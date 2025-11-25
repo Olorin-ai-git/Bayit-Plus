@@ -12,16 +12,18 @@ Week 4 Phase 2 implementation.
 """
 
 import logging
-from typing import Dict, Any, Optional, Tuple
+import time
 from datetime import datetime, timedelta
 from functools import lru_cache
-import time
+from typing import Any, Dict, Optional, Tuple
 
 logger = logging.getLogger(__name__)
 
 # Cache configuration
 THRESHOLD_CACHE_TTL_SECONDS = 3600  # 1 hour cache
-_threshold_cache: Dict[str, Tuple[float, float]] = {}  # {cache_key: (threshold_value, expiry_time)}
+_threshold_cache: Dict[str, Tuple[float, float]] = (
+    {}
+)  # {cache_key: (threshold_value, expiry_time)}
 
 # Default thresholds (fallback if Snowflake query fails)
 DEFAULT_HIGH_THRESHOLD = 0.75
@@ -43,7 +45,7 @@ def get_dynamic_risk_threshold(
     level: str,
     entity_type: Optional[str] = None,
     merchant_category: Optional[str] = None,
-    lookback_days: int = 7
+    lookback_days: int = 7,
 ) -> float:
     """
     Calculate dynamic risk threshold based on data distribution.
@@ -59,12 +61,16 @@ def get_dynamic_risk_threshold(
     """
     try:
         # Build cache key
-        cache_key = f"risk_threshold_{level}_{entity_type}_{merchant_category}_{lookback_days}"
+        cache_key = (
+            f"risk_threshold_{level}_{entity_type}_{merchant_category}_{lookback_days}"
+        )
 
         # Check cache
         cached_value = _get_from_cache(cache_key)
         if cached_value is not None:
-            logger.debug(f"📊 Using cached threshold for {level}/{entity_type}: {cached_value:.3f}")
+            logger.debug(
+                f"📊 Using cached threshold for {level}/{entity_type}: {cached_value:.3f}"
+            )
             return cached_value
 
         # Query Snowflake for percentile-based threshold
@@ -72,7 +78,7 @@ def get_dynamic_risk_threshold(
             level=level,
             entity_type=entity_type,
             merchant_category=merchant_category,
-            lookback_days=lookback_days
+            lookback_days=lookback_days,
         )
 
         # Cache the result
@@ -92,8 +98,7 @@ def get_dynamic_risk_threshold(
 
 
 def get_dynamic_device_threshold(
-    entity_type: Optional[str] = None,
-    lookback_days: int = 7
+    entity_type: Optional[str] = None, lookback_days: int = 7
 ) -> int:
     """
     Calculate dynamic device count threshold.
@@ -113,13 +118,14 @@ def get_dynamic_device_threshold(
             return int(cached_value)
 
         threshold = _query_device_threshold_from_snowflake(
-            entity_type=entity_type,
-            lookback_days=lookback_days
+            entity_type=entity_type, lookback_days=lookback_days
         )
 
         _set_in_cache(cache_key, threshold)
 
-        logger.info(f"📊 Calculated dynamic device threshold (entity: {entity_type or 'all'}): {threshold}")
+        logger.info(
+            f"📊 Calculated dynamic device threshold (entity: {entity_type or 'all'}): {threshold}"
+        )
 
         return threshold
 
@@ -129,8 +135,7 @@ def get_dynamic_device_threshold(
 
 
 def get_dynamic_card_threshold(
-    entity_type: Optional[str] = None,
-    lookback_days: int = 7
+    entity_type: Optional[str] = None, lookback_days: int = 7
 ) -> int:
     """
     Calculate dynamic card count threshold.
@@ -150,13 +155,14 @@ def get_dynamic_card_threshold(
             return int(cached_value)
 
         threshold = _query_card_threshold_from_snowflake(
-            entity_type=entity_type,
-            lookback_days=lookback_days
+            entity_type=entity_type, lookback_days=lookback_days
         )
 
         _set_in_cache(cache_key, threshold)
 
-        logger.info(f"📊 Calculated dynamic card threshold (entity: {entity_type or 'all'}): {threshold}")
+        logger.info(
+            f"📊 Calculated dynamic card threshold (entity: {entity_type or 'all'}): {threshold}"
+        )
 
         return threshold
 
@@ -166,8 +172,7 @@ def get_dynamic_card_threshold(
 
 
 def get_dynamic_velocity_threshold(
-    entity_type: Optional[str] = None,
-    lookback_days: int = 7
+    entity_type: Optional[str] = None, lookback_days: int = 7
 ) -> int:
     """
     Calculate dynamic velocity threshold.
@@ -187,13 +192,14 @@ def get_dynamic_velocity_threshold(
             return int(cached_value)
 
         threshold = _query_velocity_threshold_from_snowflake(
-            entity_type=entity_type,
-            lookback_days=lookback_days
+            entity_type=entity_type, lookback_days=lookback_days
         )
 
         _set_in_cache(cache_key, threshold)
 
-        logger.info(f"📊 Calculated dynamic velocity threshold (entity: {entity_type or 'all'}): {threshold}")
+        logger.info(
+            f"📊 Calculated dynamic velocity threshold (entity: {entity_type or 'all'}): {threshold}"
+        )
 
         return threshold
 
@@ -206,7 +212,7 @@ def _query_risk_threshold_from_snowflake(
     level: str,
     entity_type: Optional[str] = None,
     merchant_category: Optional[str] = None,
-    lookback_days: int = 7
+    lookback_days: int = 7,
 ) -> float:
     """
     Query Snowflake for percentile-based risk threshold.
@@ -235,7 +241,9 @@ def _query_risk_threshold_from_snowflake(
             merchant_filter = f"AND MERCHANT_CATEGORY = '{merchant_category}'"
 
         # Calculate lookback date
-        lookback_date = (datetime.now() - timedelta(days=lookback_days)).strftime("%Y-%m-%d")
+        lookback_date = (datetime.now() - timedelta(days=lookback_days)).strftime(
+            "%Y-%m-%d"
+        )
 
         # SQL query for percentile calculation
         query = f"""
@@ -252,7 +260,9 @@ def _query_risk_threshold_from_snowflake(
         conn = get_snowflake_connection()
         cursor = conn.cursor()
 
-        logger.debug(f"📊 Querying Snowflake for {level} threshold (percentile: {percentile})")
+        logger.debug(
+            f"📊 Querying Snowflake for {level} threshold (percentile: {percentile})"
+        )
 
         cursor.execute(query)
         result = cursor.fetchone()
@@ -262,7 +272,9 @@ def _query_risk_threshold_from_snowflake(
             logger.debug(f"📊 Snowflake returned {level} threshold: {threshold:.3f}")
             return threshold
         else:
-            logger.warning(f"⚠️ Snowflake returned no data for {level} threshold, using default")
+            logger.warning(
+                f"⚠️ Snowflake returned no data for {level} threshold, using default"
+            )
             return _get_default_threshold(level)
 
     except Exception as e:
@@ -271,15 +283,16 @@ def _query_risk_threshold_from_snowflake(
 
 
 def _query_device_threshold_from_snowflake(
-    entity_type: Optional[str] = None,
-    lookback_days: int = 7
+    entity_type: Optional[str] = None, lookback_days: int = 7
 ) -> int:
     """Query Snowflake for device count percentile."""
     try:
         from app.service.snowflake_service import get_snowflake_connection
 
         entity_filter = f"AND ENTITY_TYPE = '{entity_type}'" if entity_type else ""
-        lookback_date = (datetime.now() - timedelta(days=lookback_days)).strftime("%Y-%m-%d")
+        lookback_date = (datetime.now() - timedelta(days=lookback_days)).strftime(
+            "%Y-%m-%d"
+        )
 
         query = f"""
         SELECT
@@ -313,15 +326,16 @@ def _query_device_threshold_from_snowflake(
 
 
 def _query_card_threshold_from_snowflake(
-    entity_type: Optional[str] = None,
-    lookback_days: int = 7
+    entity_type: Optional[str] = None, lookback_days: int = 7
 ) -> int:
     """Query Snowflake for card count percentile."""
     try:
         from app.service.snowflake_service import get_snowflake_connection
 
         entity_filter = f"AND ENTITY_TYPE = '{entity_type}'" if entity_type else ""
-        lookback_date = (datetime.now() - timedelta(days=lookback_days)).strftime("%Y-%m-%d")
+        lookback_date = (datetime.now() - timedelta(days=lookback_days)).strftime(
+            "%Y-%m-%d"
+        )
 
         query = f"""
         SELECT
@@ -356,15 +370,16 @@ def _query_card_threshold_from_snowflake(
 
 
 def _query_velocity_threshold_from_snowflake(
-    entity_type: Optional[str] = None,
-    lookback_days: int = 7
+    entity_type: Optional[str] = None, lookback_days: int = 7
 ) -> int:
     """Query Snowflake for velocity percentile."""
     try:
         from app.service.snowflake_service import get_snowflake_connection
 
         entity_filter = f"AND ENTITY_TYPE = '{entity_type}'" if entity_type else ""
-        lookback_date = (datetime.now() - timedelta(days=lookback_days)).strftime("%Y-%m-%d")
+        lookback_date = (datetime.now() - timedelta(days=lookback_days)).strftime(
+            "%Y-%m-%d"
+        )
 
         query = f"""
         SELECT

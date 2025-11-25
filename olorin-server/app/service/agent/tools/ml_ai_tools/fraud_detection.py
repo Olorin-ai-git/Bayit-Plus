@@ -15,23 +15,27 @@ Legacy wrapper that delegates to specialized detection modules.
 - fraud_detection_recommendations: Recommendations
 """
 
-from typing import Any, Dict, Optional, List
-from langchain.tools import BaseTool
 import json
 from datetime import datetime
+from typing import Any, Dict, List, Optional
+
+from langchain.tools import BaseTool
+
 from app.service.logging import get_bridge_logger
+
+from .fraud_detection_behavioral import FraudBehavioralAnalysis
+from .fraud_detection_ensemble import FraudEnsembleMethods
 
 # Import specialized modules
 from .fraud_detection_input import FraudDetectionInput
 from .fraud_detection_preprocessor import FraudDataPreprocessor
-from .fraud_detection_rules import FraudDetectionRules
-from .fraud_detection_behavioral import FraudBehavioralAnalysis
-from .fraud_detection_statistical import FraudStatisticalAnalysis
-from .fraud_detection_ensemble import FraudEnsembleMethods
-from .fraud_detection_scoring import FraudScoringDecision
 from .fraud_detection_recommendations import FraudRecommendations
+from .fraud_detection_rules import FraudDetectionRules
+from .fraud_detection_scoring import FraudScoringDecision
+from .fraud_detection_statistical import FraudStatisticalAnalysis
 
 logger = get_bridge_logger(__name__)
+
 
 class FraudDetectionTool(BaseTool):
     """Advanced fraud detection using ML ensemble methods.
@@ -39,6 +43,7 @@ class FraudDetectionTool(BaseTool):
     Detects: payment fraud, identity fraud, account takeover, synthetic fraud.
     Uses: ensemble ML, rule-based systems, behavioral analysis, statistical methods.
     """
+
     name: str = "fraud_detection_ml"
     description: str = """
     Performs comprehensive fraud detection using advanced machine learning

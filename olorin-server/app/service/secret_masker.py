@@ -13,7 +13,6 @@ Constitutional Compliance:
 import re
 from typing import Any, Dict, Set
 
-
 # Sensitive field patterns (case-insensitive)
 SENSITIVE_PATTERNS = {
     # API credentials
@@ -174,7 +173,10 @@ def mask_string_secrets(text: str) -> str:
         # Connection strings with password keyword
         (r"(password[=:\s]+)([^&\s;]+)", r"\1***masked***"),
         # JWT tokens
-        (r"eyJ[a-zA-Z0-9_\-]+\.eyJ[a-zA-Z0-9_\-]+\.[a-zA-Z0-9_\-]+", "***jwt-masked***"),
+        (
+            r"eyJ[a-zA-Z0-9_\-]+\.eyJ[a-zA-Z0-9_\-]+\.[a-zA-Z0-9_\-]+",
+            "***jwt-masked***",
+        ),
     ]
 
     masked_text = text

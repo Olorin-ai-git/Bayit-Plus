@@ -10,24 +10,28 @@ and accessibility features.
 import json
 import logging
 from abc import ABC, abstractmethod
-from datetime import datetime
-from typing import Dict, List, Any, Optional, Union
-from pathlib import Path
 from dataclasses import dataclass
+from datetime import datetime
 from enum import Enum
+from pathlib import Path
+from typing import Any, Dict, List, Optional, Union
 
 logger = logging.getLogger(__name__)
 
+
 class ComponentTheme(Enum):
     """Available component themes"""
+
     DEFAULT = "default"
     DARK = "dark"
     HIGH_CONTRAST = "high_contrast"
     COLORBLIND_FRIENDLY = "colorblind_friendly"
 
+
 @dataclass
 class ComponentConfig:
     """Configuration for visualization components"""
+
     theme: ComponentTheme = ComponentTheme.DEFAULT
     enable_animations: bool = True
     enable_tooltips: bool = True
@@ -38,10 +42,11 @@ class ComponentConfig:
     enable_export: bool = True
     debug_mode: bool = False
 
+
 class BaseVisualizationComponent(ABC):
     """
     Abstract base class for all visualization components.
-    
+
     Provides common functionality:
     - Error handling and data validation
     - Theme and styling management
@@ -50,11 +55,11 @@ class BaseVisualizationComponent(ABC):
     - Performance optimization
     - Debug and logging capabilities
     """
-    
+
     def __init__(self, config: Optional[ComponentConfig] = None):
         """
         Initialize base visualization component.
-        
+
         Args:
             config: Component configuration settings
         """
@@ -62,93 +67,93 @@ class BaseVisualizationComponent(ABC):
         self.component_id = self._generate_component_id()
         self.errors: List[str] = []
         self.warnings: List[str] = []
-        
+
     @property
     @abstractmethod
     def component_name(self) -> str:
         """Return the component name"""
         pass
-        
+
     @property
-    @abstractmethod 
+    @abstractmethod
     def component_title(self) -> str:
         """Return the component display title"""
         pass
-        
+
     @property
     @abstractmethod
     def component_description(self) -> str:
         """Return the component description"""
         pass
-    
+
     @abstractmethod
     def validate_data(self, data: Dict[str, Any]) -> bool:
         """
         Validate input data for the component.
-        
+
         Args:
             data: Input data to validate
-            
+
         Returns:
             True if data is valid, False otherwise
         """
         pass
-        
+
     @abstractmethod
     def process_data(self, data: Dict[str, Any]) -> Dict[str, Any]:
         """
         Process and transform input data for visualization.
-        
+
         Args:
             data: Raw input data
-            
+
         Returns:
             Processed data ready for visualization
         """
         pass
-        
+
     @abstractmethod
     def generate_html(self, processed_data: Dict[str, Any]) -> str:
         """
         Generate HTML content for the component.
-        
+
         Args:
             processed_data: Processed visualization data
-            
+
         Returns:
             HTML string for the component
         """
         pass
-        
+
     @abstractmethod
     def generate_javascript(self, processed_data: Dict[str, Any]) -> str:
         """
         Generate JavaScript code for the component.
-        
+
         Args:
             processed_data: Processed visualization data
-            
+
         Returns:
             JavaScript string for the component
         """
         pass
-        
+
     def generate_css(self) -> str:
         """
         Generate CSS styles for the component.
-        
+
         Returns:
             CSS string for the component
         """
         return self._get_base_css()
-        
+
     def generate_component(self, data: Dict[str, Any]) -> Dict[str, str]:
         """
         Generate complete component (HTML, CSS, JavaScript).
-        
+
         Args:
             data: Input data for the component
-            
+
         Returns:
             Dictionary with 'html', 'css', 'javascript' keys
         """
@@ -156,156 +161,160 @@ class BaseVisualizationComponent(ABC):
             # Clear previous errors and warnings
             self.errors.clear()
             self.warnings.clear()
-            
+
             # Validate input data
             if not self.validate_data(data):
                 return self._generate_error_component("Invalid input data")
-            
+
             # Process data
             processed_data = self.process_data(data)
-            
+
             if not processed_data:
                 return self._generate_empty_component()
-                
+
             # Generate component parts
             html = self.generate_html(processed_data)
             css = self.generate_css()
             javascript = self.generate_javascript(processed_data)
-            
+
             return {
-                'html': html,
-                'css': css,
-                'javascript': javascript,
-                'metadata': {
-                    'component_id': self.component_id,
-                    'component_name': self.component_name,
-                    'generated_at': datetime.now().isoformat(),
-                    'data_points': len(processed_data.get('data', [])),
-                    'errors': self.errors.copy(),
-                    'warnings': self.warnings.copy()
-                }
+                "html": html,
+                "css": css,
+                "javascript": javascript,
+                "metadata": {
+                    "component_id": self.component_id,
+                    "component_name": self.component_name,
+                    "generated_at": datetime.now().isoformat(),
+                    "data_points": len(processed_data.get("data", [])),
+                    "errors": self.errors.copy(),
+                    "warnings": self.warnings.copy(),
+                },
             }
-            
+
         except Exception as e:
             error_msg = f"Error generating {self.component_name}: {str(e)}"
             logger.error(error_msg)
             self.errors.append(error_msg)
             return self._generate_error_component(error_msg)
-    
+
     def _generate_component_id(self) -> str:
         """Generate unique component ID"""
         timestamp = datetime.now().strftime("%Y%m%d_%H%M%S_%f")
         return f"{self.component_name}_{timestamp}"
-    
+
     def _add_error(self, message: str) -> None:
         """Add error message"""
         self.errors.append(message)
         logger.error(f"{self.component_name}: {message}")
-        
+
     def _add_warning(self, message: str) -> None:
         """Add warning message"""
         self.warnings.append(message)
         logger.warning(f"{self.component_name}: {message}")
-        
+
     def _format_timestamp(self, timestamp_str: str) -> str:
         """Format timestamp for display"""
         if not timestamp_str:
             return "Unknown Time"
-            
+
         try:
-            if 'T' in timestamp_str:
-                dt = datetime.fromisoformat(timestamp_str.replace('Z', '+00:00'))
+            if "T" in timestamp_str:
+                dt = datetime.fromisoformat(timestamp_str.replace("Z", "+00:00"))
                 return dt.strftime("%H:%M:%S")
-            elif ',' in timestamp_str:
-                parts = timestamp_str.split(',')[0]
+            elif "," in timestamp_str:
+                parts = timestamp_str.split(",")[0]
                 dt = datetime.strptime(parts, "%Y-%m-%d %H:%M:%S")
                 return dt.strftime("%H:%M:%S")
             else:
                 return timestamp_str[:20] if len(timestamp_str) > 20 else timestamp_str
         except (ValueError, AttributeError):
             return timestamp_str[:20] if len(timestamp_str) > 20 else timestamp_str
-    
+
     def _sanitize_string(self, text: str, max_length: int = 1000) -> str:
         """Sanitize string for HTML output"""
         if not text:
             return ""
-        
+
         # Truncate if too long
         if len(text) > max_length:
             text = text[:max_length] + "..."
-            
+
         # Basic HTML escaping
-        text = (text.replace('&', '&amp;')
-                   .replace('<', '&lt;')
-                   .replace('>', '&gt;')
-                   .replace('"', '&quot;')
-                   .replace("'", '&#39;'))
-        
+        text = (
+            text.replace("&", "&amp;")
+            .replace("<", "&lt;")
+            .replace(">", "&gt;")
+            .replace('"', "&quot;")
+            .replace("'", "&#39;")
+        )
+
         return text
-    
+
     def _get_theme_colors(self) -> Dict[str, str]:
         """Get color palette for current theme"""
         color_palettes = {
             ComponentTheme.DEFAULT: {
-                'primary': '#667eea',
-                'secondary': '#764ba2', 
-                'success': '#28a745',
-                'warning': '#fd7e14',
-                'danger': '#dc3545',
-                'info': '#17a2b8',
-                'light': '#f8f9fa',
-                'dark': '#343a40',
-                'background': '#ffffff',
-                'text': '#2c3e50',
-                'border': '#dee2e6'
+                "primary": "#667eea",
+                "secondary": "#764ba2",
+                "success": "#28a745",
+                "warning": "#fd7e14",
+                "danger": "#dc3545",
+                "info": "#17a2b8",
+                "light": "#f8f9fa",
+                "dark": "#343a40",
+                "background": "#ffffff",
+                "text": "#2c3e50",
+                "border": "#dee2e6",
             },
             ComponentTheme.DARK: {
-                'primary': '#7c3aed',
-                'secondary': '#a855f7',
-                'success': '#10b981', 
-                'warning': '#f59e0b',
-                'danger': '#ef4444',
-                'info': '#06b6d4',
-                'light': '#374151',
-                'dark': '#111827',
-                'background': '#1f2937',
-                'text': '#f9fafb',
-                'border': '#4b5563'
+                "primary": "#7c3aed",
+                "secondary": "#a855f7",
+                "success": "#10b981",
+                "warning": "#f59e0b",
+                "danger": "#ef4444",
+                "info": "#06b6d4",
+                "light": "#374151",
+                "dark": "#111827",
+                "background": "#1f2937",
+                "text": "#f9fafb",
+                "border": "#4b5563",
             },
             ComponentTheme.HIGH_CONTRAST: {
-                'primary': '#000000',
-                'secondary': '#ffffff',
-                'success': '#008000',
-                'warning': '#ff8800',
-                'danger': '#ff0000', 
-                'info': '#0066cc',
-                'light': '#ffffff',
-                'dark': '#000000',
-                'background': '#ffffff',
-                'text': '#000000',
-                'border': '#000000'
+                "primary": "#000000",
+                "secondary": "#ffffff",
+                "success": "#008000",
+                "warning": "#ff8800",
+                "danger": "#ff0000",
+                "info": "#0066cc",
+                "light": "#ffffff",
+                "dark": "#000000",
+                "background": "#ffffff",
+                "text": "#000000",
+                "border": "#000000",
             },
             ComponentTheme.COLORBLIND_FRIENDLY: {
-                'primary': '#1f77b4',
-                'secondary': '#ff7f0e',
-                'success': '#2ca02c',
-                'warning': '#d62728',
-                'danger': '#9467bd',
-                'info': '#8c564b',
-                'light': '#f8f9fa',
-                'dark': '#343a40', 
-                'background': '#ffffff',
-                'text': '#2c3e50',
-                'border': '#dee2e6'
-            }
+                "primary": "#1f77b4",
+                "secondary": "#ff7f0e",
+                "success": "#2ca02c",
+                "warning": "#d62728",
+                "danger": "#9467bd",
+                "info": "#8c564b",
+                "light": "#f8f9fa",
+                "dark": "#343a40",
+                "background": "#ffffff",
+                "text": "#2c3e50",
+                "border": "#dee2e6",
+            },
         }
-        
-        return color_palettes.get(self.config.theme, color_palettes[ComponentTheme.DEFAULT])
-    
+
+        return color_palettes.get(
+            self.config.theme, color_palettes[ComponentTheme.DEFAULT]
+        )
+
     def _get_base_css(self) -> str:
         """Get base CSS styles for all components"""
         colors = self._get_theme_colors()
-        
+
         return f"""
         .viz-component-{self.component_id} {{
             background: {colors['background']};
@@ -436,7 +445,7 @@ class BaseVisualizationComponent(ABC):
             animation: viz-fade-in-{self.component_id} 0.6s ease-out;
         }}
         """
-    
+
     def _generate_error_component(self, error_message: str) -> Dict[str, str]:
         """Generate error component"""
         html = f"""
@@ -452,20 +461,20 @@ class BaseVisualizationComponent(ABC):
             </div>
         </div>
         """
-        
+
         return {
-            'html': html,
-            'css': self._get_base_css(),
-            'javascript': f'console.error("Component {self.component_name} failed to load: {error_message}");',
-            'metadata': {
-                'component_id': self.component_id,
-                'component_name': self.component_name,
-                'generated_at': datetime.now().isoformat(),
-                'status': 'error',
-                'error_message': error_message
-            }
+            "html": html,
+            "css": self._get_base_css(),
+            "javascript": f'console.error("Component {self.component_name} failed to load: {error_message}");',
+            "metadata": {
+                "component_id": self.component_id,
+                "component_name": self.component_name,
+                "generated_at": datetime.now().isoformat(),
+                "status": "error",
+                "error_message": error_message,
+            },
         }
-    
+
     def _generate_empty_component(self) -> Dict[str, str]:
         """Generate empty state component"""
         html = f"""
@@ -482,15 +491,15 @@ class BaseVisualizationComponent(ABC):
             </div>
         </div>
         """
-        
+
         return {
-            'html': html,
-            'css': self._get_base_css(),
-            'javascript': f'console.info("Component {self.component_name} has no data to display");',
-            'metadata': {
-                'component_id': self.component_id,
-                'component_name': self.component_name,
-                'generated_at': datetime.now().isoformat(),
-                'status': 'empty'
-            }
+            "html": html,
+            "css": self._get_base_css(),
+            "javascript": f'console.info("Component {self.component_name} has no data to display");',
+            "metadata": {
+                "component_id": self.component_id,
+                "component_name": self.component_name,
+                "generated_at": datetime.now().isoformat(),
+                "status": "empty",
+            },
         }

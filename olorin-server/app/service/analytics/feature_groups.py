@@ -4,7 +4,7 @@ Feature Grouping Utilities.
 Provides categorization of features by type for analysis and reporting.
 """
 
-from typing import List, Dict, Set
+from typing import Dict, List, Set
 
 
 def categorize_features(selected_features: Set[str]) -> Dict[str, List[str]]:
@@ -25,7 +25,7 @@ def categorize_features(selected_features: Set[str]) -> Dict[str, List[str]]:
         "merchant": [],
         "entity": [],
         "pattern": [],
-        "other": []
+        "other": [],
     }
 
     for feature in selected_features:
@@ -33,7 +33,11 @@ def categorize_features(selected_features: Set[str]) -> Dict[str, List[str]]:
 
         if "velocity" in feature_lower or "tx_per" in feature_lower:
             groups["velocity"].append(feature)
-        elif "geo" in feature_lower or "distance" in feature_lower or "location" in feature_lower:
+        elif (
+            "geo" in feature_lower
+            or "distance" in feature_lower
+            or "location" in feature_lower
+        ):
             groups["geolocation"].append(feature)
         elif "amount" in feature_lower or "clustering" in feature_lower:
             groups["amount"].append(feature)

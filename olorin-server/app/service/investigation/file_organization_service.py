@@ -35,7 +35,7 @@ class FileOrganizationService:
         path_resolver: Optional[PathResolver] = None,
         directory_manager: Optional[DirectoryManager] = None,
         file_locker: Optional[FileLocker] = None,
-        symlink_manager: Optional[SymlinkManager] = None
+        symlink_manager: Optional[SymlinkManager] = None,
     ):
         """
         Initialize file organization service.
@@ -51,17 +51,13 @@ class FileOrganizationService:
         self.config = config
 
         # Initialize components
-        self.entity_normalizer = (
-            entity_normalizer
-            or EntityNormalizer(max_length=config.entity_id_max_length)
+        self.entity_normalizer = entity_normalizer or EntityNormalizer(
+            max_length=config.entity_id_max_length
         )
-        self.path_resolver = (
-            path_resolver
-            or PathResolver(config, self.entity_normalizer)
+        self.path_resolver = path_resolver or PathResolver(
+            config, self.entity_normalizer
         )
-        self.directory_manager = (
-            directory_manager or DirectoryManager()
-        )
+        self.directory_manager = directory_manager or DirectoryManager()
         self.file_locker = file_locker or FileLocker()
         self.symlink_manager = symlink_manager or SymlinkManager()
 
@@ -73,7 +69,7 @@ class FileOrganizationService:
         date_end: datetime,
         file_type: str = "json",
         investigation_id: Optional[str] = None,
-        created_at: Optional[datetime] = None
+        created_at: Optional[datetime] = None,
     ) -> Tuple[Optional[Path], Optional[Path]]:
         """
         Resolve filesystem path for investigation artifact (JSON or HTML).
@@ -103,24 +99,22 @@ class FileOrganizationService:
         if file_type not in ("json", "html"):
             raise ValueError(f"file_type must be 'json' or 'html', got '{file_type}'")
 
-        canonical_path, entity_view_path = self.path_resolver.resolve_investigation_artifact_path(
-            entity_type=entity_type,
-            entity_id=entity_id,
-            date_start=date_start,
-            date_end=date_end,
-            file_type=file_type,
-            investigation_id=investigation_id,
-            created_at=created_at
+        canonical_path, entity_view_path = (
+            self.path_resolver.resolve_investigation_artifact_path(
+                entity_type=entity_type,
+                entity_id=entity_id,
+                date_start=date_start,
+                date_end=date_end,
+                file_type=file_type,
+                investigation_id=investigation_id,
+                created_at=created_at,
+            )
         )
 
         return canonical_path, entity_view_path
 
     def resolve_comparison_report_path(
-        self,
-        source_type: str,
-        entity_type: str,
-        entity_id: str,
-        timestamp: datetime
+        self, source_type: str, entity_type: str, entity_id: str, timestamp: datetime
     ) -> Path:
         """
         Resolve filesystem path for comparison report HTML.
@@ -151,7 +145,7 @@ class FileOrganizationService:
             source_type=source_type,
             entity_type=entity_type,
             entity_id=entity_id,
-            timestamp=timestamp
+            timestamp=timestamp,
         )
 
     def resolve_startup_report_path(self, timestamp: datetime) -> Path:
@@ -167,10 +161,7 @@ class FileOrganizationService:
         return self.path_resolver.resolve_startup_report_path(timestamp)
 
     def resolve_investigation_log_path(
-        self,
-        mode: str,
-        investigation_id: str,
-        timestamp: datetime
+        self, mode: str, investigation_id: str, timestamp: datetime
     ) -> Path:
         """
         Resolve filesystem path for investigation log folder.
@@ -188,16 +179,12 @@ class FileOrganizationService:
             ValueError: If investigation_id is empty
         """
         if mode not in ("LIVE", "MOCK", "DEMO"):
-            raise ValueError(
-                f"mode must be 'LIVE', 'MOCK', or 'DEMO', got '{mode}'"
-            )
+            raise ValueError(f"mode must be 'LIVE', 'MOCK', or 'DEMO', got '{mode}'")
         if not investigation_id:
             raise ValueError("investigation_id cannot be empty")
 
         return self.path_resolver.resolve_investigation_log_path(
-            mode=mode,
-            investigation_id=investigation_id,
-            timestamp=timestamp
+            mode=mode, investigation_id=investigation_id, timestamp=timestamp
         )
 
     def create_directory_structure(self, path: Path) -> None:
@@ -229,10 +216,7 @@ class FileOrganizationService:
         return self.entity_normalizer.normalize(entity_id)
 
     def create_entity_view_symlink(
-        self,
-        canonical_path: Path,
-        entity_view_path: Path,
-        force: bool = False
+        self, canonical_path: Path, entity_view_path: Path, force: bool = False
     ) -> Tuple[str, Optional[str]]:
         """
         Create entity view symlink or indexed view.
@@ -248,15 +232,11 @@ class FileOrganizationService:
             - error_message: Error message if creation failed, None if successful
         """
         return self.symlink_manager.create_symlink(
-            target=canonical_path,
-            link_path=entity_view_path,
-            force=force
+            target=canonical_path, link_path=entity_view_path, force=force
         )
 
     def lock_file_for_write(
-        self,
-        file_path: Path,
-        create_if_missing: bool = True
+        self, file_path: Path, create_if_missing: bool = True
     ) -> Optional[int]:
         """
         Acquire exclusive lock on file for writing.
@@ -269,8 +249,7 @@ class FileOrganizationService:
             File handle if lock acquired, None if max retries exceeded
         """
         return self.file_locker.lock_file(
-            file_path=file_path,
-            create_if_missing=create_if_missing
+            file_path=file_path, create_if_missing=create_if_missing
         )
 
     def unlock_file(self, file_handle: int) -> None:
@@ -281,52 +260,48 @@ class FileOrganizationService:
             file_handle: File descriptor to unlock
         """
         self.file_locker.unlock_file(file_handle)
-    
+
     def is_migration_active(self) -> bool:
         """
         Check if migration period is currently active.
-        
+
         Returns:
             True if migration period is active, False otherwise
         """
         return self.config.is_migration_period_active
-    
+
     def is_legacy_path_read_only(self) -> bool:
         """
         Check if legacy paths should be treated as read-only.
-        
+
         This is true if:
         - Legacy support is disabled, OR
         - Migration period has expired
-        
+
         Returns:
             True if legacy paths should be read-only, False otherwise
         """
         if not self.config.enable_legacy_path_support:
             return True
-        
+
         if self.config.migration_mode and self.config.migration_end_date:
             return datetime.now() >= self.config.migration_end_date
-        
+
         return False
-    
+
     def resolve_comparison_package_path(
-        self,
-        source_type: str,
-        timestamp: datetime
+        self, source_type: str, timestamp: datetime
     ) -> Path:
         """
         Resolve filesystem path for comparison zip package.
-        
+
         Args:
             source_type: Source of comparison ("auto_startup" or "manual")
             timestamp: Timestamp for comparison package
-            
+
         Returns:
             Path object to comparison package directory
         """
         return self.path_resolver.resolve_comparison_package_path(
-            source_type=source_type,
-            timestamp=timestamp
+            source_type=source_type, timestamp=timestamp
         )
-

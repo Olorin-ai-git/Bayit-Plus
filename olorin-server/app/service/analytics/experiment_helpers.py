@@ -7,7 +7,7 @@ Week 8 Phase 3 implementation.
 """
 
 import hashlib
-from typing import Dict, Any
+from typing import Any, Dict
 
 
 def assign_variant(
@@ -15,7 +15,7 @@ def assign_variant(
     entity_id: str,
     traffic_split: float,
     variant_a_config: Dict[str, Any],
-    variant_b_config: Dict[str, Any]
+    variant_b_config: Dict[str, Any],
 ) -> Dict[str, Any]:
     """
     Assign entity to a variant using consistent hashing.
@@ -31,8 +31,7 @@ def assign_variant(
         Dictionary with variant assignment details
     """
     hash_value = int(
-        hashlib.md5(f"{experiment_id}_{entity_id}".encode()).hexdigest(),
-        16
+        hashlib.md5(f"{experiment_id}_{entity_id}".encode()).hexdigest(), 16
     )
     assignment = (hash_value % 100) / 100.0
 
@@ -43,14 +42,12 @@ def assign_variant(
         variant = "variant_a"
         config = variant_a_config
 
-    return {
-        "variant": variant,
-        "config": config,
-        "experiment_id": experiment_id
-    }
+    return {"variant": variant, "config": config, "experiment_id": experiment_id}
 
 
-def calculate_experiment_stats(metrics_a: Dict[str, float], metrics_b: Dict[str, float]) -> Dict[str, Any]:
+def calculate_experiment_stats(
+    metrics_a: Dict[str, float], metrics_b: Dict[str, float]
+) -> Dict[str, Any]:
     """
     Calculate experiment statistics and results.
 
@@ -63,41 +60,36 @@ def calculate_experiment_stats(metrics_a: Dict[str, float], metrics_b: Dict[str,
     """
     # Calculate average scores
     avg_score_a = (
-        metrics_a["total_score"] / metrics_a["count"]
-        if metrics_a["count"] > 0 else 0.0
+        metrics_a["total_score"] / metrics_a["count"] if metrics_a["count"] > 0 else 0.0
     )
     avg_score_b = (
-        metrics_b["total_score"] / metrics_b["count"]
-        if metrics_b["count"] > 0 else 0.0
+        metrics_b["total_score"] / metrics_b["count"] if metrics_b["count"] > 0 else 0.0
     )
 
     # Calculate error rates
     error_rate_a = (
-        metrics_a["errors"] / metrics_a["count"]
-        if metrics_a["count"] > 0 else 0.0
+        metrics_a["errors"] / metrics_a["count"] if metrics_a["count"] > 0 else 0.0
     )
     error_rate_b = (
-        metrics_b["errors"] / metrics_b["count"]
-        if metrics_b["count"] > 0 else 0.0
+        metrics_b["errors"] / metrics_b["count"] if metrics_b["count"] > 0 else 0.0
     )
 
     # Calculate score improvement
     score_improvement = (
-        ((avg_score_b - avg_score_a) / avg_score_a * 100)
-        if avg_score_a > 0 else 0.0
+        ((avg_score_b - avg_score_a) / avg_score_a * 100) if avg_score_a > 0 else 0.0
     )
 
     return {
         "variant_a": {
             "count": metrics_a["count"],
             "avg_score": avg_score_a,
-            "error_rate": error_rate_a
+            "error_rate": error_rate_a,
         },
         "variant_b": {
             "count": metrics_b["count"],
             "avg_score": avg_score_b,
-            "error_rate": error_rate_b
+            "error_rate": error_rate_b,
         },
         "winner": "variant_b" if avg_score_b > avg_score_a else "variant_a",
-        "score_improvement": score_improvement
+        "score_improvement": score_improvement,
     }

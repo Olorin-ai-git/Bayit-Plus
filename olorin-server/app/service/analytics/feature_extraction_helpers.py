@@ -4,8 +4,8 @@ Feature Extraction Helper Functions.
 Provides utility functions for extracting features from transactions.
 """
 
-from typing import Any, Dict
 from datetime import datetime
+from typing import Any, Dict
 
 
 def extract_hour(transaction: Dict[str, Any]) -> int:

@@ -4,13 +4,14 @@ Fetch Series Tool for LangGraph Agents
 Tool for fetching time series data from Snowflake for anomaly detection.
 """
 
-from typing import Any, Dict, Optional
 from datetime import datetime
-from pydantic import BaseModel, Field
-from langchain_core.tools import BaseTool
+from typing import Any, Dict, Optional
 
-from app.service.logging import get_bridge_logger
+from langchain_core.tools import BaseTool
+from pydantic import BaseModel, Field
+
 from app.service.anomaly.data.windows import fetch_windows_snowflake
+from app.service.logging import get_bridge_logger
 
 logger = get_bridge_logger(__name__)
 
@@ -20,9 +21,11 @@ class _FetchSeriesArgs(BaseModel):
 
     cohort: Dict[str, str] = Field(
         ...,
-        description="Cohort dimensions (e.g., {'merchant_id': 'm_01', 'channel': 'web'})"
+        description="Cohort dimensions (e.g., {'merchant_id': 'm_01', 'channel': 'web'})",
     )
-    metric: str = Field(..., description="Metric name (e.g., 'decline_rate', 'tx_count')")
+    metric: str = Field(
+        ..., description="Metric name (e.g., 'decline_rate', 'tx_count')"
+    )
     window_from: str = Field(..., description="Start of time window (ISO format)")
     window_to: str = Field(..., description="End of time window (ISO format)")
 
@@ -52,29 +55,31 @@ class FetchSeriesTool(BaseTool):
     ) -> Dict[str, Any]:
         """Execute the fetch_series tool."""
         try:
-            window_from_dt = datetime.fromisoformat(window_from.replace('Z', '+00:00'))
-            window_to_dt = datetime.fromisoformat(window_to.replace('Z', '+00:00'))
+            window_from_dt = datetime.fromisoformat(window_from.replace("Z", "+00:00"))
+            window_to_dt = datetime.fromisoformat(window_to.replace("Z", "+00:00"))
 
             # Note: fetch_windows_snowflake is async, but BaseTool._run is sync
             # Use a new event loop in a separate thread to avoid conflicts
             import asyncio
             import concurrent.futures
-            
+
             def run_async_fetch():
                 # Create a new event loop in this thread
                 new_loop = asyncio.new_event_loop()
                 asyncio.set_event_loop(new_loop)
                 try:
-                    return new_loop.run_until_complete(fetch_windows_snowflake(
-                        window_from=window_from_dt,
-                        window_to=window_to_dt,
-                        cohort_by=list(cohort.keys()),
-                        metrics=[metric],
-                        cohort_filters=cohort
-                    ))
+                    return new_loop.run_until_complete(
+                        fetch_windows_snowflake(
+                            window_from=window_from_dt,
+                            window_to=window_to_dt,
+                            cohort_by=list(cohort.keys()),
+                            metrics=[metric],
+                            cohort_filters=cohort,
+                        )
+                    )
                 finally:
                     new_loop.close()
-            
+
             with concurrent.futures.ThreadPoolExecutor() as executor:
                 future = executor.submit(run_async_fetch)
                 df = future.result()
@@ -82,24 +87,20 @@ class FetchSeriesTool(BaseTool):
             # Convert to list of dicts
             series = []
             for _, row in df.iterrows():
-                series.append({
-                    'timestamp': row['window_start'].isoformat(),
-                    'value': float(row[metric])
-                })
+                series.append(
+                    {
+                        "timestamp": row["window_start"].isoformat(),
+                        "value": float(row[metric]),
+                    }
+                )
 
             return {
-                'series': series,
-                'cohort': cohort,
-                'metric': metric,
-                'count': len(series)
+                "series": series,
+                "cohort": cohort,
+                "metric": metric,
+                "count": len(series),
             }
 
         except Exception as e:
             logger.error(f"Fetch series tool error: {e}", exc_info=True)
-            return {
-                'error': str(e),
-                'series': [],
-                'cohort': cohort,
-                'metric': metric
-            }
-
+            return {"error": str(e), "series": [], "cohort": cohort, "metric": metric}

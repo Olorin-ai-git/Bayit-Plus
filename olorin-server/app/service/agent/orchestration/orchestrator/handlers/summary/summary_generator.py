@@ -5,9 +5,10 @@ Generates comprehensive investigation summaries.
 """
 
 from datetime import datetime
-from typing import Dict, Any
+from typing import Any, Dict
 
 from app.service.logging import get_bridge_logger
+
 from .data_formatters import SummaryDataFormatters
 
 logger = get_bridge_logger(__name__)
@@ -17,7 +18,9 @@ class SummaryGenerator:
     """Generates comprehensive investigation summaries."""
 
     @staticmethod
-    def generate_investigation_summary_with_llm(state: Dict[str, Any], llm_assessment: Dict[str, Any]) -> str:
+    def generate_investigation_summary_with_llm(
+        state: Dict[str, Any], llm_assessment: Dict[str, Any]
+    ) -> str:
         """Generate comprehensive investigation summary with LLM reasoning."""
         risk_score = llm_assessment.get("risk_score", 0.5)
         confidence = llm_assessment.get("confidence", 0.5)

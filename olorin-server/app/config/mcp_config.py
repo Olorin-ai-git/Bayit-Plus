@@ -7,7 +7,9 @@ health monitoring, and server management.
 
 import os
 from typing import Optional
+
 from pydantic import BaseModel, Field, validator
+
 from app.service.logging import get_bridge_logger
 
 logger = get_bridge_logger(__name__)
@@ -18,9 +20,15 @@ class MCPConnectionPoolConfig(BaseModel):
 
     pool_size: int = Field(..., description="Maximum number of connections in pool")
     min_connections: int = Field(1, description="Minimum connections to maintain")
-    connection_timeout_seconds: int = Field(..., description="Connection timeout in seconds")
-    max_reconnect_attempts: int = Field(..., description="Maximum reconnection attempts")
-    reconnect_delay_seconds: int = Field(5, description="Delay between reconnection attempts")
+    connection_timeout_seconds: int = Field(
+        ..., description="Connection timeout in seconds"
+    )
+    max_reconnect_attempts: int = Field(
+        ..., description="Maximum reconnection attempts"
+    )
+    reconnect_delay_seconds: int = Field(
+        5, description="Delay between reconnection attempts"
+    )
 
     @validator("pool_size")
     def validate_pool_size(cls, v):
@@ -56,10 +64,16 @@ class MCPConnectionPoolConfig(BaseModel):
 class MCPHealthMonitorConfig(BaseModel):
     """Configuration for MCP health monitoring."""
 
-    health_check_interval_seconds: int = Field(..., description="Interval between health checks")
+    health_check_interval_seconds: int = Field(
+        ..., description="Interval between health checks"
+    )
     ping_timeout_seconds: int = Field(10, description="Timeout for ping operations")
-    error_rate_threshold: float = Field(0.1, description="Error rate threshold (0.0-1.0)")
-    memory_usage_threshold_mb: int = Field(1000, description="Memory usage threshold in MB")
+    error_rate_threshold: float = Field(
+        0.1, description="Error rate threshold (0.0-1.0)"
+    )
+    memory_usage_threshold_mb: int = Field(
+        1000, description="Memory usage threshold in MB"
+    )
     max_connection_count: int = Field(100, description="Maximum allowed connections")
     enable_auto_recovery: bool = Field(True, description="Enable automatic recovery")
 
@@ -106,7 +120,9 @@ class MCPConfig(BaseModel):
     enable_encryption: bool = Field(True, description="Enable connection encryption")
 
     # Logging and monitoring
-    enable_detailed_logging: bool = Field(False, description="Enable detailed MCP logging")
+    enable_detailed_logging: bool = Field(
+        False, description="Enable detailed MCP logging"
+    )
     log_level: str = Field("INFO", description="MCP logging level")
 
     @validator("protocol_version")
@@ -143,23 +159,43 @@ def load_mcp_config() -> MCPConfig:
             connection_pool=MCPConnectionPoolConfig(
                 pool_size=int(os.getenv("MCP_CONNECTION_POOL_SIZE", "10")),
                 min_connections=int(os.getenv("MCP_MIN_CONNECTIONS", "1")),
-                connection_timeout_seconds=int(os.getenv("MCP_CONNECTION_TIMEOUT_SECONDS", "30")),
-                max_reconnect_attempts=int(os.getenv("MCP_MAX_RECONNECT_ATTEMPTS", "5")),
-                reconnect_delay_seconds=int(os.getenv("MCP_RECONNECT_DELAY_SECONDS", "5"))
+                connection_timeout_seconds=int(
+                    os.getenv("MCP_CONNECTION_TIMEOUT_SECONDS", "30")
+                ),
+                max_reconnect_attempts=int(
+                    os.getenv("MCP_MAX_RECONNECT_ATTEMPTS", "5")
+                ),
+                reconnect_delay_seconds=int(
+                    os.getenv("MCP_RECONNECT_DELAY_SECONDS", "5")
+                ),
             ),
             health_monitor=MCPHealthMonitorConfig(
-                health_check_interval_seconds=int(os.getenv("MCP_HEALTH_CHECK_INTERVAL_SECONDS", "60")),
+                health_check_interval_seconds=int(
+                    os.getenv("MCP_HEALTH_CHECK_INTERVAL_SECONDS", "60")
+                ),
                 ping_timeout_seconds=int(os.getenv("MCP_PING_TIMEOUT_SECONDS", "10")),
-                error_rate_threshold=float(os.getenv("MCP_ERROR_RATE_THRESHOLD", "0.1")),
-                memory_usage_threshold_mb=int(os.getenv("MCP_MEMORY_THRESHOLD_MB", "1000")),
+                error_rate_threshold=float(
+                    os.getenv("MCP_ERROR_RATE_THRESHOLD", "0.1")
+                ),
+                memory_usage_threshold_mb=int(
+                    os.getenv("MCP_MEMORY_THRESHOLD_MB", "1000")
+                ),
                 max_connection_count=int(os.getenv("MCP_MAX_CONNECTION_COUNT", "100")),
-                enable_auto_recovery=os.getenv("MCP_ENABLE_AUTO_RECOVERY", "true").lower() == "true"
+                enable_auto_recovery=os.getenv(
+                    "MCP_ENABLE_AUTO_RECOVERY", "true"
+                ).lower()
+                == "true",
             ),
             protocol_version=os.getenv("MCP_PROTOCOL_VERSION", "1.0"),
-            enable_compression=os.getenv("MCP_ENABLE_COMPRESSION", "true").lower() == "true",
-            enable_encryption=os.getenv("MCP_ENABLE_ENCRYPTION", "true").lower() == "true",
-            enable_detailed_logging=os.getenv("MCP_ENABLE_DETAILED_LOGGING", "false").lower() == "true",
-            log_level=os.getenv("MCP_LOG_LEVEL", "INFO")
+            enable_compression=os.getenv("MCP_ENABLE_COMPRESSION", "true").lower()
+            == "true",
+            enable_encryption=os.getenv("MCP_ENABLE_ENCRYPTION", "true").lower()
+            == "true",
+            enable_detailed_logging=os.getenv(
+                "MCP_ENABLE_DETAILED_LOGGING", "false"
+            ).lower()
+            == "true",
+            log_level=os.getenv("MCP_LOG_LEVEL", "INFO"),
         )
 
         logger.info("MCP configuration loaded successfully")

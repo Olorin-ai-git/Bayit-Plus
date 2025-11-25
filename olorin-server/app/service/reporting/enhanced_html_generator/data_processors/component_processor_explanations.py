@@ -5,7 +5,7 @@ Explanations Processor for Enhanced HTML Report Generator.
 Extracts explanations and reasoning chains from investigation activities.
 """
 
-from typing import Dict, List, Any
+from typing import Any, Dict, List
 
 
 class ExplanationsProcessor:

@@ -3,41 +3,41 @@
 Create comprehensive package with all fraud detection artifacts, documentation, and results.
 """
 
+import json
 import os
 import shutil
-import json
-from pathlib import Path
-from datetime import datetime
 import zipfile
+from datetime import datetime
+from pathlib import Path
 
 
 def create_comprehensive_package():
     """Create a comprehensive package with all artifacts"""
-    
-    timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
+
+    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
     package_name = f"fraud_detection_complete_package_{timestamp}"
     package_dir = Path(f"packages/{package_name}")
     package_dir.mkdir(parents=True, exist_ok=True)
-    
+
     print("=" * 80)
     print("📦 CREATING COMPREHENSIVE FRAUD DETECTION PACKAGE")
     print("=" * 80)
     print()
-    
+
     # 1. Documentation
     print("📄 Adding Documentation...")
     docs_dir = package_dir / "documentation"
     docs_dir.mkdir(exist_ok=True)
-    
+
     docs_to_include = [
         "FRAUD_DETECTION_PIPELINE_EXPLAINED.md",
         "PIPELINE_QUICK_REFERENCE.txt",
         "FINAL_OPTIMIZATION_RESULTS.md",
         "SYSTEMATIC_TESTING_OPTIMIZATION_SUMMARY.md",
         "optimization_progression.txt",
-        "optimization_complete.txt"
+        "optimization_complete.txt",
     ]
-    
+
     for doc in docs_to_include:
         src = Path(doc)
         if src.exists():
@@ -45,166 +45,167 @@ def create_comprehensive_package():
             print(f"  ✅ {doc}")
         else:
             print(f"  ⚠️  {doc} not found")
-    
+
     print()
-    
+
     # 2. Test Results
     print("📊 Adding Test Results...")
     results_dir = package_dir / "test_results"
     results_dir.mkdir(exist_ok=True)
-    
+
     # Find all systematic test result files
     for result_file in Path(".").glob("systematic_test_results_*.json"):
         shutil.copy2(result_file, results_dir / result_file.name)
         print(f"  ✅ {result_file.name}")
-    
+
     print()
-    
+
     # 3. Investigation Artifacts
     print("🔍 Adding Investigation Artifacts...")
     artifacts_dir = package_dir / "artifacts"
-    
+
     # Copy all comparison artifacts
     comparisons_path = Path("artifacts/comparisons")
     if comparisons_path.exists():
-        shutil.copytree(comparisons_path, artifacts_dir / "comparisons", dirs_exist_ok=True)
-        
+        shutil.copytree(
+            comparisons_path, artifacts_dir / "comparisons", dirs_exist_ok=True
+        )
+
         # Count files
         html_count = len(list((artifacts_dir / "comparisons").rglob("*.html")))
         json_count = len(list((artifacts_dir / "comparisons").rglob("*.json")))
         zip_count = len(list((artifacts_dir / "comparisons").rglob("*.zip")))
-        
+
         print(f"  ✅ Comparison artifacts copied")
         print(f"     HTML files: {html_count}")
         print(f"     JSON files: {json_count}")
         print(f"     ZIP packages: {zip_count}")
-    
+
     print()
-    
+
     # 4. Investigation Folders
     print("📁 Adding Investigation Folders...")
     investigations_dir = package_dir / "investigations"
-    
+
     workspace_inv = Path("workspace/investigations")
     if workspace_inv.exists():
         shutil.copytree(workspace_inv, investigations_dir, dirs_exist_ok=True)
-        
+
         # Count investigations
         inv_count = len(list(investigations_dir.rglob("investigation_*.json")))
         print(f"  ✅ Investigation folders copied")
         print(f"     Investigations: {inv_count}")
-    
+
     print()
-    
+
     # 5. Logs
     print("📋 Adding Logs...")
     logs_dir = package_dir / "logs"
     logs_dir.mkdir(exist_ok=True)
-    
+
     # Copy recent startup logs
     for log_file in Path("logs").glob("startup_*.log"):
         # Get last 1000 lines of each log
         try:
-            with open(log_file, 'r') as f:
+            with open(log_file, "r") as f:
                 lines = f.readlines()
                 last_lines = lines[-1000:] if len(lines) > 1000 else lines
-            
-            with open(logs_dir / log_file.name, 'w') as f:
+
+            with open(logs_dir / log_file.name, "w") as f:
                 f.writelines(last_lines)
-            
+
             print(f"  ✅ {log_file.name} (last 1000 lines)")
         except Exception as e:
             print(f"  ⚠️  {log_file.name}: {e}")
-    
+
     # Copy fraud investigation logs
     for log_file in Path("logs").glob("fraud_investigation_*.log"):
         try:
-            with open(log_file, 'r') as f:
+            with open(log_file, "r") as f:
                 lines = f.readlines()
                 last_lines = lines[-1000:] if len(lines) > 1000 else lines
-            
-            with open(logs_dir / log_file.name, 'w') as f:
+
+            with open(logs_dir / log_file.name, "w") as f:
                 f.writelines(last_lines)
-            
+
             print(f"  ✅ {log_file.name} (last 1000 lines)")
         except Exception as e:
             print(f"  ⚠️  {log_file.name}: {e}")
-    
+
     print()
-    
+
     # 6. Configuration
     print("⚙️  Adding Configuration...")
     config_dir = package_dir / "configuration"
     config_dir.mkdir(exist_ok=True)
-    
+
     # Copy env file (sanitized)
     if Path("env").exists():
-        with open("env", 'r') as f:
+        with open("env", "r") as f:
             env_content = f.read()
-        
+
         # Sanitize secrets
         sanitized = env_content.replace(
-            os.getenv('SNOWFLAKE_PRIVATE_KEY_PATH', ''), 
-            '<SNOWFLAKE_PRIVATE_KEY_PATH>'
+            os.getenv("SNOWFLAKE_PRIVATE_KEY_PATH", ""), "<SNOWFLAKE_PRIVATE_KEY_PATH>"
         )
-        
-        with open(config_dir / "env_sanitized.txt", 'w') as f:
+
+        with open(config_dir / "env_sanitized.txt", "w") as f:
             f.write(sanitized)
-        
+
         print(f"  ✅ env (sanitized)")
-    
+
     print()
-    
+
     # 7. Scripts
     print("🔧 Adding Scripts...")
     scripts_dir = package_dir / "scripts"
     scripts_dir.mkdir(exist_ok=True)
-    
+
     scripts_to_include = [
         "scripts/systematic_fraud_testing.py",
         "scripts/test_random_historical_windows.py",
         "scripts/test_may_21_22.py",
-        "scripts/test_enhanced_on_fraud.py"
+        "scripts/test_enhanced_on_fraud.py",
     ]
-    
+
     for script in scripts_to_include:
         src = Path(script)
         if src.exists():
             shutil.copy2(src, scripts_dir / src.name)
             print(f"  ✅ {src.name}")
-    
+
     print()
-    
+
     # 8. Create Summary HTML
     print("📝 Creating Package Summary...")
     create_package_summary(package_dir)
     print(f"  ✅ package_summary.html")
-    
+
     print()
-    
+
     # 9. Create README
     create_package_readme(package_dir)
     print(f"  ✅ README.md")
-    
+
     print()
-    
+
     # 10. Create ZIP
     print("🗜️  Creating ZIP archive...")
     zip_path = Path(f"packages/{package_name}.zip")
-    
-    with zipfile.ZipFile(zip_path, 'w', zipfile.ZIP_DEFLATED) as zipf:
+
+    with zipfile.ZipFile(zip_path, "w", zipfile.ZIP_DEFLATED) as zipf:
         for root, dirs, files in os.walk(package_dir):
             for file in files:
                 file_path = Path(root) / file
                 arcname = file_path.relative_to(package_dir.parent)
                 zipf.write(file_path, arcname)
-    
+
     # Get size
     size_mb = zip_path.stat().st_size / (1024 * 1024)
-    
+
     print(f"  ✅ {zip_path.name}")
     print(f"     Size: {size_mb:.2f} MB")
-    
+
     print()
     print("=" * 80)
     print("✅ PACKAGE CREATED SUCCESSFULLY")
@@ -221,13 +222,14 @@ def create_comprehensive_package():
     print(f"  📋 Logs: {len(list(logs_dir.glob('*')))} files")
     print(f"  🔧 Scripts: {len(list(scripts_dir.glob('*')))} files")
     print()
-    
+
     return zip_path, package_dir
 
 
 def create_package_summary(package_dir: Path):
     """Create HTML summary of the package"""
-    html_content = """<!DOCTYPE html>
+    html_content = (
+        """<!DOCTYPE html>
 <html>
 <head>
     <meta charset="UTF-8">
@@ -562,19 +564,23 @@ USE_ENHANCED_RISK_SCORING=true
     </div>
 
     <div style="text-align: center; margin-top: 40px; color: #666;">
-        <p>Package created: """ + datetime.now().strftime('%Y-%m-%d %H:%M:%S') + """</p>
+        <p>Package created: """
+        + datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        + """</p>
         <p>Fraud Detection System v2.0 - Enhanced Behavioral Analysis</p>
     </div>
 </body>
 </html>"""
-    
-    with open(package_dir / "package_summary.html", 'w') as f:
+    )
+
+    with open(package_dir / "package_summary.html", "w") as f:
         f.write(html_content)
 
 
 def create_package_readme(package_dir: Path):
     """Create README for the package"""
-    readme_content = """# Fraud Detection System - Complete Package
+    readme_content = (
+        """# Fraud Detection System - Complete Package
 
 ## 🎯 What's Included
 
@@ -694,12 +700,15 @@ For questions or issues:
 
 ---
 
-**Package Created:** """ + datetime.now().strftime('%Y-%m-%d %H:%M:%S') + """
+**Package Created:** """
+        + datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        + """
 **System Version:** Enhanced Behavioral Analysis v2.0
 **Status:** ✅ Production Ready
 """
-    
-    with open(package_dir / "README.md", 'w') as f:
+    )
+
+    with open(package_dir / "README.md", "w") as f:
         f.write(readme_content)
 
 
@@ -712,4 +721,3 @@ if __name__ == "__main__":
     print("  2. Open package_summary.html in a browser")
     print("  3. Review the documentation folder")
     print("  4. Explore the investigation artifacts")
-

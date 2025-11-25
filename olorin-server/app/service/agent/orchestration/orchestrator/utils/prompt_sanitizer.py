@@ -15,9 +15,20 @@ class PromptSanitizer:
     def __init__(self):
         """Initialize with security patterns."""
         self.dangerous_patterns = [
-            'ignore previous', 'forget instructions', 'system:',
-            'assistant:', 'user:', '```', 'exec(', 'eval(',
-            'import ', '__', 'os.', 'subprocess', 'rm -rf', 'delete'
+            "ignore previous",
+            "forget instructions",
+            "system:",
+            "assistant:",
+            "user:",
+            "```",
+            "exec(",
+            "eval(",
+            "import ",
+            "__",
+            "os.",
+            "subprocess",
+            "rm -rf",
+            "delete",
         ]
 
     def sanitize_custom_prompt(self, prompt: str) -> str:
@@ -45,9 +56,11 @@ class PromptSanitizer:
         prompt_lower = sanitized.lower()
         for pattern in self.dangerous_patterns:
             if pattern in prompt_lower:
-                logger.warning(f"Potentially dangerous pattern '{pattern}' detected in custom prompt - removing")
+                logger.warning(
+                    f"Potentially dangerous pattern '{pattern}' detected in custom prompt - removing"
+                )
                 # Replace dangerous patterns with safe alternatives
-                sanitized = sanitized.replace(pattern, '[FILTERED]')
+                sanitized = sanitized.replace(pattern, "[FILTERED]")
 
         return sanitized
 
@@ -97,7 +110,7 @@ class PromptSanitizer:
             issues.append(f"Prompt too long: {len(prompt)} characters (max 500)")
 
         # Check for suspicious characters
-        suspicious_chars = ['<', '>', '{', '}', '$', '|', ';']
+        suspicious_chars = ["<", ">", "{", "}", "$", "|", ";"]
         for char in suspicious_chars:
             if char in prompt:
                 issues.append(f"Suspicious character detected: {char}")
@@ -106,5 +119,5 @@ class PromptSanitizer:
             "safe": len(issues) == 0,
             "issues": issues,
             "original_length": len(prompt),
-            "sanitized_length": len(self.sanitize_custom_prompt(prompt))
+            "sanitized_length": len(self.sanitize_custom_prompt(prompt)),
         }

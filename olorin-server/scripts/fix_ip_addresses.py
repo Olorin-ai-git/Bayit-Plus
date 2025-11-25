@@ -13,14 +13,14 @@ Usage:
 """
 
 import asyncio
-import sys
 import random
+import sys
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
-from app.service.logging import get_bridge_logger
 from app.service.config_loader import get_config_loader
+from app.service.logging import get_bridge_logger
 
 logger = get_bridge_logger(__name__)
 
@@ -29,20 +29,24 @@ def generate_public_ip(is_high_risk: bool, is_fraud: bool) -> str:
     """Generate realistic public IP addresses (avoid private ranges)."""
     if is_fraud or is_high_risk:
         # High-risk countries IP ranges
-        return random.choice([
-            f"185.{random.randint(1, 255)}.{random.randint(1, 255)}.{random.randint(1, 255)}",  # Russia
-            f"117.{random.randint(1, 255)}.{random.randint(1, 255)}.{random.randint(1, 255)}",  # China
-            f"41.{random.randint(1, 255)}.{random.randint(1, 255)}.{random.randint(1, 255)}",   # Nigeria
-            f"123.{random.randint(1, 255)}.{random.randint(1, 255)}.{random.randint(1, 255)}",  # Vietnam
-        ])
+        return random.choice(
+            [
+                f"185.{random.randint(1, 255)}.{random.randint(1, 255)}.{random.randint(1, 255)}",  # Russia
+                f"117.{random.randint(1, 255)}.{random.randint(1, 255)}.{random.randint(1, 255)}",  # China
+                f"41.{random.randint(1, 255)}.{random.randint(1, 255)}.{random.randint(1, 255)}",  # Nigeria
+                f"123.{random.randint(1, 255)}.{random.randint(1, 255)}.{random.randint(1, 255)}",  # Vietnam
+            ]
+        )
     else:
         # Common legitimate IP ranges
-        return random.choice([
-            f"8.{random.randint(1, 255)}.{random.randint(1, 255)}.{random.randint(1, 255)}",    # Google
-            f"23.{random.randint(1, 255)}.{random.randint(1, 255)}.{random.randint(1, 255)}",   # Akamai
-            f"34.{random.randint(1, 255)}.{random.randint(1, 255)}.{random.randint(1, 255)}",   # AWS
-            f"104.{random.randint(1, 255)}.{random.randint(1, 255)}.{random.randint(1, 255)}",  # Cloudflare
-        ])
+        return random.choice(
+            [
+                f"8.{random.randint(1, 255)}.{random.randint(1, 255)}.{random.randint(1, 255)}",  # Google
+                f"23.{random.randint(1, 255)}.{random.randint(1, 255)}.{random.randint(1, 255)}",  # Akamai
+                f"34.{random.randint(1, 255)}.{random.randint(1, 255)}.{random.randint(1, 255)}",  # AWS
+                f"104.{random.randint(1, 255)}.{random.randint(1, 255)}.{random.randint(1, 255)}",  # Cloudflare
+            ]
+        )
 
 
 async def fix_ip_addresses():
@@ -62,8 +66,8 @@ async def fix_ip_addresses():
         conn = await asyncpg.connect(conn_str)
         logger.info(f"✅ Connected to PostgreSQL: {pg_config['database']}")
 
-        schema = pg_config.get('schema', 'public')
-        table = pg_config.get('transactions_table', 'transactions_enriched')
+        schema = pg_config.get("schema", "public")
+        table = pg_config.get("transactions_table", "transactions_enriched")
         full_table = f"{schema}.{table}"
 
         # Get all records
@@ -75,13 +79,13 @@ async def fix_ip_addresses():
         batch_size = 100
 
         for i in range(0, len(records), batch_size):
-            batch = records[i:i + batch_size]
+            batch = records[i : i + batch_size]
 
             async with conn.transaction():
                 for rec in batch:
-                    tx_id = rec['tx_id_key']
-                    risk_score = rec['model_score'] or 0.5
-                    is_fraud = (rec['is_fraud_tx'] or 0) == 1
+                    tx_id = rec["tx_id_key"]
+                    risk_score = rec["model_score"] or 0.5
+                    is_fraud = (rec["is_fraud_tx"] or 0) == 1
                     is_high_risk = risk_score > 0.7
 
                     # Generate new IP
@@ -99,7 +103,9 @@ async def fix_ip_addresses():
 
             if (i // batch_size + 1) % 10 == 0:
                 progress_pct = (i + len(batch)) * 100 // len(records)
-                logger.info(f"Progress: {i + len(batch)}/{len(records)} ({progress_pct}%)")
+                logger.info(
+                    f"Progress: {i + len(batch)}/{len(records)} ({progress_pct}%)"
+                )
 
         await conn.close()
 

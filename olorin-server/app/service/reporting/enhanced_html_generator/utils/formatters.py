@@ -7,7 +7,7 @@ Provides date/time formatting, data formatting, and display utilities.
 
 import json
 from datetime import datetime
-from typing import Any, Optional, Dict, List
+from typing import Any, Dict, List, Optional
 
 
 class DateTimeFormatter:
@@ -21,13 +21,13 @@ class DateTimeFormatter:
 
         try:
             # Handle various timestamp formats
-            if 'T' in timestamp_str:
+            if "T" in timestamp_str:
                 # ISO format
-                dt = datetime.fromisoformat(timestamp_str.replace('Z', '+00:00'))
+                dt = datetime.fromisoformat(timestamp_str.replace("Z", "+00:00"))
                 return dt.strftime("%H:%M:%S")
-            elif ',' in timestamp_str:
+            elif "," in timestamp_str:
                 # Log format with milliseconds
-                parts = timestamp_str.split(',')[0]
+                parts = timestamp_str.split(",")[0]
                 dt = datetime.strptime(parts, "%Y-%m-%d %H:%M:%S")
                 return dt.strftime("%H:%M:%S")
             else:
@@ -101,7 +101,7 @@ class DataFormatter:
         """Format JSON data for preview display."""
         json_str = json.dumps(data, indent=2)
         if len(json_str) > max_length:
-            return json_str[:max_length] + '...'
+            return json_str[:max_length] + "..."
         return json_str
 
     @staticmethod
@@ -109,23 +109,23 @@ class DataFormatter:
         """Truncate text with ellipsis if too long."""
         if len(text) <= max_length:
             return text
-        return text[:max_length] + '...'
+        return text[:max_length] + "..."
 
 
 class StatusFormatter:
     """Handles status and badge formatting."""
 
     STATUS_CLASSES = {
-        'completed': 'success',
-        'failed': 'error',
-        'running': 'warning',
-        'pending': 'info'
+        "completed": "success",
+        "failed": "error",
+        "running": "warning",
+        "pending": "info",
     }
 
     @staticmethod
     def get_status_class(status: str) -> str:
         """Get CSS class for status display."""
-        return StatusFormatter.STATUS_CLASSES.get(status.lower(), 'info')
+        return StatusFormatter.STATUS_CLASSES.get(status.lower(), "info")
 
     @staticmethod
     def format_success_rate(success: int, total: int) -> tuple[float, str]:

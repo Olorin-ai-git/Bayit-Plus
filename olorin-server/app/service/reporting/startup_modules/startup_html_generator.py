@@ -4,20 +4,23 @@ Startup HTML Generation Module
 Extracted HTML generation from startup_report_generator.py
 """
 
-from typing import Dict, Any
-from app.service.reporting.olorin_logo import get_olorin_header, OLORIN_FOOTER
+from typing import Any, Dict
+
+from app.service.reporting.olorin_logo import OLORIN_FOOTER, get_olorin_header
 
 
 class StartupHTMLGenerator:
     """Generates HTML reports for startup data"""
-    
+
     def __init__(self, logger):
         self.logger = logger
-    
-    def generate_startup_report(self, data: Dict[str, Any], title: str = "System Startup Report") -> str:
+
+    def generate_startup_report(
+        self, data: Dict[str, Any], title: str = "System Startup Report"
+    ) -> str:
         """Generate HTML startup report"""
         header_html = get_olorin_header(title)
-        
+
         html_content = f"""
 <!DOCTYPE html>
 <html lang="en">
@@ -79,7 +82,7 @@ class StartupHTMLGenerator:
 </html>
 """
         return html_content
-    
+
     def _generate_system_section(self, system_data: Dict[str, Any]) -> str:
         """Generate system information section"""
         return f"""
@@ -94,7 +97,7 @@ class StartupHTMLGenerator:
             </div>
         </div>
         """
-    
+
     def _generate_database_section(self, db_data: Dict[str, Any]) -> str:
         """Generate database information section"""
         return f"""
@@ -109,7 +112,7 @@ class StartupHTMLGenerator:
             </div>
         </div>
         """
-    
+
     def _generate_service_section(self, service_data: Dict[str, Any]) -> str:
         """Generate service information section"""
         return f"""
@@ -124,7 +127,7 @@ class StartupHTMLGenerator:
             </div>
         </div>
         """
-    
+
     def _generate_analytics_section(self, analytics_data: Dict[str, Any]) -> str:
         """Generate analytics information section"""
         return f"""
@@ -140,4 +143,3 @@ class StartupHTMLGenerator:
             </div>
         </div>
         """
-

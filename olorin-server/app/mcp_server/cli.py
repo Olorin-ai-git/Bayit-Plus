@@ -1,4 +1,5 @@
 from app.service.logging import get_bridge_logger
+
 logger = get_bridge_logger(__name__)
 
 """CLI for running the Olorin MCP Server."""

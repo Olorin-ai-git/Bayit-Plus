@@ -12,21 +12,19 @@ Constitutional Compliance:
 """
 
 import os
-from fastapi import APIRouter, HTTPException, Depends, status
-from typing import Dict, Any
 import uuid
+from typing import Any, Dict
+
+from fastapi import APIRouter, Depends, HTTPException, status
 
 from .models.investigation_models import (
+    ErrorResponse,
     InvestigationRequest,
     InvestigationResponse,
-    ErrorResponse
 )
 
 # Router configuration from environment
-router = APIRouter(
-    prefix=os.getenv("API_PREFIX", "/api/v1"),
-    tags=["investigations"]
-)
+router = APIRouter(prefix=os.getenv("API_PREFIX", "/api/v1"), tags=["investigations"])
 
 
 @router.post(
@@ -36,7 +34,7 @@ router = APIRouter(
     responses={
         400: {"model": ErrorResponse, "description": "Bad Request - Invalid input"},
         422: {"model": ErrorResponse, "description": "Validation Error"},
-        500: {"model": ErrorResponse, "description": "Internal Server Error"}
+        500: {"model": ErrorResponse, "description": "Internal Server Error"},
     },
     summary="Create new fraud investigation",
     description="""
@@ -59,7 +57,7 @@ router = APIRouter(
         }
     }
     ```
-    """
+    """,
 )
 async def create_investigation(request: InvestigationRequest) -> InvestigationResponse:
     """
@@ -88,7 +86,7 @@ async def create_investigation(request: InvestigationRequest) -> InvestigationRe
         response = InvestigationResponse(
             investigation_id=investigation_id,
             status="pending",  # Initial status from domain model
-            risk_score=None  # Risk score computed after investigation completes
+            risk_score=None,  # Risk score computed after investigation completes
         )
 
         return response
@@ -100,10 +98,8 @@ async def create_investigation(request: InvestigationRequest) -> InvestigationRe
             detail={
                 "error": "ValidationError",
                 "message": str(e),
-                "details": {
-                    "request": request.model_dump()
-                }
-            }
+                "details": {"request": request.model_dump()},
+            },
         )
     except Exception as e:
         # Unexpected errors
@@ -112,10 +108,8 @@ async def create_investigation(request: InvestigationRequest) -> InvestigationRe
             detail={
                 "error": "InternalServerError",
                 "message": "Failed to create investigation",
-                "details": {
-                    "error_type": type(e).__name__
-                }
-            }
+                "details": {"error_type": type(e).__name__},
+            },
         )
 
 
@@ -124,7 +118,7 @@ async def create_investigation(request: InvestigationRequest) -> InvestigationRe
     response_model=InvestigationResponse,
     responses={
         404: {"model": ErrorResponse, "description": "Investigation not found"},
-        500: {"model": ErrorResponse, "description": "Internal Server Error"}
+        500: {"model": ErrorResponse, "description": "Internal Server Error"},
     },
     summary="Get investigation status",
     description="""
@@ -135,7 +129,7 @@ async def create_investigation(request: InvestigationRequest) -> InvestigationRe
     - Returns 404 if investigation not found
     - Risk score included when investigation completes
     - All timestamps in ISO 8601 format
-    """
+    """,
 )
 async def get_investigation(investigation_id: str) -> InvestigationResponse:
     """
@@ -161,7 +155,7 @@ async def get_investigation(investigation_id: str) -> InvestigationResponse:
         response = InvestigationResponse(
             investigation_id=investigation_id,
             status="in_progress",
-            risk_score=None  # Will be populated when investigation completes
+            risk_score=None,  # Will be populated when investigation completes
         )
 
         return response
@@ -173,10 +167,8 @@ async def get_investigation(investigation_id: str) -> InvestigationResponse:
             detail={
                 "error": "NotFoundError",
                 "message": f"Investigation {investigation_id} not found",
-                "details": {
-                    "investigation_id": investigation_id
-                }
-            }
+                "details": {"investigation_id": investigation_id},
+            },
         )
     except Exception as e:
         # Unexpected errors
@@ -187,7 +179,7 @@ async def get_investigation(investigation_id: str) -> InvestigationResponse:
                 "message": "Failed to retrieve investigation",
                 "details": {
                     "investigation_id": investigation_id,
-                    "error_type": type(e).__name__
-                }
-            }
+                    "error_type": type(e).__name__,
+                },
+            },
         )

@@ -11,11 +11,11 @@ Orchestrates behavioral analysis and deviation detection for fraud patterns.
 
 from typing import Any, Dict, List, Optional
 
+from .fraud_detection_behavioral_deviation import FraudBehavioralDeviationAnalysis
+from .fraud_detection_behavioral_temporal import FraudBehavioralTemporalAnalysis
 from .fraud_detection_behavioral_transaction import (
     FraudBehavioralTransactionAnalysis,
 )
-from .fraud_detection_behavioral_temporal import FraudBehavioralTemporalAnalysis
-from .fraud_detection_behavioral_deviation import FraudBehavioralDeviationAnalysis
 
 
 class FraudBehavioralAnalysis:

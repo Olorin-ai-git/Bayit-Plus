@@ -6,13 +6,14 @@ This script starts the Olorin FastAPI application and makes a test request
 to verify that all required security headers are present in the response.
 """
 
-import sys
 import os
+import sys
 
 # Add parent directory to path for imports
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from fastapi.testclient import TestClient
+
 from app.service import create_app
 
 

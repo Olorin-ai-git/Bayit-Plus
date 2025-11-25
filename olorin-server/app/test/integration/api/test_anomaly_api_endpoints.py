@@ -4,18 +4,19 @@ Comprehensive API endpoint integration tests for anomaly detection.
 Tests all endpoints with success and error paths.
 """
 
-import pytest
-from datetime import datetime, timedelta
-from fastapi.testclient import TestClient
-from unittest.mock import patch, MagicMock
-import uuid
 import json
+import uuid
+from datetime import datetime, timedelta
+from unittest.mock import MagicMock, patch
 
-from app.main import app
-from app.models.anomaly import Detector, DetectionRun, AnomalyEvent
-from app.persistence.database import get_db, Base
+import pytest
+from fastapi.testclient import TestClient
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
+
+from app.main import app
+from app.models.anomaly import AnomalyEvent, DetectionRun, Detector
+from app.persistence.database import Base, get_db
 
 TEST_DATABASE_URL = "sqlite:///./test_anomaly_api.db"
 
@@ -58,7 +59,7 @@ def sample_detector(test_db):
         cohort_by=["merchant_id"],
         metrics=["tx_count"],
         params={"k": 3.5, "persistence": 2, "min_support": 50},
-        enabled=True
+        enabled=True,
     )
     db.add(detector)
     db.commit()
@@ -72,28 +73,29 @@ def sample_detector(test_db):
 class TestDetectAnomaliesEndpoint:
     """Tests for POST /v1/analytics/anomalies/detect."""
 
-    @patch('app.service.anomaly.cohort_fetcher.get_database_provider')
+    @patch("app.service.anomaly.cohort_fetcher.get_database_provider")
     def test_detect_anomalies_success(self, mock_provider, client, sample_detector):
         """Test successful anomaly detection."""
         mock_snowflake = MagicMock()
         mock_snowflake.execute_query.return_value = [
             {
-                'window_start': '2024-01-01T00:00:00',
-                'window_end': '2024-01-01T00:15:00',
-                'tx_count': 100.0
-            } for _ in range(100)
+                "window_start": "2024-01-01T00:00:00",
+                "window_end": "2024-01-01T00:15:00",
+                "tx_count": 100.0,
+            }
+            for _ in range(100)
         ]
         mock_provider.return_value = mock_snowflake
-        
+
         response = client.post(
             "/v1/analytics/anomalies/detect",
             json={
                 "detector_id": str(sample_detector.id),
                 "window_from": (datetime.now() - timedelta(days=1)).isoformat(),
-                "window_to": datetime.now().isoformat()
-            }
+                "window_to": datetime.now().isoformat(),
+            },
         )
-        
+
         assert response.status_code == 200
         data = response.json()
         assert "run_id" in data
@@ -106,10 +108,10 @@ class TestDetectAnomaliesEndpoint:
             json={
                 "detector_id": str(uuid.uuid4()),
                 "window_from": (datetime.now() - timedelta(days=1)).isoformat(),
-                "window_to": datetime.now().isoformat()
-            }
+                "window_to": datetime.now().isoformat(),
+            },
         )
-        
+
         assert response.status_code == 404
 
     def test_detect_anomalies_invalid_window(self, client, sample_detector):
@@ -119,10 +121,12 @@ class TestDetectAnomaliesEndpoint:
             json={
                 "detector_id": str(sample_detector.id),
                 "window_from": datetime.now().isoformat(),
-                "window_to": (datetime.now() - timedelta(days=1)).isoformat()  # Invalid
-            }
+                "window_to": (
+                    datetime.now() - timedelta(days=1)
+                ).isoformat(),  # Invalid
+            },
         )
-        
+
         assert response.status_code in [400, 422]
 
     def test_detect_anomalies_missing_fields(self, client):
@@ -132,25 +136,27 @@ class TestDetectAnomaliesEndpoint:
             json={
                 "detector_id": str(uuid.uuid4())
                 # Missing window_from and window_to
-            }
+            },
         )
-        
+
         assert response.status_code == 422
 
-    @patch('app.service.anomaly.cohort_fetcher.get_database_provider')
-    def test_detect_anomalies_connection_error(self, mock_provider, client, sample_detector):
+    @patch("app.service.anomaly.cohort_fetcher.get_database_provider")
+    def test_detect_anomalies_connection_error(
+        self, mock_provider, client, sample_detector
+    ):
         """Test detection handles Snowflake connection error."""
         mock_provider.side_effect = ConnectionError("Connection failed")
-        
+
         response = client.post(
             "/v1/analytics/anomalies/detect",
             json={
                 "detector_id": str(sample_detector.id),
                 "window_from": (datetime.now() - timedelta(days=1)).isoformat(),
-                "window_to": datetime.now().isoformat()
-            }
+                "window_to": datetime.now().isoformat(),
+            },
         )
-        
+
         assert response.status_code in [500, 503]
 
 
@@ -168,11 +174,11 @@ class TestListAnomaliesEndpoint:
             window_from=datetime.now() - timedelta(days=1),
             window_to=datetime.now(),
             started_at=datetime.now() - timedelta(hours=1),
-            finished_at=datetime.now()
+            finished_at=datetime.now(),
         )
         db.add(run)
         db.commit()
-        
+
         anomaly = AnomalyEvent(
             id=uuid.uuid4(),
             run_id=run.id,
@@ -186,7 +192,7 @@ class TestListAnomaliesEndpoint:
             score=5.0,
             severity="critical",
             persisted_n=3,
-            status="new"
+            status="new",
         )
         db.add(anomaly)
         db.commit()
@@ -200,7 +206,7 @@ class TestListAnomaliesEndpoint:
     def test_list_anomalies_success(self, client, sample_anomaly):
         """Test successful anomaly listing."""
         response = client.get("/v1/analytics/anomalies")
-        
+
         assert response.status_code == 200
         data = response.json()
         assert "anomalies" in data
@@ -211,24 +217,17 @@ class TestListAnomaliesEndpoint:
         """Test anomaly listing with filters."""
         response = client.get(
             "/v1/analytics/anomalies",
-            params={
-                "severity": "critical",
-                "metric": "tx_count",
-                "limit": 10
-            }
+            params={"severity": "critical", "metric": "tx_count", "limit": 10},
         )
-        
+
         assert response.status_code == 200
         data = response.json()
         assert all(a["severity"] == "critical" for a in data["anomalies"])
 
     def test_list_anomalies_invalid_filter(self, client):
         """Test anomaly listing with invalid filter values."""
-        response = client.get(
-            "/v1/analytics/anomalies",
-            params={"severity": "invalid"}
-        )
-        
+        response = client.get("/v1/analytics/anomalies", params={"severity": "invalid"})
+
         # Should either return empty results or 400/422
         assert response.status_code in [200, 400, 422]
 
@@ -247,11 +246,11 @@ class TestGetAnomalyEndpoint:
             window_from=datetime.now() - timedelta(days=1),
             window_to=datetime.now(),
             started_at=datetime.now() - timedelta(hours=1),
-            finished_at=datetime.now()
+            finished_at=datetime.now(),
         )
         db.add(run)
         db.commit()
-        
+
         anomaly = AnomalyEvent(
             id=uuid.uuid4(),
             run_id=run.id,
@@ -265,7 +264,7 @@ class TestGetAnomalyEndpoint:
             score=5.0,
             severity="critical",
             persisted_n=3,
-            status="new"
+            status="new",
         )
         db.add(anomaly)
         db.commit()
@@ -279,7 +278,7 @@ class TestGetAnomalyEndpoint:
     def test_get_anomaly_success(self, client, sample_anomaly):
         """Test successful anomaly retrieval."""
         response = client.get(f"/v1/analytics/anomalies/{sample_anomaly.id}")
-        
+
         assert response.status_code == 200
         data = response.json()
         assert data["id"] == str(sample_anomaly.id)
@@ -289,13 +288,13 @@ class TestGetAnomalyEndpoint:
     def test_get_anomaly_not_found(self, client):
         """Test retrieval of non-existent anomaly."""
         response = client.get(f"/v1/analytics/anomalies/{uuid.uuid4()}")
-        
+
         assert response.status_code == 404
 
     def test_get_anomaly_invalid_id(self, client):
         """Test retrieval with invalid ID format."""
         response = client.get("/v1/analytics/anomalies/invalid-id")
-        
+
         assert response.status_code == 422
 
 
@@ -305,7 +304,7 @@ class TestDetectorEndpoints:
     def test_list_detectors_success(self, client, sample_detector):
         """Test successful detector listing."""
         response = client.get("/v1/analytics/detectors")
-        
+
         assert response.status_code == 200
         data = response.json()
         assert isinstance(data, list)
@@ -314,7 +313,7 @@ class TestDetectorEndpoints:
     def test_get_detector_success(self, client, sample_detector):
         """Test successful detector retrieval."""
         response = client.get(f"/v1/analytics/detectors/{sample_detector.id}")
-        
+
         assert response.status_code == 200
         data = response.json()
         assert data["id"] == str(sample_detector.id)
@@ -323,7 +322,7 @@ class TestDetectorEndpoints:
     def test_get_detector_not_found(self, client):
         """Test retrieval of non-existent detector."""
         response = client.get(f"/v1/analytics/detectors/{uuid.uuid4()}")
-        
+
         assert response.status_code == 404
 
     def test_create_detector_success(self, client):
@@ -336,10 +335,10 @@ class TestDetectorEndpoints:
                 "cohort_by": ["merchant_id"],
                 "metrics": ["tx_count"],
                 "params": {"k": 3.5, "persistence": 2, "min_support": 50},
-                "enabled": True
-            }
+                "enabled": True,
+            },
         )
-        
+
         assert response.status_code == 201
         data = response.json()
         assert data["name"] == "New Detector"
@@ -354,10 +353,10 @@ class TestDetectorEndpoints:
                 "type": "invalid_type",
                 "cohort_by": ["merchant_id"],
                 "metrics": ["tx_count"],
-                "params": {}
-            }
+                "params": {},
+            },
         )
-        
+
         assert response.status_code in [400, 422]
 
     def test_create_detector_missing_fields(self, client):
@@ -367,9 +366,9 @@ class TestDetectorEndpoints:
             json={
                 "name": "Incomplete Detector"
                 # Missing required fields
-            }
+            },
         )
-        
+
         assert response.status_code == 422
 
     def test_update_detector_success(self, client, sample_detector):
@@ -382,10 +381,10 @@ class TestDetectorEndpoints:
                 "cohort_by": ["merchant_id"],
                 "metrics": ["tx_count"],
                 "params": {"k": 4.0, "persistence": 3, "min_support": 50},
-                "enabled": True
-            }
+                "enabled": True,
+            },
         )
-        
+
         assert response.status_code == 200
         data = response.json()
         assert data["name"] == "Updated Detector"
@@ -401,44 +400,45 @@ class TestDetectorEndpoints:
             cohort_by=["merchant_id"],
             metrics=["tx_count"],
             params={},
-            enabled=True
+            enabled=True,
         )
         db.add(detector)
         db.commit()
         detector_id = detector.id
         db.close()
-        
+
         response = client.delete(f"/v1/analytics/detectors/{detector_id}")
-        
+
         assert response.status_code == 204
 
 
 class TestReplayEndpoint:
     """Tests for POST /v1/analytics/replay."""
 
-    @patch('app.service.anomaly.cohort_fetcher.get_database_provider')
+    @patch("app.service.anomaly.cohort_fetcher.get_database_provider")
     def test_replay_success(self, mock_provider, client, sample_detector):
         """Test successful replay."""
         mock_snowflake = MagicMock()
         mock_snowflake.execute_query.return_value = [
             {
-                'window_start': '2024-01-01T00:00:00',
-                'window_end': '2024-01-01T00:15:00',
-                'tx_count': 100.0
-            } for _ in range(100)
+                "window_start": "2024-01-01T00:00:00",
+                "window_end": "2024-01-01T00:15:00",
+                "tx_count": 100.0,
+            }
+            for _ in range(100)
         ]
         mock_provider.return_value = mock_snowflake
-        
+
         response = client.post(
             "/v1/analytics/replay",
             json={
                 "detector_id": str(sample_detector.id),
                 "window_from": (datetime.now() - timedelta(days=7)).isoformat(),
                 "window_to": datetime.now().isoformat(),
-                "params": {"k": 4.0, "persistence": 3}
-            }
+                "params": {"k": 4.0, "persistence": 3},
+            },
         )
-        
+
         assert response.status_code == 200
         data = response.json()
         assert "comparison" in data
@@ -451,9 +451,8 @@ class TestReplayEndpoint:
                 "detector_id": str(uuid.uuid4()),
                 "window_from": (datetime.now() - timedelta(days=7)).isoformat(),
                 "window_to": datetime.now().isoformat(),
-                "params": {}
-            }
+                "params": {},
+            },
         )
-        
-        assert response.status_code == 404
 
+        assert response.status_code == 404

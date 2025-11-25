@@ -16,9 +16,9 @@ SCHEMA = "DBT_PROD"
 def test_pat_connection():
     """Test Snowflake connection using Personal Access Token."""
 
-    print("\n" + "="*80)
+    print("\n" + "=" * 80)
     print("SNOWFLAKE PAT CONNECTION TEST")
-    print("="*80)
+    print("=" * 80)
 
     print("\n📋 Configuration:")
     print(f"   Account: {ACCOUNT}")
@@ -29,7 +29,7 @@ def test_pat_connection():
     print(f"   Schema: {SCHEMA}")
     print(f"   PAT Token: {PAT_TOKEN[:50]}...{PAT_TOKEN[-20:]}")
 
-    print("\n" + "-"*80)
+    print("\n" + "-" * 80)
 
     try:
         import snowflake.connector
@@ -40,21 +40,21 @@ def test_pat_connection():
         # Build connection parameters for PAT
         # PAT uses password parameter, not token
         conn_params = {
-            'account': ACCOUNT,
-            'user': USER,
-            'password': PAT_TOKEN,  # PAT goes in password parameter
-            'database': DATABASE,
-            'schema': SCHEMA,
-            'warehouse': WAREHOUSE,
-            'role': ROLE,
-            'network_timeout': 300,
-            'login_timeout': 60,
-            'client_session_keep_alive': True,
+            "account": ACCOUNT,
+            "user": USER,
+            "password": PAT_TOKEN,  # PAT goes in password parameter
+            "database": DATABASE,
+            "schema": SCHEMA,
+            "warehouse": WAREHOUSE,
+            "role": ROLE,
+            "network_timeout": 300,
+            "login_timeout": 60,
+            "client_session_keep_alive": True,
         }
 
         print("\n📦 Connection Parameters:")
         for key, value in conn_params.items():
-            if key == 'password':
+            if key == "password":
                 print(f"   {key}: {value[:50]}...{value[-20:]}")
             else:
                 print(f"   {key}: {value}")
@@ -67,7 +67,8 @@ def test_pat_connection():
         # Test query
         print("\n🔍 Running test query...")
         cursor = connection.cursor()
-        cursor.execute("""
+        cursor.execute(
+            """
             SELECT
                 CURRENT_VERSION() as version,
                 CURRENT_DATABASE() as db,
@@ -75,7 +76,8 @@ def test_pat_connection():
                 CURRENT_WAREHOUSE() as warehouse,
                 CURRENT_ROLE() as role,
                 CURRENT_USER() as user
-        """)
+        """
+        )
 
         results = cursor.fetchall()
         columns = [desc[0] for desc in cursor.description]
@@ -87,13 +89,17 @@ def test_pat_connection():
 
         # Test table access
         print("\n🔍 Testing table access...")
-        cursor.execute(f"SELECT COUNT(*) as count FROM {DATABASE}.{SCHEMA}.TRANSACTIONS_ENRICHED")
+        cursor.execute(
+            f"SELECT COUNT(*) as count FROM {DATABASE}.{SCHEMA}.TRANSACTIONS_ENRICHED"
+        )
         count_result = cursor.fetchone()
         print(f"   ✅ Table accessible! Row count: {count_result[0]:,}")
 
         # Get sample row with schema
         print("\n🔍 Fetching sample data...")
-        cursor.execute(f"SELECT * FROM {DATABASE}.{SCHEMA}.TRANSACTIONS_ENRICHED LIMIT 1")
+        cursor.execute(
+            f"SELECT * FROM {DATABASE}.{SCHEMA}.TRANSACTIONS_ENRICHED LIMIT 1"
+        )
         sample = cursor.fetchone()
         columns = [desc[0] for desc in cursor.description]
 
@@ -103,7 +109,8 @@ def test_pat_connection():
 
         # Test get_top_risk_entities style query
         print("\n🔍 Testing risk analysis query...")
-        cursor.execute(f"""
+        cursor.execute(
+            f"""
             SELECT
                 EMAIL as entity,
                 COUNT(*) as transaction_count,
@@ -116,10 +123,13 @@ def test_pat_connection():
             HAVING COUNT(*) >= 1
             ORDER BY avg_risk_score DESC
             LIMIT 5
-        """)
+        """
+        )
 
         risk_results = cursor.fetchall()
-        print(f"   ✅ Risk query successful! Found {len(risk_results)} high-risk entities")
+        print(
+            f"   ✅ Risk query successful! Found {len(risk_results)} high-risk entities"
+        )
 
         if risk_results:
             print("\n   Top 3 risk entities:")
@@ -131,9 +141,9 @@ def test_pat_connection():
         cursor.close()
         connection.close()
 
-        print("\n" + "="*80)
+        print("\n" + "=" * 80)
         print("✅ ALL TESTS PASSED!")
-        print("="*80 + "\n")
+        print("=" * 80 + "\n")
 
         return True
 
@@ -146,16 +156,16 @@ def test_pat_connection():
         print(f"\n❌ ERROR: {str(e)}")
         print(f"\n📋 Error Type: {type(e).__name__}")
 
-        if hasattr(e, 'errno'):
+        if hasattr(e, "errno"):
             print(f"   Error Code: {e.errno}")
-        if hasattr(e, 'sqlstate'):
+        if hasattr(e, "sqlstate"):
             print(f"   SQL State: {e.sqlstate}")
-        if hasattr(e, 'msg'):
+        if hasattr(e, "msg"):
             print(f"   Message: {e.msg}")
 
-        print("\n" + "="*80)
+        print("\n" + "=" * 80)
         print("❌ TEST FAILED!")
-        print("="*80 + "\n")
+        print("=" * 80 + "\n")
 
         return False
 

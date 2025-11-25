@@ -11,18 +11,19 @@ SYSTEM MANDATE Compliance:
 - Type-safe: Proper assertions on API responses
 """
 
-import pytest
-from datetime import datetime, timezone
-from typing import List, Dict, Any
 import uuid
+from datetime import datetime, timezone
+from typing import Any, Dict, List
+
+import pytest
 
 from app.schemas.event_models import (
-    InvestigationEvent,
-    EventsFeedResponse,
     Actor,
     ActorType,
-    OperationType,
     EntityType,
+    EventsFeedResponse,
+    InvestigationEvent,
+    OperationType,
 )
 from app.utils.cursor_utils import CursorGenerator
 
@@ -94,10 +95,12 @@ class TestEventFeedPagination:
         # Second page using cursor
         page2_start_idx = 10
         page2 = EventsFeedResponse(
-            items=all_events[page2_start_idx:page2_start_idx + 10],
-            next_cursor=all_events[page2_start_idx + 10].id
-            if len(all_events) > page2_start_idx + 10
-            else None,
+            items=all_events[page2_start_idx : page2_start_idx + 10],
+            next_cursor=(
+                all_events[page2_start_idx + 10].id
+                if len(all_events) > page2_start_idx + 10
+                else None
+            ),
             has_more=len(all_events) > page2_start_idx + 10,
             poll_after_seconds=5,
         )
@@ -124,8 +127,12 @@ class TestEventFeedPagination:
 
         # Verify ordering
         for i in range(len(sorted_events) - 1):
-            current_ts = datetime.fromisoformat(sorted_events[i].ts.replace("Z", "+00:00"))
-            next_ts = datetime.fromisoformat(sorted_events[i + 1].ts.replace("Z", "+00:00"))
+            current_ts = datetime.fromisoformat(
+                sorted_events[i].ts.replace("Z", "+00:00")
+            )
+            next_ts = datetime.fromisoformat(
+                sorted_events[i + 1].ts.replace("Z", "+00:00")
+            )
             assert current_ts <= next_ts, "Events must be in timestamp ascending order"
 
     def test_next_cursor_points_to_correct_position(self):
@@ -151,10 +158,12 @@ class TestEventFeedPagination:
 
         # Page 2 should start from next_cursor position
         page2 = EventsFeedResponse(
-            items=all_events[next_position:next_position + 10],
-            next_cursor=all_events[next_position + 10].id
-            if len(all_events) > next_position + 10
-            else None,
+            items=all_events[next_position : next_position + 10],
+            next_cursor=(
+                all_events[next_position + 10].id
+                if len(all_events) > next_position + 10
+                else None
+            ),
             has_more=len(all_events) > next_position + 10,
             poll_after_seconds=5,
         )

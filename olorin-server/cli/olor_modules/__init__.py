@@ -8,7 +8,6 @@ from .cli_commands import CLICommands
 from .cli_workspace import CLIWorkspace
 
 __all__ = [
-    'CLICommands',
-    'CLIWorkspace',
+    "CLICommands",
+    "CLIWorkspace",
 ]
-

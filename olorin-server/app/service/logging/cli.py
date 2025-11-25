@@ -1,6 +1,3 @@
-from app.service.logging import get_bridge_logger
-logger = get_bridge_logger(__name__)
-
 """
 Unified Logging Command Line Interface
 
@@ -22,102 +19,98 @@ from .logging_config_manager import LoggingConfigManager
 def add_unified_logging_arguments(parser: argparse.ArgumentParser) -> None:
     """
     Add unified logging arguments to an argument parser.
-    
+
     Args:
         parser: ArgumentParser instance to enhance
     """
-    logging_group = parser.add_argument_group('Unified Logging Configuration')
-    
+    logging_group = parser.add_argument_group("Unified Logging Configuration")
+
     logging_group.add_argument(
-        '--log-level',
+        "--log-level",
         type=str,
-        choices=['DEBUG', 'INFO', 'WARNING', 'ERROR', 'CRITICAL'],
-        help='Set logging level (DEBUG, INFO, WARNING, ERROR, CRITICAL)'
+        choices=["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"],
+        help="Set logging level (DEBUG, INFO, WARNING, ERROR, CRITICAL)",
     )
-    
+
     logging_group.add_argument(
-        '--log-format',
+        "--log-format",
         type=str,
-        choices=['human', 'json', 'structured'],
-        help='Set logging format: human (readable), json (compact), structured (detailed)'
+        choices=["human", "json", "structured"],
+        help="Set logging format: human (readable), json (compact), structured (detailed)",
     )
-    
+
     logging_group.add_argument(
-        '--log-output',
+        "--log-output",
         type=str,
-        help='Comma-separated list of outputs: console, file, json_file, structured_file'
+        help="Comma-separated list of outputs: console, file, json_file, structured_file",
     )
-    
+
     logging_group.add_argument(
-        '--async-logging',
-        action='store_true',
-        help='Enable asynchronous logging for high-volume operations'
+        "--async-logging",
+        action="store_true",
+        help="Enable asynchronous logging for high-volume operations",
     )
-    
+
     logging_group.add_argument(
-        '--buffer-size',
+        "--buffer-size",
         type=int,
-        help='Set buffer size for async logging (default: 1000)'
+        help="Set buffer size for async logging (default: 1000)",
     )
-    
+
     logging_group.add_argument(
-        '--lazy-init',
-        action='store_true',
-        help='Enable lazy initialization of loggers'
+        "--lazy-init", action="store_true", help="Enable lazy initialization of loggers"
     )
-    
+
     logging_group.add_argument(
-        '--no-lazy-init',
-        action='store_true',
-        help='Disable lazy initialization of loggers'
+        "--no-lazy-init",
+        action="store_true",
+        help="Disable lazy initialization of loggers",
     )
-    
+
     logging_group.add_argument(
-        '--suppress-noisy',
-        action='store_true',
-        help='Suppress verbose third-party loggers'
+        "--suppress-noisy",
+        action="store_true",
+        help="Suppress verbose third-party loggers",
     )
-    
+
     logging_group.add_argument(
-        '--no-suppress-noisy',
-        action='store_true',
-        help='Do not suppress third-party loggers'
+        "--no-suppress-noisy",
+        action="store_true",
+        help="Do not suppress third-party loggers",
     )
-    
+
     logging_group.add_argument(
-        '--performance-monitoring',
-        action='store_true',
-        help='Enable logging performance monitoring'
+        "--performance-monitoring",
+        action="store_true",
+        help="Enable logging performance monitoring",
     )
-    
+
     logging_group.add_argument(
-        '--no-performance-monitoring',
-        action='store_true',
-        help='Disable logging performance monitoring'
+        "--no-performance-monitoring",
+        action="store_true",
+        help="Disable logging performance monitoring",
     )
-    
+
     logging_group.add_argument(
-        '--logging-config',
-        type=str,
-        help='Path to logging configuration YAML file'
+        "--logging-config", type=str, help="Path to logging configuration YAML file"
     )
-    
+
     logging_group.add_argument(
-        '--logging-stats',
-        action='store_true',
-        help='Show logging performance statistics on startup'
+        "--logging-stats",
+        action="store_true",
+        help="Show logging performance statistics on startup",
     )
 
 
 def create_unified_logging_parser() -> argparse.ArgumentParser:
     """
     Create a standalone argument parser for unified logging configuration.
-    
+
     Returns:
         Configured ArgumentParser instance
     """
     parser = argparse.ArgumentParser(
-        description='Unified Logging Configuration',
+        description="Unified Logging Configuration",
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog="""
 Examples:
@@ -142,9 +135,9 @@ Configuration Priority (highest to lowest):
   2. Environment variables (OLORIN_LOG_*)
   3. YAML configuration file
   4. Default settings
-        """
+        """,
     )
-    
+
     add_unified_logging_arguments(parser)
     return parser
 
@@ -152,10 +145,10 @@ Configuration Priority (highest to lowest):
 def parse_logging_args(args: Optional[list] = None) -> argparse.Namespace:
     """
     Parse command-line arguments for unified logging configuration.
-    
+
     Args:
         args: List of arguments to parse (defaults to sys.argv)
-        
+
     Returns:
         Parsed arguments namespace
     """
@@ -166,55 +159,61 @@ def parse_logging_args(args: Optional[list] = None) -> argparse.Namespace:
 def normalize_logging_args(args: argparse.Namespace) -> argparse.Namespace:
     """
     Normalize parsed arguments for unified logging configuration.
-    
+
     This function handles argument conflicts and converts string values
     to appropriate types for the logging configuration manager.
-    
+
     Args:
         args: Parsed arguments namespace
-        
+
     Returns:
         Normalized arguments namespace
     """
     # Handle boolean conflicts
-    if hasattr(args, 'lazy_init') and hasattr(args, 'no_lazy_init'):
+    if hasattr(args, "lazy_init") and hasattr(args, "no_lazy_init"):
         if args.no_lazy_init:
             args.lazy_init = False
         elif args.lazy_init:
             args.lazy_init = True
         else:
             args.lazy_init = None
-            
-    if hasattr(args, 'suppress_noisy') and hasattr(args, 'no_suppress_noisy'):
+
+    if hasattr(args, "suppress_noisy") and hasattr(args, "no_suppress_noisy"):
         if args.no_suppress_noisy:
             args.suppress_noisy = False
         elif args.suppress_noisy:
             args.suppress_noisy = True
         else:
             args.suppress_noisy = None
-            
-    if hasattr(args, 'performance_monitoring') and hasattr(args, 'no_performance_monitoring'):
+
+    if hasattr(args, "performance_monitoring") and hasattr(
+        args, "no_performance_monitoring"
+    ):
         if args.no_performance_monitoring:
             args.performance_monitoring = False
         elif args.performance_monitoring:
             args.performance_monitoring = True
         else:
             args.performance_monitoring = None
-    
+
     return args
 
 
 def show_logging_configuration_summary():
     """Show current logging configuration summary."""
+    from .integration_bridge import get_bridge_logger
+
+    logger = get_bridge_logger(__name__)
+
     try:
         config_manager = LoggingConfigManager()
         summary = config_manager.get_configuration_summary()
-        
-        logger.info("\n" + "="*60)
+
+        logger.info("\n" + "=" * 60)
         logger.info("UNIFIED LOGGING CONFIGURATION SUMMARY")
-        logger.info("="*60)
-        
-        config = summary['configuration']
+        logger.info("=" * 60)
+
+        config = summary["configuration"]
         logger.info(f"Log Level:              {config['log_level']}")
         logger.info(f"Log Format:             {config['log_format']}")
         logger.info(f"Log Outputs:            {', '.join(config['log_outputs'])}")
@@ -223,35 +222,41 @@ def show_logging_configuration_summary():
         logger.info(f"Lazy Initialization:    {config['lazy_initialization']}")
         logger.info(f"Suppress Noisy:         {config['suppress_noisy_loggers']}")
         logger.info(f"Performance Monitor:    {config['performance_monitoring']}")
-        
+
         logger.info(f"\nConfiguration Sources:")
-        sources = summary['sources']
+        sources = summary["sources"]
         logger.info(f"Config File:            {sources['config_file']}")
-        
-        if sources['environment_variables']:
-            logger.info(f"Environment Variables:  {', '.join(sources['environment_variables'])}")
+
+        if sources["environment_variables"]:
+            logger.info(
+                f"Environment Variables:  {', '.join(sources['environment_variables'])}"
+            )
         else:
             logger.info(f"Environment Variables:  None")
-            
-        if sources['command_line_args']:
+
+        if sources["command_line_args"]:
             logger.info(f"Command Line Args:      Available")
         else:
             logger.info(f"Command Line Args:      None")
-            
+
         logger.info(f"Validation Status:      {summary['validation_status']}")
-        logger.info("="*60 + "\n")
-        
+        logger.info("=" * 60 + "\n")
+
     except Exception as e:
         logger.error(f"Error showing logging configuration: {e}")
 
 
 if __name__ == "__main__":
     # Standalone CLI for testing logging configuration
+    from .integration_bridge import get_bridge_logger
+
+    logger = get_bridge_logger(__name__)
+
     args = parse_logging_args()
     args = normalize_logging_args(args)
-    
+
     if args.logging_stats:
         show_logging_configuration_summary()
-    
+
     logger.info("Unified logging configuration parsed successfully!")
     logger.info(f"Arguments: {vars(args)}")

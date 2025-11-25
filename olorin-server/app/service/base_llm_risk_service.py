@@ -1,7 +1,6 @@
+import asyncio
 import json
 import logging
-from app.service.logging import get_bridge_logger
-import asyncio
 import random
 from abc import ABC, abstractmethod
 from typing import Any, Dict, Generic, List, Optional, Type, TypeVar
@@ -11,13 +10,14 @@ from pydantic import BaseModel
 
 from app.models.agent_context import AgentContext
 from app.models.agent_headers import AuthContext, OlorinHeader
-from app.models.upi_response import Metadata
 from app.models.llm_verification import VerificationPolicy
+from app.models.upi_response import Metadata
 from app.service.agent_service import ainvoke_agent
 from app.service.config import get_settings_for_env
-from app.service.llm.verified_client import VerifiedOpenAIClient
 from app.service.llm.verification.opus_verifier import OpusVerifier
+from app.service.llm.verified_client import VerifiedOpenAIClient
 from app.service.llm_manager import get_llm_manager
+from app.service.logging import get_bridge_logger
 from app.utils.auth_utils import get_auth_token
 from app.utils.constants import LIST_FIELDS_PRIORITY, MAX_PROMPT_TOKENS
 from app.utils.prompt_utils import trim_prompt_to_token_limit
@@ -41,7 +41,7 @@ class BaseLLMRiskService(ABC, Generic[T]):
 
     def __init__(self):
         self.settings = get_settings_for_env()
-        
+
     def _get_verification_model_name(self) -> str:
         """Get the verification model name from LLM Manager."""
         try:
@@ -51,7 +51,8 @@ class BaseLLMRiskService(ABC, Generic[T]):
             logger.warning(f"Failed to get verification model from LLM Manager: {e}")
             # Use default verification model from environment or LLM_VERIFICATION_MODEL
             import os
-            return os.getenv('LLM_VERIFICATION_MODEL', 'gpt-3.5-turbo')
+
+            return os.getenv("LLM_VERIFICATION_MODEL", "gpt-3.5-turbo")
 
     @abstractmethod
     def get_agent_name(self) -> str:
@@ -235,21 +236,30 @@ class BaseLLMRiskService(ABC, Generic[T]):
             # Feature flag: verification with sampling and mode
             raw_llm_response_str: str
             verification_enabled = getattr(self.settings, "verification_enabled", False)
-            verification_sample = float(getattr(self.settings, "verification_sample_percent", 1.0) or 0.0)
+            verification_sample = float(
+                getattr(self.settings, "verification_sample_percent", 1.0) or 0.0
+            )
             verification_mode = getattr(self.settings, "verification_mode", "shadow")
 
-            should_verify = verification_enabled and (random.random() <= verification_sample)
+            should_verify = verification_enabled and (
+                random.random() <= verification_sample
+            )
 
             if should_verify and verification_mode == "blocking":
                 policy = VerificationPolicy(
-                    threshold=getattr(self.settings, "verification_threshold_default", 0.85),
-                    max_retries=getattr(self.settings, "verification_max_retries_default", 1),
+                    threshold=getattr(
+                        self.settings, "verification_threshold_default", 0.85
+                    ),
+                    max_retries=getattr(
+                        self.settings, "verification_max_retries_default", 1
+                    ),
                     min_adherence=0.8,
                     min_safety=0.9,
                 )
                 verified_client = VerifiedOpenAIClient(openai_caller=_openai_caller)
                 # Inject verifier with configured API key
                 from app.service.llm.verification.model_verifier import ModelVerifier
+
                 verified_client.verifier = ModelVerifier(
                     model_name=self._get_verification_model_name(),
                     api_key=None,  # Will use Firebase secrets based on model type
@@ -264,7 +274,10 @@ class BaseLLMRiskService(ABC, Generic[T]):
                 raw_llm_response_str, _ = await ainvoke_agent(request, agent_context)
 
                 if should_verify and verification_mode == "shadow":
-                    from app.service.llm.verification.model_verifier import ModelVerifier
+                    from app.service.llm.verification.model_verifier import (
+                        ModelVerifier,
+                    )
+
                     verifier = ModelVerifier(
                         model_name=self._get_verification_model_name(),
                         api_key=None,  # Will use Firebase secrets based on model type
@@ -280,7 +293,9 @@ class BaseLLMRiskService(ABC, Generic[T]):
                         try:
                             from app.models.llm_verification import VerificationContext
 
-                            report = await verifier.verify(VerificationContext(**ctx_for_shadow))
+                            report = await verifier.verify(
+                                VerificationContext(**ctx_for_shadow)
+                            )
                             logger.debug(
                                 f"Shadow verification report (request_id={ctx_for_shadow['request_id']}): {report.model_dump()}"
                             )
@@ -305,12 +320,8 @@ class BaseLLMRiskService(ABC, Generic[T]):
                 logger.error(
                     f"❌ LLM JSON parsing error for {assessment_type} risk for {user_id}"
                 )
-                logger.error(
-                    f"   Error: {json_err}"
-                )
-                logger.error(
-                    f"   Raw response was: {raw_llm_response_str[:500]}..."
-                )
+                logger.error(f"   Error: {json_err}")
+                logger.error(f"   Raw response was: {raw_llm_response_str[:500]}...")
                 return self.create_fallback_assessment(
                     user_id=user_id,
                     extracted_signals=extracted_signals,
@@ -328,9 +339,7 @@ class BaseLLMRiskService(ABC, Generic[T]):
                 logger.error(
                     f"❌ LLM response validation error for {assessment_type} risk for {user_id}"
                 )
-                logger.error(
-                    f"   Error: {validation_err}"
-                )
+                logger.error(f"   Error: {validation_err}")
                 return self.create_fallback_assessment(
                     user_id=user_id,
                     extracted_signals=extracted_signals,
@@ -354,9 +363,7 @@ class BaseLLMRiskService(ABC, Generic[T]):
             logger.error(
                 f"❌ LLM invocation or validation error for {assessment_type} risk for {user_id}"
             )
-            logger.error(
-                f"   Error: {llm_err}"
-            )
+            logger.error(f"   Error: {llm_err}")
 
             return self.create_fallback_assessment(
                 user_id=user_id,

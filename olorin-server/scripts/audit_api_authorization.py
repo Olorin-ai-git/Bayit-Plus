@@ -30,20 +30,20 @@ class AuthAuditor:
     """Audits FastAPI routers for authentication and authorization"""
 
     AUTH_DEPENDENCIES = {
-        'get_current_user',
-        'get_current_active_user',
-        'require_scopes',
-        'verify_token',
-        'authenticate_user'
+        "get_current_user",
+        "get_current_active_user",
+        "require_scopes",
+        "verify_token",
+        "authenticate_user",
     }
 
     PUBLIC_PATHS = {
-        '/health',
-        '/health/',
-        '/docs',
-        '/openapi.json',
-        '/auth/login',
-        '/auth/token'
+        "/health",
+        "/health/",
+        "/docs",
+        "/openapi.json",
+        "/auth/login",
+        "/auth/token",
     }
 
     def __init__(self, router_dir: Path):
@@ -57,8 +57,8 @@ class AuthAuditor:
 
         for root, _, files in os.walk(self.router_dir):
             for file in files:
-                if file.endswith('.py') and not file.startswith('__'):
-                    if 'test' not in root and 'models' not in root:
+                if file.endswith(".py") and not file.startswith("__"):
+                    if "test" not in root and "models" not in root:
                         router_files.append(Path(root) / file)
 
         for router_file in router_files:
@@ -67,7 +67,7 @@ class AuthAuditor:
     def _audit_router_file(self, file_path: Path) -> None:
         """Audit a single router file"""
         try:
-            with open(file_path, 'r') as f:
+            with open(file_path, "r") as f:
                 content = f.read()
 
             tree = ast.parse(content)
@@ -95,9 +95,9 @@ class AuthAuditor:
         dependencies = self._extract_dependencies(node)
 
         has_auth = any(dep in self.AUTH_DEPENDENCIES for dep in dependencies)
-        has_scope = 'require_scopes' in dependencies
-        is_options = method.lower() == 'options'
-        is_health = '/health' in path.lower()
+        has_scope = "require_scopes" in dependencies
+        is_options = method.lower() == "options"
+        is_health = "/health" in path.lower()
 
         endpoint = EndpointInfo(
             file_path=file_path,
@@ -109,7 +109,7 @@ class AuthAuditor:
             has_scope_check=has_scope,
             dependencies=dependencies,
             is_options=is_options,
-            is_health_check=is_health
+            is_health_check=is_health,
         )
 
         self.endpoints.append(endpoint)
@@ -120,7 +120,7 @@ class AuthAuditor:
             if isinstance(decorator, ast.Call):
                 if isinstance(decorator.func, ast.Attribute):
                     method = decorator.func.attr
-                    if method in ['get', 'post', 'put', 'delete', 'patch', 'options']:
+                    if method in ["get", "post", "put", "delete", "patch", "options"]:
                         path = self._extract_path_from_decorator(decorator)
                         if path:
                             return (method, path)
@@ -139,7 +139,7 @@ class AuthAuditor:
         dependencies = []
 
         for arg in node.args.args:
-            if hasattr(arg, 'annotation'):
+            if hasattr(arg, "annotation"):
                 dep_name = self._extract_dependency_name(arg.annotation)
                 if dep_name:
                     dependencies.append(dep_name)
@@ -150,7 +150,7 @@ class AuthAuditor:
         """Extract dependency function name from type annotation"""
         if isinstance(annotation, ast.Call):
             if isinstance(annotation.func, ast.Name):
-                if annotation.func.id == 'Depends':
+                if annotation.func.id == "Depends":
                     if annotation.args:
                         arg = annotation.args[0]
                         if isinstance(arg, ast.Name):
@@ -168,10 +168,10 @@ class AuthAuditor:
 
         for endpoint in self.endpoints:
             is_public = (
-                endpoint.is_options or
-                endpoint.is_health_check or
-                any(pub in endpoint.path for pub in self.PUBLIC_PATHS) or
-                '/auth/' in endpoint.path
+                endpoint.is_options
+                or endpoint.is_health_check
+                or any(pub in endpoint.path for pub in self.PUBLIC_PATHS)
+                or "/auth/" in endpoint.path
             )
 
             if is_public:
@@ -182,15 +182,17 @@ class AuthAuditor:
                 unprotected_endpoints.append(endpoint)
 
         return {
-            'total_endpoints': len(self.endpoints),
-            'protected_endpoints': len(protected_endpoints),
-            'unprotected_endpoints': len(unprotected_endpoints),
-            'public_endpoints': len(public_endpoints),
-            'endpoints_with_scope_checks': len([e for e in self.endpoints if e.has_scope_check]),
-            'unprotected_details': unprotected_endpoints,
-            'protected_details': protected_endpoints,
-            'public_details': public_endpoints,
-            'errors': self.errors
+            "total_endpoints": len(self.endpoints),
+            "protected_endpoints": len(protected_endpoints),
+            "unprotected_endpoints": len(unprotected_endpoints),
+            "public_endpoints": len(public_endpoints),
+            "endpoints_with_scope_checks": len(
+                [e for e in self.endpoints if e.has_scope_check]
+            ),
+            "unprotected_details": unprotected_endpoints,
+            "protected_details": protected_endpoints,
+            "public_details": public_endpoints,
+            "errors": self.errors,
         }
 
     def print_report(self) -> None:
@@ -210,32 +212,34 @@ class AuthAuditor:
         print(f"  With Scope Checks: {report['endpoints_with_scope_checks']}")
         print()
 
-        if report['unprotected_details']:
+        if report["unprotected_details"]:
             print("UNPROTECTED ENDPOINTS (REQUIRE ATTENTION):")
             print("-" * 80)
-            for ep in report['unprotected_details']:
+            for ep in report["unprotected_details"]:
                 print(f"  [{ep.method}] {ep.path}")
                 print(f"    File: {ep.file_path}:{ep.line_number}")
                 print(f"    Function: {ep.function_name}")
-                print(f"    Dependencies: {', '.join(ep.dependencies) if ep.dependencies else 'None'}")
+                print(
+                    f"    Dependencies: {', '.join(ep.dependencies) if ep.dependencies else 'None'}"
+                )
                 print()
 
-        if report['protected_details']:
+        if report["protected_details"]:
             print("PROTECTED ENDPOINTS:")
             print("-" * 80)
-            for ep in report['protected_details'][:10]:
+            for ep in report["protected_details"][:10]:
                 scope_indicator = " [SCOPED]" if ep.has_scope_check else ""
                 print(f"  [{ep.method}] {ep.path}{scope_indicator}")
                 print(f"    File: {ep.file_path}:{ep.line_number}")
                 print()
-            if len(report['protected_details']) > 10:
+            if len(report["protected_details"]) > 10:
                 print(f"  ... and {len(report['protected_details']) - 10} more")
                 print()
 
-        if report['errors']:
+        if report["errors"]:
             print("ERRORS ENCOUNTERED:")
             print("-" * 80)
-            for error in report['errors']:
+            for error in report["errors"]:
                 print(f"  {error}")
             print()
 

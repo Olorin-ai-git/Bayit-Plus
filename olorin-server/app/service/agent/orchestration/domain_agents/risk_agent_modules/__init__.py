@@ -8,7 +8,6 @@ from .risk_calculator import RiskCalculator
 from .risk_narrative import RiskNarrativeGenerator
 
 __all__ = [
-    'RiskCalculator',
-    'RiskNarrativeGenerator',
+    "RiskCalculator",
+    "RiskNarrativeGenerator",
 ]
-

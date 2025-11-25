@@ -10,10 +10,10 @@ Compares our schema constants with the actual CSV schema file to verify:
 """
 
 import csv
-from pathlib import Path
-from typing import Dict, Set, List, Tuple
-import sys
 import os
+import sys
+from pathlib import Path
+from typing import Dict, List, Set, Tuple
 
 # Add the olorin-server directory to Python path
 script_dir = Path(__file__).parent
@@ -23,18 +23,20 @@ sys.path.insert(0, str(olorin_server_dir))
 # Import our schema constants
 from app.service.agent.tools.snowflake_tool.schema_constants import *
 
+
 def parse_csv_schema(csv_path: str) -> Dict[str, str]:
     """Parse the CSV schema file and return column name -> type mapping."""
     schema = {}
 
-    with open(csv_path, 'r', encoding='utf-8-sig') as file:
+    with open(csv_path, "r", encoding="utf-8-sig") as file:
         reader = csv.DictReader(file)
         for row in reader:
-            column_name = row['name'].strip()
-            column_type = row['type'].strip()
+            column_name = row["name"].strip()
+            column_type = row["type"].strip()
             schema[column_name] = column_type
 
     return schema
+
 
 def get_our_schema_constants() -> Dict[str, str]:
     """Get all schema constants from our constants file."""
@@ -44,47 +46,51 @@ def get_our_schema_constants() -> Dict[str, str]:
     import app.service.agent.tools.snowflake_tool.schema_constants as schema_module
 
     for name in dir(schema_module):
-        if (name.isupper() and
-            not name.startswith('_') and
-            name not in ['FIELD_MAPPINGS', 'NON_EXISTENT_COLUMNS'] and
-            isinstance(getattr(schema_module, name), str)):
+        if (
+            name.isupper()
+            and not name.startswith("_")
+            and name not in ["FIELD_MAPPINGS", "NON_EXISTENT_COLUMNS"]
+            and isinstance(getattr(schema_module, name), str)
+        ):
 
             value = getattr(schema_module, name)
 
             # Skip NULL AS aliases - these are intentionally non-existent
-            if value.startswith('NULL AS'):
+            if value.startswith("NULL AS"):
                 continue
 
             constants[name] = value
 
     return constants
 
+
 def map_snowflake_to_python_type(snowflake_type: str) -> str:
     """Map Snowflake types to Python equivalent types."""
     snowflake_type = snowflake_type.upper()
 
     # String types
-    if 'VARCHAR' in snowflake_type:
-        return 'str'
+    if "VARCHAR" in snowflake_type:
+        return "str"
 
     # Numeric types
-    if 'NUMBER' in snowflake_type or 'FLOAT' in snowflake_type:
-        return 'float'
+    if "NUMBER" in snowflake_type or "FLOAT" in snowflake_type:
+        return "float"
 
     # Boolean types
-    if 'BOOLEAN' in snowflake_type:
-        return 'bool'
+    if "BOOLEAN" in snowflake_type:
+        return "bool"
 
     # Timestamp types
-    if 'TIMESTAMP' in snowflake_type:
-        return 'datetime'
+    if "TIMESTAMP" in snowflake_type:
+        return "datetime"
 
     # Complex types
-    if snowflake_type in ['OBJECT', 'VARIANT', 'ARRAY']:
-        return 'dict'
+    if snowflake_type in ["OBJECT", "VARIANT", "ARRAY"]:
+        return "dict"
 
     # Default to string for unknown types
-    return 'str'
+    return "str"
+
 
 def analyze_compliance() -> None:
     """Analyze schema compliance and report findings."""
@@ -138,42 +144,46 @@ def analyze_compliance() -> None:
 
     # Show incorrect mappings
     if missing_from_schema:
-        print(f"\n❌ COLUMNS IN CONSTANTS BUT NOT IN SCHEMA ({len(missing_from_schema)}):")
+        print(
+            f"\n❌ COLUMNS IN CONSTANTS BUT NOT IN SCHEMA ({len(missing_from_schema)}):"
+        )
         for const_name, column_name in missing_from_schema:
             print(f"   {const_name} = '{column_name}'")
 
     # Show missing constants
     if missing_from_constants:
-        print(f"\n⚠️  COLUMNS IN SCHEMA BUT NOT IN CONSTANTS ({len(missing_from_constants)}):")
+        print(
+            f"\n⚠️  COLUMNS IN SCHEMA BUT NOT IN CONSTANTS ({len(missing_from_constants)}):"
+        )
         # Group by category
         categories = {
-            'KYC': [],
-            'DISPUTE': [],
-            'CRYPTO': [],
-            'MAXMIND': [],
-            'HLR': [],
-            'EMAIL': [],
-            'BIN': [],
-            'OTHER': []
+            "KYC": [],
+            "DISPUTE": [],
+            "CRYPTO": [],
+            "MAXMIND": [],
+            "HLR": [],
+            "EMAIL": [],
+            "BIN": [],
+            "OTHER": [],
         }
 
         for column in missing_from_constants:
-            if 'KYC' in column:
-                categories['KYC'].append(column)
-            elif 'DISPUTE' in column or 'FRAUD_ALERT' in column:
-                categories['DISPUTE'].append(column)
-            elif 'CRYPTO' in column:
-                categories['CRYPTO'].append(column)
-            elif 'MAXMIND' in column:
-                categories['MAXMIND'].append(column)
-            elif 'HLR' in column:
-                categories['HLR'].append(column)
-            elif 'EMAIL' in column and 'VALIDATION' in column:
-                categories['EMAIL'].append(column)
-            elif 'BIN_' in column:
-                categories['BIN'].append(column)
+            if "KYC" in column:
+                categories["KYC"].append(column)
+            elif "DISPUTE" in column or "FRAUD_ALERT" in column:
+                categories["DISPUTE"].append(column)
+            elif "CRYPTO" in column:
+                categories["CRYPTO"].append(column)
+            elif "MAXMIND" in column:
+                categories["MAXMIND"].append(column)
+            elif "HLR" in column:
+                categories["HLR"].append(column)
+            elif "EMAIL" in column and "VALIDATION" in column:
+                categories["EMAIL"].append(column)
+            elif "BIN_" in column:
+                categories["BIN"].append(column)
             else:
-                categories['OTHER'].append(column)
+                categories["OTHER"].append(column)
 
         for category, columns in categories.items():
             if columns:
@@ -204,7 +214,9 @@ def analyze_compliance() -> None:
     covered_columns_count = len(correct_mappings)
     coverage_percentage = (covered_columns_count / total_schema_columns) * 100
 
-    print(f"Schema Coverage: {covered_columns_count}/{total_schema_columns} ({coverage_percentage:.1f}%)")
+    print(
+        f"Schema Coverage: {covered_columns_count}/{total_schema_columns} ({coverage_percentage:.1f}%)"
+    )
     print(f"Incorrect Mappings: {len(missing_from_schema)}")
     print(f"Missing Constants: {len(missing_from_constants)}")
 
@@ -230,6 +242,7 @@ def analyze_compliance() -> None:
         print("3. Schema coverage could be improved for better query flexibility")
 
     print("\n✅ Analysis complete!")
+
 
 if __name__ == "__main__":
     analyze_compliance()

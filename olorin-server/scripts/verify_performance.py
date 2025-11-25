@@ -14,16 +14,18 @@ Constitutional Compliance:
 """
 
 import sys
-from pathlib import Path
 import time
-from typing import Dict, Any, List
+from pathlib import Path
+from typing import Any, Dict, List
 
 # Add parent directory to path for imports
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
-from app.service.logging import get_bridge_logger
 from app.service.agent.tools.database_tool.database_factory import get_database_provider
-from app.service.agent.tools.database_tool.postgres_pool_tuning import PostgreSQLPoolTuner
+from app.service.agent.tools.database_tool.postgres_pool_tuning import (
+    PostgreSQLPoolTuner,
+)
+from app.service.logging import get_bridge_logger
 
 logger = get_bridge_logger(__name__)
 
@@ -50,11 +52,11 @@ class PerformanceVerifier:
             logger.info("Setting up database providers...")
 
             # Initialize Snowflake provider
-            self.sf_provider = get_database_provider('snowflake')
+            self.sf_provider = get_database_provider("snowflake")
             logger.info("✅ Snowflake provider initialized")
 
             # Initialize PostgreSQL provider
-            self.pg_provider = get_database_provider('postgresql')
+            self.pg_provider = get_database_provider("postgresql")
             logger.info("✅ PostgreSQL provider initialized")
 
             return True
@@ -64,10 +66,7 @@ class PerformanceVerifier:
             return False
 
     def benchmark_query(
-        self,
-        query: str,
-        provider_name: str,
-        iterations: int = 5
+        self, query: str, provider_name: str, iterations: int = 5
     ) -> Dict[str, Any]:
         """
         Benchmark a query against a specific provider.
@@ -80,7 +79,9 @@ class PerformanceVerifier:
         Returns:
             Dictionary with benchmark results
         """
-        provider = self.sf_provider if provider_name == 'snowflake' else self.pg_provider
+        provider = (
+            self.sf_provider if provider_name == "snowflake" else self.pg_provider
+        )
 
         durations = []
         row_counts = []
@@ -96,24 +97,19 @@ class PerformanceVerifier:
         avg_rows = sum(row_counts) / len(row_counts)
 
         logger.info(
-            f"  {provider_name}: avg={avg_duration:.1f}ms, "
-            f"rows={avg_rows:.0f}"
+            f"  {provider_name}: avg={avg_duration:.1f}ms, " f"rows={avg_rows:.0f}"
         )
 
         return {
-            'provider': provider_name,
-            'iterations': iterations,
-            'avg_duration_ms': avg_duration,
-            'min_duration_ms': min(durations),
-            'max_duration_ms': max(durations),
-            'avg_row_count': avg_rows
+            "provider": provider_name,
+            "iterations": iterations,
+            "avg_duration_ms": avg_duration,
+            "min_duration_ms": min(durations),
+            "max_duration_ms": max(durations),
+            "avg_row_count": avg_rows,
         }
 
-    def verify_query_performance(
-        self,
-        query_name: str,
-        query: str
-    ) -> Dict[str, Any]:
+    def verify_query_performance(self, query_name: str, query: str) -> Dict[str, Any]:
         """
         Verify that PostgreSQL performance is within threshold for a query.
 
@@ -127,21 +123,21 @@ class PerformanceVerifier:
         logger.info(f"\n📊 Testing: {query_name}")
 
         # Benchmark both providers
-        sf_result = self.benchmark_query(query, 'snowflake')
-        pg_result = self.benchmark_query(query, 'postgresql')
+        sf_result = self.benchmark_query(query, "snowflake")
+        pg_result = self.benchmark_query(query, "postgresql")
 
         # Calculate performance ratio
-        ratio = pg_result['avg_duration_ms'] / sf_result['avg_duration_ms']
+        ratio = pg_result["avg_duration_ms"] / sf_result["avg_duration_ms"]
         within_threshold = ratio <= self.threshold
 
         result = {
-            'query_name': query_name,
-            'snowflake_avg_ms': sf_result['avg_duration_ms'],
-            'postgresql_avg_ms': pg_result['avg_duration_ms'],
-            'performance_ratio': ratio,
-            'threshold': self.threshold,
-            'within_threshold': within_threshold,
-            'status': '✅ PASS' if within_threshold else '❌ FAIL'
+            "query_name": query_name,
+            "snowflake_avg_ms": sf_result["avg_duration_ms"],
+            "postgresql_avg_ms": pg_result["avg_duration_ms"],
+            "performance_ratio": ratio,
+            "threshold": self.threshold,
+            "within_threshold": within_threshold,
+            "status": "✅ PASS" if within_threshold else "❌ FAIL",
         }
 
         # Log result
@@ -170,29 +166,25 @@ class PerformanceVerifier:
 
         # Setup providers
         if not self.setup_providers():
-            return {'success': False, 'error': 'Failed to setup providers'}
+            return {"success": False, "error": "Failed to setup providers"}
 
         # Define test queries (common investigation patterns)
         test_queries = {
-            'Simple SELECT': "SELECT * FROM transactions_enriched LIMIT 100",
-
-            'Email Filter': "SELECT TX_ID_KEY, EMAIL, MODEL_SCORE FROM transactions_enriched WHERE EMAIL = 'test@example.com' LIMIT 10",
-
-            'Date Range': """
+            "Simple SELECT": "SELECT * FROM transactions_enriched LIMIT 100",
+            "Email Filter": "SELECT TX_ID_KEY, EMAIL, MODEL_SCORE FROM transactions_enriched WHERE EMAIL = 'test@example.com' LIMIT 10",
+            "Date Range": """
                 SELECT TX_ID_KEY, TX_DATETIME
                 FROM transactions_enriched
                 WHERE TX_DATETIME >= CURRENT_DATE - INTERVAL '7 days'
                 LIMIT 100
             """,
-
-            'High Risk': """
+            "High Risk": """
                 SELECT TX_ID_KEY, EMAIL, MODEL_SCORE
                 FROM transactions_enriched
                 WHERE MODEL_SCORE > 0.8
                 LIMIT 50
             """,
-
-            'Aggregation': """
+            "Aggregation": """
                 SELECT
                     EMAIL,
                     COUNT(*) as tx_count,
@@ -201,14 +193,13 @@ class PerformanceVerifier:
                 GROUP BY EMAIL
                 LIMIT 50
             """,
-
-            'Complex Filter': """
+            "Complex Filter": """
                 SELECT TX_ID_KEY, EMAIL, TX_DATETIME, MODEL_SCORE
                 FROM transactions_enriched
                 WHERE TX_DATETIME >= CURRENT_DATE - INTERVAL '30 days'
                   AND MODEL_SCORE > 0.7
                 LIMIT 50
-            """
+            """,
         }
 
         # Run verification for each query
@@ -219,24 +210,22 @@ class PerformanceVerifier:
                 results.append(result)
             except Exception as e:
                 logger.error(f"❌ Failed to verify {query_name}: {e}")
-                results.append({
-                    'query_name': query_name,
-                    'status': '❌ ERROR',
-                    'error': str(e)
-                })
+                results.append(
+                    {"query_name": query_name, "status": "❌ ERROR", "error": str(e)}
+                )
 
         # Calculate summary
         total_tests = len(results)
-        passed_tests = sum(1 for r in results if r.get('within_threshold', False))
+        passed_tests = sum(1 for r in results if r.get("within_threshold", False))
         failed_tests = total_tests - passed_tests
 
         summary = {
-            'total_tests': total_tests,
-            'passed': passed_tests,
-            'failed': failed_tests,
-            'pass_rate': (passed_tests / total_tests * 100) if total_tests > 0 else 0,
-            'success': failed_tests == 0,
-            'results': results
+            "total_tests": total_tests,
+            "passed": passed_tests,
+            "failed": failed_tests,
+            "pass_rate": (passed_tests / total_tests * 100) if total_tests > 0 else 0,
+            "success": failed_tests == 0,
+            "results": results,
         }
 
         # Print summary
@@ -248,9 +237,11 @@ class PerformanceVerifier:
         logger.info(f"Failed: {failed_tests}")
         logger.info(f"Pass Rate: {summary['pass_rate']:.1f}%")
 
-        if summary['success']:
+        if summary["success"]:
             logger.info("\n🎉 ALL PERFORMANCE TESTS PASSED!")
-            logger.info("PostgreSQL performance is within 20% of Snowflake for all queries")
+            logger.info(
+                "PostgreSQL performance is within 20% of Snowflake for all queries"
+            )
         else:
             logger.error("\n❌ PERFORMANCE VERIFICATION FAILED")
             logger.error(f"{failed_tests} queries exceeded 20% threshold")
@@ -271,28 +262,28 @@ def verify_pool_configuration() -> bool:
 
     try:
         tuner = PostgreSQLPoolTuner()
-        pg_provider = get_database_provider('postgresql')
+        pg_provider = get_database_provider("postgresql")
 
         # Get current configuration
         config = {
-            'pool_size': pg_provider._config.get('pool_size'),
-            'pool_max_overflow': pg_provider._config.get('pool_max_overflow'),
-            'query_timeout': pg_provider._config.get('query_timeout')
+            "pool_size": pg_provider._config.get("pool_size"),
+            "pool_max_overflow": pg_provider._config.get("pool_max_overflow"),
+            "query_timeout": pg_provider._config.get("query_timeout"),
         }
 
         # Validate configuration
         validation = tuner.validate_pool_configuration(config)
 
-        if validation['valid']:
+        if validation["valid"]:
             logger.info("✅ Connection pool configuration is valid")
 
-            if validation['warnings']:
-                for warning in validation['warnings']:
+            if validation["warnings"]:
+                for warning in validation["warnings"]:
                     logger.warning(f"  ⚠️  {warning}")
 
-            if validation['recommendations']:
+            if validation["recommendations"]:
                 logger.info("\n  💡 Recommendations:")
-                for rec in validation['recommendations']:
+                for rec in validation["recommendations"]:
                     logger.info(f"    - {rec}")
 
             return True
@@ -313,7 +304,9 @@ def main():
     pool_valid = verify_pool_configuration()
 
     if not pool_valid:
-        logger.error("\n❌ Pool configuration validation failed - fix before running performance tests")
+        logger.error(
+            "\n❌ Pool configuration validation failed - fix before running performance tests"
+        )
         sys.exit(1)
 
     # Run performance verification suite
@@ -321,7 +314,7 @@ def main():
     summary = verifier.run_verification_suite()
 
     # Exit with appropriate code
-    sys.exit(0 if summary.get('success', False) else 1)
+    sys.exit(0 if summary.get("success", False) else 1)
 
 
 if __name__ == "__main__":

@@ -18,16 +18,17 @@ The actual implementation is in app/service/logging/ which includes:
 - Performance monitoring
 """
 
-from app.service.logging import (
-    get_bridge_logger,
-    configure_unified_bridge_from_config,
-    get_unified_logger,
-    LogFormat,
-    LogOutput,
-    LoggingConfig,
-)
 import logging
 import os
+
+from app.service.logging import (
+    LogFormat,
+    LoggingConfig,
+    LogOutput,
+    configure_unified_bridge_from_config,
+    get_bridge_logger,
+    get_unified_logger,
+)
 
 
 def setup_contract_testing_logger(logger_name: str = "contract_test") -> logging.Logger:

@@ -17,9 +17,9 @@ AUTHENTICITY GUARANTEE:
 """
 
 import asyncio
-import subprocess
 import json
 import os
+import subprocess
 import sys
 from datetime import datetime
 from pathlib import Path
@@ -45,20 +45,26 @@ def verify_services_running() -> bool:
             if response.status_code == 200:
                 print("✓ Backend service is running at http://localhost:8090")
             else:
-                print(f"✗ Backend returned status {response.status_code}, checking /docs...")
+                print(
+                    f"✗ Backend returned status {response.status_code}, checking /docs..."
+                )
                 try:
                     response = client.get("http://localhost:8090/docs")
                     if response.status_code in [200, 422]:  # 422 is OK for FastAPI docs
                         print("✓ Backend service is running at http://localhost:8090")
                     else:
-                        print(f"✗ Backend not responding correctly (status: {response.status_code})")
+                        print(
+                            f"✗ Backend not responding correctly (status: {response.status_code})"
+                        )
                         return False
                 except Exception as e2:
                     print(f"✗ Backend service not reachable: {e2}")
                     return False
     except Exception as e:
         print(f"✗ Backend service not reachable: {e}")
-        print("  Please start backend: cd olorin-server && poetry run python -m app.local_server")
+        print(
+            "  Please start backend: cd olorin-server && poetry run python -m app.local_server"
+        )
         return False
 
     # Check frontend
@@ -106,7 +112,9 @@ def run_playwright_test() -> bool:
     ]
 
     print(f"\nExecuting: {' '.join(cmd)}")
-    print("This will launch a real browser and execute the investigation through the actual UI...\n")
+    print(
+        "This will launch a real browser and execute the investigation through the actual UI...\n"
+    )
 
     try:
         result = subprocess.run(
@@ -122,7 +130,9 @@ def run_playwright_test() -> bool:
 
         if result.returncode == 0:
             print("\n✓ Playwright test completed successfully")
-            print("  The test executed a REAL investigation through the actual frontend UI")
+            print(
+                "  The test executed a REAL investigation through the actual frontend UI"
+            )
             return True
         else:
             print(f"\n⚠ Test execution completed with return code: {result.returncode}")
@@ -130,7 +140,6 @@ def run_playwright_test() -> bool:
                 print("[TEST STDERR]")
                 print(result.stderr)
             return True  # Still return True - test ran, even if validation failed
-
 
     except subprocess.TimeoutExpired:
         print("✗ Playwright test timed out after 2 minutes")
@@ -149,7 +158,9 @@ def create_real_data_investigation_log() -> None:
     print("=" * 100)
 
     investigation_id = f"real-e2e-{datetime.now().strftime('%Y%m%d-%H%M%S')}"
-    logger = InvestigationInstrumentationLogger(investigation_id, "./investigation_logs")
+    logger = InvestigationInstrumentationLogger(
+        investigation_id, "./investigation_logs"
+    )
 
     # Initialize real data interceptor
     interceptor = RealDataInterceptor(logger)

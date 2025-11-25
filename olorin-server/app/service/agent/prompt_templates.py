@@ -6,34 +6,35 @@ with context-aware dynamic generation and bulletproof resilience.
 """
 
 from typing import Dict
+
 from .orchestrator_prompts import PromptStrategy
 
 
 class PromptTemplateManager:
     """Manager for orchestrator prompt templates with strategy-specific optimization"""
-    
+
     def __init__(self):
         self.templates = self._initialize_templates()
-    
+
     def get_template(self, strategy: PromptStrategy) -> str:
         """Get prompt template for specific strategy"""
-        
+
         return self.templates.get(strategy, self.templates[PromptStrategy.STANDARD])
-    
+
     def _initialize_templates(self) -> Dict[PromptStrategy, str]:
         """Initialize all prompt templates"""
-        
+
         return {
             PromptStrategy.STANDARD: self._get_standard_template(),
             PromptStrategy.HIGH_RISK: self._get_high_risk_template(),
             PromptStrategy.DEGRADED: self._get_degraded_template(),
             PromptStrategy.EMERGENCY: self._get_emergency_template(),
-            PromptStrategy.MULTI_ENTITY: self._get_multi_entity_template()
+            PromptStrategy.MULTI_ENTITY: self._get_multi_entity_template(),
         }
-    
+
     def _get_standard_template(self) -> str:
         """Standard orchestration prompt template"""
-        
+
         return """You are the Master Orchestrator for structured fraud investigations with bulletproof resilience. Analyze the investigation context and make intelligent decisions about agent coordination strategy.
 
 INVESTIGATION CONTEXT:
@@ -81,7 +82,7 @@ REQUIRED OUTPUT FORMAT (JSON):
 
     def _get_high_risk_template(self) -> str:
         """High-risk scenario orchestration template"""
-        
+
         return """🚨 HIGH-RISK INVESTIGATION ORCHESTRATOR - ENHANCED ANALYSIS MODE
 
 CRITICAL INVESTIGATION CONTEXT:
@@ -117,7 +118,7 @@ OUTPUT: Enhanced JSON format with additional risk mitigation details"""
 
     def _get_degraded_template(self) -> str:
         """Service degradation scenario template"""
-        
+
         return """⚠️ DEGRADED MODE ORCHESTRATOR - RESILIENT OPERATION
 
 DEGRADED SERVICE CONTEXT:
@@ -146,7 +147,7 @@ DEGRADED MODE REQUIREMENTS:
 
     def _get_emergency_template(self) -> str:
         """Emergency/time-critical scenario template"""
-        
+
         return """🚨 EMERGENCY MODE - RAPID RESPONSE ORCHESTRATOR
 
 EMERGENCY CONTEXT:
@@ -174,7 +175,7 @@ EMERGENCY BULLETPROOF REQUIREMENTS:
 
     def _get_multi_entity_template(self) -> str:
         """Multi-entity investigation template"""
-        
+
         return """🔗 MULTI-ENTITY ORCHESTRATOR - COORDINATED ANALYSIS
 
 MULTI-ENTITY CONTEXT:

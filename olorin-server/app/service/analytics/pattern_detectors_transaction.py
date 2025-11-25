@@ -4,14 +4,15 @@ Transaction-Based Pattern Detectors (Patterns 1-3).
 Card Testing, Geo-Impossibility, and BIN Attack detection.
 """
 
-from typing import Dict, Any, List, Optional
 from datetime import timedelta
+from typing import Any, Dict, List, Optional
+
 from app.service.analytics.pattern_helpers import (
-    extract_timestamp,
+    calculate_distance,
     extract_amount,
-    extract_location,
     extract_card_info,
-    calculate_distance
+    extract_location,
+    extract_timestamp,
 )
 
 # Detection Thresholds
@@ -29,8 +30,7 @@ BIN_ATTACK_ADJUSTMENT = 0.15
 
 
 def detect_card_testing(
-    transaction: Dict[str, Any],
-    historical_transactions: Optional[List[Dict[str, Any]]]
+    transaction: Dict[str, Any], historical_transactions: Optional[List[Dict[str, Any]]]
 ) -> Optional[Dict[str, Any]]:
     """Detect card testing pattern."""
     if not historical_transactions:
@@ -49,9 +49,12 @@ def detect_card_testing(
         hist_timestamp = extract_timestamp(hist_tx)
         hist_amount = extract_amount(hist_tx)
 
-        if (hist_timestamp and hist_amount is not None and
-            window_start <= hist_timestamp < tx_timestamp and
-            hist_amount <= CARD_TESTING_MAX_AMOUNT):
+        if (
+            hist_timestamp
+            and hist_amount is not None
+            and window_start <= hist_timestamp < tx_timestamp
+            and hist_amount <= CARD_TESTING_MAX_AMOUNT
+        ):
             small_amount_count += 1
 
     if small_amount_count >= CARD_TESTING_MIN_ATTEMPTS:
@@ -60,20 +63,21 @@ def detect_card_testing(
             "pattern_name": "Card Testing Detection",
             "description": f"Multiple small-amount transactions ({small_amount_count}) in {CARD_TESTING_TIME_WINDOW_MINUTES} minutes",
             "risk_adjustment": CARD_TESTING_ADJUSTMENT,
-            "confidence": min(0.95, 0.70 + (small_amount_count - CARD_TESTING_MIN_ATTEMPTS) * 0.05),
+            "confidence": min(
+                0.95, 0.70 + (small_amount_count - CARD_TESTING_MIN_ATTEMPTS) * 0.05
+            ),
             "evidence": {
                 "attempt_count": small_amount_count,
                 "time_window_minutes": CARD_TESTING_TIME_WINDOW_MINUTES,
-                "max_amount": CARD_TESTING_MAX_AMOUNT
-            }
+                "max_amount": CARD_TESTING_MAX_AMOUNT,
+            },
         }
 
     return None
 
 
 def detect_geo_impossibility(
-    transaction: Dict[str, Any],
-    historical_transactions: Optional[List[Dict[str, Any]]]
+    transaction: Dict[str, Any], historical_transactions: Optional[List[Dict[str, Any]]]
 ) -> Optional[Dict[str, Any]]:
     """Detect geo-impossibility pattern."""
     if not historical_transactions:
@@ -105,24 +109,30 @@ def detect_geo_impossibility(
                 "pattern_name": "Geo-Impossibility Detection",
                 "description": f"Impossible travel speed: {required_speed:.0f} mph required",
                 "risk_adjustment": GEO_IMPOSSIBILITY_ADJUSTMENT,
-                "confidence": min(0.98, 0.75 + (required_speed / GEO_IMPOSSIBILITY_MAX_SPEED_MPH - 1) * 0.10),
+                "confidence": min(
+                    0.98,
+                    0.75
+                    + (required_speed / GEO_IMPOSSIBILITY_MAX_SPEED_MPH - 1) * 0.10,
+                ),
                 "evidence": {
                     "required_speed_mph": round(required_speed, 1),
                     "distance_miles": round(distance_miles, 1),
                     "time_diff_hours": round(time_diff_hours, 2),
-                    "max_feasible_speed_mph": GEO_IMPOSSIBILITY_MAX_SPEED_MPH
-                }
+                    "max_feasible_speed_mph": GEO_IMPOSSIBILITY_MAX_SPEED_MPH,
+                },
             }
 
     return None
 
 
 def detect_bin_attack(
-    transaction: Dict[str, Any],
-    historical_transactions: Optional[List[Dict[str, Any]]]
+    transaction: Dict[str, Any], historical_transactions: Optional[List[Dict[str, Any]]]
 ) -> Optional[Dict[str, Any]]:
     """Detect BIN attack pattern."""
-    if not historical_transactions or len(historical_transactions) < BIN_ATTACK_MIN_CARDS - 1:
+    if (
+        not historical_transactions
+        or len(historical_transactions) < BIN_ATTACK_MIN_CARDS - 1
+    ):
         return None
 
     tx_card = extract_card_info(transaction)
@@ -139,9 +149,12 @@ def detect_bin_attack(
         hist_timestamp = extract_timestamp(hist_tx)
         hist_card = extract_card_info(hist_tx)
 
-        if (hist_timestamp and hist_card and
-            window_start <= hist_timestamp < tx_timestamp and
-            hist_card["bin"] == bin_num):
+        if (
+            hist_timestamp
+            and hist_card
+            and window_start <= hist_timestamp < tx_timestamp
+            and hist_card["bin"] == bin_num
+        ):
             card_last4s.add(hist_card["last4"])
 
     if len(card_last4s) >= BIN_ATTACK_MIN_CARDS:
@@ -150,13 +163,15 @@ def detect_bin_attack(
             "pattern_name": "BIN Attack Detection",
             "description": f"Same BIN ({bin_num}) with {len(card_last4s)} different card numbers",
             "risk_adjustment": BIN_ATTACK_ADJUSTMENT,
-            "confidence": min(0.95, 0.75 + (len(card_last4s) - BIN_ATTACK_MIN_CARDS) * 0.05),
+            "confidence": min(
+                0.95, 0.75 + (len(card_last4s) - BIN_ATTACK_MIN_CARDS) * 0.05
+            ),
             "evidence": {
                 "bin": bin_num,
                 "unique_card_count": len(card_last4s),
                 "time_window_hours": BIN_ATTACK_TIME_WINDOW_HOURS,
-                "sample_last4": list(card_last4s)[:5]
-            }
+                "sample_last4": list(card_last4s)[:5],
+            },
         }
 
     return None

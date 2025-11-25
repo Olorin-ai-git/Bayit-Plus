@@ -11,25 +11,23 @@ SYSTEM MANDATE Compliance:
 - Type-safe: All parameters and returns properly typed
 """
 
-from typing import Optional, Dict, Any
-from fastapi import APIRouter, Depends, Query, Header
-from sqlalchemy.orm import Session
 from datetime import datetime
+from typing import Any, Dict, Optional
+
+from fastapi import APIRouter, Depends, Header, Query
+from sqlalchemy.orm import Session
 
 from app.persistence.database import get_db
-from app.service.stateless_polling_service import StatelessPollingService
 from app.security.auth import User, require_read_or_dev
 from app.service.logging import get_bridge_logger
+from app.service.stateless_polling_service import StatelessPollingService
 
 logger = get_bridge_logger(__name__)
 
 router = APIRouter(
     prefix="/api/v1/multi-tab",
     tags=["Multi-Tab Support"],
-    responses={
-        403: {"description": "Forbidden"},
-        404: {"description": "Not found"}
-    },
+    responses={403: {"description": "Forbidden"}, 404: {"description": "Not found"}},
 )
 
 
@@ -53,26 +51,25 @@ router = APIRouter(
                             "recommended_interval_ms": 1000,
                             "strategy": "aggressive",
                             "supports_multi_tab": True,
-                            "stateless": True
+                            "stateless": True,
                         },
                         "state_hash": "abc123def456",
-                        "has_changes": True
+                        "has_changes": True,
                     }
                 }
-            }
+            },
         }
-    }
+    },
 )
 async def get_stateless_state(
     investigation_id: str,
     client_id: Optional[str] = Header(
         None,
         alias="X-Client-ID",
-        description="Optional client/tab identifier for metrics"
+        description="Optional client/tab identifier for metrics",
     ),
     last_known_version: Optional[int] = Query(
-        None,
-        description="Last known version for change detection"
+        None, description="Last known version for change detection"
     ),
     db: Session = Depends(get_db),
     current_user: User = Depends(require_read_or_dev),
@@ -108,7 +105,7 @@ async def get_stateless_state(
         investigation_id=investigation_id,
         user_id=current_user.username,
         client_id=client_id,
-        last_known_version=last_known_version
+        last_known_version=last_known_version,
     )
 
 
@@ -119,16 +116,8 @@ async def get_stateless_state(
 )
 async def get_stateless_events(
     investigation_id: str,
-    since: Optional[str] = Query(
-        None,
-        description="ISO timestamp to get events after"
-    ),
-    limit: int = Query(
-        100,
-        ge=1,
-        le=1000,
-        description="Maximum events to return"
-    ),
+    since: Optional[str] = Query(None, description="ISO timestamp to get events after"),
+    limit: int = Query(100, ge=1, le=1000, description="Maximum events to return"),
     db: Session = Depends(get_db),
     current_user: User = Depends(require_read_or_dev),
 ) -> Dict[str, Any]:
@@ -142,35 +131,51 @@ async def get_stateless_events(
     and use it as the 'since' parameter for the next request.
     """
     # Reject reserved route names that shouldn't be treated as investigation IDs
-    reserved_names = ['visualization', 'charts', 'maps', 'risk-analysis', 'reports', 'analytics', 'rag', 'investigations', 'investigations-management', 'compare']
+    reserved_names = [
+        "visualization",
+        "charts",
+        "maps",
+        "risk-analysis",
+        "reports",
+        "analytics",
+        "rag",
+        "investigations",
+        "investigations-management",
+        "compare",
+    ]
     if investigation_id.lower() in reserved_names:
         from app.service.logging import get_bridge_logger
+
         logger = get_bridge_logger(__name__)
-        logger.warning(f"Rejected reserved route name '{investigation_id}' as investigation ID")
+        logger.warning(
+            f"Rejected reserved route name '{investigation_id}' as investigation ID"
+        )
         from fastapi import HTTPException
+
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
-            detail=f"Investigation not found: {investigation_id}"
+            detail=f"Investigation not found: {investigation_id}",
         )
-    
+
     service = StatelessPollingService(db)
 
     since_timestamp = None
     if since:
         try:
-            since_timestamp = datetime.fromisoformat(since.replace('Z', '+00:00'))
+            since_timestamp = datetime.fromisoformat(since.replace("Z", "+00:00"))
         except ValueError:
             from fastapi import HTTPException, status
+
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
-                detail=f"Invalid timestamp format: {since}"
+                detail=f"Invalid timestamp format: {since}",
             )
 
     return service.get_events_stateless(
         investigation_id=investigation_id,
         user_id=current_user.username,
         since_timestamp=since_timestamp,
-        limit=limit
+        limit=limit,
     )
 
 
@@ -181,12 +186,7 @@ async def get_stateless_events(
 )
 async def validate_multi_tab(
     investigation_id: str,
-    num_tabs: int = Query(
-        3,
-        ge=1,
-        le=10,
-        description="Number of tabs to simulate"
-    ),
+    num_tabs: int = Query(3, ge=1, le=10, description="Number of tabs to simulate"),
     db: Session = Depends(get_db),
     current_user: User = Depends(require_read_or_dev),
 ) -> Dict[str, Any]:
@@ -203,7 +203,7 @@ async def validate_multi_tab(
     return service.validate_multi_tab_support(
         investigation_id=investigation_id,
         user_id=current_user.username,
-        num_clients=num_tabs
+        num_clients=num_tabs,
     )
 
 
@@ -227,22 +227,27 @@ async def get_polling_metrics(
 
     # Verify access
     from app.models.investigation_state import InvestigationState
-    state = db.query(InvestigationState).filter(
-        InvestigationState.investigation_id == investigation_id
-    ).first()
+
+    state = (
+        db.query(InvestigationState)
+        .filter(InvestigationState.investigation_id == investigation_id)
+        .first()
+    )
 
     if not state:
         from fastapi import HTTPException, status
+
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
-            detail=f"Investigation {investigation_id} not found"
+            detail=f"Investigation {investigation_id} not found",
         )
 
     if state.user_id != current_user.username:
         from fastapi import HTTPException, status
+
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
-            detail="Not authorized to access this investigation"
+            detail="Not authorized to access this investigation",
         )
 
     return service.get_polling_metrics(investigation_id)
@@ -267,34 +272,36 @@ async def get_multi_tab_config() -> Dict[str, Any]:
             "stateless": True,
             "no_server_session_state": True,
             "max_concurrent_pollers": int(os.getenv("MAX_CONCURRENT_POLLERS", "10")),
-            "polling_cache_ttl_seconds": int(os.getenv("POLLING_CACHE_TTL_SECONDS", "5"))
+            "polling_cache_ttl_seconds": int(
+                os.getenv("POLLING_CACHE_TTL_SECONDS", "5")
+            ),
         },
         "client_recommendations": {
             "use_client_id_header": "Recommended for metrics (X-Client-ID)",
             "track_last_timestamp": "Track latest event timestamp client-side",
             "track_version": "Track investigation version for change detection",
-            "handle_429": "Implement exponential backoff on rate limit"
+            "handle_429": "Implement exponential backoff on rate limit",
         },
         "polling_strategies": {
             "IN_PROGRESS": {
                 "interval_ms": 1000,
-                "description": "Aggressive polling for active investigations"
+                "description": "Aggressive polling for active investigations",
             },
             "SETTINGS": {
                 "interval_ms": 5000,
-                "description": "Moderate polling during configuration"
+                "description": "Moderate polling during configuration",
             },
             "COMPLETED": {
                 "interval_ms": 30000,
-                "description": "Passive polling for completed investigations"
-            }
+                "description": "Passive polling for completed investigations",
+            },
         },
         "frontend_coordination": {
             "description": "Frontend handles tab coordination via BroadcastChannel API",
             "backend_role": "Provide stateless endpoints only",
             "no_sticky_sessions": True,
-            "load_balancer_safe": True
-        }
+            "load_balancer_safe": True,
+        },
     }
 
 
@@ -312,8 +319,8 @@ async def test_request_independence(
 
     T074: Demonstrates no server-side session state.
     """
-    import uuid
     import time
+    import uuid
 
     # Generate unique request ID
     request_id = str(uuid.uuid4())[:8]
@@ -327,5 +334,5 @@ async def test_request_independence(
         "user": current_user.username,
         "stateless": True,
         "message": "Each request is independent - no session state",
-        "multi_tab_safe": True
+        "multi_tab_safe": True,
     }

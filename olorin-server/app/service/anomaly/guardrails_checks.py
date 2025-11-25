@@ -4,9 +4,9 @@ Guardrails Check Functions
 This module provides individual guardrail check functions.
 """
 
-from typing import Dict
-from datetime import datetime, timedelta
 import random
+from datetime import datetime, timedelta
+from typing import Dict
 
 from app.config.anomaly_config import get_anomaly_config
 from app.service.logging import get_bridge_logger
@@ -25,7 +25,7 @@ def get_cohort_key(cohort: Dict[str, str], metric: str) -> str:
     Returns:
         Unique string key
     """
-    cohort_str = '_'.join(f"{k}:{v}" for k, v in sorted(cohort.items()))
+    cohort_str = "_".join(f"{k}:{v}" for k, v in sorted(cohort.items()))
     return f"{cohort_str}|{metric}"
 
 
@@ -34,7 +34,7 @@ def check_persistence_tracker(
     cohort: Dict[str, str],
     metric: str,
     score: float,
-    k_threshold: float
+    k_threshold: float,
 ) -> int:
     """
     Check and update persistence for anomaly.
@@ -50,7 +50,7 @@ def check_persistence_tracker(
         Current persistence count (number of consecutive windows)
     """
     key = get_cohort_key(cohort, metric)
-    
+
     if score > k_threshold:
         # Increment persistence
         persistence_tracker[key] += 1
@@ -62,10 +62,7 @@ def check_persistence_tracker(
 
 
 def check_hysteresis(
-    alert_states: Dict[str, bool],
-    cohort: Dict[str, str],
-    metric: str,
-    score: float
+    alert_states: Dict[str, bool], cohort: Dict[str, str], metric: str, score: float
 ) -> bool:
     """
     Check if anomaly should be raised based on hysteresis.
@@ -107,7 +104,7 @@ def check_cooldown(
     cooldown_tracker: Dict[str, datetime],
     cohort: Dict[str, str],
     metric: str,
-    current_time: datetime
+    current_time: datetime,
 ) -> bool:
     """
     Check if cooldown period has passed.
@@ -130,8 +127,7 @@ def check_cooldown(
 
     # Calculate cooldown duration (randomized between min and max)
     cooldown_minutes = random.randint(
-        config.cooldown_min_minutes,
-        config.cooldown_max_minutes
+        config.cooldown_min_minutes, config.cooldown_max_minutes
     )
     cooldown_duration = timedelta(minutes=cooldown_minutes)
 
@@ -144,4 +140,3 @@ def check_cooldown(
             f"minutes remaining"
         )
         return False
-

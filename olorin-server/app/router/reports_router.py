@@ -14,25 +14,28 @@ SYSTEM MANDATE Compliance:
 - Type-safe: All parameters and returns properly typed
 """
 
-from typing import Dict, Any, Optional
-from fastapi import APIRouter, Depends, Query, HTTPException, status
+from typing import Any, Dict, Optional
+
+from fastapi import APIRouter, Depends, HTTPException, Query, status
 from sqlalchemy.orm import Session
 
 from app.persistence.database import get_db
-from app.service.report_service import ReportService
 from app.schemas.report_schemas import (
-    ReportCreate,
-    ReportUpdate,
-    ReportResponse,
-    ReportListResponse,
-    InvestigationStatisticsResponse,
-    ReportPublishRequest,
-    ReportShareResponse,
-    ReportExportRequest,
     InvestigationReportGenerateRequest,
     InvestigationReportGenerateResponse,
+    InvestigationStatisticsResponse,
+    ReportCreate,
+    ReportExportRequest,
+    ReportListResponse,
+    ReportPublishRequest,
+    ReportResponse,
+    ReportShareResponse,
+    ReportUpdate,
 )
-from app.security.auth import User, require_read_or_dev as require_read, require_write_or_dev as require_write
+from app.security.auth import User
+from app.security.auth import require_read_or_dev as require_read
+from app.security.auth import require_write_or_dev as require_write
+from app.service.report_service import ReportService
 
 router = APIRouter(
     prefix="/api/v1/reports",
@@ -198,15 +201,13 @@ async def generate_investigation_report(
     service = get_report_service(db)
     try:
         return await service.generate_investigation_report(
-            investigation_id=data.investigation_id,
-            title=data.title
+            investigation_id=data.investigation_id, title=data.title
         )
     except ValueError as e:
         raise HTTPException(status_code=404, detail=str(e))
     except Exception as e:
         raise HTTPException(
-            status_code=500,
-            detail=f"Failed to generate report: {str(e)}"
+            status_code=500, detail=f"Failed to generate report: {str(e)}"
         )
 
 
@@ -217,9 +218,15 @@ async def generate_investigation_report(
     description="List all investigation reports with filtering and pagination",
 )
 async def list_investigation_reports(
-    investigation_id: Optional[str] = Query(None, description="Filter by investigation ID"),
-    risk_level: Optional[str] = Query(None, description="Filter by risk level: critical, high, medium, low"),
-    search: Optional[str] = Query(None, description="Search by investigation ID, entity ID, or title"),
+    investigation_id: Optional[str] = Query(
+        None, description="Filter by investigation ID"
+    ),
+    risk_level: Optional[str] = Query(
+        None, description="Filter by risk level: critical, high, medium, low"
+    ),
+    search: Optional[str] = Query(
+        None, description="Search by investigation ID, entity ID, or title"
+    ),
     page: int = Query(1, ge=1, description="Page number (1-indexed)"),
     limit: int = Query(20, ge=1, le=100, description="Items per page"),
     report_service: ReportService = Depends(get_report_service),
@@ -236,14 +243,11 @@ async def list_investigation_reports(
             risk_level=risk_level,
             search=search,
             page=page,
-            limit=limit
+            limit=limit,
         )
         return result
     except Exception as e:
-        raise HTTPException(
-            status_code=500,
-            detail=f"Failed to list reports: {str(e)}"
-        )
+        raise HTTPException(status_code=500, detail=f"Failed to list reports: {str(e)}")
 
 
 @router.get(
@@ -255,64 +259,77 @@ async def get_investigation_report_html(
     investigation_id: str,
     view_type: Optional[str] = Query(
         None,
-        description="View type: 'canonical' (default) or 'entity' (entity view path)"
+        description="View type: 'canonical' (default) or 'entity' (entity view path)",
     ),
     db: Session = Depends(get_db),
     current_user: User = Depends(require_read),
 ):
     """
     Serve the generated HTML report file using FileOrganizationService.
-    
+
     Supports both canonical and entity view paths:
     - canonical: Direct path to investigation folder (default)
     - entity: Entity-based view path (symlink or indexed view)
     """
     from pathlib import Path
-    from fastapi.responses import FileResponse
+
     from fastapi import HTTPException
+    from fastapi.responses import FileResponse
+
     from app.config.file_organization_config import FileOrganizationConfig
-    from app.service.investigation.file_organization_service import FileOrganizationService
+    from app.service.investigation.file_organization_service import (
+        FileOrganizationService,
+    )
     from app.service.logging import get_bridge_logger
-    
+
     logger = get_bridge_logger(__name__)
-    
+
     # Initialize FileOrganizationService
     file_org_config = FileOrganizationConfig()
     file_org_service = FileOrganizationService(file_org_config)
-    
+
     # Try to find investigation folder using InvestigationFolderManager (supports new structure)
     investigation_folder = None
     report_path = None
-    
+
     try:
         from app.service.logging.investigation_folder_manager import get_folder_manager
+
         folder_manager = get_folder_manager()
         investigation_folder = folder_manager.get_investigation_folder(investigation_id)
-        
+
         if investigation_folder and investigation_folder.exists():
             # Use canonical path (investigation folder)
-            report_path = investigation_folder / "comprehensive_investigation_report.html"
-            
+            report_path = (
+                investigation_folder / "comprehensive_investigation_report.html"
+            )
+
             # If entity view requested, try to resolve entity view path
             if view_type == "entity" and investigation_folder:
                 # Extract entity info from metadata if available
                 metadata_file = investigation_folder / "metadata.json"
                 if metadata_file.exists():
                     import json
+
                     try:
                         with open(metadata_file) as f:
                             metadata = json.load(f)
                             config = metadata.get("config", {})
                             entity_type = config.get("entity_type")
-                            entity_id = config.get("entity_id") or config.get("entity_value")
-                            
+                            entity_id = config.get("entity_id") or config.get(
+                                "entity_value"
+                            )
+
                             if entity_type and entity_id:
                                 # Resolve entity view path for report
                                 from datetime import datetime
+
                                 created_at = datetime.fromisoformat(
-                                    metadata.get("created_at", datetime.now().isoformat())
+                                    metadata.get(
+                                        "created_at", datetime.now().isoformat()
+                                    )
                                 )
-                                
+
                                 # Try to resolve entity view path
                                 # Note: Reports are stored in investigation folder, not artifacts
                                 # So entity view would be a symlink to the canonical report
@@ -323,8 +340,10 @@ async def get_investigation_report_html(
                                 # For now, return canonical path (entity view symlinks for reports
                                 # would be created during report generation if needed)
                     except Exception as e:
-                        logger.warning(f"Failed to extract entity info from metadata: {e}")
-            
+                        logger.warning(
+                            f"Failed to extract entity info from metadata: {e}"
+                        )
+
             if report_path and report_path.exists():
                 logger.info(
                     f"Serving investigation report: {report_path} "
@@ -333,17 +352,18 @@ async def get_investigation_report_html(
                 return FileResponse(
                     path=str(report_path),
                     media_type="text/html",
-                    filename=f"investigation_report_{investigation_id}.html"
+                    filename=f"investigation_report_{investigation_id}.html",
                 )
     except Exception as e:
         logger.warning(f"Failed to retrieve report using FileOrganizationService: {e}")
         # Fall through to legacy structure
-    
+
     # Fall back to legacy structure
     import os
+
     base_logs_dir = os.getenv("INVESTIGATION_LOGS_DIR", "investigation_logs")
     investigation_folder = Path(base_logs_dir) / investigation_id
-    
+
     # Also check if it's a folder with timestamp format
     if not investigation_folder.exists():
         base_path = Path(base_logs_dir)
@@ -353,19 +373,19 @@ async def get_investigation_report_html(
                 if folder.is_dir() and investigation_id in folder.name:
                     investigation_folder = folder
                     break
-    
+
     report_path = investigation_folder / "comprehensive_investigation_report.html"
 
     if not report_path.exists():
         raise HTTPException(
             status_code=404,
-            detail=f"Report not found for investigation '{investigation_id}'. Generate the report first."
+            detail=f"Report not found for investigation '{investigation_id}'. Generate the report first.",
         )
 
     return FileResponse(
         path=str(report_path),
         media_type="text/html",
-        filename=f"investigation_report_{investigation_id}.html"
+        filename=f"investigation_report_{investigation_id}.html",
     )
 
 
@@ -382,6 +402,7 @@ async def share_report(
 ) -> ReportShareResponse:
     """Generate shareable URL for report."""
     import os
+
     base_url = os.getenv("FRONTEND_URL", "http://localhost:3000")
     share_url = f"{base_url}/reports#rid={report_id}"
     return ReportShareResponse(share_url=share_url)
@@ -413,5 +434,4 @@ async def export_report(
     else:
         raise HTTPException(
             status_code=400, detail=f"Export format {data.format} not yet supported"
-    )
-
+        )

@@ -7,9 +7,9 @@ Handles extraction of raw data from investigation folder files.
 
 import json
 import logging
-from pathlib import Path
 from datetime import datetime
-from typing import Dict, List, Any, Optional
+from pathlib import Path
+from typing import Any, Dict, List, Optional
 
 from ..data_models import ExtractedData
 from ..utils import LogLineParser
@@ -35,7 +35,7 @@ class InvestigationDataExtractor:
             structured_activities=[],
             journey_tracking={},
             investigation_log=[],
-            files_info={}
+            files_info={},
         )
 
         # Extract metadata
@@ -53,9 +53,11 @@ class InvestigationDataExtractor:
         # Get file information
         self._extract_file_info(folder_path, data)
 
-        logger.info(f"Extracted data from {folder_path.name}: "
-                   f"{len(data.structured_activities)} activities, "
-                   f"{len(data.investigation_log)} log entries")
+        logger.info(
+            f"Extracted data from {folder_path.name}: "
+            f"{len(data.structured_activities)} activities, "
+            f"{len(data.investigation_log)} log entries"
+        )
 
         return data
 
@@ -64,7 +66,7 @@ class InvestigationDataExtractor:
         metadata_file = folder_path / "metadata.json"
         if metadata_file.exists():
             try:
-                with open(metadata_file, 'r', encoding='utf-8') as f:
+                with open(metadata_file, "r", encoding="utf-8") as f:
                     data.metadata = json.load(f)
             except Exception as e:
                 logger.error(f"Failed to load metadata: {e}")
@@ -74,7 +76,7 @@ class InvestigationDataExtractor:
         activities_file = folder_path / "structured_activities.jsonl"
         if activities_file.exists():
             try:
-                with open(activities_file, 'r', encoding='utf-8') as f:
+                with open(activities_file, "r", encoding="utf-8") as f:
                     for line_no, line in enumerate(f, 1):
                         line = line.strip()
                         if line:
@@ -82,7 +84,9 @@ class InvestigationDataExtractor:
                                 activity = json.loads(line)
                                 data.structured_activities.append(activity)
                             except json.JSONDecodeError as e:
-                                logger.warning(f"Invalid JSON on line {line_no} in {activities_file}: {e}")
+                                logger.warning(
+                                    f"Invalid JSON on line {line_no} in {activities_file}: {e}"
+                                )
             except Exception as e:
                 logger.error(f"Failed to load structured activities: {e}")
 
@@ -91,17 +95,19 @@ class InvestigationDataExtractor:
         journey_file = folder_path / "journey_tracking.json"
         if journey_file.exists():
             try:
-                with open(journey_file, 'r', encoding='utf-8') as f:
+                with open(journey_file, "r", encoding="utf-8") as f:
                     data.journey_tracking = json.load(f)
             except Exception as e:
                 logger.error(f"Failed to load journey tracking: {e}")
 
-    def _extract_investigation_log(self, folder_path: Path, data: ExtractedData) -> None:
+    def _extract_investigation_log(
+        self, folder_path: Path, data: ExtractedData
+    ) -> None:
         """Extract investigation log from text file."""
         log_file = folder_path / "investigation.log"
         if log_file.exists():
             try:
-                with open(log_file, 'r', encoding='utf-8') as f:
+                with open(log_file, "r", encoding="utf-8") as f:
                     for line in f:
                         line = line.strip()
                         if line:
@@ -113,17 +119,21 @@ class InvestigationDataExtractor:
 
     def _extract_file_info(self, folder_path: Path, data: ExtractedData) -> None:
         """Extract file information for all investigation files."""
-        file_names = ['metadata.json', 'structured_activities.jsonl',
-                     'journey_tracking.json', 'investigation.log']
+        file_names = [
+            "metadata.json",
+            "structured_activities.jsonl",
+            "journey_tracking.json",
+            "investigation.log",
+        ]
 
         for file_name in file_names:
             file_path = folder_path / file_name
             if file_path.exists():
                 stat = file_path.stat()
                 data.files_info[file_name] = {
-                    'size_bytes': stat.st_size,
-                    'modified': datetime.fromtimestamp(stat.st_mtime).isoformat(),
-                    'exists': True
+                    "size_bytes": stat.st_size,
+                    "modified": datetime.fromtimestamp(stat.st_mtime).isoformat(),
+                    "exists": True,
                 }
             else:
-                data.files_info[file_name] = {'exists': False}
+                data.files_info[file_name] = {"exists": False}

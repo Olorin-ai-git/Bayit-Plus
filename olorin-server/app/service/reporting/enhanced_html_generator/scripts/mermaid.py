@@ -32,13 +32,15 @@ class MermaidGenerator:
     def generate_flow_diagram(self, flow_data: list) -> str:
         """Generate a Mermaid flow diagram."""
         if not flow_data:
-            return "graph TD\\n    A[Investigation Started] --> B[No Phase Data Available]"
+            return (
+                "graph TD\\n    A[Investigation Started] --> B[No Phase Data Available]"
+            )
 
         diagram = "graph TD\\n    Start([Investigation Started])\\n"
         previous_node = "Start"
 
         for i, transition in enumerate(flow_data):
-            to_phase = transition.get('to_phase', f'Phase_{i}')
+            to_phase = transition.get("to_phase", f"Phase_{i}")
             node_id = f"Phase_{i}"
             diagram += f"    {previous_node} --> {node_id}[{to_phase}]\\n"
             previous_node = node_id

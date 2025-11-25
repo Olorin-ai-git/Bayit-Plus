@@ -14,10 +14,12 @@ OLORIN_FOOTER = """
     </footer>
 """
 
+
 # Header HTML with logo
 def get_olorin_header(title: str = "Report") -> str:
     """Generate header HTML with Olorin logo."""
     from datetime import datetime
+
     timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     return f"""
     <header class="report-header">

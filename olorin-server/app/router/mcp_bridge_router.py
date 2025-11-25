@@ -5,11 +5,12 @@ This allows the frontend to access MCP tools through familiar REST endpoints.
 
 import json
 import logging
-from app.service.logging import get_bridge_logger
 from typing import Any, Dict, List, Optional
 
 from fastapi import APIRouter, BackgroundTasks, HTTPException
 from pydantic import BaseModel, Field
+
+from app.service.logging import get_bridge_logger
 
 from ..service.agent.tools.tool_registry import (
     get_essential_tools,
@@ -321,7 +322,9 @@ async def get_tools_by_categories():
                 display_name=display_name,
                 description=tool.description,
                 category=tool_category,
-                tool_schema=tool.args_schema.model_json_schema() if tool.args_schema else {},
+                tool_schema=(
+                    tool.args_schema.model_json_schema() if tool.args_schema else {}
+                ),
             )
 
             # Categorize into Olorin vs MCP

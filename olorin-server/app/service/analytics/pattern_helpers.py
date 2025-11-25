@@ -4,9 +4,9 @@ Helper Functions for Pattern Detection.
 Provides extraction and calculation utilities for pattern-based risk adjustments.
 """
 
-from typing import Dict, Any, Optional, Tuple
-from datetime import datetime
 import math
+from datetime import datetime
+from typing import Any, Dict, Optional, Tuple
 
 EARTH_RADIUS_MILES = 3959.0
 
@@ -141,7 +141,10 @@ def calculate_distance(loc1: Dict[str, float], loc2: Dict[str, float]) -> float:
     dlat = lat2 - lat1
     dlon = lon2 - lon1
 
-    a = math.sin(dlat / 2)**2 + math.cos(lat1) * math.cos(lat2) * math.sin(dlon / 2)**2
+    a = (
+        math.sin(dlat / 2) ** 2
+        + math.cos(lat1) * math.cos(lat2) * math.sin(dlon / 2) ** 2
+    )
     c = 2 * math.atan2(math.sqrt(a), math.sqrt(1 - a))
 
     distance = EARTH_RADIUS_MILES * c

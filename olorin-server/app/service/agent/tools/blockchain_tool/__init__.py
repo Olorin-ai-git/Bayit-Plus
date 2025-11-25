@@ -1,17 +1,17 @@
 """Blockchain analysis tools for cryptocurrency investigation and compliance."""
 
 from .blockchain_analysis_suite import (
+    AddressInfo,
     BlockchainAnalysisSuite,
     BlockchainNetwork,
-    AddressInfo,
+    RiskAssessment,
     TransactionAnalysis,
-    RiskAssessment
 )
 
 __all__ = [
     "BlockchainAnalysisSuite",
-    "BlockchainNetwork", 
+    "BlockchainNetwork",
     "AddressInfo",
     "TransactionAnalysis",
-    "RiskAssessment"
+    "RiskAssessment",
 ]

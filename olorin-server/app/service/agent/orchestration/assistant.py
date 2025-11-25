@@ -8,18 +8,24 @@ including tool invocation and message processing.
 import asyncio
 from typing import Annotated, List
 
-from langchain_core.messages import SystemMessage, BaseMessage
+from langchain_core.messages import BaseMessage, SystemMessage
 from langchain_core.runnables.config import RunnableConfig
 from langgraph.graph.message import add_messages
 from typing_extensions import TypedDict
+
 from app.service.logging import get_bridge_logger
+
 
 # Define MessagesState since it's not available in langchain_core.messages
 class MessagesState(TypedDict):
     messages: Annotated[List[BaseMessage], add_messages]
 
+
 from app.service.agent.core import get_config_value, rehydrate_agent_context
-from app.service.agent.orchestration.llm_resilience import invoke_llm_with_resilience, LLMInvocationError
+from app.service.agent.orchestration.llm_resilience import (
+    LLMInvocationError,
+    invoke_llm_with_resilience,
+)
 
 logger = get_bridge_logger(__name__)
 
@@ -37,86 +43,99 @@ def _create_investigation_context_message(state: MessagesState) -> SystemMessage
     from app.service.config_loader import get_config_loader
 
     # Extract investigation context from state
-    entity_id = state.get('entity_id', 'UNKNOWN')
-    entity_type = state.get('entity_type', 'UNKNOWN')
-    investigation_id = state.get('investigation_id', 'UNKNOWN')
+    entity_id = state.get("entity_id", "UNKNOWN")
+    entity_type = state.get("entity_type", "UNKNOWN")
+    investigation_id = state.get("investigation_id", "UNKNOWN")
 
     # Get time range from state - CRITICAL FIX: Handle None values
-    time_range = state.get('time_range') or {}
+    time_range = state.get("time_range") or {}
     if not isinstance(time_range, dict):
         time_range = {}
-    start_time = time_range.get('start_time', 'UNKNOWN') if time_range else 'UNKNOWN'
-    end_time = time_range.get('end_time', 'UNKNOWN') if time_range else 'UNKNOWN'
+    start_time = time_range.get("start_time", "UNKNOWN") if time_range else "UNKNOWN"
+    end_time = time_range.get("end_time", "UNKNOWN") if time_range else "UNKNOWN"
 
     # Get transactions table name and query limit from configuration
     try:
         config_loader = get_config_loader()
         db_config = config_loader.load_database_provider_config()
-        database_provider = db_config.get('provider', 'snowflake')
+        database_provider = db_config.get("provider", "snowflake")
 
         # Use database provider's get_full_table_name() method
-        from app.service.agent.tools.database_tool.database_factory import get_database_provider
+        from app.service.agent.tools.database_tool.database_factory import (
+            get_database_provider,
+        )
+
         db_provider_instance = get_database_provider()
         table_reference = db_provider_instance.get_full_table_name()
-        
-        if database_provider == 'postgresql':
-            pg_config = db_config.get('postgresql', {})
-            max_transactions = pg_config.get('max_transactions_limit', 1000)
-        elif database_provider == 'snowflake':
-            sf_config = db_config.get('snowflake', {})
-            max_transactions = sf_config.get('max_transactions_limit', 1000)
+
+        if database_provider == "postgresql":
+            pg_config = db_config.get("postgresql", {})
+            max_transactions = pg_config.get("max_transactions_limit", 1000)
+        elif database_provider == "snowflake":
+            sf_config = db_config.get("snowflake", {})
+            max_transactions = sf_config.get("max_transactions_limit", 1000)
         else:
             max_transactions = 1000
     except Exception as e:
-        logger.warning(f"Failed to load table configuration: {e}, using database provider defaults")
+        logger.warning(
+            f"Failed to load table configuration: {e}, using database provider defaults"
+        )
         # Fallback: use database provider's get_full_table_name()
         try:
-            from app.service.agent.tools.database_tool.database_factory import get_database_provider
+            from app.service.agent.tools.database_tool.database_factory import (
+                get_database_provider,
+            )
+
             db_provider_instance = get_database_provider()
             table_reference = db_provider_instance.get_full_table_name()
-            database_provider = os.getenv('DATABASE_PROVIDER', 'snowflake').lower()
+            database_provider = os.getenv("DATABASE_PROVIDER", "snowflake").lower()
         except Exception as fallback_error:
             logger.error(f"Failed to get database provider: {fallback_error}")
             # Last resort: use environment variables directly
-            db_provider_name = os.getenv('DATABASE_PROVIDER', 'snowflake').lower()
-            if db_provider_name == 'snowflake':
-                database = os.getenv('SNOWFLAKE_DATABASE', 'DBT')
-                schema = os.getenv('SNOWFLAKE_SCHEMA', 'DBT_PROD')
-                table = os.getenv('SNOWFLAKE_TRANSACTIONS_TABLE', 'TXS')
+            db_provider_name = os.getenv("DATABASE_PROVIDER", "snowflake").lower()
+            if db_provider_name == "snowflake":
+                database = os.getenv("SNOWFLAKE_DATABASE", "DBT")
+                schema = os.getenv("SNOWFLAKE_SCHEMA", "DBT_PROD")
+                table = os.getenv("SNOWFLAKE_TRANSACTIONS_TABLE", "TXS")
                 table_reference = f"{database}.{schema}.{table}"
             else:
-                schema = os.getenv('POSTGRES_SCHEMA', 'public')
-                table = os.getenv('POSTGRES_TRANSACTIONS_TABLE', 'transactions_enriched')
+                schema = os.getenv("POSTGRES_SCHEMA", "public")
+                table = os.getenv(
+                    "POSTGRES_TRANSACTIONS_TABLE", "transactions_enriched"
+                )
                 table_reference = f"{schema}.{table}"
             database_provider = db_provider_name
         max_transactions = 1000
 
     # Map entity_type to database column name (case-sensitive based on provider)
     # This mapping must match investigation_nodes.py for consistency
-    if database_provider == 'snowflake':
+    if database_provider == "snowflake":
         # Snowflake: uppercase column names
         entity_column_map = {
-            'ip': 'IP',
-            'email': 'EMAIL',
-            'device': 'DEVICE_ID',
-            'device_id': 'DEVICE_ID',
-            'phone': 'PHONE_NUMBER',
-            'user_id': 'UNIQUE_USER_ID'
+            "ip": "IP",
+            "email": "EMAIL",
+            "device": "DEVICE_ID",
+            "device_id": "DEVICE_ID",
+            "phone": "PHONE_NUMBER",
+            "user_id": "UNIQUE_USER_ID",
         }
-        datetime_column = 'TX_DATETIME'
+        datetime_column = "TX_DATETIME"
     else:
         # PostgreSQL: lowercase column names
         entity_column_map = {
-            'ip': 'ip',
-            'email': 'email',
-            'device': 'device_id',
-            'device_id': 'device_id',
-            'phone': 'phone_number',
-            'user_id': 'unique_user_id'
+            "ip": "ip",
+            "email": "email",
+            "device": "device_id",
+            "device_id": "device_id",
+            "phone": "phone_number",
+            "user_id": "unique_user_id",
         }
-        datetime_column = 'tx_datetime'
-    
-    entity_column = entity_column_map.get(entity_type, entity_type.upper() if database_provider == 'snowflake' else entity_type)
+        datetime_column = "tx_datetime"
+
+    entity_column = entity_column_map.get(
+        entity_type,
+        entity_type.upper() if database_provider == "snowflake" else entity_type,
+    )
 
     # Create context-aware system message
     return SystemMessage(
@@ -189,15 +208,19 @@ async def assistant(state: MessagesState, config: RunnableConfig):
     """
     # Safely extract agent context and header
     agent_context = get_config_value(config, ["configurable", "agent_context"])
-    if agent_context and hasattr(agent_context, 'get_header'):
+    if agent_context and hasattr(agent_context, "get_header"):
         olorin_header = agent_context.get_header()
     else:
         # For hybrid graphs or when agent_context is not available, use empty header
-        logger.debug("No agent_context available or missing get_header method, using empty header")
+        logger.debug(
+            "No agent_context available or missing get_header method, using empty header"
+        )
         olorin_header = {}
 
     # Reduce verbosity - don't log full state with large result sets
-    logger.debug(f"LangGraph State: investigation_id={state.get('investigation_id', 'N/A')}, messages={len(state.get('messages', []))}, phase={state.get('current_phase', 'N/A')}")
+    logger.debug(
+        f"LangGraph State: investigation_id={state.get('investigation_id', 'N/A')}, messages={len(state.get('messages', []))}, phase={state.get('current_phase', 'N/A')}"
+    )
 
     # Extract investigation_id for progress reporting (reuse agent_context from above)
     investigation_id = None
@@ -224,26 +247,30 @@ async def assistant(state: MessagesState, config: RunnableConfig):
 
         # Return error message to preserve graph flow
         from langchain_core.messages import AIMessage
+
         error_response = AIMessage(
             content=f"Investigation analysis skipped: {validation_error}"
         )
 
-        return {
-            "messages": [error_response]
-        }
+        return {"messages": [error_response]}
 
     # Check if we need to force tool usage (retry scenario)
     force_tool_usage = state.get("force_tool_usage", False)
     retry_count = state.get("fraud_investigation_retry_count", 0)
-    
+
     # Check if composio tools should be forced
-    entity_id = state.get('entity_id', '')
-    entity_type = state.get('entity_type', '')
-    tools_used = state.get('tools_used', [])
-    orchestrator_loops = state.get('orchestrator_loops', 0)
+    entity_id = state.get("entity_id", "")
+    entity_type = state.get("entity_type", "")
+    tools_used = state.get("tools_used", [])
+    orchestrator_loops = state.get("orchestrator_loops", 0)
     # Force composio tools after 1+ loops if not already used and we have an entity
-    force_composio = orchestrator_loops >= 1 and "composio_search" not in tools_used and entity_id and len(tools_used) > 0
-    
+    force_composio = (
+        orchestrator_loops >= 1
+        and "composio_search" not in tools_used
+        and entity_id
+        and len(tools_used) > 0
+    )
+
     # Check if there's already a system message to avoid duplicates
     # This is important for hybrid graphs that may have already processed system messages
     has_system_message = any(isinstance(msg, SystemMessage) for msg in messages)
@@ -253,8 +280,8 @@ async def assistant(state: MessagesState, config: RunnableConfig):
     # instead of making generic schema discovery queries
     if force_tool_usage and retry_count > 0:
         # RETRY SCENARIO: LLM failed to call tools - use enhanced forceful message
-        entity_id = state.get('entity_id', 'UNKNOWN')
-        entity_type = state.get('entity_type', 'UNKNOWN')
+        entity_id = state.get("entity_id", "UNKNOWN")
+        entity_type = state.get("entity_type", "UNKNOWN")
 
         enhanced_system_message = SystemMessage(
             content=f"""
@@ -279,8 +306,12 @@ async def assistant(state: MessagesState, config: RunnableConfig):
             CALL THE DATABASE_QUERY TOOL NOW.
             """
         )
-        final_messages = [enhanced_system_message] + [m for m in messages if not isinstance(m, SystemMessage)]
-        logger.warning(f"⚠️ Enhanced retry message added (attempt {retry_count + 1}) for {entity_type}={entity_id}")
+        final_messages = [enhanced_system_message] + [
+            m for m in messages if not isinstance(m, SystemMessage)
+        ]
+        logger.warning(
+            f"⚠️ Enhanced retry message added (attempt {retry_count + 1}) for {entity_type}={entity_id}"
+        )
     elif force_composio:
         # FORCE COMPOSIO TOOLS: After 2+ orchestrator loops, force web intelligence gathering
         composio_system_message = SystemMessage(
@@ -305,17 +336,27 @@ async def assistant(state: MessagesState, config: RunnableConfig):
             CALL COMPOSIO_SEARCH TOOL NOW.
             """
         )
-        final_messages = [composio_system_message] + [m for m in messages if not isinstance(m, SystemMessage)]
-        logger.warning(f"⚠️ MANDATORY WEB INTELLIGENCE: Forcing composio_search for {entity_type}={entity_id} (loop {orchestrator_loops})")
+        final_messages = [composio_system_message] + [
+            m for m in messages if not isinstance(m, SystemMessage)
+        ]
+        logger.warning(
+            f"⚠️ MANDATORY WEB INTELLIGENCE: Forcing composio_search for {entity_type}={entity_id} (loop {orchestrator_loops})"
+        )
     else:
         # NORMAL SCENARIO: Use investigation-context-aware message with exact query guidance
         context_message = _create_investigation_context_message(state)
-        logger.info(f"✅ Created investigation-context-aware system message for {state.get('entity_type')}={state.get('entity_id')}")
+        logger.info(
+            f"✅ Created investigation-context-aware system message for {state.get('entity_type')}={state.get('entity_id')}"
+        )
 
         if has_system_message:
             # Replace existing system message with context-aware one
-            final_messages = [context_message] + [m for m in messages if not isinstance(m, SystemMessage)]
-            logger.debug("Replaced existing system message with investigation-context-aware message")
+            final_messages = [context_message] + [
+                m for m in messages if not isinstance(m, SystemMessage)
+            ]
+            logger.debug(
+                "Replaced existing system message with investigation-context-aware message"
+            )
         else:
             # Add context-aware system message (no existing message)
             final_messages = [context_message] + messages
@@ -328,25 +369,22 @@ async def assistant(state: MessagesState, config: RunnableConfig):
             messages=final_messages,
             config=config,
             extra_headers=olorin_header,
-            investigation_id=investigation_id
+            investigation_id=investigation_id,
         )
 
-        return {
-            "messages": [response]
-        }
+        return {"messages": [response]}
     except LLMInvocationError as e:
         # LLM invocation failed after all retries
         logger.error(f"❌ LLM invocation failed permanently: {str(e)}")
 
         # Return error message to preserve graph flow
         from langchain_core.messages import AIMessage
+
         error_response = AIMessage(
             content=f"Investigation analysis unavailable due to LLM error: {str(e)}. Please try again."
         )
 
-        return {
-            "messages": [error_response]
-        }
+        return {"messages": [error_response]}
 
 
 def _validate_llm_payload(messages: list, investigation_id: str = None) -> str:
@@ -374,7 +412,7 @@ def _validate_llm_payload(messages: list, investigation_id: str = None) -> str:
     non_empty_messages = []
     for i, msg in enumerate(messages):
         # Check if message has content attribute
-        if not hasattr(msg, 'content'):
+        if not hasattr(msg, "content"):
             logger.warning(f"{log_prefix} Message {i} has no content attribute")
             continue
 
@@ -384,23 +422,27 @@ def _validate_llm_payload(messages: list, investigation_id: str = None) -> str:
             non_empty_messages.append(msg)
 
     if not non_empty_messages:
-        logger.warning(f"{log_prefix} All {len(messages)} messages are empty - no content to analyze")
+        logger.warning(
+            f"{log_prefix} All {len(messages)} messages are empty - no content to analyze"
+        )
         return f"All {len(messages)} messages are empty - no investigation content to analyze"
 
     # Check if messages are malformed (missing required attributes)
     malformed_count = 0
     for i, msg in enumerate(messages):
         # Check for required attributes based on message type
-        if not hasattr(msg, 'type'):
+        if not hasattr(msg, "type"):
             logger.warning(f"{log_prefix} Message {i} missing 'type' attribute")
             malformed_count += 1
-        elif not hasattr(msg, 'content'):
+        elif not hasattr(msg, "content"):
             logger.warning(f"{log_prefix} Message {i} missing 'content' attribute")
             malformed_count += 1
 
     if malformed_count == len(messages):
         logger.warning(f"{log_prefix} All {len(messages)} messages are malformed")
-        return f"All {len(messages)} messages are malformed - cannot process investigation"
+        return (
+            f"All {len(messages)} messages are malformed - cannot process investigation"
+        )
 
     # Check for excessive empty content (more than 80% empty)
     empty_ratio = (len(messages) - len(non_empty_messages)) / len(messages)
@@ -432,6 +474,7 @@ def _get_llm_with_tools():
 
     # Get tools from the graph configuration - these are already configured
     from app.service.agent.orchestration.graph_builder import _get_configured_tools
+
     tools = _get_configured_tools()
 
     # Bind tools to LLM for graph-based execution
@@ -442,5 +485,6 @@ def _get_llm_with_tools():
         logger.error(f"Failed to bind tools to LLM: {str(e)}")
         # Filter to working tools
         from app.service.agent.orchestration.graph_builder import _filter_working_tools
+
         working_tools = _filter_working_tools(tools)
         return llm.bind_tools(working_tools) if working_tools else llm

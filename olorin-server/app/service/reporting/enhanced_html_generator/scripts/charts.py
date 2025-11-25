@@ -6,8 +6,9 @@ Provides Chart.js chart generation and configuration.
 """
 
 import json
-from typing import Dict, List, Any
-from ..data_models import InvestigationSummary, ComponentData, ReportConfig
+from typing import Any, Dict, List
+
+from ..data_models import ComponentData, InvestigationSummary, ReportConfig
 from ..utils import DateTimeFormatter
 
 
@@ -26,21 +27,30 @@ class ChartJSGenerator:
         Chart.defaults.borderColor = '#dee2e6';
         """
 
-    def generate_all_charts(self, summary: InvestigationSummary, component_data: ComponentData) -> str:
+    def generate_all_charts(
+        self, summary: InvestigationSummary, component_data: ComponentData
+    ) -> str:
         """Generate all Chart.js charts."""
         charts = [
             self._generate_llm_timeline_chart(component_data.llm_interactions),
             self._generate_tools_usage_chart(component_data.tools_analysis),
             self._generate_risk_progression_chart(component_data.risk_analysis),
-            self._generate_risk_categories_chart(component_data.risk_analysis)
+            self._generate_risk_categories_chart(component_data.risk_analysis),
         ]
 
         return "\n".join(charts)
 
-    def _generate_llm_timeline_chart(self, llm_interactions: List[Dict[str, Any]]) -> str:
+    def _generate_llm_timeline_chart(
+        self, llm_interactions: List[Dict[str, Any]]
+    ) -> str:
         """Generate LLM interactions timeline chart."""
-        timestamps = [DateTimeFormatter.format_timestamp(i.get('timestamp', '')) for i in llm_interactions]
-        tokens = [i.get('tokens_used', {}).get('total_tokens', 0) for i in llm_interactions]
+        timestamps = [
+            DateTimeFormatter.format_timestamp(i.get("timestamp", ""))
+            for i in llm_interactions
+        ]
+        tokens = [
+            i.get("tokens_used", {}).get("total_tokens", 0) for i in llm_interactions
+        ]
 
         return f"""
         // LLM Interactions Timeline Chart
@@ -76,7 +86,7 @@ class ChartJSGenerator:
     def _generate_tools_usage_chart(self, tools_analysis: Dict[str, Any]) -> str:
         """Generate tools usage chart."""
         tool_names = list(tools_analysis.keys())[:10]  # Limit to top 10
-        tool_counts = [tools_analysis[name].get('count', 0) for name in tool_names]
+        tool_counts = [tools_analysis[name].get("count", 0) for name in tool_names]
 
         return f"""
         // Tools Usage Chart
@@ -108,7 +118,7 @@ class ChartJSGenerator:
 
     def _generate_risk_progression_chart(self, risk_analysis: Dict[str, Any]) -> str:
         """Generate risk progression chart."""
-        risk_scores = risk_analysis.get('risk_scores', [])
+        risk_scores = risk_analysis.get("risk_scores", [])
 
         return f"""
         // Risk Progression Chart
@@ -149,7 +159,7 @@ class ChartJSGenerator:
 
     def _generate_risk_categories_chart(self, risk_analysis: Dict[str, Any]) -> str:
         """Generate risk categories radar chart."""
-        risk_categories = risk_analysis.get('risk_categories', {})
+        risk_categories = risk_analysis.get("risk_categories", {})
         categories = list(risk_categories.keys())[:8]  # Limit to 8 categories
         values = [risk_categories[cat] for cat in categories]
 

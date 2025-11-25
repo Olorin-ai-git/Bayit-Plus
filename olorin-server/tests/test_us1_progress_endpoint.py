@@ -13,15 +13,16 @@ SYSTEM MANDATE Compliance:
 """
 
 import json
-import pytest
 from datetime import datetime, timezone
-from unittest.mock import patch, MagicMock
+from unittest.mock import MagicMock, patch
+
+import pytest
+from fastapi.testclient import TestClient
 
 from app.models.investigation_state import InvestigationState
 from app.models.progress_models import InvestigationProgress, RiskMetrics
-from app.service.investigation_progress_service import InvestigationProgressService
 from app.router.investigations_router import get_investigation_progress_endpoint
-from fastapi.testclient import TestClient
+from app.service.investigation_progress_service import InvestigationProgressService
 
 
 @pytest.fixture
@@ -40,15 +41,12 @@ def sample_progress_json():
                 "started_at": "2025-11-06T10:00:01Z",
                 "completed_at": "2025-11-06T10:00:05Z",
                 "duration_ms": 4000,
-                "input_parameters": {
-                    "entity_id": "user123",
-                    "entity_type": "user_id"
-                },
+                "input_parameters": {"entity_id": "user123", "entity_type": "user_id"},
                 "output_result": {
                     "findings": ["Finding 1", "Finding 2"],
                     "risk_score": 0.6,
-                    "risk": 60
-                }
+                    "risk": 60,
+                },
             },
             {
                 "id": "exec-002",
@@ -57,27 +55,17 @@ def sample_progress_json():
                 "status": "running",
                 "timestamp": "2025-11-06T10:00:06Z",
                 "started_at": "2025-11-06T10:00:07Z",
-                "input_parameters": {
-                    "entity_id": "user123",
-                    "entity_type": "user_id"
-                },
-                "output_result": None
-            }
-        ]
+                "input_parameters": {"entity_id": "user123", "entity_type": "user_id"},
+                "output_result": None,
+            },
+        ],
     }
 
 
 @pytest.fixture
 def sample_settings_json():
     """Sample settings_json data from database"""
-    return {
-        "entities": [
-            {
-                "entity_type": "user_id",
-                "entity_value": "user123"
-            }
-        ]
-    }
+    return {"entities": [{"entity_type": "user_id", "entity_value": "user123"}]}
 
 
 @pytest.fixture
@@ -102,31 +90,61 @@ class TestProgressModelValidation:
     def test_progress_model_has_all_required_fields(self):
         """T040: Verify all required fields present in model"""
         progress_fields = {
-            "id", "investigation_id", "status", "lifecycle_stage",
-            "completion_percent", "created_at", "started_at", "completed_at",
-            "last_updated_at", "tool_executions", "total_tools", "completed_tools",
-            "running_tools", "queued_tools", "failed_tools", "skipped_tools",
-            "agent_statuses", "risk_metrics", "phases", "current_phase",
-            "entities", "relationships", "tools_per_second", "peak_tools_per_second",
-            "ice_connected", "errors"
+            "id",
+            "investigation_id",
+            "status",
+            "lifecycle_stage",
+            "completion_percent",
+            "created_at",
+            "started_at",
+            "completed_at",
+            "last_updated_at",
+            "tool_executions",
+            "total_tools",
+            "completed_tools",
+            "running_tools",
+            "queued_tools",
+            "failed_tools",
+            "skipped_tools",
+            "agent_statuses",
+            "risk_metrics",
+            "phases",
+            "current_phase",
+            "entities",
+            "relationships",
+            "tools_per_second",
+            "peak_tools_per_second",
+            "ice_connected",
+            "errors",
         }
-        
+
         # Check that model has schema
         assert hasattr(InvestigationProgress, "model_fields")
         model_fields = set(InvestigationProgress.model_fields.keys())
-        assert progress_fields.issubset(model_fields), \
-            f"Missing fields: {progress_fields - model_fields}"
+        assert progress_fields.issubset(
+            model_fields
+        ), f"Missing fields: {progress_fields - model_fields}"
 
     def test_tool_execution_model_structure(self):
         """T041: Verify ToolExecution model has all fields"""
         from app.models.progress_models import ToolExecution
-        
+
         required_fields = {
-            "id", "tool_name", "agent_type", "status", "queued_at",
-            "started_at", "completed_at", "execution_time_ms", "input",
-            "result", "error", "retry_count", "max_retries"
+            "id",
+            "tool_name",
+            "agent_type",
+            "status",
+            "queued_at",
+            "started_at",
+            "completed_at",
+            "execution_time_ms",
+            "input",
+            "result",
+            "error",
+            "retry_count",
+            "max_retries",
         }
-        
+
         model_fields = set(ToolExecution.model_fields.keys())
         assert required_fields.issubset(model_fields)
 
@@ -139,28 +157,42 @@ class TestProgressModelValidation:
     def test_completion_percent_validation(self):
         """T043: Validate completion_percent enforced between 0-100"""
         # Valid values
-        assert InvestigationProgress.model_validate({
-            "id": "p1",
-            "investigation_id": "inv1",
-            "status": "running",
-            "lifecycle_stage": "in_progress",
-            "completion_percent": 50,
-            "created_at": datetime.now(timezone.utc),
-            "last_updated_at": datetime.now(timezone.utc),
-            "risk_metrics": {"overall": 0.5, "by_agent": {}, "confidence": 0.8, "last_calculated": datetime.now(timezone.utc)}
-        })
+        assert InvestigationProgress.model_validate(
+            {
+                "id": "p1",
+                "investigation_id": "inv1",
+                "status": "running",
+                "lifecycle_stage": "in_progress",
+                "completion_percent": 50,
+                "created_at": datetime.now(timezone.utc),
+                "last_updated_at": datetime.now(timezone.utc),
+                "risk_metrics": {
+                    "overall": 0.5,
+                    "by_agent": {},
+                    "confidence": 0.8,
+                    "last_calculated": datetime.now(timezone.utc),
+                },
+            }
+        )
 
         # Invalid values should be clamped
-        progress = InvestigationProgress.model_validate({
-            "id": "p1",
-            "investigation_id": "inv1",
-            "status": "running",
-            "lifecycle_stage": "in_progress",
-            "completion_percent": 150,  # Should be clamped to 100
-            "created_at": datetime.now(timezone.utc),
-            "last_updated_at": datetime.now(timezone.utc),
-            "risk_metrics": {"overall": 0.5, "by_agent": {}, "confidence": 0.8, "last_calculated": datetime.now(timezone.utc)}
-        })
+        progress = InvestigationProgress.model_validate(
+            {
+                "id": "p1",
+                "investigation_id": "inv1",
+                "status": "running",
+                "lifecycle_stage": "in_progress",
+                "completion_percent": 150,  # Should be clamped to 100
+                "created_at": datetime.now(timezone.utc),
+                "last_updated_at": datetime.now(timezone.utc),
+                "risk_metrics": {
+                    "overall": 0.5,
+                    "by_agent": {},
+                    "confidence": 0.8,
+                    "last_calculated": datetime.now(timezone.utc),
+                },
+            }
+        )
         assert progress.completion_percent == 100
 
 
@@ -172,7 +204,7 @@ class TestProgressJsonParsing:
         progress = InvestigationProgressService.build_progress_from_state(
             investigation_state_with_progress
         )
-        
+
         assert progress.investigation_id == "inv-001"
         assert progress.status == "running"
         assert progress.completion_percent == 45
@@ -182,45 +214,45 @@ class TestProgressJsonParsing:
     def test_corrupted_progress_json_handling(self, investigation_state_with_progress):
         """T044: Handle corrupted progress_json gracefully"""
         investigation_state_with_progress.progress_json = "{invalid json"
-        
+
         # Should not raise, should use empty progress_json_data
         progress = InvestigationProgressService.build_progress_from_state(
             investigation_state_with_progress
         )
-        
+
         assert progress.investigation_id == "inv-001"
         assert progress.tool_executions == []  # Empty because JSON was corrupted
 
     def test_missing_progress_json(self, investigation_state_with_progress):
         """T044: Handle missing progress_json"""
         investigation_state_with_progress.progress_json = None
-        
+
         progress = InvestigationProgressService.build_progress_from_state(
             investigation_state_with_progress
         )
-        
+
         assert progress.tool_executions == []
         assert progress.completion_percent == 0
 
     def test_corrupted_settings_json_handling(self, investigation_state_with_progress):
         """T045: Handle corrupted settings_json gracefully"""
         investigation_state_with_progress.settings_json = "{invalid json"
-        
+
         # Should not raise, should extract entities as empty
         progress = InvestigationProgressService.build_progress_from_state(
             investigation_state_with_progress
         )
-        
+
         assert progress.entities == []
 
     def test_missing_settings_json(self, investigation_state_with_progress):
         """T045: Handle missing settings_json"""
         investigation_state_with_progress.settings_json = None
-        
+
         progress = InvestigationProgressService.build_progress_from_state(
             investigation_state_with_progress
         )
-        
+
         assert progress.entities == []
 
 
@@ -230,14 +262,14 @@ class TestETagGeneration:
     def test_etag_generation_format(self, investigation_state_with_progress):
         """T049: ETag generated in correct format"""
         import hashlib
-        
+
         progress = InvestigationProgressService.build_progress_from_state(
             investigation_state_with_progress
         )
-        
+
         progress_json = progress.model_dump_json()
         expected_etag = f'"{hashlib.md5((progress_json + str(investigation_state_with_progress.version)).encode()).hexdigest()}"'
-        
+
         # Verify format is quoted hex string
         assert expected_etag.startswith('"')
         assert expected_etag.endswith('"')
@@ -246,33 +278,33 @@ class TestETagGeneration:
     def test_etag_consistency(self, investigation_state_with_progress):
         """T050: Same state produces same ETag"""
         import hashlib
-        
+
         progress1 = InvestigationProgressService.build_progress_from_state(
             investigation_state_with_progress
         )
         progress2 = InvestigationProgressService.build_progress_from_state(
             investigation_state_with_progress
         )
-        
+
         json1 = progress1.model_dump_json()
         json2 = progress2.model_dump_json()
-        
+
         etag1 = f'"{hashlib.md5((json1 + str(investigation_state_with_progress.version)).encode()).hexdigest()}"'
         etag2 = f'"{hashlib.md5((json2 + str(investigation_state_with_progress.version)).encode()).hexdigest()}"'
-        
+
         assert etag1 == etag2
 
     def test_etag_changes_on_state_update(self, investigation_state_with_progress):
         """T050: Different state produces different ETag"""
         import hashlib
-        
+
         # Get first ETag
         progress1 = InvestigationProgressService.build_progress_from_state(
             investigation_state_with_progress
         )
         json1 = progress1.model_dump_json()
         etag1 = f'"{hashlib.md5((json1 + "1").encode()).hexdigest()}"'
-        
+
         # Change version and get new ETag
         investigation_state_with_progress.version = 2
         progress2 = InvestigationProgressService.build_progress_from_state(
@@ -280,21 +312,23 @@ class TestETagGeneration:
         )
         json2 = progress2.model_dump_json()
         etag2 = f'"{hashlib.md5((json2 + "2").encode()).hexdigest()}"'
-        
+
         assert etag1 != etag2
 
 
 class TestToolExecutionTracking:
     """Tests for tool execution tracking in progress (T066-T068)"""
 
-    def test_tool_executions_populated_from_progress_json(self, investigation_state_with_progress):
+    def test_tool_executions_populated_from_progress_json(
+        self, investigation_state_with_progress
+    ):
         """Verify tool executions are populated from database"""
         progress = InvestigationProgressService.build_progress_from_state(
             investigation_state_with_progress
         )
-        
+
         assert len(progress.tool_executions) == 2
-        
+
         # Check first tool (completed)
         tool1 = progress.tool_executions[0]
         assert tool1.id == "exec-001"
@@ -316,7 +350,7 @@ class TestToolExecutionTracking:
         progress = InvestigationProgressService.build_progress_from_state(
             investigation_state_with_progress
         )
-        
+
         assert progress.total_tools == 2
         assert progress.completed_tools == 1
         assert progress.running_tools == 1
@@ -342,4 +376,3 @@ class TestProgressEndpointIntegration:
 
 if __name__ == "__main__":
     pytest.main([__file__, "-v"])
-

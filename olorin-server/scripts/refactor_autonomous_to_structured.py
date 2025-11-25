@@ -26,7 +26,7 @@ EXCLUDE_DIRS = {
     ".tox",
     "dist",
     "build",
-    "*.egg-info"
+    "*.egg-info",
 }
 
 # File extensions to process for content replacement
@@ -44,6 +44,7 @@ def case_preserving_replace(text: str, old_word: str, new_word: str) -> str:
     Replace old_word with new_word while preserving case patterns.
     Handles: lowercase, UPPERCASE, Titlecase, and mixed contexts.
     """
+
     def replace_match(match):
         original = match.group(0)
         if original.isupper():
@@ -71,7 +72,7 @@ def find_files_to_rename() -> List[Path]:
             continue
 
         for filename in files:
-            if 'structured' in filename.lower():
+            if "structured" in filename.lower():
                 file_path = root_path / filename
                 files_to_rename.append(file_path)
 
@@ -97,9 +98,9 @@ def find_files_with_content() -> List[Path]:
                 continue
 
             try:
-                with open(file_path, 'r', encoding='utf-8') as f:
+                with open(file_path, "r", encoding="utf-8") as f:
                     content = f.read()
-                    if re.search(r'\bstructured\b', content, re.IGNORECASE):
+                    if re.search(r"\bstructured\b", content, re.IGNORECASE):
                         files_with_content.append(file_path)
             except (UnicodeDecodeError, PermissionError):
                 # Skip binary files or files we can't read
@@ -115,7 +116,7 @@ def rename_files(files: List[Path], dry_run: bool = False) -> List[Tuple[Path, P
     for old_path in files:
         # Create new filename
         old_name = old_path.name
-        new_name = case_preserving_replace(old_name, 'structured', 'structured')
+        new_name = case_preserving_replace(old_name, "structured", "structured")
         new_path = old_path.parent / new_name
 
         if dry_run:
@@ -139,18 +140,20 @@ def update_file_contents(files: List[Path], dry_run: bool = False) -> int:
 
     for file_path in files:
         try:
-            with open(file_path, 'r', encoding='utf-8') as f:
+            with open(file_path, "r", encoding="utf-8") as f:
                 original_content = f.read()
 
             # Perform case-preserving replacement
-            new_content = case_preserving_replace(original_content, 'structured', 'structured')
+            new_content = case_preserving_replace(
+                original_content, "structured", "structured"
+            )
 
             if original_content != new_content:
                 if dry_run:
                     print(f"[DRY RUN] Would update: {file_path}")
                 else:
                     print(f"Updating: {file_path}")
-                    with open(file_path, 'w', encoding='utf-8') as f:
+                    with open(file_path, "w", encoding="utf-8") as f:
                         f.write(new_content)
                 updated_count += 1
 
@@ -165,7 +168,7 @@ def main():
     import sys
 
     # Check for --execute flag
-    execute_mode = '--execute' in sys.argv
+    execute_mode = "--execute" in sys.argv
 
     print("=" * 80)
     print("REFACTORING: structured → structured")
@@ -248,7 +251,9 @@ def main():
     print("Next steps:")
     print("  1. Review changes with: git diff")
     print("  2. Run tests: poetry run pytest")
-    print("  3. Commit changes: git add . && git commit -m 'refactor: rename structured to structured'")
+    print(
+        "  3. Commit changes: git add . && git commit -m 'refactor: rename structured to structured'"
+    )
 
 
 if __name__ == "__main__":

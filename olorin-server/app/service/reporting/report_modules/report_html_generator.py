@@ -4,29 +4,40 @@ Report HTML Generation Module
 Extracted HTML generation methods from comprehensive_investigation_report.py
 """
 
-from typing import Dict, Any
-from app.service.reporting.olorin_logo import get_olorin_header, OLORIN_FOOTER
+from typing import Any, Dict
+
+from app.service.reporting.olorin_logo import OLORIN_FOOTER, get_olorin_header
 
 
 class ReportHTMLGenerator:
     """Handles HTML report generation"""
-    
+
     def __init__(self, logger):
         self.logger = logger
-    
+
     def generate_html_report(self, data: Dict[str, Any], title: str) -> str:
         """Generate comprehensive HTML report."""
         summary = data["summary"]
         risk_analyzer_info = data.get("risk_analyzer_info", {})
-        
+
         # Determine risk level and color
-        final_risk_score = summary.final_risk_score if summary.final_risk_score is not None else 0.0
-        risk_level = "HIGH" if final_risk_score > 0.7 else "MEDIUM" if final_risk_score > 0.4 else "LOW"
-        risk_color = "#dc3545" if risk_level == "HIGH" else "#fd7e14" if risk_level == "MEDIUM" else "#28a745"
-        
+        final_risk_score = (
+            summary.final_risk_score if summary.final_risk_score is not None else 0.0
+        )
+        risk_level = (
+            "HIGH"
+            if final_risk_score > 0.7
+            else "MEDIUM" if final_risk_score > 0.4 else "LOW"
+        )
+        risk_color = (
+            "#dc3545"
+            if risk_level == "HIGH"
+            else "#fd7e14" if risk_level == "MEDIUM" else "#28a745"
+        )
+
         # Generate header with logo
         header_html = get_olorin_header(title)
-        
+
         html_content = f"""
 <!DOCTYPE html>
 <html lang="en">
@@ -187,49 +198,48 @@ class ReportHTMLGenerator:
 </html>
 """
         return html_content
-    
+
     def _generate_agent_results_section(self, data: Dict[str, Any]) -> str:
         """Generate agent results section HTML"""
         agents_data = data.get("agents", {})
         agent_results = agents_data.get("agent_results", {})
-        
+
         if not agent_results:
             return ""
-        
+
         html = '<div class="section"><div class="section-header"><h2>Agent Results</h2></div><div class="section-content"><table class="data-table"><thead><tr><th>Agent</th><th>Status</th><th>Risk Score</th></tr></thead><tbody>'
-        
+
         for agent_name, result in agent_results.items():
             status = result.get("status", "unknown")
             risk_score = result.get("risk_score", 0.0)
-            html += f'<tr><td>{agent_name}</td><td>{status}</td><td>{risk_score:.2f}</td></tr>'
-        
-        html += '</tbody></table></div></div>'
+            html += f"<tr><td>{agent_name}</td><td>{status}</td><td>{risk_score:.2f}</td></tr>"
+
+        html += "</tbody></table></div></div>"
         return html
-    
+
     def _generate_performance_section(self, data: Dict[str, Any]) -> str:
         """Generate performance section HTML"""
         performance = data.get("performance", {})
-        
+
         if not performance:
             return ""
-        
+
         total_duration = performance.get("total_duration", 0.0)
-        
+
         html = f'<div class="section"><div class="section-header"><h2>Performance Metrics</h2></div><div class="section-content"><p>Total Duration: {total_duration:.2f}s</p></div></div>'
         return html
-    
+
     def _generate_findings_section(self, data: Dict[str, Any]) -> str:
         """Generate findings section HTML"""
         summary = data.get("summary")
-        
+
         if not summary or not summary.critical_findings:
             return ""
-        
-        html = '<div class="section"><div class="section-header"><h2>Critical Findings</h2></div><div class="section-content"><ul>'
-        
-        for finding in summary.critical_findings[:10]:
-            html += f'<li>{finding}</li>'
-        
-        html += '</ul></div></div>'
-        return html
 
+        html = '<div class="section"><div class="section-header"><h2>Critical Findings</h2></div><div class="section-content"><ul>'
+
+        for finding in summary.critical_findings[:10]:
+            html += f"<li>{finding}</li>"
+
+        html += "</ul></div></div>"
+        return html

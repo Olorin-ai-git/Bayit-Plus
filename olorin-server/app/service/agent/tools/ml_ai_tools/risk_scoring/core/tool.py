@@ -4,20 +4,25 @@ Risk Scoring Tool
 Main orchestrator for the modular risk scoring system.
 """
 
-from typing import Any, Dict, Optional, List
-from langchain.tools import BaseTool
 import json
+from typing import Any, Dict, List, Optional
+
+from langchain.tools import BaseTool
+
 from app.service.logging import get_bridge_logger
 
-from .input_schema import RiskScoringInput, ComprehensiveRiskResult
+from ..assessors import (
+    BehavioralRiskAssessor,
+    ContextualRiskAssessor,
+    CreditRiskAssessor,
+    FraudRiskAssessor,
+    OperationalRiskAssessor,
+)
+from ..scorers import CompositeScorer, MLBasedScorer, RuleBasedScorer, WeightedScorer
+from ..utils import RecommendationGenerator, RiskDataPreprocessor
+from .input_schema import ComprehensiveRiskResult, RiskScoringInput
 from .processor import RiskScoringProcessor
 from .result_generator import RiskScoringResultGenerator
-from ..assessors import (
-    FraudRiskAssessor, CreditRiskAssessor, OperationalRiskAssessor,
-    BehavioralRiskAssessor, ContextualRiskAssessor
-)
-from ..scorers import RuleBasedScorer, WeightedScorer, MLBasedScorer, CompositeScorer
-from ..utils import RiskDataPreprocessor, RecommendationGenerator
 
 logger = get_bridge_logger(__name__)
 
@@ -54,7 +59,7 @@ class RiskScoringTool(BaseTool):
             "credit": CreditRiskAssessor(),
             "operational": OperationalRiskAssessor(),
             "behavioral": BehavioralRiskAssessor(),
-            "contextual": ContextualRiskAssessor()
+            "contextual": ContextualRiskAssessor(),
         }
 
         # Initialize scorers
@@ -62,7 +67,7 @@ class RiskScoringTool(BaseTool):
             "rule_based": RuleBasedScorer(),
             "weighted": WeightedScorer(),
             "ml_based": MLBasedScorer(),
-            "composite": CompositeScorer()
+            "composite": CompositeScorer(),
         }
 
         # Initialize utilities
@@ -80,7 +85,7 @@ class RiskScoringTool(BaseTool):
         scoring_models: List[str] = None,
         risk_tolerance: str = "medium",
         time_horizon: str = "short_term",
-        historical_risk_data: Optional[Dict[str, Any]] = None
+        historical_risk_data: Optional[Dict[str, Any]] = None,
     ) -> str:
         """
         Execute comprehensive risk scoring analysis.
@@ -99,18 +104,26 @@ class RiskScoringTool(BaseTool):
         try:
             # Set defaults
             if risk_factors is None:
-                risk_factors = ["fraud", "credit", "operational", "behavioral", "contextual"]
+                risk_factors = [
+                    "fraud",
+                    "credit",
+                    "operational",
+                    "behavioral",
+                    "contextual",
+                ]
             if scoring_models is None:
                 scoring_models = ["composite", "weighted", "ml_based", "rule_based"]
 
             # Validate input
             validation_result = self._preprocessor.validate_input(risk_data)
             if not validation_result["is_valid"]:
-                return json.dumps({
-                    "success": False,
-                    "error": "Invalid input data",
-                    "validation_errors": validation_result["errors"]
-                })
+                return json.dumps(
+                    {
+                        "success": False,
+                        "error": "Invalid input data",
+                        "validation_errors": validation_result["errors"],
+                    }
+                )
 
             # Preprocess data
             processed_data = self._preprocessor.preprocess(risk_data)
@@ -122,8 +135,12 @@ class RiskScoringTool(BaseTool):
 
             # Apply scoring models
             model_scores = self._processor.apply_scoring_models(
-                processed_data, risk_assessments, scoring_models,
-                risk_tolerance, time_horizon, historical_risk_data
+                processed_data,
+                risk_assessments,
+                scoring_models,
+                risk_tolerance,
+                time_horizon,
+                historical_risk_data,
             )
 
             # Generate comprehensive result
@@ -131,18 +148,22 @@ class RiskScoringTool(BaseTool):
                 model_scores, risk_assessments, processed_data
             )
 
-            logger.info(f"Risk scoring completed successfully. Overall score: {result.overall_score:.3f}")
+            logger.info(
+                f"Risk scoring completed successfully. Overall score: {result.overall_score:.3f}"
+            )
 
-            return json.dumps({
-                "success": True,
-                "result": result.dict(),
-                "data_quality": processed_data.get("data_quality", 0.0),
-                "validation_warnings": validation_result.get("warnings", [])
-            }, indent=2)
+            return json.dumps(
+                {
+                    "success": True,
+                    "result": result.dict(),
+                    "data_quality": processed_data.get("data_quality", 0.0),
+                    "validation_warnings": validation_result.get("warnings", []),
+                },
+                indent=2,
+            )
 
         except Exception as e:
             logger.error(f"Error in risk scoring: {str(e)}")
-            return json.dumps({
-                "success": False,
-                "error": f"Risk scoring failed: {str(e)}"
-            })
+            return json.dumps(
+                {"success": False, "error": f"Risk scoring failed: {str(e)}"}
+            )

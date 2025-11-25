@@ -4,11 +4,12 @@ Behavioral Pattern Detectors (Patterns 4-6).
 Time-of-Day Anomaly, New Device + High Amount, and Cross-Entity Linking detection.
 """
 
-from typing import Dict, Any, List, Optional
+from typing import Any, Dict, List, Optional
+
 from app.service.analytics.pattern_helpers import (
-    extract_timestamp,
     extract_amount,
-    extract_device_id
+    extract_device_id,
+    extract_timestamp,
 )
 
 # Detection Thresholds
@@ -24,9 +25,7 @@ CROSS_ENTITY_THRESHOLD = 5
 CROSS_ENTITY_LINKING_ADJUSTMENT = 0.18
 
 
-def detect_time_of_day_anomaly(
-    transaction: Dict[str, Any]
-) -> Optional[Dict[str, Any]]:
+def detect_time_of_day_anomaly(transaction: Dict[str, Any]) -> Optional[Dict[str, Any]]:
     """Detect time-of-day anomaly pattern."""
     tx_timestamp = extract_timestamp(transaction)
 
@@ -45,23 +44,27 @@ def detect_time_of_day_anomaly(
             "evidence": {
                 "transaction_hour": hour,
                 "suspicious_hours": f"{SUSPICIOUS_HOURS_START}-{SUSPICIOUS_HOURS_END}",
-                "timestamp": tx_timestamp.isoformat()
-            }
+                "timestamp": tx_timestamp.isoformat(),
+            },
         }
 
     return None
 
 
 def detect_new_device_high_amount(
-    transaction: Dict[str, Any],
-    historical_transactions: Optional[List[Dict[str, Any]]]
+    transaction: Dict[str, Any], historical_transactions: Optional[List[Dict[str, Any]]]
 ) -> Optional[Dict[str, Any]]:
     """Detect new device + high amount pattern."""
     tx_amount = extract_amount(transaction)
     tx_device = extract_device_id(transaction)
     tx_timestamp = extract_timestamp(transaction)
 
-    if not tx_device or not tx_amount or not tx_timestamp or tx_amount < HIGH_AMOUNT_THRESHOLD:
+    if (
+        not tx_device
+        or not tx_amount
+        or not tx_timestamp
+        or tx_amount < HIGH_AMOUNT_THRESHOLD
+    ):
         return None
 
     if not historical_transactions:
@@ -75,8 +78,8 @@ def detect_new_device_high_amount(
                 "amount": tx_amount,
                 "device_id": tx_device[:10] + "...",
                 "high_amount_threshold": HIGH_AMOUNT_THRESHOLD,
-                "device_age_hours": 0
-            }
+                "device_age_hours": 0,
+            },
         }
 
     device_first_seen = tx_timestamp
@@ -85,7 +88,11 @@ def detect_new_device_high_amount(
         hist_device = extract_device_id(hist_tx)
         hist_timestamp = extract_timestamp(hist_tx)
 
-        if hist_device == tx_device and hist_timestamp and hist_timestamp < device_first_seen:
+        if (
+            hist_device == tx_device
+            and hist_timestamp
+            and hist_timestamp < device_first_seen
+        ):
             device_first_seen = hist_timestamp
 
     device_age_hours = (tx_timestamp - device_first_seen).total_seconds() / 3600
@@ -101,8 +108,8 @@ def detect_new_device_high_amount(
                 "amount": tx_amount,
                 "device_id": tx_device[:10] + "...",
                 "device_age_hours": round(device_age_hours, 1),
-                "high_amount_threshold": HIGH_AMOUNT_THRESHOLD
-            }
+                "high_amount_threshold": HIGH_AMOUNT_THRESHOLD,
+            },
         }
 
     return None
@@ -111,7 +118,7 @@ def detect_new_device_high_amount(
 def detect_cross_entity_linking(
     transaction: Dict[str, Any],
     historical_transactions: Optional[List[Dict[str, Any]]],
-    advanced_features: Optional[Dict[str, Any]]
+    advanced_features: Optional[Dict[str, Any]],
 ) -> Optional[Dict[str, Any]]:
     """Detect cross-entity linking pattern."""
     if advanced_features and "cross_entity_correlation" in advanced_features:
@@ -124,8 +131,10 @@ def detect_cross_entity_linking(
         max_entities = max(unique_devices, unique_ips, unique_emails)
 
         if max_entities >= CROSS_ENTITY_THRESHOLD:
-            entity_type = "devices" if max_entities == unique_devices else (
-                "IPs" if max_entities == unique_ips else "emails"
+            entity_type = (
+                "devices"
+                if max_entities == unique_devices
+                else ("IPs" if max_entities == unique_ips else "emails")
             )
 
             return {
@@ -133,14 +142,16 @@ def detect_cross_entity_linking(
                 "pattern_name": "Cross-Entity Linking",
                 "description": f"High entity linkage: {max_entities} unique {entity_type}",
                 "risk_adjustment": CROSS_ENTITY_LINKING_ADJUSTMENT,
-                "confidence": min(0.95, 0.65 + (max_entities / CROSS_ENTITY_THRESHOLD - 1) * 0.10),
+                "confidence": min(
+                    0.95, 0.65 + (max_entities / CROSS_ENTITY_THRESHOLD - 1) * 0.10
+                ),
                 "evidence": {
                     "unique_devices_per_email": unique_devices,
                     "unique_ips_per_email": unique_ips,
                     "unique_emails_per_device": unique_emails,
                     "max_entities": max_entities,
-                    "threshold": CROSS_ENTITY_THRESHOLD
-                }
+                    "threshold": CROSS_ENTITY_THRESHOLD,
+                },
             }
 
     return None

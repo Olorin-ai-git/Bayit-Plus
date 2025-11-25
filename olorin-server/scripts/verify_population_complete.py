@@ -20,8 +20,8 @@ from typing import Dict, List
 
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
-from app.service.logging import get_bridge_logger
 from app.service.config_loader import get_config_loader
+from app.service.logging import get_bridge_logger
 
 logger = get_bridge_logger(__name__)
 
@@ -44,8 +44,8 @@ async def verify_population():
         conn = await asyncpg.connect(conn_str)
         logger.info(f"✅ Connected to PostgreSQL: {pg_config['database']}")
 
-        schema = pg_config.get('schema', 'public')
-        table = pg_config.get('transactions_table', 'transactions_enriched')
+        schema = pg_config.get("schema", "public")
+        table = pg_config.get("transactions_table", "transactions_enriched")
         full_table = f"{schema}.{table}"
 
         # Get all columns
@@ -60,7 +60,7 @@ async def verify_population():
 
         # Get total records
         count_query = f"SELECT COUNT(*) as count FROM {full_table}"
-        total_records = (await conn.fetchrow(count_query))['count']
+        total_records = (await conn.fetchrow(count_query))["count"]
 
         logger.info("")
         logger.info("Database Schema Information:")
@@ -76,9 +76,9 @@ async def verify_population():
         logger.info("Checking NULL values across all columns...")
 
         for col in columns_info:
-            col_name = col['column_name']
+            col_name = col["column_name"]
             null_check = f"SELECT COUNT(*) as null_count FROM {full_table} WHERE {col_name} IS NULL"
-            null_count = (await conn.fetchrow(null_check))['null_count']
+            null_count = (await conn.fetchrow(null_check))["null_count"]
 
             if null_count > 0:
                 null_counts[col_name] = null_count
@@ -88,7 +88,9 @@ async def verify_population():
         total_fields = total_columns * total_records
         total_null_fields = sum(null_counts.values())
         total_populated_fields = total_fields - total_null_fields
-        population_percentage = (total_populated_fields / total_fields * 100) if total_fields > 0 else 0
+        population_percentage = (
+            (total_populated_fields / total_fields * 100) if total_fields > 0 else 0
+        )
 
         # Count records with 100% population
         records_100_populated = 0
@@ -110,18 +112,28 @@ async def verify_population():
         logger.info("")
         logger.info("Overall Statistics:")
         logger.info(f"  Total Fields in Database:  {total_fields:,}")
-        logger.info(f"  Populated Fields:          {total_populated_fields:,} ({population_percentage:.1f}%)")
-        logger.info(f"  NULL Fields:               {total_null_fields:,} ({100 - population_percentage:.1f}%)")
+        logger.info(
+            f"  Populated Fields:          {total_populated_fields:,} ({population_percentage:.1f}%)"
+        )
+        logger.info(
+            f"  NULL Fields:               {total_null_fields:,} ({100 - population_percentage:.1f}%)"
+        )
         logger.info("")
 
         if columns_with_nulls:
-            logger.info(f"Columns with NULL values: {len(columns_with_nulls)}/{total_columns}")
+            logger.info(
+                f"Columns with NULL values: {len(columns_with_nulls)}/{total_columns}"
+            )
             logger.info("")
             logger.info("Top 20 columns with most NULL values:")
-            sorted_nulls = sorted(null_counts.items(), key=lambda x: x[1], reverse=True)[:20]
+            sorted_nulls = sorted(
+                null_counts.items(), key=lambda x: x[1], reverse=True
+            )[:20]
             for col_name, null_count in sorted_nulls:
-                percentage = (null_count / total_records * 100)
-                logger.info(f"  {col_name:50} {null_count:>6} records ({percentage:>5.1f}%)")
+                percentage = null_count / total_records * 100
+                logger.info(
+                    f"  {col_name:50} {null_count:>6} records ({percentage:>5.1f}%)"
+                )
         else:
             logger.info("✅ NO NULL VALUES FOUND - 100% POPULATION ACHIEVED!")
 
@@ -137,7 +149,9 @@ async def verify_population():
             logger.info("✅ All 333 columns in all 5000 records are populated!")
             return 0
         else:
-            logger.warning(f"⚠️  INCOMPLETE: {total_null_fields:,} fields still have NULL values")
+            logger.warning(
+                f"⚠️  INCOMPLETE: {total_null_fields:,} fields still have NULL values"
+            )
             return 1
 
     except Exception as e:

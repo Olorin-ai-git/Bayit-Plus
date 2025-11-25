@@ -7,8 +7,8 @@ from pydantic import BaseModel, Field
 
 from app.models.agent_headers import OlorinHeader
 from app.service.config import get_settings_for_env
-from app.utils.firebase_secrets import get_app_secret
 from app.service.logging import get_bridge_logger
+from app.utils.firebase_secrets import get_app_secret
 
 settings_for_env = get_settings_for_env()
 
@@ -45,14 +45,20 @@ class AgentContext(BaseContextModel):
         if app_secret is None:
             # Fallback for test scenarios when Firebase is not available
             app_secret = "test_app_secret_fallback"
-            logger.warning("Using fallback app_secret for testing - Firebase secrets not available")
-            
+            logger.warning(
+                "Using fallback app_secret for testing - Firebase secrets not available"
+            )
+
         # Add fallbacks for all required header fields to prevent None values
-        olorin_user_id = self.olorin_header.auth_context.olorin_user_id or "test_user_id"
-        olorin_user_token = self.olorin_header.auth_context.olorin_user_token or "test_user_token"
+        olorin_user_id = (
+            self.olorin_header.auth_context.olorin_user_id or "test_user_id"
+        )
+        olorin_user_token = (
+            self.olorin_header.auth_context.olorin_user_token or "test_user_token"
+        )
         olorin_tid = self.olorin_header.olorin_tid or "test_tid"
         app_id = settings_for_env.app_id or "test_app_id"
-        
+
         return self.build_headers(
             app_id=app_id,
             app_secret=app_secret,

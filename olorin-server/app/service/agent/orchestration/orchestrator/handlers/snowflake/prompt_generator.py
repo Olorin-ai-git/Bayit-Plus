@@ -5,16 +5,35 @@ Generates prompts for Snowflake analysis.
 """
 
 import os
-from typing import Dict, Any
+from typing import Any, Dict
 
 from app.service.agent.tools.snowflake_tool.schema_constants import (
-    PAID_AMOUNT_VALUE_IN_CURRENCY, IP, IP_COUNTRY_CODE, EMAIL,
-    DEVICE_ID, USER_AGENT, TX_DATETIME, TX_ID_KEY,
-    MODEL_SCORE, IS_FRAUD_TX, NSURE_LAST_DECISION, PAYMENT_METHOD,
-    CARD_BRAND, BIN, LAST_FOUR, CARD_ISSUER, MAXMIND_RISK_SCORE,
-    UNIQUE_USER_ID, FIRST_NAME, LAST_NAME, PHONE_NUMBER,
-    DEVICE_TYPE, DEVICE_MODEL, DEVICE_OS_VERSION, PARSED_USER_AGENT,
-    get_full_table_name
+    BIN,
+    CARD_BRAND,
+    CARD_ISSUER,
+    DEVICE_ID,
+    DEVICE_MODEL,
+    DEVICE_OS_VERSION,
+    DEVICE_TYPE,
+    EMAIL,
+    FIRST_NAME,
+    IP,
+    IP_COUNTRY_CODE,
+    IS_FRAUD_TX,
+    LAST_FOUR,
+    LAST_NAME,
+    MAXMIND_RISK_SCORE,
+    MODEL_SCORE,
+    NSURE_LAST_DECISION,
+    PAID_AMOUNT_VALUE_IN_CURRENCY,
+    PARSED_USER_AGENT,
+    PAYMENT_METHOD,
+    PHONE_NUMBER,
+    TX_DATETIME,
+    TX_ID_KEY,
+    UNIQUE_USER_ID,
+    USER_AGENT,
+    get_full_table_name,
 )
 
 
@@ -25,43 +44,50 @@ class PromptGenerator:
     def create_snowflake_prompt(state: Dict[str, Any], date_range_days: int) -> str:
         """Create the Snowflake query prompt."""
         # Check if explicit time_range is provided
-        time_range = state.get('time_range')
+        time_range = state.get("time_range")
 
         if time_range:
-            date_range_description = f"between {time_range['start_time']} and {time_range['end_time']}"
-            date_range_instruction = f"Date range: {time_range['start_time']} to {time_range['end_time']}"
+            date_range_description = (
+                f"between {time_range['start_time']} and {time_range['end_time']}"
+            )
+            date_range_instruction = (
+                f"Date range: {time_range['start_time']} to {time_range['end_time']}"
+            )
         else:
             date_range_description = f"for the past {date_range_days} days"
             date_range_instruction = f"Date range: LAST {date_range_days} DAYS"
 
         # Map entity_type to database column name dynamically
-        entity_type = state.get('entity_type', 'unknown').lower()
-        database_provider = os.getenv('DATABASE_PROVIDER', 'snowflake').lower()
-        
-        if database_provider == 'snowflake':
+        entity_type = state.get("entity_type", "unknown").lower()
+        database_provider = os.getenv("DATABASE_PROVIDER", "snowflake").lower()
+
+        if database_provider == "snowflake":
             # Snowflake: uppercase column names
             entity_column_map = {
-                'ip': IP,
-                'email': EMAIL,
-                'device': DEVICE_ID,
-                'device_id': DEVICE_ID,
-                'phone': 'PHONE_NUMBER',
-                'user_id': UNIQUE_USER_ID
+                "ip": IP,
+                "email": EMAIL,
+                "device": DEVICE_ID,
+                "device_id": DEVICE_ID,
+                "phone": "PHONE_NUMBER",
+                "user_id": UNIQUE_USER_ID,
             }
         else:
             # PostgreSQL: lowercase column names
             entity_column_map = {
-                'ip': 'ip',
-                'email': 'email',
-                'device': 'device_id',
-                'device_id': 'device_id',
-                'phone': 'phone_number',
-                'user_id': 'unique_user_id'
+                "ip": "ip",
+                "email": "email",
+                "device": "device_id",
+                "device_id": "device_id",
+                "phone": "phone_number",
+                "user_id": "unique_user_id",
             }
-        
+
         # Get the appropriate column name for the entity type
-        entity_column = entity_column_map.get(entity_type, entity_type.upper() if database_provider == 'snowflake' else entity_type)
-        
+        entity_column = entity_column_map.get(
+            entity_type,
+            entity_type.upper() if database_provider == "snowflake" else entity_type,
+        )
+
         return f"""
         You MUST use the database_query tool to analyze ALL data {date_range_description}.
         The database_query tool works with both Snowflake and PostgreSQL databases.

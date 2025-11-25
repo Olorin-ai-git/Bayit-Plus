@@ -22,15 +22,21 @@ Endpoints Tested:
 5. GET /investigation-state/{id}/history (audit log)
 """
 
-import pytest
 from pathlib import Path
+from typing import Any, Dict
+
+import pytest
 import yaml
-from typing import Dict, Any
 from openapi_core import OpenAPI
 
-
 # Load OpenAPI specification
-SPEC_PATH = Path(__file__).parent.parent.parent.parent / "specs" / "005-polling-and-persistence" / "contracts" / "wizard-state-api.yaml"
+SPEC_PATH = (
+    Path(__file__).parent.parent.parent.parent
+    / "specs"
+    / "005-polling-and-persistence"
+    / "contracts"
+    / "wizard-state-api.yaml"
+)
 
 
 @pytest.fixture(scope="module")
@@ -58,26 +64,17 @@ def investigation_state_data() -> Dict[str, Any]:
         "lifecycle_stage": "SETTINGS",
         "settings": {
             "name": "Test Investigation",
-            "entities": [
-                {
-                    "entity_type": "user_id",
-                    "entity_value": "test_user_123"
-                }
-            ],
+            "entities": [{"entity_type": "user_id", "entity_value": "test_user_123"}],
             "time_range": {
                 "start_time": "2024-01-01T00:00:00Z",
-                "end_time": "2024-01-31T23:59:59Z"
+                "end_time": "2024-01-31T23:59:59Z",
             },
             "tools": [
-                {
-                    "tool_name": "device_fingerprint",
-                    "enabled": True,
-                    "config": {}
-                }
+                {"tool_name": "device_fingerprint", "enabled": True, "config": {}}
             ],
-            "correlation_mode": "OR"
+            "correlation_mode": "OR",
         },
-        "status": "SETTINGS"
+        "status": "SETTINGS",
     }
 
 
@@ -86,9 +83,7 @@ class TestInvestigationStateAPIContract:
 
     @pytest.mark.unit
     def test_create_investigation_state_schema(
-        self,
-        openapi_validator,
-        investigation_state_data: Dict[str, Any]
+        self, openapi_validator, investigation_state_data: Dict[str, Any]
     ):
         """
         Test POST /investigation-state request/response schema validation.
@@ -129,9 +124,7 @@ class TestInvestigationStateAPIContract:
 
     @pytest.mark.unit
     def test_update_investigation_state_optimistic_locking(
-        self,
-        openapi_validator,
-        investigation_state_data: Dict[str, Any]
+        self, openapi_validator, investigation_state_data: Dict[str, Any]
     ):
         """
         Test PUT /investigation-state/{id} optimistic locking behavior.
@@ -195,9 +188,7 @@ class TestInvestigationStateAPIContract:
 
     @pytest.mark.unit
     def test_lifecycle_stage_validation(
-        self,
-        openapi_validator,
-        investigation_state_data: Dict[str, Any]
+        self, openapi_validator, investigation_state_data: Dict[str, Any]
     ):
         """
         Test lifecycle_stage field validation against schema constraints.
@@ -213,9 +204,7 @@ class TestInvestigationStateAPIContract:
 
     @pytest.mark.unit
     def test_status_field_validation(
-        self,
-        openapi_validator,
-        investigation_state_data: Dict[str, Any]
+        self, openapi_validator, investigation_state_data: Dict[str, Any]
     ):
         """
         Test status field validation against schema constraints.
@@ -231,9 +220,7 @@ class TestInvestigationStateAPIContract:
 
     @pytest.mark.unit
     def test_investigation_settings_schema(
-        self,
-        openapi_validator,
-        investigation_state_data: Dict[str, Any]
+        self, openapi_validator, investigation_state_data: Dict[str, Any]
     ):
         """
         Test InvestigationSettings schema validation.

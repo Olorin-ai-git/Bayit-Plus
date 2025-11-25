@@ -2,9 +2,9 @@
 """
 Test script to verify Decimal serialization fix for tool execution service.
 """
-from decimal import Decimal
-from datetime import datetime, timezone
 import json
+from datetime import datetime, timezone
+from decimal import Decimal
 
 # Import the serialization function
 from app.service.tool_execution_service import _serialize_datetime_for_json
@@ -34,7 +34,7 @@ db_result = {
     "id": 123,
     "amount": Decimal("999.99"),
     "score": Decimal("0.87"),
-    "count": 100
+    "count": 100,
 }
 
 serialized = _serialize_datetime_for_json(db_result)
@@ -59,15 +59,15 @@ query_results = [
         "amount": Decimal("1234.56"),
         "risk_score": Decimal("0.75"),
         "timestamp": datetime(2025, 11, 8, 14, 16, 40, tzinfo=timezone.utc),
-        "description": "Test transaction"
+        "description": "Test transaction",
     },
     {
         "transaction_id": 2,
         "amount": Decimal("9876.54"),
         "risk_score": Decimal("0.95"),
         "timestamp": datetime(2025, 11, 8, 15, 30, 0, tzinfo=timezone.utc),
-        "description": "Another transaction"
-    }
+        "description": "Another transaction",
+    },
 ]
 
 serialized = _serialize_datetime_for_json(query_results)
@@ -90,13 +90,13 @@ nested_data = {
         "id": "test-123",
         "results": [
             {"score": Decimal("0.85"), "confidence": Decimal("0.92")},
-            {"score": Decimal("0.76"), "confidence": Decimal("0.88")}
+            {"score": Decimal("0.76"), "confidence": Decimal("0.88")},
         ],
         "summary": {
             "avg_score": Decimal("0.805"),
             "max_score": Decimal("0.85"),
-            "total_transactions": 100
-        }
+            "total_transactions": 100,
+        },
     }
 }
 
@@ -130,7 +130,7 @@ print("-" * 80)
 combined_data = {
     "created_at": datetime(2025, 11, 8, 14, 16, 40, tzinfo=timezone.utc),
     "amount": Decimal("12345.67"),
-    "status": "completed"
+    "status": "completed",
 }
 
 serialized = _serialize_datetime_for_json(combined_data)

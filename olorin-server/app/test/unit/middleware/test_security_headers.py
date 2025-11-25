@@ -6,8 +6,9 @@ and applied to HTTP responses.
 """
 
 import os
-import pytest
 from unittest.mock import patch
+
+import pytest
 
 from app.middleware.security_headers import (
     SecurityHeadersConfig,
@@ -186,9 +187,7 @@ class TestGetSecurityHeaders:
         headers = get_security_headers()
 
         for header_name, header_value in headers.items():
-            assert (
-                header_value
-            ), f"Header {header_name} has empty value"
+            assert header_value, f"Header {header_name} has empty value"
             assert isinstance(
                 header_value, str
             ), f"Header {header_name} value is not a string"

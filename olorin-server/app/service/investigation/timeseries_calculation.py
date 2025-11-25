@@ -9,9 +9,9 @@ Constitutional Compliance:
 - No hardcoded thresholds
 """
 
-from datetime import datetime, timedelta
 from collections import defaultdict
-from typing import List, Dict, Any
+from datetime import datetime, timedelta
+from typing import Any, Dict, List
 
 from app.router.models.investigation_comparison_models import TimeseriesDaily
 
@@ -20,7 +20,7 @@ def compute_timeseries_daily(
     transactions: List[Dict[str, Any]],
     window_start: datetime,
     window_end: datetime,
-    risk_threshold: float = 0.7
+    risk_threshold: float = 0.7,
 ) -> List[TimeseriesDaily]:
     """
     Compute daily timeseries aggregates.
@@ -87,16 +87,19 @@ def compute_timeseries_daily(
 
     while current_date <= end_date:
         date_str = current_date.isoformat()
-        data = daily_data.get(date_str, {"count": 0, "tp": 0, "fp": 0, "tn": 0, "fn": 0})
-        timeseries.append(TimeseriesDaily(
-            date=date_str,
-            count=data["count"],
-            TP=data["tp"] if data["tp"] > 0 else None,
-            FP=data["fp"] if data["fp"] > 0 else None,
-            TN=data["tn"] if data["tn"] > 0 else None,
-            FN=data["fn"] if data["fn"] > 0 else None
-        ))
+        data = daily_data.get(
+            date_str, {"count": 0, "tp": 0, "fp": 0, "tn": 0, "fn": 0}
+        )
+        timeseries.append(
+            TimeseriesDaily(
+                date=date_str,
+                count=data["count"],
+                TP=data["tp"] if data["tp"] > 0 else None,
+                FP=data["fp"] if data["fp"] > 0 else None,
+                TN=data["tn"] if data["tn"] > 0 else None,
+                FN=data["fn"] if data["fn"] > 0 else None,
+            )
+        )
         current_date += timedelta(days=1)
 
     return timeseries
-

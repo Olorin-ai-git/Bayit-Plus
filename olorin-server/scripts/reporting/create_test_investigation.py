@@ -12,23 +12,27 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 # Add the app directory to the Python path
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), 'app'))
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), "app"))
+
 
 def create_test_investigation():
     """Create a test investigation folder with sample data"""
     print("🔧 Creating test investigation folder...")
-    
+
     try:
-        from app.service.logging.investigation_folder_manager import InvestigationMode, get_folder_manager
-        
+        from app.service.logging.investigation_folder_manager import (
+            InvestigationMode,
+            get_folder_manager,
+        )
+
         # Initialize folder manager
         folder_manager = get_folder_manager()
-        
+
         # Create test investigation
         investigation_id = "test_account_takeover_demo"
         mode = InvestigationMode.DEMO
         scenario = "account_takeover"
-        
+
         folder_path, metadata = folder_manager.create_investigation_folder(
             investigation_id=investigation_id,
             mode=mode,
@@ -38,12 +42,12 @@ def create_test_investigation():
                 "entity_id": "192.168.1.100",
                 "test_mode": "demo",
                 "csv_limit": 5,
-                "timeout": 300
-            }
+                "timeout": 300,
+            },
         )
-        
+
         print(f"✅ Created investigation folder: {folder_path}")
-        
+
         # Create sample structured_activities.jsonl
         structured_file = folder_path / "structured_activities.jsonl"
         sample_activities = [
@@ -58,8 +62,8 @@ def create_test_investigation():
                     "completed_phases": [],
                     "findings_summary": {},
                     "risk_score_progression": [],
-                    "agent_status": {}
-                }
+                    "agent_status": {},
+                },
             },
             {
                 "interaction_type": "llm_call",
@@ -72,13 +76,20 @@ def create_test_investigation():
                     "prompt_template": "Analyze device fingerprint",
                     "full_prompt": "Analyze the following device fingerprint for suspicious activity...",
                     "response": "Device analysis indicates potential spoofing based on inconsistent browser characteristics.",
-                    "tokens_used": {"total_tokens": 150, "prompt_tokens": 80, "completion_tokens": 70},
-                    "tools_available": ["device_fingerprint_analyzer", "geolocation_checker"],
+                    "tokens_used": {
+                        "total_tokens": 150,
+                        "prompt_tokens": 80,
+                        "completion_tokens": 70,
+                    },
+                    "tools_available": [
+                        "device_fingerprint_analyzer",
+                        "geolocation_checker",
+                    ],
                     "tools_used": ["device_fingerprint_analyzer"],
                     "reasoning_chain": "The device fingerprint shows inconsistencies in screen resolution vs reported device model.",
                     "confidence_score": 0.85,
-                    "response_time_ms": 1200
-                }
+                    "response_time_ms": 1200,
+                },
             },
             {
                 "interaction_type": "agent_decision",
@@ -93,8 +104,8 @@ def create_test_investigation():
                     "decision_outcome": {"risk_score": 0.89, "category": "high_risk"},
                     "confidence_score": 0.92,
                     "alternative_decisions": [],
-                    "execution_time_ms": 50
-                }
+                    "execution_time_ms": 50,
+                },
             },
             {
                 "interaction_type": "tool_execution",
@@ -110,20 +121,22 @@ def create_test_investigation():
                         "country": "US",
                         "city": "San Francisco",
                         "timezone": "America/Los_Angeles",
-                        "suspicious": False
+                        "suspicious": False,
                     },
                     "success": True,
-                    "execution_time_ms": 340
-                }
-            }
+                    "execution_time_ms": 340,
+                },
+            },
         ]
-        
-        with open(structured_file, 'w') as f:
+
+        with open(structured_file, "w") as f:
             for activity in sample_activities:
-                f.write(json.dumps(activity) + '\n')
-        
-        print(f"✅ Created structured activities file with {len(sample_activities)} entries")
-        
+                f.write(json.dumps(activity) + "\n")
+
+        print(
+            f"✅ Created structured activities file with {len(sample_activities)} entries"
+        )
+
         # Create sample journey_tracking.json
         journey_file = folder_path / "journey_tracking.json"
         journey_data = {
@@ -137,9 +150,14 @@ def create_test_investigation():
                     "node_name": "device_analysis",
                     "node_type": "agent",
                     "input_data": {"device_fingerprint": "sample_fingerprint"},
-                    "output_data": {"risk_indicators": ["screen_resolution_mismatch", "browser_inconsistency"]},
+                    "output_data": {
+                        "risk_indicators": [
+                            "screen_resolution_mismatch",
+                            "browser_inconsistency",
+                        ]
+                    },
                     "duration_ms": 1500,
-                    "status": "completed"
+                    "status": "completed",
                 },
                 {
                     "timestamp": datetime.now(timezone.utc).isoformat(),
@@ -148,8 +166,8 @@ def create_test_investigation():
                     "input_data": {"ip": "192.168.1.100"},
                     "output_data": {"location_verified": True, "country": "US"},
                     "duration_ms": 340,
-                    "status": "completed"
-                }
+                    "status": "completed",
+                },
             ],
             "state_transitions": [
                 {
@@ -157,15 +175,15 @@ def create_test_investigation():
                     "from_state": "initialized",
                     "to_state": "analyzing",
                     "trigger": "start_analysis",
-                    "context": {"phase": "device_analysis"}
+                    "context": {"phase": "device_analysis"},
                 },
                 {
                     "timestamp": datetime.now(timezone.utc).isoformat(),
-                    "from_state": "analyzing", 
+                    "from_state": "analyzing",
                     "to_state": "completed",
                     "trigger": "analysis_complete",
-                    "context": {"final_risk_score": 0.89}
-                }
+                    "context": {"final_risk_score": 0.89},
+                },
             ],
             "agent_coordinations": [
                 {
@@ -173,22 +191,22 @@ def create_test_investigation():
                     "coordinator_agent": "orchestrator",
                     "target_agent": "device_analyzer",
                     "action": "handoff",
-                    "data": {"task": "analyze_device_fingerprint"}
+                    "data": {"task": "analyze_device_fingerprint"},
                 }
             ],
             "final_state": {
                 "status": "completed",
                 "final_risk_score": 0.89,
                 "confidence": 0.92,
-                "duration_ms": 5000
-            }
+                "duration_ms": 5000,
+            },
         }
-        
-        with open(journey_file, 'w') as f:
+
+        with open(journey_file, "w") as f:
             json.dump(journey_data, f, indent=2)
-        
+
         print(f"✅ Created journey tracking file")
-        
+
         # Create sample investigation.log
         log_file = folder_path / "investigation.log"
         log_entries = [
@@ -196,32 +214,36 @@ def create_test_investigation():
             f"{datetime.now(timezone.utc).isoformat()} [DEBUG] Device fingerprint analysis initiated",
             f"{datetime.now(timezone.utc).isoformat()} [INFO] Risk score calculated: 0.89",
             f"{datetime.now(timezone.utc).isoformat()} [WARN] High risk indicators detected",
-            f"{datetime.now(timezone.utc).isoformat()} [INFO] Investigation completed successfully"
+            f"{datetime.now(timezone.utc).isoformat()} [INFO] Investigation completed successfully",
         ]
-        
-        with open(log_file, 'w') as f:
+
+        with open(log_file, "w") as f:
             for entry in log_entries:
-                f.write(entry + '\n')
-        
+                f.write(entry + "\n")
+
         print(f"✅ Created investigation log with {len(log_entries)} entries")
-        
+
         # Update metadata status
         folder_manager.update_investigation_status(investigation_id, "completed")
-        
+
         print(f"\n🎯 Test investigation created successfully!")
         print(f"   📁 Folder: {folder_path}")
         print(f"   🆔 ID: {investigation_id}")
         print(f"   🎭 Mode: {mode.value}")
         print(f"   🎬 Scenario: {scenario}")
-        print(f"   📊 Files: metadata.json, structured_activities.jsonl, journey_tracking.json, investigation.log")
-        
+        print(
+            f"   📊 Files: metadata.json, structured_activities.jsonl, journey_tracking.json, investigation.log"
+        )
+
         return str(folder_path)
-        
+
     except Exception as e:
         print(f"❌ Failed to create test investigation: {e}")
         import traceback
+
         traceback.print_exc()
         return None
+
 
 if __name__ == "__main__":
     folder_path = create_test_investigation()

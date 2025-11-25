@@ -11,11 +11,12 @@ SYSTEM MANDATE Compliance:
 - Type-safe: Proper test assertions
 """
 
-import pytest
 from datetime import datetime, timezone
 from unittest.mock import patch
 
-from app.utils.cursor_utils import parse_cursor, CursorGenerator
+import pytest
+
+from app.utils.cursor_utils import CursorGenerator, parse_cursor
 
 
 class TestParseCursor:
@@ -92,7 +93,7 @@ class TestCursorGenerator:
     def test_generate_first_cursor(self):
         """Test generating the first cursor."""
         gen = CursorGenerator()
-        with patch('app.utils.cursor_utils.datetime') as mock_datetime:
+        with patch("app.utils.cursor_utils.datetime") as mock_datetime:
             mock_datetime.now.return_value.timestamp.return_value = 1730668800.0
             cursor = gen.generate()
             assert cursor == "1730668800000_000000"
@@ -100,7 +101,7 @@ class TestCursorGenerator:
     def test_generate_sequential_cursors_same_timestamp(self):
         """Test generating multiple cursors at the same timestamp."""
         gen = CursorGenerator()
-        with patch('app.utils.cursor_utils.datetime') as mock_datetime:
+        with patch("app.utils.cursor_utils.datetime") as mock_datetime:
             # Same timestamp for multiple calls
             mock_datetime.now.return_value.timestamp.return_value = 1730668800.0
 
@@ -116,7 +117,7 @@ class TestCursorGenerator:
     def test_generate_cursors_different_timestamps(self):
         """Test sequence resets with new timestamp."""
         gen = CursorGenerator()
-        with patch('app.utils.cursor_utils.datetime') as mock_datetime:
+        with patch("app.utils.cursor_utils.datetime") as mock_datetime:
             # First timestamp
             mock_datetime.now.return_value.timestamp.return_value = 1730668800.0
             cursor1 = gen.generate()
@@ -135,7 +136,7 @@ class TestCursorGenerator:
         gen = CursorGenerator()
         cursors = []
 
-        with patch('app.utils.cursor_utils.datetime') as mock_datetime:
+        with patch("app.utils.cursor_utils.datetime") as mock_datetime:
             # Generate cursors with increasing timestamps
             for i in range(10):
                 mock_datetime.now.return_value.timestamp.return_value = 1730668800.0 + i
@@ -148,7 +149,7 @@ class TestCursorGenerator:
     def test_generate_formatting(self):
         """Test cursor formatting with padding."""
         gen = CursorGenerator()
-        with patch('app.utils.cursor_utils.datetime') as mock_datetime:
+        with patch("app.utils.cursor_utils.datetime") as mock_datetime:
             # Small timestamp value
             mock_datetime.now.return_value.timestamp.return_value = 1.0
             cursor = gen.generate()
@@ -160,7 +161,7 @@ class TestCursorGenerator:
         gen = CursorGenerator()
 
         # Generate some cursors
-        with patch('app.utils.cursor_utils.datetime') as mock_datetime:
+        with patch("app.utils.cursor_utils.datetime") as mock_datetime:
             mock_datetime.now.return_value.timestamp.return_value = 1730668800.0
             gen.generate()
             gen.generate()
@@ -181,7 +182,7 @@ class TestCursorGenerator:
         gen = CursorGenerator()
         gen.sequence = 999998  # Near max for 6-digit format
 
-        with patch('app.utils.cursor_utils.datetime') as mock_datetime:
+        with patch("app.utils.cursor_utils.datetime") as mock_datetime:
             mock_datetime.now.return_value.timestamp.return_value = 1730668800.0
             gen.last_timestamp_ms = 1730668800000
 
@@ -190,13 +191,15 @@ class TestCursorGenerator:
 
             # Next cursor at same timestamp
             cursor2 = gen.generate()
-            assert cursor2 == "1730668800000_1000000"  # Exceeds 6 digits but still works
+            assert (
+                cursor2 == "1730668800000_1000000"
+            )  # Exceeds 6 digits but still works
 
     def test_cursor_roundtrip(self):
         """Test that generated cursors can be parsed back correctly."""
         gen = CursorGenerator()
 
-        with patch('app.utils.cursor_utils.datetime') as mock_datetime:
+        with patch("app.utils.cursor_utils.datetime") as mock_datetime:
             mock_datetime.now.return_value.timestamp.return_value = 1730668800.123
 
             cursor = gen.generate()

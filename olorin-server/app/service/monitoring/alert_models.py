@@ -6,13 +6,14 @@ Data structures for the alerting system.
 Week 10 Phase 4 implementation.
 """
 
-from typing import Dict, Any, Optional
 from datetime import datetime
 from enum import Enum
+from typing import Any, Dict, Optional
 
 
 class AlertSeverity(Enum):
     """Alert severity levels."""
+
     CRITICAL = "critical"
     HIGH = "high"
     MEDIUM = "medium"
@@ -31,7 +32,7 @@ class Alert:
         metric_name: str,
         metric_value: float,
         threshold: float,
-        metadata: Optional[Dict[str, Any]] = None
+        metadata: Optional[Dict[str, Any]] = None,
     ):
         """Initialize alert."""
         self.alert_type = alert_type
@@ -53,5 +54,5 @@ class Alert:
             "metric_value": self.metric_value,
             "threshold": self.threshold,
             "metadata": self.metadata,
-            "timestamp": self.timestamp.isoformat()
+            "timestamp": self.timestamp.isoformat(),
         }

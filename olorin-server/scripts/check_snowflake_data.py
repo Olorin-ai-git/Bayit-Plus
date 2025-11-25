@@ -4,8 +4,9 @@ Check what data exists in Snowflake table.
 """
 
 import asyncio
-from pathlib import Path
 import sys
+from pathlib import Path
+
 from dotenv import load_dotenv
 
 # Load environment variables
@@ -21,24 +22,27 @@ logger = get_bridge_logger(__name__)
 
 
 async def main():
-    print("\n" + "="*70)
+    print("\n" + "=" * 70)
     print("📊 CHECKING SNOWFLAKE DATA")
-    print("="*70)
+    print("=" * 70)
 
     import os
-    from app.service.agent.tools.snowflake_tool.schema_constants import get_full_table_name
+
+    from app.service.agent.tools.snowflake_tool.schema_constants import (
+        get_full_table_name,
+    )
 
     client = SnowflakeClient()
-    database = os.getenv('SNOWFLAKE_DATABASE', 'GIL')
-    schema = os.getenv('SNOWFLAKE_SCHEMA', 'PUBLIC')
+    database = os.getenv("SNOWFLAKE_DATABASE", "GIL")
+    schema = os.getenv("SNOWFLAKE_SCHEMA", "PUBLIC")
     await client.connect(database=database, schema=schema)
-    
+
     # Check total records
     print("\n1. Total Records:")
     query1 = f"SELECT COUNT(*) as total FROM {get_full_table_name()}"
     result1 = await client.execute_query(query1)
     print(f"   Total records: {result1[0]['TOTAL'] if result1 else 0}")
-    
+
     # Check data by email
     print("\n2. Records by Email:")
     query2 = f"""
@@ -53,16 +57,20 @@ async def main():
     ORDER BY risk_value DESC
     """
     result2 = await client.execute_query(query2)
-    
+
     if result2:
-        print(f"   {'Email':<30} {'Txns':<6} {'Amount':<12} {'Avg Risk':<10} {'Risk Value'}")
-        print("   " + "-"*75)
+        print(
+            f"   {'Email':<30} {'Txns':<6} {'Amount':<12} {'Avg Risk':<10} {'Risk Value'}"
+        )
+        print("   " + "-" * 75)
         for row in result2:
-            email = row.get('EMAIL') or 'None'
-            print(f"   {email:<30} {row['TX_COUNT']:<6} ${row['TOTAL_AMOUNT']:<11,.2f} {row['AVG_RISK']:<10.4f} ${row['RISK_VALUE']:,.2f}")
+            email = row.get("EMAIL") or "None"
+            print(
+                f"   {email:<30} {row['TX_COUNT']:<6} ${row['TOTAL_AMOUNT']:<11,.2f} {row['AVG_RISK']:<10.4f} ${row['RISK_VALUE']:,.2f}"
+            )
     else:
         print("   No data found")
-    
+
     # Check time range of data
     print("\n3. Time Range of Data:")
     query3 = f"""
@@ -77,7 +85,7 @@ async def main():
         print(f"   Earliest: {result3[0]['EARLIEST']}")
         print(f"   Latest: {result3[0]['LATEST']}")
         print(f"   Span: {result3[0]['HOURS_SPAN']} hours")
-    
+
     # Check sample of actual data
     print("\n4. Sample Records:")
     query4 = f"""
@@ -94,10 +102,12 @@ async def main():
     result4 = await client.execute_query(query4)
     if result4:
         for row in result4:
-            print(f"   {row['TX_ID_KEY']}: {row['EMAIL']} - ${row['PAID_AMOUNT_VALUE_IN_CURRENCY']:.2f} (Risk: {row['MODEL_SCORE']:.2f})")
-    
+            print(
+                f"   {row['TX_ID_KEY']}: {row['EMAIL']} - ${row['PAID_AMOUNT_VALUE_IN_CURRENCY']:.2f} (Risk: {row['MODEL_SCORE']:.2f})"
+            )
+
     await client.disconnect()
-    print("\n" + "="*70)
+    print("\n" + "=" * 70)
 
 
 if __name__ == "__main__":

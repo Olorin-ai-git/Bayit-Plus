@@ -11,11 +11,11 @@ SYSTEM MANDATE Compliance:
 - No mocks/stubs: Real serialization logic only
 """
 
-from typing import Any
-from datetime import datetime, date, time
-from decimal import Decimal
-from uuid import UUID
 import json
+from datetime import date, datetime, time
+from decimal import Decimal
+from typing import Any
+from uuid import UUID
 
 
 def serialize_for_json(obj: Any) -> Any:
@@ -58,7 +58,7 @@ def serialize_for_json(obj: Any) -> Any:
     elif isinstance(obj, UUID):
         return str(obj)
     elif isinstance(obj, bytes):
-        return obj.decode('utf-8', errors='replace')
+        return obj.decode("utf-8", errors="replace")
     elif isinstance(obj, set):
         return list(obj)
     elif isinstance(obj, dict):
@@ -143,7 +143,7 @@ class DecimalEncoder(json.JSONEncoder):
         elif isinstance(obj, UUID):
             return str(obj)
         elif isinstance(obj, bytes):
-            return obj.decode('utf-8', errors='replace')
+            return obj.decode("utf-8", errors="replace")
         elif isinstance(obj, set):
             return list(obj)
         return super().default(obj)

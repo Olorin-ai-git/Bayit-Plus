@@ -7,10 +7,11 @@ Tests the complete API endpoints for investigation report generation and retriev
 """
 
 import os
-import pytest
 from pathlib import Path
+from unittest.mock import MagicMock, patch
+
+import pytest
 from fastapi.testclient import TestClient
-from unittest.mock import patch, MagicMock
 
 from app.main import app
 
@@ -40,7 +41,9 @@ def mock_investigation_folder(tmp_path):
     </body>
     </html>
     """
-    (investigation_folder / "comprehensive_investigation_report.html").write_text(report_html)
+    (investigation_folder / "comprehensive_investigation_report.html").write_text(
+        report_html
+    )
     (investigation_folder / "investigation_state_initial.json").write_text(
         '{"investigation_id": "test-inv-456"}'
     )
@@ -57,7 +60,7 @@ class TestInvestigationReportsGenerateEndpoint:
 
         with patch.dict(os.environ, {"INVESTIGATION_LOGS_DIR": base_logs_dir}):
             with patch(
-                'app.service.report_service.ComprehensiveInvestigationReportGenerator'
+                "app.service.report_service.ComprehensiveInvestigationReportGenerator"
             ) as mock_generator_class:
                 mock_generator = MagicMock()
                 mock_generator.generate_comprehensive_report.return_value = None
@@ -67,8 +70,8 @@ class TestInvestigationReportsGenerateEndpoint:
                     "/api/v1/reports/investigation/generate",
                     json={
                         "investigation_id": investigation_id,
-                        "title": "API Test Report"
-                    }
+                        "title": "API Test Report",
+                    },
                 )
 
                 assert response.status_code == 201
@@ -83,7 +86,7 @@ class TestInvestigationReportsGenerateEndpoint:
         """Test error handling when investigation_id is missing."""
         response = client.post(
             "/api/v1/reports/investigation/generate",
-            json={"title": "Missing ID Report"}
+            json={"title": "Missing ID Report"},
         )
 
         assert response.status_code == 422  # Validation error
@@ -95,8 +98,8 @@ class TestInvestigationReportsGenerateEndpoint:
                 "/api/v1/reports/investigation/generate",
                 json={
                     "investigation_id": "nonexistent-investigation",
-                    "title": "Should Fail"
-                }
+                    "title": "Should Fail",
+                },
             )
 
             assert response.status_code == 404
@@ -106,16 +109,13 @@ class TestInvestigationReportsGenerateEndpoint:
         """Test that endpoint requires authentication."""
         # Test without auth token (in production, should fail)
         # Note: This test assumes authentication is enabled
-        with patch('app.security.auth.require_read_or_dev') as mock_auth:
+        with patch("app.security.auth.require_read_or_dev") as mock_auth:
             mock_auth.side_effect = Exception("Authentication required")
 
             with pytest.raises(Exception, match="Authentication required"):
                 client.post(
                     "/api/v1/reports/investigation/generate",
-                    json={
-                        "investigation_id": "test-id",
-                        "title": "Test"
-                    }
+                    json={"investigation_id": "test-id", "title": "Test"},
                 )
 
 
@@ -170,7 +170,7 @@ class TestInvestigationReportsEndToEnd:
 
         with patch.dict(os.environ, {"INVESTIGATION_LOGS_DIR": base_logs_dir}):
             with patch(
-                'app.service.report_service.ComprehensiveInvestigationReportGenerator'
+                "app.service.report_service.ComprehensiveInvestigationReportGenerator"
             ) as mock_generator_class:
                 mock_generator = MagicMock()
                 mock_generator.generate_comprehensive_report.return_value = None
@@ -181,8 +181,8 @@ class TestInvestigationReportsEndToEnd:
                     "/api/v1/reports/investigation/generate",
                     json={
                         "investigation_id": investigation_id,
-                        "title": "E2E Test Report"
-                    }
+                        "title": "E2E Test Report",
+                    },
                 )
 
                 assert generate_response.status_code == 201
@@ -202,7 +202,7 @@ class TestInvestigationReportsEndToEnd:
 
         with patch.dict(os.environ, {"INVESTIGATION_LOGS_DIR": base_logs_dir}):
             with patch(
-                'app.service.report_service.ComprehensiveInvestigationReportGenerator'
+                "app.service.report_service.ComprehensiveInvestigationReportGenerator"
             ) as mock_generator_class:
                 mock_generator = MagicMock()
                 mock_generator.generate_comprehensive_report.return_value = None
@@ -211,11 +211,11 @@ class TestInvestigationReportsEndToEnd:
                 # Generate report twice
                 response1 = client.post(
                     "/api/v1/reports/investigation/generate",
-                    json={"investigation_id": investigation_id, "title": "Report 1"}
+                    json={"investigation_id": investigation_id, "title": "Report 1"},
                 )
                 response2 = client.post(
                     "/api/v1/reports/investigation/generate",
-                    json={"investigation_id": investigation_id, "title": "Report 2"}
+                    json={"investigation_id": investigation_id, "title": "Report 2"},
                 )
 
                 assert response1.status_code == 201

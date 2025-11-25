@@ -4,14 +4,15 @@ Attach Evidence Tool for LangGraph Agents
 Tool for attaching evidence (e.g., incident summaries) to investigations.
 """
 
-from typing import Any, Dict, Optional
-from pydantic import BaseModel, Field
-from langchain_core.tools import BaseTool
 import uuid
+from typing import Any, Dict, Optional
 
-from app.service.logging import get_bridge_logger
-from app.persistence.database import get_db
+from langchain_core.tools import BaseTool
+from pydantic import BaseModel, Field
+
 from app.models.investigation_state import InvestigationState
+from app.persistence.database import get_db
+from app.service.logging import get_bridge_logger
 
 logger = get_bridge_logger(__name__)
 
@@ -22,16 +23,15 @@ class _AttachEvidenceArgs(BaseModel):
     investigation_id: str = Field(..., description="Investigation UUID")
     evidence_type: str = Field(
         "incident_summary",
-        description="Type of evidence (e.g., 'incident_summary', 'anomaly_details')"
+        description="Type of evidence (e.g., 'incident_summary', 'anomaly_details')",
     )
     content: str = Field(..., description="Evidence content (markdown or text)")
     source: Optional[str] = Field(
         "anomaly_detection",
-        description="Source of evidence (e.g., 'anomaly_detection', 'rag')"
+        description="Source of evidence (e.g., 'anomaly_detection', 'rag')",
     )
     metadata: Optional[Dict[str, Any]] = Field(
-        None,
-        description="Additional metadata for the evidence"
+        None, description="Additional metadata for the evidence"
     )
 
 
@@ -65,22 +65,25 @@ class AttachEvidenceTool(BaseTool):
                 investigation_uuid = uuid.UUID(investigation_id)
             except ValueError:
                 return {
-                    'error': f'Invalid investigation_id format: {investigation_id}',
-                    'success': False
+                    "error": f"Invalid investigation_id format: {investigation_id}",
+                    "success": False,
                 }
 
-            investigation = db.query(InvestigationState).filter(
-                InvestigationState.investigation_id == investigation_id
-            ).first()
+            investigation = (
+                db.query(InvestigationState)
+                .filter(InvestigationState.investigation_id == investigation_id)
+                .first()
+            )
 
             if not investigation:
                 return {
-                    'error': f'Investigation {investigation_id} not found',
-                    'success': False
+                    "error": f"Investigation {investigation_id} not found",
+                    "success": False,
                 }
 
             # Parse existing progress_json or create new structure
             import json
+
             progress_data = {}
             if investigation.progress_json:
                 try:
@@ -89,21 +92,25 @@ class AttachEvidenceTool(BaseTool):
                     progress_data = {}
 
             # Initialize evidence list if not present
-            if 'evidence' not in progress_data:
-                progress_data['evidence'] = []
+            if "evidence" not in progress_data:
+                progress_data["evidence"] = []
 
             # Create evidence entry
             evidence_entry = {
-                'evidence_id': str(uuid.uuid4()),
-                'evidence_type': evidence_type,
-                'content': content,
-                'source': source,
-                'metadata': metadata or {},
-                'timestamp': investigation.updated_at.isoformat() if investigation.updated_at else None,
+                "evidence_id": str(uuid.uuid4()),
+                "evidence_type": evidence_type,
+                "content": content,
+                "source": source,
+                "metadata": metadata or {},
+                "timestamp": (
+                    investigation.updated_at.isoformat()
+                    if investigation.updated_at
+                    else None
+                ),
             }
 
             # Add evidence to progress
-            progress_data['evidence'].append(evidence_entry)
+            progress_data["evidence"].append(evidence_entry)
 
             # Update progress_json
             investigation.progress_json = json.dumps(progress_data)
@@ -117,16 +124,15 @@ class AttachEvidenceTool(BaseTool):
             )
 
             return {
-                'success': True,
-                'investigation_id': investigation_id,
-                'evidence_id': evidence_entry['evidence_id'],
-                'evidence_type': evidence_type,
+                "success": True,
+                "investigation_id": investigation_id,
+                "evidence_id": evidence_entry["evidence_id"],
+                "evidence_type": evidence_type,
             }
 
         except Exception as e:
             logger.error(f"Attach evidence tool error: {e}", exc_info=True)
             db.rollback()
-            return {'error': str(e), 'success': False}
+            return {"error": str(e), "success": False}
         finally:
             db.close()
-

@@ -4,14 +4,14 @@ Test fraud investigation with real fraud IP from database.
 """
 
 import asyncio
-import sys
 import os
+import sys
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
-from app.service.logging import get_bridge_logger
 from app.service.agent.orchestration.clean_graph_builder import run_investigation
+from app.service.logging import get_bridge_logger
 
 logger = get_bridge_logger(__name__)
 
@@ -19,9 +19,9 @@ logger = get_bridge_logger(__name__)
 async def test_fraud_ip():
     """Test investigation with fraud IP."""
 
-    print("\n" + "="*80)
+    print("\n" + "=" * 80)
     print("🔍 TESTING FRAUD PATTERN DETECTION")
-    print("="*80 + "\n")
+    print("=" * 80 + "\n")
 
     # Use fraud IP from database (China - 167 transactions)
     fraud_ip = "117.22.69.114"
@@ -46,9 +46,9 @@ async def test_fraud_ip():
             run_investigation(
                 entity_id=fraud_ip,
                 entity_type="ip",
-                investigation_id=test_investigation_id
+                investigation_id=test_investigation_id,
             ),
-            timeout=60.0
+            timeout=60.0,
         )
 
         print("-" * 40)
@@ -60,7 +60,7 @@ async def test_fraud_ip():
         print(f"  - Domains Analyzed: {', '.join(result.get('domains_analyzed', []))}")
         print(f"  - Duration: {result.get('duration_ms', 0)}ms")
 
-        if not result['success']:
+        if not result["success"]:
             print(f"\n❌ Error: {result.get('error', 'Unknown error')}")
             return False
 
@@ -70,14 +70,14 @@ async def test_fraud_ip():
         print(f"  - Pattern: IP Clustering (reused 167 times)")
         print(f"  - Associated: Disposable emails, high-risk scores")
 
-        print("\n" + "="*80)
-        if result['success']:
+        print("\n" + "=" * 80)
+        if result["success"]:
             print("✅ FRAUD INVESTIGATION TEST PASSED")
         else:
             print("❌ FRAUD INVESTIGATION TEST FAILED")
-        print("="*80 + "\n")
+        print("=" * 80 + "\n")
 
-        return result['success']
+        return result["success"]
 
     except asyncio.TimeoutError:
         print("\n❌ Test timed out after 60 seconds")
@@ -85,6 +85,7 @@ async def test_fraud_ip():
     except Exception as e:
         print(f"\n❌ Test failed with error: {e}")
         import traceback
+
         traceback.print_exc()
         return False
 

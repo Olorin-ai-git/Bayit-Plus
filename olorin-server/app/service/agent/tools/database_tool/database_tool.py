@@ -9,6 +9,7 @@ from pydantic import BaseModel, Field
 from sqlalchemy import create_engine, inspect, text
 from sqlalchemy.engine import Engine
 from sqlalchemy.exc import SQLAlchemyError
+
 from app.service.logging import get_bridge_logger
 
 logger = get_bridge_logger(__name__)
@@ -65,17 +66,12 @@ class DatabaseQueryTool(BaseTool):
         try:
             # Check if this is a SELECT query (including CTEs that start with WITH)
             query_upper = query.strip().upper()
-            is_select_query = (
-                query_upper.startswith("SELECT") or 
-                query_upper.startswith("WITH")
-            )
-            
+            is_select_query = query_upper.startswith(
+                "SELECT"
+            ) or query_upper.startswith("WITH")
+
             # Add LIMIT clause for SELECT queries if not present
-            if (
-                is_select_query
-                and limit
-                and "LIMIT" not in query_upper
-            ):
+            if is_select_query and limit and "LIMIT" not in query_upper:
                 query = f"{query.rstrip(';')} LIMIT {limit}"
 
             with self.engine.connect() as conn:

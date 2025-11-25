@@ -11,9 +11,10 @@ Constitutional Compliance:
 - Clear error messages for missing configuration
 """
 
+from typing import Literal
+
 from pydantic import Field, field_validator
 from pydantic_settings import BaseSettings
-from typing import Literal
 
 
 class LogProviderConfig(BaseSettings):
@@ -23,14 +24,14 @@ class LogProviderConfig(BaseSettings):
     frontend_log_endpoint: str = Field(
         ...,
         validation_alias="LOGSTREAM_FRONTEND_ENDPOINT",
-        description="Endpoint for frontend log ingestion in local dev mode"
+        description="Endpoint for frontend log ingestion in local dev mode",
     )
 
     # Backend log provider (local dev mode)
     backend_log_endpoint: str = Field(
         ...,
         validation_alias="LOGSTREAM_BACKEND_ENDPOINT",
-        description="Endpoint for backend log storage/retrieval"
+        description="Endpoint for backend log storage/retrieval",
     )
 
     # Provider timeout
@@ -39,14 +40,14 @@ class LogProviderConfig(BaseSettings):
         validation_alias="LOGSTREAM_PROVIDER_TIMEOUT_MS",
         description="Timeout for log provider requests in milliseconds",
         gt=0,
-        le=60000  # Max 60 seconds
+        le=60000,  # Max 60 seconds
     )
 
     model_config = {
         "case_sensitive": False,
         "env_file": ".env",
         "env_file_encoding": "utf-8",
-        "extra": "ignore"
+        "extra": "ignore",
     }
 
 
@@ -59,7 +60,7 @@ class SSEConfig(BaseSettings):
         validation_alias="LOGSTREAM_SSE_HEARTBEAT_INTERVAL_SECONDS",
         description="SSE heartbeat interval to keep connections alive",
         gt=0,
-        le=60
+        le=60,
     )
 
     # Connection timeout
@@ -68,7 +69,7 @@ class SSEConfig(BaseSettings):
         validation_alias="LOGSTREAM_SSE_CONNECTION_TIMEOUT_SECONDS",
         description="SSE connection timeout before auto-disconnect",
         gt=0,
-        le=3600  # Max 1 hour
+        le=3600,  # Max 1 hour
     )
 
     # Retry interval
@@ -77,14 +78,14 @@ class SSEConfig(BaseSettings):
         validation_alias="LOGSTREAM_SSE_RETRY_INTERVAL_MS",
         description="Client retry interval on connection failure",
         gt=0,
-        le=30000  # Max 30 seconds
+        le=30000,  # Max 30 seconds
     )
 
     model_config = {
         "case_sensitive": False,
         "env_file": ".env",
         "env_file_encoding": "utf-8",
-        "extra": "ignore"
+        "extra": "ignore",
     }
 
 
@@ -97,7 +98,7 @@ class AggregatorConfig(BaseSettings):
         validation_alias="LOGSTREAM_CLOCK_SKEW_TOLERANCE_SECONDS",
         description="Clock skew tolerance window for merging logs from different sources",
         gt=0,
-        le=60
+        le=60,
     )
 
     # Buffer size
@@ -106,7 +107,7 @@ class AggregatorConfig(BaseSettings):
         validation_alias="LOGSTREAM_MAX_BUFFER_SIZE",
         description="Maximum buffer size for logs before backpressure",
         gt=0,
-        le=100000
+        le=100000,
     )
 
     # Deduplication window
@@ -115,14 +116,14 @@ class AggregatorConfig(BaseSettings):
         validation_alias="LOGSTREAM_DEDUPLICATION_WINDOW_SECONDS",
         description="Time window for deduplication of log entries",
         gt=0,
-        le=300  # Max 5 minutes
+        le=300,  # Max 5 minutes
     )
 
     model_config = {
         "case_sensitive": False,
         "env_file": ".env",
         "env_file_encoding": "utf-8",
-        "extra": "ignore"
+        "extra": "ignore",
     }
 
 
@@ -133,21 +134,21 @@ class PIIRedactionConfig(BaseSettings):
     enable_pii_redaction: bool = Field(
         ...,
         validation_alias="LOGSTREAM_ENABLE_PII_REDACTION",
-        description="Enable server-side PII redaction before streaming"
+        description="Enable server-side PII redaction before streaming",
     )
 
     # Redaction patterns (pipe-separated regex patterns)
     pii_patterns: str = Field(
         ...,
         validation_alias="LOGSTREAM_PII_PATTERNS",
-        description="Pipe-separated regex patterns for PII detection (e.g., email|ssn|creditcard)"
+        description="Pipe-separated regex patterns for PII detection (e.g., email|ssn|creditcard)",
     )
 
     model_config = {
         "case_sensitive": False,
         "env_file": ".env",
         "env_file_encoding": "utf-8",
-        "extra": "ignore"
+        "extra": "ignore",
     }
 
     @field_validator("pii_patterns")
@@ -155,7 +156,9 @@ class PIIRedactionConfig(BaseSettings):
     def validate_patterns(cls, v: str) -> str:
         """Validate that patterns string is not empty when redaction is enabled"""
         if not v or not v.strip():
-            raise ValueError("PII patterns cannot be empty when PII redaction is enabled")
+            raise ValueError(
+                "PII patterns cannot be empty when PII redaction is enabled"
+            )
         return v
 
 
@@ -168,7 +171,7 @@ class RateLimitConfig(BaseSettings):
         validation_alias="LOGSTREAM_RATE_LIMIT_USER_RPM",
         description="Maximum requests per minute per authenticated user",
         gt=0,
-        le=1000
+        le=1000,
     )
 
     # Requests per minute per investigation
@@ -177,7 +180,7 @@ class RateLimitConfig(BaseSettings):
         validation_alias="LOGSTREAM_RATE_LIMIT_INVESTIGATION_RPM",
         description="Maximum requests per minute per investigation_id",
         gt=0,
-        le=500
+        le=500,
     )
 
     # Concurrent connections per user
@@ -186,14 +189,14 @@ class RateLimitConfig(BaseSettings):
         validation_alias="LOGSTREAM_RATE_LIMIT_CONCURRENT_CONNECTIONS",
         description="Maximum concurrent SSE connections per user",
         gt=0,
-        le=50
+        le=50,
     )
 
     model_config = {
         "case_sensitive": False,
         "env_file": ".env",
         "env_file_encoding": "utf-8",
-        "extra": "ignore"
+        "extra": "ignore",
     }
 
 
@@ -206,7 +209,7 @@ class PollingConfig(BaseSettings):
         validation_alias="LOGSTREAM_POLLING_INTERVAL_MS",
         description="Default polling interval when SSE is unavailable",
         gt=0,
-        le=30000  # Max 30 seconds
+        le=30000,  # Max 30 seconds
     )
 
     # Cursor validity
@@ -215,7 +218,7 @@ class PollingConfig(BaseSettings):
         validation_alias="LOGSTREAM_CURSOR_VALIDITY_SECONDS",
         description="How long cursor tokens remain valid for pagination",
         gt=0,
-        le=3600  # Max 1 hour
+        le=3600,  # Max 1 hour
     )
 
     # ETag cache TTL
@@ -224,14 +227,14 @@ class PollingConfig(BaseSettings):
         validation_alias="LOGSTREAM_ETAG_CACHE_TTL_SECONDS",
         description="Time-to-live for ETag cache entries",
         gt=0,
-        le=300  # Max 5 minutes
+        le=300,  # Max 5 minutes
     )
 
     model_config = {
         "case_sensitive": False,
         "env_file": ".env",
         "env_file_encoding": "utf-8",
-        "extra": "ignore"
+        "extra": "ignore",
     }
 
 
@@ -255,12 +258,12 @@ class LogStreamConfig(BaseSettings):
     enable_log_stream: bool = Field(
         ...,
         validation_alias="LOGSTREAM_ENABLE",
-        description="Master switch to enable/disable log streaming feature"
+        description="Master switch to enable/disable log streaming feature",
     )
 
     model_config = {
         "case_sensitive": False,
         "env_file": ".env",
         "env_file_encoding": "utf-8",
-        "extra": "ignore"
+        "extra": "ignore",
     }

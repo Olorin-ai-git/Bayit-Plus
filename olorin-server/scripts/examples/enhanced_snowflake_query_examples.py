@@ -7,16 +7,25 @@ evidence field collection for fraud investigations.
 """
 
 import asyncio
-import sys
 import os
-from typing import Dict, Any
+import sys
+from typing import Any, Dict
 
 # Add the project root to the path
-sys.path.append(os.path.join(os.path.dirname(__file__), '../..'))
+sys.path.append(os.path.join(os.path.dirname(__file__), "../.."))
 
-from app.service.agent.tools.snowflake_tool.snowflake_tool import SnowflakeQueryTool, REAL_COLUMNS, PRIORITY_EVIDENCE_FIELDS
-from app.service.agent.tools.snowflake_tool.query_builder import SnowflakeQueryBuilder, get_recommended_query_for_entity
-from app.service.agent.tools.snowflake_tool.schema_constants import build_safe_select_columns
+from app.service.agent.tools.snowflake_tool.query_builder import (
+    SnowflakeQueryBuilder,
+    get_recommended_query_for_entity,
+)
+from app.service.agent.tools.snowflake_tool.schema_constants import (
+    build_safe_select_columns,
+)
+from app.service.agent.tools.snowflake_tool.snowflake_tool import (
+    PRIORITY_EVIDENCE_FIELDS,
+    REAL_COLUMNS,
+    SnowflakeQueryTool,
+)
 
 
 def demonstrate_field_improvements():
@@ -29,10 +38,22 @@ def demonstrate_field_improvements():
     print(f"   Priority fields for fast queries: {len(PRIORITY_EVIDENCE_FIELDS)}")
 
     # Show field categories
-    device_fields = [f for f in REAL_COLUMNS if 'DEVICE' in f or f == 'USER_AGENT']
-    risk_fields = [f for f in REAL_COLUMNS if any(keyword in f for keyword in ['SCORE', 'FRAUD', 'RISK'])]
-    payment_fields = [f for f in REAL_COLUMNS if any(keyword in f for keyword in ['CARD', 'BIN', 'PAYMENT'])]
-    user_fields = [f for f in REAL_COLUMNS if any(keyword in f for keyword in ['USER', 'NAME', 'EMAIL', 'PHONE'])]
+    device_fields = [f for f in REAL_COLUMNS if "DEVICE" in f or f == "USER_AGENT"]
+    risk_fields = [
+        f
+        for f in REAL_COLUMNS
+        if any(keyword in f for keyword in ["SCORE", "FRAUD", "RISK"])
+    ]
+    payment_fields = [
+        f
+        for f in REAL_COLUMNS
+        if any(keyword in f for keyword in ["CARD", "BIN", "PAYMENT"])
+    ]
+    user_fields = [
+        f
+        for f in REAL_COLUMNS
+        if any(keyword in f for keyword in ["USER", "NAME", "EMAIL", "PHONE"])
+    ]
 
     print(f"\n🎯 EVIDENCE CATEGORIES:")
     print(f"   Device Analysis: {len(device_fields)} fields")
@@ -61,17 +82,21 @@ def demonstrate_query_builder():
         entity_type="IP",
         entity_id="192.168.1.100",
         investigation_focus="comprehensive",
-        date_range_days=7
+        date_range_days=7,
     )
 
     print(f"   Entity: IP = 192.168.1.100")
     print(f"   Focus: Comprehensive evidence collection")
     print(f"   Fields included: {ip_query_info['metadata']['field_count']}")
-    print(f"   Evidence score: {ip_query_info['validation']['evidence_coverage_score']}")
-    print(f"   Performance: {ip_query_info['metadata']['performance_estimate']['performance_tier']}")
+    print(
+        f"   Evidence score: {ip_query_info['validation']['evidence_coverage_score']}"
+    )
+    print(
+        f"   Performance: {ip_query_info['metadata']['performance_estimate']['performance_tier']}"
+    )
 
     # Show part of the query
-    query_preview = ip_query_info['query'][:200] + "..."
+    query_preview = ip_query_info["query"][:200] + "..."
     print(f"   Query preview: {query_preview}")
 
     # Example 2: Device-Focused Investigation
@@ -80,13 +105,15 @@ def demonstrate_query_builder():
         entity_type="DEVICE_ID",
         entity_id="mobile_device_abc123",
         investigation_focus="device_focus",
-        date_range_days=5
+        date_range_days=5,
     )
 
     print(f"   Entity: DEVICE_ID = mobile_device_abc123")
     print(f"   Focus: Device fingerprinting and analysis")
     print(f"   Fields included: {device_query_info['metadata']['field_count']}")
-    print(f"   Device coverage: {device_query_info['validation']['coverage_by_category']['device_analysis']}")
+    print(
+        f"   Device coverage: {device_query_info['validation']['coverage_by_category']['device_analysis']}"
+    )
 
     # Example 3: Payment Analysis
     print(f"\n💳 PAYMENT METHOD INVESTIGATION:")
@@ -94,13 +121,15 @@ def demonstrate_query_builder():
         entity_type="CARD",
         entity_id="4111111111111111",
         investigation_focus="payment_analysis",
-        date_range_days=14
+        date_range_days=14,
     )
 
     print(f"   Entity: CARD = 4111111111111111")
     print(f"   Focus: Payment method and card analysis")
     print(f"   Fields included: {payment_query_info['metadata']['field_count']}")
-    print(f"   Payment coverage: {payment_query_info['validation']['coverage_by_category']['payment_analysis']}")
+    print(
+        f"   Payment coverage: {payment_query_info['validation']['coverage_by_category']['payment_analysis']}"
+    )
 
 
 def demonstrate_performance_optimization():
@@ -115,10 +144,10 @@ def demonstrate_performance_optimization():
         entity_id="suspect@example.com",
         investigation_focus="minimal",
         date_range_days=3,
-        limit=500
+        limit=500,
     )
 
-    perf = fast_query_info['metadata']['performance_estimate']
+    perf = fast_query_info["metadata"]["performance_estimate"]
     print(f"   Fields: {fast_query_info['metadata']['field_count']}")
     print(f"   Estimated time: {perf['estimated_execution_time_ms']}ms")
     print(f"   Performance tier: {perf['performance_tier']}")
@@ -131,10 +160,10 @@ def demonstrate_performance_optimization():
         entity_id="suspect@example.com",
         investigation_focus="comprehensive",
         date_range_days=30,
-        limit=5000
+        limit=5000,
     )
 
-    comp_perf = comprehensive_query_info['metadata']['performance_estimate']
+    comp_perf = comprehensive_query_info["metadata"]["performance_estimate"]
     print(f"   Fields: {comprehensive_query_info['metadata']['field_count']}")
     print(f"   Estimated time: {comp_perf['estimated_execution_time_ms']}ms")
     print(f"   Performance tier: {comp_perf['performance_tier']}")
@@ -150,7 +179,10 @@ def demonstrate_query_validation():
 
     # Example of incomplete query
     print(f"\n❌ INCOMPLETE QUERY EXAMPLE:")
-    from app.service.agent.tools.snowflake_tool.schema_constants import get_full_table_name
+    from app.service.agent.tools.snowflake_tool.schema_constants import (
+        get_full_table_name,
+    )
+
     incomplete_query = f"""
     SELECT TX_ID_KEY, EMAIL, PAID_AMOUNT_VALUE_IN_CURRENCY
     FROM {get_full_table_name()}
@@ -162,15 +194,13 @@ def demonstrate_query_validation():
     print(f"   Missing critical fields: {len(validation['missing_critical_fields'])}")
     print(f"   Evidence score: {validation['total_evidence_score']}")
     print(f"   Key recommendations:")
-    for rec in validation['recommendations'][:3]:
+    for rec in validation["recommendations"][:3]:
         print(f"     • {rec}")
 
     # Example of comprehensive query
     print(f"\n✅ COMPREHENSIVE QUERY EXAMPLE:")
     comprehensive_query = get_recommended_query_for_entity(
-        entity_type="IP",
-        entity_id="203.0.113.5",
-        investigation_focus="comprehensive"
+        entity_type="IP", entity_id="203.0.113.5", investigation_focus="comprehensive"
     )
 
     comp_validation = tool.validate_query_fields(comprehensive_query)
@@ -191,7 +221,7 @@ def demonstrate_convenience_functions():
         entity_type="USER_ID",
         entity_id="user_12345",
         investigation_focus="core_fraud",
-        date_range_days=7
+        date_range_days=7,
     )
 
     print(f"   Generated query length: {len(quick_query)} characters")
@@ -199,7 +229,7 @@ def demonstrate_convenience_functions():
     print(f"   Investigation focus: Core fraud detection")
 
     # Show first few lines of query
-    query_lines = quick_query.strip().split('\n')[:5]
+    query_lines = quick_query.strip().split("\n")[:5]
     print(f"   Query preview:")
     for line in query_lines:
         print(f"     {line.strip()}")
@@ -212,12 +242,14 @@ def demonstrate_convenience_functions():
         entity_type="PHONE",
         entity_id="+1-555-123-4567",
         investigation_focus="user_profile",
-        date_range_days=10
+        date_range_days=10,
     )
 
     print(f"   Method: get_optimized_investigation_query()")
     print(f"   Returns: Complete query info with metadata")
-    print(f"   Evidence score: {optimized_info['validation']['evidence_coverage_score']}")
+    print(
+        f"   Evidence score: {optimized_info['validation']['evidence_coverage_score']}"
+    )
     print(f"   Query complexity: {optimized_info['metadata']['query_complexity']}")
 
 

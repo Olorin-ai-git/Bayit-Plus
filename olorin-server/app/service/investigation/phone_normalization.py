@@ -14,6 +14,7 @@ from typing import Optional
 
 try:
     import phonenumbers
+
     PHONENUMBERS_AVAILABLE = True
 except ImportError:
     PHONENUMBERS_AVAILABLE = False
@@ -23,7 +24,7 @@ from app.service.logging import get_bridge_logger
 logger = get_bridge_logger(__name__)
 
 # E164 regex pattern: ^\+[1-9]\d{1,14}$
-E164_PATTERN = re.compile(r'^\+[1-9]\d{1,14}$')
+E164_PATTERN = re.compile(r"^\+[1-9]\d{1,14}$")
 
 
 def normalize_phone_to_e164(phone: str) -> Optional[str]:
@@ -48,7 +49,9 @@ def normalize_phone_to_e164(phone: str) -> Optional[str]:
         try:
             parsed = phonenumbers.parse(phone, None)
             if phonenumbers.is_valid_number(parsed):
-                return phonenumbers.format_number(parsed, phonenumbers.PhoneNumberFormat.E164)
+                return phonenumbers.format_number(
+                    parsed, phonenumbers.PhoneNumberFormat.E164
+                )
         except Exception as e:
             logger.warning(f"phonenumbers library failed to parse {phone}: {e}")
 
@@ -59,4 +62,3 @@ def normalize_phone_to_e164(phone: str) -> Optional[str]:
             return phone_with_plus
 
     return None
-

@@ -10,25 +10,25 @@ Strategy: Aggressive high-recall (target >85% recall, accept 15-20% FPR)
 """
 
 import logging
+import statistics
+from collections import defaultdict
 from datetime import datetime, timedelta
 from typing import Any, Dict, List, Optional
-from collections import defaultdict
-import statistics
 
 logger = logging.getLogger(__name__)
 
 # Temporal Pattern Constants (Aggressive Strategy)
 TIME_SERIES_WINDOW_HOURS = 24  # Analysis window
-TIME_SERIES_BUCKET_HOURS = 2   # Bucket size for time series
-CADENCE_MIN_TRANSACTIONS = 3   # Minimum transactions to detect cadence
+TIME_SERIES_BUCKET_HOURS = 2  # Bucket size for time series
+CADENCE_MIN_TRANSACTIONS = 3  # Minimum transactions to detect cadence
 CADENCE_IRREGULARITY_THRESHOLD = 1.5  # Z-score for irregular cadence (relaxed)
-FIRST_TX_THRESHOLD_HOURS = 2   # New account immediate transaction threshold
+FIRST_TX_THRESHOLD_HOURS = 2  # New account immediate transaction threshold
 FIRST_TX_HIGH_AMOUNT_PERCENTILE = 0.60  # P60 threshold for high amounts (relaxed)
 
 # Risk Adjustments
 TIME_SERIES_ANOMALY_RISK = 0.12  # +12% risk adjustment
-IRREGULAR_CADENCE_RISK = 0.10    # +10% risk adjustment
-FIRST_TX_VELOCITY_RISK = 0.15    # +15% risk adjustment
+IRREGULAR_CADENCE_RISK = 0.10  # +10% risk adjustment
+FIRST_TX_VELOCITY_RISK = 0.15  # +15% risk adjustment
 
 
 class TemporalPatternRecognizer:
@@ -43,13 +43,15 @@ class TemporalPatternRecognizer:
 
     def __init__(self):
         """Initialize the temporal pattern recognizer."""
-        logger.info("🕒 Initializing TemporalPatternRecognizer (aggressive high-recall strategy)")
+        logger.info(
+            "🕒 Initializing TemporalPatternRecognizer (aggressive high-recall strategy)"
+        )
 
     def recognize(
         self,
         processed_data: Dict[str, Any],
         minimum_support: float = 0.1,
-        historical_patterns: Optional[Dict[str, Any]] = None
+        historical_patterns: Optional[Dict[str, Any]] = None,
     ) -> Dict[str, Any]:
         """
         Recognize temporal patterns in transaction data.
@@ -75,7 +77,9 @@ class TemporalPatternRecognizer:
             # Detect all temporal patterns
             time_series_patterns = self._detect_time_series_anomalies(events)
             cadence_patterns = self._detect_irregular_cadence(events)
-            first_tx_patterns = self._detect_first_transaction_velocity(events, historical_patterns)
+            first_tx_patterns = self._detect_first_transaction_velocity(
+                events, historical_patterns
+            )
 
             # Combine all patterns
             all_patterns = time_series_patterns + cadence_patterns + first_tx_patterns
@@ -87,10 +91,12 @@ class TemporalPatternRecognizer:
             pattern_breakdown = {
                 "time_series_anomaly": len(time_series_patterns),
                 "irregular_cadence": len(cadence_patterns),
-                "first_transaction_velocity": len(first_tx_patterns)
+                "first_transaction_velocity": len(first_tx_patterns),
             }
 
-            logger.info(f"✅ Temporal pattern recognition complete: {len(all_patterns)} patterns detected")
+            logger.info(
+                f"✅ Temporal pattern recognition complete: {len(all_patterns)} patterns detected"
+            )
             logger.info(f"📊 Pattern breakdown: {pattern_breakdown}")
 
             return {
@@ -99,14 +105,18 @@ class TemporalPatternRecognizer:
                 "total_patterns_detected": len(all_patterns),
                 "confidence": confidence,
                 "pattern_breakdown": pattern_breakdown,
-                "minimum_support": minimum_support
+                "minimum_support": minimum_support,
             }
 
         except Exception as e:
-            logger.error(f"❌ Error in temporal pattern recognition: {str(e)}", exc_info=True)
+            logger.error(
+                f"❌ Error in temporal pattern recognition: {str(e)}", exc_info=True
+            )
             return {"success": False, "error": str(e), "patterns": []}
 
-    def _detect_time_series_anomalies(self, events: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
+    def _detect_time_series_anomalies(
+        self, events: List[Dict[str, Any]]
+    ) -> List[Dict[str, Any]]:
         """
         Detect time series anomalies (spikes/drops in volume or amounts).
 
@@ -121,7 +131,7 @@ class TemporalPatternRecognizer:
             # Sort events by timestamp
             sorted_events = sorted(
                 [e for e in events if self._extract_timestamp(e)],
-                key=lambda x: self._extract_timestamp(x)
+                key=lambda x: self._extract_timestamp(x),
             )
 
             if len(sorted_events) < 3:
@@ -142,14 +152,12 @@ class TemporalPatternRecognizer:
 
             # Detect volume anomalies
             volume_anomalies = self._detect_statistical_anomalies(
-                bucket_volumes,
-                threshold=CADENCE_IRREGULARITY_THRESHOLD
+                bucket_volumes, threshold=CADENCE_IRREGULARITY_THRESHOLD
             )
 
             # Detect amount anomalies
             amount_anomalies = self._detect_statistical_anomalies(
-                bucket_amounts,
-                threshold=CADENCE_IRREGULARITY_THRESHOLD
+                bucket_amounts, threshold=CADENCE_IRREGULARITY_THRESHOLD
             )
 
             # Create pattern if anomalies detected
@@ -160,7 +168,9 @@ class TemporalPatternRecognizer:
                     "pattern_type": "time_series_anomaly",
                     "pattern_name": "Time Series Anomaly",
                     "description": "Detected unusual spikes or drops in transaction volume or amounts over time",
-                    "confidence": 0.75 if (volume_anomalies and amount_anomalies) else 0.65,
+                    "confidence": (
+                        0.75 if (volume_anomalies and amount_anomalies) else 0.65
+                    ),
                     "risk_adjustment": TIME_SERIES_ANOMALY_RISK,
                     "affected_count": len(sorted_events),
                     "evidence": {
@@ -168,18 +178,24 @@ class TemporalPatternRecognizer:
                         "amount_anomalies": amount_anomalies,
                         "bucket_count": len(buckets),
                         "bucket_size_hours": TIME_SERIES_BUCKET_HOURS,
-                        "anomaly_timestamps": [bucket_times[i] for i in volume_anomalies[:3]]
-                    }
+                        "anomaly_timestamps": [
+                            bucket_times[i] for i in volume_anomalies[:3]
+                        ],
+                    },
                 }
                 patterns.append(pattern)
-                logger.info(f"🔴 Time series anomaly detected: {len(volume_anomalies)} volume, {len(amount_anomalies)} amount")
+                logger.info(
+                    f"🔴 Time series anomaly detected: {len(volume_anomalies)} volume, {len(amount_anomalies)} amount"
+                )
 
         except Exception as e:
             logger.error(f"❌ Error detecting time series anomalies: {str(e)}")
 
         return patterns
 
-    def _detect_irregular_cadence(self, events: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
+    def _detect_irregular_cadence(
+        self, events: List[Dict[str, Any]]
+    ) -> List[Dict[str, Any]]:
         """
         Detect irregular transaction cadence (timing patterns).
 
@@ -194,7 +210,7 @@ class TemporalPatternRecognizer:
             # Sort events by timestamp
             sorted_events = sorted(
                 [e for e in events if self._extract_timestamp(e)],
-                key=lambda x: self._extract_timestamp(x)
+                key=lambda x: self._extract_timestamp(x),
             )
 
             if len(sorted_events) < CADENCE_MIN_TRANSACTIONS:
@@ -203,7 +219,7 @@ class TemporalPatternRecognizer:
             # Calculate inter-transaction intervals (in minutes)
             intervals = []
             for i in range(1, len(sorted_events)):
-                prev_ts = self._extract_timestamp(sorted_events[i-1])
+                prev_ts = self._extract_timestamp(sorted_events[i - 1])
                 curr_ts = self._extract_timestamp(sorted_events[i])
                 if prev_ts and curr_ts:
                     interval_minutes = (curr_ts - prev_ts).total_seconds() / 60
@@ -233,7 +249,9 @@ class TemporalPatternRecognizer:
                     "pattern_type": "irregular_cadence",
                     "pattern_name": "Irregular Transaction Cadence",
                     "description": "Detected highly irregular transaction timing pattern",
-                    "confidence": min(0.85, 0.60 + (cv - CADENCE_IRREGULARITY_THRESHOLD) * 0.10),
+                    "confidence": min(
+                        0.85, 0.60 + (cv - CADENCE_IRREGULARITY_THRESHOLD) * 0.10
+                    ),
                     "risk_adjustment": IRREGULAR_CADENCE_RISK,
                     "affected_count": len(sorted_events),
                     "evidence": {
@@ -242,11 +260,13 @@ class TemporalPatternRecognizer:
                         "std_interval_minutes": round(std_interval, 2),
                         "short_interval_count": short_intervals,
                         "long_interval_count": long_intervals,
-                        "total_intervals": len(intervals)
-                    }
+                        "total_intervals": len(intervals),
+                    },
                 }
                 patterns.append(pattern)
-                logger.info(f"🔴 Irregular cadence detected: CV={cv:.2f}, mean={mean_interval:.2f}min")
+                logger.info(
+                    f"🔴 Irregular cadence detected: CV={cv:.2f}, mean={mean_interval:.2f}min"
+                )
 
         except Exception as e:
             logger.error(f"❌ Error detecting irregular cadence: {str(e)}")
@@ -256,7 +276,7 @@ class TemporalPatternRecognizer:
     def _detect_first_transaction_velocity(
         self,
         events: List[Dict[str, Any]],
-        historical_patterns: Optional[Dict[str, Any]] = None
+        historical_patterns: Optional[Dict[str, Any]] = None,
     ) -> List[Dict[str, Any]]:
         """
         Detect suspicious time-to-first-transaction patterns.
@@ -269,7 +289,7 @@ class TemporalPatternRecognizer:
             # Sort events by timestamp
             sorted_events = sorted(
                 [e for e in events if self._extract_timestamp(e)],
-                key=lambda x: self._extract_timestamp(x)
+                key=lambda x: self._extract_timestamp(x),
             )
 
             if not sorted_events:
@@ -284,28 +304,44 @@ class TemporalPatternRecognizer:
 
             # Check if this is a "new account" scenario
             # Use historical patterns to determine account age, or assume all events are recent
-            account_creation_time = historical_patterns.get("account_creation_time") if historical_patterns else None
+            account_creation_time = (
+                historical_patterns.get("account_creation_time")
+                if historical_patterns
+                else None
+            )
 
             if account_creation_time:
-                time_to_first_tx = (first_ts - account_creation_time).total_seconds() / 3600  # hours
+                time_to_first_tx = (
+                    first_ts - account_creation_time
+                ).total_seconds() / 3600  # hours
             else:
                 # Assume very short time if no historical data
                 time_to_first_tx = 0.5  # Default: 30 minutes
 
             # Calculate amount percentile among all events
-            all_amounts = [self._extract_amount(e) for e in sorted_events if self._extract_amount(e) is not None]
+            all_amounts = [
+                self._extract_amount(e)
+                for e in sorted_events
+                if self._extract_amount(e) is not None
+            ]
             if not all_amounts:
                 return []
 
-            amount_percentile = sum(1 for a in all_amounts if a <= first_amount) / len(all_amounts)
+            amount_percentile = sum(1 for a in all_amounts if a <= first_amount) / len(
+                all_amounts
+            )
 
             # Detect suspicious first transaction: quick + high amount (relaxed thresholds)
-            if time_to_first_tx <= FIRST_TX_THRESHOLD_HOURS and amount_percentile >= FIRST_TX_HIGH_AMOUNT_PERCENTILE:
+            if (
+                time_to_first_tx <= FIRST_TX_THRESHOLD_HOURS
+                and amount_percentile >= FIRST_TX_HIGH_AMOUNT_PERCENTILE
+            ):
                 pattern = {
                     "pattern_type": "first_transaction_velocity",
                     "pattern_name": "Suspicious First Transaction Velocity",
                     "description": "New account with immediate high-value transaction",
-                    "confidence": 0.70 + (amount_percentile - FIRST_TX_HIGH_AMOUNT_PERCENTILE) * 0.5,
+                    "confidence": 0.70
+                    + (amount_percentile - FIRST_TX_HIGH_AMOUNT_PERCENTILE) * 0.5,
                     "risk_adjustment": FIRST_TX_VELOCITY_RISK,
                     "affected_count": 1,
                     "evidence": {
@@ -313,11 +349,14 @@ class TemporalPatternRecognizer:
                         "first_transaction_amount": first_amount,
                         "amount_percentile": round(amount_percentile, 2),
                         "threshold_hours": FIRST_TX_THRESHOLD_HOURS,
-                        "first_transaction_id": first_event.get("TX_ID_KEY") or first_event.get("transaction_id")
-                    }
+                        "first_transaction_id": first_event.get("TX_ID_KEY")
+                        or first_event.get("transaction_id"),
+                    },
                 }
                 patterns.append(pattern)
-                logger.info(f"🔴 First transaction velocity detected: {time_to_first_tx:.2f}h, P{amount_percentile*100:.0f} amount")
+                logger.info(
+                    f"🔴 First transaction velocity detected: {time_to_first_tx:.2f}h, P{amount_percentile*100:.0f} amount"
+                )
 
         except Exception as e:
             logger.error(f"❌ Error detecting first transaction velocity: {str(e)}")
@@ -325,9 +364,7 @@ class TemporalPatternRecognizer:
         return patterns
 
     def _create_time_buckets(
-        self,
-        events: List[Dict[str, Any]],
-        bucket_hours: int
+        self, events: List[Dict[str, Any]], bucket_hours: int
     ) -> Dict[datetime, List[Dict[str, Any]]]:
         """Create time buckets for events."""
         buckets = defaultdict(list)
@@ -354,9 +391,7 @@ class TemporalPatternRecognizer:
         return buckets
 
     def _detect_statistical_anomalies(
-        self,
-        values: List[float],
-        threshold: float = 1.5
+        self, values: List[float], threshold: float = 1.5
     ) -> List[int]:
         """Detect anomalies using z-score analysis."""
         if len(values) < 2:
@@ -381,7 +416,9 @@ class TemporalPatternRecognizer:
             logger.error(f"❌ Error in statistical anomaly detection: {str(e)}")
             return []
 
-    def _calculate_confidence(self, patterns: List[Dict[str, Any]], total_events: int) -> float:
+    def _calculate_confidence(
+        self, patterns: List[Dict[str, Any]], total_events: int
+    ) -> float:
         """
         Calculate overall confidence score with ensemble boosting.
 
@@ -399,7 +436,9 @@ class TemporalPatternRecognizer:
 
         # Affected transaction ratio boost
         max_affected = max(p["affected_count"] for p in patterns)
-        coverage_boost = min(0.10, (max_affected / total_events) * 0.10)  # Up to +10% boost
+        coverage_boost = min(
+            0.10, (max_affected / total_events) * 0.10
+        )  # Up to +10% boost
 
         final_confidence = min(1.0, base_confidence + ensemble_boost + coverage_boost)
 
@@ -412,7 +451,7 @@ class TemporalPatternRecognizer:
             "amount",
             "transaction_amount",
             "value",
-            "total"
+            "total",
         ]
 
         for field in amount_fields:
@@ -431,7 +470,7 @@ class TemporalPatternRecognizer:
             "timestamp",
             "created_at",
             "transaction_time",
-            "event_time"
+            "event_time",
         ]
 
         for field in timestamp_fields:
@@ -458,6 +497,6 @@ class TemporalPatternRecognizer:
             "pattern_breakdown": {
                 "time_series_anomaly": 0,
                 "irregular_cadence": 0,
-                "first_transaction_velocity": 0
-            }
+                "first_transaction_velocity": 0,
+            },
         }

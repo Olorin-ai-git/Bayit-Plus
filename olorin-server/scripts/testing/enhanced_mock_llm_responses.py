@@ -13,15 +13,15 @@ ONLY ACTIVATED when TEST_MODE=mock environment variable is set.
 """
 
 import random
-from typing import Dict, Any, Optional, List, Tuple
 from dataclasses import dataclass
+from typing import Any, Dict, List, Optional, Tuple
 
+from app.service.logging import get_bridge_logger
 from scripts.testing.mock_llm_responses import (
     MockLLMResponseGenerator,
+    MockRiskProfile,
     ScenarioType,
-    MockRiskProfile
 )
-from app.service.logging import get_bridge_logger
 
 logger = get_bridge_logger(__name__)
 
@@ -29,6 +29,7 @@ logger = get_bridge_logger(__name__)
 @dataclass
 class RiskComponentScore:
     """Risk score with component breakdown and reasoning"""
+
     score: float
     confidence: int
     components: Dict[str, float]  # e.g., {"VPN detection": 0.80, "proxy chains": 0.65}
@@ -87,7 +88,7 @@ class EnhancedMockLLMResponseGenerator(MockLLMResponseGenerator):
                 "Assessing attack sophistication levels...",
                 "Determining primary threat vectors...",
                 "Evaluating cross-domain pattern consistency...",
-            ]
+            ],
         }
 
     def _initialize_component_weights(self) -> Dict[str, Dict[str, float]]:
@@ -131,10 +132,7 @@ class EnhancedMockLLMResponseGenerator(MockLLMResponseGenerator):
         }
 
     def _calculate_component_risk_scores(
-        self,
-        domain: str,
-        base_risk: float,
-        entity_risk_score: Optional[float] = None
+        self, domain: str, base_risk: float, entity_risk_score: Optional[float] = None
     ) -> RiskComponentScore:
         """Calculate detailed component-level risk scores"""
 
@@ -154,7 +152,9 @@ class EnhancedMockLLMResponseGenerator(MockLLMResponseGenerator):
 
         # Calculate confidence based on consistency of components
         component_values = list(components.values())
-        variance = sum((x - base_risk) ** 2 for x in component_values) / len(component_values)
+        variance = sum((x - base_risk) ** 2 for x in component_values) / len(
+            component_values
+        )
         consistency = max(0, 1 - variance)
         confidence = int(70 + consistency * 25)  # 70-95% range
 
@@ -171,7 +171,7 @@ class EnhancedMockLLMResponseGenerator(MockLLMResponseGenerator):
             confidence=confidence,
             components=components,
             reasoning=reasoning,
-            evidence=evidence
+            evidence=evidence,
         )
 
     def _generate_component_reasoning(
@@ -179,27 +179,29 @@ class EnhancedMockLLMResponseGenerator(MockLLMResponseGenerator):
         domain: str,
         components: Dict[str, float],
         overall_risk: float,
-        entity_risk_score: Optional[float]
+        entity_risk_score: Optional[float],
     ) -> str:
         """Generate evidence-based reasoning for risk score"""
 
         high_components = [
-            (name, score) for name, score in components.items()
-            if score >= 0.7
+            (name, score) for name, score in components.items() if score >= 0.7
         ]
         medium_components = [
-            (name, score) for name, score in components.items()
-            if 0.4 <= score < 0.7
+            (name, score) for name, score in components.items() if 0.4 <= score < 0.7
         ]
 
         reasoning_parts = []
 
         if high_components:
-            high_items = ", ".join([f"{name} ({score:.2f})" for name, score in high_components])
+            high_items = ", ".join(
+                [f"{name} ({score:.2f})" for name, score in high_components]
+            )
             reasoning_parts.append(f"High-risk components detected: {high_items}")
 
         if medium_components:
-            medium_items = ", ".join([f"{name} ({score:.2f})" for name, score in medium_components])
+            medium_items = ", ".join(
+                [f"{name} ({score:.2f})" for name, score in medium_components]
+            )
             reasoning_parts.append(f"Medium-risk indicators identified: {medium_items}")
 
         if entity_risk_score and entity_risk_score > 0.7:
@@ -215,7 +217,9 @@ class EnhancedMockLLMResponseGenerator(MockLLMResponseGenerator):
 
         return " ".join(reasoning_parts)
 
-    def _extract_evidence_items(self, domain: str, components: Dict[str, float]) -> List[str]:
+    def _extract_evidence_items(
+        self, domain: str, components: Dict[str, float]
+    ) -> List[str]:
         """Extract evidence items from components"""
         evidence = []
 
@@ -225,9 +229,15 @@ class EnhancedMockLLMResponseGenerator(MockLLMResponseGenerator):
             elif score >= 0.5:
                 evidence.append(f"Moderate evidence: {component_name} at {score:.2f}")
 
-        return evidence if evidence else ["Analysis completed with measured risk indicators"]
+        return (
+            evidence
+            if evidence
+            else ["Analysis completed with measured risk indicators"]
+        )
 
-    def generate_chain_of_thought(self, domain: str, scenario: ScenarioType) -> List[str]:
+    def generate_chain_of_thought(
+        self, domain: str, scenario: ScenarioType
+    ) -> List[str]:
         """Generate chain-of-thought reasoning steps"""
         templates = self.thought_templates.get(domain, [])
 
@@ -244,13 +254,15 @@ class EnhancedMockLLMResponseGenerator(MockLLMResponseGenerator):
         self,
         scenario: ScenarioType,
         investigation_id: str,
-        entity_risk_score: Optional[float] = None
+        entity_risk_score: Optional[float] = None,
     ) -> str:
         """Generate enhanced network analysis response with chain-of-thought"""
 
         logger.warning("⚠️  USING ENHANCED MOCK LLM - WITH CHAIN-OF-THOUGHT REASONING")
 
-        profile = self.risk_profiles.get(scenario, self.risk_profiles[ScenarioType.DEFAULT])
+        profile = self.risk_profiles.get(
+            scenario, self.risk_profiles[ScenarioType.DEFAULT]
+        )
         templates = self.response_templates["network"]
 
         # Calculate base risk
@@ -270,16 +282,22 @@ class EnhancedMockLLMResponseGenerator(MockLLMResponseGenerator):
 
         # Select indicators and mitigations
         num_indicators = random.randint(2, 4)
-        indicators = random.sample(templates["indicators"], min(num_indicators, len(templates["indicators"])))
-        mitigations = random.sample(templates["mitigations"], min(2, len(templates["mitigations"])))
+        indicators = random.sample(
+            templates["indicators"], min(num_indicators, len(templates["indicators"]))
+        )
+        mitigations = random.sample(
+            templates["mitigations"], min(2, len(templates["mitigations"]))
+        )
 
         risk_level = self._get_risk_level(component_risk.score)
 
         # Format component breakdown
-        component_breakdown = "\n".join([
-            f"  - {name}: {score:.2f}"
-            for name, score in component_risk.components.items()
-        ])
+        component_breakdown = "\n".join(
+            [
+                f"  - {name}: {score:.2f}"
+                for name, score in component_risk.components.items()
+            ]
+        )
 
         thought_process = "\n".join([f"  • {thought}" for thought in thoughts])
 
@@ -314,20 +332,24 @@ CONFIDENCE: {component_risk.confidence}
 Investigation {investigation_id}: Network analysis shows {len(indicators)} critical indicators.
 Pattern analysis indicates {'coordinated malicious activity' if component_risk.score > 0.7 else 'suspicious patterns'}."""
 
-        logger.info(f"Generated enhanced network response: risk={component_risk.score:.2f}")
+        logger.info(
+            f"Generated enhanced network response: risk={component_risk.score:.2f}"
+        )
         return response
 
     def generate_enhanced_device_response(
         self,
         scenario: ScenarioType,
         investigation_id: str,
-        entity_risk_score: Optional[float] = None
+        entity_risk_score: Optional[float] = None,
     ) -> str:
         """Generate enhanced device analysis response with chain-of-thought"""
 
         logger.warning("⚠️  USING ENHANCED MOCK LLM - WITH CHAIN-OF-THOUGHT REASONING")
 
-        profile = self.risk_profiles.get(scenario, self.risk_profiles[ScenarioType.DEFAULT])
+        profile = self.risk_profiles.get(
+            scenario, self.risk_profiles[ScenarioType.DEFAULT]
+        )
         templates = self.response_templates["device"]
 
         # Calculate base risk
@@ -347,16 +369,20 @@ Pattern analysis indicates {'coordinated malicious activity' if component_risk.s
 
         # Select indicators
         num_indicators = random.randint(2, 3)
-        indicators = random.sample(templates["indicators"], min(num_indicators, len(templates["indicators"])))
+        indicators = random.sample(
+            templates["indicators"], min(num_indicators, len(templates["indicators"]))
+        )
         actions = random.sample(templates["actions"], min(2, len(templates["actions"])))
 
         risk_level = self._get_risk_level(component_risk.score)
 
         # Format component breakdown
-        component_breakdown = "\n".join([
-            f"  - {name}: {score:.2f}"
-            for name, score in component_risk.components.items()
-        ])
+        component_breakdown = "\n".join(
+            [
+                f"  - {name}: {score:.2f}"
+                for name, score in component_risk.components.items()
+            ]
+        )
 
         thought_process = "\n".join([f"  • {thought}" for thought in thoughts])
 
@@ -391,20 +417,24 @@ CONFIDENCE: {component_risk.confidence}
 Investigation {investigation_id}: Device analysis reveals {len(indicators)} significant anomalies.
 The combination of indicators strongly suggests {'device spoofing' if component_risk.score > 0.7 else 'device anomalies'}."""
 
-        logger.info(f"Generated enhanced device response: risk={component_risk.score:.2f}")
+        logger.info(
+            f"Generated enhanced device response: risk={component_risk.score:.2f}"
+        )
         return response
 
     def generate_enhanced_location_response(
         self,
         scenario: ScenarioType,
         investigation_id: str,
-        entity_risk_score: Optional[float] = None
+        entity_risk_score: Optional[float] = None,
     ) -> str:
         """Generate enhanced location analysis response with chain-of-thought"""
 
         logger.warning("⚠️  USING ENHANCED MOCK LLM - WITH CHAIN-OF-THOUGHT REASONING")
 
-        profile = self.risk_profiles.get(scenario, self.risk_profiles[ScenarioType.DEFAULT])
+        profile = self.risk_profiles.get(
+            scenario, self.risk_profiles[ScenarioType.DEFAULT]
+        )
         templates = self.response_templates["location"]
 
         # Calculate base risk
@@ -424,16 +454,22 @@ The combination of indicators strongly suggests {'device spoofing' if component_
 
         # Select anomalies
         num_anomalies = random.randint(1, 3)
-        anomalies = random.sample(templates["anomalies"], min(num_anomalies, len(templates["anomalies"])))
-        verification = random.sample(templates["verification"], min(2, len(templates["verification"])))
+        anomalies = random.sample(
+            templates["anomalies"], min(num_anomalies, len(templates["anomalies"]))
+        )
+        verification = random.sample(
+            templates["verification"], min(2, len(templates["verification"]))
+        )
 
         risk_level = self._get_risk_level(component_risk.score)
 
         # Format component breakdown
-        component_breakdown = "\n".join([
-            f"  - {name}: {score:.2f}"
-            for name, score in component_risk.components.items()
-        ])
+        component_breakdown = "\n".join(
+            [
+                f"  - {name}: {score:.2f}"
+                for name, score in component_risk.components.items()
+            ]
+        )
 
         thought_process = "\n".join([f"  • {thought}" for thought in thoughts])
 
@@ -468,20 +504,24 @@ CONFIDENCE: {component_risk.confidence}
 Investigation {investigation_id}: Location analysis shows {len(anomalies)} critical inconsistencies.
 Pattern analysis indicates {'sophisticated location spoofing' if component_risk.score > 0.7 else 'location anomalies'}."""
 
-        logger.info(f"Generated enhanced location response: risk={component_risk.score:.2f}")
+        logger.info(
+            f"Generated enhanced location response: risk={component_risk.score:.2f}"
+        )
         return response
 
     def generate_enhanced_logs_response(
         self,
         scenario: ScenarioType,
         investigation_id: str,
-        entity_risk_score: Optional[float] = None
+        entity_risk_score: Optional[float] = None,
     ) -> str:
         """Generate enhanced logs analysis response with chain-of-thought"""
 
         logger.warning("⚠️  USING ENHANCED MOCK LLM - WITH CHAIN-OF-THOUGHT REASONING")
 
-        profile = self.risk_profiles.get(scenario, self.risk_profiles[ScenarioType.DEFAULT])
+        profile = self.risk_profiles.get(
+            scenario, self.risk_profiles[ScenarioType.DEFAULT]
+        )
         templates = self.response_templates["logs"]
 
         # Calculate base risk
@@ -501,16 +541,22 @@ Pattern analysis indicates {'sophisticated location spoofing' if component_risk.
 
         # Select patterns
         num_patterns = random.randint(2, 4)
-        patterns = random.sample(templates["patterns"], min(num_patterns, len(templates["patterns"])))
-        monitoring = random.sample(templates["monitoring"], min(2, len(templates["monitoring"])))
+        patterns = random.sample(
+            templates["patterns"], min(num_patterns, len(templates["patterns"]))
+        )
+        monitoring = random.sample(
+            templates["monitoring"], min(2, len(templates["monitoring"]))
+        )
 
         risk_level = self._get_risk_level(component_risk.score)
 
         # Format component breakdown
-        component_breakdown = "\n".join([
-            f"  - {name}: {score:.2f}"
-            for name, score in component_risk.components.items()
-        ])
+        component_breakdown = "\n".join(
+            [
+                f"  - {name}: {score:.2f}"
+                for name, score in component_risk.components.items()
+            ]
+        )
 
         thought_process = "\n".join([f"  • {thought}" for thought in thoughts])
 
@@ -518,7 +564,7 @@ Pattern analysis indicates {'sophisticated location spoofing' if component_risk.
         timeline_events = [
             "Initial anomaly detected: 14:30 UTC",
             f"Pattern escalation observed: {14 + random.randint(1, 3)}:{random.randint(15, 45)} UTC",
-            f"Suspicious activity peak: {15 + random.randint(0, 2)}:{random.randint(10, 50)} UTC"
+            f"Suspicious activity peak: {15 + random.randint(0, 2)}:{random.randint(10, 50)} UTC",
         ]
 
         response = f"""DOMAIN_RISK_SCORE: {component_risk.score:.2f}
@@ -555,7 +601,9 @@ CONFIDENCE: {component_risk.confidence}
 Investigation {investigation_id}: Logs analysis over {random.randint(2, 8)} hour timeframe shows {len(patterns)} distinct suspicious patterns.
 The behavioral signatures indicate {'highly automated coordinated attack' if component_risk.score > 0.7 else 'suspicious behavioral anomalies'}."""
 
-        logger.info(f"Generated enhanced logs response: risk={component_risk.score:.2f}")
+        logger.info(
+            f"Generated enhanced logs response: risk={component_risk.score:.2f}"
+        )
         return response
 
     def generate_enhanced_risk_assessment(
@@ -565,22 +613,22 @@ The behavioral signatures indicate {'highly automated coordinated attack' if com
         device_analysis: str,
         location_analysis: str,
         network_analysis: str,
-        logs_analysis: str
+        logs_analysis: str,
     ) -> str:
         """Generate enhanced risk assessment with cross-domain reasoning"""
 
         logger.warning("⚠️  USING ENHANCED MOCK LLM - WITH CROSS-DOMAIN SYNTHESIS")
 
-        profile = self.risk_profiles.get(scenario, self.risk_profiles[ScenarioType.DEFAULT])
+        profile = self.risk_profiles.get(
+            scenario, self.risk_profiles[ScenarioType.DEFAULT]
+        )
 
         # Calculate overall risk with variance
         risk_score = profile.overall_risk + random.uniform(-0.03, 0.03)
         risk_score = max(0.0, min(1.0, risk_score))
 
         # Get detailed component scores
-        component_risk = self._calculate_component_risk_scores(
-            "risk", risk_score, None
-        )
+        component_risk = self._calculate_component_risk_scores("risk", risk_score, None)
 
         # Generate cross-domain reasoning
         thoughts = [
@@ -594,24 +642,26 @@ The behavioral signatures indicate {'highly automated coordinated attack' if com
         risk_classification = self._get_risk_level(component_risk.score)
 
         # Component breakdown for cross-domain analysis
-        component_breakdown = "\n".join([
-            f"  - {name}: {score:.2f}"
-            for name, score in component_risk.components.items()
-        ])
+        component_breakdown = "\n".join(
+            [
+                f"  - {name}: {score:.2f}"
+                for name, score in component_risk.components.items()
+            ]
+        )
 
         thought_process = "\n".join([f"  • {thought}" for thought in thoughts])
 
         critical_indicators = [
             f"Primary threat vector: {scenario.value.replace('_', ' ').title()}",
             "Secondary indicators: Multi-domain anomalies",
-            f"Attack sophistication: {profile.threat_level} level"
+            f"Attack sophistication: {profile.threat_level} level",
         ]
 
         immediate_actions = [
             "Suspend user account pending verification",
             "Implement enhanced monitoring protocols",
             "Flag for immediate security team review",
-            "Apply additional authentication requirements"
+            "Apply additional authentication requirements",
         ]
 
         response = f"""OVERALL_RISK_SCORE: {component_risk.score:.2f}
@@ -662,7 +712,9 @@ consistent patterns across all investigation domains (Network: {profile.network_
 Location: {profile.location_risk:.2f}, Logs: {profile.logs_risk:.2f}), confirming the validity of the
 risk assessment at {component_risk.confidence}% confidence level."""
 
-        logger.info(f"Generated enhanced risk assessment: risk={component_risk.score:.2f}")
+        logger.info(
+            f"Generated enhanced risk assessment: risk={component_risk.score:.2f}"
+        )
         return response
 
 
@@ -676,7 +728,7 @@ def generate_enhanced_mock_response(
     investigation_id: str,
     context_data: Optional[Dict[str, Any]] = None,
     entity_risk_score: Optional[float] = None,
-    use_enhanced: bool = True
+    use_enhanced: bool = True,
 ) -> str:
     """
     Generate enhanced mock response with chain-of-thought reasoning.
@@ -696,15 +748,18 @@ def generate_enhanced_mock_response(
     if not use_enhanced:
         # Fall back to base generator if enhanced mode disabled
         from scripts.testing.mock_llm_responses import generate_mock_response
-        return generate_mock_response(agent_type, scenario, investigation_id, context_data, entity_risk_score)
 
-    logger.warning("="*80)
+        return generate_mock_response(
+            agent_type, scenario, investigation_id, context_data, entity_risk_score
+        )
+
+    logger.warning("=" * 80)
     logger.warning("🧠 ENHANCED MOCK LLM MODE - WITH CHAIN-OF-THOUGHT REASONING 🧠")
     logger.warning(f"    Agent Type: {agent_type}")
     logger.warning(f"    Scenario: {scenario}")
     logger.warning(f"    With Detailed Risk Breakdowns: Yes")
     logger.warning(f"    Chain-of-Thought Reasoning: Enabled")
-    logger.warning("="*80)
+    logger.warning("=" * 80)
 
     if entity_risk_score is not None:
         logger.warning(f"📊 Entity Risk Score (Snowflake): {entity_risk_score:.4f}")
@@ -729,21 +784,36 @@ def generate_enhanced_mock_response(
         )
     elif agent_type == "risk":
         if context_data:
-            device_analysis = context_data.get("device_analysis", "[No device analysis available]")
-            location_analysis = context_data.get("location_analysis", "[No location analysis available]")
-            network_analysis = context_data.get("network_analysis", "[No network analysis available]")
-            logs_analysis = context_data.get("logs_analysis", "[No logs analysis available]")
+            device_analysis = context_data.get(
+                "device_analysis", "[No device analysis available]"
+            )
+            location_analysis = context_data.get(
+                "location_analysis", "[No location analysis available]"
+            )
+            network_analysis = context_data.get(
+                "network_analysis", "[No network analysis available]"
+            )
+            logs_analysis = context_data.get(
+                "logs_analysis", "[No logs analysis available]"
+            )
 
             return enhanced_mock_response_generator.generate_enhanced_risk_assessment(
-                scenario_type, investigation_id, device_analysis, location_analysis,
-                network_analysis, logs_analysis
+                scenario_type,
+                investigation_id,
+                device_analysis,
+                location_analysis,
+                network_analysis,
+                logs_analysis,
             )
         else:
             logger.warning("Risk assessment requested without context data")
             return enhanced_mock_response_generator.generate_enhanced_risk_assessment(
-                scenario_type, investigation_id,
-                "[Device analysis not available]", "[Location analysis not available]",
-                "[Network analysis not available]", "[Logs analysis not available]"
+                scenario_type,
+                investigation_id,
+                "[Device analysis not available]",
+                "[Location analysis not available]",
+                "[Network analysis not available]",
+                "[Logs analysis not available]",
             )
     else:
         logger.error(f"Unknown agent type for enhanced mock response: {agent_type}")

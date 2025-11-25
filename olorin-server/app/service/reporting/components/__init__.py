@@ -7,7 +7,7 @@ interactive HTML/JavaScript/CSS components for investigation data visualization.
 
 Components:
 - LLM Interactions Timeline
-- Investigation Flow Graph  
+- Investigation Flow Graph
 - Tools & Agents Analysis
 - Risk Analysis Dashboard
 - Investigation Explanations
@@ -25,37 +25,38 @@ Features:
 - Configurable themes and styling
 """
 
-from .llm_timeline import LLMTimelineComponent
-from .flow_graph import InvestigationFlowComponent
-from .tools_analysis import ToolsAnalysisComponent
-from .risk_dashboard import RiskDashboardComponent
+from .base_component import BaseVisualizationComponent, ComponentConfig
 from .explanations import ExplanationsComponent
+from .flow_graph import InvestigationFlowComponent
 from .journey_visualization import JourneyVisualizationComponent
 from .langgraph_visualization import LangGraphVisualizationComponent
-from .base_component import BaseVisualizationComponent, ComponentConfig
+from .llm_timeline import LLMTimelineComponent
+from .risk_dashboard import RiskDashboardComponent
+from .tools_analysis import ToolsAnalysisComponent
 
 __all__ = [
-    'BaseVisualizationComponent',
-    'ComponentConfig',
-    'LLMTimelineComponent',
-    'InvestigationFlowComponent', 
-    'ToolsAnalysisComponent',
-    'RiskDashboardComponent',
-    'ExplanationsComponent',
-    'JourneyVisualizationComponent',
-    'LangGraphVisualizationComponent'
+    "BaseVisualizationComponent",
+    "ComponentConfig",
+    "LLMTimelineComponent",
+    "InvestigationFlowComponent",
+    "ToolsAnalysisComponent",
+    "RiskDashboardComponent",
+    "ExplanationsComponent",
+    "JourneyVisualizationComponent",
+    "LangGraphVisualizationComponent",
 ]
 
 # Component registry for dynamic component loading
 COMPONENT_REGISTRY = {
-    'llm_timeline': LLMTimelineComponent,
-    'investigation_flow': InvestigationFlowComponent,
-    'tools_analysis': ToolsAnalysisComponent,
-    'risk_dashboard': RiskDashboardComponent,
-    'explanations': ExplanationsComponent,
-    'journey_visualization': JourneyVisualizationComponent,
-    'langgraph_visualization': LangGraphVisualizationComponent
+    "llm_timeline": LLMTimelineComponent,
+    "investigation_flow": InvestigationFlowComponent,
+    "tools_analysis": ToolsAnalysisComponent,
+    "risk_dashboard": RiskDashboardComponent,
+    "explanations": ExplanationsComponent,
+    "journey_visualization": JourneyVisualizationComponent,
+    "langgraph_visualization": LangGraphVisualizationComponent,
 }
+
 
 def get_component(component_name: str) -> BaseVisualizationComponent:
     """Get component class by name"""
@@ -63,6 +64,7 @@ def get_component(component_name: str) -> BaseVisualizationComponent:
     if not component_class:
         raise ValueError(f"Unknown component: {component_name}")
     return component_class()
+
 
 def get_all_components() -> list:
     """Get all available component instances"""

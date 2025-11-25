@@ -12,6 +12,7 @@ SYSTEM MANDATE Compliance:
 """
 
 import os
+
 from app.models.investigation_state import InvestigationState
 
 

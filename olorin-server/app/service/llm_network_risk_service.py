@@ -1,12 +1,12 @@
 import json
 import logging
-from app.service.logging import get_bridge_logger
 from typing import Any, Dict, List, Optional
 
 from fastapi import Request
 
 from app.models.network_risk import NetworkRiskLLMAssessment
 from app.service.base_llm_risk_service import BaseLLMRiskService
+from app.service.logging import get_bridge_logger
 from app.utils.prompts import SYSTEM_PROMPT_FOR_NETWORK_RISK
 
 logger = get_bridge_logger(__name__)
@@ -195,8 +195,10 @@ class LLMNetworkRiskService(BaseLLMRiskService[NetworkRiskLLMAssessment]):
         This method coordinates the full network analysis workflow including
         data extraction, signal processing, and risk assessment.
         """
+        from app.service.agent.tools.splunk_tool.ato_splunk_query_constructor import (
+            build_base_search,
+        )
         from app.service.agent.tools.splunk_tool.splunk_tool import SplunkQueryTool
-        from app.service.agent.tools.splunk_tool.ato_splunk_query_constructor import build_base_search
         from app.service.config import get_settings_for_env
 
         try:
@@ -211,10 +213,12 @@ class LLMNetworkRiskService(BaseLLMRiskService[NetworkRiskLLMAssessment]):
                 raw_splunk_results_count = len(raw_splunk_override)
             else:
                 # Build and execute Splunk query
-                base_query = build_base_search(id_value=entity_id, id_type=entity_type.replace("_id", ""))
+                base_query = build_base_search(
+                    id_value=entity_id, id_type=entity_type.replace("_id", "")
+                )
                 splunk_query = base_query.replace(
                     f"search index={settings.splunk_index}",
-                    f"search index={settings.splunk_index} earliest=-{time_range}"
+                    f"search index={settings.splunk_index} earliest=-{time_range}",
                 )
 
                 logger.debug(f"Executing Splunk query: {splunk_query}")
@@ -222,11 +226,13 @@ class LLMNetworkRiskService(BaseLLMRiskService[NetworkRiskLLMAssessment]):
                 splunk_tool = SplunkQueryTool()
                 splunk_result = await splunk_tool.arun({"query": splunk_query})
 
-                if isinstance(splunk_result, dict) and 'results' in splunk_result:
-                    raw_splunk_results = splunk_result['results']
+                if isinstance(splunk_result, dict) and "results" in splunk_result:
+                    raw_splunk_results = splunk_result["results"]
                     raw_splunk_results_count = len(raw_splunk_results)
                 else:
-                    logger.warning(f"Unexpected Splunk result format: {type(splunk_result)}")
+                    logger.warning(
+                        f"Unexpected Splunk result format: {type(splunk_result)}"
+                    )
                     raw_splunk_results = []
                     raw_splunk_results_count = 0
 
@@ -289,7 +295,10 @@ class LLMNetworkRiskService(BaseLLMRiskService[NetworkRiskLLMAssessment]):
             }
 
         except Exception as e:
-            logger.error(f"Error in network analysis for {entity_type} {entity_id}: {e}", exc_info=True)
+            logger.error(
+                f"Error in network analysis for {entity_type} {entity_id}: {e}",
+                exc_info=True,
+            )
             # Return a fallback response
             fallback_assessment = {
                 "risk_level": 0.0,

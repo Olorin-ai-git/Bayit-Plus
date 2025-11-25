@@ -11,8 +11,8 @@ Constitutional Compliance:
 """
 
 import re
-from typing import Dict, List, Tuple
 from dataclasses import dataclass, field
+from typing import Dict, List, Tuple
 
 from app.service.logging import get_bridge_logger
 
@@ -22,6 +22,7 @@ logger = get_bridge_logger(__name__)
 @dataclass
 class TranslationStats:
     """Statistics about a query translation."""
+
     rules_applied: List[str] = field(default_factory=list)
     original_length: int = 0
     translated_length: int = 0
@@ -40,39 +41,30 @@ class QueryTranslator:
         self.translation_rules = [
             # 3-part table names: database.schema.table → schema.table (PostgreSQL only supports 2-part)
             # This should be FIRST to clean up table references before other translations
-            (
-                r'\b(\w+)\.(\w+)\.(\w+)\b',
-                r'\2.\3',
-                '3part_to_2part_table_names'
-            ),
+            (r"\b(\w+)\.(\w+)\.(\w+)\b", r"\2.\3", "3part_to_2part_table_names"),
             # CURRENT_TIMESTAMP() → CURRENT_TIMESTAMP (remove parentheses)
             (
-                r'CURRENT_TIMESTAMP\s*\(\s*\)',
-                'CURRENT_TIMESTAMP',
-                'CURRENT_TIMESTAMP_no_parens'
+                r"CURRENT_TIMESTAMP\s*\(\s*\)",
+                "CURRENT_TIMESTAMP",
+                "CURRENT_TIMESTAMP_no_parens",
             ),
             # CURRENT_DATE() → CURRENT_DATE (remove parentheses)
-            (
-                r'CURRENT_DATE\s*\(\s*\)',
-                'CURRENT_DATE',
-                'CURRENT_DATE_no_parens'
-            ),
+            (r"CURRENT_DATE\s*\(\s*\)", "CURRENT_DATE", "CURRENT_DATE_no_parens"),
             # DATEADD function: DATEADD(unit, amount, date) → date + INTERVAL 'amount unit'
             # Applied AFTER function call normalization so date expressions are clean
             (
-                r'DATEADD\s*\(\s*(\w+)\s*,\s*(-?\d+)\s*,\s*([^)]+)\)',
+                r"DATEADD\s*\(\s*(\w+)\s*,\s*(-?\d+)\s*,\s*([^)]+)\)",
                 self._translate_dateadd,
-                'DATEADD_to_INTERVAL'
+                "DATEADD_to_INTERVAL",
             ),
             # LISTAGG → STRING_AGG
-            (
-                r'LISTAGG\s*\(',
-                'STRING_AGG(',
-                'LISTAGG_to_STRING_AGG'
-            ),
+            (r"LISTAGG\s*\(", "STRING_AGG(", "LISTAGG_to_STRING_AGG"),
         ]
 
-        logger.info("QueryTranslator initialized with %d translation rules", len(self.translation_rules))
+        logger.info(
+            "QueryTranslator initialized with %d translation rules",
+            len(self.translation_rules),
+        )
 
     def translate(self, query: str) -> str:
         """
@@ -118,7 +110,7 @@ class QueryTranslator:
             logger.debug(
                 "Query translation applied %d rules: %s",
                 len(stats.rules_applied),
-                ", ".join(stats.rules_applied)
+                ", ".join(stats.rules_applied),
             )
 
         return translated_query
@@ -136,7 +128,7 @@ class QueryTranslator:
         # Process matches in reverse to maintain positions
         for match in reversed(matches):
             replacement = replacement_func(match)
-            query = query[:match.start()] + replacement + query[match.end():]
+            query = query[: match.start()] + replacement + query[match.end() :]
             applied = True
 
         return query, applied
@@ -154,24 +146,24 @@ class QueryTranslator:
 
         # Map Snowflake units to PostgreSQL units
         unit_map = {
-            'day': 'days',
-            'days': 'days',
-            'month': 'months',
-            'months': 'months',
-            'year': 'years',
-            'years': 'years',
-            'hour': 'hours',
-            'hours': 'hours',
-            'minute': 'minutes',
-            'minutes': 'minutes',
-            'second': 'seconds',
-            'seconds': 'seconds'
+            "day": "days",
+            "days": "days",
+            "month": "months",
+            "months": "months",
+            "year": "years",
+            "years": "years",
+            "hour": "hours",
+            "hours": "hours",
+            "minute": "minutes",
+            "minutes": "minutes",
+            "second": "seconds",
+            "seconds": "seconds",
         }
 
-        pg_unit = unit_map.get(unit, unit + 's')
+        pg_unit = unit_map.get(unit, unit + "s")
 
         # Handle negative intervals
-        if amount.startswith('-'):
+        if amount.startswith("-"):
             return f"{date_expr} - INTERVAL '{amount[1:]} {pg_unit}'"
         else:
             return f"{date_expr} + INTERVAL '{amount} {pg_unit}'"
@@ -179,8 +171,12 @@ class QueryTranslator:
     def get_stats(self) -> Dict:
         """Get translator statistics."""
         return {
-            'translation_count': self.translation_count,
-            'last_translation': self.last_translation_stats.__dict__ if self.last_translation_stats else None
+            "translation_count": self.translation_count,
+            "last_translation": (
+                self.last_translation_stats.__dict__
+                if self.last_translation_stats
+                else None
+            ),
         }
 
     def reset_stats(self):

@@ -4,8 +4,8 @@ Fraud Detection Ensemble Methods
 Implements ensemble model weighting and consensus finding for fraud detection.
 """
 
-from typing import Any, Dict, List
 from collections import Counter
+from typing import Any, Dict, List
 
 
 class FraudEnsembleMethods:

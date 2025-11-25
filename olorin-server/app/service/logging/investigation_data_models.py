@@ -4,13 +4,14 @@ Investigation Instrumentation Data Models
 Dataclasses for capturing investigation instrumentation data.
 """
 
-from dataclasses import dataclass, asdict
+from dataclasses import asdict, dataclass
 from typing import Any, Dict, List, Optional
 
 
 @dataclass
 class RiskFactor:
     """Individual risk factor in calculation."""
+
     name: str
     value: float
     weight: float
@@ -25,6 +26,7 @@ class RiskFactor:
 @dataclass
 class LLMInteraction:
     """Capture complete LLM interaction"""
+
     timestamp: str
     agent_name: str
     llm_model: str
@@ -45,6 +47,7 @@ class LLMInteraction:
 @dataclass
 class ToolExecution:
     """Capture tool execution details"""
+
     timestamp: str
     agent_name: str
     tool_name: str
@@ -64,6 +67,7 @@ class ToolExecution:
 @dataclass
 class RiskCalculation:
     """Capture risk calculation"""
+
     timestamp: str
     agent_name: str
     entity_id: str
@@ -83,6 +87,7 @@ class RiskCalculation:
 @dataclass
 class AgentDecision:
     """Capture agent decision making"""
+
     timestamp: str
     agent_name: str
     decision_type: str
@@ -100,6 +105,7 @@ class AgentDecision:
 @dataclass
 class AgentResult:
     """Capture agent results"""
+
     timestamp: str
     agent_name: str
     investigation_id: str

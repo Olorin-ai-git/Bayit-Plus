@@ -10,7 +10,8 @@ SYSTEM MANDATE Compliance:
 - Type-safe: All parameters and returns properly typed
 """
 
-from typing import Dict, List, Any
+from typing import Any, Dict, List
+
 from app.service.progress_calculator_service import ProgressCalculatorService
 
 
@@ -26,7 +27,7 @@ class ProgressUpdateService:
         investigation_state: Dict[str, Any],
         phase_name: str,
         tool_name: str,
-        tool_status: str
+        tool_status: str,
     ) -> Dict[str, Any]:
         """
         Update progress for a specific tool within a phase.
@@ -58,10 +59,7 @@ class ProgressUpdateService:
 
                 # Add tool if not found
                 if not tool_found:
-                    tools.append({
-                        "tool_name": tool_name,
-                        "status": tool_status
-                    })
+                    tools.append({"tool_name": tool_name, "status": tool_status})
 
                 break
 

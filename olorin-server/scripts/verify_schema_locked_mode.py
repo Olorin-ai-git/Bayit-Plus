@@ -13,31 +13,33 @@ SYSTEM MANDATE Compliance:
 - Type-safe: All parameters properly typed
 """
 
+import os
 import re
 import sys
 from pathlib import Path
-from typing import List, Tuple, Dict, Any
-import os
+from typing import Any, Dict, List, Tuple
 
 # Configuration from environment
-ROOT_DIR = Path(os.getenv("PROJECT_ROOT", "/Users/gklainert/Documents/olorin/olorin-server"))
+ROOT_DIR = Path(
+    os.getenv("PROJECT_ROOT", "/Users/gklainert/Documents/olorin/olorin-server")
+)
 APP_DIR = ROOT_DIR / "app"
 
 # Forbidden DDL patterns (case-insensitive)
 DDL_PATTERNS = [
-    r'\bCREATE\s+(TABLE|INDEX|VIEW|SCHEMA)\b',
-    r'\bALTER\s+(TABLE|INDEX|VIEW|SCHEMA)\b',
-    r'\bDROP\s+(TABLE|INDEX|VIEW|SCHEMA)\b',
-    r'\bTRUNCATE\s+TABLE\b',
-    r'\bADD\s+COLUMN\b',
-    r'\bRENAME\s+(TO|COLUMN|TABLE)\b',
-    r'\bPRISMA\s+MIGRATE\b',
-    r'\bsequelize\.sync\b',
-    r'\bsynchronize:\s*true\b',
-    r'\bLiquibase\b',
-    r'\bFlyway\b',
-    r'\bmakemigrations\b',
-    r'\bdb:migrate\b'
+    r"\bCREATE\s+(TABLE|INDEX|VIEW|SCHEMA)\b",
+    r"\bALTER\s+(TABLE|INDEX|VIEW|SCHEMA)\b",
+    r"\bDROP\s+(TABLE|INDEX|VIEW|SCHEMA)\b",
+    r"\bTRUNCATE\s+TABLE\b",
+    r"\bADD\s+COLUMN\b",
+    r"\bRENAME\s+(TO|COLUMN|TABLE)\b",
+    r"\bPRISMA\s+MIGRATE\b",
+    r"\bsequelize\.sync\b",
+    r"\bsynchronize:\s*true\b",
+    r"\bLiquibase\b",
+    r"\bFlyway\b",
+    r"\bmakemigrations\b",
+    r"\bdb:migrate\b",
 ]
 
 # Known schema: investigation_states table
@@ -53,7 +55,7 @@ KNOWN_SCHEMA = {
         "version",
         "created_at",
         "updated_at",
-        "deleted_at"
+        "deleted_at",
     ],
     "investigation_audit_log": [
         "entry_id",
@@ -62,8 +64,8 @@ KNOWN_SCHEMA = {
         "timestamp",
         "event_type",
         "changes",
-        "metadata"
-    ]
+        "metadata",
+    ],
 }
 
 
@@ -80,10 +82,10 @@ def scan_file_for_ddl(file_path: Path) -> List[Tuple[int, str, str]]:
     violations = []
 
     try:
-        with open(file_path, 'r', encoding='utf-8') as f:
+        with open(file_path, "r", encoding="utf-8") as f:
             for line_num, line in enumerate(f, 1):
                 # Skip comments
-                if line.strip().startswith('#') or line.strip().startswith('//'):
+                if line.strip().startswith("#") or line.strip().startswith("//"):
                     continue
 
                 # Check each DDL pattern
@@ -128,7 +130,7 @@ def scan_directory_for_ddl(directory: Path) -> Dict[str, List[Tuple[int, str, st
         "router/investigation_sse_router.py",
         "router/rate_limit_router.py",
         "router/multi_tab_router.py",
-        "router/polling_router.py"
+        "router/polling_router.py",
     ]
 
     for target in target_dirs:
@@ -163,7 +165,7 @@ def check_orm_auto_migrate() -> List[str]:
         "service/event_streaming_service.py",
         "router/investigation_state_router.py",
         "router/investigation_stream_router.py",
-        "router/investigation_state_router_enhanced.py"
+        "router/investigation_state_router_enhanced.py",
     ]
 
     for target in target_files:
@@ -172,20 +174,16 @@ def check_orm_auto_migrate() -> List[str]:
             continue
 
         try:
-            with open(py_file, 'r', encoding='utf-8') as f:
+            with open(py_file, "r", encoding="utf-8") as f:
                 content = f.read()
 
                 # Check for create_all() calls (SQLAlchemy)
                 if "create_all()" in content:
-                    violations.append(
-                        f"{py_file}: Found SQLAlchemy create_all() call"
-                    )
+                    violations.append(f"{py_file}: Found SQLAlchemy create_all() call")
 
                 # Check for metadata.create_all
                 if "metadata.create_all" in content:
-                    violations.append(
-                        f"{py_file}: Found metadata.create_all() call"
-                    )
+                    violations.append(f"{py_file}: Found metadata.create_all() call")
 
         except Exception as e:
             print(f"Warning: Could not scan {py_file}: {e}", file=sys.stderr)
@@ -200,18 +198,14 @@ def verify_schema_usage() -> Dict[str, Any]:
     Returns:
         Dictionary with verification results
     """
-    results = {
-        "files_scanned": 0,
-        "known_columns_used": [],
-        "warnings": []
-    }
+    results = {"files_scanned": 0, "known_columns_used": [], "warnings": []}
 
     for py_file in APP_DIR.rglob("*.py"):
         if "model" in str(py_file).lower() or "schema" in str(py_file).lower():
             results["files_scanned"] += 1
 
             try:
-                with open(py_file, 'r', encoding='utf-8') as f:
+                with open(py_file, "r", encoding="utf-8") as f:
                     content = f.read()
 
                     # Check for known column references
@@ -278,9 +272,9 @@ def main() -> int:
     print(f"  Files scanned: {schema_results['files_scanned']}")
     print(f"  Known columns used: {len(schema_results['known_columns_used'])}")
 
-    if schema_results['warnings']:
+    if schema_results["warnings"]:
         print(f"  Warnings: {len(schema_results['warnings'])}")
-        for warning in schema_results['warnings']:
+        for warning in schema_results["warnings"]:
             print(f"    - {warning}")
 
     # Step 4: Document known schema

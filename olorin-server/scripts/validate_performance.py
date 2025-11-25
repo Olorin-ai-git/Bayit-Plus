@@ -19,11 +19,11 @@ SYSTEM MANDATE Compliance:
 """
 
 import asyncio
-import time
-import statistics
-from typing import List, Dict, Any, Tuple
-import sys
 import os
+import statistics
+import sys
+import time
+from typing import Any, Dict, List, Tuple
 
 # Configuration from environment
 BASE_URL = os.getenv("API_BASE_URL", "http://localhost:8090")
@@ -36,7 +36,7 @@ TARGETS = {
     "snapshot_get": 100.0,
     "event_feed_50": 150.0,
     "not_modified_304": 30.0,
-    "full_rehydration": 700.0
+    "full_rehydration": 700.0,
 }
 
 
@@ -122,11 +122,7 @@ class PerformanceValidator:
         time.sleep(0.05)  # Additional processing overhead
 
     def validate_endpoint(
-        self,
-        name: str,
-        operation_func,
-        target_ms: float,
-        iterations: int = None
+        self, name: str, operation_func, target_ms: float, iterations: int = None
     ) -> Tuple[bool, Dict[str, Any]]:
         """
         Validate performance of a single endpoint.
@@ -153,7 +149,7 @@ class PerformanceValidator:
             "median_ms": statistics.median(latencies),
             "p95_ms": self.calculate_percentile(latencies, 95),
             "p99_ms": self.calculate_percentile(latencies, 99),
-            "target_ms": target_ms
+            "target_ms": target_ms,
         }
 
         passed = metrics["p95_ms"] <= target_ms
@@ -180,9 +176,7 @@ class PerformanceValidator:
 
         # Test 1: Snapshot GET
         passed, metrics = self.validate_endpoint(
-            "Snapshot GET",
-            self.mock_snapshot_get,
-            TARGETS["snapshot_get"]
+            "Snapshot GET", self.mock_snapshot_get, TARGETS["snapshot_get"]
         )
         results["snapshot_get"] = {"passed": passed, "metrics": metrics}
 
@@ -190,15 +184,13 @@ class PerformanceValidator:
         passed, metrics = self.validate_endpoint(
             "Event Feed GET (50 events)",
             self.mock_event_feed_get,
-            TARGETS["event_feed_50"]
+            TARGETS["event_feed_50"],
         )
         results["event_feed_50"] = {"passed": passed, "metrics": metrics}
 
         # Test 3: 304 Not Modified
         passed, metrics = self.validate_endpoint(
-            "304 Not Modified",
-            self.mock_not_modified_304,
-            TARGETS["not_modified_304"]
+            "304 Not Modified", self.mock_not_modified_304, TARGETS["not_modified_304"]
         )
         results["not_modified_304"] = {"passed": passed, "metrics": metrics}
 
@@ -207,7 +199,7 @@ class PerformanceValidator:
             "Full Rehydration",
             self.mock_full_rehydration,
             TARGETS["full_rehydration"],
-            iterations=50  # Fewer iterations for longer operation
+            iterations=50,  # Fewer iterations for longer operation
         )
         results["full_rehydration"] = {"passed": passed, "metrics": metrics}
 

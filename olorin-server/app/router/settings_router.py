@@ -5,11 +5,12 @@ Handles loading and saving user preferences and configuration.
 
 import json
 import logging
-from app.service.logging import get_bridge_logger
 from typing import Any, Dict, List, Optional
 
 from fastapi import APIRouter, Depends, HTTPException, Request
 from pydantic import BaseModel, Field
+
+from app.service.logging import get_bridge_logger
 
 logger = get_bridge_logger(__name__)
 
@@ -149,7 +150,7 @@ def get_user_id_optional(request: Request) -> Optional[str]:
     # Skip user ID extraction for OPTIONS requests (CORS preflight)
     if request.method == "OPTIONS":
         return None
-    
+
     # For now, use a simple approach - in production you'd extract from JWT/session
     user_id = request.headers.get("X-User-ID", "default_user")
     return user_id
@@ -179,7 +180,9 @@ async def get_settings(user_id: Optional[str] = Depends(get_user_id_optional)):
             # Ensure agent_tools_mapping is populated if it's empty
             if not settings.agent_tools_mapping:
                 settings.agent_tools_mapping = get_default_agent_tools_mapping()
-                logger.info(f"Populated default agent tools mapping for user {effective_user_id}")
+                logger.info(
+                    f"Populated default agent tools mapping for user {effective_user_id}"
+                )
         else:
             # Return default settings with agent tools mapping
             settings = UserSettings()

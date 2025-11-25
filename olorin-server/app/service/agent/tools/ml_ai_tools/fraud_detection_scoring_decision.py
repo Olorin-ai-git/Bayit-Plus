@@ -4,8 +4,8 @@ Fraud Detection Final Decision and Confidence
 Makes final fraud detection decisions and calculates confidence intervals.
 """
 
-from typing import Any, Dict
 import math
+from typing import Any, Dict
 
 
 class FraudFinalDecision:

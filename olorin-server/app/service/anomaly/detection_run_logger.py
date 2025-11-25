@@ -7,19 +7,16 @@ This module provides structured logging functions for detection runs.
 import time
 import uuid
 from datetime import datetime
-from typing import Dict, Any
+from typing import Any, Dict
 
+from app.models.anomaly import DetectionRun, Detector
 from app.service.logging import get_bridge_logger
-from app.models.anomaly import Detector, DetectionRun
 
 logger = get_bridge_logger(__name__)
 
 
 def log_detection_run_start(
-    run_id: uuid.UUID,
-    detector: Detector,
-    window_from: datetime,
-    window_to: datetime
+    run_id: uuid.UUID, detector: Detector, window_from: datetime, window_to: datetime
 ) -> None:
     """Log detection run start event."""
     logger.info(
@@ -34,16 +31,13 @@ def log_detection_run_start(
             "window_to": window_to.isoformat(),
             "window_duration_hours": (window_to - window_from).total_seconds() / 3600,
             "cohort_by": detector.cohort_by,
-            "metrics": detector.metrics
-        }
+            "metrics": detector.metrics,
+        },
     )
 
 
 def log_cohorts_retrieved(
-    run_id: uuid.UUID,
-    detector_id: uuid.UUID,
-    cohort_count: int,
-    duration_ms: int
+    run_id: uuid.UUID, detector_id: uuid.UUID, cohort_count: int, duration_ms: int
 ) -> None:
     """Log cohorts retrieved event."""
     logger.info(
@@ -53,8 +47,8 @@ def log_cohorts_retrieved(
             "run_id": str(run_id),
             "detector_id": str(detector_id),
             "cohort_count": cohort_count,
-            "duration_ms": duration_ms
-        }
+            "duration_ms": duration_ms,
+        },
     )
 
 
@@ -63,7 +57,7 @@ def log_anomaly_detected(
     run_id: uuid.UUID,
     detector_id: uuid.UUID,
     cohort: Dict[str, str],
-    anomaly_data: Dict[str, Any]
+    anomaly_data: Dict[str, Any],
 ) -> None:
     """Log anomaly detected and persisted event."""
     logger.info(
@@ -74,15 +68,23 @@ def log_anomaly_detected(
             "run_id": str(run_id),
             "detector_id": str(detector_id),
             "cohort": cohort,
-            "metric": anomaly_data.get('metric'),
-            "score": float(anomaly_data.get('score', 0)),
-            "severity": anomaly_data.get('severity'),
-            "observed": float(anomaly_data.get('observed', 0)),
-            "expected": float(anomaly_data.get('expected', 0)),
-            "persisted_n": anomaly_data.get('persisted_n', 0),
-            "window_start": anomaly_data.get('window_start').isoformat() if anomaly_data.get('window_start') else None,
-            "window_end": anomaly_data.get('window_end').isoformat() if anomaly_data.get('window_end') else None
-        }
+            "metric": anomaly_data.get("metric"),
+            "score": float(anomaly_data.get("score", 0)),
+            "severity": anomaly_data.get("severity"),
+            "observed": float(anomaly_data.get("observed", 0)),
+            "expected": float(anomaly_data.get("expected", 0)),
+            "persisted_n": anomaly_data.get("persisted_n", 0),
+            "window_start": (
+                anomaly_data.get("window_start").isoformat()
+                if anomaly_data.get("window_start")
+                else None
+            ),
+            "window_end": (
+                anomaly_data.get("window_end").isoformat()
+                if anomaly_data.get("window_end")
+                else None
+            ),
+        },
     )
 
 
@@ -91,7 +93,7 @@ def log_detection_progress(
     detector_id: uuid.UUID,
     cohorts_processed: int,
     total_cohorts: int,
-    anomalies_detected: int
+    anomalies_detected: int,
 ) -> None:
     """Log detection run progress."""
     logger.info(
@@ -103,8 +105,10 @@ def log_detection_progress(
             "cohorts_processed": cohorts_processed,
             "total_cohorts": total_cohorts,
             "anomalies_detected": anomalies_detected,
-            "progress_percent": int((cohorts_processed / total_cohorts) * 100) if total_cohorts else 0
-        }
+            "progress_percent": (
+                int((cohorts_processed / total_cohorts) * 100) if total_cohorts else 0
+            ),
+        },
     )
 
 
@@ -114,13 +118,14 @@ def log_detection_completed(
     cohorts_processed: int,
     anomalies_created: int,
     execution_time_ms: int,
-    cohorts_skipped: int = 0
+    cohorts_skipped: int = 0,
 ) -> None:
     """Log detection run completion."""
     from app.config.anomaly_config import get_anomaly_config
+
     config = get_anomaly_config()
-    min_support = detector.params.get('min_support', config.default_min_support)
-    
+    min_support = detector.params.get("min_support", config.default_min_support)
+
     message = "Detection run completed successfully"
     if anomalies_created == 0 and cohorts_processed == 0:
         message = (
@@ -135,7 +140,7 @@ def log_detection_completed(
             f"Processed {cohorts_processed} cohorts but no anomalies detected. "
             f"This may indicate normal behavior or that thresholds need adjustment."
         )
-    
+
     logger.info(
         message,
         extra={
@@ -148,10 +153,16 @@ def log_detection_completed(
             "anomalies_detected": anomalies_created,
             "execution_time_ms": execution_time_ms,
             "execution_time_seconds": execution_time_ms / 1000,
-            "anomalies_per_cohort": anomalies_created / cohorts_processed if cohorts_processed > 0 else 0,
-            "cohorts_per_second": cohorts_processed / (execution_time_ms / 1000) if execution_time_ms > 0 else 0,
-            "min_support_threshold": min_support
-        }
+            "anomalies_per_cohort": (
+                anomalies_created / cohorts_processed if cohorts_processed > 0 else 0
+            ),
+            "cohorts_per_second": (
+                cohorts_processed / (execution_time_ms / 1000)
+                if execution_time_ms > 0
+                else 0
+            ),
+            "min_support_threshold": min_support,
+        },
     )
 
 
@@ -162,7 +173,7 @@ def log_detection_failed(
     error_message: str,
     execution_time_ms: int,
     cohorts_processed: int,
-    anomalies_detected: int
+    anomalies_detected: int,
 ) -> None:
     """Log detection run failure."""
     logger.error(
@@ -175,8 +186,7 @@ def log_detection_failed(
             "error_message": error_message,
             "execution_time_ms": execution_time_ms,
             "cohorts_processed": cohorts_processed,
-            "anomalies_detected": anomalies_detected
+            "anomalies_detected": anomalies_detected,
         },
-        exc_info=True
+        exc_info=True,
     )
-

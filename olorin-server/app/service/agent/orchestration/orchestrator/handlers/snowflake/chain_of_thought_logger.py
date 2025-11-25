@@ -4,7 +4,7 @@ Chain of Thought Logger
 Handles chain of thought logging for Snowflake analysis.
 """
 
-from typing import Dict, Any, List
+from typing import Any, Dict, List
 
 from app.service.logging import get_bridge_logger
 
@@ -20,10 +20,14 @@ class ChainOfThoughtLogger:
 
     def log_chain_of_thought(self, state: Dict[str, Any], date_range_days: int):
         """Log chain of thought reasoning."""
-        from app.service.agent.chain_of_thought_logger import get_chain_of_thought_logger, ReasoningType
+        from app.service.agent.chain_of_thought_logger import (
+            ReasoningType,
+            get_chain_of_thought_logger,
+        )
+
         cot_logger = get_chain_of_thought_logger()
 
-        investigation_id = state.get('investigation_id', 'unknown')
+        investigation_id = state.get("investigation_id", "unknown")
         process_id = f"orchestrator_{investigation_id}"
 
         if process_id not in cot_logger._active_processes:
@@ -33,9 +37,9 @@ class ChainOfThoughtLogger:
                 domain="orchestration",
                 initial_context={
                     "phase": "snowflake_analysis",
-                    "entity_type": state.get('entity_type'),
-                    "entity_id": state.get('entity_id')
-                }
+                    "entity_type": state.get("entity_type"),
+                    "entity_id": state.get("entity_id"),
+                },
             )
 
         cot_logger.log_reasoning_step(
@@ -46,9 +50,18 @@ class ChainOfThoughtLogger:
             conclusion="Must generate Snowflake tool call to retrieve foundational data for investigation",
             confidence=0.9,
             supporting_evidence=[
-                {"type": "requirement", "data": "Snowflake analysis is mandatory first phase"},
-                {"type": "context", "data": f"Entity: {state.get('entity_type')} - {state.get('entity_id')}"},
-                {"type": "tools", "data": f"{len(self.tools)} tools available including Snowflake"}
+                {
+                    "type": "requirement",
+                    "data": "Snowflake analysis is mandatory first phase",
+                },
+                {
+                    "type": "context",
+                    "data": f"Entity: {state.get('entity_type')} - {state.get('entity_id')}",
+                },
+                {
+                    "type": "tools",
+                    "data": f"{len(self.tools)} tools available including Snowflake",
+                },
             ],
-            metadata={"phase": "snowflake_analysis", "attempt": "initial"}
+            metadata={"phase": "snowflake_analysis", "attempt": "initial"},
         )

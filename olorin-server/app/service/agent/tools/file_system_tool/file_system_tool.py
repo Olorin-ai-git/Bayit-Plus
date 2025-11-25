@@ -7,6 +7,7 @@ from typing import Any, Dict, List, Optional, Union
 
 from langchain_core.tools import BaseTool
 from pydantic import BaseModel, Field
+
 from app.service.logging import get_bridge_logger
 
 logger = get_bridge_logger(__name__)

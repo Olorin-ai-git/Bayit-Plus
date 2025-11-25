@@ -16,7 +16,6 @@ headers = {
     "X-Forwarded-Port": "8090",
     "olorin_experience_id": "d3d28eaa-7ca9-4aa2-8905-69ac11fd8c58",
     "olorin_originating_assetalias": "Olorin.cas.hri.olorin",
->>>>>>> restructure-projects:olorin-server/tests/test_all_domains_90d.py
 }
 
 

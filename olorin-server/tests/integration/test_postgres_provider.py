@@ -11,11 +11,12 @@ NOTE: These tests use testcontainers to spin up a temporary PostgreSQL
 database for testing. Docker must be running for these tests to pass.
 """
 
-import pytest
-from typing import Dict, Any, List
+from typing import Any, Dict, List
 
-from app.service.agent.tools.database_tool.postgres_client import PostgreSQLProvider
+import pytest
+
 from app.service.agent.tools.database_tool.database_provider import DatabaseProvider
+from app.service.agent.tools.database_tool.postgres_client import PostgreSQLProvider
 
 
 @pytest.fixture(scope="module")
@@ -34,18 +35,19 @@ def postgres_test_connection(postgresql_container):
     # Parse connection URL to get individual parameters
     # Format: postgresql://user:password@host:port/database
     import urllib.parse
+
     parsed = urllib.parse.urlparse(connection_url)
 
     return {
-        'host': parsed.hostname,
-        'port': parsed.port,
-        'database': parsed.path.lstrip('/'),
-        'user': parsed.username,
-        'password': parsed.password,
-        'schema': 'public',
-        'pool_size': 5,
-        'pool_max_overflow': 10,
-        'query_timeout': 30
+        "host": parsed.hostname,
+        "port": parsed.port,
+        "database": parsed.path.lstrip("/"),
+        "user": parsed.username,
+        "password": parsed.password,
+        "schema": "public",
+        "pool_size": 5,
+        "pool_max_overflow": 10,
+        "query_timeout": 30,
     }
 
 
@@ -80,18 +82,19 @@ class TestPostgreSQLProviderIntegration:
         """Verify PostgreSQLProvider implements DatabaseProvider interface."""
         provider = PostgreSQLProvider()
 
-        assert isinstance(provider, DatabaseProvider), \
-            "PostgreSQLProvider must implement DatabaseProvider interface"
+        assert isinstance(
+            provider, DatabaseProvider
+        ), "PostgreSQLProvider must implement DatabaseProvider interface"
 
     def test_provider_instantiation(self):
         """Test that PostgreSQLProvider can be instantiated."""
         provider = PostgreSQLProvider()
 
         assert provider is not None
-        assert hasattr(provider, 'connect')
-        assert hasattr(provider, 'disconnect')
-        assert hasattr(provider, 'execute_query')
-        assert hasattr(provider, 'get_connection')
+        assert hasattr(provider, "connect")
+        assert hasattr(provider, "disconnect")
+        assert hasattr(provider, "execute_query")
+        assert hasattr(provider, "get_connection")
 
     def test_connection_lifecycle(self, postgres_provider):
         """Test connection establishment and teardown with PostgreSQL."""
@@ -100,8 +103,9 @@ class TestPostgreSQLProviderIntegration:
 
         # Get connection to verify it's established
         connection = postgres_provider.get_connection()
-        assert connection is not None, \
-            "Connection should be established after connect()"
+        assert (
+            connection is not None
+        ), "Connection should be established after connect()"
 
         # Disconnect
         postgres_provider.disconnect()
@@ -117,14 +121,10 @@ class TestPostgreSQLProviderIntegration:
         query = "SELECT CURRENT_TIMESTAMP as current_time"
         results = postgres_provider.execute_query(query)
 
-        assert isinstance(results, list), \
-            "execute_query should return a list"
-        assert len(results) > 0, \
-            "Query should return at least one row"
-        assert isinstance(results[0], dict), \
-            "Each result row should be a dictionary"
-        assert 'current_time' in results[0], \
-            "Result should contain the selected column"
+        assert isinstance(results, list), "execute_query should return a list"
+        assert len(results) > 0, "Query should return at least one row"
+        assert isinstance(results[0], dict), "Each result row should be a dictionary"
+        assert "current_time" in results[0], "Result should contain the selected column"
 
         postgres_provider.disconnect()
 
@@ -141,20 +141,18 @@ class TestPostgreSQLProviderIntegration:
         try:
             # Try named parameters (dict format)
             results = postgres_provider.execute_query(
-                "SELECT %(value)s::integer as test_value",
-                {'value': 42}
+                "SELECT %(value)s::integer as test_value", {"value": 42}
             )
         except Exception:
             # Try positional parameters (list format)
             results = postgres_provider.execute_query(
-                "SELECT $1::integer as test_value",
-                [42]
+                "SELECT $1::integer as test_value", [42]
             )
 
         assert len(results) > 0
         assert isinstance(results[0], dict)
-        assert 'test_value' in results[0]
-        assert results[0]['test_value'] == 42
+        assert "test_value" in results[0]
+        assert results[0]["test_value"] == 42
 
         postgres_provider.disconnect()
 
@@ -180,17 +178,17 @@ class TestPostgreSQLProviderIntegration:
         assert isinstance(row, dict)
 
         # Verify all columns present
-        assert 'id' in row
-        assert 'name' in row
-        assert 'amount' in row
-        assert 'date_column' in row
-        assert 'is_active' in row
+        assert "id" in row
+        assert "name" in row
+        assert "amount" in row
+        assert "date_column" in row
+        assert "is_active" in row
 
         # Verify data types
-        assert row['id'] == 1
-        assert row['name'] == 'test'
-        assert abs(row['amount'] - 100.50) < 0.01  # Float comparison
-        assert row['is_active'] is True
+        assert row["id"] == 1
+        assert row["name"] == "test"
+        assert abs(row["amount"] - 100.50) < 0.01  # Float comparison
+        assert row["is_active"] is True
 
         postgres_provider.disconnect()
 
@@ -205,8 +203,9 @@ class TestPostgreSQLProviderIntegration:
 
         # Error should indicate connection issue
         error_msg = str(exc_info.value).lower()
-        assert 'connect' in error_msg or 'connection' in error_msg, \
-            "Error should mention connection issue"
+        assert (
+            "connect" in error_msg or "connection" in error_msg
+        ), "Error should mention connection issue"
 
     def test_multiple_queries_same_connection(self, postgres_provider):
         """Test executing multiple queries on the same connection."""
@@ -215,17 +214,17 @@ class TestPostgreSQLProviderIntegration:
         # Execute first query
         results1 = postgres_provider.execute_query("SELECT 1 as num")
         assert len(results1) == 1
-        assert results1[0]['num'] == 1
+        assert results1[0]["num"] == 1
 
         # Execute second query on same connection
         results2 = postgres_provider.execute_query("SELECT 2 as num")
         assert len(results2) == 1
-        assert results2[0]['num'] == 2
+        assert results2[0]["num"] == 2
 
         # Execute third query
         results3 = postgres_provider.execute_query("SELECT 3 as num")
         assert len(results3) == 1
-        assert results3[0]['num'] == 3
+        assert results3[0]["num"] == 3
 
         postgres_provider.disconnect()
 
@@ -265,8 +264,11 @@ class TestPostgreSQLProviderIntegration:
         assert exc_info.value is not None
         error_msg = str(exc_info.value).lower()
         # PostgreSQL should mention the table doesn't exist
-        assert 'not exist' in error_msg or 'does not exist' in error_msg or \
-               'relation' in error_msg
+        assert (
+            "not exist" in error_msg
+            or "does not exist" in error_msg
+            or "relation" in error_msg
+        )
 
         postgres_provider.disconnect()
 
@@ -292,14 +294,14 @@ class TestPostgreSQLProviderIntegration:
         """
         insert_results = postgres_provider.execute_query(insert_query)
         assert len(insert_results) == 1
-        assert insert_results[0]['name'] == 'John Doe'
+        assert insert_results[0]["name"] == "John Doe"
 
         # Query the data
         select_query = "SELECT id, name, email FROM test_users WHERE name = 'John Doe'"
         select_results = postgres_provider.execute_query(select_query)
         assert len(select_results) == 1
-        assert select_results[0]['name'] == 'John Doe'
-        assert select_results[0]['email'] == 'john@example.com'
+        assert select_results[0]["name"] == "John Doe"
+        assert select_results[0]["email"] == "john@example.com"
 
         # Cleanup
         postgres_provider.execute_query("DROP TABLE IF EXISTS test_users")
@@ -310,7 +312,8 @@ class TestPostgreSQLProviderIntegration:
         postgres_provider.connect()
 
         # Create test table
-        postgres_provider.execute_query("""
+        postgres_provider.execute_query(
+            """
             CREATE TABLE IF NOT EXISTS test_transactions (
                 id SERIAL PRIMARY KEY,
                 value INTEGER
@@ -328,7 +331,7 @@ class TestPostgreSQLProviderIntegration:
             "SELECT value FROM test_transactions WHERE value = 100"
         )
         assert len(results) == 1
-        assert results[0]['value'] == 100
+        assert results[0]["value"] == 100
 
         # Cleanup
         postgres_provider.execute_query("DROP TABLE IF EXISTS test_transactions")
@@ -343,6 +346,6 @@ class TestPostgreSQLProviderIntegration:
         for i in range(5):
             results = postgres_provider.execute_query(f"SELECT {i} as num")
             assert len(results) == 1
-            assert results[0]['num'] == i
+            assert results[0]["num"] == i
 
         postgres_provider.disconnect()

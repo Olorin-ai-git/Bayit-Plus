@@ -12,6 +12,7 @@ SYSTEM MANDATE Compliance:
 """
 
 from datetime import datetime, timedelta
+
 from fastapi import HTTPException, status
 
 
@@ -51,7 +52,7 @@ class TimeRangeValidator:
         if start is None or end is None:
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
-                detail="Both start and end times are required"
+                detail="Both start and end times are required",
             )
 
     def _validate_start_before_end(self, start: datetime, end: datetime) -> None:
@@ -62,7 +63,7 @@ class TimeRangeValidator:
                 detail=(
                     f"Investigation start time must be before end time "
                     f"(start: {start.isoformat()}, end: {end.isoformat()})"
-                )
+                ),
             )
 
     def _validate_not_future(self, start: datetime, end: datetime) -> None:
@@ -75,7 +76,7 @@ class TimeRangeValidator:
                 detail=(
                     f"Investigation start time cannot be in the future "
                     f"(start: {start.isoformat()}, now: {now.isoformat()})"
-                )
+                ),
             )
 
         if end > now:
@@ -84,7 +85,7 @@ class TimeRangeValidator:
                 detail=(
                     f"Investigation end time cannot be in the future "
                     f"(end: {end.isoformat()}, now: {now.isoformat()})"
-                )
+                ),
             )
 
     def _validate_duration(self, start: datetime, end: datetime) -> None:
@@ -100,5 +101,5 @@ class TimeRangeValidator:
                 detail=(
                     f"Investigation time range exceeds maximum duration "
                     f"(requested: {duration_days} days, maximum: {self.max_duration_days} days)"
-                )
+                ),
             )

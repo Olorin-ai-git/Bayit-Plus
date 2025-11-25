@@ -13,6 +13,7 @@ from langchain_core.tools import BaseTool
 
 class ToolRecommendationStrategy(Enum):
     """Tool recommendation strategies"""
+
     EFFECTIVENESS_BASED = "effectiveness_based"  # Based on historical effectiveness
     CASE_SIMILARITY = "case_similarity"  # Based on similar case patterns
     DOMAIN_SPECIFIC = "domain_specific"  # Domain-specific tool patterns
@@ -22,7 +23,7 @@ class ToolRecommendationStrategy(Enum):
 @dataclass
 class ToolEffectivenessMetrics:
     """Tool effectiveness metrics from knowledge base"""
-    
+
     tool_name: str
     success_rate: float = 0.0
     avg_confidence: float = 0.0
@@ -33,10 +34,10 @@ class ToolEffectivenessMetrics:
     combined_score: float = 0.0
 
 
-@dataclass 
+@dataclass
 class ToolRecommendation:
     """Tool recommendation with reasoning"""
-    
+
     tool: BaseTool
     confidence: float = 0.0
     reasoning: str = ""
@@ -49,22 +50,22 @@ class ToolRecommendation:
 @dataclass
 class ToolRecommenderConfig:
     """Configuration for tool recommender"""
-    
+
     # Recommendation limits
     max_recommended_tools: int = 12
     min_confidence_threshold: float = 0.6
     max_tools_per_category: int = 4
-    
+
     # Knowledge retrieval settings
     max_knowledge_chunks: int = 20
     effectiveness_threshold: float = 0.7
     similarity_threshold: float = 0.75
-    
+
     # Strategy weights
     effectiveness_weight: float = 0.4
     case_similarity_weight: float = 0.3
     domain_relevance_weight: float = 0.3
-    
+
     # Fallback settings
     enable_fallback_recommendations: bool = True
     fallback_to_standard_selection: bool = True

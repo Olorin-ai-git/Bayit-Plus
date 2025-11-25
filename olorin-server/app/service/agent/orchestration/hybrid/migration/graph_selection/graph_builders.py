@@ -10,15 +10,20 @@ Handles construction of different graph implementations:
 import os
 import sys
 from typing import Optional
+
 from langgraph.graph import StateGraph
 
+from app.service.agent.orchestration.clean_graph_builder import (
+    build_clean_investigation_graph,
+)
+from app.service.agent.orchestration.orchestrator_graph import (
+    create_orchestrator_driven_graph,
+)
 from app.service.logging import get_bridge_logger
-from ..feature_flags.flag_manager import GraphType
 
 # Import graph builders
 from ...hybrid_graph_builder import HybridGraphBuilder
-from app.service.agent.orchestration.clean_graph_builder import build_clean_investigation_graph
-from app.service.agent.orchestration.orchestrator_graph import create_orchestrator_driven_graph
+from ..feature_flags.flag_manager import GraphType
 
 logger = get_bridge_logger(__name__)
 
@@ -82,7 +87,9 @@ class GraphBuilders:
         logger.debug("🔊 Streaming enabled: interactive terminal session")
         return True
 
-    async def build_graph(self, graph_type: GraphType, investigation_id: Optional[str] = None) -> StateGraph:
+    async def build_graph(
+        self, graph_type: GraphType, investigation_id: Optional[str] = None
+    ) -> StateGraph:
         """
         Build graph of specified type.
 
@@ -107,7 +114,9 @@ class GraphBuilders:
             # Fallback to clean graph
             return await self.build_clean_graph(investigation_id)
 
-    async def build_hybrid_graph(self, investigation_id: Optional[str] = None) -> StateGraph:
+    async def build_hybrid_graph(
+        self, investigation_id: Optional[str] = None
+    ) -> StateGraph:
         """
         Build hybrid intelligence graph with enhanced capabilities.
 
@@ -118,33 +127,40 @@ class GraphBuilders:
             Compiled hybrid graph
         """
 
-        logger.debug(f"🧠 Building hybrid intelligence graph (investigation_id={investigation_id})")
+        logger.debug(
+            f"🧠 Building hybrid intelligence graph (investigation_id={investigation_id})"
+        )
 
         try:
             if self.hybrid_builder is None:
                 # Initialize hybrid builder with LLM support
-                self.hybrid_builder = HybridGraphBuilder(intelligence_mode="adaptive", llm=self.llm)
+                self.hybrid_builder = HybridGraphBuilder(
+                    intelligence_mode="adaptive", llm=self.llm
+                )
 
             # Determine if streaming should be enabled based on environment
             enable_streaming = self._should_enable_streaming()
-            logger.info(f"🔧 Hybrid graph streaming: {'enabled' if enable_streaming else 'disabled'}")
+            logger.info(
+                f"🔧 Hybrid graph streaming: {'enabled' if enable_streaming else 'disabled'}"
+            )
 
             graph = await self.hybrid_builder.build_hybrid_investigation_graph(
                 use_enhanced_tools=True,
                 enable_streaming=enable_streaming,
-                investigation_id=investigation_id
+                investigation_id=investigation_id,
             )
 
             logger.debug(f"✅ Hybrid graph built successfully")
             return graph
-
 
         except Exception as e:
             logger.error(f"❌ Failed to build hybrid graph: {str(e)}")
             logger.warning(f"   Falling back to clean graph")
             return await self.build_clean_graph(investigation_id)
 
-    async def build_clean_graph(self, investigation_id: Optional[str] = None) -> StateGraph:
+    async def build_clean_graph(
+        self, investigation_id: Optional[str] = None
+    ) -> StateGraph:
         """
         Build clean graph (original implementation).
 
@@ -166,7 +182,9 @@ class GraphBuilders:
             logger.error(f"❌ Failed to build clean graph: {str(e)}")
             raise RuntimeError(f"Critical failure: Cannot build clean graph: {str(e)}")
 
-    async def build_orchestrator_graph(self, investigation_id: Optional[str] = None) -> StateGraph:
+    async def build_orchestrator_graph(
+        self, investigation_id: Optional[str] = None
+    ) -> StateGraph:
         """
         Build orchestrator-driven graph.
 
@@ -177,12 +195,13 @@ class GraphBuilders:
             Compiled orchestrator graph
         """
 
-        logger.debug(f"🎭 Building orchestrator-driven graph (investigation_id={investigation_id})")
+        logger.debug(
+            f"🎭 Building orchestrator-driven graph (investigation_id={investigation_id})"
+        )
 
         try:
             graph = await create_orchestrator_driven_graph(
-                orchestration_mode="ai_driven",
-                use_enhanced_tools=True
+                orchestration_mode="ai_driven", use_enhanced_tools=True
             )
 
             logger.debug(f"✅ Orchestrator graph built successfully")
@@ -192,46 +211,46 @@ class GraphBuilders:
             logger.error(f"❌ Failed to build orchestrator graph: {str(e)}")
             logger.warning(f"   Falling back to clean graph")
             return await self.build_clean_graph(investigation_id)
-    
+
     def get_available_graph_types(self) -> list[GraphType]:
         """
         Get list of available graph types.
-        
+
         Returns:
             List of supported graph types
         """
-        
+
         return [GraphType.HYBRID, GraphType.ORCHESTRATOR, GraphType.CLEAN]
-    
+
     def validate_graph_type(self, graph_type: GraphType) -> bool:
         """
         Validate if graph type is supported.
-        
+
         Args:
             graph_type: Graph type to validate
-            
+
         Returns:
             True if graph type is supported
         """
-        
+
         return graph_type in self.get_available_graph_types()
-    
+
     async def test_graph_build(self, graph_type: GraphType) -> bool:
         """
         Test if a graph type can be built successfully.
-        
+
         Args:
             graph_type: Graph type to test
-            
+
         Returns:
             True if graph builds successfully
         """
-        
+
         try:
             graph = await self.build_graph(graph_type)
             logger.debug(f"✅ Graph test successful: {graph_type.value}")
             return True
-            
+
         except Exception as e:
             logger.error(f"❌ Graph test failed: {graph_type.value} - {str(e)}")
             return False

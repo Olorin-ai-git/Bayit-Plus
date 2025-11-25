@@ -11,12 +11,13 @@ SYSTEM MANDATE Compliance:
 - Type-safe: All parameters and returns properly typed
 """
 
-from typing import AsyncGenerator, Optional, Dict, Any
-from sqlalchemy.orm import Session
-from datetime import datetime, timedelta
-import json
 import asyncio
+import json
 import os
+from datetime import datetime, timedelta
+from typing import Any, AsyncGenerator, Dict, Optional
+
+from sqlalchemy.orm import Session
 
 from app.models.investigation_audit_log import InvestigationAuditLog
 from app.models.investigation_state import InvestigationState
@@ -43,7 +44,7 @@ class EventStreamingService:
         investigation_id: str,
         user_id: str,
         run_id: Optional[str] = None,
-        last_event_id: Optional[str] = None
+        last_event_id: Optional[str] = None,
     ) -> AsyncGenerator[str, None]:
         """
         Stream investigation events as Server-Sent Events.
@@ -80,19 +81,21 @@ class EventStreamingService:
         try:
             while True:
                 # Check if we've exceeded max streaming duration
-                if (datetime.utcnow() - start_time).total_seconds() > self.STREAM_MAX_DURATION:
+                if (
+                    datetime.utcnow() - start_time
+                ).total_seconds() > self.STREAM_MAX_DURATION:
                     # Send reconnect instruction
                     yield self._format_sse_message(
                         event_type="reconnect",
-                        data={"message": "Stream duration limit reached, please reconnect"}
+                        data={
+                            "message": "Stream duration limit reached, please reconnect"
+                        },
                     )
                     break
 
                 # T056: Query recent events from audit_log
                 events = await self._fetch_recent_events(
-                    investigation_id,
-                    run_id,
-                    last_event_timestamp
+                    investigation_id, run_id, last_event_timestamp
                 )
 
                 if events:
@@ -104,10 +107,12 @@ class EventStreamingService:
                     last_heartbeat = datetime.utcnow()
 
                 # Send heartbeat if no events for a while
-                elif (datetime.utcnow() - last_heartbeat).total_seconds() > self.STREAM_HEARTBEAT_INTERVAL:
+                elif (
+                    datetime.utcnow() - last_heartbeat
+                ).total_seconds() > self.STREAM_HEARTBEAT_INTERVAL:
                     yield self._format_sse_message(
                         event_type="heartbeat",
-                        data={"timestamp": datetime.utcnow().isoformat()}
+                        data={"timestamp": datetime.utcnow().isoformat()},
                     )
                     last_heartbeat = datetime.utcnow()
 
@@ -119,16 +124,13 @@ class EventStreamingService:
             raise
         except Exception as e:
             logger.error(f"Error in SSE stream for {investigation_id}: {e}")
-            yield self._format_sse_message(
-                event_type="error",
-                data={"error": str(e)}
-            )
+            yield self._format_sse_message(event_type="error", data={"error": str(e)})
 
     async def _fetch_recent_events(
         self,
         investigation_id: str,
         run_id: Optional[str],
-        since_timestamp: Optional[datetime]
+        since_timestamp: Optional[datetime],
     ) -> list[InvestigationAuditLog]:
         """
         Fetch recent events from audit log.
@@ -148,23 +150,23 @@ class EventStreamingService:
         )
 
         if since_timestamp:
-            query = query.filter(
-                InvestigationAuditLog.timestamp > since_timestamp
-            )
+            query = query.filter(InvestigationAuditLog.timestamp > since_timestamp)
 
         # T055: Filter for specific event types we want to stream
         query = query.filter(
-            InvestigationAuditLog.action_type.in_([
-                "STATE_CHANGE",  # Phase changes
-                "UPDATED",       # Tool completions/errors
-                "SETTINGS_CHANGE"  # Configuration updates
-            ])
+            InvestigationAuditLog.action_type.in_(
+                [
+                    "STATE_CHANGE",  # Phase changes
+                    "UPDATED",  # Tool completions/errors
+                    "SETTINGS_CHANGE",  # Configuration updates
+                ]
+            )
         )
 
         # Order by timestamp and limit batch size
-        query = query.order_by(
-            InvestigationAuditLog.timestamp.asc()
-        ).limit(self.STREAM_BATCH_SIZE)
+        query = query.order_by(InvestigationAuditLog.timestamp.asc()).limit(
+            self.STREAM_BATCH_SIZE
+        )
 
         return query.all()
 
@@ -200,13 +202,11 @@ class EventStreamingService:
             "source": audit_entry.source,
             "changes": changes,
             "from_version": audit_entry.from_version,
-            "to_version": audit_entry.to_version
+            "to_version": audit_entry.to_version,
         }
 
         return self._format_sse_message(
-            event_type=event_type,
-            data=event_data,
-            event_id=audit_entry.entry_id
+            event_type=event_type, data=event_data, event_id=audit_entry.entry_id
         )
 
     def _determine_event_type(self, audit_entry: InvestigationAuditLog) -> str:
@@ -242,16 +242,13 @@ class EventStreamingService:
             "UPDATED": "state_update",
             "SETTINGS_CHANGE": "settings_update",
             "CREATED": "investigation_created",
-            "DELETED": "investigation_deleted"
+            "DELETED": "investigation_deleted",
         }
 
         return action_to_event.get(audit_entry.action_type, "update")
 
     def _format_sse_message(
-        self,
-        event_type: str,
-        data: Dict[str, Any],
-        event_id: Optional[str] = None
+        self, event_type: str, data: Dict[str, Any], event_id: Optional[str] = None
     ) -> str:
         """
         Format data as SSE message.
@@ -294,28 +291,29 @@ class EventStreamingService:
         """
         from fastapi import HTTPException, status
 
-        state = self.db.query(InvestigationState).filter(
-            InvestigationState.investigation_id == investigation_id
-        ).first()
+        state = (
+            self.db.query(InvestigationState)
+            .filter(InvestigationState.investigation_id == investigation_id)
+            .first()
+        )
 
         if not state:
             raise HTTPException(
                 status_code=status.HTTP_404_NOT_FOUND,
-                detail=f"Investigation {investigation_id} not found"
+                detail=f"Investigation {investigation_id} not found",
             )
 
         # Check if user owns the investigation
         if state.user_id != user_id:
             raise HTTPException(
                 status_code=status.HTTP_403_FORBIDDEN,
-                detail="Not authorized to access this investigation"
+                detail="Not authorized to access this investigation",
             )
 
         return state
 
     def _parse_last_event_timestamp(
-        self,
-        last_event_id: Optional[str]
+        self, last_event_id: Optional[str]
     ) -> Optional[datetime]:
         """
         Parse timestamp from last event ID for reconnection.
@@ -330,9 +328,11 @@ class EventStreamingService:
             return None
 
         # Try to get timestamp from audit log entry
-        entry = self.db.query(InvestigationAuditLog).filter(
-            InvestigationAuditLog.entry_id == last_event_id
-        ).first()
+        entry = (
+            self.db.query(InvestigationAuditLog)
+            .filter(InvestigationAuditLog.entry_id == last_event_id)
+            .first()
+        )
 
         if entry:
             return entry.timestamp

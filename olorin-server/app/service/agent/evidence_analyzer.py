@@ -7,13 +7,14 @@ This is the missing step that converts raw evidence into meaningful risk assessm
 
 import re
 import time
-from typing import Dict, Any, List, Optional
-from langchain_core.messages import SystemMessage, HumanMessage
+from typing import Any, Dict, List, Optional
 
-from app.service.logging import get_bridge_logger
-from app.service.llm_manager import get_llm_manager
-from app.service.config_loader import ConfigLoader
+from langchain_core.messages import HumanMessage, SystemMessage
+
 from app.service.config import get_settings_for_env
+from app.service.config_loader import ConfigLoader
+from app.service.llm_manager import get_llm_manager
+from app.service.logging import get_bridge_logger
 
 logger = get_bridge_logger(__name__)
 
@@ -21,34 +22,38 @@ logger = get_bridge_logger(__name__)
 class EvidenceAnalyzer:
     """
     Analyzes domain evidence using LLM to generate risk scores.
-    
+
     This service bridges the gap between evidence collection and risk scoring
     by using LLM analysis to interpret evidence patterns and generate
     meaningful risk assessments.
     """
-    
+
     def __init__(self):
         """Initialize the evidence analyzer with LLM."""
         self.llm = self._initialize_llm()
         logger.debug("🧠 EvidenceAnalyzer initialized with LLM")
-    
+
     def _initialize_llm(self):
         """Initialize LLM for evidence analysis."""
         import os
 
         # Check for TEST_MODE first
         test_mode = os.getenv("TEST_MODE", "").lower()
-        has_api_key = (os.getenv("ANTHROPIC_API_KEY") or
-                      os.getenv("OPENAI_API_KEY") or
-                      os.getenv("GEMINI_API_KEY"))
+        has_api_key = (
+            os.getenv("ANTHROPIC_API_KEY")
+            or os.getenv("OPENAI_API_KEY")
+            or os.getenv("GEMINI_API_KEY")
+        )
         use_mock = test_mode == "mock" or not has_api_key
 
-        logger.info(f"🧠 EvidenceAnalyzer initialization: test_mode={test_mode}, has_api_key={bool(has_api_key)}, use_mock={use_mock}")
+        logger.info(
+            f"🧠 EvidenceAnalyzer initialization: test_mode={test_mode}, has_api_key={bool(has_api_key)}, use_mock={use_mock}"
+        )
 
         if use_mock:
             logger.info("🧪 Using mock LLM for evidence analysis")
             return self._create_mock_llm()
-        
+
         # Use real LLM for live mode
         try:
             llm_manager = get_llm_manager()
@@ -60,12 +65,18 @@ class EvidenceAnalyzer:
                 return self._create_mock_llm()
 
             # Configure for evidence analysis
-            if hasattr(llm, 'temperature'):
-                llm.temperature = 0.1  # Low temperature for consistent, deterministic results
-            if hasattr(llm, 'max_tokens'):
-                llm.max_tokens = 4096  # Increased for comprehensive fraud analysis responses
+            if hasattr(llm, "temperature"):
+                llm.temperature = (
+                    0.1  # Low temperature for consistent, deterministic results
+                )
+            if hasattr(llm, "max_tokens"):
+                llm.max_tokens = (
+                    4096  # Increased for comprehensive fraud analysis responses
+                )
 
-            logger.info(f"🤖 Evidence analyzer using live model: {llm_manager.selected_model_id}")
+            logger.info(
+                f"🤖 Evidence analyzer using live model: {llm_manager.selected_model_id}"
+            )
             return llm
 
         except Exception as e:
@@ -76,17 +87,23 @@ class EvidenceAnalyzer:
 
     def _create_mock_llm(self):
         """Create a mock LLM using the real MockLLM with enhanced responses."""
-        from app.service.agent.mock_llm import get_mock_llm
         import sys
         import traceback
 
+        from app.service.agent.mock_llm import get_mock_llm
+
         # Version marker for debugging
-        print("="*80, file=sys.stderr)
-        print("🔍 EVIDENCE ANALYZER: Creating MockLLM (v3 - Enhanced Exception Logging)", file=sys.stderr)
-        print("="*80, file=sys.stderr)
+        print("=" * 80, file=sys.stderr)
+        print(
+            "🔍 EVIDENCE ANALYZER: Creating MockLLM (v3 - Enhanced Exception Logging)",
+            file=sys.stderr,
+        )
+        print("=" * 80, file=sys.stderr)
 
         try:
-            logger.info("🧪 Creating MockLLM with enhanced responses for evidence analysis")
+            logger.info(
+                "🧪 Creating MockLLM with enhanced responses for evidence analysis"
+            )
             mock_llm = get_mock_llm()
 
             # Verify MockLLM was created successfully
@@ -104,15 +121,15 @@ class EvidenceAnalyzer:
             error_msg = f"Failed to create MockLLM: {type(e).__name__}: {str(e)}"
             logger.error(f"❌ {error_msg}")
             logger.error(f"   Traceback: {traceback.format_exc()}")
-            print("="*80, file=sys.stderr)
+            print("=" * 80, file=sys.stderr)
             print(f"❌ CRITICAL ERROR in _create_mock_llm:", file=sys.stderr)
             print(f"   Exception Type: {type(e).__name__}", file=sys.stderr)
             print(f"   Exception Message: {str(e)}", file=sys.stderr)
             print(f"   Full Traceback:", file=sys.stderr)
             print(traceback.format_exc(), file=sys.stderr)
-            print("="*80, file=sys.stderr)
+            print("=" * 80, file=sys.stderr)
             raise
-    
+
     async def analyze_domain_evidence(
         self,
         domain: str,
@@ -122,7 +139,7 @@ class EvidenceAnalyzer:
         tool_results: Optional[Dict[str, Any]] = None,
         entity_type: str = "unknown",
         entity_id: str = "unknown",
-        computed_risk_score: Optional[float] = None
+        computed_risk_score: Optional[float] = None,
     ) -> Dict[str, Any]:
         """
         Analyze domain evidence using LLM to generate risk assessment.
@@ -144,7 +161,9 @@ class EvidenceAnalyzer:
         """
         start_time = time.time()
 
-        logger.debug(f"🧠 Analyzing {domain} domain evidence for {entity_type} {entity_id}")
+        logger.debug(
+            f"🧠 Analyzing {domain} domain evidence for {entity_type} {entity_id}"
+        )
         logger.debug(f"   Evidence points: {len(evidence)}")
         logger.debug(f"   Metrics available: {len(metrics)}")
 
@@ -155,72 +174,103 @@ class EvidenceAnalyzer:
         logger.info(f"   Total tool results available: {len(tool_results)}")
         if tool_results:
             logger.info(f"   Tool names: {list(tool_results.keys())}")
-            for tool_name, tool_content in list(tool_results.items())[:3]:  # Show first 3
+            for tool_name, tool_content in list(tool_results.items())[
+                :3
+            ]:  # Show first 3
                 content_preview = str(tool_content)[:100] if tool_content else "[Empty]"
                 logger.info(f"   {tool_name}: {content_preview}...")
         else:
-            logger.warning(f"   ⚠️ No tool results provided - LLM analysis may be incomplete")
+            logger.warning(
+                f"   ⚠️ No tool results provided - LLM analysis may be incomplete"
+            )
 
         # Prepare comprehensive analysis prompt with ALL data sources
         analysis_prompt = self._create_evidence_analysis_prompt(
-            domain, evidence, metrics, snowflake_data, tool_results, entity_type, entity_id, computed_risk_score
+            domain,
+            evidence,
+            metrics,
+            snowflake_data,
+            tool_results,
+            entity_type,
+            entity_id,
+            computed_risk_score,
         )
-        
+
         # Create system message for domain-specific analysis
         system_prompt = self._create_domain_system_prompt(domain)
         system_msg = SystemMessage(content=system_prompt)
         human_msg = HumanMessage(content=analysis_prompt)
-        
+
         # Log full LLM prompt when snowflake data is included
         if snowflake_data:
             logger.info("📝 LLM Prompt (with formatted Snowflake data):")
             logger.info(f"   System Message: {system_prompt[:1000]}...")
             if len(system_prompt) > 1000:
-                logger.info(f"   ... (truncated, full length: {len(system_prompt)} chars)")
+                logger.info(
+                    f"   ... (truncated, full length: {len(system_prompt)} chars)"
+                )
             logger.info(f"   Human Message: {analysis_prompt[:3000]}...")
             if len(analysis_prompt) > 3000:
-                logger.info(f"   ... (truncated, full length: {len(analysis_prompt)} chars)")
-        
+                logger.info(
+                    f"   ... (truncated, full length: {len(analysis_prompt)} chars)"
+                )
+
         try:
             # Invoke LLM for evidence analysis
             logger.debug(f"🤖 Invoking LLM for {domain} evidence analysis...")
             response = await self.llm.ainvoke([system_msg, human_msg])
             analysis_duration = time.time() - start_time
-            
+
             # Log full LLM response (increased limit for better visibility)
             if snowflake_data:
-                logger.info("🤖 LLM Response (after receiving formatted Snowflake data):")
-                if hasattr(response, 'content') and response.content:
-                    response_preview = str(response.content)[:5000] if response.content else "[Empty response]"
+                logger.info(
+                    "🤖 LLM Response (after receiving formatted Snowflake data):"
+                )
+                if hasattr(response, "content") and response.content:
+                    response_preview = (
+                        str(response.content)[:5000]
+                        if response.content
+                        else "[Empty response]"
+                    )
                     logger.info(f"   Response content: {response_preview}")
                     if len(str(response.content)) > 5000:
-                        logger.info(f"   ... (truncated, full length: {len(str(response.content))} chars)")
+                        logger.info(
+                            f"   ... (truncated, full length: {len(str(response.content))} chars)"
+                        )
                 else:
                     logger.info("   Response: [No content]")
 
             # Parse LLM response, with computed score override if provided
             # CRITICAL FIX: Safely extract content from response (handle both dict and object responses)
-            response_content = response.content if hasattr(response, 'content') else response
+            response_content = (
+                response.content if hasattr(response, "content") else response
+            )
             if isinstance(response_content, dict):
-                response_content = response_content.get('content', str(response_content))
-            analysis_result = self._parse_evidence_analysis(response_content, domain, computed_risk_score, snowflake_data)
+                response_content = response_content.get(
+                    "content", str(response_content)
+                )
+            analysis_result = self._parse_evidence_analysis(
+                response_content, domain, computed_risk_score, snowflake_data
+            )
             analysis_result["analysis_duration"] = analysis_duration
-            
+
             logger.debug(f"✅ {domain} evidence analysis complete:")
-            if analysis_result.get('risk_score') is not None:
+            if analysis_result.get("risk_score") is not None:
                 logger.debug(f"   Risk Score: {analysis_result['risk_score']:.2f}")
             else:
-                logger.debug(f"   Risk Score: INSUFFICIENT_DATA (LLM did not provide a score)")
+                logger.debug(
+                    f"   Risk Score: INSUFFICIENT_DATA (LLM did not provide a score)"
+                )
             logger.debug(f"   Confidence: {analysis_result.get('confidence', 0.0):.2f}")
             logger.debug(f"   Duration: {analysis_duration:.3f}s")
-            
+
             return analysis_result
-            
+
         except Exception as e:
             analysis_duration = time.time() - start_time
             # Enhanced logging to capture full exception details
-            import traceback
             import sys
+            import traceback
 
             # CRITICAL: Use print to bypass logging system
             print(f"\n{'='*80}", file=sys.stderr)
@@ -239,39 +289,38 @@ class EvidenceAnalyzer:
             logger.error(f"   Full traceback:\n{traceback.format_exc()}")
 
             # Return fallback analysis
-            return self._create_fallback_analysis(domain, evidence, metrics, analysis_duration)
-    
+            return self._create_fallback_analysis(
+                domain, evidence, metrics, analysis_duration
+            )
+
     def _create_domain_system_prompt(self, domain: str) -> str:
         """Create domain-specific system prompt for LLM analysis."""
-        
+
         domain_expertise = {
             "network": """You are a network security expert specializing in IP reputation analysis, 
             geographic patterns, VPN detection, and network behavior analysis. You understand 
             network-based fraud indicators and can assess IP-related risks.""",
-            
             "device": """You are a device fingerprinting expert specializing in device consistency 
             analysis, browser spoofing detection, and device behavior patterns. You understand 
             device-based fraud indicators and can assess device-related risks.""",
-            
             "location": """You are a geographic analysis expert specializing in location patterns, 
             impossible travel detection, and geographic risk assessment. You understand 
             location-based fraud indicators and can assess geographic risks.""",
-            
             "logs": """You are a log analysis expert specializing in behavioral pattern analysis, 
             system logs interpretation, and activity pattern detection. You understand 
             behavioral fraud indicators and can assess activity-based risks.""",
-            
             "authentication": """You are an authentication security expert specializing in login 
             pattern analysis, credential security, and authentication anomaly detection. You 
             understand authentication-based fraud indicators and security risks.""",
-            
             "risk": """You are a comprehensive fraud risk expert specializing in synthesizing 
             findings from multiple domains to provide overall risk assessment. You understand 
-            how different risk factors combine to indicate fraud probability."""
+            how different risk factors combine to indicate fraud probability.""",
         }
-        
-        base_prompt = domain_expertise.get(domain, f"You are a {domain} analysis expert.")
-        
+
+        base_prompt = domain_expertise.get(
+            domain, f"You are a {domain} analysis expert."
+        )
+
         # Domain-specific analysis instructions
         domain_instructions = {
             "network": """CRITICAL: Focus ONLY on network/IP-related evidence:
@@ -280,48 +329,44 @@ class EvidenceAnalyzer:
 - Geographic IP patterns (country changes)
 - Network-based threat intelligence
 DO NOT analyze device patterns, transaction amounts, or timing - those are for other domains.""",
-            
             "device": """CRITICAL: Focus ONLY on device-related evidence:
 - Device IDs, device consistency, device changes
 - User agent patterns, browser/OS information
 - Device fingerprinting anomalies
 - Device-IP mismatches (device perspective)
 DO NOT analyze IP reputation, transaction amounts, or timing patterns - those are for other domains.""",
-            
             "location": """CRITICAL: Focus ONLY on geographic/location evidence:
 - IP country codes, geographic diversity
 - Location consistency, impossible travel
 - Geographic risk indicators
 DO NOT analyze device patterns, IP reputation, or transaction amounts - those are for other domains.""",
-            
             "logs": """CRITICAL: Focus ONLY on transaction timing and behavioral patterns:
 - Transaction timing patterns, velocity bursts
 - Amount clustering (timing perspective)
 - Error patterns, failure sequences
 - Activity timing anomalies
 DO NOT analyze IP reputation, device fingerprints, or geographic patterns - those are for other domains.""",
-            
             "authentication": """CRITICAL: Focus ONLY on authentication-related evidence:
 - Login patterns, authentication failures
 - MFA bypass attempts, credential issues
 - Session anomalies
 DO NOT analyze transaction amounts, IP reputation, or device patterns - those are for other domains.""",
-            
             "merchant": """CRITICAL: Focus ONLY on merchant/transaction amount patterns:
 - Amount clustering, transaction patterns
 - Merchant-specific risk indicators
 - Payment method patterns
 DO NOT analyze IP reputation, device fingerprints, or timing patterns - those are for other domains.""",
-            
             "risk": """CRITICAL: Synthesize findings from ALL domains:
 - Review findings from network, device, location, logs, authentication, merchant agents
 - Identify cross-domain patterns and correlations
 - Provide overall risk assessment based on combined evidence
-- Note any contradictions or reinforcing signals across domains."""
+- Note any contradictions or reinforcing signals across domains.""",
         }
-        
-        domain_specific_instruction = domain_instructions.get(domain, f"Focus on {domain}-specific evidence only.")
-        
+
+        domain_specific_instruction = domain_instructions.get(
+            domain, f"Focus on {domain}-specific evidence only."
+        )
+
         return f"""{base_prompt}
 
 {domain_specific_instruction}
@@ -368,7 +413,7 @@ Focus on qualitative interpretation of the provided quantitative values."""
         tool_results: Optional[Dict[str, Any]],
         entity_type: str,
         entity_id: str,
-        computed_risk_score: Optional[float] = None
+        computed_risk_score: Optional[float] = None,
     ) -> str:
         """Create comprehensive prompt for evidence analysis with ALL data sources.
 
@@ -376,7 +421,11 @@ Focus on qualitative interpretation of the provided quantitative values."""
         """
 
         # Format evidence
-        evidence_text = "\n".join([f"- {e}" for e in evidence]) if evidence else "No evidence collected"
+        evidence_text = (
+            "\n".join([f"- {e}" for e in evidence])
+            if evidence
+            else "No evidence collected"
+        )
 
         # CRITICAL: Detect low evidence volume
         evidence_count = len(evidence) if evidence else 0
@@ -386,12 +435,12 @@ Focus on qualitative interpretation of the provided quantitative values."""
                 # Check for error conditions - don't count error responses as data
                 if snowflake_data.get("success") is False or "error" in snowflake_data:
                     snowflake_row_count = 0  # Error responses have no data
-                elif 'results' in snowflake_data:
-                    snowflake_row_count = len(snowflake_data.get('results', []))
-                elif 'row_count' in snowflake_data:
-                    snowflake_row_count = snowflake_data.get('row_count', 0)
-                elif 'data' in snowflake_data:
-                    snowflake_row_count = len(snowflake_data.get('data', []))
+                elif "results" in snowflake_data:
+                    snowflake_row_count = len(snowflake_data.get("results", []))
+                elif "row_count" in snowflake_data:
+                    snowflake_row_count = snowflake_data.get("row_count", 0)
+                elif "data" in snowflake_data:
+                    snowflake_row_count = len(snowflake_data.get("data", []))
                 else:
                     snowflake_row_count = 0  # Unknown format, assume no data
 
@@ -402,22 +451,32 @@ Focus on qualitative interpretation of the provided quantitative values."""
         metrics_text = self._format_metrics_for_analysis(metrics)
 
         # Format Snowflake context
-        snowflake_text = self._format_snowflake_for_analysis(snowflake_data) if snowflake_data else "No Snowflake context available"
+        snowflake_text = (
+            self._format_snowflake_for_analysis(snowflake_data)
+            if snowflake_data
+            else "No Snowflake context available"
+        )
 
         # CRITICAL: Detect fraud patterns in Snowflake data - FILTER BY DOMAIN
         # Each domain agent should only see patterns relevant to their domain
         fraud_patterns_text = ""
-        if snowflake_data and isinstance(snowflake_data, dict) and "results" in snowflake_data:
+        if (
+            snowflake_data
+            and isinstance(snowflake_data, dict)
+            and "results" in snowflake_data
+        ):
             try:
                 from app.service.agent.orchestration.risk.fraud_pattern_detectors import (
-                    detect_velocity_burst, detect_amount_clustering, 
-                    detect_ip_rotation, detect_device_ip_mismatch
+                    detect_amount_clustering,
+                    detect_device_ip_mismatch,
+                    detect_ip_rotation,
+                    detect_velocity_burst,
                 )
-                
+
                 results = snowflake_data["results"]
                 if isinstance(results, list) and len(results) >= 3:
                     patterns_detected = []
-                    
+
                     # DOMAIN-SPECIFIC PATTERN FILTERING:
                     # Each domain should only see patterns relevant to their analysis
                     if domain == "network":
@@ -425,82 +484,118 @@ Focus on qualitative interpretation of the provided quantitative values."""
                         ip_rotation = detect_ip_rotation(results)
                         if ip_rotation:
                             max_rot = ip_rotation.get("max_rotation", {})
-                            patterns_detected.append(f"IP ROTATION: Device used {max_rot.get('ip_count', 0)} IPs from subnet {max_rot.get('subnet', '')}")
+                            patterns_detected.append(
+                                f"IP ROTATION: Device used {max_rot.get('ip_count', 0)} IPs from subnet {max_rot.get('subnet', '')}"
+                            )
                         # IP-related velocity (IP changes)
                         velocity_burst = detect_velocity_burst(results)
                         if velocity_burst:
-                            patterns_detected.append(f"IP VELOCITY: {velocity_burst['transaction_count']} transactions in {velocity_burst['time_window_minutes']} minutes (network context)")
-                    
+                            patterns_detected.append(
+                                f"IP VELOCITY: {velocity_burst['transaction_count']} transactions in {velocity_burst['time_window_minutes']} minutes (network context)"
+                            )
+
                     elif domain == "device":
                         # Device agent: Device-IP mismatch, device-related patterns
                         device_ip_mismatch = detect_device_ip_mismatch(results)
                         if device_ip_mismatch:
                             max_mismatch = device_ip_mismatch.get("max_mismatch", {})
-                            patterns_detected.append(f"DEVICE-IP MISMATCH: Device {max_mismatch.get('device', '')[:30]}... used {max_mismatch.get('ip_count', 0)} different IPs")
+                            patterns_detected.append(
+                                f"DEVICE-IP MISMATCH: Device {max_mismatch.get('device', '')[:30]}... used {max_mismatch.get('ip_count', 0)} different IPs"
+                            )
                         # Device-related velocity (device changes)
                         velocity_burst = detect_velocity_burst(results)
                         if velocity_burst:
-                            patterns_detected.append(f"DEVICE VELOCITY: {velocity_burst['transaction_count']} transactions in {velocity_burst['time_window_minutes']} minutes (device context)")
-                    
+                            patterns_detected.append(
+                                f"DEVICE VELOCITY: {velocity_burst['transaction_count']} transactions in {velocity_burst['time_window_minutes']} minutes (device context)"
+                            )
+
                     elif domain == "location":
                         # Location agent: Geographic patterns only
                         ip_rotation = detect_ip_rotation(results)
                         if ip_rotation:
                             max_rot = ip_rotation.get("max_rotation", {})
-                            patterns_detected.append(f"GEOGRAPHIC DIVERSITY: Device used {max_rot.get('ip_count', 0)} IPs (location context)")
-                    
+                            patterns_detected.append(
+                                f"GEOGRAPHIC DIVERSITY: Device used {max_rot.get('ip_count', 0)} IPs (location context)"
+                            )
+
                     elif domain == "logs":
                         # Logs agent: Timing patterns, velocity bursts (transaction timing)
                         velocity_burst = detect_velocity_burst(results)
                         if velocity_burst:
-                            patterns_detected.append(f"TRANSACTION VELOCITY: {velocity_burst['transaction_count']} transactions in {velocity_burst['time_window_minutes']} minutes")
+                            patterns_detected.append(
+                                f"TRANSACTION VELOCITY: {velocity_burst['transaction_count']} transactions in {velocity_burst['time_window_minutes']} minutes"
+                            )
                         amount_clustering = detect_amount_clustering(results)
                         if amount_clustering:
                             max_cluster = amount_clustering.get("max_cluster", {})
-                            patterns_detected.append(f"AMOUNT CLUSTERING: ${max_cluster.get('amount', 0):,.2f} appears {max_cluster.get('count', 0)} times (timing pattern)")
-                    
+                            patterns_detected.append(
+                                f"AMOUNT CLUSTERING: ${max_cluster.get('amount', 0):,.2f} appears {max_cluster.get('count', 0)} times (timing pattern)"
+                            )
+
                     elif domain == "authentication":
                         # Authentication agent: Login/timing patterns
                         velocity_burst = detect_velocity_burst(results)
                         if velocity_burst:
-                            patterns_detected.append(f"AUTHENTICATION VELOCITY: {velocity_burst['transaction_count']} transactions in {velocity_burst['time_window_minutes']} minutes")
-                    
+                            patterns_detected.append(
+                                f"AUTHENTICATION VELOCITY: {velocity_burst['transaction_count']} transactions in {velocity_burst['time_window_minutes']} minutes"
+                            )
+
                     elif domain == "merchant":
                         # Merchant agent: Amount patterns, transaction patterns
                         amount_clustering = detect_amount_clustering(results)
                         if amount_clustering:
                             max_cluster = amount_clustering.get("max_cluster", {})
-                            patterns_detected.append(f"AMOUNT CLUSTERING: ${max_cluster.get('amount', 0):,.2f} appears {max_cluster.get('count', 0)} times")
+                            patterns_detected.append(
+                                f"AMOUNT CLUSTERING: ${max_cluster.get('amount', 0):,.2f} appears {max_cluster.get('count', 0)} times"
+                            )
                         velocity_burst = detect_velocity_burst(results)
                         if velocity_burst:
-                            patterns_detected.append(f"MERCHANT VELOCITY: {velocity_burst['transaction_count']} transactions in {velocity_burst['time_window_minutes']} minutes")
-                    
+                            patterns_detected.append(
+                                f"MERCHANT VELOCITY: {velocity_burst['transaction_count']} transactions in {velocity_burst['time_window_minutes']} minutes"
+                            )
+
                     # Risk agent sees all patterns (it synthesizes)
                     elif domain == "risk":
                         velocity_burst = detect_velocity_burst(results)
                         amount_clustering = detect_amount_clustering(results)
                         ip_rotation = detect_ip_rotation(results)
                         device_ip_mismatch = detect_device_ip_mismatch(results)
-                        
+
                         if velocity_burst:
-                            patterns_detected.append(f"VELOCITY BURST: {velocity_burst['transaction_count']} transactions in {velocity_burst['time_window_minutes']} minutes")
+                            patterns_detected.append(
+                                f"VELOCITY BURST: {velocity_burst['transaction_count']} transactions in {velocity_burst['time_window_minutes']} minutes"
+                            )
                         if amount_clustering:
                             max_cluster = amount_clustering.get("max_cluster", {})
-                            patterns_detected.append(f"AMOUNT CLUSTERING: ${max_cluster.get('amount', 0):,.2f} appears {max_cluster.get('count', 0)} times")
+                            patterns_detected.append(
+                                f"AMOUNT CLUSTERING: ${max_cluster.get('amount', 0):,.2f} appears {max_cluster.get('count', 0)} times"
+                            )
                         if ip_rotation:
                             max_rot = ip_rotation.get("max_rotation", {})
-                            patterns_detected.append(f"IP ROTATION: Device used {max_rot.get('ip_count', 0)} IPs from subnet {max_rot.get('subnet', '')}")
+                            patterns_detected.append(
+                                f"IP ROTATION: Device used {max_rot.get('ip_count', 0)} IPs from subnet {max_rot.get('subnet', '')}"
+                            )
                         if device_ip_mismatch:
                             max_mismatch = device_ip_mismatch.get("max_mismatch", {})
-                            patterns_detected.append(f"DEVICE-IP MISMATCH: Device {max_mismatch.get('device', '')[:30]}... used {max_mismatch.get('ip_count', 0)} different IPs")
-                    
+                            patterns_detected.append(
+                                f"DEVICE-IP MISMATCH: Device {max_mismatch.get('device', '')[:30]}... used {max_mismatch.get('ip_count', 0)} different IPs"
+                            )
+
                     if patterns_detected:
-                        fraud_patterns_text = "\n\n## DOMAIN-SPECIFIC FRAUD PATTERNS DETECTED:\n" + "\n".join([f"- {p}" for p in patterns_detected]) + f"\n\n⚠️ CRITICAL: These {domain}-specific patterns are PRIMARY fraud indicators. Focus your analysis on {domain} domain risks, not cross-domain patterns."
+                        fraud_patterns_text = (
+                            "\n\n## DOMAIN-SPECIFIC FRAUD PATTERNS DETECTED:\n"
+                            + "\n".join([f"- {p}" for p in patterns_detected])
+                            + f"\n\n⚠️ CRITICAL: These {domain}-specific patterns are PRIMARY fraud indicators. Focus your analysis on {domain} domain risks, not cross-domain patterns."
+                        )
             except Exception as e:
                 logger.debug(f"Fraud pattern detection failed: {e}")
 
         # CRITICAL: Format tool results for LLM analysis
-        tool_results_text = self._format_tool_results_for_analysis(tool_results) if tool_results else "No tool execution results available"
+        tool_results_text = (
+            self._format_tool_results_for_analysis(tool_results)
+            if tool_results
+            else "No tool execution results available"
+        )
 
         # Add low evidence warning if applicable (but NOT if fraud patterns are detected)
         has_fraud_patterns = bool(fraud_patterns_text)
@@ -513,24 +608,32 @@ Focus on qualitative interpretation of the provided quantitative values."""
             evidence_warning += "Fraud patterns override evidence volume constraints - assess risk based on patterns."
         else:
             evidence_warning = ""
-        
+
         # Log what formatted data is being sent to LLM
         if snowflake_data:
             # Check for error conditions first
-            if isinstance(snowflake_data, dict) and (snowflake_data.get("success") is False or "error" in snowflake_data):
+            if isinstance(snowflake_data, dict) and (
+                snowflake_data.get("success") is False or "error" in snowflake_data
+            ):
                 row_count = 0  # Error responses have no data
-            elif isinstance(snowflake_data, dict) and 'results' in snowflake_data:
-                row_count = len(snowflake_data.get('results', []))
+            elif isinstance(snowflake_data, dict) and "results" in snowflake_data:
+                row_count = len(snowflake_data.get("results", []))
             else:
-                row_count = snowflake_data.get('row_count', 0) if isinstance(snowflake_data, dict) else 0
+                row_count = (
+                    snowflake_data.get("row_count", 0)
+                    if isinstance(snowflake_data, dict)
+                    else 0
+                )
             logger.info("📊 LLM receiving formatted Snowflake data:")
             logger.info(f"   📈 Formatted summary:")
-            for line in snowflake_text.split('\n'):
+            for line in snowflake_text.split("\n"):
                 if line.strip():
                     logger.info(f"   {line}")
             logger.info(f"   📝 Included in: SystemMessage (evidence analysis phase)")
-            logger.info(f"   📊 Source data: {row_count} raw records → formatted summary")
-        
+            logger.info(
+                f"   📊 Source data: {row_count} raw records → formatted summary"
+            )
+
         # CRITICAL PATCH C: Create render context with only engine values (prevent LLM invention)
         if computed_risk_score is not None:
             # CRITICAL FIX: Validate computed_risk_score is a valid number before formatting
@@ -538,8 +641,12 @@ Focus on qualitative interpretation of the provided quantitative values."""
                 # Convert to float if it's a string, validate range
                 risk_score_float = float(computed_risk_score)
                 if not (0.0 <= risk_score_float <= 1.0):
-                    logger.warning(f"⚠️ Invalid computed_risk_score range ({risk_score_float}), using fallback")
-                    risk_score_float = max(0.0, min(1.0, risk_score_float))  # Clamp to valid range
+                    logger.warning(
+                        f"⚠️ Invalid computed_risk_score range ({risk_score_float}), using fallback"
+                    )
+                    risk_score_float = max(
+                        0.0, min(1.0, risk_score_float)
+                    )  # Clamp to valid range
 
                 # Lock down completely - LLM can only use provided numeric values
                 score_str = f"{risk_score_float:.3f}"
@@ -556,11 +663,19 @@ STRICT REQUIREMENT: Your response MUST contain "risk_score": {score_str} exactly
 FORBIDDEN: Do not write phrases like "I assess...", "I estimate...", "appears to be around...", or any invented numeric values."""
             except (ValueError, TypeError) as e:
                 # FALLBACK: If computed_risk_score is invalid, fall back to LLM-determined scoring
-                logger.error(f"❌ Invalid computed_risk_score value ({computed_risk_score}): {e}")
-                logger.warning("🔄 Falling back to LLM-determined risk scoring due to invalid computed score")
-                risk_instruction = "1. **RISK SCORE**: (0.0 to 1.0) - Must be justified by evidence"
+                logger.error(
+                    f"❌ Invalid computed_risk_score value ({computed_risk_score}): {e}"
+                )
+                logger.warning(
+                    "🔄 Falling back to LLM-determined risk scoring due to invalid computed score"
+                )
+                risk_instruction = (
+                    "1. **RISK SCORE**: (0.0 to 1.0) - Must be justified by evidence"
+                )
         else:
-            risk_instruction = "1. **RISK SCORE**: (0.0 to 1.0) - Must be justified by evidence"
+            risk_instruction = (
+                "1. **RISK SCORE**: (0.0 to 1.0) - Must be justified by evidence"
+            )
 
         # Add system-level numeric scoring ban ONLY when computed score is provided
         if computed_risk_score is not None:
@@ -630,12 +745,12 @@ Format your response clearly with these sections. Be precise and evidence-based.
             prompt += "\nREMINDER: You MUST provide a numeric risk score (0.0-1.0) based on evidence analysis."
 
         return prompt
-    
+
     def _format_metrics_for_analysis(self, metrics: Dict[str, Any]) -> str:
         """Format metrics dictionary for LLM analysis."""
         if not metrics:
             return "No metrics available"
-        
+
         formatted = []
         for key, value in metrics.items():
             if key == "snowflake_records_count":
@@ -646,12 +761,14 @@ Format your response clearly with these sections. Be precise and evidence-based.
                 formatted.append(f"- {key.replace('_', ' ').title()}: {value}")
             else:
                 formatted.append(f"- {key.replace('_', ' ').title()}: {value}")
-        
+
         return "\n".join(formatted) if formatted else "No meaningful metrics"
-    
-    def _format_snowflake_for_analysis(self, snowflake_data: Dict[str, Any], domain: str = None) -> str:
+
+    def _format_snowflake_for_analysis(
+        self, snowflake_data: Dict[str, Any], domain: str = None
+    ) -> str:
         """Format Snowflake data for evidence analysis with dollar-weighted statistics, date range, and sample records.
-        
+
         CRITICAL: Filters data by domain to show only domain-relevant fields to LLM.
         """
         if not snowflake_data:
@@ -666,7 +783,9 @@ Format your response clearly with these sections. Be precise and evidence-based.
                 if query:
                     # Truncate long queries
                     query_preview = query[:100] + "..." if len(query) > 100 else query
-                    return f"Database query failed: {error_msg} (Query: {query_preview})"
+                    return (
+                        f"Database query failed: {error_msg} (Query: {query_preview})"
+                    )
                 return f"Database query failed: {error_msg}"
 
         if isinstance(snowflake_data, dict) and "results" in snowflake_data:
@@ -678,23 +797,33 @@ Format your response clearly with these sections. Be precise and evidence-based.
             total_records = len(results)
             # CRITICAL FIX: Filter out None values from model_scores to prevent "unsupported operand type(s) for +: 'float' and 'NoneType'" error
             model_scores = [r.get("MODEL_SCORE") for r in results if "MODEL_SCORE" in r]
-            model_scores = [s for s in model_scores if s is not None]  # Filter out None values
+            model_scores = [
+                s for s in model_scores if s is not None
+            ]  # Filter out None values
             fraud_flags = [r for r in results if r.get("IS_FRAUD_TX")]
 
             # Use safe_mean to handle empty lists and None values
             from app.service.agent.orchestration.metrics.safe import safe_mean
+
             avg_model_score = safe_mean(model_scores, default=0.0)
             avg_score_str = f"{avg_model_score:.3f}"
-            high_risk_count = len([s for s in model_scores if s is not None and s > 0.7])
+            high_risk_count = len(
+                [s for s in model_scores if s is not None and s > 0.7]
+            )
 
             # ENHANCEMENT: Extract date range from TX_DATETIME field
-            from app.service.agent.tools.snowflake_tool.schema_constants import TX_DATETIME
+            from app.service.agent.tools.snowflake_tool.schema_constants import (
+                TX_DATETIME,
+            )
+
             date_times = []
             for r in results:
-                tx_datetime = r.get(TX_DATETIME) or r.get("TX_DATETIME") or r.get("tx_datetime")
+                tx_datetime = (
+                    r.get(TX_DATETIME) or r.get("TX_DATETIME") or r.get("tx_datetime")
+                )
                 if tx_datetime:
                     date_times.append(tx_datetime)
-            
+
             date_range_str = ""
             if date_times:
                 try:
@@ -708,22 +837,29 @@ Format your response clearly with these sections. Be precise and evidence-based.
                     logger.debug(f"Could not parse date range: {e}")
 
             # CRITICAL ENHANCEMENT: Add dollar-weighted statistics
-            from app.service.agent.tools.snowflake_tool.schema_constants import PAID_AMOUNT_VALUE_IN_CURRENCY
-            dollar_weighted_stats = self._calculate_dollar_weighted_stats(results, PAID_AMOUNT_VALUE_IN_CURRENCY)
+            from app.service.agent.tools.snowflake_tool.schema_constants import (
+                PAID_AMOUNT_VALUE_IN_CURRENCY,
+            )
+
+            dollar_weighted_stats = self._calculate_dollar_weighted_stats(
+                results, PAID_AMOUNT_VALUE_IN_CURRENCY
+            )
 
             # CRITICAL: Filter sample transactions by domain-specific fields
             # Each domain should only see fields relevant to their analysis
-            sample_records = self._format_sample_transactions(results[:5], domain=domain)
+            sample_records = self._format_sample_transactions(
+                results[:5], domain=domain
+            )
 
             # Domain-specific context header
             domain_context = {
                 "network": "Network/IP Analysis Context",
-                "device": "Device Fingerprint Analysis Context", 
+                "device": "Device Fingerprint Analysis Context",
                 "location": "Geographic/Location Analysis Context",
                 "logs": "Transaction Timing/Behavioral Analysis Context",
                 "authentication": "Authentication/Login Analysis Context",
                 "merchant": "Merchant/Transaction Amount Analysis Context",
-                "risk": "Cross-Domain Risk Synthesis Context"
+                "risk": "Cross-Domain Risk Synthesis Context",
             }
             context_header = domain_context.get(domain, "Transaction Analysis Context")
 
@@ -751,14 +887,17 @@ NOTE: MODEL_SCORE is for reference only - your analysis should be based on {doma
             if snowflake_data.get("success") is False or "error" in snowflake_data:
                 error_msg = snowflake_data.get("error", "Unknown database error")
                 return f"Database error: {error_msg}"
-            
+
             if "results" in snowflake_data:
                 return f"Snowflake data: {len(snowflake_data['results'])} records available"
             elif "row_count" in snowflake_data:
                 return f"Snowflake data: {snowflake_data['row_count']} rows available"
             else:
                 # Don't count error dicts as "fields available"
-                if "error" not in snowflake_data and snowflake_data.get("success") is not False:
+                if (
+                    "error" not in snowflake_data
+                    and snowflake_data.get("success") is not False
+                ):
                     return f"Snowflake data: {len(snowflake_data)} fields available"
                 else:
                     return "Snowflake data: Error response (no data available)"
@@ -782,7 +921,10 @@ NOTE: MODEL_SCORE is for reference only - your analysis should be based on {doma
         for result in results:
             amount = result.get(amount_field, 0)
             model_score = result.get("MODEL_SCORE", 0)
-            is_blocked = result.get("BLOCK_RULE_ID") is not None or result.get("NSURE_LAST_DECISION") == "BLOCK"
+            is_blocked = (
+                result.get("BLOCK_RULE_ID") is not None
+                or result.get("NSURE_LAST_DECISION") == "BLOCK"
+            )
 
             # Convert amount to float if needed
             try:
@@ -811,10 +953,18 @@ NOTE: MODEL_SCORE is for reference only - your analysis should be based on {doma
             return "- No transaction amounts available for dollar-weighted analysis"
 
         # Calculate percentages
-        high_risk_volume_pct = (high_risk_volume / total_volume) * 100 if total_volume > 0 else 0
-        high_risk_count_pct = (high_risk_count / total_count) * 100 if total_count > 0 else 0
-        blocked_volume_pct = (blocked_volume / total_volume) * 100 if total_volume > 0 else 0
-        blocked_count_pct = (blocked_count / total_count) * 100 if total_count > 0 else 0
+        high_risk_volume_pct = (
+            (high_risk_volume / total_volume) * 100 if total_volume > 0 else 0
+        )
+        high_risk_count_pct = (
+            (high_risk_count / total_count) * 100 if total_count > 0 else 0
+        )
+        blocked_volume_pct = (
+            (blocked_volume / total_volume) * 100 if total_volume > 0 else 0
+        )
+        blocked_count_pct = (
+            (blocked_count / total_count) * 100 if total_count > 0 else 0
+        )
 
         stats = f"""- Total Volume: ${total_volume:,.2f} across {total_count} transactions
 - High Risk (≥0.7): {high_risk_volume_pct:.1f}% of volume (${high_risk_volume:,.2f}) from {high_risk_count_pct:.1f}% of transactions
@@ -827,62 +977,142 @@ NOTE: MODEL_SCORE is for reference only - your analysis should be based on {doma
             stats += f"\n- CRITICAL: Blocked transactions disproportionately affect larger amounts"
 
         return stats
-    
-    def _format_sample_transactions(self, sample_results: List[Dict[str, Any]], domain: str = None) -> str:
+
+    def _format_sample_transactions(
+        self, sample_results: List[Dict[str, Any]], domain: str = None
+    ) -> str:
         """Format sample transaction records for LLM context, filtered by domain.
-        
+
         CRITICAL: Each domain should only see fields relevant to their analysis.
         """
         if not sample_results:
             return "- No sample transactions available"
-        
+
         from app.service.agent.tools.snowflake_tool.schema_constants import (
-            TX_ID_KEY, TX_DATETIME, PAID_AMOUNT_VALUE_IN_CURRENCY, 
-            IP, IP_COUNTRY_CODE, MODEL_SCORE, IS_FRAUD_TX, 
-            EMAIL, DEVICE_ID, PAYMENT_METHOD, USER_AGENT, ASN, ISP
+            ASN,
+            DEVICE_ID,
+            EMAIL,
+            IP,
+            IP_COUNTRY_CODE,
+            IS_FRAUD_TX,
+            ISP,
+            MODEL_SCORE,
+            PAID_AMOUNT_VALUE_IN_CURRENCY,
+            PAYMENT_METHOD,
+            TX_DATETIME,
+            TX_ID_KEY,
+            USER_AGENT,
         )
-        
+
         # Domain-specific field mappings - each domain sees only relevant fields
         domain_fields = {
-            "network": [TX_ID_KEY, TX_DATETIME, IP, IP_COUNTRY_CODE, ASN, ISP, "VPN_INDICATOR", "PROXY_INDICATOR"],
-            "device": [TX_ID_KEY, TX_DATETIME, DEVICE_ID, USER_AGENT, "DEVICE_TYPE", "DEVICE_MODEL", "BROWSER_NAME", "OS_NAME"],
+            "network": [
+                TX_ID_KEY,
+                TX_DATETIME,
+                IP,
+                IP_COUNTRY_CODE,
+                ASN,
+                ISP,
+                "VPN_INDICATOR",
+                "PROXY_INDICATOR",
+            ],
+            "device": [
+                TX_ID_KEY,
+                TX_DATETIME,
+                DEVICE_ID,
+                USER_AGENT,
+                "DEVICE_TYPE",
+                "DEVICE_MODEL",
+                "BROWSER_NAME",
+                "OS_NAME",
+            ],
             "location": [TX_ID_KEY, TX_DATETIME, IP_COUNTRY_CODE, IP, "CITY", "REGION"],
-            "logs": [TX_ID_KEY, TX_DATETIME, PAID_AMOUNT_VALUE_IN_CURRENCY, "ERROR_CODES", "EVENT_TYPE", "SESSION_DATA"],
-            "authentication": [TX_ID_KEY, TX_DATETIME, "LOGIN_ATTEMPTS", "MFA_STATUS", "SESSION_ID", "AUTH_METHOD"],
-            "merchant": [TX_ID_KEY, TX_DATETIME, PAID_AMOUNT_VALUE_IN_CURRENCY, "MERCHANT_ID", "MERCHANT_NAME", PAYMENT_METHOD],
-            "risk": [TX_ID_KEY, TX_DATETIME, PAID_AMOUNT_VALUE_IN_CURRENCY, IP, DEVICE_ID, IP_COUNTRY_CODE, MODEL_SCORE, IS_FRAUD_TX]  # Risk sees all
+            "logs": [
+                TX_ID_KEY,
+                TX_DATETIME,
+                PAID_AMOUNT_VALUE_IN_CURRENCY,
+                "ERROR_CODES",
+                "EVENT_TYPE",
+                "SESSION_DATA",
+            ],
+            "authentication": [
+                TX_ID_KEY,
+                TX_DATETIME,
+                "LOGIN_ATTEMPTS",
+                "MFA_STATUS",
+                "SESSION_ID",
+                "AUTH_METHOD",
+            ],
+            "merchant": [
+                TX_ID_KEY,
+                TX_DATETIME,
+                PAID_AMOUNT_VALUE_IN_CURRENCY,
+                "MERCHANT_ID",
+                "MERCHANT_NAME",
+                PAYMENT_METHOD,
+            ],
+            "risk": [
+                TX_ID_KEY,
+                TX_DATETIME,
+                PAID_AMOUNT_VALUE_IN_CURRENCY,
+                IP,
+                DEVICE_ID,
+                IP_COUNTRY_CODE,
+                MODEL_SCORE,
+                IS_FRAUD_TX,
+            ],  # Risk sees all
         }
-        
+
         # Get fields for this domain (default to all if domain not specified)
-        fields_to_show = domain_fields.get(domain, [TX_ID_KEY, TX_DATETIME, PAID_AMOUNT_VALUE_IN_CURRENCY])
-        
+        fields_to_show = domain_fields.get(
+            domain, [TX_ID_KEY, TX_DATETIME, PAID_AMOUNT_VALUE_IN_CURRENCY]
+        )
+
         formatted_samples = []
         for idx, tx in enumerate(sample_results, 1):
             # Extract only domain-relevant fields
             tx_fields = []
-            
+
             # Always include transaction ID and datetime for context
-            tx_id = tx.get(TX_ID_KEY) or tx.get("TX_ID_KEY") or tx.get("tx_id_key") or "N/A"
-            tx_datetime = tx.get(TX_DATETIME) or tx.get("TX_DATETIME") or tx.get("tx_datetime") or "N/A"
+            tx_id = (
+                tx.get(TX_ID_KEY) or tx.get("TX_ID_KEY") or tx.get("tx_id_key") or "N/A"
+            )
+            tx_datetime = (
+                tx.get(TX_DATETIME)
+                or tx.get("TX_DATETIME")
+                or tx.get("tx_datetime")
+                or "N/A"
+            )
             tx_fields.append(f"ID: {tx_id}, Time: {tx_datetime}")
-            
+
             # Add domain-specific fields only
             for field in fields_to_show:
                 if field == TX_ID_KEY or field == TX_DATETIME:
                     continue  # Already included
-                
+
                 # Get field value with fallbacks
-                field_value = tx.get(field) or tx.get(field.upper()) or tx.get(field.lower()) or None
+                field_value = (
+                    tx.get(field)
+                    or tx.get(field.upper())
+                    or tx.get(field.lower())
+                    or None
+                )
                 if field_value is not None:
                     field_display = field.replace("_", " ").title()
                     tx_fields.append(f"{field_display}: {field_value}")
-            
+
             if len(tx_fields) > 2:  # More than just ID and Time
                 formatted_samples.append(f"  Transaction {idx}: {', '.join(tx_fields)}")
             else:
-                formatted_samples.append(f"  Transaction {idx}: {tx_id} (no {domain} fields available)")
-        
-        return "\n".join(formatted_samples) if formatted_samples else "- No sample transactions available"
+                formatted_samples.append(
+                    f"  Transaction {idx}: {tx_id} (no {domain} fields available)"
+                )
+
+        return (
+            "\n".join(formatted_samples)
+            if formatted_samples
+            else "- No sample transactions available"
+        )
 
     def _format_tool_results_for_analysis(self, tool_results: Dict[str, Any]) -> str:
         """Format tool execution results for LLM analysis.
@@ -913,11 +1143,13 @@ IMPACT ON ASSESSMENT:
 
 PRIORITY: Execute external tool analysis to fill these gaps"""
 
-        formatted = ["Tool Execution Results - ALL data signals from external fraud detection tools:\n"]
+        formatted = [
+            "Tool Execution Results - ALL data signals from external fraud detection tools:\n"
+        ]
 
         for tool_name, tool_content in tool_results.items():
             # Format tool name for readability
-            display_name = tool_name.replace('_', ' ').title()
+            display_name = tool_name.replace("_", " ").title()
 
             # Extract meaningful content from tool results
             if isinstance(tool_content, dict):
@@ -930,10 +1162,16 @@ PRIORITY: Execute external tool analysis to fill these gaps"""
                 elif "result" in tool_content:
                     result_data = tool_content["result"]
                     if isinstance(result_data, dict):
-                        for key, value in list(result_data.items())[:10]:  # Limit to first 10 items
-                            formatted.append(f"  - {key}: {self._safe_format_value(value)}")
+                        for key, value in list(result_data.items())[
+                            :10
+                        ]:  # Limit to first 10 items
+                            formatted.append(
+                                f"  - {key}: {self._safe_format_value(value)}"
+                            )
                     else:
-                        formatted.append(f"  - Result: {self._safe_format_value(result_data)}")
+                        formatted.append(
+                            f"  - Result: {self._safe_format_value(result_data)}"
+                        )
                 else:
                     # General dict - show top-level keys and values
                     for key, value in list(tool_content.items())[:10]:
@@ -952,10 +1190,14 @@ PRIORITY: Execute external tool analysis to fill these gaps"""
             elif isinstance(tool_content, str):
                 # Handle string tool results
                 formatted.append(f"\n**{display_name}**:")
-                preview = tool_content[:200] if len(tool_content) > 200 else tool_content
+                preview = (
+                    tool_content[:200] if len(tool_content) > 200 else tool_content
+                )
                 formatted.append(f"  - Output: {preview}")
                 if len(tool_content) > 200:
-                    formatted.append(f"  - (Total length: {len(tool_content)} characters)")
+                    formatted.append(
+                        f"  - (Total length: {len(tool_content)} characters)"
+                    )
 
             else:
                 # Handle other types
@@ -986,18 +1228,24 @@ PRIORITY: Execute external tool analysis to fill these gaps"""
                 return f"{str_value[:max_length]}... ({len(str_value)} chars total)"
             return str_value
 
-    def _parse_evidence_analysis(self, llm_response: str, domain: str, computed_risk_score: Optional[float] = None, snowflake_data: Optional[Dict[str, Any]] = None) -> Dict[str, Any]:
+    def _parse_evidence_analysis(
+        self,
+        llm_response: str,
+        domain: str,
+        computed_risk_score: Optional[float] = None,
+        snowflake_data: Optional[Dict[str, Any]] = None,
+    ) -> Dict[str, Any]:
         """Parse LLM response to extract structured analysis."""
         import re
-        
+
         # CRITICAL FIX: Ensure llm_response is a string (handle dict responses)
         if isinstance(llm_response, dict):
             # If response is a dict, try to extract content
-            llm_response = llm_response.get('content', str(llm_response))
+            llm_response = llm_response.get("content", str(llm_response))
         elif not isinstance(llm_response, str):
             # Convert to string if it's not already
             llm_response = str(llm_response)
-        
+
         # PRIORITY 1: Extract LLM-determined risk score (primary authority)
         # Pattern handles multiple formats:
         # - Plain text: "risk score: 0.3"
@@ -1021,13 +1269,19 @@ PRIORITY: Execute external tool analysis to fill these gaps"""
         ]
         risk_match = None
         for i, pattern in enumerate(risk_patterns):
-            risk_match = re.search(pattern, llm_response.lower(), re.DOTALL | re.MULTILINE)
+            risk_match = re.search(
+                pattern, llm_response.lower(), re.DOTALL | re.MULTILINE
+            )
             if risk_match:
-                logger.debug(f"✅ Risk score pattern {i+1} matched: {risk_match.group(1)}")
+                logger.debug(
+                    f"✅ Risk score pattern {i+1} matched: {risk_match.group(1)}"
+                )
                 break
-        
+
         if not risk_match:
-            logger.debug(f"⚠️ No risk score pattern matched. LLM response preview: {repr(llm_response[:200])}")
+            logger.debug(
+                f"⚠️ No risk score pattern matched. LLM response preview: {repr(llm_response[:200])}"
+            )
 
         if risk_match:
             # LLM provided a risk score - use it as primary authority
@@ -1048,13 +1302,13 @@ PRIORITY: Execute external tool analysis to fill these gaps"""
                     "risk_score": None,
                     "confidence": 0.0,
                     "reasoning": f"LLM response did not contain a parseable risk score. Response: {llm_response[:2000] if llm_response else 'No response'}",
-                    "status": "INSUFFICIENT_DATA"
+                    "status": "INSUFFICIENT_DATA",
                 },
                 "evidence": [],
                 "risk_indicators": [],
-                "metrics": {}
+                "metrics": {},
             }
-        
+
         # Extract confidence
         # Pattern handles multiple formats:
         # - Plain text: "confidence: 0.7"
@@ -1074,27 +1328,29 @@ PRIORITY: Execute external tool analysis to fill these gaps"""
         ]
         conf_match = None
         for pattern in conf_patterns:
-            conf_match = re.search(pattern, llm_response.lower(), re.DOTALL | re.MULTILINE)
+            conf_match = re.search(
+                pattern, llm_response.lower(), re.DOTALL | re.MULTILINE
+            )
             if conf_match:
                 break
         confidence = float(conf_match.group(1)) if conf_match else 0.5
-        
+
         # CRITICAL FIX: Normalize confidence from 0-100 scale to 0-1 scale
         if confidence > 1.0:
             confidence = min(confidence / 100.0, 1.0)
-        
+
         # Extract risk factors
         factors_section = self._extract_section(llm_response, "risk factors")
-        
+
         # Extract reasoning
         reasoning_section = self._extract_section(llm_response, "reasoning")
-        
+
         # Extract recommendations
         recommendations_section = self._extract_section(llm_response, "recommendations")
-        
+
         # Extract specific values from analysis for actionable recommendations
         extracted_values = self._extract_specific_values(llm_response, snowflake_data)
-        
+
         return {
             "risk_score": min(1.0, max(0.0, risk_score)),
             "confidence": min(1.0, max(0.0, confidence)),
@@ -1104,9 +1360,9 @@ PRIORITY: Execute external tool analysis to fill these gaps"""
             "extracted_values": extracted_values,  # IPs, devices, emails extracted for recommendations
             "llm_response": llm_response,
             "domain": domain,
-            "analysis_type": "llm_evidence_analysis"
+            "analysis_type": "llm_evidence_analysis",
         }
-    
+
     def _extract_section(self, text: str, section_name: str) -> str:
         """Extract a specific section from LLM response."""
         # Try to find section with various formatting
@@ -1114,115 +1370,139 @@ PRIORITY: Execute external tool analysis to fill these gaps"""
             rf"(?:^|\n)\s*\*\*{section_name}[:\s]*\*\*[:\s]*([\s\S]*?)(?=\n\s*\*\*|\n\s*##|\n\s*$|$)",
             rf"(?:^|\n)\s*#{1,3}\s*{section_name}[:\s]*([\s\S]*?)(?=\n\s*#|\n\s*$|$)",
             rf"(?:^|\n)\s*\d+\.\s*\*\*{section_name}[:\s]*\*\*[:\s]*([\s\S]*?)(?=\n\s*\d+\.|\n\s*$|$)",
-            rf"(?:{section_name})[:\s]*([\s\S]*?)(?=\n\s*(?:risk|confidence|reasoning|recommendations|\*\*|##)|$)"
+            rf"(?:{section_name})[:\s]*([\s\S]*?)(?=\n\s*(?:risk|confidence|reasoning|recommendations|\*\*|##)|$)",
         ]
-        
+
         for pattern in patterns:
             match = re.search(pattern, text, re.IGNORECASE)
             if match:
                 return match.group(1).strip()
-        
+
         # Fallback: return portion of text that might contain the section
         return f"Section not clearly identified in response: {text[:200]}..."
-    
-    def _extract_specific_values(self, llm_response: str, snowflake_data: Optional[Dict[str, Any]] = None) -> Dict[str, List[str]]:
+
+    def _extract_specific_values(
+        self, llm_response: str, snowflake_data: Optional[Dict[str, Any]] = None
+    ) -> Dict[str, List[str]]:
         """
         Extract specific values (IPs, devices, emails) from LLM response and Snowflake data.
-        
+
         Returns:
             Dict with keys: 'ips', 'devices', 'emails', 'amounts'
         """
-        extracted = {
-            "ips": [],
-            "devices": [],
-            "emails": [],
-            "amounts": []
-        }
-        
+        extracted = {"ips": [], "devices": [], "emails": [], "amounts": []}
+
         # Extract from LLM response using regex patterns
         # IPv4 pattern
-        ipv4_pattern = r'\b(?:\d{1,3}\.){3}\d{1,3}\b'
+        ipv4_pattern = r"\b(?:\d{1,3}\.){3}\d{1,3}\b"
         # IPv6 pattern (simplified - matches common formats)
-        ipv6_pattern = r'\b(?:[0-9a-fA-F]{0,4}:){2,7}[0-9a-fA-F]{0,4}\b'
+        ipv6_pattern = r"\b(?:[0-9a-fA-F]{0,4}:){2,7}[0-9a-fA-F]{0,4}\b"
         # Device fingerprint pattern (UUID-like)
-        device_pattern = r'\b[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}\b'
+        device_pattern = (
+            r"\b[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}\b"
+        )
         # Email pattern
-        email_pattern = r'\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b'
+        email_pattern = r"\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b"
         # Amount pattern (currency amounts)
-        amount_pattern = r'\$[\d,]+\.?\d*'
-        
+        amount_pattern = r"\$[\d,]+\.?\d*"
+
         # Extract IPs
         ipv4_matches = re.findall(ipv4_pattern, llm_response)
         ipv6_matches = re.findall(ipv6_pattern, llm_response)
         extracted["ips"] = list(set(ipv4_matches + ipv6_matches))
-        
+
         # Extract devices
         device_matches = re.findall(device_pattern, llm_response)
         extracted["devices"] = list(set(device_matches))
-        
+
         # Extract emails
         email_matches = re.findall(email_pattern, llm_response)
         extracted["emails"] = list(set(email_matches))
-        
+
         # Extract amounts
         amount_matches = re.findall(amount_pattern, llm_response)
         extracted["amounts"] = list(set(amount_matches))
-        
+
         # Also extract from Snowflake data if available
-        if snowflake_data and isinstance(snowflake_data, dict) and "results" in snowflake_data:
+        if (
+            snowflake_data
+            and isinstance(snowflake_data, dict)
+            and "results" in snowflake_data
+        ):
             results = snowflake_data["results"]
             if isinstance(results, list):
                 for result in results:
                     if isinstance(result, dict):
                         # Extract IP
-                        ip = result.get("IP") or result.get("ip") or result.get("IP_ADDRESS")
+                        ip = (
+                            result.get("IP")
+                            or result.get("ip")
+                            or result.get("IP_ADDRESS")
+                        )
                         if ip and ip not in extracted["ips"]:
                             extracted["ips"].append(str(ip))
-                        
+
                         # Extract device
-                        device = result.get("DEVICE_ID") or result.get("device_id") or result.get("DEVICE_FINGERPRINT")
+                        device = (
+                            result.get("DEVICE_ID")
+                            or result.get("device_id")
+                            or result.get("DEVICE_FINGERPRINT")
+                        )
                         if device and device not in extracted["devices"]:
                             extracted["devices"].append(str(device))
-                        
+
                         # Extract email
                         email = result.get("EMAIL") or result.get("email")
                         if email and email not in extracted["emails"]:
                             extracted["emails"].append(str(email))
-                        
+
                         # Extract amount
-                        amount = result.get("PAID_AMOUNT_VALUE_IN_CURRENCY") or result.get("paid_amount_value_in_currency")
+                        amount = result.get(
+                            "PAID_AMOUNT_VALUE_IN_CURRENCY"
+                        ) or result.get("paid_amount_value_in_currency")
                         if amount:
                             amount_str = f"${float(amount):,.2f}" if amount else ""
                             if amount_str and amount_str not in extracted["amounts"]:
                                 extracted["amounts"].append(amount_str)
-        
+
         # Limit to reasonable number of values
         for key in extracted:
             extracted[key] = extracted[key][:20]  # Limit to top 20 values
-        
-        logger.debug(f"🔍 Extracted specific values: {len(extracted['ips'])} IPs, {len(extracted['devices'])} devices, {len(extracted['emails'])} emails")
-        
+
+        logger.debug(
+            f"🔍 Extracted specific values: {len(extracted['ips'])} IPs, {len(extracted['devices'])} devices, {len(extracted['emails'])} emails"
+        )
+
         return extracted
-    
+
     def _create_fallback_analysis(
-        self, 
-        domain: str, 
-        evidence: List[str], 
-        metrics: Dict[str, Any], 
-        duration: float
+        self, domain: str, evidence: List[str], metrics: Dict[str, Any], duration: float
     ) -> Dict[str, Any]:
         """Create fallback analysis when LLM fails."""
-        
+
         # Simple evidence-based scoring
         evidence_score = min(1.0, len(evidence) * 0.1) if evidence else 0.0
-        
+
         # Check for high-risk indicators in evidence
-        risk_keywords = ["suspicious", "anomaly", "unusual", "high", "critical", "threat", "malicious"]
-        risk_indicators = sum(1 for e in evidence for keyword in risk_keywords if keyword.lower() in e.lower())
-        
+        risk_keywords = [
+            "suspicious",
+            "anomaly",
+            "unusual",
+            "high",
+            "critical",
+            "threat",
+            "malicious",
+        ]
+        risk_indicators = sum(
+            1
+            for e in evidence
+            for keyword in risk_keywords
+            if keyword.lower() in e.lower()
+        )
+
         risk_score = min(1.0, evidence_score + (risk_indicators * 0.1))
         confidence = 0.3  # Low confidence for fallback
-        
+
         return {
             "risk_score": risk_score,
             "confidence": confidence,
@@ -1232,12 +1512,13 @@ PRIORITY: Execute external tool analysis to fill these gaps"""
             "llm_response": "LLM analysis failed - using fallback calculation",
             "domain": domain,
             "analysis_type": "fallback_analysis",
-            "analysis_duration": duration
+            "analysis_duration": duration,
         }
 
 
 # Singleton instance for domain agents to use
 _evidence_analyzer_instance = None
+
 
 def get_evidence_analyzer() -> EvidenceAnalyzer:
     """Get singleton instance of EvidenceAnalyzer."""

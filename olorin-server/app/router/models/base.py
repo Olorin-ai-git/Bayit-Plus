@@ -12,10 +12,11 @@ Constitutional Compliance:
 - Clear documentation for contract generation
 """
 
-from pydantic import BaseModel, Field, ConfigDict
+import uuid
 from datetime import datetime
 from typing import Optional
-import uuid
+
+from pydantic import BaseModel, ConfigDict, Field
 
 
 class TimestampedModel(BaseModel):
@@ -37,18 +38,18 @@ class TimestampedModel(BaseModel):
 
     created_at: str = Field(
         default_factory=lambda: datetime.utcnow().isoformat() + "Z",
-        description="ISO 8601 timestamp of creation"
+        description="ISO 8601 timestamp of creation",
     )
     updated_at: str = Field(
         default_factory=lambda: datetime.utcnow().isoformat() + "Z",
-        description="ISO 8601 timestamp of last update"
+        description="ISO 8601 timestamp of last update",
     )
 
     model_config = ConfigDict(
         json_schema_extra={
             "example": {
                 "created_at": "2025-01-15T10:30:00Z",
-                "updated_at": "2025-01-15T10:35:00Z"
+                "updated_at": "2025-01-15T10:35:00Z",
             }
         }
     )
@@ -72,15 +73,11 @@ class IdentifiedModel(BaseModel):
 
     id: str = Field(
         default_factory=lambda: str(uuid.uuid4()),
-        description="Unique identifier (UUID)"
+        description="Unique identifier (UUID)",
     )
 
     model_config = ConfigDict(
-        json_schema_extra={
-            "example": {
-                "id": "a1b2c3d4-e5f6-4a7b-8c9d-0e1f2a3b4c5d"
-            }
-        }
+        json_schema_extra={"example": {"id": "a1b2c3d4-e5f6-4a7b-8c9d-0e1f2a3b4c5d"}}
     )
 
 
@@ -108,7 +105,7 @@ class BaseAPIModel(IdentifiedModel, TimestampedModel):
             "example": {
                 "id": "a1b2c3d4-e5f6-4a7b-8c9d-0e1f2a3b4c5d",
                 "created_at": "2025-01-15T10:30:00Z",
-                "updated_at": "2025-01-15T10:35:00Z"
+                "updated_at": "2025-01-15T10:35:00Z",
             }
         }
     )
@@ -130,6 +127,7 @@ class BaseRequestModel(BaseModel):
 
     class Config:
         """Pydantic configuration"""
+
         str_strip_whitespace = True
         validate_assignment = True
 
@@ -149,10 +147,11 @@ class BaseResponseModel(BaseAPIModel):
 
     class Config:
         """Pydantic configuration"""
+
         json_schema_extra = {
             "example": {
                 "id": "a1b2c3d4-e5f6-4a7b-8c9d-0e1f2a3b4c5d",
                 "created_at": "2025-01-15T10:30:00Z",
-                "updated_at": "2025-01-15T10:35:00Z"
+                "updated_at": "2025-01-15T10:35:00Z",
             }
         }

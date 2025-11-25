@@ -1,9 +1,12 @@
 """Snowflake connection service with private key authentication."""
+
 import logging
 import os
 from typing import Any, Dict, List, Optional
+
 import snowflake.connector
 from snowflake.connector import DictCursor
+
 from app.config.snowflake_config import SnowflakeConfig
 
 logger = logging.getLogger(__name__)
@@ -95,19 +98,16 @@ class SnowflakeQueryService:
         self.connection_factory = connection_factory
         # Get table name from environment variables
         self.table_name = self._get_table_name()
-    
+
     def _get_table_name(self) -> str:
         """Get full table name from environment variables."""
-        database = os.getenv('SNOWFLAKE_DATABASE', 'DBT')
-        schema = os.getenv('SNOWFLAKE_SCHEMA', 'DBT_PROD')
-        table = os.getenv('SNOWFLAKE_TRANSACTIONS_TABLE', 'TXS')
+        database = os.getenv("SNOWFLAKE_DATABASE", "DBT")
+        schema = os.getenv("SNOWFLAKE_SCHEMA", "DBT_PROD")
+        table = os.getenv("SNOWFLAKE_TRANSACTIONS_TABLE", "TXS")
         return f"{database}.{schema}.{table}"
 
     def execute_query(
-        self,
-        query: str,
-        params: Optional[tuple] = None,
-        fetch_all: bool = True
+        self, query: str, params: Optional[tuple] = None, fetch_all: bool = True
     ) -> List[Dict[str, Any]]:
         """
         Execute a SQL query and return results as list of dictionaries.
@@ -157,9 +157,7 @@ class SnowflakeQueryService:
                 conn.close()
 
     def get_transactions_by_email(
-        self,
-        email: str,
-        limit: int = 100
+        self, email: str, limit: int = 100
     ) -> List[Dict[str, Any]]:
         """
         Get transactions for a specific email address.
@@ -210,9 +208,7 @@ class SnowflakeQueryService:
         return self.execute_query(query, (email, limit))
 
     def get_high_risk_transactions(
-        self,
-        risk_threshold: float = 70.0,
-        limit: int = 100
+        self, risk_threshold: float = 70.0, limit: int = 100
     ) -> List[Dict[str, Any]]:
         """
         Get high-risk transactions above a risk score threshold.

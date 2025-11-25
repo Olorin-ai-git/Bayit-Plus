@@ -10,21 +10,22 @@ Date: 2025-11-12
 Spec: /specs/021-live-merged-logstream/api-contracts.md
 """
 
-from typing import Optional, List
 from datetime import datetime
-from fastapi import APIRouter, Query, HTTPException, Header, Depends
+from typing import List, Optional
+
+from fastapi import APIRouter, Depends, Header, HTTPException, Query
 from fastapi.responses import StreamingResponse
 
-from app.service.logging import get_bridge_logger
 from app.api.sse_generator import generate_sse_stream
-from app.service.log_providers.aggregator import LogAggregatorService
-from app.service.log_providers.deduplicator import LogDeduplicatorService
-from app.service.log_providers.frontend_provider import FrontendLogProvider
-from app.service.log_providers.backend_provider import BackendLogProvider
-from app.service.log_providers.frontend_log_buffer import FrontendLogBuffer
-from app.service.log_providers.backend_log_collector import BackendLogCollector
-from app.service.log_providers.base import LogProvider
 from app.config.logstream_config import LogStreamConfig
+from app.service.log_providers.aggregator import LogAggregatorService
+from app.service.log_providers.backend_log_collector import BackendLogCollector
+from app.service.log_providers.backend_provider import BackendLogProvider
+from app.service.log_providers.base import LogProvider
+from app.service.log_providers.deduplicator import LogDeduplicatorService
+from app.service.log_providers.frontend_log_buffer import FrontendLogBuffer
+from app.service.log_providers.frontend_provider import FrontendLogProvider
+from app.service.logging import get_bridge_logger
 
 logger = get_bridge_logger(__name__)
 
@@ -58,13 +59,13 @@ def _create_log_providers(
     frontend = FrontendLogProvider(
         investigation_id=investigation_id,
         buffer=_frontend_buffer,
-        timeout_ms=config.provider.provider_timeout_ms
+        timeout_ms=config.provider.provider_timeout_ms,
     )
 
     backend = BackendLogProvider(
         investigation_id=investigation_id,
         collector=_backend_collector,
-        timeout_ms=config.provider.provider_timeout_ms
+        timeout_ms=config.provider.provider_timeout_ms,
     )
 
     return [frontend, backend]
@@ -76,7 +77,7 @@ async def stream_logs(
     start_time: Optional[datetime] = Query(None),
     end_time: Optional[datetime] = Query(None),
     last_event_id: Optional[str] = Header(None, alias="Last-Event-ID"),
-    config: LogStreamConfig = Depends(get_logstream_config)
+    config: LogStreamConfig = Depends(get_logstream_config),
 ):
     """
     SSE endpoint for real-time log streaming.
@@ -98,10 +99,7 @@ async def stream_logs(
         HTTPException: If feature is disabled or configuration invalid
     """
     if not config.enable_log_stream:
-        raise HTTPException(
-            status_code=503,
-            detail="Log streaming is not enabled"
-        )
+        raise HTTPException(status_code=503, detail="Log streaming is not enabled")
 
     logger.info(
         f"SSE stream request for investigation {investigation_id}",
@@ -109,8 +107,8 @@ async def stream_logs(
             "investigation_id": investigation_id,
             "start_time": start_time,
             "end_time": end_time,
-            "last_event_id": last_event_id
-        }
+            "last_event_id": last_event_id,
+        },
     )
 
     # Create providers and services
@@ -126,14 +124,14 @@ async def stream_logs(
             start_time,
             end_time,
             last_event_id,
-            config
+            config,
         ),
         media_type="text/event-stream",
         headers={
             "Cache-Control": "no-cache",
             "Connection": "keep-alive",
-            "X-Accel-Buffering": "no"
-        }
+            "X-Accel-Buffering": "no",
+        },
     )
 
 
@@ -144,7 +142,7 @@ async def poll_logs(
     end_time: Optional[datetime] = Query(None),
     limit: int = Query(100, ge=1, le=1000),
     cursor: Optional[str] = Query(None),
-    config: LogStreamConfig = Depends(get_logstream_config)
+    config: LogStreamConfig = Depends(get_logstream_config),
 ) -> dict:
     """
     Polling endpoint for log fetching (fallback when SSE unavailable).
@@ -166,18 +164,11 @@ async def poll_logs(
         HTTPException: If feature is disabled or configuration invalid
     """
     if not config.enable_log_stream:
-        raise HTTPException(
-            status_code=503,
-            detail="Log streaming is not enabled"
-        )
+        raise HTTPException(status_code=503, detail="Log streaming is not enabled")
 
     logger.info(
         f"Polling request for investigation {investigation_id}",
-        extra={
-            "investigation_id": investigation_id,
-            "limit": limit,
-            "cursor": cursor
-        }
+        extra={"investigation_id": investigation_id, "limit": limit, "cursor": cursor},
     )
 
     # Create providers and aggregator service
@@ -188,8 +179,7 @@ async def poll_logs(
         logs = await aggregator.fetch_logs(start_time, end_time, limit + 1)
 
         filtered_logs = [
-            log for log in logs
-            if log.investigation_id == investigation_id
+            log for log in logs if log.investigation_id == investigation_id
         ]
 
         has_more = len(filtered_logs) > limit
@@ -204,14 +194,14 @@ async def poll_logs(
             "logs": [log.model_dump() for log in result_logs],
             "cursor": next_cursor,
             "has_more": has_more,
-            "investigation_id": investigation_id
+            "investigation_id": investigation_id,
         }
 
     except Exception as e:
         logger.error(
             f"Polling error for investigation {investigation_id}: {e}",
             exc_info=True,
-            extra={"investigation_id": investigation_id}
+            extra={"investigation_id": investigation_id},
         )
         raise HTTPException(status_code=500, detail=str(e))
 
@@ -219,7 +209,7 @@ async def poll_logs(
 @router.post("/client-logs")
 async def ingest_client_logs(
     request: "ClientLogBatchRequest",
-    config: LogStreamConfig = Depends(get_logstream_config)
+    config: LogStreamConfig = Depends(get_logstream_config),
 ) -> dict:
     """
     Ingest frontend client logs for merged streaming.
@@ -237,15 +227,13 @@ async def ingest_client_logs(
         HTTPException: If feature disabled or ingestion fails
     """
     if not config.enable_log_stream:
-        raise HTTPException(
-            status_code=503,
-            detail="Log streaming is not enabled"
-        )
+        raise HTTPException(status_code=503, detail="Log streaming is not enabled")
+
+    import hashlib
+    from datetime import datetime
 
     from app.models.client_log_request import ClientLogBatchRequest
     from app.models.unified_log import UnifiedLog
-    from datetime import datetime
-    import hashlib
 
     try:
         ingested_count = 0
@@ -262,7 +250,7 @@ async def ingest_client_logs(
                 metadata=log_entry.metadata or {},
                 event_hash=hashlib.sha1(
                     f"{log_entry.investigation_id}{log_entry.message}{log_entry.timestamp}".encode()
-                ).hexdigest()
+                ).hexdigest(),
             )
 
             # Add to frontend buffer
@@ -270,18 +258,11 @@ async def ingest_client_logs(
             ingested_count += 1
 
         logger.info(
-            f"Ingested {ingested_count} client logs",
-            extra={"count": ingested_count}
+            f"Ingested {ingested_count} client logs", extra={"count": ingested_count}
         )
 
-        return {
-            "success": True,
-            "ingested": ingested_count
-        }
+        return {"success": True, "ingested": ingested_count}
 
     except Exception as e:
-        logger.error(
-            f"Client log ingestion error: {e}",
-            exc_info=True
-        )
+        logger.error(f"Client log ingestion error: {e}", exc_info=True)
         raise HTTPException(status_code=500, detail=str(e))

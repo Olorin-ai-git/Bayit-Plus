@@ -6,10 +6,10 @@ Provides utilities for parsing various log line formats.
 Focused on log parsing, format detection, and timestamp extraction.
 """
 
+import logging
 import re
 from datetime import datetime
-from typing import Dict, Any, Optional
-import logging
+from typing import Any, Dict, Optional
 
 logger = logging.getLogger(__name__)
 

@@ -4,9 +4,10 @@
 
 import json
 import logging
+from dataclasses import asdict, dataclass
 from datetime import datetime
-from typing import Any, Dict, Optional, List
-from dataclasses import dataclass, asdict
+from typing import Any, Dict, List, Optional
+
 from app.service.logging.investigation_instrumentation import (
     InvestigationInstrumentationLogger,
 )
@@ -15,6 +16,7 @@ from app.service.logging.investigation_instrumentation import (
 @dataclass
 class RealAPIInterception:
     """Capture of real API call."""
+
     timestamp: str
     endpoint: str
     method: str
@@ -27,6 +29,7 @@ class RealAPIInterception:
 @dataclass
 class RealWebSocketEvent:
     """Capture of real WebSocket event."""
+
     timestamp: str
     event_type: str
     event_data: Dict[str, Any]

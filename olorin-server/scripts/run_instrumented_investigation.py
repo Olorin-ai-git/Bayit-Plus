@@ -12,15 +12,17 @@ logging capturing:
 """
 
 import asyncio
-import httpx
 import json
 import os
-from pathlib import Path
 from datetime import datetime
+from pathlib import Path
+
+import httpx
+
+from app.service.logging.investigation_data_models import RiskFactor
 from app.service.logging.investigation_instrumentation import (
     InvestigationInstrumentationLogger,
 )
-from app.service.logging.investigation_data_models import RiskFactor
 
 
 async def run_instrumented_investigation():
@@ -110,9 +112,7 @@ async def run_instrumented_investigation():
                     )
 
                 else:
-                    print(
-                        f"⚠ Investigation API returned status {response.status_code}"
-                    )
+                    print(f"⚠ Investigation API returned status {response.status_code}")
                     print(f"  Response: {response.text}\n")
 
                     logger.log_error(
@@ -272,13 +272,21 @@ async def run_instrumented_investigation():
                     "weight": 0.35,
                     "weighted": 0.3325,
                 },
-                "device_proliferation": {"value": 0.85, "weight": 0.25, "weighted": 0.2125},
+                "device_proliferation": {
+                    "value": 0.85,
+                    "weight": 0.25,
+                    "weighted": 0.2125,
+                },
                 "unusual_geographic_pattern": {
                     "value": 0.75,
                     "weight": 0.2,
                     "weighted": 0.15,
                 },
-                "session_anomalies": {"value": 0.65, "weight": 0.15, "weighted": 0.0975},
+                "session_anomalies": {
+                    "value": 0.65,
+                    "weight": 0.15,
+                    "weighted": 0.0975,
+                },
                 "authentication_pattern_change": {
                     "value": 0.55,
                     "weight": 0.05,
@@ -464,11 +472,21 @@ async def run_instrumented_investigation():
             with open(json_file, "r") as f:
                 json_data = json.load(f)
             print("Log File Summary:")
-            print(f"  - LLM Interactions: {json_data['summary'].get('total_llm_interactions', 0)}")
-            print(f"  - Tool Executions: {json_data['summary'].get('total_tool_executions', 0)}")
-            print(f"  - Risk Calculations: {json_data['summary'].get('total_risk_calculations', 0)}")
-            print(f"  - Agent Decisions: {json_data['summary'].get('total_agent_decisions', 0)}")
-            print(f"  - Agent Results: {json_data['summary'].get('total_agent_results', 0)}")
+            print(
+                f"  - LLM Interactions: {json_data['summary'].get('total_llm_interactions', 0)}"
+            )
+            print(
+                f"  - Tool Executions: {json_data['summary'].get('total_tool_executions', 0)}"
+            )
+            print(
+                f"  - Risk Calculations: {json_data['summary'].get('total_risk_calculations', 0)}"
+            )
+            print(
+                f"  - Agent Decisions: {json_data['summary'].get('total_agent_decisions', 0)}"
+            )
+            print(
+                f"  - Agent Results: {json_data['summary'].get('total_agent_results', 0)}"
+            )
             print(f"  - Events: {len(json_data.get('events', []))}")
 
         if log_file.exists():

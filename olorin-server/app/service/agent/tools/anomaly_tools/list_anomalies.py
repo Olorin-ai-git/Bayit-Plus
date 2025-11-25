@@ -4,14 +4,15 @@ List Anomalies Tool for LangGraph Agents
 Tool for querying detected anomalies with filtering.
 """
 
-from typing import Any, Dict, List, Optional
-from pydantic import BaseModel, Field
-from langchain_core.tools import BaseTool
 import uuid
+from typing import Any, Dict, List, Optional
 
-from app.service.logging import get_bridge_logger
+from langchain_core.tools import BaseTool
+from pydantic import BaseModel, Field
+
 from app.models.anomaly import AnomalyEvent
 from app.persistence.database import get_db
+from app.service.logging import get_bridge_logger
 
 logger = get_bridge_logger(__name__)
 
@@ -19,11 +20,17 @@ logger = get_bridge_logger(__name__)
 class _ListAnomaliesArgs(BaseModel):
     """Arguments for list_anomalies tool."""
 
-    severity: Optional[str] = Field(None, description="Filter by severity (info, warn, critical)")
+    severity: Optional[str] = Field(
+        None, description="Filter by severity (info, warn, critical)"
+    )
     metric: Optional[str] = Field(None, description="Filter by metric name")
     detector_id: Optional[str] = Field(None, description="Filter by detector ID")
-    status: Optional[str] = Field(None, description="Filter by status (new, triaged, closed)")
-    limit: int = Field(100, ge=1, le=1000, description="Maximum number of anomalies to return")
+    status: Optional[str] = Field(
+        None, description="Filter by status (new, triaged, closed)"
+    )
+    limit: int = Field(
+        100, ge=1, le=1000, description="Maximum number of anomalies to return"
+    )
 
 
 class ListAnomaliesTool(BaseTool):
@@ -65,18 +72,19 @@ class ListAnomaliesTool(BaseTool):
                 query = query.filter(AnomalyEvent.status == status)
 
             total = query.count()
-            anomalies = query.order_by(AnomalyEvent.created_at.desc()).limit(limit).all()
+            anomalies = (
+                query.order_by(AnomalyEvent.created_at.desc()).limit(limit).all()
+            )
 
             return {
-                'anomalies': [anomaly.to_dict() for anomaly in anomalies],
-                'total': total,
-                'limit': limit,
-                'count': len(anomalies)
+                "anomalies": [anomaly.to_dict() for anomaly in anomalies],
+                "total": total,
+                "limit": limit,
+                "count": len(anomalies),
             }
 
         except Exception as e:
             logger.error(f"List anomalies tool error: {e}", exc_info=True)
-            return {'error': str(e), 'anomalies': [], 'total': 0}
+            return {"error": str(e), "anomalies": [], "total": 0}
         finally:
             db.close()
-

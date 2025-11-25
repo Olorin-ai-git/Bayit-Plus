@@ -14,9 +14,10 @@ SYSTEM MANDATE Compliance:
 - Type-safe configuration objects
 """
 
+from typing import Literal
+
 from pydantic import Field, field_validator, model_validator
 from pydantic_settings import BaseSettings
-from typing import Literal
 
 
 class DatabaseConfig(BaseSettings):

@@ -8,14 +8,15 @@ Week 9 Phase 3 implementation.
 
 import logging
 import os
-from typing import Dict, Any, List, Optional, Tuple
+from typing import Any, Dict, List, Optional, Tuple
+
 import numpy as np
 
 from app.service.analytics.model_base import ModelPrediction
 from app.service.analytics.uncertainty_quantification import (
-    quantify_prediction_uncertainty,
+    assess_feature_reliability,
     calculate_expected_calibration_error,
-    assess_feature_reliability
+    quantify_prediction_uncertainty,
 )
 
 logger = logging.getLogger(__name__)
@@ -37,16 +38,16 @@ class ConfidenceScorer:
 
         min_samples_env = os.getenv("CONFIDENCE_MIN_SAMPLES")
         if not min_samples_env:
-            raise RuntimeError("CONFIDENCE_MIN_SAMPLES environment variable is required")
+            raise RuntimeError(
+                "CONFIDENCE_MIN_SAMPLES environment variable is required"
+            )
         self.min_samples = int(min_samples_env)
 
         self.prediction_history: List[Dict[str, Any]] = []
         logger.info(f"📊 ConfidenceScorer initialized (alpha={self.alpha})")
 
     def calculate_confidence_interval(
-        self,
-        score: float,
-        model_predictions: List[ModelPrediction]
+        self, score: float, model_predictions: List[ModelPrediction]
     ) -> Tuple[float, float]:
         """
         Calculate confidence interval for a prediction.
@@ -96,15 +97,13 @@ class ConfidenceScorer:
     def quantify_uncertainty(
         self,
         ensemble_prediction: ModelPrediction,
-        model_predictions: List[ModelPrediction]
+        model_predictions: List[ModelPrediction],
     ) -> Dict[str, float]:
         """Quantify uncertainty in prediction."""
         return quantify_prediction_uncertainty(ensemble_prediction, model_predictions)
 
     def assess_reliability(
-        self,
-        score: float,
-        features: Dict[str, Any]
+        self, score: float, features: Dict[str, Any]
     ) -> Dict[str, Any]:
         """Assess reliability of prediction based on input characteristics."""
         feature_reliability = assess_feature_reliability(features)
@@ -119,15 +118,13 @@ class ConfidenceScorer:
             "reliability_score": reliability_score,
             "factors": {
                 "feature_completeness": feature_completeness,
-                "score_extremity": score_extremity
+                "score_extremity": score_extremity,
             },
-            "is_reliable": reliability_score > 0.5
+            "is_reliable": reliability_score > 0.5,
         }
 
     def track_prediction(
-        self,
-        prediction: ModelPrediction,
-        actual_label: Optional[bool] = None
+        self, prediction: ModelPrediction, actual_label: Optional[bool] = None
     ) -> None:
         """
         Track prediction for confidence calibration.
@@ -136,12 +133,14 @@ class ConfidenceScorer:
             prediction: Model prediction
             actual_label: Actual outcome if known
         """
-        self.prediction_history.append({
-            "score": prediction.score,
-            "confidence": prediction.confidence,
-            "timestamp": prediction.timestamp.isoformat(),
-            "actual_label": actual_label
-        })
+        self.prediction_history.append(
+            {
+                "score": prediction.score,
+                "confidence": prediction.confidence,
+                "timestamp": prediction.timestamp.isoformat(),
+                "actual_label": actual_label,
+            }
+        )
 
         # Keep only recent history
         if len(self.prediction_history) > 1000:
@@ -162,8 +161,7 @@ class ConfidenceScorer:
 
         # Calculate calibration if we have labels
         labeled_predictions = [
-            p for p in self.prediction_history
-            if p["actual_label"] is not None
+            p for p in self.prediction_history if p["actual_label"] is not None
         ]
 
         calibration_error = None
@@ -177,12 +175,11 @@ class ConfidenceScorer:
             "score_std": np.std(scores),
             "confidence_std": np.std(confidences),
             "calibration_error": calibration_error,
-            "labeled_predictions": len(labeled_predictions)
+            "labeled_predictions": len(labeled_predictions),
         }
 
     def _calculate_calibration_error(
-        self,
-        labeled_predictions: List[Dict[str, Any]]
+        self, labeled_predictions: List[Dict[str, Any]]
     ) -> float:
         """Calculate expected calibration error."""
         return calculate_expected_calibration_error(labeled_predictions)

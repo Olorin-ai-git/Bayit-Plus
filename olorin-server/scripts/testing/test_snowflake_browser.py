@@ -12,9 +12,9 @@ DATABASE = "DBT"
 SCHEMA = "DBT_PROD"
 ROLE = "ANALYST"
 
-print("\n" + "="*80)
+print("\n" + "=" * 80)
 print("SNOWFLAKE EXTERNAL BROWSER AUTHENTICATION TEST")
-print("="*80)
+print("=" * 80)
 
 print("\n📋 Configuration:")
 print(f"   Account: {ACCOUNT}")
@@ -31,11 +31,11 @@ try:
     conn = snowflake.connector.connect(
         account=ACCOUNT,
         user=USER,
-        authenticator='externalbrowser',
+        authenticator="externalbrowser",
         warehouse=WAREHOUSE,
         database=DATABASE,
         schema=SCHEMA,
-        role=ROLE
+        role=ROLE,
     )
 
     print("\n✅ Connection successful!")
@@ -52,9 +52,9 @@ try:
     cursor.close()
     conn.close()
 
-    print("\n" + "="*80)
+    print("\n" + "=" * 80)
     print("✅ TEST PASSED!")
-    print("="*80 + "\n")
+    print("=" * 80 + "\n")
 
 except Exception as e:
     print(f"\n❌ ERROR: {e}")

@@ -1,8 +1,9 @@
 import logging
-from app.service.logging import get_bridge_logger
 
 from fastapi import Depends, Request
 from typing_extensions import Annotated
+
+from app.service.logging import get_bridge_logger
 
 from .config import LocalSettings, SvcSettings, get_settings
 from .error_handling import AuthorizationError

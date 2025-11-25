@@ -9,9 +9,10 @@ SYSTEM MANDATE Compliance:
 - Complete implementation: No placeholders or TODOs
 """
 
-from sqlalchemy.orm import Session
-from typing import Optional
 import uuid
+from typing import Optional
+
+from sqlalchemy.orm import Session
 
 from app.models.investigation_audit_log import InvestigationAuditLog
 
@@ -24,7 +25,7 @@ def create_audit_entry(
     changes_json: Optional[str] = None,
     from_version: Optional[int] = None,
     to_version: Optional[int] = None,
-    source: str = "API"
+    source: str = "API",
 ) -> None:
     """Create audit log entry.
 
@@ -47,7 +48,7 @@ def create_audit_entry(
         state_snapshot_json=None,
         source=source,
         from_version=from_version,
-        to_version=to_version
+        to_version=to_version,
     )
 
     db.add(entry)

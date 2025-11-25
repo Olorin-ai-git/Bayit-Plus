@@ -10,14 +10,15 @@ SYSTEM MANDATE Compliance:
 - Type-safe test implementations
 """
 
-import pytest
 from datetime import datetime
+
+import pytest
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
-from app.service.etag_service import ETagService
 from app.models.investigation_state import InvestigationState
 from app.persistence.database import Base
+from app.service.etag_service import ETagService
 
 
 class TestETagService:
@@ -92,7 +93,7 @@ class TestETagService:
             status="IN_PROGRESS",
             version=1,
             created_at=datetime.utcnow(),
-            updated_at=datetime.utcnow()
+            updated_at=datetime.utcnow(),
         )
         test_db.add(state)
         test_db.commit()
@@ -113,7 +114,7 @@ class TestETagService:
             status="COMPLETED",
             version=1,
             created_at=datetime.utcnow(),
-            updated_at=datetime.utcnow()
+            updated_at=datetime.utcnow(),
         )
         test_db.add(state)
         test_db.commit()
@@ -134,7 +135,7 @@ class TestETagService:
             status="ERROR",
             version=1,
             created_at=datetime.utcnow(),
-            updated_at=datetime.utcnow()
+            updated_at=datetime.utcnow(),
         )
         test_db.add(state)
         test_db.commit()
@@ -163,7 +164,7 @@ class TestETagService:
             status="IN_PROGRESS",
             version=1,
             created_at=datetime.utcnow(),
-            updated_at=datetime.utcnow()
+            updated_at=datetime.utcnow(),
         )
         test_db.add(state)
         test_db.commit()
@@ -176,6 +177,7 @@ class TestETagService:
     def test_verify_authorization_forbidden(self, test_db):
         """Test authorization failure for wrong user."""
         from fastapi import HTTPException
+
         service = ETagService(test_db)
 
         # Create investigation
@@ -186,7 +188,7 @@ class TestETagService:
             status="IN_PROGRESS",
             version=1,
             created_at=datetime.utcnow(),
-            updated_at=datetime.utcnow()
+            updated_at=datetime.utcnow(),
         )
         test_db.add(state)
         test_db.commit()
@@ -200,6 +202,7 @@ class TestETagService:
     def test_verify_authorization_not_found(self, test_db):
         """Test authorization failure for nonexistent investigation."""
         from fastapi import HTTPException
+
         service = ETagService(test_db)
 
         # Should fail for nonexistent investigation

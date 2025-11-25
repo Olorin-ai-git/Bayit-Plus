@@ -8,15 +8,15 @@ Week 8 Phase 3 implementation.
 
 import logging
 import os
-from typing import Dict, Any, List, Optional
+from dataclasses import asdict, dataclass
 from datetime import datetime
-from dataclasses import dataclass, asdict
 from pathlib import Path
+from typing import Any, Dict, List, Optional
 
 from app.service.analytics.registry_storage import (
+    ensure_directory_exists,
     load_registry_data,
     save_registry_data,
-    ensure_directory_exists
 )
 
 logger = logging.getLogger(__name__)
@@ -37,6 +37,7 @@ class ModelMetadata:
         status: Model status (active, deprecated, archived)
         description: Model description
     """
+
     model_name: str
     model_version: str
     model_type: str
@@ -61,8 +62,7 @@ class ModelRegistry:
     def __init__(self, registry_path: Optional[str] = None):
         """Initialize model registry."""
         self.registry_path = registry_path or os.getenv(
-            "MODEL_REGISTRY_PATH",
-            str(Path.home() / ".olorin" / "model_registry")
+            "MODEL_REGISTRY_PATH", str(Path.home() / ".olorin" / "model_registry")
         )
         ensure_directory_exists(self.registry_path)
         self.metadata_file = os.path.join(self.registry_path, "registry.json")
@@ -86,7 +86,7 @@ class ModelRegistry:
         model_type: str,
         model_path: str,
         metrics: Optional[Dict[str, float]] = None,
-        description: str = ""
+        description: str = "",
     ) -> bool:
         """Register a new model version."""
         key = f"{model_name}_{model_version}"
@@ -103,7 +103,7 @@ class ModelRegistry:
             created_at=datetime.utcnow().isoformat(),
             metrics=metrics or {},
             status="active",
-            description=description
+            description=description,
         )
 
         self.models[key] = metadata
@@ -113,9 +113,7 @@ class ModelRegistry:
         return True
 
     def get_model(
-        self,
-        model_name: str,
-        model_version: Optional[str] = None
+        self, model_name: str, model_version: Optional[str] = None
     ) -> Optional[ModelMetadata]:
         """Get model metadata (latest active if version not specified)."""
         if model_version:
@@ -124,7 +122,8 @@ class ModelRegistry:
 
         # Get latest active version
         matching_models = [
-            (k, m) for k, m in self.models.items()
+            (k, m)
+            for k, m in self.models.items()
             if m.model_name == model_name and m.status == "active"
         ]
 
@@ -136,9 +135,7 @@ class ModelRegistry:
         return latest[1]
 
     def list_models(
-        self,
-        model_name: Optional[str] = None,
-        status: Optional[str] = None
+        self, model_name: Optional[str] = None, status: Optional[str] = None
     ) -> List[ModelMetadata]:
         """List registered models with optional filters."""
         models = list(self.models.values())
@@ -179,12 +176,16 @@ class ModelRegistry:
         models_by_status = {}
 
         for metadata in self.models.values():
-            models_by_type[metadata.model_type] = models_by_type.get(metadata.model_type, 0) + 1
-            models_by_status[metadata.status] = models_by_status.get(metadata.status, 0) + 1
+            models_by_type[metadata.model_type] = (
+                models_by_type.get(metadata.model_type, 0) + 1
+            )
+            models_by_status[metadata.status] = (
+                models_by_status.get(metadata.status, 0) + 1
+            )
 
         return {
             "total_models": len(self.models),
             "models_by_type": models_by_type,
             "models_by_status": models_by_status,
-            "registry_path": self.registry_path
+            "registry_path": self.registry_path,
         }

@@ -12,16 +12,18 @@ This package provides:
 Main entry point: RiskScoringTool
 """
 
-from .core import RiskScoringTool, RiskScoringInput, ComprehensiveRiskResult
+from .core import ComprehensiveRiskResult, RiskScoringInput, RiskScoringTool
+
 
 # For backward compatibility with existing code
 def get_risk_scoring_tool():
     """Get a configured risk scoring tool instance."""
     return RiskScoringTool()
 
+
 __all__ = [
-    'RiskScoringTool',
-    'RiskScoringInput',
-    'ComprehensiveRiskResult',
-    'get_risk_scoring_tool'
+    "RiskScoringTool",
+    "RiskScoringInput",
+    "ComprehensiveRiskResult",
+    "get_risk_scoring_tool",
 ]

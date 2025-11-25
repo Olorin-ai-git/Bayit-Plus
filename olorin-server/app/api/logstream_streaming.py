@@ -10,20 +10,18 @@ Date: 2025-11-13
 Spec: /specs/021-live-merged-logstream/api-contracts.md
 """
 
-from typing import Optional
 from datetime import datetime
-from fastapi import Query, HTTPException, Header, Depends, APIRouter
+from typing import Optional
+
+from fastapi import APIRouter, Depends, Header, HTTPException, Query
 from fastapi.responses import StreamingResponse
 
-from app.service.logging import get_bridge_logger
+from app.api.logstream_dependencies import create_log_providers, get_logstream_config
 from app.api.sse_generator import generate_sse_stream
+from app.config.logstream_config import LogStreamConfig
 from app.service.log_providers.aggregator import LogAggregatorService
 from app.service.log_providers.deduplicator import LogDeduplicatorService
-from app.config.logstream_config import LogStreamConfig
-from app.api.logstream_dependencies import (
-    get_logstream_config,
-    create_log_providers
-)
+from app.service.logging import get_bridge_logger
 
 logger = get_bridge_logger(__name__)
 
@@ -36,7 +34,7 @@ async def stream_logs(
     start_time: Optional[datetime] = Query(None),
     end_time: Optional[datetime] = Query(None),
     last_event_id: Optional[str] = Header(None, alias="Last-Event-ID"),
-    config: LogStreamConfig = Depends(get_logstream_config)
+    config: LogStreamConfig = Depends(get_logstream_config),
 ):
     """
     SSE endpoint for real-time log streaming.
@@ -58,10 +56,7 @@ async def stream_logs(
         HTTPException: If feature is disabled or configuration invalid
     """
     if not config.enable_log_stream:
-        raise HTTPException(
-            status_code=503,
-            detail="Log streaming is not enabled"
-        )
+        raise HTTPException(status_code=503, detail="Log streaming is not enabled")
 
     logger.info(
         f"SSE stream request for investigation {investigation_id}",
@@ -69,8 +64,8 @@ async def stream_logs(
             "investigation_id": investigation_id,
             "start_time": start_time,
             "end_time": end_time,
-            "last_event_id": last_event_id
-        }
+            "last_event_id": last_event_id,
+        },
     )
 
     # Create providers and services
@@ -86,12 +81,12 @@ async def stream_logs(
             start_time,
             end_time,
             last_event_id,
-            config
+            config,
         ),
         media_type="text/event-stream",
         headers={
             "Cache-Control": "no-cache",
             "Connection": "keep-alive",
-            "X-Accel-Buffering": "no"
-        }
+            "X-Accel-Buffering": "no",
+        },
     )

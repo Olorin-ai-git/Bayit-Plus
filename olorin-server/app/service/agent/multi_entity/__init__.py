@@ -6,27 +6,23 @@ cross-entity analysis, and coordinated investigation workflows.
 """
 
 from .entity_manager import (
-    EntityManager,
     Entity,
-    EntityType,
-    EntityRelationship,
     EntityGraph,
-    get_entity_manager
+    EntityManager,
+    EntityRelationship,
+    EntityType,
+    get_entity_manager,
 )
-
-from .transaction_entity_factory import (
-    TransactionEntityFactory
-)
+from .transaction_entity_factory import TransactionEntityFactory
 
 __all__ = [
     # Entity Management
     "EntityManager",
     "Entity",
-    "EntityType", 
+    "EntityType",
     "EntityRelationship",
     "EntityGraph",
     "get_entity_manager",
-    
     # Transaction Entity Factory
-    "TransactionEntityFactory"
+    "TransactionEntityFactory",
 ]

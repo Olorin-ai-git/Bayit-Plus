@@ -9,21 +9,30 @@ This module handles loading configuration with the following priority:
 
 import os
 from pathlib import Path
-from typing import Optional, Dict
+from typing import Dict, Optional
+
 from dotenv import load_dotenv
 
-from .secret_manager import get_secret_manager
 from .logging import get_bridge_logger
+from .secret_manager import get_secret_manager
 
 # Configure logging level based on environment variable
 _log_level = os.getenv("SECRET_MANAGER_LOG_LEVEL", "INFO").upper()
 if _log_level == "SILENT":
     # Special mode to completely silence config loader logs
     class SilentLogger:
-        def debug(self, *args, **kwargs): pass
-        def info(self, *args, **kwargs): pass
-        def warning(self, *args, **kwargs): pass
-        def error(self, *args, **kwargs): pass
+        def debug(self, *args, **kwargs):
+            pass
+
+        def info(self, *args, **kwargs):
+            pass
+
+        def warning(self, *args, **kwargs):
+            pass
+
+        def error(self, *args, **kwargs):
+            pass
+
     logger = SilentLogger()
 else:
     # Use unified logging bridge - this will respect CLI log level
@@ -46,15 +55,19 @@ class ConfigLoader:
         """Initialize the configuration loader with .env support (only once)."""
         if not ConfigLoader._initialized:
             # Load .env file if it exists
-            env_path = Path(__file__).parent.parent.parent / '.env'
+            env_path = Path(__file__).parent.parent.parent / ".env"
             if env_path.exists():
-                load_dotenv(env_path, override=True)  # override=True ensures .env takes precedence
+                load_dotenv(
+                    env_path, override=True
+                )  # override=True ensures .env takes precedence
                 logger.info(f"Loaded .env configuration from {env_path}")
             else:
                 logger.warning(f"No .env file found at {env_path}")
 
             # Initialize secret manager only if Firebase secrets are enabled
-            use_firebase_secrets = os.getenv('USE_FIREBASE_SECRETS', 'true').lower() == 'true'
+            use_firebase_secrets = (
+                os.getenv("USE_FIREBASE_SECRETS", "true").lower() == "true"
+            )
             if use_firebase_secrets:
                 self.secret_manager = get_secret_manager()
                 logger.info("Firebase Secret Manager enabled")
@@ -84,10 +97,14 @@ class ConfigLoader:
 
         # Priority 2: Try Firebase Secret Manager (if enabled)
         if not self.secret_manager:
-            logger.debug(f"❌ Firebase secrets disabled, {secret_path} not found in .env")
+            logger.debug(
+                f"❌ Firebase secrets disabled, {secret_path} not found in .env"
+            )
             return None
 
-        logger.info(f"⚠️  Secret '{secret_path}' not found in .env, attempting Firebase fallback...")
+        logger.info(
+            f"⚠️  Secret '{secret_path}' not found in .env, attempting Firebase fallback..."
+        )
 
         # Try environment-specific secret first
         env_secret_path = f"{self.env}/{secret_path}"
@@ -101,7 +118,9 @@ class ConfigLoader:
         value = self.secret_manager.get_secret(secret_path)
 
         if not value:
-            logger.warning(f"Configuration '{secret_path}' not found in .env or Firebase Secrets")
+            logger.warning(
+                f"Configuration '{secret_path}' not found in .env or Firebase Secrets"
+            )
 
         return value
 
@@ -133,7 +152,7 @@ class ConfigLoader:
             "name": "fraud_detection",
             "user": "root",
             "password": None,  # Not needed for SQLite
-            "pool_size": 10
+            "pool_size": 10,
         }
 
     def load_snowflake_config(self) -> Dict[str, Optional[str]]:
@@ -147,32 +166,44 @@ class ConfigLoader:
 
         # Define configuration keys (no defaults - must be configured)
         config_keys = [
-            'account', 'host', 'user', 'password', 'private_key', 'oauth_token',
-            'database', 'schema', 'warehouse', 'role', 'authenticator',
-            'pool_size', 'pool_max_overflow', 'pool_timeout', 'query_timeout',
-            'max_transactions_limit'
+            "account",
+            "host",
+            "user",
+            "password",
+            "private_key",
+            "oauth_token",
+            "database",
+            "schema",
+            "warehouse",
+            "role",
+            "authenticator",
+            "pool_size",
+            "pool_max_overflow",
+            "pool_timeout",
+            "query_timeout",
+            "max_transactions_limit",
         ]
 
         # Check authentication method early to determine which configs are actually needed
-        auth_method = os.getenv('SNOWFLAKE_AUTH_METHOD', 'password')
-        authenticator = os.getenv('SNOWFLAKE_AUTHENTICATOR', 'snowflake')
-        private_key_path = os.getenv('SNOWFLAKE_PRIVATE_KEY_PATH')
-        
+        auth_method = os.getenv("SNOWFLAKE_AUTH_METHOD", "password")
+        authenticator = os.getenv("SNOWFLAKE_AUTHENTICATOR", "snowflake")
+        private_key_path = os.getenv("SNOWFLAKE_PRIVATE_KEY_PATH")
+
         # Determine which auth-related configs are actually needed
         auth_configs_needed = set()
-        if authenticator == 'oauth' or auth_method == 'oauth':
-            auth_configs_needed.add('SNOWFLAKE_OAUTH_TOKEN')
-        elif auth_method == 'private_key':
-            auth_configs_needed.add('SNOWFLAKE_PRIVATE_KEY_PATH')  # Path is preferred
+        if authenticator == "oauth" or auth_method == "oauth":
+            auth_configs_needed.add("SNOWFLAKE_OAUTH_TOKEN")
+        elif auth_method == "private_key":
+            auth_configs_needed.add("SNOWFLAKE_PRIVATE_KEY_PATH")  # Path is preferred
             # Don't require SNOWFLAKE_PASSWORD or SNOWFLAKE_PRIVATE_KEY when using private key path
         else:
             # Default password auth
-            auth_configs_needed.add('SNOWFLAKE_PASSWORD')
-        
+            auth_configs_needed.add("SNOWFLAKE_PASSWORD")
+
         missing_from_env = []
 
         for key in config_keys:
-            env_var = f'SNOWFLAKE_{key.upper()}'
+            env_var = f"SNOWFLAKE_{key.upper()}"
 
             # Priority 1: Check .env file (expected source)
             value = os.getenv(env_var)
@@ -180,11 +211,15 @@ class ConfigLoader:
             if value:
                 config[key] = value
                 # Log source for debugging (avoid logging passwords)
-                if 'password' not in key.lower() and 'key' not in key.lower():
+                if "password" not in key.lower() and "key" not in key.lower():
                     logger.debug(f"Loaded {key} from .env: {value}")
             else:
                 # Skip logging warnings for auth configs that aren't needed for current auth method
-                is_auth_config = env_var in ['SNOWFLAKE_PASSWORD', 'SNOWFLAKE_PRIVATE_KEY', 'SNOWFLAKE_OAUTH_TOKEN']
+                is_auth_config = env_var in [
+                    "SNOWFLAKE_PASSWORD",
+                    "SNOWFLAKE_PRIVATE_KEY",
+                    "SNOWFLAKE_OAUTH_TOKEN",
+                ]
                 if is_auth_config and env_var not in auth_configs_needed:
                     # This auth config is not needed - skip warning and continue
                     config[key] = None
@@ -201,20 +236,36 @@ class ConfigLoader:
                 else:
                     # Missing from both - only warn if it's actually needed
                     if not is_auth_config or env_var in auth_configs_needed:
-                        logger.warning(f"MISSING: {env_var} not found in .env or Firebase Secrets")
+                        logger.warning(
+                            f"MISSING: {env_var} not found in .env or Firebase Secrets"
+                        )
                     config[key] = None
 
         # Log summary of missing configs (filter out unnecessary auth configs)
         if missing_from_env:
             # Filter out auth configs that aren't needed
-            actually_missing = [m for m in missing_from_env if m not in ['SNOWFLAKE_PASSWORD', 'SNOWFLAKE_PRIVATE_KEY', 'SNOWFLAKE_OAUTH_TOKEN'] or m in auth_configs_needed]
+            actually_missing = [
+                m
+                for m in missing_from_env
+                if m
+                not in [
+                    "SNOWFLAKE_PASSWORD",
+                    "SNOWFLAKE_PRIVATE_KEY",
+                    "SNOWFLAKE_OAUTH_TOKEN",
+                ]
+                or m in auth_configs_needed
+            ]
             if actually_missing:
-                logger.warning(f"Expected in .env but missing: {', '.join(actually_missing)}")
-                logger.warning("Please add these to your .env file for complete configuration")
+                logger.warning(
+                    f"Expected in .env but missing: {', '.join(actually_missing)}"
+                )
+                logger.warning(
+                    "Please add these to your .env file for complete configuration"
+                )
 
         # Check critical fields but don't fail - just warn
         # Note: password is only required for non-OAuth/auth_method auth
-        critical_fields = ['account', 'user', 'database']
+        critical_fields = ["account", "user", "database"]
         missing_critical = [f for f in critical_fields if not config.get(f)]
 
         # Mask file paths in logs (show basename only)
@@ -222,36 +273,53 @@ class ConfigLoader:
             if not path:
                 return None
             from pathlib import Path
+
             return Path(path).name if path else None
-        
-        if authenticator == 'oauth' or auth_method == 'oauth':
-            if not config.get('oauth_token'):
-                missing_critical.append('oauth_token (required for OAuth auth)')
-        elif auth_method == 'private_key':
-            if not config.get('private_key') and not private_key_path:
-                missing_critical.append('private_key or SNOWFLAKE_PRIVATE_KEY_PATH (required for private key auth)')
+
+        if authenticator == "oauth" or auth_method == "oauth":
+            if not config.get("oauth_token"):
+                missing_critical.append("oauth_token (required for OAuth auth)")
+        elif auth_method == "private_key":
+            if not config.get("private_key") and not private_key_path:
+                missing_critical.append(
+                    "private_key or SNOWFLAKE_PRIVATE_KEY_PATH (required for private key auth)"
+                )
             else:
                 # Private key auth is configured - log debug (no warnings for missing password)
-                logger.debug(f"Using Snowflake private-key authentication (key: {mask_path(private_key_path)})")
+                logger.debug(
+                    f"Using Snowflake private-key authentication (key: {mask_path(private_key_path)})"
+                )
         else:
             # Default to password auth
-            if not config.get('password'):
-                missing_critical.append('password (required for password auth)')
+            if not config.get("password"):
+                missing_critical.append("password (required for password auth)")
 
         if missing_critical:
             # Only log CRITICAL if no auth method is configured
             # If private_key is configured, missing password is expected
-            if auth_method == 'private_key' and 'password' in str(missing_critical):
+            if auth_method == "private_key" and "password" in str(missing_critical):
                 # Remove password from critical if private_key is configured
-                missing_critical = [m for m in missing_critical if 'password' not in m.lower()]
+                missing_critical = [
+                    m for m in missing_critical if "password" not in m.lower()
+                ]
                 if missing_critical:
-                    logger.error(f"CRITICAL: Missing required Snowflake configuration: {missing_critical}")
-                    logger.error("Snowflake connection will not be possible without these values")
+                    logger.error(
+                        f"CRITICAL: Missing required Snowflake configuration: {missing_critical}"
+                    )
+                    logger.error(
+                        "Snowflake connection will not be possible without these values"
+                    )
                 else:
-                    logger.info(f"✅ Snowflake private-key authentication configured (key: {mask_path(private_key_path)})")
+                    logger.info(
+                        f"✅ Snowflake private-key authentication configured (key: {mask_path(private_key_path)})"
+                    )
             else:
-                logger.error(f"CRITICAL: Missing required Snowflake configuration: {missing_critical}")
-                logger.error("Snowflake connection will not be possible without these values")
+                logger.error(
+                    f"CRITICAL: Missing required Snowflake configuration: {missing_critical}"
+                )
+                logger.error(
+                    "Snowflake connection will not be possible without these values"
+                )
             # Don't raise exception - just warn
 
         return config
@@ -267,23 +335,23 @@ class ConfigLoader:
 
         # Define configuration keys with type conversion info
         config_keys = {
-            'host': str,
-            'port': int,
-            'database': str,
-            'schema': str,
-            'user': str,
-            'password': str,
-            'pool_size': int,
-            'pool_max_overflow': int,
-            'query_timeout': int,
-            'transactions_table': str,
-            'max_transactions_limit': int
+            "host": str,
+            "port": int,
+            "database": str,
+            "schema": str,
+            "user": str,
+            "password": str,
+            "pool_size": int,
+            "pool_max_overflow": int,
+            "query_timeout": int,
+            "transactions_table": str,
+            "max_transactions_limit": int,
         }
 
         missing_from_env = []
 
         for key, key_type in config_keys.items():
-            env_var = f'POSTGRES_{key.upper()}'
+            env_var = f"POSTGRES_{key.upper()}"
 
             # Priority 1: Check .env file (expected source)
             value = os.getenv(env_var)
@@ -296,11 +364,13 @@ class ConfigLoader:
                     else:
                         config[key] = value
                 except ValueError:
-                    logger.warning(f"Invalid value for {env_var}: {value}, expected {key_type.__name__}")
+                    logger.warning(
+                        f"Invalid value for {env_var}: {value}, expected {key_type.__name__}"
+                    )
                     config[key] = None
 
                 # Log source for debugging (avoid logging passwords)
-                if 'password' not in key.lower():
+                if "password" not in key.lower():
                     logger.debug(f"Loaded {key} from .env: {config[key]}")
             else:
                 # Track what's missing from .env
@@ -315,26 +385,38 @@ class ConfigLoader:
                         else:
                             config[key] = value
                     except ValueError:
-                        logger.warning(f"Invalid value for {env_var}: {value}, expected {key_type.__name__}")
+                        logger.warning(
+                            f"Invalid value for {env_var}: {value}, expected {key_type.__name__}"
+                        )
                         config[key] = None
                     logger.info(f"Using Firebase fallback for {env_var} (not in .env)")
                 else:
                     # Missing from both - just warn
-                    logger.warning(f"MISSING: {env_var} not found in .env or Firebase Secrets")
+                    logger.warning(
+                        f"MISSING: {env_var} not found in .env or Firebase Secrets"
+                    )
                     config[key] = None
 
         # Log summary of missing configs
         if missing_from_env:
-            logger.warning(f"Expected in .env but missing: {', '.join(missing_from_env)}")
-            logger.warning("Please add these to your .env file for complete configuration")
+            logger.warning(
+                f"Expected in .env but missing: {', '.join(missing_from_env)}"
+            )
+            logger.warning(
+                "Please add these to your .env file for complete configuration"
+            )
 
         # Check critical fields but don't fail - just warn
-        critical_fields = ['host', 'port', 'database', 'user', 'password']
+        critical_fields = ["host", "port", "database", "user", "password"]
         missing_critical = [f for f in critical_fields if not config.get(f)]
 
         if missing_critical:
-            logger.error(f"CRITICAL: Missing required PostgreSQL configuration: {missing_critical}")
-            logger.error("PostgreSQL connection will not be possible without these values")
+            logger.error(
+                f"CRITICAL: Missing required PostgreSQL configuration: {missing_critical}"
+            )
+            logger.error(
+                "PostgreSQL connection will not be possible without these values"
+            )
             # Don't raise exception - just warn
 
         return config
@@ -350,29 +432,29 @@ class ConfigLoader:
             ValueError: If DATABASE_PROVIDER is invalid (not 'snowflake' or 'postgresql')
         """
         # Get database provider from environment
-        provider = os.getenv('DATABASE_PROVIDER')
+        provider = os.getenv("DATABASE_PROVIDER")
 
         if not provider:
             logger.warning("DATABASE_PROVIDER not set, defaulting to 'snowflake'")
-            provider = 'snowflake'
+            provider = "snowflake"
 
         # Normalize provider name to lowercase
         provider = provider.lower()
 
         # Validate provider
-        if provider not in ['snowflake', 'postgresql']:
+        if provider not in ["snowflake", "postgresql"]:
             raise ValueError(
                 f"Invalid DATABASE_PROVIDER: '{provider}'. "
                 "Must be 'snowflake' or 'postgresql'"
             )
 
         # Load appropriate configuration
-        config = {'provider': provider}
+        config = {"provider": provider}
 
-        if provider == 'snowflake':
-            config['snowflake'] = self.load_snowflake_config()
-        elif provider == 'postgresql':
-            config['postgresql'] = self.load_postgresql_config()
+        if provider == "snowflake":
+            config["snowflake"] = self.load_snowflake_config()
+        elif provider == "postgresql":
+            config["postgresql"] = self.load_postgresql_config()
 
         logger.debug(f"Loaded database provider configuration for: {provider}")
 
@@ -388,15 +470,15 @@ class ConfigLoader:
         secrets = {}
 
         # Load Snowflake configuration
-        secrets['snowflake'] = self.load_snowflake_config()
+        secrets["snowflake"] = self.load_snowflake_config()
 
         # Load other API keys and secrets
         api_keys = [
-            'ANTHROPIC_API_KEY',
-            'OPENAI_API_KEY',
-            'OLORIN_API_KEY',
-            'JWT_SECRET_KEY',
-            'REDIS_API_KEY'
+            "ANTHROPIC_API_KEY",
+            "OPENAI_API_KEY",
+            "OLORIN_API_KEY",
+            "JWT_SECRET_KEY",
+            "REDIS_API_KEY",
         ]
 
         for key in api_keys:
@@ -405,13 +487,13 @@ class ConfigLoader:
                 secrets[key.lower()] = value
 
         # Load Splunk configuration if enabled
-        if os.getenv('USE_SPLUNK', 'false').lower() == 'true':
-            secrets['splunk'] = {
-                'username': self.load_secret('SPLUNK_USERNAME'),
-                'password': self.load_secret('SPLUNK_PASSWORD'),
-                'host': os.getenv('SPLUNK_HOST'),
-                'port': os.getenv('SPLUNK_PORT', '8089'),
-                'index': os.getenv('SPLUNK_INDEX', 'main')
+        if os.getenv("USE_SPLUNK", "false").lower() == "true":
+            secrets["splunk"] = {
+                "username": self.load_secret("SPLUNK_USERNAME"),
+                "password": self.load_secret("SPLUNK_PASSWORD"),
+                "host": os.getenv("SPLUNK_HOST"),
+                "port": os.getenv("SPLUNK_PORT", "8089"),
+                "index": os.getenv("SPLUNK_INDEX", "main"),
             }
 
         return secrets
@@ -428,7 +510,9 @@ class ConfigLoader:
             "host": "redis-13848.c253.us-central1-1.gce.redns.redis-cloud.com",  # Use hardcoded default
             "port": 13848,  # Use hardcoded default
             "username": "default",  # Use hardcoded default
-            "api_key": self.load_secret("REDIS_API_KEY")  # Only this needs to be fetched from secrets
+            "api_key": self.load_secret(
+                "REDIS_API_KEY"
+            ),  # Only this needs to be fetched from secrets
         }
 
     def load_jwt_config(self) -> dict:
@@ -454,7 +538,7 @@ class ConfigLoader:
         return {
             "secret_key": secret_key,
             "algorithm": "HS256",  # Use hardcoded default
-            "expire_hours": 2  # Use hardcoded default (reduced from 24 to 2 hours for security)
+            "expire_hours": 2,  # Use hardcoded default (reduced from 24 to 2 hours for security)
         }
 
     def load_splunk_config(self) -> dict:
@@ -466,7 +550,7 @@ class ConfigLoader:
         """
         return {
             "username": self.load_secret("SPLUNK_USERNAME"),
-            "password": self.load_secret("SPLUNK_PASSWORD")
+            "password": self.load_secret("SPLUNK_PASSWORD"),
         }
 
     def load_sumo_logic_config(self) -> dict:
@@ -478,9 +562,8 @@ class ConfigLoader:
         """
         return {
             "access_id": self.load_secret("SUMO_LOGIC_ACCESS_ID"),
-            "access_key": self.load_secret("SUMO_LOGIC_ACCESS_KEY")
+            "access_key": self.load_secret("SUMO_LOGIC_ACCESS_KEY"),
         }
-
 
     def load_all_secrets(self) -> dict:
         """
@@ -491,11 +574,14 @@ class ConfigLoader:
         """
         return {
             # API Keys - USED
-            "anthropic_api_key": self.load_api_key("anthropic_api_key"),  # USED: Core LLM functionality
+            "anthropic_api_key": self.load_api_key(
+                "anthropic_api_key"
+            ),  # USED: Core LLM functionality
             # "openai_api_key": self.load_api_key("openai_api_key"),  # UNUSED: Replaced by Anthropic
-            "olorin_api_key": self.load_api_key("olorin_api_key"),  # USED: Internal API calls
+            "olorin_api_key": self.load_api_key(
+                "olorin_api_key"
+            ),  # USED: Internal API calls
             # "databricks_token": self.load_api_key("databricks_token"),  # UNUSED: Mock implementation only
-
             # Service Configurations - Only load configs that actually fetch secrets
             # "database": self.load_database_config(),  # UNUSED: Using SQLite, not PostgreSQL
             "redis": self.load_redis_config(),  # USED: Caching system (only api_key from secrets)
@@ -503,7 +589,6 @@ class ConfigLoader:
             "splunk": self.load_splunk_config(),  # USED: Log analysis
             # "sumo_logic": self.load_sumo_logic_config(),  # UNUSED: Mock implementation only
             # "snowflake": self.load_snowflake_config(),  # UNUSED: Mock implementation only
-
             # App Secret
             # "app_secret": self.load_secret("APP_SECRET")  # UNUSED: Not referenced in codebase
         }

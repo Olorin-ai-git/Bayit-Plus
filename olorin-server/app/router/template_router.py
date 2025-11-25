@@ -14,13 +14,14 @@ SYSTEM MANDATE Compliance:
 - Type-safe: All parameters and returns properly typed
 """
 
-from typing import List, Dict, Any, Optional
+from typing import Any, Dict, List, Optional
+
 from fastapi import APIRouter, Depends, Query, status
 from sqlalchemy.orm import Session
 
 from app.persistence.database import get_db
-from app.service.template_service import TemplateService
 from app.security.auth import User, require_read, require_write
+from app.service.template_service import TemplateService
 
 router = APIRouter(
     prefix="/api/v1/templates",

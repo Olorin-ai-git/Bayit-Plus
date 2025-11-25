@@ -7,33 +7,33 @@ Contains the main report generation logic and orchestrates all components.
 
 import json
 import logging
-from pathlib import Path
 from datetime import datetime
-from typing import Dict, List, Any, Optional, Union
+from pathlib import Path
+from typing import Any, Dict, List, Optional, Union
 
-from .data_models import (
-    InvestigationSummary,
-    ComponentData,
-    ReportConfig,
-    ReportTheme,
-    GeneratedReport,
-)
-from .data_processor import (
-    InvestigationDataExtractor,
-    ComponentDataProcessor,
-    SummaryGenerator,
-)
-from .styles import StyleManager
-from .scripts import JavaScriptManager
 from .components import (
-    HeaderGenerator,
-    SummaryGenerator as ComponentSummaryGenerator,
     FooterGenerator,
+    HeaderGenerator,
 )
-from .utils import DateTimeFormatter
+from .components import SummaryGenerator as ComponentSummaryGenerator
+from .core_component_manager import ComponentManager
 from .core_html_builder import HTMLBuilder
 from .core_validator import ReportValidator
-from .core_component_manager import ComponentManager
+from .data_models import (
+    ComponentData,
+    GeneratedReport,
+    InvestigationSummary,
+    ReportConfig,
+    ReportTheme,
+)
+from .data_processor import (
+    ComponentDataProcessor,
+    InvestigationDataExtractor,
+    SummaryGenerator,
+)
+from .scripts import JavaScriptManager
+from .styles import StyleManager
+from .utils import DateTimeFormatter
 
 logger = logging.getLogger(__name__)
 

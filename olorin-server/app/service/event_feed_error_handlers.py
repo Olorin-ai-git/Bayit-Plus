@@ -14,6 +14,7 @@ SYSTEM MANDATE Compliance:
 import logging
 from datetime import datetime, timezone
 from typing import Optional
+
 from fastapi import HTTPException, status
 
 logger = logging.getLogger(__name__)
@@ -24,9 +25,7 @@ class EventFeedErrorHandler:
 
     @staticmethod
     def handle_invalid_cursor(
-        investigation_id: str,
-        cursor: str,
-        error: str
+        investigation_id: str, cursor: str, error: str
     ) -> HTTPException:
         """
         Handle invalid cursor format error.
@@ -45,8 +44,8 @@ class EventFeedErrorHandler:
                 "investigation_id": investigation_id,
                 "cursor": cursor,
                 "error": error,
-                "operation": "fetch_events"
-            }
+                "operation": "fetch_events",
+            },
         )
 
         return HTTPException(
@@ -58,17 +57,14 @@ class EventFeedErrorHandler:
                 "details": {
                     "cursor": cursor,
                     "expected_format": "timestamp_ms_sequence",
-                    "error": error
-                }
-            }
+                    "error": error,
+                },
+            },
         )
 
     @staticmethod
     def handle_expired_cursor(
-        investigation_id: str,
-        cursor: str,
-        cursor_date: datetime,
-        expiry_days: int
+        investigation_id: str, cursor: str, cursor_date: datetime, expiry_days: int
     ) -> HTTPException:
         """
         Handle expired cursor error.
@@ -89,8 +85,8 @@ class EventFeedErrorHandler:
                 "cursor": cursor,
                 "cursor_date": cursor_date.isoformat(),
                 "expiry_days": expiry_days,
-                "operation": "fetch_events"
-            }
+                "operation": "fetch_events",
+            },
         )
 
         return HTTPException(
@@ -101,16 +97,14 @@ class EventFeedErrorHandler:
                 "message": f"Cursor expired (older than {expiry_days} days)",
                 "details": {
                     "cursor_date": cursor_date.isoformat(),
-                    "suggestion": "Retry without cursor to get latest events"
-                }
-            }
+                    "suggestion": "Retry without cursor to get latest events",
+                },
+            },
         )
 
     @staticmethod
     def handle_database_error(
-        investigation_id: str,
-        error: Exception,
-        latency_ms: float
+        investigation_id: str, error: Exception, latency_ms: float
     ) -> HTTPException:
         """
         Handle database operation error.
@@ -130,9 +124,9 @@ class EventFeedErrorHandler:
                 "error": str(error),
                 "error_type": type(error).__name__,
                 "latency_ms": round(latency_ms, 2),
-                "operation": "fetch_events"
+                "operation": "fetch_events",
             },
-            exc_info=True
+            exc_info=True,
         )
 
         return HTTPException(
@@ -144,7 +138,7 @@ class EventFeedErrorHandler:
                 "details": {
                     "error_type": type(error).__name__,
                     "error_message": str(error),
-                    "suggestion": "Retry the request or contact support"
-                }
-            }
+                    "suggestion": "Retry the request or contact support",
+                },
+            },
         )

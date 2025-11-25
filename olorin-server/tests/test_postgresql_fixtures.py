@@ -3,8 +3,8 @@ Test suite for PostgreSQL Docker fixtures.
 Tests for T010: Docker PostgreSQL test fixtures in conftest.py.
 """
 
-import pytest
 import psycopg2
+import pytest
 from sqlalchemy import create_engine, text
 from testcontainers.postgres import PostgresContainer
 
@@ -16,12 +16,12 @@ class TestPostgreSQLFixtures:
         """Test that PostgreSQL container starts successfully."""
         # Container should be running
         assert postgresql_container is not None
-        assert hasattr(postgresql_container, 'get_connection_url')
+        assert hasattr(postgresql_container, "get_connection_url")
 
         # Should be able to get connection URL
         connection_url = postgresql_container.get_connection_url()
         assert connection_url is not None
-        assert 'postgresql' in connection_url
+        assert "postgresql" in connection_url
 
     def test_postgresql_container_accepts_connections(self, postgresql_container):
         """Test that PostgreSQL container accepts connections."""
@@ -31,6 +31,7 @@ class TestPostgreSQLFixtures:
         try:
             # Parse connection URL for psycopg2
             import urllib.parse
+
             parsed = urllib.parse.urlparse(connection_url)
 
             conn = psycopg2.connect(
@@ -38,7 +39,7 @@ class TestPostgreSQLFixtures:
                 port=parsed.port,
                 database=parsed.path[1:],  # Remove leading '/'
                 user=parsed.username,
-                password=parsed.password
+                password=parsed.password,
             )
             cursor = conn.cursor()
             cursor.execute("SELECT 1")
@@ -49,7 +50,9 @@ class TestPostgreSQLFixtures:
         except Exception as e:
             pytest.fail(f"Failed to connect to PostgreSQL container: {e}")
 
-    def test_postgresql_connection_fixture_provides_connection(self, postgresql_connection):
+    def test_postgresql_connection_fixture_provides_connection(
+        self, postgresql_connection
+    ):
         """Test that postgresql_connection fixture provides working connection."""
         assert postgresql_connection is not None
 
@@ -57,7 +60,7 @@ class TestPostgreSQLFixtures:
         cursor = postgresql_connection.cursor()
         cursor.execute("SELECT version()")
         result = cursor.fetchone()
-        assert 'PostgreSQL' in result[0]
+        assert "PostgreSQL" in result[0]
         cursor.close()
 
     def test_postgresql_connection_fixture_isolated(self, postgresql_connection):
@@ -65,12 +68,14 @@ class TestPostgreSQLFixtures:
         cursor = postgresql_connection.cursor()
 
         # Create a test table
-        cursor.execute("""
+        cursor.execute(
+            """
             CREATE TABLE test_isolation (
                 id SERIAL PRIMARY KEY,
                 name VARCHAR(100)
             )
-        """)
+        """
+        )
 
         # Insert test data
         cursor.execute("INSERT INTO test_isolation (name) VALUES ('test')")
@@ -83,25 +88,31 @@ class TestPostgreSQLFixtures:
 
         cursor.close()
 
-    def test_postgresql_fixtures_cleanup(self, postgresql_container, postgresql_connection):
+    def test_postgresql_fixtures_cleanup(
+        self, postgresql_container, postgresql_connection
+    ):
         """Test that fixtures clean up properly after tests."""
         # Create a table that should be cleaned up
         cursor = postgresql_connection.cursor()
-        cursor.execute("""
+        cursor.execute(
+            """
             CREATE TABLE test_cleanup (
                 id SERIAL PRIMARY KEY,
                 value TEXT
             )
-        """)
+        """
+        )
         postgresql_connection.commit()
 
         # Table should exist during test
-        cursor.execute("""
+        cursor.execute(
+            """
             SELECT EXISTS (
                 SELECT FROM information_schema.tables
                 WHERE table_name = 'test_cleanup'
             )
-        """)
+        """
+        )
         exists = cursor.fetchone()[0]
         assert exists is True
 
@@ -122,25 +133,33 @@ class TestPostgreSQLFixtures:
 
         # Test creating tables
         with engine.connect() as conn:
-            conn.execute(text("""
+            conn.execute(
+                text(
+                    """
                 CREATE TABLE test_sqlalchemy (
                     id SERIAL PRIMARY KEY,
                     data JSONB
                 )
-            """))
+            """
+                )
+            )
             conn.commit()
 
             # Insert data
-            conn.execute(text("""
+            conn.execute(
+                text(
+                    """
                 INSERT INTO test_sqlalchemy (data)
                 VALUES ('{"key": "value"}'::jsonb)
-            """))
+            """
+                )
+            )
             conn.commit()
 
             # Query data
             result = conn.execute(text("SELECT data->>'key' FROM test_sqlalchemy"))
             value = result.scalar()
-            assert value == 'value'
+            assert value == "value"
 
     def test_multiple_connections_to_same_container(self, postgresql_container):
         """Test that multiple connections can be made to the same container."""
@@ -155,7 +174,7 @@ class TestPostgreSQLFixtures:
                 port=parsed.port,
                 database=parsed.path[1:],
                 user=parsed.username,
-                password=parsed.password
+                password=parsed.password,
             )
             connections.append(conn)
 
@@ -171,11 +190,14 @@ class TestPostgreSQLFixtures:
         for conn in connections:
             conn.close()
 
-    @pytest.mark.parametrize("query,expected", [
-        ("SELECT 1 + 1", 2),
-        ("SELECT 'hello' || ' ' || 'world'", "hello world"),
-        ("SELECT NOW() IS NOT NULL", True),
-    ])
+    @pytest.mark.parametrize(
+        "query,expected",
+        [
+            ("SELECT 1 + 1", 2),
+            ("SELECT 'hello' || ' ' || 'world'", "hello world"),
+            ("SELECT NOW() IS NOT NULL", True),
+        ],
+    )
     def test_postgresql_query_execution(self, postgresql_connection, query, expected):
         """Test various query executions on PostgreSQL."""
         cursor = postgresql_connection.cursor()

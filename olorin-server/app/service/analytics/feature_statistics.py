@@ -5,7 +5,7 @@ Provides statistical calculations for feature analysis.
 """
 
 import statistics
-from typing import List, Dict, Any
+from typing import Any, Dict, List
 
 
 def pearson_correlation(x: List[float], y: List[float]) -> float:
@@ -33,13 +33,12 @@ def calculate_statistics(values: List[float]) -> Dict[str, float]:
         "median": statistics.median(values),
         "std_dev": statistics.stdev(values) if len(values) > 1 else 0.0,
         "min": min(values),
-        "max": max(values)
+        "max": max(values),
     }
 
 
 def calculate_discriminative_power(
-    fraud_values: List[float],
-    non_fraud_values: List[float]
+    fraud_values: List[float], non_fraud_values: List[float]
 ) -> float:
     """Calculate how well feature discriminates fraud vs non-fraud using Cohen's d."""
     if not fraud_values or not non_fraud_values:
@@ -49,9 +48,13 @@ def calculate_discriminative_power(
     non_fraud_mean = statistics.mean(non_fraud_values)
 
     fraud_std = statistics.stdev(fraud_values) if len(fraud_values) > 1 else 1.0
-    non_fraud_std = statistics.stdev(non_fraud_values) if len(non_fraud_values) > 1 else 1.0
+    non_fraud_std = (
+        statistics.stdev(non_fraud_values) if len(non_fraud_values) > 1 else 1.0
+    )
 
-    pooled_std = ((fraud_std + non_fraud_std) / 2) if (fraud_std + non_fraud_std) > 0 else 1.0
+    pooled_std = (
+        ((fraud_std + non_fraud_std) / 2) if (fraud_std + non_fraud_std) > 0 else 1.0
+    )
 
     cohens_d = abs(fraud_mean - non_fraud_mean) / pooled_std
 
@@ -59,18 +62,12 @@ def calculate_discriminative_power(
 
 
 def calculate_combined_importance(
-    correlation: float,
-    discriminative_power: float,
-    sample_count: int
+    correlation: float, discriminative_power: float, sample_count: int
 ) -> float:
     """Calculate combined importance score."""
     sample_weight = min(1.0, sample_count / 1000)
 
-    return (
-        abs(correlation) * 0.5 +
-        discriminative_power * 0.4 +
-        sample_weight * 0.1
-    )
+    return abs(correlation) * 0.5 + discriminative_power * 0.4 + sample_weight * 0.1
 
 
 def is_numeric(value: Any) -> bool:

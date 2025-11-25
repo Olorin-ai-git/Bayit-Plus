@@ -10,22 +10,22 @@ Strategy: Aggressive high-recall (target >85% recall, accept 15-20% FPR)
 """
 
 import logging
+from collections import Counter, defaultdict
 from datetime import datetime, timedelta
 from typing import Any, Dict, List, Optional, Set
-from collections import defaultdict, Counter
 
 logger = logging.getLogger(__name__)
 
 # Frequency Pattern Constants (Aggressive Strategy)
-ENTITY_FREQUENCY_THRESHOLD = 5      # Minimum frequency to trigger (relaxed)
-BIN_ATTACK_MIN_CARDS = 4            # Minimum different cards with same BIN
+ENTITY_FREQUENCY_THRESHOLD = 5  # Minimum frequency to trigger (relaxed)
+BIN_ATTACK_MIN_CARDS = 4  # Minimum different cards with same BIN
 BIN_ATTACK_TIME_WINDOW_HOURS = 24  # Time window for BIN attack detection
 MERCHANT_CONCENTRATION_THRESHOLD = 0.60  # 60% of transactions at one merchant (relaxed)
 MERCHANT_CONCENTRATION_MIN_TXS = 3  # Minimum transactions to detect concentration
 
 # Risk Adjustments
-ENTITY_FREQUENCY_RISK = 0.12    # +12% risk adjustment
-BIN_ATTACK_RISK = 0.15          # +15% risk adjustment
+ENTITY_FREQUENCY_RISK = 0.12  # +12% risk adjustment
+BIN_ATTACK_RISK = 0.15  # +15% risk adjustment
 MERCHANT_CONCENTRATION_RISK = 0.10  # +10% risk adjustment
 
 
@@ -41,13 +41,15 @@ class FrequencyPatternRecognizer:
 
     def __init__(self):
         """Initialize the frequency pattern recognizer."""
-        logger.info("📊 Initializing FrequencyPatternRecognizer (aggressive high-recall strategy)")
+        logger.info(
+            "📊 Initializing FrequencyPatternRecognizer (aggressive high-recall strategy)"
+        )
 
     def recognize(
         self,
         processed_data: Dict[str, Any],
         minimum_support: float = 0.1,
-        historical_patterns: Optional[Dict[str, Any]] = None
+        historical_patterns: Optional[Dict[str, Any]] = None,
     ) -> Dict[str, Any]:
         """
         Recognize frequency patterns in transaction data.
@@ -85,10 +87,12 @@ class FrequencyPatternRecognizer:
             pattern_breakdown = {
                 "entity_frequency": len(entity_patterns),
                 "bin_attack": len(bin_patterns),
-                "merchant_concentration": len(merchant_patterns)
+                "merchant_concentration": len(merchant_patterns),
             }
 
-            logger.info(f"✅ Frequency pattern recognition complete: {len(all_patterns)} patterns detected")
+            logger.info(
+                f"✅ Frequency pattern recognition complete: {len(all_patterns)} patterns detected"
+            )
             logger.info(f"📊 Pattern breakdown: {pattern_breakdown}")
 
             return {
@@ -97,14 +101,18 @@ class FrequencyPatternRecognizer:
                 "total_patterns_detected": len(all_patterns),
                 "confidence": confidence,
                 "pattern_breakdown": pattern_breakdown,
-                "minimum_support": minimum_support
+                "minimum_support": minimum_support,
             }
 
         except Exception as e:
-            logger.error(f"❌ Error in frequency pattern recognition: {str(e)}", exc_info=True)
+            logger.error(
+                f"❌ Error in frequency pattern recognition: {str(e)}", exc_info=True
+            )
             return {"success": False, "error": str(e), "patterns": []}
 
-    def _detect_entity_frequency(self, events: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
+    def _detect_entity_frequency(
+        self, events: List[Dict[str, Any]]
+    ) -> List[Dict[str, Any]]:
         """
         Detect entity frequency anomalies.
 
@@ -133,16 +141,22 @@ class FrequencyPatternRecognizer:
             # Detect high-frequency entities (relaxed threshold for high recall)
             high_freq_entities = []
 
-            for entity_type, counter in [("email", email_counter), ("device_id", device_counter), ("ip_address", ip_counter)]:
+            for entity_type, counter in [
+                ("email", email_counter),
+                ("device_id", device_counter),
+                ("ip_address", ip_counter),
+            ]:
                 for entity, count in counter.items():
                     if count >= ENTITY_FREQUENCY_THRESHOLD:
                         frequency_ratio = count / len(events)
-                        high_freq_entities.append({
-                            "entity_type": entity_type,
-                            "entity_value": entity,
-                            "frequency": count,
-                            "frequency_ratio": round(frequency_ratio, 2)
-                        })
+                        high_freq_entities.append(
+                            {
+                                "entity_type": entity_type,
+                                "entity_value": entity,
+                                "frequency": count,
+                                "frequency_ratio": round(frequency_ratio, 2),
+                            }
+                        )
 
             # Create pattern if high-frequency entities detected
             if high_freq_entities:
@@ -159,11 +173,13 @@ class FrequencyPatternRecognizer:
                     "evidence": {
                         "high_frequency_entities": high_freq_entities[:5],  # Top 5
                         "total_high_freq_entities": len(high_freq_entities),
-                        "threshold": ENTITY_FREQUENCY_THRESHOLD
-                    }
+                        "threshold": ENTITY_FREQUENCY_THRESHOLD,
+                    },
                 }
                 patterns.append(pattern)
-                logger.info(f"🔴 Entity frequency anomaly detected: {len(high_freq_entities)} high-frequency entities")
+                logger.info(
+                    f"🔴 Entity frequency anomaly detected: {len(high_freq_entities)} high-frequency entities"
+                )
 
         except Exception as e:
             logger.error(f"❌ Error detecting entity frequency: {str(e)}")
@@ -184,8 +200,12 @@ class FrequencyPatternRecognizer:
         try:
             # Sort events by timestamp for time window analysis
             sorted_events = sorted(
-                [e for e in events if self._extract_timestamp(e) and self._extract_card_info(e)],
-                key=lambda x: self._extract_timestamp(x)
+                [
+                    e
+                    for e in events
+                    if self._extract_timestamp(e) and self._extract_card_info(e)
+                ],
+                key=lambda x: self._extract_timestamp(x),
             )
 
             if len(sorted_events) < BIN_ATTACK_MIN_CARDS:
@@ -225,19 +245,31 @@ class FrequencyPatternRecognizer:
                             "pattern_type": "bin_attack",
                             "pattern_name": "BIN Attack Detection",
                             "description": "Multiple different cards with same BIN detected",
-                            "confidence": min(0.90, 0.70 + (len(last4_set) - BIN_ATTACK_MIN_CARDS) * 0.05),
+                            "confidence": min(
+                                0.90,
+                                0.70 + (len(last4_set) - BIN_ATTACK_MIN_CARDS) * 0.05,
+                            ),
                             "risk_adjustment": BIN_ATTACK_RISK,
-                            "affected_count": len([e for e in window_events if self._extract_card_info(e) and self._extract_card_info(e).get("bin") == bin_num]),
+                            "affected_count": len(
+                                [
+                                    e
+                                    for e in window_events
+                                    if self._extract_card_info(e)
+                                    and self._extract_card_info(e).get("bin") == bin_num
+                                ]
+                            ),
                             "evidence": {
                                 "bin": bin_num,
                                 "unique_card_count": len(last4_set),
                                 "threshold": BIN_ATTACK_MIN_CARDS,
                                 "time_window_hours": BIN_ATTACK_TIME_WINDOW_HOURS,
-                                "sample_last4": list(last4_set)[:5]
-                            }
+                                "sample_last4": list(last4_set)[:5],
+                            },
                         }
                         patterns.append(pattern)
-                        logger.info(f"🔴 BIN attack detected: BIN {bin_num} with {len(last4_set)} different cards")
+                        logger.info(
+                            f"🔴 BIN attack detected: BIN {bin_num} with {len(last4_set)} different cards"
+                        )
                         break  # Only detect once per dataset
 
                 if patterns:
@@ -248,7 +280,9 @@ class FrequencyPatternRecognizer:
 
         return patterns
 
-    def _detect_merchant_concentration(self, events: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
+    def _detect_merchant_concentration(
+        self, events: List[Dict[str, Any]]
+    ) -> List[Dict[str, Any]]:
         """
         Detect merchant concentration patterns.
 
@@ -278,7 +312,10 @@ class FrequencyPatternRecognizer:
             for merchant_id, count in merchant_counter.items():
                 concentration_ratio = count / total_txs
 
-                if concentration_ratio >= MERCHANT_CONCENTRATION_THRESHOLD and count >= MERCHANT_CONCENTRATION_MIN_TXS:
+                if (
+                    concentration_ratio >= MERCHANT_CONCENTRATION_THRESHOLD
+                    and count >= MERCHANT_CONCENTRATION_MIN_TXS
+                ):
                     # Extract merchant name if available
                     merchant_name = None
                     for event in events:
@@ -287,39 +324,52 @@ class FrequencyPatternRecognizer:
                             if merchant_name:
                                 break
 
-                    concentrated_merchants.append({
-                        "merchant_id": merchant_id,
-                        "merchant_name": merchant_name or "Unknown",
-                        "transaction_count": count,
-                        "concentration_ratio": round(concentration_ratio, 2)
-                    })
+                    concentrated_merchants.append(
+                        {
+                            "merchant_id": merchant_id,
+                            "merchant_name": merchant_name or "Unknown",
+                            "transaction_count": count,
+                            "concentration_ratio": round(concentration_ratio, 2),
+                        }
+                    )
 
             # Create pattern if concentration detected
             if concentrated_merchants:
-                concentrated_merchants.sort(key=lambda x: x["concentration_ratio"], reverse=True)
+                concentrated_merchants.sort(
+                    key=lambda x: x["concentration_ratio"], reverse=True
+                )
 
                 pattern = {
                     "pattern_type": "merchant_concentration",
                     "pattern_name": "Merchant Concentration",
                     "description": "High concentration of transactions at specific merchants",
-                    "confidence": min(0.85, 0.60 + concentrated_merchants[0]["concentration_ratio"] * 0.3),
+                    "confidence": min(
+                        0.85,
+                        0.60 + concentrated_merchants[0]["concentration_ratio"] * 0.3,
+                    ),
                     "risk_adjustment": MERCHANT_CONCENTRATION_RISK,
-                    "affected_count": sum(m["transaction_count"] for m in concentrated_merchants),
+                    "affected_count": sum(
+                        m["transaction_count"] for m in concentrated_merchants
+                    ),
                     "evidence": {
                         "concentrated_merchants": concentrated_merchants[:3],  # Top 3
                         "total_merchants": len(merchant_counter),
-                        "concentration_threshold": MERCHANT_CONCENTRATION_THRESHOLD
-                    }
+                        "concentration_threshold": MERCHANT_CONCENTRATION_THRESHOLD,
+                    },
                 }
                 patterns.append(pattern)
-                logger.info(f"🔴 Merchant concentration detected: {len(concentrated_merchants)} concentrated merchants")
+                logger.info(
+                    f"🔴 Merchant concentration detected: {len(concentrated_merchants)} concentrated merchants"
+                )
 
         except Exception as e:
             logger.error(f"❌ Error detecting merchant concentration: {str(e)}")
 
         return patterns
 
-    def _calculate_confidence(self, patterns: List[Dict[str, Any]], total_events: int) -> float:
+    def _calculate_confidence(
+        self, patterns: List[Dict[str, Any]], total_events: int
+    ) -> float:
         """
         Calculate overall confidence score with ensemble boosting.
 
@@ -337,7 +387,9 @@ class FrequencyPatternRecognizer:
 
         # Affected transaction ratio boost
         max_affected = max(p["affected_count"] for p in patterns)
-        coverage_boost = min(0.10, (max_affected / total_events) * 0.10)  # Up to +10% boost
+        coverage_boost = min(
+            0.10, (max_affected / total_events) * 0.10
+        )  # Up to +10% boost
 
         final_confidence = min(1.0, base_confidence + ensemble_boost + coverage_boost)
 
@@ -350,7 +402,7 @@ class FrequencyPatternRecognizer:
             "email",
             "user_email",
             "customer_email",
-            "billing_email"
+            "billing_email",
         ]
 
         for field in email_fields:
@@ -366,7 +418,7 @@ class FrequencyPatternRecognizer:
             "device_id",
             "device_fingerprint",
             "fingerprint_id",
-            "user_agent_hash"
+            "user_agent_hash",
         ]
 
         for field in device_fields:
@@ -377,13 +429,7 @@ class FrequencyPatternRecognizer:
 
     def _extract_ip(self, event: Dict[str, Any]) -> Optional[str]:
         """Extract IP address from event."""
-        ip_fields = [
-            "IP_ADDRESS",
-            "ip_address",
-            "ip",
-            "client_ip",
-            "remote_addr"
-        ]
+        ip_fields = ["IP_ADDRESS", "ip_address", "ip", "client_ip", "remote_addr"]
 
         for field in ip_fields:
             if field in event and event[field]:
@@ -430,7 +476,7 @@ class FrequencyPatternRecognizer:
             "merchant_id",
             "merchant",
             "store_id",
-            "seller_id"
+            "seller_id",
         ]
 
         for field in merchant_fields:
@@ -446,7 +492,7 @@ class FrequencyPatternRecognizer:
             "merchant_name",
             "store_name",
             "seller_name",
-            "business_name"
+            "business_name",
         ]
 
         for field in name_fields:
@@ -462,7 +508,7 @@ class FrequencyPatternRecognizer:
             "timestamp",
             "created_at",
             "transaction_time",
-            "event_time"
+            "event_time",
         ]
 
         for field in timestamp_fields:
@@ -488,6 +534,6 @@ class FrequencyPatternRecognizer:
             "pattern_breakdown": {
                 "entity_frequency": 0,
                 "bin_attack": 0,
-                "merchant_concentration": 0
-            }
+                "merchant_concentration": 0,
+            },
         }

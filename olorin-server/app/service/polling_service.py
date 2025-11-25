@@ -11,15 +11,16 @@ SYSTEM MANDATE Compliance:
 - Type-safe: All parameters and returns properly typed
 """
 
-from sqlalchemy.orm import Session
-from typing import Optional, Dict, Any, List
-from datetime import datetime, timedelta
-from collections import defaultdict
 import hashlib
+from collections import defaultdict
+from datetime import datetime, timedelta
+from typing import Any, Dict, List, Optional
 
-from app.service.investigation_state_service import InvestigationStateService
-from app.schemas.investigation_state import InvestigationStateResponse
+from sqlalchemy.orm import Session
+
 from app.config.investigation_state_config import PollingConfig, RateLimitConfig
+from app.schemas.investigation_state import InvestigationStateResponse
+from app.service.investigation_state_service import InvestigationStateService
 
 
 class PollingService:
@@ -70,9 +71,7 @@ class PollingService:
 
         # Calculate adaptive interval
         interval_ms = self.calculate_adaptive_interval(
-            state.status,
-            state.lifecycle_stage,
-            investigation_id
+            state.status, state.lifecycle_stage, investigation_id
         )
 
         # Update last activity
@@ -110,15 +109,12 @@ class PollingService:
                 "has_changes": False,
                 "current_version": state.version,
                 "recommended_interval_ms": self.calculate_adaptive_interval(
-                    state.status,
-                    state.lifecycle_stage,
-                    investigation_id
+                    state.status, state.lifecycle_stage, investigation_id
                 ),
                 "poll_after_seconds": self.calculate_adaptive_interval(
-                    state.status,
-                    state.lifecycle_stage,
-                    investigation_id
-                ) // 1000,
+                    state.status, state.lifecycle_stage, investigation_id
+                )
+                // 1000,
             }
 
         history = self.state_service.get_history(
@@ -134,15 +130,12 @@ class PollingService:
             "delta": history,
             "current_state": state.model_dump(),
             "recommended_interval_ms": self.calculate_adaptive_interval(
-                state.status,
-                state.lifecycle_stage,
-                investigation_id
+                state.status, state.lifecycle_stage, investigation_id
             ),
             "poll_after_seconds": self.calculate_adaptive_interval(
-                state.status,
-                state.lifecycle_stage,
-                investigation_id
-            ) // 1000,
+                state.status, state.lifecycle_stage, investigation_id
+            )
+            // 1000,
         }
 
     def poll_active_investigations(
@@ -181,11 +174,13 @@ class PollingService:
 
         results = []
         for state in states:
-            state_response = InvestigationStateResponse.model_validate(state, from_attributes=True)
+            state_response = InvestigationStateResponse.model_validate(
+                state, from_attributes=True
+            )
             interval_ms = self.calculate_adaptive_interval(
                 state_response.status,
                 state_response.lifecycle_stage,
-                state.investigation_id
+                state.investigation_id,
             )
 
             results.append(
@@ -199,10 +194,7 @@ class PollingService:
         return results
 
     def calculate_adaptive_interval(
-        self,
-        status: str,
-        lifecycle_stage: str,
-        investigation_id: Optional[str] = None
+        self, status: str, lifecycle_stage: str, investigation_id: Optional[str] = None
     ) -> int:
         """Calculate adaptive polling interval based on investigation state.
 
@@ -224,7 +216,9 @@ class PollingService:
 
         # Check for idle state if investigation_id provided
         if investigation_id and investigation_id in self._last_activity:
-            time_since_activity = datetime.utcnow() - self._last_activity[investigation_id]
+            time_since_activity = (
+                datetime.utcnow() - self._last_activity[investigation_id]
+            )
             idle_threshold = timedelta(minutes=5)
 
             if time_since_activity > idle_threshold:
@@ -282,7 +276,7 @@ class PollingService:
 
         try:
             # Split by dash and get version part
-            version_str = etag_content.split('-')[0]
+            version_str = etag_content.split("-")[0]
             client_version = int(version_str)
 
             # Return true if versions match
@@ -334,5 +328,5 @@ class PollingService:
         return {
             "limit": self.rate_limit_config.requests_per_minute,
             "remaining": remaining,
-            "reset": reset_at
+            "reset": reset_at,
         }

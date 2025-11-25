@@ -13,18 +13,19 @@ SYSTEM MANDATE Compliance:
 """
 
 import logging
-from typing import Dict, Any, Optional
 from datetime import datetime, timezone
+from typing import Any, Dict, Optional
+
 from sqlalchemy.orm import Session
 
-from app.schemas.investigation_state import (
-    InvestigationSettings,
-    Entity,
-    LifecycleStage,
-    InvestigationStatus,
-)
 from app.router.models.autonomous_investigation_models import (
     StructuredInvestigationRequest,
+)
+from app.schemas.investigation_state import (
+    Entity,
+    InvestigationSettings,
+    InvestigationStatus,
+    LifecycleStage,
 )
 from app.service.audit_helper import create_audit_entry
 from app.service.investigation_entity_converter import convert_entity_type
@@ -59,9 +60,13 @@ class InvestigationTriggerService:
         """
         # Check investigation mode - risk-based or entity-based
         is_risk_mode = (
-            getattr(settings, 'investigation_mode', None) == 'risk' or
-            getattr(settings, 'auto_select_entities', False) is True
-        ) if settings else False
+            (
+                getattr(settings, "investigation_mode", None) == "risk"
+                or getattr(settings, "auto_select_entities", False) is True
+            )
+            if settings
+            else False
+        )
 
         # For risk-based investigations, entities are optional (will be auto-selected)
         if not settings or not settings.entities:
@@ -100,7 +105,9 @@ class InvestigationTriggerService:
             # Use placeholder values that the executor can recognize for auto-selection
             # Use "user" as a valid entity type (will be auto-selected by executor)
             entity_id = "risk-based-auto-select"
-            entity_type = "user"  # Use valid entity type, executor will auto-select actual entity
+            entity_type = (
+                "user"  # Use valid entity type, executor will auto-select actual entity
+            )
         else:
             # Use actual entity values for entity-based investigations
             if not primary_entity.entity_value:
@@ -121,17 +128,25 @@ class InvestigationTriggerService:
             investigation_priority=getattr(settings, "priority", "normal"),
             metadata={
                 "investigation_name": getattr(settings, "name", investigation_id),
-                "time_range": {
-                    "start_time": settings.time_range.start_time.isoformat()
-                    if settings.time_range and settings.time_range.start_time
-                    else None,
-                    "end_time": settings.time_range.end_time.isoformat()
-                    if settings.time_range and settings.time_range.end_time
-                    else None,
-                }
-                if settings.time_range
-                else None,
-                "tools": [t.tool_name for t in settings.tools] if settings.tools else [],
+                "time_range": (
+                    {
+                        "start_time": (
+                            settings.time_range.start_time.isoformat()
+                            if settings.time_range and settings.time_range.start_time
+                            else None
+                        ),
+                        "end_time": (
+                            settings.time_range.end_time.isoformat()
+                            if settings.time_range and settings.time_range.end_time
+                            else None
+                        ),
+                    }
+                    if settings.time_range
+                    else None
+                ),
+                "tools": (
+                    [t.tool_name for t in settings.tools] if settings.tools else []
+                ),
                 "correlation_mode": settings.correlation_mode,
             },
             enable_verbose_logging=True,
@@ -175,14 +190,27 @@ class InvestigationTriggerService:
             if settings.time_range:
                 # Use both field names for backward compatibility and frontend expectations
                 # start_time/end_time for internal tools, start_date/end_date for frontend
-                start_iso = settings.time_range.start_time.isoformat() if settings.time_range.start_time else None
-                end_iso = settings.time_range.end_time.isoformat() if settings.time_range.end_time else None
+                start_iso = (
+                    settings.time_range.start_time.isoformat()
+                    if settings.time_range.start_time
+                    else None
+                )
+                end_iso = (
+                    settings.time_range.end_time.isoformat()
+                    if settings.time_range.end_time
+                    else None
+                )
                 context["time_range"] = {
                     "start_time": start_iso,  # For internal tools (Snowflake, etc.)
-                    "end_time": end_iso,      # For internal tools
+                    "end_time": end_iso,  # For internal tools
                     "start_date": start_iso,  # For frontend compatibility
-                    "end_date": end_iso,      # For frontend compatibility
-                    "type": settings.time_range.type if hasattr(settings.time_range, 'type') and settings.time_range.type else None
+                    "end_date": end_iso,  # For frontend compatibility
+                    "type": (
+                        settings.time_range.type
+                        if hasattr(settings.time_range, "type")
+                        and settings.time_range.type
+                        else None
+                    ),
                 }
 
             if settings.tools:
@@ -222,6 +250,7 @@ class InvestigationTriggerService:
         # Initialize progress_json if it's null (Feature 008: Live Investigation Updates)
         # This ensures progress object is always available, even before first tool execution
         import json
+
         if not state.progress_json:
             initial_progress = {
                 "status": "running",
@@ -230,10 +259,16 @@ class InvestigationTriggerService:
                 "tool_executions": [],
                 "current_phase": None,
                 "started_at": datetime.now(timezone.utc).isoformat(),
-                "created_at": state.created_at.isoformat() if state.created_at else datetime.now(timezone.utc).isoformat()
+                "created_at": (
+                    state.created_at.isoformat()
+                    if state.created_at
+                    else datetime.now(timezone.utc).isoformat()
+                ),
             }
             state.progress_json = json.dumps(initial_progress)
-            logger.info(f"Initialized progress_json for investigation {investigation_id}")
+            logger.info(
+                f"Initialized progress_json for investigation {investigation_id}"
+            )
 
         # Flush changes to database before commit to ensure they're persisted
         self.db.flush()

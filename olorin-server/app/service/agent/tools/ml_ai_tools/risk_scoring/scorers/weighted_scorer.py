@@ -4,9 +4,10 @@ Weighted Risk Scorer
 Implements weighted risk scoring methodology.
 """
 
-from typing import Any, Dict, Optional, List
-from .base_scorer import BaseScorer
+from typing import Any, Dict, List, Optional
+
 from ..core.input_schema import RiskAssessmentResult
+from .base_scorer import BaseScorer
 
 
 class WeightedScorer(BaseScorer):
@@ -19,7 +20,7 @@ class WeightedScorer(BaseScorer):
             "credit": 1.5,
             "operational": 1.2,
             "behavioral": 1.8,
-            "contextual": 1.0
+            "contextual": 1.0,
         }
 
     def score(
@@ -28,7 +29,7 @@ class WeightedScorer(BaseScorer):
         risk_assessments: List[RiskAssessmentResult],
         risk_tolerance: str,
         time_horizon: str = "short_term",
-        historical_data: Optional[Dict[str, Any]] = None
+        historical_data: Optional[Dict[str, Any]] = None,
     ) -> Dict[str, Any]:
         """Apply weighted risk scoring."""
         assessment_scores = self._extract_assessment_scores(risk_assessments)
@@ -51,7 +52,7 @@ class WeightedScorer(BaseScorer):
             weight_details[risk_type] = {
                 "raw_score": score,
                 "weight": weight,
-                "weighted_score": weighted_score
+                "weighted_score": weighted_score,
             }
 
         # Calculate average weighted score
@@ -75,7 +76,7 @@ class WeightedScorer(BaseScorer):
             "weight_details": weight_details,
             "total_weight": total_weight,
             "model_type": "weighted",
-            "applied_weights": weights
+            "applied_weights": weights,
         }
 
     def _merge_weights(self, custom_weights: Dict[str, float]) -> Dict[str, float]:
@@ -85,25 +86,18 @@ class WeightedScorer(BaseScorer):
         return merged_weights
 
     def _apply_adjustments(
-        self,
-        score: float,
-        risk_tolerance: str,
-        time_horizon: str
+        self, score: float, risk_tolerance: str, time_horizon: str
     ) -> float:
         """Apply tolerance and time horizon adjustments."""
         # Risk tolerance adjustment
-        tolerance_adjustments = {
-            "low": 1.2,
-            "medium": 1.0,
-            "high": 0.85
-        }
+        tolerance_adjustments = {"low": 1.2, "medium": 1.0, "high": 0.85}
 
         # Time horizon adjustment
         horizon_adjustments = {
             "immediate": 1.15,
             "short_term": 1.0,
             "medium_term": 0.95,
-            "long_term": 0.9
+            "long_term": 0.9,
         }
 
         tolerance_factor = tolerance_adjustments.get(risk_tolerance, 1.0)

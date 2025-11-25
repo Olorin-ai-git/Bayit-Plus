@@ -7,7 +7,7 @@ about data it hasn't actually queried from Snowflake.
 """
 
 import sys
-from typing import Dict, Any
+from typing import Any, Dict
 
 
 def _analyze_browser_os_patterns_fixed(results: list, findings: Dict[str, Any]) -> None:
@@ -16,7 +16,9 @@ def _analyze_browser_os_patterns_fixed(results: list, findings: Dict[str, Any]) 
     # SCHEMA FIX: Use actual available fields from Snowflake schema
     # BROWSER_NAME and OS_NAME don't exist - use alternative fields
     device_models = set(r.get("DEVICE_MODEL") for r in results if r.get("DEVICE_MODEL"))
-    device_os_versions = set(r.get("DEVICE_OS_VERSION") for r in results if r.get("DEVICE_OS_VERSION"))
+    device_os_versions = set(
+        r.get("DEVICE_OS_VERSION") for r in results if r.get("DEVICE_OS_VERSION")
+    )
 
     # Try to extract browser/OS info from PARSED_USER_AGENT if available
     browsers = set()
@@ -54,7 +56,9 @@ def _analyze_browser_os_patterns_fixed(results: list, findings: Dict[str, Any]) 
     # Check what data is actually available
     has_parsed_ua = any(r.get("PARSED_USER_AGENT") for r in results)
     has_user_agent = any(r.get("USER_AGENT") for r in results)
-    has_device_fields = any(r.get("DEVICE_MODEL") for r in results) or any(r.get("DEVICE_OS_VERSION") for r in results)
+    has_device_fields = any(r.get("DEVICE_MODEL") for r in results) or any(
+        r.get("DEVICE_OS_VERSION") for r in results
+    )
 
     findings["analysis"]["unique_browsers"] = len(browsers)
     findings["analysis"]["unique_os"] = len(os_names)
@@ -68,8 +72,12 @@ def _analyze_browser_os_patterns_fixed(results: list, findings: Dict[str, Any]) 
 
     if not has_user_agent and not has_parsed_ua and not has_device_fields:
         # No device data available at all
-        findings["evidence"].append("Device analysis data not available - USER_AGENT, PARSED_USER_AGENT, and device fields not queried")
-        findings["evidence"].append("LIMITATION: Cannot analyze device consistency without device data")
+        findings["evidence"].append(
+            "Device analysis data not available - USER_AGENT, PARSED_USER_AGENT, and device fields not queried"
+        )
+        findings["evidence"].append(
+            "LIMITATION: Cannot analyze device consistency without device data"
+        )
     else:
         # Build evidence based on available data
         evidence_parts = []
@@ -83,15 +91,23 @@ def _analyze_browser_os_patterns_fixed(results: list, findings: Dict[str, Any]) 
             evidence_parts.append(f"{len(device_os_versions)} OS versions")
 
         if evidence_parts:
-            findings["evidence"].append(f"Device diversity: {', '.join(evidence_parts)}")
+            findings["evidence"].append(
+                f"Device diversity: {', '.join(evidence_parts)}"
+            )
 
             # Risk assessment based on diversity
             total_variations = len(browsers) + len(os_names) + len(device_models)
             if total_variations > 5:
-                findings["risk_indicators"].append("High device fingerprint diversity detected")
-                findings["evidence"].append(f"SUSPICIOUS: High device variation ({total_variations} unique characteristics)")
+                findings["risk_indicators"].append(
+                    "High device fingerprint diversity detected"
+                )
+                findings["evidence"].append(
+                    f"SUSPICIOUS: High device variation ({total_variations} unique characteristics)"
+                )
         else:
-            findings["evidence"].append("Device data parsed but no browser/OS patterns identified")
+            findings["evidence"].append(
+                "Device data parsed but no browser/OS patterns identified"
+            )
 
         # Data source transparency
         data_sources = []
@@ -112,8 +128,12 @@ def _analyze_user_agent_patterns_fixed(results: list, findings: Dict[str, Any]) 
     findings["evidence"].append(f"User agent variations: {len(user_agents)}")
 
     if len(user_agents) > 10:
-        findings["risk_indicators"].append(f"Excessive user agent variations: {len(user_agents)}")
-        findings["evidence"].append(f"SUSPICIOUS: {len(user_agents)} different user agents detected")
+        findings["risk_indicators"].append(
+            f"Excessive user agent variations: {len(user_agents)}"
+        )
+        findings["evidence"].append(
+            f"SUSPICIOUS: {len(user_agents)} different user agents detected"
+        )
 
 
 def test_missing_browser_os_data():
@@ -138,31 +158,29 @@ def test_missing_browser_os_data():
             "DEVICE_TYPE": "mobile",
             "DEVICE_MODEL": "iPhone 12",
             "DEVICE_OS_VERSION": "iOS 14.7.1",
-        }
+        },
     ]
 
-    findings = {
-        "evidence": [],
-        "metrics": {},
-        "analysis": {},
-        "risk_indicators": []
-    }
+    findings = {"evidence": [], "metrics": {}, "analysis": {}, "risk_indicators": []}
 
     # Test the fixed browser/OS analysis
     _analyze_browser_os_patterns_fixed(mock_results, findings)
 
     print("📊 Analysis Results:")
     print(f"   Evidence collected: {len(findings['evidence'])}")
-    for i, evidence in enumerate(findings['evidence']):
+    for i, evidence in enumerate(findings["evidence"]):
         print(f"     {i+1}. {evidence}")
 
     print(f"\n   Metrics: {findings['metrics']}")
     print(f"   Risk indicators: {findings['risk_indicators']}")
 
     # Verify the fix
-    evidence_text = ' '.join(findings['evidence']).lower()
+    evidence_text = " ".join(findings["evidence"]).lower()
 
-    if "browser diversity: 0 browsers" in evidence_text and "0 operating systems" in evidence_text:
+    if (
+        "browser diversity: 0 browsers" in evidence_text
+        and "0 operating systems" in evidence_text
+    ):
         print("❌ FAILED: Still making unfounded claims about missing data")
         return False
     elif "analysis based on" in evidence_text and "user_agent" in evidence_text:
@@ -183,21 +201,16 @@ def test_user_agent_analysis():
         {"USER_AGENT": "Chrome browser"},  # Duplicate
     ]
 
-    findings = {
-        "evidence": [],
-        "metrics": {},
-        "analysis": {},
-        "risk_indicators": []
-    }
+    findings = {"evidence": [], "metrics": {}, "analysis": {}, "risk_indicators": []}
 
     _analyze_user_agent_patterns_fixed(mock_results, findings)
 
     print("📊 USER_AGENT Analysis Results:")
-    for evidence in findings['evidence']:
+    for evidence in findings["evidence"]:
         print(f"   - {evidence}")
 
     # Should show 2 unique user agents
-    if "User agent variations: 2" in str(findings['evidence']):
+    if "User agent variations: 2" in str(findings["evidence"]):
         print("✅ PASSED: USER_AGENT analysis working correctly")
         return True
     else:

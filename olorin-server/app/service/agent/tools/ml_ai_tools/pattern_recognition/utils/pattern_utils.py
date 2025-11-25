@@ -4,8 +4,8 @@ Pattern recognition utilities.
 Helper functions and common pattern operations.
 """
 
-from typing import Any, Dict, List, Tuple
 from collections import Counter
+from typing import Any, Dict, List, Tuple
 
 
 class PatternUtils:
@@ -16,7 +16,7 @@ class PatternUtils:
         """Extract n-gram transitions from a sequence."""
         transitions = []
         for i in range(len(sequence) - n + 1):
-            transition = tuple(sequence[i:i + n])
+            transition = tuple(sequence[i : i + n])
             transitions.append(transition)
         return transitions
 
@@ -28,7 +28,9 @@ class PatternUtils:
         return patterns
 
     @staticmethod
-    def build_transition_matrix(transitions: List[Tuple], elements: List[str]) -> Dict[str, Dict[str, float]]:
+    def build_transition_matrix(
+        transitions: List[Tuple], elements: List[str]
+    ) -> Dict[str, Dict[str, float]]:
         """Build transition probability matrix."""
         matrix = {}
         # TODO: Implement transition matrix calculation

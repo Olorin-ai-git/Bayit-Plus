@@ -7,7 +7,8 @@ Week 9 Phase 3 implementation.
 """
 
 import logging
-from typing import Dict, List, Any
+from typing import Any, Dict, List
+
 import numpy as np
 
 from app.service.analytics.model_base import ModelPrediction
@@ -16,8 +17,7 @@ logger = logging.getLogger(__name__)
 
 
 def quantify_prediction_uncertainty(
-    ensemble_prediction: ModelPrediction,
-    model_predictions: List[ModelPrediction]
+    ensemble_prediction: ModelPrediction, model_predictions: List[ModelPrediction]
 ) -> Dict[str, float]:
     """
     Quantify uncertainty in prediction.
@@ -33,7 +33,7 @@ def quantify_prediction_uncertainty(
         return {
             "prediction_uncertainty": 1.0,
             "model_disagreement": 0.0,
-            "confidence_score": 0.0
+            "confidence_score": 0.0,
         }
 
     scores = [p.score for p in model_predictions]
@@ -60,12 +60,12 @@ def quantify_prediction_uncertainty(
         "model_disagreement": model_disagreement,
         "confidence_score": confidence_score,
         "avg_model_confidence": avg_confidence,
-        "score_std": prediction_std
+        "score_std": prediction_std,
     }
 
 
 def calculate_expected_calibration_error(
-    labeled_predictions: List[Dict[str, Any]]
+    labeled_predictions: List[Dict[str, Any]],
 ) -> float:
     """
     Calculate expected calibration error (ECE).
@@ -85,7 +85,9 @@ def calculate_expected_calibration_error(
 
     ece = 0.0
     for i in range(n_bins):
-        bin_mask = (np.array(scores) >= bin_edges[i]) & (np.array(scores) < bin_edges[i + 1])
+        bin_mask = (np.array(scores) >= bin_edges[i]) & (
+            np.array(scores) < bin_edges[i + 1]
+        )
         if np.sum(bin_mask) > 0:
             bin_scores = np.array(scores)[bin_mask]
             bin_labels = np.array(labels)[bin_mask]
@@ -97,9 +99,7 @@ def calculate_expected_calibration_error(
     return ece
 
 
-def assess_feature_reliability(
-    features: Dict[str, Any]
-) -> Dict[str, Any]:
+def assess_feature_reliability(features: Dict[str, Any]) -> Dict[str, Any]:
     """
     Assess reliability based on feature completeness.
 
@@ -111,10 +111,12 @@ def assess_feature_reliability(
     """
     total_features = len(features)
     non_null_features = sum(1 for v in features.values() if v is not None and v != 0)
-    feature_completeness = non_null_features / total_features if total_features > 0 else 0.0
+    feature_completeness = (
+        non_null_features / total_features if total_features > 0 else 0.0
+    )
 
     return {
         "feature_completeness": feature_completeness,
         "total_features": total_features,
-        "non_null_features": non_null_features
+        "non_null_features": non_null_features,
     }

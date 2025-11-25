@@ -12,13 +12,13 @@ Spec: /specs/021-live-merged-logstream/api-contracts.md
 
 import asyncio
 import json
-from typing import Optional, AsyncIterator, Dict, Any
 from datetime import datetime
+from typing import Any, AsyncIterator, Dict, Optional
 
-from app.service.logging import get_bridge_logger
+from app.config.logstream_config import LogStreamConfig
 from app.service.log_providers.aggregator import LogAggregatorService
 from app.service.log_providers.deduplicator import LogDeduplicatorService
-from app.config.logstream_config import LogStreamConfig
+from app.service.logging import get_bridge_logger
 
 logger = get_bridge_logger(__name__)
 
@@ -29,9 +29,7 @@ EVENT_TYPE_ERROR = "error"
 
 
 def format_sse_event(
-    event_type: str,
-    data: Dict[str, Any],
-    event_id: Optional[str] = None
+    event_type: str, data: Dict[str, Any], event_id: Optional[str] = None
 ) -> str:
     """
     Format data as SSE event.
@@ -60,7 +58,7 @@ async def generate_sse_stream(
     start_time: Optional[datetime] = None,
     end_time: Optional[datetime] = None,
     last_event_id: Optional[str] = None,
-    config: Optional[LogStreamConfig] = None
+    config: Optional[LogStreamConfig] = None,
 ) -> AsyncIterator[str]:
     """
     Generate SSE stream for investigation logs with heartbeat support.
@@ -99,8 +97,8 @@ async def generate_sse_stream(
             extra={
                 "investigation_id": investigation_id,
                 "last_event_id": last_event_id,
-                "heartbeat_interval": heartbeat_interval
-            }
+                "heartbeat_interval": heartbeat_interval,
+            },
         )
 
         # Resume from last event if provided
@@ -108,7 +106,7 @@ async def generate_sse_stream(
         if resume_from > 0:
             logger.info(
                 f"Resuming SSE stream from event {resume_from}",
-                extra={"investigation_id": investigation_id}
+                extra={"investigation_id": investigation_id},
             )
 
         # Get log stream from aggregator
@@ -130,9 +128,7 @@ async def generate_sse_stream(
 
             # Emit log event
             yield format_sse_event(
-                EVENT_TYPE_LOG,
-                log.model_dump(),
-                event_id=str(event_counter)
+                EVENT_TYPE_LOG, log.model_dump(), event_id=str(event_counter)
             )
 
             # Check if heartbeat is needed
@@ -142,8 +138,8 @@ async def generate_sse_stream(
                     EVENT_TYPE_HEARTBEAT,
                     {
                         "timestamp": datetime.utcnow().isoformat(),
-                        "investigation_id": investigation_id
-                    }
+                        "investigation_id": investigation_id,
+                    },
                 )
                 last_heartbeat = current_time
 
@@ -153,7 +149,7 @@ async def generate_sse_stream(
     except asyncio.CancelledError:
         logger.info(
             f"SSE stream cancelled for investigation {investigation_id}",
-            extra={"investigation_id": investigation_id}
+            extra={"investigation_id": investigation_id},
         )
         raise
 
@@ -161,19 +157,15 @@ async def generate_sse_stream(
         logger.error(
             f"SSE stream error for investigation {investigation_id}: {e}",
             exc_info=True,
-            extra={"investigation_id": investigation_id}
+            extra={"investigation_id": investigation_id},
         )
         yield format_sse_event(
-            EVENT_TYPE_ERROR,
-            {"error": str(e), "investigation_id": investigation_id}
+            EVENT_TYPE_ERROR, {"error": str(e), "investigation_id": investigation_id}
         )
         raise
 
     finally:
         logger.info(
             f"SSE stream ended for investigation {investigation_id}",
-            extra={
-                "investigation_id": investigation_id,
-                "events_sent": event_counter
-            }
+            extra={"investigation_id": investigation_id, "events_sent": event_counter},
         )

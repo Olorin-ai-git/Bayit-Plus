@@ -11,10 +11,10 @@ This module wraps LLM invocations with resilience patterns:
 import asyncio
 import os
 import time
-from typing import Any, Dict, List, Optional
 from datetime import datetime
+from typing import Any, Dict, List, Optional
 
-from langchain_core.messages import BaseMessage, AIMessage
+from langchain_core.messages import AIMessage, BaseMessage
 from langchain_core.runnables.config import RunnableConfig
 
 from app.service.logging import get_bridge_logger
@@ -28,31 +28,31 @@ class LLMInvocationConfig:
     def __init__(self):
         """Load configuration from environment."""
         # Timeout configuration (in seconds)
-        self.llm_timeout = int(os.getenv(
-            'LLM_TIMEOUT_SECONDS',
-            '60'  # 60 second default timeout
-        ))
+        self.llm_timeout = int(
+            os.getenv("LLM_TIMEOUT_SECONDS", "60")  # 60 second default timeout
+        )
 
         # Retry configuration
-        self.max_retries = int(os.getenv(
-            'LLM_MAX_RETRIES',
-            '3'  # 3 retry attempts by default
-        ))
+        self.max_retries = int(
+            os.getenv("LLM_MAX_RETRIES", "3")  # 3 retry attempts by default
+        )
 
-        self.initial_retry_delay = float(os.getenv(
-            'LLM_RETRY_DELAY_SECONDS',
-            '1.0'  # 1 second initial delay
-        ))
+        self.initial_retry_delay = float(
+            os.getenv("LLM_RETRY_DELAY_SECONDS", "1.0")  # 1 second initial delay
+        )
 
-        self.retry_backoff_multiplier = float(os.getenv(
-            'LLM_RETRY_BACKOFF_MULTIPLIER',
-            '2.0'  # Exponential backoff: 1s, 2s, 4s, 8s, ...
-        ))
+        self.retry_backoff_multiplier = float(
+            os.getenv(
+                "LLM_RETRY_BACKOFF_MULTIPLIER",
+                "2.0",  # Exponential backoff: 1s, 2s, 4s, 8s, ...
+            )
+        )
 
-        self.max_retry_delay = float(os.getenv(
-            'LLM_MAX_RETRY_DELAY_SECONDS',
-            '30.0'  # Max 30 seconds between retries
-        ))
+        self.max_retry_delay = float(
+            os.getenv(
+                "LLM_MAX_RETRY_DELAY_SECONDS", "30.0"  # Max 30 seconds between retries
+            )
+        )
 
         # Log configuration
         logger.info(f"🛡️ LLM Resilience Configuration:")
@@ -65,16 +65,19 @@ class LLMInvocationConfig:
 
 class LLMInvocationError(Exception):
     """Base exception for LLM invocation errors."""
+
     pass
 
 
 class LLMTimeoutError(LLMInvocationError):
     """LLM invocation exceeded timeout."""
+
     pass
 
 
 class LLMRetryExhaustedError(LLMInvocationError):
     """All retry attempts exhausted."""
+
     pass
 
 
@@ -92,7 +95,7 @@ def _extract_llm_metadata(response: AIMessage) -> Dict[str, Any]:
         "model": "unknown",
         "input_tokens": 0,
         "output_tokens": 0,
-        "total_tokens": 0
+        "total_tokens": 0,
     }
 
     # Safety check: ensure response is not None
@@ -103,60 +106,68 @@ def _extract_llm_metadata(response: AIMessage) -> Dict[str, Any]:
     try:
         # Extract model from response
         # Different providers store model in different places
-        if hasattr(response, 'response_metadata'):
+        if hasattr(response, "response_metadata"):
             response_meta = response.response_metadata
-            
+
             # Safety check: ensure response_meta is a dict
             if response_meta is None or not isinstance(response_meta, dict):
                 return metadata
 
             # OpenAI format
-            if 'model' in response_meta:
-                metadata['model'] = response_meta['model']
-            elif 'model_name' in response_meta:
-                metadata['model'] = response_meta['model_name']
+            if "model" in response_meta:
+                metadata["model"] = response_meta["model"]
+            elif "model_name" in response_meta:
+                metadata["model"] = response_meta["model_name"]
 
             # Extract token counts - OpenAI format
-            if 'token_usage' in response_meta:
-                token_usage = response_meta['token_usage']
+            if "token_usage" in response_meta:
+                token_usage = response_meta["token_usage"]
                 if token_usage is not None and isinstance(token_usage, dict):
-                    metadata['input_tokens'] = token_usage.get('prompt_tokens', 0)
-                    metadata['output_tokens'] = token_usage.get('completion_tokens', 0)
-                    metadata['total_tokens'] = token_usage.get('total_tokens', 0)
+                    metadata["input_tokens"] = token_usage.get("prompt_tokens", 0)
+                    metadata["output_tokens"] = token_usage.get("completion_tokens", 0)
+                    metadata["total_tokens"] = token_usage.get("total_tokens", 0)
 
             # Extract token counts - Anthropic format
-            elif 'usage' in response_meta:
-                usage = response_meta['usage']
+            elif "usage" in response_meta:
+                usage = response_meta["usage"]
                 if usage is not None and isinstance(usage, dict):
-                    metadata['input_tokens'] = usage.get('input_tokens', 0)
-                    metadata['output_tokens'] = usage.get('output_tokens', 0)
-                    metadata['total_tokens'] = (
-                        usage.get('input_tokens', 0) + usage.get('output_tokens', 0)
+                    metadata["input_tokens"] = usage.get("input_tokens", 0)
+                    metadata["output_tokens"] = usage.get("output_tokens", 0)
+                    metadata["total_tokens"] = usage.get("input_tokens", 0) + usage.get(
+                        "output_tokens", 0
                     )
 
         # Fallback: try additional_kwargs (some providers use this)
-        elif hasattr(response, 'additional_kwargs'):
+        elif hasattr(response, "additional_kwargs"):
             additional = response.additional_kwargs
-            
+
             # Safety check: ensure additional_kwargs is a dict
             if additional is None or not isinstance(additional, dict):
                 return metadata
 
-            if 'model' in additional:
-                metadata['model'] = additional['model']
+            if "model" in additional:
+                metadata["model"] = additional["model"]
 
-            if 'usage' in additional:
-                usage = additional['usage']
+            if "usage" in additional:
+                usage = additional["usage"]
                 if usage is not None and isinstance(usage, dict):
-                    metadata['input_tokens'] = usage.get('input_tokens', 0) or usage.get('prompt_tokens', 0)
-                    metadata['output_tokens'] = usage.get('output_tokens', 0) or usage.get('completion_tokens', 0)
-                    metadata['total_tokens'] = usage.get('total_tokens', 0) or (
-                        metadata['input_tokens'] + metadata['output_tokens']
+                    metadata["input_tokens"] = usage.get(
+                        "input_tokens", 0
+                    ) or usage.get("prompt_tokens", 0)
+                    metadata["output_tokens"] = usage.get(
+                        "output_tokens", 0
+                    ) or usage.get("completion_tokens", 0)
+                    metadata["total_tokens"] = usage.get("total_tokens", 0) or (
+                        metadata["input_tokens"] + metadata["output_tokens"]
                     )
 
         # Calculate total if not provided
-        if metadata['total_tokens'] == 0 and (metadata['input_tokens'] or metadata['output_tokens']):
-            metadata['total_tokens'] = metadata['input_tokens'] + metadata['output_tokens']
+        if metadata["total_tokens"] == 0 and (
+            metadata["input_tokens"] or metadata["output_tokens"]
+        ):
+            metadata["total_tokens"] = (
+                metadata["input_tokens"] + metadata["output_tokens"]
+            )
 
     except Exception as e:
         # Silently fail metadata extraction - don't break on metadata issues
@@ -181,21 +192,32 @@ def _is_retryable_error(error: Exception) -> bool:
     # Retryable error patterns (transient errors)
     retryable_patterns = [
         # Network/connection errors
-        "connection", "timeout", "timed out", "connectionerror",
-        "connectionreseterror", "connectionrefusederror",
-
+        "connection",
+        "timeout",
+        "timed out",
+        "connectionerror",
+        "connectionreseterror",
+        "connectionrefusederror",
         # Rate limiting
-        "rate limit", "ratelimit", "too many requests", "429",
-
+        "rate limit",
+        "ratelimit",
+        "too many requests",
+        "429",
         # Service unavailable
-        "service unavailable", "503", "502", "504",
-        "temporarily unavailable", "server error",
-
+        "service unavailable",
+        "503",
+        "502",
+        "504",
+        "temporarily unavailable",
+        "server error",
         # API errors (transient)
-        "internal server error", "500", "overloaded",
-
+        "internal server error",
+        "500",
+        "overloaded",
         # Temporary failures
-        "try again", "retry", "temporary"
+        "try again",
+        "retry",
+        "temporary",
     ]
 
     # Check if error matches any retryable pattern
@@ -206,20 +228,28 @@ def _is_retryable_error(error: Exception) -> bool:
     # Non-retryable error patterns (permanent errors)
     non_retryable_patterns = [
         # Context/token limit errors (cannot be fixed by retrying)
-        "context_length_exceeded", "maximum context length",
-        "token limit", "tokens exceeded",
-
+        "context_length_exceeded",
+        "maximum context length",
+        "token limit",
+        "tokens exceeded",
         # Authentication/authorization errors
-        "unauthorized", "forbidden", "authentication", "invalid api key",
-        "api key", "permission denied",
-
+        "unauthorized",
+        "forbidden",
+        "authentication",
+        "invalid api key",
+        "api key",
+        "permission denied",
         # Model not found errors
-        "not_found_error", "model not found", "notfounderror",
+        "not_found_error",
+        "model not found",
+        "notfounderror",
         "invalid model",
-
         # Bad request errors (malformed input)
-        "bad request", "invalid request", "validation error",
-        "malformed", "invalid input"
+        "bad request",
+        "invalid request",
+        "validation error",
+        "malformed",
+        "invalid input",
     ]
 
     for pattern in non_retryable_patterns:
@@ -236,7 +266,7 @@ async def invoke_llm_with_resilience(
     config: Optional[RunnableConfig] = None,
     extra_headers: Optional[Dict] = None,
     investigation_id: Optional[str] = None,
-    resilience_config: Optional[LLMInvocationConfig] = None
+    resilience_config: Optional[LLMInvocationConfig] = None,
 ) -> AIMessage:
     """
     Invoke LLM with robust error handling, retries, and timeout.
@@ -281,10 +311,9 @@ async def invoke_llm_with_resilience(
             if attempt > 0:
                 # Exponential backoff: delay = initial_delay * (multiplier ^ (attempt - 1))
                 delay = min(
-                    resilience_config.initial_retry_delay * (
-                        resilience_config.retry_backoff_multiplier ** (attempt - 1)
-                    ),
-                    resilience_config.max_retry_delay
+                    resilience_config.initial_retry_delay
+                    * (resilience_config.retry_backoff_multiplier ** (attempt - 1)),
+                    resilience_config.max_retry_delay,
                 )
 
                 logger.info(
@@ -308,11 +337,9 @@ async def invoke_llm_with_resilience(
             try:
                 response = await asyncio.wait_for(
                     llm_with_tools.ainvoke(
-                        messages,
-                        config=config,
-                        extra_headers=extra_headers or {}
+                        messages, config=config, extra_headers=extra_headers or {}
                     ),
-                    timeout=resilience_config.llm_timeout
+                    timeout=resilience_config.llm_timeout,
                 )
 
                 # Success - log metrics and return

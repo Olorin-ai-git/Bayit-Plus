@@ -1,6 +1,5 @@
 import json
 import logging
-from app.service.logging import get_bridge_logger
 from datetime import datetime, timezone
 from typing import Any, Dict, List, Optional
 
@@ -13,6 +12,7 @@ from app.models.upi_response import Metadata
 from app.service.agent_service import ainvoke_agent
 from app.service.base_llm_risk_service import BaseLLMRiskService
 from app.service.config import get_settings_for_env
+from app.service.logging import get_bridge_logger
 from app.utils.auth_utils import get_auth_token
 
 logger = get_bridge_logger(__name__)

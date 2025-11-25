@@ -5,12 +5,13 @@ Populates all 38 columns with 0% data completeness using realistic, business-app
 """
 
 import asyncio
-import sys
-import random
 import json
-from pathlib import Path
+import random
+import sys
 from datetime import datetime, timedelta
-from typing import Dict, List, Any, Optional
+from pathlib import Path
+from typing import Any, Dict, List, Optional
+
 from dotenv import load_dotenv
 
 # Load environment variables
@@ -24,6 +25,7 @@ from app.service.agent.tools.snowflake_tool.schema_constants import *
 from app.service.logging import get_bridge_logger
 
 logger = get_bridge_logger(__name__)
+
 
 class DataPopulator:
     """Populates missing data in Snowflake table with realistic values."""
@@ -45,49 +47,122 @@ class DataPopulator:
         """Generate processing fee data based on paid amount."""
         # Typical processing fees are 2.9% + $0.30 for credit cards
         fee_rate = random.uniform(0.025, 0.035)  # 2.5% - 3.5%
-        fixed_fee = random.uniform(0.25, 0.35)   # $0.25 - $0.35
+        fixed_fee = random.uniform(0.25, 0.35)  # $0.25 - $0.35
 
         processing_fee = round(paid_amount * fee_rate + fixed_fee, 2)
 
         return {
             "PROCESSING_FEE_VALUE_IN_CURRENCY": processing_fee,
-            "PROCESSING_FEE_CURRENCY": "USD"
+            "PROCESSING_FEE_CURRENCY": "USD",
         }
 
     def generate_personal_data(self, email: str) -> Dict[str, Any]:
         """Generate realistic personal data from email."""
         # Extract name hints from email
-        local_part = email.split('@')[0]
+        local_part = email.split("@")[0]
 
         # Common first names
         first_names = [
-            "John", "Jane", "Michael", "Sarah", "David", "Lisa", "Robert", "Jennifer",
-            "William", "Jessica", "James", "Ashley", "Christopher", "Amanda", "Daniel",
-            "Melissa", "Matthew", "Emily", "Anthony", "Kimberly", "Mark", "Donna",
-            "Steven", "Margaret", "Andrew", "Carol", "Brian", "Ruth", "Joshua", "Sandra"
+            "John",
+            "Jane",
+            "Michael",
+            "Sarah",
+            "David",
+            "Lisa",
+            "Robert",
+            "Jennifer",
+            "William",
+            "Jessica",
+            "James",
+            "Ashley",
+            "Christopher",
+            "Amanda",
+            "Daniel",
+            "Melissa",
+            "Matthew",
+            "Emily",
+            "Anthony",
+            "Kimberly",
+            "Mark",
+            "Donna",
+            "Steven",
+            "Margaret",
+            "Andrew",
+            "Carol",
+            "Brian",
+            "Ruth",
+            "Joshua",
+            "Sandra",
         ]
 
         # Common last names
         last_names = [
-            "Smith", "Johnson", "Williams", "Brown", "Jones", "Garcia", "Miller", "Davis",
-            "Rodriguez", "Martinez", "Hernandez", "Lopez", "Gonzalez", "Wilson", "Anderson",
-            "Thomas", "Taylor", "Moore", "Jackson", "Martin", "Lee", "Perez", "Thompson",
-            "White", "Harris", "Sanchez", "Clark", "Ramirez", "Lewis", "Robinson"
+            "Smith",
+            "Johnson",
+            "Williams",
+            "Brown",
+            "Jones",
+            "Garcia",
+            "Miller",
+            "Davis",
+            "Rodriguez",
+            "Martinez",
+            "Hernandez",
+            "Lopez",
+            "Gonzalez",
+            "Wilson",
+            "Anderson",
+            "Thomas",
+            "Taylor",
+            "Moore",
+            "Jackson",
+            "Martin",
+            "Lee",
+            "Perez",
+            "Thompson",
+            "White",
+            "Harris",
+            "Sanchez",
+            "Clark",
+            "Ramirez",
+            "Lewis",
+            "Robinson",
         ]
 
         # Try to extract name from email, otherwise use random
-        if '.' in local_part:
-            parts = local_part.split('.')
-            first_name = parts[0].title() if parts[0] in [n.lower() for n in first_names] else random.choice(first_names)
-            last_name = parts[1].title() if len(parts) > 1 and parts[1] in [n.lower() for n in last_names] else random.choice(last_names)
+        if "." in local_part:
+            parts = local_part.split(".")
+            first_name = (
+                parts[0].title()
+                if parts[0] in [n.lower() for n in first_names]
+                else random.choice(first_names)
+            )
+            last_name = (
+                parts[1].title()
+                if len(parts) > 1 and parts[1] in [n.lower() for n in last_names]
+                else random.choice(last_names)
+            )
         else:
             first_name = random.choice(first_names)
             last_name = random.choice(last_names)
 
         # Generate phone number
-        area_codes = ["212", "415", "310", "713", "312", "404", "602", "617", "206", "702"]
+        area_codes = [
+            "212",
+            "415",
+            "310",
+            "713",
+            "312",
+            "404",
+            "602",
+            "617",
+            "206",
+            "702",
+        ]
         area_code = random.choice(area_codes)
-        phone_number = f"+1-{area_code}-{random.randint(100, 999)}-{random.randint(1000, 9999)}"
+        phone_number = (
+            f"+1-{area_code}-{random.randint(100, 999)}-{random.randint(1000, 9999)}"
+        )
 
         # Normalize email (lowercase, trimmed)
         email_normalized = email.lower().strip()
@@ -97,7 +172,7 @@ class DataPopulator:
             "FIRST_NAME": first_name,
             "LAST_NAME": last_name,
             "PHONE_NUMBER": phone_number,
-            "PHONE_COUNTRY_CODE": "+1"
+            "PHONE_COUNTRY_CODE": "+1",
         }
 
     def generate_device_data(self) -> Dict[str, Any]:
@@ -107,21 +182,57 @@ class DataPopulator:
 
         if device_type == "mobile":
             devices = [
-                {"model": "iPhone 13", "os": "iOS 15.6", "agent": "Mozilla/5.0 (iPhone; CPU iPhone OS 15_6 like Mac OS X) AppleWebKit/605.1.15"},
-                {"model": "iPhone 12", "os": "iOS 14.8", "agent": "Mozilla/5.0 (iPhone; CPU iPhone OS 14_8 like Mac OS X) AppleWebKit/605.1.15"},
-                {"model": "Samsung Galaxy S21", "os": "Android 11", "agent": "Mozilla/5.0 (Linux; Android 11; SM-G991B) AppleWebKit/537.36"},
-                {"model": "Google Pixel 6", "os": "Android 12", "agent": "Mozilla/5.0 (Linux; Android 12; Pixel 6) AppleWebKit/537.36"}
+                {
+                    "model": "iPhone 13",
+                    "os": "iOS 15.6",
+                    "agent": "Mozilla/5.0 (iPhone; CPU iPhone OS 15_6 like Mac OS X) AppleWebKit/605.1.15",
+                },
+                {
+                    "model": "iPhone 12",
+                    "os": "iOS 14.8",
+                    "agent": "Mozilla/5.0 (iPhone; CPU iPhone OS 14_8 like Mac OS X) AppleWebKit/605.1.15",
+                },
+                {
+                    "model": "Samsung Galaxy S21",
+                    "os": "Android 11",
+                    "agent": "Mozilla/5.0 (Linux; Android 11; SM-G991B) AppleWebKit/537.36",
+                },
+                {
+                    "model": "Google Pixel 6",
+                    "os": "Android 12",
+                    "agent": "Mozilla/5.0 (Linux; Android 12; Pixel 6) AppleWebKit/537.36",
+                },
             ]
         elif device_type == "desktop":
             devices = [
-                {"model": "Windows PC", "os": "Windows 10", "agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"},
-                {"model": "MacBook Pro", "os": "macOS 12.6", "agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36"},
-                {"model": "iMac", "os": "macOS 11.7", "agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15"}
+                {
+                    "model": "Windows PC",
+                    "os": "Windows 10",
+                    "agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36",
+                },
+                {
+                    "model": "MacBook Pro",
+                    "os": "macOS 12.6",
+                    "agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36",
+                },
+                {
+                    "model": "iMac",
+                    "os": "macOS 11.7",
+                    "agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15",
+                },
             ]
         else:  # tablet
             devices = [
-                {"model": "iPad Pro", "os": "iPadOS 15.6", "agent": "Mozilla/5.0 (iPad; CPU OS 15_6 like Mac OS X) AppleWebKit/605.1.15"},
-                {"model": "Samsung Galaxy Tab", "os": "Android 11", "agent": "Mozilla/5.0 (Linux; Android 11; SM-T870) AppleWebKit/537.36"}
+                {
+                    "model": "iPad Pro",
+                    "os": "iPadOS 15.6",
+                    "agent": "Mozilla/5.0 (iPad; CPU OS 15_6 like Mac OS X) AppleWebKit/605.1.15",
+                },
+                {
+                    "model": "Samsung Galaxy Tab",
+                    "os": "Android 11",
+                    "agent": "Mozilla/5.0 (Linux; Android 11; SM-T870) AppleWebKit/537.36",
+                },
             ]
 
         device = random.choice(devices)
@@ -132,7 +243,7 @@ class DataPopulator:
             "USER_AGENT": device["agent"],
             "DEVICE_TYPE": device_type,
             "DEVICE_MODEL": device["model"],
-            "DEVICE_OS_VERSION": device["os"]
+            "DEVICE_OS_VERSION": device["os"],
         }
 
     def generate_risk_data(self, model_score: float, ip_country: str) -> Dict[str, Any]:
@@ -160,7 +271,7 @@ class DataPopulator:
         return {
             "NSURE_FIRST_DECISION": nsure_first,
             "MAXMIND_RISK_SCORE": round(maxmind_risk, 2),
-            "MAXMIND_IP_RISK_SCORE": round(maxmind_ip_risk, 2)
+            "MAXMIND_IP_RISK_SCORE": round(maxmind_ip_risk, 2),
         }
 
     def generate_card_data(self, bin_number: str) -> Dict[str, Any]:
@@ -195,14 +306,14 @@ class DataPopulator:
             "CARD_BRAND": card_brand,
             "CARD_TYPE": card_type,
             "CARD_ISSUER": card_issuer,
-            "BIN_COUNTRY_CODE": bin_country
+            "BIN_COUNTRY_CODE": bin_country,
         }
 
     def generate_temporal_data(self, tx_datetime: str) -> Dict[str, Any]:
         """Generate additional temporal data."""
         # Parse the transaction datetime
         try:
-            tx_dt = datetime.fromisoformat(tx_datetime.replace('Z', '+00:00'))
+            tx_dt = datetime.fromisoformat(tx_datetime.replace("Z", "+00:00"))
         except:
             tx_dt = datetime.now()
 
@@ -214,17 +325,21 @@ class DataPopulator:
 
         return {
             "TX_RECEIVED_DATETIME": received_dt.isoformat(),
-            "TX_TIMESTAMP_MS": timestamp_ms
+            "TX_TIMESTAMP_MS": timestamp_ms,
         }
 
-    def generate_dispute_data(self, is_fraud: int, model_score: float) -> Dict[str, Any]:
+    def generate_dispute_data(
+        self, is_fraud: int, model_score: float
+    ) -> Dict[str, Any]:
         """Generate dispute and fraud alert data."""
         # Disputes are more likely for actual fraud
         dispute_probability = 0.15 if is_fraud else 0.02
         has_dispute = random.random() < dispute_probability
 
         # Fraud alerts based on model score
-        alert_probability = max(0, (model_score - 0.3) * 2)  # Higher score = more likely alert
+        alert_probability = max(
+            0, (model_score - 0.3) * 2
+        )  # Higher score = more likely alert
         has_fraud_alert = random.random() < alert_probability
 
         disputes = 1 if has_dispute else 0
@@ -234,7 +349,7 @@ class DataPopulator:
             "DISPUTES": disputes,
             "COUNT_DISPUTES": disputes,
             "FRAUD_ALERTS": fraud_alerts,
-            "COUNT_FRAUD_ALERTS": fraud_alerts
+            "COUNT_FRAUD_ALERTS": fraud_alerts,
         }
 
         # Add timestamps if there are disputes/alerts
@@ -262,7 +377,7 @@ class DataPopulator:
             {"name": "DoorDash", "partner": "Food Delivery"},
             {"name": "Apple", "partner": "Technology"},
             {"name": "Google", "partner": "Digital Services"},
-            {"name": "Microsoft", "partner": "Software"}
+            {"name": "Microsoft", "partner": "Software"},
         ]
 
         merchant = random.choice(merchants)
@@ -273,18 +388,14 @@ class DataPopulator:
             "STORE_ID": store_id,
             "MERCHANT_NAME": merchant["name"],
             "PARTNER_NAME": merchant["partner"],
-            "APP_ID": app_id
+            "APP_ID": app_id,
         }
 
     def generate_cart_data(self, paid_amount: float) -> Dict[str, Any]:
         """Generate cart and product data."""
         # Cart details as JSON
         cart_items = random.randint(1, 5)
-        cart_data = {
-            "items": cart_items,
-            "total": paid_amount,
-            "currency": "USD"
-        }
+        cart_data = {"items": cart_items, "total": paid_amount, "currency": "USD"}
 
         # Product types
         product_types = ["digital", "physical", "service", "subscription"]
@@ -299,7 +410,7 @@ class DataPopulator:
             "CART_USD": paid_amount,
             "GMV": round(gmv, 2),
             "PRODUCT_TYPE": product_type,
-            "IS_DIGITAL": is_digital
+            "IS_DIGITAL": is_digital,
         }
 
     def generate_network_data(self, ip: str, ip_country: str) -> Dict[str, Any]:
@@ -314,7 +425,7 @@ class DataPopulator:
             "AU": ["Telstra", "Optus", "TPG", "Vodafone Australia"],
             "RU": ["Rostelecom", "MTS", "Beeline", "Tele2"],
             "CN": ["China Telecom", "China Unicom", "China Mobile"],
-            "default": ["Global ISP", "International Provider", "Local Network"]
+            "default": ["Global ISP", "International Provider", "Local Network"],
         }
 
         # ASN ranges by region
@@ -327,7 +438,7 @@ class DataPopulator:
             "AU": (4000, 7000),
             "RU": (8000, 12000),
             "CN": (9000, 14000),
-            "default": (1000, 20000)
+            "default": (1000, 20000),
         }
 
         isp_list = isp_mapping.get(ip_country, isp_mapping["default"])
@@ -336,14 +447,13 @@ class DataPopulator:
         asn_range = asn_ranges.get(ip_country, asn_ranges["default"])
         asn = random.randint(asn_range[0], asn_range[1])
 
-        return {
-            "ISP": isp,
-            "ASN": asn
-        }
+        return {"ISP": isp, "ASN": asn}
 
     async def get_existing_data(self) -> List[Dict[str, Any]]:
         """Get existing data to populate missing fields."""
-        from app.service.agent.tools.snowflake_tool.schema_constants import get_full_table_name
+        from app.service.agent.tools.snowflake_tool.schema_constants import (
+            get_full_table_name,
+        )
 
         query = f"""
         SELECT
@@ -368,7 +478,7 @@ class DataPopulator:
     async def populate_data(self, dry_run: bool = True) -> Dict[str, Any]:
         """Populate all missing data fields."""
         print(f"\n{'🧪 DRY RUN MODE' if dry_run else '🚀 LIVE UPDATE MODE'}")
-        print("="*80)
+        print("=" * 80)
 
         # Get existing data
         existing_data = await self.get_existing_data()
@@ -430,10 +540,7 @@ class DataPopulator:
                 update_data.update(self.generate_network_data(ip, ip_country))
 
                 # Store update for this record
-                updates.append({
-                    "tx_id": tx_id,
-                    "data": update_data
-                })
+                updates.append({"tx_id": tx_id, "data": update_data})
 
             except Exception as e:
                 self.errors.append(f"Error processing record {tx_id}: {e}")
@@ -457,7 +564,7 @@ class DataPopulator:
             "records_processed": len(existing_data),
             "updates_generated": len(updates),
             "errors": len(self.errors),
-            "dry_run": dry_run
+            "dry_run": dry_run,
         }
 
     async def execute_updates(self, updates: List[Dict[str, Any]]) -> None:
@@ -465,8 +572,10 @@ class DataPopulator:
         batch_size = 100
 
         for i in range(0, len(updates), batch_size):
-            batch = updates[i:i + batch_size]
-            print(f"   📦 Updating batch {i//batch_size + 1}/{(len(updates) + batch_size - 1)//batch_size}...")
+            batch = updates[i : i + batch_size]
+            print(
+                f"   📦 Updating batch {i//batch_size + 1}/{(len(updates) + batch_size - 1)//batch_size}..."
+            )
 
             try:
                 # Build batch update query
@@ -487,7 +596,9 @@ class DataPopulator:
                             set_clauses.append(f"{field} = {value}")
 
                     # Execute update
-                    from app.service.agent.tools.snowflake_tool.schema_constants import get_full_table_name
+                    from app.service.agent.tools.snowflake_tool.schema_constants import (
+                        get_full_table_name,
+                    )
 
                     update_query = f"""
                     UPDATE {get_full_table_name()}
@@ -507,11 +618,12 @@ class DataPopulator:
 
         print(f"✅ Updated {self.populated_records} records")
 
+
 async def main():
     """Main execution function."""
-    print("\n" + "="*80)
+    print("\n" + "=" * 80)
     print("🔧 SNOWFLAKE DATA POPULATION TOOL")
-    print("="*80)
+    print("=" * 80)
     print("📋 Populating 38 columns with 0% data completeness...")
 
     populator = DataPopulator()
@@ -531,20 +643,22 @@ async def main():
         print(f"   Updates generated: {dry_run_results['updates_generated']:,}")
         print(f"   Errors encountered: {dry_run_results['errors']}")
 
-        if dry_run_results['errors'] > 0:
+        if dry_run_results["errors"] > 0:
             print("\n⚠️  Errors found in dry run:")
             for error in populator.errors[:5]:  # Show first 5 errors
                 print(f"   - {error}")
 
         # Ask for confirmation before live run
-        print("\n" + "="*80)
+        print("\n" + "=" * 80)
         print("🚨 READY FOR LIVE DATABASE UPDATES")
-        print("="*80)
+        print("=" * 80)
         print("⚠️  This will modify your Snowflake database!")
         print("📊 Updates to execute:")
         print(f"   - {dry_run_results['updates_generated']:,} records will be updated")
         print(f"   - 38 columns will be populated per record")
-        print(f"   - Estimated total field updates: {dry_run_results['updates_generated'] * 38:,}")
+        print(
+            f"   - Estimated total field updates: {dry_run_results['updates_generated'] * 38:,}"
+        )
 
         # For safety, we'll stop here and require explicit user confirmation
         print("\n🛑 Stopping before live execution.")
@@ -557,6 +671,7 @@ async def main():
     finally:
         # Disconnect
         await populator.disconnect()
+
 
 if __name__ == "__main__":
     asyncio.run(main())

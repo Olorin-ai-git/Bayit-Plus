@@ -10,7 +10,8 @@ Constitutional Compliance:
 """
 
 import re
-from typing import Dict, Any, List, Optional
+from typing import Any, Dict, List, Optional
+
 import asyncpg
 
 from app.service.logging import get_bridge_logger
@@ -26,10 +27,7 @@ class PostgreSQLQueryOptimizer:
         logger.info("Initialized PostgreSQLQueryOptimizer")
 
     async def explain_query(
-        self,
-        connection: asyncpg.Connection,
-        query: str,
-        analyze: bool = False
+        self, connection: asyncpg.Connection, query: str, analyze: bool = False
     ) -> str:
         """
         Get PostgreSQL EXPLAIN output for a query.
@@ -57,7 +55,7 @@ class PostgreSQLQueryOptimizer:
                 # Row is a Record object, get first column
                 explain_output.append(str(row[0]))
 
-            result = '\n'.join(explain_output)
+            result = "\n".join(explain_output)
             logger.debug(f"EXPLAIN output ({len(explain_output)} lines)")
 
             return result
@@ -67,9 +65,7 @@ class PostgreSQLQueryOptimizer:
             raise
 
     async def analyze_execution_plan(
-        self,
-        connection: asyncpg.Connection,
-        query: str
+        self, connection: asyncpg.Connection, query: str
     ) -> Dict[str, Any]:
         """
         Analyze query execution plan and provide optimization insights.
@@ -85,27 +81,27 @@ class PostgreSQLQueryOptimizer:
         explain_output = await self.explain_query(connection, query, analyze=False)
 
         analysis = {
-            'query': query[:100] + '...' if len(query) > 100 else query,
-            'plan': explain_output,
-            'uses_index': self._check_index_usage(explain_output),
-            'has_sequential_scan': self._check_sequential_scan(explain_output),
-            'estimated_cost': self._extract_cost(explain_output),
-            'recommendations': []
+            "query": query[:100] + "..." if len(query) > 100 else query,
+            "plan": explain_output,
+            "uses_index": self._check_index_usage(explain_output),
+            "has_sequential_scan": self._check_sequential_scan(explain_output),
+            "estimated_cost": self._extract_cost(explain_output),
+            "recommendations": [],
         }
 
         # Generate recommendations
-        if not analysis['uses_index']:
-            analysis['recommendations'].append(
+        if not analysis["uses_index"]:
+            analysis["recommendations"].append(
                 "Query does not use indexes - consider adding indexes on filter columns"
             )
 
-        if analysis['has_sequential_scan']:
-            analysis['recommendations'].append(
+        if analysis["has_sequential_scan"]:
+            analysis["recommendations"].append(
                 "Query uses sequential scan - consider adding index or optimizing WHERE clause"
             )
 
-        if analysis['estimated_cost'] and analysis['estimated_cost'] > 10000:
-            analysis['recommendations'].append(
+        if analysis["estimated_cost"] and analysis["estimated_cost"] > 10000:
+            analysis["recommendations"].append(
                 f"High estimated cost ({analysis['estimated_cost']:.0f}) - query may be slow"
             )
 
@@ -127,11 +123,7 @@ class PostgreSQLQueryOptimizer:
         Returns:
             True if query uses index scan
         """
-        index_patterns = [
-            'Index Scan',
-            'Index Only Scan',
-            'Bitmap Index Scan'
-        ]
+        index_patterns = ["Index Scan", "Index Only Scan", "Bitmap Index Scan"]
 
         for pattern in index_patterns:
             if pattern in explain_output:
@@ -149,7 +141,7 @@ class PostgreSQLQueryOptimizer:
         Returns:
             True if query uses sequential scan
         """
-        return 'Seq Scan' in explain_output
+        return "Seq Scan" in explain_output
 
     def _extract_cost(self, explain_output: str) -> Optional[float]:
         """
@@ -162,7 +154,7 @@ class PostgreSQLQueryOptimizer:
             Estimated cost or None if not found
         """
         # Pattern: cost=0.00..123.45
-        cost_pattern = r'cost=[\d.]+\.\.([\d.]+)'
+        cost_pattern = r"cost=[\d.]+\.\.([\d.]+)"
         match = re.search(cost_pattern, explain_output)
 
         if match:
@@ -171,9 +163,7 @@ class PostgreSQLQueryOptimizer:
         return None
 
     async def suggest_indexes(
-        self,
-        connection: asyncpg.Connection,
-        query: str
+        self, connection: asyncpg.Connection, query: str
     ) -> List[str]:
         """
         Suggest indexes that might improve query performance.
@@ -190,7 +180,7 @@ class PostgreSQLQueryOptimizer:
         # Analyze the query
         analysis = await self.analyze_execution_plan(connection, query)
 
-        if not analysis['uses_index']:
+        if not analysis["uses_index"]:
             # Extract table and columns from WHERE clause
             where_columns = self._extract_where_columns(query)
 
@@ -204,8 +194,8 @@ class PostgreSQLQueryOptimizer:
                         )
                     else:
                         # Composite index
-                        cols_str = ', '.join(columns)
-                        cols_name = '_'.join([c.lower() for c in columns])
+                        cols_str = ", ".join(columns)
+                        cols_name = "_".join([c.lower() for c in columns])
                         suggestions.append(
                             f"CREATE INDEX idx_{table}_{cols_name} ON {table} ({cols_str})"
                         )
@@ -227,28 +217,31 @@ class PostgreSQLQueryOptimizer:
         where_columns = {}
 
         # Extract WHERE clause
-        where_match = re.search(r'WHERE\s+(.+?)(?:ORDER BY|GROUP BY|LIMIT|$)', query, re.IGNORECASE | re.DOTALL)
+        where_match = re.search(
+            r"WHERE\s+(.+?)(?:ORDER BY|GROUP BY|LIMIT|$)",
+            query,
+            re.IGNORECASE | re.DOTALL,
+        )
 
         if where_match:
             where_clause = where_match.group(1)
 
             # Extract column references (simplified pattern)
             # Pattern: table.column or just column
-            column_pattern = r'([A-Z_][A-Z0-9_]*)'
+            column_pattern = r"([A-Z_][A-Z0-9_]*)"
             columns = re.findall(column_pattern, where_clause.upper())
 
             if columns:
                 # Assume single table for simplicity (would need FROM parsing for multi-table)
-                table = 'transactions_enriched'  # Default - would extract from FROM clause
+                table = (
+                    "transactions_enriched"  # Default - would extract from FROM clause
+                )
                 where_columns[table] = list(set(columns))  # Remove duplicates
 
         return where_columns
 
     async def benchmark_query(
-        self,
-        connection: asyncpg.Connection,
-        query: str,
-        iterations: int = 5
+        self, connection: asyncpg.Connection, query: str, iterations: int = 5
     ) -> Dict[str, Any]:
         """
         Benchmark query execution performance.
@@ -281,11 +274,11 @@ class PostgreSQLQueryOptimizer:
         max_duration = max(durations)
 
         result = {
-            'iterations': iterations,
-            'avg_duration_ms': avg_duration,
-            'min_duration_ms': min_duration,
-            'max_duration_ms': max_duration,
-            'durations_ms': durations
+            "iterations": iterations,
+            "avg_duration_ms": avg_duration,
+            "min_duration_ms": min_duration,
+            "max_duration_ms": max_duration,
+            "durations_ms": durations,
         }
 
         logger.info(

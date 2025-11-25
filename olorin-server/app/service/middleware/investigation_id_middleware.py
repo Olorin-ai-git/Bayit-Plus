@@ -14,6 +14,7 @@ import uuid
 from typing import Callable, Optional
 
 from fastapi import Request, Response
+
 from app.service.logging import get_bridge_logger
 from app.service.logging_helper import logging_context
 

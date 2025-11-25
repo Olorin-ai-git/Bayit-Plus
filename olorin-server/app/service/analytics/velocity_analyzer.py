@@ -11,18 +11,18 @@ Week 5 Phase 2 implementation.
 """
 
 import logging
-from typing import Dict, Any, List, Optional, Tuple
-from datetime import datetime, timedelta
-from collections import defaultdict
 import time
+from collections import defaultdict
+from datetime import datetime, timedelta
+from typing import Any, Dict, List, Optional, Tuple
 
-from app.service.analytics.velocity_utils import extract_timestamp
 from app.service.analytics.velocity_calculations import (
-    calculate_sliding_windows,
     calculate_entity_velocities,
     calculate_merchant_concentration,
-    detect_cross_entity_correlation
+    calculate_sliding_windows,
+    detect_cross_entity_correlation,
 )
+from app.service.analytics.velocity_utils import extract_timestamp
 
 logger = logging.getLogger(__name__)
 
@@ -48,7 +48,7 @@ class VelocityAnalyzer:
         window_minutes_medium: int = 15,
         window_hours_long: int = 1,
         window_hours_daily: int = 24,
-        concentration_threshold: float = 0.70
+        concentration_threshold: float = 0.70,
     ):
         """
         Initialize velocity analyzer with configurable time windows.
@@ -75,7 +75,7 @@ class VelocityAnalyzer:
     def analyze_transaction_velocity(
         self,
         transaction: Dict[str, Any],
-        historical_transactions: Optional[List[Dict[str, Any]]] = None
+        historical_transactions: Optional[List[Dict[str, Any]]] = None,
     ) -> Dict[str, Any]:
         """
         Analyze velocity metrics for a single transaction.
@@ -103,7 +103,7 @@ class VelocityAnalyzer:
                 self.window_minutes_short,
                 self.window_minutes_medium,
                 self.window_hours_long,
-                self.window_hours_daily
+                self.window_hours_daily,
             )
 
             # Calculate entity-scoped velocities
@@ -111,20 +111,17 @@ class VelocityAnalyzer:
                 transaction,
                 tx_timestamp,
                 historical_transactions,
-                self.window_hours_daily
+                self.window_hours_daily,
             )
 
             # Calculate merchant concentration
             merchant_concentration = calculate_merchant_concentration(
-                transaction,
-                historical_transactions,
-                self.concentration_threshold
+                transaction, historical_transactions, self.concentration_threshold
             )
 
             # Detect cross-entity correlations
             cross_entity = detect_cross_entity_correlation(
-                transaction,
-                historical_transactions
+                transaction, historical_transactions
             )
 
             return {
@@ -134,7 +131,7 @@ class VelocityAnalyzer:
                 "entity_velocities": entity_velocities,
                 "merchant_concentration": merchant_concentration,
                 "cross_entity_correlation": cross_entity,
-                "timestamp": tx_timestamp.isoformat()
+                "timestamp": tx_timestamp.isoformat(),
             }
 
         except Exception as e:
@@ -148,5 +145,5 @@ class VelocityAnalyzer:
             "sliding_windows": {},
             "entity_velocities": {},
             "merchant_concentration": {},
-            "cross_entity_correlation": {}
+            "cross_entity_correlation": {},
         }

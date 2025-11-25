@@ -12,9 +12,10 @@ from pathlib import Path
 # Add project root to path
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
-from app.persistence.database import get_db_session
 from sqlalchemy import inspect, text
-from app.service.logging import get_bridge_logger, configure_unified_logging
+
+from app.persistence.database import get_db_session
+from app.service.logging import configure_unified_logging, get_bridge_logger
 from app.service.logging.unified_logging_core import LogFormat, LogOutput
 
 logger = get_bridge_logger(__name__)
@@ -26,27 +27,29 @@ def check_precision_tables():
         with get_db_session() as db:
             inspector = inspect(db.bind)
             table_names = inspector.get_table_names()
-            
+
             # Check for views (SQLite)
             view_names = []
             try:
-                if 'sqlite' in str(db.bind.url).lower():
-                    result = db.execute(text("SELECT name FROM sqlite_master WHERE type='view'"))
+                if "sqlite" in str(db.bind.url).lower():
+                    result = db.execute(
+                        text("SELECT name FROM sqlite_master WHERE type='view'")
+                    )
                     view_names = [row[0] for row in result]
-                elif hasattr(inspector, 'get_view_names'):
+                elif hasattr(inspector, "get_view_names"):
                     view_names = inspector.get_view_names()
             except Exception:
                 pass
-            
+
             # Required precision detection tables
             required_tables = [
                 "pg_transactions",
                 "pg_merchants",
                 "labels_truth",
                 "pg_enrichment_scores",
-                "pg_alerts"
+                "pg_alerts",
             ]
-            
+
             # Required views (from SQLite-compatible migrations)
             required_views = [
                 "mv_features_txn",
@@ -56,16 +59,16 @@ def check_precision_tables():
                 "mv_peer_flags",
                 "mv_txn_feats_basic",
                 "mv_txn_graph_feats",
-                "mv_trailing_merchant"
+                "mv_trailing_merchant",
             ]
-            
+
             print("=" * 60)
             print("PRECISION DETECTION MIGRATION STATUS")
             print("=" * 60)
             print(f"\nDatabase: {db.bind.url}")
             print(f"Total tables: {len(table_names)}")
             print(f"Total views: {len(view_names)}")
-            
+
             print("\n" + "-" * 60)
             print("REQUIRED TABLES:")
             print("-" * 60)
@@ -76,7 +79,7 @@ def check_precision_tables():
                 print(f"{status} {table}")
                 if not exists:
                     missing_tables.append(table)
-            
+
             print("\n" + "-" * 60)
             print("REQUIRED VIEWS:")
             print("-" * 60)
@@ -87,7 +90,7 @@ def check_precision_tables():
                 print(f"{status} {view}")
                 if not exists:
                     missing_views.append(view)
-            
+
             print("\n" + "=" * 60)
             if missing_tables or missing_views:
                 print("❌ MIGRATION INCOMPLETE")
@@ -101,7 +104,7 @@ def check_precision_tables():
             else:
                 print("✅ ALL PRECISION DETECTION TABLES AND VIEWS EXIST")
                 return True
-                
+
     except Exception as e:
         logger.error(f"Failed to check migrations: {e}", exc_info=True)
         print(f"\n❌ ERROR: {e}")
@@ -117,14 +120,10 @@ def main():
         lazy_initialization=False,
         suppress_noisy_loggers=False,
     )
-    
+
     success = check_precision_tables()
     sys.exit(0 if success else 1)
 
 
 if __name__ == "__main__":
     main()
-
-
-
-

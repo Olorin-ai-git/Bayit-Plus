@@ -11,9 +11,10 @@ SYSTEM MANDATE Compliance:
 - Type-safe: Proper assertions on returned values
 """
 
-import pytest
 from datetime import datetime, timedelta
-from unittest.mock import patch, MagicMock
+from unittest.mock import MagicMock, patch
+
+import pytest
 
 from app.service.polling_enhancements import PollingEnhancements
 
@@ -28,8 +29,7 @@ class TestPollingEnhancements:
     def test_calculate_adaptive_interval_active_investigation(self):
         """Test interval calculation for active investigation in progress."""
         interval = self.enhancements.calculate_adaptive_interval(
-            status="IN_PROGRESS",
-            lifecycle_stage="IN_PROGRESS"
+            status="IN_PROGRESS", lifecycle_stage="IN_PROGRESS"
         )
         # Should return fast interval (2000-5000ms range, middle is 3000ms)
         assert 2000 <= interval <= 5000
@@ -40,7 +40,7 @@ class TestPollingEnhancements:
         investigation_id = "test-investigation-123"
 
         # Set last activity to 6 minutes ago
-        with patch('app.service.polling_enhancements.datetime') as mock_datetime:
+        with patch("app.service.polling_enhancements.datetime") as mock_datetime:
             now = datetime(2025, 1, 1, 12, 0, 0)
             old_time = datetime(2025, 1, 1, 11, 54, 0)  # 6 minutes ago
 
@@ -53,7 +53,7 @@ class TestPollingEnhancements:
             interval = self.enhancements.calculate_adaptive_interval(
                 status="IN_PROGRESS",
                 lifecycle_stage="SETTINGS",
-                investigation_id=investigation_id
+                investigation_id=investigation_id,
             )
 
             # Should return slow interval (30000-120000ms range, middle is 60000ms)
@@ -63,8 +63,7 @@ class TestPollingEnhancements:
     def test_calculate_adaptive_interval_completed_status(self):
         """Test interval calculation for completed investigation."""
         interval = self.enhancements.calculate_adaptive_interval(
-            status="COMPLETED",
-            lifecycle_stage="COMPLETED"
+            status="COMPLETED", lifecycle_stage="COMPLETED"
         )
         # Should return slow interval
         assert interval == 5000  # Configured slow interval
@@ -72,8 +71,7 @@ class TestPollingEnhancements:
     def test_calculate_adaptive_interval_error_status(self):
         """Test interval calculation for error status."""
         interval = self.enhancements.calculate_adaptive_interval(
-            status="ERROR",
-            lifecycle_stage="IN_PROGRESS"
+            status="ERROR", lifecycle_stage="IN_PROGRESS"
         )
         # Should return slow interval
         assert interval == 5000
@@ -81,8 +79,7 @@ class TestPollingEnhancements:
     def test_calculate_adaptive_interval_cancelled_status(self):
         """Test interval calculation for cancelled status."""
         interval = self.enhancements.calculate_adaptive_interval(
-            status="CANCELLED",
-            lifecycle_stage="IN_PROGRESS"
+            status="CANCELLED", lifecycle_stage="IN_PROGRESS"
         )
         # Should return slow interval
         assert interval == 5000
@@ -90,8 +87,7 @@ class TestPollingEnhancements:
     def test_calculate_adaptive_interval_results_stage(self):
         """Test interval calculation for results lifecycle stage."""
         interval = self.enhancements.calculate_adaptive_interval(
-            status="IN_PROGRESS",
-            lifecycle_stage="RESULTS"
+            status="IN_PROGRESS", lifecycle_stage="RESULTS"
         )
         # Should return slow interval
         assert interval == 5000
@@ -99,8 +95,7 @@ class TestPollingEnhancements:
     def test_calculate_adaptive_interval_settings_stage(self):
         """Test interval calculation for settings stage."""
         interval = self.enhancements.calculate_adaptive_interval(
-            status="SETTINGS",
-            lifecycle_stage="SETTINGS"
+            status="SETTINGS", lifecycle_stage="SETTINGS"
         )
         # Should return normal interval
         assert interval == 2000
@@ -108,8 +103,7 @@ class TestPollingEnhancements:
     def test_calculate_adaptive_interval_created_status(self):
         """Test interval calculation for created status."""
         interval = self.enhancements.calculate_adaptive_interval(
-            status="CREATED",
-            lifecycle_stage="CREATED"
+            status="CREATED", lifecycle_stage="CREATED"
         )
         # Should return normal interval
         assert interval == 2000
@@ -117,8 +111,7 @@ class TestPollingEnhancements:
     def test_calculate_adaptive_interval_default(self):
         """Test interval calculation for unknown status."""
         interval = self.enhancements.calculate_adaptive_interval(
-            status="UNKNOWN",
-            lifecycle_stage="UNKNOWN"
+            status="UNKNOWN", lifecycle_stage="UNKNOWN"
         )
         # Should return default interval
         assert interval == 15000  # 15 seconds default
@@ -195,15 +188,20 @@ class TestPollingEnhancements:
         current_version = 42
 
         # Invalid formats
-        assert self.enhancements.should_return_etag_304(current_version, "invalid") is False
+        assert (
+            self.enhancements.should_return_etag_304(current_version, "invalid")
+            is False
+        )
         assert self.enhancements.should_return_etag_304(current_version, "42") is False
-        assert self.enhancements.should_return_etag_304(current_version, "abc-42") is False
+        assert (
+            self.enhancements.should_return_etag_304(current_version, "abc-42") is False
+        )
 
     def test_update_activity(self):
         """Test updating last activity timestamp."""
         investigation_id = "test-investigation-123"
 
-        with patch('app.service.polling_enhancements.datetime') as mock_datetime:
+        with patch("app.service.polling_enhancements.datetime") as mock_datetime:
             mock_time = datetime(2025, 1, 1, 12, 0, 0)
             mock_datetime.utcnow.return_value = mock_time
 
@@ -216,7 +214,7 @@ class TestPollingEnhancements:
         """Test getting idle time for investigation."""
         investigation_id = "test-investigation-123"
 
-        with patch('app.service.polling_enhancements.datetime') as mock_datetime:
+        with patch("app.service.polling_enhancements.datetime") as mock_datetime:
             # Set activity time
             activity_time = datetime(2025, 1, 1, 11, 55, 0)
             mock_datetime.utcnow.return_value = activity_time
@@ -238,7 +236,7 @@ class TestPollingEnhancements:
         """Test is_idle returns True for idle investigation."""
         investigation_id = "test-investigation-123"
 
-        with patch('app.service.polling_enhancements.datetime') as mock_datetime:
+        with patch("app.service.polling_enhancements.datetime") as mock_datetime:
             # Set activity time 6 minutes ago
             activity_time = datetime(2025, 1, 1, 11, 54, 0)
             mock_datetime.utcnow.return_value = activity_time
@@ -254,7 +252,7 @@ class TestPollingEnhancements:
         """Test is_idle returns False for active investigation."""
         investigation_id = "test-investigation-123"
 
-        with patch('app.service.polling_enhancements.datetime') as mock_datetime:
+        with patch("app.service.polling_enhancements.datetime") as mock_datetime:
             # Set activity time 3 minutes ago
             activity_time = datetime(2025, 1, 1, 11, 57, 0)
             mock_datetime.utcnow.return_value = activity_time
@@ -270,7 +268,7 @@ class TestPollingEnhancements:
         """Test is_idle with custom threshold."""
         investigation_id = "test-investigation-123"
 
-        with patch('app.service.polling_enhancements.datetime') as mock_datetime:
+        with patch("app.service.polling_enhancements.datetime") as mock_datetime:
             # Set activity time 2 minutes ago
             activity_time = datetime(2025, 1, 1, 11, 58, 0)
             mock_datetime.utcnow.return_value = activity_time
@@ -281,9 +279,14 @@ class TestPollingEnhancements:
             mock_datetime.utcnow.return_value = current_time
 
             # Should be idle with 1 minute threshold
-            assert self.enhancements.is_idle(investigation_id, threshold_minutes=1) is True
+            assert (
+                self.enhancements.is_idle(investigation_id, threshold_minutes=1) is True
+            )
             # Should not be idle with 5 minute threshold
-            assert self.enhancements.is_idle(investigation_id, threshold_minutes=5) is False
+            assert (
+                self.enhancements.is_idle(investigation_id, threshold_minutes=5)
+                is False
+            )
 
     def test_is_idle_no_activity(self):
         """Test is_idle returns False when no activity recorded."""

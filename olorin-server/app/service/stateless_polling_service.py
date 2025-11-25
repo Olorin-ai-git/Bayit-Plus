@@ -11,15 +11,16 @@ SYSTEM MANDATE Compliance:
 - Type-safe: All parameters and returns properly typed
 """
 
-from typing import Optional, Dict, Any, List
-from sqlalchemy.orm import Session
-from datetime import datetime, timedelta
 import hashlib
 import json
 import os
+from datetime import datetime, timedelta
+from typing import Any, Dict, List, Optional
 
-from app.models.investigation_state import InvestigationState
+from sqlalchemy.orm import Session
+
 from app.models.investigation_audit_log import InvestigationAuditLog
+from app.models.investigation_state import InvestigationState
 from app.service.logging import get_bridge_logger
 
 logger = get_bridge_logger(__name__)
@@ -36,7 +37,9 @@ class StatelessPollingService:
     # Configuration from environment
     MAX_CONCURRENT_POLLERS = int(os.getenv("MAX_CONCURRENT_POLLERS", "10"))
     POLLING_CACHE_TTL_SECONDS = int(os.getenv("POLLING_CACHE_TTL_SECONDS", "5"))
-    ENABLE_POLLING_METRICS = os.getenv("ENABLE_POLLING_METRICS", "true").lower() == "true"
+    ENABLE_POLLING_METRICS = (
+        os.getenv("ENABLE_POLLING_METRICS", "true").lower() == "true"
+    )
 
     def __init__(self, db: Session):
         """Initialize service with database session."""
@@ -49,7 +52,7 @@ class StatelessPollingService:
         investigation_id: str,
         user_id: str,
         client_id: Optional[str] = None,
-        last_known_version: Optional[int] = None
+        last_known_version: Optional[int] = None,
     ) -> Dict[str, Any]:
         """
         Get investigation state in a completely stateless manner.
@@ -78,15 +81,21 @@ class StatelessPollingService:
             "last_updated": state.updated_at.isoformat() if state.updated_at else None,
             "data_fresh": True,  # Always fresh from DB
             "polling_info": self._get_polling_info(state),
-            "state_hash": self._calculate_state_hash(state)
+            "state_hash": self._calculate_state_hash(state),
         }
 
         # Include state data if changed
         if last_known_version is None or state.version != last_known_version:
             response["state_data"] = {
-                "settings": json.loads(state.settings_json) if state.settings_json else None,
-                "progress": json.loads(state.progress_json) if state.progress_json else None,
-                "results": json.loads(state.results_json) if state.results_json else None
+                "settings": (
+                    json.loads(state.settings_json) if state.settings_json else None
+                ),
+                "progress": (
+                    json.loads(state.progress_json) if state.progress_json else None
+                ),
+                "results": (
+                    json.loads(state.results_json) if state.results_json else None
+                ),
             }
             response["has_changes"] = True
         else:
@@ -103,7 +112,7 @@ class StatelessPollingService:
         investigation_id: str,
         user_id: str,
         since_timestamp: Optional[datetime] = None,
-        limit: int = 100
+        limit: int = 100,
     ) -> Dict[str, Any]:
         """
         Get events in a stateless manner.
@@ -129,14 +138,12 @@ class StatelessPollingService:
         )
 
         if since_timestamp:
-            query = query.filter(
-                InvestigationAuditLog.timestamp > since_timestamp
-            )
+            query = query.filter(InvestigationAuditLog.timestamp > since_timestamp)
 
         # Order and limit
-        events = query.order_by(
-            InvestigationAuditLog.timestamp.asc()
-        ).limit(limit).all()
+        events = (
+            query.order_by(InvestigationAuditLog.timestamp.asc()).limit(limit).all()
+        )
 
         # Convert to stateless response
         return {
@@ -146,26 +153,26 @@ class StatelessPollingService:
                     "id": event.entry_id,
                     "timestamp": event.timestamp.isoformat(),
                     "action_type": event.action_type,
-                    "changes": json.loads(event.changes_json) if event.changes_json else {},
+                    "changes": (
+                        json.loads(event.changes_json) if event.changes_json else {}
+                    ),
                     "source": event.source,
-                    "version_transition": {
-                        "from": event.from_version,
-                        "to": event.to_version
-                    } if event.from_version else None
+                    "version_transition": (
+                        {"from": event.from_version, "to": event.to_version}
+                        if event.from_version
+                        else None
+                    ),
                 }
                 for event in events
             ],
             "event_count": len(events),
             "latest_timestamp": events[-1].timestamp.isoformat() if events else None,
             "query_timestamp": datetime.utcnow().isoformat(),
-            "has_more": len(events) == limit
+            "has_more": len(events) == limit,
         }
 
     def validate_multi_tab_support(
-        self,
-        investigation_id: str,
-        user_id: str,
-        num_clients: int = 3
+        self, investigation_id: str, user_id: str, num_clients: int = 3
     ) -> Dict[str, Any]:
         """
         Validate that multiple clients can poll independently.
@@ -187,17 +194,17 @@ class StatelessPollingService:
 
             # Each "tab" makes an independent request
             state = self.get_investigation_state_stateless(
-                investigation_id=investigation_id,
-                user_id=user_id,
-                client_id=client_id
+                investigation_id=investigation_id, user_id=user_id, client_id=client_id
             )
 
-            results.append({
-                "client_id": client_id,
-                "version_received": state["version"],
-                "state_hash": state["state_hash"],
-                "timestamp": datetime.utcnow().isoformat()
-            })
+            results.append(
+                {
+                    "client_id": client_id,
+                    "version_received": state["version"],
+                    "state_hash": state["state_hash"],
+                    "timestamp": datetime.utcnow().isoformat(),
+                }
+            )
 
         # Verify all clients got the same state (stateless guarantee)
         versions = [r["version_received"] for r in results]
@@ -214,9 +221,9 @@ class StatelessPollingService:
             "validation": {
                 "all_same_version": all_same_version,
                 "all_same_hash": all_same_hash,
-                "stateless_guaranteed": all_same_version and all_same_hash
+                "stateless_guaranteed": all_same_version and all_same_hash,
             },
-            "conclusion": "PASS" if (all_same_version and all_same_hash) else "FAIL"
+            "conclusion": "PASS" if (all_same_version and all_same_hash) else "FAIL",
         }
 
     def _get_polling_info(self, state: InvestigationState) -> Dict[str, Any]:
@@ -245,7 +252,7 @@ class StatelessPollingService:
             "strategy": strategy,
             "supports_multi_tab": True,
             "stateless": True,
-            "max_concurrent_pollers": self.MAX_CONCURRENT_POLLERS
+            "max_concurrent_pollers": self.MAX_CONCURRENT_POLLERS,
         }
 
     def _calculate_state_hash(self, state: InvestigationState) -> str:
@@ -283,20 +290,22 @@ class StatelessPollingService:
         """
         from fastapi import HTTPException, status
 
-        state = self.db.query(InvestigationState).filter(
-            InvestigationState.investigation_id == investigation_id
-        ).first()
+        state = (
+            self.db.query(InvestigationState)
+            .filter(InvestigationState.investigation_id == investigation_id)
+            .first()
+        )
 
         if not state:
             raise HTTPException(
                 status_code=status.HTTP_404_NOT_FOUND,
-                detail=f"Investigation {investigation_id} not found"
+                detail=f"Investigation {investigation_id} not found",
             )
 
         if state.user_id != user_id:
             raise HTTPException(
                 status_code=status.HTTP_403_FORBIDDEN,
-                detail="Not authorized to access this investigation"
+                detail="Not authorized to access this investigation",
             )
 
         return state
@@ -318,15 +327,15 @@ class StatelessPollingService:
 
         # Clean old metrics
         self._polling_metrics[investigation_id] = [
-            m for m in self._polling_metrics[investigation_id]
+            m
+            for m in self._polling_metrics[investigation_id]
             if datetime.fromisoformat(m["timestamp"]) > cutoff
         ]
 
         # Add new metric
-        self._polling_metrics[investigation_id].append({
-            "client_id": client_id,
-            "timestamp": now.isoformat()
-        })
+        self._polling_metrics[investigation_id].append(
+            {"client_id": client_id, "timestamp": now.isoformat()}
+        )
 
     def get_polling_metrics(self, investigation_id: str) -> Dict[str, Any]:
         """
@@ -347,5 +356,5 @@ class StatelessPollingService:
             "investigation_id": investigation_id,
             "active_pollers": unique_clients,
             "total_polls_last_minute": len(metrics),
-            "metrics": metrics[-10:]  # Last 10 polls
+            "metrics": metrics[-10:],  # Last 10 polls
         }

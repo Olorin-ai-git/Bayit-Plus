@@ -10,7 +10,7 @@ from pathlib import Path
 from typing import Optional
 
 from .core import ReportCore
-from .data_models import ReportConfig, GeneratedReport
+from .data_models import GeneratedReport, ReportConfig
 
 logger = logging.getLogger(__name__)
 
@@ -37,7 +37,7 @@ class EnhancedHTMLReportGenerator:
         self,
         folder_path: Path,
         output_path: Optional[Path] = None,
-        title: Optional[str] = None
+        title: Optional[str] = None,
     ) -> GeneratedReport:
         """
         Generate complete HTML report for an investigation folder.
@@ -63,6 +63,7 @@ class EnhancedHTMLReportGenerator:
             Tuple of (is_valid, error_messages)
         """
         from .core import ReportValidator
+
         return ReportValidator.validate_folder_structure(folder_path)
 
     def set_config(self, config: ReportConfig) -> None:
@@ -81,8 +82,8 @@ HTMLReportGenerator = EnhancedHTMLReportGenerator
 
 
 __all__ = [
-    'EnhancedHTMLReportGenerator',
-    'HTMLReportGenerator',
-    'ReportConfig',
-    'GeneratedReport'
+    "EnhancedHTMLReportGenerator",
+    "HTMLReportGenerator",
+    "ReportConfig",
+    "GeneratedReport",
 ]

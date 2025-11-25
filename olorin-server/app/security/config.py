@@ -2,24 +2,25 @@
 Security configuration for Olorin application
 """
 
-import os
 import logging
-from app.service.logging import get_bridge_logger
+import os
 from typing import List, Optional
 
 from pydantic import BaseModel
+
 from app.service.config_loader import get_config_loader
+from app.service.logging import get_bridge_logger
 
 logger = get_bridge_logger(__name__)
 
 
 class SecurityConfig(BaseModel):
     """Security configuration settings."""
-    
+
     def __init__(self, **kwargs):
         # Get singleton ConfigLoader for secrets
         config_loader = get_config_loader()
-        
+
         # Load secrets from Firebase Secret Manager
         jwt_secret_key = config_loader.load_secret("JWT_SECRET_KEY")
         csrf_secret_key = config_loader.load_secret("CSRF_SECRET_KEY")
@@ -28,33 +29,40 @@ class SecurityConfig(BaseModel):
         redis_api_key = config_loader.load_secret("REDIS_API_KEY")
         olorin_api_key = config_loader.load_secret("OLORIN_API_KEY")
         olorin_app_secret = config_loader.load_secret("OLORIN_APP_SECRET")
-        
+
         # Set defaults for JWT configuration
-        access_token_expire_minutes = int(os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES", "30"))
-        
-        # Set defaults for CORS configuration  
+        access_token_expire_minutes = int(
+            os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES", "30")
+        )
+
+        # Set defaults for CORS configuration
         allowed_origins = os.getenv(
             "ALLOWED_ORIGINS", "http://localhost:3000,https://localhost:3000"
         ).split(",")
-        
+
         # Set defaults for rate limiting
         rate_limit_calls = int(os.getenv("RATE_LIMIT_CALLS", "60"))
         rate_limit_period = int(os.getenv("RATE_LIMIT_PERIOD", "60"))
-        
+
         # Set defaults for CSRF protection
         csrf_enabled = os.getenv("CSRF_ENABLED", "true").lower() == "true"
-        
+
         # Set defaults for Redis security
-        redis_url = os.getenv("REDIS_URL", "redis://default@redis-13848.c253.us-central1-1.gce.redns.redis-cloud.com:13848")
+        redis_url = os.getenv(
+            "REDIS_URL",
+            "redis://default@redis-13848.c253.us-central1-1.gce.redns.redis-cloud.com:13848",
+        )
         redis_use_tls = os.getenv("REDIS_USE_TLS", "false").lower() == "true"
-        
+
         # Set defaults for security headers
-        enable_security_headers = os.getenv("ENABLE_SECURITY_HEADERS", "true").lower() == "true"
-        
+        enable_security_headers = (
+            os.getenv("ENABLE_SECURITY_HEADERS", "true").lower() == "true"
+        )
+
         # Set defaults for environment
         environment = os.getenv("ENVIRONMENT", "development")
         debug = os.getenv("DEBUG", "false").lower() == "true"
-        
+
         # Initialize parent with all values
         super().__init__(
             jwt_secret_key=jwt_secret_key,
@@ -75,23 +83,23 @@ class SecurityConfig(BaseModel):
             olorin_app_secret=olorin_app_secret or "",
             environment=environment,
             debug=debug,
-            **kwargs
+            **kwargs,
         )
-        
+
         # Validate critical secrets on initialization
         if not self.jwt_secret_key:
             raise ValueError(
                 "JWT_SECRET_KEY secret is required in Firebase Secret Manager. "
                 "Generate with: openssl rand -base64 64"
             )
-        
+
         # For now, allow missing encryption secrets (will be added to Firebase Secret Manager later)
         if self.encryption_password and len(self.encryption_password) < 32:
             logger.warning("ENCRYPTION_PASSWORD should be at least 32 characters long")
-        
+
         if self.encryption_salt and len(self.encryption_salt) < 16:
             logger.warning("ENCRYPTION_SALT should be at least 16 characters long")
-    
+
     # JWT Configuration - From Firebase Secrets
     jwt_secret_key: str
     jwt_algorithm: str = "HS256"
@@ -132,7 +140,7 @@ class SecurityConfig(BaseModel):
     def is_production(self) -> bool:
         """Check if running in production environment."""
         return self.environment.lower() == "production"
-    
+
     def validate_production_settings(self) -> List[str]:
         """Validate security settings for production deployment."""
         issues = []
@@ -140,19 +148,31 @@ class SecurityConfig(BaseModel):
         if self.is_production:
             # Validate required secrets
             if not self.jwt_secret_key:
-                issues.append("JWT_SECRET_KEY secret is required in Firebase Secret Manager for production")
+                issues.append(
+                    "JWT_SECRET_KEY secret is required in Firebase Secret Manager for production"
+                )
             elif len(self.jwt_secret_key) < 32:
-                issues.append("JWT_SECRET_KEY must be at least 32 characters long in production")
+                issues.append(
+                    "JWT_SECRET_KEY must be at least 32 characters long in production"
+                )
 
             if not self.encryption_password:
-                issues.append("ENCRYPTION_PASSWORD secret is required in Firebase Secret Manager for production")
+                issues.append(
+                    "ENCRYPTION_PASSWORD secret is required in Firebase Secret Manager for production"
+                )
             elif len(self.encryption_password) < 32:
-                issues.append("ENCRYPTION_PASSWORD must be at least 32 characters long in production")
+                issues.append(
+                    "ENCRYPTION_PASSWORD must be at least 32 characters long in production"
+                )
 
             if not self.encryption_salt:
-                issues.append("ENCRYPTION_SALT secret is required in Firebase Secret Manager for production")
+                issues.append(
+                    "ENCRYPTION_SALT secret is required in Firebase Secret Manager for production"
+                )
             elif len(self.encryption_salt) < 16:
-                issues.append("ENCRYPTION_SALT must be at least 16 characters long in production")
+                issues.append(
+                    "ENCRYPTION_SALT must be at least 16 characters long in production"
+                )
 
             if not self.olorin_api_key:
                 issues.append("OLORIN_API_KEY must be set in production")

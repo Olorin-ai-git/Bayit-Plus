@@ -12,9 +12,10 @@ Constitutional Compliance:
 - Tests guide index creation
 """
 
-import pytest
 import time
-from typing import Dict, Any, List
+from typing import Any, Dict, List
+
+import pytest
 
 from app.service.agent.tools.database_tool.database_factory import get_database_provider
 
@@ -24,7 +25,7 @@ class TestEmailIndexPerformance:
 
     def test_email_lookup_uses_index(self):
         """Test that email lookup queries use the index."""
-        pg_provider = get_database_provider('postgresql')
+        pg_provider = get_database_provider("postgresql")
 
         query = "SELECT * FROM transactions_enriched WHERE EMAIL = 'test@example.com' LIMIT 10"
 
@@ -34,21 +35,21 @@ class TestEmailIndexPerformance:
         duration = time.time() - start
 
         # Email lookup with index should be fast (< 50ms)
-        assert duration < 0.05, f"Email lookup too slow: {duration:.3f}s (expected < 0.05s)"
+        assert (
+            duration < 0.05
+        ), f"Email lookup too slow: {duration:.3f}s (expected < 0.05s)"
 
     def test_email_lookup_performance_consistent(self):
         """Test that email lookup performance is consistent across multiple queries."""
-        pg_provider = get_database_provider('postgresql')
+        pg_provider = get_database_provider("postgresql")
 
-        emails = [
-            'test@example.com',
-            'user@test.com',
-            'another@example.com'
-        ]
+        emails = ["test@example.com", "user@test.com", "another@example.com"]
 
         durations = []
         for email in emails:
-            query = f"SELECT * FROM transactions_enriched WHERE EMAIL = '{email}' LIMIT 10"
+            query = (
+                f"SELECT * FROM transactions_enriched WHERE EMAIL = '{email}' LIMIT 10"
+            )
 
             start = time.time()
             pg_provider.execute_query(query)
@@ -59,12 +60,14 @@ class TestEmailIndexPerformance:
         avg_duration = sum(durations) / len(durations)
         max_duration = max(durations)
 
-        assert avg_duration < 0.05, f"Average email lookup too slow: {avg_duration:.3f}s"
+        assert (
+            avg_duration < 0.05
+        ), f"Average email lookup too slow: {avg_duration:.3f}s"
         assert max_duration < 0.1, f"Slowest email lookup too slow: {max_duration:.3f}s"
 
     def test_email_pattern_search_performance(self):
         """Test LIKE pattern search on email with index."""
-        pg_provider = get_database_provider('postgresql')
+        pg_provider = get_database_provider("postgresql")
 
         # Pattern search (may not use index depending on pattern)
         query = "SELECT * FROM transactions_enriched WHERE EMAIL LIKE '%@example.com' LIMIT 50"
@@ -82,7 +85,7 @@ class TestDateIndexPerformance:
 
     def test_date_range_query_uses_index(self):
         """Test that date range queries use the index."""
-        pg_provider = get_database_provider('postgresql')
+        pg_provider = get_database_provider("postgresql")
 
         query = """
             SELECT TX_ID_KEY, EMAIL, TX_DATETIME
@@ -100,7 +103,7 @@ class TestDateIndexPerformance:
 
     def test_date_comparison_performance(self):
         """Test date comparison queries with index."""
-        pg_provider = get_database_provider('postgresql')
+        pg_provider = get_database_provider("postgresql")
 
         query = """
             SELECT COUNT(*) as count
@@ -117,7 +120,7 @@ class TestDateIndexPerformance:
 
     def test_date_sorting_performance(self):
         """Test ORDER BY TX_DATETIME performance with index."""
-        pg_provider = get_database_provider('postgresql')
+        pg_provider = get_database_provider("postgresql")
 
         query = """
             SELECT TX_ID_KEY, TX_DATETIME
@@ -139,7 +142,7 @@ class TestCompositeIndexPerformance:
 
     def test_composite_index_date_and_email(self):
         """Test queries using both date and email filters."""
-        pg_provider = get_database_provider('postgresql')
+        pg_provider = get_database_provider("postgresql")
 
         query = """
             SELECT TX_ID_KEY, EMAIL, TX_DATETIME, MODEL_SCORE
@@ -158,7 +161,7 @@ class TestCompositeIndexPerformance:
 
     def test_composite_index_date_range_and_email_pattern(self):
         """Test composite index with date range and email pattern."""
-        pg_provider = get_database_provider('postgresql')
+        pg_provider = get_database_provider("postgresql")
 
         query = """
             SELECT TX_ID_KEY, EMAIL, TX_DATETIME
@@ -181,7 +184,7 @@ class TestModelScoreIndexPerformance:
 
     def test_model_score_filter_performance(self):
         """Test filtering by MODEL_SCORE uses index."""
-        pg_provider = get_database_provider('postgresql')
+        pg_provider = get_database_provider("postgresql")
 
         query = """
             SELECT TX_ID_KEY, EMAIL, MODEL_SCORE
@@ -199,7 +202,7 @@ class TestModelScoreIndexPerformance:
 
     def test_model_score_range_query_performance(self):
         """Test MODEL_SCORE range queries."""
-        pg_provider = get_database_provider('postgresql')
+        pg_provider = get_database_provider("postgresql")
 
         query = """
             SELECT TX_ID_KEY, MODEL_SCORE
@@ -217,7 +220,7 @@ class TestModelScoreIndexPerformance:
 
     def test_model_score_sorting_performance(self):
         """Test ORDER BY MODEL_SCORE performance."""
-        pg_provider = get_database_provider('postgresql')
+        pg_provider = get_database_provider("postgresql")
 
         query = """
             SELECT TX_ID_KEY, MODEL_SCORE
@@ -239,7 +242,7 @@ class TestIndexCoverage:
 
     def test_investigation_workflow_query_performance(self):
         """Test typical investigation workflow query performance."""
-        pg_provider = get_database_provider('postgresql')
+        pg_provider = get_database_provider("postgresql")
 
         # Typical investigation query: email + recent date range + high risk
         query = """
@@ -260,7 +263,7 @@ class TestIndexCoverage:
 
     def test_high_risk_recent_transactions_query(self):
         """Test query for high-risk recent transactions."""
-        pg_provider = get_database_provider('postgresql')
+        pg_provider = get_database_provider("postgresql")
 
         query = """
             SELECT TX_ID_KEY, EMAIL, TX_DATETIME, MODEL_SCORE
@@ -280,7 +283,7 @@ class TestIndexCoverage:
 
     def test_user_transaction_history_query(self):
         """Test query for user's complete transaction history."""
-        pg_provider = get_database_provider('postgresql')
+        pg_provider = get_database_provider("postgresql")
 
         query = """
             SELECT TX_ID_KEY, TX_DATETIME, MODEL_SCORE
@@ -303,14 +306,14 @@ class TestIndexMaintenanceOverhead:
 
     def test_insert_performance_with_indexes(self):
         """Test that INSERT performance is acceptable with indexes."""
-        pg_provider = get_database_provider('postgresql')
+        pg_provider = get_database_provider("postgresql")
 
         # Prepare test record
         test_record = {
-            'TX_ID_KEY': 'TEST_INSERT_001',
-            'EMAIL': 'index_test@example.com',
-            'TX_DATETIME': 'CURRENT_TIMESTAMP',
-            'MODEL_SCORE': 0.75
+            "TX_ID_KEY": "TEST_INSERT_001",
+            "EMAIL": "index_test@example.com",
+            "TX_DATETIME": "CURRENT_TIMESTAMP",
+            "MODEL_SCORE": 0.75,
         }
 
         # Insert with indexes present
@@ -328,5 +331,7 @@ class TestIndexMaintenanceOverhead:
         assert duration < 0.1, f"INSERT too slow with indexes: {duration:.3f}s"
 
         # Cleanup
-        cleanup_query = "DELETE FROM transactions_enriched WHERE TX_ID_KEY = 'TEST_INSERT_001'"
+        cleanup_query = (
+            "DELETE FROM transactions_enriched WHERE TX_ID_KEY = 'TEST_INSERT_001'"
+        )
         pg_provider.execute_query(cleanup_query)

@@ -4,8 +4,8 @@ Fraud Detection Indicator Identification
 Identifies specific fraud indicators from all models.
 """
 
-from typing import Any, Dict, List
 from collections import Counter
+from typing import Any, Dict, List
 
 
 class FraudIndicatorIdentification:

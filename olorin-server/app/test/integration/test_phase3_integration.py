@@ -8,26 +8,24 @@ SYSTEM MANDATE Compliance:
 - Type-safe: All parameters and returns properly typed
 """
 
-import pytest
+import os
 import time
 from datetime import datetime, timedelta
-from typing import Dict, Any
+from typing import Any, Dict
+
+import pytest
 from fastapi.testclient import TestClient
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
 from app.main import app
-from app.persistence.database import get_db
-from app.models.investigation_state import InvestigationState
-from app.models.investigation_audit_log import InvestigationAuditLog
 from app.models.base import Base
-import os
+from app.models.investigation_audit_log import InvestigationAuditLog
+from app.models.investigation_state import InvestigationState
+from app.persistence.database import get_db
 
 # Test database configuration
-TEST_DATABASE_URL = os.getenv(
-    "TEST_DATABASE_URL",
-    "sqlite:///./test_phase3.db"
-)
+TEST_DATABASE_URL = os.getenv("TEST_DATABASE_URL", "sqlite:///./test_phase3.db")
 
 
 @pytest.fixture(scope="module")
@@ -60,10 +58,7 @@ def client(test_db):
 @pytest.fixture
 def auth_headers():
     """Get authentication headers for test user."""
-    return {
-        "Authorization": "Bearer test-token",
-        "X-User-Id": "test-user-001"
-    }
+    return {"Authorization": "Bearer test-token", "X-User-Id": "test-user-001"}
 
 
 class TestInvestigationStateEndpoint:
@@ -82,15 +77,13 @@ class TestInvestigationStateEndpoint:
                 "entities": [{"entity_type": "user_id", "entity_value": "user123"}],
                 "time_range": {"duration_hours": 24},
                 "tools": [{"tool_name": "device_analyzer", "enabled": True}],
-                "correlation_mode": "OR"
-            }
+                "correlation_mode": "OR",
+            },
         }
 
         # Create investigation
         response = client.post(
-            "/api/v1/investigation-state/",
-            json=create_data,
-            headers=auth_headers
+            "/api/v1/investigation-state/", json=create_data, headers=auth_headers
         )
         assert response.status_code == 201
 
@@ -104,33 +97,32 @@ class TestInvestigationStateEndpoint:
                         "status": "COMPLETED",
                         "tools_executed": [
                             {"tool_name": "device_analyzer", "status": "COMPLETED"},
-                            {"tool_name": "location_analyzer", "status": "COMPLETED"}
-                        ]
+                            {"tool_name": "location_analyzer", "status": "COMPLETED"},
+                        ],
                     },
                     {
                         "phase_name": "Analysis",
                         "status": "IN_PROGRESS",
                         "tools_executed": [
                             {"tool_name": "risk_scorer", "status": "RUNNING"}
-                        ]
-                    }
+                        ],
+                    },
                 ],
                 "percent_complete": 40,
-                "current_phase": "Analysis"
-            }
+                "current_phase": "Analysis",
+            },
         }
 
         response = client.put(
             f"/api/v1/investigation-state/{investigation_id}",
             json=update_data,
-            headers=auth_headers
+            headers=auth_headers,
         )
         assert response.status_code == 200
 
         # Get state with progress
         response = client.get(
-            f"/api/v1/investigation-state/{investigation_id}",
-            headers=auth_headers
+            f"/api/v1/investigation-state/{investigation_id}", headers=auth_headers
         )
         assert response.status_code == 200
 
@@ -154,13 +146,11 @@ class TestInvestigationStateEndpoint:
         create_data = {
             "investigation_id": investigation_id,
             "lifecycle_stage": "CREATED",
-            "status": "CREATED"
+            "status": "CREATED",
         }
 
         response = client.post(
-            "/api/v1/investigation-state/",
-            json=create_data,
-            headers=auth_headers
+            "/api/v1/investigation-state/", json=create_data, headers=auth_headers
         )
         assert response.status_code == 201
 
@@ -169,8 +159,7 @@ class TestInvestigationStateEndpoint:
         for _ in range(20):
             start = time.time()
             response = client.get(
-                f"/api/v1/investigation-state/{investigation_id}",
-                headers=auth_headers
+                f"/api/v1/investigation-state/{investigation_id}", headers=auth_headers
             )
             response_times.append((time.time() - start) * 1000)
             assert response.status_code == 200
@@ -197,7 +186,7 @@ class TestInvestigationEventsEndpoint:
             user_id="test-user-001",
             lifecycle_stage="IN_PROGRESS",
             status="IN_PROGRESS",
-            version=1
+            version=1,
         )
         test_db.add(state)
 
@@ -210,7 +199,7 @@ class TestInvestigationEventsEndpoint:
                 from_version=i,
                 to_version=i + 1,
                 source="API",
-                entry_id=f"{int(time.time() * 1000)}_{i:06d}"
+                entry_id=f"{int(time.time() * 1000)}_{i:06d}",
             )
             test_db.add(entry)
 
@@ -219,7 +208,7 @@ class TestInvestigationEventsEndpoint:
         # Test pagination
         response = client.get(
             f"/api/v1/investigations/{investigation_id}/events?limit=2",
-            headers=auth_headers
+            headers=auth_headers,
         )
         assert response.status_code == 200
 
@@ -234,7 +223,7 @@ class TestInvestigationEventsEndpoint:
         if data["next_cursor"]:
             response = client.get(
                 f"/api/v1/investigations/{investigation_id}/events?since={data['next_cursor']}&limit=2",
-                headers=auth_headers
+                headers=auth_headers,
             )
             assert response.status_code == 200
 
@@ -243,7 +232,7 @@ class TestInvestigationEventsEndpoint:
         # Test invalid cursor
         response = client.get(
             "/api/v1/investigations/test-inv/events?since=invalid_cursor",
-            headers=auth_headers
+            headers=auth_headers,
         )
         assert response.status_code == 400
 
@@ -252,25 +241,23 @@ class TestInvestigationEventsEndpoint:
         expired_cursor = f"{old_timestamp}_000001"
         response = client.get(
             f"/api/v1/investigations/test-inv/events?since={expired_cursor}",
-            headers=auth_headers
+            headers=auth_headers,
         )
         assert response.status_code == 400
 
         # Test investigation not found
         response = client.get(
-            "/api/v1/investigations/non-existent/events",
-            headers=auth_headers
+            "/api/v1/investigations/non-existent/events", headers=auth_headers
         )
         assert response.status_code == 404
 
         # Test unauthorized access
         other_user_headers = {
             "Authorization": "Bearer test-token",
-            "X-User-Id": "other-user"
+            "X-User-Id": "other-user",
         }
         response = client.get(
-            "/api/v1/investigations/events-test-001/events",
-            headers=other_user_headers
+            "/api/v1/investigations/events-test-001/events", headers=other_user_headers
         )
         assert response.status_code in [403, 404]
 
@@ -284,7 +271,7 @@ class TestInvestigationEventsEndpoint:
             user_id="test-user-001",
             lifecycle_stage="IN_PROGRESS",
             status="IN_PROGRESS",
-            version=1
+            version=1,
         )
         test_db.add(state)
 
@@ -297,7 +284,7 @@ class TestInvestigationEventsEndpoint:
                 from_version=i,
                 to_version=i + 1,
                 source="API",
-                entry_id=f"{int(time.time() * 1000)}_{i:06d}"
+                entry_id=f"{int(time.time() * 1000)}_{i:06d}",
             )
             test_db.add(entry)
 
@@ -309,7 +296,7 @@ class TestInvestigationEventsEndpoint:
             start = time.time()
             response = client.get(
                 f"/api/v1/investigations/{investigation_id}/events?limit=50",
-                headers=auth_headers
+                headers=auth_headers,
             )
             response_times.append((time.time() - start) * 1000)
             assert response.status_code == 200
@@ -329,40 +316,30 @@ class TestAuthorizationChecks:
     def test_row_level_security(self, client, test_db):
         """Test that users can only access their own investigations."""
         # Create investigation for user1
-        user1_headers = {
-            "Authorization": "Bearer test-token",
-            "X-User-Id": "user1"
-        }
+        user1_headers = {"Authorization": "Bearer test-token", "X-User-Id": "user1"}
 
         create_data = {
             "investigation_id": "user1-inv-001",
             "lifecycle_stage": "CREATED",
-            "status": "CREATED"
+            "status": "CREATED",
         }
 
         response = client.post(
-            "/api/v1/investigation-state/",
-            json=create_data,
-            headers=user1_headers
+            "/api/v1/investigation-state/", json=create_data, headers=user1_headers
         )
         assert response.status_code == 201
 
         # Try to access with user2
-        user2_headers = {
-            "Authorization": "Bearer test-token",
-            "X-User-Id": "user2"
-        }
+        user2_headers = {"Authorization": "Bearer test-token", "X-User-Id": "user2"}
 
         response = client.get(
-            "/api/v1/investigation-state/user1-inv-001",
-            headers=user2_headers
+            "/api/v1/investigation-state/user1-inv-001", headers=user2_headers
         )
         assert response.status_code == 403
 
         # User1 should be able to access
         response = client.get(
-            "/api/v1/investigation-state/user1-inv-001",
-            headers=user1_headers
+            "/api/v1/investigation-state/user1-inv-001", headers=user1_headers
         )
         assert response.status_code == 200
 
@@ -374,13 +351,11 @@ class TestAuthorizationChecks:
         create_data = {
             "investigation_id": investigation_id,
             "lifecycle_stage": "IN_PROGRESS",
-            "status": "IN_PROGRESS"
+            "status": "IN_PROGRESS",
         }
 
         response = client.post(
-            "/api/v1/investigation-state/",
-            json=create_data,
-            headers=auth_headers
+            "/api/v1/investigation-state/", json=create_data, headers=auth_headers
         )
         assert response.status_code == 201
 
@@ -394,24 +369,23 @@ class TestAuthorizationChecks:
                         "status": "COMPLETED",
                         "tools_executed": [
                             {"tool_name": "tool1", "status": "COMPLETED"}
-                        ]
+                        ],
                     }
                 ],
-                "percent_complete": 20
-            }
+                "percent_complete": 20,
+            },
         }
 
         response = client.put(
             f"/api/v1/investigation-state/{investigation_id}",
             json=update_data,
-            headers=auth_headers
+            headers=auth_headers,
         )
         assert response.status_code == 200
 
         # Get state and verify progress
         response = client.get(
-            f"/api/v1/investigation-state/{investigation_id}",
-            headers=auth_headers
+            f"/api/v1/investigation-state/{investigation_id}", headers=auth_headers
         )
         assert response.status_code == 200
 

@@ -12,8 +12,8 @@ SYSTEM MANDATE Compliance:
 - No ORM auto-sync features
 """
 
-import os
 import logging
+import os
 from pathlib import Path
 from typing import List, Optional
 
@@ -50,56 +50,68 @@ class MigrationRunner:
 
     def _is_postgresql_specific(self, migration_file: Path) -> bool:
         """Check if migration file is PostgreSQL-specific.
-        
+
         Note: All migrations are now PostgreSQL-specific (SQLite support removed).
         This method checks for Snowflake-specific syntax to exclude those.
         """
         # Skip SQLite-specific files (should not exist after consolidation)
         filename = migration_file.name.lower()
-        if filename.endswith('_sqlite.sql'):
-            logger.warning(f"Found SQLite-specific migration file {migration_file.name} - SQLite support has been removed. Skipping.")
+        if filename.endswith("_sqlite.sql"):
+            logger.warning(
+                f"Found SQLite-specific migration file {migration_file.name} - SQLite support has been removed. Skipping."
+            )
             return False
-        
+
         # All non-Snowflake migrations are PostgreSQL-specific
         return not self._is_snowflake_specific(migration_file)
-    
+
     def _is_snowflake_specific(self, migration_file: Path) -> bool:
         """Check if migration file is Snowflake-specific."""
         # Note: Analytics tables are now in PostgreSQL, so we only skip
         # files that contain actual Snowflake-specific syntax (not table names)
-        
+
         # Check content for Snowflake-specific syntax
         try:
             content = migration_file.read_text().upper()
             snowflake_keywords = [
-                'DYNAMIC TABLE', 'SNOWPIPE STREAMING', 'VARIANT', 'TARGET_LAG',
-                'WAREHOUSE', 'CREATE OR REPLACE DYNAMIC TABLE'
+                "DYNAMIC TABLE",
+                "SNOWPIPE STREAMING",
+                "VARIANT",
+                "TARGET_LAG",
+                "WAREHOUSE",
+                "CREATE OR REPLACE DYNAMIC TABLE",
             ]
             if any(keyword in content for keyword in snowflake_keywords):
                 return True
         except Exception:
             pass
-        
+
         return False
 
     def _get_database_type(self) -> str:
         """Detect database type from connection.
-        
+
         Note: SQLite support has been removed. All non-Snowflake databases are PostgreSQL.
         """
         try:
             # Check connection URL or dialect
-            url = str(self.db_session.bind.url) if hasattr(self.db_session, 'bind') else ''
-            if 'postgresql' in url.lower() or 'postgres' in url.lower():
-                return 'postgresql'
-            elif 'sqlite' in url.lower():
-                logger.warning("SQLite database detected but SQLite support has been removed. Please use PostgreSQL.")
-                return 'postgresql'  # Treat as PostgreSQL for migration purposes
+            url = (
+                str(self.db_session.bind.url)
+                if hasattr(self.db_session, "bind")
+                else ""
+            )
+            if "postgresql" in url.lower() or "postgres" in url.lower():
+                return "postgresql"
+            elif "sqlite" in url.lower():
+                logger.warning(
+                    "SQLite database detected but SQLite support has been removed. Please use PostgreSQL."
+                )
+                return "postgresql"  # Treat as PostgreSQL for migration purposes
         except Exception:
             pass
-        
+
         # Fallback: assume PostgreSQL (SQLite support removed)
-        return 'postgresql'
+        return "postgresql"
 
     def execute_migration(self, migration_file: Path) -> None:
         """Execute a single migration file.
@@ -111,22 +123,28 @@ class MigrationRunner:
             Exception: If migration execution fails
         """
         logger.debug(f"Executing migration: {migration_file.name}")
-        
+
         # Skip SQLite-specific files (SQLite support removed)
-        if migration_file.name.endswith('_sqlite.sql'):
-            logger.info(f"Skipping SQLite-specific migration {migration_file.name} (SQLite support removed)")
+        if migration_file.name.endswith("_sqlite.sql"):
+            logger.info(
+                f"Skipping SQLite-specific migration {migration_file.name} (SQLite support removed)"
+            )
             return
 
         # Check if migration is Snowflake-specific (skip for PostgreSQL)
         if self._is_snowflake_specific(migration_file):
             logger.info(f"Skipping Snowflake-specific migration {migration_file.name}")
-            logger.info(f"  Note: Snowflake migrations must be run separately against Snowflake database")
+            logger.info(
+                f"  Note: Snowflake migrations must be run separately against Snowflake database"
+            )
             return
 
         # All remaining migrations are PostgreSQL-specific
         db_type = self._get_database_type()
-        if db_type != 'postgresql':
-            logger.warning(f"Database type is {db_type}, but only PostgreSQL is supported. Skipping migration {migration_file.name}")
+        if db_type != "postgresql":
+            logger.warning(
+                f"Database type is {db_type}, but only PostgreSQL is supported. Skipping migration {migration_file.name}"
+            )
             return
 
         try:
@@ -137,11 +155,13 @@ class MigrationRunner:
             # Simple approach: execute entire file as-is (PostgreSQL supports this)
             # This handles functions with $$ delimiters correctly
             db_type = self._get_database_type()
-            
-            if db_type == 'postgresql':
+
+            if db_type == "postgresql":
                 # PostgreSQL: Execute entire file using psycopg2 directly
                 # This handles dollar-quoted strings ($$) and functions correctly
-                logger.debug(f"Executing PostgreSQL migration file: {migration_file.name}")
+                logger.debug(
+                    f"Executing PostgreSQL migration file: {migration_file.name}"
+                )
                 try:
                     # Get raw DBAPI connection (psycopg2)
                     raw_connection = self.db_session.connection().connection
@@ -150,7 +170,9 @@ class MigrationRunner:
                     cursor.execute(sql_content)
                     cursor.close()
                     raw_connection.commit()
-                    logger.debug(f"Migration executed successfully: {migration_file.name}")
+                    logger.debug(
+                        f"Migration executed successfully: {migration_file.name}"
+                    )
                 except Exception as e:
                     logger.error(f"Migration failed: {migration_file.name} - {e}")
                     raw_connection.rollback()
@@ -159,15 +181,15 @@ class MigrationRunner:
                 # For other databases, parse statements by semicolon
                 statements = []
                 current_stmt = []
-                for line in sql_content.split('\n'):
+                for line in sql_content.split("\n"):
                     stripped = line.strip()
                     # Skip comment-only lines and empty lines
-                    if stripped.startswith('--') or not stripped:
+                    if stripped.startswith("--") or not stripped:
                         continue
                     current_stmt.append(line)
                     # Statement ends with semicolon
-                    if stripped.endswith(';'):
-                        stmt_text = '\n'.join(current_stmt).strip()
+                    if stripped.endswith(";"):
+                        stmt_text = "\n".join(current_stmt).strip()
                         if stmt_text:
                             statements.append(stmt_text)
                         current_stmt = []
@@ -178,14 +200,24 @@ class MigrationRunner:
                 for idx, statement in enumerate(statements, 1):
                     if statement:
                         # Log first 100 chars of statement for debugging
-                        stmt_preview = statement[:100] + "..." if len(statement) > 100 else statement
-                        logger.debug(f"  [{idx}/{len(statements)}] Executing: {stmt_preview}")
+                        stmt_preview = (
+                            statement[:100] + "..."
+                            if len(statement) > 100
+                            else statement
+                        )
+                        logger.debug(
+                            f"  [{idx}/{len(statements)}] Executing: {stmt_preview}"
+                        )
 
                         try:
                             self.db_session.execute(text(statement))
-                            logger.debug(f"  [{idx}/{len(statements)}] Statement executed successfully")
+                            logger.debug(
+                                f"  [{idx}/{len(statements)}] Statement executed successfully"
+                            )
                         except Exception as stmt_error:
-                            logger.error(f"  [{idx}/{len(statements)}] Statement failed: {stmt_preview}")
+                            logger.error(
+                                f"  [{idx}/{len(statements)}] Statement failed: {stmt_preview}"
+                            )
                             logger.error(f"  Error details: {stmt_error}")
                             raise
 
@@ -212,10 +244,14 @@ class MigrationRunner:
         logger.debug(f"Found {len(migration_files)} migration file(s)")
 
         # Exclude SQLite-specific files (SQLite support removed)
-        migration_files = [f for f in migration_files if not f.name.endswith('_sqlite.sql')]
-        
+        migration_files = [
+            f for f in migration_files if not f.name.endswith("_sqlite.sql")
+        ]
+
         # Exclude Snowflake-specific files (run separately)
-        migration_files = [f for f in migration_files if not self._is_snowflake_specific(f)]
+        migration_files = [
+            f for f in migration_files if not self._is_snowflake_specific(f)
+        ]
 
         logger.debug(f"Filtered to {len(migration_files)} PostgreSQL migration file(s)")
 
@@ -236,25 +272,26 @@ class MigrationRunner:
         expected_tables = [
             "investigation_states",
             "investigation_templates",
-            "investigation_audit_log"
+            "investigation_audit_log",
         ]
 
         try:
             # Use PostgreSQL-compatible query (information_schema)
             # SQLite support has been removed - PostgreSQL only
             result = self.db_session.execute(
-                text("""
+                text(
+                    """
                     SELECT table_name 
                     FROM information_schema.tables 
                     WHERE table_schema = 'public' 
                     AND table_type = 'BASE TABLE'
-                """)
+                """
+                )
             )
             existing_tables = {row[0] for row in result}
 
             missing_tables = [
-                table for table in expected_tables
-                if table not in existing_tables
+                table for table in expected_tables if table not in existing_tables
             ]
 
             if missing_tables:

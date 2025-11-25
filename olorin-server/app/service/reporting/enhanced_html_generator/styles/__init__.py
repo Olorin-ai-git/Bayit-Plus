@@ -5,10 +5,10 @@ Styles package for Enhanced HTML Report Generator.
 Provides CSS generation for themes, components, and responsive design.
 """
 
+from ..data_models import ReportTheme
 from .base import BaseStyleGenerator, ThemeGenerator
 from .components import ComponentStyleGenerator
 from .responsive import ResponsiveStyleGenerator
-from ..data_models import ReportTheme
 
 
 class StyleManager:
@@ -41,7 +41,7 @@ class StyleManager:
             ResponsiveStyleGenerator.get_all_responsive_styles(),
             "",
             "/* Animation Classes */",
-            self._get_animation_styles()
+            self._get_animation_styles(),
         ]
 
         return "\n".join(css_parts)
@@ -61,10 +61,10 @@ class StyleManager:
 
 
 __all__ = [
-    'BaseStyleGenerator',
-    'ThemeGenerator',
-    'ComponentStyleGenerator',
-    'ResponsiveStyleGenerator',
-    'StyleManager',
-    'ReportTheme'
+    "BaseStyleGenerator",
+    "ThemeGenerator",
+    "ComponentStyleGenerator",
+    "ResponsiveStyleGenerator",
+    "StyleManager",
+    "ReportTheme",
 ]

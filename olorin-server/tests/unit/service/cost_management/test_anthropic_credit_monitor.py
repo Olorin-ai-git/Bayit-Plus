@@ -10,16 +10,17 @@ Plan: /docs/plans/2025-09-07-api-cost-management-system-plan.md
 """
 
 import asyncio
+from datetime import datetime, timedelta
+from typing import Any, Dict
+
 import pytest
 import pytest_asyncio
-from datetime import datetime, timedelta
-from typing import Dict, Any
 
 from app.service.cost_management.anthropic_credit_monitor import (
     AnthropicCreditMonitor,
-    CreditStatus,
-    CreditBalance,
     CostEstimate,
+    CreditBalance,
+    CreditStatus,
     get_credit_monitor,
     shutdown_credit_monitor,
 )
@@ -40,7 +41,7 @@ class TestAnthropicCreditMonitor:
         assert credit_monitor.thresholds["weekly_budget"] == 2000.0
         assert credit_monitor.thresholds["monthly_budget"] == 8000.0
         assert credit_monitor.thresholds["minimum_balance"] == 50.0
-        
+
         assert credit_monitor._daily_usage == 0.0
         assert credit_monitor._weekly_usage == 0.0
         assert credit_monitor._monthly_usage == 0.0
@@ -121,7 +122,7 @@ class TestAnthropicCreditMonitor:
             output_tokens=1500,
             model="claude-3-sonnet-20240229",
             estimated_cost=test_cost,
-            timestamp=datetime.now()
+            timestamp=datetime.now(),
         )
 
         await credit_monitor.track_request_usage(cost_estimate)
@@ -138,7 +139,7 @@ class TestAnthropicCreditMonitor:
             output_tokens=1200,
             model="claude-3-haiku-20240307",
             estimated_cost=additional_cost,
-            timestamp=datetime.now()
+            timestamp=datetime.now(),
         )
 
         await credit_monitor.track_request_usage(additional_estimate)
@@ -202,9 +203,7 @@ class TestAnthropicCreditMonitor:
 
         # Update thresholds
         credit_monitor.update_thresholds(
-            daily_budget=750.0,
-            weekly_budget=3000.0,
-            warning_threshold=0.75
+            daily_budget=750.0, weekly_budget=3000.0, warning_threshold=0.75
         )
 
         # Verify updates
@@ -221,7 +220,7 @@ class TestAnthropicCreditMonitor:
         )
         api_cost_monitor.track_call(2000, 1500, "claude-3-sonnet-20240229")
 
-        # Synthetic Identity Investigation Scenario  
+        # Synthetic Identity Investigation Scenario
         synthetic_id_estimate = await credit_monitor.estimate_request_cost(
             "claude-opus-4-1-20250805", 3500, 2500  # High complexity
         )
@@ -234,14 +233,19 @@ class TestAnthropicCreditMonitor:
         api_cost_monitor.track_call(4000, 3000, "claude-opus-4-1-20250805")
 
         # Verify cost escalation matches complexity
-        assert device_analysis_estimate.estimated_cost < synthetic_id_estimate.estimated_cost
+        assert (
+            device_analysis_estimate.estimated_cost
+            < synthetic_id_estimate.estimated_cost
+        )
         assert synthetic_id_estimate.estimated_cost < ml_estimate.estimated_cost
 
         # Track total investigation cost
-        total_cost = (device_analysis_estimate.estimated_cost + 
-                     synthetic_id_estimate.estimated_cost + 
-                     ml_estimate.estimated_cost)
-        
+        total_cost = (
+            device_analysis_estimate.estimated_cost
+            + synthetic_id_estimate.estimated_cost
+            + ml_estimate.estimated_cost
+        )
+
         # Verify investigation stays within reasonable bounds
         assert total_cost < 100.0  # Should be well under $100 for a full investigation
 
@@ -262,7 +266,7 @@ class TestAnthropicCreditMonitor:
         # Instead, we verify the health check handles normal conditions properly
         assert health_status["status"] == "healthy"
 
-    @pytest.mark.asyncio  
+    @pytest.mark.asyncio
     async def test_cache_behavior(self, credit_monitor):
         """Test balance caching behavior and expiry."""
         # First call should fetch fresh data
@@ -286,23 +290,23 @@ class TestAnthropicCreditMonitor:
             {
                 "daily_usage": 400.0,  # Warning level
                 "balance": 200.0,
-                "expected_recommendations": ["WARNING", "lower-cost models"]
+                "expected_recommendations": ["WARNING", "lower-cost models"],
             },
             {
                 "daily_usage": 475.0,  # Critical level
                 "balance": 75.0,
-                "expected_recommendations": ["URGENT", "emergency cost optimization"]
+                "expected_recommendations": ["URGENT", "emergency cost optimization"],
             },
             {
                 "daily_usage": 100.0,  # Healthy level
                 "balance": 500.0,
-                "expected_recommendations": []
-            }
+                "expected_recommendations": [],
+            },
         ]
 
         for scenario in test_scenarios:
             credit_monitor._daily_usage = scenario["daily_usage"]
-            
+
             balance = CreditBalance(
                 balance=scenario["balance"],
                 currency="USD",
@@ -310,11 +314,11 @@ class TestAnthropicCreditMonitor:
                 status=credit_monitor._determine_credit_status(scenario["balance"]),
                 daily_usage=scenario["daily_usage"],
                 weekly_usage=scenario["daily_usage"] * 3,
-                monthly_usage=scenario["daily_usage"] * 15
+                monthly_usage=scenario["daily_usage"] * 15,
             )
 
             recommendations = credit_monitor._generate_recommendations(balance)
-            
+
             # Verify recommendations contain expected elements
             rec_text = " ".join(recommendations).lower()
             for expected in scenario["expected_recommendations"]:
@@ -331,17 +335,14 @@ class TestAnthropicCreditMonitor:
                 output_tokens=750 + i * 100,
                 model="claude-3-sonnet-20240229",
                 estimated_cost=5.0 + i,
-                timestamp=datetime.now()
+                timestamp=datetime.now(),
             )
             for i in range(5)
         ]
 
         # Track usage concurrently
-        tasks = [
-            credit_monitor.track_request_usage(estimate)
-            for estimate in estimates
-        ]
-        
+        tasks = [credit_monitor.track_request_usage(estimate) for estimate in estimates]
+
         await asyncio.gather(*tasks)
 
         # Verify all usage was tracked
@@ -356,13 +357,13 @@ class TestAnthropicCreditMonitor:
         # Get global instance
         monitor1 = get_credit_monitor()
         monitor2 = get_credit_monitor()
-        
+
         # Should be same instance
         assert monitor1 is monitor2
 
         # Test shutdown
         await shutdown_credit_monitor()
-        
+
         # New instance should be created after shutdown
         monitor3 = get_credit_monitor()
         assert monitor3 is not monitor1
@@ -383,7 +384,7 @@ class TestCreditStatusEdgeCases:
         status = credit_monitor._determine_credit_status(100.0)
         assert status == CreditStatus.WARNING
 
-        # Test exactly at critical threshold  
+        # Test exactly at critical threshold
         credit_monitor._daily_usage = 475.0  # Exactly 95% of 500
         status = credit_monitor._determine_credit_status(100.0)
         assert status == CreditStatus.CRITICAL
@@ -421,9 +422,9 @@ class TestCreditStatusEdgeCases:
             status=status,
             daily_usage=credit_monitor._daily_usage,
             weekly_usage=credit_monitor._weekly_usage,
-            monthly_usage=credit_monitor._monthly_usage
+            monthly_usage=credit_monitor._monthly_usage,
         )
-        
+
         recommendations = credit_monitor._generate_recommendations(balance)
         assert len(recommendations) > 0
         assert any("budget" in rec.lower() for rec in recommendations)
@@ -451,44 +452,46 @@ class TestCreditMonitorIntegration:
     async def test_performance_overhead(self):
         """Test that credit monitoring adds minimal performance overhead."""
         import time
-        
+
         monitor = AnthropicCreditMonitor()
-        
+
         # Time basic operations
         start_time = time.time()
-        
+
         for _ in range(100):
             await monitor.estimate_request_cost("claude-3-sonnet-20240229", 1000, 1000)
-        
+
         elapsed = time.time() - start_time
         avg_time = elapsed / 100
-        
+
         # Should be well under 1ms per operation
         assert avg_time < 0.001, f"Credit monitoring overhead too high: {avg_time:.4f}s"
 
-    @pytest.mark.asyncio  
+    @pytest.mark.asyncio
     async def test_memory_usage_stability(self):
         """Test that credit monitor doesn't leak memory over time."""
         import gc
         import sys
-        
+
         monitor = AnthropicCreditMonitor()
-        
+
         # Force garbage collection and get baseline
         gc.collect()
         initial_objects = len(gc.get_objects())
-        
+
         # Perform many operations
         for i in range(1000):
             estimate = await monitor.estimate_request_cost(
                 "claude-3-sonnet-20240229", 1000 + i, 1000 + i
             )
             await monitor.track_request_usage(estimate)
-        
+
         # Force garbage collection again
         gc.collect()
         final_objects = len(gc.get_objects())
-        
+
         # Object count shouldn't grow significantly
         object_growth = final_objects - initial_objects
-        assert object_growth < 100, f"Potential memory leak: {object_growth} new objects"
+        assert (
+            object_growth < 100
+        ), f"Potential memory leak: {object_growth} new objects"

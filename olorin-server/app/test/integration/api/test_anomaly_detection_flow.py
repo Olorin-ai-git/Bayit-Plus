@@ -4,17 +4,18 @@ Integration tests for anomaly detection flow.
 Tests the complete detection run flow with database and API integration.
 """
 
-import pytest
-from datetime import datetime, timedelta
-from fastapi.testclient import TestClient
-from unittest.mock import patch, MagicMock
 import uuid
+from datetime import datetime, timedelta
+from unittest.mock import MagicMock, patch
 
-from app.main import app
-from app.models.anomaly import Detector, DetectionRun, AnomalyEvent
-from app.persistence.database import get_db, Base
+import pytest
+from fastapi.testclient import TestClient
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
+
+from app.main import app
+from app.models.anomaly import AnomalyEvent, DetectionRun, Detector
+from app.persistence.database import Base, get_db
 
 TEST_DATABASE_URL = "sqlite:///./test_anomaly.db"
 
@@ -61,9 +62,9 @@ def sample_detector(test_db):
             "robust": True,
             "k": 3.5,
             "persistence": 2,
-            "min_support": 20
+            "min_support": 20,
         },
-        enabled=True
+        enabled=True,
     )
     db.add(detector)
     db.commit()
@@ -77,31 +78,32 @@ def sample_detector(test_db):
 class TestAnomalyDetectionFlow:
     """Integration tests for anomaly detection flow."""
 
-    @patch('app.service.anomaly.data.windows.get_database_provider')
+    @patch("app.service.anomaly.data.windows.get_database_provider")
     def test_detection_run_flow(self, mock_provider, client, sample_detector):
         """Test complete detection run flow."""
         # Mock Snowflake data
         mock_snowflake = MagicMock()
         mock_snowflake.execute_query.return_value = [
             {
-                'window_start': '2024-01-01T00:00:00',
-                'window_end': '2024-01-01T00:15:00',
-                'decline_rate': 0.05
-            } for _ in range(50)
+                "window_start": "2024-01-01T00:00:00",
+                "window_end": "2024-01-01T00:15:00",
+                "decline_rate": 0.05,
+            }
+            for _ in range(50)
         ]
         mock_provider.return_value = mock_snowflake
 
         # Trigger detection run
         window_from = datetime.now() - timedelta(days=1)
         window_to = datetime.now()
-        
+
         response = client.post(
             "/v1/analytics/anomalies/detect",
             json={
                 "detector_id": str(sample_detector.id),
                 "window_from": window_from.isoformat(),
-                "window_to": window_to.isoformat()
-            }
+                "window_to": window_to.isoformat(),
+            },
         )
 
         assert response.status_code == 202
@@ -120,19 +122,19 @@ class TestAnomalyDetectionFlow:
             cohort_by=["merchant_id"],
             metrics=["decline_rate"],
             params={"k": 3.5},
-            enabled=True
+            enabled=True,
         )
         db.add(detector)
-        
+
         run = DetectionRun(
             id=uuid.uuid4(),
             detector_id=detector.id,
             status="success",
             window_from=datetime.now() - timedelta(days=1),
-            window_to=datetime.now()
+            window_to=datetime.now(),
         )
         db.add(run)
-        
+
         anomaly = AnomalyEvent(
             id=uuid.uuid4(),
             run_id=run.id,
@@ -146,18 +148,17 @@ class TestAnomalyDetectionFlow:
             score=4.5,
             severity="critical",
             persisted_n=2,
-            status="new"
+            status="new",
         )
         db.add(anomaly)
         db.commit()
 
         # Query anomalies
         response = client.get("/v1/analytics/anomalies?limit=10")
-        
+
         assert response.status_code == 200
         data = response.json()
         assert "anomalies" in data
         assert len(data["anomalies"]) >= 1
 
         db.close()
-

@@ -6,10 +6,10 @@ Handles file I/O for A/B testing experiment persistence.
 Week 8 Phase 3 implementation.
 """
 
-import logging
 import json
-from typing import Dict, Any
+import logging
 from pathlib import Path
+from typing import Any, Dict
 
 logger = logging.getLogger(__name__)
 
@@ -28,7 +28,7 @@ def load_experiments_data(experiments_file: str) -> Dict[str, Dict[str, Any]]:
         return {}
 
     try:
-        with open(experiments_file, 'r') as f:
+        with open(experiments_file, "r") as f:
             data = json.load(f)
         return data
     except Exception as e:
@@ -36,7 +36,9 @@ def load_experiments_data(experiments_file: str) -> Dict[str, Dict[str, Any]]:
         return {}
 
 
-def save_experiments_data(experiments_file: str, data: Dict[str, Dict[str, Any]]) -> bool:
+def save_experiments_data(
+    experiments_file: str, data: Dict[str, Dict[str, Any]]
+) -> bool:
     """
     Save experiments data to JSON file.
 
@@ -48,7 +50,7 @@ def save_experiments_data(experiments_file: str, data: Dict[str, Dict[str, Any]]
         True if saved successfully, False otherwise
     """
     try:
-        with open(experiments_file, 'w') as f:
+        with open(experiments_file, "w") as f:
             json.dump(data, f, indent=2)
         return True
     except Exception as e:

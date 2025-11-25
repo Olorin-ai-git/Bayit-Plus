@@ -4,12 +4,14 @@ Main Pattern Recognition Tool class.
 Orchestrates pattern recognition across different algorithms and types.
 """
 
-from typing import Any, Dict, Optional, List
-from langchain.tools import BaseTool
 import json
 from datetime import datetime
+from typing import Any, Dict, List, Optional
+
+from langchain.tools import BaseTool
 
 from app.service.logging import get_bridge_logger
+
 from .models import PatternRecognitionInput
 
 logger = get_bridge_logger(__name__)
@@ -57,7 +59,7 @@ class PatternRecognitionTool(BaseTool):
         minimum_support: float = 0.1,
         historical_patterns: Optional[Dict[str, Any]] = None,
         learning_enabled: bool = True,
-        **kwargs: Any
+        **kwargs: Any,
     ) -> str:
         """Execute pattern recognition analysis."""
         try:
@@ -68,11 +70,13 @@ class PatternRecognitionTool(BaseTool):
 
             # Validate input data
             if not data:
-                return json.dumps({
-                    "success": False,
-                    "error": "No data provided for pattern recognition",
-                    "recognition_mode": recognition_mode
-                })
+                return json.dumps(
+                    {
+                        "success": False,
+                        "error": "No data provided for pattern recognition",
+                        "recognition_mode": recognition_mode,
+                    }
+                )
 
             # Initialize recognition results
             recognition_results = {
@@ -84,18 +88,20 @@ class PatternRecognitionTool(BaseTool):
                 "recognized_patterns": {},
                 "pattern_statistics": {},
                 "pattern_evolution": {},
-                "recommendations": []
+                "recommendations": [],
             }
 
             # Import pattern recognition modules
-            from ..utils.preprocessor import DataPreprocessor
-            from ..recognizers import PatternRecognizers
             from ..analyzers import PatternAnalyzers
+            from ..recognizers import PatternRecognizers
+            from ..utils.preprocessor import DataPreprocessor
 
             # Preprocess data for pattern analysis
             preprocessor = DataPreprocessor()
             processed_data = preprocessor.preprocess_for_patterns(data)
-            recognition_results["data_summary"] = preprocessor.generate_data_summary(processed_data)
+            recognition_results["data_summary"] = preprocessor.generate_data_summary(
+                processed_data
+            )
 
             # Execute pattern recognition
             recognizers = PatternRecognizers()
@@ -121,7 +127,7 @@ class PatternRecognitionTool(BaseTool):
             recommendations = analyzers.generate_pattern_recommendations(
                 recognition_results["recognized_patterns"],
                 pattern_stats,
-                recognition_results.get("pattern_evolution", {})
+                recognition_results.get("pattern_evolution", {}),
             )
             recognition_results["recommendations"] = recommendations
 
@@ -133,20 +139,24 @@ class PatternRecognitionTool(BaseTool):
                 recognition_results["learned_patterns"] = learned_patterns
 
             total_patterns = sum(
-                len(patterns.get('patterns', []))
-                for patterns in recognition_results['recognized_patterns'].values()
+                len(patterns.get("patterns", []))
+                for patterns in recognition_results["recognized_patterns"].values()
             )
-            logger.info(f"Pattern recognition completed. Found {total_patterns} patterns")
+            logger.info(
+                f"Pattern recognition completed. Found {total_patterns} patterns"
+            )
 
             return json.dumps(recognition_results, indent=2)
 
         except Exception as e:
             logger.error(f"Error in pattern recognition: {str(e)}")
-            return json.dumps({
-                "success": False,
-                "error": f"Pattern recognition failed: {str(e)}",
-                "recognition_mode": recognition_mode
-            })
+            return json.dumps(
+                {
+                    "success": False,
+                    "error": f"Pattern recognition failed: {str(e)}",
+                    "recognition_mode": recognition_mode,
+                }
+            )
 
     async def _arun(self, *args, **kwargs) -> str:
         """Async version of _run."""

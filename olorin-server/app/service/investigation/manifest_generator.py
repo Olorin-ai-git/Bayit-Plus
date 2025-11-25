@@ -13,7 +13,7 @@ Constitutional Compliance:
 import json
 from datetime import datetime
 from pathlib import Path
-from typing import Dict, Any, Optional, List
+from typing import Any, Dict, List, Optional
 
 from app.config.file_organization_config import FileOrganizationConfig
 from app.service.logging import get_bridge_logger
@@ -24,23 +24,23 @@ logger = get_bridge_logger(__name__)
 class ManifestGenerator:
     """
     Generates manifest.json files for investigations and comparisons.
-    
+
     Manifests provide:
     - Investigation/comparison metadata
     - File references (canonical and entity view paths)
     - Provenance information
     - Timestamps and lifecycle information
     """
-    
+
     def __init__(self, config: Optional[FileOrganizationConfig] = None):
         """
         Initialize manifest generator.
-        
+
         Args:
             config: FileOrganizationConfig instance. If None, creates new instance.
         """
         self.config = config or FileOrganizationConfig()
-    
+
     def generate_investigation_manifest(
         self,
         investigation_id: str,
@@ -58,11 +58,11 @@ class ManifestGenerator:
         updated_at: Optional[datetime] = None,
         completed_at: Optional[datetime] = None,
         metadata: Optional[Dict[str, Any]] = None,
-        file_references: Optional[List[Dict[str, Any]]] = None
+        file_references: Optional[List[Dict[str, Any]]] = None,
     ) -> Dict[str, Any]:
         """
         Generate investigation manifest JSON.
-        
+
         Args:
             investigation_id: Unique investigation identifier
             title: Investigation title
@@ -80,12 +80,12 @@ class ManifestGenerator:
             completed_at: Completion timestamp
             metadata: Additional metadata dictionary
             file_references: List of file references with canonical and entity view paths
-            
+
         Returns:
             Manifest dictionary ready for JSON serialization
         """
         now = datetime.now()
-        
+
         manifest = {
             "manifest_version": "1.0",
             "investigation_id": investigation_id,
@@ -94,26 +94,23 @@ class ManifestGenerator:
             "graph_type": graph_type,
             "trigger_source": trigger_source,
             "status": status or "UNKNOWN",
-            "entity": {
-                "entity_type": entity_type,
-                "entity_ids": entity_ids or []
-            },
+            "entity": {"entity_type": entity_type, "entity_ids": entity_ids or []},
             "tags": tags or [],
             "paths": {
                 "canonical": canonical_path,
-                "entity_views": entity_view_paths or []
+                "entity_views": entity_view_paths or [],
             },
             "timestamps": {
                 "created_at": (created_at or now).isoformat(),
                 "updated_at": (updated_at or now).isoformat(),
-                "completed_at": completed_at.isoformat() if completed_at else None
+                "completed_at": completed_at.isoformat() if completed_at else None,
             },
             "file_references": file_references or [],
-            "metadata": metadata or {}
+            "metadata": metadata or {},
         }
-        
+
         return manifest
-    
+
     def generate_comparison_manifest(
         self,
         comparison_id: str,
@@ -126,11 +123,11 @@ class ManifestGenerator:
         canonical_path: Optional[str] = None,
         entity_view_path: Optional[str] = None,
         created_at: Optional[datetime] = None,
-        metadata: Optional[Dict[str, Any]] = None
+        metadata: Optional[Dict[str, Any]] = None,
     ) -> Dict[str, Any]:
         """
         Generate comparison manifest JSON.
-        
+
         Args:
             comparison_id: Unique comparison identifier
             left_investigation: Investigation ID for left side
@@ -143,12 +140,12 @@ class ManifestGenerator:
             entity_view_path: Entity view path (symlink or indexed view)
             created_at: Creation timestamp
             metadata: Additional metadata dictionary
-            
+
         Returns:
             Manifest dictionary ready for JSON serialization
         """
         now = datetime.now()
-        
+
         manifest = {
             "manifest_version": "1.0",
             "comparison_id": comparison_id,
@@ -156,34 +153,24 @@ class ManifestGenerator:
             "right_investigation": right_investigation,
             "title": title or f"Comparison {comparison_id[:8]}",
             "source_type": source_type,
-            "entity": {
-                "entity_type": entity_type,
-                "entity_id": entity_id
-            },
-            "paths": {
-                "canonical": canonical_path,
-                "entity_view": entity_view_path
-            },
-            "timestamps": {
-                "created_at": (created_at or now).isoformat()
-            },
-            "metadata": metadata or {}
+            "entity": {"entity_type": entity_type, "entity_id": entity_id},
+            "paths": {"canonical": canonical_path, "entity_view": entity_view_path},
+            "timestamps": {"created_at": (created_at or now).isoformat()},
+            "metadata": metadata or {},
         }
-        
+
         return manifest
-    
+
     def save_investigation_manifest(
-        self,
-        manifest: Dict[str, Any],
-        output_path: Optional[Path] = None
+        self, manifest: Dict[str, Any], output_path: Optional[Path] = None
     ) -> Path:
         """
         Save investigation manifest to file.
-        
+
         Args:
             manifest: Manifest dictionary
             output_path: Output path for manifest file. If None, uses canonical_path from manifest.
-            
+
         Returns:
             Path to saved manifest file
         """
@@ -193,29 +180,29 @@ class ManifestGenerator:
                 output_path = Path(canonical_path) / "manifest.json"
             else:
                 investigation_id = manifest.get("investigation_id", "unknown")
-                output_path = Path(f"workspace/investigations/manifest_{investigation_id}.json")
-        
+                output_path = Path(
+                    f"workspace/investigations/manifest_{investigation_id}.json"
+                )
+
         output_path = Path(output_path)
         output_path.parent.mkdir(parents=True, exist_ok=True)
-        
-        with open(output_path, 'w') as f:
+
+        with open(output_path, "w") as f:
             json.dump(manifest, f, indent=2, default=str)
-        
+
         logger.debug(f"Saved investigation manifest: {output_path}")
         return output_path
-    
+
     def save_comparison_manifest(
-        self,
-        manifest: Dict[str, Any],
-        output_path: Optional[Path] = None
+        self, manifest: Dict[str, Any], output_path: Optional[Path] = None
     ) -> Path:
         """
         Save comparison manifest to file.
-        
+
         Args:
             manifest: Manifest dictionary
             output_path: Output path for manifest file. If None, uses canonical_path from manifest.
-            
+
         Returns:
             Path to saved manifest file
         """
@@ -225,14 +212,16 @@ class ManifestGenerator:
                 output_path = Path(canonical_path).parent / "manifest.json"
             else:
                 comparison_id = manifest.get("comparison_id", "unknown")
-                output_path = Path(f"workspace/comparisons/manifest_{comparison_id}.json")
-        
+                output_path = Path(
+                    f"workspace/comparisons/manifest_{comparison_id}.json"
+                )
+
         output_path = Path(output_path)
         output_path.parent.mkdir(parents=True, exist_ok=True)
-        
-        with open(output_path, 'w') as f:
+
+        with open(output_path, "w") as f:
             json.dump(manifest, f, indent=2, default=str)
-        
+
         logger.debug(f"Saved comparison manifest: {output_path}")
         return output_path
 
@@ -247,4 +236,3 @@ def get_manifest_generator() -> ManifestGenerator:
     if _manifest_generator_instance is None:
         _manifest_generator_instance = ManifestGenerator()
     return _manifest_generator_instance
-

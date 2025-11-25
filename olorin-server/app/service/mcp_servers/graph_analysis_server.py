@@ -6,13 +6,14 @@ entity relationship mapping, and anomaly clustering using graph algorithms.
 """
 
 import asyncio
-from typing import Dict, List, Any, Optional, Set, Tuple
-from datetime import datetime, timedelta
 from dataclasses import dataclass
+from datetime import datetime, timedelta
 from enum import Enum
+from typing import Any, Dict, List, Optional, Set, Tuple
 
 from langchain_core.tools import BaseTool, tool
 from pydantic import BaseModel, Field
+
 from app.service.logging import get_bridge_logger
 
 logger = get_bridge_logger(__name__)
@@ -20,6 +21,7 @@ logger = get_bridge_logger(__name__)
 
 class EntityType(str, Enum):
     """Types of entities in the fraud graph."""
+
     USER = "user"
     DEVICE = "device"
     IP = "ip"
@@ -32,6 +34,7 @@ class EntityType(str, Enum):
 
 class RelationshipType(str, Enum):
     """Types of relationships between entities."""
+
     USES_DEVICE = "uses_device"
     FROM_IP = "from_ip"
     HAS_EMAIL = "has_email"
@@ -45,37 +48,57 @@ class RelationshipType(str, Enum):
 # Tool input schemas
 class FraudRingInput(BaseModel):
     """Input schema for fraud ring detection."""
-    seed_entity_id: str = Field(..., description="Starting entity ID for ring detection")
+
+    seed_entity_id: str = Field(
+        ..., description="Starting entity ID for ring detection"
+    )
     entity_type: EntityType = Field(..., description="Type of the seed entity")
     max_depth: int = Field(3, description="Maximum depth to traverse in the graph")
-    min_ring_size: int = Field(3, description="Minimum number of entities to constitute a ring")
-    confidence_threshold: float = Field(0.7, description="Minimum confidence for ring detection")
+    min_ring_size: int = Field(
+        3, description="Minimum number of entities to constitute a ring"
+    )
+    confidence_threshold: float = Field(
+        0.7, description="Minimum confidence for ring detection"
+    )
 
 
 class MoneyFlowInput(BaseModel):
     """Input schema for money flow analysis."""
+
     source_entity: str = Field(..., description="Source entity ID")
     time_window_days: int = Field(30, description="Time window for analysis in days")
-    min_amount: Optional[float] = Field(None, description="Minimum transaction amount to consider")
+    min_amount: Optional[float] = Field(
+        None, description="Minimum transaction amount to consider"
+    )
     max_hops: int = Field(5, description="Maximum hops to trace money flow")
     include_indirect: bool = Field(True, description="Include indirect money flows")
 
 
 class EntityMappingInput(BaseModel):
     """Input schema for entity relationship mapping."""
+
     entity_id: str = Field(..., description="Entity ID to map relationships for")
     entity_type: EntityType = Field(..., description="Type of the entity")
-    relationship_types: Optional[List[RelationshipType]] = Field(None, description="Specific relationships to map")
+    relationship_types: Optional[List[RelationshipType]] = Field(
+        None, description="Specific relationships to map"
+    )
     depth: int = Field(2, description="Depth of relationship mapping")
-    include_metrics: bool = Field(True, description="Include relationship strength metrics")
+    include_metrics: bool = Field(
+        True, description="Include relationship strength metrics"
+    )
 
 
 class AnomalyClusterInput(BaseModel):
     """Input schema for anomaly clustering."""
-    analysis_type: str = Field(..., description="Type of anomaly analysis (velocity, pattern, behavioral)")
+
+    analysis_type: str = Field(
+        ..., description="Type of anomaly analysis (velocity, pattern, behavioral)"
+    )
     time_window_hours: int = Field(24, description="Time window for clustering")
     min_cluster_size: int = Field(2, description="Minimum cluster size")
-    similarity_threshold: float = Field(0.8, description="Similarity threshold for clustering")
+    similarity_threshold: float = Field(
+        0.8, description="Similarity threshold for clustering"
+    )
 
 
 # MCP Server Tools
@@ -85,27 +108,26 @@ async def detect_fraud_rings(
     entity_type: EntityType,
     max_depth: int = 3,
     min_ring_size: int = 3,
-    confidence_threshold: float = 0.7
+    confidence_threshold: float = 0.7,
 ) -> Dict[str, Any]:
     """
     Detect fraud rings using graph analysis algorithms.
-    
+
     This tool identifies connected groups of entities that exhibit
     coordinated fraudulent behavior patterns.
     """
     try:
-        logger.info(f"Detecting fraud rings from seed: {seed_entity_id} ({entity_type})")
-        
+        logger.info(
+            f"Detecting fraud rings from seed: {seed_entity_id} ({entity_type})"
+        )
+
         ring_detection_result = {
             "status": "success",
-            "seed_entity": {
-                "id": seed_entity_id,
-                "type": entity_type
-            },
+            "seed_entity": {"id": seed_entity_id, "type": entity_type},
             "analysis_parameters": {
                 "max_depth": max_depth,
                 "min_ring_size": min_ring_size,
-                "confidence_threshold": confidence_threshold
+                "confidence_threshold": confidence_threshold,
             },
             "detected_rings": [],
             "statistics": {
@@ -113,11 +135,11 @@ async def detect_fraud_rings(
                 "largest_ring_size": 0,
                 "highest_confidence": 0.0,
                 "entities_analyzed": 0,
-                "relationships_traversed": 0
+                "relationships_traversed": 0,
             },
-            "timestamp": datetime.now().isoformat()
+            "timestamp": datetime.now().isoformat(),
         }
-        
+
         # TODO: Implement actual graph-based fraud ring detection
         # Algorithms to implement:
         # 1. Community detection (Louvain, Label Propagation)
@@ -125,7 +147,7 @@ async def detect_fraud_rings(
         # 3. Strongly connected components
         # 4. PageRank for influence analysis
         # 5. Betweenness centrality for key entities
-        
+
         # Example ring structure
         example_ring = {
             "ring_id": "ring_001",
@@ -141,22 +163,19 @@ async def detect_fraud_rings(
             "fraud_indicators": [
                 "shared_device_fingerprints",
                 "rapid_money_circulation",
-                "coordinated_timing"
+                "coordinated_timing",
             ],
             "risk_score": 0.9,
-            "recommended_action": "immediate_investigation"
+            "recommended_action": "immediate_investigation",
         }
-        
+
         # In production, this would query a graph database like Neo4j or Neptune
-        
+
         return ring_detection_result
-        
+
     except Exception as e:
         logger.error(f"Fraud ring detection failed: {e}")
-        return {
-            "status": "error",
-            "error": str(e)
-        }
+        return {"status": "error", "error": str(e)}
 
 
 @tool("analyze_money_flow", args_schema=MoneyFlowInput)
@@ -165,17 +184,17 @@ async def analyze_money_flow(
     time_window_days: int = 30,
     min_amount: Optional[float] = None,
     max_hops: int = 5,
-    include_indirect: bool = True
+    include_indirect: bool = True,
 ) -> Dict[str, Any]:
     """
     Analyze money flow patterns through the transaction graph.
-    
+
     This tool traces money movements to identify laundering patterns,
     circular flows, and suspicious transaction chains.
     """
     try:
         logger.info(f"Analyzing money flow from: {source_entity}")
-        
+
         money_flow_analysis = {
             "status": "success",
             "source_entity": source_entity,
@@ -183,7 +202,7 @@ async def analyze_money_flow(
                 "time_window_days": time_window_days,
                 "min_amount": min_amount,
                 "max_hops": max_hops,
-                "include_indirect": include_indirect
+                "include_indirect": include_indirect,
             },
             "flow_paths": [],
             "summary": {
@@ -193,17 +212,17 @@ async def analyze_money_flow(
                 "unique_destinations": 0,
                 "unique_sources": 0,
                 "circular_flows_detected": 0,
-                "suspicious_patterns": []
+                "suspicious_patterns": [],
             },
             "risk_assessment": {
                 "laundering_risk": 0.0,
                 "structuring_detected": False,
                 "velocity_anomaly": False,
-                "pattern_matches": []
+                "pattern_matches": [],
             },
-            "timestamp": datetime.now().isoformat()
+            "timestamp": datetime.now().isoformat(),
         }
-        
+
         # TODO: Implement actual money flow analysis
         # Techniques to implement:
         # 1. Breadth-first search for transaction paths
@@ -211,7 +230,7 @@ async def analyze_money_flow(
         # 3. Flow network analysis (max flow/min cut)
         # 4. Temporal pattern analysis
         # 5. Amount structuring detection
-        
+
         # Example flow path
         example_flow = {
             "path_id": "flow_001",
@@ -222,22 +241,19 @@ async def analyze_money_flow(
                     "entity": source_entity,
                     "timestamp": "2024-01-01T10:00:00Z",
                     "amount": 10000.00,
-                    "transaction_id": "tx_001"
+                    "transaction_id": "tx_001",
                 },
                 # Additional hops in the flow
             ],
             "flags": ["rapid_movement", "amount_splitting"],
-            "risk_score": 0.75
+            "risk_score": 0.75,
         }
-        
+
         return money_flow_analysis
-        
+
     except Exception as e:
         logger.error(f"Money flow analysis failed: {e}")
-        return {
-            "status": "error",
-            "error": str(e)
-        }
+        return {"status": "error", "error": str(e)}
 
 
 @tool("map_entity_relationships", args_schema=EntityMappingInput)
@@ -246,53 +262,44 @@ async def map_entity_relationships(
     entity_type: EntityType,
     relationship_types: Optional[List[RelationshipType]] = None,
     depth: int = 2,
-    include_metrics: bool = True
+    include_metrics: bool = True,
 ) -> Dict[str, Any]:
     """
     Map relationships between entities in the fraud graph.
-    
+
     This tool creates a comprehensive map of entity relationships
     to understand connection patterns and identify suspicious links.
     """
     try:
         logger.info(f"Mapping relationships for: {entity_id} ({entity_type})")
-        
+
         relationship_map = {
             "status": "success",
-            "central_entity": {
-                "id": entity_id,
-                "type": entity_type
-            },
+            "central_entity": {"id": entity_id, "type": entity_type},
             "mapping_parameters": {
                 "depth": depth,
                 "relationship_types": relationship_types or "all",
-                "include_metrics": include_metrics
+                "include_metrics": include_metrics,
             },
-            "relationships": {
-                "direct": [],
-                "indirect": []
-            },
-            "entity_graph": {
-                "nodes": [],
-                "edges": []
-            },
+            "relationships": {"direct": [], "indirect": []},
+            "entity_graph": {"nodes": [], "edges": []},
             "statistics": {
                 "total_entities": 1,
                 "total_relationships": 0,
                 "relationship_distribution": {},
-                "average_degree": 0.0
+                "average_degree": 0.0,
             },
-            "timestamp": datetime.now().isoformat()
+            "timestamp": datetime.now().isoformat(),
         }
-        
+
         if include_metrics:
             relationship_map["metrics"] = {
                 "centrality_score": 0.0,
                 "clustering_coefficient": 0.0,
                 "betweenness": 0.0,
-                "eigenvector_centrality": 0.0
+                "eigenvector_centrality": 0.0,
             }
-        
+
         # TODO: Implement actual relationship mapping
         # Graph operations to implement:
         # 1. Breadth-first traversal for relationship discovery
@@ -300,7 +307,7 @@ async def map_entity_relationships(
         # 3. Subgraph extraction
         # 4. Path finding between entities
         # 5. Similarity scoring
-        
+
         # Example relationship
         example_relationship = {
             "relationship_id": "rel_001",
@@ -311,17 +318,14 @@ async def map_entity_relationships(
             "first_seen": "2024-01-01T00:00:00Z",
             "last_seen": "2024-01-31T23:59:59Z",
             "interaction_count": 150,
-            "flags": ["high_frequency", "recent_activity"]
+            "flags": ["high_frequency", "recent_activity"],
         }
-        
+
         return relationship_map
-        
+
     except Exception as e:
         logger.error(f"Entity relationship mapping failed: {e}")
-        return {
-            "status": "error",
-            "error": str(e)
-        }
+        return {"status": "error", "error": str(e)}
 
 
 @tool("cluster_anomalies", args_schema=AnomalyClusterInput)
@@ -329,24 +333,26 @@ async def cluster_anomalies(
     analysis_type: str,
     time_window_hours: int = 24,
     min_cluster_size: int = 2,
-    similarity_threshold: float = 0.8
+    similarity_threshold: float = 0.8,
 ) -> Dict[str, Any]:
     """
     Cluster anomalous entities and behaviors in the graph.
-    
+
     This tool identifies clusters of entities exhibiting similar
     anomalous patterns, helping detect coordinated fraud campaigns.
     """
     try:
-        logger.info(f"Clustering anomalies: type={analysis_type}, window={time_window_hours}h")
-        
+        logger.info(
+            f"Clustering anomalies: type={analysis_type}, window={time_window_hours}h"
+        )
+
         anomaly_clusters = {
             "status": "success",
             "analysis_type": analysis_type,
             "clustering_parameters": {
                 "time_window_hours": time_window_hours,
                 "min_cluster_size": min_cluster_size,
-                "similarity_threshold": similarity_threshold
+                "similarity_threshold": similarity_threshold,
             },
             "clusters": [],
             "summary": {
@@ -354,21 +360,29 @@ async def cluster_anomalies(
                 "total_anomalous_entities": 0,
                 "largest_cluster": 0,
                 "highest_risk_cluster": None,
-                "pattern_distribution": {}
+                "pattern_distribution": {},
             },
             "risk_assessment": {
                 "overall_risk": 0.0,
                 "coordinated_attack_probability": 0.0,
-                "recommended_actions": []
+                "recommended_actions": [],
             },
-            "timestamp": datetime.now().isoformat()
+            "timestamp": datetime.now().isoformat(),
         }
-        
+
         # Define anomaly types
-        valid_analysis_types = ["velocity", "pattern", "behavioral", "network", "temporal"]
+        valid_analysis_types = [
+            "velocity",
+            "pattern",
+            "behavioral",
+            "network",
+            "temporal",
+        ]
         if analysis_type not in valid_analysis_types:
-            anomaly_clusters["warning"] = f"Unknown analysis type. Valid types: {valid_analysis_types}"
-        
+            anomaly_clusters["warning"] = (
+                f"Unknown analysis type. Valid types: {valid_analysis_types}"
+            )
+
         # TODO: Implement actual anomaly clustering
         # Algorithms to implement:
         # 1. DBSCAN for density-based clustering
@@ -376,7 +390,7 @@ async def cluster_anomalies(
         # 3. Hierarchical clustering for behavioral analysis
         # 4. Spectral clustering for graph-based anomalies
         # 5. Isolation Forest for outlier detection
-        
+
         # Example cluster
         example_cluster = {
             "cluster_id": "cluster_001",
@@ -389,36 +403,33 @@ async def cluster_anomalies(
             "common_patterns": [
                 "rapid_account_creation",
                 "similar_behavior_profiles",
-                "coordinated_timing"
+                "coordinated_timing",
             ],
             "centroid_characteristics": {
                 # Characteristics defining the cluster center
             },
-            "recommended_action": "block_and_investigate"
+            "recommended_action": "block_and_investigate",
         }
-        
+
         return anomaly_clusters
-        
+
     except Exception as e:
         logger.error(f"Anomaly clustering failed: {e}")
-        return {
-            "status": "error",
-            "error": str(e)
-        }
+        return {"status": "error", "error": str(e)}
 
 
 class GraphAnalysisMCPServer:
     """
     MCP Server for graph-based fraud analysis.
-    
+
     This server provides tools for analyzing fraud patterns
     using graph algorithms and network analysis techniques.
     """
-    
+
     def __init__(self, graph_config: Optional[Dict[str, Any]] = None):
         """
         Initialize the graph analysis MCP server.
-        
+
         Args:
             graph_config: Graph database configuration
         """
@@ -427,7 +438,7 @@ class GraphAnalysisMCPServer:
             detect_fraud_rings,
             analyze_money_flow,
             map_entity_relationships,
-            cluster_anomalies
+            cluster_anomalies,
         ]
         self.server_info = {
             "name": "graph_analysis",
@@ -437,15 +448,15 @@ class GraphAnalysisMCPServer:
                 "fraud_ring_detection",
                 "money_flow_analysis",
                 "entity_relationship_mapping",
-                "anomaly_clustering"
-            ]
+                "anomaly_clustering",
+            ],
         }
         self.graph_client = None
-        
+
     async def initialize(self):
         """Initialize graph database connections and resources."""
         logger.info("Initializing Graph Analysis MCP Server")
-        
+
         # TODO: Initialize graph database connection
         # Options:
         # - Neo4j (Cypher queries)
@@ -453,33 +464,33 @@ class GraphAnalysisMCPServer:
         # - ArangoDB (AQL)
         # - Memgraph (Cypher)
         # - TigerGraph (GSQL)
-        
+
         # TODO: Load graph algorithms library
         # - NetworkX for in-memory processing
         # - Graph-tool for performance
         # - igraph for analysis
-        
+
     async def shutdown(self):
         """Cleanup resources and close connections."""
         logger.info("Shutting down Graph Analysis MCP Server")
-        
+
         if self.graph_client:
             # TODO: Close graph database connections
             pass
-        
+
     def get_tools(self) -> List[BaseTool]:
         """
         Get all available tools from this server.
-        
+
         Returns:
             List of graph analysis tools
         """
         return self.tools
-    
+
     def get_server_info(self) -> Dict[str, Any]:
         """
         Get server information and capabilities.
-        
+
         Returns:
             Server metadata and capabilities
         """
@@ -487,13 +498,15 @@ class GraphAnalysisMCPServer:
 
 
 # Server initialization for MCP
-async def create_graph_analysis_server(config: Optional[Dict[str, Any]] = None) -> GraphAnalysisMCPServer:
+async def create_graph_analysis_server(
+    config: Optional[Dict[str, Any]] = None,
+) -> GraphAnalysisMCPServer:
     """
     Create and initialize a graph analysis MCP server.
-    
+
     Args:
         config: Server configuration including graph database settings
-        
+
     Returns:
         Initialized GraphAnalysisMCPServer instance
     """

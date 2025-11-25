@@ -6,11 +6,7 @@ into the standardized UnifiedReportData structure.
 """
 
 from .base_adapter import BaseAdapter
-from .test_results_adapter import TestResultsAdapter
 from .investigation_folder_adapter import InvestigationFolderAdapter
+from .test_results_adapter import TestResultsAdapter
 
-__all__ = [
-    "BaseAdapter",
-    "TestResultsAdapter", 
-    "InvestigationFolderAdapter"
-]
+__all__ = ["BaseAdapter", "TestResultsAdapter", "InvestigationFolderAdapter"]

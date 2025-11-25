@@ -9,13 +9,9 @@ Constitutional Compliance:
 - Actionable guidance
 """
 
-from typing import List, Dict
-from .schema_models import (
-    SchemaInfo,
-    SchemaDifference,
-    TypeMismatch,
-    ColumnInfo
-)
+from typing import Dict, List
+
+from .schema_models import ColumnInfo, SchemaDifference, SchemaInfo, TypeMismatch
 
 
 class SchemaReporter:
@@ -37,7 +33,7 @@ class SchemaReporter:
         differences: List[SchemaDifference],
         missing_cols: List[str],
         type_mismatches: List[TypeMismatch],
-        nullability_mismatches: List[SchemaDifference]
+        nullability_mismatches: List[SchemaDifference],
     ) -> str:
         """Generate detailed human-readable report of schema differences."""
         lines = []
@@ -45,8 +41,12 @@ class SchemaReporter:
         lines.append("DETAILED SCHEMA PARITY REPORT")
         lines.append("=" * 80)
         lines.append("")
-        lines.append(f"Snowflake Table: {sf_schema.table_name} ({len(sf_schema.columns)} columns)")
-        lines.append(f"PostgreSQL Table: {pg_schema.table_name} ({len(pg_schema.columns)} columns)")
+        lines.append(
+            f"Snowflake Table: {sf_schema.table_name} ({len(sf_schema.columns)} columns)"
+        )
+        lines.append(
+            f"PostgreSQL Table: {pg_schema.table_name} ({len(pg_schema.columns)} columns)"
+        )
         lines.append("")
 
         if not differences:
@@ -70,9 +70,7 @@ class SchemaReporter:
         return "\n".join(lines)
 
     def _format_missing_columns(
-        self,
-        missing_cols: List[str],
-        sf_schema: SchemaInfo
+        self, missing_cols: List[str], sf_schema: SchemaInfo
     ) -> List[str]:
         """Format missing columns section."""
         lines = []
@@ -88,10 +86,7 @@ class SchemaReporter:
         lines.append("")
         return lines
 
-    def _format_type_mismatches(
-        self,
-        type_mismatches: List[TypeMismatch]
-    ) -> List[str]:
+    def _format_type_mismatches(self, type_mismatches: List[TypeMismatch]) -> List[str]:
         """Format type mismatches section."""
         lines = []
         lines.append(f"TYPE MISMATCHES ({len(type_mismatches)}):")
@@ -106,8 +101,7 @@ class SchemaReporter:
         return lines
 
     def _format_nullability_mismatches(
-        self,
-        nullability_mismatches: List[SchemaDifference]
+        self, nullability_mismatches: List[SchemaDifference]
     ) -> List[str]:
         """Format nullability mismatches section."""
         lines = []

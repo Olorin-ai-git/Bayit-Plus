@@ -5,7 +5,7 @@ Provides caching functionality for feature extraction results.
 """
 
 import time
-from typing import Dict, Any, Optional
+from typing import Any, Dict, Optional
 
 # Feature cache configuration
 FEATURE_CACHE_TTL_SECONDS = 300  # 5 minutes

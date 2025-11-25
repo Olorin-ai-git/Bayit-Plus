@@ -37,7 +37,7 @@ class FileLocker:
         max_retries: int = 5,
         base_backoff_ms: int = 100,
         max_backoff_ms: int = 5000,
-        jitter: bool = True
+        jitter: bool = True,
     ):
         """
         Initialize file locker.
@@ -81,19 +81,22 @@ class FileLocker:
         """
         try:
             import msvcrt
+
             msvcrt.locking(file_handle, msvcrt.LK_LOCK, 1)
         except ImportError:
             # Fallback: try using win32file if available
             try:
-                import win32file
                 import win32con
+                import win32file
+
                 win32file.LockFileEx(
                     file_handle,
-                    win32con.LOCKFILE_EXCLUSIVE_LOCK | win32con.LOCKFILE_FAIL_IMMEDIATELY,
+                    win32con.LOCKFILE_EXCLUSIVE_LOCK
+                    | win32con.LOCKFILE_FAIL_IMMEDIATELY,
                     0,
                     -1,
                     -1,
-                    None
+                    None,
                 )
             except ImportError:
                 raise FileLockError(
@@ -124,17 +127,13 @@ class FileLocker:
         """
         try:
             import msvcrt
+
             msvcrt.locking(file_handle, msvcrt.LK_UNLCK, 1)
         except ImportError:
             try:
                 import win32file
-                win32file.UnlockFileEx(
-                    file_handle,
-                    0,
-                    -1,
-                    -1,
-                    None
-                )
+
+                win32file.UnlockFileEx(file_handle, 0, -1, -1, None)
             except ImportError:
                 logger.warning("Windows unlock not available (pywin32 not installed)")
         except Exception as e:
@@ -151,10 +150,7 @@ class FileLocker:
             Backoff time in seconds
         """
         # Exponential backoff: base * 2^attempt
-        backoff_ms = min(
-            self.base_backoff_ms * (2 ** attempt),
-            self.max_backoff_ms
-        )
+        backoff_ms = min(self.base_backoff_ms * (2**attempt), self.max_backoff_ms)
 
         # Add jitter if enabled
         if self.jitter:
@@ -164,9 +160,7 @@ class FileLocker:
         return backoff_ms / 1000.0  # Convert to seconds
 
     def lock_file(
-        self,
-        file_path: Path,
-        create_if_missing: bool = True
+        self, file_path: Path, create_if_missing: bool = True
     ) -> Optional[int]:
         """
         Acquire exclusive lock on file with retry.
@@ -192,10 +186,7 @@ class FileLocker:
         for attempt in range(self.max_retries):
             try:
                 # Open file for locking
-                file_handle = os.open(
-                    str(file_path),
-                    os.O_RDWR | os.O_CREAT
-                )
+                file_handle = os.open(str(file_path), os.O_RDWR | os.O_CREAT)
 
                 # Acquire lock
                 if self.is_windows:
@@ -252,9 +243,7 @@ class FileLocker:
                 pass
 
     def get_sequence_numbered_path(
-        self,
-        base_path: Path,
-        max_sequence: int = 1000
+        self, base_path: Path, max_sequence: int = 1000
     ) -> Path:
         """
         Get sequence-numbered path for file conflicts.
@@ -290,4 +279,3 @@ class FileLocker:
             f"Could not find available sequence number for {base_path} "
             f"(tried up to {max_sequence})"
         )
-

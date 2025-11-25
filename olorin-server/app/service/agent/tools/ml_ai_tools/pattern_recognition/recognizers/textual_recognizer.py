@@ -10,13 +10,18 @@ from typing import Any, Dict, Optional
 class PatternRecognizer:
     """Base pattern recognizer."""
 
-    def recognize(self, processed_data: Dict[str, Any], minimum_support: float, historical_patterns: Optional[Dict[str, Any]] = None) -> Dict[str, Any]:
+    def recognize(
+        self,
+        processed_data: Dict[str, Any],
+        minimum_support: float,
+        historical_patterns: Optional[Dict[str, Any]] = None,
+    ) -> Dict[str, Any]:
         """Recognize patterns in processed data."""
         return {
             "success": True,
             "patterns": [],
             "method": "pattern_recognition",
-            "support_threshold": minimum_support
+            "support_threshold": minimum_support,
         }
 
 

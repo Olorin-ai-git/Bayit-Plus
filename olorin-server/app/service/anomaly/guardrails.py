@@ -7,17 +7,17 @@ This module implements guardrails for anomaly detection:
 - Cooldowns: Minimum time between alerts for same cohort/metric
 """
 
-from typing import Dict
-from datetime import datetime
 from collections import defaultdict
+from datetime import datetime
+from typing import Dict
 
-from app.service.logging import get_bridge_logger
 from app.service.anomaly.guardrails_checks import (
-    get_cohort_key,
-    check_persistence_tracker,
+    check_cooldown,
     check_hysteresis,
-    check_cooldown
+    check_persistence_tracker,
+    get_cohort_key,
 )
+from app.service.logging import get_bridge_logger
 
 logger = get_bridge_logger(__name__)
 
@@ -33,19 +33,15 @@ class Guardrails:
         """Initialize guardrails with configuration."""
         # Track persistence: (cohort_key, metric) -> persisted_n
         self.persistence_tracker: Dict[str, int] = defaultdict(int)
-        
+
         # Track cooldowns: (cohort_key, metric) -> last_alert_time
         self.cooldown_tracker: Dict[str, datetime] = {}
-        
+
         # Track alert states: (cohort_key, metric) -> is_alerting
         self.alert_states: Dict[str, bool] = {}
 
     def check_persistence(
-        self,
-        cohort: Dict[str, str],
-        metric: str,
-        score: float,
-        k_threshold: float
+        self, cohort: Dict[str, str], metric: str, score: float, k_threshold: float
     ) -> int:
         """
         Check and update persistence for anomaly.
@@ -60,18 +56,11 @@ class Guardrails:
             Current persistence count (number of consecutive windows)
         """
         return check_persistence_tracker(
-            self.persistence_tracker,
-            cohort,
-            metric,
-            score,
-            k_threshold
+            self.persistence_tracker, cohort, metric, score, k_threshold
         )
 
     def check_hysteresis(
-        self,
-        cohort: Dict[str, str],
-        metric: str,
-        score: float
+        self, cohort: Dict[str, str], metric: str, score: float
     ) -> bool:
         """
         Check if anomaly should be raised based on hysteresis.
@@ -84,18 +73,10 @@ class Guardrails:
         Returns:
             True if anomaly should be raised, False otherwise
         """
-        return check_hysteresis(
-            self.alert_states,
-            cohort,
-            metric,
-            score
-        )
+        return check_hysteresis(self.alert_states, cohort, metric, score)
 
     def check_cooldown(
-        self,
-        cohort: Dict[str, str],
-        metric: str,
-        current_time: datetime
+        self, cohort: Dict[str, str], metric: str, current_time: datetime
     ) -> bool:
         """
         Check if cooldown period has passed.
@@ -108,18 +89,10 @@ class Guardrails:
         Returns:
             True if cooldown has passed, False otherwise
         """
-        return check_cooldown(
-            self.cooldown_tracker,
-            cohort,
-            metric,
-            current_time
-        )
+        return check_cooldown(self.cooldown_tracker, cohort, metric, current_time)
 
     def update_cooldown(
-        self,
-        cohort: Dict[str, str],
-        metric: str,
-        alert_time: datetime
+        self, cohort: Dict[str, str], metric: str, alert_time: datetime
     ) -> None:
         """
         Update cooldown tracker after alert is raised.
@@ -141,7 +114,7 @@ class Guardrails:
         persisted_n: int,
         k_threshold: float,
         persistence_required: int,
-        current_time: datetime
+        current_time: datetime,
     ) -> bool:
         """
         Check if anomaly should be raised considering all guardrails.
@@ -183,4 +156,3 @@ def get_guardrails() -> Guardrails:
         Guardrails instance
     """
     return Guardrails()
-

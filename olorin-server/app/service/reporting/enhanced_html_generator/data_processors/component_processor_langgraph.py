@@ -5,7 +5,7 @@ LangGraph Nodes Processor for Enhanced HTML Report Generator.
 Processes LangGraph node execution data from investigation activities.
 """
 
-from typing import Dict, List, Any
+from typing import Any, Dict, List
 
 
 class LangGraphNodesProcessor:

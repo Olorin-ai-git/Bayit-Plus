@@ -10,11 +10,12 @@ Constitutional Compliance:
 - PII handling: case-insensitive email, E164 phone format
 """
 
-import re
-from typing import Optional, Dict, List, Tuple
 import os
+import re
+from typing import Dict, List, Optional, Tuple
 
 from app.service.logging import get_bridge_logger
+
 from .phone_normalization import normalize_phone_to_e164
 
 logger = get_bridge_logger(__name__)
@@ -67,9 +68,7 @@ def normalize_entity_value(entity_type: str, entity_value: str) -> str:
 
 
 def build_entity_where_clause(
-    entity_type: Optional[str],
-    entity_value: Optional[str],
-    is_snowflake: bool = True
+    entity_type: Optional[str], entity_value: Optional[str], is_snowflake: bool = True
 ) -> Tuple[str, Optional[Dict[str, str]]]:
     """
     Build WHERE clause for entity filtering.
@@ -97,7 +96,7 @@ def build_entity_where_clause(
             "ip": "IP",
             "account_id": "ACCOUNT_ID",
             "card_fingerprint": None,  # Special handling
-            "merchant_id": "STORE_ID"
+            "merchant_id": "STORE_ID",
         }
     else:
         columns = {
@@ -107,7 +106,7 @@ def build_entity_where_clause(
             "ip": "ip",
             "account_id": "account_id",
             "card_fingerprint": None,  # Special handling
-            "merchant_id": "store_id"
+            "merchant_id": "store_id",
         }
 
     column = columns.get(entity_type_lower)
@@ -149,8 +148,7 @@ def build_entity_where_clause(
 
 
 def build_merchant_where_clause(
-    merchant_ids: Optional[List[str]],
-    is_snowflake: bool = True
+    merchant_ids: Optional[List[str]], is_snowflake: bool = True
 ) -> Tuple[str, Optional[Dict[str, List[str]]]]:
     """
     Build WHERE clause for merchant filtering.
@@ -175,4 +173,3 @@ def build_merchant_where_clause(
         clause = f"{column} = ANY($1)"
         params = {"merchant_ids": merchant_ids}
         return clause, params
-

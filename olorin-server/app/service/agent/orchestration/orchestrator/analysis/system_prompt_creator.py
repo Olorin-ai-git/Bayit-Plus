@@ -4,9 +4,12 @@ System Prompt Creator
 Creates enhanced system prompts with custom user instructions.
 """
 
-from app.service.logging import get_bridge_logger
+from app.service.agent.orchestration.orchestrator.utils import (
+    IntegrityValidator,
+    PromptSanitizer,
+)
 from app.service.agent.orchestration.state_schema import InvestigationState
-from app.service.agent.orchestration.orchestrator.utils import PromptSanitizer, IntegrityValidator
+from app.service.logging import get_bridge_logger
 
 logger = get_bridge_logger(__name__)
 
@@ -19,7 +22,9 @@ class SystemPromptCreator:
         self.prompt_sanitizer = PromptSanitizer()
         self.integrity_validator = IntegrityValidator()
 
-    def create_enhanced_system_prompt(self, base_prompt: str, state: InvestigationState) -> str:
+    def create_enhanced_system_prompt(
+        self, base_prompt: str, state: InvestigationState
+    ) -> str:
         """
         Create system prompt with custom user prompt priority.
 
@@ -30,7 +35,7 @@ class SystemPromptCreator:
         Returns:
             Enhanced prompt with custom user instruction
         """
-        custom_prompt = state.get('custom_user_prompt')
+        custom_prompt = state.get("custom_user_prompt")
         if not custom_prompt:
             return base_prompt
 
@@ -41,7 +46,7 @@ class SystemPromptCreator:
 
         # Sanitize custom prompt
         sanitized_prompt = self.prompt_sanitizer.sanitize_custom_prompt(custom_prompt)
-        if not sanitized_prompt or sanitized_prompt == '[FILTERED]':
+        if not sanitized_prompt or sanitized_prompt == "[FILTERED]":
             logger.warning("Custom prompt was filtered out due to security concerns")
             return base_prompt
 

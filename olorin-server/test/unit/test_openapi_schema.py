@@ -18,13 +18,14 @@ Constitutional Compliance:
 - Fail-fast behavior on validation errors
 """
 
+import json
+import os
+from pathlib import Path
+
 import pytest
 from fastapi.openapi.utils import get_openapi
 from openapi_spec_validator import validate_spec
 from openapi_spec_validator.readers import read_from_filename
-import json
-import os
-from pathlib import Path
 
 
 @pytest.fixture
@@ -89,14 +90,16 @@ class TestOpenAPISchemaValidation:
         assert "info" in openapi_schema, "Schema should have 'info' metadata"
         assert "paths" in openapi_schema, "Schema should have 'paths' for endpoints"
 
-    def test_schema_validates_against_openapi_spec(self, openapi_schema, schema_file_path):
+    def test_schema_validates_against_openapi_spec(
+        self, openapi_schema, schema_file_path
+    ):
         """
         Test that generated schema validates against OpenAPI 3.1 specification.
 
         This test will FAIL until the schema is properly structured and valid.
         """
         # Write schema to temporary file for validation
-        with open(schema_file_path, 'w') as f:
+        with open(schema_file_path, "w") as f:
             json.dump(openapi_schema, f, indent=2)
 
         # Validate against OpenAPI spec
@@ -113,16 +116,20 @@ class TestOpenAPISchemaValidation:
         This test will FAIL until T011 OpenAPI metadata configuration is properly integrated.
         """
         # Get expected values from environment or defaults
-        expected_title = os.getenv("OPENAPI_TITLE", "Olorin Fraud Investigation Platform API")
+        expected_title = os.getenv(
+            "OPENAPI_TITLE", "Olorin Fraud Investigation Platform API"
+        )
         expected_version = os.getenv("OPENAPI_VERSION", "1.0.0")
 
         info = openapi_schema.get("info", {})
 
-        assert info.get("title") == expected_title, \
-            f"Schema title should match environment: expected '{expected_title}', got '{info.get('title')}'"
+        assert (
+            info.get("title") == expected_title
+        ), f"Schema title should match environment: expected '{expected_title}', got '{info.get('title')}'"
 
-        assert info.get("version") == expected_version, \
-            f"Schema version should match environment: expected '{expected_version}', got '{info.get('version')}'"
+        assert (
+            info.get("version") == expected_version
+        ), f"Schema version should match environment: expected '{expected_version}', got '{info.get('version')}'"
 
         assert "description" in info, "Schema should have description"
         assert len(info["description"]) > 0, "Description should not be empty"
@@ -136,20 +143,24 @@ class TestOpenAPISchemaValidation:
         paths = openapi_schema.get("paths", {})
 
         # Check for POST /api/v1/investigations/ endpoint
-        assert "/api/v1/investigations/" in paths, \
-            "Schema should include POST /api/v1/investigations/ endpoint"
+        assert (
+            "/api/v1/investigations/" in paths
+        ), "Schema should include POST /api/v1/investigations/ endpoint"
 
         post_endpoint = paths.get("/api/v1/investigations/", {})
-        assert "post" in post_endpoint, \
-            "POST method should be defined for /api/v1/investigations/"
+        assert (
+            "post" in post_endpoint
+        ), "POST method should be defined for /api/v1/investigations/"
 
         # Check for GET /api/v1/investigations/{investigation_id} endpoint
-        assert "/api/v1/investigations/{investigation_id}" in paths, \
-            "Schema should include GET /api/v1/investigations/{investigation_id} endpoint"
+        assert (
+            "/api/v1/investigations/{investigation_id}" in paths
+        ), "Schema should include GET /api/v1/investigations/{investigation_id} endpoint"
 
         get_endpoint = paths.get("/api/v1/investigations/{investigation_id}", {})
-        assert "get" in get_endpoint, \
-            "GET method should be defined for /api/v1/investigations/{investigation_id}"
+        assert (
+            "get" in get_endpoint
+        ), "GET method should be defined for /api/v1/investigations/{investigation_id}"
 
     def test_schema_includes_health_check_endpoints(self, openapi_schema):
         """
@@ -160,19 +171,15 @@ class TestOpenAPISchemaValidation:
         paths = openapi_schema.get("paths", {})
 
         # Check for health check endpoints
-        health_endpoints = [
-            "/health/ready",
-            "/health/live",
-            "/health/startup"
-        ]
+        health_endpoints = ["/health/ready", "/health/live", "/health/startup"]
 
         for endpoint in health_endpoints:
-            assert endpoint in paths, \
-                f"Schema should include {endpoint} health check endpoint"
+            assert (
+                endpoint in paths
+            ), f"Schema should include {endpoint} health check endpoint"
 
             endpoint_def = paths.get(endpoint, {})
-            assert "get" in endpoint_def, \
-                f"GET method should be defined for {endpoint}"
+            assert "get" in endpoint_def, f"GET method should be defined for {endpoint}"
 
     def test_schema_includes_investigation_models(self, openapi_schema):
         """
@@ -184,30 +191,39 @@ class TestOpenAPISchemaValidation:
         schemas = components.get("schemas", {})
 
         # Check for InvestigationRequest model
-        assert "InvestigationRequest" in schemas, \
-            "Schema should include InvestigationRequest model"
+        assert (
+            "InvestigationRequest" in schemas
+        ), "Schema should include InvestigationRequest model"
 
         request_schema = schemas["InvestigationRequest"]
-        assert "properties" in request_schema, \
-            "InvestigationRequest should have properties"
-        assert "entity_id" in request_schema["properties"], \
-            "InvestigationRequest should have entity_id field"
-        assert "entity_type" in request_schema["properties"], \
-            "InvestigationRequest should have entity_type field"
+        assert (
+            "properties" in request_schema
+        ), "InvestigationRequest should have properties"
+        assert (
+            "entity_id" in request_schema["properties"]
+        ), "InvestigationRequest should have entity_id field"
+        assert (
+            "entity_type" in request_schema["properties"]
+        ), "InvestigationRequest should have entity_type field"
 
         # Check for InvestigationResponse model
-        assert "InvestigationResponse" in schemas, \
-            "Schema should include InvestigationResponse model"
+        assert (
+            "InvestigationResponse" in schemas
+        ), "Schema should include InvestigationResponse model"
 
         response_schema = schemas["InvestigationResponse"]
-        assert "properties" in response_schema, \
-            "InvestigationResponse should have properties"
-        assert "investigation_id" in response_schema["properties"], \
-            "InvestigationResponse should have investigation_id field"
-        assert "status" in response_schema["properties"], \
-            "InvestigationResponse should have status field"
-        assert "risk_score" in response_schema["properties"], \
-            "InvestigationResponse should have risk_score field"
+        assert (
+            "properties" in response_schema
+        ), "InvestigationResponse should have properties"
+        assert (
+            "investigation_id" in response_schema["properties"]
+        ), "InvestigationResponse should have investigation_id field"
+        assert (
+            "status" in response_schema["properties"]
+        ), "InvestigationResponse should have status field"
+        assert (
+            "risk_score" in response_schema["properties"]
+        ), "InvestigationResponse should have risk_score field"
 
     def test_schema_includes_error_response_model(self, openapi_schema):
         """
@@ -218,13 +234,13 @@ class TestOpenAPISchemaValidation:
         components = openapi_schema.get("components", {})
         schemas = components.get("schemas", {})
 
-        assert "ErrorResponse" in schemas, \
-            "Schema should include ErrorResponse model"
+        assert "ErrorResponse" in schemas, "Schema should include ErrorResponse model"
 
         error_schema = schemas["ErrorResponse"]
-        assert "properties" in error_schema, \
-            "ErrorResponse should have properties"
-        assert "error" in error_schema["properties"], \
-            "ErrorResponse should have error field"
-        assert "message" in error_schema["properties"], \
-            "ErrorResponse should have message field"
+        assert "properties" in error_schema, "ErrorResponse should have properties"
+        assert (
+            "error" in error_schema["properties"]
+        ), "ErrorResponse should have error field"
+        assert (
+            "message" in error_schema["properties"]
+        ), "ErrorResponse should have message field"

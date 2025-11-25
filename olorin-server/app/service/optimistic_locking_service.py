@@ -11,14 +11,15 @@ SYSTEM MANDATE Compliance:
 - Type-safe: All parameters and returns properly typed
 """
 
-from typing import Optional, Dict, Any
-from sqlalchemy.orm import Session
-from fastapi import HTTPException, status
 import json
 import os
+from typing import Any, Dict, Optional
 
-from app.models.investigation_state import InvestigationState
+from fastapi import HTTPException, status
+from sqlalchemy.orm import Session
+
 from app.models.investigation_audit_log import InvestigationAuditLog
+from app.models.investigation_state import InvestigationState
 from app.schemas.investigation_state import InvestigationStateUpdate
 from app.service.audit_helper import create_audit_entry
 from app.service.logging import get_bridge_logger
@@ -30,7 +31,9 @@ class OptimisticLockingService:
     """Service for handling optimistic locking on investigation state updates."""
 
     # Configuration from environment
-    ENABLE_OPTIMISTIC_LOCKING = os.getenv("ENABLE_OPTIMISTIC_LOCKING", "true").lower() == "true"
+    ENABLE_OPTIMISTIC_LOCKING = (
+        os.getenv("ENABLE_OPTIMISTIC_LOCKING", "true").lower() == "true"
+    )
     VERSION_HEADER_NAME = os.getenv("VERSION_HEADER_NAME", "If-Match")
 
     def __init__(self, db: Session):
@@ -42,7 +45,7 @@ class OptimisticLockingService:
         investigation_id: str,
         user_id: str,
         update_data: InvestigationStateUpdate,
-        if_match_version: Optional[str] = None
+        if_match_version: Optional[str] = None,
     ) -> InvestigationState:
         """
         Update investigation state with optimistic locking.
@@ -65,21 +68,23 @@ class OptimisticLockingService:
             409: Version conflict - current version doesn't match If-Match
         """
         # Get current state
-        state = self.db.query(InvestigationState).filter(
-            InvestigationState.investigation_id == investigation_id
-        ).first()
+        state = (
+            self.db.query(InvestigationState)
+            .filter(InvestigationState.investigation_id == investigation_id)
+            .first()
+        )
 
         if not state:
             raise HTTPException(
                 status_code=status.HTTP_404_NOT_FOUND,
-                detail=f"Investigation {investigation_id} not found"
+                detail=f"Investigation {investigation_id} not found",
             )
 
         # Check authorization
         if state.user_id != user_id:
             raise HTTPException(
                 status_code=status.HTTP_403_FORBIDDEN,
-                detail="Not authorized to update this investigation"
+                detail="Not authorized to update this investigation",
             )
 
         current_version = state.version
@@ -93,7 +98,7 @@ class OptimisticLockingService:
             except (ValueError, TypeError):
                 raise HTTPException(
                     status_code=status.HTTP_400_BAD_REQUEST,
-                    detail=f"Invalid If-Match version format: {if_match_version}"
+                    detail=f"Invalid If-Match version format: {if_match_version}",
                 )
 
             # T047: Check if current version matches expected
@@ -109,8 +114,8 @@ class OptimisticLockingService:
                         "error": "version_conflict",
                         "message": "The resource has been modified by another client",
                         "current_version": current_version,
-                        "submitted_version": expected_version
-                    }
+                        "submitted_version": expected_version,
+                    },
                 )
 
         # Apply updates
@@ -119,24 +124,25 @@ class OptimisticLockingService:
         if update_data.lifecycle_stage is not None:
             changes["lifecycle_stage"] = {
                 "old": state.lifecycle_stage,
-                "new": update_data.lifecycle_stage
+                "new": update_data.lifecycle_stage,
             }
             state.lifecycle_stage = update_data.lifecycle_stage
 
         if update_data.status is not None:
-            changes["status"] = {
-                "old": state.status,
-                "new": update_data.status
-            }
+            changes["status"] = {"old": state.status, "new": update_data.status}
             state.status = update_data.status
 
         if update_data.settings is not None:
             changes["settings"] = "updated"
-            state.settings_json = json.dumps(update_data.settings.model_dump(mode='json'))
+            state.settings_json = json.dumps(
+                update_data.settings.model_dump(mode="json")
+            )
 
         if update_data.progress is not None:
             changes["progress"] = "updated"
-            state.progress_json = json.dumps(update_data.progress.model_dump(mode='json'))
+            state.progress_json = json.dumps(
+                update_data.progress.model_dump(mode="json")
+            )
 
         # Results are now stored in progress_json, not a separate results_json field
         # No need to handle results separately
@@ -155,7 +161,7 @@ class OptimisticLockingService:
             user_id=user_id,
             from_version=from_version,
             to_version=to_version,
-            changes=changes
+            changes=changes,
         )
 
         logger.info(
@@ -166,9 +172,7 @@ class OptimisticLockingService:
         return state
 
     def check_version_conflict(
-        self,
-        investigation_id: str,
-        expected_version: int
+        self, investigation_id: str, expected_version: int
     ) -> Optional[Dict[str, Any]]:
         """
         Check if there's a version conflict for an investigation.
@@ -180,14 +184,16 @@ class OptimisticLockingService:
         Returns:
             None if no conflict, or conflict details dict if conflict exists
         """
-        state = self.db.query(InvestigationState).filter(
-            InvestigationState.investigation_id == investigation_id
-        ).first()
+        state = (
+            self.db.query(InvestigationState)
+            .filter(InvestigationState.investigation_id == investigation_id)
+            .first()
+        )
 
         if not state:
             return {
                 "error": "not_found",
-                "message": f"Investigation {investigation_id} not found"
+                "message": f"Investigation {investigation_id} not found",
             }
 
         if state.version != expected_version:
@@ -195,7 +201,7 @@ class OptimisticLockingService:
                 "error": "version_conflict",
                 "current_version": state.version,
                 "expected_version": expected_version,
-                "message": "Version mismatch detected"
+                "message": "Version mismatch detected",
             }
 
         return None
@@ -206,7 +212,7 @@ class OptimisticLockingService:
         user_id: str,
         from_version: int,
         to_version: int,
-        changes: Dict[str, Any]
+        changes: Dict[str, Any],
     ) -> None:
         """
         Create audit log entry for version transition.
@@ -232,7 +238,7 @@ class OptimisticLockingService:
             source="API",
             from_version=from_version,
             to_version=to_version,
-            timestamp=datetime.utcnow()
+            timestamp=datetime.utcnow(),
         )
 
         self.db.add(audit_entry)
@@ -244,9 +250,7 @@ class OptimisticLockingService:
         )
 
     def get_version_history(
-        self,
-        investigation_id: str,
-        limit: int = 20
+        self, investigation_id: str, limit: int = 20
     ) -> list[Dict[str, Any]]:
         """
         Get version history for an investigation.
@@ -258,13 +262,17 @@ class OptimisticLockingService:
         Returns:
             List of version transition records
         """
-        entries = self.db.query(InvestigationAuditLog).filter(
-            InvestigationAuditLog.investigation_id == investigation_id,
-            InvestigationAuditLog.from_version.isnot(None),
-            InvestigationAuditLog.to_version.isnot(None)
-        ).order_by(
-            InvestigationAuditLog.timestamp.desc()
-        ).limit(limit).all()
+        entries = (
+            self.db.query(InvestigationAuditLog)
+            .filter(
+                InvestigationAuditLog.investigation_id == investigation_id,
+                InvestigationAuditLog.from_version.isnot(None),
+                InvestigationAuditLog.to_version.isnot(None),
+            )
+            .order_by(InvestigationAuditLog.timestamp.desc())
+            .limit(limit)
+            .all()
+        )
 
         return [
             {
@@ -273,7 +281,7 @@ class OptimisticLockingService:
                 "from_version": entry.from_version,
                 "to_version": entry.to_version,
                 "changes": json.loads(entry.changes_json) if entry.changes_json else {},
-                "action_type": entry.action_type
+                "action_type": entry.action_type,
             }
             for entry in entries
         ]

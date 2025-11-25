@@ -4,8 +4,8 @@ Velocity Analysis Utility Functions.
 Provides extraction and helper functions for velocity analysis.
 """
 
-from typing import Dict, Any, Optional
 from datetime import datetime
+from typing import Any, Dict, Optional
 
 
 def extract_timestamp(event: Dict[str, Any]) -> Optional[datetime]:

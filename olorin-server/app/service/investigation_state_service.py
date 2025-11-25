@@ -14,32 +14,33 @@ SYSTEM MANDATE Compliance:
 - Type-safe: All parameters and returns properly typed
 """
 
-from sqlalchemy.orm import Session
-from typing import List, Dict, Any, Optional
-from datetime import datetime
-from fastapi import BackgroundTasks
 import json
 import logging
+from datetime import datetime
+from typing import Any, Dict, List, Optional
 
-from app.models.investigation_state import InvestigationState
+from fastapi import BackgroundTasks
+from sqlalchemy.orm import Session
+
 from app.models.investigation_audit_log import InvestigationAuditLog
+from app.models.investigation_state import InvestigationState
 from app.schemas.investigation_state import (
     InvestigationStateCreate,
-    InvestigationStateUpdate,
     InvestigationStateResponse,
+    InvestigationStateUpdate,
     InvestigationStatus,
     LifecycleStage,
 )
 from app.service.audit_helper import create_audit_entry
-from app.service.state_query_helper import (
-    get_state_by_id,
-    check_duplicate_state,
-    check_version_conflict,
-)
-from app.service.state_update_helper import apply_state_updates
 from app.service.auto_select_entity_helper import populate_auto_select_entities
 from app.service.investigation_state_auth_helper import InvestigationStateAuthHelper
 from app.service.investigation_trigger_service import InvestigationTriggerService
+from app.service.state_query_helper import (
+    check_duplicate_state,
+    check_version_conflict,
+    get_state_by_id,
+)
+from app.service.state_update_helper import apply_state_updates
 
 logger = logging.getLogger(__name__)
 
@@ -56,17 +57,18 @@ class InvestigationStateService:
         self,
         user_id: str,
         data: InvestigationStateCreate,
-        background_tasks: Optional[BackgroundTasks] = None
+        background_tasks: Optional[BackgroundTasks] = None,
     ) -> InvestigationStateResponse:
         """Create investigation state with auto-select entity population and auto-trigger execution. Raises 409 if already exists."""
         # Generate investigation ID if not provided
         import uuid
+
         investigation_id = data.investigation_id or str(uuid.uuid4())
 
         check_duplicate_state(self.db, investigation_id)
 
         # Convert settings to dict with JSON-serializable values
-        settings_dict = data.settings.model_dump(mode='json') if data.settings else {}
+        settings_dict = data.settings.model_dump(mode="json") if data.settings else {}
 
         # Populate auto-select entities if placeholder is present
         if settings_dict:
@@ -79,7 +81,7 @@ class InvestigationStateService:
             settings_json=json.dumps(settings_dict) if settings_dict else None,
             progress_json=None,
             status=data.status,
-            version=1
+            version=1,
         )
 
         self.db.add(state)
@@ -93,29 +95,30 @@ class InvestigationStateService:
             action_type="CREATED",
             from_version=None,
             to_version=1,
-            source="API"
+            source="API",
         )
 
         # Trigger structured investigation if settings present and background_tasks available
         if background_tasks and data.settings:
             trigger_service = InvestigationTriggerService(self.db)
             structured_request = trigger_service.extract_structured_request(
-                investigation_id=investigation_id,
-                settings=data.settings
+                investigation_id=investigation_id, settings=data.settings
             )
 
             if structured_request:
                 # Check if this is a risk-based investigation (auto-select entities)
-                is_risk_based = (
-                    data.settings.auto_select_entities is True or
-                    (data.settings.entities and len(data.settings.entities) > 0 and
-                     data.settings.entities[0].entity_type is None and
-                     data.settings.entities[0].entity_value is None)
+                is_risk_based = data.settings.auto_select_entities is True or (
+                    data.settings.entities
+                    and len(data.settings.entities) > 0
+                    and data.settings.entities[0].entity_type is None
+                    and data.settings.entities[0].entity_value is None
                 )
 
                 # For risk-based investigations, we still trigger execution even with null entities
                 # The executor will handle auto-selection
-                if not is_risk_based and (not data.settings.entities or len(data.settings.entities) == 0):
+                if not is_risk_based and (
+                    not data.settings.entities or len(data.settings.entities) == 0
+                ):
                     logger.warning(
                         f"Investigation {investigation_id} has structured request "
                         f"but no entities in settings. Skipping auto-trigger execution."
@@ -124,10 +127,15 @@ class InvestigationStateService:
                     # For risk-based investigations, use placeholder entity values
                     if is_risk_based:
                         # Use placeholder entity for risk-based investigations
-                        entity = data.settings.entities[0] if data.settings.entities else None
+                        entity = (
+                            data.settings.entities[0]
+                            if data.settings.entities
+                            else None
+                        )
                         if not entity or entity.entity_type is None:
                             # Create a placeholder entity for risk-based mode
                             from app.schemas.investigation_state import Entity
+
                             entity = Entity(entity_type=None, entity_value=None)
                     else:
                         entity = data.settings.entities[0]
@@ -135,11 +143,13 @@ class InvestigationStateService:
                     investigation_context = trigger_service.get_investigation_context(
                         investigation_id=investigation_id,
                         entity=entity,
-                        settings=data.settings
+                        settings=data.settings,
                     )
 
                     # Import executor here to avoid circular imports
-                    from app.router.controllers.investigation_executor import execute_structured_investigation
+                    from app.router.controllers.investigation_executor import (
+                        execute_structured_investigation,
+                    )
 
                     # CRITICAL: Set status to IN_PROGRESS IMMEDIATELY before queuing background task
                     # This ensures frontend sees IN_PROGRESS even if executor completes very quickly
@@ -147,9 +157,7 @@ class InvestigationStateService:
                     # IMPORTANT: Refresh state from DB to ensure we have latest version before updating
                     self.db.refresh(state)
                     trigger_service.update_state_to_in_progress(
-                        investigation_id=investigation_id,
-                        state=state,
-                        user_id=user_id
+                        investigation_id=investigation_id, state=state, user_id=user_id
                     )
                     # CRITICAL: Commit and refresh again to ensure IN_PROGRESS is persisted before queuing task
                     self.db.commit()
@@ -164,7 +172,7 @@ class InvestigationStateService:
                         execute_structured_investigation,
                         investigation_id,
                         investigation_context,
-                        structured_request
+                        structured_request,
                     )
 
                     logger.info(
@@ -175,12 +183,13 @@ class InvestigationStateService:
             else:
                 # For risk-based investigations with placeholder entities, structured_request is None
                 # but we should still initialize progress_json if state is IN_PROGRESS
-                if data.status == InvestigationStatus.IN_PROGRESS or data.lifecycle_stage == LifecycleStage.IN_PROGRESS:
+                if (
+                    data.status == InvestigationStatus.IN_PROGRESS
+                    or data.lifecycle_stage == LifecycleStage.IN_PROGRESS
+                ):
                     trigger_service = InvestigationTriggerService(self.db)
                     trigger_service.update_state_to_in_progress(
-                        investigation_id=investigation_id,
-                        state=state,
-                        user_id=user_id
+                        investigation_id=investigation_id, state=state, user_id=user_id
                     )
                     logger.info(
                         f"Investigation {investigation_id} is risk-based with placeholder entities. "
@@ -190,9 +199,7 @@ class InvestigationStateService:
         return InvestigationStateResponse.model_validate(state, from_attributes=True)
 
     def get_state(
-        self,
-        investigation_id: str,
-        user_id: str
+        self, investigation_id: str, user_id: str
     ) -> InvestigationStateResponse:
         """Retrieve investigation state. Updates last_accessed. Raises 404 if not found."""
         state = get_state_by_id(self.db, investigation_id, user_id)
@@ -203,9 +210,7 @@ class InvestigationStateService:
         return InvestigationStateResponse.model_validate(state, from_attributes=True)
 
     def get_state_with_auth(
-        self,
-        investigation_id: str,
-        user_id: str
+        self, investigation_id: str, user_id: str
     ) -> InvestigationStateResponse:
         """
         Retrieve investigation state with authorization check and enhanced progress.
@@ -226,10 +231,7 @@ class InvestigationStateService:
         return self.auth_helper.get_state_with_auth(investigation_id, user_id)
 
     def update_state(
-        self,
-        investigation_id: str,
-        user_id: str,
-        data: InvestigationStateUpdate
+        self, investigation_id: str, user_id: str, data: InvestigationStateUpdate
     ) -> InvestigationStateResponse:
         """Update state with optimistic locking. Raises 404 if not found, 409 if version mismatch."""
         state = get_state_by_id(self.db, investigation_id, user_id)
@@ -237,30 +239,40 @@ class InvestigationStateService:
 
         from_version = state.version
         changes = apply_state_updates(state, data)
-        
+
         # Check if investigation was just completed for registry indexing
-        was_completed = (
-            changes.get("status") in ("COMPLETED", "completed", "COMPLETE", "complete") or
-            (state.status in ("COMPLETED", "completed", "COMPLETE", "complete") and 
-             changes.get("status") is not None)
+        was_completed = changes.get("status") in (
+            "COMPLETED",
+            "completed",
+            "COMPLETE",
+            "complete",
+        ) or (
+            state.status in ("COMPLETED", "completed", "COMPLETE", "complete")
+            and changes.get("status") is not None
         )
 
         self.db.commit()
         self.db.refresh(state)
-        
+
         # Index investigation in registry if it was just completed
         if was_completed:
             try:
                 from app.service.investigation.workspace_registry import get_registry
-                from app.service.logging.investigation_folder_manager import get_folder_manager
-                
+                from app.service.logging.investigation_folder_manager import (
+                    get_folder_manager,
+                )
+
                 registry = get_registry()
                 folder_manager = get_folder_manager()
-                
+
                 # Get investigation folder path
-                investigation_folder = folder_manager.get_investigation_folder(investigation_id)
-                canonical_path = str(investigation_folder) if investigation_folder else None
-                
+                investigation_folder = folder_manager.get_investigation_folder(
+                    investigation_id
+                )
+                canonical_path = (
+                    str(investigation_folder) if investigation_folder else None
+                )
+
                 # Extract metadata from state
                 settings_dict = {}
                 if state.settings_json:
@@ -268,25 +280,37 @@ class InvestigationStateService:
                         settings_dict = json.loads(state.settings_json)
                     except json.JSONDecodeError:
                         pass
-                
+
                 # Extract entity information
                 entities = settings_dict.get("entities", [])
                 entity_type = None
                 entity_ids = []
-                
+
                 if entities and len(entities) > 0:
-                    entity_type = entities[0].get("entity_type") if isinstance(entities[0], dict) else getattr(entities[0], "entity_type", None)
+                    entity_type = (
+                        entities[0].get("entity_type")
+                        if isinstance(entities[0], dict)
+                        else getattr(entities[0], "entity_type", None)
+                    )
                     for entity in entities:
-                        entity_value = entity.get("entity_value") if isinstance(entity, dict) else getattr(entity, "entity_value", None)
+                        entity_value = (
+                            entity.get("entity_value")
+                            if isinstance(entity, dict)
+                            else getattr(entity, "entity_value", None)
+                        )
                         if entity_value:
                             entity_ids.append(entity_value)
-                
+
                 # Extract other metadata
                 investigation_type = settings_dict.get("investigation_type")
-                graph_type = settings_dict.get("graph_type") or settings_dict.get("graph")
+                graph_type = settings_dict.get("graph_type") or settings_dict.get(
+                    "graph"
+                )
                 trigger_source = settings_dict.get("trigger_source") or "unknown"
-                title = settings_dict.get("name") or f"Investigation {investigation_id[:8]}"
-                
+                title = (
+                    settings_dict.get("name") or f"Investigation {investigation_id[:8]}"
+                )
+
                 # Index investigation
                 registry.index_investigation(
                     investigation_id=investigation_id,
@@ -305,14 +329,18 @@ class InvestigationStateService:
                     metadata={
                         "user_id": state.user_id,
                         "version": state.version,
-                        "lifecycle_stage": state.lifecycle_stage
-                    }
+                        "lifecycle_stage": state.lifecycle_stage,
+                    },
                 )
-                
-                logger.debug(f"Indexed completed investigation {investigation_id} in workspace registry")
+
+                logger.debug(
+                    f"Indexed completed investigation {investigation_id} in workspace registry"
+                )
             except Exception as e:
                 # Don't fail state update if registry indexing fails
-                logger.warning(f"Failed to index investigation {investigation_id} in registry: {e}")
+                logger.warning(
+                    f"Failed to index investigation {investigation_id} in registry: {e}"
+                )
 
         create_audit_entry(
             db=self.db,
@@ -322,7 +350,7 @@ class InvestigationStateService:
             changes_json=json.dumps(changes),
             from_version=from_version,
             to_version=state.version,
-            source="API"
+            source="API",
         )
 
         return InvestigationStateResponse.model_validate(state, from_attributes=True)
@@ -338,26 +366,25 @@ class InvestigationStateService:
             action_type="DELETED",
             from_version=state.version,
             to_version=None,
-            source="API"
+            source="API",
         )
 
         self.db.delete(state)
         self.db.commit()
 
     def get_history(
-        self,
-        investigation_id: str,
-        user_id: str,
-        limit: int = 20,
-        offset: int = 0
+        self, investigation_id: str, user_id: str, limit: int = 20, offset: int = 0
     ) -> List[Dict[str, Any]]:
         """Retrieve paginated investigation history. Raises 404 if not found."""
         get_state_by_id(self.db, investigation_id, user_id)
 
-        entries = self.db.query(InvestigationAuditLog).filter(
-            InvestigationAuditLog.investigation_id == investigation_id
-        ).order_by(
-            InvestigationAuditLog.timestamp.desc()
-        ).limit(limit).offset(offset).all()
+        entries = (
+            self.db.query(InvestigationAuditLog)
+            .filter(InvestigationAuditLog.investigation_id == investigation_id)
+            .order_by(InvestigationAuditLog.timestamp.desc())
+            .limit(limit)
+            .offset(offset)
+            .all()
+        )
 
         return [entry.to_dict() for entry in entries]

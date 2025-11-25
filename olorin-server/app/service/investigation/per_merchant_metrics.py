@@ -9,10 +9,11 @@ Constitutional Compliance:
 - Caps at max_merchants
 """
 
-from typing import List, Dict, Any
 from collections import defaultdict
+from typing import Any, Dict, List
 
 from app.router.models.investigation_comparison_models import PerMerchantMetrics
+
 from .metrics_calculation import compute_confusion_matrix, compute_derived_metrics
 
 
@@ -20,7 +21,7 @@ def compute_per_merchant_metrics(
     transactions_a: List[Dict[str, Any]],
     transactions_b: List[Dict[str, Any]],
     risk_threshold: float,
-    max_merchants: int
+    max_merchants: int,
 ) -> List[PerMerchantMetrics]:
     """
     Compute per-merchant metrics for both windows.
@@ -59,14 +60,14 @@ def compute_per_merchant_metrics(
 
         # Compute metrics for Window A
         tp_a, fp_a, tn_a, fn_a, _ = compute_confusion_matrix(tx_a, risk_threshold)
-        precision_a, recall_a, f1_a, accuracy_a, fraud_rate_a, _ = compute_derived_metrics(
-            tp_a, fp_a, tn_a, fn_a, tx_a
+        precision_a, recall_a, f1_a, accuracy_a, fraud_rate_a, _ = (
+            compute_derived_metrics(tp_a, fp_a, tn_a, fn_a, tx_a)
         )
 
         # Compute metrics for Window B
         tp_b, fp_b, tn_b, fn_b, _ = compute_confusion_matrix(tx_b, risk_threshold)
-        precision_b, recall_b, f1_b, accuracy_b, fraud_rate_b, _ = compute_derived_metrics(
-            tp_b, fp_b, tn_b, fn_b, tx_b
+        precision_b, recall_b, f1_b, accuracy_b, fraud_rate_b, _ = (
+            compute_derived_metrics(tp_b, fp_b, tn_b, fn_b, tx_b)
         )
 
         # Compute deltas
@@ -75,31 +76,41 @@ def compute_per_merchant_metrics(
             "recall": recall_b - recall_a,
             "f1": f1_b - f1_a,
             "accuracy": accuracy_b - accuracy_a,
-            "fraud_rate": fraud_rate_b - fraud_rate_a
+            "fraud_rate": fraud_rate_b - fraud_rate_a,
         }
 
-        merchant_metrics.append(PerMerchantMetrics(
-            merchant_id=merchant_id,
-            A={
-                "total_transactions": len(tx_a),
-                "TP": tp_a, "FP": fp_a, "TN": tn_a, "FN": fn_a,
-                "precision": precision_a, "recall": recall_a, "f1": f1_a,
-                "accuracy": accuracy_a, "fraud_rate": fraud_rate_a
-            },
-            B={
-                "total_transactions": len(tx_b),
-                "TP": tp_b, "FP": fp_b, "TN": tn_b, "FN": fn_b,
-                "precision": precision_b, "recall": recall_b, "f1": f1_b,
-                "accuracy": accuracy_b, "fraud_rate": fraud_rate_b
-            },
-            delta=delta_dict
-        ))
+        merchant_metrics.append(
+            PerMerchantMetrics(
+                merchant_id=merchant_id,
+                A={
+                    "total_transactions": len(tx_a),
+                    "TP": tp_a,
+                    "FP": fp_a,
+                    "TN": tn_a,
+                    "FN": fn_a,
+                    "precision": precision_a,
+                    "recall": recall_a,
+                    "f1": f1_a,
+                    "accuracy": accuracy_a,
+                    "fraud_rate": fraud_rate_a,
+                },
+                B={
+                    "total_transactions": len(tx_b),
+                    "TP": tp_b,
+                    "FP": fp_b,
+                    "TN": tn_b,
+                    "FN": fn_b,
+                    "precision": precision_b,
+                    "recall": recall_b,
+                    "f1": f1_b,
+                    "accuracy": accuracy_b,
+                    "fraud_rate": fraud_rate_b,
+                },
+                delta=delta_dict,
+            )
+        )
 
     # Sort by total volume (Window B) descending, cap at max_merchants
-    merchant_metrics.sort(
-        key=lambda m: m.B.get("total_transactions", 0),
-        reverse=True
-    )
+    merchant_metrics.sort(key=lambda m: m.B.get("total_transactions", 0), reverse=True)
 
     return merchant_metrics[:max_merchants]
-

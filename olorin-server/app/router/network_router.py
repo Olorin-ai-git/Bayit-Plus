@@ -1,5 +1,4 @@
 import logging
-from app.service.logging import get_bridge_logger
 from typing import Any, Dict, List, Optional
 
 from fastapi import APIRouter, Depends, Query
@@ -8,6 +7,7 @@ from starlette.requests import Request
 from app.persistence import ensure_investigation_exists
 from app.security.auth import User, require_read
 from app.service.llm_network_risk_service import LLMNetworkRiskService
+from app.service.logging import get_bridge_logger
 
 logger = get_bridge_logger(__name__)
 router = APIRouter(prefix="/network")

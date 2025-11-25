@@ -8,14 +8,16 @@ Tests all 4 fraud patterns:
 4. Time-of-Day Anomaly Pattern
 """
 
-import pytest
 from datetime import datetime, timedelta
+
+import pytest
+
 from app.service.agent.tools.ml_ai_tools.pattern_recognition.recognizers.fraud_recognizer import (
-    FraudPatternRecognizer,
-    CARD_TESTING_SMALL_THRESHOLD,
+    AMOUNT_CLUSTERING_THRESHOLDS,
     CARD_TESTING_LARGE_THRESHOLD,
+    CARD_TESTING_SMALL_THRESHOLD,
     VELOCITY_BURST_COUNT,
-    AMOUNT_CLUSTERING_THRESHOLDS
+    FraudPatternRecognizer,
 )
 
 
@@ -35,13 +37,13 @@ class TestFraudPatternRecognizer:
             {
                 "TX_ID_KEY": "tx_001",
                 "PAID_AMOUNT_VALUE_IN_CURRENCY": 2.99,  # Small test amount
-                "TX_DATETIME": base_time
+                "TX_DATETIME": base_time,
             },
             {
                 "TX_ID_KEY": "tx_002",
                 "PAID_AMOUNT_VALUE_IN_CURRENCY": 500.00,  # Large purchase
-                "TX_DATETIME": base_time + timedelta(minutes=5)
-            }
+                "TX_DATETIME": base_time + timedelta(minutes=5),
+            },
         ]
 
     @pytest.fixture
@@ -52,7 +54,7 @@ class TestFraudPatternRecognizer:
             {
                 "TX_ID_KEY": f"tx_{i:03d}",
                 "PAID_AMOUNT_VALUE_IN_CURRENCY": 50.0 + i * 10,
-                "TX_DATETIME": base_time + timedelta(minutes=i * 0.5)
+                "TX_DATETIME": base_time + timedelta(minutes=i * 0.5),
             }
             for i in range(6)  # 6 transactions in 3 minutes
         ]
@@ -65,18 +67,18 @@ class TestFraudPatternRecognizer:
             {
                 "TX_ID_KEY": "tx_001",
                 "PAID_AMOUNT_VALUE_IN_CURRENCY": 99.50,  # Near $99 threshold
-                "TX_DATETIME": base_time
+                "TX_DATETIME": base_time,
             },
             {
                 "TX_ID_KEY": "tx_002",
                 "PAID_AMOUNT_VALUE_IN_CURRENCY": 100.25,  # Near $99 threshold
-                "TX_DATETIME": base_time + timedelta(minutes=10)
+                "TX_DATETIME": base_time + timedelta(minutes=10),
             },
             {
                 "TX_ID_KEY": "tx_003",
                 "PAID_AMOUNT_VALUE_IN_CURRENCY": 99.99,  # Near $99 threshold
-                "TX_DATETIME": base_time + timedelta(minutes=20)
-            }
+                "TX_DATETIME": base_time + timedelta(minutes=20),
+            },
         ]
 
     @pytest.fixture
@@ -87,24 +89,28 @@ class TestFraudPatternRecognizer:
             {
                 "TX_ID_KEY": "tx_001",
                 "PAID_AMOUNT_VALUE_IN_CURRENCY": 50.0,
-                "TX_DATETIME": base_date.replace(hour=2, minute=30)  # 2:30 AM - unusual
+                "TX_DATETIME": base_date.replace(
+                    hour=2, minute=30
+                ),  # 2:30 AM - unusual
             },
             {
                 "TX_ID_KEY": "tx_002",
                 "PAID_AMOUNT_VALUE_IN_CURRENCY": 75.0,
-                "TX_DATETIME": base_date.replace(hour=3, minute=15)  # 3:15 AM - unusual
+                "TX_DATETIME": base_date.replace(
+                    hour=3, minute=15
+                ),  # 3:15 AM - unusual
             },
             {
                 "TX_ID_KEY": "tx_003",
                 "PAID_AMOUNT_VALUE_IN_CURRENCY": 100.0,
-                "TX_DATETIME": base_date.replace(hour=14, minute=0)  # 2:00 PM - normal
-            }
+                "TX_DATETIME": base_date.replace(hour=14, minute=0),  # 2:00 PM - normal
+            },
         ]
 
     def test_recognizer_initialization(self, recognizer):
         """Test recognizer initializes correctly."""
         assert recognizer is not None
-        assert hasattr(recognizer, 'recognize')
+        assert hasattr(recognizer, "recognize")
 
     def test_card_testing_detection(self, recognizer, card_testing_events):
         """Test card testing pattern detection."""
@@ -115,7 +121,9 @@ class TestFraudPatternRecognizer:
         assert result["total_patterns_detected"] >= 1
 
         # Find card testing patterns
-        card_testing_patterns = [p for p in result["patterns"] if p["pattern_type"] == "card_testing"]
+        card_testing_patterns = [
+            p for p in result["patterns"] if p["pattern_type"] == "card_testing"
+        ]
         assert len(card_testing_patterns) >= 1
 
         pattern = card_testing_patterns[0]
@@ -136,7 +144,9 @@ class TestFraudPatternRecognizer:
         assert result["total_patterns_detected"] >= 1
 
         # Find velocity burst patterns
-        velocity_patterns = [p for p in result["patterns"] if p["pattern_type"] == "velocity_burst"]
+        velocity_patterns = [
+            p for p in result["patterns"] if p["pattern_type"] == "velocity_burst"
+        ]
         assert len(velocity_patterns) >= 1
 
         pattern = velocity_patterns[0]
@@ -154,7 +164,9 @@ class TestFraudPatternRecognizer:
         assert result["total_patterns_detected"] >= 1
 
         # Find amount clustering patterns
-        clustering_patterns = [p for p in result["patterns"] if p["pattern_type"] == "amount_clustering"]
+        clustering_patterns = [
+            p for p in result["patterns"] if p["pattern_type"] == "amount_clustering"
+        ]
         assert len(clustering_patterns) >= 1
 
         pattern = clustering_patterns[0]
@@ -172,7 +184,9 @@ class TestFraudPatternRecognizer:
 
         # Time anomaly detection requires sufficient unusual hour transactions
         # With 2 out of 3 transactions in unusual hours (66%), should detect
-        time_patterns = [p for p in result["patterns"] if p["pattern_type"] == "time_anomaly"]
+        time_patterns = [
+            p for p in result["patterns"] if p["pattern_type"] == "time_anomaly"
+        ]
 
         if time_patterns:  # May not always trigger depending on z-score
             pattern = time_patterns[0]
@@ -199,18 +213,18 @@ class TestFraudPatternRecognizer:
             {
                 "TX_ID_KEY": "tx_001",
                 "PAID_AMOUNT_VALUE_IN_CURRENCY": 3.00,  # Small test
-                "TX_DATETIME": base_time
+                "TX_DATETIME": base_time,
             },
             {
                 "TX_ID_KEY": "tx_002",
                 "PAID_AMOUNT_VALUE_IN_CURRENCY": 300.00,  # Large purchase
-                "TX_DATETIME": base_time + timedelta(minutes=5)
+                "TX_DATETIME": base_time + timedelta(minutes=5),
             },
             {
                 "TX_ID_KEY": "tx_003",
                 "PAID_AMOUNT_VALUE_IN_CURRENCY": 100.00,
-                "TX_DATETIME": base_time + timedelta(minutes=10)
-            }
+                "TX_DATETIME": base_time + timedelta(minutes=10),
+            },
         ]
 
         processed_data = {"events": events}
@@ -246,7 +260,9 @@ class TestFraudPatternRecognizer:
         assert recognizer._extract_timestamp(event3) is not None
         assert recognizer._extract_timestamp({}) is None
 
-    def test_pattern_breakdown_in_result(self, recognizer, card_testing_events, velocity_burst_events):
+    def test_pattern_breakdown_in_result(
+        self, recognizer, card_testing_events, velocity_burst_events
+    ):
         """Test that result includes pattern breakdown by type."""
         # Combine different pattern types
         all_events = card_testing_events + velocity_burst_events
@@ -267,20 +283,22 @@ class TestFraudPatternRecognizer:
             {
                 "TX_ID_KEY": "tx_001",
                 "PAID_AMOUNT_VALUE_IN_CURRENCY": 5.00,  # Exactly at threshold
-                "TX_DATETIME": datetime(2024, 1, 1, 10, 0, 0)
+                "TX_DATETIME": datetime(2024, 1, 1, 10, 0, 0),
             },
             {
                 "TX_ID_KEY": "tx_002",
                 "PAID_AMOUNT_VALUE_IN_CURRENCY": 200.00,  # Exactly at threshold
-                "TX_DATETIME": datetime(2024, 1, 1, 10, 5, 0)
-            }
+                "TX_DATETIME": datetime(2024, 1, 1, 10, 5, 0),
+            },
         ]
 
         processed_data = {"events": events}
         result = recognizer.recognize(processed_data, minimum_support=0.1)
 
         # Should detect even borderline cases (aggressive strategy)
-        card_testing_patterns = [p for p in result["patterns"] if p["pattern_type"] == "card_testing"]
+        card_testing_patterns = [
+            p for p in result["patterns"] if p["pattern_type"] == "card_testing"
+        ]
         assert len(card_testing_patterns) >= 1  # Aggressive: should catch borderline
 
     def test_error_handling(self, recognizer):

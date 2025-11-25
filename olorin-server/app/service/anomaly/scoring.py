@@ -5,7 +5,7 @@ This module provides logic for determining anomaly severity levels
 based on scores and persistence, using configurable thresholds.
 """
 
-from typing import Dict, Any, Optional
+from typing import Any, Dict, Optional
 
 from app.config.anomaly_config import get_anomaly_config
 from app.service.logging import get_bridge_logger
@@ -14,9 +14,7 @@ logger = get_bridge_logger(__name__)
 
 
 def determine_severity(
-    score: float,
-    persisted_n: int,
-    detector_params: Optional[Dict[str, Any]] = None
+    score: float, persisted_n: int, detector_params: Optional[Dict[str, Any]] = None
 ) -> Optional[str]:
     """
     Determine anomaly severity based on score and persistence.
@@ -32,11 +30,11 @@ def determine_severity(
     config = get_anomaly_config()
 
     # Get thresholds from detector params or use global defaults
-    if detector_params and 'severity_thresholds' in detector_params:
-        thresholds = detector_params['severity_thresholds']
-        info_max = thresholds.get('info_max', config.severity_info_max)
-        warn_max = thresholds.get('warn_max', config.severity_warn_max)
-        critical_min = thresholds.get('critical_min', config.severity_critical_min)
+    if detector_params and "severity_thresholds" in detector_params:
+        thresholds = detector_params["severity_thresholds"]
+        info_max = thresholds.get("info_max", config.severity_info_max)
+        warn_max = thresholds.get("warn_max", config.severity_warn_max)
+        critical_min = thresholds.get("critical_min", config.severity_critical_min)
     else:
         info_max = config.severity_info_max
         warn_max = config.severity_warn_max
@@ -55,16 +53,16 @@ def determine_severity(
 
     # Determine severity based on score
     if score >= critical_min:
-        return 'critical'
+        return "critical"
     elif score >= warn_max:
-        return 'warn'
+        return "warn"
     elif score >= info_max:
-        return 'info'
+        return "info"
     else:
         return None
 
 
-def normalize_score(raw_score: float, method: str = 'standard') -> float:
+def normalize_score(raw_score: float, method: str = "standard") -> float:
     """
     Normalize anomaly score to consistent scale.
 
@@ -79,4 +77,3 @@ def normalize_score(raw_score: float, method: str = 'standard') -> float:
     # Detectors should return normalized scores
     # This function can be extended for additional normalization
     return max(0.0, raw_score)
-

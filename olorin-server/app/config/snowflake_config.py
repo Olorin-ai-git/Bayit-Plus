@@ -1,10 +1,12 @@
 """Snowflake configuration with private key authentication support."""
+
 from pathlib import Path
 from typing import Literal, Optional
-from pydantic import Field, field_validator
-from pydantic_settings import BaseSettings
+
 from cryptography.hazmat.backends import default_backend
 from cryptography.hazmat.primitives import serialization
+from pydantic import Field, field_validator
+from pydantic_settings import BaseSettings
 
 
 class SnowflakeConfig(BaseSettings):
@@ -22,18 +24,20 @@ class SnowflakeConfig(BaseSettings):
     role: str = Field(..., validation_alias="SNOWFLAKE_ROLE")
     warehouse: str = Field(..., validation_alias="SNOWFLAKE_WAREHOUSE")
     database: str = Field(..., validation_alias="SNOWFLAKE_DATABASE")
-    snowflake_schema: str = Field(..., validation_alias="SNOWFLAKE_SCHEMA", alias="schema")
+    snowflake_schema: str = Field(
+        ..., validation_alias="SNOWFLAKE_SCHEMA", alias="schema"
+    )
 
     auth_method: Literal["private_key", "password", "externalbrowser"] = Field(
-        "private_key",
-        validation_alias="SNOWFLAKE_AUTH_METHOD"
+        "private_key", validation_alias="SNOWFLAKE_AUTH_METHOD"
     )
 
     # Private key authentication
-    private_key_path: Optional[str] = Field(None, validation_alias="SNOWFLAKE_PRIVATE_KEY_PATH")
+    private_key_path: Optional[str] = Field(
+        None, validation_alias="SNOWFLAKE_PRIVATE_KEY_PATH"
+    )
     private_key_passphrase: Optional[str] = Field(
-        None,
-        validation_alias="SNOWFLAKE_PRIVATE_KEY_PASSPHRASE"
+        None, validation_alias="SNOWFLAKE_PRIVATE_KEY_PASSPHRASE"
     )
 
     # Password authentication
@@ -52,13 +56,9 @@ class SnowflakeConfig(BaseSettings):
                 )
             key_path = Path(v)
             if not key_path.exists():
-                raise ValueError(
-                    f"Private key file not found: {v}"
-                )
+                raise ValueError(f"Private key file not found: {v}")
             if not key_path.is_file():
-                raise ValueError(
-                    f"Private key path is not a file: {v}"
-                )
+                raise ValueError(f"Private key path is not a file: {v}")
         return v
 
     @field_validator("password")
@@ -67,9 +67,7 @@ class SnowflakeConfig(BaseSettings):
         """Validate password exists if using password auth."""
         auth_method = info.data.get("auth_method")
         if auth_method == "password" and not v:
-            raise ValueError(
-                "SNOWFLAKE_PASSWORD required when auth_method='password'"
-            )
+            raise ValueError("SNOWFLAKE_PASSWORD required when auth_method='password'")
         return v
 
     def load_private_key(self) -> bytes:
@@ -96,16 +94,14 @@ class SnowflakeConfig(BaseSettings):
 
             # Load the private key
             private_key = serialization.load_pem_private_key(
-                private_key_data,
-                password=passphrase,
-                backend=default_backend()
+                private_key_data, password=passphrase, backend=default_backend()
             )
 
             # Serialize to DER format for Snowflake
             return private_key.private_bytes(
                 encoding=serialization.Encoding.DER,
                 format=serialization.PrivateFormat.PKCS8,
-                encryption_algorithm=serialization.NoEncryption()
+                encryption_algorithm=serialization.NoEncryption(),
             )
 
         except Exception as e:
@@ -133,6 +129,4 @@ def load_snowflake_config() -> SnowflakeConfig:
     try:
         return SnowflakeConfig()
     except Exception as e:
-        raise RuntimeError(
-            f"Invalid Snowflake configuration – refusing to start: {e}"
-        )
+        raise RuntimeError(f"Invalid Snowflake configuration – refusing to start: {e}")

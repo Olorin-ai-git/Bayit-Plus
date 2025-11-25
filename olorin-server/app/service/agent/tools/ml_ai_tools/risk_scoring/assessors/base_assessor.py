@@ -6,6 +6,7 @@ Abstract base class for all risk assessment modules.
 
 from abc import ABC, abstractmethod
 from typing import Any, Dict, List
+
 from ..core.input_schema import RiskAssessmentResult
 
 
@@ -13,7 +14,9 @@ class BaseRiskAssessor(ABC):
     """Base class for risk assessment modules."""
 
     @abstractmethod
-    def assess(self, processed_data: Dict[str, Any], risk_tolerance: str) -> RiskAssessmentResult:
+    def assess(
+        self, processed_data: Dict[str, Any], risk_tolerance: str
+    ) -> RiskAssessmentResult:
         """
         Assess risk for the specific domain.
 
@@ -36,8 +39,7 @@ class BaseRiskAssessor(ABC):
             return 0.0
 
         weighted_score = sum(
-            factor.get("score", 0.0) * factor.get("weight", 1.0)
-            for factor in factors
+            factor.get("score", 0.0) * factor.get("weight", 1.0) for factor in factors
         )
 
         return min(weighted_score / total_weight, 1.0)
@@ -47,7 +49,7 @@ class BaseRiskAssessor(ABC):
         tolerance_thresholds = {
             "low": {"low": 0.2, "medium": 0.4, "high": 0.6},
             "medium": {"low": 0.3, "medium": 0.6, "high": 0.8},
-            "high": {"low": 0.4, "medium": 0.7, "high": 0.9}
+            "high": {"low": 0.4, "medium": 0.7, "high": 0.9},
         }
 
         thresholds = tolerance_thresholds.get(tolerance, tolerance_thresholds["medium"])

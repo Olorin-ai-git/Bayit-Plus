@@ -7,12 +7,8 @@ Components:
 - ABTestManager: A/B testing functionality
 """
 
-from .graph_selector import GraphSelector
-from .graph_builders import GraphBuilders
 from .ab_test_manager import ABTestManager
+from .graph_builders import GraphBuilders
+from .graph_selector import GraphSelector
 
-__all__ = [
-    "GraphSelector",
-    "GraphBuilders", 
-    "ABTestManager"
-]
+__all__ = ["GraphSelector", "GraphBuilders", "ABTestManager"]

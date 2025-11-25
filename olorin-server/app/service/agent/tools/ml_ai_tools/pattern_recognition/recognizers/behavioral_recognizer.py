@@ -10,10 +10,10 @@ Implements behavioral pattern detection for:
 Strategy: Aggressive High Recall (target >85% recall, accept 15-20% FPR)
 """
 
-from typing import Any, Dict, Optional, List
-from datetime import datetime, timedelta
-from collections import defaultdict, Counter
 import statistics
+from collections import Counter, defaultdict
+from datetime import datetime, timedelta
+from typing import Any, Dict, List, Optional
 
 from app.service.logging import get_bridge_logger
 
@@ -41,7 +41,7 @@ class BehavioralPatternRecognizer:
         self,
         processed_data: Dict[str, Any],
         minimum_support: float,
-        historical_patterns: Optional[Dict[str, Any]] = None
+        historical_patterns: Optional[Dict[str, Any]] = None,
     ) -> Dict[str, Any]:
         """
         Recognize behavioral patterns in processed data.
@@ -55,7 +55,9 @@ class BehavioralPatternRecognizer:
             Dictionary with detected behavioral patterns, confidence, and anomalies
         """
         try:
-            logger.info("🔍 Starting behavioral pattern recognition (aggressive high-recall strategy)")
+            logger.info(
+                "🔍 Starting behavioral pattern recognition (aggressive high-recall strategy)"
+            )
 
             # Extract events and behavioral data
             events = processed_data.get("events", [])
@@ -69,7 +71,9 @@ class BehavioralPatternRecognizer:
 
             # Detect all 4 behavioral patterns
             session_anomaly_patterns = self._detect_session_anomalies(events)
-            purchase_deviation_patterns = self._detect_purchase_deviations(events, historical_patterns)
+            purchase_deviation_patterns = self._detect_purchase_deviations(
+                events, historical_patterns
+            )
             multi_entity_patterns = self._detect_multi_entity_clustering(events)
             ato_patterns = self._detect_account_takeover_indicators(events)
 
@@ -83,7 +87,9 @@ class BehavioralPatternRecognizer:
             # Calculate overall confidence and support
             total_events = len(events)
             flagged_events = sum(p.get("affected_count", 0) for p in all_patterns)
-            support = min(1.0, flagged_events / total_events) if total_events > 0 else 0.0
+            support = (
+                min(1.0, flagged_events / total_events) if total_events > 0 else 0.0
+            )
 
             # Confidence calculation
             confidence = self._calculate_confidence(all_patterns, total_events)
@@ -102,8 +108,8 @@ class BehavioralPatternRecognizer:
                     "session_anomaly": len(session_anomaly_patterns),
                     "purchase_deviation": len(purchase_deviation_patterns),
                     "multi_entity": len(multi_entity_patterns),
-                    "account_takeover": len(ato_patterns)
-                }
+                    "account_takeover": len(ato_patterns),
+                },
             }
 
             logger.info(
@@ -114,16 +120,20 @@ class BehavioralPatternRecognizer:
             return result
 
         except Exception as e:
-            logger.error(f"❌ Behavioral pattern recognition failed: {e}", exc_info=True)
+            logger.error(
+                f"❌ Behavioral pattern recognition failed: {e}", exc_info=True
+            )
             return {
                 "success": False,
                 "error": str(e),
                 "patterns": [],
                 "method": "behavioral_pattern_recognition",
-                "support_threshold": minimum_support
+                "support_threshold": minimum_support,
             }
 
-    def _detect_session_anomalies(self, events: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
+    def _detect_session_anomalies(
+        self, events: List[Dict[str, Any]]
+    ) -> List[Dict[str, Any]]:
         """
         Detect session behavior anomalies: device/browser changes mid-session.
         """
@@ -154,25 +164,33 @@ class BehavioralPatternRecognizer:
             device_changes = len(devices) - 1
             browser_changes = len(user_agents) - 1
 
-            if (device_changes >= SESSION_DEVICE_CHANGE_THRESHOLD or
-                browser_changes >= SESSION_BROWSER_CHANGE_THRESHOLD):
+            if (
+                device_changes >= SESSION_DEVICE_CHANGE_THRESHOLD
+                or browser_changes >= SESSION_BROWSER_CHANGE_THRESHOLD
+            ):
 
-                patterns.append({
-                    "pattern_type": "session_anomaly",
-                    "pattern_name": "Session Behavior Anomaly",
-                    "description": f"Session with {device_changes} device changes and {browser_changes} browser changes",
-                    "confidence": 0.80,  # High confidence for mid-session changes
-                    "risk_adjustment": 0.15,  # +15% risk boost
-                    "affected_count": len(session_events),
-                    "evidence": {
-                        "device_changes": device_changes,
-                        "browser_changes": browser_changes,
-                        "unique_devices": list(devices)[:5],
-                        "unique_user_agents": list(user_agents)[:3],
-                        "session_duration_minutes": self._calculate_session_duration(session_events),
-                        "transaction_ids": [self._extract_tx_id(e) for e in session_events[:5]]
+                patterns.append(
+                    {
+                        "pattern_type": "session_anomaly",
+                        "pattern_name": "Session Behavior Anomaly",
+                        "description": f"Session with {device_changes} device changes and {browser_changes} browser changes",
+                        "confidence": 0.80,  # High confidence for mid-session changes
+                        "risk_adjustment": 0.15,  # +15% risk boost
+                        "affected_count": len(session_events),
+                        "evidence": {
+                            "device_changes": device_changes,
+                            "browser_changes": browser_changes,
+                            "unique_devices": list(devices)[:5],
+                            "unique_user_agents": list(user_agents)[:3],
+                            "session_duration_minutes": self._calculate_session_duration(
+                                session_events
+                            ),
+                            "transaction_ids": [
+                                self._extract_tx_id(e) for e in session_events[:5]
+                            ],
+                        },
                     }
-                })
+                )
                 logger.debug(
                     f"🚨 Session anomaly detected: {device_changes} device changes, "
                     f"{browser_changes} browser changes"
@@ -183,7 +201,7 @@ class BehavioralPatternRecognizer:
     def _detect_purchase_deviations(
         self,
         events: List[Dict[str, Any]],
-        historical_patterns: Optional[Dict[str, Any]]
+        historical_patterns: Optional[Dict[str, Any]],
     ) -> List[Dict[str, Any]]:
         """
         Detect purchase behavior deviations: category shift, amount deviation.
@@ -216,23 +234,31 @@ class BehavioralPatternRecognizer:
                 if historical_patterns and "common_merchants" in historical_patterns:
                     common_merchants = set(historical_patterns["common_merchants"])
                     new_merchants = set(categories) - common_merchants
-                    is_deviation = len(new_merchants) >= PURCHASE_CATEGORY_SHIFT_MIN_CATEGORIES
+                    is_deviation = (
+                        len(new_merchants) >= PURCHASE_CATEGORY_SHIFT_MIN_CATEGORIES
+                    )
 
                 if is_deviation:
-                    patterns.append({
-                        "pattern_type": "purchase_deviation",
-                        "pattern_name": "Purchase Category Shift",
-                        "description": f"Unusual merchant diversity: {unique_categories} different merchants",
-                        "confidence": 0.70,  # Moderate confidence
-                        "risk_adjustment": 0.12,  # +12% risk boost
-                        "affected_count": len(categories),
-                        "evidence": {
-                            "unique_categories": unique_categories,
-                            "top_merchants": [m for m, _ in category_counts.most_common(5)],
-                            "new_merchants_count": len(new_merchants)
+                    patterns.append(
+                        {
+                            "pattern_type": "purchase_deviation",
+                            "pattern_name": "Purchase Category Shift",
+                            "description": f"Unusual merchant diversity: {unique_categories} different merchants",
+                            "confidence": 0.70,  # Moderate confidence
+                            "risk_adjustment": 0.12,  # +12% risk boost
+                            "affected_count": len(categories),
+                            "evidence": {
+                                "unique_categories": unique_categories,
+                                "top_merchants": [
+                                    m for m, _ in category_counts.most_common(5)
+                                ],
+                                "new_merchants_count": len(new_merchants),
+                            },
                         }
-                    })
-                    logger.debug(f"🚨 Category shift detected: {unique_categories} unique merchants")
+                    )
+                    logger.debug(
+                        f"🚨 Category shift detected: {unique_categories} unique merchants"
+                    )
 
         # 2. Amount deviation detection
         if len(amounts) >= 5:  # Need sufficient data for z-score
@@ -249,28 +275,36 @@ class BehavioralPatternRecognizer:
                             outliers.append((i, amount, z_score))
 
                     if outliers:
-                        patterns.append({
-                            "pattern_type": "purchase_deviation",
-                            "pattern_name": "Purchase Amount Deviation",
-                            "description": f"{len(outliers)} transactions with unusual amounts (z-score ≥ {PURCHASE_AMOUNT_DEVIATION_ZSCORE})",
-                            "confidence": 0.75,  # Good confidence for statistical deviation
-                            "risk_adjustment": 0.10,  # +10% risk boost
-                            "affected_count": len(outliers),
-                            "evidence": {
-                                "outlier_count": len(outliers),
-                                "mean_amount": mean_amount,
-                                "stdev_amount": stdev_amount,
-                                "outlier_amounts": [amt for _, amt, _ in outliers[:5]],
-                                "outlier_zscores": [z for _, _, z in outliers[:5]]
+                        patterns.append(
+                            {
+                                "pattern_type": "purchase_deviation",
+                                "pattern_name": "Purchase Amount Deviation",
+                                "description": f"{len(outliers)} transactions with unusual amounts (z-score ≥ {PURCHASE_AMOUNT_DEVIATION_ZSCORE})",
+                                "confidence": 0.75,  # Good confidence for statistical deviation
+                                "risk_adjustment": 0.10,  # +10% risk boost
+                                "affected_count": len(outliers),
+                                "evidence": {
+                                    "outlier_count": len(outliers),
+                                    "mean_amount": mean_amount,
+                                    "stdev_amount": stdev_amount,
+                                    "outlier_amounts": [
+                                        amt for _, amt, _ in outliers[:5]
+                                    ],
+                                    "outlier_zscores": [z for _, _, z in outliers[:5]],
+                                },
                             }
-                        })
-                        logger.debug(f"🚨 Amount deviation detected: {len(outliers)} outlier transactions")
+                        )
+                        logger.debug(
+                            f"🚨 Amount deviation detected: {len(outliers)} outlier transactions"
+                        )
             except Exception as e:
                 logger.debug(f"Amount deviation calculation failed: {e}")
 
         return patterns
 
-    def _detect_multi_entity_clustering(self, events: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
+    def _detect_multi_entity_clustering(
+        self, events: List[Dict[str, Any]]
+    ) -> List[Dict[str, Any]]:
         """
         Detect multi-entity clustering: shared device/IP across accounts.
         """
@@ -293,44 +327,54 @@ class BehavioralPatternRecognizer:
         # 1. Shared device detection
         for device, emails in device_to_emails.items():
             if len(emails) >= MULTI_ENTITY_SHARED_DEVICE_THRESHOLD:
-                patterns.append({
-                    "pattern_type": "multi_entity",
-                    "pattern_name": "Shared Device Clustering",
-                    "description": f"Device shared across {len(emails)} different accounts",
-                    "confidence": 0.85,  # High confidence for device sharing
-                    "risk_adjustment": 0.18,  # +18% risk boost (serious indicator)
-                    "affected_count": len(emails),
-                    "evidence": {
-                        "device_id": device,
-                        "email_count": len(emails),
-                        "emails": list(emails)[:5]  # First 5 emails
+                patterns.append(
+                    {
+                        "pattern_type": "multi_entity",
+                        "pattern_name": "Shared Device Clustering",
+                        "description": f"Device shared across {len(emails)} different accounts",
+                        "confidence": 0.85,  # High confidence for device sharing
+                        "risk_adjustment": 0.18,  # +18% risk boost (serious indicator)
+                        "affected_count": len(emails),
+                        "evidence": {
+                            "device_id": device,
+                            "email_count": len(emails),
+                            "emails": list(emails)[:5],  # First 5 emails
+                        },
                     }
-                })
-                logger.debug(f"🚨 Shared device detected: {len(emails)} accounts on device {device}")
+                )
+                logger.debug(
+                    f"🚨 Shared device detected: {len(emails)} accounts on device {device}"
+                )
 
         # 2. Shared IP detection (with household filter)
         for ip, devices in ip_to_devices.items():
             if len(devices) >= MULTI_ENTITY_SHARED_IP_THRESHOLD:
                 # This could be household or fraud ring
                 # Use conservative threshold to avoid false positives for families
-                patterns.append({
-                    "pattern_type": "multi_entity",
-                    "pattern_name": "Shared IP Clustering",
-                    "description": f"IP address with {len(devices)} different devices (potential fraud ring or household)",
-                    "confidence": 0.65,  # Lower confidence (could be legitimate household)
-                    "risk_adjustment": 0.10,  # +10% risk boost (moderate)
-                    "affected_count": len(devices),
-                    "evidence": {
-                        "ip_address": ip,
-                        "device_count": len(devices),
-                        "devices": list(devices)[:5]
+                patterns.append(
+                    {
+                        "pattern_type": "multi_entity",
+                        "pattern_name": "Shared IP Clustering",
+                        "description": f"IP address with {len(devices)} different devices (potential fraud ring or household)",
+                        "confidence": 0.65,  # Lower confidence (could be legitimate household)
+                        "risk_adjustment": 0.10,  # +10% risk boost (moderate)
+                        "affected_count": len(devices),
+                        "evidence": {
+                            "ip_address": ip,
+                            "device_count": len(devices),
+                            "devices": list(devices)[:5],
+                        },
                     }
-                })
-                logger.debug(f"🚨 Shared IP detected: {len(devices)} devices from IP {ip}")
+                )
+                logger.debug(
+                    f"🚨 Shared IP detected: {len(devices)} devices from IP {ip}"
+                )
 
         return patterns
 
-    def _detect_account_takeover_indicators(self, events: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
+    def _detect_account_takeover_indicators(
+        self, events: List[Dict[str, Any]]
+    ) -> List[Dict[str, Any]]:
         """
         Detect account takeover indicators: sudden profile changes + transactions.
         """
@@ -364,20 +408,26 @@ class BehavioralPatternRecognizer:
                 time_diff = (next_time - current_time).total_seconds() / 60
 
                 if time_diff <= ATO_RAPID_TRANSACTION_MINUTES:
-                    patterns.append({
-                        "pattern_type": "account_takeover",
-                        "pattern_name": "Account Takeover Indicator",
-                        "description": f"Profile changes ({', '.join(changes)}) followed by transaction within {time_diff:.1f} minutes",
-                        "confidence": 0.75,  # Good confidence for ATO pattern
-                        "risk_adjustment": 0.20,  # +20% risk boost (serious threat)
-                        "affected_count": 2,
-                        "evidence": {
-                            "changed_fields": changes,
-                            "time_to_transaction_minutes": time_diff,
-                            "profile_change_transaction": self._extract_tx_id(current),
-                            "following_transaction": self._extract_tx_id(next_event)
+                    patterns.append(
+                        {
+                            "pattern_type": "account_takeover",
+                            "pattern_name": "Account Takeover Indicator",
+                            "description": f"Profile changes ({', '.join(changes)}) followed by transaction within {time_diff:.1f} minutes",
+                            "confidence": 0.75,  # Good confidence for ATO pattern
+                            "risk_adjustment": 0.20,  # +20% risk boost (serious threat)
+                            "affected_count": 2,
+                            "evidence": {
+                                "changed_fields": changes,
+                                "time_to_transaction_minutes": time_diff,
+                                "profile_change_transaction": self._extract_tx_id(
+                                    current
+                                ),
+                                "following_transaction": self._extract_tx_id(
+                                    next_event
+                                ),
+                            },
                         }
-                    })
+                    )
                     logger.debug(
                         f"🚨 ATO indicator detected: {', '.join(changes)} changed, "
                         f"transaction in {time_diff:.1f} min"
@@ -386,9 +436,7 @@ class BehavioralPatternRecognizer:
         return patterns
 
     def _group_into_sessions(
-        self,
-        sorted_events: List[Dict[str, Any]],
-        window_minutes: int
+        self, sorted_events: List[Dict[str, Any]], window_minutes: int
     ) -> List[List[Dict[str, Any]]]:
         """Group events into sessions based on time windows."""
         if not sorted_events:
@@ -421,7 +469,9 @@ class BehavioralPatternRecognizer:
 
         return sessions
 
-    def _calculate_session_duration(self, session_events: List[Dict[str, Any]]) -> float:
+    def _calculate_session_duration(
+        self, session_events: List[Dict[str, Any]]
+    ) -> float:
         """Calculate session duration in minutes."""
         if len(session_events) < 2:
             return 0.0
@@ -434,7 +484,9 @@ class BehavioralPatternRecognizer:
 
         return (max(timestamps) - min(timestamps)).total_seconds() / 60
 
-    def _calculate_confidence(self, patterns: List[Dict[str, Any]], total_events: int) -> float:
+    def _calculate_confidence(
+        self, patterns: List[Dict[str, Any]], total_events: int
+    ) -> float:
         """Calculate overall confidence based on detected patterns."""
         if not patterns:
             return 0.0
@@ -476,7 +528,12 @@ class BehavioralPatternRecognizer:
     # Field extraction helpers
     def _extract_amount(self, event: Dict[str, Any]) -> Optional[float]:
         """Extract transaction amount."""
-        for field in ["PAID_AMOUNT_VALUE_IN_CURRENCY", "paid_amount_value_in_currency", "amount", "AMOUNT"]:
+        for field in [
+            "PAID_AMOUNT_VALUE_IN_CURRENCY",
+            "paid_amount_value_in_currency",
+            "amount",
+            "AMOUNT",
+        ]:
             if field in event:
                 try:
                     return float(event[field])
@@ -486,14 +543,20 @@ class BehavioralPatternRecognizer:
 
     def _extract_timestamp(self, event: Dict[str, Any]) -> Optional[datetime]:
         """Extract timestamp."""
-        for field in ["TX_DATETIME", "tx_datetime", "timestamp", "TIMESTAMP", "created_at"]:
+        for field in [
+            "TX_DATETIME",
+            "tx_datetime",
+            "timestamp",
+            "TIMESTAMP",
+            "created_at",
+        ]:
             if field in event:
                 try:
                     value = event[field]
                     if isinstance(value, datetime):
                         return value
                     elif isinstance(value, str):
-                        return datetime.fromisoformat(value.replace('Z', '+00:00'))
+                        return datetime.fromisoformat(value.replace("Z", "+00:00"))
                 except Exception:
                     continue
         return None
@@ -535,7 +598,13 @@ class BehavioralPatternRecognizer:
 
     def _extract_merchant(self, event: Dict[str, Any]) -> Optional[str]:
         """Extract merchant/category."""
-        for field in ["MERCHANT_NAME", "merchant_name", "MERCHANT_ID", "merchant", "category"]:
+        for field in [
+            "MERCHANT_NAME",
+            "merchant_name",
+            "MERCHANT_ID",
+            "merchant",
+            "category",
+        ]:
             if field in event:
                 return str(event[field])
         return None
@@ -558,5 +627,5 @@ class BehavioralPatternRecognizer:
             "actual_support": 0.0,
             "confidence": 0.0,
             "total_events_analyzed": 0,
-            "total_patterns_detected": 0
+            "total_patterns_detected": 0,
         }

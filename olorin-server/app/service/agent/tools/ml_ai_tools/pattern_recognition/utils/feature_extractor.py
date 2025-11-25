@@ -18,6 +18,8 @@ class FeatureExtractor:
         """Extract features from sequence data."""
         return {}
 
-    def extract_temporal_features(self, timestamps: List[Dict[str, Any]]) -> Dict[str, Any]:
+    def extract_temporal_features(
+        self, timestamps: List[Dict[str, Any]]
+    ) -> Dict[str, Any]:
         """Extract features from temporal data."""
         return {}

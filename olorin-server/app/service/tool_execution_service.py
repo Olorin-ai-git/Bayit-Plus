@@ -12,11 +12,12 @@ SYSTEM MANDATE Compliance:
 - No mocks/stubs: Real database operations only
 """
 
-from typing import Dict, Any, List, Optional
-from datetime import datetime, timezone
-from decimal import Decimal
 import json
 import uuid
+from datetime import datetime, timezone
+from decimal import Decimal
+from typing import Any, Dict, List, Optional
+
 from sqlalchemy.orm import Session
 
 from app.models.investigation_state import InvestigationState
@@ -46,7 +47,7 @@ def _serialize_datetime_for_json(obj: Any) -> Any:
     elif isinstance(obj, Decimal):
         return float(obj)
     elif isinstance(obj, bytes):
-        return obj.decode('utf-8', errors='replace')
+        return obj.decode("utf-8", errors="replace")
     elif isinstance(obj, dict):
         return {key: _serialize_datetime_for_json(value) for key, value in obj.items()}
     elif isinstance(obj, list):
@@ -75,7 +76,7 @@ class ToolExecutionService:
         error_message: Optional[str] = None,
         duration_ms: Optional[int] = None,
         tokens_used: Optional[int] = None,
-        cost: Optional[float] = None
+        cost: Optional[float] = None,
     ) -> str:
         """
         Persist tool execution to database in progress_json field
@@ -100,32 +101,48 @@ class ToolExecutionService:
         """
         try:
             # Get current investigation state
-            state = self.db.query(InvestigationState).filter(
-                InvestigationState.investigation_id == investigation_id
-            ).first()
+            state = (
+                self.db.query(InvestigationState)
+                .filter(InvestigationState.investigation_id == investigation_id)
+                .first()
+            )
 
             if not state:
                 raise ValueError(f"Investigation {investigation_id} not found")
 
             # CRITICAL: Initialize progress_json if NULL
             if not state.progress_json:
-                logger.info(f"Initializing progress_json for investigation {investigation_id}")
+                logger.info(
+                    f"Initializing progress_json for investigation {investigation_id}"
+                )
                 initial_progress = {
                     "status": "running",
-                    "lifecycle_stage": state.lifecycle_stage.lower() if state.lifecycle_stage else "in_progress",
+                    "lifecycle_stage": (
+                        state.lifecycle_stage.lower()
+                        if state.lifecycle_stage
+                        else "in_progress"
+                    ),
                     "percent_complete": 0,
                     "tool_executions": [],
                     "current_phase": "initialization",
                     "started_at": datetime.now(timezone.utc).isoformat(),
-                    "created_at": (state.created_at.isoformat() if state.created_at else datetime.now(timezone.utc).isoformat())
+                    "created_at": (
+                        state.created_at.isoformat()
+                        if state.created_at
+                        else datetime.now(timezone.utc).isoformat()
+                    ),
                 }
                 state.progress_json = json.dumps(initial_progress)
                 state.version = (state.version or 0) + 1
                 self.db.commit()
-                logger.info(f"✅ Initialized progress_json for investigation {investigation_id}")
+                logger.info(
+                    f"✅ Initialized progress_json for investigation {investigation_id}"
+                )
 
             # Parse existing progress or create new
-            progress_data = json.loads(state.progress_json) if state.progress_json else {}
+            progress_data = (
+                json.loads(state.progress_json) if state.progress_json else {}
+            )
 
             # Initialize tool_executions list if not exists
             if "tool_executions" not in progress_data:
@@ -138,19 +155,29 @@ class ToolExecutionService:
             tool_execution = {
                 "id": tool_exec_id,
                 "agent_name": agent_name,
-                "agent_type": agent_name.replace("_agent", "") if "_agent" in agent_name else agent_name,
+                "agent_type": (
+                    agent_name.replace("_agent", "")
+                    if "_agent" in agent_name
+                    else agent_name
+                ),
                 "tool_name": tool_name,
                 "tool_type": tool_name,
                 "status": status,
-                "started_at": now.isoformat() if status in ["running", "completed", "failed"] else None,
-                "completed_at": now.isoformat() if status in ["completed", "failed"] else None,
+                "started_at": (
+                    now.isoformat()
+                    if status in ["running", "completed", "failed"]
+                    else None
+                ),
+                "completed_at": (
+                    now.isoformat() if status in ["completed", "failed"] else None
+                ),
                 "duration_ms": duration_ms,
                 "input_parameters": input_parameters,
                 "output_result": output_result,
                 "error_message": error_message,
                 "tokens_used": tokens_used,
                 "cost": cost,
-                "timestamp": now.isoformat()
+                "timestamp": now.isoformat(),
             }
 
             # Append to tool executions
@@ -158,8 +185,14 @@ class ToolExecutionService:
 
             # Update progress percentage based on completed tools
             total_tools = len(progress_data["tool_executions"])
-            completed_tools = sum(1 for t in progress_data["tool_executions"] if t["status"] == "completed")
-            progress_data["percent_complete"] = int((completed_tools / total_tools * 100) if total_tools > 0 else 0)
+            completed_tools = sum(
+                1
+                for t in progress_data["tool_executions"]
+                if t["status"] == "completed"
+            )
+            progress_data["percent_complete"] = int(
+                (completed_tools / total_tools * 100) if total_tools > 0 else 0
+            )
 
             # Update current phase if provided
             if agent_name:
@@ -169,9 +202,11 @@ class ToolExecutionService:
                     "network_agent": "network_analysis",
                     "logs_agent": "logs_analysis",
                     "authentication_agent": "authentication_analysis",
-                    "risk_agent": "risk_assessment"
+                    "risk_agent": "risk_assessment",
                 }
-                progress_data["current_phase"] = phase_mapping.get(agent_name, "processing")
+                progress_data["current_phase"] = phase_mapping.get(
+                    agent_name, "processing"
+                )
 
             # Serialize datetime objects before JSON encoding
             serialized_progress_data = _serialize_datetime_for_json(progress_data)
@@ -208,9 +243,11 @@ class ToolExecutionService:
             List of tool execution records
         """
         try:
-            state = self.db.query(InvestigationState).filter(
-                InvestigationState.investigation_id == investigation_id
-            ).first()
+            state = (
+                self.db.query(InvestigationState)
+                .filter(InvestigationState.investigation_id == investigation_id)
+                .first()
+            )
 
             if not state or not state.progress_json:
                 return []
@@ -229,7 +266,7 @@ class ToolExecutionService:
         status: str,
         output_result: Optional[Dict[str, Any]] = None,
         error_message: Optional[str] = None,
-        duration_ms: Optional[int] = None
+        duration_ms: Optional[int] = None,
     ) -> bool:
         """
         Update status of an existing tool execution
@@ -246,9 +283,11 @@ class ToolExecutionService:
             True if updated successfully, False otherwise
         """
         try:
-            state = self.db.query(InvestigationState).filter(
-                InvestigationState.investigation_id == investigation_id
-            ).first()
+            state = (
+                self.db.query(InvestigationState)
+                .filter(InvestigationState.investigation_id == investigation_id)
+                .first()
+            )
 
             if not state or not state.progress_json:
                 return False
@@ -262,7 +301,9 @@ class ToolExecutionService:
                     tool_exec["status"] = status
 
                     if status in ["completed", "failed"]:
-                        tool_exec["completed_at"] = datetime.now(timezone.utc).isoformat()
+                        tool_exec["completed_at"] = datetime.now(
+                            timezone.utc
+                        ).isoformat()
 
                     if output_result is not None:
                         tool_exec["output_result"] = output_result
@@ -275,11 +316,17 @@ class ToolExecutionService:
 
                     # Recalculate progress
                     total_tools = len(tool_executions)
-                    completed_tools = sum(1 for t in tool_executions if t["status"] == "completed")
-                    progress_data["percent_complete"] = int((completed_tools / total_tools * 100) if total_tools > 0 else 0)
+                    completed_tools = sum(
+                        1 for t in tool_executions if t["status"] == "completed"
+                    )
+                    progress_data["percent_complete"] = int(
+                        (completed_tools / total_tools * 100) if total_tools > 0 else 0
+                    )
 
                     # Serialize datetime objects before JSON encoding
-                    serialized_progress_data = _serialize_datetime_for_json(progress_data)
+                    serialized_progress_data = _serialize_datetime_for_json(
+                        progress_data
+                    )
 
                     # Save back to database
                     state.progress_json = json.dumps(serialized_progress_data)
@@ -293,54 +340,62 @@ class ToolExecutionService:
                     if status in ["completed", "failed"]:
                         try:
                             from app.service.audit_helper import create_audit_entry
-                            
+
                             # Create rich payload with tool execution details
                             payload = {
                                 "tool_name": tool_exec.get("tool_name"),
                                 "tool_exec_id": tool_exec_id,
                                 "status": status,
                                 "agent_type": tool_exec.get("agent_type"),
-                                "execution_time_ms": duration_ms or tool_exec.get("duration_ms", 0),
+                                "execution_time_ms": duration_ms
+                                or tool_exec.get("duration_ms", 0),
                                 "has_result": bool(output_result),
                                 "has_error": bool(error_message),
-                                "error_message": error_message[:200] if error_message else None,  # Truncate long errors
+                                "error_message": (
+                                    error_message[:200] if error_message else None
+                                ),  # Truncate long errors
                                 # Include summary of output result (first 300 chars)
                                 "result_preview": (
-                                    str(output_result)[:300] if output_result
-                                    else None
-                                )
+                                    str(output_result)[:300] if output_result else None
+                                ),
                             }
-                            
+
                             create_audit_entry(
                                 db=self.db,
                                 investigation_id=investigation_id,
                                 user_id="SYSTEM",  # Tool executions run as SYSTEM
                                 action_type="TOOL_EXECUTION",
-                                changes_json=json.dumps(payload),  # Payload is the changes_json directly
+                                changes_json=json.dumps(
+                                    payload
+                                ),  # Payload is the changes_json directly
                                 from_version=state.version - 1,
                                 to_version=state.version,
-                                source="SYSTEM"
+                                source="SYSTEM",
                             )
                             self.db.commit()
                         except Exception as audit_error:
                             # Don't fail tool execution update if audit entry creation fails
-                            logger.warning(f"Failed to create audit entry for tool execution: {str(audit_error)}")
+                            logger.warning(
+                                f"Failed to create audit entry for tool execution: {str(audit_error)}"
+                            )
 
-                    logger.info(f"Updated tool execution {tool_exec_id} status to {status}")
+                    logger.info(
+                        f"Updated tool execution {tool_exec_id} status to {status}"
+                    )
                     return True
 
             logger.warning(f"Tool execution {tool_exec_id} not found")
             return False
 
         except Exception as e:
-            logger.error(f"Failed to update tool execution status: {str(e)}", exc_info=True)
+            logger.error(
+                f"Failed to update tool execution status: {str(e)}", exc_info=True
+            )
             self.db.rollback()
             return False
 
     def get_latest_tool_executions(
-        self,
-        investigation_id: str,
-        limit: int = 10
+        self, investigation_id: str, limit: int = 10
     ) -> List[Dict[str, Any]]:
         """
         Get the latest N tool executions for an investigation
@@ -356,8 +411,7 @@ class ToolExecutionService:
 
         # Sort by timestamp (most recent first)
         tool_executions.sort(
-            key=lambda x: x.get("timestamp", x.get("started_at", "")),
-            reverse=True
+            key=lambda x: x.get("timestamp", x.get("started_at", "")), reverse=True
         )
 
         return tool_executions[:limit]
@@ -383,19 +437,21 @@ class ToolExecutionService:
                 "pending": 0,
                 "average_duration_ms": 0,
                 "total_tokens": 0,
-                "total_cost": 0.0
+                "total_cost": 0.0,
             }
 
         # Calculate statistics
         stats = {
             "total": len(tool_executions),
-            "completed": sum(1 for t in tool_executions if t.get("status") == "completed"),
+            "completed": sum(
+                1 for t in tool_executions if t.get("status") == "completed"
+            ),
             "failed": sum(1 for t in tool_executions if t.get("status") == "failed"),
             "running": sum(1 for t in tool_executions if t.get("status") == "running"),
             "pending": sum(1 for t in tool_executions if t.get("status") == "pending"),
             "average_duration_ms": 0,
             "total_tokens": sum(t.get("tokens_used") or 0 for t in tool_executions),
-            "total_cost": sum(t.get("cost") or 0.0 for t in tool_executions)
+            "total_cost": sum(t.get("cost") or 0.0 for t in tool_executions),
         }
 
         # Calculate average duration for completed tools
@@ -406,6 +462,8 @@ class ToolExecutionService:
         ]
 
         if completed_durations:
-            stats["average_duration_ms"] = int(sum(completed_durations) / len(completed_durations))
+            stats["average_duration_ms"] = int(
+                sum(completed_durations) / len(completed_durations)
+            )
 
         return stats

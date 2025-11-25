@@ -4,10 +4,11 @@ Machine Learning Risk Scorer
 Implements ML-based risk scoring methodology.
 """
 
-from typing import Any, Dict, Optional, List
 import math
-from .base_scorer import BaseScorer
+from typing import Any, Dict, List, Optional
+
 from ..core.input_schema import RiskAssessmentResult
+from .base_scorer import BaseScorer
 
 
 class MLBasedScorer(BaseScorer):
@@ -19,7 +20,7 @@ class MLBasedScorer(BaseScorer):
         risk_assessments: List[RiskAssessmentResult],
         risk_tolerance: str,
         time_horizon: str = "short_term",
-        historical_data: Optional[Dict[str, Any]] = None
+        historical_data: Optional[Dict[str, Any]] = None,
     ) -> Dict[str, Any]:
         """Apply machine learning-based risk scoring."""
         assessment_scores = self._extract_assessment_scores(risk_assessments)
@@ -55,13 +56,13 @@ class MLBasedScorer(BaseScorer):
             "feature_importance": self._calculate_feature_importance(features),
             "model_type": "ml_based",
             "trend_adjustment": trend_adjusted_score - confidence_weighted_score,
-            "prediction_interval": self._calculate_prediction_interval(normalized_score)
+            "prediction_interval": self._calculate_prediction_interval(
+                normalized_score
+            ),
         }
 
     def _extract_ml_features(
-        self,
-        processed_data: Dict[str, Any],
-        assessment_scores: Dict[str, float]
+        self, processed_data: Dict[str, Any], assessment_scores: Dict[str, float]
     ) -> Dict[str, float]:
         """Extract features for ML model."""
         features = {}
@@ -74,12 +75,12 @@ class MLBasedScorer(BaseScorer):
         features["data_completeness"] = processed_data.get("data_completeness", 0.8)
 
         # Interaction features
-        features["fraud_behavioral_interaction"] = (
-            assessment_scores.get("fraud", 0) * assessment_scores.get("behavioral", 0)
-        )
-        features["credit_operational_interaction"] = (
-            assessment_scores.get("credit", 0) * assessment_scores.get("operational", 0)
-        )
+        features["fraud_behavioral_interaction"] = assessment_scores.get(
+            "fraud", 0
+        ) * assessment_scores.get("behavioral", 0)
+        features["credit_operational_interaction"] = assessment_scores.get(
+            "credit", 0
+        ) * assessment_scores.get("operational", 0)
 
         # Statistical features
         scores_list = list(assessment_scores.values())
@@ -91,9 +92,7 @@ class MLBasedScorer(BaseScorer):
         return features
 
     def _apply_ml_model(
-        self,
-        features: Dict[str, float],
-        historical_data: Optional[Dict[str, Any]]
+        self, features: Dict[str, float], historical_data: Optional[Dict[str, Any]]
     ) -> float:
         """Apply simplified ML model (placeholder for actual implementation)."""
         # Simplified linear combination (replace with actual ML model)
@@ -105,7 +104,7 @@ class MLBasedScorer(BaseScorer):
             "contextual": 0.18,
             "data_quality": 0.05,
             "fraud_behavioral_interaction": 0.15,
-            "risk_score_variance": 0.10
+            "risk_score_variance": 0.10,
         }
 
         score = 0.0
@@ -117,18 +116,14 @@ class MLBasedScorer(BaseScorer):
         return 1 / (1 + math.exp(-5 * (score - 0.5)))  # Sigmoid transformation
 
     def _apply_confidence_weighting(
-        self,
-        score: float,
-        risk_assessments: List[RiskAssessmentResult]
+        self, score: float, risk_assessments: List[RiskAssessmentResult]
     ) -> float:
         """Apply confidence weighting to the score."""
         avg_confidence = self._calculate_confidence(risk_assessments)
         return score * (0.5 + 0.5 * avg_confidence)
 
     def _apply_trend_adjustment(
-        self,
-        score: float,
-        historical_data: Optional[Dict[str, Any]]
+        self, score: float, historical_data: Optional[Dict[str, Any]]
     ) -> float:
         """Apply historical trend adjustment."""
         if not historical_data:
@@ -139,24 +134,17 @@ class MLBasedScorer(BaseScorer):
         return score + trend_adjustment
 
     def _apply_ml_adjustments(
-        self,
-        score: float,
-        risk_tolerance: str,
-        time_horizon: str
+        self, score: float, risk_tolerance: str, time_horizon: str
     ) -> float:
         """Apply ML-specific adjustments."""
         # Less aggressive adjustments than rule-based
-        tolerance_factors = {
-            "low": 1.1,
-            "medium": 1.0,
-            "high": 0.9
-        }
+        tolerance_factors = {"low": 1.1, "medium": 1.0, "high": 0.9}
 
         horizon_factors = {
             "immediate": 1.05,
             "short_term": 1.0,
             "medium_term": 0.98,
-            "long_term": 0.95
+            "long_term": 0.95,
         }
 
         tolerance_factor = tolerance_factors.get(risk_tolerance, 1.0)
@@ -173,9 +161,7 @@ class MLBasedScorer(BaseScorer):
         return sum((x - mean) ** 2 for x in values) / len(values)
 
     def _calculate_ml_confidence(
-        self,
-        features: Dict[str, float],
-        risk_assessments: List[RiskAssessmentResult]
+        self, features: Dict[str, float], risk_assessments: List[RiskAssessmentResult]
     ) -> float:
         """Calculate ML model confidence."""
         base_confidence = self._calculate_confidence(risk_assessments)
@@ -184,7 +170,9 @@ class MLBasedScorer(BaseScorer):
 
         return min(base_confidence * data_quality + feature_count_bonus, 1.0)
 
-    def _calculate_feature_importance(self, features: Dict[str, float]) -> Dict[str, float]:
+    def _calculate_feature_importance(
+        self, features: Dict[str, float]
+    ) -> Dict[str, float]:
         """Calculate feature importance scores."""
         # Simplified importance calculation
         importance = {}
@@ -201,5 +189,5 @@ class MLBasedScorer(BaseScorer):
         uncertainty = 0.1  # 10% uncertainty
         return {
             "lower_bound": max(0.0, score - uncertainty),
-            "upper_bound": min(1.0, score + uncertainty)
+            "upper_bound": min(1.0, score + uncertainty),
         }

@@ -11,14 +11,15 @@ SYSTEM MANDATE Compliance:
 - Type-safe: Proper assertions on conversions
 """
 
-import pytest
 import json
 from datetime import datetime, timezone
 from unittest.mock import MagicMock
 
+import pytest
+
 from app.models.investigation_audit_log import InvestigationAuditLog
 from app.service.event_feed_converters import EventFeedConverter
-from app.service.event_feed_models import InvestigationEvent, EventActor
+from app.service.event_feed_models import EventActor, InvestigationEvent
 
 
 class TestEventFeedConverter:
@@ -88,10 +89,7 @@ class TestEventFeedConverter:
 
     def test_actor_object_creation(self):
         """Test actor object is properly created."""
-        entry = self._create_audit_log_entry(
-            source="API",
-            user_id="api_user_456"
-        )
+        entry = self._create_audit_log_entry(source="API", user_id="api_user_456")
 
         event_dict = EventFeedConverter.audit_log_to_event(entry)
 
@@ -106,7 +104,13 @@ class TestEventFeedConverter:
 
     def test_action_type_mapped_to_op(self):
         """Test action_type is correctly mapped to op field."""
-        for action_type in ["CREATED", "UPDATED", "DELETED", "STATE_CHANGE", "SETTINGS_CHANGE"]:
+        for action_type in [
+            "CREATED",
+            "UPDATED",
+            "DELETED",
+            "STATE_CHANGE",
+            "SETTINGS_CHANGE",
+        ]:
             entry = self._create_audit_log_entry(action_type=action_type)
             event_dict = EventFeedConverter.audit_log_to_event(entry)
 
@@ -115,9 +119,7 @@ class TestEventFeedConverter:
     def test_changes_json_parsing(self):
         """Test changes JSON is correctly parsed."""
         changes = {"field1": "old_value", "field2": "new_value"}
-        entry = self._create_audit_log_entry(
-            changes_json=json.dumps(changes)
-        )
+        entry = self._create_audit_log_entry(changes_json=json.dumps(changes))
 
         event_dict = EventFeedConverter.audit_log_to_event(entry)
 
@@ -125,9 +127,7 @@ class TestEventFeedConverter:
 
     def test_invalid_changes_json_handling(self):
         """Test invalid JSON in changes_json is handled gracefully."""
-        entry = self._create_audit_log_entry(
-            changes_json="invalid json {{"
-        )
+        entry = self._create_audit_log_entry(changes_json="invalid json {{")
 
         event_dict = EventFeedConverter.audit_log_to_event(entry)
 
@@ -137,9 +137,7 @@ class TestEventFeedConverter:
     def test_state_snapshot_json_parsing(self):
         """Test state_snapshot_json is correctly parsed."""
         snapshot = {"status": "COMPLETED", "risk_score": 0.85}
-        entry = self._create_audit_log_entry(
-            state_snapshot_json=json.dumps(snapshot)
-        )
+        entry = self._create_audit_log_entry(state_snapshot_json=json.dumps(snapshot))
 
         event_dict = EventFeedConverter.audit_log_to_event(entry)
 
@@ -147,10 +145,7 @@ class TestEventFeedConverter:
 
     def test_version_mapping(self):
         """Test to_version is mapped to version field."""
-        entry = self._create_audit_log_entry(
-            from_version=5,
-            to_version=6
-        )
+        entry = self._create_audit_log_entry(from_version=5, to_version=6)
 
         event_dict = EventFeedConverter.audit_log_to_event(entry)
 
@@ -173,8 +168,7 @@ class TestEventFeedConverter:
     def test_batch_convert(self):
         """Test batch conversion of multiple entries."""
         entries = [
-            self._create_audit_log_entry(entry_id=f"entry_{i}")
-            for i in range(5)
+            self._create_audit_log_entry(entry_id=f"entry_{i}") for i in range(5)
         ]
 
         events = EventFeedConverter.batch_convert(entries)
@@ -229,7 +223,7 @@ class TestEventFeedConverter:
             timestamp=timestamp,
             changes_json=json.dumps({"status": "active"}),
             from_version=2,
-            to_version=3
+            to_version=3,
         )
 
         event_dict = EventFeedConverter.audit_log_to_event(entry)

@@ -10,16 +10,14 @@ SYSTEM MANDATE Compliance:
 - Type-safe: All parameters and returns properly typed
 """
 
-from typing import Optional, List, Tuple
-from datetime import datetime, timedelta
-from fastapi import HTTPException, status
 import json
+from datetime import datetime, timedelta
+from typing import List, Optional, Tuple
+
+from fastapi import HTTPException, status
 
 from app.models.investigation_audit_log import InvestigationAuditLog
-from app.service.event_feed_models import (
-    InvestigationEvent,
-    EventActor
-)
+from app.service.event_feed_models import EventActor, InvestigationEvent
 
 
 class EventFeedHelper:
@@ -54,7 +52,7 @@ class EventFeedHelper:
             if datetime.utcnow() - timestamp > timedelta(days=expiry_days):
                 raise HTTPException(
                     status_code=status.HTTP_400_BAD_REQUEST,
-                    detail=f"Cursor expired (older than {expiry_days} days)"
+                    detail=f"Cursor expired (older than {expiry_days} days)",
                 )
 
             return timestamp, sequence
@@ -62,7 +60,7 @@ class EventFeedHelper:
         except (ValueError, IndexError) as e:
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
-                detail=f"Invalid cursor format: {cursor}"
+                detail=f"Invalid cursor format: {cursor}",
             )
 
     def create_cursor(self, entry: InvestigationAuditLog) -> str:
@@ -80,7 +78,9 @@ class EventFeedHelper:
 
         # Extract sequence from entry_id or use 0
         try:
-            sequence = int(entry.entry_id.split("_")[-1]) if "_" in entry.entry_id else 0
+            sequence = (
+                int(entry.entry_id.split("_")[-1]) if "_" in entry.entry_id else 0
+            )
         except:
             sequence = 0
 
@@ -113,7 +113,7 @@ class EventFeedHelper:
             "API": "USER",
             "SYSTEM": "SYSTEM",
             "WEBHOOK": "WEBHOOK",
-            "POLLING": "SYSTEM"
+            "POLLING": "SYSTEM",
         }
 
         return InvestigationEvent(
@@ -122,11 +122,10 @@ class EventFeedHelper:
             op=entry.action_type,
             investigation_id=entry.investigation_id,
             actor=EventActor(
-                type=actor_type_map.get(entry.source, "SYSTEM"),
-                id=entry.user_id
+                type=actor_type_map.get(entry.source, "SYSTEM"), id=entry.user_id
             ),
             payload=payload,
-            version=entry.to_version
+            version=entry.to_version,
         )
 
     def generate_etag(self, events: List[InvestigationEvent]) -> str:

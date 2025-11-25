@@ -4,12 +4,14 @@ NO HARDCODED VALUES - All configuration from environment variables.
 """
 
 from datetime import datetime
-from typing import Optional, Dict, Any, List
+from typing import Any, Dict, List, Optional
+
 from pydantic import BaseModel, Field
 
 
 class FraudDecision(BaseModel):
     """Fraud decision model."""
+
     id: str
     transaction_id: str
     investigation_id: Optional[str] = None
@@ -48,6 +50,7 @@ class FraudDecision(BaseModel):
 
 class FraudMetrics(BaseModel):
     """Fraud metrics model."""
+
     start_time: datetime
     end_time: datetime
     time_window: str
@@ -81,6 +84,7 @@ class FraudMetrics(BaseModel):
 
 class DashboardKPIs(BaseModel):
     """Dashboard KPI model."""
+
     precision: float
     recall: float
     f1_score: float
@@ -93,18 +97,21 @@ class DashboardKPIs(BaseModel):
 
 class TrendDataPoint(BaseModel):
     """Trend data point model."""
+
     timestamp: datetime
     value: float
 
 
 class TrendSeries(BaseModel):
     """Trend series model."""
+
     metric: str
     data_points: List[TrendDataPoint]
 
 
 class PrecisionRecallResponse(BaseModel):
     """Precision/recall response model."""
+
     precision: float
     recall: float
     f1_score: float
@@ -116,6 +123,7 @@ class PrecisionRecallResponse(BaseModel):
 
 class Cohort(BaseModel):
     """Cohort model."""
+
     id: str
     name: str
     dimension: str
@@ -128,6 +136,7 @@ class Cohort(BaseModel):
 
 class CohortComparison(BaseModel):
     """Cohort comparison model."""
+
     bestPerformer: Optional[Cohort] = None
     worstPerformer: Optional[Cohort] = None
     significantDifferences: List[Dict[str, Any]] = []
@@ -135,6 +144,7 @@ class CohortComparison(BaseModel):
 
 class CohortAnalysisResponse(BaseModel):
     """Cohort analysis response model."""
+
     dimension: str
     cohorts: List[Cohort]
     overallMetrics: FraudMetrics
@@ -143,6 +153,7 @@ class CohortAnalysisResponse(BaseModel):
 
 class AnalyticsDashboardResponse(BaseModel):
     """Analytics dashboard response model."""
+
     kpis: DashboardKPIs
     trends: List[TrendSeries]
     recent_decisions: List[FraudDecision]
@@ -151,6 +162,7 @@ class AnalyticsDashboardResponse(BaseModel):
 
 class ExperimentVariant(BaseModel):
     """Experiment variant model."""
+
     id: str
     name: str
     description: Optional[str] = None
@@ -162,6 +174,7 @@ class ExperimentVariant(BaseModel):
 
 class Guardrail(BaseModel):
     """Guardrail model."""
+
     metric: str
     threshold: float
     direction: str
@@ -172,6 +185,7 @@ class Guardrail(BaseModel):
 
 class ExperimentResults(BaseModel):
     """Experiment results model."""
+
     winner: Optional[str] = None
     conclusion: Optional[str] = None
     recommendation: Optional[str] = None
@@ -180,6 +194,7 @@ class ExperimentResults(BaseModel):
 
 class Experiment(BaseModel):
     """Experiment model."""
+
     id: str
     name: str
     description: Optional[str] = None
@@ -194,4 +209,3 @@ class Experiment(BaseModel):
     createdAt: datetime
     createdBy: str
     updatedAt: datetime
-

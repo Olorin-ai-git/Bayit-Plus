@@ -8,8 +8,8 @@ from .models import PatternRecognitionInput, PatternResult, ProcessedData
 from .tool import PatternRecognitionTool
 
 __all__ = [
-    'PatternRecognitionInput',
-    'PatternResult',
-    'ProcessedData',
-    'PatternRecognitionTool'
+    "PatternRecognitionInput",
+    "PatternResult",
+    "ProcessedData",
+    "PatternRecognitionTool",
 ]

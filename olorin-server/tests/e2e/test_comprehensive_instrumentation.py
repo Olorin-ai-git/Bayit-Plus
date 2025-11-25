@@ -11,12 +11,14 @@ Demonstrates the complete instrumentation framework capturing:
 
 import json
 import os
-import pytest
 from pathlib import Path
+
+import pytest
+
+from app.service.logging.investigation_data_models import RiskFactor
 from app.service.logging.investigation_instrumentation import (
     InvestigationInstrumentationLogger,
 )
-from app.service.logging.investigation_data_models import RiskFactor
 
 
 @pytest.fixture
@@ -86,18 +88,22 @@ def test_complete_instrumentation_flow(logger):
             value=0.8,
             weight=0.3,
             reasoning="Multiple countries detected: US, UK, CN within 2 hours",
-            evidence=["IP_1.2.3.4 from US at 10:00 UTC",
-                     "IP_5.6.7.8 from UK at 10:15 UTC",
-                     "IP_9.10.11.12 from CN at 12:05 UTC"],
+            evidence=[
+                "IP_1.2.3.4 from US at 10:00 UTC",
+                "IP_5.6.7.8 from UK at 10:15 UTC",
+                "IP_9.10.11.12 from CN at 12:05 UTC",
+            ],
         ),
         RiskFactor(
             name="device_proliferation",
             value=0.7,
             weight=0.25,
             reasoning="5 unique device fingerprints in 24-hour window",
-            evidence=["DeviceID_A created 2024-11-04 10:00",
-                     "DeviceID_B created 2024-11-04 10:15",
-                     "DeviceID_C created 2024-11-04 12:05"],
+            evidence=[
+                "DeviceID_A created 2024-11-04 10:00",
+                "DeviceID_B created 2024-11-04 10:15",
+                "DeviceID_C created 2024-11-04 12:05",
+            ],
         ),
         RiskFactor(
             name="velocity_anomaly",
@@ -111,8 +117,10 @@ def test_complete_instrumentation_flow(logger):
             value=0.5,
             weight=0.15,
             reasoning="Activity pattern deviates from historical baseline",
-            evidence=["Peak usage normally 9-17 UTC, now 10-13 UTC",
-                     "Normal usage from 2-3 devices, now 5 devices"],
+            evidence=[
+                "Peak usage normally 9-17 UTC, now 10-13 UTC",
+                "Normal usage from 2-3 devices, now 5 devices",
+            ],
         ),
         RiskFactor(
             name="authentication_anomaly",
@@ -139,16 +147,15 @@ def test_complete_instrumentation_flow(logger):
         },
         calculation_method="weighted_average",
         intermediate_scores={
-            "geographic_diversity": {"value": 0.8, "weight": 0.3,
-                                     "weighted": 0.24},
-            "device_proliferation": {"value": 0.7, "weight": 0.25,
-                                    "weighted": 0.175},
-            "velocity_anomaly": {"value": 0.6, "weight": 0.2,
-                                "weighted": 0.12},
-            "session_pattern_deviation": {"value": 0.5, "weight": 0.15,
-                                         "weighted": 0.075},
-            "authentication_anomaly": {"value": 0.4, "weight": 0.1,
-                                      "weighted": 0.04},
+            "geographic_diversity": {"value": 0.8, "weight": 0.3, "weighted": 0.24},
+            "device_proliferation": {"value": 0.7, "weight": 0.25, "weighted": 0.175},
+            "velocity_anomaly": {"value": 0.6, "weight": 0.2, "weighted": 0.12},
+            "session_pattern_deviation": {
+                "value": 0.5,
+                "weight": 0.15,
+                "weighted": 0.075,
+            },
+            "authentication_anomaly": {"value": 0.4, "weight": 0.1, "weighted": 0.04},
             "_aggregation": {
                 "total_weighted": 0.65,
                 "total_weight": 1.0,
@@ -180,9 +187,11 @@ def test_complete_instrumentation_flow(logger):
             "entity_id": "user123",
             "risk_score": 0.65,
             "threshold": 0.56,
-            "action_items": ["Review device activity in detail",
-                           "Check for credential compromise",
-                           "Verify recent authentication events"],
+            "action_items": [
+                "Review device activity in detail",
+                "Check for credential compromise",
+                "Verify recent authentication events",
+            ],
         },
     )
 

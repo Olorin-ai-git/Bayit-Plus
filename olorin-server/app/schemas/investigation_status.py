@@ -6,7 +6,8 @@ Used for GET /api/investigations/{id}/status endpoint.
 """
 
 from datetime import datetime
-from typing import List, Dict, Optional, Literal, Any
+from typing import Any, Dict, List, Literal, Optional
+
 from pydantic import BaseModel, Field
 
 
@@ -65,9 +66,7 @@ class ErrorDetailSchema(BaseModel):
 
     error_code: str = Field(..., description="Error code identifier")
     error_message: str = Field(..., description="Human-readable error message")
-    error_details: Optional[str] = Field(
-        None, description="Detailed error information"
-    )
+    error_details: Optional[str] = Field(None, description="Detailed error information")
     recovery_suggestions: List[str] = Field(
         default_factory=list, description="Suggested recovery actions"
     )

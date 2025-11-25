@@ -10,21 +10,22 @@ Plan: /docs/plans/2025-09-07-api-cost-management-system-plan.md
 """
 
 import asyncio
+from datetime import datetime, timedelta
+from typing import Any, Callable, Dict, List
+from unittest.mock import AsyncMock
+
 import pytest
 import pytest_asyncio
-from datetime import datetime, timedelta
-from typing import Dict, Any, List, Callable
-from unittest.mock import AsyncMock
 
 from app.service.cost_management.api_circuit_breaker import (
     APICircuitBreaker,
-    CircuitBreakerConfig,
-    CircuitState,
-    CircuitBreakerStats,
     APICircuitBreakerError,
+    CircuitBreakerConfig,
     CircuitBreakerRegistry,
-    get_circuit_breaker_registry,
+    CircuitBreakerStats,
+    CircuitState,
     get_circuit_breaker,
+    get_circuit_breaker_registry,
 )
 
 
@@ -52,7 +53,9 @@ class TestAPICircuitBreaker:
         return APICircuitBreaker("test_circuit", circuit_config)
 
     @pytest.mark.asyncio
-    async def test_circuit_breaker_initialization(self, circuit_breaker, circuit_config):
+    async def test_circuit_breaker_initialization(
+        self, circuit_breaker, circuit_config
+    ):
         """Test circuit breaker initializes with proper configuration."""
         assert circuit_breaker.name == "test_circuit"
         assert circuit_breaker.config == circuit_config
@@ -106,7 +109,10 @@ class TestAPICircuitBreaker:
 
         # Circuit should be open now
         assert circuit_breaker.state == CircuitState.OPEN
-        assert circuit_breaker.consecutive_failures >= circuit_breaker.config.failure_threshold
+        assert (
+            circuit_breaker.consecutive_failures
+            >= circuit_breaker.config.failure_threshold
+        )
 
     @pytest.mark.asyncio
     async def test_circuit_blocks_calls_when_open(self, circuit_breaker):
@@ -128,6 +134,7 @@ class TestAPICircuitBreaker:
     @pytest.mark.asyncio
     async def test_circuit_recovery_workflow(self, circuit_breaker):
         """Test complete circuit breaker recovery workflow."""
+
         # Step 1: Force failures to open circuit
         async def failing_call():
             raise Exception("Simulated API failure")
@@ -160,6 +167,7 @@ class TestAPICircuitBreaker:
     @pytest.mark.asyncio
     async def test_timeout_handling(self, circuit_breaker):
         """Test circuit breaker handles API call timeouts."""
+
         async def slow_api_call():
             await asyncio.sleep(circuit_breaker.config.timeout + 0.5)  # Exceed timeout
             return "should_timeout"
@@ -178,6 +186,7 @@ class TestAPICircuitBreaker:
         call_results = [True, False, False, True, False, False]  # 4 failures out of 6
 
         for should_succeed in call_results:
+
             async def test_call():
                 if should_succeed:
                     return "success"
@@ -197,6 +206,7 @@ class TestAPICircuitBreaker:
     @pytest.mark.asyncio
     async def test_slow_request_detection(self, circuit_breaker):
         """Test detection and tracking of slow API requests."""
+
         async def slow_but_successful_call():
             await asyncio.sleep(circuit_breaker.config.slow_request_threshold + 0.1)
             return "slow_success"
@@ -216,7 +226,9 @@ class TestAPICircuitBreaker:
             assert circuit_breaker.slow_requests > 0
 
     @pytest.mark.asyncio
-    async def test_anthropic_api_integration_scenario(self, circuit_breaker, api_cost_monitor):
+    async def test_anthropic_api_integration_scenario(
+        self, circuit_breaker, api_cost_monitor
+    ):
         """Test circuit breaker with realistic Anthropic API scenarios."""
         # Simulate various Anthropic API response patterns
         api_scenarios = [
@@ -232,21 +244,21 @@ class TestAPICircuitBreaker:
             try:
                 result = await circuit_breaker.call(scenario_func)
                 results.append(("success", result))
-                
+
                 # Track successful calls for cost monitoring
                 if scenario_type == "success":
                     api_cost_monitor.track_call(2000, 1500, "claude-3-sonnet-20240229")
-                    
+
             except Exception as e:
                 results.append(("failure", str(e)))
 
         # Verify circuit handled various scenarios
         assert len(results) == len(api_scenarios)
-        
+
         # Should have some successes and some failures
         successes = [r for r in results if r[0] == "success"]
         failures = [r for r in results if r[0] == "failure"]
-        
+
         assert len(successes) >= 1
         assert len(failures) >= 1
 
@@ -261,7 +273,7 @@ class TestAPICircuitBreaker:
             "investigation_id": "inv_12345",
             "risk_score": 0.75,
             "analysis": "Device fingerprint analysis indicates potential fraud",
-            "recommendations": ["Flag for manual review", "Additional verification"]
+            "recommendations": ["Flag for manual review", "Additional verification"],
         }
 
     async def _simulate_api_timeout(self):
@@ -271,7 +283,9 @@ class TestAPICircuitBreaker:
 
     async def _simulate_service_unavailable(self):
         """Simulate service unavailable error."""
-        raise Exception("ServiceUnavailableError: Anthropic API temporarily unavailable")
+        raise Exception(
+            "ServiceUnavailableError: Anthropic API temporarily unavailable"
+        )
 
     @pytest.mark.asyncio
     async def test_statistics_accuracy(self, circuit_breaker):
@@ -291,9 +305,9 @@ class TestAPICircuitBreaker:
         # 3 successes, 2 failures
         call_sequence = [
             (successful_call, False),  # success
-            (failing_call, True),      # failure
+            (failing_call, True),  # failure
             (successful_call, False),  # success
-            (failing_call, True),      # failure
+            (failing_call, True),  # failure
             (successful_call, False),  # success
         ]
 
@@ -343,6 +357,7 @@ class TestAPICircuitBreaker:
     @pytest.mark.asyncio
     async def test_reset_functionality(self, circuit_breaker):
         """Test circuit breaker reset functionality."""
+
         # Generate some activity
         async def test_call():
             return "test"
@@ -379,15 +394,15 @@ class TestAPICircuitBreaker:
             nonlocal call_count
             call_count += 1
             await asyncio.sleep(0.1)  # Simulate API latency
-            
+
             # Track API cost
             api_cost_monitor.track_call(1000, 1000, "claude-3-haiku-20240307")
-            
+
             return f"result_{call_id}"
 
         # Execute concurrent calls
         tasks = [
-            circuit_breaker.call(concurrent_api_call, i) 
+            circuit_breaker.call(concurrent_api_call, i)
             for i in range(concurrent_calls)
         ]
 
@@ -396,7 +411,7 @@ class TestAPICircuitBreaker:
         # Verify all calls completed
         assert len(results) == concurrent_calls
         assert call_count == concurrent_calls
-        
+
         # Verify each result is unique
         result_ids = {result.split("_")[1] for result in results}
         assert len(result_ids) == concurrent_calls
@@ -421,16 +436,16 @@ class TestAPICircuitBreaker:
         # Expected errors should trigger circuit logic
         with pytest.raises(ValueError):
             await circuit_breaker.call(expected_error)
-        
+
         assert circuit_breaker.consecutive_failures == 1
 
         # Reset for next test
         circuit_breaker.consecutive_failures = 0
 
-        # Unexpected errors should not trigger circuit logic  
+        # Unexpected errors should not trigger circuit logic
         with pytest.raises(RuntimeError):
             await circuit_breaker.call(unexpected_error)
-        
+
         # Should not increment failure count for unexpected errors
         assert circuit_breaker.consecutive_successes == 1  # Treated as success
 
@@ -448,7 +463,7 @@ class TestCircuitBreakerRegistry:
         # Create new circuit breaker
         config = CircuitBreakerConfig(failure_threshold=5)
         breaker1 = registry.get_breaker("test_service", config)
-        
+
         assert breaker1.name == "test_service"
         assert breaker1.config.failure_threshold == 5
 
@@ -465,10 +480,7 @@ class TestCircuitBreakerRegistry:
     async def test_registry_statistics(self, registry):
         """Test registry-wide statistics collection."""
         # Create multiple circuit breakers
-        breakers = [
-            registry.get_breaker(f"service_{i}")
-            for i in range(3)
-        ]
+        breakers = [registry.get_breaker(f"service_{i}") for i in range(3)]
 
         # Generate some activity
         async def test_call():
@@ -502,8 +514,8 @@ class TestCircuitBreakerRegistry:
 
         assert health["total_breakers"] == 3
         assert health["healthy_breakers"] == 1  # Only healthy_breaker
-        assert health["open_breakers"] == 1     # open_breaker
-        assert health["half_open_breakers"] == 1 # half_open_breaker
+        assert health["open_breakers"] == 1  # open_breaker
+        assert health["half_open_breakers"] == 1  # half_open_breaker
         assert health["overall_health"] in ["healthy", "degraded", "critical"]
 
     def test_reset_all_breakers(self, registry):
@@ -531,7 +543,7 @@ class TestCircuitBreakerRegistry:
         # Get global registry
         registry1 = get_circuit_breaker_registry()
         registry2 = get_circuit_breaker_registry()
-        
+
         # Should be same instance
         assert registry1 is registry2
 
@@ -561,24 +573,26 @@ class TestInvestigationSpecificScenarios:
         return APICircuitBreaker("investigation_api", config)
 
     @pytest.mark.asyncio
-    async def test_device_spoofing_analysis_flow(self, investigation_breaker, api_cost_monitor):
+    async def test_device_spoofing_analysis_flow(
+        self, investigation_breaker, api_cost_monitor
+    ):
         """Test circuit breaker in device spoofing investigation workflow."""
-        
+
         async def analyze_device_fingerprint():
             """Simulate device fingerprint analysis API call."""
             await asyncio.sleep(0.5)  # Realistic processing time
-            
+
             # Track API usage
             api_cost_monitor.track_call(2500, 1800, "claude-3-sonnet-20240229")
-            
+
             return {
                 "device_risk_score": 0.85,
                 "fingerprint_anomalies": [
                     "Inconsistent screen resolution",
                     "Modified user agent",
-                    "Suspicious plugin configuration"
+                    "Suspicious plugin configuration",
                 ],
-                "recommendation": "HIGH_RISK"
+                "recommendation": "HIGH_RISK",
             }
 
         # Execute analysis
@@ -593,16 +607,18 @@ class TestInvestigationSpecificScenarios:
         assert stats["success_count"] == 1
 
     @pytest.mark.asyncio
-    async def test_synthetic_identity_investigation_failure_recovery(self, investigation_breaker):
+    async def test_synthetic_identity_investigation_failure_recovery(
+        self, investigation_breaker
+    ):
         """Test circuit breaker recovery during synthetic identity investigation."""
-        
+
         failure_count = 0
-        
+
         async def synthetic_identity_analysis():
             """Simulate synthetic identity analysis with intermittent failures."""
             nonlocal failure_count
             failure_count += 1
-            
+
             if failure_count <= 2:
                 # First two calls fail
                 raise Exception("Identity verification service temporarily unavailable")
@@ -614,9 +630,9 @@ class TestInvestigationSpecificScenarios:
                     "synthetic_indicators": [
                         "SSN issued after DOB indicates impossibility",
                         "Credit history inconsistent with age",
-                        "Address history shows suspicious patterns"
+                        "Address history shows suspicious patterns",
                     ],
-                    "confidence": 0.88
+                    "confidence": 0.88,
                 }
 
         # First two calls should fail
@@ -633,16 +649,18 @@ class TestInvestigationSpecificScenarios:
         assert len(result["synthetic_indicators"]) == 3
 
     @pytest.mark.asyncio
-    async def test_money_laundering_detection_timeout_handling(self, investigation_breaker):
+    async def test_money_laundering_detection_timeout_handling(
+        self, investigation_breaker
+    ):
         """Test circuit breaker timeout handling for complex ML analysis."""
-        
+
         timeout_call_count = 0
-        
+
         async def money_laundering_analysis():
             """Simulate money laundering analysis that may timeout."""
             nonlocal timeout_call_count
             timeout_call_count += 1
-            
+
             if timeout_call_count == 1:
                 # First call times out
                 await asyncio.sleep(20.0)  # Exceeds timeout
@@ -655,9 +673,9 @@ class TestInvestigationSpecificScenarios:
                     "suspicious_patterns": [
                         "Rapid movement of large amounts",
                         "Use of multiple intermediate accounts",
-                        "Transactions just below reporting thresholds"
+                        "Transactions just below reporting thresholds",
                     ],
-                    "investigation_priority": "HIGH"
+                    "investigation_priority": "HIGH",
                 }
 
         # First call should timeout
@@ -676,18 +694,21 @@ class TestInvestigationSpecificScenarios:
     @pytest.mark.asyncio
     async def test_multi_entity_investigation_coordination(self, api_cost_monitor):
         """Test multiple circuit breakers coordinating for multi-entity investigation."""
-        
+
         # Create specialized circuit breakers for different investigation aspects
         breakers = {
-            "user_analysis": APICircuitBreaker("user_analysis", CircuitBreakerConfig(
-                failure_threshold=2, recovery_timeout=10.0
-            )),
-            "merchant_analysis": APICircuitBreaker("merchant_analysis", CircuitBreakerConfig(
-                failure_threshold=3, recovery_timeout=15.0
-            )),
-            "transaction_analysis": APICircuitBreaker("transaction_analysis", CircuitBreakerConfig(
-                failure_threshold=2, recovery_timeout=20.0
-            )),
+            "user_analysis": APICircuitBreaker(
+                "user_analysis",
+                CircuitBreakerConfig(failure_threshold=2, recovery_timeout=10.0),
+            ),
+            "merchant_analysis": APICircuitBreaker(
+                "merchant_analysis",
+                CircuitBreakerConfig(failure_threshold=3, recovery_timeout=15.0),
+            ),
+            "transaction_analysis": APICircuitBreaker(
+                "transaction_analysis",
+                CircuitBreakerConfig(failure_threshold=2, recovery_timeout=20.0),
+            ),
         }
 
         async def user_risk_analysis():
@@ -700,7 +721,10 @@ class TestInvestigationSpecificScenarios:
 
         async def transaction_pattern_analysis():
             api_cost_monitor.track_call(2500, 2000, "claude-opus-4-1-20250805")
-            return {"pattern_risk": 0.82, "flags": ["unusual_amounts", "rapid_sequence"]}
+            return {
+                "pattern_risk": 0.82,
+                "flags": ["unusual_amounts", "rapid_sequence"],
+            }
 
         # Execute coordinated analysis
         analysis_tasks = [
@@ -725,20 +749,21 @@ class TestInvestigationSpecificScenarios:
     @pytest.mark.asyncio
     async def test_investigation_performance_monitoring(self, investigation_breaker):
         """Test performance monitoring for investigation API calls."""
-        
+
         response_times = []
-        
+
         async def timed_investigation_call():
             """Investigation call with variable response times."""
             import random
+
             delay = random.uniform(0.1, 1.0)  # 100ms to 1s
             response_times.append(delay)
             await asyncio.sleep(delay)
-            
+
             return {
                 "analysis_complete": True,
                 "processing_time": delay,
-                "data": "investigation_results"
+                "data": "investigation_results",
             }
 
         # Execute multiple calls

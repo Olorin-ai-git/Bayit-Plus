@@ -13,9 +13,10 @@ Constitutional Compliance:
 """
 
 import os
-from pydantic import Field, field_validator, AnyHttpUrl
-from pydantic_settings import BaseSettings
 from typing import Literal
+
+from pydantic import AnyHttpUrl, Field, field_validator
+from pydantic_settings import BaseSettings
 
 
 class APIConfig(BaseSettings):
@@ -30,7 +31,7 @@ class APIConfig(BaseSettings):
     backend_url: AnyHttpUrl = Field(
         ...,
         env="API_BASE_URL",
-        description="Backend API base URL (e.g., http://localhost:8090)"
+        description="Backend API base URL (e.g., http://localhost:8090)",
     )
 
     # Request timeout configuration
@@ -39,7 +40,7 @@ class APIConfig(BaseSettings):
         env="REQUEST_TIMEOUT_MS",
         description="Default API request timeout in milliseconds",
         gt=0,
-        le=300000  # Max 5 minutes
+        le=300000,  # Max 5 minutes
     )
 
     # Contract testing configuration
@@ -48,20 +49,20 @@ class APIConfig(BaseSettings):
         env="CONTRACT_TEST_TIMEOUT_MS",
         description="Timeout for contract test execution in milliseconds",
         gt=0,
-        le=600000  # Max 10 minutes
+        le=600000,  # Max 10 minutes
     )
 
     # OpenAPI schema configuration
     enable_openapi_schema_generation: bool = Field(
         ...,
         env="ENABLE_OPENAPI_SCHEMA_GENERATION",
-        description="Enable automatic OpenAPI schema generation"
+        description="Enable automatic OpenAPI schema generation",
     )
 
     openapi_schema_path: str = Field(
         ...,
         env="OPENAPI_SCHEMA_PATH",
-        description="URL path for OpenAPI schema endpoint (e.g., /openapi.json)"
+        description="URL path for OpenAPI schema endpoint (e.g., /openapi.json)",
     )
 
     @field_validator("openapi_schema_path")
@@ -86,7 +87,7 @@ class APIConfig(BaseSettings):
         "case_sensitive": False,
         "env_file": ".env",
         "env_file_encoding": "utf-8",
-        "extra": "ignore"  # Ignore extra environment variables not defined in this config
+        "extra": "ignore",  # Ignore extra environment variables not defined in this config
     }
 
 

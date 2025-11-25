@@ -8,9 +8,10 @@ Week 10 Phase 4 implementation.
 
 import logging
 import os
-from typing import Dict, Any, List, Optional
-from datetime import datetime, timedelta
 from collections import deque
+from datetime import datetime, timedelta
+from typing import Any, Dict, List, Optional
+
 import numpy as np
 
 logger = logging.getLogger(__name__)
@@ -32,7 +33,9 @@ class MetricsCollector:
 
         retention_hours_env = os.getenv("METRICS_RETENTION_HOURS")
         if not retention_hours_env:
-            raise RuntimeError("METRICS_RETENTION_HOURS environment variable is required")
+            raise RuntimeError(
+                "METRICS_RETENTION_HOURS environment variable is required"
+            )
         self.retention_hours = int(retention_hours_env)
 
         self.prediction_scores: deque = deque(maxlen=self.window_size)
@@ -50,17 +53,19 @@ class MetricsCollector:
         confidence: float,
         latency_ms: float,
         features: Dict[str, Any],
-        metadata: Optional[Dict[str, Any]] = None
+        metadata: Optional[Dict[str, Any]] = None,
     ) -> None:
         """Record a prediction event."""
         timestamp = datetime.utcnow()
 
-        self.prediction_scores.append({
-            "score": score,
-            "confidence": confidence,
-            "timestamp": timestamp,
-            "metadata": metadata or {}
-        })
+        self.prediction_scores.append(
+            {
+                "score": score,
+                "confidence": confidence,
+                "timestamp": timestamp,
+                "metadata": metadata or {},
+            }
+        )
 
         self.prediction_latencies.append(latency_ms)
 
@@ -94,15 +99,15 @@ class MetricsCollector:
                 "std": float(np.std(scores)),
                 "p50": float(np.percentile(scores, 50)),
                 "p95": float(np.percentile(scores, 95)),
-                "p99": float(np.percentile(scores, 99))
+                "p99": float(np.percentile(scores, 99)),
             },
             "confidence_stats": {
                 "mean": float(np.mean(confidences)),
                 "median": float(np.median(confidences)),
                 "std": float(np.std(confidences)),
                 "p50": float(np.percentile(confidences, 50)),
-                "p95": float(np.percentile(confidences, 95))
-            }
+                "p95": float(np.percentile(confidences, 95)),
+            },
         }
 
     def get_latency_metrics(self) -> Dict[str, float]:
@@ -118,7 +123,7 @@ class MetricsCollector:
             "p95_ms": float(np.percentile(latencies, 95)),
             "p99_ms": float(np.percentile(latencies, 99)),
             "max_ms": float(np.max(latencies)),
-            "min_ms": float(np.min(latencies))
+            "min_ms": float(np.min(latencies)),
         }
 
     def get_error_metrics(self) -> Dict[str, Any]:
@@ -127,7 +132,11 @@ class MetricsCollector:
         return {
             "total_errors": total_errors,
             "error_counts_by_type": dict(self.error_counts),
-            "error_rate": total_errors / len(self.prediction_scores) if self.prediction_scores else 0.0
+            "error_rate": (
+                total_errors / len(self.prediction_scores)
+                if self.prediction_scores
+                else 0.0
+            ),
         }
 
     def get_feature_statistics(self, feature_name: str) -> Optional[Dict[str, float]]:
@@ -147,7 +156,7 @@ class MetricsCollector:
             "max": float(np.max(values)),
             "p25": float(np.percentile(values, 25)),
             "p75": float(np.percentile(values, 75)),
-            "sample_count": len(values)
+            "sample_count": len(values),
         }
 
     def get_all_metrics(self) -> Dict[str, Any]:
@@ -157,7 +166,7 @@ class MetricsCollector:
             "latency_metrics": self.get_latency_metrics(),
             "error_metrics": self.get_error_metrics(),
             "window_size": self.window_size,
-            "collected_at": datetime.utcnow().isoformat()
+            "collected_at": datetime.utcnow().isoformat(),
         }
 
     def reset(self) -> None:
@@ -172,8 +181,21 @@ class MetricsCollector:
         """Return empty prediction metrics structure."""
         return {
             "total_predictions": 0,
-            "score_stats": {"mean": 0.0, "median": 0.0, "std": 0.0, "p50": 0.0, "p95": 0.0, "p99": 0.0},
-            "confidence_stats": {"mean": 0.0, "median": 0.0, "std": 0.0, "p50": 0.0, "p95": 0.0}
+            "score_stats": {
+                "mean": 0.0,
+                "median": 0.0,
+                "std": 0.0,
+                "p50": 0.0,
+                "p95": 0.0,
+                "p99": 0.0,
+            },
+            "confidence_stats": {
+                "mean": 0.0,
+                "median": 0.0,
+                "std": 0.0,
+                "p50": 0.0,
+                "p95": 0.0,
+            },
         }
 
     def _empty_latency_metrics(self) -> Dict[str, float]:
@@ -185,5 +207,5 @@ class MetricsCollector:
             "p95_ms": 0.0,
             "p99_ms": 0.0,
             "max_ms": 0.0,
-            "min_ms": 0.0
+            "min_ms": 0.0,
         }

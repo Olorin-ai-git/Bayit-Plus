@@ -49,9 +49,7 @@ class DatabaseProvider(ABC):
 
     @abstractmethod
     def execute_query(
-        self,
-        query: str,
-        params: Optional[Dict[str, Any]] = None
+        self, query: str, params: Optional[Dict[str, Any]] = None
     ) -> List[Dict[str, Any]]:
         """
         Execute a query against the database.

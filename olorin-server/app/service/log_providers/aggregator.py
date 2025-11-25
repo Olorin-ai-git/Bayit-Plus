@@ -10,15 +10,15 @@ Date: 2025-11-12
 Spec: /specs/021-live-merged-logstream/research.md
 """
 
-from typing import AsyncIterator, List, Optional
-from datetime import datetime
 import asyncio
 import heapq
 import logging
+from datetime import datetime
+from typing import AsyncIterator, List, Optional
 
+from app.config.logstream_config import AggregatorConfig
 from app.models.unified_log import UnifiedLog
 from app.service.log_providers.base import LogProvider
-from app.config.logstream_config import AggregatorConfig
 
 logger = logging.getLogger(__name__)
 
@@ -66,9 +66,7 @@ class LogAggregatorService:
         self.buffer_size = config.buffer_size
 
     async def stream_logs(
-        self,
-        start_time: Optional[datetime] = None,
-        end_time: Optional[datetime] = None
+        self, start_time: Optional[datetime] = None, end_time: Optional[datetime] = None
     ) -> AsyncIterator[UnifiedLog]:
         """
         Stream merged logs from all providers.
@@ -126,7 +124,7 @@ class LogAggregatorService:
         self,
         start_time: Optional[datetime] = None,
         end_time: Optional[datetime] = None,
-        limit: int = 100
+        limit: int = 100,
     ) -> List[UnifiedLog]:
         """
         Fetch merged logs from all providers (for polling endpoint).

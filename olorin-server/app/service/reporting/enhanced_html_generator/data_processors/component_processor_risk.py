@@ -5,8 +5,8 @@ Risk Analysis Processor for Enhanced HTML Report Generator.
 Processes risk scores, agents, and risk categories from investigation activities.
 """
 
-from typing import Dict, List, Any
 from collections import defaultdict
+from typing import Any, Dict, List
 
 
 class RiskAnalysisProcessor:

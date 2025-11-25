@@ -6,22 +6,22 @@ Enables testing different models or ensemble strategies against each other.
 Week 8 Phase 3 implementation.
 """
 
+import hashlib
 import logging
 import os
-import hashlib
-from typing import Dict, Any, Optional, List
+from dataclasses import asdict, dataclass
 from datetime import datetime
-from dataclasses import dataclass, asdict
 from pathlib import Path
+from typing import Any, Dict, List, Optional
 
-from app.service.analytics.experiment_storage import (
-    load_experiments_data,
-    save_experiments_data,
-    ensure_experiments_directory
-)
 from app.service.analytics.experiment_helpers import (
     assign_variant,
-    calculate_experiment_stats
+    calculate_experiment_stats,
+)
+from app.service.analytics.experiment_storage import (
+    ensure_experiments_directory,
+    load_experiments_data,
+    save_experiments_data,
 )
 
 logger = logging.getLogger(__name__)
@@ -30,6 +30,7 @@ logger = logging.getLogger(__name__)
 @dataclass
 class ABExperiment:
     """A/B test experiment configuration and metrics."""
+
     experiment_id: str
     name: str
     description: str
@@ -51,8 +52,7 @@ class ABTestingFramework:
     def __init__(self, experiments_path: Optional[str] = None):
         """Initialize A/B testing framework."""
         self.experiments_path = experiments_path or os.getenv(
-            "AB_EXPERIMENTS_PATH",
-            str(Path.home() / ".olorin" / "ab_experiments")
+            "AB_EXPERIMENTS_PATH", str(Path.home() / ".olorin" / "ab_experiments")
         )
         ensure_experiments_directory(self.experiments_path)
         self.experiments_file = os.path.join(self.experiments_path, "experiments.json")
@@ -75,7 +75,7 @@ class ABTestingFramework:
         description: str,
         variant_a: Dict[str, Any],
         variant_b: Dict[str, Any],
-        traffic_split: float = 0.5
+        traffic_split: float = 0.5,
     ) -> str:
         """Create a new A/B test experiment."""
         experiment_id = hashlib.md5(
@@ -93,8 +93,8 @@ class ABTestingFramework:
             created_at=datetime.utcnow().isoformat(),
             metrics={
                 "variant_a": {"count": 0, "total_score": 0.0, "errors": 0},
-                "variant_b": {"count": 0, "total_score": 0.0, "errors": 0}
-            }
+                "variant_b": {"count": 0, "total_score": 0.0, "errors": 0},
+            },
         )
 
         self.experiments[experiment_id] = experiment
@@ -104,9 +104,7 @@ class ABTestingFramework:
         return experiment_id
 
     def get_variant(
-        self,
-        experiment_id: str,
-        entity_id: str
+        self, experiment_id: str, entity_id: str
     ) -> Optional[Dict[str, Any]]:
         """Get variant assignment for an entity using consistent hashing."""
         if experiment_id not in self.experiments:
@@ -122,15 +120,11 @@ class ABTestingFramework:
             entity_id,
             experiment.traffic_split,
             experiment.variant_a,
-            experiment.variant_b
+            experiment.variant_b,
         )
 
     def record_metric(
-        self,
-        experiment_id: str,
-        variant: str,
-        score: float,
-        error: bool = False
+        self, experiment_id: str, variant: str, score: float, error: bool = False
     ) -> None:
         """Record prediction metric for a variant."""
         if experiment_id not in self.experiments:
@@ -151,15 +145,14 @@ class ABTestingFramework:
 
         experiment = self.experiments[experiment_id]
         stats = calculate_experiment_stats(
-            experiment.metrics["variant_a"],
-            experiment.metrics["variant_b"]
+            experiment.metrics["variant_a"], experiment.metrics["variant_b"]
         )
 
         return {
             "experiment_id": experiment_id,
             "name": experiment.name,
             "status": experiment.status,
-            **stats
+            **stats,
         }
 
     def pause_experiment(self, experiment_id: str) -> bool:

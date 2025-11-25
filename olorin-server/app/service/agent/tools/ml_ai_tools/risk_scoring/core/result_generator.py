@@ -5,6 +5,7 @@ Generates comprehensive risk assessment results.
 """
 
 from typing import Any, Dict, List
+
 from .input_schema import ComprehensiveRiskResult, RiskAssessmentResult
 
 
@@ -19,7 +20,7 @@ class RiskScoringResultGenerator:
         self,
         model_scores: Dict[str, Any],
         risk_assessments: List[RiskAssessmentResult],
-        processed_data: Dict[str, Any]
+        processed_data: Dict[str, Any],
     ) -> ComprehensiveRiskResult:
         """Generate comprehensive risk assessment result."""
         # Determine primary score (prefer composite, then weighted, then highest individual)
@@ -34,7 +35,9 @@ class RiskScoringResultGenerator:
             primary_level = model_scores["weighted"].get("risk_level", "low")
         elif model_scores:
             # Use the highest score from available models
-            scores = [result.get("overall_score", 0.0) for result in model_scores.values()]
+            scores = [
+                result.get("overall_score", 0.0) for result in model_scores.values()
+            ]
             primary_score = max(scores) if scores else 0.0
             primary_level = self._determine_risk_level(primary_score)
 
@@ -55,9 +58,9 @@ class RiskScoringResultGenerator:
                 "data_quality": processed_data.get("data_quality", 0.0),
                 "data_completeness": processed_data.get("data_completeness", 0.0),
                 "models_applied": list(model_scores.keys()),
-                "assessments_completed": len(risk_assessments)
+                "assessments_completed": len(risk_assessments),
             },
-            "model_details": model_scores
+            "model_details": model_scores,
         }
 
         return ComprehensiveRiskResult(
@@ -66,7 +69,7 @@ class RiskScoringResultGenerator:
             individual_assessments=risk_assessments,
             model_scores=extracted_model_scores,
             recommendations=recommendations,
-            metadata=metadata
+            metadata=metadata,
         )
 
     def _determine_risk_level(self, score: float) -> str:

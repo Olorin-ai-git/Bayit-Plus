@@ -9,13 +9,14 @@ Week 9 Phase 3 implementation.
 import logging
 import os
 import pickle
-from typing import List, Optional, Dict, Any, Tuple
 from pathlib import Path
+from typing import Any, Dict, List, Optional, Tuple
+
 import numpy as np
 
 from app.service.analytics.calibration_metrics import (
     calculate_calibration_curve,
-    calculate_calibration_metrics
+    calculate_calibration_metrics,
 )
 
 logger = logging.getLogger(__name__)
@@ -48,7 +49,9 @@ class IsotonicCalibrator:
 
         min_samples_env = os.getenv("CALIBRATION_MIN_SAMPLES")
         if not min_samples_env:
-            raise RuntimeError("CALIBRATION_MIN_SAMPLES environment variable is required")
+            raise RuntimeError(
+                "CALIBRATION_MIN_SAMPLES environment variable is required"
+            )
         self.min_samples = int(min_samples_env)
 
         self._load_calibrator()
@@ -62,7 +65,7 @@ class IsotonicCalibrator:
             return
 
         try:
-            with open(calibrator_file, 'rb') as f:
+            with open(calibrator_file, "rb") as f:
                 self.calibrator = pickle.load(f)
             self.is_fitted = True
             logger.info(f"✓ Loaded calibrator from {calibrator_file}")
@@ -86,7 +89,7 @@ class IsotonicCalibrator:
         try:
             from sklearn.isotonic import IsotonicRegression
 
-            self.calibrator = IsotonicRegression(out_of_bounds='clip')
+            self.calibrator = IsotonicRegression(out_of_bounds="clip")
             self.calibrator.fit(scores, labels)
             self.is_fitted = True
 
@@ -105,7 +108,7 @@ class IsotonicCalibrator:
         calibrator_file = os.path.join(self.calibrator_path, "isotonic_calibrator.pkl")
 
         try:
-            with open(calibrator_file, 'wb') as f:
+            with open(calibrator_file, "wb") as f:
                 pickle.dump(self.calibrator, f)
             logger.info(f"✓ Saved calibrator to {calibrator_file}")
         except Exception as e:
@@ -153,18 +156,13 @@ class IsotonicCalibrator:
             return scores
 
     def get_calibration_curve(
-        self,
-        scores: List[float],
-        labels: List[bool],
-        n_bins: int = 10
+        self, scores: List[float], labels: List[bool], n_bins: int = 10
     ) -> Tuple[List[float], List[float]]:
         """Get calibration curve data."""
         return calculate_calibration_curve(scores, labels, n_bins)
 
     def get_calibration_metrics(
-        self,
-        scores: List[float],
-        labels: List[bool]
+        self, scores: List[float], labels: List[bool]
     ) -> Dict[str, float]:
         """Get calibration quality metrics."""
         return calculate_calibration_metrics(scores, labels)

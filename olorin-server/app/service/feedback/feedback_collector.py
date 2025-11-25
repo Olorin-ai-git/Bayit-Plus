@@ -8,17 +8,17 @@ Week 11 Phase 4 implementation.
 
 import logging
 import os
-from typing import Dict, Any, List, Optional
-from datetime import datetime
 from collections import deque
+from datetime import datetime
 from enum import Enum
-
+from typing import Any, Dict, List, Optional
 
 logger = logging.getLogger(__name__)
 
 
 class FeedbackType(Enum):
     """Types of feedback."""
+
     TRUE_POSITIVE = "true_positive"  # Correct fraud detection
     FALSE_POSITIVE = "false_positive"  # Incorrectly flagged as fraud
     TRUE_NEGATIVE = "true_negative"  # Correctly identified as legitimate
@@ -42,7 +42,9 @@ class FeedbackCollector:
 
         min_feedback_for_retrain_env = os.getenv("FEEDBACK_MIN_FOR_RETRAIN")
         if not min_feedback_for_retrain_env:
-            raise RuntimeError("FEEDBACK_MIN_FOR_RETRAIN environment variable is required")
+            raise RuntimeError(
+                "FEEDBACK_MIN_FOR_RETRAIN environment variable is required"
+            )
         self.min_feedback_for_retrain = int(min_feedback_for_retrain_env)
 
         fp_threshold_env = os.getenv("FEEDBACK_FP_THRESHOLD")
@@ -61,7 +63,7 @@ class FeedbackCollector:
             "false_positive": 0,
             "true_negative": 0,
             "false_negative": 0,
-            "uncertain": 0
+            "uncertain": 0,
         }
         logger.info(
             f"📝 FeedbackCollector initialized (window={self.window_size}, "
@@ -77,7 +79,7 @@ class FeedbackCollector:
         feedback_type: FeedbackType,
         reviewer_id: str,
         features: Optional[Dict[str, Any]] = None,
-        notes: Optional[str] = None
+        notes: Optional[str] = None,
     ) -> None:
         """Record human feedback on a prediction."""
         feedback_item = {
@@ -89,7 +91,7 @@ class FeedbackCollector:
             "reviewer_id": reviewer_id,
             "features": features or {},
             "notes": notes,
-            "timestamp": datetime.utcnow().isoformat()
+            "timestamp": datetime.utcnow().isoformat(),
         }
 
         self.feedback_items.append(feedback_item)
@@ -107,7 +109,7 @@ class FeedbackCollector:
             return {
                 "total_feedback": 0,
                 "ready_for_retrain": False,
-                "message": "No feedback collected yet"
+                "message": "No feedback collected yet",
             }
 
         tp = self.feedback_by_type["true_positive"]
@@ -130,13 +132,15 @@ class FeedbackCollector:
                 "recall": recall,
                 "accuracy": accuracy,
                 "false_positive_rate": fp_rate,
-                "false_negative_rate": fn_rate
+                "false_negative_rate": fn_rate,
             },
             "ready_for_retrain": self._check_retrain_trigger(total, fp_rate, fn_rate),
-            "collected_at": datetime.utcnow().isoformat()
+            "collected_at": datetime.utcnow().isoformat(),
         }
 
-    def _check_retrain_trigger(self, total: int, fp_rate: float, fn_rate: float) -> bool:
+    def _check_retrain_trigger(
+        self, total: int, fp_rate: float, fn_rate: float
+    ) -> bool:
         """Check if retraining should be triggered."""
         if total < self.min_feedback_for_retrain:
             return False
@@ -162,12 +166,14 @@ class FeedbackCollector:
     def get_misclassifications(self) -> Dict[str, List[Dict[str, Any]]]:
         """Get false positives and false negatives for analysis."""
         false_positives = [
-            item for item in self.feedback_items
+            item
+            for item in self.feedback_items
             if item["feedback_type"] == "false_positive"
         ]
 
         false_negatives = [
-            item for item in self.feedback_items
+            item
+            for item in self.feedback_items
             if item["feedback_type"] == "false_negative"
         ]
 
@@ -175,7 +181,7 @@ class FeedbackCollector:
             "false_positives": false_positives,
             "false_negatives": false_negatives,
             "fp_count": len(false_positives),
-            "fn_count": len(false_negatives)
+            "fn_count": len(false_negatives),
         }
 
     def clear_feedback(self) -> int:

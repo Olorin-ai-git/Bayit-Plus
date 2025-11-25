@@ -6,7 +6,9 @@ Wraps LLM calls to capture prompts, responses, latency, and settings.
 
 import time
 from typing import Any
+
 from langchain_core.language_model import LanguageModel
+
 from app.service.logging.llm_callback_handler import InstrumentationCallbackHandler
 
 
@@ -27,7 +29,7 @@ class InstrumentedLanguageModel:
         input_str: str,
         temperature: float = 0.1,  # Low temperature for consistent results
         max_tokens: int = 2048,
-        **kwargs
+        **kwargs,
     ) -> str:
         """Invoke LLM with instrumentation."""
         start_time = time.time()
@@ -35,14 +37,13 @@ class InstrumentedLanguageModel:
 
         try:
             response = self.llm.invoke(
-                input_str,
-                temperature=temperature,
-                max_tokens=max_tokens,
-                **kwargs
+                input_str, temperature=temperature, max_tokens=max_tokens, **kwargs
             )
 
             latency_ms = (time.time() - start_time) * 1000
-            response_text = response.content if hasattr(response, "content") else str(response)
+            response_text = (
+                response.content if hasattr(response, "content") else str(response)
+            )
 
             self.logger.log_llm_interaction(
                 agent_name=self.agent_name,
@@ -52,7 +53,7 @@ class InstrumentedLanguageModel:
                 tokens_used=0,
                 latency_ms=latency_ms,
                 temperature=temperature,
-                max_tokens=max_tokens
+                max_tokens=max_tokens,
             )
 
             self.logger.log_event(
@@ -63,8 +64,8 @@ class InstrumentedLanguageModel:
                     "latency_ms": latency_ms,
                     "temperature": temperature,
                     "max_tokens": max_tokens,
-                    "response_length": len(response_text)
-                }
+                    "response_length": len(response_text),
+                },
             )
 
             return response_text
@@ -77,8 +78,8 @@ class InstrumentedLanguageModel:
                 context={
                     "call_number": self.call_count,
                     "latency_ms": latency_ms,
-                    "input_length": len(input_str)
-                }
+                    "input_length": len(input_str),
+                },
             )
             raise
 
@@ -87,7 +88,7 @@ class InstrumentedLanguageModel:
         input_str: str,
         temperature: float = 0.1,  # Low temperature for consistent results
         max_tokens: int = 2048,
-        **kwargs
+        **kwargs,
     ) -> str:
         """Async invoke LLM with instrumentation."""
         start_time = time.time()
@@ -95,14 +96,13 @@ class InstrumentedLanguageModel:
 
         try:
             response = await self.llm.ainvoke(
-                input_str,
-                temperature=temperature,
-                max_tokens=max_tokens,
-                **kwargs
+                input_str, temperature=temperature, max_tokens=max_tokens, **kwargs
             )
 
             latency_ms = (time.time() - start_time) * 1000
-            response_text = response.content if hasattr(response, "content") else str(response)
+            response_text = (
+                response.content if hasattr(response, "content") else str(response)
+            )
 
             self.logger.log_llm_interaction(
                 agent_name=self.agent_name,
@@ -112,7 +112,7 @@ class InstrumentedLanguageModel:
                 tokens_used=0,
                 latency_ms=latency_ms,
                 temperature=temperature,
-                max_tokens=max_tokens
+                max_tokens=max_tokens,
             )
 
             self.logger.log_event(
@@ -123,8 +123,8 @@ class InstrumentedLanguageModel:
                     "latency_ms": latency_ms,
                     "temperature": temperature,
                     "max_tokens": max_tokens,
-                    "response_length": len(response_text)
-                }
+                    "response_length": len(response_text),
+                },
             )
 
             return response_text
@@ -137,8 +137,8 @@ class InstrumentedLanguageModel:
                 context={
                     "call_number": self.call_count,
                     "latency_ms": latency_ms,
-                    "input_length": len(input_str)
-                }
+                    "input_length": len(input_str),
+                },
             )
             raise
 

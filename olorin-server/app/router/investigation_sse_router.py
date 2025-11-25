@@ -11,16 +11,17 @@ SYSTEM MANDATE Compliance:
 - Type-safe: All parameters and returns properly typed
 """
 
+import os
+import time
 from typing import Optional
+
 from fastapi import APIRouter, Depends, Query, Request
 from fastapi.responses import StreamingResponse
 from sqlalchemy.orm import Session
-import time
-import os
 
 from app.persistence.database import get_db
-from app.service.event_streaming_service import EventStreamingService
 from app.security.auth import User, require_read_or_dev
+from app.service.event_streaming_service import EventStreamingService
 from app.service.logging import get_bridge_logger
 
 logger = get_bridge_logger(__name__)
@@ -28,10 +29,7 @@ logger = get_bridge_logger(__name__)
 router = APIRouter(
     prefix="/api/v1/investigations",
     tags=["Investigation SSE"],
-    responses={
-        403: {"description": "Forbidden"},
-        404: {"description": "Not found"}
-    },
+    responses={403: {"description": "Forbidden"}, 404: {"description": "Not found"}},
 )
 
 # Configuration
@@ -46,20 +44,17 @@ SSE_RESPONSE_TIME_TARGET_MS = int(os.getenv("SSE_RESPONSE_TIME_TARGET_MS", "200"
         200: {
             "description": "SSE event stream",
             "content": {
-                "text/event-stream": {
-                    "example": "event: phase_change\ndata: {...}\n\n"
-                }
-            }
+                "text/event-stream": {"example": "event: phase_change\ndata: {...}\n\n"}
+            },
         }
-    }
+    },
 )
 async def stream_investigation_events(
     investigation_id: str,
     run_id: str,
     request: Request,
     last_event_id: Optional[str] = Query(
-        None,
-        description="Last event ID for reconnection support"
+        None, description="Last event ID for reconnection support"
     ),
     db: Session = Depends(get_db),
     current_user: User = Depends(require_read_or_dev),
@@ -117,18 +112,20 @@ async def stream_investigation_events(
                 investigation_id=investigation_id,
                 user_id=current_user.username,
                 run_id=run_id,
-                last_event_id=last_event_id
+                last_event_id=last_event_id,
             ):
                 # Check if client disconnected
                 if await request.is_disconnected():
-                    logger.info(f"Client disconnected from SSE stream {investigation_id}")
+                    logger.info(
+                        f"Client disconnected from SSE stream {investigation_id}"
+                    )
                     break
 
                 yield event
 
         except Exception as e:
             logger.error(f"Error in SSE generator for {investigation_id}: {e}")
-            yield f"event: error\ndata: {{\"error\": \"{str(e)}\"}}\n\n"
+            yield f'event: error\ndata: {{"error": "{str(e)}"}}\n\n'
 
     # Return SSE response with proper headers
     return StreamingResponse(
@@ -139,7 +136,7 @@ async def stream_investigation_events(
             "Connection": "keep-alive",
             "X-Accel-Buffering": "no",  # Disable Nginx buffering
             "Access-Control-Allow-Origin": "*",  # Configure based on CORS needs
-        }
+        },
     )
 
 
@@ -177,22 +174,21 @@ async def test_polling_performance(
                 investigation_id=investigation_id,
                 user_id=current_user.username,
                 cursor=None,
-                limit=10
+                limit=10,
             )
 
             elapsed_ms = int((time.time() - start) * 1000)
-            results.append({
-                "iteration": i + 1,
-                "elapsed_ms": elapsed_ms,
-                "events_returned": len(response.items),
-                "meets_target": elapsed_ms < SSE_RESPONSE_TIME_TARGET_MS
-            })
+            results.append(
+                {
+                    "iteration": i + 1,
+                    "elapsed_ms": elapsed_ms,
+                    "events_returned": len(response.items),
+                    "meets_target": elapsed_ms < SSE_RESPONSE_TIME_TARGET_MS,
+                }
+            )
 
         except Exception as e:
-            results.append({
-                "iteration": i + 1,
-                "error": str(e)
-            })
+            results.append({"iteration": i + 1, "error": str(e)})
 
     # Calculate statistics
     successful_results = [r for r in results if "elapsed_ms" in r]
@@ -216,9 +212,11 @@ async def test_polling_performance(
             "max_response_ms": max_time,
             "min_response_ms": min_time,
             "success_rate": round(success_rate, 2),
-            "meets_target": avg_time < SSE_RESPONSE_TIME_TARGET_MS
+            "meets_target": avg_time < SSE_RESPONSE_TIME_TARGET_MS,
         },
-        "fallback_status": "AVAILABLE" if avg_time < SSE_RESPONSE_TIME_TARGET_MS else "DEGRADED"
+        "fallback_status": (
+            "AVAILABLE" if avg_time < SSE_RESPONSE_TIME_TARGET_MS else "DEGRADED"
+        ),
     }
 
 
@@ -241,26 +239,31 @@ async def get_streaming_options(
     # Check if investigation exists and user has access
     from app.models.investigation_state import InvestigationState
 
-    state = db.query(InvestigationState).filter(
-        InvestigationState.investigation_id == investigation_id
-    ).first()
+    state = (
+        db.query(InvestigationState)
+        .filter(InvestigationState.investigation_id == investigation_id)
+        .first()
+    )
 
     if not state:
         from fastapi import HTTPException, status
+
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
-            detail=f"Investigation {investigation_id} not found"
+            detail=f"Investigation {investigation_id} not found",
         )
 
     if state.user_id != current_user.username:
         from fastapi import HTTPException, status
+
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
-            detail="Not authorized to access this investigation"
+            detail="Not authorized to access this investigation",
         )
 
     # Test polling endpoint performance
     from app.service.event_feed_service import EventFeedService
+
     service = EventFeedService(db)
 
     start = time.time()
@@ -269,7 +272,7 @@ async def get_streaming_options(
             investigation_id=investigation_id,
             user_id=current_user.username,
             cursor=None,
-            limit=1
+            limit=1,
         )
         polling_response_ms = int((time.time() - start) * 1000)
         polling_available = True
@@ -285,8 +288,12 @@ async def get_streaming_options(
                 "endpoint": f"/api/v1/investigations/{investigation_id}/runs/{{run_id}}/stream",
                 "protocol": "Server-Sent Events",
                 "real_time": True,
-                "max_duration_seconds": int(os.getenv("SSE_MAX_DURATION_SECONDS", "300")),
-                "heartbeat_interval_seconds": int(os.getenv("SSE_HEARTBEAT_INTERVAL_SECONDS", "30"))
+                "max_duration_seconds": int(
+                    os.getenv("SSE_MAX_DURATION_SECONDS", "300")
+                ),
+                "heartbeat_interval_seconds": int(
+                    os.getenv("SSE_HEARTBEAT_INTERVAL_SECONDS", "30")
+                ),
             },
             "polling": {
                 "available": polling_available,
@@ -294,14 +301,17 @@ async def get_streaming_options(
                 "protocol": "HTTP Polling",
                 "real_time": False,
                 "response_time_ms": polling_response_ms,
-                "meets_target": polling_response_ms and polling_response_ms < SSE_RESPONSE_TIME_TARGET_MS,
+                "meets_target": polling_response_ms
+                and polling_response_ms < SSE_RESPONSE_TIME_TARGET_MS,
                 "target_ms": SSE_RESPONSE_TIME_TARGET_MS,
-                "recommended_interval_ms": 1000 if state.status == "IN_PROGRESS" else 5000
+                "recommended_interval_ms": (
+                    1000 if state.status == "IN_PROGRESS" else 5000
+                ),
             },
             "websocket": {
                 "available": False,
-                "reason": "WebSocket support disabled in favor of SSE"
-            }
+                "reason": "WebSocket support disabled in favor of SSE",
+            },
         },
-        "recommended": "sse" if state.status == "IN_PROGRESS" else "polling"
+        "recommended": "sse" if state.status == "IN_PROGRESS" else "polling",
     }

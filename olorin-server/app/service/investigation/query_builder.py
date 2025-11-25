@@ -10,35 +10,37 @@ Constitutional Compliance:
 """
 
 from datetime import datetime
-from typing import Optional, List
+from typing import List, Optional
+
 from pydantic import BaseModel, Field
+
 from app.service.agent.tools.database_tool import get_database_provider
 from app.service.agent.tools.database_tool.database_provider import DatabaseProvider
 
 
 class InvestigationQueryConfig(BaseModel):
     """Configuration for investigation query column exclusion."""
+
     exclude_columns: List[str] = Field(
-        default_factory=lambda: ['MODEL_SCORE', 'IS_FRAUD_TX'],
-        description="Columns to exclude from investigation queries"
+        default_factory=lambda: ["MODEL_SCORE", "IS_FRAUD_TX"],
+        description="Columns to exclude from investigation queries",
     )
-    database_provider: str = Field(..., description="Database provider: 'snowflake' or 'postgresql'")
-    
+    database_provider: str = Field(
+        ..., description="Database provider: 'snowflake' or 'postgresql'"
+    )
+
     def get_excluded_columns(self) -> List[str]:
         """Get excluded columns with proper case for database provider."""
-        if self.database_provider.lower() == 'snowflake':
-            return ['MODEL_SCORE', 'IS_FRAUD_TX']
+        if self.database_provider.lower() == "snowflake":
+            return ["MODEL_SCORE", "IS_FRAUD_TX"]
         else:
-            return ['model_score', 'is_fraud_tx']
-    
+            return ["model_score", "is_fraud_tx"]
+
     def exclude_columns_from_select(self, columns: List[str]) -> List[str]:
         """Filter out excluded columns from SELECT clause."""
         excluded = self.get_excluded_columns()
         excluded_upper = [col.upper() for col in excluded]
-        return [
-            col for col in columns
-            if col.upper() not in excluded_upper
-        ]
+        return [col for col in columns if col.upper() not in excluded_upper]
 
 
 def build_transaction_query(
@@ -48,11 +50,11 @@ def build_transaction_query(
     merchant_clause: str,
     is_snowflake: bool,
     db_provider: Optional[DatabaseProvider] = None,
-    is_investigation: bool = False
+    is_investigation: bool = False,
 ) -> str:
     """
     Build SQL query for fetching transactions.
-    
+
     Args:
         window_start: Start of time window
         window_end: End of time window
@@ -61,7 +63,7 @@ def build_transaction_query(
         is_snowflake: Whether using Snowflake (affects column naming)
         db_provider: Database provider instance
         is_investigation: If True, exclude MODEL_SCORE and IS_FRAUD_TX (CRITICAL for unbiased investigation)
-    
+
     Returns:
         SQL query string
     """
@@ -86,7 +88,7 @@ def build_transaction_query(
 
     where_parts = [
         f"{datetime_col} >= '{window_start.isoformat()}'",
-        f"{datetime_col} < '{window_end.isoformat()}'"
+        f"{datetime_col} < '{window_end.isoformat()}'",
     ]
 
     if entity_clause:
@@ -101,13 +103,13 @@ def build_transaction_query(
     select_parts = [
         f"{tx_id_col} as transaction_id",
         f"{merchant_col} as merchant_id",
-        f"{datetime_col} as event_ts"
+        f"{datetime_col} as event_ts",
     ]
-    
+
     if not is_investigation:
         # For comparison queries (post-investigation), include IS_FRAUD_TX for ground truth
         select_parts.append(f"{actual_outcome_col} as actual_outcome")
-    
+
     # MODEL_SCORE is NEVER included (excluded during investigation and comparison)
     # IS_FRAUD_TX is excluded during investigation, but included for comparison
 
@@ -119,4 +121,3 @@ def build_transaction_query(
     """
 
     return query
-

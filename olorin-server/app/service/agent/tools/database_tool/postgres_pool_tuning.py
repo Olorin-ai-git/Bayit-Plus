@@ -10,8 +10,9 @@ Constitutional Compliance:
 """
 
 import os
+from typing import Any, Dict
+
 import psutil
-from typing import Dict, Any
 
 from app.service.logging import get_bridge_logger
 
@@ -36,10 +37,10 @@ class PostgreSQLPoolTuner:
         memory = psutil.virtual_memory()
 
         resources = {
-            'cpu_count': cpu_count,
-            'total_memory_gb': memory.total / (1024 ** 3),
-            'available_memory_gb': memory.available / (1024 ** 3),
-            'memory_percent_used': memory.percent
+            "cpu_count": cpu_count,
+            "total_memory_gb": memory.total / (1024**3),
+            "available_memory_gb": memory.available / (1024**3),
+            "memory_percent_used": memory.percent,
         }
 
         logger.debug(f"System resources: {resources}")
@@ -49,7 +50,7 @@ class PostgreSQLPoolTuner:
         self,
         cpu_count: int,
         available_memory_gb: float,
-        expected_concurrent_queries: int = 10
+        expected_concurrent_queries: int = 10,
     ) -> int:
         """
         Calculate recommended connection pool size.
@@ -82,7 +83,9 @@ class PostgreSQLPoolTuner:
         # Clamp to reasonable range
         recommended_size = max(5, min(recommended_size, 100))
 
-        logger.info(f"Recommended pool size: {recommended_size} (CPU: {cpu_count}, Memory: {available_memory_gb:.1f}GB)")
+        logger.info(
+            f"Recommended pool size: {recommended_size} (CPU: {cpu_count}, Memory: {available_memory_gb:.1f}GB)"
+        )
         return recommended_size
 
     def calculate_recommended_max_overflow(self, pool_size: int) -> int:
@@ -101,12 +104,13 @@ class PostgreSQLPoolTuner:
         # Ensure at least some overflow capacity
         max_overflow = max(max_overflow, 5)
 
-        logger.debug(f"Recommended max_overflow: {max_overflow} (pool_size: {pool_size})")
+        logger.debug(
+            f"Recommended max_overflow: {max_overflow} (pool_size: {pool_size})"
+        )
         return max_overflow
 
     def calculate_recommended_query_timeout(
-        self,
-        query_type: str = "investigation"
+        self, query_type: str = "investigation"
     ) -> int:
         """
         Calculate recommended query timeout in seconds.
@@ -119,13 +123,13 @@ class PostgreSQLPoolTuner:
         """
         # Timeouts based on query type
         timeout_map = {
-            'investigation': 30,  # Interactive queries should be fast
-            'reporting': 60,      # Reports can take longer
-            'batch': 300,         # Batch operations need more time
-            'default': 30
+            "investigation": 30,  # Interactive queries should be fast
+            "reporting": 60,  # Reports can take longer
+            "batch": 300,  # Batch operations need more time
+            "default": 30,
         }
 
-        timeout = timeout_map.get(query_type, timeout_map['default'])
+        timeout = timeout_map.get(query_type, timeout_map["default"])
         logger.debug(f"Recommended query timeout: {timeout}s for {query_type}")
         return timeout
 
@@ -142,9 +146,9 @@ class PostgreSQLPoolTuner:
         Raises:
             ValueError: If configuration is invalid
         """
-        pool_size = config.get('pool_size')
-        max_overflow = config.get('pool_max_overflow')
-        query_timeout = config.get('query_timeout')
+        pool_size = config.get("pool_size")
+        max_overflow = config.get("pool_max_overflow")
+        query_timeout = config.get("query_timeout")
 
         validation_errors = []
         warnings = []
@@ -164,7 +168,9 @@ class PostgreSQLPoolTuner:
         if max_overflow is None:
             validation_errors.append("pool_max_overflow is required")
         elif max_overflow < 0:
-            validation_errors.append(f"pool_max_overflow must be >= 0, got {max_overflow}")
+            validation_errors.append(
+                f"pool_max_overflow must be >= 0, got {max_overflow}"
+            )
         elif pool_size and max_overflow < pool_size:
             validation_errors.append(
                 f"pool_max_overflow ({max_overflow}) should be >= pool_size ({pool_size})"
@@ -183,8 +189,7 @@ class PostgreSQLPoolTuner:
         # Get system-based recommendations
         resources = self.get_system_resources()
         recommended_pool_size = self.calculate_recommended_pool_size(
-            resources['cpu_count'],
-            resources['available_memory_gb']
+            resources["cpu_count"], resources["available_memory_gb"]
         )
         recommended_max_overflow = self.calculate_recommended_max_overflow(
             recommended_pool_size
@@ -209,15 +214,15 @@ class PostgreSQLPoolTuner:
             raise ValueError(f"Invalid pool configuration: {error_msg}")
 
         result = {
-            'valid': True,
-            'warnings': warnings,
-            'recommendations': recommendations,
-            'system_resources': resources,
-            'recommended_config': {
-                'pool_size': recommended_pool_size,
-                'pool_max_overflow': recommended_max_overflow,
-                'query_timeout': recommended_timeout
-            }
+            "valid": True,
+            "warnings": warnings,
+            "recommendations": recommendations,
+            "system_resources": resources,
+            "recommended_config": {
+                "pool_size": recommended_pool_size,
+                "pool_max_overflow": recommended_max_overflow,
+                "query_timeout": recommended_timeout,
+            },
         }
 
         if warnings:

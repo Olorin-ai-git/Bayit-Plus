@@ -6,7 +6,9 @@ except Exception:
     jsonschema = None  # type: ignore
 
 
-def validate_json_against_schema(instance: Dict[str, Any], schema: Dict[str, Any]) -> Tuple[bool, List[str]]:
+def validate_json_against_schema(
+    instance: Dict[str, Any], schema: Dict[str, Any]
+) -> Tuple[bool, List[str]]:
     if jsonschema is None:
         # Degrade gracefully if dependency not installed
         return True, []

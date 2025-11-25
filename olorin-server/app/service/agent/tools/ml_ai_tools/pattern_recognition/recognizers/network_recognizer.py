@@ -10,26 +10,26 @@ Implements network-based pattern detection:
 Strategy: Aggressive high-recall (target >85% recall, accept 15-20% FPR)
 """
 
+import ipaddress
 import logging
+from collections import defaultdict
 from datetime import datetime, timedelta
 from typing import Any, Dict, List, Optional, Set
-from collections import defaultdict
-import ipaddress
 
 logger = logging.getLogger(__name__)
 
 # Network Pattern Constants (Aggressive Strategy)
 GEO_IMPOSSIBILITY_SPEED_MPH = 600  # Max realistic travel speed (relaxed for flights)
-IP_ROTATION_MIN_CHANGES = 3        # Minimum IP changes to detect rotation
+IP_ROTATION_MIN_CHANGES = 3  # Minimum IP changes to detect rotation
 IP_ROTATION_TIME_WINDOW_HOURS = 2  # Time window for IP rotation detection
-ASN_ANOMALY_MIN_ASNS = 3           # Minimum different ASNs to trigger
+ASN_ANOMALY_MIN_ASNS = 3  # Minimum different ASNs to trigger
 PROXY_INDICATORS = ["vpn", "proxy", "hosting", "datacenter", "cloud", "tor"]
 
 # Risk Adjustments
-IP_REPUTATION_RISK = 0.18      # +18% risk adjustment
+IP_REPUTATION_RISK = 0.18  # +18% risk adjustment
 GEO_IMPOSSIBILITY_RISK = 0.25  # +25% risk adjustment (highest)
-ASN_ANOMALY_RISK = 0.15        # +15% risk adjustment
-IP_ROTATION_RISK = 0.20        # +20% risk adjustment
+ASN_ANOMALY_RISK = 0.15  # +15% risk adjustment
+IP_ROTATION_RISK = 0.20  # +20% risk adjustment
 
 
 class NetworkPatternRecognizer:
@@ -45,13 +45,15 @@ class NetworkPatternRecognizer:
 
     def __init__(self):
         """Initialize the network pattern recognizer."""
-        logger.info("🌐 Initializing NetworkPatternRecognizer (aggressive high-recall strategy)")
+        logger.info(
+            "🌐 Initializing NetworkPatternRecognizer (aggressive high-recall strategy)"
+        )
 
     def recognize(
         self,
         processed_data: Dict[str, Any],
         minimum_support: float = 0.1,
-        historical_patterns: Optional[Dict[str, Any]] = None
+        historical_patterns: Optional[Dict[str, Any]] = None,
     ) -> Dict[str, Any]:
         """
         Recognize network patterns in transaction data.
@@ -81,7 +83,9 @@ class NetworkPatternRecognizer:
             rotation_patterns = self._detect_ip_rotation(events)
 
             # Combine all patterns
-            all_patterns = reputation_patterns + geo_patterns + asn_patterns + rotation_patterns
+            all_patterns = (
+                reputation_patterns + geo_patterns + asn_patterns + rotation_patterns
+            )
 
             # Calculate ensemble confidence
             confidence = self._calculate_confidence(all_patterns, len(events))
@@ -91,10 +95,12 @@ class NetworkPatternRecognizer:
                 "ip_reputation_clustering": len(reputation_patterns),
                 "geo_impossibility": len(geo_patterns),
                 "asn_anomaly": len(asn_patterns),
-                "ip_rotation": len(rotation_patterns)
+                "ip_rotation": len(rotation_patterns),
             }
 
-            logger.info(f"✅ Network pattern recognition complete: {len(all_patterns)} patterns detected")
+            logger.info(
+                f"✅ Network pattern recognition complete: {len(all_patterns)} patterns detected"
+            )
             logger.info(f"📊 Pattern breakdown: {pattern_breakdown}")
 
             return {
@@ -103,14 +109,18 @@ class NetworkPatternRecognizer:
                 "total_patterns_detected": len(all_patterns),
                 "confidence": confidence,
                 "pattern_breakdown": pattern_breakdown,
-                "minimum_support": minimum_support
+                "minimum_support": minimum_support,
             }
 
         except Exception as e:
-            logger.error(f"❌ Error in network pattern recognition: {str(e)}", exc_info=True)
+            logger.error(
+                f"❌ Error in network pattern recognition: {str(e)}", exc_info=True
+            )
             return {"success": False, "error": str(e), "patterns": []}
 
-    def _detect_ip_reputation_clustering(self, events: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
+    def _detect_ip_reputation_clustering(
+        self, events: List[Dict[str, Any]]
+    ) -> List[Dict[str, Any]]:
         """
         Detect IP reputation clustering (VPN/proxy/hosting).
 
@@ -155,7 +165,7 @@ class NetworkPatternRecognizer:
                     ip_metadata[ip] = {
                         "isp": isp,
                         "ip_type": ip_type,
-                        "reason": ", ".join(reason)
+                        "reason": ", ".join(reason),
                     }
 
             # Create pattern if suspicious IPs detected
@@ -175,18 +185,24 @@ class NetworkPatternRecognizer:
                         "total_transactions": len(events),
                         "suspicious_ratio": round(suspicious_ratio, 2),
                         "sample_ips": list(unique_suspicious)[:3],
-                        "ip_metadata": {ip: ip_metadata[ip] for ip in list(unique_suspicious)[:3]}
-                    }
+                        "ip_metadata": {
+                            ip: ip_metadata[ip] for ip in list(unique_suspicious)[:3]
+                        },
+                    },
                 }
                 patterns.append(pattern)
-                logger.info(f"🔴 IP reputation clustering detected: {len(unique_suspicious)} suspicious IPs")
+                logger.info(
+                    f"🔴 IP reputation clustering detected: {len(unique_suspicious)} suspicious IPs"
+                )
 
         except Exception as e:
             logger.error(f"❌ Error detecting IP reputation clustering: {str(e)}")
 
         return patterns
 
-    def _detect_geo_impossibility(self, events: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
+    def _detect_geo_impossibility(
+        self, events: List[Dict[str, Any]]
+    ) -> List[Dict[str, Any]]:
         """
         Detect geo-impossibility (impossible travel).
 
@@ -200,8 +216,12 @@ class NetworkPatternRecognizer:
         try:
             # Sort events by timestamp
             sorted_events = sorted(
-                [e for e in events if self._extract_timestamp(e) and self._extract_location(e)],
-                key=lambda x: self._extract_timestamp(x)
+                [
+                    e
+                    for e in events
+                    if self._extract_timestamp(e) and self._extract_location(e)
+                ],
+                key=lambda x: self._extract_timestamp(x),
             )
 
             if len(sorted_events) < 2:
@@ -210,7 +230,7 @@ class NetworkPatternRecognizer:
             impossible_travels = []
 
             for i in range(1, len(sorted_events)):
-                prev_event = sorted_events[i-1]
+                prev_event = sorted_events[i - 1]
                 curr_event = sorted_events[i]
 
                 prev_ts = self._extract_timestamp(prev_event)
@@ -235,15 +255,19 @@ class NetworkPatternRecognizer:
 
                 # Detect impossibility (relaxed threshold: 600 mph accounts for flights)
                 if required_speed_mph > GEO_IMPOSSIBILITY_SPEED_MPH:
-                    impossible_travels.append({
-                        "from_location": prev_loc,
-                        "to_location": curr_loc,
-                        "distance_miles": round(distance_miles, 2),
-                        "time_hours": round(time_diff_hours, 2),
-                        "required_speed_mph": round(required_speed_mph, 2),
-                        "from_tx_id": prev_event.get("TX_ID_KEY") or prev_event.get("transaction_id"),
-                        "to_tx_id": curr_event.get("TX_ID_KEY") or curr_event.get("transaction_id")
-                    })
+                    impossible_travels.append(
+                        {
+                            "from_location": prev_loc,
+                            "to_location": curr_loc,
+                            "distance_miles": round(distance_miles, 2),
+                            "time_hours": round(time_diff_hours, 2),
+                            "required_speed_mph": round(required_speed_mph, 2),
+                            "from_tx_id": prev_event.get("TX_ID_KEY")
+                            or prev_event.get("transaction_id"),
+                            "to_tx_id": curr_event.get("TX_ID_KEY")
+                            or curr_event.get("transaction_id"),
+                        }
+                    )
 
             # Create pattern if impossible travels detected
             if impossible_travels:
@@ -256,20 +280,26 @@ class NetworkPatternRecognizer:
                     "affected_count": len(impossible_travels),
                     "evidence": {
                         "impossible_travel_count": len(impossible_travels),
-                        "max_required_speed_mph": max(t["required_speed_mph"] for t in impossible_travels),
+                        "max_required_speed_mph": max(
+                            t["required_speed_mph"] for t in impossible_travels
+                        ),
                         "threshold_speed_mph": GEO_IMPOSSIBILITY_SPEED_MPH,
-                        "impossible_travels": impossible_travels[:3]  # Top 3
-                    }
+                        "impossible_travels": impossible_travels[:3],  # Top 3
+                    },
                 }
                 patterns.append(pattern)
-                logger.info(f"🔴 Geo-impossibility detected: {len(impossible_travels)} impossible travels")
+                logger.info(
+                    f"🔴 Geo-impossibility detected: {len(impossible_travels)} impossible travels"
+                )
 
         except Exception as e:
             logger.error(f"❌ Error detecting geo-impossibility: {str(e)}")
 
         return patterns
 
-    def _detect_asn_anomalies(self, events: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
+    def _detect_asn_anomalies(
+        self, events: List[Dict[str, Any]]
+    ) -> List[Dict[str, Any]]:
         """
         Detect ISP/ASN anomalies.
 
@@ -310,7 +340,9 @@ class NetworkPatternRecognizer:
                     "pattern_type": "asn_anomaly",
                     "pattern_name": "ISP/ASN Anomaly",
                     "description": "Multiple different network providers detected",
-                    "confidence": min(0.85, 0.60 + (network_count - ASN_ANOMALY_MIN_ASNS) * 0.10),
+                    "confidence": min(
+                        0.85, 0.60 + (network_count - ASN_ANOMALY_MIN_ASNS) * 0.10
+                    ),
                     "risk_adjustment": ASN_ANOMALY_RISK,
                     "affected_count": len(events),
                     "evidence": {
@@ -318,11 +350,17 @@ class NetworkPatternRecognizer:
                         "threshold": ASN_ANOMALY_MIN_ASNS,
                         "network_type": "ASN" if unique_asns else "ISP",
                         "networks": list(network_identifiers)[:5],
-                        "asn_isp_mapping": {asn: asn_isp_map[asn] for asn in list(unique_asns)[:5]} if unique_asns else {}
-                    }
+                        "asn_isp_mapping": (
+                            {asn: asn_isp_map[asn] for asn in list(unique_asns)[:5]}
+                            if unique_asns
+                            else {}
+                        ),
+                    },
                 }
                 patterns.append(pattern)
-                logger.info(f"🔴 ASN anomaly detected: {network_count} different networks")
+                logger.info(
+                    f"🔴 ASN anomaly detected: {network_count} different networks"
+                )
 
         except Exception as e:
             logger.error(f"❌ Error detecting ASN anomalies: {str(e)}")
@@ -343,8 +381,12 @@ class NetworkPatternRecognizer:
         try:
             # Sort events by timestamp
             sorted_events = sorted(
-                [e for e in events if self._extract_timestamp(e) and self._extract_ip(e)],
-                key=lambda x: self._extract_timestamp(x)
+                [
+                    e
+                    for e in events
+                    if self._extract_timestamp(e) and self._extract_ip(e)
+                ],
+                key=lambda x: self._extract_timestamp(x),
             )
 
             if len(sorted_events) < IP_ROTATION_MIN_CHANGES:
@@ -380,7 +422,10 @@ class NetworkPatternRecognizer:
                         "pattern_type": "ip_rotation",
                         "pattern_name": "IP Address Rotation",
                         "description": "Rapid IP address changes detected",
-                        "confidence": min(0.85, 0.65 + (len(window_ips) - IP_ROTATION_MIN_CHANGES) * 0.05),
+                        "confidence": min(
+                            0.85,
+                            0.65 + (len(window_ips) - IP_ROTATION_MIN_CHANGES) * 0.05,
+                        ),
                         "risk_adjustment": IP_ROTATION_RISK,
                         "affected_count": len(window_events),
                         "evidence": {
@@ -388,11 +433,13 @@ class NetworkPatternRecognizer:
                             "transaction_count": len(window_events),
                             "time_window_hours": IP_ROTATION_TIME_WINDOW_HOURS,
                             "threshold": IP_ROTATION_MIN_CHANGES,
-                            "sample_ips": list(window_ips)[:5]
-                        }
+                            "sample_ips": list(window_ips)[:5],
+                        },
                     }
                     patterns.append(pattern)
-                    logger.info(f"🔴 IP rotation detected: {len(window_ips)} IPs in {IP_ROTATION_TIME_WINDOW_HOURS}h")
+                    logger.info(
+                        f"🔴 IP rotation detected: {len(window_ips)} IPs in {IP_ROTATION_TIME_WINDOW_HOURS}h"
+                    )
                     break  # Only detect once per dataset
 
         except Exception as e:
@@ -400,13 +447,15 @@ class NetworkPatternRecognizer:
 
         return patterns
 
-    def _calculate_distance(self, loc1: Dict[str, float], loc2: Dict[str, float]) -> float:
+    def _calculate_distance(
+        self, loc1: Dict[str, float], loc2: Dict[str, float]
+    ) -> float:
         """
         Calculate great circle distance between two locations (miles).
 
         Simplified Haversine formula.
         """
-        from math import radians, sin, cos, sqrt, atan2
+        from math import atan2, cos, radians, sin, sqrt
 
         lat1, lon1 = loc1.get("latitude", 0), loc1.get("longitude", 0)
         lat2, lon2 = loc2.get("latitude", 0), loc2.get("longitude", 0)
@@ -420,13 +469,15 @@ class NetworkPatternRecognizer:
         # Haversine formula
         dlat = lat2 - lat1
         dlon = lon2 - lon1
-        a = sin(dlat / 2)**2 + cos(lat1) * cos(lat2) * sin(dlon / 2)**2
+        a = sin(dlat / 2) ** 2 + cos(lat1) * cos(lat2) * sin(dlon / 2) ** 2
         c = 2 * atan2(sqrt(a), sqrt(1 - a))
         distance = R * c
 
         return distance
 
-    def _calculate_confidence(self, patterns: List[Dict[str, Any]], total_events: int) -> float:
+    def _calculate_confidence(
+        self, patterns: List[Dict[str, Any]], total_events: int
+    ) -> float:
         """
         Calculate overall confidence score with ensemble boosting.
 
@@ -444,7 +495,9 @@ class NetworkPatternRecognizer:
 
         # Affected transaction ratio boost
         max_affected = max(p["affected_count"] for p in patterns)
-        coverage_boost = min(0.10, (max_affected / total_events) * 0.10)  # Up to +10% boost
+        coverage_boost = min(
+            0.10, (max_affected / total_events) * 0.10
+        )  # Up to +10% boost
 
         final_confidence = min(1.0, base_confidence + ensemble_boost + coverage_boost)
 
@@ -458,7 +511,7 @@ class NetworkPatternRecognizer:
             "ip",
             "client_ip",
             "remote_addr",
-            "x_forwarded_for"
+            "x_forwarded_for",
         ]
 
         for field in ip_fields:
@@ -469,13 +522,7 @@ class NetworkPatternRecognizer:
 
     def _extract_isp(self, event: Dict[str, Any]) -> Optional[str]:
         """Extract ISP name from event."""
-        isp_fields = [
-            "ISP",
-            "isp",
-            "ISP_NAME",
-            "isp_name",
-            "organization"
-        ]
+        isp_fields = ["ISP", "isp", "ISP_NAME", "isp_name", "organization"]
 
         for field in isp_fields:
             if field in event and event[field]:
@@ -485,13 +532,7 @@ class NetworkPatternRecognizer:
 
     def _extract_asn(self, event: Dict[str, Any]) -> Optional[str]:
         """Extract ASN from event."""
-        asn_fields = [
-            "ASN",
-            "asn",
-            "AS_NUMBER",
-            "as_number",
-            "autonomous_system"
-        ]
+        asn_fields = ["ASN", "asn", "AS_NUMBER", "as_number", "autonomous_system"]
 
         for field in asn_fields:
             if field in event and event[field]:
@@ -501,12 +542,7 @@ class NetworkPatternRecognizer:
 
     def _extract_ip_type(self, event: Dict[str, Any]) -> Optional[str]:
         """Extract IP type from event."""
-        type_fields = [
-            "IP_TYPE",
-            "ip_type",
-            "connection_type",
-            "user_type"
-        ]
+        type_fields = ["IP_TYPE", "ip_type", "connection_type", "user_type"]
 
         for field in type_fields:
             if field in event and event[field]:
@@ -520,7 +556,10 @@ class NetworkPatternRecognizer:
         if "location" in event and isinstance(event["location"], dict):
             loc = event["location"]
             if "latitude" in loc and "longitude" in loc:
-                return {"latitude": float(loc["latitude"]), "longitude": float(loc["longitude"])}
+                return {
+                    "latitude": float(loc["latitude"]),
+                    "longitude": float(loc["longitude"]),
+                }
 
         # Try separate lat/lon fields
         lat_fields = ["LATITUDE", "latitude", "lat"]
@@ -556,7 +595,7 @@ class NetworkPatternRecognizer:
             "timestamp",
             "created_at",
             "transaction_time",
-            "event_time"
+            "event_time",
         ]
 
         for field in timestamp_fields:
@@ -583,6 +622,6 @@ class NetworkPatternRecognizer:
                 "ip_reputation_clustering": 0,
                 "geo_impossibility": 0,
                 "asn_anomaly": 0,
-                "ip_rotation": 0
-            }
+                "ip_rotation": 0,
+            },
         }

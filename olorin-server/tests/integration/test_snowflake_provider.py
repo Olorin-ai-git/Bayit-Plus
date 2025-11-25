@@ -11,11 +11,12 @@ NOTE: These tests require Snowflake credentials to be configured.
 Tests will be skipped if Snowflake configuration is not available.
 """
 
-import pytest
-from typing import Dict, Any, List
+from typing import Any, Dict, List
 
-from app.service.agent.tools.database_tool.snowflake_provider import SnowflakeProvider
+import pytest
+
 from app.service.agent.tools.database_tool.database_provider import DatabaseProvider
+from app.service.agent.tools.database_tool.snowflake_provider import SnowflakeProvider
 
 
 @pytest.fixture
@@ -27,6 +28,7 @@ def snowflake_config_available():
         bool: True if Snowflake can be tested, False otherwise
     """
     import os
+
     from app.service.config_loader import get_config_loader
 
     try:
@@ -34,7 +36,7 @@ def snowflake_config_available():
         config = config_loader.load_snowflake_config()
 
         # Check critical fields are present
-        required_fields = ['account', 'user', 'password', 'database']
+        required_fields = ["account", "user", "password", "database"]
         has_required = all(config.get(field) for field in required_fields)
 
         return has_required
@@ -67,22 +69,23 @@ class TestSnowflakeProviderIntegration:
         """Verify SnowflakeProvider implements DatabaseProvider interface."""
         provider = SnowflakeProvider()
 
-        assert isinstance(provider, DatabaseProvider), \
-            "SnowflakeProvider must implement DatabaseProvider interface"
+        assert isinstance(
+            provider, DatabaseProvider
+        ), "SnowflakeProvider must implement DatabaseProvider interface"
 
     def test_provider_instantiation(self):
         """Test that SnowflakeProvider can be instantiated."""
         provider = SnowflakeProvider()
 
         assert provider is not None
-        assert hasattr(provider, 'connect')
-        assert hasattr(provider, 'disconnect')
-        assert hasattr(provider, 'execute_query')
-        assert hasattr(provider, 'get_connection')
+        assert hasattr(provider, "connect")
+        assert hasattr(provider, "disconnect")
+        assert hasattr(provider, "execute_query")
+        assert hasattr(provider, "get_connection")
 
     @pytest.mark.skipif(
         not pytest.config.getoption("--run-integration"),
-        reason="Integration tests disabled. Use --run-integration to enable."
+        reason="Integration tests disabled. Use --run-integration to enable.",
     )
     def test_connection_lifecycle(self, snowflake_provider):
         """Test connection establishment and teardown."""
@@ -94,8 +97,9 @@ class TestSnowflakeProviderIntegration:
 
         # Get connection to verify it's established
         connection = snowflake_provider.get_connection()
-        assert connection is not None, \
-            "Connection should be established after connect()"
+        assert (
+            connection is not None
+        ), "Connection should be established after connect()"
 
         # Disconnect
         snowflake_provider.disconnect()
@@ -105,7 +109,7 @@ class TestSnowflakeProviderIntegration:
 
     @pytest.mark.skipif(
         not pytest.config.getoption("--run-integration"),
-        reason="Integration tests disabled"
+        reason="Integration tests disabled",
     )
     def test_execute_simple_query(self, snowflake_provider):
         """Test executing a simple SELECT query."""
@@ -115,20 +119,18 @@ class TestSnowflakeProviderIntegration:
         query = "SELECT CURRENT_TIMESTAMP() as current_time"
         results = snowflake_provider.execute_query(query)
 
-        assert isinstance(results, list), \
-            "execute_query should return a list"
-        assert len(results) > 0, \
-            "Query should return at least one row"
-        assert isinstance(results[0], dict), \
-            "Each result row should be a dictionary"
-        assert 'current_time' in results[0] or 'CURRENT_TIME' in results[0], \
-            "Result should contain the selected column"
+        assert isinstance(results, list), "execute_query should return a list"
+        assert len(results) > 0, "Query should return at least one row"
+        assert isinstance(results[0], dict), "Each result row should be a dictionary"
+        assert (
+            "current_time" in results[0] or "CURRENT_TIME" in results[0]
+        ), "Result should contain the selected column"
 
         snowflake_provider.disconnect()
 
     @pytest.mark.skipif(
         not pytest.config.getoption("--run-integration"),
-        reason="Integration tests disabled"
+        reason="Integration tests disabled",
     )
     def test_execute_query_with_parameters(self, snowflake_provider):
         """Test executing a parameterized query."""
@@ -136,7 +138,7 @@ class TestSnowflakeProviderIntegration:
 
         # Test query with parameters (syntax depends on Snowflake driver)
         query = "SELECT :value as test_value"
-        params = {'value': 42}
+        params = {"value": 42}
 
         results = snowflake_provider.execute_query(query, params)
 
@@ -144,13 +146,13 @@ class TestSnowflakeProviderIntegration:
         assert isinstance(results[0], dict)
         # Result column name might vary (test_value or TEST_VALUE)
         result_keys = [k.lower() for k in results[0].keys()]
-        assert 'test_value' in result_keys
+        assert "test_value" in result_keys
 
         snowflake_provider.disconnect()
 
     @pytest.mark.skipif(
         not pytest.config.getoption("--run-integration"),
-        reason="Integration tests disabled"
+        reason="Integration tests disabled",
     )
     def test_execute_query_returns_correct_structure(self, snowflake_provider):
         """Test that query results have expected structure."""
@@ -174,10 +176,10 @@ class TestSnowflakeProviderIntegration:
 
         # Verify all columns present (case-insensitive)
         row_keys_lower = [k.lower() for k in row.keys()]
-        assert 'id' in row_keys_lower
-        assert 'name' in row_keys_lower
-        assert 'amount' in row_keys_lower
-        assert 'date_column' in row_keys_lower
+        assert "id" in row_keys_lower
+        assert "name" in row_keys_lower
+        assert "amount" in row_keys_lower
+        assert "date_column" in row_keys_lower
 
         snowflake_provider.disconnect()
 
@@ -192,12 +194,13 @@ class TestSnowflakeProviderIntegration:
 
         # Error should indicate connection issue
         error_msg = str(exc_info.value).lower()
-        assert 'connect' in error_msg or 'connection' in error_msg, \
-            "Error should mention connection issue"
+        assert (
+            "connect" in error_msg or "connection" in error_msg
+        ), "Error should mention connection issue"
 
     @pytest.mark.skipif(
         not pytest.config.getoption("--run-integration"),
-        reason="Integration tests disabled"
+        reason="Integration tests disabled",
     )
     def test_multiple_queries_same_connection(self, snowflake_provider):
         """Test executing multiple queries on the same connection."""
@@ -219,7 +222,7 @@ class TestSnowflakeProviderIntegration:
 
     @pytest.mark.skipif(
         not pytest.config.getoption("--run-integration"),
-        reason="Integration tests disabled"
+        reason="Integration tests disabled",
     )
     def test_reconnection_after_disconnect(self, snowflake_provider):
         """Test that provider can reconnect after disconnect."""
@@ -245,7 +248,7 @@ class TestSnowflakeProviderIntegration:
 
     @pytest.mark.skipif(
         not pytest.config.getoption("--run-integration"),
-        reason="Integration tests disabled"
+        reason="Integration tests disabled",
     )
     def test_invalid_query_raises_error(self, snowflake_provider):
         """Test that invalid SQL raises appropriate error."""

@@ -3,12 +3,14 @@
 Test Redis Cloud connection with the provided credentials.
 """
 
+import logging
 import os
 import sys
-import logging
 
 # Set up logging
-logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+logging.basicConfig(
+    level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+)
 logger = logging.getLogger(__name__)
 
 # Redis credentials should be set via environment variables or Firebase Secrets
@@ -28,47 +30,49 @@ if not os.environ.get("REDIS_API_KEY"):
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
 from app.service.config import LocalSettings
-from app.service.redis_client import test_redis_connection, RedisCloudClient
+from app.service.redis_client import RedisCloudClient, test_redis_connection
+
 
 def main():
     """Test Redis connection."""
     logger.info("Testing Redis Cloud connection...")
-    
+
     # Create settings with Redis configuration
     settings = LocalSettings()
-    
+
     # Test connection
     if test_redis_connection(settings):
         logger.info("✅ Redis connection test PASSED")
-        
+
         # Additional test with direct client
         client = RedisCloudClient(settings)
         redis_client = client.get_client()
-        
+
         # Test some operations
         test_key = "olorin:test:manual"
         test_value = "Hello from Olorin!"
-        
+
         logger.info(f"Setting test key: {test_key}")
         client.set(test_key, test_value, ex=60)
-        
+
         logger.info(f"Getting test key: {test_key}")
         retrieved = client.get(test_key)
         logger.info(f"Retrieved value: {retrieved}")
-        
+
         if retrieved == test_value:
             logger.info("✅ Manual test PASSED")
         else:
             logger.error("❌ Manual test FAILED - values don't match")
-        
+
         # Clean up
         client.delete(test_key)
         client.close()
-        
+
         return 0
     else:
         logger.error("❌ Redis connection test FAILED")
         return 1
+
 
 if __name__ == "__main__":
     sys.exit(main())

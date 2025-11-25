@@ -5,10 +5,12 @@ This module provides THE ONLY aggregation logic to prevent dual final scores.
 All other aggregators should be disabled/deleted to prevent contradictions.
 """
 
-from typing import List, Dict, Any, Tuple, Optional, Iterable
-from .domain_result import DomainResult
-from .domain_normalize import normalize_domains, get_numeric_domains
+from typing import Any, Dict, Iterable, List, Optional, Tuple
+
 from app.service.logging import get_bridge_logger
+
+from .domain_normalize import get_numeric_domains, normalize_domains
+from .domain_result import DomainResult
 
 logger = get_bridge_logger(__name__)
 
@@ -17,7 +19,9 @@ logger = get_bridge_logger(__name__)
 HARD_EVIDENCE_KEYS = {"chargeback_confirmed", "manual_case_outcome_fraud"}
 
 
-def aggregate(domains: Iterable[DomainResult], facts: Dict[str, Any]) -> Tuple[Optional[float], Optional[float], str]:
+def aggregate(
+    domains: Iterable[DomainResult], facts: Dict[str, Any]
+) -> Tuple[Optional[float], Optional[float], str]:
     """
     THE ONLY aggregator - single source of truth to prevent dual finals.
 
@@ -30,9 +34,11 @@ def aggregate(domains: Iterable[DomainResult], facts: Dict[str, Any]) -> Tuple[O
     """
     # Convert to list and normalize to handle mixed input types
     domain_list = list(domains)
-    if domain_list and hasattr(domain_list[0], '_asdict'):
+    if domain_list and hasattr(domain_list[0], "_asdict"):
         # Convert DomainResult objects to dictionaries
-        domain_dicts = [d._asdict() if hasattr(d, '_asdict') else d.__dict__ for d in domain_list]
+        domain_dicts = [
+            d._asdict() if hasattr(d, "_asdict") else d.__dict__ for d in domain_list
+        ]
     else:
         # Already dictionaries
         domain_dicts = [d if isinstance(d, dict) else d.__dict__ for d in domain_list]
@@ -58,7 +64,9 @@ def aggregate(domains: Iterable[DomainResult], facts: Dict[str, Any]) -> Tuple[O
 
         if domain_status == "INSUFFICIENT_EVIDENCE" or domain_score is None:
             reason = _get_domain_failure_reason(domain_dict)
-            insufficient_domains.append({"name": domain_name, "reason": reason, "signals": len(domain_signals)})
+            insufficient_domains.append(
+                {"name": domain_name, "reason": reason, "signals": len(domain_signals)}
+            )
 
     # Check for completely missing expected domains
     expected_domains = {"logs", "network", "device", "location", "authentication"}
@@ -67,15 +75,22 @@ def aggregate(domains: Iterable[DomainResult], facts: Dict[str, Any]) -> Tuple[O
 
     if missing_domain_names:
         for missing_name in missing_domain_names:
-            missing_domains.append({"name": missing_name, "reason": "Domain not executed or missing from results"})
+            missing_domains.append(
+                {
+                    "name": missing_name,
+                    "reason": "Domain not executed or missing from results",
+                }
+            )
 
     # Check for hard evidence
     # CRITICAL: No fraud indicators can be used during investigation to prevent data leakage
     # All fraud indicator columns (IS_FRAUD_TX, COUNT_DISPUTES, COUNT_FRAUD_ALERTS, etc.) are excluded
     # Only manual case outcomes can be used (if provided externally, not from Snowflake)
-    hard = any([
-        facts.get("manual_case_outcome") == "fraud",
-    ])
+    hard = any(
+        [
+            facts.get("manual_case_outcome") == "fraud",
+        ]
+    )
 
     # Calculate pre-gate average
     pre_gate = (sum(numeric) / len(numeric)) if numeric else None
@@ -93,28 +108,44 @@ def aggregate(domains: Iterable[DomainResult], facts: Dict[str, Any]) -> Tuple[O
 
         if gate == "BLOCK":
             # C1 FIX: Provide detailed failure information
-            logger.error(f"🚫 AGGREGATION FAILED: Insufficient evidence for risk calculation")
+            logger.error(
+                f"🚫 AGGREGATION FAILED: Insufficient evidence for risk calculation"
+            )
             logger.error(f"   Requirements: ≥2 domain scores OR ≥1 score + ≥2 signals")
             logger.error(f"   Current state: {len(numeric)} scores, {signals} signals")
 
             if insufficient_domains:
-                logger.error(f"   Domains with insufficient evidence ({len(insufficient_domains)}):")
+                logger.error(
+                    f"   Domains with insufficient evidence ({len(insufficient_domains)}):"
+                )
                 for domain_info in insufficient_domains:
-                    logger.error(f"     - {domain_info['name']}: {domain_info['reason']} (signals: {domain_info['signals']})")
+                    logger.error(
+                        f"     - {domain_info['name']}: {domain_info['reason']} (signals: {domain_info['signals']})"
+                    )
 
             if missing_domains:
                 logger.error(f"   Missing domains ({len(missing_domains)}):")
                 for domain_info in missing_domains:
-                    logger.error(f"     - {domain_info['name']}: {domain_info['reason']}")
+                    logger.error(
+                        f"     - {domain_info['name']}: {domain_info['reason']}"
+                    )
 
             if numeric_domains:
-                logger.info(f"   Available domains ({len(numeric_domains)}): {[d.get('name') for d in numeric_domains]}")
+                logger.info(
+                    f"   Available domains ({len(numeric_domains)}): {[d.get('name') for d in numeric_domains]}"
+                )
         else:
-            logger.info(f"✅ EVIDENCE GATING: PASS (scores={len(numeric)}, signals={signals})")
+            logger.info(
+                f"✅ EVIDENCE GATING: PASS (scores={len(numeric)}, signals={signals})"
+            )
 
-    logger.info(f"🎯 SINGLE AGGREGATOR: numeric_domains={[d.get('name', 'unknown') for d in numeric_domains]}")
+    logger.info(
+        f"🎯 SINGLE AGGREGATOR: numeric_domains={[d.get('name', 'unknown') for d in numeric_domains]}"
+    )
     logger.info(f"🎯 SINGLE AGGREGATOR: scores={numeric}")
-    logger.info(f"🎯 SINGLE AGGREGATOR: pre_gate={fmt(pre_gate)}, final={fmt(final)}, gate={gate}")
+    logger.info(
+        f"🎯 SINGLE AGGREGATOR: pre_gate={fmt(pre_gate)}, final={fmt(final)}, gate={gate}"
+    )
     return pre_gate, final, gate
 
 
@@ -137,7 +168,9 @@ def _get_domain_failure_reason(domain_dict: Dict[str, Any]) -> str:
     if score is None and len(signals) == 0:
         return f"No data available - no score and no signals collected"
     elif score is None and len(signals) > 0:
-        return f"Insufficient signal quality - {len(signals)} signals but no numeric score"
+        return (
+            f"Insufficient signal quality - {len(signals)} signals but no numeric score"
+        )
     elif score is not None and len(signals) == 0:
         return f"Score present ({fmt(score)}) but no supporting signals/evidence"
     elif status == "INSUFFICIENT_EVIDENCE":
@@ -156,30 +189,36 @@ def fmt_score(v: Optional[float]) -> str:
     return "N/A" if v is None else f"{v:.3f}"
 
 
-def render_summary(domains: List[DomainResult], pre_gate: Optional[float], final: Optional[float], gate: str) -> str:
+def render_summary(
+    domains: List[DomainResult],
+    pre_gate: Optional[float],
+    final: Optional[float],
+    gate: str,
+) -> str:
     """
     Render investigation summary with single source of truth values.
-    
+
     CRITICAL: Only shows pre_gate and final from the single aggregator.
     No other "calculated risk from N agents" values should be logged.
     """
     lines = [
         "=== SINGLE AGGREGATOR SUMMARY ===",
         f"Pre-gate average: {fmt(pre_gate)}",
-        f"Final risk: {fmt(final)} (gating: {gate})"
+        f"Final risk: {fmt(final)} (gating: {gate})",
     ]
-    
+
     lines.append("\nDomain Breakdown:")
     for d in domains:
-        lines.append(f"  {d.name}: {fmt(d.score)} | {d.status} | signals={len(d.signals)}")
-    
+        lines.append(
+            f"  {d.name}: {fmt(d.score)} | {d.status} | signals={len(d.signals)}"
+        )
+
     return "\n".join(lines)
 
 
 # Legacy compatibility functions - redirect to single aggregator
 def aggregate_domains(
-    domains: List[DomainResult],
-    facts: Dict[str, Any]
+    domains: List[DomainResult], facts: Dict[str, Any]
 ) -> Tuple[Optional[float], str, Optional[str]]:
     """
     Legacy wrapper - redirects to single aggregator with enhanced gating reasons.
@@ -198,7 +237,9 @@ def aggregate_domains(
         gating_reason = f"Evidence check passed: {len(scored_domains)} domains scored"
     else:
         # BLOCK case - provide detailed failure information
-        insufficient = [d for d in domains if d.status == "INSUFFICIENT_EVIDENCE" or d.score is None]
+        insufficient = [
+            d for d in domains if d.status == "INSUFFICIENT_EVIDENCE" or d.score is None
+        ]
         scored = [d for d in domains if d.score is not None]
 
         # Build comprehensive failure reason
@@ -225,17 +266,17 @@ def summarize_investigation(
     final_risk: Optional[float],
     gating_status: str,
     gating_reason: Optional[str],
-    domains: List[DomainResult]
+    domains: List[DomainResult],
 ) -> str:
     """
     Generate investigation summary with consistent narrative.
-    
+
     Args:
         final_risk: Final aggregated risk score
         gating_status: Evidence gating result
         gating_reason: Reason for gating decision
         domains: List of domain results
-        
+
     Returns:
         Formatted summary text
     """
@@ -248,86 +289,96 @@ def summarize_investigation(
         headline = f"Final risk: {risk_text}"
     else:
         headline = f"Final risk: {fmt(final_risk)} (gating: {gating_status})"
-    
+
     # Domain breakdown lines (guaranteed consistent by validation)
     domain_lines = []
     for domain in domains:
         score_text = fmt_score(domain.score)
         status_text = domain.status
         signal_count = len(domain.signals)
-        
+
         line = f"- {domain.name}: {score_text} | {status_text} | signals={signal_count}"
         domain_lines.append(line)
-    
+
     # Summary statistics
     numeric_count = sum(1 for d in domains if d.score is not None)
     total_signals = sum(len(d.signals) for d in domains)
-    
+
     stats_line = f"- Summary: {numeric_count}/{len(domains)} domains scored, {total_signals} total signals"
-    
+
     return "\n".join([headline] + domain_lines + [stats_line])
 
 
 def get_recommendations_for_risk(
-    final_risk: Optional[float],
-    hard_evidence: bool,
-    domains: List[DomainResult]
+    final_risk: Optional[float], hard_evidence: bool, domains: List[DomainResult]
 ) -> List[str]:
     """
     Generate risk-appropriate recommendations.
-    
+
     Args:
         final_risk: Final risk score
         hard_evidence: Whether hard evidence is present
         domains: Domain results for context
-        
+
     Returns:
         List of appropriate recommendations
     """
     recommendations = []
-    
+
     if hard_evidence:
         # Hard evidence recommendations (regardless of score)
-        recommendations.extend([
-            "IMMEDIATE: Manual review required due to confirmed fraud indicators",
-            "IMMEDIATE: Consider account restrictions pending investigation", 
-            "IMMEDIATE: Flag for enhanced monitoring and verification",
-            "MEDIUM: Review transaction patterns for additional fraud indicators"
-        ])
+        recommendations.extend(
+            [
+                "IMMEDIATE: Manual review required due to confirmed fraud indicators",
+                "IMMEDIATE: Consider account restrictions pending investigation",
+                "IMMEDIATE: Flag for enhanced monitoring and verification",
+                "MEDIUM: Review transaction patterns for additional fraud indicators",
+            ]
+        )
     elif final_risk is None:
-        # Insufficient evidence recommendations  
-        recommendations.extend([
-            "SHORT: Execute additional external validation tools (AbuseIPDB, VirusTotal)",
-            "SHORT: Gather more transaction history if available",
-            "MEDIUM: Monitor entity for behavioral changes",
-            "MEDIUM: Consider temporary enhanced verification steps"
-        ])
+        # Insufficient evidence recommendations
+        recommendations.extend(
+            [
+                "SHORT: Execute additional external validation tools (AbuseIPDB, VirusTotal)",
+                "SHORT: Gather more transaction history if available",
+                "MEDIUM: Monitor entity for behavioral changes",
+                "MEDIUM: Consider temporary enhanced verification steps",
+            ]
+        )
     elif final_risk >= 0.7:
         # High risk recommendations
-        recommendations.extend([
-            "IMMEDIATE: Manual review and verification required",
-            "IMMEDIATE: Consider blocking or flagging transaction", 
-            "SHORT: Execute comprehensive fraud investigation",
-            "MEDIUM: Implement enhanced monitoring"
-        ])
+        recommendations.extend(
+            [
+                "IMMEDIATE: Manual review and verification required",
+                "IMMEDIATE: Consider blocking or flagging transaction",
+                "SHORT: Execute comprehensive fraud investigation",
+                "MEDIUM: Implement enhanced monitoring",
+            ]
+        )
     elif final_risk >= 0.4:
         # Moderate risk recommendations
-        recommendations.extend([
-            "SHORT: Additional verification steps recommended",
-            "MEDIUM: Enhanced monitoring for behavioral changes",
-            "MEDIUM: Consider stepped-up authentication requirements"
-        ])
+        recommendations.extend(
+            [
+                "SHORT: Additional verification steps recommended",
+                "MEDIUM: Enhanced monitoring for behavioral changes",
+                "MEDIUM: Consider stepped-up authentication requirements",
+            ]
+        )
     else:
         # Low risk recommendations
-        recommendations.extend([
-            "MEDIUM: Continue standard monitoring",
-            "LONG: Periodic review recommended"
-        ])
-    
+        recommendations.extend(
+            [
+                "MEDIUM: Continue standard monitoring",
+                "LONG: Periodic review recommended",
+            ]
+        )
+
     # Add domain-specific recommendations
     insufficient_domains = [d for d in domains if d.status == "INSUFFICIENT_EVIDENCE"]
     if insufficient_domains:
         domain_names = [d.name for d in insufficient_domains]
-        recommendations.append(f"MEDIUM: Gather additional evidence for {', '.join(domain_names)} domains")
-    
+        recommendations.append(
+            f"MEDIUM: Gather additional evidence for {', '.join(domain_names)} domains"
+        )
+
     return recommendations

@@ -15,8 +15,8 @@ Usage:
 
 import asyncio
 import sys
-from typing import Dict, List, Optional
 from pathlib import Path
+from typing import Dict, List, Optional
 
 # Add parent directory to path for imports
 sys.path.insert(0, str(Path(__file__).parent.parent))
@@ -49,7 +49,7 @@ class DataPopulator:
             "total_records": 0,
             "records_updated": 0,
             "fields_populated": 0,
-            "errors": 0
+            "errors": 0,
         }
 
         try:
@@ -70,7 +70,7 @@ class DataPopulator:
             # Process in batches for efficiency
             batch_size = 100
             for i in range(0, len(records), batch_size):
-                batch = records[i:i + batch_size]
+                batch = records[i : i + batch_size]
                 batch_stats = await self._populate_batch(batch)
 
                 stats["records_updated"] += batch_stats["updated"]
@@ -139,7 +139,9 @@ class DataPopulator:
                 escaped = str(val).replace("'", "''")
                 set_clauses.append(f"{col} = '{escaped}'")
 
-        return f"UPDATE {table} SET {', '.join(set_clauses)} WHERE tx_id_key = '{tx_id}'"
+        return (
+            f"UPDATE {table} SET {', '.join(set_clauses)} WHERE tx_id_key = '{tx_id}'"
+        )
 
 
 async def main():

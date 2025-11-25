@@ -4,10 +4,10 @@ Data preprocessing utilities for Pattern Recognition.
 Handles data cleaning, transformation, and preparation for pattern analysis.
 """
 
-from typing import Any, Dict, List
-from datetime import datetime
 import re
 from collections import defaultdict
+from datetime import datetime
+from typing import Any, Dict, List
 
 from app.service.logging import get_bridge_logger
 
@@ -27,7 +27,7 @@ class DataPreprocessor:
             "textual_data": [],
             "numerical_data": {},
             "categorical_data": {},
-            "network_data": {}
+            "network_data": {},
         }
 
         for key, value in data.items():
@@ -37,34 +37,30 @@ class DataPreprocessor:
                     # List of events/records
                     processed["events"].extend(value)
                     # Also treat as sequence
-                    processed["sequences"].append({
-                        "name": key,
-                        "sequence": value,
-                        "length": len(value)
-                    })
+                    processed["sequences"].append(
+                        {"name": key, "sequence": value, "length": len(value)}
+                    )
                 else:
                     # Simple list - treat as sequence
-                    processed["sequences"].append({
-                        "name": key,
-                        "sequence": value,
-                        "length": len(value)
-                    })
+                    processed["sequences"].append(
+                        {"name": key, "sequence": value, "length": len(value)}
+                    )
 
             elif isinstance(value, str):
                 # Check if timestamp
                 if self._is_timestamp(value):
-                    processed["temporal_data"].append({
-                        "field": key,
-                        "timestamp": value,
-                        "parsed_time": self._safe_parse_timestamp(value)
-                    })
+                    processed["temporal_data"].append(
+                        {
+                            "field": key,
+                            "timestamp": value,
+                            "parsed_time": self._safe_parse_timestamp(value),
+                        }
+                    )
                 else:
                     # Textual data
-                    processed["textual_data"].append({
-                        "field": key,
-                        "text": value,
-                        "length": len(value)
-                    })
+                    processed["textual_data"].append(
+                        {"field": key, "text": value, "length": len(value)}
+                    )
                     processed["categorical_data"][key] = value
 
             elif isinstance(value, (int, float)):
@@ -72,13 +68,13 @@ class DataPreprocessor:
 
             elif isinstance(value, dict):
                 # Network or behavioral data
-                if any(network_key in value for network_key in ["ip", "port", "connection", "network"]):
+                if any(
+                    network_key in value
+                    for network_key in ["ip", "port", "connection", "network"]
+                ):
                     processed["network_data"][key] = value
                 else:
-                    processed["behaviors"].append({
-                        "name": key,
-                        "behavior_data": value
-                    })
+                    processed["behaviors"].append({"name": key, "behavior_data": value})
 
         return processed
 
@@ -92,7 +88,7 @@ class DataPreprocessor:
             "textual_fields": len(processed_data.get("textual_data", [])),
             "numerical_fields": len(processed_data.get("numerical_data", {})),
             "categorical_fields": len(processed_data.get("categorical_data", {})),
-            "network_fields": len(processed_data.get("network_data", {}))
+            "network_fields": len(processed_data.get("network_data", {})),
         }
 
         # Add sequence statistics
@@ -102,18 +98,24 @@ class DataPreprocessor:
             summary["sequence_stats"] = {
                 "min_length": min(sequence_lengths),
                 "max_length": max(sequence_lengths),
-                "avg_length": sum(sequence_lengths) / len(sequence_lengths)
+                "avg_length": sum(sequence_lengths) / len(sequence_lengths),
             }
 
         # Add temporal data range
         temporal_data = processed_data.get("temporal_data", [])
         if temporal_data:
-            timestamps = [t.get("parsed_time") for t in temporal_data if t.get("parsed_time")]
+            timestamps = [
+                t.get("parsed_time") for t in temporal_data if t.get("parsed_time")
+            ]
             if timestamps:
                 summary["temporal_range"] = {
                     "earliest": min(timestamps).isoformat() if timestamps else None,
                     "latest": max(timestamps).isoformat() if timestamps else None,
-                    "span_hours": (max(timestamps) - min(timestamps)).total_seconds() / 3600 if len(timestamps) > 1 else 0
+                    "span_hours": (
+                        (max(timestamps) - min(timestamps)).total_seconds() / 3600
+                        if len(timestamps) > 1
+                        else 0
+                    ),
                 }
 
         return summary
@@ -121,11 +123,11 @@ class DataPreprocessor:
     def _is_timestamp(self, value: str) -> bool:
         """Check if string value represents a timestamp."""
         timestamp_patterns = [
-            r'\d{4}-\d{2}-\d{2}[T ]\d{2}:\d{2}:\d{2}',  # ISO format
-            r'\d{2}/\d{2}/\d{4}',  # US format
-            r'\d{2}-\d{2}-\d{4}',  # European format
-            r'\d{10}',  # Unix timestamp
-            r'\d{13}'   # Unix timestamp with milliseconds
+            r"\d{4}-\d{2}-\d{2}[T ]\d{2}:\d{2}:\d{2}",  # ISO format
+            r"\d{2}/\d{2}/\d{4}",  # US format
+            r"\d{2}-\d{2}-\d{4}",  # European format
+            r"\d{10}",  # Unix timestamp
+            r"\d{13}",  # Unix timestamp with milliseconds
         ]
 
         return any(re.match(pattern, str(value)) for pattern in timestamp_patterns)
@@ -139,7 +141,7 @@ class DataPreprocessor:
                 "%Y-%m-%d %H:%M:%S",
                 "%m/%d/%Y",
                 "%d-%m-%Y",
-                "%Y-%m-%d"
+                "%Y-%m-%d",
             ]
 
             for fmt in formats:

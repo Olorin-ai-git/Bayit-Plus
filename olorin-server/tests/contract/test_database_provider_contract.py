@@ -8,9 +8,10 @@ Following TDD approach: These tests MUST FAIL initially, then pass after
 implementing the concrete provider classes.
 """
 
-import pytest
-from typing import Any, Dict, List
 from abc import ABC
+from typing import Any, Dict, List
+
+import pytest
 
 from app.service.agent.tools.database_tool.database_provider import DatabaseProvider
 
@@ -34,75 +35,85 @@ class TestDatabaseProviderContract:
         Returns:
             List of DatabaseProvider class types (not instances)
         """
-        from app.service.agent.tools.database_tool.snowflake_provider import SnowflakeProvider
-        from app.service.agent.tools.database_tool.postgres_client import PostgreSQLProvider
+        from app.service.agent.tools.database_tool.postgres_client import (
+            PostgreSQLProvider,
+        )
+        from app.service.agent.tools.database_tool.snowflake_provider import (
+            SnowflakeProvider,
+        )
 
         return [SnowflakeProvider, PostgreSQLProvider]
 
     def test_provider_is_abstract_base_class(self):
         """Verify DatabaseProvider is an abstract base class."""
-        assert issubclass(DatabaseProvider, ABC), \
-            "DatabaseProvider must inherit from ABC"
+        assert issubclass(
+            DatabaseProvider, ABC
+        ), "DatabaseProvider must inherit from ABC"
 
     def test_provider_has_required_methods(self):
         """Verify DatabaseProvider defines all required abstract methods."""
-        required_methods = [
-            'connect',
-            'disconnect',
-            'execute_query',
-            'get_connection'
-        ]
+        required_methods = ["connect", "disconnect", "execute_query", "get_connection"]
 
         for method_name in required_methods:
-            assert hasattr(DatabaseProvider, method_name), \
-                f"DatabaseProvider must define abstract method: {method_name}"
+            assert hasattr(
+                DatabaseProvider, method_name
+            ), f"DatabaseProvider must define abstract method: {method_name}"
 
     def test_all_providers_implement_interface(self, provider_implementations):
         """Verify all concrete providers implement the DatabaseProvider interface."""
         for provider_class in provider_implementations:
-            assert issubclass(provider_class, DatabaseProvider), \
-                f"{provider_class.__name__} must inherit from DatabaseProvider"
+            assert issubclass(
+                provider_class, DatabaseProvider
+            ), f"{provider_class.__name__} must inherit from DatabaseProvider"
 
     def test_all_providers_implement_connect(self, provider_implementations):
         """Verify all providers implement connect() method."""
         for provider_class in provider_implementations:
-            assert hasattr(provider_class, 'connect'), \
-                f"{provider_class.__name__} must implement connect()"
+            assert hasattr(
+                provider_class, "connect"
+            ), f"{provider_class.__name__} must implement connect()"
 
             # Check method signature (takes no arguments except self)
-            method = getattr(provider_class, 'connect')
-            assert callable(method), \
-                f"{provider_class.__name__}.connect must be callable"
+            method = getattr(provider_class, "connect")
+            assert callable(
+                method
+            ), f"{provider_class.__name__}.connect must be callable"
 
     def test_all_providers_implement_disconnect(self, provider_implementations):
         """Verify all providers implement disconnect() method."""
         for provider_class in provider_implementations:
-            assert hasattr(provider_class, 'disconnect'), \
-                f"{provider_class.__name__} must implement disconnect()"
+            assert hasattr(
+                provider_class, "disconnect"
+            ), f"{provider_class.__name__} must implement disconnect()"
 
-            method = getattr(provider_class, 'disconnect')
-            assert callable(method), \
-                f"{provider_class.__name__}.disconnect must be callable"
+            method = getattr(provider_class, "disconnect")
+            assert callable(
+                method
+            ), f"{provider_class.__name__}.disconnect must be callable"
 
     def test_all_providers_implement_execute_query(self, provider_implementations):
         """Verify all providers implement execute_query() method with correct signature."""
         for provider_class in provider_implementations:
-            assert hasattr(provider_class, 'execute_query'), \
-                f"{provider_class.__name__} must implement execute_query()"
+            assert hasattr(
+                provider_class, "execute_query"
+            ), f"{provider_class.__name__} must implement execute_query()"
 
-            method = getattr(provider_class, 'execute_query')
-            assert callable(method), \
-                f"{provider_class.__name__}.execute_query must be callable"
+            method = getattr(provider_class, "execute_query")
+            assert callable(
+                method
+            ), f"{provider_class.__name__}.execute_query must be callable"
 
     def test_all_providers_implement_get_connection(self, provider_implementations):
         """Verify all providers implement get_connection() method."""
         for provider_class in provider_implementations:
-            assert hasattr(provider_class, 'get_connection'), \
-                f"{provider_class.__name__} must implement get_connection()"
+            assert hasattr(
+                provider_class, "get_connection"
+            ), f"{provider_class.__name__} must implement get_connection()"
 
-            method = getattr(provider_class, 'get_connection')
-            assert callable(method), \
-                f"{provider_class.__name__}.get_connection must be callable"
+            method = getattr(provider_class, "get_connection")
+            assert callable(
+                method
+            ), f"{provider_class.__name__}.get_connection must be callable"
 
     def test_execute_query_returns_list_of_dicts(self, provider_implementations):
         """
@@ -114,14 +125,15 @@ class TestDatabaseProviderContract:
         """
         for provider_class in provider_implementations:
             # Get method signature from annotations if available
-            method = getattr(provider_class, 'execute_query')
+            method = getattr(provider_class, "execute_query")
 
             # Verify method exists and is callable
-            assert callable(method), \
-                f"{provider_class.__name__}.execute_query must be callable"
+            assert callable(
+                method
+            ), f"{provider_class.__name__}.execute_query must be callable"
 
             # Check if the method has return type annotation
-            if hasattr(method, '__annotations__'):
+            if hasattr(method, "__annotations__"):
                 annotations = method.__annotations__
                 # Note: Actual return type checking would require instantiation
                 # which we avoid in contract tests
@@ -139,8 +151,9 @@ class TestDatabaseProviderContract:
                 provider = provider_class()
 
                 # Verify it's an instance of DatabaseProvider
-                assert isinstance(provider, DatabaseProvider), \
-                    f"{provider_class.__name__} instance must be DatabaseProvider"
+                assert isinstance(
+                    provider, DatabaseProvider
+                ), f"{provider_class.__name__} instance must be DatabaseProvider"
 
             except TypeError as e:
                 # If instantiation fails, it might require config parameters

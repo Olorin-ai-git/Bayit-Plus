@@ -1,11 +1,10 @@
 """Simplified tool registry under 200 lines."""
 
 from typing import Any, Dict, List, Optional
+
 from langchain_core.tools import BaseTool
 
 from app.service.logging import get_bridge_logger
-from .tool_config import ToolConfig
-from .tool_initializer import ToolInitializer
 
 # Import core tools that are always available
 from .api_tool import HTTPRequestTool, JSONAPITool
@@ -16,6 +15,8 @@ from .file_system_tool import (
     FileSearchTool,
     FileWriteTool,
 )
+from .tool_config import ToolConfig
+from .tool_initializer import ToolInitializer
 from .vector_search_tool import VectorSearchTool
 from .web_search_tool import WebScrapeTool, WebSearchTool
 
@@ -59,41 +60,43 @@ class ToolRegistry:
         try:
             # Log tool configuration status
             status = ToolConfig.get_tool_status_summary()
-            logger.info(f"Initializing tool registry with {len(status['enabled'])} enabled tools")
-            
+            logger.info(
+                f"Initializing tool registry with {len(status['enabled'])} enabled tools"
+            )
+
             # Validate configuration
             ToolConfig.validate_configuration()
-            
+
             # Initialize core tools (always available)
             self._initialize_core_tools(
                 database_connection_string,
                 web_search_user_agent,
                 file_system_base_path,
-                api_default_headers
+                api_default_headers,
             )
-            
+
             # Initialize Olorin-specific tools based on configuration
             ToolInitializer.initialize_olorin_tools(self)
-            
+
             # Initialize threat intelligence tools
             ToolInitializer.initialize_threat_intel_tools(self)
-            
+
             # Initialize blockchain tools
             ToolInitializer.initialize_blockchain_tools(self)
-            
+
             # Initialize intelligence tools
             ToolInitializer.initialize_intelligence_tools(self)
-            
+
             # Initialize ML/AI tools
             ToolInitializer.initialize_ml_tools(self)
-            
+
             self._initialized = True
             logger.info(f"Tool registry initialized with {len(self._tools)} tools")
-            
+
         except Exception as e:
             logger.error(f"Failed to initialize tool registry: {e}")
             raise
-    
+
     def _initialize_core_tools(
         self,
         database_connection_string: Optional[str],
@@ -102,7 +105,7 @@ class ToolRegistry:
         api_default_headers: Optional[Dict[str, str]],
     ) -> None:
         """Initialize core tools that are always available."""
-        
+
         # Database Tools
         if database_connection_string:
             self._register_tool(
@@ -119,10 +122,18 @@ class ToolRegistry:
         self._register_tool(WebScrapeTool(user_agent=web_search_user_agent), "web")
 
         # File System Tools
-        self._register_tool(FileReadTool(base_path=file_system_base_path), "file_system")
-        self._register_tool(FileWriteTool(base_path=file_system_base_path), "file_system")
-        self._register_tool(DirectoryListTool(base_path=file_system_base_path), "file_system")
-        self._register_tool(FileSearchTool(base_path=file_system_base_path), "file_system")
+        self._register_tool(
+            FileReadTool(base_path=file_system_base_path), "file_system"
+        )
+        self._register_tool(
+            FileWriteTool(base_path=file_system_base_path), "file_system"
+        )
+        self._register_tool(
+            DirectoryListTool(base_path=file_system_base_path), "file_system"
+        )
+        self._register_tool(
+            FileSearchTool(base_path=file_system_base_path), "file_system"
+        )
 
         # API Tools
         self._register_tool(HTTPRequestTool(default_headers=api_default_headers), "api")

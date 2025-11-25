@@ -4,25 +4,23 @@ HTML Section Generation Module
 Extracted section generation functions from html_report_generator.py
 """
 
-from typing import Dict, Any, Optional
-from app.service.reporting.olorin_logo import get_olorin_header, OLORIN_FOOTER
+from typing import Any, Dict, Optional
+
+from app.service.reporting.olorin_logo import OLORIN_FOOTER, get_olorin_header
+
 from .html_formatters import HTMLFormatters
 
 
 class HTMLSectionGenerator:
     """Generates HTML sections for comparison reports"""
-    
+
     def __init__(self):
         self.formatters = HTMLFormatters()
-    
-    def generate_header(
-        self,
-        entity_label: str,
-        response: Any
-    ) -> str:
+
+    def generate_header(self, entity_label: str, response: Any) -> str:
         """Generate report header section"""
         header_html = get_olorin_header("Investigation Comparison Report")
-        
+
         return f"""
         <div class="header">
             {header_html}
@@ -31,7 +29,7 @@ class HTMLSectionGenerator:
             <p class="entity-info">Entity: {entity_label}</p>
         </div>
         """
-    
+
     def generate_metadata_section(self, response: Any) -> str:
         """Generate metadata section"""
         return f"""
@@ -49,7 +47,7 @@ class HTMLSectionGenerator:
             </div>
         </div>
         """
-    
+
     def generate_explanation_section(self) -> str:
         """Generate explanation section"""
         return """
@@ -62,7 +60,7 @@ class HTMLSectionGenerator:
             </p>
         </div>
         """
-    
+
     def generate_summary_section(self, response: Any) -> str:
         """Generate summary section"""
         return f"""
@@ -80,7 +78,7 @@ class HTMLSectionGenerator:
             </div>
         </div>
         """
-    
+
     def generate_footer(self) -> str:
         """Generate report footer"""
         return f"""

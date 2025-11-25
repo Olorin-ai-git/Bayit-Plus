@@ -6,13 +6,12 @@ import httpx
 from pydantic import BaseModel
 
 from app.models.llm_verification import (
+    VerificationCategoryScores,
     VerificationContext,
     VerificationReport,
-    VerificationCategoryScores,
     VerificationVerdict,
 )
-from app.utils.redaction import redact_text, redact_payload
-
+from app.utils.redaction import redact_payload, redact_text
 
 _OPUS_SYSTEM_INSTRUCTIONS = (
     "You are a validator that returns ONLY valid compact JSON per the provided schema. "
@@ -23,7 +22,9 @@ _OPUS_SYSTEM_INSTRUCTIONS = (
 
 
 class OpusVerifier:
-    def __init__(self, model_name: str = "claude-opus-4.1", api_key: Optional[str] = None):
+    def __init__(
+        self, model_name: str = "claude-opus-4.1", api_key: Optional[str] = None
+    ):
         self.model_name = model_name
         self._api_key = api_key
 
@@ -32,7 +33,9 @@ class OpusVerifier:
         data = json.loads(opus_output)
         return VerificationReport(
             weighted_score=data.get("weighted_score", 0.0),
-            category_scores=VerificationCategoryScores(**data.get("category_scores", {})),
+            category_scores=VerificationCategoryScores(
+                **data.get("category_scores", {})
+            ),
             verdict=VerificationVerdict(data.get("verdict", "fail")),
             hard_gate_failures=data.get("hard_gate_failures", []),
             required_fixes=data.get("required_fixes", []),
@@ -41,19 +44,21 @@ class OpusVerifier:
         )
 
     async def _call_opus(self, ctx: VerificationContext) -> str:
-        from app.utils.firebase_secrets import get_firebase_secret
         from app.service.config import get_settings_for_env
-        
+        from app.utils.firebase_secrets import get_firebase_secret
+
         settings = get_settings_for_env()
-        
+
         # ONLY use Firebase secrets - no environment variable fallback
-        api_key = (
-            self._api_key or 
-            get_firebase_secret(settings.anthropic_api_key_secret)
+        api_key = self._api_key or get_firebase_secret(
+            settings.anthropic_api_key_secret
         )
         if not api_key:
             # Fallback scaffold behavior
-            if ctx.original_response_text and len(ctx.original_response_text.strip()) > 0:
+            if (
+                ctx.original_response_text
+                and len(ctx.original_response_text.strip()) > 0
+            ):
                 return json.dumps(
                     {
                         "weighted_score": 0.92,
@@ -84,7 +89,9 @@ class OpusVerifier:
                         },
                         "verdict": "fail",
                         "hard_gate_failures": ["empty_response"],
-                        "required_fixes": ["Return a non-empty, schema-valid response."],
+                        "required_fixes": [
+                            "Return a non-empty, schema-valid response."
+                        ],
                         "rationale": "Empty response.",
                         "suggested_retry_suffix": "Ensure response is non-empty and conforms to schema.",
                     }
@@ -94,7 +101,9 @@ class OpusVerifier:
         system_prompt = _OPUS_SYSTEM_INSTRUCTIONS
         user_payload: Dict[str, Any] = {
             "task_type": ctx.task_type,
-            "system_prompt_or_instructions": redact_text(ctx.system_prompt_or_instructions or ""),
+            "system_prompt_or_instructions": redact_text(
+                ctx.system_prompt_or_instructions or ""
+            ),
             "user_request": redact_text(ctx.user_request or ""),
             "original_prompt": redact_text(ctx.original_prompt or ""),
             "original_response_text": redact_text(ctx.original_response_text),
@@ -108,7 +117,8 @@ class OpusVerifier:
                     {
                         "type": "text",
                         "text": (
-                            "Return ONLY valid JSON for the verification report.\n" + json.dumps(user_payload)
+                            "Return ONLY valid JSON for the verification report.\n"
+                            + json.dumps(user_payload)
                         ),
                     }
                 ],
@@ -129,10 +139,14 @@ class OpusVerifier:
             "top_p": 0.1,
         }
         async with httpx.AsyncClient(timeout=20.0) as client:
-            r = await client.post("https://api.anthropic.com/v1/messages", headers=headers, json=body)
+            r = await client.post(
+                "https://api.anthropic.com/v1/messages", headers=headers, json=body
+            )
             r.raise_for_status()
             j = r.json()
             content_blocks = j.get("content", [])
-            text_parts = [b.get("text", "") for b in content_blocks if isinstance(b, dict)]
+            text_parts = [
+                b.get("text", "") for b in content_blocks if isinstance(b, dict)
+            ]
             text = "\n".join([t for t in text_parts if t])
             return text.strip() or "{}"

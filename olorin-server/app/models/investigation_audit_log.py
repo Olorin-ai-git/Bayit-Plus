@@ -11,11 +11,12 @@ SYSTEM MANDATE Compliance:
 - Complete implementation: No placeholders or TODOs
 """
 
-from sqlalchemy import Column, String, Text, Integer, DateTime, CheckConstraint, Index
-from sqlalchemy.sql import func
-from sqlalchemy.ext.declarative import declarative_base
-from typing import Optional
 from datetime import datetime
+from typing import Optional
+
+from sqlalchemy import CheckConstraint, Column, DateTime, Index, Integer, String, Text
+from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.sql import func
 
 Base = declarative_base()
 
@@ -38,7 +39,7 @@ class InvestigationAuditLog(Base):
         String(255),
         primary_key=True,
         nullable=False,
-        comment="Unique audit entry identifier"
+        comment="Unique audit entry identifier",
     )
 
     # Investigation Reference
@@ -46,15 +47,12 @@ class InvestigationAuditLog(Base):
         String(255),
         nullable=False,
         index=True,
-        comment="Investigation this audit entry belongs to"
+        comment="Investigation this audit entry belongs to",
     )
 
     # User Reference
     user_id = Column(
-        String(255),
-        nullable=False,
-        index=True,
-        comment="User who performed the action"
+        String(255), nullable=False, index=True, comment="User who performed the action"
     )
 
     # Action Details
@@ -62,39 +60,31 @@ class InvestigationAuditLog(Base):
         String(50),
         nullable=False,
         index=True,
-        comment="Action type: CREATED, UPDATED, DELETED, STATE_CHANGE, SETTINGS_CHANGE"
+        comment="Action type: CREATED, UPDATED, DELETED, STATE_CHANGE, SETTINGS_CHANGE",
     )
 
     changes_json = Column(
         Text,
         nullable=True,
-        comment="JSON describing what changed (field-level changes)"
+        comment="JSON describing what changed (field-level changes)",
     )
 
     state_snapshot_json = Column(
-        Text,
-        nullable=True,
-        comment="Complete state snapshot after change"
+        Text, nullable=True, comment="Complete state snapshot after change"
     )
 
     source = Column(
         String(50),
         nullable=False,
-        comment="Source of change: UI, API, SYSTEM, WEBHOOK, POLLING"
+        comment="Source of change: UI, API, SYSTEM, WEBHOOK, POLLING",
     )
 
     # Version Tracking
     from_version = Column(
-        Integer,
-        nullable=True,
-        comment="Version number before change"
+        Integer, nullable=True, comment="Version number before change"
     )
 
-    to_version = Column(
-        Integer,
-        nullable=True,
-        comment="Version number after change"
-    )
+    to_version = Column(Integer, nullable=True, comment="Version number after change")
 
     # Timestamp
     timestamp = Column(
@@ -102,18 +92,17 @@ class InvestigationAuditLog(Base):
         nullable=False,
         server_default=func.now(),
         index=True,
-        comment="When the action occurred"
+        comment="When the action occurred",
     )
 
     # Table Arguments: Constraints and Indexes
     __table_args__ = (
         CheckConstraint(
             "action_type IN ('CREATED', 'UPDATED', 'DELETED', 'STATE_CHANGE', 'SETTINGS_CHANGE')",
-            name="chk_action_type"
+            name="chk_action_type",
         ),
         CheckConstraint(
-            "source IN ('UI', 'API', 'SYSTEM', 'WEBHOOK', 'POLLING')",
-            name="chk_source"
+            "source IN ('UI', 'API', 'SYSTEM', 'WEBHOOK', 'POLLING')", name="chk_source"
         ),
         Index("idx_investigation_audit_log_investigation", "investigation_id"),
         Index("idx_investigation_audit_log_user", "user_id"),

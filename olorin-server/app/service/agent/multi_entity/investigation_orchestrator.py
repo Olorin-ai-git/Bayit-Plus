@@ -5,7 +5,9 @@ This module provides compatibility wrapper functions for the multi-entity invest
 system, maintaining backward compatibility with existing router imports.
 """
 
-from app.service.agent.multi_entity.multi_investigation_coordinator import get_multi_entity_coordinator
+from app.service.agent.multi_entity.multi_investigation_coordinator import (
+    get_multi_entity_coordinator,
+)
 
 
 def get_multi_entity_orchestrator():

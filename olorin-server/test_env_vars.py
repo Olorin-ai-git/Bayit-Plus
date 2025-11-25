@@ -5,14 +5,16 @@ import os
 import sys
 
 # Clear the environment variable to test error handling
-if 'SNOWFLAKE_DATABASE' in os.environ:
-    del os.environ['SNOWFLAKE_DATABASE']
+if "SNOWFLAKE_DATABASE" in os.environ:
+    del os.environ["SNOWFLAKE_DATABASE"]
 
 try:
-    from app.service.agent.tools.snowflake_tool.schema_constants import get_required_env_var
+    from app.service.agent.tools.snowflake_tool.schema_constants import (
+        get_required_env_var,
+    )
 
     # This should raise an error since SNOWFLAKE_DATABASE is not set
-    result = get_required_env_var('SNOWFLAKE_DATABASE')
+    result = get_required_env_var("SNOWFLAKE_DATABASE")
     print(f"ERROR: Should have raised an error but got: {result}")
     sys.exit(1)
 

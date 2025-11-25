@@ -4,28 +4,29 @@ Manages report CRUD operations and report-related business logic.
 All configuration from environment variables - no hardcoded values.
 """
 
-from typing import List, Optional, Dict, Any
-from sqlalchemy.orm import Session
-from sqlalchemy import select, and_, or_, func
-from datetime import datetime, timedelta
-from pathlib import Path
+import asyncio
 import json
 import os
-import asyncio
+from datetime import datetime, timedelta
+from pathlib import Path
+from typing import Any, Dict, List, Optional
+
+from langchain_core.messages import HumanMessage, SystemMessage
+from sqlalchemy import and_, func, or_, select
+from sqlalchemy.orm import Session
 
 from app.persistence.models import ReportRecord
 from app.schemas.report_schemas import (
-    ReportCreate,
-    ReportUpdate,
-    ReportResponse,
-    InvestigationStatisticsResponse,
     InvestigationReportGenerateResponse,
+    InvestigationStatisticsResponse,
+    ReportCreate,
+    ReportResponse,
+    ReportUpdate,
 )
 from app.service.logging import get_bridge_logger
 from app.service.reporting.comprehensive_investigation_report import (
-    ComprehensiveInvestigationReportGenerator
+    ComprehensiveInvestigationReportGenerator,
 )
-from langchain_core.messages import SystemMessage, HumanMessage
 
 logger = get_bridge_logger(__name__)
 
@@ -37,9 +38,7 @@ class ReportService:
         """Initialize service with database session."""
         self.db = db
 
-    def create_report(
-        self, owner: str, data: ReportCreate
-    ) -> ReportResponse:
+    def create_report(self, owner: str, data: ReportCreate) -> ReportResponse:
         """Create a new report."""
         report = ReportRecord(
             owner=owner,
@@ -54,7 +53,9 @@ class ReportService:
         logger.info(f"Created report: {report.id} by {owner}")
         return ReportResponse.model_validate(report)
 
-    def get_report(self, report_id: str, owner: Optional[str] = None) -> Optional[ReportResponse]:
+    def get_report(
+        self, report_id: str, owner: Optional[str] = None
+    ) -> Optional[ReportResponse]:
         """Get report by ID, optionally filtered by owner."""
         query = select(ReportRecord).where(ReportRecord.id == report_id)
         if owner:
@@ -66,10 +67,7 @@ class ReportService:
         return None
 
     def list_reports(
-        self,
-        owner: Optional[str] = None,
-        skip: int = 0,
-        limit: int = 100
+        self, owner: Optional[str] = None, skip: int = 0, limit: int = 100
     ) -> List[ReportResponse]:
         """List reports, optionally filtered by owner."""
         query = select(ReportRecord)
@@ -131,20 +129,23 @@ class ReportService:
         total_result = self.db.execute(total_query)
         total_investigations = total_result.scalar() or 0
 
-        completed_query = select(
-            InvestigationState
-        ).where(InvestigationState.status == "COMPLETED")
+        completed_query = select(InvestigationState).where(
+            InvestigationState.status == "COMPLETED"
+        )
         completed_result = self.db.execute(completed_query)
         completed_investigations = len(completed_result.scalars().all())
 
         # If no data in investigation_states, try investigations table as fallback
         if total_investigations == 0:
             from app.persistence.models import Investigation
+
             total_query = select(func.count()).select_from(Investigation)
             total_result = self.db.execute(total_query)
             total_investigations = total_result.scalar() or 0
 
-            completed_query = select(Investigation).where(Investigation.status == "COMPLETED")
+            completed_query = select(Investigation).where(
+                Investigation.status == "COMPLETED"
+            )
             completed_result = self.db.execute(completed_query)
             completed_investigations = len(completed_result.scalars().all())
 
@@ -161,6 +162,7 @@ class ReportService:
         # If no recent investigations from investigation_states, try investigations table
         if recent_investigations == 0:
             from app.persistence.models import Investigation
+
             recent_query = (
                 select(Investigation)
                 .where(Investigation.created_at >= thirty_days_ago)
@@ -172,7 +174,7 @@ class ReportService:
         return InvestigationStatisticsResponse(
             total_investigations=total_investigations,
             completed_investigations=completed_investigations,
-            recent_investigations=recent_investigations
+            recent_investigations=recent_investigations,
         )
 
     async def generate_investigation_report(
@@ -180,7 +182,7 @@ class ReportService:
     ) -> InvestigationReportGenerateResponse:
         """
         Generate comprehensive investigation report.
-        
+
         Retrieves investigation state/progress from database, augments with folder data,
         and uses LLM to generate HTML report.
 
@@ -196,20 +198,29 @@ class ReportService:
         """
         # Try to find investigation folder using InvestigationFolderManager (supports new structure)
         investigation_folder = None
-        
+
         try:
-            from app.service.logging.investigation_folder_manager import get_folder_manager
+            from app.service.logging.investigation_folder_manager import (
+                get_folder_manager,
+            )
+
             folder_manager = get_folder_manager()
-            investigation_folder = folder_manager.get_investigation_folder(investigation_id)
+            investigation_folder = folder_manager.get_investigation_folder(
+                investigation_id
+            )
             if investigation_folder and investigation_folder.exists():
-                logger.debug(f"Found investigation folder via InvestigationFolderManager: {investigation_folder}")
+                logger.debug(
+                    f"Found investigation folder via InvestigationFolderManager: {investigation_folder}"
+                )
         except Exception as e:
-            logger.debug(f"InvestigationFolderManager lookup failed: {e}, trying legacy structure")
-        
+            logger.debug(
+                f"InvestigationFolderManager lookup failed: {e}, trying legacy structure"
+            )
+
         # Fall back to legacy structure if not found
         if not investigation_folder or not investigation_folder.exists():
             base_logs_dir = os.getenv("INVESTIGATION_LOGS_DIR", "investigation_logs")
-            
+
             # Resolve relative to server root if path is relative
             if not Path(base_logs_dir).is_absolute():
                 # This file is at: app/service/report_service.py
@@ -218,18 +229,20 @@ class ReportService:
                 base_path = server_root / base_logs_dir
             else:
                 base_path = Path(base_logs_dir)
-            
+
             investigation_folder = base_path / investigation_id
-            
+
             # Also check if it's a folder with timestamp format
             if not investigation_folder.exists() and base_path.exists():
                 # Search for folders containing the investigation_id
                 for folder in base_path.iterdir():
                     if folder.is_dir() and investigation_id in folder.name:
                         investigation_folder = folder
-                        logger.debug(f"Found investigation folder in legacy structure: {investigation_folder}")
+                        logger.debug(
+                            f"Found investigation folder in legacy structure: {investigation_folder}"
+                        )
                         break
-            
+
             # Also check other common log locations
             if not investigation_folder or not investigation_folder.exists():
                 server_root = Path(__file__).parent.parent.parent
@@ -238,7 +251,7 @@ class ReportService:
                     server_root / "logs" / "autonomous_investigations",
                     server_root / "logs" / "journey_tracking",
                 ]
-                
+
                 for alt_base in alternative_locations:
                     if alt_base.exists():
                         # Search for folders/files containing the investigation_id
@@ -246,55 +259,73 @@ class ReportService:
                             if investigation_id in item.name:
                                 if item.is_dir():
                                     investigation_folder = item
-                                    logger.debug(f"Found investigation folder in alternative location: {investigation_folder}")
+                                    logger.debug(
+                                        f"Found investigation folder in alternative location: {investigation_folder}"
+                                    )
                                     break
-                                elif item.is_file() and item.suffix == '.json':
+                                elif item.is_file() and item.suffix == ".json":
                                     # If it's a JSON file, check if parent directory exists
                                     parent_folder = alt_base / investigation_id
                                     if parent_folder.exists():
                                         investigation_folder = parent_folder
-                                        logger.debug(f"Found investigation folder via JSON file: {investigation_folder}")
+                                        logger.debug(
+                                            f"Found investigation folder via JSON file: {investigation_folder}"
+                                        )
                                         break
                         if investigation_folder and investigation_folder.exists():
                             break
-            
+
             # If still not found, try to create folder from journey file (investigation ran but folder wasn't created)
             if not investigation_folder or not investigation_folder.exists():
-                journey_file = server_root / "logs" / "journey_tracking" / f"journey_{investigation_id}.json"
+                journey_file = (
+                    server_root
+                    / "logs"
+                    / "journey_tracking"
+                    / f"journey_{investigation_id}.json"
+                )
                 if journey_file.exists():
                     try:
                         import json
-                        from app.service.logging.investigation_folder_manager import get_folder_manager, InvestigationMode
                         from datetime import datetime
-                        
+
+                        from app.service.logging.investigation_folder_manager import (
+                            InvestigationMode,
+                            get_folder_manager,
+                        )
+
                         # Read journey file to get timestamp
-                        with open(journey_file, 'r') as f:
+                        with open(journey_file, "r") as f:
                             journey_data = json.load(f)
-                        
-                        start_ts = journey_data.get('start_timestamp')
+
+                        start_ts = journey_data.get("start_timestamp")
                         timestamp = None
                         if start_ts:
                             try:
-                                dt = datetime.fromisoformat(start_ts.replace('Z', '+00:00'))
+                                dt = datetime.fromisoformat(
+                                    start_ts.replace("Z", "+00:00")
+                                )
                                 timestamp = dt.strftime("%Y%m%d_%H%M%S")
                             except Exception:
                                 pass
-                        
+
                         # Create folder using existing InvestigationFolderManager
                         folder_manager = get_folder_manager()
-                        folder_path, metadata = folder_manager.create_investigation_folder(
-                            investigation_id=investigation_id,
-                            mode=InvestigationMode.LIVE,  # Default to LIVE
-                            scenario="",
-                            custom_timestamp=timestamp
+                        folder_path, metadata = (
+                            folder_manager.create_investigation_folder(
+                                investigation_id=investigation_id,
+                                mode=InvestigationMode.LIVE,  # Default to LIVE
+                                scenario="",
+                                custom_timestamp=timestamp,
+                            )
                         )
-                        
+
                         # Copy journey file to the folder
                         import shutil
+
                         dest_journey = folder_path / "journey_tracking.json"
                         if not dest_journey.exists():
                             shutil.copy2(journey_file, dest_journey)
-                        
+
                         # Copy chain of thought files if they exist
                         chain_dir = server_root / "logs" / "chain_of_thought"
                         if chain_dir.exists():
@@ -303,11 +334,15 @@ class ReportService:
                                     dest_file = folder_path / file.name
                                     if not dest_file.exists():
                                         shutil.copy2(file, dest_file)
-                        
+
                         investigation_folder = folder_path
-                        logger.info(f"✅ Created investigation folder from journey file: {investigation_folder}")
+                        logger.info(
+                            f"✅ Created investigation folder from journey file: {investigation_folder}"
+                        )
                     except Exception as e:
-                        logger.warning(f"Failed to create folder from journey file: {e}")
+                        logger.warning(
+                            f"Failed to create folder from journey file: {e}"
+                        )
 
         if not investigation_folder or not investigation_folder.exists():
             raise ValueError(
@@ -318,36 +353,45 @@ class ReportService:
 
         # Check if LLM-based reporting is enabled
         use_llm_reporting = os.getenv("LLM_BASED_REPORTING", "false").lower() == "true"
-        
+
         if use_llm_reporting:
-            logger.info(f"Using LLM-based report generation for investigation {investigation_id}")
-            
+            logger.info(
+                f"Using LLM-based report generation for investigation {investigation_id}"
+            )
+
             # Retrieve investigation state/progress from database (needed for LLM-based generation)
             from app.models.investigation_state import InvestigationState
-            investigation_state = self.db.query(InvestigationState).filter(
-                InvestigationState.investigation_id == investigation_id
-            ).first()
-            
+
+            investigation_state = (
+                self.db.query(InvestigationState)
+                .filter(InvestigationState.investigation_id == investigation_id)
+                .first()
+            )
+
             if not investigation_state:
-                logger.warning(f"Investigation state not found in database for {investigation_id}, proceeding with folder data only")
+                logger.warning(
+                    f"Investigation state not found in database for {investigation_id}, proceeding with folder data only"
+                )
                 investigation_progress = {}
                 investigation_settings = {}
             else:
                 # Get progress and settings data
                 investigation_progress = investigation_state.get_progress_data()
                 investigation_settings = investigation_state.settings or {}
-                logger.info(f"Retrieved investigation state from database for {investigation_id}")
-            
+                logger.info(
+                    f"Retrieved investigation state from database for {investigation_id}"
+                )
+
             # Collect all raw data from investigation folder
             folder_data = self._collect_investigation_folder_data(investigation_folder)
-            
+
             # Extract risk analyzer information (top 3 entities and selected entity)
             risk_analyzer_info = self._extract_risk_analyzer_info(
                 investigation_settings=investigation_settings,
                 investigation_progress=investigation_progress,
-                folder_data=folder_data
+                folder_data=folder_data,
             )
-            
+
             # Generate HTML report using LLM
             report_path = await self._generate_llm_html_report(
                 investigation_id=investigation_id,
@@ -356,29 +400,38 @@ class ReportService:
                 folder_data=folder_data,
                 investigation_folder=investigation_folder,
                 title=title,
-                risk_analyzer_info=risk_analyzer_info
+                risk_analyzer_info=risk_analyzer_info,
             )
         else:
-            logger.info(f"Using template-based report generation for investigation {investigation_id} (LLM_BASED_REPORTING=false)")
+            logger.info(
+                f"Using template-based report generation for investigation {investigation_id} (LLM_BASED_REPORTING=false)"
+            )
             # Try to get investigation state for risk analyzer info even in template mode
             risk_analyzer_info = {}
             try:
                 from app.models.investigation_state import InvestigationState
-                investigation_state = self.db.query(InvestigationState).filter(
-                    InvestigationState.investigation_id == investigation_id
-                ).first()
+
+                investigation_state = (
+                    self.db.query(InvestigationState)
+                    .filter(InvestigationState.investigation_id == investigation_id)
+                    .first()
+                )
                 if investigation_state:
                     investigation_settings = investigation_state.settings or {}
                     investigation_progress = investigation_state.get_progress_data()
-                    folder_data = self._collect_investigation_folder_data(investigation_folder)
+                    folder_data = self._collect_investigation_folder_data(
+                        investigation_folder
+                    )
                     risk_analyzer_info = self._extract_risk_analyzer_info(
                         investigation_settings=investigation_settings,
                         investigation_progress=investigation_progress,
-                        folder_data=folder_data
+                        folder_data=folder_data,
                     )
             except Exception as e:
-                logger.debug(f"Could not extract risk analyzer info for template report: {e}")
-            
+                logger.debug(
+                    f"Could not extract risk analyzer info for template report: {e}"
+                )
+
             # Use template-based generation (doesn't need database state)
             generator = ComprehensiveInvestigationReportGenerator(
                 base_logs_dir=investigation_folder.parent
@@ -387,7 +440,7 @@ class ReportService:
                 investigation_folder=investigation_folder,
                 output_path=None,
                 title=title,
-                risk_analyzer_info=risk_analyzer_info
+                risk_analyzer_info=risk_analyzer_info,
             )
 
         # Get file size
@@ -397,7 +450,7 @@ class ReportService:
         summary = {
             "investigation_id": investigation_id,
             "report_path": str(report_path),
-            "file_size_bytes": file_size
+            "file_size_bytes": file_size,
         }
 
         logger.info(
@@ -407,21 +460,24 @@ class ReportService:
 
         # Use datetime from module import
         from datetime import datetime as dt_module
+
         return InvestigationReportGenerateResponse(
             investigation_id=investigation_id,
             report_path=str(report_path),
             file_size_bytes=file_size,
             generated_at=dt_module.utcnow().isoformat(),
-            summary=summary
+            summary=summary,
         )
 
-    def _collect_investigation_folder_data(self, investigation_folder: Path) -> Dict[str, Any]:
+    def _collect_investigation_folder_data(
+        self, investigation_folder: Path
+    ) -> Dict[str, Any]:
         """
         Collect all raw data from investigation folder.
-        
+
         Args:
             investigation_folder: Path to investigation folder
-            
+
         Returns:
             Dictionary containing all folder data organized by file type
         """
@@ -432,57 +488,61 @@ class ReportService:
             "structured_activities": [],
             "investigation_log": [],
             "server_logs": {},
-            "other_files": {}
+            "other_files": {},
         }
-        
+
         # Process all files in folder
         for file_path in investigation_folder.rglob("*"):
             if not file_path.is_file():
                 continue
-                
+
             try:
                 filename = file_path.name.lower()
-                
+
                 if filename == "metadata.json":
-                    with open(file_path, 'r', encoding='utf-8') as f:
+                    with open(file_path, "r", encoding="utf-8") as f:
                         folder_data["metadata"] = json.load(f)
-                        
+
                 elif filename == "journey_tracking.json":
-                    with open(file_path, 'r', encoding='utf-8') as f:
+                    with open(file_path, "r", encoding="utf-8") as f:
                         folder_data["journey_tracking"] = json.load(f)
-                        
+
                 elif filename.startswith("thought_process_"):
-                    with open(file_path, 'r', encoding='utf-8') as f:
+                    with open(file_path, "r", encoding="utf-8") as f:
                         folder_data["thought_processes"].append(json.load(f))
-                        
+
                 elif filename == "structured_activities.jsonl":
-                    with open(file_path, 'r', encoding='utf-8') as f:
+                    with open(file_path, "r", encoding="utf-8") as f:
                         for line in f:
                             if line.strip():
-                                folder_data["structured_activities"].append(json.loads(line))
-                                
+                                folder_data["structured_activities"].append(
+                                    json.loads(line)
+                                )
+
                 elif filename == "investigation.log" or filename.endswith(".log"):
-                    with open(file_path, 'r', encoding='utf-8') as f:
+                    with open(file_path, "r", encoding="utf-8") as f:
                         folder_data["investigation_log"] = f.readlines()
-                        
+
                 elif filename == "server_logs" or filename == "server_logs.json":
-                    with open(file_path, 'r', encoding='utf-8') as f:
+                    with open(file_path, "r", encoding="utf-8") as f:
                         folder_data["server_logs"] = json.load(f)
-                        
+
                 else:
                     # Store other files as JSON if possible, otherwise as text
                     try:
-                        with open(file_path, 'r', encoding='utf-8') as f:
-                            if filename.endswith('.json'):
-                                folder_data["other_files"][file_path.name] = json.load(f)
+                        with open(file_path, "r", encoding="utf-8") as f:
+                            if filename.endswith(".json"):
+                                folder_data["other_files"][file_path.name] = json.load(
+                                    f
+                                )
                             else:
                                 folder_data["other_files"][file_path.name] = f.read()
                     except Exception:
                         pass
-                        
+
             except Exception as e:
                 logger.warning(f"Error reading file {file_path.name}: {e}")
-        
+
         return folder_data
 
     async def _generate_llm_html_report(
@@ -493,11 +553,11 @@ class ReportService:
         folder_data: Dict[str, Any],
         investigation_folder: Path,
         title: Optional[str] = None,
-        risk_analyzer_info: Optional[Dict[str, Any]] = None
+        risk_analyzer_info: Optional[Dict[str, Any]] = None,
     ) -> Path:
         """
         Generate HTML report using LLM.
-        
+
         Args:
             investigation_id: Investigation ID
             investigation_progress: Progress data from database
@@ -505,16 +565,16 @@ class ReportService:
             folder_data: All data collected from folder
             investigation_folder: Path to investigation folder
             title: Optional report title
-            
+
         Returns:
             Path to generated HTML report
         """
         from app.service.llm_manager import LLMManager
-        
+
         # Get LLM instance
         llm_manager = LLMManager()
         llm = llm_manager.selected_model
-        
+
         # Prepare prompt with all investigation data
         prompt = self._build_llm_report_prompt(
             investigation_id=investigation_id,
@@ -522,40 +582,51 @@ class ReportService:
             investigation_settings=investigation_settings,
             folder_data=folder_data,
             title=title,
-            risk_analyzer_info=risk_analyzer_info or {}
+            risk_analyzer_info=risk_analyzer_info or {},
         )
-        
+
         # Call LLM to generate HTML
-        logger.info(f"Calling LLM to generate HTML report for investigation {investigation_id}")
+        logger.info(
+            f"Calling LLM to generate HTML report for investigation {investigation_id}"
+        )
         messages = [
-            SystemMessage(content="You are an expert at generating comprehensive HTML investigation reports. Generate a complete, professional HTML report with embedded CSS and JavaScript. The report should be well-structured, visually appealing, and include all relevant investigation data."),
-            HumanMessage(content=prompt)
+            SystemMessage(
+                content="You are an expert at generating comprehensive HTML investigation reports. Generate a complete, professional HTML report with embedded CSS and JavaScript. The report should be well-structured, visually appealing, and include all relevant investigation data."
+            ),
+            HumanMessage(content=prompt),
         ]
-        
+
         try:
             response = await llm.ainvoke(messages)
-            html_content = response.content if hasattr(response, 'content') else str(response)
-            
+            html_content = (
+                response.content if hasattr(response, "content") else str(response)
+            )
+
             # Ensure HTML content is valid
-            if not html_content.strip().startswith('<!DOCTYPE html>') and not html_content.strip().startswith('<html'):
+            if not html_content.strip().startswith(
+                "<!DOCTYPE html>"
+            ) and not html_content.strip().startswith("<html"):
                 # LLM might have wrapped it in markdown, extract HTML
                 import re
-                html_match = re.search(r'```html\n(.*?)\n```', html_content, re.DOTALL)
+
+                html_match = re.search(r"```html\n(.*?)\n```", html_content, re.DOTALL)
                 if html_match:
                     html_content = html_match.group(1)
                 else:
-                    html_match = re.search(r'```\n(.*?)\n```', html_content, re.DOTALL)
+                    html_match = re.search(r"```\n(.*?)\n```", html_content, re.DOTALL)
                     if html_match:
                         html_content = html_match.group(1)
-            
+
             # Save HTML report
-            report_path = investigation_folder / "comprehensive_investigation_report.html"
-            with open(report_path, 'w', encoding='utf-8') as f:
+            report_path = (
+                investigation_folder / "comprehensive_investigation_report.html"
+            )
+            with open(report_path, "w", encoding="utf-8") as f:
                 f.write(html_content)
-            
+
             logger.info(f"✅ LLM-generated HTML report saved to {report_path}")
             return report_path
-            
+
         except Exception as e:
             logger.error(f"❌ LLM report generation failed: {e}")
             # Fallback to template-based generation
@@ -564,9 +635,7 @@ class ReportService:
                 base_logs_dir=investigation_folder.parent
             )
             return generator.generate_comprehensive_report(
-                investigation_folder=investigation_folder,
-                output_path=None,
-                title=title
+                investigation_folder=investigation_folder, output_path=None, title=title
             )
 
     def _build_llm_report_prompt(
@@ -576,7 +645,7 @@ class ReportService:
         investigation_settings: Dict[str, Any],
         folder_data: Dict[str, Any],
         title: Optional[str] = None,
-        risk_analyzer_info: Optional[Dict[str, Any]] = None
+        risk_analyzer_info: Optional[Dict[str, Any]] = None,
     ) -> str:
         """
         Build comprehensive prompt for LLM report generation.
@@ -587,18 +656,20 @@ class ReportService:
             investigation_settings: Settings data from database
             folder_data: All folder data
             title: Optional report title
-            
+
         Returns:
             Formatted prompt string
         """
         import json as json_module
-        
+
         # Summarize large data structures to fit within context window
-        def summarize_dict(data: Dict[str, Any], max_depth: int = 2, max_items: int = 10) -> Dict[str, Any]:
+        def summarize_dict(
+            data: Dict[str, Any], max_depth: int = 2, max_items: int = 10
+        ) -> Dict[str, Any]:
             """Recursively summarize a dictionary to reduce size."""
             if max_depth <= 0:
                 return {"_truncated": True, "_summary": "Deep nesting truncated"}
-            
+
             result = {}
             items_processed = 0
             for key, value in list(data.items())[:max_items]:
@@ -608,7 +679,7 @@ class ReportService:
                     if len(value) > max_items:
                         result[key] = {
                             "_count": len(value),
-                            "_items": summarize_list(value[:max_items], max_depth - 1)
+                            "_items": summarize_list(value[:max_items], max_depth - 1),
                         }
                     else:
                         result[key] = summarize_list(value, max_depth - 1)
@@ -617,18 +688,18 @@ class ReportService:
                 else:
                     result[key] = value
                 items_processed += 1
-            
+
             if len(data) > max_items:
                 result["_truncated"] = True
                 result["_total_items"] = len(data)
-            
+
             return result
-        
+
         def summarize_list(data: list, max_depth: int = 2) -> list:
             """Summarize a list to reduce size."""
             if max_depth <= 0:
                 return [{"_truncated": True}]
-            
+
             result = []
             for item in data[:10]:  # Limit to first 10 items
                 if isinstance(item, dict):
@@ -637,21 +708,27 @@ class ReportService:
                     result.append(item[:200] + "... [truncated]")
                 else:
                     result.append(item)
-            
+
             if len(data) > 10:
                 result.append({"_truncated": True, "_total_count": len(data)})
-            
+
             return result
-        
+
         # Summarize progress data
-        progress_summary = summarize_dict(investigation_progress, max_depth=2, max_items=15)
-        
+        progress_summary = summarize_dict(
+            investigation_progress, max_depth=2, max_items=15
+        )
+
         # Summarize settings
-        settings_summary = summarize_dict(investigation_settings, max_depth=2, max_items=10)
-        
+        settings_summary = summarize_dict(
+            investigation_settings, max_depth=2, max_items=10
+        )
+
         # Summarize metadata
-        metadata_summary = summarize_dict(folder_data.get("metadata", {}), max_depth=2, max_items=10)
-        
+        metadata_summary = summarize_dict(
+            folder_data.get("metadata", {}), max_depth=2, max_items=10
+        )
+
         # Summarize journey tracking - keep key fields, truncate node_executions
         journey = folder_data.get("journey_tracking", {})
         journey_summary = {
@@ -660,9 +737,11 @@ class ReportService:
             "end_timestamp": journey.get("end_timestamp"),
             "status": journey.get("status"),
             "node_executions_count": len(journey.get("node_executions", [])),
-            "node_executions_sample": summarize_list(journey.get("node_executions", [])[:5], max_depth=1)
+            "node_executions_sample": summarize_list(
+                journey.get("node_executions", [])[:5], max_depth=1
+            ),
         }
-        
+
         # Summarize thought processes - extract key info only
         thought_processes = folder_data.get("thought_processes", [])
         thought_summary = []
@@ -676,20 +755,30 @@ class ReportService:
                     "final_assessment": {
                         "risk_score": tp.get("final_assessment", {}).get("risk_score"),
                         "confidence": tp.get("final_assessment", {}).get("confidence"),
-                        "risk_indicators_count": len(tp.get("final_assessment", {}).get("risk_indicators", [])),
-                        "recommendations_preview": tp.get("final_assessment", {}).get("llm_analysis", {}).get("recommendations", "")[:300] if tp.get("final_assessment", {}).get("llm_analysis", {}).get("recommendations") else None
+                        "risk_indicators_count": len(
+                            tp.get("final_assessment", {}).get("risk_indicators", [])
+                        ),
+                        "recommendations_preview": (
+                            tp.get("final_assessment", {})
+                            .get("llm_analysis", {})
+                            .get("recommendations", "")[:300]
+                            if tp.get("final_assessment", {})
+                            .get("llm_analysis", {})
+                            .get("recommendations")
+                            else None
+                        ),
                     },
-                    "reasoning_steps_count": len(tp.get("reasoning_steps", []))
+                    "reasoning_steps_count": len(tp.get("reasoning_steps", [])),
                 }
                 thought_summary.append(summary)
-        
+
         # Summarize structured activities
         activities = folder_data.get("structured_activities", [])
         activities_summary = {
             "total_count": len(activities),
-            "sample": summarize_list(activities[:5], max_depth=1)
+            "sample": summarize_list(activities[:5], max_depth=1),
         }
-        
+
         # Format risk analyzer info for prompt
         risk_info_text = ""
         if risk_analyzer_info:
@@ -698,15 +787,19 @@ class ReportService:
             selected_type = risk_analyzer_info.get("selected_entity_type")
             time_window = risk_analyzer_info.get("time_window_used", "7d or 14d")
             group_by = risk_analyzer_info.get("group_by", "email")
-            
+
             if top_entities or selected_entity:
                 risk_info_text = "\n=== RISK ANALYZER INFORMATION ===\n"
                 if top_entities:
                     risk_info_text += f"Top 3 Entities Identified:\n"
                     for i, entity in enumerate(top_entities[:3], 1):
-                        entity_val = entity.get("entity") or entity.get("entity_value", "N/A")
+                        entity_val = entity.get("entity") or entity.get(
+                            "entity_value", "N/A"
+                        )
                         entity_type = entity.get("entity_type") or "unknown"
-                        risk_score = entity.get("risk_score") or entity.get("avg_risk_score", "N/A")
+                        risk_score = entity.get("risk_score") or entity.get(
+                            "avg_risk_score", "N/A"
+                        )
                         tx_count = entity.get("transaction_count", "N/A")
                         risk_info_text += f"  {i}. Entity: {entity_val} | Type: {entity_type} | Risk Score: {risk_score} | Transactions: {tx_count}\n"
                 if selected_entity:
@@ -714,7 +807,7 @@ class ReportService:
                     risk_info_text += f"  Entity: {selected_entity} | Type: {selected_type or 'unknown'}\n"
                 risk_info_text += f"\nTime Window Used: {time_window}\n"
                 risk_info_text += f"Grouped By: {group_by}\n"
-        
+
         # Build prompt sections with summarized data
         prompt_parts = [
             "Generate a comprehensive HTML investigation report with the following data:",
@@ -765,31 +858,33 @@ class ReportService:
             "9. Use responsive design for mobile compatibility",
             "10. Note: Some data has been summarized due to size constraints - use available summaries",
             "",
-            "Generate the complete HTML report now:"
+            "Generate the complete HTML report now:",
         ]
-        
+
         prompt_text = "\n".join(prompt_parts)
-        
+
         # Ensure prompt doesn't exceed reasonable size (approximately 50K chars should be safe)
         max_prompt_size = 50000
         if len(prompt_text) > max_prompt_size:
-            logger.warning(f"Prompt size ({len(prompt_text)} chars) exceeds limit, truncating further")
+            logger.warning(
+                f"Prompt size ({len(prompt_text)} chars) exceeds limit, truncating further"
+            )
             # Further truncate thought processes
             thought_summary = thought_summary[:3]  # Reduce to 3
-            prompt_parts[15] = f"THOUGHT PROCESSES (summary of {len(thought_processes)} files, showing first 3):"
+            prompt_parts[15] = (
+                f"THOUGHT PROCESSES (summary of {len(thought_processes)} files, showing first 3):"
+            )
             prompt_parts[16] = json_module.dumps(thought_summary, indent=2, default=str)
             prompt_text = "\n".join(prompt_parts)
-        
+
         return prompt_text
 
     def list_investigation_reports(
-        self,
-        skip: int = 0,
-        limit: int = 100
+        self, skip: int = 0, limit: int = 100
     ) -> List[Dict[str, Any]]:
         """
         List all investigation reports with metadata.
-        
+
         Scans both new structure (logs/investigations/) and legacy structure (investigation_logs/)
         for generated reports.
 
@@ -797,57 +892,69 @@ class ReportService:
             List of report metadata dictionaries
         """
         reports = []
-        
+
         # Collect all investigation folders with generated reports from both structures
         investigation_folders = []
-        
+
         # Check new structure via InvestigationFolderManager
         try:
-            from app.service.logging.investigation_folder_manager import get_folder_manager
+            from app.service.logging.investigation_folder_manager import (
+                get_folder_manager,
+            )
+
             folder_manager = get_folder_manager()
             new_structure_path = folder_manager.base_logs_dir
-            
+
             if new_structure_path.exists():
                 for investigation_folder in new_structure_path.iterdir():
                     if not investigation_folder.is_dir():
                         continue
-                    
-                    report_file = investigation_folder / "comprehensive_investigation_report.html"
+
+                    report_file = (
+                        investigation_folder / "comprehensive_investigation_report.html"
+                    )
                     if report_file.exists():
                         # Extract investigation_id from folder name (format: {MODE}_{ID}_{TIMESTAMP})
                         folder_name = investigation_folder.name
-                        parts = folder_name.split('_')
-                        
+                        parts = folder_name.split("_")
+
                         # Try to get ID from metadata.json first
                         metadata_file = investigation_folder / "metadata.json"
                         inv_id = None
                         if metadata_file.exists():
                             try:
-                                with open(metadata_file, 'r') as f:
+                                with open(metadata_file, "r") as f:
                                     metadata = json.load(f)
-                                    inv_id = metadata.get('investigation_id')
+                                    inv_id = metadata.get("investigation_id")
                             except Exception:
                                 pass
-                        
+
                         # Fallback to parsing folder name
                         if not inv_id and len(parts) >= 2:
                             # UUID format: might be split across parts
                             # Try to find UUID pattern
                             import re
-                            uuid_pattern = r'[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}'
+
+                            uuid_pattern = r"[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}"
                             match = re.search(uuid_pattern, folder_name, re.IGNORECASE)
                             if match:
                                 inv_id = match.group(0)
                             else:
                                 # Fallback: use middle parts as ID
-                                inv_id = '_'.join(parts[1:-1]) if len(parts) > 2 else parts[1]
-                        
+                                inv_id = (
+                                    "_".join(parts[1:-1])
+                                    if len(parts) > 2
+                                    else parts[1]
+                                )
+
                         if inv_id:
-                            metadata = self._extract_report_metadata(investigation_folder, inv_id)
+                            metadata = self._extract_report_metadata(
+                                investigation_folder, inv_id
+                            )
                             reports.append(metadata)
         except Exception as e:
             logger.warning(f"Error scanning new structure: {e}")
-        
+
         # Check legacy structure
         base_logs_dir = os.getenv("INVESTIGATION_LOGS_DIR", "investigation_logs")
         server_root = Path(__file__).parent.parent.parent
@@ -862,53 +969,62 @@ class ReportService:
                     continue
 
                 inv_id = investigation_folder.name
-                report_file = investigation_folder / "comprehensive_investigation_report.html"
+                report_file = (
+                    investigation_folder / "comprehensive_investigation_report.html"
+                )
 
                 if report_file.exists():
-                    metadata = self._extract_report_metadata(investigation_folder, inv_id)
+                    metadata = self._extract_report_metadata(
+                        investigation_folder, inv_id
+                    )
                     reports.append(metadata)
-        
+
         # Sort by generated_at descending and apply pagination
         reports.sort(key=lambda x: x.get("generated_at", ""), reverse=True)
-        return reports[skip:skip + limit]
+        return reports[skip : skip + limit]
 
-    def _extract_report_metadata(self, investigation_folder: Path, inv_id: str) -> Dict[str, Any]:
+    def _extract_report_metadata(
+        self, investigation_folder: Path, inv_id: str
+    ) -> Dict[str, Any]:
         """
         Extract metadata from investigation folder.
 
         Args:
             investigation_folder: Path to investigation folder
             inv_id: Investigation ID
-            
+
         Returns:
             Dictionary with report metadata
         """
         report_file = investigation_folder / "comprehensive_investigation_report.html"
-        
+
         # Try to read metadata.json
         metadata = {}
         state_file = investigation_folder / "investigation_state_initial.json"
         if state_file.exists():
             try:
-                with open(state_file, 'r') as f:
+                with open(state_file, "r") as f:
                     metadata = json.load(f)
             except Exception:
                 pass
-        
+
         # Get file stats
         file_size = report_file.stat().st_size if report_file.exists() else 0
         from datetime import datetime as dt_module
-        generated_at = dt_module.fromtimestamp(
-            report_file.stat().st_mtime
-        ).isoformat() if report_file.exists() else None
-        
+
+        generated_at = (
+            dt_module.fromtimestamp(report_file.stat().st_mtime).isoformat()
+            if report_file.exists()
+            else None
+        )
+
         return {
             "investigation_id": inv_id,
             "report_path": str(report_file),
             "file_size_bytes": file_size,
             "generated_at": generated_at,
             "folder_path": str(investigation_folder),
-            "metadata": metadata
+            "metadata": metadata,
         }
 
 

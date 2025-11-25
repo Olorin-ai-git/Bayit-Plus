@@ -7,9 +7,9 @@ Week 8 Phase 3 implementation.
 """
 
 import logging
-from typing import Dict, Any, List, Optional
-from datetime import datetime
 import os
+from datetime import datetime
+from typing import Any, Dict, List, Optional
 
 from app.service.analytics.model_base import FraudDetectionModel, ModelPrediction
 
@@ -48,13 +48,16 @@ class XGBoostModel(FraudDetectionModel):
 
         try:
             import xgboost as xgb
+
             if os.path.exists(self.model_path):
                 self.model = xgb.Booster()
                 self.model.load_model(self.model_path)
                 self.is_trained = True
                 logger.info(f"✓ Loaded XGBoost model from {self.model_path}")
             else:
-                logger.warning(f"{self.model_name}: Model file not found at {self.model_path}")
+                logger.warning(
+                    f"{self.model_name}: Model file not found at {self.model_path}"
+                )
                 self.is_trained = False
         except ImportError:
             logger.warning(f"{self.model_name}: xgboost library not available")
@@ -67,7 +70,7 @@ class XGBoostModel(FraudDetectionModel):
         self,
         transaction: Dict[str, Any],
         features: Dict[str, Any],
-        advanced_features: Optional[Dict[str, Any]] = None
+        advanced_features: Optional[Dict[str, Any]] = None,
     ) -> ModelPrediction:
         """Generate XGBoost prediction."""
         if not self.is_trained or self.model is None:
@@ -77,8 +80,8 @@ class XGBoostModel(FraudDetectionModel):
             )
 
         try:
-            import xgboost as xgb
             import numpy as np
+            import xgboost as xgb
 
             # Get confidence threshold from config
             confidence_env = os.getenv("XGBOOST_CONFIDENCE_THRESHOLD")
@@ -109,7 +112,7 @@ class XGBoostModel(FraudDetectionModel):
                 model_version=self.model_version,
                 features_used=required_features,
                 metadata={"prediction_method": "xgboost_inference"},
-                timestamp=datetime.utcnow()
+                timestamp=datetime.utcnow(),
             )
         except Exception as e:
             logger.error(f"{self.model_name}: Prediction failed: {e}")
@@ -123,18 +126,26 @@ class XGBoostModel(FraudDetectionModel):
             )
 
         try:
-            importance = self.model.get_score(importance_type='weight')
+            importance = self.model.get_score(importance_type="weight")
             if not importance:
-                raise RuntimeError(f"{self.model_name}: Model returned empty feature importance")
+                raise RuntimeError(
+                    f"{self.model_name}: Model returned empty feature importance"
+                )
             max_importance = max(importance.values())
             return {k: v / max_importance for k, v in importance.items()}
         except Exception as e:
             logger.error(f"{self.model_name}: Failed to get feature importance: {e}")
-            raise RuntimeError(f"{self.model_name}: Failed to get feature importance - {e}") from e
+            raise RuntimeError(
+                f"{self.model_name}: Failed to get feature importance - {e}"
+            ) from e
 
     def get_required_features(self) -> List[str]:
         """Get required features for XGBoost model."""
         return [
-            "tx_amount", "tx_hour", "tx_day_of_week",
-            "velocity_5min", "velocity_15min", "velocity_1hr"
+            "tx_amount",
+            "tx_hour",
+            "tx_day_of_week",
+            "velocity_5min",
+            "velocity_15min",
+            "velocity_1hr",
         ]

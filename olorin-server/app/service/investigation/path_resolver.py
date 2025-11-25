@@ -27,7 +27,7 @@ class PathResolver:
     def __init__(
         self,
         config: FileOrganizationConfig,
-        entity_normalizer: Optional[EntityNormalizer] = None
+        entity_normalizer: Optional[EntityNormalizer] = None,
     ):
         """
         Initialize path resolver.
@@ -37,15 +37,12 @@ class PathResolver:
             entity_normalizer: Optional entity normalizer (creates default if None)
         """
         self.config = config
-        self.entity_normalizer = (
-            entity_normalizer
-            or EntityNormalizer(max_length=config.entity_id_max_length)
+        self.entity_normalizer = entity_normalizer or EntityNormalizer(
+            max_length=config.entity_id_max_length
         )
 
     def resolve_canonical_investigation_path(
-        self,
-        investigation_id: str,
-        created_at: datetime
+        self, investigation_id: str, created_at: datetime
     ) -> Path:
         """
         Resolve canonical investigation path: investigations/<YYYY>/<MM>/<inv_id>/
@@ -64,9 +61,7 @@ class PathResolver:
         safe_inv_id = self.entity_normalizer.normalize_for_filename(investigation_id)
 
         base_dir = self.config.workspace_base_dir
-        canonical_path = (
-            base_dir / "investigations" / year / month / safe_inv_id
-        )
+        canonical_path = base_dir / "investigations" / year / month / safe_inv_id
 
         return canonical_path
 
@@ -77,7 +72,7 @@ class PathResolver:
         investigation_id: str,
         created_at: datetime,
         file_kind: str,
-        file_ext: str
+        file_ext: str,
     ) -> Path:
         """
         Resolve date-grouped entity view path:
@@ -102,9 +97,7 @@ class PathResolver:
         normalized_entity_type = self.entity_normalizer.normalize_for_filename(
             entity_type
         )
-        safe_inv_id = self.entity_normalizer.normalize_for_filename(
-            investigation_id
-        )
+        safe_inv_id = self.entity_normalizer.normalize_for_filename(investigation_id)
 
         # Build entity view path
         base_dir = self.config.artifacts_base_dir
@@ -128,7 +121,7 @@ class PathResolver:
         date_end: datetime,
         file_type: str = "json",
         investigation_id: Optional[str] = None,
-        created_at: Optional[datetime] = None
+        created_at: Optional[datetime] = None,
     ) -> tuple[Path, Optional[Path]]:
         """
         Resolve paths for investigation artifact (canonical + entity view).
@@ -187,7 +180,7 @@ class PathResolver:
                     investigation_id=investigation_id,
                     created_at=view_created_at,
                     file_kind="artifact",
-                    file_ext=file_type
+                    file_ext=file_type,
                 )
             else:
                 # Don't log warning - this is expected when comparison doesn't have an investigation
@@ -200,11 +193,7 @@ class PathResolver:
         return canonical_path, entity_view_path
 
     def resolve_comparison_report_path(
-        self,
-        source_type: str,
-        entity_type: str,
-        entity_id: str,
-        timestamp: datetime
+        self, source_type: str, entity_type: str, entity_id: str, timestamp: datetime
     ) -> Path:
         """
         Resolve path for comparison report.
@@ -264,10 +253,7 @@ class PathResolver:
         return report_path
 
     def resolve_investigation_log_path(
-        self,
-        mode: str,
-        investigation_id: str,
-        timestamp: datetime
+        self, mode: str, investigation_id: str, timestamp: datetime
     ) -> Path:
         """
         Resolve path for investigation log folder.
@@ -281,21 +267,12 @@ class PathResolver:
             Path to investigation log folder
         """
         if mode not in ("LIVE", "MOCK", "DEMO"):
-            raise ValueError(
-                f"Invalid mode: {mode}. Must be 'LIVE', 'MOCK', or 'DEMO'"
-            )
+            raise ValueError(f"Invalid mode: {mode}. Must be 'LIVE', 'MOCK', or 'DEMO'")
 
         timestamp_str = timestamp.strftime(self.config.timestamp_format)
-        safe_inv_id = self.entity_normalizer.normalize_for_filename(
-            investigation_id
-        )
+        safe_inv_id = self.entity_normalizer.normalize_for_filename(investigation_id)
 
         base_dir = self.config.logs_base_dir
-        log_path = (
-            base_dir
-            / "investigations"
-            / f"{mode}_{safe_inv_id}_{timestamp_str}"
-        )
+        log_path = base_dir / "investigations" / f"{mode}_{safe_inv_id}_{timestamp_str}"
 
         return log_path
-

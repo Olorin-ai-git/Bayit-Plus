@@ -9,16 +9,14 @@ SYSTEM MANDATE Compliance:
 - Complete implementation: No placeholders or TODOs
 """
 
-from sqlalchemy.orm import Session
 from fastapi import HTTPException
+from sqlalchemy.orm import Session
 
 from app.models.investigation_state import InvestigationState
 
 
 def get_state_by_id(
-    db: Session,
-    investigation_id: str,
-    user_id: str
+    db: Session, investigation_id: str, user_id: str
 ) -> InvestigationState:
     """Query state by investigation_id and user_id.
 
@@ -33,24 +31,24 @@ def get_state_by_id(
     Raises:
         HTTPException: 404 if state not found
     """
-    state = db.query(InvestigationState).filter(
-        InvestigationState.investigation_id == investigation_id,
-        InvestigationState.user_id == user_id
-    ).first()
+    state = (
+        db.query(InvestigationState)
+        .filter(
+            InvestigationState.investigation_id == investigation_id,
+            InvestigationState.user_id == user_id,
+        )
+        .first()
+    )
 
     if not state:
         raise HTTPException(
-            status_code=404,
-            detail=f"Investigation {investigation_id} not found"
+            status_code=404, detail=f"Investigation {investigation_id} not found"
         )
 
     return state
 
 
-def check_duplicate_state(
-    db: Session,
-    investigation_id: str
-) -> None:
+def check_duplicate_state(db: Session, investigation_id: str) -> None:
     """Check if investigation state already exists.
 
     Args:
@@ -60,21 +58,19 @@ def check_duplicate_state(
     Raises:
         HTTPException: 409 if state already exists
     """
-    existing = db.query(InvestigationState).filter(
-        InvestigationState.investigation_id == investigation_id
-    ).first()
+    existing = (
+        db.query(InvestigationState)
+        .filter(InvestigationState.investigation_id == investigation_id)
+        .first()
+    )
 
     if existing:
         raise HTTPException(
-            status_code=409,
-            detail=f"Investigation {investigation_id} already exists"
+            status_code=409, detail=f"Investigation {investigation_id} already exists"
         )
 
 
-def check_version_conflict(
-    state: InvestigationState,
-    expected_version: int
-) -> None:
+def check_version_conflict(state: InvestigationState, expected_version: int) -> None:
     """Validate version for optimistic locking.
 
     Args:
@@ -87,5 +83,5 @@ def check_version_conflict(
     if state.version != expected_version:
         raise HTTPException(
             status_code=409,
-            detail=f"Version conflict: expected {state.version}, got {expected_version}"
+            detail=f"Version conflict: expected {state.version}, got {expected_version}",
         )

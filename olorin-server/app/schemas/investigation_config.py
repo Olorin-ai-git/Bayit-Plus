@@ -6,7 +6,8 @@ Used for POST /api/investigations endpoint request validation.
 """
 
 from datetime import datetime
-from typing import List, Literal, Dict, Any
+from typing import Any, Dict, List, Literal
+
 from pydantic import BaseModel, Field, field_validator
 
 
@@ -22,17 +23,20 @@ class TimeRangeSchema(BaseModel):
         """Ensure end time is after start time and not later than max lookback."""
         if "start" in info.data and v <= info.data["start"]:
             raise ValueError("end time must be after start time")
-        
+
         # Cap end_time at max_lookback_months before current date
         import os
         from datetime import timedelta
-        max_lookback_months = int(os.getenv('ANALYTICS_MAX_LOOKBACK_MONTHS', '6'))
+
+        max_lookback_months = int(os.getenv("ANALYTICS_MAX_LOOKBACK_MONTHS", "6"))
         max_lookback_days = max_lookback_months * 30
         max_allowed_end = datetime.utcnow() - timedelta(days=max_lookback_days)
-        
+
         if v > max_allowed_end:
-            raise ValueError(f"end time cannot be later than {max_lookback_months} months before current date ({max_allowed_end.date()})")
-        
+            raise ValueError(
+                f"end time cannot be later than {max_lookback_months} months before current date ({max_allowed_end.date()})"
+            )
+
         return v
 
     @field_validator("start", "end")
@@ -110,7 +114,9 @@ class InvestigationConfigSchema(BaseModel):
         elif entity_type == "device":
             import re
 
-            uuid_pattern = r"^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$"
+            uuid_pattern = (
+                r"^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$"
+            )
             if not re.match(uuid_pattern, v.lower()):
                 raise ValueError("device entity_id must be a valid UUID format")
 

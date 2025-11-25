@@ -12,6 +12,7 @@ Date: 2025-11-12
 import os
 from pathlib import Path
 from typing import Optional
+
 from pydantic import BaseSettings, Field, validator
 
 
@@ -20,61 +21,57 @@ class TestRunnerConfig(BaseSettings):
 
     # Server configuration
     server_url: str = Field(
-        ...,
-        env="TEST_RUNNER_SERVER_URL",
-        description="Server endpoint URL for testing"
+        ..., env="TEST_RUNNER_SERVER_URL", description="Server endpoint URL for testing"
     )
 
     # Test execution configuration
     timeout: int = Field(
-        default=300,
-        env="TEST_RUNNER_TIMEOUT",
-        description="Test timeout in seconds"
+        default=300, env="TEST_RUNNER_TIMEOUT", description="Test timeout in seconds"
     )
 
     concurrent: int = Field(
         default=3,
         env="TEST_RUNNER_CONCURRENT",
-        description="Number of concurrent tests to run"
+        description="Number of concurrent tests to run",
     )
 
     csv_limit: int = Field(
         default=2000,
         env="TEST_RUNNER_CSV_LIMIT",
-        description="Maximum number of CSV rows to process"
+        description="Maximum number of CSV rows to process",
     )
 
     default_csv_file: Path = Field(
         ...,
         env="TEST_RUNNER_DEFAULT_CSV_FILE",
-        description="Path to default CSV file for testing"
+        description="Path to default CSV file for testing",
     )
 
     # Logging configuration
     log_level: str = Field(
         default="INFO",
         env="TEST_RUNNER_LOG_LEVEL",
-        description="Logging level (DEBUG, INFO, WARNING, ERROR)"
+        description="Logging level (DEBUG, INFO, WARNING, ERROR)",
     )
 
     # Feature flags
     use_mock_ips_cache: bool = Field(
         default=False,
         env="TEST_RUNNER_USE_MOCK_IPS",
-        description="Use mocked IPS cache for testing"
+        description="Use mocked IPS cache for testing",
     )
 
     # Retry configuration
     max_retry_attempts: int = Field(
         default=3,
         env="TEST_RUNNER_MAX_RETRIES",
-        description="Maximum number of retry attempts"
+        description="Maximum number of retry attempts",
     )
 
     retry_delay_seconds: int = Field(
         default=5,
         env="TEST_RUNNER_RETRY_DELAY",
-        description="Delay between retry attempts in seconds"
+        description="Delay between retry attempts in seconds",
     )
 
     class Config:

@@ -14,17 +14,17 @@ Usage:
 """
 
 import asyncio
-import sys
-import random
 import json
+import random
+import sys
 from datetime import datetime, timedelta
 from pathlib import Path
 from uuid import uuid4
 
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
-from app.service.logging import get_bridge_logger
 from app.service.config_loader import get_config_loader
+from app.service.logging import get_bridge_logger
 
 logger = get_bridge_logger(__name__)
 
@@ -52,7 +52,9 @@ def generate_realistic_record():
     device_type = "mobile"
     device_model = "iPhone 13 Pro"
     device_os_version = "iOS 16.5"
-    user_agent = "Mozilla/5.0 (iPhone; CPU iPhone OS 16_5 like Mac OS X) AppleWebKit/605.1.15"
+    user_agent = (
+        "Mozilla/5.0 (iPhone; CPU iPhone OS 16_5 like Mac OS X) AppleWebKit/605.1.15"
+    )
 
     # Payment details
     payment_method = "credit_card"
@@ -72,31 +74,37 @@ def generate_realistic_record():
     is_processor_rejected_due_to_fraud = 1
 
     # Geographic data
-    billing_address = json.dumps({
-        "street": "123 Red Square",
-        "city": "Moscow",
-        "state": "Moscow Oblast",
-        "zip": "101000",
-        "country": "RU"
-    })
+    billing_address = json.dumps(
+        {
+            "street": "123 Red Square",
+            "city": "Moscow",
+            "state": "Moscow Oblast",
+            "zip": "101000",
+            "country": "RU",
+        }
+    )
 
-    shipping_address = json.dumps({
-        "street": "456 Different Street",
-        "city": "New York",
-        "state": "NY",
-        "zip": "10001",
-        "country": "US"
-    })
+    shipping_address = json.dumps(
+        {
+            "street": "456 Different Street",
+            "city": "New York",
+            "state": "NY",
+            "zip": "10001",
+            "country": "US",
+        }
+    )
 
     # IP geolocation
-    ip_geolocation = json.dumps({
-        "country": "RU",
-        "city": "Moscow",
-        "latitude": 55.7558,
-        "longitude": 37.6173,
-        "isp": "Unknown ISP",
-        "timezone": "Europe/Moscow"
-    })
+    ip_geolocation = json.dumps(
+        {
+            "country": "RU",
+            "city": "Moscow",
+            "latitude": 55.7558,
+            "longitude": 37.6173,
+            "isp": "Unknown ISP",
+            "timezone": "Europe/Moscow",
+        }
+    )
 
     # Transaction history counts
     user_tx_count_last_30d = 15
@@ -120,10 +128,12 @@ def generate_realistic_record():
     ip_billing_distance_km = 50.0
 
     # Cart information
-    cart_items = json.dumps([
-        {"sku": "SKU1234", "qty": 2, "price": 500.00, "name": "Electronics"},
-        {"sku": "SKU5678", "qty": 1, "price": 250.00, "name": "Gift Card"}
-    ])
+    cart_items = json.dumps(
+        [
+            {"sku": "SKU1234", "qty": 2, "price": 500.00, "name": "Electronics"},
+            {"sku": "SKU5678", "qty": 1, "price": 250.00, "name": "Gift Card"},
+        ]
+    )
     cart_total_items = 3
     cart_total_value = 1250.00
 
@@ -220,7 +230,6 @@ def generate_realistic_record():
         "first_name": first_name,
         "last_name": last_name,
         "phone_number": phone_number,
-
         # Network
         "ip": ip_address,
         "ip_country_code": ip_country_code,
@@ -231,7 +240,6 @@ def generate_realistic_record():
         "is_proxy": is_proxy,
         "is_tor": is_tor,
         "is_hosting": is_hosting,
-
         # Device
         "device_id": device_id,
         "device_type": device_type,
@@ -243,7 +251,6 @@ def generate_realistic_record():
         "browser_timezone": browser_timezone,
         "has_cookies_enabled": has_cookies_enabled,
         "has_javascript_enabled": has_javascript_enabled,
-
         # Payment
         "payment_method": payment_method,
         "card_brand": card_brand,
@@ -256,7 +263,6 @@ def generate_realistic_record():
         "processor_decline_reason": processor_decline_reason,
         "avs_result": avs_result,
         "cvv_result": cvv_result,
-
         # Risk scores
         "model_score": model_score,
         "maxmind_risk_score": maxmind_risk_score,
@@ -264,13 +270,11 @@ def generate_realistic_record():
         "nsure_last_decision": nsure_last_decision,
         "is_failed_tx": is_failed_tx,
         "is_processor_rejected_due_to_fraud": is_processor_rejected_due_to_fraud,
-
         # Addresses
         "billing_address": billing_address,
         "shipping_address": shipping_address,
         "billing_shipping_distance_km": billing_shipping_distance_km,
         "ip_billing_distance_km": ip_billing_distance_km,
-
         # Velocity
         "user_tx_count_last_30d": user_tx_count_last_30d,
         "user_tx_count_last_7d": user_tx_count_last_7d,
@@ -279,35 +283,29 @@ def generate_realistic_record():
         "ip_tx_count_last_24h": ip_tx_count_last_24h,
         "device_tx_count_last_24h": device_tx_count_last_24h,
         "card_tx_count_last_24h": card_tx_count_last_24h,
-
         # Time features
         "hour_of_day": hour_of_day,
         "day_of_week": day_of_week,
         "is_weekend": is_weekend,
         "is_business_hours": is_business_hours,
-
         # Cart
         "cart_items": cart_items,
         "cart_total_items": cart_total_items,
         "cart_total_value": cart_total_value,
-
         # Session
         "session_id": session_id,
         "session_duration_seconds": session_duration_seconds,
         "page_views_in_session": page_views_in_session,
-
         # Email
         "email_domain": email_domain,
         "email_domain_age_days": email_domain_age_days,
         "is_disposable_email": is_disposable_email,
         "email_verification_status": email_verification_status,
-
         # Phone
         "phone_carrier": phone_carrier,
         "phone_type": phone_type,
         "phone_country_code": phone_country_code,
         "is_phone_verified": is_phone_verified,
-
         # Account
         "account_created_at": account_created_at,
         "account_age_days": account_age_days,
@@ -315,37 +313,30 @@ def generate_realistic_record():
         "kyc_status": kyc_status,
         "kyc_documents_uploaded": kyc_documents_uploaded,
         "kyc_verification_attempts": kyc_verification_attempts,
-
         # Social
         "has_facebook_connected": has_facebook_connected,
         "has_google_connected": has_google_connected,
         "has_twitter_connected": has_twitter_connected,
-
         # Merchant
         "merchant_id": merchant_id,
         "merchant_category_code": merchant_category_code,
         "merchant_name": merchant_name,
-
         # History
         "user_chargeback_count_lifetime": user_chargeback_count_lifetime,
         "user_chargeback_count_last_90d": user_chargeback_count_last_90d,
         "user_refund_count_lifetime": user_refund_count_lifetime,
         "user_refund_count_last_90d": user_refund_count_last_90d,
         "user_refund_amount_last_90d": user_refund_amount_last_90d,
-
         # Shipping
         "shipping_method": shipping_method,
         "estimated_delivery_days": estimated_delivery_days,
         "is_expedited_shipping": is_expedited_shipping,
-
         # Promo
         "promo_code_used": promo_code_used,
         "promo_discount_amount": promo_discount_amount,
-
         # 3DS
         "is_3ds_authenticated": is_3ds_authenticated,
         "threeds_version": threeds_version,
-
         # Timestamps
         "first_seen_at": first_seen_at,
         "last_seen_at": last_seen_at,
@@ -371,8 +362,8 @@ async def regenerate_single_record():
         conn = await asyncpg.connect(conn_str)
         logger.info(f"✅ Connected to PostgreSQL: {pg_config['database']}")
 
-        schema = pg_config.get('schema', 'public')
-        table = pg_config.get('transactions_table', 'transactions_enriched')
+        schema = pg_config.get("schema", "public")
+        table = pg_config.get("transactions_table", "transactions_enriched")
         full_table = f"{schema}.{table}"
 
         # Step 1: Delete all existing records
@@ -388,7 +379,7 @@ async def regenerate_single_record():
             ORDER BY ordinal_position
         """
         columns = await conn.fetch(columns_query)
-        all_columns = [col['column_name'] for col in columns]
+        all_columns = [col["column_name"] for col in columns]
         logger.info(f"📊 Total columns in schema: {len(all_columns)}")
 
         # Step 3: Generate comprehensive record
@@ -406,8 +397,8 @@ async def regenerate_single_record():
             logger.info(f"Missing columns: {', '.join(missing_columns[:10])}...")
 
         # Build INSERT
-        column_names = ', '.join(available_columns)
-        placeholders = ', '.join([f'${i+1}' for i in range(len(available_columns))])
+        column_names = ", ".join(available_columns)
+        placeholders = ", ".join([f"${i+1}" for i in range(len(available_columns))])
         values = [record[col] for col in available_columns]
 
         insert_sql = f"""

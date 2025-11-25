@@ -9,8 +9,8 @@ Constitutional Compliance:
 - Returns None for insufficient data
 """
 
-from typing import List, Optional
 import math
+from typing import List, Optional
 
 from app.service.logging import get_bridge_logger
 
@@ -18,9 +18,7 @@ logger = get_bridge_logger(__name__)
 
 
 def compute_psi(
-    risks_a: List[float],
-    risks_b: List[float],
-    num_bins: int = 10
+    risks_a: List[float], risks_b: List[float], num_bins: int = 10
 ) -> Optional[float]:
     """
     Compute Population Stability Index (PSI) for distribution drift detection.
@@ -42,7 +40,9 @@ def compute_psi(
         return None
 
     if len(risks_a) < 10 or len(risks_b) < 10:
-        logger.warning("Insufficient data for PSI calculation (need at least 10 values per window)")
+        logger.warning(
+            "Insufficient data for PSI calculation (need at least 10 values per window)"
+        )
         return None
 
     # Find common range
@@ -60,11 +60,19 @@ def compute_psi(
     bins_b = [0] * num_bins
 
     for risk in risks_a:
-        bin_idx = min(int((risk - min_risk) / bin_width), num_bins - 1) if bin_width > 0 else 0
+        bin_idx = (
+            min(int((risk - min_risk) / bin_width), num_bins - 1)
+            if bin_width > 0
+            else 0
+        )
         bins_a[bin_idx] += 1
 
     for risk in risks_b:
-        bin_idx = min(int((risk - min_risk) / bin_width), num_bins - 1) if bin_width > 0 else 0
+        bin_idx = (
+            min(int((risk - min_risk) / bin_width), num_bins - 1)
+            if bin_width > 0
+            else 0
+        )
         bins_b[bin_idx] += 1
 
     # Normalize to probabilities
@@ -89,10 +97,7 @@ def compute_psi(
     return psi
 
 
-def compute_ks_statistic(
-    risks_a: List[float],
-    risks_b: List[float]
-) -> Optional[float]:
+def compute_ks_statistic(risks_a: List[float], risks_b: List[float]) -> Optional[float]:
     """
     Compute Kolmogorov-Smirnov (KS) statistic for distribution comparison.
 
@@ -110,7 +115,9 @@ def compute_ks_statistic(
         return None
 
     if len(risks_a) < 10 or len(risks_b) < 10:
-        logger.warning("Insufficient data for KS statistic calculation (need at least 10 values per window)")
+        logger.warning(
+            "Insufficient data for KS statistic calculation (need at least 10 values per window)"
+        )
         return None
 
     # Sort both lists
@@ -133,4 +140,3 @@ def compute_ks_statistic(
         max_diff = max(max_diff, diff)
 
     return max_diff
-

@@ -12,8 +12,8 @@ Orchestrates fraud score calculation, indicator identification, and final decisi
 from typing import Any, Dict, List
 
 from .fraud_detection_scoring_calculation import FraudScoreCalculation
-from .fraud_detection_scoring_indicators import FraudIndicatorIdentification
 from .fraud_detection_scoring_decision import FraudFinalDecision
+from .fraud_detection_scoring_indicators import FraudIndicatorIdentification
 
 
 class FraudScoringDecision:

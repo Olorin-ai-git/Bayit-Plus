@@ -11,25 +11,31 @@ from pathlib import Path
 # Add parent directory to path
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
-from app.service.database.vector_database_config import get_vector_db_config
-from app.service.database.models import (
-    DocumentCollection, Document, DocumentChunk, 
-    RAGChatSession, RAGChatMessage, RAGDataSource
-)
-from sqlalchemy import select, func, text
 from datetime import datetime
+
+from sqlalchemy import func, select, text
+
+from app.service.database.models import (
+    Document,
+    DocumentChunk,
+    DocumentCollection,
+    RAGChatMessage,
+    RAGChatSession,
+    RAGDataSource,
+)
+from app.service.database.vector_database_config import get_vector_db_config
 
 
 async def query_vector_db():
     """Query and display vector database contents."""
     db_config = get_vector_db_config()
     await db_config.initialize_engine()
-    
+
     print("=" * 80)
     print("VECTOR DATABASE CONTENTS")
     print("=" * 80)
     print()
-    
+
     async with db_config.session() as session:
         # Collections
         print("📚 DOCUMENT COLLECTIONS")
@@ -43,7 +49,7 @@ async def query_vector_db():
                 select(DocumentCollection).where(DocumentCollection.is_active == True)
             )
         collections = collections_result.scalars().all()
-        
+
         if collections:
             for coll in collections:
                 print(f"  • {coll.name} (ID: {coll.id})")
@@ -52,24 +58,26 @@ async def query_vector_db():
         else:
             print("  No collections found")
         print()
-        
+
         # Documents
         print("📄 DOCUMENTS")
         print("-" * 80)
         if db_config.is_postgresql:
             docs_result = await session.execute(
-                select(Document).where(Document.is_active == True)
+                select(Document)
+                .where(Document.is_active == True)
                 .order_by(Document.created_at.desc())
                 .limit(20)
             )
         else:
             docs_result = session.execute(
-                select(Document).where(Document.is_active == True)
+                select(Document)
+                .where(Document.is_active == True)
                 .order_by(Document.created_at.desc())
                 .limit(20)
             )
         documents = docs_result.scalars().all()
-        
+
         if documents:
             print(f"  Found {len(documents)} documents (showing up to 20):")
             for doc in documents:
@@ -86,21 +94,23 @@ async def query_vector_db():
         else:
             print("  No documents found")
         print()
-        
+
         # Document Chunks
         print("🧩 DOCUMENT CHUNKS")
         print("-" * 80)
         if db_config.is_postgresql:
             chunks_result = await session.execute(
-                select(func.count(DocumentChunk.id)).where(DocumentChunk.is_active == True)
+                select(func.count(DocumentChunk.id)).where(
+                    DocumentChunk.is_active == True
+                )
             )
             total_chunks = chunks_result.scalar() or 0
-            
+
             # Get chunks by document
             chunks_by_doc_result = await session.execute(
                 select(
                     DocumentChunk.document_id,
-                    func.count(DocumentChunk.id).label('chunk_count')
+                    func.count(DocumentChunk.id).label("chunk_count"),
                 )
                 .where(DocumentChunk.is_active == True)
                 .group_by(DocumentChunk.document_id)
@@ -108,20 +118,22 @@ async def query_vector_db():
             )
         else:
             chunks_result = session.execute(
-                select(func.count(DocumentChunk.id)).where(DocumentChunk.is_active == True)
+                select(func.count(DocumentChunk.id)).where(
+                    DocumentChunk.is_active == True
+                )
             )
             total_chunks = chunks_result.scalar() or 0
-            
+
             chunks_by_doc_result = session.execute(
                 select(
                     DocumentChunk.document_id,
-                    func.count(DocumentChunk.id).label('chunk_count')
+                    func.count(DocumentChunk.id).label("chunk_count"),
                 )
                 .where(DocumentChunk.is_active == True)
                 .group_by(DocumentChunk.document_id)
                 .limit(10)
             )
-        
+
         print(f"  Total chunks: {total_chunks}")
         chunks_by_doc = chunks_by_doc_result.fetchall()
         if chunks_by_doc:
@@ -129,7 +141,7 @@ async def query_vector_db():
             for row in chunks_by_doc:
                 print(f"    Document {row[0][:36]}...: {row[1]} chunks")
         print()
-        
+
         # Chat Sessions
         print("💬 CHAT SESSIONS")
         print("-" * 80)
@@ -146,23 +158,25 @@ async def query_vector_db():
                 .limit(10)
             )
         sessions = sessions_result.scalars().all()
-        
+
         if sessions:
             print(f"  Found {len(sessions)} sessions (showing up to 10):")
             for sess in sessions:
                 # Get message count
                 if db_config.is_postgresql:
                     msg_count_result = await session.execute(
-                        select(func.count(RAGChatMessage.id))
-                        .where(RAGChatMessage.session_id == sess.id)
+                        select(func.count(RAGChatMessage.id)).where(
+                            RAGChatMessage.session_id == sess.id
+                        )
                     )
                 else:
                     msg_count_result = session.execute(
-                        select(func.count(RAGChatMessage.id))
-                        .where(RAGChatMessage.session_id == sess.id)
+                        select(func.count(RAGChatMessage.id)).where(
+                            RAGChatMessage.session_id == sess.id
+                        )
                     )
                 msg_count = msg_count_result.scalar() or 0
-                
+
                 print(f"  • {sess.title or 'Untitled Chat'}")
                 print(f"    ID: {sess.id}")
                 print(f"    User: {sess.user_id}")
@@ -173,7 +187,7 @@ async def query_vector_db():
         else:
             print("  No chat sessions found")
         print()
-        
+
         # Data Sources
         print("🔌 DATA SOURCES")
         print("-" * 80)
@@ -186,7 +200,7 @@ async def query_vector_db():
                 select(RAGDataSource).order_by(RAGDataSource.name)
             )
         sources = sources_result.scalars().all()
-        
+
         if sources:
             for source in sources:
                 print(f"  • {source.name}")
@@ -197,12 +211,14 @@ async def query_vector_db():
         else:
             print("  No data sources found")
         print()
-        
+
         # Summary
         print("=" * 80)
         print("SUMMARY")
         print("=" * 80)
-        print(f"Database Type: {'PostgreSQL + pgvector' if db_config.is_postgresql else 'SQLite'}")
+        print(
+            f"Database Type: {'PostgreSQL + pgvector' if db_config.is_postgresql else 'SQLite'}"
+        )
         print(f"Collections: {len(collections)}")
         print(f"Documents: {len(documents)}")
         print(f"Total Chunks: {total_chunks}")
@@ -213,4 +229,3 @@ async def query_vector_db():
 
 if __name__ == "__main__":
     asyncio.run(query_vector_db())
-

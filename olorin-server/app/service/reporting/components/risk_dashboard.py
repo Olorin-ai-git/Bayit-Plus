@@ -16,36 +16,37 @@ Features:
 
 import json
 import statistics
-from typing import Dict, List, Any, Optional
-from collections import defaultdict, Counter
+from collections import Counter, defaultdict
 from datetime import datetime
+from typing import Any, Dict, List, Optional
 
 from .base_component import BaseVisualizationComponent
+
 
 class RiskDashboardComponent(BaseVisualizationComponent):
     """
     Interactive risk analysis dashboard component.
-    
+
     Displays comprehensive risk analysis with progression tracking,
     category breakdown, and confidence assessment.
     """
-    
+
     @property
     def component_name(self) -> str:
         return "risk_dashboard"
-        
+
     @property
     def component_title(self) -> str:
         return "Risk Analysis Dashboard"
-        
+
     @property
     def component_description(self) -> str:
         return "Interactive dashboard showing risk score progression, categories, and threat assessment"
-    
+
     def validate_data(self, data: Dict[str, Any]) -> bool:
         """
         Validate risk analysis data.
-        
+
         Expected data structure:
         {
             'risk_score_entries': [
@@ -64,298 +65,330 @@ class RiskDashboardComponent(BaseVisualizationComponent):
         if not isinstance(data, dict):
             self._add_error("Data must be a dictionary")
             return False
-            
-        risk_entries = data.get('risk_score_entries', [])
+
+        risk_entries = data.get("risk_score_entries", [])
         if not isinstance(risk_entries, list):
             self._add_error("risk_score_entries must be a list")
             return False
-            
+
         if not risk_entries:
             self._add_warning("No risk score entries found")
             return True
-            
+
         # Validate risk entry structure
         for i, entry in enumerate(risk_entries[:3]):
             if not isinstance(entry, dict):
                 self._add_error(f"Risk entry {i} must be a dictionary")
                 return False
-                
-            if 'risk_score' not in entry:
+
+            if "risk_score" not in entry:
                 self._add_warning(f"Risk entry {i} missing risk_score field")
-            elif not isinstance(entry['risk_score'], (int, float)):
+            elif not isinstance(entry["risk_score"], (int, float)):
                 self._add_warning(f"Risk entry {i} risk_score must be numeric")
-                
+
         return True
-    
+
     def process_data(self, data: Dict[str, Any]) -> Dict[str, Any]:
         """
         Process risk analysis data for visualization.
         """
-        risk_entries = data.get('risk_score_entries', [])
-        agent_decisions = data.get('agent_decisions', [])
-        
+        risk_entries = data.get("risk_score_entries", [])
+        agent_decisions = data.get("agent_decisions", [])
+
         if not risk_entries:
             return {}
-            
+
         # Process risk score progression
         processed_entries = []
         risk_scores = []
         risk_categories = defaultdict(list)
         risk_factors_counter = Counter()
         confidence_scores = []
-        
+
         for i, entry in enumerate(risk_entries):
-            timestamp = entry.get('timestamp', '')
-            risk_score = entry.get('risk_score', 0.0)
-            risk_factors = entry.get('risk_factors', [])
-            confidence = entry.get('confidence', 0.0)
-            category = entry.get('category', 'Unknown')
-            details = entry.get('details', {})
-            
+            timestamp = entry.get("timestamp", "")
+            risk_score = entry.get("risk_score", 0.0)
+            risk_factors = entry.get("risk_factors", [])
+            confidence = entry.get("confidence", 0.0)
+            category = entry.get("category", "Unknown")
+            details = entry.get("details", {})
+
             # Validate and normalize risk score
             if isinstance(risk_score, (int, float)):
                 risk_score = max(0.0, min(1.0, float(risk_score)))
             else:
                 risk_score = 0.0
-                
+
             # Validate and normalize confidence
             if isinstance(confidence, (int, float)):
                 confidence = max(0.0, min(1.0, float(confidence)))
             else:
                 confidence = 0.0
-            
+
             processed_entry = {
-                'index': i,
-                'timestamp': timestamp,
-                'formatted_time': self._format_timestamp(timestamp),
-                'risk_score': risk_score,
-                'risk_factors': risk_factors if isinstance(risk_factors, list) else [],
-                'confidence': confidence,
-                'category': category,
-                'details': details,
-                'risk_level': self._determine_risk_level(risk_score),
-                'confidence_level': self._determine_confidence_level(confidence)
+                "index": i,
+                "timestamp": timestamp,
+                "formatted_time": self._format_timestamp(timestamp),
+                "risk_score": risk_score,
+                "risk_factors": risk_factors if isinstance(risk_factors, list) else [],
+                "confidence": confidence,
+                "category": category,
+                "details": details,
+                "risk_level": self._determine_risk_level(risk_score),
+                "confidence_level": self._determine_confidence_level(confidence),
             }
-            
+
             processed_entries.append(processed_entry)
             risk_scores.append(risk_score)
             confidence_scores.append(confidence)
             risk_categories[category].append(risk_score)
-            
+
             # Count risk factors
             for factor in risk_factors if isinstance(risk_factors, list) else []:
                 risk_factors_counter[factor] += 1
-        
+
         # Calculate risk statistics
         current_risk = risk_scores[-1] if risk_scores else 0.0
         max_risk = max(risk_scores) if risk_scores else 0.0
         min_risk = min(risk_scores) if risk_scores else 0.0
         avg_risk = statistics.mean(risk_scores) if risk_scores else 0.0
         risk_volatility = statistics.stdev(risk_scores) if len(risk_scores) > 1 else 0.0
-        
+
         # Calculate confidence statistics
-        avg_confidence = statistics.mean(confidence_scores) if confidence_scores else 0.0
+        avg_confidence = (
+            statistics.mean(confidence_scores) if confidence_scores else 0.0
+        )
         min_confidence = min(confidence_scores) if confidence_scores else 0.0
-        
+
         # Analyze risk trend
         risk_trend = self._analyze_risk_trend(risk_scores)
-        
+
         # Process risk categories with average scores
         processed_categories = {}
         for category, scores in risk_categories.items():
             processed_categories[category] = {
-                'avg_score': statistics.mean(scores),
-                'max_score': max(scores),
-                'count': len(scores),
-                'latest_score': scores[-1]
+                "avg_score": statistics.mean(scores),
+                "max_score": max(scores),
+                "count": len(scores),
+                "latest_score": scores[-1],
             }
-        
+
         # Get top risk factors
         top_risk_factors = risk_factors_counter.most_common(10)
-        
+
         # Risk level distribution
-        risk_level_distribution = Counter(entry['risk_level'] for entry in processed_entries)
-        
+        risk_level_distribution = Counter(
+            entry["risk_level"] for entry in processed_entries
+        )
+
         # Detect risk alerts (significant changes or high risk periods)
         risk_alerts = self._detect_risk_alerts(processed_entries)
-        
+
         return {
-            'processed_entries': processed_entries,
-            'risk_scores': risk_scores,
-            'confidence_scores': confidence_scores,
-            'timestamps': [entry['formatted_time'] for entry in processed_entries],
-            'processed_categories': processed_categories,
-            'top_risk_factors': top_risk_factors,
-            'risk_level_distribution': dict(risk_level_distribution),
-            'risk_alerts': risk_alerts,
-            'metrics': {
-                'current_risk_score': round(current_risk, 3),
-                'max_risk_score': round(max_risk, 3),
-                'min_risk_score': round(min_risk, 3),
-                'avg_risk_score': round(avg_risk, 3),
-                'risk_volatility': round(risk_volatility, 3),
-                'avg_confidence': round(avg_confidence, 3),
-                'min_confidence': round(min_confidence, 3),
-                'total_assessments': len(processed_entries),
-                'risk_categories_count': len(processed_categories),
-                'risk_trend': risk_trend,
-                'current_risk_level': self._determine_risk_level(current_risk),
-                'overall_risk_status': self._determine_overall_status(current_risk, risk_trend, avg_confidence)
-            }
+            "processed_entries": processed_entries,
+            "risk_scores": risk_scores,
+            "confidence_scores": confidence_scores,
+            "timestamps": [entry["formatted_time"] for entry in processed_entries],
+            "processed_categories": processed_categories,
+            "top_risk_factors": top_risk_factors,
+            "risk_level_distribution": dict(risk_level_distribution),
+            "risk_alerts": risk_alerts,
+            "metrics": {
+                "current_risk_score": round(current_risk, 3),
+                "max_risk_score": round(max_risk, 3),
+                "min_risk_score": round(min_risk, 3),
+                "avg_risk_score": round(avg_risk, 3),
+                "risk_volatility": round(risk_volatility, 3),
+                "avg_confidence": round(avg_confidence, 3),
+                "min_confidence": round(min_confidence, 3),
+                "total_assessments": len(processed_entries),
+                "risk_categories_count": len(processed_categories),
+                "risk_trend": risk_trend,
+                "current_risk_level": self._determine_risk_level(current_risk),
+                "overall_risk_status": self._determine_overall_status(
+                    current_risk, risk_trend, avg_confidence
+                ),
+            },
         }
-    
+
     def _determine_risk_level(self, risk_score: float) -> str:
         """Determine risk level based on score"""
         if risk_score >= 0.8:
-            return 'Critical'
+            return "Critical"
         elif risk_score >= 0.6:
-            return 'High'
+            return "High"
         elif risk_score >= 0.4:
-            return 'Medium'
+            return "Medium"
         elif risk_score >= 0.2:
-            return 'Low'
+            return "Low"
         else:
-            return 'Minimal'
-    
+            return "Minimal"
+
     def _determine_confidence_level(self, confidence: float) -> str:
         """Determine confidence level based on score"""
         if confidence >= 0.9:
-            return 'Very High'
+            return "Very High"
         elif confidence >= 0.7:
-            return 'High'
+            return "High"
         elif confidence >= 0.5:
-            return 'Medium'
+            return "Medium"
         elif confidence >= 0.3:
-            return 'Low'
+            return "Low"
         else:
-            return 'Very Low'
-    
+            return "Very Low"
+
     def _analyze_risk_trend(self, risk_scores: List[float]) -> str:
         """Analyze risk trend over time"""
         if len(risk_scores) < 3:
-            return 'insufficient_data'
-            
+            return "insufficient_data"
+
         # Compare first third with last third
         third = len(risk_scores) // 3
-        first_third_avg = statistics.mean(risk_scores[:third]) if third > 0 else risk_scores[0]
-        last_third_avg = statistics.mean(risk_scores[-third:]) if third > 0 else risk_scores[-1]
-        
-        change_percent = ((last_third_avg - first_third_avg) / first_third_avg) * 100 if first_third_avg > 0 else 0
-        
+        first_third_avg = (
+            statistics.mean(risk_scores[:third]) if third > 0 else risk_scores[0]
+        )
+        last_third_avg = (
+            statistics.mean(risk_scores[-third:]) if third > 0 else risk_scores[-1]
+        )
+
+        change_percent = (
+            ((last_third_avg - first_third_avg) / first_third_avg) * 100
+            if first_third_avg > 0
+            else 0
+        )
+
         if change_percent > 15:
-            return 'increasing'
+            return "increasing"
         elif change_percent < -15:
-            return 'decreasing'
+            return "decreasing"
         else:
-            return 'stable'
-    
-    def _determine_overall_status(self, current_risk: float, trend: str, avg_confidence: float) -> str:
+            return "stable"
+
+    def _determine_overall_status(
+        self, current_risk: float, trend: str, avg_confidence: float
+    ) -> str:
         """Determine overall risk status"""
         if current_risk >= 0.7:
-            if trend == 'increasing':
-                return 'critical_escalating'
+            if trend == "increasing":
+                return "critical_escalating"
             else:
-                return 'critical_stable'
+                return "critical_stable"
         elif current_risk >= 0.5:
-            if trend == 'increasing':
-                return 'high_escalating'
-            elif trend == 'decreasing':
-                return 'high_improving'
+            if trend == "increasing":
+                return "high_escalating"
+            elif trend == "decreasing":
+                return "high_improving"
             else:
-                return 'high_stable'
+                return "high_stable"
         elif current_risk >= 0.3:
-            if trend == 'increasing':
-                return 'medium_escalating'
-            elif trend == 'decreasing':
-                return 'medium_improving'
+            if trend == "increasing":
+                return "medium_escalating"
+            elif trend == "decreasing":
+                return "medium_improving"
             else:
-                return 'medium_stable'
+                return "medium_stable"
         else:
             if avg_confidence > 0.7:
-                return 'low_confident'
+                return "low_confident"
             else:
-                return 'low_uncertain'
-    
-    def _detect_risk_alerts(self, entries: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
+                return "low_uncertain"
+
+    def _detect_risk_alerts(
+        self, entries: List[Dict[str, Any]]
+    ) -> List[Dict[str, Any]]:
         """Detect significant risk events or patterns"""
         alerts = []
-        
+
         if len(entries) < 2:
             return alerts
-            
+
         # Check for sudden spikes
         for i in range(1, len(entries)):
-            current_score = entries[i]['risk_score']
-            previous_score = entries[i-1]['risk_score']
-            
+            current_score = entries[i]["risk_score"]
+            previous_score = entries[i - 1]["risk_score"]
+
             # Risk spike detection
             if current_score - previous_score > 0.3:
-                alerts.append({
-                    'type': 'risk_spike',
-                    'severity': 'high',
-                    'timestamp': entries[i]['timestamp'],
-                    'message': f"Risk increased by {(current_score - previous_score):.2f} points",
-                    'details': {
-                        'previous_score': previous_score,
-                        'current_score': current_score,
-                        'factors': entries[i]['risk_factors']
+                alerts.append(
+                    {
+                        "type": "risk_spike",
+                        "severity": "high",
+                        "timestamp": entries[i]["timestamp"],
+                        "message": f"Risk increased by {(current_score - previous_score):.2f} points",
+                        "details": {
+                            "previous_score": previous_score,
+                            "current_score": current_score,
+                            "factors": entries[i]["risk_factors"],
+                        },
                     }
-                })
-            
+                )
+
             # Risk drop detection
             elif previous_score - current_score > 0.3:
-                alerts.append({
-                    'type': 'risk_drop',
-                    'severity': 'info',
-                    'timestamp': entries[i]['timestamp'],
-                    'message': f"Risk decreased by {(previous_score - current_score):.2f} points",
-                    'details': {
-                        'previous_score': previous_score,
-                        'current_score': current_score
+                alerts.append(
+                    {
+                        "type": "risk_drop",
+                        "severity": "info",
+                        "timestamp": entries[i]["timestamp"],
+                        "message": f"Risk decreased by {(previous_score - current_score):.2f} points",
+                        "details": {
+                            "previous_score": previous_score,
+                            "current_score": current_score,
+                        },
                     }
-                })
-        
+                )
+
         # Check for sustained high risk
-        high_risk_count = sum(1 for entry in entries[-5:] if entry['risk_score'] >= 0.7)
+        high_risk_count = sum(1 for entry in entries[-5:] if entry["risk_score"] >= 0.7)
         if high_risk_count >= 3:
-            alerts.append({
-                'type': 'sustained_high_risk',
-                'severity': 'critical',
-                'timestamp': entries[-1]['timestamp'],
-                'message': f"High risk maintained for {high_risk_count} consecutive assessments",
-                'details': {
-                    'consecutive_count': high_risk_count,
-                    'latest_score': entries[-1]['risk_score']
+            alerts.append(
+                {
+                    "type": "sustained_high_risk",
+                    "severity": "critical",
+                    "timestamp": entries[-1]["timestamp"],
+                    "message": f"High risk maintained for {high_risk_count} consecutive assessments",
+                    "details": {
+                        "consecutive_count": high_risk_count,
+                        "latest_score": entries[-1]["risk_score"],
+                    },
                 }
-            })
-        
+            )
+
         return alerts[-10:]  # Return last 10 alerts
-    
+
     def generate_html(self, processed_data: Dict[str, Any]) -> str:
         """
         Generate HTML for risk dashboard component.
         """
-        metrics = processed_data.get('metrics', {})
-        processed_categories = processed_data.get('processed_categories', {})
-        top_risk_factors = processed_data.get('top_risk_factors', [])
-        risk_level_distribution = processed_data.get('risk_level_distribution', {})
-        risk_alerts = processed_data.get('risk_alerts', [])
-        
-        current_risk = metrics.get('current_risk_score', 0.0)
-        current_level = metrics.get('current_risk_level', 'Unknown')
-        overall_status = metrics.get('overall_risk_status', 'unknown')
-        
+        metrics = processed_data.get("metrics", {})
+        processed_categories = processed_data.get("processed_categories", {})
+        top_risk_factors = processed_data.get("top_risk_factors", [])
+        risk_level_distribution = processed_data.get("risk_level_distribution", {})
+        risk_alerts = processed_data.get("risk_alerts", [])
+
+        current_risk = metrics.get("current_risk_score", 0.0)
+        current_level = metrics.get("current_risk_level", "Unknown")
+        overall_status = metrics.get("overall_risk_status", "unknown")
+
         # Generate statistics section
         stats_html = ""
         stats_items = [
-            ('Current Risk', f"{current_risk:.3f}", self._get_risk_class(current_risk)),
-            ('Peak Risk', f"{metrics.get('max_risk_score', 0):.3f}", self._get_risk_class(metrics.get('max_risk_score', 0))),
-            ('Average Risk', f"{metrics.get('avg_risk_score', 0):.3f}", self._get_risk_class(metrics.get('avg_risk_score', 0))),
-            ('Risk Volatility', f"{metrics.get('risk_volatility', 0):.3f}", 'neutral'),
-            ('Avg Confidence', f"{metrics.get('avg_confidence', 0):.3f}", 'neutral'),
-            ('Assessments', str(metrics.get('total_assessments', 0)), 'neutral')
+            ("Current Risk", f"{current_risk:.3f}", self._get_risk_class(current_risk)),
+            (
+                "Peak Risk",
+                f"{metrics.get('max_risk_score', 0):.3f}",
+                self._get_risk_class(metrics.get("max_risk_score", 0)),
+            ),
+            (
+                "Average Risk",
+                f"{metrics.get('avg_risk_score', 0):.3f}",
+                self._get_risk_class(metrics.get("avg_risk_score", 0)),
+            ),
+            ("Risk Volatility", f"{metrics.get('risk_volatility', 0):.3f}", "neutral"),
+            ("Avg Confidence", f"{metrics.get('avg_confidence', 0):.3f}", "neutral"),
+            ("Assessments", str(metrics.get("total_assessments", 0)), "neutral"),
         ]
-        
+
         for label, value, risk_class in stats_items:
             stats_html += f"""
                 <div class="viz-stat-item-{self.component_id}">
@@ -363,7 +396,7 @@ class RiskDashboardComponent(BaseVisualizationComponent):
                     <div class="viz-stat-label-{self.component_id}">{label}</div>
                 </div>
             """
-        
+
         # Generate risk level indicator
         risk_indicator_html = f"""
             <div class="risk-indicator-{self.component_id}">
@@ -383,14 +416,14 @@ class RiskDashboardComponent(BaseVisualizationComponent):
                 </div>
             </div>
         """
-        
+
         # Generate risk categories breakdown
         categories_html = ""
         for category, data in list(processed_categories.items())[:6]:
-            avg_score = data['avg_score']
-            count = data['count']
+            avg_score = data["avg_score"]
+            count = data["count"]
             risk_class = self._get_risk_class(avg_score)
-            
+
             categories_html += f"""
                 <div class="category-item-{self.component_id}">
                     <div class="category-header-{self.component_id}">
@@ -402,7 +435,7 @@ class RiskDashboardComponent(BaseVisualizationComponent):
                     </div>
                 </div>
             """
-        
+
         # Generate top risk factors
         factors_html = ""
         for factor, count in top_risk_factors[:8]:
@@ -412,13 +445,13 @@ class RiskDashboardComponent(BaseVisualizationComponent):
                     <span class="factor-count-{self.component_id}">{count}</span>
                 </div>
             """
-        
+
         # Generate risk alerts
         alerts_html = ""
         for alert in risk_alerts[:5]:
-            severity_class = alert.get('severity', 'info')
-            alert_time = self._format_timestamp(alert.get('timestamp', ''))
-            
+            severity_class = alert.get("severity", "info")
+            alert_time = self._format_timestamp(alert.get("timestamp", ""))
+
             alerts_html += f"""
                 <div class="alert-item-{self.component_id} alert-{severity_class}-{self.component_id}">
                     <div class="alert-header-{self.component_id}">
@@ -428,7 +461,7 @@ class RiskDashboardComponent(BaseVisualizationComponent):
                     <div class="alert-message-{self.component_id}">{alert['message']}</div>
                 </div>
             """
-        
+
         return f"""
         <div class="viz-component-{self.component_id} viz-animate-{self.component_id}">
             <div class="viz-header-{self.component_id}">
@@ -479,76 +512,83 @@ class RiskDashboardComponent(BaseVisualizationComponent):
             </div>
         </div>
         """
-    
+
     def _get_risk_class(self, risk_score: float) -> str:
         """Get CSS class based on risk score"""
         if risk_score >= 0.8:
-            return 'critical'
+            return "critical"
         elif risk_score >= 0.6:
-            return 'high'
+            return "high"
         elif risk_score >= 0.4:
-            return 'medium'
+            return "medium"
         elif risk_score >= 0.2:
-            return 'low'
+            return "low"
         else:
-            return 'minimal'
-    
+            return "minimal"
+
     def generate_javascript(self, processed_data: Dict[str, Any]) -> str:
         """
         Generate JavaScript for interactive risk charts.
         """
-        risk_scores = processed_data.get('risk_scores', [])
-        confidence_scores = processed_data.get('confidence_scores', [])
-        timestamps = processed_data.get('timestamps', [])
-        processed_categories = processed_data.get('processed_categories', {})
-        processed_entries = processed_data.get('processed_entries', [])
-        
+        risk_scores = processed_data.get("risk_scores", [])
+        confidence_scores = processed_data.get("confidence_scores", [])
+        timestamps = processed_data.get("timestamps", [])
+        processed_categories = processed_data.get("processed_categories", {})
+        processed_entries = processed_data.get("processed_entries", [])
+
         # Risk progression chart data
         progression_chart_data = {
-            'labels': timestamps,
-            'datasets': [
+            "labels": timestamps,
+            "datasets": [
                 {
-                    'label': 'Risk Score',
-                    'data': risk_scores,
-                    'borderColor': '#dc3545',
-                    'backgroundColor': 'rgba(220, 53, 69, 0.1)',
-                    'tension': 0.4,
-                    'fill': True,
-                    'pointRadius': 4,
-                    'pointHoverRadius': 6,
-                    'pointBackgroundColor': [self._get_point_color(score) for score in risk_scores],
-                    'pointBorderColor': '#fff',
-                    'pointBorderWidth': 2
+                    "label": "Risk Score",
+                    "data": risk_scores,
+                    "borderColor": "#dc3545",
+                    "backgroundColor": "rgba(220, 53, 69, 0.1)",
+                    "tension": 0.4,
+                    "fill": True,
+                    "pointRadius": 4,
+                    "pointHoverRadius": 6,
+                    "pointBackgroundColor": [
+                        self._get_point_color(score) for score in risk_scores
+                    ],
+                    "pointBorderColor": "#fff",
+                    "pointBorderWidth": 2,
                 },
                 {
-                    'label': 'Confidence',
-                    'data': confidence_scores,
-                    'borderColor': '#17a2b8',
-                    'backgroundColor': 'rgba(23, 162, 184, 0.1)',
-                    'tension': 0.4,
-                    'fill': False,
-                    'pointRadius': 3,
-                    'pointHoverRadius': 5,
-                    'yAxisID': 'y1'
-                }
-            ]
+                    "label": "Confidence",
+                    "data": confidence_scores,
+                    "borderColor": "#17a2b8",
+                    "backgroundColor": "rgba(23, 162, 184, 0.1)",
+                    "tension": 0.4,
+                    "fill": False,
+                    "pointRadius": 3,
+                    "pointHoverRadius": 5,
+                    "yAxisID": "y1",
+                },
+            ],
         }
-        
+
         # Risk categories chart data (radar)
         categories_data = {
-            'labels': list(processed_categories.keys())[:8],
-            'datasets': [{
-                'label': 'Average Risk Score',
-                'data': [data['avg_score'] for data in list(processed_categories.values())[:8]],
-                'borderColor': '#667eea',
-                'backgroundColor': 'rgba(102, 126, 234, 0.2)',
-                'pointBackgroundColor': '#667eea',
-                'pointBorderColor': '#fff',
-                'pointHoverBackgroundColor': '#fff',
-                'pointHoverBorderColor': '#667eea'
-            }]
+            "labels": list(processed_categories.keys())[:8],
+            "datasets": [
+                {
+                    "label": "Average Risk Score",
+                    "data": [
+                        data["avg_score"]
+                        for data in list(processed_categories.values())[:8]
+                    ],
+                    "borderColor": "#667eea",
+                    "backgroundColor": "rgba(102, 126, 234, 0.2)",
+                    "pointBackgroundColor": "#667eea",
+                    "pointBorderColor": "#fff",
+                    "pointHoverBackgroundColor": "#fff",
+                    "pointHoverBorderColor": "#667eea",
+                }
+            ],
         }
-        
+
         return f"""
         // Risk Dashboard Component
         (function() {{
@@ -687,27 +727,27 @@ class RiskDashboardComponent(BaseVisualizationComponent):
             console.log('Risk Dashboard Component loaded successfully');
         }})();
         """
-    
+
     def _get_point_color(self, score: float) -> str:
         """Get point color based on risk score"""
         if score >= 0.8:
-            return '#dc3545'  # Critical - red
+            return "#dc3545"  # Critical - red
         elif score >= 0.6:
-            return '#fd7e14'  # High - orange
+            return "#fd7e14"  # High - orange
         elif score >= 0.4:
-            return '#ffc107'  # Medium - yellow
+            return "#ffc107"  # Medium - yellow
         elif score >= 0.2:
-            return '#28a745'  # Low - green
+            return "#28a745"  # Low - green
         else:
-            return '#6c757d'  # Minimal - gray
-    
+            return "#6c757d"  # Minimal - gray
+
     def generate_css(self) -> str:
         """
         Generate CSS styles for risk dashboard component.
         """
         colors = self._get_theme_colors()
         base_css = super().generate_css()
-        
+
         component_css = f"""
         .risk-overview-{self.component_id} {{
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
@@ -922,5 +962,5 @@ class RiskDashboardComponent(BaseVisualizationComponent):
             }}
         }}
         """
-        
+
         return base_css + component_css

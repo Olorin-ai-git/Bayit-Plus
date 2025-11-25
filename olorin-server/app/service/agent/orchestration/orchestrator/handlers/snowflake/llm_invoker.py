@@ -5,7 +5,7 @@ Handles LLM invocation and error handling for Snowflake analysis.
 """
 
 import time
-from typing import List, Dict, Any
+from typing import Any, Dict, List
 
 from app.service.logging import get_bridge_logger
 
@@ -19,7 +19,9 @@ class LLMInvoker:
         """Initialize with LLM instance."""
         self.llm_with_tools = llm_with_tools
 
-    async def invoke_llm_with_error_handling(self, messages: List, state: Dict[str, Any]):
+    async def invoke_llm_with_error_handling(
+        self, messages: List, state: Dict[str, Any]
+    ):
         """Invoke LLM with comprehensive error handling."""
         start_time = time.time()
 
@@ -37,25 +39,44 @@ class LLMInvoker:
         """Get model information for error reporting."""
         try:
             from app.service.llm_manager import get_llm_manager
+
             llm_manager = get_llm_manager()
-            return llm_manager.selected_model_id if hasattr(llm_manager, 'selected_model_id') else "unknown"
+            return (
+                llm_manager.selected_model_id
+                if hasattr(llm_manager, "selected_model_id")
+                else "unknown"
+            )
         except:
             return "unknown"
 
-    def _handle_llm_error(self, error: Exception, model_info: str, messages: List, duration: float):
+    def _handle_llm_error(
+        self, error: Exception, model_info: str, messages: List, duration: float
+    ):
         """Handle different types of LLM errors."""
         error_str = str(error).lower()
 
-        if any(keyword in error_str for keyword in ["context_length_exceeded", "maximum context length", "token limit"]):
+        if any(
+            keyword in error_str
+            for keyword in [
+                "context_length_exceeded",
+                "maximum context length",
+                "token limit",
+            ]
+        ):
             logger.error(f"❌ LLM context length exceeded in Snowflake analysis")
             logger.error(f"   Model: {model_info}")
             logger.error(f"   Context info: {len(messages)} messages")
 
-        elif any(keyword in error_str for keyword in ["not_found_error", "notfounderror", "model:"]):
+        elif any(
+            keyword in error_str
+            for keyword in ["not_found_error", "notfounderror", "model:"]
+        ):
             logger.error(f"❌ LLM model not found in Snowflake analysis")
             logger.error(f"   Model: {model_info}")
 
-        elif any(provider in error_str for provider in ["openai", "anthropic", "google"]):
+        elif any(
+            provider in error_str for provider in ["openai", "anthropic", "google"]
+        ):
             logger.error(f"❌ LLM API error in Snowflake analysis")
             logger.error(f"   Model: {model_info}")
 

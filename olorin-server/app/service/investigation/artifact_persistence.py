@@ -11,13 +11,13 @@ Constitutional Compliance:
 
 import json
 from datetime import datetime
-from typing import Optional
 from pathlib import Path
+from typing import Optional
 
 from app.config.file_organization_config import FileOrganizationConfig
+from app.router.models.investigation_comparison_models import ComparisonResponse
 from app.service.investigation.file_organization_service import FileOrganizationService
 from app.service.logging import get_bridge_logger
-from app.router.models.investigation_comparison_models import ComparisonResponse
 
 logger = get_bridge_logger(__name__)
 
@@ -41,15 +41,15 @@ def persist_artifact(
     window_a_start: datetime,
     window_b_end: datetime,
     investigation_id: Optional[str] = None,
-    created_at: Optional[datetime] = None
+    created_at: Optional[datetime] = None,
 ) -> str:
     """
     Persist comparison response to artifacts directory in organized structure.
-    
+
     Uses FileOrganizationService to resolve paths and create:
     - Canonical file: investigations/<YYYY>/<MM>/<inv_id>/artifacts/investigation_*.json
     - Entity view symlink: artifacts/<entity_type>/<entity_id>/<YYYY>/<MM>/inv_<id>__artifact.json
-    
+
     Args:
         response: Comparison response to persist
         entity_type: Entity type (e.g., "email", "device_id")
@@ -58,16 +58,16 @@ def persist_artifact(
         window_b_end: Investigation window end date
         investigation_id: Optional investigation ID for canonical path
         created_at: Optional creation timestamp for canonical path
-        
+
     Returns:
         Path to persisted artifact file (canonical path)
     """
     service = _get_file_org_service()
-    
+
     # Use defaults if entity info missing
     entity_type_str = entity_type or "global"
     entity_value_str = entity_value or "global"
-    
+
     # Resolve paths using FileOrganizationService
     canonical_path, entity_view_path = service.resolve_investigation_artifact_path(
         entity_type=entity_type_str,
@@ -76,9 +76,9 @@ def persist_artifact(
         date_end=window_b_end,
         file_type="json",
         investigation_id=investigation_id,
-        created_at=created_at or window_b_end
+        created_at=created_at or window_b_end,
     )
-    
+
     # Use canonical path if available, otherwise fall back to entity view path
     if canonical_path:
         filepath = canonical_path
@@ -99,39 +99,41 @@ def persist_artifact(
         )
         date_start_str = window_a_start.strftime("%Y%m%d")
         date_end_str = window_b_end.strftime("%Y%m%d")
-        
-        fallback_dir = base_dir / "investigations" / normalized_entity_type / normalized_entity_id
+
+        fallback_dir = (
+            base_dir / "investigations" / normalized_entity_type / normalized_entity_id
+        )
         filepath = fallback_dir / (
             f"investigation_{normalized_entity_type}_{normalized_entity_id}"
             f"_{date_start_str}_{date_end_str}.json"
         )
         logger.warning(f"Using fallback path for artifact: {filepath}")
-    
+
     # Create directory structure with validation
     service.create_directory_structure(filepath.parent)
-    
+
     # Acquire file lock before writing
     file_handle = None
     try:
         file_handle = service.lock_file_for_write(filepath, create_if_missing=True)
-        
+
         # Write artifact
         with open(filepath, "w") as f:
             json.dump(response.model_dump(), f, indent=2, default=str)
-        
+
         logger.info(
             f"Comparison artifact persisted: {filepath} "
             f"(canonical={'yes' if canonical_path else 'no'}, "
             f"entity_view={'yes' if entity_view_path else 'no'})"
         )
-        
+
         # Create entity view symlink if both paths available
         entity_view_created = False
         if canonical_path and entity_view_path and canonical_path != entity_view_path:
             view_type, error_msg = service.create_entity_view_symlink(
                 canonical_path=canonical_path,
                 entity_view_path=entity_view_path,
-                force=False
+                force=False,
             )
             if error_msg:
                 logger.warning(
@@ -142,13 +144,13 @@ def persist_artifact(
                 logger.debug(
                     f"Created entity view {view_type}: {entity_view_path} -> {canonical_path}"
                 )
-        
+
         # Index file in workspace registry
         try:
             from app.service.investigation.workspace_registry import get_registry
-            
+
             registry = get_registry()
-            
+
             # Index the file with both canonical and entity view paths
             # CRITICAL: Only index if we have an investigation_id - don't use "unknown"
             if investigation_id:
@@ -157,8 +159,16 @@ def persist_artifact(
                     canonical_path=str(filepath),
                     file_kind="artifact",
                     file_ext="json",
-                    entity_view_path=str(entity_view_path) if entity_view_path and entity_view_created else None,
-                    relative_path=str(filepath.relative_to(filepath.parent.parent.parent)) if filepath.is_relative_to(Path("workspace")) else None
+                    entity_view_path=(
+                        str(entity_view_path)
+                        if entity_view_path and entity_view_created
+                        else None
+                    ),
+                    relative_path=(
+                        str(filepath.relative_to(filepath.parent.parent.parent))
+                        if filepath.is_relative_to(Path("workspace"))
+                        else None
+                    ),
                 )
                 logger.debug(f"Indexed artifact file in registry: {filepath}")
             else:
@@ -169,10 +179,9 @@ def persist_artifact(
         except Exception as e:
             # Don't fail artifact persistence if registry indexing fails
             logger.warning(f"Failed to index artifact in registry: {e}")
-        
+
     finally:
         if file_handle is not None:
             service.unlock_file(file_handle)
-    
-    return str(filepath)
 
+    return str(filepath)

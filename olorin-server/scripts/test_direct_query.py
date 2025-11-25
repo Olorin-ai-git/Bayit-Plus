@@ -6,6 +6,7 @@ Test direct Snowflake query to debug the issue.
 import os
 import sys
 from pathlib import Path
+
 import snowflake.connector
 from dotenv import load_dotenv
 
@@ -19,32 +20,34 @@ from app.service.agent.tools.snowflake_tool.schema_constants import get_required
 
 
 def main():
-    print("\n" + "="*70)
+    print("\n" + "=" * 70)
     print("🔍 TESTING DIRECT SNOWFLAKE QUERY")
-    print("="*70)
+    print("=" * 70)
 
     # Get table configuration from environment - no defaults!
-    database = get_required_env_var('SNOWFLAKE_DATABASE')
-    schema = get_required_env_var('SNOWFLAKE_SCHEMA')
+    database = get_required_env_var("SNOWFLAKE_DATABASE")
+    schema = get_required_env_var("SNOWFLAKE_SCHEMA")
 
     # Connect to Snowflake
     conn = snowflake.connector.connect(
-        account=get_required_env_var('SNOWFLAKE_ACCOUNT').replace('https://', '').replace('.snowflakecomputing.com', ''),
-        user=get_required_env_var('SNOWFLAKE_USER'),
-        password=get_required_env_var('SNOWFLAKE_PASSWORD'),
+        account=get_required_env_var("SNOWFLAKE_ACCOUNT")
+        .replace("https://", "")
+        .replace(".snowflakecomputing.com", ""),
+        user=get_required_env_var("SNOWFLAKE_USER"),
+        password=get_required_env_var("SNOWFLAKE_PASSWORD"),
         database=database,
         schema=schema,
-        warehouse=get_required_env_var('SNOWFLAKE_WAREHOUSE'),
-        role=get_required_env_var('SNOWFLAKE_ROLE')
+        warehouse=get_required_env_var("SNOWFLAKE_WAREHOUSE"),
+        role=get_required_env_var("SNOWFLAKE_ROLE"),
     )
 
     cursor = conn.cursor()
 
     # This is the query the risk analyzer uses
     hours = 7 * 24  # 7 days
-    group_by = 'EMAIL'
+    group_by = "EMAIL"
     top_decimal = 0.1  # 10%
-    table = get_required_env_var('SNOWFLAKE_TRANSACTIONS_TABLE')
+    table = get_required_env_var("SNOWFLAKE_TRANSACTIONS_TABLE")
 
     query = f"""
     WITH risk_calculations AS (
@@ -77,39 +80,43 @@ def main():
     WHERE risk_rank <= CEIL(total_entities * {top_decimal})
     ORDER BY risk_weighted_value DESC
     """
-    
+
     print("\nExecuting query...")
     print(f"Time filter: Last {hours} hours")
     print(f"Group by: {group_by}")
     print(f"Top percentage: {top_decimal * 100}%")
-    
+
     cursor.execute(query)
     results = cursor.fetchall()
     columns = [col[0] for col in cursor.description]
-    
+
     print(f"\nFound {len(results)} results")
     print("\nColumn names:", columns)
-    
+
     if results:
         print("\n🎯 Top Risk Entities:")
-        print(f"{'Rank':<6} {'Entity':<30} {'Risk Value':<15} {'Txns':<6} {'Risk Score'}")
-        print("-"*75)
-        
+        print(
+            f"{'Rank':<6} {'Entity':<30} {'Risk Value':<15} {'Txns':<6} {'Risk Score'}"
+        )
+        print("-" * 75)
+
         for row in results:
             # Convert row to dict for easier access
             data = dict(zip(columns, row))
-            rank = data.get('RISK_RANK', 0)
-            entity = data.get('ENTITY', 'Unknown')
-            risk_value = data.get('RISK_WEIGHTED_VALUE', 0)
-            tx_count = data.get('TRANSACTION_COUNT', 0)
-            avg_risk = data.get('AVG_RISK_SCORE', 0)
-            
-            print(f"{rank:<6} {entity:<30} ${risk_value:<14,.2f} {tx_count:<6} {avg_risk:.4f}")
-    
+            rank = data.get("RISK_RANK", 0)
+            entity = data.get("ENTITY", "Unknown")
+            risk_value = data.get("RISK_WEIGHTED_VALUE", 0)
+            tx_count = data.get("TRANSACTION_COUNT", 0)
+            avg_risk = data.get("AVG_RISK_SCORE", 0)
+
+            print(
+                f"{rank:<6} {entity:<30} ${risk_value:<14,.2f} {tx_count:<6} {avg_risk:.4f}"
+            )
+
     cursor.close()
     conn.close()
-    
-    print("\n" + "="*70)
+
+    print("\n" + "=" * 70)
 
 
 if __name__ == "__main__":

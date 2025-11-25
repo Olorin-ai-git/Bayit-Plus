@@ -5,7 +5,7 @@ Investigation Flow Processor for Enhanced HTML Report Generator.
 Processes investigation flow and phase transitions from activities.
 """
 
-from typing import Dict, List, Any
+from typing import Any, Dict, List
 
 
 class InvestigationFlowProcessor:

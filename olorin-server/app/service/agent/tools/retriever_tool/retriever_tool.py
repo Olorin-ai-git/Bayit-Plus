@@ -201,7 +201,3 @@ class RetrieverTool(BaseTool):
         logger.debug(f"async response from RAG search {resp_data}")  # pragma: no cover
         output = [choice["content"] for choice in resp_data["choices"]]
         return ", ".join(output)
-
-
-
-

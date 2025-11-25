@@ -10,8 +10,8 @@ All responsive styles have been refactored into focused modules.
 @see responsive_accessibility.py for accessibility and print styles
 """
 
-from .responsive_media_queries import ResponsiveMediaQueryGenerator
 from .responsive_accessibility import ResponsiveAccessibilityGenerator
+from .responsive_media_queries import ResponsiveMediaQueryGenerator
 
 
 class ResponsiveStyleGenerator:

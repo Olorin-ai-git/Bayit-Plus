@@ -27,9 +27,28 @@ class DirectoryManager:
 
     # Windows reserved names (case-insensitive)
     WINDOWS_RESERVED_NAMES = {
-        "CON", "PRN", "AUX", "NUL",
-        "COM1", "COM2", "COM3", "COM4", "COM5", "COM6", "COM7", "COM8", "COM9",
-        "LPT1", "LPT2", "LPT3", "LPT4", "LPT5", "LPT6", "LPT7", "LPT8", "LPT9"
+        "CON",
+        "PRN",
+        "AUX",
+        "NUL",
+        "COM1",
+        "COM2",
+        "COM3",
+        "COM4",
+        "COM5",
+        "COM6",
+        "COM7",
+        "COM8",
+        "COM9",
+        "LPT1",
+        "LPT2",
+        "LPT3",
+        "LPT4",
+        "LPT5",
+        "LPT6",
+        "LPT7",
+        "LPT8",
+        "LPT9",
     }
 
     def __init__(self, max_path_length: int = MAX_PATH_LENGTH):
@@ -106,10 +125,7 @@ class DirectoryManager:
         return True, None
 
     def create_directory(
-        self,
-        path: Path,
-        validate: bool = True,
-        mode: int = 0o755
+        self, path: Path, validate: bool = True, mode: int = 0o755
     ) -> Path:
         """
         Create directory with validation.
@@ -137,9 +153,7 @@ class DirectoryManager:
             try:
                 self.create_directory(parent, validate=validate, mode=mode)
             except OSError as e:
-                raise OSError(
-                    f"Failed to create parent directory {parent}: {e}"
-                ) from e
+                raise OSError(f"Failed to create parent directory {parent}: {e}") from e
 
         # Create directory if it doesn't exist
         if not path.exists():
@@ -147,10 +161,12 @@ class DirectoryManager:
                 path.mkdir(mode=mode, exist_ok=False)
                 # Lazy import logger
                 from app.service.logging import get_bridge_logger
+
                 get_bridge_logger(__name__).debug(f"Created directory: {path}")
             except FileExistsError:
                 # Directory was created by another process
                 from app.service.logging import get_bridge_logger
+
                 get_bridge_logger(__name__).debug(f"Directory already exists: {path}")
             except OSError as e:
                 error_msg = (
@@ -158,12 +174,14 @@ class DirectoryManager:
                     f"Check permissions and disk space."
                 )
                 from app.service.logging import get_bridge_logger
+
                 get_bridge_logger(__name__).error(error_msg)
                 raise OSError(error_msg) from e
         else:
             if not path.is_dir():
                 raise OSError(f"Path exists but is not a directory: {path}")
             from app.service.logging import get_bridge_logger
+
             get_bridge_logger(__name__).debug(f"Directory already exists: {path}")
 
         # Set permissions (may fail on Windows, but that's okay)
@@ -172,15 +190,12 @@ class DirectoryManager:
         except OSError:
             # Permission setting may fail on Windows or if not owner
             from app.service.logging import get_bridge_logger
+
             get_bridge_logger(__name__).debug(f"Could not set permissions on {path}")
 
         return path
 
-    def ensure_directory_exists(
-        self,
-        path: Path,
-        validate: bool = True
-    ) -> Path:
+    def ensure_directory_exists(self, path: Path, validate: bool = True) -> Path:
         """
         Ensure directory exists, creating if necessary.
 
@@ -199,4 +214,3 @@ class DirectoryManager:
             return path
 
         return self.create_directory(path, validate=validate)
-

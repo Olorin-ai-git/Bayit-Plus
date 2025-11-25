@@ -12,9 +12,10 @@ Constitutional Compliance:
 """
 
 import os
+from typing import Optional
+
 from pydantic import Field, field_validator
 from pydantic_settings import BaseSettings
-from typing import Optional
 
 
 class AnomalyConfig(BaseSettings):
@@ -31,7 +32,7 @@ class AnomalyConfig(BaseSettings):
         env="ANOMALY_DETECTION_RUN_INTERVAL_MINUTES",
         description="Interval between scheduled detection runs in minutes",
         gt=0,
-        le=1440  # Max 24 hours
+        le=1440,  # Max 24 hours
     )
 
     # Default detector parameters
@@ -39,21 +40,21 @@ class AnomalyConfig(BaseSettings):
         default=3.0,
         env="ANOMALY_DEFAULT_K_THRESHOLD",
         description="Default k threshold for anomaly scoring",
-        gt=0.0
+        gt=0.0,
     )
 
     default_persistence: int = Field(
         default=2,
         env="ANOMALY_DEFAULT_PERSISTENCE",
         description="Default persistence requirement (number of windows)",
-        ge=1
+        ge=1,
     )
 
     default_min_support: int = Field(
         default=100,
         env="ANOMALY_DEFAULT_MIN_SUPPORT",
         description="Default minimum support (minimum transactions per cohort)",
-        ge=1
+        ge=1,
     )
 
     # Severity thresholds (global defaults)
@@ -61,21 +62,21 @@ class AnomalyConfig(BaseSettings):
         default=2.0,
         env="ANOMALY_SEVERITY_INFO_MAX",
         description="Maximum score for 'info' severity level",
-        gt=0.0
+        gt=0.0,
     )
 
     severity_warn_max: float = Field(
         default=4.0,
         env="ANOMALY_SEVERITY_WARN_MAX",
         description="Maximum score for 'warn' severity level",
-        gt=0.0
+        gt=0.0,
     )
 
     severity_critical_min: float = Field(
         default=6.0,
         env="ANOMALY_SEVERITY_CRITICAL_MIN",
         description="Minimum score for 'critical' severity level",
-        gt=0.0
+        gt=0.0,
     )
 
     # Guardrails configuration
@@ -83,28 +84,28 @@ class AnomalyConfig(BaseSettings):
         default=3.0,
         env="ANOMALY_HYSTERESIS_RAISE_K",
         description="K threshold for raising anomaly alert",
-        gt=0.0
+        gt=0.0,
     )
 
     hysteresis_clear_k: float = Field(
         default=2.0,
         env="ANOMALY_HYSTERESIS_CLEAR_K",
         description="K threshold for clearing anomaly alert",
-        gt=0.0
+        gt=0.0,
     )
 
     cooldown_min_minutes: int = Field(
         default=5,
         env="ANOMALY_COOLDOWN_MIN_MINUTES",
         description="Minimum cooldown period in minutes",
-        ge=0
+        ge=0,
     )
 
     cooldown_max_minutes: int = Field(
         default=60,
         env="ANOMALY_COOLDOWN_MAX_MINUTES",
         description="Maximum cooldown period in minutes",
-        ge=0
+        ge=0,
     )
 
     # STL+MAD detector defaults
@@ -112,13 +113,13 @@ class AnomalyConfig(BaseSettings):
         default=7,
         env="ANOMALY_STL_PERIOD",
         description="STL decomposition period (number of windows for seasonality)",
-        ge=1
+        ge=1,
     )
 
     stl_robust: bool = Field(
         default=True,
         env="ANOMALY_STL_ROBUST",
-        description="Use robust STL decomposition"
+        description="Use robust STL decomposition",
     )
 
     # CUSUM detector defaults
@@ -126,14 +127,14 @@ class AnomalyConfig(BaseSettings):
         default=0.75,
         env="ANOMALY_CUSUM_DELTA_MULTIPLIER",
         description="CUSUM delta multiplier (e.g., 0.75 for 0.75*std)",
-        gt=0.0
+        gt=0.0,
     )
 
     cusum_threshold_multiplier: float = Field(
         default=5.0,
         env="ANOMALY_CUSUM_THRESHOLD_MULTIPLIER",
         description="CUSUM threshold multiplier (e.g., 5.0 for 5*std)",
-        gt=0.0
+        gt=0.0,
     )
 
     # Isolation Forest defaults
@@ -141,7 +142,7 @@ class AnomalyConfig(BaseSettings):
         default=100,
         env="ANOMALY_ISOFOREST_N_ESTIMATORS",
         description="Number of estimators for Isolation Forest",
-        ge=1
+        ge=1,
     )
 
     isoforest_contamination: float = Field(
@@ -149,33 +150,37 @@ class AnomalyConfig(BaseSettings):
         env="ANOMALY_ISOFOREST_CONTAMINATION",
         description="Expected proportion of anomalies (contamination rate)",
         gt=0.0,
-        lt=1.0
+        lt=1.0,
     )
 
     @field_validator("severity_warn_max")
     @classmethod
     def validate_warn_max(cls, v: float, info) -> float:
         """Validate warn_max > info_max"""
-        if hasattr(info, 'data') and 'severity_info_max' in info.data:
-            if v <= info.data['severity_info_max']:
-                raise ValueError("severity_warn_max must be greater than severity_info_max")
+        if hasattr(info, "data") and "severity_info_max" in info.data:
+            if v <= info.data["severity_info_max"]:
+                raise ValueError(
+                    "severity_warn_max must be greater than severity_info_max"
+                )
         return v
 
     @field_validator("severity_critical_min")
     @classmethod
     def validate_critical_min(cls, v: float, info) -> float:
         """Validate critical_min > warn_max"""
-        if hasattr(info, 'data') and 'severity_warn_max' in info.data:
-            if v <= info.data['severity_warn_max']:
-                raise ValueError("severity_critical_min must be greater than severity_warn_max")
+        if hasattr(info, "data") and "severity_warn_max" in info.data:
+            if v <= info.data["severity_warn_max"]:
+                raise ValueError(
+                    "severity_critical_min must be greater than severity_warn_max"
+                )
         return v
 
     @field_validator("hysteresis_clear_k")
     @classmethod
     def validate_hysteresis(cls, v: float, info) -> float:
         """Validate clear_k <= raise_k"""
-        if hasattr(info, 'data') and 'hysteresis_raise_k' in info.data:
-            if v > info.data['hysteresis_raise_k']:
+        if hasattr(info, "data") and "hysteresis_raise_k" in info.data:
+            if v > info.data["hysteresis_raise_k"]:
                 raise ValueError("hysteresis_clear_k must be <= hysteresis_raise_k")
         return v
 
@@ -183,8 +188,8 @@ class AnomalyConfig(BaseSettings):
     @classmethod
     def validate_cooldown(cls, v: int, info) -> int:
         """Validate cooldown_max >= cooldown_min"""
-        if hasattr(info, 'data') and 'cooldown_min_minutes' in info.data:
-            if v < info.data['cooldown_min_minutes']:
+        if hasattr(info, "data") and "cooldown_min_minutes" in info.data:
+            if v < info.data["cooldown_min_minutes"]:
                 raise ValueError("cooldown_max_minutes must be >= cooldown_min_minutes")
         return v
 
@@ -192,7 +197,7 @@ class AnomalyConfig(BaseSettings):
         "case_sensitive": False,
         "env_file": ".env",
         "env_file_encoding": "utf-8",
-        "extra": "ignore"  # Ignore extra environment variables not defined in this config
+        "extra": "ignore",  # Ignore extra environment variables not defined in this config
     }
 
 
@@ -264,4 +269,3 @@ def get_anomaly_config() -> AnomalyConfig:
     if _anomaly_config is None:
         _anomaly_config = load_anomaly_config()
     return _anomaly_config
-

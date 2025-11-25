@@ -38,12 +38,14 @@ class SecurityHeadersConfig:
             "connect-src 'self'; "
             "frame-ancestors 'none'; "
             "base-uri 'self'; "
-            "form-action 'self'"
+            "form-action 'self'",
         )
 
         # HTTP Strict Transport Security - forces HTTPS
         hsts_max_age = int(os.getenv("SECURITY_HSTS_MAX_AGE", "31536000"))
-        hsts_include_subdomains = os.getenv("SECURITY_HSTS_INCLUDE_SUBDOMAINS", "true").lower() == "true"
+        hsts_include_subdomains = (
+            os.getenv("SECURITY_HSTS_INCLUDE_SUBDOMAINS", "true").lower() == "true"
+        )
         hsts_preload = os.getenv("SECURITY_HSTS_PRELOAD", "false").lower() == "true"
 
         hsts_parts = [f"max-age={hsts_max_age}"]
@@ -57,21 +59,22 @@ class SecurityHeadersConfig:
         self.x_frame_options = os.getenv("SECURITY_X_FRAME_OPTIONS", "DENY")
 
         # X-Content-Type-Options - prevents MIME-sniffing
-        self.x_content_type_options = os.getenv("SECURITY_X_CONTENT_TYPE_OPTIONS", "nosniff")
+        self.x_content_type_options = os.getenv(
+            "SECURITY_X_CONTENT_TYPE_OPTIONS", "nosniff"
+        )
 
         # X-XSS-Protection - legacy XSS protection (for older browsers)
         self.x_xss_protection = os.getenv("SECURITY_X_XSS_PROTECTION", "1; mode=block")
 
         # Referrer-Policy - controls referrer information
         self.referrer_policy = os.getenv(
-            "SECURITY_REFERRER_POLICY",
-            "strict-origin-when-cross-origin"
+            "SECURITY_REFERRER_POLICY", "strict-origin-when-cross-origin"
         )
 
         # Permissions-Policy - controls browser features
         self.permissions_policy = os.getenv(
             "SECURITY_PERMISSIONS_POLICY",
-            "camera=(), microphone=(), geolocation=(), interest-cohort=()"
+            "camera=(), microphone=(), geolocation=(), interest-cohort=()",
         )
 
         # Log configuration on initialization

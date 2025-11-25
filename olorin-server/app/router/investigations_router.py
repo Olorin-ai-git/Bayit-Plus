@@ -1,9 +1,18 @@
-from typing import List
-import uuid
 import logging
-from app.service.logging import get_bridge_logger
+import uuid
+from typing import List
 
-from fastapi import APIRouter, Body, Depends, HTTPException, Query, UploadFile, File, Form, status
+from fastapi import (
+    APIRouter,
+    Body,
+    Depends,
+    File,
+    Form,
+    HTTPException,
+    Query,
+    UploadFile,
+    status,
+)
 from sqlalchemy.orm import Session
 
 from app.models.api_models import (
@@ -13,7 +22,6 @@ from app.models.api_models import (
     RawDataUploadResponse,
 )
 from app.models.progress_models import InvestigationProgress
-from app.service.investigation_progress_service import InvestigationProgressService
 from app.persistence import (
     create_investigation,
     delete_investigation,
@@ -24,7 +32,16 @@ from app.persistence import (
     update_investigation,
 )
 from app.persistence.database import get_db
-from app.security.auth import User, require_admin, require_read, require_read_or_dev, require_write, require_write_or_dev
+from app.security.auth import (
+    User,
+    require_admin,
+    require_read,
+    require_read_or_dev,
+    require_write,
+    require_write_or_dev,
+)
+from app.service.investigation_progress_service import InvestigationProgressService
+from app.service.logging import get_bridge_logger
 
 logger = get_bridge_logger(__name__)
 
@@ -39,7 +56,8 @@ def create_investigation_options():
 
 @investigations_router.post("/investigation", response_model=InvestigationOut)
 def create_investigation_endpoint(
-    investigation: InvestigationCreate, current_user: User = Depends(require_write_or_dev)
+    investigation: InvestigationCreate,
+    current_user: User = Depends(require_write_or_dev),
 ):
     # Validate custom agent-tools mapping if provided
     if investigation.agent_tools_mapping:
@@ -48,7 +66,7 @@ def create_investigation_endpoint(
         if not validate_agent_tools_mapping(investigation.agent_tools_mapping):
             raise HTTPException(
                 status_code=400,
-                detail="Invalid agent_tools_mapping format. Must be Dict[str, List[str]]."
+                detail="Invalid agent_tools_mapping format. Must be Dict[str, List[str]].",
             )
 
         logger.info(
@@ -109,7 +127,9 @@ def get_investigation_progress_options():
 )
 def get_investigation_progress_endpoint(
     investigation_id: str,
-    if_none_match: str = Query(None, alias="If-None-Match", description="ETag for conditional requests"),
+    if_none_match: str = Query(
+        None, alias="If-None-Match", description="ETag for conditional requests"
+    ),
     db: Session = Depends(get_db),
     current_user: User = Depends(require_read_or_dev),
 ):
@@ -124,18 +144,35 @@ def get_investigation_progress_endpoint(
     - Real-time metrics
     - Entity relationships
     - ETag support for efficient caching
-    
+
     **ETag Support**: Pass If-None-Match header with previous ETag for 304 Not Modified responses
     """
-    from app.service.state_query_helper import get_state_by_id
-    from fastapi import HTTPException, Response
     import hashlib
 
+    from fastapi import HTTPException, Response
+
+    from app.service.state_query_helper import get_state_by_id
+
     # Reject reserved route names that shouldn't be treated as investigation IDs
-    reserved_names = ['visualization', 'charts', 'maps', 'risk-analysis', 'reports', 'analytics', 'rag', 'investigations', 'investigations-management', 'compare']
+    reserved_names = [
+        "visualization",
+        "charts",
+        "maps",
+        "risk-analysis",
+        "reports",
+        "analytics",
+        "rag",
+        "investigations",
+        "investigations-management",
+        "compare",
+    ]
     if investigation_id.lower() in reserved_names:
-        logger.warning(f"Rejected reserved route name '{investigation_id}' as investigation ID")
-        raise HTTPException(status_code=404, detail=f"Investigation not found: {investigation_id}")
+        logger.warning(
+            f"Rejected reserved route name '{investigation_id}' as investigation ID"
+        )
+        raise HTTPException(
+            status_code=404, detail=f"Investigation not found: {investigation_id}"
+        )
 
     try:
         # Query database for investigation state
@@ -147,26 +184,33 @@ def get_investigation_progress_endpoint(
         # Build progress response from investigation state
         progress = InvestigationProgressService.build_progress_from_state(state)
     except Exception as e:
-        logger.error(f"Failed to build progress for investigation {investigation_id}: {str(e)}")
+        logger.error(
+            f"Failed to build progress for investigation {investigation_id}: {str(e)}"
+        )
         raise HTTPException(status_code=500, detail="Failed to build progress response")
 
     # Generate ETag based on state version and last_updated timestamp
     progress_json = progress.model_dump_json()
     etag = f'"{hashlib.md5((progress_json + str(state.version)).encode()).hexdigest()}"'
-    
+
     # Check if client has current version (304 Not Modified)
     if if_none_match and if_none_match == etag:
-        logger.debug(f"304 Not Modified for investigation {investigation_id}, ETag={etag}")
+        logger.debug(
+            f"304 Not Modified for investigation {investigation_id}, ETag={etag}"
+        )
         response = Response(status_code=304)
         response.headers["ETag"] = etag
         response.headers["Cache-Control"] = "public, max-age=5"
         return response
 
-    logger.info(f"Progress requested for investigation {investigation_id}: {progress.status}")
+    logger.info(
+        f"Progress requested for investigation {investigation_id}: {progress.status}"
+    )
 
     # Return progress with ETag header for next request
     # Note: FastAPI Response wrapper needed for headers
     from fastapi.responses import JSONResponse
+
     response = JSONResponse(content=progress.model_dump())
     response.headers["ETag"] = etag
     response.headers["Cache-Control"] = "public, max-age=5"
@@ -241,23 +285,29 @@ def get_investigations_endpoint(current_user: User = Depends(require_read_or_dev
     investigations = list_investigations()
     # investigations is now a list of dicts with all fields including name, owner, created, updated, etc.
     result = [InvestigationOut.model_validate(i) for i in investigations]
-    
+
     # Debug: Log first investigation with LLM thoughts
     for inv in result:
         # Safely check for LLM thoughts (they might be None)
         loc_thoughts = inv.location_llm_thoughts or ""
         net_thoughts = inv.network_llm_thoughts or ""
         logs_thoughts = inv.logs_llm_thoughts or ""
-        
+
         if loc_thoughts or net_thoughts or logs_thoughts:
-            logger.info(f"[GET_INVESTIGATIONS] Returning investigation {inv.id} with LLM thoughts: location={len(loc_thoughts)}, network={len(net_thoughts)}, logs={len(logs_thoughts)}")
+            logger.info(
+                f"[GET_INVESTIGATIONS] Returning investigation {inv.id} with LLM thoughts: location={len(loc_thoughts)}, network={len(net_thoughts)}, logs={len(logs_thoughts)}"
+            )
             # Also log the actual dict representation
             inv_dict = inv.model_dump()
-            location_llm_safe = inv_dict.get('location_llm_thoughts') or ""
-            logger.info(f"[GET_INVESTIGATIONS] Investigation {inv.id} dict has location_llm_thoughts: {'location_llm_thoughts' in inv_dict}, length={len(location_llm_safe)}")
-            logger.info(f"[GET_INVESTIGATIONS] Investigation {inv.id} has name: {inv.name}, owner: {inv.owner}, created: {inv.created}, updated: {inv.updated}")
+            location_llm_safe = inv_dict.get("location_llm_thoughts") or ""
+            logger.info(
+                f"[GET_INVESTIGATIONS] Investigation {inv.id} dict has location_llm_thoughts: {'location_llm_thoughts' in inv_dict}, length={len(location_llm_safe)}"
+            )
+            logger.info(
+                f"[GET_INVESTIGATIONS] Investigation {inv.id} has name: {inv.name}, owner: {inv.owner}, created: {inv.created}, updated: {inv.updated}"
+            )
             break
-    
+
     return result
 
 
@@ -279,30 +329,32 @@ def upload_raw_data_options():
     return {}
 
 
-@investigations_router.post("/investigation/raw-data", response_model=RawDataUploadResponse)
+@investigations_router.post(
+    "/investigation/raw-data", response_model=RawDataUploadResponse
+)
 async def upload_raw_data_endpoint(
     investigation_id: str = Form(..., description="Investigation identifier"),
     file: UploadFile = File(..., description="CSV file containing transaction data"),
-    current_user: User = Depends(require_write)
+    current_user: User = Depends(require_write),
 ):
     """
     Upload and process raw CSV transaction data for investigation.
-    
+
     This endpoint accepts CSV files containing transaction data and processes them
     using the RawDataNode for quality assessment, validation, and anomaly detection.
-    
+
     **File Requirements:**
     - Format: CSV (Comma Separated Values)
     - Size: Maximum 50MB
     - Encoding: UTF-8
     - Headers: Must include transaction_id, amount, timestamp
-    
+
     **Security Features:**
     - File type validation
     - Size limit enforcement
     - Input sanitization
     - Rate limiting applied
-    
+
     **Processing Features:**
     - Data validation using Pydantic models
     - Quality assessment with scoring
@@ -310,37 +362,36 @@ async def upload_raw_data_endpoint(
     - Batch processing for large files
     """
     from app.service.raw_data_service import raw_data_service
-    
+
     logger = get_bridge_logger(__name__)
     upload_id = str(uuid.uuid4())
-    
+
     try:
         # Validate file upload
         raw_data_service.validate_file_upload(file)
-        
+
         # Ensure investigation exists
         raw_data_service.ensure_investigation_exists(investigation_id)
-        
+
         # Read file content
         file_content = await file.read()
-        
+
         # Validate file is not empty
         if not file_content:
             raise HTTPException(
-                status_code=status.HTTP_400_BAD_REQUEST,
-                detail="Uploaded file is empty"
+                status_code=status.HTTP_400_BAD_REQUEST, detail="Uploaded file is empty"
             )
-        
+
         # Process the CSV data
         success, processing_result = await raw_data_service.process_raw_data_file(
             file_content, file.filename, investigation_id
         )
-        
+
         # Convert to API models
         api_processing_result = raw_data_service.convert_to_api_models(
             processing_result, investigation_id, file.filename
         )
-        
+
         if success:
             return raw_data_service.create_success_response(
                 investigation_id, upload_id, api_processing_result
@@ -350,13 +401,13 @@ async def upload_raw_data_endpoint(
             return raw_data_service.create_error_response(
                 investigation_id, upload_id, error_message, api_processing_result
             )
-    
+
     except HTTPException:
         # Re-raise HTTP exceptions
         raise
     except Exception as e:
         logger.error(f"Unexpected error in raw data upload: {str(e)}", exc_info=True)
-        
+
         # Return error response for unexpected errors
         return raw_data_service.create_error_response(
             investigation_id, upload_id, f"Internal server error: {str(e)}"

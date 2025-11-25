@@ -1,13 +1,15 @@
 from datetime import datetime, timezone
-from typing import Any, Dict, List, Optional, TYPE_CHECKING
+from typing import TYPE_CHECKING, Any, Dict, List, Optional
 
 from pydantic import BaseModel, ConfigDict, Field, field_validator
 
 from app.models.location_risk import LocationRiskAssessment
 
+
 # Define a mock LocationInfo class for compatibility
 class LocationInfo(BaseModel):
     """Mock LocationInfo class for compatibility"""
+
     latitude: Optional[float] = None
     longitude: Optional[float] = None
     city: Optional[str] = None
@@ -34,7 +36,7 @@ class Investigation(BaseModel):
     location_risk_score: float = 0.0
     network_risk_score: float = 0.0
     logs_risk_score: float = 0.0
-    
+
     # Raw data processing fields
     raw_data_processed: bool = False
     raw_data_filename: Optional[str] = None
@@ -48,7 +50,9 @@ class InvestigationCreate(BaseModel):
     id: str  # investigationId
     entity_id: str
     entity_type: str = "user_id"  # Default to user_id for backward compatibility
-    agent_tools_mapping: Optional[Dict[str, List[str]]] = None  # Custom agent→tools mapping
+    agent_tools_mapping: Optional[Dict[str, List[str]]] = (
+        None  # Custom agent→tools mapping
+    )
 
 
 class InvestigationUpdate(BaseModel):
@@ -60,8 +64,12 @@ class InvestigationUpdate(BaseModel):
 
 class InvestigationOut(BaseModel):
     id: str
-    entity_id: Optional[str] = None  # NO FALLBACKS - extracted from settings_json.entities[0].entityValue
-    entity_type: Optional[str] = None  # NO FALLBACKS - extracted from settings_json.entities[0].entityType
+    entity_id: Optional[str] = (
+        None  # NO FALLBACKS - extracted from settings_json.entities[0].entityValue
+    )
+    entity_type: Optional[str] = (
+        None  # NO FALLBACKS - extracted from settings_json.entities[0].entityType
+    )
     user_id: Optional[str] = None  # Deprecated, kept for backward compatibility
     status: str = "IN_PROGRESS"
     policy_comments: str = ""
@@ -76,7 +84,7 @@ class InvestigationOut(BaseModel):
     location_risk_score: Optional[float] = None
     network_risk_score: Optional[float] = None
     logs_risk_score: Optional[float] = None
-    
+
     # Frontend-required fields (extracted from settings_json and progress_json)
     name: Optional[str] = None  # Extracted from settings_json.name
     owner: Optional[str] = None  # Mapped from user_id or entity_id
@@ -90,7 +98,7 @@ class InvestigationOut(BaseModel):
     description: Optional[str] = None  # Extracted from settings_json.description
     from_date: Optional[str] = None  # Extracted from settings_json.time_range.from
     to_date: Optional[str] = None  # Extracted from settings_json.time_range.to
-    
+
     # Raw data processing fields
     raw_data_processed: bool = False
     raw_data_filename: Optional[str] = None
@@ -122,35 +130,43 @@ class LocationRiskAnalysisResponse(BaseModel):
 
 # Raw Data Node Models
 
+
 class RawTransactionData(BaseModel):
     """Model for raw transaction data processing requests and responses."""
+
     transaction_id: str = Field(..., description="Unique transaction identifier")
     amount: float = Field(..., ge=0, le=1000000, description="Transaction amount")
     timestamp: datetime = Field(..., description="Transaction timestamp")
     merchant: Optional[str] = Field(None, max_length=200, description="Merchant name")
-    card_number: Optional[str] = Field(None, max_length=20, description="Card number (masked)")
+    card_number: Optional[str] = Field(
+        None, max_length=20, description="Card number (masked)"
+    )
     user_id: Optional[str] = Field(None, max_length=100, description="User identifier")
-    location: Optional[str] = Field(None, max_length=200, description="Transaction location")
+    location: Optional[str] = Field(
+        None, max_length=200, description="Transaction location"
+    )
     currency: str = Field(default="USD", max_length=3, description="Currency code")
     status: str = Field(default="completed", description="Transaction status")
-    category: Optional[str] = Field(None, max_length=100, description="Transaction category")
-    
-    @field_validator('amount')
+    category: Optional[str] = Field(
+        None, max_length=100, description="Transaction category"
+    )
+
+    @field_validator("amount")
     @classmethod
     def validate_amount(cls, v):
         if v < 0:
-            raise ValueError('Amount cannot be negative')
+            raise ValueError("Amount cannot be negative")
         if v > 1000000:  # $1M limit
-            raise ValueError('Amount exceeds maximum limit')
+            raise ValueError("Amount exceeds maximum limit")
         return v
-    
-    @field_validator('transaction_id')
+
+    @field_validator("transaction_id")
     @classmethod
     def validate_transaction_id(cls, v):
         if not v or len(v.strip()) == 0:
-            raise ValueError('Transaction ID cannot be empty')
+            raise ValueError("Transaction ID cannot be empty")
         return v.strip()
-    
+
     model_config = ConfigDict(
         json_schema_extra={
             "example": {
@@ -163,7 +179,7 @@ class RawTransactionData(BaseModel):
                 "location": "New York, NY",
                 "currency": "USD",
                 "status": "completed",
-                "category": "dining"
+                "category": "dining",
             }
         }
     )
@@ -171,29 +187,41 @@ class RawTransactionData(BaseModel):
 
 class CSVUploadRequest(BaseModel):
     """Model for CSV file upload metadata."""
+
     investigation_id: str = Field(..., description="Investigation identifier")
     filename: Optional[str] = Field(None, description="Original filename")
     file_size: Optional[int] = Field(None, ge=0, description="File size in bytes")
-    
-    @field_validator('investigation_id')
+
+    @field_validator("investigation_id")
     @classmethod
     def validate_investigation_id(cls, v):
         if not v or len(v.strip()) == 0:
-            raise ValueError('Investigation ID cannot be empty')
+            raise ValueError("Investigation ID cannot be empty")
         return v.strip()
 
 
 class DataQualityMetrics(BaseModel):
     """Model for data quality assessment metrics."""
+
     total_records: int = Field(..., ge=0, description="Total number of records")
     valid_records: int = Field(..., ge=0, description="Number of valid records")
     invalid_records: int = Field(..., ge=0, description="Number of invalid records")
-    missing_fields: Dict[str, int] = Field(default_factory=dict, description="Missing field counts")
-    data_issues: Dict[str, List[str]] = Field(default_factory=dict, description="Data quality issues")
-    anomalies_detected: List[Dict[str, Any]] = Field(default_factory=list, description="Detected anomalies")
-    quality_score: float = Field(..., ge=0.0, le=1.0, description="Overall quality score (0.0-1.0)")
-    processing_time: float = Field(..., ge=0.0, description="Processing time in seconds")
-    
+    missing_fields: Dict[str, int] = Field(
+        default_factory=dict, description="Missing field counts"
+    )
+    data_issues: Dict[str, List[str]] = Field(
+        default_factory=dict, description="Data quality issues"
+    )
+    anomalies_detected: List[Dict[str, Any]] = Field(
+        default_factory=list, description="Detected anomalies"
+    )
+    quality_score: float = Field(
+        ..., ge=0.0, le=1.0, description="Overall quality score (0.0-1.0)"
+    )
+    processing_time: float = Field(
+        ..., ge=0.0, description="Processing time in seconds"
+    )
+
     model_config = ConfigDict(
         json_schema_extra={
             "example": {
@@ -203,7 +231,7 @@ class DataQualityMetrics(BaseModel):
                 "missing_fields": {"merchant": 25, "location": 10},
                 "data_issues": {
                     "invalid_format": ["Row 45: Amount cannot be negative"],
-                    "duplicate_transaction": ["Row 123: Duplicate transaction ID"]
+                    "duplicate_transaction": ["Row 123: Duplicate transaction ID"],
                 },
                 "anomalies_detected": [
                     {
@@ -211,11 +239,11 @@ class DataQualityMetrics(BaseModel):
                         "transaction_id": "TXN-999",
                         "amount": 50000.0,
                         "z_score": 4.2,
-                        "description": "Amount $50,000.00 is statistically unusual"
+                        "description": "Amount $50,000.00 is statistically unusual",
                     }
                 ],
                 "quality_score": 0.85,
-                "processing_time": 2.5
+                "processing_time": 2.5,
             }
         }
     )
@@ -223,16 +251,25 @@ class DataQualityMetrics(BaseModel):
 
 class RawDataProcessingResult(BaseModel):
     """Model for raw data processing results."""
+
     success: bool = Field(..., description="Processing success status")
     investigation_id: str = Field(..., description="Investigation identifier")
     filename: Optional[str] = Field(None, description="Processed filename")
-    data: List[RawTransactionData] = Field(default_factory=list, description="Processed transaction data")
-    quality_metrics: DataQualityMetrics = Field(..., description="Data quality assessment")
-    batches_processed: int = Field(..., ge=0, description="Number of data batches processed")
+    data: List[RawTransactionData] = Field(
+        default_factory=list, description="Processed transaction data"
+    )
+    quality_metrics: DataQualityMetrics = Field(
+        ..., description="Data quality assessment"
+    )
+    batches_processed: int = Field(
+        ..., ge=0, description="Number of data batches processed"
+    )
     anomalies_count: int = Field(..., ge=0, description="Total anomalies detected")
-    processing_time_seconds: float = Field(..., ge=0.0, description="Total processing time")
+    processing_time_seconds: float = Field(
+        ..., ge=0.0, description="Total processing time"
+    )
     error: Optional[str] = Field(None, description="Error message if processing failed")
-    
+
     model_config = ConfigDict(
         json_schema_extra={
             "example": {
@@ -246,7 +283,7 @@ class RawDataProcessingResult(BaseModel):
                         "timestamp": "2025-01-02T09:15:00Z",
                         "merchant": "Amazon",
                         "currency": "USD",
-                        "status": "completed"
+                        "status": "completed",
                     }
                 ],
                 "quality_metrics": {
@@ -254,11 +291,11 @@ class RawDataProcessingResult(BaseModel):
                     "valid_records": 95,
                     "invalid_records": 5,
                     "quality_score": 0.92,
-                    "processing_time": 1.2
+                    "processing_time": 1.2,
                 },
                 "batches_processed": 1,
                 "anomalies_count": 2,
-                "processing_time_seconds": 1.5
+                "processing_time_seconds": 1.5,
             }
         }
     )
@@ -266,14 +303,18 @@ class RawDataProcessingResult(BaseModel):
 
 # Raw Data Upload Response Models
 
+
 class RawDataUploadResponse(BaseModel):
     """Response model for raw data upload operations."""
+
     success: bool = Field(..., description="Upload success status")
     message: str = Field(..., description="Status message")
     investigation_id: str = Field(..., description="Investigation identifier")
     upload_id: Optional[str] = Field(None, description="Unique upload identifier")
-    processing_result: Optional[RawDataProcessingResult] = Field(None, description="Processing results")
-    
+    processing_result: Optional[RawDataProcessingResult] = Field(
+        None, description="Processing results"
+    )
+
     model_config = ConfigDict(
         json_schema_extra={
             "example": {
@@ -286,11 +327,11 @@ class RawDataUploadResponse(BaseModel):
                     "quality_metrics": {
                         "total_records": 500,
                         "valid_records": 485,
-                        "quality_score": 0.87
+                        "quality_score": 0.87,
                     },
                     "batches_processed": 1,
-                    "anomalies_count": 3
-                }
+                    "anomalies_count": 3,
+                },
             }
         }
     )

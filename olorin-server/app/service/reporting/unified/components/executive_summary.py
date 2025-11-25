@@ -6,6 +6,7 @@ key metrics, statistics, and high-level investigation information.
 """
 
 from typing import List
+
 from ..core.data_structures import UnifiedReportData
 from .base_component import BaseComponent
 
@@ -13,38 +14,38 @@ from .base_component import BaseComponent
 class ExecutiveSummary(BaseComponent):
     """
     Executive summary component showing key investigation metrics.
-    
+
     This component provides a high-level overview of the investigation
     including status, risk scores, timing, and success metrics.
     """
-    
+
     def generate(self, data: UnifiedReportData) -> str:
         """Generate executive summary HTML content."""
         summary = data.summary
-        
+
         # Calculate additional metrics
         completion_percentage = data.get_completion_percentage()
         risk_level = data.get_risk_level()
-        
+
         # Risk level styling
         risk_colors = {
             "low": "#28a745",
-            "medium": "#ffc107", 
+            "medium": "#ffc107",
             "high": "#fd7e14",
-            "critical": "#dc3545"
+            "critical": "#dc3545",
         }
         risk_color = risk_colors.get(risk_level.value, "#6c757d")
-        
+
         # Status styling
         status_colors = {
             "completed": "#28a745",
             "failed": "#dc3545",
             "in_progress": "#007bff",
-            "pending": "#6c757d"
+            "pending": "#6c757d",
         }
         status_color = status_colors.get(summary.status.value, "#6c757d")
-        
-        html = f'''
+
+        html = f"""
         <div class="executive-summary">
             <div class="summary-grid">
                 <div class="summary-card investigation-info">
@@ -315,18 +316,14 @@ class ExecutiveSummary(BaseComponent):
             }}
         }}
         </style>
-        '''
-        
+        """
+
         return html
-    
+
     def get_required_data_fields(self) -> List[str]:
         """Return list of required data fields."""
-        return [
-            "summary.investigation_id",
-            "summary.scenario_name", 
-            "summary.status"
-        ]
-    
+        return ["summary.investigation_id", "summary.scenario_name", "summary.status"]
+
     def _get_default_title(self) -> str:
         """Get default component title."""
         return "Executive Summary"

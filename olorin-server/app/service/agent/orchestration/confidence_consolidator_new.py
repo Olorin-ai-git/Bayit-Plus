@@ -6,25 +6,18 @@ All original functionality is preserved through component imports.
 """
 
 # Import all components from the new modular structure
-from app.service.agent.orchestration.hybrid.confidence import (
-    # Main class (maintains original interface)
-    ConfidenceConsolidator,
-    
-    # Data models for advanced usage
-    ConfidenceFieldType,
-    ConsolidatedConfidence,
-    
-    # Individual components for advanced customization
-    ConfidenceExtractor,
-    ConfidenceValidator,
-    ConfidenceCalculator,
-    ConfidenceApplicator,
-    
-    # Constants
-    DEFAULT_COMPONENT_WEIGHTS,
+from app.service.agent.orchestration.hybrid.confidence import (  # Main class (maintains original interface); Data models for advanced usage; Individual components for advanced customization; Constants
     CONFIDENCE_THRESHOLDS,
+    DEFAULT_COMPONENT_WEIGHTS,
     FALLBACK_CONFIDENCE,
-    FALLBACK_LEVEL
+    FALLBACK_LEVEL,
+    ConfidenceApplicator,
+    ConfidenceCalculator,
+    ConfidenceConsolidator,
+    ConfidenceExtractor,
+    ConfidenceFieldType,
+    ConfidenceValidator,
+    ConsolidatedConfidence,
 )
 
 # Re-export everything for backward compatibility
@@ -34,10 +27,10 @@ __all__ = [
     "ConsolidatedConfidence",
     "ConfidenceExtractor",
     "ConfidenceValidator",
-    "ConfidenceCalculator", 
+    "ConfidenceCalculator",
     "ConfidenceApplicator",
     "DEFAULT_COMPONENT_WEIGHTS",
     "CONFIDENCE_THRESHOLDS",
     "FALLBACK_CONFIDENCE",
-    "FALLBACK_LEVEL"
+    "FALLBACK_LEVEL",
 ]

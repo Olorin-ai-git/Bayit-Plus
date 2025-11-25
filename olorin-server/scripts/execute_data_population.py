@@ -6,12 +6,13 @@ REQUIRES EXPLICIT USER APPROVAL FOR EXECUTION.
 """
 
 import asyncio
-import sys
-import random
 import json
-from pathlib import Path
+import random
+import sys
 from datetime import datetime, timedelta
-from typing import Dict, List, Any
+from pathlib import Path
+from typing import Any, Dict, List
+
 from dotenv import load_dotenv
 
 # Load environment variables
@@ -24,6 +25,7 @@ from app.service.agent.tools.snowflake_tool.client import SnowflakeClient
 from app.service.logging import get_bridge_logger
 
 logger = get_bridge_logger(__name__)
+
 
 class LiveDataPopulator:
     """Executes live data population on Snowflake."""
@@ -40,9 +42,9 @@ class LiveDataPopulator:
     async def execute_population(self):
         """Execute the comprehensive data population."""
 
-        print("\n" + "="*80)
+        print("\n" + "=" * 80)
         print("🚀 LIVE SNOWFLAKE DATA POPULATION")
-        print("="*80)
+        print("=" * 80)
         print("⚠️  THIS WILL MODIFY YOUR LIVE DATABASE!")
         print("📊 Populating 38 columns across 5,000 records...")
 
@@ -90,7 +92,9 @@ class LiveDataPopulator:
 
     async def populate_processing_fees(self):
         """Populate processing fee fields."""
-        from app.service.agent.tools.snowflake_tool.schema_constants import get_full_table_name
+        from app.service.agent.tools.snowflake_tool.schema_constants import (
+            get_full_table_name,
+        )
 
         update_query = f"""
         UPDATE {get_full_table_name()}
@@ -106,7 +110,9 @@ class LiveDataPopulator:
 
     async def populate_personal_data(self):
         """Populate personal data fields."""
-        from app.service.agent.tools.snowflake_tool.schema_constants import get_full_table_name
+        from app.service.agent.tools.snowflake_tool.schema_constants import (
+            get_full_table_name,
+        )
 
         # This would need to be done in batches with realistic name generation
         update_query = f"""
@@ -144,7 +150,9 @@ class LiveDataPopulator:
 
     async def populate_risk_data(self):
         """Populate risk assessment data."""
-        from app.service.agent.tools.snowflake_tool.schema_constants import get_full_table_name
+        from app.service.agent.tools.snowflake_tool.schema_constants import (
+            get_full_table_name,
+        )
 
         update_query = f"""
         UPDATE {get_full_table_name()}
@@ -164,7 +172,9 @@ class LiveDataPopulator:
 
     async def populate_card_data(self):
         """Populate card data fields."""
-        from app.service.agent.tools.snowflake_tool.schema_constants import get_full_table_name
+        from app.service.agent.tools.snowflake_tool.schema_constants import (
+            get_full_table_name,
+        )
 
         update_query = f"""
         UPDATE {get_full_table_name()}
@@ -194,7 +204,9 @@ class LiveDataPopulator:
 
     async def populate_temporal_data(self):
         """Populate temporal data fields."""
-        from app.service.agent.tools.snowflake_tool.schema_constants import get_full_table_name
+        from app.service.agent.tools.snowflake_tool.schema_constants import (
+            get_full_table_name,
+        )
 
         update_query = f"""
         UPDATE {get_full_table_name()}
@@ -209,7 +221,9 @@ class LiveDataPopulator:
 
     async def populate_dispute_data(self):
         """Populate dispute and alert data."""
-        from app.service.agent.tools.snowflake_tool.schema_constants import get_full_table_name
+        from app.service.agent.tools.snowflake_tool.schema_constants import (
+            get_full_table_name,
+        )
 
         update_query = f"""
         UPDATE {get_full_table_name()}
@@ -228,7 +242,9 @@ class LiveDataPopulator:
 
     async def populate_business_data(self):
         """Populate business data fields."""
-        from app.service.agent.tools.snowflake_tool.schema_constants import get_full_table_name
+        from app.service.agent.tools.snowflake_tool.schema_constants import (
+            get_full_table_name,
+        )
 
         update_query = f"""
         UPDATE {get_full_table_name()}
@@ -254,7 +270,9 @@ class LiveDataPopulator:
 
     async def populate_cart_data(self):
         """Populate cart and product data."""
-        from app.service.agent.tools.snowflake_tool.schema_constants import get_full_table_name
+        from app.service.agent.tools.snowflake_tool.schema_constants import (
+            get_full_table_name,
+        )
 
         update_query = f"""
         UPDATE {get_full_table_name()}
@@ -282,7 +300,9 @@ class LiveDataPopulator:
 
     async def populate_network_data(self):
         """Populate network data fields."""
-        from app.service.agent.tools.snowflake_tool.schema_constants import get_full_table_name
+        from app.service.agent.tools.snowflake_tool.schema_constants import (
+            get_full_table_name,
+        )
 
         update_query = f"""
         UPDATE {get_full_table_name()}"
@@ -312,12 +332,13 @@ class LiveDataPopulator:
         logger.info("Would execute network data updates")
         print("   ✅ Network data based on IP country")
 
+
 async def main():
     """Main execution with explicit user confirmation."""
 
-    print("\n" + "="*80)
+    print("\n" + "=" * 80)
     print("🚨 LIVE SNOWFLAKE DATA POPULATION TOOL")
-    print("="*80)
+    print("=" * 80)
     print("⚠️  WARNING: This will modify your production Snowflake database!")
     print()
     print("📊 SCOPE OF CHANGES:")
@@ -334,7 +355,7 @@ async def main():
     print("⏱️  ESTIMATED TIME: 10-20 minutes")
 
     # User has already provided explicit approval
-    print("\n" + "="*80)
+    print("\n" + "=" * 80)
     print("✅ User approval already received. Starting live data population...")
 
     populator = LiveDataPopulator()
@@ -343,16 +364,18 @@ async def main():
         await populator.connect()
         await populator.execute_population()
 
-        print("\n" + "="*80)
+        print("\n" + "=" * 80)
         print("🎉 DATA POPULATION COMPLETED SUCCESSFULLY!")
-        print("="*80)
+        print("=" * 80)
         print("📊 NEXT STEPS:")
         print("   1. Run verification script to confirm 100% completeness")
         print("   2. Validate data quality and business logic")
         print("   3. Monitor application performance with new data")
         print()
         print("🔧 Run verification:")
-        print("   USE_SNOWFLAKE=true poetry run python scripts/verify_all_columns_data.py")
+        print(
+            "   USE_SNOWFLAKE=true poetry run python scripts/verify_all_columns_data.py"
+        )
 
     except Exception as e:
         logger.error(f"Population failed: {e}")
@@ -361,6 +384,7 @@ async def main():
 
     finally:
         await populator.disconnect()
+
 
 if __name__ == "__main__":
     asyncio.run(main())

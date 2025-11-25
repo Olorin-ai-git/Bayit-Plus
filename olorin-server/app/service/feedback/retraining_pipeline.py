@@ -8,18 +8,17 @@ Week 11 Phase 4 implementation.
 
 import logging
 import os
-from typing import Dict, Any, List, Optional, Callable
 from datetime import datetime
+from typing import Any, Callable, Dict, List, Optional
 
 from app.service.feedback.retraining_helpers import (
-    RetrainingTrigger,
     RetrainingStatus,
+    RetrainingTrigger,
     create_retraining_job,
-    update_job_started,
     update_job_completed,
-    update_job_failed
+    update_job_failed,
+    update_job_started,
 )
-
 
 logger = logging.getLogger(__name__)
 
@@ -35,22 +34,30 @@ class RetrainingPipeline:
         """Initialize retraining pipeline."""
         retrain_interval_hours_env = os.getenv("RETRAIN_INTERVAL_HOURS")
         if not retrain_interval_hours_env:
-            raise RuntimeError("RETRAIN_INTERVAL_HOURS environment variable is required")
+            raise RuntimeError(
+                "RETRAIN_INTERVAL_HOURS environment variable is required"
+            )
         self.retrain_interval_hours = int(retrain_interval_hours_env)
 
         min_training_samples_env = os.getenv("RETRAIN_MIN_TRAINING_SAMPLES")
         if not min_training_samples_env:
-            raise RuntimeError("RETRAIN_MIN_TRAINING_SAMPLES environment variable is required")
+            raise RuntimeError(
+                "RETRAIN_MIN_TRAINING_SAMPLES environment variable is required"
+            )
         self.min_training_samples = int(min_training_samples_env)
 
         validation_split_env = os.getenv("RETRAIN_VALIDATION_SPLIT")
         if not validation_split_env:
-            raise RuntimeError("RETRAIN_VALIDATION_SPLIT environment variable is required")
+            raise RuntimeError(
+                "RETRAIN_VALIDATION_SPLIT environment variable is required"
+            )
         self.validation_split = float(validation_split_env)
 
         min_validation_f1_env = os.getenv("RETRAIN_MIN_VALIDATION_F1")
         if not min_validation_f1_env:
-            raise RuntimeError("RETRAIN_MIN_VALIDATION_F1 environment variable is required")
+            raise RuntimeError(
+                "RETRAIN_MIN_VALIDATION_F1 environment variable is required"
+            )
         self.min_validation_f1 = float(min_validation_f1_env)
 
         self.current_status = RetrainingStatus.IDLE
@@ -69,31 +76,27 @@ class RetrainingPipeline:
         training_data: List[Dict[str, Any]],
         model_id: str,
         model_version: str,
-        metadata: Optional[Dict[str, Any]] = None
+        metadata: Optional[Dict[str, Any]] = None,
     ) -> Dict[str, Any]:
         """Trigger a retraining job."""
         if self.current_status == RetrainingStatus.IN_PROGRESS:
             return {
                 "success": False,
                 "status": "already_in_progress",
-                "message": "Retraining already in progress"
+                "message": "Retraining already in progress",
             }
 
         if len(training_data) < self.min_training_samples:
             return {
                 "success": False,
                 "status": "insufficient_data",
-                "message": f"Need at least {self.min_training_samples} samples, have {len(training_data)}"
+                "message": f"Need at least {self.min_training_samples} samples, have {len(training_data)}",
             }
 
         self.current_status = RetrainingStatus.QUEUED
 
         retrain_job = create_retraining_job(
-            trigger_reason,
-            model_id,
-            model_version,
-            len(training_data),
-            metadata or {}
+            trigger_reason, model_id, model_version, len(training_data), metadata or {}
         )
 
         logger.info(
@@ -101,16 +104,13 @@ class RetrainingPipeline:
             f"({len(training_data)} samples)"
         )
 
-        return {
-            "success": True,
-            "job": retrain_job
-        }
+        return {"success": True, "job": retrain_job}
 
     def execute_retraining(
         self,
         job: Dict[str, Any],
         training_data: List[Dict[str, Any]],
-        trainer_function: Callable[[List[Dict[str, Any]], float], Dict[str, Any]]
+        trainer_function: Callable[[List[Dict[str, Any]], float], Dict[str, Any]],
     ) -> Dict[str, Any]:
         """Execute retraining process."""
         if self.current_status != RetrainingStatus.QUEUED:
@@ -126,7 +126,10 @@ class RetrainingPipeline:
         try:
             training_result = trainer_function(training_data, self.validation_split)
 
-            if training_result["validation_metrics"]["f1_score"] < self.min_validation_f1:
+            if (
+                training_result["validation_metrics"]["f1_score"]
+                < self.min_validation_f1
+            ):
                 raise ValueError(
                     f"Validation F1 score ({training_result['validation_metrics']['f1_score']:.3f}) "
                     f"below minimum threshold ({self.min_validation_f1})"
@@ -144,10 +147,7 @@ class RetrainingPipeline:
                 f"F1={training_result['validation_metrics']['f1_score']:.3f}"
             )
 
-            return {
-                "success": True,
-                "job": job
-            }
+            return {"success": True, "job": job}
 
         except Exception as e:
             update_job_failed(job, str(e))
@@ -156,14 +156,13 @@ class RetrainingPipeline:
 
             logger.error(f"✗ Retraining failed: {job['job_id']} - {e}")
 
-            return {
-                "success": False,
-                "job": job,
-                "error": str(e)
-            }
+            return {"success": False, "job": job, "error": str(e)}
 
         finally:
-            if self.current_status in [RetrainingStatus.COMPLETED, RetrainingStatus.FAILED]:
+            if self.current_status in [
+                RetrainingStatus.COMPLETED,
+                RetrainingStatus.FAILED,
+            ]:
                 self.current_status = RetrainingStatus.IDLE
 
     def register_callback(self, callback: Callable[[Dict[str, Any]], None]) -> None:
@@ -183,16 +182,20 @@ class RetrainingPipeline:
         """Get current retraining pipeline status."""
         return {
             "current_status": self.current_status.value,
-            "last_retrain_time": self.last_retrain_time.isoformat() if self.last_retrain_time else None,
+            "last_retrain_time": (
+                self.last_retrain_time.isoformat() if self.last_retrain_time else None
+            ),
             "total_retrains": len(self.retrain_history),
-            "successful_retrains": len([j for j in self.retrain_history if j["status"] == "completed"]),
-            "failed_retrains": len([j for j in self.retrain_history if j["status"] == "failed"])
+            "successful_retrains": len(
+                [j for j in self.retrain_history if j["status"] == "completed"]
+            ),
+            "failed_retrains": len(
+                [j for j in self.retrain_history if j["status"] == "failed"]
+            ),
         }
 
     def get_retrain_history(self, limit: int = 10) -> List[Dict[str, Any]]:
         """Get recent retraining history."""
         return sorted(
-            self.retrain_history,
-            key=lambda j: j.get("queued_at", ""),
-            reverse=True
+            self.retrain_history, key=lambda j: j.get("queued_at", ""), reverse=True
         )[:limit]

@@ -7,9 +7,10 @@ Checks all 300+ columns for data completeness across 5000 records.
 import asyncio
 import json
 import sys
-from pathlib import Path
 from datetime import datetime
-from typing import Dict, List, Any
+from pathlib import Path
+from typing import Any, Dict, List
+
 from dotenv import load_dotenv
 
 # Load environment variables
@@ -24,6 +25,7 @@ from app.service.logging import get_bridge_logger
 
 logger = get_bridge_logger(__name__)
 
+
 class DataCompletenessVerifier:
     """Verifies data completeness across all columns in the Snowflake table."""
 
@@ -34,7 +36,7 @@ class DataCompletenessVerifier:
             "table_info": {},
             "column_analysis": {},
             "data_quality_summary": {},
-            "issues_found": []
+            "issues_found": [],
         }
 
     async def connect(self):
@@ -50,21 +52,30 @@ class DataCompletenessVerifier:
         print("\n📊 Getting table information...")
 
         # Get total record count
-        from app.service.agent.tools.snowflake_tool.schema_constants import get_full_table_name
+        from app.service.agent.tools.snowflake_tool.schema_constants import (
+            get_full_table_name,
+        )
+
         count_query = f"SELECT COUNT(*) as total_records FROM {get_full_table_name()}"
         count_result = await self.client.execute_query(count_query)
         # Handle different possible column names in mock vs real data
         total_records = 0
         if count_result and len(count_result) > 0:
             row = count_result[0]
-            total_records = (row.get('TOTAL_RECORDS') or
-                           row.get('total_records') or
-                           row.get('COUNT') or 0)
+            total_records = (
+                row.get("TOTAL_RECORDS")
+                or row.get("total_records")
+                or row.get("COUNT")
+                or 0
+            )
 
         # Get column information from INFORMATION_SCHEMA
-        from app.service.agent.tools.snowflake_tool.schema_constants import get_required_env_var
-        schema_name = get_required_env_var('SNOWFLAKE_SCHEMA')
-        table_name = get_required_env_var('SNOWFLAKE_TRANSACTIONS_TABLE')
+        from app.service.agent.tools.snowflake_tool.schema_constants import (
+            get_required_env_var,
+        )
+
+        schema_name = get_required_env_var("SNOWFLAKE_SCHEMA")
+        table_name = get_required_env_var("SNOWFLAKE_TRANSACTIONS_TABLE")
         columns_query = f"""
         SELECT
             COLUMN_NAME,
@@ -89,7 +100,7 @@ class DataCompletenessVerifier:
         self.results["table_info"] = {
             "total_records": total_records,
             "total_columns": column_count,
-            "columns_metadata": columns_result
+            "columns_metadata": columns_result,
         }
 
         print(f"   ✅ Total Records: {total_records:,}")
@@ -104,40 +115,68 @@ class DataCompletenessVerifier:
         # Define all known columns from schema constants
         known_columns = [
             # Payment and Transaction Fields
-            PAID_AMOUNT_VALUE_IN_CURRENCY, PAID_AMOUNT_CURRENCY, PROCESSING_FEE_VALUE, PROCESSING_FEE_CURRENCY,
-
+            PAID_AMOUNT_VALUE_IN_CURRENCY,
+            PAID_AMOUNT_CURRENCY,
+            PROCESSING_FEE_VALUE,
+            PROCESSING_FEE_CURRENCY,
             # Identity and User Fields
-            TX_ID_KEY, EMAIL, EMAIL_NORMALIZED, UNIQUE_USER_ID, FIRST_NAME, LAST_NAME,
-            PHONE_NUMBER, PHONE_COUNTRY_CODE,
-
+            TX_ID_KEY,
+            EMAIL,
+            EMAIL_NORMALIZED,
+            UNIQUE_USER_ID,
+            FIRST_NAME,
+            LAST_NAME,
+            PHONE_NUMBER,
+            PHONE_COUNTRY_CODE,
             # Network and Location Fields
-            IP, IP_COUNTRY_CODE,
-
+            IP,
+            IP_COUNTRY_CODE,
             # Device Fields
-            DEVICE_ID, USER_AGENT, DEVICE_TYPE, DEVICE_MODEL, DEVICE_OS_VERSION,
-
+            DEVICE_ID,
+            USER_AGENT,
+            DEVICE_TYPE,
+            DEVICE_MODEL,
+            DEVICE_OS_VERSION,
             # Risk and Fraud Fields
-            MODEL_SCORE, IS_FRAUD_TX, NSURE_LAST_DECISION, NSURE_FIRST_DECISION,
-            MAXMIND_RISK_SCORE, MAXMIND_IP_RISK_SCORE,
-
+            MODEL_SCORE,
+            IS_FRAUD_TX,
+            NSURE_LAST_DECISION,
+            NSURE_FIRST_DECISION,
+            MAXMIND_RISK_SCORE,
+            MAXMIND_IP_RISK_SCORE,
             # Payment Method Fields
-            PAYMENT_METHOD, CARD_BRAND, CARD_TYPE, CARD_ISSUER, BIN, LAST_FOUR, BIN_COUNTRY_CODE,
-
+            PAYMENT_METHOD,
+            CARD_BRAND,
+            CARD_TYPE,
+            CARD_ISSUER,
+            BIN,
+            LAST_FOUR,
+            BIN_COUNTRY_CODE,
             # Temporal Fields
-            TX_DATETIME, TX_RECEIVED_DATETIME, TX_TIMESTAMP_MS,
-
+            TX_DATETIME,
+            TX_RECEIVED_DATETIME,
+            TX_TIMESTAMP_MS,
             # Dispute and Alert Fields
-            DISPUTES, COUNT_DISPUTES, FRAUD_ALERTS, COUNT_FRAUD_ALERTS,
-            LAST_DISPUTE_DATETIME, LAST_FRAUD_ALERT_DATETIME,
-
+            DISPUTES,
+            COUNT_DISPUTES,
+            FRAUD_ALERTS,
+            COUNT_FRAUD_ALERTS,
+            LAST_DISPUTE_DATETIME,
+            LAST_FRAUD_ALERT_DATETIME,
             # Business Fields
-            STORE_ID, MERCHANT_NAME, PARTNER_NAME, APP_ID,
-
+            STORE_ID,
+            MERCHANT_NAME,
+            PARTNER_NAME,
+            APP_ID,
             # Cart and Product Fields
-            CART, CART_USD, GMV, PRODUCT_TYPE, IS_DIGITAL,
-
+            CART,
+            CART_USD,
+            GMV,
+            PRODUCT_TYPE,
+            IS_DIGITAL,
             # Geographic and ISP Fields
-            ISP, ASN
+            ISP,
+            ASN,
         ]
 
         # Get all columns from the table dynamically
@@ -145,7 +184,7 @@ class DataCompletenessVerifier:
         try:
             describe_result = await self.client.execute_query(describe_query)
             if describe_result:
-                all_columns = [row['name'] for row in describe_result]
+                all_columns = [row["name"] for row in describe_result]
             else:
                 all_columns = known_columns
         except Exception as e:
@@ -173,22 +212,26 @@ class DataCompletenessVerifier:
                     total_mock_records = 5000  # Simulated total for mock
                     for col in actual_columns:
                         # Simulate realistic data completeness patterns
-                        if col in ['TX_ID_KEY', 'TX_DATETIME', 'EMAIL']:
+                        if col in ["TX_ID_KEY", "TX_DATETIME", "EMAIL"]:
                             # Core fields - very high completeness
                             null_count = 0
                             empty_count = 0
                             distinct_count = total_mock_records
-                        elif col in ['MODEL_SCORE', 'PAID_AMOUNT_VALUE_IN_CURRENCY', 'IS_FRAUD_TX']:
+                        elif col in [
+                            "MODEL_SCORE",
+                            "PAID_AMOUNT_VALUE_IN_CURRENCY",
+                            "IS_FRAUD_TX",
+                        ]:
                             # Important fields - high completeness
                             null_count = 5
                             empty_count = 0
                             distinct_count = total_mock_records - 100
-                        elif col in ['DEVICE_ID', 'IP', 'USER_AGENT']:
+                        elif col in ["DEVICE_ID", "IP", "USER_AGENT"]:
                             # Technical fields - good completeness
                             null_count = 50
                             empty_count = 10
                             distinct_count = total_mock_records - 500
-                        elif col in ['PHONE_NUMBER', 'CARD_BRAND', 'DISPUTES']:
+                        elif col in ["PHONE_NUMBER", "CARD_BRAND", "DISPUTES"]:
                             # Optional fields - moderate completeness
                             null_count = 1000
                             empty_count = 100
@@ -200,7 +243,11 @@ class DataCompletenessVerifier:
                             distinct_count = total_mock_records - 800
 
                         missing_count = null_count + empty_count
-                        completeness_pct = ((total_mock_records - missing_count) / total_mock_records * 100)
+                        completeness_pct = (
+                            (total_mock_records - missing_count)
+                            / total_mock_records
+                            * 100
+                        )
 
                         column_analysis[col] = {
                             "null_count": null_count,
@@ -208,18 +255,20 @@ class DataCompletenessVerifier:
                             "missing_count": missing_count,
                             "distinct_count": distinct_count,
                             "completeness_percentage": round(completeness_pct, 2),
-                            "has_data": missing_count < total_mock_records
+                            "has_data": missing_count < total_mock_records,
                         }
 
                         # Flag columns with significant missing data
                         if completeness_pct < 50:
-                            self.results["issues_found"].append({
-                                "type": "low_completeness",
-                                "column": col,
-                                "completeness_percentage": completeness_pct,
-                                "missing_count": missing_count,
-                                "total_records": total_mock_records
-                            })
+                            self.results["issues_found"].append(
+                                {
+                                    "type": "low_completeness",
+                                    "column": col,
+                                    "completeness_percentage": completeness_pct,
+                                    "missing_count": missing_count,
+                                    "total_records": total_mock_records,
+                                }
+                            )
 
                 else:
                     print("   ⚠️  No sample data available in mock mode")
@@ -235,18 +284,22 @@ class DataCompletenessVerifier:
             # Batch columns into groups for efficient querying
             batch_size = 20
             for i in range(0, len(all_columns), batch_size):
-                batch_columns = all_columns[i:i + batch_size]
+                batch_columns = all_columns[i : i + batch_size]
 
-                print(f"   🔄 Processing columns {i+1}-{min(i+batch_size, len(all_columns))}...")
+                print(
+                    f"   🔄 Processing columns {i+1}-{min(i+batch_size, len(all_columns))}..."
+                )
 
                 # Build dynamic query for this batch
                 null_checks = []
                 for col in batch_columns:
-                    null_checks.append(f"""
+                    null_checks.append(
+                        f"""
                         SUM(CASE WHEN {col} IS NULL THEN 1 ELSE 0 END) AS {col}_NULL_COUNT,
                         SUM(CASE WHEN {col} IS NOT NULL AND TRIM(CAST({col} AS STRING)) = '' THEN 1 ELSE 0 END) AS {col}_EMPTY_COUNT,
                         COUNT(DISTINCT {col}) AS {col}_DISTINCT_COUNT
-                    """)
+                    """
+                    )
 
                 batch_query = f"""
                 SELECT
@@ -259,15 +312,19 @@ class DataCompletenessVerifier:
                     batch_result = await self.client.execute_query(batch_query)
                     if batch_result and len(batch_result) > 0:
                         row = batch_result[0]
-                        total_records = row['TOTAL_RECORDS']
+                        total_records = row["TOTAL_RECORDS"]
 
                         for col in batch_columns:
-                            null_count = row.get(f'{col}_NULL_COUNT', 0)
-                            empty_count = row.get(f'{col}_EMPTY_COUNT', 0)
-                            distinct_count = row.get(f'{col}_DISTINCT_COUNT', 0)
+                            null_count = row.get(f"{col}_NULL_COUNT", 0)
+                            empty_count = row.get(f"{col}_EMPTY_COUNT", 0)
+                            distinct_count = row.get(f"{col}_DISTINCT_COUNT", 0)
 
                             missing_count = null_count + empty_count
-                            completeness_pct = ((total_records - missing_count) / total_records * 100) if total_records > 0 else 0
+                            completeness_pct = (
+                                ((total_records - missing_count) / total_records * 100)
+                                if total_records > 0
+                                else 0
+                            )
 
                             column_analysis[col] = {
                                 "null_count": null_count,
@@ -275,21 +332,25 @@ class DataCompletenessVerifier:
                                 "missing_count": missing_count,
                                 "distinct_count": distinct_count,
                                 "completeness_percentage": round(completeness_pct, 2),
-                                "has_data": missing_count < total_records
+                                "has_data": missing_count < total_records,
                             }
 
                             # Flag columns with significant missing data
                             if completeness_pct < 50:
-                                self.results["issues_found"].append({
-                                    "type": "low_completeness",
-                                    "column": col,
-                                    "completeness_percentage": completeness_pct,
-                                    "missing_count": missing_count,
-                                    "total_records": total_records
-                                })
+                                self.results["issues_found"].append(
+                                    {
+                                        "type": "low_completeness",
+                                        "column": col,
+                                        "completeness_percentage": completeness_pct,
+                                        "missing_count": missing_count,
+                                        "total_records": total_records,
+                                    }
+                                )
 
                 except Exception as e:
-                    logger.error(f"Error analyzing batch {i+1}-{min(i+batch_size, len(all_columns))}: {e}")
+                    logger.error(
+                        f"Error analyzing batch {i+1}-{min(i+batch_size, len(all_columns))}: {e}"
+                    )
                     # Mark columns as unanalyzed
                     for col in batch_columns:
                         column_analysis[col] = {
@@ -299,28 +360,43 @@ class DataCompletenessVerifier:
                             "distinct_count": "ERROR",
                             "completeness_percentage": "ERROR",
                             "has_data": False,
-                            "error": str(e)
+                            "error": str(e),
                         }
 
         self.results["column_analysis"] = column_analysis
 
         # Generate summary statistics
-        analyzed_columns = [col for col, data in column_analysis.items()
-                          if isinstance(data.get("completeness_percentage"), (int, float))]
+        analyzed_columns = [
+            col
+            for col, data in column_analysis.items()
+            if isinstance(data.get("completeness_percentage"), (int, float))
+        ]
 
         if analyzed_columns:
-            completeness_values = [column_analysis[col]["completeness_percentage"]
-                                 for col in analyzed_columns]
+            completeness_values = [
+                column_analysis[col]["completeness_percentage"]
+                for col in analyzed_columns
+            ]
 
             self.results["data_quality_summary"] = {
                 "total_columns_analyzed": len(analyzed_columns),
-                "columns_with_100_percent_completeness": len([c for c in completeness_values if c == 100]),
-                "columns_with_90_plus_percent_completeness": len([c for c in completeness_values if c >= 90]),
-                "columns_with_50_plus_percent_completeness": len([c for c in completeness_values if c >= 50]),
-                "columns_with_less_than_50_percent_completeness": len([c for c in completeness_values if c < 50]),
-                "average_completeness_percentage": round(sum(completeness_values) / len(completeness_values), 2),
+                "columns_with_100_percent_completeness": len(
+                    [c for c in completeness_values if c == 100]
+                ),
+                "columns_with_90_plus_percent_completeness": len(
+                    [c for c in completeness_values if c >= 90]
+                ),
+                "columns_with_50_plus_percent_completeness": len(
+                    [c for c in completeness_values if c >= 50]
+                ),
+                "columns_with_less_than_50_percent_completeness": len(
+                    [c for c in completeness_values if c < 50]
+                ),
+                "average_completeness_percentage": round(
+                    sum(completeness_values) / len(completeness_values), 2
+                ),
                 "min_completeness_percentage": min(completeness_values),
-                "max_completeness_percentage": max(completeness_values)
+                "max_completeness_percentage": max(completeness_values),
             }
 
         print(f"   ✅ Column analysis completed for {len(analyzed_columns)} columns")
@@ -334,7 +410,7 @@ class DataCompletenessVerifier:
         self.results["execution_info"] = {
             "script_version": "1.0",
             "verification_mode": "MOCK" if not self.client.is_real else "LIVE",
-            "total_issues_found": len(self.results["issues_found"])
+            "total_issues_found": len(self.results["issues_found"]),
         }
 
         # Save results to file
@@ -344,7 +420,7 @@ class DataCompletenessVerifier:
         # Create reports directory if it doesn't exist
         Path(report_file).parent.mkdir(parents=True, exist_ok=True)
 
-        with open(report_file, 'w') as f:
+        with open(report_file, "w") as f:
             json.dump(self.results, f, indent=2, default=str)
 
         print(f"   ✅ Report saved to: {report_file}")
@@ -352,9 +428,9 @@ class DataCompletenessVerifier:
 
     def print_summary(self):
         """Print summary of findings to console."""
-        print("\n" + "="*80)
+        print("\n" + "=" * 80)
         print("📊 DATA COMPLETENESS VERIFICATION SUMMARY")
-        print("="*80)
+        print("=" * 80)
 
         table_info = self.results.get("table_info", {})
         quality_summary = self.results.get("data_quality_summary", {})
@@ -365,11 +441,21 @@ class DataCompletenessVerifier:
 
         if quality_summary:
             print(f"\n📊 Data Quality Summary:")
-            print(f"   Columns Analyzed: {quality_summary.get('total_columns_analyzed', 0)}")
-            print(f"   Average Completeness: {quality_summary.get('average_completeness_percentage', 0)}%")
-            print(f"   Columns with 100% completeness: {quality_summary.get('columns_with_100_percent_completeness', 0)}")
-            print(f"   Columns with 90%+ completeness: {quality_summary.get('columns_with_90_plus_percent_completeness', 0)}")
-            print(f"   Columns with <50% completeness: {quality_summary.get('columns_with_less_than_50_percent_completeness', 0)}")
+            print(
+                f"   Columns Analyzed: {quality_summary.get('total_columns_analyzed', 0)}"
+            )
+            print(
+                f"   Average Completeness: {quality_summary.get('average_completeness_percentage', 0)}%"
+            )
+            print(
+                f"   Columns with 100% completeness: {quality_summary.get('columns_with_100_percent_completeness', 0)}"
+            )
+            print(
+                f"   Columns with 90%+ completeness: {quality_summary.get('columns_with_90_plus_percent_completeness', 0)}"
+            )
+            print(
+                f"   Columns with <50% completeness: {quality_summary.get('columns_with_less_than_50_percent_completeness', 0)}"
+            )
 
         issues_count = len(self.results.get("issues_found", []))
         print(f"\n⚠️  Issues Found: {issues_count}")
@@ -378,16 +464,19 @@ class DataCompletenessVerifier:
             print("\n🔍 Issues Details:")
             for issue in self.results["issues_found"][:10]:  # Show first 10 issues
                 if issue["type"] == "low_completeness":
-                    print(f"   ❌ {issue['column']}: {issue['completeness_percentage']}% complete "
-                          f"({issue['missing_count']:,} missing values)")
+                    print(
+                        f"   ❌ {issue['column']}: {issue['completeness_percentage']}% complete "
+                        f"({issue['missing_count']:,} missing values)"
+                    )
 
-        print("\n" + "="*80)
+        print("\n" + "=" * 80)
+
 
 async def main():
     """Main execution function."""
-    print("\n" + "="*80)
+    print("\n" + "=" * 80)
     print("🔍 SNOWFLAKE DATA COMPLETENESS VERIFICATION")
-    print("="*80)
+    print("=" * 80)
     print("📋 Analyzing all 300+ columns across 5000 records...")
     print("⚠️  Running in MOCK mode (TEST_MODE=mock)")
 
@@ -416,6 +505,7 @@ async def main():
     finally:
         # Disconnect
         await verifier.disconnect()
+
 
 if __name__ == "__main__":
     asyncio.run(main())

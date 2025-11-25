@@ -10,17 +10,21 @@ Constitutional Compliance:
 - Complete implementation with all metrics
 """
 
-from datetime import datetime
-from typing import Optional, List, Dict, Any
-from pathlib import Path
 import json
+from datetime import datetime
+from pathlib import Path
+from typing import Any, Dict, List, Optional
 
 from app.router.models.investigation_comparison_models import (
-    ComparisonResponse, WindowMetrics, DeltaMetrics, HistogramBin,
-    TimeseriesDaily, PerMerchantMetrics
+    ComparisonResponse,
+    DeltaMetrics,
+    HistogramBin,
+    PerMerchantMetrics,
+    TimeseriesDaily,
+    WindowMetrics,
 )
 from app.service.logging import get_bridge_logger
-from app.service.reporting.olorin_logo import get_olorin_header, OLORIN_FOOTER
+from app.service.reporting.olorin_logo import OLORIN_FOOTER, get_olorin_header
 
 logger = get_bridge_logger(__name__)
 
@@ -46,18 +50,18 @@ def get_delta_color_class(delta: float) -> str:
 
 
 def generate_html_report(
-    response: ComparisonResponse, 
+    response: ComparisonResponse,
     output_path: Optional[Path] = None,
-    additional_metrics: Optional[Dict[str, Any]] = None
+    additional_metrics: Optional[Dict[str, Any]] = None,
 ) -> str:
     """
     Generate comprehensive HTML report for comparison results.
-    
+
     Args:
         response: ComparisonResponse with all metrics and data
         output_path: Optional path to save HTML file
         additional_metrics: Optional dict with workload metrics, threshold curves, etc.
-        
+
     Returns:
         HTML content as string
     """
@@ -66,19 +70,35 @@ def generate_html_report(
         entity_type = response.entity.get("type", "unknown")
         entity_value = response.entity.get("value", "")
         entity_label = f"{entity_type}: {entity_value}"
-    
+
     additional_metrics = additional_metrics or {}
-    
+
     # Generate charts data
-    histogram_a_data = _prepare_histogram_data(response.A.risk_histogram) if response.A.risk_histogram else None
-    histogram_b_data = _prepare_histogram_data(response.B.risk_histogram) if response.B.risk_histogram else None
-    timeseries_a_data = _prepare_timeseries_data(response.A.timeseries_daily) if response.A.timeseries_daily else None
-    timeseries_b_data = _prepare_timeseries_data(response.B.timeseries_daily) if response.B.timeseries_daily else None
-    
+    histogram_a_data = (
+        _prepare_histogram_data(response.A.risk_histogram)
+        if response.A.risk_histogram
+        else None
+    )
+    histogram_b_data = (
+        _prepare_histogram_data(response.B.risk_histogram)
+        if response.B.risk_histogram
+        else None
+    )
+    timeseries_a_data = (
+        _prepare_timeseries_data(response.A.timeseries_daily)
+        if response.A.timeseries_daily
+        else None
+    )
+    timeseries_b_data = (
+        _prepare_timeseries_data(response.B.timeseries_daily)
+        if response.B.timeseries_daily
+        else None
+    )
+
     # Prepare threshold curve data
     threshold_curve_a = additional_metrics.get("threshold_curve_a")
     threshold_curve_b = additional_metrics.get("threshold_curve_b")
-    
+
     html_content = f"""<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -110,14 +130,14 @@ def generate_html_report(
     </script>
 </body>
 </html>"""
-    
+
     if output_path:
         output_path = Path(output_path)
         output_path.parent.mkdir(parents=True, exist_ok=True)
-        with open(output_path, 'w', encoding='utf-8') as f:
+        with open(output_path, "w", encoding="utf-8") as f:
             f.write(html_content)
         logger.info(f"HTML report saved to {output_path}")
-    
+
     return html_content
 
 
@@ -584,16 +604,16 @@ def _generate_metadata_section(response: ComparisonResponse) -> str:
     entity_info = "All Entities"
     if response.entity:
         entity_info = f"{response.entity.get('type', 'unknown').upper()}: {response.entity.get('value', '')}"
-    
+
     # Auto-expand info
     expand_info_a = ""
     if response.windowA.auto_expand_meta and response.windowA.auto_expand_meta.expanded:
         expand_info_a = f'<div style="color: #4ade80; font-size: 0.85em; margin-top: 5px;">✓ Expanded from {response.windowA.auto_expand_meta.attempts[0]}d → {response.windowA.auto_expand_meta.attempts[1]}d</div>'
-    
+
     expand_info_b = ""
     if response.windowB.auto_expand_meta and response.windowB.auto_expand_meta.expanded:
         expand_info_b = f'<div style="color: #4ade80; font-size: 0.85em; margin-top: 5px;">✓ Expanded from {response.windowB.auto_expand_meta.attempts[0]}d → {response.windowB.auto_expand_meta.attempts[1]}d</div>'
-    
+
     return f"""
         <div class="section">
             <h2 class="section-title">Metadata</h2>
@@ -716,13 +736,13 @@ def _generate_power_badge(power) -> str:
     """Generate power assessment badge."""
     if not power:
         return ""
-    status = power.status if hasattr(power, 'status') else power.get('status', 'stable')
-    reasons = power.reasons if hasattr(power, 'reasons') else power.get('reasons', [])
-    
-    if status == 'stable':
+    status = power.status if hasattr(power, "status") else power.get("status", "stable")
+    reasons = power.reasons if hasattr(power, "reasons") else power.get("reasons", [])
+
+    if status == "stable":
         return '<span style="background: #065f46; color: #6ee7b7; padding: 4px 8px; border-radius: 4px; font-size: 0.85em; margin-left: 10px;">✓ Stable</span>'
     else:
-        reason_text = ', '.join(reasons) if reasons else 'Low power'
+        reason_text = ", ".join(reasons) if reasons else "Low power"
         return f'<span style="background: #78350f; color: #fbbf24; padding: 4px 8px; border-radius: 4px; font-size: 0.85em; margin-left: 10px;" title="{reason_text}">⚠ Low Power</span>'
 
 
@@ -730,23 +750,47 @@ def _generate_metrics_comparison(response: ComparisonResponse) -> str:
     """Generate metrics comparison section with CI, power, and support."""
     metrics_a = response.A
     metrics_b = response.B
-    
+
     # Power badges
     power_badge_a = _generate_power_badge(metrics_a.power)
     power_badge_b = _generate_power_badge(metrics_b.power)
-    
+
     # CI formatting
     ci_a_dict = metrics_a.ci if metrics_a.ci else {}
     ci_b_dict = metrics_b.ci if metrics_b.ci else {}
-    
-    precision_ci_a = _format_ci(ci_a_dict.get('precision') if isinstance(ci_a_dict, dict) else (ci_a_dict.precision if hasattr(ci_a_dict, 'precision') else None))
-    recall_ci_a = _format_ci(ci_a_dict.get('recall') if isinstance(ci_a_dict, dict) else (ci_a_dict.recall if hasattr(ci_a_dict, 'recall') else None))
-    accuracy_ci_a = _format_ci(ci_a_dict.get('accuracy') if isinstance(ci_a_dict, dict) else (ci_a_dict.accuracy if hasattr(ci_a_dict, 'accuracy') else None))
-    
-    precision_ci_b = _format_ci(ci_b_dict.get('precision') if isinstance(ci_b_dict, dict) else (ci_b_dict.precision if hasattr(ci_b_dict, 'precision') else None))
-    recall_ci_b = _format_ci(ci_b_dict.get('recall') if isinstance(ci_b_dict, dict) else (ci_b_dict.recall if hasattr(ci_b_dict, 'recall') else None))
-    accuracy_ci_b = _format_ci(ci_b_dict.get('accuracy') if isinstance(ci_b_dict, dict) else (ci_b_dict.accuracy if hasattr(ci_b_dict, 'accuracy') else None))
-    
+
+    precision_ci_a = _format_ci(
+        ci_a_dict.get("precision")
+        if isinstance(ci_a_dict, dict)
+        else (ci_a_dict.precision if hasattr(ci_a_dict, "precision") else None)
+    )
+    recall_ci_a = _format_ci(
+        ci_a_dict.get("recall")
+        if isinstance(ci_a_dict, dict)
+        else (ci_a_dict.recall if hasattr(ci_a_dict, "recall") else None)
+    )
+    accuracy_ci_a = _format_ci(
+        ci_a_dict.get("accuracy")
+        if isinstance(ci_a_dict, dict)
+        else (ci_a_dict.accuracy if hasattr(ci_a_dict, "accuracy") else None)
+    )
+
+    precision_ci_b = _format_ci(
+        ci_b_dict.get("precision")
+        if isinstance(ci_b_dict, dict)
+        else (ci_b_dict.precision if hasattr(ci_b_dict, "precision") else None)
+    )
+    recall_ci_b = _format_ci(
+        ci_b_dict.get("recall")
+        if isinstance(ci_b_dict, dict)
+        else (ci_b_dict.recall if hasattr(ci_b_dict, "recall") else None)
+    )
+    accuracy_ci_b = _format_ci(
+        ci_b_dict.get("accuracy")
+        if isinstance(ci_b_dict, dict)
+        else (ci_b_dict.accuracy if hasattr(ci_b_dict, "accuracy") else None)
+    )
+
     # Auto-expand indicators
     expand_note_a = ""
     if response.windowA.auto_expand_meta and response.windowA.auto_expand_meta.expanded:
@@ -763,7 +807,7 @@ def _generate_metrics_comparison(response: ComparisonResponse) -> str:
                         </span>
                     </div>
         """
-    
+
     expand_note_b = ""
     if response.windowB.auto_expand_meta and response.windowB.auto_expand_meta.expanded:
         original_days = response.windowB.auto_expand_meta.attempts[0]
@@ -779,7 +823,7 @@ def _generate_metrics_comparison(response: ComparisonResponse) -> str:
                         </span>
                     </div>
         """
-    
+
     # Support metrics
     support_a = ""
     if metrics_a.support:
@@ -791,7 +835,7 @@ def _generate_metrics_comparison(response: ComparisonResponse) -> str:
                         </span>
                     </div>
         """
-    
+
     support_b = ""
     if metrics_b.support:
         support_b = f"""
@@ -802,30 +846,30 @@ def _generate_metrics_comparison(response: ComparisonResponse) -> str:
                         </span>
                     </div>
         """
-    
+
     # Calibration metrics
     calibration_a = ""
     if metrics_a.brier is not None or metrics_a.log_loss is not None:
         calibration_a = '<div class="metric-row" style="border-top: 2px solid #333; margin-top: 10px; padding-top: 10px;"><span class="metric-label">Calibration</span><span class="metric-value" style="font-size: 0.9em;">'
         if metrics_a.brier is not None:
-            calibration_a += f'Brier: {metrics_a.brier:.4f}'
+            calibration_a += f"Brier: {metrics_a.brier:.4f}"
         if metrics_a.log_loss is not None:
             if metrics_a.brier is not None:
-                calibration_a += ', '
-            calibration_a += f'Log Loss: {metrics_a.log_loss:.4f}'
-        calibration_a += '</span></div>'
-    
+                calibration_a += ", "
+            calibration_a += f"Log Loss: {metrics_a.log_loss:.4f}"
+        calibration_a += "</span></div>"
+
     calibration_b = ""
     if metrics_b.brier is not None or metrics_b.log_loss is not None:
         calibration_b = '<div class="metric-row" style="border-top: 2px solid #333; margin-top: 10px; padding-top: 10px;"><span class="metric-label">Calibration</span><span class="metric-value" style="font-size: 0.9em;">'
         if metrics_b.brier is not None:
-            calibration_b += f'Brier: {metrics_b.brier:.4f}'
+            calibration_b += f"Brier: {metrics_b.brier:.4f}"
         if metrics_b.log_loss is not None:
             if metrics_b.brier is not None:
-                calibration_b += ', '
-            calibration_b += f'Log Loss: {metrics_b.log_loss:.4f}'
-        calibration_b += '</span></div>'
-    
+                calibration_b += ", "
+            calibration_b += f"Log Loss: {metrics_b.log_loss:.4f}"
+        calibration_b += "</span></div>"
+
     return f"""
         <div class="section">
             <h2 class="section-title">Metrics Comparison</h2>
@@ -909,7 +953,7 @@ def _generate_metrics_comparison(response: ComparisonResponse) -> str:
 def _generate_delta_section(response: ComparisonResponse) -> str:
     """Generate delta metrics section."""
     delta = response.delta
-    
+
     return f"""
         <div class="section">
             <h2 class="section-title">Delta Metrics (Window B - Window A)</h2>
@@ -1007,13 +1051,15 @@ def _generate_confusion_matrices(response: ComparisonResponse) -> str:
 
 
 def _generate_charts_section(
-    histogram_a: Optional[Dict], histogram_b: Optional[Dict],
-    timeseries_a: Optional[Dict], timeseries_b: Optional[Dict],
-    response: ComparisonResponse
+    histogram_a: Optional[Dict],
+    histogram_b: Optional[Dict],
+    timeseries_a: Optional[Dict],
+    timeseries_b: Optional[Dict],
+    response: ComparisonResponse,
 ) -> str:
     """Generate charts section."""
     charts_html = ""
-    
+
     if histogram_a or histogram_b:
         charts_html += f"""
             <div class="section">
@@ -1025,7 +1071,7 @@ def _generate_charts_section(
                 </div>
             </div>
         """
-    
+
     if timeseries_a or timeseries_b:
         charts_html += f"""
             <div class="section">
@@ -1037,7 +1083,7 @@ def _generate_charts_section(
                 </div>
             </div>
         """
-    
+
     return charts_html
 
 
@@ -1045,14 +1091,14 @@ def _generate_per_merchant_section(response: ComparisonResponse) -> str:
     """Generate per-merchant breakdown section."""
     if not response.per_merchant or len(response.per_merchant) == 0:
         return ""
-    
+
     rows = ""
     for pm in response.per_merchant:
         merchant_id = pm.merchant_id
         metrics_a = pm.A
         metrics_b = pm.B
         delta = pm.delta
-        
+
         rows += f"""
             <tr>
                 <td>{merchant_id}</td>
@@ -1065,7 +1111,7 @@ def _generate_per_merchant_section(response: ComparisonResponse) -> str:
                 </td>
             </tr>
         """
-    
+
     return f"""
         <div class="section">
             <h2 class="section-title">Per-Merchant Breakdown</h2>
@@ -1097,28 +1143,30 @@ def _prepare_histogram_data(histogram: Optional[List[HistogramBin]]) -> Optional
     """Prepare histogram data for Chart.js."""
     if not histogram:
         return None
-    
+
     bins = []
     counts = []
     for bin_data in histogram:
         bins.append(bin_data.bin)
         counts.append(bin_data.n)
-    
+
     return {"labels": bins, "data": counts}
 
 
-def _prepare_timeseries_data(timeseries: Optional[List[TimeseriesDaily]]) -> Optional[Dict]:
+def _prepare_timeseries_data(
+    timeseries: Optional[List[TimeseriesDaily]],
+) -> Optional[Dict]:
     """Prepare timeseries data for Chart.js."""
     if not timeseries:
         return None
-    
+
     dates = []
     counts = []
     tps = []
     fps = []
     tns = []
     fns = []
-    
+
     for ts in timeseries:
         dates.append(ts.date)
         counts.append(ts.count)
@@ -1126,20 +1174,19 @@ def _prepare_timeseries_data(timeseries: Optional[List[TimeseriesDaily]]) -> Opt
         fps.append(ts.FP or 0)
         tns.append(ts.TN or 0)
         fns.append(ts.FN or 0)
-    
+
     return {
         "labels": dates,
         "counts": counts,
         "tp": tps,
         "fp": fps,
         "tn": tns,
-        "fn": fns
+        "fn": fns,
     }
 
 
 def _generate_workload_metrics_section(
-    response: ComparisonResponse,
-    additional_metrics: Dict[str, Any]
+    response: ComparisonResponse, additional_metrics: Dict[str, Any]
 ) -> str:
     """Generate workload-aware metrics section."""
     workload_a = additional_metrics.get("workload_metrics_a", {})
@@ -1148,10 +1195,10 @@ def _generate_workload_metrics_section(
     precision_at_k_b = additional_metrics.get("precision_at_k_b", {})
     recall_at_budget_a = additional_metrics.get("recall_at_budget_a", {})
     recall_at_budget_b = additional_metrics.get("recall_at_budget_b", {})
-    
+
     if not workload_a and not workload_b:
         return ""
-    
+
     precision_at_k_rows = ""
     for k in [100, 500, 1000]:
         pk_a = precision_at_k_a.get(k, {})
@@ -1166,7 +1213,7 @@ def _generate_workload_metrics_section(
                     <td>{format_percentage(pk_b.get('recall_at_k', 0))}</td>
                 </tr>
             """
-    
+
     recall_at_budget_rows = ""
     for budget in [50, 100, 150]:
         rb_a = recall_at_budget_a.get(budget, {})
@@ -1181,7 +1228,7 @@ def _generate_workload_metrics_section(
                     <td>{format_percentage(rb_b.get('precision_at_budget', 0))}</td>
                 </tr>
             """
-    
+
     return f"""
         <div class="section">
             <h2 class="section-title">Workload-Aware Metrics</h2>
@@ -1260,12 +1307,12 @@ def _generate_workload_metrics_section(
 def _generate_threshold_curves_section(
     threshold_curve_a: Optional[List[Dict]],
     threshold_curve_b: Optional[List[Dict]],
-    response: ComparisonResponse
+    response: ComparisonResponse,
 ) -> str:
     """Generate threshold tuning curves section."""
     if not threshold_curve_a and not threshold_curve_b:
         return ""
-    
+
     return f"""
         <div class="section">
             <h2 class="section-title">Threshold Tuning Curves</h2>
@@ -1288,40 +1335,50 @@ def _generate_threshold_curves_section(
 
 
 def _generate_chart_scripts(
-    histogram_a: Optional[Dict], histogram_b: Optional[Dict],
-    timeseries_a: Optional[Dict], timeseries_b: Optional[Dict],
+    histogram_a: Optional[Dict],
+    histogram_b: Optional[Dict],
+    timeseries_a: Optional[Dict],
+    timeseries_b: Optional[Dict],
     threshold_curve_a: Optional[List[Dict]] = None,
     threshold_curve_b: Optional[List[Dict]] = None,
-    response: Optional[ComparisonResponse] = None
+    response: Optional[ComparisonResponse] = None,
 ) -> str:
     """Generate Chart.js scripts."""
     scripts = ""
-    
+
     # Get window labels
     window_a_label = response.windowA.label if response else "Window A"
     window_b_label = response.windowB.label if response else "Window B"
-    
+
     if histogram_a or histogram_b:
         datasets = []
         if histogram_a:
-            datasets.append({
-                "label": "Window A",
-                "data": histogram_a["data"],
-                "backgroundColor": "rgba(0, 212, 255, 0.6)",
-                "borderColor": "rgba(0, 212, 255, 1)",
-                "borderWidth": 1
-            })
+            datasets.append(
+                {
+                    "label": "Window A",
+                    "data": histogram_a["data"],
+                    "backgroundColor": "rgba(0, 212, 255, 0.6)",
+                    "borderColor": "rgba(0, 212, 255, 1)",
+                    "borderWidth": 1,
+                }
+            )
         if histogram_b:
-            datasets.append({
-                "label": "Window B",
-                "data": histogram_b["data"],
-                "backgroundColor": "rgba(255, 107, 107, 0.6)",
-                "borderColor": "rgba(255, 107, 107, 1)",
-                "borderWidth": 1
-            })
-        
-        labels = histogram_a["labels"] if histogram_a else (histogram_b["labels"] if histogram_b else [])
-        
+            datasets.append(
+                {
+                    "label": "Window B",
+                    "data": histogram_b["data"],
+                    "backgroundColor": "rgba(255, 107, 107, 0.6)",
+                    "borderColor": "rgba(255, 107, 107, 1)",
+                    "borderWidth": 1,
+                }
+            )
+
+        labels = (
+            histogram_a["labels"]
+            if histogram_a
+            else (histogram_b["labels"] if histogram_b else [])
+        )
+
         scripts += f"""
             const histogramCtx = document.getElementById('histogramChart');
             if (histogramCtx) {{
@@ -1354,28 +1411,36 @@ def _generate_chart_scripts(
                 }});
             }}
         """
-    
+
     if timeseries_a or timeseries_b:
         datasets = []
         if timeseries_a:
-            datasets.append({
-                "label": "Window A - Transactions",
-                "data": timeseries_a["counts"],
-                "borderColor": "rgba(0, 212, 255, 1)",
-                "backgroundColor": "rgba(0, 212, 255, 0.1)",
-                "tension": 0.4
-            })
+            datasets.append(
+                {
+                    "label": "Window A - Transactions",
+                    "data": timeseries_a["counts"],
+                    "borderColor": "rgba(0, 212, 255, 1)",
+                    "backgroundColor": "rgba(0, 212, 255, 0.1)",
+                    "tension": 0.4,
+                }
+            )
         if timeseries_b:
-            datasets.append({
-                "label": "Window B - Transactions",
-                "data": timeseries_b["counts"],
-                "borderColor": "rgba(255, 107, 107, 1)",
-                "backgroundColor": "rgba(255, 107, 107, 0.1)",
-                "tension": 0.4
-            })
-        
-        labels = timeseries_a["labels"] if timeseries_a else (timeseries_b["labels"] if timeseries_b else [])
-        
+            datasets.append(
+                {
+                    "label": "Window B - Transactions",
+                    "data": timeseries_b["counts"],
+                    "borderColor": "rgba(255, 107, 107, 1)",
+                    "backgroundColor": "rgba(255, 107, 107, 0.1)",
+                    "tension": 0.4,
+                }
+            )
+
+        labels = (
+            timeseries_a["labels"]
+            if timeseries_a
+            else (timeseries_b["labels"] if timeseries_b else [])
+        )
+
         scripts += f"""
             const timeseriesCtx = document.getElementById('timeseriesChart');
             if (timeseriesCtx) {{
@@ -1408,7 +1473,7 @@ def _generate_chart_scripts(
                 }});
             }}
         """
-    
+
     # Threshold curve charts
     if threshold_curve_a or threshold_curve_b:
         # Precision-Recall vs Threshold chart
@@ -1417,51 +1482,63 @@ def _generate_chart_scripts(
             thresholds_a = [p["threshold"] for p in threshold_curve_a]
             precision_a = [p["precision"] for p in threshold_curve_a]
             recall_a = [p["recall"] for p in threshold_curve_a]
-            
-            threshold_datasets.append({
-                "label": f"{response.windowA.label} - Precision",
-                "data": precision_a,
-                "borderColor": "rgba(0, 212, 255, 1)",
-                "backgroundColor": "rgba(0, 212, 255, 0.1)",
-                "yAxisID": "y",
-                "tension": 0.4
-            })
-            threshold_datasets.append({
-                "label": f"{response.windowA.label} - Recall",
-                "data": recall_a,
-                "borderColor": "rgba(0, 212, 255, 0.6)",
-                "backgroundColor": "rgba(0, 212, 255, 0.05)",
-                "yAxisID": "y",
-                "tension": 0.4,
-                "borderDash": [5, 5]
-            })
-        
+
+            threshold_datasets.append(
+                {
+                    "label": f"{response.windowA.label} - Precision",
+                    "data": precision_a,
+                    "borderColor": "rgba(0, 212, 255, 1)",
+                    "backgroundColor": "rgba(0, 212, 255, 0.1)",
+                    "yAxisID": "y",
+                    "tension": 0.4,
+                }
+            )
+            threshold_datasets.append(
+                {
+                    "label": f"{response.windowA.label} - Recall",
+                    "data": recall_a,
+                    "borderColor": "rgba(0, 212, 255, 0.6)",
+                    "backgroundColor": "rgba(0, 212, 255, 0.05)",
+                    "yAxisID": "y",
+                    "tension": 0.4,
+                    "borderDash": [5, 5],
+                }
+            )
+
         if threshold_curve_b:
             thresholds_b = [p["threshold"] for p in threshold_curve_b]
             precision_b = [p["precision"] for p in threshold_curve_b]
             recall_b = [p["recall"] for p in threshold_curve_b]
-            
-            threshold_datasets.append({
-                "label": f"{response.windowB.label} - Precision",
-                "data": precision_b,
-                "borderColor": "rgba(255, 107, 107, 1)",
-                "backgroundColor": "rgba(255, 107, 107, 0.1)",
-                "yAxisID": "y",
-                "tension": 0.4
-            })
-            threshold_datasets.append({
-                "label": f"{response.windowB.label} - Recall",
-                "data": recall_b,
-                "borderColor": "rgba(255, 107, 107, 0.6)",
-                "backgroundColor": "rgba(255, 107, 107, 0.05)",
-                "yAxisID": "y",
-                "tension": 0.4,
-                "borderDash": [5, 5]
-            })
-        
-        threshold_labels = thresholds_a if threshold_curve_a else (thresholds_b if threshold_curve_b else [])
+
+            threshold_datasets.append(
+                {
+                    "label": f"{response.windowB.label} - Precision",
+                    "data": precision_b,
+                    "borderColor": "rgba(255, 107, 107, 1)",
+                    "backgroundColor": "rgba(255, 107, 107, 0.1)",
+                    "yAxisID": "y",
+                    "tension": 0.4,
+                }
+            )
+            threshold_datasets.append(
+                {
+                    "label": f"{response.windowB.label} - Recall",
+                    "data": recall_b,
+                    "borderColor": "rgba(255, 107, 107, 0.6)",
+                    "backgroundColor": "rgba(255, 107, 107, 0.05)",
+                    "yAxisID": "y",
+                    "tension": 0.4,
+                    "borderDash": [5, 5],
+                }
+            )
+
+        threshold_labels = (
+            thresholds_a
+            if threshold_curve_a
+            else (thresholds_b if threshold_curve_b else [])
+        )
         threshold_labels_str = [f"{t:.1f}" for t in threshold_labels]
-        
+
         scripts += f"""
             const thresholdCtx = document.getElementById('thresholdCurveChart');
             if (thresholdCtx) {{
@@ -1511,35 +1588,39 @@ def _generate_chart_scripts(
                 }});
             }}
         """
-        
+
         # Precision-Recall curve chart
         pr_datasets = []
         if threshold_curve_a:
             precision_a = [p["precision"] for p in threshold_curve_a]
             recall_a = [p["recall"] for p in threshold_curve_a]
             pr_data_a = [[r, p] for r, p in zip(recall_a, precision_a)]
-            pr_datasets.append({
-                "label": window_a_label,
-                "data": pr_data_a,
-                "borderColor": "rgba(0, 212, 255, 1)",
-                "backgroundColor": "rgba(0, 212, 255, 0.1)",
-                "pointRadius": 3,
-                "tension": 0.4
-            })
-        
+            pr_datasets.append(
+                {
+                    "label": window_a_label,
+                    "data": pr_data_a,
+                    "borderColor": "rgba(0, 212, 255, 1)",
+                    "backgroundColor": "rgba(0, 212, 255, 0.1)",
+                    "pointRadius": 3,
+                    "tension": 0.4,
+                }
+            )
+
         if threshold_curve_b:
             precision_b = [p["precision"] for p in threshold_curve_b]
             recall_b = [p["recall"] for p in threshold_curve_b]
             pr_data_b = [[r, p] for r, p in zip(recall_b, precision_b)]
-            pr_datasets.append({
-                "label": window_b_label,
-                "data": pr_data_b,
-                "borderColor": "rgba(255, 107, 107, 1)",
-                "backgroundColor": "rgba(255, 107, 107, 0.1)",
-                "pointRadius": 3,
-                "tension": 0.4
-            })
-        
+            pr_datasets.append(
+                {
+                    "label": window_b_label,
+                    "data": pr_data_b,
+                    "borderColor": "rgba(255, 107, 107, 1)",
+                    "backgroundColor": "rgba(255, 107, 107, 0.1)",
+                    "pointRadius": 3,
+                    "tension": 0.4,
+                }
+            )
+
         scripts += f"""
             const prCtx = document.getElementById('precisionRecallChart');
             if (prCtx) {{
@@ -1600,6 +1681,5 @@ def _generate_chart_scripts(
                 }});
             }}
         """
-    
-    return scripts
 
+    return scripts

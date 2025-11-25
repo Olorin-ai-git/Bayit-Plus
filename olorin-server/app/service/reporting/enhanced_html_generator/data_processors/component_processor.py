@@ -12,15 +12,15 @@ Component data processing module.
 """
 
 import logging
-from typing import Dict, List, Any
+from typing import Any, Dict, List
 
-from ..data_models import ExtractedData, ComponentData
-from .component_processor_llm import LLMInteractionProcessor
-from .component_processor_tools import ToolsUsageProcessor
-from .component_processor_risk import RiskAnalysisProcessor
-from .component_processor_flow import InvestigationFlowProcessor
+from ..data_models import ComponentData, ExtractedData
 from .component_processor_explanations import ExplanationsProcessor
+from .component_processor_flow import InvestigationFlowProcessor
 from .component_processor_langgraph import LangGraphNodesProcessor
+from .component_processor_llm import LLMInteractionProcessor
+from .component_processor_risk import RiskAnalysisProcessor
+from .component_processor_tools import ToolsUsageProcessor
 
 logger = logging.getLogger(__name__)
 

@@ -13,9 +13,9 @@ Spec: /specs/021-live-merged-logstream/api-contracts.md
 
 from fastapi import APIRouter
 
-from app.api.logstream_streaming import router as streaming_router
-from app.api.logstream_polling import router as polling_router
 from app.api.logstream_ingestion import router as ingestion_router
+from app.api.logstream_polling import router as polling_router
+from app.api.logstream_streaming import router as streaming_router
 
 # Create main router with prefix and tags
 router = APIRouter(prefix="/api/v1/investigations", tags=["log-stream"])

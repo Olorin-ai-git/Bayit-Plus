@@ -1,7 +1,7 @@
 """
 RAG-Enhanced Structured Investigation Agent
 
-Extension of StructuredInvestigationAgent with RAG (Retrieval-Augmented Generation) 
+Extension of StructuredInvestigationAgent with RAG (Retrieval-Augmented Generation)
 capabilities for knowledge-augmented fraud investigation analysis.
 """
 
@@ -11,16 +11,17 @@ from typing import Any, Dict, List, Optional
 
 from langchain_core.runnables.config import RunnableConfig
 
-from .autonomous_base import StructuredInvestigationAgent
-from .autonomous_context import StructuredInvestigationContext, DomainFindings
 from app.service.logging import get_bridge_logger
+
+from .autonomous_base import StructuredInvestigationAgent
+from .autonomous_context import DomainFindings, StructuredInvestigationContext
 from .rag import (
-    RAGOrchestrator, 
-    ContextAugmentor, 
+    ContextAugmentationConfig,
+    ContextAugmentor,
     KnowledgeContext,
-    get_rag_orchestrator,
+    RAGOrchestrator,
     create_context_augmentor,
-    ContextAugmentationConfig
+    get_rag_orchestrator,
 )
 
 logger = get_bridge_logger(__name__)
@@ -29,28 +30,28 @@ logger = get_bridge_logger(__name__)
 class RAGEnhancedInvestigationAgent(StructuredInvestigationAgent):
     """
     RAG-Enhanced Structured Investigation Agent
-    
+
     Extends the base StructuredInvestigationAgent with RAG capabilities:
     - Knowledge-augmented decision making
     - Context-aware prompt generation
     - Domain-specific knowledge retrieval
     - Enhanced analysis quality through background knowledge
     - Graceful degradation when RAG unavailable
-    
+
     Maintains full backward compatibility with existing agent functionality.
     """
-    
+
     def __init__(
-        self, 
-        domain: str, 
+        self,
+        domain: str,
         tools: List[Any],
         rag_orchestrator: Optional[RAGOrchestrator] = None,
         enable_rag: bool = True,
-        rag_config: Optional[ContextAugmentationConfig] = None
+        rag_config: Optional[ContextAugmentationConfig] = None,
     ):
         """
         Initialize RAG-enhanced investigation agent
-        
+
         Args:
             domain: Investigation domain (network, device, location, logs, risk)
             tools: List of available tools for the agent
@@ -60,60 +61,61 @@ class RAGEnhancedInvestigationAgent(StructuredInvestigationAgent):
         """
         # Initialize base agent
         super().__init__(domain, tools)
-        
+
         # RAG system integration
         self.enable_rag = enable_rag
         self.rag_available = False
         self.rag_orchestrator = None
         self.context_augmentor = None
-        
+
         # Initialize RAG components if enabled
         if enable_rag:
             try:
                 # Get or use provided RAG orchestrator
                 self.rag_orchestrator = rag_orchestrator or get_rag_orchestrator()
-                
+
                 # Create context augmentor with optional config
                 self.context_augmentor = create_context_augmentor(
-                    self.rag_orchestrator,
-                    rag_config
+                    self.rag_orchestrator, rag_config
                 )
-                
+
                 self.rag_available = True
                 logger.info(f"RAG capabilities enabled for {domain} agent")
-                
+
             except Exception as e:
-                logger.warning(f"RAG initialization failed for {domain} agent - continuing without RAG: {str(e)}")
+                logger.warning(
+                    f"RAG initialization failed for {domain} agent - continuing without RAG: {str(e)}"
+                )
                 self.enable_rag = False
                 self.rag_available = False
-        
+
         # Performance tracking
         self.rag_stats = {
             "investigations_with_rag": 0,
             "investigations_without_rag": 0,
             "rag_failures": 0,
             "avg_context_retrieval_time_ms": 0.0,
-            "knowledge_chunks_used": 0
+            "knowledge_chunks_used": 0,
         }
-    
+
     async def structured_investigate(
         self,
         context: StructuredInvestigationContext,
         config: RunnableConfig,
-        specific_objectives: List[str] = None
+        specific_objectives: List[str] = None,
     ) -> DomainFindings:
         """
         Perform RAG-enhanced structured investigation
-        
+
         Args:
             context: Rich investigation context
             config: LangGraph configuration
             specific_objectives: Specific objectives for this domain
-            
+
         Returns:
             DomainFindings with enhanced analysis results
         """
-        
+
         # Attempt RAG-enhanced investigation if available
         if self.rag_available and self.enable_rag:
             try:
@@ -121,91 +123,99 @@ class RAGEnhancedInvestigationAgent(StructuredInvestigationAgent):
                     context, config, specific_objectives
                 )
             except Exception as e:
-                logger.error(f"RAG-enhanced investigation failed for {self.domain}: {str(e)}")
+                logger.error(
+                    f"RAG-enhanced investigation failed for {self.domain}: {str(e)}"
+                )
                 self.rag_stats["rag_failures"] += 1
                 logger.info(f"Falling back to standard investigation for {self.domain}")
-        
+
         # Fallback to standard investigation
         self.rag_stats["investigations_without_rag"] += 1
-        return await super().structured_investigate(context, config, specific_objectives)
-    
+        return await super().structured_investigate(
+            context, config, specific_objectives
+        )
+
     async def _rag_enhanced_investigation(
         self,
         context: StructuredInvestigationContext,
         config: RunnableConfig,
-        specific_objectives: List[str] = None
+        specific_objectives: List[str] = None,
     ) -> DomainFindings:
         """
         Perform investigation with RAG enhancement
         """
         import time
-        
-        logger.info(f"Starting RAG-enhanced {self.domain} investigation for {context.investigation_id}")
-        
+
+        logger.info(
+            f"Starting RAG-enhanced {self.domain} investigation for {context.investigation_id}"
+        )
+
         # Step 1: Augment context with relevant knowledge
         context_start_time = time.time()
-        
+
         knowledge_context = await self.context_augmentor.augment_investigation_context(
             investigation_context=context,
             domain=self.domain,
-            specific_objectives=specific_objectives
+            specific_objectives=specific_objectives,
         )
-        
+
         context_retrieval_time_ms = (time.time() - context_start_time) * 1000
-        self._update_rag_stats(context_retrieval_time_ms, knowledge_context.total_chunks)
-        
+        self._update_rag_stats(
+            context_retrieval_time_ms, knowledge_context.total_chunks
+        )
+
         logger.info(
             f"Knowledge context retrieved for {self.domain}: "
             f"{knowledge_context.total_chunks} chunks in {context_retrieval_time_ms:.1f}ms"
         )
-        
+
         # Step 2: Generate enhanced investigation prompt
         enhanced_prompt = await self._create_rag_enhanced_prompt(
             context, knowledge_context, specific_objectives
         )
-        
+
         # Step 3: Execute investigation with enhanced prompt
         findings = await self._execute_enhanced_investigation(
             enhanced_prompt, context, config, knowledge_context, specific_objectives
         )
-        
+
         # Step 4: Augment findings with knowledge metadata
         findings = self._augment_findings_with_rag_metadata(findings, knowledge_context)
-        
+
         logger.info(
             f"RAG-enhanced {self.domain} investigation completed: "
             f"risk_score={findings.risk_score}, knowledge_chunks={knowledge_context.total_chunks}"
         )
-        
+
         self.rag_stats["investigations_with_rag"] += 1
-        
+
         return findings
-    
+
     async def _create_rag_enhanced_prompt(
         self,
         context: StructuredInvestigationContext,
         knowledge_context: KnowledgeContext,
-        specific_objectives: List[str] = None
+        specific_objectives: List[str] = None,
     ) -> str:
         """
         Create investigation prompt enhanced with knowledge context
         """
-        
+
         # Generate base investigation prompt
         from .structured_prompts import create_investigation_prompt
-        
+
         llm_context = context.generate_llm_context(self.domain)
         base_prompt = create_investigation_prompt(
             self.domain, context, llm_context, specific_objectives
         )
-        
+
         # Inject knowledge context into prompt
         enhanced_prompt = await self.context_augmentor.inject_context_into_prompt(
             base_prompt=base_prompt,
             knowledge_context=knowledge_context,
-            include_all_levels=True
+            include_all_levels=True,
         )
-        
+
         # Add RAG-specific instructions
         rag_instructions = f"""
 
@@ -230,29 +240,31 @@ Remember: The knowledge context provides expert domain knowledge to enhance your
 === END RAG ENHANCEMENT INSTRUCTIONS ===
 
 """
-        
+
         enhanced_prompt += rag_instructions
-        
+
         return enhanced_prompt
-    
+
     async def _execute_enhanced_investigation(
         self,
         enhanced_prompt: str,
         context: StructuredInvestigationContext,
         config: RunnableConfig,
         knowledge_context: KnowledgeContext,
-        specific_objectives: List[str] = None
+        specific_objectives: List[str] = None,
     ) -> DomainFindings:
         """
         Execute investigation with enhanced prompt using the base class method
         """
-        
+
         # Import modules needed for investigation execution
         from langchain_core.messages import HumanMessage, SystemMessage
+
         from .structured_parsing import parse_structured_result
-        
+
         # Create enhanced system message
-        system_msg = SystemMessage(content=f"""
+        system_msg = SystemMessage(
+            content=f"""
 You are an intelligent fraud investigation agent specializing in {self.domain.upper()} ANALYSIS with RAG enhancement.
 
 ENHANCED CAPABILITIES:
@@ -281,13 +293,17 @@ Knowledge context: {knowledge_context.total_chunks} relevant knowledge pieces av
 IMPORTANT: The investigation prompt contains exact format requirements. Follow these precisely while leveraging both your structured capabilities and the retrieved knowledge context.
 
 Remember: You have full autonomy to choose tools and analyze data, now enhanced with domain expertise from the knowledge base.
-""")
-        
+"""
+        )
+
         try:
             # Import logging components
-            from app.service.logging.autonomous_investigation_logger import get_console_logger
+            from app.service.logging.autonomous_investigation_logger import (
+                get_console_logger,
+            )
+
             console_logger = get_console_logger()
-            
+
             # Start enhanced investigation logging
             console_logger.start_investigation_logging(
                 context.investigation_id,
@@ -297,85 +313,112 @@ Remember: You have full autonomy to choose tools and analyze data, now enhanced 
                     "entity_id": context.entity_id,
                     "objectives": specific_objectives or [],
                     "rag_enhanced": True,
-                    "knowledge_chunks": knowledge_context.total_chunks
-                }
+                    "knowledge_chunks": knowledge_context.total_chunks,
+                },
             )
-            
+
             # Add final reminder about risk score
-            final_enhanced_prompt = enhanced_prompt + "\n\n⚠️ FINAL REMINDER: Include 'risk_score: X.XX' in your response (numerical value 0.0-1.0) - Enhanced with knowledge context"
-            
+            final_enhanced_prompt = (
+                enhanced_prompt
+                + "\n\n⚠️ FINAL REMINDER: Include 'risk_score: X.XX' in your response (numerical value 0.0-1.0) - Enhanced with knowledge context"
+            )
+
             # Log the RAG-enhanced prompt
             from app.service.agent.llm_formatter import LLMInteractionFormatter
-            
+
             console_prompt, _ = LLMInteractionFormatter.format_console_interaction(
-                self.domain, context.investigation_id, context.entity_id, final_enhanced_prompt, ""
+                self.domain,
+                context.investigation_id,
+                context.entity_id,
+                final_enhanced_prompt,
+                "",
             )
             logger.info(console_prompt)
-            
-            logger.info(f"        🤖🧠 Starting RAG-Enhanced {self.domain.title()} Agent analysis...")
-            logger.info(f"Starting RAG-enhanced structured {self.domain} investigation for {context.investigation_id}")
-            
+
+            logger.info(
+                f"        🤖🧠 Starting RAG-Enhanced {self.domain.title()} Agent analysis..."
+            )
+            logger.info(
+                f"Starting RAG-enhanced structured {self.domain} investigation for {context.investigation_id}"
+            )
+
             messages = [system_msg, HumanMessage(content=final_enhanced_prompt)]
-            
+
             # Log enhanced LLM interaction
-            logger.info(f"🤖🧠 RAG-ENHANCED LLM INTERACTION START: {self.domain.title()} Agent")
-            
+            logger.info(
+                f"🤖🧠 RAG-ENHANCED LLM INTERACTION START: {self.domain.title()} Agent"
+            )
+
             # Use the same investigation execution pattern as the base class
             # but with enhanced prompts and logging
             result = await self.llm_with_tools.ainvoke(messages, config=config)
-            
+
             # Handle tool calls if present (same as base class)
-            if hasattr(result, 'tool_calls') and result.tool_calls:
-                logger.info(f"🔧🧠 RAG-Enhanced tool calls detected - executing with knowledge context")
-                
+            if hasattr(result, "tool_calls") and result.tool_calls:
+                logger.info(
+                    f"🔧🧠 RAG-Enhanced tool calls detected - executing with knowledge context"
+                )
+
                 from langchain_core.messages import ToolMessage
+
                 tool_messages = []
-                
+
                 for tool_call in result.tool_calls:
-                    tool_name = tool_call.get('name')
-                    tool_args = tool_call.get('args', {})
-                    tool_id = tool_call.get('id')
-                    
+                    tool_name = tool_call.get("name")
+                    tool_args = tool_call.get("args", {})
+                    tool_id = tool_call.get("id")
+
                     logger.info(f"🔧🧠 Executing RAG-enhanced tool: {tool_name}")
-                    
+
                     # Fix tool parameters to ensure correct naming
-                    from app.service.agent.tools.tool_parameter_mapper import ToolParameterMapper
-                    fixed_args = ToolParameterMapper.fix_tool_parameters(tool_name, tool_args)
-                    
+                    from app.service.agent.tools.tool_parameter_mapper import (
+                        ToolParameterMapper,
+                    )
+
+                    fixed_args = ToolParameterMapper.fix_tool_parameters(
+                        tool_name, tool_args
+                    )
+
                     try:
                         if tool_name in self.tool_map:
                             tool = self.tool_map[tool_name]
                             tool_result = await tool.ainvoke(fixed_args)
-                            
+
                             tool_message = ToolMessage(
                                 content=str(tool_result),
                                 tool_call_id=tool_id,
-                                name=tool_name
+                                name=tool_name,
                             )
                             tool_messages.append(tool_message)
-                            
+
                         else:
                             tool_message = ToolMessage(
                                 content=f"Error: Tool {tool_name} not available",
                                 tool_call_id=tool_id,
-                                name=tool_name
+                                name=tool_name,
                             )
                             tool_messages.append(tool_message)
-                    
+
                     except Exception as e:
-                        logger.error(f"❌🧠 RAG-enhanced tool {tool_name} execution failed: {str(e)}")
+                        logger.error(
+                            f"❌🧠 RAG-enhanced tool {tool_name} execution failed: {str(e)}"
+                        )
                         tool_message = ToolMessage(
                             content=f"Tool execution failed: {str(e)}",
                             tool_call_id=tool_id,
-                            name=tool_name
+                            name=tool_name,
                         )
                         tool_messages.append(tool_message)
-                
+
                 # Get final analysis with knowledge context
                 analysis_messages = messages + [result] + tool_messages
-                
-                successful_tools = [msg for msg in tool_messages if "Error:" not in msg.content and "failed:" not in msg.content]
-                
+
+                successful_tools = [
+                    msg
+                    for msg in tool_messages
+                    if "Error:" not in msg.content and "failed:" not in msg.content
+                ]
+
                 if successful_tools:
                     follow_up_prompt = f"""
 Based on the tool execution results and the provided knowledge context, provide your fraud analysis in the EXACT format below.
@@ -430,15 +473,20 @@ CRITICAL REQUIREMENTS:
 
 MANDATORY: Begin your response with "1. Risk Level:" right now.
 """
-                
+
                 analysis_messages.append(HumanMessage(content=follow_up_prompt))
-                
-                logger.info(f"🔍🧠 Requesting RAG-enhanced final analysis for {self.domain} domain")
-                
+
+                logger.info(
+                    f"🔍🧠 Requesting RAG-enhanced final analysis for {self.domain} domain"
+                )
+
                 from .autonomous_base import get_structured_llm
-                final_result = await get_structured_llm().ainvoke(analysis_messages, config=config)
+
+                final_result = await get_structured_llm().ainvoke(
+                    analysis_messages, config=config
+                )
                 result = final_result
-                
+
             else:
                 # No tools used - ensure formatted response with knowledge context
                 format_reminder_prompt = f"""
@@ -461,23 +509,39 @@ CRITICAL REQUIREMENTS:
 
 MANDATORY: Begin your response with "1. Risk Level:" right now.
 """
-                
-                format_messages = messages + [result, HumanMessage(content=format_reminder_prompt)]
-                
-                logger.info(f"🔍🧠 Requesting RAG-enhanced formatted response for {self.domain} domain")
-                
+
+                format_messages = messages + [
+                    result,
+                    HumanMessage(content=format_reminder_prompt),
+                ]
+
+                logger.info(
+                    f"🔍🧠 Requesting RAG-enhanced formatted response for {self.domain} domain"
+                )
+
                 from .autonomous_base import get_structured_llm
-                formatted_result = await get_structured_llm().ainvoke(format_messages, config=config)
+
+                formatted_result = await get_structured_llm().ainvoke(
+                    format_messages, config=config
+                )
                 result = formatted_result
-            
+
             # Parse results with enhanced logging
             findings = parse_structured_result(result, context, self.domain)
-            
+
             # Enhanced completion logging
-            risk_display = "MISSING!" if findings.risk_score is None else f"{findings.risk_score:.3f}"
-            logger.info(f"        ✅🧠 RAG-Enhanced {self.domain.title()} Agent completed")
-            logger.info(f"           Risk Score: {risk_display} | Confidence: {findings.confidence:.2f} | Knowledge: {knowledge_context.total_chunks} chunks")
-            
+            risk_display = (
+                "MISSING!"
+                if findings.risk_score is None
+                else f"{findings.risk_score:.3f}"
+            )
+            logger.info(
+                f"        ✅🧠 RAG-Enhanced {self.domain.title()} Agent completed"
+            )
+            logger.info(
+                f"           Risk Score: {risk_display} | Confidence: {findings.confidence:.2f} | Knowledge: {knowledge_context.total_chunks} chunks"
+            )
+
             logger.info(
                 f"✅🧠 RAG-ENHANCED {self.domain.upper()} INVESTIGATION COMPLETE: "
                 f"risk_score={findings.risk_score:.2f}, "
@@ -485,91 +549,95 @@ MANDATORY: Begin your response with "1. Risk Level:" right now.
                 f"findings={len(findings.key_findings)}, "
                 f"knowledge_chunks={knowledge_context.total_chunks}"
             )
-            
+
             return findings
-            
+
         except Exception as e:
-            logger.error(f"RAG-enhanced investigation execution failed for {self.domain}: {str(e)}")
+            logger.error(
+                f"RAG-enhanced investigation execution failed for {self.domain}: {str(e)}"
+            )
             raise  # Re-raise to trigger fallback in calling method
-    
+
     def _augment_findings_with_rag_metadata(
-        self,
-        findings: DomainFindings,
-        knowledge_context: KnowledgeContext
+        self, findings: DomainFindings, knowledge_context: KnowledgeContext
     ) -> DomainFindings:
         """
         Augment findings with RAG-related metadata
         """
-        
+
         # Add RAG metadata to recommended actions
         rag_info = f"Analysis enhanced with {knowledge_context.total_chunks} domain knowledge pieces"
         findings.recommended_actions.append(rag_info)
-        
+
         # Add knowledge source information if available
         if knowledge_context.knowledge_sources:
             sources_info = f"Knowledge sources consulted: {', '.join(sorted(knowledge_context.knowledge_sources))}"
             findings.key_findings.append(sources_info)
-        
+
         # Mark data quality as enhanced if knowledge was used
         if knowledge_context.total_chunks > 0:
             if findings.data_quality == "good":
                 findings.data_quality = "excellent"  # Upgrade quality with knowledge
             elif findings.data_quality == "fair":
                 findings.data_quality = "good"
-        
+
         return findings
-    
+
     def _update_rag_stats(self, retrieval_time_ms: float, chunks_count: int) -> None:
         """Update RAG performance statistics"""
-        
+
         # Update average retrieval time (simplified running average)
         investigations_count = self.rag_stats["investigations_with_rag"] + 1
         current_avg = self.rag_stats["avg_context_retrieval_time_ms"]
-        new_avg = ((current_avg * (investigations_count - 1)) + retrieval_time_ms) / investigations_count
+        new_avg = (
+            (current_avg * (investigations_count - 1)) + retrieval_time_ms
+        ) / investigations_count
         self.rag_stats["avg_context_retrieval_time_ms"] = new_avg
-        
+
         # Update knowledge chunks count
         self.rag_stats["knowledge_chunks_used"] += chunks_count
-    
+
     def get_rag_performance_stats(self) -> Dict[str, Any]:
         """Get RAG-specific performance statistics"""
-        
+
         total_investigations = (
-            self.rag_stats["investigations_with_rag"] + 
-            self.rag_stats["investigations_without_rag"]
+            self.rag_stats["investigations_with_rag"]
+            + self.rag_stats["investigations_without_rag"]
         )
-        
+
         rag_usage_rate = 0.0
         if total_investigations > 0:
-            rag_usage_rate = self.rag_stats["investigations_with_rag"] / total_investigations
-        
+            rag_usage_rate = (
+                self.rag_stats["investigations_with_rag"] / total_investigations
+            )
+
         avg_chunks_per_investigation = 0.0
         if self.rag_stats["investigations_with_rag"] > 0:
             avg_chunks_per_investigation = (
-                self.rag_stats["knowledge_chunks_used"] / 
-                self.rag_stats["investigations_with_rag"]
+                self.rag_stats["knowledge_chunks_used"]
+                / self.rag_stats["investigations_with_rag"]
             )
-        
+
         return {
             "rag_status": {
                 "enabled": self.enable_rag,
                 "available": self.rag_available,
-                "domain": self.domain
+                "domain": self.domain,
             },
             "usage_statistics": self.rag_stats.copy(),
             "performance_metrics": {
                 "rag_usage_rate": rag_usage_rate,
                 "avg_chunks_per_investigation": avg_chunks_per_investigation,
-                "total_investigations": total_investigations
-            }
+                "total_investigations": total_investigations,
+            },
         }
-    
+
     async def clear_rag_cache(self) -> None:
         """Clear RAG-related caches"""
         if self.context_augmentor:
             await self.context_augmentor.clear_cache()
             logger.info(f"RAG cache cleared for {self.domain} agent")
-    
+
     def is_rag_enhanced(self) -> bool:
         """Check if agent is RAG-enhanced and available"""
         return self.rag_available and self.enable_rag
@@ -581,18 +649,18 @@ def create_rag_enhanced_agent(
     tools: List[Any],
     rag_orchestrator: Optional[RAGOrchestrator] = None,
     enable_rag: bool = True,
-    rag_config: Optional[ContextAugmentationConfig] = None
+    rag_config: Optional[ContextAugmentationConfig] = None,
 ) -> RAGEnhancedInvestigationAgent:
     """
     Create RAG-enhanced investigation agent
-    
+
     Args:
         domain: Investigation domain
         tools: List of available tools
         rag_orchestrator: Optional RAG orchestrator
         enable_rag: Whether to enable RAG capabilities
         rag_config: Optional RAG configuration
-        
+
     Returns:
         RAG-enhanced investigation agent
     """
@@ -601,5 +669,5 @@ def create_rag_enhanced_agent(
         tools=tools,
         rag_orchestrator=rag_orchestrator,
         enable_rag=enable_rag,
-        rag_config=rag_config
+        rag_config=rag_config,
     )

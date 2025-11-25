@@ -12,27 +12,28 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 # Add the app directory to the Python path
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), 'app'))
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), "app"))
+
 
 def generate_simple_html_report(investigation_folder_path: str) -> str:
     """Generate a simple HTML report from investigation folder data"""
-    
+
     folder_path = Path(investigation_folder_path)
     if not folder_path.exists():
         raise FileNotFoundError(f"Investigation folder not found: {folder_path}")
-    
+
     # Read investigation data
     metadata_file = folder_path / "metadata.json"
-    structured_file = folder_path / "structured_activities.jsonl" 
+    structured_file = folder_path / "structured_activities.jsonl"
     journey_file = folder_path / "journey_tracking.json"
     log_file = folder_path / "investigation.log"
-    
+
     # Load metadata
     metadata = {}
     if metadata_file.exists():
         with open(metadata_file) as f:
             metadata = json.load(f)
-    
+
     # Load structured activities
     activities = []
     if structured_file.exists():
@@ -42,7 +43,7 @@ def generate_simple_html_report(investigation_folder_path: str) -> str:
                     activities.append(json.loads(line.strip()))
                 except:
                     pass
-    
+
     # Load journey data
     journey_data = {}
     if journey_file.exists():
@@ -51,7 +52,7 @@ def generate_simple_html_report(investigation_folder_path: str) -> str:
                 journey_data = json.load(f)
         except:
             pass
-    
+
     # Load log entries
     log_entries = []
     if log_file.exists():
@@ -60,7 +61,7 @@ def generate_simple_html_report(investigation_folder_path: str) -> str:
                 log_entries = f.readlines()
         except:
             pass
-    
+
     # Generate HTML report
     html_content = f"""
     <!DOCTYPE html>
@@ -231,50 +232,54 @@ def generate_simple_html_report(investigation_folder_path: str) -> str:
             <div class="section">
                 <div class="section-title">📊 Activity Log</div>
     """
-    
+
     # Add activities
     llm_interactions = []
     for activity in activities:
-        activity_type = activity.get('interaction_type', 'unknown')
-        data = activity.get('data', {})
-        timestamp = data.get('timestamp', '')
-        
-        if activity_type == 'llm_call':
-            tokens = data.get('tokens_used', {}).get('total_tokens', 0)
-            llm_interactions.append({
-                'timestamp': timestamp,
-                'tokens': tokens,
-                'agent': data.get('agent_name', 'unknown')
-            })
-        
+        activity_type = activity.get("interaction_type", "unknown")
+        data = activity.get("data", {})
+        timestamp = data.get("timestamp", "")
+
+        if activity_type == "llm_call":
+            tokens = data.get("tokens_used", {}).get("total_tokens", 0)
+            llm_interactions.append(
+                {
+                    "timestamp": timestamp,
+                    "tokens": tokens,
+                    "agent": data.get("agent_name", "unknown"),
+                }
+            )
+
         # Determine risk level for styling
         from app.service.agent.orchestration.metrics.safe import coerce_float
-        
+
         risk_class = "risk-low"
-        if activity_type in ['agent_decision', 'investigation_progress']:
-            risk_score = data.get('decision_outcome', {}).get('risk_score') or data.get('findings_summary', {}).get('risk_score', 0)
+        if activity_type in ["agent_decision", "investigation_progress"]:
+            risk_score = data.get("decision_outcome", {}).get("risk_score") or data.get(
+                "findings_summary", {}
+            ).get("risk_score", 0)
             safe_risk = coerce_float(risk_score, 0.0)
             if safe_risk > 0.7:
                 risk_class = "risk-high"
             elif safe_risk > 0.4:
                 risk_class = "risk-medium"
-        
+
         html_content += f"""
                 <div class="activity-item {risk_class}">
                     <div class="activity-time">{timestamp}</div>
                     <div class="activity-type">{activity_type.replace('_', ' ').title()}</div>
                     <div style="font-size: 0.9rem; margin-top: 5px;">
         """
-        
-        if activity_type == 'llm_call':
+
+        if activity_type == "llm_call":
             html_content += f"Agent: {data.get('agent_name', 'N/A')} | Model: {data.get('model_name', 'N/A')} | Tokens: {data.get('tokens_used', {}).get('total_tokens', 0)}"
-        elif activity_type == 'tool_execution':
+        elif activity_type == "tool_execution":
             html_content += f"Tool: {data.get('tool_name', 'N/A')} | Success: {data.get('success', False)} | Duration: {data.get('execution_time_ms', 0)}ms"
-        elif activity_type == 'agent_decision':
+        elif activity_type == "agent_decision":
             html_content += f"Decision: {data.get('decision_type', 'N/A')} | Confidence: {data.get('confidence_score', 0):.2f}"
-        
+
         html_content += "</div></div>"
-    
+
     # Close sections and add JavaScript
     html_content += f"""
             </div>
@@ -282,10 +287,10 @@ def generate_simple_html_report(investigation_folder_path: str) -> str:
             <div class="section">
                 <div class="section-title">📝 Investigation Logs</div>
     """
-    
+
     for log_entry in log_entries[:10]:  # Show first 10 log entries
         html_content += f'<div class="log-entry">{log_entry.strip()}</div>'
-    
+
     html_content += f"""
             </div>
         </div>
@@ -333,44 +338,45 @@ def generate_simple_html_report(investigation_folder_path: str) -> str:
     </body>
     </html>
     """
-    
+
     # Save the report
     report_file = folder_path / "investigation_report.html"
-    with open(report_file, 'w', encoding='utf-8') as f:
+    with open(report_file, "w", encoding="utf-8") as f:
         f.write(html_content)
-    
+
     return str(report_file)
+
 
 def test_simple_html_generation():
     """Test simple HTML report generation"""
     print("🧪 Testing Simple HTML Report Generation...")
-    
+
     try:
         # Find investigation folders
         from app.service.logging.investigation_folder_manager import get_folder_manager
-        
+
         folder_manager = get_folder_manager()
         investigations = folder_manager.list_investigations()
-        
+
         if not investigations:
             print("❌ No investigation folders found")
             return False
-        
+
         investigation = investigations[0]
         folder_path = investigation.folder_path
-        
+
         print(f"📁 Processing investigation: {investigation.investigation_id}")
         print(f"   Path: {folder_path}")
-        
+
         # Generate HTML report
         report_path = generate_simple_html_report(folder_path)
-        
+
         if Path(report_path).exists():
             report_size = Path(report_path).stat().st_size
             print(f"✅ HTML report generated successfully!")
             print(f"   📄 Report: {report_path}")
             print(f"   📊 Size: {report_size:,} bytes")
-            
+
             # Check content
             with open(report_path) as f:
                 content = f.read()
@@ -383,12 +389,14 @@ def test_simple_html_generation():
         else:
             print("❌ Report file was not created")
             return False
-            
+
     except Exception as e:
         print(f"❌ Test failed: {e}")
         import traceback
+
         traceback.print_exc()
         return False
+
 
 if __name__ == "__main__":
     success = test_simple_html_generation()

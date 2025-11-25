@@ -5,22 +5,26 @@ Components package for Enhanced HTML Report Generator.
 Provides HTML generation for headers, summaries, timelines, and other report sections.
 """
 
-from ..data_models import InvestigationSummary, ComponentData
-from ..utils import DateTimeFormatter, DataFormatter, StatusFormatter, ListFormatter
-from typing import Dict, List, Any
-from app.service.reporting.olorin_logo import get_olorin_header, OLORIN_FOOTER
+from typing import Any, Dict, List
+
+from app.service.reporting.olorin_logo import OLORIN_FOOTER, get_olorin_header
+
+from ..data_models import ComponentData, InvestigationSummary
+from ..utils import DataFormatter, DateTimeFormatter, ListFormatter, StatusFormatter
 
 
 class HeaderGenerator:
     """Generates HTML headers for reports."""
 
-    def generate_header(self, summary: InvestigationSummary, title: str, timestamp: str) -> str:
+    def generate_header(
+        self, summary: InvestigationSummary, title: str, timestamp: str
+    ) -> str:
         """Generate the enhanced report header with Olorin logo."""
         status_class = StatusFormatter.get_status_class(summary.status)
-        
+
         # Use Olorin logo header
         logo_header = get_olorin_header(title)
-        
+
         return f"""
         {logo_header}
         <div class="header-grid" style="margin-top: 20px;">
@@ -157,13 +161,13 @@ class JourneyGenerator:
 
 
 __all__ = [
-    'HeaderGenerator',
-    'SummaryGenerator',
-    'FooterGenerator',
-    'TimelineGenerator',
-    'FlowGraphGenerator',
-    'ToolsAnalysisGenerator',
-    'RiskDashboardGenerator',
-    'ExplanationsGenerator',
-    'JourneyGenerator'
+    "HeaderGenerator",
+    "SummaryGenerator",
+    "FooterGenerator",
+    "TimelineGenerator",
+    "FlowGraphGenerator",
+    "ToolsAnalysisGenerator",
+    "RiskDashboardGenerator",
+    "ExplanationsGenerator",
+    "JourneyGenerator",
 ]

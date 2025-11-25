@@ -7,14 +7,14 @@ Week 9 Phase 3 implementation.
 """
 
 import logging
-from typing import Dict, Any, List, Tuple, Optional
+from typing import Any, Dict, List, Optional, Tuple
 
-from app.service.analytics.model_base import ModelPrediction, FraudDetectionModel
 from app.service.analytics.feature_contribution import calculate_feature_contributions
 from app.service.analytics.feature_description import (
     generate_explanation_text,
-    interpret_score_difference
+    interpret_score_difference,
 )
+from app.service.analytics.model_base import FraudDetectionModel, ModelPrediction
 
 logger = logging.getLogger(__name__)
 
@@ -35,7 +35,7 @@ class ScoreExplainer:
         self,
         prediction: ModelPrediction,
         features: Dict[str, Any],
-        model: Optional[FraudDetectionModel] = None
+        model: Optional[FraudDetectionModel] = None,
     ) -> Dict[str, Any]:
         """Generate explanation for a prediction."""
         # Get feature contributions
@@ -46,9 +46,7 @@ class ScoreExplainer:
 
         # Generate human-readable explanation
         explanation_text = generate_explanation_text(
-            prediction.score,
-            top_features,
-            features
+            prediction.score, top_features, features
         )
 
         return {
@@ -58,29 +56,23 @@ class ScoreExplainer:
             "top_features": top_features,
             "explanation": explanation_text,
             "model_name": prediction.model_name,
-            "model_version": prediction.model_version
+            "model_version": prediction.model_version,
         }
 
-
     def _get_top_features(
-        self,
-        contributions: Dict[str, float],
-        n: int = 5
+        self, contributions: Dict[str, float], n: int = 5
     ) -> List[Tuple[str, float]]:
         """Get top N contributing features."""
         sorted_features = sorted(
-            contributions.items(),
-            key=lambda x: abs(x[1]),
-            reverse=True
+            contributions.items(), key=lambda x: abs(x[1]), reverse=True
         )
         return sorted_features[:n]
-
 
     def compare_predictions(
         self,
         prediction_a: ModelPrediction,
         prediction_b: ModelPrediction,
-        features: Dict[str, Any]
+        features: Dict[str, Any],
     ) -> Dict[str, Any]:
         """Compare two predictions and explain differences."""
         score_diff = prediction_b.score - prediction_a.score
@@ -92,12 +84,12 @@ class ScoreExplainer:
             "model_a": {
                 "name": prediction_a.model_name,
                 "score": prediction_a.score,
-                "confidence": prediction_a.confidence
+                "confidence": prediction_a.confidence,
             },
             "model_b": {
                 "name": prediction_b.model_name,
                 "score": prediction_b.score,
-                "confidence": prediction_b.confidence
+                "confidence": prediction_b.confidence,
             },
-            "interpretation": interpret_score_difference(score_diff)
+            "interpretation": interpret_score_difference(score_diff),
         }

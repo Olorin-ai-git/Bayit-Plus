@@ -9,7 +9,9 @@ from app.service.agent.tools.splunk_tool.splunk_tool import MockSplunkClient
 # OBSOLETE TEST: Complex SplunkClient with many methods from ato_agents has been removed
 # Current implementation only has basic MockSplunkClient with connect/disconnect/search
 # Most of these tests are for functionality that no longer exists
-pytestmark = pytest.mark.skip(reason="Complex SplunkClient removed - test for obsolete functionality")
+pytestmark = pytest.mark.skip(
+    reason="Complex SplunkClient removed - test for obsolete functionality"
+)
 
 
 @pytest.fixture

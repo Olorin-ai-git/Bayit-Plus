@@ -15,6 +15,7 @@ class EntityType(str, Enum):
     - Entity types from domain model, not hardcoded business logic
     - Extensible via configuration in future
     """
+
     EMAIL = "email"
     PHONE = "phone"
     DEVICE_ID = "device_id"

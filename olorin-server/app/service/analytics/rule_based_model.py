@@ -8,8 +8,8 @@ Week 8 Phase 3 implementation.
 
 import logging
 import os
-from typing import Dict, Any, List, Optional
 from datetime import datetime
+from typing import Any, Dict, List, Optional
 
 from app.service.analytics.model_base import FraudDetectionModel, ModelPrediction
 from app.service.analytics.pattern_adjustments import PatternAdjustmentEngine
@@ -45,7 +45,7 @@ class RuleBasedModel(FraudDetectionModel):
         self,
         transaction: Dict[str, Any],
         features: Dict[str, Any],
-        advanced_features: Optional[Dict[str, Any]] = None
+        advanced_features: Optional[Dict[str, Any]] = None,
     ) -> ModelPrediction:
         """
         Generate rule-based risk prediction.
@@ -59,11 +59,15 @@ class RuleBasedModel(FraudDetectionModel):
             ModelPrediction with score and metadata
         """
         # Detect patterns
-        historical_transactions = advanced_features.get("historical_transactions") if advanced_features else None
+        historical_transactions = (
+            advanced_features.get("historical_transactions")
+            if advanced_features
+            else None
+        )
         patterns = self.pattern_engine.detect_all_patterns(
             transaction=transaction,
             historical_transactions=historical_transactions,
-            advanced_features=advanced_features
+            advanced_features=advanced_features,
         )
 
         # Calculate total adjustment
@@ -93,12 +97,12 @@ class RuleBasedModel(FraudDetectionModel):
                 {
                     "type": p["pattern_type"],
                     "adjustment": p["risk_adjustment"],
-                    "confidence": p["confidence"]
+                    "confidence": p["confidence"],
                 }
                 for p in patterns
             ],
             "total_adjustment": total_adjustment,
-            "base_score": self.base_score
+            "base_score": self.base_score,
         }
 
         return ModelPrediction(
@@ -108,7 +112,7 @@ class RuleBasedModel(FraudDetectionModel):
             model_version=self.model_version,
             features_used=features_used,
             metadata=metadata,
-            timestamp=datetime.utcnow()
+            timestamp=datetime.utcnow(),
         )
 
     def get_feature_importance(self) -> Dict[str, float]:
@@ -138,7 +142,4 @@ class RuleBasedModel(FraudDetectionModel):
 
     def get_required_features(self) -> List[str]:
         """Get required features for rule-based model."""
-        return [
-            "tx_amount",
-            "tx_hour"
-        ]
+        return ["tx_amount", "tx_hour"]

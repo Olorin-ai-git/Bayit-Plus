@@ -16,36 +16,37 @@ Features:
 
 import json
 import statistics
-from typing import Dict, List, Any, Optional
-from datetime import datetime
 from collections import Counter, defaultdict
+from datetime import datetime
+from typing import Any, Dict, List, Optional
 
 from .base_component import BaseVisualizationComponent
+
 
 class LLMTimelineComponent(BaseVisualizationComponent):
     """
     Interactive LLM interactions timeline component.
-    
+
     Displays LLM interactions over time with detailed metrics,
     interactive charts, and comprehensive breakdowns.
     """
-    
+
     @property
     def component_name(self) -> str:
         return "llm_timeline"
-        
+
     @property
     def component_title(self) -> str:
         return "LLM Interactions Timeline"
-        
+
     @property
     def component_description(self) -> str:
         return "Interactive timeline showing LLM interactions, token usage, and agent activity over time"
-    
+
     def validate_data(self, data: Dict[str, Any]) -> bool:
         """
         Validate LLM interactions data.
-        
+
         Expected data structure:
         {
             'llm_interactions': [
@@ -66,43 +67,45 @@ class LLMTimelineComponent(BaseVisualizationComponent):
         if not isinstance(data, dict):
             self._add_error("Data must be a dictionary")
             return False
-            
-        interactions = data.get('llm_interactions', [])
+
+        interactions = data.get("llm_interactions", [])
         if not isinstance(interactions, list):
             self._add_error("llm_interactions must be a list")
             return False
-            
+
         if not interactions:
             self._add_warning("No LLM interactions found")
             return True  # Empty data is valid, just shows empty state
-            
+
         # Validate sample interactions
         for i, interaction in enumerate(interactions[:5]):  # Check first 5
             if not isinstance(interaction, dict):
                 self._add_error(f"Interaction {i} must be a dictionary")
                 return False
-                
-            required_fields = ['timestamp', 'agent_name', 'model_name']
+
+            required_fields = ["timestamp", "agent_name", "model_name"]
             for field in required_fields:
                 if field not in interaction:
                     self._add_warning(f"Interaction {i} missing field: {field}")
-                    
+
         return True
-    
+
     def process_data(self, data: Dict[str, Any]) -> Dict[str, Any]:
         """
         Process LLM interactions data for visualization.
         """
-        interactions = data.get('llm_interactions', [])
-        
+        interactions = data.get("llm_interactions", [])
+
         if not interactions:
             return {}
-            
+
         # Limit data points for performance
         if len(interactions) > self.config.max_data_points:
-            interactions = interactions[:self.config.max_data_points]
-            self._add_warning(f"Limited to {self.config.max_data_points} interactions for performance")
-        
+            interactions = interactions[: self.config.max_data_points]
+            self._add_warning(
+                f"Limited to {self.config.max_data_points} interactions for performance"
+            )
+
         # Process timeline data
         timeline_data = []
         token_progression = []
@@ -110,115 +113,135 @@ class LLMTimelineComponent(BaseVisualizationComponent):
         model_stats = Counter()
         response_times = []
         success_count = 0
-        
+
         for i, interaction in enumerate(interactions):
             # Extract basic info
-            timestamp = interaction.get('timestamp', '')
-            agent_name = interaction.get('agent_name', 'Unknown')
-            model_name = interaction.get('model_name', 'Unknown')
-            tokens_used = interaction.get('tokens_used', {})
-            tools_used = interaction.get('tools_used', [])
-            reasoning = interaction.get('reasoning_chain', '')
-            response_time = interaction.get('response_time_ms', 0)
-            confidence = interaction.get('confidence_score')
-            success = interaction.get('success', True)
-            
+            timestamp = interaction.get("timestamp", "")
+            agent_name = interaction.get("agent_name", "Unknown")
+            model_name = interaction.get("model_name", "Unknown")
+            tokens_used = interaction.get("tokens_used", {})
+            tools_used = interaction.get("tools_used", [])
+            reasoning = interaction.get("reasoning_chain", "")
+            response_time = interaction.get("response_time_ms", 0)
+            confidence = interaction.get("confidence_score")
+            success = interaction.get("success", True)
+
             # Format timestamp
             formatted_time = self._format_timestamp(timestamp)
-            
+
             # Process tokens
-            total_tokens = tokens_used.get('total_tokens', 0) if isinstance(tokens_used, dict) else 0
-            prompt_tokens = tokens_used.get('prompt_tokens', 0) if isinstance(tokens_used, dict) else 0
-            completion_tokens = tokens_used.get('completion_tokens', 0) if isinstance(tokens_used, dict) else 0
-            
+            total_tokens = (
+                tokens_used.get("total_tokens", 0)
+                if isinstance(tokens_used, dict)
+                else 0
+            )
+            prompt_tokens = (
+                tokens_used.get("prompt_tokens", 0)
+                if isinstance(tokens_used, dict)
+                else 0
+            )
+            completion_tokens = (
+                tokens_used.get("completion_tokens", 0)
+                if isinstance(tokens_used, dict)
+                else 0
+            )
+
             # Timeline entry
             timeline_entry = {
-                'index': i,
-                'timestamp': timestamp,
-                'formatted_time': formatted_time,
-                'agent_name': agent_name,
-                'model_name': model_name,
-                'total_tokens': total_tokens,
-                'prompt_tokens': prompt_tokens,
-                'completion_tokens': completion_tokens,
-                'tools_used': tools_used,
-                'reasoning': self._sanitize_string(reasoning, 200),
-                'response_time_ms': response_time,
-                'confidence_score': confidence,
-                'success': success
+                "index": i,
+                "timestamp": timestamp,
+                "formatted_time": formatted_time,
+                "agent_name": agent_name,
+                "model_name": model_name,
+                "total_tokens": total_tokens,
+                "prompt_tokens": prompt_tokens,
+                "completion_tokens": completion_tokens,
+                "tools_used": tools_used,
+                "reasoning": self._sanitize_string(reasoning, 200),
+                "response_time_ms": response_time,
+                "confidence_score": confidence,
+                "success": success,
             }
-            
+
             timeline_data.append(timeline_entry)
             token_progression.append(total_tokens)
-            
+
             # Update statistics
             agent_stats[agent_name] += 1
             model_stats[model_name] += 1
-            
+
             if response_time > 0:
                 response_times.append(response_time)
-                
+
             if success:
                 success_count += 1
-        
+
         # Calculate aggregate metrics
         total_tokens = sum(token_progression)
         avg_tokens = statistics.mean(token_progression) if token_progression else 0
         max_tokens = max(token_progression) if token_progression else 0
         avg_response_time = statistics.mean(response_times) if response_times else 0
         success_rate = (success_count / len(interactions)) * 100 if interactions else 0
-        
+
         # Calculate token usage trend
-        token_trend = 'stable'
+        token_trend = "stable"
         if len(token_progression) > 3:
-            first_half = statistics.mean(token_progression[:len(token_progression)//2])
-            second_half = statistics.mean(token_progression[len(token_progression)//2:])
-            change_percent = ((second_half - first_half) / first_half) * 100 if first_half > 0 else 0
-            
+            first_half = statistics.mean(
+                token_progression[: len(token_progression) // 2]
+            )
+            second_half = statistics.mean(
+                token_progression[len(token_progression) // 2 :]
+            )
+            change_percent = (
+                ((second_half - first_half) / first_half) * 100 if first_half > 0 else 0
+            )
+
             if change_percent > 20:
-                token_trend = 'increasing'
+                token_trend = "increasing"
             elif change_percent < -20:
-                token_trend = 'decreasing'
-        
+                token_trend = "decreasing"
+
         return {
-            'timeline_data': timeline_data,
-            'token_progression': token_progression,
-            'timestamps': [self._format_timestamp(item['timestamp']) for item in timeline_data],
-            'agents': dict(agent_stats.most_common()),
-            'models': dict(model_stats.most_common()),
-            'metrics': {
-                'total_interactions': len(interactions),
-                'total_tokens': total_tokens,
-                'avg_tokens_per_interaction': round(avg_tokens, 1),
-                'max_tokens_single_interaction': max_tokens,
-                'avg_response_time_ms': round(avg_response_time, 1),
-                'success_rate': round(success_rate, 1),
-                'unique_agents': len(agent_stats),
-                'unique_models': len(model_stats),
-                'token_trend': token_trend
-            }
+            "timeline_data": timeline_data,
+            "token_progression": token_progression,
+            "timestamps": [
+                self._format_timestamp(item["timestamp"]) for item in timeline_data
+            ],
+            "agents": dict(agent_stats.most_common()),
+            "models": dict(model_stats.most_common()),
+            "metrics": {
+                "total_interactions": len(interactions),
+                "total_tokens": total_tokens,
+                "avg_tokens_per_interaction": round(avg_tokens, 1),
+                "max_tokens_single_interaction": max_tokens,
+                "avg_response_time_ms": round(avg_response_time, 1),
+                "success_rate": round(success_rate, 1),
+                "unique_agents": len(agent_stats),
+                "unique_models": len(model_stats),
+                "token_trend": token_trend,
+            },
         }
-    
+
     def generate_html(self, processed_data: Dict[str, Any]) -> str:
         """
         Generate HTML for LLM timeline component.
         """
-        metrics = processed_data.get('metrics', {})
-        timeline_data = processed_data.get('timeline_data', [])
-        agents = processed_data.get('agents', {})
-        models = processed_data.get('models', {})
-        
+        metrics = processed_data.get("metrics", {})
+        timeline_data = processed_data.get("timeline_data", [])
+        agents = processed_data.get("agents", {})
+        models = processed_data.get("models", {})
+
         # Generate statistics section
         stats_html = ""
         stats_items = [
-            ('Total Interactions', metrics.get('total_interactions', 0)),
-            ('Total Tokens', f"{metrics.get('total_tokens', 0):,}"),
-            ('Avg Tokens/Call', metrics.get('avg_tokens_per_interaction', 0)),
-            ('Success Rate', f"{metrics.get('success_rate', 0)}%"),
-            ('Unique Agents', metrics.get('unique_agents', 0)),
-            ('Avg Response Time', f"{metrics.get('avg_response_time_ms', 0):.0f}ms")
+            ("Total Interactions", metrics.get("total_interactions", 0)),
+            ("Total Tokens", f"{metrics.get('total_tokens', 0):,}"),
+            ("Avg Tokens/Call", metrics.get("avg_tokens_per_interaction", 0)),
+            ("Success Rate", f"{metrics.get('success_rate', 0)}%"),
+            ("Unique Agents", metrics.get("unique_agents", 0)),
+            ("Avg Response Time", f"{metrics.get('avg_response_time_ms', 0):.0f}ms"),
         ]
-        
+
         for label, value in stats_items:
             stats_html += f"""
                 <div class="viz-stat-item-{self.component_id}">
@@ -226,16 +249,26 @@ class LLMTimelineComponent(BaseVisualizationComponent):
                     <div class="viz-stat-label-{self.component_id}">{label}</div>
                 </div>
             """
-        
+
         # Generate timeline cards for key interactions
         timeline_cards_html = ""
-        key_interactions = timeline_data[:10] if len(timeline_data) > 10 else timeline_data
-        
+        key_interactions = (
+            timeline_data[:10] if len(timeline_data) > 10 else timeline_data
+        )
+
         for interaction in key_interactions:
-            confidence_display = f" • Confidence: {interaction['confidence_score']:.2f}" if interaction['confidence_score'] is not None else ""
-            tools_display = f"Tools: {', '.join(interaction['tools_used'])}" if interaction['tools_used'] else "No tools used"
-            success_badge = "✅" if interaction['success'] else "❌"
-            
+            confidence_display = (
+                f" • Confidence: {interaction['confidence_score']:.2f}"
+                if interaction["confidence_score"] is not None
+                else ""
+            )
+            tools_display = (
+                f"Tools: {', '.join(interaction['tools_used'])}"
+                if interaction["tools_used"]
+                else "No tools used"
+            )
+            success_badge = "✅" if interaction["success"] else "❌"
+
             timeline_cards_html += f"""
                 <div class="timeline-card-{self.component_id}">
                     <div class="timeline-card-header-{self.component_id}">
@@ -258,7 +291,7 @@ class LLMTimelineComponent(BaseVisualizationComponent):
                     </div>
                 </div>
             """
-        
+
         # Generate agent/model breakdown
         agents_html = ""
         for agent, count in list(agents.items())[:6]:  # Top 6 agents
@@ -268,7 +301,7 @@ class LLMTimelineComponent(BaseVisualizationComponent):
                     <span class="breakdown-count-{self.component_id}">{count}</span>
                 </div>
             """
-        
+
         models_html = ""
         for model, count in list(models.items())[:4]:  # Top 4 models
             models_html += f"""
@@ -277,7 +310,7 @@ class LLMTimelineComponent(BaseVisualizationComponent):
                     <span class="breakdown-count-{self.component_id}">{count}</span>
                 </div>
             """
-        
+
         return f"""
         <div class="viz-component-{self.component_id} viz-animate-{self.component_id}">
             <div class="viz-header-{self.component_id}">
@@ -312,33 +345,35 @@ class LLMTimelineComponent(BaseVisualizationComponent):
             </div>
         </div>
         """
-    
+
     def generate_javascript(self, processed_data: Dict[str, Any]) -> str:
         """
         Generate JavaScript for interactive LLM timeline chart.
         """
-        timestamps = processed_data.get('timestamps', [])
-        token_progression = processed_data.get('token_progression', [])
-        timeline_data = processed_data.get('timeline_data', [])
-        
+        timestamps = processed_data.get("timestamps", [])
+        token_progression = processed_data.get("token_progression", [])
+        timeline_data = processed_data.get("timeline_data", [])
+
         # Prepare chart data
         chart_data = {
-            'labels': timestamps,
-            'datasets': [{
-                'label': 'Token Usage',
-                'data': token_progression,
-                'borderColor': '#667eea',
-                'backgroundColor': 'rgba(102, 126, 234, 0.1)',
-                'tension': 0.4,
-                'fill': True,
-                'pointRadius': 4,
-                'pointHoverRadius': 6,
-                'pointBackgroundColor': '#667eea',
-                'pointBorderColor': '#fff',
-                'pointBorderWidth': 2
-            }]
+            "labels": timestamps,
+            "datasets": [
+                {
+                    "label": "Token Usage",
+                    "data": token_progression,
+                    "borderColor": "#667eea",
+                    "backgroundColor": "rgba(102, 126, 234, 0.1)",
+                    "tension": 0.4,
+                    "fill": True,
+                    "pointRadius": 4,
+                    "pointHoverRadius": 6,
+                    "pointBackgroundColor": "#667eea",
+                    "pointBorderColor": "#fff",
+                    "pointBorderWidth": 2,
+                }
+            ],
         }
-        
+
         return f"""
         // LLM Timeline Chart
         (function() {{
@@ -427,14 +462,14 @@ class LLMTimelineComponent(BaseVisualizationComponent):
             console.log('LLM Timeline Component loaded successfully');
         }})();
         """
-    
+
     def generate_css(self) -> str:
         """
         Generate CSS styles for LLM timeline component.
         """
         colors = self._get_theme_colors()
         base_css = super().generate_css()
-        
+
         component_css = f"""
         .breakdown-section-{self.component_id} {{
             display: grid;
@@ -575,5 +610,5 @@ class LLMTimelineComponent(BaseVisualizationComponent):
             }}
         }}
         """
-        
+
         return base_css + component_css

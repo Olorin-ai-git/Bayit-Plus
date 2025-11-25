@@ -6,7 +6,8 @@ Used for GET /api/investigations/{id}/results endpoint.
 """
 
 from datetime import datetime
-from typing import List, Dict, Any, Literal
+from typing import Any, Dict, List, Literal
+
 from pydantic import BaseModel, Field
 
 
@@ -78,9 +79,7 @@ class InvestigationMetadataSchema(BaseModel):
 
     entity_type: str = Field(..., description="Entity type investigated")
     entity_id: str = Field(..., description="Entity identifier")
-    time_range: Dict[str, datetime] = Field(
-        ..., description="Time range (start, end)"
-    )
+    time_range: Dict[str, datetime] = Field(..., description="Time range (start, end)")
     tools_used: List[str] = Field(
         default_factory=list, description="Tools executed during investigation"
     )
@@ -107,7 +106,9 @@ class InvestigationResultsSchema(BaseModel):
 
     started_at: datetime = Field(..., description="Investigation start timestamp")
 
-    completed_at: datetime = Field(..., description="Investigation completion timestamp")
+    completed_at: datetime = Field(
+        ..., description="Investigation completion timestamp"
+    )
 
     duration_ms: int = Field(
         ..., ge=0, description="Total investigation duration in milliseconds"

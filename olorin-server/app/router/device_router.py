@@ -1,6 +1,5 @@
 import json
 import logging
-from app.service.logging import get_bridge_logger
 import os
 import re
 from datetime import datetime, timedelta, timezone
@@ -29,13 +28,14 @@ from app.security.auth import User, require_read
 from app.service.agent.tools.splunk_tool.splunk_tool import SplunkQueryTool
 from app.service.agent_service import ainvoke_agent
 from app.service.config import get_settings_for_env
+from app.service.config_loader import get_config_loader
 from app.service.llm_device_risk_service import LLMDeviceRiskService
+from app.service.logging import get_bridge_logger
 from app.utils.auth_utils import get_auth_token
 from app.utils.constants import LIST_FIELDS_PRIORITY, MAX_PROMPT_TOKENS
 from app.utils.firebase_secrets import get_app_secret
 from app.utils.prompt_utils import sanitize_splunk_data, trim_prompt_to_token_limit
 from app.utils.prompts import SYSTEM_PROMPT_FOR_DEVICE_RISK
-from app.service.config_loader import get_config_loader
 
 logger = get_bridge_logger(__name__)
 router = APIRouter(prefix="/device")
@@ -47,7 +47,7 @@ async def get_identity_authorization_header(
     # Load app secret from Firebase Secret Manager
     config_loader = get_config_loader()
     olorin_app_secret = config_loader.load_secret("OLORIN_APP_SECRET") or ""
-    
+
     url = "https://identityinternal-e2e.api.olorin.com/v1/graphql"
     headers = {
         "olorin_tid": olorin_tid,

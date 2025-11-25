@@ -6,25 +6,25 @@ for the unified HTML report generator system.
 """
 
 import re
-from typing import Dict, Any, List, Optional
-from pathlib import Path
 from datetime import datetime
+from pathlib import Path
+from typing import Any, Dict, List, Optional
 
-from app.service.reporting.olorin_logo import get_olorin_header, OLORIN_FOOTER
+from app.service.reporting.olorin_logo import OLORIN_FOOTER, get_olorin_header
 
 
 class TemplateEngine:
     """
     Template engine for compiling and rendering HTML reports.
-    
+
     This class manages HTML templates, handles variable substitution,
     and provides utilities for generating complete HTML documents.
     """
-    
+
     def __init__(self, template_dir: Optional[Path] = None):
         """
         Initialize the template engine.
-        
+
         Args:
             template_dir: Directory containing template files.
                          Uses default templates if None.
@@ -33,33 +33,33 @@ class TemplateEngine:
             # Use default templates in the unified package
             current_dir = Path(__file__).parent.parent
             template_dir = current_dir / "templates"
-        
+
         self.template_dir = Path(template_dir)
         self._template_cache: Dict[str, str] = {}
         self._ensure_template_dir()
-    
+
     def _ensure_template_dir(self) -> None:
         """Ensure template directory exists and create default templates if needed."""
         self.template_dir.mkdir(parents=True, exist_ok=True)
-        
+
         # Create default base template if it doesn't exist
         base_template_path = self.template_dir / "base_template.html"
         if not base_template_path.exists():
             self._create_default_base_template(base_template_path)
-    
+
     def render_report(
-        self, 
+        self,
         components_html: List[str],
         title: str = "Investigation Report",
         theme: str = "professional",
         js_dependencies: List[str] = None,
         css_dependencies: List[str] = None,
         custom_css: str = "",
-        custom_js: str = ""
+        custom_js: str = "",
     ) -> str:
         """
         Render complete HTML report with components.
-        
+
         Args:
             components_html: List of HTML content from components
             title: Report title
@@ -68,15 +68,15 @@ class TemplateEngine:
             css_dependencies: CSS library dependencies
             custom_css: Custom CSS to include
             custom_js: Custom JavaScript to include
-            
+
         Returns:
             str: Complete HTML document
         """
         base_template = self.load_template("base_template.html")
-        
+
         # Generate header with logo
         header_html = get_olorin_header(title)
-        
+
         # Prepare template variables
         template_vars = {
             "title": title,
@@ -89,85 +89,86 @@ class TemplateEngine:
             "dependencies_js": self._get_js_links(js_dependencies or []),
             "custom_css": custom_css,
             "custom_js": custom_js,
-            "interactive_js": self._get_interactive_js()
+            "interactive_js": self._get_interactive_js(),
         }
-        
+
         return self.substitute_variables(base_template, template_vars)
-    
+
     def load_template(self, template_name: str) -> str:
         """
         Load template from file with caching.
-        
+
         Args:
             template_name: Name of the template file
-            
+
         Returns:
             str: Template content
-            
+
         Raises:
             FileNotFoundError: If template file doesn't exist
         """
         if template_name in self._template_cache:
             return self._template_cache[template_name]
-        
+
         template_path = self.template_dir / template_name
         if not template_path.exists():
             raise FileNotFoundError(f"Template not found: {template_path}")
-        
+
         try:
-            with open(template_path, 'r', encoding='utf-8') as f:
+            with open(template_path, "r", encoding="utf-8") as f:
                 content = f.read()
-            
+
             self._template_cache[template_name] = content
             return content
-            
+
         except Exception as e:
             raise IOError(f"Error reading template {template_name}: {str(e)}")
-    
+
     def substitute_variables(self, template: str, variables: Dict[str, Any]) -> str:
         """
         Substitute variables in template using {{variable}} syntax.
-        
+
         Args:
             template: Template string with variables
             variables: Dictionary of variable name -> value mappings
-            
+
         Returns:
             str: Template with variables substituted
         """
+
         def replace_var(match):
             var_name = match.group(1).strip()
             return str(variables.get(var_name, f"{{{{Missing: {var_name}}}}}"))
-        
+
         # Replace {{variable}} with values
-        return re.sub(r'\{\{(.+?)\}\}', replace_var, template)
-    
+        return re.sub(r"\{\{(.+?)\}\}", replace_var, template)
+
     def clear_cache(self) -> None:
         """Clear the template cache."""
         self._template_cache.clear()
-    
+
     def _get_theme_css(self, theme: str) -> str:
         """
         Get CSS content for a specific theme.
-        
+
         Args:
             theme: Theme name
-            
+
         Returns:
             str: CSS content for the theme
         """
         theme_path = self.template_dir / "styles" / "themes" / f"{theme}.css"
-        
+
         if theme_path.exists():
             try:
-                with open(theme_path, 'r', encoding='utf-8') as f:
+                with open(theme_path, "r", encoding="utf-8") as f:
                     return f.read()
             except Exception:
                 pass  # Fall back to default theme
-        
+
         # Return default professional theme CSS
         return self._get_default_theme_css()
-    
+
     def _get_css_links(self, dependencies: List[str]) -> str:
         """Generate CSS link tags for dependencies."""
         links = []
@@ -179,9 +180,9 @@ class TemplateEngine:
                 cdn_url = self._get_css_cdn_url(dep)
                 if cdn_url:
                     links.append(f'<link rel="stylesheet" href="{cdn_url}">')
-        
+
         return "\n".join(links)
-    
+
     def _get_js_links(self, dependencies: List[str]) -> str:
         """Generate JavaScript script tags for dependencies."""
         scripts = []
@@ -193,29 +194,29 @@ class TemplateEngine:
                 cdn_url = self._get_js_cdn_url(dep)
                 if cdn_url:
                     scripts.append(f'<script src="{cdn_url}"></script>')
-        
+
         return "\n".join(scripts)
-    
+
     def _get_css_cdn_url(self, library: str) -> Optional[str]:
         """Map CSS library names to CDN URLs."""
         css_cdns = {
             "chart.js": "https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.min.css",
-            "bootstrap": "https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+            "bootstrap": "https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css",
         }
         return css_cdns.get(library.lower())
-    
+
     def _get_js_cdn_url(self, library: str) -> Optional[str]:
         """Map JavaScript library names to CDN URLs."""
         js_cdns = {
             "chart.js": "https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.js",
             "mermaid": "https://cdn.jsdelivr.net/npm/mermaid@10.6.1/dist/mermaid.min.js",
-            "d3": "https://d3js.org/d3.v7.min.js"
+            "d3": "https://d3js.org/d3.v7.min.js",
         }
         return js_cdns.get(library.lower())
-    
+
     def _get_interactive_js(self) -> str:
         """Get JavaScript for interactive functionality."""
-        return '''
+        return """
         // Toggle collapsible sections
         function toggleSection(sectionId) {
             const content = document.querySelector('#' + sectionId + ' .component-content');
@@ -244,11 +245,11 @@ class TemplateEngine:
                 });
             }
         });
-        '''
-    
+        """
+
     def _create_default_base_template(self, template_path: Path) -> None:
         """Create default base template file."""
-        default_template = '''<!DOCTYPE html>
+        default_template = """<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -277,14 +278,14 @@ class TemplateEngine:
         {{custom_js}}
     </script>
 </body>
-</html>'''
-        
-        with open(template_path, 'w', encoding='utf-8') as f:
+</html>"""
+
+        with open(template_path, "w", encoding="utf-8") as f:
             f.write(default_template)
-    
+
     def _get_default_theme_css(self) -> str:
         """Get default professional theme CSS."""
-        return '''
+        return """
         * {
             margin: 0;
             padding: 0;
@@ -408,4 +409,4 @@ class TemplateEngine:
                 padding: 1rem;
             }
         }
-        '''
+        """

@@ -5,8 +5,9 @@ Uses Cumulative Sum (CUSUM) method for detecting level shifts
 and variance changes in time series.
 """
 
+from typing import Any, Dict, Optional
+
 import numpy as np
-from typing import Dict, Any, Optional
 
 from app.service.anomaly.detectors.base import BaseDetector, DetectorResult
 from app.service.logging import get_bridge_logger
@@ -35,8 +36,8 @@ class CUSUMDetector(BaseDetector):
                 - min_support: Minimum data points required (default: 50)
         """
         super().__init__(params)
-        self.delta_multiplier = params.get('delta')
-        self.threshold_multiplier = params.get('threshold')
+        self.delta_multiplier = params.get("delta")
+        self.threshold_multiplier = params.get("threshold")
 
     def detect(self, series: np.ndarray) -> DetectorResult:
         """
@@ -57,7 +58,7 @@ class CUSUMDetector(BaseDetector):
             # Calculate mean and standard deviation
             mu = np.mean(series)
             std = np.std(series)
-            
+
             # Avoid division by zero
             if std == 0:
                 std = 1e-9
@@ -66,12 +67,18 @@ class CUSUMDetector(BaseDetector):
             if self.delta_multiplier is None:
                 delta = std * 0.75
             else:
-                delta = self.delta_multiplier if self.delta_multiplier > 0 else std * 0.75
+                delta = (
+                    self.delta_multiplier if self.delta_multiplier > 0 else std * 0.75
+                )
 
             if self.threshold_multiplier is None:
                 threshold = std * 5.0
             else:
-                threshold = self.threshold_multiplier if self.threshold_multiplier > 0 else std * 5.0
+                threshold = (
+                    self.threshold_multiplier
+                    if self.threshold_multiplier > 0
+                    else std * 5.0
+                )
 
             # Initialize CUSUM statistics
             s_pos = np.zeros_like(series, dtype=float)
@@ -81,19 +88,19 @@ class CUSUMDetector(BaseDetector):
             # Calculate CUSUM statistics
             for i in range(len(series)):
                 x = series[i]
-                
+
                 # Positive shift detection
                 if i == 0:
                     s_pos[i] = max(0, x - mu - delta)
                 else:
-                    s_pos[i] = max(0, (x - mu - delta) + s_pos[i-1])
-                
+                    s_pos[i] = max(0, (x - mu - delta) + s_pos[i - 1])
+
                 # Negative shift detection
                 if i == 0:
                     s_neg[i] = max(0, mu - x - delta)
                 else:
-                    s_neg[i] = max(0, (mu - x - delta) + s_neg[i-1])
-                
+                    s_neg[i] = max(0, (mu - x - delta) + s_neg[i - 1])
+
                 # Score is max of positive/negative CUSUM normalized by threshold
                 scores[i] = max(s_pos[i], s_neg[i]) / (threshold or 1e-9)
 
@@ -109,13 +116,13 @@ class CUSUMDetector(BaseDetector):
 
             # Build evidence
             evidence = {
-                's_pos': s_pos.tolist(),
-                's_neg': s_neg.tolist(),
-                'changepoint_index': changepoint_index,
-                'mu': float(mu),
-                'std': float(std),
-                'delta': float(delta),
-                'threshold': float(threshold)
+                "s_pos": s_pos.tolist(),
+                "s_neg": s_neg.tolist(),
+                "changepoint_index": changepoint_index,
+                "mu": float(mu),
+                "std": float(std),
+                "delta": float(delta),
+                "threshold": float(threshold),
             }
 
             logger.debug(
@@ -123,13 +130,8 @@ class CUSUMDetector(BaseDetector):
                 f"out of {len(series)} points, changepoint at index {changepoint_index}"
             )
 
-            return DetectorResult(
-                scores=scores,
-                anomalies=anomalies,
-                evidence=evidence
-            )
+            return DetectorResult(scores=scores, anomalies=anomalies, evidence=evidence)
 
         except Exception as e:
             logger.error(f"CUSUM detection failed: {e}")
             raise ValueError(f"CUSUM detection error: {e}") from e
-

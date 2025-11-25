@@ -29,14 +29,20 @@ Endpoints Tested:
 6. POST /templates/{id}/apply (apply template to new investigation)
 """
 
-import pytest
 from pathlib import Path
+from typing import Any, Dict
+
+import pytest
 import yaml
-from typing import Dict, Any
 from openapi_core import OpenAPI
 
-
-SPEC_PATH = Path(__file__).parent.parent.parent.parent / "specs" / "005-polling-and-persistence" / "contracts" / "template-api.yaml"
+SPEC_PATH = (
+    Path(__file__).parent.parent.parent.parent
+    / "specs"
+    / "005-polling-and-persistence"
+    / "contracts"
+    / "template-api.yaml"
+)
 
 
 @pytest.fixture(scope="module")
@@ -63,24 +69,14 @@ def template_data() -> Dict[str, Any]:
         "name": "Test Investigation Template",
         "description": "Template for testing purposes",
         "template_json": {
-            "entities": [
-                {
-                    "entity_type": "user_id"
-                }
-            ],
-            "time_range": {
-                "duration_hours": 24
-            },
+            "entities": [{"entity_type": "user_id"}],
+            "time_range": {"duration_hours": 24},
             "tools": [
-                {
-                    "tool_name": "device_fingerprint",
-                    "enabled": True,
-                    "config": {}
-                }
+                {"tool_name": "device_fingerprint", "enabled": True, "config": {}}
             ],
-            "correlation_mode": "OR"
+            "correlation_mode": "OR",
         },
-        "tags": ["test", "automation"]
+        "tags": ["test", "automation"],
     }
 
 
@@ -134,9 +130,7 @@ class TestTemplateAPIContract:
 
     @pytest.mark.unit
     def test_create_template_schema(
-        self,
-        openapi_validator,
-        template_data: Dict[str, Any]
+        self, openapi_validator, template_data: Dict[str, Any]
     ):
         """
         Test POST /templates request/response schema validation.
@@ -154,9 +148,7 @@ class TestTemplateAPIContract:
 
     @pytest.mark.unit
     def test_create_template_name_uniqueness(
-        self,
-        openapi_validator,
-        template_data: Dict[str, Any]
+        self, openapi_validator, template_data: Dict[str, Any]
     ):
         """
         Test template name uniqueness constraint.
@@ -172,9 +164,7 @@ class TestTemplateAPIContract:
 
     @pytest.mark.unit
     def test_create_template_json_validation(
-        self,
-        openapi_validator,
-        template_data: Dict[str, Any]
+        self, openapi_validator, template_data: Dict[str, Any]
     ):
         """
         Test template_json validation against InvestigationSettings schema.
@@ -220,9 +210,7 @@ class TestTemplateAPIContract:
 
     @pytest.mark.unit
     def test_update_template_metadata(
-        self,
-        openapi_validator,
-        template_data: Dict[str, Any]
+        self, openapi_validator, template_data: Dict[str, Any]
     ):
         """
         Test PUT /templates/{id} metadata updates.
@@ -238,10 +226,7 @@ class TestTemplateAPIContract:
         pytest.skip("Endpoint not implemented yet - will implement in T017")
 
     @pytest.mark.unit
-    def test_update_template_configuration_restriction(
-        self,
-        openapi_validator
-    ):
+    def test_update_template_configuration_restriction(self, openapi_validator):
         """
         Test restriction on updating template_json when template is in use.
 
@@ -284,9 +269,7 @@ class TestTemplateAPIContract:
 
     @pytest.mark.unit
     def test_apply_template_schema(
-        self,
-        openapi_validator,
-        template_data: Dict[str, Any]
+        self, openapi_validator, template_data: Dict[str, Any]
     ):
         """
         Test POST /templates/{id}/apply request/response schema.
@@ -303,10 +286,7 @@ class TestTemplateAPIContract:
         pytest.skip("Endpoint not implemented yet - will implement in T017")
 
     @pytest.mark.unit
-    def test_apply_template_placeholder_replacement(
-        self,
-        openapi_validator
-    ):
+    def test_apply_template_placeholder_replacement(self, openapi_validator):
         """
         Test placeholder replacement in template application.
 

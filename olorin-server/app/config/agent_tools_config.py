@@ -20,6 +20,7 @@ Environment Variables:
 
 import os
 from typing import Dict, List
+
 from app.service.logging import get_bridge_logger
 
 logger = get_bridge_logger(__name__)
@@ -154,24 +155,19 @@ def is_tool_enabled(tool_name: str) -> bool:
         "snowflake_query_tool": "USE_SNOWFLAKE_TOOL",
         "splunk_query": "USE_SPLUNK_TOOL",
         "sumologic_query": "USE_SUMOLOGIC_TOOL",
-
         # Threat intelligence
         "simple_ip_reputation": "USE_ABUSEIPDB_TOOL",
         "bulk_ip_analysis": "USE_ABUSEIPDB_TOOL",
         "cidr_block_analysis": "USE_ABUSEIPDB_TOOL",
         "abuse_reporting": "USE_ABUSEIPDB_TOOL",
-
         "virustotal_ip_analysis": "USE_VIRUSTOTAL_TOOL",
         "virustotal_domain_analysis": "USE_VIRUSTOTAL_TOOL",
         "virustotal_file_analysis": "USE_VIRUSTOTAL_TOOL",
         "virustotal_url_analysis": "USE_VIRUSTOTAL_TOOL",
-
         "shodan_infrastructure_analysis": "USE_SHODAN_TOOL",
         "shodan_search": "USE_SHODAN_TOOL",
         "shodan_exploit_search": "USE_SHODAN_TOOL",
-
         "unified_threat_intelligence": "USE_UNIFIED_THREAT_INTEL_TOOL",
-
         # Blockchain tools
         "blockchain_wallet_analysis": "USE_BLOCKCHAIN_TOOLS",
         "cryptocurrency_tracing": "USE_BLOCKCHAIN_TOOLS",
@@ -181,7 +177,6 @@ def is_tool_enabled(tool_name: str) -> bool:
         "crypto_exchange_analysis": "USE_BLOCKCHAIN_TOOLS",
         "darkweb_crypto_monitor": "USE_BLOCKCHAIN_TOOLS",
         "cryptocurrency_compliance": "USE_BLOCKCHAIN_TOOLS",
-
         # Intelligence tools
         "social_media_profiling": "USE_INTELLIGENCE_TOOLS",
         "social_network_analysis": "USE_INTELLIGENCE_TOOLS",
@@ -191,14 +186,12 @@ def is_tool_enabled(tool_name: str) -> bool:
         "business_intelligence": "USE_INTELLIGENCE_TOOLS",
         "darkweb_monitoring": "USE_INTELLIGENCE_TOOLS",
         "deepweb_search": "USE_INTELLIGENCE_TOOLS",
-
         # ML/AI tools
         "behavioral_analysis": "USE_ML_AI_TOOLS",
         "anomaly_detection": "USE_ML_AI_TOOLS",
         "pattern_recognition": "USE_ML_AI_TOOLS",
         "fraud_detection": "USE_ML_AI_TOOLS",
         "risk_scoring": "USE_ML_AI_TOOLS",
-        
         # Device fingerprinting (Composio integration)
         "device_fingerprint_analysis": "USE_DEVICE_FINGERPRINT",
     }
@@ -282,7 +275,9 @@ def validate_agent_tools_mapping(mapping: Dict[str, List[str]]) -> bool:
 
         for tool in tools:
             if not isinstance(tool, str):
-                logger.warning(f"Invalid tool name type in agent '{agent}': {type(tool)}")
+                logger.warning(
+                    f"Invalid tool name type in agent '{agent}': {type(tool)}"
+                )
                 return False
 
     return True

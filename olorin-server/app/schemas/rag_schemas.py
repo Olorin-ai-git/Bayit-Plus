@@ -4,24 +4,33 @@ Pydantic models for RAG API request/response validation.
 All configuration from environment variables - no hardcoded values.
 """
 
-from typing import List, Optional, Dict, Any
-from pydantic import BaseModel, Field
 from datetime import datetime
+from typing import Any, Dict, List, Optional
+
+from pydantic import BaseModel, Field
 
 
 class RAGQueryRequest(BaseModel):
     """RAG query request."""
+
     query_text: str = Field(..., description="Natural language query")
-    data_source_ids: Optional[List[str]] = Field(None, description="Specific data sources to query")
+    data_source_ids: Optional[List[str]] = Field(
+        None, description="Specific data sources to query"
+    )
     limit: int = Field(10, ge=1, le=100, description="Maximum number of results")
-    similarity_threshold: float = Field(0.7, ge=0.0, le=1.0, description="Similarity threshold")
-    investigation_id: Optional[str] = Field(None, description="Filter by investigation ID")
+    similarity_threshold: float = Field(
+        0.7, ge=0.0, le=1.0, description="Similarity threshold"
+    )
+    investigation_id: Optional[str] = Field(
+        None, description="Filter by investigation ID"
+    )
     entity_id: Optional[str] = Field(None, description="Filter by entity ID")
     user_id: Optional[str] = Field(None, description="User ID for authorization")
 
 
 class Citation(BaseModel):
     """Source citation."""
+
     chunk_id: str
     source_type: str
     source_name: str
@@ -33,6 +42,7 @@ class Citation(BaseModel):
 
 class RAGQueryResponse(BaseModel):
     """RAG query response."""
+
     answer: str
     sources: List[Dict[str, Any]] = Field(default_factory=list)
     citations: List[Citation] = Field(default_factory=list)
@@ -43,14 +53,20 @@ class RAGQueryResponse(BaseModel):
 
 class DataSourceCreate(BaseModel):
     """Create data source request."""
+
     name: str = Field(..., min_length=1, max_length=255)
-    source_type: str = Field(..., description="postgresql, sqlite, or investigation_results")
-    connection_config: Dict[str, Any] = Field(..., description="Connection configuration")
+    source_type: str = Field(
+        ..., description="postgresql, sqlite, or investigation_results"
+    )
+    connection_config: Dict[str, Any] = Field(
+        ..., description="Connection configuration"
+    )
     enabled: bool = Field(True, description="Enable data source immediately")
 
 
 class DataSourceUpdate(BaseModel):
     """Update data source request."""
+
     name: Optional[str] = Field(None, min_length=1, max_length=255)
     connection_config: Optional[Dict[str, Any]] = None
     enabled: Optional[bool] = None
@@ -58,6 +74,7 @@ class DataSourceUpdate(BaseModel):
 
 class DataSourceResponse(BaseModel):
     """Data source response."""
+
     id: str
     name: str
     source_type: str
@@ -72,6 +89,7 @@ class DataSourceResponse(BaseModel):
 
 class DocumentUpload(BaseModel):
     """Document upload request."""
+
     title: str = Field(..., min_length=1)
     content: str = Field(..., min_length=1)
     collection_id: Optional[str] = None
@@ -80,6 +98,7 @@ class DocumentUpload(BaseModel):
 
 class DocumentResponse(BaseModel):
     """Document response."""
+
     id: str
     collection_id: str
     title: str
@@ -93,6 +112,7 @@ class DocumentResponse(BaseModel):
 
 class RAGConfigResponse(BaseModel):
     """RAG configuration response."""
+
     default_model: str
     chunk_size: int
     chunk_overlap: int
@@ -103,6 +123,7 @@ class RAGConfigResponse(BaseModel):
 
 class ChatMessageCreate(BaseModel):
     """Create chat message request."""
+
     session_id: Optional[str] = None
     sender: str = Field(..., description="'user', 'assistant', or 'system'")
     content: str = Field(..., min_length=1)
@@ -114,6 +135,7 @@ class ChatMessageCreate(BaseModel):
 
 class ChatMessageResponse(BaseModel):
     """Chat message response."""
+
     id: str
     session_id: str
     sender: str
@@ -129,12 +151,14 @@ class ChatMessageResponse(BaseModel):
 
 class ChatSessionCreate(BaseModel):
     """Create chat session request."""
+
     title: Optional[str] = None
     metadata: Optional[Dict[str, Any]] = None
 
 
 class ChatSessionUpdate(BaseModel):
     """Update chat session request."""
+
     title: Optional[str] = None
     is_active: Optional[bool] = None
     metadata: Optional[Dict[str, Any]] = None
@@ -142,6 +166,7 @@ class ChatSessionUpdate(BaseModel):
 
 class ChatSessionResponse(BaseModel):
     """Chat session response."""
+
     id: str
     user_id: str
     title: Optional[str] = None
@@ -154,5 +179,5 @@ class ChatSessionResponse(BaseModel):
 
 class ChatSessionWithMessages(ChatSessionResponse):
     """Chat session with messages."""
-    messages: List[ChatMessageResponse] = Field(default_factory=list)
 
+    messages: List[ChatMessageResponse] = Field(default_factory=list)

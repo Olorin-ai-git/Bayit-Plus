@@ -25,17 +25,15 @@ class FileOrganizationConfig(BaseSettings):
     # Base directories (configurable via environment variables)
     artifacts_base_dir: Path = Field(
         default=Path("artifacts"),
-        description="Base directory for investigation artifacts"
+        description="Base directory for investigation artifacts",
     )
 
     logs_base_dir: Path = Field(
-        default=Path("logs"),
-        description="Base directory for investigation logs"
+        default=Path("logs"), description="Base directory for investigation logs"
     )
 
     workspace_base_dir: Path = Field(
-        default=Path("workspace"),
-        description="Base directory for workspace structure"
+        default=Path("workspace"), description="Base directory for workspace structure"
     )
 
     # Entity ID normalization settings
@@ -43,25 +41,24 @@ class FileOrganizationConfig(BaseSettings):
         default=255,
         ge=1,
         le=255,
-        description="Maximum length for normalized entity IDs"
+        description="Maximum length for normalized entity IDs",
     )
 
     # Timestamp format
     timestamp_format: str = Field(
         default="%Y%m%d_%H%M%S",
-        description="Format string for timestamp-based folder names"
+        description="Format string for timestamp-based folder names",
     )
 
     # Legacy support
     enable_legacy_path_support: bool = Field(
-        default=True,
-        description="Enable backward compatibility with legacy file paths"
+        default=True, description="Enable backward compatibility with legacy file paths"
     )
 
     # Migration mode
     migration_mode: bool = Field(
         default=False,
-        description="Enable migration mode (creates symlinks during transition)"
+        description="Enable migration mode (creates symlinks during transition)",
     )
 
     # Migration period settings
@@ -69,15 +66,17 @@ class FileOrganizationConfig(BaseSettings):
         default=30,
         ge=1,
         le=365,
-        description="Migration period duration in days (legacy paths become read-only after)"
+        description="Migration period duration in days (legacy paths become read-only after)",
     )
 
     migration_start_date: Optional[datetime] = Field(
         default=None,
-        description="Migration start date (ISO format). If None, uses current date when migration_mode=True"
+        description="Migration start date (ISO format). If None, uses current date when migration_mode=True",
     )
 
-    @field_validator("artifacts_base_dir", "logs_base_dir", "workspace_base_dir", mode="before")
+    @field_validator(
+        "artifacts_base_dir", "logs_base_dir", "workspace_base_dir", mode="before"
+    )
     @classmethod
     def convert_to_path(cls, v):
         """Convert string to Path object."""
@@ -111,6 +110,5 @@ class FileOrganizationConfig(BaseSettings):
         "populate_by_name": True,
         "env_file": ".env",
         "env_file_encoding": "utf-8",
-        "extra": "ignore"  # Ignore extra env vars that don't match FILE_ORG_ prefix
+        "extra": "ignore",  # Ignore extra env vars that don't match FILE_ORG_ prefix
     }
-

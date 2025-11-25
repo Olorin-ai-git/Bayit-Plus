@@ -1,6 +1,5 @@
 import json
 import logging
-from app.service.logging import get_bridge_logger
 from typing import Any, Dict, List, Optional
 
 from fastapi import Request
@@ -12,6 +11,7 @@ from app.models.upi_response import Metadata
 from app.service.agent_service import ainvoke_agent
 from app.service.base_llm_risk_service import BaseLLMRiskService
 from app.service.config import get_settings_for_env
+from app.service.logging import get_bridge_logger
 from app.utils.auth_utils import get_auth_token
 from app.utils.constants import LIST_FIELDS_PRIORITY, MAX_PROMPT_TOKENS
 from app.utils.prompt_utils import trim_prompt_to_token_limit

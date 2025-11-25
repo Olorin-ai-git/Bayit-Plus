@@ -17,36 +17,37 @@ Features:
 
 import json
 import statistics
-from typing import Dict, List, Any, Optional, Set, Tuple
+from collections import Counter, defaultdict
 from datetime import datetime
-from collections import defaultdict, Counter
+from typing import Any, Dict, List, Optional, Set, Tuple
 
 from .base_component import BaseVisualizationComponent
+
 
 class LangGraphVisualizationComponent(BaseVisualizationComponent):
     """
     Interactive LangGraph execution visualization component.
-    
+
     Displays comprehensive LangGraph node execution flow with network diagrams,
     performance metrics, and state transition analysis.
     """
-    
+
     @property
     def component_name(self) -> str:
         return "langgraph_visualization"
-        
+
     @property
     def component_title(self) -> str:
         return "LangGraph Execution Flow"
-        
+
     @property
     def component_description(self) -> str:
         return "Interactive network diagram showing LangGraph node execution, state transitions, and coordination"
-    
+
     def validate_data(self, data: Dict[str, Any]) -> bool:
         """
         Validate LangGraph data.
-        
+
         Expected data structure:
         {
             'langgraph_nodes': [
@@ -68,375 +69,461 @@ class LangGraphVisualizationComponent(BaseVisualizationComponent):
         if not isinstance(data, dict):
             self._add_error("Data must be a dictionary")
             return False
-            
-        langgraph_nodes = data.get('langgraph_nodes', [])
+
+        langgraph_nodes = data.get("langgraph_nodes", [])
         if not isinstance(langgraph_nodes, list):
             self._add_error("langgraph_nodes must be a list")
             return False
-            
+
         if not langgraph_nodes:
             self._add_warning("No LangGraph nodes found")
             return True
-            
+
         # Validate sample nodes
         for i, node in enumerate(langgraph_nodes[:3]):
             if not isinstance(node, dict):
                 self._add_error(f"LangGraph node {i} must be a dictionary")
                 return False
-                
-            required_fields = ['node_name', 'node_type']
+
+            required_fields = ["node_name", "node_type"]
             for field in required_fields:
                 if field not in node:
                     self._add_warning(f"LangGraph node {i} missing field: {field}")
-                    
+
         return True
-    
+
     def process_data(self, data: Dict[str, Any]) -> Dict[str, Any]:
         """
         Process LangGraph data for visualization.
         """
-        langgraph_nodes = data.get('langgraph_nodes', [])
-        
+        langgraph_nodes = data.get("langgraph_nodes", [])
+
         if not langgraph_nodes:
             return {}
-            
+
         # Limit data points for performance
         if len(langgraph_nodes) > self.config.max_data_points:
-            langgraph_nodes = langgraph_nodes[:self.config.max_data_points]
-            self._add_warning(f"Limited to {self.config.max_data_points} nodes for performance")
-        
+            langgraph_nodes = langgraph_nodes[: self.config.max_data_points]
+            self._add_warning(
+                f"Limited to {self.config.max_data_points} nodes for performance"
+            )
+
         # Process individual nodes
         processed_nodes = []
-        node_stats = defaultdict(lambda: {
-            'executions': 0,
-            'total_time': 0,
-            'success_count': 0,
-            'error_count': 0,
-            'execution_times': []
-        })
-        
-        for i, node in enumerate(langgraph_nodes):
-            timestamp = node.get('timestamp', '')
-            node_name = node.get('node_name', f'Node_{i}')
-            node_type = node.get('node_type', 'Unknown')
-            node_id = node.get('node_id', f'id_{i}')
-            execution_time = node.get('execution_time_ms', 0)
-            next_nodes = node.get('next_nodes', [])
-            input_data = node.get('input_data', {})
-            output_data = node.get('output_data', {})
-            success = node.get('success', True)
-            error_message = node.get('error_message')
-            
-            processed_node = {
-                'index': i,
-                'timestamp': timestamp,
-                'formatted_time': self._format_timestamp(timestamp),
-                'node_name': node_name,
-                'node_type': node_type,
-                'node_id': node_id,
-                'execution_time_ms': execution_time,
-                'next_nodes': next_nodes if isinstance(next_nodes, list) else [],
-                'input_data': input_data,
-                'output_data': output_data,
-                'success': success,
-                'error_message': error_message,
-                'input_size': len(str(input_data)) if input_data else 0,
-                'output_size': len(str(output_data)) if output_data else 0,
-                'has_next_nodes': bool(next_nodes),
-                'performance_category': self._categorize_performance(execution_time)
+        node_stats = defaultdict(
+            lambda: {
+                "executions": 0,
+                "total_time": 0,
+                "success_count": 0,
+                "error_count": 0,
+                "execution_times": [],
             }
-            
+        )
+
+        for i, node in enumerate(langgraph_nodes):
+            timestamp = node.get("timestamp", "")
+            node_name = node.get("node_name", f"Node_{i}")
+            node_type = node.get("node_type", "Unknown")
+            node_id = node.get("node_id", f"id_{i}")
+            execution_time = node.get("execution_time_ms", 0)
+            next_nodes = node.get("next_nodes", [])
+            input_data = node.get("input_data", {})
+            output_data = node.get("output_data", {})
+            success = node.get("success", True)
+            error_message = node.get("error_message")
+
+            processed_node = {
+                "index": i,
+                "timestamp": timestamp,
+                "formatted_time": self._format_timestamp(timestamp),
+                "node_name": node_name,
+                "node_type": node_type,
+                "node_id": node_id,
+                "execution_time_ms": execution_time,
+                "next_nodes": next_nodes if isinstance(next_nodes, list) else [],
+                "input_data": input_data,
+                "output_data": output_data,
+                "success": success,
+                "error_message": error_message,
+                "input_size": len(str(input_data)) if input_data else 0,
+                "output_size": len(str(output_data)) if output_data else 0,
+                "has_next_nodes": bool(next_nodes),
+                "performance_category": self._categorize_performance(execution_time),
+            }
+
             processed_nodes.append(processed_node)
-            
+
             # Update statistics
-            node_stats[node_name]['executions'] += 1
-            node_stats[node_name]['total_time'] += execution_time
+            node_stats[node_name]["executions"] += 1
+            node_stats[node_name]["total_time"] += execution_time
             if success:
-                node_stats[node_name]['success_count'] += 1
+                node_stats[node_name]["success_count"] += 1
             else:
-                node_stats[node_name]['error_count'] += 1
-            
+                node_stats[node_name]["error_count"] += 1
+
             if execution_time > 0:
-                node_stats[node_name]['execution_times'].append(execution_time)
-        
+                node_stats[node_name]["execution_times"].append(execution_time)
+
         # Build execution graph
         execution_graph = self._build_execution_graph(processed_nodes)
-        
+
         # Analyze execution patterns
         execution_patterns = self._analyze_execution_patterns(processed_nodes)
-        
+
         # Calculate performance metrics
-        performance_metrics = self._calculate_performance_metrics(processed_nodes, node_stats)
-        
+        performance_metrics = self._calculate_performance_metrics(
+            processed_nodes, node_stats
+        )
+
         # Identify critical paths
         critical_paths = self._identify_critical_paths(processed_nodes)
-        
+
         # Generate execution insights
-        execution_insights = self._generate_execution_insights(processed_nodes, performance_metrics, execution_patterns)
-        
+        execution_insights = self._generate_execution_insights(
+            processed_nodes, performance_metrics, execution_patterns
+        )
+
         return {
-            'processed_nodes': processed_nodes,
-            'execution_graph': execution_graph,
-            'node_statistics': dict(node_stats),
-            'execution_patterns': execution_patterns,
-            'performance_metrics': performance_metrics,
-            'critical_paths': critical_paths,
-            'execution_insights': execution_insights,
-            'metrics': {
-                'total_nodes_executed': len(processed_nodes),
-                'unique_node_types': len(set(node['node_type'] for node in processed_nodes)),
-                'unique_node_names': len(set(node['node_name'] for node in processed_nodes)),
-                'total_execution_time_ms': sum(node['execution_time_ms'] for node in processed_nodes),
-                'avg_execution_time_ms': statistics.mean([node['execution_time_ms'] for node in processed_nodes if node['execution_time_ms'] > 0]) if processed_nodes else 0,
-                'success_rate': (sum(1 for node in processed_nodes if node['success']) / len(processed_nodes)) * 100 if processed_nodes else 0,
-                'error_count': sum(1 for node in processed_nodes if not node['success']),
-                'max_execution_time_ms': max((node['execution_time_ms'] for node in processed_nodes), default=0),
-                'nodes_with_transitions': len([node for node in processed_nodes if node['has_next_nodes']])
-            }
+            "processed_nodes": processed_nodes,
+            "execution_graph": execution_graph,
+            "node_statistics": dict(node_stats),
+            "execution_patterns": execution_patterns,
+            "performance_metrics": performance_metrics,
+            "critical_paths": critical_paths,
+            "execution_insights": execution_insights,
+            "metrics": {
+                "total_nodes_executed": len(processed_nodes),
+                "unique_node_types": len(
+                    set(node["node_type"] for node in processed_nodes)
+                ),
+                "unique_node_names": len(
+                    set(node["node_name"] for node in processed_nodes)
+                ),
+                "total_execution_time_ms": sum(
+                    node["execution_time_ms"] for node in processed_nodes
+                ),
+                "avg_execution_time_ms": (
+                    statistics.mean(
+                        [
+                            node["execution_time_ms"]
+                            for node in processed_nodes
+                            if node["execution_time_ms"] > 0
+                        ]
+                    )
+                    if processed_nodes
+                    else 0
+                ),
+                "success_rate": (
+                    (
+                        sum(1 for node in processed_nodes if node["success"])
+                        / len(processed_nodes)
+                    )
+                    * 100
+                    if processed_nodes
+                    else 0
+                ),
+                "error_count": sum(
+                    1 for node in processed_nodes if not node["success"]
+                ),
+                "max_execution_time_ms": max(
+                    (node["execution_time_ms"] for node in processed_nodes), default=0
+                ),
+                "nodes_with_transitions": len(
+                    [node for node in processed_nodes if node["has_next_nodes"]]
+                ),
+            },
         }
-    
+
     def _categorize_performance(self, execution_time: int) -> str:
         """Categorize node performance based on execution time"""
         if execution_time == 0:
-            return 'unknown'
+            return "unknown"
         elif execution_time < 100:
-            return 'fast'
+            return "fast"
         elif execution_time < 1000:
-            return 'medium'
+            return "medium"
         elif execution_time < 5000:
-            return 'slow'
+            return "slow"
         else:
-            return 'very_slow'
-    
+            return "very_slow"
+
     def _build_execution_graph(self, nodes: List[Dict[str, Any]]) -> Dict[str, Any]:
         """Build execution graph structure"""
         # Create node map
         node_map = {}
         for node in nodes:
-            node_id = node['node_id']
+            node_id = node["node_id"]
             node_map[node_id] = {
-                'id': node_id,
-                'name': node['node_name'],
-                'type': node['node_type'],
-                'execution_time': node['execution_time_ms'],
-                'success': node['success'],
-                'performance_category': node['performance_category']
+                "id": node_id,
+                "name": node["node_name"],
+                "type": node["node_type"],
+                "execution_time": node["execution_time_ms"],
+                "success": node["success"],
+                "performance_category": node["performance_category"],
             }
-        
+
         # Create edges
         edges = []
         edge_id = 0
-        
+
         for node in nodes:
-            source_id = node['node_id']
-            for next_node in node['next_nodes']:
+            source_id = node["node_id"]
+            for next_node in node["next_nodes"]:
                 # Find the actual node ID for this node name
                 target_id = None
                 for n in nodes:
-                    if n['node_name'] == next_node:
-                        target_id = n['node_id']
+                    if n["node_name"] == next_node:
+                        target_id = n["node_id"]
                         break
-                
+
                 if target_id and source_id != target_id:
-                    edges.append({
-                        'id': f'edge_{edge_id}',
-                        'source': source_id,
-                        'target': target_id,
-                        'type': 'transition'
-                    })
+                    edges.append(
+                        {
+                            "id": f"edge_{edge_id}",
+                            "source": source_id,
+                            "target": target_id,
+                            "type": "transition",
+                        }
+                    )
                     edge_id += 1
-        
+
         return {
-            'nodes': list(node_map.values()),
-            'edges': edges,
-            'node_count': len(node_map),
-            'edge_count': len(edges)
+            "nodes": list(node_map.values()),
+            "edges": edges,
+            "node_count": len(node_map),
+            "edge_count": len(edges),
         }
-    
-    def _analyze_execution_patterns(self, nodes: List[Dict[str, Any]]) -> Dict[str, Any]:
+
+    def _analyze_execution_patterns(
+        self, nodes: List[Dict[str, Any]]
+    ) -> Dict[str, Any]:
         """Analyze execution patterns in the graph"""
         patterns = {
-            'execution_sequence': 'linear',
-            'branching_factor': 0,
-            'parallel_executions': [],
-            'execution_clusters': {},
-            'bottlenecks': []
+            "execution_sequence": "linear",
+            "branching_factor": 0,
+            "parallel_executions": [],
+            "execution_clusters": {},
+            "bottlenecks": [],
         }
-        
+
         if not nodes:
             return patterns
-            
+
         # Analyze branching
-        node_with_multiple_next = [node for node in nodes if len(node['next_nodes']) > 1]
+        node_with_multiple_next = [
+            node for node in nodes if len(node["next_nodes"]) > 1
+        ]
         if node_with_multiple_next:
-            patterns['execution_sequence'] = 'branching'
-            patterns['branching_factor'] = max(len(node['next_nodes']) for node in node_with_multiple_next)
-        
+            patterns["execution_sequence"] = "branching"
+            patterns["branching_factor"] = max(
+                len(node["next_nodes"]) for node in node_with_multiple_next
+            )
+
         # Look for parallel executions (nodes with same timestamp)
         timestamp_groups = defaultdict(list)
         for node in nodes:
-            if node['timestamp']:
-                timestamp_groups[node['timestamp']].append(node['node_name'])
-        
-        patterns['parallel_executions'] = [group for group in timestamp_groups.values() if len(group) > 1]
-        
+            if node["timestamp"]:
+                timestamp_groups[node["timestamp"]].append(node["node_name"])
+
+        patterns["parallel_executions"] = [
+            group for group in timestamp_groups.values() if len(group) > 1
+        ]
+
         # Identify performance bottlenecks
-        execution_times = [node['execution_time_ms'] for node in nodes if node['execution_time_ms'] > 0]
+        execution_times = [
+            node["execution_time_ms"] for node in nodes if node["execution_time_ms"] > 0
+        ]
         if execution_times:
             avg_time = statistics.mean(execution_times)
             threshold = avg_time * 2  # 2x average execution time
-            
+
             bottlenecks = [
                 {
-                    'node_name': node['node_name'],
-                    'execution_time_ms': node['execution_time_ms'],
-                    'slowdown_factor': node['execution_time_ms'] / avg_time if avg_time > 0 else 1
+                    "node_name": node["node_name"],
+                    "execution_time_ms": node["execution_time_ms"],
+                    "slowdown_factor": (
+                        node["execution_time_ms"] / avg_time if avg_time > 0 else 1
+                    ),
                 }
                 for node in nodes
-                if node['execution_time_ms'] > threshold
+                if node["execution_time_ms"] > threshold
             ]
-            patterns['bottlenecks'] = sorted(bottlenecks, key=lambda x: x['execution_time_ms'], reverse=True)
-        
+            patterns["bottlenecks"] = sorted(
+                bottlenecks, key=lambda x: x["execution_time_ms"], reverse=True
+            )
+
         return patterns
-    
-    def _calculate_performance_metrics(self, nodes: List[Dict], node_stats: Dict) -> Dict[str, Any]:
+
+    def _calculate_performance_metrics(
+        self, nodes: List[Dict], node_stats: Dict
+    ) -> Dict[str, Any]:
         """Calculate comprehensive performance metrics"""
         if not nodes:
             return {}
-            
-        execution_times = [node['execution_time_ms'] for node in nodes if node['execution_time_ms'] > 0]
-        
+
+        execution_times = [
+            node["execution_time_ms"] for node in nodes if node["execution_time_ms"] > 0
+        ]
+
         metrics = {
-            'total_execution_time': sum(execution_times),
-            'avg_execution_time': statistics.mean(execution_times) if execution_times else 0,
-            'median_execution_time': statistics.median(execution_times) if execution_times else 0,
-            'execution_time_std': statistics.stdev(execution_times) if len(execution_times) > 1 else 0,
-            'performance_distribution': {},
-            'node_efficiency_scores': {}
+            "total_execution_time": sum(execution_times),
+            "avg_execution_time": (
+                statistics.mean(execution_times) if execution_times else 0
+            ),
+            "median_execution_time": (
+                statistics.median(execution_times) if execution_times else 0
+            ),
+            "execution_time_std": (
+                statistics.stdev(execution_times) if len(execution_times) > 1 else 0
+            ),
+            "performance_distribution": {},
+            "node_efficiency_scores": {},
         }
-        
+
         # Performance distribution
-        perf_categories = Counter(node['performance_category'] for node in nodes)
-        metrics['performance_distribution'] = dict(perf_categories)
-        
+        perf_categories = Counter(node["performance_category"] for node in nodes)
+        metrics["performance_distribution"] = dict(perf_categories)
+
         # Node efficiency scores (considering execution count and average time)
         for node_name, stats in node_stats.items():
-            avg_time = stats['total_time'] / stats['executions'] if stats['executions'] > 0 else 0
-            success_rate = stats['success_count'] / stats['executions'] if stats['executions'] > 0 else 0
-            
+            avg_time = (
+                stats["total_time"] / stats["executions"]
+                if stats["executions"] > 0
+                else 0
+            )
+            success_rate = (
+                stats["success_count"] / stats["executions"]
+                if stats["executions"] > 0
+                else 0
+            )
+
             # Efficiency score: higher success rate and lower execution time = better
             if avg_time > 0:
-                efficiency = (success_rate * 100) / (avg_time / 1000)  # Success rate per second
+                efficiency = (success_rate * 100) / (
+                    avg_time / 1000
+                )  # Success rate per second
             else:
                 efficiency = success_rate * 100
-            
-            metrics['node_efficiency_scores'][node_name] = round(efficiency, 2)
-        
+
+            metrics["node_efficiency_scores"][node_name] = round(efficiency, 2)
+
         return metrics
-    
+
     def _identify_critical_paths(self, nodes: List[Dict]) -> List[Dict[str, Any]]:
         """Identify critical execution paths"""
         paths = []
-        
+
         if not nodes:
             return paths
-            
+
         # Find paths with high execution times
-        high_time_nodes = [node for node in nodes if node['execution_time_ms'] > 1000]
-        
+        high_time_nodes = [node for node in nodes if node["execution_time_ms"] > 1000]
+
         for node in high_time_nodes[:5]:  # Top 5 critical nodes
             path = {
-                'node_name': node['node_name'],
-                'execution_time_ms': node['execution_time_ms'],
-                'criticality': 'high' if node['execution_time_ms'] > 5000 else 'medium',
-                'next_nodes': node['next_nodes'],
-                'impact_factor': node['execution_time_ms'] / 1000  # Impact in seconds
+                "node_name": node["node_name"],
+                "execution_time_ms": node["execution_time_ms"],
+                "criticality": "high" if node["execution_time_ms"] > 5000 else "medium",
+                "next_nodes": node["next_nodes"],
+                "impact_factor": node["execution_time_ms"] / 1000,  # Impact in seconds
             }
             paths.append(path)
-        
-        return sorted(paths, key=lambda x: x['execution_time_ms'], reverse=True)
-    
-    def _generate_execution_insights(self, nodes: List[Dict], metrics: Dict, patterns: Dict) -> List[Dict[str, Any]]:
+
+        return sorted(paths, key=lambda x: x["execution_time_ms"], reverse=True)
+
+    def _generate_execution_insights(
+        self, nodes: List[Dict], metrics: Dict, patterns: Dict
+    ) -> List[Dict[str, Any]]:
         """Generate insights about execution patterns"""
         insights = []
-        
+
         if not nodes:
             return insights
-            
+
         # Execution efficiency insight
-        success_rate = sum(1 for node in nodes if node['success']) / len(nodes) * 100
+        success_rate = sum(1 for node in nodes if node["success"]) / len(nodes) * 100
         if success_rate >= 95:
-            insights.append({
-                'type': 'execution_efficiency',
-                'title': 'High Success Rate',
-                'description': f"Excellent execution with {success_rate:.1f}% success rate across {len(nodes)} nodes",
-                'severity': 'success'
-            })
+            insights.append(
+                {
+                    "type": "execution_efficiency",
+                    "title": "High Success Rate",
+                    "description": f"Excellent execution with {success_rate:.1f}% success rate across {len(nodes)} nodes",
+                    "severity": "success",
+                }
+            )
         elif success_rate < 85:
-            insights.append({
-                'type': 'execution_efficiency',
-                'title': 'Execution Issues Detected',
-                'description': f"Lower success rate of {success_rate:.1f}% indicates potential execution issues",
-                'severity': 'warning'
-            })
-        
+            insights.append(
+                {
+                    "type": "execution_efficiency",
+                    "title": "Execution Issues Detected",
+                    "description": f"Lower success rate of {success_rate:.1f}% indicates potential execution issues",
+                    "severity": "warning",
+                }
+            )
+
         # Performance bottleneck insight
-        bottlenecks = patterns.get('bottlenecks', [])
+        bottlenecks = patterns.get("bottlenecks", [])
         if bottlenecks:
-            high_impact = [b for b in bottlenecks if b['slowdown_factor'] > 5]
-            insights.append({
-                'type': 'performance_bottlenecks',
-                'title': 'Performance Bottlenecks',
-                'description': f"Found {len(bottlenecks)} slow nodes ({len(high_impact)} high impact)",
-                'severity': 'high' if high_impact else 'medium',
-                'details': bottlenecks[:3]
-            })
-        
+            high_impact = [b for b in bottlenecks if b["slowdown_factor"] > 5]
+            insights.append(
+                {
+                    "type": "performance_bottlenecks",
+                    "title": "Performance Bottlenecks",
+                    "description": f"Found {len(bottlenecks)} slow nodes ({len(high_impact)} high impact)",
+                    "severity": "high" if high_impact else "medium",
+                    "details": bottlenecks[:3],
+                }
+            )
+
         # Execution complexity insight
-        if patterns.get('execution_sequence') == 'branching':
-            branching_factor = patterns.get('branching_factor', 0)
-            insights.append({
-                'type': 'execution_complexity',
-                'title': 'Complex Execution Flow',
-                'description': f"Branching execution with max {branching_factor} parallel paths",
-                'severity': 'info'
-            })
-        
+        if patterns.get("execution_sequence") == "branching":
+            branching_factor = patterns.get("branching_factor", 0)
+            insights.append(
+                {
+                    "type": "execution_complexity",
+                    "title": "Complex Execution Flow",
+                    "description": f"Branching execution with max {branching_factor} parallel paths",
+                    "severity": "info",
+                }
+            )
+
         # Parallel execution insight
-        parallel_executions = patterns.get('parallel_executions', [])
+        parallel_executions = patterns.get("parallel_executions", [])
         if parallel_executions:
             total_parallel = sum(len(group) for group in parallel_executions)
-            insights.append({
-                'type': 'parallel_execution',
-                'title': 'Parallel Processing Detected',
-                'description': f"Found {total_parallel} nodes executing in parallel across {len(parallel_executions)} time slots",
-                'severity': 'info'
-            })
-        
+            insights.append(
+                {
+                    "type": "parallel_execution",
+                    "title": "Parallel Processing Detected",
+                    "description": f"Found {total_parallel} nodes executing in parallel across {len(parallel_executions)} time slots",
+                    "severity": "info",
+                }
+            )
+
         return insights
-    
+
     def generate_html(self, processed_data: Dict[str, Any]) -> str:
         """
         Generate HTML for LangGraph visualization component.
         """
-        processed_nodes = processed_data.get('processed_nodes', [])
-        execution_graph = processed_data.get('execution_graph', {})
-        performance_metrics = processed_data.get('performance_metrics', {})
-        critical_paths = processed_data.get('critical_paths', [])
-        execution_insights = processed_data.get('execution_insights', [])
-        metrics = processed_data.get('metrics', {})
-        
+        processed_nodes = processed_data.get("processed_nodes", [])
+        execution_graph = processed_data.get("execution_graph", {})
+        performance_metrics = processed_data.get("performance_metrics", {})
+        critical_paths = processed_data.get("critical_paths", [])
+        execution_insights = processed_data.get("execution_insights", [])
+        metrics = processed_data.get("metrics", {})
+
         # Generate statistics section
         stats_html = ""
         stats_items = [
-            ('Nodes Executed', metrics.get('total_nodes_executed', 0)),
-            ('Unique Types', metrics.get('unique_node_types', 0)),
-            ('Success Rate', f"{metrics.get('success_rate', 0):.1f}%"),
-            ('Total Time', f"{metrics.get('total_execution_time_ms', 0):,}ms"),
-            ('Avg Time', f"{metrics.get('avg_execution_time_ms', 0):.0f}ms"),
-            ('Errors', metrics.get('error_count', 0))
+            ("Nodes Executed", metrics.get("total_nodes_executed", 0)),
+            ("Unique Types", metrics.get("unique_node_types", 0)),
+            ("Success Rate", f"{metrics.get('success_rate', 0):.1f}%"),
+            ("Total Time", f"{metrics.get('total_execution_time_ms', 0):,}ms"),
+            ("Avg Time", f"{metrics.get('avg_execution_time_ms', 0):.0f}ms"),
+            ("Errors", metrics.get("error_count", 0)),
         ]
-        
+
         for label, value in stats_items:
             stats_html += f"""
                 <div class="viz-stat-item-{self.component_id}">
@@ -444,19 +531,23 @@ class LangGraphVisualizationComponent(BaseVisualizationComponent):
                     <div class="viz-stat-label-{self.component_id}">{label}</div>
                 </div>
             """
-        
+
         # Generate Mermaid diagram
-        mermaid_diagram = self._generate_mermaid_diagram(execution_graph, processed_nodes)
-        
+        mermaid_diagram = self._generate_mermaid_diagram(
+            execution_graph, processed_nodes
+        )
+
         # Generate node performance table
         nodes_table_html = ""
         for node in processed_nodes[:15]:  # Top 15 nodes
-            perf_class = self._get_performance_class(node['performance_category'])
-            success_icon = '✅' if node['success'] else '❌'
-            next_nodes_display = ', '.join(node['next_nodes'][:3]) if node['next_nodes'] else 'None'
-            if len(node['next_nodes']) > 3:
+            perf_class = self._get_performance_class(node["performance_category"])
+            success_icon = "✅" if node["success"] else "❌"
+            next_nodes_display = (
+                ", ".join(node["next_nodes"][:3]) if node["next_nodes"] else "None"
+            )
+            if len(node["next_nodes"]) > 3:
                 next_nodes_display += f' (+{len(node["next_nodes"]) - 3})'
-            
+
             nodes_table_html += f"""
                 <tr class="node-row-{self.component_id}" data-node="{node['node_name']}">
                     <td><strong>{node['node_name']}</strong></td>
@@ -467,11 +558,11 @@ class LangGraphVisualizationComponent(BaseVisualizationComponent):
                     <td class="next-nodes-{self.component_id}">{next_nodes_display}</td>
                 </tr>
             """
-        
+
         # Generate critical paths section
         critical_paths_html = ""
         for path in critical_paths[:5]:
-            criticality_class = path.get('criticality', 'medium')
+            criticality_class = path.get("criticality", "medium")
             critical_paths_html += f"""
                 <div class="critical-path-{self.component_id} {criticality_class}-{self.component_id}">
                     <div class="path-name-{self.component_id}">{path['node_name']}</div>
@@ -484,18 +575,18 @@ class LangGraphVisualizationComponent(BaseVisualizationComponent):
                     </div>
                 </div>
             """
-        
+
         # Generate insights section
         insights_html = ""
         for insight in execution_insights:
-            severity_class = insight.get('severity', 'info')
+            severity_class = insight.get("severity", "info")
             insights_html += f"""
                 <div class="insight-item-{self.component_id} {severity_class}-{self.component_id}">
                     <div class="insight-title-{self.component_id}">{insight['title']}</div>
                     <div class="insight-description-{self.component_id}">{insight['description']}</div>
                 </div>
             """
-        
+
         return f"""
         <div class="viz-component-{self.component_id} viz-animate-{self.component_id}">
             <div class="viz-header-{self.component_id}">
@@ -562,81 +653,92 @@ class LangGraphVisualizationComponent(BaseVisualizationComponent):
             </div>
         </div>
         """
-    
-    def _generate_mermaid_diagram(self, execution_graph: Dict, nodes: List[Dict]) -> str:
+
+    def _generate_mermaid_diagram(
+        self, execution_graph: Dict, nodes: List[Dict]
+    ) -> str:
         """Generate Mermaid network diagram"""
-        if not execution_graph.get('nodes'):
+        if not execution_graph.get("nodes"):
             return "graph TD\n    A[No LangGraph Data Available]"
-            
+
         diagram_lines = ["graph TD"]
-        
+
         # Add nodes
-        for node in execution_graph['nodes']:
-            node_id = node['id']
-            node_name = node['name']
-            node_type = node['type']
-            
+        for node in execution_graph["nodes"]:
+            node_id = node["id"]
+            node_name = node["name"]
+            node_type = node["type"]
+
             # Determine node shape based on performance
-            perf_category = node.get('performance_category', 'medium')
-            if perf_category == 'fast':
+            perf_category = node.get("performance_category", "medium")
+            if perf_category == "fast":
                 node_shape = f"({node_name})"
-            elif perf_category in ['slow', 'very_slow']:
+            elif perf_category in ["slow", "very_slow"]:
                 node_shape = f"{{{node_name}}}"
-            elif not node['success']:
+            elif not node["success"]:
                 node_shape = f"[{node_name}]"
             else:
                 node_shape = f"[{node_name}]"
-                
+
             diagram_lines.append(f"    {node_id}{node_shape}")
-        
+
         # Add edges
-        for edge in execution_graph.get('edges', []):
-            source = edge['source']
-            target = edge['target']
+        for edge in execution_graph.get("edges", []):
+            source = edge["source"]
+            target = edge["target"]
             diagram_lines.append(f"    {source} --> {target}")
-        
+
         # Add styling
-        diagram_lines.extend([
-            "    classDef fast fill:#28a745,stroke:#fff,stroke-width:2px,color:#fff",
-            "    classDef medium fill:#17a2b8,stroke:#fff,stroke-width:2px,color:#fff",
-            "    classDef slow fill:#ffc107,stroke:#333,stroke-width:2px,color:#333",
-            "    classDef error fill:#dc3545,stroke:#fff,stroke-width:2px,color:#fff"
-        ])
-        
+        diagram_lines.extend(
+            [
+                "    classDef fast fill:#28a745,stroke:#fff,stroke-width:2px,color:#fff",
+                "    classDef medium fill:#17a2b8,stroke:#fff,stroke-width:2px,color:#fff",
+                "    classDef slow fill:#ffc107,stroke:#333,stroke-width:2px,color:#333",
+                "    classDef error fill:#dc3545,stroke:#fff,stroke-width:2px,color:#fff",
+            ]
+        )
+
         return "\n".join(diagram_lines)
-    
+
     def _get_performance_class(self, performance_category: str) -> str:
         """Get CSS class for performance category"""
         return {
-            'fast': 'fast',
-            'medium': 'medium',
-            'slow': 'slow',
-            'very_slow': 'very-slow',
-            'unknown': 'unknown'
-        }.get(performance_category, 'medium')
-    
+            "fast": "fast",
+            "medium": "medium",
+            "slow": "slow",
+            "very_slow": "very-slow",
+            "unknown": "unknown",
+        }.get(performance_category, "medium")
+
     def generate_javascript(self, processed_data: Dict[str, Any]) -> str:
         """
         Generate JavaScript for interactive LangGraph chart.
         """
-        processed_nodes = processed_data.get('processed_nodes', [])
-        metrics = processed_data.get('metrics', {})
-        
+        processed_nodes = processed_data.get("processed_nodes", [])
+        metrics = processed_data.get("metrics", {})
+
         # Prepare chart data for node execution times
-        node_names = [node['node_name'] for node in processed_nodes[:10]]  # Top 10 nodes
-        execution_times = [node['execution_time_ms'] for node in processed_nodes[:10]]
-        
+        node_names = [
+            node["node_name"] for node in processed_nodes[:10]
+        ]  # Top 10 nodes
+        execution_times = [node["execution_time_ms"] for node in processed_nodes[:10]]
+
         chart_data = {
-            'labels': node_names,
-            'datasets': [{
-                'label': 'Execution Time (ms)',
-                'data': execution_times,
-                'backgroundColor': [self._get_node_color(node['performance_category']) for node in processed_nodes[:10]],
-                'borderColor': 'rgba(102, 126, 234, 0.8)',
-                'borderWidth': 1
-            }]
+            "labels": node_names,
+            "datasets": [
+                {
+                    "label": "Execution Time (ms)",
+                    "data": execution_times,
+                    "backgroundColor": [
+                        self._get_node_color(node["performance_category"])
+                        for node in processed_nodes[:10]
+                    ],
+                    "borderColor": "rgba(102, 126, 234, 0.8)",
+                    "borderWidth": 1,
+                }
+            ],
         }
-        
+
         return f"""
         // LangGraph Visualization Component
         (function() {{
@@ -754,25 +856,25 @@ class LangGraphVisualizationComponent(BaseVisualizationComponent):
             console.log('LangGraph Visualization Component loaded successfully');
         }})();
         """
-    
+
     def _get_node_color(self, performance_category: str) -> str:
         """Get color for node based on performance"""
         colors = {
-            'fast': '#28a745',      # Green
-            'medium': '#17a2b8',    # Blue
-            'slow': '#ffc107',      # Yellow
-            'very_slow': '#fd7e14', # Orange
-            'unknown': '#6c757d'    # Gray
+            "fast": "#28a745",  # Green
+            "medium": "#17a2b8",  # Blue
+            "slow": "#ffc107",  # Yellow
+            "very_slow": "#fd7e14",  # Orange
+            "unknown": "#6c757d",  # Gray
         }
-        return colors.get(performance_category, '#667eea')
-    
+        return colors.get(performance_category, "#667eea")
+
     def generate_css(self) -> str:
         """
         Generate CSS styles for LangGraph visualization component.
         """
         colors = self._get_theme_colors()
         base_css = super().generate_css()
-        
+
         component_css = f"""
         .mermaid-container-{self.component_id} {{
             background: white;
@@ -1005,5 +1107,5 @@ class LangGraphVisualizationComponent(BaseVisualizationComponent):
             }}
         }}
         """
-        
+
         return base_css + component_css

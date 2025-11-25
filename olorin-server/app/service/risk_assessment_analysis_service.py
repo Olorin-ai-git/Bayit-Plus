@@ -1,5 +1,4 @@
 import logging
-from app.service.logging import get_bridge_logger
 from typing import Dict, Optional
 
 from fastapi import HTTPException, Request
@@ -9,6 +8,7 @@ from app.service.llm_risk_assessment_service import (
     LLMRiskAssessmentService,
     OverallRiskAssessment,
 )
+from app.service.logging import get_bridge_logger
 
 logger = get_bridge_logger(__name__)
 

@@ -12,12 +12,13 @@ Constitutional Compliance:
 - Tests guide implementation
 """
 
-import pytest
 import os
-from typing import List, Dict, Any
+from typing import Any, Dict, List
 
-from app.service.agent.tools.database_tool.migration_manager import MigrationManager
+import pytest
+
 from app.service.agent.tools.database_tool.database_factory import get_database_provider
+from app.service.agent.tools.database_tool.migration_manager import MigrationManager
 
 
 class TestMigrationDataParity:
@@ -28,32 +29,32 @@ class TestMigrationDataParity:
         manager = MigrationManager(batch_size=500)
 
         # Get providers
-        source_provider = get_database_provider('snowflake')
-        target_provider = get_database_provider('postgresql')
+        source_provider = get_database_provider("snowflake")
+        target_provider = get_database_provider("postgresql")
 
         # Get record counts before migration
         source_count_query = "SELECT COUNT(*) as count FROM transactions_enriched"
         source_count_result = source_provider.execute_query(source_count_query)
-        source_count = source_count_result[0]['count'] if source_count_result else 0
+        source_count = source_count_result[0]["count"] if source_count_result else 0
 
         # Run migration
         migration_result = manager.migrate_all_data()
 
         # Get record counts after migration
         target_count_result = target_provider.execute_query(source_count_query)
-        target_count = target_count_result[0]['count'] if target_count_result else 0
+        target_count = target_count_result[0]["count"] if target_count_result else 0
 
         # Verify counts match
         assert target_count == source_count
-        assert migration_result['records_migrated'] == source_count
+        assert migration_result["records_migrated"] == source_count
 
     def test_sample_data_matches_after_migration(self):
         """Test that sample records match between source and target."""
         manager = MigrationManager()
 
         # Get providers
-        source_provider = get_database_provider('snowflake')
-        target_provider = get_database_provider('postgresql')
+        source_provider = get_database_provider("snowflake")
+        target_provider = get_database_provider("postgresql")
 
         # Get sample from source (first 10 records)
         sample_query = """
@@ -78,16 +79,16 @@ class TestMigrationDataParity:
             source_record = {k.upper(): v for k, v in source_sample[i].items()}
             target_record = {k.upper(): v for k, v in target_sample[i].items()}
 
-            assert source_record['TX_ID_KEY'] == target_record['TX_ID_KEY']
-            assert source_record['EMAIL'] == target_record['EMAIL']
+            assert source_record["TX_ID_KEY"] == target_record["TX_ID_KEY"]
+            assert source_record["EMAIL"] == target_record["EMAIL"]
 
     def test_all_columns_migrated(self):
         """Test that all 333 columns are migrated correctly."""
         manager = MigrationManager()
 
         # Get providers
-        source_provider = get_database_provider('snowflake')
-        target_provider = get_database_provider('postgresql')
+        source_provider = get_database_provider("snowflake")
+        target_provider = get_database_provider("postgresql")
 
         # Get column lists from both databases
         source_columns_query = """
@@ -108,12 +109,14 @@ class TestMigrationDataParity:
         target_columns = target_provider.execute_query(target_columns_query)
 
         # Normalize column names to uppercase for comparison
-        source_col_names = set(col['COLUMN_NAME'].upper() for col in source_columns)
-        target_col_names = set(col['column_name'].upper() for col in target_columns)
+        source_col_names = set(col["COLUMN_NAME"].upper() for col in source_columns)
+        target_col_names = set(col["column_name"].upper() for col in target_columns)
 
         # Verify all source columns exist in target
         missing_columns = source_col_names - target_col_names
-        assert len(missing_columns) == 0, f"Missing columns in target: {missing_columns}"
+        assert (
+            len(missing_columns) == 0
+        ), f"Missing columns in target: {missing_columns}"
 
 
 class TestMigrationIdempotency:
@@ -123,27 +126,29 @@ class TestMigrationIdempotency:
         """Test that running migration twice doesn't create duplicate records."""
         manager = MigrationManager()
 
-        target_provider = get_database_provider('postgresql')
+        target_provider = get_database_provider("postgresql")
 
         # Run migration first time
         first_result = manager.migrate_all_data()
-        first_count = first_result['records_migrated']
+        first_count = first_result["records_migrated"]
 
         # Get record count after first migration
         count_query = "SELECT COUNT(*) as count FROM transactions_enriched"
         after_first = target_provider.execute_query(count_query)
-        count_after_first = after_first[0]['count']
+        count_after_first = after_first[0]["count"]
 
         # Run migration second time
         second_result = manager.migrate_all_data()
 
         # Get record count after second migration
         after_second = target_provider.execute_query(count_query)
-        count_after_second = after_second[0]['count']
+        count_after_second = after_second[0]["count"]
 
         # Record count should not increase (idempotent)
         assert count_after_second == count_after_first
-        assert second_result['records_skipped'] == first_count  # All records already exist
+        assert (
+            second_result["records_skipped"] == first_count
+        )  # All records already exist
 
     def test_partial_migration_resume(self):
         """Test that interrupted migration can resume from checkpoint."""
@@ -156,14 +161,14 @@ class TestMigrationIdempotency:
         # Get checkpoint
         checkpoint = manager1.load_checkpoint()
         assert checkpoint is not None
-        assert checkpoint['last_batch_id'] == 1
+        assert checkpoint["last_batch_id"] == 1
 
         # Second migration - resume
         manager2 = MigrationManager(batch_size=500)
         resume_result = manager2.migrate_all_data()
 
         # Should start from batch 2
-        assert resume_result['resumed_from_batch'] == 2
+        assert resume_result["resumed_from_batch"] == 2
 
 
 class TestMigrationErrorRecovery:
@@ -180,7 +185,7 @@ class TestMigrationErrorRecovery:
             manager.migrate_all_data()
 
         # Verify no partial data in target
-        target_provider = get_database_provider('postgresql')
+        target_provider = get_database_provider("postgresql")
         count_query = "SELECT COUNT(*) as count FROM transactions_enriched"
         result = target_provider.execute_query(count_query)
 
@@ -201,7 +206,7 @@ class TestMigrationErrorRecovery:
             # Error should be informative
             assert len(error_msg) > 0
             # Should mention source or configuration issue
-            assert 'source' in error_msg.lower() or 'provider' in error_msg.lower()
+            assert "source" in error_msg.lower() or "provider" in error_msg.lower()
 
 
 class TestMigrationPerformance:
@@ -213,6 +218,7 @@ class TestMigrationPerformance:
 
         # Run migration and track time
         import time
+
         start_time = time.time()
 
         result = manager.migrate_all_data()
@@ -220,12 +226,12 @@ class TestMigrationPerformance:
         elapsed_time = time.time() - start_time
 
         # Verify batching was used
-        assert result['total_batches'] > 0
-        assert result['batch_size'] == 500
+        assert result["total_batches"] > 0
+        assert result["batch_size"] == 500
 
         # Performance should be reasonable (< 1 second per batch for small datasets)
-        if result['total_batches'] > 0:
-            time_per_batch = elapsed_time / result['total_batches']
+        if result["total_batches"] > 0:
+            time_per_batch = elapsed_time / result["total_batches"]
             # Reasonable threshold (adjust based on actual performance)
             assert time_per_batch < 10.0  # Less than 10 seconds per batch
 
@@ -237,9 +243,9 @@ class TestMigrationPerformance:
         result = manager.migrate_all_data()
 
         # Verify progress tracking
-        assert 'records_migrated' in result
-        assert 'elapsed_time_seconds' in result
-        assert 'batches_processed' in result
+        assert "records_migrated" in result
+        assert "elapsed_time_seconds" in result
+        assert "batches_processed" in result
 
 
 class TestMigrationValidation:
@@ -255,9 +261,9 @@ class TestMigrationValidation:
         # Validate migration
         validation_result = manager.validate_migration()
 
-        assert validation_result['is_valid'] is True
-        assert validation_result['record_count_match'] is True
-        assert validation_result['sample_data_match'] is True
+        assert validation_result["is_valid"] is True
+        assert validation_result["record_count_match"] is True
+        assert validation_result["sample_data_match"] is True
 
     def test_validate_migration_comprehensive(self):
         """Test comprehensive migration validation."""
@@ -268,15 +274,16 @@ class TestMigrationValidation:
 
         # Validate with comprehensive checks
         validation_result = manager.validate_migration(
-            check_record_count=True,
-            check_sample_data=True,
-            sample_size=100
+            check_record_count=True, check_sample_data=True, sample_size=100
         )
 
-        assert validation_result['is_valid'] is True
-        assert 'record_count_source' in validation_result
-        assert 'record_count_target' in validation_result
-        assert validation_result['record_count_source'] == validation_result['record_count_target']
+        assert validation_result["is_valid"] is True
+        assert "record_count_source" in validation_result
+        assert "record_count_target" in validation_result
+        assert (
+            validation_result["record_count_source"]
+            == validation_result["record_count_target"]
+        )
 
 
 class TestDataTransformationValidation:
@@ -287,8 +294,8 @@ class TestDataTransformationValidation:
         manager = MigrationManager()
 
         # Get providers
-        source_provider = get_database_provider('snowflake')
-        target_provider = get_database_provider('postgresql')
+        source_provider = get_database_provider("snowflake")
+        target_provider = get_database_provider("postgresql")
 
         # Run migration
         manager.migrate_all_data()
@@ -313,7 +320,7 @@ class TestDataTransformationValidation:
         manager = MigrationManager()
 
         # Get providers
-        target_provider = get_database_provider('postgresql')
+        target_provider = get_database_provider("postgresql")
 
         # Run migration
         manager.migrate_all_data()
@@ -341,12 +348,12 @@ class TestMigrationStatistics:
         result = manager.migrate_all_data()
 
         # Verify all expected statistics are present
-        assert 'records_migrated' in result
-        assert 'total_batches' in result
-        assert 'elapsed_time_seconds' in result
-        assert 'migration_start_time' in result
-        assert 'migration_end_time' in result
-        assert 'average_records_per_second' in result
+        assert "records_migrated" in result
+        assert "total_batches" in result
+        assert "elapsed_time_seconds" in result
+        assert "migration_start_time" in result
+        assert "migration_end_time" in result
+        assert "average_records_per_second" in result
 
     def test_migration_calculates_rate_correctly(self):
         """Test that migration rate is calculated correctly."""
@@ -355,6 +362,6 @@ class TestMigrationStatistics:
         result = manager.migrate_all_data()
 
         # Verify rate calculation
-        if result['elapsed_time_seconds'] > 0:
-            expected_rate = result['records_migrated'] / result['elapsed_time_seconds']
-            assert abs(result['average_records_per_second'] - expected_rate) < 0.01
+        if result["elapsed_time_seconds"] > 0:
+            expected_rate = result["records_migrated"] / result["elapsed_time_seconds"]
+            assert abs(result["average_records_per_second"] - expected_rate) < 0.01

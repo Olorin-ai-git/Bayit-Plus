@@ -5,19 +5,20 @@ Feature: 001-composio-tools-integration
 Provides REST API endpoints for MaxMind minFraud IP risk scoring.
 """
 
-from typing import Dict, Any
+from typing import Any, Dict
+
 from fastapi import APIRouter, Depends, HTTPException, status
 from pydantic import BaseModel
 
 from app.models.ip_risk_score import IPRiskScoreRequest, IPRiskScoreResponse
-from app.service.ip_risk.maxmind_client import MaxMindClient
-from app.service.ip_risk.score_cache import ScoreCache
+from app.security.auth import User, require_read, require_write
 from app.service.ip_risk.exceptions import (
+    MaxMindConnectionError,
     MaxMindError,
     MaxMindRateLimitError,
-    MaxMindConnectionError
 )
-from app.security.auth import User, require_read, require_write
+from app.service.ip_risk.maxmind_client import MaxMindClient
+from app.service.ip_risk.score_cache import ScoreCache
 
 router = APIRouter(
     prefix="/api/ip-risk",
@@ -40,7 +41,7 @@ def get_maxmind_client() -> MaxMindClient:
     response_model=IPRiskScoreResponse,
     status_code=status.HTTP_200_OK,
     summary="Score IP risk",
-    description="Score transaction IP risk using MaxMind minFraud API"
+    description="Score transaction IP risk using MaxMind minFraud API",
 )
 async def score_ip_risk(
     request: IPRiskScoreRequest,
@@ -49,7 +50,7 @@ async def score_ip_risk(
 ) -> IPRiskScoreResponse:
     """
     Score IP risk for a transaction using MaxMind minFraud.
-    
+
     Returns risk score, proxy/VPN/TOR detection, geolocation, and velocity signals.
     Results are cached for 1 hour and persisted to Snowflake.
     """
@@ -60,9 +61,9 @@ async def score_ip_risk(
             email=request.email,
             billing_country=request.billing_country,
             transaction_amount=request.transaction_amount,
-            currency=request.currency
+            currency=request.currency,
         )
-        
+
         return IPRiskScoreResponse(
             transaction_id=score_data["transaction_id"],
             ip_address=score_data["ip_address"],
@@ -75,28 +76,26 @@ async def score_ip_risk(
             scored_at=score_data.get("scored_at", ""),
             cached=score_data.get("cached", False),
             cached_at=score_data.get("cached_at"),
-            expires_at=score_data.get("expires_at")
+            expires_at=score_data.get("expires_at"),
         )
-        
+
     except MaxMindRateLimitError as e:
         raise HTTPException(
-            status_code=status.HTTP_429_TOO_MANY_REQUESTS,
-            detail=str(e)
+            status_code=status.HTTP_429_TOO_MANY_REQUESTS, detail=str(e)
         ) from e
     except MaxMindConnectionError as e:
         raise HTTPException(
             status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
-            detail=f"MaxMind service unavailable: {str(e)}"
+            detail=f"MaxMind service unavailable: {str(e)}",
         ) from e
     except MaxMindError as e:
         raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail=str(e)
+            status_code=status.HTTP_400_BAD_REQUEST, detail=str(e)
         ) from e
     except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Failed to score IP risk: {str(e)}"
+            detail=f"Failed to score IP risk: {str(e)}",
         ) from e
 
 
@@ -104,7 +103,7 @@ async def score_ip_risk(
     "/score/{ip_address}",
     response_model=IPRiskScoreResponse,
     summary="Get cached IP risk score",
-    description="Get cached IP risk score if available (1 hour TTL)"
+    description="Get cached IP risk score if available (1 hour TTL)",
 )
 async def get_cached_ip_risk_score(
     ip_address: str,
@@ -113,26 +112,27 @@ async def get_cached_ip_risk_score(
 ) -> IPRiskScoreResponse:
     """
     Get cached IP risk score for an IP address.
-    
+
     Returns cached score if available and not expired, otherwise 404.
     """
     try:
         import ipaddress
+
         ipaddress.ip_address(ip_address)  # Validate IP format
     except ValueError:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail=f"Invalid IP address format: {ip_address}"
+            detail=f"Invalid IP address format: {ip_address}",
         )
-    
+
     cached_score = score_cache.get_cached_score(ip_address)
-    
+
     if not cached_score:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
-            detail=f"Cached score not found for IP {ip_address}"
+            detail=f"Cached score not found for IP {ip_address}",
         )
-    
+
     return IPRiskScoreResponse(
         transaction_id=cached_score.get("transaction_id", f"cached_{ip_address}"),
         ip_address=ip_address,
@@ -145,6 +145,5 @@ async def get_cached_ip_risk_score(
         scored_at=cached_score.get("scored_at", ""),
         cached=True,
         cached_at=cached_score.get("cached_at"),
-        expires_at=cached_score.get("expires_at")
+        expires_at=cached_score.get("expires_at"),
     )
-

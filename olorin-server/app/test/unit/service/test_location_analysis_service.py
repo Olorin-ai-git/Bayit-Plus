@@ -7,7 +7,9 @@ from fastapi import Request
 # OBSOLETE TEST: LocationAnalysisService and ato_agents have been removed
 # This test is for legacy functionality that no longer exists
 # Location functionality is now handled by location_router.py with basic implementation
-pytestmark = pytest.mark.skip(reason="LocationAnalysisService removed - obsolete test file")
+pytestmark = pytest.mark.skip(
+    reason="LocationAnalysisService removed - obsolete test file"
+)
 
 
 @pytest.fixture

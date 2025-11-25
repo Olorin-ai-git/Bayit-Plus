@@ -6,12 +6,13 @@ Contains all dataclasses and type definitions used throughout the report generat
 """
 
 from dataclasses import dataclass
-from typing import Dict, List, Any, Optional
 from enum import Enum
+from typing import Any, Dict, List, Optional
 
 
 class ReportTheme(Enum):
     """Available report themes"""
+
     DEFAULT = "default"
     DARK = "dark"
     HIGH_CONTRAST = "high_contrast"
@@ -21,6 +22,7 @@ class ReportTheme(Enum):
 @dataclass
 class InvestigationSummary:
     """Summary statistics for an investigation"""
+
     investigation_id: str
     mode: str
     scenario: str
@@ -42,6 +44,7 @@ class InvestigationSummary:
 @dataclass
 class ComponentData:
     """Container for processed component data"""
+
     llm_interactions: List[Dict[str, Any]]
     investigation_flow: List[Dict[str, Any]]
     tools_analysis: Dict[str, Any]
@@ -54,6 +57,7 @@ class ComponentData:
 @dataclass
 class ReportConfig:
     """Configuration for report generation"""
+
     theme: ReportTheme = ReportTheme.DEFAULT
     enable_animations: bool = True
     enable_tooltips: bool = True
@@ -69,6 +73,7 @@ class ReportConfig:
 @dataclass
 class ExtractedData:
     """Raw extracted data from investigation files"""
+
     metadata: Dict[str, Any]
     structured_activities: List[Dict[str, Any]]
     journey_tracking: Dict[str, Any]
@@ -79,6 +84,7 @@ class ExtractedData:
 @dataclass
 class GeneratedReport:
     """Generated report information"""
+
     output_path: str
     generation_time: float
     report_size_bytes: int

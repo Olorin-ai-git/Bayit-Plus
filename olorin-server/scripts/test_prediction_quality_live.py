@@ -6,18 +6,20 @@ Finds two investigations for the same entity and validates prediction quality,
 then generates an HTML report.
 """
 
-import os
-import sys
 import asyncio
 import json
+import os
+import sys
 from datetime import datetime
 from pathlib import Path
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from app.persistence import list_investigations
-from app.service.investigation.investigation_comparison_service import compare_investigations
 from app.service.investigation.html_report_generator import generate_html_report
+from app.service.investigation.investigation_comparison_service import (
+    compare_investigations,
+)
 from app.service.logging import get_bridge_logger
 
 logger = get_bridge_logger(__name__)
@@ -27,71 +29,103 @@ async def find_investigations_to_compare():
     """Find two investigations for the same entity with risk scores."""
     investigations = list_investigations()
     logger.info(f"Found {len(investigations)} total investigations")
-    
+
     # Filter for investigations with entity, time windows, AND risk scores
     valid_investigations = []
     for inv in investigations:
-        inv_dict = inv if isinstance(inv, dict) else inv.__dict__ if hasattr(inv, '__dict__') else {}
-        risk_score = inv_dict.get('overall_risk_score')
-        if (inv_dict.get('entity_type') and inv_dict.get('entity_id') and 
-            inv_dict.get('from_date') and inv_dict.get('to_date') and
-            risk_score is not None and risk_score > 0):
-            valid_investigations.append({
-                'id': inv_dict.get('id'),
-                'entity_type': inv_dict.get('entity_type'),
-                'entity_id': inv_dict.get('entity_id'),
-                'from_date': inv_dict.get('from_date'),
-                'to_date': inv_dict.get('to_date'),
-                'overall_risk_score': risk_score
-            })
-    
+        inv_dict = (
+            inv
+            if isinstance(inv, dict)
+            else inv.__dict__ if hasattr(inv, "__dict__") else {}
+        )
+        risk_score = inv_dict.get("overall_risk_score")
+        if (
+            inv_dict.get("entity_type")
+            and inv_dict.get("entity_id")
+            and inv_dict.get("from_date")
+            and inv_dict.get("to_date")
+            and risk_score is not None
+            and risk_score > 0
+        ):
+            valid_investigations.append(
+                {
+                    "id": inv_dict.get("id"),
+                    "entity_type": inv_dict.get("entity_type"),
+                    "entity_id": inv_dict.get("entity_id"),
+                    "from_date": inv_dict.get("from_date"),
+                    "to_date": inv_dict.get("to_date"),
+                    "overall_risk_score": risk_score,
+                }
+            )
+
     logger.info(f"Found {len(valid_investigations)} investigations with risk scores")
-    
+
     if len(valid_investigations) < 2:
-        logger.warning("Need at least 2 investigations with risk scores. Checking all investigations...")
+        logger.warning(
+            "Need at least 2 investigations with risk scores. Checking all investigations..."
+        )
         # Fallback: use any investigations with entity and time windows
         fallback_investigations = []
         for inv in investigations:
-            inv_dict = inv if isinstance(inv, dict) else inv.__dict__ if hasattr(inv, '__dict__') else {}
-            if (inv_dict.get('entity_type') and inv_dict.get('entity_id') and 
-                inv_dict.get('from_date') and inv_dict.get('to_date')):
-                fallback_investigations.append({
-                    'id': inv_dict.get('id'),
-                    'entity_type': inv_dict.get('entity_type'),
-                    'entity_id': inv_dict.get('entity_id'),
-                    'from_date': inv_dict.get('from_date'),
-                    'to_date': inv_dict.get('to_date'),
-                    'overall_risk_score': inv_dict.get('overall_risk_score')
-                })
-        
+            inv_dict = (
+                inv
+                if isinstance(inv, dict)
+                else inv.__dict__ if hasattr(inv, "__dict__") else {}
+            )
+            if (
+                inv_dict.get("entity_type")
+                and inv_dict.get("entity_id")
+                and inv_dict.get("from_date")
+                and inv_dict.get("to_date")
+            ):
+                fallback_investigations.append(
+                    {
+                        "id": inv_dict.get("id"),
+                        "entity_type": inv_dict.get("entity_type"),
+                        "entity_id": inv_dict.get("entity_id"),
+                        "from_date": inv_dict.get("from_date"),
+                        "to_date": inv_dict.get("to_date"),
+                        "overall_risk_score": inv_dict.get("overall_risk_score"),
+                    }
+                )
+
         if len(fallback_investigations) < 2:
             logger.error("Need at least 2 investigations with entity and time windows")
             return None, None
-        
+
         valid_investigations = fallback_investigations
-    
+
     # Group by entity to find pairs
     from collections import defaultdict
+
     by_entity = defaultdict(list)
     for inv in valid_investigations:
         key = f"{inv['entity_type']}:{inv['entity_id']}"
         by_entity[key].append(inv)
-    
+
     # Find entities with multiple investigations
     for entity_key, invs in by_entity.items():
         if len(invs) >= 2:
             # Sort by date
-            invs_sorted = sorted(invs, key=lambda x: x['from_date'] if x['from_date'] else '')
+            invs_sorted = sorted(
+                invs, key=lambda x: x["from_date"] if x["from_date"] else ""
+            )
             logger.info(f"Entity {entity_key} has {len(invs)} investigations")
             for inv in invs_sorted[:2]:
-                logger.info(f"  - {inv['id']}: {inv['from_date']} to {inv['to_date']}, risk={inv.get('overall_risk_score', 'N/A')}")
-            return invs_sorted[0]['id'], invs_sorted[1]['id']
-    
+                logger.info(
+                    f"  - {inv['id']}: {inv['from_date']} to {inv['to_date']}, risk={inv.get('overall_risk_score', 'N/A')}"
+                )
+            return invs_sorted[0]["id"], invs_sorted[1]["id"]
+
     # If no entity has multiple investigations, use first two
     logger.info("No entity with multiple investigations. Using first two:")
-    logger.info(f"  - {valid_investigations[0]['id']}: {valid_investigations[0]['entity_type']}:{valid_investigations[0]['entity_id']}")
-    logger.info(f"  - {valid_investigations[1]['id']}: {valid_investigations[1]['entity_type']}:{valid_investigations[1]['entity_id']}")
-    return valid_investigations[0]['id'], valid_investigations[1]['id']
+    logger.info(
+        f"  - {valid_investigations[0]['id']}: {valid_investigations[0]['entity_type']}:{valid_investigations[0]['entity_id']}"
+    )
+    logger.info(
+        f"  - {valid_investigations[1]['id']}: {valid_investigations[1]['entity_type']}:{valid_investigations[1]['entity_id']}"
+    )
+    return valid_investigations[0]["id"], valid_investigations[1]["id"]
 
 
 async def test_prediction_quality():
@@ -99,82 +133,83 @@ async def test_prediction_quality():
     logger.info("=" * 60)
     logger.info("Testing Prediction Quality Validation")
     logger.info("=" * 60)
-    
+
     # Find investigations to compare
     inv_id_a, inv_id_b = await find_investigations_to_compare()
-    
+
     if not inv_id_a or not inv_id_b:
         logger.error("Could not find suitable investigations to compare")
         return None
-    
+
     logger.info(f"\nComparing investigations:")
     logger.info(f"  Investigation A: {inv_id_a}")
     logger.info(f"  Investigation B: {inv_id_b}")
-    
+
     try:
         # Run comparison
         result = await compare_investigations(inv_id_a, inv_id_b)
-        
+
         logger.info("\n" + "=" * 60)
         logger.info("Comparison Results:")
         logger.info("=" * 60)
         logger.info(json.dumps(result, indent=2, default=str))
-        
+
         # Check if prediction quality validation succeeded
         prediction_quality = result.get("prediction_quality")
         if not prediction_quality:
-            logger.warning("Prediction quality validation returned None - investigation may not have risk score")
+            logger.warning(
+                "Prediction quality validation returned None - investigation may not have risk score"
+            )
             logger.info("Result structure:")
             logger.info(json.dumps(result, indent=2, default=str))
             return {
                 "status": "warning",
                 "message": "Prediction quality validation could not be performed - investigation may not have risk score",
-                "result": result
+                "result": result,
             }
-        
+
         # Generate HTML report
         logger.info("\n" + "=" * 60)
         logger.info("Generating HTML Report...")
         logger.info("=" * 60)
-        
+
         # Create a ComparisonResponse-like structure for HTML generation
         # The HTML generator expects a ComparisonResponse, but we have investigation comparison results
         # For now, we'll create a simplified report
         html_content = generate_investigation_comparison_html_report(result)
-        
+
         # Save HTML report
         validated_inv = result.get("investigation_validated", {})
         entity_type = validated_inv.get("entity_type", "unknown")
         entity_id = validated_inv.get("entity_id", "unknown")
         inv_id = validated_inv.get("id", "unknown")
-        
+
         # Create safe filename
         entity_slug = entity_id.replace("@", "-").replace(".", "-")[:30]
         timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-        filename = f"prediction_quality_{entity_type}_{entity_slug}_{inv_id}_{timestamp}.html"
-        
+        filename = (
+            f"prediction_quality_{entity_type}_{entity_slug}_{inv_id}_{timestamp}.html"
+        )
+
         artifacts_dir = Path("artifacts")
         artifacts_dir.mkdir(exist_ok=True)
         report_path = artifacts_dir / filename
-        
-        with open(report_path, 'w', encoding='utf-8') as f:
+
+        with open(report_path, "w", encoding="utf-8") as f:
             f.write(html_content)
-        
+
         logger.info(f"\n✅ HTML report saved: {report_path}")
         logger.info(f"   File size: {len(html_content)} bytes")
-        
+
         return {
             "status": "success",
             "result": result,
-            "html_report_path": str(report_path)
+            "html_report_path": str(report_path),
         }
-        
+
     except Exception as e:
         logger.error(f"❌ Test failed: {e}", exc_info=True)
-        return {
-            "status": "error",
-            "error": str(e)
-        }
+        return {"status": "error", "error": str(e)}
 
 
 def generate_investigation_comparison_html_report(result: dict) -> str:
@@ -183,18 +218,24 @@ def generate_investigation_comparison_html_report(result: dict) -> str:
     recent_inv = result.get("investigation_recent", {})
     prediction_quality = result.get("prediction_quality") or {}
     summary = result.get("summary", "")
-    
+
     validated_metrics = validated_inv.get("metrics", {})
     recent_metrics = recent_inv.get("metrics", {})
-    
+
     entity_type = validated_inv.get("entity_type", "unknown")
     entity_id = validated_inv.get("entity_id", "unknown")
-    
+
     predicted_risk = validated_metrics.get("overall_risk_score", 0) or 0
-    actual_fraud_rate = prediction_quality.get("actual_fraud_rate") if prediction_quality else None
-    prediction_accurate = prediction_quality.get("prediction_accurate") if prediction_quality else None
-    prediction_error = prediction_quality.get("prediction_error", 0) if prediction_quality else None
-    
+    actual_fraud_rate = (
+        prediction_quality.get("actual_fraud_rate") if prediction_quality else None
+    )
+    prediction_accurate = (
+        prediction_quality.get("prediction_accurate") if prediction_quality else None
+    )
+    prediction_error = (
+        prediction_quality.get("prediction_error", 0) if prediction_quality else None
+    )
+
     html = f"""<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -503,7 +544,7 @@ def generate_investigation_comparison_html_report(result: dict) -> str:
     </script>
 </body>
 </html>"""
-    
+
     return html
 
 
@@ -513,11 +554,10 @@ if __name__ == "__main__":
     print("Test Results:")
     print("=" * 60)
     print(json.dumps(result, indent=2, default=str))
-    
+
     if result and result.get("status") == "success":
         print(f"\n✅ HTML report generated: {result.get('html_report_path')}")
         sys.exit(0)
     else:
         print(f"\n❌ Test failed")
         sys.exit(1)
-

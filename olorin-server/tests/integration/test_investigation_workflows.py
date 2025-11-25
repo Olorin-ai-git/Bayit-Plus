@@ -12,13 +12,14 @@ Constitutional Compliance:
 - Tests guide implementation
 """
 
-import pytest
 import os
-from typing import List, Dict, Any
+from typing import Any, Dict, List
+
+import pytest
 
 from app.service.agent.tools.database_tool.database_factory import get_database_provider
-from app.service.agent.tools.database_tool.query_translator import QueryTranslator
 from app.service.agent.tools.database_tool.query_cache import QueryCache
+from app.service.agent.tools.database_tool.query_translator import QueryTranslator
 
 
 class TestInvestigationWorkflowSwitching:
@@ -27,12 +28,14 @@ class TestInvestigationWorkflowSwitching:
     def test_simple_query_workflow_snowflake(self):
         """Test simple investigation query workflow with Snowflake provider."""
         # Set provider to Snowflake
-        os.environ['DATABASE_PROVIDER'] = 'snowflake'
+        os.environ["DATABASE_PROVIDER"] = "snowflake"
 
         provider = get_database_provider()
 
         # Simple query to verify provider works
-        query = "SELECT TX_ID_KEY, EMAIL, MODEL_SCORE FROM transactions_enriched LIMIT 5"
+        query = (
+            "SELECT TX_ID_KEY, EMAIL, MODEL_SCORE FROM transactions_enriched LIMIT 5"
+        )
 
         # Execute query
         results = provider.execute_query(query)
@@ -41,17 +44,19 @@ class TestInvestigationWorkflowSwitching:
         assert isinstance(results, list)
         # Note: May be empty if no test data in Snowflake
         if results:
-            assert 'TX_ID_KEY' in results[0] or 'tx_id_key' in results[0]
+            assert "TX_ID_KEY" in results[0] or "tx_id_key" in results[0]
 
     def test_simple_query_workflow_postgresql(self):
         """Test simple investigation query workflow with PostgreSQL provider."""
         # Set provider to PostgreSQL
-        os.environ['DATABASE_PROVIDER'] = 'postgresql'
+        os.environ["DATABASE_PROVIDER"] = "postgresql"
 
         provider = get_database_provider()
 
         # Snowflake-style query (will be translated)
-        query = "SELECT TX_ID_KEY, EMAIL, MODEL_SCORE FROM transactions_enriched LIMIT 5"
+        query = (
+            "SELECT TX_ID_KEY, EMAIL, MODEL_SCORE FROM transactions_enriched LIMIT 5"
+        )
 
         # Execute query (should translate Snowflake SQL to PostgreSQL)
         results = provider.execute_query(query)
@@ -61,11 +66,14 @@ class TestInvestigationWorkflowSwitching:
         # Note: May be empty if no test data in PostgreSQL
         if results:
             # PostgreSQL returns lowercase column names
-            assert any(key.lower() in ['tx_id_key', 'email', 'model_score'] for key in results[0].keys())
+            assert any(
+                key.lower() in ["tx_id_key", "email", "model_score"]
+                for key in results[0].keys()
+            )
 
     def test_date_function_workflow_translation(self):
         """Test query workflow with date functions that require translation."""
-        os.environ['DATABASE_PROVIDER'] = 'postgresql'
+        os.environ["DATABASE_PROVIDER"] = "postgresql"
 
         provider = get_database_provider()
 
@@ -85,7 +93,7 @@ class TestInvestigationWorkflowSwitching:
 
     def test_aggregation_workflow(self):
         """Test aggregation query workflow."""
-        os.environ['DATABASE_PROVIDER'] = 'postgresql'
+        os.environ["DATABASE_PROVIDER"] = "postgresql"
 
         provider = get_database_provider()
 
@@ -101,7 +109,9 @@ class TestInvestigationWorkflowSwitching:
         # Verify aggregation results
         assert isinstance(results, list)
         if results:
-            assert 'transaction_count' in results[0] or 'TRANSACTION_COUNT' in results[0]
+            assert (
+                "transaction_count" in results[0] or "TRANSACTION_COUNT" in results[0]
+            )
 
 
 class TestInvestigationWorkflowCaching:
@@ -109,7 +119,7 @@ class TestInvestigationWorkflowCaching:
 
     def test_cache_improves_performance(self):
         """Test that query cache improves performance on repeated queries."""
-        os.environ['DATABASE_PROVIDER'] = 'postgresql'
+        os.environ["DATABASE_PROVIDER"] = "postgresql"
 
         provider = get_database_provider()
 
@@ -126,7 +136,7 @@ class TestInvestigationWorkflowCaching:
 
     def test_cache_handles_whitespace_variations(self):
         """Test that cache normalizes queries with whitespace variations."""
-        os.environ['DATABASE_PROVIDER'] = 'postgresql'
+        os.environ["DATABASE_PROVIDER"] = "postgresql"
 
         provider = get_database_provider()
 
@@ -146,7 +156,7 @@ class TestInvestigationWorkflowErrorHandling:
 
     def test_invalid_query_fails_gracefully(self):
         """Test that invalid queries fail with clear error messages."""
-        os.environ['DATABASE_PROVIDER'] = 'postgresql'
+        os.environ["DATABASE_PROVIDER"] = "postgresql"
 
         provider = get_database_provider()
 
@@ -161,7 +171,7 @@ class TestInvestigationWorkflowErrorHandling:
 
     def test_missing_table_fails_gracefully(self):
         """Test that queries on missing tables fail with clear errors."""
-        os.environ['DATABASE_PROVIDER'] = 'postgresql'
+        os.environ["DATABASE_PROVIDER"] = "postgresql"
 
         provider = get_database_provider()
 
@@ -179,12 +189,12 @@ class TestInvestigationWorkflowZeroCodeChanges:
         query = "SELECT COUNT(*) as total FROM transactions_enriched"
 
         # Test with Snowflake
-        os.environ['DATABASE_PROVIDER'] = 'snowflake'
+        os.environ["DATABASE_PROVIDER"] = "snowflake"
         sf_provider = get_database_provider()
         sf_results = sf_provider.execute_query(query)
 
         # Test with PostgreSQL
-        os.environ['DATABASE_PROVIDER'] = 'postgresql'
+        os.environ["DATABASE_PROVIDER"] = "postgresql"
         pg_provider = get_database_provider()
         pg_results = pg_provider.execute_query(query)
 
@@ -194,6 +204,7 @@ class TestInvestigationWorkflowZeroCodeChanges:
 
     def test_investigation_workflow_provider_agnostic(self):
         """Test complete investigation workflow is provider-agnostic."""
+
         # Define a typical investigation query
         def run_investigation(email: str) -> List[Dict[str, Any]]:
             """Example investigation function - provider-agnostic."""
@@ -217,11 +228,11 @@ class TestInvestigationWorkflowZeroCodeChanges:
         test_email = "test@example.com"
 
         # Run with Snowflake
-        os.environ['DATABASE_PROVIDER'] = 'snowflake'
+        os.environ["DATABASE_PROVIDER"] = "snowflake"
         sf_results = run_investigation(test_email)
 
         # Run with PostgreSQL
-        os.environ['DATABASE_PROVIDER'] = 'postgresql'
+        os.environ["DATABASE_PROVIDER"] = "postgresql"
         pg_results = run_investigation(test_email)
 
         # Both should return valid results (may be empty if no test data)

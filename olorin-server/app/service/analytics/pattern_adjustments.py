@@ -13,17 +13,17 @@ Week 6 Phase 2 implementation.
 """
 
 import logging
-from typing import Dict, Any, List, Optional
+from typing import Any, Dict, List, Optional
 
+from app.service.analytics.pattern_detectors_behavioral import (
+    detect_cross_entity_linking,
+    detect_new_device_high_amount,
+    detect_time_of_day_anomaly,
+)
 from app.service.analytics.pattern_detectors_transaction import (
+    detect_bin_attack,
     detect_card_testing,
     detect_geo_impossibility,
-    detect_bin_attack
-)
-from app.service.analytics.pattern_detectors_behavioral import (
-    detect_time_of_day_anomaly,
-    detect_new_device_high_amount,
-    detect_cross_entity_linking
 )
 
 logger = logging.getLogger(__name__)
@@ -44,7 +44,7 @@ class PatternAdjustmentEngine:
         self,
         transaction: Dict[str, Any],
         historical_transactions: Optional[List[Dict[str, Any]]] = None,
-        advanced_features: Optional[Dict[str, Any]] = None
+        advanced_features: Optional[Dict[str, Any]] = None,
     ) -> List[Dict[str, Any]]:
         """
         Detect all pattern types for a transaction.
@@ -65,7 +65,9 @@ class PatternAdjustmentEngine:
             patterns.append(card_testing)
 
         # Pattern 2: Geo-Impossibility
-        geo_impossibility = detect_geo_impossibility(transaction, historical_transactions)
+        geo_impossibility = detect_geo_impossibility(
+            transaction, historical_transactions
+        )
         if geo_impossibility:
             patterns.append(geo_impossibility)
 
@@ -81,17 +83,14 @@ class PatternAdjustmentEngine:
 
         # Pattern 5: New Device + High Amount
         new_device_high = detect_new_device_high_amount(
-            transaction,
-            historical_transactions
+            transaction, historical_transactions
         )
         if new_device_high:
             patterns.append(new_device_high)
 
         # Pattern 6: Cross-Entity Linking
         cross_entity = detect_cross_entity_linking(
-            transaction,
-            historical_transactions,
-            advanced_features
+            transaction, historical_transactions, advanced_features
         )
         if cross_entity:
             patterns.append(cross_entity)
@@ -107,9 +106,7 @@ class PatternAdjustmentEngine:
         return patterns
 
     def apply_pattern_adjustments(
-        self,
-        base_score: float,
-        patterns: List[Dict[str, Any]]
+        self, base_score: float, patterns: List[Dict[str, Any]]
     ) -> tuple[float, List[str]]:
         """
         Apply pattern-based risk adjustments to a base score.

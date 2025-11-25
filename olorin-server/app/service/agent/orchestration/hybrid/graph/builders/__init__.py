@@ -5,14 +5,9 @@ This package contains all the foundational components needed to build
 the hybrid intelligence investigation graph.
 """
 
-from .graph_foundation import GraphFoundation
-from .node_factory import NodeFactory
 from .edge_configurator import EdgeConfigurator
+from .graph_foundation import GraphFoundation
 from .memory_provider import MemoryProvider
+from .node_factory import NodeFactory
 
-__all__ = [
-    "GraphFoundation",
-    "NodeFactory", 
-    "EdgeConfigurator",
-    "MemoryProvider"
-]
+__all__ = ["GraphFoundation", "NodeFactory", "EdgeConfigurator", "MemoryProvider"]

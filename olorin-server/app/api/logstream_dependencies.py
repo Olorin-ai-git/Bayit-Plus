@@ -12,14 +12,14 @@ Spec: /specs/021-live-merged-logstream/api-contracts.md
 
 from typing import List
 
-from app.service.logging import get_bridge_logger
-from app.service.log_providers.aggregator import LogAggregatorService
-from app.service.log_providers.frontend_provider import FrontendLogProvider
-from app.service.log_providers.backend_provider import BackendLogProvider
-from app.service.log_providers.frontend_log_buffer import FrontendLogBuffer
-from app.service.log_providers.backend_log_collector import BackendLogCollector
-from app.service.log_providers.base import LogProvider
 from app.config.logstream_config import LogStreamConfig
+from app.service.log_providers.aggregator import LogAggregatorService
+from app.service.log_providers.backend_log_collector import BackendLogCollector
+from app.service.log_providers.backend_provider import BackendLogProvider
+from app.service.log_providers.base import LogProvider
+from app.service.log_providers.frontend_log_buffer import FrontendLogBuffer
+from app.service.log_providers.frontend_provider import FrontendLogProvider
+from app.service.logging import get_bridge_logger
 
 logger = get_bridge_logger(__name__)
 
@@ -65,13 +65,13 @@ def create_log_providers(
     frontend = FrontendLogProvider(
         investigation_id=investigation_id,
         buffer=_frontend_buffer,
-        timeout_ms=config.provider.provider_timeout_ms
+        timeout_ms=config.provider.provider_timeout_ms,
     )
 
     backend = BackendLogProvider(
         investigation_id=investigation_id,
         collector=_backend_collector,
-        timeout_ms=config.provider.provider_timeout_ms
+        timeout_ms=config.provider.provider_timeout_ms,
     )
 
     return [frontend, backend]

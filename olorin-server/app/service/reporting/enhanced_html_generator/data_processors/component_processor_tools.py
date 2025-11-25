@@ -5,8 +5,8 @@ Tools Usage Processor for Enhanced HTML Report Generator.
 Processes tools usage analysis from investigation activities.
 """
 
-from typing import Dict, List, Any
 from collections import Counter
+from typing import Any, Dict, List
 
 
 class ToolsUsageProcessor:

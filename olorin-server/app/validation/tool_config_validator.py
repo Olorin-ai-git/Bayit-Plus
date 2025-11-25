@@ -11,7 +11,8 @@ SYSTEM MANDATE Compliance:
 - Type-safe: Parameter validation with clear error messages
 """
 
-from typing import Dict, Any, Set
+from typing import Any, Dict, Set
+
 from fastapi import HTTPException, status
 
 
@@ -70,7 +71,7 @@ class ToolConfigValidator:
                 detail=(
                     f"Unknown tool ID: '{tool_id}'. "
                     f"Available tools: {available_list}"
-                )
+                ),
             )
 
     def _validate_parameters(self, tool_id: str, parameters: Dict[str, Any]) -> None:
@@ -106,5 +107,5 @@ class ToolConfigValidator:
                     detail=(
                         f"Unknown parameter '{param_name}' for tool '{tool_id}'. "
                         f"Optional parameters: {', '.join(optional_params) if optional_params else 'none'}"
-                    )
+                    ),
                 )

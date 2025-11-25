@@ -3,18 +3,18 @@ Feature Flags System for Hybrid Intelligence Migration
 
 Components:
 - FlagManager: Core feature flag management
-- EnvironmentLoader: Environment variable overrides  
+- EnvironmentLoader: Environment variable overrides
 - RolloutCalculator: Percentage-based rollout logic
 """
 
-from .flag_manager import FeatureFlags, DeploymentMode, GraphType
 from .environment_loader import EnvironmentLoader
+from .flag_manager import DeploymentMode, FeatureFlags, GraphType
 from .rollout_calculator import RolloutCalculator
 
 __all__ = [
     "FeatureFlags",
-    "DeploymentMode", 
+    "DeploymentMode",
     "GraphType",
     "EnvironmentLoader",
-    "RolloutCalculator"
+    "RolloutCalculator",
 ]

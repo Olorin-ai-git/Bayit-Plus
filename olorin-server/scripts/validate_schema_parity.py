@@ -29,10 +29,10 @@ import argparse
 import json
 import os
 import sys
-from typing import Dict, Any
+from typing import Any, Dict
 
 # Add parent directory to path for imports
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
 from app.service.agent.tools.database_tool.database_factory import get_database_provider
 from app.service.agent.tools.database_tool.schema_validator import SchemaValidator
@@ -44,31 +44,31 @@ logger = get_bridge_logger(__name__)
 def format_validation_result(result, verbose: bool = False) -> Dict[str, Any]:
     """Format validation result for output."""
     output = {
-        'is_valid': result.is_valid,
-        'summary': result.summary,
-        'column_count_snowflake': result.column_count_snowflake,
-        'column_count_postgresql': result.column_count_postgresql,
-        'differences_count': len(result.differences),
-        'missing_columns_count': len(result.missing_columns),
-        'type_mismatches_count': len(result.type_mismatches),
-        'nullability_mismatches_count': len(result.nullability_mismatches)
+        "is_valid": result.is_valid,
+        "summary": result.summary,
+        "column_count_snowflake": result.column_count_snowflake,
+        "column_count_postgresql": result.column_count_postgresql,
+        "differences_count": len(result.differences),
+        "missing_columns_count": len(result.missing_columns),
+        "type_mismatches_count": len(result.type_mismatches),
+        "nullability_mismatches_count": len(result.nullability_mismatches),
     }
 
     if verbose or not result.is_valid:
-        output['missing_columns'] = result.missing_columns
-        output['type_mismatches'] = [
+        output["missing_columns"] = result.missing_columns
+        output["type_mismatches"] = [
             {
-                'column': tm.column_name,
-                'snowflake_type': tm.snowflake_type,
-                'postgresql_type': tm.postgresql_type
+                "column": tm.column_name,
+                "snowflake_type": tm.snowflake_type,
+                "postgresql_type": tm.postgresql_type,
             }
             for tm in result.type_mismatches
         ]
-        output['nullability_mismatches'] = [
+        output["nullability_mismatches"] = [
             {
-                'column': nm.column_name,
-                'snowflake_nullable': nm.snowflake_value,
-                'postgresql_nullable': nm.postgresql_value
+                "column": nm.column_name,
+                "snowflake_nullable": nm.snowflake_value,
+                "postgresql_nullable": nm.postgresql_value,
             }
             for nm in result.nullability_mismatches
         ]
@@ -117,33 +117,29 @@ def print_text_report(result, verbose: bool = False):
 def main():
     """Main entry point for schema validation script."""
     parser = argparse.ArgumentParser(
-        description='Validate schema parity between Snowflake and PostgreSQL',
-        formatter_class=argparse.RawDescriptionHelpFormatter
+        description="Validate schema parity between Snowflake and PostgreSQL",
+        formatter_class=argparse.RawDescriptionHelpFormatter,
     )
 
     parser.add_argument(
-        '--provider',
-        default='postgresql',
-        choices=['postgresql'],
-        help='Database provider to validate against Snowflake (default: postgresql)'
+        "--provider",
+        default="postgresql",
+        choices=["postgresql"],
+        help="Database provider to validate against Snowflake (default: postgresql)",
     )
 
     parser.add_argument(
-        '--fail-fast',
-        action='store_true',
-        help='Exit immediately on first difference found'
+        "--fail-fast",
+        action="store_true",
+        help="Exit immediately on first difference found",
     )
 
     parser.add_argument(
-        '--verbose',
-        action='store_true',
-        help='Show detailed schema information'
+        "--verbose", action="store_true", help="Show detailed schema information"
     )
 
     parser.add_argument(
-        '--json',
-        action='store_true',
-        help='Output results in JSON format'
+        "--json", action="store_true", help="Output results in JSON format"
     )
 
     args = parser.parse_args()
@@ -155,7 +151,7 @@ def main():
 
         # Get Snowflake provider (source of truth)
         logger.info("🔌 Connecting to Snowflake...")
-        snowflake_provider = get_database_provider('snowflake')
+        snowflake_provider = get_database_provider("snowflake")
         snowflake_provider.connect()
 
         # Get comparison provider
@@ -190,7 +186,7 @@ def main():
     except ValueError as e:
         logger.error(f"❌ Configuration error: {e}")
         if args.json:
-            print(json.dumps({'error': 'configuration_error', 'message': str(e)}))
+            print(json.dumps({"error": "configuration_error", "message": str(e)}))
         else:
             print(f"\n❌ CONFIGURATION ERROR: {e}\n", file=sys.stderr)
         sys.exit(2)
@@ -198,7 +194,7 @@ def main():
     except ConnectionError as e:
         logger.error(f"❌ Database connection error: {e}")
         if args.json:
-            print(json.dumps({'error': 'connection_error', 'message': str(e)}))
+            print(json.dumps({"error": "connection_error", "message": str(e)}))
         else:
             print(f"\n❌ CONNECTION ERROR: {e}\n", file=sys.stderr)
         sys.exit(2)
@@ -206,11 +202,11 @@ def main():
     except Exception as e:
         logger.error(f"❌ Unexpected error: {e}")
         if args.json:
-            print(json.dumps({'error': 'unexpected_error', 'message': str(e)}))
+            print(json.dumps({"error": "unexpected_error", "message": str(e)}))
         else:
             print(f"\n❌ UNEXPECTED ERROR: {e}\n", file=sys.stderr)
         sys.exit(2)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

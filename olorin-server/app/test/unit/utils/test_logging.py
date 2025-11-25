@@ -8,7 +8,10 @@ import pytest
 
 yaml = pytest.importorskip("yaml")
 
-from app.service.logging.unified_logging_core import get_unified_logger, configure_unified_logging
+from app.service.logging.unified_logging_core import (
+    configure_unified_logging,
+    get_unified_logger,
+)
 
 
 def test_get_logger_returns_logger_instance():

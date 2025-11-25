@@ -10,6 +10,7 @@ Constitutional Compliance:
 """
 
 from typing import List
+
 from .schema_models import ColumnInfo, SchemaInfo
 
 
@@ -39,14 +40,14 @@ class SchemaIntrospector:
         """
         database_type = self._detect_database_type(provider)
 
-        if database_type == 'snowflake':
+        if database_type == "snowflake":
             return self._introspect_snowflake(provider)
         else:
             return self._introspect_postgresql(provider)
 
     def _detect_database_type(self, provider) -> str:
         """Detect database type from provider class name."""
-        return 'snowflake' if 'Snowflake' in type(provider).__name__ else 'postgresql'
+        return "snowflake" if "Snowflake" in type(provider).__name__ else "postgresql"
 
     def _introspect_snowflake(self, provider) -> SchemaInfo:
         """Introspect Snowflake schema."""
@@ -62,17 +63,15 @@ class SchemaIntrospector:
 
         for row in results:
             col = ColumnInfo(
-                name=row['COLUMN_NAME'],
-                data_type=row['DATA_TYPE'],
-                is_nullable=(row['IS_NULLABLE'] == 'YES'),
-                max_length=row.get('CHARACTER_MAXIMUM_LENGTH')
+                name=row["COLUMN_NAME"],
+                data_type=row["DATA_TYPE"],
+                is_nullable=(row["IS_NULLABLE"] == "YES"),
+                max_length=row.get("CHARACTER_MAXIMUM_LENGTH"),
             )
             columns.append(col)
 
         return SchemaInfo(
-            table_name=self.snowflake_table,
-            columns=columns,
-            database_type='snowflake'
+            table_name=self.snowflake_table, columns=columns, database_type="snowflake"
         )
 
     def _introspect_postgresql(self, provider) -> SchemaInfo:
@@ -89,15 +88,15 @@ class SchemaIntrospector:
 
         for row in results:
             col = ColumnInfo(
-                name=row['column_name'],
-                data_type=row['data_type'],
-                is_nullable=(row['is_nullable'] == True or row['is_nullable'] == 'YES'),
-                max_length=row.get('character_maximum_length')
+                name=row["column_name"],
+                data_type=row["data_type"],
+                is_nullable=(row["is_nullable"] == True or row["is_nullable"] == "YES"),
+                max_length=row.get("character_maximum_length"),
             )
             columns.append(col)
 
         return SchemaInfo(
             table_name=self.postgresql_table,
             columns=columns,
-            database_type='postgresql'
+            database_type="postgresql",
         )

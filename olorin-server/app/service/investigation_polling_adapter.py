@@ -11,18 +11,20 @@ SYSTEM MANDATE Compliance:
 - Complete implementation: No placeholders or TODOs
 """
 
-from typing import Dict, List, Any, Optional
-from datetime import datetime
 import json
 from contextlib import contextmanager
+from datetime import datetime
+from typing import Any, Dict, List, Optional
+
 from sqlalchemy.exc import TimeoutError
+
 from app.models.investigation_state import InvestigationState
 from app.schemas.investigation_status import (
-    InvestigationStatusSchema,
     AgentStatusSchema,
-    ToolExecutionSchema,
+    ErrorDetailSchema,
+    InvestigationStatusSchema,
     LogEntrySchema,
-    ErrorDetailSchema
+    ToolExecutionSchema,
 )
 
 
@@ -36,6 +38,7 @@ class InvestigationPollingAdapter:
     def __init__(self):
         """Initialize adapter with timeout configuration."""
         from config.hybrid_graph_config import get_hybrid_graph_config
+
         self.config = get_hybrid_graph_config()
 
     @contextmanager
@@ -48,7 +51,9 @@ class InvestigationPollingAdapter:
                 f"Database query exceeded timeout limit ({timeout_ms}ms): {str(e)}"
             ) from e
 
-    def transform_to_status(self, investigation: InvestigationState) -> InvestigationStatusSchema:
+    def transform_to_status(
+        self, investigation: InvestigationState
+    ) -> InvestigationStatusSchema:
         """
         Transform InvestigationState to InvestigationStatusSchema.
 
@@ -70,10 +75,12 @@ class InvestigationPollingAdapter:
             agent_status=self._extract_agent_status(progress_data),
             tool_executions=self._extract_tool_executions(progress_data),
             logs=self._extract_log_entries(progress_data),
-            error=self._extract_error_details(investigation)
+            error=self._extract_error_details(investigation),
         )
 
-    def _estimate_completion_time(self, investigation: InvestigationState) -> Optional[datetime]:
+    def _estimate_completion_time(
+        self, investigation: InvestigationState
+    ) -> Optional[datetime]:
         """Estimate completion time based on progress and elapsed time."""
         if investigation.status in ("completed", "failed", "cancelled"):
             return None
@@ -87,6 +94,7 @@ class InvestigationPollingAdapter:
         remaining = estimated_total - elapsed
 
         from datetime import timedelta
+
         return datetime.utcnow() + timedelta(seconds=remaining)
 
     def _extract_risk_score(self, investigation: InvestigationState) -> Optional[float]:
@@ -105,7 +113,9 @@ class InvestigationPollingAdapter:
 
         return None
 
-    def _extract_agent_status(self, progress_data: Dict[str, Any]) -> Dict[str, AgentStatusSchema]:
+    def _extract_agent_status(
+        self, progress_data: Dict[str, Any]
+    ) -> Dict[str, AgentStatusSchema]:
         """Extract agent execution status from progress data."""
         agent_status_dict = {}
         agents_data = progress_data.get("agents", {})
@@ -117,12 +127,14 @@ class InvestigationPollingAdapter:
                 progress_percentage=float(agent_info.get("progress_percentage", 0.0)),
                 tools_used=int(agent_info.get("tools_used", 0)),
                 findings_count=int(agent_info.get("findings_count", 0)),
-                execution_time_ms=agent_info.get("execution_time_ms")
+                execution_time_ms=agent_info.get("execution_time_ms"),
             )
 
         return agent_status_dict
 
-    def _extract_tool_executions(self, progress_data: Dict[str, Any]) -> List[ToolExecutionSchema]:
+    def _extract_tool_executions(
+        self, progress_data: Dict[str, Any]
+    ) -> List[ToolExecutionSchema]:
         """Extract tool execution details from progress data."""
         tool_executions = []
         tools_data = progress_data.get("tool_executions", [])
@@ -131,20 +143,24 @@ class InvestigationPollingAdapter:
             started_at = self._parse_datetime(tool_info.get("started_at"))
             completed_at = self._parse_datetime(tool_info.get("completed_at"))
 
-            tool_executions.append(ToolExecutionSchema(
-                tool_id=tool_info.get("tool_id", "unknown"),
-                tool_name=tool_info.get("tool_name", "Unknown Tool"),
-                status=tool_info.get("status", "pending"),
-                started_at=started_at or datetime.utcnow(),
-                completed_at=completed_at,
-                duration_ms=tool_info.get("duration_ms"),
-                output_summary=tool_info.get("output_summary", ""),
-                error_message=tool_info.get("error_message")
-            ))
+            tool_executions.append(
+                ToolExecutionSchema(
+                    tool_id=tool_info.get("tool_id", "unknown"),
+                    tool_name=tool_info.get("tool_name", "Unknown Tool"),
+                    status=tool_info.get("status", "pending"),
+                    started_at=started_at or datetime.utcnow(),
+                    completed_at=completed_at,
+                    duration_ms=tool_info.get("duration_ms"),
+                    output_summary=tool_info.get("output_summary", ""),
+                    error_message=tool_info.get("error_message"),
+                )
+            )
 
         return tool_executions
 
-    def _extract_log_entries(self, progress_data: Dict[str, Any]) -> List[LogEntrySchema]:
+    def _extract_log_entries(
+        self, progress_data: Dict[str, Any]
+    ) -> List[LogEntrySchema]:
         """Extract log entries from progress data."""
         log_entries = []
         logs_data = progress_data.get("logs", [])
@@ -152,17 +168,21 @@ class InvestigationPollingAdapter:
         for log_info in logs_data:
             timestamp = self._parse_datetime(log_info.get("timestamp"))
 
-            log_entries.append(LogEntrySchema(
-                timestamp=timestamp or datetime.utcnow(),
-                severity=log_info.get("severity", "info"),
-                source=log_info.get("source", "system"),
-                message=log_info.get("message", ""),
-                metadata=log_info.get("metadata", {})
-            ))
+            log_entries.append(
+                LogEntrySchema(
+                    timestamp=timestamp or datetime.utcnow(),
+                    severity=log_info.get("severity", "info"),
+                    source=log_info.get("source", "system"),
+                    message=log_info.get("message", ""),
+                    metadata=log_info.get("metadata", {}),
+                )
+            )
 
         return log_entries
 
-    def _extract_error_details(self, investigation: InvestigationState) -> Optional[ErrorDetailSchema]:
+    def _extract_error_details(
+        self, investigation: InvestigationState
+    ) -> Optional[ErrorDetailSchema]:
         """Extract error details if investigation failed."""
         if investigation.status not in ("failed", "error"):
             return None
@@ -175,14 +195,14 @@ class InvestigationPollingAdapter:
                 error_code="UNKNOWN_ERROR",
                 error_message="Investigation failed with unknown error",
                 error_details=None,
-                recovery_suggestions=["Retry the investigation", "Check system logs"]
+                recovery_suggestions=["Retry the investigation", "Check system logs"],
             )
 
         return ErrorDetailSchema(
             error_code=error_info.get("error_code", "UNKNOWN_ERROR"),
             error_message=error_info.get("error_message", "Unknown error occurred"),
             error_details=error_info.get("error_details"),
-            recovery_suggestions=error_info.get("recovery_suggestions", [])
+            recovery_suggestions=error_info.get("recovery_suggestions", []),
         )
 
     def _parse_datetime(self, date_str: Optional[str]) -> Optional[datetime]:

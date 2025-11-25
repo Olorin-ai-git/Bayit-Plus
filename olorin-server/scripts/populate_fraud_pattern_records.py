@@ -19,18 +19,18 @@ Usage:
 """
 
 import asyncio
-import sys
+import json
 import random
+import sys
 from datetime import datetime, timedelta
 from pathlib import Path
 from uuid import uuid4
-import json
 
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
-from scripts.populate_all_333_columns import ComprehensiveDataGenerator
 from app.service.config_loader import get_config_loader
 from app.service.logging import get_bridge_logger
+from scripts.populate_all_333_columns import ComprehensiveDataGenerator
 
 logger = get_bridge_logger(__name__)
 
@@ -45,10 +45,10 @@ class FraudPatternGenerator:
         self.fraud_ips = [
             "185.220.101.42",  # Russia - used in 50+ transactions
             "185.220.101.43",  # Russia - velocity attack IP
-            "117.22.69.113",   # China - card testing IP
-            "117.22.69.114",   # China - account takeover IP
-            "41.17.184.175",   # Nigeria - BIN attack IP
-            "41.17.184.176",   # Nigeria - shipping fraud IP
+            "117.22.69.113",  # China - card testing IP
+            "117.22.69.114",  # China - account takeover IP
+            "41.17.184.175",  # Nigeria - BIN attack IP
+            "41.17.184.176",  # Nigeria - shipping fraud IP
             "123.251.74.248",  # Vietnam - gift card fraud IP
             "123.251.74.249",  # Vietnam - velocity pattern
         ]
@@ -56,8 +56,18 @@ class FraudPatternGenerator:
         # Compromised card details (reused across users)
         self.stolen_cards = [
             {"bin": "424242", "last_four": "4242", "brand": "Visa", "issuer": "Chase"},
-            {"bin": "555555", "last_four": "5555", "brand": "Mastercard", "issuer": "Citi"},
-            {"bin": "378282", "last_four": "1007", "brand": "Amex", "issuer": "American Express"},
+            {
+                "bin": "555555",
+                "last_four": "5555",
+                "brand": "Mastercard",
+                "issuer": "Citi",
+            },
+            {
+                "bin": "378282",
+                "last_four": "1007",
+                "brand": "Amex",
+                "issuer": "American Express",
+            },
         ]
 
         # Suspicious email domains
@@ -77,9 +87,27 @@ class FraudPatternGenerator:
 
         # Shipping addresses for fraud
         self.drop_addresses = [
-            {"street": "123 Abandoned Building", "city": "New York", "state": "NY", "zip": "10001", "country": "US"},
-            {"street": "456 Vacant Lot", "city": "Los Angeles", "state": "CA", "zip": "90001", "country": "US"},
-            {"street": "789 Empty Office", "city": "Miami", "state": "FL", "zip": "33101", "country": "US"},
+            {
+                "street": "123 Abandoned Building",
+                "city": "New York",
+                "state": "NY",
+                "zip": "10001",
+                "country": "US",
+            },
+            {
+                "street": "456 Vacant Lot",
+                "city": "Los Angeles",
+                "state": "CA",
+                "zip": "90001",
+                "country": "US",
+            },
+            {
+                "street": "789 Empty Office",
+                "city": "Miami",
+                "state": "FL",
+                "zip": "33101",
+                "country": "US",
+            },
         ]
 
     def generate_fraud_pattern_record(self, record_num: int, base_time: datetime):
@@ -92,10 +120,7 @@ class FraudPatternGenerator:
         is_fraud = record_num % 3 != 0  # 66% fraud rate
         is_high_risk = is_fraud or (record_num % 5 == 0)
 
-        context = {
-            'is_high_risk': is_high_risk,
-            'is_fraud': is_fraud
-        }
+        context = {"is_high_risk": is_high_risk, "is_fraud": is_fraud}
 
         # Generate base record
         record = {}
@@ -168,78 +193,116 @@ class FraudPatternGenerator:
         tx_datetime = base_time - timedelta(hours=record_num % 48)  # Spread over 2 days
 
         # Core fields
-        record['tx_id_key'] = tx_id
-        record['unique_user_id'] = user_id if 'user_id' in locals() else str(uuid4())
-        record['tx_datetime'] = tx_datetime
-        record['email'] = email if 'email' in locals() else f"user{record_num}@fraud-example.com"
+        record["tx_id_key"] = tx_id
+        record["unique_user_id"] = user_id if "user_id" in locals() else str(uuid4())
+        record["tx_datetime"] = tx_datetime
+        record["email"] = (
+            email if "email" in locals() else f"user{record_num}@fraud-example.com"
+        )
 
         # Names
-        first_names = ["John", "Jane", "Bob", "Alice", "Charlie", "Diana", "Frank", "Grace"]
-        last_names = ["Smith", "Jones", "Brown", "Wilson", "Taylor", "Anderson", "Thomas", "Moore"]
-        record['first_name'] = random.choice(first_names)
-        record['last_name'] = random.choice(last_names)
-        record['phone_number'] = f"+1-555-{random.randint(1000, 9999):04d}"
+        first_names = [
+            "John",
+            "Jane",
+            "Bob",
+            "Alice",
+            "Charlie",
+            "Diana",
+            "Frank",
+            "Grace",
+        ]
+        last_names = [
+            "Smith",
+            "Jones",
+            "Brown",
+            "Wilson",
+            "Taylor",
+            "Anderson",
+            "Thomas",
+            "Moore",
+        ]
+        record["first_name"] = random.choice(first_names)
+        record["last_name"] = random.choice(last_names)
+        record["phone_number"] = f"+1-555-{random.randint(1000, 9999):04d}"
 
         # IP and network
-        record['ip'] = ip_address if 'ip_address' in locals() else random.choice(self.fraud_ips)
-        record['ip_country_code'] = "RU" if record['ip'].startswith("185") else "CN" if record['ip'].startswith("117") else "NG"
+        record["ip"] = (
+            ip_address if "ip_address" in locals() else random.choice(self.fraud_ips)
+        )
+        record["ip_country_code"] = (
+            "RU"
+            if record["ip"].startswith("185")
+            else "CN" if record["ip"].startswith("117") else "NG"
+        )
 
         # Device
-        if 'fraud_device' in locals():
-            record['device_id'] = fraud_device['id']
-            record['device_model'] = fraud_device['model']
-            record['device_os_version'] = fraud_device['os']
+        if "fraud_device" in locals():
+            record["device_id"] = fraud_device["id"]
+            record["device_model"] = fraud_device["model"]
+            record["device_os_version"] = fraud_device["os"]
         else:
-            record['device_id'] = str(uuid4())
-            record['device_model'] = random.choice(["iPhone 13 Pro", "Samsung Galaxy S21", "Google Pixel 6"])
-            record['device_os_version'] = random.choice(["iOS 16.5", "Android 12", "Android 13"])
+            record["device_id"] = str(uuid4())
+            record["device_model"] = random.choice(
+                ["iPhone 13 Pro", "Samsung Galaxy S21", "Google Pixel 6"]
+            )
+            record["device_os_version"] = random.choice(
+                ["iOS 16.5", "Android 12", "Android 13"]
+            )
 
-        record['device_type'] = "mobile"
-        record['user_agent'] = "Mozilla/5.0 (iPhone; CPU iPhone OS 16_5 like Mac OS X)"
+        record["device_type"] = "mobile"
+        record["user_agent"] = "Mozilla/5.0 (iPhone; CPU iPhone OS 16_5 like Mac OS X)"
 
         # Payment
-        if 'stolen_card' in locals():
-            record['bin'] = stolen_card['bin']
-            record['last_four'] = stolen_card['last_four']
-            record['card_brand'] = stolen_card['brand']
-            record['card_issuer'] = stolen_card['issuer']
+        if "stolen_card" in locals():
+            record["bin"] = stolen_card["bin"]
+            record["last_four"] = stolen_card["last_four"]
+            record["card_brand"] = stolen_card["brand"]
+            record["card_issuer"] = stolen_card["issuer"]
         else:
-            record['bin'] = bin_number if 'bin_number' in locals() else f"{random.randint(400000, 499999):06d}"
-            record['last_four'] = f"{random.randint(1000, 9999):04d}"
-            record['card_brand'] = random.choice(["Visa", "Mastercard", "Amex"])
-            record['card_issuer'] = random.choice(["Chase", "Citi", "Wells Fargo"])
+            record["bin"] = (
+                bin_number
+                if "bin_number" in locals()
+                else f"{random.randint(400000, 499999):06d}"
+            )
+            record["last_four"] = f"{random.randint(1000, 9999):04d}"
+            record["card_brand"] = random.choice(["Visa", "Mastercard", "Amex"])
+            record["card_issuer"] = random.choice(["Chase", "Citi", "Wells Fargo"])
 
-        record['payment_method'] = "credit_card"
-        record['processor'] = "Stripe"
-        record['card_holder_name'] = f"{record['first_name']} {record['last_name']}"
-        record['paid_amount_value_in_currency'] = amount if 'amount' in locals() else round(random.uniform(50, 1500), 2)
+        record["payment_method"] = "credit_card"
+        record["processor"] = "Stripe"
+        record["card_holder_name"] = f"{record['first_name']} {record['last_name']}"
+        record["paid_amount_value_in_currency"] = (
+            amount if "amount" in locals() else round(random.uniform(50, 1500), 2)
+        )
 
         # Risk scores
         if is_fraud:
-            record['model_score'] = round(random.uniform(0.75, 0.99), 2)
-            record['maxmind_risk_score'] = round(random.uniform(0.70, 0.95), 2)
-            record['is_fraud_tx'] = 1
-            record['nsure_last_decision'] = random.choice(["REJECT", "REVIEW"])
-            record['is_failed_tx'] = 1
-            record['is_processor_rejected_due_to_fraud'] = random.choice([0, 1])
+            record["model_score"] = round(random.uniform(0.75, 0.99), 2)
+            record["maxmind_risk_score"] = round(random.uniform(0.70, 0.95), 2)
+            record["is_fraud_tx"] = 1
+            record["nsure_last_decision"] = random.choice(["REJECT", "REVIEW"])
+            record["is_failed_tx"] = 1
+            record["is_processor_rejected_due_to_fraud"] = random.choice([0, 1])
         else:
-            record['model_score'] = round(random.uniform(0.10, 0.50), 2)
-            record['maxmind_risk_score'] = round(random.uniform(0.05, 0.45), 2)
-            record['is_fraud_tx'] = 0
-            record['nsure_last_decision'] = "APPROVE"
-            record['is_failed_tx'] = 0
-            record['is_processor_rejected_due_to_fraud'] = 0
+            record["model_score"] = round(random.uniform(0.10, 0.50), 2)
+            record["maxmind_risk_score"] = round(random.uniform(0.05, 0.45), 2)
+            record["is_fraud_tx"] = 0
+            record["nsure_last_decision"] = "APPROVE"
+            record["is_failed_tx"] = 0
+            record["is_processor_rejected_due_to_fraud"] = 0
 
         # Addresses with geographic mismatches for fraud
-        if 'drop_address' in locals():
+        if "drop_address" in locals():
             shipping = drop_address
         else:
             shipping = {
                 "street": f"{random.randint(100, 9999)} Main St",
-                "city": random.choice(["New York", "Los Angeles", "Chicago", "Houston"]),
+                "city": random.choice(
+                    ["New York", "Los Angeles", "Chicago", "Houston"]
+                ),
                 "state": random.choice(["NY", "CA", "IL", "TX"]),
                 "zip": f"{random.randint(10000, 99999):05d}",
-                "country": "US"
+                "country": "US",
             }
 
         if is_fraud and pattern_type == 5:
@@ -249,34 +312,40 @@ class FraudPatternGenerator:
                 "city": "Moscow",
                 "state": "Moscow Oblast",
                 "zip": "101000",
-                "country": "RU"
+                "country": "RU",
             }
         else:
             billing = shipping.copy()
 
-        record['billing_address'] = json.dumps(billing)
+        record["billing_address"] = json.dumps(billing)
 
         # Velocity indicators (higher for fraud)
         if is_fraud:
-            record['user_tx_count_last_24h'] = random.randint(5, 25)
-            record['ip_tx_count_last_24h'] = random.randint(10, 50)
-            record['device_tx_count_last_24h'] = random.randint(8, 35)
+            record["user_tx_count_last_24h"] = random.randint(5, 25)
+            record["ip_tx_count_last_24h"] = random.randint(10, 50)
+            record["device_tx_count_last_24h"] = random.randint(8, 35)
         else:
-            record['user_tx_count_last_24h'] = random.randint(0, 3)
-            record['ip_tx_count_last_24h'] = random.randint(1, 5)
-            record['device_tx_count_last_24h'] = random.randint(0, 4)
+            record["user_tx_count_last_24h"] = random.randint(0, 3)
+            record["ip_tx_count_last_24h"] = random.randint(1, 5)
+            record["device_tx_count_last_24h"] = random.randint(0, 4)
 
         # Flags
-        record['is_sent_for_nsure_review'] = 1 if is_fraud else 0
-        record['is_anonymous'] = 0
-        record['is_gifting'] = 1 if pattern_type == 6 else 0
-        record['is_delivery_method_email_only'] = 1 if pattern_type == 6 else 0
-        record['count_triggered_rules'] = random.randint(5, 12) if is_fraud else random.randint(0, 3)
-        record['is_reviewed'] = 1
-        record['is_suspicious_amount'] = 1 if record['paid_amount_value_in_currency'] > 500 else 0
-        record['fipp_is_incognito'] = True if is_fraud and random.random() > 0.5 else False
-        record['is_user_first_tx_event'] = 1 if pattern_type == 3 else 0
-        record['is_digital'] = 1 if pattern_type == 6 else 0
+        record["is_sent_for_nsure_review"] = 1 if is_fraud else 0
+        record["is_anonymous"] = 0
+        record["is_gifting"] = 1 if pattern_type == 6 else 0
+        record["is_delivery_method_email_only"] = 1 if pattern_type == 6 else 0
+        record["count_triggered_rules"] = (
+            random.randint(5, 12) if is_fraud else random.randint(0, 3)
+        )
+        record["is_reviewed"] = 1
+        record["is_suspicious_amount"] = (
+            1 if record["paid_amount_value_in_currency"] > 500 else 0
+        )
+        record["fipp_is_incognito"] = (
+            True if is_fraud and random.random() > 0.5 else False
+        )
+        record["is_user_first_tx_event"] = 1 if pattern_type == 3 else 0
+        record["is_digital"] = 1 if pattern_type == 6 else 0
 
         return record, context
 
@@ -298,12 +367,14 @@ async def populate_fraud_patterns():
         conn = await asyncpg.connect(conn_str)
         logger.info(f"✅ Connected to PostgreSQL: {pg_config['database']}")
 
-        schema = pg_config.get('schema', 'public')
-        table = pg_config.get('transactions_table', 'transactions_enriched')
+        schema = pg_config.get("schema", "public")
+        table = pg_config.get("transactions_table", "transactions_enriched")
         full_table = f"{schema}.{table}"
 
         # Get current count
-        current_count = await conn.fetchrow(f"SELECT COUNT(*) as count FROM {full_table}")
+        current_count = await conn.fetchrow(
+            f"SELECT COUNT(*) as count FROM {full_table}"
+        )
         logger.info(f"📊 Current records: {current_count['count']}")
 
         # Get all columns with types
@@ -331,19 +402,23 @@ async def populate_fraud_patterns():
             async with conn.transaction():
                 for i in range(batch_start, batch_end):
                     # Generate pattern-based record
-                    record, context = pattern_gen.generate_fraud_pattern_record(i, base_time)
+                    record, context = pattern_gen.generate_fraud_pattern_record(
+                        i, base_time
+                    )
 
                     # Fill remaining columns with base generator
                     for col_info in columns_info:
-                        col_name = col_info['column_name']
+                        col_name = col_info["column_name"]
                         if col_name not in record:
-                            value = base_gen.generate_value(col_name, col_info['data_type'], context)
+                            value = base_gen.generate_value(
+                                col_name, col_info["data_type"], context
+                            )
                             if value is not None:
                                 record[col_name] = value
 
                     # Insert record
-                    column_names = ', '.join(record.keys())
-                    placeholders = ', '.join([f'${j+1}' for j in range(len(record))])
+                    column_names = ", ".join(record.keys())
+                    placeholders = ", ".join([f"${j+1}" for j in range(len(record))])
                     values = list(record.values())
 
                     insert_sql = f"""
@@ -356,13 +431,17 @@ async def populate_fraud_patterns():
 
             # Progress logging
             progress_pct = (batch_end * 100) // 1999
-            logger.info(f"Progress: {batch_end}/1999 ({progress_pct}%) - Fraud patterns inserted")
+            logger.info(
+                f"Progress: {batch_end}/1999 ({progress_pct}%) - Fraud patterns inserted"
+            )
 
         # Final verification
         final_count = await conn.fetchrow(f"SELECT COUNT(*) as count FROM {full_table}")
 
         # Count fraud records
-        fraud_count = await conn.fetchrow(f"SELECT COUNT(*) as count FROM {full_table} WHERE is_fraud_tx = 1")
+        fraud_count = await conn.fetchrow(
+            f"SELECT COUNT(*) as count FROM {full_table} WHERE is_fraud_tx = 1"
+        )
 
         await conn.close()
 
@@ -373,7 +452,9 @@ async def populate_fraud_patterns():
         logger.info(f"Total records: {final_count['count']}")
         logger.info(f"Fraud records: {fraud_count['count']}")
         logger.info(f"Clean records: {final_count['count'] - fraud_count['count']}")
-        logger.info(f"Fraud rate: {fraud_count['count'] * 100 // final_count['count']}%")
+        logger.info(
+            f"Fraud rate: {fraud_count['count'] * 100 // final_count['count']}%"
+        )
         logger.info("")
         logger.info("Fraud Patterns Included:")
         logger.info("  1. IP Clustering - Same suspicious IPs reused")

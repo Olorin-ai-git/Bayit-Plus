@@ -22,18 +22,18 @@ Generated after investigation completion, this report provides stakeholders
 with complete visibility into the fraud detection investigation process.
 """
 
+import base64
 import json
 import logging
+import re
+import statistics
+from collections import Counter, defaultdict
+from dataclasses import asdict, dataclass
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import Dict, List, Any, Optional, Tuple, Union
-import base64
-import re
-from collections import defaultdict, Counter
-from dataclasses import dataclass, asdict
-import statistics
+from typing import Any, Dict, List, Optional, Tuple, Union
 
-from app.service.reporting.olorin_logo import get_olorin_header, OLORIN_FOOTER
+from app.service.reporting.olorin_logo import OLORIN_FOOTER, get_olorin_header
 
 logger = logging.getLogger(__name__)
 
@@ -41,6 +41,7 @@ logger = logging.getLogger(__name__)
 @dataclass
 class InvestigationSummary:
     """Summary of investigation key metrics and findings."""
+
     investigation_id: str
     scenario: str
     entity_id: str
@@ -61,73 +62,79 @@ class InvestigationSummary:
 class ComprehensiveInvestigationReportGenerator:
     """
     Generates comprehensive HTML reports from investigation folders.
-    
+
     Processes all investigation files to create a unified report containing:
     - Investigation analysis
     - Test execution results
     - Performance metrics
     - Interactive visualizations
     """
-    
+
     def __init__(self, base_logs_dir: Optional[Path] = None):
         """Initialize the comprehensive report generator."""
         self.base_logs_dir = Path(base_logs_dir) if base_logs_dir else Path.cwd()
         self.logger = logging.getLogger(self.__class__.__name__)
-        
+
     def generate_comprehensive_report(
         self,
         investigation_folder: Path,
         output_path: Optional[Path] = None,
         title: Optional[str] = None,
-        risk_analyzer_info: Optional[Dict[str, Any]] = None
+        risk_analyzer_info: Optional[Dict[str, Any]] = None,
     ) -> Path:
         """
         Generate comprehensive HTML report from investigation folder.
-        
+
         Args:
             investigation_folder: Path to investigation folder
             output_path: Output path for HTML report (optional)
             title: Report title (optional)
-            
+
         Returns:
             Path to generated HTML report
         """
-        self.logger.info(f"🔄 Generating comprehensive report for: {investigation_folder}")
-        
+        self.logger.info(
+            f"🔄 Generating comprehensive report for: {investigation_folder}"
+        )
+
         # Set output path
         if not output_path:
-            output_path = investigation_folder / "comprehensive_investigation_report.html"
-        
+            output_path = (
+                investigation_folder / "comprehensive_investigation_report.html"
+            )
+
         # Set default title
         if not title:
             title = f"Comprehensive Investigation Report - {investigation_folder.name}"
-        
+
         try:
             # Process all investigation files
-            investigation_data = self._process_investigation_folder(investigation_folder)
-            
+            investigation_data = self._process_investigation_folder(
+                investigation_folder
+            )
+
             # Add risk analyzer info to investigation data
             if risk_analyzer_info:
                 investigation_data["risk_analyzer_info"] = risk_analyzer_info
-            
+
             # Generate HTML content
             html_content = self._generate_html_report(investigation_data, title)
-            
+
             # Write to file
-            with open(output_path, 'w', encoding='utf-8') as f:
+            with open(output_path, "w", encoding="utf-8") as f:
                 f.write(html_content)
-                
+
             self.logger.info(f"✅ Comprehensive report generated: {output_path}")
             return output_path
-            
+
         except Exception as e:
             self.logger.error(f"❌ Failed to generate comprehensive report: {e}")
             raise
-    
+
     def _process_investigation_folder(self, folder_path: Path) -> Dict[str, Any]:
         """Process all files in investigation folder."""
         self.logger.info(f"📁 Processing investigation folder: {folder_path}")
-        
+
         data = {
             "folder_path": folder_path,
             "folder_name": folder_path.name,
@@ -143,9 +150,9 @@ class ComprehensiveInvestigationReportGenerator:
             "test_results": {},
             "server_logs": {},
             "files_processed": 0,
-            "processing_errors": []
+            "processing_errors": [],
         }
-        
+
         # Process each file type
         for file_path in folder_path.rglob("*"):
             if file_path.is_file():
@@ -156,80 +163,85 @@ class ComprehensiveInvestigationReportGenerator:
                     error_msg = f"Error processing {file_path.name}: {str(e)}"
                     data["processing_errors"].append(error_msg)
                     self.logger.warning(error_msg)
-        
+
         # Generate investigation summary
         data["summary"] = self._generate_investigation_summary(data)
-        
-        self.logger.info(f"📊 Processed {data['files_processed']} files with {len(data['processing_errors'])} errors")
+
+        self.logger.info(
+            f"📊 Processed {data['files_processed']} files with {len(data['processing_errors'])} errors"
+        )
         return data
-    
+
     def _process_file(self, file_path: Path, data: Dict[str, Any]) -> None:
         """Process individual file based on its type."""
         filename = file_path.name.lower()
-        
+
         if filename == "metadata.json":
             data["metadata"] = self._load_json_file(file_path)
-            
+
         elif filename == "summary.json":
             data["summary_raw"] = self._load_json_file(file_path)
-            
+
         elif filename.startswith("investigation_result"):
             data["agents"] = self._load_json_file(file_path)
-            
+
         elif filename == "performance_metrics.json":
             data["performance"] = self._load_json_file(file_path)
-            
+
         elif filename == "validation_results.json":
             data["validation"] = self._load_json_file(file_path)
-            
+
         elif filename == "merchant_validation_results.json":
             # Load merchant validation results
             merchant_validation = self._load_json_file(file_path)
             if "validation" not in data:
                 data["validation"] = {}
             data["validation"]["merchant"] = merchant_validation
-            
+
         elif filename == "journey_tracking.json":
             data["journey"] = self._load_json_file(file_path)
-            
+
         elif filename.startswith("thought_process_"):
             thought_data = self._load_json_file(file_path)
             if thought_data:
                 data["thought_processes"].append(thought_data)
-                
+
         elif filename == "structured_activities.jsonl":
             data["activities"] = self._load_jsonl_file(file_path)
-            
+
         elif filename.startswith("unified_test_report") and filename.endswith(".json"):
             data["test_results"] = self._load_json_file(file_path)
-            
+
         elif filename == "server_logs" or filename == "server_logs.json":
             data["server_logs"] = self._load_json_file(file_path)
-            
+
         elif filename == "server_logs.txt" or filename.endswith("_logs.txt"):
             # Handle text-based log files
             try:
-                with open(file_path, 'r', encoding='utf-8') as f:
+                with open(file_path, "r", encoding="utf-8") as f:
                     log_content = f.read()
-                    data["server_logs"] = {"raw_logs": log_content, "log_count": len(log_content.split('\n'))}
+                    data["server_logs"] = {
+                        "raw_logs": log_content,
+                        "log_count": len(log_content.split("\n")),
+                    }
             except Exception as e:
                 self.logger.warning(f"Failed to load text log file {file_path}: {e}")
                 data["server_logs"] = {}
-    
+
     def _load_json_file(self, file_path: Path) -> Dict[str, Any]:
         """Load JSON file safely."""
         try:
-            with open(file_path, 'r', encoding='utf-8') as f:
+            with open(file_path, "r", encoding="utf-8") as f:
                 return json.load(f)
         except Exception as e:
             self.logger.warning(f"Failed to load JSON file {file_path}: {e}")
             return {}
-    
+
     def _load_jsonl_file(self, file_path: Path) -> List[Dict[str, Any]]:
         """Load JSONL file safely."""
         try:
             data = []
-            with open(file_path, 'r', encoding='utf-8') as f:
+            with open(file_path, "r", encoding="utf-8") as f:
                 for line in f:
                     if line.strip():
                         data.append(json.loads(line))
@@ -237,8 +249,10 @@ class ComprehensiveInvestigationReportGenerator:
         except Exception as e:
             self.logger.warning(f"Failed to load JSONL file {file_path}: {e}")
             return []
-    
-    def _generate_investigation_summary(self, data: Dict[str, Any]) -> InvestigationSummary:
+
+    def _generate_investigation_summary(
+        self, data: Dict[str, Any]
+    ) -> InvestigationSummary:
         """Generate investigation summary from processed data."""
         metadata = data.get("metadata", {})
         agents_data = data.get("agents", {})
@@ -247,23 +261,23 @@ class ComprehensiveInvestigationReportGenerator:
         test_results = data.get("test_results", {})
         journey = data.get("journey", {})
         thought_processes = data.get("thought_processes", [])
-        
+
         # Extract key metrics
         investigation_id = metadata.get("investigation_id", "unknown")
         if investigation_id == "unknown" and journey:
             investigation_id = journey.get("investigation_id", "unknown")
-        
+
         scenario = metadata.get("scenario", "unknown")
         entity_id = metadata.get("config", {}).get("entity_id", "unknown")
         entity_type = metadata.get("config", {}).get("entity_type", "unknown")
-        
+
         # CRITICAL FIX: Check nested config structure (metadata.config.config.entity_type)
         if entity_type == "unknown" and "config" in metadata.get("config", {}):
             nested_config = metadata.get("config", {}).get("config", {})
             if entity_id == "unknown":
                 entity_id = nested_config.get("entity_id") or entity_id
             entity_type = nested_config.get("entity_type") or entity_type
-        
+
         # Extract entity info from agents_data (investigation_result.json) if available
         if (entity_id == "unknown" or entity_type == "unknown") and agents_data:
             # Try to get entity_id from agent_results first
@@ -274,28 +288,36 @@ class ComprehensiveInvestigationReportGenerator:
                 findings = first_agent.get("findings", {})
                 if entity_id == "unknown":
                     # Try to extract from investigation_id or entity_id in findings
-                    entity_id = findings.get("entity_id") or agents_data.get("investigation_id", entity_id)
+                    entity_id = findings.get("entity_id") or agents_data.get(
+                        "investigation_id", entity_id
+                    )
                 if entity_type == "unknown":
-                    entity_type = findings.get("entity_type") or findings.get("domain") or entity_type
-            
+                    entity_type = (
+                        findings.get("entity_type")
+                        or findings.get("domain")
+                        or entity_type
+                    )
+
             if entity_id == "unknown":
-                entity_id = agents_data.get("investigation_id", entity_id)  # Fallback to investigation_id
-            
+                entity_id = agents_data.get(
+                    "investigation_id", entity_id
+                )  # Fallback to investigation_id
+
             # CRITICAL FIX: Infer entity_type from entity_id format (IPv6/IPv4 detection)
             if entity_type == "unknown" and entity_id != "unknown":
                 # IPv6 addresses contain multiple colons
-                if ':' in entity_id and entity_id.count(':') >= 2:
+                if ":" in entity_id and entity_id.count(":") >= 2:
                     entity_type = "ip"
                 # IPv4 addresses have 3 dots
-                elif '.' in entity_id and entity_id.count('.') == 3:
+                elif "." in entity_id and entity_id.count(".") == 3:
                     entity_type = "ip"
-                elif '@' in entity_id:
+                elif "@" in entity_id:
                     entity_type = "email"
-                elif len(entity_id) == 36 and '-' in entity_id:  # UUID format
+                elif len(entity_id) == 36 and "-" in entity_id:  # UUID format
                     entity_type = "device_id"
                 else:
                     entity_type = "user_id"
-        
+
         # Extract entity info from journey if still unknown
         if (entity_id == "unknown" or entity_type == "unknown") and journey:
             node_executions = journey.get("node_executions", [])
@@ -306,11 +328,11 @@ class ComprehensiveInvestigationReportGenerator:
                     entity_id = input_state.get("entity_id", entity_id)
                 if entity_type == "unknown":
                     entity_type = input_state.get("entity_type", entity_type)
-        
+
         # Risk and confidence scores - get from agents_data (investigation_result.json)
         final_risk_score = agents_data.get("final_risk_score", 0.0)
         confidence_score = agents_data.get("confidence", 0.0)
-        
+
         # If no agent data, try to extract from thought processes
         if final_risk_score == 0.0 and thought_processes:
             # Extract risk scores from thought processes
@@ -319,12 +341,14 @@ class ComprehensiveInvestigationReportGenerator:
                 if isinstance(tp, dict):
                     final_assessment = tp.get("final_assessment", {})
                     if isinstance(final_assessment, dict):
-                        risk = final_assessment.get("risk_score") or final_assessment.get("risk")
+                        risk = final_assessment.get(
+                            "risk_score"
+                        ) or final_assessment.get("risk")
                         if risk:
                             risk_scores.append(float(risk))
             if risk_scores:
                 final_risk_score = sum(risk_scores) / len(risk_scores)
-        
+
         # Extract confidence from thought processes if not found in agents_data
         if confidence_score == 0.0 and thought_processes:
             confidence_scores = []
@@ -333,9 +357,11 @@ class ComprehensiveInvestigationReportGenerator:
                     final_assessment = tp.get("final_assessment", {})
                     if isinstance(final_assessment, dict):
                         # Try multiple possible confidence field names
-                        conf = (final_assessment.get("confidence") or 
-                               final_assessment.get("confidence_score") or
-                               final_assessment.get("confidence_level"))
+                        conf = (
+                            final_assessment.get("confidence")
+                            or final_assessment.get("confidence_score")
+                            or final_assessment.get("confidence_level")
+                        )
                         if conf:
                             try:
                                 conf_float = float(conf)
@@ -345,7 +371,7 @@ class ComprehensiveInvestigationReportGenerator:
                                 pass
             if confidence_scores:
                 confidence_score = sum(confidence_scores) / len(confidence_scores)
-        
+
         # Duration - check multiple sources
         duration = 0.0
         if performance:
@@ -357,7 +383,7 @@ class ComprehensiveInvestigationReportGenerator:
                 for agent_name, timing_data in agent_timings.items():
                     if isinstance(timing_data, dict) and "duration" in timing_data:
                         duration += timing_data.get("duration", 0.0)
-        
+
         # Calculate duration from journey if not available
         if duration == 0.0 and journey:
             start_ts = journey.get("start_timestamp")
@@ -365,15 +391,16 @@ class ComprehensiveInvestigationReportGenerator:
             if start_ts and end_ts:
                 try:
                     from datetime import datetime
-                    start = datetime.fromisoformat(start_ts.replace('Z', '+00:00'))
-                    end = datetime.fromisoformat(end_ts.replace('Z', '+00:00'))
+
+                    start = datetime.fromisoformat(start_ts.replace("Z", "+00:00"))
+                    end = datetime.fromisoformat(end_ts.replace("Z", "+00:00"))
                     duration = (end - start).total_seconds()
                 except Exception:
                     pass
-        
+
         # Status - determine from multiple sources (prioritize journey over metadata)
         status = "unknown"
-        
+
         # First check journey (most reliable source)
         if journey:
             journey_status = journey.get("status", "unknown")
@@ -389,37 +416,37 @@ class ComprehensiveInvestigationReportGenerator:
             # Also check if journey has end_timestamp (indicates completion)
             elif journey.get("end_timestamp"):
                 status = "completed"
-        
+
         # Fallback to metadata if journey status is unknown
         if status == "unknown":
             metadata_status = metadata.get("status", "unknown")
             if metadata_status not in ["unknown", "initialized", "INITIALIZED"]:
                 status = metadata_status.lower()
-        
+
         # Fallback to test results
         if status == "unknown" and test_results:
             investigation_results = test_results.get("investigation_results", {})
             test_status = investigation_results.get("status", "unknown")
             if test_status != "unknown":
                 status = test_status.lower()
-        
+
         # Final fallback: if we have successful agents, mark as completed
         if status in ["unknown", "initialized", "INITIALIZED"]:
             # This will be checked after agents_executed is populated below
             pass
-        
+
         # Agent execution info - check multiple data sources
         agents_executed = []
         agent_results = {}
         tools_used = 0
-        
+
         # Try to get agent results from investigation data first
         if agents_data and "agent_results" in agents_data:
             agent_results = agents_data.get("agent_results", {})
             for agent_name, result in agent_results.items():
                 if result.get("status") == "success":
                     agents_executed.append(agent_name)
-            
+
             # Count tools from agent findings (specifically risk_aggregation)
             risk_agg = agent_results.get("risk_aggregation", {})
             if risk_agg and "findings" in risk_agg:
@@ -432,7 +459,7 @@ class ComprehensiveInvestigationReportGenerator:
                         findings = agent_data["findings"]
                         if "tools_used" in findings:
                             tools_used += findings["tools_used"]
-        
+
         # If no agents found, extract from thought processes
         if not agents_executed and thought_processes:
             for tp in thought_processes:
@@ -447,37 +474,51 @@ class ComprehensiveInvestigationReportGenerator:
                             final_assessment = tp.get("final_assessment", {})
                             risk_score = 0.0
                             if isinstance(final_assessment, dict):
-                                risk_score = float(final_assessment.get("risk_score", final_assessment.get("risk", 0.0)))
-                            
+                                risk_score = float(
+                                    final_assessment.get(
+                                        "risk_score", final_assessment.get("risk", 0.0)
+                                    )
+                                )
+
                             agent_results[clean_name] = {
                                 "status": "success",
                                 "risk_score": risk_score,
-                                "findings": final_assessment
+                                "findings": final_assessment,
                             }
-        
+
         # If no agents found, try from journey node executions
         if not agents_executed and journey:
             node_executions = journey.get("node_executions", [])
             for node in node_executions:
                 node_name = node.get("node_name", "")
-                if node_name and "agent" in node_name.lower() and node.get("status") != "NodeStatus.FAILED":
+                if (
+                    node_name
+                    and "agent" in node_name.lower()
+                    and node.get("status") != "NodeStatus.FAILED"
+                ):
                     # Extract agent name from node
                     agent_name = node_name.replace("_agent", "").replace("_", " ")
                     if agent_name not in agents_executed:
                         agents_executed.append(agent_name)
-        
+
         # If no agents found, try from test_results
-        if not agents_executed and test_results and "investigation_results" in test_results:
+        if (
+            not agents_executed
+            and test_results
+            and "investigation_results" in test_results
+        ):
             investigation_results = test_results.get("investigation_results", {})
             # Check for agent execution data in test results
             if "agent_executions" in investigation_results:
-                for agent_name, status in investigation_results["agent_executions"].items():
+                for agent_name, status in investigation_results[
+                    "agent_executions"
+                ].items():
                     if status == "success":
                         agents_executed.append(agent_name)
             # Count tools from test results if available
             if "tools_used" in investigation_results:
                 tools_used = investigation_results.get("tools_used", 0)
-        
+
         # If still no results, try direct agents_data structure
         if not agents_executed and agents_data:
             # Check if agents_data itself contains agent execution info
@@ -485,7 +526,7 @@ class ComprehensiveInvestigationReportGenerator:
                 if isinstance(value, dict) and value.get("status") == "success":
                     agents_executed.append(key)
                     agent_results[key] = value
-        
+
         # Count tools from journey node executions if not already counted
         if tools_used == 0 and journey:
             node_executions = journey.get("node_executions", [])
@@ -496,7 +537,7 @@ class ComprehensiveInvestigationReportGenerator:
                     tool_names.add(tool_name)
             if tool_names:
                 tools_used = len(tool_names)
-        
+
         # Count tools from thought processes if not already counted
         if tools_used == 0 and thought_processes:
             tool_names = set()
@@ -533,7 +574,7 @@ class ComprehensiveInvestigationReportGenerator:
                                     tool_names.add("shodan")
             if tool_names:
                 tools_used = len(tool_names)
-        
+
         # Count tools from structured activities if not already counted
         if tools_used == 0:
             structured_activities = data.get("structured_activities", [])
@@ -550,25 +591,31 @@ class ComprehensiveInvestigationReportGenerator:
                             tool_names.add(tool_name)
             if tool_names:
                 tools_used = len(tool_names)
-        
+
         # Tools and evidence
-        evidence_points = len(agents_executed)  # Use number of successful agents as evidence points
-        
+        evidence_points = len(
+            agents_executed
+        )  # Use number of successful agents as evidence points
+
         # Geographic info
         geographic_countries = 0
         geographic_cities = 0
-        
+
         # Extract from location agent
         location_data = agent_results.get("location", {})
         if location_data:
             location_findings = location_data.get("findings", {})
-            geographic_countries = location_findings.get("metrics", {}).get("unique_countries", 0)
-            geographic_cities = location_findings.get("metrics", {}).get("unique_cities", 0)
-        
+            geographic_countries = location_findings.get("metrics", {}).get(
+                "unique_countries", 0
+            )
+            geographic_cities = location_findings.get("metrics", {}).get(
+                "unique_cities", 0
+            )
+
         # Critical findings and recommendations
         critical_findings = []
         recommendations = []
-        
+
         # Extract from agent results
         for agent_name, result in agent_results.items():
             findings = result.get("findings", {})
@@ -579,23 +626,31 @@ class ComprehensiveInvestigationReportGenerator:
                         critical_findings.extend(risk_indicators)
                     elif isinstance(risk_indicators, str):
                         critical_findings.append(risk_indicators)
-                
+
                 llm_analysis = findings.get("llm_analysis", {})
                 if isinstance(llm_analysis, dict) and "recommendations" in llm_analysis:
                     rec_text = llm_analysis["recommendations"]
                     if isinstance(rec_text, str):
                         # Split multi-line recommendations
-                        rec_lines = [line.strip() for line in rec_text.split('\n') if line.strip() and line.strip().startswith('-')]
+                        rec_lines = [
+                            line.strip()
+                            for line in rec_text.split("\n")
+                            if line.strip() and line.strip().startswith("-")
+                        ]
                         if rec_lines:
                             recommendations.extend(rec_lines[:5])  # Limit to first 5
                         else:
-                            recommendations.append(f"{agent_name.title()}: {rec_text[:200]}")
-        
+                            recommendations.append(
+                                f"{agent_name.title()}: {rec_text[:200]}"
+                            )
+
         # Extract from thought processes if not found
         if not critical_findings and not recommendations and thought_processes:
             for tp in thought_processes:
                 if isinstance(tp, dict):
-                    agent_name = tp.get("agent_name", "").replace("_agent", "").replace("_", " ")
+                    agent_name = (
+                        tp.get("agent_name", "").replace("_agent", "").replace("_", " ")
+                    )
                     final_assessment = tp.get("final_assessment", {})
                     if isinstance(final_assessment, dict):
                         # Extract risk indicators
@@ -604,20 +659,28 @@ class ComprehensiveInvestigationReportGenerator:
                             critical_findings.extend(risk_indicators[:5])  # Limit to 5
                         elif isinstance(risk_indicators, str):
                             critical_findings.append(risk_indicators)
-                        
+
                         # Extract recommendations from llm_analysis
                         llm_analysis = final_assessment.get("llm_analysis", {})
                         if isinstance(llm_analysis, dict):
                             rec_text = llm_analysis.get("recommendations", "")
                             if rec_text:
                                 # Split multi-line recommendations (they start with "- [PRIORITY]")
-                                rec_lines = [line.strip() for line in rec_text.split('\n') if line.strip() and line.strip().startswith('-')]
+                                rec_lines = [
+                                    line.strip()
+                                    for line in rec_text.split("\n")
+                                    if line.strip() and line.strip().startswith("-")
+                                ]
                                 if rec_lines:
-                                    recommendations.extend(rec_lines[:5])  # Limit to first 5
+                                    recommendations.extend(
+                                        rec_lines[:5]
+                                    )  # Limit to first 5
                                 else:
                                     # If no bullet points, use first 200 chars
-                                    recommendations.append(f"{agent_name.title()}: {rec_text[:200]}")
-        
+                                    recommendations.append(
+                                        f"{agent_name.title()}: {rec_text[:200]}"
+                                    )
+
         # Final status check: if still initialized/unknown but agents executed, mark as completed
         if status in ["unknown", "initialized", "INITIALIZED"] and agents_executed:
             # Check if journey has end_timestamp (indicates completion)
@@ -626,7 +689,7 @@ class ComprehensiveInvestigationReportGenerator:
             elif len(agents_executed) > 0:
                 # If agents executed successfully, likely completed
                 status = "completed"
-        
+
         return InvestigationSummary(
             investigation_id=investigation_id,
             scenario=scenario,
@@ -642,23 +705,33 @@ class ComprehensiveInvestigationReportGenerator:
             geographic_countries=geographic_countries,
             geographic_cities=geographic_cities,
             critical_findings=critical_findings[:10],  # Top 10
-            recommendations=recommendations
+            recommendations=recommendations,
         )
-    
+
     def _generate_html_report(self, data: Dict[str, Any], title: str) -> str:
         """Generate comprehensive HTML report."""
         summary = data["summary"]
         risk_analyzer_info = data.get("risk_analyzer_info", {})
-        
+
         # Determine risk level and color
         # CRITICAL FIX: Handle None values to prevent TypeError: '>' not supported between instances of 'NoneType' and 'float'
-        final_risk_score = summary.final_risk_score if summary.final_risk_score is not None else 0.0
-        risk_level = "HIGH" if final_risk_score > 0.7 else "MEDIUM" if final_risk_score > 0.4 else "LOW"
-        risk_color = "#dc3545" if risk_level == "HIGH" else "#fd7e14" if risk_level == "MEDIUM" else "#28a745"
-        
+        final_risk_score = (
+            summary.final_risk_score if summary.final_risk_score is not None else 0.0
+        )
+        risk_level = (
+            "HIGH"
+            if final_risk_score > 0.7
+            else "MEDIUM" if final_risk_score > 0.4 else "LOW"
+        )
+        risk_color = (
+            "#dc3545"
+            if risk_level == "HIGH"
+            else "#fd7e14" if risk_level == "MEDIUM" else "#28a745"
+        )
+
         # Generate header with logo
         header_html = get_olorin_header(title)
-        
+
         html_content = f"""
 <!DOCTYPE html>
 <html lang="en">
@@ -1149,9 +1222,9 @@ class ComprehensiveInvestigationReportGenerator:
 </body>
 </html>
         """
-        
+
         return html_content
-    
+
     def _generate_agent_results_html(self, data: Dict[str, Any]) -> str:
         """Generate agent results section HTML."""
         agents_data = data.get("agents", {})
@@ -1159,10 +1232,10 @@ class ComprehensiveInvestigationReportGenerator:
             agents_data = agents_data.get("agent_results", {})
         else:
             agents_data = {}
-        
+
         thought_processes = data.get("thought_processes", [])
         journey = data.get("journey", {})
-        
+
         # If no agent data, extract from thought processes
         if not agents_data and thought_processes:
             agents_data = {}
@@ -1174,8 +1247,12 @@ class ComprehensiveInvestigationReportGenerator:
                         final_assessment = tp.get("final_assessment", {})
                         risk_score = 0.0
                         if isinstance(final_assessment, dict):
-                            risk_score = float(final_assessment.get("risk_score", final_assessment.get("risk", 0.0)))
-                        
+                            risk_score = float(
+                                final_assessment.get(
+                                    "risk_score", final_assessment.get("risk", 0.0)
+                                )
+                            )
+
                         # Calculate duration from timestamps
                         duration = 0.0
                         start_ts = tp.get("start_timestamp")
@@ -1183,45 +1260,54 @@ class ComprehensiveInvestigationReportGenerator:
                         if start_ts and end_ts:
                             try:
                                 from datetime import datetime
-                                start = datetime.fromisoformat(start_ts.replace('Z', '+00:00'))
-                                end = datetime.fromisoformat(end_ts.replace('Z', '+00:00'))
+
+                                start = datetime.fromisoformat(
+                                    start_ts.replace("Z", "+00:00")
+                                )
+                                end = datetime.fromisoformat(
+                                    end_ts.replace("Z", "+00:00")
+                                )
                                 duration = (end - start).total_seconds()
                             except Exception:
                                 pass
-                        
+
                         agents_data[clean_name] = {
                             "status": "success",
                             "risk_score": risk_score,
                             "duration": duration,
-                            "findings": final_assessment
+                            "findings": final_assessment,
                         }
-        
+
         # If still no agents, try to extract from journey node executions
         if not agents_data and journey:
             node_executions = journey.get("node_executions", [])
             agents_data = {}
             for node in node_executions:
                 node_name = node.get("node_name", "")
-                if node_name and "agent" in node_name.lower() and node.get("status") != "NodeStatus.FAILED":
+                if (
+                    node_name
+                    and "agent" in node_name.lower()
+                    and node.get("status") != "NodeStatus.FAILED"
+                ):
                     agent_name = node_name.replace("_agent", "").replace("_", " ")
                     duration_ms = node.get("duration_ms", 0)
                     agents_data[agent_name] = {
                         "status": "success",
                         "risk_score": 0.0,
                         "duration": duration_ms / 1000.0,
-                        "findings": {}
+                        "findings": {},
                     }
-        
+
         if not agents_data:
             return "<p>No agent results available. Check investigation folder for thought_process_*.json files or journey_tracking.json.</p>"
-        
+
         html = "<table class='data-table'><thead><tr><th>Agent</th><th>Status</th><th>Risk Score</th><th>Duration</th><th>Key Findings</th></tr></thead><tbody>"
-        
+
         for agent_name, result in agents_data.items():
             status = result.get("status", "unknown")
             risk_score = result.get("risk_score", 0.0)
             duration = result.get("duration", 0.0)
-            
+
             # Get key findings
             findings = result.get("findings", {})
             if isinstance(findings, dict):
@@ -1229,20 +1315,22 @@ class ComprehensiveInvestigationReportGenerator:
                 evidence = findings.get("evidence", [])
                 risk_indicators = findings.get("risk_indicators", [])
                 conclusion = findings.get("conclusion", "")
-                
+
                 if evidence:
                     key_finding = str(evidence[0])[:100] if evidence else ""
                 elif risk_indicators:
-                    key_finding = str(risk_indicators[0])[:100] if risk_indicators else ""
+                    key_finding = (
+                        str(risk_indicators[0])[:100] if risk_indicators else ""
+                    )
                 elif conclusion:
                     key_finding = conclusion[:100]
                 else:
                     key_finding = "Analysis completed"
             else:
                 key_finding = "Analysis completed"
-            
+
             status_class = f"agent-status status-{status}"
-            
+
             html += f"""
             <tr>
                 <td><strong>{agent_name.replace('_', ' ').title()}</strong></td>
@@ -1252,21 +1340,27 @@ class ComprehensiveInvestigationReportGenerator:
                 <td>{key_finding}</td>
             </tr>
             """
-        
+
         html += "</tbody></table>"
         return html
-    
+
     def _generate_performance_html(self, data: Dict[str, Any]) -> str:
         """Generate performance metrics section HTML."""
         performance = data.get("performance", {})
         journey = data.get("journey", {})
         thought_processes = data.get("thought_processes", [])
         agents_data = data.get("agents", {})
-        agent_results = agents_data.get("agent_results", {}) if isinstance(agents_data, dict) else {}
-        
+        agent_results = (
+            agents_data.get("agent_results", {})
+            if isinstance(agents_data, dict)
+            else {}
+        )
+
         # Initialize agent_timings from existing performance data
-        agent_timings = performance.get("agent_timings", {}).copy() if performance else {}
-        
+        agent_timings = (
+            performance.get("agent_timings", {}).copy() if performance else {}
+        )
+
         # Calculate total duration from journey (most reliable)
         total_duration = performance.get("total_duration", 0.0)
         if not total_duration and journey:
@@ -1275,12 +1369,13 @@ class ComprehensiveInvestigationReportGenerator:
             if start_ts and end_ts:
                 try:
                     from datetime import datetime
-                    start = datetime.fromisoformat(start_ts.replace('Z', '+00:00'))
-                    end = datetime.fromisoformat(end_ts.replace('Z', '+00:00'))
+
+                    start = datetime.fromisoformat(start_ts.replace("Z", "+00:00"))
+                    end = datetime.fromisoformat(end_ts.replace("Z", "+00:00"))
                     total_duration = (end - start).total_seconds()
                 except Exception:
                     pass
-        
+
         # Extract agent timings from journey node executions (merge with existing)
         if journey:
             node_executions = journey.get("node_executions", [])
@@ -1288,34 +1383,55 @@ class ComprehensiveInvestigationReportGenerator:
                 node_name = node.get("node_name", "")
                 if "agent" in node_name.lower():
                     # Extract agent name (handle various formats)
-                    agent_name = node_name.replace("_agent", "").replace("_", " ").strip()
+                    agent_name = (
+                        node_name.replace("_agent", "").replace("_", " ").strip()
+                    )
                     if not agent_name:
                         agent_name = node_name.replace("_", " ").strip()
-                    
+
                     duration_ms = node.get("duration_ms", 0)
                     node_status = node.get("status", "")
-                    is_completed = node_status == "NodeStatus.COMPLETED" or "COMPLETED" in node_status
-                    is_failed = node_status == "NodeStatus.FAILED" or "FAILED" in node_status
-                    
+                    is_completed = (
+                        node_status == "NodeStatus.COMPLETED"
+                        or "COMPLETED" in node_status
+                    )
+                    is_failed = (
+                        node_status == "NodeStatus.FAILED" or "FAILED" in node_status
+                    )
+
                     # Use duration from node if available, otherwise keep existing
                     if agent_name not in agent_timings:
                         agent_timings[agent_name] = {
-                            "duration": duration_ms / 1000.0 if duration_ms > 0 else 0.0,
-                            "status": "success" if is_completed else ("failed" if is_failed else "unknown"),
-                            "performance_category": "normal"
+                            "duration": (
+                                duration_ms / 1000.0 if duration_ms > 0 else 0.0
+                            ),
+                            "status": (
+                                "success"
+                                if is_completed
+                                else ("failed" if is_failed else "unknown")
+                            ),
+                            "performance_category": "normal",
                         }
-                    elif duration_ms > 0 and agent_timings[agent_name].get("duration", 0) == 0:
+                    elif (
+                        duration_ms > 0
+                        and agent_timings[agent_name].get("duration", 0) == 0
+                    ):
                         # Update duration if we have a better value
                         agent_timings[agent_name]["duration"] = duration_ms / 1000.0
-        
+
         # Extract agent timings from thought processes (merge with existing)
         if thought_processes:
             for tp in thought_processes:
                 if isinstance(tp, dict):
-                    agent_name = tp.get("agent_name", "").replace("_agent", "").replace("_", " ").strip()
+                    agent_name = (
+                        tp.get("agent_name", "")
+                        .replace("_agent", "")
+                        .replace("_", " ")
+                        .strip()
+                    )
                     if not agent_name:
                         continue
-                    
+
                     # Try to get duration from timestamps
                     start_ts = tp.get("start_timestamp")
                     end_ts = tp.get("end_timestamp")
@@ -1323,67 +1439,88 @@ class ComprehensiveInvestigationReportGenerator:
                     if start_ts and end_ts:
                         try:
                             from datetime import datetime
-                            start = datetime.fromisoformat(start_ts.replace('Z', '+00:00'))
-                            end = datetime.fromisoformat(end_ts.replace('Z', '+00:00'))
+
+                            start = datetime.fromisoformat(
+                                start_ts.replace("Z", "+00:00")
+                            )
+                            end = datetime.fromisoformat(end_ts.replace("Z", "+00:00"))
                             duration = (end - start).total_seconds()
                         except Exception:
                             pass
-                    
+
                     # Also check duration_ms field
                     if duration == 0.0:
                         duration_ms = tp.get("duration_ms", 0)
                         if duration_ms > 0:
                             duration = duration_ms / 1000.0
-                    
+
                     # Add or update agent timing
                     if agent_name not in agent_timings:
                         agent_timings[agent_name] = {
                             "duration": duration,
                             "status": "success",
-                            "performance_category": "normal"
+                            "performance_category": "normal",
                         }
-                    elif duration > 0 and agent_timings[agent_name].get("duration", 0) == 0:
+                    elif (
+                        duration > 0
+                        and agent_timings[agent_name].get("duration", 0) == 0
+                    ):
                         # Update duration if we have a better value
                         agent_timings[agent_name]["duration"] = duration
-        
+
         # Extract agent timings from agent_results (merge with existing)
         if agent_results:
             for agent_name, result in agent_results.items():
                 if isinstance(result, dict):
-                    clean_name = agent_name.replace("_agent", "").replace("_", " ").strip()
+                    clean_name = (
+                        agent_name.replace("_agent", "").replace("_", " ").strip()
+                    )
                     duration = result.get("duration", 0.0)
                     status = result.get("status", "success")
-                    
+
                     if clean_name not in agent_timings:
                         agent_timings[clean_name] = {
                             "duration": duration,
                             "status": status,
-                            "performance_category": "normal"
+                            "performance_category": "normal",
                         }
-                    elif duration > 0 and agent_timings[clean_name].get("duration", 0) == 0:
+                    elif (
+                        duration > 0
+                        and agent_timings[clean_name].get("duration", 0) == 0
+                    ):
                         # Update duration if we have a better value
                         agent_timings[clean_name]["duration"] = duration
-        
+
         # Calculate success rate
-        success_count = sum(1 for timing in agent_timings.values() if timing.get("status") == "success")
+        success_count = sum(
+            1 for timing in agent_timings.values() if timing.get("status") == "success"
+        )
         total_agents = len(agent_timings) if agent_timings else 1
         success_rate = success_count / total_agents if total_agents > 0 else 1.0
-        
+
         # Calculate average agent time
-        agent_durations = [t.get("duration", 0) for t in agent_timings.values() if t.get("duration", 0) > 0]
-        avg_agent_time = sum(agent_durations) / len(agent_durations) if agent_durations else (total_duration / total_agents if total_agents > 0 else 0)
-        
+        agent_durations = [
+            t.get("duration", 0)
+            for t in agent_timings.values()
+            if t.get("duration", 0) > 0
+        ]
+        avg_agent_time = (
+            sum(agent_durations) / len(agent_durations)
+            if agent_durations
+            else (total_duration / total_agents if total_agents > 0 else 0)
+        )
+
         # Build performance dict
         performance = {
             "total_duration": total_duration,
             "agent_timings": agent_timings,
             "error_rates": {"overall_success_rate": success_rate},
-            "throughput_metrics": {"average_agent_time": avg_agent_time}
+            "throughput_metrics": {"average_agent_time": avg_agent_time},
         }
-        
+
         if not agent_timings and not total_duration:
             return "<p>No performance data available.</p>"
-        
+
         html = f"""
         <div class="metrics-grid">
             <div class="metric-card">
@@ -1400,34 +1537,38 @@ class ComprehensiveInvestigationReportGenerator:
             </div>
         </div>
         """
-        
+
         # Agent timings table - show all agents
         agent_timings = performance.get("agent_timings", {})
         if agent_timings:
             html += "<h4>Agent Performance Breakdown</h4><table class='data-table'><thead><tr><th>Agent</th><th>Duration</th><th>Status</th><th>Performance</th></tr></thead><tbody>"
-            
+
             # Sort agents by duration (descending) for better readability
             sorted_agents = sorted(
                 agent_timings.items(),
                 key=lambda x: x[1].get("duration", 0),
-                reverse=True
+                reverse=True,
             )
-            
+
             for agent, metrics in sorted_agents:
                 duration = metrics.get("duration", 0)
                 status = metrics.get("status", "unknown")
                 perf_category = metrics.get("performance_category", "normal")
-                
+
                 # Format duration display
                 if duration == 0:
                     duration_str = "< 0.1s"
                 else:
                     duration_str = f"{duration:.1f}s"
-                
+
                 # Format status display
                 status_display = status.title() if status != "unknown" else "Completed"
-                status_class = f"agent-status status-{status}" if status != "unknown" else "agent-status status-success"
-                
+                status_class = (
+                    f"agent-status status-{status}"
+                    if status != "unknown"
+                    else "agent-status status-success"
+                )
+
                 html += f"""
                 <tr>
                     <td><strong>{agent.replace('_', ' ').title()}</strong></td>
@@ -1436,23 +1577,27 @@ class ComprehensiveInvestigationReportGenerator:
                     <td>{perf_category.title()}</td>
                 </tr>
                 """
-            
+
             html += "</tbody></table>"
         else:
             html += "<p>No agent performance data available.</p>"
-        
+
         return html
-    
+
     def _generate_tools_html(self, data: Dict[str, Any]) -> str:
         """Generate tools execution section HTML."""
         agents_data = data.get("agents", {})
-        agent_results = agents_data.get("agent_results", {}) if isinstance(agents_data, dict) else {}
+        agent_results = (
+            agents_data.get("agent_results", {})
+            if isinstance(agents_data, dict)
+            else {}
+        )
         thought_processes = data.get("thought_processes", [])
         journey = data.get("journey", {})
-        
+
         # Extract tool execution data from agent evidence
         tools_found = {}
-        
+
         # Extract tools from journey node executions
         if journey:
             node_executions = journey.get("node_executions", [])
@@ -1460,32 +1605,46 @@ class ComprehensiveInvestigationReportGenerator:
                 tool_name = node.get("tool_name")
                 agent_name = node.get("agent_name", "")
                 if tool_name:
-                    clean_agent = agent_name.replace("_agent", "").replace("_", " ") if agent_name else "Unknown"
+                    clean_agent = (
+                        agent_name.replace("_agent", "").replace("_", " ")
+                        if agent_name
+                        else "Unknown"
+                    )
                     if tool_name not in tools_found:
                         tools_found[tool_name] = {
                             "agent": clean_agent,
                             "purpose": f"Tool execution for {node.get('node_name', 'investigation')}",
-                            "status": "Success" if node.get("status") != "NodeStatus.FAILED" else "Failed",
-                            "key_result": f"Executed at {node.get('timestamp', '')[:19]}"
+                            "status": (
+                                "Success"
+                                if node.get("status") != "NodeStatus.FAILED"
+                                else "Failed"
+                            ),
+                            "key_result": f"Executed at {node.get('timestamp', '')[:19]}",
                         }
-        
+
         # Extract tools from thought processes if agent_results is empty
         if not tools_found and thought_processes:
             for tp in thought_processes:
                 if isinstance(tp, dict):
-                    agent_name = tp.get("agent_name", "").replace("_agent", "").replace("_", " ")
+                    agent_name = (
+                        tp.get("agent_name", "").replace("_agent", "").replace("_", " ")
+                    )
                     reasoning_steps = tp.get("reasoning_steps", [])
                     for step in reasoning_steps:
                         if step.get("reasoning_type") == "tool_use":
-                            tool_name = step.get("premise", "").split(":")[0] if ":" in step.get("premise", "") else "Tool"
+                            tool_name = (
+                                step.get("premise", "").split(":")[0]
+                                if ":" in step.get("premise", "")
+                                else "Tool"
+                            )
                             if tool_name not in tools_found:
                                 tools_found[tool_name] = {
                                     "agent": agent_name,
                                     "purpose": step.get("premise", "Tool execution"),
                                     "status": "Success",
-                                    "key_result": step.get("conclusion", "")
+                                    "key_result": step.get("conclusion", ""),
                                 }
-                    
+
                     # Also check for Snowflake usage in evidence
                     final_assessment = tp.get("final_assessment", {})
                     if isinstance(final_assessment, dict):
@@ -1497,9 +1656,9 @@ class ComprehensiveInvestigationReportGenerator:
                                         "agent": agent_name,
                                         "purpose": "Transaction Data Analysis",
                                         "status": "Success",
-                                        "key_result": "Retrieved transaction records"
+                                        "key_result": "Retrieved transaction records",
                                     }
-        
+
         for agent_name, agent_data in agent_results.items():
             if isinstance(agent_data, dict) and "findings" in agent_data:
                 findings = agent_data["findings"]
@@ -1514,23 +1673,30 @@ class ComprehensiveInvestigationReportGenerator:
                                         "agent": agent_name,
                                         "purpose": "IP Reputation & Malware Scanning",
                                         "status": "Success",
-                                        "result": evidence_item.split(": ", 1)[1] if ": " in evidence_item else evidence_item
+                                        "result": (
+                                            evidence_item.split(": ", 1)[1]
+                                            if ": " in evidence_item
+                                            else evidence_item
+                                        ),
                                     }
                                 elif "abuseipdb" in evidence_item.lower():
                                     tools_found["abuseipdb_analysis"] = {
                                         "agent": agent_name,
                                         "purpose": "IP Abuse Database Check",
-                                        "status": "Success", 
-                                        "result": evidence_item
+                                        "status": "Success",
+                                        "result": evidence_item,
                                     }
-                                elif "snowflake" in evidence_item.lower() and ("record" in evidence_item.lower() or "transaction" in evidence_item.lower()):
+                                elif "snowflake" in evidence_item.lower() and (
+                                    "record" in evidence_item.lower()
+                                    or "transaction" in evidence_item.lower()
+                                ):
                                     tools_found["snowflake_query"] = {
                                         "agent": agent_name,
                                         "purpose": "Transaction Data Analysis",
                                         "status": "Success",
-                                        "result": evidence_item
+                                        "result": evidence_item,
                                     }
-        
+
         # Also check Snowflake agent specifically
         snowflake_agent = agent_results.get("snowflake", {})
         if isinstance(snowflake_agent, dict) and "findings" in snowflake_agent:
@@ -1542,14 +1708,16 @@ class ComprehensiveInvestigationReportGenerator:
                         "agent": "snowflake",
                         "purpose": "Database Query Execution",
                         "status": "Success",
-                        "result": f"Retrieved {row_count} transaction records"
+                        "result": f"Retrieved {row_count} transaction records",
                     }
-        
+
         # If still no tools found, check for implicit tool usage in evidence
         if not tools_found and thought_processes:
             for tp in thought_processes:
                 if isinstance(tp, dict):
-                    agent_name = tp.get("agent_name", "").replace("_agent", "").replace("_", " ")
+                    agent_name = (
+                        tp.get("agent_name", "").replace("_agent", "").replace("_", " ")
+                    )
                     final_assessment = tp.get("final_assessment", {})
                     if isinstance(final_assessment, dict):
                         # Check metrics for Snowflake usage
@@ -1560,9 +1728,9 @@ class ComprehensiveInvestigationReportGenerator:
                                     "agent": agent_name,
                                     "purpose": "Transaction Data Analysis",
                                     "status": "Success",
-                                    "key_result": f"Retrieved {metrics.get('snowflake_records_count', 0)} transaction records"
-                    }
-        
+                                    "key_result": f"Retrieved {metrics.get('snowflake_records_count', 0)} transaction records",
+                                }
+
         if not tools_found:
             # Show a helpful message with what data is available
             if thought_processes:
@@ -1571,15 +1739,15 @@ class ComprehensiveInvestigationReportGenerator:
                 return "<p>No tool execution data found in journey tracking. Tools may have been used during agent execution phases.</p>"
             else:
                 return "<p>No tool execution data available.</p>"
-        
+
         html = "<table class='data-table'><thead><tr><th>Tool</th><th>Agent</th><th>Purpose</th><th>Status</th><th>Key Result</th></tr></thead><tbody>"
-        
+
         for tool_name, tool_data in tools_found.items():
-            agent = tool_data.get('agent', 'Unknown')
-            purpose = tool_data.get('purpose', 'Data analysis')
-            key_result = tool_data.get('key_result', 'Analysis completed')
-            status = tool_data.get('status', 'Success')
-            
+            agent = tool_data.get("agent", "Unknown")
+            purpose = tool_data.get("purpose", "Data analysis")
+            key_result = tool_data.get("key_result", "Analysis completed")
+            status = tool_data.get("status", "Success")
+
             html += f"""
             <tr>
                 <td><strong>{tool_name.replace('_', ' ').title()}</strong></td>
@@ -1589,15 +1757,15 @@ class ComprehensiveInvestigationReportGenerator:
                 <td>{key_result}</td>
             </tr>
             """
-        
+
         html += "</tbody></table>"
         return html
-    
+
     def _generate_charts_script(self, data: Dict[str, Any]) -> str:
         """Generate Chart.js scripts for time series charts."""
         journey = data.get("journey", {})
         thought_processes = data.get("thought_processes", [])
-        
+
         # Extract risk score over time from thought processes
         risk_score_data = []
         if thought_processes:
@@ -1606,18 +1774,22 @@ class ComprehensiveInvestigationReportGenerator:
                     timestamp = tp.get("start_timestamp") or tp.get("end_timestamp")
                     final_assessment = tp.get("final_assessment", {})
                     if isinstance(final_assessment, dict):
-                        risk_score = final_assessment.get("risk_score", final_assessment.get("risk", 0.0))
+                        risk_score = final_assessment.get(
+                            "risk_score", final_assessment.get("risk", 0.0)
+                        )
                         if timestamp and risk_score is not None:
                             try:
                                 from datetime import datetime
-                                dt = datetime.fromisoformat(timestamp.replace('Z', '+00:00'))
-                                risk_score_data.append({
-                                    "x": dt.isoformat(),
-                                    "y": float(risk_score)
-                                })
+
+                                dt = datetime.fromisoformat(
+                                    timestamp.replace("Z", "+00:00")
+                                )
+                                risk_score_data.append(
+                                    {"x": dt.isoformat(), "y": float(risk_score)}
+                                )
                             except Exception:
                                 pass
-        
+
         # Extract agent execution timeline
         agent_timeline_data = []
         if journey:
@@ -1630,15 +1802,22 @@ class ComprehensiveInvestigationReportGenerator:
                     if timestamp:
                         try:
                             from datetime import datetime
-                            dt = datetime.fromisoformat(timestamp.replace('Z', '+00:00'))
-                            agent_timeline_data.append({
-                                "x": dt.isoformat(),
-                                "y": duration_ms / 1000.0,  # Convert to seconds
-                                "label": node_name.replace("_agent", "").replace("_", " ").title()
-                            })
+
+                            dt = datetime.fromisoformat(
+                                timestamp.replace("Z", "+00:00")
+                            )
+                            agent_timeline_data.append(
+                                {
+                                    "x": dt.isoformat(),
+                                    "y": duration_ms / 1000.0,  # Convert to seconds
+                                    "label": node_name.replace("_agent", "")
+                                    .replace("_", " ")
+                                    .title(),
+                                }
+                            )
                         except Exception:
                             pass
-        
+
         # If no timeline data from journey, use thought processes
         if not agent_timeline_data and thought_processes:
             for tp in thought_processes:
@@ -1649,29 +1828,36 @@ class ComprehensiveInvestigationReportGenerator:
                     if start_ts and end_ts:
                         try:
                             from datetime import datetime
-                            start = datetime.fromisoformat(start_ts.replace('Z', '+00:00'))
-                            end = datetime.fromisoformat(end_ts.replace('Z', '+00:00'))
+
+                            start = datetime.fromisoformat(
+                                start_ts.replace("Z", "+00:00")
+                            )
+                            end = datetime.fromisoformat(end_ts.replace("Z", "+00:00"))
                             duration = (end - start).total_seconds()
-                            agent_timeline_data.append({
-                                "x": start.isoformat(),
-                                "y": duration,
-                                "label": agent_name.replace("_agent", "").replace("_", " ").title()
-                            })
+                            agent_timeline_data.append(
+                                {
+                                    "x": start.isoformat(),
+                                    "y": duration,
+                                    "label": agent_name.replace("_agent", "")
+                                    .replace("_", " ")
+                                    .title(),
+                                }
+                            )
                         except Exception:
                             pass
-        
+
         # Sort data by timestamp
         risk_score_data.sort(key=lambda x: x["x"])
         agent_timeline_data.sort(key=lambda x: x["x"])
-        
+
         # Generate JavaScript for charts
         risk_labels = [d["x"][:19] for d in risk_score_data]  # Format timestamp
         risk_values = [d["y"] for d in risk_score_data]
-        
+
         timeline_labels = [d["x"][:19] for d in agent_timeline_data]
         timeline_values = [d["y"] for d in agent_timeline_data]
         timeline_agent_names = [d.get("label", "Agent") for d in agent_timeline_data]
-        
+
         # Generate SVG-based charts matching analytics TimeSeriesChart
         risk_chart_svg = self._generate_svg_time_series_chart(
             risk_score_data,
@@ -1679,9 +1865,9 @@ class ComprehensiveInvestigationReportGenerator:
             y_label="Risk Score",
             width=800,
             height=300,
-            chart_id="riskChart"
+            chart_id="riskChart",
         )
-        
+
         timeline_chart_svg = self._generate_svg_time_series_chart(
             agent_timeline_data,
             title="Agent Execution Duration Over Time",
@@ -1689,9 +1875,9 @@ class ComprehensiveInvestigationReportGenerator:
             width=800,
             height=300,
             show_points=True,
-            chart_id="timelineChart"
+            chart_id="timelineChart",
         )
-        
+
         script = f"""
     <script>
         // Update chart containers with SVG charts
@@ -1709,9 +1895,9 @@ class ComprehensiveInvestigationReportGenerator:
         }});
     </script>
         """
-        
+
         return script
-    
+
     def _generate_svg_time_series_chart(
         self,
         data_points: List[Dict[str, Any]],
@@ -1720,35 +1906,41 @@ class ComprehensiveInvestigationReportGenerator:
         width: int = 800,
         height: int = 300,
         show_points: bool = False,
-        chart_id: str = "chart"
+        chart_id: str = "chart",
     ) -> str:
         """Generate SVG time series chart matching analytics TimeSeriesChart component."""
         if not data_points:
             return f'<div style="padding: 40px; text-align: center; color: #666;">No data available for {title}</div>'
-        
+
         # Extract values and timestamps
         values = [d["y"] for d in data_points]
         timestamps = [d["x"] for d in data_points]
-        
+
         # Calculate min/max for scaling
         min_val = min(values) if values else 0
         max_val = max(values) if values else 1
         range_val = max_val - min_val if max_val != min_val else 1
-        
+
         # Padding for chart area
         padding = {"top": 40, "right": 40, "bottom": 60, "left": 80}
         chart_width = width - padding["left"] - padding["right"]
         chart_height = height - padding["top"] - padding["bottom"]
-        
+
         # Generate path for line
         path_points = []
         for i, (timestamp, value) in enumerate(zip(timestamps, values)):
-            x = (i / (len(data_points) - 1) if len(data_points) > 1 else 0) * chart_width + padding["left"]
-            y = chart_height - ((value - min_val) / range_val) * chart_height + padding["top"]
+            x = (
+                i / (len(data_points) - 1) if len(data_points) > 1 else 0
+            ) * chart_width + padding["left"]
+            y = (
+                chart_height
+                - ((value - min_val) / range_val) * chart_height
+                + padding["top"]
+            )
             path_points.append(f"{x},{y}")
-        
+
         path_d = f"M {' L '.join(path_points)}" if path_points else ""
-        
+
         # Generate grid lines
         grid_lines = []
         for ratio in [0, 0.25, 0.5, 0.75, 1]:
@@ -1757,34 +1949,43 @@ class ComprehensiveInvestigationReportGenerator:
                 f'<line x1="{padding["left"]}" y1="{y}" x2="{width - padding["right"]}" '
                 f'y2="{y}" stroke="#6B21A8" stroke-width="1" stroke-dasharray="4 4" opacity="0.3"/>'
             )
-        
+
         # Generate points if requested
         points_svg = ""
         if show_points:
             for i, (timestamp, value) in enumerate(zip(timestamps, values)):
-                x = (i / (len(data_points) - 1) if len(data_points) > 1 else 0) * chart_width + padding["left"]
-                y = chart_height - ((value - min_val) / range_val) * chart_height + padding["top"]
+                x = (
+                    i / (len(data_points) - 1) if len(data_points) > 1 else 0
+                ) * chart_width + padding["left"]
+                y = (
+                    chart_height
+                    - ((value - min_val) / range_val) * chart_height
+                    + padding["top"]
+                )
                 points_svg += f'<circle cx="{x}" cy="{y}" r="3" fill="#A855F7"/>'
-        
+
         # Format timestamps for labels
         def format_timestamp(ts_str: str) -> str:
             try:
                 from datetime import datetime
-                dt = datetime.fromisoformat(ts_str.replace('Z', '+00:00'))
-                return dt.strftime('%H:%M:%S')
+
+                dt = datetime.fromisoformat(ts_str.replace("Z", "+00:00"))
+                return dt.strftime("%H:%M:%S")
             except:
                 return ts_str[:19] if len(ts_str) > 19 else ts_str
-        
+
         # Generate x-axis labels (show every nth label to avoid crowding)
         x_labels = []
         label_interval = max(1, len(data_points) // 8)  # Show ~8 labels
         for i in range(0, len(data_points), label_interval):
-            x = (i / (len(data_points) - 1) if len(data_points) > 1 else 0) * chart_width + padding["left"]
+            x = (
+                i / (len(data_points) - 1) if len(data_points) > 1 else 0
+            ) * chart_width + padding["left"]
             label = format_timestamp(timestamps[i])
             x_labels.append(
                 f'<text x="{x}" y="{height - 15}" fill="#D8B4FE" font-size="10" text-anchor="middle">{label}</text>'
             )
-        
+
         # Generate y-axis labels
         y_labels = []
         for ratio in [0, 0.25, 0.5, 0.75, 1]:
@@ -1793,8 +1994,8 @@ class ComprehensiveInvestigationReportGenerator:
             y_labels.append(
                 f'<text x="{padding["left"] - 10}" y="{y + 4}" fill="#D8B4FE" font-size="10" text-anchor="end">{val:.2f}</text>'
             )
-        
-        svg = f'''
+
+        svg = f"""
         <div style="background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 8px; padding: 16px; width: 100%;">
             <svg viewBox="0 0 {width} {height}" preserveAspectRatio="xMidYMid meet" style="width: 100%; height: auto; max-height: 100%;">
                 <defs>
@@ -1832,19 +2033,19 @@ class ComprehensiveInvestigationReportGenerator:
                 </g>
             </svg>
         </div>
-        '''
-        
+        """
+
         return svg
-    
+
     def _generate_technical_details_html(self, data: Dict[str, Any]) -> str:
         """Generate technical details section HTML."""
         validation = data.get("validation", {})
         metadata = data.get("metadata", {})
         journey = data.get("journey", {})
         thought_processes = data.get("thought_processes", [])
-        
+
         html = "<h4>Investigation Metadata</h4>"
-        
+
         # Show metadata
         if metadata:
             html += f"""
@@ -1863,9 +2064,9 @@ class ComprehensiveInvestigationReportGenerator:
                 </div>
             </div>
             """
-        
+
         html += "<h4>Validation Results</h4>"
-        
+
         if validation:
             html += f"""
             <div class="metrics-grid">
@@ -1883,23 +2084,23 @@ class ComprehensiveInvestigationReportGenerator:
                 </div>
             </div>
             """
-            
+
             # Warnings and recommendations
             warnings = validation.get("warnings", [])
             recommendations = validation.get("recommendations", [])
-            
+
             if warnings:
                 html += "<h5>Validation Warnings</h5><ul class='finding-list'>"
                 for warning in warnings:
                     html += f'<li class="finding-item" style="border-left-color: #fd7e14;">{warning}</li>'
                 html += "</ul>"
-            
+
             if recommendations:
                 html += "<h5>Technical Recommendations</h5><ul class='finding-list'>"
                 for rec in recommendations:
                     html += f'<li class="finding-item">{rec}</li>'
                 html += "</ul>"
-        
+
         # Journey tracking summary
         if journey:
             node_executions = journey.get("node_executions", [])
@@ -1916,7 +2117,7 @@ class ComprehensiveInvestigationReportGenerator:
                 </div>
             </div>
             """
-            
+
             # Show node execution summary
             if node_executions:
                 html += "<h5>Node Execution Timeline</h5><table class='data-table'><thead><tr><th>Node</th><th>Status</th><th>Duration</th><th>Timestamp</th></tr></thead><tbody>"
@@ -1924,7 +2125,11 @@ class ComprehensiveInvestigationReportGenerator:
                     node_name = node.get("node_name", "Unknown")
                     status = node.get("status", "Unknown")
                     duration_ms = node.get("duration_ms", 0)
-                    timestamp = node.get("timestamp", "")[:19] if node.get("timestamp") else "N/A"
+                    timestamp = (
+                        node.get("timestamp", "")[:19]
+                        if node.get("timestamp")
+                        else "N/A"
+                    )
                     html += f"""
                     <tr>
                         <td>{node_name.replace('_', ' ').title()}</td>
@@ -1934,7 +2139,7 @@ class ComprehensiveInvestigationReportGenerator:
                     </tr>
                     """
                 html += "</tbody></table>"
-        
+
         # Thought processes summary
         if thought_processes:
             html += f"""
@@ -1943,7 +2148,12 @@ class ComprehensiveInvestigationReportGenerator:
             <ul class="finding-list">
             """
             for tp in thought_processes:
-                agent_name = tp.get("agent_name", "Unknown").replace("_agent", "").replace("_", " ").title()
+                agent_name = (
+                    tp.get("agent_name", "Unknown")
+                    .replace("_agent", "")
+                    .replace("_", " ")
+                    .title()
+                )
                 domain = tp.get("domain", "unknown").title()
                 risk_score = 0.0
                 final_assessment = tp.get("final_assessment", {})
@@ -1951,7 +2161,7 @@ class ComprehensiveInvestigationReportGenerator:
                     risk_score = float(final_assessment.get("risk_score", 0.0))
                 html += f'<li class="finding-item">{agent_name} ({domain}): Risk Score {risk_score:.2f}</li>'
                 html += "</ul>"
-        
+
         # Processing summary
         html += f"""
         <h4>Processing Summary</h4>
@@ -1959,24 +2169,26 @@ class ComprehensiveInvestigationReportGenerator:
         <p><strong>Processing Errors:</strong> {len(data.get('processing_errors', []))}</p>
         <p><strong>Investigation Mode:</strong> {metadata.get('mode', 'Unknown')}</p>
         """
-        
-        errors = data.get('processing_errors', [])
+
+        errors = data.get("processing_errors", [])
         if errors:
             html += "<h5>Processing Errors</h5><ul>"
             for error in errors:
                 html += f"<li>{error}</li>"
             html += "</ul>"
-        
+
         return html
 
     def _generate_merchant_validation_html(self, data: Dict[str, Any]) -> str:
         """Generate merchant validation section HTML."""
         validation = data.get("validation", {})
         merchant_validation = validation.get("merchant", {})
-        
-        if not merchant_validation or not merchant_validation.get("validation_complete"):
+
+        if not merchant_validation or not merchant_validation.get(
+            "validation_complete"
+        ):
             return ""
-        
+
         predicted_risk = merchant_validation.get("predicted_risk_score", 0.0)
         actual_fraud_rate = merchant_validation.get("actual_fraud_rate", 0.0)
         prediction_correct = merchant_validation.get("prediction_correct", False)
@@ -1986,7 +2198,7 @@ class ComprehensiveInvestigationReportGenerator:
         historical_transactions = merchant_validation.get("historical_transactions", 0)
         actual_fraud_count = merchant_validation.get("actual_fraud_count", 0)
         actual_total = merchant_validation.get("actual_total_transactions", 0)
-        
+
         # Determine quality color
         quality_colors = {
             "excellent": "#28a745",
@@ -1994,18 +2206,21 @@ class ComprehensiveInvestigationReportGenerator:
             "fair": "#ffc107",
             "poor": "#dc3545",
             "insufficient_data": "#6c757d",
-            "no_prediction": "#6c757d"
+            "no_prediction": "#6c757d",
         }
         quality_color = quality_colors.get(validation_quality, "#6c757d")
-        
+
         # Format historical date
         try:
             from datetime import datetime
-            hist_date = datetime.fromisoformat(historical_date.replace('Z', '+00:00'))
-            hist_date_str = hist_date.strftime('%Y-%m-%d')
+
+            hist_date = datetime.fromisoformat(historical_date.replace("Z", "+00:00"))
+            hist_date_str = hist_date.strftime("%Y-%m-%d")
         except:
-            hist_date_str = historical_date[:10] if len(historical_date) >= 10 else historical_date
-        
+            hist_date_str = (
+                historical_date[:10] if len(historical_date) >= 10 else historical_date
+            )
+
         return f"""
         <!-- Merchant Validation -->
         <div class="section">
@@ -2108,30 +2323,32 @@ class ComprehensiveInvestigationReportGenerator:
             </div>
         </div>
         """
-    
+
     def _generate_thought_process_html(self, data: Dict[str, Any]) -> str:
         """Generate HTML for agent thought processes."""
         thought_processes = data.get("thought_processes", [])
-        
+
         if not thought_processes:
             # Check if we have journey data that we can use
             journey = data.get("journey", {})
             if journey:
                 return f"<p>Journey tracking data available with {len(journey.get('node_executions', []))} node executions. Thought process files not found in folder.</p>"
             return "<p>No thought process data available.</p>"
-        
+
         html = ""
-        
+
         # Sort thought processes by agent name for better organization
-        sorted_thoughts = sorted(thought_processes, key=lambda x: x.get("agent_name", "unknown"))
-        
+        sorted_thoughts = sorted(
+            thought_processes, key=lambda x: x.get("agent_name", "unknown")
+        )
+
         for thought_data in sorted_thoughts:
             agent_name = thought_data.get("agent_name", "Unknown Agent")
             domain = thought_data.get("domain", "unknown")
             start_time = thought_data.get("start_timestamp", "")
             end_time = thought_data.get("end_timestamp", "")
             reasoning_steps = thought_data.get("reasoning_steps", [])
-            
+
             # Agent header
             html += f"""
             <div class="thought-process-container">
@@ -2140,10 +2357,10 @@ class ComprehensiveInvestigationReportGenerator:
                     <span class="timestamp">⏰ {start_time[:19] if start_time else 'N/A'} - {end_time[:19] if end_time else 'N/A'}</span>
                 </div>
             """
-            
+
             if reasoning_steps:
                 html += "<div class='reasoning-chain'>"
-                
+
                 for i, step in enumerate(reasoning_steps, 1):
                     step_type = step.get("reasoning_type", "analysis")
                     premise = step.get("premise", "")
@@ -2151,10 +2368,14 @@ class ComprehensiveInvestigationReportGenerator:
                     conclusion = step.get("conclusion", "")
                     confidence = step.get("confidence", 0)
                     evidence = step.get("supporting_evidence", [])
-                    
+
                     # Step icon based on type
-                    step_icon = "🔍" if step_type == "analysis" else "💡" if step_type == "conclusion" else "⚡"
-                    
+                    step_icon = (
+                        "🔍"
+                        if step_type == "analysis"
+                        else "💡" if step_type == "conclusion" else "⚡"
+                    )
+
                     html += f"""
                     <div class="reasoning-step">
                         <div class="step-header">
@@ -2170,23 +2391,25 @@ class ComprehensiveInvestigationReportGenerator:
                             <div class="conclusion"><strong>Conclusion:</strong> {conclusion}</div>
                         </div>
                     """
-                    
+
                     if evidence:
                         html += "<div class='evidence'><strong>Supporting Evidence:</strong><ul>"
                         for ev in evidence[:3]:  # Limit to first 3 pieces of evidence
                             ev_type = ev.get("type", "unknown")
-                            ev_data = str(ev.get("data", ""))[:100]  # Truncate long data
+                            ev_data = str(ev.get("data", ""))[
+                                :100
+                            ]  # Truncate long data
                             html += f"<li><em>{ev_type}:</em> {ev_data}</li>"
                         html += "</ul></div>"
-                    
+
                     html += "</div>"
-                
+
                 html += "</div>"
             else:
                 html += "<p>No detailed reasoning steps available for this agent.</p>"
-            
+
             html += "</div><hr class='agent-separator'>"
-        
+
         # Add CSS styles for thought process visualization
         html = f"""
         <style>
@@ -2265,21 +2488,21 @@ class ComprehensiveInvestigationReportGenerator:
         </style>
         {html}
         """
-        
+
         return html
 
     def _generate_server_logs_html(self, data: Dict[str, Any]) -> str:
         """Generate HTML for server logs."""
         server_logs = data.get("server_logs", {})
-        
+
         if not server_logs:
             return "<p>No server logs available.</p>"
-        
+
         # Handle raw logs format
         if "raw_logs" in server_logs:
             raw_logs = server_logs.get("raw_logs", "")
             log_count = server_logs.get("log_count", 0)
-            
+
             html = f"""
             <div class="metrics-grid">
                 <div class="metric-card">
@@ -2296,12 +2519,12 @@ class ComprehensiveInvestigationReportGenerator:
             </div>
             """
             return html
-        
+
         capture_session = server_logs.get("capture_session", {})
         logs = server_logs.get("server_logs", [])
-        
+
         html = ""
-        
+
         # Capture session summary
         if capture_session:
             start_time = capture_session.get("start_time", "")
@@ -2309,7 +2532,7 @@ class ComprehensiveInvestigationReportGenerator:
             duration = capture_session.get("duration_seconds", 0)
             total_count = capture_session.get("total_log_count", 0)
             level_counts = capture_session.get("level_counts", {})
-            
+
             html += f"""
             <div class="logs-summary">
                 <h4>📊 Logging Session Summary</h4>
@@ -2331,24 +2554,24 @@ class ComprehensiveInvestigationReportGenerator:
                 <div class="level-breakdown">
                     <strong>Log Level Breakdown:</strong>
             """
-            
+
             for level, count in level_counts.items():
                 color = {
                     "DEBUG": "#6c757d",
-                    "INFO": "#17a2b8", 
+                    "INFO": "#17a2b8",
                     "WARNING": "#ffc107",
                     "ERROR": "#dc3545",
-                    "CRITICAL": "#721c24"
+                    "CRITICAL": "#721c24",
                 }.get(level, "#6c757d")
-                
+
                 html += f"""
                 <span class="level-badge" style="background: {color}">
                     {level}: {count}
                 </span>
                 """
-            
+
             html += "</div></div>"
-        
+
         # Server logs table
         if logs:
             html += """
@@ -2367,36 +2590,46 @@ class ComprehensiveInvestigationReportGenerator:
                         </thead>
                         <tbody>
             """
-            
+
             # Show only recent logs (limit to 50 for performance)
             display_logs = logs[-50:] if len(logs) > 50 else logs
-            
+
             for log_entry in display_logs:
-                timestamp = log_entry.get("timestamp", "")[:19]  # Remove microseconds and timezone
+                timestamp = log_entry.get("timestamp", "")[
+                    :19
+                ]  # Remove microseconds and timezone
                 level = log_entry.get("level", "INFO")
                 logger_name = log_entry.get("logger_name", "")
                 message = log_entry.get("message", "")
                 source_file = log_entry.get("source_file", "")
                 line_number = log_entry.get("line_number", "")
-                
+
                 # Truncate long messages
-                display_message = message[:100] + "..." if len(message) > 100 else message
-                
+                display_message = (
+                    message[:100] + "..." if len(message) > 100 else message
+                )
+
                 # Source info
                 source_info = ""
                 if source_file:
-                    source_name = source_file.split("/")[-1] if "/" in source_file else source_file
-                    source_info = f"{source_name}:{line_number}" if line_number else source_name
-                
+                    source_name = (
+                        source_file.split("/")[-1]
+                        if "/" in source_file
+                        else source_file
+                    )
+                    source_info = (
+                        f"{source_name}:{line_number}" if line_number else source_name
+                    )
+
                 # Level color
                 level_color = {
                     "DEBUG": "#6c757d",
                     "INFO": "#17a2b8",
-                    "WARNING": "#ffc107", 
+                    "WARNING": "#ffc107",
                     "ERROR": "#dc3545",
-                    "CRITICAL": "#721c24"
+                    "CRITICAL": "#721c24",
                 }.get(level, "#6c757d")
-                
+
                 html += f"""
                 <tr>
                     <td class="timestamp">{timestamp}</td>
@@ -2406,7 +2639,7 @@ class ComprehensiveInvestigationReportGenerator:
                     <td class="source">{source_info}</td>
                 </tr>
                 """
-            
+
             if len(logs) > 50:
                 html += f"""
                 <tr class="logs-truncated">
@@ -2415,14 +2648,14 @@ class ComprehensiveInvestigationReportGenerator:
                     </td>
                 </tr>
                 """
-            
+
             html += """
                         </tbody>
                     </table>
                 </div>
             </div>
             """
-        
+
         # Add CSS styles for server logs
         html = f"""
         <style>
@@ -2538,29 +2771,27 @@ class ComprehensiveInvestigationReportGenerator:
         </style>
         {html}
         """
-        
+
         return html
 
 
 def generate_comprehensive_investigation_report(
     investigation_folder: Path,
     output_path: Optional[Path] = None,
-    title: Optional[str] = None
+    title: Optional[str] = None,
 ) -> Path:
     """
     Generate comprehensive investigation report from investigation folder.
-    
+
     Args:
         investigation_folder: Path to investigation folder
         output_path: Output path for HTML report (optional)
         title: Report title (optional)
-        
+
     Returns:
         Path to generated HTML report
     """
     generator = ComprehensiveInvestigationReportGenerator()
     return generator.generate_comprehensive_report(
-        investigation_folder=investigation_folder,
-        output_path=output_path,
-        title=title
+        investigation_folder=investigation_folder, output_path=output_path, title=title
     )

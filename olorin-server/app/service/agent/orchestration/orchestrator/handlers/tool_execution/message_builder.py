@@ -4,8 +4,9 @@ Message Builder
 Builds messages for tool execution phase.
 """
 
-from typing import Dict, Any, List
-from langchain_core.messages import SystemMessage, HumanMessage
+from typing import Any, Dict, List
+
+from langchain_core.messages import HumanMessage, SystemMessage
 
 from app.service.logging import get_bridge_logger
 
@@ -15,35 +16,52 @@ logger = get_bridge_logger(__name__)
 class MessageBuilder:
     """Builds messages for tool execution interactions."""
 
-    def __init__(self, tools: List[Any], create_enhanced_system_prompt_fn, summarize_snowflake_data_fn):
+    def __init__(
+        self,
+        tools: List[Any],
+        create_enhanced_system_prompt_fn,
+        summarize_snowflake_data_fn,
+    ):
         """Initialize with tools and utility functions."""
         self.tools = tools
         self._create_enhanced_system_prompt = create_enhanced_system_prompt_fn
         self._summarize_snowflake_data = summarize_snowflake_data_fn
 
-    def create_tool_selection_messages(self, state: Dict[str, Any], snowflake_data: Dict[str, Any],
-                                     tools_used: List[str], tool_count: int,
-                                     tool_execution_attempts: int, orchestrator_loops: int) -> List:
+    def create_tool_selection_messages(
+        self,
+        state: Dict[str, Any],
+        snowflake_data: Dict[str, Any],
+        tools_used: List[str],
+        tool_count: int,
+        tool_execution_attempts: int,
+        orchestrator_loops: int,
+    ) -> List:
         """Create messages for tool selection."""
         # Format snowflake data for LLM
         formatted_summary = self._summarize_snowflake_data(snowflake_data)
-        
+
         # Log what formatted data is being sent to LLM
         if snowflake_data:
-            row_count = len(snowflake_data.get('results', [])) if isinstance(snowflake_data, dict) and 'results' in snowflake_data else snowflake_data.get('row_count', 0)
+            row_count = (
+                len(snowflake_data.get("results", []))
+                if isinstance(snowflake_data, dict) and "results" in snowflake_data
+                else snowflake_data.get("row_count", 0)
+            )
             logger.info("📊 LLM receiving formatted Snowflake data:")
             logger.info(f"   📈 Formatted summary:")
-            for line in formatted_summary.split('\n'):
+            for line in formatted_summary.split("\n"):
                 if line.strip():
                     logger.info(f"   {line}")
             logger.info(f"   📝 Included in: HumanMessage (tool execution phase)")
-            logger.info(f"   📊 Source data: {row_count} raw records → formatted summary")
-        
+            logger.info(
+                f"   📊 Source data: {row_count} raw records → formatted summary"
+            )
+
         # Check if composio tools should be forced
-        entity_id = state.get('entity_id', '')
-        entity_type = state.get('entity_type', '')
+        entity_id = state.get("entity_id", "")
+        entity_type = state.get("entity_type", "")
         force_composio = orchestrator_loops >= 2 and "composio_search" not in tools_used
-        
+
         composio_instruction = ""
         if force_composio:
             composio_instruction = f"""
@@ -57,7 +75,7 @@ class MessageBuilder:
         This is CRITICAL for comprehensive fraud detection. Web intelligence provides OSINT data that complements
         internal transaction analysis. You MUST call composio_search before proceeding.
         """
-        
+
         tool_selection_prompt = f"""
         Based on the Snowflake analysis results, select appropriate additional tools for comprehensive investigation.
 
@@ -100,32 +118,41 @@ class MessageBuilder:
         # Skip AIMessages with tool_calls to avoid API errors about incomplete tool responses
         # This is safe because we're starting a fresh tool selection round
         from langchain_core.messages import AIMessage, ToolMessage
+
         existing_messages = []
         messages = state.get("messages", [])
-        
+
         for msg in messages:
             # Skip SystemMessages (we'll add a new one)
             if isinstance(msg, SystemMessage):
                 continue
-            
+
             # Skip AIMessages with tool_calls - they require complete ToolMessage responses
             # This prevents API errors about incomplete tool_call_id responses
-            if isinstance(msg, AIMessage) and hasattr(msg, 'tool_calls') and msg.tool_calls:
-                logger.debug(f"⚠️ Skipping AIMessage with {len(msg.tool_calls)} tool_calls to avoid incomplete response errors")
+            if (
+                isinstance(msg, AIMessage)
+                and hasattr(msg, "tool_calls")
+                and msg.tool_calls
+            ):
+                logger.debug(
+                    f"⚠️ Skipping AIMessage with {len(msg.tool_calls)} tool_calls to avoid incomplete response errors"
+                )
                 continue
-            
+
             # Skip ToolMessages - they're only valid when paired with AIMessages with tool_calls
             if isinstance(msg, ToolMessage):
-                logger.debug(f"⚠️ Skipping ToolMessage to avoid orphaned tool response errors")
+                logger.debug(
+                    f"⚠️ Skipping ToolMessage to avoid orphaned tool response errors"
+                )
                 continue
-            
+
             # Include HumanMessages and AIMessages without tool_calls
             existing_messages.append(msg)
 
         # Extract time_range from state
-        time_range = state.get('time_range')
+        time_range = state.get("time_range")
         time_range_instruction = ""
-        if time_range and time_range.get('start_time') and time_range.get('end_time'):
+        if time_range and time_range.get("start_time") and time_range.get("end_time"):
             time_range_instruction = f"""
 ⏰ INVESTIGATION TIME RANGE: {time_range['start_time']} to {time_range['end_time']}
 CRITICAL: When invoking ANY data query tools (Splunk, SumoLogic, Database queries, Blockchain, etc.),

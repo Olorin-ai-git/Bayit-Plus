@@ -5,6 +5,7 @@ Captures risk scoring, factors, and decision-making for investigation entities.
 """
 
 from typing import Dict, List, Optional
+
 from app.service.logging.investigation_data_models import RiskFactor
 
 
@@ -24,7 +25,7 @@ class RiskCalculationInstrumentor:
         final_score: float,
         overall_reasoning: str,
         confidence: float,
-        recommendations: Optional[List[str]] = None
+        recommendations: Optional[List[str]] = None,
     ) -> float:
         """Log a complete risk calculation with all factors and reasoning."""
         intermediate_scores = {}
@@ -38,7 +39,7 @@ class RiskCalculationInstrumentor:
                 "weight": factor.weight,
                 "weighted_contribution": weighted,
                 "reasoning": factor.reasoning,
-                "evidence_count": len(factor.evidence)
+                "evidence_count": len(factor.evidence),
             }
             total_weighted += weighted
             total_weight += factor.weight
@@ -49,7 +50,7 @@ class RiskCalculationInstrumentor:
                 "total_weight": total_weight,
                 "average_weighted": total_weighted / total_weight,
                 "calculation_method": calculation_method,
-                "number_of_factors": len(risk_factors)
+                "number_of_factors": len(risk_factors),
             }
 
         risk_factors_dict = {
@@ -58,7 +59,7 @@ class RiskCalculationInstrumentor:
                 "weight": factor.weight,
                 "weighted_score": factor.weighted_score(),
                 "reasoning": factor.reasoning,
-                "evidence_count": len(factor.evidence)
+                "evidence_count": len(factor.evidence),
             }
             for factor in risk_factors
         }
@@ -72,7 +73,7 @@ class RiskCalculationInstrumentor:
             intermediate_scores=intermediate_scores,
             final_score=final_score,
             reasoning=overall_reasoning,
-            confidence=confidence
+            confidence=confidence,
         )
 
         self.logger.log_event(
@@ -84,8 +85,8 @@ class RiskCalculationInstrumentor:
                 "confidence": confidence,
                 "number_of_factors": len(risk_factors),
                 "calculation_method": calculation_method,
-                "recommendations": recommendations or []
-            }
+                "recommendations": recommendations or [],
+            },
         )
 
         return final_score
@@ -97,10 +98,12 @@ class RiskCalculationInstrumentor:
         threshold: float,
         decision: str,
         reasoning: str,
-        action_items: List[str]
+        action_items: List[str],
     ) -> None:
         """Log risk threshold-based decisions."""
-        confidence = min(1.0, 1.0 - (abs(risk_score - threshold) / max(risk_score, threshold)))
+        confidence = min(
+            1.0, 1.0 - (abs(risk_score - threshold) / max(risk_score, threshold))
+        )
 
         self.logger.log_agent_decision(
             agent_name=self.agent_name,
@@ -109,7 +112,7 @@ class RiskCalculationInstrumentor:
                 f"escalate (score >= {threshold})",
                 f"investigate (score >= {threshold * 0.8})",
                 f"monitor (score >= {threshold * 0.5})",
-                f"clear (score < {threshold * 0.5})"
+                f"clear (score < {threshold * 0.5})",
             ],
             selected_option=decision,
             reasoning=reasoning,
@@ -118,8 +121,8 @@ class RiskCalculationInstrumentor:
                 "entity_id": entity_id,
                 "risk_score": risk_score,
                 "threshold": threshold,
-                "action_items": action_items
-            }
+                "action_items": action_items,
+            },
         )
 
         self.logger.log_event(
@@ -130,8 +133,8 @@ class RiskCalculationInstrumentor:
                 "risk_score": risk_score,
                 "threshold": threshold,
                 "decision": decision,
-                "action_items": action_items
-            }
+                "action_items": action_items,
+            },
         )
 
     def log_risk_aggregation(
@@ -140,10 +143,12 @@ class RiskCalculationInstrumentor:
         agent_scores: Dict[str, float],
         aggregation_method: str,
         final_score: float,
-        reasoning: str
+        reasoning: str,
     ) -> float:
         """Log aggregation of scores from multiple agents."""
-        avg_score = sum(agent_scores.values()) / len(agent_scores) if agent_scores else 0
+        avg_score = (
+            sum(agent_scores.values()) / len(agent_scores) if agent_scores else 0
+        )
 
         self.logger.log_event(
             event_type="risk_aggregation",
@@ -154,8 +159,8 @@ class RiskCalculationInstrumentor:
                 "aggregation_method": aggregation_method,
                 "average_score": avg_score,
                 "final_score": final_score,
-                "reasoning": reasoning
-            }
+                "reasoning": reasoning,
+            },
         )
 
         return final_score
@@ -168,7 +173,7 @@ class RiskCalculationInstrumentor:
         model_score: float,
         confidence_interval: tuple,
         reasoning: str,
-        features_used: List[str]
+        features_used: List[str],
     ) -> float:
         """Log ML model-based risk prediction."""
         self.logger.log_event(
@@ -182,8 +187,8 @@ class RiskCalculationInstrumentor:
                 "confidence_upper": confidence_interval[1],
                 "reasoning": reasoning,
                 "features_count": len(features_used),
-                "features": features_used[:5]
-            }
+                "features": features_used[:5],
+            },
         )
 
         return model_score

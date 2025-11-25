@@ -11,7 +11,7 @@ SYSTEM MANDATE Compliance:
 
 import json
 import re
-from typing import Dict, Any
+from typing import Any, Dict
 
 
 def replace_placeholders(template_json: str, entity_values: Dict[str, str]) -> str:

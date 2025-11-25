@@ -10,13 +10,13 @@ Date: 2025-11-12
 Spec: /specs/021-live-merged-logstream/research.md
 """
 
-from typing import AsyncIterator, Dict
-from collections import OrderedDict
 import hashlib
 import logging
+from collections import OrderedDict
+from typing import AsyncIterator, Dict
 
-from app.models.unified_log import UnifiedLog
 from app.config.logstream_config import AggregatorConfig
+from app.models.unified_log import UnifiedLog
 
 logger = logging.getLogger(__name__)
 

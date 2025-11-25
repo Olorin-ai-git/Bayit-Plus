@@ -11,14 +11,11 @@ maintainability and compliance with file size requirements.
 """
 
 # Import from the new modular structure
-from .risk_scoring import RiskScoringTool, RiskScoringInput, ComprehensiveRiskResult
+from .risk_scoring import ComprehensiveRiskResult, RiskScoringInput, RiskScoringTool
 
 # For backward compatibility, expose the classes at module level
-__all__ = [
-    'RiskScoringTool',
-    'RiskScoringInput',
-    'ComprehensiveRiskResult'
-]
+__all__ = ["RiskScoringTool", "RiskScoringInput", "ComprehensiveRiskResult"]
+
 
 # Legacy function for backward compatibility
 def get_risk_scoring_tool():

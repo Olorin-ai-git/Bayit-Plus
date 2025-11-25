@@ -11,12 +11,24 @@ SYSTEM MANDATE Compliance:
 - Complete implementation: No placeholders or TODOs
 """
 
-from sqlalchemy import Column, String, Text, Integer, Boolean, Float, DateTime, CheckConstraint, Index, ForeignKey
-from sqlalchemy.sql import func
-from typing import Optional, Dict, Any, List
-from datetime import datetime
 import json
 import uuid
+from datetime import datetime
+from typing import Any, Dict, List, Optional
+
+from sqlalchemy import (
+    Boolean,
+    CheckConstraint,
+    Column,
+    DateTime,
+    Float,
+    ForeignKey,
+    Index,
+    Integer,
+    String,
+    Text,
+)
+from sqlalchemy.sql import func
 
 from app.persistence.database import Base, JSONType, UUIDType
 
@@ -36,11 +48,22 @@ class Detector(Base):
     metrics = Column(JSONType, nullable=False)
     params = Column(JSONType, nullable=False)
     enabled = Column(Boolean, nullable=False, default=True, index=True)
-    created_at = Column(DateTime(timezone=True), nullable=False, server_default=func.now())
-    updated_at = Column(DateTime(timezone=True), nullable=False, server_default=func.now(), onupdate=func.now(), index=True)
+    created_at = Column(
+        DateTime(timezone=True), nullable=False, server_default=func.now()
+    )
+    updated_at = Column(
+        DateTime(timezone=True),
+        nullable=False,
+        server_default=func.now(),
+        onupdate=func.now(),
+        index=True,
+    )
 
     __table_args__ = (
-        CheckConstraint("type IN ('stl_mad', 'cusum', 'isoforest', 'rcf', 'matrix_profile')", name="chk_detector_type"),
+        CheckConstraint(
+            "type IN ('stl_mad', 'cusum', 'isoforest', 'rcf', 'matrix_profile')",
+            name="chk_detector_type",
+        ),
         Index("idx_detectors_type", "type"),
         Index("idx_detectors_enabled", "enabled"),
         Index("idx_detectors_updated", "updated_at"),
@@ -73,16 +96,26 @@ class DetectionRun(Base):
     __tablename__ = "detection_runs"
 
     id = Column(UUIDType(), primary_key=True, default=uuid.uuid4, nullable=False)
-    detector_id = Column(UUIDType(), ForeignKey("detectors.id", ondelete="CASCADE"), nullable=False, index=True)
+    detector_id = Column(
+        UUIDType(),
+        ForeignKey("detectors.id", ondelete="CASCADE"),
+        nullable=False,
+        index=True,
+    )
     status = Column(String(50), nullable=False, index=True)
-    started_at = Column(DateTime(timezone=True), nullable=False, server_default=func.now(), index=True)
+    started_at = Column(
+        DateTime(timezone=True), nullable=False, server_default=func.now(), index=True
+    )
     finished_at = Column(DateTime(timezone=True), nullable=True)
     window_from = Column(DateTime(timezone=True), nullable=False)
     window_to = Column(DateTime(timezone=True), nullable=False)
     info = Column(JSONType, nullable=True)
 
     __table_args__ = (
-        CheckConstraint("status IN ('queued', 'running', 'success', 'failed')", name="chk_detection_run_status"),
+        CheckConstraint(
+            "status IN ('queued', 'running', 'success', 'failed')",
+            name="chk_detection_run_status",
+        ),
         CheckConstraint("window_to > window_from", name="chk_window_order"),
         Index("idx_detection_runs_detector", "detector_id"),
         Index("idx_detection_runs_status", "status"),
@@ -116,8 +149,18 @@ class AnomalyEvent(Base):
     __tablename__ = "anomaly_events"
 
     id = Column(UUIDType(), primary_key=True, default=uuid.uuid4, nullable=False)
-    run_id = Column(UUIDType(), ForeignKey("detection_runs.id", ondelete="CASCADE"), nullable=False, index=True)
-    detector_id = Column(UUIDType(), ForeignKey("detectors.id", ondelete="CASCADE"), nullable=False, index=True)
+    run_id = Column(
+        UUIDType(),
+        ForeignKey("detection_runs.id", ondelete="CASCADE"),
+        nullable=False,
+        index=True,
+    )
+    detector_id = Column(
+        UUIDType(),
+        ForeignKey("detectors.id", ondelete="CASCADE"),
+        nullable=False,
+        index=True,
+    )
     cohort = Column(JSONType, nullable=False)
     window_start = Column(DateTime(timezone=True), nullable=False)
     window_end = Column(DateTime(timezone=True), nullable=False)
@@ -130,11 +173,18 @@ class AnomalyEvent(Base):
     status = Column(String(50), nullable=False, default="new", index=True)
     evidence = Column(JSONType, nullable=True)
     investigation_id = Column(UUIDType(), nullable=True, index=True)
-    created_at = Column(DateTime(timezone=True), nullable=False, server_default=func.now(), index=True)
+    created_at = Column(
+        DateTime(timezone=True), nullable=False, server_default=func.now(), index=True
+    )
 
     __table_args__ = (
-        CheckConstraint("severity IN ('info', 'warn', 'critical') OR severity IS NULL", name="chk_anomaly_severity"),
-        CheckConstraint("status IN ('new', 'triaged', 'closed')", name="chk_anomaly_status"),
+        CheckConstraint(
+            "severity IN ('info', 'warn', 'critical') OR severity IS NULL",
+            name="chk_anomaly_severity",
+        ),
+        CheckConstraint(
+            "status IN ('new', 'triaged', 'closed')", name="chk_anomaly_status"
+        ),
         CheckConstraint("window_end > window_start", name="chk_anomaly_window_order"),
         CheckConstraint("score >= 0", name="chk_anomaly_score"),
         CheckConstraint("persisted_n >= 1", name="chk_anomaly_persisted_n"),
@@ -160,7 +210,9 @@ class AnomalyEvent(Base):
             "run_id": str(self.run_id),
             "detector_id": str(self.detector_id),
             "cohort": self.cohort,
-            "window_start": self.window_start.isoformat() if self.window_start else None,
+            "window_start": (
+                self.window_start.isoformat() if self.window_start else None
+            ),
             "window_end": self.window_end.isoformat() if self.window_end else None,
             "metric": self.metric,
             "observed": self.observed,
@@ -170,7 +222,8 @@ class AnomalyEvent(Base):
             "persisted_n": self.persisted_n,
             "status": self.status,
             "evidence": self.evidence,
-            "investigation_id": str(self.investigation_id) if self.investigation_id else None,
+            "investigation_id": (
+                str(self.investigation_id) if self.investigation_id else None
+            ),
             "created_at": self.created_at.isoformat() if self.created_at else None,
         }
-

@@ -15,16 +15,16 @@ Usage:
 
 import asyncio
 import os
-import sys
 import random
+import sys
 from datetime import datetime, timedelta
 from pathlib import Path
 
 # Add parent directory to path
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
-from app.service.logging import get_bridge_logger
 from app.service.config_loader import get_config_loader
+from app.service.logging import get_bridge_logger
 
 logger = get_bridge_logger(__name__)
 
@@ -41,7 +41,14 @@ async def populate_database():
     conn_str = f"postgresql://{pg_config['user']}:{pg_config['password']}@{pg_config['host']}:{pg_config['port']}/{pg_config['database']}"
 
     # Reference data
-    devices = ["iPhone 14 Pro", "Samsung Galaxy S23", "Google Pixel 7", "OnePlus 11", "MacBook Pro", "iPad Pro"]
+    devices = [
+        "iPhone 14 Pro",
+        "Samsung Galaxy S23",
+        "Google Pixel 7",
+        "OnePlus 11",
+        "MacBook Pro",
+        "iPad Pro",
+    ]
     browsers = ["Chrome", "Safari", "Firefox", "Edge", "Opera"]
     os_list = ["iOS", "Android", "Windows", "macOS", "Linux"]
     processors = ["Stripe", "PayPal", "Square", "Authorize.net", "Adyen"]
@@ -58,8 +65,8 @@ async def populate_database():
         logger.info(f"✅ Connected to PostgreSQL database: {pg_config['database']}")
 
         # Get table name
-        schema = pg_config.get('schema', 'public')
-        table = pg_config.get('transactions_table', 'transactions_enriched')
+        schema = pg_config.get("schema", "public")
+        table = pg_config.get("transactions_table", "transactions_enriched")
         full_table = f"{schema}.{table}"
 
         # Get all records
@@ -72,13 +79,13 @@ async def populate_database():
         batch_size = 100
 
         for i in range(0, len(records), batch_size):
-            batch = records[i:i + batch_size]
+            batch = records[i : i + batch_size]
 
             async with conn.transaction():
                 for rec in batch:
-                    tx_id = rec['tx_id_key']
-                    risk_score = rec['model_score'] or 0.5
-                    is_fraud = (rec['is_fraud_tx'] or 0) == 1
+                    tx_id = rec["tx_id_key"]
+                    risk_score = rec["model_score"] or 0.5
+                    is_fraud = (rec["is_fraud_tx"] or 0) == 1
                     is_high_risk = risk_score > 0.7
 
                     # Generate values
@@ -116,13 +123,15 @@ async def populate_database():
                         random.choice(payment_methods),
                         random.choice(processors),
                         f"User {random.randint(1, 1000)}",
-                        round(max(0, min(1, risk_score + random.uniform(-0.1, 0.1))), 3),
+                        round(
+                            max(0, min(1, risk_score + random.uniform(-0.1, 0.1))), 3
+                        ),
                         "REJECTED" if is_fraud else random.choice(decisions),
                         1 if is_fraud else (1 if random.random() < 0.1 else 0),
                         1 if is_fraud and random.random() < 0.5 else 0,
                         datetime.now().isoformat(),
                         datetime.now().isoformat(),
-                        tx_id
+                        tx_id,
                     )
 
                     updated_count += 1
@@ -130,7 +139,9 @@ async def populate_database():
             # Progress update every 10 batches
             if (i // batch_size + 1) % 10 == 0:
                 progress_pct = (i + len(batch)) * 100 // len(records)
-                logger.info(f"Progress: {i + len(batch)}/{len(records)} ({progress_pct}%) - {updated_count} records updated")
+                logger.info(
+                    f"Progress: {i + len(batch)}/{len(records)} ({progress_pct}%) - {updated_count} records updated"
+                )
 
         await conn.close()
 

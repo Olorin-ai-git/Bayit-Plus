@@ -4,22 +4,22 @@ Pattern recognizers package.
 Provides specialized pattern recognition algorithms for different data types.
 """
 
-from .sequence_recognizer import SequencePatternRecognizer
 from .behavioral_recognizer import BehavioralPatternRecognizer
-from .temporal_recognizer import TemporalPatternRecognizer
-from .frequency_recognizer import FrequencyPatternRecognizer
 from .fraud_recognizer import FraudPatternRecognizer
+from .frequency_recognizer import FrequencyPatternRecognizer
 from .network_recognizer import NetworkPatternRecognizer
-from .textual_recognizer import TextualPatternRecognizer
 from .pattern_orchestrator import PatternRecognizers
+from .sequence_recognizer import SequencePatternRecognizer
+from .temporal_recognizer import TemporalPatternRecognizer
+from .textual_recognizer import TextualPatternRecognizer
 
 __all__ = [
-    'SequencePatternRecognizer',
-    'BehavioralPatternRecognizer',
-    'TemporalPatternRecognizer',
-    'FrequencyPatternRecognizer',
-    'FraudPatternRecognizer',
-    'NetworkPatternRecognizer',
-    'TextualPatternRecognizer',
-    'PatternRecognizers'
+    "SequencePatternRecognizer",
+    "BehavioralPatternRecognizer",
+    "TemporalPatternRecognizer",
+    "FrequencyPatternRecognizer",
+    "FraudPatternRecognizer",
+    "NetworkPatternRecognizer",
+    "TextualPatternRecognizer",
+    "PatternRecognizers",
 ]

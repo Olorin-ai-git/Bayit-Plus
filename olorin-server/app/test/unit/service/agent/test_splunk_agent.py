@@ -5,7 +5,9 @@ import pytest
 
 # OBSOLETE TEST: SplunkAgent from ato_agents has been removed
 # Splunk functionality is now handled by SplunkQueryTool and MockSplunkClient
-pytestmark = pytest.mark.skip(reason="SplunkAgent from ato_agents removed - obsolete test file")
+pytestmark = pytest.mark.skip(
+    reason="SplunkAgent from ato_agents removed - obsolete test file"
+)
 
 
 @pytest.fixture

@@ -10,9 +10,9 @@ Date: 2025-11-12
 Spec: /specs/021-live-merged-logstream/research.md
 """
 
-from typing import Optional, List
-from datetime import datetime
 import asyncio
+from datetime import datetime
+from typing import List, Optional
 
 from app.models.unified_log import UnifiedLog
 
@@ -44,7 +44,7 @@ class FrontendLogBuffer:
         investigation_id: str,
         start_time: Optional[datetime] = None,
         end_time: Optional[datetime] = None,
-        limit: Optional[int] = None
+        limit: Optional[int] = None,
     ) -> List[UnifiedLog]:
         """
         Get logs from buffer with filtering.
@@ -60,9 +60,9 @@ class FrontendLogBuffer:
         """
         async with self._lock:
             filtered = [
-                log for log in self._logs
-                if log.investigation_id == investigation_id
-                and log.source == "frontend"
+                log
+                for log in self._logs
+                if log.investigation_id == investigation_id and log.source == "frontend"
             ]
 
             if start_time:

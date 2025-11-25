@@ -7,10 +7,11 @@ Tests the GET /api/v1/reports/investigation/ endpoint with filtering,
 pagination, and search functionality.
 """
 
-import os
 import json
-import pytest
+import os
 from pathlib import Path
+
+import pytest
 from fastapi.testclient import TestClient
 
 from app.main import app
@@ -40,7 +41,7 @@ def mock_investigation_reports(tmp_path):
             "entity_type": "email",
             "overall_risk_score": 92.5,
             "status": "COMPLETED",
-            "owner": "analyst@olorin.com"
+            "owner": "analyst@olorin.com",
         },
         {
             "id": "api-test-002",
@@ -49,7 +50,7 @@ def mock_investigation_reports(tmp_path):
             "entity_type": "device",
             "overall_risk_score": 68.3,
             "status": "COMPLETED",
-            "owner": "analyst@olorin.com"
+            "owner": "analyst@olorin.com",
         },
         {
             "id": "api-test-003",
@@ -58,7 +59,7 @@ def mock_investigation_reports(tmp_path):
             "entity_type": "ip",
             "overall_risk_score": 45.2,
             "status": "COMPLETED",
-            "owner": "admin@olorin.com"
+            "owner": "admin@olorin.com",
         },
         {
             "id": "api-test-004",
@@ -67,8 +68,8 @@ def mock_investigation_reports(tmp_path):
             "entity_type": "email",
             "overall_risk_score": 15.8,
             "status": "COMPLETED",
-            "owner": "admin@olorin.com"
-        }
+            "owner": "admin@olorin.com",
+        },
     ]
 
     for inv in investigations:
@@ -87,11 +88,9 @@ def mock_investigation_reports(tmp_path):
             "settings_json": {
                 "title": inv["title"],
                 "entity_id": inv["entity_id"],
-                "entity_type": inv["entity_type"]
+                "entity_type": inv["entity_type"],
             },
-            "results_json": {
-                "overall_risk_score": inv["overall_risk_score"]
-            }
+            "results_json": {"overall_risk_score": inv["overall_risk_score"]},
         }
         state_file = inv_folder / "investigation_state_initial.json"
         state_file.write_text(json.dumps(state_data))
@@ -102,7 +101,9 @@ def mock_investigation_reports(tmp_path):
 class TestInvestigationReportsListAPI:
     """Integration tests for investigation reports list endpoint."""
 
-    def test_list_all_reports_no_filters(self, client, mock_investigation_reports, monkeypatch):
+    def test_list_all_reports_no_filters(
+        self, client, mock_investigation_reports, monkeypatch
+    ):
         """Test listing all reports without filters."""
         base_logs_dir, investigation_ids = mock_investigation_reports
         monkeypatch.setenv("INVESTIGATION_LOGS_DIR", base_logs_dir)
@@ -122,7 +123,9 @@ class TestInvestigationReportsListAPI:
         assert data["page"] == 1
         assert data["limit"] == 20
 
-    def test_list_reports_with_pagination(self, client, mock_investigation_reports, monkeypatch):
+    def test_list_reports_with_pagination(
+        self, client, mock_investigation_reports, monkeypatch
+    ):
         """Test pagination with page and limit parameters."""
         base_logs_dir, _ = mock_investigation_reports
         monkeypatch.setenv("INVESTIGATION_LOGS_DIR", base_logs_dir)
@@ -145,7 +148,9 @@ class TestInvestigationReportsListAPI:
         monkeypatch.setenv("INVESTIGATION_LOGS_DIR", base_logs_dir)
 
         target_id = investigation_ids[0]
-        response = client.get(f"/api/v1/reports/investigation/?investigation_id={target_id}")
+        response = client.get(
+            f"/api/v1/reports/investigation/?investigation_id={target_id}"
+        )
 
         assert response.status_code == 200
         data = response.json()
@@ -252,7 +257,9 @@ class TestInvestigationReportsListAPI:
         data = response.json()
 
         assert data["total"] >= 1
-        assert any("evil.com" in (report["entity_id"] or "") for report in data["reports"])
+        assert any(
+            "evil.com" in (report["entity_id"] or "") for report in data["reports"]
+        )
 
     def test_list_reports_combined_filters(
         self, client, mock_investigation_reports, monkeypatch

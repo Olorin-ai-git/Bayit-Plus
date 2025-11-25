@@ -5,9 +5,10 @@ Uses Isolation Forest algorithm for multivariate anomaly detection
 on window feature vectors.
 """
 
+from typing import Any, Dict
+
 import numpy as np
 from sklearn.ensemble import IsolationForest
-from typing import Dict, Any
 
 from app.service.anomaly.detectors.base import BaseDetector, DetectorResult
 from app.service.logging import get_bridge_logger
@@ -36,8 +37,8 @@ class IsoForestDetector(BaseDetector):
                 - min_support: Minimum data points required (default: 50)
         """
         super().__init__(params)
-        self.n_estimators = params.get('n_estimators', 200)
-        self.contamination = params.get('contamination', 0.005)
+        self.n_estimators = params.get("n_estimators", 200)
+        self.contamination = params.get("contamination", 0.005)
 
     def detect(self, series: np.ndarray) -> DetectorResult:
         """
@@ -56,9 +57,9 @@ class IsoForestDetector(BaseDetector):
         # Handle 1D input (single metric) by reshaping
         if series.ndim == 1:
             series = series.reshape(-1, 1)
-        
+
         n_samples, n_features = series.shape
-        
+
         # Validate minimum support
         if n_samples < self.min_support:
             raise ValueError(
@@ -77,9 +78,9 @@ class IsoForestDetector(BaseDetector):
             model = IsolationForest(
                 n_estimators=self.n_estimators,
                 contamination=self.contamination,
-                max_samples='auto',
+                max_samples="auto",
                 random_state=42,
-                n_jobs=-1
+                n_jobs=-1,
             )
             model.fit(series)
 
@@ -91,7 +92,7 @@ class IsoForestDetector(BaseDetector):
             std_score = np.std(raw_scores)
             if std_score == 0:
                 std_score = 1e-9
-            
+
             scores = (raw_scores - mean_score) / std_score
             # Ensure non-negative
             scores = np.maximum(scores, 0.0)
@@ -101,10 +102,10 @@ class IsoForestDetector(BaseDetector):
 
             # Build evidence
             evidence = {
-                'feature_vector': series.tolist() if n_features <= 5 else [],
-                'raw_scores': raw_scores.tolist(),
-                'n_estimators': self.n_estimators,
-                'contamination': self.contamination
+                "feature_vector": series.tolist() if n_features <= 5 else [],
+                "raw_scores": raw_scores.tolist(),
+                "n_estimators": self.n_estimators,
+                "contamination": self.contamination,
             }
 
             logger.debug(
@@ -112,13 +113,8 @@ class IsoForestDetector(BaseDetector):
                 f"out of {n_samples} samples with {n_features} features"
             )
 
-            return DetectorResult(
-                scores=scores,
-                anomalies=anomalies,
-                evidence=evidence
-            )
+            return DetectorResult(scores=scores, anomalies=anomalies, evidence=evidence)
 
         except Exception as e:
             logger.error(f"Isolation Forest detection failed: {e}")
             raise ValueError(f"Isolation Forest detection error: {e}") from e
-

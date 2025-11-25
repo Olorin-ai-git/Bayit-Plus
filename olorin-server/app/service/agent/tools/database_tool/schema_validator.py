@@ -11,17 +11,13 @@ Constitutional Compliance:
 """
 
 import os
-from typing import List, Dict
+from typing import Dict, List
 
 from app.service.logging import get_bridge_logger
-from .schema_models import (
-    SchemaInfo,
-    SchemaDifference,
-    TypeMismatch,
-    ValidationResult
-)
-from .schema_reporter import SchemaReporter
+
 from .schema_introspector import SchemaIntrospector
+from .schema_models import SchemaDifference, SchemaInfo, TypeMismatch, ValidationResult
+from .schema_reporter import SchemaReporter
 
 logger = get_bridge_logger(__name__)
 
@@ -35,8 +31,12 @@ class SchemaValidator:
     def __init__(self):
         """Initialize validator with configuration."""
         # Get table names from environment
-        snowflake_table = os.getenv('SNOWFLAKE_TRANSACTIONS_TABLE', 'TRANSACTIONS_ENRICHED')
-        postgres_table = os.getenv('POSTGRES_TRANSACTIONS_TABLE', 'transactions_enriched')
+        snowflake_table = os.getenv(
+            "SNOWFLAKE_TRANSACTIONS_TABLE", "TRANSACTIONS_ENRICHED"
+        )
+        postgres_table = os.getenv(
+            "POSTGRES_TRANSACTIONS_TABLE", "transactions_enriched"
+        )
 
         self.snowflake_table = snowflake_table
         self.postgresql_table = postgres_table
@@ -44,20 +44,22 @@ class SchemaValidator:
 
         # Type mapping: Snowflake → PostgreSQL
         self._type_map = {
-            'NUMBER': 'NUMERIC',
-            'VARCHAR': 'CHARACTER VARYING',
-            'TIMESTAMP_NTZ': 'TIMESTAMP',
-            'VARIANT': 'JSONB',
-            'ARRAY': 'ARRAY',
-            'BOOLEAN': 'BOOLEAN',
-            'DATE': 'DATE'
+            "NUMBER": "NUMERIC",
+            "VARCHAR": "CHARACTER VARYING",
+            "TIMESTAMP_NTZ": "TIMESTAMP",
+            "VARIANT": "JSONB",
+            "ARRAY": "ARRAY",
+            "BOOLEAN": "BOOLEAN",
+            "DATE": "DATE",
         }
 
         # Initialize components
         self.introspector = SchemaIntrospector(snowflake_table, postgres_table)
         self.reporter = SchemaReporter(self._type_map)
 
-        logger.info(f"SchemaValidator initialized: SF={snowflake_table}, PG={postgres_table}")
+        logger.info(
+            f"SchemaValidator initialized: SF={snowflake_table}, PG={postgres_table}"
+        )
 
     def get_schema(self, provider) -> SchemaInfo:
         """
@@ -71,7 +73,9 @@ class SchemaValidator:
         """
         return self.introspector.introspect_schema(provider)
 
-    def compare_schemas(self, schema1: SchemaInfo, schema2: SchemaInfo) -> List[SchemaDifference]:
+    def compare_schemas(
+        self, schema1: SchemaInfo, schema2: SchemaInfo
+    ) -> List[SchemaDifference]:
         """Compare two schemas and return differences."""
         differences = []
 
@@ -82,12 +86,14 @@ class SchemaValidator:
         # Check for missing columns
         for norm_name, col in schema1_cols.items():
             if norm_name not in schema2_cols:
-                differences.append(SchemaDifference(
-                    difference_type='missing_column',
-                    column_name=col.name,
-                    snowflake_value=col.name,
-                    postgresql_value=None
-                ))
+                differences.append(
+                    SchemaDifference(
+                        difference_type="missing_column",
+                        column_name=col.name,
+                        snowflake_value=col.name,
+                        postgresql_value=None,
+                    )
+                )
 
         # Check for type mismatches and nullability
         for norm_name, col1 in schema1_cols.items():
@@ -99,24 +105,30 @@ class SchemaValidator:
                 type2 = self._normalize_type_name(col2.data_type, schema2.database_type)
 
                 if type1 != type2:
-                    differences.append(SchemaDifference(
-                        difference_type='type_mismatch',
-                        column_name=col1.name,
-                        snowflake_value=col1.data_type,
-                        postgresql_value=col2.data_type
-                    ))
+                    differences.append(
+                        SchemaDifference(
+                            difference_type="type_mismatch",
+                            column_name=col1.name,
+                            snowflake_value=col1.data_type,
+                            postgresql_value=col2.data_type,
+                        )
+                    )
 
                 if col1.is_nullable != col2.is_nullable:
-                    differences.append(SchemaDifference(
-                        difference_type='nullability_mismatch',
-                        column_name=col1.name,
-                        snowflake_value=col1.is_nullable,
-                        postgresql_value=col2.is_nullable
-                    ))
+                    differences.append(
+                        SchemaDifference(
+                            difference_type="nullability_mismatch",
+                            column_name=col1.name,
+                            snowflake_value=col1.is_nullable,
+                            postgresql_value=col2.is_nullable,
+                        )
+                    )
 
         return differences
 
-    def validate_parity(self, snowflake_provider, postgresql_provider) -> ValidationResult:
+    def validate_parity(
+        self, snowflake_provider, postgresql_provider
+    ) -> ValidationResult:
         """Validate schema parity between databases."""
         if not snowflake_provider or not postgresql_provider:
             raise ValueError("Both providers required for validation")
@@ -142,12 +154,17 @@ class SchemaValidator:
         differences = self.compare_schemas(sf_schema, pg_schema)
 
         # Categorize differences
-        missing_cols = [d.column_name for d in differences if d.difference_type == 'missing_column']
+        missing_cols = [
+            d.column_name for d in differences if d.difference_type == "missing_column"
+        ]
         type_mismatches = [
             TypeMismatch(d.column_name, d.snowflake_value, d.postgresql_value)
-            for d in differences if d.difference_type == 'type_mismatch'
+            for d in differences
+            if d.difference_type == "type_mismatch"
         ]
-        nullability_mismatches = [d for d in differences if d.difference_type == 'nullability_mismatch']
+        nullability_mismatches = [
+            d for d in differences if d.difference_type == "nullability_mismatch"
+        ]
 
         is_valid = len(differences) == 0
         summary = (
@@ -158,8 +175,12 @@ class SchemaValidator:
 
         # Generate detailed report using reporter
         detailed_report = self.reporter.generate_detailed_report(
-            sf_schema, pg_schema, differences, missing_cols,
-            type_mismatches, nullability_mismatches
+            sf_schema,
+            pg_schema,
+            differences,
+            missing_cols,
+            type_mismatches,
+            nullability_mismatches,
         )
 
         return ValidationResult(
@@ -171,7 +192,7 @@ class SchemaValidator:
             column_count_postgresql=len(pg_schema.columns),
             summary=summary,
             nullability_mismatches=nullability_mismatches,
-            detailed_report=detailed_report
+            detailed_report=detailed_report,
         )
 
     def _normalize_column_name(self, name: str) -> str:
@@ -183,18 +204,18 @@ class SchemaValidator:
         normalized = type_name.upper().strip()
 
         # Apply type mapping for Snowflake types
-        if database_type == 'snowflake':
+        if database_type == "snowflake":
             for sf_type, pg_type in self._type_map.items():
                 if sf_type in normalized:
                     return pg_type
 
         # Normalize PostgreSQL types
-        if database_type == 'postgresql':
-            if 'CHARACTER VARYING' in normalized or 'VARCHAR' in normalized:
-                return 'CHARACTER VARYING'
-            if 'BIGINT' in normalized or 'INT8' in normalized:
-                return 'BIGINT'
-            if 'INTEGER' in normalized or 'INT4' in normalized:
-                return 'INTEGER'
+        if database_type == "postgresql":
+            if "CHARACTER VARYING" in normalized or "VARCHAR" in normalized:
+                return "CHARACTER VARYING"
+            if "BIGINT" in normalized or "INT8" in normalized:
+                return "BIGINT"
+            if "INTEGER" in normalized or "INT4" in normalized:
+                return "INTEGER"
 
         return normalized

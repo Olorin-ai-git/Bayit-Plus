@@ -5,10 +5,10 @@ This module implements the factory pattern for creating detector instances
 based on detector type configuration.
 """
 
-from typing import Dict, Any, Optional
+from typing import Any, Dict, Optional
 
-from app.service.logging import get_bridge_logger
 from app.service.anomaly.detectors.base import BaseDetector
+from app.service.logging import get_bridge_logger
 
 logger = get_bridge_logger(__name__)
 
@@ -32,17 +32,17 @@ class DetectorFactory:
         global _detectors_registered
         if _detectors_registered:
             return
-        
+
         # Import detectors here to avoid circular import
-        from app.service.anomaly.detectors.stl_mad import STLMADDetector
         from app.service.anomaly.detectors.cusum import CUSUMDetector
         from app.service.anomaly.detectors.isoforest import IsoForestDetector
-        
+        from app.service.anomaly.detectors.stl_mad import STLMADDetector
+
         # Register detectors
-        cls.register('stl_mad', STLMADDetector)
-        cls.register('cusum', CUSUMDetector)
-        cls.register('isoforest', IsoForestDetector)
-        
+        cls.register("stl_mad", STLMADDetector)
+        cls.register("cusum", CUSUMDetector)
+        cls.register("isoforest", IsoForestDetector)
+
         _detectors_registered = True
         logger.debug("Detectors registered: stl_mad, cusum, isoforest")
 
@@ -60,7 +60,9 @@ class DetectorFactory:
                 f"Detector class {detector_class.__name__} must inherit from BaseDetector"
             )
         cls._detector_classes[detector_type] = detector_class
-        logger.info(f"Registered detector type: {detector_type} -> {detector_class.__name__}")
+        logger.info(
+            f"Registered detector type: {detector_type} -> {detector_class.__name__}"
+        )
 
     @classmethod
     def create(cls, detector_type: str, params: Dict[str, Any]) -> BaseDetector:
@@ -79,10 +81,10 @@ class DetectorFactory:
         """
         # Ensure detectors are registered (lazy registration to avoid circular imports)
         cls._ensure_detectors_registered()
-        
+
         detector_class = cls._detector_classes.get(detector_type)
         if detector_class is None:
-            available_types = ', '.join(cls._detector_classes.keys())
+            available_types = ", ".join(cls._detector_classes.keys())
             raise ValueError(
                 f"Unknown detector type: {detector_type}. "
                 f"Available types: {available_types}"
@@ -112,4 +114,3 @@ def get_detector_factory() -> DetectorFactory:
         DetectorFactory instance
     """
     return DetectorFactory
-

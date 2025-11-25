@@ -7,4 +7,4 @@ Provides classes for extracting raw data from investigation files.
 
 from .investigation_extractor import InvestigationDataExtractor
 
-__all__ = ['InvestigationDataExtractor']
+__all__ = ["InvestigationDataExtractor"]

@@ -28,22 +28,22 @@ class ComprehensiveAuthAuditor:
     """Comprehensive audit of API authorization"""
 
     AUTH_PATTERNS = [
-        r'Depends\(get_current_user\)',
-        r'Depends\(get_current_active_user\)',
-        r'Depends\(require_read\)',
-        r'Depends\(require_write\)',
-        r'Depends\(require_admin\)',
-        r'Depends\(require_scopes\)',
-        r'current_user:\s*User\s*=\s*Depends\(',
+        r"Depends\(get_current_user\)",
+        r"Depends\(get_current_active_user\)",
+        r"Depends\(require_read\)",
+        r"Depends\(require_write\)",
+        r"Depends\(require_admin\)",
+        r"Depends\(require_scopes\)",
+        r"current_user:\s*User\s*=\s*Depends\(",
     ]
 
     PUBLIC_INDICATORS = {
-        'health': 'Health check endpoint',
-        'auth': 'Authentication endpoint',
-        'options': 'CORS preflight',
-        'docs': 'API documentation',
-        'openapi': 'OpenAPI spec',
-        '/api-docs': 'API documentation',
+        "health": "Health check endpoint",
+        "auth": "Authentication endpoint",
+        "options": "CORS preflight",
+        "docs": "API documentation",
+        "openapi": "OpenAPI spec",
+        "/api-docs": "API documentation",
     }
 
     def __init__(self, router_dir: Path):
@@ -56,15 +56,15 @@ class ComprehensiveAuthAuditor:
         router_files = []
 
         for path in self.router_dir.rglob("*.py"):
-            if '__pycache__' in str(path):
+            if "__pycache__" in str(path):
                 continue
-            if path.name.startswith('__'):
+            if path.name.startswith("__"):
                 continue
-            if 'test' in str(path):
+            if "test" in str(path):
                 continue
-            if 'models' in path.parts:
+            if "models" in path.parts:
                 continue
-            if 'handlers' in path.parts and 'test_scenario' in path.name:
+            if "handlers" in path.parts and "test_scenario" in path.name:
                 continue
 
             router_files.append(path)
@@ -82,12 +82,11 @@ class ComprehensiveAuthAuditor:
 
     def _find_endpoints(self, content: str, file_path: str) -> None:
         """Find all endpoint definitions"""
-        lines = content.split('\n')
+        lines = content.split("\n")
 
         for i, line in enumerate(lines, 1):
             endpoint_match = re.search(
-                r'@\w+\.(get|post|put|delete|patch|options)\s*\(',
-                line
+                r"@\w+\.(get|post|put|delete|patch|options)\s*\(", line
             )
 
             if endpoint_match:
@@ -95,9 +94,7 @@ class ComprehensiveAuthAuditor:
                 path = self._extract_path(line, lines, i)
                 func_name = self._extract_function_name(lines, i)
 
-                has_auth, auth_type = self._check_authentication(
-                    lines, i, func_name
-                )
+                has_auth, auth_type = self._check_authentication(lines, i, func_name)
 
                 is_public, public_reason = self._is_public_endpoint(
                     path, method, file_path
@@ -112,7 +109,7 @@ class ComprehensiveAuthAuditor:
                     has_auth=has_auth,
                     auth_type=auth_type,
                     is_public=is_public,
-                    public_reason=public_reason
+                    public_reason=public_reason,
                 )
 
                 self.endpoints.append(endpoint)
@@ -135,7 +132,7 @@ class ComprehensiveAuthAuditor:
         """Extract function name"""
         for offset in range(0, min(10, len(lines) - line_num)):
             line = lines[line_num + offset - 1]
-            func_match = re.search(r'(async\s+)?def\s+(\w+)\s*\(', line)
+            func_match = re.search(r"(async\s+)?def\s+(\w+)\s*\(", line)
             if func_match:
                 return func_match.group(2)
         return "unknown"
@@ -148,35 +145,33 @@ class ComprehensiveAuthAuditor:
         for i in range(line_num, min(line_num + 20, len(lines))):
             line = lines[i - 1]
 
-            if re.search(r'(async\s+)?def\s+\w+\s*\(', line):
+            if re.search(r"(async\s+)?def\s+\w+\s*\(", line):
                 func_start = i
                 break
 
-        func_body = '\n'.join(lines[func_start - 1:func_start + 10])
+        func_body = "\n".join(lines[func_start - 1 : func_start + 10])
 
         for pattern in self.AUTH_PATTERNS:
             if re.search(pattern, func_body):
-                if 'require_admin' in pattern:
+                if "require_admin" in pattern:
                     return True, "admin"
-                elif 'require_write' in pattern:
+                elif "require_write" in pattern:
                     return True, "write"
-                elif 'require_read' in pattern:
+                elif "require_read" in pattern:
                     return True, "read"
-                elif 'require_scopes' in pattern:
+                elif "require_scopes" in pattern:
                     return True, "scoped"
                 else:
                     return True, "authenticated"
 
         return False, "none"
 
-    def _is_public_endpoint(
-        self, path: str, method: str, file_path: str
-    ) -> tuple:
+    def _is_public_endpoint(self, path: str, method: str, file_path: str) -> tuple:
         """Determine if endpoint should be public"""
         path_lower = path.lower()
         file_lower = file_path.lower()
 
-        if method == 'OPTIONS':
+        if method == "OPTIONS":
             return True, "CORS preflight"
 
         for indicator, reason in self.PUBLIC_INDICATORS.items():
@@ -200,25 +195,29 @@ class ComprehensiveAuthAuditor:
                 unprotected.append(ep)
 
         return {
-            'total': len(self.endpoints),
-            'protected': protected,
-            'unprotected': unprotected,
-            'public': public,
-            'errors': self.errors,
-            'summary': {
-                'protected_count': len(protected),
-                'unprotected_count': len(unprotected),
-                'public_count': len(public),
-                'admin_endpoints': len([e for e in protected if e.auth_type == 'admin']),
-                'write_endpoints': len([e for e in protected if e.auth_type == 'write']),
-                'read_endpoints': len([e for e in protected if e.auth_type == 'read']),
-            }
+            "total": len(self.endpoints),
+            "protected": protected,
+            "unprotected": unprotected,
+            "public": public,
+            "errors": self.errors,
+            "summary": {
+                "protected_count": len(protected),
+                "unprotected_count": len(unprotected),
+                "public_count": len(public),
+                "admin_endpoints": len(
+                    [e for e in protected if e.auth_type == "admin"]
+                ),
+                "write_endpoints": len(
+                    [e for e in protected if e.auth_type == "write"]
+                ),
+                "read_endpoints": len([e for e in protected if e.auth_type == "read"]),
+            },
         }
 
     def print_report(self) -> None:
         """Print formatted report"""
         report = self.generate_report()
-        summary = report['summary']
+        summary = report["summary"]
 
         print("=" * 90)
         print("COMPREHENSIVE API AUTHORIZATION AUDIT")
@@ -236,10 +235,10 @@ class ComprehensiveAuthAuditor:
         print(f"  ℹ Public (Expected): {summary['public_count']}")
         print()
 
-        if report['unprotected']:
+        if report["unprotected"]:
             print("⚠️  CRITICAL: UNPROTECTED ENDPOINTS REQUIRE IMMEDIATE ATTENTION")
             print("=" * 90)
-            for ep in report['unprotected']:
+            for ep in report["unprotected"]:
                 print(f"\n[{ep.method}] {ep.path}")
                 print(f"  📁 File: {ep.file_path}:{ep.line_number}")
                 print(f"  🔧 Function: {ep.function_name}()")
@@ -247,42 +246,44 @@ class ComprehensiveAuthAuditor:
                 print(f"  ✅ Required: Add Depends(require_read/write/admin)")
             print()
 
-        if report['protected']:
+        if report["protected"]:
             print("✅ PROTECTED ENDPOINTS (Sample)")
             print("-" * 90)
-            for ep in report['protected'][:15]:
+            for ep in report["protected"][:15]:
                 auth_badge = {
-                    'admin': '🔐 ADMIN',
-                    'write': '✏️ WRITE',
-                    'read': '👁️ READ',
-                    'scoped': '🔒 SCOPED',
-                    'authenticated': '🔑 AUTH'
-                }.get(ep.auth_type, '🔒 AUTH')
+                    "admin": "🔐 ADMIN",
+                    "write": "✏️ WRITE",
+                    "read": "👁️ READ",
+                    "scoped": "🔒 SCOPED",
+                    "authenticated": "🔑 AUTH",
+                }.get(ep.auth_type, "🔒 AUTH")
 
                 print(f"[{ep.method}] {ep.path} - {auth_badge}")
                 print(f"  📁 {ep.file_path}:{ep.line_number}")
-            if len(report['protected']) > 15:
-                print(f"\n  ... and {len(report['protected']) - 15} more protected endpoints")
+            if len(report["protected"]) > 15:
+                print(
+                    f"\n  ... and {len(report['protected']) - 15} more protected endpoints"
+                )
             print()
 
-        if report['public']:
+        if report["public"]:
             print("ℹ️  PUBLIC ENDPOINTS (Expected)")
             print("-" * 90)
-            for ep in report['public'][:10]:
+            for ep in report["public"][:10]:
                 print(f"[{ep.method}] {ep.path} - {ep.public_reason}")
                 print(f"  📁 {ep.file_path}:{ep.line_number}")
-            if len(report['public']) > 10:
+            if len(report["public"]) > 10:
                 print(f"\n  ... and {len(report['public']) - 10} more public endpoints")
             print()
 
-        if report['errors']:
+        if report["errors"]:
             print("⚠️  ERRORS ENCOUNTERED")
             print("-" * 90)
-            for error in report['errors']:
+            for error in report["errors"]:
                 print(f"  • {error}")
             print()
 
-        if report['unprotected']:
+        if report["unprotected"]:
             print("=" * 90)
             print("RECOMMENDATIONS")
             print("=" * 90)
@@ -299,7 +300,9 @@ class ComprehensiveAuthAuditor:
             print("   ):")
             print()
             print("3. Import required dependencies:")
-            print("   from app.security.auth import User, require_read, require_write, require_admin")
+            print(
+                "   from app.security.auth import User, require_read, require_write, require_admin"
+            )
             print()
 
         print("=" * 90)
@@ -320,7 +323,7 @@ def main():
     auditor.print_report()
 
     report = auditor.generate_report()
-    return 1 if report['unprotected'] else 0
+    return 1 if report["unprotected"] else 0
 
 
 if __name__ == "__main__":

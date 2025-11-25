@@ -18,23 +18,25 @@ This script tests every step of the TEST_MODE=mock workflow:
 Everything is REAL except the LLM component (step 9-10).
 """
 
-import os
-import sys
 import asyncio
 import json
+import os
+import sys
 from datetime import datetime
-from typing import Dict, Any
+from typing import Any, Dict
 
 # Set environment variables BEFORE importing anything
 os.environ["TEST_MODE"] = "mock"
 os.environ["ENHANCED_MOCK_LLM"] = "true"
 
-print("\n" + "="*80)
+print("\n" + "=" * 80)
 print("🔬 INVESTIGATION WORKFLOW VERIFICATION TEST")
-print("="*80)
+print("=" * 80)
 print(f"⏰ Started: {datetime.now().isoformat()}")
-print(f"🌍 Environment: TEST_MODE={os.environ.get('TEST_MODE')}, ENHANCED_MOCK_LLM={os.environ.get('ENHANCED_MOCK_LLM')}")
-print("="*80 + "\n")
+print(
+    f"🌍 Environment: TEST_MODE={os.environ.get('TEST_MODE')}, ENHANCED_MOCK_LLM={os.environ.get('ENHANCED_MOCK_LLM')}"
+)
+print("=" * 80 + "\n")
 
 
 def step_1_frontend_trigger():
@@ -75,7 +77,7 @@ def step_3_query_postgres_top_risk():
         "transaction_count": 42,
         "fraud_count": 12,
         "countries": ["US", "CN"],
-        "devices": 15
+        "devices": 15,
     }
     return entity
 
@@ -144,26 +146,26 @@ def step_8_tools_retrieve_data():
             "proxy_chains": 3,
             "ip_reputation_score": 0.85,
             "geolocation_matches": False,
-            "anonymous_proxy": True
+            "anonymous_proxy": True,
         },
         "device_signals": {
             "fingerprint_variance": 0.72,
             "user_agent_changes": 5,
             "browser_automation": True,
-            "emulation_indicators": True
+            "emulation_indicators": True,
         },
         "location_signals": {
             "impossible_travel": True,
             "travel_distance_miles": 7500,
             "time_between_transactions_minutes": 45,
-            "timezone_jumps": 8
+            "timezone_jumps": 8,
         },
         "logs_signals": {
             "failed_login_attempts": 23,
             "velocity_violations": True,
             "account_enumeration": True,
-            "privilege_escalation_attempts": 4
-        }
+            "privilege_escalation_attempts": 4,
+        },
     }
 
     print("   Network Signals:")
@@ -171,14 +173,24 @@ def step_8_tools_retrieve_data():
     print(f"     - Proxy Chains: {raw_data['network_signals']['proxy_chains']}")
     print(f"     - IP Reputation: {raw_data['network_signals']['ip_reputation_score']}")
     print("   Device Signals:")
-    print(f"     - Fingerprint Variance: {raw_data['device_signals']['fingerprint_variance']}")
-    print(f"     - Browser Automation: {raw_data['device_signals']['browser_automation']}")
+    print(
+        f"     - Fingerprint Variance: {raw_data['device_signals']['fingerprint_variance']}"
+    )
+    print(
+        f"     - Browser Automation: {raw_data['device_signals']['browser_automation']}"
+    )
     print("   Location Signals:")
-    print(f"     - Impossible Travel: {raw_data['location_signals']['impossible_travel']}")
-    print(f"     - Travel Distance: {raw_data['location_signals']['travel_distance_miles']} miles")
+    print(
+        f"     - Impossible Travel: {raw_data['location_signals']['impossible_travel']}"
+    )
+    print(
+        f"     - Travel Distance: {raw_data['location_signals']['travel_distance_miles']} miles"
+    )
     print("   Logs Signals:")
     print(f"     - Failed Logins: {raw_data['logs_signals']['failed_login_attempts']}")
-    print(f"     - Velocity Violations: {raw_data['logs_signals']['velocity_violations']}")
+    print(
+        f"     - Velocity Violations: {raw_data['logs_signals']['velocity_violations']}"
+    )
 
     return raw_data
 
@@ -202,7 +214,9 @@ async def step_10_mock_llm_responds():
     print("-" * 60)
 
     # Import and use enhanced mock LLM
-    from scripts.testing.enhanced_mock_llm_responses import generate_enhanced_mock_response
+    from scripts.testing.enhanced_mock_llm_responses import (
+        generate_enhanced_mock_response,
+    )
 
     print("✅ Enhanced Mock LLM Response Generated:")
     print()
@@ -213,12 +227,12 @@ async def step_10_mock_llm_responds():
         scenario="device_spoofing",
         investigation_id="workflow_test_investigation",
         entity_risk_score=0.85,
-        use_enhanced=True
+        use_enhanced=True,
     )
 
     # Print first 800 characters of response showing structure
     print("📋 Response Structure:")
-    lines = response.split('\n')[:30]
+    lines = response.split("\n")[:30]
     for line in lines:
         print(f"   {line}")
     print(f"   ... (truncated, total {len(response)} characters)")
@@ -275,9 +289,9 @@ async def main():
         llm_response = await step_10_mock_llm_responds()
 
         # Summary
-        print("\n" + "="*80)
+        print("\n" + "=" * 80)
         print("✅ WORKFLOW VERIFICATION COMPLETE")
-        print("="*80)
+        print("=" * 80)
         print("\n📊 VERIFICATION SUMMARY:")
         print("-" * 60)
         print("✅ Step 1: Frontend triggers investigation        ✓ PASSED")
@@ -299,7 +313,7 @@ async def main():
         print("   • Risk scoring: MOCK (no API costs) ✓")
         print("   • Chain-of-thought: ENHANCED MOCK ✓")
         print("   • Total API cost: $0.00 ✓")
-        print("="*80 + "\n")
+        print("=" * 80 + "\n")
 
         return 0
 
@@ -307,6 +321,7 @@ async def main():
         print(f"\n❌ WORKFLOW VERIFICATION FAILED")
         print(f"Error: {str(e)}")
         import traceback
+
         traceback.print_exc()
         return 1
 

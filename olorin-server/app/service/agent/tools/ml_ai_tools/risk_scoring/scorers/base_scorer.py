@@ -5,7 +5,8 @@ Abstract base class for all scoring model implementations.
 """
 
 from abc import ABC, abstractmethod
-from typing import Any, Dict, Optional, List
+from typing import Any, Dict, List, Optional
+
 from ..core.input_schema import RiskAssessmentResult
 
 
@@ -19,7 +20,7 @@ class BaseScorer(ABC):
         risk_assessments: List[RiskAssessmentResult],
         risk_tolerance: str,
         time_horizon: str = "short_term",
-        historical_data: Optional[Dict[str, Any]] = None
+        historical_data: Optional[Dict[str, Any]] = None,
     ) -> Dict[str, Any]:
         """
         Calculate risk score using the specific model.
@@ -59,9 +60,8 @@ class BaseScorer(ABC):
         total_confidence = sum(assessment.confidence for assessment in assessments)
         return total_confidence / len(assessments)
 
-    def _extract_assessment_scores(self, assessments: List[RiskAssessmentResult]) -> Dict[str, float]:
+    def _extract_assessment_scores(
+        self, assessments: List[RiskAssessmentResult]
+    ) -> Dict[str, float]:
         """Extract scores from risk assessments."""
-        return {
-            assessment.risk_type: assessment.score
-            for assessment in assessments
-        }
+        return {assessment.risk_type: assessment.score for assessment in assessments}

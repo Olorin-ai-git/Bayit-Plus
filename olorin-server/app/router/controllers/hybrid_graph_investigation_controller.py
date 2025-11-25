@@ -11,19 +11,20 @@ SYSTEM MANDATE Compliance:
 - Complete implementation: No placeholders or TODOs
 """
 
+import json
 import uuid
 from datetime import datetime
 from typing import Optional
+
 from fastapi import HTTPException, status
 
-from app.schemas.investigation_config import InvestigationConfigSchema
 from app.models.investigation_state import InvestigationState
+from app.schemas.investigation_config import InvestigationConfigSchema
+from app.service.logging import get_bridge_logger
 from app.validation.entity_validator import EntityValidator
 from app.validation.time_range_validator import TimeRangeValidator
 from app.validation.tool_config_validator import ToolConfigValidator
 from config.hybrid_graph_config import get_hybrid_graph_config
-from app.service.logging import get_bridge_logger
-import json
 
 logger = get_bridge_logger(__name__)
 
@@ -41,9 +42,7 @@ class InvestigationController:
         self.tool_validator = ToolConfigValidator()
 
     async def create_investigation(
-        self,
-        config: InvestigationConfigSchema,
-        user_id: str
+        self, config: InvestigationConfigSchema, user_id: str
     ) -> str:
         """
         Create new hybrid graph investigation.
@@ -66,9 +65,7 @@ class InvestigationController:
         investigation_id = self._generate_investigation_id()
 
         investigation_state = self._create_database_record(
-            investigation_id=investigation_id,
-            user_id=user_id,
-            config=config
+            investigation_id=investigation_id, user_id=user_id, config=config
         )
 
         await self._trigger_hybrid_graph_execution(investigation_state)
@@ -80,8 +77,8 @@ class InvestigationController:
                 "user_id": user_id,
                 "entity_type": config.entity_type,
                 "entity_id": config.entity_id,
-                "tools_count": len(config.tools)
-            }
+                "tools_count": len(config.tools),
+            },
         )
 
         return investigation_id
@@ -89,14 +86,16 @@ class InvestigationController:
     async def _validate_configuration(self, config: InvestigationConfigSchema) -> None:
         """Validate investigation configuration using validators."""
         self.entity_validator.validate(config.entity_type, config.entity_id)
-        self.time_range_validator.validate(config.time_range.start, config.time_range.end)
+        self.time_range_validator.validate(
+            config.time_range.start, config.time_range.end
+        )
 
         for tool in config.tools:
             self.tool_validator.validate(tool.tool_id, tool.parameters or {})
 
     async def _check_concurrency_limits(self, user_id: str) -> None:
         """Check user hasn't exceeded concurrent investigation limit."""
-        from sqlalchemy import create_engine, select, and_
+        from sqlalchemy import and_, create_engine, select
         from sqlalchemy.orm import sessionmaker
 
         engine = create_engine(self.config.database_url)
@@ -104,17 +103,21 @@ class InvestigationController:
         session = Session()
 
         try:
-            active_count = session.query(InvestigationState).filter(
-                and_(
-                    InvestigationState.user_id == user_id,
-                    InvestigationState.status.in_(["pending", "running"])
+            active_count = (
+                session.query(InvestigationState)
+                .filter(
+                    and_(
+                        InvestigationState.user_id == user_id,
+                        InvestigationState.status.in_(["pending", "running"]),
+                    )
                 )
-            ).count()
+                .count()
+            )
 
             if active_count >= self.config.max_concurrent_per_user:
                 raise HTTPException(
                     status_code=status.HTTP_409_CONFLICT,
-                    detail=f"Maximum concurrent investigations limit reached ({self.config.max_concurrent_per_user})"
+                    detail=f"Maximum concurrent investigations limit reached ({self.config.max_concurrent_per_user})",
                 )
         finally:
             session.close()
@@ -124,48 +127,46 @@ class InvestigationController:
         return f"hg-{uuid.uuid4()}"
 
     def _create_database_record(
-        self,
-        investigation_id: str,
-        user_id: str,
-        config: InvestigationConfigSchema
+        self, investigation_id: str, user_id: str, config: InvestigationConfigSchema
     ) -> InvestigationState:
         """Create investigation state record in database."""
         from sqlalchemy import create_engine
         from sqlalchemy.orm import sessionmaker
 
-        settings_json = json.dumps({
-            "entity_type": config.entity_type,
-            "entity_id": config.entity_id,
-            "time_range": {
-                "start": config.time_range.start.isoformat(),
-                "end": config.time_range.end.isoformat()
-            },
-            "tools": [
-                {
-                    "tool_id": tool.tool_id,
-                    "enabled": tool.enabled,
-                    "parameters": tool.parameters or {}
-                }
-                for tool in config.tools
-            ],
-            "correlation_mode": config.correlation_mode,
-            "execution_mode": config.execution_mode,
-            "risk_threshold": config.risk_threshold
-        })
+        settings_json = json.dumps(
+            {
+                "entity_type": config.entity_type,
+                "entity_id": config.entity_id,
+                "time_range": {
+                    "start": config.time_range.start.isoformat(),
+                    "end": config.time_range.end.isoformat(),
+                },
+                "tools": [
+                    {
+                        "tool_id": tool.tool_id,
+                        "enabled": tool.enabled,
+                        "parameters": tool.parameters or {},
+                    }
+                    for tool in config.tools
+                ],
+                "correlation_mode": config.correlation_mode,
+                "execution_mode": config.execution_mode,
+                "risk_threshold": config.risk_threshold,
+            }
+        )
 
         investigation = InvestigationState(
             investigation_id=investigation_id,
             user_id=user_id,
             lifecycle_stage="CREATED",
             settings_json=settings_json,
-            progress_json=json.dumps({
-                "current_phase": "initialization",
-                "progress_percentage": 0.0
-            }),
+            progress_json=json.dumps(
+                {"current_phase": "initialization", "progress_percentage": 0.0}
+            ),
             status="pending",
             version=1,
             created_at=datetime.utcnow(),
-            updated_at=datetime.utcnow()
+            updated_at=datetime.utcnow(),
         )
 
         engine = create_engine(self.config.database_url)
@@ -180,9 +181,11 @@ class InvestigationController:
         finally:
             session.close()
 
-    async def _trigger_hybrid_graph_execution(self, investigation: InvestigationState) -> None:
+    async def _trigger_hybrid_graph_execution(
+        self, investigation: InvestigationState
+    ) -> None:
         """Trigger hybrid graph execution (placeholder for actual hybrid graph integration)."""
         logger.info(
             f"Queued investigation for hybrid graph execution",
-            extra={"investigation_id": investigation.investigation_id}
+            extra={"investigation_id": investigation.investigation_id},
         )

@@ -12,12 +12,13 @@ Constitutional Compliance:
 
 import json
 import os
-from pathlib import Path
-from typing import List, Dict, Any, Optional
-from datetime import datetime, timezone
 import time
+from datetime import datetime, timezone
+from pathlib import Path
+from typing import Any, Dict, List, Optional
 
 from app.service.logging import get_bridge_logger
+
 from .database_factory import get_database_provider
 from .database_provider import DatabaseProvider
 
@@ -32,7 +33,7 @@ class MigrationManager:
         batch_size: int = 500,
         checkpoint_file: Path = Path("migration_checkpoint.json"),
         source_provider_name: str = "snowflake",
-        target_provider_name: str = "postgresql"
+        target_provider_name: str = "postgresql",
     ):
         """Initialize migration manager.
 
@@ -62,7 +63,9 @@ class MigrationManager:
         self.migration_start_time = None
         self.batches_processed = 0
 
-        logger.info(f"MigrationManager initialized: {source_provider_name} → {target_provider_name}")
+        logger.info(
+            f"MigrationManager initialized: {source_provider_name} → {target_provider_name}"
+        )
         logger.info(f"Batch size: {batch_size}, Checkpoint: {checkpoint_file}")
 
     def extract_batch(self, batch_id: int, offset: int) -> List[Dict[str, Any]]:
@@ -83,7 +86,9 @@ class MigrationManager:
             OFFSET {offset}
         """
 
-        logger.debug(f"Extracting batch {batch_id} (offset={offset}, limit={self.batch_size})")
+        logger.debug(
+            f"Extracting batch {batch_id} (offset={offset}, limit={self.batch_size})"
+        )
 
         results = self.source_provider.execute_query(query)
         logger.info(f"Batch {batch_id}: Extracted {len(results)} records")
@@ -147,7 +152,10 @@ class MigrationManager:
         # Build VALUES clause
         values_clauses = []
         for record in transformed_batch:
-            values = [f"'{record[col]}'" if record[col] is not None else "NULL" for col in columns]
+            values = [
+                f"'{record[col]}'" if record[col] is not None else "NULL"
+                for col in columns
+            ]
             values_clauses.append(f"({', '.join(values)})")
 
         values_str = ", ".join(values_clauses)
@@ -172,7 +180,7 @@ class MigrationManager:
         Args:
             state: Checkpoint state to save
         """
-        with open(self.checkpoint_file, 'w') as f:
+        with open(self.checkpoint_file, "w") as f:
             json.dump(state, f, indent=2)
 
         logger.debug(f"Checkpoint saved: batch {state.get('last_batch_id')}")
@@ -212,8 +220,8 @@ class MigrationManager:
         """
         checkpoint = self.load_checkpoint()
 
-        start_batch = 1 if checkpoint is None else checkpoint['last_batch_id'] + 1
-        records_migrated = 0 if checkpoint is None else checkpoint['records_migrated']
+        start_batch = 1 if checkpoint is None else checkpoint["last_batch_id"] + 1
+        records_migrated = 0 if checkpoint is None else checkpoint["records_migrated"]
 
         self.migration_start_time = datetime.now(timezone.utc)
         batch_id = start_batch
@@ -237,21 +245,25 @@ class MigrationManager:
                 "last_batch_id": batch_id,
                 "records_migrated": records_migrated,
                 "migration_start_time": self.migration_start_time.isoformat(),
-                "last_successful_batch_timestamp": datetime.now(timezone.utc).isoformat()
+                "last_successful_batch_timestamp": datetime.now(
+                    timezone.utc
+                ).isoformat(),
             }
             self.save_checkpoint(checkpoint_state)
 
             batch_id += 1
             offset += self.batch_size
 
-        elapsed = (datetime.now(timezone.utc) - self.migration_start_time).total_seconds()
+        elapsed = (
+            datetime.now(timezone.utc) - self.migration_start_time
+        ).total_seconds()
 
         return {
             "records_migrated": records_migrated,
             "total_batches": self.batches_processed,
             "elapsed_time_seconds": elapsed,
             "batch_size": self.batch_size,
-            "resumed_from_batch": start_batch if checkpoint else None
+            "resumed_from_batch": start_batch if checkpoint else None,
         }
 
     def migrate_all_data(self) -> Dict[str, Any]:
@@ -264,7 +276,9 @@ class MigrationManager:
             return 0.0
         return (records_migrated / self.total_records) * 100.0
 
-    def estimate_time_remaining(self, records_migrated: int, elapsed_seconds: float) -> float:
+    def estimate_time_remaining(
+        self, records_migrated: int, elapsed_seconds: float
+    ) -> float:
         """Estimate remaining time in seconds."""
         if records_migrated == 0:
             return 0.0
@@ -289,13 +303,16 @@ class MigrationManager:
             source = {k.upper(): v for k, v in source_sample[i].items()}
             target = {k.upper(): v for k, v in target_sample[i].items()}
 
-            if source.get('TX_ID_KEY') != target.get('TX_ID_KEY'):
+            if source.get("TX_ID_KEY") != target.get("TX_ID_KEY"):
                 return False
 
         return True
 
     def validate_migration(
-        self, check_record_count: bool = True, check_sample_data: bool = True, sample_size: int = 100
+        self,
+        check_record_count: bool = True,
+        check_sample_data: bool = True,
+        sample_size: int = 100,
     ) -> Dict[str, Any]:
         """Comprehensive migration validation."""
         count_query = f"SELECT COUNT(*) as count FROM {self.source_provider.get_full_table_name()}"
@@ -303,14 +320,14 @@ class MigrationManager:
         source_count_result = self.source_provider.execute_query(count_query)
         target_count_result = self.target_provider.execute_query(count_query)
 
-        source_count = source_count_result[0]['count']
-        target_count = target_count_result[0]['count']
+        source_count = source_count_result[0]["count"]
+        target_count = target_count_result[0]["count"]
 
         validation = {
             "is_valid": True,
             "record_count_source": source_count,
             "record_count_target": target_count,
-            "record_count_match": source_count == target_count
+            "record_count_match": source_count == target_count,
         }
 
         if check_sample_data:
@@ -318,11 +335,15 @@ class MigrationManager:
             source_sample = self.source_provider.execute_query(sample_query)
             target_sample = self.target_provider.execute_query(sample_query)
 
-            validation["sample_data_match"] = self.validate_sample_data(source_sample, target_sample)
+            validation["sample_data_match"] = self.validate_sample_data(
+                source_sample, target_sample
+            )
 
         validation["is_valid"] = validation["record_count_match"]
         if check_sample_data:
-            validation["is_valid"] = validation["is_valid"] and validation["sample_data_match"]
+            validation["is_valid"] = (
+                validation["is_valid"] and validation["sample_data_match"]
+            )
 
         return validation
 
@@ -330,4 +351,4 @@ class MigrationManager:
         """Check if record exists in target (for idempotency)."""
         query = f"SELECT COUNT(*) as count FROM {self.target_provider.get_full_table_name()} WHERE TX_ID_KEY = '{tx_id_key}'"
         result = self.target_provider.execute_query(query)
-        return result[0]['count'] > 0 if result else False
+        return result[0]["count"] > 0 if result else False

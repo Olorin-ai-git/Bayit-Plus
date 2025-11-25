@@ -12,15 +12,16 @@ SYSTEM MANDATE Compliance:
 """
 
 import asyncio
-import time
 import os
+import time
 from collections import defaultdict, deque
-from typing import Dict, Optional, Tuple
 from datetime import datetime, timedelta
+from typing import Dict, Optional, Tuple
 
 from fastapi import HTTPException, Request, status
 from starlette.middleware.base import BaseHTTPMiddleware
 from starlette.responses import Response
+
 from app.service.logging import get_bridge_logger
 
 logger = get_bridge_logger(__name__)
@@ -38,14 +39,20 @@ class EnhancedRateLimiter:
         self,
         max_requests: int = None,
         window_seconds: int = None,
-        enable_exponential_backoff: bool = None
+        enable_exponential_backoff: bool = None,
     ):
         """Initialize rate limiter with configuration from environment."""
         # T066: Configuration from environment with defaults
-        self.max_requests = max_requests or int(os.getenv("RATE_LIMIT_MAX_REQUESTS", "60"))
-        self.window_seconds = window_seconds or int(os.getenv("RATE_LIMIT_WINDOW_SECONDS", "60"))
-        self.enable_backoff = enable_exponential_backoff if enable_exponential_backoff is not None else (
-            os.getenv("RATE_LIMIT_ENABLE_BACKOFF", "true").lower() == "true"
+        self.max_requests = max_requests or int(
+            os.getenv("RATE_LIMIT_MAX_REQUESTS", "60")
+        )
+        self.window_seconds = window_seconds or int(
+            os.getenv("RATE_LIMIT_WINDOW_SECONDS", "60")
+        )
+        self.enable_backoff = (
+            enable_exponential_backoff
+            if enable_exponential_backoff is not None
+            else (os.getenv("RATE_LIMIT_ENABLE_BACKOFF", "true").lower() == "true")
         )
 
         # Per-user request tracking
@@ -87,7 +94,7 @@ class EnhancedRateLimiter:
             headers = {
                 "X-RateLimit-Limit": str(self.max_requests),
                 "X-RateLimit-Remaining": str(remaining),
-                "X-RateLimit-Reset": str(reset_time)
+                "X-RateLimit-Reset": str(reset_time),
             }
 
             # Check if we're within the limit
@@ -133,7 +140,7 @@ class EnhancedRateLimiter:
 
         # Exponential backoff based on consecutive violations
         violations = self.violations.get(user_id, 0)
-        backoff_factor = min(2 ** violations, 32)  # Cap at 32x
+        backoff_factor = min(2**violations, 32)  # Cap at 32x
         retry_after = min(base_retry * backoff_factor, 300)  # Cap at 5 minutes
 
         return retry_after
@@ -154,15 +161,27 @@ class EnhancedRateLimitMiddleware(BaseHTTPMiddleware):
 
         # Endpoints to exclude from rate limiting
         self.excluded_paths = {
-            "/health", "/", "/docs", "/redoc", "/openapi.json",
-            "/health/full", "/version", "/favicon.ico"
+            "/health",
+            "/",
+            "/docs",
+            "/redoc",
+            "/openapi.json",
+            "/health/full",
+            "/version",
+            "/favicon.ico",
         }
 
         # Special rate limits for specific endpoint patterns
         self.endpoint_limits = {
             "/auth/": {"max_requests": 5, "window_seconds": 300},  # 5 per 5 minutes
-            "/api/v1/investigations/*/stream": {"max_requests": 10, "window_seconds": 60},  # SSE connections
-            "/api/v1/investigations/*/events": {"max_requests": 120, "window_seconds": 60},  # Polling
+            "/api/v1/investigations/*/stream": {
+                "max_requests": 10,
+                "window_seconds": 60,
+            },  # SSE connections
+            "/api/v1/investigations/*/events": {
+                "max_requests": 120,
+                "window_seconds": 60,
+            },  # Polling
         }
 
     def get_user_id(self, request: Request) -> str:
@@ -183,6 +202,7 @@ class EnhancedRateLimitMiddleware(BaseHTTPMiddleware):
             # In production, decode JWT to get user ID
             # For now, use a hash of the token as identifier
             import hashlib
+
             token_hash = hashlib.md5(auth_header.encode()).hexdigest()[:8]
             return f"user_{token_hash}"
 
@@ -232,7 +252,7 @@ class EnhancedRateLimitMiddleware(BaseHTTPMiddleware):
             # Create endpoint-specific limiter
             limiter = EnhancedRateLimiter(
                 max_requests=endpoint_limits["max_requests"],
-                window_seconds=endpoint_limits["window_seconds"]
+                window_seconds=endpoint_limits["window_seconds"],
             )
         else:
             limiter = self.limiter
@@ -245,7 +265,7 @@ class EnhancedRateLimitMiddleware(BaseHTTPMiddleware):
             raise HTTPException(
                 status_code=status.HTTP_429_TOO_MANY_REQUESTS,
                 detail="Rate limit exceeded. Please try again later.",
-                headers=rate_headers
+                headers=rate_headers,
             )
 
         # Process request
@@ -269,8 +289,7 @@ class RateLimitState:
 
     @staticmethod
     async def get_user_rate_limit_status(
-        user_id: str,
-        limiter: EnhancedRateLimiter
+        user_id: str, limiter: EnhancedRateLimiter
     ) -> Dict[str, any]:
         """
         Get current rate limit status for a user.
@@ -305,5 +324,5 @@ class RateLimitState:
                 "reset_datetime": datetime.fromtimestamp(reset_time).isoformat(),
                 "violations": violations,
                 "is_limited": current_count >= limiter.max_requests,
-                "backoff_enabled": limiter.enable_backoff
+                "backoff_enabled": limiter.enable_backoff,
             }

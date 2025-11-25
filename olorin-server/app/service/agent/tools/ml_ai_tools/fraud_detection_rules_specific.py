@@ -12,10 +12,10 @@ Orchestrates specific rules for payment, identity, account takeover, and synthet
 
 from typing import Any, Dict, List
 
-from .fraud_detection_rules_payment import FraudRulesPayment
 from .fraud_detection_rules_identity import FraudRulesIdentity
-from .fraud_detection_rules_takeover import FraudRulesTakeover
+from .fraud_detection_rules_payment import FraudRulesPayment
 from .fraud_detection_rules_synthetic import FraudRulesSynthetic
+from .fraud_detection_rules_takeover import FraudRulesTakeover
 
 
 class FraudRulesSpecific:

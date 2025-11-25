@@ -14,11 +14,11 @@ Usage:
 """
 
 import asyncio
-import sys
 import random
+import sys
 from datetime import datetime, timedelta
-from typing import Dict, List
 from pathlib import Path
+from typing import Dict, List
 
 # Add parent directory to path for imports
 sys.path.insert(0, str(Path(__file__).parent.parent))
@@ -38,14 +38,26 @@ class CriticalFieldsPopulator:
 
         # Reference data (realistic patterns for fraud detection)
         self.devices = [
-            "iPhone 14 Pro", "Samsung Galaxy S23", "Google Pixel 7",
-            "OnePlus 11", "Xiaomi 13", "iPad Pro", "MacBook Pro",
-            "Dell XPS 13", "ThinkPad X1 Carbon"
+            "iPhone 14 Pro",
+            "Samsung Galaxy S23",
+            "Google Pixel 7",
+            "OnePlus 11",
+            "Xiaomi 13",
+            "iPad Pro",
+            "MacBook Pro",
+            "Dell XPS 13",
+            "ThinkPad X1 Carbon",
         ]
         self.browsers = ["Chrome", "Safari", "Firefox", "Edge", "Opera"]
         self.os_list = ["iOS", "Android", "Windows", "macOS", "Linux"]
         self.processors = ["Stripe", "PayPal", "Square", "Authorize.net", "Adyen"]
-        self.payment_methods = ["credit_card", "debit_card", "paypal", "apple_pay", "google_pay"]
+        self.payment_methods = [
+            "credit_card",
+            "debit_card",
+            "paypal",
+            "apple_pay",
+            "google_pay",
+        ]
         self.decisions = ["APPROVED", "REJECTED", "REVIEW", "PENDING"]
 
     async def populate_all_records(self) -> Dict[str, int]:
@@ -58,7 +70,7 @@ class CriticalFieldsPopulator:
             "total_records": 0,
             "records_updated": 0,
             "fields_populated": 0,
-            "errors": 0
+            "errors": 0,
         }
 
         try:
@@ -79,7 +91,7 @@ class CriticalFieldsPopulator:
             # Process in batches
             batch_size = 100
             for i in range(0, len(records), batch_size):
-                batch = records[i:i + batch_size]
+                batch = records[i : i + batch_size]
                 batch_stats = await self._populate_batch(batch, table_name)
 
                 stats["records_updated"] += batch_stats["updated"]
@@ -108,7 +120,9 @@ class CriticalFieldsPopulator:
 
         return stats
 
-    async def _populate_batch(self, batch: List[Dict], table_name: str) -> Dict[str, int]:
+    async def _populate_batch(
+        self, batch: List[Dict], table_name: str
+    ) -> Dict[str, int]:
         """Populate a batch of records."""
         stats = {"updated": 0, "fields": 0}
 
@@ -143,29 +157,31 @@ class CriticalFieldsPopulator:
             # Device fields (critical for device agent)
             "device_model": device_model,
             "user_agent": f"Mozilla/5.0 ({os_name}) {browser}/{random.randint(90, 120)}.0",
-
             # User fields
             "unique_user_id": f"user_{random.randint(100000, 999999)}",
-            "date_of_birth": (datetime.now() - timedelta(days=random.randint(18, 75) * 365)),
-
+            "date_of_birth": (
+                datetime.now() - timedelta(days=random.randint(18, 75) * 365)
+            ),
             # Payment fields
             "payment_method": random.choice(self.payment_methods),
             "processor": random.choice(self.processors),
             "card_holder_name": f"User {random.randint(1, 1000)}",
-
             # Risk scoring fields
-            "maxmind_risk_score": round(max(0, min(1, risk_score + random.uniform(-0.1, 0.1))), 3),
-
+            "maxmind_risk_score": round(
+                max(0, min(1, risk_score + random.uniform(-0.1, 0.1))), 3
+            ),
             # Decision fields
-            "nsure_last_decision": "REJECTED" if is_fraud else random.choice(self.decisions),
-
+            "nsure_last_decision": (
+                "REJECTED" if is_fraud else random.choice(self.decisions)
+            ),
             # Fraud indicators
             "is_failed_tx": 1 if is_fraud else (1 if random.random() < 0.1 else 0),
-            "is_processor_rejected_due_to_fraud": 1 if is_fraud and random.random() < 0.5 else 0,
-
+            "is_processor_rejected_due_to_fraud": (
+                1 if is_fraud and random.random() < 0.5 else 0
+            ),
             # Timestamps
             "table_record_created_at": datetime.now().isoformat(),
-            "table_record_updated_at": datetime.now().isoformat()
+            "table_record_updated_at": datetime.now().isoformat(),
         }
 
     def _build_update_query(self, table: str, tx_id: str, data: Dict) -> str:
@@ -186,7 +202,9 @@ class CriticalFieldsPopulator:
                 escaped = str(val).replace("'", "''")
                 set_clauses.append(f"{col} = '{escaped}'")
 
-        return f"UPDATE {table} SET {', '.join(set_clauses)} WHERE tx_id_key = '{tx_id}'"
+        return (
+            f"UPDATE {table} SET {', '.join(set_clauses)} WHERE tx_id_key = '{tx_id}'"
+        )
 
 
 async def main():

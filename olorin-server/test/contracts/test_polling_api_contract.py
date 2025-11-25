@@ -25,14 +25,20 @@ Endpoints Tested:
 4. GET /polling/health (health check, no auth)
 """
 
-import pytest
 from pathlib import Path
+from typing import Any, Dict
+
+import pytest
 import yaml
-from typing import Dict, Any
 from openapi_core import OpenAPI
 
-
-SPEC_PATH = Path(__file__).parent.parent.parent.parent / "specs" / "005-polling-and-persistence" / "contracts" / "polling-api.yaml"
+SPEC_PATH = (
+    Path(__file__).parent.parent.parent.parent
+    / "specs"
+    / "005-polling-and-persistence"
+    / "contracts"
+    / "polling-api.yaml"
+)
 
 
 @pytest.fixture(scope="module")
@@ -82,10 +88,7 @@ class TestPollingAPIContract:
         pytest.skip("Endpoint not implemented yet - will implement in T016")
 
     @pytest.mark.unit
-    def test_poll_investigation_state_adaptive_intervals(
-        self,
-        openapi_validator
-    ):
+    def test_poll_investigation_state_adaptive_intervals(self, openapi_validator):
         """
         Test adaptive polling interval recommendations.
 
@@ -99,10 +102,7 @@ class TestPollingAPIContract:
         pytest.skip("Endpoint not implemented yet - will implement in T016")
 
     @pytest.mark.unit
-    def test_poll_investigation_state_client_interval_header(
-        self,
-        openapi_validator
-    ):
+    def test_poll_investigation_state_client_interval_header(self, openapi_validator):
         """
         Test X-Polling-Interval request header validation.
 

@@ -12,7 +12,7 @@ Strategy: Aggressive high-recall (>85% recall target)
 """
 
 import logging
-from typing import Dict, Any, List, Optional
+from typing import Any, Dict, List, Optional
 
 logger = logging.getLogger(__name__)
 
@@ -20,7 +20,7 @@ logger = logging.getLogger(__name__)
 def recognize_all_patterns(
     transactions: List[Dict[str, Any]],
     minimum_support: float = 0.1,
-    historical_patterns: Optional[Dict[str, Any]] = None
+    historical_patterns: Optional[Dict[str, Any]] = None,
 ) -> Dict[str, Any]:
     """
     Run all 5 pattern recognizers on transaction data.
@@ -44,22 +44,36 @@ def recognize_all_patterns(
 
     try:
         # Import all 5 recognizers
-        from app.service.agent.tools.ml_ai_tools.pattern_recognition.recognizers.fraud_recognizer import FraudPatternRecognizer
-        from app.service.agent.tools.ml_ai_tools.pattern_recognition.recognizers.behavioral_recognizer import BehavioralPatternRecognizer
-        from app.service.agent.tools.ml_ai_tools.pattern_recognition.recognizers.temporal_recognizer import TemporalPatternRecognizer
-        from app.service.agent.tools.ml_ai_tools.pattern_recognition.recognizers.network_recognizer import NetworkPatternRecognizer
-        from app.service.agent.tools.ml_ai_tools.pattern_recognition.recognizers.frequency_recognizer import FrequencyPatternRecognizer
+        from app.service.agent.tools.ml_ai_tools.pattern_recognition.recognizers.behavioral_recognizer import (
+            BehavioralPatternRecognizer,
+        )
+        from app.service.agent.tools.ml_ai_tools.pattern_recognition.recognizers.fraud_recognizer import (
+            FraudPatternRecognizer,
+        )
+        from app.service.agent.tools.ml_ai_tools.pattern_recognition.recognizers.frequency_recognizer import (
+            FrequencyPatternRecognizer,
+        )
+        from app.service.agent.tools.ml_ai_tools.pattern_recognition.recognizers.network_recognizer import (
+            NetworkPatternRecognizer,
+        )
+        from app.service.agent.tools.ml_ai_tools.pattern_recognition.recognizers.temporal_recognizer import (
+            TemporalPatternRecognizer,
+        )
 
         processed_data = {"events": transactions}
 
         # 1. Fraud Pattern Recognition
         try:
             fraud_recognizer = FraudPatternRecognizer()
-            fraud_result = fraud_recognizer.recognize(processed_data, minimum_support, historical_patterns)
+            fraud_result = fraud_recognizer.recognize(
+                processed_data, minimum_support, historical_patterns
+            )
             recognizer_results["fraud"] = fraud_result
             if fraud_result.get("success") and fraud_result.get("patterns"):
                 all_patterns.extend(fraud_result["patterns"])
-                logger.info(f"✅ Fraud recognizer: {len(fraud_result['patterns'])} patterns detected")
+                logger.info(
+                    f"✅ Fraud recognizer: {len(fraud_result['patterns'])} patterns detected"
+                )
         except Exception as e:
             logger.error(f"❌ Fraud pattern recognition failed: {e}", exc_info=True)
             recognizer_results["fraud"] = {"success": False, "error": str(e)}
@@ -67,23 +81,33 @@ def recognize_all_patterns(
         # 2. Behavioral Pattern Recognition
         try:
             behavioral_recognizer = BehavioralPatternRecognizer()
-            behavioral_result = behavioral_recognizer.recognize(processed_data, minimum_support, historical_patterns)
+            behavioral_result = behavioral_recognizer.recognize(
+                processed_data, minimum_support, historical_patterns
+            )
             recognizer_results["behavioral"] = behavioral_result
             if behavioral_result.get("success") and behavioral_result.get("patterns"):
                 all_patterns.extend(behavioral_result["patterns"])
-                logger.info(f"✅ Behavioral recognizer: {len(behavioral_result['patterns'])} patterns detected")
+                logger.info(
+                    f"✅ Behavioral recognizer: {len(behavioral_result['patterns'])} patterns detected"
+                )
         except Exception as e:
-            logger.error(f"❌ Behavioral pattern recognition failed: {e}", exc_info=True)
+            logger.error(
+                f"❌ Behavioral pattern recognition failed: {e}", exc_info=True
+            )
             recognizer_results["behavioral"] = {"success": False, "error": str(e)}
 
         # 3. Temporal Pattern Recognition
         try:
             temporal_recognizer = TemporalPatternRecognizer()
-            temporal_result = temporal_recognizer.recognize(processed_data, minimum_support, historical_patterns)
+            temporal_result = temporal_recognizer.recognize(
+                processed_data, minimum_support, historical_patterns
+            )
             recognizer_results["temporal"] = temporal_result
             if temporal_result.get("success") and temporal_result.get("patterns"):
                 all_patterns.extend(temporal_result["patterns"])
-                logger.info(f"✅ Temporal recognizer: {len(temporal_result['patterns'])} patterns detected")
+                logger.info(
+                    f"✅ Temporal recognizer: {len(temporal_result['patterns'])} patterns detected"
+                )
         except Exception as e:
             logger.error(f"❌ Temporal pattern recognition failed: {e}", exc_info=True)
             recognizer_results["temporal"] = {"success": False, "error": str(e)}
@@ -91,11 +115,15 @@ def recognize_all_patterns(
         # 4. Network Pattern Recognition
         try:
             network_recognizer = NetworkPatternRecognizer()
-            network_result = network_recognizer.recognize(processed_data, minimum_support, historical_patterns)
+            network_result = network_recognizer.recognize(
+                processed_data, minimum_support, historical_patterns
+            )
             recognizer_results["network"] = network_result
             if network_result.get("success") and network_result.get("patterns"):
                 all_patterns.extend(network_result["patterns"])
-                logger.info(f"✅ Network recognizer: {len(network_result['patterns'])} patterns detected")
+                logger.info(
+                    f"✅ Network recognizer: {len(network_result['patterns'])} patterns detected"
+                )
         except Exception as e:
             logger.error(f"❌ Network pattern recognition failed: {e}", exc_info=True)
             recognizer_results["network"] = {"success": False, "error": str(e)}
@@ -103,11 +131,15 @@ def recognize_all_patterns(
         # 5. Frequency Pattern Recognition
         try:
             frequency_recognizer = FrequencyPatternRecognizer()
-            frequency_result = frequency_recognizer.recognize(processed_data, minimum_support, historical_patterns)
+            frequency_result = frequency_recognizer.recognize(
+                processed_data, minimum_support, historical_patterns
+            )
             recognizer_results["frequency"] = frequency_result
             if frequency_result.get("success") and frequency_result.get("patterns"):
                 all_patterns.extend(frequency_result["patterns"])
-                logger.info(f"✅ Frequency recognizer: {len(frequency_result['patterns'])} patterns detected")
+                logger.info(
+                    f"✅ Frequency recognizer: {len(frequency_result['patterns'])} patterns detected"
+                )
         except Exception as e:
             logger.error(f"❌ Frequency pattern recognition failed: {e}", exc_info=True)
             recognizer_results["frequency"] = {"success": False, "error": str(e)}
@@ -115,11 +147,17 @@ def recognize_all_patterns(
         # Calculate overall statistics
         total_patterns = len(all_patterns)
         total_risk_adjustment = sum(p.get("risk_adjustment", 0.0) for p in all_patterns)
-        max_risk_adjustment = max((p.get("risk_adjustment", 0.0) for p in all_patterns), default=0.0)
+        max_risk_adjustment = max(
+            (p.get("risk_adjustment", 0.0) for p in all_patterns), default=0.0
+        )
 
         # Calculate ensemble confidence
         pattern_confidences = [p.get("confidence", 0.0) for p in all_patterns]
-        avg_confidence = sum(pattern_confidences) / len(pattern_confidences) if pattern_confidences else 0.0
+        avg_confidence = (
+            sum(pattern_confidences) / len(pattern_confidences)
+            if pattern_confidences
+            else 0.0
+        )
 
         # Unique pattern types
         unique_pattern_types = len(set(p.get("pattern_type") for p in all_patterns))
@@ -138,23 +176,16 @@ def recognize_all_patterns(
             "max_risk_adjustment": round(max_risk_adjustment, 3),
             "avg_confidence": round(avg_confidence, 3),
             "recognizer_results": recognizer_results,
-            "transaction_count": len(transactions)
+            "transaction_count": len(transactions),
         }
 
     except Exception as e:
         logger.error(f"❌ Pattern recognition failed: {e}", exc_info=True)
-        return {
-            "success": False,
-            "error": str(e),
-            "patterns": [],
-            "total_patterns": 0
-        }
+        return {"success": False, "error": str(e), "patterns": [], "total_patterns": 0}
 
 
 def apply_pattern_adjustments(
-    base_score: float,
-    patterns: List[Dict[str, Any]],
-    transaction: Dict[str, Any]
+    base_score: float, patterns: List[Dict[str, Any]], transaction: Dict[str, Any]
 ) -> tuple[float, List[str]]:
     """
     Apply pattern-based risk adjustments to a transaction score.
@@ -227,7 +258,9 @@ def get_pattern_summary_for_llm(patterns: List[Dict[str, Any]]) -> str:
             pattern_groups[pattern_type].append(pattern)
 
         # Build summary
-        summary_lines = [f"🔍 **Pattern Recognition Results** ({len(patterns)} patterns detected):"]
+        summary_lines = [
+            f"🔍 **Pattern Recognition Results** ({len(patterns)} patterns detected):"
+        ]
 
         for pattern_type, type_patterns in pattern_groups.items():
             for pattern in type_patterns:
@@ -259,5 +292,5 @@ def _empty_recognition_result() -> Dict[str, Any]:
         "max_risk_adjustment": 0.0,
         "avg_confidence": 0.0,
         "recognizer_results": {},
-        "transaction_count": 0
+        "transaction_count": 0,
     }

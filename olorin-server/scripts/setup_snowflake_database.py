@@ -18,8 +18,8 @@ from typing import Optional
 sys.path.append(str(Path(__file__).parent.parent))
 
 import snowflake.connector
-from snowflake.connector import SnowflakeConnection
 from dotenv import load_dotenv
+from snowflake.connector import SnowflakeConnection
 
 # Load environment variables
 load_dotenv()
@@ -29,37 +29,45 @@ def get_connection(use_admin: bool = False) -> Optional[SnowflakeConnection]:
     """Create Snowflake connection"""
     try:
         # Get credentials from environment
-        account = os.getenv('SNOWFLAKE_ACCOUNT', '').replace('https://', '').replace('.snowflakecomputing.com', '')
-        user = os.getenv('SNOWFLAKE_USER', 'Olorin')
-        password = os.getenv('SNOWFLAKE_PASSWORD')
-        
-        if not account or account == 'your-account.region':
+        account = (
+            os.getenv("SNOWFLAKE_ACCOUNT", "")
+            .replace("https://", "")
+            .replace(".snowflakecomputing.com", "")
+        )
+        user = os.getenv("SNOWFLAKE_USER", "Olorin")
+        password = os.getenv("SNOWFLAKE_PASSWORD")
+
+        if not account or account == "your-account.region":
             print("\n❌ ERROR: Please update SNOWFLAKE_ACCOUNT in .env file")
             print("   Example: SNOWFLAKE_ACCOUNT=xy12345.us-east-1")
             return None
-            
+
         if not password:
             print("\n❌ ERROR: SNOWFLAKE_PASSWORD not found in .env file")
             return None
-        
+
         print(f"\n🔌 Connecting to Snowflake...")
         print(f"   Account: {account}")
         print(f"   User: {user}")
-        
+
         # For setup, we might need ACCOUNTADMIN role
-        role = 'ACCOUNTADMIN' if use_admin else os.getenv('SNOWFLAKE_ROLE', 'FRAUD_ANALYST_ROLE')
-        
+        role = (
+            "ACCOUNTADMIN"
+            if use_admin
+            else os.getenv("SNOWFLAKE_ROLE", "FRAUD_ANALYST_ROLE")
+        )
+
         conn = snowflake.connector.connect(
             account=account,
             user=user,
             password=password,
             role=role,
-            warehouse=os.getenv('SNOWFLAKE_WAREHOUSE', 'COMPUTE_WH')
+            warehouse=os.getenv("SNOWFLAKE_WAREHOUSE", "COMPUTE_WH"),
         )
-        
+
         print(f"✅ Connected successfully with role: {role}")
         return conn
-        
+
     except Exception as e:
         print(f"\n❌ Connection failed: {str(e)}")
         return None
@@ -68,10 +76,10 @@ def get_connection(use_admin: bool = False) -> Optional[SnowflakeConnection]:
 def setup_database_and_table(conn: SnowflakeConnection) -> bool:
     """Create database and table if they don't exist"""
     cursor = conn.cursor()
-    
+
     try:
         # Get database configuration from environment
-        database = os.getenv('SNOWFLAKE_DATABASE', 'GIL')
+        database = os.getenv("SNOWFLAKE_DATABASE", "GIL")
 
         # Create database
         print(f"\n📦 Creating database {database}...")
@@ -80,15 +88,15 @@ def setup_database_and_table(conn: SnowflakeConnection) -> bool:
 
         # Use the database
         cursor.execute(f"USE DATABASE {database}")
-        
+
         # Create schema
         print("\n📋 Creating schema PUBLIC...")
         cursor.execute("CREATE SCHEMA IF NOT EXISTS PUBLIC")
         print("✅ Schema created/verified")
-        
+
         # Get table configuration from environment
-        schema = os.getenv('SNOWFLAKE_SCHEMA', 'PUBLIC')
-        table = os.getenv('SNOWFLAKE_TRANSACTIONS_TABLE', 'TRANSACTIONS_ENRICHED')
+        schema = os.getenv("SNOWFLAKE_SCHEMA", "PUBLIC")
+        table = os.getenv("SNOWFLAKE_TRANSACTIONS_TABLE", "TRANSACTIONS_ENRICHED")
 
         # Create the massive transactions table with 300+ columns
         print(f"\n📊 Creating {table} table (300+ columns)...")
@@ -477,34 +485,42 @@ def setup_database_and_table(conn: SnowflakeConnection) -> bool:
             SAR_FILED BOOLEAN
         );
         """
-        
+
         cursor.execute(create_table_sql)
         print("✅ Table TRANSACTIONS_ENRICHED created/verified")
-        
+
         # Grant permissions to the Olorin user
         print("\n🔐 Setting up permissions...")
-        
+
         # Create role if it doesn't exist
         cursor.execute("CREATE ROLE IF NOT EXISTS FRAUD_ANALYST_ROLE")
-        
+
         # Grant usage on warehouse
-        cursor.execute(f"GRANT USAGE ON WAREHOUSE {os.getenv('SNOWFLAKE_WAREHOUSE', 'COMPUTE_WH')} TO ROLE FRAUD_ANALYST_ROLE")
-        
+        cursor.execute(
+            f"GRANT USAGE ON WAREHOUSE {os.getenv('SNOWFLAKE_WAREHOUSE', 'COMPUTE_WH')} TO ROLE FRAUD_ANALYST_ROLE"
+        )
+
         # Grant usage on database and schema
         cursor.execute(f"GRANT USAGE ON DATABASE {database} TO ROLE FRAUD_ANALYST_ROLE")
-        cursor.execute(f"GRANT USAGE ON SCHEMA {database}.{schema} TO ROLE FRAUD_ANALYST_ROLE")
+        cursor.execute(
+            f"GRANT USAGE ON SCHEMA {database}.{schema} TO ROLE FRAUD_ANALYST_ROLE"
+        )
 
         # Grant SELECT on table
-        cursor.execute(f"GRANT SELECT ON TABLE {database}.{schema}.{table} TO ROLE FRAUD_ANALYST_ROLE")
-        
+        cursor.execute(
+            f"GRANT SELECT ON TABLE {database}.{schema}.{table} TO ROLE FRAUD_ANALYST_ROLE"
+        )
+
         # Grant role to user
-        cursor.execute(f"GRANT ROLE FRAUD_ANALYST_ROLE TO USER {os.getenv('SNOWFLAKE_USER', 'Olorin')}")
-        
+        cursor.execute(
+            f"GRANT ROLE FRAUD_ANALYST_ROLE TO USER {os.getenv('SNOWFLAKE_USER', 'Olorin')}"
+        )
+
         print("✅ Permissions configured")
-        
+
         # Insert some sample data for testing
         print("\n📝 Inserting sample data for testing...")
-        
+
         sample_data_sql = f"""
         INSERT INTO {database}.{schema}.{table}
         (TX_ID_KEY, TX_DATETIME, EMAIL, DEVICE_ID, IP,
@@ -516,17 +532,17 @@ def setup_database_and_table(conn: SnowflakeConnection) -> bool:
         ('TX004', CURRENT_TIMESTAMP(), 'low.risk@example.com', 'DEV003', '192.168.1.3', 500.00, 0.15, FALSE, 'PURCHASE', 'COMPLETED'),
         ('TX005', CURRENT_TIMESTAMP(), 'fraud.user@example.com', 'DEV004', '192.168.1.4', 10000.00, 0.99, TRUE, 'PURCHASE', 'BLOCKED');
         """
-        
+
         cursor.execute(sample_data_sql)
         print("✅ Sample data inserted")
-        
+
         # Verify the setup
         cursor.execute(f"SELECT COUNT(*) as count FROM {database}.{schema}.{table}")
         count = cursor.fetchone()[0]
         print(f"\n✅ Setup complete! Table contains {count} sample records")
-        
+
         return True
-        
+
     except Exception as e:
         print(f"\n❌ Setup failed: {str(e)}")
         return False
@@ -537,21 +553,22 @@ def setup_database_and_table(conn: SnowflakeConnection) -> bool:
 def test_user_access():
     """Test if the Olorin user can access the table"""
     print("\n🧪 Testing user access with FRAUD_ANALYST_ROLE...")
-    
+
     conn = get_connection(use_admin=False)
     if not conn:
         return False
-    
+
     try:
         cursor = conn.cursor()
-        
+
         # Get database and table configuration
-        database = os.getenv('SNOWFLAKE_DATABASE', 'GIL')
-        schema = os.getenv('SNOWFLAKE_SCHEMA', 'PUBLIC')
-        table = os.getenv('SNOWFLAKE_TRANSACTIONS_TABLE', 'TRANSACTIONS_ENRICHED')
+        database = os.getenv("SNOWFLAKE_DATABASE", "GIL")
+        schema = os.getenv("SNOWFLAKE_SCHEMA", "PUBLIC")
+        table = os.getenv("SNOWFLAKE_TRANSACTIONS_TABLE", "TRANSACTIONS_ENRICHED")
 
         # Test SELECT access
-        cursor.execute(f"""
+        cursor.execute(
+            f"""
             SELECT
                 EMAIL,
                 COUNT(*) as tx_count,
@@ -559,19 +576,20 @@ def test_user_access():
             FROM {database}.{schema}.{table}
             GROUP BY EMAIL
             ORDER BY risk_weighted_value DESC
-        """)
-        
+        """
+        )
+
         results = cursor.fetchall()
-        
+
         print("\n📊 Query Results:")
         print("-" * 60)
         for row in results:
             print(f"Email: {row[0]:<30} Txns: {row[1]:<5} Risk Value: ${row[2]:,.2f}")
         print("-" * 60)
-        
+
         print("\n✅ User access verified successfully!")
         return True
-        
+
     except Exception as e:
         print(f"\n❌ Access test failed: {str(e)}")
         return False
@@ -585,12 +603,12 @@ def main():
     print("=" * 70)
     print("🚀 SNOWFLAKE DATABASE SETUP FOR OLORIN POC")
     print("=" * 70)
-    
+
     # First, check if we need admin access
     print("\n📌 Note: This script needs ACCOUNTADMIN role to create database/table")
     print("   Make sure the Olorin user has ACCOUNTADMIN role temporarily, or")
     print("   run this with an admin account first.")
-    
+
     # Try to connect with admin privileges
     conn = get_connection(use_admin=True)
     if not conn:
@@ -599,15 +617,15 @@ def main():
         print("   2. SNOWFLAKE_PASSWORD is correct")
         print("   3. The user has ACCOUNTADMIN role (for initial setup)")
         return
-    
+
     # Setup database and table
     success = setup_database_and_table(conn)
     conn.close()
-    
+
     if success:
         # Test with regular user role
         test_user_access()
-        
+
         print("\n" + "=" * 70)
         print("🎉 SETUP COMPLETE!")
         print("=" * 70)

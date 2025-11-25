@@ -5,7 +5,9 @@ import pytest
 
 # OBSOLETE TEST: TMXClient from ato_agents has been removed
 # TMX functionality is handled through other client mechanisms
-pytestmark = pytest.mark.skip(reason="TMXClient from ato_agents removed - obsolete test file")
+pytestmark = pytest.mark.skip(
+    reason="TMXClient from ato_agents removed - obsolete test file"
+)
 
 
 @pytest.fixture

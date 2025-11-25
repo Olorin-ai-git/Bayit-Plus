@@ -5,28 +5,29 @@ This module orchestrates anomaly detection runs, coordinating detectors,
 data access, scoring, guardrails, and persistence.
 """
 
-from typing import Dict, Any, List, Optional
-from datetime import datetime
-import uuid
 import time
+import uuid
+from datetime import datetime
+from typing import Any, Dict, List, Optional
+
 import numpy as np
 import pandas as pd
 
-from app.service.logging import get_bridge_logger
+from app.config.anomaly_config import get_anomaly_config
+from app.models.anomaly import AnomalyEvent, DetectionRun, Detector
+from app.persistence.database import get_db
+from app.service.anomaly.cohort_detector import detect_cohort_anomalies
+from app.service.anomaly.cohort_fetcher import get_cohorts
+from app.service.anomaly.cohort_processor import process_cohorts
+from app.service.anomaly.detection_run_handler import handle_detection_error
+from app.service.anomaly.detection_run_logger import (
+    log_cohorts_retrieved,
+    log_detection_completed,
+    log_detection_run_start,
+)
 from app.service.anomaly.detector_factory import DetectorFactory
 from app.service.anomaly.guardrails import Guardrails
-from app.service.anomaly.cohort_fetcher import get_cohorts
-from app.service.anomaly.cohort_detector import detect_cohort_anomalies
-from app.service.anomaly.detection_run_logger import (
-    log_detection_run_start,
-    log_cohorts_retrieved,
-    log_detection_completed
-)
-from app.service.anomaly.detection_run_handler import handle_detection_error
-from app.service.anomaly.cohort_processor import process_cohorts
-from app.models.anomaly import Detector, DetectionRun, AnomalyEvent
-from app.persistence.database import get_db
-from app.config.anomaly_config import get_anomaly_config
+from app.service.logging import get_bridge_logger
 
 logger = get_bridge_logger(__name__)
 
@@ -49,7 +50,7 @@ class DetectionJob:
         detector: Detector,
         window_from: datetime,
         window_to: datetime,
-        run_id: Optional[uuid.UUID] = None
+        run_id: Optional[uuid.UUID] = None,
     ) -> DetectionRun:
         """
         Execute detection run for a detector on a time window.
@@ -77,10 +78,10 @@ class DetectionJob:
             detection_run = DetectionRun(
                 id=run_id,
                 detector_id=detector.id,
-                status='running',
+                status="running",
                 window_from=window_from,
                 window_to=window_to,
-                started_at=datetime.now()
+                started_at=datetime.now(),
             )
             db.add(detection_run)
             db.commit()
@@ -100,18 +101,22 @@ class DetectionJob:
                     run_id,
                     detector.id,
                     len(cohorts),
-                    int((time.time() - cohort_start_time) * 1000)
+                    int((time.time() - cohort_start_time) * 1000),
                 )
 
                 # Create detector instance
-                detector_instance = DetectorFactory.create(detector.type, detector.params)
+                detector_instance = DetectorFactory.create(
+                    detector.type, detector.params
+                )
 
                 # Process all cohorts
                 # Note: We don't pass a provider because PostgreSQL connection pools are tied to specific event loops
                 # Each cohort detection creates its own event loop in a thread, so each will create its own provider
                 # Analytics queries ALWAYS use PostgreSQL because transaction_windows is an Olorin-managed table in PostgreSQL
-                logger.info("Processing cohorts with PostgreSQL (analytics always uses PostgreSQL)")
-                
+                logger.info(
+                    "Processing cohorts with PostgreSQL (analytics always uses PostgreSQL)"
+                )
+
                 cohorts_processed, anomalies_created = process_cohorts(
                     detector_instance,
                     detector,
@@ -121,18 +126,18 @@ class DetectionJob:
                     self.guardrails,
                     run_id,
                     db,
-                    provider=None  # Each thread creates its own provider in its event loop
+                    provider=None,  # Each thread creates its own provider in its event loop
                 )
 
                 # Update run status
                 run_end_time = time.time()
                 execution_time_ms = int((run_end_time - run_start_time) * 1000)
-                detection_run.status = 'success'
+                detection_run.status = "success"
                 detection_run.finished_at = datetime.now()
                 detection_run.info = {
-                    'cohorts_processed': cohorts_processed,
-                    'anomalies_detected': anomalies_created,
-                    'execution_time_ms': execution_time_ms
+                    "cohorts_processed": cohorts_processed,
+                    "anomalies_detected": anomalies_created,
+                    "execution_time_ms": execution_time_ms,
                 }
                 db.commit()
 
@@ -142,7 +147,7 @@ class DetectionJob:
                     detector,
                     cohorts_processed,
                     anomalies_created,
-                    execution_time_ms
+                    execution_time_ms,
                 )
 
             except Exception as e:
@@ -151,7 +156,7 @@ class DetectionJob:
                     e,
                     run_start_time,
                     cohorts_processed,
-                    anomalies_created
+                    anomalies_created,
                 )
                 db.commit()
 
@@ -159,11 +164,11 @@ class DetectionJob:
             # The ID is already set (run_id was used to create the object)
             # so it should be accessible even after expunge
             db.expunge(detection_run)
-            
+
             # Ensure ID is accessible by setting it explicitly in __dict__
             # This prevents SQLAlchemy from trying to lazy-load it
-            detection_run.__dict__['id'] = run_id
-            
+            detection_run.__dict__["id"] = run_id
+
             return detection_run
 
         finally:
@@ -171,9 +176,7 @@ class DetectionJob:
 
 
 def run_detection(
-    detector_id: uuid.UUID,
-    window_from: datetime,
-    window_to: datetime
+    detector_id: uuid.UUID, window_from: datetime, window_to: datetime
 ) -> DetectionRun:
     """
     Run anomaly detection for a detector.
@@ -202,4 +205,3 @@ def run_detection(
 
     finally:
         db.close()
-

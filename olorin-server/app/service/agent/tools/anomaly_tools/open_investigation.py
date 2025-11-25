@@ -4,14 +4,15 @@ Open Investigation Tool for LangGraph Agents
 Tool for creating investigations from detected anomalies.
 """
 
-from typing import Any, Dict, Optional
-from pydantic import BaseModel, Field
-from langchain_core.tools import BaseTool
 import uuid
+from typing import Any, Dict, Optional
 
-from app.service.logging import get_bridge_logger
+from langchain_core.tools import BaseTool
+from pydantic import BaseModel, Field
+
 from app.models.anomaly import AnomalyEvent
 from app.persistence.database import get_db
+from app.service.logging import get_bridge_logger
 
 logger = get_bridge_logger(__name__)
 
@@ -21,8 +22,7 @@ class _OpenInvestigationArgs(BaseModel):
 
     anomaly_id: str = Field(..., description="Anomaly event UUID")
     entity_type: Optional[str] = Field(
-        "merchant_id",
-        description="Primary entity type for investigation"
+        "merchant_id", description="Primary entity type for investigation"
     )
 
 
@@ -50,14 +50,16 @@ class OpenInvestigationTool(BaseTool):
         """Execute the open_investigation tool."""
         db = next(get_db())
         try:
-            anomaly = db.query(AnomalyEvent).filter(
-                AnomalyEvent.id == uuid.UUID(anomaly_id)
-            ).first()
+            anomaly = (
+                db.query(AnomalyEvent)
+                .filter(AnomalyEvent.id == uuid.UUID(anomaly_id))
+                .first()
+            )
 
             if not anomaly:
                 return {
-                    'error': f'Anomaly {anomaly_id} not found',
-                    'investigation_id': None
+                    "error": f"Anomaly {anomaly_id} not found",
+                    "investigation_id": None,
                 }
 
             # Extract entity_id from cohort
@@ -66,39 +68,41 @@ class OpenInvestigationTool(BaseTool):
 
             if not entity_id:
                 return {
-                    'error': f'Entity {entity_type} not found in cohort',
-                    'investigation_id': None
+                    "error": f"Entity {entity_type} not found in cohort",
+                    "investigation_id": None,
                 }
 
             # Build investigation metadata
             metadata = {
-                'anomaly_id': str(anomaly.id),
-                'detector_id': str(anomaly.detector_id),
-                'cohort': cohort,
-                'metric': anomaly.metric,
-                'score': float(anomaly.score),
-                'severity': anomaly.severity,
-                'window_start': anomaly.window_start.isoformat(),
-                'window_end': anomaly.window_end.isoformat(),
-                'evidence': anomaly.evidence,
-                'channel': cohort.get('channel'),
-                'geo': cohort.get('geo')
+                "anomaly_id": str(anomaly.id),
+                "detector_id": str(anomaly.detector_id),
+                "cohort": cohort,
+                "metric": anomaly.metric,
+                "score": float(anomaly.score),
+                "severity": anomaly.severity,
+                "window_start": anomaly.window_start.isoformat(),
+                "window_end": anomaly.window_end.isoformat(),
+                "evidence": anomaly.evidence,
+                "channel": cohort.get("channel"),
+                "geo": cohort.get("geo"),
             }
 
             # Create investigation via investigation service
-            from app.service.investigation_state_service import InvestigationStateService
             from app.schemas.investigation_state import (
-                InvestigationStateCreate,
-                InvestigationSettings,
-                Entity,
-                TimeRange,
                 CorrelationMode,
+                Entity,
+                InvestigationMode,
+                InvestigationSettings,
+                InvestigationStateCreate,
                 InvestigationType,
-                InvestigationMode
+                TimeRange,
             )
-            
+            from app.service.investigation_state_service import (
+                InvestigationStateService,
+            )
+
             investigation_service = InvestigationStateService(db)
-            
+
             # Build investigation settings with entity and time range
             investigation_settings = InvestigationSettings(
                 name=f"Anomaly Investigation: {metric} - {entity_id}",
@@ -106,45 +110,46 @@ class OpenInvestigationTool(BaseTool):
                     Entity(
                         entity_type=entity_type,
                         entity_value=entity_id,
-                        metadata=metadata
+                        metadata=metadata,
                     )
                 ],
                 time_range=TimeRange(
                     start_time=anomaly.window_start.isoformat(),
-                    end_time=anomaly.window_end.isoformat()
+                    end_time=anomaly.window_end.isoformat(),
                 ),
                 investigation_type=InvestigationType.STRUCTURED,
                 investigation_mode=InvestigationMode.ENTITY,
-                correlation_mode=CorrelationMode.SINGLE_ENTITY
+                correlation_mode=CorrelationMode.SINGLE_ENTITY,
             )
-            
+
             # Build investigation state create request
             investigation_data = InvestigationStateCreate(
                 settings=investigation_settings
             )
-            
+
             # Create investigation (synchronous call for tool)
             # Note: Tools are synchronous, so we call the service synchronously
             # The investigation service will handle async operations internally
             import asyncio
-            
+
             try:
                 loop = asyncio.get_event_loop()
             except RuntimeError:
                 loop = asyncio.new_event_loop()
                 asyncio.set_event_loop(loop)
-            
+
             from fastapi import BackgroundTasks
+
             background_tasks = BackgroundTasks()
-            
+
             investigation_state = loop.run_until_complete(
                 investigation_service.create_state(
-                    user_id='system',  # System-initiated from anomaly
+                    user_id="system",  # System-initiated from anomaly
                     data=investigation_data,
-                    background_tasks=background_tasks
+                    background_tasks=background_tasks,
                 )
             )
-            
+
             investigation_id = investigation_state.investigation_id
 
             # Update anomaly with investigation_id
@@ -158,16 +163,15 @@ class OpenInvestigationTool(BaseTool):
             )
 
             return {
-                'investigation_id': investigation_id,
-                'entity_type': entity_type,
-                'entity_id': entity_id,
-                'anomaly_id': anomaly_id,
-                'metadata': metadata
+                "investigation_id": investigation_id,
+                "entity_type": entity_type,
+                "entity_id": entity_id,
+                "anomaly_id": anomaly_id,
+                "metadata": metadata,
             }
 
         except Exception as e:
             logger.error(f"Open investigation tool error: {e}", exc_info=True)
-            return {'error': str(e), 'investigation_id': None}
+            return {"error": str(e), "investigation_id": None}
         finally:
             db.close()
-

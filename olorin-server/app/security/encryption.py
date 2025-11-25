@@ -5,14 +5,15 @@ Encryption utilities for sensitive data storage
 import base64
 import json
 import logging
-from app.service.logging import get_bridge_logger
 import os
 from typing import Optional, Union
 
 from cryptography.fernet import Fernet
 from cryptography.hazmat.primitives import hashes
 from cryptography.hazmat.primitives.kdf.pbkdf2 import PBKDF2HMAC
+
 from app.service.config_loader import get_config_loader
+from app.service.logging import get_bridge_logger
 
 logger = get_bridge_logger(__name__)
 
@@ -23,16 +24,18 @@ class DataEncryption:
     def __init__(self, password: Optional[str] = None):
         """Initialize encryption with a password from Firebase Secret Manager."""
         config_loader = get_config_loader()
-        
+
         # Load encryption settings from Firebase Secret Manager
-        encryption_password = password or config_loader.load_secret("ENCRYPTION_PASSWORD")
+        encryption_password = password or config_loader.load_secret(
+            "ENCRYPTION_PASSWORD"
+        )
         if not encryption_password:
             raise ValueError(
                 "ENCRYPTION_PASSWORD secret is required in Firebase Secret Manager. "
                 "Generate with: openssl rand -base64 32"
             )
         self.password = encryption_password
-        
+
         encryption_salt = config_loader.load_secret("ENCRYPTION_SALT")
         if not encryption_salt:
             raise ValueError(

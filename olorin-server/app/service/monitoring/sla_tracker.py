@@ -8,15 +8,15 @@ Week 10 Phase 4 implementation.
 
 import logging
 import os
-from typing import Dict, Any, List, Optional
-from datetime import datetime
 from collections import deque
+from datetime import datetime
+from typing import Any, Dict, List, Optional
 
 from app.service.monitoring.sla_calculations import (
+    calculate_accuracy_sla,
     calculate_availability,
     calculate_latency_sla,
-    calculate_accuracy_sla,
-    empty_sla_metric
+    empty_sla_metric,
 )
 
 logger = logging.getLogger(__name__)
@@ -33,12 +33,16 @@ class SLATracker:
         """Initialize SLA tracker."""
         availability_target_env = os.getenv("SLA_AVAILABILITY_TARGET")
         if not availability_target_env:
-            raise RuntimeError("SLA_AVAILABILITY_TARGET environment variable is required")
+            raise RuntimeError(
+                "SLA_AVAILABILITY_TARGET environment variable is required"
+            )
         self.availability_target = float(availability_target_env)
 
         latency_target_env = os.getenv("SLA_LATENCY_P95_TARGET_MS")
         if not latency_target_env:
-            raise RuntimeError("SLA_LATENCY_P95_TARGET_MS environment variable is required")
+            raise RuntimeError(
+                "SLA_LATENCY_P95_TARGET_MS environment variable is required"
+            )
         self.latency_p95_target_ms = float(latency_target_env)
 
         accuracy_target_env = os.getenv("SLA_ACCURACY_TARGET")
@@ -61,20 +65,17 @@ class SLATracker:
 
     def record_request(self, success: bool, latency_ms: float) -> None:
         """Record a request outcome."""
-        self.request_outcomes.append({
-            "success": success,
-            "timestamp": datetime.utcnow()
-        })
+        self.request_outcomes.append(
+            {"success": success, "timestamp": datetime.utcnow()}
+        )
         if success:
             self.latency_samples.append(latency_ms)
 
     def record_prediction(self, predicted: bool, actual: Optional[bool] = None) -> None:
         """Record a prediction and actual outcome if known."""
-        self.prediction_results.append({
-            "predicted": predicted,
-            "actual": actual,
-            "timestamp": datetime.utcnow()
-        })
+        self.prediction_results.append(
+            {"predicted": predicted, "actual": actual, "timestamp": datetime.utcnow()}
+        )
 
     def get_availability_sla(self) -> Dict[str, Any]:
         """Calculate availability SLA compliance."""
@@ -96,15 +97,16 @@ class SLATracker:
     def get_accuracy_sla(self) -> Dict[str, Any]:
         """Calculate accuracy SLA compliance."""
         labeled_predictions = [
-            p for p in self.prediction_results
-            if p["actual"] is not None
+            p for p in self.prediction_results if p["actual"] is not None
         ]
 
         if not labeled_predictions:
             return empty_sla_metric("accuracy", self.accuracy_target)
 
         correct = sum(1 for p in labeled_predictions if p["predicted"] == p["actual"])
-        return calculate_accuracy_sla(correct, len(labeled_predictions), self.accuracy_target)
+        return calculate_accuracy_sla(
+            correct, len(labeled_predictions), self.accuracy_target
+        )
 
     def get_all_slas(self) -> Dict[str, Any]:
         """Get all SLA metrics."""
@@ -113,9 +115,9 @@ class SLATracker:
         accuracy_sla = self.get_accuracy_sla()
 
         all_compliant = (
-            availability_sla["compliant"] and
-            latency_sla["compliant"] and
-            accuracy_sla["compliant"]
+            availability_sla["compliant"]
+            and latency_sla["compliant"]
+            and accuracy_sla["compliant"]
         )
 
         return {
@@ -123,9 +125,9 @@ class SLATracker:
             "slas": {
                 "availability": availability_sla,
                 "latency": latency_sla,
-                "accuracy": accuracy_sla
+                "accuracy": accuracy_sla,
             },
-            "measured_at": datetime.utcnow().isoformat()
+            "measured_at": datetime.utcnow().isoformat(),
         }
 
     def get_sla_violations(self) -> List[Dict[str, Any]]:
@@ -134,30 +136,49 @@ class SLATracker:
 
         availability_sla = self.get_availability_sla()
         if not availability_sla["compliant"]:
-            violations.append({
-                "sla_type": "availability",
-                "target": availability_sla["target"],
-                "actual": availability_sla["actual"],
-                "severity": "critical" if availability_sla["actual"] < availability_sla["target"] * 0.95 else "high"
-            })
+            violations.append(
+                {
+                    "sla_type": "availability",
+                    "target": availability_sla["target"],
+                    "actual": availability_sla["actual"],
+                    "severity": (
+                        "critical"
+                        if availability_sla["actual"]
+                        < availability_sla["target"] * 0.95
+                        else "high"
+                    ),
+                }
+            )
 
         latency_sla = self.get_latency_sla()
         if not latency_sla["compliant"]:
-            violations.append({
-                "sla_type": "latency_p95",
-                "target": latency_sla["target"],
-                "actual": latency_sla["actual"],
-                "severity": "high" if latency_sla["actual"] > latency_sla["target"] * 1.5 else "medium"
-            })
+            violations.append(
+                {
+                    "sla_type": "latency_p95",
+                    "target": latency_sla["target"],
+                    "actual": latency_sla["actual"],
+                    "severity": (
+                        "high"
+                        if latency_sla["actual"] > latency_sla["target"] * 1.5
+                        else "medium"
+                    ),
+                }
+            )
 
         accuracy_sla = self.get_accuracy_sla()
         if not accuracy_sla["compliant"]:
-            violations.append({
-                "sla_type": "accuracy",
-                "target": accuracy_sla["target"],
-                "actual": accuracy_sla["actual"],
-                "severity": "high" if accuracy_sla["actual"] < accuracy_sla["target"] * 0.9 else "medium"
-            })
+            violations.append(
+                {
+                    "sla_type": "accuracy",
+                    "target": accuracy_sla["target"],
+                    "actual": accuracy_sla["actual"],
+                    "severity": (
+                        "high"
+                        if accuracy_sla["actual"] < accuracy_sla["target"] * 0.9
+                        else "medium"
+                    ),
+                }
+            )
 
         return violations
 

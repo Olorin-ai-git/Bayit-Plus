@@ -11,8 +11,10 @@ Spec: /specs/021-live-merged-logstream/research.md
 """
 
 import sys
-from typing import Optional, List, Tuple
+from typing import List, Optional, Tuple
+
 from pydantic import ValidationError
+
 from app.service.logging import get_bridge_logger
 
 logger = get_bridge_logger(__name__)
@@ -42,7 +44,9 @@ def validate_logstream_config() -> Tuple[bool, Optional[str]]:
             logger.info(f"  SSE timeout: {config.sse.connection_timeout_seconds}s")
             logger.info(f"  Buffer size: {config.aggregator.max_buffer_size}")
             logger.info(f"  PII redaction: {config.pii_redaction.enable_pii_redaction}")
-            logger.info(f"  Rate limit (user): {config.rate_limit.requests_per_minute_per_user} req/min")
+            logger.info(
+                f"  Rate limit (user): {config.rate_limit.requests_per_minute_per_user} req/min"
+            )
 
         return True, None
 
@@ -143,7 +147,9 @@ def fail_fast_on_invalid_config() -> None:
 
     if not is_valid:
         print(error_message, file=sys.stderr)
-        logger.critical("Log stream configuration validation failed - refusing to start")
+        logger.critical(
+            "Log stream configuration validation failed - refusing to start"
+        )
         sys.exit(1)
 
     logger.info("✅ Log stream configuration validated successfully")
@@ -161,5 +167,5 @@ def get_validation_summary() -> dict:
     return {
         "valid": is_valid,
         "error": error_message if not is_valid else None,
-        "component": "log_stream_configuration"
+        "component": "log_stream_configuration",
     }

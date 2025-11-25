@@ -5,9 +5,11 @@ from fastapi import HTTPException
 from langchain_core.tools import BaseTool
 from pydantic import BaseModel, Field
 
+
 # Mock SplunkClient for testing when ato_agents module is not available
 class MockSplunkClient:
     """Mock Splunk client for testing purposes"""
+
     def __init__(self, host, port, username, password):
         self.host = host
         self.port = port
@@ -25,6 +27,7 @@ class MockSplunkClient:
     async def disconnect(self):
         """Mock disconnection"""
         pass
+
 
 # Use mock client for now - TODO: Replace with proper Splunk SDK implementation
 SplunkClient = MockSplunkClient
@@ -64,12 +67,12 @@ class SplunkQueryTool(BaseTool):
 
     async def _arun(self, query: str) -> Dict[str, Any]:  # type: ignore[override]
         """Async execution of the Splunk query."""
-        
+
         # Check for demo/test mode
         if os.getenv("OLORIN_USE_DEMO_DATA", "false").lower() == "true":
             # Return empty results for testing when demo data is not available
             return {"results": []}
-        
+
         settings = get_settings_for_env()
 
         # Use environment variables if available, otherwise fall back to IDPS secrets

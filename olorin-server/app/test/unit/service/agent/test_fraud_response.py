@@ -3,7 +3,9 @@ from pydantic import ValidationError
 
 # OBSOLETE TEST: fraud_response from ato_agents.splunk_agent has been removed
 # Fraud response functionality is now handled by domain-specific LLM services
-pytestmark = pytest.mark.skip(reason="fraud_response from ato_agents removed - obsolete test file")
+pytestmark = pytest.mark.skip(
+    reason="fraud_response from ato_agents removed - obsolete test file"
+)
 
 
 def test_behavior_patterns_defaults():

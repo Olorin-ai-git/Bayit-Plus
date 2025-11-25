@@ -5,9 +5,10 @@ Uses Seasonal and Trend decomposition using Loess (STL) with
 Median Absolute Deviation (MAD) for robust anomaly detection.
 """
 
+from typing import Any, Dict
+
 import numpy as np
 from statsmodels.tsa.seasonal import STL
-from typing import Dict, Any
 
 from app.service.anomaly.detectors.base import BaseDetector, DetectorResult
 from app.service.logging import get_bridge_logger
@@ -36,8 +37,8 @@ class STLMADDetector(BaseDetector):
                 - min_support: Minimum data points required (default: 50)
         """
         super().__init__(params)
-        self.period = params.get('period', 672)
-        self.robust = params.get('robust', True)
+        self.period = params.get("period", 672)
+        self.robust = params.get("robust", True)
 
     def detect(self, series: np.ndarray) -> DetectorResult:
         """
@@ -71,7 +72,7 @@ class STLMADDetector(BaseDetector):
             # Calculate MAD (Median Absolute Deviation)
             median_residual = np.median(residuals)
             mad = np.median(np.abs(residuals - median_residual))
-            
+
             # Avoid division by zero
             if mad == 0:
                 mad = 1e-9
@@ -85,11 +86,11 @@ class STLMADDetector(BaseDetector):
 
             # Build evidence
             evidence = {
-                'residuals': residuals.tolist(),
-                'mad': float(mad),
-                'trend': trend.tolist(),
-                'seasonal': seasonal.tolist(),
-                'period': actual_period
+                "residuals": residuals.tolist(),
+                "mad": float(mad),
+                "trend": trend.tolist(),
+                "seasonal": seasonal.tolist(),
+                "period": actual_period,
             }
 
             logger.debug(
@@ -97,13 +98,8 @@ class STLMADDetector(BaseDetector):
                 f"out of {len(series)} points"
             )
 
-            return DetectorResult(
-                scores=scores,
-                anomalies=anomalies,
-                evidence=evidence
-            )
+            return DetectorResult(scores=scores, anomalies=anomalies, evidence=evidence)
 
         except Exception as e:
             logger.error(f"STL+MAD detection failed: {e}")
             raise ValueError(f"STL+MAD detection error: {e}") from e
-

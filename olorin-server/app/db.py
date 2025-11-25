@@ -12,8 +12,9 @@ SYSTEM MANDATE Compliance:
 
 import os
 from contextlib import contextmanager
+
 from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker, Session
+from sqlalchemy.orm import Session, sessionmaker
 
 from app.service.logging import get_bridge_logger
 
@@ -57,7 +58,7 @@ def get_engine():
         _engine = create_engine(
             db_url,
             pool_pre_ping=True,  # Verify connections before using
-            pool_recycle=3600,   # Recycle connections after 1 hour
+            pool_recycle=3600,  # Recycle connections after 1 hour
         )
         logger.info("Database engine initialized")
     return _engine

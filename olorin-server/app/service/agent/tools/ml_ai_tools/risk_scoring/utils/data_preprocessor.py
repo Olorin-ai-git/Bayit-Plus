@@ -4,8 +4,8 @@ Risk Data Preprocessor
 Utility for preprocessing and normalizing risk data.
 """
 
-from typing import Any, Dict, List, Optional
 from collections import defaultdict
+from typing import Any, Dict, List, Optional
 
 
 class RiskDataPreprocessor:
@@ -27,7 +27,7 @@ class RiskDataPreprocessor:
             "contextual_data": self._process_contextual_data(risk_data),
             "risk_indicators": self._extract_risk_indicators(risk_data),
             "data_quality": self._assess_data_quality(risk_data),
-            "data_completeness": self._assess_data_completeness(risk_data)
+            "data_completeness": self._assess_data_completeness(risk_data),
         }
 
         return processed_data
@@ -39,10 +39,16 @@ class RiskDataPreprocessor:
         # Extract financial fields
         for key, value in risk_data.items():
             key_lower = key.lower()
-            if any(term in key_lower for term in ['amount', 'balance', 'income', 'debt', 'credit']):
+            if any(
+                term in key_lower
+                for term in ["amount", "balance", "income", "debt", "credit"]
+            ):
                 if isinstance(value, (int, float)):
                     financial_data[key] = float(value)
-                elif isinstance(value, str) and value.replace('.', '').replace('-', '').isdigit():
+                elif (
+                    isinstance(value, str)
+                    and value.replace(".", "").replace("-", "").isdigit()
+                ):
                     financial_data[key] = float(value)
 
         return financial_data
@@ -54,7 +60,10 @@ class RiskDataPreprocessor:
         # Extract behavioral fields
         for key, value in risk_data.items():
             key_lower = key.lower()
-            if any(term in key_lower for term in ['behavior', 'pattern', 'frequency', 'usage']):
+            if any(
+                term in key_lower
+                for term in ["behavior", "pattern", "frequency", "usage"]
+            ):
                 if isinstance(value, (int, float)):
                     behavioral_data[key] = self._normalize_score(float(value))
 
@@ -67,7 +76,10 @@ class RiskDataPreprocessor:
         # Extract contextual fields
         for key, value in risk_data.items():
             key_lower = key.lower()
-            if any(term in key_lower for term in ['location', 'time', 'device', 'environment']):
+            if any(
+                term in key_lower
+                for term in ["location", "time", "device", "environment"]
+            ):
                 contextual_data[key] = value
 
         return contextual_data
@@ -79,7 +91,10 @@ class RiskDataPreprocessor:
         # Extract risk-related fields
         for key, value in risk_data.items():
             key_lower = key.lower()
-            if any(term in key_lower for term in ['risk', 'fraud', 'suspicious', 'alert', 'violation']):
+            if any(
+                term in key_lower
+                for term in ["risk", "fraud", "suspicious", "alert", "violation"]
+            ):
                 if isinstance(value, (int, float)):
                     indicators[key] = float(value)
 
@@ -103,7 +118,9 @@ class RiskDataPreprocessor:
         quality_score = valid_fields / total_fields
 
         # Bonus for numeric data (more reliable)
-        numeric_fields = sum(1 for value in risk_data.values() if isinstance(value, (int, float)))
+        numeric_fields = sum(
+            1 for value in risk_data.values() if isinstance(value, (int, float))
+        )
         numeric_bonus = min(numeric_fields / total_fields * 0.2, 0.2)
 
         return min(quality_score + numeric_bonus, 1.0)
@@ -111,7 +128,11 @@ class RiskDataPreprocessor:
     def _assess_data_completeness(self, risk_data: Dict[str, Any]) -> float:
         """Assess data completeness."""
         expected_categories = [
-            'financial', 'behavioral', 'contextual', 'temporal', 'geographic'
+            "financial",
+            "behavioral",
+            "contextual",
+            "temporal",
+            "geographic",
         ]
 
         present_categories = set()
@@ -123,7 +144,9 @@ class RiskDataPreprocessor:
 
         return len(present_categories) / len(expected_categories)
 
-    def _normalize_score(self, value: float, min_val: float = 0.0, max_val: float = 1.0) -> float:
+    def _normalize_score(
+        self, value: float, min_val: float = 0.0, max_val: float = 1.0
+    ) -> float:
         """Normalize a score to 0-1 range."""
         if max_val == min_val:
             return 0.0
@@ -135,7 +158,7 @@ class RiskDataPreprocessor:
             "is_valid": True,
             "errors": [],
             "warnings": [],
-            "data_summary": {}
+            "data_summary": {},
         }
 
         # Check for empty data
@@ -159,7 +182,9 @@ class RiskDataPreprocessor:
 
         # Warnings for data quality issues
         if none_fields > len(risk_data) * 0.3:
-            validation_result["warnings"].append("More than 30% of fields are None/null")
+            validation_result["warnings"].append(
+                "More than 30% of fields are None/null"
+            )
 
         if numeric_fields < len(risk_data) * 0.2:
             validation_result["warnings"].append("Less than 20% of fields are numeric")
@@ -168,7 +193,7 @@ class RiskDataPreprocessor:
             "total_fields": len(risk_data),
             "numeric_fields": numeric_fields,
             "string_fields": string_fields,
-            "none_fields": none_fields
+            "none_fields": none_fields,
         }
 
         return validation_result

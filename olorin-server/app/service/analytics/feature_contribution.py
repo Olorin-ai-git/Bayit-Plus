@@ -7,10 +7,11 @@ Week 9 Phase 3 implementation.
 """
 
 import logging
-from typing import Dict, Any, Optional
+from typing import Any, Dict, Optional
+
 import numpy as np
 
-from app.service.analytics.model_base import ModelPrediction, FraudDetectionModel
+from app.service.analytics.model_base import FraudDetectionModel, ModelPrediction
 
 logger = logging.getLogger(__name__)
 
@@ -53,12 +54,10 @@ def normalize_feature_value(feature_name: str, value: Any) -> float:
         return 0.0
 
 
-
-
 def calculate_feature_contributions(
     prediction: ModelPrediction,
     features: Dict[str, Any],
-    model: Optional[FraudDetectionModel]
+    model: Optional[FraudDetectionModel],
 ) -> Dict[str, float]:
     """
     Calculate feature contributions to prediction.

@@ -4,8 +4,9 @@ Agent Service Module - Compatibility wrapper for legacy agent invocation.
 This module provides backward compatibility for the legacy agent service API
 while using the new clean graph orchestration system under the hood.
 """
+
 import logging
-from typing import Tuple, Optional
+from typing import Optional, Tuple
 
 from fastapi import Request
 
@@ -15,7 +16,9 @@ from app.service.logging import get_bridge_logger
 logger = get_bridge_logger(__name__)
 
 
-async def ainvoke_agent(request: Request, agent_context: AgentContext) -> Tuple[str, Optional[str]]:
+async def ainvoke_agent(
+    request: Request, agent_context: AgentContext
+) -> Tuple[str, Optional[str]]:
     """
     Legacy compatibility function for agent invocation.
 
@@ -37,19 +40,26 @@ async def ainvoke_agent(request: Request, agent_context: AgentContext) -> Tuple[
             # Use clean graph orchestration system
             logger.info("🚀 Using Clean Graph Orchestration for fraud investigation")
 
-            from app.service.agent.orchestration.hybrid.migration_utilities import (
-                get_investigation_graph,
-                get_feature_flags
-            )
-            from app.service.agent.orchestration.state_schema import create_initial_state
             from langchain_core.messages import HumanMessage
+
+            from app.service.agent.orchestration.hybrid.migration_utilities import (
+                get_feature_flags,
+                get_investigation_graph,
+            )
+            from app.service.agent.orchestration.state_schema import (
+                create_initial_state,
+            )
 
             # Create investigation ID from context
             investigation_id = f"LEGACY_AGENT_{agent_context.thread_id}"
 
             # Extract entity info from agent context metadata or input
-            entity_id = getattr(agent_context.metadata, 'additionalMetadata', {}).get('entity_id', 'unknown')
-            entity_type = getattr(agent_context.metadata, 'additionalMetadata', {}).get('entity_type', 'user_id')
+            entity_id = getattr(agent_context.metadata, "additionalMetadata", {}).get(
+                "entity_id", "unknown"
+            )
+            entity_type = getattr(agent_context.metadata, "additionalMetadata", {}).get(
+                "entity_type", "user_id"
+            )
 
             # Create initial state for clean graph execution
             initial_state = create_initial_state(
@@ -57,17 +67,19 @@ async def ainvoke_agent(request: Request, agent_context: AgentContext) -> Tuple[
                 entity_id=entity_id,
                 entity_type=entity_type,
                 parallel_execution=True,
-                max_tools=52
+                max_tools=52,
             )
 
             # Add investigation query to messages
-            investigation_query = agent_context.input or f"Investigate {entity_type}: {entity_id} for fraud patterns"
+            investigation_query = (
+                agent_context.input
+                or f"Investigate {entity_type}: {entity_id} for fraud patterns"
+            )
             initial_state["messages"] = [HumanMessage(content=investigation_query)]
 
             # Get appropriate graph (hybrid or clean based on feature flags)
             graph = await get_investigation_graph(
-                investigation_id=investigation_id,
-                entity_type=entity_type
+                investigation_id=investigation_id, entity_type=entity_type
             )
 
             # Set recursion limit for production mode
@@ -78,18 +90,23 @@ async def ainvoke_agent(request: Request, agent_context: AgentContext) -> Tuple[
             feature_flags = get_feature_flags()
             if feature_flags.is_enabled("hybrid_graph_v1", investigation_id):
                 config["configurable"] = {"thread_id": investigation_id}
-                logger.info(f"🧠 Using Hybrid Intelligence graph for investigation: {investigation_id}")
+                logger.info(
+                    f"🧠 Using Hybrid Intelligence graph for investigation: {investigation_id}"
+                )
             else:
-                logger.info(f"🔄 Using Clean graph orchestration for investigation: {investigation_id}")
+                logger.info(
+                    f"🔄 Using Clean graph orchestration for investigation: {investigation_id}"
+                )
 
             # Execute the clean graph system
-            langgraph_result = await graph.ainvoke(
-                initial_state,
-                config=config
-            )
+            langgraph_result = await graph.ainvoke(initial_state, config=config)
 
             # Extract result from LangGraph execution
-            response_str = str(langgraph_result.get("messages", [])[-1].content if langgraph_result.get("messages") else "Investigation completed")
+            response_str = str(
+                langgraph_result.get("messages", [])[-1].content
+                if langgraph_result.get("messages")
+                else "Investigation completed"
+            )
             trace_id = investigation_id  # Use investigation ID as trace ID
 
             return response_str, trace_id

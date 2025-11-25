@@ -4,12 +4,13 @@ Summarize Node for Anomaly Investigations
 Generates incident summaries for anomaly-triggered investigations using RAG context.
 """
 
-from typing import Dict, Any, Optional
 from datetime import datetime
+from typing import Any, Dict, Optional
 
 from langchain_core.messages import AIMessage, SystemMessage
-from app.service.logging import get_bridge_logger
+
 from app.service.agent.orchestration.state_schema import InvestigationState
+from app.service.logging import get_bridge_logger
 from app.service.rag.rag_service import get_rag_service
 
 logger = get_bridge_logger(__name__)
@@ -34,19 +35,19 @@ async def summarize_node(state: InvestigationState) -> Dict[str, Any]:
 
     try:
         # Extract anomaly context from state
-        entity_id = state.get('entity_id', 'unknown')
-        entity_type = state.get('entity_type', 'unknown')
-        investigation_id = state.get('investigation_id', 'unknown')
+        entity_id = state.get("entity_id", "unknown")
+        entity_type = state.get("entity_type", "unknown")
+        investigation_id = state.get("investigation_id", "unknown")
 
         # Get anomaly metadata from state
-        metadata = state.get('metadata', {})
-        anomaly_id = metadata.get('anomaly_id')
-        cohort = metadata.get('cohort', {})
-        metric = metadata.get('metric', 'unknown')
-        score = metadata.get('score', 0.0)
-        severity = metadata.get('severity', 'unknown')
-        window_start = metadata.get('window_start')
-        window_end = metadata.get('window_end')
+        metadata = state.get("metadata", {})
+        anomaly_id = metadata.get("anomaly_id")
+        cohort = metadata.get("cohort", {})
+        metric = metadata.get("metric", "unknown")
+        score = metadata.get("score", 0.0)
+        severity = metadata.get("severity", "unknown")
+        window_start = metadata.get("window_start")
+        window_end = metadata.get("window_end")
 
         # Retrieve RAG context for the anomaly
         rag_service = get_rag_service()
@@ -59,20 +60,30 @@ async def summarize_node(state: InvestigationState) -> Dict[str, Any]:
                 rag_results = await rag_service.search(
                     query=query,
                     limit=5,
-                    filters={
-                        'entity_type': entity_type,
-                        'entity_id': entity_id,
-                    } if entity_id != 'unknown' else None
+                    filters=(
+                        {
+                            "entity_type": entity_type,
+                            "entity_id": entity_id,
+                        }
+                        if entity_id != "unknown"
+                        else None
+                    ),
                 )
-                
-                if rag_results and rag_results.get('results'):
-                    rag_context = "\n\n".join([
-                        f"- {r.get('content', '')[:200]}..." 
-                        for r in rag_results['results'][:3]
-                    ])
-                    logger.info(f"Retrieved {len(rag_results['results'])} RAG context results")
+
+                if rag_results and rag_results.get("results"):
+                    rag_context = "\n\n".join(
+                        [
+                            f"- {r.get('content', '')[:200]}..."
+                            for r in rag_results["results"][:3]
+                        ]
+                    )
+                    logger.info(
+                        f"Retrieved {len(rag_results['results'])} RAG context results"
+                    )
             except Exception as e:
-                logger.warning(f"RAG context retrieval failed: {e}, proceeding without RAG")
+                logger.warning(
+                    f"RAG context retrieval failed: {e}, proceeding without RAG"
+                )
 
         # Build summary prompt
         summary_prompt = f"""Generate an incident summary for a fraud anomaly detection.
@@ -148,4 +159,3 @@ A **{severity.upper()}** severity anomaly was detected for {entity_type} `{entit
             "summary_generated": False,
             "summary_error": str(e),
         }
-

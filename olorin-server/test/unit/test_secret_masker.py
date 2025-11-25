@@ -6,12 +6,13 @@ exposure of API keys, passwords, tokens, and other secrets.
 """
 
 import pytest
+
 from app.service.secret_masker import (
+    _mask_value,
+    _should_mask_field,
     mask_config_object,
     mask_sensitive_dict,
     mask_string_secrets,
-    _should_mask_field,
-    _mask_value
 )
 
 
@@ -94,7 +95,7 @@ class TestDictMasking:
             "port": 8090,
             "api_key": "secret-key-12345",
             "database_password": "super-secret-password",
-            "username": "admin"
+            "username": "admin",
         }
 
         masked = mask_sensitive_dict(config)
@@ -103,34 +104,34 @@ class TestDictMasking:
         assert masked["port"] == 8090  # Safe field unchanged
         assert masked["username"] == "admin"  # Safe field unchanged
         assert "secret-key" not in str(masked["api_key"])  # Sensitive field masked
-        assert "super-secret" not in str(masked["database_password"])  # Sensitive field masked
+        assert "super-secret" not in str(
+            masked["database_password"]
+        )  # Sensitive field masked
 
     def test_masks_nested_dictionaries(self):
         """Should recursively mask nested dictionaries."""
         config = {
-            "app": {
-                "name": "Olorin",
-                "api_key": "secret-key-12345"
-            },
-            "database": {
-                "host": "localhost",
-                "password": "db-secret-password"
-            }
+            "app": {"name": "Olorin", "api_key": "secret-key-12345"},
+            "database": {"host": "localhost", "password": "db-secret-password"},
         }
 
         masked = mask_sensitive_dict(config)
 
         assert masked["app"]["name"] == "Olorin"  # Safe nested field unchanged
-        assert "secret-key" not in str(masked["app"]["api_key"])  # Nested sensitive field masked
+        assert "secret-key" not in str(
+            masked["app"]["api_key"]
+        )  # Nested sensitive field masked
         assert masked["database"]["host"] == "localhost"  # Safe nested field unchanged
-        assert "db-secret" not in str(masked["database"]["password"])  # Nested sensitive field masked
+        assert "db-secret" not in str(
+            masked["database"]["password"]
+        )  # Nested sensitive field masked
 
     def test_masks_lists_of_dicts(self):
         """Should mask sensitive fields in lists of dictionaries."""
         config = {
             "services": [
                 {"name": "service1", "api_key": "key1"},
-                {"name": "service2", "api_key": "key2"}
+                {"name": "service2", "api_key": "key2"},
             ]
         }
 
@@ -159,7 +160,7 @@ class TestConfigObjectMasking:
             app_name="Olorin",
             api_key="secret-key-12345",
             database_password="super-secret-password",
-            port=8090
+            port=8090,
         )
 
         masked = mask_config_object(config)
@@ -175,7 +176,9 @@ class TestStringMasking:
 
     def test_masks_api_keys_in_strings(self):
         """Should mask API keys in strings."""
-        text = "Using api_key=sk-proj-AbCdEfGhIjKlMnOpQrStUvWxYz123456 for authentication"
+        text = (
+            "Using api_key=sk-proj-AbCdEfGhIjKlMnOpQrStUvWxYz123456 for authentication"
+        )
         masked = mask_string_secrets(text)
         assert "sk-proj-AbCdEfGhIjKlMnOpQrStUvWxYz123456" not in masked
         assert "***masked***" in masked

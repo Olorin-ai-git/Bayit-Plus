@@ -11,13 +11,14 @@ This script verifies that:
 Run: poetry run python verify_real_tools_persistence.py
 """
 
-import json
 import asyncio
+import json
 from datetime import datetime, timezone
+
 from sqlalchemy import create_engine
 from sqlalchemy.orm import Session
 
-from app.models.investigation_state import InvestigationState, Base
+from app.models.investigation_state import Base, InvestigationState
 from app.service.investigation_progress_service import InvestigationProgressService
 
 
@@ -28,14 +29,8 @@ async def create_investigation_with_real_tools(db_session: Session) -> str:
     # Create settings data with entities
     settings_data = {
         "entities": [
-            {
-                "entity_type": "ip",
-                "entity_value": "67.76.8.209"
-            },
-            {
-                "entity_type": "user_id",
-                "entity_value": "user-12345"
-            }
+            {"entity_type": "ip", "entity_value": "67.76.8.209"},
+            {"entity_type": "user_id", "entity_value": "user-12345"},
         ]
     }
 
@@ -52,14 +47,14 @@ async def create_investigation_with_real_tools(db_session: Session) -> str:
                 "input_parameters": {
                     "entity_id": "67.76.8.209",
                     "entity_type": "ip",
-                    "query_type": "risk_assessment"
+                    "query_type": "risk_assessment",
                 },
                 "output_result": {
                     "model_score": 0.87,
                     "is_fraud_tx": 1,
-                    "risk_flags": ["high_transaction_velocity", "unusual_geography"]
+                    "risk_flags": ["high_transaction_velocity", "unusual_geography"],
                 },
-                "timestamp": "2024-11-03T10:00:05Z"
+                "timestamp": "2024-11-03T10:00:05Z",
             },
             {
                 "id": "te-abuseipdb-001",
@@ -68,17 +63,14 @@ async def create_investigation_with_real_tools(db_session: Session) -> str:
                 "status": "success",
                 "started_at": "2024-11-03T10:00:06Z",
                 "completed_at": "2024-11-03T10:00:08Z",
-                "input_parameters": {
-                    "ip_address": "67.76.8.209",
-                    "days": 90
-                },
+                "input_parameters": {"ip_address": "67.76.8.209", "days": 90},
                 "output_result": {
                     "abuseIPDB_score": 45,
                     "threat_level": "moderate",
                     "total_reports": 3,
-                    "last_reported_at": "2024-11-02T15:30:00Z"
+                    "last_reported_at": "2024-11-02T15:30:00Z",
                 },
-                "timestamp": "2024-11-03T10:00:08Z"
+                "timestamp": "2024-11-03T10:00:08Z",
             },
             {
                 "id": "te-splunk-001",
@@ -91,18 +83,21 @@ async def create_investigation_with_real_tools(db_session: Session) -> str:
                     "entity_id": "user-12345",
                     "entity_type": "user",
                     "time_range": "24h",
-                    "query": "failed_login_attempts"
+                    "query": "failed_login_attempts",
                 },
                 "output_result": {
                     "event_count": 7,
                     "unique_ip_addresses": 5,
                     "failed_attempts": 7,
                     "events": [
-                        {"timestamp": "2024-11-03T08:15:00Z", "source_ip": "192.168.1.100"},
-                        {"timestamp": "2024-11-03T09:30:00Z", "source_ip": "10.0.0.50"}
-                    ]
+                        {
+                            "timestamp": "2024-11-03T08:15:00Z",
+                            "source_ip": "192.168.1.100",
+                        },
+                        {"timestamp": "2024-11-03T09:30:00Z", "source_ip": "10.0.0.50"},
+                    ],
                 },
-                "timestamp": "2024-11-03T10:00:12Z"
+                "timestamp": "2024-11-03T10:00:12Z",
             },
             {
                 "id": "te-device-analysis-001",
@@ -113,23 +108,23 @@ async def create_investigation_with_real_tools(db_session: Session) -> str:
                 "completed_at": "2024-11-03T10:00:15Z",
                 "input_parameters": {
                     "device_id": "device-abc123xyz",
-                    "user_id": "user-12345"
+                    "user_id": "user-12345",
                 },
                 "output_result": {
                     "device_risk_score": 0.62,
                     "is_known_device": False,
                     "browser_family": "Chrome",
-                    "os_family": "Windows"
+                    "os_family": "Windows",
                 },
-                "timestamp": "2024-11-03T10:00:15Z"
-            }
+                "timestamp": "2024-11-03T10:00:15Z",
+            },
         ],
         "investigation_metadata": {
             "entity_type": "ip",
             "entity_id": "67.76.8.209",
             "investigation_type": "fraud_detection",
-            "created_at": "2024-11-03T10:00:00Z"
-        }
+            "created_at": "2024-11-03T10:00:00Z",
+        },
     }
 
     # Create investigation state
@@ -139,7 +134,7 @@ async def create_investigation_with_real_tools(db_session: Session) -> str:
         lifecycle_stage="IN_PROGRESS",
         settings_json=json.dumps(settings_data),
         progress_json=json.dumps(progress_data),
-        status="COMPLETED"
+        status="COMPLETED",
     )
 
     db_session.add(state)
@@ -155,13 +150,17 @@ async def create_investigation_with_real_tools(db_session: Session) -> str:
     return investigation_id
 
 
-async def verify_database_persistence(db_session: Session, investigation_id: str) -> bool:
+async def verify_database_persistence(
+    db_session: Session, investigation_id: str
+) -> bool:
     """Verify tool execution data is in database."""
     print(f"\n📊 Verifying Database Persistence...")
 
-    state = db_session.query(InvestigationState).filter_by(
-        investigation_id=investigation_id
-    ).first()
+    state = (
+        db_session.query(InvestigationState)
+        .filter_by(investigation_id=investigation_id)
+        .first()
+    )
 
     if not state:
         print(f"❌ Investigation not found in database")
@@ -195,12 +194,7 @@ async def verify_progress_api_response(investigation_id: str) -> bool:
     with Session(engine) as db_session:
         # Create test settings data
         settings_data = {
-            "entities": [
-                {
-                    "entity_type": "ip",
-                    "entity_value": "67.76.8.209"
-                }
-            ]
+            "entities": [{"entity_type": "ip", "entity_value": "67.76.8.209"}]
         }
 
         # Create test data
@@ -214,7 +208,7 @@ async def verify_progress_api_response(investigation_id: str) -> bool:
                     "started_at": "2024-11-03T10:00:00Z",
                     "input_parameters": {"entity_id": "67.76.8.209"},
                     "output_result": {"model_score": 0.87},
-                    "timestamp": "2024-11-03T10:00:05Z"
+                    "timestamp": "2024-11-03T10:00:05Z",
                 },
                 {
                     "id": "te-abuseipdb-001",
@@ -224,8 +218,8 @@ async def verify_progress_api_response(investigation_id: str) -> bool:
                     "started_at": "2024-11-03T10:00:06Z",
                     "input_parameters": {"ip_address": "67.76.8.209"},
                     "output_result": {"abuseIPDB_score": 45},
-                    "timestamp": "2024-11-03T10:00:08Z"
-                }
+                    "timestamp": "2024-11-03T10:00:08Z",
+                },
             ]
         }
 
@@ -235,7 +229,7 @@ async def verify_progress_api_response(investigation_id: str) -> bool:
             lifecycle_stage="IN_PROGRESS",
             settings_json=json.dumps(settings_data),
             progress_json=json.dumps(progress_data),
-            status="COMPLETED"
+            status="COMPLETED",
         )
 
         db_session.add(state)
@@ -260,9 +254,11 @@ async def verify_real_tool_names(db_session: Session, investigation_id: str) -> 
     """Verify database contains REAL tool names, not test mocks."""
     print(f"\n🔧 Verifying REAL Tool Names (Not Mocks)...")
 
-    state = db_session.query(InvestigationState).filter_by(
-        investigation_id=investigation_id
-    ).first()
+    state = (
+        db_session.query(InvestigationState)
+        .filter_by(investigation_id=investigation_id)
+        .first()
+    )
 
     if not state or not state.progress_json:
         return False
@@ -276,7 +272,7 @@ async def verify_real_tool_names(db_session: Session, investigation_id: str) -> 
         "splunk_logs_query",
         "device_fingerprint_analyzer",
         "location_validator",
-        "authentication_analyzer"
+        "authentication_analyzer",
     }
 
     found_tools = set()
@@ -309,6 +305,7 @@ async def main():
         # Fallback: create in-memory database
         engine = create_engine("sqlite:///:memory:")
         from sqlalchemy.orm import sessionmaker
+
         SessionLocal = sessionmaker(bind=engine)
 
     Base.metadata.create_all(engine)
@@ -341,7 +338,9 @@ async def main():
             print("\nEnd-to-End Flow Verified:")
             print("  1. ✅ Real tool execution data persisted to database")
             print("  2. ✅ Tool execution data correctly retrieved from database")
-            print("  3. ✅ /progress API returns tool execution data with real tool names")
+            print(
+                "  3. ✅ /progress API returns tool execution data with real tool names"
+            )
             print("  4. ✅ investigation_id threading works through entire pipeline")
         else:
             print("\n⚠️ Some verification checks failed")

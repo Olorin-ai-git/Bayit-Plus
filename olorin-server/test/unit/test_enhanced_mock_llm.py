@@ -3,10 +3,11 @@ Unit tests for enhanced mock LLM response generator with chain-of-thought reason
 """
 
 import pytest
+
 from scripts.testing.enhanced_mock_llm_responses import (
     EnhancedMockLLMResponseGenerator,
     ScenarioType,
-    generate_enhanced_mock_response
+    generate_enhanced_mock_response,
 )
 
 
@@ -19,7 +20,9 @@ class TestEnhancedMockLLMGenerator:
 
     def test_chain_of_thought_generation(self):
         """Test that chain-of-thought reasoning is generated"""
-        thoughts = self.generator.generate_chain_of_thought("network", ScenarioType.DEVICE_SPOOFING)
+        thoughts = self.generator.generate_chain_of_thought(
+            "network", ScenarioType.DEVICE_SPOOFING
+        )
 
         assert isinstance(thoughts, list)
         assert len(thoughts) >= 3
@@ -44,7 +47,7 @@ class TestEnhancedMockLLMGenerator:
         response = self.generator.generate_enhanced_network_response(
             ScenarioType.DEVICE_SPOOFING,
             "test-investigation-001",
-            entity_risk_score=0.85
+            entity_risk_score=0.85,
         )
 
         assert isinstance(response, str)
@@ -59,7 +62,7 @@ class TestEnhancedMockLLMGenerator:
         response = self.generator.generate_enhanced_device_response(
             ScenarioType.DEVICE_SPOOFING,
             "test-investigation-002",
-            entity_risk_score=0.75
+            entity_risk_score=0.75,
         )
 
         assert isinstance(response, str)
@@ -72,7 +75,7 @@ class TestEnhancedMockLLMGenerator:
         response = self.generator.generate_enhanced_location_response(
             ScenarioType.IMPOSSIBLE_TRAVEL,
             "test-investigation-003",
-            entity_risk_score=0.90
+            entity_risk_score=0.90,
         )
 
         assert isinstance(response, str)
@@ -84,7 +87,7 @@ class TestEnhancedMockLLMGenerator:
         response = self.generator.generate_enhanced_logs_response(
             ScenarioType.VELOCITY_ABUSE,
             "test-investigation-004",
-            entity_risk_score=0.65
+            entity_risk_score=0.65,
         )
 
         assert isinstance(response, str)
@@ -99,7 +102,7 @@ class TestEnhancedMockLLMGenerator:
             "[Device analysis sample]",
             "[Location analysis sample]",
             "[Network analysis sample]",
-            "[Logs analysis sample]"
+            "[Logs analysis sample]",
         )
 
         assert isinstance(response, str)
@@ -115,7 +118,7 @@ class TestEnhancedMockLLMGenerator:
             scenario="device_spoofing",
             investigation_id="test-001",
             entity_risk_score=0.80,
-            use_enhanced=True
+            use_enhanced=True,
         )
 
         assert isinstance(response, str)
@@ -129,7 +132,7 @@ class TestEnhancedMockLLMGenerator:
             scenario="device_spoofing",
             investigation_id="test-002",
             entity_risk_score=0.75,
-            use_enhanced=True
+            use_enhanced=True,
         )
 
         assert isinstance(response, str)
@@ -141,7 +144,7 @@ class TestEnhancedMockLLMGenerator:
             agent_type="location",
             scenario="impossible_travel",
             investigation_id="test-003",
-            use_enhanced=True
+            use_enhanced=True,
         )
 
         assert isinstance(response, str)
@@ -153,7 +156,7 @@ class TestEnhancedMockLLMGenerator:
             agent_type="logs",
             scenario="velocity_abuse",
             investigation_id="test-004",
-            use_enhanced=True
+            use_enhanced=True,
         )
 
         assert isinstance(response, str)
@@ -165,7 +168,7 @@ class TestEnhancedMockLLMGenerator:
             "device_analysis": "[Device findings]",
             "location_analysis": "[Location findings]",
             "network_analysis": "[Network findings]",
-            "logs_analysis": "[Logs findings]"
+            "logs_analysis": "[Logs findings]",
         }
 
         response = generate_enhanced_mock_response(
@@ -173,7 +176,7 @@ class TestEnhancedMockLLMGenerator:
             scenario="account_takeover",
             investigation_id="test-005",
             context_data=context_data,
-            use_enhanced=True
+            use_enhanced=True,
         )
 
         assert isinstance(response, str)
@@ -185,7 +188,7 @@ class TestEnhancedMockLLMGenerator:
             agent_type="network",
             scenario="default",
             investigation_id="test-006",
-            use_enhanced=False
+            use_enhanced=False,
         )
 
         assert isinstance(response, str)
@@ -206,9 +209,7 @@ class TestEnhancedMockLLMGenerator:
 
         for scenario in scenarios:
             response = self.generator.generate_enhanced_network_response(
-                scenario,
-                f"test-{scenario.value}",
-                entity_risk_score=0.70
+                scenario, f"test-{scenario.value}", entity_risk_score=0.70
             )
 
             assert isinstance(response, str)

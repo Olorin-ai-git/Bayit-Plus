@@ -1,4 +1,5 @@
 from app.service.logging import get_bridge_logger
+
 logger = get_bridge_logger(__name__)
 
 #!/usr/bin/env python3
@@ -12,7 +13,7 @@ including CSV data detection, routing, and state management.
 import asyncio
 import logging
 from datetime import datetime
-from typing import Dict, Any
+from typing import Any, Dict
 
 from langchain_core.messages import HumanMessage
 
@@ -32,8 +33,10 @@ async def test_csv_detection():
     """Test CSV data detection in messages."""
     logger.info("\n=== Testing CSV Data Detection ===")
     
-    from app.service.agent.orchestration.enhanced_routing import _detect_csv_data_in_messages
-    
+    from app.service.agent.orchestration.enhanced_routing import (
+        _detect_csv_data_in_messages,
+    )
+
     # Test 1: Message with CSV data in additional_kwargs
     msg1 = HumanMessage(
         content="Start investigation",
@@ -72,10 +75,10 @@ async def test_routing_functions():
     logger.info("\n=== Testing Routing Functions ===")
     
     from app.service.agent.orchestration.enhanced_routing import (
+        csv_data_routing,
         raw_data_or_investigation_routing,
-        csv_data_routing
     )
-    
+
     # Test 1: State with CSV data should route to raw_data_node
     state_with_csv = {
         "messages": [
@@ -123,7 +126,7 @@ async def test_raw_data_node():
     logger.info("\n=== Testing RawDataNode Processing ===")
     
     from app.service.agent.nodes.raw_data_node import raw_data_node
-    
+
     # Create test state with CSV data
     test_state = {
         "messages": [

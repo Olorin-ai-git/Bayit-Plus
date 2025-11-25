@@ -7,4 +7,4 @@ Provides classes for processing extracted data into component-specific structure
 
 from .component_processor import ComponentDataProcessor
 
-__all__ = ['ComponentDataProcessor']
+__all__ = ["ComponentDataProcessor"]

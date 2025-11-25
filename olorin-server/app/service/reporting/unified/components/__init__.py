@@ -7,7 +7,4 @@ of HTML reports in a modular, extensible way.
 
 from .base_component import BaseComponent, ComponentConfig
 
-__all__ = [
-    "BaseComponent",
-    "ComponentConfig"
-]
+__all__ = ["BaseComponent", "ComponentConfig"]

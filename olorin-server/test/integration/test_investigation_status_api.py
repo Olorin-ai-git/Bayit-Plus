@@ -6,16 +6,16 @@ Tests GET /investigations/{id}/status endpoint for real-time investigation progr
 Verifies phase reporting, progress percentage, agent status, tool executions, and logs.
 """
 
+from datetime import datetime
+
 import pytest
 from fastapi.testclient import TestClient
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
-from datetime import datetime
 
-from app.main import app
 from app.db import Base, get_db_session
+from app.main import app
 from app.models.investigation_state import InvestigationState
-
 
 TEST_DATABASE_URL = "sqlite:///:memory:"
 
@@ -32,7 +32,9 @@ def test_db_engine():
 @pytest.fixture
 def test_db_session(test_db_engine):
     """Create test database session"""
-    TestingSessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=test_db_engine)
+    TestingSessionLocal = sessionmaker(
+        autocommit=False, autoflush=False, bind=test_db_engine
+    )
     session = TestingSessionLocal()
     yield session
     session.close()
@@ -41,6 +43,7 @@ def test_db_session(test_db_engine):
 @pytest.fixture
 def test_client(test_db_session):
     """Create test client with database session override"""
+
     def override_get_db():
         try:
             yield test_db_session
@@ -56,31 +59,63 @@ def test_client(test_db_session):
 def create_sample_investigation_data(investigation_id, status="running", progress=45.0):
     """Helper to create investigation with realistic data"""
     return {
-        "investigation_id": investigation_id, "user_id": "test-user-123",
-        "entity_type": "user", "entity_id": "user-456", "status": status,
-        "current_phase": "domain_analysis", "progress_percentage": progress,
-        "created_at": datetime.utcnow(), "updated_at": datetime.utcnow(),
+        "investigation_id": investigation_id,
+        "user_id": "test-user-123",
+        "entity_type": "user",
+        "entity_id": "user-456",
+        "status": status,
+        "current_phase": "domain_analysis",
+        "progress_percentage": progress,
+        "created_at": datetime.utcnow(),
+        "updated_at": datetime.utcnow(),
         "results_json": {
             "agent_status": {
-                "device": {"agent_name": "Device Analysis Agent", "status": "completed",
-                           "progress_percentage": 100.0, "tools_used": 3, "findings_count": 5},
-                "location": {"agent_name": "Location Analysis Agent", "status": "running",
-                             "progress_percentage": 60.0, "tools_used": 2, "findings_count": 2}
+                "device": {
+                    "agent_name": "Device Analysis Agent",
+                    "status": "completed",
+                    "progress_percentage": 100.0,
+                    "tools_used": 3,
+                    "findings_count": 5,
+                },
+                "location": {
+                    "agent_name": "Location Analysis Agent",
+                    "status": "running",
+                    "progress_percentage": 60.0,
+                    "tools_used": 2,
+                    "findings_count": 2,
+                },
             },
             "tool_executions": [
-                {"tool_id": "tool-001", "tool_name": "Device Fingerprint Analyzer",
-                 "status": "completed", "started_at": "2025-10-15T10:00:00Z",
-                 "completed_at": "2025-10-15T10:00:05Z", "duration_ms": 5000},
-                {"tool_id": "tool-002", "tool_name": "Location Validator",
-                 "status": "running", "started_at": "2025-10-15T10:00:05Z"}
+                {
+                    "tool_id": "tool-001",
+                    "tool_name": "Device Fingerprint Analyzer",
+                    "status": "completed",
+                    "started_at": "2025-10-15T10:00:00Z",
+                    "completed_at": "2025-10-15T10:00:05Z",
+                    "duration_ms": 5000,
+                },
+                {
+                    "tool_id": "tool-002",
+                    "tool_name": "Location Validator",
+                    "status": "running",
+                    "started_at": "2025-10-15T10:00:05Z",
+                },
             ],
             "logs": [
-                {"timestamp": "2025-10-15T10:00:00Z", "severity": "info",
-                 "source": "investigation_coordinator", "message": "Investigation started"},
-                {"timestamp": "2025-10-15T10:00:05Z", "severity": "warning",
-                 "source": "location_agent", "message": "Location verification slow"}
-            ]
-        }
+                {
+                    "timestamp": "2025-10-15T10:00:00Z",
+                    "severity": "info",
+                    "source": "investigation_coordinator",
+                    "message": "Investigation started",
+                },
+                {
+                    "timestamp": "2025-10-15T10:00:05Z",
+                    "severity": "warning",
+                    "source": "location_agent",
+                    "message": "Location verification slow",
+                },
+            ],
+        },
     }
 
 
@@ -98,11 +133,13 @@ def sample_investigation(test_db_session):
 class TestInvestigationStatusAPI:
     """Test GET /investigations/{id}/status endpoint"""
 
-    def test_status_success_running_investigation(self, test_client, sample_investigation):
+    def test_status_success_running_investigation(
+        self, test_client, sample_investigation
+    ):
         """Verify status retrieval for running investigation"""
         response = test_client.get(
             f"/api/hybrid-graph/investigations/{sample_investigation.investigation_id}/status",
-            headers={"Authorization": "Bearer test-token"}
+            headers={"Authorization": "Bearer test-token"},
         )
 
         assert response.status_code == 200
@@ -120,7 +157,9 @@ class TestInvestigationStatusAPI:
 
     def test_status_completed_investigation(self, test_client, test_db_session):
         """Verify status retrieval for completed investigation with risk score"""
-        data = create_sample_investigation_data("hg-test-002", status="completed", progress=100.0)
+        data = create_sample_investigation_data(
+            "hg-test-002", status="completed", progress=100.0
+        )
         data["results_json"]["risk_score"] = 75.5
         investigation = InvestigationState(**data)
         test_db_session.add(investigation)
@@ -128,7 +167,7 @@ class TestInvestigationStatusAPI:
 
         response = test_client.get(
             f"/api/hybrid-graph/investigations/{investigation.investigation_id}/status",
-            headers={"Authorization": "Bearer test-token"}
+            headers={"Authorization": "Bearer test-token"},
         )
 
         assert response.status_code == 200
@@ -141,7 +180,7 @@ class TestInvestigationStatusAPI:
         """Verify 404 for non-existent investigation"""
         response = test_client.get(
             "/api/hybrid-graph/investigations/hg-nonexistent/status",
-            headers={"Authorization": "Bearer test-token"}
+            headers={"Authorization": "Bearer test-token"},
         )
 
         assert response.status_code == 404
@@ -154,7 +193,7 @@ class TestInvestigationStatusAPI:
             ("domain_analysis", 30.0),
             ("risk_assessment", 60.0),
             ("evidence_gathering", 80.0),
-            ("summary", 95.0)
+            ("summary", 95.0),
         ]
 
         for i, (phase, progress) in enumerate(phases):
@@ -167,7 +206,7 @@ class TestInvestigationStatusAPI:
         for i, (phase, progress) in enumerate(phases):
             response = test_client.get(
                 f"/api/hybrid-graph/investigations/hg-phase-{i}/status",
-                headers={"Authorization": "Bearer test-token"}
+                headers={"Authorization": "Bearer test-token"},
             )
             assert response.status_code == 200
             data = response.json()

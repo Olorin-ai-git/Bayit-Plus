@@ -13,6 +13,7 @@ from mcp.types import (
     TextResourceContents,
     Tool,
 )
+
 from app.service.logging import get_bridge_logger
 
 from ..service.agent.tools.tool_registry import (

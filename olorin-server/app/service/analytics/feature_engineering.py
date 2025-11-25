@@ -7,18 +7,15 @@ Week 7 Phase 3 implementation.
 """
 
 import logging
-from typing import Dict, Any, List, Optional, Set
 import time
+from typing import Any, Dict, List, Optional, Set
 
+from app.service.analytics.feature_cache import get_from_cache, set_in_cache
 from app.service.analytics.feature_extraction_helpers import (
-    extract_hour,
     extract_day_of_week,
+    extract_hour,
+    handle_missing_values,
     safe_float,
-    handle_missing_values
-)
-from app.service.analytics.feature_cache import (
-    get_from_cache,
-    set_in_cache
 )
 
 logger = logging.getLogger(__name__)
@@ -32,9 +29,7 @@ class FeatureEngineeringPipeline:
     """
 
     def __init__(
-        self,
-        selected_features: Optional[Set[str]] = None,
-        enable_caching: bool = True
+        self, selected_features: Optional[Set[str]] = None, enable_caching: bool = True
     ):
         """
         Initialize feature engineering pipeline.
@@ -58,7 +53,7 @@ class FeatureEngineeringPipeline:
         self,
         transaction: Dict[str, Any],
         advanced_features: Optional[Dict[str, Any]] = None,
-        historical_transactions: Optional[List[Dict[str, Any]]] = None
+        historical_transactions: Optional[List[Dict[str, Any]]] = None,
     ) -> Dict[str, Any]:
         """
         Extract optimized feature set for a transaction.
@@ -87,7 +82,9 @@ class FeatureEngineeringPipeline:
 
         # Basic transaction features
         if self._should_extract("tx_amount"):
-            features["tx_amount"] = safe_float(transaction.get("TX_AMOUNT") or transaction.get("amount"))
+            features["tx_amount"] = safe_float(
+                transaction.get("TX_AMOUNT") or transaction.get("amount")
+            )
         if self._should_extract("tx_hour"):
             features["tx_hour"] = extract_hour(transaction)
         if self._should_extract("tx_day_of_week"):
@@ -113,22 +110,24 @@ class FeatureEngineeringPipeline:
         return features
 
     def _extract_velocity_features(
-        self,
-        features: Dict[str, Any],
-        advanced_features: Dict[str, Any]
+        self, features: Dict[str, Any], advanced_features: Dict[str, Any]
     ) -> None:
         """Extract velocity features."""
         if self._should_extract("tx_per_5min_by_email"):
-            features["tx_per_5min_by_email"] = advanced_features.get("tx_per_5min_by_email", 0)
+            features["tx_per_5min_by_email"] = advanced_features.get(
+                "tx_per_5min_by_email", 0
+            )
         if self._should_extract("tx_per_5min_by_device"):
-            features["tx_per_5min_by_device"] = advanced_features.get("tx_per_5min_by_device", 0)
+            features["tx_per_5min_by_device"] = advanced_features.get(
+                "tx_per_5min_by_device", 0
+            )
         if self._should_extract("tx_per_5min_by_ip"):
-            features["tx_per_5min_by_ip"] = advanced_features.get("tx_per_5min_by_ip", 0)
+            features["tx_per_5min_by_ip"] = advanced_features.get(
+                "tx_per_5min_by_ip", 0
+            )
 
     def _extract_enhanced_velocity_features(
-        self,
-        features: Dict[str, Any],
-        advanced_features: Dict[str, Any]
+        self, features: Dict[str, Any], advanced_features: Dict[str, Any]
     ) -> None:
         """Extract enhanced velocity features (Week 5)."""
         if self._should_extract("sliding_window_velocities"):
@@ -140,29 +139,45 @@ class FeatureEngineeringPipeline:
 
         if self._should_extract("merchant_concentration"):
             merchant_conc = advanced_features.get("merchant_concentration", {})
-            features["merchant_concentration_ratio"] = merchant_conc.get("concentration_ratio", 0.0)
-            features["merchant_concentration_flag"] = 1.0 if merchant_conc.get("is_concentrated") else 0.0
+            features["merchant_concentration_ratio"] = merchant_conc.get(
+                "concentration_ratio", 0.0
+            )
+            features["merchant_concentration_flag"] = (
+                1.0 if merchant_conc.get("is_concentrated") else 0.0
+            )
 
         if self._should_extract("cross_entity_correlation"):
             cross_entity = advanced_features.get("cross_entity_correlation", {})
-            features["unique_devices_per_email"] = cross_entity.get("unique_devices_per_email", 0)
-            features["unique_ips_per_email"] = cross_entity.get("unique_ips_per_email", 0)
-            features["unique_emails_per_device"] = cross_entity.get("unique_emails_per_device", 0)
+            features["unique_devices_per_email"] = cross_entity.get(
+                "unique_devices_per_email", 0
+            )
+            features["unique_ips_per_email"] = cross_entity.get(
+                "unique_ips_per_email", 0
+            )
+            features["unique_emails_per_device"] = cross_entity.get(
+                "unique_emails_per_device", 0
+            )
 
     def _extract_other_advanced_features(
-        self,
-        features: Dict[str, Any],
-        advanced_features: Dict[str, Any]
+        self, features: Dict[str, Any], advanced_features: Dict[str, Any]
     ) -> None:
         """Extract other advanced features."""
         if self._should_extract("distance_anomaly_score"):
-            features["distance_anomaly_score"] = advanced_features.get("distance_anomaly_score", 0.0)
+            features["distance_anomaly_score"] = advanced_features.get(
+                "distance_anomaly_score", 0.0
+            )
         if self._should_extract("amount_clustering_score"):
-            features["amount_clustering_score"] = advanced_features.get("amount_clustering_score", 0.0)
+            features["amount_clustering_score"] = advanced_features.get(
+                "amount_clustering_score", 0.0
+            )
         if self._should_extract("device_instability_score"):
-            features["device_instability_score"] = advanced_features.get("device_instability_score", 0.0)
+            features["device_instability_score"] = advanced_features.get(
+                "device_instability_score", 0.0
+            )
         if self._should_extract("merchant_diversity_score"):
-            features["merchant_diversity_score"] = advanced_features.get("merchant_diversity_score", 0.5)
+            features["merchant_diversity_score"] = advanced_features.get(
+                "merchant_diversity_score", 0.5
+            )
 
     def _should_extract(self, feature_name: str) -> bool:
         """Check if feature should be extracted."""
@@ -170,7 +185,9 @@ class FeatureEngineeringPipeline:
             return True
         return feature_name in self.selected_features
 
-    def _track_extraction_time(self, feature_group: str, extraction_time: float) -> None:
+    def _track_extraction_time(
+        self, feature_group: str, extraction_time: float
+    ) -> None:
         """Track feature extraction time for performance monitoring."""
         if feature_group not in self.extraction_times:
             self.extraction_times[feature_group] = []
@@ -181,7 +198,9 @@ class FeatureEngineeringPipeline:
 
         # Keep only last 1000 timings
         if len(self.extraction_times[feature_group]) > 1000:
-            self.extraction_times[feature_group] = self.extraction_times[feature_group][-1000:]
+            self.extraction_times[feature_group] = self.extraction_times[feature_group][
+                -1000:
+            ]
 
     def get_performance_stats(self) -> Dict[str, Any]:
         """Get feature extraction performance statistics."""
@@ -194,7 +213,11 @@ class FeatureEngineeringPipeline:
                     "count": self.extraction_counts[feature_group],
                     "avg_time_ms": statistics.mean(times) * 1000,
                     "p50_time_ms": statistics.median(times) * 1000,
-                    "p95_time_ms": sorted(times)[int(len(times) * 0.95)] * 1000 if len(times) > 20 else None
+                    "p95_time_ms": (
+                        sorted(times)[int(len(times) * 0.95)] * 1000
+                        if len(times) > 20
+                        else None
+                    ),
                 }
 
         return stats

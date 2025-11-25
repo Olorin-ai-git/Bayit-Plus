@@ -10,9 +10,12 @@ SYSTEM MANDATE Compliance:
 - Complete implementation: All 3 models fully implemented
 """
 
-from app.models.investigation_state import InvestigationState, Base as InvestigationStateBase
-from app.models.investigation_template import InvestigationTemplate, Base as InvestigationTemplateBase
-from app.models.investigation_audit_log import InvestigationAuditLog, Base as InvestigationAuditLogBase
+from app.models.investigation_audit_log import Base as InvestigationAuditLogBase
+from app.models.investigation_audit_log import InvestigationAuditLog
+from app.models.investigation_state import Base as InvestigationStateBase
+from app.models.investigation_state import InvestigationState
+from app.models.investigation_template import Base as InvestigationTemplateBase
+from app.models.investigation_template import InvestigationTemplate
 
 # Export all models
 __all__ = [

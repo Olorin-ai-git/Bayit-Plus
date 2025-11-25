@@ -7,9 +7,10 @@ Focused on HTML document assembly and CDN script integration.
 """
 
 from typing import Any
-from .data_models import InvestigationSummary, ComponentData
-from .styles import StyleManager
+
+from .data_models import ComponentData, InvestigationSummary
 from .scripts import JavaScriptManager
+from .styles import StyleManager
 
 
 class HTMLBuilder:

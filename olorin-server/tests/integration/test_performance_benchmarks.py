@@ -12,10 +12,11 @@ Constitutional Compliance:
 - Tests guide optimization
 """
 
-import pytest
-import time
 import os
-from typing import Dict, Any, List
+import time
+from typing import Any, Dict, List
+
+import pytest
 
 from app.service.agent.tools.database_tool.database_factory import get_database_provider
 
@@ -28,13 +29,13 @@ class TestQueryPerformanceBenchmarks:
         query = "SELECT * FROM transactions_enriched LIMIT 100"
 
         # Benchmark Snowflake
-        sf_provider = get_database_provider('snowflake')
+        sf_provider = get_database_provider("snowflake")
         sf_start = time.time()
         sf_results = sf_provider.execute_query(query)
         sf_duration = time.time() - sf_start
 
         # Benchmark PostgreSQL
-        pg_provider = get_database_provider('postgresql')
+        pg_provider = get_database_provider("postgresql")
         pg_start = time.time()
         pg_results = pg_provider.execute_query(query)
         pg_duration = time.time() - pg_start
@@ -44,7 +45,9 @@ class TestQueryPerformanceBenchmarks:
 
         # PostgreSQL should be within 20% of Snowflake
         performance_ratio = pg_duration / sf_duration if sf_duration > 0 else 1.0
-        assert performance_ratio <= 1.2, f"PostgreSQL {performance_ratio:.2f}x slower than Snowflake"
+        assert (
+            performance_ratio <= 1.2
+        ), f"PostgreSQL {performance_ratio:.2f}x slower than Snowflake"
 
     def test_aggregation_query_performance(self):
         """Test aggregation query performance."""
@@ -59,8 +62,8 @@ class TestQueryPerformanceBenchmarks:
         """
 
         # Benchmark both providers
-        sf_provider = get_database_provider('snowflake')
-        pg_provider = get_database_provider('postgresql')
+        sf_provider = get_database_provider("snowflake")
+        pg_provider = get_database_provider("postgresql")
 
         sf_start = time.time()
         sf_results = sf_provider.execute_query(query)
@@ -83,8 +86,8 @@ class TestQueryPerformanceBenchmarks:
             LIMIT 100
         """
 
-        sf_provider = get_database_provider('snowflake')
-        pg_provider = get_database_provider('postgresql')
+        sf_provider = get_database_provider("snowflake")
+        pg_provider = get_database_provider("postgresql")
 
         sf_start = time.time()
         sf_results = sf_provider.execute_query(query)
@@ -111,7 +114,7 @@ class TestIndexedQueryPerformance:
             LIMIT 10
         """
 
-        pg_provider = get_database_provider('postgresql')
+        pg_provider = get_database_provider("postgresql")
 
         # Run query multiple times to test index effectiveness
         durations = []
@@ -134,7 +137,7 @@ class TestIndexedQueryPerformance:
             LIMIT 100
         """
 
-        pg_provider = get_database_provider('postgresql')
+        pg_provider = get_database_provider("postgresql")
 
         start = time.time()
         results = pg_provider.execute_query(query)
@@ -149,12 +152,12 @@ class TestConnectionPoolPerformance:
 
     def test_concurrent_query_performance(self):
         """Test performance under concurrent load."""
-        pg_provider = get_database_provider('postgresql')
+        pg_provider = get_database_provider("postgresql")
 
         queries = [
             "SELECT COUNT(*) FROM transactions_enriched",
             "SELECT * FROM transactions_enriched LIMIT 10",
-            "SELECT AVG(MODEL_SCORE) FROM transactions_enriched"
+            "SELECT AVG(MODEL_SCORE) FROM transactions_enriched",
         ]
 
         start = time.time()
@@ -171,11 +174,11 @@ class TestConnectionPoolPerformance:
 
     def test_connection_pool_size_adequate(self):
         """Test that connection pool size is adequate."""
-        pg_provider = get_database_provider('postgresql')
+        pg_provider = get_database_provider("postgresql")
 
         # Verify pool configuration
         # Pool should be created and configured
-        assert pg_provider._pool is not None or hasattr(pg_provider, '_ensure_pool')
+        assert pg_provider._pool is not None or hasattr(pg_provider, "_ensure_pool")
 
 
 class TestQueryCachePerformance:
@@ -183,7 +186,7 @@ class TestQueryCachePerformance:
 
     def test_cache_hit_improves_performance(self):
         """Test that cache hits improve performance."""
-        pg_provider = get_database_provider('postgresql')
+        pg_provider = get_database_provider("postgresql")
 
         query = "SELECT * FROM transactions_enriched LIMIT 10"
 
@@ -205,17 +208,17 @@ class TestQueryCachePerformance:
 
     def test_cache_hit_rate_above_threshold(self):
         """Test that cache hit rate exceeds 80% target."""
-        pg_provider = get_database_provider('postgresql')
+        pg_provider = get_database_provider("postgresql")
 
         # Clear cache stats
-        if hasattr(pg_provider, 'query_cache'):
+        if hasattr(pg_provider, "query_cache"):
             pg_provider.query_cache.clear()
 
         # Execute repeated queries
         queries = [
             "SELECT * FROM transactions_enriched LIMIT 5",
             "SELECT COUNT(*) FROM transactions_enriched",
-            "SELECT * FROM transactions_enriched WHERE EMAIL = 'test@example.com'"
+            "SELECT * FROM transactions_enriched WHERE EMAIL = 'test@example.com'",
         ]
 
         # Run each query 10 times (30 total queries, 27 should hit cache)
@@ -224,9 +227,9 @@ class TestQueryCachePerformance:
                 pg_provider.execute_query(query)
 
         # Check cache stats
-        if hasattr(pg_provider, 'query_cache'):
+        if hasattr(pg_provider, "query_cache"):
             stats = pg_provider.query_cache.get_stats()
-            hit_rate = stats['hit_rate']
+            hit_rate = stats["hit_rate"]
 
             # Should exceed 80% hit rate
             assert hit_rate >= 0.8, f"Cache hit rate too low: {hit_rate:.1%}"
@@ -237,20 +240,20 @@ class TestQueryTimeoutConfiguration:
 
     def test_query_timeout_configured(self):
         """Test that query timeout is properly configured."""
-        pg_provider = get_database_provider('postgresql')
+        pg_provider = get_database_provider("postgresql")
 
         # Verify timeout configuration exists
         assert pg_provider._config is not None
-        assert 'query_timeout' in pg_provider._config
-        assert pg_provider._config['query_timeout'] > 0
+        assert "query_timeout" in pg_provider._config
+        assert pg_provider._config["query_timeout"] > 0
 
     def test_slow_query_respects_timeout(self):
         """Test that slow queries respect timeout configuration."""
-        pg_provider = get_database_provider('postgresql')
+        pg_provider = get_database_provider("postgresql")
 
         # This test would need a genuinely slow query
         # For now, verify timeout configuration is accessible
-        timeout = pg_provider._config.get('query_timeout', 30)
+        timeout = pg_provider._config.get("query_timeout", 30)
         assert timeout > 0
 
 
@@ -259,7 +262,7 @@ class TestPerformanceMonitoring:
 
     def test_query_duration_logged(self):
         """Test that query durations are logged."""
-        pg_provider = get_database_provider('postgresql')
+        pg_provider = get_database_provider("postgresql")
 
         query = "SELECT * FROM transactions_enriched LIMIT 5"
 
@@ -273,14 +276,14 @@ class TestPerformanceMonitoring:
 
     def test_performance_metrics_available(self):
         """Test that performance metrics are available."""
-        pg_provider = get_database_provider('postgresql')
+        pg_provider = get_database_provider("postgresql")
 
         # Verify provider has performance tracking
         # Either through cache stats or other metrics
-        if hasattr(pg_provider, 'query_cache'):
+        if hasattr(pg_provider, "query_cache"):
             stats = pg_provider.query_cache.get_stats()
-            assert 'total_requests' in stats
-            assert 'hit_rate' in stats
+            assert "total_requests" in stats
+            assert "hit_rate" in stats
 
 
 class TestPerformanceComparison:
@@ -290,8 +293,8 @@ class TestPerformanceComparison:
         """Compare COUNT query performance."""
         query = "SELECT COUNT(*) as total FROM transactions_enriched"
 
-        sf_provider = get_database_provider('snowflake')
-        pg_provider = get_database_provider('postgresql')
+        sf_provider = get_database_provider("snowflake")
+        pg_provider = get_database_provider("postgresql")
 
         # Benchmark both
         sf_start = time.time()
@@ -303,7 +306,7 @@ class TestPerformanceComparison:
         pg_duration = time.time() - pg_start
 
         # Results should match
-        assert sf_result[0]['total'] == pg_result[0]['total']
+        assert sf_result[0]["total"] == pg_result[0]["total"]
 
         # Performance should be comparable
         ratio = pg_duration / sf_duration if sf_duration > 0 else 1.0
@@ -324,8 +327,8 @@ class TestPerformanceComparison:
             LIMIT 20
         """
 
-        sf_provider = get_database_provider('snowflake')
-        pg_provider = get_database_provider('postgresql')
+        sf_provider = get_database_provider("snowflake")
+        pg_provider = get_database_provider("postgresql")
 
         sf_start = time.time()
         sf_results = sf_provider.execute_query(query)

@@ -12,10 +12,10 @@ Interactive JavaScript generation for Enhanced HTML Report Generator.
 
 from ..data_models import ReportConfig
 from .interactions_collapsible import CollapsibleSectionGenerator
-from .interactions_search import SearchFunctionalityGenerator
-from .interactions_tooltips import TooltipSystemGenerator
-from .interactions_theme import ThemeSwitcherGenerator
 from .interactions_progress import ProgressIndicatorGenerator
+from .interactions_search import SearchFunctionalityGenerator
+from .interactions_theme import ThemeSwitcherGenerator
+from .interactions_tooltips import TooltipSystemGenerator
 
 
 class InteractionScriptGenerator:

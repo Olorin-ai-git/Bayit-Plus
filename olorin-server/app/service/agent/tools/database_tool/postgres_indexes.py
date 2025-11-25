@@ -9,7 +9,8 @@ Constitutional Compliance:
 - Fail-fast validation
 """
 
-from typing import List, Dict, Any
+from typing import Any, Dict, List
+
 import asyncpg
 
 from app.service.logging import get_bridge_logger
@@ -50,36 +51,36 @@ class PostgreSQLIndexManager:
         """
         indexes = [
             {
-                'name': f"idx_{self.table}_email",
-                'query': f"""
+                "name": f"idx_{self.table}_email",
+                "query": f"""
                     CREATE INDEX IF NOT EXISTS idx_{self.table}_email
                     ON {self.full_table_name} (EMAIL)
                 """,
-                'description': "Email lookup optimization for investigation queries"
+                "description": "Email lookup optimization for investigation queries",
             },
             {
-                'name': f"idx_{self.table}_tx_datetime",
-                'query': f"""
+                "name": f"idx_{self.table}_tx_datetime",
+                "query": f"""
                     CREATE INDEX IF NOT EXISTS idx_{self.table}_tx_datetime
                     ON {self.full_table_name} (TX_DATETIME)
                 """,
-                'description': "Date range query optimization"
+                "description": "Date range query optimization",
             },
             {
-                'name': f"idx_{self.table}_tx_datetime_email",
-                'query': f"""
+                "name": f"idx_{self.table}_tx_datetime_email",
+                "query": f"""
                     CREATE INDEX IF NOT EXISTS idx_{self.table}_tx_datetime_email
                     ON {self.full_table_name} (TX_DATETIME, EMAIL)
                 """,
-                'description': "Composite index for date + email queries"
+                "description": "Composite index for date + email queries",
             },
             {
-                'name': f"idx_{self.table}_model_score",
-                'query': f"""
+                "name": f"idx_{self.table}_model_score",
+                "query": f"""
                     CREATE INDEX IF NOT EXISTS idx_{self.table}_model_score
                     ON {self.full_table_name} (MODEL_SCORE)
                 """,
-                'description': "High-risk transaction filtering"
+                "description": "High-risk transaction filtering",
             },
         ]
 
@@ -109,20 +110,23 @@ class PostgreSQLIndexManager:
         for index_def in indexes:
             try:
                 # Create index (IF NOT EXISTS handles duplicates)
-                await connection.execute(index_def['query'])
+                await connection.execute(index_def["query"])
 
                 # Verify index was created
                 index_exists = await self._verify_index_exists(
-                    connection,
-                    index_def['name']
+                    connection, index_def["name"]
                 )
 
                 if index_exists:
                     created_count += 1
-                    logger.info(f"✅ Created index: {index_def['name']} - {index_def['description']}")
+                    logger.info(
+                        f"✅ Created index: {index_def['name']} - {index_def['description']}"
+                    )
                 else:
                     skipped_count += 1
-                    logger.info(f"⏭️  Skipped index (already exists): {index_def['name']}")
+                    logger.info(
+                        f"⏭️  Skipped index (already exists): {index_def['name']}"
+                    )
 
             except Exception as e:
                 failed_count += 1
@@ -130,14 +134,14 @@ class PostgreSQLIndexManager:
                 # Continue with other indexes rather than failing completely
 
         result = {
-            'total_indexes': len(indexes),
-            'created': created_count,
-            'skipped': skipped_count,
-            'failed': failed_count,
-            'success': failed_count == 0
+            "total_indexes": len(indexes),
+            "created": created_count,
+            "skipped": skipped_count,
+            "failed": failed_count,
+            "success": failed_count == 0,
         }
 
-        if result['success']:
+        if result["success"]:
             logger.info(
                 f"✅ Index creation complete: {created_count} created, "
                 f"{skipped_count} already existed"
@@ -150,9 +154,7 @@ class PostgreSQLIndexManager:
         return result
 
     async def _verify_index_exists(
-        self,
-        connection: asyncpg.Connection,
-        index_name: str
+        self, connection: asyncpg.Connection, index_name: str
     ) -> bool:
         """
         Verify that an index exists in the database.
@@ -177,7 +179,9 @@ class PostgreSQLIndexManager:
         result = await connection.fetchval(query, self.schema, self.table, index_name)
         return bool(result)
 
-    async def verify_all_indexes(self, connection: asyncpg.Connection) -> Dict[str, Any]:
+    async def verify_all_indexes(
+        self, connection: asyncpg.Connection
+    ) -> Dict[str, Any]:
         """
         Verify that all required indexes exist.
 
@@ -197,24 +201,24 @@ class PostgreSQLIndexManager:
         logger.info(f"Verifying {len(indexes)} indexes for {self.full_table_name}...")
 
         for index_def in indexes:
-            exists = await self._verify_index_exists(connection, index_def['name'])
+            exists = await self._verify_index_exists(connection, index_def["name"])
 
             if exists:
                 existing_count += 1
                 logger.debug(f"✅ Index exists: {index_def['name']}")
             else:
-                missing_indexes.append(index_def['name'])
+                missing_indexes.append(index_def["name"])
                 logger.warning(f"❌ Index missing: {index_def['name']}")
 
         result = {
-            'total_indexes': len(indexes),
-            'existing': existing_count,
-            'missing': len(missing_indexes),
-            'missing_index_names': missing_indexes,
-            'all_present': len(missing_indexes) == 0
+            "total_indexes": len(indexes),
+            "existing": existing_count,
+            "missing": len(missing_indexes),
+            "missing_index_names": missing_indexes,
+            "all_present": len(missing_indexes) == 0,
         }
 
-        if result['all_present']:
+        if result["all_present"]:
             logger.info(f"✅ All {existing_count} indexes verified")
         else:
             logger.warning(
@@ -223,7 +227,9 @@ class PostgreSQLIndexManager:
 
         return result
 
-    async def get_index_sizes(self, connection: asyncpg.Connection) -> List[Dict[str, Any]]:
+    async def get_index_sizes(
+        self, connection: asyncpg.Connection
+    ) -> List[Dict[str, Any]]:
         """
         Get sizes of all indexes for performance monitoring.
 
@@ -248,11 +254,13 @@ class PostgreSQLIndexManager:
 
         index_sizes = []
         for row in rows:
-            index_sizes.append({
-                'index_name': row['indexname'],
-                'size': row['size'],
-                'size_bytes': row['size_bytes']
-            })
+            index_sizes.append(
+                {
+                    "index_name": row["indexname"],
+                    "size": row["size"],
+                    "size_bytes": row["size_bytes"],
+                }
+            )
 
         logger.info(f"Retrieved size information for {len(index_sizes)} indexes")
         return index_sizes

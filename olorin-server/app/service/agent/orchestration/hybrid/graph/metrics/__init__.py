@@ -8,7 +8,4 @@ generating comprehensive investigation summaries.
 from .performance_calculator import PerformanceCalculator
 from .summary_generator import SummaryGenerator
 
-__all__ = [
-    "PerformanceCalculator",
-    "SummaryGenerator"
-]
+__all__ = ["PerformanceCalculator", "SummaryGenerator"]

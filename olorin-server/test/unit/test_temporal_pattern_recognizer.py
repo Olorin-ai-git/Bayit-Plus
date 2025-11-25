@@ -7,15 +7,17 @@ Tests all 3 temporal patterns:
 3. First Transaction Velocity Pattern
 """
 
-import pytest
 from datetime import datetime, timedelta
+
+import pytest
+
 from app.service.agent.tools.ml_ai_tools.pattern_recognition.recognizers.temporal_recognizer import (
-    TemporalPatternRecognizer,
-    TIME_SERIES_BUCKET_HOURS,
-    CADENCE_MIN_TRANSACTIONS,
     CADENCE_IRREGULARITY_THRESHOLD,
+    CADENCE_MIN_TRANSACTIONS,
+    FIRST_TX_HIGH_AMOUNT_PERCENTILE,
     FIRST_TX_THRESHOLD_HOURS,
-    FIRST_TX_HIGH_AMOUNT_PERCENTILE
+    TIME_SERIES_BUCKET_HOURS,
+    TemporalPatternRecognizer,
 )
 
 
@@ -35,20 +37,24 @@ class TestTemporalPatternRecognizer:
 
         # Normal volume: 1-2 transactions per 2-hour bucket
         for hour in range(0, 12, 2):
-            events.append({
-                "TX_ID_KEY": f"tx_{hour:02d}",
-                "PAID_AMOUNT_VALUE_IN_CURRENCY": 50.0,
-                "TX_DATETIME": base_time + timedelta(hours=hour)
-            })
+            events.append(
+                {
+                    "TX_ID_KEY": f"tx_{hour:02d}",
+                    "PAID_AMOUNT_VALUE_IN_CURRENCY": 50.0,
+                    "TX_DATETIME": base_time + timedelta(hours=hour),
+                }
+            )
 
         # Spike: 6 transactions in one 2-hour bucket
         spike_start = base_time + timedelta(hours=12)
         for minute in range(0, 120, 20):
-            events.append({
-                "TX_ID_KEY": f"tx_spike_{minute}",
-                "PAID_AMOUNT_VALUE_IN_CURRENCY": 100.0,
-                "TX_DATETIME": spike_start + timedelta(minutes=minute)
-            })
+            events.append(
+                {
+                    "TX_ID_KEY": f"tx_spike_{minute}",
+                    "PAID_AMOUNT_VALUE_IN_CURRENCY": 100.0,
+                    "TX_DATETIME": spike_start + timedelta(minutes=minute),
+                }
+            )
 
         return events
 
@@ -63,11 +69,13 @@ class TestTemporalPatternRecognizer:
         current_time = base_time
 
         for i, interval in enumerate(intervals):
-            events.append({
-                "TX_ID_KEY": f"tx_{i:03d}",
-                "PAID_AMOUNT_VALUE_IN_CURRENCY": 50.0 + i * 10,
-                "TX_DATETIME": current_time
-            })
+            events.append(
+                {
+                    "TX_ID_KEY": f"tx_{i:03d}",
+                    "PAID_AMOUNT_VALUE_IN_CURRENCY": 50.0 + i * 10,
+                    "TX_DATETIME": current_time,
+                }
+            )
             current_time += timedelta(minutes=interval)
 
         return events
@@ -83,28 +91,28 @@ class TestTemporalPatternRecognizer:
             {
                 "TX_ID_KEY": "tx_001",
                 "PAID_AMOUNT_VALUE_IN_CURRENCY": 500.0,  # High amount (will be P80+)
-                "TX_DATETIME": base_time
+                "TX_DATETIME": base_time,
             },
             {
                 "TX_ID_KEY": "tx_002",
                 "PAID_AMOUNT_VALUE_IN_CURRENCY": 50.0,
-                "TX_DATETIME": base_time + timedelta(minutes=30)
+                "TX_DATETIME": base_time + timedelta(minutes=30),
             },
             {
                 "TX_ID_KEY": "tx_003",
                 "PAID_AMOUNT_VALUE_IN_CURRENCY": 75.0,
-                "TX_DATETIME": base_time + timedelta(minutes=60)
+                "TX_DATETIME": base_time + timedelta(minutes=60),
             },
             {
                 "TX_ID_KEY": "tx_004",
                 "PAID_AMOUNT_VALUE_IN_CURRENCY": 100.0,
-                "TX_DATETIME": base_time + timedelta(minutes=90)
+                "TX_DATETIME": base_time + timedelta(minutes=90),
             },
             {
                 "TX_ID_KEY": "tx_005",
                 "PAID_AMOUNT_VALUE_IN_CURRENCY": 60.0,
-                "TX_DATETIME": base_time + timedelta(minutes=120)
-            }
+                "TX_DATETIME": base_time + timedelta(minutes=120),
+            },
         ]
 
     @pytest.fixture
@@ -115,20 +123,24 @@ class TestTemporalPatternRecognizer:
 
         # Regular 30-minute intervals
         for i in range(10):
-            events.append({
-                "TX_ID_KEY": f"tx_{i:03d}",
-                "PAID_AMOUNT_VALUE_IN_CURRENCY": 50.0,
-                "TX_DATETIME": base_time + timedelta(minutes=i * 30)
-            })
+            events.append(
+                {
+                    "TX_ID_KEY": f"tx_{i:03d}",
+                    "PAID_AMOUNT_VALUE_IN_CURRENCY": 50.0,
+                    "TX_DATETIME": base_time + timedelta(minutes=i * 30),
+                }
+            )
 
         return events
 
     def test_recognizer_initialization(self, recognizer):
         """Test recognizer initializes correctly."""
         assert recognizer is not None
-        assert hasattr(recognizer, 'recognize')
+        assert hasattr(recognizer, "recognize")
 
-    def test_time_series_anomaly_detection(self, recognizer, time_series_anomaly_events):
+    def test_time_series_anomaly_detection(
+        self, recognizer, time_series_anomaly_events
+    ):
         """Test time series anomaly pattern detection."""
         processed_data = {"events": time_series_anomaly_events}
         result = recognizer.recognize(processed_data, minimum_support=0.1)
@@ -137,14 +149,19 @@ class TestTemporalPatternRecognizer:
         assert result["total_patterns_detected"] >= 1
 
         # Find time series anomaly patterns
-        ts_patterns = [p for p in result["patterns"] if p["pattern_type"] == "time_series_anomaly"]
+        ts_patterns = [
+            p for p in result["patterns"] if p["pattern_type"] == "time_series_anomaly"
+        ]
         assert len(ts_patterns) >= 1
 
         pattern = ts_patterns[0]
         assert pattern["pattern_name"] == "Time Series Anomaly"
         assert pattern["confidence"] >= 0.65
         assert pattern["risk_adjustment"] == 0.12  # +12% boost
-        assert "volume_anomalies" in pattern["evidence"] or "amount_anomalies" in pattern["evidence"]
+        assert (
+            "volume_anomalies" in pattern["evidence"]
+            or "amount_anomalies" in pattern["evidence"]
+        )
         assert pattern["evidence"]["bucket_size_hours"] == TIME_SERIES_BUCKET_HOURS
 
     def test_irregular_cadence_detection(self, recognizer, irregular_cadence_events):
@@ -156,7 +173,9 @@ class TestTemporalPatternRecognizer:
         assert result["total_patterns_detected"] >= 1
 
         # Find irregular cadence patterns
-        cadence_patterns = [p for p in result["patterns"] if p["pattern_type"] == "irregular_cadence"]
+        cadence_patterns = [
+            p for p in result["patterns"] if p["pattern_type"] == "irregular_cadence"
+        ]
         assert len(cadence_patterns) >= 1
 
         pattern = cadence_patterns[0]
@@ -164,21 +183,32 @@ class TestTemporalPatternRecognizer:
         assert pattern["confidence"] >= 0.60
         assert pattern["risk_adjustment"] == 0.10  # +10% boost
         assert "coefficient_of_variation" in pattern["evidence"]
-        assert pattern["evidence"]["coefficient_of_variation"] > CADENCE_IRREGULARITY_THRESHOLD
+        assert (
+            pattern["evidence"]["coefficient_of_variation"]
+            > CADENCE_IRREGULARITY_THRESHOLD
+        )
 
-    def test_first_transaction_velocity_detection(self, recognizer, first_tx_velocity_events):
+    def test_first_transaction_velocity_detection(
+        self, recognizer, first_tx_velocity_events
+    ):
         """Test first transaction velocity pattern detection."""
         # Provide account creation time to simulate new account
         account_creation = datetime(2024, 1, 1, 9, 30, 0)  # 30 minutes before first TX
         historical_patterns = {"account_creation_time": account_creation}
 
         processed_data = {"events": first_tx_velocity_events}
-        result = recognizer.recognize(processed_data, minimum_support=0.1, historical_patterns=historical_patterns)
+        result = recognizer.recognize(
+            processed_data, minimum_support=0.1, historical_patterns=historical_patterns
+        )
 
         assert result["success"] is True
 
         # Find first transaction velocity patterns
-        first_tx_patterns = [p for p in result["patterns"] if p["pattern_type"] == "first_transaction_velocity"]
+        first_tx_patterns = [
+            p
+            for p in result["patterns"]
+            if p["pattern_type"] == "first_transaction_velocity"
+        ]
 
         if first_tx_patterns:  # May or may not trigger depending on exact percentiles
             pattern = first_tx_patterns[0]
@@ -186,8 +216,14 @@ class TestTemporalPatternRecognizer:
             assert pattern["confidence"] >= 0.70
             assert pattern["risk_adjustment"] == 0.15  # +15% boost
             assert "time_to_first_tx_hours" in pattern["evidence"]
-            assert pattern["evidence"]["time_to_first_tx_hours"] <= FIRST_TX_THRESHOLD_HOURS
-            assert pattern["evidence"]["amount_percentile"] >= FIRST_TX_HIGH_AMOUNT_PERCENTILE
+            assert (
+                pattern["evidence"]["time_to_first_tx_hours"]
+                <= FIRST_TX_THRESHOLD_HOURS
+            )
+            assert (
+                pattern["evidence"]["amount_percentile"]
+                >= FIRST_TX_HIGH_AMOUNT_PERCENTILE
+            )
 
     def test_regular_cadence_no_detection(self, recognizer, regular_cadence_events):
         """Test that regular cadence does NOT trigger irregular cadence detection."""
@@ -197,7 +233,9 @@ class TestTemporalPatternRecognizer:
         assert result["success"] is True
 
         # Should NOT detect irregular cadence for regular intervals
-        cadence_patterns = [p for p in result["patterns"] if p["pattern_type"] == "irregular_cadence"]
+        cadence_patterns = [
+            p for p in result["patterns"] if p["pattern_type"] == "irregular_cadence"
+        ]
         assert len(cadence_patterns) == 0
 
     def test_empty_events(self, recognizer):
@@ -216,13 +254,13 @@ class TestTemporalPatternRecognizer:
             {
                 "TX_ID_KEY": "tx_001",
                 "PAID_AMOUNT_VALUE_IN_CURRENCY": 100.0,
-                "TX_DATETIME": datetime(2024, 1, 1, 10, 0, 0)
+                "TX_DATETIME": datetime(2024, 1, 1, 10, 0, 0),
             },
             {
                 "TX_ID_KEY": "tx_002",
                 "PAID_AMOUNT_VALUE_IN_CURRENCY": 200.0,
-                "TX_DATETIME": datetime(2024, 1, 1, 11, 0, 0)
-            }
+                "TX_DATETIME": datetime(2024, 1, 1, 11, 0, 0),
+            },
         ]
 
         processed_data = {"events": events}
@@ -230,7 +268,9 @@ class TestTemporalPatternRecognizer:
 
         assert result["success"] is True
         # Should not detect cadence patterns with too few events
-        cadence_patterns = [p for p in result["patterns"] if p["pattern_type"] == "irregular_cadence"]
+        cadence_patterns = [
+            p for p in result["patterns"] if p["pattern_type"] == "irregular_cadence"
+        ]
         assert len(cadence_patterns) == 0
 
     def test_extract_amount_multiple_field_names(self, recognizer):
@@ -276,22 +316,26 @@ class TestTemporalPatternRecognizer:
         # Create events with BOTH time series anomaly AND irregular cadence
         # Normal baseline
         for hour in range(0, 6, 2):
-            events.append({
-                "TX_ID_KEY": f"tx_baseline_{hour}",
-                "PAID_AMOUNT_VALUE_IN_CURRENCY": 50.0,
-                "TX_DATETIME": base_time + timedelta(hours=hour)
-            })
+            events.append(
+                {
+                    "TX_ID_KEY": f"tx_baseline_{hour}",
+                    "PAID_AMOUNT_VALUE_IN_CURRENCY": 50.0,
+                    "TX_DATETIME": base_time + timedelta(hours=hour),
+                }
+            )
 
         # Spike with irregular intervals
         spike_start = base_time + timedelta(hours=8)
         intervals = [1, 2, 60, 1, 3]  # Very irregular
         current_time = spike_start
         for i, interval in enumerate(intervals):
-            events.append({
-                "TX_ID_KEY": f"tx_spike_{i}",
-                "PAID_AMOUNT_VALUE_IN_CURRENCY": 100.0,
-                "TX_DATETIME": current_time
-            })
+            events.append(
+                {
+                    "TX_ID_KEY": f"tx_spike_{i}",
+                    "PAID_AMOUNT_VALUE_IN_CURRENCY": 100.0,
+                    "TX_DATETIME": current_time,
+                }
+            )
             current_time += timedelta(minutes=interval)
 
         processed_data = {"events": events}
@@ -341,11 +385,13 @@ class TestTemporalPatternRecognizer:
         current_time = base_time
 
         for i, interval in enumerate(intervals):
-            events.append({
-                "TX_ID_KEY": f"tx_{i}",
-                "PAID_AMOUNT_VALUE_IN_CURRENCY": 50.0,
-                "TX_DATETIME": current_time
-            })
+            events.append(
+                {
+                    "TX_ID_KEY": f"tx_{i}",
+                    "PAID_AMOUNT_VALUE_IN_CURRENCY": 50.0,
+                    "TX_DATETIME": current_time,
+                }
+            )
             current_time += timedelta(minutes=interval)
 
         processed_data = {"events": events}

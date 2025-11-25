@@ -11,16 +11,17 @@ SYSTEM MANDATE Compliance:
 - Complete implementation: No placeholders or TODOs
 """
 
-from fastapi import HTTPException, status
-from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker
 import json
 from datetime import datetime
 
+from fastapi import HTTPException, status
+from sqlalchemy import create_engine
+from sqlalchemy.orm import sessionmaker
+
 from app.models.investigation_state import InvestigationState
 from app.schemas.investigation_results import InvestigationResultsSchema
-from config.hybrid_graph_config import get_hybrid_graph_config
 from app.service.logging import get_bridge_logger
+from config.hybrid_graph_config import get_hybrid_graph_config
 
 logger = get_bridge_logger(__name__)
 
@@ -35,9 +36,7 @@ class InvestigationResultsController:
         self.config = get_hybrid_graph_config()
 
     async def get_results(
-        self,
-        investigation_id: str,
-        user_id: str
+        self, investigation_id: str, user_id: str
     ) -> InvestigationResultsSchema:
         """
         Retrieve investigation results.
@@ -57,13 +56,13 @@ class InvestigationResultsController:
         if investigation.status not in ["COMPLETED", "completed"]:
             raise HTTPException(
                 status_code=status.HTTP_409_CONFLICT,
-                detail=f"Investigation {investigation_id} is not completed (status: {investigation.status})"
+                detail=f"Investigation {investigation_id} is not completed (status: {investigation.status})",
             )
 
         if not investigation.progress_json:
             raise HTTPException(
                 status_code=status.HTTP_409_CONFLICT,
-                detail=f"Investigation {investigation_id} has no progress/results available"
+                detail=f"Investigation {investigation_id} has no progress/results available",
             )
 
         try:
@@ -77,7 +76,7 @@ class InvestigationResultsController:
             )
             raise HTTPException(
                 status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-                detail="Failed to parse investigation results"
+                detail="Failed to parse investigation results",
             )
 
         # Parse settings for entity info
@@ -107,7 +106,9 @@ class InvestigationResultsController:
             completed_at=investigation.updated_at,
         )
 
-    def _get_investigation(self, investigation_id: str, user_id: str) -> InvestigationState:
+    def _get_investigation(
+        self, investigation_id: str, user_id: str
+    ) -> InvestigationState:
         """
         Retrieve investigation from database.
 
@@ -126,14 +127,16 @@ class InvestigationResultsController:
         session = Session()
 
         try:
-            investigation = session.query(InvestigationState).filter(
-                InvestigationState.investigation_id == investigation_id
-            ).first()
+            investigation = (
+                session.query(InvestigationState)
+                .filter(InvestigationState.investigation_id == investigation_id)
+                .first()
+            )
 
             if not investigation:
                 raise HTTPException(
                     status_code=status.HTTP_404_NOT_FOUND,
-                    detail=f"Investigation {investigation_id} not found"
+                    detail=f"Investigation {investigation_id} not found",
                 )
 
             # Verify user authorization
@@ -144,7 +147,7 @@ class InvestigationResultsController:
                 )
                 raise HTTPException(
                     status_code=status.HTTP_404_NOT_FOUND,
-                    detail=f"Investigation {investigation_id} not found"
+                    detail=f"Investigation {investigation_id} not found",
                 )
 
             return investigation

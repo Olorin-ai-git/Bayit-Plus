@@ -7,15 +7,15 @@ Week 7 Phase 3 implementation.
 """
 
 import logging
-from typing import Dict, Any, List, Optional, Tuple
 from collections import defaultdict
+from typing import Any, Dict, List, Optional, Tuple
 
 from app.service.analytics.feature_statistics import (
-    pearson_correlation,
-    calculate_statistics,
-    calculate_discriminative_power,
     calculate_combined_importance,
-    is_numeric
+    calculate_discriminative_power,
+    calculate_statistics,
+    is_numeric,
+    pearson_correlation,
 )
 
 logger = logging.getLogger(__name__)
@@ -35,10 +35,7 @@ class FeatureImportanceAnalyzer:
         logger.info("📊 Initialized FeatureImportanceAnalyzer")
 
     def track_feature_usage(
-        self,
-        features: Dict[str, Any],
-        score: float,
-        is_fraud: Optional[bool] = None
+        self, features: Dict[str, Any], score: float, is_fraud: Optional[bool] = None
     ) -> None:
         """
         Track feature usage and values for importance analysis.
@@ -51,15 +48,16 @@ class FeatureImportanceAnalyzer:
         for feature_name, feature_value in features.items():
             if feature_value is not None and is_numeric(feature_value):
                 self.feature_usage[feature_name] += 1
-                self.feature_values[feature_name].append({
-                    "value": float(feature_value),
-                    "score": score,
-                    "is_fraud": is_fraud
-                })
+                self.feature_values[feature_name].append(
+                    {
+                        "value": float(feature_value),
+                        "score": score,
+                        "is_fraud": is_fraud,
+                    }
+                )
 
     def calculate_feature_importance(
-        self,
-        min_samples: int = 100
+        self, min_samples: int = 100
     ) -> Dict[str, Dict[str, Any]]:
         """
         Calculate feature importance metrics.
@@ -74,7 +72,9 @@ class FeatureImportanceAnalyzer:
 
         for feature_name, values in self.feature_values.items():
             if len(values) < min_samples:
-                logger.debug(f"Skipping {feature_name}: insufficient samples ({len(values)})")
+                logger.debug(
+                    f"Skipping {feature_name}: insufficient samples ({len(values)})"
+                )
                 continue
 
             # Extract value lists
@@ -95,17 +95,15 @@ class FeatureImportanceAnalyzer:
                 "discriminative_power": disc_power,
                 "statistics": stats,
                 "importance_score": calculate_combined_importance(
-                    correlation,
-                    disc_power,
-                    len(values)
-                )
+                    correlation, disc_power, len(values)
+                ),
             }
 
         # Sort by importance score
         sorted_features = sorted(
             importance_scores.items(),
             key=lambda x: x[1]["importance_score"],
-            reverse=True
+            reverse=True,
         )
 
         logger.info(
@@ -116,8 +114,7 @@ class FeatureImportanceAnalyzer:
         return dict(sorted_features)
 
     def get_feature_correlations(
-        self,
-        threshold: float = 0.8
+        self, threshold: float = 0.8
     ) -> List[Tuple[str, str, float]]:
         """
         Find highly correlated feature pairs.
@@ -132,8 +129,11 @@ class FeatureImportanceAnalyzer:
         feature_names = list(self.feature_values.keys())
 
         for i, feat1 in enumerate(feature_names):
-            for feat2 in feature_names[i+1:]:
-                if len(self.feature_values[feat1]) < 50 or len(self.feature_values[feat2]) < 50:
+            for feat2 in feature_names[i + 1 :]:
+                if (
+                    len(self.feature_values[feat1]) < 50
+                    or len(self.feature_values[feat2]) < 50
+                ):
                     continue
 
                 corr = self._calculate_feature_correlation(feat1, feat2)
@@ -143,15 +143,13 @@ class FeatureImportanceAnalyzer:
         correlations.sort(key=lambda x: abs(x[2]), reverse=True)
 
         if correlations:
-            logger.info(f"📊 Found {len(correlations)} highly correlated feature pairs (threshold={threshold})")
+            logger.info(
+                f"📊 Found {len(correlations)} highly correlated feature pairs (threshold={threshold})"
+            )
 
         return correlations
 
-    def _calculate_feature_correlation(
-        self,
-        feat1: str,
-        feat2: str
-    ) -> float:
+    def _calculate_feature_correlation(self, feat1: str, feat2: str) -> float:
         """Calculate correlation between two features."""
         vals1_dict = {i: v["value"] for i, v in enumerate(self.feature_values[feat1])}
         vals2_dict = {i: v["value"] for i, v in enumerate(self.feature_values[feat2])}

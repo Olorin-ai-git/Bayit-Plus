@@ -4,7 +4,7 @@ Data Analyzer
 Analyzes and summarizes investigation data.
 """
 
-from typing import Dict, Any
+from typing import Any, Dict
 
 from app.service.logging import get_bridge_logger
 
@@ -37,7 +37,11 @@ class DataAnalyzer:
 
             # Look for high risk scores
             # CRITICAL FIX: Handle None values to prevent TypeError
-            high_risk = [r for r in results if r.get("MODEL_SCORE") is not None and r.get("MODEL_SCORE", 0) > 0.7]
+            high_risk = [
+                r
+                for r in results
+                if r.get("MODEL_SCORE") is not None and r.get("MODEL_SCORE", 0) > 0.7
+            ]
             if high_risk:
                 summary_parts.append(f"- {len(high_risk)} high-risk transactions found")
 
@@ -58,7 +62,7 @@ class DataAnalyzer:
             "high_risk_count": 0,
             "fraud_count": 0,
             "average_risk_score": 0.0,
-            "date_range": None
+            "date_range": None,
         }
 
         if not isinstance(snowflake_data, dict) or "results" not in snowflake_data:
@@ -72,7 +76,11 @@ class DataAnalyzer:
 
         # Calculate risk metrics
         # CRITICAL FIX: Filter out None values to prevent TypeError
-        model_scores = [r.get("MODEL_SCORE") for r in results if "MODEL_SCORE" in r and r.get("MODEL_SCORE") is not None]
+        model_scores = [
+            r.get("MODEL_SCORE")
+            for r in results
+            if "MODEL_SCORE" in r and r.get("MODEL_SCORE") is not None
+        ]
         if model_scores:
             metrics["average_risk_score"] = sum(model_scores) / len(model_scores)
             metrics["high_risk_count"] = len([s for s in model_scores if s > 0.7])
@@ -80,13 +88,22 @@ class DataAnalyzer:
         # CRITICAL: No fraud indicators can be used during investigation to prevent data leakage
         # All fraud indicator columns (IS_FRAUD_TX, COUNT_DISPUTES, COUNT_FRAUD_ALERTS, etc.) are excluded
         # Fraud count must be based on behavioral patterns only (e.g., rejected transactions)
-        metrics["fraud_count"] = len([r for r in results 
-                                     if r.get("NSURE_LAST_DECISION") in ("REJECT", "BLOCK", "DECLINE")])
+        metrics["fraud_count"] = len(
+            [
+                r
+                for r in results
+                if r.get("NSURE_LAST_DECISION") in ("REJECT", "BLOCK", "DECLINE")
+            ]
+        )
 
         # Extract date range
         if results:
-            first_date = results[0].get('TX_DATETIME', 'N/A')
-            last_date = results[-1].get('TX_DATETIME', 'N/A') if len(results) > 1 else first_date
+            first_date = results[0].get("TX_DATETIME", "N/A")
+            last_date = (
+                results[-1].get("TX_DATETIME", "N/A")
+                if len(results) > 1
+                else first_date
+            )
             metrics["date_range"] = f"{first_date} to {last_date}"
 
         return metrics
@@ -98,7 +115,7 @@ class DataAnalyzer:
             "risk_distribution": {},
             "fraud_indicators": [],
             "temporal_patterns": {},
-            "geographic_patterns": {}
+            "geographic_patterns": {},
         }
 
         if not isinstance(snowflake_data, dict) or "results" not in snowflake_data:

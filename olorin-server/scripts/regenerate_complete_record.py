@@ -15,15 +15,15 @@ Usage:
 
 import asyncio
 import sys
+from datetime import datetime
 from pathlib import Path
 from uuid import uuid4
-from datetime import datetime
 
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
-from scripts.populate_all_333_columns import ComprehensiveDataGenerator
 from app.service.config_loader import get_config_loader
 from app.service.logging import get_bridge_logger
+from scripts.populate_all_333_columns import ComprehensiveDataGenerator
 
 logger = get_bridge_logger(__name__)
 
@@ -45,8 +45,8 @@ async def regenerate_with_all_columns():
         conn = await asyncpg.connect(conn_str)
         logger.info(f"✅ Connected to PostgreSQL: {pg_config['database']}")
 
-        schema = pg_config.get('schema', 'public')
-        table = pg_config.get('transactions_table', 'transactions_enriched')
+        schema = pg_config.get("schema", "public")
+        table = pg_config.get("transactions_table", "transactions_enriched")
         full_table = f"{schema}.{table}"
 
         # Delete all records
@@ -68,49 +68,48 @@ async def regenerate_with_all_columns():
         generator = ComprehensiveDataGenerator()
 
         # High-risk fraud context
-        context = {
-            'is_high_risk': True,
-            'is_fraud': True
-        }
+        context = {"is_high_risk": True, "is_fraud": True}
 
         # Generate values for ALL columns
         record = {}
         for col_info in columns_info:
-            col_name = col_info['column_name']
-            data_type = col_info['data_type']
+            col_name = col_info["column_name"]
+            data_type = col_info["data_type"]
 
             # Core required fields with realistic values
-            if col_name == 'tx_id_key':
+            if col_name == "tx_id_key":
                 record[col_name] = str(uuid4())
-            elif col_name == 'unique_user_id':
+            elif col_name == "unique_user_id":
                 record[col_name] = str(uuid4())
-            elif col_name == 'email':
-                record[col_name] = 'suspicious.user@fraud-example.com'
-            elif col_name == 'first_name':
-                record[col_name] = 'John'
-            elif col_name == 'last_name':
-                record[col_name] = 'Doe'
-            elif col_name == 'device_model':
-                record[col_name] = 'iPhone 13 Pro'
-            elif col_name == 'user_agent':
-                record[col_name] = 'Mozilla/5.0 (iPhone; CPU iPhone OS 16_5 like Mac OS X)'
-            elif col_name == 'payment_method':
-                record[col_name] = 'credit_card'
-            elif col_name == 'processor':
-                record[col_name] = 'Stripe'
-            elif col_name == 'card_holder_name':
-                record[col_name] = 'John Doe'
-            elif col_name == 'model_score':
+            elif col_name == "email":
+                record[col_name] = "suspicious.user@fraud-example.com"
+            elif col_name == "first_name":
+                record[col_name] = "John"
+            elif col_name == "last_name":
+                record[col_name] = "Doe"
+            elif col_name == "device_model":
+                record[col_name] = "iPhone 13 Pro"
+            elif col_name == "user_agent":
+                record[col_name] = (
+                    "Mozilla/5.0 (iPhone; CPU iPhone OS 16_5 like Mac OS X)"
+                )
+            elif col_name == "payment_method":
+                record[col_name] = "credit_card"
+            elif col_name == "processor":
+                record[col_name] = "Stripe"
+            elif col_name == "card_holder_name":
+                record[col_name] = "John Doe"
+            elif col_name == "model_score":
                 record[col_name] = 0.92
-            elif col_name == 'maxmind_risk_score':
+            elif col_name == "maxmind_risk_score":
                 record[col_name] = 0.88
-            elif col_name == 'nsure_last_decision':
-                record[col_name] = 'REJECT'
-            elif col_name == 'is_failed_tx':
+            elif col_name == "nsure_last_decision":
+                record[col_name] = "REJECT"
+            elif col_name == "is_failed_tx":
                 record[col_name] = 1
-            elif col_name == 'is_fraud_tx':
+            elif col_name == "is_fraud_tx":
                 record[col_name] = 1
-            elif col_name == 'is_processor_rejected_due_to_fraud':
+            elif col_name == "is_processor_rejected_due_to_fraud":
                 record[col_name] = 1
             else:
                 # Use generator for all other fields
@@ -121,8 +120,8 @@ async def regenerate_with_all_columns():
         logger.info(f"🔧 Generated values for {len(record)} columns")
 
         # Build INSERT statement
-        column_names = ', '.join(record.keys())
-        placeholders = ', '.join([f'${i+1}' for i in range(len(record))])
+        column_names = ", ".join(record.keys())
+        placeholders = ", ".join([f"${i+1}" for i in range(len(record))])
         values = list(record.values())
 
         insert_sql = f"""

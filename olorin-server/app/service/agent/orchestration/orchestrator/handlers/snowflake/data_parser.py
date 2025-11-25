@@ -5,7 +5,7 @@ Handles parsing of Snowflake data from message content.
 """
 
 import json
-from typing import Dict, Any
+from typing import Any, Dict
 
 from app.service.logging import get_bridge_logger
 
@@ -22,11 +22,16 @@ class DataParser:
             try:
                 return json.loads(content)
             except json.JSONDecodeError:
-                logger.warning(f"Snowflake data is not valid JSON, attempting to parse Python repr: {content[:100]}...")
+                logger.warning(
+                    f"Snowflake data is not valid JSON, attempting to parse Python repr: {content[:100]}..."
+                )
                 try:
                     import ast
+
                     return ast.literal_eval(content)
                 except (ValueError, SyntaxError):
-                    logger.error("Failed to parse Snowflake data as JSON or Python literal")
+                    logger.error(
+                        "Failed to parse Snowflake data as JSON or Python literal"
+                    )
                     return {"error": "Failed to parse Snowflake data", "raw": content}
         return content

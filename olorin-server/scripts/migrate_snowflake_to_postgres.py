@@ -18,8 +18,8 @@ Constitutional Compliance:
 
 import argparse
 import sys
-from pathlib import Path
 from datetime import datetime, timezone
+from pathlib import Path
 
 # Add parent directory to path for imports
 sys.path.insert(0, str(Path(__file__).parent.parent))
@@ -40,38 +40,36 @@ def parse_args():
         "--batch-size",
         type=int,
         default=500,
-        help="Number of records per batch (default: 500)"
+        help="Number of records per batch (default: 500)",
     )
 
     parser.add_argument(
         "--checkpoint-file",
         type=str,
         default="migration_checkpoint.json",
-        help="Path to checkpoint file (default: migration_checkpoint.json)"
+        help="Path to checkpoint file (default: migration_checkpoint.json)",
     )
 
     parser.add_argument(
         "--validate-only",
         action="store_true",
-        help="Only validate existing migration, don't migrate data"
+        help="Only validate existing migration, don't migrate data",
     )
 
     parser.add_argument(
-        "--resume",
-        action="store_true",
-        help="Resume from last checkpoint"
+        "--resume", action="store_true", help="Resume from last checkpoint"
     )
 
     parser.add_argument(
-        "--skip-validation",
-        action="store_true",
-        help="Skip post-migration validation"
+        "--skip-validation", action="store_true", help="Skip post-migration validation"
     )
 
     return parser.parse_args()
 
 
-def print_progress(manager: MigrationManager, records_migrated: int, start_time: datetime):
+def print_progress(
+    manager: MigrationManager, records_migrated: int, start_time: datetime
+):
     """Print migration progress."""
     elapsed = (datetime.now(timezone.utc) - start_time).total_seconds()
     rate = records_migrated / elapsed if elapsed > 0 else 0
@@ -95,9 +93,7 @@ def validate_migration(manager: MigrationManager) -> bool:
     logger.info("\n🔍 Validating migration...")
 
     validation_result = manager.validate_migration(
-        check_record_count=True,
-        check_sample_data=True,
-        sample_size=100
+        check_record_count=True, check_sample_data=True, sample_size=100
     )
 
     logger.info("=" * 60)
@@ -105,15 +101,21 @@ def validate_migration(manager: MigrationManager) -> bool:
     logger.info("=" * 60)
     logger.info(f"Source record count: {validation_result['record_count_source']:,}")
     logger.info(f"Target record count: {validation_result['record_count_target']:,}")
-    logger.info(f"Record counts match: {'✅ YES' if validation_result['record_count_match'] else '❌ NO'}")
+    logger.info(
+        f"Record counts match: {'✅ YES' if validation_result['record_count_match'] else '❌ NO'}"
+    )
 
-    if 'sample_data_match' in validation_result:
-        logger.info(f"Sample data matches: {'✅ YES' if validation_result['sample_data_match'] else '❌ NO'}")
+    if "sample_data_match" in validation_result:
+        logger.info(
+            f"Sample data matches: {'✅ YES' if validation_result['sample_data_match'] else '❌ NO'}"
+        )
 
-    logger.info(f"Overall validation: {'✅ PASSED' if validation_result['is_valid'] else '❌ FAILED'}")
+    logger.info(
+        f"Overall validation: {'✅ PASSED' if validation_result['is_valid'] else '❌ FAILED'}"
+    )
     logger.info("=" * 60)
 
-    return validation_result['is_valid']
+    return validation_result["is_valid"]
 
 
 def main():
@@ -133,8 +135,7 @@ def main():
     try:
         # Initialize migration manager
         manager = MigrationManager(
-            batch_size=args.batch_size,
-            checkpoint_file=Path(args.checkpoint_file)
+            batch_size=args.batch_size, checkpoint_file=Path(args.checkpoint_file)
         )
 
         # Validate-only mode
@@ -149,7 +150,9 @@ def main():
             logger.warning(f"   Last batch: {checkpoint['last_batch_id']}")
             logger.warning(f"   Records migrated: {checkpoint['records_migrated']:,}")
             logger.warning("")
-            logger.warning("   Use --resume to continue, or delete checkpoint file to start fresh")
+            logger.warning(
+                "   Use --resume to continue, or delete checkpoint file to start fresh"
+            )
             sys.exit(1)
 
         # Run migration
@@ -168,11 +171,11 @@ def main():
         logger.info(f"Batch size: {result['batch_size']}")
         logger.info(f"Elapsed time: {result['elapsed_time_seconds']:.1f} seconds")
 
-        if result['records_migrated'] > 0:
-            rate = result['records_migrated'] / result['elapsed_time_seconds']
+        if result["records_migrated"] > 0:
+            rate = result["records_migrated"] / result["elapsed_time_seconds"]
             logger.info(f"Average rate: {rate:.1f} records/second")
 
-        if result.get('resumed_from_batch'):
+        if result.get("resumed_from_batch"):
             logger.info(f"Resumed from batch: {result['resumed_from_batch']}")
 
         logger.info("=" * 60)

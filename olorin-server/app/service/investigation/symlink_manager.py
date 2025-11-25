@@ -13,7 +13,7 @@ Constitutional Compliance:
 import os
 import platform
 from pathlib import Path
-from typing import Optional, Literal
+from typing import Literal, Optional
 
 from app.service.logging import get_bridge_logger
 
@@ -48,7 +48,11 @@ class SymlinkManager:
             # Windows requires admin privileges or developer mode for symlinks
             # Check if we can create symlinks
             try:
-                test_dir = Path("/tmp") if not self.is_windows else Path(os.getenv("TEMP", "."))
+                test_dir = (
+                    Path("/tmp")
+                    if not self.is_windows
+                    else Path(os.getenv("TEMP", "."))
+                )
                 test_link = test_dir / "symlink_test_link"
                 test_target = test_dir / "symlink_test_target"
 
@@ -86,10 +90,7 @@ class SymlinkManager:
             return True
 
     def create_symlink(
-        self,
-        target: Path,
-        link_path: Path,
-        force: bool = False
+        self, target: Path, link_path: Path, force: bool = False
     ) -> tuple[ViewType, Optional[str]]:
         """
         Create symlink or indexed view.
@@ -106,10 +107,7 @@ class SymlinkManager:
         """
         # Validate target exists
         if not target.exists():
-            return (
-                "indexed",
-                f"Target does not exist: {target}. Using indexed view."
-            )
+            return ("indexed", f"Target does not exist: {target}. Using indexed view.")
 
         # Check if link already exists
         if link_path.exists() or link_path.is_symlink():
@@ -129,7 +127,7 @@ class SymlinkManager:
 
                 return (
                     "indexed",
-                    f"Link path already exists: {link_path}. Using indexed view."
+                    f"Link path already exists: {link_path}. Using indexed view.",
                 )
             else:
                 # Remove existing link/path
@@ -143,7 +141,7 @@ class SymlinkManager:
                 except OSError as e:
                     return (
                         "indexed",
-                        f"Failed to remove existing link: {e}. Using indexed view."
+                        f"Failed to remove existing link: {e}. Using indexed view.",
                     )
 
         # Try to create symlink if supported
@@ -156,11 +154,15 @@ class SymlinkManager:
                 # CRITICAL: Use absolute path for target to avoid resolution issues
                 # Relative symlinks can resolve incorrectly when the working directory changes
                 target_absolute = target.resolve()
-                
+
                 if target.is_dir():
-                    os.symlink(str(target_absolute), str(link_path), target_is_directory=True)
+                    os.symlink(
+                        str(target_absolute), str(link_path), target_is_directory=True
+                    )
                 else:
-                    os.symlink(str(target_absolute), str(link_path), target_is_directory=False)
+                    os.symlink(
+                        str(target_absolute), str(link_path), target_is_directory=False
+                    )
 
                 logger.debug(f"Created symlink: {link_path} -> {target}")
                 return ("symlink", None)
@@ -182,9 +184,7 @@ class SymlinkManager:
             return self._create_indexed_view(target, link_path)
 
     def _create_indexed_view(
-        self,
-        target: Path,
-        link_path: Path
+        self, target: Path, link_path: Path
     ) -> tuple[ViewType, Optional[str]]:
         """
         Create indexed view entry in registry.
@@ -202,7 +202,7 @@ class SymlinkManager:
         except OSError as e:
             return (
                 "indexed",
-                f"Failed to create parent directories for indexed view: {e}"
+                f"Failed to create parent directories for indexed view: {e}",
             )
 
         # Register indexed view in registry if available
@@ -213,27 +213,20 @@ class SymlinkManager:
                     self.registry.register_indexed_view(
                         virtual_path=str(link_path),
                         canonical_path=str(target),
-                        view_type="indexed"
+                        view_type="indexed",
                     )
-                    logger.debug(
-                        f"Registered indexed view: {link_path} -> {target}"
-                    )
+                    logger.debug(f"Registered indexed view: {link_path} -> {target}")
                 else:
                     logger.debug(
                         f"Registry does not support indexed views. "
                         f"Tracking {link_path} -> {target} locally."
                     )
             except Exception as e:
-                logger.warning(
-                    f"Failed to register indexed view in registry: {e}"
-                )
+                logger.warning(f"Failed to register indexed view in registry: {e}")
 
         return ("indexed", None)
 
-    def resolve_view_path(
-        self,
-        link_path: Path
-    ) -> Optional[Path]:
+    def resolve_view_path(self, link_path: Path) -> Optional[Path]:
         """
         Resolve symlink or indexed view to canonical path.
 
@@ -254,15 +247,11 @@ class SymlinkManager:
         # Check registry for indexed view
         if self.registry and hasattr(self.registry, "resolve_indexed_view"):
             try:
-                canonical_path = self.registry.resolve_indexed_view(
-                    str(link_path)
-                )
+                canonical_path = self.registry.resolve_indexed_view(str(link_path))
                 if canonical_path:
                     return Path(canonical_path)
             except Exception as e:
-                logger.warning(
-                    f"Failed to resolve indexed view from registry: {e}"
-                )
+                logger.warning(f"Failed to resolve indexed view from registry: {e}")
 
         return None
 
@@ -293,10 +282,7 @@ class SymlinkManager:
                 logger.debug(f"Removed indexed view: {link_path}")
                 return True
             except Exception as e:
-                logger.warning(
-                    f"Failed to remove indexed view from registry: {e}"
-                )
+                logger.warning(f"Failed to remove indexed view from registry: {e}")
                 return False
 
         return False
-

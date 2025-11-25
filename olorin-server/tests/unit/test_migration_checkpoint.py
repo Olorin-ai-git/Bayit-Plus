@@ -12,10 +12,11 @@ Constitutional Compliance:
 - Tests guide implementation
 """
 
-import pytest
 import json
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
-from datetime import datetime, timezone, timedelta
+
+import pytest
 
 from app.service.agent.tools.database_tool.migration_manager import MigrationManager
 
@@ -88,7 +89,7 @@ class TestCheckpointDataStructure:
             "last_batch_id": 5,
             "records_migrated": 2500,
             "migration_start_time": datetime.now(timezone.utc).isoformat(),
-            "last_successful_batch_timestamp": datetime.now(timezone.utc).isoformat()
+            "last_successful_batch_timestamp": datetime.now(timezone.utc).isoformat(),
         }
 
         manager.save_checkpoint(state)
@@ -137,10 +138,10 @@ class TestCheckpointResume:
         state = {
             "last_batch_id": 3,
             "records_migrated": 1500,
-            "migration_start_time": datetime.now(timezone.utc).isoformat()
+            "migration_start_time": datetime.now(timezone.utc).isoformat(),
         }
 
-        with open(checkpoint_file, 'w') as f:
+        with open(checkpoint_file, "w") as f:
             json.dump(state, f)
 
         # Create new manager and load checkpoint
@@ -161,10 +162,10 @@ class TestCheckpointResume:
         state = {
             "last_batch_id": 5,
             "records_migrated": 2500,
-            "migration_start_time": original_start.isoformat()
+            "migration_start_time": original_start.isoformat(),
         }
 
-        with open(checkpoint_file, 'w') as f:
+        with open(checkpoint_file, "w") as f:
             json.dump(state, f)
 
         # Resume migration
@@ -179,12 +180,9 @@ class TestCheckpointResume:
         checkpoint_file = tmp_path / "migration_checkpoint.json"
 
         # Initial checkpoint: 1500 records migrated
-        state = {
-            "last_batch_id": 3,
-            "records_migrated": 1500
-        }
+        state = {"last_batch_id": 3, "records_migrated": 1500}
 
-        with open(checkpoint_file, 'w') as f:
+        with open(checkpoint_file, "w") as f:
             json.dump(state, f)
 
         # Load and verify
@@ -197,7 +195,7 @@ class TestCheckpointResume:
         # Total should be 2000
         updated_state = {
             "last_batch_id": 4,
-            "records_migrated": loaded["records_migrated"] + 500
+            "records_migrated": loaded["records_migrated"] + 500,
         }
 
         manager.save_checkpoint(updated_state)
@@ -214,7 +212,7 @@ class TestCheckpointCorruptionHandling:
         checkpoint_file = tmp_path / "migration_checkpoint.json"
 
         # Write invalid JSON
-        with open(checkpoint_file, 'w') as f:
+        with open(checkpoint_file, "w") as f:
             f.write("{ invalid json")
 
         manager = MigrationManager(checkpoint_file=checkpoint_file)
@@ -243,7 +241,7 @@ class TestCheckpointCorruptionHandling:
         # Checkpoint missing required field
         incomplete_state = {"last_batch_id": 5}  # Missing records_migrated
 
-        with open(checkpoint_file, 'w') as f:
+        with open(checkpoint_file, "w") as f:
             json.dump(incomplete_state, f)
 
         manager = MigrationManager(checkpoint_file=checkpoint_file)
@@ -322,7 +320,7 @@ class TestCheckpointMetadata:
         state = {
             "last_batch_id": 5,
             "records_migrated": 2500,
-            "last_successful_batch_timestamp": now.isoformat()
+            "last_successful_batch_timestamp": now.isoformat(),
         }
 
         manager.save_checkpoint(state)
@@ -342,7 +340,7 @@ class TestCheckpointMetadata:
             "last_batch_id": 5,
             "records_migrated": 2500,
             "average_batch_time_seconds": 12.5,
-            "estimated_time_remaining_seconds": 150.0
+            "estimated_time_remaining_seconds": 150.0,
         }
 
         manager.save_checkpoint(state)
@@ -364,10 +362,10 @@ class TestCheckpointRecoveryScenarios:
             "last_batch_id": 7,
             "records_migrated": 3500,
             "total_batches_expected": 20,
-            "migration_start_time": datetime.now(timezone.utc).isoformat()
+            "migration_start_time": datetime.now(timezone.utc).isoformat(),
         }
 
-        with open(checkpoint_file, 'w') as f:
+        with open(checkpoint_file, "w") as f:
             json.dump(crash_state, f)
 
         # Recovery: new manager loads checkpoint
@@ -387,12 +385,9 @@ class TestCheckpointRecoveryScenarios:
         checkpoint_file = tmp_path / "migration_checkpoint.json"
 
         # Failure after first batch
-        early_failure_state = {
-            "last_batch_id": 1,
-            "records_migrated": 500
-        }
+        early_failure_state = {"last_batch_id": 1, "records_migrated": 500}
 
-        with open(checkpoint_file, 'w') as f:
+        with open(checkpoint_file, "w") as f:
             json.dump(early_failure_state, f)
 
         # Recovery
@@ -413,16 +408,16 @@ class TestCheckpointRecoveryScenarios:
         stale_state = {
             "last_batch_id": 5,
             "records_migrated": 2500,
-            "last_successful_batch_timestamp": old_time.isoformat()
+            "last_successful_batch_timestamp": old_time.isoformat(),
         }
 
-        with open(checkpoint_file, 'w') as f:
+        with open(checkpoint_file, "w") as f:
             json.dump(stale_state, f)
 
         manager = MigrationManager(checkpoint_file=checkpoint_file)
         loaded = manager.load_checkpoint()
 
         # Should detect staleness (implementation dependent)
-        if hasattr(manager, 'is_checkpoint_stale'):
+        if hasattr(manager, "is_checkpoint_stale"):
             is_stale = manager.is_checkpoint_stale(loaded, hours=12)
             assert is_stale is True

@@ -5,8 +5,9 @@ Core analysis functionality for investigation summaries.
 """
 
 import re
-from typing import Dict, Any, List
-from langchain_core.messages import SystemMessage, HumanMessage
+from typing import Any, Dict, List
+
+from langchain_core.messages import HumanMessage, SystemMessage
 
 from app.service.logging import get_bridge_logger
 
@@ -22,20 +23,24 @@ class SummaryAnalysisEngine:
 
     async def analyze_with_llm(self, state: Dict[str, Any]) -> Dict[str, Any]:
         """Analyze aggregated tool results with LLM for risk assessment."""
-        logger.info("🤖 Performing LLM-based risk assessment on aggregated tool results")
+        logger.info(
+            "🤖 Performing LLM-based risk assessment on aggregated tool results"
+        )
 
         # Prepare comprehensive analysis prompt
         analysis_prompt = self._prepare_risk_analysis_prompt(state)
 
         # Create messages for LLM
-        system_msg = SystemMessage(content="""You are a fraud risk assessment expert. Analyze the investigation results and provide:
+        system_msg = SystemMessage(
+            content="""You are a fraud risk assessment expert. Analyze the investigation results and provide:
 1. A risk score from 0.0 to 1.0 based on the evidence
 2. Confidence level in your assessment (0.0 to 1.0)
 3. Key risk factors identified
 4. Detailed reasoning for your risk assessment
 5. Recommended actions
 
-Base your assessment ONLY on the actual data provided. Do not use arbitrary values.""")
+Base your assessment ONLY on the actual data provided. Do not use arbitrary values."""
+        )
 
         human_msg = HumanMessage(content=analysis_prompt)
 
@@ -45,10 +50,14 @@ Base your assessment ONLY on the actual data provided. Do not use arbitrary valu
             logger.info("📝 LLM Prompt (with formatted Snowflake data):")
             logger.info(f"   System Message: {system_msg.content[:500]}...")
             if len(system_msg.content) > 500:
-                logger.info(f"   ... (truncated, full length: {len(system_msg.content)} chars)")
+                logger.info(
+                    f"   ... (truncated, full length: {len(system_msg.content)} chars)"
+                )
             logger.info(f"   Human Message: {human_msg.content[:1000]}...")
             if len(human_msg.content) > 1000:
-                logger.info(f"   ... (truncated, full length: {len(human_msg.content)} chars)")
+                logger.info(
+                    f"   ... (truncated, full length: {len(human_msg.content)} chars)"
+                )
 
         try:
             # Invoke LLM for risk assessment
@@ -56,12 +65,20 @@ Base your assessment ONLY on the actual data provided. Do not use arbitrary valu
 
             # Log full LLM response
             if snowflake_data:
-                logger.info("🤖 LLM Response (after receiving formatted Snowflake data):")
-                if hasattr(response, 'content') and response.content:
-                    response_preview = str(response.content)[:2000] if response.content else "[Empty response]"
+                logger.info(
+                    "🤖 LLM Response (after receiving formatted Snowflake data):"
+                )
+                if hasattr(response, "content") and response.content:
+                    response_preview = (
+                        str(response.content)[:2000]
+                        if response.content
+                        else "[Empty response]"
+                    )
                     logger.info(f"   Response content: {response_preview}")
                     if len(str(response.content)) > 2000:
-                        logger.info(f"   ... (truncated, full length: {len(str(response.content))} chars)")
+                        logger.info(
+                            f"   ... (truncated, full length: {len(str(response.content))} chars)"
+                        )
                 else:
                     logger.info("   Response: [No content]")
 
@@ -83,18 +100,26 @@ Base your assessment ONLY on the actual data provided. Do not use arbitrary valu
         domain_findings = state.get("domain_findings", {})
 
         # Format snowflake data for LLM
-        formatted_snowflake = SummaryDataFormatters.format_snowflake_for_llm(snowflake_data)
-        
+        formatted_snowflake = SummaryDataFormatters.format_snowflake_for_llm(
+            snowflake_data
+        )
+
         # Log what formatted data is being sent to LLM
         if snowflake_data:
-            row_count = len(snowflake_data.get('results', [])) if isinstance(snowflake_data, dict) and 'results' in snowflake_data else snowflake_data.get('row_count', 0)
+            row_count = (
+                len(snowflake_data.get("results", []))
+                if isinstance(snowflake_data, dict) and "results" in snowflake_data
+                else snowflake_data.get("row_count", 0)
+            )
             logger.info("📊 LLM receiving formatted Snowflake data:")
             logger.info(f"   📈 Formatted summary:")
-            for line in formatted_snowflake.split('\n'):
+            for line in formatted_snowflake.split("\n"):
                 if line.strip():
                     logger.info(f"   {line}")
             logger.info(f"   📝 Included in: HumanMessage (risk analysis phase)")
-            logger.info(f"   📊 Source data: {row_count} raw records → formatted summary")
+            logger.info(
+                f"   📊 Source data: {row_count} raw records → formatted summary"
+            )
 
         prompt = f"""Analyze this fraud investigation and provide risk assessment:
 
@@ -167,17 +192,20 @@ Based on ALL the above evidence, provide:
             "risk_score": risk_score,
             "confidence": confidence,
             "reasoning": llm_response,
-            "risk_factors": self._extract_risk_factors(llm_response)
+            "risk_factors": self._extract_risk_factors(llm_response),
         }
 
     def _extract_risk_factors(self, llm_response: str) -> List[str]:
         """Extract risk factors from LLM response."""
         factors = []
-        lines = llm_response.split('\n')
+        lines = llm_response.split("\n")
 
         for line in lines:
             line = line.strip()
-            if any(keyword in line.lower() for keyword in ['risk', 'factor', 'indicator', 'suspicious', 'anomaly']):
+            if any(
+                keyword in line.lower()
+                for keyword in ["risk", "factor", "indicator", "suspicious", "anomaly"]
+            ):
                 if len(line) > 10 and len(line) < 200:  # Reasonable length
                     factors.append(line)
 
@@ -191,26 +219,33 @@ Based on ALL the above evidence, provide:
         facts = state.get("facts", {})
 
         if not domain_findings:
-            logger.warning("⚠️ No domain findings available for fallback risk calculation")
+            logger.warning(
+                "⚠️ No domain findings available for fallback risk calculation"
+            )
             return {
                 "risk_score": 0.0,
                 "confidence": 0.1,
                 "reasoning": "No domain findings available - cannot calculate risk score",
-                "risk_factors": ["Insufficient data"]
+                "risk_factors": ["Insufficient data"],
             }
 
         # Use risk agent calculation method (PRIMARY METHOD)
         try:
-            from app.service.agent.orchestration.domain_agents.risk_agent import _calculate_real_risk_score
+            from app.service.agent.orchestration.domain_agents.risk_agent import (
+                _calculate_real_risk_score,
+            )
+
             risk_score = _calculate_real_risk_score(domain_findings, facts)
             logger.info(f"✅ Fallback risk score calculated: {risk_score:.4f}")
         except Exception as e:
-            logger.error(f"❌ Risk agent calculation failed in fallback: {e}", exc_info=True)
+            logger.error(
+                f"❌ Risk agent calculation failed in fallback: {e}", exc_info=True
+            )
             risk_score = 0.0
 
         return {
             "risk_score": risk_score,
             "confidence": 0.3,  # Lower confidence for fallback
             "reasoning": "Fallback calculation using risk agent method (LLM analysis unavailable)",
-            "risk_factors": ["Data-driven assessment", "Limited LLM analysis"]
+            "risk_factors": ["Data-driven assessment", "Limited LLM analysis"],
         }

@@ -7,8 +7,8 @@ import pytest
 from sqlalchemy import create_engine
 from sqlalchemy.orm import Session, sessionmaker
 
-from app.models.investigation_state import Base as InvestigationBase
 from app.models.investigation_audit_log import Base as AuditBase
+from app.models.investigation_state import Base as InvestigationBase
 
 
 @pytest.fixture(scope="function")

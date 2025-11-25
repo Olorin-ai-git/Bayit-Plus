@@ -5,7 +5,8 @@ Exact prompts from the Gaia system, adapted for Olorin fraud detection analysis.
 These prompts provide structured output formats for consistent risk assessment.
 """
 
-from typing import Dict, Any
+from typing import Any, Dict
+
 from app.service.logging import get_bridge_logger
 
 logger = get_bridge_logger(__name__)
@@ -247,20 +248,22 @@ OLORIN_PROMPTS = {
 def get_olorin_prompt(domain: str) -> str:
     """
     Get the exact Olorin prompt for a specific domain.
-    
+
     Args:
         domain: The investigation domain (device, location, network, logs, risk)
-        
+
     Returns:
         The exact Olorin prompt template for the domain
-        
+
     Raises:
         ValueError: If domain is not supported
     """
     if domain not in OLORIN_PROMPTS:
         supported_domains = ", ".join(OLORIN_PROMPTS.keys())
-        raise ValueError(f"Domain '{domain}' not supported. Supported domains: {supported_domains}")
-    
+        raise ValueError(
+            f"Domain '{domain}' not supported. Supported domains: {supported_domains}"
+        )
+
     logger.info(f"Retrieved Olorin prompt for domain: {domain}")
     return OLORIN_PROMPTS[domain]
 
@@ -268,42 +271,51 @@ def get_olorin_prompt(domain: str) -> str:
 def format_olorin_prompt(domain: str, data: Dict[str, Any]) -> str:
     """
     Format an Olorin prompt with investigation data.
-    
+
     Args:
         domain: The investigation domain
         data: Dictionary containing the data to inject into the prompt
-        
+
     Returns:
         Formatted prompt string ready for LLM consumption
     """
     try:
         prompt_template = get_olorin_prompt(domain)
-        
+
         # Map domain to expected data keys
         data_key_mapping = {
             "device": "device_info",
-            "location": "location_data", 
+            "location": "location_data",
             "network": "network_info",
             "logs": "logs_data",
-            "risk": ["device_analysis", "location_analysis", "network_analysis", "logs_analysis"]
+            "risk": [
+                "device_analysis",
+                "location_analysis",
+                "network_analysis",
+                "logs_analysis",
+            ],
         }
-        
+
         if domain == "risk":
             # Risk assessment needs multiple fields
             expected_keys = data_key_mapping[domain]
-            formatted_prompt = prompt_template.format(**{
-                key: data.get(key, f"[No {key.replace('_', ' ')} available]")
-                for key in expected_keys
-            })
+            formatted_prompt = prompt_template.format(
+                **{
+                    key: data.get(key, f"[No {key.replace('_', ' ')} available]")
+                    for key in expected_keys
+                }
+            )
         else:
             # Other domains need single data field
             expected_key = data_key_mapping[domain]
-            data_value = data.get(expected_key, f"[No {expected_key.replace('_', ' ')} available]")
+            data_value = data.get(
+                expected_key, f"[No {expected_key.replace('_', ' ')} available]"
+            )
             formatted_prompt = prompt_template.format(**{expected_key: data_value})
-        
+
         logger.info(f"Formatted Olorin prompt for domain: {domain}")
         return formatted_prompt
-        
+
     except Exception as e:
         logger.error(f"Failed to format Olorin prompt for domain {domain}: {str(e)}")
         raise
@@ -312,7 +324,7 @@ def format_olorin_prompt(domain: str, data: Dict[str, Any]) -> str:
 def get_supported_olorin_domains() -> list:
     """
     Get list of supported domains for Olorin prompts.
-    
+
     Returns:
         List of supported domain names
     """
@@ -322,11 +334,11 @@ def get_supported_olorin_domains() -> list:
 def validate_olorin_response_format(response: str, domain: str) -> bool:
     """
     Validate that a response follows the expected Olorin format.
-    
+
     Args:
         response: The LLM response to validate
         domain: The domain that generated the response
-        
+
     Returns:
         True if response appears to follow Olorin format, False otherwise
     """
@@ -335,51 +347,65 @@ def validate_olorin_response_format(response: str, domain: str) -> bool:
         required_elements = [
             "risk_score:",  # MANDATORY numerical risk score for all domains
         ]
-        
+
         if domain == "risk":
             # Risk domain uses different terminology
-            required_elements.extend([
-                "overall_risk_score:",  # Specific to risk domain
-                "risk classification",
-            ])
+            required_elements.extend(
+                [
+                    "overall_risk_score:",  # Specific to risk domain
+                    "risk classification",
+                ]
+            )
         else:
-            required_elements.extend([
-                "Risk Level",
-                "Confidence score",
-            ])
-        
+            required_elements.extend(
+                [
+                    "Risk Level",
+                    "Confidence score",
+                ]
+            )
+
         # Domain-specific requirements
         domain_specific = {
             "device": ["fraud indicators found", "Recommended actions"],
             "location": ["Geographic anomalies", "verification steps"],
             "network": ["Network red flags", "mitigation measures"],
             "logs": ["Suspicious patterns", "monitoring actions"],
-            "risk": ["overall risk score", "risk classification"]
+            "risk": ["overall risk score", "risk classification"],
         }
-        
+
         response_lower = response.lower()
-        
+
         # Check general requirements
         for element in required_elements:
             if element.lower() not in response_lower:
-                logger.warning(f"Missing required element '{element}' in {domain} response")
+                logger.warning(
+                    f"Missing required element '{element}' in {domain} response"
+                )
                 return False
-        
+
         # Check domain-specific requirements (flexible validation)
         domain_reqs = domain_specific.get(domain, [])
         missing_elements = []
         for req in domain_reqs:
             if req.lower() not in response_lower:
                 missing_elements.append(req)
-                logger.warning(f"Missing domain-specific element '{req}' in {domain} response")
-        
+                logger.warning(
+                    f"Missing domain-specific element '{req}' in {domain} response"
+                )
+
         # Log missing elements but don't fail validation unless ALL required elements are missing
         if missing_elements:
-            logger.info(f"Domain {domain} response missing {len(missing_elements)} optional elements but validation passed")
-        
-        logger.info(f"Olorin response format validated successfully for domain: {domain}")
+            logger.info(
+                f"Domain {domain} response missing {len(missing_elements)} optional elements but validation passed"
+            )
+
+        logger.info(
+            f"Olorin response format validated successfully for domain: {domain}"
+        )
         return True
-        
+
     except Exception as e:
-        logger.error(f"Error validating Olorin response format for domain {domain}: {str(e)}")
+        logger.error(
+            f"Error validating Olorin response format for domain {domain}: {str(e)}"
+        )
         return False

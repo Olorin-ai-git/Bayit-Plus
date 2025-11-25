@@ -10,14 +10,15 @@ SYSTEM MANDATE Compliance:
 - Type-safe: All parameters and returns properly typed
 """
 
-from typing import List, Dict, Any, Optional
-from fastapi import APIRouter, Depends, Response, Request, Query, status, HTTPException
+from typing import Any, Dict, List, Optional
+
+from fastapi import APIRouter, Depends, HTTPException, Query, Request, Response, status
 from sqlalchemy.orm import Session
 
-from app.persistence.database import get_db
-from app.service.polling_service import PollingService
 from app.config.investigation_state_config import PollingConfig, RateLimitConfig
+from app.persistence.database import get_db
 from app.security.auth import User, require_read, require_write
+from app.service.polling_service import PollingService
 
 router = APIRouter(
     prefix="/api/v1/polling",

@@ -7,10 +7,10 @@ Week 8 Phase 3 implementation.
 """
 
 import logging
-from typing import Dict, Any, List, Optional
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
 from datetime import datetime
+from typing import Any, Dict, List, Optional
 
 logger = logging.getLogger(__name__)
 
@@ -29,6 +29,7 @@ class ModelPrediction:
         metadata: Additional model-specific metadata
         timestamp: When prediction was made
     """
+
     score: float
     confidence: float
     model_name: str
@@ -46,7 +47,7 @@ class ModelPrediction:
             "model_version": self.model_version,
             "features_used": self.features_used,
             "metadata": self.metadata,
-            "timestamp": self.timestamp.isoformat()
+            "timestamp": self.timestamp.isoformat(),
         }
 
 
@@ -75,7 +76,7 @@ class FraudDetectionModel(ABC):
         self,
         transaction: Dict[str, Any],
         features: Dict[str, Any],
-        advanced_features: Optional[Dict[str, Any]] = None
+        advanced_features: Optional[Dict[str, Any]] = None,
     ) -> ModelPrediction:
         """
         Generate risk prediction for a transaction.
@@ -106,7 +107,7 @@ class FraudDetectionModel(ABC):
             "name": self.model_name,
             "version": self.model_version,
             "is_trained": self.is_trained,
-            "type": self.__class__.__name__
+            "type": self.__class__.__name__,
         }
 
     def validate_features(self, features: Dict[str, Any]) -> bool:
@@ -123,9 +124,7 @@ class FraudDetectionModel(ABC):
         missing = [f for f in required_features if f not in features]
 
         if missing:
-            logger.warning(
-                f"{self.model_name}: Missing required features: {missing}"
-            )
+            logger.warning(f"{self.model_name}: Missing required features: {missing}")
             return False
         return True
 

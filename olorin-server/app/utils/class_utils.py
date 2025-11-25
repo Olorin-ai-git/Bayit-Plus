@@ -1,4 +1,5 @@
 import logging
+
 from app.service.logging import get_bridge_logger
 
 logger = get_bridge_logger(__name__)

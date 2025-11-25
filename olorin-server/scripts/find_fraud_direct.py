@@ -4,8 +4,8 @@ Direct Snowflake Fraud Finder
 Queries Snowflake directly without async complexity
 """
 
-import sys
 import os
+import sys
 from datetime import datetime, timedelta
 from pathlib import Path
 
@@ -13,6 +13,7 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
 from dotenv import load_dotenv
+
 load_dotenv()
 
 # Try to import snowflake connector directly
@@ -24,16 +25,22 @@ except ImportError:
     sys.exit(1)
 
 # Connection details from env
-account = os.getenv('SNOWFLAKE_ACCOUNT', '').replace('.snowflakecomputing.com', '').replace('https://', '')
-user = os.getenv('SNOWFLAKE_USER')
-password = os.getenv('SNOWFLAKE_PASSWORD')
-database = 'DBT'
-schema = 'DBT_PROD'
-table = 'TXS'
-warehouse = os.getenv('SNOWFLAKE_WAREHOUSE', 'manual_review_agent_wh')
+account = (
+    os.getenv("SNOWFLAKE_ACCOUNT", "")
+    .replace(".snowflakecomputing.com", "")
+    .replace("https://", "")
+)
+user = os.getenv("SNOWFLAKE_USER")
+password = os.getenv("SNOWFLAKE_PASSWORD")
+database = "DBT"
+schema = "DBT_PROD"
+table = "TXS"
+warehouse = os.getenv("SNOWFLAKE_WAREHOUSE", "manual_review_agent_wh")
 
 # Check if using private key auth
-private_key_path = os.getenv('SNOWFLAKE_PRIVATE_KEY_PATH', '/Users/olorin/Documents/rsa_key.p8')
+private_key_path = os.getenv(
+    "SNOWFLAKE_PRIVATE_KEY_PATH", "/Users/olorin/Documents/rsa_key.p8"
+)
 use_private_key = os.path.exists(private_key_path)
 
 print(f"")
@@ -56,27 +63,25 @@ try:
     if use_private_key:
         from cryptography.hazmat.backends import default_backend
         from cryptography.hazmat.primitives import serialization
-        
+
         with open(private_key_path, "rb") as key_file:
             p_key = serialization.load_pem_private_key(
-                key_file.read(),
-                password=None,
-                backend=default_backend()
+                key_file.read(), password=None, backend=default_backend()
             )
-        
+
         pkb = p_key.private_bytes(
             encoding=serialization.Encoding.DER,
             format=serialization.PrivateFormat.PKCS8,
-            encryption_algorithm=serialization.NoEncryption()
+            encryption_algorithm=serialization.NoEncryption(),
         )
-        
+
         conn = snowflake.connector.connect(
             user=user,
             account=account,
             private_key=pkb,
             warehouse=warehouse,
             database=database,
-            schema=schema
+            schema=schema,
         )
     else:
         conn = snowflake.connector.connect(
@@ -85,32 +90,32 @@ try:
             account=account,
             warehouse=warehouse,
             database=database,
-            schema=schema
+            schema=schema,
         )
-    
+
     print("✅ Connected to Snowflake")
     print("")
-    
+
     # Search parameters
-    days_to_search = int(os.getenv('DAYS_TO_SEARCH', '365'))
-    start_offset_days = int(os.getenv('START_OFFSET_DAYS', '180'))
-    
+    days_to_search = int(os.getenv("DAYS_TO_SEARCH", "365"))
+    start_offset_days = int(os.getenv("START_OFFSET_DAYS", "180"))
+
     print(f"Search Parameters:")
     print(f"  Start: {start_offset_days} days ago (~{start_offset_days/30:.1f} months)")
     print(f"  Duration: {days_to_search} days")
     print(f"  Window: 24 hours per iteration")
     print(f"")
-    
+
     # Search backwards
     now = datetime.now()  # Using timezone-aware would be better but this works
     fraud_found = False
     current_offset = start_offset_days
-    
+
     while current_offset < (start_offset_days + days_to_search) and not fraud_found:
         # Calculate 24H window
         window_end = now - timedelta(days=current_offset)
         window_start = window_end - timedelta(hours=24)
-        
+
         # Query for fraud in this window
         query = f"""
         SELECT 
@@ -128,20 +133,22 @@ try:
         ORDER BY fraud_count DESC
         LIMIT 10
         """
-        
+
         cursor = conn.cursor()
         cursor.execute(query)
         results = cursor.fetchall()
         cursor.close()
-        
+
         if results:
             fraud_found = True
             total_fraud = sum(row[2] for row in results)
-            
+
             print(f"")
             print(f"🎉 FRAUD FOUND!")
             print(f"   Window: {window_start.date()} to {window_end.date()}")
-            print(f"   Offset: {current_offset} days ago (~{current_offset/30:.1f} months)")
+            print(
+                f"   Offset: {current_offset} days ago (~{current_offset/30:.1f} months)"
+            )
             print(f"   Entities with fraud: {len(results)}")
             print(f"   Total fraud transactions: {total_fraud}")
             print(f"")
@@ -159,9 +166,9 @@ try:
             print(f"Then restart the server:")
             print(f"   poetry run python -m app.local_server")
             print(f"")
-            
+
             # Save to file
-            with open('fraud_window_found.txt', 'w') as f:
+            with open("fraud_window_found.txt", "w") as f:
                 f.write(f"ANALYZER_END_OFFSET_MONTHS={int(current_offset/30)}\n")
                 f.write(f"# Found at {current_offset} days ago\n")
                 f.write(f"# Window: {window_start.date()} to {window_end.date()}\n")
@@ -169,15 +176,17 @@ try:
                 for i, row in enumerate(results[:10], 1):
                     email, total, fraud, clean = row
                     f.write(f"# {i}. {email}: {fraud} fraud, {clean} clean\n")
-            
+
             print(f"📄 Results saved to: fraud_window_found.txt")
             print(f"")
             break
         else:
             if current_offset % 10 == 0:
-                print(f"[Day {current_offset}/{start_offset_days + days_to_search}] No fraud... continuing backwards")
+                print(
+                    f"[Day {current_offset}/{start_offset_days + days_to_search}] No fraud... continuing backwards"
+                )
             current_offset += 1
-    
+
     if not fraud_found:
         print(f"")
         print(f"⚠️  No fraud found in {days_to_search} days")
@@ -185,12 +194,12 @@ try:
         print(f"   Dataset appears to be very clean!")
         print(f"   Try searching further back or checking data quality")
         print(f"")
-    
+
     conn.close()
-    
+
 except Exception as e:
     print(f"ERROR: {e}")
     import traceback
+
     traceback.print_exc()
     sys.exit(1)
-

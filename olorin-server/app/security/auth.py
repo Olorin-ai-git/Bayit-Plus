@@ -12,6 +12,7 @@ from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 from jose import JWTError, jwt
 from passlib.context import CryptContext
 from pydantic import BaseModel
+
 from app.service.logging import get_bridge_logger
 
 logger = get_bridge_logger(__name__)
@@ -41,24 +42,27 @@ def _get_jwt_secret() -> str:
     """
     try:
         from app.service.config_loader import get_config_loader
+
         config_loader = get_config_loader()
         jwt_config = config_loader.load_jwt_config()
         secret_key = jwt_config.get("secret_key")
-        
+
         if secret_key:
             logger.info("JWT secret loaded from Firebase Secrets Manager")
             return secret_key
     except Exception as e:
         logger.warning(f"Failed to load JWT secret from Firebase Secrets Manager: {e}")
-    
+
     # Fallback to environment variable for development
     env_secret = os.getenv("JWT_SECRET_KEY")
     if env_secret:
         logger.info("Using JWT secret from environment variable")
         return env_secret
-    
+
     # Final fallback for development/testing
-    logger.warning("Using fallback JWT secret for development - DO NOT USE IN PRODUCTION")
+    logger.warning(
+        "Using fallback JWT secret for development - DO NOT USE IN PRODUCTION"
+    )
     return "olorin-development-jwt-secret-key-fallback-for-testing-only"
 
 
@@ -249,9 +253,7 @@ def _create_dev_aware_scope_checker(required_scopes: list[str]):
             username: str = payload.get("sub")
             if username is None:
                 raise credentials_exception
-            token_data = TokenData(
-                username=username, scopes=payload.get("scopes", [])
-            )
+            token_data = TokenData(username=username, scopes=payload.get("scopes", []))
         except JWTError:
             raise credentials_exception
 
@@ -312,4 +314,5 @@ class SecurityHeaders:
             Dictionary of security header names and values from config
         """
         from app.middleware.security_headers import get_security_headers
+
         return get_security_headers()

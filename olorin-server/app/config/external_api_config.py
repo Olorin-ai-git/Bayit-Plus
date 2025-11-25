@@ -7,7 +7,9 @@ IP reputation, email verification, phone validation, and credit bureau services.
 
 import os
 from typing import Optional
+
 from pydantic import BaseModel, Field, validator
+
 from app.service.logging import get_bridge_logger
 
 logger = get_bridge_logger(__name__)
@@ -44,7 +46,9 @@ class ServiceEndpointConfig(BaseModel):
     @validator("endpoint_url")
     def validate_url(cls, v):
         if not v or v == "<service-url>" or v == "<url>":
-            raise ValueError(f"Invalid endpoint URL: {v}. Must be configured in environment.")
+            raise ValueError(
+                f"Invalid endpoint URL: {v}. Must be configured in environment."
+            )
         if not v.startswith(("http://", "https://")):
             raise ValueError(f"Endpoint URL must start with http:// or https://: {v}")
         return v
@@ -119,8 +123,10 @@ def load_external_api_config() -> ExternalAPIConfig:
                 max_retries=int(os.getenv("EXTERNAL_API_MAX_RETRIES", "3")),
                 rate_limit=RateLimitConfig(
                     calls=int(os.getenv("RATE_LIMIT_IP_REPUTATION_CALLS", "100")),
-                    period_seconds=int(os.getenv("RATE_LIMIT_IP_REPUTATION_PERIOD", "60"))
-                )
+                    period_seconds=int(
+                        os.getenv("RATE_LIMIT_IP_REPUTATION_PERIOD", "60")
+                    ),
+                ),
             ),
             email_verification=ServiceEndpointConfig(
                 endpoint_url=os.getenv("EXTERNAL_API_EMAIL_VERIFICATION_ENDPOINT", ""),
@@ -129,8 +135,10 @@ def load_external_api_config() -> ExternalAPIConfig:
                 max_retries=int(os.getenv("EXTERNAL_API_MAX_RETRIES", "3")),
                 rate_limit=RateLimitConfig(
                     calls=int(os.getenv("RATE_LIMIT_EMAIL_VERIFICATION_CALLS", "50")),
-                    period_seconds=int(os.getenv("RATE_LIMIT_EMAIL_VERIFICATION_PERIOD", "60"))
-                )
+                    period_seconds=int(
+                        os.getenv("RATE_LIMIT_EMAIL_VERIFICATION_PERIOD", "60")
+                    ),
+                ),
             ),
             phone_validation=ServiceEndpointConfig(
                 endpoint_url=os.getenv("EXTERNAL_API_PHONE_VALIDATION_ENDPOINT", ""),
@@ -139,8 +147,10 @@ def load_external_api_config() -> ExternalAPIConfig:
                 max_retries=int(os.getenv("EXTERNAL_API_MAX_RETRIES", "3")),
                 rate_limit=RateLimitConfig(
                     calls=int(os.getenv("RATE_LIMIT_PHONE_VALIDATION_CALLS", "50")),
-                    period_seconds=int(os.getenv("RATE_LIMIT_PHONE_VALIDATION_PERIOD", "60"))
-                )
+                    period_seconds=int(
+                        os.getenv("RATE_LIMIT_PHONE_VALIDATION_PERIOD", "60")
+                    ),
+                ),
             ),
             credit_bureau=ServiceEndpointConfig(
                 endpoint_url=os.getenv("EXTERNAL_API_CREDIT_BUREAU_ENDPOINT", ""),
@@ -149,11 +159,14 @@ def load_external_api_config() -> ExternalAPIConfig:
                 max_retries=int(os.getenv("EXTERNAL_API_MAX_RETRIES", "3")),
                 rate_limit=RateLimitConfig(
                     calls=int(os.getenv("RATE_LIMIT_CREDIT_BUREAU_CALLS", "10")),
-                    period_seconds=int(os.getenv("RATE_LIMIT_CREDIT_BUREAU_PERIOD", "60"))
-                )
+                    period_seconds=int(
+                        os.getenv("RATE_LIMIT_CREDIT_BUREAU_PERIOD", "60")
+                    ),
+                ),
             ),
-            enable_caching=os.getenv("EXTERNAL_API_ENABLE_CACHING", "true").lower() == "true",
-            cache_ttl_seconds=int(os.getenv("EXTERNAL_API_CACHE_TTL_SECONDS", "3600"))
+            enable_caching=os.getenv("EXTERNAL_API_ENABLE_CACHING", "true").lower()
+            == "true",
+            cache_ttl_seconds=int(os.getenv("EXTERNAL_API_CACHE_TTL_SECONDS", "3600")),
         )
 
         logger.info("External API configuration loaded successfully")
@@ -161,7 +174,9 @@ def load_external_api_config() -> ExternalAPIConfig:
 
     except ValueError as e:
         logger.error(f"Configuration validation failed: {e}")
-        raise RuntimeError(f"Invalid external API configuration – refusing to start: {e}")
+        raise RuntimeError(
+            f"Invalid external API configuration – refusing to start: {e}"
+        )
     except Exception as e:
         logger.error(f"Failed to load external API configuration: {e}")
         raise RuntimeError(f"Configuration load failed – refusing to start: {e}")

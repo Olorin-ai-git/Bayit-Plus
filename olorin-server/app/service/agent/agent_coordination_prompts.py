@@ -6,38 +6,40 @@ with handoff management and cross-domain analysis instructions.
 """
 
 import json
-from typing import Dict, Any
+from typing import Any, Dict
 
 
 class AgentCoordinationManager:
     """Manager for agent-specific coordination prompts and handoff instructions"""
-    
+
     def __init__(self):
         self.agent_prompts = self._initialize_agent_prompts()
-    
-    def get_agent_prompt(self, agent_name: str, coordination_context: Dict[str, Any]) -> str:
+
+    def get_agent_prompt(
+        self, agent_name: str, coordination_context: Dict[str, Any]
+    ) -> str:
         """Get specialized coordination prompt for specific agent"""
-        
+
         if agent_name not in self.agent_prompts:
             return self._get_generic_agent_prompt(agent_name, coordination_context)
-            
+
         template = self.agent_prompts[agent_name]
         return template.format(**coordination_context)
-    
+
     def _initialize_agent_prompts(self) -> Dict[str, str]:
         """Initialize agent-specific coordination prompts"""
-        
+
         return {
             "network": self._get_network_agent_prompt(),
             "device": self._get_device_agent_prompt(),
-            "location": self._get_location_agent_prompt(), 
+            "location": self._get_location_agent_prompt(),
             "logs": self._get_logs_agent_prompt(),
-            "risk": self._get_risk_agent_prompt()
+            "risk": self._get_risk_agent_prompt(),
         }
-    
+
     def _get_network_agent_prompt(self) -> str:
         """Network agent coordination prompt"""
-        
+
         return """Network Security Analyst - IP and Geographic Analysis
 
 COORDINATION CONTEXT: {coordination_context}
@@ -57,7 +59,7 @@ COORDINATION REQUIREMENTS:
 
     def _get_device_agent_prompt(self) -> str:
         """Device agent coordination prompt"""
-        
+
         return """Device Fraud Detection Specialist - Hardware and Behavioral Analysis
 
 COORDINATION CONTEXT: {coordination_context}
@@ -77,7 +79,7 @@ COORDINATION REQUIREMENTS:
 
     def _get_location_agent_prompt(self) -> str:
         """Location agent coordination prompt"""
-        
+
         return """Geographic Validation Specialist - Location and Travel Analysis
 
 COORDINATION CONTEXT: {coordination_context}
@@ -97,7 +99,7 @@ COORDINATION REQUIREMENTS:
 
     def _get_logs_agent_prompt(self) -> str:
         """Logs agent coordination prompt"""
-        
+
         return """Activity Log Analyst - Pattern Detection and Timeline Analysis  
 
 COORDINATION CONTEXT: {coordination_context}
@@ -117,7 +119,7 @@ COORDINATION REQUIREMENTS:
 
     def _get_risk_agent_prompt(self) -> str:
         """Risk agent coordination prompt"""
-        
+
         return """Risk Assessment Coordinator - Cross-Domain Risk Analysis
 
 COORDINATION CONTEXT: {coordination_context}
@@ -136,12 +138,10 @@ COORDINATION REQUIREMENTS:
 - Provide final risk assessment with actionable recommendations"""
 
     def _get_generic_agent_prompt(
-        self, 
-        agent_name: str, 
-        coordination_context: Dict[str, Any]
+        self, agent_name: str, coordination_context: Dict[str, Any]
     ) -> str:
         """Generic agent prompt for unknown agents"""
-        
+
         return f"""Unknown Agent ({agent_name}) - Generic Coordination
 
 COORDINATION CONTEXT: {json.dumps(coordination_context, default=str)}

@@ -6,10 +6,12 @@ Helper functions for SLA metric calculations.
 Week 10 Phase 4 implementation.
 """
 
-from typing import Dict, Any
+from typing import Any, Dict
 
 
-def calculate_availability(successful: int, total: int, target: float) -> Dict[str, Any]:
+def calculate_availability(
+    successful: int, total: int, target: float
+) -> Dict[str, Any]:
     """Calculate availability SLA."""
     availability = successful / total if total > 0 else 0.0
     return {
@@ -19,13 +21,14 @@ def calculate_availability(successful: int, total: int, target: float) -> Dict[s
         "compliant": availability >= target,
         "total_requests": total,
         "successful_requests": successful,
-        "failed_requests": total - successful
+        "failed_requests": total - successful,
     }
 
 
 def calculate_latency_sla(latencies: list, p95_target: float) -> Dict[str, Any]:
     """Calculate latency SLA."""
     import numpy as np
+
     p95_latency = float(np.percentile(latencies, 95))
     return {
         "metric": "latency_p95_ms",
@@ -34,7 +37,7 @@ def calculate_latency_sla(latencies: list, p95_target: float) -> Dict[str, Any]:
         "compliant": p95_latency <= p95_target,
         "sample_count": len(latencies),
         "mean_latency_ms": float(np.mean(latencies)),
-        "median_latency_ms": float(np.median(latencies))
+        "median_latency_ms": float(np.median(latencies)),
     }
 
 
@@ -48,7 +51,7 @@ def calculate_accuracy_sla(correct: int, total: int, target: float) -> Dict[str,
         "compliant": accuracy >= target,
         "total_predictions": total,
         "correct_predictions": correct,
-        "incorrect_predictions": total - correct
+        "incorrect_predictions": total - correct,
     }
 
 
@@ -59,5 +62,5 @@ def empty_sla_metric(metric_name: str, target: float) -> Dict[str, Any]:
         "target": target,
         "actual": 0.0,
         "compliant": False,
-        "message": "Insufficient data for SLA calculation"
+        "message": "Insufficient data for SLA calculation",
     }

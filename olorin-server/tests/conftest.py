@@ -13,35 +13,35 @@ import json
 import logging
 import os
 import sys
+import urllib.parse
 from datetime import datetime, timedelta
 from pathlib import Path
-from typing import Dict, Any, List, Optional
+from typing import Any, Dict, List, Optional
 from unittest.mock import MagicMock
-import urllib.parse
 
+import psycopg2
 import pytest
 import pytest_asyncio
+from langchain_anthropic import ChatAnthropic
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
-from langchain_anthropic import ChatAnthropic
-import psycopg2
 from testcontainers.postgres import PostgresContainer
 
 # Add parent directory to path for imports
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
-from app.service.config import get_settings_for_env
-from app.service.agent.autonomous_context import (
-    StructuredInvestigationContext,
-    InvestigationPhase,
-    EntityType,
-)
 from app.persistence.database import Base, get_db
 from app.persistence.models import (
+    EntityRecord,
     InvestigationRecord,
     UserRecord,
-    EntityRecord,
 )
+from app.service.agent.autonomous_context import (
+    EntityType,
+    InvestigationPhase,
+    StructuredInvestigationContext,
+)
+from app.service.config import get_settings_for_env
 
 logger = logging.getLogger(__name__)
 
@@ -190,7 +190,7 @@ def real_investigation_context(db_session):
         investigation_id=investigation.id,
         entity_id=entity.entity_id,
         entity_type=EntityType.USER_ID,
-        investigation_type="fraud_investigation"
+        investigation_type="fraud_investigation",
     )
 
     logger.info(f"Created real investigation context: {investigation.id}")
@@ -203,6 +203,7 @@ def api_cost_monitor():
     Monitor and track API costs during tests.
     Provides real-time cost tracking for Anthropic API calls.
     """
+
     class CostMonitor:
         def __init__(self):
             self.calls = []
@@ -214,7 +215,9 @@ def api_cost_monitor():
                 "output": 75.00,  # $75 per 1M output tokens
             }
 
-        def track_call(self, input_tokens: int, output_tokens: int, model: str = "claude-opus-4.1"):
+        def track_call(
+            self, input_tokens: int, output_tokens: int, model: str = "claude-opus-4.1"
+        ):
             """Track an API call and calculate cost."""
             input_cost = (input_tokens / 1_000_000) * self.pricing["input"]
             output_cost = (output_tokens / 1_000_000) * self.pricing["output"]
@@ -253,7 +256,9 @@ def api_cost_monitor():
             return {
                 "total_calls": len(self.calls),
                 "total_cost": self.total_cost,
-                "average_cost_per_call": self.total_cost / len(self.calls) if self.calls else 0,
+                "average_cost_per_call": (
+                    self.total_cost / len(self.calls) if self.calls else 0
+                ),
                 "calls": self.calls,
             }
 
@@ -263,7 +268,9 @@ def api_cost_monitor():
     # Print cost summary after test
     if monitor.calls:
         summary = monitor.get_summary()
-        logger.info(f"Test API costs: ${summary['total_cost']:.4f} for {summary['total_calls']} calls")
+        logger.info(
+            f"Test API costs: ${summary['total_cost']:.4f} for {summary['total_calls']} calls"
+        )
 
 
 @pytest.fixture
@@ -272,18 +279,21 @@ def real_webhook_server():
     Real webhook server for testing agent communications.
     Receives real agent progress updates.
     """
-    from aiohttp import web
     import threading
+
+    from aiohttp import web
 
     received_webhooks = []
 
     async def webhook_handler(request):
         """Handle incoming webhooks."""
         data = await request.json()
-        received_webhooks.append({
-            "timestamp": datetime.now().isoformat(),
-            "data": data,
-        })
+        received_webhooks.append(
+            {
+                "timestamp": datetime.now().isoformat(),
+                "data": data,
+            }
+        )
         return web.Response(text="OK", status=200)
 
     app = web.Application()
@@ -319,6 +329,7 @@ def real_webhook_server():
 
 
 # PostgreSQL Docker Fixtures (T010)
+
 
 @pytest.fixture(scope="session")
 def postgresql_container():
@@ -370,7 +381,7 @@ def postgresql_connection(postgresql_container):
         port=parsed.port,
         database=parsed.path[1:],  # Remove leading '/'
         user=parsed.username,
-        password=parsed.password
+        password=parsed.password,
     )
 
     # Set autocommit for test isolation
@@ -401,15 +412,16 @@ def setup_test_logging():
 @pytest.fixture(scope="session", autouse=True)
 def test_session_summary(request):
     """Print test session summary at the end."""
+
     def print_summary():
-        logger.info("="*50)
+        logger.info("=" * 50)
         logger.info("Test Session Summary")
-        logger.info("="*50)
+        logger.info("=" * 50)
         logger.info(f"Total API calls: {api_cost_tracker['total_calls']}")
         logger.info(f"Total tokens used: {api_cost_tracker['total_tokens']:,}")
         logger.info(f"Estimated cost: ${api_cost_tracker['estimated_cost']:.4f}")
         logger.info(f"Calls by model: {api_cost_tracker['calls_by_model']}")
-        logger.info("="*50)
+        logger.info("=" * 50)
 
     request.addfinalizer(print_summary)
 

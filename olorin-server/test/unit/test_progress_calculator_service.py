@@ -12,7 +12,11 @@ SYSTEM MANDATE Compliance:
 """
 
 import pytest
-from app.service.progress_calculator_service import ProgressCalculatorService, ToolStatus
+
+from app.service.progress_calculator_service import (
+    ProgressCalculatorService,
+    ToolStatus,
+)
 from app.service.progress_update_service import ProgressUpdateService
 
 
@@ -56,11 +60,31 @@ class TestProgressCalculatorService:
         state = {
             "progress": {
                 "phases": [
-                    {"phase_name": "phase_1", "status": "PENDING", "tools_executed": []},
-                    {"phase_name": "phase_2", "status": "PENDING", "tools_executed": []},
-                    {"phase_name": "phase_3", "status": "PENDING", "tools_executed": []},
-                    {"phase_name": "phase_4", "status": "PENDING", "tools_executed": []},
-                    {"phase_name": "phase_5", "status": "PENDING", "tools_executed": []},
+                    {
+                        "phase_name": "phase_1",
+                        "status": "PENDING",
+                        "tools_executed": [],
+                    },
+                    {
+                        "phase_name": "phase_2",
+                        "status": "PENDING",
+                        "tools_executed": [],
+                    },
+                    {
+                        "phase_name": "phase_3",
+                        "status": "PENDING",
+                        "tools_executed": [],
+                    },
+                    {
+                        "phase_name": "phase_4",
+                        "status": "PENDING",
+                        "tools_executed": [],
+                    },
+                    {
+                        "phase_name": "phase_5",
+                        "status": "PENDING",
+                        "tools_executed": [],
+                    },
                 ]
             }
         }
@@ -100,8 +124,16 @@ class TestProgressCalculatorService:
                         "status": "PENDING",
                         "tools_executed": [{"tool_name": "tool5", "status": "QUEUED"}],
                     },
-                    {"phase_name": "phase_4", "status": "PENDING", "tools_executed": []},
-                    {"phase_name": "phase_5", "status": "PENDING", "tools_executed": []},
+                    {
+                        "phase_name": "phase_4",
+                        "status": "PENDING",
+                        "tools_executed": [],
+                    },
+                    {
+                        "phase_name": "phase_5",
+                        "status": "PENDING",
+                        "tools_executed": [],
+                    },
                 ]
             }
         }
@@ -183,12 +215,18 @@ class TestProgressCalculatorService:
         state = {
             "progress": {
                 "phases": [
-                    {"phase_name": "phase_1", "status": "IN_PROGRESS", "tools_executed": []}
+                    {
+                        "phase_name": "phase_1",
+                        "status": "IN_PROGRESS",
+                        "tools_executed": [],
+                    }
                 ]
             }
         }
 
-        result = self.update_service.update_phase_progress(state, "phase_1", "new_tool", "RUNNING")
+        result = self.update_service.update_phase_progress(
+            state, "phase_1", "new_tool", "RUNNING"
+        )
 
         # Verify the tool was added
         assert result["phase_progress"]["phase_1"]["phase_percentage"] == 50.0
@@ -202,7 +240,9 @@ class TestProgressCalculatorService:
                     {
                         "phase_name": "phase_1",
                         "status": "IN_PROGRESS",
-                        "tools_executed": [{"tool_name": "existing_tool", "status": "RUNNING"}],
+                        "tools_executed": [
+                            {"tool_name": "existing_tool", "status": "RUNNING"}
+                        ],
                     }
                 ]
             }

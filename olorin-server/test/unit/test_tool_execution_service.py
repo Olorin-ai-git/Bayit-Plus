@@ -11,15 +11,15 @@ SYSTEM MANDATE Compliance:
 - No mocks/stubs: Uses real SQLite in-memory database
 """
 
-import pytest
 import json
 from datetime import datetime, timezone
-from typing import Dict, Any
+from typing import Any, Dict
 
+import pytest
 from sqlalchemy import create_engine
 from sqlalchemy.orm import Session, sessionmaker
 
-from app.models.investigation_state import InvestigationState, Base
+from app.models.investigation_state import Base, InvestigationState
 from app.service.tool_execution_service import ToolExecutionService
 
 
@@ -46,13 +46,13 @@ def investigation_state(test_db: Session):
         user_id="test-user-001",  # Required field
         status="IN_PROGRESS",
         lifecycle_stage="IN_PROGRESS",
-        settings_json=json.dumps({
-            "entities": [{"entity_type": "user_id", "entity_value": "test-user"}]
-        }),
+        settings_json=json.dumps(
+            {"entities": [{"entity_type": "user_id", "entity_value": "test-user"}]}
+        ),
         progress_json=None,
         created_at=datetime.now(timezone.utc),
         updated_at=datetime.now(timezone.utc),
-        version=1
+        version=1,
     )
     test_db.add(state)
     test_db.commit()
@@ -62,7 +62,9 @@ def investigation_state(test_db: Session):
 class TestToolExecutionService:
     """Test suite for ToolExecutionService"""
 
-    def test_persist_tool_execution_success(self, test_db: Session, investigation_state):
+    def test_persist_tool_execution_success(
+        self, test_db: Session, investigation_state
+    ):
         """Test successful tool execution persistence"""
         service = ToolExecutionService(test_db)
 
@@ -76,7 +78,7 @@ class TestToolExecutionService:
             output_result={"risk_score": 0.75, "findings": ["suspicious pattern"]},
             duration_ms=1500,
             tokens_used=250,
-            cost=0.005
+            cost=0.005,
         )
 
         # Verify ID was returned
@@ -99,7 +101,9 @@ class TestToolExecutionService:
         assert tool_exec["tokens_used"] == 250
         assert tool_exec["cost"] == 0.005
 
-    def test_persist_tool_execution_with_error(self, test_db: Session, investigation_state):
+    def test_persist_tool_execution_with_error(
+        self, test_db: Session, investigation_state
+    ):
         """Test persisting failed tool execution with error message"""
         service = ToolExecutionService(test_db)
 
@@ -110,7 +114,7 @@ class TestToolExecutionService:
             status="failed",
             input_parameters={"ip_address": "192.168.1.1"},
             error_message="Invalid IP address",
-            duration_ms=50
+            duration_ms=50,
         )
 
         test_db.refresh(investigation_state)
@@ -121,7 +125,9 @@ class TestToolExecutionService:
         assert tool_exec["error_message"] == "Invalid IP address"
         assert tool_exec["output_result"] is None
 
-    def test_persist_multiple_tool_executions(self, test_db: Session, investigation_state):
+    def test_persist_multiple_tool_executions(
+        self, test_db: Session, investigation_state
+    ):
         """Test persisting multiple tool executions"""
         service = ToolExecutionService(test_db)
 
@@ -133,7 +139,7 @@ class TestToolExecutionService:
             status="completed",
             input_parameters={"device_id": "device-123"},
             output_result={"reputation": "good"},
-            duration_ms=1000
+            duration_ms=1000,
         )
 
         # Persist second tool
@@ -144,7 +150,7 @@ class TestToolExecutionService:
             status="completed",
             input_parameters={"location": "New York"},
             output_result={"valid": True},
-            duration_ms=500
+            duration_ms=500,
         )
 
         test_db.refresh(investigation_state)
@@ -164,7 +170,7 @@ class TestToolExecutionService:
             tool_name="splunk_search",
             status="running",
             input_parameters={"query": "error logs"},
-            duration_ms=0
+            duration_ms=0,
         )
 
         # Get executions
@@ -185,7 +191,7 @@ class TestToolExecutionService:
             tool_name="risk_calculator",
             status="running",
             input_parameters={"entity": "user-123"},
-            duration_ms=0
+            duration_ms=0,
         )
 
         # Update status
@@ -194,7 +200,7 @@ class TestToolExecutionService:
             tool_exec_id=tool_exec_id,
             status="completed",
             output_result={"risk_level": "high", "score": 0.85},
-            duration_ms=2500
+            duration_ms=2500,
         )
 
         assert success is True
@@ -217,11 +223,13 @@ class TestToolExecutionService:
                 tool_name=f"tool_{i}",
                 status="completed",
                 input_parameters={"index": i},
-                duration_ms=i * 100
+                duration_ms=i * 100,
             )
 
         # Get latest 3
-        latest = service.get_latest_tool_executions(investigation_state.investigation_id, limit=3)
+        latest = service.get_latest_tool_executions(
+            investigation_state.investigation_id, limit=3
+        )
 
         assert len(latest) == 3
         # Should be in reverse order (most recent first)
@@ -242,7 +250,7 @@ class TestToolExecutionService:
             input_parameters={},
             duration_ms=1000,
             tokens_used=100,
-            cost=0.01
+            cost=0.01,
         )
 
         service.persist_tool_execution(
@@ -253,7 +261,7 @@ class TestToolExecutionService:
             input_parameters={},
             duration_ms=2000,
             tokens_used=200,
-            cost=0.02
+            cost=0.02,
         )
 
         service.persist_tool_execution(
@@ -263,7 +271,7 @@ class TestToolExecutionService:
             status="failed",
             input_parameters={},
             error_message="Error",
-            duration_ms=500
+            duration_ms=500,
         )
 
         service.persist_tool_execution(
@@ -272,7 +280,7 @@ class TestToolExecutionService:
             tool_name="tool_4",
             status="running",
             input_parameters={},
-            duration_ms=0
+            duration_ms=0,
         )
 
         # Get statistics
@@ -297,7 +305,7 @@ class TestToolExecutionService:
                 agent_name="test_agent",
                 tool_name="test_tool",
                 status="completed",
-                input_parameters={}
+                input_parameters={},
             )
 
     def test_empty_tool_executions(self, test_db: Session, investigation_state):
@@ -311,7 +319,9 @@ class TestToolExecutionService:
         assert stats["total"] == 0
         assert stats["average_duration_ms"] == 0
 
-    def test_progress_percentage_calculation(self, test_db: Session, investigation_state):
+    def test_progress_percentage_calculation(
+        self, test_db: Session, investigation_state
+    ):
         """Test that progress percentage is calculated correctly"""
         service = ToolExecutionService(test_db)
 
@@ -323,7 +333,7 @@ class TestToolExecutionService:
                 tool_name=f"tool_{i}",
                 status="completed" if i < 3 else "pending",
                 input_parameters={},
-                duration_ms=100
+                duration_ms=100,
             )
 
         test_db.refresh(investigation_state)
@@ -344,7 +354,7 @@ class TestToolExecutionService:
             tool_name="test_tool",
             status="completed",
             input_parameters={},
-            duration_ms=100
+            duration_ms=100,
         )
 
         test_db.refresh(investigation_state)

@@ -9,8 +9,8 @@ Credentials:
 - Database: DBT
 - Schema: DBT_PROD
 """
-import sys
 import os
+import sys
 from pathlib import Path
 
 # Add app to path
@@ -34,16 +34,14 @@ def load_private_key(key_path: str, passphrase: str = None) -> bytes:
 
         # Load the private key
         private_key = serialization.load_pem_private_key(
-            private_key_data,
-            password=passphrase_bytes,
-            backend=default_backend()
+            private_key_data, password=passphrase_bytes, backend=default_backend()
         )
 
         # Serialize to DER format for Snowflake
         return private_key.private_bytes(
             encoding=serialization.Encoding.DER,
             format=serialization.PrivateFormat.PKCS8,
-            encryption_algorithm=serialization.NoEncryption()
+            encryption_algorithm=serialization.NoEncryption(),
         )
     except Exception as e:
         raise ValueError(f"Failed to load private key from {key_path}: {e}")
@@ -61,7 +59,7 @@ def test_connection(account: str = None, role: str = None, passphrase: str = Non
     warehouse = "manual_review_agent_wh"
     database = "DBT"
     schema = "DBT_PROD"
-    
+
     # Get account from parameter, environment, or raise error
     account = account or os.getenv("SNOWFLAKE_ACCOUNT")
     if not account:
@@ -69,10 +67,10 @@ def test_connection(account: str = None, role: str = None, passphrase: str = Non
             "Snowflake account is required. Set SNOWFLAKE_ACCOUNT environment variable "
             "or pass as argument: --account <account>"
         )
-    
+
     # Get role from parameter, environment, or use default
     role = role or os.getenv("SNOWFLAKE_ROLE", "PUBLIC")
-    
+
     # Get passphrase from parameter or environment
     passphrase = passphrase or os.getenv("SNOWFLAKE_PRIVATE_KEY_PASSPHRASE")
 
@@ -116,7 +114,7 @@ def test_connection(account: str = None, role: str = None, passphrase: str = Non
 
         # Test query
         cursor = conn.cursor()
-        
+
         # Get current session info
         print(f"\n📊 Current session information:")
         cursor.execute(
@@ -136,7 +134,7 @@ def test_connection(account: str = None, role: str = None, passphrase: str = Non
         cursor.execute(f"SHOW TABLES IN SCHEMA {database}.{schema}")
         tables = cursor.fetchall()
         print(f"   ✅ Found {len(tables)} tables in {database}.{schema}")
-        
+
         if tables:
             print(f"\n   Sample tables:")
             for i, table in enumerate(tables[:10], 1):
@@ -152,7 +150,7 @@ def test_connection(account: str = None, role: str = None, passphrase: str = Non
             count_result = cursor.fetchone()
             row_count = count_result[0] if count_result else 0
             print(f"   ✅ Table exists with {row_count:,} rows")
-            
+
             # Get sample columns
             cursor.execute(
                 f"SELECT COLUMN_NAME, DATA_TYPE FROM INFORMATION_SCHEMA.COLUMNS "
@@ -184,6 +182,7 @@ def test_connection(account: str = None, role: str = None, passphrase: str = Non
         print(f"   SQL State: {e.sqlstate}")
         print(f"   Message: {e.msg}")
         import traceback
+
         traceback.print_exc()
         return 1
 
@@ -193,6 +192,7 @@ def test_connection(account: str = None, role: str = None, passphrase: str = Non
         print(f"   SQL State: {e.sqlstate}")
         print(f"   Message: {e.msg}")
         import traceback
+
         traceback.print_exc()
         return 1
 
@@ -201,6 +201,7 @@ def test_connection(account: str = None, role: str = None, passphrase: str = Non
         print(f"   Error: {e}")
         print(f"   Type: {type(e).__name__}")
         import traceback
+
         print(f"\nTraceback:")
         traceback.print_exc()
         return 1
@@ -208,32 +209,28 @@ def test_connection(account: str = None, role: str = None, passphrase: str = Non
 
 if __name__ == "__main__":
     import argparse
-    
+
     parser = argparse.ArgumentParser(description="Test Snowflake connection for Splunk")
     parser.add_argument(
         "--account",
         type=str,
         help="Snowflake account (e.g., xy12345.us-east-1)",
-        default=None
+        default=None,
     )
     parser.add_argument(
-        "--role",
-        type=str,
-        help="Snowflake role (default: PUBLIC)",
-        default=None
+        "--role", type=str, help="Snowflake role (default: PUBLIC)", default=None
     )
     parser.add_argument(
         "--passphrase",
         type=str,
         help="Private key passphrase (if required)",
-        default=None
+        default=None,
     )
-    
-    args = parser.parse_args()
-    
-    sys.exit(test_connection(
-        account=args.account,
-        role=args.role,
-        passphrase=args.passphrase
-    ))
 
+    args = parser.parse_args()
+
+    sys.exit(
+        test_connection(
+            account=args.account, role=args.role, passphrase=args.passphrase
+        )
+    )

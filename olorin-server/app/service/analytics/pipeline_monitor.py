@@ -3,15 +3,17 @@ Pipeline Monitor Service for observability and SLO tracking.
 NO HARDCODED VALUES - All configuration from environment variables.
 """
 
-import os
 import json
+import os
 import uuid
-from typing import Dict, List, Optional, Any
 from datetime import datetime, timedelta
+from typing import Any, Dict, List, Optional
+
 from sqlalchemy import text
-from app.service.logging import get_bridge_logger
-from app.service.agent.tools.database_tool import get_database_provider
+
 from app.persistence.database import get_db_session
+from app.service.agent.tools.database_tool import get_database_provider
+from app.service.logging import get_bridge_logger
 
 logger = get_bridge_logger(__name__)
 
@@ -21,28 +23,36 @@ class PipelineMonitor:
 
     def __init__(self):
         """Initialize pipeline monitor."""
-        db_provider_env = os.getenv('DATABASE_PROVIDER')
+        db_provider_env = os.getenv("DATABASE_PROVIDER")
         if not db_provider_env:
             raise RuntimeError("DATABASE_PROVIDER environment variable is required")
         self.client = get_database_provider(db_provider_env)
         self.db_provider = db_provider_env.lower()
 
-        freshness_env = os.getenv('PIPELINE_FRESHNESS_THRESHOLD_MINUTES')
+        freshness_env = os.getenv("PIPELINE_FRESHNESS_THRESHOLD_MINUTES")
         if not freshness_env:
-            raise RuntimeError("PIPELINE_FRESHNESS_THRESHOLD_MINUTES environment variable is required")
+            raise RuntimeError(
+                "PIPELINE_FRESHNESS_THRESHOLD_MINUTES environment variable is required"
+            )
         self.freshness_threshold_minutes = int(freshness_env)
 
-        completeness_env = os.getenv('PIPELINE_COMPLETENESS_THRESHOLD')
+        completeness_env = os.getenv("PIPELINE_COMPLETENESS_THRESHOLD")
         if not completeness_env:
-            raise RuntimeError("PIPELINE_COMPLETENESS_THRESHOLD environment variable is required")
+            raise RuntimeError(
+                "PIPELINE_COMPLETENESS_THRESHOLD environment variable is required"
+            )
         self.completeness_threshold = float(completeness_env)
 
-        success_rate_env = os.getenv('PIPELINE_SUCCESS_RATE_THRESHOLD')
+        success_rate_env = os.getenv("PIPELINE_SUCCESS_RATE_THRESHOLD")
         if not success_rate_env:
-            raise RuntimeError("PIPELINE_SUCCESS_RATE_THRESHOLD environment variable is required")
+            raise RuntimeError(
+                "PIPELINE_SUCCESS_RATE_THRESHOLD environment variable is required"
+            )
         self.success_rate_threshold = float(success_rate_env)
 
-        logger.info(f"PipelineMonitor initialized with {db_provider_env.upper()} provider")
+        logger.info(
+            f"PipelineMonitor initialized with {db_provider_env.upper()} provider"
+        )
 
     async def check_freshness(self) -> Dict[str, Any]:
         """
@@ -53,8 +63,10 @@ class PipelineMonitor:
         """
         # Get table name and column names based on database provider
         table_name = self.client.get_full_table_name()
-        datetime_col = 'TX_DATETIME' if self.db_provider == 'snowflake' else 'tx_datetime'
-        
+        datetime_col = (
+            "TX_DATETIME" if self.db_provider == "snowflake" else "tx_datetime"
+        )
+
         query = f"""
         SELECT MAX({datetime_col}) as latest_timestamp
         FROM {table_name}
@@ -64,28 +76,28 @@ class PipelineMonitor:
         if not results:
             return {"status": "error", "message": "No data found"}
 
-        latest = results[0].get('latest_timestamp')
+        latest = results[0].get("latest_timestamp")
         if not latest:
             return {"status": "error", "message": "No timestamp found"}
 
         if isinstance(latest, str):
-            latest_dt = datetime.fromisoformat(latest.replace('Z', '+00:00'))
+            latest_dt = datetime.fromisoformat(latest.replace("Z", "+00:00"))
         else:
             latest_dt = latest
 
         age_minutes = (datetime.now(latest_dt.tzinfo) - latest_dt).total_seconds() / 60
 
         return {
-            "status": "healthy" if age_minutes < self.freshness_threshold_minutes else "stale",
+            "status": (
+                "healthy" if age_minutes < self.freshness_threshold_minutes else "stale"
+            ),
             "latestTimestamp": latest_dt.isoformat(),
             "ageMinutes": age_minutes,
-            "thresholdMinutes": self.freshness_threshold_minutes
+            "thresholdMinutes": self.freshness_threshold_minutes,
         }
 
     async def check_completeness(
-        self,
-        start_date: datetime,
-        end_date: datetime
+        self, start_date: datetime, end_date: datetime
     ) -> Dict[str, Any]:
         """
         Check data completeness.
@@ -99,9 +111,11 @@ class PipelineMonitor:
         """
         # Get table name and column names based on database provider
         table_name = self.client.get_full_table_name()
-        datetime_col = 'TX_DATETIME' if self.db_provider == 'snowflake' else 'tx_datetime'
-        model_score_col = 'MODEL_SCORE' if db_provider == 'snowflake' else 'model_score'
-        
+        datetime_col = (
+            "TX_DATETIME" if self.db_provider == "snowflake" else "tx_datetime"
+        )
+        model_score_col = "MODEL_SCORE" if db_provider == "snowflake" else "model_score"
+
         where_sql = f"{datetime_col} >= '{start_date.isoformat()}' AND {datetime_col} <= '{end_date.isoformat()}'"
 
         query = f"""
@@ -117,23 +131,23 @@ class PipelineMonitor:
             return {"status": "error", "message": "No data found"}
 
         row = results[0]
-        actual = int(row.get('actual_count', 0) or 0)
-        complete = int(row.get('complete_count', 0) or 0)
+        actual = int(row.get("actual_count", 0) or 0)
+        complete = int(row.get("complete_count", 0) or 0)
 
         completeness = complete / actual if actual > 0 else 0.0
 
         return {
-            "status": "healthy" if completeness >= self.completeness_threshold else "degraded",
+            "status": (
+                "healthy" if completeness >= self.completeness_threshold else "degraded"
+            ),
             "completeness": completeness,
             "threshold": self.completeness_threshold,
             "actualCount": actual,
-            "completeCount": complete
+            "completeCount": complete,
         }
 
     async def check_success_rate(
-        self,
-        start_date: datetime,
-        end_date: datetime
+        self, start_date: datetime, end_date: datetime
     ) -> Dict[str, Any]:
         """
         Check pipeline success rate.
@@ -147,10 +161,12 @@ class PipelineMonitor:
         """
         # Get table name and column names based on database provider
         table_name = self.client.get_full_table_name()
-        datetime_col = 'TX_DATETIME' if self.db_provider == 'snowflake' else 'tx_datetime'
-        model_score_col = 'MODEL_SCORE' if db_provider == 'snowflake' else 'model_score'
-        email_col = 'EMAIL' if db_provider == 'snowflake' else 'email'
-        
+        datetime_col = (
+            "TX_DATETIME" if self.db_provider == "snowflake" else "tx_datetime"
+        )
+        model_score_col = "MODEL_SCORE" if db_provider == "snowflake" else "model_score"
+        email_col = "EMAIL" if db_provider == "snowflake" else "email"
+
         where_sql = f"{datetime_col} >= '{start_date.isoformat()}' AND {datetime_col} <= '{end_date.isoformat()}'"
 
         query = f"""
@@ -166,17 +182,19 @@ class PipelineMonitor:
             return {"status": "error", "message": "No data found"}
 
         row = results[0]
-        total = int(row.get('total_decisions', 0) or 0)
-        successful = int(row.get('successful_decisions', 0) or 0)
+        total = int(row.get("total_decisions", 0) or 0)
+        successful = int(row.get("successful_decisions", 0) or 0)
 
         success_rate = successful / total if total > 0 else 0.0
 
         return {
-            "status": "healthy" if success_rate >= self.success_rate_threshold else "degraded",
+            "status": (
+                "healthy" if success_rate >= self.success_rate_threshold else "degraded"
+            ),
             "successRate": success_rate,
             "threshold": self.success_rate_threshold,
             "totalDecisions": total,
-            "successfulDecisions": successful
+            "successfulDecisions": successful,
         }
 
     async def get_pipeline_health(self) -> Dict[str, Any]:
@@ -192,15 +210,15 @@ class PipelineMonitor:
         completeness = await self.check_completeness(start_date, end_date)
         success_rate = await self.check_success_rate(start_date, end_date)
 
-        freshness_met = freshness.get('status') == 'healthy'
-        completeness_met = completeness.get('status') == 'healthy'
-        success_rate_met = success_rate.get('status') == 'healthy'
+        freshness_met = freshness.get("status") == "healthy"
+        completeness_met = completeness.get("status") == "healthy"
+        success_rate_met = success_rate.get("status") == "healthy"
 
-        overall_status = 'healthy'
+        overall_status = "healthy"
         if not (freshness_met and completeness_met and success_rate_met):
-            overall_status = 'degraded'
+            overall_status = "degraded"
         if not freshness_met and not completeness_met:
-            overall_status = 'unhealthy'
+            overall_status = "unhealthy"
 
         health_data = {
             "overallStatus": overall_status,
@@ -210,9 +228,9 @@ class PipelineMonitor:
             "sloStatus": {
                 "freshnessMet": freshness_met,
                 "completenessMet": completeness_met,
-                "successRateMet": success_rate_met
+                "successRateMet": success_rate_met,
             },
-            "timestamp": datetime.utcnow().isoformat()
+            "timestamp": datetime.utcnow().isoformat(),
         }
 
         # Store health snapshot
@@ -226,7 +244,8 @@ class PipelineMonitor:
         now = datetime.utcnow()
 
         with get_db_session() as db:
-            query = text("""
+            query = text(
+                """
             INSERT INTO pipeline_health (
                 health_id, freshness_minutes, completeness, success_rate,
                 freshness_slo_met, completeness_slo_met, success_rate_slo_met,
@@ -234,19 +253,23 @@ class PipelineMonitor:
             ) VALUES (:health_id, :freshness_minutes, :completeness, :success_rate,
                       :freshness_slo_met, :completeness_slo_met, :success_rate_slo_met,
                       :overall_status, :recorded_at)
-            """)
+            """
+            )
 
-            db.execute(query, {
-                'health_id': health_id,
-                'freshness_minutes': health_data['freshness'].get('ageMinutes', 0),
-                'completeness': health_data['completeness'].get('completeness', 0),
-                'success_rate': health_data['successRate'].get('successRate', 0),
-                'freshness_slo_met': health_data['sloStatus']['freshnessMet'],
-                'completeness_slo_met': health_data['sloStatus']['completenessMet'],
-                'success_rate_slo_met': health_data['sloStatus']['successRateMet'],
-                'overall_status': health_data['overallStatus'],
-                'recorded_at': now
-            })
+            db.execute(
+                query,
+                {
+                    "health_id": health_id,
+                    "freshness_minutes": health_data["freshness"].get("ageMinutes", 0),
+                    "completeness": health_data["completeness"].get("completeness", 0),
+                    "success_rate": health_data["successRate"].get("successRate", 0),
+                    "freshness_slo_met": health_data["sloStatus"]["freshnessMet"],
+                    "completeness_slo_met": health_data["sloStatus"]["completenessMet"],
+                    "success_rate_slo_met": health_data["sloStatus"]["successRateMet"],
+                    "overall_status": health_data["overallStatus"],
+                    "recorded_at": now,
+                },
+            )
 
     async def log_audit_event(
         self,
@@ -260,7 +283,7 @@ class PipelineMonitor:
         query_params: Optional[Dict[str, Any]] = None,
         request_body: Optional[Dict[str, Any]] = None,
         status_code: Optional[int] = None,
-        response_size: Optional[int] = None
+        response_size: Optional[int] = None,
     ) -> None:
         """
         Log an audit event.
@@ -282,29 +305,34 @@ class PipelineMonitor:
         now = datetime.utcnow()
 
         with get_db_session() as db:
-            query = text("""
+            query = text(
+                """
             INSERT INTO audit_logs (
                 log_id, action_type, resource_type, resource_id, user_id, user_email,
                 endpoint, method, query_params, request_body, status_code, response_size, timestamp
             ) VALUES (:log_id, :action_type, :resource_type, :resource_id, :user_id, :user_email,
                       :endpoint, :method, :query_params, :request_body, :status_code, :response_size, :timestamp)
-            """)
+            """
+            )
 
-            db.execute(query, {
-                'log_id': log_id,
-                'action_type': action_type,
-                'resource_type': resource_type,
-                'resource_id': resource_id,
-                'user_id': user_id,
-                'user_email': user_email,
-                'endpoint': endpoint,
-                'method': method,
-                'query_params': json.dumps(query_params) if query_params else None,
-                'request_body': json.dumps(request_body) if request_body else None,
-                'status_code': status_code,
-                'response_size': response_size,
-                'timestamp': now
-            })
+            db.execute(
+                query,
+                {
+                    "log_id": log_id,
+                    "action_type": action_type,
+                    "resource_type": resource_type,
+                    "resource_id": resource_id,
+                    "user_id": user_id,
+                    "user_email": user_email,
+                    "endpoint": endpoint,
+                    "method": method,
+                    "query_params": json.dumps(query_params) if query_params else None,
+                    "request_body": json.dumps(request_body) if request_body else None,
+                    "status_code": status_code,
+                    "response_size": response_size,
+                    "timestamp": now,
+                },
+            )
 
     async def get_audit_logs(
         self,
@@ -312,7 +340,7 @@ class PipelineMonitor:
         end_date: Optional[datetime] = None,
         action_type: Optional[str] = None,
         user_id: Optional[str] = None,
-        limit: int = 100
+        limit: int = 100,
     ) -> List[Dict[str, Any]]:
         """
         Get audit logs with filters.
@@ -329,32 +357,34 @@ class PipelineMonitor:
         """
         with get_db_session() as db:
             where_clauses = []
-            params: Dict[str, Any] = {'limit': limit}
+            params: Dict[str, Any] = {"limit": limit}
 
             if start_date:
                 where_clauses.append("timestamp >= :start_date")
-                params['start_date'] = start_date
+                params["start_date"] = start_date
 
             if end_date:
                 where_clauses.append("timestamp <= :end_date")
-                params['end_date'] = end_date
+                params["end_date"] = end_date
 
             if action_type:
                 where_clauses.append("action_type = :action_type")
-                params['action_type'] = action_type
+                params["action_type"] = action_type
 
             if user_id:
                 where_clauses.append("user_id = :user_id")
-                params['user_id'] = user_id
+                params["user_id"] = user_id
 
             where_sql = " AND ".join(where_clauses) if where_clauses else "1=1"
 
-            query = text(f"""
+            query = text(
+                f"""
             SELECT * FROM audit_logs
             WHERE {where_sql}
             ORDER BY timestamp DESC
             LIMIT :limit
-            """)
+            """
+            )
 
             result = db.execute(query, params)
             logs = [dict(row) for row in result]
@@ -362,9 +392,17 @@ class PipelineMonitor:
         return [
             {
                 **log,
-                'id': log.get('log_id'),
-                'queryParams': json.loads(log.get('query_params', '{}')) if log.get('query_params') else None,
-                'requestBody': json.loads(log.get('request_body', '{}')) if log.get('request_body') else None
+                "id": log.get("log_id"),
+                "queryParams": (
+                    json.loads(log.get("query_params", "{}"))
+                    if log.get("query_params")
+                    else None
+                ),
+                "requestBody": (
+                    json.loads(log.get("request_body", "{}"))
+                    if log.get("request_body")
+                    else None
+                ),
             }
             for log in logs
         ]
@@ -379,32 +417,37 @@ class PipelineMonitor:
         health = await self.get_pipeline_health()
         violations = []
 
-        if not health['sloStatus']['freshnessMet']:
-            violations.append({
-                "slo": "freshness",
-                "severity": "high",
-                "message": f"Data freshness ({health['freshness']['ageMinutes']:.1f} min) exceeds threshold ({health['freshness']['thresholdMinutes']} min)",
-                "currentValue": health['freshness']['ageMinutes'],
-                "threshold": health['freshness']['thresholdMinutes']
-            })
+        if not health["sloStatus"]["freshnessMet"]:
+            violations.append(
+                {
+                    "slo": "freshness",
+                    "severity": "high",
+                    "message": f"Data freshness ({health['freshness']['ageMinutes']:.1f} min) exceeds threshold ({health['freshness']['thresholdMinutes']} min)",
+                    "currentValue": health["freshness"]["ageMinutes"],
+                    "threshold": health["freshness"]["thresholdMinutes"],
+                }
+            )
 
-        if not health['sloStatus']['completenessMet']:
-            violations.append({
-                "slo": "completeness",
-                "severity": "medium",
-                "message": f"Data completeness ({health['completeness']['completeness']:.2%}) below threshold ({health['completeness']['threshold']:.2%})",
-                "currentValue": health['completeness']['completeness'],
-                "threshold": health['completeness']['threshold']
-            })
+        if not health["sloStatus"]["completenessMet"]:
+            violations.append(
+                {
+                    "slo": "completeness",
+                    "severity": "medium",
+                    "message": f"Data completeness ({health['completeness']['completeness']:.2%}) below threshold ({health['completeness']['threshold']:.2%})",
+                    "currentValue": health["completeness"]["completeness"],
+                    "threshold": health["completeness"]["threshold"],
+                }
+            )
 
-        if not health['sloStatus']['successRateMet']:
-            violations.append({
-                "slo": "success_rate",
-                "severity": "high",
-                "message": f"Pipeline success rate ({health['successRate']['successRate']:.2%}) below threshold ({health['successRate']['threshold']:.2%})",
-                "currentValue": health['successRate']['successRate'],
-                "threshold": health['successRate']['threshold']
-            })
+        if not health["sloStatus"]["successRateMet"]:
+            violations.append(
+                {
+                    "slo": "success_rate",
+                    "severity": "high",
+                    "message": f"Pipeline success rate ({health['successRate']['successRate']:.2%}) below threshold ({health['successRate']['threshold']:.2%})",
+                    "currentValue": health["successRate"]["successRate"],
+                    "threshold": health["successRate"]["threshold"],
+                }
+            )
 
         return violations
-

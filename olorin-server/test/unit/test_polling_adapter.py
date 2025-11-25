@@ -6,10 +6,12 @@ Tests InvestigationPollingAdapter transformation logic from hybrid graph interna
 to polling API responses. Verifies correct mapping of phases, agents, tools, and logs.
 """
 
-import pytest
 from datetime import datetime, timedelta
-from app.service.investigation_polling_adapter import InvestigationPollingAdapter
+
+import pytest
+
 from app.models.investigation_state import InvestigationState
+from app.service.investigation_polling_adapter import InvestigationPollingAdapter
 
 
 class TestInvestigationPollingAdapter:
@@ -34,7 +36,7 @@ class TestInvestigationPollingAdapter:
                         "status": "completed",
                         "progress_percentage": 100.0,
                         "tools_used": 3,
-                        "findings_count": 5
+                        "findings_count": 5,
                     }
                 },
                 "tool_executions": [
@@ -44,7 +46,7 @@ class TestInvestigationPollingAdapter:
                         "status": "completed",
                         "started_at": "2025-10-15T10:00:00Z",
                         "completed_at": "2025-10-15T10:00:05Z",
-                        "duration_ms": 5000
+                        "duration_ms": 5000,
                     }
                 ],
                 "logs": [
@@ -52,10 +54,10 @@ class TestInvestigationPollingAdapter:
                         "timestamp": "2025-10-15T10:00:00Z",
                         "severity": "info",
                         "source": "device_agent",
-                        "message": "Device analysis started"
+                        "message": "Device analysis started",
                     }
-                ]
-            }
+                ],
+            },
         )
 
         adapter = InvestigationPollingAdapter()
@@ -84,10 +86,7 @@ class TestInvestigationPollingAdapter:
             progress_percentage=100.0,
             created_at=datetime.utcnow() - timedelta(minutes=10),
             updated_at=datetime.utcnow(),
-            progress_json={
-                "risk_score": 75.5,
-                "agents": {}
-            }
+            progress_json={"risk_score": 75.5, "agents": {}},
         )
 
         adapter = InvestigationPollingAdapter()
@@ -102,10 +101,20 @@ class TestInvestigationPollingAdapter:
         """Test agent status extraction with multiple agents"""
         progress_data = {
             "agents": {
-                "device": {"name": "Device Agent", "status": "completed",
-                           "progress_percentage": 100.0, "tools_used": 3, "findings_count": 5},
-                "location": {"name": "Location Agent", "status": "running",
-                             "progress_percentage": 60.0, "tools_used": 2, "findings_count": 2}
+                "device": {
+                    "name": "Device Agent",
+                    "status": "completed",
+                    "progress_percentage": 100.0,
+                    "tools_used": 3,
+                    "findings_count": 5,
+                },
+                "location": {
+                    "name": "Location Agent",
+                    "status": "running",
+                    "progress_percentage": 60.0,
+                    "tools_used": 2,
+                    "findings_count": 2,
+                },
             }
         }
 
@@ -120,11 +129,20 @@ class TestInvestigationPollingAdapter:
         """Test tool execution extraction with various statuses"""
         progress_data = {
             "tool_executions": [
-                {"tool_id": "tool-001", "tool_name": "Tool One", "status": "completed",
-                 "started_at": "2025-10-15T10:00:00Z", "completed_at": "2025-10-15T10:00:05Z",
-                 "duration_ms": 5000},
-                {"tool_id": "tool-002", "tool_name": "Tool Two", "status": "running",
-                 "started_at": "2025-10-15T10:00:05Z"}
+                {
+                    "tool_id": "tool-001",
+                    "tool_name": "Tool One",
+                    "status": "completed",
+                    "started_at": "2025-10-15T10:00:00Z",
+                    "completed_at": "2025-10-15T10:00:05Z",
+                    "duration_ms": 5000,
+                },
+                {
+                    "tool_id": "tool-002",
+                    "tool_name": "Tool Two",
+                    "status": "running",
+                    "started_at": "2025-10-15T10:00:05Z",
+                },
             ]
         }
 
@@ -141,11 +159,19 @@ class TestInvestigationPollingAdapter:
         """Test log entry extraction with different severity levels"""
         progress_data = {
             "logs": [
-                {"timestamp": "2025-10-15T10:00:00Z", "severity": "info",
-                 "source": "coordinator", "message": "Investigation started"},
-                {"timestamp": "2025-10-15T10:00:05Z", "severity": "error",
-                 "source": "network_agent", "message": "Connection failed",
-                 "metadata": {"retry_count": 3}}
+                {
+                    "timestamp": "2025-10-15T10:00:00Z",
+                    "severity": "info",
+                    "source": "coordinator",
+                    "message": "Investigation started",
+                },
+                {
+                    "timestamp": "2025-10-15T10:00:05Z",
+                    "severity": "error",
+                    "source": "network_agent",
+                    "message": "Connection failed",
+                    "metadata": {"retry_count": 3},
+                },
             ]
         }
 
@@ -168,9 +194,12 @@ class TestInvestigationPollingAdapter:
                     "error_code": "AGENT_TIMEOUT",
                     "error_message": "Network agent exceeded timeout",
                     "error_details": {"agent": "network", "timeout_seconds": 300},
-                    "recovery_suggestions": ["Retry with increased timeout", "Check network connectivity"]
+                    "recovery_suggestions": [
+                        "Retry with increased timeout",
+                        "Check network connectivity",
+                    ],
                 }
-            }
+            },
         )
 
         adapter = InvestigationPollingAdapter()
@@ -188,7 +217,7 @@ class TestInvestigationPollingAdapter:
             user_id="user-123",
             status="running",
             progress_percentage=50.0,
-            created_at=datetime.utcnow() - timedelta(minutes=5)
+            created_at=datetime.utcnow() - timedelta(minutes=5),
         )
 
         adapter = InvestigationPollingAdapter()

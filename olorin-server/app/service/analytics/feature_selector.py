@@ -11,7 +11,7 @@ Week 7 Phase 3 implementation.
 """
 
 import logging
-from typing import Dict, Any, List, Set, Optional
+from typing import Any, Dict, List, Optional, Set
 
 from app.service.analytics.feature_groups import categorize_features
 
@@ -29,7 +29,7 @@ class FeatureSelector:
         self,
         importance_threshold: float = 0.1,
         correlation_threshold: float = 0.85,
-        min_samples_threshold: int = 100
+        min_samples_threshold: int = 100,
     ):
         """
         Initialize feature selector.
@@ -55,7 +55,7 @@ class FeatureSelector:
         self,
         feature_importance: Dict[str, Dict[str, Any]],
         feature_correlations: List[tuple[str, str, float]],
-        essential_features: Optional[Set[str]] = None
+        essential_features: Optional[Set[str]] = None,
     ) -> Dict[str, Any]:
         """
         Select optimal feature subset.
@@ -72,8 +72,7 @@ class FeatureSelector:
 
         # Step 1: Filter by importance threshold
         important_features = self._filter_by_importance(
-            feature_importance,
-            essential_features
+            feature_importance, essential_features
         )
 
         # Step 2: Remove redundant features based on correlation
@@ -81,14 +80,12 @@ class FeatureSelector:
             important_features,
             feature_correlations,
             feature_importance,
-            essential_features
+            essential_features,
         )
 
         # Step 3: Filter by sample count
         final_features = self._filter_by_samples(
-            non_redundant_features,
-            feature_importance,
-            essential_features
+            non_redundant_features, feature_importance, essential_features
         )
 
         self.selected_features = final_features
@@ -97,9 +94,13 @@ class FeatureSelector:
             "total_features_analyzed": len(feature_importance),
             "features_selected": len(final_features),
             "features_rejected": len(self.rejected_features),
-            "selection_rate": len(final_features) / len(feature_importance) if feature_importance else 0,
+            "selection_rate": (
+                len(final_features) / len(feature_importance)
+                if feature_importance
+                else 0
+            ),
             "selected_feature_list": sorted(list(final_features)),
-            "rejection_reasons": self.rejected_features
+            "rejection_reasons": self.rejected_features,
         }
 
         logger.info(
@@ -112,7 +113,7 @@ class FeatureSelector:
     def _filter_by_importance(
         self,
         feature_importance: Dict[str, Dict[str, Any]],
-        essential_features: Set[str]
+        essential_features: Set[str],
     ) -> Set[str]:
         """Filter features by importance threshold."""
         important = set()
@@ -125,7 +126,9 @@ class FeatureSelector:
             elif importance_score >= self.importance_threshold:
                 important.add(feature_name)
             else:
-                self.rejected_features[feature_name] = f"low_importance:{importance_score:.3f}"
+                self.rejected_features[feature_name] = (
+                    f"low_importance:{importance_score:.3f}"
+                )
 
         logger.debug(f"Importance filter: {len(important)} features passed")
         return important
@@ -135,7 +138,7 @@ class FeatureSelector:
         features: Set[str],
         correlations: List[tuple[str, str, float]],
         feature_importance: Dict[str, Dict[str, Any]],
-        essential_features: Set[str]
+        essential_features: Set[str],
     ) -> Set[str]:
         """Remove redundant highly correlated features."""
         non_redundant = features.copy()
@@ -156,9 +159,14 @@ class FeatureSelector:
                 imp2 = feature_importance.get(feat2, {}).get("importance_score", 0.0)
                 feature_to_remove = feat1 if imp1 < imp2 else feat2
 
-            if feature_to_remove in non_redundant and feature_to_remove not in essential_features:
+            if (
+                feature_to_remove in non_redundant
+                and feature_to_remove not in essential_features
+            ):
                 non_redundant.remove(feature_to_remove)
-                self.rejected_features[feature_to_remove] = f"redundant_with:{feat1 if feature_to_remove == feat2 else feat2}:{abs(corr):.3f}"
+                self.rejected_features[feature_to_remove] = (
+                    f"redundant_with:{feat1 if feature_to_remove == feat2 else feat2}:{abs(corr):.3f}"
+                )
 
         logger.debug(f"Correlation filter: {len(non_redundant)} features passed")
         return non_redundant
@@ -167,20 +175,24 @@ class FeatureSelector:
         self,
         features: Set[str],
         feature_importance: Dict[str, Dict[str, Any]],
-        essential_features: Set[str]
+        essential_features: Set[str],
     ) -> Set[str]:
         """Filter features by minimum sample count."""
         sufficient_samples = set()
 
         for feature_name in features:
-            sample_count = feature_importance.get(feature_name, {}).get("sample_count", 0)
+            sample_count = feature_importance.get(feature_name, {}).get(
+                "sample_count", 0
+            )
 
             if feature_name in essential_features:
                 sufficient_samples.add(feature_name)
             elif sample_count >= self.min_samples_threshold:
                 sufficient_samples.add(feature_name)
             else:
-                self.rejected_features[feature_name] = f"insufficient_samples:{sample_count}"
+                self.rejected_features[feature_name] = (
+                    f"insufficient_samples:{sample_count}"
+                )
 
         logger.debug(f"Sample count filter: {len(sufficient_samples)} features passed")
         return sufficient_samples

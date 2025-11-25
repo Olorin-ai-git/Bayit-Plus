@@ -10,9 +10,9 @@ SYSTEM MANDATE Compliance:
 - Type-safe: All parameters and returns properly typed
 """
 
-from typing import Dict, Optional
-from datetime import datetime, timedelta
 import hashlib
+from datetime import datetime, timedelta
+from typing import Dict, Optional
 
 
 class PollingEnhancements:
@@ -23,10 +23,7 @@ class PollingEnhancements:
         self._last_activity: Dict[str, datetime] = {}
 
     def calculate_adaptive_interval(
-        self,
-        status: str,
-        lifecycle_stage: str,
-        investigation_id: Optional[str] = None
+        self, status: str, lifecycle_stage: str, investigation_id: Optional[str] = None
     ) -> int:
         """Calculate adaptive polling interval based on investigation state.
 
@@ -48,7 +45,9 @@ class PollingEnhancements:
 
         # Check for idle state if investigation_id provided
         if investigation_id and investigation_id in self._last_activity:
-            time_since_activity = datetime.utcnow() - self._last_activity[investigation_id]
+            time_since_activity = (
+                datetime.utcnow() - self._last_activity[investigation_id]
+            )
             idle_threshold = timedelta(minutes=5)
 
             if time_since_activity > idle_threshold:
@@ -106,7 +105,7 @@ class PollingEnhancements:
 
         try:
             # Split by dash and get version part
-            version_str = etag_content.split('-')[0]
+            version_str = etag_content.split("-")[0]
             client_version = int(version_str)
 
             # Return true if versions match

@@ -4,6 +4,7 @@ Location Router - REST API endpoints for location-based risk analysis.
 This module provides FastAPI endpoints for analyzing location-based risk indicators
 in fraud detection investigations.
 """
+
 import logging
 from typing import Any, Dict, List, Optional
 
@@ -74,37 +75,41 @@ async def analyze_location(
             "location_analysis": {
                 "geographic_velocity": {
                     "max_velocity_km_h": 0.0,
-                    "suspicious_movements": []
+                    "suspicious_movements": [],
                 },
                 "location_patterns": {
                     "primary_locations": [],
-                    "anomalous_locations": []
+                    "anomalous_locations": [],
                 },
                 "travel_analysis": {
                     "total_unique_locations": 0,
-                    "geographic_spread_km": 0.0
+                    "geographic_spread_km": 0.0,
                 },
                 "risk_indicators": {
                     "velocity_risk": "low",
                     "location_anomaly_risk": "low",
-                    "geographic_risk": "low"
-                }
+                    "geographic_risk": "low",
+                },
             },
             "overall_location_risk_score": 0.0,
             "risk_factors": [],
-            "recommendations": ["No significant location-based risk indicators detected"],
+            "recommendations": [
+                "No significant location-based risk indicators detected"
+            ],
             "metadata": {
                 "analysis_timestamp": "2024-01-01T00:00:00Z",
                 "data_sources": ["splunk"],
-                "analysis_version": "1.0"
-            }
+                "analysis_version": "1.0",
+            },
         }
 
         logger.info(f"Location analysis completed for {entity_type}: {entity_id}")
         return result
 
     except Exception as e:
-        logger.error(f"❌ Error in location analysis for {entity_id}: {e}", exc_info=True)
+        logger.error(
+            f"❌ Error in location analysis for {entity_id}: {e}", exc_info=True
+        )
         # Return error response structure
         return {
             "entity_id": entity_id,
@@ -118,8 +123,8 @@ async def analyze_location(
             "recommendations": ["Unable to complete location analysis due to error"],
             "metadata": {
                 "analysis_timestamp": "2024-01-01T00:00:00Z",
-                "error_details": str(e)
-            }
+                "error_details": str(e),
+            },
         }
 
 
@@ -132,6 +137,6 @@ async def location_router_health():
         "endpoints": [
             "GET /{entity_id} - Location risk analysis",
             "OPTIONS /{entity_id} - CORS preflight",
-            "GET /health - Health check"
-        ]
+            "GET /health - Health check",
+        ],
     }

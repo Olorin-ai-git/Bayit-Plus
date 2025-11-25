@@ -60,8 +60,8 @@ class TestCommentAuthorization:
                 "entity_id": "test-123",
                 "entity_type": "user_id",
                 "sender": "test",
-                "message": "test message"
-            }
+                "message": "test message",
+            },
         )
         assert response.status_code == status.HTTP_401_UNAUTHORIZED
 
@@ -75,8 +75,8 @@ class TestCommentAuthorization:
                 "entity_id": "test-123",
                 "entity_type": "user_id",
                 "sender": "test",
-                "message": "test message"
-            }
+                "message": "test message",
+            },
         )
         assert response.status_code == status.HTTP_403_FORBIDDEN
 
@@ -90,8 +90,8 @@ class TestCommentAuthorization:
                 "entity_id": "test-123",
                 "entity_type": "user_id",
                 "sender": "test",
-                "message": "test message"
-            }
+                "message": "test message",
+            },
         )
         assert response.status_code in [status.HTTP_200_OK, status.HTTP_201_CREATED]
 
@@ -103,10 +103,7 @@ class TestDeviceAuthorization:
         """Test that device analysis without auth returns 401"""
         response = client.get(
             "/device/test-device-123",
-            params={
-                "investigation_id": "inv-123",
-                "entity_type": "device_id"
-            }
+            params={"investigation_id": "inv-123", "entity_type": "device_id"},
         )
         assert response.status_code == status.HTTP_401_UNAUTHORIZED
 
@@ -116,12 +113,12 @@ class TestDeviceAuthorization:
         response = client.get(
             "/device/test-device-123",
             headers=headers,
-            params={
-                "investigation_id": "inv-123",
-                "entity_type": "device_id"
-            }
+            params={"investigation_id": "inv-123", "entity_type": "device_id"},
         )
-        assert response.status_code in [status.HTTP_200_OK, status.HTTP_422_UNPROCESSABLE_ENTITY]
+        assert response.status_code in [
+            status.HTTP_200_OK,
+            status.HTTP_422_UNPROCESSABLE_ENTITY,
+        ]
 
 
 class TestNetworkAuthorization:
@@ -131,10 +128,7 @@ class TestNetworkAuthorization:
         """Test that network analysis without auth returns 401"""
         response = client.get(
             "/network/test-user-123",
-            params={
-                "investigation_id": "inv-123",
-                "entity_type": "user_id"
-            }
+            params={"investigation_id": "inv-123", "entity_type": "user_id"},
         )
         assert response.status_code == status.HTTP_401_UNAUTHORIZED
 
@@ -144,12 +138,12 @@ class TestNetworkAuthorization:
         response = client.get(
             "/network/test-user-123",
             headers=headers,
-            params={
-                "investigation_id": "inv-123",
-                "entity_type": "user_id"
-            }
+            params={"investigation_id": "inv-123", "entity_type": "user_id"},
         )
-        assert response.status_code in [status.HTTP_200_OK, status.HTTP_422_UNPROCESSABLE_ENTITY]
+        assert response.status_code in [
+            status.HTTP_200_OK,
+            status.HTTP_422_UNPROCESSABLE_ENTITY,
+        ]
 
 
 class TestLocationAuthorization:
@@ -159,10 +153,7 @@ class TestLocationAuthorization:
         """Test that location analysis without auth returns 401"""
         response = client.get(
             "/location/test-user-123",
-            params={
-                "investigation_id": "inv-123",
-                "entity_type": "user_id"
-            }
+            params={"investigation_id": "inv-123", "entity_type": "user_id"},
         )
         assert response.status_code == status.HTTP_401_UNAUTHORIZED
 
@@ -172,12 +163,12 @@ class TestLocationAuthorization:
         response = client.get(
             "/location/test-user-123",
             headers=headers,
-            params={
-                "investigation_id": "inv-123",
-                "entity_type": "user_id"
-            }
+            params={"investigation_id": "inv-123", "entity_type": "user_id"},
         )
-        assert response.status_code in [status.HTTP_200_OK, status.HTTP_422_UNPROCESSABLE_ENTITY]
+        assert response.status_code in [
+            status.HTTP_200_OK,
+            status.HTTP_422_UNPROCESSABLE_ENTITY,
+        ]
 
 
 class TestLogsAuthorization:
@@ -187,10 +178,7 @@ class TestLogsAuthorization:
         """Test that logs analysis without auth returns 401"""
         response = client.get(
             "/logs/test-user-123",
-            params={
-                "investigation_id": "inv-123",
-                "entity_type": "user_id"
-            }
+            params={"investigation_id": "inv-123", "entity_type": "user_id"},
         )
         assert response.status_code == status.HTTP_401_UNAUTHORIZED
 
@@ -200,12 +188,12 @@ class TestLogsAuthorization:
         response = client.get(
             "/logs/test-user-123",
             headers=headers,
-            params={
-                "investigation_id": "inv-123",
-                "entity_type": "user_id"
-            }
+            params={"investigation_id": "inv-123", "entity_type": "user_id"},
         )
-        assert response.status_code in [status.HTTP_200_OK, status.HTTP_422_UNPROCESSABLE_ENTITY]
+        assert response.status_code in [
+            status.HTTP_200_OK,
+            status.HTTP_422_UNPROCESSABLE_ENTITY,
+        ]
 
 
 class TestInvestigationAuthorization:
@@ -214,11 +202,7 @@ class TestInvestigationAuthorization:
     def test_create_investigation_without_auth_returns_401(self, client):
         """Test that creating investigation without auth returns 401"""
         response = client.post(
-            "/investigation",
-            json={
-                "entity_id": "test-123",
-                "entity_type": "user_id"
-            }
+            "/investigation", json={"entity_id": "test-123", "entity_type": "user_id"}
         )
         assert response.status_code == status.HTTP_401_UNAUTHORIZED
 
@@ -228,10 +212,7 @@ class TestInvestigationAuthorization:
         response = client.post(
             "/investigation",
             headers=headers,
-            json={
-                "entity_id": "test-123",
-                "entity_type": "user_id"
-            }
+            json={"entity_id": "test-123", "entity_type": "user_id"},
         )
         assert response.status_code == status.HTTP_403_FORBIDDEN
 
@@ -241,12 +222,12 @@ class TestInvestigationAuthorization:
         response = client.post(
             "/investigation",
             headers=headers,
-            json={
-                "entity_id": "test-123",
-                "entity_type": "user_id"
-            }
+            json={"entity_id": "test-123", "entity_type": "user_id"},
         )
-        assert response.status_code in [status.HTTP_200_OK, status.HTTP_422_UNPROCESSABLE_ENTITY]
+        assert response.status_code in [
+            status.HTTP_200_OK,
+            status.HTTP_422_UNPROCESSABLE_ENTITY,
+        ]
 
     def test_delete_all_without_admin_returns_403(self, client, write_token):
         """Test that deleting all investigations without admin returns 403"""

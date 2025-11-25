@@ -11,8 +11,9 @@ Constitutional Compliance:
 - Tests guide implementation
 """
 
-import pytest
 from unittest.mock import Mock
+
+import pytest
 
 # Import will fail initially - that's expected in TDD
 from app.service.agent.tools.database_tool.query_translator import QueryTranslator
@@ -29,7 +30,7 @@ class TestQueryTranslatorInit:
     def test_translator_has_translation_rules(self):
         """Test that translator loads translation rules."""
         translator = QueryTranslator()
-        assert hasattr(translator, 'translation_rules')
+        assert hasattr(translator, "translation_rules")
         assert len(translator.translation_rules) > 0
 
 
@@ -279,7 +280,7 @@ class TestEdgeCases:
         queries = [
             "SELECT current_timestamp() FROM users",
             "SELECT CURRENT_TIMESTAMP() FROM users",
-            "SELECT Current_Timestamp() FROM users"
+            "SELECT Current_Timestamp() FROM users",
         ]
 
         results = [translator.translate(q) for q in queries]
@@ -299,7 +300,7 @@ class TestTranslationMetrics:
 
     def test_translator_tracks_translation_count(self, translator):
         """Test that translator tracks number of translations."""
-        initial_count = getattr(translator, 'translation_count', 0)
+        initial_count = getattr(translator, "translation_count", 0)
 
         translator.translate("SELECT * FROM users")
 
@@ -312,5 +313,5 @@ class TestTranslationMetrics:
         result = translator.translate(query)
 
         # Should have metrics about which rules were applied
-        if hasattr(translator, 'last_translation_stats'):
-            assert 'rules_applied' in translator.last_translation_stats
+        if hasattr(translator, "last_translation_stats"):
+            assert "rules_applied" in translator.last_translation_stats

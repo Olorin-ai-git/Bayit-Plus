@@ -11,16 +11,17 @@ SYSTEM MANDATE Compliance:
 - Type-safe: All parameters and returns properly typed
 """
 
-from sqlalchemy.orm import Session
-from typing import List, Dict, Any, Optional
-from fastapi import HTTPException
-from datetime import datetime
 import json
+from datetime import datetime
+from typing import Any, Dict, List, Optional
 
-from app.models.investigation_template import InvestigationTemplate
+from fastapi import HTTPException
+from sqlalchemy.orm import Session
+
 from app.models.investigation_state import InvestigationState
+from app.models.investigation_template import InvestigationTemplate
 from app.schemas.investigation_state import InvestigationSettings
-from app.service.template_helper import replace_placeholders, apply_overrides
+from app.service.template_helper import apply_overrides, replace_placeholders
 
 
 class TemplateService:

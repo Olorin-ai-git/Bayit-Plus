@@ -11,11 +11,10 @@ Spec: /specs/021-live-merged-logstream/research.md
 """
 
 from typing import Dict, Optional, Pattern
+
 from app.service.logging import get_bridge_logger
-from .pii_redaction_patterns import (
-    PIIRedactionConfig,
-    get_redaction_patterns
-)
+
+from .pii_redaction_patterns import PIIRedactionConfig, get_redaction_patterns
 
 logger = get_bridge_logger(__name__)
 
@@ -36,7 +35,9 @@ class PIIRedactionService:
             config: PII redaction configuration (loads from env if not provided)
         """
         self.config = config or PIIRedactionConfig()
-        self.patterns: Dict[str, tuple[Pattern, str]] = get_redaction_patterns(self.config)
+        self.patterns: Dict[str, tuple[Pattern, str]] = get_redaction_patterns(
+            self.config
+        )
 
         enabled_patterns = list(self.patterns.keys())
         logger.info(
@@ -67,7 +68,7 @@ class PIIRedactionService:
             except Exception as e:
                 logger.warning(
                     f"Failed to apply {pattern_name} redaction pattern: {e}",
-                    extra={"pattern": pattern_name, "error": str(e)}
+                    extra={"pattern": pattern_name, "error": str(e)},
                 )
                 continue
 
@@ -98,9 +99,15 @@ class PIIRedactionService:
                 redacted_context[key] = self.redact_context(value)
             elif isinstance(value, list):
                 redacted_context[key] = [
-                    self.redact_message(item) if isinstance(item, str)
-                    else self.redact_context(item) if isinstance(item, dict)
-                    else item
+                    (
+                        self.redact_message(item)
+                        if isinstance(item, str)
+                        else (
+                            self.redact_context(item)
+                            if isinstance(item, dict)
+                            else item
+                        )
+                    )
                     for item in value
                 ]
             else:

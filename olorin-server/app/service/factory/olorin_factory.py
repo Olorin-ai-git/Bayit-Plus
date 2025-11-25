@@ -12,11 +12,12 @@ from typing import Callable, Optional
 from fastapi import FastAPI
 from fastapi.responses import Response
 
+from app.service.logging import get_bridge_logger
+
 from ..config import SvcSettings
 from ..middleware import configure_middleware
 from ..router import configure_routes
 from ..secret_masker import mask_config_object
-from app.service.logging import get_bridge_logger
 
 logger = get_bridge_logger(__name__)
 
@@ -35,11 +36,11 @@ class OlorinApplication:
     ):
         # Import here to avoid circular dependency
         from .. import _settings_factory
-        
+
         self.config: SvcSettings = (
-            settings_factory() if settings_factory and test_config is None 
-            else test_config if test_config is not None
-            else _settings_factory()
+            settings_factory()
+            if settings_factory and test_config is None
+            else test_config if test_config is not None else _settings_factory()
         )
         self.lifespan = lifespan
         self.app = self._create_fastapi_app()
@@ -55,8 +56,9 @@ class OlorinApplication:
         - Fail-fast configuration validation
         """
         # Import here to avoid circular dependency
-        from .. import on_startup, on_shutdown
         from contextlib import asynccontextmanager
+
+        from .. import on_shutdown, on_startup
 
         async def default_lifespan(app: FastAPI):
             await on_startup(app)
@@ -65,19 +67,21 @@ class OlorinApplication:
 
         # Merge with pskhealth lifespan if available (must be done BEFORE creating FastAPI app)
         final_lifespan = self.lifespan or default_lifespan
-        
+
         # Try to merge with pskhealth lifespan if it exists
         # Note: pskhealth.add_health_endpoint may try to add its own lifespan,
         # so we merge it here BEFORE creating the FastAPI app to avoid conflicts
         try:
             from pskhealth import lifespan_function
+
             if lifespan_function and callable(lifespan_function):
                 # lifespan_function() returns a lifespan function (callable that takes app and returns context manager)
                 # We need to call it to get the actual lifespan function, then use it in our merged lifespan
                 psk_lifespan_func = lifespan_function()
-                
+
                 # Verify it's callable (it should be a lifespan function)
                 if callable(psk_lifespan_func):
+
                     @asynccontextmanager
                     async def merged_lifespan(app: FastAPI):
                         # Run pskhealth startup first, then ours
@@ -85,17 +89,20 @@ class OlorinApplication:
                         async with psk_lifespan_func(app):
                             async with final_lifespan(app):
                                 yield
-                    
+
                     final_lifespan = merged_lifespan
                     logger.info("Merged pskhealth lifespan with application lifespan")
                 else:
-                    logger.warning("pskhealth lifespan_function() did not return a callable, skipping merge")
+                    logger.warning(
+                        "pskhealth lifespan_function() did not return a callable, skipping merge"
+                    )
         except ImportError:
             # pskhealth not available, use our lifespan only
             pass
         except Exception as e:
             logger.warning(f"Failed to merge pskhealth lifespan, using default: {e}")
             import traceback
+
             logger.debug(f"Lifespan merge error details: {traceback.format_exc()}")
 
         # Get OpenAPI metadata from environment variables
@@ -114,9 +121,11 @@ Key use cases:
 - Automated fraud investigation coordination
 - Risk assessment and scoring across multiple domains
 - Real-time threat detection and response
-- Investigation workflow management and reporting"""
+- Investigation workflow management and reporting""",
         )
-        contact_url = os.getenv("OPENAPI_CONTACT_URL", "https://api.contact.info.olorin.com")
+        contact_url = os.getenv(
+            "OPENAPI_CONTACT_URL", "https://api.contact.info.olorin.com"
+        )
 
         logger.info(f"Creating FastAPI app with OpenAPI metadata from environment:")
         logger.info(f"  Title: {title}")
@@ -130,7 +139,12 @@ Key use cases:
             docs_url="/apidoc/swagger",
             redoc_url="/apidoc/redoc",
             contact={"url": contact_url},
-            openapi_tags=[{"name": "investigations", "description": "Investigation management endpoints"}],
+            openapi_tags=[
+                {
+                    "name": "investigations",
+                    "description": "Investigation management endpoints",
+                }
+            ],
             lifespan=final_lifespan,
         )
         return app
@@ -139,9 +153,10 @@ Key use cases:
         """Configure the application with middleware, routes, and utilities."""
         app = self.app
         app.state.config = self.config
-        
+
         # Import here to avoid circular dependency
         from .. import configure_logger
+
         configure_logger(app)
         # Mask sensitive config values before logging
         masked_config = mask_config_object(self.config)
@@ -149,15 +164,16 @@ Key use cases:
 
         # Configure middleware (CORS, security, rate limiting)
         configure_middleware(app, self.config)
-        
+
         # Configure routes and endpoints
         configure_routes(app, self.config)
-        
+
         # Add utility endpoints
         self._add_utility_endpoints()
 
     def _add_utility_endpoints(self):
         """Add utility endpoints like health checks and favicon."""
+
         @self.app.get("/health")
         async def health_check():
             return {"status": "healthy"}

@@ -6,10 +6,10 @@ Provides validation for investigation folder structure and metadata.
 Focused on folder structure validation, naming patterns, and metadata integrity.
 """
 
+import logging
 import re
 from pathlib import Path
-from typing import Dict, List, Any, Tuple
-import logging
+from typing import Any, Dict, List, Tuple
 
 logger = logging.getLogger(__name__)
 

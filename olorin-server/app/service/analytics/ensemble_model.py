@@ -8,13 +8,16 @@ Week 8 Phase 3 implementation.
 
 import logging
 import os
-from typing import Dict, Any, List, Optional
+from typing import Any, Dict, List, Optional
 
+from app.service.analytics.ensemble_strategy import (
+    EnsembleStrategy,
+    get_ensemble_strategy,
+)
+from app.service.analytics.lightgbm_model import LightGBMModel
 from app.service.analytics.model_base import FraudDetectionModel, ModelPrediction
-from app.service.analytics.ensemble_strategy import get_ensemble_strategy, EnsembleStrategy
 from app.service.analytics.rule_based_model import RuleBasedModel
 from app.service.analytics.xgboost_model import XGBoostModel
-from app.service.analytics.lightgbm_model import LightGBMModel
 
 logger = logging.getLogger(__name__)
 
@@ -29,7 +32,7 @@ class EnsembleModel:
     def __init__(
         self,
         strategy_name: Optional[str] = None,
-        models: Optional[List[FraudDetectionModel]] = None
+        models: Optional[List[FraudDetectionModel]] = None,
     ):
         """Initialize ensemble model with strategy and models."""
         if strategy_name is None:
@@ -43,7 +46,9 @@ class EnsembleModel:
         self.strategy = get_ensemble_strategy(self.strategy_name)
         self.models = models or self._initialize_default_models()
         self.prediction_count = 0
-        self.model_stats = {m.model_name: {"predictions": 0, "errors": 0} for m in self.models}
+        self.model_stats = {
+            m.model_name: {"predictions": 0, "errors": 0} for m in self.models
+        }
         logger.info(
             f"📊 EnsembleModel: {len(self.models)} models, {self.strategy_name} strategy"
         )
@@ -55,18 +60,24 @@ class EnsembleModel:
         # Rule-based model is always included
         rule_version_env = os.getenv("RULE_BASED_MODEL_VERSION")
         if not rule_version_env:
-            raise RuntimeError("RULE_BASED_MODEL_VERSION environment variable is required")
+            raise RuntimeError(
+                "RULE_BASED_MODEL_VERSION environment variable is required"
+            )
         models.append(RuleBasedModel(model_version=rule_version_env))
         logger.info("✓ RuleBasedModel added")
 
         # XGBoost model - optional
         enable_xgb_env = os.getenv("ENABLE_XGBOOST_MODEL")
         if not enable_xgb_env:
-            raise RuntimeError("ENABLE_XGBOOST_MODEL environment variable is required (set to 'true' or 'false')")
+            raise RuntimeError(
+                "ENABLE_XGBOOST_MODEL environment variable is required (set to 'true' or 'false')"
+            )
         if enable_xgb_env.lower() == "true":
             xgb_version_env = os.getenv("XGBOOST_MODEL_VERSION")
             if not xgb_version_env:
-                raise RuntimeError("XGBOOST_MODEL_VERSION environment variable is required when ENABLE_XGBOOST_MODEL=true")
+                raise RuntimeError(
+                    "XGBOOST_MODEL_VERSION environment variable is required when ENABLE_XGBOOST_MODEL=true"
+                )
             xgb_model = XGBoostModel(model_version=xgb_version_env)
             if xgb_model.is_trained:
                 models.append(xgb_model)
@@ -77,11 +88,15 @@ class EnsembleModel:
         # LightGBM model - optional
         enable_lgbm_env = os.getenv("ENABLE_LIGHTGBM_MODEL")
         if not enable_lgbm_env:
-            raise RuntimeError("ENABLE_LIGHTGBM_MODEL environment variable is required (set to 'true' or 'false')")
+            raise RuntimeError(
+                "ENABLE_LIGHTGBM_MODEL environment variable is required (set to 'true' or 'false')"
+            )
         if enable_lgbm_env.lower() == "true":
             lgbm_version_env = os.getenv("LIGHTGBM_MODEL_VERSION")
             if not lgbm_version_env:
-                raise RuntimeError("LIGHTGBM_MODEL_VERSION environment variable is required when ENABLE_LIGHTGBM_MODEL=true")
+                raise RuntimeError(
+                    "LIGHTGBM_MODEL_VERSION environment variable is required when ENABLE_LIGHTGBM_MODEL=true"
+                )
             lgbm_model = LightGBMModel(model_version=lgbm_version_env)
             if lgbm_model.is_trained:
                 models.append(lgbm_model)
@@ -95,7 +110,7 @@ class EnsembleModel:
         self,
         transaction: Dict[str, Any],
         features: Dict[str, Any],
-        advanced_features: Optional[Dict[str, Any]] = None
+        advanced_features: Optional[Dict[str, Any]] = None,
     ) -> ModelPrediction:
         """Generate ensemble prediction for a transaction."""
         predictions = []
@@ -129,7 +144,7 @@ class EnsembleModel:
             "num_models": len(self.models),
             "models": [m.get_model_info() for m in self.models],
             "prediction_count": self.prediction_count,
-            "model_stats": self.model_stats
+            "model_stats": self.model_stats,
         }
 
     def get_combined_feature_importance(self) -> Dict[str, float]:

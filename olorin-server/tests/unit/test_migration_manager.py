@@ -12,12 +12,13 @@ Constitutional Compliance:
 - Tests guide implementation
 """
 
-import pytest
-import os
 import json
-from pathlib import Path
-from typing import List, Dict, Any
+import os
 from datetime import datetime, timezone
+from pathlib import Path
+from typing import Any, Dict, List
+
+import pytest
 
 from app.service.agent.tools.database_tool.migration_manager import MigrationManager
 
@@ -37,8 +38,7 @@ class TestMigrationManagerInitialization:
     def test_migration_manager_init_with_custom_config(self):
         """Test initialization with custom configuration."""
         manager = MigrationManager(
-            batch_size=1000,
-            checkpoint_file=Path("custom_checkpoint.json")
+            batch_size=1000, checkpoint_file=Path("custom_checkpoint.json")
         )
 
         assert manager.batch_size == 1000
@@ -66,7 +66,7 @@ class TestMigrationCheckpointing:
             "last_batch_id": 5,
             "records_migrated": 2500,
             "migration_start_time": datetime.now(timezone.utc).isoformat(),
-            "last_successful_batch_timestamp": datetime.now(timezone.utc).isoformat()
+            "last_successful_batch_timestamp": datetime.now(timezone.utc).isoformat(),
         }
 
         manager.save_checkpoint(state)
@@ -89,10 +89,10 @@ class TestMigrationCheckpointing:
         checkpoint_data = {
             "last_batch_id": 10,
             "records_migrated": 5000,
-            "migration_start_time": "2025-01-01T00:00:00Z"
+            "migration_start_time": "2025-01-01T00:00:00Z",
         }
 
-        with open(checkpoint_file, 'w') as f:
+        with open(checkpoint_file, "w") as f:
             json.dump(checkpoint_data, f)
 
         manager = MigrationManager(checkpoint_file=checkpoint_file)
@@ -118,10 +118,7 @@ class TestMigrationCheckpointing:
         manager = MigrationManager(checkpoint_file=checkpoint_file)
 
         # Save checkpoint at batch 3
-        state = {
-            "last_batch_id": 3,
-            "records_migrated": 1500
-        }
+        state = {"last_batch_id": 3, "records_migrated": 1500}
         manager.save_checkpoint(state)
 
         # Create new manager instance and load checkpoint
@@ -186,7 +183,7 @@ class TestDataInsertion:
         # Sample batch data
         batch_data = [
             {"TX_ID_KEY": "tx_001", "EMAIL": "user1@test.com", "MODEL_SCORE": 0.75},
-            {"TX_ID_KEY": "tx_002", "EMAIL": "user2@test.com", "MODEL_SCORE": 0.45}
+            {"TX_ID_KEY": "tx_002", "EMAIL": "user2@test.com", "MODEL_SCORE": 0.45},
         ]
 
         # Insert batch
@@ -211,9 +208,7 @@ class TestDataInsertion:
         manager = MigrationManager()
 
         # Batch with invalid data (should trigger error)
-        invalid_batch = [
-            {"INVALID_COLUMN": "value"}  # Column doesn't exist
-        ]
+        invalid_batch = [{"INVALID_COLUMN": "value"}]  # Column doesn't exist
 
         # Should raise error and rollback
         with pytest.raises(Exception):
@@ -228,10 +223,7 @@ class TestDataTransformation:
         manager = MigrationManager()
 
         # Record with timestamp (may have timezone info)
-        record = {
-            "TX_DATETIME": "2025-01-01 12:00:00",
-            "EMAIL": "user@test.com"
-        }
+        record = {"TX_DATETIME": "2025-01-01 12:00:00", "EMAIL": "user@test.com"}
 
         transformed = manager.transform_record(record)
 
@@ -247,7 +239,7 @@ class TestDataTransformation:
         # Record with VARIANT column
         record = {
             "TX_ID_KEY": "tx_001",
-            "METADATA": '{"key": "value", "nested": {"data": "test"}}'  # JSON string
+            "METADATA": '{"key": "value", "nested": {"data": "test"}}',  # JSON string
         }
 
         transformed = manager.transform_record(record)
@@ -267,7 +259,7 @@ class TestDataTransformation:
             "EMAIL": "user@test.com",
             "MODEL_SCORE": 0.85,
             "IS_FRAUD_TX": True,
-            "TX_DATETIME": "2025-01-01 12:00:00"
+            "TX_DATETIME": "2025-01-01 12:00:00",
         }
 
         transformed = manager.transform_record(record)
@@ -307,8 +299,7 @@ class TestMigrationProgress:
         records_migrated = 1000  # 10% complete
 
         estimated_remaining = manager.estimate_time_remaining(
-            records_migrated=records_migrated,
-            elapsed_seconds=elapsed_seconds
+            records_migrated=records_migrated, elapsed_seconds=elapsed_seconds
         )
 
         # Should estimate ~9 minutes remaining (90% of work at current rate)
@@ -349,12 +340,12 @@ class TestMigrationValidation:
         # Sample records from both databases
         source_sample = [
             {"TX_ID_KEY": "tx_001", "EMAIL": "user@test.com"},
-            {"TX_ID_KEY": "tx_002", "EMAIL": "admin@test.com"}
+            {"TX_ID_KEY": "tx_002", "EMAIL": "admin@test.com"},
         ]
 
         target_sample = [
             {"tx_id_key": "tx_001", "email": "user@test.com"},  # Lowercase keys
-            {"tx_id_key": "tx_002", "email": "admin@test.com"}
+            {"tx_id_key": "tx_002", "email": "admin@test.com"},
         ]
 
         is_valid = manager.validate_sample_data(source_sample, target_sample)
@@ -391,9 +382,7 @@ class TestErrorHandling:
         manager = MigrationManager()
 
         # Batch with invalid data
-        invalid_batch = [
-            {"NONEXISTENT_COLUMN": "value"}
-        ]
+        invalid_batch = [{"NONEXISTENT_COLUMN": "value"}]
 
         # Should raise error and not partially insert
         with pytest.raises(Exception):
@@ -411,7 +400,9 @@ class TestIdempotency:
 
         # This test will be fully implemented when integration tests exist
         # For unit tests, verify manager has idempotency checks
-        assert hasattr(manager, 'check_record_exists') or hasattr(manager, 'upsert_batch')
+        assert hasattr(manager, "check_record_exists") or hasattr(
+            manager, "upsert_batch"
+        )
 
     def test_detect_duplicate_records(self):
         """Test that duplicate records are detected."""
@@ -422,5 +413,6 @@ class TestIdempotency:
 
         # Check if record exists (implementation will handle)
         # Method should exist for idempotency
-        assert callable(getattr(manager, 'check_record_exists', None)) or \
-               callable(getattr(manager, 'insert_batch', None))
+        assert callable(getattr(manager, "check_record_exists", None)) or callable(
+            getattr(manager, "insert_batch", None)
+        )

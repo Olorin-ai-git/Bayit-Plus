@@ -3,8 +3,8 @@
 from .real_investigation_scenarios import (
     RealInvestigationScenario,
     RealScenarioGenerator,
-    get_test_scenarios,
     get_scenario_by_type,
+    get_test_scenarios,
 )
 
 __all__ = [

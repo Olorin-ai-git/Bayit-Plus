@@ -19,6 +19,7 @@ sys.path.insert(0, str(project_root))
 os.environ["TEST_MODE"] = "mock"
 os.environ["USE_SNOWFLAKE"] = "false"
 
+
 async def debug_orchestrator_execution():
     """Run a simple investigation with detailed logging to trace execution."""
 
@@ -27,7 +28,9 @@ async def debug_orchestrator_execution():
 
     try:
         # Import required modules
-        from app.service.agent.orchestration.clean_graph_builder import build_clean_investigation_graph
+        from app.service.agent.orchestration.clean_graph_builder import (
+            build_clean_investigation_graph,
+        )
         from app.service.agent.orchestration.state_schema import create_initial_state
         from app.service.logging import get_bridge_logger
 
@@ -44,7 +47,7 @@ async def debug_orchestrator_execution():
             entity_id=entity_id,
             entity_type=entity_type,
             parallel_execution=True,
-            max_tools=52
+            max_tools=52,
         )
 
         print(f"✅ Initial state created with {len(initial_state)} keys")
@@ -73,23 +76,31 @@ async def debug_orchestrator_execution():
         print("=" * 60)
         print(f"🔍 Final result analysis:")
         print(f"   Current phase: {result.get('current_phase', 'unknown')}")
-        print(f"   Tools used: {len(result.get('tools_used', []))} ({result.get('tools_used', [])})")
-        print(f"   Domains completed: {len(result.get('domains_completed', []))} ({result.get('domains_completed', [])})")
+        print(
+            f"   Tools used: {len(result.get('tools_used', []))} ({result.get('tools_used', [])})"
+        )
+        print(
+            f"   Domains completed: {len(result.get('domains_completed', []))} ({result.get('domains_completed', [])})"
+        )
         print(f"   Snowflake completed: {result.get('snowflake_completed', False)}")
         print(f"   Orchestrator loops: {result.get('orchestrator_loops', 0)}")
         print(f"   Messages count: {len(result.get('messages', []))}")
 
         # Check for routing decisions
-        routing_decisions = result.get('routing_decisions', [])
+        routing_decisions = result.get("routing_decisions", [])
         if routing_decisions:
             print(f"\n🔀 Routing decisions ({len(routing_decisions)}):")
             for i, decision in enumerate(routing_decisions[-5:]):  # Show last 5
-                print(f"   {i+1}. {decision.get('decision', 'unknown')} - {decision.get('reason', 'no reason')}")
+                print(
+                    f"   {i+1}. {decision.get('decision', 'unknown')} - {decision.get('reason', 'no reason')}"
+                )
         else:
-            print(f"\n⚠️ No routing decisions found - this indicates orchestrator may not have been called")
+            print(
+                f"\n⚠️ No routing decisions found - this indicates orchestrator may not have been called"
+            )
 
         # Check phase changes
-        phase_changes = result.get('phase_changes', [])
+        phase_changes = result.get("phase_changes", [])
         if phase_changes:
             print(f"\n🔄 Phase changes ({len(phase_changes)}):")
             for i, change in enumerate(phase_changes):
@@ -99,8 +110,13 @@ async def debug_orchestrator_execution():
 
         print("\n" + "=" * 60)
 
-        if result.get('current_phase') == 'complete' and len(result.get('domains_completed', [])) == 0:
-            print("🚨 ISSUE CONFIRMED: Investigation completed without executing domain agents")
+        if (
+            result.get("current_phase") == "complete"
+            and len(result.get("domains_completed", [])) == 0
+        ):
+            print(
+                "🚨 ISSUE CONFIRMED: Investigation completed without executing domain agents"
+            )
             print("   This indicates the orchestrator routing logic has an issue")
             return False
         else:
@@ -110,12 +126,16 @@ async def debug_orchestrator_execution():
     except Exception as e:
         print(f"❌ Error during debugging: {e}")
         import traceback
+
         traceback.print_exc()
         return False
 
+
 if __name__ == "__main__":
     print("🐛 Orchestrator Execution Debugging Script")
-    print("This script traces LangGraph execution to find why domain analysis is skipped")
+    print(
+        "This script traces LangGraph execution to find why domain analysis is skipped"
+    )
     print()
 
     success = asyncio.run(debug_orchestrator_execution())

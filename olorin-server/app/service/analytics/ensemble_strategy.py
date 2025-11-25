@@ -7,12 +7,12 @@ Week 8 Phase 3 implementation.
 """
 
 import logging
-from typing import Dict, Any, List
 from abc import ABC, abstractmethod
 from datetime import datetime
+from typing import Any, Dict, List
 
-from app.service.analytics.model_base import ModelPrediction
 from app.service.analytics.ensemble_helpers import combine_features
+from app.service.analytics.model_base import ModelPrediction
 
 logger = logging.getLogger(__name__)
 
@@ -52,7 +52,9 @@ class AveragingStrategy(EnsembleStrategy):
     def combine(self, predictions: List[ModelPrediction]) -> ModelPrediction:
         """Average all model scores equally."""
         if not predictions:
-            raise ValueError("Cannot combine empty predictions list - at least one model required")
+            raise ValueError(
+                "Cannot combine empty predictions list - at least one model required"
+            )
 
         avg_score = sum(p.score for p in predictions) / len(predictions)
         avg_confidence = sum(p.confidence for p in predictions) / len(predictions)
@@ -63,7 +65,7 @@ class AveragingStrategy(EnsembleStrategy):
             "model_contributions": [
                 {"model": p.model_name, "score": p.score, "confidence": p.confidence}
                 for p in predictions
-            ]
+            ],
         }
 
         return ModelPrediction(
@@ -73,7 +75,7 @@ class AveragingStrategy(EnsembleStrategy):
             model_version="1.0",
             features_used=combine_features(predictions),
             metadata=metadata,
-            timestamp=datetime.utcnow()
+            timestamp=datetime.utcnow(),
         )
 
 
@@ -86,7 +88,9 @@ class WeightedAveragingStrategy(EnsembleStrategy):
     def combine(self, predictions: List[ModelPrediction]) -> ModelPrediction:
         """Combine predictions using confidence weighting."""
         if not predictions:
-            raise ValueError("Cannot combine empty predictions list - at least one model required")
+            raise ValueError(
+                "Cannot combine empty predictions list - at least one model required"
+            )
 
         valid_predictions = [p for p in predictions if p.confidence > 0]
         if not valid_predictions:
@@ -96,10 +100,16 @@ class WeightedAveragingStrategy(EnsembleStrategy):
 
         total_weight = sum(p.confidence for p in valid_predictions)
         if total_weight == 0:
-            raise ValueError("Cannot combine predictions - total confidence weight is zero")
+            raise ValueError(
+                "Cannot combine predictions - total confidence weight is zero"
+            )
 
-        weighted_score = sum(p.score * p.confidence for p in valid_predictions) / total_weight
-        avg_confidence = sum(p.confidence for p in valid_predictions) / len(valid_predictions)
+        weighted_score = (
+            sum(p.score * p.confidence for p in valid_predictions) / total_weight
+        )
+        avg_confidence = sum(p.confidence for p in valid_predictions) / len(
+            valid_predictions
+        )
 
         metadata = {
             "strategy": self.strategy_name,
@@ -109,10 +119,10 @@ class WeightedAveragingStrategy(EnsembleStrategy):
                     "model": p.model_name,
                     "score": p.score,
                     "confidence": p.confidence,
-                    "weight": p.confidence / total_weight
+                    "weight": p.confidence / total_weight,
                 }
                 for p in valid_predictions
-            ]
+            ],
         }
 
         return ModelPrediction(
@@ -122,7 +132,7 @@ class WeightedAveragingStrategy(EnsembleStrategy):
             model_version="1.0",
             features_used=combine_features(valid_predictions),
             metadata=metadata,
-            timestamp=datetime.utcnow()
+            timestamp=datetime.utcnow(),
         )
 
 
@@ -135,7 +145,9 @@ class MaxScoreStrategy(EnsembleStrategy):
     def combine(self, predictions: List[ModelPrediction]) -> ModelPrediction:
         """Take the highest score from all models."""
         if not predictions:
-            raise ValueError("Cannot combine empty predictions list - at least one model required")
+            raise ValueError(
+                "Cannot combine empty predictions list - at least one model required"
+            )
 
         max_prediction = max(predictions, key=lambda p: p.score)
 
@@ -144,7 +156,9 @@ class MaxScoreStrategy(EnsembleStrategy):
             "num_models": len(predictions),
             "selected_model": max_prediction.model_name,
             "selected_score": max_prediction.score,
-            "all_scores": [{"model": p.model_name, "score": p.score} for p in predictions]
+            "all_scores": [
+                {"model": p.model_name, "score": p.score} for p in predictions
+            ],
         }
 
         return ModelPrediction(
@@ -154,7 +168,7 @@ class MaxScoreStrategy(EnsembleStrategy):
             model_version="1.0",
             features_used=combine_features(predictions),
             metadata=metadata,
-            timestamp=datetime.utcnow()
+            timestamp=datetime.utcnow(),
         )
 
 
@@ -174,7 +188,7 @@ def get_ensemble_strategy(strategy_name: str) -> EnsembleStrategy:
     strategies = {
         "averaging": AveragingStrategy,
         "weighted_averaging": WeightedAveragingStrategy,
-        "max_score": MaxScoreStrategy
+        "max_score": MaxScoreStrategy,
     }
 
     strategy_class = strategies.get(strategy_name)

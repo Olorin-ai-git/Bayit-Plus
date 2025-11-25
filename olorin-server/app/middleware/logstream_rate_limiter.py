@@ -11,9 +11,12 @@ Spec: /specs/021-live-merged-logstream/research.md
 """
 
 import os
+
 from fastapi import FastAPI
+
 from app.service.logging import get_bridge_logger
-from .rate_limiter import RateLimitMiddleware, EndpointRateLimits
+
+from .rate_limiter import EndpointRateLimits, RateLimitMiddleware
 
 logger = get_bridge_logger(__name__)
 
@@ -63,9 +66,8 @@ def is_log_streaming_endpoint(path: str) -> bool:
     Returns:
         True if path is a log streaming endpoint, False otherwise
     """
-    return (
-        "/logs/stream" in path or
-        (path.endswith("/logs") and "/investigations/" in path)
+    return "/logs/stream" in path or (
+        path.endswith("/logs") and "/investigations/" in path
     )
 
 
@@ -83,10 +85,7 @@ def is_log_ingestion_endpoint(path: str) -> bool:
     Returns:
         True if path is a log ingestion endpoint, False otherwise
     """
-    return (
-        path.endswith("/client-logs") or
-        "/logs/ingest" in path
-    )
+    return path.endswith("/client-logs") or "/logs/ingest" in path
 
 
 def get_rate_limit_for_endpoint(path: str) -> dict:

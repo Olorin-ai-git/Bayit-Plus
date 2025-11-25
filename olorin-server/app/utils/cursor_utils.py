@@ -49,12 +49,16 @@ def parse_cursor(cursor: str) -> Tuple[int, int]:
         raise ValueError("Cursor cannot be empty")
 
     if "_" not in cursor:
-        raise ValueError(f"Invalid cursor format: {cursor}. Expected format: {{timestamp_ms}}_{{sequence}}")
+        raise ValueError(
+            f"Invalid cursor format: {cursor}. Expected format: {{timestamp_ms}}_{{sequence}}"
+        )
 
     try:
         parts = cursor.split("_")
         if len(parts) != 2:
-            raise ValueError(f"Invalid cursor format: {cursor}. Must have exactly one underscore")
+            raise ValueError(
+                f"Invalid cursor format: {cursor}. Must have exactly one underscore"
+            )
 
         timestamp_ms_str, sequence_str = parts
 
@@ -73,7 +77,9 @@ def parse_cursor(cursor: str) -> Tuple[int, int]:
     except ValueError as e:
         if "Invalid cursor format" in str(e) or "cannot be negative" in str(e):
             raise
-        raise ValueError(f"Invalid cursor format: {cursor}. Components must be valid integers") from e
+        raise ValueError(
+            f"Invalid cursor format: {cursor}. Components must be valid integers"
+        ) from e
 
 
 class CursorGenerator:

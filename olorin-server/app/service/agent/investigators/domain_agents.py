@@ -1,7 +1,7 @@
 """
 Domain Agents - Specialized investigation agents for different analysis domains.
 
-This module contains the individual agent execution functions for network, 
+This module contains the individual agent execution functions for network,
 location, device, logs, and risk analysis.
 """
 
@@ -12,21 +12,31 @@ from typing import Annotated, List
 from langchain_core.messages import AIMessage, BaseMessage
 from langgraph.graph.message import add_messages
 from typing_extensions import TypedDict
+
 from app.service.logging import get_bridge_logger
+
 
 # Define MessagesState since it's not available in langchain_core.messages
 class MessagesState(TypedDict):
     messages: Annotated[List[BaseMessage], add_messages]
 
-# Import the working orchestration domain agents instead of missing analysis services
-from app.service.agent.orchestration.domain_agents.network_agent import network_agent_node
-from app.service.agent.orchestration.domain_agents.device_agent import device_agent_node
-from app.service.agent.orchestration.domain_agents.location_agent import location_agent_node
-from app.service.agent.orchestration.domain_agents.logs_agent import logs_agent_node
-from app.service.agent.orchestration.domain_agents.authentication_agent import authentication_agent_node
-from app.service.agent.orchestration.domain_agents.risk_agent import risk_agent_node
+
 # Remove unused imports since we're delegating to orchestration agents
 from app.service.agent.core import log_agent_execution
+from app.service.agent.orchestration.domain_agents.authentication_agent import (
+    authentication_agent_node,
+)
+from app.service.agent.orchestration.domain_agents.device_agent import device_agent_node
+from app.service.agent.orchestration.domain_agents.location_agent import (
+    location_agent_node,
+)
+from app.service.agent.orchestration.domain_agents.logs_agent import logs_agent_node
+
+# Import the working orchestration domain agents instead of missing analysis services
+from app.service.agent.orchestration.domain_agents.network_agent import (
+    network_agent_node,
+)
+from app.service.agent.orchestration.domain_agents.risk_agent import risk_agent_node
 
 logger = get_bridge_logger(__name__)
 

@@ -6,10 +6,10 @@ Handles file I/O for model registry persistence.
 Week 8 Phase 3 implementation.
 """
 
-import logging
 import json
-from typing import Dict, Any
+import logging
 from pathlib import Path
+from typing import Any, Dict
 
 logger = logging.getLogger(__name__)
 
@@ -29,7 +29,7 @@ def load_registry_data(registry_file: str) -> Dict[str, Dict[str, Any]]:
         return {}
 
     try:
-        with open(registry_file, 'r') as f:
+        with open(registry_file, "r") as f:
             data = json.load(f)
         return data
     except Exception as e:
@@ -49,7 +49,7 @@ def save_registry_data(registry_file: str, data: Dict[str, Dict[str, Any]]) -> b
         True if saved successfully, False otherwise
     """
     try:
-        with open(registry_file, 'w') as f:
+        with open(registry_file, "w") as f:
             json.dump(data, f, indent=2)
         logger.debug(f"Saved registry with {len(data)} models")
         return True

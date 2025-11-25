@@ -9,7 +9,7 @@ import time
 from dataclasses import dataclass, field
 from datetime import datetime
 from enum import Enum
-from typing import Dict, List, Any, Optional
+from typing import Any, Dict, List, Optional
 
 # Configuration Constants
 DEFAULT_SERVER_URL = "http://localhost:8090"
@@ -17,8 +17,8 @@ DEFAULT_TIMEOUT = 300  # 5 minutes
 DEFAULT_CONCURRENT = 3
 DEFAULT_CSV_LIMIT = 2000
 DEFAULT_CSV_FILE = os.path.join(
-    os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))), 
-    "transaction_dataset_10k.csv"
+    os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))),
+    "transaction_dataset_10k.csv",
 )
 DEFAULT_LOG_LEVEL = "INFO"
 DEFAULT_USE_MOCK_IPS = False
@@ -26,12 +26,14 @@ DEFAULT_USE_MOCK_IPS = False
 
 class TestMode(Enum):
     """Test execution modes"""
+
     DEMO = "demo"  # Uses MockLLM for testing (no real API calls)
     LIVE = "live"  # Uses real LLM with production data
 
 
 class OutputFormat(Enum):
     """Report output formats"""
+
     HTML = "html"
     JSON = "json"
     MARKDOWN = "markdown"
@@ -41,6 +43,7 @@ class OutputFormat(Enum):
 @dataclass
 class TestConfiguration:
     """Test runner configuration"""
+
     scenario: Optional[str] = None
     all_scenarios: bool = False
     entity_id: Optional[str] = None
@@ -58,14 +61,14 @@ class TestConfiguration:
     html_report: bool = False
     open_report: bool = False
     use_mock_ips_cache: bool = DEFAULT_USE_MOCK_IPS
-    
+
     # Custom investigation options
     custom_prompt: Optional[str] = None
-    
+
     # Anomaly-based investigation options
     anomaly_id: Optional[str] = None
     list_anomalies: bool = False
-    
+
     # Advanced monitoring options
     show_websocket: bool = False
     show_llm: bool = False
@@ -77,6 +80,7 @@ class TestConfiguration:
 @dataclass
 class TestMetrics:
     """Comprehensive test metrics"""
+
     start_time: float = field(default_factory=time.time)
     end_time: Optional[float] = None
     total_duration: float = 0.0
@@ -94,6 +98,7 @@ class TestMetrics:
 @dataclass
 class InvestigationResult:
     """Results from a single investigation"""
+
     investigation_id: str
     scenario_name: str
     status: str
@@ -112,4 +117,3 @@ class InvestigationResult:
     websocket_events: List[Dict] = field(default_factory=list)
     graph_result: Dict[str, Any] = field(default_factory=dict)
     initial_risk_score: Optional[float] = None
-

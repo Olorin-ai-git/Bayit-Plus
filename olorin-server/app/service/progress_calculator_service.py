@@ -13,14 +13,15 @@ SYSTEM MANDATE Compliance:
 
 import logging
 import time
-from typing import Dict, List, Optional, Any
 from enum import Enum
+from typing import Any, Dict, List, Optional
 
 logger = logging.getLogger(__name__)
 
 
 class ToolStatus(str, Enum):
     """Tool execution status."""
+
     QUEUED = "queued"
     RUNNING = "running"
     COMPLETED = "completed"
@@ -61,8 +62,8 @@ class ProgressCalculatorService:
             "calculate_investigation_progress_started",
             extra={
                 "investigation_id": investigation_id,
-                "operation": "calculate_progress"
-            }
+                "operation": "calculate_progress",
+            },
         )
 
         progress_data = investigation_state.get("progress", {})
@@ -71,13 +72,13 @@ class ProgressCalculatorService:
                 "no_progress_data",
                 extra={
                     "investigation_id": investigation_id,
-                    "progress_percentage": 0.0
-                }
+                    "progress_percentage": 0.0,
+                },
             )
             return {
                 "current_phase": None,
                 "progress_percentage": 0.0,
-                "phase_progress": {}
+                "phase_progress": {},
             }
 
         # Extract phases information
@@ -86,7 +87,7 @@ class ProgressCalculatorService:
             return {
                 "current_phase": progress_data.get("current_phase"),
                 "progress_percentage": 0.0,
-                "phase_progress": {}
+                "phase_progress": {},
             }
 
         # Calculate progress for each phase
@@ -107,10 +108,11 @@ class ProgressCalculatorService:
                 "phase_percentage": phase_percentage,
                 "status": phase_status,
                 "tools_completed": sum(
-                    1 for tool in phase.get("tools_executed", [])
+                    1
+                    for tool in phase.get("tools_executed", [])
                     if tool.get("status") in ["COMPLETED", "completed"]
                 ),
-                "tools_total": len(phase.get("tools_executed", []))
+                "tools_total": len(phase.get("tools_executed", [])),
             }
 
             # Track current phase (last phase that's in progress or running)
@@ -134,14 +136,14 @@ class ProgressCalculatorService:
                 "current_phase": current_phase,
                 "phase_count": len(phases),
                 "latency_ms": round(elapsed_ms, 2),
-                "operation": "calculate_progress"
-            }
+                "operation": "calculate_progress",
+            },
         )
 
         return {
             "current_phase": current_phase or progress_data.get("current_phase"),
             "progress_percentage": round(progress_percentage, 2),
-            "phase_progress": phase_progress
+            "phase_progress": phase_progress,
         }
 
     def calculate_phase_progress(self, tools_executed: List[Dict[str, Any]]) -> float:
@@ -164,7 +166,9 @@ class ProgressCalculatorService:
             total_progress += tool_progress
 
         # Average progress across all tools in phase
-        phase_percentage = (total_progress / len(tools_executed)) if tools_executed else 0.0
+        phase_percentage = (
+            (total_progress / len(tools_executed)) if tools_executed else 0.0
+        )
         return max(0.0, min(100.0, phase_percentage))
 
     def calculate_tool_progress(self, status: str) -> float:

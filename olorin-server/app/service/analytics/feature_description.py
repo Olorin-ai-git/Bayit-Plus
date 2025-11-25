@@ -59,11 +59,7 @@ def get_risk_level(score: float) -> str:
         return "MINIMAL"
 
 
-def generate_explanation_text(
-    score: float,
-    top_features: list,
-    features: dict
-) -> str:
+def generate_explanation_text(score: float, top_features: list, features: dict) -> str:
     """
     Generate human-readable explanation text.
 

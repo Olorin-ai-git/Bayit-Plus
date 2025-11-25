@@ -2,6 +2,7 @@ import json
 from typing import Any, Dict, List, Optional
 
 from pydantic import BaseModel, Field, HttpUrl
+
 from app.service.logging import get_bridge_logger
 
 logger = get_bridge_logger(__name__)

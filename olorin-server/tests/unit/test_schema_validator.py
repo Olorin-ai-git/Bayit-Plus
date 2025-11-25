@@ -11,18 +11,19 @@ Constitutional Compliance:
 - Fail-fast validation
 """
 
-import pytest
-from unittest.mock import Mock, MagicMock
-from typing import List, Dict, Any
+from typing import Any, Dict, List
+from unittest.mock import MagicMock, Mock
 
-from app.service.agent.tools.database_tool.schema_validator import SchemaValidator
+import pytest
+
 from app.service.agent.tools.database_tool.schema_models import (
-    SchemaInfo,
     ColumnInfo,
-    ValidationResult,
     SchemaDifference,
-    TypeMismatch
+    SchemaInfo,
+    TypeMismatch,
+    ValidationResult,
 )
+from app.service.agent.tools.database_tool.schema_validator import SchemaValidator
 
 
 class TestSchemaValidatorInit:
@@ -38,7 +39,7 @@ class TestSchemaValidatorInit:
         validator = SchemaValidator()
 
         # Should have table_name attribute loaded from config
-        assert hasattr(validator, 'table_name')
+        assert hasattr(validator, "table_name")
         assert isinstance(validator.table_name, str)
         assert len(validator.table_name) > 0
 
@@ -49,19 +50,21 @@ class TestSchemaInfoDataClass:
     def test_schema_info_creation(self):
         """Test creating SchemaInfo instance."""
         columns = [
-            ColumnInfo(name='id', data_type='INTEGER', is_nullable=False, max_length=None),
-            ColumnInfo(name='email', data_type='VARCHAR', is_nullable=True, max_length=255)
+            ColumnInfo(
+                name="id", data_type="INTEGER", is_nullable=False, max_length=None
+            ),
+            ColumnInfo(
+                name="email", data_type="VARCHAR", is_nullable=True, max_length=255
+            ),
         ]
 
         schema = SchemaInfo(
-            table_name='users',
-            columns=columns,
-            database_type='postgresql'
+            table_name="users", columns=columns, database_type="postgresql"
         )
 
-        assert schema.table_name == 'users'
+        assert schema.table_name == "users"
         assert len(schema.columns) == 2
-        assert schema.database_type == 'postgresql'
+        assert schema.database_type == "postgresql"
 
 
 class TestColumnInfoDataClass:
@@ -70,24 +73,18 @@ class TestColumnInfoDataClass:
     def test_column_info_creation(self):
         """Test creating ColumnInfo instance."""
         column = ColumnInfo(
-            name='user_id',
-            data_type='BIGINT',
-            is_nullable=False,
-            max_length=None
+            name="user_id", data_type="BIGINT", is_nullable=False, max_length=None
         )
 
-        assert column.name == 'user_id'
-        assert column.data_type == 'BIGINT'
+        assert column.name == "user_id"
+        assert column.data_type == "BIGINT"
         assert column.is_nullable is False
         assert column.max_length is None
 
     def test_column_info_with_max_length(self):
         """Test ColumnInfo with max_length for VARCHAR."""
         column = ColumnInfo(
-            name='description',
-            data_type='VARCHAR',
-            is_nullable=True,
-            max_length=1000
+            name="description", data_type="VARCHAR", is_nullable=True, max_length=1000
         )
 
         assert column.max_length == 1000
@@ -105,7 +102,7 @@ class TestValidationResultDataClass:
             type_mismatches=[],
             column_count_snowflake=333,
             column_count_postgresql=333,
-            summary="All 333 columns match perfectly"
+            summary="All 333 columns match perfectly",
         )
 
         assert result.is_valid is True
@@ -120,20 +117,28 @@ class TestSchemaValidator:
     def mock_snowflake_provider(self):
         """Create mock Snowflake provider."""
         provider = Mock()
-        provider.execute_query = Mock(return_value=[
-            {'COLUMN_NAME': 'ID', 'DATA_TYPE': 'NUMBER', 'IS_NULLABLE': 'NO'},
-            {'COLUMN_NAME': 'EMAIL', 'DATA_TYPE': 'VARCHAR', 'IS_NULLABLE': 'YES'}
-        ])
+        provider.execute_query = Mock(
+            return_value=[
+                {"COLUMN_NAME": "ID", "DATA_TYPE": "NUMBER", "IS_NULLABLE": "NO"},
+                {"COLUMN_NAME": "EMAIL", "DATA_TYPE": "VARCHAR", "IS_NULLABLE": "YES"},
+            ]
+        )
         return provider
 
     @pytest.fixture
     def mock_postgresql_provider(self):
         """Create mock PostgreSQL provider."""
         provider = Mock()
-        provider.execute_query = Mock(return_value=[
-            {'column_name': 'id', 'data_type': 'bigint', 'is_nullable': False},
-            {'column_name': 'email', 'data_type': 'character varying', 'is_nullable': True}
-        ])
+        provider.execute_query = Mock(
+            return_value=[
+                {"column_name": "id", "data_type": "bigint", "is_nullable": False},
+                {
+                    "column_name": "email",
+                    "data_type": "character varying",
+                    "is_nullable": True,
+                },
+            ]
+        )
         return provider
 
     def test_get_schema_snowflake(self, mock_snowflake_provider):
@@ -143,7 +148,7 @@ class TestSchemaValidator:
 
         assert isinstance(schema, SchemaInfo)
         assert len(schema.columns) == 2
-        assert schema.database_type == 'snowflake'
+        assert schema.database_type == "snowflake"
 
     def test_get_schema_postgresql(self, mock_postgresql_provider):
         """Test extracting schema from PostgreSQL."""
@@ -152,28 +157,28 @@ class TestSchemaValidator:
 
         assert isinstance(schema, SchemaInfo)
         assert len(schema.columns) == 2
-        assert schema.database_type == 'postgresql'
+        assert schema.database_type == "postgresql"
 
     def test_compare_schemas_identical(self):
         """Test comparing two identical schemas."""
         validator = SchemaValidator()
 
         schema1 = SchemaInfo(
-            table_name='test',
+            table_name="test",
             columns=[
-                ColumnInfo('id', 'INTEGER', False, None),
-                ColumnInfo('name', 'VARCHAR', True, 255)
+                ColumnInfo("id", "INTEGER", False, None),
+                ColumnInfo("name", "VARCHAR", True, 255),
             ],
-            database_type='snowflake'
+            database_type="snowflake",
         )
 
         schema2 = SchemaInfo(
-            table_name='test',
+            table_name="test",
             columns=[
-                ColumnInfo('id', 'INTEGER', False, None),
-                ColumnInfo('name', 'VARCHAR', True, 255)
+                ColumnInfo("id", "INTEGER", False, None),
+                ColumnInfo("name", "VARCHAR", True, 255),
             ],
-            database_type='postgresql'
+            database_type="postgresql",
         )
 
         differences = validator.compare_schemas(schema1, schema2)
@@ -186,72 +191,71 @@ class TestSchemaValidator:
         validator = SchemaValidator()
 
         schema1 = SchemaInfo(
-            table_name='test',
+            table_name="test",
             columns=[
-                ColumnInfo('id', 'INTEGER', False, None),
-                ColumnInfo('name', 'VARCHAR', True, 255),
-                ColumnInfo('email', 'VARCHAR', True, 255)
+                ColumnInfo("id", "INTEGER", False, None),
+                ColumnInfo("name", "VARCHAR", True, 255),
+                ColumnInfo("email", "VARCHAR", True, 255),
             ],
-            database_type='snowflake'
+            database_type="snowflake",
         )
 
         schema2 = SchemaInfo(
-            table_name='test',
+            table_name="test",
             columns=[
-                ColumnInfo('id', 'INTEGER', False, None),
-                ColumnInfo('name', 'VARCHAR', True, 255)
+                ColumnInfo("id", "INTEGER", False, None),
+                ColumnInfo("name", "VARCHAR", True, 255),
                 # Missing 'email' column
             ],
-            database_type='postgresql'
+            database_type="postgresql",
         )
 
         differences = validator.compare_schemas(schema1, schema2)
 
         assert len(differences) > 0, "Should detect missing column"
         # Should have a difference for missing 'email' column
-        missing_cols = [d for d in differences if d.difference_type == 'missing_column']
+        missing_cols = [d for d in differences if d.difference_type == "missing_column"]
         assert len(missing_cols) == 1
-        assert missing_cols[0].column_name == 'email'
+        assert missing_cols[0].column_name == "email"
 
     def test_compare_schemas_type_mismatch(self):
         """Test detecting type mismatches."""
         validator = SchemaValidator()
 
         schema1 = SchemaInfo(
-            table_name='test',
-            columns=[
-                ColumnInfo('amount', 'DECIMAL', False, None)
-            ],
-            database_type='snowflake'
+            table_name="test",
+            columns=[ColumnInfo("amount", "DECIMAL", False, None)],
+            database_type="snowflake",
         )
 
         schema2 = SchemaInfo(
-            table_name='test',
-            columns=[
-                ColumnInfo('amount', 'INTEGER', False, None)  # Wrong type
-            ],
-            database_type='postgresql'
+            table_name="test",
+            columns=[ColumnInfo("amount", "INTEGER", False, None)],  # Wrong type
+            database_type="postgresql",
         )
 
         differences = validator.compare_schemas(schema1, schema2)
 
         assert len(differences) > 0, "Should detect type mismatch"
-        type_mismatches = [d for d in differences if d.difference_type == 'type_mismatch']
+        type_mismatches = [
+            d for d in differences if d.difference_type == "type_mismatch"
+        ]
         assert len(type_mismatches) == 1
 
-    def test_validate_parity_success(self, mock_snowflake_provider, mock_postgresql_provider):
+    def test_validate_parity_success(
+        self, mock_snowflake_provider, mock_postgresql_provider
+    ):
         """Test successful schema parity validation."""
         validator = SchemaValidator()
 
         result = validator.validate_parity(
-            mock_snowflake_provider,
-            mock_postgresql_provider
+            mock_snowflake_provider, mock_postgresql_provider
         )
 
         assert isinstance(result, ValidationResult)
-        assert hasattr(result, 'is_valid')
-        assert hasattr(result, 'differences')
-        assert hasattr(result, 'summary')
+        assert hasattr(result, "is_valid")
+        assert hasattr(result, "differences")
+        assert hasattr(result, "summary")
 
     def test_normalize_column_name(self):
         """Test column name normalization (case insensitive)."""
@@ -259,9 +263,9 @@ class TestSchemaValidator:
 
         # Snowflake uses uppercase, PostgreSQL uses lowercase
         # Normalization should make them comparable
-        normalized_upper = validator._normalize_column_name('USER_ID')
-        normalized_lower = validator._normalize_column_name('user_id')
-        normalized_mixed = validator._normalize_column_name('User_Id')
+        normalized_upper = validator._normalize_column_name("USER_ID")
+        normalized_lower = validator._normalize_column_name("user_id")
+        normalized_mixed = validator._normalize_column_name("User_Id")
 
         # All should normalize to same value
         assert normalized_upper == normalized_lower == normalized_mixed
@@ -275,8 +279,8 @@ class TestSchemaValidator:
         # VARCHAR (Snowflake) → CHARACTER VARYING (PostgreSQL)
 
         # Should map equivalent types
-        snowflake_type = validator._normalize_type_name('NUMBER', 'snowflake')
-        postgresql_type = validator._normalize_type_name('BIGINT', 'postgresql')
+        snowflake_type = validator._normalize_type_name("NUMBER", "snowflake")
+        postgresql_type = validator._normalize_type_name("BIGINT", "postgresql")
 
         # Both should map to comparable type
         assert snowflake_type is not None
@@ -291,14 +295,12 @@ class TestSchemaValidatorErrorHandling:
         validator = SchemaValidator()
 
         failing_provider = Mock()
-        failing_provider.execute_query = Mock(
-            side_effect=Exception("Query failed")
-        )
+        failing_provider.execute_query = Mock(side_effect=Exception("Query failed"))
 
         with pytest.raises(Exception) as exc_info:
             validator.get_schema(failing_provider)
 
-        assert 'query failed' in str(exc_info.value).lower()
+        assert "query failed" in str(exc_info.value).lower()
 
     def test_validate_parity_requires_both_providers(self):
         """Test that validate_parity requires both providers."""

@@ -13,15 +13,15 @@ Usage:
 """
 
 import asyncio
-import sys
 import random
-from pathlib import Path
+import sys
 from datetime import datetime, timedelta
+from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
-from app.service.logging import get_bridge_logger
 from app.service.config_loader import get_config_loader
+from app.service.logging import get_bridge_logger
 
 logger = get_bridge_logger(__name__)
 
@@ -37,22 +37,44 @@ class RealisticDataGenerator:
 
         # Card data
         self.card_brands = ["Visa", "Mastercard", "Amex", "Discover"]
-        self.card_issuers = ["Chase", "Wells Fargo", "Bank of America", "Citi", "Capital One", "US Bank"]
+        self.card_issuers = [
+            "Chase",
+            "Wells Fargo",
+            "Bank of America",
+            "Citi",
+            "Capital One",
+            "US Bank",
+        ]
         self.card_types = ["credit", "debit", "prepaid"]
 
         # ISPs
         self.isps = ["Comcast", "AT&T", "Verizon", "Charter", "CenturyLink", "Cox"]
-        self.high_risk_isps = ["VPN Provider", "Tor Exit Node", "Proxy Service", "Hosting Provider"]
+        self.high_risk_isps = [
+            "VPN Provider",
+            "Tor Exit Node",
+            "Proxy Service",
+            "Hosting Provider",
+        ]
 
         # Merchants
-        self.merchant_names = ["TechStore", "GameWorld", "DigitalGoods", "Electronics Plus", "Software Hub"]
+        self.merchant_names = [
+            "TechStore",
+            "GameWorld",
+            "DigitalGoods",
+            "Electronics Plus",
+            "Software Hub",
+        ]
         self.partners = ["PaymentGateway", "FraudGuard", "RiskShield", "SecurePayments"]
 
         # Decisions and statuses
         self.decisions = ["APPROVE", "REJECT", "REVIEW", "SOFT_APPROVE"]
         self.failure_reasons = [
-            "Insufficient Funds", "Card Declined", "Risk Score Too High",
-            "Fraud Detected", "Invalid CVV", "Expired Card"
+            "Insufficient Funds",
+            "Card Declined",
+            "Risk Score Too High",
+            "Fraud Detected",
+            "Invalid CVV",
+            "Expired Card",
         ]
 
         # Languages
@@ -65,6 +87,7 @@ class RealisticDataGenerator:
     def generate_device_id(self) -> str:
         """Generate realistic device fingerprint ID."""
         import uuid
+
         return str(uuid.uuid4())
 
     def generate_ip_country_code(self, is_fraud: bool) -> str:
@@ -109,137 +132,150 @@ class RealisticDataGenerator:
             return "REVIEW"
         return "APPROVE"
 
-    def generate_value_for_column(self, column_name: str, is_fraud: bool, model_score: float) -> str:
+    def generate_value_for_column(
+        self, column_name: str, is_fraud: bool, model_score: float
+    ) -> str:
         """Generate realistic value for any column."""
         col = column_name.lower()
 
         # IDs and identifiers
-        if 'tx_id' in col or '_id' in col:
+        if "tx_id" in col or "_id" in col:
             import uuid
-            return str(uuid.uuid4())[:random.randint(12, 36)]
+
+            return str(uuid.uuid4())[: random.randint(12, 36)]
 
         # Phone numbers
-        if 'phone' in col:
-            if 'country' in col:
+        if "phone" in col:
+            if "country" in col:
                 return random.choice(["+1", "+44", "+49", "+86", "+7"])
             return self.generate_phone_number()
 
         # Device
-        if 'device_id' in col or 'visitor_id' in col:
+        if "device_id" in col or "visitor_id" in col:
             return self.generate_device_id()
-        if 'device_os' in col:
+        if "device_os" in col:
             return random.choice(["iOS 16.5", "Android 13", "Windows 11", "macOS 13"])
 
         # Location
-        if 'ip_country' in col or 'bin_country' in col or 'payment_method_country' in col:
+        if (
+            "ip_country" in col
+            or "bin_country" in col
+            or "payment_method_country" in col
+        ):
             return self.generate_ip_country_code(is_fraud)
-        if 'isp' in col:
+        if "isp" in col:
             return self.generate_isp(is_fraud)
 
         # Card data
-        if 'card_brand' in col:
+        if "card_brand" in col:
             return self.generate_card_brand()
-        if 'bin' in col:
+        if "bin" in col:
             return self.generate_bin()
-        if 'last_four' in col:
+        if "last_four" in col:
             return self.generate_last_four()
-        if 'card_issuer' in col or col.endswith('issuer'):
+        if "card_issuer" in col or col.endswith("issuer"):
             return random.choice(self.card_issuers)
-        if 'card_type' in col:
+        if "card_type" in col:
             return random.choice(self.card_types)
-        if 'card_category' in col:
+        if "card_category" in col:
             return random.choice(["consumer", "business", "corporate"])
 
         # Email
-        if 'email' in col:
+        if "email" in col:
             if is_fraud:
                 domains = ["temp-mail.org", "10minutemail.com", "guerrillamail.com"]
             else:
                 domains = ["gmail.com", "yahoo.com", "outlook.com"]
             return f"user{random.randint(1000, 9999)}@{random.choice(domains)}"
-        if 'email_domain' in col:
+        if "email_domain" in col:
             if is_fraud:
                 return random.choice(["temp-mail.org", "10minutemail.com"])
             return random.choice(["gmail.com", "yahoo.com", "outlook.com"])
 
         # Currency
-        if 'currency' in col:
+        if "currency" in col:
             return random.choice(["USD", "EUR", "GBP", "JPY", "CAD"])
 
         # Merchants and partners
-        if 'merchant' in col or 'store' in col:
-            if 'name' in col:
+        if "merchant" in col or "store" in col:
+            if "name" in col:
                 return self.generate_merchant_name()
-            if 'segment' in col:
+            if "segment" in col:
                 return f"segment_{random.randint(1, 10)}"
-        if 'partner' in col:
-            if 'name' in col:
+        if "partner" in col:
+            if "name" in col:
                 return random.choice(self.partners)
-            if 'industry' in col:
+            if "industry" in col:
                 return random.choice(["ecommerce", "gaming", "travel", "services"])
 
         # Decisions and statuses
-        if 'decision' in col:
+        if "decision" in col:
             return self.generate_decision(is_fraud)
-        if 'model_decision' in col:
+        if "model_decision" in col:
             return self.generate_model_decision(model_score)
-        if 'risk_mode' in col:
+        if "risk_mode" in col:
             return random.choice(["strict", "balanced", "lenient"])
 
         # Reasons
-        if 'reason' in col:
+        if "reason" in col:
             if is_fraud:
                 return random.choice(self.failure_reasons)
             return random.choice(["Normal Transaction", "Approved", "Low Risk"])
 
         # Product info
-        if 'product' in col:
-            if 'platform' in col:
+        if "product" in col:
+            if "platform" in col:
                 return random.choice(["iOS", "Android", "Web", "Desktop"])
-            if 'gametitle' in col or 'game' in col:
+            if "gametitle" in col or "game" in col:
                 return f"Game Title {random.randint(1, 100)}"
-            return random.choice(["Digital Goods", "Physical Goods", "Services", "Subscription"])
+            return random.choice(
+                ["Digital Goods", "Physical Goods", "Services", "Subscription"]
+            )
 
         # Language
-        if 'language' in col:
+        if "language" in col:
             return random.choice(self.languages)
 
         # Network
-        if 'asn' in col:
+        if "asn" in col:
             return f"AS{random.randint(1000, 99999)}"
 
         # Payment tokens
-        if 'token' in col:
+        if "token" in col:
             return f"tok_{random.randint(100000, 999999)}"
 
         # Versions
-        if 'version' in col:
-            return f"{random.randint(1, 5)}.{random.randint(0, 9)}.{random.randint(0, 20)}"
+        if "version" in col:
+            return (
+                f"{random.randint(1, 5)}.{random.randint(0, 9)}.{random.randint(0, 20)}"
+            )
 
         # KYC
-        if 'kyc' in col or 'identity' in col:
+        if "kyc" in col or "identity" in col:
             return random.choice(["verified", "pending", "failed", "not_required"])
 
         # Rule
-        if 'rule' in col:
-            if 'description' in col:
+        if "rule" in col:
+            if "description" in col:
                 return f"Fraud detection rule {random.randint(1, 100)}"
             return f"RULE_{random.randint(1, 50)}"
 
         # Attack
-        if 'attack' in col:
-            return random.choice(["brute_force", "credential_stuffing", "account_takeover", "none"])
+        if "attack" in col:
+            return random.choice(
+                ["brute_force", "credential_stuffing", "account_takeover", "none"]
+            )
 
         # 3D Secure
-        if '3d' in col or 'three_d' in col:
+        if "3d" in col or "three_d" in col:
             return random.choice(["success", "failed", "unavailable", "not_enrolled"])
 
         # Failure/Error categories
-        if 'failure' in col or 'category' in col:
+        if "failure" in col or "category" in col:
             return random.choice(["fraud", "technical", "customer_action", "system"])
 
         # Sellers
-        if 'seller' in col:
+        if "seller" in col:
             return f"seller_{random.randint(1000, 9999)}"
 
         # Default: generate realistic identifier
@@ -263,18 +299,18 @@ async def fix_placeholder_values():
         conn = await asyncpg.connect(conn_str)
         logger.info(f"✅ Connected to PostgreSQL: {pg_config['database']}")
 
-        schema = pg_config.get('schema', 'public')
-        table = pg_config.get('transactions_table', 'transactions_enriched')
+        schema = pg_config.get("schema", "public")
+        table = pg_config.get("transactions_table", "transactions_enriched")
         full_table = f"{schema}.{table}"
 
         # Find all text columns with placeholders
-        columns_query = '''
+        columns_query = """
             SELECT column_name
             FROM information_schema.columns
             WHERE table_name = 'transactions_enriched'
             AND data_type IN ('text', 'character varying')
             ORDER BY ordinal_position
-        '''
+        """
         text_columns = await conn.fetch(columns_query)
 
         generator = RealisticDataGenerator()
@@ -283,7 +319,9 @@ async def fix_placeholder_values():
         records_query = f"SELECT tx_id_key, is_fraud_tx, model_score FROM {full_table}"
         records = await conn.fetch(records_query)
 
-        logger.info(f"📝 Processing {len(records)} records across {len(text_columns)} text columns")
+        logger.info(
+            f"📝 Processing {len(records)} records across {len(text_columns)} text columns"
+        )
 
         updated_count = 0
         batch_size = 50
@@ -294,20 +332,22 @@ async def fix_placeholder_values():
 
             async with conn.transaction():
                 for record in batch_records:
-                    tx_id = record['tx_id_key']
-                    is_fraud = record['is_fraud_tx'] == 1
-                    model_score = record['model_score'] or 0.5
+                    tx_id = record["tx_id_key"]
+                    is_fraud = record["is_fraud_tx"] == 1
+                    model_score = record["model_score"] or 0.5
 
                     updates = {}
 
                     for col in text_columns:
-                        col_name = col['column_name']
+                        col_name = col["column_name"]
 
                         # Check if column has placeholder
-                        check_query = f"SELECT {col_name} FROM {full_table} WHERE tx_id_key = $1"
+                        check_query = (
+                            f"SELECT {col_name} FROM {full_table} WHERE tx_id_key = $1"
+                        )
                         current_value = await conn.fetchval(check_query, tx_id)
 
-                        if current_value and str(current_value).startswith('value_'):
+                        if current_value and str(current_value).startswith("value_"):
                             # Generate realistic replacement
                             new_value = generator.generate_value_for_column(
                                 col_name, is_fraud, model_score
@@ -316,7 +356,9 @@ async def fix_placeholder_values():
 
                     if updates:
                         # Build UPDATE statement
-                        set_clauses = [f"{col} = ${i+2}" for i, col in enumerate(updates.keys())]
+                        set_clauses = [
+                            f"{col} = ${i+2}" for i, col in enumerate(updates.keys())
+                        ]
                         update_query = f"""
                             UPDATE {full_table}
                             SET {', '.join(set_clauses)}
@@ -329,12 +371,14 @@ async def fix_placeholder_values():
             # Progress logging
             if (batch_start // batch_size) % 10 == 0:
                 progress = (batch_end * 100) // len(records)
-                logger.info(f"Progress: {batch_end}/{len(records)} ({progress}%) - {updated_count} values updated")
+                logger.info(
+                    f"Progress: {batch_end}/{len(records)} ({progress}%) - {updated_count} values updated"
+                )
 
         # Verify no placeholders remain
         remaining_placeholders = 0
         for col in text_columns:
-            col_name = col['column_name']
+            col_name = col["column_name"]
             check_query = f"""
                 SELECT COUNT(*)
                 FROM {full_table}

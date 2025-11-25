@@ -10,6 +10,7 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).parent))
 
 from app.service.logging import get_bridge_logger
+
 logger = get_bridge_logger(__name__)
 
 
@@ -17,7 +18,9 @@ def test_transformation():
     """Test the agent_results to domain_findings transformation"""
 
     # Load the investigation result
-    result_path = Path("logs/investigations/DEMO_unified_test_device_spoofing_1762398932_20251106_031532/results/investigation_result.json")
+    result_path = Path(
+        "logs/investigations/DEMO_unified_test_device_spoofing_1762398932_20251106_031532/results/investigation_result.json"
+    )
 
     if not result_path.exists():
         print(f"❌ Result file not found: {result_path}")
@@ -79,10 +82,16 @@ def test_transformation():
                 "confidence": agent_data.get("confidence", 0.35),
                 "evidence": evidence if isinstance(evidence, list) else [],
                 "summary": findings.get("summary", f"{domain_name} domain analysis"),
-                "status": "OK" if agent_data.get("risk_score") is not None else "INSUFFICIENT_EVIDENCE"
+                "status": (
+                    "OK"
+                    if agent_data.get("risk_score") is not None
+                    else "INSUFFICIENT_EVIDENCE"
+                ),
             }
 
-            print(f"   ✅ Transformed {domain_name}: risk={agent_data.get('risk_score')}, evidence={len(evidence) if isinstance(evidence, list) else 0}")
+            print(
+                f"   ✅ Transformed {domain_name}: risk={agent_data.get('risk_score')}, evidence={len(evidence) if isinstance(evidence, list) else 0}"
+            )
 
     print()
     print(f"✅ Transformation complete: {len(transformed_domain_findings)} domains")
@@ -90,10 +99,18 @@ def test_transformation():
 
     # Test risk aggregation requirements
     print("📊 Risk Aggregation Check:")
-    numeric_scores = [df["risk_score"] for df in transformed_domain_findings.values() if df.get("risk_score") is not None]
+    numeric_scores = [
+        df["risk_score"]
+        for df in transformed_domain_findings.values()
+        if df.get("risk_score") is not None
+    ]
 
     # Count signals (evidence points)
-    signals = sum(1 for df in transformed_domain_findings.values() if df.get("evidence") and len(df["evidence"]) > 0)
+    signals = sum(
+        1
+        for df in transformed_domain_findings.values()
+        if df.get("evidence") and len(df["evidence"]) > 0
+    )
 
     print(f"   Numeric scores: {len(numeric_scores)} domains have risk scores")
     print(f"   Risk scores: {numeric_scores}")
@@ -104,21 +121,31 @@ def test_transformation():
     enough = (len(numeric_scores) >= 2) or (len(numeric_scores) >= 1 and signals >= 2)
 
     if enough:
-        print(f"✅ Evidence gating PASSES: {len(numeric_scores)} scores, {signals} signals")
+        print(
+            f"✅ Evidence gating PASSES: {len(numeric_scores)} scores, {signals} signals"
+        )
         print(f"   Requirement: ≥2 scores OR (≥1 score AND ≥2 signals)")
     else:
-        print(f"❌ Evidence gating BLOCKS: {len(numeric_scores)} scores, {signals} signals")
+        print(
+            f"❌ Evidence gating BLOCKS: {len(numeric_scores)} scores, {signals} signals"
+        )
         print(f"   Requirement: ≥2 scores OR (≥1 score AND ≥2 signals)")
     print()
 
     # Calculate what the final risk would be
     if len(numeric_scores) >= 2:
         # Weight by confidence
-        confidences = [transformed_domain_findings[d]["confidence"] for d in transformed_domain_findings if transformed_domain_findings[d].get("risk_score") is not None]
+        confidences = [
+            transformed_domain_findings[d]["confidence"]
+            for d in transformed_domain_findings
+            if transformed_domain_findings[d].get("risk_score") is not None
+        ]
         total_conf = sum(confidences)
 
         if total_conf > 0:
-            weighted_sum = sum(score * conf for score, conf in zip(numeric_scores, confidences))
+            weighted_sum = sum(
+                score * conf for score, conf in zip(numeric_scores, confidences)
+            )
             final_risk = weighted_sum / total_conf
             print(f"📊 Calculated Final Risk: {final_risk:.3f}")
             print(f"   Weighted by confidences: {confidences}")

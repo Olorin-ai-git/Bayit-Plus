@@ -14,10 +14,10 @@ from typing import Any, Dict, List, Optional
 from .fraud_detection_statistical_amount_frequency import (
     FraudStatisticalAmountFrequencyAnalysis,
 )
+from .fraud_detection_statistical_outlier import FraudStatisticalOutlierAnalysis
 from .fraud_detection_statistical_velocity import (
     FraudStatisticalVelocityZScoreAnalysis,
 )
-from .fraud_detection_statistical_outlier import FraudStatisticalOutlierAnalysis
 
 
 class FraudStatisticalAnalysis:

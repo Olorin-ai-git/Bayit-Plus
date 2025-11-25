@@ -5,11 +5,12 @@ This module wraps the existing RealSnowflakeClient to conform to
 the DatabaseProvider interface for the database abstraction layer.
 """
 
-from typing import Any, Dict, List, Optional
 import asyncio
+from typing import Any, Dict, List, Optional
 
-from app.service.logging import get_bridge_logger
 from app.service.agent.tools.snowflake_tool.real_client import RealSnowflakeClient
+from app.service.logging import get_bridge_logger
+
 from .database_provider import DatabaseProvider
 
 logger = get_bridge_logger(__name__)
@@ -45,14 +46,14 @@ class SnowflakeProvider(DatabaseProvider):
     async def disconnect_async(self) -> None:
         """
         Close the Snowflake database connection asynchronously.
-        
+
         This method properly awaits the disconnect operation, ensuring all queries
         have completed before closing the connection. Use this from async code.
-        
+
         Safe to call multiple times.
         """
         try:
-            if self._client and hasattr(self._client, 'disconnect'):
+            if self._client and hasattr(self._client, "disconnect"):
                 await self._client.disconnect()
                 logger.debug("Snowflake provider disconnected")
             else:
@@ -63,18 +64,19 @@ class SnowflakeProvider(DatabaseProvider):
     def disconnect(self) -> None:
         """
         Close the Snowflake database connection synchronously.
-        
+
         Safe to call multiple times.
         Properly closes the underlying connection to prevent atexit callback errors.
-        
+
         Note: When called from a running event loop, this schedules the disconnect
         as a background task and doesn't wait for completion. For async code, use
         disconnect_async() instead.
         """
         try:
-            if self._client and hasattr(self._client, 'disconnect'):
+            if self._client and hasattr(self._client, "disconnect"):
                 # RealSnowflakeClient.disconnect() is async, so we need to run it in an event loop
                 import asyncio
+
                 try:
                     # Try to get the current running event loop
                     loop = asyncio.get_running_loop()
@@ -89,7 +91,9 @@ class SnowflakeProvider(DatabaseProvider):
                         if loop.is_running():
                             # Loop is running but get_running_loop() failed - schedule task
                             loop.create_task(self._client.disconnect())
-                            logger.debug("Snowflake disconnect scheduled as background task")
+                            logger.debug(
+                                "Snowflake disconnect scheduled as background task"
+                            )
                         else:
                             # Loop exists but not running - run the disconnect synchronously
                             loop.run_until_complete(self._client.disconnect())
@@ -104,13 +108,11 @@ class SnowflakeProvider(DatabaseProvider):
             logger.warning(f"Error during Snowflake disconnect: {e}")
 
     async def execute_query_async(
-        self,
-        query: str,
-        params: Optional[Dict[str, Any]] = None
+        self, query: str, params: Optional[Dict[str, Any]] = None
     ) -> List[Dict[str, Any]]:
         """
         Execute a query against Snowflake database (async version - USE THIS!).
-        
+
         Does NOT block the event loop. Properly awaits async operations.
 
         Args:
@@ -133,13 +135,11 @@ class SnowflakeProvider(DatabaseProvider):
             raise RuntimeError(f"Query execution failed: {e}") from e
 
     def execute_query(
-        self,
-        query: str,
-        params: Optional[Dict[str, Any]] = None
+        self, query: str, params: Optional[Dict[str, Any]] = None
     ) -> List[Dict[str, Any]]:
         """
         DEPRECATED: Use execute_query_async() instead!
-        
+
         This sync wrapper should NOT be called from async code - it blocks the event loop.
 
         Args:
@@ -189,20 +189,23 @@ class SnowflakeProvider(DatabaseProvider):
     def get_full_table_name(self) -> str:
         """
         Get the full qualified table name: database.schema.table
-        
+
         Uses environment variables:
         - SNOWFLAKE_DATABASE (default: DBT)
         - SNOWFLAKE_SCHEMA (default: DBT_PROD)
         - SNOWFLAKE_TRANSACTIONS_TABLE (default: TXS)
-        
+
         Returns:
             Full qualified table name: database.schema.table
         """
         import os
-        from app.service.agent.tools.snowflake_tool.schema_constants import get_required_env_var
-        
-        database = os.getenv('SNOWFLAKE_DATABASE', 'DBT')
-        schema = os.getenv('SNOWFLAKE_SCHEMA', 'DBT_PROD')
-        table = os.getenv('SNOWFLAKE_TRANSACTIONS_TABLE', 'TXS')
-        
+
+        from app.service.agent.tools.snowflake_tool.schema_constants import (
+            get_required_env_var,
+        )
+
+        database = os.getenv("SNOWFLAKE_DATABASE", "DBT")
+        schema = os.getenv("SNOWFLAKE_SCHEMA", "DBT_PROD")
+        table = os.getenv("SNOWFLAKE_TRANSACTIONS_TABLE", "TXS")
+
         return f"{database}.{schema}.{table}"

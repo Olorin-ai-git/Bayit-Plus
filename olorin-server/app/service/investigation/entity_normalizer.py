@@ -30,11 +30,7 @@ class EntityNormalizer:
         """
         self.max_length = max_length
 
-    def normalize(
-        self,
-        entity_id: str,
-        max_length: Optional[int] = None
-    ) -> str:
+    def normalize(self, entity_id: str, max_length: Optional[int] = None) -> str:
         """
         Normalize entity ID for filesystem paths.
 
@@ -89,7 +85,9 @@ class EntityNormalizer:
 
         # Handle case where normalization results in empty string
         if not normalized:
-            logger.warning(f"Entity ID '{entity_id}' normalized to empty string, using 'unknown'")
+            logger.warning(
+                f"Entity ID '{entity_id}' normalized to empty string, using 'unknown'"
+            )
             return "unknown"
 
         # Limit length
@@ -97,11 +95,12 @@ class EntityNormalizer:
         if len(normalized) > length_limit:
             # Truncate and append hash suffix for uniqueness if needed
             # Use first part of normalized string
-            truncated = normalized[:length_limit - 9]  # Reserve space for hash suffix
+            truncated = normalized[: length_limit - 9]  # Reserve space for hash suffix
             # Remove trailing dash if present
             truncated = truncated.rstrip("-")
             # Append short hash for uniqueness (first 8 chars of hash)
             import hashlib
+
             hash_suffix = hashlib.md5(entity_id.encode()).hexdigest()[:8]
             normalized = f"{truncated}-{hash_suffix}"
             logger.debug(
@@ -135,4 +134,3 @@ class EntityNormalizer:
         normalized = "".join(char for char in normalized if ord(char) >= 32)
 
         return normalized
-

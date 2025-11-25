@@ -284,7 +284,7 @@ class TestTranslationInvariant:
         queries = [
             "SELECT * FROM users",
             "SELECT COUNT(*) FROM orders",
-            "SELECT * FROM users WHERE age > 18"
+            "SELECT * FROM users WHERE age > 18",
         ]
 
         for query in queries:

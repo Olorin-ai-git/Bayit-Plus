@@ -8,6 +8,7 @@ Focused on folder structure validation and configuration validation.
 
 from pathlib import Path
 from typing import List
+
 from .data_models import ReportConfig, ReportTheme
 
 

@@ -10,10 +10,10 @@ Implements sophisticated fraud pattern detection for:
 Strategy: Aggressive High Recall (target >85% recall, accept 15-20% FPR)
 """
 
-from typing import Any, Dict, Optional, List
-from datetime import datetime, timedelta
-from collections import defaultdict
 import statistics
+from collections import defaultdict
+from datetime import datetime, timedelta
+from typing import Any, Dict, List, Optional
 
 from app.service.logging import get_bridge_logger
 
@@ -28,8 +28,8 @@ VELOCITY_BURST_COUNT = 5  # >= 5 transactions triggers burst detection
 VELOCITY_BURST_WINDOW_MINUTES = 5  # Within 5 minutes
 
 AMOUNT_CLUSTERING_THRESHOLDS = [
-    (99, 101),    # $99-$101 range
-    (499, 501),   # $499-$501 range
+    (99, 101),  # $99-$101 range
+    (499, 501),  # $499-$501 range
     (999, 1001),  # $999-$1001 range
 ]
 AMOUNT_CLUSTERING_MIN_COUNT = 2  # Minimum occurrences to flag as clustering
@@ -45,7 +45,7 @@ class FraudPatternRecognizer:
         self,
         processed_data: Dict[str, Any],
         minimum_support: float,
-        historical_patterns: Optional[Dict[str, Any]] = None
+        historical_patterns: Optional[Dict[str, Any]] = None,
     ) -> Dict[str, Any]:
         """
         Recognize fraud patterns in processed transaction data.
@@ -59,15 +59,21 @@ class FraudPatternRecognizer:
             Dictionary with detected fraud patterns, confidence, and anomalies
         """
         try:
-            logger.info("🔍 Starting fraud pattern recognition (aggressive high-recall strategy)")
+            logger.info(
+                "🔍 Starting fraud pattern recognition (aggressive high-recall strategy)"
+            )
 
             # Extract transaction events
             events = processed_data.get("events", [])
             if not events:
-                logger.warning("No transaction events found for fraud pattern recognition")
+                logger.warning(
+                    "No transaction events found for fraud pattern recognition"
+                )
                 return self._empty_result(minimum_support)
 
-            logger.info(f"📊 Analyzing {len(events)} transaction events for fraud patterns")
+            logger.info(
+                f"📊 Analyzing {len(events)} transaction events for fraud patterns"
+            )
 
             # Detect all 4 fraud patterns
             card_testing_patterns = self._detect_card_testing(events)
@@ -85,7 +91,9 @@ class FraudPatternRecognizer:
             # Calculate overall confidence and support
             total_events = len(events)
             flagged_events = sum(p.get("affected_count", 0) for p in all_patterns)
-            support = min(1.0, flagged_events / total_events) if total_events > 0 else 0.0
+            support = (
+                min(1.0, flagged_events / total_events) if total_events > 0 else 0.0
+            )
 
             # Confidence calculation (aggressive: higher confidence for any detection)
             confidence = self._calculate_confidence(all_patterns, total_events)
@@ -104,8 +112,8 @@ class FraudPatternRecognizer:
                     "card_testing": len(card_testing_patterns),
                     "velocity_burst": len(velocity_burst_patterns),
                     "amount_clustering": len(amount_clustering_patterns),
-                    "time_anomaly": len(time_anomaly_patterns)
-                }
+                    "time_anomaly": len(time_anomaly_patterns),
+                },
             }
 
             logger.info(
@@ -122,10 +130,12 @@ class FraudPatternRecognizer:
                 "error": str(e),
                 "patterns": [],
                 "method": "fraud_pattern_recognition",
-                "support_threshold": minimum_support
+                "support_threshold": minimum_support,
             }
 
-    def _detect_card_testing(self, events: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
+    def _detect_card_testing(
+        self, events: List[Dict[str, Any]]
+    ) -> List[Dict[str, Any]]:
         """
         Detect card testing patterns: small amounts followed by large amounts.
 
@@ -163,21 +173,25 @@ class FraudPatternRecognizer:
 
                     # Check if large purchase
                     if next_amount >= CARD_TESTING_LARGE_THRESHOLD:
-                        patterns.append({
-                            "pattern_type": "card_testing",
-                            "pattern_name": "Card Testing Sequence",
-                            "description": f"Small test amount (${current_amount:.2f}) followed by large purchase (${next_amount:.2f}) within {time_diff:.1f} minutes",
-                            "confidence": 0.85,  # High confidence for clear pattern
-                            "risk_adjustment": 0.20,  # +20% risk boost
-                            "affected_count": 2,
-                            "evidence": {
-                                "test_amount": current_amount,
-                                "large_amount": next_amount,
-                                "time_between_minutes": time_diff,
-                                "test_transaction": self._extract_tx_id(current),
-                                "large_transaction": self._extract_tx_id(next_event)
+                        patterns.append(
+                            {
+                                "pattern_type": "card_testing",
+                                "pattern_name": "Card Testing Sequence",
+                                "description": f"Small test amount (${current_amount:.2f}) followed by large purchase (${next_amount:.2f}) within {time_diff:.1f} minutes",
+                                "confidence": 0.85,  # High confidence for clear pattern
+                                "risk_adjustment": 0.20,  # +20% risk boost
+                                "affected_count": 2,
+                                "evidence": {
+                                    "test_amount": current_amount,
+                                    "large_amount": next_amount,
+                                    "time_between_minutes": time_diff,
+                                    "test_transaction": self._extract_tx_id(current),
+                                    "large_transaction": self._extract_tx_id(
+                                        next_event
+                                    ),
+                                },
                             }
-                        })
+                        )
                         logger.debug(
                             f"🚨 Card testing detected: ${current_amount:.2f} → ${next_amount:.2f} "
                             f"in {time_diff:.1f} min"
@@ -185,7 +199,9 @@ class FraudPatternRecognizer:
 
         return patterns
 
-    def _detect_velocity_bursts(self, events: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
+    def _detect_velocity_bursts(
+        self, events: List[Dict[str, Any]]
+    ) -> List[Dict[str, Any]]:
         """
         Detect velocity burst patterns: >= 5 transactions within 5 minutes.
         """
@@ -221,21 +237,27 @@ class FraudPatternRecognizer:
                 burst_amounts = [a for a in burst_amounts if a is not None]
                 total_amount = sum(burst_amounts) if burst_amounts else 0
 
-                patterns.append({
-                    "pattern_type": "velocity_burst",
-                    "pattern_name": "Transaction Velocity Burst",
-                    "description": f"{len(burst_txns)} transactions within {VELOCITY_BURST_WINDOW_MINUTES} minutes (total: ${total_amount:.2f})",
-                    "confidence": 0.80,  # High confidence
-                    "risk_adjustment": 0.10,  # +10% risk boost
-                    "affected_count": len(burst_txns),
-                    "evidence": {
-                        "transaction_count": len(burst_txns),
-                        "time_window_minutes": VELOCITY_BURST_WINDOW_MINUTES,
-                        "total_amount": total_amount,
-                        "avg_amount": total_amount / len(burst_txns) if burst_txns else 0,
-                        "transaction_ids": [self._extract_tx_id(e) for e in burst_txns[:5]]  # First 5
+                patterns.append(
+                    {
+                        "pattern_type": "velocity_burst",
+                        "pattern_name": "Transaction Velocity Burst",
+                        "description": f"{len(burst_txns)} transactions within {VELOCITY_BURST_WINDOW_MINUTES} minutes (total: ${total_amount:.2f})",
+                        "confidence": 0.80,  # High confidence
+                        "risk_adjustment": 0.10,  # +10% risk boost
+                        "affected_count": len(burst_txns),
+                        "evidence": {
+                            "transaction_count": len(burst_txns),
+                            "time_window_minutes": VELOCITY_BURST_WINDOW_MINUTES,
+                            "total_amount": total_amount,
+                            "avg_amount": (
+                                total_amount / len(burst_txns) if burst_txns else 0
+                            ),
+                            "transaction_ids": [
+                                self._extract_tx_id(e) for e in burst_txns[:5]
+                            ],  # First 5
+                        },
                     }
-                })
+                )
                 logger.debug(
                     f"🚨 Velocity burst detected: {len(burst_txns)} txns in "
                     f"{VELOCITY_BURST_WINDOW_MINUTES} min, total ${total_amount:.2f}"
@@ -244,7 +266,9 @@ class FraudPatternRecognizer:
 
         return patterns
 
-    def _detect_amount_clustering(self, events: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
+    def _detect_amount_clustering(
+        self, events: List[Dict[str, Any]]
+    ) -> List[Dict[str, Any]]:
         """
         Detect amount clustering patterns: multiple near-threshold amounts.
 
@@ -266,21 +290,25 @@ class FraudPatternRecognizer:
                 amounts = [self._extract_amount(e) for e in clustered_txns]
                 amounts = [a for a in amounts if a is not None]
 
-                patterns.append({
-                    "pattern_type": "amount_clustering",
-                    "pattern_name": f"Amount Clustering (${min_amt}-${max_amt})",
-                    "description": f"{len(clustered_txns)} transactions clustered around ${(min_amt + max_amt) / 2:.0f} threshold",
-                    "confidence": 0.75,  # Good confidence for threshold avoidance
-                    "risk_adjustment": 0.15,  # +15% risk boost
-                    "affected_count": len(clustered_txns),
-                    "evidence": {
-                        "threshold_range": f"${min_amt}-${max_amt}",
-                        "transaction_count": len(clustered_txns),
-                        "amounts": amounts[:10],  # First 10 amounts
-                        "avg_amount": statistics.mean(amounts) if amounts else 0,
-                        "transaction_ids": [self._extract_tx_id(e) for e in clustered_txns[:5]]
+                patterns.append(
+                    {
+                        "pattern_type": "amount_clustering",
+                        "pattern_name": f"Amount Clustering (${min_amt}-${max_amt})",
+                        "description": f"{len(clustered_txns)} transactions clustered around ${(min_amt + max_amt) / 2:.0f} threshold",
+                        "confidence": 0.75,  # Good confidence for threshold avoidance
+                        "risk_adjustment": 0.15,  # +15% risk boost
+                        "affected_count": len(clustered_txns),
+                        "evidence": {
+                            "threshold_range": f"${min_amt}-${max_amt}",
+                            "transaction_count": len(clustered_txns),
+                            "amounts": amounts[:10],  # First 10 amounts
+                            "avg_amount": statistics.mean(amounts) if amounts else 0,
+                            "transaction_ids": [
+                                self._extract_tx_id(e) for e in clustered_txns[:5]
+                            ],
+                        },
                     }
-                })
+                )
                 logger.debug(
                     f"🚨 Amount clustering detected: {len(clustered_txns)} txns "
                     f"around ${(min_amt + max_amt) / 2:.0f} threshold"
@@ -288,7 +316,9 @@ class FraudPatternRecognizer:
 
         return patterns
 
-    def _detect_time_anomalies(self, events: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
+    def _detect_time_anomalies(
+        self, events: List[Dict[str, Any]]
+    ) -> List[Dict[str, Any]]:
         """
         Detect time-of-day anomaly patterns: transactions at unusual hours.
 
@@ -318,33 +348,52 @@ class FraudPatternRecognizer:
         if len(hours_of_day) >= 5 and unusual_hour_txns:
             try:
                 mean_hour = statistics.mean(hours_of_day)
-                stdev_hour = statistics.stdev(hours_of_day) if len(hours_of_day) > 1 else 1
+                stdev_hour = (
+                    statistics.stdev(hours_of_day) if len(hours_of_day) > 1 else 1
+                )
 
-                unusual_hour_values = [timestamp.hour for event in unusual_hour_txns
-                                      if (timestamp := self._extract_timestamp(event)) is not None]
+                unusual_hour_values = [
+                    timestamp.hour
+                    for event in unusual_hour_txns
+                    if (timestamp := self._extract_timestamp(event)) is not None
+                ]
 
                 if unusual_hour_values:
                     avg_unusual_hour = statistics.mean(unusual_hour_values)
-                    z_score = abs((avg_unusual_hour - mean_hour) / stdev_hour) if stdev_hour > 0 else 0
+                    z_score = (
+                        abs((avg_unusual_hour - mean_hour) / stdev_hour)
+                        if stdev_hour > 0
+                        else 0
+                    )
 
                     # Check if anomalous (relaxed threshold for high recall)
-                    if z_score >= TIME_ANOMALY_MIN_ZSCORE or len(unusual_hour_txns) / len(events) >= 0.3:
-                        patterns.append({
-                            "pattern_type": "time_anomaly",
-                            "pattern_name": "Time-of-Day Anomaly",
-                            "description": f"{len(unusual_hour_txns)} transactions during unusual hours (12am-5am, 10pm-12am)",
-                            "confidence": 0.70,  # Moderate confidence (time can vary)
-                            "risk_adjustment": 0.10,  # +10% risk boost
-                            "affected_count": len(unusual_hour_txns),
-                            "evidence": {
-                                "unusual_hour_count": len(unusual_hour_txns),
-                                "unusual_hour_percentage": len(unusual_hour_txns) / len(events) * 100,
-                                "z_score": z_score,
-                                "avg_hour": mean_hour,
-                                "unusual_hours": unusual_hour_values[:10],
-                                "transaction_ids": [self._extract_tx_id(e) for e in unusual_hour_txns[:5]]
+                    if (
+                        z_score >= TIME_ANOMALY_MIN_ZSCORE
+                        or len(unusual_hour_txns) / len(events) >= 0.3
+                    ):
+                        patterns.append(
+                            {
+                                "pattern_type": "time_anomaly",
+                                "pattern_name": "Time-of-Day Anomaly",
+                                "description": f"{len(unusual_hour_txns)} transactions during unusual hours (12am-5am, 10pm-12am)",
+                                "confidence": 0.70,  # Moderate confidence (time can vary)
+                                "risk_adjustment": 0.10,  # +10% risk boost
+                                "affected_count": len(unusual_hour_txns),
+                                "evidence": {
+                                    "unusual_hour_count": len(unusual_hour_txns),
+                                    "unusual_hour_percentage": len(unusual_hour_txns)
+                                    / len(events)
+                                    * 100,
+                                    "z_score": z_score,
+                                    "avg_hour": mean_hour,
+                                    "unusual_hours": unusual_hour_values[:10],
+                                    "transaction_ids": [
+                                        self._extract_tx_id(e)
+                                        for e in unusual_hour_txns[:5]
+                                    ],
+                                },
                             }
-                        })
+                        )
                         logger.debug(
                             f"🚨 Time anomaly detected: {len(unusual_hour_txns)} txns "
                             f"during unusual hours (z-score: {z_score:.2f})"
@@ -354,7 +403,9 @@ class FraudPatternRecognizer:
 
         return patterns
 
-    def _calculate_confidence(self, patterns: List[Dict[str, Any]], total_events: int) -> float:
+    def _calculate_confidence(
+        self, patterns: List[Dict[str, Any]], total_events: int
+    ) -> float:
         """
         Calculate overall confidence based on detected patterns.
 
@@ -402,8 +453,14 @@ class FraudPatternRecognizer:
     def _extract_amount(self, event: Dict[str, Any]) -> Optional[float]:
         """Extract transaction amount from event."""
         # Try multiple field names
-        for field in ["PAID_AMOUNT_VALUE_IN_CURRENCY", "paid_amount_value_in_currency",
-                     "amount", "AMOUNT", "transaction_amount", "value"]:
+        for field in [
+            "PAID_AMOUNT_VALUE_IN_CURRENCY",
+            "paid_amount_value_in_currency",
+            "amount",
+            "AMOUNT",
+            "transaction_amount",
+            "value",
+        ]:
             if field in event:
                 try:
                     return float(event[field])
@@ -414,8 +471,14 @@ class FraudPatternRecognizer:
     def _extract_timestamp(self, event: Dict[str, Any]) -> Optional[datetime]:
         """Extract timestamp from event."""
         # Try multiple field names
-        for field in ["TX_DATETIME", "tx_datetime", "timestamp", "TIMESTAMP",
-                     "transaction_time", "created_at"]:
+        for field in [
+            "TX_DATETIME",
+            "tx_datetime",
+            "timestamp",
+            "TIMESTAMP",
+            "transaction_time",
+            "created_at",
+        ]:
             if field in event:
                 try:
                     value = event[field]
@@ -423,7 +486,7 @@ class FraudPatternRecognizer:
                         return value
                     elif isinstance(value, str):
                         # Try parsing ISO format
-                        return datetime.fromisoformat(value.replace('Z', '+00:00'))
+                        return datetime.fromisoformat(value.replace("Z", "+00:00"))
                 except Exception:
                     continue
         return None
@@ -445,7 +508,7 @@ class FraudPatternRecognizer:
             "actual_support": 0.0,
             "confidence": 0.0,
             "total_events_analyzed": 0,
-            "total_patterns_detected": 0
+            "total_patterns_detected": 0,
         }
 
 

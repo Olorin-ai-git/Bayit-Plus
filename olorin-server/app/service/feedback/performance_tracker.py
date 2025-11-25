@@ -8,17 +8,16 @@ Week 11 Phase 4 implementation.
 
 import logging
 import os
-from typing import Dict, Any, List, Optional
-from datetime import datetime
 from collections import deque
+from datetime import datetime
+from typing import Any, Dict, List, Optional
 
 from app.service.feedback.performance_helpers import (
-    filter_recent_snapshots,
     aggregate_snapshot_metrics,
+    calculate_metric_trend,
     check_metric_degradation,
-    calculate_metric_trend
+    filter_recent_snapshots,
 )
-
 
 logger = logging.getLogger(__name__)
 
@@ -34,22 +33,30 @@ class PerformanceTracker:
         """Initialize performance tracker."""
         window_size_env = os.getenv("PERFORMANCE_WINDOW_SIZE")
         if not window_size_env:
-            raise RuntimeError("PERFORMANCE_WINDOW_SIZE environment variable is required")
+            raise RuntimeError(
+                "PERFORMANCE_WINDOW_SIZE environment variable is required"
+            )
         self.window_size = int(window_size_env)
 
         degradation_threshold_env = os.getenv("PERFORMANCE_DEGRADATION_THRESHOLD")
         if not degradation_threshold_env:
-            raise RuntimeError("PERFORMANCE_DEGRADATION_THRESHOLD environment variable is required")
+            raise RuntimeError(
+                "PERFORMANCE_DEGRADATION_THRESHOLD environment variable is required"
+            )
         self.degradation_threshold = float(degradation_threshold_env)
 
         lookback_hours_env = os.getenv("PERFORMANCE_LOOKBACK_HOURS")
         if not lookback_hours_env:
-            raise RuntimeError("PERFORMANCE_LOOKBACK_HOURS environment variable is required")
+            raise RuntimeError(
+                "PERFORMANCE_LOOKBACK_HOURS environment variable is required"
+            )
         self.lookback_hours = int(lookback_hours_env)
 
         min_samples_env = os.getenv("PERFORMANCE_MIN_SAMPLES")
         if not min_samples_env:
-            raise RuntimeError("PERFORMANCE_MIN_SAMPLES environment variable is required")
+            raise RuntimeError(
+                "PERFORMANCE_MIN_SAMPLES environment variable is required"
+            )
         self.min_samples = int(min_samples_env)
 
         self.performance_snapshots: deque = deque(maxlen=self.window_size)
@@ -69,7 +76,7 @@ class PerformanceTracker:
         accuracy: float,
         f1_score: float,
         sample_count: int,
-        metadata: Optional[Dict[str, Any]] = None
+        metadata: Optional[Dict[str, Any]] = None,
     ) -> None:
         """Record a performance snapshot."""
         snapshot = {
@@ -81,7 +88,7 @@ class PerformanceTracker:
             "f1_score": f1_score,
             "sample_count": sample_count,
             "metadata": metadata or {},
-            "timestamp": datetime.utcnow()
+            "timestamp": datetime.utcnow(),
         }
 
         self.performance_snapshots.append(snapshot)
@@ -92,18 +99,14 @@ class PerformanceTracker:
         )
 
     def set_baseline(
-        self,
-        precision: float,
-        recall: float,
-        accuracy: float,
-        f1_score: float
+        self, precision: float, recall: float, accuracy: float, f1_score: float
     ) -> None:
         """Set baseline performance metrics for comparison."""
         self.baseline_metrics = {
             "precision": precision,
             "recall": recall,
             "accuracy": accuracy,
-            "f1_score": f1_score
+            "f1_score": f1_score,
         }
 
         logger.info(
@@ -114,15 +117,14 @@ class PerformanceTracker:
     def get_current_performance(self) -> Optional[Dict[str, Any]]:
         """Get current performance metrics from recent snapshots."""
         recent = filter_recent_snapshots(
-            list(self.performance_snapshots),
-            self.lookback_hours
+            list(self.performance_snapshots), self.lookback_hours
         )
 
         if len(recent) < self.min_samples:
             return {
                 "status": "insufficient_data",
                 "message": f"Need at least {self.min_samples} samples, have {len(recent)}",
-                "sample_count": len(recent)
+                "sample_count": len(recent),
             }
 
         return aggregate_snapshot_metrics(recent)
@@ -130,26 +132,20 @@ class PerformanceTracker:
     def check_degradation(self) -> Dict[str, Any]:
         """Check if performance has degraded below threshold."""
         if not self.baseline_metrics:
-            return {
-                "degraded": False,
-                "message": "No baseline set for comparison"
-            }
+            return {"degraded": False, "message": "No baseline set for comparison"}
 
         current = self.get_current_performance()
 
         if current and current.get("status") == "insufficient_data":
-            return {
-                "degraded": False,
-                "message": current["message"]
-            }
+            return {"degraded": False, "message": current["message"]}
 
         if not current or "metrics" not in current:
-            raise RuntimeError("Cannot check degradation - current performance unavailable")
+            raise RuntimeError(
+                "Cannot check degradation - current performance unavailable"
+            )
 
         degraded_metrics = check_metric_degradation(
-            self.baseline_metrics,
-            current["metrics"],
-            self.degradation_threshold
+            self.baseline_metrics, current["metrics"], self.degradation_threshold
         )
 
         return {
@@ -157,14 +153,13 @@ class PerformanceTracker:
             "degraded_metrics": degraded_metrics,
             "baseline": self.baseline_metrics,
             "current_summary": {k: v["mean"] for k, v in current["metrics"].items()},
-            "checked_at": datetime.utcnow().isoformat()
+            "checked_at": datetime.utcnow().isoformat(),
         }
 
     def get_performance_trend(self, metric_name: str) -> Dict[str, Any]:
         """Get trend for a specific metric."""
         recent = filter_recent_snapshots(
-            list(self.performance_snapshots),
-            self.lookback_hours
+            list(self.performance_snapshots), self.lookback_hours
         )
 
         return calculate_metric_trend(recent, metric_name)

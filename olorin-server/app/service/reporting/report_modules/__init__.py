@@ -8,8 +8,7 @@ from .report_data_processor import ReportDataProcessor
 from .report_summary import InvestigationSummary, ReportSummaryGenerator
 
 __all__ = [
-    'ReportDataProcessor',
-    'InvestigationSummary',
-    'ReportSummaryGenerator',
+    "ReportDataProcessor",
+    "InvestigationSummary",
+    "ReportSummaryGenerator",
 ]
-

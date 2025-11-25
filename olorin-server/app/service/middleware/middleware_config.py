@@ -12,8 +12,9 @@ from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from starlette.middleware.base import BaseHTTPMiddleware
 
-from ..config import SvcSettings
 from app.service.logging import get_bridge_logger
+
+from ..config import SvcSettings
 
 logger = get_bridge_logger(__name__)
 
@@ -80,22 +81,28 @@ def _configure_rate_limiting(app: FastAPI) -> None:
         period = int(os.getenv("RATE_LIMIT_PERIOD", "60"))
 
     app.add_middleware(RateLimitMiddleware, calls=calls, period=period)
-    logger.info(f"Rate limiting configured for {environment}: {calls} requests per {period} seconds")
+    logger.info(
+        f"Rate limiting configured for {environment}: {calls} requests per {period} seconds"
+    )
 
 
 def _configure_cors_middleware(app: FastAPI) -> None:
     """Configure CORS middleware with environment-specific security."""
     environment = os.getenv("APP_ENV", "local")
-    
+
     # Environment-specific CORS configuration
     if environment == "prd":
         # Production: Use only environment-specified origins, no fallback
         allowed_origins_str = os.getenv("ALLOWED_ORIGINS")
         if not allowed_origins_str:
-            logger.error("ALLOWED_ORIGINS not set in production - CORS will deny all requests")
+            logger.error(
+                "ALLOWED_ORIGINS not set in production - CORS will deny all requests"
+            )
             allowed_origins = []
         else:
-            allowed_origins = [origin.strip() for origin in allowed_origins_str.split(",")]
+            allowed_origins = [
+                origin.strip() for origin in allowed_origins_str.split(",")
+            ]
         allow_credentials = False  # Disable credentials in production for security
     else:
         # Development/staging: Allow localhost origins for development (all microservice ports)
@@ -119,14 +126,20 @@ def _configure_cors_middleware(app: FastAPI) -> None:
             "http://127.0.0.1:3007",
         ]
         allowed_origins_str = os.getenv("ALLOWED_ORIGINS", ",".join(default_origins))
-        allowed_origins = [origin.strip() for origin in allowed_origins_str.split(",") if origin.strip()]
+        allowed_origins = [
+            origin.strip()
+            for origin in allowed_origins_str.split(",")
+            if origin.strip()
+        ]
         allow_credentials = True  # Allow credentials in development
-    
+
     # Security validation: reject wildcard origins if credentials are enabled
     if allow_credentials and "*" in allowed_origins:
-        logger.error("SECURITY RISK: Cannot use wildcard origins with credentials enabled")
+        logger.error(
+            "SECURITY RISK: Cannot use wildcard origins with credentials enabled"
+        )
         allowed_origins = [origin for origin in allowed_origins if origin != "*"]
-    
+
     app.add_middleware(
         CORSMiddleware,
         allow_origins=allowed_origins,
@@ -134,7 +147,7 @@ def _configure_cors_middleware(app: FastAPI) -> None:
         allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"],
         allow_headers=[
             "Authorization",
-            "Content-Type", 
+            "Content-Type",
             "Accept",
             "X-Requested-With",
             "Cache-Control",
@@ -158,21 +171,27 @@ def _configure_cors_middleware(app: FastAPI) -> None:
         ],
         max_age=600,  # Cache preflight requests for 10 minutes
     )
-    
-    logger.info(f"CORS configured for {environment} environment with {len(allowed_origins)} allowed origins")
+
+    logger.info(
+        f"CORS configured for {environment} environment with {len(allowed_origins)} allowed origins"
+    )
     if environment != "prd" and len(allowed_origins) > 0:
-        logger.debug(f"CORS allowed origins: {allowed_origins[:5]}{'...' if len(allowed_origins) > 5 else ''}")
+        logger.debug(
+            f"CORS allowed origins: {allowed_origins[:5]}{'...' if len(allowed_origins) > 5 else ''}"
+        )
 
 
 def _configure_error_middleware(app: FastAPI) -> None:
     """Configure production error handling middleware."""
     from app.middleware.production_error_middleware import ProductionErrorMiddleware
-    
+
     # Add error handling middleware (must be first middleware)
     environment = os.getenv("APP_ENV", "local")
     app.add_middleware(ProductionErrorMiddleware, environment=environment)
-    
-    logger.info(f"Production error middleware configured for environment: {environment}")
+
+    logger.info(
+        f"Production error middleware configured for environment: {environment}"
+    )
 
 
 def _configure_transaction_id_middleware(app: FastAPI) -> None:

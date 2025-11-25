@@ -5,11 +5,13 @@ Handles the summary phase of investigations using modular components.
 """
 
 from datetime import datetime
-from typing import Dict, Any
+from typing import Any, Dict
+
 from langchain_core.messages import AIMessage
 
-from app.service.logging import get_bridge_logger
 from app.service.agent.orchestration.state_schema import InvestigationState
+from app.service.logging import get_bridge_logger
+
 from .summary import SummaryAnalysisEngine, SummaryGenerator
 
 logger = get_bridge_logger(__name__)
@@ -35,7 +37,9 @@ class SummaryHandler:
         confidence = llm_assessment.get("confidence", 0.5)
 
         # Generate summary including LLM reasoning
-        summary = self.summary_generator.generate_investigation_summary_with_llm(state, llm_assessment)
+        summary = self.summary_generator.generate_investigation_summary_with_llm(
+            state, llm_assessment
+        )
         summary_msg = AIMessage(content=summary)
 
         # Calculate total duration
@@ -47,7 +51,7 @@ class SummaryHandler:
             "risk_score": final_risk_score,
             "confidence_score": confidence,
             "end_time": datetime.utcnow().isoformat(),
-            "total_duration_ms": duration_ms
+            "total_duration_ms": duration_ms,
         }
 
     def _calculate_duration(self, state: InvestigationState) -> int:

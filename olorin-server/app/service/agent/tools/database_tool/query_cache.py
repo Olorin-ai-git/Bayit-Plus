@@ -12,7 +12,7 @@ Constitutional Compliance:
 
 import threading
 from collections import OrderedDict
-from typing import Optional, Dict, Any
+from typing import Any, Dict, Optional
 
 from app.service.logging import get_bridge_logger
 
@@ -132,12 +132,12 @@ class QueryCache:
         """
         with self._lock:
             return {
-                'size': len(self._cache),
-                'max_size': self.max_size,
-                'hit_count': self.hit_count,
-                'miss_count': self.miss_count,
-                'hit_rate': self.get_hit_rate(),
-                'total_requests': self.hit_count + self.miss_count
+                "size": len(self._cache),
+                "max_size": self.max_size,
+                "hit_count": self.hit_count,
+                "miss_count": self.miss_count,
+                "hit_rate": self.get_hit_rate(),
+                "total_requests": self.hit_count + self.miss_count,
             }
 
     def _normalize_key(self, query: str) -> str:
@@ -155,4 +155,4 @@ class QueryCache:
         """
         # Collapse multiple spaces into single space
         # Trim leading/trailing whitespace
-        return ' '.join(query.split())
+        return " ".join(query.split())

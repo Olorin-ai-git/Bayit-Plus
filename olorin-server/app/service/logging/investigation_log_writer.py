@@ -5,9 +5,9 @@ Handles writing investigation logs to files in JSON format.
 """
 
 import json
-from pathlib import Path
-from typing import Dict, Any, Optional
 from datetime import datetime
+from pathlib import Path
+from typing import Any, Dict, Optional
 
 
 class InvestigationLogWriter:
@@ -42,31 +42,28 @@ Start Time: {datetime.utcnow().isoformat()}
 Format: Each entry is a JSON line for easy parsing and analysis.
 {'='*100}
 """
-        with open(self.log_file, 'w') as f:
+        with open(self.log_file, "w") as f:
             f.write(header)
 
     def write_entry(self, entry_type: str, data: Dict[str, Any]) -> None:
         """Write entry to log file"""
-        entry = {
-            "type": entry_type,
-            "data": data
-        }
+        entry = {"type": entry_type, "data": data}
 
         try:
-            with open(self.log_file, 'a') as f:
+            with open(self.log_file, "a") as f:
                 f.write(json.dumps(entry) + "\n")
         except Exception as e:
             print(f"Error writing to log file: {e}")
 
     def write_summary(self, summary: Dict[str, Any]) -> None:
         """Write JSON summary file"""
-        with open(self.json_file, 'w') as f:
+        with open(self.json_file, "w") as f:
             json.dump(summary, f, indent=2)
 
     def append_to_log(self, text: str) -> None:
         """Append text to log file"""
         try:
-            with open(self.log_file, 'a') as f:
+            with open(self.log_file, "a") as f:
                 f.write(text)
         except Exception as e:
             print(f"Error appending to log file: {e}")

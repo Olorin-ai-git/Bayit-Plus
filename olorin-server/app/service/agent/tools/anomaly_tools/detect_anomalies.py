@@ -4,14 +4,15 @@ Detect Anomalies Tool for LangGraph Agents
 Tool for running anomaly detection on time series data.
 """
 
-from typing import Any, Dict, Optional
-from datetime import datetime
-from pydantic import BaseModel, Field
-from langchain_core.tools import BaseTool
 import uuid
+from datetime import datetime
+from typing import Any, Dict, Optional
 
-from app.service.logging import get_bridge_logger
+from langchain_core.tools import BaseTool
+from pydantic import BaseModel, Field
+
 from app.service.anomaly.detection_job import run_detection
+from app.service.logging import get_bridge_logger
 
 logger = get_bridge_logger(__name__)
 
@@ -49,27 +50,26 @@ class DetectAnomaliesTool(BaseTool):
         """Execute the detect_anomalies tool."""
         try:
             detector_uuid = uuid.UUID(detector_id)
-            window_from_dt = datetime.fromisoformat(window_from.replace('Z', '+00:00'))
-            window_to_dt = datetime.fromisoformat(window_to.replace('Z', '+00:00'))
+            window_from_dt = datetime.fromisoformat(window_from.replace("Z", "+00:00"))
+            window_to_dt = datetime.fromisoformat(window_to.replace("Z", "+00:00"))
 
             detection_run = run_detection(
                 detector_id=detector_uuid,
                 window_from=window_from_dt,
-                window_to=window_to_dt
+                window_to=window_to_dt,
             )
 
             return {
-                'run_id': str(detection_run.id),
-                'status': detection_run.status,
-                'detector_id': detector_id,
-                'window_from': window_from,
-                'window_to': window_to
+                "run_id": str(detection_run.id),
+                "status": detection_run.status,
+                "detector_id": detector_id,
+                "window_from": window_from,
+                "window_to": window_to,
             }
 
         except ValueError as e:
             logger.error(f"Detect anomalies tool validation error: {e}")
-            return {'error': str(e), 'run_id': None}
+            return {"error": str(e), "run_id": None}
         except Exception as e:
             logger.error(f"Detect anomalies tool error: {e}", exc_info=True)
-            return {'error': str(e), 'run_id': None}
-
+            return {"error": str(e), "run_id": None}

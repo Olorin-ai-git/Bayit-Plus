@@ -11,10 +11,12 @@ Constitutional Compliance:
 """
 
 from datetime import datetime, timedelta
-from typing import Tuple, Optional
+from typing import Optional, Tuple
+
 import pytz
-from app.service.logging import get_bridge_logger
+
 from app.router.models.investigation_comparison_models import WindowPreset, WindowSpec
+from app.service.logging import get_bridge_logger
 
 logger = get_bridge_logger(__name__)
 
@@ -25,7 +27,7 @@ NY_TZ = pytz.timezone("America/New_York")
 def compute_window(
     preset: WindowPreset,
     custom_start: Optional[datetime] = None,
-    custom_end: Optional[datetime] = None
+    custom_end: Optional[datetime] = None,
 ) -> Tuple[datetime, datetime, str]:
     """
     Compute window start, end, and label based on preset.
@@ -50,10 +52,11 @@ def compute_window(
 
     elif preset == WindowPreset.RETRO_14D_6MO_BACK:
         import os
+
         # Get max lookback months from environment (default: 6 months)
-        max_lookback_months = int(os.getenv('ANALYTICS_MAX_LOOKBACK_MONTHS', '6'))
+        max_lookback_months = int(os.getenv("ANALYTICS_MAX_LOOKBACK_MONTHS", "6"))
         max_lookback_days = max_lookback_months * 30  # Approximate months to days
-        
+
         recent_end = now_ny.replace(hour=0, minute=0, second=0, microsecond=0)
         recent_start = recent_end - timedelta(days=14)
         retro_start = recent_start - timedelta(days=max_lookback_days)
@@ -76,8 +79,7 @@ def compute_window(
 
 
 def compute_windows_from_specs(
-    window_a_spec: WindowSpec,
-    window_b_spec: WindowSpec
+    window_a_spec: WindowSpec, window_b_spec: WindowSpec
 ) -> Tuple[Tuple[datetime, datetime, str], Tuple[datetime, datetime, str]]:
     """
     Compute both windows from specifications.
@@ -90,21 +92,13 @@ def compute_windows_from_specs(
         Tuple of ((start_a, end_a, label_a), (start_b, end_b, label_b))
     """
     window_a = compute_window(
-        window_a_spec.preset,
-        window_a_spec.start,
-        window_a_spec.end
+        window_a_spec.preset, window_a_spec.start, window_a_spec.end
     )
     window_b = compute_window(
-        window_b_spec.preset,
-        window_b_spec.start,
-        window_b_spec.end
+        window_b_spec.preset, window_b_spec.start, window_b_spec.end
     )
 
     label_a = window_a_spec.label or window_a[2]
     label_b = window_b_spec.label or window_b[2]
 
-    return (
-        (window_a[0], window_a[1], label_a),
-        (window_b[0], window_b[1], label_b)
-    )
-
+    return ((window_a[0], window_a[1], label_a), (window_b[0], window_b[1], label_b))

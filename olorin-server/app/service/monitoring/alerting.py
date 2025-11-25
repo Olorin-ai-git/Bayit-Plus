@@ -8,7 +8,7 @@ Week 10 Phase 4 implementation.
 
 import logging
 import os
-from typing import Dict, Any, List, Optional, Callable
+from typing import Any, Callable, Dict, List, Optional
 
 from app.service.monitoring.alert_models import Alert, AlertSeverity
 
@@ -26,22 +26,30 @@ class AlertingSystem:
         """Initialize alerting system."""
         latency_threshold_env = os.getenv("ALERT_LATENCY_THRESHOLD_MS")
         if not latency_threshold_env:
-            raise RuntimeError("ALERT_LATENCY_THRESHOLD_MS environment variable is required")
+            raise RuntimeError(
+                "ALERT_LATENCY_THRESHOLD_MS environment variable is required"
+            )
         self.latency_threshold_ms = float(latency_threshold_env)
 
         error_rate_threshold_env = os.getenv("ALERT_ERROR_RATE_THRESHOLD")
         if not error_rate_threshold_env:
-            raise RuntimeError("ALERT_ERROR_RATE_THRESHOLD environment variable is required")
+            raise RuntimeError(
+                "ALERT_ERROR_RATE_THRESHOLD environment variable is required"
+            )
         self.error_rate_threshold = float(error_rate_threshold_env)
 
         score_drift_threshold_env = os.getenv("ALERT_SCORE_DRIFT_THRESHOLD")
         if not score_drift_threshold_env:
-            raise RuntimeError("ALERT_SCORE_DRIFT_THRESHOLD environment variable is required")
+            raise RuntimeError(
+                "ALERT_SCORE_DRIFT_THRESHOLD environment variable is required"
+            )
         self.score_drift_threshold = float(score_drift_threshold_env)
 
         confidence_drop_threshold_env = os.getenv("ALERT_CONFIDENCE_DROP_THRESHOLD")
         if not confidence_drop_threshold_env:
-            raise RuntimeError("ALERT_CONFIDENCE_DROP_THRESHOLD environment variable is required")
+            raise RuntimeError(
+                "ALERT_CONFIDENCE_DROP_THRESHOLD environment variable is required"
+            )
         self.confidence_drop_threshold = float(confidence_drop_threshold_env)
 
         self.active_alerts: List[Alert] = []
@@ -67,7 +75,9 @@ class AlertingSystem:
         if score_alert:
             new_alerts.append(score_alert)
 
-        confidence_alert = self._check_confidence_drop(metrics.get("prediction_metrics", {}))
+        confidence_alert = self._check_confidence_drop(
+            metrics.get("prediction_metrics", {})
+        )
         if confidence_alert:
             new_alerts.append(confidence_alert)
 
@@ -80,14 +90,18 @@ class AlertingSystem:
         """Check if latency exceeds threshold."""
         p95_latency = latency_metrics.get("p95_ms", 0.0)
         if p95_latency > self.latency_threshold_ms:
-            severity = AlertSeverity.CRITICAL if p95_latency > self.latency_threshold_ms * 2 else AlertSeverity.HIGH
+            severity = (
+                AlertSeverity.CRITICAL
+                if p95_latency > self.latency_threshold_ms * 2
+                else AlertSeverity.HIGH
+            )
             return Alert(
                 alert_type="latency_threshold_exceeded",
                 severity=severity,
                 message=f"P95 latency ({p95_latency:.2f}ms) exceeds threshold ({self.latency_threshold_ms}ms)",
                 metric_name="p95_latency_ms",
                 metric_value=p95_latency,
-                threshold=self.latency_threshold_ms
+                threshold=self.latency_threshold_ms,
             )
         return None
 
@@ -95,7 +109,11 @@ class AlertingSystem:
         """Check if error rate exceeds threshold."""
         error_rate = error_metrics.get("error_rate", 0.0)
         if error_rate > self.error_rate_threshold:
-            severity = AlertSeverity.CRITICAL if error_rate > self.error_rate_threshold * 2 else AlertSeverity.HIGH
+            severity = (
+                AlertSeverity.CRITICAL
+                if error_rate > self.error_rate_threshold * 2
+                else AlertSeverity.HIGH
+            )
             return Alert(
                 alert_type="error_rate_threshold_exceeded",
                 severity=severity,
@@ -103,7 +121,7 @@ class AlertingSystem:
                 metric_name="error_rate",
                 metric_value=error_rate,
                 threshold=self.error_rate_threshold,
-                metadata=error_metrics.get("error_counts_by_type", {})
+                metadata=error_metrics.get("error_counts_by_type", {}),
             )
         return None
 
@@ -119,11 +137,13 @@ class AlertingSystem:
                 message=f"Score standard deviation ({score_std:.3f}) exceeds threshold ({self.score_drift_threshold})",
                 metric_name="score_std",
                 metric_value=score_std,
-                threshold=self.score_drift_threshold
+                threshold=self.score_drift_threshold,
             )
         return None
 
-    def _check_confidence_drop(self, prediction_metrics: Dict[str, Any]) -> Optional[Alert]:
+    def _check_confidence_drop(
+        self, prediction_metrics: Dict[str, Any]
+    ) -> Optional[Alert]:
         """Check for confidence drop."""
         confidence_stats = prediction_metrics.get("confidence_stats", {})
         mean_confidence = confidence_stats.get("mean", 1.0)
@@ -135,7 +155,7 @@ class AlertingSystem:
                 message=f"Mean confidence ({mean_confidence:.3f}) below threshold ({self.confidence_drop_threshold})",
                 metric_name="mean_confidence",
                 metric_value=mean_confidence,
-                threshold=self.confidence_drop_threshold
+                threshold=self.confidence_drop_threshold,
             )
         return None
 

@@ -11,8 +11,8 @@ Spec: /specs/021-live-merged-logstream/research.md
 """
 
 from abc import ABC, abstractmethod
-from typing import AsyncIterator, Optional
 from datetime import datetime
+from typing import AsyncIterator, Optional
 
 from app.models.unified_log import UnifiedLog
 
@@ -38,9 +38,7 @@ class LogProvider(ABC):
 
     @abstractmethod
     async def stream_logs(
-        self,
-        start_time: Optional[datetime] = None,
-        end_time: Optional[datetime] = None
+        self, start_time: Optional[datetime] = None, end_time: Optional[datetime] = None
     ) -> AsyncIterator[UnifiedLog]:
         """
         Stream logs from this provider.
@@ -62,7 +60,7 @@ class LogProvider(ABC):
         self,
         start_time: Optional[datetime] = None,
         end_time: Optional[datetime] = None,
-        limit: int = 100
+        limit: int = 100,
     ) -> list[UnifiedLog]:
         """
         Fetch a batch of logs (for polling endpoint).
@@ -98,7 +96,9 @@ class LogProvider(ABC):
 class ProviderError(Exception):
     """Exception raised when log provider encounters an error"""
 
-    def __init__(self, provider_name: str, message: str, cause: Optional[Exception] = None):
+    def __init__(
+        self, provider_name: str, message: str, cause: Optional[Exception] = None
+    ):
         self.provider_name = provider_name
         self.message = message
         self.cause = cause
@@ -107,9 +107,11 @@ class ProviderError(Exception):
 
 class ProviderTimeoutError(ProviderError):
     """Exception raised when provider operation times out"""
+
     pass
 
 
 class ProviderUnavailableError(ProviderError):
     """Exception raised when provider is temporarily unavailable"""
+
     pass

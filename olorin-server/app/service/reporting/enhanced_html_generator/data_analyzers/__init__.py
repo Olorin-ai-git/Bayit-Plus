@@ -7,4 +7,4 @@ Provides classes for analyzing and summarizing processed data.
 
 from .summary_generator import SummaryGenerator
 
-__all__ = ['SummaryGenerator']
+__all__ = ["SummaryGenerator"]

@@ -11,8 +11,9 @@ Constitutional Compliance:
 - Tests guide implementation
 """
 
-import pytest
 from unittest.mock import Mock
+
+import pytest
 
 # Import will fail initially - that's expected in TDD
 from app.service.agent.tools.database_tool.query_cache import QueryCache
@@ -29,7 +30,7 @@ class TestQueryCacheInit:
     def test_cache_has_default_max_size(self):
         """Test that cache has default maximum size."""
         cache = QueryCache()
-        assert hasattr(cache, 'max_size')
+        assert hasattr(cache, "max_size")
         assert cache.max_size > 0
 
     def test_cache_accepts_custom_max_size(self):
@@ -322,16 +323,16 @@ class TestCacheStats:
 
         stats = cache.get_stats()
 
-        assert 'size' in stats
-        assert 'max_size' in stats
-        assert 'hit_count' in stats
-        assert 'miss_count' in stats
-        assert 'hit_rate' in stats
+        assert "size" in stats
+        assert "max_size" in stats
+        assert "hit_count" in stats
+        assert "miss_count" in stats
+        assert "hit_rate" in stats
 
-        assert stats['size'] == 2
-        assert stats['max_size'] == 10
-        assert stats['hit_count'] == 1
-        assert stats['miss_count'] == 1
+        assert stats["size"] == 2
+        assert stats["max_size"] == 10
+        assert stats["hit_count"] == 1
+        assert stats["miss_count"] == 1
 
 
 class TestCacheConfiguration:

@@ -12,8 +12,9 @@ SYSTEM MANDATE Compliance:
 """
 
 import json
-from typing import Dict, Any, List
 from datetime import datetime, timezone
+from typing import Any, Dict, List
+
 from app.models.investigation_audit_log import InvestigationAuditLog
 
 
@@ -47,7 +48,11 @@ class EventFeedConverter:
             changes = {}
 
         try:
-            state_snapshot = json.loads(entry.state_snapshot_json) if entry.state_snapshot_json else {}
+            state_snapshot = (
+                json.loads(entry.state_snapshot_json)
+                if entry.state_snapshot_json
+                else {}
+            )
         except (json.JSONDecodeError, TypeError):
             state_snapshot = {}
 
@@ -58,31 +63,30 @@ class EventFeedConverter:
         # Database sources: UI, API, SYSTEM, WEBHOOK, POLLING
         # EventActor types: USER, SYSTEM, WEBHOOK, POLLING
         source_to_actor_type = {
-            "UI": "USER",      # UI actions are user actions
-            "API": "USER",     # API actions are user actions (via API)
+            "UI": "USER",  # UI actions are user actions
+            "API": "USER",  # API actions are user actions (via API)
             "SYSTEM": "SYSTEM",
             "WEBHOOK": "WEBHOOK",
-            "POLLING": "POLLING"
+            "POLLING": "POLLING",
         }
-        actor_type = source_to_actor_type.get(entry.source, "USER")  # Default to USER if unknown
+        actor_type = source_to_actor_type.get(
+            entry.source, "USER"
+        )  # Default to USER if unknown
 
         return {
             "id": entry.entry_id,
             "investigation_id": entry.investigation_id,
             "ts": ts,
             "op": entry.action_type,
-            "actor": {
-                "type": actor_type,
-                "id": entry.user_id
-            },
+            "actor": {"type": actor_type, "id": entry.user_id},
             "payload": changes,
             "version": entry.to_version,
             "metadata": {
                 "source": entry.source,  # Keep original source in metadata
                 "from_version": entry.from_version,
                 "to_version": entry.to_version,
-                "state_snapshot": state_snapshot
-            }
+                "state_snapshot": state_snapshot,
+            },
         }
 
     @staticmethod
@@ -96,10 +100,7 @@ class EventFeedConverter:
         Returns:
             List of event dictionaries
         """
-        return [
-            EventFeedConverter.audit_log_to_event(entry)
-            for entry in entries
-        ]
+        return [EventFeedConverter.audit_log_to_event(entry) for entry in entries]
 
     @staticmethod
     def serialize_event(event: Dict[str, Any]) -> Dict[str, Any]:
@@ -121,9 +122,9 @@ class EventFeedConverter:
             "op": str(event.get("op", "")),
             "actor": {
                 "type": str(actor.get("type", "")),
-                "id": str(actor.get("id", ""))
+                "id": str(actor.get("id", "")),
             },
             "payload": event.get("payload", {}),
             "version": event.get("version"),
-            "metadata": event.get("metadata", {})
+            "metadata": event.get("metadata", {}),
         }

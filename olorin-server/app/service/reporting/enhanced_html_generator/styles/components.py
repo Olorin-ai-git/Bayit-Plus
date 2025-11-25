@@ -10,8 +10,8 @@ All component styles have been refactored into focused modules.
 @see components_data.py for data display components (tables, progress, explanations)
 """
 
-from .components_visual import VisualComponentStyleGenerator
 from .components_data import DataComponentStyleGenerator
+from .components_visual import VisualComponentStyleGenerator
 
 
 class ComponentStyleGenerator:

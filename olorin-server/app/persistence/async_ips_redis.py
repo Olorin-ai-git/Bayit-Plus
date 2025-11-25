@@ -8,6 +8,7 @@ https://langchain-ai.github.io/langgraph/concepts/persistence/
 """
 
 import asyncio
+import os
 import time
 from contextlib import asynccontextmanager
 from functools import reduce
@@ -23,13 +24,12 @@ from langgraph.checkpoint.base import (
     PendingWrite,
     get_checkpoint_id,
 )
-from app.service.logging import get_bridge_logger
 from langgraph.checkpoint.serde.base import SerializerProtocol
 
 from app.adapters.mock_ips_cache_client import MockIPSCacheClient as IPSCacheClient
 from app.models.agent_headers import OlorinHeader
 from app.service.config import get_settings_for_env
-import os
+from app.service.logging import get_bridge_logger
 
 logger = get_bridge_logger(__name__)
 
@@ -289,11 +289,12 @@ class AsyncRedisSaver(BaseCheckpointSaver):
     def __init__(self, namespace: str = "default") -> None:
         super().__init__()
         self.namespace = namespace
-        
+
         # Use mock client if in TEST_MODE=mock
         use_mock = os.environ.get("TEST_MODE", "").lower() == "demo"
         if use_mock:
             from app.adapters.mock_ips_cache_client import MockIPSCacheClient
+
             self.ips_cache = MockIPSCacheClient()
             logger.info("AsyncRedisSaver using MockIPSCacheClient (TEST_MODE=mock)")
         else:

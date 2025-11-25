@@ -7,12 +7,8 @@ Components:
 - MetricsCollector: Performance metrics collection
 """
 
-from .rollback_triggers import RollbackTriggers
 from .health_monitor import HealthMonitor
 from .metrics_collector import MetricsCollector
+from .rollback_triggers import RollbackTriggers
 
-__all__ = [
-    "RollbackTriggers",
-    "HealthMonitor",
-    "MetricsCollector"
-]
+__all__ = ["RollbackTriggers", "HealthMonitor", "MetricsCollector"]

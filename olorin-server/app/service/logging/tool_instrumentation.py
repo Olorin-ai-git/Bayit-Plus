@@ -14,8 +14,7 @@ def _count_data_retrieved(result: Any) -> int:
         return len(result)
     if isinstance(result, dict):
         return sum(
-            len(v) if isinstance(v, (list, dict)) else 1
-            for v in result.values()
+            len(v) if isinstance(v, (list, dict)) else 1 for v in result.values()
         )
     return 0
 
@@ -24,7 +23,7 @@ def _prepare_tool_input(*args, **kwargs) -> Dict[str, Any]:
     """Prepare tool input for logging."""
     return {
         "args": str(args)[:500],
-        "kwargs": {k: str(v)[:200] for k, v in kwargs.items()}
+        "kwargs": {k: str(v)[:200] for k, v in kwargs.items()},
     }
 
 
@@ -36,7 +35,7 @@ class InstrumentedTool:
         tool_name: str,
         tool_func: Callable,
         instrumentation_logger,
-        agent_name: str
+        agent_name: str,
     ):
         self.tool_name = tool_name
         self.tool_func = tool_func
@@ -62,12 +61,12 @@ class InstrumentedTool:
                 tool_output={
                     "status": "success",
                     "execution_number": self.execution_count,
-                    "execution_time_ms": execution_time_ms
+                    "execution_time_ms": execution_time_ms,
                 },
                 raw_output=str(result)[:1000],
                 execution_time_ms=execution_time_ms,
                 status="success",
-                data_retrieved=data_count
+                data_retrieved=data_count,
             )
 
             self.logger.log_event(
@@ -77,8 +76,8 @@ class InstrumentedTool:
                 details={
                     "execution_time_ms": execution_time_ms,
                     "data_retrieved": data_count,
-                    "result_type": type(result).__name__
-                }
+                    "result_type": type(result).__name__,
+                },
             )
 
             return result
@@ -95,7 +94,7 @@ class InstrumentedTool:
                 execution_time_ms=execution_time_ms,
                 status="error",
                 error_message=str(e)[:500],
-                data_retrieved=0
+                data_retrieved=0,
             )
 
             self.logger.log_error(
@@ -105,8 +104,8 @@ class InstrumentedTool:
                 context={
                     "tool_name": self.tool_name,
                     "execution_number": self.execution_count,
-                    "execution_time_ms": execution_time_ms
-                }
+                    "execution_time_ms": execution_time_ms,
+                },
             )
 
             raise
@@ -117,7 +116,9 @@ class InstrumentedTool:
         start_time = time.time()
 
         try:
-            if hasattr(self.tool_func, "__call__") and hasattr(self.tool_func, "__await__"):
+            if hasattr(self.tool_func, "__call__") and hasattr(
+                self.tool_func, "__await__"
+            ):
                 result = await self.tool_func(*args, **kwargs)
             else:
                 result = self.tool_func(*args, **kwargs)
@@ -133,12 +134,12 @@ class InstrumentedTool:
                 tool_output={
                     "status": "success",
                     "execution_number": self.execution_count,
-                    "execution_time_ms": execution_time_ms
+                    "execution_time_ms": execution_time_ms,
                 },
                 raw_output=str(result)[:1000],
                 execution_time_ms=execution_time_ms,
                 status="success",
-                data_retrieved=data_count
+                data_retrieved=data_count,
             )
 
             return result
@@ -155,7 +156,7 @@ class InstrumentedTool:
                 execution_time_ms=execution_time_ms,
                 status="error",
                 error_message=str(e)[:500],
-                data_retrieved=0
+                data_retrieved=0,
             )
 
             raise

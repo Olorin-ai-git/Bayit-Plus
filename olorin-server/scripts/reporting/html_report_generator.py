@@ -6,28 +6,29 @@ Generates comprehensive, interactive HTML reports with visualizations
 for structured investigation test results.
 """
 
+import base64
 import json
 from datetime import datetime
 from pathlib import Path
-from typing import Dict, List, Any, Optional
-import base64
+from typing import Any, Dict, List, Optional
+
 
 class StructuredInvestigationHTMLReporter:
     """Generates comprehensive HTML reports for structured investigation tests."""
-    
+
     def __init__(self, report_title: str = "Structured Investigation Test Report"):
         self.report_title = report_title
         self.timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-        
+
     def generate_html_report(
         self,
         test_results: Dict[str, Any],
         csv_metadata: Optional[Dict[str, Any]] = None,
         output_path: str = "structured_investigation_report.html",
-        investigation_folder: Optional[str] = None
+        investigation_folder: Optional[str] = None,
     ) -> str:
         """Generate a comprehensive HTML report from test results."""
-        
+
         html_content = f"""
 <!DOCTYPE html>
 <html lang="en">
@@ -62,13 +63,13 @@ class StructuredInvestigationHTMLReporter:
 </body>
 </html>
 """
-        
+
         # Save to file
-        with open(output_path, 'w', encoding='utf-8') as f:
+        with open(output_path, "w", encoding="utf-8") as f:
             f.write(html_content)
-        
+
         return output_path
-    
+
     def _get_css_styles(self) -> str:
         """Return CSS styles for the HTML report."""
         return """
@@ -308,8 +309,12 @@ class StructuredInvestigationHTMLReporter:
             font-weight: bold;
         }
         """
-    
-    def _generate_header(self, csv_metadata: Optional[Dict[str, Any]], investigation_folder: Optional[str] = None) -> str:
+
+    def _generate_header(
+        self,
+        csv_metadata: Optional[Dict[str, Any]],
+        investigation_folder: Optional[str] = None,
+    ) -> str:
         """Generate the report header."""
         data_source = "CSV Transaction Data" if csv_metadata else "Synthetic Test Data"
         return f"""
@@ -319,14 +324,18 @@ class StructuredInvestigationHTMLReporter:
             <div class="subtitle">Data Source: {data_source}</div>
         </header>
         """
-    
+
     def _generate_executive_summary(self, test_results: Dict[str, Any]) -> str:
         """Generate executive summary section."""
         total_tests = len(test_results)
-        passed_tests = sum(1 for r in test_results.values() if r.get("status") == "PASSED")
-        failed_tests = sum(1 for r in test_results.values() if r.get("status") == "FAILED")
+        passed_tests = sum(
+            1 for r in test_results.values() if r.get("status") == "PASSED"
+        )
+        failed_tests = sum(
+            1 for r in test_results.values() if r.get("status") == "FAILED"
+        )
         pass_rate = (passed_tests / total_tests * 100) if total_tests > 0 else 0
-        
+
         return f"""
         <section class="section">
             <h2>📊 Executive Summary</h2>
@@ -360,12 +369,12 @@ class StructuredInvestigationHTMLReporter:
             </div>
         </section>
         """
-    
+
     def _generate_csv_data_section(self, csv_metadata: Optional[Dict[str, Any]]) -> str:
         """Generate CSV data information section."""
         if not csv_metadata:
             return ""
-        
+
         return f"""
         <section class="section">
             <h2>📁 CSV Transaction Data</h2>
@@ -400,7 +409,7 @@ class StructuredInvestigationHTMLReporter:
             </div>
         </section>
         """
-    
+
     def _generate_test_phases_section(self, test_results: Dict[str, Any]) -> str:
         """Generate test phases results section."""
         html = """
@@ -419,15 +428,21 @@ class StructuredInvestigationHTMLReporter:
                 </thead>
                 <tbody>
         """
-        
+
         for test_name, result in test_results.items():
             status = result.get("status", "UNKNOWN")
-            status_class = "passed" if status == "PASSED" else "failed" if status == "FAILED" else "warning"
+            status_class = (
+                "passed"
+                if status == "PASSED"
+                else "failed" if status == "FAILED" else "warning"
+            )
             duration = result.get("duration", 0)
             risk_score = result.get("final_risk_score", 0)
-            
-            risk_class = "high" if risk_score > 0.7 else "medium" if risk_score > 0.3 else "low"
-            
+
+            risk_class = (
+                "high" if risk_score > 0.7 else "medium" if risk_score > 0.3 else "low"
+            )
+
             html += f"""
                 <tr>
                     <td><strong>{test_name}</strong></td>
@@ -437,15 +452,15 @@ class StructuredInvestigationHTMLReporter:
                     <td>{result.get("error", "Success") if status != "PASSED" else "All checks passed"}</td>
                 </tr>
             """
-        
+
         html += """
                 </tbody>
             </table>
         </section>
         """
-        
+
         return html
-    
+
     def _generate_investigation_details(self, test_results: Dict[str, Any]) -> str:
         """Generate detailed investigation results."""
         html = """
@@ -454,7 +469,7 @@ class StructuredInvestigationHTMLReporter:
             
             <div class="timeline">
         """
-        
+
         for test_name, result in test_results.items():
             if "phases" in result:
                 for phase_name, phase_data in result["phases"].items():
@@ -466,40 +481,44 @@ class StructuredInvestigationHTMLReporter:
                         <p><strong>Findings:</strong> {len(phase_data.get('findings', {}))} items</p>
                     </div>
                     """
-        
+
         html += """
             </div>
         </section>
         """
-        
+
         return html
-    
-    def _generate_investigation_files_section(self, investigation_folder: Optional[str]) -> str:
+
+    def _generate_investigation_files_section(
+        self, investigation_folder: Optional[str]
+    ) -> str:
         """Generate investigation files and logs section."""
         if not investigation_folder:
             return ""
-        
+
         folder_path = Path(investigation_folder)
         if not folder_path.exists():
             return ""
-        
+
         # List all files in the investigation folder
         files = []
         try:
-            for file_path in folder_path.rglob('*'):
+            for file_path in folder_path.rglob("*"):
                 if file_path.is_file():
-                    files.append({
-                        'name': file_path.name,
-                        'path': str(file_path.relative_to(folder_path)),
-                        'size': file_path.stat().st_size,
-                        'type': file_path.suffix or 'No extension'
-                    })
+                    files.append(
+                        {
+                            "name": file_path.name,
+                            "path": str(file_path.relative_to(folder_path)),
+                            "size": file_path.stat().st_size,
+                            "type": file_path.suffix or "No extension",
+                        }
+                    )
         except Exception:
             files = []
-        
+
         if not files:
             return ""
-        
+
         html = """
         <section class="section">
             <h2>📁 Investigation Files & Logs</h2>
@@ -517,12 +536,16 @@ class StructuredInvestigationHTMLReporter:
                     </tr>
                 </thead>
                 <tbody>
-        """.format(folder=investigation_folder)
-        
-        for file_info in sorted(files, key=lambda x: x['name']):
-            size_kb = file_info['size'] / 1024
-            size_display = f"{size_kb:.1f} KB" if size_kb > 1 else f"{file_info['size']} bytes"
-            
+        """.format(
+            folder=investigation_folder
+        )
+
+        for file_info in sorted(files, key=lambda x: x["name"]):
+            size_kb = file_info["size"] / 1024
+            size_display = (
+                f"{size_kb:.1f} KB" if size_kb > 1 else f"{file_info['size']} bytes"
+            )
+
             html += f"""
                 <tr>
                     <td><strong>{file_info['name']}</strong></td>
@@ -531,15 +554,15 @@ class StructuredInvestigationHTMLReporter:
                     <td>{size_display}</td>
                 </tr>
             """
-        
+
         html += """
                 </tbody>
             </table>
         </section>
         """
-        
+
         return html
-    
+
     def _generate_agent_risk_scores_section(self, test_results: Dict[str, Any]) -> str:
         """Generate detailed agent risk scores section with highlighting."""
         html = """
@@ -548,29 +571,31 @@ class StructuredInvestigationHTMLReporter:
             
             <div class="metrics-grid">
         """
-        
+
         # Extract agent risk scores from phases
         agent_scores = {}
         overall_scores = []
-        
+
         for test_name, result in test_results.items():
             phases = result.get("phases", {})
             final_risk = result.get("final_risk_score", 0)
             overall_scores.append(final_risk)
-            
+
             for phase_name, phase_data in phases.items():
                 agent_name = phase_name.replace("_agent", "").replace("_", " ").title()
                 risk_score = phase_data.get("risk_score", 0)
-                
+
                 if agent_name not in agent_scores:
                     agent_scores[agent_name] = []
                 agent_scores[agent_name].append(risk_score)
-        
+
         # Calculate average scores for each agent
         for agent_name, scores in agent_scores.items():
             avg_score = sum(scores) / len(scores) if scores else 0
-            risk_class = "high" if avg_score > 0.7 else "medium" if avg_score > 0.3 else "low"
-            
+            risk_class = (
+                "high" if avg_score > 0.7 else "medium" if avg_score > 0.3 else "low"
+            )
+
             html += f"""
                 <div class="metric-card">
                     <div class="metric-label">{agent_name} Agent</div>
@@ -578,12 +603,16 @@ class StructuredInvestigationHTMLReporter:
                     <div class="metric-label">{len(scores)} analysis(es)</div>
                 </div>
             """
-        
+
         # Overall risk score
         if overall_scores:
             avg_overall = sum(overall_scores) / len(overall_scores)
-            risk_class = "high" if avg_overall > 0.7 else "medium" if avg_overall > 0.3 else "low"
-            
+            risk_class = (
+                "high"
+                if avg_overall > 0.7
+                else "medium" if avg_overall > 0.3 else "low"
+            )
+
             html += f"""
                 <div class="metric-card" style="border: 3px solid #667eea;">
                     <div class="metric-label">🎯 OVERALL RISK SCORE</div>
@@ -591,29 +620,32 @@ class StructuredInvestigationHTMLReporter:
                     <div class="metric-label">Averaged across {len(overall_scores)} investigations</div>
                 </div>
             """
-        
+
         html += """
             </div>
         </section>
         """
-        
+
         return html
-    
+
     def _generate_chain_of_thought_section(self, test_results: Dict[str, Any]) -> str:
         """Generate chain of thought analysis section."""
         html = """
         <section class="section">
             <h2>🧠 Chain of Thought Analysis</h2>
         """
-        
+
         # Check if we have chain of thought data
         has_cot_data = False
         for test_name, result in test_results.items():
             logging_data = result.get("logging_data", {})
-            if logging_data and any("chain" in str(key).lower() or "thought" in str(key).lower() for key in logging_data.keys()):
+            if logging_data and any(
+                "chain" in str(key).lower() or "thought" in str(key).lower()
+                for key in logging_data.keys()
+            ):
                 has_cot_data = True
                 break
-        
+
         if not has_cot_data:
             html += """
                 <div class="csv-info">
@@ -626,10 +658,10 @@ class StructuredInvestigationHTMLReporter:
             html += """
                 <div class="timeline">
             """
-            
+
             for test_name, result in test_results.items():
                 logging_data = result.get("logging_data", {})
-                
+
                 for key, data in logging_data.items():
                     if "chain" in str(key).lower() or "thought" in str(key).lower():
                         html += f"""
@@ -640,27 +672,29 @@ class StructuredInvestigationHTMLReporter:
                             </div>
                         </div>
                         """
-            
+
             html += """
                 </div>
             """
-        
+
         html += """
         </section>
         """
-        
+
         return html
-    
+
     def _generate_journey_tracking_section(self, test_results: Dict[str, Any]) -> str:
         """Generate journey tracking section."""
         html = """
         <section class="section">
             <h2>🗺️ Investigation Journey Tracking</h2>
         """
-        
+
         # Check if we have journey data
-        has_journey_data = any(result.get("journey_data") for result in test_results.values())
-        
+        has_journey_data = any(
+            result.get("journey_data") for result in test_results.values()
+        )
+
         if not has_journey_data:
             html += """
                 <div class="csv-info">
@@ -672,13 +706,13 @@ class StructuredInvestigationHTMLReporter:
             html += """
                 <div class="timeline">
             """
-            
+
             for test_name, result in test_results.items():
                 journey_data = result.get("journey_data", {})
                 if journey_data:
                     investigation_id = result.get("investigation_id", "Unknown")
                     start_time = result.get("start_time", "Unknown")
-                    
+
                     html += f"""
                     <div class="timeline-item">
                         <h3>🎯 {test_name} Journey</h3>
@@ -690,32 +724,32 @@ class StructuredInvestigationHTMLReporter:
                         </div>
                     </div>
                     """
-            
+
             html += """
                 </div>
             """
-        
+
         html += """
         </section>
         """
-        
+
         return html
-    
+
     def _generate_performance_metrics(self, test_results: Dict[str, Any]) -> str:
         """Generate performance metrics section with charts using real data."""
-        
+
         # Extract real performance data
         durations = [result.get("duration", 0) for result in test_results.values()]
         total_duration = sum(durations)
         avg_duration = total_duration / len(durations) if durations else 0
         agent_counts = []
-        
+
         for result in test_results.values():
             phases = result.get("phases", {})
             agent_counts.append(len(phases))
-        
+
         total_agents = sum(agent_counts)
-        
+
         return f"""
         <section class="section">
             <h2>⚡ Performance Metrics</h2>
@@ -747,10 +781,10 @@ class StructuredInvestigationHTMLReporter:
             </div>
         </section>
         """
-    
+
     def _generate_risk_analysis(self, test_results: Dict[str, Any]) -> str:
         """Generate risk analysis section using real data."""
-        
+
         html = """
         <section class="section">
             <h2>⚠️ Detailed Risk Analysis</h2>
@@ -771,25 +805,29 @@ class StructuredInvestigationHTMLReporter:
                 </thead>
                 <tbody>
         """
-        
+
         for test_name, result in test_results.items():
             risk_score = result.get("final_risk_score", 0)
             confidence = result.get("confidence", 0)
             status = result.get("status", "UNKNOWN")
             phases = result.get("phases", {})
-            
-            risk_class = "high" if risk_score > 0.7 else "medium" if risk_score > 0.3 else "low"
+
+            risk_class = (
+                "high" if risk_score > 0.7 else "medium" if risk_score > 0.3 else "low"
+            )
             status_class = "passed" if status == "PASSED" else "failed"
-            
+
             # Build agent breakdown
             agent_breakdown = []
             for phase_name, phase_data in phases.items():
                 agent_name = phase_name.replace("_agent", "").replace("_", " ").title()
                 phase_risk = phase_data.get("risk_score", 0)
                 agent_breakdown.append(f"{agent_name}: {phase_risk:.2f}")
-            
-            breakdown_text = ", ".join(agent_breakdown) if agent_breakdown else "No agent data"
-            
+
+            breakdown_text = (
+                ", ".join(agent_breakdown) if agent_breakdown else "No agent data"
+            )
+
             html += f"""
                 <tr>
                     <td><strong>{test_name}</strong></td>
@@ -799,7 +837,7 @@ class StructuredInvestigationHTMLReporter:
                     <td><span class="status-badge status-{status_class}">{status}</span></td>
                 </tr>
             """
-        
+
         html += """
                 </tbody>
             </table>
@@ -812,9 +850,9 @@ class StructuredInvestigationHTMLReporter:
             </div>
         </section>
         """
-        
+
         return html
-    
+
     def _generate_footer(self) -> str:
         """Generate report footer."""
         return """
@@ -823,34 +861,44 @@ class StructuredInvestigationHTMLReporter:
             <p>Structured Investigation Test Report</p>
             <p>Generated with Python {python_version}</p>
         </footer>
-        """.format(python_version="3.11")
-    
+        """.format(
+            python_version="3.11"
+        )
+
     def _get_javascript_code(self, test_results: Dict[str, Any]) -> str:
         """Generate JavaScript code for interactive charts using real data."""
-        
+
         # Extract real data for charts
         durations = []
         risk_scores = []
         test_names = []
         agent_scores = {}
-        
+
         for test_name, result in test_results.items():
-            test_names.append(test_name[:10] + "..." if len(test_name) > 10 else test_name)
+            test_names.append(
+                test_name[:10] + "..." if len(test_name) > 10 else test_name
+            )
             durations.append(result.get("duration", 0))
             risk_scores.append(result.get("final_risk_score", 0))
-            
+
             phases = result.get("phases", {})
             for phase_name, phase_data in phases.items():
                 agent_name = phase_name.replace("_agent", "").replace("_", " ").title()
                 if agent_name not in agent_scores:
                     agent_scores[agent_name] = []
                 agent_scores[agent_name].append(phase_data.get("risk_score", 0))
-        
+
         # Calculate average agent scores for radar chart
         agent_names = list(agent_scores.keys())[:5]  # Limit to 5 agents for readability
-        avg_agent_scores = [sum(agent_scores[name])/len(agent_scores[name]) if agent_scores[name] else 0 
-                          for name in agent_names]
-        
+        avg_agent_scores = [
+            (
+                sum(agent_scores[name]) / len(agent_scores[name])
+                if agent_scores[name]
+                else 0
+            )
+            for name in agent_names
+        ]
+
         return f"""
         // Performance Chart
         const perfCtx = document.getElementById('performanceChart');

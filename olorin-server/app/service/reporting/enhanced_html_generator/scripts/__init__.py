@@ -5,10 +5,10 @@ Scripts package for Enhanced HTML Report Generator.
 Provides JavaScript generation for charts, interactions, and Mermaid diagrams.
 """
 
+from ..data_models import ComponentData, InvestigationSummary, ReportConfig
 from .charts import ChartJSGenerator
-from .mermaid import MermaidGenerator
 from .interactions import InteractionScriptGenerator
-from ..data_models import InvestigationSummary, ComponentData, ReportConfig
+from .mermaid import MermaidGenerator
 
 
 class JavaScriptManager:
@@ -21,9 +21,7 @@ class JavaScriptManager:
         self.interaction_generator = InteractionScriptGenerator(config)
 
     def generate_complete_javascript(
-        self,
-        summary: InvestigationSummary,
-        component_data: ComponentData
+        self, summary: InvestigationSummary, component_data: ComponentData
     ) -> str:
         """Generate complete JavaScript for the report."""
         js_parts = [
@@ -42,7 +40,7 @@ class JavaScriptManager:
             self.interaction_generator.generate_interaction_scripts(),
             "",
             "// Console Logging",
-            self._generate_console_logging(summary)
+            self._generate_console_logging(summary),
         ]
 
         return "\n".join(js_parts)
@@ -58,8 +56,8 @@ class JavaScriptManager:
 
 
 __all__ = [
-    'ChartJSGenerator',
-    'MermaidGenerator',
-    'InteractionScriptGenerator',
-    'JavaScriptManager'
+    "ChartJSGenerator",
+    "MermaidGenerator",
+    "InteractionScriptGenerator",
+    "JavaScriptManager",
 ]

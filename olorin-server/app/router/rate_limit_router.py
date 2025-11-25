@@ -10,13 +10,14 @@ SYSTEM MANDATE Compliance:
 - Type-safe: All parameters and returns properly typed
 """
 
-from typing import Dict, Any
+from typing import Any, Dict
+
 from fastapi import APIRouter, Depends, Request
 from sqlalchemy.orm import Session
 
+from app.middleware.enhanced_rate_limiter import EnhancedRateLimiter, RateLimitState
 from app.persistence.database import get_db
 from app.security.auth import User, require_read_or_dev
-from app.middleware.enhanced_rate_limiter import EnhancedRateLimiter, RateLimitState
 from app.service.logging import get_bridge_logger
 
 logger = get_bridge_logger(__name__)
@@ -24,9 +25,7 @@ logger = get_bridge_logger(__name__)
 router = APIRouter(
     prefix="/api/v1/rate-limit",
     tags=["Rate Limiting"],
-    responses={
-        429: {"description": "Rate limit exceeded"}
-    },
+    responses={429: {"description": "Rate limit exceeded"}},
 )
 
 # Global rate limiter instance for status checking
@@ -52,12 +51,12 @@ _rate_limiter = EnhancedRateLimiter()
                         "reset_datetime": "2024-01-01T12:00:00",
                         "violations": 0,
                         "is_limited": False,
-                        "backoff_enabled": True
+                        "backoff_enabled": True,
                     }
                 }
-            }
+            },
         }
-    }
+    },
 )
 async def get_rate_limit_status(
     request: Request,
@@ -76,15 +75,14 @@ async def get_rate_limit_status(
     user_id = current_user.username
 
     status = await RateLimitState.get_user_rate_limit_status(
-        user_id=user_id,
-        limiter=_rate_limiter
+        user_id=user_id, limiter=_rate_limiter
     )
 
     # Add rate limit headers to response
     request.state.rate_limit_headers = {
         "X-RateLimit-Limit": str(status["max_requests"]),
         "X-RateLimit-Remaining": str(status["remaining_requests"]),
-        "X-RateLimit-Reset": str(status["reset_timestamp"])
+        "X-RateLimit-Reset": str(status["reset_timestamp"]),
     }
 
     return status
@@ -109,29 +107,32 @@ async def get_rate_limit_config(
         "default": {
             "max_requests": int(os.getenv("RATE_LIMIT_MAX_REQUESTS", "60")),
             "window_seconds": int(os.getenv("RATE_LIMIT_WINDOW_SECONDS", "60")),
-            "description": "Default rate limit for authenticated users"
+            "description": "Default rate limit for authenticated users",
         },
         "authentication": {
             "max_requests": 5,
             "window_seconds": 300,
-            "description": "Rate limit for authentication endpoints"
+            "description": "Rate limit for authentication endpoints",
         },
         "sse_streaming": {
             "max_requests": 10,
             "window_seconds": 60,
-            "description": "Rate limit for SSE streaming connections"
+            "description": "Rate limit for SSE streaming connections",
         },
         "event_polling": {
             "max_requests": 120,
             "window_seconds": 60,
-            "description": "Rate limit for event polling endpoints"
+            "description": "Rate limit for event polling endpoints",
         },
         "features": {
-            "exponential_backoff": os.getenv("RATE_LIMIT_ENABLE_BACKOFF", "true").lower() == "true",
+            "exponential_backoff": os.getenv(
+                "RATE_LIMIT_ENABLE_BACKOFF", "true"
+            ).lower()
+            == "true",
             "per_user_tracking": True,
             "sliding_window": True,
-            "endpoint_specific_limits": True
-        }
+            "endpoint_specific_limits": True,
+        },
     }
 
 
@@ -156,8 +157,7 @@ async def test_rate_limit(
 
     # Get current status
     status = await RateLimitState.get_user_rate_limit_status(
-        user_id=user_id,
-        limiter=_rate_limiter
+        user_id=user_id, limiter=_rate_limiter
     )
 
     return {
@@ -167,8 +167,8 @@ async def test_rate_limit(
             "current": status["current_requests"],
             "remaining": status["remaining_requests"],
             "max": status["max_requests"],
-            "will_be_limited": status["remaining_requests"] <= 1
-        }
+            "will_be_limited": status["remaining_requests"] <= 1,
+        },
     }
 
 
@@ -191,9 +191,10 @@ async def reset_rate_limit(
     # Only allow in development mode
     if os.getenv("APP_ENV", "local") == "prd":
         from fastapi import HTTPException, status
+
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
-            detail="Rate limit reset not allowed in production"
+            detail="Rate limit reset not allowed in production",
         )
 
     target_user = user_id or current_user.username
@@ -207,7 +208,7 @@ async def reset_rate_limit(
 
     return {
         "message": f"Rate limit reset for user {target_user}",
-        "user_id": target_user
+        "user_id": target_user,
     }
 
 
@@ -228,34 +229,34 @@ async def rate_limit_headers_example() -> Dict[str, Any]:
             "X-RateLimit-Limit": {
                 "description": "Maximum number of requests allowed in the window",
                 "example": "60",
-                "format": "integer"
+                "format": "integer",
             },
             "X-RateLimit-Remaining": {
                 "description": "Number of requests remaining in the current window",
                 "example": "35",
-                "format": "integer"
+                "format": "integer",
             },
             "X-RateLimit-Reset": {
                 "description": "Unix timestamp when the rate limit window resets",
                 "example": "1234567890",
-                "format": "integer (unix timestamp)"
+                "format": "integer (unix timestamp)",
             },
             "Retry-After": {
                 "description": "Seconds to wait before retrying (only in 429 responses)",
                 "example": "60",
                 "format": "integer",
-                "note": "Includes exponential backoff for repeated violations"
-            }
+                "note": "Includes exponential backoff for repeated violations",
+            },
         },
         "example_response_headers": {
             "X-RateLimit-Limit": "60",
             "X-RateLimit-Remaining": "35",
-            "X-RateLimit-Reset": "1234567890"
+            "X-RateLimit-Reset": "1234567890",
         },
         "example_429_response_headers": {
             "X-RateLimit-Limit": "60",
             "X-RateLimit-Remaining": "0",
             "X-RateLimit-Reset": "1234567890",
-            "Retry-After": "60"
-        }
+            "Retry-After": "60",
+        },
     }

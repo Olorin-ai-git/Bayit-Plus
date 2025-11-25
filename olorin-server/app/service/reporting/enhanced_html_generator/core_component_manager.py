@@ -8,6 +8,7 @@ Focused on component instantiation and rendering coordination.
 
 import logging
 from typing import Any, Dict, List
+
 from .data_models import ComponentData, ReportConfig
 
 logger = logging.getLogger(__name__)
@@ -31,12 +32,12 @@ class ComponentManager:
             HTML string with all generated components
         """
         from .components import (
-            TimelineGenerator,
-            FlowGraphGenerator,
-            ToolsAnalysisGenerator,
-            RiskDashboardGenerator,
             ExplanationsGenerator,
+            FlowGraphGenerator,
             JourneyGenerator,
+            RiskDashboardGenerator,
+            TimelineGenerator,
+            ToolsAnalysisGenerator,
         )
 
         components: List[str] = []

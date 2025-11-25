@@ -12,17 +12,18 @@ SYSTEM MANDATE Compliance:
 """
 
 from typing import Optional
-from fastapi import APIRouter, Depends, HTTPException, Response, Header, status
+
+from fastapi import APIRouter, Depends, Header, HTTPException, Response, status
 from sqlalchemy.orm import Session
 
 from app.persistence.database import get_db
-from app.service.optimistic_locking_service import OptimisticLockingService
 from app.schemas.investigation_state import (
-    InvestigationStateUpdate,
     InvestigationStateResponse,
+    InvestigationStateUpdate,
 )
 from app.security.auth import User, require_write_or_dev
 from app.service.logging import get_bridge_logger
+from app.service.optimistic_locking_service import OptimisticLockingService
 
 logger = get_bridge_logger(__name__)
 
@@ -31,7 +32,7 @@ router = APIRouter(
     tags=["Investigation State Enhanced"],
     responses={
         404: {"description": "Not found"},
-        409: {"description": "Version conflict"}
+        409: {"description": "Version conflict"},
     },
 )
 
@@ -46,9 +47,7 @@ router = APIRouter(
             "description": "State updated successfully",
             "model": InvestigationStateResponse,
         },
-        400: {
-            "description": "Invalid request data"
-        },
+        400: {"description": "Invalid request data"},
         409: {
             "description": "Version conflict - resource modified by another client",
             "content": {
@@ -58,13 +57,13 @@ router = APIRouter(
                             "error": "version_conflict",
                             "message": "The resource has been modified by another client",
                             "current_version": 5,
-                            "submitted_version": 3
+                            "submitted_version": 3,
                         }
                     }
                 }
-            }
-        }
-    }
+            },
+        },
+    },
 )
 async def patch_investigation_state(
     investigation_id: str,
@@ -73,7 +72,7 @@ async def patch_investigation_state(
     if_match: Optional[str] = Header(
         None,
         alias="If-Match",
-        description="Expected version for optimistic locking (e.g., '3' or 'W/\"3-abc123\"')"
+        description="Expected version for optimistic locking (e.g., '3' or 'W/\"3-abc123\"')",
     ),
     db: Session = Depends(get_db),
     current_user: User = Depends(require_write_or_dev),
@@ -125,7 +124,7 @@ async def patch_investigation_state(
         if if_match.startswith('W/"') or if_match.startswith('"'):
             # Extract version from ETag format
             etag_content = if_match.strip('W/"')
-            version_part = etag_content.split('-')[0]
+            version_part = etag_content.split("-")[0]
             expected_version = version_part
         else:
             # Plain version number
@@ -137,7 +136,7 @@ async def patch_investigation_state(
             investigation_id=investigation_id,
             user_id=current_user.username,
             update_data=data,
-            if_match_version=expected_version
+            if_match_version=expected_version,
         )
 
         # Generate new ETag for response
@@ -154,7 +153,7 @@ async def patch_investigation_state(
         logger.error(f"Error in PATCH update for {investigation_id}: {e}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="Internal server error during update"
+            detail="Internal server error during update",
         )
 
 
@@ -170,12 +169,12 @@ async def patch_investigation_state(
                     "example": {
                         "investigation_id": "inv123",
                         "version": 5,
-                        "etag": 'W/"5-abc123"'
+                        "etag": 'W/"5-abc123"',
                     }
                 }
-            }
+            },
         }
-    }
+    },
 )
 async def get_investigation_version(
     investigation_id: str,
@@ -189,21 +188,23 @@ async def get_investigation_version(
     """
     from app.models.investigation_state import InvestigationState
 
-    state = db.query(InvestigationState).filter(
-        InvestigationState.investigation_id == investigation_id
-    ).first()
+    state = (
+        db.query(InvestigationState)
+        .filter(InvestigationState.investigation_id == investigation_id)
+        .first()
+    )
 
     if not state:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
-            detail=f"Investigation {investigation_id} not found"
+            detail=f"Investigation {investigation_id} not found",
         )
 
     # Check authorization
     if state.user_id != current_user.username:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
-            detail="Not authorized to access this investigation"
+            detail="Not authorized to access this investigation",
         )
 
     etag = _generate_etag(state)
@@ -212,7 +213,7 @@ async def get_investigation_version(
         "investigation_id": investigation_id,
         "version": state.version,
         "etag": etag,
-        "last_updated": state.updated_at.isoformat() if state.updated_at else None
+        "last_updated": state.updated_at.isoformat() if state.updated_at else None,
     }
 
 
@@ -236,20 +237,23 @@ async def get_version_history(
 
     # Verify authorization
     from app.models.investigation_state import InvestigationState
-    state = db.query(InvestigationState).filter(
-        InvestigationState.investigation_id == investigation_id
-    ).first()
+
+    state = (
+        db.query(InvestigationState)
+        .filter(InvestigationState.investigation_id == investigation_id)
+        .first()
+    )
 
     if not state:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
-            detail=f"Investigation {investigation_id} not found"
+            detail=f"Investigation {investigation_id} not found",
         )
 
     if state.user_id != current_user.username:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
-            detail="Not authorized to access this investigation"
+            detail="Not authorized to access this investigation",
         )
 
     return service.get_version_history(investigation_id, limit)
@@ -258,10 +262,12 @@ async def get_version_history(
 def _generate_etag(state) -> str:
     """Generate ETag from investigation version and state hash."""
     import hashlib
+
     # Create a hash of key state fields for stronger ETag
     state_str = f"{state.investigation_id}-v{state.version}"
     if state.progress_json:
         import json
+
         progress = json.loads(state.progress_json)
         if progress.get("progress_percentage"):
             state_str += f"-p{progress['progress_percentage']}"

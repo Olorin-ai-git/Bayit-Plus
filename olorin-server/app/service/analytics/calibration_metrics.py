@@ -7,16 +7,15 @@ Week 9 Phase 3 implementation.
 """
 
 import logging
-from typing import List, Tuple, Dict
+from typing import Dict, List, Tuple
+
 import numpy as np
 
 logger = logging.getLogger(__name__)
 
 
 def calculate_calibration_curve(
-    scores: List[float],
-    labels: List[bool],
-    n_bins: int = 10
+    scores: List[float], labels: List[bool], n_bins: int = 10
 ) -> Tuple[List[float], List[float]]:
     """
     Calculate calibration curve data.
@@ -36,10 +35,7 @@ def calculate_calibration_curve(
         from sklearn.calibration import calibration_curve
 
         fraction_of_positives, mean_predicted_value = calibration_curve(
-            labels,
-            scores,
-            n_bins=n_bins,
-            strategy='uniform'
+            labels, scores, n_bins=n_bins, strategy="uniform"
         )
 
         return mean_predicted_value.tolist(), fraction_of_positives.tolist()
@@ -52,8 +48,7 @@ def calculate_calibration_curve(
 
 
 def calculate_calibration_metrics(
-    scores: List[float],
-    labels: List[bool]
+    scores: List[float], labels: List[bool]
 ) -> Dict[str, float]:
     """
     Calculate calibration quality metrics.
@@ -73,7 +68,7 @@ def calculate_calibration_metrics(
 
         metrics = {
             "brier_score": brier_score_loss(labels, scores),
-            "log_loss": log_loss(labels, scores)
+            "log_loss": log_loss(labels, scores),
         }
 
         return metrics

@@ -4,7 +4,9 @@ import pytest
 
 # OBSOLETE TEST: ato_splunk_query_constructor from ato_agents has been removed
 # Splunk query construction is now handled by current tools and services
-pytestmark = pytest.mark.skip(reason="ato_splunk_query_constructor from ato_agents removed - obsolete test file")
+pytestmark = pytest.mark.skip(
+    reason="ato_splunk_query_constructor from ato_agents removed - obsolete test file"
+)
 
 
 def mock_settings():

@@ -13,17 +13,26 @@ SYSTEM MANDATE Compliance:
 - Type-safe: All fields properly typed
 """
 
-from pydantic import BaseModel, Field, field_validator, ConfigDict, model_validator, field_serializer
-from pydantic.alias_generators import to_camel
-from typing import List, Optional, Dict, Any
+import json
 from datetime import datetime, timezone
 from enum import Enum
-import json
+from typing import Any, Dict, List, Optional
+
+from pydantic import (
+    BaseModel,
+    ConfigDict,
+    Field,
+    field_serializer,
+    field_validator,
+    model_validator,
+)
+from pydantic.alias_generators import to_camel
 
 
 # Enums
 class LifecycleStage(str, Enum):
     """Investigation lifecycle stages."""
+
     CREATED = "CREATED"
     SETTINGS = "SETTINGS"
     IN_PROGRESS = "IN_PROGRESS"
@@ -32,6 +41,7 @@ class LifecycleStage(str, Enum):
 
 class InvestigationStatus(str, Enum):
     """Investigation status values."""
+
     CREATED = "CREATED"
     SETTINGS = "SETTINGS"
     IN_PROGRESS = "IN_PROGRESS"
@@ -42,18 +52,21 @@ class InvestigationStatus(str, Enum):
 
 class InvestigationType(str, Enum):
     """Investigation type determining tool selection mode."""
+
     STRUCTURED = "structured"
     HYBRID = "hybrid"
 
 
 class InvestigationMode(str, Enum):
     """Investigation mode determining entity selection."""
+
     RISK = "risk"
     ENTITY = "entity"
 
 
 class EntityType(str, Enum):
     """Supported entity types for investigation."""
+
     USER_ID = "user_id"
     EMAIL = "email"
     IP = "ip"  # Matches database schema column name
@@ -63,12 +76,14 @@ class EntityType(str, Enum):
 
 class CorrelationMode(str, Enum):
     """Entity correlation mode."""
+
     OR = "OR"
     AND = "AND"
 
 
 class PhaseStatus(str, Enum):
     """Investigation phase status."""
+
     PENDING = "PENDING"
     IN_PROGRESS = "IN_PROGRESS"
     COMPLETED = "COMPLETED"
@@ -78,10 +93,9 @@ class PhaseStatus(str, Enum):
 # Entity Models
 class Entity(BaseModel):
     """Investigation entity configuration."""
+
     model_config = ConfigDict(
-        use_enum_values=True,
-        alias_generator=to_camel,
-        populate_by_name=True
+        use_enum_values=True, alias_generator=to_camel, populate_by_name=True
     )
 
     entity_type: Optional[EntityType] = None  # Allow None for risk-based mode
@@ -90,42 +104,50 @@ class Entity(BaseModel):
 
 class TimeRange(BaseModel):
     """Investigation time range."""
-    model_config = ConfigDict(
-        alias_generator=to_camel,
-        populate_by_name=True
-    )
+
+    model_config = ConfigDict(alias_generator=to_camel, populate_by_name=True)
 
     # Accept both start_date/startDate and start_time/startTime
-    start_time: Optional[datetime] = Field(None, validation_alias="start_date", serialization_alias="start_date")
+    start_time: Optional[datetime] = Field(
+        None, validation_alias="start_date", serialization_alias="start_date"
+    )
     # Accept both end_date/endDate and end_time/endTime
-    end_time: Optional[datetime] = Field(None, validation_alias="end_date", serialization_alias="end_date")
+    end_time: Optional[datetime] = Field(
+        None, validation_alias="end_date", serialization_alias="end_date"
+    )
     # Accept duration_hours for backward compatibility
     duration_hours: Optional[int] = Field(None, ge=1, le=720)
     # Accept type field from frontend (e.g., "last_180d", "last_30d")
-    type: Optional[str] = Field(None, description="Time range type: last_24h, last_7d, last_30d, last_180d, custom")
+    type: Optional[str] = Field(
+        None,
+        description="Time range type: last_24h, last_7d, last_30d, last_180d, custom",
+    )
 
     @field_validator("end_time")
     @classmethod
-    def validate_end_after_start(cls, v: Optional[datetime], info) -> Optional[datetime]:
+    def validate_end_after_start(
+        cls, v: Optional[datetime], info
+    ) -> Optional[datetime]:
         """Ensure end_time is after start_time and not later than max lookback."""
         if v:
             # Check end_time is after start_time
             if info.data.get("start_time") and v <= info.data["start_time"]:
                 raise ValueError("end_time must be after start_time")
-            
+
             # Cap end_time at max_lookback_months before current date
             import os
-            import pytz
             from datetime import timedelta
-            
-            max_lookback_months = int(os.getenv('ANALYTICS_MAX_LOOKBACK_MONTHS', '6'))
+
+            import pytz
+
+            max_lookback_months = int(os.getenv("ANALYTICS_MAX_LOOKBACK_MONTHS", "6"))
             max_lookback_days = max_lookback_months * 30
-            
+
             # Ensure timezone-aware comparison - normalize both to UTC
             utc = pytz.UTC
             now_utc = datetime.now(utc)
             max_allowed_end = now_utc - timedelta(days=max_lookback_days)
-            
+
             # Normalize v to UTC for comparison
             if v.tzinfo is None:
                 # If v is naive, assume UTC
@@ -133,18 +155,18 @@ class TimeRange(BaseModel):
             else:
                 # If v is timezone-aware, convert to UTC
                 v_utc = v.astimezone(utc)
-            
+
             if v_utc > max_allowed_end:
-                raise ValueError(f"end_time cannot be later than {max_lookback_months} months before current date ({max_allowed_end.date()})")
+                raise ValueError(
+                    f"end_time cannot be later than {max_lookback_months} months before current date ({max_allowed_end.date()})"
+                )
         return v
 
 
 class ToolSelection(BaseModel):
     """Investigation tool configuration."""
-    model_config = ConfigDict(
-        alias_generator=to_camel,
-        populate_by_name=True
-    )
+
+    model_config = ConfigDict(alias_generator=to_camel, populate_by_name=True)
 
     tool_name: str = Field(..., min_length=1, max_length=100)
     enabled: bool = True
@@ -153,26 +175,28 @@ class ToolSelection(BaseModel):
 
 class InvestigationSettings(BaseModel):
     """Complete investigation settings."""
+
     model_config = ConfigDict(
         use_enum_values=True,
         alias_generator=to_camel,
-        populate_by_name=True  # Accept both snake_case and camelCase
+        populate_by_name=True,  # Accept both snake_case and camelCase
     )
 
     name: str = Field(..., min_length=1, max_length=255)
-    entities: List[Entity] = Field(default_factory=list, max_items=10)  # Optional for risk-based mode
+    entities: List[Entity] = Field(
+        default_factory=list, max_items=10
+    )  # Optional for risk-based mode
     time_range: TimeRange
     investigation_type: InvestigationType = Field(
         default=InvestigationType.STRUCTURED,
-        description="Investigation type: structured (user selects tools) or hybrid (LLM selects tools)"
+        description="Investigation type: structured (user selects tools) or hybrid (LLM selects tools)",
     )
     investigation_mode: Optional[InvestigationMode] = Field(
         default=InvestigationMode.ENTITY,
-        description="Investigation mode: risk (auto-select entities) or entity (user specifies entities)"
+        description="Investigation mode: risk (auto-select entities) or entity (user specifies entities)",
     )
     auto_select_entities: Optional[bool] = Field(
-        default=False,
-        description="Whether to automatically select high-risk entities"
+        default=False, description="Whether to automatically select high-risk entities"
     )
     tools: List[ToolSelection] = Field(default_factory=list, max_items=20)
     correlation_mode: CorrelationMode
@@ -182,8 +206,8 @@ class InvestigationSettings(BaseModel):
         """Validate settings based on investigation type and mode."""
         # Validate entities requirement based on investigation mode
         is_risk_mode = (
-            self.investigation_mode == InvestigationMode.RISK or
-            self.auto_select_entities is True
+            self.investigation_mode == InvestigationMode.RISK
+            or self.auto_select_entities is True
         )
 
         if not is_risk_mode and len(self.entities) == 0:
@@ -201,8 +225,13 @@ class InvestigationSettings(BaseModel):
                     )
 
         # Validate tools for structured investigations
-        if self.investigation_type == InvestigationType.STRUCTURED and len(self.tools) == 0:
-            raise ValueError("At least 1 tool must be specified for structured investigations")
+        if (
+            self.investigation_type == InvestigationType.STRUCTURED
+            and len(self.tools) == 0
+        ):
+            raise ValueError(
+                "At least 1 tool must be specified for structured investigations"
+            )
 
         # For hybrid investigations, empty tools list is allowed (LLM will choose)
         return self
@@ -210,6 +239,7 @@ class InvestigationSettings(BaseModel):
 
 class ToolExecution(BaseModel):
     """Tool execution status."""
+
     model_config = ConfigDict(use_enum_values=True)
 
     tool_name: str
@@ -221,6 +251,7 @@ class ToolExecution(BaseModel):
 
 class InvestigationPhase(BaseModel):
     """Investigation phase information."""
+
     model_config = ConfigDict(use_enum_values=True)
 
     phase_name: str
@@ -233,6 +264,7 @@ class InvestigationPhase(BaseModel):
 # Enhanced Progress Model with new fields
 class PhaseProgress(BaseModel):
     """Progress for a specific phase."""
+
     phase_name: str
     phase_percentage: float = Field(0.0, ge=0.0, le=100.0)
     tools_completed: int = Field(0, ge=0)
@@ -241,6 +273,7 @@ class PhaseProgress(BaseModel):
 
 class InvestigationProgress(BaseModel):
     """Investigation execution progress with enhanced tracking."""
+
     phases: List[InvestigationPhase] = Field(default_factory=list)
     tools_executed: List[str] = Field(default_factory=list)
     percent_complete: int = Field(0, ge=0, le=100)
@@ -248,39 +281,47 @@ class InvestigationProgress(BaseModel):
     estimated_completion: Optional[datetime] = None
 
     # New fields for enhanced progress tracking
-    progress_percentage: float = Field(0.0, ge=0.0, le=100.0, description="Overall progress as float")
-    phase_progress: Dict[str, PhaseProgress] = Field(
-        default_factory=dict,
-        description="Detailed progress per phase"
+    progress_percentage: float = Field(
+        0.0, ge=0.0, le=100.0, description="Overall progress as float"
     )
-    
+    phase_progress: Dict[str, PhaseProgress] = Field(
+        default_factory=dict, description="Detailed progress per phase"
+    )
+
     # Domain findings with LLM analysis
     domain_findings: Dict[str, Any] = Field(
         default_factory=dict,
-        description="Domain-specific findings including LLM risk scores, confidence, and reasoning"
+        description="Domain-specific findings including LLM risk scores, confidence, and reasoning",
     )
 
 
 class InvestigationResults(BaseModel):
     """Investigation final results."""
+
     risk_score: int = Field(..., ge=0, le=100)
     findings: List[Dict[str, Any]] = Field(default_factory=list)
     summary: Optional[str] = None
     completed_at: Optional[datetime] = None
-    
+
     # Domain findings with LLM analysis
     domain_findings: Dict[str, Any] = Field(
         default_factory=dict,
-        description="Domain-specific findings including LLM risk scores, confidence, and reasoning"
+        description="Domain-specific findings including LLM risk scores, confidence, and reasoning",
     )
 
 
 # API Request/Response Models
 class InvestigationStateCreate(BaseModel):
     """Request schema for creating investigation state."""
+
     model_config = ConfigDict(use_enum_values=True)
 
-    investigation_id: Optional[str] = Field(None, min_length=1, max_length=255, description="Optional investigation ID. If not provided, backend will generate UUID.")
+    investigation_id: Optional[str] = Field(
+        None,
+        min_length=1,
+        max_length=255,
+        description="Optional investigation ID. If not provided, backend will generate UUID.",
+    )
     lifecycle_stage: LifecycleStage = LifecycleStage.CREATED
     settings: Optional[InvestigationSettings] = None
     status: InvestigationStatus = InvestigationStatus.CREATED
@@ -288,6 +329,7 @@ class InvestigationStateCreate(BaseModel):
 
 class InvestigationStateUpdate(BaseModel):
     """Request schema for updating investigation state."""
+
     model_config = ConfigDict(use_enum_values=True)
 
     lifecycle_stage: Optional[LifecycleStage] = None
@@ -299,6 +341,7 @@ class InvestigationStateUpdate(BaseModel):
 
 class InvestigationStateResponse(BaseModel):
     """Response schema for investigation state with enhanced fields."""
+
     model_config = ConfigDict(from_attributes=True, use_enum_values=True)
 
     investigation_id: str
@@ -314,13 +357,19 @@ class InvestigationStateResponse(BaseModel):
     # Enhanced fields for optimistic locking and caching
     version: int = Field(..., ge=1, description="Version for optimistic locking")
     etag: Optional[str] = Field(None, description="ETag for conditional requests")
-    
-    # Internal fields to access JSON columns from SQLAlchemy model (not exposed in API)
-    settings_json: Optional[str] = Field(None, exclude=True, description="Internal field for JSON deserialization")
-    progress_json: Optional[str] = Field(None, exclude=True, description="Internal field for JSON deserialization")
 
-    @field_serializer('created_at', 'updated_at', 'last_accessed', when_used='json')
-    def serialize_datetime_with_timezone(self, dt: Optional[datetime], _info) -> Optional[str]:
+    # Internal fields to access JSON columns from SQLAlchemy model (not exposed in API)
+    settings_json: Optional[str] = Field(
+        None, exclude=True, description="Internal field for JSON deserialization"
+    )
+    progress_json: Optional[str] = Field(
+        None, exclude=True, description="Internal field for JSON deserialization"
+    )
+
+    @field_serializer("created_at", "updated_at", "last_accessed", when_used="json")
+    def serialize_datetime_with_timezone(
+        self, dt: Optional[datetime], _info
+    ) -> Optional[str]:
         """Ensure all datetimes are serialized with timezone information (assume UTC if naive)."""
         if dt is None:
             return None
@@ -337,20 +386,20 @@ class InvestigationStateResponse(BaseModel):
         """Deserialize JSON fields from database model after Pydantic population."""
         # Handle progress field - deserialize from database property if it's a dict
         if self.progress is None:
-            progress_json_str = getattr(self, 'progress_json', None)
+            progress_json_str = getattr(self, "progress_json", None)
             if progress_json_str and isinstance(progress_json_str, str):
                 try:
                     progress_data = json.loads(progress_json_str)
                     # Ensure domain_findings is included (default to empty dict if not present)
-                    if 'domain_findings' not in progress_data:
-                        progress_data['domain_findings'] = {}
+                    if "domain_findings" not in progress_data:
+                        progress_data["domain_findings"] = {}
                     self.progress = InvestigationProgress(**progress_data)
                 except (json.JSONDecodeError, TypeError, ValueError):
                     pass
 
         # Handle settings field
         if self.settings is None:
-            settings_json_str = getattr(self, 'settings_json', None)
+            settings_json_str = getattr(self, "settings_json", None)
             if settings_json_str and isinstance(settings_json_str, str):
                 try:
                     settings_data = json.loads(settings_json_str)
@@ -358,12 +407,15 @@ class InvestigationStateResponse(BaseModel):
                 except (json.JSONDecodeError, TypeError, ValueError) as e:
                     # Log deserialization error for debugging
                     import logging
+
                     logger = logging.getLogger(__name__)
                     logger.error(
                         f"Failed to deserialize settings_json for investigation {self.investigation_id}: "
                         f"{type(e).__name__}: {str(e)}"
                     )
-                    logger.debug(f"Settings data that failed: {settings_data if 'settings_data' in locals() else 'JSON parse failed'}")
+                    logger.debug(
+                        f"Settings data that failed: {settings_data if 'settings_data' in locals() else 'JSON parse failed'}"
+                    )
 
         return self
 
@@ -371,6 +423,7 @@ class InvestigationStateResponse(BaseModel):
 # Error Response Models
 class ErrorDetail(BaseModel):
     """Error detail information."""
+
     message: str
     field: Optional[str] = None
     code: Optional[str] = None
@@ -378,6 +431,7 @@ class ErrorDetail(BaseModel):
 
 class ErrorResponse(BaseModel):
     """Standard error response."""
+
     error: str
     details: Optional[List[ErrorDetail]] = None
     request_id: Optional[str] = None
@@ -385,6 +439,7 @@ class ErrorResponse(BaseModel):
 
 class ConflictResponse(BaseModel):
     """409 Conflict response for version mismatch."""
+
     error: str = "Version conflict"
     current_version: int
     provided_version: int
@@ -393,6 +448,7 @@ class ConflictResponse(BaseModel):
 
 class RateLimitResponse(BaseModel):
     """429 Too Many Requests response."""
+
     error: str = "Rate limit exceeded"
     retry_after_seconds: int
     limit: int

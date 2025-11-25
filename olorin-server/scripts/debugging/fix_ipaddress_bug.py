@@ -4,22 +4,23 @@ Fix all ipaddress.ip() calls to use ipaddress.ip_address() instead.
 """
 
 import os
-import sys
 import re
+import sys
+
 
 def fix_ipaddress_calls(file_path):
     """Fix ipaddress.ip calls in a single file."""
     try:
-        with open(file_path, 'r') as f:
+        with open(file_path, "r") as f:
             content = f.read()
 
         # Replace all ipaddress.ip( with ipaddress.ip_address(
         # Use word boundary to avoid changing ipaddress.ip_address or ipaddress.ip_network
         original_content = content
-        content = re.sub(r'\bipaddress\.ip\(', 'ipaddress.ip_address(', content)
+        content = re.sub(r"\bipaddress\.ip\(", "ipaddress.ip_address(", content)
 
         if content != original_content:
-            with open(file_path, 'w') as f:
+            with open(file_path, "w") as f:
                 f.write(content)
             print(f"✅ Fixed: {file_path}")
             return True
@@ -30,6 +31,7 @@ def fix_ipaddress_calls(file_path):
     except Exception as e:
         print(f"❌ Error fixing {file_path}: {e}")
         return False
+
 
 def main():
     """Fix all files with ipaddress.ip bugs."""
@@ -67,6 +69,7 @@ def main():
 
     print(f"\n✅ Fixed {fixed_count}/{len(files_to_fix)} files")
     print("🎯 All ipaddress.ip() calls have been updated to ipaddress.ip_address()")
+
 
 if __name__ == "__main__":
     main()

@@ -6,14 +6,15 @@ Extracted utilities for job management and status tracking.
 Week 11 Phase 4 implementation.
 """
 
-from typing import Dict, Any
+import hashlib
 from datetime import datetime
 from enum import Enum
-import hashlib
+from typing import Any, Dict
 
 
 class RetrainingTrigger(Enum):
     """Reasons for triggering retraining."""
+
     MANUAL = "manual"
     PERFORMANCE_DEGRADATION = "performance_degradation"
     FEEDBACK_THRESHOLD = "feedback_threshold"
@@ -23,6 +24,7 @@ class RetrainingTrigger(Enum):
 
 class RetrainingStatus(Enum):
     """Status of retraining process."""
+
     IDLE = "idle"
     QUEUED = "queued"
     IN_PROGRESS = "in_progress"
@@ -41,7 +43,7 @@ def create_retraining_job(
     model_id: str,
     model_version: str,
     training_samples: int,
-    metadata: Dict[str, Any]
+    metadata: Dict[str, Any],
 ) -> Dict[str, Any]:
     """Create a retraining job structure."""
     return {
@@ -52,7 +54,7 @@ def create_retraining_job(
         "training_samples": training_samples,
         "metadata": metadata,
         "queued_at": datetime.utcnow().isoformat(),
-        "status": "queued"
+        "status": "queued",
     }
 
 

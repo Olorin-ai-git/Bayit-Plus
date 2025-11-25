@@ -179,4 +179,3 @@ class WorkspaceConfig:
     def is_legacy_support_enabled(self) -> bool:
         """Check if legacy path support is enabled."""
         return self.get("migration.enable_legacy_support", True)
-

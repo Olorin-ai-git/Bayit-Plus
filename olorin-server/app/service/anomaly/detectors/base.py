@@ -6,9 +6,10 @@ All detector implementations must inherit from this base class.
 """
 
 from abc import ABC, abstractmethod
-from typing import Dict, List, Any, Optional
-import numpy as np
 from datetime import datetime
+from typing import Any, Dict, List, Optional
+
+import numpy as np
 
 from app.service.logging import get_bridge_logger
 
@@ -22,7 +23,7 @@ class DetectorResult:
         self,
         scores: np.ndarray,
         anomalies: List[int],
-        evidence: Optional[Dict[str, Any]] = None
+        evidence: Optional[Dict[str, Any]] = None,
     ):
         self.scores = scores
         self.anomalies = anomalies
@@ -46,10 +47,11 @@ class BaseDetector(ABC):
         """
         self.params = params
         from app.config.anomaly_config import get_anomaly_config
+
         config = get_anomaly_config()
-        self.k_threshold = params.get('k', config.default_k_threshold)
-        self.persistence = params.get('persistence', config.default_persistence)
-        self.min_support = params.get('min_support', config.default_min_support)
+        self.k_threshold = params.get("k", config.default_k_threshold)
+        self.persistence = params.get("persistence", config.default_persistence)
+        self.min_support = params.get("min_support", config.default_min_support)
 
     @abstractmethod
     def detect(self, series: np.ndarray) -> DetectorResult:
@@ -88,9 +90,7 @@ class BaseDetector(ABC):
             raise ValueError("Series contains non-finite values (NaN or Inf)")
 
     def filter_anomalies(
-        self,
-        scores: np.ndarray,
-        evidence: Optional[Dict[str, Any]] = None
+        self, scores: np.ndarray, evidence: Optional[Dict[str, Any]] = None
     ) -> List[int]:
         """
         Filter anomalies based on k threshold.
@@ -104,4 +104,3 @@ class BaseDetector(ABC):
         """
         anomaly_indices = np.where(scores > self.k_threshold)[0].tolist()
         return anomaly_indices
-

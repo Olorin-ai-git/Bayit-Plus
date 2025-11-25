@@ -14,11 +14,12 @@ SYSTEM MANDATE Compliance:
 - Polling state tracked in progress_json field (current_phase, progress_percentage)
 """
 
-from sqlalchemy import Column, String, Text, Integer, DateTime, CheckConstraint, Index
-from sqlalchemy.sql import func
-from typing import Optional, Dict, Any
-from datetime import datetime
 import json
+from datetime import datetime
+from typing import Any, Dict, Optional
+
+from sqlalchemy import CheckConstraint, Column, DateTime, Index, Integer, String, Text
+from sqlalchemy.sql import func
 
 from app.persistence.database import Base
 
@@ -39,12 +40,24 @@ class InvestigationState(Base):
     status = Column(String(50), nullable=False, index=True)
     version = Column(Integer, nullable=False, default=1)
     created_at = Column(DateTime, nullable=False, server_default=func.now())
-    updated_at = Column(DateTime, nullable=False, server_default=func.now(), onupdate=func.now(), index=True)
+    updated_at = Column(
+        DateTime,
+        nullable=False,
+        server_default=func.now(),
+        onupdate=func.now(),
+        index=True,
+    )
     last_accessed = Column(DateTime, nullable=True)
 
     __table_args__ = (
-        CheckConstraint("lifecycle_stage IN ('CREATED', 'SETTINGS', 'IN_PROGRESS', 'COMPLETED')", name="chk_lifecycle_stage"),
-        CheckConstraint("status IN ('CREATED', 'SETTINGS', 'IN_PROGRESS', 'COMPLETED', 'ERROR', 'CANCELLED')", name="chk_status"),
+        CheckConstraint(
+            "lifecycle_stage IN ('CREATED', 'SETTINGS', 'IN_PROGRESS', 'COMPLETED')",
+            name="chk_lifecycle_stage",
+        ),
+        CheckConstraint(
+            "status IN ('CREATED', 'SETTINGS', 'IN_PROGRESS', 'COMPLETED', 'ERROR', 'CANCELLED')",
+            name="chk_status",
+        ),
         CheckConstraint("version >= 1", name="chk_version"),
         Index("idx_investigation_states_user", "user_id"),
         Index("idx_investigation_states_status", "status"),
@@ -67,7 +80,9 @@ class InvestigationState(Base):
             "version": self.version,
             "created_at": self.created_at.isoformat() if self.created_at else None,
             "updated_at": self.updated_at.isoformat() if self.updated_at else None,
-            "last_accessed": self.last_accessed.isoformat() if self.last_accessed else None,
+            "last_accessed": (
+                self.last_accessed.isoformat() if self.last_accessed else None
+            ),
         }
 
     @property
@@ -84,7 +99,6 @@ class InvestigationState(Base):
             return json.loads(self.settings_json)
         except (json.JSONDecodeError, TypeError):
             return None
-
 
     def get_progress_data(self) -> Dict[str, Any]:
         """Safely parse progress_json field, returns empty dict if parsing fails."""
@@ -107,14 +121,16 @@ class InvestigationState(Base):
         self,
         current_phase: Optional[str] = None,
         progress_percentage: Optional[float] = None,
-        additional_data: Optional[Dict[str, Any]] = None
+        additional_data: Optional[Dict[str, Any]] = None,
     ) -> None:
         """Update progress_json with new phase/percentage."""
         progress_data = self.get_progress_data()
         if current_phase is not None:
             progress_data["current_phase"] = current_phase
         if progress_percentage is not None:
-            progress_data["progress_percentage"] = max(0.0, min(100.0, progress_percentage))
+            progress_data["progress_percentage"] = max(
+                0.0, min(100.0, progress_percentage)
+            )
         if additional_data:
             progress_data.update(additional_data)
         self.progress_json = json.dumps(progress_data)

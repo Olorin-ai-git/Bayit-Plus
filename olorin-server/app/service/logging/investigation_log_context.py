@@ -9,23 +9,27 @@ Date: 2025-01-11
 """
 
 from contextvars import ContextVar
-from typing import Optional, Dict, Any
+from typing import Any, Dict, Optional
 
 # Context variable for investigation ID
-investigation_id_var: ContextVar[Optional[str]] = ContextVar('investigation_id', default=None)
+investigation_id_var: ContextVar[Optional[str]] = ContextVar(
+    "investigation_id", default=None
+)
 
 # Context variable for investigation metadata
-investigation_metadata_var: ContextVar[Optional[Dict[str, Any]]] = ContextVar('investigation_metadata', default=None)
+investigation_metadata_var: ContextVar[Optional[Dict[str, Any]]] = ContextVar(
+    "investigation_metadata", default=None
+)
 
 
 def set_investigation_context(investigation_id: str, metadata: Dict[str, Any]) -> None:
     """
     Set investigation context for current async context.
-    
+
     Args:
         investigation_id: Investigation identifier
         metadata: Investigation metadata from frontend
-        
+
     Raises:
         ValueError: If investigation_id is empty or None
         TypeError: If metadata is not a dictionary
@@ -34,7 +38,7 @@ def set_investigation_context(investigation_id: str, metadata: Dict[str, Any]) -
         raise ValueError("investigation_id cannot be empty or None")
     if not isinstance(metadata, dict):
         raise TypeError(f"metadata must be a dictionary, got {type(metadata)}")
-    
+
     investigation_id_var.set(investigation_id)
     investigation_metadata_var.set(metadata)
 
@@ -42,7 +46,7 @@ def set_investigation_context(investigation_id: str, metadata: Dict[str, Any]) -
 def get_investigation_id() -> Optional[str]:
     """
     Get current investigation ID from context.
-    
+
     Returns:
         Investigation ID if set, None otherwise
     """
@@ -52,7 +56,7 @@ def get_investigation_id() -> Optional[str]:
 def get_investigation_metadata() -> Optional[Dict[str, Any]]:
     """
     Get current investigation metadata from context.
-    
+
     Returns:
         Investigation metadata dictionary if set, None otherwise
     """
@@ -65,9 +69,3 @@ def clear_investigation_context() -> None:
     """
     investigation_id_var.set(None)
     investigation_metadata_var.set(None)
-
-
-
-
-
-

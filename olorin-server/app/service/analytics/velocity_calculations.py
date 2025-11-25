@@ -4,16 +4,16 @@ Velocity Calculation Functions.
 Provides core calculation logic for velocity analysis.
 """
 
-from typing import Dict, Any, List, Optional
-from datetime import datetime, timedelta
 from collections import defaultdict
+from datetime import datetime, timedelta
+from typing import Any, Dict, List, Optional
 
 from app.service.analytics.velocity_utils import (
-    extract_timestamp,
-    extract_email,
     extract_device_id,
+    extract_email,
     extract_ip,
-    extract_merchant_id
+    extract_merchant_id,
+    extract_timestamp,
 )
 
 
@@ -24,14 +24,14 @@ def calculate_sliding_windows(
     window_minutes_short: int,
     window_minutes_medium: int,
     window_hours_long: int,
-    window_hours_daily: int
+    window_hours_daily: int,
 ) -> Dict[str, int]:
     """Calculate transaction counts across multiple sliding windows."""
     windows = {
         f"{window_minutes_short}min": timedelta(minutes=window_minutes_short),
         f"{window_minutes_medium}min": timedelta(minutes=window_minutes_medium),
         f"{window_hours_long}hr": timedelta(hours=window_hours_long),
-        f"{window_hours_daily}hr": timedelta(hours=window_hours_daily)
+        f"{window_hours_daily}hr": timedelta(hours=window_hours_daily),
     }
 
     result = {}
@@ -49,8 +49,11 @@ def calculate_sliding_windows(
             hist_timestamp = extract_timestamp(hist_tx)
             hist_email = extract_email(hist_tx)
 
-            if (hist_timestamp and hist_email == email and
-                window_start <= hist_timestamp < tx_timestamp):
+            if (
+                hist_timestamp
+                and hist_email == email
+                and window_start <= hist_timestamp < tx_timestamp
+            ):
                 count += 1
 
         result[window_name] = count
@@ -62,7 +65,7 @@ def calculate_entity_velocities(
     transaction: Dict[str, Any],
     tx_timestamp: datetime,
     historical_transactions: Optional[List[Dict[str, Any]]],
-    window_hours_daily: int
+    window_hours_daily: int,
 ) -> Dict[str, Dict[str, int]]:
     """Calculate velocity per entity type."""
     if not historical_transactions:
@@ -70,7 +73,7 @@ def calculate_entity_velocities(
             "email": {"count": 1},
             "device": {"count": 1},
             "ip": {"count": 1},
-            "merchant": {"count": 1}
+            "merchant": {"count": 1},
         }
 
     window_start = tx_timestamp - timedelta(hours=window_hours_daily)
@@ -84,7 +87,7 @@ def calculate_entity_velocities(
         "email": defaultdict(int),
         "device": defaultdict(int),
         "ip": defaultdict(int),
-        "merchant": defaultdict(int)
+        "merchant": defaultdict(int),
     }
 
     entity_counts["email"][email] = 1
@@ -114,14 +117,14 @@ def calculate_entity_velocities(
         "email": {"count": entity_counts["email"].get(email, 1)},
         "device": {"count": entity_counts["device"].get(device_id, 1)},
         "ip": {"count": entity_counts["ip"].get(ip_address, 1)},
-        "merchant": {"count": entity_counts["merchant"].get(merchant_id, 1)}
+        "merchant": {"count": entity_counts["merchant"].get(merchant_id, 1)},
     }
 
 
 def calculate_merchant_concentration(
     transaction: Dict[str, Any],
     historical_transactions: Optional[List[Dict[str, Any]]],
-    concentration_threshold: float
+    concentration_threshold: float,
 ) -> Dict[str, Any]:
     """Calculate merchant concentration index."""
     if not historical_transactions:
@@ -138,20 +141,21 @@ def calculate_merchant_concentration(
 
     total_transactions = sum(merchant_counts.values())
     current_merchant_count = merchant_counts[merchant_id]
-    concentration_ratio = current_merchant_count / total_transactions if total_transactions > 0 else 0.0
+    concentration_ratio = (
+        current_merchant_count / total_transactions if total_transactions > 0 else 0.0
+    )
 
     return {
         "concentration_ratio": round(concentration_ratio, 3),
         "merchant_count": len(merchant_counts),
         "transactions_at_merchant": current_merchant_count,
         "total_transactions": total_transactions,
-        "is_concentrated": concentration_ratio >= concentration_threshold
+        "is_concentrated": concentration_ratio >= concentration_threshold,
     }
 
 
 def detect_cross_entity_correlation(
-    transaction: Dict[str, Any],
-    historical_transactions: Optional[List[Dict[str, Any]]]
+    transaction: Dict[str, Any], historical_transactions: Optional[List[Dict[str, Any]]]
 ) -> Dict[str, Any]:
     """Detect cross-entity velocity correlations."""
     if not historical_transactions:
@@ -180,8 +184,10 @@ def detect_cross_entity_correlation(
             device_emails.add(hist_email)
 
     return {
-        "correlated": len(email_devices) > 1 or len(email_ips) > 1 or len(device_emails) > 1,
+        "correlated": len(email_devices) > 1
+        or len(email_ips) > 1
+        or len(device_emails) > 1,
         "unique_devices_per_email": len(email_devices),
         "unique_ips_per_email": len(email_ips),
-        "unique_emails_per_device": len(device_emails)
+        "unique_emails_per_device": len(device_emails),
     }

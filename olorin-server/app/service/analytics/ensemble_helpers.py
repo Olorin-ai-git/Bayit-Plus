@@ -6,7 +6,7 @@ Provides common utilities for ensemble operations.
 Week 8 Phase 3 implementation.
 """
 
-from typing import Set, List
+from typing import List, Set
 
 from app.service.analytics.model_base import ModelPrediction
 

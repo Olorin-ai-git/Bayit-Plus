@@ -12,6 +12,7 @@ SYSTEM MANDATE Compliance:
 """
 
 from typing import Optional
+
 from fastapi import HTTPException, status
 from sqlalchemy.orm import Session
 
@@ -33,10 +34,7 @@ class HybridGraphStatusController:
         self.polling_adapter = InvestigationPollingAdapter()
 
     async def get_status(
-        self,
-        investigation_id: str,
-        user_id: str,
-        db: Session
+        self, investigation_id: str, user_id: str, db: Session
     ) -> InvestigationStatusSchema:
         """
         Get investigation status for polling.
@@ -61,9 +59,7 @@ class HybridGraphStatusController:
         return status_response
 
     def _get_investigation_or_404(
-        self,
-        investigation_id: str,
-        db: Session
+        self, investigation_id: str, db: Session
     ) -> InvestigationState:
         """
         Fetch investigation from database or raise 404.
@@ -78,22 +74,22 @@ class HybridGraphStatusController:
         Raises:
             HTTPException: 404 if investigation not found
         """
-        investigation = db.query(InvestigationState).filter(
-            InvestigationState.investigation_id == investigation_id
-        ).first()
+        investigation = (
+            db.query(InvestigationState)
+            .filter(InvestigationState.investigation_id == investigation_id)
+            .first()
+        )
 
         if not investigation:
             raise HTTPException(
                 status_code=status.HTTP_404_NOT_FOUND,
-                detail=f"Investigation '{investigation_id}' not found"
+                detail=f"Investigation '{investigation_id}' not found",
             )
 
         return investigation
 
     def _verify_authorization(
-        self,
-        investigation: InvestigationState,
-        user_id: str
+        self, investigation: InvestigationState, user_id: str
     ) -> None:
         """
         Verify user is authorized to view investigation status.
@@ -111,7 +107,7 @@ class HybridGraphStatusController:
                 detail=(
                     f"User '{user_id}' not authorized to view "
                     f"investigation '{investigation.investigation_id}'"
-                )
+                ),
             )
 
 
@@ -127,10 +123,7 @@ class CachedHybridGraphStatusController(HybridGraphStatusController):
         self._cache: dict[str, tuple[InvestigationStatusSchema, float]] = {}
 
     async def get_status(
-        self,
-        investigation_id: str,
-        user_id: str,
-        db: Session
+        self, investigation_id: str, user_id: str, db: Session
     ) -> InvestigationStatusSchema:
         """
         Get investigation status with caching.
@@ -174,7 +167,8 @@ class CachedHybridGraphStatusController(HybridGraphStatusController):
             current_time: Current timestamp for comparison
         """
         expired_keys = [
-            key for key, (_, cached_at) in self._cache.items()
+            key
+            for key, (_, cached_at) in self._cache.items()
             if (current_time - cached_at) >= self.config.status_cache_ttl_seconds
         ]
 

@@ -4,7 +4,8 @@ Risk Scoring Processor
 Handles assessment and scoring model execution.
 """
 
-from typing import Any, Dict, Optional, List
+from typing import Any, Dict, List, Optional
+
 from app.service.logging import get_bridge_logger
 
 from .input_schema import RiskAssessmentResult
@@ -24,7 +25,7 @@ class RiskScoringProcessor:
         self,
         processed_data: Dict[str, Any],
         risk_factors: List[str],
-        risk_tolerance: str
+        risk_tolerance: str,
     ) -> List[RiskAssessmentResult]:
         """Perform individual risk assessments."""
         assessments = []
@@ -49,7 +50,7 @@ class RiskScoringProcessor:
         scoring_models: List[str],
         risk_tolerance: str,
         time_horizon: str,
-        historical_data: Optional[Dict[str, Any]]
+        historical_data: Optional[Dict[str, Any]],
     ) -> Dict[str, Any]:
         """Apply different scoring models."""
         model_scores = {}
@@ -62,11 +63,16 @@ class RiskScoringProcessor:
             if model_name in self._scorers:
                 try:
                     score_result = self._scorers[model_name].score(
-                        processed_data, risk_assessments, risk_tolerance,
-                        time_horizon, historical_data
+                        processed_data,
+                        risk_assessments,
+                        risk_tolerance,
+                        time_horizon,
+                        historical_data,
                     )
                     model_scores[model_name] = score_result
-                    logger.debug(f"{model_name} model score: {score_result.get('overall_score', 0):.3f}")
+                    logger.debug(
+                        f"{model_name} model score: {score_result.get('overall_score', 0):.3f}"
+                    )
                 except Exception as e:
                     logger.warning(f"Failed to apply {model_name} scoring: {str(e)}")
 
@@ -74,11 +80,17 @@ class RiskScoringProcessor:
         if "composite" in scoring_models and len(model_scores) > 1:
             try:
                 composite_result = self._scorers["composite"].score(
-                    processed_data, risk_assessments, risk_tolerance,
-                    time_horizon, historical_data, model_scores
+                    processed_data,
+                    risk_assessments,
+                    risk_tolerance,
+                    time_horizon,
+                    historical_data,
+                    model_scores,
                 )
                 model_scores["composite"] = composite_result
-                logger.debug(f"Composite model score: {composite_result.get('overall_score', 0):.3f}")
+                logger.debug(
+                    f"Composite model score: {composite_result.get('overall_score', 0):.3f}"
+                )
             except Exception as e:
                 logger.warning(f"Failed to apply composite scoring: {str(e)}")
 

@@ -14,8 +14,9 @@ SYSTEM MANDATE Compliance:
 import hashlib
 import logging
 import time
-from sqlalchemy.orm import Session
+
 from fastapi import HTTPException, status
+from sqlalchemy.orm import Session
 
 from app.models.investigation_state import InvestigationState
 from app.service.adaptive_polling_calculator import AdaptivePollingCalculator
@@ -34,30 +35,36 @@ class ETagService:
     def get_investigation_etag(self, investigation_id: str, user_id: str) -> str:
         """Get current ETag for investigation without fetching events."""
         start_time = time.perf_counter()
-        logger.debug("get_investigation_etag_started", extra={
-            "investigation_id": investigation_id,
-            "user_id": user_id
-        })
+        logger.debug(
+            "get_investigation_etag_started",
+            extra={"investigation_id": investigation_id, "user_id": user_id},
+        )
 
         try:
             state = self._verify_authorization(investigation_id, user_id)
             etag = self.generate_etag_for_investigation(investigation_id, state.version)
 
             elapsed_ms = (time.perf_counter() - start_time) * 1000
-            logger.info("etag_retrieved", extra={
-                "investigation_id": investigation_id,
-                "version": state.version,
-                "latency_ms": round(elapsed_ms, 2)
-            })
+            logger.info(
+                "etag_retrieved",
+                extra={
+                    "investigation_id": investigation_id,
+                    "version": state.version,
+                    "latency_ms": round(elapsed_ms, 2),
+                },
+            )
             return etag
 
         except HTTPException as e:
             elapsed_ms = (time.perf_counter() - start_time) * 1000
-            logger.warning("etag_retrieval_failed", extra={
-                "investigation_id": investigation_id,
-                "status_code": e.status_code,
-                "latency_ms": round(elapsed_ms, 2)
-            })
+            logger.warning(
+                "etag_retrieval_failed",
+                extra={
+                    "investigation_id": investigation_id,
+                    "status_code": e.status_code,
+                    "latency_ms": round(elapsed_ms, 2),
+                },
+            )
             raise
 
     def generate_etag_for_investigation(
@@ -94,9 +101,11 @@ class ETagService:
         Returns:
             Recommended poll interval in seconds
         """
-        state = self.db.query(InvestigationState).filter(
-            InvestigationState.investigation_id == investigation_id
-        ).first()
+        state = (
+            self.db.query(InvestigationState)
+            .filter(InvestigationState.investigation_id == investigation_id)
+            .first()
+        )
 
         if not state:
             return self.polling_calculator.get_default_interval()
@@ -126,20 +135,22 @@ class ETagService:
             404: Investigation not found
             403: User not authorized
         """
-        state = self.db.query(InvestigationState).filter(
-            InvestigationState.investigation_id == investigation_id
-        ).first()
+        state = (
+            self.db.query(InvestigationState)
+            .filter(InvestigationState.investigation_id == investigation_id)
+            .first()
+        )
 
         if not state:
             raise HTTPException(
                 status_code=status.HTTP_404_NOT_FOUND,
-                detail=f"Investigation not found: {investigation_id}"
+                detail=f"Investigation not found: {investigation_id}",
             )
 
         if state.user_id != user_id:
             raise HTTPException(
                 status_code=status.HTTP_403_FORBIDDEN,
-                detail=f"User not authorized to access investigation {investigation_id}"
+                detail=f"User not authorized to access investigation {investigation_id}",
             )
 
         return state

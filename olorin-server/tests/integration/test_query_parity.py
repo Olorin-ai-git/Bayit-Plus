@@ -12,8 +12,9 @@ Constitutional Compliance:
 - Complete result validation
 """
 
+from typing import Any, Dict, List
+
 import pytest
-from typing import List, Dict, Any
 
 from app.service.agent.tools.database_tool.database_factory import get_database_provider
 
@@ -24,7 +25,7 @@ class TestQueryParity:
     @pytest.fixture
     def snowflake_provider(self):
         """Create Snowflake provider."""
-        provider = get_database_provider('snowflake')
+        provider = get_database_provider("snowflake")
         provider.connect()
         yield provider
         provider.disconnect()
@@ -32,7 +33,7 @@ class TestQueryParity:
     @pytest.fixture
     def postgresql_provider(self, postgresql_container):
         """Create PostgreSQL provider."""
-        provider = get_database_provider('postgresql')
+        provider = get_database_provider("postgresql")
         provider.connect()
         yield provider
         provider.disconnect()
@@ -68,11 +69,13 @@ class TestQueryParity:
         snowflake_keys = [k.lower() for k in snowflake_results[0].keys()]
         postgresql_keys = [k.lower() for k in postgresql_results[0].keys()]
 
-        assert 'test_value' in snowflake_keys
-        assert 'test_value' in postgresql_keys
+        assert "test_value" in snowflake_keys
+        assert "test_value" in postgresql_keys
 
     @pytest.mark.integration
-    def test_query_with_where_clause_parity(self, snowflake_provider, postgresql_provider):
+    def test_query_with_where_clause_parity(
+        self, snowflake_provider, postgresql_provider
+    ):
         """Test queries with WHERE clause work on both."""
         query = "SELECT 1 as result WHERE 1 = 1"
 
@@ -84,7 +87,9 @@ class TestQueryParity:
         assert len(postgresql_results) == 1
 
     @pytest.mark.integration
-    def test_query_result_structure_parity(self, snowflake_provider, postgresql_provider):
+    def test_query_result_structure_parity(
+        self, snowflake_provider, postgresql_provider
+    ):
         """Test that query results have identical structure."""
         query = """
             SELECT
@@ -104,8 +109,9 @@ class TestQueryParity:
         pg_keys = set(k.lower() for k in pg_row.keys())
 
         # Should have same columns
-        assert sf_keys == pg_keys, \
-            f"Column sets differ: Snowflake={sf_keys}, PostgreSQL={pg_keys}"
+        assert (
+            sf_keys == pg_keys
+        ), f"Column sets differ: Snowflake={sf_keys}, PostgreSQL={pg_keys}"
 
     @pytest.mark.integration
     def test_numeric_data_type_parity(self, snowflake_provider, postgresql_provider):
@@ -120,10 +126,10 @@ class TestQueryParity:
         pg_row = {k.lower(): v for k, v in postgresql_results[0].items()}
 
         # Integer values should be equal
-        assert sf_row['int_val'] == pg_row['int_val']
+        assert sf_row["int_val"] == pg_row["int_val"]
 
         # Decimal values should be close (floating point comparison)
-        assert abs(float(sf_row['decimal_val']) - float(pg_row['decimal_val'])) < 0.01
+        assert abs(float(sf_row["decimal_val"]) - float(pg_row["decimal_val"])) < 0.01
 
     @pytest.mark.integration
     def test_string_data_type_parity(self, snowflake_provider, postgresql_provider):
@@ -136,7 +142,7 @@ class TestQueryParity:
         sf_row = {k.lower(): v for k, v in snowflake_results[0].items()}
         pg_row = {k.lower(): v for k, v in postgresql_results[0].items()}
 
-        assert sf_row['message'] == pg_row['message']
+        assert sf_row["message"] == pg_row["message"]
 
     @pytest.mark.integration
     def test_date_functions_parity(self, snowflake_provider, postgresql_provider):
@@ -174,7 +180,7 @@ class TestQueryParity:
         sf_row = {k.lower(): v for k, v in snowflake_results[0].items()}
         pg_row = {k.lower(): v for k, v in postgresql_results[0].items()}
 
-        assert sf_row['result'] == pg_row['result'] == 'yes'
+        assert sf_row["result"] == pg_row["result"] == "yes"
 
     @pytest.mark.integration
     def test_null_handling_parity(self, snowflake_provider, postgresql_provider):
@@ -188,8 +194,8 @@ class TestQueryParity:
         pg_row = {k.lower(): v for k, v in postgresql_results[0].items()}
 
         # Both should have NULL/None
-        assert sf_row['null_value'] is None
-        assert pg_row['null_value'] is None
+        assert sf_row["null_value"] is None
+        assert pg_row["null_value"] is None
 
     @pytest.mark.integration
     def test_multiple_row_results_parity(self, snowflake_provider, postgresql_provider):
@@ -246,7 +252,9 @@ class TestQueryPerformanceParity:
     """Test query performance is comparable."""
 
     @pytest.mark.integration
-    def test_query_execution_time_within_spec(self, snowflake_provider, postgresql_provider):
+    def test_query_execution_time_within_spec(
+        self, snowflake_provider, postgresql_provider
+    ):
         """Test both databases execute within 20% of each other (per spec)."""
         import time
 
@@ -269,4 +277,6 @@ class TestQueryPerformanceParity:
             # Should be within 20% (per User Story 5 success criteria)
             # This is aspirational - may not pass until optimizations are done
             if pct_diff > 20:
-                pytest.skip(f"Performance difference {pct_diff:.1f}% - optimization needed")
+                pytest.skip(
+                    f"Performance difference {pct_diff:.1f}% - optimization needed"
+                )

@@ -23,7 +23,6 @@ from app.models.api_models import (
     InvestigationUpdate,
     LocationRiskAnalysisResponse,
 )
-from app.service.logging import get_bridge_logger
 from app.models.device_risk import (
     AnalyzeDeviceResponse,
     DeviceSignalDetail,
@@ -48,12 +47,13 @@ from app.router.demo_router import demo_cache, demo_mode_users
 from app.security.auth import User, require_read, require_write
 from app.service.agent_service import ainvoke_agent
 from app.service.config import get_settings_for_env
+from app.service.config_loader import get_config_loader
+from app.service.logging import get_bridge_logger
 from app.utils.auth_utils import get_auth_token
 from app.utils.constants import LIST_FIELDS_PRIORITY, MAX_PROMPT_TOKENS
 from app.utils.firebase_secrets import get_app_secret
 from app.utils.prompt_utils import sanitize_splunk_data, trim_prompt_to_token_limit
 from app.utils.prompts import SYSTEM_PROMPT_FOR_LOG_RISK
-from app.service.config_loader import get_config_loader
 
 from .device_router import analyze_device
 from .device_router import router as device_router
@@ -108,23 +108,24 @@ async def get_all_demo_agent_responses(user_id: str) -> Dict[str, Any]:
     }
 
 
+from app.api.v1.llm_models import router as llm_models_router
+
 from .comment_router import comment_router
+from .composio_router import router as composio_router
 from .demo_router import router as demo_router
+from .device_signals_router import router as device_signals_router
+from .ip_risk_router import router as ip_risk_router
 from .location_router import router as location_router
 from .logs_router import router as logs_router
 from .mcp_http_router import router as mcp_http_router
 
 # --- IMPORT NEW ROUTERS ---
 from .network_router import router as network_router
+from .rag_router import router as rag_router
 from .risk_assessment_router import risk_assessment_router
 from .settings_router import router as settings_router
-from .rag_router import router as rag_router
-from app.api.v1.llm_models import router as llm_models_router
-from .composio_router import router as composio_router
-from .tenant_config_router import router as tenant_config_router
-from .device_signals_router import router as device_signals_router
-from .ip_risk_router import router as ip_risk_router
 from .soar_playbooks_router import router as soar_playbooks_router
+from .tenant_config_router import router as tenant_config_router
 
 # --- INCLUDE NEW ROUTERS ---
 router.include_router(network_router)
@@ -149,20 +150,30 @@ router.include_router(soar_playbooks_router)
 try:
     # Use print as fallback since logger might not be initialized at module import time
     import sys
+
     print("[API_ROUTER] Attempting to import analytics router...", file=sys.stderr)
     logger.info("Attempting to import analytics router...")
     from app.api.routes.analytics import router as analytics_router
-    print(f"[API_ROUTER] Analytics router imported: prefix={analytics_router.prefix}, routes={len(analytics_router.routes)}", file=sys.stderr)
-    logger.info(f"Analytics router imported successfully, prefix: {analytics_router.prefix}, routes: {len(analytics_router.routes)}")
+
+    print(
+        f"[API_ROUTER] Analytics router imported: prefix={analytics_router.prefix}, routes={len(analytics_router.routes)}",
+        file=sys.stderr,
+    )
+    logger.info(
+        f"Analytics router imported successfully, prefix: {analytics_router.prefix}, routes: {len(analytics_router.routes)}"
+    )
     router.include_router(analytics_router)
     print(f"[API_ROUTER] ✅ Analytics router included successfully", file=sys.stderr)
-    logger.info(f"✅ Analytics router included successfully with prefix: {analytics_router.prefix}")
+    logger.info(
+        f"✅ Analytics router included successfully with prefix: {analytics_router.prefix}"
+    )
 except ImportError as e:
     print(f"[API_ROUTER] ❌ Analytics router import failed: {e}", file=sys.stderr)
     logger.error(f"❌ Analytics router import failed: {e}", exc_info=True)
 except Exception as e:
     print(f"[API_ROUTER] ❌ Analytics router error: {e}", file=sys.stderr)
     import traceback
+
     traceback.print_exc(file=sys.stderr)
     logger.error(f"❌ Analytics router not available: {e}", exc_info=True)
 
@@ -180,8 +191,12 @@ async def get_online_identity_info(user_id: str, request: Request) -> Dict[str, 
     """Retrieve online identity information using intelligence tools."""
     try:
         # Use the people search and social media profiling tools as OII replacement
-        from app.service.agent.tools.intelligence_tools.people_search import PeopleSearchTool
-        from app.service.agent.tools.intelligence_tools.social_media_profiling import SocialMediaProfilingTool
+        from app.service.agent.tools.intelligence_tools.people_search import (
+            PeopleSearchTool,
+        )
+        from app.service.agent.tools.intelligence_tools.social_media_profiling import (
+            SocialMediaProfilingTool,
+        )
 
         # Initialize tools
         people_tool = PeopleSearchTool()
@@ -199,7 +214,7 @@ async def get_online_identity_info(user_id: str, request: Request) -> Dict[str, 
             "social_media_presence": social_result.get("profiles", {}),
             "risk_indicators": people_result.get("risk_indicators", []),
             "timestamp": datetime.now(timezone.utc).isoformat(),
-            "data_sources": ["people_search", "social_media_profiling"]
+            "data_sources": ["people_search", "social_media_profiling"],
         }
 
         return oii_result
@@ -653,19 +668,38 @@ async def cancel_splunk_job(job_id: str) -> Dict[str, Any]:
 async def verification_stats():
     settings = get_settings_for_env()
     from app.service.llm.verification.log_store import verification_log_store
+
     snapshot = await verification_log_store.snapshot()
     return JSONResponse(
         content={
             "enabled": bool(getattr(settings, "verification_enabled", False)),
             "mode": getattr(settings, "verification_mode", "shadow"),
-            "sample_percent": float(getattr(settings, "verification_sample_percent", 1.0) or 0.0),
+            "sample_percent": float(
+                getattr(settings, "verification_sample_percent", 1.0) or 0.0
+            ),
             "verification_model_name": "DEPRECATED - use LLM_VERIFICATION_MODEL environment variable",
-            "threshold_default": float(getattr(settings, "verification_threshold_default", 0.85)),
-            "max_retries_default": int(getattr(settings, "verification_max_retries_default", 1)),
+            "threshold_default": float(
+                getattr(settings, "verification_threshold_default", 0.85)
+            ),
+            "max_retries_default": int(
+                getattr(settings, "verification_max_retries_default", 1)
+            ),
             "task_policies": {
                 "risk_analysis": {
-                    "threshold": float(getattr(settings, "verification_task_policy_risk_analysis_threshold", 0.9)),
-                    "max_retries": int(getattr(settings, "verification_task_policy_risk_analysis_max_retries", 2)),
+                    "threshold": float(
+                        getattr(
+                            settings,
+                            "verification_task_policy_risk_analysis_threshold",
+                            0.9,
+                        )
+                    ),
+                    "max_retries": int(
+                        getattr(
+                            settings,
+                            "verification_task_policy_risk_analysis_max_retries",
+                            2,
+                        )
+                    ),
                 }
             },
             "metrics": snapshot,
@@ -680,21 +714,26 @@ async def api_health():
     Used by the frontend to fetch system status and configuration.
     """
     from app.service.config import get_settings_for_env
-    
+
     settings = get_settings_for_env()
-    
+
     # Get verification configuration
     verification_config = {
         "enabled": bool(getattr(settings, "verification_enabled", False)),
         "mode": getattr(settings, "verification_mode", "shadow"),
-        "sample_percent": float(getattr(settings, "verification_sample_percent", 1.0) or 0.0),
-        "threshold_default": float(getattr(settings, "verification_threshold_default", 0.85)),
+        "sample_percent": float(
+            getattr(settings, "verification_sample_percent", 1.0) or 0.0
+        ),
+        "threshold_default": float(
+            getattr(settings, "verification_threshold_default", 0.85)
+        ),
     }
-    
+
     # Get model configuration
     from app.service.llm_manager import get_llm_manager
+
     llm_manager = get_llm_manager()
-    
+
     return JSONResponse(
         content={
             "status": "healthy",
@@ -704,7 +743,7 @@ async def api_health():
             "models": {
                 "selected": llm_manager.selected_model_id,
                 "verification_model": llm_manager.verification_model_id,
-            }
+            },
         }
     )
 
@@ -718,27 +757,29 @@ async def update_verification_settings(request: Request):
     try:
         body = await request.json()
         settings = get_settings_for_env()
-        
+
         # Update settings dynamically (runtime only)
-        if 'enabled' in body:
-            settings.verification_enabled = bool(body['enabled'])
-        if 'mode' in body:
-            settings.verification_mode = str(body['mode'])
-        if 'sample_percent' in body:
+        if "enabled" in body:
+            settings.verification_enabled = bool(body["enabled"])
+        if "mode" in body:
+            settings.verification_mode = str(body["mode"])
+        if "sample_percent" in body:
             # Convert from decimal (0.0-1.0) if needed
-            val = float(body['sample_percent'])
+            val = float(body["sample_percent"])
             settings.verification_sample_percent = val if val <= 1.0 else val / 100.0
-        if 'threshold_default' in body:
+        if "threshold_default" in body:
             # Convert from decimal (0.0-1.0) if needed
-            val = float(body['threshold_default'])
+            val = float(body["threshold_default"])
             settings.verification_threshold_default = val if val <= 1.0 else val / 100.0
-        
+
         # Log the changes
-        logger.info(f"Verification settings updated: enabled={settings.verification_enabled}, "
-                   f"mode={settings.verification_mode}, "
-                   f"sample_percent={settings.verification_sample_percent}, "
-                   f"threshold={settings.verification_threshold_default}")
-        
+        logger.info(
+            f"Verification settings updated: enabled={settings.verification_enabled}, "
+            f"mode={settings.verification_mode}, "
+            f"sample_percent={settings.verification_sample_percent}, "
+            f"threshold={settings.verification_threshold_default}"
+        )
+
         return JSONResponse(
             content={
                 "success": True,
@@ -748,7 +789,7 @@ async def update_verification_settings(request: Request):
                     "mode": settings.verification_mode,
                     "sample_percent": settings.verification_sample_percent,
                     "threshold_default": settings.verification_threshold_default,
-                }
+                },
             }
         )
     except Exception as e:
@@ -757,6 +798,6 @@ async def update_verification_settings(request: Request):
             status_code=500,
             content={
                 "success": False,
-                "message": f"Failed to update verification settings: {str(e)}"
-            }
+                "message": f"Failed to update verification settings: {str(e)}",
+            },
         )

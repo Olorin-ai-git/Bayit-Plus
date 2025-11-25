@@ -10,22 +10,23 @@ Plan: /docs/plans/2025-09-07-api-cost-management-system-plan.md
 """
 
 import asyncio
+from datetime import datetime
+from typing import Any, Dict, List
+
 import pytest
 import pytest_asyncio
-from datetime import datetime
-from typing import Dict, Any, List
 
+from app.service.cost_management.anthropic_credit_monitor import (
+    CreditBalance,
+    CreditStatus,
+)
 from app.service.cost_management.model_tier_fallback import (
-    ModelTierFallback,
-    TaskComplexity,
-    ModelTier,
     ModelConfig,
     ModelSelection,
+    ModelTier,
+    ModelTierFallback,
+    TaskComplexity,
     get_model_fallback,
-)
-from app.service.cost_management.anthropic_credit_monitor import (
-    CreditStatus,
-    CreditBalance,
 )
 
 
@@ -74,7 +75,7 @@ class TestModelTierFallback:
         simple_models = model_fallback._get_suitable_models(TaskComplexity.SIMPLE)
         assert "claude-3-haiku-20240307" in simple_models
 
-        # Moderate task - should include standard models  
+        # Moderate task - should include standard models
         moderate_models = model_fallback._get_suitable_models(TaskComplexity.MODERATE)
         assert "claude-3-sonnet-20240229" in moderate_models
         assert "claude-3-haiku-20240307" in moderate_models
@@ -90,45 +91,47 @@ class TestModelTierFallback:
         assert "claude-3-opus-20240229" in critical_models
 
     @pytest.mark.asyncio
-    async def test_investigation_scenario_selection(self, model_fallback, api_cost_monitor):
+    async def test_investigation_scenario_selection(
+        self, model_fallback, api_cost_monitor
+    ):
         """Test model selection for realistic investigation scenarios."""
-        
+
         # Scenario 1: Device Spoofing Analysis (Complex)
         device_selection = await model_fallback.select_model(
             task_type="device_spoofing",
             estimated_tokens=3000,
-            preferred_model="claude-opus-4-1-20250805"
+            preferred_model="claude-opus-4-1-20250805",
         )
-        
+
         # Should select appropriate model for complexity
         assert device_selection.selected_model in [
-            "claude-opus-4-1-20250805", "claude-3-opus-20240229", "claude-3-sonnet-20240229"
+            "claude-opus-4-1-20250805",
+            "claude-3-opus-20240229",
+            "claude-3-sonnet-20240229",
         ]
         assert device_selection.tier in [ModelTier.PREMIUM, ModelTier.STANDARD]
-        
+
         # Track cost for monitoring
-        api_cost_monitor.track_call(
-            1500, 1500, device_selection.selected_model
-        )
+        api_cost_monitor.track_call(1500, 1500, device_selection.selected_model)
 
         # Scenario 2: Location Analysis (Simple)
         location_selection = await model_fallback.select_model(
-            task_type="location_analysis", 
+            task_type="location_analysis",
             estimated_tokens=1500,
-            preferred_model="claude-3-haiku-20240307"
+            preferred_model="claude-3-haiku-20240307",
         )
-        
+
         # Should use efficient model for simple task
         assert location_selection.selected_model == "claude-3-haiku-20240307"
         assert location_selection.tier == ModelTier.EFFICIENT
-        
-        # Scenario 3: Risk Assessment (Critical) 
+
+        # Scenario 3: Risk Assessment (Critical)
         risk_selection = await model_fallback.select_model(
             task_type="risk_assessment",
             estimated_tokens=4000,
-            preferred_model="claude-opus-4-1-20250805"
+            preferred_model="claude-opus-4-1-20250805",
         )
-        
+
         # Should prefer premium model for critical tasks
         assert risk_selection.tier in [ModelTier.PREMIUM]
         assert risk_selection.quality_impact <= 0.05  # Minimal quality impact
@@ -138,14 +141,14 @@ class TestModelTierFallback:
         """Test fallback behavior when cost constraints apply."""
         # Force high usage to trigger fallback
         model_fallback.credit_monitor._daily_usage = 450.0  # Near budget limit
-        
+
         # Request expensive model for moderate task
         selection = await model_fallback.select_model(
             task_type="pattern_recognition",
-            estimated_tokens=2000, 
-            preferred_model="claude-opus-4-1-20250805"
+            estimated_tokens=2000,
+            preferred_model="claude-opus-4-1-20250805",
         )
-        
+
         # Should fallback to less expensive model
         if selection.fallback_reason:
             assert "cost constraints" in selection.fallback_reason.lower()
@@ -163,7 +166,7 @@ class TestModelTierFallback:
         selection = await model_fallback.select_model(
             task_type="correlation_analysis",
             estimated_tokens=3000,
-            preferred_model="claude-opus-4-1-20250805"
+            preferred_model="claude-opus-4-1-20250805",
         )
 
         # Should select cheaper model even for complex task
@@ -183,9 +186,7 @@ class TestModelTierFallback:
 
         # Request model with quality requirement
         selection = await model_fallback.select_model(
-            task_type="data_extraction",
-            estimated_tokens=1000,
-            quality_requirement=0.85
+            task_type="data_extraction", estimated_tokens=1000, quality_requirement=0.85
         )
 
         # Should only use high-quality models
@@ -199,7 +200,7 @@ class TestModelTierFallback:
         large_token_selection = await model_fallback.select_model(
             task_type="report_generation",
             estimated_tokens=10000,  # Exceeds most model limits
-            preferred_model="claude-3-sonnet-20240229"
+            preferred_model="claude-3-sonnet-20240229",
         )
 
         # Should cap at model's maximum
@@ -236,7 +237,7 @@ class TestModelTierFallback:
         """Test model recommendation generation for different tasks."""
         # Get recommendations for complex investigation task
         complex_recs = model_fallback.get_model_recommendations("network_analysis")
-        
+
         assert complex_recs["task_type"] == "network_analysis"
         assert complex_recs["complexity"] == "complex"
         assert len(complex_recs["recommendations"]) > 0
@@ -250,7 +251,9 @@ class TestModelTierFallback:
             assert "suitability" in rec
 
         # Recommendations should be sorted by quality
-        quality_scores = [rec["quality_score"] for rec in complex_recs["recommendations"]]
+        quality_scores = [
+            rec["quality_score"] for rec in complex_recs["recommendations"]
+        ]
         assert quality_scores == sorted(quality_scores, reverse=True)
 
     @pytest.mark.asyncio
@@ -265,13 +268,13 @@ class TestModelTierFallback:
         selection = await model_fallback.select_model(
             task_type="synthetic_identity",
             estimated_tokens=5000,
-            preferred_model="claude-opus-4-1-20250805"
+            preferred_model="claude-opus-4-1-20250805",
         )
 
         # Should fall back to emergency model
         assert selection.fallback_reason is not None
         assert "fallback" in selection.fallback_reason.lower()
-        
+
         # Should still provide a valid selection
         assert selection.selected_model in model_fallback.MODEL_CONFIGS
         assert selection.estimated_cost > 0
@@ -293,7 +296,7 @@ class TestModelTierFallback:
             task = model_fallback.select_model(
                 task_type=task_type,
                 estimated_tokens=tokens,
-                preferred_model="claude-3-sonnet-20240229"
+                preferred_model="claude-3-sonnet-20240229",
             )
             tasks.append(task)
 
@@ -323,7 +326,7 @@ class TestModelTierFallback:
         selection = await model_fallback.select_model(
             task_type="money_laundering",
             estimated_tokens=4000,
-            preferred_model="claude-opus-4-1-20250805"
+            preferred_model="claude-opus-4-1-20250805",
         )
 
         # Track the actual selection cost
@@ -404,30 +407,40 @@ class TestModelConfigValidation:
         configs = model_fallback.MODEL_CONFIGS
 
         premium_models = [
-            name for name, config in configs.items()
-            if config.tier == ModelTier.PREMIUM
+            name for name, config in configs.items() if config.tier == ModelTier.PREMIUM
         ]
         standard_models = [
-            name for name, config in configs.items()
+            name
+            for name, config in configs.items()
             if config.tier == ModelTier.STANDARD
         ]
         efficient_models = [
-            name for name, config in configs.items()
+            name
+            for name, config in configs.items()
             if config.tier == ModelTier.EFFICIENT
         ]
 
         # Premium should have highest quality scores
-        premium_avg_quality = sum(
-            configs[name].quality_score for name in premium_models
-        ) / len(premium_models) if premium_models else 0
+        premium_avg_quality = (
+            sum(configs[name].quality_score for name in premium_models)
+            / len(premium_models)
+            if premium_models
+            else 0
+        )
 
-        standard_avg_quality = sum(
-            configs[name].quality_score for name in standard_models
-        ) / len(standard_models) if standard_models else 0
+        standard_avg_quality = (
+            sum(configs[name].quality_score for name in standard_models)
+            / len(standard_models)
+            if standard_models
+            else 0
+        )
 
-        efficient_avg_quality = sum(
-            configs[name].quality_score for name in efficient_models
-        ) / len(efficient_models) if efficient_models else 0
+        efficient_avg_quality = (
+            sum(configs[name].quality_score for name in efficient_models)
+            / len(efficient_models)
+            if efficient_models
+            else 0
+        )
 
         assert premium_avg_quality > standard_avg_quality > efficient_avg_quality
 
@@ -472,17 +485,19 @@ class TestRealWorldScenarios:
             selection = await model_fallback.select_model(
                 task_type=task_type,
                 estimated_tokens=tokens,
-                preferred_model="claude-3-sonnet-20240229"
+                preferred_model="claude-3-sonnet-20240229",
             )
 
-            phase_results.append({
-                "phase": description,
-                "task_type": task_type,
-                "model": selection.selected_model,
-                "tier": selection.tier.value,
-                "cost": selection.estimated_cost,
-                "fallback": selection.fallback_reason is not None
-            })
+            phase_results.append(
+                {
+                    "phase": description,
+                    "task_type": task_type,
+                    "model": selection.selected_model,
+                    "tier": selection.tier.value,
+                    "cost": selection.estimated_cost,
+                    "fallback": selection.fallback_reason is not None,
+                }
+            )
 
             total_cost += selection.estimated_cost
 
@@ -502,7 +517,11 @@ class TestRealWorldScenarios:
             assert phase["tier"] in ["premium", "standard"]
 
         # Simple phases should use efficient models when possible
-        simple_phases = [r for r in phase_results if r["task_type"] in ["data_extraction", "report_generation"]]
+        simple_phases = [
+            r
+            for r in phase_results
+            if r["task_type"] in ["data_extraction", "report_generation"]
+        ]
         efficient_count = sum(1 for p in simple_phases if p["tier"] == "efficient")
         assert efficient_count > 0  # At least some should use efficient models
 
@@ -516,7 +535,7 @@ class TestRealWorldScenarios:
         # Attempt high-priority investigation
         critical_tasks = [
             "synthetic_identity",
-            "money_laundering", 
+            "money_laundering",
             "insider_fraud",
         ]
 
@@ -527,18 +546,21 @@ class TestRealWorldScenarios:
             selection = await model_fallback.select_model(
                 task_type=task_type,
                 estimated_tokens=4000,
-                preferred_model="claude-opus-4-1-20250805"
+                preferred_model="claude-opus-4-1-20250805",
             )
 
-            if selection.fallback_reason and "emergency" in selection.fallback_reason.lower():
+            if (
+                selection.fallback_reason
+                and "emergency" in selection.fallback_reason.lower()
+            ):
                 emergency_fallbacks += 1
-            
+
             if selection.selected_model:
                 successful_selections += 1
 
         # Should still provide selections even under constraints
         assert successful_selections == len(critical_tasks)
-        
+
         # May require emergency fallbacks
         if emergency_fallbacks > 0:
             assert emergency_fallbacks <= len(critical_tasks)
@@ -548,7 +570,7 @@ class TestRealWorldScenarios:
         """Test performance tracking across different model selections."""
         # Perform selections with different models
         model_usage = {}
-        
+
         test_cases = [
             ("claude-opus-4-1-20250805", "synthetic_identity", 4000),
             ("claude-3-sonnet-20240229", "device_spoofing", 2500),
@@ -559,12 +581,12 @@ class TestRealWorldScenarios:
             selection = await model_fallback.select_model(
                 task_type=task_type,
                 estimated_tokens=tokens,
-                preferred_model=preferred_model
+                preferred_model=preferred_model,
             )
 
-            model_usage[selection.selected_model] = model_usage.get(
-                selection.selected_model, 0
-            ) + 1
+            model_usage[selection.selected_model] = (
+                model_usage.get(selection.selected_model, 0) + 1
+            )
 
         # Verify tracking statistics
         stats = model_fallback.get_fallback_statistics()
@@ -573,34 +595,36 @@ class TestRealWorldScenarios:
         # All selected models should appear in tracking
         for model_name, count in model_usage.items():
             assert model_name in tracked_usage
-            assert tracked_usage[model_name] >= count  # May have additional uses from other tests
+            assert (
+                tracked_usage[model_name] >= count
+            )  # May have additional uses from other tests
 
-    @pytest.mark.asyncio 
+    @pytest.mark.asyncio
     async def test_adaptive_fallback_behavior(self, model_fallback):
         """Test fallback system adapts to changing conditions."""
         initial_economy_mode = model_fallback.force_economy_mode
-        
+
         # Phase 1: Normal operation
         normal_selection = await model_fallback.select_model(
             task_type="correlation_analysis",
             estimated_tokens=3000,
-            preferred_model="claude-opus-4-1-20250805"
+            preferred_model="claude-opus-4-1-20250805",
         )
 
         # Phase 2: Enable economy mode
         model_fallback.configure_economy_mode(True)
         economy_selection = await model_fallback.select_model(
-            task_type="correlation_analysis", 
+            task_type="correlation_analysis",
             estimated_tokens=3000,
-            preferred_model="claude-opus-4-1-20250805"
+            preferred_model="claude-opus-4-1-20250805",
         )
 
         # Phase 3: High budget usage
         model_fallback.credit_monitor._daily_usage = 450.0
         constrained_selection = await model_fallback.select_model(
             task_type="correlation_analysis",
-            estimated_tokens=3000, 
-            preferred_model="claude-opus-4-1-20250805"
+            estimated_tokens=3000,
+            preferred_model="claude-opus-4-1-20250805",
         )
 
         # Verify adaptive behavior

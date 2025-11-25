@@ -4,9 +4,9 @@ Fraud Detection Behavioral Deviation Analysis
 Implements behavior deviation detection and risk factor identification.
 """
 
-from typing import Any, Dict, List
-from collections import Counter
 import math
+from collections import Counter
+from typing import Any, Dict, List
 
 
 class FraudBehavioralDeviationAnalysis:

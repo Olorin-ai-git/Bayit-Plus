@@ -14,7 +14,7 @@ sys.path.insert(0, str(Path(__file__).parent.parent.parent))
 from app.config.snowflake_config import load_snowflake_config
 from app.service.snowflake_service import (
     SnowflakeConnectionFactory,
-    SnowflakeQueryService
+    SnowflakeQueryService,
 )
 
 
@@ -88,8 +88,7 @@ def main():
         # Test high-risk transactions query
         print("\n🚨 Fetching high-risk transactions...")
         high_risk = query_service.get_high_risk_transactions(
-            risk_threshold=70.0,
-            limit=10
+            risk_threshold=70.0, limit=10
         )
 
         if high_risk:
@@ -117,6 +116,7 @@ def main():
         print(f"   Error: {e}")
         print(f"   Type: {type(e).__name__}")
         import traceback
+
         print(f"\nTraceback:")
         traceback.print_exc()
 

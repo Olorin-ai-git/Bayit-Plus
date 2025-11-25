@@ -4,9 +4,10 @@ Composite Risk Scorer
 Combines multiple scoring models for comprehensive risk assessment.
 """
 
-from typing import Any, Dict, Optional, List
-from .base_scorer import BaseScorer
+from typing import Any, Dict, List, Optional
+
 from ..core.input_schema import RiskAssessmentResult
+from .base_scorer import BaseScorer
 
 
 class CompositeScorer(BaseScorer):
@@ -14,11 +15,7 @@ class CompositeScorer(BaseScorer):
 
     def __init__(self):
         """Initialize with default model weights."""
-        self.model_weights = {
-            "rule_based": 0.3,
-            "weighted": 0.3,
-            "ml_based": 0.4
-        }
+        self.model_weights = {"rule_based": 0.3, "weighted": 0.3, "ml_based": 0.4}
 
     def score(
         self,
@@ -27,11 +24,13 @@ class CompositeScorer(BaseScorer):
         risk_tolerance: str,
         time_horizon: str = "short_term",
         historical_data: Optional[Dict[str, Any]] = None,
-        model_scores: Optional[Dict[str, Any]] = None
+        model_scores: Optional[Dict[str, Any]] = None,
     ) -> Dict[str, Any]:
         """Apply composite risk scoring combining multiple models."""
         if not model_scores:
-            raise ValueError("Composite scorer requires model_scores from other scoring models")
+            raise ValueError(
+                "Composite scorer requires model_scores from other scoring models"
+            )
 
         # Extract scores from each model
         scores = {}
@@ -91,13 +90,11 @@ class CompositeScorer(BaseScorer):
             "consensus_factor": self._calculate_consensus_factor(scores),
             "model_type": "composite",
             "recommendations": recommendations,
-            "score_variance": self._calculate_score_variance(scores)
+            "score_variance": self._calculate_score_variance(scores),
         }
 
     def _apply_consensus_adjustment(
-        self,
-        composite_score: float,
-        model_scores: Dict[str, float]
+        self, composite_score: float, model_scores: Dict[str, float]
     ) -> float:
         """Apply adjustment based on model consensus."""
         if len(model_scores) < 2:
@@ -121,7 +118,9 @@ class CompositeScorer(BaseScorer):
             return 1.0
 
         mean_score = sum(scores_list) / len(scores_list)
-        variance = sum((score - mean_score) ** 2 for score in scores_list) / len(scores_list)
+        variance = sum((score - mean_score) ** 2 for score in scores_list) / len(
+            scores_list
+        )
 
         # Convert variance to consensus (inverse relationship)
         max_variance = 0.25  # Maximum expected variance
@@ -129,24 +128,17 @@ class CompositeScorer(BaseScorer):
         return min(1.0, consensus)
 
     def _apply_composite_adjustments(
-        self,
-        score: float,
-        risk_tolerance: str,
-        time_horizon: str
+        self, score: float, risk_tolerance: str, time_horizon: str
     ) -> float:
         """Apply composite-specific adjustments."""
         # Conservative adjustments for composite model
-        tolerance_factors = {
-            "low": 1.05,
-            "medium": 1.0,
-            "high": 0.95
-        }
+        tolerance_factors = {"low": 1.05, "medium": 1.0, "high": 0.95}
 
         horizon_factors = {
             "immediate": 1.02,
             "short_term": 1.0,
             "medium_term": 0.99,
-            "long_term": 0.98
+            "long_term": 0.98,
         }
 
         tolerance_factor = tolerance_factors.get(risk_tolerance, 1.0)
@@ -172,7 +164,7 @@ class CompositeScorer(BaseScorer):
         self,
         composite_score: float,
         model_scores: Dict[str, float],
-        risk_assessments: List[RiskAssessmentResult]
+        risk_assessments: List[RiskAssessmentResult],
     ) -> List[str]:
         """Generate risk mitigation recommendations."""
         recommendations = []
@@ -195,8 +187,7 @@ class CompositeScorer(BaseScorer):
 
         # Assessment-specific recommendations
         high_risk_assessments = [
-            assessment for assessment in risk_assessments
-            if assessment.score > 0.7
+            assessment for assessment in risk_assessments if assessment.score > 0.7
         ]
 
         for assessment in high_risk_assessments:
@@ -211,7 +202,9 @@ class CompositeScorer(BaseScorer):
             return 0.0
 
         mean_score = sum(scores_list) / len(scores_list)
-        return sum((score - mean_score) ** 2 for score in scores_list) / len(scores_list)
+        return sum((score - mean_score) ** 2 for score in scores_list) / len(
+            scores_list
+        )
 
     def update_model_weights(self, new_weights: Dict[str, float]) -> None:
         """Update model weights."""
@@ -219,6 +212,5 @@ class CompositeScorer(BaseScorer):
         total_weight = sum(new_weights.values())
         if total_weight > 0:
             self.model_weights = {
-                model: weight / total_weight
-                for model, weight in new_weights.items()
+                model: weight / total_weight for model, weight in new_weights.items()
             }

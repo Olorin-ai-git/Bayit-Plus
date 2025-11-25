@@ -4,8 +4,8 @@ Fraud Detection Statistical Amount and Frequency Analysis
 Implements statistical analysis of transaction amounts and activity frequency.
 """
 
-from typing import Any, Dict, List, Optional
 import math
+from typing import Any, Dict, List, Optional
 
 
 class FraudStatisticalAmountFrequencyAnalysis:
