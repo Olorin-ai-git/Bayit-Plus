@@ -10,6 +10,7 @@ from datetime import datetime, timedelta
 from collections import defaultdict, Counter
 import math
 from app.service.logging import get_bridge_logger
+from app.service.analytics.velocity_analyzer import VelocityAnalyzer
 
 logger = get_bridge_logger(__name__)
 
@@ -548,36 +549,64 @@ def extract_all_advanced_features(
 ) -> Dict[str, Any]:
     """
     Extract all advanced features for a transaction set.
-    
+
     Args:
         transactions: List of transaction dictionaries
         entity_type: Entity type
         entity_value: Entity value
-        
+
     Returns:
         Dictionary with all advanced features
     """
     features = {}
-    
-    # Entity-scoped velocity
+
+    # Entity-scoped velocity (legacy 5-minute window)
     velocity_features = calculate_entity_scoped_velocity(transactions, entity_type, entity_value)
     features.update(velocity_features)
-    
+
+    # Enhanced velocity analysis (Week 5 Phase 2 - multi-window)
+    try:
+        if transactions:
+            velocity_analyzer = VelocityAnalyzer()
+
+            current_tx = transactions[-1] if transactions else {}
+            historical_txs = transactions[:-1] if len(transactions) > 1 else None
+
+            enhanced_velocity = velocity_analyzer.analyze_transaction_velocity(
+                current_tx,
+                historical_txs
+            )
+
+            if enhanced_velocity.get("success"):
+                features["enhanced_velocity"] = enhanced_velocity
+                features["sliding_window_velocities"] = enhanced_velocity.get("sliding_windows", {})
+                features["entity_velocities_enhanced"] = enhanced_velocity.get("entity_velocities", {})
+                features["merchant_concentration"] = enhanced_velocity.get("merchant_concentration", {})
+                features["cross_entity_correlation"] = enhanced_velocity.get("cross_entity_correlation", {})
+
+                logger.debug(
+                    f"📊 Enhanced velocity analysis complete: "
+                    f"windows={list(enhanced_velocity.get('sliding_windows', {}).keys())}, "
+                    f"merchant_concentration={enhanced_velocity.get('merchant_concentration', {}).get('concentration_ratio', 0):.2f}"
+                )
+    except Exception as e:
+        logger.warning(f"⚠️ Enhanced velocity analysis failed: {e}")
+
     # Geovelocity features
     geovelocity_features = calculate_geovelocity_features(transactions)
     features.update(geovelocity_features)
-    
+
     # Amount patterns
     amount_features = calculate_amount_patterns(transactions)
     features.update(amount_features)
-    
+
     # Device/IP stability
     stability_features = calculate_device_ip_stability(transactions)
     features.update(stability_features)
-    
+
     # Merchant consistency
     merchant_features = calculate_merchant_consistency(transactions)
     features.update(merchant_features)
-    
+
     return features
 

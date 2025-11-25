@@ -1403,7 +1403,35 @@ def _calculate_per_transaction_scores(
     except Exception as e:
         logger.debug(f"Failed to extract advanced features: {e}")
         advanced_features = {}
-    
+
+    # Run pattern recognition once for all transactions (Week 3 Phase 1 integration)
+    pattern_recognition_result = {}
+    all_detected_patterns = []
+    try:
+        from app.service.agent.orchestration.domain_agents.pattern_recognition_integration import recognize_all_patterns
+        pattern_recognition_result = recognize_all_patterns(
+            transactions=results,
+            minimum_support=0.1,  # Aggressive high-recall strategy
+            historical_patterns=None  # TODO: Add historical patterns in future
+        )
+        if pattern_recognition_result.get("success"):
+            all_detected_patterns = pattern_recognition_result.get("patterns", [])
+            logger.info(
+                f"🔍 Pattern recognition complete: {pattern_recognition_result.get('total_patterns', 0)} patterns detected "
+                f"(max risk: +{pattern_recognition_result.get('max_risk_adjustment', 0)*100:.0f}%)"
+            )
+            # Store pattern findings in domain_findings for LLM synthesis
+            if "pattern_recognition" not in domain_findings:
+                domain_findings["pattern_recognition"] = {}
+            domain_findings["pattern_recognition"]["patterns"] = all_detected_patterns
+            domain_findings["pattern_recognition"]["summary"] = pattern_recognition_result
+        else:
+            logger.warning(f"⚠️ Pattern recognition failed: {pattern_recognition_result.get('error', 'unknown error')}")
+    except Exception as e:
+        logger.debug(f"Pattern recognition failed: {e}")
+        pattern_recognition_result = {}
+        all_detected_patterns = []
+
     # Process transactions in batches of 100 for large volumes
     batch_size = 100
     excluded_count = 0
@@ -1506,7 +1534,65 @@ def _calculate_per_transaction_scores(
                     excluded_count += 1
                     logger.warning(f"⚠️ Failed to calculate per-transaction score for transaction {tx_id}: {e}")
                     continue
-                
+
+                # Apply pattern-based risk adjustments (Week 3 Phase 1 integration)
+                try:
+                    if all_detected_patterns:
+                        from app.service.agent.orchestration.domain_agents.pattern_recognition_integration import apply_pattern_adjustments
+                        pattern_adjusted_score, applied_pattern_names = apply_pattern_adjustments(
+                            tx_score,
+                            all_detected_patterns,
+                            result
+                        )
+                        if applied_pattern_names:
+                            logger.debug(
+                                f"📊 Applied {len(applied_pattern_names)} pattern adjustments to {tx_id}: "
+                                f"{tx_score:.3f} → {pattern_adjusted_score:.3f}"
+                            )
+                            tx_score = pattern_adjusted_score
+                except Exception as e:
+                    logger.debug(f"Failed to apply pattern adjustments for transaction {tx_id}: {e}")
+                    # Continue with original score if pattern adjustment fails
+
+                # Apply Week 6 pattern-based adjustments (6 high-impact patterns)
+                try:
+                    from app.service.analytics.pattern_adjustments import PatternAdjustmentEngine
+
+                    pattern_engine = PatternAdjustmentEngine()
+
+                    # Get historical transactions for this entity (transactions before current one)
+                    current_tx_index = results.index(result) if result in results else -1
+                    historical_txs = results[:current_tx_index] if current_tx_index > 0 else None
+
+                    # Detect all 6 pattern types
+                    week6_patterns = pattern_engine.detect_all_patterns(
+                        transaction=result,
+                        historical_transactions=historical_txs,
+                        advanced_features=advanced_features
+                    )
+
+                    if week6_patterns:
+                        # Apply pattern adjustments
+                        pattern_adjusted_score, applied_patterns = pattern_engine.apply_pattern_adjustments(
+                            tx_score,
+                            week6_patterns
+                        )
+
+                        if applied_patterns:
+                            logger.debug(
+                                f"📊 Applied {len(applied_patterns)} Week 6 pattern adjustments to {tx_id}: "
+                                f"{tx_score:.3f} → {pattern_adjusted_score:.3f} "
+                                f"(patterns: {', '.join(applied_patterns)})"
+                            )
+                            tx_score = pattern_adjusted_score
+
+                            # Store pattern findings in result for transparency
+                            result["week6_patterns_detected"] = [p["pattern_name"] for p in week6_patterns]
+                            result["week6_pattern_adjustments"] = sum(p["risk_adjustment"] for p in week6_patterns)
+                except Exception as e:
+                    logger.debug(f"Failed to apply Week 6 pattern adjustments for transaction {tx_id}: {e}")
+                    # Continue with original score if pattern adjustment fails
+
                 # Apply calibration and rule-overrides
                 try:
                     from app.service.agent.orchestration.domain_agents.calibration import apply_rule_overrides

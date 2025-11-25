@@ -918,53 +918,107 @@ class RiskAnalyzer:
         """
         Calculate dynamic risk thresholds based on current data distribution.
 
+        Week 4 Phase 2: Replaced hardcoded thresholds with percentile-based calculation.
+
         Args:
-            level: Threshold level ('high' or 'medium')
+            level: Threshold level ('high', 'medium', or 'low')
             current_score: Current score for context
 
         Returns:
-            Dynamic threshold value
+            Dynamic threshold value (0.0-1.0)
         """
         try:
-            # Use percentile-based thresholds from actual data
+            from app.service.analytics.threshold_calculator import get_dynamic_risk_threshold
+
+            # Get entity type and merchant category from context if available
+            entity_type = getattr(self, '_current_entity_type', None)
+            merchant_category = getattr(self, '_current_merchant_category', None)
+
+            # Calculate dynamic threshold from Snowflake data
+            threshold = get_dynamic_risk_threshold(
+                level=level,
+                entity_type=entity_type,
+                merchant_category=merchant_category,
+                lookback_days=7  # 7-day rolling window
+            )
+
+            return threshold
+
+        except Exception as e:
+            logger.warning(f"⚠️ Failed to get dynamic threshold for {level}: {e}")
+            # Fallback to conservative static thresholds
             if level == 'high':
-                # Top 10% of risk scores define high risk
-                return 0.75  # Will be replaced with real calculation from data
+                return 0.75
             elif level == 'medium':
-                # Top 30% define medium risk
-                return 0.50  # Will be replaced with real calculation from data
+                return 0.50
             else:
                 return 0.25
-        except Exception:
-            # Fallback to conservative thresholds if calculation fails
-            return 0.8 if level == 'high' else 0.5
 
     def _get_device_threshold(self) -> int:
-        """Calculate dynamic threshold for suspicious device count."""
-        try:
-            # Calculate based on 95th percentile of device usage patterns
-            # This should query actual data to find normal device usage patterns
-            return 4  # Will be replaced with real calculation
-        except Exception:
-            return 5  # Conservative fallback
+        """
+        Calculate dynamic threshold for suspicious device count.
 
-    def _get_card_threshold(self) -> int:
-        """Calculate dynamic threshold for suspicious card count."""
+        Week 4 Phase 2: Replaced hardcoded threshold with 95th percentile from Snowflake.
+        """
         try:
-            # Calculate based on 95th percentile of card usage patterns
-            # This should query actual data to find normal card usage patterns
-            return 3  # Will be replaced with real calculation
-        except Exception:
+            from app.service.analytics.threshold_calculator import get_dynamic_device_threshold
+
+            entity_type = getattr(self, '_current_entity_type', None)
+
+            threshold = get_dynamic_device_threshold(
+                entity_type=entity_type,
+                lookback_days=7
+            )
+
+            return threshold
+
+        except Exception as e:
+            logger.warning(f"⚠️ Failed to get dynamic device threshold: {e}")
             return 4  # Conservative fallback
 
-    def _get_velocity_threshold(self) -> int:
-        """Calculate dynamic threshold for suspicious transaction velocity."""
+    def _get_card_threshold(self) -> int:
+        """
+        Calculate dynamic threshold for suspicious card count.
+
+        Week 4 Phase 2: Replaced hardcoded threshold with 95th percentile from Snowflake.
+        """
         try:
-            # Calculate based on 99th percentile of transaction velocity
-            # This should query actual data to find normal velocity patterns
-            return 25  # Will be replaced with real calculation
-        except Exception:
-            return 30  # Conservative fallback
+            from app.service.analytics.threshold_calculator import get_dynamic_card_threshold
+
+            entity_type = getattr(self, '_current_entity_type', None)
+
+            threshold = get_dynamic_card_threshold(
+                entity_type=entity_type,
+                lookback_days=7
+            )
+
+            return threshold
+
+        except Exception as e:
+            logger.warning(f"⚠️ Failed to get dynamic card threshold: {e}")
+            return 3  # Conservative fallback
+
+    def _get_velocity_threshold(self) -> int:
+        """
+        Calculate dynamic threshold for suspicious transaction velocity.
+
+        Week 4 Phase 2: Replaced hardcoded threshold with 99th percentile from Snowflake.
+        """
+        try:
+            from app.service.analytics.threshold_calculator import get_dynamic_velocity_threshold
+
+            entity_type = getattr(self, '_current_entity_type', None)
+
+            threshold = get_dynamic_velocity_threshold(
+                entity_type=entity_type,
+                lookback_days=7
+            )
+
+            return threshold
+
+        except Exception as e:
+            logger.warning(f"⚠️ Failed to get dynamic velocity threshold: {e}")
+            return 25  # Conservative fallback
 
     def _assess_risk(self, profile: Dict[str, Any]) -> Dict[str, Any]:
         """

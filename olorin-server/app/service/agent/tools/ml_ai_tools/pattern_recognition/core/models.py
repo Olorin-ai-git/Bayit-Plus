@@ -4,7 +4,7 @@ Core data models for Pattern Recognition ML Tool.
 Defines input schemas and core data structures.
 """
 
-from typing import Any, Dict, Optional, List
+from typing import Any, Dict, Optional, List, Literal
 from pydantic import BaseModel, Field
 
 
@@ -55,3 +55,35 @@ class ProcessedData(BaseModel):
     text_data: List[str] = Field(default=[], description="Text data")
     network_data: Dict[str, Any] = Field(default={}, description="Network connections")
     transaction_data: List[Dict[str, Any]] = Field(default=[], description="Transaction records")
+
+
+class FraudPattern(BaseModel):
+    """Structure for detected fraud pattern."""
+
+    pattern_type: str = Field(..., description="Type of fraud pattern (card_testing, velocity_burst, amount_clustering, time_anomaly)")
+    pattern_name: str = Field(..., description="Human-readable pattern name")
+    description: str = Field(..., description="Description of the detected pattern")
+    confidence: float = Field(..., ge=0.0, le=1.0, description="Confidence score for the pattern (0.0-1.0)")
+    risk_adjustment: float = Field(..., description="Risk score adjustment (e.g., +0.20 for +20%)")
+    affected_count: int = Field(..., ge=0, description="Number of transactions affected by this pattern")
+    evidence: Dict[str, Any] = Field(..., description="Supporting evidence for the pattern")
+
+
+class CardTestingPattern(FraudPattern):
+    """Card testing pattern: small test followed by large purchase."""
+    pattern_type: Literal["card_testing"] = "card_testing"
+
+
+class VelocityBurstPattern(FraudPattern):
+    """Velocity burst pattern: multiple transactions in short time window."""
+    pattern_type: Literal["velocity_burst"] = "velocity_burst"
+
+
+class AmountClusteringPattern(FraudPattern):
+    """Amount clustering pattern: transactions near threshold amounts."""
+    pattern_type: Literal["amount_clustering"] = "amount_clustering"
+
+
+class TimeAnomalyPattern(FraudPattern):
+    """Time anomaly pattern: transactions at unusual hours."""
+    pattern_type: Literal["time_anomaly"] = "time_anomaly"
