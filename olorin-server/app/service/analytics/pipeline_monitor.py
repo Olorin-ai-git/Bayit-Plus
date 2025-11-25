@@ -21,12 +21,28 @@ class PipelineMonitor:
 
     def __init__(self):
         """Initialize pipeline monitor."""
-        db_provider = os.getenv('DATABASE_PROVIDER', 'snowflake')
-        self.client = get_database_provider(db_provider)
-        self.freshness_threshold_minutes = int(os.getenv('PIPELINE_FRESHNESS_THRESHOLD_MINUTES', '5'))
-        self.completeness_threshold = float(os.getenv('PIPELINE_COMPLETENESS_THRESHOLD', '0.99'))
-        self.success_rate_threshold = float(os.getenv('PIPELINE_SUCCESS_RATE_THRESHOLD', '0.95'))
-        logger.info(f"PipelineMonitor initialized with {db_provider.upper()} provider")
+        db_provider_env = os.getenv('DATABASE_PROVIDER')
+        if not db_provider_env:
+            raise RuntimeError("DATABASE_PROVIDER environment variable is required")
+        self.client = get_database_provider(db_provider_env)
+        self.db_provider = db_provider_env.lower()
+
+        freshness_env = os.getenv('PIPELINE_FRESHNESS_THRESHOLD_MINUTES')
+        if not freshness_env:
+            raise RuntimeError("PIPELINE_FRESHNESS_THRESHOLD_MINUTES environment variable is required")
+        self.freshness_threshold_minutes = int(freshness_env)
+
+        completeness_env = os.getenv('PIPELINE_COMPLETENESS_THRESHOLD')
+        if not completeness_env:
+            raise RuntimeError("PIPELINE_COMPLETENESS_THRESHOLD environment variable is required")
+        self.completeness_threshold = float(completeness_env)
+
+        success_rate_env = os.getenv('PIPELINE_SUCCESS_RATE_THRESHOLD')
+        if not success_rate_env:
+            raise RuntimeError("PIPELINE_SUCCESS_RATE_THRESHOLD environment variable is required")
+        self.success_rate_threshold = float(success_rate_env)
+
+        logger.info(f"PipelineMonitor initialized with {db_provider_env.upper()} provider")
 
     async def check_freshness(self) -> Dict[str, Any]:
         """
@@ -37,8 +53,7 @@ class PipelineMonitor:
         """
         # Get table name and column names based on database provider
         table_name = self.client.get_full_table_name()
-        db_provider = os.getenv('DATABASE_PROVIDER', 'snowflake').lower()
-        datetime_col = 'TX_DATETIME' if db_provider == 'snowflake' else 'tx_datetime'
+        datetime_col = 'TX_DATETIME' if self.db_provider == 'snowflake' else 'tx_datetime'
         
         query = f"""
         SELECT MAX({datetime_col}) as latest_timestamp
@@ -84,8 +99,7 @@ class PipelineMonitor:
         """
         # Get table name and column names based on database provider
         table_name = self.client.get_full_table_name()
-        db_provider = os.getenv('DATABASE_PROVIDER', 'snowflake').lower()
-        datetime_col = 'TX_DATETIME' if db_provider == 'snowflake' else 'tx_datetime'
+        datetime_col = 'TX_DATETIME' if self.db_provider == 'snowflake' else 'tx_datetime'
         model_score_col = 'MODEL_SCORE' if db_provider == 'snowflake' else 'model_score'
         
         where_sql = f"{datetime_col} >= '{start_date.isoformat()}' AND {datetime_col} <= '{end_date.isoformat()}'"
@@ -133,8 +147,7 @@ class PipelineMonitor:
         """
         # Get table name and column names based on database provider
         table_name = self.client.get_full_table_name()
-        db_provider = os.getenv('DATABASE_PROVIDER', 'snowflake').lower()
-        datetime_col = 'TX_DATETIME' if db_provider == 'snowflake' else 'tx_datetime'
+        datetime_col = 'TX_DATETIME' if self.db_provider == 'snowflake' else 'tx_datetime'
         model_score_col = 'MODEL_SCORE' if db_provider == 'snowflake' else 'model_score'
         email_col = 'EMAIL' if db_provider == 'snowflake' else 'email'
         

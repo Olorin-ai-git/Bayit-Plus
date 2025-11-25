@@ -17,9 +17,12 @@ class ThroughputCalculator:
 
     def __init__(self):
         """Initialize throughput calculator."""
-        db_provider = os.getenv('DATABASE_PROVIDER', 'snowflake')
-        self.client = get_database_provider(db_provider)
-        logger.info(f"ThroughputCalculator initialized with {db_provider.upper()} provider")
+        db_provider_env = os.getenv('DATABASE_PROVIDER')
+        if not db_provider_env:
+            raise RuntimeError("DATABASE_PROVIDER environment variable is required")
+        self.client = get_database_provider(db_provider_env)
+        self.db_provider = db_provider_env.lower()
+        logger.info(f"ThroughputCalculator initialized with {db_provider_env.upper()} provider")
 
     async def calculate(
         self,
@@ -40,9 +43,8 @@ class ThroughputCalculator:
         """
         # Get table name and column names based on database provider
         table_name = self.client.get_full_table_name()
-        db_provider = os.getenv('DATABASE_PROVIDER', 'snowflake').lower()
-        
-        if db_provider == 'snowflake':
+
+        if self.db_provider == 'snowflake':
             # Snowflake: uppercase column names
             datetime_col = 'TX_DATETIME'
             investigation_col = 'INVESTIGATION_ID'

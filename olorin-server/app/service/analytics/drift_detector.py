@@ -20,12 +20,28 @@ class DriftDetector:
 
     def __init__(self):
         """Initialize drift detector."""
-        db_provider = os.getenv('DATABASE_PROVIDER', 'snowflake')
-        self.client = get_database_provider(db_provider)
-        self.psi_threshold = float(os.getenv('DRIFT_PSI_THRESHOLD', '0.2'))
-        self.kl_threshold = float(os.getenv('DRIFT_KL_THRESHOLD', '0.1'))
-        self.null_spike_threshold = float(os.getenv('NULL_SPIKE_THRESHOLD', '0.1'))
-        logger.info(f"DriftDetector initialized with {db_provider.upper()} provider")
+        db_provider_env = os.getenv('DATABASE_PROVIDER')
+        if not db_provider_env:
+            raise RuntimeError("DATABASE_PROVIDER environment variable is required")
+        self.client = get_database_provider(db_provider_env)
+
+        psi_threshold_env = os.getenv('DRIFT_PSI_THRESHOLD')
+        if not psi_threshold_env:
+            raise RuntimeError("DRIFT_PSI_THRESHOLD environment variable is required")
+        self.psi_threshold = float(psi_threshold_env)
+
+        kl_threshold_env = os.getenv('DRIFT_KL_THRESHOLD')
+        if not kl_threshold_env:
+            raise RuntimeError("DRIFT_KL_THRESHOLD environment variable is required")
+        self.kl_threshold = float(kl_threshold_env)
+
+        null_spike_env = os.getenv('NULL_SPIKE_THRESHOLD')
+        if not null_spike_env:
+            raise RuntimeError("NULL_SPIKE_THRESHOLD environment variable is required")
+        self.null_spike_threshold = float(null_spike_env)
+
+        self.db_provider = db_provider_env.lower()
+        logger.info(f"DriftDetector initialized with {db_provider_env.upper()} provider")
 
     def calculate_psi(self, reference_data: List[float], current_data: List[float], buckets: int = 10) -> float:
         """
@@ -132,9 +148,8 @@ class DriftDetector:
         """
         # Get table name and column names based on database provider
         table_name = self.client.get_full_table_name()
-        db_provider = os.getenv('DATABASE_PROVIDER', 'snowflake').lower()
-        datetime_col = 'TX_DATETIME' if db_provider == 'snowflake' else 'tx_datetime'
-        
+        datetime_col = 'TX_DATETIME' if self.db_provider == 'snowflake' else 'tx_datetime'
+
         # Fetch reference data
         ref_where = f"{datetime_col} >= '{reference_start.isoformat()}' AND {datetime_col} <= '{reference_end.isoformat()}'"
         ref_query = f"SELECT {feature} FROM {table_name} WHERE {ref_where} AND {feature} IS NOT NULL"
@@ -185,10 +200,9 @@ class DriftDetector:
         """
         # Get table name and column names based on database provider
         table_name = self.client.get_full_table_name()
-        db_provider = os.getenv('DATABASE_PROVIDER', 'snowflake').lower()
-        datetime_col = 'TX_DATETIME' if db_provider == 'snowflake' else 'tx_datetime'
-        chargeback_col = 'CHARGEBACK_DATE' if db_provider == 'snowflake' else 'chargeback_date'
-        fraud_col = 'IS_FRAUD_TX' if db_provider == 'snowflake' else 'is_fraud_tx'
+        datetime_col = 'TX_DATETIME' if self.db_provider == 'snowflake' else 'tx_datetime'
+        chargeback_col = 'CHARGEBACK_DATE' if self.db_provider == 'snowflake' else 'chargeback_date'
+        fraud_col = 'IS_FRAUD_TX' if self.db_provider == 'snowflake' else 'is_fraud_tx'
         
         where_sql = f"{datetime_col} >= '{start_date.isoformat()}' AND {datetime_col} <= '{end_date.isoformat()}'"
 
@@ -247,13 +261,12 @@ class DriftDetector:
         """
         # Get table name and column names based on database provider
         table_name = self.client.get_full_table_name()
-        db_provider = os.getenv('DATABASE_PROVIDER', 'snowflake').lower()
-        datetime_col = 'TX_DATETIME' if db_provider == 'snowflake' else 'tx_datetime'
-        
+        datetime_col = 'TX_DATETIME' if self.db_provider == 'snowflake' else 'tx_datetime'
+
         where_sql = f"{datetime_col} >= '{start_date.isoformat()}' AND {datetime_col} <= '{end_date.isoformat()}'"
 
         # Expected required fields (use uppercase for Snowflake, lowercase for PostgreSQL)
-        if db_provider == 'snowflake':
+        if self.db_provider == 'snowflake':
             required_fields = ['TX_ID_KEY', 'TX_DATETIME', 'MODEL_SCORE', 'EMAIL', 'AMOUNT']
         else:
             required_fields = ['tx_id_key', 'tx_datetime', 'model_score', 'email', 'amount']
@@ -307,9 +320,8 @@ class DriftDetector:
         """
         # Get table name and column names based on database provider
         table_name = self.client.get_full_table_name()
-        db_provider = os.getenv('DATABASE_PROVIDER', 'snowflake').lower()
-        datetime_col = 'TX_DATETIME' if db_provider == 'snowflake' else 'tx_datetime'
-        
+        datetime_col = 'TX_DATETIME' if self.db_provider == 'snowflake' else 'tx_datetime'
+
         where_sql = f"{datetime_col} >= '{start_date.isoformat()}' AND {datetime_col} <= '{end_date.isoformat()}'"
 
         query = f"""
@@ -370,13 +382,12 @@ class DriftDetector:
         """
         # Get table name and column names based on database provider
         table_name = self.client.get_full_table_name()
-        db_provider = os.getenv('DATABASE_PROVIDER', 'snowflake').lower()
-        datetime_col = 'TX_DATETIME' if db_provider == 'snowflake' else 'tx_datetime'
-        
+        datetime_col = 'TX_DATETIME' if self.db_provider == 'snowflake' else 'tx_datetime'
+
         where_sql = f"{datetime_col} >= '{start_date.isoformat()}' AND {datetime_col} <= '{end_date.isoformat()}'"
 
         query = f"""
-        SELECT 
+        SELECT
             {field} as value,
             COUNT(*) as count
         FROM {table_name}
@@ -429,13 +440,12 @@ class DriftDetector:
         """
         # Get table name and column names based on database provider
         table_name = self.client.get_full_table_name()
-        db_provider = os.getenv('DATABASE_PROVIDER', 'snowflake').lower()
-        datetime_col = 'TX_DATETIME' if db_provider == 'snowflake' else 'tx_datetime'
-        
+        datetime_col = 'TX_DATETIME' if self.db_provider == 'snowflake' else 'tx_datetime'
+
         where_sql = f"{datetime_col} >= '{start_date.isoformat()}' AND {datetime_col} <= '{end_date.isoformat()}'"
 
         query = f"""
-        SELECT 
+        SELECT
             MIN({field}) as min_val,
             MAX({field}) as max_val,
             AVG({field}) as avg_val,
@@ -498,11 +508,10 @@ class DriftDetector:
         """
         # Get table name and column names based on database provider
         table_name = self.client.get_full_table_name()
-        db_provider = os.getenv('DATABASE_PROVIDER', 'snowflake').lower()
-        datetime_col = 'TX_DATETIME' if db_provider == 'snowflake' else 'tx_datetime'
-        model_score_col = 'MODEL_SCORE' if db_provider == 'snowflake' else 'model_score'
-        email_col = 'EMAIL' if db_provider == 'snowflake' else 'email'
-        amount_col = 'AMOUNT' if db_provider == 'snowflake' else 'amount'
+        datetime_col = 'TX_DATETIME' if self.db_provider == 'snowflake' else 'tx_datetime'
+        model_score_col = 'MODEL_SCORE' if self.db_provider == 'snowflake' else 'model_score'
+        email_col = 'EMAIL' if self.db_provider == 'snowflake' else 'email'
+        amount_col = 'AMOUNT' if self.db_provider == 'snowflake' else 'amount'
         
         where_sql = f"{datetime_col} >= '{start_date.isoformat()}' AND {datetime_col} <= '{end_date.isoformat()}'"
 
@@ -527,7 +536,7 @@ class DriftDetector:
         null_amounts = int(row.get('null_amounts', 0) or 0)
 
         # Check for null spikes
-        model_score_field = 'MODEL_SCORE' if db_provider == 'snowflake' else 'model_score'
+        model_score_field = 'MODEL_SCORE' if self.db_provider == 'snowflake' else 'model_score'
         null_spikes = await self.detect_null_spikes(model_score_field, start_date, end_date)
 
         # Check schema conformance

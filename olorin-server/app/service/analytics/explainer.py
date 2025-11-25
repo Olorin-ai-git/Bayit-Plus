@@ -19,9 +19,12 @@ class Explainer:
 
     def __init__(self):
         """Initialize explainer."""
-        db_provider = os.getenv('DATABASE_PROVIDER', 'snowflake')
-        self.client = get_database_provider(db_provider)
-        logger.info(f"Explainer initialized with {db_provider.upper()} provider")
+        db_provider_env = os.getenv('DATABASE_PROVIDER')
+        if not db_provider_env:
+            raise RuntimeError("DATABASE_PROVIDER environment variable is required")
+        self.client = get_database_provider(db_provider_env)
+        self.db_provider = db_provider_env.lower()
+        logger.info(f"Explainer initialized with {db_provider_env.upper()} provider")
 
     def calculate_shap_values(self, decision_data: Dict[str, Any], baseline_data: List[Dict[str, Any]]) -> Dict[str, float]:
         """
@@ -141,7 +144,6 @@ class Explainer:
         """
         # Get table name and column names based on database provider
         table_name = self.client.get_full_table_name()
-        db_provider = os.getenv('DATABASE_PROVIDER', 'snowflake').lower()
         id_col = 'TX_ID_KEY' if db_provider == 'snowflake' else 'tx_id_key'
         datetime_col = 'TX_DATETIME' if db_provider == 'snowflake' else 'tx_datetime'
         
@@ -215,7 +217,6 @@ class Explainer:
         """
         # Get table name and column names based on database provider
         table_name = self.client.get_full_table_name()
-        db_provider = os.getenv('DATABASE_PROVIDER', 'snowflake').lower()
         datetime_col = 'TX_DATETIME' if db_provider == 'snowflake' else 'tx_datetime'
         merchant_col = 'MERCHANT_ID' if db_provider == 'snowflake' else 'merchant_id'
         channel_col = 'CHANNEL' if db_provider == 'snowflake' else 'channel'
@@ -318,7 +319,6 @@ class Explainer:
         """
         # Get table name and column names based on database provider
         table_name = self.client.get_full_table_name()
-        db_provider = os.getenv('DATABASE_PROVIDER', 'snowflake').lower()
         datetime_col = 'TX_DATETIME' if db_provider == 'snowflake' else 'tx_datetime'
         fraud_col = 'IS_FRAUD_TX' if db_provider == 'snowflake' else 'is_fraud_tx'
         model_score_col = 'MODEL_SCORE' if db_provider == 'snowflake' else 'model_score'
