@@ -126,6 +126,11 @@ ipython_config.py
 **/.env.example
 **/*.env
 **/*.env.example
+# Additional environment file patterns
+env
+!env/  # But allow env/ directories (for virtual environments)
+*.local.env
+.env.backup*
 **/envrc
 **/.envrc
 
