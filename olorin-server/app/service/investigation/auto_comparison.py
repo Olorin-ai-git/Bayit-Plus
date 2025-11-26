@@ -434,6 +434,10 @@ async def create_and_wait_for_investigation(
                         # Get investigation from persistence layer
                         investigation = get_investigation_by_id(investigation_id)
                         if investigation:
+                            # Trigger post-investigation packaging
+                            asyncio.create_task(
+                                _trigger_post_investigation_packaging(investigation_id)
+                            )
                             return investigation
                         else:
                             logger.warning(
@@ -3004,3 +3008,33 @@ def generate_summary_html(investigation_data: List[Dict[str, Any]]) -> str:
     )
 
     return "".join(html_parts)
+
+
+async def _trigger_post_investigation_packaging(investigation_id: str) -> None:
+    """
+    Trigger post-investigation packaging in background.
+    
+    This creates confusion matrix and complete package after investigation completes.
+    """
+    try:
+        from app.service.investigation.post_investigation_packager import (
+            generate_post_investigation_package
+        )
+        
+        logger.info(f"📦 Triggering post-investigation packaging for {investigation_id}")
+        
+        package_path = await generate_post_investigation_package(investigation_id)
+        
+        if package_path:
+            logger.info(
+                f"✅ Post-investigation package created: {package_path.name}"
+            )
+        else:
+            logger.warning(
+                f"⚠️ Post-investigation packaging failed for {investigation_id}"
+            )
+    except Exception as e:
+        logger.error(
+            f"❌ Error in post-investigation packaging for {investigation_id}: {e}",
+            exc_info=True
+        )
