@@ -25,6 +25,10 @@ from app.service.analytics.pattern_detectors_transaction import (
     detect_card_testing,
     detect_geo_impossibility,
 )
+from app.service.analytics.pattern_detectors_advanced import (
+    detect_refund_chargeback_spike,
+    detect_transaction_chaining,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -33,12 +37,12 @@ class PatternAdjustmentEngine:
     """
     Pattern-based risk adjustment engine.
 
-    Detects 6 high-impact fraud patterns and returns risk adjustments.
+    Detects 8 high-impact fraud patterns and returns risk adjustments.
     """
 
     def __init__(self):
         """Initialize pattern adjustment engine."""
-        logger.info("📊 Initializing PatternAdjustmentEngine (6 pattern types)")
+        logger.info("📊 Initializing PatternAdjustmentEngine (8 pattern types)")
 
     def detect_all_patterns(
         self,
@@ -94,6 +98,20 @@ class PatternAdjustmentEngine:
         )
         if cross_entity:
             patterns.append(cross_entity)
+        
+        # Pattern 7: Transaction Chaining
+        transaction_chaining = detect_transaction_chaining(
+            transaction, historical_transactions
+        )
+        if transaction_chaining:
+            patterns.append(transaction_chaining)
+        
+        # Pattern 8: Refund/Chargeback Spike
+        refund_chargeback = detect_refund_chargeback_spike(
+            transaction, historical_transactions
+        )
+        if refund_chargeback:
+            patterns.append(refund_chargeback)
 
         if patterns:
             pattern_names = [p["pattern_name"] for p in patterns]

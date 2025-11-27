@@ -21,3 +21,4 @@ class EntityType(str, Enum):
     DEVICE_ID = "device_id"
     IP_ADDRESS = "ip_address"
     USER_ID = "user_id"
+    MERCHANT = "merchant"

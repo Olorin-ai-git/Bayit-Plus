@@ -282,6 +282,8 @@ class SnowflakeQueryBuilder:
     @classmethod
     def _build_entity_where_clause(cls, entity_type: str, entity_id: str) -> str:
         """Build WHERE clause for different entity types."""
+        from app.service.agent.tools.snowflake_tool.schema_constants import MERCHANT_NAME
+        
         entity_type_upper = entity_type.upper()
 
         entity_clauses = {
@@ -293,6 +295,8 @@ class SnowflakeQueryBuilder:
             "PHONE": f"{PHONE_NUMBER} = '{entity_id}'",
             "CARD": f"({BIN} LIKE '{entity_id}%' OR {LAST_FOUR} = '{entity_id[-4:]}' OR {CARD_ISSUER} LIKE '%{entity_id}%')",
             "BIN": f"{BIN} = '{entity_id}'",
+            "MERCHANT": f"{MERCHANT_NAME} = '{entity_id}'",
+            "MERCHANT_NAME": f"{MERCHANT_NAME} = '{entity_id}'",
         }
 
         if entity_type_upper in entity_clauses:

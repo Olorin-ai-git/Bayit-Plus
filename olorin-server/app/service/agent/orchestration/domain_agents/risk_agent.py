@@ -68,6 +68,24 @@ async def risk_agent_node(
         # NARRATIVE-ONLY: Risk domain provides synthesis narrative but includes compatibility keys
         snowflake_data = state.get("snowflake_data", {})
         facts = snowflake_data if isinstance(snowflake_data, dict) else {}
+        
+        # CRITICAL DEBUG: Log transaction count received from snowflake_data
+        import time
+        if isinstance(facts, dict) and "results" in facts:
+            results_count = len(facts.get("results", []))
+            logger.info(f"🔍 CRITICAL DEBUG: snowflake_data contains {results_count} transactions")
+            
+            # Also write to debug file
+            debug_file = "/tmp/risk_agent_debug.txt"
+            with open(debug_file, "a") as f:
+                f.write(f"\n{'='*80}\n")
+                f.write(f"SNOWFLAKE_DATA EXTRACTION DEBUG\n")
+                f.write(f"Time: {time.strftime('%Y-%m-%d %H:%M:%S')}\n")
+                f.write(f"Investigation ID: {investigation_id}\n")
+                f.write(f"Snowflake data contains {results_count} transactions\n")
+                f.write(f"{'='*80}\n")
+        else:
+            logger.warning("⚠️ CRITICAL DEBUG: snowflake_data has no 'results' key or is not a dict")
 
         # Get other domains for aggregation narrative
         other_domains = [d for d in domain_findings.values() if isinstance(d, dict)]
@@ -230,20 +248,53 @@ async def risk_agent_node(
             # Extract entity info for advanced features
             entity_type = state.get("entity_type")
             entity_value = state.get("entity_id")
+            investigation_id = state.get("investigation_id")
             transaction_scores = _calculate_per_transaction_scores(
                 facts,
                 domain_findings,
                 entity_type=entity_type,
                 entity_value=entity_value,
+                investigation_id=investigation_id,
             )
             if transaction_scores:
-                # Store transaction_scores in state for later persistence
+                # NON-STREAMING MODE: Store scores in state (legacy behavior for <10K transactions)
                 state["transaction_scores"] = transaction_scores
                 logger.info(
                     f"[Step 5.2.6] ✅ Per-transaction scores calculated: {len(transaction_scores)} transactions"
                 )
+                
+                # Also save to dedicated transaction_scores table for consistency
+                try:
+                    from app.service.transaction_score_service import TransactionScoreService
+                    
+                    TransactionScoreService.save_transaction_scores(
+                        investigation_id=investigation_id,
+                        scores=transaction_scores
+                    )
+                    logger.info(
+                        f"[Step 5.2.6] 💾 Saved {len(transaction_scores)} transaction scores to database table"
+                    )
+                except Exception as save_error:
+                    logger.error(
+                        f"[Step 5.2.6] ⚠️ Failed to save transaction scores to database table: {save_error}",
+                        exc_info=True
+                    )
+                    # Continue - scores are still in state
             else:
-                logger.warning(f"[Step 5.2.6] ⚠️ No per-transaction scores calculated")
+                # STREAMING MODE: Scores already saved to database during processing
+                # Check database for score count
+                try:
+                    from app.service.transaction_score_service import TransactionScoreService
+                    db_count = TransactionScoreService.get_score_count(investigation_id)
+                    if db_count > 0:
+                        logger.info(
+                            f"[Step 5.2.6] ✅ STREAMING MODE: {db_count} transaction scores saved to database"
+                        )
+                        logger.info(f"[Step 5.2.6]    (Scores streamed to DB to avoid memory limits)")
+                    else:
+                        logger.warning(f"[Step 5.2.6] ⚠️ No per-transaction scores calculated")
+                except Exception as check_error:
+                    logger.warning(f"[Step 5.2.6] ⚠️ Could not verify database scores: {check_error}")
         except Exception as e:
             logger.error(
                 f"[Step 5.2.6] ❌ Per-transaction score calculation failed: {e}",
@@ -1478,6 +1529,7 @@ def _calculate_per_transaction_scores(
     domain_findings: Dict[str, Any],
     entity_type: Optional[str] = None,
     entity_value: Optional[str] = None,
+    investigation_id: Optional[str] = None,
 ) -> Dict[str, float]:
     """
     Process all transactions in facts["results"], validate features, calculate scores.
@@ -1485,10 +1537,11 @@ def _calculate_per_transaction_scores(
     CRITICAL: Must NOT use MODEL_SCORE or NSURE_LAST_DECISION per FR-005.
 
     Features:
-    - Batch processing for large volumes (100 transactions per batch)
-    - Timeout handling to ensure completion within investigation timeout
-    - Comprehensive error handling for missing features, invalid values, missing domain findings
-    - Detailed logging for progress tracking and debugging
+    - STREAMING BATCH PROCESSING: Process in chunks, save incrementally to database
+    - Memory-efficient: Never holds all scores in memory
+    - Configurable batch size (default: 5000 transactions per batch)
+    - Incremental database saves prevent data loss on timeout/crash
+    - Progress tracking with detailed logging
     - Advanced feature engineering (entity-scoped velocity, geovelocity, amount patterns)
     - Calibration and rule-overrides (clean-intel veto, impossible travel hard block)
 
@@ -1497,34 +1550,45 @@ def _calculate_per_transaction_scores(
         domain_findings: Domain findings dictionary
         entity_type: Optional entity type for entity-scoped features
         entity_value: Optional entity value for entity-scoped features
+        investigation_id: Investigation ID for saving scores to database
 
     Returns:
         Dictionary mapping TX_ID_KEY to risk score (float 0.0-1.0)
+        NOTE: For large volumes (>10K), returns empty dict and saves directly to database
     """
+    import os
     import time
 
-    transaction_scores = {}
     start_time = time.time()
-    timeout_seconds = 300.0  # 5 minutes default timeout (investigation timeout is typically 30 minutes)
+    
+    # Get batch size from environment (default: 5000 transactions per batch)
+    batch_size = int(os.getenv("INVESTIGATION_SCORING_BATCH_SIZE", "5000"))
+    
+    # Get timeout from environment (default: 3600 seconds = 60 minutes)
+    timeout_seconds = float(os.getenv("INVESTIGATION_PER_TX_SCORING_TIMEOUT", "3600"))
 
     if not isinstance(facts, dict) or "results" not in facts:
         logger.warning(
             "⚠️ No transaction results found in facts for per-transaction scoring"
         )
-        return transaction_scores
+        return {}
 
     results = facts["results"]
     if not isinstance(results, list):
         logger.warning("⚠️ facts['results'] is not a list for per-transaction scoring")
-        return transaction_scores
+        return {}
 
     if not results:
         logger.warning("⚠️ Empty transaction results list for per-transaction scoring")
-        return transaction_scores
+        return {}
 
     total_transactions = len(results)
+    
     logger.info(
-        f"📊 Starting per-transaction scoring for {total_transactions} transactions"
+        f"📊 STREAMING BATCH SCORING: {total_transactions} transactions in {batch_size}-tx batches"
+    )
+    logger.info(
+        f"⏱️  Timeout: {timeout_seconds}s | Investigation: {investigation_id or 'N/A'}"
     )
 
     # FR-005 Compliance: Validate that MODEL_SCORE and NSURE_LAST_DECISION are not used
@@ -1613,7 +1677,7 @@ def _calculate_per_transaction_scores(
                         patterns=all_detected_patterns,
                         entity_type=entity_type,
                         entity_value=entity_value,
-                        investigation_id=state.get("investigation_id", "unknown"),
+                        investigation_id=investigation_id or "unknown",
                     )
                 except Exception as e:
                     logger.debug(f"Could not save historical patterns: {e}")
@@ -1634,28 +1698,45 @@ def _calculate_per_transaction_scores(
         pattern_recognition_result = {}
         all_detected_patterns = []
 
-    # Process transactions in batches of 100 for large volumes
-    batch_size = 100
+    # STREAMING BATCH PROCESSING: Process in large batches, save to DB incrementally
+    # For large volumes (>10K), we use database-backed scoring to avoid memory issues
+    use_streaming = total_transactions > 10000 and investigation_id
+    
+    if use_streaming:
+        logger.info(
+            f"💾 STREAMING MODE: Saving scores directly to database (investigation: {investigation_id})"
+        )
+        from app.service.transaction_score_service import TransactionScoreService
+        # Clear any existing scores for this investigation
+        TransactionScoreService.delete_transaction_scores(investigation_id)
+    
     excluded_count = 0
     processed_count = 0
+    batch_scores = {}  # Temporary batch storage
 
     for batch_start in range(0, total_transactions, batch_size):
         # Check timeout
         elapsed_time = time.time() - start_time
         if elapsed_time > timeout_seconds:
+            # Save partial results before timeout
+            if use_streaming and batch_scores:
+                logger.info(f"💾 Saving partial batch ({len(batch_scores)} scores) before timeout...")
+                TransactionScoreService.save_transaction_scores(investigation_id, batch_scores)
             logger.warning(
                 f"⚠️ Per-transaction scoring timeout after {elapsed_time:.1f}s "
                 f"(processed {processed_count}/{total_transactions} transactions). "
-                f"Returning partial results."
+                f"Saved {processed_count} scores to database."
             )
             break
 
         batch_end = min(batch_start + batch_size, total_transactions)
         batch = results[batch_start:batch_end]
+        batch_num = batch_start // batch_size + 1
+        total_batches = (total_transactions + batch_size - 1) // batch_size
 
-        logger.debug(
-            f"📊 Processing batch {batch_start // batch_size + 1} "
-            f"(transactions {batch_start + 1}-{batch_end} of {total_transactions})"
+        logger.info(
+            f"📊 Processing batch {batch_num}/{total_batches} "
+            f"({len(batch)} transactions, {batch_start + 1}-{batch_end})"
         )
 
         # Process each transaction in batch
@@ -1879,7 +1960,8 @@ def _calculate_per_transaction_scores(
                     )
                     continue
 
-                transaction_scores[str(tx_id)] = tx_score
+                # Add to batch scores (not final transaction_scores yet)
+                batch_scores[str(tx_id)] = tx_score
                 processed_count += 1
 
             except Exception as e:
@@ -1896,59 +1978,88 @@ def _calculate_per_transaction_scores(
                 )
                 continue
 
+        # STREAMING: Save batch to database and clear memory
+        if use_streaming and batch_scores:
+            logger.info(f"💾 Saving batch to database ({len(batch_scores)} scores)...")
+            TransactionScoreService.save_transaction_scores(investigation_id, batch_scores)
+            batch_scores = {}  # Clear batch after saving
+        
         # Log batch progress
-        if batch_end % (batch_size * 5) == 0 or batch_end == total_transactions:
-            elapsed = time.time() - start_time
-            logger.info(
-                f"📊 Per-transaction scoring progress: {processed_count}/{total_transactions} processed, "
-                f"{excluded_count} excluded, {len(transaction_scores)} scores calculated "
-                f"({elapsed:.1f}s elapsed)"
-            )
+        elapsed = time.time() - start_time
+        logger.info(
+            f"📊 Batch {batch_num}/{total_batches} complete: {processed_count}/{total_transactions} total processed, "
+            f"{excluded_count} excluded ({elapsed:.1f}s elapsed)"
+        )
 
-    # Apply pattern-based risk adjustments after all base scoring is complete
-    if transaction_scores:
-        try:
-            from app.service.agent.orchestration.domain_agents.pattern_based_adjustments import (
-                calculate_pattern_based_adjustments,
-            )
-
-            logger.info(
-                f"📊 Applying pattern-based risk adjustments to {len(transaction_scores)} transactions"
-            )
-            adjusted_scores, adjustment_reasons = calculate_pattern_based_adjustments(
-                transactions=results,
-                base_scores=transaction_scores,
-                domain_findings=domain_findings,
-            )
-
-            # Replace scores with adjusted scores
-            transaction_scores = adjusted_scores
-
-            # Log adjustment summary
-            adjusted_count = len(adjustment_reasons)
-            if adjusted_count > 0:
-                logger.info(
-                    f"✅ Pattern adjustments applied to {adjusted_count} transactions"
+    # Handle remaining scores in batch (if not using streaming or if it's the last partial batch)
+    transaction_scores = {}
+    if not use_streaming:
+        # Non-streaming mode: collect all scores in memory (legacy behavior for small datasets)
+        transaction_scores = batch_scores
+        
+        # Apply pattern-based risk adjustments after all base scoring is complete
+        if transaction_scores:
+            try:
+                from app.service.agent.orchestration.domain_agents.pattern_based_adjustments import (
+                    calculate_pattern_based_adjustments,
                 )
-                # Log first few examples
-                for tx_id, reasons in list(adjustment_reasons.items())[:3]:
-                    logger.info(f"   Example: {tx_id} - {', '.join(reasons)}")
-        except Exception as e:
-            logger.warning(f"⚠️ Pattern-based adjustments failed: {e}", exc_info=True)
-            # Continue with base scores if pattern adjustments fail
+
+                logger.info(
+                    f"📊 Applying pattern-based risk adjustments to {len(transaction_scores)} transactions"
+                )
+                adjusted_scores, adjustment_reasons = calculate_pattern_based_adjustments(
+                    transactions=results,
+                    base_scores=transaction_scores,
+                    domain_findings=domain_findings,
+                )
+
+                # Replace scores with adjusted scores
+                transaction_scores = adjusted_scores
+
+                # Log adjustment summary
+                adjusted_count = len(adjustment_reasons)
+                if adjusted_count > 0:
+                    logger.info(
+                        f"✅ Pattern adjustments applied to {adjusted_count} transactions"
+                    )
+                    # Log first few examples
+                    for tx_id, reasons in list(adjustment_reasons.items())[:3]:
+                        logger.info(f"   Example: {tx_id} - {', '.join(reasons)}")
+            except Exception as e:
+                logger.warning(f"⚠️ Pattern-based adjustments failed: {e}", exc_info=True)
+                # Continue with base scores if pattern adjustments fail
+    else:
+        # Streaming mode: save any remaining scores in final batch
+        if batch_scores:
+            logger.info(f"💾 Saving final batch to database ({len(batch_scores)} scores)...")
+            TransactionScoreService.save_transaction_scores(investigation_id, batch_scores)
+        
+        # Verify database save
+        total_saved = TransactionScoreService.get_score_count(investigation_id)
+        logger.info(
+            f"💾 STREAMING COMPLETE: {total_saved} scores saved to database (investigation: {investigation_id})"
+        )
 
     # Final summary
     elapsed_time = time.time() - start_time
-    if excluded_count > 0:
+    if use_streaming:
         logger.info(
-            f"📊 Per-transaction scoring complete: {len(transaction_scores)} scores calculated, "
-            f"{excluded_count} transactions excluded, {processed_count} processed "
-            f"({elapsed_time:.2f}s elapsed)"
+            f"✅ STREAMING SCORING COMPLETE: {processed_count} transactions scored in {elapsed_time:.2f}s"
         )
+        logger.info(f"   📊 {excluded_count} excluded | Saved to database: transaction_scores table")
+        logger.info(f"   ⚡ Peak memory usage avoided by streaming to database")
+        # Return empty dict for streaming mode (scores are in database, not in state)
+        return {}
     else:
-        logger.info(
-            f"📊 Per-transaction scoring complete: {len(transaction_scores)} scores calculated "
-            f"({elapsed_time:.2f}s elapsed)"
-        )
-
-    return transaction_scores
+        if excluded_count > 0:
+            logger.info(
+                f"📊 Per-transaction scoring complete: {len(transaction_scores)} scores calculated, "
+                f"{excluded_count} transactions excluded, {processed_count} processed "
+                f"({elapsed_time:.2f}s elapsed)"
+            )
+        else:
+            logger.info(
+                f"📊 Per-transaction scoring complete: {len(transaction_scores)} scores calculated "
+                f"({elapsed_time:.2f}s elapsed)"
+            )
+        return transaction_scores

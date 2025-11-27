@@ -118,6 +118,8 @@ def _create_investigation_context_message(state: MessagesState) -> SystemMessage
             "device_id": "DEVICE_ID",
             "phone": "PHONE_NUMBER",
             "user_id": "UNIQUE_USER_ID",
+            "merchant": "MERCHANT_NAME",
+            "merchant_name": "MERCHANT_NAME",
         }
         datetime_column = "TX_DATETIME"
     else:
@@ -129,6 +131,8 @@ def _create_investigation_context_message(state: MessagesState) -> SystemMessage
             "device_id": "device_id",
             "phone": "phone_number",
             "user_id": "unique_user_id",
+            "merchant": "merchant_name",
+            "merchant_name": "merchant_name",
         }
         datetime_column = "tx_datetime"
 

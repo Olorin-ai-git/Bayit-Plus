@@ -290,6 +290,10 @@ class InvestigationNodes:
             import os
 
             db_provider_name = os.getenv("DATABASE_PROVIDER", "snowflake").lower()
+            
+            # Get max transactions limit from environment (default: 2000)
+            # Can be increased for shorter time windows or decreased for performance
+            max_transactions = int(os.getenv("INVESTIGATION_MAX_TRANSACTIONS", "2000"))
 
             # Map entity_type to database column name dynamically
             entity_type_lower = (entity_type or "ip").lower()
@@ -302,6 +306,8 @@ class InvestigationNodes:
                     "device_id": "DEVICE_ID",
                     "phone": "PHONE_NUMBER",
                     "user_id": "UNIQUE_USER_ID",
+                    "merchant": "MERCHANT_NAME",
+                    "merchant_name": "MERCHANT_NAME",
                 }
             else:
                 # PostgreSQL: lowercase column names
@@ -312,6 +318,8 @@ class InvestigationNodes:
                     "device_id": "device_id",
                     "phone": "phone_number",
                     "user_id": "unique_user_id",
+                    "merchant": "merchant_name",
+                    "merchant_name": "merchant_name",
                 }
 
             # Get the appropriate column name for the entity type
@@ -345,7 +353,7 @@ class InvestigationNodes:
                     FROM {table_name}
                     WHERE {entity_column} = '{entity_id}'
                     ORDER BY TX_DATETIME DESC
-                    LIMIT 2000
+                    LIMIT {max_transactions}
                 """
             else:
                 # PostgreSQL: lowercase column names, parameterized queries
@@ -367,7 +375,7 @@ class InvestigationNodes:
                     FROM {table_name}
                     WHERE {entity_column} = $1
                     ORDER BY tx_datetime DESC
-                    LIMIT 2000
+                    LIMIT {max_transactions}
                 """
 
             # Execute query using provider's async execute_query_async method
@@ -398,7 +406,7 @@ class InvestigationNodes:
 
                 logger.info(
                     f"✅ DATABASE FETCH: Retrieved {len(results)} transactions "
-                    f"(query limit: 2000, matched: {len(results)} for {entity_type}={entity_id})"
+                    f"(query limit: {max_transactions}, matched: {len(results)} for {entity_type}={entity_id})"
                 )
             except Exception as query_error:
                 # Re-raise to be caught by outer exception handler

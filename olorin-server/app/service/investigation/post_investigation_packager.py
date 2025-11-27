@@ -32,24 +32,23 @@ async def generate_post_investigation_package(
     investigation_folder: Optional[Path] = None,
 ) -> Optional[Path]:
     """
-    Generate complete investigation package after investigation completes.
+    Generate confusion matrix ONLY for investigation (no ZIP package).
     
     This function:
     1. Generates confusion matrix HTML
-    2. Creates a complete ZIP package with all artifacts
-    3. Stores package in standardized location
+    2. Returns path to confusion matrix
     
     Args:
         investigation_id: Investigation ID
         investigation_folder: Optional investigation folder path
         
     Returns:
-        Path to generated ZIP package, or None if generation failed
+        Path to generated confusion matrix HTML, or None if generation failed
     """
     try:
-        logger.info(f"📦 Starting post-investigation packaging for {investigation_id}")
+        logger.info(f"📊 Generating confusion matrix for {investigation_id}")
         
-        # Step 1: Generate confusion matrix
+        # Generate confusion matrix ONLY (no ZIP package)
         confusion_matrix_path = await _generate_confusion_matrix(
             investigation_id, investigation_folder
         )
@@ -58,28 +57,15 @@ async def generate_post_investigation_package(
             logger.warning(
                 f"⚠️ Could not generate confusion matrix for {investigation_id}"
             )
+            return None
         else:
             logger.info(f"✅ Confusion matrix generated: {confusion_matrix_path}")
         
-        # Step 2: Create complete investigation package
-        package_path = await _create_investigation_package(
-            investigation_id, investigation_folder, confusion_matrix_path
-        )
-        
-        if not package_path:
-            logger.warning(
-                f"⚠️ Could not create investigation package for {investigation_id}"
-            )
-            return None
-        
-        logger.info(f"✅ Investigation package created: {package_path}")
-        logger.info(f"   Size: {_format_size(package_path.stat().st_size)}")
-        
-        return package_path
+        return confusion_matrix_path
         
     except Exception as e:
         logger.error(
-            f"❌ Failed to create post-investigation package for {investigation_id}: {e}",
+            f"❌ Failed to generate confusion matrix for {investigation_id}: {e}",
             exc_info=True
         )
         return None

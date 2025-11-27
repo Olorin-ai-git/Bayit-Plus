@@ -707,8 +707,12 @@ async def on_startup(app: FastAPI):
             import asyncio
 
             try:
+                # Get group_by from environment for flexible entity type analysis
+                group_by = os.getenv("ANALYTICS_DEFAULT_GROUP_BY", "email")
+                logger.info(f"🎯 Analyzing risk entities by: {group_by}")
+                
                 results = await asyncio.wait_for(
-                    analyzer.get_top_risk_entities(),
+                    analyzer.get_top_risk_entities(group_by=group_by),
                     timeout=120.0,  # 120 seconds (2 minutes) max for Snowflake query
                 )
             except asyncio.TimeoutError:
@@ -952,7 +956,10 @@ async def run_startup_analysis_flow(
         if risk_analyzer_results is None or force_refresh:
             logger.info("📋 Loading top risk entities from Snowflake...")
             analyzer = get_risk_analyzer()
-            results = await analyzer.get_top_risk_entities()
+            # Get group_by from environment for flexible entity type analysis
+            group_by = os.getenv("ANALYTICS_DEFAULT_GROUP_BY", "email")
+            logger.info(f"🎯 Analyzing risk entities by: {group_by}")
+            results = await analyzer.get_top_risk_entities(group_by=group_by)
 
             # Handle errors
             if results.get("status") == "error":

@@ -13,6 +13,9 @@ Constitutional Compliance:
 - No database modifications
 - Read-only operations
 - Handles missing data gracefully
+
+CRITICAL: ALL transactions must receive risk scores (no sampling/limiting to 2000).
+Modified to support large transaction volumes (100K+).
 """
 
 import inspect
@@ -766,15 +769,32 @@ async def map_investigation_to_transactions(
                 progress_data = progress_json if isinstance(progress_json, dict) else {}
 
             transaction_scores = progress_data.get("transaction_scores")
+            
+            # STREAMING MODE SUPPORT: Check database if not in state
+            if not transaction_scores and investigation and investigation.get("id"):
+                try:
+                    from app.service.transaction_score_service import TransactionScoreService
+                    db_scores = TransactionScoreService.get_transaction_scores(investigation.get("id"))
+                    if db_scores:
+                        transaction_scores = db_scores
+                        logger.info(
+                            f"[MAP_INVESTIGATION_TO_TRANSACTIONS] Retrieved {len(transaction_scores)} per-transaction scores "
+                            f"from database (streaming mode) for investigation {investigation.get('id')}"
+                        )
+                except Exception as e:
+                    logger.warning(
+                        f"[MAP_INVESTIGATION_TO_TRANSACTIONS] Failed to retrieve scores from database: {e}"
+                    )
+            
             if transaction_scores:
                 logger.info(
-                    f"[MAP_INVESTIGATION_TO_TRANSACTIONS] Found per-transaction scores: {len(transaction_scores)} transactions "
+                    f"[MAP_INVESTIGATION_TO_TRANSACTIONS] Using per-transaction scores: {len(transaction_scores)} transactions "
                     f"for investigation {investigation.get('id', 'unknown')}"
                 )
             else:
                 logger.warning(
-                    f"[MAP_INVESTIGATION_TO_TRANSACTIONS] No transaction_scores found in progress_json "
-                    f"for investigation {investigation.get('id', 'unknown')} - will exclude all transactions"
+                    f"[MAP_INVESTIGATION_TO_TRANSACTIONS] No transaction_scores found in state or database "
+                    f"for investigation {investigation.get('id', 'unknown')} - will use overall risk score"
                 )
 
         # Log investigation details for debugging

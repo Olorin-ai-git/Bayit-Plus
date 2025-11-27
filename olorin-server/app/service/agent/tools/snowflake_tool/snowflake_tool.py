@@ -339,6 +339,8 @@ class SnowflakeQueryTool(BaseTool):
         Returns:
             WHERE clause string
         """
+        from app.service.agent.tools.snowflake_tool.schema_constants import MERCHANT_NAME
+        
         entity_type_upper = entity_type.upper()
 
         if entity_type_upper == "IP":
@@ -353,6 +355,8 @@ class SnowflakeQueryTool(BaseTool):
             return f"{PHONE_NUMBER} = '{entity_id}'"
         elif entity_type_upper == "CARD" or entity_type_upper == "BIN":
             return f"({BIN} = '{entity_id}' OR {LAST_FOUR} = '{entity_id[-4:]}' OR {CARD_ISSUER} LIKE '%{entity_id}%')"
+        elif entity_type_upper == "MERCHANT" or entity_type_upper == "MERCHANT_NAME":
+            return f"{MERCHANT_NAME} = '{entity_id}'"
         else:
             # Fallback: search across multiple key fields
             logger.warning(

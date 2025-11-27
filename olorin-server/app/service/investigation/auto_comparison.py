@@ -1090,12 +1090,12 @@ async def run_auto_comparison_for_entity(
                 days_span = (latest_date - earliest_date).days
 
                 # Use actual transaction dates to determine historical window
-                # Try to use a window that's at least 90 days before now for validation
-                # Allow tolerance of 5 days (minimum 9 days instead of 14)
-                span_tolerance_days = 5
-                min_required_span = window_duration_days - span_tolerance_days
+                # Read minimum requirements from environment variables
+                min_required_span = int(os.getenv("INVESTIGATION_MIN_REQUIRED_SPAN_DAYS", "30"))
+                span_tolerance_days = int(os.getenv("INVESTIGATION_SPAN_TOLERANCE_DAYS", "10"))
+                min_with_tolerance = min_required_span - span_tolerance_days
 
-                if days_span >= min_required_span:
+                if days_span >= min_with_tolerance:
                     # Find a historical window within the transaction date range
                     # Use actual span if less than target, otherwise use target duration
                     actual_window_days = min(days_span, window_duration_days)
@@ -1184,7 +1184,7 @@ async def run_auto_comparison_for_entity(
                         )
                 else:
                     logger.warning(
-                        f"⚠️ Insufficient transaction span ({days_span} days, minimum {min_required_span} days required with tolerance)"
+                        f"⚠️ Insufficient transaction span ({days_span} days, minimum {min_with_tolerance} days required)"
                     )
                     # Fall through to use default windows
             else:
@@ -1834,6 +1834,8 @@ async def run_auto_comparisons_for_top_entities(
         "user_id": "user_id",
         "phone": "phone",
         "account_id": "account_id",
+        "merchant_name": "merchant",
+        "merchant_id": "merchant",
     }
     default_entity_type = entity_type_map.get(group_by_lower, "email")
 
@@ -3014,20 +3016,20 @@ async def _trigger_post_investigation_packaging(investigation_id: str) -> None:
     """
     Trigger post-investigation packaging in background.
     
-    This creates confusion matrix and complete package after investigation completes.
+    This creates confusion matrix ONLY (no ZIP package).
     """
     try:
         from app.service.investigation.post_investigation_packager import (
             generate_post_investigation_package
         )
         
-        logger.info(f"📦 Triggering post-investigation packaging for {investigation_id}")
+        logger.info(f"📊 Generating confusion matrix for {investigation_id}")
         
-        package_path = await generate_post_investigation_package(investigation_id)
+        confusion_matrix_path = await generate_post_investigation_package(investigation_id)
         
-        if package_path:
+        if confusion_matrix_path:
             logger.info(
-                f"✅ Post-investigation package created: {package_path.name}"
+                f"✅ Confusion matrix created: {confusion_matrix_path.name}"
             )
         else:
             logger.warning(

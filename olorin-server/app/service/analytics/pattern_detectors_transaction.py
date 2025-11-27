@@ -4,6 +4,7 @@ Transaction-Based Pattern Detectors (Patterns 1-3).
 Card Testing, Geo-Impossibility, and BIN Attack detection.
 """
 
+import os
 from datetime import timedelta
 from typing import Any, Dict, List, Optional
 
@@ -15,18 +16,24 @@ from app.service.analytics.pattern_helpers import (
     extract_timestamp,
 )
 
-# Detection Thresholds
-CARD_TESTING_MIN_ATTEMPTS = 3
-CARD_TESTING_MAX_AMOUNT = 10.0
-CARD_TESTING_TIME_WINDOW_MINUTES = 10
-CARD_TESTING_ADJUSTMENT = 0.20
+# Detection Thresholds (from environment variables)
+def _get_float_env(key: str, default: str) -> float:
+    return float(os.getenv(key, default))
 
-GEO_IMPOSSIBILITY_MAX_SPEED_MPH = 600
-GEO_IMPOSSIBILITY_ADJUSTMENT = 0.25
+def _get_int_env(key: str, default: str) -> int:
+    return int(os.getenv(key, default))
 
-BIN_ATTACK_MIN_CARDS = 4
-BIN_ATTACK_TIME_WINDOW_HOURS = 24
-BIN_ATTACK_ADJUSTMENT = 0.15
+CARD_TESTING_MIN_ATTEMPTS = _get_int_env("PATTERN_CARD_TESTING_MIN_ATTEMPTS", "3")
+CARD_TESTING_MAX_AMOUNT = _get_float_env("PATTERN_CARD_TESTING_MAX_AMOUNT", "10.0")
+CARD_TESTING_TIME_WINDOW_MINUTES = _get_int_env("PATTERN_CARD_TESTING_TIME_WINDOW_MINUTES", "10")
+CARD_TESTING_ADJUSTMENT = _get_float_env("PATTERN_CARD_TESTING_ADJUSTMENT", "0.20")
+
+GEO_IMPOSSIBILITY_MAX_SPEED_MPH = _get_int_env("PATTERN_GEO_IMPOSSIBILITY_MAX_SPEED_MPH", "600")
+GEO_IMPOSSIBILITY_ADJUSTMENT = _get_float_env("PATTERN_GEO_IMPOSSIBILITY_ADJUSTMENT", "0.25")
+
+BIN_ATTACK_MIN_CARDS = _get_int_env("PATTERN_BIN_ATTACK_MIN_CARDS", "4")
+BIN_ATTACK_TIME_WINDOW_HOURS = _get_int_env("PATTERN_BIN_ATTACK_TIME_WINDOW_HOURS", "24")
+BIN_ATTACK_ADJUSTMENT = _get_float_env("PATTERN_BIN_ATTACK_ADJUSTMENT", "0.15")
 
 
 def detect_card_testing(

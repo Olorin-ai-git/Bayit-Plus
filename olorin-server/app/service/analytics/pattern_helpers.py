@@ -30,7 +30,7 @@ def extract_timestamp(event: Dict[str, Any]) -> Optional[datetime]:
 
 def extract_amount(event: Dict[str, Any]) -> Optional[float]:
     """Extract transaction amount from event."""
-    amount_fields = ["TX_AMOUNT", "amount", "transaction_amount", "AMOUNT"]
+    amount_fields = ["PAID_AMOUNT_VALUE_IN_CURRENCY", "TX_AMOUNT", "amount", "transaction_amount", "AMOUNT"]
 
     for field in amount_fields:
         if field in event and event[field] is not None:

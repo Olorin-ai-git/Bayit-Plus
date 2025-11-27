@@ -97,6 +97,8 @@ def build_entity_where_clause(
             "account_id": "ACCOUNT_ID",
             "card_fingerprint": None,  # Special handling
             "merchant_id": "STORE_ID",
+            "merchant": "MERCHANT_NAME",
+            "merchant_name": "MERCHANT_NAME",
         }
     else:
         columns = {
@@ -107,6 +109,8 @@ def build_entity_where_clause(
             "account_id": "account_id",
             "card_fingerprint": None,  # Special handling
             "merchant_id": "store_id",
+            "merchant": "merchant_name",
+            "merchant_name": "merchant_name",
         }
 
     column = columns.get(entity_type_lower)

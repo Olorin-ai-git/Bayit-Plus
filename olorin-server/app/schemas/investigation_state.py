@@ -72,6 +72,7 @@ class EntityType(str, Enum):
     IP = "ip"  # Matches database schema column name
     DEVICE_ID = "device_id"
     SESSION_ID = "session_id"
+    MERCHANT = "merchant"
 
 
 class CorrelationMode(str, Enum):
