@@ -1026,6 +1026,20 @@ async def map_investigation_to_transactions(
             if not transaction_scores:
                 transaction_scores = {}
             transaction_scores.update(risk_assessment["transaction_scores"])
+            
+            # CRITICAL: Save enhanced scores to database for confusion table generation
+            inv_id = investigation.get("id") if investigation else None
+            if inv_id and risk_assessment["transaction_scores"]:
+                try:
+                    from app.service.transaction_score_service import TransactionScoreService
+                    TransactionScoreService.save_transaction_scores(
+                        inv_id, risk_assessment["transaction_scores"]
+                    )
+                    logger.info(
+                        f"💾 Saved {len(risk_assessment['transaction_scores'])} enhanced transaction scores to database"
+                    )
+                except Exception as save_error:
+                    logger.error(f"❌ Failed to save enhanced scores to database: {save_error}", exc_info=True)
 
             # Log anomalies detected
             if risk_assessment["anomalies"]:

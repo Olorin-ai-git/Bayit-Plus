@@ -70,7 +70,6 @@ async def risk_agent_node(
         facts = snowflake_data if isinstance(snowflake_data, dict) else {}
         
         # CRITICAL DEBUG: Log transaction count received from snowflake_data
-        import time
         if isinstance(facts, dict) and "results" in facts:
             results_count = len(facts.get("results", []))
             logger.info(f"🔍 CRITICAL DEBUG: snowflake_data contains {results_count} transactions")
@@ -307,7 +306,7 @@ async def risk_agent_node(
         return add_domain_findings(state, "risk", risk_findings)
 
     except Exception as e:
-        logger.error(f"❌ Risk agent failed: {str(e)}")
+        logger.error(f"❌ Risk agent failed: {str(e)}", exc_info=True)
 
         # Record failure with circuit breaker
         from app.service.agent.orchestration.circuit_breaker import record_node_failure
@@ -1556,9 +1555,9 @@ def _calculate_per_transaction_scores(
         Dictionary mapping TX_ID_KEY to risk score (float 0.0-1.0)
         NOTE: For large volumes (>10K), returns empty dict and saves directly to database
     """
+    # Use module-level imports (imported at top of file)
     import os
-    import time
-
+    
     start_time = time.time()
     
     # Get batch size from environment (default: 5000 transactions per batch)
@@ -1699,8 +1698,10 @@ def _calculate_per_transaction_scores(
         all_detected_patterns = []
 
     # STREAMING BATCH PROCESSING: Process in large batches, save to DB incrementally
-    # For large volumes (>10K), we use database-backed scoring to avoid memory issues
-    use_streaming = total_transactions > 10000 and investigation_id
+    # ALWAYS use streaming when investigation_id is present to ensure confusion tables work
+    # (Confusion tables require scores in database, not just in memory/state)
+    use_streaming_env = os.getenv("INVESTIGATION_USE_STREAMING_SCORING", "true").lower() == "true"
+    use_streaming = investigation_id and use_streaming_env
     
     if use_streaming:
         logger.info(
@@ -1713,6 +1714,7 @@ def _calculate_per_transaction_scores(
     excluded_count = 0
     processed_count = 0
     batch_scores = {}  # Temporary batch storage
+    start_time = time.time()  # Track processing start time for timeout
 
     for batch_start in range(0, total_transactions, batch_size):
         # Check timeout
