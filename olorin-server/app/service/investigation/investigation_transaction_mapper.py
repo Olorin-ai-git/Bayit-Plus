@@ -133,6 +133,26 @@ async def query_isfraud_tx_for_transactions(
     if not transaction_ids:
         return {}
 
+    # CRITICAL FIX: Batch large IN clauses to prevent query malformation and memory issues
+    BATCH_SIZE = int(os.getenv("ISFRAUD_BATCH_SIZE", "500"))  # Process in batches of 500
+    
+    if len(transaction_ids) > BATCH_SIZE:
+        logger.info(
+            f"[QUERY_ISFRAUD_TX] Batching {len(transaction_ids)} transaction IDs into chunks of {BATCH_SIZE}"
+        )
+        
+        result = {}
+        for i in range(0, len(transaction_ids), BATCH_SIZE):
+            batch = transaction_ids[i:i + BATCH_SIZE]
+            batch_result = await query_isfraud_tx_for_transactions(batch, window_end, is_snowflake)
+            result.update(batch_result)
+            logger.info(
+                f"[QUERY_ISFRAUD_TX] Processed batch {i // BATCH_SIZE + 1}/{(len(transaction_ids) + BATCH_SIZE - 1) // BATCH_SIZE}, "
+                f"got {len(batch_result)} results"
+            )
+        
+        return result
+
     db_provider = get_database_provider()
     db_provider.connect()
 
@@ -162,25 +182,36 @@ async def query_isfraud_tx_for_transactions(
 
     # CRITICAL: Cast both TX_ID_KEY and transaction IDs to VARCHAR for proper matching
     # This handles cases where TX_ID_KEY is VARCHAR but contains numeric strings or UUIDs
+    # CRITICAL FIX: Add LIMIT to prevent runaway queries and ensure proper filtering
+    max_expected_rows = len(transaction_ids) * 2  # Safety margin in case of duplicates
+    
+    # CRITICAL: Do NOT filter by TX_DATETIME here!
+    # We already have the exact transaction IDs from the investigation window.
+    # The datetime filter was causing 0 results because IS_FRAUD_TX is populated
+    # based on fraud detection time, not transaction time, which can be later.
+    # Since Snowflake is source of truth, we query IS_FRAUD_TX for these specific IDs.
+    
     if is_snowflake:
         # Snowflake: Cast both sides to VARCHAR for proper comparison
+        # NO datetime filter - we already have the correct IDs from the investigation query
         query = f"""
         SELECT
             CAST({tx_id_col} AS VARCHAR) as transaction_id,
             {is_fraud_col} as is_fraud_tx
         FROM {table_name}
         WHERE CAST({tx_id_col} AS VARCHAR) IN ('{transaction_ids_str}')
-          AND {datetime_col} <= '{window_end_str}'
+        LIMIT {max_expected_rows}
         """
     else:
         # PostgreSQL: Cast both sides to TEXT for proper comparison
+        # NO datetime filter - we already have the correct IDs from the investigation query
         query = f"""
         SELECT
             {tx_id_col}::TEXT as transaction_id,
             {is_fraud_col} as is_fraud_tx
         FROM {table_name}
         WHERE {tx_id_col}::TEXT IN ('{transaction_ids_str}')
-          AND {datetime_col} <= '{window_end_str}'
+        LIMIT {max_expected_rows}
         """
 
     logger.info(
@@ -387,9 +418,19 @@ async def query_isfraud_tx_for_transactions(
         else:
             results = db_provider.execute_query(query)
 
-        logger.info(
-            f"[QUERY_ISFRAUD_TX] Query returned {len(results) if results else 0} rows"
-        )
+        # CRITICAL VALIDATION: Ensure query didn't return entire table
+        result_count = len(results) if results else 0
+        logger.info(f"[QUERY_ISFRAUD_TX] Query returned {result_count} rows")
+        
+        # If we got significantly more rows than expected, something is wrong
+        if result_count > max_expected_rows:
+            logger.error(
+                f"[QUERY_ISFRAUD_TX] ❌ CRITICAL: Query returned {result_count} rows but only {len(transaction_ids)} transaction IDs were requested! "
+                f"Expected max {max_expected_rows} rows. The WHERE IN clause may be malformed or ignored by the database."
+            )
+            logger.error(f"[QUERY_ISFRAUD_TX] Problematic query: {query[:500]}...")
+            logger.error(f"[QUERY_ISFRAUD_TX] Truncating results to first {max_expected_rows} rows to prevent memory overflow")
+            results = results[:max_expected_rows]  # Limit to prevent memory issues
         if results:
             logger.info(
                 f"[QUERY_ISFRAUD_TX] Sample result row keys: {list(results[0].keys())}"

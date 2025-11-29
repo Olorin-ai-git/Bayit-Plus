@@ -434,10 +434,9 @@ async def create_and_wait_for_investigation(
                         # Get investigation from persistence layer
                         investigation = get_investigation_by_id(investigation_id)
                         if investigation:
-                            # Trigger post-investigation packaging
-                            asyncio.create_task(
-                                _trigger_post_investigation_packaging(investigation_id)
-                            )
+                            # Trigger post-investigation packaging SYNCHRONOUSLY
+                            # This ensures IS_FRAUD_TX queries complete before confusion table generation
+                            await _trigger_post_investigation_packaging(investigation_id)
                             return investigation
                         else:
                             logger.warning(
@@ -498,8 +497,10 @@ async def run_auto_comparison_for_entity(
         os.getenv("INVESTIGATION_DEFAULT_WINDOW_DAYS", "60")
     )  # Default: 60 days (changed from 14)
 
-    # Get max lookback months from environment (default: 6 months)
-    max_lookback_months = int(os.getenv("ANALYTICS_MAX_LOOKBACK_MONTHS", "6"))
+    # CRITICAL: Use SAME variable as analyzer to ensure window alignment
+    # Analyzer uses ANALYZER_END_OFFSET_MONTHS to find fraud
+    # Investigation MUST use same window to investigate that fraud
+    max_lookback_months = int(os.getenv("ANALYZER_END_OFFSET_MONTHS", "6"))
     max_lookback_days = max_lookback_months * 30  # Approximate months to days
 
     # Step 1: Try to find a historical investigation for this entity
@@ -1100,71 +1101,29 @@ async def run_auto_comparison_for_entity(
                     # Use actual span if less than target, otherwise use target duration
                     actual_window_days = min(days_span, window_duration_days)
 
-                    # Get max lookback constraint
-                    max_lookback_months = int(
-                        os.getenv("ANALYTICS_MAX_LOOKBACK_MONTHS", "6")
+                    # CRITICAL FIX: Investigation window should cover the merchant's ACTUAL
+                    # transaction history FORWARD from their earliest transaction
+                    # max_lookback applies to WHERE ANALYZER LOOKS, not where investigations run
+                    target_start = earliest_date  # Start from merchant's first transaction
+                    target_end = min(
+                        latest_date,  # Don't exceed actual transaction range
+                        target_start + timedelta(days=actual_window_days)  # Or configured duration
                     )
-                    max_lookback_days = max_lookback_months * 30
-                    max_allowed_end = now - timedelta(days=max_lookback_days)
 
-                    # Calculate target window respecting BOTH constraints:
-                    # 1. Must be within transaction date range (earliest_date to latest_date)
-                    # 2. Must not exceed max lookback (end <= max_allowed_end)
-
-                    # Start with the most restrictive end date
-                    effective_max_end = min(latest_date, max_allowed_end)
-
-                    # CRITICAL FIX: Calculate window ensuring start < end
-                    # Strategy: Try to fit window_duration_days window ending at effective_max_end
-                    # If that doesn't fit, use the maximum possible window within constraints
-
-                    # First attempt: window ending at effective_max_end
-                    target_end = effective_max_end
-                    target_start = target_end - timedelta(days=actual_window_days)
-
-                    # Ensure the window is within the actual transaction range
-                    if target_start < earliest_date:
-                        # Window doesn't fit ending at effective_max_end
-                        # Try: window starting at earliest_date
-                        target_start = earliest_date
-                        target_end = target_start + timedelta(days=actual_window_days)
-
-                        # Ensure end doesn't exceed effective_max_end
-                        if target_end > effective_max_end:
-                            # Can't fit full window - use what fits
-                            target_end = effective_max_end
-                            # Recalculate start to ensure we get maximum possible window
-                            target_start = max(
-                                earliest_date,
-                                target_end - timedelta(days=actual_window_days),
-                            )
-
-                    # Final validation: ensure start < end
+                    # Validation: ensure start < end
                     if target_start >= target_end:
-                        # Still invalid - use minimal valid window
-                        # Use earliest_date as start, effective_max_end as end (if they're different)
-                        if earliest_date < effective_max_end:
-                            # Use maximum possible window (could be less than actual_window_days)
-                            target_start = earliest_date
-                            target_end = effective_max_end
-                            logger.warning(
-                                f"⚠️ Using maximum available window: {target_start.date()} to {target_end.date()} "
-                                f"({(target_end - target_start).days} days, requested {actual_window_days} days)"
-                            )
-                        else:
-                            # Cannot create valid window - earliest_date >= effective_max_end
-                            logger.error(
-                                f"❌ Cannot create valid window: earliest_date ({earliest_date.date()}) >= "
-                                f"effective_max_end ({effective_max_end.date()}). Transaction range too narrow."
-                            )
-                            # Fall back to default windows - skip this adjustment
-                            logger.warning(
-                                f"⚠️ Skipping transaction date range adjustment - using default windows"
-                            )
-                            # Don't set target_start/target_end to None - keep using default windows
-                            # The code below will use the default historical_window_start/end
-                            target_start = None  # Signal to skip adjustment
-                            target_end = None
+                        # This should NEVER happen with the new logic, but just in case
+                        logger.error(
+                            f"❌ Invalid window: start ({target_start.date()}) >= end ({target_end.date()}). "
+                            f"Using fallback: all available transaction history."
+                        )
+                        # Use ALL available transaction history
+                        target_start = earliest_date
+                        target_end = latest_date
+                        logger.warning(
+                            f"⚠️ Using full transaction history: {target_start.date()} to {target_end.date()} "
+                            f"({(target_end - target_start).days} days)"
+                        )
 
                     # Only use adjusted windows if they're valid
                     if target_start is not None and target_end is not None:
@@ -1193,31 +1152,16 @@ async def run_auto_comparison_for_entity(
                 )
                 # Fall through to use default windows
 
-        # Final validation: Ensure window_end doesn't exceed max lookback constraint
-        # and that start < end
-        max_lookback_months = int(os.getenv("ANALYTICS_MAX_LOOKBACK_MONTHS", "6"))
-        max_lookback_days = max_lookback_months * 30
-        max_allowed_end = now - timedelta(days=max_lookback_days)
-
-        # Normalize to UTC for comparison
+        # CRITICAL: Investigation window should NOT be capped by max_lookback
+        # max_lookback applies to WHERE THE ANALYZER LOOKS, not where investigations run
+        # Investigations should cover the entity's FULL transaction history
+        
+        # Final validation: Ensure start < end (normalize to UTC for comparison)
         utc = pytz.UTC
         if historical_window_end.tzinfo is None:
             historical_window_end_utc = utc.localize(historical_window_end)
         else:
             historical_window_end_utc = historical_window_end.astimezone(utc)
-
-        if max_allowed_end.tzinfo is None:
-            max_allowed_end_utc = utc.localize(max_allowed_end)
-        else:
-            max_allowed_end_utc = max_allowed_end.astimezone(utc)
-
-        # Cap historical_window_end if it exceeds max lookback
-        if historical_window_end_utc > max_allowed_end_utc:
-            logger.warning(
-                f"⚠️ Window end {historical_window_end_utc.date()} exceeds max lookback ({max_allowed_end_utc.date()}), capping to {max_allowed_end_utc.date()}"
-            )
-            historical_window_end = max_allowed_end
-            historical_window_end_utc = max_allowed_end_utc
 
         # Normalize start to UTC for comparison
         if historical_window_start.tzinfo is None:
@@ -1286,35 +1230,24 @@ async def run_auto_comparison_for_entity(
         )
 
         if historical_inv:
-            # Use the newly created investigation
-            inv_from = historical_inv.get("from_date") or historical_window_start
-            inv_to = historical_inv.get("to_date") or historical_window_end
-
-            # Parse and ensure timezone-aware
-            tz = pytz.timezone("America/New_York")
-            if isinstance(inv_from, str):
-                inv_from = datetime.fromisoformat(inv_from.replace("Z", "+00:00"))
-            elif not isinstance(inv_from, datetime):
-                inv_from = historical_window_start
-
-            if isinstance(inv_to, str):
-                inv_to = datetime.fromisoformat(inv_to.replace("Z", "+00:00"))
-            elif not isinstance(inv_to, datetime):
-                inv_to = historical_window_end
-
-            if inv_from.tzinfo is None:
-                inv_from = tz.localize(inv_from)
-            else:
-                inv_from = inv_from.astimezone(tz)
-
-            if inv_to.tzinfo is None:
-                inv_to = tz.localize(inv_to)
-            else:
-                inv_to = inv_to.astimezone(tz)
-
-            # Window A: Historical investigation period (has predicted risk)
-            window_a_start = inv_from
-            window_a_end = inv_to
+            # SIMPLIFIED PATH: Skip Window A/B comparison logic
+            # Just generate confusion matrix from the investigation itself
+            investigation_id = historical_inv.get("id") or historical_inv.get("investigation_id")
+            
+            logger.info(f"✅ Investigation {investigation_id} completed successfully")
+            logger.info(f"📊 Generating confusion matrix for {entity_type}={entity_value}")
+            
+            # Trigger post-investigation packaging (confusion matrix generation)
+            await _trigger_post_investigation_packaging(investigation_id)
+            
+            return {
+                "status": "success",
+                "entity_type": entity_type,
+                "entity_value": entity_value,
+                "investigation_id": investigation_id,
+                "investigation": historical_inv,
+                "message": f"Investigation completed for {entity_type}={entity_value}",
+            }
 
             # Window B: Validation period (after investigation, check actual outcomes)
             # CRITICAL: Ensure timezone consistency and that end > start

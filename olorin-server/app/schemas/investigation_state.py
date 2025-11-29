@@ -129,38 +129,16 @@ class TimeRange(BaseModel):
     def validate_end_after_start(
         cls, v: Optional[datetime], info
     ) -> Optional[datetime]:
-        """Ensure end_time is after start_time and not later than max lookback."""
+        """Ensure end_time is after start_time."""
         if v:
             # Check end_time is after start_time
             if info.data.get("start_time") and v <= info.data["start_time"]:
                 raise ValueError("end_time must be after start_time")
-
-            # Cap end_time at max_lookback_months before current date
-            import os
-            from datetime import timedelta
-
-            import pytz
-
-            max_lookback_months = int(os.getenv("ANALYTICS_MAX_LOOKBACK_MONTHS", "6"))
-            max_lookback_days = max_lookback_months * 30
-
-            # Ensure timezone-aware comparison - normalize both to UTC
-            utc = pytz.UTC
-            now_utc = datetime.now(utc)
-            max_allowed_end = now_utc - timedelta(days=max_lookback_days)
-
-            # Normalize v to UTC for comparison
-            if v.tzinfo is None:
-                # If v is naive, assume UTC
-                v_utc = utc.localize(v)
-            else:
-                # If v is timezone-aware, convert to UTC
-                v_utc = v.astimezone(utc)
-
-            if v_utc > max_allowed_end:
-                raise ValueError(
-                    f"end_time cannot be later than {max_lookback_months} months before current date ({max_allowed_end.date()})"
-                )
+            
+            # REMOVED: max_lookback cap validation
+            # Investigations should be able to run on ANY date range,
+            # including recent data. The max_lookback constraint applies
+            # to WHERE THE ANALYZER LOOKS, not where investigations can run.
         return v
 
 
