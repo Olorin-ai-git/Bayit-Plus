@@ -1,6 +1,7 @@
 """
 Enhanced risk scorer that uses behavioral features instead of MODEL_SCORE.
 This integrates with the existing investigation system.
+Includes merchant-specific fraud profiles based on empirical analysis.
 """
 
 import logging
@@ -9,6 +10,7 @@ from datetime import datetime, timedelta
 from typing import Any, Dict, List, Optional, Tuple
 
 from app.service.investigation.fraud_detection_features import FraudDetectionFeatures
+from app.service.investigation.merchant_fraud_profiles import get_merchant_profiles
 
 logger = logging.getLogger(__name__)
 
@@ -18,10 +20,13 @@ class EnhancedRiskScorer:
     Enhanced risk scoring that doesn't use MODEL_SCORE.
     Replaces the existing risk calculation with behavioral pattern analysis.
     Includes progressive thresholds and merchant-specific adjustments.
+    
+    NEW: Merchant-specific fraud profiles (Eneba, Atlantis Games, Coinflow, Paybis)
     """
 
     def __init__(self):
         self.feature_calculator = FraudDetectionFeatures()
+        self.merchant_profiles = get_merchant_profiles()
         self.base_threshold = float(os.getenv("RISK_THRESHOLD_DEFAULT", "0.20"))
 
         # Progressive thresholds based on transaction volume
@@ -217,6 +222,17 @@ class EnhancedRiskScorer:
         adaptive_threshold, threshold_reason = self._get_progressive_threshold(
             tx_count, primary_merchant
         )
+        
+        # Apply merchant-specific threshold adjustment
+        if primary_merchant:
+            merchant_adjustment = self.merchant_profiles.get_threshold_adjustment(primary_merchant)
+            if merchant_adjustment != 1.0:
+                original_threshold = adaptive_threshold
+                adaptive_threshold = adaptive_threshold * merchant_adjustment
+                logger.info(
+                    f"   🎯 Merchant threshold adjustment for {primary_merchant}: "
+                    f"{original_threshold:.3f} → {adaptive_threshold:.3f} (×{merchant_adjustment})"
+                )
 
         # Calculate per-transaction scores
         transaction_scores = {}
@@ -231,10 +247,17 @@ class EnhancedRiskScorer:
                 or str(hash(str(tx)))
             )
 
-            # Calculate risk for this transaction in context
+            # Calculate base risk for this transaction in context
             tx_risk = self.feature_calculator.calculate_per_transaction_risk(
                 tx, transactions
             )
+            
+            # Apply merchant-specific adjustments
+            if primary_merchant:
+                adjusted_risk = self.merchant_profiles.apply_merchant_adjustments(
+                    tx_risk, tx, transactions, primary_merchant
+                )
+                tx_risk = adjusted_risk
 
             transaction_scores[tx_id] = tx_risk
 

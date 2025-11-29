@@ -42,7 +42,8 @@ class RealSnowflakeClient:
     def __init__(self):
         """Initialize with configuration from environment/Firebase."""
         self.connection = None
-        self.cursor = None
+        self.cursor = None  # Kept for backward compatibility, but will use per-query cursors
+        self._connection_lock = asyncio.Lock()  # Lock for connection management
         self._load_configuration()
 
     def _load_configuration(self):
@@ -398,32 +399,15 @@ class RealSnowflakeClient:
             self.cursor = None
             conn = self._get_connection()
 
-        # CRITICAL FIX: Ensure cursor exists and is valid - create if None or invalid
-        # This handles race conditions where cursor might be None after connection creation
-        # or if cursor was closed/disconnected
-        if self.cursor is None:
-            try:
-                self.cursor = conn.cursor()
-                logger.debug("Created new cursor for query execution")
-            except Exception as e:
-                logger.error(f"Failed to create cursor: {e}")
-                raise
-
-        cursor = self.cursor
-
-        # Validate cursor is still valid (not closed)
+        # CONCURRENCY FIX: Create a NEW cursor for each query execution
+        # This prevents "generator already executing" errors when multiple
+        # async queries run concurrently via thread pool executor.
+        # Each query gets its own cursor, preventing interference.
+        cursor = None
         try:
-            # Test cursor is valid by checking if it has required attributes
-            if not hasattr(cursor, "execute"):
-                logger.warning("Cursor is invalid, creating new cursor")
-                self.cursor = conn.cursor()
-                cursor = self.cursor
-        except Exception as e:
-            logger.warning(f"Cursor validation failed, creating new cursor: {e}")
-            self.cursor = conn.cursor()
-            cursor = self.cursor
-
-        try:
+            cursor = conn.cursor()
+            logger.debug("Created new cursor for this query execution")
+            
             # Execute query
             cursor.execute(query)
 
@@ -446,8 +430,9 @@ class RealSnowflakeClient:
                 e
             ) or "_update_parameters" in str(e):
                 logger.error(f"Cursor is None or invalid: {e}")
-                logger.info("Attempting to recreate cursor and retry query")
+                logger.info("Attempting to recreate connection and retry query")
                 # Recreate connection and cursor if connection is closed
+                retry_cursor = None
                 try:
                     # Check if connection is closed
                     if self.connection and (
@@ -458,12 +443,11 @@ class RealSnowflakeClient:
                         self.connection = None
                         self.cursor = None
                         conn = self._get_connection()
-                    # Recreate cursor and retry once
-                    self.cursor = conn.cursor()
-                    cursor = self.cursor
-                    cursor.execute(query)
-                    rows = cursor.fetchall()
-                    columns = [desc[0] for desc in cursor.description]
+                    # Create NEW cursor for retry
+                    retry_cursor = conn.cursor()
+                    retry_cursor.execute(query)
+                    rows = retry_cursor.fetchall()
+                    columns = [desc[0] for desc in retry_cursor.description]
                     results = []
                     for row in rows:
                         results.append(dict(zip(columns, row)))
@@ -474,6 +458,12 @@ class RealSnowflakeClient:
                         f"Query execution failed after cursor recreation: {retry_error}"
                     )
                     raise
+                finally:
+                    if retry_cursor is not None:
+                        try:
+                            retry_cursor.close()
+                        except Exception:
+                            pass
             else:
                 raise
         except Exception as e:
@@ -483,15 +473,15 @@ class RealSnowflakeClient:
                 logger.warning(
                     "Connection closed during query, reconnecting and retrying..."
                 )
+                reconnect_cursor = None
                 try:
                     self.connection = None
                     self.cursor = None
                     conn = self._get_connection()
-                    self.cursor = conn.cursor()
-                    cursor = self.cursor
-                    cursor.execute(query)
-                    rows = cursor.fetchall()
-                    columns = [desc[0] for desc in cursor.description]
+                    reconnect_cursor = conn.cursor()
+                    reconnect_cursor.execute(query)
+                    rows = reconnect_cursor.fetchall()
+                    columns = [desc[0] for desc in reconnect_cursor.description]
                     results = []
                     for row in rows:
                         results.append(dict(zip(columns, row)))
@@ -502,9 +492,23 @@ class RealSnowflakeClient:
                         f"Query execution failed after reconnection: {reconnect_error}"
                     )
                     raise
+                finally:
+                    if reconnect_cursor is not None:
+                        try:
+                            reconnect_cursor.close()
+                        except Exception:
+                            pass
             else:
                 logger.error(f"Query execution failed: {e}")
                 raise
+        finally:
+            # CRITICAL: Always close the cursor when done to free resources
+            if cursor is not None:
+                try:
+                    cursor.close()
+                    logger.debug("Closed cursor after query execution")
+                except Exception as close_error:
+                    logger.warning(f"Error closing cursor: {close_error}")
 
     async def execute_query(
         self, query: str, limit: Optional[int] = None

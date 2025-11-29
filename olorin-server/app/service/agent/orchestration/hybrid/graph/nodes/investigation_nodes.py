@@ -332,10 +332,23 @@ class InvestigationNodes:
                 ),
             )
 
+            # Get investigation window dates from state
+            window_start = state.get("from_date")
+            window_end = state.get("to_date")
+            
             if db_provider_name == "snowflake":
                 # Snowflake: uppercase column names, no parameterized queries
                 # TXS schema uses PAID_AMOUNT_CURRENCY (not PAID_CURRENCY_CODE)
                 # CRITICAL: Exclude MODEL_SCORE and IS_FRAUD_TX from investigation queries
+                # CRITICAL FIX: Add TX_DATETIME filter to respect investigation window
+                datetime_filter = ""
+                if window_start and window_end:
+                    datetime_filter = f"""
+                        AND TX_DATETIME >= '{window_start.isoformat()}'
+                        AND TX_DATETIME < '{window_end.isoformat()}'
+                    """
+                    logger.info(f"📅 Filtering transactions to investigation window: {window_start.date()} to {window_end.date()}")
+                
                 sql_query = f"""
                     SELECT
                         TX_ID_KEY,
@@ -352,12 +365,22 @@ class InvestigationNodes:
                         NSURE_LAST_DECISION as MODEL_DECISION
                     FROM {table_name}
                     WHERE {entity_column} = '{entity_id}'
+                    {datetime_filter}
                     ORDER BY TX_DATETIME DESC
                     LIMIT {max_transactions}
                 """
             else:
                 # PostgreSQL: lowercase column names, parameterized queries
                 # CRITICAL: Exclude MODEL_SCORE and IS_FRAUD_TX from investigation queries
+                # CRITICAL FIX: Add tx_datetime filter to respect investigation window
+                datetime_filter = ""
+                if window_start and window_end:
+                    datetime_filter = f"""
+                        AND tx_datetime >= '{window_start.isoformat()}'
+                        AND tx_datetime < '{window_end.isoformat()}'
+                    """
+                    logger.info(f"📅 Filtering transactions to investigation window: {window_start.date()} to {window_end.date()}")
+                
                 sql_query = f"""
                     SELECT
                         tx_id_key,
@@ -374,6 +397,7 @@ class InvestigationNodes:
                         nSure_last_decision as model_decision
                     FROM {table_name}
                     WHERE {entity_column} = $1
+                    {datetime_filter}
                     ORDER BY tx_datetime DESC
                     LIMIT {max_transactions}
                 """

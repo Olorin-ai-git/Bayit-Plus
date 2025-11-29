@@ -911,84 +911,78 @@ async def map_investigation_to_transactions(
     )
     filter_mode = os.getenv("TRANSACTION_DECISION_FILTER", "FINALIZED").upper()
 
-    # Build transaction query with decision filter
-    # Note: build_transaction_query doesn't support WHERE clause additions, so we'll add it manually
-    query = build_transaction_query(
-        window_start,
-        window_end,
-        entity_clause,
-        "",  # No merchant filter
-        is_snowflake,
-        db_provider=db_provider,
-        is_investigation=True,  # Exclude MODEL_SCORE and IS_FRAUD_TX during investigation
-    )
-
-    # Add decision filter to WHERE clause
-    if "WHERE" in query.upper():
-        query = query.rstrip(";").rstrip() + f" AND {decision_filter}"
-    else:
-        # If no WHERE clause exists, create one
-        query = query.rstrip(";").rstrip() + f" WHERE {decision_filter}"
-
+    # CRITICAL: MUST have per-transaction scores - confusion matrix is ONLY for investigated transactions
+    if not transaction_scores or len(transaction_scores) == 0:
+        error_msg = (
+            f"[MAP_INVESTIGATION_TO_TRANSACTIONS] CRITICAL ERROR: No transaction scores available for investigation {investigation.get('id') if investigation else 'unknown'}. "
+            f"Confusion matrix can ONLY be generated for transactions that were ACTUALLY INVESTIGATED. "
+            f"Cannot proceed without transaction scores."
+        )
+        logger.error(error_msg)
+        raise ValueError(error_msg)
+    
     logger.info(
-        f"🔍 Filtering transactions: mode={filter_mode}, filter={decision_filter}"
+        f"[MAP_INVESTIGATION_TO_TRANSACTIONS] ✅ Using {len(transaction_scores)} INVESTIGATED transaction IDs "
+        f"to query Snowflake for ground truth labels"
     )
-    logger.debug(f"[MAP_INVESTIGATION_TO_TRANSACTIONS] Entity clause: {entity_clause}")
-    logger.debug(
-        f"[MAP_INVESTIGATION_TO_TRANSACTIONS] Window: {window_start} to {window_end}"
-    )
-    logger.debug(f"[MAP_INVESTIGATION_TO_TRANSACTIONS] Full SQL query: {query}")
-
-    # Execute query with fallback logic if APPROVED returns 0 transactions
-    if is_async:
-        transactions = await db_provider.execute_query_async(query)
-    else:
-        transactions = db_provider.execute_query(query)
-
-    # Fallback: If APPROVED returns 0 transactions, try fallback decision values
-    if (not transactions or len(transactions) == 0) and filter_mode == "APPROVED_ONLY":
-        logger.warning(
-            "⚠️ No APPROVED transactions found - trying fallback decision values..."
-        )
-
-        # Try FINALIZED filter (APPROVED, AUTHORIZED, SETTLED)
-        fallback_filter = _build_approved_filter(
-            decision_col,
-            "snowflake" if is_snowflake else "postgresql",
-            use_fallback=True,
-        )
-        fallback_query = build_transaction_query(
-            window_start,
-            window_end,
-            entity_clause,
-            "",
-            is_snowflake,
-            db_provider=db_provider,
-            is_investigation=True,
-        )
-
-        if "WHERE" in fallback_query.upper():
-            fallback_query = (
-                fallback_query.rstrip(";").rstrip() + f" AND {fallback_filter}"
-            )
+    
+    # Build IN clause with the EXACT transaction IDs that were investigated
+    transaction_ids = list(transaction_scores.keys())
+    tx_id_col = "TX_ID_KEY" if is_snowflake else "tx_id_key"
+    
+    # For large lists, use batching to avoid SQL query limits
+    max_in_clause_size = 1000
+    transactions = []
+    
+    for batch_start in range(0, len(transaction_ids), max_in_clause_size):
+        batch_ids = transaction_ids[batch_start:batch_start + max_in_clause_size]
+        batch_ids_str = "', '".join(str(tid) for tid in batch_ids)
+        
+        if is_snowflake:
+            batch_query = f"""
+            SELECT
+                TX_ID_KEY as transaction_id,
+                STORE_ID as merchant_id,
+                TX_DATETIME as event_ts
+            FROM {db_provider.get_full_table_name()}
+            WHERE CAST(TX_ID_KEY AS VARCHAR) IN ('{batch_ids_str}')
+            """
         else:
-            fallback_query = (
-                fallback_query.rstrip(";").rstrip() + f" WHERE {fallback_filter}"
-            )
-
-        logger.info(f"🔄 Fallback query: {fallback_filter}")
-
+            batch_query = f"""
+            SELECT
+                tx_id_key as transaction_id,
+                store_id as merchant_id,
+                tx_datetime as event_ts
+            FROM {db_provider.get_full_table_name()}
+            WHERE tx_id_key::TEXT IN ('{batch_ids_str}')
+            """
+        
+        batch_num = batch_start // max_in_clause_size + 1
+        total_batches = (len(transaction_ids) + max_in_clause_size - 1) // max_in_clause_size
+        logger.info(
+            f"[MAP_INVESTIGATION_TO_TRANSACTIONS] Querying batch {batch_num}/{total_batches} "
+            f"({len(batch_ids)} transaction IDs)"
+        )
+        
         if is_async:
-            transactions = await db_provider.execute_query_async(fallback_query)
+            batch_txs = await db_provider.execute_query_async(batch_query)
         else:
-            transactions = db_provider.execute_query(fallback_query)
-
-        if transactions and len(transactions) > 0:
-            logger.info(f"✅ Fallback query returned {len(transactions)} transactions")
-        else:
-            logger.warning(
-                "⚠️ Fallback query also returned 0 transactions - may need to use ALL filter"
-            )
+            batch_txs = db_provider.execute_query(batch_query)
+        
+        if batch_txs:
+            transactions.extend(batch_txs)
+    
+    logger.info(
+        f"[MAP_INVESTIGATION_TO_TRANSACTIONS] ✅ Retrieved {len(transactions)}/{len(transaction_ids)} investigated transactions from Snowflake"
+    )
+    
+    # CRITICAL: If we didn't get all transactions, that's an error condition
+    if len(transactions) < len(transaction_ids):
+        missing_count = len(transaction_ids) - len(transactions)
+        logger.warning(
+            f"⚠️ Could not find {missing_count}/{len(transaction_ids)} investigated transactions in Snowflake. "
+            f"This may indicate transaction IDs that no longer exist or were deleted."
+        )
 
     # Normalize transaction keys upfront (deterministic mapping)
     if transactions:

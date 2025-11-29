@@ -494,22 +494,21 @@ async def run_auto_comparison_for_entity(
 
     now = datetime.now(pytz.timezone("America/New_York"))
     window_duration_days = int(
-        os.getenv("INVESTIGATION_DEFAULT_WINDOW_DAYS", "60")
-    )  # Default: 60 days (changed from 14)
+        os.getenv("INVESTIGATION_DEFAULT_WINDOW_DAYS", "180")
+    )  # Investigation window duration (default: 180 days = 6 months)
 
-    # CRITICAL: Use SAME variable as analyzer to ensure window alignment
-    # Analyzer uses ANALYZER_END_OFFSET_MONTHS to find fraud
-    # Investigation MUST use same window to investigate that fraud
-    max_lookback_months = int(os.getenv("ANALYZER_END_OFFSET_MONTHS", "6"))
-    max_lookback_days = max_lookback_months * 30  # Approximate months to days
-
-    # Step 1: Try to find a historical investigation for this entity
-    # Target: Investigation window that covers max_lookback_months ago (60 days of transactions by default)
-    # IMPORTANT: We match by investigation WINDOW (from_date/to_date), not when investigation was created
-    historical_window_end = now - timedelta(days=max_lookback_days)
+    # CRITICAL FIX: Investigation windows should be 6-12 months ago (not current date)
+    # Window END: 6 months ago from today
+    # Window START: 6 months before that (12 months ago from today)
+    # This ensures investigations analyze historical data, not recent transactions
+    investigation_end_offset_months = 6  # End 6 months ago
+    investigation_end_offset_days = investigation_end_offset_months * 30
+    
+    # Calculate investigation window: 6-12 months ago
+    historical_window_end = now - timedelta(days=investigation_end_offset_days)
     historical_window_start = historical_window_end - timedelta(
         days=window_duration_days
-    )  # window_duration_days before that
+    )  # window_duration_days before that (another 6 months back)
 
     logger.info(
         f"🔍 Looking for investigations that cover time window: {historical_window_start.date()} to {historical_window_end.date()}"
@@ -1048,14 +1047,9 @@ async def run_auto_comparison_for_entity(
         # First, check if entity has transaction data in the desired historical window
         # Determine historical window respecting ANALYTICS_MAX_LOOKBACK_MONTHS constraint
         # Note: os is already imported at module level, don't re-import here
-        max_lookback_months = int(os.getenv("ANALYTICS_MAX_LOOKBACK_MONTHS", "6"))
-        max_lookback_days = max_lookback_months * 30
-
-        # Cap historical_window_end at max_lookback_days before now
-        historical_window_end = now - timedelta(days=max_lookback_days)
-        historical_window_start = historical_window_end - timedelta(
-            days=window_duration_days
-        )
+        # Investigation window: 6-12 months ago (already calculated above)
+        # historical_window_end and historical_window_start are set earlier
+        # If no data exists in this window, we'll fall back to actual transaction dates below
 
         # Check data availability for this window before creating investigation
         from app.service.investigation.data_availability_check import (
@@ -1097,55 +1091,18 @@ async def run_auto_comparison_for_entity(
                 min_with_tolerance = min_required_span - span_tolerance_days
 
                 if days_span >= min_with_tolerance:
-                    # Find a historical window within the transaction date range
-                    # Use actual span if less than target, otherwise use target duration
-                    actual_window_days = min(days_span, window_duration_days)
-
-                    # CRITICAL FIX: Investigation window should cover the merchant's ACTUAL
-                    # transaction history FORWARD from their earliest transaction
-                    # max_lookback applies to WHERE ANALYZER LOOKS, not where investigations run
-                    target_start = earliest_date  # Start from merchant's first transaction
-                    target_end = min(
-                        latest_date,  # Don't exceed actual transaction range
-                        target_start + timedelta(days=actual_window_days)  # Or configured duration
-                    )
-
-                    # Validation: ensure start < end
-                    if target_start >= target_end:
-                        # This should NEVER happen with the new logic, but just in case
-                        logger.error(
-                            f"❌ Invalid window: start ({target_start.date()}) >= end ({target_end.date()}). "
-                            f"Using fallback: all available transaction history."
-                        )
-                        # Use ALL available transaction history
-                        target_start = earliest_date
-                        target_end = latest_date
-                        logger.warning(
-                            f"⚠️ Using full transaction history: {target_start.date()} to {target_end.date()} "
-                            f"({(target_end - target_start).days} days)"
-                        )
-
-                    # Only use adjusted windows if they're valid
-                    if target_start is not None and target_end is not None:
-                        historical_window_start = target_start
-                        historical_window_end = target_end
-
-                        logger.info(f"📅 Using actual transaction date range:")
-                        logger.info(
-                            f"   Historical window: {historical_window_start.date()} to {historical_window_end.date()}"
-                        )
-                        logger.info(
-                            f"   Window duration: {(historical_window_end - historical_window_start).days} days (tolerance: ±{span_tolerance_days} days)"
-                        )
-                    else:
-                        logger.info(
-                            f"📅 Using default window dates (transaction range adjustment skipped)"
-                        )
+                    # Merchant has sufficient transaction history
+                    # Use the calculated 6-12 month historical window
+                    logger.info(f"✅ Merchant has sufficient transaction history ({days_span} days)")
+                    logger.info(f"   Using 6-12 month historical window: {historical_window_start.date()} to {historical_window_end.date()}")
                 else:
                     logger.warning(
                         f"⚠️ Insufficient transaction span ({days_span} days, minimum {min_with_tolerance} days required)"
                     )
-                    # Fall through to use default windows
+                    logger.info(f"   Adjusting to use all available data: {earliest_date} to {latest_date}")
+                    # Use all available transaction history
+                    historical_window_start = earliest_date
+                    historical_window_end = latest_date
             else:
                 logger.warning(
                     f"⚠️ No transaction data found for {entity_type}={entity_value} in last 180 days"
@@ -1171,32 +1128,12 @@ async def run_auto_comparison_for_entity(
 
         # CRITICAL: Ensure start < end (fix invalid windows)
         if historical_window_start_utc >= historical_window_end_utc:
-            logger.warning(
-                f"⚠️ Invalid window: start {historical_window_start_utc.date()} >= end {historical_window_end_utc.date()}, adjusting..."
+            logger.error(
+                f"❌ Invalid window: start {historical_window_start_utc.date()} >= end {historical_window_end_utc.date()}"
             )
-            # Recalculate: set end to max_allowed_end, start to window_duration_days before that
-            historical_window_end = max_allowed_end
-            historical_window_end_utc = max_allowed_end_utc
-            historical_window_start = historical_window_end - timedelta(
-                days=window_duration_days
+            raise ValueError(
+                f"Invalid investigation window: start must be before end"
             )
-            historical_window_start_utc = (
-                historical_window_start.astimezone(utc)
-                if historical_window_start.tzinfo
-                else utc.localize(historical_window_start)
-            )
-
-            # Final check: if start is still >= end, use minimum valid window
-            if historical_window_start_utc >= historical_window_end_utc:
-                logger.error(
-                    f"⚠️ Cannot create valid window with duration {window_duration_days} days within max lookback constraint"
-                )
-                # Use a minimal 1-day window ending at max_allowed_end
-                historical_window_end = max_allowed_end
-                historical_window_start = historical_window_end - timedelta(days=1)
-                logger.warning(
-                    f"⚠️ Using minimal 1-day window: {historical_window_start.date()} to {historical_window_end.date()}"
-                )
 
         # Final validation: ensure start < end
         if historical_window_start.tzinfo is None:
