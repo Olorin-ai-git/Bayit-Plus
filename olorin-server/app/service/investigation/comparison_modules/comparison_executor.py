@@ -31,6 +31,7 @@ class ComparisonExecutor:
         window_start: datetime,
         window_end: datetime,
         max_wait_seconds: int = 600,
+        merchant_name: Optional[str] = None,
     ) -> Optional[Dict[str, Any]]:
         """
         Create a new investigation and wait for it to complete.
@@ -41,6 +42,7 @@ class ComparisonExecutor:
             window_start: Investigation window start
             window_end: Investigation window end
             max_wait_seconds: Maximum time to wait for completion (default: 10 minutes)
+            merchant_name: Optional merchant name for context
 
         Returns:
             Investigation dict if completed successfully, None otherwise
@@ -66,14 +68,22 @@ class ComparisonExecutor:
             self.logger.info(
                 f"🔨 Creating investigation {investigation_id} for {entity_type}={entity_value}"
             )
+            if merchant_name:
+                self.logger.info(f"   Context: Merchant={merchant_name}")
             self.logger.info(f"   Window: {window_start.date()} to {window_end.date()}")
 
             # Create investigation settings
+            # We can store merchant_name in auto_select_context or custom field if needed
+            # For now, just logging it. Could pass as a second entity if correlation needed.
+            
+            entities = [
+                EntitySchema(entity_type=entity_type, entity_value=entity_value)
+            ]
+            
+            # Create investigation settings
             settings = InvestigationSettings(
-                name=f"Auto-comparison investigation for {entity_value}",
-                entities=[
-                    EntitySchema(entity_type=entity_type, entity_value=entity_value)
-                ],
+                name=f"Auto-comparison investigation for {entity_value}" + (f" (Merchant: {merchant_name})" if merchant_name else ""),
+                entities=entities,
                 time_range=TimeRangeSchema(
                     start_time=window_start.isoformat(), end_time=window_end.isoformat()
                 ),
@@ -146,7 +156,7 @@ class ComparisonExecutor:
                 result = await execute_structured_investigation(
                     investigation_id=investigation_id,
                     request=structured_request,
-                    context=investigation_context,
+                    investigation_context=investigation_context,
                 )
 
                 # Wait for completion
@@ -165,10 +175,13 @@ class ComparisonExecutor:
                     self.logger.info(
                         f"✅ Investigation {investigation_id} completed successfully"
                     )
+                    
+                    # Store merchant_name in result for grouping later
                     return {
                         "investigation_id": investigation_id,
                         "status": "completed",
                         "result": result,
+                        "merchant_name": merchant_name
                     }
                 else:
                     self.logger.warning(
@@ -182,3 +195,30 @@ class ComparisonExecutor:
         except Exception as e:
             self.logger.error(f"❌ Failed to create investigation: {e}")
             return None
+
+    async def generate_confusion_matrix(self, investigation_id: str) -> None:
+        """
+        Trigger post-investigation packaging to generate confusion matrix.
+        """
+        try:
+            from app.service.investigation.post_investigation_packager import (
+                generate_post_investigation_package
+            )
+            
+            self.logger.info(f"📊 Generating confusion matrix for {investigation_id}")
+            
+            confusion_matrix_path = await generate_post_investigation_package(investigation_id)
+            
+            if confusion_matrix_path:
+                self.logger.info(
+                    f"✅ Confusion matrix created: {confusion_matrix_path.name}"
+                )
+            else:
+                self.logger.warning(
+                    f"⚠️ Post-investigation packaging failed for {investigation_id}"
+                )
+        except Exception as e:
+            self.logger.error(
+                f"❌ Error in post-investigation packaging for {investigation_id}: {e}",
+                exc_info=True
+            )

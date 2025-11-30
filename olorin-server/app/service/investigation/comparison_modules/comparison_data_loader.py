@@ -108,6 +108,96 @@ class ComparisonDataLoader:
             self.logger.error(f"Error finding transaction date range: {e}")
             return None
 
+    async def get_fraudulent_emails_grouped_by_merchant(
+        self, 
+        lookback_hours: int = 24,
+        min_fraud_tx: int = 1,
+        limit: int = 100
+    ) -> List[Dict[str, Any]]:
+        """
+        Get emails involved in fraud, grouped by merchant.
+        
+        Args:
+            lookback_hours: Hours to look back (default 24h)
+            min_fraud_tx: Minimum fraudulent transactions required
+            limit: Maximum number of results
+            
+        Returns:
+            List of dicts with {email, merchant, fraud_count}
+        """
+        try:
+            db_provider = get_database_provider()
+            db_provider.connect()
+            is_snowflake = (
+                os.getenv("DATABASE_PROVIDER", "snowflake").lower() == "snowflake"
+            )
+            is_async = hasattr(db_provider, "execute_query_async")
+            
+            # Calculate window
+            now = datetime.now(pytz.timezone("America/New_York"))
+            start_time = now - timedelta(hours=lookback_hours)
+            
+            if is_snowflake:
+                query = f"""
+                SELECT 
+                    EMAIL,
+                    MERCHANT_NAME,
+                    COUNT(*) as FRAUD_TX_COUNT
+                FROM {db_provider.get_full_table_name()}
+                WHERE TX_DATETIME >= '{start_time.isoformat()}'
+                  AND IS_FRAUD_TX = 1
+                  AND EMAIL IS NOT NULL
+                  AND MERCHANT_NAME IS NOT NULL
+                GROUP BY EMAIL, MERCHANT_NAME
+                HAVING COUNT(*) >= {min_fraud_tx}
+                ORDER BY FRAUD_TX_COUNT DESC
+                LIMIT {limit}
+                """
+            else:
+                query = f"""
+                SELECT 
+                    email,
+                    merchant_name,
+                    COUNT(*) as fraud_tx_count
+                FROM {db_provider.get_full_table_name()}
+                WHERE tx_datetime >= '{start_time.isoformat()}'
+                  AND is_fraud_tx = 1
+                  AND email IS NOT NULL
+                  AND merchant_name IS NOT NULL
+                GROUP BY email, merchant_name
+                HAVING COUNT(*) >= {min_fraud_tx}
+                ORDER BY fraud_tx_count DESC
+                LIMIT {limit}
+                """
+                
+            self.logger.info(f"🔍 Executing fraud email query: {query}")
+            
+            if is_async:
+                results = await db_provider.execute_query_async(query)
+            else:
+                results = db_provider.execute_query(query)
+                
+            # Normalize keys
+            normalized_results = []
+            for r in results:
+                email = r.get("EMAIL") or r.get("email")
+                merchant = r.get("MERCHANT_NAME") or r.get("merchant_name")
+                count = r.get("FRAUD_TX_COUNT") or r.get("fraud_tx_count")
+                
+                if email and merchant:
+                    normalized_results.append({
+                        "email": email,
+                        "merchant": merchant,
+                        "fraud_count": count
+                    })
+                    
+            self.logger.info(f"✅ Found {len(normalized_results)} fraudulent email-merchant pairs")
+            return normalized_results
+            
+        except Exception as e:
+            self.logger.error(f"❌ Failed to fetch fraudulent emails: {e}")
+            return []
+
     def detect_entity_type(self, entity_value: str) -> str:
         """Detect entity type from entity value format"""
         # IPv6 addresses contain multiple colons
