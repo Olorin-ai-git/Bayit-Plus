@@ -943,7 +943,22 @@ async def map_investigation_to_transactions(
             SELECT
                 TX_ID_KEY as transaction_id,
                 STORE_ID as merchant_id,
-                TX_DATETIME as event_ts
+                TX_DATETIME as event_ts,
+                PAID_AMOUNT_VALUE_IN_CURRENCY as amount,
+                PAID_AMOUNT_CURRENCY as currency,
+                BIN,
+                BIN_COUNTRY_CODE,
+                IP_COUNTRY_CODE,
+                IS_CARD_PREPAID,
+                AVS_RESULT,
+                EMAIL_NORMALIZED,
+                DEVICE_ID,
+                IP,
+                USER_AGENT,
+                CARD_TYPE,
+                IS_DISPOSABLE_EMAIL,
+                MAXMIND_RISK_SCORE,
+                EMAIL_DATA_THIRD_PARTY_RISK_SCORE
             FROM {db_provider.get_full_table_name()}
             WHERE CAST(TX_ID_KEY AS VARCHAR) IN ('{batch_ids_str}')
             """
@@ -952,7 +967,22 @@ async def map_investigation_to_transactions(
             SELECT
                 tx_id_key as transaction_id,
                 store_id as merchant_id,
-                tx_datetime as event_ts
+                tx_datetime as event_ts,
+                paid_amount_value_in_currency as amount,
+                paid_amount_currency as currency,
+                bin,
+                bin_country_code,
+                ip_country_code,
+                is_card_prepaid,
+                avs_result,
+                email_normalized,
+                device_id,
+                ip,
+                user_agent,
+                card_type,
+                is_disposable_email,
+                maxmind_risk_score,
+                email_data_third_party_risk_score
             FROM {db_provider.get_full_table_name()}
             WHERE tx_id_key::TEXT IN ('{batch_ids_str}')
             """
@@ -1042,8 +1072,10 @@ async def map_investigation_to_transactions(
 
         try:
             enhanced_scorer = EnhancedRiskScorer()
+            # Pass is_merchant_investigation flag to avoid penalizing natural merchant concentration
+            is_merchant_inv = entity_type and entity_type.lower() in ["merchant", "merchant_name"]
             risk_assessment = enhanced_scorer.calculate_entity_risk(
-                transactions, entity_id, entity_type
+                transactions, entity_id, entity_type, is_merchant_investigation=is_merchant_inv
             )
 
             # Update investigation risk score if enhanced score is higher
@@ -1270,8 +1302,7 @@ async def map_investigation_to_transactions(
     # CRITICAL: Query IS_FRAUD_TX values separately AFTER investigation for ground truth comparison
     # This ensures we're using the current IS_FRAUD_TX values (single source of truth)
     # Ensure timezone normalization (UTC) for timestamp comparisons
-    import pytz
-
+    
     utc = pytz.UTC
     if window_start.tzinfo is None:
         window_start = utc.localize(window_start)

@@ -268,7 +268,7 @@ async def risk_agent_node(
                     
                     TransactionScoreService.save_transaction_scores(
                         investigation_id=investigation_id,
-                        scores=transaction_scores
+                        transaction_scores=transaction_scores
                     )
                     logger.info(
                         f"[Step 5.2.6] 💾 Saved {len(transaction_scores)} transaction scores to database table"
@@ -1580,6 +1580,58 @@ def _calculate_per_transaction_scores(
     if not results:
         logger.warning("⚠️ Empty transaction results list for per-transaction scoring")
         return {}
+    
+    # MERCHANT INVESTIGATION: Use Enhanced Risk Scorer with outlier detection
+    if entity_type and entity_type.lower() in ["merchant", "merchant_name"]:
+        logger.info(
+            f"🎯 MERCHANT INVESTIGATION DETECTED: Using Enhanced Risk Scorer with outlier detection "
+            f"for {len(results)} transactions (merchant: {entity_value or 'unknown'})"
+        )
+        try:
+            from app.service.investigation.enhanced_risk_scorer import EnhancedRiskScorer
+            
+            scorer = EnhancedRiskScorer()
+            result = scorer.calculate_entity_risk(
+                transactions=results,
+                entity_id=entity_value or "unknown",
+                entity_type=entity_type,
+                is_merchant_investigation=True
+            )
+            
+            transaction_scores = result.get("transaction_scores", {})
+            
+            if not transaction_scores:
+                logger.warning(
+                    "⚠️ Enhanced Risk Scorer returned no transaction scores for merchant investigation"
+                )
+                # Fall through to legacy scoring
+            else:
+                # Save scores to database immediately
+                if investigation_id:
+                    from app.service.transaction_score_service import TransactionScoreService
+                    TransactionScoreService.save_transaction_scores(
+                        investigation_id=investigation_id,
+                        transaction_scores=transaction_scores
+                    )
+                    logger.info(
+                        f"💾 Saved {len(transaction_scores)} merchant outlier scores to database"
+                    )
+                
+                # Return scores
+                logger.info(
+                    f"✅ MERCHANT OUTLIER SCORING: {len(transaction_scores)} transactions scored "
+                    f"in {time.time() - start_time:.2f}s"
+                )
+                return transaction_scores
+        except Exception as e:
+            logger.error(
+                f"❌ Enhanced Risk Scorer failed for merchant investigation: {e}",
+                exc_info=True
+            )
+            logger.warning("⚠️ Falling back to legacy domain-based scoring")
+            # Fall through to legacy scoring
+    
+    # LEGACY SCORING (for non-merchant investigations or if Enhanced Risk Scorer failed)
 
     total_transactions = len(results)
     

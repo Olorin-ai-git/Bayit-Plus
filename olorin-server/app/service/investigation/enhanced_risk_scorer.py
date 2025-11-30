@@ -6,8 +6,14 @@ Includes merchant-specific fraud profiles based on empirical analysis.
 
 import logging
 import os
+import math
+import numpy as np
 from datetime import datetime, timedelta
 from typing import Any, Dict, List, Optional, Tuple
+from collections import Counter
+
+from sklearn.ensemble import IsolationForest
+from sklearn.preprocessing import StandardScaler
 
 from app.service.investigation.fraud_detection_features import FraudDetectionFeatures
 from app.service.investigation.merchant_fraud_profiles import get_merchant_profiles
@@ -22,6 +28,8 @@ class EnhancedRiskScorer:
     Includes progressive thresholds and merchant-specific adjustments.
     
     NEW: Merchant-specific fraud profiles (Eneba, Atlantis Games, Coinflow, Paybis)
+    NEW: Isolation Forest for unsupervised anomaly detection.
+    NEW: Benford's Law analysis for synthetic data detection.
     """
 
     def __init__(self):
@@ -92,82 +100,140 @@ class EnhancedRiskScorer:
         threshold = max(0.10, min(threshold, 0.30))
         return threshold, reason
 
-    def _is_borderline_fraud(
-        self, features: Dict[str, float], anomalies: List[Dict]
-    ) -> bool:
+    def _train_isolation_forest(self, transactions: List[Dict[str, Any]]) -> Tuple[Optional[IsolationForest], Optional[StandardScaler], List[List[float]]]:
         """
-        Apply strict rules for borderline cases (scores just below threshold).
+        Train Isolation Forest model on transaction features.
+        Returns trained model, scaler, and feature matrix.
         """
-        # High transaction count with any concentration
-        if features.get("tx_count", 0) > 8:
-            if (
-                features.get("single_merchant", 0) > 0
-                or features.get("single_device", 0) > 0
-                or features.get("single_ip", 0) > 0
-            ):
-                return True
+        if len(transactions) < 20: # Need sufficient data for IF
+            return None, None, []
+            
+        features = []
+        for tx in transactions:
+            # Extract numerical features for anomaly detection
+            amount = float(tx.get("PAID_AMOUNT_VALUE_IN_CURRENCY") or tx.get("amount") or 0)
+            
+            # Time features
+            tx_time = tx.get("TX_DATETIME") or tx.get("tx_datetime")
+            hour = 0
+            weekday = 0
+            if tx_time:
+                try:
+                    if isinstance(tx_time, str):
+                        dt = datetime.fromisoformat(tx_time[:19])
+                    else:
+                        dt = tx_time
+                    hour = dt.hour
+                    weekday = dt.weekday()
+                except: pass
+                
+            # Boolean/Categorical features as numeric
+            is_prepaid = 1.0 if str(tx.get("IS_CARD_PREPAID", "")).lower() in ("true", "1") else 0.0
+            is_international = 1.0 if str(tx.get("BIN_COUNTRY_CODE", "")) != str(tx.get("IP_COUNTRY_CODE", "")) else 0.0
+            
+            # Feature vector: [Amount, Hour, Weekday, IsPrepaid, IsInternational]
+            features.append([amount, hour, weekday, is_prepaid, is_international])
+            
+        if not features:
+            return None, None, []
+            
+        X = np.array(features)
+        
+        # Scale features
+        scaler = StandardScaler()
+        X_scaled = scaler.fit_transform(X)
+        
+        # Train Isolation Forest
+        # contamination='auto' lets algorithm determine outlier proportion
+        clf = IsolationForest(random_state=42, contamination=0.05, n_estimators=100)
+        clf.fit(X_scaled)
+        
+        return clf, scaler, features
 
-        # Multiple anomalies detected
-        if len(anomalies) >= 3:
-            return True
-
-        # Very high burst score
-        if features.get("burst_score_3h", 0) > 4:
-            return True
-
-        # High repetition with volume
-        if (
-            features.get("max_repeated_amount_ratio", 0) > 0.6
-            and features.get("tx_count", 0) > 4
-        ):
-            return True
-
-        return False
-
-    def _is_whitelisted_pattern(
-        self, features: Dict[str, float], primary_merchant: str = None
-    ) -> bool:
+    def _score_isolation_forest(self, clf: IsolationForest, scaler: StandardScaler, feature_vector: List[float]) -> float:
         """
-        Check if this matches a known legitimate pattern (reduce false positives).
+        Score a single transaction using trained Isolation Forest.
+        Returns anomaly score 0.0 (normal) to 1.0 (highly anomalous).
         """
-        tx_count = features.get("tx_count", 0)
+        if not clf or not scaler:
+            return 0.0
+            
+        # Scale input
+        X_new = scaler.transform([feature_vector])
+        
+        # decision_function returns anomaly score. Lower is more anomalous.
+        # Range is roughly -0.5 to 0.5. Negative is outlier.
+        raw_score = clf.decision_function(X_new)[0]
+        
+        # Normalize to 0.0-1.0 probability of anomaly
+        # Typically negative scores are anomalies. 
+        # Map: 0.5 (very normal) -> 0.0 risk
+        #      0.0 (borderline) -> 0.5 risk
+        #     -0.5 (very anomalous) -> 1.0 risk
+        
+        prob_score = 0.5 - raw_score
+        return max(0.0, min(prob_score, 1.0))
 
-        # Single transaction - very unlikely to be fraud
-        if tx_count == 1:
-            return True
+    def _check_benfords_law(self, transactions: List[Dict[str, Any]]) -> float:
+        """
+        Check if transaction amounts violate Benford's Law.
+        Returns risk score 0.0 (natural) to 1.0 (highly artificial).
+        """
+        if len(transactions) < 50: # Need sufficient sample size
+            return 0.0
+            
+        amounts = [float(tx.get("PAID_AMOUNT_VALUE_IN_CURRENCY") or tx.get("amount") or 0) for tx in transactions]
+        # Skip if too few unique amounts (likely fixed pricing model, e.g. subscriptions)
+        unique_amounts = len(set(amounts))
+        if unique_amounts < 10:
+            logger.info(f"ℹ️ Benford's Law skipped: Only {unique_amounts} unique amounts (likely fixed pricing)")
+            return 0.0
 
-        # Known subscription merchants with low volume
-        if primary_merchant:
-            merchant_lower = primary_merchant.lower()
-            subscription_merchants = [
-                "netflix",
-                "spotify",
-                "apple",
-                "amazon prime",
-                "hulu",
-                "disney",
-            ]
-            if any(sub in merchant_lower for sub in subscription_merchants):
-                if tx_count <= 2:  # Subscription renewal pattern
-                    return True
-
-        # Low transaction count with high diversity (normal shopping)
-        if tx_count <= 3 and features.get("merchant_diversity", 0) > 0.8:
-            return True
-
-        # Regular monthly pattern (not implemented yet - would need time analysis)
-
-        return False
+        first_digits = []
+        for amt in amounts:
+            if amt > 0:
+                first_digit = int(str(amt).replace('.', '').lstrip('0')[0])
+                first_digits.append(first_digit)
+                
+        if not first_digits:
+            return 0.0
+            
+        counts = Counter(first_digits)
+        total = len(first_digits)
+        
+        # Benford's Law probabilities for digits 1-9
+        benford_probs = {
+            1: 0.301, 2: 0.176, 3: 0.125, 4: 0.097, 
+            5: 0.079, 6: 0.067, 7: 0.058, 8: 0.051, 9: 0.046
+        }
+        
+        chi_square = 0.0
+        for d in range(1, 10):
+            observed = counts.get(d, 0)
+            expected = total * benford_probs[d]
+            chi_square += ((observed - expected) ** 2) / expected
+            
+        # Critical value for 8 degrees of freedom at p=0.01 is ~20.09
+        # Normalize score: <15 is normal(0), >25 is high risk(1.0)
+        risk = max(0.0, min((chi_square - 15) / 10, 1.0))
+        
+        if risk > 0.5:
+            logger.info(f"🚨 Benford's Law Violation Detected! Score: {risk:.2f} (Chi2: {chi_square:.2f})")
+            
+        return risk
 
     def calculate_entity_risk(
         self,
         transactions: List[Dict[str, Any]],
         entity_id: str,
         entity_type: str = "email",
+        is_merchant_investigation: bool = False,
     ) -> Dict[str, Any]:
         """
         Calculate overall risk for an entity based on all transactions.
         Includes progressive thresholds, merchant adjustments, and whitelist checking.
+        
+        Now includes ML-based anomaly detection (Isolation Forest) and Benford's Law.
 
         Args:
             transactions: List of transaction records
@@ -192,13 +258,18 @@ class EnhancedRiskScorer:
                 "threshold_adjustment": "none",
             }
 
+        # CRITICAL: Detect if this is a merchant investigation
+        if not is_merchant_investigation:  # Only auto-detect if not explicitly set
+            is_merchant_investigation = entity_type.lower() in ["merchant", "merchant_name"]
+        
         logger.info(
-            f"📊 Calculating enhanced risk for {entity_type}:{entity_id} with {len(transactions)} transactions"
+            f"📊 Calculating enhanced risk for {entity_type}:{entity_id} with {len(transactions)} transactions "
+            f"(is_merchant_investigation={is_merchant_investigation})"
         )
 
-        # Calculate overall features
+        # Calculate overall features (Heuristic)
         overall_assessment = self.feature_calculator.calculate_transaction_features(
-            transactions, entity_id, window_hours=24
+            transactions, entity_id, window_hours=24, is_merchant_investigation=is_merchant_investigation
         )
 
         # Get most common merchant
@@ -207,15 +278,8 @@ class EnhancedRiskScorer:
             for tx in transactions
             if tx.get("MERCHANT") or tx.get("MERCHANT_NAME")
         ]
-        merchant_counts = {}
-        for m in merchants:
-            if m:
-                merchant_counts[m] = merchant_counts.get(m, 0) + 1
-        primary_merchant = (
-            max(merchant_counts.keys(), key=lambda k: merchant_counts[k])
-            if merchant_counts
-            else None
-        )
+        merchant_counts = Counter(merchants)
+        primary_merchant = merchant_counts.most_common(1)[0][0] if merchant_counts else None
 
         # Get progressive threshold
         tx_count = len(transactions)
@@ -234,11 +298,19 @@ class EnhancedRiskScorer:
                     f"{original_threshold:.3f} → {adaptive_threshold:.3f} (×{merchant_adjustment})"
                 )
 
+        # Train Isolation Forest (ML Model)
+        clf, scaler, feature_vectors = self._train_isolation_forest(transactions)
+        if clf:
+            logger.info(f"🤖 Isolation Forest trained on {len(transactions)} transactions")
+            
+        # Check Benford's Law (Statistical Model)
+        benford_risk = self._check_benfords_law(transactions)
+
         # Calculate per-transaction scores
         transaction_scores = {}
         high_risk_count = 0
 
-        for tx in transactions:
+        for i, tx in enumerate(transactions):
             tx_id = (
                 tx.get("TX_ID_KEY")
                 or tx.get("tx_id_key")
@@ -247,52 +319,73 @@ class EnhancedRiskScorer:
                 or str(hash(str(tx)))
             )
 
-            # Calculate base risk for this transaction in context
-            tx_risk = self.feature_calculator.calculate_per_transaction_risk(
-                tx, transactions
+            # 1. Heuristic Score (Rule-based)
+            heuristic_risk = self.feature_calculator.calculate_per_transaction_risk(
+                tx, transactions, is_merchant_investigation=is_merchant_investigation
             )
             
-            # Apply merchant-specific adjustments
+            # 2. ML Score (Isolation Forest)
+            ml_risk = 0.0
+            if clf and i < len(feature_vectors):
+                ml_risk = self._score_isolation_forest(clf, scaler, feature_vectors[i])
+                
+            # 3. Combine Scores (Weighted Average)
+            # ML provides anomaly detection, Heuristics provide expert knowledge
+            if clf:
+                # If ML is available, give it 40% weight
+                combined_risk = (heuristic_risk * 0.6) + (ml_risk * 0.4)
+                
+                # Boost if both agree (both high)
+                if heuristic_risk > 0.5 and ml_risk > 0.5:
+                    combined_risk += 0.1
+            else:
+                combined_risk = heuristic_risk
+                
+            # 4. Add Entity-Level Risk (Benford's Law)
+            if benford_risk > 0.5:
+                combined_risk = min(combined_risk + 0.1, 1.0)
+            
+            # Apply merchant-specific adjustments (Legacy)
             if primary_merchant:
                 adjusted_risk = self.merchant_profiles.apply_merchant_adjustments(
-                    tx_risk, tx, transactions, primary_merchant
+                    combined_risk, tx, transactions, primary_merchant
                 )
-                tx_risk = adjusted_risk
+                combined_risk = adjusted_risk
 
-            transaction_scores[tx_id] = tx_risk
+            transaction_scores[tx_id] = combined_risk
 
-            if tx_risk >= adaptive_threshold:
+            if combined_risk >= adaptive_threshold:
                 high_risk_count += 1
 
-        # Log feature importance
-        self._log_feature_importance(overall_assessment["features"])
-
-        # Determine if fraud
-        risk_score = overall_assessment["risk_score"]
-        is_fraud = risk_score >= adaptive_threshold
-        refinement_applied = False
-        whitelisted = False
-
-        # Check whitelist first (reduce false positives)
-        if is_fraud:
-            whitelisted = self._is_whitelisted_pattern(
-                overall_assessment["features"], primary_merchant
+        # Log score distribution for debugging
+        if transaction_scores:
+            scores_list = list(transaction_scores.values())
+            scores_list.sort()
+            avg_score = sum(scores_list) / len(scores_list)
+            min_score = min(scores_list)
+            max_score = max(scores_list)
+            median_score = scores_list[len(scores_list) // 2]
+            
+            logger.info(
+                f"📊 SCORE DISTRIBUTION: min={min_score:.3f}, median={median_score:.3f}, "
+                f"avg={avg_score:.3f}, max={max_score:.3f}"
             )
-            if whitelisted:
-                is_fraud = False
-                logger.info(f"   ✅ Whitelisted: Legitimate pattern detected")
+            
+        # Determine overall risk score
+        risk_score = overall_assessment["risk_score"]
+        
+        # Boost overall risk if Benford's Law violated
+        if benford_risk > 0.5:
+            # Don't override completely, just boost significantly
+            risk_score = min(risk_score + 0.3, 1.0)
+            overall_assessment["anomalies"].append({
+                "type": "statistical_anomaly",
+                "description": f"Benford's Law violation (Score: {benford_risk:.2f}) - potential synthetic data",
+                "severity": "high"
+            })
 
-        # Second-stage refinement for borderline cases (increase recall)
-        if not is_fraud and 0.10 <= risk_score < adaptive_threshold:
-            if self._is_borderline_fraud(
-                overall_assessment["features"], overall_assessment["anomalies"]
-            ):
-                is_fraud = True
-                refinement_applied = True
-                logger.info(
-                    f"   ⚠️ Borderline case flagged as fraud (score: {risk_score:.3f}, threshold: {adaptive_threshold:.3f})"
-                )
-
+        is_fraud = risk_score >= adaptive_threshold
+        
         # Prepare response
         result = {
             "entity_id": entity_id,
@@ -305,29 +398,50 @@ class EnhancedRiskScorer:
             "features": overall_assessment["features"],
             "anomalies": overall_assessment["anomalies"],
             "risk_threshold": adaptive_threshold,
-            "base_threshold": self.base_threshold,
-            "threshold_adjustment": threshold_reason,
             "is_fraud": is_fraud,
-            "refinement_applied": refinement_applied,
-            "whitelisted": whitelisted,
             "primary_merchant": primary_merchant,
         }
 
-        # Log summary
-        logger.info(f"✅ Risk assessment complete for {entity_id}")
-        logger.info(
-            f"   Overall risk: {risk_score:.3f} ({overall_assessment['risk_level']})"
-        )
-        logger.info(f"   Threshold: {adaptive_threshold:.3f} ({threshold_reason})")
-        logger.info(f"   High-risk transactions: {high_risk_count}/{tx_count}")
-        logger.info(f"   Anomalies detected: {len(overall_assessment['anomalies'])}")
-        logger.info(f"   Is Fraud: {is_fraud}")
-
-        if overall_assessment["anomalies"]:
-            for anomaly in overall_assessment["anomalies"][:5]:  # Show first 5
-                logger.warning(f"   🚨 {anomaly['type']}: {anomaly['description']}")
-
         return result
+
+    def _is_borderline_fraud(
+        self, features: Dict[str, float], anomalies: List[Dict]
+    ) -> bool:
+        """
+        Apply strict rules for borderline cases (scores just below threshold).
+        """
+        # High transaction count with any concentration
+        if features.get("tx_count", 0) > 8:
+            if (
+                features.get("single_merchant", 0) > 0
+                or features.get("single_device", 0) > 0
+                or features.get("single_ip", 0) > 0
+            ):
+                return True
+
+        # Multiple anomalies detected
+        if len(anomalies) >= 3:
+            return True
+
+        # Very high burst score
+        if features.get("burst_score_3h", 0) > 4:
+            return True
+
+        return False
+
+    def _is_whitelisted_pattern(
+        self, features: Dict[str, float], primary_merchant: str = None
+    ) -> bool:
+        """
+        Check if this matches a known legitimate pattern (reduce false positives).
+        """
+        tx_count = features.get("tx_count", 0)
+
+        # Single transaction - very unlikely to be fraud
+        if tx_count == 1:
+            return True
+            
+        return False
 
     def _log_feature_importance(self, features: Dict[str, float]):
         """Log the most important features contributing to risk."""
@@ -337,8 +451,8 @@ class EnhancedRiskScorer:
             ("burst_score_3h", "Burst Pattern"),
             ("max_repeated_amount_ratio", "Repeated Amounts"),
             ("single_ip", "Single IP"),
-            ("single_device", "Single Device"),
-            ("rapid_succession", "Rapid Succession"),
+            ("country_mismatch_ratio", "Geo Mismatch"),
+            ("prepaid_ratio", "Prepaid Cards"),
         ]
 
         logger.debug("📈 Key Risk Indicators:")
