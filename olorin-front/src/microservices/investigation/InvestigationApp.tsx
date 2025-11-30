@@ -1,5 +1,5 @@
-import React, { Suspense } from 'react';
-import { Routes, Route, Navigate } from 'react-router-dom';
+import React, { Suspense, useEffect } from 'react';
+import { Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import { ErrorBoundary } from '@shared/components/ErrorBoundary';
 import LoadingSpinner from '@shared/components/LoadingSpinner';
 
@@ -15,8 +15,15 @@ const InvestigationStepTracker = React.lazy(() => import('./components/Investiga
 const CollaborationPanel = React.lazy(() => import('./components/CollaborationPanel'));
 const KPIDashboard = React.lazy(() => import('./components/KPIDashboard'));
 const ComparisonPage = React.lazy(() => import('./pages/ComparisonPage'));
+const ParallelInvestigationsPage = React.lazy(() => import('./pages/ParallelInvestigationsPage').then(module => ({ default: module.ParallelInvestigationsPage })));
 
 const InvestigationApp: React.FC = () => {
+  const location = useLocation();
+
+  useEffect(() => {
+    console.log('🚨 [InvestigationApp] Current Location:', location.pathname);
+  }, [location]);
+
   return (
     <ErrorBoundary serviceName="investigation">
       <div className="investigation-service min-h-screen bg-black">
@@ -31,6 +38,22 @@ const InvestigationApp: React.FC = () => {
           </div>
         }>
           <Routes>
+            {/* Parallel Investigations Page - Place HIGH priority */}
+            <Route path="parallel" element={
+              <Suspense fallback={
+                <div className="flex items-center justify-center h-64">
+                  <div className="text-center">
+                    <LoadingSpinner size="md" />
+                    <p className="mt-2 text-sm text-corporate-textSecondary">
+                      Loading Parallel Investigations...
+                    </p>
+                  </div>
+                </div>
+              }>
+                <ParallelInvestigationsPage />
+              </Suspense>
+            } />
+
             {/* Comparison Page - Investigation Comparison */}
             <Route path="comparison" element={
               <Suspense fallback={
@@ -70,13 +93,14 @@ const InvestigationApp: React.FC = () => {
             <Route path="poc/:pilotId/overview" element={<KPIDashboard />} />
 
             {/* Nested Routes for Investigation Details */}
-            <Route path="/investigation/:id/*" element={
+            {/* Note: Use relative path ':id/*' instead of absolute '/investigation/:id/*' to avoid matching collisions */}
+            <Route path=":id/*" element={
               <Routes>
                 <Route path="/" element={<ManualInvestigationDetails />} />
                 <Route path="/evidence" element={<EvidenceManager />} />
                 <Route path="/tracker" element={<InvestigationStepTracker />} />
                 <Route path="/collaboration" element={<CollaborationPanel />} />
-                <Route path="*" element={<Navigate to="/investigation/:id" replace />} />
+                <Route path="*" element={<Navigate to="../" replace />} />
               </Routes>
             } />
 
@@ -138,6 +162,9 @@ const InvestigationApp: React.FC = () => {
                   </h1>
                   <p className="text-corporate-textSecondary mb-4">
                     The requested investigation page could not be found.
+                  </p>
+                  <p className="text-xs text-corporate-textTertiary mb-6">
+                    Path: {location.pathname}
                   </p>
                   <button
                     onClick={() => window.history.back()}

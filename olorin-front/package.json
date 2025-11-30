@@ -52,8 +52,7 @@
     "vis-network": "9.1.13",
     "web-vitals": "^2.1.4",
     "zod": "3.22.4",
-    "zustand": "5.0.8",
-    "@fingerprintjs/fingerprintjs-pro": "^4.5.0"
+    "zustand": "5.0.8"
   },
   "scripts": {
     "start": "npm run start:shell",

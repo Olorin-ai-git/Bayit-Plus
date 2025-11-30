@@ -41,7 +41,9 @@ export async function createDefaultSettings(): Promise<InvestigationSettings> {
  */
 export function ensureValidSettings(settings: Partial<InvestigationSettings> | null | undefined): InvestigationSettings {
   // Get max lookback months from environment (default: 6 months)
-  const maxLookbackMonths = parseInt(process.env.REACT_APP_ANALYTICS_MAX_LOOKBACK_MONTHS || '6', 10);
+  // Ensure process.env is accessed safely for browser environments
+  const envMaxLookback = (typeof process !== 'undefined' && process.env?.REACT_APP_ANALYTICS_MAX_LOOKBACK_MONTHS) || '6';
+  const maxLookbackMonths = parseInt(envMaxLookback, 10);
   const maxLookbackDays = maxLookbackMonths * 30;
   const windowDays = 14;
   

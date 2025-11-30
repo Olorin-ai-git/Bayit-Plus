@@ -388,3 +388,50 @@ class InvestigationStateService:
         )
 
         return [entry.to_dict() for entry in entries]
+
+    def get_states(
+        self,
+        user_id: Optional[str] = None,
+        status: Optional[str] = None,
+        search: Optional[str] = None,
+        page: int = 1,
+        page_size: int = 20,
+    ) -> Dict[str, Any]:
+        """Retrieve paginated investigation states with filtering."""
+        query = self.db.query(InvestigationState)
+
+        # Filter by user_id if provided
+        if user_id:
+            query = query.filter(InvestigationState.user_id == user_id)
+
+        # Filter by status if provided
+        if status:
+            query = query.filter(InvestigationState.status == status)
+
+        # Filter by search term (investigation_id)
+        if search:
+            query = query.filter(InvestigationState.investigation_id.ilike(f"%{search}%"))
+
+        # Calculate pagination
+        total_count = query.count()
+        offset = (page - 1) * page_size
+        
+        # Get items
+        items = (
+            query.order_by(InvestigationState.updated_at.desc())
+            .offset(offset)
+            .limit(page_size)
+            .all()
+        )
+        
+        return {
+            "investigations": [
+                InvestigationStateResponse.model_validate(item, from_attributes=True)
+                for item in items
+            ],
+            "total_count": total_count,
+            "page": page,
+            "page_size": page_size,
+            "has_next_page": offset + len(items) < total_count,
+            "has_previous_page": page > 1,
+        }

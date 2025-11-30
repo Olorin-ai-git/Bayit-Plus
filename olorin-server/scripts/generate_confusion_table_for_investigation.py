@@ -94,7 +94,27 @@ async def generate_confusion_table(
                     else getattr(entities[0], "entity_value", None)
                 )
 
+        # Extract merchant name from investigation name
+        merchant_name = "Unknown"
+        if state.settings and state.settings.name:
+            import re
+            match = re.search(r"\(Merchant: (.*?)\)", state.settings.name)
+            if match:
+                merchant_name = match.group(1)
+        
+        # Fallback to checking settings_json for raw name if state.settings not populated or match failed
+        if merchant_name == "Unknown" and state.settings_json:
+             try:
+                s_dict = json.loads(state.settings_json)
+                name = s_dict.get("name", "")
+                match = re.search(r"\(Merchant: (.*?)\)", name)
+                if match:
+                    merchant_name = match.group(1)
+             except:
+                 pass
+
         logger.info(f"   Entity: {entity_type}={entity_value}")
+        logger.info(f"   Merchant: {merchant_name}")
 
         # Extract risk score from progress_json
         risk_score = None
@@ -290,6 +310,13 @@ async def generate_confusion_table(
         # Save to file
         if output_path is None:
             output_dir = Path("artifacts/comparisons/auto_startup")
+            
+            # Use merchant folder if available
+            if merchant_name and merchant_name != "Unknown":
+                # Sanitize merchant name for folder usage
+                safe_merchant = "".join(c for c in merchant_name if c.isalnum() or c in (' ', '-', '_')).strip()
+                output_dir = output_dir / safe_merchant
+                
             output_dir.mkdir(parents=True, exist_ok=True)
             timestamp_str = datetime.now().strftime("%Y%m%d_%H%M%S")
             output_path = (
@@ -384,6 +411,7 @@ async def generate_confusion_table(
         <div class="metadata">
             <p><strong>Investigation ID:</strong> <code>{investigation_id}</code></p>
             <p><strong>Entity:</strong> <code>{entity_type}:{entity_value}</code></p>
+            <p><strong>Merchant:</strong> <span style="color: var(--accent-secondary); font-weight: bold;">{merchant_name}</span></p>
             <p><strong>Risk Score:</strong> {risk_score if risk_score is not None else 'N/A'}</p>
             <p><strong>Risk Threshold:</strong> {risk_threshold:.1%}</p>
             <p><strong>Window:</strong> {window_start.strftime('%Y-%m-%d %H:%M:%S UTC')} to {window_end.strftime('%Y-%m-%d %H:%M:%S UTC')}</p>

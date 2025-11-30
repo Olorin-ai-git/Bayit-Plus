@@ -55,36 +55,41 @@ async def generate_confusion_table_for_investigation(
             generate_confusion_table,
         )
 
-        # Resolve investigation folder if not provided
-        if investigation_folder is None:
-            folder_manager = get_folder_manager()
-            investigation_folder = folder_manager.get_investigation_folder(
-                investigation_id
-            )
-
         # Determine output path
-        if investigation_folder:
-            output_path = (
-                investigation_folder / f"confusion_table_{investigation_id}.html"
-            )
-        else:
-            # Fallback: use default artifacts directory
-            output_dir = Path("artifacts/comparisons/auto_startup")
-            output_dir.mkdir(parents=True, exist_ok=True)
-            timestamp_str = datetime.now().strftime("%Y%m%d_%H%M%S")
-            output_path = (
-                output_dir / f"confusion_table_{investigation_id}_{timestamp_str}.html"
-            )
+        output_path = None
+        
+        # For auto-comparison investigations, we want to let the script handle the path
+        # (which includes grouping by merchant in artifacts/)
+        if not investigation_id.startswith("auto-comp-"):
+            # Resolve investigation folder if not provided
+            if investigation_folder is None:
+                folder_manager = get_folder_manager()
+                investigation_folder = folder_manager.get_investigation_folder(
+                    investigation_id
+                )
 
-        # Check if confusion table already exists
-        if output_path.exists():
+            if investigation_folder:
+                output_path = (
+                    investigation_folder / f"confusion_table_{investigation_id}.html"
+                )
+            else:
+                # Fallback: use default artifacts directory
+                output_dir = Path("artifacts/comparisons/auto_startup")
+                output_dir.mkdir(parents=True, exist_ok=True)
+                timestamp_str = datetime.now().strftime("%Y%m%d_%H%M%S")
+                output_path = (
+                    output_dir / f"confusion_table_{investigation_id}_{timestamp_str}.html"
+                )
+
+        # Check if confusion table already exists (only if we resolved a path)
+        if output_path and output_path.exists():
             logger.info(
                 f"⏭️  Confusion table already exists for {investigation_id} at {output_path}, skipping generation"
             )
             return output_path
 
         logger.info(
-            f"📊 Generating confusion table for investigation {investigation_id} -> {output_path}"
+            f"📊 Generating confusion table for investigation {investigation_id} {f'-> {output_path}' if output_path else '(auto-path)'}"
         )
 
         # Generate confusion table

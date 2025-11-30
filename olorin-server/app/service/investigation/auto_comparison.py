@@ -54,61 +54,95 @@ async def run_auto_comparisons_for_top_entities(
     reporter = ComparisonReporter()
 
     # 2. Get fraudulent emails grouped by merchant
-    # Using 24h lookback as requested
+    # Using 24h lookback as requested, from 8 to 6.5 months ago
+    import random
+    
+    # Calculate time range: 6 to 8 months ago
+    # 8 months = ~240 days
+    # 6 months = ~180 days
+    now = datetime.now()
+    start_range = now - timedelta(days=240)
+    end_range = now - timedelta(days=180)
+    
+    # Pick a random timestamp within this range
+    time_delta = end_range - start_range
+    random_seconds = random.randint(0, int(time_delta.total_seconds()))
+    reference_time = start_range + timedelta(seconds=random_seconds)
+    
+    logger.info(f"📅 Setting analyzer reference time to random date: {reference_time}")
+    
     fraud_pairs = await loader.get_fraudulent_emails_grouped_by_merchant(
-        lookback_hours=time_window_hours, min_fraud_tx=1, limit=50  # Safety limit
+        lookback_hours=time_window_hours, 
+        min_fraud_tx=1, 
+        limit=50,
+        reference_time=reference_time
     )
 
     if not fraud_pairs:
-        logger.warning("⚠️ No fraudulent emails found in the last 24h")
+        logger.warning(f"⚠️ No fraudulent emails found in the window ending {reference_time}")
         return []
 
     logger.info(
         f"📊 Found {len(fraud_pairs)} fraudulent email-merchant pairs to investigate"
     )
 
-    # 3. Run investigations
+    # 3. Run investigations (Parallel with Semaphore)
+    semaphore = asyncio.Semaphore(5)  # Limit concurrency to 5
     results = []
 
-    # Prepare date window (6 months lookback for investigation)
-    window_end = datetime.now()
+    # Prepare date window (6 months lookback for investigation relative to the reference time)
+    # This ensures we investigate the history leading up to the randomly selected "incident" time
+    window_end = reference_time
     window_start = window_end - timedelta(days=180)
+    
+    logger.info(f"📅 Investigation window: {window_start} to {window_end}")
 
-    for i, pair in enumerate(fraud_pairs):
-        email = pair["email"]
-        merchant = pair["merchant"]
-        fraud_count = pair["fraud_count"]
+    async def process_single_comparison(i: int, pair: Dict[str, Any]) -> Optional[Dict[str, Any]]:
+        async with semaphore:
+            email = pair["email"]
+            merchant = pair["merchant"]
+            fraud_count = pair["fraud_count"]
 
-        logger.info(
-            f"🔍 [{i+1}/{len(fraud_pairs)}] Investigating {email} (Merchant: {merchant}, Fraud Tx: {fraud_count})"
-        )
+            logger.info(
+                f"🔍 [{i+1}/{len(fraud_pairs)}] Investigating {email} (Merchant: {merchant}, Fraud Tx: {fraud_count})"
+            )
 
-        # Create and wait for investigation
-        result = await executor.create_and_wait_for_investigation(
-            entity_type="email",
-            entity_value=email,
-            window_start=window_start,
-            window_end=window_end,
-            merchant_name=merchant,
-        )
+            try:
+                # Create and wait for investigation
+                result = await executor.create_and_wait_for_investigation(
+                    entity_type="email",
+                    entity_value=email,
+                    window_start=window_start,
+                    window_end=window_end,
+                    merchant_name=merchant,
+                    fraud_tx_count=fraud_count,
+                )
 
-        if result:
-            # Generate confusion matrix immediately
-            inv_id = result["investigation_id"]
-            await executor.generate_confusion_matrix(inv_id)
+                if result:
+                    # Generate confusion matrix immediately
+                    inv_id = result["investigation_id"]
+                    await executor.generate_confusion_matrix(inv_id)
 
-            # Enrich result with metadata
-            result["merchant_name"] = merchant
-            result["email"] = email
-            result["fraud_tx_count"] = fraud_count
-            
-            # Map for reporter compatibility
-            result["entity_type"] = "email"
-            result["entity_value"] = email
-            
-            results.append(result)
-        else:
-            logger.error(f"❌ Investigation failed for {email}")
+                    # Enrich result with metadata
+                    result["merchant_name"] = merchant
+                    result["email"] = email
+                    result["fraud_tx_count"] = fraud_count
+                    
+                    # Map for reporter compatibility
+                    result["entity_type"] = "email"
+                    result["entity_value"] = email
+                    
+                    return result
+                else:
+                    logger.error(f"❌ Investigation failed for {email}")
+                    return None
+            except Exception as e:
+                logger.error(f"❌ Exception processing {email}: {e}")
+                return None
+
+    tasks = [process_single_comparison(i, pair) for i, pair in enumerate(fraud_pairs)]
+    results_with_none = await asyncio.gather(*tasks)
+    results = [r for r in results_with_none if r is not None]
 
     # 4. Generate Reports
     # Ensure artifacts dir exists

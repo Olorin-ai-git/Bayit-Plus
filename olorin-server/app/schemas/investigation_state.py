@@ -179,6 +179,7 @@ class InvestigationSettings(BaseModel):
     )
     tools: List[ToolSelection] = Field(default_factory=list, max_items=20)
     correlation_mode: CorrelationMode
+    metadata: Dict[str, Any] = Field(default_factory=dict, description="Additional metadata")
 
     @model_validator(mode="after")
     def validate_settings(self):
@@ -263,6 +264,7 @@ class InvestigationProgress(BaseModel):
     progress_percentage: float = Field(
         0.0, ge=0.0, le=100.0, description="Overall progress as float"
     )
+    risk_score: Optional[float] = Field(None, ge=0.0, le=100.0, description="Overall risk score")
     phase_progress: Dict[str, PhaseProgress] = Field(
         default_factory=dict, description="Detailed progress per phase"
     )
@@ -397,6 +399,19 @@ class InvestigationStateResponse(BaseModel):
                     )
 
         return self
+
+
+class PaginatedInvestigations(BaseModel):
+    """Paginated response for investigations list."""
+    
+    model_config = ConfigDict(alias_generator=to_camel, populate_by_name=True)
+
+    investigations: List[InvestigationStateResponse]
+    total_count: int = Field(..., serialization_alias="totalCount")
+    page: int
+    page_size: int = Field(..., serialization_alias="pageSize")
+    has_next_page: bool = Field(..., serialization_alias="hasNextPage")
+    has_previous_page: bool = Field(..., serialization_alias="hasPreviousPage")
 
 
 # Error Response Models

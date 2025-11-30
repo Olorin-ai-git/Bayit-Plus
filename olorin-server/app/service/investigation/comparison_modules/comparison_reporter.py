@@ -12,6 +12,9 @@ from typing import Any, Dict, List, Optional
 
 from app.service.logging import get_bridge_logger
 from app.service.reporting.olorin_logo import OLORIN_FOOTER, get_olorin_header
+from app.service.investigation.comparison_modules.report_content_generator import (
+    ReportContentGenerator,
+)
 
 logger = get_bridge_logger(__name__)
 
@@ -197,6 +200,31 @@ class ComparisonReporter:
             padding: 2px 6px;
             border-radius: 3px;
         }
+        .section-container {
+            background: white;
+            padding: 25px;
+            margin-bottom: 30px;
+            border-radius: 8px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+            border-left: 4px solid #9b59b6;
+        }
+        .content-block {
+            color: #444;
+            font-size: 1.05em;
+        }
+        .content-block h3 {
+            color: #2c3e50;
+            margin-top: 20px;
+            margin-bottom: 10px;
+            font-size: 1.2em;
+        }
+        .content-block ul, .content-block ol {
+            margin-left: 25px;
+            margin-bottom: 15px;
+        }
+        .content-block li {
+            margin-bottom: 8px;
+        }
     </style>
 </head>
 <body>
@@ -232,8 +260,12 @@ class ComparisonReporter:
     """
         )
 
+        # Methodology and Analysis Sections
+        html_parts.append(ReportContentGenerator.get_methodology_html())
+        html_parts.append(ReportContentGenerator.get_analysis_html(investigation_data))
+
         # Investigation details
-        html_parts.append("<h2>Investigation Details</h2>")
+        html_parts.append("<h2>3. Investigation Details</h2>")
 
         # Group by Merchant
         by_merchant = {}

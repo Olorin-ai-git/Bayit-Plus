@@ -16,13 +16,14 @@ SYSTEM MANDATE Compliance:
 - Type-safe: All parameters and returns properly typed
 """
 
-from typing import Any, Dict, List
+from typing import Any, Dict, List, Optional
 
 from fastapi import (
     APIRouter,
     BackgroundTasks,
     Depends,
     HTTPException,
+    Query,
     Request,
     Response,
     status,
@@ -34,6 +35,8 @@ from app.schemas.investigation_state import (
     InvestigationStateCreate,
     InvestigationStateResponse,
     InvestigationStateUpdate,
+    PaginatedInvestigations,
+    InvestigationStatus,
 )
 from app.security.auth import User, require_read_or_dev, require_write_or_dev
 from app.service.investigation_state_service import InvestigationStateService
@@ -71,6 +74,33 @@ def _generate_etag(state: InvestigationStateResponse) -> str:
             state_str += "-has_results"
     etag_hash = hashlib.md5(state_str.encode()).hexdigest()[:8]
     return f'W/"{state.version}-{etag_hash}"'
+
+
+@router.get(
+    "/",
+    response_model=PaginatedInvestigations,
+    summary="List investigation states",
+    description="Retrieve paginated list of investigation states with filtering",
+)
+async def list_investigation_states(
+    page: int = Query(1, ge=1),
+    page_size: int = Query(20, ge=1, le=100),
+    status: Optional[InvestigationStatus] = None,
+    search: Optional[str] = None,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(require_read_or_dev),
+) -> PaginatedInvestigations:
+    """Get paginated investigation states."""
+    service = InvestigationStateService(db)
+    
+    # Return all investigations (no user_id filter) to allow viewing system investigations
+    return service.get_states(
+        user_id=None,
+        status=status,
+        search=search,
+        page=page,
+        page_size=page_size,
+    )
 
 
 @router.post(

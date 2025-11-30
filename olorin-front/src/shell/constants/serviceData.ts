@@ -87,6 +87,15 @@ export const serviceLinks: ServiceLink[] = [
     status: 'ready',
     color: 'from-amber-600 to-orange-700',
     bgGradient: 'from-amber-50 to-orange-100'
+  },
+  {
+    name: 'Parallel Investigations',
+    path: '/investigation/parallel',
+    icon: '⚡',
+    description: 'Track parallel automated investigations',
+    status: 'ready',
+    color: 'from-pink-600 to-rose-700',
+    bgGradient: 'from-pink-50 to-rose-100'
   }
 ];
 
