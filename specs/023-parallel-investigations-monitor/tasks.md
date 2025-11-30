@@ -17,15 +17,15 @@
 
 **Purpose**: Break down the 249-line ParallelInvestigationsPage into focused, testable modules
 
-- [ ] T001 Create directory structure for ParallelInvestigationsPage module in `olorin-front/src/microservices/investigation/pages/ParallelInvestigationsPage/`
-- [ ] T002 [P] Create empty component files:
+- [x] T001 Create directory structure for ParallelInvestigationsPage module in `olorin-front/src/microservices/investigation/pages/ParallelInvestigationsPage/`
+- [x] T002 [P] Create empty component files:
   - `ParallelInvestigationsPage.tsx`
   - `InvestigationsTable.tsx`
   - `InvestigationFilters.tsx`
   - `useInvestigationPolling.ts`
   - `index.ts`
-- [ ] T003 Create test directory structure: `olorin-front/src/microservices/investigation/__tests__/integration/ParallelInvestigationsPage.test.tsx`
-- [ ] T004 Create types file with interfaces in `olorin-front/src/microservices/investigation/types/index.ts` (if extending existing types)
+- [x] T003 Create test directory structure: `olorin-front/src/microservices/investigation/__tests__/integration/ParallelInvestigationsPage.test.tsx`
+- [x] T004 Create types file with interfaces in `olorin-front/src/microservices/investigation/types/index.ts` (if extending existing types)
 
 **Checkpoint**: Component structure ready for implementation
 
@@ -37,18 +37,18 @@
 
 **⚠️ CRITICAL**: Must complete before user story implementation
 
-- [ ] T005 [P] Define configuration schema in `olorin-front/src/config/investigationConfig.ts` with:
+- [x] T005 [P] Define configuration schema in `olorin-front/src/config/investigationConfig.ts` with:
   - Polling intervals (fast/slow) from environment variables
   - API base URL (from env)
   - Feature flags for filters, real-time updates
   - UI settings (pagination size, etc.)
-- [ ] T006 [P] Create config loader/validator using Zod schema with fail-fast behavior
-- [ ] T007 Create `.env.example` with required environment variables:
+- [x] T006 [P] Create config loader/validator using Zod schema with fail-fast behavior
+- [x] T007 Create `.env.example` with required environment variables:
   - `REACT_APP_INVESTIGATION_POLLING_INTERVAL_MS` (default from const, e.g., 10000)
   - `REACT_APP_API_BASE_URL`
   - `REACT_APP_FEATURE_ENABLE_STATUS_FILTER`
   - `REACT_APP_FEATURE_ENABLE_REAL_TIME_UPDATES`
-- [ ] T008 Document configuration in `quickstart.md`:
+- [x] T008 Document configuration in `quickstart.md`:
   - Required environment variables
   - Configuration schema
   - How to override defaults
