@@ -108,6 +108,53 @@ cleanup() {
     # exit 0  <-- Removed exit to allow restart logic to continue
 }
 
+# Function to kill zombie/orphan processes
+kill_zombie_processes() {
+    print_status "Checking for existing Olorin services to kill..."
+
+    # Kill FastAPI backend (uvicorn or python running app.main)
+    pkill -f "uvicorn app.main:app" 2>/dev/null || true
+    pkill -f "python.*app.main" 2>/dev/null || true
+
+    # Kill MCP server
+    pkill -f "app.mcp_server.cli" 2>/dev/null || true
+
+    # Kill Frontend server (npm/react)
+    pkill -f "react-scripts start" 2>/dev/null || true
+    pkill -f "npm run start" 2>/dev/null || true
+
+    print_success "Any existing Olorin services have been stopped (if running)"
+}
+
+# Function to detect code duplication
+detect_duplication() {
+    print_status "Scanning codebase for duplication..."
+    
+    if [ ! -d "$BACKEND_DIR" ]; then
+        print_error "Backend directory not found: $BACKEND_DIR"
+        return 1
+    fi
+    
+    # We want to scan the PROJECT_ROOT, so we pass it as an argument
+    # We execute using the backend's python/poetry env
+    cd "$BACKEND_DIR"
+    
+    if ! command -v poetry &> /dev/null; then
+        print_error "Poetry not found."
+        return 1
+    fi
+    
+    # Run the script, passing project root as target
+    poetry run python scripts/detect_code_duplication.py "$PROJECT_ROOT"
+    
+    if [ $? -eq 0 ]; then
+        print_success "Duplication scan complete. Check DUPLICATION_STRATEGIC_PLAN.md"
+    else
+        print_error "Duplication scan failed."
+        return 1
+    fi
+}
+
 # Function to start backend
 start_backend() {
     print_status "Starting Backend server..."
@@ -440,6 +487,8 @@ usage() {
     echo "  check-coverage    Run test coverage check"
     echo "  validate-schema   Validate schema parity"
     echo "  full-cleanup      Archive artifacts and clean DB/cache"
+    echo "  killdups          Scan codebase for duplicate code and patterns"
+    echo "  kill-zombies      Kill duplicate/orphan Olorin processes"
     echo ""
     echo "Options:"
     echo "  --log-level LEVEL Set log level (debug, info, warning, error)"
@@ -488,7 +537,7 @@ main() {
                     exit 1
                 fi
                 ;;
-            start|stop|restart|status|logs|generate-report|startup-analysis|find-fraud|generate-data|enrich-data|check-coverage|validate-schema|full-cleanup|--help|-h)
+            start|stop|restart|status|logs|generate-report|startup-analysis|find-fraud|generate-data|enrich-data|check-coverage|validate-schema|full-cleanup|killdups|--help|-h)
                 command=$1
                 shift
                 ;;
@@ -512,20 +561,7 @@ main() {
     case $command in
         start)
              # Kill any existing FastAPI backend, MCP server, and Frontend server processes
-            print_status "Checking for existing Olorin services to kill..."
-
-            # Kill FastAPI backend (uvicorn or python running app.main)
-            pkill -f "uvicorn app.main:app" 2>/dev/null || true
-            pkill -f "python.*app.main" 2>/dev/null || true
-
-            # Kill MCP server
-            pkill -f "app.mcp_server.cli" 2>/dev/null || true
-
-            # Kill Frontend server (npm/react)
-            pkill -f "react-scripts start" 2>/dev/null || true
-            pkill -f "npm run start" 2>/dev/null || true
-
-            print_success "Any existing Olorin services have been stopped (if running)"
+            kill_zombie_processes
 
             print_status "Starting Olorin services..."
             local log_level_upper=$(echo "$LOG_LEVEL" | tr '[:lower:]' '[:upper:]')
@@ -593,6 +629,12 @@ main() {
             ;;
         full-cleanup)
             full_cleanup "${CMD_ARGS[@]}"
+            ;;
+        killdups)
+            detect_duplication
+            ;;
+        kill-zombies)
+            kill_zombie_processes
             ;;
         --help|-h)
             usage
