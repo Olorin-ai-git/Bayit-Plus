@@ -139,3 +139,5 @@ export function ParallelInvestigationsPage() {
     </div>
   );
 }
+
+export { ParallelInvestigationsPage };

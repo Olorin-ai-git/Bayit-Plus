@@ -36,9 +36,11 @@ interface RouteConfig {
 
 const routes: RouteConfig[] = [
   // Investigation Service Routes (Port 3001) - Main Investigation Hub
-  { path: '/investigations', component: InvestigationApp, serviceName: 'investigation', exact: true },
-  { path: '/investigations/*', component: InvestigationApp, serviceName: 'investigation' },
+  { path: '/parallel', component: InvestigationApp, serviceName: 'investigation' },
+  { path: '/parallel/*', component: InvestigationApp, serviceName: 'investigation' },
   { path: '/investigation/*', component: InvestigationApp, serviceName: 'investigation' },
+  { path: '/investigations/*', component: InvestigationApp, serviceName: 'investigation' },
+  { path: '/investigations', component: InvestigationApp, serviceName: 'investigation', exact: true },
 
   // Analytics Service Routes (Anomaly detection with replay/detector features)
   { path: '/analytics', component: AnalyticsApp, serviceName: 'analytics', exact: true },

@@ -135,6 +135,15 @@ export const InvestigationLogEntryEventSchema = BaseEventSchema.extend({
   })
 });
 
+export const AgentHeartbeatEventSchema = BaseEventSchema.extend({
+  event: z.literal(EVENT_NAMES.AGENT_HEARTBEAT),
+  data: z.object({
+    investigationId: z.string(),
+    timestamp: z.string(),
+    status: z.string()
+  })
+});
+
 // Published event schemas
 export const VizNodeSelectedEventSchema = BaseEventSchema.extend({
   event: z.literal(EVENT_NAMES.VIZ_NODE_SELECTED),
@@ -209,6 +218,7 @@ export type InvestigationEntityDiscoveredEvent = z.infer<typeof InvestigationEnt
 export type InvestigationLocationDetectedEvent = z.infer<typeof InvestigationLocationDetectedEventSchema>;
 export type InvestigationProgressUpdatedEvent = z.infer<typeof InvestigationProgressUpdatedEventSchema>;
 export type InvestigationLogEntryEvent = z.infer<typeof InvestigationLogEntryEventSchema>;
+export type AgentHeartbeatEvent = z.infer<typeof AgentHeartbeatEventSchema>;
 export type VizNodeSelectedEvent = z.infer<typeof VizNodeSelectedEventSchema>;
 export type VizLocationClickedEvent = z.infer<typeof VizLocationClickedEventSchema>;
 export type VizMapViewChangedEvent = z.infer<typeof VizMapViewChangedEventSchema>;

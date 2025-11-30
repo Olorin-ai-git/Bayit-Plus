@@ -51,6 +51,9 @@ def _include_core_routers(app: FastAPI) -> None:
     from app.router.investigation_state_router import (
         router as investigation_state_router,
     )
+    from app.router.investigation_state_extended_router import (
+        router as investigation_state_extended_router,
+    )
     from app.router.investigation_stream_router import (
         router as investigation_stream_router,
     )
@@ -74,6 +77,9 @@ def _include_core_routers(app: FastAPI) -> None:
     app.include_router(
         investigation_state_router
     )  # Investigation state management (Feature 005)
+    app.include_router(
+        investigation_state_extended_router
+    )  # Investigation management extended endpoints
     app.include_router(
         investigation_stream_router
     )  # Investigation event stream (Feature 001)

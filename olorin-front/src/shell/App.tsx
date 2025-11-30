@@ -27,6 +27,7 @@ const RagIntelligenceApp = React.lazy(() => import('../microservices/rag-intelli
 const ReportingApp = React.lazy(() => import('../microservices/reporting/ReportingApp'));
 const VisualizationApp = React.lazy(() => import('../microservices/visualization/VisualizationApp'));
 const InvestigationsManagementApp = React.lazy(() => import('../microservices/investigations-management/InvestigationsManagementApp'));
+const ParallelInvestigationsPage = React.lazy(() => import('../microservices/investigation/pages/ParallelInvestigationsPage').then(module => ({ default: module.ParallelInvestigationsPage })));
 const AnalyticsApp = React.lazy(() => import('../microservices/analytics/AnalyticsApp'));
 
 interface ShellState {
@@ -174,6 +175,22 @@ const App: React.FC = () => {
                       </div>
                     }>
                       <ComparisonPage />
+                    </Suspense>
+                  </ErrorBoundary>
+                } />
+                <Route path="/parallel" element={
+                  <ErrorBoundary serviceName="investigation">
+                    <Suspense fallback={
+                      <div className="flex items-center justify-center h-64">
+                        <div className="text-center">
+                          <LoadingSpinner size="md" />
+                          <p className="mt-2 text-sm text-corporate-textSecondary">
+                            Loading Parallel Investigations...
+                          </p>
+                        </div>
+                      </div>
+                    }>
+                      <ParallelInvestigationsPage />
                     </Suspense>
                   </ErrorBoundary>
                 } />

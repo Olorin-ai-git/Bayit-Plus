@@ -18,6 +18,8 @@ import {
   InvestigationProgressUpdatedEventSchema,
   InvestigationLogEntryEvent,
   InvestigationLogEntryEventSchema,
+  AgentHeartbeatEvent,
+  AgentHeartbeatEventSchema,
   VizNodeSelectedEvent,
   VizNodeSelectedEventSchema,
   VizLocationClickedEvent,
@@ -92,6 +94,16 @@ export class VisualizationEventBusService {
       handler
     );
     return eventBus.on(EVENT_NAMES.INVESTIGATION_LOG_ENTRY, validatingHandler).unsubscribe;
+  }
+
+  public onAgentHeartbeat(
+    handler: EventHandler<AgentHeartbeatEvent>
+  ): () => void {
+    const validatingHandler = this.createValidatingHandler(
+      AgentHeartbeatEventSchema,
+      handler
+    );
+    return eventBus.on(EVENT_NAMES.AGENT_HEARTBEAT, validatingHandler).unsubscribe;
   }
 
   // Publish visualization events (to other microservices)

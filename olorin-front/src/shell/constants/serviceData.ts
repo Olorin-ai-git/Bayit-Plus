@@ -90,7 +90,7 @@ export const serviceLinks: ServiceLink[] = [
   },
   {
     name: 'Parallel Investigations',
-    path: '/investigation/parallel',
+    path: '/parallel',
     icon: '⚡',
     description: 'Track parallel automated investigations',
     status: 'ready',

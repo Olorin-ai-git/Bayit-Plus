@@ -3,10 +3,14 @@ import { render, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { BrowserRouter } from 'react-router-dom';
 import { ParallelInvestigationsPage } from '../../pages/ParallelInvestigationsPage';
-import * as investigationService from '../../services/investigationService';
+import { investigationService } from '../../services/investigationService';
 
 // Mock the investigation service
-jest.mock('../../services/investigationService');
+jest.mock('../../services/investigationService', () => ({
+  investigationService: {
+    getInvestigations: jest.fn(),
+  },
+}));
 
 // Mock navigation
 const mockNavigate = jest.fn();
@@ -71,7 +75,7 @@ describe('ParallelInvestigationsPage', () => {
   // T009: Integration test - Page loads and displays investigations table
   describe('T009: Page loads and displays investigations table', () => {
     test('should render table with correct columns', async () => {
-      (investigationService.getInvestigations as jest.Mock).mockResolvedValueOnce({
+      (investigationService.getInvestigations as any).mockResolvedValueOnce({
         investigations: mockInvestigations,
         totalCount: 2,
         hasNextPage: false,
@@ -97,7 +101,7 @@ describe('ParallelInvestigationsPage', () => {
     });
 
     test('should display investigations from API', async () => {
-      (investigationService.getInvestigations as jest.Mock).mockResolvedValueOnce({
+      (investigationService.getInvestigations as any).mockResolvedValueOnce({
         investigations: mockInvestigations,
         totalCount: 2,
         hasNextPage: false,
@@ -124,7 +128,7 @@ describe('ParallelInvestigationsPage', () => {
     });
 
     test('should show loading state initially', () => {
-      (investigationService.getInvestigations as jest.Mock).mockImplementationOnce(
+      (investigationService.getInvestigations as any).mockImplementationOnce(
         () => new Promise(() => {}) // Never resolves
       );
 
@@ -139,7 +143,7 @@ describe('ParallelInvestigationsPage', () => {
     });
 
     test('should handle empty investigation list', async () => {
-      (investigationService.getInvestigations as jest.Mock).mockResolvedValueOnce({
+      (investigationService.getInvestigations as any).mockResolvedValueOnce({
         investigations: [],
         totalCount: 0,
         hasNextPage: false,
@@ -162,7 +166,7 @@ describe('ParallelInvestigationsPage', () => {
   // T010: Integration test - Automatic polling refreshes data
   describe('T010: Automatic polling refreshes data', () => {
     test('should call API on mount', async () => {
-      (investigationService.getInvestigations as jest.Mock).mockResolvedValueOnce({
+      (investigationService.getInvestigations as any).mockResolvedValueOnce({
         investigations: mockInvestigations,
         totalCount: 2,
         hasNextPage: false,
@@ -181,7 +185,7 @@ describe('ParallelInvestigationsPage', () => {
     });
 
     test('should poll API every 10 seconds', async () => {
-      (investigationService.getInvestigations as jest.Mock).mockResolvedValue({
+      (investigationService.getInvestigations as any).mockResolvedValue({
         investigations: mockInvestigations,
         totalCount: 2,
         hasNextPage: false,
@@ -231,7 +235,7 @@ describe('ParallelInvestigationsPage', () => {
         hasPreviousPage: false,
       };
 
-      (investigationService.getInvestigations as jest.Mock)
+      (investigationService.getInvestigations as any)
         .mockResolvedValueOnce(initialData)
         .mockResolvedValueOnce(updatedData);
 
@@ -258,7 +262,7 @@ describe('ParallelInvestigationsPage', () => {
     });
 
     test('should use correct polling interval from config', async () => {
-      (investigationService.getInvestigations as jest.Mock).mockResolvedValue({
+      (investigationService.getInvestigations as any).mockResolvedValue({
         investigations: mockInvestigations,
         totalCount: 2,
         hasNextPage: false,
@@ -291,7 +295,7 @@ describe('ParallelInvestigationsPage', () => {
     });
 
     test('should pass search filter to API', async () => {
-      (investigationService.getInvestigations as jest.Mock).mockResolvedValueOnce({
+      (investigationService.getInvestigations as any).mockResolvedValueOnce({
         investigations: mockInvestigations,
         totalCount: 2,
         hasNextPage: false,
@@ -309,7 +313,7 @@ describe('ParallelInvestigationsPage', () => {
       });
 
       // Verify search filter for auto-comp investigations
-      const call = (investigationService.getInvestigations as jest.Mock).mock.calls[0];
+      const call = (investigationService.getInvestigations as any).mock.calls[0];
       expect(call[0]).toEqual(
         expect.objectContaining({
           search: 'auto-comp-',
@@ -321,7 +325,7 @@ describe('ParallelInvestigationsPage', () => {
   // T024: Row click navigation test
   describe('T024: Row click navigation', () => {
     test('should navigate to progress page when row clicked', async () => {
-      (investigationService.getInvestigations as jest.Mock).mockResolvedValueOnce({
+      (investigationService.getInvestigations as any).mockResolvedValueOnce({
         investigations: mockInvestigations,
         totalCount: 2,
         hasNextPage: false,
@@ -351,7 +355,7 @@ describe('ParallelInvestigationsPage', () => {
   describe('T035: Error handling', () => {
     test('should display error message on API failure', async () => {
       const errorMessage = 'Failed to fetch investigations';
-      (investigationService.getInvestigations as jest.Mock).mockRejectedValueOnce(
+      (investigationService.getInvestigations as any).mockRejectedValueOnce(
         new Error(errorMessage)
       );
 
@@ -367,7 +371,7 @@ describe('ParallelInvestigationsPage', () => {
     });
 
     test('should show retry button on error', async () => {
-      (investigationService.getInvestigations as jest.Mock)
+      (investigationService.getInvestigations as any)
         .mockRejectedValueOnce(new Error('API Error'))
         .mockResolvedValueOnce({
           investigations: mockInvestigations,
@@ -400,7 +404,7 @@ describe('ParallelInvestigationsPage', () => {
   // T036: WebSocket real-time updates test
   describe('T036: WebSocket real-time updates', () => {
     test('should display WebSocket connection status', async () => {
-      (investigationService.getInvestigations as jest.Mock).mockResolvedValueOnce({
+      (investigationService.getInvestigations as any).mockResolvedValueOnce({
         investigations: mockInvestigations,
         totalCount: 2,
         hasNextPage: false,
@@ -422,7 +426,7 @@ describe('ParallelInvestigationsPage', () => {
     });
 
     test('should update connection status when WebSocket connects', async () => {
-      (investigationService.getInvestigations as jest.Mock).mockResolvedValueOnce({
+      (investigationService.getInvestigations as any).mockResolvedValueOnce({
         investigations: mockInvestigations,
         totalCount: 2,
         hasNextPage: false,
@@ -469,7 +473,7 @@ describe('ParallelInvestigationsPage', () => {
   // T037: Status filtering tests
   describe('T037: Status filtering', () => {
     test('should show filter UI when feature flag enabled', async () => {
-      (investigationService.getInvestigations as jest.Mock).mockResolvedValueOnce({
+      (investigationService.getInvestigations as any).mockResolvedValueOnce({
         investigations: mockInvestigations,
         totalCount: 2,
         hasNextPage: false,
@@ -493,7 +497,7 @@ describe('ParallelInvestigationsPage', () => {
     });
 
     test('should filter investigations by status', async () => {
-      (investigationService.getInvestigations as jest.Mock).mockResolvedValueOnce({
+      (investigationService.getInvestigations as any).mockResolvedValueOnce({
         investigations: mockInvestigations,
         totalCount: 2,
         hasNextPage: false,
@@ -515,7 +519,7 @@ describe('ParallelInvestigationsPage', () => {
   // T038: Last updated timestamp tests
   describe('T038: Last updated timestamp', () => {
     test('should display last updated timestamp', async () => {
-      (investigationService.getInvestigations as jest.Mock).mockResolvedValueOnce({
+      (investigationService.getInvestigations as any).mockResolvedValueOnce({
         investigations: mockInvestigations,
         totalCount: 2,
         hasNextPage: false,
@@ -538,7 +542,7 @@ describe('ParallelInvestigationsPage', () => {
   describe('T039: Advanced error recovery', () => {
     test('should show error message with retry button', async () => {
       const errorMsg = 'Network connection failed';
-      (investigationService.getInvestigations as jest.Mock).mockRejectedValueOnce(
+      (investigationService.getInvestigations as any).mockRejectedValueOnce(
         new Error(errorMsg)
       );
 
@@ -558,7 +562,7 @@ describe('ParallelInvestigationsPage', () => {
     });
 
     test('should retry with exponential backoff', async () => {
-      (investigationService.getInvestigations as jest.Mock)
+      (investigationService.getInvestigations as any)
         .mockRejectedValueOnce(new Error('Connection error'))
         .mockResolvedValueOnce({
           investigations: mockInvestigations,
@@ -592,7 +596,7 @@ describe('ParallelInvestigationsPage', () => {
   // T040: Refresh button improvements tests
   describe('T040: Refresh button improvements', () => {
     test('should show loading spinner during refresh', async () => {
-      (investigationService.getInvestigations as jest.Mock).mockResolvedValueOnce({
+      (investigationService.getInvestigations as any).mockResolvedValueOnce({
         investigations: mockInvestigations,
         totalCount: 2,
         hasNextPage: false,

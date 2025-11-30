@@ -701,6 +701,20 @@ export class InvestigationService extends BaseApiService {
       isActive = false;
     };
   }
+
+  /**
+   * Triggers the startup analysis flow manually
+   * 
+   * @param topN Number of top entities to process (default: 3)
+   * @param forceRefresh Whether to force refresh risk entities (default: false)
+   */
+  async triggerStartupAnalysis(topN: number = 3, forceRefresh: boolean = false): Promise<any> {
+    const params = new URLSearchParams();
+    params.append('top_n', topN.toString());
+    params.append('force_refresh', forceRefresh.toString());
+    
+    return this.post(`/api/v1/analytics/startup-analysis/trigger?${params.toString()}`);
+  }
 }
 
 // Lazy singleton - only instantiate when first accessed, after config is initialized
@@ -771,4 +785,6 @@ export const investigationService = {
     getInstance().getProgress(...args),
   subscribeToUpdates: (...args: Parameters<InvestigationService['subscribeToUpdates']>) =>
     getInstance().subscribeToUpdates(...args),
+  triggerStartupAnalysis: (...args: Parameters<InvestigationService['triggerStartupAnalysis']>) =>
+    getInstance().triggerStartupAnalysis(...args),
 };

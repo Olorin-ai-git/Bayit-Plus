@@ -33,7 +33,6 @@ export function useInvestigationPolling(): EnhancedInvestigationPollingReturn {
       const response = await investigationService.getInvestigations({
         page: 1,
         pageSize: config.paginationSize,
-        search: 'auto-comp-',
       });
 
       const newInvestigations = response.investigations || [];

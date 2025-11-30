@@ -88,12 +88,12 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundarySt
                     <summary className="text-sm font-medium text-corporate-textTertiary cursor-pointer hover:text-corporate-textSecondary">
                       Error Details
                     </summary>
-                    <div className="mt-2 p-3 bg-corporate-bgPrimary rounded text-xs font-mono text-corporate-textTertiary overflow-auto max-h-40">
-                      <p className="mb-2 text-corporate-error">
+                    <div className="mt-2 p-3 bg-corporate-bgPrimary rounded text-xs font-mono text-corporate-textTertiary overflow-x-auto overflow-y-auto max-h-60 w-full">
+                      <p className="mb-2 text-corporate-error break-words">
                         {this.state.error.toString()}
                       </p>
                       {this.state.errorInfo && (
-                        <pre className="whitespace-pre-wrap">
+                        <pre className="whitespace-pre-wrap break-all">
                           {this.state.errorInfo.componentStack}
                         </pre>
                       )}

@@ -36,8 +36,25 @@ export const ParallelInvestigationsPage: React.FC = () => {
   const navigate = useNavigate();
   const [investigations, setInvestigations] = useState<ParallelInvestigation[]>([]);
   const [loading, setLoading] = useState(true);
+  const [triggering, setTriggering] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [lastRefreshed, setLastRefreshed] = useState<Date>(new Date());
+
+  const triggerAnalysis = async () => {
+    try {
+      setTriggering(true);
+      await investigationService.triggerStartupAnalysis(3, true);
+      // Wait a bit for backend to initialize
+      setTimeout(() => {
+        fetchInvestigations();
+        setTriggering(false);
+      }, 1000);
+    } catch (err) {
+      console.error('Failed to trigger analysis:', err);
+      setError('Failed to trigger analysis. Please check logs.');
+      setTriggering(false);
+    }
+  };
 
   const fetchInvestigations = useCallback(async () => {
     try {
@@ -47,10 +64,8 @@ export const ParallelInvestigationsPage: React.FC = () => {
         setLoading(true);
       }
       
-      // Fetch investigations filtered by 'auto-comp-' prefix to identify parallel/automated ones
-      const response = await investigationService.getInvestigations({
-        search: 'auto-comp-'
-      }, 1, 50); // Fetch up to 50 items
+      // Fetch all investigations to display parallel/automated ones
+      const response = await investigationService.getInvestigations({}, 1, 50); // Fetch up to 50 items
 
       const mappedData: ParallelInvestigation[] = response.investigations.map((inv: any) => {
         // Extract metadata from settings (injected by executor)
@@ -105,9 +120,10 @@ export const ParallelInvestigationsPage: React.FC = () => {
   const columns: Column<ParallelInvestigation>[] = [
     {
       header: 'Investigation ID',
-      accessor: 'id',
+      accessor: (row) => row.id,
+      id: 'id',
       className: 'font-mono text-xs text-corporate-accentPrimary cursor-pointer hover:underline',
-      render: (value) => (
+      cell: (value) => (
         <span onClick={(e) => {
           e.stopPropagation();
           // Navigate to progress page
@@ -121,18 +137,21 @@ export const ParallelInvestigationsPage: React.FC = () => {
     },
     {
       header: 'Entity',
-      accessor: 'entityValue',
+      accessor: (row) => row.entityValue,
+      id: 'entityValue',
       className: 'font-medium text-white'
     },
     {
       header: 'Merchant',
-      accessor: 'merchantName',
+      accessor: (row) => row.merchantName,
+      id: 'merchantName',
       className: 'text-corporate-textSecondary'
     },
     {
       header: 'Status',
-      accessor: 'status',
-      render: (value) => {
+      accessor: (row) => row.status,
+      id: 'status',
+      cell: (value) => {
         let colorClass = 'text-corporate-textSecondary';
         let animate = false;
         
@@ -162,8 +181,9 @@ export const ParallelInvestigationsPage: React.FC = () => {
     },
     {
       header: 'Risk Score',
-      accessor: 'riskScore',
-      render: (value) => {
+      accessor: (row) => row.riskScore,
+      id: 'riskScore',
+      cell: (value) => {
         // High risk > 0.5 -> Red, otherwise Warning/Info
         const colorClass = value > 0.5 ? 'text-corporate-error' : 'text-corporate-warning';
         return <span className={`font-bold ${colorClass}`}>{value.toFixed(2)}</span>;
@@ -171,13 +191,15 @@ export const ParallelInvestigationsPage: React.FC = () => {
     },
     {
       header: 'Fraud Tx',
-      accessor: 'fraudTxCount',
+      accessor: (row) => row.fraudTxCount,
+      id: 'fraudTxCount',
       className: 'text-right'
     },
     {
       header: 'Start Time',
-      accessor: 'startTime',
-      render: (value) => new Date(value).toLocaleTimeString()
+      accessor: (row) => row.startTime,
+      id: 'startTime',
+      cell: (value) => new Date(value).toLocaleTimeString()
     }
   ];
 
@@ -196,6 +218,14 @@ export const ParallelInvestigationsPage: React.FC = () => {
             <span className="text-xs text-corporate-textTertiary">
               Last updated: {lastRefreshed.toLocaleTimeString()}
             </span>
+            <WizardButton 
+              variant="primary" 
+              onClick={triggerAnalysis}
+              disabled={loading || triggering}
+              icon={triggering ? <LoadingSpinner size="sm" /> : undefined}
+            >
+              Trigger Analysis
+            </WizardButton>
             <WizardButton 
               variant="secondary" 
               onClick={fetchInvestigations}
@@ -233,10 +263,15 @@ export const ParallelInvestigationsPage: React.FC = () => {
           <div className="bg-black/40 backdrop-blur border border-corporate-borderPrimary rounded-lg overflow-hidden shadow-xl">
             <Table
               data={investigations}
-              columns={columns}
-              onRowClick={(row) => navigate(`/investigation/progress?id=${row.id}`)}
-              hoverable
-              striped
+              config={{
+                columns,
+                onRowClick: (row) => navigate(`/investigation/progress?id=${row.id}`),
+                getRowKey: (row) => row.id,
+                sortable: true,
+                paginated: true,
+                pageSize: 50,
+                emptyMessage: "No parallel investigations found."
+              }}
             />
           </div>
         )}

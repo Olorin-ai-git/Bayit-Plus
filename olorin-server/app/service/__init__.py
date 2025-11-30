@@ -785,15 +785,11 @@ async def on_startup(app: FastAPI):
                     # This ensures consistent evaluation regardless of other conditions
                     if auto_run_startup_analysis:
                         # Automatically run comparisons for top N riskiest entities (unconditional execution)
-                        # Run synchronously during startup
+                        # Run asynchronously in background to avoid blocking server startup
                         try:
                             # Create reports directory (same as in run_startup_analysis_flow)
                             reports_dir = Path("artifacts/comparisons/auto_startup")
                             reports_dir.mkdir(parents=True, exist_ok=True)
-
-                            # Run startup analysis flow synchronously with timeout
-                            # This will block startup until analysis completes or times out
-                            import asyncio
 
                             # Get timeout from environment (default: 30 minutes, max: 30 minutes)
                             startup_timeout_seconds = float(
@@ -803,10 +799,6 @@ async def on_startup(app: FastAPI):
                                 max(startup_timeout_seconds, 30.0), 1800.0
                             )  # Clamp between 30s and 30min (30 minutes)
 
-                            logger.info(
-                                f"⏱️ Starting startup analysis with {startup_timeout_seconds}s timeout..."
-                            )
-
                             # Get number of top entities to investigate from environment (default: 3)
                             top_n_entities = int(
                                 os.getenv("STARTUP_ANALYSIS_TOP_N_ENTITIES", "3")
@@ -814,73 +806,70 @@ async def on_startup(app: FastAPI):
                             top_n_entities = max(
                                 1, min(top_n_entities, 10)
                             )  # Clamp between 1 and 10
+                            
                             logger.info(
-                                f"📊 Will investigate top {top_n_entities} riskiest entities"
+                                f"🚀 Scheduling startup analysis in background (timeout: {startup_timeout_seconds}s, top_n: {top_n_entities})"
                             )
 
-                            # CRITICAL: Initialize comparison_results BEFORE try block to avoid UnboundLocalError
-                            # Python treats assignment inside try block as local variable, so must initialize first
-                            comparison_results = None
+                            # Define background task wrapper
+                            async def _background_startup_analysis():
+                                try:
+                                    logger.info("▶️ Starting background startup analysis task...")
+                                    import asyncio
+                                    
+                                    # Initialize comparison_results to avoid potential UnboundLocalError
+                                    comparison_results = None
+                                    
+                                    try:
+                                        comparison_results = await asyncio.wait_for(
+                                            run_startup_analysis_flow(
+                                                app=app,
+                                                risk_analyzer_results=results,
+                                                top_n=top_n_entities,
+                                            ),
+                                            timeout=startup_timeout_seconds,
+                                        )
+                                        # Update app state with results
+                                        app.state.auto_comparison_results = comparison_results
+                                        app.state.auto_comparison_completed = True
+                                        logger.info(
+                                            "✅ Background startup analysis completed successfully"
+                                        )
+                                    except asyncio.TimeoutError:
+                                        logger.warning(
+                                            f"⏱️ Background startup analysis timed out after {startup_timeout_seconds}s"
+                                        )
+                                        logger.warning(
+                                            "   Investigations may still be running independently"
+                                        )
+                                        app.state.auto_comparison_results = []
+                                        app.state.auto_comparison_completed = False
+                                    except asyncio.CancelledError:
+                                        logger.warning(
+                                            "⚠️ Background startup analysis was cancelled"
+                                        )
+                                        app.state.auto_comparison_results = []
+                                        app.state.auto_comparison_completed = False
+                                    except Exception as e:
+                                        logger.error(
+                                            f"❌ Background startup analysis failed: {e}", exc_info=True
+                                        )
+                                        app.state.auto_comparison_results = []
+                                        app.state.auto_comparison_completed = False
+                                        
+                                except Exception as e:
+                                    logger.error(
+                                        f"❌ Critical error in background startup analysis task: {e}", exc_info=True
+                                    )
 
-                            try:
-                                comparison_results = await asyncio.wait_for(
-                                    run_startup_analysis_flow(
-                                        app=app,
-                                        risk_analyzer_results=results,
-                                        top_n=top_n_entities,
-                                    ),
-                                    timeout=startup_timeout_seconds,
-                                )
-                                # Update app state with results
-                                app.state.auto_comparison_results = comparison_results
-                                app.state.auto_comparison_completed = True
-                                logger.info(
-                                    "✅ Startup analysis completed successfully"
-                                )
-                            except asyncio.TimeoutError:
-                                logger.warning(
-                                    f"⏱️ Startup analysis timed out after {startup_timeout_seconds}s - continuing server startup"
-                                )
-                                logger.warning(
-                                    "   NOTE: Investigations that were already started will continue running as background tasks."
-                                )
-                                logger.warning(
-                                    "   However, their results will NOT be collected automatically - they will complete independently."
-                                )
-                                logger.warning(
-                                    "   To increase timeout, set STARTUP_ANALYSIS_TIMEOUT_SECONDS in .env"
-                                )
-                                logger.warning(
-                                    "   Note: Complex investigations may take longer than the timeout"
-                                )
-                                # CRITICAL FIX: comparison_results is guaranteed to be None here on timeout
-                                # because the await was cancelled before assignment could complete
-                                # The investigations that were started will continue running, but we won't wait for them
-                                # They will complete independently and can be checked via the investigation API
-                                logger.info(
-                                    "⚠️ Startup analysis timed out - investigations may still be running independently"
-                                )
-                                logger.info(
-                                    "   You can check investigation status via the API or wait for them to complete"
-                                )
-                                app.state.auto_comparison_results = []
-                                app.state.auto_comparison_completed = False
-                            except asyncio.CancelledError:
-                                logger.warning(
-                                    "⚠️ Startup analysis was cancelled - continuing server startup"
-                                )
-                                app.state.auto_comparison_results = []
-                                app.state.auto_comparison_completed = False
-                            except Exception as e:
-                                logger.error(
-                                    f"❌ Startup analysis failed: {e}", exc_info=True
-                                )
-                                app.state.auto_comparison_results = []
-                                app.state.auto_comparison_completed = False
+                            # Schedule the background task
+                            import asyncio
+                            asyncio.create_task(_background_startup_analysis())
+                            logger.info("✅ Startup analysis task scheduled")
 
                         except Exception as e:
                             logger.error(
-                                f"❌ Failed to run auto-comparisons: {e}", exc_info=True
+                                f"❌ Failed to schedule auto-comparisons: {e}", exc_info=True
                             )
                             app.state.auto_comparison_results = []
                             app.state.auto_comparison_completed = False
@@ -946,6 +935,7 @@ async def run_startup_analysis_flow(
     Returns:
         List of comparison results
     """
+    import os
     from app.service.analytics.risk_analyzer import get_risk_analyzer
     from app.service.investigation.auto_comparison import (
         run_auto_comparisons_for_top_entities,
@@ -1024,7 +1014,6 @@ async def run_startup_analysis_flow(
                 "📊 Calculating confusion matrices for investigated entities..."
             )
             try:
-                import os
                 from datetime import datetime
 
                 from app.service.investigation.comparison_service import (
@@ -1189,8 +1178,6 @@ async def run_startup_analysis_flow(
                     "📊 Creating empty aggregated confusion matrix due to error to ensure confusion table is always generated"
                 )
                 try:
-                    import os
-
                     from app.service.investigation.comparison_service import (
                         aggregate_confusion_matrices,
                     )

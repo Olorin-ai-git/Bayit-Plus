@@ -1,16 +1,24 @@
 module.exports = {
   displayName: 'Integration Tests',
-  rootDir: '../../../',
+  rootDir: '../../../../',
   testMatch: [
-    '**/__tests__/integration/**/*.test.{ts,tsx,js,jsx}',
-    '**/shared/testing/integration/**/*.test.{ts,tsx,js,jsx}'
+    '<rootDir>/src/**/__tests__/integration/**/*.test.{ts,tsx,js,jsx}',
+    '<rootDir>/src/shared/testing/integration/**/*.test.{ts,tsx,js,jsx}'
   ],
   testEnvironment: 'jsdom',
   moduleNameMapper: {
     '^@/(.*)$': '<rootDir>/src/$1',
     '^@shared/(.*)$': '<rootDir>/src/shared/$1',
     '^@microservices/(.*)$': '<rootDir>/src/microservices/$1',
-    '^@shell/(.*)$': '<rootDir>/src/shell/$1'
+    '^@shell/(.*)$': '<rootDir>/src/shell/$1',
+    '^@structured-investigation/(.*)$': '<rootDir>/src/microservices/structured-investigation/$1',
+    '^@manual-investigation/(.*)$': '<rootDir>/src/microservices/manual-investigation/$1',
+    '^@agent-analytics/(.*)$': '<rootDir>/src/microservices/agent-analytics/$1',
+    '^@rag-intelligence/(.*)$': '<rootDir>/src/microservices/rag-intelligence/$1',
+    '^@visualization/(.*)$': '<rootDir>/src/microservices/visualization/$1',
+    '^@reporting/(.*)$': '<rootDir>/src/microservices/reporting/$1',
+    '^@core-ui/(.*)$': '<rootDir>/src/microservices/core-ui/$1',
+    '^@design-system/(.*)$': '<rootDir>/src/microservices/design-system/$1'
   },
   transform: {
     '^.+\\.(ts|tsx)$': ['ts-jest', {

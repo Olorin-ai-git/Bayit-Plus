@@ -16,7 +16,8 @@ import {
   InvestigationEntityDiscoveredEvent,
   InvestigationLocationDetectedEvent,
   InvestigationProgressUpdatedEvent,
-  InvestigationLogEntryEvent
+  InvestigationLogEntryEvent,
+  AgentHeartbeatEvent
 } from '../types/events.types';
 
 /**
@@ -76,6 +77,11 @@ export function useEventBus<T>(
       case EVENT_NAMES.INVESTIGATION_LOG_ENTRY:
         unsubscribe = visualizationEventBusService.onInvestigationLogEntry(
           stableHandler as EventHandler<InvestigationLogEntryEvent>
+        );
+        break;
+      case EVENT_NAMES.AGENT_HEARTBEAT:
+        unsubscribe = visualizationEventBusService.onAgentHeartbeat(
+          stableHandler as EventHandler<AgentHeartbeatEvent>
         );
         break;
       default:

@@ -55,6 +55,7 @@ export interface EventMap {
   'agent:execution:completed': { agentId: string; executionId: string; result: any };
   'agent:performance:updated': { agentId: string; metrics: any };
   'agent:anomaly:detected': { agentId: string; anomaly: any };
+  'agent:heartbeat': { data: { investigationId: string; timestamp: string; status: string } };
 
   // ==================== SYSTEM EVENTS ====================
 
