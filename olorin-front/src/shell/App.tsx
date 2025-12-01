@@ -149,11 +149,11 @@ const App: React.FC = () => {
         <ToastProvider>
           <AuthProvider>
             <BrowserRouter
-            future={{
-              v7_startTransition: true,
-              v7_relativeSplatPath: true
-            }}
-          >
+              future={{
+                v7_startTransition: true,
+                v7_relativeSplatPath: true
+              }}
+            >
             <NavigationExposer />
             <div className="shell-application min-h-screen bg-black">
               <NavigationHeader />
@@ -339,6 +339,23 @@ const App: React.FC = () => {
                       <InvestigationsManagementApp />
                     </Suspense>
                   </ErrorBoundary>
+                } />
+                {/* Fallback route for 404s */}
+                <Route path="*" element={
+                  <div className="flex items-center justify-center h-64">
+                    <div className="text-center">
+                      <h1 className="text-2xl font-bold text-corporate-textPrimary mb-2">Page Not Found</h1>
+                      <p className="text-corporate-textSecondary mb-4">
+                        The requested page could not be found.
+                      </p>
+                      <button
+                        onClick={() => window.history.back()}
+                        className="bg-corporate-accentPrimary text-white px-4 py-2 rounded-md hover:bg-corporate-accentPrimary/80 transition-colors"
+                      >
+                        Go Back
+                      </button>
+                    </div>
+                  </div>
                 } />
               </Routes>
             </main>

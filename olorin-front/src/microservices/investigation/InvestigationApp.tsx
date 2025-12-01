@@ -71,7 +71,7 @@ const InvestigationApp: React.FC = () => {
             } />
             
             {/* Main Dashboard - Investigations Management */}
-            <Route path="/" element={<InvestigationsManagementPage />} />
+            <Route index element={<InvestigationsManagementPage />} />
             <Route path="dashboard" element={<InvestigationsManagementPage />} />
 
             {/* Investigation Types */}

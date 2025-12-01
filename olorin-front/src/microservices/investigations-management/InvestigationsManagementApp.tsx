@@ -27,7 +27,7 @@ const InvestigationsManagementApp: React.FC = () => {
             </div>
           }>
             <Routes>
-              <Route path="/" element={<InvestigationsManagementPage />} />
+              <Route index element={<InvestigationsManagementPage />} />
               <Route path="*" element={<InvestigationsManagementPage />} />
             </Routes>
           </Suspense>

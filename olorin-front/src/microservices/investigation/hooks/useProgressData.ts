@@ -65,14 +65,16 @@ export function useProgressData(
   /**
    * Fetches progress data from backend with ETag support
    */
-  const fetchProgress = useCallback(async () => {
+  const fetchProgress = useCallback(async (forceFetch: boolean = false) => {
     if (!investigationId) {
       setIsLoading(false);
       return;
     }
 
     // Prevent concurrent calls - if a call is already in progress, skip this one
-    if (isCallInProgressRef.current) {
+    // UNLESS we are forcing a fetch (e.g. on ID change/reset), in which case we proceed
+    // assuming the previous call was aborted by the useEffect cleanup
+    if (isCallInProgressRef.current && !forceFetch) {
       console.log('[useProgressData] ⏸️ Call already in progress, skipping this request');
       return;
     }
@@ -87,17 +89,18 @@ export function useProgressData(
     try {
       // Get cached ETag for conditional request
       // CRITICAL: Only use ETag if we have progress data AND it matches the current investigation ID
-      // If we switched investigations, we need to force a full fetch to populate state for the new ID
+      // If we switched investigations or forced fetch, we need to force a full fetch
       const currentProgress = progressRef.current;
       const hasRelevantData = currentProgress && 
                              (currentProgress.id === investigationId || currentProgress.investigationId === investigationId);
       
-      const cachedETag = hasRelevantData ? getETag() : null;
+      const cachedETag = (hasRelevantData && !forceFetch) ? getETag() : null;
 
       console.log('🚨🚨🚨 [useProgressData] Fetching with ETag logic:', {
         investigationId,
         currentProgressId: currentProgress?.id,
         hasRelevantData,
+        forceFetch,
         usingETag: !!cachedETag,
         cachedETag
       });
@@ -218,11 +221,22 @@ export function useProgressData(
     // Reset state when investigationId changes
     if (investigationId) {
       console.log('🚨🚨🚨 [useProgressData] Resetting state and fetching progress for:', investigationId);
+      
+      // Abort any pending requests from previous ID
+      if (abortControllerRef.current) {
+        abortControllerRef.current.abort();
+        abortControllerRef.current = null;
+      }
+      // Reset concurrency flag since we aborted previous request
+      isCallInProgressRef.current = false;
+      
       setProgress(null);
+      progressRef.current = null; // Clear ref immediately to prevent ETag usage
       setError(null);
       setIsLoading(true);
-      // Initial fetch - don't wait for polling to start
-      fetchProgress().catch(err => {
+      
+      // Initial fetch - force fetch to bypass concurrency check and ETag
+      fetchProgress(true).catch(err => {
         console.error('🚨🚨🚨 [useProgressData] Error in fetchProgress:', err);
       });
     } else {
