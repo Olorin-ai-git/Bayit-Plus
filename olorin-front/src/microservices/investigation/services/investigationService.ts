@@ -330,6 +330,10 @@ export class InvestigationService extends BaseApiService {
     return this.post<Investigation>(`${this.baseEndpoint}/${id}/start`);
   }
 
+  async restartInvestigation(id: string): Promise<Investigation> {
+    return this.post<Investigation>(`${this.baseEndpoint}/${id}/restart`);
+  }
+
   async pauseInvestigation(id: string): Promise<Investigation> {
     return this.post<Investigation>(`${this.baseEndpoint}/${id}/pause`);
   }
@@ -747,6 +751,8 @@ export const investigationService = {
     getInstance().getInvestigations(...args),
   startInvestigation: (...args: Parameters<InvestigationService['startInvestigation']>) =>
     getInstance().startInvestigation(...args),
+  restartInvestigation: (...args: Parameters<InvestigationService['restartInvestigation']>) =>
+    getInstance().restartInvestigation(...args),
   pauseInvestigation: (...args: Parameters<InvestigationService['pauseInvestigation']>) =>
     getInstance().pauseInvestigation(...args),
   resumeInvestigation: (...args: Parameters<InvestigationService['resumeInvestigation']>) =>

@@ -48,10 +48,16 @@ export function useProgressData(
   // CRITICAL (FR-011): Memoize API service to prevent infinite loop
   const service = useMemo(() => investigationService, []);
 
-  // Track component mount state - use a more robust approach
+  // Track component mount state and latest progress
   const isMountedRef = useRef<boolean>(true);
+  const progressRef = useRef<InvestigationProgress | null>(null);
   const abortControllerRef = useRef<AbortController | null>(null);
   const isCallInProgressRef = useRef<boolean>(false);
+
+  // Update ref when progress changes
+  useEffect(() => {
+    progressRef.current = progress;
+  }, [progress]);
 
   // ETag cache for conditional requests
   const { getETag, saveETag, clearETag } = useETagCache(investigationId);
@@ -80,7 +86,21 @@ export function useProgressData(
 
     try {
       // Get cached ETag for conditional request
-      const cachedETag = getETag();
+      // CRITICAL: Only use ETag if we have progress data AND it matches the current investigation ID
+      // If we switched investigations, we need to force a full fetch to populate state for the new ID
+      const currentProgress = progressRef.current;
+      const hasRelevantData = currentProgress && 
+                             (currentProgress.id === investigationId || currentProgress.investigationId === investigationId);
+      
+      const cachedETag = hasRelevantData ? getETag() : null;
+
+      console.log('🚨🚨🚨 [useProgressData] Fetching with ETag logic:', {
+        investigationId,
+        currentProgressId: currentProgress?.id,
+        hasRelevantData,
+        usingETag: !!cachedETag,
+        cachedETag
+      });
 
       // Make request through service with ETag support
       const result = await service.getProgress(investigationId, cachedETag);

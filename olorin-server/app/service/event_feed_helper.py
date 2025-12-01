@@ -23,7 +23,7 @@ from app.service.event_feed_models import EventActor, InvestigationEvent
 class EventFeedHelper:
     """Helper class for event feed operations."""
 
-    def parse_cursor(self, cursor: str, expiry_days: int) -> Tuple[datetime, int]:
+    def parse_cursor(self, cursor: str, expiry_days: int) -> Tuple[int, int]:
         """
         Parse cursor string into timestamp and sequence.
 
@@ -32,7 +32,7 @@ class EventFeedHelper:
             expiry_days: Number of days before cursor expires
 
         Returns:
-            Tuple of (timestamp, sequence)
+            Tuple of (timestamp_ms, sequence)
 
         Raises:
             HTTPException: If cursor is invalid or expired
@@ -45,7 +45,7 @@ class EventFeedHelper:
             timestamp_ms = int(parts[0])
             sequence = int(parts[1])
 
-            # Convert milliseconds to datetime
+            # Convert milliseconds to datetime for expiry check
             timestamp = datetime.fromtimestamp(timestamp_ms / 1000.0)
 
             # Check if cursor is expired
@@ -55,7 +55,7 @@ class EventFeedHelper:
                     detail=f"Cursor expired (older than {expiry_days} days)",
                 )
 
-            return timestamp, sequence
+            return timestamp_ms, sequence
 
         except (ValueError, IndexError) as e:
             raise HTTPException(

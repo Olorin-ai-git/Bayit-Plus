@@ -18,12 +18,13 @@ from datetime import datetime
 from typing import Any, Dict, List, Optional
 from uuid import uuid4
 
-from fastapi import APIRouter, Depends, HTTPException, Query, Response, status
+from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException, Query, Response, status
 from sqlalchemy.orm import Session
 
 from app.persistence.database import get_db
 from app.schemas.investigation_results import FindingSchema, EvidenceSchema
 from app.schemas.investigation_state import (
+    InvestigationStateCreate,
     InvestigationStateResponse,
     InvestigationStatus,
     InvestigationStateUpdate,
@@ -37,6 +38,100 @@ router = APIRouter(
     tags=["Investigation Management"],
     responses={404: {"description": "Not found"}, 409: {"description": "Conflict"}},
 )
+
+
+@router.post(
+    "/{investigation_id}/restart",
+    response_model=InvestigationStateResponse,
+    status_code=status.HTTP_201_CREATED,
+    summary="Restart investigation",
+    description="Restart investigation with same parameters (creates new instance)",
+)
+async def restart_investigation(
+    investigation_id: str,
+    background_tasks: BackgroundTasks,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(require_write_or_dev),
+) -> InvestigationStateResponse:
+    """Restart investigation by creating a new instance with same settings."""
+    service = InvestigationStateService(db)
+    
+    # Get existing state (relaxed auth for system user if needed, but here we require write)
+    # Using get_state_with_auth to ensure user has access to the one they are restarting
+    old_state = service.get_state_with_auth(investigation_id, current_user.username)
+
+    # Generate new ID first to link
+    new_investigation_id = str(uuid4())
+
+    # Update old investigation with metadata pointing to new one
+    old_settings = old_state.settings or {}
+    # Convert Pydantic model to dict if needed
+    if hasattr(old_settings, "model_dump"):
+        old_settings_dict = old_settings.model_dump()
+    elif hasattr(old_settings, "dict"):
+        old_settings_dict = old_settings.dict()
+    else:
+        old_settings_dict = dict(old_settings)
+
+    if "metadata" not in old_settings_dict:
+        old_settings_dict["metadata"] = {}
+    
+    # Mark old as restarted to new ID
+    old_settings_dict["metadata"]["restarted_to"] = new_investigation_id
+
+    # Reconstruct settings object if needed or pass dict
+    from app.schemas.investigation_state import InvestigationSettings
+    updated_old_settings = InvestigationSettings(**old_settings_dict)
+
+    # Cancel old investigation if not already terminal
+    terminal_statuses = [
+        InvestigationStatus.COMPLETED,
+        InvestigationStatus.ERROR,
+        InvestigationStatus.CANCELLED
+    ]
+    
+    new_status = old_state.status
+    if old_state.status not in terminal_statuses:
+        new_status = InvestigationStatus.CANCELLED
+    
+    # Update old state
+    service.update_state(
+        investigation_id,
+        current_user.username,
+        InvestigationStateUpdate(
+            status=new_status,
+            settings=updated_old_settings,
+            version=old_state.version
+        )
+    )
+
+    # Prepare settings for new investigation
+    new_settings_dict = old_settings_dict.copy()
+    # Remove forward link from new one
+    new_settings_dict["metadata"].pop("restarted_to", None)
+    # Add backward link
+    new_settings_dict["metadata"]["restarted_from"] = investigation_id
+    
+    new_settings = InvestigationSettings(**new_settings_dict)
+
+    # Create new investigation data
+    new_data = InvestigationStateCreate(
+        investigation_id=new_investigation_id,
+        lifecycle_stage=LifecycleStage.CREATED,
+        status=InvestigationStatus.CREATED,
+        settings=new_settings,
+        # We don't copy progress or results
+    )
+
+    # Create new state using service (this handles DB save and background task trigger)
+    # Note: create_state auto-generates ID if not provided
+    new_state = await service.create_state(
+        user_id=current_user.username,
+        data=new_data,
+        background_tasks=background_tasks
+    )
+
+    return new_state
 
 
 @router.post(

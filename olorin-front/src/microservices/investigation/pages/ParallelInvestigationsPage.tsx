@@ -33,6 +33,8 @@ interface ParallelInvestigation {
   fraudPercent: number | null;
   startTime: string;
   endTime?: string;
+  updatedAt?: string;
+  restartedToId?: string; // Metadata field
 }
 
 // Helper component for dynamic duration display
@@ -102,7 +104,27 @@ export const ParallelInvestigationsPage: React.FC = () => {
   
   // Filtering state
   const [searchQuery, setSearchQuery] = useState('');
-  const [statusFilter, setStatusFilter] = useState<string>('ALL');
+  const [statusFilters, setStatusFilters] = useState<string[]>([]);
+  const [isStatusDropdownOpen, setIsStatusDropdownOpen] = useState(false);
+
+  // Status options for multi-select
+  const STATUS_OPTIONS = [
+    { value: 'IN_PROGRESS', label: 'In Progress' },
+    { value: 'SETTINGS', label: 'Paused' },
+    { value: 'COMPLETED', label: 'Completed' },
+    { value: 'ERROR', label: 'Error' },
+    { value: 'CANCELLED', label: 'Cancelled' }
+  ];
+
+  const toggleStatusFilter = (value: string) => {
+    setStatusFilters(prev => 
+      prev.includes(value) 
+        ? prev.filter(v => v !== value)
+        : [...prev, value]
+    );
+  };
+
+  const clearStatusFilters = () => setStatusFilters([]);
 
   // Modal state
   const [isCancelModalOpen, setIsCancelModalOpen] = useState(false);
@@ -162,6 +184,12 @@ export const ParallelInvestigationsPage: React.FC = () => {
           0;
 
         const isTerminal = ['COMPLETED', 'ERROR', 'FAILED', 'CANCELLED'].includes(inv.status);
+        
+        // Expose updatedAt for staleness check
+        const updatedAt = inv.updatedAt || inv.updated_at;
+        
+        // Check for restarted metadata
+        const restartedToId = metadata.restarted_to || metadata.restartedTo;
 
         return {
           id: inv.investigationId || inv.id, // Handle potential ID field variations
@@ -173,7 +201,9 @@ export const ParallelInvestigationsPage: React.FC = () => {
           fraudTxCount: typeof fraudTxCount === 'number' ? fraudTxCount : 0,
           fraudPercent: typeof fraudPercent === 'number' ? fraudPercent : null,
           startTime: inv.createdAt || inv.created_at,
-          endTime: isTerminal ? (inv.updatedAt || inv.updated_at) : undefined
+          endTime: isTerminal ? updatedAt : undefined,
+          updatedAt: updatedAt,
+          restartedToId: restartedToId // Map metadata
         };
       });
 
@@ -203,8 +233,15 @@ export const ParallelInvestigationsPage: React.FC = () => {
   const filteredInvestigations = React.useMemo(() => {
     return investigations.filter(inv => {
       // Status filter
-      if (statusFilter !== 'ALL' && inv.status !== statusFilter) {
-        return false;
+      if (statusFilters.length > 0) {
+        if (!statusFilters.includes(inv.status)) {
+          return false;
+        }
+      } else {
+        // Default: Hide CANCELLED and RESTARTED rows if no filter selected
+        if (inv.status === 'CANCELLED' || inv.restartedToId) {
+          return false;
+        }
       }
       
       // Search filter
@@ -219,7 +256,7 @@ export const ParallelInvestigationsPage: React.FC = () => {
       
       return true;
     });
-  }, [investigations, statusFilter, searchQuery]);
+  }, [investigations, statusFilters, searchQuery]);
 
   const handleCancelInvestigation = (id: string) => {
     setInvestigationToCancel(id);
@@ -239,6 +276,30 @@ export const ParallelInvestigationsPage: React.FC = () => {
       console.error('Failed to cancel investigation:', err);
       setError('Failed to cancel investigation. Please try again.');
       setIsCancelModalOpen(false);
+    }
+  };
+
+  const handleRestartInvestigation = async (id: string) => {
+    try {
+      await investigationService.restartInvestigation(id);
+      fetchInvestigations();
+    } catch (err) {
+      console.error('Failed to restart investigation:', err);
+      setError('Failed to restart investigation. Please try again.');
+    }
+  };
+
+  const handleTogglePauseInvestigation = async (id: string, currentStatus: string) => {
+    try {
+      if (currentStatus === 'IN_PROGRESS') {
+        await investigationService.pauseInvestigation(id);
+      } else {
+        await investigationService.resumeInvestigation(id);
+      }
+      fetchInvestigations();
+    } catch (err) {
+      console.error('Failed to toggle pause/resume:', err);
+      setError('Failed to update investigation status. Please try again.');
     }
   };
 
@@ -280,7 +341,21 @@ export const ParallelInvestigationsPage: React.FC = () => {
       accessor: (row) => row.status,
       id: 'status',
       sortable: true,
-      cell: (value) => {
+      cell: (value, row) => {
+        // Special handling for Restarted status (overrides DB status in UI)
+        if (row.restartedToId) {
+          return (
+             <div className="flex flex-col">
+              <span className="font-semibold text-corporate-accentPrimary animate-pulse">
+                RESTARTED
+              </span>
+              <span className="text-[10px] text-corporate-textTertiary font-mono">
+                → {row.restartedToId.substring(0, 8)}
+              </span>
+            </div>
+          );
+        }
+
         let colorClass = 'text-corporate-textSecondary';
         let animate = false;
         
@@ -386,31 +461,98 @@ export const ParallelInvestigationsPage: React.FC = () => {
     {
       header: '',
       id: 'actions',
-      width: '40px',
+      width: '120px',
       accessor: () => '',
       cell: (value, row) => {
         const canCancel = ['CREATED', 'SETTINGS', 'IN_PROGRESS'].includes(row.status);
-        if (!canCancel) return null;
+        const canPause = row.status === 'IN_PROGRESS';
+        const canResume = row.status === 'SETTINGS';
+        let canRestart = ['COMPLETED', 'ERROR', 'FAILED', 'CANCELLED'].includes(row.status);
+        
+        // Detect stale investigations (IN_PROGRESS but no update for > 15 mins)
+        let isStale = false;
+        if (row.status === 'IN_PROGRESS' && row.updatedAt) {
+          const lastUpdate = new Date(row.updatedAt).getTime();
+          const now = new Date().getTime();
+          const diffMinutes = (now - lastUpdate) / (1000 * 60);
+          if (diffMinutes > 15) {
+            isStale = true;
+            canRestart = true; // Allow restart for stale items
+          }
+        }
         
         return (
-          <div className="invisible group-hover:visible flex justify-end">
-            <button
-              onClick={(e) => {
-                e.stopPropagation();
-                handleCancelInvestigation(row.id);
-              }}
-              className="p-1 rounded-full text-corporate-textTertiary hover:text-corporate-error hover:bg-corporate-error/10 transition-colors"
-              title="Cancel Investigation"
-            >
-              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M9.75 9.75l4.5 4.5m0-4.5l-4.5 4.5M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-              </svg>
-            </button>
+          <div className="invisible group-hover:visible flex justify-end gap-1">
+            {/* Restart Button */}
+            {canRestart && (
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleRestartInvestigation(row.id);
+                }}
+                className={`p-1 rounded-full text-corporate-textTertiary hover:text-corporate-accentPrimary hover:bg-corporate-accentPrimary/10 transition-colors ${isStale ? 'text-corporate-warning' : ''}`}
+                title={isStale ? "Restart Stale Investigation" : "Restart Investigation"}
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182m0-4.991v4.99" />
+                </svg>
+              </button>
+            )}
+
+            {/* Pause/Resume Button */}
+            {(canPause || canResume) && (
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleTogglePauseInvestigation(row.id, row.status);
+                }}
+                className="p-1 rounded-full text-corporate-textTertiary hover:text-corporate-info hover:bg-corporate-info/10 transition-colors"
+                title={canPause ? "Pause Investigation" : "Resume Investigation"}
+              >
+                {canPause ? (
+                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 5.25v13.5m-7.5-13.5v13.5" />
+                  </svg>
+                ) : (
+                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M5.25 5.653c0-.856.917-1.398 1.667-.986l11.54 6.348a1.125 1.125 0 010 1.971l-11.54 6.347a1.125 1.125 0 01-1.667-.985V5.653z" />
+                  </svg>
+                )}
+              </button>
+            )}
+
+            {/* Cancel Button */}
+            {canCancel && (
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleCancelInvestigation(row.id);
+                }}
+                className="p-1 rounded-full text-corporate-textTertiary hover:text-corporate-error hover:bg-corporate-error/10 transition-colors"
+                title="Cancel Investigation"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M9.75 9.75l4.5 4.5m0-4.5l-4.5 4.5M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+              </button>
+            )}
           </div>
         );
       }
     }
   ];
+
+  const statusDropdownRef = React.useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (statusDropdownRef.current && !statusDropdownRef.current.contains(event.target as Node)) {
+        setIsStatusDropdownOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
 
   return (
     <div className="min-h-screen bg-black text-corporate-textPrimary px-6 py-8">
@@ -462,20 +604,58 @@ export const ParallelInvestigationsPage: React.FC = () => {
               className="pl-10 block w-full bg-black/50 border border-corporate-borderPrimary rounded-md py-2 text-corporate-textPrimary placeholder-corporate-textTertiary focus:ring-corporate-accentPrimary focus:border-corporate-accentPrimary sm:text-sm"
             />
           </div>
-          <div className="w-full md:w-48">
-            <select
-              value={statusFilter}
-              onChange={(e) => setStatusFilter(e.target.value)}
-              className="block w-full bg-black/50 border border-corporate-borderPrimary rounded-md py-2 pl-3 pr-10 text-corporate-textPrimary focus:ring-corporate-accentPrimary focus:border-corporate-accentPrimary sm:text-sm"
+          <div className="w-full md:w-64 relative" ref={statusDropdownRef}>
+            <button
+              onClick={() => setIsStatusDropdownOpen(!isStatusDropdownOpen)}
+              className="flex items-center justify-between w-full bg-black/50 border border-corporate-borderPrimary rounded-md py-2 px-3 text-left text-corporate-textPrimary focus:outline-none focus:ring-1 focus:ring-corporate-accentPrimary focus:border-corporate-accentPrimary sm:text-sm"
             >
-              <option value="ALL">All Statuses</option>
-              <option value="CREATED">Created</option>
-              <option value="SETTINGS">Settings</option>
-              <option value="IN_PROGRESS">In Progress</option>
-              <option value="COMPLETED">Completed</option>
-              <option value="ERROR">Error</option>
-              <option value="CANCELLED">Cancelled</option>
-            </select>
+              <span className="block truncate">
+                {statusFilters.length === 0 
+                  ? 'All Statuses' 
+                  : `${statusFilters.length} Status${statusFilters.length > 1 ? 'es' : ''} Selected`}
+              </span>
+              <svg className="h-5 w-5 text-corporate-textTertiary" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                <path fillRule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z" clipRule="evenodd" />
+              </svg>
+            </button>
+
+            {isStatusDropdownOpen && (
+              <div className="absolute z-10 mt-1 w-full bg-corporate-bgSecondary border border-corporate-borderPrimary rounded-md shadow-lg max-h-60 overflow-auto focus:outline-none">
+                <div className="p-2 border-b border-corporate-borderPrimary/30 sticky top-0 bg-corporate-bgSecondary z-10">
+                  <div 
+                    className={`cursor-pointer px-2 py-1 rounded text-xs font-medium hover:bg-white/5 flex items-center gap-2 ${statusFilters.length === 0 ? 'text-corporate-accentPrimary' : 'text-corporate-textSecondary'}`}
+                    onClick={clearStatusFilters}
+                  >
+                    <div className={`w-3 h-3 rounded-full border border-current ${statusFilters.length === 0 ? 'bg-corporate-accentPrimary' : ''}`}></div>
+                    All Statuses
+                  </div>
+                </div>
+                <div className="p-1">
+                  {STATUS_OPTIONS.map((option) => (
+                    <div
+                      key={option.value}
+                      className="flex items-center px-2 py-2 cursor-pointer hover:bg-white/5 rounded"
+                      onClick={() => toggleStatusFilter(option.value)}
+                    >
+                      <div className={`w-4 h-4 mr-3 flex items-center justify-center border rounded ${
+                        statusFilters.includes(option.value) 
+                          ? 'bg-corporate-accentPrimary border-corporate-accentPrimary text-white' 
+                          : 'border-corporate-textTertiary'
+                      }`}>
+                        {statusFilters.includes(option.value) && (
+                          <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
+                          </svg>
+                        )}
+                      </div>
+                      <span className={`block truncate text-sm ${statusFilters.includes(option.value) ? 'text-white' : 'text-corporate-textSecondary'}`}>
+                        {option.label}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
           </div>
         </div>
 
