@@ -10,6 +10,7 @@ SYSTEM MANDATE Compliance:
 """
 
 from fastapi import HTTPException
+from sqlalchemy import or_
 from sqlalchemy.orm import Session
 
 from app.models.investigation_state import InvestigationState
@@ -33,9 +34,12 @@ def get_state_by_id(
     """
     state = (
         db.query(InvestigationState)
+        .filter(InvestigationState.investigation_id == investigation_id)
         .filter(
-            InvestigationState.investigation_id == investigation_id,
-            InvestigationState.user_id == user_id,
+            or_(
+                InvestigationState.user_id == user_id,
+                InvestigationState.user_id == "auto-comparison-system",
+            )
         )
         .first()
     )

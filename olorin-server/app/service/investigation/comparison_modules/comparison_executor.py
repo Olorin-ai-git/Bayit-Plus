@@ -33,6 +33,7 @@ class ComparisonExecutor:
         max_wait_seconds: int = 600,
         merchant_name: Optional[str] = None,
         fraud_tx_count: int = 0,
+        total_tx_count: int = 0,
     ) -> Optional[Dict[str, Any]]:
         """
         Create a new investigation and wait for it to complete.
@@ -45,6 +46,7 @@ class ComparisonExecutor:
             max_wait_seconds: Maximum time to wait for completion (default: 10 minutes)
             merchant_name: Optional merchant name for context
             fraud_tx_count: Number of fraudulent transactions detected
+            total_tx_count: Total number of transactions in the window
 
         Returns:
             Investigation dict if completed successfully, None otherwise
@@ -71,7 +73,7 @@ class ComparisonExecutor:
                 f"🔨 Creating investigation {investigation_id} for {entity_type}={entity_value}"
             )
             if merchant_name:
-                self.logger.info(f"   Context: Merchant={merchant_name}, Fraud Tx={fraud_tx_count}")
+                self.logger.info(f"   Context: Merchant={merchant_name}, Fraud Tx={fraud_tx_count}/{total_tx_count}")
             self.logger.info(f"   Window: {window_start.date()} to {window_end.date()}")
 
             # Create investigation settings
@@ -96,6 +98,7 @@ class ComparisonExecutor:
                 metadata={
                     "merchant_name": merchant_name,
                     "fraud_tx_count": fraud_tx_count,
+                    "total_tx_count": total_tx_count,
                     "auto_generated": True
                 }
             )

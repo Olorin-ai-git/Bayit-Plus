@@ -33,7 +33,7 @@ export function TableBody<T>({ data, config, selection }: TableBodyProps<T>) {
         return (
           <tr
             key={rowKey}
-            className={`hover:bg-gray-800 transition-colors ${
+            className={`group hover:bg-gray-800 transition-colors ${
               config.onRowClick ? 'cursor-pointer' : ''
             } ${isSelected ? 'bg-blue-900/20' : ''}`}
             onClick={() => {

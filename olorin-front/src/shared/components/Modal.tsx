@@ -137,12 +137,13 @@ export const Modal: React.FC<ModalProps> = ({
             rounded-lg bg-black border-2 border-corporate-borderPrimary/40
             shadow-2xl transition-all duration-300 ease-out
             animate-in fade-in-0 zoom-in-95 slide-in-from-bottom-4
+            flex flex-col max-h-[90vh]
             ${className}
           `}
         >
           {/* Header with Olorin corporate styling */}
           {(title || showCloseButton) && (
-            <div className="flex items-center justify-between border-b border-corporate-borderPrimary px-6 py-4">
+            <div className="flex items-center justify-between border-b border-corporate-borderPrimary px-6 py-4 shrink-0">
               {title && (
                 <h3
                   id="modal-title"
@@ -164,7 +165,7 @@ export const Modal: React.FC<ModalProps> = ({
           )}
 
           {/* Content */}
-          <div className="px-6 py-4">{children}</div>
+          <div className="px-6 py-4 overflow-y-auto">{children}</div>
         </div>
       </div>
     </div>

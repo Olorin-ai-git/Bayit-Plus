@@ -68,7 +68,7 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundarySt
 
       return (
         <div className="flex items-center justify-center min-h-screen bg-corporate-bgPrimary p-4">
-          <div className="max-w-md w-full bg-corporate-bgSecondary border-2 border-corporate-error rounded-lg p-6">
+          <div className="max-w-md w-full bg-corporate-bgSecondary border-2 border-corporate-error rounded-lg p-6 max-h-[90vh] overflow-y-auto">
             <div className="flex items-start gap-3 mb-4">
               <div className="flex-shrink-0">
                 <svg className="w-6 h-6 text-corporate-error" fill="none" stroke="currentColor" viewBox="0 0 24 24">

@@ -102,9 +102,10 @@ async def run_auto_comparisons_for_top_entities(
             email = pair["email"]
             merchant = pair["merchant"]
             fraud_count = pair["fraud_count"]
+            total_count = pair.get("total_count", 0)
 
             logger.info(
-                f"🔍 [{i+1}/{len(fraud_pairs)}] Investigating {email} (Merchant: {merchant}, Fraud Tx: {fraud_count})"
+                f"🔍 [{i+1}/{len(fraud_pairs)}] Investigating {email} (Merchant: {merchant}, Fraud Tx: {fraud_count}/{total_count})"
             )
 
             try:
@@ -116,6 +117,7 @@ async def run_auto_comparisons_for_top_entities(
                     window_end=window_end,
                     merchant_name=merchant,
                     fraud_tx_count=fraud_count,
+                    total_tx_count=total_count,
                 )
 
                 if result:
@@ -127,6 +129,7 @@ async def run_auto_comparisons_for_top_entities(
                     result["merchant_name"] = merchant
                     result["email"] = email
                     result["fraud_tx_count"] = fraud_count
+                    result["total_tx_count"] = total_count
                     
                     # Map for reporter compatibility
                     result["entity_type"] = "email"

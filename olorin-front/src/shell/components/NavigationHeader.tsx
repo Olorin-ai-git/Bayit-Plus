@@ -17,7 +17,7 @@ const NavigationHeader: React.FC = () => {
   return (
     <header className="bg-black/50 backdrop-blur-lg border-b border-corporate-borderPrimary sticky top-0 z-50">
       <div className="max-w-full mx-auto px-6 lg:px-8">
-        <div className="flex justify-between items-center h-24 gap-8">
+        <div className="flex flex-wrap justify-between items-center min-h-[6rem] gap-4 py-2">
           {/* Logo Section */}
           <div className="flex-shrink-0">
             <Link to="/" className="flex items-center group hover:opacity-80 transition-opacity duration-200">
@@ -31,14 +31,14 @@ const NavigationHeader: React.FC = () => {
 
           {/* Center: Navigation Links - Desktop */}
           {!isHomePage && (
-            <nav className="hidden lg:flex items-center justify-center flex-1 gap-4">
+            <nav className="hidden lg:flex flex-wrap items-center justify-center flex-1 gap-2 px-4">
               {serviceLinks.filter(service => service.name !== 'Status').map((service) => {
                 const isActive = location.pathname.startsWith(service.path);
                 return (
                   <Link
                     key={service.name}
                     to={service.path}
-                    className={`flex items-center gap-2 px-4 py-2.5 rounded-lg text-sm font-medium whitespace-nowrap transition-all duration-200 border h-10 ${
+                    className={`flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium whitespace-nowrap transition-all duration-200 border h-10 ${
                       isActive
                         ? `bg-corporate-accentPrimary text-white border-corporate-accentPrimary shadow-lg shadow-corporate-accentPrimary/20`
                         : 'text-corporate-textSecondary border-2 border-corporate-borderPrimary/40/50 hover:text-corporate-accentSecondary hover:border-corporate-accentSecondary bg-black/20 hover:bg-black/30'

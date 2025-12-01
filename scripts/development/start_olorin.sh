@@ -16,9 +16,10 @@ NC='\033[0m' # No Color
 
 # Configuration
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-BACKEND_DIR="$SCRIPT_DIR/olorin-server"
-FRONTEND_DIR="$SCRIPT_DIR/olorin-front"
-LOG_DIR="$SCRIPT_DIR/logs"
+PROJECT_ROOT="$(cd "$SCRIPT_DIR/../.." && pwd)"
+BACKEND_DIR="$PROJECT_ROOT/olorin-server"
+FRONTEND_DIR="$PROJECT_ROOT/olorin-front"
+LOG_DIR="$PROJECT_ROOT/logs"
 
 # Default ports
 BACKEND_PORT=8090
@@ -103,8 +104,22 @@ start_backend() {
     print_status "Starting Backend server..."
     
     if check_port $BACKEND_PORT; then
-        print_warning "Port $BACKEND_PORT is already in use. Skipping backend startup."
-        return 1
+        print_warning "Port $BACKEND_PORT is already in use. Attempting to kill process using it..."
+        local pid=$(lsof -ti :$BACKEND_PORT | head -1)
+        if [ -n "$pid" ]; then
+            print_status "Killing process $pid using port $BACKEND_PORT..."
+            kill -9 "$pid" 2>/dev/null || true
+            sleep 2
+            
+            if check_port $BACKEND_PORT; then
+                print_error "Failed to kill process on port $BACKEND_PORT. Cannot start backend."
+                return 1
+            else
+                print_success "Port $BACKEND_PORT freed."
+            fi
+        else
+            print_warning "Could not identify process using port $BACKEND_PORT."
+        fi
     fi
     
     if [ ! -d "$BACKEND_DIR" ]; then

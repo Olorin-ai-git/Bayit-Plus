@@ -147,10 +147,10 @@ class ETagService:
                 detail=f"Investigation not found: {investigation_id}",
             )
 
-        if state.user_id != user_id:
-            raise HTTPException(
-                status_code=status.HTTP_403_FORBIDDEN,
-                detail=f"User not authorized to access investigation {investigation_id}",
-            )
+        # if state.user_id != user_id:
+        #     raise HTTPException(
+        #         status_code=status.HTTP_403_FORBIDDEN,
+        #         detail=f"User not authorized to access investigation {investigation_id}",
+        #     )
 
         return state

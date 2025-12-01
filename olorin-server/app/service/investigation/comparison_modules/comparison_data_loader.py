@@ -150,15 +150,15 @@ class ComparisonDataLoader:
                 SELECT 
                     EMAIL,
                     MERCHANT_NAME,
-                    COUNT(*) as FRAUD_TX_COUNT
+                    COUNT(CASE WHEN IS_FRAUD_TX = 1 THEN 1 END) as FRAUD_TX_COUNT,
+                    COUNT(*) as TOTAL_TX_COUNT
                 FROM {db_provider.get_full_table_name()}
                 WHERE TX_DATETIME >= '{start_time.isoformat()}'
                   AND TX_DATETIME <= '{end_time.isoformat()}'
-                  AND IS_FRAUD_TX = 1
                   AND EMAIL IS NOT NULL
                   AND MERCHANT_NAME IS NOT NULL
                 GROUP BY EMAIL, MERCHANT_NAME
-                HAVING COUNT(*) >= {min_fraud_tx}
+                HAVING COUNT(CASE WHEN IS_FRAUD_TX = 1 THEN 1 END) >= {min_fraud_tx}
                 ORDER BY FRAUD_TX_COUNT DESC
                 LIMIT {limit}
                 """
@@ -167,15 +167,15 @@ class ComparisonDataLoader:
                 SELECT 
                     email,
                     merchant_name,
-                    COUNT(*) as fraud_tx_count
+                    COUNT(CASE WHEN is_fraud_tx = 1 THEN 1 END) as fraud_tx_count,
+                    COUNT(*) as total_tx_count
                 FROM {db_provider.get_full_table_name()}
                 WHERE tx_datetime >= '{start_time.isoformat()}'
                   AND tx_datetime <= '{end_time.isoformat()}'
-                  AND is_fraud_tx = 1
                   AND email IS NOT NULL
                   AND merchant_name IS NOT NULL
                 GROUP BY email, merchant_name
-                HAVING COUNT(*) >= {min_fraud_tx}
+                HAVING COUNT(CASE WHEN is_fraud_tx = 1 THEN 1 END) >= {min_fraud_tx}
                 ORDER BY fraud_tx_count DESC
                 LIMIT {limit}
                 """
@@ -190,18 +190,32 @@ class ComparisonDataLoader:
             # Normalize keys
             normalized_results = []
             for r in results:
-                email = r.get("EMAIL") or r.get("email")
-                merchant = r.get("MERCHANT_NAME") or r.get("merchant_name")
-                count = r.get("FRAUD_TX_COUNT") or r.get("fraud_tx_count")
+                # Helper to get value case-insensitively
+                def get_val(keys):
+                    for k in keys:
+                        val = r.get(k) or r.get(k.lower()) or r.get(k.upper())
+                        if val is not None:
+                            return val
+                    return None
+
+                email = get_val(["email", "EMAIL"])
+                merchant = get_val(["merchant_name", "MERCHANT_NAME"])
+                count = get_val(["fraud_tx_count", "FRAUD_TX_COUNT", "fraud_count"])
+                total = get_val(["total_tx_count", "TOTAL_TX_COUNT", "total_count"]) or 0
                 
                 if email and merchant:
                     normalized_results.append({
                         "email": email,
                         "merchant": merchant,
-                        "fraud_count": count
+                        "fraud_count": count,
+                        "total_count": total
                     })
-                    
+            
             self.logger.info(f"✅ Found {len(normalized_results)} fraudulent email-merchant pairs")
+            # Log first result to debug metadata flow
+            if normalized_results:
+                self.logger.info(f"   First result sample: {normalized_results[0]}")
+            
             return normalized_results
             
         except Exception as e:
