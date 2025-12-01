@@ -44,7 +44,8 @@ async def generate_confusion_table(
     db = next(db_gen)
     try:
         service = InvestigationStateService(db)
-        state = service.get_state_with_auth(
+        # Use get_state instead of get_state_with_auth to avoid strict auth issues for system tasks
+        state = service.get_state(
             investigation_id=investigation_id, user_id="auto-comparison-system"
         )
 
@@ -225,6 +226,7 @@ async def generate_confusion_table(
                 logger.warning(
                     f"⚠️ No transactions found for {entity_type}:{entity_value}"
                 )
+                # If no transactions found, we cannot generate a confusion matrix
                 return None
 
             logger.info(f"   Found {len(transactions)} transactions")

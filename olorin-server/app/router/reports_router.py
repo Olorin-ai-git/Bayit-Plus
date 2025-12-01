@@ -261,6 +261,10 @@ async def get_investigation_report_html(
         None,
         description="View type: 'canonical' (default) or 'entity' (entity view path)",
     ),
+    report_type: str = Query(
+        "comprehensive",
+        description="Report type: 'comprehensive' (default) or 'confusion_matrix'",
+    ),
     db: Session = Depends(get_db),
     current_user: User = Depends(require_read),
 ):
@@ -292,6 +296,11 @@ async def get_investigation_report_html(
     investigation_folder = None
     report_path = None
 
+    # Determine filename based on report_type
+    filename = "comprehensive_investigation_report.html"
+    if report_type == "confusion_matrix":
+        filename = "confusion_matrix.html"
+
     try:
         from app.service.logging.investigation_folder_manager import get_folder_manager
 
@@ -300,9 +309,7 @@ async def get_investigation_report_html(
 
         if investigation_folder and investigation_folder.exists():
             # Use canonical path (investigation folder)
-            report_path = (
-                investigation_folder / "comprehensive_investigation_report.html"
-            )
+            report_path = investigation_folder / filename
 
             # If entity view requested, try to resolve entity view path
             if view_type == "entity" and investigation_folder:
@@ -352,7 +359,7 @@ async def get_investigation_report_html(
                 return FileResponse(
                     path=str(report_path),
                     media_type="text/html",
-                    filename=f"investigation_report_{investigation_id}.html",
+                    filename=f"investigation_{report_type}_{investigation_id}.html",
                 )
     except Exception as e:
         logger.warning(f"Failed to retrieve report using FileOrganizationService: {e}")
@@ -374,19 +381,27 @@ async def get_investigation_report_html(
                     investigation_folder = folder
                     break
 
-    report_path = investigation_folder / "comprehensive_investigation_report.html"
+    report_path = investigation_folder / filename
 
-    if not report_path.exists():
-        raise HTTPException(
-            status_code=404,
-            detail=f"Report not found for investigation '{investigation_id}'. Generate the report first.",
+        if not report_path.exists():
+            # Check artifacts fallback for confusion matrix (for auto-comp investigations)
+            if report_type == "confusion_matrix":
+                artifacts_path = Path("artifacts/comparisons/auto_startup") / f"confusion_matrix_{investigation_id}.html"
+                if artifacts_path.exists():
+                    report_path = artifacts_path
+            
+            # Final check
+            if not report_path.exists():
+                raise HTTPException(
+                    status_code=404,
+                    detail=f"Report not found for investigation '{investigation_id}'. Generate the report first.",
+                )
+
+        return FileResponse(
+            path=str(report_path),
+            media_type="text/html",
+            filename=f"investigation_{report_type}_{investigation_id}.html",
         )
-
-    return FileResponse(
-        path=str(report_path),
-        media_type="text/html",
-        filename=f"investigation_report_{investigation_id}.html",
-    )
 
 
 @router.post(

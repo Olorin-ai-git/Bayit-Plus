@@ -34,6 +34,7 @@ import { useProgressRehydration } from '../hooks/useProgressRehydration';
 import { useEventApplication } from '../hooks/useEventApplication';
 import { NoInvestigationMessage } from '../components/NoInvestigationMessage';
 import { ConnectionStatusHeader } from '../components/ConnectionStatusHeader';
+import { investigationService } from '../services/investigationService';
 import { useInvestigationReports } from '@microservices/reporting/hooks/useInvestigationReports';
 import { Spinner } from '@shared/components/ui/Spinner';
 import {
@@ -433,6 +434,34 @@ export const ProgressPage: React.FC = () => {
     }
   };
 
+  // Handler for generating confusion matrix
+  const [isGeneratingMatrix, setIsGeneratingMatrix] = React.useState(false);
+  const [matrixError, setMatrixError] = React.useState<string | null>(null);
+
+  const handleGenerateMatrix = async () => {
+    setReportSuccess(null);
+    setMatrixError(null);
+    setIsGeneratingMatrix(true);
+
+    try {
+      if (!structuredInvestigationId) return;
+      
+      const result = await investigationService.generateConfusionMatrix(structuredInvestigationId);
+      
+      if (result && result.url) {
+        const apiBaseUrl = process.env.REACT_APP_API_BASE_URL || 'http://localhost:8090';
+        const downloadUrl = `${apiBaseUrl}${result.url}`;
+        window.open(downloadUrl, '_blank');
+        setReportSuccess('Confusion matrix generated and downloaded.');
+      }
+    } catch (err) {
+      console.error('Failed to generate confusion matrix:', err);
+      setMatrixError('Failed to generate confusion matrix. Please try again.');
+    } finally {
+      setIsGeneratingMatrix(false);
+    }
+  };
+
   // Handler for viewing analytics
   const handleViewAnalytics = () => {
     if (window.olorin?.navigate) {
@@ -498,6 +527,14 @@ export const ProgressPage: React.FC = () => {
                 {isGenerating ? 'Generating Report...' : 'Create Report'}
               </button>
               <button
+                onClick={handleGenerateMatrix}
+                disabled={isGeneratingMatrix}
+                className="px-4 py-2 rounded-lg bg-corporate-accentPrimary hover:bg-corporate-accentPrimaryHover text-white font-medium transition-all duration-200 shadow-lg hover:shadow-corporate-accentPrimary/50 hover:scale-105 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 flex items-center gap-2"
+              >
+                {isGeneratingMatrix && <Spinner size="sm" variant="white" />}
+                {isGeneratingMatrix ? 'Generating...' : 'Confusion Matrix'}
+              </button>
+              <button
                 onClick={handleViewAnalytics}
                 className="px-4 py-2 rounded-lg bg-corporate-info hover:bg-corporate-info/90 text-white font-medium transition-all duration-200 shadow-lg hover:shadow-corporate-info/50 hover:scale-105 active:scale-95"
               >
@@ -521,6 +558,11 @@ export const ProgressPage: React.FC = () => {
           {reportError && (
             <div className="mt-3 p-3 bg-red-900/20 border border-red-500 text-red-300 rounded-lg max-w-xl">
               <span className="text-sm">{reportError}</span>
+            </div>
+          )}
+          {matrixError && (
+            <div className="mt-3 p-3 bg-red-900/20 border border-red-500 text-red-300 rounded-lg max-w-xl">
+              <span className="text-sm">{matrixError}</span>
             </div>
           )}
 

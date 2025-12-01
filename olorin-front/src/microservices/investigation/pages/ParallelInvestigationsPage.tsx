@@ -19,6 +19,7 @@ import SectionSkeleton from '@shared/components/SectionSkeleton';
 import { LoadingSpinner } from '@shared/components/LoadingSpinner';
 import { WizardButton } from '@shared/components/WizardButton';
 import { Modal } from '@shared/components/Modal';
+import { useToast } from '@shared/components/ui/ToastProvider';
 import { investigationService } from '../services/investigationService';
 
 // Interface for table row data
@@ -129,6 +130,11 @@ export const ParallelInvestigationsPage: React.FC = () => {
   // Modal state
   const [isCancelModalOpen, setIsCancelModalOpen] = useState(false);
   const [investigationToCancel, setInvestigationToCancel] = useState<string | null>(null);
+  
+  // Confusion Matrix state
+  const [generatingMatrixId, setGeneratingMatrixId] = useState<string | null>(null);
+
+  const { showToast } = useToast();
 
   const triggerAnalysis = async () => {
     try {
@@ -303,6 +309,25 @@ export const ParallelInvestigationsPage: React.FC = () => {
     }
   };
 
+  const handleGenerateMatrix = async (id: string) => {
+    try {
+      setGeneratingMatrixId(id);
+      const result = await investigationService.generateConfusionMatrix(id);
+      
+      if (result && result.url) {
+        const apiBaseUrl = process.env.REACT_APP_API_BASE_URL || 'http://localhost:8090';
+        const downloadUrl = `${apiBaseUrl}${result.url}`;
+        window.open(downloadUrl, '_blank');
+        showToast('success', 'Success', 'Confusion matrix generated successfully');
+      }
+    } catch (err) {
+      console.error('Failed to generate confusion matrix:', err);
+      showToast('error', 'Error', 'Failed to generate confusion matrix');
+    } finally {
+      setGeneratingMatrixId(null);
+    }
+  };
+
   const columns: Column<ParallelInvestigation>[] = [
     {
       header: 'Investigation ID',
@@ -461,13 +486,14 @@ export const ParallelInvestigationsPage: React.FC = () => {
     {
       header: '',
       id: 'actions',
-      width: '120px',
+      width: '160px',
       accessor: () => '',
       cell: (value, row) => {
         const canCancel = ['CREATED', 'SETTINGS', 'IN_PROGRESS'].includes(row.status);
         const canPause = row.status === 'IN_PROGRESS';
         const canResume = row.status === 'SETTINGS';
         let canRestart = ['COMPLETED', 'ERROR', 'FAILED', 'CANCELLED'].includes(row.status);
+        const canGenerateMatrix = row.status === 'COMPLETED';
         
         // Detect stale investigations (IN_PROGRESS but no update for > 15 mins)
         let isStale = false;
@@ -481,33 +507,67 @@ export const ParallelInvestigationsPage: React.FC = () => {
           }
         }
         
+        const isGenerating = generatingMatrixId === row.id;
+
         return (
-          <div className="invisible group-hover:visible flex justify-end gap-1">
+          <div 
+            className={`flex justify-end gap-1 items-center ${isGenerating ? 'visible' : 'invisible group-hover:visible'}`}
+            onClick={(e) => e.stopPropagation()} // Stop propagation for the entire actions container
+          >
+            {/* Confusion Matrix Button */}
+            {canGenerateMatrix && (
+              <div className="relative group/btn">
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleGenerateMatrix(row.id);
+                  }}
+                  disabled={isGenerating}
+                  className="p-1 rounded-full text-corporate-textTertiary hover:text-corporate-accentPrimary hover:bg-corporate-accentPrimary/10 transition-colors disabled:opacity-50"
+                >
+                  {isGenerating ? (
+                    <LoadingSpinner size="sm" />
+                  ) : (
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5">
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M3.375 19.5h17.25m-17.25 0a1.125 1.125 0 01-1.125-1.125M3.375 19.5h7.5c.621 0 1.125-.504 1.125-1.125m-9.75 0V5.625m0 12.75v-1.5c0-.621.504-1.125 1.125-1.125m18.375 2.625V5.625m0 12.75c0 .621-.504 1.125-1.125 1.125m1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125m0 3.75h-7.5A1.125 1.125 0 0112 18.375m9.75-12.75c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125m19.5 0v1.5c0 .621-.504 1.125-1.125 1.125M2.25 5.625v1.5c0 .621.504 1.125 1.125 1.125m0 0h17.25m-17.25 0h7.5c.621 0 1.125.504 1.125 1.125M3.375 8.25c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125m17.25-3.75h-7.5c-.621 0-1.125.504-1.125 1.125m8.625-1.125c.621 0 1.125.504 1.125 1.125v1.5c0 .621-.504 1.125-1.125 1.125m-17.25 0h7.5m-7.5 0c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125M12 10.875v-1.5m0 1.5c0 .621-.504 1.125-1.125 1.125M12 10.875c0 .621.504 1.125 1.125 1.125m-2.25 0c.621 0 1.125.504 1.125 1.125M13.125 12h7.5m-7.5 0c-.621 0-1.125.504-1.125 1.125M20.625 12c.621 0 1.125.504 1.125 1.125v1.5c0 .621-.504 1.125-1.125 1.125m-17.25 0h7.5M12 14.625v-1.5m0 1.5c0 .621-.504 1.125-1.125 1.125M12 14.625c0 .621.504 1.125 1.125 1.125m-2.25 0c.621 0 1.125.504 1.125 1.125m0 1.5v-1.5m0 1.5c0 .621-.504 1.125-1.125 1.125M19.125 14.625c0 .621.504 1.125 1.125 1.125" />
+                    </svg>
+                  )}
+                </button>
+                <div className="absolute bottom-full mb-2 left-1/2 transform -translate-x-1/2 px-2 py-1 bg-corporate-bgSecondary border border-corporate-borderPrimary text-white text-[10px] rounded opacity-0 group-hover/btn:opacity-100 transition-opacity whitespace-nowrap pointer-events-none z-10 shadow-lg">
+                  Generate Confusion Matrix
+                </div>
+              </div>
+            )}
+
             {/* Restart Button */}
             {canRestart && (
+              <div className="relative group/btn">
               <button
                 onClick={(e) => {
                   e.stopPropagation();
                   handleRestartInvestigation(row.id);
                 }}
                 className={`p-1 rounded-full text-corporate-textTertiary hover:text-corporate-accentPrimary hover:bg-corporate-accentPrimary/10 transition-colors ${isStale ? 'text-corporate-warning' : ''}`}
-                title={isStale ? "Restart Stale Investigation" : "Restart Investigation"}
               >
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5">
                   <path strokeLinecap="round" strokeLinejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182m0-4.991v4.99" />
                 </svg>
               </button>
+              <div className="absolute bottom-full mb-2 left-1/2 transform -translate-x-1/2 px-2 py-1 bg-corporate-bgSecondary border border-corporate-borderPrimary text-white text-[10px] rounded opacity-0 group-hover/btn:opacity-100 transition-opacity whitespace-nowrap pointer-events-none z-10 shadow-lg">
+                  {isStale ? "Restart Stale Investigation" : "Restart Investigation"}
+              </div>
+              </div>
             )}
 
             {/* Pause/Resume Button */}
             {(canPause || canResume) && (
+              <div className="relative group/btn">
               <button
                 onClick={(e) => {
                   e.stopPropagation();
                   handleTogglePauseInvestigation(row.id, row.status);
                 }}
                 className="p-1 rounded-full text-corporate-textTertiary hover:text-corporate-info hover:bg-corporate-info/10 transition-colors"
-                title={canPause ? "Pause Investigation" : "Resume Investigation"}
               >
                 {canPause ? (
                   <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5">
@@ -519,22 +579,30 @@ export const ParallelInvestigationsPage: React.FC = () => {
                   </svg>
                 )}
               </button>
+              <div className="absolute bottom-full mb-2 left-1/2 transform -translate-x-1/2 px-2 py-1 bg-corporate-bgSecondary border border-corporate-borderPrimary text-white text-[10px] rounded opacity-0 group-hover/btn:opacity-100 transition-opacity whitespace-nowrap pointer-events-none z-10 shadow-lg">
+                  {canPause ? "Pause Investigation" : "Resume Investigation"}
+              </div>
+              </div>
             )}
 
             {/* Cancel Button */}
             {canCancel && (
+              <div className="relative group/btn">
               <button
                 onClick={(e) => {
                   e.stopPropagation();
                   handleCancelInvestigation(row.id);
                 }}
                 className="p-1 rounded-full text-corporate-textTertiary hover:text-corporate-error hover:bg-corporate-error/10 transition-colors"
-                title="Cancel Investigation"
               >
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5">
                   <path strokeLinecap="round" strokeLinejoin="round" d="M9.75 9.75l4.5 4.5m0-4.5l-4.5 4.5M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
               </button>
+              <div className="absolute bottom-full mb-2 left-1/2 transform -translate-x-1/2 px-2 py-1 bg-corporate-bgSecondary border border-corporate-borderPrimary text-white text-[10px] rounded opacity-0 group-hover/btn:opacity-100 transition-opacity whitespace-nowrap pointer-events-none z-10 shadow-lg">
+                  Cancel Investigation
+              </div>
+              </div>
             )}
           </div>
         );

@@ -719,6 +719,10 @@ export class InvestigationService extends BaseApiService {
     
     return this.post(`/api/v1/analytics/startup-analysis/trigger?${params.toString()}`);
   }
+
+  async generateConfusionMatrix(id: string): Promise<{ url: string; filename: string }> {
+    return this.post<{ url: string; filename: string }>(`${this.baseEndpoint}/${id}/confusion-matrix`);
+  }
 }
 
 // Lazy singleton - only instantiate when first accessed, after config is initialized
@@ -793,4 +797,6 @@ export const investigationService = {
     getInstance().subscribeToUpdates(...args),
   triggerStartupAnalysis: (...args: Parameters<InvestigationService['triggerStartupAnalysis']>) =>
     getInstance().triggerStartupAnalysis(...args),
+  generateConfusionMatrix: (...args: Parameters<InvestigationService['generateConfusionMatrix']>) =>
+    getInstance().generateConfusionMatrix(...args),
 };

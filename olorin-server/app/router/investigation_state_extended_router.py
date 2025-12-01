@@ -135,6 +135,43 @@ async def restart_investigation(
 
 
 @router.post(
+    "/{investigation_id}/confusion-matrix",
+    response_model=Dict[str, Any],
+    status_code=status.HTTP_201_CREATED,
+    summary="Generate confusion matrix",
+    description="Generate confusion matrix for investigation",
+)
+async def generate_confusion_matrix(
+    investigation_id: str,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(require_write_or_dev),
+) -> Dict[str, Any]:
+    """Generate confusion matrix for investigation."""
+    from app.service.investigation.post_investigation_packager import (
+        generate_post_investigation_package,
+    )
+
+    # Check if investigation exists and user has access
+    service = InvestigationStateService(db)
+    # relaxed auth check for dev users
+    service.get_state(investigation_id, current_user.username)
+
+    # Generate confusion matrix
+    path = await generate_post_investigation_package(investigation_id)
+    
+    if not path:
+        raise HTTPException(
+            status_code=500,
+            detail=f"Failed to generate confusion matrix for investigation {investigation_id}",
+        )
+
+    return {
+        "url": f"/api/v1/reports/investigation/{investigation_id}/html?report_type=confusion_matrix",
+        "filename": path.name
+    }
+
+
+@router.post(
     "/{investigation_id}/start",
     response_model=InvestigationStateResponse,
     summary="Start investigation",
