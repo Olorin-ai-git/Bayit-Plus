@@ -723,6 +723,10 @@ export class InvestigationService extends BaseApiService {
   async generateConfusionMatrix(id: string): Promise<{ url: string; filename: string }> {
     return this.post<{ url: string; filename: string }>(`${this.baseEndpoint}/${id}/confusion-matrix`);
   }
+
+  async generateStartupAnalysisReport(): Promise<{ message: string; report_path: string; download_url: string }> {
+    return this.post<{ message: string; report_path: string; download_url: string }>('/api/v1/reports/startup-analysis/generate');
+  }
 }
 
 // Lazy singleton - only instantiate when first accessed, after config is initialized
@@ -799,4 +803,6 @@ export const investigationService = {
     getInstance().triggerStartupAnalysis(...args),
   generateConfusionMatrix: (...args: Parameters<InvestigationService['generateConfusionMatrix']>) =>
     getInstance().generateConfusionMatrix(...args),
+  generateStartupAnalysisReport: (...args: Parameters<InvestigationService['generateStartupAnalysisReport']>) =>
+    getInstance().generateStartupAnalysisReport(...args),
 };

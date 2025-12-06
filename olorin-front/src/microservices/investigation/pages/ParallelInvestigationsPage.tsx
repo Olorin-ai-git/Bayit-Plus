@@ -16,7 +16,6 @@ import React, { useEffect, useState, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Table, Column } from '@shared/components/Table';
 import SectionSkeleton from '@shared/components/SectionSkeleton';
-import { LoadingSpinner } from '@shared/components/LoadingSpinner';
 import { WizardButton } from '@shared/components/WizardButton';
 import { Modal } from '@shared/components/Modal';
 import { useToast } from '@shared/components/ui/ToastProvider';
@@ -131,10 +130,49 @@ export const ParallelInvestigationsPage: React.FC = () => {
   const [isCancelModalOpen, setIsCancelModalOpen] = useState(false);
   const [investigationToCancel, setInvestigationToCancel] = useState<string | null>(null);
   
-  // Confusion Matrix state
-  const [generatingMatrixId, setGeneratingMatrixId] = useState<string | null>(null);
+  // Summary Report state
+  const [isGeneratingSummary, setIsGeneratingSummary] = useState(false);
+  const [summaryReportUrl, setSummaryReportUrl] = useState<string | null>(null);
+  const [isSuccessModalOpen, setIsSuccessModalOpen] = useState(false);
 
   const { showToast } = useToast();
+
+  const handleGenerateSummaryReport = async () => {
+    try {
+      setIsGeneratingSummary(true);
+      console.log('Generating summary report...');
+      const result = await investigationService.generateStartupAnalysisReport();
+      console.log('Summary report result:', result);
+      
+      // Handle both camelCase (from BaseApiService transformation) and snake_case (raw backend)
+      const downloadUrl = (result as any).downloadUrl || (result as any).download_url;
+      
+      if (downloadUrl) {
+        const apiBaseUrl = process.env.REACT_APP_API_BASE_URL || 'http://localhost:8090';
+        
+        // Handle both relative and absolute URLs
+        let finalUrl = downloadUrl;
+        if (finalUrl.startsWith('/')) {
+            finalUrl = `${apiBaseUrl}${finalUrl}`;
+        }
+        
+        console.log('Setting summary URL:', finalUrl);
+        setSummaryReportUrl(finalUrl);
+        setIsSuccessModalOpen(true);
+        
+        // Also open directly as a convenience
+        setTimeout(() => window.open(finalUrl, '_blank'), 500);
+      } else {
+        console.warn('No download URL in result:', result);
+        showToast('warning', 'Report Generated', 'Report generated but no download URL returned.');
+      }
+    } catch (err) {
+      console.error('Failed to generate summary report:', err);
+      showToast('error', 'Error', 'Failed to generate summary report');
+    } finally {
+      setIsGeneratingSummary(false);
+    }
+  };
 
   const triggerAnalysis = async () => {
     try {
@@ -177,7 +215,7 @@ export const ParallelInvestigationsPage: React.FC = () => {
         // Extract entity value
         const entities = settings.entities || [];
         const entityValue = entities.length > 0 ? (entities[0].entityValue || entities[0].entity_value || 'Unknown') : 'Unknown';
-        
+
         // Extract risk score from progress
         const progress = inv.progress || {};
         const riskScore = progress.riskScore || progress.risk_score || 0.0;
@@ -306,25 +344,6 @@ export const ParallelInvestigationsPage: React.FC = () => {
     } catch (err) {
       console.error('Failed to toggle pause/resume:', err);
       setError('Failed to update investigation status. Please try again.');
-    }
-  };
-
-  const handleGenerateMatrix = async (id: string) => {
-    try {
-      setGeneratingMatrixId(id);
-      const result = await investigationService.generateConfusionMatrix(id);
-      
-      if (result && result.url) {
-        const apiBaseUrl = process.env.REACT_APP_API_BASE_URL || 'http://localhost:8090';
-        const downloadUrl = `${apiBaseUrl}${result.url}`;
-        window.open(downloadUrl, '_blank');
-        showToast('success', 'Success', 'Confusion matrix generated successfully');
-      }
-    } catch (err) {
-      console.error('Failed to generate confusion matrix:', err);
-      showToast('error', 'Error', 'Failed to generate confusion matrix');
-    } finally {
-      setGeneratingMatrixId(null);
     }
   };
 
@@ -493,7 +512,6 @@ export const ParallelInvestigationsPage: React.FC = () => {
         const canPause = row.status === 'IN_PROGRESS';
         const canResume = row.status === 'SETTINGS';
         let canRestart = ['COMPLETED', 'ERROR', 'FAILED', 'CANCELLED'].includes(row.status);
-        const canGenerateMatrix = row.status === 'COMPLETED';
         
         // Detect stale investigations (IN_PROGRESS but no update for > 15 mins)
         let isStale = false;
@@ -507,38 +525,11 @@ export const ParallelInvestigationsPage: React.FC = () => {
           }
         }
         
-        const isGenerating = generatingMatrixId === row.id;
-
         return (
           <div 
-            className={`flex justify-end gap-1 items-center ${isGenerating ? 'visible' : 'invisible group-hover:visible'}`}
+            className="flex justify-end gap-1 items-center invisible group-hover:visible"
             onClick={(e) => e.stopPropagation()} // Stop propagation for the entire actions container
           >
-            {/* Confusion Matrix Button */}
-            {canGenerateMatrix && (
-              <div className="relative group/btn">
-                <button
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    handleGenerateMatrix(row.id);
-                  }}
-                  disabled={isGenerating}
-                  className="p-1 rounded-full text-corporate-textTertiary hover:text-corporate-accentPrimary hover:bg-corporate-accentPrimary/10 transition-colors disabled:opacity-50"
-                >
-                  {isGenerating ? (
-                    <LoadingSpinner size="sm" />
-                  ) : (
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5">
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M3.375 19.5h17.25m-17.25 0a1.125 1.125 0 01-1.125-1.125M3.375 19.5h7.5c.621 0 1.125-.504 1.125-1.125m-9.75 0V5.625m0 12.75v-1.5c0-.621.504-1.125 1.125-1.125m18.375 2.625V5.625m0 12.75c0 .621-.504 1.125-1.125 1.125m1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125m0 3.75h-7.5A1.125 1.125 0 0112 18.375m9.75-12.75c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125m19.5 0v1.5c0 .621-.504 1.125-1.125 1.125M2.25 5.625v1.5c0 .621.504 1.125 1.125 1.125m0 0h17.25m-17.25 0h7.5c.621 0 1.125.504 1.125 1.125M3.375 8.25c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125m17.25-3.75h-7.5c-.621 0-1.125.504-1.125 1.125m8.625-1.125c.621 0 1.125.504 1.125 1.125v1.5c0 .621-.504 1.125-1.125 1.125m-17.25 0h7.5m-7.5 0c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125M12 10.875v-1.5m0 1.5c0 .621-.504 1.125-1.125 1.125M12 10.875c0 .621.504 1.125 1.125 1.125m-2.25 0c.621 0 1.125.504 1.125 1.125M13.125 12h7.5m-7.5 0c-.621 0-1.125.504-1.125 1.125M20.625 12c.621 0 1.125.504 1.125 1.125v1.5c0 .621-.504 1.125-1.125 1.125m-17.25 0h7.5M12 14.625v-1.5m0 1.5c0 .621-.504 1.125-1.125 1.125M12 14.625c0 .621.504 1.125 1.125 1.125m-2.25 0c.621 0 1.125.504 1.125 1.125m0 1.5v-1.5m0 1.5c0 .621-.504 1.125-1.125 1.125M19.125 14.625c0 .621.504 1.125 1.125 1.125" />
-                    </svg>
-                  )}
-                </button>
-                <div className="absolute bottom-full mb-2 left-1/2 transform -translate-x-1/2 px-2 py-1 bg-corporate-bgSecondary border border-corporate-borderPrimary text-white text-[10px] rounded opacity-0 group-hover/btn:opacity-100 transition-opacity whitespace-nowrap pointer-events-none z-10 shadow-lg">
-                  Generate Confusion Matrix
-                </div>
-              </div>
-            )}
-
             {/* Restart Button */}
             {canRestart && (
               <div className="relative group/btn">
@@ -640,16 +631,23 @@ export const ParallelInvestigationsPage: React.FC = () => {
             <WizardButton 
               variant="primary" 
               onClick={triggerAnalysis}
-              disabled={loading || triggering}
-              icon={triggering ? <LoadingSpinner size="sm" /> : undefined}
+              disabled={loading}
+              loading={triggering}
             >
               Trigger Analysis
             </WizardButton>
             <WizardButton 
               variant="secondary" 
-              onClick={fetchInvestigations}
+              onClick={handleGenerateSummaryReport}
               disabled={loading}
-              icon={loading ? <LoadingSpinner size="sm" /> : undefined}
+              loading={isGeneratingSummary}
+            >
+              Generate Confusions
+            </WizardButton>
+            <WizardButton 
+              variant="secondary" 
+              onClick={fetchInvestigations}
+              loading={loading}
             >
               Refresh
             </WizardButton>
@@ -793,6 +791,61 @@ export const ParallelInvestigationsPage: React.FC = () => {
             >
               Yes, Cancel
             </button>
+          </div>
+        </div>
+      </Modal>
+
+      {/* Success Modal for Report Generation */}
+      <Modal
+        isOpen={isSuccessModalOpen}
+        onClose={() => setIsSuccessModalOpen(false)}
+        title="Report Generated"
+        size="sm"
+      >
+        <div className="space-y-6">
+          <div className="flex flex-col items-center justify-center p-4">
+            <div className="w-12 h-12 rounded-full bg-green-900/30 flex items-center justify-center mb-4">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6 text-green-400">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+            </div>
+            <p className="text-corporate-textPrimary font-medium text-lg text-center">
+              Startup Analysis Report Ready
+            </p>
+            <p className="text-corporate-textSecondary text-sm text-center mt-2">
+              The aggregate confusion matrix report has been generated successfully.
+            </p>
+          </div>
+          
+          <div className="bg-black/30 p-3 rounded-lg border border-white/10 break-all">
+            <a 
+              href={summaryReportUrl || '#'} 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="text-corporate-accentPrimary hover:text-corporate-accentPrimaryHover text-xs font-mono underline"
+            >
+              {summaryReportUrl}
+            </a>
+          </div>
+
+          <div className="flex justify-center gap-3">
+            <button
+              onClick={() => {
+                if (summaryReportUrl) window.open(summaryReportUrl, '_blank');
+              }}
+              className="px-4 py-2 rounded bg-corporate-accentPrimary hover:bg-corporate-accentPrimaryHover text-white font-medium transition-colors duration-200 text-sm flex items-center gap-2"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-4 h-4">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3" />
+              </svg>
+              Download Again
+            </button>
+            <WizardButton
+              variant="secondary"
+              onClick={() => setIsSuccessModalOpen(false)}
+            >
+              Close
+            </WizardButton>
           </div>
         </div>
       </Modal>

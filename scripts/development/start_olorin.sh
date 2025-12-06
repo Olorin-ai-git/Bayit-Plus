@@ -113,7 +113,7 @@ start_backend() {
             
             if check_port $BACKEND_PORT; then
                 print_error "Failed to kill process on port $BACKEND_PORT. Cannot start backend."
-                return 1
+        return 1
             else
                 print_success "Port $BACKEND_PORT freed."
             fi

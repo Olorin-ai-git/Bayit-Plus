@@ -37,7 +37,7 @@ def get_state_by_id(
         .filter(InvestigationState.investigation_id == investigation_id)
         .filter(
             or_(
-                InvestigationState.user_id == user_id,
+            InvestigationState.user_id == user_id,
                 InvestigationState.user_id == "auto-comparison-system",
             )
         )

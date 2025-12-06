@@ -210,7 +210,7 @@ class ComparisonDataLoader:
                         "fraud_count": count,
                         "total_count": total
                     })
-            
+                    
             self.logger.info(f"✅ Found {len(normalized_results)} fraudulent email-merchant pairs")
             # Log first result to debug metadata flow
             if normalized_results:

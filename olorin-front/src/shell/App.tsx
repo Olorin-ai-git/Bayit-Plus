@@ -149,11 +149,11 @@ const App: React.FC = () => {
         <ToastProvider>
           <AuthProvider>
             <BrowserRouter
-              future={{
-                v7_startTransition: true,
-                v7_relativeSplatPath: true
-              }}
-            >
+            future={{
+              v7_startTransition: true,
+              v7_relativeSplatPath: true
+            }}
+          >
             <NavigationExposer />
             <div className="shell-application min-h-screen bg-black">
               <NavigationHeader />

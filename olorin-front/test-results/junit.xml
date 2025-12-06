@@ -1,0 +1,698 @@
+<testsuites id="" name="" tests="60" failures="15" skipped="45" errors="0" time="2.164452">
+<testsuite name="parallel-investigations.e2e.test.ts" timestamp="2025-12-01T14:54:18.295Z" hostname="chromium" tests="20" failures="5" skipped="15" time="0" errors="0">
+<testcase name="Parallel Investigations Feature - End-to-End › 1. API endpoints should be available" classname="parallel-investigations.e2e.test.ts" time="0">
+<failure message="parallel-investigations.e2e.test.ts:55:7 1. API endpoints should be available" type="FAILURE">
+<![CDATA[  [chromium] › parallel-investigations.e2e.test.ts:55:7 › Parallel Investigations Feature - End-to-End › 1. API endpoints should be available 
+
+    Error: apiRequestContext.post: connect ECONNREFUSED ::1:8090
+    Call log:
+      - → POST http://localhost:8090/api/v1/investigation-state/
+        - user-agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.7390.37 Safari/537.36
+        - accept: */*
+        - accept-encoding: gzip,deflate,br
+        - content-type: application/json
+        - content-length: 219
+
+        at apiRequestContext.post: connect ECONNREFUSED ::1:8090
+        at InvestigationAPIClient.call (/Users/olorin/Documents/olorin/olorin-front/src/shared/testing/e2e/helpers/api.js:91:62)
+        at step (/Users/olorin/Documents/olorin/olorin-front/src/shared/testing/e2e/helpers/api.js:52:23)
+        at Object.next (/Users/olorin/Documents/olorin/olorin-front/src/shared/testing/e2e/helpers/api.js:33:53)
+        at /Users/olorin/Documents/olorin/olorin-front/src/shared/testing/e2e/helpers/api.js:27:71
+        at __awaiter (/Users/olorin/Documents/olorin/olorin-front/src/shared/testing/e2e/helpers/api.js:23:12)
+        at InvestigationAPIClient.createInvestigation (/Users/olorin/Documents/olorin/olorin-front/src/shared/testing/e2e/helpers/api.js:66:16)
+        at call (/Users/olorin/Documents/olorin/olorin-front/src/shared/testing/e2e/helpers/api.js:262:49)
+        at step (/Users/olorin/Documents/olorin/olorin-front/src/shared/testing/e2e/helpers/api.js:52:23)
+        at Object.next (/Users/olorin/Documents/olorin/olorin-front/src/shared/testing/e2e/helpers/api.js:33:53)
+        at /Users/olorin/Documents/olorin/olorin-front/src/shared/testing/e2e/helpers/api.js:27:71
+        at __awaiter (/Users/olorin/Documents/olorin/olorin-front/src/shared/testing/e2e/helpers/api.js:23:12)
+        at createTestInvestigations (/Users/olorin/Documents/olorin/olorin-front/src/shared/testing/e2e/helpers/api.js:250:12)
+        at /Users/olorin/Documents/olorin/olorin-front/src/shared/testing/e2e/parallel-investigations.e2e.test.ts:37:56
+]]>
+</failure>
+<system-out>
+<![CDATA[Cleaned up 0 test investigations
+]]>
+</system-out>
+</testcase>
+<testcase name="Parallel Investigations Feature - End-to-End › 2. Should list all investigations" classname="parallel-investigations.e2e.test.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Parallel Investigations Feature - End-to-End › 3. Should navigate to /parallel route" classname="parallel-investigations.e2e.test.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Parallel Investigations Feature - End-to-End › 4. ParallelInvestigationsPage should render" classname="parallel-investigations.e2e.test.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Parallel Investigations Feature - End-to-End › 5. Should display investigation data in table" classname="parallel-investigations.e2e.test.ts" time="0">
+<failure message="parallel-investigations.e2e.test.ts:108:7 5. Should display investigation data in table" type="FAILURE">
+<![CDATA[  [chromium] › parallel-investigations.e2e.test.ts:108:7 › Parallel Investigations Feature - End-to-End › 5. Should display investigation data in table 
+
+    Error: apiRequestContext.post: connect ECONNREFUSED ::1:8090
+    Call log:
+      - → POST http://localhost:8090/api/v1/investigation-state/
+        - user-agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.7390.37 Safari/537.36
+        - accept: */*
+        - accept-encoding: gzip,deflate,br
+        - content-type: application/json
+        - content-length: 219
+
+        at apiRequestContext.post: connect ECONNREFUSED ::1:8090
+        at InvestigationAPIClient.call (/Users/olorin/Documents/olorin/olorin-front/src/shared/testing/e2e/helpers/api.js:91:62)
+        at step (/Users/olorin/Documents/olorin/olorin-front/src/shared/testing/e2e/helpers/api.js:52:23)
+        at Object.next (/Users/olorin/Documents/olorin/olorin-front/src/shared/testing/e2e/helpers/api.js:33:53)
+        at /Users/olorin/Documents/olorin/olorin-front/src/shared/testing/e2e/helpers/api.js:27:71
+        at __awaiter (/Users/olorin/Documents/olorin/olorin-front/src/shared/testing/e2e/helpers/api.js:23:12)
+        at InvestigationAPIClient.createInvestigation (/Users/olorin/Documents/olorin/olorin-front/src/shared/testing/e2e/helpers/api.js:66:16)
+        at call (/Users/olorin/Documents/olorin/olorin-front/src/shared/testing/e2e/helpers/api.js:262:49)
+        at step (/Users/olorin/Documents/olorin/olorin-front/src/shared/testing/e2e/helpers/api.js:52:23)
+        at Object.next (/Users/olorin/Documents/olorin/olorin-front/src/shared/testing/e2e/helpers/api.js:33:53)
+        at /Users/olorin/Documents/olorin/olorin-front/src/shared/testing/e2e/helpers/api.js:27:71
+        at __awaiter (/Users/olorin/Documents/olorin/olorin-front/src/shared/testing/e2e/helpers/api.js:23:12)
+        at createTestInvestigations (/Users/olorin/Documents/olorin/olorin-front/src/shared/testing/e2e/helpers/api.js:250:12)
+        at /Users/olorin/Documents/olorin/olorin-front/src/shared/testing/e2e/parallel-investigations.e2e.test.ts:37:56
+]]>
+</failure>
+<system-out>
+<![CDATA[Cleaned up 0 test investigations
+]]>
+</system-out>
+</testcase>
+<testcase name="Parallel Investigations Feature - End-to-End › 6. Should show investigation status colors" classname="parallel-investigations.e2e.test.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Parallel Investigations Feature - End-to-End › 7. Should have working refresh button" classname="parallel-investigations.e2e.test.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Parallel Investigations Feature - End-to-End › 8. Should navigate to investigation details on row click" classname="parallel-investigations.e2e.test.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Parallel Investigations Feature - End-to-End › 9. Should handle loading state gracefully" classname="parallel-investigations.e2e.test.ts" time="0">
+<failure message="parallel-investigations.e2e.test.ts:182:7 9. Should handle loading state gracefully" type="FAILURE">
+<![CDATA[  [chromium] › parallel-investigations.e2e.test.ts:182:7 › Parallel Investigations Feature - End-to-End › 9. Should handle loading state gracefully 
+
+    Error: apiRequestContext.post: connect ECONNREFUSED ::1:8090
+    Call log:
+      - → POST http://localhost:8090/api/v1/investigation-state/
+        - user-agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.7390.37 Safari/537.36
+        - accept: */*
+        - accept-encoding: gzip,deflate,br
+        - content-type: application/json
+        - content-length: 219
+
+        at apiRequestContext.post: connect ECONNREFUSED ::1:8090
+        at InvestigationAPIClient.call (/Users/olorin/Documents/olorin/olorin-front/src/shared/testing/e2e/helpers/api.js:91:62)
+        at step (/Users/olorin/Documents/olorin/olorin-front/src/shared/testing/e2e/helpers/api.js:52:23)
+        at Object.next (/Users/olorin/Documents/olorin/olorin-front/src/shared/testing/e2e/helpers/api.js:33:53)
+        at /Users/olorin/Documents/olorin/olorin-front/src/shared/testing/e2e/helpers/api.js:27:71
+        at __awaiter (/Users/olorin/Documents/olorin/olorin-front/src/shared/testing/e2e/helpers/api.js:23:12)
+        at InvestigationAPIClient.createInvestigation (/Users/olorin/Documents/olorin/olorin-front/src/shared/testing/e2e/helpers/api.js:66:16)
+        at call (/Users/olorin/Documents/olorin/olorin-front/src/shared/testing/e2e/helpers/api.js:262:49)
+        at step (/Users/olorin/Documents/olorin/olorin-front/src/shared/testing/e2e/helpers/api.js:52:23)
+        at Object.next (/Users/olorin/Documents/olorin/olorin-front/src/shared/testing/e2e/helpers/api.js:33:53)
+        at /Users/olorin/Documents/olorin/olorin-front/src/shared/testing/e2e/helpers/api.js:27:71
+        at __awaiter (/Users/olorin/Documents/olorin/olorin-front/src/shared/testing/e2e/helpers/api.js:23:12)
+        at createTestInvestigations (/Users/olorin/Documents/olorin/olorin-front/src/shared/testing/e2e/helpers/api.js:250:12)
+        at /Users/olorin/Documents/olorin/olorin-front/src/shared/testing/e2e/parallel-investigations.e2e.test.ts:37:56
+]]>
+</failure>
+<system-out>
+<![CDATA[Cleaned up 0 test investigations
+]]>
+</system-out>
+</testcase>
+<testcase name="Parallel Investigations Feature - End-to-End › 10. Should show &quot;No investigations&quot; message when empty" classname="parallel-investigations.e2e.test.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Parallel Investigations Feature - End-to-End › 11. API: Create investigation endpoint" classname="parallel-investigations.e2e.test.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Parallel Investigations Feature - End-to-End › 12. API: Lifecycle endpoints (start, complete)" classname="parallel-investigations.e2e.test.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Parallel Investigations Feature - End-to-End › 13. API: Findings endpoints" classname="parallel-investigations.e2e.test.ts" time="0">
+<failure message="parallel-investigations.e2e.test.ts:292:7 13. API: Findings endpoints" type="FAILURE">
+<![CDATA[  [chromium] › parallel-investigations.e2e.test.ts:292:7 › Parallel Investigations Feature - End-to-End › 13. API: Findings endpoints 
+
+    Error: apiRequestContext.post: connect ECONNREFUSED ::1:8090
+    Call log:
+      - → POST http://localhost:8090/api/v1/investigation-state/
+        - user-agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.7390.37 Safari/537.36
+        - accept: */*
+        - accept-encoding: gzip,deflate,br
+        - content-type: application/json
+        - content-length: 219
+
+        at apiRequestContext.post: connect ECONNREFUSED ::1:8090
+        at InvestigationAPIClient.call (/Users/olorin/Documents/olorin/olorin-front/src/shared/testing/e2e/helpers/api.js:91:62)
+        at step (/Users/olorin/Documents/olorin/olorin-front/src/shared/testing/e2e/helpers/api.js:52:23)
+        at Object.next (/Users/olorin/Documents/olorin/olorin-front/src/shared/testing/e2e/helpers/api.js:33:53)
+        at /Users/olorin/Documents/olorin/olorin-front/src/shared/testing/e2e/helpers/api.js:27:71
+        at __awaiter (/Users/olorin/Documents/olorin/olorin-front/src/shared/testing/e2e/helpers/api.js:23:12)
+        at InvestigationAPIClient.createInvestigation (/Users/olorin/Documents/olorin/olorin-front/src/shared/testing/e2e/helpers/api.js:66:16)
+        at call (/Users/olorin/Documents/olorin/olorin-front/src/shared/testing/e2e/helpers/api.js:262:49)
+        at step (/Users/olorin/Documents/olorin/olorin-front/src/shared/testing/e2e/helpers/api.js:52:23)
+        at Object.next (/Users/olorin/Documents/olorin/olorin-front/src/shared/testing/e2e/helpers/api.js:33:53)
+        at /Users/olorin/Documents/olorin/olorin-front/src/shared/testing/e2e/helpers/api.js:27:71
+        at __awaiter (/Users/olorin/Documents/olorin/olorin-front/src/shared/testing/e2e/helpers/api.js:23:12)
+        at createTestInvestigations (/Users/olorin/Documents/olorin/olorin-front/src/shared/testing/e2e/helpers/api.js:250:12)
+        at /Users/olorin/Documents/olorin/olorin-front/src/shared/testing/e2e/parallel-investigations.e2e.test.ts:37:56
+]]>
+</failure>
+<system-out>
+<![CDATA[Cleaned up 0 test investigations
+]]>
+</system-out>
+</testcase>
+<testcase name="Parallel Investigations Feature - End-to-End › 14. API: Error handling - 404 on missing investigation" classname="parallel-investigations.e2e.test.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Parallel Investigations Feature - End-to-End › 15. Performance: Page load time should be reasonable" classname="parallel-investigations.e2e.test.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Parallel Investigations Feature - End-to-End › 16. Accessibility: Page should have proper ARIA labels" classname="parallel-investigations.e2e.test.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Parallel Investigations Feature - End-to-End › 17. Responsive design: Should work on mobile viewport" classname="parallel-investigations.e2e.test.ts" time="0">
+<failure message="parallel-investigations.e2e.test.ts:358:7 17. Responsive design: Should work on mobile viewport" type="FAILURE">
+<![CDATA[  [chromium] › parallel-investigations.e2e.test.ts:358:7 › Parallel Investigations Feature - End-to-End › 17. Responsive design: Should work on mobile viewport 
+
+    Error: apiRequestContext.post: connect ECONNREFUSED ::1:8090
+    Call log:
+      - → POST http://localhost:8090/api/v1/investigation-state/
+        - user-agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.7390.37 Safari/537.36
+        - accept: */*
+        - accept-encoding: gzip,deflate,br
+        - content-type: application/json
+        - content-length: 219
+
+        at apiRequestContext.post: connect ECONNREFUSED ::1:8090
+        at InvestigationAPIClient.call (/Users/olorin/Documents/olorin/olorin-front/src/shared/testing/e2e/helpers/api.js:91:62)
+        at step (/Users/olorin/Documents/olorin/olorin-front/src/shared/testing/e2e/helpers/api.js:52:23)
+        at Object.next (/Users/olorin/Documents/olorin/olorin-front/src/shared/testing/e2e/helpers/api.js:33:53)
+        at /Users/olorin/Documents/olorin/olorin-front/src/shared/testing/e2e/helpers/api.js:27:71
+        at __awaiter (/Users/olorin/Documents/olorin/olorin-front/src/shared/testing/e2e/helpers/api.js:23:12)
+        at InvestigationAPIClient.createInvestigation (/Users/olorin/Documents/olorin/olorin-front/src/shared/testing/e2e/helpers/api.js:66:16)
+        at call (/Users/olorin/Documents/olorin/olorin-front/src/shared/testing/e2e/helpers/api.js:262:49)
+        at step (/Users/olorin/Documents/olorin/olorin-front/src/shared/testing/e2e/helpers/api.js:52:23)
+        at Object.next (/Users/olorin/Documents/olorin/olorin-front/src/shared/testing/e2e/helpers/api.js:33:53)
+        at /Users/olorin/Documents/olorin/olorin-front/src/shared/testing/e2e/helpers/api.js:27:71
+        at __awaiter (/Users/olorin/Documents/olorin/olorin-front/src/shared/testing/e2e/helpers/api.js:23:12)
+        at createTestInvestigations (/Users/olorin/Documents/olorin/olorin-front/src/shared/testing/e2e/helpers/api.js:250:12)
+        at /Users/olorin/Documents/olorin/olorin-front/src/shared/testing/e2e/parallel-investigations.e2e.test.ts:37:56
+]]>
+</failure>
+<system-out>
+<![CDATA[Cleaned up 0 test investigations
+]]>
+</system-out>
+</testcase>
+<testcase name="Parallel Investigations Feature - End-to-End › 18. Should handle network errors gracefully" classname="parallel-investigations.e2e.test.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Parallel Investigations Feature - End-to-End › 19. Should auto-refresh data at configured interval" classname="parallel-investigations.e2e.test.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Parallel Investigations Feature - End-to-End › 20. Full integration test: Create, navigate, and monitor investigation" classname="parallel-investigations.e2e.test.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+</testsuite>
+<testsuite name="parallel-investigations.e2e.test.ts" timestamp="2025-12-01T14:54:18.295Z" hostname="firefox" tests="20" failures="5" skipped="15" time="0" errors="0">
+<testcase name="Parallel Investigations Feature - End-to-End › 1. API endpoints should be available" classname="parallel-investigations.e2e.test.ts" time="0">
+<failure message="parallel-investigations.e2e.test.ts:55:7 1. API endpoints should be available" type="FAILURE">
+<![CDATA[  [firefox] › parallel-investigations.e2e.test.ts:55:7 › Parallel Investigations Feature - End-to-End › 1. API endpoints should be available 
+
+    Error: apiRequestContext.post: connect ECONNREFUSED ::1:8090
+    Call log:
+      - → POST http://localhost:8090/api/v1/investigation-state/
+        - user-agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:142.0.1) Gecko/20100101 Firefox/142.0.1
+        - accept: */*
+        - accept-encoding: gzip,deflate,br
+        - content-type: application/json
+        - content-length: 219
+
+        at apiRequestContext.post: connect ECONNREFUSED ::1:8090
+        at InvestigationAPIClient.call (/Users/olorin/Documents/olorin/olorin-front/src/shared/testing/e2e/helpers/api.js:91:62)
+        at step (/Users/olorin/Documents/olorin/olorin-front/src/shared/testing/e2e/helpers/api.js:52:23)
+        at Object.next (/Users/olorin/Documents/olorin/olorin-front/src/shared/testing/e2e/helpers/api.js:33:53)
+        at /Users/olorin/Documents/olorin/olorin-front/src/shared/testing/e2e/helpers/api.js:27:71
+        at __awaiter (/Users/olorin/Documents/olorin/olorin-front/src/shared/testing/e2e/helpers/api.js:23:12)
+        at InvestigationAPIClient.createInvestigation (/Users/olorin/Documents/olorin/olorin-front/src/shared/testing/e2e/helpers/api.js:66:16)
+        at call (/Users/olorin/Documents/olorin/olorin-front/src/shared/testing/e2e/helpers/api.js:262:49)
+        at step (/Users/olorin/Documents/olorin/olorin-front/src/shared/testing/e2e/helpers/api.js:52:23)
+        at Object.next (/Users/olorin/Documents/olorin/olorin-front/src/shared/testing/e2e/helpers/api.js:33:53)
+        at /Users/olorin/Documents/olorin/olorin-front/src/shared/testing/e2e/helpers/api.js:27:71
+        at __awaiter (/Users/olorin/Documents/olorin/olorin-front/src/shared/testing/e2e/helpers/api.js:23:12)
+        at createTestInvestigations (/Users/olorin/Documents/olorin/olorin-front/src/shared/testing/e2e/helpers/api.js:250:12)
+        at /Users/olorin/Documents/olorin/olorin-front/src/shared/testing/e2e/parallel-investigations.e2e.test.ts:37:56
+]]>
+</failure>
+<system-out>
+<![CDATA[Cleaned up 0 test investigations
+]]>
+</system-out>
+</testcase>
+<testcase name="Parallel Investigations Feature - End-to-End › 2. Should list all investigations" classname="parallel-investigations.e2e.test.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Parallel Investigations Feature - End-to-End › 3. Should navigate to /parallel route" classname="parallel-investigations.e2e.test.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Parallel Investigations Feature - End-to-End › 4. ParallelInvestigationsPage should render" classname="parallel-investigations.e2e.test.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Parallel Investigations Feature - End-to-End › 5. Should display investigation data in table" classname="parallel-investigations.e2e.test.ts" time="0">
+<failure message="parallel-investigations.e2e.test.ts:108:7 5. Should display investigation data in table" type="FAILURE">
+<![CDATA[  [firefox] › parallel-investigations.e2e.test.ts:108:7 › Parallel Investigations Feature - End-to-End › 5. Should display investigation data in table 
+
+    Error: apiRequestContext.post: connect ECONNREFUSED ::1:8090
+    Call log:
+      - → POST http://localhost:8090/api/v1/investigation-state/
+        - user-agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:142.0.1) Gecko/20100101 Firefox/142.0.1
+        - accept: */*
+        - accept-encoding: gzip,deflate,br
+        - content-type: application/json
+        - content-length: 219
+
+        at apiRequestContext.post: connect ECONNREFUSED ::1:8090
+        at InvestigationAPIClient.call (/Users/olorin/Documents/olorin/olorin-front/src/shared/testing/e2e/helpers/api.js:91:62)
+        at step (/Users/olorin/Documents/olorin/olorin-front/src/shared/testing/e2e/helpers/api.js:52:23)
+        at Object.next (/Users/olorin/Documents/olorin/olorin-front/src/shared/testing/e2e/helpers/api.js:33:53)
+        at /Users/olorin/Documents/olorin/olorin-front/src/shared/testing/e2e/helpers/api.js:27:71
+        at __awaiter (/Users/olorin/Documents/olorin/olorin-front/src/shared/testing/e2e/helpers/api.js:23:12)
+        at InvestigationAPIClient.createInvestigation (/Users/olorin/Documents/olorin/olorin-front/src/shared/testing/e2e/helpers/api.js:66:16)
+        at call (/Users/olorin/Documents/olorin/olorin-front/src/shared/testing/e2e/helpers/api.js:262:49)
+        at step (/Users/olorin/Documents/olorin/olorin-front/src/shared/testing/e2e/helpers/api.js:52:23)
+        at Object.next (/Users/olorin/Documents/olorin/olorin-front/src/shared/testing/e2e/helpers/api.js:33:53)
+        at /Users/olorin/Documents/olorin/olorin-front/src/shared/testing/e2e/helpers/api.js:27:71
+        at __awaiter (/Users/olorin/Documents/olorin/olorin-front/src/shared/testing/e2e/helpers/api.js:23:12)
+        at createTestInvestigations (/Users/olorin/Documents/olorin/olorin-front/src/shared/testing/e2e/helpers/api.js:250:12)
+        at /Users/olorin/Documents/olorin/olorin-front/src/shared/testing/e2e/parallel-investigations.e2e.test.ts:37:56
+]]>
+</failure>
+<system-out>
+<![CDATA[Cleaned up 0 test investigations
+]]>
+</system-out>
+</testcase>
+<testcase name="Parallel Investigations Feature - End-to-End › 6. Should show investigation status colors" classname="parallel-investigations.e2e.test.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Parallel Investigations Feature - End-to-End › 7. Should have working refresh button" classname="parallel-investigations.e2e.test.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Parallel Investigations Feature - End-to-End › 8. Should navigate to investigation details on row click" classname="parallel-investigations.e2e.test.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Parallel Investigations Feature - End-to-End › 9. Should handle loading state gracefully" classname="parallel-investigations.e2e.test.ts" time="0">
+<failure message="parallel-investigations.e2e.test.ts:182:7 9. Should handle loading state gracefully" type="FAILURE">
+<![CDATA[  [firefox] › parallel-investigations.e2e.test.ts:182:7 › Parallel Investigations Feature - End-to-End › 9. Should handle loading state gracefully 
+
+    Error: apiRequestContext.post: connect ECONNREFUSED ::1:8090
+    Call log:
+      - → POST http://localhost:8090/api/v1/investigation-state/
+        - user-agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:142.0.1) Gecko/20100101 Firefox/142.0.1
+        - accept: */*
+        - accept-encoding: gzip,deflate,br
+        - content-type: application/json
+        - content-length: 219
+
+        at apiRequestContext.post: connect ECONNREFUSED ::1:8090
+        at InvestigationAPIClient.call (/Users/olorin/Documents/olorin/olorin-front/src/shared/testing/e2e/helpers/api.js:91:62)
+        at step (/Users/olorin/Documents/olorin/olorin-front/src/shared/testing/e2e/helpers/api.js:52:23)
+        at Object.next (/Users/olorin/Documents/olorin/olorin-front/src/shared/testing/e2e/helpers/api.js:33:53)
+        at /Users/olorin/Documents/olorin/olorin-front/src/shared/testing/e2e/helpers/api.js:27:71
+        at __awaiter (/Users/olorin/Documents/olorin/olorin-front/src/shared/testing/e2e/helpers/api.js:23:12)
+        at InvestigationAPIClient.createInvestigation (/Users/olorin/Documents/olorin/olorin-front/src/shared/testing/e2e/helpers/api.js:66:16)
+        at call (/Users/olorin/Documents/olorin/olorin-front/src/shared/testing/e2e/helpers/api.js:262:49)
+        at step (/Users/olorin/Documents/olorin/olorin-front/src/shared/testing/e2e/helpers/api.js:52:23)
+        at Object.next (/Users/olorin/Documents/olorin/olorin-front/src/shared/testing/e2e/helpers/api.js:33:53)
+        at /Users/olorin/Documents/olorin/olorin-front/src/shared/testing/e2e/helpers/api.js:27:71
+        at __awaiter (/Users/olorin/Documents/olorin/olorin-front/src/shared/testing/e2e/helpers/api.js:23:12)
+        at createTestInvestigations (/Users/olorin/Documents/olorin/olorin-front/src/shared/testing/e2e/helpers/api.js:250:12)
+        at /Users/olorin/Documents/olorin/olorin-front/src/shared/testing/e2e/parallel-investigations.e2e.test.ts:37:56
+]]>
+</failure>
+<system-out>
+<![CDATA[Cleaned up 0 test investigations
+]]>
+</system-out>
+</testcase>
+<testcase name="Parallel Investigations Feature - End-to-End › 10. Should show &quot;No investigations&quot; message when empty" classname="parallel-investigations.e2e.test.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Parallel Investigations Feature - End-to-End › 11. API: Create investigation endpoint" classname="parallel-investigations.e2e.test.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Parallel Investigations Feature - End-to-End › 12. API: Lifecycle endpoints (start, complete)" classname="parallel-investigations.e2e.test.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Parallel Investigations Feature - End-to-End › 13. API: Findings endpoints" classname="parallel-investigations.e2e.test.ts" time="0">
+<failure message="parallel-investigations.e2e.test.ts:292:7 13. API: Findings endpoints" type="FAILURE">
+<![CDATA[  [firefox] › parallel-investigations.e2e.test.ts:292:7 › Parallel Investigations Feature - End-to-End › 13. API: Findings endpoints 
+
+    Error: apiRequestContext.post: connect ECONNREFUSED ::1:8090
+    Call log:
+      - → POST http://localhost:8090/api/v1/investigation-state/
+        - user-agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:142.0.1) Gecko/20100101 Firefox/142.0.1
+        - accept: */*
+        - accept-encoding: gzip,deflate,br
+        - content-type: application/json
+        - content-length: 219
+
+        at apiRequestContext.post: connect ECONNREFUSED ::1:8090
+        at InvestigationAPIClient.call (/Users/olorin/Documents/olorin/olorin-front/src/shared/testing/e2e/helpers/api.js:91:62)
+        at step (/Users/olorin/Documents/olorin/olorin-front/src/shared/testing/e2e/helpers/api.js:52:23)
+        at Object.next (/Users/olorin/Documents/olorin/olorin-front/src/shared/testing/e2e/helpers/api.js:33:53)
+        at /Users/olorin/Documents/olorin/olorin-front/src/shared/testing/e2e/helpers/api.js:27:71
+        at __awaiter (/Users/olorin/Documents/olorin/olorin-front/src/shared/testing/e2e/helpers/api.js:23:12)
+        at InvestigationAPIClient.createInvestigation (/Users/olorin/Documents/olorin/olorin-front/src/shared/testing/e2e/helpers/api.js:66:16)
+        at call (/Users/olorin/Documents/olorin/olorin-front/src/shared/testing/e2e/helpers/api.js:262:49)
+        at step (/Users/olorin/Documents/olorin/olorin-front/src/shared/testing/e2e/helpers/api.js:52:23)
+        at Object.next (/Users/olorin/Documents/olorin/olorin-front/src/shared/testing/e2e/helpers/api.js:33:53)
+        at /Users/olorin/Documents/olorin/olorin-front/src/shared/testing/e2e/helpers/api.js:27:71
+        at __awaiter (/Users/olorin/Documents/olorin/olorin-front/src/shared/testing/e2e/helpers/api.js:23:12)
+        at createTestInvestigations (/Users/olorin/Documents/olorin/olorin-front/src/shared/testing/e2e/helpers/api.js:250:12)
+        at /Users/olorin/Documents/olorin/olorin-front/src/shared/testing/e2e/parallel-investigations.e2e.test.ts:37:56
+]]>
+</failure>
+<system-out>
+<![CDATA[Cleaned up 0 test investigations
+]]>
+</system-out>
+</testcase>
+<testcase name="Parallel Investigations Feature - End-to-End › 14. API: Error handling - 404 on missing investigation" classname="parallel-investigations.e2e.test.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Parallel Investigations Feature - End-to-End › 15. Performance: Page load time should be reasonable" classname="parallel-investigations.e2e.test.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Parallel Investigations Feature - End-to-End › 16. Accessibility: Page should have proper ARIA labels" classname="parallel-investigations.e2e.test.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Parallel Investigations Feature - End-to-End › 17. Responsive design: Should work on mobile viewport" classname="parallel-investigations.e2e.test.ts" time="0">
+<failure message="parallel-investigations.e2e.test.ts:358:7 17. Responsive design: Should work on mobile viewport" type="FAILURE">
+<![CDATA[  [firefox] › parallel-investigations.e2e.test.ts:358:7 › Parallel Investigations Feature - End-to-End › 17. Responsive design: Should work on mobile viewport 
+
+    Error: apiRequestContext.post: connect ECONNREFUSED ::1:8090
+    Call log:
+      - → POST http://localhost:8090/api/v1/investigation-state/
+        - user-agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:142.0.1) Gecko/20100101 Firefox/142.0.1
+        - accept: */*
+        - accept-encoding: gzip,deflate,br
+        - content-type: application/json
+        - content-length: 219
+
+        at apiRequestContext.post: connect ECONNREFUSED ::1:8090
+        at InvestigationAPIClient.call (/Users/olorin/Documents/olorin/olorin-front/src/shared/testing/e2e/helpers/api.js:91:62)
+        at step (/Users/olorin/Documents/olorin/olorin-front/src/shared/testing/e2e/helpers/api.js:52:23)
+        at Object.next (/Users/olorin/Documents/olorin/olorin-front/src/shared/testing/e2e/helpers/api.js:33:53)
+        at /Users/olorin/Documents/olorin/olorin-front/src/shared/testing/e2e/helpers/api.js:27:71
+        at __awaiter (/Users/olorin/Documents/olorin/olorin-front/src/shared/testing/e2e/helpers/api.js:23:12)
+        at InvestigationAPIClient.createInvestigation (/Users/olorin/Documents/olorin/olorin-front/src/shared/testing/e2e/helpers/api.js:66:16)
+        at call (/Users/olorin/Documents/olorin/olorin-front/src/shared/testing/e2e/helpers/api.js:262:49)
+        at step (/Users/olorin/Documents/olorin/olorin-front/src/shared/testing/e2e/helpers/api.js:52:23)
+        at Object.next (/Users/olorin/Documents/olorin/olorin-front/src/shared/testing/e2e/helpers/api.js:33:53)
+        at /Users/olorin/Documents/olorin/olorin-front/src/shared/testing/e2e/helpers/api.js:27:71
+        at __awaiter (/Users/olorin/Documents/olorin/olorin-front/src/shared/testing/e2e/helpers/api.js:23:12)
+        at createTestInvestigations (/Users/olorin/Documents/olorin/olorin-front/src/shared/testing/e2e/helpers/api.js:250:12)
+        at /Users/olorin/Documents/olorin/olorin-front/src/shared/testing/e2e/parallel-investigations.e2e.test.ts:37:56
+]]>
+</failure>
+<system-out>
+<![CDATA[Cleaned up 0 test investigations
+]]>
+</system-out>
+</testcase>
+<testcase name="Parallel Investigations Feature - End-to-End › 18. Should handle network errors gracefully" classname="parallel-investigations.e2e.test.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Parallel Investigations Feature - End-to-End › 19. Should auto-refresh data at configured interval" classname="parallel-investigations.e2e.test.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Parallel Investigations Feature - End-to-End › 20. Full integration test: Create, navigate, and monitor investigation" classname="parallel-investigations.e2e.test.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+</testsuite>
+<testsuite name="parallel-investigations.e2e.test.ts" timestamp="2025-12-01T14:54:18.295Z" hostname="webkit" tests="20" failures="5" skipped="15" time="0" errors="0">
+<testcase name="Parallel Investigations Feature - End-to-End › 1. API endpoints should be available" classname="parallel-investigations.e2e.test.ts" time="0">
+<failure message="parallel-investigations.e2e.test.ts:55:7 1. API endpoints should be available" type="FAILURE">
+<![CDATA[  [webkit] › parallel-investigations.e2e.test.ts:55:7 › Parallel Investigations Feature - End-to-End › 1. API endpoints should be available 
+
+    Error: apiRequestContext.post: connect ECONNREFUSED ::1:8090
+    Call log:
+      - → POST http://localhost:8090/api/v1/investigation-state/
+        - user-agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/26.0 Safari/605.1.15
+        - accept: */*
+        - accept-encoding: gzip,deflate,br
+        - content-type: application/json
+        - content-length: 219
+
+        at apiRequestContext.post: connect ECONNREFUSED ::1:8090
+        at InvestigationAPIClient.call (/Users/olorin/Documents/olorin/olorin-front/src/shared/testing/e2e/helpers/api.js:91:62)
+        at step (/Users/olorin/Documents/olorin/olorin-front/src/shared/testing/e2e/helpers/api.js:52:23)
+        at Object.next (/Users/olorin/Documents/olorin/olorin-front/src/shared/testing/e2e/helpers/api.js:33:53)
+        at /Users/olorin/Documents/olorin/olorin-front/src/shared/testing/e2e/helpers/api.js:27:71
+        at __awaiter (/Users/olorin/Documents/olorin/olorin-front/src/shared/testing/e2e/helpers/api.js:23:12)
+        at InvestigationAPIClient.createInvestigation (/Users/olorin/Documents/olorin/olorin-front/src/shared/testing/e2e/helpers/api.js:66:16)
+        at call (/Users/olorin/Documents/olorin/olorin-front/src/shared/testing/e2e/helpers/api.js:262:49)
+        at step (/Users/olorin/Documents/olorin/olorin-front/src/shared/testing/e2e/helpers/api.js:52:23)
+        at Object.next (/Users/olorin/Documents/olorin/olorin-front/src/shared/testing/e2e/helpers/api.js:33:53)
+        at /Users/olorin/Documents/olorin/olorin-front/src/shared/testing/e2e/helpers/api.js:27:71
+        at __awaiter (/Users/olorin/Documents/olorin/olorin-front/src/shared/testing/e2e/helpers/api.js:23:12)
+        at createTestInvestigations (/Users/olorin/Documents/olorin/olorin-front/src/shared/testing/e2e/helpers/api.js:250:12)
+        at /Users/olorin/Documents/olorin/olorin-front/src/shared/testing/e2e/parallel-investigations.e2e.test.ts:37:56
+]]>
+</failure>
+<system-out>
+<![CDATA[Cleaned up 0 test investigations
+]]>
+</system-out>
+</testcase>
+<testcase name="Parallel Investigations Feature - End-to-End › 2. Should list all investigations" classname="parallel-investigations.e2e.test.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Parallel Investigations Feature - End-to-End › 3. Should navigate to /parallel route" classname="parallel-investigations.e2e.test.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Parallel Investigations Feature - End-to-End › 4. ParallelInvestigationsPage should render" classname="parallel-investigations.e2e.test.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Parallel Investigations Feature - End-to-End › 5. Should display investigation data in table" classname="parallel-investigations.e2e.test.ts" time="0">
+<failure message="parallel-investigations.e2e.test.ts:108:7 5. Should display investigation data in table" type="FAILURE">
+<![CDATA[  [webkit] › parallel-investigations.e2e.test.ts:108:7 › Parallel Investigations Feature - End-to-End › 5. Should display investigation data in table 
+
+    Error: apiRequestContext.post: connect ECONNREFUSED ::1:8090
+    Call log:
+      - → POST http://localhost:8090/api/v1/investigation-state/
+        - user-agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/26.0 Safari/605.1.15
+        - accept: */*
+        - accept-encoding: gzip,deflate,br
+        - content-type: application/json
+        - content-length: 219
+
+        at apiRequestContext.post: connect ECONNREFUSED ::1:8090
+        at InvestigationAPIClient.call (/Users/olorin/Documents/olorin/olorin-front/src/shared/testing/e2e/helpers/api.js:91:62)
+        at step (/Users/olorin/Documents/olorin/olorin-front/src/shared/testing/e2e/helpers/api.js:52:23)
+        at Object.next (/Users/olorin/Documents/olorin/olorin-front/src/shared/testing/e2e/helpers/api.js:33:53)
+        at /Users/olorin/Documents/olorin/olorin-front/src/shared/testing/e2e/helpers/api.js:27:71
+        at __awaiter (/Users/olorin/Documents/olorin/olorin-front/src/shared/testing/e2e/helpers/api.js:23:12)
+        at InvestigationAPIClient.createInvestigation (/Users/olorin/Documents/olorin/olorin-front/src/shared/testing/e2e/helpers/api.js:66:16)
+        at call (/Users/olorin/Documents/olorin/olorin-front/src/shared/testing/e2e/helpers/api.js:262:49)
+        at step (/Users/olorin/Documents/olorin/olorin-front/src/shared/testing/e2e/helpers/api.js:52:23)
+        at Object.next (/Users/olorin/Documents/olorin/olorin-front/src/shared/testing/e2e/helpers/api.js:33:53)
+        at /Users/olorin/Documents/olorin/olorin-front/src/shared/testing/e2e/helpers/api.js:27:71
+        at __awaiter (/Users/olorin/Documents/olorin/olorin-front/src/shared/testing/e2e/helpers/api.js:23:12)
+        at createTestInvestigations (/Users/olorin/Documents/olorin/olorin-front/src/shared/testing/e2e/helpers/api.js:250:12)
+        at /Users/olorin/Documents/olorin/olorin-front/src/shared/testing/e2e/parallel-investigations.e2e.test.ts:37:56
+]]>
+</failure>
+<system-out>
+<![CDATA[Cleaned up 0 test investigations
+]]>
+</system-out>
+</testcase>
+<testcase name="Parallel Investigations Feature - End-to-End › 6. Should show investigation status colors" classname="parallel-investigations.e2e.test.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Parallel Investigations Feature - End-to-End › 7. Should have working refresh button" classname="parallel-investigations.e2e.test.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Parallel Investigations Feature - End-to-End › 8. Should navigate to investigation details on row click" classname="parallel-investigations.e2e.test.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Parallel Investigations Feature - End-to-End › 9. Should handle loading state gracefully" classname="parallel-investigations.e2e.test.ts" time="0">
+<failure message="parallel-investigations.e2e.test.ts:182:7 9. Should handle loading state gracefully" type="FAILURE">
+<![CDATA[  [webkit] › parallel-investigations.e2e.test.ts:182:7 › Parallel Investigations Feature - End-to-End › 9. Should handle loading state gracefully 
+
+    Error: apiRequestContext.post: connect ECONNREFUSED ::1:8090
+    Call log:
+      - → POST http://localhost:8090/api/v1/investigation-state/
+        - user-agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/26.0 Safari/605.1.15
+        - accept: */*
+        - accept-encoding: gzip,deflate,br
+        - content-type: application/json
+        - content-length: 219
+
+        at apiRequestContext.post: connect ECONNREFUSED ::1:8090
+        at InvestigationAPIClient.call (/Users/olorin/Documents/olorin/olorin-front/src/shared/testing/e2e/helpers/api.js:91:62)
+        at step (/Users/olorin/Documents/olorin/olorin-front/src/shared/testing/e2e/helpers/api.js:52:23)
+        at Object.next (/Users/olorin/Documents/olorin/olorin-front/src/shared/testing/e2e/helpers/api.js:33:53)
+        at /Users/olorin/Documents/olorin/olorin-front/src/shared/testing/e2e/helpers/api.js:27:71
+        at __awaiter (/Users/olorin/Documents/olorin/olorin-front/src/shared/testing/e2e/helpers/api.js:23:12)
+        at InvestigationAPIClient.createInvestigation (/Users/olorin/Documents/olorin/olorin-front/src/shared/testing/e2e/helpers/api.js:66:16)
+        at call (/Users/olorin/Documents/olorin/olorin-front/src/shared/testing/e2e/helpers/api.js:262:49)
+        at step (/Users/olorin/Documents/olorin/olorin-front/src/shared/testing/e2e/helpers/api.js:52:23)
+        at Object.next (/Users/olorin/Documents/olorin/olorin-front/src/shared/testing/e2e/helpers/api.js:33:53)
+        at /Users/olorin/Documents/olorin/olorin-front/src/shared/testing/e2e/helpers/api.js:27:71
+        at __awaiter (/Users/olorin/Documents/olorin/olorin-front/src/shared/testing/e2e/helpers/api.js:23:12)
+        at createTestInvestigations (/Users/olorin/Documents/olorin/olorin-front/src/shared/testing/e2e/helpers/api.js:250:12)
+        at /Users/olorin/Documents/olorin/olorin-front/src/shared/testing/e2e/parallel-investigations.e2e.test.ts:37:56
+]]>
+</failure>
+<system-out>
+<![CDATA[Cleaned up 0 test investigations
+]]>
+</system-out>
+</testcase>
+<testcase name="Parallel Investigations Feature - End-to-End › 10. Should show &quot;No investigations&quot; message when empty" classname="parallel-investigations.e2e.test.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Parallel Investigations Feature - End-to-End › 11. API: Create investigation endpoint" classname="parallel-investigations.e2e.test.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Parallel Investigations Feature - End-to-End › 12. API: Lifecycle endpoints (start, complete)" classname="parallel-investigations.e2e.test.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Parallel Investigations Feature - End-to-End › 13. API: Findings endpoints" classname="parallel-investigations.e2e.test.ts" time="0">
+<failure message="parallel-investigations.e2e.test.ts:292:7 13. API: Findings endpoints" type="FAILURE">
+<![CDATA[  [webkit] › parallel-investigations.e2e.test.ts:292:7 › Parallel Investigations Feature - End-to-End › 13. API: Findings endpoints 
+
+    Error: apiRequestContext.post: connect ECONNREFUSED ::1:8090
+    Call log:
+      - → POST http://localhost:8090/api/v1/investigation-state/
+        - user-agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/26.0 Safari/605.1.15
+        - accept: */*
+        - accept-encoding: gzip,deflate,br
+        - content-type: application/json
+        - content-length: 219
+
+        at apiRequestContext.post: connect ECONNREFUSED ::1:8090
+        at InvestigationAPIClient.call (/Users/olorin/Documents/olorin/olorin-front/src/shared/testing/e2e/helpers/api.js:91:62)
+        at step (/Users/olorin/Documents/olorin/olorin-front/src/shared/testing/e2e/helpers/api.js:52:23)
+        at Object.next (/Users/olorin/Documents/olorin/olorin-front/src/shared/testing/e2e/helpers/api.js:33:53)
+        at /Users/olorin/Documents/olorin/olorin-front/src/shared/testing/e2e/helpers/api.js:27:71
+        at __awaiter (/Users/olorin/Documents/olorin/olorin-front/src/shared/testing/e2e/helpers/api.js:23:12)
+        at InvestigationAPIClient.createInvestigation (/Users/olorin/Documents/olorin/olorin-front/src/shared/testing/e2e/helpers/api.js:66:16)
+        at call (/Users/olorin/Documents/olorin/olorin-front/src/shared/testing/e2e/helpers/api.js:262:49)
+        at step (/Users/olorin/Documents/olorin/olorin-front/src/shared/testing/e2e/helpers/api.js:52:23)
+        at Object.next (/Users/olorin/Documents/olorin/olorin-front/src/shared/testing/e2e/helpers/api.js:33:53)
+        at /Users/olorin/Documents/olorin/olorin-front/src/shared/testing/e2e/helpers/api.js:27:71
+        at __awaiter (/Users/olorin/Documents/olorin/olorin-front/src/shared/testing/e2e/helpers/api.js:23:12)
+        at createTestInvestigations (/Users/olorin/Documents/olorin/olorin-front/src/shared/testing/e2e/helpers/api.js:250:12)
+        at /Users/olorin/Documents/olorin/olorin-front/src/shared/testing/e2e/parallel-investigations.e2e.test.ts:37:56
+]]>
+</failure>
+<system-out>
+<![CDATA[Cleaned up 0 test investigations
+]]>
+</system-out>
+</testcase>
+<testcase name="Parallel Investigations Feature - End-to-End › 14. API: Error handling - 404 on missing investigation" classname="parallel-investigations.e2e.test.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Parallel Investigations Feature - End-to-End › 15. Performance: Page load time should be reasonable" classname="parallel-investigations.e2e.test.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Parallel Investigations Feature - End-to-End › 16. Accessibility: Page should have proper ARIA labels" classname="parallel-investigations.e2e.test.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Parallel Investigations Feature - End-to-End › 17. Responsive design: Should work on mobile viewport" classname="parallel-investigations.e2e.test.ts" time="0">
+<failure message="parallel-investigations.e2e.test.ts:358:7 17. Responsive design: Should work on mobile viewport" type="FAILURE">
+<![CDATA[  [webkit] › parallel-investigations.e2e.test.ts:358:7 › Parallel Investigations Feature - End-to-End › 17. Responsive design: Should work on mobile viewport 
+
+    Error: apiRequestContext.post: connect ECONNREFUSED ::1:8090
+    Call log:
+      - → POST http://localhost:8090/api/v1/investigation-state/
+        - user-agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/26.0 Safari/605.1.15
+        - accept: */*
+        - accept-encoding: gzip,deflate,br
+        - content-type: application/json
+        - content-length: 219
+
+        at apiRequestContext.post: connect ECONNREFUSED ::1:8090
+        at InvestigationAPIClient.call (/Users/olorin/Documents/olorin/olorin-front/src/shared/testing/e2e/helpers/api.js:91:62)
+        at step (/Users/olorin/Documents/olorin/olorin-front/src/shared/testing/e2e/helpers/api.js:52:23)
+        at Object.next (/Users/olorin/Documents/olorin/olorin-front/src/shared/testing/e2e/helpers/api.js:33:53)
+        at /Users/olorin/Documents/olorin/olorin-front/src/shared/testing/e2e/helpers/api.js:27:71
+        at __awaiter (/Users/olorin/Documents/olorin/olorin-front/src/shared/testing/e2e/helpers/api.js:23:12)
+        at InvestigationAPIClient.createInvestigation (/Users/olorin/Documents/olorin/olorin-front/src/shared/testing/e2e/helpers/api.js:66:16)
+        at call (/Users/olorin/Documents/olorin/olorin-front/src/shared/testing/e2e/helpers/api.js:262:49)
+        at step (/Users/olorin/Documents/olorin/olorin-front/src/shared/testing/e2e/helpers/api.js:52:23)
+        at Object.next (/Users/olorin/Documents/olorin/olorin-front/src/shared/testing/e2e/helpers/api.js:33:53)
+        at /Users/olorin/Documents/olorin/olorin-front/src/shared/testing/e2e/helpers/api.js:27:71
+        at __awaiter (/Users/olorin/Documents/olorin/olorin-front/src/shared/testing/e2e/helpers/api.js:23:12)
+        at createTestInvestigations (/Users/olorin/Documents/olorin/olorin-front/src/shared/testing/e2e/helpers/api.js:250:12)
+        at /Users/olorin/Documents/olorin/olorin-front/src/shared/testing/e2e/parallel-investigations.e2e.test.ts:37:56
+]]>
+</failure>
+<system-out>
+<![CDATA[Cleaned up 0 test investigations
+]]>
+</system-out>
+</testcase>
+<testcase name="Parallel Investigations Feature - End-to-End › 18. Should handle network errors gracefully" classname="parallel-investigations.e2e.test.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Parallel Investigations Feature - End-to-End › 19. Should auto-refresh data at configured interval" classname="parallel-investigations.e2e.test.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Parallel Investigations Feature - End-to-End › 20. Full integration test: Create, navigate, and monitor investigation" classname="parallel-investigations.e2e.test.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+</testsuite>
+</testsuites>

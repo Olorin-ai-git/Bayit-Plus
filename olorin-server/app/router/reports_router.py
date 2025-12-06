@@ -36,6 +36,9 @@ from app.security.auth import User
 from app.security.auth import require_read_or_dev as require_read
 from app.security.auth import require_write_or_dev as require_write
 from app.service.report_service import ReportService
+from app.service.reporting.on_demand_startup_report_service import (
+    generate_on_demand_startup_report,
+)
 
 router = APIRouter(
     prefix="/api/v1/reports",
@@ -181,6 +184,52 @@ async def get_investigation_statistics(
     """Get investigation statistics for widgets."""
     service = get_report_service(db)
     return service.get_investigation_statistics()
+
+
+@router.post(
+    "/startup-analysis/generate",
+    response_model=Dict[str, Any],
+    summary="Generate startup analysis report",
+    description="Generate startup analysis report aggregating all completed auto-comparison investigations",
+)
+async def generate_startup_analysis_report(
+    db: Session = Depends(get_db),
+    current_user: User = Depends(require_write),
+) -> Dict[str, Any]:
+    """Generate startup analysis report on demand."""
+    try:
+        return await generate_on_demand_startup_report(db)
+    except Exception as e:
+        raise HTTPException(
+            status_code=500, detail=f"Failed to generate startup report: {str(e)}"
+        )
+
+
+@router.get(
+    "/artifacts/{filename}",
+    summary="Get artifact file",
+    description="Retrieve generic artifact file (e.g. startup report)",
+)
+async def get_artifact_file(
+    filename: str,
+    current_user: User = Depends(require_read),
+):
+    """Serve artifact file from artifacts directory."""
+    from fastapi.responses import FileResponse
+
+    from app.config.file_organization_config import FileOrganizationConfig
+
+    file_org_config = FileOrganizationConfig()
+    file_path = file_org_config.artifacts_base_dir / filename
+
+    if not file_path.exists():
+        raise HTTPException(status_code=404, detail="Artifact not found")
+
+    return FileResponse(
+        path=str(file_path),
+        media_type="text/html",  # Assume HTML for reports
+        filename=filename,
+    )
 
 
 # Investigation report endpoints - must be defined before parameterized routes
@@ -383,25 +432,36 @@ async def get_investigation_report_html(
 
     report_path = investigation_folder / filename
 
-        if not report_path.exists():
-            # Check artifacts fallback for confusion matrix (for auto-comp investigations)
-            if report_type == "confusion_matrix":
-                artifacts_path = Path("artifacts/comparisons/auto_startup") / f"confusion_matrix_{investigation_id}.html"
-                if artifacts_path.exists():
-                    report_path = artifacts_path
+    if not report_path.exists():
+        # Check artifacts fallback for confusion matrix (for auto-comp investigations)
+        if report_type == "confusion_matrix":
+            artifacts_path = Path("artifacts/comparisons/auto_startup") / f"confusion_matrix_{investigation_id}.html"
             
-            # Final check
-            if not report_path.exists():
-                raise HTTPException(
-                    status_code=404,
-                    detail=f"Report not found for investigation '{investigation_id}'. Generate the report first.",
-                )
+            # Also check nested artifacts/comparisons/auto_startup folders if direct file not found
+            # Sometimes reports are saved in folders like: artifacts/comparisons/auto_startup/{Entity Name}/
+            if not artifacts_path.exists():
+                base_artifacts = Path("artifacts/comparisons/auto_startup")
+                if base_artifacts.exists():
+                    for item in base_artifacts.rglob(f"*confusion*{investigation_id}*.html"):
+                        if item.is_file():
+                            artifacts_path = item
+                            break
 
-        return FileResponse(
-            path=str(report_path),
-            media_type="text/html",
-            filename=f"investigation_{report_type}_{investigation_id}.html",
-        )
+            if artifacts_path.exists():
+                report_path = artifacts_path
+        
+        # Final check
+        if not report_path.exists():
+            raise HTTPException(
+                status_code=404,
+                detail=f"Report not found for investigation '{investigation_id}'. Generate the report first.",
+            )
+
+    return FileResponse(
+        path=str(report_path),
+        media_type="text/html",
+        filename=f"investigation_{report_type}_{investigation_id}.html",
+    )
 
 
 @router.post(

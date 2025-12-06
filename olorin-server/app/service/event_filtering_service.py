@@ -76,18 +76,18 @@ class EventFilteringService:
             if isinstance(filters.since_timestamp, datetime):
                 since_dt = filters.since_timestamp
             else:
-                since_dt = datetime.fromtimestamp(
-                    filters.since_timestamp / 1000, tz=timezone.utc
-                )
+            since_dt = datetime.fromtimestamp(
+                filters.since_timestamp / 1000, tz=timezone.utc
+            )
             filtered = [e for e in filtered if e.timestamp >= since_dt]
 
         if filters.until_timestamp:
             if isinstance(filters.until_timestamp, datetime):
                 until_dt = filters.until_timestamp
             else:
-                until_dt = datetime.fromtimestamp(
-                    filters.until_timestamp / 1000, tz=timezone.utc
-                )
+            until_dt = datetime.fromtimestamp(
+                filters.until_timestamp / 1000, tz=timezone.utc
+            )
             filtered = [e for e in filtered if e.timestamp <= until_dt]
 
         logger.debug(f"Event filtering: {len(events)} → {len(filtered)} events")
@@ -128,18 +128,18 @@ class EventFilteringService:
             if isinstance(filters.since_timestamp, datetime):
                 since_dt = filters.since_timestamp
             else:
-                since_dt = datetime.fromtimestamp(
-                    filters.since_timestamp / 1000, tz=timezone.utc
-                )
+            since_dt = datetime.fromtimestamp(
+                filters.since_timestamp / 1000, tz=timezone.utc
+            )
             query = query.filter(InvestigationAuditLog.timestamp >= since_dt)
 
         if filters.until_timestamp:
             if isinstance(filters.until_timestamp, datetime):
                 until_dt = filters.until_timestamp
             else:
-                until_dt = datetime.fromtimestamp(
-                    filters.until_timestamp / 1000, tz=timezone.utc
-                )
+            until_dt = datetime.fromtimestamp(
+                filters.until_timestamp / 1000, tz=timezone.utc
+            )
             query = query.filter(InvestigationAuditLog.timestamp <= until_dt)
 
         return query
