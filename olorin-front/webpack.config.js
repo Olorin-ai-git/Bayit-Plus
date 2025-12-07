@@ -109,6 +109,19 @@ const microservices = {
       visualization: 'visualization@http://localhost:3004/remoteEntry.js'
     }
   },
+  financialAnalysis: {
+    name: 'financialAnalysis',
+    port: 3009,
+    exposes: {
+      './App': './src/microservices/financial-analysis/FinancialAnalysisApp.tsx',
+      './Dashboard': './src/microservices/financial-analysis/pages/FinancialDashboardPage.tsx',
+      './InvestigationDetail': './src/microservices/financial-analysis/pages/InvestigationFinancialPage.tsx'
+    },
+    remotes: {
+      coreUi: 'coreUi@http://localhost:3006/remoteEntry.js',
+      designSystem: 'designSystem@http://localhost:3007/remoteEntry.js'
+    }
+  },
   coreUi: {
     name: 'coreUi',
     port: 3006,
@@ -191,6 +204,8 @@ const getEntryPoint = (service) => {
       return './src/microservices/visualization/index.tsx';
     case 'reporting':
       return './src/microservices/reporting/index.tsx';
+    case 'financialAnalysis':
+      return './src/microservices/financial-analysis/index.tsx';
     case 'coreUi':
       return './src/microservices/core-ui/index.tsx';
     case 'designSystem':
@@ -232,6 +247,10 @@ const serviceOptimizations = {
   reporting: {
     eager: ['react', 'react-dom'],
     priority: ['reports', 'pdf-generation', 'export']
+  },
+  financialAnalysis: {
+    eager: ['react', 'react-dom'],
+    priority: ['financial-metrics', 'dashboard', 'analysis']
   },
   coreUi: {
     eager: ['react', 'react-dom', '@headlessui/react'],

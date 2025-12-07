@@ -153,6 +153,7 @@
     "start:rag-intelligence": "SERVICE=ragIntelligence webpack serve --mode development",
     "start:visualization": "SERVICE=visualization webpack serve --mode development",
     "start:reporting": "SERVICE=reporting webpack serve --mode development",
+    "start:financial-analysis": "SERVICE=financialAnalysis webpack serve --mode development",
     "start:core-ui": "SERVICE=coreUi webpack serve --mode development",
     "start:design-system": "SERVICE=designSystem webpack serve --mode development",
     "start:investigations-management": "SERVICE=investigationsManagement webpack serve --mode development",

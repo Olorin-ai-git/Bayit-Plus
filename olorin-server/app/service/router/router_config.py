@@ -45,6 +45,7 @@ def _include_core_routers(app: FastAPI) -> None:
     from app.router.health_router import router as health_router
     from app.router.hybrid_graph_investigations_router import hybrid_graph_router
     from app.router.investigation_api import router as investigation_api_router
+    from app.router.financial_router import router as financial_router
     from app.router.investigation_comparison_router import (
         router as investigation_comparison_router,
     )
@@ -101,6 +102,7 @@ def _include_core_routers(app: FastAPI) -> None:
     app.include_router(
         investigation_comparison_router
     )  # Investigation comparison API (Feature 001-you-editing-fraud)
+    app.include_router(financial_router)  # Financial Analysis API (Feature 025)
 
     logger.info("All core routers have been included (WebSocket disabled)")
 

@@ -1,5 +1,7 @@
 // Types for Parallel Investigations Monitoring
 
+import type { RevenueMetrics, ConfusionMetrics } from './financialMetrics';
+
 export interface ParallelInvestigation {
   id: string;
   investigationId?: string;
@@ -14,6 +16,8 @@ export interface ParallelInvestigation {
       entityValue: string;
     }>;
   };
+  financialMetrics?: RevenueMetrics | null;
+  confusionMetrics?: ConfusionMetrics | null;
 }
 
 export type InvestigationStatusType =

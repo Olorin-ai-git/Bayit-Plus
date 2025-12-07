@@ -1,0 +1,253 @@
+openapi: 3.0.3
+info:
+  title: Financial Analysis API
+  description: API endpoints for investigation financial metrics
+  version: 1.0.0
+
+servers:
+  - url: /api/v1/financial
+    description: Financial Analysis API
+
+paths:
+  /{investigation_id}/metrics:
+    get:
+      summary: Get financial metrics for an investigation
+      description: Returns revenue implications and confusion matrix for a completed investigation
+      operationId: getInvestigationFinancialMetrics
+      parameters:
+        - name: investigation_id
+          in: path
+          required: true
+          schema:
+            type: string
+          description: Investigation ID
+      responses:
+        '200':
+          description: Financial metrics retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FinancialMetricsResponse'
+        '404':
+          description: Investigation not found
+        '422':
+          description: Investigation not completed
+
+  /summary:
+    get:
+      summary: Get aggregated financial summary
+      description: Returns aggregated financial metrics across multiple investigations
+      operationId: getFinancialSummary
+      parameters:
+        - name: investigation_ids
+          in: query
+          required: true
+          schema:
+            type: array
+            items:
+              type: string
+          style: form
+          explode: true
+          description: List of investigation IDs to aggregate
+      responses:
+        '200':
+          description: Financial summary retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FinancialSummaryResponse'
+
+components:
+  schemas:
+    RevenueMetrics:
+      type: object
+      required:
+        - savedFraudGmv
+        - lostRevenues
+        - netValue
+        - confidenceLevel
+        - approvedFraudTxCount
+        - blockedLegitTxCount
+        - totalTxCount
+        - calculationSuccessful
+        - skippedDueToPrediction
+      properties:
+        savedFraudGmv:
+          type: number
+          format: decimal
+          description: GMV saved by detecting fraud
+          example: 10234.56
+        lostRevenues:
+          type: number
+          format: decimal
+          description: Revenue lost from false positive blocks
+          example: 7597.48
+        netValue:
+          type: number
+          format: decimal
+          description: Net value (savedFraudGmv - lostRevenues)
+          example: 2637.08
+        confidenceLevel:
+          type: string
+          enum: [high, medium, low]
+          description: Confidence based on transaction volume
+        approvedFraudTxCount:
+          type: integer
+          minimum: 0
+          description: Number of approved fraud transactions
+        blockedLegitTxCount:
+          type: integer
+          minimum: 0
+          description: Number of blocked legitimate transactions
+        totalTxCount:
+          type: integer
+          minimum: 0
+          description: Total transactions analyzed
+        calculationSuccessful:
+          type: boolean
+          description: Whether calculation completed successfully
+        errorMessage:
+          type: string
+          nullable: true
+          description: Error message if calculation failed
+        skippedDueToPrediction:
+          type: boolean
+          description: True if skipped because entity not predicted as fraud
+
+    ConfusionMetrics:
+      type: object
+      required:
+        - truePositives
+        - falsePositives
+        - trueNegatives
+        - falseNegatives
+        - precision
+        - recall
+        - f1Score
+        - accuracy
+      properties:
+        truePositives:
+          type: integer
+          minimum: 0
+        falsePositives:
+          type: integer
+          minimum: 0
+        trueNegatives:
+          type: integer
+          minimum: 0
+        falseNegatives:
+          type: integer
+          minimum: 0
+        precision:
+          type: number
+          format: float
+          minimum: 0
+          maximum: 1
+        recall:
+          type: number
+          format: float
+          minimum: 0
+          maximum: 1
+        f1Score:
+          type: number
+          format: float
+          minimum: 0
+          maximum: 1
+        accuracy:
+          type: number
+          format: float
+          minimum: 0
+          maximum: 1
+
+    FinancialMetricsResponse:
+      type: object
+      required:
+        - investigationId
+        - calculatedAt
+      properties:
+        investigationId:
+          type: string
+        revenueMetrics:
+          $ref: '#/components/schemas/RevenueMetrics'
+          nullable: true
+        confusionMetrics:
+          $ref: '#/components/schemas/ConfusionMetrics'
+          nullable: true
+        calculatedAt:
+          type: string
+          format: date-time
+
+    AggregateConfusionMatrix:
+      type: object
+      properties:
+        totalTP:
+          type: integer
+        totalFP:
+          type: integer
+        totalTN:
+          type: integer
+        totalFN:
+          type: integer
+        avgPrecision:
+          type: number
+          format: float
+        avgRecall:
+          type: number
+          format: float
+
+    FinancialSummary:
+      type: object
+      required:
+        - totalSavedFraudGmv
+        - totalLostRevenues
+        - totalNetValue
+        - investigationCount
+        - successfulCalculations
+        - failedCalculations
+        - aggregatedAt
+      properties:
+        totalSavedFraudGmv:
+          type: number
+          format: decimal
+        totalLostRevenues:
+          type: number
+          format: decimal
+        totalNetValue:
+          type: number
+          format: decimal
+        aggregateConfusionMatrix:
+          $ref: '#/components/schemas/AggregateConfusionMatrix'
+        investigationCount:
+          type: integer
+        successfulCalculations:
+          type: integer
+        failedCalculations:
+          type: integer
+        aggregatedAt:
+          type: string
+          format: date-time
+
+    InvestigationStatus:
+      type: object
+      properties:
+        investigationId:
+          type: string
+        status:
+          type: string
+          enum: [success, failed, skipped]
+        errorMessage:
+          type: string
+          nullable: true
+
+    FinancialSummaryResponse:
+      type: object
+      required:
+        - summary
+        - investigations
+      properties:
+        summary:
+          $ref: '#/components/schemas/FinancialSummary'
+        investigations:
+          type: array
+          items:
+            $ref: '#/components/schemas/InvestigationStatus'
