@@ -3,6 +3,7 @@
  * Feature: 025-financial-analysis-frontend
  *
  * Configuration schema and loader for financial analysis features.
+ * Uses safe browser-compatible configuration loading.
  */
 
 import { z } from 'zod';
@@ -22,19 +23,50 @@ export type FinancialConfig = z.infer<typeof FinancialConfigSchema>;
 let cachedConfig: FinancialConfig | null = null;
 
 /**
- * Load and validate financial configuration from environment variables.
- * Fails fast if configuration is invalid or missing.
+ * Get configuration value safely from window.__RUNTIME_CONFIG__ or return fallback.
+ * This approach is browser-safe and doesn't rely on process.env directly.
+ */
+function safeGetConfig(key: string, fallback: string): string {
+  try {
+    // Check for window.__RUNTIME_CONFIG__ (populated by shell app)
+    if (typeof window !== 'undefined' && window.__RUNTIME_CONFIG__) {
+      const value = (window.__RUNTIME_CONFIG__ as Record<string, string | undefined>)[key];
+      if (value !== undefined && value !== null && value !== '') {
+        return value;
+      }
+    }
+    return fallback;
+  } catch {
+    return fallback;
+  }
+}
+
+/**
+ * Get number configuration value safely.
+ */
+function safeGetNumberConfig(key: string, fallback: number): number {
+  const value = safeGetConfig(key, String(fallback));
+  const parsed = parseInt(value, 10);
+  return isNaN(parsed) ? fallback : parsed;
+}
+
+/**
+ * Load and validate financial configuration.
+ * Uses safe defaults that work in all browser contexts.
+ * Configuration values come from window.__RUNTIME_CONFIG__ when available.
  */
 export function getFinancialConfig(): FinancialConfig {
   if (cachedConfig) {
     return cachedConfig;
   }
 
+  // Use safe defaults that work in all browser contexts
+  // When running through the shell app, window.__RUNTIME_CONFIG__ will be populated
   const config = FinancialConfigSchema.safeParse({
-    enabled: process.env.REACT_APP_FEATURE_FINANCIAL_ANALYSIS_ENABLED,
-    refreshIntervalMs: process.env.REACT_APP_FINANCIAL_REFRESH_INTERVAL_MS,
-    currencyCode: process.env.REACT_APP_FINANCIAL_CURRENCY_CODE,
-    currencyLocale: process.env.REACT_APP_FINANCIAL_CURRENCY_LOCALE,
+    enabled: safeGetConfig('REACT_APP_FEATURE_FINANCIAL_ANALYSIS_ENABLED', 'true'),
+    refreshIntervalMs: safeGetNumberConfig('REACT_APP_REQUEST_TIMEOUT_MS', 30000),
+    currencyCode: 'USD',
+    currencyLocale: 'en-US',
   });
 
   if (!config.success) {

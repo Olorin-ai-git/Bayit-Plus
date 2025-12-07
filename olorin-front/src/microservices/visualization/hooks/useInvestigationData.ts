@@ -56,7 +56,7 @@ export function useInvestigationData(investigationId?: string): UseInvestigation
   // Fetch investigation data from API
   const fetchInvestigationData = useCallback(async () => {
     // Don't fetch if investigationId is missing or is a reserved route name
-    const reservedNames = ['visualization', 'charts', 'maps', 'risk-analysis', 'reports', 'analytics', 'rag', 'investigations', 'investigations-management', 'compare', 'parallel'];
+    const reservedNames = ['visualization', 'charts', 'maps', 'risk-analysis', 'reports', 'analytics', 'rag', 'investigations', 'investigations-management', 'compare', 'parallel', 'financial-analysis', 'status', 'profile', 'settings', 'auth'];
     if (!investigationId || reservedNames.includes(investigationId.toLowerCase())) {
       setLoading(false);
       return;

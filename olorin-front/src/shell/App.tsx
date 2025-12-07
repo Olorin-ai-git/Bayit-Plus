@@ -29,6 +29,7 @@ const VisualizationApp = React.lazy(() => import('../microservices/visualization
 const InvestigationsManagementApp = React.lazy(() => import('../microservices/investigations-management/InvestigationsManagementApp'));
 const ParallelInvestigationsPage = React.lazy(() => import('../microservices/investigation/pages/ParallelInvestigationsPage').then(module => ({ default: module.ParallelInvestigationsPage })));
 const AnalyticsApp = React.lazy(() => import('../microservices/analytics/AnalyticsApp'));
+const FinancialAnalysisApp = React.lazy(() => import('../microservices/financial-analysis/FinancialAnalysisApp'));
 
 interface ShellState {
   isInitialized: boolean;
@@ -324,6 +325,22 @@ const App: React.FC = () => {
                   </ErrorBoundary>
                 } />
                 <Route path="/status" element={<SystemStatusPage />} />
+                <Route path="/financial-analysis/*" element={
+                  <ErrorBoundary serviceName="financial-analysis">
+                    <Suspense fallback={
+                      <div className="flex items-center justify-center h-64">
+                        <div className="text-center">
+                          <LoadingSpinner size="md" />
+                          <p className="mt-2 text-sm text-corporate-textSecondary">
+                            Loading Financial Analysis...
+                          </p>
+                        </div>
+                      </div>
+                    }>
+                      <FinancialAnalysisApp />
+                    </Suspense>
+                  </ErrorBoundary>
+                } />
                 <Route path="/investigations-management/*" element={
                   <ErrorBoundary serviceName="investigations-management">
                     <Suspense fallback={

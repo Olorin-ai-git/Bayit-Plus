@@ -447,3 +447,15 @@ class InvestigationStateService:
             "has_next_page": offset + len(items) < total_count,
             "has_previous_page": page > 1,
         }
+
+    def get_completed_investigations_with_auth(
+        self, user_id: str
+    ) -> List[InvestigationState]:
+        """Get all completed investigations for a user (for financial dashboard)."""
+        return (
+            self.db.query(InvestigationState)
+            .filter(InvestigationState.user_id == user_id)
+            .filter(InvestigationState.status == "COMPLETED")
+            .order_by(InvestigationState.updated_at.desc())
+            .all()
+        )

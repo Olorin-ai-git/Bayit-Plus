@@ -14,8 +14,8 @@ import {
 } from '../../utils/currencyFormatter';
 
 interface CurrencyDisplayProps {
-  /** The numeric value to display */
-  value: number;
+  /** The numeric value to display (null/undefined are handled gracefully as 0) */
+  value: number | null | undefined;
   /** Display format: 'standard' for full, 'compact' for abbreviated (e.g., $1.2M), 'detailed' with decimals */
   format?: 'standard' | 'compact' | 'detailed';
   /** Additional CSS classes */
@@ -46,7 +46,8 @@ export const CurrencyDisplay: React.FC<CurrencyDisplayProps> = ({
         formatted = formatCurrency(value);
     }
 
-    if (showSign && value > 0) {
+    // Safe check: only show sign if value is a positive number
+    if (showSign && value !== null && value !== undefined && value > 0) {
       return `+${formatted}`;
     }
     return formatted;

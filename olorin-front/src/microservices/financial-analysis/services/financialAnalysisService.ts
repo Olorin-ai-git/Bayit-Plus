@@ -5,7 +5,8 @@
  * API service for financial analysis dashboard data.
  */
 
-import { BaseApiService } from '@shared/services/baseApiService';
+import { BaseApiService } from '@shared/services/BaseApiService';
+import { getRuntimeConfig } from '@shared/config/runtimeConfig';
 import type { FinancialSummary, InvestigationFinancialAnalysis } from '../../investigation/types/financialMetrics';
 import type { FinancialMetricsResponse, ApiFinancialSummary } from '../../investigation/types/financialApiTypes';
 import { transformFinancialSummary, transformFinancialMetrics } from '../../investigation/types/financialApiTypes';
@@ -45,6 +46,11 @@ interface DashboardData {
 }
 
 class FinancialAnalysisService extends BaseApiService {
+  constructor(baseUrl?: string) {
+    const apiUrl = baseUrl || getRuntimeConfig('REACT_APP_API_BASE_URL', { required: true });
+    super(apiUrl);
+  }
+
   async getDashboardData(): Promise<DashboardData> {
     const response = await this.get<DashboardDataApiResponse>('/api/v1/financial/dashboard');
     return {

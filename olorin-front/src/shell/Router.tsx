@@ -27,6 +27,9 @@ const VisualizationApp = React.lazy(() => import('../microservices/visualization
 // Reporting Service (port 3005) - Fully implemented
 const ReportingApp = React.lazy(() => import('../microservices/reporting/ReportingApp'));
 
+// Financial Analysis Service (port 3009) - Revenue impact and metrics
+const FinancialAnalysisApp = React.lazy(() => import('../microservices/financial-analysis/FinancialAnalysisApp'));
+
 interface RouteConfig {
   path: string;
   component: React.LazyExoticComponent<React.ComponentType<any>>;
@@ -78,6 +81,10 @@ const routes: RouteConfig[] = [
   { path: '/profile', component: CoreUIApp, serviceName: 'core-ui', exact: true },
   { path: '/settings', component: CoreUIApp, serviceName: 'core-ui', exact: true },
   { path: '/auth/*', component: CoreUIApp, serviceName: 'core-ui' },
+
+  // Financial Analysis Service Routes (Port 3009) - Revenue impact and metrics
+  { path: '/financial-analysis', component: FinancialAnalysisApp, serviceName: 'financial-analysis', exact: true },
+  { path: '/financial-analysis/*', component: FinancialAnalysisApp, serviceName: 'financial-analysis' },
 ];
 
 const AppRouter: React.FC = () => {
@@ -166,7 +173,8 @@ const AppRouter: React.FC = () => {
               { name: 'rag-intelligence', display: 'RAG Intelligence', port: '3003', status: 'operational' },
               { name: 'visualization', display: 'Visualization', port: '3004', status: 'operational' },
               { name: 'reporting', display: 'Reporting', port: '3005', status: 'operational' },
-              { name: 'core-ui', display: 'Core UI', port: '3006', status: 'operational' }
+              { name: 'core-ui', display: 'Core UI', port: '3006', status: 'operational' },
+              { name: 'financial-analysis', display: 'Financial Analysis', port: '3009', status: 'operational' }
             ].map(service => (
               <div key={service.name} className="bg-white rounded-lg shadow p-4">
                 <h3 className="font-medium text-gray-900">{service.display}</h3>

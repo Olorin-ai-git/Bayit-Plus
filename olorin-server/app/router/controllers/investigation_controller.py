@@ -323,7 +323,9 @@ def update_investigation_status(investigation_id: str, updates: Dict[str, Any]) 
                         f"⚠️ Failed to generate confusion table for investigation {investigation_id}: {e}",
                         exc_info=True,
                     )
-                    # Don't fail the status update if confusion table generation fails
+                
+                # NOTE: Incremental report is now triggered AFTER confusion table generation
+                # (see confusion_table_generator.py) to ensure it includes the latest data
 
             # Update status
             if "status" in updates:

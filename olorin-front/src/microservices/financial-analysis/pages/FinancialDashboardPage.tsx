@@ -59,11 +59,29 @@ const createColumns = (onNavigate: (id: string) => void): Column<InvestigationLi
   },
 ];
 
+// Empty state summary for when no data is available
+const EMPTY_SUMMARY = {
+  totalSavedFraudGmv: 0,
+  totalLostRevenues: 0,
+  totalNetValue: 0,
+  aggregateConfusionMatrix: null,
+  investigationCount: 0,
+  successfulCalculations: 0,
+  failedCalculations: 0,
+  aggregatedAt: new Date().toISOString(),
+};
+
 export const FinancialDashboardPage: React.FC = () => {
   const navigate = useNavigate();
   const { data, loading, error, refetch } = useFinancialDashboard();
   const handleNavigate = (id: string) => navigate(`/financial-analysis/investigation/${id}`);
   const columns = React.useMemo(() => createColumns(handleNavigate), []);
+
+  // Use empty defaults when data is not available
+  const summary = data?.summary || EMPTY_SUMMARY;
+  const investigations = data?.investigations || [];
+  const hasError = !!error;
+  const hasNoData = !loading && !hasError && investigations.length === 0;
 
   if (loading) {
     return (
@@ -73,38 +91,52 @@ export const FinancialDashboardPage: React.FC = () => {
     );
   }
 
-  if (error) {
-    return (
-      <div className="min-h-screen bg-black p-6">
-        <div className="bg-corporate-bgSecondary/50 border border-corporate-error/50 rounded-lg p-8 text-center">
-          <p className="text-lg font-semibold text-corporate-error">Error Loading Dashboard</p>
-          <p className="mt-2 text-sm text-corporate-textSecondary">{error}</p>
-          <WizardButton variant="secondary" className="mt-4" onClick={refetch}>Retry</WizardButton>
-        </div>
-      </div>
-    );
-  }
-
-  if (!data) return null;
-
   return (
     <div className="min-h-screen bg-black text-white px-6 py-8">
       <div className="max-w-7xl mx-auto space-y-6">
         <div className="flex justify-between items-center border-b border-corporate-borderPrimary pb-4">
           <div>
             <h1 className="text-2xl font-bold">Financial Analysis Dashboard</h1>
-            <p className="text-corporate-textSecondary mt-1">{data.summary.investigationCount} investigations analyzed</p>
+            <p className="text-corporate-textSecondary mt-1">
+              {hasError ? 'Unable to load data' : `${summary.investigationCount} investigations analyzed`}
+            </p>
           </div>
           <WizardButton variant="secondary" onClick={refetch} loading={loading}>Refresh</WizardButton>
         </div>
-        <FinancialOverview summary={data.summary} />
+        {hasError && (
+          <div className="bg-corporate-bgSecondary/50 border border-corporate-warning/50 rounded-lg p-4">
+            <p className="text-sm text-corporate-warning">
+              Unable to load financial data. Showing empty dashboard. Error: {error}
+            </p>
+          </div>
+        )}
+        {hasNoData && !hasError && (
+          <div className="bg-corporate-bgSecondary/50 border border-corporate-borderPrimary rounded-lg p-6 text-center">
+            <p className="text-lg font-medium text-corporate-textPrimary">No Completed Investigations</p>
+            <p className="mt-2 text-sm text-corporate-textSecondary">
+              Financial metrics will appear here once investigations are completed.
+            </p>
+          </div>
+        )}
+        <FinancialOverview summary={summary} />
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          <RevenueImpactChart investigations={data.investigations} />
-          <ConfusionMatrixDisplay matrix={data.summary.aggregateConfusionMatrix} />
+          <RevenueImpactChart investigations={investigations} />
+          <ConfusionMatrixDisplay matrix={summary.aggregateConfusionMatrix} />
         </div>
-        <MerchantBreakdown investigations={data.investigations} />
+        <MerchantBreakdown investigations={investigations} />
         <div className="bg-black/40 backdrop-blur border border-corporate-borderPrimary rounded-lg overflow-hidden">
-          <Table data={data.investigations} config={{ columns, sortable: true, paginated: true, pageSize: 20, onRowClick: (row) => handleNavigate(row.id), getRowKey: (row) => row.id, emptyMessage: 'No investigations found' }} />
+          <Table
+            data={investigations}
+            config={{
+              columns,
+              sortable: true,
+              paginated: true,
+              pageSize: 20,
+              onRowClick: (row) => handleNavigate(row.id),
+              getRowKey: (row) => row.id,
+              emptyMessage: hasError ? 'Unable to load investigations' : 'No completed investigations yet',
+            }}
+          />
         </div>
       </div>
     </div>

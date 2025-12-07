@@ -92,6 +92,25 @@ async def generate_confusion_table_for_investigation(
         if result and result.get("html_path"):
             html_path = result["html_path"]
             logger.info(f"✅ Confusion table generated: {html_path}")
+            
+            # Trigger incremental report update for auto-comp investigations
+            if investigation_id.startswith("auto-comp-"):
+                try:
+                    import threading
+                    from app.service.investigation.incremental_report import generate_incremental_report
+                    
+                    def trigger_incremental():
+                        try:
+                            generate_incremental_report(investigation_id)
+                        except Exception as e:
+                            logger.error(f"Failed to generate incremental report: {e}", exc_info=True)
+                    
+                    thread = threading.Thread(target=trigger_incremental, daemon=True)
+                    thread.start()
+                    logger.info(f"📊 Incremental report generation triggered after confusion table for {investigation_id}")
+                except Exception as e:
+                    logger.warning(f"⚠️ Failed to trigger incremental report: {e}", exc_info=True)
+            
             return html_path
         else:
             logger.warning(

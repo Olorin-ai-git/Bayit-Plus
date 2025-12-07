@@ -23,8 +23,8 @@ const FinancialAnalysisApp: React.FC = () => {
     <div className="min-h-screen bg-black text-white">
       <Suspense fallback={<LoadingFallback />}>
         <Routes>
-          <Route path="/" element={<FinancialDashboardPage />} />
-          <Route path="/investigation/:id" element={<InvestigationFinancialPage />} />
+          <Route index element={<FinancialDashboardPage />} />
+          <Route path="investigation/:id" element={<InvestigationFinancialPage />} />
         </Routes>
       </Suspense>
     </div>

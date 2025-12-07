@@ -96,6 +96,15 @@ export const serviceLinks: ServiceLink[] = [
     status: 'ready',
     color: 'from-pink-600 to-rose-700',
     bgGradient: 'from-pink-50 to-rose-100'
+  },
+  {
+    name: 'Financial Analysis',
+    path: '/financial-analysis',
+    icon: '💰',
+    description: 'Revenue impact and financial metrics dashboard',
+    status: 'ready',
+    color: 'from-emerald-600 to-green-700',
+    bgGradient: 'from-emerald-50 to-green-100'
   }
 ];
 

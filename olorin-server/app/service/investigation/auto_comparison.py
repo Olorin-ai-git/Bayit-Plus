@@ -318,6 +318,8 @@ async def run_auto_comparisons_for_top_entities(
     tasks = [process_single_comparison(i, pair) for i, pair in enumerate(fraud_pairs)]
     results_with_none = await asyncio.gather(*tasks)
     results = [r for r in results_with_none if r is not None]
+    
+    logger.info(f"✅ {len(results)} investigations completed (incremental reports generated along the way)")
 
     # 4. Generate Reports
     # Ensure artifacts dir exists
