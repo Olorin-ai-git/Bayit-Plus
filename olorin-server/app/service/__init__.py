@@ -669,11 +669,10 @@ async def on_startup(app: FastAPI):
     app.state.auto_comparison_results = []
 
     # Check if we should retrieve risky entities from Snowflake
-    # TEMPORARY FIX: Force False to prevent hang
-    retrieve_risky_entities_raw = "false"
-    retrieve_risky_entities = False
+    retrieve_risky_entities_raw = os.getenv("RETRIEVE_RISKY_ENTITIES", "false")
+    retrieve_risky_entities = retrieve_risky_entities_raw.lower() == "true"
     logger.info(
-        f"🔍 RETRIEVE_RISKY_ENTITIES check: forced to False to prevent hang"
+        f"🔍 RETRIEVE_RISKY_ENTITIES check: {retrieve_risky_entities_raw} -> {retrieve_risky_entities}"
     )
 
     # Check if we should run startup analysis flow (investigations and comparisons)

@@ -958,7 +958,9 @@ async def map_investigation_to_transactions(
                 CARD_TYPE,
                 IS_DISPOSABLE_EMAIL,
                 MAXMIND_RISK_SCORE,
-                EMAIL_DATA_THIRD_PARTY_RISK_SCORE
+                EMAIL_DATA_THIRD_PARTY_RISK_SCORE,
+                NSURE_LAST_DECISION,
+                IS_FRAUD_TX
             FROM {db_provider.get_full_table_name()}
             WHERE CAST(TX_ID_KEY AS VARCHAR) IN ('{batch_ids_str}')
             """
@@ -982,7 +984,9 @@ async def map_investigation_to_transactions(
                 card_type,
                 is_disposable_email,
                 maxmind_risk_score,
-                email_data_third_party_risk_score
+                email_data_third_party_risk_score,
+                nsure_last_decision,
+                is_fraud_tx
             FROM {db_provider.get_full_table_name()}
             WHERE tx_id_key::TEXT IN ('{batch_ids_str}')
             """

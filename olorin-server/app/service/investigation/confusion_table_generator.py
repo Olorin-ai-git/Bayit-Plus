@@ -59,25 +59,21 @@ async def generate_confusion_table_for_investigation(
         output_path = None
         
         # 1. Try to resolve investigation folder first (preferred location)
-            if investigation_folder is None:
-                folder_manager = get_folder_manager()
-                investigation_folder = folder_manager.get_investigation_folder(
-                    investigation_id
-                )
+        if investigation_folder is None:
+            folder_manager = get_folder_manager()
+            investigation_folder = folder_manager.get_investigation_folder(
+                investigation_id
+            )
 
-            if investigation_folder:
-                output_path = (
-                investigation_folder / "confusion_matrix.html"
-                )
-            else:
+        if investigation_folder:
+            output_path = investigation_folder / "confusion_matrix.html"
+        else:
             # 2. Fallback to artifacts directory (for auto-comp without folder)
-                output_dir = Path("artifacts/comparisons/auto_startup")
-                output_dir.mkdir(parents=True, exist_ok=True)
+            output_dir = Path("artifacts/comparisons/auto_startup")
+            output_dir.mkdir(parents=True, exist_ok=True)
             
             # Use fixed filename so router can find it easily
-                output_path = (
-                output_dir / f"confusion_matrix_{investigation_id}.html"
-                )
+            output_path = output_dir / f"confusion_matrix_{investigation_id}.html"
 
         # Check if confusion table already exists (only if we resolved a path)
         if output_path and output_path.exists():
