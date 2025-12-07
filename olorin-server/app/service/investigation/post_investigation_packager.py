@@ -34,9 +34,13 @@ async def generate_post_investigation_package(
     """
     Generate confusion matrix ONLY for investigation (no ZIP package).
     
+    DISABLED for auto-comparison investigations to reduce report clutter.
+    Individual entity reports are now consolidated into the startup analysis report.
+    
     This function:
-    1. Generates confusion matrix HTML
-    2. Returns path to confusion matrix
+    1. Skips auto-comparison investigations (start with 'auto-comp-')
+    2. Generates confusion matrix HTML for manual investigations only
+    3. Returns path to confusion matrix
     
     Args:
         investigation_id: Investigation ID
@@ -46,6 +50,15 @@ async def generate_post_investigation_package(
         Path to generated confusion matrix HTML, or None if generation failed
     """
     try:
+        # SKIP individual reports for auto-comparison investigations
+        # They are consolidated in the startup analysis report
+        if investigation_id.startswith("auto-comp-"):
+            logger.info(
+                f"⏭️ Skipping individual confusion matrix for {investigation_id} "
+                "(auto-comparison - included in consolidated report)"
+            )
+            return None
+        
         logger.info(f"📊 Generating confusion matrix for {investigation_id}")
         
         # Generate confusion matrix ONLY (no ZIP package)

@@ -791,13 +791,13 @@ async def on_startup(app: FastAPI):
                             reports_dir = Path("artifacts/comparisons/auto_startup")
                             reports_dir.mkdir(parents=True, exist_ok=True)
 
-                            # Get timeout from environment (default: 30 minutes, max: 30 minutes)
+                            # Get timeout from environment (default: 180 minutes, max: 180 minutes)
                             startup_timeout_seconds = float(
-                                os.getenv("STARTUP_ANALYSIS_TIMEOUT_SECONDS", "1800.0")
+                                os.getenv("STARTUP_ANALYSIS_TIMEOUT_SECONDS", "10800.0")
                             )
                             startup_timeout_seconds = min(
-                                max(startup_timeout_seconds, 30.0), 1800.0
-                            )  # Clamp between 30s and 30min (30 minutes)
+                                max(startup_timeout_seconds, 30.0), 10800.0
+                            )  # Clamp between 30s and 180min (3 hours)
 
                             # Get number of top entities to investigate from environment (default: 3)
                             top_n_entities = int(
@@ -1199,26 +1199,24 @@ async def run_startup_analysis_flow(
                     # Last resort: set to None, but report generator will handle this gracefully
                     app.state.aggregated_confusion_matrix = None
 
-            # CRITICAL FIX: Generate startup report ONLY after all investigations complete
+            # Generate SINGLE consolidated startup report with financial analysis and drill-down
             logger.info(
-                "📊 Generating startup analysis report after all investigations completed..."
+                "📊 Generating consolidated startup analysis report after all investigations completed..."
             )
             try:
-                from app.service.reporting.startup_report_generator import (
-                    generate_startup_report,
+                from app.service.reporting.consolidated_startup_report import (
+                    generate_consolidated_report,
                 )
 
-                startup_duration = getattr(app.state, "startup_duration_seconds", None)
-                report_path = generate_startup_report(
-                    app_state=app.state,
-                    startup_duration_seconds=startup_duration,
-                    reports_dir=reports_dir,  # Pass reports_dir so report can find comparison data
+                report_path = await generate_consolidated_report(
+                    comparison_results=comparison_results,
+                    output_dir=reports_dir.parent if reports_dir else None,
                 )
-                logger.info(f"📊 Startup analysis report generated: {report_path}")
+                logger.info(f"📊 Consolidated startup report generated: {report_path}")
                 app.state.startup_report_path = str(report_path)
             except Exception as e:
                 logger.warning(
-                    f"⚠️ Failed to generate startup report: {e}", exc_info=True
+                    f"⚠️ Failed to generate consolidated report: {e}", exc_info=True
                 )
                 app.state.startup_report_path = None
 
@@ -1390,25 +1388,23 @@ async def _wait_and_create_final_zip_package(
     app.state.auto_comparison_results = updated_results
     app.state.auto_comparison_completed = True
 
-    # CRITICAL FIX: Generate startup report ONLY after all investigations are complete
+    # Generate SINGLE consolidated startup report with financial analysis and drill-down
     logger.info(
-        "📊 Generating startup analysis report after all investigations completed..."
+        "📊 Generating consolidated startup analysis report after all investigations completed..."
     )
     try:
-        from app.service.reporting.startup_report_generator import (
-            generate_startup_report,
+        from app.service.reporting.consolidated_startup_report import (
+            generate_consolidated_report,
         )
 
-        startup_duration = getattr(app.state, "startup_duration_seconds", None)
-        report_path = generate_startup_report(
-            app_state=app.state,
-            startup_duration_seconds=startup_duration,
-            reports_dir=reports_dir,  # Pass reports_dir so report can find comparison data
+        report_path = await generate_consolidated_report(
+            comparison_results=updated_results,
+            output_dir=reports_dir.parent if reports_dir else None,
         )
-        logger.info(f"📊 Startup analysis report generated: {report_path}")
+        logger.info(f"📊 Consolidated startup report generated: {report_path}")
         app.state.startup_report_path = str(report_path)
     except Exception as e:
-        logger.warning(f"⚠️ Failed to generate startup report: {e}", exc_info=True)
+        logger.warning(f"⚠️ Failed to generate consolidated report: {e}", exc_info=True)
         app.state.startup_report_path = None
 
     # Create final zip package with completed investigation data and startup report
