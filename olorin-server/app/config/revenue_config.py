@@ -28,7 +28,7 @@ class RevenueConfig(BaseModel):
         ge=12,  # Minimum 12 months for meaningful analysis
     )
     investigation_window_start_months: int = Field(
-        default=18,
+        default=24,
         description="Investigation window start offset (months ago)",
     )
     investigation_window_end_months: int = Field(
@@ -108,7 +108,7 @@ def load_revenue_config() -> RevenueConfig:
             os.getenv("ANALYZER_HISTORICAL_OFFSET_MONTHS", "12")
         ),
         investigation_window_start_months=int(
-            os.getenv("INVESTIGATION_WINDOW_START_MONTHS", "18")
+            os.getenv("INVESTIGATION_WINDOW_START_MONTHS", "24")
         ),
         investigation_window_end_months=int(
             os.getenv("INVESTIGATION_WINDOW_END_MONTHS", "12")

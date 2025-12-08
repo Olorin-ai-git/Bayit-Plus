@@ -67,8 +67,8 @@ class RiskAnalyzer:
             os.getenv("ANALYTICS_DEFAULT_TOP_PERCENTAGE", "10")
         )
         self.cache_ttl = int(os.getenv("ANALYTICS_CACHE_TTL", "300"))
-        # Maximum lookback in months (default: 6 months) - ANALYZER_END_OFFSET_MONTHS
-        self.max_lookback_months = int(os.getenv("ANALYZER_END_OFFSET_MONTHS", "6"))
+        # Maximum lookback in months (default: 12 months) - ANALYZER_END_OFFSET_MONTHS
+        self.max_lookback_months = int(os.getenv("ANALYZER_END_OFFSET_MONTHS", "12"))
 
         logger.info(
             f"Risk Analyzer configured: time_window={self.default_time_window}, "
