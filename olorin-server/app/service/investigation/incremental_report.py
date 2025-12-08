@@ -136,6 +136,16 @@ def _fetch_completed_auto_comp_investigations() -> List[Dict[str, Any]]:
                     if not result.get("revenue_data"):
                         result["revenue_data"] = cm_data.get("revenue_implications", {})
             
+            # Calculate total_transactions from confusion matrix
+            if "confusion_matrix" in result:
+                cm = result["confusion_matrix"]
+                result["total_transactions"] = (
+                    cm.get("TP", 0) + cm.get("FP", 0) + 
+                    cm.get("TN", 0) + cm.get("FN", 0)
+                )
+            else:
+                result["total_transactions"] = 0
+            
             investigations.append(result)
     
     finally:
@@ -154,10 +164,11 @@ def _load_confusion_matrix_from_file(investigation_id: str) -> Optional[Dict[str
             result = {"confusion_matrix": {}, "revenue_implications": {}}
             
             # Extract TP, FP, TN, FN from HTML
-            tp_match = re.search(r'True Positives[^0-9]*(\d+)', html_content)
-            fp_match = re.search(r'False Positives[^0-9]*(\d+)', html_content)
-            tn_match = re.search(r'True Negatives[^0-9]*(\d+)', html_content)
-            fn_match = re.search(r'False Negatives[^0-9]*(\d+)', html_content)
+            # Match pattern: True Positives (TP)...font-size: 12px...next <td> tag contains the actual value
+            tp_match = re.search(r'True Positives \(TP\)</strong>.*?<td[^>]*>(\d+)</td>', html_content, re.DOTALL)
+            fp_match = re.search(r'False Positives \(FP\)</strong>.*?<td[^>]*>(\d+)</td>', html_content, re.DOTALL)
+            tn_match = re.search(r'True Negatives \(TN\)</strong>.*?<td[^>]*>(\d+)</td>', html_content, re.DOTALL)
+            fn_match = re.search(r'False Negatives \(FN\)</strong>.*?<td[^>]*>(\d+)</td>', html_content, re.DOTALL)
             
             if tp_match:
                 result["confusion_matrix"]["TP"] = int(tp_match.group(1))

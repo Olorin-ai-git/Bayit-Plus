@@ -113,7 +113,8 @@ def _group_by_merchant(
     merchant_groups = defaultdict(list)
     
     for result in comparison_results:
-        merchant = result.get("merchant", "Unknown")
+        # Support both "merchant" (old) and "merchant_name" (new)
+        merchant = result.get("merchant_name") or result.get("merchant", "Unknown")
         merchant_groups[merchant].append(result)
     
     return dict(merchant_groups)
@@ -135,11 +136,16 @@ def _calculate_global_metrics(
         total_tn += cm.get("TN", 0)
         total_fn += cm.get("FN", 0)
         
-        revenue = result.get("revenue_implications", {})
+        # Support both "revenue_implications" (old) and "revenue_data" (new)
+        revenue = result.get("revenue_data") or result.get("revenue_implications", {})
         total_saved += revenue.get("saved_fraud_gmv", 0.0)
         total_lost += revenue.get("lost_revenues", 0.0)
         
-        total_transactions += result.get("total_transactions", 0)
+        # Calculate total_transactions from confusion matrix if not present
+        txs = result.get("total_transactions", 0)
+        if txs == 0:
+            txs = cm.get("TP", 0) + cm.get("FP", 0) + cm.get("TN", 0) + cm.get("FN", 0)
+        total_transactions += txs
     
     total_all = total_tp + total_fp + total_tn + total_fn
     precision = total_tp / (total_tp + total_fp) if (total_tp + total_fp) > 0 else 0.0
@@ -524,11 +530,16 @@ def _generate_merchant_section(merchant: str, entities: List[Dict[str, Any]]) ->
         merchant_tn += cm.get("TN", 0)
         merchant_fn += cm.get("FN", 0)
         
-        revenue = entity.get("revenue_implications", {})
+        # Support both "revenue_implications" (old) and "revenue_data" (new)
+        revenue = entity.get("revenue_data") or entity.get("revenue_implications", {})
         merchant_saved += revenue.get("saved_fraud_gmv", 0.0)
         merchant_lost += revenue.get("lost_revenues", 0.0)
         
-        merchant_txs += entity.get("total_transactions", 0)
+        # Calculate total_transactions from confusion matrix if not present
+        txs = entity.get("total_transactions", 0)
+        if txs == 0:
+            txs = cm.get("TP", 0) + cm.get("FP", 0) + cm.get("TN", 0) + cm.get("FN", 0)
+        merchant_txs += txs
     
     merchant_net = merchant_saved - merchant_lost
     
@@ -579,12 +590,13 @@ def _generate_merchant_section(merchant: str, entities: List[Dict[str, Any]]) ->
 def _generate_entity_card(merchant: str, index: int, entity: Dict[str, Any]) -> str:
     """Generate entity card with collapsible details."""
     
-    entity_id = entity.get("entity_id", "Unknown")
+    # Support both "entity_id" (old) and "entity_value" (new)
+    entity_id = entity.get("entity_value") or entity.get("email") or entity.get("entity_id", "Unknown")
     entity_type = entity.get("entity_type", "email")
     cm = entity.get("confusion_matrix", {})
-    revenue = entity.get("revenue_implications", {})
+    # Support both "revenue_implications" (old) and "revenue_data" (new)
+    revenue = entity.get("revenue_data") or entity.get("revenue_implications", {})
     investigation_id = entity.get("investigation_id", "N/A")
-    total_txs = entity.get("total_transactions", 0)
     
     tp = cm.get("TP", 0)
     fp = cm.get("FP", 0)
@@ -592,6 +604,11 @@ def _generate_entity_card(merchant: str, index: int, entity: Dict[str, Any]) -> 
     fn = cm.get("FN", 0)
     precision = cm.get("precision", 0.0)
     recall = cm.get("recall", 0.0)
+    
+    # Calculate total_transactions from confusion matrix if not present
+    total_txs = entity.get("total_transactions", 0)
+    if total_txs == 0:
+        total_txs = tp + fp + tn + fn
     
     saved = revenue.get("saved_fraud_gmv", 0.0)
     lost = revenue.get("lost_revenues", 0.0)

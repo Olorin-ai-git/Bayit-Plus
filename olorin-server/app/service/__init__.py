@@ -1428,8 +1428,6 @@ async def _create_startup_zip_package(
     """
     import asyncio
 
-    from app.service.investigation.auto_comparison import package_comparison_results
-
     # Wait for startup report to be generated (with retries)
     # In most cases, startup report is already generated since on_startup() completes first,
     # but we wait with retries to handle edge cases where background task finishes very quickly
@@ -1458,15 +1456,18 @@ async def _create_startup_zip_package(
         if not startup_report_path:
             startup_report_path = getattr(app.state, "startup_report_path", None)
 
-    # Create zip package
+    # Create zip package using consolidated report generator
     try:
-        zip_path = await package_comparison_results(
+        from app.service.reporting.consolidated_startup_report import (
+            generate_consolidated_report,
+        )
+
+        zip_path = await generate_consolidated_report(
             comparison_results=comparison_results,
             output_dir=reports_dir,
-            startup_report_path=startup_report_path,
         )
         app.state.auto_comparison_zip_path = str(zip_path)
-        logger.info(f"📦 Startup package created: {zip_path}")
+        logger.info(f"📦 Startup package (consolidated ZIP) created: {zip_path}")
     except Exception as e:
         logger.error(f"❌ Failed to create startup package: {e}", exc_info=True)
         app.state.auto_comparison_zip_path = None
