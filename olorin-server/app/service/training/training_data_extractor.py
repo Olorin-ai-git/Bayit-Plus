@@ -92,8 +92,8 @@ class TrainingDataExtractor:
             SUM(PAID_AMOUNT_VALUE_IN_CURRENCY) as total_gmv,
             SUM(CASE WHEN IS_FRAUD_TX = 1 THEN 1 ELSE 0 END) as fraud_count,
             MAX(IS_FRAUD_TX) as has_fraud,
-            COUNT(DISTINCT IP_ADDRESS) as ip_count,
-            COUNT(DISTINCT DEVICE_FINGERPRINT) as device_count,
+            COUNT(DISTINCT IP) as ip_count,
+            COUNT(DISTINCT FIPP_VISITOR_ID) as device_count,
             MIN(TX_DATETIME) as first_tx,
             MAX(TX_DATETIME) as last_tx,
             MAX(MERCHANT_NAME) as merchant
