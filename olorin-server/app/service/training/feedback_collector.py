@@ -16,7 +16,7 @@ from typing import Any, Dict, List, Optional
 import yaml
 
 from app.service.logging import get_bridge_logger
-from app.service.training.training_pipeline import PredictionResult, TrainingMetrics
+from app.service.training.training_models import PredictionResult, TrainingMetrics
 
 logger = get_bridge_logger(__name__)
 

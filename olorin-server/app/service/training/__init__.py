@@ -22,6 +22,12 @@ from app.service.training.training_config_loader import (
     get_training_config,
     load_training_config,
 )
+from app.service.training.training_data_extractor import TrainingDataExtractor
+from app.service.training.training_models import (
+    PredictionResult,
+    TrainingMetrics,
+    TrainingSample,
+)
 from app.service.training.training_pipeline import TrainingPipeline, get_training_pipeline
 
 __all__ = [
@@ -39,4 +45,8 @@ __all__ = [
     "get_feedback_collector",
     "PromptOptimizer",
     "get_prompt_optimizer",
+    "TrainingDataExtractor",
+    "TrainingSample",
+    "PredictionResult",
+    "TrainingMetrics",
 ]
