@@ -1,0 +1,61 @@
+# LLM Training Configuration
+# All values use environment variable placeholders for configuration-driven design
+# Feature: 026-llm-training-pipeline
+
+llm_training:
+  # Master switch for LLM training pipeline
+  enabled: ${LLM_TRAINING_ENABLED:false}
+
+  # LLM reasoning mode (replaces rule-based scoring when true)
+  reasoning_enabled: ${LLM_REASONING_ENABLED:false}
+
+  # Provider configuration
+  provider:
+    primary: ${LLM_TRAINING_PRIMARY_PROVIDER:claude}
+    model_id: ${LLM_TRAINING_MODEL_ID:claude-3-5-sonnet-20241022}
+    fallback_provider: ${LLM_TRAINING_FALLBACK_PROVIDER:openai}
+    fallback_model_id: ${LLM_TRAINING_FALLBACK_MODEL_ID:gpt-4o-mini}
+
+  # Batch processing settings
+  batch_processing:
+    batch_size: ${LLM_TRAINING_BATCH_SIZE:100}
+    max_concurrent: ${LLM_TRAINING_MAX_CONCURRENT:5}
+    timeout_seconds: ${LLM_TRAINING_TIMEOUT_SECONDS:120}
+    retry_attempts: ${LLM_TRAINING_RETRY_ATTEMPTS:3}
+    retry_delay_seconds: ${LLM_TRAINING_RETRY_DELAY_SECONDS:2}
+
+  # Data sampling configuration
+  data_sampling:
+    fraud_ratio: ${LLM_TRAINING_FRAUD_RATIO:0.5}
+    time_window_days: ${LLM_TRAINING_TIME_WINDOW_DAYS:365}
+    min_sample_size: ${LLM_TRAINING_MIN_SAMPLE_SIZE:100}
+    max_sample_size: ${LLM_TRAINING_MAX_SAMPLE_SIZE:10000}
+    stratified_by_merchant: ${LLM_TRAINING_STRATIFIED_BY_MERCHANT:true}
+
+  # Scoring thresholds
+  scoring:
+    fraud_threshold: ${LLM_FRAUD_THRESHOLD:0.5}
+    high_confidence_threshold: ${LLM_HIGH_CONFIDENCE_THRESHOLD:0.8}
+    low_confidence_threshold: ${LLM_LOW_CONFIDENCE_THRESHOLD:0.2}
+    require_reasoning: ${LLM_REQUIRE_REASONING:true}
+
+  # Prompt configuration
+  prompts:
+    active_version: ${LLM_PROMPT_ACTIVE_VERSION:v1}
+    prompts_directory: ${LLM_PROMPTS_DIRECTORY:config/prompts}
+    cache_enabled: ${LLM_PROMPT_CACHE_ENABLED:true}
+    cache_ttl_seconds: ${LLM_PROMPT_CACHE_TTL_SECONDS:3600}
+
+  # Output configuration
+  output:
+    include_reasoning: ${LLM_OUTPUT_INCLUDE_REASONING:true}
+    include_confidence: ${LLM_OUTPUT_INCLUDE_CONFIDENCE:true}
+    include_feature_weights: ${LLM_OUTPUT_INCLUDE_FEATURE_WEIGHTS:true}
+    max_reasoning_length: ${LLM_OUTPUT_MAX_REASONING_LENGTH:500}
+
+  # Logging and metrics
+  logging:
+    log_prompts: ${LLM_LOG_PROMPTS:false}
+    log_responses: ${LLM_LOG_RESPONSES:false}
+    log_metrics: ${LLM_LOG_METRICS:true}
+    metrics_export_enabled: ${LLM_METRICS_EXPORT_ENABLED:false}

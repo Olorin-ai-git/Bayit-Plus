@@ -1,15 +1,24 @@
 """
 Fraud detection features WITHOUT using MODEL_SCORE.
 These features detect fraud based on behavioral patterns only.
+
+Supports LLM-based reasoning mode via LLM_REASONING_ENABLED env variable.
+Feature: 026-llm-training-pipeline
 """
 
 import hashlib
 import logging
+import os
 from collections import Counter
 from datetime import datetime, timedelta
 from typing import Any, Dict, List, Optional
 
 logger = logging.getLogger(__name__)
+
+
+def _is_llm_reasoning_enabled() -> bool:
+    """Check if LLM reasoning mode is enabled via environment variable."""
+    return os.getenv("LLM_REASONING_ENABLED", "false").lower() == "true"
 
 
 class FraudDetectionFeatures:
@@ -465,14 +474,22 @@ class FraudDetectionFeatures:
         """
         Calculate composite risk score WITHOUT using MODEL_SCORE.
         Based entirely on behavioral patterns.
-        
+
         CALIBRATED VERSION: More selective scoring to reduce false positives.
         Focus on ANOMALIES, not just volume.
-        
+
+        Supports LLM-based reasoning mode via LLM_REASONING_ENABLED env variable.
+        Feature: 026-llm-training-pipeline
+
         Args:
             features: Calculated features
             is_merchant_investigation: If True, skip single_merchant concentration penalty
         """
+        # Check if LLM reasoning mode is enabled
+        if _is_llm_reasoning_enabled():
+            return self._calculate_llm_risk_score(features, is_merchant_investigation)
+
+        # Original rule-based scoring
         risk_score = 0.0
 
         # Transaction volume risk (15% weight - REDUCED)
@@ -594,6 +611,93 @@ class FraudDetectionFeatures:
 
         # Ensure score is between 0 and 1
         return min(max(risk_score, 0.0), 1.0)
+
+    def _calculate_llm_risk_score(
+        self, features: Dict[str, float], is_merchant_investigation: bool = False
+    ) -> float:
+        """
+        Calculate risk score using LLM reasoning.
+        Feature: 026-llm-training-pipeline
+
+        This method uses the LLM reasoning engine to analyze features
+        and produce a risk score with explanatory reasoning.
+
+        Args:
+            features: Calculated features
+            is_merchant_investigation: If True, indicates merchant investigation
+
+        Returns:
+            Risk score between 0.0 and 1.0
+        """
+        import asyncio
+
+        try:
+            from app.service.training import get_reasoning_engine
+
+            engine = get_reasoning_engine()
+
+            # Build feature dict for LLM analysis
+            llm_features = {
+                "total_transactions": int(features.get("tx_count", 0)),
+                "total_gmv": features.get("total_amount", 0),
+                "tx_per_day_avg": features.get("tx_per_hour", 0) * 24,
+                "tx_per_day_max": features.get("max_tx_in_24h", 0),
+                "fraud_ratio": features.get("fraud_ratio", 0),
+                "ip_count": int(features.get("unique_ips", 0)),
+                "device_count": int(features.get("unique_devices", 0)),
+                "country_count": int(features.get("unique_countries", 0)),
+                "frequency_anomaly_score": features.get("burst_score_3h", 0),
+                "geo_dispersion_score": features.get("geo_dispersion", 0),
+                "is_merchant_investigation": is_merchant_investigation,
+            }
+
+            # Run async analysis synchronously
+            loop = asyncio.new_event_loop()
+            try:
+                assessment = loop.run_until_complete(
+                    engine.analyze_entity(
+                        entity_type="email",
+                        entity_value="analysis",
+                        features=llm_features,
+                        merchant_name=None,
+                    )
+                )
+            finally:
+                loop.close()
+
+            if assessment.error:
+                logger.warning(f"LLM analysis failed: {assessment.error}")
+                return self._fallback_rule_based_score(features, is_merchant_investigation)
+
+            logger.debug(
+                f"LLM risk score: {assessment.risk_score:.3f} "
+                f"(confidence: {assessment.confidence:.2f})"
+            )
+            return assessment.risk_score
+
+        except ImportError as e:
+            logger.warning(f"Training module not available: {e}")
+            return self._fallback_rule_based_score(features, is_merchant_investigation)
+        except Exception as e:
+            logger.error(f"LLM risk score calculation failed: {e}")
+            return self._fallback_rule_based_score(features, is_merchant_investigation)
+
+    def _fallback_rule_based_score(
+        self, features: Dict[str, float], is_merchant_investigation: bool
+    ) -> float:
+        """Fallback to rule-based scoring when LLM fails."""
+        # Simplified rule-based score for fallback
+        risk = 0.0
+        tx_count = features.get("tx_count", 0)
+        if tx_count > 30:
+            risk += 0.3
+        if features.get("burst_score_3h", 0) > 3:
+            risk += 0.2
+        if features.get("max_repeated_amount_ratio", 0) > 0.5:
+            risk += 0.2
+        if features.get("country_mismatch_ratio", 0) > 0.3:
+            risk += 0.3
+        return min(risk, 1.0)
 
     def _detect_anomalies(self, features: Dict[str, float]) -> List[Dict[str, Any]]:
         """Detect specific anomaly patterns."""
