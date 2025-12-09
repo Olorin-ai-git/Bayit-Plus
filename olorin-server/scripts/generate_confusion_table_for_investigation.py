@@ -683,118 +683,255 @@ async def generate_confusion_table(
             )
             return None
 
-        # Calculate revenue implications FROM THE SAME TRANSACTIONS used in confusion matrix
-        logger.info("💰 Calculating revenue implications FROM INVESTIGATION TRANSACTIONS...")
+        # Calculate revenue implications FROM THE GMV WINDOW (12-6 months ago)
+        # This is DIFFERENT from the investigation window - it shows FUTURE losses prevented
+        # CRITICAL: Only calculate GMV value if Olorin predicted FRAUD (risk_score >= threshold)
+        logger.info("💰 Calculating revenue implications FROM GMV WINDOW (post-investigation)...")
         revenue_data = None
         try:
             from app.config.revenue_config import get_revenue_config
+            from app.service.agent.tools.database_tool import get_database_provider
             from decimal import Decimal
 
             revenue_config = get_revenue_config()
             take_rate = revenue_config.take_rate_percent
             lifetime_multiplier = revenue_config.lifetime_multiplier
 
-            # Calculate revenue DIRECTLY from the investigation transactions
-            # These are the SAME transactions used for the confusion matrix
-            
-            # Saved Fraud GMV: APPROVED transactions that were fraud (IS_FRAUD_TX = 1)
-            # These are fraud that slipped through - if Olorin blocked them, we'd save this GMV
-            approved_fraud_txs = []
-            saved_fraud_gmv = Decimal("0")
-            
-            # Lost Revenues: BLOCKED transactions that were legitimate (IS_FRAUD_TX = 0 or NULL)
-            # These are false positives - blocking good customers costs revenue
-            blocked_legit_txs = []
-            blocked_gmv = Decimal("0")
-            
-            for tx in transactions:
-                # Get decision and fraud status from transaction
-                decision = str(tx.get("NSURE_LAST_DECISION", tx.get("nSure_last_decision", ""))).upper()
-                is_fraud = tx.get("IS_FRAUD_TX", tx.get("is_fraud_tx", tx.get("actual_outcome")))
-                gmv = Decimal(str(tx.get("PAID_AMOUNT_VALUE_IN_CURRENCY", tx.get("paid_amount_value_in_currency", tx.get("AMOUNT", tx.get("amount", 0)))) or 0))
-                tx_id = tx.get("TRANSACTION_ID", tx.get("transaction_id", tx.get("TX_ID_KEY", "unknown")))
-                
-                # Normalize is_fraud to boolean
-                if isinstance(is_fraud, str):
-                    is_fraud = is_fraud.lower() in ("1", "true", "fraud")
-                elif is_fraud is None:
-                    is_fraud = False
-                else:
-                    is_fraud = bool(int(is_fraud)) if is_fraud else False
-                
-                # Saved Fraud GMV: APPROVED + FRAUD
-                if decision == "APPROVED" and is_fraud:
-                    saved_fraud_gmv += gmv
-                    approved_fraud_txs.append({"tx_id": tx_id, "gmv": float(gmv), "decision": decision, "is_fraud": is_fraud})
-                
-                # Blocked Legit (for Lost Revenues): BLOCKED + NOT FRAUD
-                if decision in ("BLOCK", "BLOCKED", "REJECT", "REJECTED", "DECLINE", "DECLINED") and not is_fraud:
-                    blocked_gmv += gmv
-                    blocked_legit_txs.append({"tx_id": tx_id, "gmv": float(gmv), "decision": decision, "is_fraud": is_fraud})
-            
-            # Calculate Lost Revenues: blocked_gmv × take_rate × lifetime_multiplier
-            lost_revenues = blocked_gmv * (take_rate / Decimal("100")) * lifetime_multiplier
-            
-            # Net Value: Saved - Lost
-            net_value = saved_fraud_gmv - lost_revenues
-            
-            logger.info(f"   Analyzed {len(transactions)} transactions from investigation")
-            logger.info(f"   APPROVED + FRAUD (Saved GMV source): {len(approved_fraud_txs)} tx = ${saved_fraud_gmv:,.2f}")
-            logger.info(f"   BLOCKED + LEGIT (Lost Rev source): {len(blocked_legit_txs)} tx = ${blocked_gmv:,.2f}")
-            logger.info(f"   Lost Revenues = ${blocked_gmv:,.2f} × {take_rate}% × {lifetime_multiplier} = ${lost_revenues:,.2f}")
-            
-            # Build detailed reasoning
-            saved_reasoning = _build_saved_fraud_reasoning_from_txs(
-                entity_type, entity_value, merchant_name,
-                saved_fraud_gmv, len(approved_fraud_txs), approved_fraud_txs,
-                window_start, window_end, len(transactions)
-            )
-            
-            lost_reasoning = _build_lost_revenues_reasoning_from_txs(
-                entity_type, entity_value, merchant_name,
-                blocked_gmv, lost_revenues, len(blocked_legit_txs), blocked_legit_txs,
-                take_rate, lifetime_multiplier, window_start, window_end, len(transactions)
-            )
-            
-            net_reasoning = _build_net_value_reasoning(
-                saved_fraud_gmv, lost_revenues, net_value, entity_type, entity_value, merchant_name
-            )
-            
-            revenue_data = {
-                "saved_fraud_gmv": float(saved_fraud_gmv),
-                "lost_revenues": float(lost_revenues),
-                "net_value": float(net_value),
-                "approved_fraud_tx_count": len(approved_fraud_txs),
-                "blocked_legitimate_tx_count": len(blocked_legit_txs),
-                "total_tx_count": len(transactions),
-                "take_rate_used": float(take_rate),
-                "lifetime_multiplier_used": float(lifetime_multiplier),
-                "confidence_level": "high" if len(transactions) >= 100 else "medium" if len(transactions) >= 10 else "low",
-                "calculation_successful": True,
-                "saved_fraud_breakdown": {
-                    "reasoning": saved_reasoning,
-                    "methodology": f"From {len(transactions)} investigation transactions, found {len(approved_fraud_txs)} APPROVED + FRAUD",
-                    "sample_transactions": approved_fraud_txs[:5],
-                },
-                "lost_revenues_breakdown": {
-                    "reasoning": lost_reasoning,
-                    "methodology": f"From {len(transactions)} investigation transactions, found {len(blocked_legit_txs)} BLOCKED + LEGITIMATE",
-                    "formula_applied": f"${blocked_gmv:,.2f} × ({take_rate}% / 100) × {lifetime_multiplier} = ${lost_revenues:,.2f}",
-                    "blocked_gmv_total": float(blocked_gmv),
-                    "sample_transactions": blocked_legit_txs[:5],
-                },
-                "net_value_breakdown": {
-                    "reasoning": net_reasoning,
-                    "formula": f"${saved_fraud_gmv:,.2f} - ${lost_revenues:,.2f} = ${net_value:,.2f}",
-                    "is_positive": net_value >= 0,
-                    "roi_percentage": float((net_value / lost_revenues) * 100) if lost_revenues > 0 else None,
-                },
-            }
+            # Check Olorin's prediction: only calculate value if Olorin recommended blocking
+            olorin_predicted_fraud = risk_score is not None and risk_score >= risk_threshold
+            logger.info(f"   Olorin Risk Score: {risk_score}, Threshold: {risk_threshold}")
+            logger.info(f"   Olorin Prediction: {'FRAUD (recommend block)' if olorin_predicted_fraud else 'LEGITIMATE (no action)'}")
 
-            logger.info(f"✅ Revenue calculated FROM INVESTIGATION TRANSACTIONS:")
-            logger.info(f"   Saved Fraud GMV: ${saved_fraud_gmv:,.2f} ({len(approved_fraud_txs)} tx)")
-            logger.info(f"   Lost Revenues: ${lost_revenues:,.2f} ({len(blocked_legit_txs)} tx)")
-            logger.info(f"   Net Value: ${net_value:,.2f}")
+            # Calculate GMV window dates from config
+            # GMV window shows what would have happened AFTER the investigation period
+            now = datetime.now(pytz.UTC)
+            gmv_window_start = now - timedelta(days=revenue_config.saved_fraud_gmv_start_months * 30)
+            gmv_window_end = now - timedelta(days=revenue_config.saved_fraud_gmv_end_months * 30)
+
+            logger.info(f"   Investigation Window: {window_start.date()} to {window_end.date()}")
+            logger.info(f"   GMV Window: {gmv_window_start.date()} to {gmv_window_end.date()}")
+            logger.info(f"   (Configured: {revenue_config.saved_fraud_gmv_start_months} to {revenue_config.saved_fraud_gmv_end_months} months ago)")
+
+            # CRITICAL: Only calculate GMV value if Olorin predicted FRAUD
+            # If Olorin predicted LEGITIMATE, the merchant would NOT have blocked,
+            # so there's no value to measure
+            if not olorin_predicted_fraud:
+                logger.info("⚠️ Olorin predicted LEGITIMATE - skipping GMV value calculation")
+                logger.info(f"   Risk Score {risk_score} < Threshold {risk_threshold}")
+                logger.info("   No blocking recommendation = No value to measure")
+                revenue_data = {
+                    "saved_fraud_gmv": 0.0,
+                    "potential_lost_revenues": 0.0,
+                    "net_value": 0.0,
+                    "approved_fraud_tx_count": 0,
+                    "approved_legit_tx_count": 0,
+                    "total_tx_count": 0,
+                    "take_rate_used": float(take_rate),
+                    "lifetime_multiplier_used": float(lifetime_multiplier),
+                    "confidence_level": "n/a",
+                    "calculation_successful": True,
+                    "olorin_predicted_fraud": False,
+                    "olorin_risk_score": risk_score,
+                    "olorin_risk_threshold": risk_threshold,
+                    "investigation_window_start": window_start.isoformat(),
+                    "investigation_window_end": window_end.isoformat(),
+                    "gmv_window_start": gmv_window_start.isoformat(),
+                    "gmv_window_end": gmv_window_end.isoformat(),
+                    "skip_reason": f"Olorin predicted LEGITIMATE (risk_score={risk_score} < threshold={risk_threshold}). No blocking recommendation was made, so no GMV value calculation applies.",
+                    "saved_fraud_breakdown": {
+                        "reasoning": f"Olorin did not recommend blocking {entity_type} '{entity_value}'. Risk score {risk_score} is below threshold {risk_threshold}.",
+                        "methodology": "GMV calculation skipped - Olorin predicted LEGITIMATE",
+                        "sample_transactions": [],
+                    },
+                    "potential_lost_revenues_breakdown": {
+                        "reasoning": f"No potential lost revenue to calculate because Olorin did not recommend blocking this entity.",
+                        "methodology": "GMV calculation skipped - Olorin predicted LEGITIMATE",
+                        "formula_applied": "N/A",
+                        "approved_legit_gmv_total": 0.0,
+                        "sample_transactions": [],
+                    },
+                    "net_value_breakdown": {
+                        "reasoning": f"Net value is $0 because Olorin predicted this entity as LEGITIMATE and would not have recommended blocking.",
+                        "formula": "N/A - No blocking recommendation",
+                        "is_positive": True,
+                        "roi_percentage": None,
+                    },
+                }
+            else:
+                # Olorin predicted FRAUD - proceed with GMV value calculation
+                logger.info("✅ Olorin predicted FRAUD - calculating GMV value")
+
+                # Query Snowflake for transactions in the GMV window
+                db_provider = get_database_provider()
+                db_provider.connect()
+                is_snowflake = os.getenv("DATABASE_PROVIDER", "snowflake").lower() == "snowflake"
+                table_name = db_provider.get_full_table_name()
+
+                # Build entity clause
+                if is_snowflake:
+                    entity_col = "EMAIL" if entity_type == "email" else entity_type.upper()
+                    gmv_col = "PAID_AMOUNT_VALUE_IN_CURRENCY"
+                    decision_col = "NSURE_LAST_DECISION"
+                    fraud_col = "IS_FRAUD_TX"
+                    datetime_col = "TX_DATETIME"
+                    tx_id_col = "TX_ID_KEY"
+                else:
+                    entity_col = "email" if entity_type == "email" else entity_type.lower()
+                    gmv_col = "paid_amount_value_in_currency"
+                    decision_col = "nSure_last_decision"
+                    fraud_col = "is_fraud_tx"
+                    datetime_col = "tx_datetime"
+                    tx_id_col = "tx_id_key"
+
+                # Query for APPROVED + FRAUD transactions in GMV window (Saved Fraud GMV)
+                saved_query = f"""
+                SELECT
+                    {tx_id_col} as tx_id,
+                    {gmv_col} as gmv,
+                    {decision_col} as decision,
+                    {fraud_col} as is_fraud,
+                    {datetime_col} as tx_datetime
+                FROM {table_name}
+                WHERE {entity_col} = '{entity_value}'
+                  AND {datetime_col} >= '{gmv_window_start.isoformat()}'
+                  AND {datetime_col} < '{gmv_window_end.isoformat()}'
+                  AND UPPER({decision_col}) = 'APPROVED'
+                  AND {fraud_col} = 1
+                ORDER BY {gmv_col} DESC
+                """
+
+                # Query for APPROVED + LEGITIMATE transactions in GMV window (Potential Lost Revenue)
+                # This measures: "If Olorin had blocked this entity, we would have lost this legitimate business"
+                # NOTE: We look at APPROVED (not BLOCKED) because we're measuring what would have been
+                # lost if the merchant had acted on Olorin's flag to block the entity
+                approved_legit_query = f"""
+                SELECT
+                    {tx_id_col} as tx_id,
+                    {gmv_col} as gmv,
+                    {decision_col} as decision,
+                    {fraud_col} as is_fraud,
+                    {datetime_col} as tx_datetime
+                FROM {table_name}
+                WHERE {entity_col} = '{entity_value}'
+                  AND {datetime_col} >= '{gmv_window_start.isoformat()}'
+                  AND {datetime_col} < '{gmv_window_end.isoformat()}'
+                  AND UPPER({decision_col}) = 'APPROVED'
+                  AND ({fraud_col} = 0 OR {fraud_col} IS NULL)
+                ORDER BY {gmv_col} DESC
+                """
+
+                # Execute queries
+                is_async = hasattr(db_provider, "execute_query_async")
+                if is_async:
+                    saved_results = await db_provider.execute_query_async(saved_query)
+                    approved_legit_results = await db_provider.execute_query_async(approved_legit_query)
+                else:
+                    saved_results = db_provider.execute_query(saved_query)
+                    approved_legit_results = db_provider.execute_query(approved_legit_query)
+
+                # Process APPROVED + FRAUD transactions
+                approved_fraud_txs = []
+                saved_fraud_gmv = Decimal("0")
+                for row in (saved_results or []):
+                    gmv = Decimal(str(row.get("gmv", row.get("GMV", 0)) or 0))
+                    saved_fraud_gmv += gmv
+                    approved_fraud_txs.append({
+                        "tx_id": str(row.get("tx_id", row.get("TX_ID", "unknown"))),
+                        "gmv": float(gmv),
+                        "decision": str(row.get("decision", row.get("DECISION", "APPROVED"))),
+                        "is_fraud": True
+                    })
+
+                # Process APPROVED + LEGITIMATE transactions (Olorin's potential cost)
+                # These are legitimate transactions that went through - if Olorin blocked this entity,
+                # these would have been lost revenue
+                approved_legit_txs = []
+                approved_legit_gmv = Decimal("0")
+                for row in (approved_legit_results or []):
+                    gmv = Decimal(str(row.get("gmv", row.get("GMV", 0)) or 0))
+                    approved_legit_gmv += gmv
+                    approved_legit_txs.append({
+                        "tx_id": str(row.get("tx_id", row.get("TX_ID", "unknown"))),
+                        "gmv": float(gmv),
+                        "decision": str(row.get("decision", row.get("DECISION", "APPROVED"))),
+                        "is_fraud": False
+                    })
+
+                # Calculate Potential Lost Revenues if Olorin had blocked:
+                # approved_legit_gmv × take_rate × lifetime_multiplier
+                potential_lost_revenues = approved_legit_gmv * (take_rate / Decimal("100")) * lifetime_multiplier
+
+                # Net Value: Saved Fraud GMV - Potential Lost Revenues
+                # Positive = Olorin adds value (fraud savings > potential lost business)
+                # Negative = Olorin costs money (potential lost business > fraud savings)
+                net_value = saved_fraud_gmv - potential_lost_revenues
+
+                total_gmv_txs = len(approved_fraud_txs) + len(approved_legit_txs)
+                logger.info(f"   GMV Window: {gmv_window_start.date()} to {gmv_window_end.date()}")
+                logger.info(f"   APPROVED + FRAUD in GMV window: {len(approved_fraud_txs)} tx = ${saved_fraud_gmv:,.2f}")
+                logger.info(f"   APPROVED + LEGIT in GMV window: {len(approved_legit_txs)} tx = ${approved_legit_gmv:,.2f}")
+                logger.info(f"   Potential Lost Revenue = ${approved_legit_gmv:,.2f} × {take_rate}% × {lifetime_multiplier} = ${potential_lost_revenues:,.2f}")
+
+                # Build detailed reasoning with GMV window
+                saved_reasoning = _build_saved_fraud_reasoning_from_txs(
+                    entity_type, entity_value, merchant_name,
+                    saved_fraud_gmv, len(approved_fraud_txs), approved_fraud_txs,
+                    gmv_window_start, gmv_window_end, total_gmv_txs
+                )
+
+                lost_reasoning = _build_lost_revenues_reasoning_from_txs(
+                    entity_type, entity_value, merchant_name,
+                    approved_legit_gmv, potential_lost_revenues, len(approved_legit_txs), approved_legit_txs,
+                    take_rate, lifetime_multiplier, gmv_window_start, gmv_window_end, total_gmv_txs
+                )
+
+                net_reasoning = _build_net_value_reasoning(
+                    saved_fraud_gmv, potential_lost_revenues, net_value, entity_type, entity_value, merchant_name
+                )
+
+                revenue_data = {
+                    "saved_fraud_gmv": float(saved_fraud_gmv),
+                    "potential_lost_revenues": float(potential_lost_revenues),
+                    "net_value": float(net_value),
+                    "approved_fraud_tx_count": len(approved_fraud_txs),
+                    "approved_legit_tx_count": len(approved_legit_txs),
+                    "total_tx_count": total_gmv_txs,
+                    "take_rate_used": float(take_rate),
+                    "lifetime_multiplier_used": float(lifetime_multiplier),
+                    "confidence_level": "high" if total_gmv_txs >= 100 else "medium" if total_gmv_txs >= 10 else "low",
+                    "calculation_successful": True,
+                    "olorin_predicted_fraud": True,
+                    "olorin_risk_score": risk_score,
+                    "olorin_risk_threshold": risk_threshold,
+                    # Include both windows for methodology explanation
+                    "investigation_window_start": window_start.isoformat(),
+                    "investigation_window_end": window_end.isoformat(),
+                    "gmv_window_start": gmv_window_start.isoformat(),
+                    "gmv_window_end": gmv_window_end.isoformat(),
+                    "saved_fraud_breakdown": {
+                        "reasoning": saved_reasoning,
+                        "methodology": f"Queried Snowflake for GMV window ({gmv_window_start.date()} to {gmv_window_end.date()}), found {len(approved_fraud_txs)} APPROVED + FRAUD",
+                        "sample_transactions": approved_fraud_txs[:5],
+                    },
+                    "potential_lost_revenues_breakdown": {
+                        "reasoning": lost_reasoning,
+                        "methodology": f"Queried Snowflake for GMV window ({gmv_window_start.date()} to {gmv_window_end.date()}), found {len(approved_legit_txs)} APPROVED + LEGITIMATE (would be lost if Olorin blocked)",
+                        "formula_applied": f"${approved_legit_gmv:,.2f} × ({take_rate}% / 100) × {lifetime_multiplier} = ${potential_lost_revenues:,.2f}",
+                        "approved_legit_gmv_total": float(approved_legit_gmv),
+                        "sample_transactions": approved_legit_txs[:5],
+                    },
+                    "net_value_breakdown": {
+                        "reasoning": net_reasoning,
+                        "formula": f"${saved_fraud_gmv:,.2f} - ${potential_lost_revenues:,.2f} = ${net_value:,.2f}",
+                        "is_positive": net_value >= 0,
+                        "roi_percentage": float((net_value / potential_lost_revenues) * 100) if potential_lost_revenues > 0 else None,
+                    },
+                }
+
+                logger.info(f"✅ Olorin Value calculated FROM GMV WINDOW (post-investigation):")
+                logger.info(f"   Saved Fraud GMV: ${saved_fraud_gmv:,.2f} ({len(approved_fraud_txs)} APPROVED+FRAUD tx)")
+                logger.info(f"   Potential Lost Revenue: ${potential_lost_revenues:,.2f} ({len(approved_legit_txs)} APPROVED+LEGIT tx)")
+                logger.info(f"   Net Value (Olorin's contribution): ${net_value:,.2f}")
 
         except Exception as e:
             logger.warning(f"⚠️ Revenue calculation failed (non-fatal): {e}")
