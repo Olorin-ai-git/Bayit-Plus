@@ -791,13 +791,18 @@ async def on_startup(app: FastAPI):
                             reports_dir = Path("artifacts/comparisons/auto_startup")
                             reports_dir.mkdir(parents=True, exist_ok=True)
 
-                            # Get timeout from environment (default: 180 minutes, max: 180 minutes)
-                            startup_timeout_seconds = float(
-                                os.getenv("STARTUP_ANALYSIS_TIMEOUT_SECONDS", "10800.0")
+                            # Get timeout from environment (default: 24 hours, max: 48 hours)
+                            startup_timeout_hours = float(
+                                os.getenv("STARTUP_ANALYSIS_TIMEOUT_HOURS", "24.0")
                             )
-                            startup_timeout_seconds = min(
-                                max(startup_timeout_seconds, 30.0), 10800.0
-                            )  # Clamp between 30s and 180min (3 hours)
+                            startup_timeout_hours = min(
+                                max(startup_timeout_hours, 0.5), 48.0
+                            )  # Clamp between 0.5h (30min) and 48h
+                            startup_timeout_seconds = startup_timeout_hours * 3600  # Convert to seconds
+                            
+                            logger.info(
+                                f"🔧 STARTUP_ANALYSIS_TIMEOUT_HOURS = {startup_timeout_hours} ({startup_timeout_seconds:.0f} seconds)"
+                            )
 
                             # Get number of top entities to investigate from environment (default: 3)
                             top_n_entities = int(
@@ -808,7 +813,7 @@ async def on_startup(app: FastAPI):
                             )  # Clamp between 1 and 10
                             
                             logger.info(
-                                f"🚀 Scheduling startup analysis in background (timeout: {startup_timeout_seconds}s, top_n: {top_n_entities})"
+                                f"🚀 Scheduling startup analysis in background (timeout: {startup_timeout_hours}h, top_n: {top_n_entities})"
                             )
 
                             # Define background task wrapper
@@ -837,7 +842,7 @@ async def on_startup(app: FastAPI):
                                         )
                                     except asyncio.TimeoutError:
                                         logger.warning(
-                                            f"⏱️ Background startup analysis timed out after {startup_timeout_seconds}s"
+                                            f"⏱️ Background startup analysis timed out after {startup_timeout_hours}h ({startup_timeout_seconds:.0f}s)"
                                         )
                                         logger.warning(
                                             "   Investigations may still be running independently"

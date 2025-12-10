@@ -57,6 +57,11 @@ async def run_auto_comparisons_for_top_entities(
     # Load revenue configuration for time windows
     revenue_config = get_revenue_config()
     
+    # Configuration: Maximum entities to investigate (default: 2000)
+    max_entities = int(os.getenv("MAX_ENTITIES_TO_INVESTIGATE", "2000"))
+    max_entities = max(1, max_entities)  # Ensure at least 1
+    logger.info(f"🔧 MAX_ENTITIES_TO_INVESTIGATE = {max_entities}")
+    
     loader = ComparisonDataLoader()
     executor = ComparisonExecutor()
     reporter = ComparisonReporter()
@@ -94,7 +99,7 @@ async def run_auto_comparisons_for_top_entities(
     fraud_pairs = await loader.get_fraudulent_emails_grouped_by_merchant(
         lookback_hours=time_window_hours, 
         min_fraud_tx=1, 
-        limit=50,
+        limit=max_entities,
         reference_time=reference_time
     )
 
