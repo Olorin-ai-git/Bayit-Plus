@@ -68,11 +68,20 @@ class PromptRegistry:
             path = Path(__file__).parent.parent.parent.parent / prompts_dir
         return path
 
+    def _get_active_version_from_env(self) -> str:
+        """Get active version from environment, falling back to config."""
+        env_version = os.getenv("LLM_PROMPT_ACTIVE_VERSION")
+        if env_version:
+            return env_version
+        return self._config.prompts.active_version
+
     def _load_available_versions(self) -> None:
         """Scan prompts directory and load available versions."""
         if not self._prompts_dir.exists():
             logger.warning(f"Prompts directory not found: {self._prompts_dir}")
             return
+
+        active_from_env = self._get_active_version_from_env()
 
         for yaml_file in self._prompts_dir.glob("fraud_detection_*.yaml"):
             try:
@@ -85,10 +94,10 @@ class PromptRegistry:
                     created_at=data.get("created_at", ""),
                     description=data.get("description", ""),
                     file_path=str(yaml_file),
-                    is_active=(version == self._config.prompts.active_version),
+                    is_active=(version == active_from_env),
                 )
 
-                if version == self._config.prompts.active_version:
+                if version == active_from_env:
                     self._active_version = version
 
                 logger.debug(f"Found prompt version: {version}")
@@ -98,7 +107,10 @@ class PromptRegistry:
         logger.info(f"Loaded {len(self._versions)} prompt versions")
 
     def get_active_version(self) -> str:
-        """Get the currently active prompt version."""
+        """Get the currently active prompt version from env or cache."""
+        env_version = os.getenv("LLM_PROMPT_ACTIVE_VERSION")
+        if env_version:
+            return env_version
         if self._active_version:
             return self._active_version
         return self._config.prompts.active_version

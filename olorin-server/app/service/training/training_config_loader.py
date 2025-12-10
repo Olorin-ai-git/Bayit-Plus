@@ -9,7 +9,7 @@ All values are sourced from environment variables via placeholders.
 import os
 import re
 from pathlib import Path
-from typing import Any, Dict, Optional
+from typing import Any, Dict, Optional, Union
 
 import yaml
 from pydantic import BaseModel, Field, field_validator
@@ -84,6 +84,15 @@ class LoggingConfig(BaseModel):
     metrics_export_enabled: bool = Field(description="Export metrics externally")
 
 
+class TemporalHoldoutConfig(BaseModel):
+    """Temporal holdout configuration to prevent data leakage."""
+
+    enabled: bool = Field(default=True, description="Enable temporal holdout")
+    feature_period_months: int = Field(ge=1, le=24, description="Feature period months")
+    observation_period_months: int = Field(ge=1, le=12, description="Observation months")
+    min_transactions_in_feature_period: int = Field(ge=1, description="Min txs in feature")
+
+
 class TrainingConfig(BaseModel):
     """Main training configuration."""
 
@@ -92,6 +101,7 @@ class TrainingConfig(BaseModel):
     provider: ProviderConfig
     batch_processing: BatchProcessingConfig
     data_sampling: DataSamplingConfig
+    temporal_holdout: Optional[TemporalHoldoutConfig] = Field(default=None)
     scoring: ScoringConfig
     prompts: PromptsConfig
     output: OutputConfig

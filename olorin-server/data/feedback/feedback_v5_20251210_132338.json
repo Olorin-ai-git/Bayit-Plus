@@ -1,0 +1,19 @@
+{
+  "prompt_version": "v5",
+  "collected_at": "2025-12-10T13:23:38.364383",
+  "entry_count": 1,
+  "entries": [
+    {
+      "timestamp": "2025-12-10T13:23:38.364344",
+      "entity_type": "email",
+      "entity_value": "fruit9052@gmail.com",
+      "predicted_fraud": false,
+      "actual_fraud": true,
+      "risk_score": 0.25,
+      "confidence": 0.9,
+      "reasoning": "The entity shows normal patterns with 3 unique devices and 11 unique IPs, which does not trigger any high-risk indicators. The average transaction value is low, and the standard deviation does not ind",
+      "error_type": "false_negative",
+      "prompt_version": "v5"
+    }
+  ]
+}

@@ -118,12 +118,10 @@ class LLMReasoningEngine:
         features: Dict[str, Any],
         merchant_name: Optional[str],
     ) -> str:
-        """Build the fraud analysis prompt from template and features."""
-        fraud_indicators = self._format_fraud_indicators(template, features)
-        velocity_analysis = self._format_velocity_analysis(template, features)
-        geographic_analysis = self._format_geographic_analysis(template, features)
-        device_analysis = self._format_device_analysis(template, features)
-        historical_patterns = self._format_historical_patterns(template, features)
+        """Build the fraud analysis prompt from template and features - v4 compatible."""
+        first_tx = features.get("first_tx_date", "N/A")
+        last_tx = features.get("last_tx_date", "N/A")
+        date_range = f"{first_tx} to {last_tx}"
 
         return template.fraud_analysis_prompt.format(
             entity_type=entity_type,
@@ -131,73 +129,72 @@ class LLMReasoningEngine:
             merchant_name=merchant_name or "Unknown",
             total_transactions=features.get("total_transactions", 0),
             total_gmv=features.get("total_gmv", 0),
-            date_range=features.get("date_range", "N/A"),
-            unique_merchants=features.get("unique_merchants", 0),
-            unique_devices=features.get("unique_devices", 0),
-            unique_ips=features.get("unique_ips", 0),
-            fraud_indicators=fraud_indicators,
-            velocity_analysis=velocity_analysis,
-            geographic_analysis=geographic_analysis,
-            device_analysis=device_analysis,
-            historical_patterns=historical_patterns,
+            avg_tx_value=features.get("avg_tx_value", 0),
+            std_tx_value=features.get("std_tx_value", 0),
+            date_range=date_range,
+            unique_merchants=features.get("merchant_count", 0),
+            unique_devices=features.get("device_count", 0),
+            unique_ips=features.get("ip_count", 0),
         )
 
     def _format_fraud_indicators(
         self, template: Any, features: Dict[str, Any]
     ) -> str:
-        """Format fraud indicators section."""
+        """Format fraud indicators section - v4 uses behavioral features only."""
         return template.fraud_indicators_template.format(
-            fraud_tx_count=features.get("fraud_tx_count", 0),
-            fraud_ratio=features.get("fraud_ratio", 0) * 100,
-            chargeback_count=features.get("chargeback_count", 0),
-            declined_ratio=features.get("declined_ratio", 0) * 100,
-            high_risk_country_count=features.get("high_risk_country_count", 0),
+            total_transactions=features.get("total_transactions", 0),
+            total_gmv=features.get("total_gmv", 0),
+            avg_tx_value=features.get("avg_tx_value", 0),
+            std_tx_value=features.get("std_tx_value", 0),
+            device_count=features.get("device_count", 0),
+            ip_count=features.get("ip_count", 0),
+            merchant_count=features.get("merchant_count", 0),
         )
 
     def _format_velocity_analysis(
         self, template: Any, features: Dict[str, Any]
     ) -> str:
-        """Format velocity analysis section."""
+        """Format velocity analysis section - v4 uses transaction patterns."""
         return template.velocity_analysis_template.format(
-            tx_per_day_avg=features.get("tx_per_day_avg", 0),
-            tx_per_day_max=features.get("tx_per_day_max", 0),
-            peak_hour=features.get("peak_hour", "N/A"),
-            frequency_anomaly_score=features.get("frequency_anomaly_score", 0),
-            min_time_between_tx=features.get("min_time_between_tx", "N/A"),
+            total_transactions=features.get("total_transactions", 0),
+            avg_tx_value=features.get("avg_tx_value", 0),
+            std_tx_value=features.get("std_tx_value", 0),
+            first_tx_date=features.get("first_tx_date", "N/A"),
+            last_tx_date=features.get("last_tx_date", "N/A"),
         )
 
     def _format_geographic_analysis(
         self, template: Any, features: Dict[str, Any]
     ) -> str:
-        """Format geographic analysis section."""
+        """Format geographic analysis section - v4 uses IP diversity only."""
+        ip_count = features.get("ip_count", 0)
+        total_tx = features.get("total_transactions", 1)
+        ip_ratio = round(ip_count / total_tx, 2) if total_tx > 0 else 0
         return template.geographic_analysis_template.format(
-            countries=features.get("countries", "N/A"),
-            country_count=features.get("country_count", 0),
-            ip_count=features.get("ip_count", 0),
-            geo_dispersion_score=features.get("geo_dispersion_score", 0),
-            impossible_travel=features.get("impossible_travel", False),
+            ip_count=ip_count,
+            ip_ratio=ip_ratio,
         )
 
     def _format_device_analysis(self, template: Any, features: Dict[str, Any]) -> str:
-        """Format device analysis section."""
+        """Format device analysis section - v4 uses device/IP counts."""
+        device_count = features.get("device_count", 0)
+        ip_count = features.get("ip_count", 0)
+        multi_device = "Yes" if device_count > 1 or ip_count > 1 else "No"
         return template.device_analysis_template.format(
-            device_count=features.get("device_count", 0),
-            browser_types=features.get("browser_types", "N/A"),
-            os_types=features.get("os_types", "N/A"),
-            device_sharing=features.get("device_sharing", False),
-            emulator_detected=features.get("emulator_detected", False),
+            device_count=device_count,
+            ip_count=ip_count,
+            multi_device=multi_device,
         )
 
     def _format_historical_patterns(
         self, template: Any, features: Dict[str, Any]
     ) -> str:
-        """Format historical patterns section."""
+        """Format historical patterns section - v4 uses account age only."""
         return template.historical_patterns_template.format(
-            account_age_days=features.get("account_age_days", 0),
             first_tx_date=features.get("first_tx_date", "N/A"),
             last_tx_date=features.get("last_tx_date", "N/A"),
-            historical_fraud_rate=features.get("historical_fraud_rate", 0) * 100,
-            previous_investigations=features.get("previous_investigations", 0),
+            total_transactions=features.get("total_transactions", 0),
+            merchant_count=features.get("merchant_count", 0),
         )
 
     def _parse_response(self, response: str) -> FraudAssessment:
