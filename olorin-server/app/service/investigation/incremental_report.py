@@ -98,6 +98,11 @@ def _fetch_completed_auto_comp_investigations() -> List[Dict[str, Any]]:
                     name = settings.get("name", "")
                     match = re.search(r"\(Merchant: (.*?)\)", name)
                     result["merchant_name"] = match.group(1) if match else "Unknown"
+                    
+                    # Extract analyzer_metadata from settings.metadata
+                    metadata = settings.get("metadata", {})
+                    if "analyzer_metadata" in metadata:
+                        result["analyzer_metadata"] = metadata["analyzer_metadata"]
                 except json.JSONDecodeError:
                     pass
             
@@ -209,8 +214,147 @@ def _load_confusion_matrix_from_file(investigation_id: str) -> Optional[Dict[str
     return None
 
 
+def _generate_analyzer_section_html(analyzer_metadata: Optional[Dict[str, Any]]) -> str:
+    """Generate the analyzer section HTML for incremental report."""
+    if not analyzer_metadata:
+        return ""
+    
+    start_time = analyzer_metadata.get("start_time")
+    end_time = analyzer_metadata.get("end_time")
+    entities = analyzer_metadata.get("entities", [])
+    
+    # Format datetimes - handle both datetime objects and ISO strings
+    if isinstance(start_time, datetime):
+        start_str = start_time.strftime("%Y-%m-%d %H:%M:%S UTC")
+    elif isinstance(start_time, str):
+        try:
+            dt = datetime.fromisoformat(start_time.replace('Z', '+00:00'))
+            start_str = dt.strftime("%Y-%m-%d %H:%M:%S UTC")
+        except:
+            start_str = str(start_time)
+    else:
+        start_str = "Unknown"
+    
+    if isinstance(end_time, datetime):
+        end_str = end_time.strftime("%Y-%m-%d %H:%M:%S UTC")
+    elif isinstance(end_time, str):
+        try:
+            dt = datetime.fromisoformat(end_time.replace('Z', '+00:00'))
+            end_str = dt.strftime("%Y-%m-%d %H:%M:%S UTC")
+        except:
+            end_str = str(end_time)
+    else:
+        end_str = "Unknown"
+    
+    # Generate entity rows (show top 20)
+    entity_rows = ""
+    for entity in entities[:20]:
+        email = entity.get("email", "Unknown")
+        merchant = entity.get("merchant", "Unknown")
+        fraud_count = entity.get("fraud_count", 0)
+        total_count = entity.get("total_count", 0)
+        
+        entity_rows += f"""
+        <tr>
+            <td style="padding: 8px; border-bottom: 1px solid var(--border);">{email}</td>
+            <td style="padding: 8px; border-bottom: 1px solid var(--border);">{merchant}</td>
+            <td style="padding: 8px; text-align: center; border-bottom: 1px solid var(--border);"><strong style="color: var(--danger);">{fraud_count}</strong></td>
+            <td style="padding: 8px; text-align: center; border-bottom: 1px solid var(--border);">{total_count}</td>
+        </tr>
+        """
+    
+    if len(entities) > 20:
+        entity_rows += f"""
+        <tr>
+            <td colspan="4" style="padding: 12px; text-align: center; color: var(--muted); font-style: italic; border-bottom: 1px solid var(--border);">
+                ... and {len(entities) - 20} more entities
+            </td>
+        </tr>
+        """
+    
+    total_fraud_tx = sum(e.get("fraud_count", 0) for e in entities)
+    
+    return f"""
+    <div style="background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 24px; margin-bottom: 24px;">
+        <div onclick="toggleAnalyzer()" style="cursor: pointer; padding: 16px; background: linear-gradient(135deg, rgba(59, 130, 246, 0.15) 0%, rgba(59, 130, 246, 0.05) 100%); border-radius: 8px; margin-bottom: 20px; transition: all 0.3s ease;">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+                <h2 style="color: var(--accent); margin: 0; font-size: 1.5em;">🔍 Analyzer Discovery Window</h2>
+                <span id="analyzer-toggle" style="font-size: 1.5em; color: var(--accent);">▼</span>
+            </div>
+            <div style="margin-top: 12px; display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 16px;">
+                <div>
+                    <div style="font-size: 0.85em; color: var(--muted);">📅 Time Window</div>
+                    <div style="font-size: 0.9em; font-weight: 600; color: var(--text); margin-top: 4px;">
+                        {start_str.split(' ')[0]} → {end_str.split(' ')[0]}
+                    </div>
+                </div>
+                <div>
+                    <div style="font-size: 0.85em; color: var(--muted);">🎯 Entities Discovered</div>
+                    <div style="font-size: 1.2em; font-weight: bold; color: var(--accent); margin-top: 4px;">
+                        {len(entities)}
+                    </div>
+                </div>
+                <div>
+                    <div style="font-size: 0.85em; color: var(--muted);">📊 Fraud Transactions</div>
+                    <div style="font-size: 1.2em; font-weight: bold; color: var(--danger); margin-top: 4px;">
+                        {total_fraud_tx}
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div id="analyzer-content" style="display: block;">
+            <div style="background: rgba(59, 130, 246, 0.1); border-left: 4px solid var(--accent); padding: 16px; border-radius: 8px; margin-bottom: 20px;">
+                <div style="display: grid; grid-template-columns: auto 1fr; gap: 12px 20px; align-items: center;">
+                    <div style="color: var(--muted); font-weight: 600;">📅 Time Window:</div>
+                    <div style="font-family: 'Monaco', 'Courier New', monospace; color: var(--text);">
+                        <strong>{start_str}</strong> → <strong>{end_str}</strong>
+                        <span style="color: var(--muted); margin-left: 12px;">(24-hour window)</span>
+                    </div>
+                    
+                    <div style="color: var(--muted); font-weight: 600;">🎯 Entities Discovered:</div>
+                    <div style="font-size: 1.2em; color: var(--accent); font-weight: bold;">{len(entities)} entities with fraudulent transactions</div>
+                    
+                    <div style="color: var(--muted); font-weight: 600;">📊 Total Fraud Transactions:</div>
+                    <div style="font-size: 1.2em; color: var(--danger); font-weight: bold;">{total_fraud_tx} fraud transactions detected</div>
+                </div>
+            </div>
+            
+            <h3 style="color: var(--accent); margin-bottom: 16px; font-size: 1.1em;">🚨 Entities Flagged for Investigation</h3>
+            <div style="overflow-x: auto;">
+                <table style="width: 100%; border-collapse: collapse; font-size: 0.9em;">
+                    <thead>
+                        <tr style="background: rgba(59, 130, 246, 0.2);">
+                            <th style="padding: 12px 8px; text-align: left; border-bottom: 2px solid var(--border); font-weight: 600;">Email</th>
+                            <th style="padding: 12px 8px; text-align: left; border-bottom: 2px solid var(--border); font-weight: 600;">Merchant</th>
+                            <th style="padding: 12px 8px; text-align: center; border-bottom: 2px solid var(--border); font-weight: 600;">Fraud TX</th>
+                            <th style="padding: 12px 8px; text-align: center; border-bottom: 2px solid var(--border); font-weight: 600;">Total TX</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {entity_rows}
+                    </tbody>
+                </table>
+            </div>
+            
+            <div style="margin-top: 16px; padding: 12px; background: rgba(0, 0, 0, 0.3); border-radius: 8px;">
+                <div style="color: var(--muted); font-size: 0.9em;">
+                    <strong>ℹ️ Note:</strong> This analyzer window identifies entities that had fraudulent transactions in the specified 24-hour period. 
+                    Each entity is then investigated using a broader time window (6-12 months historical data) to build comprehensive risk profiles and confusion matrices.
+                </div>
+            </div>
+        </div>
+    </div>
+    """
+
+
 def _generate_incremental_html(investigations: List[Dict[str, Any]]) -> str:
     """Generate the incremental HTML report with full financial analysis."""
+    
+    # Extract analyzer metadata from first investigation (all share the same metadata)
+    analyzer_metadata = None
+    if investigations and len(investigations) > 0:
+        analyzer_metadata = investigations[0].get("analyzer_metadata")
     
     # Group by merchant
     by_merchant: Dict[str, List[Dict[str, Any]]] = {}
@@ -228,6 +372,9 @@ def _generate_incremental_html(investigations: List[Dict[str, Any]]) -> str:
     total_fp = sum(_safe_int(inv.get("confusion_matrix", {}).get("FP", 0)) for inv in investigations)
     total_tn = sum(_safe_int(inv.get("confusion_matrix", {}).get("TN", 0)) for inv in investigations)
     total_fn = sum(_safe_int(inv.get("confusion_matrix", {}).get("FN", 0)) for inv in investigations)
+    
+    # Generate analyzer section HTML
+    analyzer_section_html = _generate_analyzer_section_html(analyzer_metadata)
     
     timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     
@@ -368,6 +515,8 @@ def _generate_incremental_html(investigations: List[Dict[str, Any]]) -> str:
         <p class="subtitle" style="margin-top: 10px;">Last updated: {timestamp}</p>
     </div>
 
+    {analyzer_section_html}
+
     <h2 style="margin-bottom: 20px;">💰 Financial Impact Summary</h2>
     <div class="global-metrics">
         <div class="metric-card">
@@ -475,14 +624,29 @@ def _generate_incremental_html(investigations: List[Dict[str, Any]]) -> str:
     
     html += """
     <script>
+        function toggleAnalyzer() {
+            const content = document.getElementById('analyzer-content');
+            const icon = document.getElementById('analyzer-toggle');
+            
+            if (content.style.display === 'none') {
+                content.style.display = 'block';
+                icon.textContent = '▼';
+            } else {
+                content.style.display = 'none';
+                icon.textContent = '▶';
+            }
+        }
+        
         function toggleMerchant(id) {
             const content = document.getElementById('merchant-' + id);
             content.classList.toggle('open');
         }
+        
         function toggleEntity(id) {
             const content = document.getElementById('entity-' + id);
             content.classList.toggle('open');
         }
+        
         // Auto-expand first merchant
         document.querySelector('.merchant-content')?.classList.add('open');
     </script>

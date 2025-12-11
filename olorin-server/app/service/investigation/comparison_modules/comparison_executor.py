@@ -34,6 +34,7 @@ class ComparisonExecutor:
         merchant_name: Optional[str] = None,
         fraud_tx_count: int = 0,
         total_tx_count: int = 0,
+        analyzer_metadata: Optional[Dict[str, Any]] = None,
     ) -> Optional[Dict[str, Any]]:
         """
         Create a new investigation and wait for it to complete.
@@ -85,6 +86,18 @@ class ComparisonExecutor:
             ]
             
             # Create investigation settings
+            # Build metadata dictionary
+            metadata = {
+                "merchant_name": merchant_name,
+                "fraud_tx_count": fraud_tx_count,
+                "total_tx_count": total_tx_count,
+                "auto_generated": True
+            }
+            
+            # Add analyzer_metadata if provided
+            if analyzer_metadata:
+                metadata["analyzer_metadata"] = analyzer_metadata
+            
             settings = InvestigationSettings(
                 name=f"Auto-comparison investigation for {entity_value}" + (f" (Merchant: {merchant_name})" if merchant_name else ""),
                 entities=entities,
@@ -95,12 +108,7 @@ class ComparisonExecutor:
                 correlation_mode="OR",
                 investigation_type=InvestigationType.HYBRID,
                 auto_select_entities=False,
-                metadata={
-                    "merchant_name": merchant_name,
-                    "fraud_tx_count": fraud_tx_count,
-                    "total_tx_count": total_tx_count,
-                    "auto_generated": True
-                }
+                metadata=metadata
             )
 
             # Create investigation state

@@ -96,6 +96,10 @@ async def run_auto_comparisons_for_top_entities(
         f"(configured offset: {offset_months} months)"
     )
     
+    # Calculate analyzer window
+    analyzer_start_time = reference_time - timedelta(hours=time_window_hours)
+    analyzer_end_time = reference_time
+    
     fraud_pairs = await loader.get_fraudulent_emails_grouped_by_merchant(
         lookback_hours=time_window_hours, 
         min_fraud_tx=1, 
@@ -110,6 +114,14 @@ async def run_auto_comparisons_for_top_entities(
     logger.info(
         f"📊 Found {len(fraud_pairs)} fraudulent email-merchant pairs to investigate"
     )
+    
+    # Store analyzer metadata for reporting
+    analyzer_metadata = {
+        "start_time": analyzer_start_time,
+        "end_time": analyzer_end_time,
+        "time_window_hours": time_window_hours,
+        "entities": fraud_pairs,  # List of {email, merchant, fraud_count, total_count}
+    }
 
     # 3. Run investigations (Parallel with Semaphore)
     semaphore = asyncio.Semaphore(5)  # Limit concurrency to 5
@@ -168,6 +180,7 @@ async def run_auto_comparisons_for_top_entities(
                     merchant_name=merchant,
                     fraud_tx_count=fraud_count,
                     total_tx_count=total_count,
+                    analyzer_metadata=analyzer_metadata,
                 )
 
                 if result:
@@ -339,6 +352,10 @@ async def run_auto_comparisons_for_top_entities(
     report_path.write_text(html_content)
     logger.info(f"✅ Startup analysis report generated: {report_path}")
 
+    # Add analyzer metadata to each result for reporting
+    for result in results:
+        result["analyzer_metadata"] = analyzer_metadata
+    
     # Also package results (zip)
     reporter.package_comparison_results(results, report_dir)
 

@@ -818,6 +818,9 @@ class LangGraphJourneyTracker:
         # Convert journey to JSON-serializable format
         journey_dict = asdict(journey)
 
+        # Ensure directory exists (safety check)
+        journey_file.parent.mkdir(parents=True, exist_ok=True)
+
         with open(journey_file, "w") as f:
             json.dump(journey_dict, f, indent=2, default=str)
 
