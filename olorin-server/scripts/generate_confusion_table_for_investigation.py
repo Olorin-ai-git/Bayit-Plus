@@ -55,10 +55,12 @@ def _generate_financial_reasoning_html(revenue_data: Optional[Dict], merchant_na
         """
 
     saved_gmv = revenue_data.get("saved_fraud_gmv", 0)
-    lost_rev = revenue_data.get("lost_revenues", 0)
+    # Fix: use "potential_lost_revenues" key (was incorrectly using "lost_revenues")
+    lost_rev = revenue_data.get("potential_lost_revenues", 0)
     net_val = revenue_data.get("net_value", 0)
     approved_fraud_count = revenue_data.get("approved_fraud_tx_count", 0)
-    blocked_legit_count = revenue_data.get("blocked_legitimate_tx_count", 0)
+    # Fix: use "approved_legit_tx_count" key (was incorrectly using "blocked_legitimate_tx_count")
+    blocked_legit_count = revenue_data.get("approved_legit_tx_count", 0)
     take_rate = revenue_data.get("take_rate_used", 0.75)
     multiplier = revenue_data.get("lifetime_multiplier_used", 1.0)
     confidence = revenue_data.get("confidence_level", "low")
@@ -76,9 +78,13 @@ def _generate_financial_reasoning_html(revenue_data: Optional[Dict], merchant_na
 
     html = f"""
     <div class="panel">
-        <h2>💰 Financial Analysis</h2>
-        <p style="color: var(--muted); margin-bottom: 16px;">
+        <h2>💰 Financial Analysis (GMV Window - Post Investigation)</h2>
+        <p style="color: var(--muted); margin-bottom: 8px;">
             Revenue impact analysis based on transaction data. Merchant: <strong>{merchant_name}</strong>
+        </p>
+        <p style="padding: 10px; background: rgba(251, 191, 36, 0.1); border-radius: 6px; font-size: 12px; color: var(--warning); margin-bottom: 16px; border-left: 3px solid var(--warning);">
+            <strong>📅 Important:</strong> These financial metrics are calculated from the <em>GMV Window</em> - the period <strong>AFTER</strong> the investigation completed.
+            This measures what fraud the entity committed after Olorin flagged them, proving Olorin's <strong>predictive value</strong>.
         </p>
 
         <!-- Summary Cards -->
@@ -200,7 +206,8 @@ TIMELINE:
         """
 
     # Add Lost Revenues reasoning
-    lost_breakdown = revenue_data.get("lost_revenues_breakdown", {})
+    # Fix: use "potential_lost_revenues_breakdown" key (was incorrectly using "lost_revenues_breakdown")
+    lost_breakdown = revenue_data.get("potential_lost_revenues_breakdown", {})
     if lost_breakdown and lost_breakdown.get("reasoning"):
         html += f"""
                 <div style="margin-bottom: 24px;">
@@ -975,7 +982,26 @@ async def generate_confusion_table(
         # Create full HTML document with financial analysis
         net_val = revenue_data.get("net_value", 0) if revenue_data else 0
         saved_gmv = revenue_data.get("saved_fraud_gmv", 0) if revenue_data else 0
-        lost_rev = revenue_data.get("lost_revenues", 0) if revenue_data else 0
+        # Fix: use "potential_lost_revenues" key (was incorrectly using "lost_revenues" which doesn't exist)
+        lost_rev = revenue_data.get("potential_lost_revenues", 0) if revenue_data else 0
+
+        # Calculate GMV window info for header
+        gmv_start = revenue_data.get("gmv_window_start", "") if revenue_data else ""
+        gmv_end = revenue_data.get("gmv_window_end", "") if revenue_data else ""
+        if gmv_start and isinstance(gmv_start, str):
+            gmv_start_date = gmv_start[:10]
+        elif gmv_start:
+            gmv_start_date = gmv_start.strftime("%Y-%m-%d")
+        else:
+            gmv_start_date = "N/A"
+        if gmv_end and isinstance(gmv_end, str):
+            gmv_end_date = gmv_end[:10]
+        elif gmv_end:
+            gmv_end_date = gmv_end.strftime("%Y-%m-%d")
+        else:
+            gmv_end_date = "N/A"
+        inv_start_date = window_start.strftime("%Y-%m-%d") if window_start else "N/A"
+        inv_end_date = window_end.strftime("%Y-%m-%d") if window_end else "N/A"
 
         full_html = f"""<!DOCTYPE html>
 <html lang="en">
@@ -1070,24 +1096,57 @@ async def generate_confusion_table(
             <p><strong>Merchant:</strong> <span style="color: var(--accent-secondary); font-weight: bold;">{merchant_name}</span></p>
             <p><strong>Risk Score:</strong> {risk_score if risk_score is not None else 'N/A'}</p>
             <p><strong>Risk Threshold:</strong> {risk_threshold:.1%}</p>
-            <p><strong>Window:</strong> {window_start.strftime('%Y-%m-%d %H:%M:%S UTC')} to {window_end.strftime('%Y-%m-%d %H:%M:%S UTC')}</p>
-            <p><strong>Total Transactions:</strong> {len(transactions)}</p>
+            <p><strong>Investigation Window:</strong> {window_start.strftime('%Y-%m-%d %H:%M:%S UTC')} to {window_end.strftime('%Y-%m-%d %H:%M:%S UTC')}</p>
+            <p><strong>Total Transactions (Investigation Period):</strong> {len(transactions)}</p>
             <p><strong>Generated:</strong> {datetime.now().strftime('%Y-%m-%d %H:%M:%S UTC')}</p>
         </div>
-        
+
+        <!-- CRITICAL: Methodology Banner - Explains Different Time Windows -->
+        <div style="margin-top: 20px; padding: 20px; background: linear-gradient(135deg, rgba(74, 158, 255, 0.15), rgba(123, 104, 238, 0.15)); border-radius: 12px; border: 2px solid var(--accent);">
+            <h3 style="color: var(--accent); margin-bottom: 12px; display: flex; align-items: center; gap: 8px;">
+                <span style="font-size: 24px;">⚠️</span> IMPORTANT: This Report Uses Two Time Windows
+            </h3>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+                <div style="background: rgba(0,0,0,0.3); padding: 16px; border-radius: 8px;">
+                    <h4 style="color: var(--ok); margin-bottom: 8px;">📊 Confusion Matrix Window</h4>
+                    <p style="color: var(--text); font-size: 14px; margin-bottom: 8px;"><strong>{inv_start_date}</strong> to <strong>{inv_end_date}</strong></p>
+                    <p style="color: var(--muted); font-size: 12px;">
+                        This is when Olorin analyzed the entity and made its fraud prediction.
+                        The confusion matrix measures detection <em>accuracy</em> during this period.
+                    </p>
+                </div>
+                <div style="background: rgba(0,0,0,0.3); padding: 16px; border-radius: 8px;">
+                    <h4 style="color: var(--warning); margin-bottom: 8px;">💰 Financial Analysis Window</h4>
+                    <p style="color: var(--text); font-size: 14px; margin-bottom: 8px;"><strong>{gmv_start_date}</strong> to <strong>{gmv_end_date}</strong></p>
+                    <p style="color: var(--muted); font-size: 12px;">
+                        This is AFTER the investigation. It measures what fraud the entity committed
+                        <em>after</em> Olorin flagged them - proving Olorin's <strong>predictive value</strong>.
+                    </p>
+                </div>
+            </div>
+            <p style="margin-top: 16px; padding: 12px; background: rgba(251, 191, 36, 0.2); border-radius: 6px; color: var(--text); font-size: 13px;">
+                <strong>Why the difference?</strong> An entity may have 0 TP/100% FP in the confusion matrix (no fraud during investigation),
+                but still have large "Saved Fraud GMV" (committed fraud AFTER). This means Olorin correctly identified a future fraudster
+                before they acted, proving predictive detection capability.
+            </p>
+        </div>
+
         <!-- Quick Financial Summary in Header -->
         <div style="margin-top: 16px; padding: 16px; background: var(--panel-glass); border-radius: 8px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; text-align: center;">
             <div>
                 <div style="color: var(--ok); font-size: 18px; font-weight: bold;">${saved_gmv:,.2f}</div>
                 <div style="color: var(--muted); font-size: 11px;">Saved Fraud GMV</div>
+                <div style="color: var(--warning); font-size: 9px; margin-top: 2px;">(GMV Window: {gmv_start_date} to {gmv_end_date})</div>
             </div>
             <div>
                 <div style="color: var(--warning); font-size: 18px; font-weight: bold;">${lost_rev:,.2f}</div>
                 <div style="color: var(--muted); font-size: 11px;">Lost Revenues</div>
+                <div style="color: var(--warning); font-size: 9px; margin-top: 2px;">(GMV Window)</div>
             </div>
             <div>
                 <div style="color: {'var(--ok)' if net_val >= 0 else 'var(--error)'}; font-size: 18px; font-weight: bold;">${net_val:,.2f}</div>
                 <div style="color: var(--muted); font-size: 11px;">Net Value</div>
+                <div style="color: var(--warning); font-size: 9px; margin-top: 2px;">(GMV Window)</div>
             </div>
         </div>
     </div>

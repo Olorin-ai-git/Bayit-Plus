@@ -1141,12 +1141,17 @@ def _generate_confusion_table_section(data: Dict[str, Any]) -> str:
 
     return f"""
           <div class="panel">
-            <h2>📊 Confusion Table Metrics</h2>
-            <p style="color: var(--muted); margin-bottom: 16px;">
+            <h2>📊 Confusion Table Metrics (Investigation Window)</h2>
+            <p style="color: var(--muted); margin-bottom: 8px;">
               Aggregated confusion matrix metrics across {entity_count} investigated entities.
               Only APPROVED transactions (NSURE_LAST_DECISION = 'APPROVED') are included.
             </p>
-            
+            <p style="padding: 10px; background: rgba(74, 158, 255, 0.1); border-radius: 6px; font-size: 12px; color: var(--accent); margin-bottom: 16px; border-left: 3px solid var(--accent);">
+              <strong>📅 Note:</strong> These metrics measure fraud detection accuracy during the <em>Investigation Period</em> only.
+              The Financial Analysis section uses a separate <em>GMV Window</em> to measure future fraud prevented.
+              See the methodology banner at the top of this report for details.
+            </p>
+
             <h3>Aggregated Metrics</h3>
             <div style="margin: 16px 0;">
               <table style="width: 100%; border-collapse: collapse;">
