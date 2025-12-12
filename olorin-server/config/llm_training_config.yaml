@@ -41,14 +41,14 @@ llm_training:
 
   # Scoring thresholds
   scoring:
-    fraud_threshold: ${LLM_FRAUD_THRESHOLD:0.65}
+    fraud_threshold: ${LLM_FRAUD_THRESHOLD:0.55}
     high_confidence_threshold: ${LLM_HIGH_CONFIDENCE_THRESHOLD:0.8}
     low_confidence_threshold: ${LLM_LOW_CONFIDENCE_THRESHOLD:0.2}
     require_reasoning: ${LLM_REQUIRE_REASONING:true}
 
   # Prompt configuration
   prompts:
-    active_version: ${LLM_PROMPT_ACTIVE_VERSION:v10}
+    active_version: ${LLM_PROMPT_ACTIVE_VERSION:v11}
     prompts_directory: ${LLM_PROMPTS_DIRECTORY:config/prompts}
     cache_enabled: ${LLM_PROMPT_CACHE_ENABLED:true}
     cache_ttl_seconds: ${LLM_PROMPT_CACHE_TTL_SECONDS:3600}

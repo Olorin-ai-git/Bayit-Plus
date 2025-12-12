@@ -145,38 +145,81 @@ class ComparisonDataLoader:
             start_time = now - timedelta(hours=lookback_hours)
             end_time = now
             
+            
+            # Configuration for risk analysis
+            top_percentage = float(os.getenv("ANALYTICS_DEFAULT_TOP_PERCENTAGE", "30"))
+            top_decimal = top_percentage / 100.0
+            
+            # Column names
+            model_score_col = os.getenv("ANALYTICS_MODEL_SCORE_COL", "MODEL_SCORE")
+            amount_col = os.getenv("ANALYTICS_AMOUNT_COL", "PAID_AMOUNT_VALUE_IN_CURRENCY")
+            fraud_col = "IS_FRAUD_TX" if is_snowflake else "is_fraud_tx"
+            decision_col = "NSURE_LAST_DECISION" if is_snowflake else "nsure_last_decision"
+            
             if is_snowflake:
                 query = f"""
+                WITH raw_data AS (
+                    SELECT 
+                        EMAIL,
+                        MERCHANT_NAME,
+                        COUNT(*) as total_count,
+                        SUM({model_score_col} * {amount_col}) * COUNT(*) as risk_weighted_value,
+                        COUNT(CASE WHEN {fraud_col} = 1 THEN 1 END) as fraud_count
+                    FROM {db_provider.get_full_table_name()}
+                    WHERE TX_DATETIME >= '{start_time.isoformat()}'
+                      AND TX_DATETIME <= '{end_time.isoformat()}'
+                      AND EMAIL IS NOT NULL
+                      AND MERCHANT_NAME IS NOT NULL
+                      AND UPPER({decision_col}) = 'APPROVED'
+                    GROUP BY EMAIL, MERCHANT_NAME
+                ),
+                ranked_data AS (
+                    SELECT 
+                        *,
+                        PERCENT_RANK() OVER (ORDER BY risk_weighted_value DESC) as pct_rank
+                    FROM raw_data
+                )
                 SELECT 
                     EMAIL,
                     MERCHANT_NAME,
-                    COUNT(CASE WHEN IS_FRAUD_TX = 1 THEN 1 END) as FRAUD_TX_COUNT,
-                    COUNT(*) as TOTAL_TX_COUNT
-                FROM {db_provider.get_full_table_name()}
-                WHERE TX_DATETIME >= '{start_time.isoformat()}'
-                  AND TX_DATETIME <= '{end_time.isoformat()}'
-                  AND EMAIL IS NOT NULL
-                  AND MERCHANT_NAME IS NOT NULL
-                GROUP BY EMAIL, MERCHANT_NAME
-                HAVING COUNT(CASE WHEN IS_FRAUD_TX = 1 THEN 1 END) >= {min_fraud_tx}
-                ORDER BY FRAUD_TX_COUNT DESC
+                    fraud_count as FRAUD_TX_COUNT,
+                    total_count as TOTAL_TX_COUNT
+                FROM ranked_data
+                WHERE pct_rank <= {top_decimal}
+                ORDER BY risk_weighted_value DESC
                 LIMIT {limit}
                 """
             else:
                 query = f"""
+                WITH raw_data AS (
+                    SELECT 
+                        email,
+                        merchant_name,
+                        COUNT(*) as total_count,
+                        SUM({model_score_col} * {amount_col}) * COUNT(*) as risk_weighted_value,
+                        COUNT(CASE WHEN {fraud_col} = 1 THEN 1 END) as fraud_count
+                    FROM {db_provider.get_full_table_name()}
+                    WHERE tx_datetime >= '{start_time.isoformat()}'
+                      AND tx_datetime <= '{end_time.isoformat()}'
+                      AND email IS NOT NULL
+                      AND merchant_name IS NOT NULL
+                      AND UPPER({decision_col}) = 'APPROVED'
+                    GROUP BY email, merchant_name
+                ),
+                ranked_data AS (
+                    SELECT 
+                        *,
+                        PERCENT_RANK() OVER (ORDER BY risk_weighted_value DESC) as pct_rank
+                    FROM raw_data
+                )
                 SELECT 
                     email,
                     merchant_name,
-                    COUNT(CASE WHEN is_fraud_tx = 1 THEN 1 END) as fraud_tx_count,
-                    COUNT(*) as total_tx_count
-                FROM {db_provider.get_full_table_name()}
-                WHERE tx_datetime >= '{start_time.isoformat()}'
-                  AND tx_datetime <= '{end_time.isoformat()}'
-                  AND email IS NOT NULL
-                  AND merchant_name IS NOT NULL
-                GROUP BY email, merchant_name
-                HAVING COUNT(CASE WHEN is_fraud_tx = 1 THEN 1 END) >= {min_fraud_tx}
-                ORDER BY fraud_tx_count DESC
+                    fraud_count as fraud_tx_count,
+                    total_count as total_tx_count
+                FROM ranked_data
+                WHERE pct_rank <= {top_decimal}
+                ORDER BY risk_weighted_value DESC
                 LIMIT {limit}
                 """
                 

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LLM Fraud Detection Strategy - v10 Statistical Anomaly Detection</title>
+    <title>LLM Fraud Detection Strategy - v11 Balanced Scoring</title>
     <style>
         :root {
             --primary: #2563eb;
@@ -157,8 +157,8 @@
     <div class="container">
         <header>
             <h1>LLM Fraud Detection Strategy</h1>
-            <p>v10 - Statistical Anomaly Detection with Derived Features</p>
-            <span class="badge new">NEW: v10</span>
+            <p>v11 - Balanced Scoring with Neutral Baseline</p>
+            <span class="badge new">NEW: v11</span>
             <span class="badge">Feature: 026-llm-training-pipeline</span>
             <span class="badge">December 2025</span>
         </header>
@@ -227,29 +227,38 @@
                             <td>1.58%</td>
                             <td>1492 FP - too aggressive</td>
                         </tr>
-                        <tr style="background: #dbeafe; font-weight: bold;">
+                        <tr>
                             <td>v10</td>
                             <td>0.65</td>
+                            <td style="color: var(--danger);">0%</td>
+                            <td>-</td>
+                            <td>0%</td>
+                            <td>Baseline too low, all scores below threshold</td>
+                        </tr>
+                        <tr style="background: #dbeafe; font-weight: bold;">
+                            <td>v11</td>
+                            <td>0.55</td>
                             <td>Target: 50%+</td>
                             <td>Target: 10%+</td>
                             <td>Target: 15%+</td>
-                            <td>Statistical anomaly approach</td>
+                            <td>Neutral baseline (0.50), balanced adjustments</td>
                         </tr>
                     </tbody>
                 </table>
             </div>
         </div>
 
-        <!-- SECTION 1: v10 STRATEGY -->
+        <!-- SECTION 1: v11 STRATEGY -->
         <div class="section">
-            <h2>1. v10 Strategy: Statistical Anomaly Detection</h2>
+            <h2>1. v11 Strategy: Balanced Scoring with Neutral Baseline</h2>
 
             <div class="alert-box info">
-                <h4>The v10 Approach</h4>
+                <h4>The v11 Approach</h4>
                 <p>
-                    Instead of using raw counts, v10 uses <strong>derived features (ratios)</strong> that better
-                    distinguish fraud from legitimate behavior. Only <strong>statistical outliers</strong> (top 1-2%)
-                    are flagged, and <strong>multiple anomalies must be present</strong> to predict fraud.
+                    v10 failed because its baseline (0.30) combined with heavy legitimate deductions pushed all scores
+                    below 0.30. v11 fixes this with a <strong>neutral baseline of 0.50</strong>, allowing scores to go
+                    both up (fraud) and down (legitimate) from the middle. The threshold is set at <strong>0.55</strong>
+                    so that any entity with even ONE clear fraud signal gets flagged.
                 </p>
             </div>
 
@@ -277,47 +286,35 @@
                 </div>
             </div>
 
-            <h3>Scoring Algorithm (v10)</h3>
+            <h3>Scoring Algorithm (v11)</h3>
             <div class="code-block">
-# Calculate derived features
-device_per_tx = device_count / total_transactions
-ip_per_tx = ip_count / total_transactions
-cv_tx_value = std_tx_value / avg_tx_value  # coefficient of variation
+# Start at NEUTRAL baseline (middle of range)
+risk_score = 0.50
 
-# Start with baseline (below threshold)
-risk_score = 0.30
-anomaly_count = 0
+# Add risk for FRAUD signals
+if device_count >= 5 and ip_count >= 8:
+    risk_score += 0.25      # Fraud ring pattern
+if std_tx_value > avg_tx_value * 2:
+    risk_score += 0.20      # Testing card limits
+if device_count >= 4 and total_transactions < 10:
+    risk_score += 0.15      # Suspicious new account
+if ip_count >= 6 and total_transactions < 10:
+    risk_score += 0.15      # IP hopping
+if avg_tx_value > 500 and std_tx_value > avg_tx_value:
+    risk_score += 0.10      # High-value fraud attempt
 
-# Count ANOMALIES (only extreme outliers)
-if device_per_tx > 0.80:    # new device almost every tx
-    anomaly_count += 1
-if ip_per_tx > 1.00:        # multiple IPs per tx
-    anomaly_count += 1
-if cv_tx_value > 2.00:      # extreme value variance
-    anomaly_count += 1
-if device_count >= 6:       # absolute device threshold
-    anomaly_count += 1
-if ip_count >= 12:          # absolute IP threshold
-    anomaly_count += 1
-
-# Apply risk based on MULTIPLE anomalies
-if anomaly_count == 1:
-    risk_score += 0.10      # Single anomaly = not enough
-elif anomaly_count == 2:
-    risk_score += 0.25      # Two anomalies = concerning
-elif anomaly_count >= 3:
-    risk_score += 0.40      # Three+ = very suspicious
-
-# Apply LEGITIMATE signals (reduce risk)
-if device_per_tx < 0.30 and ip_per_tx < 0.50:
-    risk_score -= 0.15      # Consistent user pattern
-if cv_tx_value < 0.50:
-    risk_score -= 0.10      # Stable spending
+# Subtract risk for LEGITIMATE signals (smaller deductions)
+if device_count == 1 and ip_count <= 2:
+    risk_score -= 0.10      # Stable user
 if total_transactions > 20 and device_count <= 2:
     risk_score -= 0.10      # Loyal customer
+if std_tx_value < avg_tx_value * 0.3:
+    risk_score -= 0.05      # Very consistent spending
+if merchant_count == 1:
+    risk_score -= 0.05      # Single merchant focus
 
-# Final decision (HIGH threshold to reduce FP)
-if risk_score >= 0.65:
+# Final decision (threshold at 0.55)
+if risk_score >= 0.55:
     prediction = "FRAUD"
 else:
     prediction = "LEGITIMATE"</div>
@@ -464,17 +461,17 @@ else:
 
         <!-- SECTION 4: PRODUCTION CONFIGURATION -->
         <div class="section">
-            <h2>4. Production Configuration (v10)</h2>
+            <h2>4. Production Configuration (v11)</h2>
 
             <div class="code-block">
-# Environment Variables for v10 Production
+# Environment Variables for v11 Production
 
-# Enable LLM reasoning with v10 prompt
+# Enable LLM reasoning with v11 prompt
 LLM_REASONING_ENABLED=true
-LLM_PROMPT_ACTIVE_VERSION=v10
+LLM_PROMPT_ACTIVE_VERSION=v11
 
-# HIGHER threshold to reduce false positives
-LLM_FRAUD_THRESHOLD=0.65
+# Balanced threshold (neutral baseline + 0.05)
+LLM_FRAUD_THRESHOLD=0.55
 
 # Temporal Holdout Settings (unchanged)
 LLM_TEMPORAL_HOLDOUT_ENABLED=true
@@ -501,11 +498,11 @@ LLM_TRAINING_MAX_CONCURRENT=5</div>
                 <tbody>
                     <tr>
                         <td><code>config/llm_training_config.yaml</code></td>
-                        <td>Main configuration - threshold now 0.65, active version v10</td>
+                        <td>Main configuration - threshold 0.55, active version v11</td>
                     </tr>
                     <tr>
-                        <td><code>config/prompts/fraud_detection_v10.yaml</code></td>
-                        <td>Statistical anomaly prompt with derived features</td>
+                        <td><code>config/prompts/fraud_detection_v11.yaml</code></td>
+                        <td>Balanced scoring with neutral baseline (0.50)</td>
                     </tr>
                     <tr>
                         <td><code>app/service/training/llm_reasoning_engine.py</code></td>
@@ -518,12 +515,12 @@ LLM_TRAINING_MAX_CONCURRENT=5</div>
                 </tbody>
             </table>
 
-            <h3>Run Training with v10</h3>
+            <h3>Run Training with v11</h3>
             <div class="code-block">
-# Run training with v10 prompt and higher threshold
+# Run training with v11 prompt and balanced threshold
 LLM_REASONING_ENABLED=true \
-LLM_PROMPT_ACTIVE_VERSION=v10 \
-LLM_FRAUD_THRESHOLD=0.65 \
+LLM_PROMPT_ACTIVE_VERSION=v11 \
+LLM_FRAUD_THRESHOLD=0.55 \
 poetry run python scripts/run_llm_training.py</div>
         </div>
 

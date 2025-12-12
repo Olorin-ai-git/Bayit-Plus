@@ -64,7 +64,7 @@ class RiskAnalyzer:
 
         self.default_group_by = os.getenv("ANALYTICS_DEFAULT_GROUP_BY", "email")
         self.default_top_percentage = float(
-            os.getenv("ANALYTICS_DEFAULT_TOP_PERCENTAGE", "10")
+            os.getenv("ANALYTICS_DEFAULT_TOP_PERCENTAGE", "30")
         )
         self.cache_ttl = int(os.getenv("ANALYTICS_CACHE_TTL", "300"))
         # Maximum lookback in months (default: 12 months) - ANALYZER_END_OFFSET_MONTHS
@@ -906,7 +906,7 @@ class RiskAnalyzer:
             # Start date: end_date - window_duration
             date_filter = f"{datetime_col} >= CURRENT_TIMESTAMP() - INTERVAL '{max_lookback_days + window_duration_days} days' - INTERVAL '{window_duration_hours} hours' AND {datetime_col} < CURRENT_TIMESTAMP() - INTERVAL '{max_lookback_days} days'"
 
-        query = f"""
+        base_query = f"""
         SELECT
             {column_name} as entity,
             COUNT(*) as transaction_count,
@@ -923,9 +923,25 @@ class RiskAnalyzer:
         WHERE {date_filter}
             AND {column_name} IS NOT NULL
             AND {approved_filter_expr}
-            AND {fraud_col} = 1{ip_filter}
+            {ip_filter}
         GROUP BY {column_name}
-        ORDER BY fraud_count DESC, transaction_count DESC
+        """
+
+        # Wrap to filter by top percentage using window function
+        query = f"""
+        WITH raw_data AS (
+            {base_query}
+        ),
+        ranked_data AS (
+            SELECT 
+                *,
+                PERCENT_RANK() OVER (ORDER BY risk_weighted_value DESC) as pct_rank
+            FROM raw_data
+        )
+        SELECT *
+        FROM ranked_data
+        WHERE pct_rank <= {top_decimal}
+        ORDER BY risk_weighted_value DESC
         """
 
         return query

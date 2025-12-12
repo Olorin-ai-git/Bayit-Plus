@@ -45,12 +45,12 @@ SELECT
     -- Cohort dimensions (mapped from transactions_enriched columns)
     store_id,
     COALESCE(device_type, 'unknown') AS device_type,
-    COALESCE(ip_country_code, 'unknown') AS ip_country_code,
+    COALESCE(ip_country, 'unknown') AS ip_country_code,
     
     -- Basic metrics
     COUNT(*) AS tx_count,
-    COUNT(DISTINCT unique_user_id) AS unique_users,
-    COUNT(DISTINCT last_four) AS unique_cards,
+    COUNT(DISTINCT user_id) AS unique_users,
+    COUNT(DISTINCT card_last_4) AS unique_cards,
     COUNT(DISTINCT device_id) AS unique_devices,
     
     -- Amount metrics
@@ -59,14 +59,14 @@ SELECT
     STDDEV(paid_amount_value_in_currency) AS amount_std,
     
     -- Rate metrics (using available columns)
-    AVG(CASE WHEN is_failed_tx = 1 THEN 1.0 ELSE 0.0 END) AS decline_rate,
-    AVG(CASE WHEN tx_refund_datetime IS NOT NULL THEN 1.0 ELSE 0.0 END) AS refund_rate,
-    AVG(CASE WHEN is_anonymous = 1 THEN 1.0 ELSE 0.0 END) AS cnp_share,
+    AVG(CASE WHEN 0 = 1 THEN 1.0 ELSE 0.0 END) AS decline_rate,
+    AVG(CASE WHEN 0 = 1 THEN 1.0 ELSE 0.0 END) AS refund_rate,
+    AVG(CASE WHEN 0 = 1 THEN 1.0 ELSE 0.0 END) AS cnp_share,
     
     -- Derived metrics
     CASE 
-        WHEN COUNT(DISTINCT unique_user_id) > 0 
-        THEN COUNT(*)::FLOAT / COUNT(DISTINCT unique_user_id) 
+        WHEN COUNT(DISTINCT user_id) > 0 
+        THEN COUNT(*)::FLOAT / COUNT(DISTINCT user_id) 
         ELSE 0 
     END AS tx_per_user,
     
@@ -89,7 +89,7 @@ GROUP BY
         INTERVAL '15 minutes' * FLOOR(EXTRACT(MINUTE FROM tx_datetime) / 15),
     store_id,
     device_type,
-    ip_country_code;
+    ip_country;
         $sql$;
 
         -- Add comment

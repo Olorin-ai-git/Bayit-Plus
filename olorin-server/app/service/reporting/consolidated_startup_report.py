@@ -271,10 +271,10 @@ def _generate_analyzer_section(analyzer_metadata: Optional[Dict[str, Any]]) -> s
                         </div>
                         
                         <div style="color: var(--muted); font-weight: 600;">🎯 Entities Discovered:</div>
-                        <div style="font-size: 1.2em; color: var(--accent); font-weight: bold;">{len(entities)} entities with fraudulent transactions</div>
+                        <div style="font-size: 1.2em; color: var(--accent); font-weight: bold;">{len(entities)} high-risk entities identified</div>
                         
                         <div style="color: var(--muted); font-weight: 600;">📊 Total Fraud Transactions:</div>
-                        <div style="font-size: 1.2em; color: var(--error); font-weight: bold;">{sum(e.get('fraud_count', 0) for e in entities)} fraud transactions detected</div>
+                        <div style="font-size: 1.2em; color: var(--error); font-weight: bold;">{sum(e.get('fraud_count', 0) for e in entities)} confirmed fraud transactions</div>
                     </div>
                 </div>
             </div>
@@ -298,7 +298,7 @@ def _generate_analyzer_section(analyzer_metadata: Optional[Dict[str, Any]]) -> s
             
             <div style="margin-top: 16px; padding: 12px; background: rgba(0, 0, 0, 0.2); border-radius: 8px;">
                 <div style="color: var(--muted); font-size: 0.9em;">
-                    <strong>ℹ️ Note:</strong> This analyzer window identifies entities that had fraudulent transactions in the specified 24-hour period. 
+                    <strong>ℹ️ Note:</strong> This analyzer window identifies the top 30% riskiest entities based on risk-weighted transaction volume (Risk Score × Amount × Velocity).
                     Each entity is then investigated using a broader time window (6-12 months historical data) to build comprehensive risk profiles and confusion matrices.
                 </div>
             </div>

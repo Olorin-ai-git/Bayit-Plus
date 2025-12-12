@@ -55,8 +55,10 @@ class TrainingPipeline:
         ]
 
         for batch_idx, batch in enumerate(batches):
+            print(f"Processing batch {batch_idx + 1}/{len(batches)} ({len(batch)} samples)...")
             logger.debug(f"Processing batch {batch_idx + 1}/{len(batches)}")
             batch_results = await self._process_batch(batch)
+            print(f"  Batch {batch_idx + 1} complete: {len(batch_results)} results")
 
             for result in batch_results:
                 metrics.prediction_results.append(result)

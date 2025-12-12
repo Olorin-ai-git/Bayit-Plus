@@ -133,11 +133,32 @@ class RevenueCalculator:
                     # If no predictions found with investigation_id, try without it
                     if row is None or row.prediction_count == 0:
                         logger.info(
-                            f"[REVENUE] No predictions found for investigation_id={investigation_id}, "
-                            f"checking entity-level predictions..."
+                            f"[REVENUE] No predictions found for investigation_id={investigation_id} in 'predictions' table. "
+                            f"Checking 'transaction_scores' table as fallback..."
                         )
-                        result = db.execute(text(base_query), params)
-                        row = result.fetchone()
+                        # FALLBACK: Check transaction_scores table
+                        # This is used by the Auto-Comparison flow which persists to transaction_scores
+                        ts_query = """
+                            SELECT 
+                                COUNT(*) as prediction_count,
+                                SUM(CASE WHEN risk_score >= :threshold THEN 1 ELSE 0 END) as fraud_predictions,
+                                AVG(risk_score) as avg_predicted_risk,
+                                MAX(risk_score) as max_predicted_risk
+                            FROM transaction_scores
+                            WHERE investigation_id = :investigation_id
+                        """
+                        ts_params = {"investigation_id": investigation_id, "threshold": risk_threshold}
+                        ts_result = db.execute(text(ts_query), ts_params)
+                        ts_row = ts_result.fetchone()
+                        
+                        if ts_row and ts_row.prediction_count > 0:
+                            logger.info(f"[REVENUE] ✅ Found predictions in 'transaction_scores' table.")
+                            row = ts_row
+                        else:
+                            # Final fallback: Check entity-level predictions in 'predictions' table
+                            logger.info(f"[REVENUE] No scores in 'transaction_scores', checking entity-level predictions...")
+                            result = db.execute(text(base_query), params)
+                            row = result.fetchone()
                 else:
                     result = db.execute(text(base_query), params)
                     row = result.fetchone()

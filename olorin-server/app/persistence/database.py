@@ -254,6 +254,7 @@ def ensure_required_tables_exist():
         from app.models.composio_connection import ComposioConnection
         from app.models.investigation_state import InvestigationState
         from app.models.soar_playbook_execution import SOARPlaybookExecution
+        from app.models.transaction_score import TransactionScore
 
         # Note: InvestigationTemplate and InvestigationAuditLog use separate Base classes
         # They are handled separately if needed, but the main tables use app.persistence.database.Base
