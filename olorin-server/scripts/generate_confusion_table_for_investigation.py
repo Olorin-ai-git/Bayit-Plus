@@ -777,14 +777,16 @@ async def generate_confusion_table(
                 # Build entity clause
                 if is_snowflake:
                     entity_col = "EMAIL" if entity_type == "email" else entity_type.upper()
-                    gmv_col = "PAID_AMOUNT_VALUE_IN_CURRENCY"
+                    # CRITICAL: Use GMV for USD-normalized amounts, not PAID_AMOUNT_VALUE_IN_CURRENCY (local currency)
+                    gmv_col = "GMV"
                     decision_col = "NSURE_LAST_DECISION"
                     fraud_col = "IS_FRAUD_TX"
                     datetime_col = "TX_DATETIME"
                     tx_id_col = "TX_ID_KEY"
                 else:
                     entity_col = "email" if entity_type == "email" else entity_type.lower()
-                    gmv_col = "paid_amount_value_in_currency"
+                    # CRITICAL: Use GMV for USD-normalized amounts, not paid_amount_value_in_currency (local currency)
+                    gmv_col = "gmv"
                     decision_col = "nSure_last_decision"
                     fraud_col = "is_fraud_tx"
                     datetime_col = "tx_datetime"

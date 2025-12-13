@@ -39,11 +39,12 @@ async def extract_entity_transactions(
     email = entity_value.lower()
 
     # Define columns to extract
+    # CRITICAL: Use GMV for USD-normalized amounts, not PAID_AMOUNT_VALUE_IN_CURRENCY (local currency)
     columns = """
         TX_ID_KEY,
         TX_DATETIME,
         EMAIL,
-        PAID_AMOUNT_VALUE_IN_CURRENCY,
+        GMV,
         PAID_AMOUNT_CURRENCY,
         NSURE_LAST_DECISION,
         IS_FRAUD_TX,

@@ -252,8 +252,9 @@ class RevenueCalculator:
         db = self._get_db_provider()
         table_name = db.get_full_table_name()
 
-        # Column names
-        gmv_col = "PAID_AMOUNT_VALUE_IN_CURRENCY" if is_sf else "paid_amount_value_in_currency"
+        # Column names - Use GMV column for USD-normalized amounts
+        # CRITICAL: GMV is USD-normalized, PAID_AMOUNT_VALUE_IN_CURRENCY may be in local currency
+        gmv_col = "GMV" if is_sf else "gmv"
         decision_col = "NSURE_LAST_DECISION" if is_sf else "nSure_last_decision"
         fraud_col = "IS_FRAUD_TX" if is_sf else "is_fraud_tx"
         datetime_col = "TX_DATETIME" if is_sf else "tx_datetime"
@@ -531,8 +532,9 @@ class RevenueCalculator:
             else self.config.lifetime_multiplier
         )
 
-        # Column names
-        gmv_col = "PAID_AMOUNT_VALUE_IN_CURRENCY" if is_sf else "paid_amount_value_in_currency"
+        # Column names - Use GMV column for USD-normalized amounts
+        # CRITICAL: GMV is USD-normalized, PAID_AMOUNT_VALUE_IN_CURRENCY may be in local currency
+        gmv_col = "GMV" if is_sf else "gmv"
         decision_col = "NSURE_LAST_DECISION" if is_sf else "nSure_last_decision"
         fraud_col = "IS_FRAUD_TX" if is_sf else "is_fraud_tx"
         datetime_col = "TX_DATETIME" if is_sf else "tx_datetime"

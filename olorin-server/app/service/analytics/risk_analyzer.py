@@ -12,11 +12,11 @@ from app.service.agent.tools.database_tool import get_database_provider
 from app.service.agent.tools.snowflake_tool.schema_constants import (
     DEVICE_ID,
     EMAIL,
+    GMV,
     IP,
     IP_COUNTRY_CODE,
     IS_FRAUD_TX,
     MODEL_SCORE,
-    PAID_AMOUNT_VALUE_IN_CURRENCY,
     TX_DATETIME,
     get_required_env_var,
     is_valid_column,
@@ -906,13 +906,14 @@ class RiskAnalyzer:
             # Start date: end_date - window_duration
             date_filter = f"{datetime_col} >= CURRENT_TIMESTAMP() - INTERVAL '{max_lookback_days + window_duration_days} days' - INTERVAL '{window_duration_hours} hours' AND {datetime_col} < CURRENT_TIMESTAMP() - INTERVAL '{max_lookback_days} days'"
 
+        # CRITICAL: Use GMV for USD-normalized amounts, not PAID_AMOUNT_VALUE_IN_CURRENCY (local currency)
         base_query = f"""
         SELECT
             {column_name} as entity,
             COUNT(*) as transaction_count,
-            SUM({PAID_AMOUNT_VALUE_IN_CURRENCY}) as total_amount,
+            SUM({GMV}) as total_amount,
             AVG({MODEL_SCORE}) as avg_risk_score,
-            SUM({MODEL_SCORE} * {PAID_AMOUNT_VALUE_IN_CURRENCY}) * COUNT(*) as risk_weighted_value,
+            SUM({MODEL_SCORE} * {GMV}) * COUNT(*) as risk_weighted_value,
             MAX(MODEL_SCORE) as max_risk_score,
             MIN(MODEL_SCORE) as min_risk_score,
             SUM(CASE WHEN {fraud_col} = 1 THEN 1 ELSE 0 END) as fraud_count,
@@ -1127,10 +1128,11 @@ class RiskAnalyzer:
             # Build query with schema-validated column name and properly escaped values
             # Filter out NULL MODEL_SCORE to ensure accurate risk calculations
             # Only include APPROVED transactions
+            # CRITICAL: Use GMV for USD-normalized amounts, not PAID_AMOUNT_VALUE_IN_CURRENCY (local currency)
             query = f"""
             SELECT
                 COUNT(*) as transaction_count,
-                SUM({PAID_AMOUNT_VALUE_IN_CURRENCY}) as total_amount,
+                SUM({GMV}) as total_amount,
                 AVG({MODEL_SCORE}) as avg_risk_score,
                 MAX({MODEL_SCORE}) as max_risk_score,
                 MIN({MODEL_SCORE}) as min_risk_score,

@@ -111,7 +111,8 @@ class EnhancedRiskScorer:
         features = []
         for tx in transactions:
             # Extract numerical features for anomaly detection
-            amount = float(tx.get("PAID_AMOUNT_VALUE_IN_CURRENCY") or tx.get("amount") or 0)
+            # CRITICAL: Use GMV for USD-normalized amounts, not PAID_AMOUNT_VALUE_IN_CURRENCY (local currency)
+            amount = float(tx.get("GMV") or tx.get("gmv") or tx.get("amount") or 0)
             
             # Time features
             tx_time = tx.get("TX_DATETIME") or tx.get("tx_datetime")
@@ -182,7 +183,8 @@ class EnhancedRiskScorer:
         if len(transactions) < 50: # Need sufficient sample size
             return 0.0
             
-        amounts = [float(tx.get("PAID_AMOUNT_VALUE_IN_CURRENCY") or tx.get("amount") or 0) for tx in transactions]
+        # CRITICAL: Use GMV for USD-normalized amounts, not PAID_AMOUNT_VALUE_IN_CURRENCY (local currency)
+        amounts = [float(tx.get("GMV") or tx.get("gmv") or tx.get("amount") or 0) for tx in transactions]
         # Skip if too few unique amounts (likely fixed pricing model, e.g. subscriptions)
         unique_amounts = len(set(amounts))
         if unique_amounts < 10:

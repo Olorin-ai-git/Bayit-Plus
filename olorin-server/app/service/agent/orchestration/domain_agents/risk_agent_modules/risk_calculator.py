@@ -37,7 +37,8 @@ class RiskCalculator:
         if isinstance(facts, dict) and "results" in facts:
             for result in facts["results"]:
                 if isinstance(result, dict):
-                    amount = result.get("PAID_AMOUNT_VALUE_IN_CURRENCY", 0.0) or 0.0
+                    # CRITICAL: Use GMV for USD-normalized amounts, not PAID_AMOUNT_VALUE_IN_CURRENCY (local currency)
+                    amount = result.get("GMV", 0.0) or result.get("gmv", 0.0) or 0.0
                     model_score = result.get("MODEL_SCORE")
                     is_blocked = result.get("NSURE_LAST_DECISION") == "BLOCK"
 

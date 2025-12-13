@@ -374,9 +374,10 @@ def detect_merchant_local_anomaly(
             else:
                 tx_datetime = tx_datetime_str
 
+            # CRITICAL: Use GMV for USD-normalized amounts, not PAID_AMOUNT_VALUE_IN_CURRENCY (local currency)
             amount = float(
-                tx.get("PAID_AMOUNT_VALUE_IN_CURRENCY")
-                or tx.get("paid_amount_value_in_currency")
+                tx.get("GMV")
+                or tx.get("gmv")
                 or 0
             )
             card_bin = tx.get("CARD_BIN") or tx.get("card_bin") or ""

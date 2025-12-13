@@ -340,11 +340,12 @@ class FraudDetectionFeatures:
         if not transactions:
             return features
 
+        # CRITICAL: Use GMV for USD-normalized amounts, not PAID_AMOUNT_VALUE_IN_CURRENCY (local currency)
         amounts = [
             float(
                 tx.get(
                     "AMOUNT",
-                    tx.get("amount", tx.get("PAID_AMOUNT_VALUE_IN_CURRENCY", 0)),
+                    tx.get("amount", tx.get("GMV", tx.get("gmv", 0))),
                 )
             )
             for tx in transactions
@@ -868,10 +869,11 @@ class FraudDetectionFeatures:
         import statistics
         
         # Extract transaction amount
-        tx_amount = transaction.get("PAID_AMOUNT_VALUE_IN_CURRENCY") or transaction.get("paid_amount_value_in_currency") or 0
+        # CRITICAL: Use GMV for USD-normalized amounts, not PAID_AMOUNT_VALUE_IN_CURRENCY (local currency)
+        tx_amount = transaction.get("GMV") or transaction.get("gmv") or 0
         tx_id = transaction.get("TX_ID_KEY") or transaction.get("tx_id_key") or "unknown"
         merchant = transaction.get("MERCHANT_NAME") or transaction.get("merchant_name") or "unknown"
-        
+
         if tx_amount == 0:
             # Check other risk signals even if amount is 0
             base_score = 0.0
@@ -879,7 +881,7 @@ class FraudDetectionFeatures:
             # Get all amounts for baseline
             amounts = []
             for tx in all_merchant_transactions:
-                amt = tx.get("PAID_AMOUNT_VALUE_IN_CURRENCY") or tx.get("paid_amount_value_in_currency")
+                amt = tx.get("GMV") or tx.get("gmv")
                 if amt and amt > 0:
                     amounts.append(float(amt))
             

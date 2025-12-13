@@ -113,17 +113,18 @@ class TrainingDataExtractor:
         logger.info(f"Temporal holdout: features {feature_start} to {feature_end}")
         logger.info(f"Temporal holdout: labels {observation_start} to {observation_end}")
 
+        # CRITICAL: Use GMV for USD-normalized amounts, not PAID_AMOUNT_VALUE_IN_CURRENCY (local currency)
         query = f"""
         WITH feature_period AS (
             SELECT
                 EMAIL,
                 COUNT(*) as tx_count,
-                SUM(PAID_AMOUNT_VALUE_IN_CURRENCY) as total_gmv,
+                SUM(GMV) as total_gmv,
                 COUNT(DISTINCT IP) as ip_count,
                 COUNT(DISTINCT FIPP_VISITOR_ID) as device_count,
                 COUNT(DISTINCT MERCHANT_NAME) as merchant_count,
-                AVG(PAID_AMOUNT_VALUE_IN_CURRENCY) as avg_tx_value,
-                STDDEV(PAID_AMOUNT_VALUE_IN_CURRENCY) as std_tx_value,
+                AVG(GMV) as avg_tx_value,
+                STDDEV(GMV) as std_tx_value,
                 MIN(TX_DATETIME) as first_tx,
                 MAX(TX_DATETIME) as last_tx,
                 MAX(MERCHANT_NAME) as merchant
@@ -170,11 +171,12 @@ class TrainingDataExtractor:
     ) -> List[TrainingSample]:
         """Legacy query (no temporal holdout - has data leakage)."""
         logger.warning("Using legacy query without temporal holdout - potential leakage")
+        # CRITICAL: Use GMV for USD-normalized amounts, not PAID_AMOUNT_VALUE_IN_CURRENCY (local currency)
         query = f"""
         SELECT
             EMAIL,
             COUNT(*) as tx_count,
-            SUM(PAID_AMOUNT_VALUE_IN_CURRENCY) as total_gmv,
+            SUM(GMV) as total_gmv,
             MAX(IS_FRAUD_TX) as has_fraud,
             COUNT(DISTINCT IP) as ip_count,
             COUNT(DISTINCT FIPP_VISITOR_ID) as device_count,
