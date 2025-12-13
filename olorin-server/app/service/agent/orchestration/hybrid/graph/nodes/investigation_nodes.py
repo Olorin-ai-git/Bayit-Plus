@@ -349,11 +349,13 @@ class InvestigationNodes:
                     """
                     logger.info(f"📅 Filtering transactions to investigation window: {window_start.date()} to {window_end.date()}")
                 
+                # CRITICAL: Include GMV for USD-normalized amounts (PAID_AMOUNT_VALUE_IN_CURRENCY may be local currency)
                 sql_query = f"""
                     SELECT
                         TX_ID_KEY,
                         EMAIL,
                         IP,
+                        GMV,
                         PAID_AMOUNT_VALUE_IN_CURRENCY,
                         PAID_AMOUNT_CURRENCY,
                         TX_DATETIME,
@@ -381,11 +383,13 @@ class InvestigationNodes:
                     """
                     logger.info(f"📅 Filtering transactions to investigation window: {window_start.date()} to {window_end.date()}")
                 
+                # CRITICAL: Include gmv for USD-normalized amounts (paid_amount_value_in_currency may be local currency)
                 sql_query = f"""
                     SELECT
                         tx_id_key,
                         email,
                         ip,
+                        gmv,
                         paid_amount_value_in_currency,
                         paid_amount_currency,
                         tx_datetime,
