@@ -6,6 +6,7 @@ Batch training pipeline for LLM-based fraud detection.
 """
 
 import asyncio
+import sys
 from datetime import datetime
 from typing import List, Optional
 
@@ -56,9 +57,11 @@ class TrainingPipeline:
 
         for batch_idx, batch in enumerate(batches):
             print(f"Processing batch {batch_idx + 1}/{len(batches)} ({len(batch)} samples)...")
+            sys.stdout.flush()
             logger.debug(f"Processing batch {batch_idx + 1}/{len(batches)}")
             batch_results = await self._process_batch(batch)
             print(f"  Batch {batch_idx + 1} complete: {len(batch_results)} results")
+            sys.stdout.flush()
 
             for result in batch_results:
                 metrics.prediction_results.append(result)
