@@ -248,12 +248,7 @@ jobs:
           
           # Process results
           if [[ -f "mock-detection-${SCAN_MODE}.json" ]]; then
-            TOTAL_VIOLATIONS=$(python -c "
-import json
-with open('mock-detection-${SCAN_MODE}.json') as f:
-    data = json.load(f)
-    print(data['scan_metadata']['total_violations'])
-            ")
+            TOTAL_VIOLATIONS=$(python -c "import json; f=open('mock-detection-${SCAN_MODE}.json'); data=json.load(f); print(data['scan_metadata']['total_violations'])")
             
             CRITICAL_VIOLATIONS=$(python -c "
 import json
@@ -262,7 +257,7 @@ with open('mock-detection-${SCAN_MODE}.json') as f:
     print(data['summary_by_severity']['CRITICAL'])
             ")
             
-            echo "violations-found=$TOTAL_VIOLATIONS" >> $GITHUB_OUTPUT
+            echo "violations-found=$Page_Down" >> $GITHUB_OUTPUT
             echo "critical-violations=$CRITICAL_VIOLATIONS" >> $GITHUB_OUTPUT
             
             # Create scan summary
@@ -282,7 +277,7 @@ with open('mock-detection-${SCAN_MODE}.json') as f:
           
           # Set step status
           if [[ $EXIT_CODE -ne 0 ]] && [[ $TOTAL_VIOLATIONS -gt 0 ]]; then
-            echo "::error title=Mock Data Policy Violation::Critical mock data violations found - blocking deployment"
+            echo "::error title=Mock Data Policy Violation::Critical mock data violations found - blocking deploymPage_DownPage_Upent"
             exit $EXIT_CODE
           fi
       
