@@ -39,16 +39,19 @@ class ParameterGridGenerator:
 
     def __init__(self):
         """Initialize from environment."""
-        self._threshold_min = float(os.getenv("CONTINUOUS_TRAINING_THRESHOLD_MIN", "0.30"))
-        self._threshold_max = float(os.getenv("CONTINUOUS_TRAINING_THRESHOLD_MAX", "0.90"))
+        # Reduced grid for faster training (~40 configs, 3-4 hours)
+        self._threshold_min = float(os.getenv("CONTINUOUS_TRAINING_THRESHOLD_MIN", "0.60"))
+        self._threshold_max = float(os.getenv("CONTINUOUS_TRAINING_THRESHOLD_MAX", "0.95"))
         self._threshold_step = float(os.getenv("CONTINUOUS_TRAINING_THRESHOLD_STEP", "0.05"))
 
-        self._llm_weight_min = float(os.getenv("CONTINUOUS_TRAINING_LLM_WEIGHT_MIN", "0.20"))
-        self._llm_weight_max = float(os.getenv("CONTINUOUS_TRAINING_LLM_WEIGHT_MAX", "0.40"))
-        self._llm_weight_step = float(os.getenv("CONTINUOUS_TRAINING_LLM_WEIGHT_STEP", "0.05"))
+        # LLM weight range (reduced)
+        self._llm_weight_min = float(os.getenv("CONTINUOUS_TRAINING_LLM_WEIGHT_MIN", "0.25"))
+        self._llm_weight_max = float(os.getenv("CONTINUOUS_TRAINING_LLM_WEIGHT_MAX", "0.45"))
+        self._llm_weight_step = float(os.getenv("CONTINUOUS_TRAINING_LLM_WEIGHT_STEP", "0.10"))
 
-        self._prompt_versions = ["v14", "v15"]  # Focus on best performing prompts
-        self._baseline_scores = [0.20, 0.25]  # Reduced for faster iteration
+        # Focus on best performing prompt with single baseline
+        self._prompt_versions = ["v14"]  # Best from previous training
+        self._baseline_scores = [0.25]   # Best from previous training
 
     def generate(self) -> List[EvaluationConfig]:
         """Generate all parameter combinations."""

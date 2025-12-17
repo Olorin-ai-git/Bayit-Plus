@@ -159,3 +159,10 @@ def get_training_pipeline() -> TrainingPipeline:
     if _training_pipeline is None:
         _training_pipeline = TrainingPipeline()
     return _training_pipeline
+
+
+def clear_training_pipeline_cache() -> None:
+    """Clear cached training pipeline to force reload with new config."""
+    global _training_pipeline
+    _training_pipeline = None
+    logger.debug("Training pipeline cache cleared")

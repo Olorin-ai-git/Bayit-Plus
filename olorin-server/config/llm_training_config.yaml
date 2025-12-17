@@ -39,16 +39,16 @@ llm_training:
     observation_period_months: ${LLM_OBSERVATION_PERIOD_MONTHS:6}
     min_transactions_in_feature_period: ${LLM_MIN_TX_IN_FEATURE_PERIOD:2}
 
-  # Scoring thresholds
+  # Scoring thresholds (defaults updated from 2025-12-17 training)
   scoring:
-    fraud_threshold: ${LLM_FRAUD_THRESHOLD:0.55}
+    fraud_threshold: ${LLM_FRAUD_THRESHOLD:0.45}
     high_confidence_threshold: ${LLM_HIGH_CONFIDENCE_THRESHOLD:0.8}
     low_confidence_threshold: ${LLM_LOW_CONFIDENCE_THRESHOLD:0.2}
     require_reasoning: ${LLM_REQUIRE_REASONING:true}
 
   # Prompt configuration
   prompts:
-    active_version: ${LLM_PROMPT_ACTIVE_VERSION:v11}
+    active_version: ${LLM_PROMPT_ACTIVE_VERSION:v14}
     prompts_directory: ${LLM_PROMPTS_DIRECTORY:config/prompts}
     cache_enabled: ${LLM_PROMPT_CACHE_ENABLED:true}
     cache_ttl_seconds: ${LLM_PROMPT_CACHE_TTL_SECONDS:3600}
@@ -116,23 +116,23 @@ llm_training:
     cost_fp_ratio: ${LLM_COST_FP_RATIO:1}
     search_steps: ${LLM_THRESHOLD_STEPS:100}
 
-  # Hybrid Scoring (Enhancement 5)
+  # Hybrid Scoring (Enhancement 5) - weights from 2025-12-17 training
   hybrid:
     mode: ${LLM_SCORING_MODE:hybrid}
-    classical_weight: ${LLM_CLASSICAL_WEIGHT:0.7}
-    llm_weight: ${LLM_LLM_WEIGHT:0.3}
+    classical_weight: ${LLM_CLASSICAL_WEIGHT:0.75}
+    llm_weight: ${LLM_LLM_WEIGHT:0.25}
     fallback_to_llm: ${LLM_FALLBACK_TO_LLM:true}
   explanation:
     enabled: ${LLM_EXPLANATION_ENABLED:true}
     max_length: ${LLM_EXPLANATION_MAX_LENGTH:500}
     include_contributions: ${LLM_INCLUDE_CONTRIBUTIONS:true}
 
-  # Risk Bands (Enhancement 6)
+  # Risk Bands (Enhancement 6) - aligned with 0.45 fraud threshold
   risk_bands:
     enabled: ${LLM_RISK_BANDS_ENABLED:true}
-    auto_approve_max: ${LLM_BAND_APPROVE_MAX:0.30}
-    log_only_max: ${LLM_BAND_LOG_MAX:0.55}
-    review_max: ${LLM_BAND_REVIEW_MAX:0.75}
+    auto_approve_max: ${LLM_BAND_APPROVE_MAX:0.35}
+    log_only_max: ${LLM_BAND_LOG_MAX:0.45}
+    review_max: ${LLM_BAND_REVIEW_MAX:0.65}
   segmentation:
     enabled: ${LLM_SEGMENTATION_ENABLED:true}
     config_path: ${LLM_SEGMENT_CONFIG:config/segment_thresholds.json}

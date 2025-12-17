@@ -30,25 +30,21 @@ continuous_training:
     # Minimum iterations before convergence check
     min_iterations: ${CONTINUOUS_TRAINING_MIN_ITERATIONS:100}
 
-  # Parameter grid for optimization
+  # Parameter grid for optimization (ranges updated from 2025-12-17 training)
   parameter_grid:
-    # Fraud decision thresholds to test
+    # Fraud decision thresholds to test (optimal range 0.40-0.55)
     thresholds:
-      min: ${CONTINUOUS_TRAINING_THRESHOLD_MIN:0.30}
-      max: ${CONTINUOUS_TRAINING_THRESHOLD_MAX:0.90}
+      min: ${CONTINUOUS_TRAINING_THRESHOLD_MIN:0.35}
+      max: ${CONTINUOUS_TRAINING_THRESHOLD_MAX:0.60}
       step: ${CONTINUOUS_TRAINING_THRESHOLD_STEP:0.05}
-    # Prompt versions to test
+    # Prompt versions to test (v14 is current best)
     prompt_versions:
-      - v10
-      - v11
-      - v12
-      - v13
       - v14
       - v15
-    # LLM weight in hybrid scoring
+    # LLM weight in hybrid scoring (0.25 is optimal)
     llm_weights:
       min: ${CONTINUOUS_TRAINING_LLM_WEIGHT_MIN:0.20}
-      max: ${CONTINUOUS_TRAINING_LLM_WEIGHT_MAX:0.40}
+      max: ${CONTINUOUS_TRAINING_LLM_WEIGHT_MAX:0.35}
       step: ${CONTINUOUS_TRAINING_LLM_WEIGHT_STEP:0.05}
     # Baseline risk scores
     baseline_scores:

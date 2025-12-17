@@ -12,7 +12,10 @@ from typing import Any, Dict, List, Optional
 
 from app.service.logging import get_bridge_logger
 from app.service.training.convergence_detector import OptimizationResult
+from app.service.training.llm_reasoning_engine import clear_reasoning_engine_cache
+from app.service.training.training_config_loader import clear_training_config_cache
 from app.service.training.training_models import TrainingMetrics, TrainingSample
+from app.service.training.training_pipeline import clear_training_pipeline_cache
 
 logger = get_bridge_logger(__name__)
 
@@ -65,11 +68,16 @@ class EvaluationWrapper:
         original_prompt = os.getenv("LLM_PROMPT_ACTIVE_VERSION")
 
         try:
+            # Set new environment variables BEFORE clearing caches
             os.environ["LLM_FRAUD_THRESHOLD"] = str(config.threshold)
             os.environ["LLM_PROMPT_ACTIVE_VERSION"] = config.prompt_version
 
+            # Clear ALL caches to force reload with new config values
+            clear_training_config_cache()
+            clear_reasoning_engine_cache()
+            clear_training_pipeline_cache()
+
             from app.service.training.prompt_registry import get_prompt_registry
-            from app.service.training.training_config_loader import get_training_config
             from app.service.training.training_pipeline import TrainingPipeline
 
             registry = get_prompt_registry()

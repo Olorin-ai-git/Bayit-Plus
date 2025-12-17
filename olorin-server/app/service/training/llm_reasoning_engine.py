@@ -256,9 +256,9 @@ class LLMReasoningEngine:
         )
 
     def _create_disabled_response(self) -> FraudAssessment:
-        """Create response when LLM reasoning is disabled."""
+        """Create response when LLM reasoning is disabled with neutral score."""
         return FraudAssessment(
-            risk_score=0.0,
+            risk_score=0.5,
             confidence=0.0,
             prediction="UNKNOWN",
             reasoning="LLM reasoning is disabled",
@@ -266,11 +266,11 @@ class LLMReasoningEngine:
         )
 
     def _create_error_response(self, error: str) -> FraudAssessment:
-        """Create error response."""
+        """Create error response with neutral score to avoid biasing results."""
         return FraudAssessment(
-            risk_score=0.0,
+            risk_score=0.5,
             confidence=0.0,
-            prediction="ERROR",
+            prediction="UNKNOWN",
             reasoning=f"Error during analysis: {error}",
             error=error,
         )
@@ -285,3 +285,10 @@ def get_reasoning_engine() -> LLMReasoningEngine:
     if _reasoning_engine is None:
         _reasoning_engine = LLMReasoningEngine()
     return _reasoning_engine
+
+
+def clear_reasoning_engine_cache() -> None:
+    """Clear cached reasoning engine to force reload with new config."""
+    global _reasoning_engine
+    _reasoning_engine = None
+    logger.debug("Reasoning engine cache cleared")

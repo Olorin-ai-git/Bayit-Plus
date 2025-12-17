@@ -216,3 +216,10 @@ def get_training_config() -> TrainingConfig:
     if _training_config is None:
         _training_config = load_training_config()
     return _training_config
+
+
+def clear_training_config_cache() -> None:
+    """Clear cached training config to force reload from environment."""
+    global _training_config
+    _training_config = None
+    logger.debug("Training config cache cleared")
