@@ -22,20 +22,28 @@ logger = get_bridge_logger(__name__)
 
 
 def compute_confusion_matrix(
-    transactions: List[Dict[str, Any]], risk_threshold: float
-) -> Tuple[int, int, int, int, int]:
+    transactions: List[Dict[str, Any]],
+    risk_threshold: float,
+    only_flagged: bool = False,
+) -> Tuple[int, int, int, int, int, int]:
     """
     Compute confusion matrix from transactions.
 
     Args:
         transactions: List of transaction dicts with predicted_risk, actual_outcome
         risk_threshold: Threshold for predicted_label
+        only_flagged: If True, only count transactions where predicted_risk >= threshold.
+            This changes the semantics: only transactions we actually flagged as risky
+            are counted in the confusion matrix. Transactions below threshold are skipped.
+            This dramatically reduces FP count since we don't count unflagged legitimate
+            transactions from risky entities.
 
     Returns:
-        Tuple of (TP, FP, TN, FN, excluded_missing_predicted_risk)
+        Tuple of (TP, FP, TN, FN, excluded_missing_predicted_risk, excluded_below_threshold)
     """
     tp = fp = tn = fn = 0
     excluded_missing_predicted_risk = 0
+    excluded_below_threshold = 0
 
     for tx in transactions:
         predicted_risk = tx.get("predicted_risk")
@@ -52,6 +60,12 @@ def compute_confusion_matrix(
         # Skip if predicted_risk is missing
         if predicted_risk is None:
             excluded_missing_predicted_risk += 1
+            continue
+
+        # NEW: Skip transactions below threshold if only_flagged=True
+        # This means we only count transactions we actually flagged as risky
+        if only_flagged and predicted_risk < risk_threshold:
+            excluded_below_threshold += 1
             continue
 
         # Skip if label is unknown (exclude from confusion matrix)
@@ -71,7 +85,13 @@ def compute_confusion_matrix(
         elif predicted_label == 0 and is_fraud == 1:
             fn += 1
 
-    return tp, fp, tn, fn, excluded_missing_predicted_risk
+    if only_flagged and excluded_below_threshold > 0:
+        logger.info(
+            f"📊 only_flagged=True: Excluded {excluded_below_threshold} transactions "
+            f"below threshold {risk_threshold} from confusion matrix"
+        )
+
+    return tp, fp, tn, fn, excluded_missing_predicted_risk, excluded_below_threshold
 
 
 def compute_derived_metrics(

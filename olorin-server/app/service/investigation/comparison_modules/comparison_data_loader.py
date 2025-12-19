@@ -265,11 +265,179 @@ class ComparisonDataLoader:
             # Log first result to debug metadata flow
             if normalized_results:
                 self.logger.info(f"   First result sample: {normalized_results[0]}")
-            
+
             return normalized_results
-            
+
         except Exception as e:
             self.logger.error(f"❌ Failed to fetch fraudulent emails: {e}")
+            return []
+
+    async def get_fraudulent_compound_entities(
+        self,
+        lookback_hours: int = 24,
+        min_fraud_tx: int = 1,
+        limit: int = 100,
+        reference_time: Optional[datetime] = None,
+    ) -> List[Dict[str, Any]]:
+        """
+        Get compound entities (EMAIL + DEVICE_ID + PAYMENT_METHOD_TOKEN) with fraud.
+
+        Compound entities have significantly lower false positive rates compared
+        to single entity investigation because they are more specific.
+
+        Args:
+            lookback_hours: Hours to look back (default 24h)
+            min_fraud_tx: Minimum fraudulent transactions required
+            limit: Maximum number of results
+            reference_time: Optional reference time to look back from
+
+        Returns:
+            List of dicts with {email, device_id, pmt_token, merchant, fraud_count, total_count}
+        """
+        try:
+            db_provider = get_database_provider()
+            db_provider.connect()
+            is_snowflake = (
+                os.getenv("DATABASE_PROVIDER", "snowflake").lower() == "snowflake"
+            )
+            is_async = hasattr(db_provider, "execute_query_async")
+
+            # Calculate window
+            if reference_time:
+                now = reference_time
+            else:
+                now = datetime.now(pytz.timezone("America/New_York"))
+
+            start_time = now - timedelta(hours=lookback_hours)
+            end_time = now
+
+            # Configuration
+            model_score_col = os.getenv("ANALYTICS_MODEL_SCORE_COL", "MODEL_SCORE")
+            amount_col = os.getenv("ANALYTICS_AMOUNT_COL", "PAID_AMOUNT_VALUE_IN_CURRENCY")
+            min_model_score = float(os.getenv("MIN_AVG_MODEL_SCORE", "0.5"))
+
+            if is_snowflake:
+                table = db_provider.get_full_table_name()
+                query = f"""
+                WITH compound_entities AS (
+                    SELECT
+                        EMAIL,
+                        DEVICE_ID,
+                        PAYMENT_METHOD_TOKEN,
+                        MERCHANT_NAME,
+                        COUNT(*) as total_count,
+                        SUM(CASE WHEN IS_FRAUD_TX = 1 THEN 1 ELSE 0 END) as fraud_count,
+                        AVG({model_score_col}) as avg_model_score,
+                        SUM({model_score_col} * {amount_col}) as risk_weighted_value
+                    FROM {table}
+                    WHERE TX_DATETIME >= '{start_time.isoformat()}'
+                      AND TX_DATETIME <= '{end_time.isoformat()}'
+                      AND EMAIL IS NOT NULL
+                      AND DEVICE_ID IS NOT NULL
+                      AND PAYMENT_METHOD_TOKEN IS NOT NULL
+                      AND MERCHANT_NAME IS NOT NULL
+                      AND UPPER(NSURE_LAST_DECISION) = 'APPROVED'
+                    GROUP BY EMAIL, DEVICE_ID, PAYMENT_METHOD_TOKEN, MERCHANT_NAME
+                    HAVING SUM(CASE WHEN IS_FRAUD_TX = 1 THEN 1 ELSE 0 END) >= {min_fraud_tx}
+                       AND AVG({model_score_col}) >= {min_model_score}
+                )
+                SELECT
+                    EMAIL,
+                    DEVICE_ID,
+                    PAYMENT_METHOD_TOKEN,
+                    MERCHANT_NAME,
+                    fraud_count,
+                    total_count,
+                    avg_model_score,
+                    risk_weighted_value
+                FROM compound_entities
+                ORDER BY fraud_count DESC, risk_weighted_value DESC
+                LIMIT {limit}
+                """
+            else:
+                table = db_provider.get_full_table_name()
+                query = f"""
+                WITH compound_entities AS (
+                    SELECT
+                        email,
+                        device_id,
+                        payment_method_token,
+                        merchant_name,
+                        COUNT(*) as total_count,
+                        SUM(CASE WHEN is_fraud_tx = 1 THEN 1 ELSE 0 END) as fraud_count,
+                        AVG({model_score_col}) as avg_model_score,
+                        SUM({model_score_col} * {amount_col}) as risk_weighted_value
+                    FROM {table}
+                    WHERE tx_datetime >= '{start_time.isoformat()}'
+                      AND tx_datetime <= '{end_time.isoformat()}'
+                      AND email IS NOT NULL
+                      AND device_id IS NOT NULL
+                      AND payment_method_token IS NOT NULL
+                      AND merchant_name IS NOT NULL
+                      AND UPPER(nsure_last_decision) = 'APPROVED'
+                    GROUP BY email, device_id, payment_method_token, merchant_name
+                    HAVING SUM(CASE WHEN is_fraud_tx = 1 THEN 1 ELSE 0 END) >= {min_fraud_tx}
+                       AND AVG({model_score_col}) >= {min_model_score}
+                )
+                SELECT
+                    email,
+                    device_id,
+                    payment_method_token,
+                    merchant_name,
+                    fraud_count,
+                    total_count,
+                    avg_model_score,
+                    risk_weighted_value
+                FROM compound_entities
+                ORDER BY fraud_count DESC, risk_weighted_value DESC
+                LIMIT {limit}
+                """
+
+            self.logger.info(f"🔍 Executing compound entity fraud query (lookback={lookback_hours}h)")
+
+            if is_async:
+                results = await db_provider.execute_query_async(query)
+            else:
+                results = db_provider.execute_query(query)
+
+            # Normalize keys
+            normalized_results = []
+            for r in results:
+                def get_val(keys):
+                    for k in keys:
+                        val = r.get(k) or r.get(k.lower()) or r.get(k.upper())
+                        if val is not None:
+                            return val
+                    return None
+
+                email = get_val(["email", "EMAIL"])
+                device_id = get_val(["device_id", "DEVICE_ID"])
+                pmt_token = get_val(["payment_method_token", "PAYMENT_METHOD_TOKEN"])
+                merchant = get_val(["merchant_name", "MERCHANT_NAME"])
+                fraud_count = get_val(["fraud_count", "FRAUD_COUNT"]) or 0
+                total_count = get_val(["total_count", "TOTAL_COUNT"]) or 0
+
+                if email and device_id and pmt_token and merchant:
+                    normalized_results.append({
+                        "email": email,
+                        "device_id": device_id,
+                        "pmt_token": pmt_token,
+                        "merchant": merchant,
+                        "fraud_count": fraud_count,
+                        "total_count": total_count,
+                    })
+
+            self.logger.info(
+                f"✅ Found {len(normalized_results)} compound entities "
+                f"(EMAIL+DEVICE+PMT) with fraud (AVG MODEL_SCORE >= {min_model_score})"
+            )
+            if normalized_results:
+                self.logger.info(f"   First compound entity: {normalized_results[0]}")
+
+            return normalized_results
+
+        except Exception as e:
+            self.logger.error(f"❌ Failed to fetch compound entities: {e}")
             return []
 
     def detect_entity_type(self, entity_value: str) -> str:

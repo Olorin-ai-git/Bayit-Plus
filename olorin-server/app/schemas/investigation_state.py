@@ -73,6 +73,7 @@ class EntityType(str, Enum):
     DEVICE_ID = "device_id"
     SESSION_ID = "session_id"
     MERCHANT = "merchant"
+    PAYMENT_METHOD_TOKEN = "payment_method_token"
 
 
 class CorrelationMode(str, Enum):

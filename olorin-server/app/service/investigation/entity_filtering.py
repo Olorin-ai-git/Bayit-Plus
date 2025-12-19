@@ -99,6 +99,7 @@ def build_entity_where_clause(
             "merchant_id": "STORE_ID",
             "merchant": "MERCHANT_NAME",
             "merchant_name": "MERCHANT_NAME",
+            "payment_method_token": "PAYMENT_METHOD_TOKEN",
         }
     else:
         columns = {
@@ -111,6 +112,7 @@ def build_entity_where_clause(
             "merchant_id": "store_id",
             "merchant": "merchant_name",
             "merchant_name": "merchant_name",
+            "payment_method_token": "payment_method_token",
         }
 
     column = columns.get(entity_type_lower)
@@ -149,6 +151,61 @@ def build_entity_where_clause(
         clause = f"{column} = $1"
         params = {entity_type_lower: normalized_value}
         return clause, params
+
+
+def build_compound_entity_where_clause(
+    entities: List[Dict[str, str]],
+    is_snowflake: bool = True,
+    logic: str = "AND",
+) -> Tuple[str, None]:
+    """
+    Build WHERE clause for multiple entities combined with AND/OR.
+
+    This enables compound entity investigations where transactions must match
+    ALL specified entities (e.g., EMAIL + DEVICE_ID + PAYMENT_METHOD_TOKEN),
+    which dramatically reduces false positive rates.
+
+    Args:
+        entities: List of dicts with 'entity_type' and 'entity_value' keys
+        is_snowflake: True for Snowflake column names (uppercase)
+        logic: "AND" or "OR" to combine entity conditions (default AND)
+
+    Returns:
+        Tuple of (WHERE clause string, None)
+
+    Example:
+        entities = [
+            {"entity_type": "email", "entity_value": "user@example.com"},
+            {"entity_type": "device_id", "entity_value": "device-123"},
+        ]
+        clause, _ = build_compound_entity_where_clause(entities)
+        # Returns: "(LOWER(EMAIL) = 'user@example.com' AND DEVICE_ID = 'device-123')"
+    """
+    if not entities:
+        return "", None
+
+    clauses = []
+    for entity in entities:
+        entity_type = entity.get("entity_type")
+        entity_value = entity.get("entity_value")
+
+        if not entity_type or not entity_value:
+            continue
+
+        try:
+            clause, _ = build_entity_where_clause(entity_type, entity_value, is_snowflake)
+            if clause:
+                clauses.append(clause)
+        except ValueError as e:
+            logger.warning(f"Skipping invalid entity in compound clause: {e}")
+            continue
+
+    if not clauses:
+        return "", None
+
+    # Combine clauses with specified logic (AND/OR)
+    combined = f" {logic} ".join(clauses)
+    return f"({combined})", None
 
 
 def build_merchant_where_clause(

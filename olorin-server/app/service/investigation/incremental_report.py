@@ -7,9 +7,10 @@ Fetches data directly from the database to ensure all confusion matrices are inc
 
 import json
 import logging
+import os
 import re
 import threading
-from datetime import datetime
+from datetime import datetime, timedelta
 from pathlib import Path
 from typing import Any, Dict, List, Optional
 
@@ -18,42 +19,75 @@ logger = logging.getLogger(__name__)
 # Global lock to prevent concurrent report generation
 _report_generation_lock = threading.Lock()
 
-INCREMENTAL_FILE = Path("artifacts/startup_analysis_INCREMENTAL.html")
+ARTIFACTS_DIR = Path("artifacts")
+
+
+def _get_incremental_file_path() -> Path:
+    """
+    Get the incremental report file path with the 24h window date in the filename.
+
+    Format: startup_analysis_DAILY_YYYY-MM-DD.html
+    Uses ANALYZER_REFERENCE_DATE env var if set, otherwise uses current date.
+    """
+    ref_date_str = os.getenv("ANALYZER_REFERENCE_DATE")
+    if ref_date_str:
+        try:
+            # Parse the reference date (format: YYYY-MM-DDTHH:MM:SS or YYYY-MM-DD)
+            if "T" in ref_date_str:
+                ref_date = datetime.fromisoformat(ref_date_str)
+            else:
+                ref_date = datetime.strptime(ref_date_str, "%Y-%m-%d")
+            date_suffix = ref_date.strftime("%Y-%m-%d")
+        except ValueError:
+            date_suffix = datetime.now().strftime("%Y-%m-%d")
+    else:
+        # Default: use current date
+        date_suffix = datetime.now().strftime("%Y-%m-%d")
+
+    return ARTIFACTS_DIR / f"startup_analysis_DAILY_{date_suffix}.html"
+
+
+# Legacy constant for backward compatibility
+INCREMENTAL_FILE = _get_incremental_file_path()
 
 
 def generate_incremental_report(triggering_investigation_id: str) -> Optional[Path]:
     """
     Generate/update the INCREMENTAL HTML report.
-    
+
     Fetches ALL completed auto-comp investigations from DB and generates report.
     This creates a SINGLE HTML file that gets overwritten each time.
+    The filename includes the 24h window date being investigated.
     """
     acquired = _report_generation_lock.acquire(blocking=False)
     if not acquired:
         logger.info(f"⏭️ Report generation in progress, skipping {triggering_investigation_id}")
         return None
-    
+
     try:
+        # Get the output file path dynamically based on current ANALYZER_REFERENCE_DATE
+        output_file = _get_incremental_file_path()
+
         logger.info(f"🔄 Generating incremental report (triggered by {triggering_investigation_id})")
-        
+
         # Fetch completed investigations from database
         investigations = _fetch_completed_auto_comp_investigations()
-        
+
         logger.info(f"   Found {len(investigations)} completed auto-comp investigations")
-        
+
         if not investigations:
             logger.info("   No completed investigations to report")
             return None
-        
+
         # Ensure directory exists
-        INCREMENTAL_FILE.parent.mkdir(parents=True, exist_ok=True)
-        
+        output_file.parent.mkdir(parents=True, exist_ok=True)
+
         # Generate HTML
         html = _generate_incremental_html(investigations)
-        INCREMENTAL_FILE.write_text(html)
-        
-        logger.info(f"✅ Incremental report updated: {INCREMENTAL_FILE}")
-        return INCREMENTAL_FILE
+        output_file.write_text(html)
+
+        logger.info(f"✅ Incremental report updated: {output_file}")
+        return output_file
         
     except Exception as e:
         logger.error(f"❌ Failed to generate incremental report: {e}", exc_info=True)

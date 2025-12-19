@@ -28,7 +28,10 @@ import pytz
 from app.persistence import list_investigations
 from app.service.agent.tools.database_tool import get_database_provider
 from app.service.investigation.enhanced_risk_scorer import EnhancedRiskScorer
-from app.service.investigation.entity_filtering import build_entity_where_clause
+from app.service.investigation.entity_filtering import (
+    build_compound_entity_where_clause,
+    build_entity_where_clause,
+)
 from app.service.investigation.entity_label_helper import (
     get_entity_label,
     map_label_to_actual_outcome,
@@ -656,13 +659,34 @@ def get_investigation_by_id(investigation_id: str) -> Optional[Dict[str, Any]]:
                 return None
 
             # Extract entity info from settings_json
+            # Supports both single entity (entities[0]) and compound entities (all entities)
             entity_id = None
             entity_type = None
+            entity_list = []  # For compound entities
             if db_inv.settings_json:
                 try:
                     settings_data = json.loads(db_inv.settings_json)
                     entities = settings_data.get("entities", [])
                     if entities and len(entities) > 0:
+                        # Extract all entities for compound mode support
+                        for e in entities:
+                            entity_dict = (
+                                e
+                                if isinstance(e, dict)
+                                else (e.__dict__ if hasattr(e, "__dict__") else {})
+                            )
+                            if entity_dict.get("entity_type") and entity_dict.get(
+                                "entity_value"
+                            ):
+                                entity_list.append(
+                                    {
+                                        "entity_type": entity_dict.get("entity_type"),
+                                        "entity_value": entity_dict.get("entity_value")
+                                        or entity_dict.get("entity_id"),
+                                    }
+                                )
+
+                        # For backward compatibility, also set single entity from first
                         entity = (
                             entities[0]
                             if isinstance(entities[0], dict)
@@ -733,6 +757,7 @@ def get_investigation_by_id(investigation_id: str) -> Optional[Dict[str, Any]]:
                 "investigation_id": db_inv.investigation_id,
                 "entity_id": entity_id,
                 "entity_type": entity_type,
+                "entity_list": entity_list,  # For compound entity support (multiple entities)
                 "overall_risk_score": overall_risk_score,
                 "from_date": from_date,
                 "to_date": to_date,
@@ -899,9 +924,18 @@ async def map_investigation_to_transactions(
             f"[MAP_INVESTIGATION_TO_TRANSACTIONS] No investigation provided, using fallback source"
         )
 
+    # For compound entity investigations, we need entity_list
+    entity_list = investigation.get("entity_list", []) if investigation else []
+
     if not entity_type or not entity_id:
-        logger.warning(f"No entity_type or entity_id available")
-        return [], source, None
+        # Check if we have compound entities instead
+        if not entity_list:
+            logger.warning(f"No entity_type/entity_id or entity_list available")
+            return [], source, None
+        else:
+            # Use first entity from list for backward compatibility logging
+            entity_type = entity_list[0].get("entity_type")
+            entity_id = entity_list[0].get("entity_value")
 
     # Query Snowflake for transactions
     db_provider = get_database_provider()
@@ -909,8 +943,18 @@ async def map_investigation_to_transactions(
     is_snowflake = os.getenv("DATABASE_PROVIDER", "snowflake").lower() == "snowflake"
     is_async = hasattr(db_provider, "execute_query_async")
 
-    # Build entity where clause
-    entity_clause, _ = build_entity_where_clause(entity_type, entity_id, is_snowflake)
+    # Build entity where clause (supports compound entities with multiple entities)
+    if len(entity_list) > 1:
+        # Compound entity - use AND logic for multiple entities
+        entity_clause, _ = build_compound_entity_where_clause(
+            entity_list, is_snowflake, logic="AND"
+        )
+        logger.info(
+            f"[MAP_INVESTIGATION_TO_TRANSACTIONS] Using COMPOUND entity clause with {len(entity_list)} entities"
+        )
+    else:
+        # Single entity - use standard clause
+        entity_clause, _ = build_entity_where_clause(entity_type, entity_id, is_snowflake)
 
     # CRITICAL: Filter to finalized authorization decisions (APPROVED, AUTHORIZED, SETTLED)
     # This can be configured via TRANSACTION_DECISION_FILTER env var:

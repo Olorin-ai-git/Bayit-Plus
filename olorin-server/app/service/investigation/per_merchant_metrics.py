@@ -58,14 +58,18 @@ def compute_per_merchant_metrics(
         tx_a = merchants_a.get(merchant_id, [])
         tx_b = merchants_b.get(merchant_id, [])
 
-        # Compute metrics for Window A
-        tp_a, fp_a, tn_a, fn_a, _ = compute_confusion_matrix(tx_a, risk_threshold)
+        # Compute metrics for Window A (only_flagged=True to reduce FP count)
+        tp_a, fp_a, tn_a, fn_a, _, _ = compute_confusion_matrix(
+            tx_a, risk_threshold, only_flagged=True
+        )
         precision_a, recall_a, f1_a, accuracy_a, fraud_rate_a, _ = (
             compute_derived_metrics(tp_a, fp_a, tn_a, fn_a, tx_a)
         )
 
-        # Compute metrics for Window B
-        tp_b, fp_b, tn_b, fn_b, _ = compute_confusion_matrix(tx_b, risk_threshold)
+        # Compute metrics for Window B (only_flagged=True to reduce FP count)
+        tp_b, fp_b, tn_b, fn_b, _, _ = compute_confusion_matrix(
+            tx_b, risk_threshold, only_flagged=True
+        )
         precision_b, recall_b, f1_b, accuracy_b, fraud_rate_b, _ = (
             compute_derived_metrics(tp_b, fp_b, tn_b, fn_b, tx_b)
         )

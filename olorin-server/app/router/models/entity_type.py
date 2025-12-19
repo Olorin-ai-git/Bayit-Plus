@@ -22,3 +22,4 @@ class EntityType(str, Enum):
     IP_ADDRESS = "ip_address"
     USER_ID = "user_id"
     MERCHANT = "merchant"
+    PAYMENT_METHOD_TOKEN = "payment_method_token"

@@ -375,8 +375,10 @@ async def analyze_investigation_confusion_matrix(
                 f"{str(tx_id):<20} {str(predicted_risk):<20} {str(actual_outcome):<20} {reason}"
             )
 
-    # Calculate and verify confusion matrix
-    tp, fp, tn, fn, excluded = compute_confusion_matrix(transactions, risk_threshold)
+    # Calculate and verify confusion matrix (only_flagged=True to reduce FP count)
+    tp, fp, tn, fn, excluded, below_threshold = compute_confusion_matrix(
+        transactions, risk_threshold, only_flagged=True
+    )
 
     print(f"\n{'='*85}")
     print("VERIFICATION - Confusion Matrix Calculation")

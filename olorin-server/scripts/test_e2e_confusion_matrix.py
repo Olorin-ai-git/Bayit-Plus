@@ -123,7 +123,10 @@ async def test_e2e_confusion_matrix():
     print()
     
     risk_threshold = 0.5
-    tp, fp, tn, fn, excluded = compute_confusion_matrix(transactions, risk_threshold)
+    # Use only_flagged=True to count only flagged transactions (reduces FP count)
+    tp, fp, tn, fn, excluded, below_threshold = compute_confusion_matrix(
+        transactions, risk_threshold, only_flagged=True
+    )
     
     print(f"  True Positives (TP):  {tp:,}")
     print(f"  False Positives (FP): {fp:,}")

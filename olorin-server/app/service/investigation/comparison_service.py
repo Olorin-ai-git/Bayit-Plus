@@ -373,9 +373,9 @@ async def compare_windows(request: ComparisonRequest) -> ComparisonResponse:
     else:
         window_b_empty = False
 
-    # Compute metrics for Window A
-    tp_a, fp_a, tn_a, fn_a, excluded_a = compute_confusion_matrix(
-        transactions_a, risk_threshold
+    # Compute metrics for Window A (only_flagged=True to reduce FP count)
+    tp_a, fp_a, tn_a, fn_a, excluded_a, below_threshold_a = compute_confusion_matrix(
+        transactions_a, risk_threshold, only_flagged=True
     )
     (
         precision_a,
@@ -450,8 +450,9 @@ async def compare_windows(request: ComparisonRequest) -> ComparisonResponse:
         brier_b = None
         log_loss_b = None
     else:
-        tp_b, fp_b, tn_b, fn_b, excluded_b = compute_confusion_matrix(
-            transactions_b, risk_threshold
+        # Window B (only_flagged=True to reduce FP count)
+        tp_b, fp_b, tn_b, fn_b, excluded_b, below_threshold_b = compute_confusion_matrix(
+            transactions_b, risk_threshold, only_flagged=True
         )
         (
             precision_b,
@@ -728,9 +729,11 @@ def calculate_confusion_matrix(
     Returns:
         ConfusionMatrix object with TP, FP, TN, FN, precision, recall, F1, accuracy
     """
-    # Use existing compute_confusion_matrix function
-    tp, fp, tn, fn, excluded_missing_predicted_risk = compute_confusion_matrix(
-        transactions, risk_threshold
+    # Use existing compute_confusion_matrix function with only_flagged=True
+    # This ensures we only count transactions that were actually flagged as risky
+    # (predicted_risk >= threshold), dramatically reducing FP count
+    tp, fp, tn, fn, excluded_missing_predicted_risk, excluded_below_threshold = (
+        compute_confusion_matrix(transactions, risk_threshold, only_flagged=True)
     )
 
     # Count transactions with missing actual_outcome (excluded from confusion matrix)
@@ -740,7 +743,11 @@ def calculate_confusion_matrix(
         1 for tx in transactions if tx.get("actual_outcome") is None
     )
 
-    excluded_count = excluded_missing_actual_outcome + excluded_missing_predicted_risk
+    excluded_count = (
+        excluded_missing_actual_outcome
+        + excluded_missing_predicted_risk
+        + excluded_below_threshold
+    )
 
     # Use existing compute_derived_metrics function
     (

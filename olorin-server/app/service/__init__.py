@@ -789,10 +789,55 @@ async def on_startup(app: FastAPI):
                         )
                         app.state.snowflake_read_path_verified = False
 
+                    # Check for monthly analysis mode (takes priority over standard startup analysis)
+                    monthly_analysis_enabled = os.getenv("MONTHLY_ANALYSIS_ENABLED", "false").lower() == "true"
+
+                    if monthly_analysis_enabled and retrieve_risky_entities:
+                        # Monthly sequential analysis mode - runs 24h windows for each day of the month
+                        try:
+                            from app.config.monthly_analysis_config import get_monthly_analysis_config
+                            from app.service.investigation.monthly_analysis_orchestrator import MonthlyAnalysisOrchestrator
+
+                            monthly_config = get_monthly_analysis_config()
+                            orchestrator = MonthlyAnalysisOrchestrator()
+
+                            logger.info(
+                                f"📅 Monthly analysis mode enabled: {monthly_config.get_month_name()} "
+                                f"{monthly_config.year}, starting from day {monthly_config.resume_from_day}"
+                            )
+
+                            async def _background_monthly_analysis():
+                                try:
+                                    logger.info("▶️ Starting background monthly analysis task...")
+                                    result = await orchestrator.run_monthly_analysis(
+                                        year=monthly_config.year,
+                                        month=monthly_config.month,
+                                        resume_from_day=monthly_config.resume_from_day,
+                                    )
+                                    app.state.monthly_analysis_result = result
+                                    app.state.monthly_analysis_completed = True
+                                    logger.info(
+                                        f"✅ Monthly analysis completed: {result.month_name} {result.year}"
+                                    )
+                                except Exception as e:
+                                    logger.error(
+                                        f"❌ Monthly analysis failed: {e}", exc_info=True
+                                    )
+                                    app.state.monthly_analysis_completed = False
+
+                            import asyncio
+                            asyncio.create_task(_background_monthly_analysis())
+                            logger.info("✅ Monthly analysis task scheduled")
+
+                        except Exception as e:
+                            logger.error(
+                                f"❌ Failed to start monthly analysis: {e}", exc_info=True
+                            )
+
                     # Always run auto-comparisons for top N riskiest entities when AUTO_RUN_STARTUP_ANALYSIS is enabled
                     # Number of entities is configured via STARTUP_ANALYSIS_TOP_N_ENTITIES (default: 3)
                     # This ensures consistent evaluation regardless of other conditions
-                    if auto_run_startup_analysis:
+                    elif auto_run_startup_analysis:
                         # Automatically run comparisons for top N riskiest entities (unconditional execution)
                         # Run asynchronously in background to avoid blocking server startup
                         try:

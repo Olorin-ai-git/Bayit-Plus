@@ -125,7 +125,10 @@ async def test_confusion_matrix():
         from app.service.investigation.metrics_calculation import compute_confusion_matrix
         
         risk_threshold = 0.5
-        tp, fp, tn, fn, excluded = compute_confusion_matrix(transactions, risk_threshold)
+        # Use only_flagged=True to count only flagged transactions (reduces FP count)
+        tp, fp, tn, fn, excluded, below_threshold = compute_confusion_matrix(
+            transactions, risk_threshold, only_flagged=True
+        )
         
         print("="*80)
         print("CONFUSION MATRIX")

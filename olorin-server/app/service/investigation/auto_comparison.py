@@ -36,6 +36,7 @@ async def run_auto_comparisons_for_top_entities(
     time_window_hours: int = 24,
     force_refresh: bool = False,
     unconditional_execution: bool = False,
+    reference_date: Optional[datetime] = None,
     **kwargs: Any,  # Accept extra arguments like risk_analyzer_results
 ) -> List[Dict[str, Any]]:
     """
@@ -67,52 +68,82 @@ async def run_auto_comparisons_for_top_entities(
     reporter = ComparisonReporter()
     revenue_calculator = RevenueCalculator(revenue_config)
 
-    # 2. Get top-risk emails grouped by merchant (ranked by MODEL_SCORE * AMOUNT)
-    # Feature 024: Use configurable historical offset (default 12 months)
+    # 2. Get top-risk entities (either single EMAIL or compound EMAIL+DEVICE+PMT)
+    # Feature: Compound entity mode for reduced FP rates
     import random
-    
-    # Calculate analyzer reference time based on config
-    # analyzer_historical_offset_months defines how far back to look
-    now = datetime.now()
-    offset_months = revenue_config.analyzer_historical_offset_months
-    
-    # Create a range around the offset (±1 month for variability)
-    offset_days_min = (offset_months + 1) * 30  # e.g., 13 months = 390 days
-    offset_days_max = offset_months * 30  # e.g., 12 months = 360 days
-    
-    start_range = now - timedelta(days=offset_days_min)
-    end_range = now - timedelta(days=offset_days_max)
-    
-    # Pick a random timestamp within this range
-    time_delta = end_range - start_range
-    if time_delta.total_seconds() > 0:
-        random_seconds = random.randint(0, int(time_delta.total_seconds()))
-        reference_time = start_range + timedelta(seconds=random_seconds)
+
+    # Check if compound entity mode is enabled
+    compound_entity_enabled = os.getenv("COMPOUND_ENTITY_ENABLED", "false").lower() == "true"
+    if compound_entity_enabled:
+        logger.info("🔗 COMPOUND ENTITY MODE enabled (EMAIL + DEVICE_ID + PAYMENT_METHOD_TOKEN)")
     else:
-        reference_time = end_range
-    
-    logger.info(
-        f"📅 Analyzer reference time: {reference_time} "
-        f"(configured offset: {offset_months} months)"
-    )
-    
+        logger.info("📧 SINGLE ENTITY MODE (EMAIL only)")
+
+    # Calculate analyzer reference time based on config or use provided reference_date
+    now = datetime.now()
+
+    if reference_date is not None:
+        # Use the explicitly provided reference date (for monthly analysis mode)
+        reference_time = reference_date
+        logger.info(
+            f"📅 Analyzer reference time: {reference_time} "
+            f"(explicitly provided for monthly analysis)"
+        )
+    else:
+        # Default behavior: random timestamp within historical offset range
+        offset_months = revenue_config.analyzer_historical_offset_months
+
+        # Create a range around the offset (±1 month for variability)
+        offset_days_min = (offset_months + 1) * 30  # e.g., 13 months = 390 days
+        offset_days_max = offset_months * 30  # e.g., 12 months = 360 days
+
+        start_range = now - timedelta(days=offset_days_min)
+        end_range = now - timedelta(days=offset_days_max)
+
+        # Pick a random timestamp within this range
+        time_delta = end_range - start_range
+        if time_delta.total_seconds() > 0:
+            random_seconds = random.randint(0, int(time_delta.total_seconds()))
+            reference_time = start_range + timedelta(seconds=random_seconds)
+        else:
+            reference_time = end_range
+
+        logger.info(
+            f"📅 Analyzer reference time: {reference_time} "
+            f"(configured offset: {offset_months} months)"
+        )
+
     # Calculate analyzer window
     analyzer_start_time = reference_time - timedelta(hours=time_window_hours)
     analyzer_end_time = reference_time
-    
-    fraud_pairs = await loader.get_fraudulent_emails_grouped_by_merchant(
-        lookback_hours=time_window_hours, 
-        min_fraud_tx=1, 
-        limit=max_entities,
-        reference_time=reference_time
-    )
+
+    # Fetch entities based on mode
+    if compound_entity_enabled:
+        # COMPOUND MODE: Get EMAIL + DEVICE_ID + PAYMENT_METHOD_TOKEN combinations
+        fraud_pairs = await loader.get_fraudulent_compound_entities(
+            lookback_hours=time_window_hours,
+            min_fraud_tx=1,
+            limit=max_entities,
+            reference_time=reference_time,
+        )
+        entity_mode = "compound"
+    else:
+        # SINGLE MODE: Get EMAIL only (original behavior)
+        fraud_pairs = await loader.get_fraudulent_emails_grouped_by_merchant(
+            lookback_hours=time_window_hours,
+            min_fraud_tx=1,
+            limit=max_entities,
+            reference_time=reference_time,
+        )
+        entity_mode = "single"
 
     if not fraud_pairs:
-        logger.warning(f"⚠️ No top-risk emails found in the window ending {reference_time}")
+        logger.warning(f"⚠️ No top-risk entities found in the window ending {reference_time}")
         return []
 
+    entity_desc = "compound entities (EMAIL+DEVICE+PMT)" if compound_entity_enabled else "email-merchant pairs"
     logger.info(
-        f"📊 Found {len(fraud_pairs)} top-risk email-merchant pairs to investigate"
+        f"📊 Found {len(fraud_pairs)} top-risk {entity_desc} to investigate"
     )
     
     # Store analyzer metadata for reporting
@@ -120,7 +151,8 @@ async def run_auto_comparisons_for_top_entities(
         "start_time": analyzer_start_time,
         "end_time": analyzer_end_time,
         "time_window_hours": time_window_hours,
-        "entities": fraud_pairs,  # List of {email, merchant, fraud_count, total_count}
+        "entities": fraud_pairs,
+        "entity_mode": entity_mode,  # "single" or "compound"
     }
 
     # 3. Run investigations (Parallel with Semaphore)
@@ -161,27 +193,59 @@ async def run_auto_comparisons_for_top_entities(
 
     async def process_single_comparison(i: int, pair: Dict[str, Any]) -> Optional[Dict[str, Any]]:
         async with semaphore:
+            # Extract fields based on entity mode
             email = pair["email"]
             merchant = pair["merchant"]
-            fraud_count = pair["fraud_count"]
+            fraud_count = pair.get("fraud_count", 0)
             total_count = pair.get("total_count", 0)
 
-            logger.info(
-                f"🔍 [{i+1}/{len(fraud_pairs)}] Investigating {email} (Merchant: {merchant}, Fraud Tx: {fraud_count}/{total_count})"
-            )
+            # Compound mode has additional entity fields
+            device_id = pair.get("device_id")
+            pmt_token = pair.get("pmt_token")
+
+            if compound_entity_enabled and device_id and pmt_token:
+                # COMPOUND MODE: Log all three entity components
+                logger.info(
+                    f"🔍 [{i+1}/{len(fraud_pairs)}] Investigating compound entity: "
+                    f"EMAIL={email[:20]}..., DEVICE={device_id[:15]}..., PMT={pmt_token[:15]}... "
+                    f"(Merchant: {merchant}, Fraud: {fraud_count}/{total_count})"
+                )
+            else:
+                # SINGLE MODE: Log email only
+                logger.info(
+                    f"🔍 [{i+1}/{len(fraud_pairs)}] Investigating {email} "
+                    f"(Merchant: {merchant}, Fraud Tx: {fraud_count}/{total_count})"
+                )
 
             try:
-                # Create and wait for investigation
-                result = await executor.create_and_wait_for_investigation(
-                    entity_type="email",
-                    entity_value=email,
-                    window_start=window_start,
-                    window_end=window_end,
-                    merchant_name=merchant,
-                    fraud_tx_count=fraud_count,
-                    total_tx_count=total_count,
-                    analyzer_metadata=analyzer_metadata,
-                )
+                # Create investigation with single or compound entities
+                if compound_entity_enabled and device_id and pmt_token:
+                    # COMPOUND MODE: Create investigation with multiple entities
+                    result = await executor.create_and_wait_for_compound_investigation(
+                        entities=[
+                            {"entity_type": "email", "entity_value": email},
+                            {"entity_type": "device_id", "entity_value": device_id},
+                            {"entity_type": "payment_method_token", "entity_value": pmt_token},
+                        ],
+                        window_start=window_start,
+                        window_end=window_end,
+                        merchant_name=merchant,
+                        fraud_tx_count=fraud_count,
+                        total_tx_count=total_count,
+                        analyzer_metadata=analyzer_metadata,
+                    )
+                else:
+                    # SINGLE MODE: Original single-entity investigation
+                    result = await executor.create_and_wait_for_investigation(
+                        entity_type="email",
+                        entity_value=email,
+                        window_start=window_start,
+                        window_end=window_end,
+                        merchant_name=merchant,
+                        fraud_tx_count=fraud_count,
+                        total_tx_count=total_count,
+                        analyzer_metadata=analyzer_metadata,
+                    )
 
                 if result:
                     # Generate confusion matrix immediately
@@ -193,10 +257,18 @@ async def run_auto_comparisons_for_top_entities(
                     result["email"] = email
                     result["fraud_tx_count"] = fraud_count
                     result["total_tx_count"] = total_count
-                    
-                    # Map for reporter compatibility
-                    result["entity_type"] = "email"
-                    result["entity_value"] = email
+
+                    # Add compound entity fields if present
+                    if compound_entity_enabled and device_id and pmt_token:
+                        result["device_id"] = device_id
+                        result["pmt_token"] = pmt_token
+                        result["entity_mode"] = "compound"
+                        result["entity_type"] = "compound"
+                        result["entity_value"] = f"{email}|{device_id}|{pmt_token}"
+                    else:
+                        result["entity_mode"] = "single"
+                        result["entity_type"] = "email"
+                        result["entity_value"] = email
                     
                     # Feature 024: Calculate revenue implications with DETAILED REASONING
                     try:

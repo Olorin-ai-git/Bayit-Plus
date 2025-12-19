@@ -145,8 +145,10 @@ async def main():
             print(f"     Transactions: {len(transactions):,}")
             print(f"     Source: {source}")
             
-            # Calculate confusion matrix
-            tp, fp, tn, fn, excluded = compute_confusion_matrix(transactions, 0.5)
+            # Calculate confusion matrix (only_flagged=True to reduce FP count)
+            tp, fp, tn, fn, excluded, below_threshold = compute_confusion_matrix(
+                transactions, 0.5, only_flagged=True
+            )
             
             total_classified = tp + fp + tn + fn
             precision = tp / (tp + fp) if (tp + fp) > 0 else 0
