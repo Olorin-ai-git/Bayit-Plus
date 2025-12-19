@@ -302,13 +302,20 @@ def compute_confusion_matrix_with_join(
         f"📊 Retrieved {len([v for v in labels_map.values() if v is not None])} ground truth labels from Snowflake (with fallbacks)"
     )
 
-    # Step 3: Compute confusion matrix
+    # Step 3: Compute confusion matrix using CURRENT risk_threshold (not stored labels)
+    logger.info(
+        f"📊 Computing confusion matrix with risk_threshold={risk_threshold} "
+        f"(recalculating predicted_label from predicted_risk values)"
+    )
     tp = fp = tn = fn = 0
     merchant_counts = defaultdict(lambda: {"TP": 0, "FP": 0, "TN": 0, "FN": 0})
 
     for pred in predictions:
         tx_id = str(pred["transaction_id"])
-        predicted_label = pred["predicted_label"]
+        # CRITICAL: Recalculate predicted_label using current risk_threshold
+        # Stored predicted_label may have been computed with a different threshold
+        predicted_risk = pred.get("predicted_risk", 0.0)
+        predicted_label = 1 if predicted_risk >= risk_threshold else 0
         is_fraud = labels_map.get(tx_id)
         merchant_id = pred.get("merchant_id") or "unknown"
 

@@ -79,8 +79,12 @@ def compute_final_risk(state: Dict[str, Any]) -> Optional[float]:
                 logger.info(f"   {domain_name}: risk_score={risk_score}")
 
     # Use risk agent calculation method (PRIMARY METHOD)
+    # Pass transaction_scores for entity-level boost from high-risk transactions
+    calibrated_tx_scores = state.get("transaction_scores", {})
     try:
-        risk_agent_score = _calculate_real_risk_score(domain_findings, facts)
+        risk_agent_score = _calculate_real_risk_score(
+            domain_findings, facts, calibrated_tx_scores
+        )
         logger.info(f"📊 Risk agent calculated score: {risk_agent_score:.4f}")
     except Exception as e:
         logger.error(f"❌ Risk agent calculation failed: {e}", exc_info=True)

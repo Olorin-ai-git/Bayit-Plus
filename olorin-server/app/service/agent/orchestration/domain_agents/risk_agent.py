@@ -99,9 +99,44 @@ async def risk_agent_node(
             or facts.get("manual_case_outcome") == "fraud"
         )
 
-        # Calculate REAL risk score from domain findings
+        # CRITICAL: Calculate per-transaction risk scores FIRST (includes calibration like impossible travel)
+        # These scores are needed to boost entity-level risk score
+        calibrated_tx_scores = {}
         try:
-            real_risk_score = _calculate_real_risk_score(domain_findings, facts)
+            entity_type_for_scores = state.get("entity_type")
+            entity_value_for_scores = state.get("entity_id")
+            investigation_id_for_scores = state.get("investigation_id")
+            calibrated_tx_scores = _calculate_per_transaction_scores(
+                facts,
+                domain_findings,
+                entity_type=entity_type_for_scores,
+                entity_value=entity_value_for_scores,
+                investigation_id=investigation_id_for_scores,
+            )
+            if calibrated_tx_scores:
+                state["transaction_scores"] = calibrated_tx_scores
+                logger.info(
+                    f"[Step 5.2.6] ✅ Pre-calculated {len(calibrated_tx_scores)} calibrated transaction scores for entity boost"
+                )
+                # Save to database
+                try:
+                    from app.service.transaction_score_service import TransactionScoreService
+                    TransactionScoreService.save_transaction_scores(
+                        investigation_id=investigation_id_for_scores,
+                        transaction_scores=calibrated_tx_scores
+                    )
+                except Exception as save_err:
+                    logger.warning(f"[Step 5.2.6] ⚠️ Failed to save pre-calculated scores: {save_err}")
+        except Exception as tx_err:
+            logger.warning(f"[Step 5.2.6] ⚠️ Pre-transaction score calculation failed: {tx_err}")
+            calibrated_tx_scores = {}
+
+        # Calculate REAL risk score from domain findings
+        # Pass transaction_scores for entity-level boost from high-risk transactions
+        try:
+            real_risk_score = _calculate_real_risk_score(
+                domain_findings, facts, calibrated_tx_scores
+            )
         except ValueError as e:
             logger.error(f"❌ Risk score calculation failed: {e}")
             # Investigation cannot continue with numeric scoring - return error state
@@ -242,65 +277,28 @@ async def risk_agent_node(
             f"[Step 5.2.6] ✅ Risk synthesis complete - Narrative-only domain with {len(risk_findings.get('evidence', []))} synthesis points"
         )
 
-        # Calculate per-transaction risk scores
-        try:
-            # Extract entity info for advanced features
-            entity_type = state.get("entity_type")
-            entity_value = state.get("entity_id")
-            investigation_id = state.get("investigation_id")
-            transaction_scores = _calculate_per_transaction_scores(
-                facts,
-                domain_findings,
-                entity_type=entity_type,
-                entity_value=entity_value,
-                investigation_id=investigation_id,
+        # NOTE: Per-transaction risk scores were already calculated at the start of this function
+        # (before _calculate_real_risk_score) to enable entity-level boosting from high-risk transactions.
+        # The scores are in calibrated_tx_scores and already saved to state and database.
+        # This section now only logs the final status.
+        investigation_id = state.get("investigation_id")
+        if calibrated_tx_scores:
+            logger.info(
+                f"[Step 5.2.6] ✅ Transaction scores already calculated: {len(calibrated_tx_scores)} transactions (used for entity boost)"
             )
-            if transaction_scores:
-                # NON-STREAMING MODE: Store scores in state (legacy behavior for <10K transactions)
-                state["transaction_scores"] = transaction_scores
-                logger.info(
-                    f"[Step 5.2.6] ✅ Per-transaction scores calculated: {len(transaction_scores)} transactions"
-                )
-                
-                # Also save to dedicated transaction_scores table for consistency
-                try:
-                    from app.service.transaction_score_service import TransactionScoreService
-                    
-                    TransactionScoreService.save_transaction_scores(
-                        investigation_id=investigation_id,
-                        transaction_scores=transaction_scores
-                    )
+        else:
+            # Check database for score count (streaming mode fallback)
+            try:
+                from app.service.transaction_score_service import TransactionScoreService
+                db_count = TransactionScoreService.get_score_count(investigation_id)
+                if db_count > 0:
                     logger.info(
-                        f"[Step 5.2.6] 💾 Saved {len(transaction_scores)} transaction scores to database table"
+                        f"[Step 5.2.6] ✅ STREAMING MODE: {db_count} transaction scores in database"
                     )
-                except Exception as save_error:
-                    logger.error(
-                        f"[Step 5.2.6] ⚠️ Failed to save transaction scores to database table: {save_error}",
-                        exc_info=True
-                    )
-                    # Continue - scores are still in state
-            else:
-                # STREAMING MODE: Scores already saved to database during processing
-                # Check database for score count
-                try:
-                    from app.service.transaction_score_service import TransactionScoreService
-                    db_count = TransactionScoreService.get_score_count(investigation_id)
-                    if db_count > 0:
-                        logger.info(
-                            f"[Step 5.2.6] ✅ STREAMING MODE: {db_count} transaction scores saved to database"
-                        )
-                        logger.info(f"[Step 5.2.6]    (Scores streamed to DB to avoid memory limits)")
-                    else:
-                        logger.warning(f"[Step 5.2.6] ⚠️ No per-transaction scores calculated")
-                except Exception as check_error:
-                    logger.warning(f"[Step 5.2.6] ⚠️ Could not verify database scores: {check_error}")
-        except Exception as e:
-            logger.error(
-                f"[Step 5.2.6] ❌ Per-transaction score calculation failed: {e}",
-                exc_info=True,
-            )
-            # Continue with investigation even if per-transaction scoring fails
-            state["transaction_scores"] = {}
+                else:
+                    logger.warning(f"[Step 5.2.6] ⚠️ No per-transaction scores available")
+            except Exception as check_error:
+                logger.warning(f"[Step 5.2.6] ⚠️ Could not verify database scores: {check_error}")
 
         # Update state with risk findings
         return add_domain_findings(state, "risk", risk_findings)
@@ -524,7 +522,8 @@ def _calculate_investigation_confidence(
 
 
 def _calculate_real_risk_score(
-    domain_findings: Dict[str, Any], facts: Dict[str, Any]
+    domain_findings: Dict[str, Any], facts: Dict[str, Any],
+    transaction_scores: Optional[Dict[str, float]] = None
 ) -> float:
     """Calculate REAL risk score based on actual domain analysis results with volume weighting."""
     # CRITICAL: No fraud indicators can be used during investigation to prevent data leakage
@@ -638,6 +637,52 @@ def _calculate_real_risk_score(
 
     # Add device penalty and ensure bounds
     final_risk = min(1.0, max(0.0, weighted_avg + device_penalty))
+
+    # CRITICAL FIX: Incorporate calibrated transaction-level scores into entity score
+    # If we have high-risk transactions (from impossible travel, calibration, etc.),
+    # the entity should be flagged even if aggregate patterns look normal
+    if transaction_scores:
+        tx_scores = list(transaction_scores.values())
+        if tx_scores:
+            max_tx_score = max(tx_scores)
+            avg_tx_score = sum(tx_scores) / len(tx_scores)
+            high_risk_count = sum(1 for s in tx_scores if s >= 0.80)
+            high_risk_ratio = high_risk_count / len(tx_scores) if tx_scores else 0
+
+            # Boost 1: Based on max transaction score (worst transaction)
+            # If any transaction scores very high, entity should be investigated
+            if max_tx_score >= 0.75:
+                tx_boost = max_tx_score * 0.4  # Up to 0.38 boost for max_score=0.95
+                old_risk = final_risk
+                final_risk = max(final_risk, final_risk + tx_boost)
+                logger.info(
+                    f"📈 TX_SCORE_BOOST: max_tx_score={max_tx_score:.3f} → boost={tx_boost:.3f} "
+                    f"(risk: {old_risk:.3f} → {final_risk:.3f})"
+                )
+
+            # Boost 2: Based on high-risk transaction ratio
+            # If >10% of transactions are high-risk, significant boost
+            if high_risk_ratio > 0.10:
+                ratio_boost = min(high_risk_ratio * 0.5, 0.25)  # Up to 0.25 boost
+                final_risk = final_risk + ratio_boost
+                logger.info(
+                    f"📈 HIGH_RISK_RATIO_BOOST: {high_risk_count}/{len(tx_scores)} "
+                    f"({high_risk_ratio:.1%}) → boost={ratio_boost:.3f}"
+                )
+            elif high_risk_ratio > 0.05:
+                ratio_boost = high_risk_ratio * 0.3  # Smaller boost for 5-10%
+                final_risk = final_risk + ratio_boost
+
+            # Boost 3: If average transaction score is elevated
+            if avg_tx_score > 0.50:
+                avg_boost = (avg_tx_score - 0.50) * 0.3  # Up to 0.135 for avg=0.95
+                final_risk = final_risk + avg_boost
+                logger.info(
+                    f"📈 AVG_SCORE_BOOST: avg={avg_tx_score:.3f} → boost={avg_boost:.3f}"
+                )
+
+            # Cap at 0.95 to leave room for manual escalation
+            final_risk = min(final_risk, 0.95)
 
     return final_risk
 
@@ -1988,9 +2033,17 @@ def _calculate_per_transaction_scores(
                             "ip_reputation"
                         ) or location_domain.get("reputation")
 
-                    # Apply rule-overrides (clean-intel veto, impossible travel hard block)
+                    # Apply rule-overrides (clean-intel veto only for per-transaction scoring)
+                    # CRITICAL FIX: Do NOT apply impossible travel hard block at per-transaction level
+                    # because advanced_features contains ENTITY-LEVEL max_travel_speed_mph (max across ALL transactions)
+                    # which would incorrectly flag ALL transactions if ANY one had impossible travel.
+                    # Create per-transaction features that exclude entity-level impossible travel metrics.
+                    per_tx_advanced_features = {
+                        k: v for k, v in advanced_features.items()
+                        if k not in ("max_travel_speed_mph", "impossible_travel_count")
+                    }
                     final_score, applied_rules = apply_rule_overrides(
-                        tx_score, ip_reputation, advanced_features, domain_findings
+                        tx_score, ip_reputation, per_tx_advanced_features, domain_findings
                     )
 
                     if applied_rules:

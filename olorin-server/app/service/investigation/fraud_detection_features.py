@@ -578,37 +578,40 @@ class FraudDetectionFeatures:
             temporal_risk += 0.4
         risk_score += min(temporal_risk, 1.0) * 0.05
         
-        # NEW: Payment & Geo Risk (20% weight - HIGH VALUE)
+        # NEW: Payment & Geo Risk (20% weight)
+        # RECALIBRATED: Reduced weights to prevent score inflation
+        # These signals have high false positive rates in legitimate commerce
         advanced_risk = 0.0
-        
-        # Country/Currency Mismatch (Very strong signal)
+
+        # Country/Currency Mismatch (Common in global commerce - be conservative)
         if features.get("country_mismatch_ratio", 0) > 0.5:
-            advanced_risk += 0.8
+            advanced_risk += 0.35  # Reduced from 0.8
         elif features.get("country_mismatch_ratio", 0) > 0.2:
-            advanced_risk += 0.4
-            
+            advanced_risk += 0.15  # Reduced from 0.4
+
         if features.get("currency_mismatch_ratio", 0) > 0.5:
-            advanced_risk += 0.6
-            
-        # Prepaid Cards (High risk for fraud)
+            advanced_risk += 0.25  # Reduced from 0.6
+
+        # Prepaid Cards (Many legitimate use cases)
         if features.get("prepaid_ratio", 0) > 0.8:
-            advanced_risk += 0.5
+            advanced_risk += 0.20  # Reduced from 0.5
         elif features.get("prepaid_ratio", 0) > 0.4:
-            advanced_risk += 0.3
-            
-        # AVS Failures (Strong signal)
+            advanced_risk += 0.10  # Reduced from 0.3
+
+        # AVS Failures (Less reliable internationally)
         if features.get("avs_failure_ratio", 0) > 0.3:
-            advanced_risk += 0.7
-            
-        # Disposable Emails
+            advanced_risk += 0.25  # Reduced from 0.7
+
+        # Disposable Emails (Strong signal when present)
         if features.get("disposable_email_ratio", 0) > 0.2:
-            advanced_risk += 0.6
-            
-        # External Risk Scores
+            advanced_risk += 0.30  # Reduced from 0.6
+
+        # External Risk Scores (Validation signal)
         if features.get("high_external_risk_ratio", 0) > 0.2:
-            advanced_risk += 0.6
-            
-        risk_score += min(advanced_risk, 1.0) * 0.30 # Increased to 30% weight, stealing 10% from others
+            advanced_risk += 0.25  # Reduced from 0.6
+
+        # Cap advanced_risk component and reduce weight
+        risk_score += min(advanced_risk, 0.80) * 0.20  # Reduced from 1.0 * 0.30
 
         # Ensure score is between 0 and 1
         return min(max(risk_score, 0.0), 1.0)
@@ -901,103 +904,106 @@ class FraudDetectionFeatures:
                 stdev_amount = statistics.stdev(amounts) if len(amounts) > 1 else 0
                 
                 # DUAL METHOD: Use both IQR and Z-score for robust detection
-                
-                # Method 1: IQR-based outlier detection (more sensitive)
+                # RECALIBRATED: Raised thresholds for crypto/fintech where large txs are normal
+
+                # Method 1: IQR-based outlier detection (CONSERVATIVE for e-commerce)
                 iqr_score = 0.0
                 if iqr > 0:
-                    upper_fence = q3 + 1.5 * iqr
-                    lower_fence = q1 - 1.5 * iqr
-                    extreme_upper = q3 + 3.0 * iqr
-                    extreme_lower = q1 - 3.0 * iqr
-                    mild_upper = q3 + 0.5 * iqr  # NEW: Catch mild outliers
-                    mild_lower = q1 - 0.5 * iqr
-                    
+                    # Raised multipliers - large transactions are normal in crypto
+                    extreme_upper = q3 + 5.0 * iqr  # Raised from 3.0
+                    extreme_lower = q1 - 5.0 * iqr
+                    upper_fence = q3 + 3.0 * iqr    # Raised from 1.5
+                    lower_fence = q1 - 3.0 * iqr
+                    moderate_upper = q3 + 2.0 * iqr  # NEW intermediate level
+                    moderate_lower = q1 - 2.0 * iqr
+
                     if tx_amount > extreme_upper or tx_amount < extreme_lower:
-                        iqr_score = 1.0  # Extreme outlier
+                        iqr_score = 0.70  # CAPPED at 0.70 (was 1.0) - outlier alone isn't fraud
                     elif tx_amount > upper_fence or tx_amount < lower_fence:
-                        iqr_score = 0.6  # Moderate outlier
-                    elif tx_amount > q3 + 0.75 * iqr or tx_amount < q1 - 0.75 * iqr:
-                        iqr_score = 0.4  # Mild-moderate outlier
-                    elif tx_amount > mild_upper or tx_amount < mild_lower:
-                        iqr_score = 0.2  # NEW: Mild outlier
-                
-                # Method 2: Z-score based detection (LOWERED THRESHOLDS)
+                        iqr_score = 0.45  # Reduced from 0.6
+                    elif tx_amount > moderate_upper or tx_amount < moderate_lower:
+                        iqr_score = 0.25  # Reduced
+                    # Removed mild outlier detection (too noisy)
+
+                # Method 2: Z-score based detection (CONSERVATIVE for non-normal distributions)
                 z_score_value = 0.0
                 z_based_score = 0.0
                 if stdev_amount > 0:
                     z_score_value = abs((tx_amount - mean_amount) / stdev_amount)
-                    
-                    # IMPROVED: Lower thresholds to catch more fraud
-                    if z_score_value > 3.0:  # 99.7% (extreme)
-                        z_based_score = 1.0
+
+                    # CONSERVATIVE: Raised thresholds - crypto/fintech data is skewed
+                    if z_score_value > 4.5:  # Very extreme
+                        z_based_score = 0.70  # CAPPED at 0.70 (was 1.0)
+                    elif z_score_value > 4.0:  # 99.99%
+                        z_based_score = 0.55
+                    elif z_score_value > 3.5:  # 99.95%
+                        z_based_score = 0.40
+                    elif z_score_value > 3.0:  # 99.7%
+                        z_based_score = 0.30  # Reduced from 1.0!
                     elif z_score_value > 2.5:  # 98.8%
-                        z_based_score = 0.7
+                        z_based_score = 0.20  # Reduced from 0.7
                     elif z_score_value > 2.0:  # 97.7%
-                        z_based_score = 0.5
-                    elif z_score_value > 1.5:  # 93.3%
-                        z_based_score = 0.35  # INCREASED from 0.3
-                    elif z_score_value > 1.0:  # 84.1%
-                        z_based_score = 0.2   # INCREASED from 0.1
-                    elif z_score_value > 0.75:  # NEW: 77.3%
-                        z_based_score = 0.1
-                
+                        z_based_score = 0.10  # Reduced from 0.5
+                    # Removed z < 2.0 scoring (too noisy)
+
                 # Combine both methods (take maximum for sensitivity)
-                base_score = max(iqr_score, z_based_score)
+                # CAPPED: base_score can never exceed 0.70 from outlier detection alone
+                base_score = min(max(iqr_score, z_based_score), 0.70)
         
         # --- ENHANCED SIGNAL INTEGRATION ---
         # Add risk from new feature categories (Payment, Geo, Identity)
-        
+        # V3 RECALIBRATION: Very conservative - most signals have high FP rates
+
         additional_risk = 0.0
-        
-        # 1. Geo Mismatch (Strongest Signal)
+
+        # 1. Geo Mismatch - ONLY count if strong mismatch (not just different countries)
         bin_country = str(transaction.get("BIN_COUNTRY_CODE", "")).upper()
         ip_country = str(transaction.get("IP_COUNTRY_CODE", "")).upper()
-        if bin_country and ip_country and bin_country != ip_country:
-            additional_risk += 0.5 # High risk boost for cross-border mismatch
-            
-        # 2. Prepaid Card (Moderate Signal)
+        # Only penalize if BOTH are known and different - single missing is normal
+        if bin_country and ip_country and len(bin_country) == 2 and len(ip_country) == 2:
+            if bin_country != ip_country:
+                additional_risk += 0.08  # Reduced from 0.15 - very common legitimately
+
+        # 2. Prepaid Card - Common legitimate use, minimal signal
         if str(transaction.get("IS_CARD_PREPAID", "")).lower() in ("true", "1", "yes"):
-            additional_risk += 0.3
-            
-        # 3. AVS Failure (Strong Signal)
+            additional_risk += 0.05  # Reduced from 0.10 - privacy-conscious users
+
+        # 3. AVS Failure - Very unreliable internationally, minimal weight
         avs = str(transaction.get("AVS_RESULT", "")).upper()
         if avs in ("N", "R", "U", "E"):
-            additional_risk += 0.4
-            
-        # 4. Disposable Email (Moderate Signal)
+            additional_risk += 0.05  # Reduced from 0.12 - too noisy
+
+        # 4. Disposable Email - Strongest signal, keep moderate weight
         if str(transaction.get("IS_DISPOSABLE_EMAIL", "")).lower() in ("true", "1", "yes"):
-            additional_risk += 0.3
-            
-        # 5. High External Score (Validation)
+            additional_risk += 0.15  # Reduced from 0.20
+
+        # 5. High External Score (MaxMind) - Only trust very high scores
         try:
             ext_score = float(transaction.get("MAXMIND_RISK_SCORE") or 0)
-            if ext_score > 50: additional_risk += 0.4
-            elif ext_score > 20: additional_risk += 0.2
+            if ext_score > 70: additional_risk += 0.10  # Only very high (raised from 50)
+            elif ext_score > 50: additional_risk += 0.05  # Raised threshold
         except: pass
 
-        # Combine Amount Score + Additional Risk
-        # Use probabilistic combination: P(A or B) = P(A) + P(B) - P(A)*P(B)
-        # This prevents score > 1.0 naturally
-        final_score = base_score + additional_risk - (base_score * additional_risk)
-        
-        # MERCHANT-SPECIFIC ADJUSTMENTS (re-apply on final score)
-        merchant_lower = merchant.lower()
-        from app.service.investigation.merchant_fraud_profiles import get_merchant_profiles
-        
-        profiles = get_merchant_profiles().profiles
-        if merchant_lower in profiles:
-            profile = profiles[merchant_lower]
-            amount_multiplier = profile.get("amount_multiplier", 1.0)
-            
-            # Use original amount logic for merchant-specific boosts
-            if tx_amount > 0 and 'mean_amount' in locals():
-                if amount_multiplier > 1.0 and tx_amount > mean_amount:
-                     boost = (tx_amount / mean_amount - 1.0) * 0.1
-                     final_score = min(final_score + boost, 1.0)
-                elif amount_multiplier < 1.0 and tx_amount < mean_amount:
-                     boost = (1.0 - tx_amount / mean_amount) * 0.15
-                     final_score = min(final_score + boost, 1.0)
-        
+        # Cap additional_risk AGGRESSIVELY to prevent accumulation
+        additional_risk = min(additional_risk, 0.25)  # Reduced from 0.40
+
+        # Combine Amount Score + Additional Risk using geometric mean (more conservative)
+        # Geometric mean requires BOTH signals to be high to produce high score
+        if base_score > 0 and additional_risk > 0:
+            final_score = (base_score * (base_score + additional_risk)) ** 0.5
+        else:
+            final_score = base_score * 0.9  # Slight penalty for no additional signals
+
+        # HARD CAP: No transaction score can exceed 0.85 without LLM confirmation
+        # This ensures the 0.80 threshold has meaning
+        final_score = min(final_score, 0.85)
+
+        # MERCHANT-SPECIFIC ADJUSTMENTS - DISABLED for now (too aggressive)
+        # These were causing score inflation
+        # merchant_lower = merchant.lower()
+        # from app.service.investigation.merchant_fraud_profiles import get_merchant_profiles
+        # (merchant adjustments removed)
+
         # Log outliers
         if final_score > 0.5:
              if not hasattr(self, '_logged_outlier_count'):

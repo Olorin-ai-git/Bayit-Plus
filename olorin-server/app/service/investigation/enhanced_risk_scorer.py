@@ -96,8 +96,9 @@ class EnhancedRiskScorer:
                     )
                     break
 
-        # Ensure threshold stays reasonable
-        threshold = max(0.10, min(threshold, 0.30))
+        # Ensure threshold stays within valid bounds (0.10 to 1.0)
+        # Note: Do NOT cap at 0.30 - respect configured RISK_THRESHOLD_DEFAULT
+        threshold = max(0.10, min(threshold, 1.0))
         return threshold, reason
 
     def _train_isolation_forest(self, transactions: List[Dict[str, Any]]) -> Tuple[Optional[IsolationForest], Optional[StandardScaler], List[List[float]]]:
@@ -333,19 +334,21 @@ class EnhancedRiskScorer:
                 
             # 3. Combine Scores (Weighted Average)
             # ML provides anomaly detection, Heuristics provide expert knowledge
+            # RECALIBRATED: Use geometric mean for more conservative combination
             if clf:
-                # If ML is available, give it 40% weight
-                combined_risk = (heuristic_risk * 0.6) + (ml_risk * 0.4)
-                
-                # Boost if both agree (both high)
-                if heuristic_risk > 0.5 and ml_risk > 0.5:
-                    combined_risk += 0.1
+                # If ML is available, use geometric mean (more conservative than arithmetic)
+                # This prevents high scores unless BOTH signals agree
+                combined_risk = (heuristic_risk * ml_risk) ** 0.5 if (heuristic_risk > 0 and ml_risk > 0) else max(heuristic_risk * 0.6, ml_risk * 0.4)
+
+                # Small boost if both agree (both high) - reduced from 0.1
+                if heuristic_risk > 0.6 and ml_risk > 0.6:
+                    combined_risk = min(combined_risk + 0.05, 0.95)
             else:
                 combined_risk = heuristic_risk
-                
-            # 4. Add Entity-Level Risk (Benford's Law)
-            if benford_risk > 0.5:
-                combined_risk = min(combined_risk + 0.1, 1.0)
+
+            # 4. Add Entity-Level Risk (Benford's Law) - reduced boost
+            if benford_risk > 0.6:  # Raised threshold from 0.5
+                combined_risk = min(combined_risk + 0.05, 0.95)  # Reduced from 0.1, cap at 0.95
             
             # Apply merchant-specific adjustments (Legacy)
             if primary_merchant:
@@ -360,6 +363,8 @@ class EnhancedRiskScorer:
                 high_risk_count += 1
 
         # Log score distribution for debugging
+        max_score = 0.0
+        avg_score = 0.0
         if transaction_scores:
             scores_list = list(transaction_scores.values())
             scores_list.sort()
@@ -367,19 +372,57 @@ class EnhancedRiskScorer:
             min_score = min(scores_list)
             max_score = max(scores_list)
             median_score = scores_list[len(scores_list) // 2]
-            
+
             logger.info(
                 f"📊 SCORE DISTRIBUTION: min={min_score:.3f}, median={median_score:.3f}, "
                 f"avg={avg_score:.3f}, max={max_score:.3f}"
             )
-            
+
         # Determine overall risk score
         risk_score = overall_assessment["risk_score"]
-        
-        # Boost overall risk if Benford's Law violated
-        if benford_risk > 0.5:
-            # Don't override completely, just boost significantly
-            risk_score = min(risk_score + 0.3, 1.0)
+
+        # CRITICAL FIX: Incorporate transaction-level scores into entity score
+        # If we have high-risk transactions, the entity should be flagged even if
+        # aggregate patterns look normal
+        if transaction_scores and tx_count > 0:
+            high_risk_ratio = high_risk_count / tx_count
+
+            # Boost 1: Based on max transaction score (worst transaction)
+            # If any transaction scores very high, entity should be investigated
+            if max_score >= 0.75:
+                tx_boost = max_score * 0.4  # Up to 0.34 boost for max_score=0.85
+                risk_score = max(risk_score, risk_score + tx_boost)
+                logger.info(
+                    f"📈 TX_SCORE_BOOST: max_tx_score={max_score:.3f} → boost={tx_boost:.3f}"
+                )
+
+            # Boost 2: Based on high-risk transaction ratio
+            # If >10% of transactions are high-risk, significant boost
+            if high_risk_ratio > 0.10:
+                ratio_boost = min(high_risk_ratio * 0.5, 0.25)  # Up to 0.25 boost
+                risk_score = risk_score + ratio_boost
+                logger.info(
+                    f"📈 HIGH_RISK_RATIO_BOOST: {high_risk_count}/{tx_count} ({high_risk_ratio:.1%}) → boost={ratio_boost:.3f}"
+                )
+            elif high_risk_ratio > 0.05:
+                ratio_boost = high_risk_ratio * 0.3  # Smaller boost for 5-10%
+                risk_score = risk_score + ratio_boost
+
+            # Boost 3: If average transaction score is elevated
+            if avg_score > 0.50:
+                avg_boost = (avg_score - 0.50) * 0.3  # Up to 0.105 for avg=0.85
+                risk_score = risk_score + avg_boost
+                logger.info(
+                    f"📈 AVG_SCORE_BOOST: avg={avg_score:.3f} → boost={avg_boost:.3f}"
+                )
+
+        # Cap at 0.95 to leave room for manual escalation
+        risk_score = min(risk_score, 0.95)
+
+        # Boost overall risk if Benford's Law violated - conservative boost
+        if benford_risk > 0.6:  # Raised threshold from 0.5
+            # Small boost, capped at 0.95 to avoid max saturation
+            risk_score = min(risk_score + 0.10, 0.95)  # Reduced from 0.3
             overall_assessment["anomalies"].append({
                 "type": "statistical_anomaly",
                 "description": f"Benford's Law violation (Score: {benford_risk:.2f}) - potential synthetic data",

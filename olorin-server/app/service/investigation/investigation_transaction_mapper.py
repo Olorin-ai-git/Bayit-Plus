@@ -809,22 +809,34 @@ async def map_investigation_to_transactions(
             else:
                 progress_data = progress_json if isinstance(progress_json, dict) else {}
 
-            transaction_scores = progress_data.get("transaction_scores")
-            
-            # STREAMING MODE SUPPORT: Check database if not in state
-            if not transaction_scores and investigation and investigation.get("id"):
+            # PRIORITY: Database scores > progress_json scores
+            # Database scores are enhanced/calibrated scores from enhanced_risk_scorer
+            # progress_json scores are original investigation scores (may not be calibrated)
+            transaction_scores = None
+
+            # First try database (enhanced/calibrated scores)
+            if investigation and investigation.get("id"):
                 try:
                     from app.service.transaction_score_service import TransactionScoreService
                     db_scores = TransactionScoreService.get_transaction_scores(investigation.get("id"))
                     if db_scores:
                         transaction_scores = db_scores
                         logger.info(
-                            f"[MAP_INVESTIGATION_TO_TRANSACTIONS] Retrieved {len(transaction_scores)} per-transaction scores "
-                            f"from database (streaming mode) for investigation {investigation.get('id')}"
+                            f"[MAP_INVESTIGATION_TO_TRANSACTIONS] Using {len(transaction_scores)} ENHANCED per-transaction scores "
+                            f"from database (calibrated by enhanced_risk_scorer) for investigation {investigation.get('id')}"
                         )
                 except Exception as e:
                     logger.warning(
                         f"[MAP_INVESTIGATION_TO_TRANSACTIONS] Failed to retrieve scores from database: {e}"
+                    )
+
+            # Fallback to progress_json if no database scores
+            if not transaction_scores:
+                transaction_scores = progress_data.get("transaction_scores")
+                if transaction_scores:
+                    logger.info(
+                        f"[MAP_INVESTIGATION_TO_TRANSACTIONS] Using {len(transaction_scores)} per-transaction scores "
+                        f"from progress_json (fallback, not enhanced) for investigation {investigation.get('id', 'unknown')}"
                     )
             
             if transaction_scores:

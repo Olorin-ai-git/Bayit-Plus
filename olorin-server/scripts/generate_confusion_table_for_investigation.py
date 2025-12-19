@@ -704,9 +704,33 @@ async def generate_confusion_table(
             take_rate = revenue_config.take_rate_percent
             lifetime_multiplier = revenue_config.lifetime_multiplier
 
-            # Check Olorin's prediction: only calculate value if Olorin recommended blocking
-            olorin_predicted_fraud = risk_score is not None and risk_score >= risk_threshold
+            # Check Olorin's prediction: flag entity as fraud if EITHER:
+            # 1. Entity-level risk_score >= threshold, OR
+            # 2. ANY transaction has predicted_risk >= threshold (at least one fraudulent transaction)
+            entity_level_fraud = risk_score is not None and risk_score >= risk_threshold
+
+            # Count high-risk transactions
+            high_risk_tx_count = sum(
+                1 for tx in transactions
+                if tx.get("predicted_risk", 0) >= risk_threshold
+            )
+            # Transaction-level fraud requires MULTIPLE high-risk transactions (not just one)
+            # Configurable via environment: MIN_HIGH_RISK_TX_COUNT (default 3) and MIN_HIGH_RISK_TX_RATIO (default 0.10)
+            min_high_risk_count = int(os.getenv("MIN_HIGH_RISK_TX_COUNT", "3"))
+            min_high_risk_ratio = float(os.getenv("MIN_HIGH_RISK_TX_RATIO", "0.10"))  # 10% of transactions
+
+            total_tx = len(transactions) if transactions else 1
+            high_risk_ratio = high_risk_tx_count / total_tx if total_tx > 0 else 0
+
+            # Flag as fraud if EITHER minimum count OR minimum ratio is exceeded
+            tx_level_fraud = (high_risk_tx_count >= min_high_risk_count) or (high_risk_ratio >= min_high_risk_ratio)
+
+            # CRITICAL: Flag entity as fraud if entity-level OR transaction-level criteria met
+            olorin_predicted_fraud = entity_level_fraud or tx_level_fraud
+
             logger.info(f"   Olorin Risk Score: {risk_score}, Threshold: {risk_threshold}")
+            logger.info(f"   Entity-level fraud: {entity_level_fraud} (score >= threshold)")
+            logger.info(f"   Transaction-level fraud: {tx_level_fraud} ({high_risk_tx_count}/{total_tx} = {high_risk_ratio:.1%} >= {min_high_risk_count} count or {min_high_risk_ratio:.0%} ratio)")
             logger.info(f"   Olorin Prediction: {'FRAUD (recommend block)' if olorin_predicted_fraud else 'LEGITIMATE (no action)'}")
 
             # Calculate GMV window dates from config
@@ -744,7 +768,7 @@ async def generate_confusion_table(
                     "investigation_window_end": window_end.isoformat(),
                     "gmv_window_start": gmv_window_start.isoformat(),
                     "gmv_window_end": gmv_window_end.isoformat(),
-                    "skip_reason": f"Olorin predicted LEGITIMATE (risk_score={risk_score} < threshold={risk_threshold}). No blocking recommendation was made, so no GMV value calculation applies.",
+                    "skip_reason": f"Olorin predicted LEGITIMATE: entity risk_score={risk_score} < threshold={risk_threshold} AND no transactions >= threshold. No blocking recommendation was made.",
                     "saved_fraud_breakdown": {
                         "reasoning": f"Olorin did not recommend blocking {entity_type} '{entity_value}'. Risk score {risk_score} is below threshold {risk_threshold}.",
                         "methodology": "GMV calculation skipped - Olorin predicted LEGITIMATE",

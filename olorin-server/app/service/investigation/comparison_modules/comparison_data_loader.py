@@ -156,13 +156,17 @@ class ComparisonDataLoader:
             fraud_col = "IS_FRAUD_TX" if is_snowflake else "is_fraud_tx"
             decision_col = "NSURE_LAST_DECISION" if is_snowflake else "nsure_last_decision"
             
+            # Minimum MODEL_SCORE threshold for entity selection
+            min_model_score = float(os.getenv("MIN_AVG_MODEL_SCORE", "0.5"))
+
             if is_snowflake:
                 query = f"""
                 WITH raw_data AS (
-                    SELECT 
+                    SELECT
                         EMAIL,
                         MERCHANT_NAME,
                         COUNT(*) as total_count,
+                        AVG({model_score_col}) as avg_model_score,
                         SUM({model_score_col} * {amount_col}) * COUNT(*) as risk_weighted_value,
                         COUNT(CASE WHEN {fraud_col} = 1 THEN 1 END) as fraud_count
                     FROM {db_provider.get_full_table_name()}
@@ -172,6 +176,7 @@ class ComparisonDataLoader:
                       AND MERCHANT_NAME IS NOT NULL
                       AND UPPER({decision_col}) = 'APPROVED'
                     GROUP BY EMAIL, MERCHANT_NAME
+                    HAVING AVG({model_score_col}) >= {min_model_score}
                 ),
                 ranked_data AS (
                     SELECT 
@@ -192,10 +197,11 @@ class ComparisonDataLoader:
             else:
                 query = f"""
                 WITH raw_data AS (
-                    SELECT 
+                    SELECT
                         email,
                         merchant_name,
                         COUNT(*) as total_count,
+                        AVG({model_score_col}) as avg_model_score,
                         SUM({model_score_col} * {amount_col}) * COUNT(*) as risk_weighted_value,
                         COUNT(CASE WHEN {fraud_col} = 1 THEN 1 END) as fraud_count
                     FROM {db_provider.get_full_table_name()}
@@ -205,6 +211,7 @@ class ComparisonDataLoader:
                       AND merchant_name IS NOT NULL
                       AND UPPER({decision_col}) = 'APPROVED'
                     GROUP BY email, merchant_name
+                    HAVING AVG({model_score_col}) >= {min_model_score}
                 ),
                 ranked_data AS (
                     SELECT 
@@ -254,7 +261,7 @@ class ComparisonDataLoader:
                         "total_count": total
                     })
                     
-            self.logger.info(f"✅ Found {len(normalized_results)} fraudulent email-merchant pairs")
+            self.logger.info(f"✅ Found {len(normalized_results)} top-risk email-merchant pairs (AVG MODEL_SCORE >= {min_model_score})")
             # Log first result to debug metadata flow
             if normalized_results:
                 self.logger.info(f"   First result sample: {normalized_results[0]}")

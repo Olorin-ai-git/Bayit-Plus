@@ -53,6 +53,31 @@ class RiskAnalyzer:
         self._cache_timestamp = None
         self._cache_ttl = 300  # 5 minutes cache
 
+    def _get_reference_time(self) -> datetime:
+        """Get current time or simulated reference time."""
+        ref_date = os.getenv("ANALYZER_REFERENCE_DATE")
+        if ref_date:
+            try:
+                # Handle YYYY-MM-DD format by adding time
+                if len(ref_date) == 10:
+                    ref_date += "T12:00:00"
+                return datetime.fromisoformat(ref_date)
+            except ValueError:
+                logger.warning(f"Invalid ANALYZER_REFERENCE_DATE format: {ref_date}")
+        return datetime.utcnow()
+
+    def _get_current_timestamp_sql(self, db_provider: str) -> str:
+        """Get SQL for current timestamp or simulated reference time."""
+        ref_date = os.getenv("ANALYZER_REFERENCE_DATE")
+        if ref_date:
+            # Handle YYYY-MM-DD format by adding time
+            if len(ref_date) == 10:
+                ref_date += " 12:00:00"
+            # Basic sanitization
+            ref_date = ref_date.replace("'", "")
+            return f"'{ref_date}'::TIMESTAMP" if db_provider == "postgresql" else f"TO_TIMESTAMP('{ref_date}')"
+        return "CURRENT_TIMESTAMP()"
+
     def _load_configuration(self):
         """Load analytics configuration from environment."""
         # Default configuration from .env (single source of truth)
@@ -202,7 +227,7 @@ class RiskAnalyzer:
             window_duration_hours = hours % 24
 
             # End date: capped at max_lookback_days ago
-            end_date = datetime.utcnow() - timedelta(days=max_lookback_days)
+            end_date = self._get_reference_time() - timedelta(days=max_lookback_days)
             # Start date: end_date - window_duration
             start_date = end_date - timedelta(
                 days=window_duration_days, hours=window_duration_hours
@@ -266,14 +291,15 @@ class RiskAnalyzer:
             validated_group_by = self._validate_column_name(group_by)
 
             # Build same date filter as main query
+            current_ts_sql = self._get_current_timestamp_sql(db_provider)
             if db_provider == "snowflake":
                 end_timestamp_expr = (
-                    f"DATEADD(day, -{max_lookback_days}, CURRENT_TIMESTAMP())"
+                    f"DATEADD(day, -{max_lookback_days}, {current_ts_sql})"
                 )
                 start_timestamp_expr = f"DATEADD(day, -{window_duration_days}, DATEADD(hour, -{window_duration_hours}, {end_timestamp_expr}))"
                 date_filter_diag = f"{datetime_col} >= {start_timestamp_expr} AND {datetime_col} < {end_timestamp_expr}"
             else:
-                date_filter_diag = f"{datetime_col} >= CURRENT_TIMESTAMP() - INTERVAL '{max_lookback_days + window_duration_days} days' - INTERVAL '{window_duration_hours} hours' AND {datetime_col} < CURRENT_TIMESTAMP() - INTERVAL '{max_lookback_days} days'"
+                date_filter_diag = f"{datetime_col} >= {current_ts_sql} - INTERVAL '{max_lookback_days + window_duration_days} days' - INTERVAL '{window_duration_hours} hours' AND {datetime_col} < {current_ts_sql} - INTERVAL '{max_lookback_days} days'"
 
             logger.info(f"🔍 Diagnostic date filter SQL:")
             logger.info(f"   {date_filter_diag}")
@@ -892,19 +918,20 @@ class RiskAnalyzer:
         window_duration_days = hours // 24
         window_duration_hours = hours % 24
 
+        current_ts_sql = self._get_current_timestamp_sql(db_provider)
         if db_provider == "snowflake":
             # End date: capped at max_lookback_days ago (cannot be later than 6 months ago)
             # Start date: end_date - window_duration
             # Simplify: Calculate end timestamp first, then subtract window duration
             end_timestamp_expr = (
-                f"DATEADD(day, -{max_lookback_days}, CURRENT_TIMESTAMP())"
+                f"DATEADD(day, -{max_lookback_days}, {current_ts_sql})"
             )
             start_timestamp_expr = f"DATEADD(day, -{window_duration_days}, DATEADD(hour, -{window_duration_hours}, {end_timestamp_expr}))"
             date_filter = f"{datetime_col} >= {start_timestamp_expr} AND {datetime_col} < {end_timestamp_expr}"
         else:
             # End date: capped at max_lookback_days ago
             # Start date: end_date - window_duration
-            date_filter = f"{datetime_col} >= CURRENT_TIMESTAMP() - INTERVAL '{max_lookback_days + window_duration_days} days' - INTERVAL '{window_duration_hours} hours' AND {datetime_col} < CURRENT_TIMESTAMP() - INTERVAL '{max_lookback_days} days'"
+            date_filter = f"{datetime_col} >= {current_ts_sql} - INTERVAL '{max_lookback_days + window_duration_days} days' - INTERVAL '{window_duration_hours} hours' AND {datetime_col} < {current_ts_sql} - INTERVAL '{max_lookback_days} days'"
 
         # CRITICAL: Use GMV for USD-normalized amounts, not PAID_AMOUNT_VALUE_IN_CURRENCY (local currency)
         base_query = f"""
@@ -1116,14 +1143,15 @@ class RiskAnalyzer:
             window_duration_days = hours // 24
             window_duration_hours = hours % 24
 
+            current_ts_sql = self._get_current_timestamp_sql(db_provider)
             if db_provider == "snowflake":
                 # End date: capped at max_lookback_days ago
                 # Start date: end_date - window_duration
-                date_filter = f"{datetime_col} >= DATEADD(day, -{max_lookback_days + window_duration_days}, DATEADD(hour, -{window_duration_hours}, CURRENT_TIMESTAMP())) AND {datetime_col} < DATEADD(day, -{max_lookback_days}, CURRENT_TIMESTAMP())"
+                date_filter = f"{datetime_col} >= DATEADD(day, -{max_lookback_days + window_duration_days}, DATEADD(hour, -{window_duration_hours}, {current_ts_sql})) AND {datetime_col} < DATEADD(day, -{max_lookback_days}, {current_ts_sql})"
             else:
                 # End date: capped at max_lookback_days ago
                 # Start date: end_date - window_duration
-                date_filter = f"{datetime_col} >= CURRENT_TIMESTAMP() - INTERVAL '{max_lookback_days + window_duration_days} days' - INTERVAL '{window_duration_hours} hours' AND {datetime_col} < CURRENT_TIMESTAMP() - INTERVAL '{max_lookback_days} days'"
+                date_filter = f"{datetime_col} >= {current_ts_sql} - INTERVAL '{max_lookback_days + window_duration_days} days' - INTERVAL '{window_duration_hours} hours' AND {datetime_col} < {current_ts_sql} - INTERVAL '{max_lookback_days} days'"
 
             # Build query with schema-validated column name and properly escaped values
             # Filter out NULL MODEL_SCORE to ensure accurate risk calculations

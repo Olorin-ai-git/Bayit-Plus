@@ -199,3 +199,6 @@ Phase 7 → T031 can run in parallel with other frontend tasks
 - Log confidence levels for each calculation
 - Currency is assumed to be consistent (no conversion needed)
 
+
+
+

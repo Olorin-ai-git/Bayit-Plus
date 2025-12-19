@@ -39,7 +39,7 @@ async def run_auto_comparisons_for_top_entities(
     **kwargs: Any,  # Accept extra arguments like risk_analyzer_results
 ) -> List[Dict[str, Any]]:
     """
-    Run investigations for fraudulent emails grouped by merchant.
+    Run investigations for top-risk emails grouped by merchant.
 
     NEW LOGIC (Feature 024 - Revenue Implication Tracking):
     1. Find emails with fraud in configurable historical window (default 12+ months ago).
@@ -67,7 +67,7 @@ async def run_auto_comparisons_for_top_entities(
     reporter = ComparisonReporter()
     revenue_calculator = RevenueCalculator(revenue_config)
 
-    # 2. Get fraudulent emails grouped by merchant
+    # 2. Get top-risk emails grouped by merchant (ranked by MODEL_SCORE * AMOUNT)
     # Feature 024: Use configurable historical offset (default 12 months)
     import random
     
@@ -108,11 +108,11 @@ async def run_auto_comparisons_for_top_entities(
     )
 
     if not fraud_pairs:
-        logger.warning(f"⚠️ No fraudulent emails found in the window ending {reference_time}")
+        logger.warning(f"⚠️ No top-risk emails found in the window ending {reference_time}")
         return []
 
     logger.info(
-        f"📊 Found {len(fraud_pairs)} fraudulent email-merchant pairs to investigate"
+        f"📊 Found {len(fraud_pairs)} top-risk email-merchant pairs to investigate"
     )
     
     # Store analyzer metadata for reporting

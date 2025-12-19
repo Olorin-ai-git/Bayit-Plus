@@ -166,3 +166,6 @@ def get_revenue_config(force_reload: bool = False) -> RevenueConfig:
         _config_instance = load_revenue_config()
     return _config_instance
 
+
+
+
