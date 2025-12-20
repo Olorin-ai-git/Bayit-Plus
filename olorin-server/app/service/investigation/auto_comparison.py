@@ -120,12 +120,13 @@ async def run_auto_comparisons_for_top_entities(
     # Fetch entities based on mode
     if compound_entity_enabled:
         # COMPOUND MODE: Get EMAIL + DEVICE_ID + PAYMENT_METHOD_TOKEN combinations
-        fraud_pairs = await loader.get_fraudulent_compound_entities(
+        # Selected based on MODEL_SCORE risk signal, NOT confirmed fraud
+        high_risk_entities = await loader.get_high_risk_compound_entities(
             lookback_hours=time_window_hours,
-            min_fraud_tx=1,
             limit=max_entities,
             reference_time=reference_time,
         )
+        fraud_pairs = high_risk_entities  # Keep variable name for compatibility
         entity_mode = "compound"
     else:
         # SINGLE MODE: Get EMAIL only (original behavior)
@@ -469,7 +470,7 @@ async def create_and_wait_for_investigation(
     entity_value: str,
     window_start: datetime,
     window_end: datetime,
-    max_wait_seconds: int = 600,
+    max_wait_seconds: int = 6000,
 ) -> Optional[Dict[str, Any]]:
     """
     Legacy compatibility wrapper.

@@ -30,7 +30,7 @@ class ComparisonExecutor:
         entity_value: str,
         window_start: datetime,
         window_end: datetime,
-        max_wait_seconds: int = 600,
+        max_wait_seconds: int = 6000,
         merchant_name: Optional[str] = None,
         fraud_tx_count: int = 0,
         total_tx_count: int = 0,
@@ -180,6 +180,8 @@ class ComparisonExecutor:
                 # Wait for completion
                 start_time = datetime.now()
                 while (datetime.now() - start_time).total_seconds() < max_wait_seconds:
+                    # Expire cached objects to force fresh database read
+                    db.expire_all()
                     state = get_state_by_id(
                         db, investigation_id, "auto-comparison-system"
                     )
@@ -187,7 +189,8 @@ class ComparisonExecutor:
                         break
                     await asyncio.sleep(5)
 
-                # Get final state
+                # Get final state (expire again to ensure fresh read)
+                db.expire_all()
                 state = get_state_by_id(db, investigation_id, "auto-comparison-system")
                 if state and state.status == "COMPLETED":
                     self.logger.info(
@@ -219,7 +222,7 @@ class ComparisonExecutor:
         entities: list,
         window_start: datetime,
         window_end: datetime,
-        max_wait_seconds: int = 600,
+        max_wait_seconds: int = 6000,
         merchant_name: Optional[str] = None,
         fraud_tx_count: int = 0,
         total_tx_count: int = 0,
@@ -387,6 +390,8 @@ class ComparisonExecutor:
                 # Wait for completion
                 start_time = datetime.now()
                 while (datetime.now() - start_time).total_seconds() < max_wait_seconds:
+                    # Expire cached objects to force fresh database read
+                    db.expire_all()
                     state = get_state_by_id(
                         db, investigation_id, "auto-comparison-system"
                     )
@@ -394,7 +399,8 @@ class ComparisonExecutor:
                         break
                     await asyncio.sleep(5)
 
-                # Get final state
+                # Get final state (expire again to ensure fresh read)
+                db.expire_all()
                 state = get_state_by_id(db, investigation_id, "auto-comparison-system")
                 if state and state.status == "COMPLETED":
                     self.logger.info(

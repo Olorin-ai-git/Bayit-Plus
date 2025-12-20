@@ -91,7 +91,7 @@ def check_environment_variables() -> ValidationResult:
     ]
 
     optional_vars = [
-        "ANOMALY_DETECTION_INTERVAL_MINUTES",
+        "ANOMALY_DETECTION_RUN_INTERVAL_MINUTES",
         "ANOMALY_DETECTION_ENABLED",
         "ANOMALY_SEVERITY_INFO_MAX",
         "ANOMALY_SEVERITY_WARN_MAX",

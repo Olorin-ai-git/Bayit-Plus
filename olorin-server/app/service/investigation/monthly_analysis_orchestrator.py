@@ -209,7 +209,7 @@ class MonthlyAnalysisOrchestrator:
     def _save_checkpoint(self, state: MonthlyAnalysisState) -> None:
         """Save checkpoint to disk."""
         checkpoint_path = self._get_checkpoint_path(state.year, state.month)
-        checkpoint_path.write_text(state.json(indent=2))
+        checkpoint_path.write_text(state.model_dump_json(indent=2))
         logger.debug(f"💾 Checkpoint saved: day {state.last_completed_day}")
 
     def _load_checkpoint(

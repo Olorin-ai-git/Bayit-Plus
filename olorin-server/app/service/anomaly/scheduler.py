@@ -43,8 +43,9 @@ class DetectionScheduler:
         self._running = False
 
         # Get configuration from environment
+        # Use ANOMALY_DETECTION_RUN_INTERVAL_MINUTES (same as anomaly_config.py)
         self.default_interval_minutes = int(
-            os.getenv("ANOMALY_DETECTION_INTERVAL_MINUTES", "15")
+            os.getenv("ANOMALY_DETECTION_RUN_INTERVAL_MINUTES", "15")
         )
         self.enabled = os.getenv("ENABLE_SCHEDULED_DETECTION", "true").lower() == "true"
 

@@ -272,22 +272,25 @@ class ComparisonDataLoader:
             self.logger.error(f"❌ Failed to fetch fraudulent emails: {e}")
             return []
 
-    async def get_fraudulent_compound_entities(
+    async def get_high_risk_compound_entities(
         self,
         lookback_hours: int = 24,
-        min_fraud_tx: int = 1,
         limit: int = 100,
         reference_time: Optional[datetime] = None,
     ) -> List[Dict[str, Any]]:
         """
-        Get compound entities (EMAIL + DEVICE_ID + PAYMENT_METHOD_TOKEN) with fraud.
+        Get high-risk compound entities (EMAIL + DEVICE_ID + PAYMENT_METHOD_TOKEN).
 
-        Compound entities have significantly lower false positive rates compared
-        to single entity investigation because they are more specific.
+        Selection criteria:
+        - AVG(MODEL_SCORE) >= 0.5 (configurable via MIN_AVG_MODEL_SCORE)
+        - COUNT(*) >= 3 (minimum transactions for statistical significance)
+        - Top 30% by risk_weighted_value (configurable via ANALYTICS_DEFAULT_TOP_PERCENTAGE)
+        - Ordered by risk_weighted_value = SUM(MODEL_SCORE * AMOUNT) DESC
+
+        Does NOT filter by IS_FRAUD_TX - that is used later for evaluation only.
 
         Args:
             lookback_hours: Hours to look back (default 24h)
-            min_fraud_tx: Minimum fraudulent transactions required
             limit: Maximum number of results
             reference_time: Optional reference time to look back from
 
@@ -313,11 +316,18 @@ class ComparisonDataLoader:
 
             # Configuration
             model_score_col = os.getenv("ANALYTICS_MODEL_SCORE_COL", "MODEL_SCORE")
-            amount_col = os.getenv("ANALYTICS_AMOUNT_COL", "PAID_AMOUNT_VALUE_IN_CURRENCY")
-            min_model_score = float(os.getenv("MIN_AVG_MODEL_SCORE", "0.5"))
+            top_percentage = float(os.getenv("ANALYTICS_DEFAULT_TOP_PERCENTAGE", "30"))
+            top_decimal = top_percentage / 100.0
+
+            # Use APPROVED transactions - only these have ground truth IS_FRAUD_TX labels
+            # for confusion matrix evaluation (NOT_REVIEWED lacks fraud labels)
+            target_decision = os.getenv("ANALYZER_TARGET_DECISION", "APPROVED")
 
             if is_snowflake:
                 table = db_provider.get_full_table_name()
+                # Use two formulas and combine results:
+                # 1. Velocity: tx_count / active_hours (captures burst patterns)
+                # 2. Sweet spot: 3x score if in 0.45-0.6 range (medium-risk zone)
                 query = f"""
                 WITH compound_entities AS (
                     SELECT
@@ -328,7 +338,13 @@ class ComparisonDataLoader:
                         COUNT(*) as total_count,
                         SUM(CASE WHEN IS_FRAUD_TX = 1 THEN 1 ELSE 0 END) as fraud_count,
                         AVG({model_score_col}) as avg_model_score,
-                        SUM({model_score_col} * {amount_col}) as risk_weighted_value
+                        COUNT(DISTINCT DATE_TRUNC(hour, TX_DATETIME)) as active_hours,
+                        -- Velocity: transactions per hour (burst pattern detection)
+                        COUNT(*) / NULLIF(COUNT(DISTINCT DATE_TRUNC(hour, TX_DATETIME)), 0) as velocity_score,
+                        -- Sweet spot: boost scores in the 0.45-0.6 range
+                        CASE WHEN AVG({model_score_col}) BETWEEN 0.45 AND 0.6
+                             THEN AVG({model_score_col}) * 3
+                             ELSE AVG({model_score_col}) END as sweet_spot_score
                     FROM {table}
                     WHERE TX_DATETIME >= '{start_time.isoformat()}'
                       AND TX_DATETIME <= '{end_time.isoformat()}'
@@ -336,26 +352,48 @@ class ComparisonDataLoader:
                       AND DEVICE_ID IS NOT NULL
                       AND PAYMENT_METHOD_TOKEN IS NOT NULL
                       AND MERCHANT_NAME IS NOT NULL
-                      AND UPPER(NSURE_LAST_DECISION) = 'APPROVED'
+                      AND UPPER(NSURE_LAST_DECISION) = '{target_decision}'
                     GROUP BY EMAIL, DEVICE_ID, PAYMENT_METHOD_TOKEN, MERCHANT_NAME
-                    HAVING SUM(CASE WHEN IS_FRAUD_TX = 1 THEN 1 ELSE 0 END) >= {min_fraud_tx}
-                       AND AVG({model_score_col}) >= {min_model_score}
+                    HAVING COUNT(*) >= 3
+                ),
+                velocity_ranked AS (
+                    SELECT *,
+                           PERCENT_RANK() OVER (ORDER BY velocity_score DESC) as velocity_rank,
+                           'velocity' as selection_method
+                    FROM compound_entities
+                ),
+                sweet_ranked AS (
+                    SELECT *,
+                           PERCENT_RANK() OVER (ORDER BY sweet_spot_score DESC) as sweet_rank,
+                           'sweet_spot' as selection_method
+                    FROM compound_entities
+                ),
+                combined AS (
+                    -- Top entities by velocity
+                    SELECT EMAIL, DEVICE_ID, PAYMENT_METHOD_TOKEN, MERCHANT_NAME,
+                           fraud_count, total_count, avg_model_score, velocity_score, sweet_spot_score,
+                           velocity_rank as rank_value, selection_method
+                    FROM velocity_ranked
+                    WHERE velocity_rank <= {top_decimal}
+                    UNION
+                    -- Top entities by sweet spot score
+                    SELECT EMAIL, DEVICE_ID, PAYMENT_METHOD_TOKEN, MERCHANT_NAME,
+                           fraud_count, total_count, avg_model_score, velocity_score, sweet_spot_score,
+                           sweet_rank as rank_value, selection_method
+                    FROM sweet_ranked
+                    WHERE sweet_rank <= {top_decimal}
                 )
-                SELECT
-                    EMAIL,
-                    DEVICE_ID,
-                    PAYMENT_METHOD_TOKEN,
-                    MERCHANT_NAME,
-                    fraud_count,
-                    total_count,
-                    avg_model_score,
-                    risk_weighted_value
-                FROM compound_entities
-                ORDER BY fraud_count DESC, risk_weighted_value DESC
+                SELECT DISTINCT
+                    EMAIL, DEVICE_ID, PAYMENT_METHOD_TOKEN, MERCHANT_NAME,
+                    fraud_count, total_count, avg_model_score,
+                    velocity_score, sweet_spot_score
+                FROM combined
+                ORDER BY velocity_score DESC, sweet_spot_score DESC
                 LIMIT {limit}
                 """
             else:
                 table = db_provider.get_full_table_name()
+                # Same dual-formula approach for non-Snowflake
                 query = f"""
                 WITH compound_entities AS (
                     SELECT
@@ -366,7 +404,10 @@ class ComparisonDataLoader:
                         COUNT(*) as total_count,
                         SUM(CASE WHEN is_fraud_tx = 1 THEN 1 ELSE 0 END) as fraud_count,
                         AVG({model_score_col}) as avg_model_score,
-                        SUM({model_score_col} * {amount_col}) as risk_weighted_value
+                        COUNT(*) * 1.0 / COUNT(DISTINCT strftime('%Y-%m-%d %H', tx_datetime)) as velocity_score,
+                        CASE WHEN AVG({model_score_col}) BETWEEN 0.45 AND 0.6
+                             THEN AVG({model_score_col}) * 3
+                             ELSE AVG({model_score_col}) END as sweet_spot_score
                     FROM {table}
                     WHERE tx_datetime >= '{start_time.isoformat()}'
                       AND tx_datetime <= '{end_time.isoformat()}'
@@ -374,26 +415,24 @@ class ComparisonDataLoader:
                       AND device_id IS NOT NULL
                       AND payment_method_token IS NOT NULL
                       AND merchant_name IS NOT NULL
-                      AND UPPER(nsure_last_decision) = 'APPROVED'
+                      AND UPPER(nsure_last_decision) = '{target_decision}'
                     GROUP BY email, device_id, payment_method_token, merchant_name
-                    HAVING SUM(CASE WHEN is_fraud_tx = 1 THEN 1 ELSE 0 END) >= {min_fraud_tx}
-                       AND AVG({model_score_col}) >= {min_model_score}
+                    HAVING COUNT(*) >= 3
                 )
-                SELECT
-                    email,
-                    device_id,
-                    payment_method_token,
-                    merchant_name,
-                    fraud_count,
-                    total_count,
-                    avg_model_score,
-                    risk_weighted_value
+                SELECT DISTINCT
+                    email, device_id, payment_method_token, merchant_name,
+                    fraud_count, total_count, avg_model_score,
+                    velocity_score, sweet_spot_score
                 FROM compound_entities
-                ORDER BY fraud_count DESC, risk_weighted_value DESC
+                ORDER BY velocity_score DESC, sweet_spot_score DESC
                 LIMIT {limit}
                 """
 
-            self.logger.info(f"🔍 Executing compound entity fraud query (lookback={lookback_hours}h)")
+            self.logger.info(
+                f"🔍 Executing dual-formula entity query: decision={target_decision}, "
+                f"min_tx=3, top_{top_percentage}% each formula, "
+                f"formulas=[velocity, sweet_spot]"
+            )
 
             if is_async:
                 results = await db_provider.execute_query_async(query)
@@ -428,8 +467,8 @@ class ComparisonDataLoader:
                     })
 
             self.logger.info(
-                f"✅ Found {len(normalized_results)} compound entities "
-                f"(EMAIL+DEVICE+PMT) with fraud (AVG MODEL_SCORE >= {min_model_score})"
+                f"✅ Found {len(normalized_results)} high-risk compound entities "
+                f"(EMAIL+DEVICE+PMT) using dual-formula selection [velocity + sweet_spot]"
             )
             if normalized_results:
                 self.logger.info(f"   First compound entity: {normalized_results[0]}")

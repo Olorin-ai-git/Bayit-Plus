@@ -34,6 +34,21 @@
   ],
   "hosting": [
     {
+      "target": "olorin-web-portal",
+      "public": "olorin-web-portal/build",
+      "ignore": [
+        "firebase.json",
+        "**/.*",
+        "**/node_modules/**"
+      ],
+      "rewrites": [
+        {
+          "source": "**",
+          "destination": "/index.html"
+        }
+      ]
+    },
+    {
       "target": "olorin-frontend",
       "public": "olorin-front/build",
       "ignore": [

@@ -3,7 +3,7 @@
   "targets": {
     "olorin-ai": {
       "hosting": {
-        "olorin-frontend": [
+        "olorin-web-portal": [
           "olorin-ai"
         ]
       }
