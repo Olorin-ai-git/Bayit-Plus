@@ -655,19 +655,32 @@ class FraudDetectionFeatures:
                 "is_merchant_investigation": is_merchant_investigation,
             }
 
-            # Run async analysis synchronously
-            loop = asyncio.new_event_loop()
+            # Run async analysis - handle both sync and async contexts
             try:
-                assessment = loop.run_until_complete(
-                    engine.analyze_entity(
-                        entity_type="email",
-                        entity_value="analysis",
-                        features=llm_features,
-                        merchant_name=None,
-                    )
+                # Check if there's already a running event loop
+                loop = asyncio.get_running_loop()
+                # If we're already in an async context, use create_task
+                # Note: We can't await here since we're in a sync function
+                # So we'll use run_coroutine_threadsafe or nest_asyncio
+                logger.warning(
+                    "⚠️ Detected running event loop - LLM analysis requires sync context"
                 )
-            finally:
-                loop.close()
+                # Fall back to rule-based scoring in async context
+                return self._fallback_rule_based_score(features, is_merchant_investigation)
+            except RuntimeError:
+                # No running loop - we can create our own
+                loop = asyncio.new_event_loop()
+                try:
+                    assessment = loop.run_until_complete(
+                        engine.analyze_entity(
+                            entity_type="email",
+                            entity_value="analysis",
+                            features=llm_features,
+                            merchant_name=None,
+                        )
+                    )
+                finally:
+                    loop.close()
 
             if assessment.error:
                 logger.warning(f"LLM analysis failed: {assessment.error}")

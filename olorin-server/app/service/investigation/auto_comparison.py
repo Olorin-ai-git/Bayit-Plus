@@ -22,6 +22,9 @@ from app.service.investigation.comparison_modules.comparison_executor import (
 from app.service.investigation.comparison_modules.comparison_reporter import (
     ComparisonReporter,
 )
+from scripts.generate_confusion_table_for_investigation import (
+    generate_confusion_table,
+)
 from app.service.investigation.revenue_calculator import RevenueCalculator
 from app.service.logging import get_bridge_logger
 
@@ -165,31 +168,43 @@ async def run_auto_comparisons_for_top_entities(
     # investigation_window_end_months = 12 (default)
     inv_start_offset = revenue_config.investigation_window_start_months
     inv_end_offset = revenue_config.investigation_window_end_months
-    
-    window_end = now - timedelta(days=inv_end_offset * 30)
-    window_start = now - timedelta(days=inv_start_offset * 30)
-    
+
+    # When reference_date is provided (for monthly analysis), use it as the base time
+    # for window calculations. This ensures historical analysis looks at the correct
+    # time periods relative to the analysis date, not relative to current date.
+    base_time = reference_time if reference_date is not None else now
+
+    window_end = base_time - timedelta(days=inv_end_offset * 30)
+    window_start = base_time - timedelta(days=inv_start_offset * 30)
+
     # Feature 024: GMV window is SEPARATE from investigation window
-    # Investigation Window: When fraud was analyzed (18-12 months ago)
-    # GMV Window: FUTURE period showing what would have been saved (12-6 months ago)
+    # Investigation Window: When fraud was analyzed (24-12 months ago from reference_date)
+    # GMV Window: PAST period showing what fraud occurred AFTER investigation
     # This demonstrates: "If Olorin had blocked this entity at investigation time,
-    # these FUTURE losses would have been prevented"
+    # these losses would have been prevented"
     gmv_start_offset = revenue_config.saved_fraud_gmv_start_months  # Default: 12
     gmv_end_offset = revenue_config.saved_fraud_gmv_end_months      # Default: 6
-    gmv_window_start = now - timedelta(days=gmv_start_offset * 30)
-    gmv_window_end = now - timedelta(days=gmv_end_offset * 30)
 
+    # CRITICAL: GMV window is ALWAYS calculated as PAST relative to reference_date/now
+    # For Dec 4, 2024 reference_date:
+    #   Investigation: Dec 4, 2022 - Dec 4, 2023 (24-12 months ago)
+    #   GMV Window: Dec 4, 2023 - June 4, 2024 (12-6 months ago)
+    # This queries HISTORICAL data that actually exists in the database
+    gmv_window_start = base_time - timedelta(days=gmv_start_offset * 30)  # 12 months ago
+    gmv_window_end = base_time - timedelta(days=gmv_end_offset * 30)      # 6 months ago
+
+    base_time_desc = "reference_date" if reference_date is not None else "now"
     logger.info(
         f"📅 Investigation window: {window_start.date()} to {window_end.date()} "
-        f"({inv_start_offset}-{inv_end_offset} months ago)"
+        f"({inv_start_offset}-{inv_end_offset} months before {base_time_desc}={base_time.date()})"
     )
     logger.info(
         f"💰 GMV calculation window: {gmv_window_start.date()} to {gmv_window_end.date()} "
-        f"({gmv_start_offset}-{gmv_end_offset} months ago)"
+        f"({gmv_start_offset}-{gmv_end_offset} months before {base_time_desc}={base_time.date()})"
     )
     logger.info(
-        "💡 Methodology: If Olorin had identified this entity as risky during investigation, "
-        "we would have prevented these FUTURE losses"
+        "💡 Methodology: If Olorin had blocked this entity at end of investigation, "
+        "fraud in the GMV window would have been prevented"
     )
 
     async def process_single_comparison(i: int, pair: Dict[str, Any]) -> Optional[Dict[str, Any]]:
@@ -249,9 +264,26 @@ async def run_auto_comparisons_for_top_entities(
                     )
 
                 if result:
-                    # Generate confusion matrix immediately
+                    # Generate confusion matrix and get TP/FP/TN/FN data for monthly aggregation
                     inv_id = result["investigation_id"]
-                    await executor.generate_confusion_matrix(inv_id)
+                    try:
+                        cm_result = await generate_confusion_table(inv_id)
+                        if cm_result and cm_result.get("aggregated_matrix"):
+                            agg = cm_result["aggregated_matrix"]
+                            # AggregatedConfusionMatrix uses total_TP, total_FP, etc.
+                            result["confusion_matrix"] = {
+                                "TP": getattr(agg, "total_TP", 0) if hasattr(agg, "total_TP") else agg.get("total_TP", 0),
+                                "FP": getattr(agg, "total_FP", 0) if hasattr(agg, "total_FP") else agg.get("total_FP", 0),
+                                "TN": getattr(agg, "total_TN", 0) if hasattr(agg, "total_TN") else agg.get("total_TN", 0),
+                                "FN": getattr(agg, "total_FN", 0) if hasattr(agg, "total_FN") else agg.get("total_FN", 0),
+                            }
+                            logger.info(f"📊 [{i+1}] Confusion matrix: TP={result['confusion_matrix']['TP']}, FP={result['confusion_matrix']['FP']}")
+                        else:
+                            logger.warning(f"⚠️ [{i+1}] No confusion matrix data returned")
+                            result["confusion_matrix"] = {"TP": 0, "FP": 0, "TN": 0, "FN": 0}
+                    except Exception as cm_err:
+                        logger.warning(f"⚠️ [{i+1}] Could not generate confusion matrix: {cm_err}")
+                        result["confusion_matrix"] = {"TP": 0, "FP": 0, "TN": 0, "FN": 0}
 
                     # Enrich result with metadata
                     result["merchant_name"] = merchant

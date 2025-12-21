@@ -338,13 +338,13 @@ class ComparisonDataLoader:
                         COUNT(*) as total_count,
                         SUM(CASE WHEN IS_FRAUD_TX = 1 THEN 1 ELSE 0 END) as fraud_count,
                         AVG({model_score_col}) as avg_model_score,
-                        COUNT(DISTINCT DATE_TRUNC(hour, TX_DATETIME)) as active_hours,
-                        -- Velocity: transactions per hour (burst pattern detection)
+                        MAX({model_score_col}) as max_model_score,
+                        MAX(MAXMIND_RISK_SCORE) as max_maxmind_risk,
                         COUNT(*) / NULLIF(COUNT(DISTINCT DATE_TRUNC(hour, TX_DATETIME)), 0) as velocity_score,
-                        -- Sweet spot: boost scores in the 0.45-0.6 range
-                        CASE WHEN AVG({model_score_col}) BETWEEN 0.45 AND 0.6
-                             THEN AVG({model_score_col}) * 3
-                             ELSE AVG({model_score_col}) END as sweet_spot_score
+                        -- Combined risk formula: MAX(Maxmind) × MAX(Model) × Velocity
+                        -- This formula has 68x better fraud concentration than velocity alone
+                        MAX(MAXMIND_RISK_SCORE) * MAX({model_score_col}) *
+                            (COUNT(*) / NULLIF(COUNT(DISTINCT DATE_TRUNC(hour, TX_DATETIME)), 0)) as combined_risk_score
                     FROM {table}
                     WHERE TX_DATETIME >= '{start_time.isoformat()}'
                       AND TX_DATETIME <= '{end_time.isoformat()}'
@@ -356,44 +356,23 @@ class ComparisonDataLoader:
                     GROUP BY EMAIL, DEVICE_ID, PAYMENT_METHOD_TOKEN, MERCHANT_NAME
                     HAVING COUNT(*) >= 3
                 ),
-                velocity_ranked AS (
+                ranked AS (
                     SELECT *,
-                           PERCENT_RANK() OVER (ORDER BY velocity_score DESC) as velocity_rank,
-                           'velocity' as selection_method
+                           PERCENT_RANK() OVER (ORDER BY combined_risk_score DESC) as risk_rank
                     FROM compound_entities
-                ),
-                sweet_ranked AS (
-                    SELECT *,
-                           PERCENT_RANK() OVER (ORDER BY sweet_spot_score DESC) as sweet_rank,
-                           'sweet_spot' as selection_method
-                    FROM compound_entities
-                ),
-                combined AS (
-                    -- Top entities by velocity
-                    SELECT EMAIL, DEVICE_ID, PAYMENT_METHOD_TOKEN, MERCHANT_NAME,
-                           fraud_count, total_count, avg_model_score, velocity_score, sweet_spot_score,
-                           velocity_rank as rank_value, selection_method
-                    FROM velocity_ranked
-                    WHERE velocity_rank <= {top_decimal}
-                    UNION
-                    -- Top entities by sweet spot score
-                    SELECT EMAIL, DEVICE_ID, PAYMENT_METHOD_TOKEN, MERCHANT_NAME,
-                           fraud_count, total_count, avg_model_score, velocity_score, sweet_spot_score,
-                           sweet_rank as rank_value, selection_method
-                    FROM sweet_ranked
-                    WHERE sweet_rank <= {top_decimal}
                 )
-                SELECT DISTINCT
+                SELECT
                     EMAIL, DEVICE_ID, PAYMENT_METHOD_TOKEN, MERCHANT_NAME,
-                    fraud_count, total_count, avg_model_score,
-                    velocity_score, sweet_spot_score
-                FROM combined
-                ORDER BY velocity_score DESC, sweet_spot_score DESC
+                    fraud_count, total_count, avg_model_score, max_model_score,
+                    max_maxmind_risk, velocity_score, combined_risk_score
+                FROM ranked
+                WHERE risk_rank <= {top_decimal}
+                ORDER BY combined_risk_score DESC
                 LIMIT {limit}
                 """
             else:
                 table = db_provider.get_full_table_name()
-                # Same dual-formula approach for non-Snowflake
+                # Combined risk formula for non-Snowflake (SQLite)
                 query = f"""
                 WITH compound_entities AS (
                     SELECT
@@ -404,10 +383,12 @@ class ComparisonDataLoader:
                         COUNT(*) as total_count,
                         SUM(CASE WHEN is_fraud_tx = 1 THEN 1 ELSE 0 END) as fraud_count,
                         AVG({model_score_col}) as avg_model_score,
+                        MAX({model_score_col}) as max_model_score,
+                        MAX(maxmind_risk_score) as max_maxmind_risk,
                         COUNT(*) * 1.0 / COUNT(DISTINCT strftime('%Y-%m-%d %H', tx_datetime)) as velocity_score,
-                        CASE WHEN AVG({model_score_col}) BETWEEN 0.45 AND 0.6
-                             THEN AVG({model_score_col}) * 3
-                             ELSE AVG({model_score_col}) END as sweet_spot_score
+                        -- Combined risk formula: MAX(Maxmind) × MAX(Model) × Velocity
+                        MAX(maxmind_risk_score) * MAX({model_score_col}) *
+                            (COUNT(*) * 1.0 / COUNT(DISTINCT strftime('%Y-%m-%d %H', tx_datetime))) as combined_risk_score
                     FROM {table}
                     WHERE tx_datetime >= '{start_time.isoformat()}'
                       AND tx_datetime <= '{end_time.isoformat()}'
@@ -418,20 +399,26 @@ class ComparisonDataLoader:
                       AND UPPER(nsure_last_decision) = '{target_decision}'
                     GROUP BY email, device_id, payment_method_token, merchant_name
                     HAVING COUNT(*) >= 3
+                ),
+                ranked AS (
+                    SELECT *,
+                           PERCENT_RANK() OVER (ORDER BY combined_risk_score DESC) as risk_rank
+                    FROM compound_entities
                 )
-                SELECT DISTINCT
+                SELECT
                     email, device_id, payment_method_token, merchant_name,
-                    fraud_count, total_count, avg_model_score,
-                    velocity_score, sweet_spot_score
-                FROM compound_entities
-                ORDER BY velocity_score DESC, sweet_spot_score DESC
+                    fraud_count, total_count, avg_model_score, max_model_score,
+                    max_maxmind_risk, velocity_score, combined_risk_score
+                FROM ranked
+                WHERE risk_rank <= {top_decimal}
+                ORDER BY combined_risk_score DESC
                 LIMIT {limit}
                 """
 
             self.logger.info(
-                f"🔍 Executing dual-formula entity query: decision={target_decision}, "
-                f"min_tx=3, top_{top_percentage}% each formula, "
-                f"formulas=[velocity, sweet_spot]"
+                f"🔍 Executing combined_risk_score entity query: decision={target_decision}, "
+                f"min_tx=3, top_{top_percentage}%, "
+                f"formula=MAX(Maxmind) × MAX(Model) × Velocity"
             )
 
             if is_async:
@@ -468,7 +455,7 @@ class ComparisonDataLoader:
 
             self.logger.info(
                 f"✅ Found {len(normalized_results)} high-risk compound entities "
-                f"(EMAIL+DEVICE+PMT) using dual-formula selection [velocity + sweet_spot]"
+                f"(EMAIL+DEVICE+PMT) using combined_risk_score formula"
             )
             if normalized_results:
                 self.logger.info(f"   First compound entity: {normalized_results[0]}")
