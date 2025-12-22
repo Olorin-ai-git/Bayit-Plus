@@ -176,42 +176,65 @@ async def merchant_agent_node(
             f"[Step 5.2.7] ✅ Merchant analysis complete - Evidence collected: {len(merchant_findings['evidence'])} points"
         )
 
-        # Run merchant validation automatically
-        try:
-            from app.service.logging.investigation_folder_manager import (
-                InvestigationFolderManager,
-            )
+        # Run merchant validation (optional - controlled by environment variable)
+        # This validation is skipped by default to prevent merchant agent timeouts
+        # Set MERCHANT_VALIDATION_ENABLED=true to enable it
+        import os
+        validation_enabled = os.getenv("MERCHANT_VALIDATION_ENABLED", "false").lower() == "true"
+        validation_timeout = int(os.getenv("MERCHANT_VALIDATION_TIMEOUT_SECONDS", "30"))
 
-            from .merchant_validation import get_validation_service
-
-            validation_service = await get_validation_service()
-
-            # Get investigation folder path
-            investigation_folder = None
+        if validation_enabled:
             try:
-                folder_manager = InvestigationFolderManager()
-                investigation_folder = folder_manager.get_investigation_folder(
-                    investigation_id
+                import asyncio
+                from app.service.logging.investigation_folder_manager import (
+                    InvestigationFolderManager,
                 )
+
+                from .merchant_validation import get_validation_service
+
+                validation_service = await get_validation_service()
+
+                # Get investigation folder path
+                investigation_folder = None
+                try:
+                    folder_manager = InvestigationFolderManager()
+                    investigation_folder = folder_manager.get_investigation_folder(
+                        investigation_id
+                    )
+                except Exception as e:
+                    logger.debug(f"Could not get investigation folder: {e}")
+
+                # Run validation with timeout protection
+                try:
+                    validation_results = await asyncio.wait_for(
+                        validation_service.run_validation(
+                            investigation_id=investigation_id,
+                            entity_type=entity_type,
+                            entity_id=entity_id,
+                            merchant_findings=merchant_findings,
+                            investigation_folder=investigation_folder,
+                        ),
+                        timeout=validation_timeout,
+                    )
+                    merchant_findings["validation"] = validation_results
+                    logger.info(f"[Step 5.2.7] ✅ Merchant validation completed")
+                except asyncio.TimeoutError:
+                    logger.warning(
+                        f"[Step 5.2.7] ⚠️ Merchant validation timed out after {validation_timeout}s"
+                    )
+                    merchant_findings["validation"] = {
+                        "validation_complete": False,
+                        "error": "timeout",
+                        "timeout_seconds": validation_timeout,
+                    }
+
             except Exception as e:
-                logger.debug(f"Could not get investigation folder: {e}")
-
-            # Run validation
-            validation_results = await validation_service.run_validation(
-                investigation_id=investigation_id,
-                entity_type=entity_type,
-                entity_id=entity_id,
-                merchant_findings=merchant_findings,
-                investigation_folder=investigation_folder,
+                logger.warning(f"[Step 5.2.7] ⚠️ Merchant validation failed: {e}")
+                # Continue without validation - don't fail the agent
+        else:
+            logger.debug(
+                "[Step 5.2.7] Merchant validation skipped (MERCHANT_VALIDATION_ENABLED=false)"
             )
-
-            # Add validation results to merchant findings
-            merchant_findings["validation"] = validation_results
-            logger.info(f"[Step 5.2.7] ✅ Merchant validation completed")
-
-        except Exception as e:
-            logger.warning(f"[Step 5.2.7] ⚠️ Merchant validation failed: {e}")
-            # Continue without validation - don't fail the agent
 
         # Update state with findings
         return add_domain_findings(state, "merchant", merchant_findings)

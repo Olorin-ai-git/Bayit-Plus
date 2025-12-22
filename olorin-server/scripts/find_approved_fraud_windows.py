@@ -169,8 +169,8 @@ async def find_fraud_windows():
                 (today.year - fraud_date.year) * 12 + today.month - fraud_date.month
             )
 
-            print(f"   ANALYZER_END_OFFSET_MONTHS={months_back}")
-            print(f"   ANALYZER_TIME_WINDOW_HOURS=24")
+            print(f"   SELECTOR_END_OFFSET_MONTHS={months_back}")
+            print(f"   SELECTOR_TIME_WINDOW_HOURS=24")
             print()
             print("Then restart the server to investigate these fraud entities!")
 

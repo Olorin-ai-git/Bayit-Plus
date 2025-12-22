@@ -1268,14 +1268,14 @@ async def run_startup_analysis_flow(
                 )
 
                 # Extract analyzer metadata from first result (all share the same metadata)
-                analyzer_metadata = None
+                selector_metadata = None
                 if comparison_results and len(comparison_results) > 0:
-                    analyzer_metadata = comparison_results[0].get("analyzer_metadata")
+                    selector_metadata = comparison_results[0].get("selector_metadata")
 
                 report_path = await generate_consolidated_report(
                     comparison_results=comparison_results,
                     output_dir=reports_dir.parent if reports_dir else None,
-                    analyzer_metadata=analyzer_metadata,
+                    selector_metadata=selector_metadata,
                 )
                 logger.info(f"📊 Consolidated startup report generated: {report_path}")
                 app.state.startup_report_path = str(report_path)
@@ -1463,14 +1463,14 @@ async def _wait_and_create_final_zip_package(
         )
 
         # Extract analyzer metadata from first result (all share the same metadata)
-        analyzer_metadata = None
+        selector_metadata = None
         if updated_results and len(updated_results) > 0:
-            analyzer_metadata = updated_results[0].get("analyzer_metadata")
+            selector_metadata = updated_results[0].get("selector_metadata")
 
         report_path = await generate_consolidated_report(
             comparison_results=updated_results,
             output_dir=reports_dir.parent if reports_dir else None,
-            analyzer_metadata=analyzer_metadata,
+            selector_metadata=selector_metadata,
         )
         logger.info(f"📊 Consolidated startup report generated: {report_path}")
         app.state.startup_report_path = str(report_path)
@@ -1534,14 +1534,14 @@ async def _create_startup_zip_package(
         )
 
         # Extract analyzer metadata from first result (all share the same metadata)
-        analyzer_metadata = None
+        selector_metadata = None
         if comparison_results and len(comparison_results) > 0:
-            analyzer_metadata = comparison_results[0].get("analyzer_metadata")
+            selector_metadata = comparison_results[0].get("selector_metadata")
 
         zip_path = await generate_consolidated_report(
             comparison_results=comparison_results,
             output_dir=reports_dir,
-            analyzer_metadata=analyzer_metadata,
+            selector_metadata=selector_metadata,
         )
         app.state.auto_comparison_zip_path = str(zip_path)
         logger.info(f"📦 Startup package (consolidated ZIP) created: {zip_path}")

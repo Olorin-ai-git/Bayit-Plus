@@ -34,7 +34,7 @@ class ComparisonExecutor:
         merchant_name: Optional[str] = None,
         fraud_tx_count: int = 0,
         total_tx_count: int = 0,
-        analyzer_metadata: Optional[Dict[str, Any]] = None,
+        selector_metadata: Optional[Dict[str, Any]] = None,
     ) -> Optional[Dict[str, Any]]:
         """
         Create a new investigation and wait for it to complete.
@@ -94,9 +94,9 @@ class ComparisonExecutor:
                 "auto_generated": True
             }
             
-            # Add analyzer_metadata if provided
-            if analyzer_metadata:
-                metadata["analyzer_metadata"] = analyzer_metadata
+            # Add selector_metadata if provided
+            if selector_metadata:
+                metadata["selector_metadata"] = selector_metadata
             
             settings = InvestigationSettings(
                 name=f"Auto-comparison investigation for {entity_value}" + (f" (Merchant: {merchant_name})" if merchant_name else ""),
@@ -226,7 +226,7 @@ class ComparisonExecutor:
         merchant_name: Optional[str] = None,
         fraud_tx_count: int = 0,
         total_tx_count: int = 0,
-        analyzer_metadata: Optional[Dict[str, Any]] = None,
+        selector_metadata: Optional[Dict[str, Any]] = None,
     ) -> Optional[Dict[str, Any]]:
         """
         Create a compound entity investigation with multiple entities.
@@ -242,7 +242,7 @@ class ComparisonExecutor:
             merchant_name: Optional merchant name for context
             fraud_tx_count: Number of fraudulent transactions detected
             total_tx_count: Total number of transactions in the window
-            analyzer_metadata: Optional analyzer metadata
+            selector_metadata: Optional selector metadata
 
         Returns:
             Investigation dict if completed successfully, None otherwise
@@ -301,9 +301,9 @@ class ComparisonExecutor:
                 "entity_count": len(entity_schemas),
             }
 
-            # Add analyzer_metadata if provided
-            if analyzer_metadata:
-                metadata["analyzer_metadata"] = analyzer_metadata
+            # Add selector_metadata if provided
+            if selector_metadata:
+                metadata["selector_metadata"] = selector_metadata
 
             # Create investigation settings with correlation_mode="AND" for compound entities
             settings = InvestigationSettings(

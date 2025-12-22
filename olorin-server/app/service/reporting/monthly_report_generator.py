@@ -301,7 +301,7 @@ def _generate_day_card(day: DailyAnalysisResult) -> str:
                 <span class="toggle-icon">▶</span>
                 <strong style="margin-left: 10px;">{date_str}</strong>
                 <span style="color: var(--muted); margin-left: 15px;">
-                    {day.entities_discovered} entities
+                    {day.entities_discovered}/{day.entities_expected} entities
                 </span>
             </div>
             <div>

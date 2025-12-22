@@ -50,9 +50,9 @@ class StartupDataCollector:
 
     def collect_analytics_info(self) -> Dict[str, Any]:
         """Collect analytics configuration"""
-        # Read analyzer time window configuration
-        analyzer_hours = int(os.getenv("ANALYZER_TIME_WINDOW_HOURS", "24"))
-        default_time_window = f"{analyzer_hours}h"
+        # Read selector time window configuration
+        selector_hours = int(os.getenv("SELECTOR_TIME_WINDOW_HOURS", "24"))
+        default_time_window = f"{selector_hours}h"
 
         return {
             "snowflake_enabled": os.getenv("USE_SNOWFLAKE", "false").lower() == "true",

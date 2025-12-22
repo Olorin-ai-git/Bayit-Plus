@@ -151,12 +151,14 @@ async def run_auto_comparisons_for_top_entities(
     )
     
     # Store analyzer metadata for reporting
-    analyzer_metadata = {
+    total_entities_expected = len(fraud_pairs)
+    selector_metadata = {
         "start_time": analyzer_start_time,
         "end_time": analyzer_end_time,
         "time_window_hours": time_window_hours,
         "entities": fraud_pairs,
         "entity_mode": entity_mode,  # "single" or "compound"
+        "total_entities_expected": total_entities_expected,  # For x/y progress display
     }
 
     # 3. Run investigations (Parallel with Semaphore)
@@ -248,7 +250,7 @@ async def run_auto_comparisons_for_top_entities(
                         merchant_name=merchant,
                         fraud_tx_count=fraud_count,
                         total_tx_count=total_count,
-                        analyzer_metadata=analyzer_metadata,
+                        selector_metadata=selector_metadata,
                     )
                 else:
                     # SINGLE MODE: Original single-entity investigation
@@ -260,7 +262,7 @@ async def run_auto_comparisons_for_top_entities(
                         merchant_name=merchant,
                         fraud_tx_count=fraud_count,
                         total_tx_count=total_count,
-                        analyzer_metadata=analyzer_metadata,
+                        selector_metadata=selector_metadata,
                     )
 
                 if result:
@@ -459,7 +461,7 @@ async def run_auto_comparisons_for_top_entities(
 
     # Add analyzer metadata to each result for reporting
     for result in results:
-        result["analyzer_metadata"] = analyzer_metadata
+        result["selector_metadata"] = selector_metadata
     
     # Also package results (zip)
     reporter.package_comparison_results(results, report_dir)

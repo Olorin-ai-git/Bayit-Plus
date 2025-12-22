@@ -40,8 +40,8 @@ async def run_analyzer_on_window(window_start_offset_days: int) -> Dict[str, Any
     months_offset = window_start_offset_days // 30
 
     # Set environment for this window
-    os.environ["ANALYZER_END_OFFSET_MONTHS"] = str(months_offset)
-    os.environ["ANALYZER_TIME_WINDOW_HOURS"] = "24"
+    os.environ["SELECTOR_END_OFFSET_MONTHS"] = str(months_offset)
+    os.environ["SELECTOR_TIME_WINDOW_HOURS"] = "24"
 
     # Calculate actual date range
     target_date = datetime.now() - timedelta(days=window_start_offset_days)

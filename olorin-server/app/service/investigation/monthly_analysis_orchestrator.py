@@ -1,250 +1,304 @@
 """
 Monthly Analysis Orchestrator
 
-Orchestrates sequential 24h analysis windows across a full month.
-Supports checkpointing for resumability after interruptions.
+Orchestrates running auto-comparison analysis for each day of a specified month.
+Generates incremental HTML reports for each day and an updated monthly summary.
 
 Feature: monthly-sequential-analysis
 """
 
 import calendar
-import json
 import os
-from datetime import datetime, timedelta
+from datetime import datetime
 from decimal import Decimal
 from pathlib import Path
-from typing import Any, Dict, List, Optional
+from typing import List
 
-from app.config.monthly_analysis_config import get_monthly_analysis_config
 from app.schemas.monthly_analysis import (
     DailyAnalysisResult,
     MonthlyAnalysisResult,
-    MonthlyAnalysisState,
+)
+from app.service.investigation.auto_comparison import (
+    run_auto_comparisons_for_top_entities,
 )
 from app.service.logging import get_bridge_logger
+from app.service.reporting.monthly_report_generator import generate_monthly_report
 
 logger = get_bridge_logger(__name__)
 
-ARTIFACTS_DIR = Path("artifacts")
-MONTHLY_DIR = ARTIFACTS_DIR / "monthly_analysis"
+
+def _generate_daily_html_report(
+    day_result: DailyAnalysisResult, output_dir: Path
+) -> Path:
+    """Generate HTML report for a single day's results."""
+    date_str = day_result.date.strftime("%Y-%m-%d")
+    day_num = day_result.day_of_month
+    net_class = "positive" if day_result.net_value >= 0 else "negative"
+    timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+
+    html = f"""<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Daily Analysis - {date_str}</title>
+    <style>
+        :root {{
+            --bg: #0f172a; --card: #1e293b; --border: #334155;
+            --text: #e2e8f0; --muted: #94a3b8;
+            --ok: #22c55e; --warn: #f59e0b; --danger: #ef4444; --accent: #3b82f6;
+        }}
+        * {{ box-sizing: border-box; margin: 0; padding: 0; }}
+        body {{
+            font-family: 'Segoe UI', system-ui, sans-serif;
+            background: var(--bg); color: var(--text);
+            line-height: 1.6; padding: 20px;
+        }}
+        .header {{
+            text-align: center; padding: 30px;
+            border-bottom: 2px solid var(--accent); margin-bottom: 30px;
+        }}
+        h1 {{ color: var(--accent); font-size: 2rem; }}
+        .subtitle {{ color: var(--muted); margin-top: 10px; }}
+        .metrics-grid {{
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 20px; margin: 30px 0;
+        }}
+        .metric-card {{
+            background: var(--card); border: 1px solid var(--border);
+            border-radius: 12px; padding: 20px; text-align: center;
+        }}
+        .metric-value {{ font-size: 1.8rem; font-weight: bold; }}
+        .metric-value.positive {{ color: var(--ok); }}
+        .metric-value.negative {{ color: var(--danger); }}
+        .metric-label {{ color: var(--muted); margin-top: 5px; font-size: 0.9rem; }}
+        .confusion-grid {{
+            display: grid; grid-template-columns: repeat(2, 1fr);
+            gap: 10px; max-width: 400px; margin: 20px auto;
+        }}
+        .cm-cell {{
+            padding: 15px; text-align: center;
+            border-radius: 8px; font-weight: bold;
+        }}
+        .cm-tp {{ background: rgba(34, 197, 94, 0.2); color: var(--ok); }}
+        .cm-fp {{ background: rgba(239, 68, 68, 0.2); color: var(--danger); }}
+        .cm-tn {{ background: rgba(59, 130, 246, 0.2); color: var(--accent); }}
+        .cm-fn {{ background: rgba(245, 158, 11, 0.2); color: var(--warn); }}
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>Daily Fraud Analysis Report</h1>
+        <p class="subtitle">{date_str} (Day {day_num})</p>
+        <p class="subtitle">Generated: {timestamp}</p>
+    </div>
+
+    <div class="metrics-grid">
+        <div class="metric-card">
+            <div class="metric-value">{day_result.entities_discovered}/{day_result.entities_expected}</div>
+            <div class="metric-label">Entities Analyzed</div>
+        </div>
+        <div class="metric-card">
+            <div class="metric-value">{len(day_result.investigation_ids)}</div>
+            <div class="metric-label">Investigations</div>
+        </div>
+        <div class="metric-card">
+            <div class="metric-value {net_class}">${float(day_result.net_value):,.2f}</div>
+            <div class="metric-label">Net Value</div>
+        </div>
+    </div>
+
+    <h2 style="text-align: center; color: var(--accent); margin: 20px 0;">Confusion Matrix</h2>
+    <div class="confusion-grid">
+        <div class="cm-cell cm-tp">TP: {day_result.tp}<br><small>Fraud Caught</small></div>
+        <div class="cm-cell cm-fp">FP: {day_result.fp}<br><small>False Alarms</small></div>
+        <div class="cm-cell cm-fn">FN: {day_result.fn}<br><small>Fraud Missed</small></div>
+        <div class="cm-cell cm-tn">TN: {day_result.tn}<br><small>Legit Confirmed</small></div>
+    </div>
+
+    <div class="metrics-grid" style="margin-top: 30px;">
+        <div class="metric-card">
+            <div class="metric-value positive">${float(day_result.saved_fraud_gmv):,.2f}</div>
+            <div class="metric-label">Saved Fraud GMV</div>
+        </div>
+        <div class="metric-card">
+            <div class="metric-value negative">${float(day_result.lost_revenues):,.2f}</div>
+            <div class="metric-label">Lost Revenues</div>
+        </div>
+    </div>
+</body>
+</html>"""
+
+    output_path = output_dir / f"day_{day_num:02d}_report.html"
+    output_path.write_text(html)
+    return output_path
 
 
 class MonthlyAnalysisOrchestrator:
-    """Orchestrates monthly sequential analysis."""
+    """Orchestrates monthly sequential analysis across all days of a month."""
 
-    def __init__(self):
-        self.config = get_monthly_analysis_config()
+    def __init__(self) -> None:
+        """Initialize orchestrator with configuration from environment."""
+        self.top_percentage = float(
+            os.getenv("MONTHLY_ANALYSIS_TOP_PERCENTAGE", "0.1")
+        )
+        self.time_window_hours = int(
+            os.getenv("MONTHLY_ANALYSIS_TIME_WINDOW_HOURS", "24")
+        )
+        self.output_base_dir = Path(
+            os.getenv("MONTHLY_ANALYSIS_OUTPUT_DIR", "artifacts/monthly_analysis")
+        )
 
     async def run_monthly_analysis(
         self,
-        year: Optional[int] = None,
-        month: Optional[int] = None,
-        resume_from_day: Optional[int] = None,
+        year: int,
+        month: int,
+        resume_from_day: int = 1,
     ) -> MonthlyAnalysisResult:
         """
-        Run sequential 24h analysis windows for an entire month.
+        Run analysis for each day in the specified month.
 
         Args:
-            year: Target year (defaults to config)
-            month: Target month 1-12 (defaults to config)
-            resume_from_day: Day to resume from (defaults to config or checkpoint)
+            year: Target year (e.g., 2024)
+            month: Target month (1-12)
+            resume_from_day: Day to start/resume from (1-31)
 
         Returns:
-            MonthlyAnalysisResult with aggregated metrics
+            MonthlyAnalysisResult with aggregated metrics and daily summaries.
         """
-        year = year or self.config.year
-        month = month or self.config.month
-        _, days_in_month = calendar.monthrange(year, month)
+        days_in_month = calendar.monthrange(year, month)[1]
         month_name = calendar.month_name[month]
 
-        logger.info(
-            f"📅 Starting Monthly Analysis: {month_name} {year} ({days_in_month} days)"
+        logger.info(f"{'='*60}")
+        logger.info(f"MONTHLY ANALYSIS: {month_name} {year}")
+        logger.info(f"Days in month: {days_in_month}")
+        logger.info(f"Starting from day: {resume_from_day}")
+        logger.info(f"Top percentage: {self.top_percentage}")
+        logger.info(f"Time window: {self.time_window_hours}h")
+        logger.info(f"{'='*60}")
+
+        output_dir = self.output_base_dir / f"{year}_{month:02d}"
+        output_dir.mkdir(parents=True, exist_ok=True)
+
+        daily_results: List[DailyAnalysisResult] = []
+        started_at = datetime.now()
+
+        for day in range(resume_from_day, days_in_month + 1):
+            reference_date = datetime(year, month, day, 23, 59, 59)
+            day_started = datetime.now()
+
+            logger.info(f"\n{'='*40}")
+            logger.info(f"Processing: {reference_date.date()}")
+            logger.info(f"{'='*40}")
+
+            try:
+                results = await run_auto_comparisons_for_top_entities(
+                    top_percentage=self.top_percentage,
+                    time_window_hours=self.time_window_hours,
+                    reference_date=reference_date,
+                )
+
+                day_completed = datetime.now()
+                tp = fp = tn = fn = 0
+                investigation_ids: List[str] = []
+                entities_expected = 0
+
+                for result in results:
+                    cm = result.get("confusion_matrix", {})
+                    tp += cm.get("TP", 0)
+                    fp += cm.get("FP", 0)
+                    tn += cm.get("TN", 0)
+                    fn += cm.get("FN", 0)
+                    if result.get("investigation_id"):
+                        investigation_ids.append(result["investigation_id"])
+                    # Extract total expected from selector_metadata (set once)
+                    if entities_expected == 0:
+                        metadata = result.get("selector_metadata", {})
+                        entities_expected = metadata.get("total_entities_expected", 0)
+
+                day_result = DailyAnalysisResult(
+                    date=reference_date,
+                    day_of_month=day,
+                    entities_expected=entities_expected,
+                    entities_discovered=len(results),
+                    tp=tp,
+                    fp=fp,
+                    tn=tn,
+                    fn=fn,
+                    saved_fraud_gmv=Decimal("0"),
+                    lost_revenues=Decimal("0"),
+                    net_value=Decimal("0"),
+                    investigation_ids=investigation_ids,
+                    started_at=day_started,
+                    completed_at=day_completed,
+                    duration_seconds=(day_completed - day_started).total_seconds(),
+                )
+
+                daily_results.append(day_result)
+
+                daily_html = _generate_daily_html_report(day_result, output_dir)
+                logger.info(f"Daily HTML report: {daily_html}")
+
+                monthly_result = self._build_monthly_result(
+                    year, month, month_name, days_in_month,
+                    daily_results, started_at
+                )
+                await generate_monthly_report(monthly_result)
+
+                logger.info(f"Day {day} complete: {len(results)} investigations")
+                logger.info(f"Confusion: TP={tp}, FP={fp}, TN={tn}, FN={fn}")
+
+            except Exception as e:
+                logger.error(f"Error processing day {day}: {e}")
+                day_result = DailyAnalysisResult(
+                    date=reference_date,
+                    day_of_month=day,
+                    entities_discovered=0,
+                    tp=0, fp=0, tn=0, fn=0,
+                    started_at=day_started,
+                    completed_at=datetime.now(),
+                )
+                daily_results.append(day_result)
+
+        final_result = self._build_monthly_result(
+            year, month, month_name, days_in_month,
+            daily_results, started_at, is_final=True
         )
 
-        # Try to load existing checkpoint
-        state = self._load_checkpoint(year, month)
-        if state and not resume_from_day:
-            resume_from_day = state.last_completed_day + 1
-            logger.info(
-                f"📥 Resuming from checkpoint: day {resume_from_day} "
-                f"({state.last_completed_day} days already completed)"
-            )
-        else:
-            resume_from_day = resume_from_day or self.config.resume_from_day
-            state = MonthlyAnalysisState(
-                year=year,
-                month=month,
-                started_at=datetime.utcnow(),
-                updated_at=datetime.utcnow(),
-            )
+        final_html_path = await generate_monthly_report(final_result)
+        logger.info(f"\n{'='*60}")
+        logger.info(f"MONTHLY ANALYSIS COMPLETE: {month_name} {year}")
+        logger.info(f"Days processed: {len(daily_results)}")
+        logger.info(f"Total investigations: {final_result.total_entities}")
+        logger.info(
+            f"Aggregated: TP={final_result.total_tp}, FP={final_result.total_fp}, "
+            f"TN={final_result.total_tn}, FN={final_result.total_fn}"
+        )
+        logger.info(f"Final HTML report: {final_html_path}")
+        logger.info(f"{'='*60}")
 
-        # Initialize result
+        return final_result
+
+    def _build_monthly_result(
+        self,
+        year: int,
+        month: int,
+        month_name: str,
+        total_days: int,
+        daily_results: List[DailyAnalysisResult],
+        started_at: datetime,
+        is_final: bool = False,
+    ) -> MonthlyAnalysisResult:
+        """Build MonthlyAnalysisResult from daily results."""
         result = MonthlyAnalysisResult(
             year=year,
             month=month,
             month_name=month_name,
-            total_days=days_in_month,
-            started_at=state.started_at,
-            daily_results=list(state.daily_results),
+            total_days=total_days,
+            daily_results=daily_results,
+            started_at=started_at,
+            completed_at=datetime.now() if is_final else None,
         )
-
-        # Process each day
-        for day in range(resume_from_day, days_in_month + 1):
-            try:
-                daily_result = await self._process_single_day(year, month, day)
-                result.daily_results.append(daily_result)
-
-                # Update and save checkpoint
-                state.last_completed_day = day
-                state.daily_results = result.daily_results
-                state.updated_at = datetime.utcnow()
-                self._save_checkpoint(state)
-
-                # Update aggregated metrics and generate report
-                result.aggregate_from_daily()
-                await self._generate_monthly_report(result)
-
-                logger.info(
-                    f"✅ Day {day}/{days_in_month} complete: "
-                    f"TP={daily_result.tp}, FP={daily_result.fp}, "
-                    f"Net=${daily_result.net_value:,.2f}"
-                )
-
-            except Exception as e:
-                logger.error(f"❌ Error processing day {day}: {e}")
-                state.error_message = str(e)
-                self._save_checkpoint(state)
-                raise
-
-        # Mark as complete
-        result.is_complete = True
-        result.completed_at = datetime.utcnow()
-        state.is_complete = True
-        self._save_checkpoint(state)
-
-        # Generate final report
-        await self._generate_monthly_report(result)
-
-        logger.info(
-            f"🎉 Monthly Analysis Complete: {month_name} {year}\n"
-            f"   Total TP: {result.total_tp}, Total FP: {result.total_fp}\n"
-            f"   Saved GMV: ${result.total_saved_fraud_gmv:,.2f}\n"
-            f"   Lost Revenues: ${result.total_lost_revenues:,.2f}\n"
-            f"   Net Value: ${result.total_net_value:,.2f}"
-        )
-
+        result.aggregate_from_daily()
         return result
-
-    async def _process_single_day(
-        self, year: int, month: int, day: int
-    ) -> DailyAnalysisResult:
-        """Process a single day's 24h analysis window."""
-        # Calculate the reference date (end of day)
-        reference_date = datetime(year, month, day, 23, 59, 59)
-        start_time = datetime.utcnow()
-
-        logger.info(f"📆 Processing day {day}: {reference_date.strftime('%Y-%m-%d')}")
-
-        # Set environment variable for risk analyzer
-        os.environ["ANALYZER_REFERENCE_DATE"] = reference_date.strftime(
-            "%Y-%m-%dT%H:%M:%S"
-        )
-
-        try:
-            # Run auto comparisons for this day
-            from app.service.investigation.auto_comparison import (
-                run_auto_comparisons_for_top_entities,
-            )
-
-            results = await run_auto_comparisons_for_top_entities(
-                time_window_hours=24,
-                reference_date=reference_date,
-            )
-
-            # Aggregate results for this day
-            daily = DailyAnalysisResult(
-                date=reference_date,
-                day_of_month=day,
-                entities_discovered=len(results),
-                started_at=start_time,
-                completed_at=datetime.utcnow(),
-            )
-
-            for r in results:
-                cm = r.get("confusion_matrix", {})
-                rev = r.get("revenue_data", {})
-
-                daily.tp += self._safe_int(cm.get("TP", 0))
-                daily.fp += self._safe_int(cm.get("FP", 0))
-                daily.tn += self._safe_int(cm.get("TN", 0))
-                daily.fn += self._safe_int(cm.get("FN", 0))
-
-                daily.saved_fraud_gmv += Decimal(
-                    str(self._safe_float(rev.get("saved_fraud_gmv", 0)))
-                )
-                daily.lost_revenues += Decimal(
-                    str(self._safe_float(rev.get("lost_revenues", 0)))
-                )
-
-                daily.investigation_ids.append(r.get("investigation_id", ""))
-
-            daily.net_value = daily.saved_fraud_gmv - daily.lost_revenues
-            daily.duration_seconds = (
-                daily.completed_at - daily.started_at
-            ).total_seconds()
-
-            return daily
-
-        finally:
-            # Clear env var after processing
-            if "ANALYZER_REFERENCE_DATE" in os.environ:
-                del os.environ["ANALYZER_REFERENCE_DATE"]
-
-    def _get_checkpoint_path(self, year: int, month: int) -> Path:
-        """Get path to checkpoint file for given year/month."""
-        month_dir = MONTHLY_DIR / f"{year}_{month:02d}"
-        month_dir.mkdir(parents=True, exist_ok=True)
-        return month_dir / "checkpoint.json"
-
-    def _save_checkpoint(self, state: MonthlyAnalysisState) -> None:
-        """Save checkpoint to disk."""
-        checkpoint_path = self._get_checkpoint_path(state.year, state.month)
-        checkpoint_path.write_text(state.model_dump_json(indent=2))
-        logger.debug(f"💾 Checkpoint saved: day {state.last_completed_day}")
-
-    def _load_checkpoint(
-        self, year: int, month: int
-    ) -> Optional[MonthlyAnalysisState]:
-        """Load checkpoint from disk if exists."""
-        checkpoint_path = self._get_checkpoint_path(year, month)
-        if checkpoint_path.exists():
-            try:
-                data = json.loads(checkpoint_path.read_text())
-                return MonthlyAnalysisState(**data)
-            except Exception as e:
-                logger.warning(f"⚠️ Could not load checkpoint: {e}")
-        return None
-
-    async def _generate_monthly_report(self, result: MonthlyAnalysisResult) -> Path:
-        """Generate the monthly HTML report."""
-        from app.service.reporting.monthly_report_generator import (
-            generate_monthly_report,
-        )
-
-        return await generate_monthly_report(result)
-
-    @staticmethod
-    def _safe_float(val: Any) -> float:
-        """Safely convert to float."""
-        try:
-            return float(val) if val else 0.0
-        except (ValueError, TypeError):
-            return 0.0
-
-    @staticmethod
-    def _safe_int(val: Any) -> int:
-        """Safely convert to int."""
-        try:
-            return int(val) if val else 0
-        except (ValueError, TypeError):
-            return 0

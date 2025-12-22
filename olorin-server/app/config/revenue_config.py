@@ -22,9 +22,9 @@ class RevenueConfig(BaseModel):
     """Configuration for revenue implication calculations."""
 
     # Time window configuration (in months)
-    analyzer_historical_offset_months: int = Field(
+    selector_historical_offset_months: int = Field(
         default=12,
-        description="How far back to set analyzer reference time (months)",
+        description="How far back to set selector reference time (months)",
         ge=12,  # Minimum 12 months for meaningful analysis
     )
     investigation_window_start_months: int = Field(
@@ -104,8 +104,8 @@ def load_revenue_config() -> RevenueConfig:
         RevenueConfig instance with values from environment or defaults.
     """
     config = RevenueConfig(
-        analyzer_historical_offset_months=int(
-            os.getenv("ANALYZER_HISTORICAL_OFFSET_MONTHS", "12")
+        selector_historical_offset_months=int(
+            os.getenv("SELECTOR_HISTORICAL_OFFSET_MONTHS", "12")
         ),
         investigation_window_start_months=int(
             os.getenv("INVESTIGATION_WINDOW_START_MONTHS", "24")
@@ -135,7 +135,7 @@ def load_revenue_config() -> RevenueConfig:
 
     logger.info(
         f"📊 Revenue config loaded: "
-        f"analyzer_offset={config.analyzer_historical_offset_months}mo, "
+        f"selector_offset={config.selector_historical_offset_months}mo, "
         f"inv_window={config.investigation_window_start_months}-"
         f"{config.investigation_window_end_months}mo, "
         f"gmv_window={config.saved_fraud_gmv_start_months}-"

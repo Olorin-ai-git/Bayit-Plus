@@ -3,14 +3,17 @@ Incremental Report Generation
 
 Generates and updates a SINGLE incremental HTML file after each investigation completes.
 Fetches data directly from the database to ensure all confusion matrices are included.
+Also updates monthly totals as daily reports are generated.
 """
 
+import calendar
 import json
 import logging
 import os
 import re
 import threading
 from datetime import datetime, timedelta
+from decimal import Decimal
 from pathlib import Path
 from typing import Any, Dict, List, Optional
 
@@ -22,33 +25,76 @@ _report_generation_lock = threading.Lock()
 ARTIFACTS_DIR = Path("artifacts")
 
 
-def _get_incremental_file_path() -> Path:
+def _get_incremental_file_path(window_date: Optional[datetime] = None) -> Path:
     """
     Get the incremental report file path with the 24h window date in the filename.
 
     Format: startup_analysis_DAILY_YYYY-MM-DD.html
-    Uses ANALYZER_REFERENCE_DATE env var if set, otherwise uses current date.
+
+    Args:
+        window_date: The 24h window date being analyzed. If provided, uses this date.
+                     Otherwise falls back to SELECTOR_REFERENCE_DATE env var, then current date.
     """
-    ref_date_str = os.getenv("ANALYZER_REFERENCE_DATE")
-    if ref_date_str:
-        try:
-            # Parse the reference date (format: YYYY-MM-DDTHH:MM:SS or YYYY-MM-DD)
-            if "T" in ref_date_str:
-                ref_date = datetime.fromisoformat(ref_date_str)
-            else:
-                ref_date = datetime.strptime(ref_date_str, "%Y-%m-%d")
-            date_suffix = ref_date.strftime("%Y-%m-%d")
-        except ValueError:
-            date_suffix = datetime.now().strftime("%Y-%m-%d")
+    if window_date:
+        date_suffix = window_date.strftime("%Y-%m-%d")
     else:
-        # Default: use current date
-        date_suffix = datetime.now().strftime("%Y-%m-%d")
+        ref_date_str = os.getenv("SELECTOR_REFERENCE_DATE")
+        if ref_date_str:
+            try:
+                # Parse the reference date (format: YYYY-MM-DDTHH:MM:SS or YYYY-MM-DD)
+                if "T" in ref_date_str:
+                    ref_date = datetime.fromisoformat(ref_date_str)
+                else:
+                    ref_date = datetime.strptime(ref_date_str, "%Y-%m-%d")
+                date_suffix = ref_date.strftime("%Y-%m-%d")
+            except ValueError:
+                date_suffix = datetime.now().strftime("%Y-%m-%d")
+        else:
+            # Default: use current date
+            date_suffix = datetime.now().strftime("%Y-%m-%d")
 
     return ARTIFACTS_DIR / f"startup_analysis_DAILY_{date_suffix}.html"
 
 
 # Legacy constant for backward compatibility
 INCREMENTAL_FILE = _get_incremental_file_path()
+
+
+def _extract_window_date_from_investigations(
+    investigations: List[Dict[str, Any]]
+) -> Optional[datetime]:
+    """
+    Extract the 24h window date from selector_metadata in investigations.
+
+    The selector_metadata contains start_time and end_time of the 24h window.
+    We use the end_time (or start_time) to determine the date for the filename.
+    """
+    if not investigations:
+        return None
+
+    # Get selector_metadata from first investigation (all share same window)
+    selector_metadata = investigations[0].get("selector_metadata")
+    if not selector_metadata:
+        return None
+
+    # Try to get end_time first, then start_time
+    time_str = selector_metadata.get("end_time") or selector_metadata.get("start_time")
+    if not time_str:
+        return None
+
+    # Parse the time string (can be datetime object or ISO string)
+    if isinstance(time_str, datetime):
+        return time_str
+
+    try:
+        # Handle ISO format with or without Z suffix
+        if isinstance(time_str, str):
+            time_str = time_str.replace("Z", "+00:00")
+            return datetime.fromisoformat(time_str)
+    except (ValueError, TypeError):
+        logger.debug(f"Could not parse window date from: {time_str}")
+
+    return None
 
 
 def generate_incremental_report(triggering_investigation_id: str) -> Optional[Path]:
@@ -65,9 +111,6 @@ def generate_incremental_report(triggering_investigation_id: str) -> Optional[Pa
         return None
 
     try:
-        # Get the output file path dynamically based on current ANALYZER_REFERENCE_DATE
-        output_file = _get_incremental_file_path()
-
         logger.info(f"🔄 Generating incremental report (triggered by {triggering_investigation_id})")
 
         # Fetch completed investigations from database
@@ -79,6 +122,12 @@ def generate_incremental_report(triggering_investigation_id: str) -> Optional[Pa
             logger.info("   No completed investigations to report")
             return None
 
+        # Extract 24h window date from selector_metadata for filename
+        window_date = _extract_window_date_from_investigations(investigations)
+
+        # Get the output file path with the 24h window date
+        output_file = _get_incremental_file_path(window_date)
+
         # Ensure directory exists
         output_file.parent.mkdir(parents=True, exist_ok=True)
 
@@ -87,13 +136,126 @@ def generate_incremental_report(triggering_investigation_id: str) -> Optional[Pa
         output_file.write_text(html)
 
         logger.info(f"✅ Incremental report updated: {output_file}")
+
+        # Update the monthly report with this day's data
+        if window_date:
+            _update_monthly_report_from_daily(window_date, investigations)
+
         return output_file
-        
+
     except Exception as e:
         logger.error(f"❌ Failed to generate incremental report: {e}", exc_info=True)
         return None
     finally:
         _report_generation_lock.release()
+
+
+def _update_monthly_report_from_daily(
+    window_date: datetime, investigations: List[Dict[str, Any]]
+) -> None:
+    """
+    Update the monthly report with aggregated data from ALL daily reports.
+
+    This is called after each daily report is generated. It queries all completed
+    investigations for the month, groups them by window date, and regenerates
+    the monthly totals from scratch - ensuring accuracy.
+    """
+    try:
+        from app.schemas.monthly_analysis import DailyAnalysisResult, MonthlyAnalysisResult
+        from app.service.reporting.monthly_report_generator import generate_monthly_report
+        import asyncio
+        from collections import defaultdict
+
+        year = window_date.year
+        month = window_date.month
+
+        # Fetch ALL completed investigations to build the full monthly picture
+        all_investigations = _fetch_completed_auto_comp_investigations()
+
+        # Group investigations by their window date (day of month)
+        by_day: Dict[int, List[Dict[str, Any]]] = defaultdict(list)
+        for inv in all_investigations:
+            inv_date = _extract_window_date_from_investigations([inv])
+            if inv_date and inv_date.year == year and inv_date.month == month:
+                by_day[inv_date.day].append(inv)
+
+        if not by_day:
+            logger.info(f"No investigations found for {year}-{month:02d}")
+            return
+
+        # Build daily results for each day that has data
+        daily_results: List[DailyAnalysisResult] = []
+        for day_num in sorted(by_day.keys()):
+            day_invs = by_day[day_num]
+
+            day_tp = sum(_safe_int(inv.get("confusion_matrix", {}).get("TP", 0)) for inv in day_invs)
+            day_fp = sum(_safe_int(inv.get("confusion_matrix", {}).get("FP", 0)) for inv in day_invs)
+            day_tn = sum(_safe_int(inv.get("confusion_matrix", {}).get("TN", 0)) for inv in day_invs)
+            day_fn = sum(_safe_int(inv.get("confusion_matrix", {}).get("FN", 0)) for inv in day_invs)
+
+            day_saved = Decimal(str(sum(
+                _safe_float(inv.get("revenue_data", {}).get("saved_fraud_gmv", 0))
+                for inv in day_invs
+            )))
+            day_lost = Decimal(str(sum(
+                _safe_float(inv.get("revenue_data", {}).get("lost_revenues", 0))
+                for inv in day_invs
+            )))
+            day_net = day_saved - day_lost
+
+            # Get entity counts from selector_metadata
+            selector_meta = day_invs[0].get("selector_metadata", {}) if day_invs else {}
+            entities_expected = selector_meta.get("total_entities_expected", len(day_invs))
+
+            day_date = datetime(year, month, day_num)
+            daily_results.append(DailyAnalysisResult(
+                date=day_date,
+                day_of_month=day_num,
+                entities_expected=entities_expected,
+                entities_discovered=len(day_invs),
+                tp=day_tp,
+                fp=day_fp,
+                tn=day_tn,
+                fn=day_fn,
+                saved_fraud_gmv=day_saved,
+                lost_revenues=day_lost,
+                net_value=day_net,
+                investigation_ids=[inv.get("investigation_id", "") for inv in day_invs],
+                started_at=datetime.now(),
+                completed_at=datetime.now(),
+                duration_seconds=0.0,
+            ))
+
+        # Build monthly result with ALL days
+        days_in_month = calendar.monthrange(year, month)[1]
+        month_name = calendar.month_name[month]
+
+        monthly_result = MonthlyAnalysisResult(
+            year=year,
+            month=month,
+            month_name=month_name,
+            total_days=days_in_month,
+            daily_results=daily_results,
+            started_at=datetime.now(),
+            completed_at=None,
+        )
+        monthly_result.aggregate_from_daily()
+
+        # Generate the monthly report (async call in sync context)
+        loop = asyncio.new_event_loop()
+        try:
+            loop.run_until_complete(generate_monthly_report(monthly_result))
+            days_with_data = len(daily_results)
+            total_invs = sum(len(by_day[d]) for d in by_day)
+            logger.info(
+                f"📊 Monthly report updated for {month_name} {year} "
+                f"({days_with_data} days, {total_invs} investigations)"
+            )
+        finally:
+            loop.close()
+
+    except Exception as e:
+        logger.warning(f"⚠️ Could not update monthly report: {e}")
 
 
 def _fetch_completed_auto_comp_investigations() -> List[Dict[str, Any]]:
@@ -133,10 +295,14 @@ def _fetch_completed_auto_comp_investigations() -> List[Dict[str, Any]]:
                     match = re.search(r"\(Merchant: (.*?)\)", name)
                     result["merchant_name"] = match.group(1) if match else "Unknown"
                     
-                    # Extract analyzer_metadata from settings.metadata
+                    # Extract selector_metadata from settings.metadata
+                    # Support both new (selector_metadata) and old (analyzer_metadata) keys
                     metadata = settings.get("metadata", {})
-                    if "analyzer_metadata" in metadata:
-                        result["analyzer_metadata"] = metadata["analyzer_metadata"]
+                    selector_data = metadata.get("selector_metadata") or metadata.get(
+                        "analyzer_metadata"
+                    )
+                    if selector_data:
+                        result["selector_metadata"] = selector_data
                 except json.JSONDecodeError:
                     pass
             
@@ -248,14 +414,14 @@ def _load_confusion_matrix_from_file(investigation_id: str) -> Optional[Dict[str
     return None
 
 
-def _generate_analyzer_section_html(analyzer_metadata: Optional[Dict[str, Any]]) -> str:
-    """Generate the analyzer section HTML for incremental report."""
-    if not analyzer_metadata:
+def _generate_selector_section_html(selector_metadata: Optional[Dict[str, Any]]) -> str:
+    """Generate the selector section HTML for incremental report."""
+    if not selector_metadata:
         return ""
-    
-    start_time = analyzer_metadata.get("start_time")
-    end_time = analyzer_metadata.get("end_time")
-    entities = analyzer_metadata.get("entities", [])
+
+    start_time = selector_metadata.get("start_time")
+    end_time = selector_metadata.get("end_time")
+    entities = selector_metadata.get("entities", [])
     
     # Format datetimes - handle both datetime objects and ISO strings
     if isinstance(start_time, datetime):
@@ -310,10 +476,10 @@ def _generate_analyzer_section_html(analyzer_metadata: Optional[Dict[str, Any]])
     
     return f"""
     <div style="background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 24px; margin-bottom: 24px;">
-        <div onclick="toggleAnalyzer()" style="cursor: pointer; padding: 16px; background: linear-gradient(135deg, rgba(59, 130, 246, 0.15) 0%, rgba(59, 130, 246, 0.05) 100%); border-radius: 8px; margin-bottom: 20px; transition: all 0.3s ease;">
+        <div onclick="toggleSelector()" style="cursor: pointer; padding: 16px; background: linear-gradient(135deg, rgba(59, 130, 246, 0.15) 0%, rgba(59, 130, 246, 0.05) 100%); border-radius: 8px; margin-bottom: 20px; transition: all 0.3s ease;">
             <div style="display: flex; justify-content: space-between; align-items: center;">
-                <h2 style="color: var(--accent); margin: 0; font-size: 1.5em;">🔍 Analyzer Discovery Window</h2>
-                <span id="analyzer-toggle" style="font-size: 1.5em; color: var(--accent);">▼</span>
+                <h2 style="color: var(--accent); margin: 0; font-size: 1.5em;">🔍 Selector Discovery Window</h2>
+                <span id="selector-toggle" style="font-size: 1.5em; color: var(--accent);">▼</span>
             </div>
             <div style="margin-top: 12px; display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 16px;">
                 <div>
@@ -337,7 +503,7 @@ def _generate_analyzer_section_html(analyzer_metadata: Optional[Dict[str, Any]])
             </div>
         </div>
         
-        <div id="analyzer-content" style="display: block;">
+        <div id="selector-content" style="display: block;">
             <div style="background: rgba(59, 130, 246, 0.1); border-left: 4px solid var(--accent); padding: 16px; border-radius: 8px; margin-bottom: 20px;">
                 <div style="display: grid; grid-template-columns: auto 1fr; gap: 12px 20px; align-items: center;">
                     <div style="color: var(--muted); font-weight: 600;">📅 Time Window:</div>
@@ -373,7 +539,7 @@ def _generate_analyzer_section_html(analyzer_metadata: Optional[Dict[str, Any]])
             
             <div style="margin-top: 16px; padding: 12px; background: rgba(0, 0, 0, 0.3); border-radius: 8px;">
                 <div style="color: var(--muted); font-size: 0.9em;">
-                    <strong>ℹ️ Note:</strong> This analyzer window identifies the top 30% riskiest entities based on risk-weighted transaction volume (Risk Score × Amount × Velocity).
+                    <strong>ℹ️ Note:</strong> This selector window identifies the top 30% riskiest entities based on risk-weighted transaction volume (Risk Score × Amount × Velocity).
                     Each entity is then investigated using a broader time window (6-12 months historical data) to build comprehensive risk profiles and confusion matrices.
                 </div>
             </div>
@@ -385,10 +551,10 @@ def _generate_analyzer_section_html(analyzer_metadata: Optional[Dict[str, Any]])
 def _generate_incremental_html(investigations: List[Dict[str, Any]]) -> str:
     """Generate the incremental HTML report with full financial analysis."""
     
-    # Extract analyzer metadata from first investigation (all share the same metadata)
-    analyzer_metadata = None
+    # Extract selector metadata from first investigation (all share the same metadata)
+    selector_metadata = None
     if investigations and len(investigations) > 0:
-        analyzer_metadata = investigations[0].get("analyzer_metadata")
+        selector_metadata = investigations[0].get("selector_metadata")
     
     # Group by merchant
     by_merchant: Dict[str, List[Dict[str, Any]]] = {}
@@ -407,8 +573,8 @@ def _generate_incremental_html(investigations: List[Dict[str, Any]]) -> str:
     total_tn = sum(_safe_int(inv.get("confusion_matrix", {}).get("TN", 0)) for inv in investigations)
     total_fn = sum(_safe_int(inv.get("confusion_matrix", {}).get("FN", 0)) for inv in investigations)
     
-    # Generate analyzer section HTML
-    analyzer_section_html = _generate_analyzer_section_html(analyzer_metadata)
+    # Generate selector section HTML
+    selector_section_html = _generate_selector_section_html(selector_metadata)
     
     timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     
@@ -549,7 +715,7 @@ def _generate_incremental_html(investigations: List[Dict[str, Any]]) -> str:
         <p class="subtitle" style="margin-top: 10px;">Last updated: {timestamp}</p>
     </div>
 
-    {analyzer_section_html}
+    {selector_section_html}
 
     <h2 style="margin-bottom: 20px;">💰 Financial Impact Summary</h2>
     <div class="global-metrics">
@@ -658,9 +824,9 @@ def _generate_incremental_html(investigations: List[Dict[str, Any]]) -> str:
     
     html += """
     <script>
-        function toggleAnalyzer() {
-            const content = document.getElementById('analyzer-content');
-            const icon = document.getElementById('analyzer-toggle');
+        function toggleSelector() {
+            const content = document.getElementById('selector-content');
+            const icon = document.getElementById('selector-toggle');
             
             if (content.style.display === 'none') {
                 content.style.display = 'block';

@@ -38,7 +38,7 @@ async def main():
     analyzer = RiskAnalyzer()
 
     # Test parameters (matching our systematic testing)
-    time_window_hours = int(os.getenv("ANALYZER_TIME_WINDOW_HOURS", "24"))
+    time_window_hours = int(os.getenv("SELECTOR_TIME_WINDOW_HOURS", "24"))
     group_by = "EMAIL"
 
     print(f"Configuration:")

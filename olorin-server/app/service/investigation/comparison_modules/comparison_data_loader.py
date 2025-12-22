@@ -321,7 +321,7 @@ class ComparisonDataLoader:
 
             # Use APPROVED transactions - only these have ground truth IS_FRAUD_TX labels
             # for confusion matrix evaluation (NOT_REVIEWED lacks fraud labels)
-            target_decision = os.getenv("ANALYZER_TARGET_DECISION", "APPROVED")
+            target_decision = os.getenv("SELECTOR_TARGET_DECISION", "APPROVED")
 
             if is_snowflake:
                 table = db_provider.get_full_table_name()

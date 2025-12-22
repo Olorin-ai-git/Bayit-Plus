@@ -41,7 +41,7 @@ def main():
     args = parser.parse_args()
 
     # Use args or defaults from .env
-    # For debugging, default to 30d for wider visibility (analyzer uses 24h from ANALYZER_TIME_WINDOW_HOURS)
+    # For debugging, default to 30d for wider visibility (selector uses 24h from SELECTOR_TIME_WINDOW_HOURS)
     time_window = args.time_window or "30d"
     group_by = args.group_by or os.getenv("ANALYTICS_DEFAULT_GROUP_BY", "email")
     top_percentage = args.top_percentage or float(

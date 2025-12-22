@@ -62,8 +62,8 @@ async def main():
 
     executor = ComparisonExecutor()
 
-    # Analyzer metadata for context
-    analyzer_metadata = {
+    # Selector metadata for context
+    selector_metadata = {
         "start_time": investigation_start,
         "end_time": investigation_end,
         "original_investigation_id": "auto-comp-1b8f14e1f64c",
@@ -81,7 +81,7 @@ async def main():
             merchant_name=merchant_name,
             fraud_tx_count=fraud_tx_count,
             total_tx_count=total_tx_count,
-            analyzer_metadata=analyzer_metadata,
+            selector_metadata=selector_metadata,
             max_wait_seconds=600,  # 10 minutes timeout
         )
 

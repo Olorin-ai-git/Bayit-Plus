@@ -160,7 +160,7 @@ try:
             print(f"{'━'*65}")
             print(f"")
             print(f"✅ To investigate these entities, update .env:")
-            print(f"   ANALYZER_END_OFFSET_MONTHS={int(current_offset/30)}")
+            print(f"   SELECTOR_END_OFFSET_MONTHS={int(current_offset/30)}")
             print(f"   STARTUP_ANALYSIS_TOP_N_ENTITIES=5")
             print(f"")
             print(f"Then restart the server:")
@@ -169,7 +169,7 @@ try:
 
             # Save to file
             with open("fraud_window_found.txt", "w") as f:
-                f.write(f"ANALYZER_END_OFFSET_MONTHS={int(current_offset/30)}\n")
+                f.write(f"SELECTOR_END_OFFSET_MONTHS={int(current_offset/30)}\n")
                 f.write(f"# Found at {current_offset} days ago\n")
                 f.write(f"# Window: {window_start.date()} to {window_end.date()}\n")
                 f.write(f"# Entities with fraud: {len(results)}\n")

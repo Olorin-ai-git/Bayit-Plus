@@ -20,6 +20,9 @@ class DailyAnalysisResult(BaseModel):
     day_of_month: int = Field(description="Day number (1-31)")
 
     # Entity counts
+    entities_expected: int = Field(
+        default=0, description="Total number of entities expected for this day"
+    )
     entities_discovered: int = Field(
         default=0, description="Number of entities analyzed this day"
     )

@@ -76,8 +76,8 @@ async def main():
     months_ago = 6.5
     
     # Configure analyzer via environment variables
-    os.environ["ANALYZER_END_OFFSET_MONTHS"] = str(int(months_ago))
-    os.environ["ANALYZER_TIME_WINDOW_HOURS"] = "24"
+    os.environ["SELECTOR_END_OFFSET_MONTHS"] = str(int(months_ago))
+    os.environ["SELECTOR_TIME_WINDOW_HOURS"] = "24"
     
     days_ago = int(months_ago * 30)
     window_end = datetime.now() - timedelta(days=days_ago)

@@ -58,7 +58,7 @@ def main():
     end_offset_months = months_ago
     window_days = 1  # 24 hours
     
-    os.environ["ANALYZER_END_OFFSET_MONTHS"] = str(end_offset_months)
+    os.environ["SELECTOR_END_OFFSET_MONTHS"] = str(end_offset_months)
     os.environ["INVESTIGATION_DEFAULT_WINDOW_DAYS"] = str(window_days)
     
     # Calculate actual dates for logging

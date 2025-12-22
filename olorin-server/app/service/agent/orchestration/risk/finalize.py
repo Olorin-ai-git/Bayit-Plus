@@ -672,11 +672,17 @@ def _assert_sanity_checks(state: Dict[str, Any], final_risk: float) -> None:
     ), f"final_risk not numeric: {type(final_risk)}"
     assert 0.0 <= final_risk <= 1.0, f"final_risk out of range: {final_risk}"
 
-    # Check domain risk scores are valid
+    # Check domain risk scores are valid (skip None - agents may timeout)
     domain_findings = state.get("domain_findings", {})
     for domain_name, domain_data in domain_findings.items():
         if isinstance(domain_data, dict) and "risk_score" in domain_data:
             domain_risk = domain_data["risk_score"]
+            # Skip None risk scores - these are valid when agents timeout or have no data
+            if domain_risk is None:
+                logger.debug(
+                    f"Skipping sanity check for {domain_name}: risk_score is None (agent timeout or no data)"
+                )
+                continue
             assert isinstance(
                 domain_risk, (int, float)
             ), f"domain {domain_name} risk_score not numeric: {type(domain_risk)}"

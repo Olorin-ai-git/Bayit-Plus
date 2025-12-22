@@ -55,7 +55,7 @@ class RiskAnalyzer:
 
     def _get_reference_time(self) -> datetime:
         """Get current time or simulated reference time."""
-        ref_date = os.getenv("ANALYZER_REFERENCE_DATE")
+        ref_date = os.getenv("SELECTOR_REFERENCE_DATE")
         if ref_date:
             try:
                 # Handle YYYY-MM-DD format by adding time
@@ -63,12 +63,12 @@ class RiskAnalyzer:
                     ref_date += "T12:00:00"
                 return datetime.fromisoformat(ref_date)
             except ValueError:
-                logger.warning(f"Invalid ANALYZER_REFERENCE_DATE format: {ref_date}")
+                logger.warning(f"Invalid SELECTOR_REFERENCE_DATE format: {ref_date}")
         return datetime.utcnow()
 
     def _get_current_timestamp_sql(self, db_provider: str) -> str:
         """Get SQL for current timestamp or simulated reference time."""
-        ref_date = os.getenv("ANALYZER_REFERENCE_DATE")
+        ref_date = os.getenv("SELECTOR_REFERENCE_DATE")
         if ref_date:
             # Handle YYYY-MM-DD format by adding time
             if len(ref_date) == 10:
@@ -81,9 +81,9 @@ class RiskAnalyzer:
     def _load_configuration(self):
         """Load analytics configuration from environment."""
         # Default configuration from .env (single source of truth)
-        # Read analyzer time window in hours (ANALYZER_TIME_WINDOW_HOURS)
+        # Read selector time window in hours (SELECTOR_TIME_WINDOW_HOURS)
         self.default_time_window_hours = int(
-            os.getenv("ANALYZER_TIME_WINDOW_HOURS", "24")
+            os.getenv("SELECTOR_TIME_WINDOW_HOURS", "24")
         )
         self.default_time_window = f"{self.default_time_window_hours}h"  # For display
 
@@ -92,8 +92,8 @@ class RiskAnalyzer:
             os.getenv("ANALYTICS_DEFAULT_TOP_PERCENTAGE", "30")
         )
         self.cache_ttl = int(os.getenv("ANALYTICS_CACHE_TTL", "300"))
-        # Maximum lookback in months (default: 12 months) - ANALYZER_END_OFFSET_MONTHS
-        self.max_lookback_months = int(os.getenv("ANALYZER_END_OFFSET_MONTHS", "12"))
+        # Maximum lookback in months (default: 12 months) - SELECTOR_END_OFFSET_MONTHS
+        self.max_lookback_months = int(os.getenv("SELECTOR_END_OFFSET_MONTHS", "12"))
 
         logger.info(
             f"Risk Analyzer configured: time_window={self.default_time_window}, "

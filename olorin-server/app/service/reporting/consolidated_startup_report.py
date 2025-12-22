@@ -28,7 +28,7 @@ logger = get_bridge_logger(__name__)
 async def generate_consolidated_report(
     comparison_results: List[Dict[str, Any]],
     output_dir: Optional[Path] = None,
-    analyzer_metadata: Optional[Dict[str, Any]] = None,
+    selector_metadata: Optional[Dict[str, Any]] = None,
 ) -> Path:
     """
     Generate consolidated HTML report and package with individual reports in a ZIP file.
@@ -36,7 +36,7 @@ async def generate_consolidated_report(
     Args:
         comparison_results: List of investigation comparison results
         output_dir: Optional output directory (defaults to artifacts/)
-        analyzer_metadata: Optional analyzer metadata (time window, entities, etc.)
+        selector_metadata: Optional analyzer metadata (time window, entities, etc.)
         
     Returns:
         Path to generated ZIP file containing all reports
@@ -50,7 +50,7 @@ async def generate_consolidated_report(
     global_metrics = _calculate_global_metrics(comparison_results)
     
     # Generate HTML
-    html_content = _generate_html(merchant_groups, global_metrics, analyzer_metadata)
+    html_content = _generate_html(merchant_groups, global_metrics, selector_metadata)
     
     # Setup output directory
     if output_dir is None:
@@ -173,14 +173,14 @@ def _calculate_global_metrics(
     }
 
 
-def _generate_analyzer_section(analyzer_metadata: Optional[Dict[str, Any]]) -> str:
-    """Generate analyzer section showing time window and discovered entities."""
-    if not analyzer_metadata:
+def _generate_selector_section(selector_metadata: Optional[Dict[str, Any]]) -> str:
+    """Generate selector section showing time window and discovered entities."""
+    if not selector_metadata:
         return ""
     
-    start_time = analyzer_metadata.get("start_time", "Unknown")
-    end_time = analyzer_metadata.get("end_time", "Unknown")
-    entities = analyzer_metadata.get("entities", [])
+    start_time = selector_metadata.get("start_time", "Unknown")
+    end_time = selector_metadata.get("end_time", "Unknown")
+    entities = selector_metadata.get("entities", [])
     
     # Format datetimes - handle both datetime objects and ISO strings
     if isinstance(start_time, datetime):
@@ -233,10 +233,10 @@ def _generate_analyzer_section(analyzer_metadata: Optional[Dict[str, Any]]) -> s
     
     return f"""
     <div class="panel">
-        <div class="entity-header" onclick="toggleAnalyzer()" style="cursor: pointer; padding: 20px; background: linear-gradient(135deg, rgba(74, 158, 255, 0.15) 0%, rgba(74, 158, 255, 0.05) 100%); border-radius: 12px; margin-bottom: 20px; transition: all 0.3s ease;">
+        <div class="entity-header" onclick="toggleSelector()" style="cursor: pointer; padding: 20px; background: linear-gradient(135deg, rgba(74, 158, 255, 0.15) 0%, rgba(74, 158, 255, 0.05) 100%); border-radius: 12px; margin-bottom: 20px; transition: all 0.3s ease;">
             <div style="display: flex; justify-content: space-between; align-items: center;">
-                <h2 style="color: var(--accent); margin: 0;">🔍 Analyzer Discovery Window</h2>
-                <span id="analyzer-toggle" style="font-size: 1.5em; color: var(--accent);">▼</span>
+                <h2 style="color: var(--accent); margin: 0;">🔍 Selector Discovery Window</h2>
+                <span id="selector-toggle" style="font-size: 1.5em; color: var(--accent);">▼</span>
             </div>
             <div style="margin-top: 12px; display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px;">
                 <div>
@@ -260,7 +260,7 @@ def _generate_analyzer_section(analyzer_metadata: Optional[Dict[str, Any]]) -> s
             </div>
         </div>
         
-        <div id="analyzer-content" style="display: block;">
+        <div id="selector-content" style="display: block;">
             <div style="margin-bottom: 20px;">
                 <div style="background: rgba(74, 158, 255, 0.1); border-left: 4px solid var(--accent); padding: 16px; border-radius: 8px;">
                     <div style="display: grid; grid-template-columns: auto 1fr; gap: 12px 20px; align-items: center;">
@@ -298,7 +298,7 @@ def _generate_analyzer_section(analyzer_metadata: Optional[Dict[str, Any]]) -> s
             
             <div style="margin-top: 16px; padding: 12px; background: rgba(0, 0, 0, 0.2); border-radius: 8px;">
                 <div style="color: var(--muted); font-size: 0.9em;">
-                    <strong>ℹ️ Note:</strong> This analyzer window identifies the top 30% riskiest entities based on risk-weighted transaction volume (Risk Score × Amount × Velocity).
+                    <strong>ℹ️ Note:</strong> This selector window identifies the top 30% riskiest entities based on risk-weighted transaction volume (Risk Score × Amount × Velocity).
                     Each entity is then investigated using a broader time window (6-12 months historical data) to build comprehensive risk profiles and confusion matrices.
                 </div>
             </div>
@@ -310,12 +310,12 @@ def _generate_analyzer_section(analyzer_metadata: Optional[Dict[str, Any]]) -> s
 def _generate_html(
     merchant_groups: Dict[str, List[Dict[str, Any]]],
     global_metrics: Dict[str, Any],
-    analyzer_metadata: Optional[Dict[str, Any]] = None,
+    selector_metadata: Optional[Dict[str, Any]] = None,
 ) -> str:
     """Generate consolidated HTML report."""
     
     # Generate analyzer section if metadata provided
-    analyzer_section = _generate_analyzer_section(analyzer_metadata) if analyzer_metadata else ""
+    selector_section = _generate_selector_section(selector_metadata) if selector_metadata else ""
     
     # Generate merchant sections
     merchant_sections = ""
@@ -541,7 +541,7 @@ def _generate_html(
     </div>
 
     <!-- ANALYZER SECTION -->
-    {analyzer_section}
+    {selector_section}
 
     <!-- FINANCIAL ANALYSIS AT TOP -->
     <div class="panel">
@@ -616,9 +616,9 @@ def _generate_html(
     </div>
 
     <script>
-        function toggleAnalyzer() {{
-            const content = document.getElementById('analyzer-content');
-            const icon = document.getElementById('analyzer-toggle');
+        function toggleSelector() {{
+            const content = document.getElementById('selector-content');
+            const icon = document.getElementById('selector-toggle');
             
             if (content.style.display === 'none') {{
                 content.style.display = 'block';

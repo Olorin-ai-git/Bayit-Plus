@@ -145,8 +145,8 @@ async def run_analyzer_on_window(
         analyzer = get_risk_analyzer()
 
         # Temporarily update environment for this run
-        os.environ["ANALYZER_END_OFFSET_MONTHS"] = str(start_offset_months)
-        os.environ["ANALYZER_TIME_WINDOW_HOURS"] = str(time_window_hours)
+        os.environ["SELECTOR_END_OFFSET_MONTHS"] = str(start_offset_months)
+        os.environ["SELECTOR_TIME_WINDOW_HOURS"] = str(time_window_hours)
 
         results = await analyzer.analyze_risk_entities(
             group_by="email", time_window=f"{time_window_hours}h", limit=10
@@ -320,12 +320,12 @@ async def main():
         )
         logger.info(f"")
         logger.info(f"To run investigations, restart server with:")
-        logger.info(f"   ANALYZER_END_OFFSET_MONTHS={fraud_window_offset}")
+        logger.info(f"   SELECTOR_END_OFFSET_MONTHS={fraud_window_offset}")
         logger.info(f"   STARTUP_ANALYSIS_TOP_N_ENTITIES={args.entities_per_window}")
     else:
         logger.info(f"")
         logger.info(f"💡 To investigate these entities, restart server with:")
-        logger.info(f"   ANALYZER_END_OFFSET_MONTHS={fraud_window_offset}")
+        logger.info(f"   SELECTOR_END_OFFSET_MONTHS={fraud_window_offset}")
         logger.info(f"   STARTUP_ANALYSIS_TOP_N_ENTITIES={args.entities_per_window}")
 
 

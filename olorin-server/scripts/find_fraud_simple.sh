@@ -156,7 +156,7 @@ try:
             print(f"━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━")
             print(f"")
             print(f"To investigate these entities, update .env:")
-            print(f"  ANALYZER_END_OFFSET_MONTHS={int(current_offset/30)}")
+            print(f"  SELECTOR_END_OFFSET_MONTHS={int(current_offset/30)}")
             print(f"  STARTUP_ANALYSIS_TOP_N_ENTITIES=5")
             print(f"")
             print(f"Then restart the server.")

@@ -45,7 +45,7 @@ async def find_historical_fraud():
     full_table = f"{db}.{schema}.{table}"
 
     # Calculate 6 months ago
-    months_back = int(os.getenv("ANALYZER_END_OFFSET_MONTHS", "6"))
+    months_back = int(os.getenv("SELECTOR_END_OFFSET_MONTHS", "6"))
     end_date = datetime.now() - timedelta(days=months_back * 30)
 
     print(f"📅 Search Parameters:")
@@ -145,7 +145,7 @@ async def find_historical_fraud():
 
                 print()
                 print(f"To investigate, update env:")
-                print(f"   ANALYZER_END_OFFSET_MONTHS={months_back_calc}")
+                print(f"   SELECTOR_END_OFFSET_MONTHS={months_back_calc}")
             else:
                 print("❌ No approved fraud found even in earlier periods")
                 print("   Try checking fraud with ANY decision status")
@@ -201,8 +201,8 @@ async def find_historical_fraud():
             months_back_calc = days_back // 30
 
             print("To investigate this period, update env:")
-            print(f"   ANALYZER_END_OFFSET_MONTHS={months_back_calc}")
-            print(f"   ANALYZER_TIME_WINDOW_HOURS=24")
+            print(f"   SELECTOR_END_OFFSET_MONTHS={months_back_calc}")
+            print(f"   SELECTOR_TIME_WINDOW_HOURS=24")
             print()
             print(
                 f"This will investigate the 24-hour window ending on {fraud_date.strftime('%Y-%m-%d')}"
