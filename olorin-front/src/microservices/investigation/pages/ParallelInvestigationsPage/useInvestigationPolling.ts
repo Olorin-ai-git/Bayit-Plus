@@ -15,7 +15,6 @@ export function useInvestigationPolling(): EnhancedInvestigationPollingReturn {
   const [investigations, setInvestigations] = useState<ParallelInvestigation[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);
-  const [isWebSocketConnected, setIsWebSocketConnected] = useState(false);
   const [lastUpdated, setLastUpdated] = useState<Date | null>(null);
   const [selectedStatus, setSelectedStatus] = useState<InvestigationStatusType | 'ALL'>('ALL');
   const [retryCount, setRetryCount] = useState(0);
@@ -78,8 +77,9 @@ export function useInvestigationPolling(): EnhancedInvestigationPollingReturn {
   }, []);
 
   const retryWithBackoff = useCallback(async () => {
-    const maxRetries = 5;
-    const baseDelay = 1000; // 1 second
+    const config = getInvestigationConfig();
+    const maxRetries = config.retryMaxAttempts;
+    const baseDelay = config.retryBaseDelayMs;
 
     if (retryCount >= maxRetries) {
       setError(new Error('Max retries exceeded. Please check your connection.'));
@@ -116,41 +116,11 @@ export function useInvestigationPolling(): EnhancedInvestigationPollingReturn {
       fetchInvestigations();
     }, config.pollingInterval);
 
-    // Try to establish WebSocket connection for true real-time updates
-    // This is attempted but polling continues regardless
-    try {
-      const wsConnected = () => {
-        setIsWebSocketConnected(true);
-        eventBusInstance.emit('system:websocket-connected', {
-          timestamp: new Date().toISOString()
-        });
-      };
-
-      const wsDisconnected = () => {
-        setIsWebSocketConnected(false);
-        eventBusInstance.emit('system:websocket-disconnected', {
-          timestamp: new Date(),
-          reason: 'Connection lost, falling back to polling'
-        });
-      };
-
-      eventBusInstance.on('system:websocket-connected', wsConnected);
-      eventBusInstance.on('system:websocket-disconnected', wsDisconnected);
-
-      return () => {
-        unsubscribe();
-        eventBusInstance.off('system:websocket-connected', wsConnected);
-        eventBusInstance.off('system:websocket-disconnected', wsDisconnected);
-        if (pollingIntervalRef.current) clearInterval(pollingIntervalRef.current);
-        if (retryTimeoutRef.current) clearTimeout(retryTimeoutRef.current);
-      };
-    } catch {
-      return () => {
-        unsubscribe();
-        if (pollingIntervalRef.current) clearInterval(pollingIntervalRef.current);
-        if (retryTimeoutRef.current) clearTimeout(retryTimeoutRef.current);
-      };
-    }
+    return () => {
+      unsubscribe();
+      if (pollingIntervalRef.current) clearInterval(pollingIntervalRef.current);
+      if (retryTimeoutRef.current) clearTimeout(retryTimeoutRef.current);
+    };
   }, [fetchInvestigations, handleInvestigationUpdate]);
 
   return {

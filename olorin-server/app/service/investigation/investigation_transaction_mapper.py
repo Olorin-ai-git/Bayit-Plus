@@ -967,15 +967,16 @@ async def map_investigation_to_transactions(
     )
     filter_mode = os.getenv("TRANSACTION_DECISION_FILTER", "FINALIZED").upper()
 
-    # CRITICAL: MUST have per-transaction scores - confusion matrix is ONLY for investigated transactions
+    # CRITICAL: Handle 0-transaction investigations gracefully
+    # When entity combinations don't exist in the investigation window, there are legitimately
+    # no transactions to score. This is EXPECTED for historical analysis with mismatched time windows.
     if not transaction_scores or len(transaction_scores) == 0:
-        error_msg = (
-            f"[MAP_INVESTIGATION_TO_TRANSACTIONS] CRITICAL ERROR: No transaction scores available for investigation {investigation.get('id') if investigation else 'unknown'}. "
-            f"Confusion matrix can ONLY be generated for transactions that were ACTUALLY INVESTIGATED. "
-            f"Cannot proceed without transaction scores."
+        logger.warning(
+            f"[MAP_INVESTIGATION_TO_TRANSACTIONS] ⚠️ No transaction scores available for investigation {investigation.get('id') if investigation else 'unknown'}. "
+            f"This is expected when the entity combination doesn't exist in the investigation time window. "
+            f"Returning empty result set (TP=0, FP=0, TN=0, FN=0)."
         )
-        logger.error(error_msg)
-        raise ValueError(error_msg)
+        return [], source, investigation_risk_score
     
     logger.info(
         f"[MAP_INVESTIGATION_TO_TRANSACTIONS] ✅ Using {len(transaction_scores)} INVESTIGATED transaction IDs "

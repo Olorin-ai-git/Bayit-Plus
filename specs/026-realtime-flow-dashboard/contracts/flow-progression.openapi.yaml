@@ -1,0 +1,105 @@
+openapi: 3.0.3
+info:
+  title: Real-Time Flow Dashboard Contract
+  version: "1.0"
+paths:
+  /api/v1/investigation-state/flow-progression:
+    get:
+      summary: Get daily and month-to-date flow progression
+      description: Returns a snapshot of daily and month-to-date progression derived from persisted investigation state.
+      parameters:
+        - in: query
+          name: day
+          required: true
+          schema:
+            type: string
+            format: date
+          description: UTC day to summarize (YYYY-MM-DD)
+        - in: query
+          name: year
+          required: true
+          schema:
+            type: integer
+            minimum: 1970
+            maximum: 2100
+          description: UTC year for month-to-date
+        - in: query
+          name: month
+          required: true
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 12
+          description: UTC month for month-to-date (1-12)
+      responses:
+        "200":
+          description: Flow progression snapshot
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/FlowProgressionResponse"
+components:
+  schemas:
+    StatusCounts:
+      type: object
+      properties:
+        byStatus:
+          type: object
+          additionalProperties:
+            type: integer
+      required: [byStatus]
+    DailyFlowProgression:
+      type: object
+      properties:
+        date:
+          type: string
+          format: date
+        total:
+          type: integer
+        statusCounts:
+          $ref: "#/components/schemas/StatusCounts"
+      required: [date, total, statusCounts]
+    MonthlyDayProgression:
+      type: object
+      properties:
+        date:
+          type: string
+          format: date
+        total:
+          type: integer
+        statusCounts:
+          $ref: "#/components/schemas/StatusCounts"
+      required: [date, total, statusCounts]
+    MonthlyFlowProgression:
+      type: object
+      properties:
+        year:
+          type: integer
+        month:
+          type: integer
+        total:
+          type: integer
+        statusCounts:
+          $ref: "#/components/schemas/StatusCounts"
+        byDay:
+          type: array
+          items:
+            $ref: "#/components/schemas/MonthlyDayProgression"
+      required: [year, month, total, statusCounts, byDay]
+    FlowProgressionResponse:
+      type: object
+      properties:
+        asOf:
+          type: string
+          format: date-time
+        daily:
+          nullable: true
+          allOf:
+            - $ref: "#/components/schemas/DailyFlowProgression"
+        monthly:
+          nullable: true
+          allOf:
+            - $ref: "#/components/schemas/MonthlyFlowProgression"
+      required: [asOf, daily, monthly]
+
+

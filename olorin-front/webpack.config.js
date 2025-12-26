@@ -4,6 +4,20 @@ const HtmlWebpackPlugin = require('html-webpack-plugin');
 const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 const TsconfigPathsPlugin = require('tsconfig-paths-webpack-plugin');
 
+// Required environment variables for Running Investigations monitoring.
+// Fail fast during bundling to avoid hidden runtime configuration issues.
+const requiredMonitoringEnv = [
+  'REACT_APP_INVESTIGATION_POLLING_INTERVAL_MS',
+  'REACT_APP_INVESTIGATION_POLLING_RETRY_MAX_ATTEMPTS',
+  'REACT_APP_INVESTIGATION_POLLING_RETRY_BASE_DELAY_MS',
+];
+
+for (const key of requiredMonitoringEnv) {
+  if (!process.env[key]) {
+    throw new Error(`Missing required environment variable: ${key}`);
+  }
+}
+
 // Microservice configurations
 const microservices = {
   shell: {
@@ -21,7 +35,7 @@ const microservices = {
       visualization: 'visualization@http://localhost:3004/remoteEntry.js',
       reporting: 'reporting@http://localhost:3005/remoteEntry.js',
       investigationsManagement: 'investigationsManagement@http://localhost:3008/remoteEntry.js',
-      // TODO: Uncomment when implementing these microservices
+      // Uncomment when implementing these microservices
       // structuredInvestigation: 'structuredInvestigation@http://localhost:3009/remoteEntry.js',
       // manualInvestigation: 'manualInvestigation@http://localhost:3010/remoteEntry.js',
       designSystem: 'designSystem@http://localhost:3007/remoteEntry.js'
@@ -159,7 +173,7 @@ const microservices = {
       designSystem: 'designSystem@http://localhost:3007/remoteEntry.js'
     }
   }
-  // TODO: Uncomment when implementing these microservices
+  // Uncomment when implementing these microservices
   // structuredInvestigation: {
   //   name: 'structuredInvestigation',
   //   port: 3008,
@@ -212,7 +226,7 @@ const getEntryPoint = (service) => {
       return './src/microservices/design-system/index.tsx';
     case 'investigationsManagement':
       return './src/microservices/investigations-management/index.tsx';
-    // TODO: Uncomment when implementing these microservices
+    // Uncomment when implementing these microservices
     // case 'structuredInvestigation':
     //   return './src/microservices/structured-investigation/index.tsx';
     // case 'manualInvestigation':
@@ -504,6 +518,11 @@ module.exports = (env, argv) => {
 
         // UI Configuration
         'process.env.REACT_APP_PAGINATION_SIZE': JSON.stringify(process.env.REACT_APP_PAGINATION_SIZE || '20'),
+
+        // Running Investigations (monitoring) configuration
+        'process.env.REACT_APP_INVESTIGATION_POLLING_INTERVAL_MS': JSON.stringify(process.env.REACT_APP_INVESTIGATION_POLLING_INTERVAL_MS),
+        'process.env.REACT_APP_INVESTIGATION_POLLING_RETRY_MAX_ATTEMPTS': JSON.stringify(process.env.REACT_APP_INVESTIGATION_POLLING_RETRY_MAX_ATTEMPTS),
+        'process.env.REACT_APP_INVESTIGATION_POLLING_RETRY_BASE_DELAY_MS': JSON.stringify(process.env.REACT_APP_INVESTIGATION_POLLING_RETRY_BASE_DELAY_MS),
 
         // Wizard Configuration
         'process.env.REACT_APP_MAX_ENTITIES': JSON.stringify(process.env.REACT_APP_MAX_ENTITIES || '10'),

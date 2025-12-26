@@ -51,12 +51,17 @@ All configuration via environment variables with Zod validation:
 // Required environment variables
 REACT_APP_API_BASE_URL=https://<backend-api-host>
 REACT_APP_WS_BASE_URL=wss://<websocket-host>
-REACT_APP_REQUEST_TIMEOUT_MS=30000
-REACT_APP_RETRY_ATTEMPTS=3
-REACT_APP_RETRY_DELAY_MS=1000
-REACT_APP_PAGINATION_SIZE=20
-REACT_APP_CACHE_MAX_ENTRIES=100
-REACT_APP_CACHE_TTL_MS=300000
+REACT_APP_REQUEST_TIMEOUT_MS=<required>
+REACT_APP_RETRY_ATTEMPTS=<required>
+REACT_APP_RETRY_DELAY_MS=<required>
+REACT_APP_PAGINATION_SIZE=<required>
+REACT_APP_CACHE_MAX_ENTRIES=<required>
+REACT_APP_CACHE_TTL_MS=<required>
+
+// Required for Running Investigations real-time monitoring panels
+REACT_APP_INVESTIGATION_POLLING_INTERVAL_MS=<required>
+REACT_APP_INVESTIGATION_POLLING_RETRY_MAX_ATTEMPTS=<required>
+REACT_APP_INVESTIGATION_POLLING_RETRY_BASE_DELAY_MS=<required>
 
 // Optional configuration
 REACT_APP_LOG_LEVEL=info

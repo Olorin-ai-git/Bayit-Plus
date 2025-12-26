@@ -10,6 +10,20 @@ const path = require('path');
 const serviceName = process.env.SERVICE || 'shell';
 const isAnalyzing = process.env.ANALYZE === 'true';
 
+// Required environment variables for Running Investigations monitoring.
+// Fail fast during bundling to avoid hidden runtime configuration issues.
+const requiredMonitoringEnv = [
+  'REACT_APP_INVESTIGATION_POLLING_INTERVAL_MS',
+  'REACT_APP_INVESTIGATION_POLLING_RETRY_MAX_ATTEMPTS',
+  'REACT_APP_INVESTIGATION_POLLING_RETRY_BASE_DELAY_MS',
+];
+
+for (const key of requiredMonitoringEnv) {
+  if (!process.env[key]) {
+    throw new Error(`Missing required environment variable: ${key}`);
+  }
+}
+
 // Service-specific configurations
 const serviceConfigs = {
   shell: {
@@ -243,6 +257,9 @@ module.exports = {
       'process.env.REACT_APP_RETRY_ATTEMPTS': JSON.stringify(process.env.REACT_APP_RETRY_ATTEMPTS || '3'),
       'process.env.REACT_APP_RETRY_DELAY_MS': JSON.stringify(process.env.REACT_APP_RETRY_DELAY_MS || '1000'),
       'process.env.REACT_APP_PAGINATION_SIZE': JSON.stringify(process.env.REACT_APP_PAGINATION_SIZE || '20'),
+      'process.env.REACT_APP_INVESTIGATION_POLLING_INTERVAL_MS': JSON.stringify(process.env.REACT_APP_INVESTIGATION_POLLING_INTERVAL_MS),
+      'process.env.REACT_APP_INVESTIGATION_POLLING_RETRY_MAX_ATTEMPTS': JSON.stringify(process.env.REACT_APP_INVESTIGATION_POLLING_RETRY_MAX_ATTEMPTS),
+      'process.env.REACT_APP_INVESTIGATION_POLLING_RETRY_BASE_DELAY_MS': JSON.stringify(process.env.REACT_APP_INVESTIGATION_POLLING_RETRY_BASE_DELAY_MS),
       'process.env.REACT_APP_CACHE_MAX_ENTRIES': JSON.stringify(process.env.REACT_APP_CACHE_MAX_ENTRIES || '100'),
       'process.env.REACT_APP_CACHE_TTL_MS': JSON.stringify(process.env.REACT_APP_CACHE_TTL_MS || '300000')
     }),

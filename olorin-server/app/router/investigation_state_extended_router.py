@@ -466,15 +466,14 @@ async def get_statistics(
     current_user: User = Depends(require_read_or_dev),
 ) -> Dict[str, Any]:
     """Get investigation statistics."""
+    _ = timeframe
+    _ = current_user
+
     service = InvestigationStateService(db)
-    states = service.get_states(user_id=None)
+    states = service.get_states(user_id=None, page=1, page_size=1)
 
     return {
-        "total_investigations": len(states.investigations),
-        "active_investigations": len([s for s in states.investigations if s.status == InvestigationStatus.IN_PROGRESS]),
-        "completed_today": len([s for s in states.investigations if s.status == InvestigationStatus.COMPLETED]),
-        "average_completion_time": 0,
-        "success_rate": 0.95,
+        "total_investigations": states.get("total_count", 0),
     }
 
 

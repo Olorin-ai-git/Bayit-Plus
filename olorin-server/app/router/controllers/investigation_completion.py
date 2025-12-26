@@ -52,7 +52,34 @@ async def _execute_results_processing_phase(
 
     # Extract actual results from the agent execution
     investigation_result = result if result else ""
-    final_risk_score = extract_risk_score_from_result(investigation_result)
+
+    # CRITICAL FIX: Get risk score from investigation state, NOT from parsing text
+    # The regex-based extraction was picking up random numbers from narrative text
+    # (e.g., "5 risk factors" → extracted as risk_score=5)
+    # The REAL risk score (0-1 normalized) is already in the state from risk agent
+    final_risk_score = None
+    try:
+        from app.models.investigation_state import InvestigationState
+        from app.persistence.database import get_db_session
+        import json
+
+        with get_db_session() as db:
+            state = db.query(InvestigationState).filter(
+                InvestigationState.investigation_id == investigation_id
+            ).first()
+
+            if state and state.progress_json:
+                progress = json.loads(state.progress_json)
+                # Get risk score (0-1 normalized) and convert to 0-100 integer
+                risk_score_normalized = progress.get("overall_risk_score") or progress.get("risk_score")
+                if risk_score_normalized is not None:
+                    # Convert from 0-1 to 0-100 integer
+                    final_risk_score = int(risk_score_normalized * 100)
+                    logger.info(f"✅ Retrieved risk_score from state: {risk_score_normalized:.3f} → {final_risk_score}/100")
+                else:
+                    logger.warning(f"⚠️ No risk_score found in progress_json for investigation {investigation_id}")
+    except Exception as e:
+        logger.error(f"❌ Failed to retrieve risk_score from state: {e}", exc_info=True)
 
     if investigation_result:
         logger.info(f"📋 REAL AGENT RESULT CONTENT: {investigation_result[:500]}...")
@@ -120,7 +147,8 @@ async def _complete_investigation(
     # - findings: List[Dict[str, Any]] (optional, defaults to empty list)
     # - summary: Optional[str] (optional)
     # - completed_at: Optional[datetime] (optional)
-    risk_score_int = int(final_risk_score) if final_risk_score is not None else None
+    # CRITICAL: final_risk_score is already 0-100 integer from state retrieval above
+    risk_score_int = final_risk_score
     if risk_score_int is not None:
         risk_score_int = max(0, min(100, risk_score_int))  # Clamp to 0-100 range
 

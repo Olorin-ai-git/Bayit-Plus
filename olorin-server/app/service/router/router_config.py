@@ -42,6 +42,7 @@ def _include_core_routers(app: FastAPI) -> None:
     from app.router import agent_router, api_router
     from app.router.auth_router import router as auth_router
     from app.router.autonomous_investigation_router import router as structured_router
+    from app.router.flow_progression_router import router as flow_progression_router
     from app.router.health_router import router as health_router
     from app.router.hybrid_graph_investigations_router import hybrid_graph_router
     from app.router.investigation_api import router as investigation_api_router
@@ -78,6 +79,7 @@ def _include_core_routers(app: FastAPI) -> None:
     app.include_router(
         investigation_state_router
     )  # Investigation state management (Feature 005)
+    app.include_router(flow_progression_router)  # Daily/monthly flow progression (read-only)
     app.include_router(
         investigation_state_extended_router
     )  # Investigation management extended endpoints

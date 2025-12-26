@@ -30,6 +30,11 @@ declare global {
     readonly REACT_APP_POLLING_BACKOFF_MULTIPLIER?: string;
     readonly REACT_APP_POLLING_MAX_BACKOFF_MS?: string;
 
+    // Investigation Monitoring (Running Investigations page)
+    readonly REACT_APP_INVESTIGATION_POLLING_INTERVAL_MS?: string;
+    readonly REACT_APP_INVESTIGATION_POLLING_RETRY_MAX_ATTEMPTS?: string;
+    readonly REACT_APP_INVESTIGATION_POLLING_RETRY_BASE_DELAY_MS?: string;
+
     // Feature Flags
     readonly REACT_APP_FEATURE_ENABLE_RAG?: string;
     readonly REACT_APP_FEATURE_ENABLE_REAL_TIME_UPDATES?: string;

@@ -6,6 +6,9 @@ import { InvestigationFilters } from './InvestigationFilters';
 import { ParallelInvestigation } from '../../types/parallelInvestigations';
 import { getInvestigationConfig } from '../../config/investigationConfig';
 import { eventBusInstance } from '../../../../shared/events/UnifiedEventBus';
+import { FlowProgressionPanels } from './FlowProgressionPanels';
+import { investigationService } from '../../services/investigationService';
+import type { FlowProgressionResponse } from '../../services/investigationService';
 
 export function ParallelInvestigationsPage() {
   const navigate = useNavigate();
@@ -22,6 +25,9 @@ export function ParallelInvestigationsPage() {
   } = useInvestigationPolling();
   const [wsConnected, setWsConnected] = useState(false);
   const [isRefreshing, setIsRefreshing] = useState(false);
+  const [flow, setFlow] = useState<FlowProgressionResponse | null>(null);
+  const [flowLoading, setFlowLoading] = useState(false);
+  const [flowError, setFlowError] = useState<string | null>(null);
 
   useEffect(() => {
     const handleWsConnected = () => setWsConnected(true);
@@ -53,20 +59,43 @@ export function ParallelInvestigationsPage() {
     await retryWithBackoff();
   };
 
-  const getReportUrls = () => {
-    const apiBaseUrl = process.env.REACT_APP_API_BASE_URL || 'http://localhost:8090';
-    const today = new Date();
-    const dateStr = today.toISOString().split('T')[0]; // YYYY-MM-DD
-    const year = today.getFullYear();
-    const month = String(today.getMonth() + 1).padStart(2, '0');
-    
-    return {
-      daily: `${apiBaseUrl}/api/v1/reports/artifacts/startup_analysis_DAILY_${dateStr}.html`,
-      monthly: `${apiBaseUrl}/api/v1/reports/artifacts/startup_analysis_MONTHLY_${year}_${month}.html`
-    };
+  const fetchFlowProgression = async () => {
+    setFlowLoading(true);
+    setFlowError(null);
+    try {
+      const now = new Date();
+      const day = now.toISOString().slice(0, 10);
+      const year = now.getUTCFullYear();
+      const month = now.getUTCMonth() + 1;
+      // #region agent log
+      fetch('http://127.0.0.1:7242/ingest/06c5fffe-6ae5-4788-a989-0bf06eb0cb8b',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'ParallelInvestigationsPage.tsx:71',message:'Calling getFlowProgression',data:{day,year,month},timestamp:Date.now(),sessionId:'debug-session',hypothesisId:'H5'})}).catch(()=>{});
+      // #endregion
+      const data = await investigationService.instance.getFlowProgression({ day, year, month });
+      // #region agent log
+      fetch('http://127.0.0.1:7242/ingest/06c5fffe-6ae5-4788-a989-0bf06eb0cb8b',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'ParallelInvestigationsPage.tsx:75',message:'getFlowProgression response',data:{hasData:!!data,hasDaily:!!data?.daily,hasMonthly:!!data?.monthly,dailyTotal:data?.daily?.total,monthlyTotal:data?.monthly?.total},timestamp:Date.now(),sessionId:'debug-session',hypothesisId:'H5'})}).catch(()=>{});
+      // #endregion
+      setFlow(data);
+    } catch (e) {
+      const msg = e instanceof Error ? e.message : 'Failed to load flow progression';
+      // #region agent log
+      fetch('http://127.0.0.1:7242/ingest/06c5fffe-6ae5-4788-a989-0bf06eb0cb8b',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'ParallelInvestigationsPage.tsx:82',message:'getFlowProgression error',data:{error:msg,stack:e instanceof Error ? e.stack : undefined},timestamp:Date.now(),sessionId:'debug-session',hypothesisId:'H5'})}).catch(()=>{});
+      // #endregion
+      setFlowError(msg);
+      setFlow(null);
+    } finally {
+      setFlowLoading(false);
+    }
   };
 
-  const reportUrls = getReportUrls();
+  useEffect(() => {
+    fetchFlowProgression();
+  }, []);
+
+  useEffect(() => {
+    if (lastUpdated) {
+      fetchFlowProgression();
+    }
+  }, [lastUpdated]);
 
   const formatLastUpdated = (date: Date | null) => {
     if (!date) return 'Never';
@@ -92,24 +121,6 @@ export function ParallelInvestigationsPage() {
               <span className="text-xs text-gray-600">
                 {wsConnected ? 'Real-time' : 'Polling mode'}
               </span>
-            </div>
-            <div className="flex gap-2">
-              <a 
-                href={reportUrls.daily}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="px-3 py-1 bg-indigo-600 text-white text-xs rounded hover:bg-indigo-700 transition-colors"
-              >
-                Daily Flow Report
-              </a>
-              <a 
-                href={reportUrls.monthly}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="px-3 py-1 bg-indigo-600 text-white text-xs rounded hover:bg-indigo-700 transition-colors"
-              >
-                Monthly Flow Report
-              </a>
             </div>
           </div>
         </div>
@@ -140,6 +151,13 @@ export function ParallelInvestigationsPage() {
           </div>
         </div>
       )}
+
+      <FlowProgressionPanels
+        daily={flow?.daily ?? null}
+        monthly={flow?.monthly ?? null}
+        loading={flowLoading}
+        error={flowError}
+      />
 
       <div className="bg-white rounded-lg shadow">
         <div className="p-4 border-b border-gray-200 flex justify-between items-center">

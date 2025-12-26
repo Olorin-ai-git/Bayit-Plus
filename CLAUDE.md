@@ -620,3 +620,6 @@ If ANY task fails these criteria, it is **REJECTED** and must be fixed. Tasks ar
 - Solutions with fallback values
 
 **Everything delivered is COMPLETE, TESTED, PRODUCTION-READY, and IMMEDIATELY USABLE.**
+
+## Recent Changes
+- 026-realtime-flow-dashboard: Added real-time daily/monthly flow progression panels on Running Investigations and a read-only investigation-state flow progression API endpoint.

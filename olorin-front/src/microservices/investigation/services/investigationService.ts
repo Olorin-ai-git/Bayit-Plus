@@ -155,6 +155,36 @@ export interface InvestigationStatistics {
   byPriority: Record<Investigation['priority'], number>;
 }
 
+export interface FlowProgressionStatusCounts {
+  byStatus: Record<string, number>;
+}
+
+export interface DailyFlowProgression {
+  date: string; // YYYY-MM-DD (UTC)
+  total: number;
+  statusCounts: FlowProgressionStatusCounts;
+}
+
+export interface MonthlyDayProgression {
+  date: string; // YYYY-MM-DD (UTC)
+  total: number;
+  statusCounts: FlowProgressionStatusCounts;
+}
+
+export interface MonthlyFlowProgression {
+  year: number;
+  month: number; // 1-12 (UTC)
+  total: number;
+  statusCounts: FlowProgressionStatusCounts;
+  byDay: MonthlyDayProgression[];
+}
+
+export interface FlowProgressionResponse {
+  asOf: string;
+  daily: DailyFlowProgression | null;
+  monthly: MonthlyFlowProgression | null;
+}
+
 // Module-level request deduplication for getProgress and getInvestigation
 // Prevents multiple simultaneous calls for the same investigation ID
 // Works across React StrictMode remounts and multiple hook instances
@@ -373,6 +403,15 @@ export class InvestigationService extends BaseApiService {
   async getInvestigationStatistics(timeframe?: 'day' | 'week' | 'month' | 'year'): Promise<InvestigationStatistics> {
     const params = timeframe ? `?timeframe=${timeframe}` : '';
     return this.get<InvestigationStatistics>(`${this.baseEndpoint}/statistics${params}`);
+  }
+
+  async getFlowProgression(params: { day: string; year: number; month: number }): Promise<FlowProgressionResponse> {
+    const qs = new URLSearchParams({
+      day: params.day,
+      year: String(params.year),
+      month: String(params.month),
+    });
+    return this.get<FlowProgressionResponse>(`${this.baseEndpoint}/flow-progression?${qs.toString()}`);
   }
 
   async exportInvestigation(id: string, format: 'pdf' | 'json' | 'csv' = 'pdf'): Promise<Blob> {
