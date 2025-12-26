@@ -51,11 +51,16 @@ def _generate_html(result: MonthlyAnalysisResult) -> str:
         else f"All {result.total_days} Days Completed"
     )
 
-    # Calculate precision percentage for display
+    # Calculate precision percentages for display - both review and overall
     precision_pct = f"{result.precision * 100:.2f}%" if result.precision else "N/A"
     recall_pct = f"{result.recall * 100:.2f}%" if result.recall else "N/A"
     f1_pct = f"{result.f1_score * 100:.2f}%" if result.f1_score else "N/A"
     roi_display = f"+{result.roi_percentage:.0f}%" if result.roi_percentage else "N/A"
+
+    # Overall classification metrics
+    overall_precision_pct = f"{result.overall_precision * 100:.2f}%" if hasattr(result, 'overall_precision') and result.overall_precision else "N/A"
+    overall_recall_pct = f"{result.overall_recall * 100:.2f}%" if hasattr(result, 'overall_recall') and result.overall_recall else "N/A"
+    overall_f1_pct = f"{result.overall_f1_score * 100:.2f}%" if hasattr(result, 'overall_f1_score') and result.overall_f1_score else "N/A"
 
     daily_breakdown_html = _generate_daily_breakdown(result.daily_results)
 
@@ -212,6 +217,43 @@ def _generate_html(result: MonthlyAnalysisResult) -> str:
         <p class="subtitle" style="margin-top: 10px;">Last updated: {timestamp}</p>
     </div>
 
+    <div style="background: rgba(59, 130, 246, 0.1); border: 1px solid var(--border); border-radius: 12px; padding: 20px; margin-bottom: 30px;">
+        <h3 style="color: var(--accent); margin-bottom: 15px;">📖 Understanding the Two Metric Types</h3>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+            <div>
+                <h4 style="color: var(--ok); margin-bottom: 10px;">📊 Review Precision (Flagged Only)</h4>
+                <p style="color: var(--muted); font-size: 0.9rem; line-height: 1.6;">
+                    Measures the quality of <strong>alerts sent for human review</strong>. Only counts transactions
+                    that exceeded the risk threshold and were flagged as suspicious.
+                </p>
+                <ul style="color: var(--muted); font-size: 0.85rem; margin-top: 10px; padding-left: 20px;">
+                    <li><strong>TP:</strong> Flagged transaction was actually fraud</li>
+                    <li><strong>FP:</strong> Flagged transaction was legitimate (false alarm)</li>
+                    <li><strong>TN/FN:</strong> Always 0 (below-threshold transactions excluded)</li>
+                </ul>
+                <p style="color: var(--warn); font-size: 0.85rem; margin-top: 10px;">
+                    ⚠️ Recall is not meaningful here (always 100%) since we exclude transactions below threshold.
+                </p>
+            </div>
+            <div>
+                <h4 style="color: var(--accent); margin-bottom: 10px;">🎯 Overall Classification (All Transactions)</h4>
+                <p style="color: var(--muted); font-size: 0.9rem; line-height: 1.6;">
+                    Measures the <strong>full classifier performance</strong> across ALL transactions,
+                    including those correctly identified as legitimate (below threshold).
+                </p>
+                <ul style="color: var(--muted); font-size: 0.85rem; margin-top: 10px; padding-left: 20px;">
+                    <li><strong>TP:</strong> Correctly identified fraud</li>
+                    <li><strong>FP:</strong> Incorrectly flagged legitimate transaction</li>
+                    <li><strong>TN:</strong> Correctly identified legitimate transaction</li>
+                    <li><strong>FN:</strong> Missed fraud (below threshold but was fraud)</li>
+                </ul>
+                <p style="color: var(--ok); font-size: 0.85rem; margin-top: 10px;">
+                    ✅ This gives true precision/recall for full classifier evaluation.
+                </p>
+            </div>
+        </div>
+    </div>
+
     <h2 style="margin-bottom: 20px; color: var(--accent);">💰 Monthly Totals</h2>
     <div class="totals-grid">
         <div class="metric-card">
@@ -232,19 +274,37 @@ def _generate_html(result: MonthlyAnalysisResult) -> str:
         </div>
     </div>
 
-    <h2 style="margin-bottom: 20px; color: var(--accent);">📊 Confusion Matrix</h2>
+    <h2 style="margin-bottom: 10px; color: var(--accent);">📊 Review Precision (Flagged Transactions)</h2>
+    <p style="text-align: center; color: var(--muted); font-size: 0.9rem; margin-bottom: 15px;">
+        Alert-level metrics: Only counts transactions above risk threshold that were flagged for review
+    </p>
     <div class="confusion-grid">
         <div class="cm-cell cm-tp">TP: {result.total_tp}<br><small>Fraud Caught</small></div>
         <div class="cm-cell cm-fp">FP: {result.total_fp}<br><small>False Alarms</small></div>
         <div class="cm-cell cm-fn">FN: {result.total_fn}<br><small>Fraud Missed</small></div>
         <div class="cm-cell cm-tn">TN: {result.total_tn}<br><small>Legit Confirmed</small></div>
     </div>
-
     <div class="metrics-row">
-        <div class="metric-pill"><strong>Precision:</strong> {precision_pct}</div>
+        <div class="metric-pill"><strong>Review Precision:</strong> {precision_pct}</div>
         <div class="metric-pill"><strong>Recall:</strong> {recall_pct}</div>
         <div class="metric-pill"><strong>F1 Score:</strong> {f1_pct}</div>
         <div class="metric-pill"><strong>ROI:</strong> {roi_display}</div>
+    </div>
+
+    <h2 style="margin-top: 40px; margin-bottom: 10px; color: var(--accent);">🎯 Overall Classification (All Transactions)</h2>
+    <p style="text-align: center; color: var(--muted); font-size: 0.9rem; margin-bottom: 15px;">
+        Full classifier metrics: Includes ALL transactions (both flagged and below-threshold)
+    </p>
+    <div class="confusion-grid">
+        <div class="cm-cell cm-tp">TP: {result.overall_total_tp}<br><small>Fraud Caught</small></div>
+        <div class="cm-cell cm-fp">FP: {result.overall_total_fp}<br><small>False Alarms</small></div>
+        <div class="cm-cell cm-fn">FN: {result.overall_total_fn}<br><small>Fraud Missed</small></div>
+        <div class="cm-cell cm-tn">TN: {result.overall_total_tn}<br><small>Legit Confirmed</small></div>
+    </div>
+    <div class="metrics-row">
+        <div class="metric-pill"><strong>Overall Precision:</strong> {overall_precision_pct}</div>
+        <div class="metric-pill"><strong>Overall Recall:</strong> {overall_recall_pct}</div>
+        <div class="metric-pill"><strong>Overall F1 Score:</strong> {overall_f1_pct}</div>
     </div>
 
     <div class="section-header">
@@ -294,6 +354,12 @@ def _generate_day_card(day: DailyAnalysisResult) -> str:
     date_str = day.date.strftime("%B %d, %Y")
     net_class = "positive" if day.net_value >= 0 else "negative"
 
+    # Get overall metrics with fallback to 0
+    overall_tp = getattr(day, 'overall_tp', 0) or 0
+    overall_fp = getattr(day, 'overall_fp', 0) or 0
+    overall_tn = getattr(day, 'overall_tn', 0) or 0
+    overall_fn = getattr(day, 'overall_fn', 0) or 0
+
     return f"""
     <div class="day-card" id="day-{day.day_of_month}">
         <div class="day-header" onclick="toggleDay({day.day_of_month})">
@@ -311,6 +377,9 @@ def _generate_day_card(day: DailyAnalysisResult) -> str:
             </div>
         </div>
         <div class="day-content" id="content-{day.day_of_month}">
+            <p style="color: var(--muted); font-size: 0.85rem; margin-bottom: 10px;">
+                <strong>Review Precision (Flagged Only)</strong>
+            </p>
             <div class="day-stats">
                 <div class="day-stat">
                     <div class="day-stat-value" style="color: var(--ok);">{day.tp}</div>
@@ -328,6 +397,32 @@ def _generate_day_card(day: DailyAnalysisResult) -> str:
                     <div class="day-stat-value" style="color: var(--warn);">{day.fn}</div>
                     <div class="day-stat-label">False Negatives</div>
                 </div>
+            </div>
+            <p style="color: var(--muted); font-size: 0.85rem; margin-top: 15px; margin-bottom: 10px;">
+                <strong>Overall Classification (All Transactions)</strong>
+            </p>
+            <div class="day-stats">
+                <div class="day-stat">
+                    <div class="day-stat-value" style="color: var(--ok);">{overall_tp}</div>
+                    <div class="day-stat-label">Overall TP</div>
+                </div>
+                <div class="day-stat">
+                    <div class="day-stat-value" style="color: var(--danger);">{overall_fp}</div>
+                    <div class="day-stat-label">Overall FP</div>
+                </div>
+                <div class="day-stat">
+                    <div class="day-stat-value" style="color: var(--accent);">{overall_tn}</div>
+                    <div class="day-stat-label">Overall TN</div>
+                </div>
+                <div class="day-stat">
+                    <div class="day-stat-value" style="color: var(--warn);">{overall_fn}</div>
+                    <div class="day-stat-label">Overall FN</div>
+                </div>
+            </div>
+            <p style="color: var(--muted); font-size: 0.85rem; margin-top: 15px; margin-bottom: 10px;">
+                <strong>Financial Impact</strong>
+            </p>
+            <div class="day-stats">
                 <div class="day-stat">
                     <div class="day-stat-value" style="color: var(--ok);">${float(day.saved_fraud_gmv):,.2f}</div>
                     <div class="day-stat-label">Saved GMV</div>

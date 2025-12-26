@@ -2,6 +2,31 @@
 Comparison Data Loading Module
 
 Extracted data loading methods from auto_comparison.py
+
+CONFIGURATION CONTROL POINTS:
+-----------------------------
+Entity selection for auto-comparison is controlled by environment variables,
+NOT by parameters passed through the call chain. The authoritative controls are:
+
+- ANALYTICS_DEFAULT_TOP_PERCENTAGE (default: 30)
+  Controls what percentage of top-risk entities are selected for analysis.
+  Example: "10" selects the top 10% of entities by risk score.
+
+- SELECTOR_ENABLE_SCORE_FILTERING (default: true)
+  Enables score-based filtering of entities.
+
+- SELECTOR_MIN_SCORE_THRESHOLD (default: 0.15)
+  Minimum average model score for entity to be included.
+
+- SELECTOR_HIGH_SCORE_THRESHOLD (default: 0.70)
+  Threshold for high-score weighting multiplier.
+
+- SELECTOR_HIGH_SCORE_WEIGHT_MULTIPLIER (default: 2.0)
+  Weight multiplier for high-score entities.
+
+NOTE: The `top_percentage` parameter passed to `run_auto_comparisons_for_top_entities()`
+is logged but NOT used for entity selection. The env var takes precedence.
+If you need to control selection size programmatically, set the env var before calling.
 """
 
 import os
@@ -147,6 +172,8 @@ class ComparisonDataLoader:
             
             
             # Configuration for risk analysis
+            # NOTE: top_percentage is read from env here, NOT from any function parameter.
+            # See module docstring for full list of configuration control points.
             top_percentage = float(os.getenv("ANALYTICS_DEFAULT_TOP_PERCENTAGE", "30"))
             top_decimal = top_percentage / 100.0
 

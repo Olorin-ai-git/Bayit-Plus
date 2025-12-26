@@ -133,8 +133,9 @@ class ConfusionMatrix(BaseModel):
         description="Transactions with NULL IS_FRAUD_TX excluded from confusion matrix",
     )
 
+    # Review Precision Metrics (only_flagged=True - transactions above threshold)
     precision: float = Field(
-        0.0, ge=0.0, le=1.0, description="TP / (TP + FP), or 0.0 if TP + FP = 0"
+        0.0, ge=0.0, le=1.0, description="Review Precision: TP / (TP + FP) for flagged transactions only, or 0.0 if TP + FP = 0"
     )
     recall: float = Field(
         0.0, ge=0.0, le=1.0, description="TP / (TP + FN), or 0.0 if TP + FN = 0"
@@ -150,6 +151,38 @@ class ConfusionMatrix(BaseModel):
         ge=0.0,
         le=1.0,
         description="(TP + TN) / (TP + FP + TN + FN), or 0.0 if total = 0",
+    )
+
+    # Overall Classification Metrics (only_flagged=False - all transactions)
+    overall_TP: int = Field(
+        0, ge=0, description="Overall True Positives: includes all transactions"
+    )
+    overall_FP: int = Field(
+        0, ge=0, description="Overall False Positives: includes all transactions"
+    )
+    overall_TN: int = Field(
+        0, ge=0, description="Overall True Negatives: includes all transactions"
+    )
+    overall_FN: int = Field(
+        0, ge=0, description="Overall False Negatives: includes all transactions"
+    )
+    overall_precision: float = Field(
+        0.0, ge=0.0, le=1.0, description="Overall Precision: TP / (TP + FP) for ALL transactions, or 0.0 if TP + FP = 0"
+    )
+    overall_recall: float = Field(
+        0.0, ge=0.0, le=1.0, description="Overall Recall: TP / (TP + FN) for ALL transactions, or 0.0 if TP + FN = 0"
+    )
+    overall_f1_score: float = Field(
+        0.0,
+        ge=0.0,
+        le=1.0,
+        description="Overall F1: 2 * (precision * recall) / (precision + recall) for ALL transactions, or 0.0 if precision + recall = 0",
+    )
+    overall_accuracy: float = Field(
+        0.0,
+        ge=0.0,
+        le=1.0,
+        description="Overall Accuracy: (TP + TN) / (TP + FP + TN + FN) for ALL transactions, or 0.0 if total = 0",
     )
 
     investigation_risk_score: Optional[float] = Field(
@@ -331,8 +364,9 @@ class AggregatedConfusionMatrix(BaseModel):
         0, ge=0, description="Sum of excluded transactions across all entities"
     )
 
+    # Review Precision Metrics (only_flagged=True)
     aggregated_precision: float = Field(
-        0.0, ge=0.0, le=1.0, description="total_TP / (total_TP + total_FP)"
+        0.0, ge=0.0, le=1.0, description="Review Precision: total_TP / (total_TP + total_FP) for flagged transactions only"
     )
     aggregated_recall: float = Field(
         0.0, ge=0.0, le=1.0, description="total_TP / (total_TP + total_FN)"
@@ -348,6 +382,30 @@ class AggregatedConfusionMatrix(BaseModel):
         ge=0.0,
         le=1.0,
         description="(total_TP + total_TN) / (total_TP + total_FP + total_TN + total_FN)",
+    )
+
+    # Overall Classification Metrics (only_flagged=False - all transactions)
+    overall_total_TP: int = Field(0, ge=0, description="Overall sum of TP across all entities (all transactions)")
+    overall_total_FP: int = Field(0, ge=0, description="Overall sum of FP across all entities (all transactions)")
+    overall_total_TN: int = Field(0, ge=0, description="Overall sum of TN across all entities (all transactions)")
+    overall_total_FN: int = Field(0, ge=0, description="Overall sum of FN across all entities (all transactions)")
+    overall_aggregated_precision: float = Field(
+        0.0, ge=0.0, le=1.0, description="Overall Precision: total_TP / (total_TP + total_FP) for ALL transactions"
+    )
+    overall_aggregated_recall: float = Field(
+        0.0, ge=0.0, le=1.0, description="Overall Recall: total_TP / (total_TP + total_FN) for ALL transactions"
+    )
+    overall_aggregated_f1_score: float = Field(
+        0.0,
+        ge=0.0,
+        le=1.0,
+        description="Overall F1: 2 * (precision * recall) / (precision + recall) for ALL transactions",
+    )
+    overall_aggregated_accuracy: float = Field(
+        0.0,
+        ge=0.0,
+        le=1.0,
+        description="Overall Accuracy: (total_TP + total_TN) / (total_TP + total_FP + total_TN + total_FN) for ALL transactions",
     )
 
     entity_matrices: List[ConfusionMatrix] = Field(

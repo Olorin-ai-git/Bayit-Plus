@@ -729,7 +729,7 @@ def calculate_confusion_matrix(
     Returns:
         ConfusionMatrix object with TP, FP, TN, FN, precision, recall, F1, accuracy
     """
-    # Use existing compute_confusion_matrix function with only_flagged=True
+    # Calculate REVIEW PRECISION metrics (only_flagged=True)
     # This ensures we only count transactions that were actually flagged as risky
     # (predicted_risk >= threshold), dramatically reducing FP count
     tp, fp, tn, fn, excluded_missing_predicted_risk, excluded_below_threshold = (
@@ -749,7 +749,7 @@ def calculate_confusion_matrix(
         + excluded_below_threshold
     )
 
-    # Use existing compute_derived_metrics function
+    # Use existing compute_derived_metrics function for review precision
     (
         precision,
         recall,
@@ -762,6 +762,35 @@ def calculate_confusion_matrix(
         power_dict,
     ) = compute_derived_metrics(tp, fp, tn, fn, transactions)
 
+    # Calculate OVERALL CLASSIFICATION metrics (only_flagged=False)
+    # This includes ALL transactions, not just flagged ones
+    overall_tp, overall_fp, overall_tn, overall_fn, overall_excluded_missing_predicted_risk, overall_excluded_below_threshold = (
+        compute_confusion_matrix(transactions, risk_threshold, only_flagged=False)
+    )
+
+    # Calculate overall derived metrics
+    (
+        overall_precision,
+        overall_recall,
+        overall_f1,
+        overall_accuracy,
+        _,  # fraud_rate (same for both)
+        _,  # pending_count (same for both)
+        _,  # ci_dict (not needed for overall)
+        _,  # support_dict (not needed for overall)
+        _,  # power_dict (not needed for overall)
+    ) = compute_derived_metrics(overall_tp, overall_fp, overall_tn, overall_fn, transactions)
+
+    logger.info(
+        f"📊 Calculated dual confusion metrics for {entity_type}:{entity_id}:"
+    )
+    logger.info(
+        f"   Review Precision (flagged only): TP={tp}, FP={fp}, TN={tn}, FN={fn}, precision={precision:.3f}"
+    )
+    logger.info(
+        f"   Overall Classification (all txs): TP={overall_tp}, FP={overall_fp}, TN={overall_tn}, FN={overall_fn}, precision={overall_precision:.3f}"
+    )
+
     # Validation: Sum check - TP+FP+TN+FN+excluded should equal total_transactions
     total_calculated = tp + fp + tn + fn + excluded_count
     total_expected = len(transactions)
@@ -772,11 +801,12 @@ def calculate_confusion_matrix(
             f"TP+FP+TN+FN+excluded={total_calculated} != total_transactions={total_expected}"
         )
 
-    # Create ConfusionMatrix object
+    # Create ConfusionMatrix object with both review and overall metrics
     confusion_matrix = ConfusionMatrix(
         entity_type=entity_type,
         entity_id=entity_id,
         investigation_id=investigation_id,
+        # Review Precision Metrics (only_flagged=True)
         TP=tp,
         FP=fp,
         TN=tn,
@@ -786,6 +816,16 @@ def calculate_confusion_matrix(
         recall=recall,
         f1_score=f1,
         accuracy=accuracy,
+        # Overall Classification Metrics (only_flagged=False)
+        overall_TP=overall_tp,
+        overall_FP=overall_fp,
+        overall_TN=overall_tn,
+        overall_FN=overall_fn,
+        overall_precision=overall_precision,
+        overall_recall=overall_recall,
+        overall_f1_score=overall_f1,
+        overall_accuracy=overall_accuracy,
+        # Common fields
         investigation_risk_score=investigation_risk_score,
         risk_threshold=risk_threshold,
         total_transactions=len(transactions),
@@ -836,13 +876,19 @@ def aggregate_confusion_matrices(
             calculation_timestamp=datetime.now(pytz.UTC),
         )
 
-    # Aggregate counts
+    # Aggregate REVIEW PRECISION counts (only_flagged=True)
     total_tp = sum(m.TP for m in matrices)
     total_fp = sum(m.FP for m in matrices)
     total_tn = sum(m.TN for m in matrices)
     total_fn = sum(m.FN for m in matrices)
     total_excluded = sum(m.excluded_count for m in matrices)
     total_transactions = sum(m.total_transactions for m in matrices)
+
+    # Aggregate OVERALL CLASSIFICATION counts (only_flagged=False)
+    overall_total_tp = sum(m.overall_TP for m in matrices)
+    overall_total_fp = sum(m.overall_FP for m in matrices)
+    overall_total_tn = sum(m.overall_TN for m in matrices)
+    overall_total_fn = sum(m.overall_FN for m in matrices)
 
     # Validation: Sum check - TP+FP+TN+FN+excluded should equal total_transactions
     total_calculated = total_tp + total_fp + total_tn + total_fn + total_excluded
@@ -852,7 +898,7 @@ def aggregate_confusion_matrices(
             f"TP+FP+TN+FN+excluded={total_calculated} != total_transactions={total_transactions}"
         )
 
-    # Calculate aggregated derived metrics with divide-by-zero guards
+    # Calculate REVIEW PRECISION aggregated metrics with divide-by-zero guards
     # Precision: total_TP / (total_TP + total_FP)
     aggregated_precision = (
         total_tp / (total_tp + total_fp) if (total_tp + total_fp) > 0 else 0.0
@@ -892,7 +938,38 @@ def aggregate_confusion_matrices(
             "Divide-by-zero in aggregated accuracy calculation: no known labels"
         )
 
+    # Calculate OVERALL CLASSIFICATION aggregated metrics
+    overall_aggregated_precision = (
+        overall_total_tp / (overall_total_tp + overall_total_fp)
+        if (overall_total_tp + overall_total_fp) > 0 else 0.0
+    )
+    overall_aggregated_recall = (
+        overall_total_tp / (overall_total_tp + overall_total_fn)
+        if (overall_total_tp + overall_total_fn) > 0 else 0.0
+    )
+    overall_aggregated_f1 = (
+        2 * (overall_aggregated_precision * overall_aggregated_recall)
+        / (overall_aggregated_precision + overall_aggregated_recall)
+        if (overall_aggregated_precision + overall_aggregated_recall) > 0 else 0.0
+    )
+    overall_total_known = overall_total_tp + overall_total_fp + overall_total_tn + overall_total_fn
+    overall_aggregated_accuracy = (
+        (overall_total_tp + overall_total_tn) / overall_total_known
+        if overall_total_known > 0 else 0.0
+    )
+
+    logger.info(
+        f"📊 Aggregated dual metrics:"
+    )
+    logger.info(
+        f"   Review Precision (flagged only): TP={total_tp}, FP={total_fp}, precision={aggregated_precision:.3f}"
+    )
+    logger.info(
+        f"   Overall Classification (all txs): TP={overall_total_tp}, FP={overall_total_fp}, TN={overall_total_tn}, precision={overall_aggregated_precision:.3f}"
+    )
+
     aggregated_matrix = AggregatedConfusionMatrix(
+        # Review Precision Metrics (only_flagged=True)
         total_TP=total_tp,
         total_FP=total_fp,
         total_TN=total_tn,
@@ -902,6 +979,16 @@ def aggregate_confusion_matrices(
         aggregated_recall=aggregated_recall,
         aggregated_f1_score=aggregated_f1,
         aggregated_accuracy=aggregated_accuracy,
+        # Overall Classification Metrics (only_flagged=False)
+        overall_total_TP=overall_total_tp,
+        overall_total_FP=overall_total_fp,
+        overall_total_TN=overall_total_tn,
+        overall_total_FN=overall_total_fn,
+        overall_aggregated_precision=overall_aggregated_precision,
+        overall_aggregated_recall=overall_aggregated_recall,
+        overall_aggregated_f1_score=overall_aggregated_f1,
+        overall_aggregated_accuracy=overall_aggregated_accuracy,
+        # Common fields
         entity_matrices=matrices,
         entity_count=len(matrices),
         risk_threshold=risk_threshold,

@@ -283,19 +283,36 @@ async def run_auto_comparisons_for_top_entities(
                         if cm_result and cm_result.get("aggregated_matrix"):
                             agg = cm_result["aggregated_matrix"]
                             # AggregatedConfusionMatrix uses total_TP, total_FP, etc.
+                            # Store both Review Precision (flagged-only) and Overall Classification metrics
                             result["confusion_matrix"] = {
+                                # Review Precision Metrics (only_flagged=True - transactions above threshold)
                                 "TP": getattr(agg, "total_TP", 0) if hasattr(agg, "total_TP") else agg.get("total_TP", 0),
                                 "FP": getattr(agg, "total_FP", 0) if hasattr(agg, "total_FP") else agg.get("total_FP", 0),
                                 "TN": getattr(agg, "total_TN", 0) if hasattr(agg, "total_TN") else agg.get("total_TN", 0),
                                 "FN": getattr(agg, "total_FN", 0) if hasattr(agg, "total_FN") else agg.get("total_FN", 0),
+                                # Overall Classification Metrics (only_flagged=False - all transactions)
+                                "overall_TP": getattr(agg, "overall_total_TP", 0) if hasattr(agg, "overall_total_TP") else agg.get("overall_total_TP", 0),
+                                "overall_FP": getattr(agg, "overall_total_FP", 0) if hasattr(agg, "overall_total_FP") else agg.get("overall_total_FP", 0),
+                                "overall_TN": getattr(agg, "overall_total_TN", 0) if hasattr(agg, "overall_total_TN") else agg.get("overall_total_TN", 0),
+                                "overall_FN": getattr(agg, "overall_total_FN", 0) if hasattr(agg, "overall_total_FN") else agg.get("overall_total_FN", 0),
                             }
-                            logger.info(f"📊 [{i+1}] Confusion matrix: TP={result['confusion_matrix']['TP']}, FP={result['confusion_matrix']['FP']}")
+                            logger.info(
+                                f"📊 [{i+1}] Confusion matrix: "
+                                f"Review(TP={result['confusion_matrix']['TP']}, FP={result['confusion_matrix']['FP']}) "
+                                f"Overall(TP={result['confusion_matrix']['overall_TP']}, FP={result['confusion_matrix']['overall_FP']})"
+                            )
                         else:
                             logger.warning(f"⚠️ [{i+1}] No confusion matrix data returned")
-                            result["confusion_matrix"] = {"TP": 0, "FP": 0, "TN": 0, "FN": 0}
+                            result["confusion_matrix"] = {
+                                "TP": 0, "FP": 0, "TN": 0, "FN": 0,
+                                "overall_TP": 0, "overall_FP": 0, "overall_TN": 0, "overall_FN": 0,
+                            }
                     except Exception as cm_err:
                         logger.warning(f"⚠️ [{i+1}] Could not generate confusion matrix: {cm_err}")
-                        result["confusion_matrix"] = {"TP": 0, "FP": 0, "TN": 0, "FN": 0}
+                        result["confusion_matrix"] = {
+                            "TP": 0, "FP": 0, "TN": 0, "FN": 0,
+                            "overall_TP": 0, "overall_FP": 0, "overall_TN": 0, "overall_FN": 0,
+                        }
 
                     # Enrich result with metadata
                     result["merchant_name"] = merchant

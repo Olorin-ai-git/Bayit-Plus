@@ -188,10 +188,17 @@ def _update_monthly_report_from_daily(
         for day_num in sorted(by_day.keys()):
             day_invs = by_day[day_num]
 
+            # Review Precision Metrics (flagged-only)
             day_tp = sum(_safe_int(inv.get("confusion_matrix", {}).get("TP", 0)) for inv in day_invs)
             day_fp = sum(_safe_int(inv.get("confusion_matrix", {}).get("FP", 0)) for inv in day_invs)
             day_tn = sum(_safe_int(inv.get("confusion_matrix", {}).get("TN", 0)) for inv in day_invs)
             day_fn = sum(_safe_int(inv.get("confusion_matrix", {}).get("FN", 0)) for inv in day_invs)
+
+            # Overall Classification Metrics (all transactions)
+            day_overall_tp = sum(_safe_int(inv.get("confusion_matrix", {}).get("overall_TP", 0)) for inv in day_invs)
+            day_overall_fp = sum(_safe_int(inv.get("confusion_matrix", {}).get("overall_FP", 0)) for inv in day_invs)
+            day_overall_tn = sum(_safe_int(inv.get("confusion_matrix", {}).get("overall_TN", 0)) for inv in day_invs)
+            day_overall_fn = sum(_safe_int(inv.get("confusion_matrix", {}).get("overall_FN", 0)) for inv in day_invs)
 
             day_saved = Decimal(str(sum(
                 _safe_float(inv.get("revenue_data", {}).get("saved_fraud_gmv", 0))
@@ -203,9 +210,12 @@ def _update_monthly_report_from_daily(
             )))
             day_net = day_saved - day_lost
 
-            # Get entity counts from selector_metadata
-            selector_meta = day_invs[0].get("selector_metadata", {}) if day_invs else {}
-            entities_expected = selector_meta.get("total_entities_expected", len(day_invs))
+            # Get entity counts from selector_metadata - use max across all investigations
+            # (fixes bug where only first investigation's metadata was used)
+            entities_expected = max(
+                (inv.get("selector_metadata", {}).get("total_entities_expected", 0) for inv in day_invs),
+                default=len(day_invs)
+            ) or len(day_invs)
 
             day_date = datetime(year, month, day_num)
             daily_results.append(DailyAnalysisResult(
@@ -217,6 +227,10 @@ def _update_monthly_report_from_daily(
                 fp=day_fp,
                 tn=day_tn,
                 fn=day_fn,
+                overall_tp=day_overall_tp,
+                overall_fp=day_overall_fp,
+                overall_tn=day_overall_tn,
+                overall_fn=day_overall_fn,
                 saved_fraud_gmv=day_saved,
                 lost_revenues=day_lost,
                 net_value=day_net,

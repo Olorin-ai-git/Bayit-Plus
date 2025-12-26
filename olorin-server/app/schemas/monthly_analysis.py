@@ -27,11 +27,17 @@ class DailyAnalysisResult(BaseModel):
         default=0, description="Number of entities analyzed this day"
     )
 
-    # Confusion matrix metrics
-    tp: int = Field(default=0, description="True Positives")
-    fp: int = Field(default=0, description="False Positives")
-    tn: int = Field(default=0, description="True Negatives")
-    fn: int = Field(default=0, description="False Negatives")
+    # Review Precision Metrics (only_flagged=True - transactions above threshold)
+    tp: int = Field(default=0, description="Review True Positives (flagged transactions only)")
+    fp: int = Field(default=0, description="Review False Positives (flagged transactions only)")
+    tn: int = Field(default=0, description="Review True Negatives (flagged transactions only)")
+    fn: int = Field(default=0, description="Review False Negatives (flagged transactions only)")
+
+    # Overall Classification Metrics (only_flagged=False - all transactions)
+    overall_tp: int = Field(default=0, description="Overall True Positives (all transactions)")
+    overall_fp: int = Field(default=0, description="Overall False Positives (all transactions)")
+    overall_tn: int = Field(default=0, description="Overall True Negatives (all transactions)")
+    overall_fn: int = Field(default=0, description="Overall False Negatives (all transactions)")
 
     # Financial metrics
     saved_fraud_gmv: Decimal = Field(
@@ -103,11 +109,20 @@ class MonthlyAnalysisResult(BaseModel):
         default=Decimal("0"), description="Total Net Value"
     )
 
-    # Derived metrics
-    precision: Optional[float] = Field(default=None, description="Precision rate")
+    # Review Precision Metrics (only_flagged=True)
+    precision: Optional[float] = Field(default=None, description="Review Precision rate (flagged transactions only)")
     recall: Optional[float] = Field(default=None, description="Recall rate")
     f1_score: Optional[float] = Field(default=None, description="F1 Score")
     roi_percentage: Optional[float] = Field(default=None, description="ROI percentage")
+
+    # Overall Classification Metrics (only_flagged=False - all transactions)
+    overall_total_tp: int = Field(default=0, description="Overall Total True Positives (all transactions)")
+    overall_total_fp: int = Field(default=0, description="Overall Total False Positives (all transactions)")
+    overall_total_tn: int = Field(default=0, description="Overall Total True Negatives (all transactions)")
+    overall_total_fn: int = Field(default=0, description="Overall Total False Negatives (all transactions)")
+    overall_precision: Optional[float] = Field(default=None, description="Overall Precision rate (all transactions)")
+    overall_recall: Optional[float] = Field(default=None, description="Overall Recall rate (all transactions)")
+    overall_f1_score: Optional[float] = Field(default=None, description="Overall F1 Score (all transactions)")
 
     # Entity counts
     total_entities: int = Field(
@@ -123,8 +138,8 @@ class MonthlyAnalysisResult(BaseModel):
     )
 
     def calculate_derived_metrics(self) -> None:
-        """Calculate precision, recall, F1, and ROI from raw metrics."""
-        # Precision: TP / (TP + FP)
+        """Calculate precision, recall, F1, and ROI from raw metrics (both review and overall)."""
+        # Review Precision Metrics: TP / (TP + FP)
         if self.total_tp + self.total_fp > 0:
             self.precision = self.total_tp / (self.total_tp + self.total_fp)
 
@@ -138,6 +153,18 @@ class MonthlyAnalysisResult(BaseModel):
                 2 * (self.precision * self.recall) / (self.precision + self.recall)
             )
 
+        # Overall Classification Metrics
+        if self.overall_total_tp + self.overall_total_fp > 0:
+            self.overall_precision = self.overall_total_tp / (self.overall_total_tp + self.overall_total_fp)
+
+        if self.overall_total_tp + self.overall_total_fn > 0:
+            self.overall_recall = self.overall_total_tp / (self.overall_total_tp + self.overall_total_fn)
+
+        if self.overall_precision and self.overall_recall and (self.overall_precision + self.overall_recall) > 0:
+            self.overall_f1_score = (
+                2 * (self.overall_precision * self.overall_recall) / (self.overall_precision + self.overall_recall)
+            )
+
         # ROI: (Net Value / Lost Revenues) * 100
         if self.total_lost_revenues > 0:
             self.roi_percentage = float(
@@ -149,10 +176,17 @@ class MonthlyAnalysisResult(BaseModel):
         self.completed_days = len(self.daily_results)
         self.is_complete = self.completed_days >= self.total_days
 
+        # Review Precision Metrics (flagged-only)
         self.total_tp = sum(d.tp for d in self.daily_results)
         self.total_fp = sum(d.fp for d in self.daily_results)
         self.total_tn = sum(d.tn for d in self.daily_results)
         self.total_fn = sum(d.fn for d in self.daily_results)
+
+        # Overall Classification Metrics (all transactions)
+        self.overall_total_tp = sum(d.overall_tp for d in self.daily_results)
+        self.overall_total_fp = sum(d.overall_fp for d in self.daily_results)
+        self.overall_total_tn = sum(d.overall_tn for d in self.daily_results)
+        self.overall_total_fn = sum(d.overall_fn for d in self.daily_results)
 
         self.total_saved_fraud_gmv = sum(
             d.saved_fraud_gmv for d in self.daily_results
