@@ -46,7 +46,7 @@ class RevenueConfig(BaseModel):
 
     # Revenue calculation parameters
     take_rate_percent: Decimal = Field(
-        default=Decimal("0.75"),
+        default=Decimal("7.5"),
         description="Take rate percentage for Lost Revenues calculation",
         ge=Decimal("0"),
         le=Decimal("100"),
@@ -120,7 +120,7 @@ def load_revenue_config() -> RevenueConfig:
             os.getenv("SAVED_FRAUD_GMV_END_MONTHS", "6")
         ),
         take_rate_percent=Decimal(
-            os.getenv("REVENUE_TAKE_RATE_PERCENT", "0.75")
+            os.getenv("REVENUE_TAKE_RATE_PERCENT", "7.5")
         ),
         lifetime_multiplier=Decimal(
             os.getenv("REVENUE_LIFETIME_MULTIPLIER", "1.0")

@@ -162,8 +162,18 @@ async def run_auto_comparisons_for_top_entities(
     }
 
     # 3. Run investigations (Parallel with Semaphore)
-    semaphore = asyncio.Semaphore(5)  # Limit concurrency to 5
+    # Sequential mode for monthly analysis to avoid API rate limits
+    sequential_mode = os.getenv("MONTHLY_ANALYSIS_SEQUENTIAL", "false").lower() == "true"
+    max_concurrent = 1 if sequential_mode else 5
+    investigation_delay_seconds = float(os.getenv("INVESTIGATION_DELAY_SECONDS", "2.0" if sequential_mode else "0"))
+
+    semaphore = asyncio.Semaphore(max_concurrent)
     results = []
+
+    if sequential_mode:
+        logger.info(f"🔄 SEQUENTIAL MODE enabled: max_concurrent={max_concurrent}, delay={investigation_delay_seconds}s between investigations")
+    else:
+        logger.info(f"⚡ CONCURRENT MODE: max_concurrent={max_concurrent}")
 
     # Feature 024: Use configurable investigation window
     # investigation_window_start_months = 18 (default)
@@ -431,13 +441,23 @@ async def run_auto_comparisons_for_top_entities(
                     except Exception as rev_err:
                         logger.warning(f"⚠️ [{i+1}] Revenue calculation failed for {email}: {rev_err}")
                         result["revenue_data"] = {"error": str(rev_err), "calculation_successful": False}
-                    
+
+                    # Add delay between investigations in sequential mode to avoid rate limits
+                    if sequential_mode and investigation_delay_seconds > 0:
+                        await asyncio.sleep(investigation_delay_seconds)
+
                     return result
                 else:
                     logger.error(f"❌ Investigation failed for {email}")
+                    # Add delay even for failures in sequential mode
+                    if sequential_mode and investigation_delay_seconds > 0:
+                        await asyncio.sleep(investigation_delay_seconds)
                     return None
             except Exception as e:
                 logger.error(f"❌ Exception processing {email}: {e}")
+                # Add delay even for exceptions in sequential mode
+                if sequential_mode and investigation_delay_seconds > 0:
+                    await asyncio.sleep(investigation_delay_seconds)
                 return None
 
     tasks = [process_single_comparison(i, pair) for i, pair in enumerate(fraud_pairs)]

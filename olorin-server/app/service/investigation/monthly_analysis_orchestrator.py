@@ -146,6 +146,9 @@ class MonthlyAnalysisOrchestrator:
         self.time_window_hours = int(
             os.getenv("MONTHLY_ANALYSIS_TIME_WINDOW_HOURS", "24")
         )
+        self.max_days = int(
+            os.getenv("MONTHLY_ANALYSIS_MAX_DAYS", "31")
+        )
         self.output_base_dir = Path(
             os.getenv("MONTHLY_ANALYSIS_OUTPUT_DIR", "artifacts/monthly_analysis")
         )
@@ -170,10 +173,14 @@ class MonthlyAnalysisOrchestrator:
         days_in_month = calendar.monthrange(year, month)[1]
         month_name = calendar.month_name[month]
 
+        # Calculate end day based on max_days setting
+        end_day = min(resume_from_day + self.max_days - 1, days_in_month)
+
         logger.info(f"{'='*60}")
         logger.info(f"MONTHLY ANALYSIS: {month_name} {year}")
         logger.info(f"Days in month: {days_in_month}")
         logger.info(f"Starting from day: {resume_from_day}")
+        logger.info(f"Ending at day: {end_day} (max_days={self.max_days})")
         logger.info(f"Top percentage: {self.top_percentage}")
         logger.info(f"Time window: {self.time_window_hours}h")
         logger.info(f"{'='*60}")
@@ -184,7 +191,7 @@ class MonthlyAnalysisOrchestrator:
         daily_results: List[DailyAnalysisResult] = []
         started_at = datetime.now()
 
-        for day in range(resume_from_day, days_in_month + 1):
+        for day in range(resume_from_day, end_day + 1):
             reference_date = datetime(year, month, day, 23, 59, 59)
             day_started = datetime.now()
 
