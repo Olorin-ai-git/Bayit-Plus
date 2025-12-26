@@ -37,6 +37,11 @@ class SnowflakeAssessor:
         """
         snowflake_data = state.get("snowflake_data", {})
 
+        # Handle case where snowflake_data is a string (parsing error)
+        if isinstance(snowflake_data, str):
+            logger.warning(f"     ⚠️  Snowflake assessor failed: snowflake_data is str, not dict, using 0.0")
+            return 0.0
+
         if not snowflake_data:
             logger.debug("   📊 Snowflake evidence: None available (0.0)")
             return 0.0

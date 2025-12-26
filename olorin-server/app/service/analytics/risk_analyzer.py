@@ -95,11 +95,22 @@ class RiskAnalyzer:
         # Maximum lookback in months (default: 12 months) - SELECTOR_END_OFFSET_MONTHS
         self.max_lookback_months = int(os.getenv("SELECTOR_END_OFFSET_MONTHS", "12"))
 
+        # Score-based filtering configuration (data-driven refinements)
+        self.enable_score_filtering = os.getenv("SELECTOR_ENABLE_SCORE_FILTERING", "true").lower() == "true"
+        self.min_score_threshold = float(os.getenv("SELECTOR_MIN_SCORE_THRESHOLD", "0.15"))
+        self.high_score_threshold = float(os.getenv("SELECTOR_HIGH_SCORE_THRESHOLD", "0.70"))
+
         logger.info(
             f"Risk Analyzer configured: time_window={self.default_time_window}, "
             f"group_by={self.default_group_by}, top={self.default_top_percentage}%, "
-            f"max_lookback_months={self.max_lookback_months}"
+            f"max_lookback_months={self.max_lookback_months}, "
+            f"score_filtering={'enabled' if self.enable_score_filtering else 'disabled'}"
         )
+        if self.enable_score_filtering:
+            logger.info(
+                f"Score-based filtering: min_threshold={self.min_score_threshold}, "
+                f"high_threshold={self.high_score_threshold}"
+            )
 
     def _validate_column_name(self, column_name: str) -> str:
         """
@@ -955,21 +966,50 @@ class RiskAnalyzer:
         GROUP BY {column_name}
         """
 
+        # Get score-based filtering configuration
+        enable_score_filtering = os.getenv("SELECTOR_ENABLE_SCORE_FILTERING", "true").lower() == "true"
+        min_score_threshold = float(os.getenv("SELECTOR_MIN_SCORE_THRESHOLD", "0.15"))
+        high_score_threshold = float(os.getenv("SELECTOR_HIGH_SCORE_THRESHOLD", "0.70"))
+        high_score_multiplier = float(os.getenv("SELECTOR_HIGH_SCORE_WEIGHT_MULTIPLIER", "2.0"))
+
+        # Build query based on filtering mode
+        if enable_score_filtering:
+            # Data-driven refinements: score filtering and weighting
+            score_filter = f"AND avg_risk_score >= {min_score_threshold}"
+            score_weighting = f"""CASE
+                WHEN avg_risk_score >= {high_score_threshold}
+                THEN risk_weighted_value * {high_score_multiplier}
+                ELSE risk_weighted_value
+            END as weighted_risk_value"""
+            ranking_column = "weighted_risk_value"
+        else:
+            # Baseline behavior: no filtering or weighting
+            score_filter = ""
+            score_weighting = "risk_weighted_value as weighted_risk_value"
+            ranking_column = "weighted_risk_value"
+
         # Wrap to filter by top percentage using window function
         query = f"""
         WITH raw_data AS (
             {base_query}
         ),
-        ranked_data AS (
-            SELECT 
+        filtered_data AS (
+            SELECT
                 *,
-                PERCENT_RANK() OVER (ORDER BY risk_weighted_value DESC) as pct_rank
+                {score_weighting}
             FROM raw_data
+            WHERE 1=1 {score_filter}
+        ),
+        ranked_data AS (
+            SELECT
+                *,
+                PERCENT_RANK() OVER (ORDER BY {ranking_column} DESC) as pct_rank
+            FROM filtered_data
         )
         SELECT *
         FROM ranked_data
         WHERE pct_rank <= {top_decimal}
-        ORDER BY risk_weighted_value DESC
+        ORDER BY {ranking_column} DESC
         """
 
         return query

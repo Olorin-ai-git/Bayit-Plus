@@ -149,15 +149,34 @@ class ComparisonDataLoader:
             # Configuration for risk analysis
             top_percentage = float(os.getenv("ANALYTICS_DEFAULT_TOP_PERCENTAGE", "30"))
             top_decimal = top_percentage / 100.0
-            
+
             # Column names
             model_score_col = os.getenv("ANALYTICS_MODEL_SCORE_COL", "MODEL_SCORE")
             amount_col = os.getenv("ANALYTICS_AMOUNT_COL", "PAID_AMOUNT_VALUE_IN_CURRENCY")
             fraud_col = "IS_FRAUD_TX" if is_snowflake else "is_fraud_tx"
             decision_col = "NSURE_LAST_DECISION" if is_snowflake else "nsure_last_decision"
-            
-            # Minimum MODEL_SCORE threshold for entity selection
-            min_model_score = float(os.getenv("MIN_AVG_MODEL_SCORE", "0.5"))
+
+            # Score-based filtering configuration (data-driven from multi-period analysis)
+            # Unified with compound entity method for consistency
+            enable_score_filtering = os.getenv("SELECTOR_ENABLE_SCORE_FILTERING", "true").lower() == "true"
+            min_score_threshold = float(os.getenv("SELECTOR_MIN_SCORE_THRESHOLD", "0.15"))
+            high_score_threshold = float(os.getenv("SELECTOR_HIGH_SCORE_THRESHOLD", "0.70"))
+            high_score_multiplier = float(os.getenv("SELECTOR_HIGH_SCORE_WEIGHT_MULTIPLIER", "2.0"))
+
+            # Build score filter and weighting based on configuration
+            # Use MODEL_SCORE directly to match schema constant
+            if enable_score_filtering:
+                score_filter_clause = f"AND AVG(MODEL_SCORE) >= {min_score_threshold}"
+                score_weighting_expr = f"""CASE
+                    WHEN avg_model_score >= {high_score_threshold}
+                    THEN risk_weighted_value * {high_score_multiplier}
+                    ELSE risk_weighted_value
+                END"""
+                ranking_column = "weighted_risk_value"
+            else:
+                score_filter_clause = ""
+                score_weighting_expr = "risk_weighted_value"
+                ranking_column = "weighted_risk_value"
 
             if is_snowflake:
                 query = f"""
@@ -176,22 +195,31 @@ class ComparisonDataLoader:
                       AND MERCHANT_NAME IS NOT NULL
                       AND UPPER({decision_col}) = 'APPROVED'
                     GROUP BY EMAIL, MERCHANT_NAME
-                    HAVING AVG({model_score_col}) >= {min_model_score}
+                    HAVING 1=1
+                      {score_filter_clause}
+                ),
+                weighted_data AS (
+                    SELECT
+                        *,
+                        {score_weighting_expr} as weighted_risk_value
+                    FROM raw_data
                 ),
                 ranked_data AS (
-                    SELECT 
+                    SELECT
                         *,
-                        PERCENT_RANK() OVER (ORDER BY risk_weighted_value DESC) as pct_rank
-                    FROM raw_data
+                        PERCENT_RANK() OVER (ORDER BY {ranking_column} DESC) as pct_rank
+                    FROM weighted_data
                 )
-                SELECT 
+                SELECT
                     EMAIL,
                     MERCHANT_NAME,
                     fraud_count as FRAUD_TX_COUNT,
-                    total_count as TOTAL_TX_COUNT
+                    total_count as TOTAL_TX_COUNT,
+                    avg_model_score,
+                    weighted_risk_value
                 FROM ranked_data
                 WHERE pct_rank <= {top_decimal}
-                ORDER BY risk_weighted_value DESC
+                ORDER BY {ranking_column} DESC
                 LIMIT {limit}
                 """
             else:
@@ -211,26 +239,40 @@ class ComparisonDataLoader:
                       AND merchant_name IS NOT NULL
                       AND UPPER({decision_col}) = 'APPROVED'
                     GROUP BY email, merchant_name
-                    HAVING AVG({model_score_col}) >= {min_model_score}
+                    HAVING 1=1
+                      {score_filter_clause}
+                ),
+                weighted_data AS (
+                    SELECT
+                        *,
+                        {score_weighting_expr} as weighted_risk_value
+                    FROM raw_data
                 ),
                 ranked_data AS (
-                    SELECT 
+                    SELECT
                         *,
-                        PERCENT_RANK() OVER (ORDER BY risk_weighted_value DESC) as pct_rank
-                    FROM raw_data
+                        PERCENT_RANK() OVER (ORDER BY {ranking_column} DESC) as pct_rank
+                    FROM weighted_data
                 )
-                SELECT 
+                SELECT
                     email,
                     merchant_name,
                     fraud_count as fraud_tx_count,
-                    total_count as total_tx_count
+                    total_count as total_tx_count,
+                    avg_model_score,
+                    weighted_risk_value
                 FROM ranked_data
                 WHERE pct_rank <= {top_decimal}
-                ORDER BY risk_weighted_value DESC
+                ORDER BY {ranking_column} DESC
                 LIMIT {limit}
                 """
                 
-            self.logger.info(f"🔍 Executing fraud email query: {query}")
+            score_filter_status = "enabled" if enable_score_filtering else "disabled"
+            filter_details = f"min_score>={min_score_threshold}, boost>={high_score_threshold}x{high_score_multiplier}" if enable_score_filtering else "none"
+            self.logger.info(
+                f"🔍 Executing single entity (email) query: top_{top_percentage}%, "
+                f"score_filtering={score_filter_status} ({filter_details})"
+            )
             
             if is_async:
                 results = await db_provider.execute_query_async(query)
@@ -261,7 +303,8 @@ class ComparisonDataLoader:
                         "total_count": total
                     })
                     
-            self.logger.info(f"✅ Found {len(normalized_results)} top-risk email-merchant pairs (AVG MODEL_SCORE >= {min_model_score})")
+            filter_info = f"AVG MODEL_SCORE >= {min_score_threshold}" if enable_score_filtering else "no score filtering"
+            self.logger.info(f"✅ Found {len(normalized_results)} top-risk email-merchant pairs ({filter_info})")
             # Log first result to debug metadata flow
             if normalized_results:
                 self.logger.info(f"   First result sample: {normalized_results[0]}")
@@ -319,15 +362,35 @@ class ComparisonDataLoader:
             top_percentage = float(os.getenv("ANALYTICS_DEFAULT_TOP_PERCENTAGE", "30"))
             top_decimal = top_percentage / 100.0
 
+            # Score-based filtering configuration (data-driven from multi-period analysis)
+            enable_score_filtering = os.getenv("SELECTOR_ENABLE_SCORE_FILTERING", "true").lower() == "true"
+            min_score_threshold = float(os.getenv("SELECTOR_MIN_SCORE_THRESHOLD", "0.15"))
+            high_score_threshold = float(os.getenv("SELECTOR_HIGH_SCORE_THRESHOLD", "0.70"))
+            high_score_multiplier = float(os.getenv("SELECTOR_HIGH_SCORE_WEIGHT_MULTIPLIER", "2.0"))
+
             # Use APPROVED transactions - only these have ground truth IS_FRAUD_TX labels
             # for confusion matrix evaluation (NOT_REVIEWED lacks fraud labels)
             target_decision = os.getenv("SELECTOR_TARGET_DECISION", "APPROVED")
 
+            # Build score filter and weighting based on configuration
+            # Use MODEL_SCORE directly to match schema constant
+            if enable_score_filtering:
+                score_filter_clause = f"AND AVG(MODEL_SCORE) >= {min_score_threshold}"
+                score_weighting_expr = f"""CASE
+                    WHEN avg_model_score >= {high_score_threshold}
+                    THEN combined_risk_score * {high_score_multiplier}
+                    ELSE combined_risk_score
+                END"""
+                ranking_column = "weighted_risk_score"
+            else:
+                score_filter_clause = ""
+                score_weighting_expr = "combined_risk_score"
+                ranking_column = "weighted_risk_score"
+
             if is_snowflake:
                 table = db_provider.get_full_table_name()
-                # Use two formulas and combine results:
-                # 1. Velocity: tx_count / active_hours (captures burst patterns)
-                # 2. Sweet spot: 3x score if in 0.45-0.6 range (medium-risk zone)
+                # Combined risk formula: MAX(Maxmind) × MAX(Model) × Velocity
+                # Plus score-based filtering and weighting (data-driven from multi-period analysis)
                 query = f"""
                 WITH compound_entities AS (
                     SELECT
@@ -355,24 +418,31 @@ class ComparisonDataLoader:
                       AND UPPER(NSURE_LAST_DECISION) = '{target_decision}'
                     GROUP BY EMAIL, DEVICE_ID, PAYMENT_METHOD_TOKEN, MERCHANT_NAME
                     HAVING COUNT(*) >= 3
+                      {score_filter_clause}
+                ),
+                weighted_entities AS (
+                    SELECT *,
+                           {score_weighting_expr} as weighted_risk_score
+                    FROM compound_entities
                 ),
                 ranked AS (
                     SELECT *,
-                           PERCENT_RANK() OVER (ORDER BY combined_risk_score DESC) as risk_rank
-                    FROM compound_entities
+                           PERCENT_RANK() OVER (ORDER BY {ranking_column} DESC) as risk_rank
+                    FROM weighted_entities
                 )
                 SELECT
                     EMAIL, DEVICE_ID, PAYMENT_METHOD_TOKEN, MERCHANT_NAME,
                     fraud_count, total_count, avg_model_score, max_model_score,
-                    max_maxmind_risk, velocity_score, combined_risk_score
+                    max_maxmind_risk, velocity_score, combined_risk_score, weighted_risk_score
                 FROM ranked
                 WHERE risk_rank <= {top_decimal}
-                ORDER BY combined_risk_score DESC
+                ORDER BY {ranking_column} DESC
                 LIMIT {limit}
                 """
             else:
                 table = db_provider.get_full_table_name()
                 # Combined risk formula for non-Snowflake (SQLite)
+                # Plus score-based filtering and weighting (data-driven from multi-period analysis)
                 query = f"""
                 WITH compound_entities AS (
                     SELECT
@@ -399,26 +469,35 @@ class ComparisonDataLoader:
                       AND UPPER(nsure_last_decision) = '{target_decision}'
                     GROUP BY email, device_id, payment_method_token, merchant_name
                     HAVING COUNT(*) >= 3
+                      {score_filter_clause}
+                ),
+                weighted_entities AS (
+                    SELECT *,
+                           {score_weighting_expr} as weighted_risk_score
+                    FROM compound_entities
                 ),
                 ranked AS (
                     SELECT *,
-                           PERCENT_RANK() OVER (ORDER BY combined_risk_score DESC) as risk_rank
-                    FROM compound_entities
+                           PERCENT_RANK() OVER (ORDER BY {ranking_column} DESC) as risk_rank
+                    FROM weighted_entities
                 )
                 SELECT
                     email, device_id, payment_method_token, merchant_name,
                     fraud_count, total_count, avg_model_score, max_model_score,
-                    max_maxmind_risk, velocity_score, combined_risk_score
+                    max_maxmind_risk, velocity_score, combined_risk_score, weighted_risk_score
                 FROM ranked
                 WHERE risk_rank <= {top_decimal}
-                ORDER BY combined_risk_score DESC
+                ORDER BY {ranking_column} DESC
                 LIMIT {limit}
                 """
 
+            score_filter_status = "enabled" if enable_score_filtering else "disabled"
+            filter_details = f"min_score>={min_score_threshold}, boost>={high_score_threshold}x{high_score_multiplier}" if enable_score_filtering else "none"
             self.logger.info(
                 f"🔍 Executing combined_risk_score entity query: decision={target_decision}, "
                 f"min_tx=3, top_{top_percentage}%, "
-                f"formula=MAX(Maxmind) × MAX(Model) × Velocity"
+                f"formula=MAX(Maxmind) × MAX(Model) × Velocity, "
+                f"score_filtering={score_filter_status} ({filter_details})"
             )
 
             if is_async:

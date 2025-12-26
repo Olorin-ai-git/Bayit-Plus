@@ -53,6 +53,21 @@ export function ParallelInvestigationsPage() {
     await retryWithBackoff();
   };
 
+  const getReportUrls = () => {
+    const apiBaseUrl = process.env.REACT_APP_API_BASE_URL || 'http://localhost:8090';
+    const today = new Date();
+    const dateStr = today.toISOString().split('T')[0]; // YYYY-MM-DD
+    const year = today.getFullYear();
+    const month = String(today.getMonth() + 1).padStart(2, '0');
+    
+    return {
+      daily: `${apiBaseUrl}/api/v1/reports/artifacts/startup_analysis_DAILY_${dateStr}.html`,
+      monthly: `${apiBaseUrl}/api/v1/reports/artifacts/startup_analysis_MONTHLY_${year}_${month}.html`
+    };
+  };
+
+  const reportUrls = getReportUrls();
+
   const formatLastUpdated = (date: Date | null) => {
     if (!date) return 'Never';
     const now = new Date();
@@ -71,11 +86,31 @@ export function ParallelInvestigationsPage() {
             <h1 className="text-3xl font-bold text-gray-900 mb-2">Running Investigations</h1>
             <p className="text-gray-600">Monitor parallel running investigations in real-time</p>
           </div>
-          <div className="flex items-center gap-2">
-            <div className={`w-3 h-3 rounded-full ${wsConnected ? 'bg-green-500' : 'bg-yellow-500'}`} />
-            <span className="text-xs text-gray-600">
-              {wsConnected ? 'Real-time' : 'Polling mode'}
-            </span>
+          <div className="flex flex-col items-end gap-2">
+            <div className="flex items-center gap-2">
+              <div className={`w-3 h-3 rounded-full ${wsConnected ? 'bg-green-500' : 'bg-yellow-500'}`} />
+              <span className="text-xs text-gray-600">
+                {wsConnected ? 'Real-time' : 'Polling mode'}
+              </span>
+            </div>
+            <div className="flex gap-2">
+              <a 
+                href={reportUrls.daily}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="px-3 py-1 bg-indigo-600 text-white text-xs rounded hover:bg-indigo-700 transition-colors"
+              >
+                Daily Flow Report
+              </a>
+              <a 
+                href={reportUrls.monthly}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="px-3 py-1 bg-indigo-600 text-white text-xs rounded hover:bg-indigo-700 transition-colors"
+              >
+                Monthly Flow Report
+              </a>
+            </div>
           </div>
         </div>
 

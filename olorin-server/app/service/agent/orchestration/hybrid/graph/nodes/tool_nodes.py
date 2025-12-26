@@ -455,11 +455,13 @@ class ToolNodes:
                         )
                         return parsed_data
                     except (ValueError, SyntaxError):
-                        # If all parsing fails, return as string but log warning
+                        # If all parsing fails, return empty dict for data types that expect objects
                         logger.warning(
-                            f"📊 {data_type.upper()} DATA: Could not parse string data, keeping as string"
+                            f"📊 {data_type.upper()} DATA: Could not parse string data, returning empty dict"
                         )
-                        return data
+                        # For data types that should be dicts (snowflake, network, etc.), return {}
+                        # instead of unparsed string to prevent .get() errors downstream
+                        return {}
             else:
                 # Already an object, return as-is
                 logger.debug(
