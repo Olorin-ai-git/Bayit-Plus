@@ -1066,7 +1066,79 @@ async def map_investigation_to_transactions(
     logger.info(
         f"[MAP_INVESTIGATION_TO_TRANSACTIONS] ✅ Retrieved {len(transactions)}/{len(transaction_ids)} investigated transactions from Snowflake"
     )
-    
+
+    # OVERALL CLASSIFICATION: Query ALL transactions for entity window (for TN calculation)
+    # This enables only_flagged=False to properly count True Negatives (below-threshold legitimate transactions)
+    include_all_entity_transactions = os.getenv("INCLUDE_ALL_ENTITY_TRANSACTIONS", "true").lower() == "true"
+    if include_all_entity_transactions and entity_clause:
+        # Format window for query
+        window_start_str = window_start.strftime("%Y-%m-%d %H:%M:%S") if window_start else None
+        window_end_str = window_end.strftime("%Y-%m-%d %H:%M:%S") if window_end else None
+
+        if window_start_str and window_end_str:
+            if is_snowflake:
+                all_entity_query = f"""
+                SELECT
+                    TX_ID_KEY as transaction_id,
+                    STORE_ID as merchant_id,
+                    TX_DATETIME as event_ts,
+                    PAID_AMOUNT_VALUE_IN_CURRENCY as amount,
+                    PAID_AMOUNT_CURRENCY as currency,
+                    BIN, BIN_COUNTRY_CODE, IP_COUNTRY_CODE, IS_CARD_PREPAID, AVS_RESULT,
+                    EMAIL_NORMALIZED, DEVICE_ID, IP, USER_AGENT, CARD_TYPE,
+                    IS_DISPOSABLE_EMAIL, MAXMIND_RISK_SCORE, EMAIL_DATA_THIRD_PARTY_RISK_SCORE,
+                    NSURE_LAST_DECISION, IS_FRAUD_TX
+                FROM {db_provider.get_full_table_name()}
+                WHERE {entity_clause}
+                    AND TX_DATETIME >= '{window_start_str}'
+                    AND TX_DATETIME <= '{window_end_str}'
+                    {decision_filter}
+                """
+            else:
+                all_entity_query = f"""
+                SELECT
+                    tx_id_key as transaction_id,
+                    store_id as merchant_id, tx_datetime as event_ts,
+                    paid_amount_value_in_currency as amount, paid_amount_currency as currency,
+                    bin, bin_country_code, ip_country_code, is_card_prepaid, avs_result,
+                    email_normalized, device_id, ip, user_agent, card_type,
+                    is_disposable_email, maxmind_risk_score, email_data_third_party_risk_score,
+                    nsure_last_decision, is_fraud_tx
+                FROM {db_provider.get_full_table_name()}
+                WHERE {entity_clause}
+                    AND tx_datetime >= '{window_start_str}'
+                    AND tx_datetime <= '{window_end_str}'
+                    {decision_filter}
+                """
+
+            try:
+                if is_async:
+                    all_entity_txs = await db_provider.execute_query_async(all_entity_query)
+                else:
+                    all_entity_txs = db_provider.execute_query(all_entity_query)
+
+                if all_entity_txs:
+                    # Get IDs of already-scored transactions
+                    scored_tx_ids = set(str(tx.get("transaction_id") or tx.get("TRANSACTION_ID") or "") for tx in transactions)
+
+                    # Add unscored transactions (below-threshold) with predicted_risk=0
+                    unscored_count = 0
+                    for tx in all_entity_txs:
+                        tx_id = str(tx.get("transaction_id") or tx.get("TRANSACTION_ID") or "")
+                        if tx_id and tx_id not in scored_tx_ids:
+                            # Mark as unscored (below threshold)
+                            tx["_unscored"] = True
+                            tx["_predicted_risk"] = 0.0
+                            transactions.append(tx)
+                            unscored_count += 1
+
+                    logger.info(
+                        f"[MAP_INVESTIGATION_TO_TRANSACTIONS] 📊 OVERALL CLASSIFICATION: Added {unscored_count} "
+                        f"unscored transactions (total: {len(transactions)}) for TN calculation"
+                    )
+            except Exception as e:
+                logger.warning(f"[MAP_INVESTIGATION_TO_TRANSACTIONS] Failed to query all entity transactions: {e}")
+
     # CRITICAL: If we didn't get all transactions, that's an error condition
     if len(transactions) < len(transaction_ids):
         missing_count = len(transaction_ids) - len(transactions)
@@ -1292,9 +1364,14 @@ async def map_investigation_to_transactions(
             # Skip transaction if no ID
             continue
 
-        # Use per-transaction score if available, otherwise exclude transaction (no fallback)
+        # Use per-transaction score if available, otherwise check for unscored transactions
         tx_score_float = None
-        if transaction_scores and isinstance(transaction_scores, dict):
+
+        # Check if this is an unscored transaction (added for Overall Classification TN calculation)
+        if tx.get("_unscored"):
+            tx_score_float = tx.get("_predicted_risk", 0.0)
+            transactions_without_risk += 1
+        elif transaction_scores and isinstance(transaction_scores, dict):
             # Check if this transaction has a per-transaction score
             tx_score = transaction_scores.get(str(tx_id)) or transaction_scores.get(
                 tx_id
