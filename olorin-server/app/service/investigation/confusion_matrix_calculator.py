@@ -18,6 +18,7 @@ from typing import Any, Dict, List, Optional
 
 import pytz
 
+from app.config.threshold_config import get_risk_threshold
 from app.service.investigation.prediction_storage import (
     compute_confusion_matrix_with_join,
 )
@@ -82,8 +83,8 @@ def calculate_confusion_matrix_14day(
         f"(ending {max_lookback_days} days before today)"
     )
 
-    # Get risk threshold (default: 0.5, configurable)
-    risk_threshold = float(os.getenv("RISK_THRESHOLD_DEFAULT", "0.5"))
+    # Get unified risk threshold
+    risk_threshold = get_risk_threshold()
 
     # Compute confusion matrix using join strategy
     result = compute_confusion_matrix_with_join(

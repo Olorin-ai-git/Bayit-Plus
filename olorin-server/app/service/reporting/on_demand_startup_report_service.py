@@ -21,6 +21,7 @@ from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from app.config.eval import EVAL_DEFAULTS
+from app.config.threshold_config import get_risk_threshold
 from app.models.investigation_state import InvestigationState
 from app.schemas.investigation_state import InvestigationStatus
 from app.service.investigation.comparison_service import (
@@ -700,7 +701,7 @@ async def generate_on_demand_startup_report(
     # 2. Reconstruct comparison results and confusion matrices
     aggregated_results = []
     
-    risk_threshold = float(os.getenv("RISK_THRESHOLD_DEFAULT", "0.3"))
+    risk_threshold = get_risk_threshold()
     
     # Process investigations in parallel with concurrency limit
     # Use semaphore to limit concurrent Snowflake queries

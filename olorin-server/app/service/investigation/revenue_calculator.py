@@ -13,6 +13,7 @@ from decimal import Decimal
 from typing import Any, Dict, List, Optional, Tuple
 
 from app.config.revenue_config import RevenueConfig, get_revenue_config
+from app.config.threshold_config import get_risk_threshold
 from app.schemas.revenue_implication import (
     ConfidenceLevel,
     LostRevenuesBreakdown,
@@ -101,8 +102,8 @@ class RevenueCalculator:
         from app.persistence.database import get_db_session
         from sqlalchemy import text
 
-        # Get risk threshold from environment
-        risk_threshold = float(os.getenv("RISK_THRESHOLD_DEFAULT", "0.5"))
+        # Get unified risk threshold
+        risk_threshold = get_risk_threshold()
 
         try:
             with get_db_session() as db:

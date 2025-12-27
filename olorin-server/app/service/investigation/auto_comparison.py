@@ -16,6 +16,11 @@ from app.schemas.revenue_implication import RevenueCalculationRequest
 from app.service.investigation.comparison_modules.comparison_data_loader import (
     ComparisonDataLoader,
 )
+from app.service.training.data_boundary_validator import (
+    get_boundary_config,
+    validate_date_range,
+    DataBoundaryViolationError,
+)
 from app.service.investigation.comparison_modules.comparison_executor import (
     ComparisonExecutor,
 )
@@ -94,7 +99,7 @@ async def run_auto_comparisons_for_top_entities(
         )
     else:
         # Default behavior: random timestamp within historical offset range
-        offset_months = revenue_config.analyzer_historical_offset_months
+        offset_months = revenue_config.selector_historical_offset_months
 
         # Create a range around the offset (±1 month for variability)
         offset_days_min = (offset_months + 1) * 30  # e.g., 13 months = 390 days
@@ -119,6 +124,20 @@ async def run_auto_comparisons_for_top_entities(
     # Calculate analyzer window
     analyzer_start_time = reference_time - timedelta(hours=time_window_hours)
     analyzer_end_time = reference_time
+
+    # CRITICAL: Validate data boundaries to prevent training data leakage
+    try:
+        is_valid, message = validate_date_range(
+            start_date=analyzer_start_time.date(),
+            end_date=analyzer_end_time.date(),
+        )
+        if is_valid:
+            logger.info(f"✅ Data boundary check passed: {message}")
+        else:
+            logger.warning(f"⚠️ Data boundary check: {message}")
+    except DataBoundaryViolationError as e:
+        logger.error(f"❌ Data boundary violation: {e}")
+        raise
 
     # Fetch entities based on mode
     if compound_entity_enabled:

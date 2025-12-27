@@ -13,6 +13,7 @@ from datetime import datetime
 from pathlib import Path
 from typing import Any, Dict, List, Optional
 
+from app.config.threshold_config import get_risk_threshold
 from app.service.logging import get_bridge_logger
 from app.service.reporting.olorin_logo import OLORIN_FOOTER, get_olorin_header
 
@@ -876,10 +877,8 @@ def _generate_zero_metrics_explanation(
     artifact_data: Optional[Dict[str, Any]],
 ) -> str:
     """Generate explanation for why metrics are zero."""
-    import os
-
-    # Use current environment threshold, not artifact data (which may be from old comparisons)
-    threshold = float(os.getenv("RISK_THRESHOLD_DEFAULT", "0.3"))
+    # Use unified risk threshold
+    threshold = get_risk_threshold()
     fn_count = window_a.get("FN", 0)
     total_tx_a = window_a.get("total_transactions", 0)
     total_tx_b = window_b.get("total_transactions", 0)
@@ -964,10 +963,8 @@ def _generate_comparison_summary(
     artifact_data: Optional[Dict[str, Any]],
 ) -> str:
     """Generate detailed explanation of comparison metrics."""
-    import os
-
-    # Use current environment threshold, not artifact data (which may be from old comparisons)
-    threshold = float(os.getenv("RISK_THRESHOLD_DEFAULT", "0.3"))
+    # Use unified risk threshold
+    threshold = get_risk_threshold()
 
     return f"""
           <details style="margin-top: 20px; padding: 16px; background: var(--panel-glass); border-radius: 8px; border: 1px solid var(--border);">

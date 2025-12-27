@@ -15,6 +15,7 @@ from collections import Counter
 from sklearn.ensemble import IsolationForest
 from sklearn.preprocessing import StandardScaler
 
+from app.config.threshold_config import get_risk_threshold
 from app.service.investigation.fraud_detection_features import FraudDetectionFeatures
 from app.service.investigation.merchant_fraud_profiles import get_merchant_profiles
 
@@ -35,7 +36,7 @@ class EnhancedRiskScorer:
     def __init__(self):
         self.feature_calculator = FraudDetectionFeatures()
         self.merchant_profiles = get_merchant_profiles()
-        self.base_threshold = float(os.getenv("RISK_THRESHOLD_DEFAULT", "0.20"))
+        self.base_threshold = get_risk_threshold()
 
         # Progressive thresholds based on transaction volume
         self.progressive_thresholds = {

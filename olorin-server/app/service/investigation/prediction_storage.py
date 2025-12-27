@@ -16,6 +16,7 @@ from typing import Any, Dict, List, Optional
 
 from sqlalchemy import func, text
 
+from app.config.threshold_config import get_risk_threshold
 from app.persistence.database import get_db_session, init_database
 from app.service.logging import get_bridge_logger
 
@@ -54,9 +55,9 @@ def store_predictions(
         logger.warning("No transactions provided for prediction storage")
         return 0
 
-    # Get default risk threshold from environment
+    # Get unified risk threshold
     if risk_threshold is None:
-        risk_threshold = float(os.getenv("RISK_THRESHOLD_DEFAULT", "0.5"))
+        risk_threshold = get_risk_threshold()
 
     if model_version is None:
         model_version = investigation_id or "unknown"
@@ -204,7 +205,7 @@ def compute_confusion_matrix_with_join(
         }
     """
     if risk_threshold is None:
-        risk_threshold = float(os.getenv("RISK_THRESHOLD_DEFAULT", "0.5"))
+        risk_threshold = get_risk_threshold()
 
     # Step 1: Read predictions from Postgres
     predictions = []

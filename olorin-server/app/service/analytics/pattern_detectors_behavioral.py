@@ -21,8 +21,11 @@ HIGH_AMOUNT_THRESHOLD = 500.0
 DEVICE_AGE_THRESHOLD_HOURS = 24
 NEW_DEVICE_HIGH_AMOUNT_ADJUSTMENT = 0.12
 
-CROSS_ENTITY_THRESHOLD = 5
-CROSS_ENTITY_LINKING_ADJUSTMENT = 0.18
+# Cross-Entity Linking: Only trigger on TRUE cross-entity signals
+# unique_emails_per_device >= 3 means multiple entities share the same device
+# This is the real fraud signal, not "one entity uses multiple devices"
+CROSS_ENTITY_EMAILS_PER_DEVICE_THRESHOLD = 3  # Multiple emails on same device
+CROSS_ENTITY_LINKING_ADJUSTMENT = 0.12  # Reduced from 0.18
 
 
 def detect_time_of_day_anomaly(transaction: Dict[str, Any]) -> Optional[Dict[str, Any]]:
@@ -120,37 +123,52 @@ def detect_cross_entity_linking(
     historical_transactions: Optional[List[Dict[str, Any]]],
     advanced_features: Optional[Dict[str, Any]],
 ) -> Optional[Dict[str, Any]]:
-    """Detect cross-entity linking pattern."""
+    """
+    Detect cross-entity linking pattern.
+
+    CRITICAL FIX: Only trigger on TRUE cross-entity signals:
+    - unique_emails_per_device: Multiple DIFFERENT entities sharing the same device
+      This is a real fraud indicator (device used by multiple accounts)
+
+    DO NOT trigger on intra-entity patterns:
+    - unique_devices_per_email: One entity using multiple devices (normal behavior)
+    - unique_ips_per_email: One entity from multiple IPs (normal for mobile users)
+
+    These intra-entity patterns were causing 100% false positive rates because
+    an entity's transactions always share identifiers with itself.
+    """
     if advanced_features and "cross_entity_correlation" in advanced_features:
         correlation = advanced_features["cross_entity_correlation"]
 
-        unique_devices = correlation.get("unique_devices_per_email", 0)
-        unique_ips = correlation.get("unique_ips_per_email", 0)
-        unique_emails = correlation.get("unique_emails_per_device", 0)
+        # ONLY check unique_emails_per_device - the TRUE cross-entity signal
+        # This means: "How many different email addresses have used this device?"
+        # If > 1, multiple entities are sharing the same device = suspicious
+        unique_emails_per_device = correlation.get("unique_emails_per_device", 0)
 
-        max_entities = max(unique_devices, unique_ips, unique_emails)
+        # Ignore intra-entity patterns (these are NOT cross-entity)
+        # unique_devices_per_email = one person using multiple devices (normal)
+        # unique_ips_per_email = one person from multiple locations (normal)
 
-        if max_entities >= CROSS_ENTITY_THRESHOLD:
-            entity_type = (
-                "devices"
-                if max_entities == unique_devices
-                else ("IPs" if max_entities == unique_ips else "emails")
-            )
-
+        if unique_emails_per_device >= CROSS_ENTITY_EMAILS_PER_DEVICE_THRESHOLD:
             return {
                 "pattern_type": "cross_entity_linking",
                 "pattern_name": "Cross-Entity Linking",
-                "description": f"High entity linkage: {max_entities} unique {entity_type}",
+                "description": (
+                    f"Device shared by {unique_emails_per_device} different entities"
+                ),
                 "risk_adjustment": CROSS_ENTITY_LINKING_ADJUSTMENT,
                 "confidence": min(
-                    0.95, 0.65 + (max_entities / CROSS_ENTITY_THRESHOLD - 1) * 0.10
+                    0.95,
+                    0.70
+                    + (unique_emails_per_device / CROSS_ENTITY_EMAILS_PER_DEVICE_THRESHOLD - 1)
+                    * 0.10,
                 ),
                 "evidence": {
-                    "unique_devices_per_email": unique_devices,
-                    "unique_ips_per_email": unique_ips,
-                    "unique_emails_per_device": unique_emails,
-                    "max_entities": max_entities,
-                    "threshold": CROSS_ENTITY_THRESHOLD,
+                    "unique_emails_per_device": unique_emails_per_device,
+                    "threshold": CROSS_ENTITY_EMAILS_PER_DEVICE_THRESHOLD,
+                    "pattern_explanation": (
+                        "Multiple different entities using the same device"
+                    ),
                 },
             }
 

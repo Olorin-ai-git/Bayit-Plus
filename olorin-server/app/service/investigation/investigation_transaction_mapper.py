@@ -25,6 +25,7 @@ from typing import Any, Dict, List, Optional, Tuple
 
 import pytz
 
+from app.config.threshold_config import get_risk_threshold
 from app.persistence import list_investigations
 from app.service.agent.tools.database_tool import get_database_provider
 from app.service.investigation.enhanced_risk_scorer import EnhancedRiskScorer
@@ -967,110 +968,204 @@ async def map_investigation_to_transactions(
     )
     filter_mode = os.getenv("TRANSACTION_DECISION_FILTER", "FINALIZED").upper()
 
-    # CRITICAL: Handle 0-transaction investigations gracefully
-    # When entity combinations don't exist in the investigation window, there are legitimately
-    # no transactions to score. This is EXPECTED for historical analysis with mismatched time windows.
+    # Track if we already loaded all entity transactions (to avoid duplicate queries)
+    all_entity_transactions_loaded = False
+
+    # Handle investigations with no scored transactions
+    # Instead of returning empty, query ALL entity transactions for Overall Classification TN calculation
     if not transaction_scores or len(transaction_scores) == 0:
-        logger.warning(
-            f"[MAP_INVESTIGATION_TO_TRANSACTIONS] ⚠️ No transaction scores available for investigation {investigation.get('id') if investigation else 'unknown'}. "
-            f"This is expected when the entity combination doesn't exist in the investigation time window. "
-            f"Returning empty result set (TP=0, FP=0, TN=0, FN=0)."
-        )
-        return [], source, investigation_risk_score
-    
-    logger.info(
-        f"[MAP_INVESTIGATION_TO_TRANSACTIONS] ✅ Using {len(transaction_scores)} INVESTIGATED transaction IDs "
-        f"to query Snowflake for ground truth labels"
-    )
-    
-    # Build IN clause with the EXACT transaction IDs that were investigated
-    transaction_ids = list(transaction_scores.keys())
-    tx_id_col = "TX_ID_KEY" if is_snowflake else "tx_id_key"
-    
-    # For large lists, use batching to avoid SQL query limits
-    max_in_clause_size = 1000
-    transactions = []
-    
-    for batch_start in range(0, len(transaction_ids), max_in_clause_size):
-        batch_ids = transaction_ids[batch_start:batch_start + max_in_clause_size]
-        batch_ids_str = "', '".join(str(tid) for tid in batch_ids)
-        
-        if is_snowflake:
-            batch_query = f"""
-            SELECT
-                TX_ID_KEY as transaction_id,
-                STORE_ID as merchant_id,
-                TX_DATETIME as event_ts,
-                PAID_AMOUNT_VALUE_IN_CURRENCY as amount,
-                PAID_AMOUNT_CURRENCY as currency,
-                BIN,
-                BIN_COUNTRY_CODE,
-                IP_COUNTRY_CODE,
-                IS_CARD_PREPAID,
-                AVS_RESULT,
-                EMAIL_NORMALIZED,
-                DEVICE_ID,
-                IP,
-                USER_AGENT,
-                CARD_TYPE,
-                IS_DISPOSABLE_EMAIL,
-                MAXMIND_RISK_SCORE,
-                EMAIL_DATA_THIRD_PARTY_RISK_SCORE,
-                NSURE_LAST_DECISION,
-                IS_FRAUD_TX
-            FROM {db_provider.get_full_table_name()}
-            WHERE CAST(TX_ID_KEY AS VARCHAR) IN ('{batch_ids_str}')
-            """
+        include_all_entity_transactions = os.getenv("INCLUDE_ALL_ENTITY_TRANSACTIONS", "true").lower() == "true"
+        if include_all_entity_transactions and entity_clause:
+            logger.info(
+                f"[MAP_INVESTIGATION_TO_TRANSACTIONS] No transaction scores - querying ALL entity transactions for TN calculation"
+            )
+            # Format window for query
+            window_start_str = window_start.strftime("%Y-%m-%d %H:%M:%S") if window_start else None
+            window_end_str = window_end.strftime("%Y-%m-%d %H:%M:%S") if window_end else None
+
+            if window_start_str and window_end_str:
+                if is_snowflake:
+                    all_entity_query = f"""
+                    SELECT
+                        TX_ID_KEY as transaction_id,
+                        STORE_ID as merchant_id,
+                        TX_DATETIME as event_ts,
+                        PAID_AMOUNT_VALUE_IN_CURRENCY as amount,
+                        PAID_AMOUNT_CURRENCY as currency,
+                        BIN, BIN_COUNTRY_CODE, IP_COUNTRY_CODE, IS_CARD_PREPAID, AVS_RESULT,
+                        EMAIL_NORMALIZED, DEVICE_ID, IP, USER_AGENT, CARD_TYPE,
+                        IS_DISPOSABLE_EMAIL, MAXMIND_RISK_SCORE, EMAIL_DATA_THIRD_PARTY_RISK_SCORE,
+                        NSURE_LAST_DECISION, IS_FRAUD_TX
+                    FROM {db_provider.get_full_table_name()}
+                    WHERE {entity_clause}
+                        AND TX_DATETIME >= '{window_start_str}'
+                        AND TX_DATETIME <= '{window_end_str}'
+                        {decision_filter}
+                    """
+                else:
+                    all_entity_query = f"""
+                    SELECT
+                        tx_id_key as transaction_id,
+                        store_id as merchant_id, tx_datetime as event_ts,
+                        paid_amount_value_in_currency as amount, paid_amount_currency as currency,
+                        bin, bin_country_code, ip_country_code, is_card_prepaid, avs_result,
+                        email_normalized, device_id, ip, user_agent, card_type,
+                        is_disposable_email, maxmind_risk_score, email_data_third_party_risk_score,
+                        nsure_last_decision, is_fraud_tx
+                    FROM {db_provider.get_full_table_name()}
+                    WHERE {entity_clause}
+                        AND tx_datetime >= '{window_start_str}'
+                        AND tx_datetime <= '{window_end_str}'
+                        {decision_filter}
+                    """
+
+                try:
+                    if is_async:
+                        all_entity_txs = await db_provider.execute_query_async(all_entity_query)
+                    else:
+                        all_entity_txs = db_provider.execute_query(all_entity_query)
+
+                    if all_entity_txs and len(all_entity_txs) > 0:
+                        # Mark all as unscored (no predictions made, so below threshold by default)
+                        transactions = []
+                        for tx in all_entity_txs:
+                            tx["_unscored"] = True
+                            tx["_predicted_risk"] = 0.0
+                            transactions.append(tx)
+
+                        logger.info(
+                            f"[MAP_INVESTIGATION_TO_TRANSACTIONS] 📊 OVERALL CLASSIFICATION: Found {len(transactions)} "
+                            f"entity transactions (all unscored) for TN calculation"
+                        )
+                        all_entity_transactions_loaded = True
+                        # Continue to the rest of the function to process these transactions
+                        # Skip the next section that queries by transaction_scores
+                        # We'll jump to the normalization section
+                        from app.service.investigation.transaction_key_normalizer import (
+                            normalize_transaction_keys,
+                        )
+                        transactions = normalize_transaction_keys(transactions)
+                        logger.info(f"🔑 Normalized transaction keys for {len(transactions)} transactions")
+                        # Jump to the mapping section by setting transaction_scores to empty dict
+                        transaction_scores = {}
+                    else:
+                        logger.warning(
+                            f"[MAP_INVESTIGATION_TO_TRANSACTIONS] ⚠️ No transactions found for entity in window. "
+                            f"Returning empty result set (TP=0, FP=0, TN=0, FN=0)."
+                        )
+                        return [], source, investigation_risk_score
+                except Exception as e:
+                    logger.warning(f"[MAP_INVESTIGATION_TO_TRANSACTIONS] Failed to query entity transactions: {e}")
+                    return [], source, investigation_risk_score
+            else:
+                logger.warning(
+                    f"[MAP_INVESTIGATION_TO_TRANSACTIONS] ⚠️ No window dates available. "
+                    f"Returning empty result set."
+                )
+                return [], source, investigation_risk_score
         else:
-            batch_query = f"""
-            SELECT
-                tx_id_key as transaction_id,
-                store_id as merchant_id,
-                tx_datetime as event_ts,
-                paid_amount_value_in_currency as amount,
-                paid_amount_currency as currency,
-                bin,
-                bin_country_code,
-                ip_country_code,
-                is_card_prepaid,
-                avs_result,
-                email_normalized,
-                device_id,
-                ip,
-                user_agent,
-                card_type,
-                is_disposable_email,
-                maxmind_risk_score,
-                email_data_third_party_risk_score,
-                nsure_last_decision,
-                is_fraud_tx
-            FROM {db_provider.get_full_table_name()}
-            WHERE tx_id_key::TEXT IN ('{batch_ids_str}')
-            """
-        
-        batch_num = batch_start // max_in_clause_size + 1
-        total_batches = (len(transaction_ids) + max_in_clause_size - 1) // max_in_clause_size
+            logger.warning(
+                f"[MAP_INVESTIGATION_TO_TRANSACTIONS] ⚠️ No transaction scores available for investigation {investigation.get('id') if investigation else 'unknown'}. "
+                f"This is expected when the entity combination doesn't exist in the investigation time window. "
+                f"Returning empty result set (TP=0, FP=0, TN=0, FN=0)."
+            )
+            return [], source, investigation_risk_score
+    else:
+        # Have transaction_scores - use them to query scored transactions
         logger.info(
-            f"[MAP_INVESTIGATION_TO_TRANSACTIONS] Querying batch {batch_num}/{total_batches} "
-            f"({len(batch_ids)} transaction IDs)"
+            f"[MAP_INVESTIGATION_TO_TRANSACTIONS] ✅ Using {len(transaction_scores)} INVESTIGATED transaction IDs "
+            f"to query Snowflake for ground truth labels"
         )
-        
-        if is_async:
-            batch_txs = await db_provider.execute_query_async(batch_query)
-        else:
-            batch_txs = db_provider.execute_query(batch_query)
-        
-        if batch_txs:
-            transactions.extend(batch_txs)
-    
-    logger.info(
-        f"[MAP_INVESTIGATION_TO_TRANSACTIONS] ✅ Retrieved {len(transactions)}/{len(transaction_ids)} investigated transactions from Snowflake"
-    )
+
+        # Build IN clause with the EXACT transaction IDs that were investigated
+        transaction_ids = list(transaction_scores.keys())
+        tx_id_col = "TX_ID_KEY" if is_snowflake else "tx_id_key"
+
+        # For large lists, use batching to avoid SQL query limits
+        max_in_clause_size = 1000
+        transactions = []
+
+        for batch_start in range(0, len(transaction_ids), max_in_clause_size):
+            batch_ids = transaction_ids[batch_start:batch_start + max_in_clause_size]
+            batch_ids_str = "', '".join(str(tid) for tid in batch_ids)
+
+            if is_snowflake:
+                batch_query = f"""
+                SELECT
+                    TX_ID_KEY as transaction_id,
+                    STORE_ID as merchant_id,
+                    TX_DATETIME as event_ts,
+                    PAID_AMOUNT_VALUE_IN_CURRENCY as amount,
+                    PAID_AMOUNT_CURRENCY as currency,
+                    BIN,
+                    BIN_COUNTRY_CODE,
+                    IP_COUNTRY_CODE,
+                    IS_CARD_PREPAID,
+                    AVS_RESULT,
+                    EMAIL_NORMALIZED,
+                    DEVICE_ID,
+                    IP,
+                    USER_AGENT,
+                    CARD_TYPE,
+                    IS_DISPOSABLE_EMAIL,
+                    MAXMIND_RISK_SCORE,
+                    EMAIL_DATA_THIRD_PARTY_RISK_SCORE,
+                    NSURE_LAST_DECISION,
+                    IS_FRAUD_TX
+                FROM {db_provider.get_full_table_name()}
+                WHERE CAST(TX_ID_KEY AS VARCHAR) IN ('{batch_ids_str}')
+                """
+            else:
+                batch_query = f"""
+                SELECT
+                    tx_id_key as transaction_id,
+                    store_id as merchant_id,
+                    tx_datetime as event_ts,
+                    paid_amount_value_in_currency as amount,
+                    paid_amount_currency as currency,
+                    bin,
+                    bin_country_code,
+                    ip_country_code,
+                    is_card_prepaid,
+                    avs_result,
+                    email_normalized,
+                    device_id,
+                    ip,
+                    user_agent,
+                    card_type,
+                    is_disposable_email,
+                    maxmind_risk_score,
+                    email_data_third_party_risk_score,
+                    nsure_last_decision,
+                    is_fraud_tx
+                FROM {db_provider.get_full_table_name()}
+                WHERE tx_id_key::TEXT IN ('{batch_ids_str}')
+                """
+
+            batch_num = batch_start // max_in_clause_size + 1
+            total_batches = (len(transaction_ids) + max_in_clause_size - 1) // max_in_clause_size
+            logger.info(
+                f"[MAP_INVESTIGATION_TO_TRANSACTIONS] Querying batch {batch_num}/{total_batches} "
+                f"({len(batch_ids)} transaction IDs)"
+            )
+
+            if is_async:
+                batch_txs = await db_provider.execute_query_async(batch_query)
+            else:
+                batch_txs = db_provider.execute_query(batch_query)
+
+            if batch_txs:
+                transactions.extend(batch_txs)
+
+        logger.info(
+            f"[MAP_INVESTIGATION_TO_TRANSACTIONS] ✅ Retrieved {len(transactions)}/{len(transaction_ids)} investigated transactions from Snowflake"
+        )
 
     # OVERALL CLASSIFICATION: Query ALL transactions for entity window (for TN calculation)
     # This enables only_flagged=False to properly count True Negatives (below-threshold legitimate transactions)
+    # Skip if we already loaded all entity transactions in the first block
     include_all_entity_transactions = os.getenv("INCLUDE_ALL_ENTITY_TRANSACTIONS", "true").lower() == "true"
-    if include_all_entity_transactions and entity_clause:
+    if include_all_entity_transactions and entity_clause and not all_entity_transactions_loaded:
         # Format window for query
         window_start_str = window_start.strftime("%Y-%m-%d %H:%M:%S") if window_start else None
         window_end_str = window_end.strftime("%Y-%m-%d %H:%M:%S") if window_end else None
@@ -1173,7 +1268,7 @@ async def map_investigation_to_transactions(
                 window_start=window_start,
                 window_end=window_end,
                 model_version=investigation.get("id") if investigation else "fallback",
-                risk_threshold=float(os.getenv("RISK_THRESHOLD_DEFAULT", "0.5")),
+                risk_threshold=get_risk_threshold(),
             )
             logger.info(
                 f"💾 Stored {stored_count} predictions to Postgres PREDICTIONS table"
@@ -1294,9 +1389,24 @@ async def map_investigation_to_transactions(
             f"[MAP_INVESTIGATION_TO_TRANSACTIONS] No transactions returned from query - this may explain empty transaction_ids"
         )
 
-    # Read RISK_THRESHOLD_DEFAULT from environment variables (default 0.3)
-    risk_threshold = float(os.getenv("RISK_THRESHOLD_DEFAULT", "0.3"))
+    # Get unified risk threshold from threshold_config
+    risk_threshold = get_risk_threshold()
     logger.info(f"📊 Using risk threshold for classification: {risk_threshold}")
+
+    # FIX #5: Check if entity-level decision should override transaction classification
+    # If entity-level score is BELOW threshold, entity is NOT flagged as fraud
+    # In this case, we should align transaction classifications with the entity decision
+    entity_is_fraud = (
+        investigation_risk_score is not None
+        and investigation_risk_score >= risk_threshold
+    )
+    align_with_entity = os.getenv("ALIGN_TX_WITH_ENTITY_DECISION", "true").lower() == "true"
+
+    if not entity_is_fraud and align_with_entity:
+        logger.info(
+            f"📊 ENTITY ALIGNMENT: Entity score {investigation_risk_score:.3f} < threshold {risk_threshold:.3f}. "
+            f"Transactions will be classified as 'Not Fraud' to align with entity decision."
+        )
 
     # Get entity label from EntityRecord (assigned by Remediation Agent)
     entity_label = None
@@ -1408,8 +1518,15 @@ async def map_investigation_to_transactions(
         # Transaction has valid per-transaction score - set predicted_risk and classify
         mapped_tx["predicted_risk"] = tx_score_float
 
-        # Classify transaction as Fraud or Not Fraud based on per-transaction score vs threshold
-        predicted_label = classify_transaction_fraud(tx_score_float, risk_threshold)
+        # Classify transaction as Fraud or Not Fraud
+        # FIX #5: If entity is NOT flagged (below threshold), align all transactions
+        if not entity_is_fraud and align_with_entity:
+            # Entity decision overrides: Entity is not fraud, so transactions are not fraud
+            predicted_label = "Not Fraud"
+        else:
+            # Normal classification based on per-transaction score vs threshold
+            predicted_label = classify_transaction_fraud(tx_score_float, risk_threshold)
+
         mapped_tx["predicted_label"] = predicted_label
 
         if predicted_label == "Fraud":

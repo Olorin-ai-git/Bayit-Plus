@@ -90,9 +90,18 @@ class RevenueConfig(BaseModel):
             )
         return v
 
+    @property
+    def analyzer_historical_offset_months(self) -> int:
+        """
+        Alias for selector_historical_offset_months.
+
+        Provides backwards compatibility for code that references the old name.
+        """
+        return self.selector_historical_offset_months
+
     class Config:
         """Pydantic config."""
-        
+
         validate_assignment = True
 
 

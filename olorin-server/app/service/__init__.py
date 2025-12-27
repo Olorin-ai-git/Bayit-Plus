@@ -1075,6 +1075,7 @@ async def run_startup_analysis_flow(
             try:
                 from datetime import datetime
 
+                from app.config.threshold_config import get_risk_threshold
                 from app.service.investigation.comparison_service import (
                     aggregate_confusion_matrices,
                     calculate_confusion_matrix,
@@ -1084,7 +1085,7 @@ async def run_startup_analysis_flow(
                     map_investigation_to_transactions,
                 )
 
-                risk_threshold = float(os.getenv("RISK_THRESHOLD_DEFAULT", "0.3"))
+                risk_threshold = get_risk_threshold()
                 confusion_matrices = []
 
                 for result in comparison_results:
@@ -1237,11 +1238,12 @@ async def run_startup_analysis_flow(
                     "📊 Creating empty aggregated confusion matrix due to error to ensure confusion table is always generated"
                 )
                 try:
+                    from app.config.threshold_config import get_risk_threshold
                     from app.service.investigation.comparison_service import (
                         aggregate_confusion_matrices,
                     )
 
-                    risk_threshold = float(os.getenv("RISK_THRESHOLD_DEFAULT", "0.3"))
+                    risk_threshold = get_risk_threshold()
                     aggregated_matrix = aggregate_confusion_matrices(
                         matrices=[],  # Empty list creates zero-filled matrix
                         risk_threshold=risk_threshold,

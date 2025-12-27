@@ -19,6 +19,7 @@ from typing import Any, Dict, List, Optional
 import pytz
 
 from app.config.eval import EVAL_DEFAULTS
+from app.config.threshold_config import get_risk_threshold
 from app.router.models.investigation_comparison_models import (
     AggregatedConfusionMatrix,
     ComparisonRequest,
@@ -76,9 +77,7 @@ async def compare_windows(request: ComparisonRequest) -> ComparisonResponse:
         ComparisonResponse with metrics for both windows and deltas
     """
     logger.info("Starting window comparison")
-    risk_threshold = float(
-        os.getenv("RISK_THRESHOLD_DEFAULT", "0.3")
-    )  # Default changed from 0.7 to 0.3
+    risk_threshold = get_risk_threshold()  # Unified threshold from threshold_config
     if request.risk_threshold:
         risk_threshold = request.risk_threshold
 

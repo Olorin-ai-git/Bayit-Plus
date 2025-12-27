@@ -1555,16 +1555,30 @@ def _calculate_per_transaction_score(
     feature_score: float, domain_score: float
 ) -> float:
     """
-    Calculate single transaction score using formula: tx_score = 0.6 * feature_score + 0.4 * domain_score
+    Calculate single transaction score.
+
+    UPDATED FORMULA: tx_score = 0.75 * feature_score + 0.25 * domain_score
+
+    Weights changed from 60/40 to 75/25 because:
+    - The old 40% domain weight was "contaminating" all transactions with entity-level risk
+    - This caused 100% false positive rates when domain findings showed risk signals
+    - Transaction-level features should dominate the per-transaction score
+    - Domain signals are still incorporated but with less influence
 
     Args:
-        feature_score: Feature score in [0,1] range
-        domain_score: Domain score in [0,1] range
+        feature_score: Feature score in [0,1] range (transaction-specific signals)
+        domain_score: Domain score in [0,1] range (entity-level signals)
 
     Returns:
         Transaction risk score in [0,1] range
     """
-    tx_score = (0.6 * feature_score) + (0.4 * domain_score)
+    # Configurable weights via environment
+    import os
+
+    feature_weight = float(os.getenv("TX_SCORE_FEATURE_WEIGHT", "0.75"))
+    domain_weight = float(os.getenv("TX_SCORE_DOMAIN_WEIGHT", "0.25"))
+
+    tx_score = (feature_weight * feature_score) + (domain_weight * domain_score)
     return min(1.0, max(0.0, tx_score))
 
 

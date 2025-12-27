@@ -12,6 +12,10 @@ from dateutil.relativedelta import relativedelta
 from typing import Any, List, Optional
 
 from app.service.logging import get_bridge_logger
+from app.service.training.data_boundary_validator import (
+    get_boundary_config,
+    validate_no_overlap,
+)
 from app.service.training.training_config_loader import get_training_config
 from app.service.training.training_models import TrainingSample
 
@@ -105,13 +109,28 @@ class TrainingDataExtractor:
         feature_months = holdout.feature_period_months
         observation_months = holdout.observation_period_months
 
-        observation_end = datetime.utcnow()
+        # CRITICAL: Use configured training observation end date instead of now()
+        # This ensures training data does NOT overlap with detection period
+        boundary_config = get_boundary_config()
+        observation_end = datetime.combine(
+            boundary_config.training_observation_end_date,
+            datetime.max.time()
+        )
         observation_start = observation_end - relativedelta(months=observation_months)
         feature_end = observation_start
         feature_start = feature_end - relativedelta(months=feature_months)
 
+        # Validate boundaries
+        validation_result = validate_no_overlap(
+            training_end=observation_end.date(),
+            detection_start=boundary_config.detection_window_start,
+        )
+        if not validation_result.is_valid:
+            raise ValueError(f"Training data boundary violation: {validation_result.message}")
+
         logger.info(f"Temporal holdout: features {feature_start} to {feature_end}")
         logger.info(f"Temporal holdout: labels {observation_start} to {observation_end}")
+        logger.info(f"Boundary check: {validation_result.message}")
 
         # CRITICAL: Use GMV for USD-normalized amounts, not PAID_AMOUNT_VALUE_IN_CURRENCY (local currency)
         query = f"""
