@@ -37,13 +37,19 @@ See individual service CLAUDE.md files for language-specific implementation deta
    - Verify no parallel implementations are planned
    - If functionality exists, use it—DO NOT duplicate
 
-2. **Verify Infrastructure**:
+2. **ALWAYS Search for Existing Scripts**:
+   - Before performing ANY task (cleanup, migration, data fixes, etc.), search for existing scripts in `/scripts/` directory
+   - Use glob patterns like `**/clean*.py`, `**/reset*.py`, `**/fix*.py` to find relevant scripts
+   - Prefer using existing scripts over writing inline code
+   - This applies to: database operations, file cleanup, data migrations, testing utilities
+
+3. **Verify Infrastructure**:
    - Each task must reference existing infrastructure
    - No creating new services if existing ones suffice
    - No adding utilities if helpers already exist
    - Reuse existing hooks, components, services
 
-3. **Validate Requirements**:
+4. **Validate Requirements**:
    - Confirm all real data sources are available
    - **If real data doesn't exist—REJECT the task**
    - DO NOT use fallback/default values as a workaround

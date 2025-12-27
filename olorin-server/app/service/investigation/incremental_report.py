@@ -210,12 +210,11 @@ def _update_monthly_report_from_daily(
             )))
             day_net = day_saved - day_lost
 
-            # Get entity counts from selector_metadata - use max across all investigations
-            # (fixes bug where only first investigation's metadata was used)
-            entities_expected = max(
-                (inv.get("selector_metadata", {}).get("total_entities_expected", 0) for inv in day_invs),
-                default=len(day_invs)
-            ) or len(day_invs)
+            # Entities discovered = number of completed investigations that day
+            entities_discovered = len(day_invs)
+            # Entities expected = same as discovered (total_entities_expected in metadata
+            # refers to each batch's count, not cumulative across multiple runs)
+            entities_expected = entities_discovered
 
             day_date = datetime(year, month, day_num)
             daily_results.append(DailyAnalysisResult(
@@ -305,9 +304,12 @@ def _fetch_completed_auto_comp_investigations() -> List[Dict[str, Any]]:
                         result["email"] = entities[0].get("entity_value")
                     
                     # Extract merchant from name
+                    # Support multiple formats:
+                    # - "Compound investigation (3 entities) - Merchant: ZeusX"
+                    # - "Investigation (Merchant: ZeusX)"
                     name = settings.get("name", "")
-                    match = re.search(r"\(Merchant: (.*?)\)", name)
-                    result["merchant_name"] = match.group(1) if match else "Unknown"
+                    match = re.search(r"(?:- Merchant: |\(Merchant: )([^)]+)", name)
+                    result["merchant_name"] = match.group(1).strip() if match else "Unknown"
                     
                     # Extract selector_metadata from settings.metadata
                     # Support both new (selector_metadata) and old (analyzer_metadata) keys
@@ -381,14 +383,49 @@ def _load_confusion_matrix_from_file(investigation_id: str) -> Optional[Dict[str
         try:
             html_content = cm_path.read_text()
             result = {"confusion_matrix": {}, "revenue_implications": {}}
-            
-            # Extract TP, FP, TN, FN from HTML
-            # Match pattern: True Positives (TP)...font-size: 12px...next <td> tag contains the actual value
-            tp_match = re.search(r'True Positives \(TP\)</strong>.*?<td[^>]*>(\d+)</td>', html_content, re.DOTALL)
-            fp_match = re.search(r'False Positives \(FP\)</strong>.*?<td[^>]*>(\d+)</td>', html_content, re.DOTALL)
-            tn_match = re.search(r'True Negatives \(TN\)</strong>.*?<td[^>]*>(\d+)</td>', html_content, re.DOTALL)
-            fn_match = re.search(r'False Negatives \(FN\)</strong>.*?<td[^>]*>(\d+)</td>', html_content, re.DOTALL)
-            
+
+            # Find the Overall Classification section and extract metrics from it
+            # This section contains ALL transactions including entities below threshold
+            overall_section = re.search(
+                r'Overall Classification \(All Transactions\)</h3>.*?</table>',
+                html_content, re.DOTALL
+            )
+            if overall_section:
+                section = overall_section.group(0)
+                # Extract metrics from the Overall Classification table
+                overall_tp = re.search(r'True Positives \(TP\).*?<td[^>]*>(\d+)</td>', section, re.DOTALL)
+                overall_fp = re.search(r'False Positives \(FP\).*?<td[^>]*>(\d+)</td>', section, re.DOTALL)
+                overall_tn = re.search(r'True Negatives \(TN\).*?<td[^>]*>(\d+)</td>', section, re.DOTALL)
+                overall_fn = re.search(r'False Negatives \(FN\).*?<td[^>]*>(\d+)</td>', section, re.DOTALL)
+
+                if overall_tp:
+                    result["confusion_matrix"]["overall_TP"] = int(overall_tp.group(1))
+                if overall_fp:
+                    result["confusion_matrix"]["overall_FP"] = int(overall_fp.group(1))
+                if overall_tn:
+                    result["confusion_matrix"]["overall_TN"] = int(overall_tn.group(1))
+                if overall_fn:
+                    result["confusion_matrix"]["overall_FN"] = int(overall_fn.group(1))
+
+            # Find Review Precision section - the first table with TP/FP/TN/FN
+            # Match from start to first Overall Classification section
+            review_section = re.search(
+                r'Review Precision.*?</table>',
+                html_content, re.DOTALL
+            )
+            if review_section:
+                section = review_section.group(0)
+                tp_match = re.search(r'True Positives \(TP\).*?<td[^>]*>(\d+)</td>', section, re.DOTALL)
+                fp_match = re.search(r'False Positives \(FP\).*?<td[^>]*>(\d+)</td>', section, re.DOTALL)
+                tn_match = re.search(r'True Negatives \(TN\).*?<td[^>]*>(\d+)</td>', section, re.DOTALL)
+                fn_match = re.search(r'False Negatives \(FN\).*?<td[^>]*>(\d+)</td>', section, re.DOTALL)
+            else:
+                # Fallback: match first occurrence (Review Precision, before Overall Classification)
+                tp_match = re.search(r'True Positives \(TP\)</strong>.*?<td[^>]*>(\d+)</td>', html_content, re.DOTALL)
+                fp_match = re.search(r'False Positives \(FP\)</strong>.*?<td[^>]*>(\d+)</td>', html_content, re.DOTALL)
+                tn_match = re.search(r'True Negatives \(TN\)</strong>.*?<td[^>]*>(\d+)</td>', html_content, re.DOTALL)
+                fn_match = re.search(r'False Negatives \(FN\)</strong>.*?<td[^>]*>(\d+)</td>', html_content, re.DOTALL)
+
             if tp_match:
                 result["confusion_matrix"]["TP"] = int(tp_match.group(1))
             if fp_match:
@@ -428,14 +465,34 @@ def _load_confusion_matrix_from_file(investigation_id: str) -> Optional[Dict[str
     return None
 
 
-def _generate_selector_section_html(selector_metadata: Optional[Dict[str, Any]]) -> str:
+def _generate_selector_section_html(
+    selector_metadata: Optional[Dict[str, Any]],
+    total_investigations: int = 0,
+    all_investigations: Optional[List[Dict[str, Any]]] = None
+) -> str:
     """Generate the selector section HTML for incremental report."""
     if not selector_metadata:
         return ""
 
     start_time = selector_metadata.get("start_time")
     end_time = selector_metadata.get("end_time")
-    entities = selector_metadata.get("entities", [])
+    # Build entities list from all investigations if provided
+    if all_investigations:
+        entities = []
+        for inv in all_investigations:
+            entities.append({
+                "email": inv.get("entity_value", inv.get("email", "Unknown")),
+                "merchant": inv.get("merchant_name", "Unknown"),
+                "fraud_count": inv.get("confusion_matrix", {}).get("overall_FN", 0),
+                "total_count": inv.get("confusion_matrix", {}).get("overall_TP", 0) +
+                               inv.get("confusion_matrix", {}).get("overall_FP", 0) +
+                               inv.get("confusion_matrix", {}).get("overall_TN", 0) +
+                               inv.get("confusion_matrix", {}).get("overall_FN", 0),
+            })
+    else:
+        entities = selector_metadata.get("entities", [])
+    # Use total_investigations if provided, otherwise fallback to entities count
+    entity_count = total_investigations if total_investigations > 0 else len(entities)
     
     # Format datetimes - handle both datetime objects and ISO strings
     if isinstance(start_time, datetime):
@@ -477,11 +534,11 @@ def _generate_selector_section_html(selector_metadata: Optional[Dict[str, Any]])
         </tr>
         """
     
-    if len(entities) > 20:
+    if entity_count > 20:
         entity_rows += f"""
         <tr>
             <td colspan="4" style="padding: 12px; text-align: center; color: var(--muted); font-style: italic; border-bottom: 1px solid var(--border);">
-                ... and {len(entities) - 20} more entities
+                ... and {entity_count - 20} more entities
             </td>
         </tr>
         """
@@ -503,9 +560,9 @@ def _generate_selector_section_html(selector_metadata: Optional[Dict[str, Any]])
                     </div>
                 </div>
                 <div>
-                    <div style="font-size: 0.85em; color: var(--muted);">🎯 Entities Discovered</div>
+                    <div style="font-size: 0.85em; color: var(--muted);">🎯 Entities Analyzed</div>
                     <div style="font-size: 1.2em; font-weight: bold; color: var(--accent); margin-top: 4px;">
-                        {len(entities)}
+                        {entity_count}
                     </div>
                 </div>
                 <div>
@@ -526,8 +583,8 @@ def _generate_selector_section_html(selector_metadata: Optional[Dict[str, Any]])
                         <span style="color: var(--muted); margin-left: 12px;">(24-hour window)</span>
                     </div>
                     
-                    <div style="color: var(--muted); font-weight: 600;">🎯 Entities Discovered:</div>
-                    <div style="font-size: 1.2em; color: var(--accent); font-weight: bold;">{len(entities)} high-risk entities identified</div>
+                    <div style="color: var(--muted); font-weight: 600;">🎯 Entities Analyzed:</div>
+                    <div style="font-size: 1.2em; color: var(--accent); font-weight: bold;">{entity_count} high-risk entities analyzed</div>
                     
                     <div style="color: var(--muted); font-weight: 600;">📊 Total Fraud Transactions:</div>
                     <div style="font-size: 1.2em; color: var(--danger); font-weight: bold;">{total_fraud_tx} confirmed fraud transactions</div>
@@ -582,13 +639,23 @@ def _generate_incremental_html(investigations: List[Dict[str, Any]]) -> str:
     total_saved = sum(_safe_float(inv.get("revenue_data", {}).get("saved_fraud_gmv", 0)) for inv in investigations)
     total_lost = sum(_safe_float(inv.get("revenue_data", {}).get("lost_revenues", 0)) for inv in investigations)
     total_net = total_saved - total_lost
+    # Review Precision (flagged only)
     total_tp = sum(_safe_int(inv.get("confusion_matrix", {}).get("TP", 0)) for inv in investigations)
     total_fp = sum(_safe_int(inv.get("confusion_matrix", {}).get("FP", 0)) for inv in investigations)
     total_tn = sum(_safe_int(inv.get("confusion_matrix", {}).get("TN", 0)) for inv in investigations)
     total_fn = sum(_safe_int(inv.get("confusion_matrix", {}).get("FN", 0)) for inv in investigations)
+    # Overall Classification (all transactions)
+    overall_tp = sum(_safe_int(inv.get("confusion_matrix", {}).get("overall_TP", 0)) for inv in investigations)
+    overall_fp = sum(_safe_int(inv.get("confusion_matrix", {}).get("overall_FP", 0)) for inv in investigations)
+    overall_tn = sum(_safe_int(inv.get("confusion_matrix", {}).get("overall_TN", 0)) for inv in investigations)
+    overall_fn = sum(_safe_int(inv.get("confusion_matrix", {}).get("overall_FN", 0)) for inv in investigations)
     
-    # Generate selector section HTML
-    selector_section_html = _generate_selector_section_html(selector_metadata)
+    # Generate selector section HTML with total investigation count and all investigations
+    selector_section_html = _generate_selector_section_html(
+        selector_metadata,
+        total_investigations=len(investigations),
+        all_investigations=investigations
+    )
     
     timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     
@@ -751,7 +818,21 @@ def _generate_incremental_html(investigations: List[Dict[str, Any]]) -> str:
         </div>
     </div>
 
-    <h2 style="margin-bottom: 20px;">📊 Global Confusion Matrix</h2>
+    <h2 style="margin-bottom: 20px;">📊 Overall Classification (All Transactions)</h2>
+    <p style="color: var(--muted); font-size: 12px; margin-bottom: 12px;">
+        Classification across ALL transactions, including entities below threshold.
+    </p>
+    <div class="confusion-grid">
+        <div class="cm-cell cm-tp">TP: {overall_tp}<br><small>Fraud Caught</small></div>
+        <div class="cm-cell cm-fp">FP: {overall_fp}<br><small>False Alarms</small></div>
+        <div class="cm-cell cm-fn">FN: {overall_fn}<br><small>Fraud Missed</small></div>
+        <div class="cm-cell cm-tn">TN: {overall_tn}<br><small>Legit Confirmed</small></div>
+    </div>
+
+    <h2 style="margin: 20px 0;">📊 Review Precision (Flagged Entities Only)</h2>
+    <p style="color: var(--muted); font-size: 12px; margin-bottom: 12px;">
+        Classification for entities flagged as potentially fraudulent (above threshold).
+    </p>
     <div class="confusion-grid">
         <div class="cm-cell cm-tp">TP: {total_tp}<br><small>Fraud Caught</small></div>
         <div class="cm-cell cm-fp">FP: {total_fp}<br><small>False Alarms</small></div>

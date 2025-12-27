@@ -352,6 +352,7 @@ def _generate_daily_breakdown(daily_results: list) -> str:
 def _generate_day_card(day: DailyAnalysisResult) -> str:
     """Generate HTML for a single day card."""
     date_str = day.date.strftime("%B %d, %Y")
+    daily_report_date = day.date.strftime("%Y-%m-%d")  # For daily report filename
     net_class = "positive" if day.net_value >= 0 else "negative"
 
     # Get overall metrics with fallback to 0
@@ -367,7 +368,7 @@ def _generate_day_card(day: DailyAnalysisResult) -> str:
                 <span class="toggle-icon">▶</span>
                 <strong style="margin-left: 10px;">{date_str}</strong>
                 <span style="color: var(--muted); margin-left: 15px;">
-                    {day.entities_discovered}/{day.entities_expected} entities
+                    {day.entities_discovered} entities
                 </span>
             </div>
             <div>
@@ -436,6 +437,12 @@ def _generate_day_card(day: DailyAnalysisResult) -> str:
                 Duration: {day.duration_seconds:.1f}s |
                 Investigations: {len(day.investigation_ids)}
             </div>
+            <a href="startup_analysis_DAILY_{daily_report_date}.html"
+               style="display: inline-block; margin-top: 12px; padding: 8px 16px;
+                      background: var(--accent); color: white; border-radius: 6px;
+                      text-decoration: none; font-size: 0.9rem;">
+                📊 View Daily Report →
+            </a>
         </div>
     </div>
     """

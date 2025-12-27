@@ -382,48 +382,21 @@ class EnhancedRiskScorer:
         # Determine overall risk score
         risk_score = overall_assessment["risk_score"]
 
-        # CRITICAL FIX: Incorporate transaction-level scores into entity score
-        # If we have high-risk transactions, the entity should be flagged even if
-        # aggregate patterns look normal
-        if transaction_scores and tx_count > 0:
-            high_risk_ratio = high_risk_count / tx_count
-
-            # Boost 1: Based on max transaction score (worst transaction)
-            # If any transaction scores very high, entity should be investigated
-            if max_score >= 0.75:
-                tx_boost = max_score * 0.4  # Up to 0.34 boost for max_score=0.85
-                risk_score = max(risk_score, risk_score + tx_boost)
-                logger.info(
-                    f"📈 TX_SCORE_BOOST: max_tx_score={max_score:.3f} → boost={tx_boost:.3f}"
-                )
-
-            # Boost 2: Based on high-risk transaction ratio
-            # If >10% of transactions are high-risk, significant boost
-            if high_risk_ratio > 0.10:
-                ratio_boost = min(high_risk_ratio * 0.5, 0.25)  # Up to 0.25 boost
-                risk_score = risk_score + ratio_boost
-                logger.info(
-                    f"📈 HIGH_RISK_RATIO_BOOST: {high_risk_count}/{tx_count} ({high_risk_ratio:.1%}) → boost={ratio_boost:.3f}"
-                )
-            elif high_risk_ratio > 0.05:
-                ratio_boost = high_risk_ratio * 0.3  # Smaller boost for 5-10%
-                risk_score = risk_score + ratio_boost
-
-            # Boost 3: If average transaction score is elevated
-            if avg_score > 0.50:
-                avg_boost = (avg_score - 0.50) * 0.3  # Up to 0.105 for avg=0.85
-                risk_score = risk_score + avg_boost
-                logger.info(
-                    f"📈 AVG_SCORE_BOOST: avg={avg_score:.3f} → boost={avg_boost:.3f}"
-                )
+        # REMOVED STACKING BOOSTS (2024-12-27)
+        # Previous boosts caused score inflation leading to 99% false positive rate:
+        # - TX_SCORE_BOOST: +0.34 max
+        # - HIGH_RISK_RATIO_BOOST: +0.25 max
+        # - AVG_SCORE_BOOST: +0.105 max
+        # These duplicated signals already in transaction scores, causing runaway inflation.
+        # Now we use the risk_score directly from feature calculation.
 
         # Cap at 0.95 to leave room for manual escalation
         risk_score = min(risk_score, 0.95)
 
-        # Boost overall risk if Benford's Law violated - conservative boost
-        if benford_risk > 0.6:  # Raised threshold from 0.5
-            # Small boost, capped at 0.95 to avoid max saturation
-            risk_score = min(risk_score + 0.10, 0.95)  # Reduced from 0.3
+        # Boost overall risk if Benford's Law violated - very conservative boost
+        if benford_risk > 0.7:  # Raised threshold from 0.6
+            # Very small boost, only as a tie-breaker signal
+            risk_score = min(risk_score + 0.05, 0.95)  # Reduced from 0.10
             overall_assessment["anomalies"].append({
                 "type": "statistical_anomaly",
                 "description": f"Benford's Law violation (Score: {benford_risk:.2f}) - potential synthetic data",

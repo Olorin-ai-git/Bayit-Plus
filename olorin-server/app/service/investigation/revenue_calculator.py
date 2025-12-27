@@ -500,13 +500,19 @@ class RevenueCalculator:
         """
         Calculate Lost Revenues with DETAILED reasoning.
 
-        Lost Revenues = Sum of GMV for BLOCKED legitimate transactions × take_rate × multiplier.
+        Lost Revenues = Sum of GMV for APPROVED legitimate transactions × take_rate × multiplier.
 
         REASONING:
-        - These transactions were BLOCKED (rejected) by the system
-        - But they were actually LEGITIMATE (IS_FRAUD_TX = 0 or NULL)
-        - This is a FALSE POSITIVE - blocking good transactions
-        - The lost revenue = blocked_gmv × take_rate × lifetime_multiplier
+        - This function is called ONLY for entities Olorin predicted as fraud
+        - We count transactions that nSure APPROVED + IS_FRAUD_TX=0 (legitimate)
+        - If Olorin blocked this entity, these approved legitimate tx would be lost
+        - The lost revenue = legitimate_gmv × take_rate × lifetime_multiplier
+
+        WHY APPROVED + IS_FRAUD_TX=0:
+        - APPROVED: nSure let these transactions through (they generated revenue)
+        - IS_FRAUD_TX=0: These were legitimate (not fraud)
+        - If Olorin blocked the entity, these good transactions would be blocked
+        - This is the "cost" of Olorin's fraud prediction (False Positives)
 
         WHY TAKE RATE:
         - nSure.ai earns a percentage (take rate) on each approved transaction
@@ -519,7 +525,7 @@ class RevenueCalculator:
         - Set to 4x or 6x to represent 2-3 years of expected lifetime value
 
         Returns:
-            Tuple of (lost_revenues, count, blocked_gmv, breakdown)
+            Tuple of (lost_revenues, count, legitimate_gmv, breakdown)
         """
         is_sf = self._is_snowflake()
         db = self._get_db_provider()
@@ -544,17 +550,19 @@ class RevenueCalculator:
 
         entity_col, entity_clause = self._build_entity_clause(entity_type, entity_value)
 
-        # Aggregate query for blocked legitimate transactions
+        # Aggregate query for legitimate APPROVED transactions (would be FP if Olorin blocked)
+        # Logic: nSure APPROVED + IS_FRAUD_TX=0 = legitimate transactions nSure let through
+        # If Olorin blocked this entity, these would become False Positives
         agg_query = f"""
         SELECT
-            COALESCE(SUM({gmv_col}), 0) as blocked_gmv,
-            COUNT(*) as blocked_legitimate_count,
+            COALESCE(SUM({gmv_col}), 0) as legitimate_gmv,
+            COUNT(*) as legitimate_tx_count,
             COALESCE(AVG({gmv_col}), 0) as avg_value
         FROM {table_name}
         WHERE {entity_clause}
           AND {datetime_col} >= '{window_start.isoformat()}'
           AND {datetime_col} < '{window_end.isoformat()}'
-          AND UPPER({decision_col}) IN ('BLOCK', 'REJECT', 'DECLINE', 'DECLINED', 'REJECTED')
+          AND UPPER({decision_col}) = 'APPROVED'
           AND ({fraud_col} = 0 OR {fraud_col} IS NULL)
         """
 
@@ -571,7 +579,7 @@ class RevenueCalculator:
         WHERE {entity_clause}
           AND {datetime_col} >= '{window_start.isoformat()}'
           AND {datetime_col} < '{window_end.isoformat()}'
-          AND UPPER({decision_col}) IN ('BLOCK', 'REJECT', 'DECLINE', 'DECLINED', 'REJECTED')
+          AND UPPER({decision_col}) = 'APPROVED'
           AND ({fraud_col} = 0 OR {fraud_col} IS NULL)
         ORDER BY {gmv_col} DESC
         LIMIT 5
@@ -581,7 +589,7 @@ class RevenueCalculator:
             f"[REVENUE] 📉 Calculating LOST REVENUES for {entity_type}={entity_value}"
         )
         logger.info(f"[REVENUE]    Window: {window_start.date()} to {window_end.date()}")
-        logger.info(f"[REVENUE]    Criteria: BLOCKED + IS_FRAUD_TX=0/NULL (false positives)")
+        logger.info(f"[REVENUE]    Criteria: APPROVED + IS_FRAUD_TX=0/NULL (false positives if Olorin blocked)")
         logger.info(f"[REVENUE]    Take Rate: {rate}% × Lifetime Multiplier: {multiplier}x")
 
         try:
@@ -591,18 +599,18 @@ class RevenueCalculator:
             else:
                 result = db.execute_query(agg_query)
 
-            blocked_gmv = Decimal("0")
+            legitimate_gmv = Decimal("0")
             count = 0
             avg_val = Decimal("0")
 
             if result and len(result) > 0:
                 row = result[0]
-                blocked_gmv = Decimal(str(row.get("blocked_gmv", 0) or 0))
-                count = int(row.get("blocked_legitimate_count", 0) or 0)
+                legitimate_gmv = Decimal(str(row.get("legitimate_gmv", 0) or 0))
+                count = int(row.get("legitimate_tx_count", 0) or 0)
                 avg_val = Decimal(str(row.get("avg_value", 0) or 0))
 
             # Calculate lost revenues with formula
-            lost_revenues = blocked_gmv * (rate / Decimal("100")) * multiplier
+            lost_revenues = legitimate_gmv * (rate / Decimal("100")) * multiplier
 
             # Get sample transactions
             samples: List[TransactionDetail] = []
@@ -627,15 +635,15 @@ class RevenueCalculator:
             # Build detailed reasoning with time window methodology
             reasoning = self._build_lost_revenues_reasoning(
                 entity_type, entity_value, merchant_name,
-                blocked_gmv, lost_revenues, count, avg_val,
+                legitimate_gmv, lost_revenues, count, avg_val,
                 rate, multiplier, window_start, window_end,
                 investigation_window_start, investigation_window_end
             )
 
             formula = (
-                f"Lost Revenues = Blocked GMV × (Take Rate / 100) × Lifetime Multiplier\n"
-                f"             = ${blocked_gmv:,.2f} × ({rate}% / 100) × {multiplier}\n"
-                f"             = ${blocked_gmv:,.2f} × {float(rate)/100:.4f} × {multiplier}\n"
+                f"Lost Revenues = Legitimate GMV × (Take Rate / 100) × Lifetime Multiplier\n"
+                f"             = ${legitimate_gmv:,.2f} × ({rate}% / 100) × {multiplier}\n"
+                f"             = ${legitimate_gmv:,.2f} × {float(rate)/100:.4f} × {multiplier}\n"
                 f"             = ${lost_revenues:,.2f}"
             )
 
@@ -643,19 +651,22 @@ class RevenueCalculator:
                 "METHODOLOGY: Query all transactions where:\n"
                 f"  1. Entity ({entity_type}) = '{entity_value}'\n"
                 f"  2. Transaction date between {window_start.date()} and {window_end.date()}\n"
-                "  3. nSure decision IN (BLOCK, REJECT, DECLINE, DECLINED, REJECTED)\n"
+                "  3. nSure decision = APPROVED (transaction was let through)\n"
                 "  4. IS_FRAUD_TX = 0 or NULL (NOT fraud - legitimate transaction)\n"
                 "\n"
-                "Sum the GMV of all matching transactions (Blocked GMV).\n"
-                "Then apply the formula:\n"
-                f"  Lost Revenues = Blocked GMV × (Take Rate / 100) × Lifetime Multiplier\n"
+                "These are legitimate transactions that nSure approved.\n"
+                "If Olorin blocked this entity, these would become False Positives.\n"
                 "\n"
-                "This represents the revenue nSure.ai loses from blocking legitimate users."
+                "Sum the GMV of all matching transactions (Legitimate GMV).\n"
+                "Then apply the formula:\n"
+                f"  Lost Revenues = Legitimate GMV × (Take Rate / 100) × Lifetime Multiplier\n"
+                "\n"
+                "This represents the revenue that would be lost if Olorin blocked this entity."
             )
 
             breakdown = LostRevenuesBreakdown(
                 total_lost_revenues=lost_revenues,
-                blocked_gmv_total=blocked_gmv,
+                blocked_gmv_total=legitimate_gmv,
                 take_rate_percent=rate,
                 lifetime_multiplier=multiplier,
                 reasoning=reasoning,
@@ -670,9 +681,9 @@ class RevenueCalculator:
 
             logger.info(
                 f"[REVENUE] ✅ Lost Revenues: ${lost_revenues:,.2f} "
-                f"(${blocked_gmv:,.2f} × {rate}% × {multiplier}x) from {count} transactions"
+                f"(${legitimate_gmv:,.2f} × {rate}% × {multiplier}x) from {count} transactions"
             )
-            return lost_revenues, count, blocked_gmv, breakdown
+            return lost_revenues, count, legitimate_gmv, breakdown
 
         except Exception as e:
             logger.error(f"[REVENUE] ❌ Error calculating Lost Revenues: {e}")
@@ -695,7 +706,7 @@ class RevenueCalculator:
         entity_type: str,
         entity_value: str,
         merchant_name: Optional[str],
-        blocked_gmv: Decimal,
+        legitimate_gmv: Decimal,
         lost_revenues: Decimal,
         count: int,
         avg_val: Decimal,
@@ -716,12 +727,12 @@ class RevenueCalculator:
                 f"═══════════════════════════════════════════════════════════════\n"
                 f"TIME WINDOW METHODOLOGY\n"
                 f"═══════════════════════════════════════════════════════════════\n\n"
-                f"We analyze blocked legitimate transactions in the GMV window\n"
+                f"We analyze APPROVED legitimate transactions in the GMV window\n"
                 f"({gmv_window_start.date()} to {gmv_window_end.date()}) to understand\n"
-                f"the cost of false positives if Olorin had blocked this entity.\n\n"
-                f"IMPORTANT: This represents the 'cost' side of the equation.\n"
-                f"If we had blocked this entity after investigation, we would also\n"
-                f"have blocked these legitimate transactions (false positives).\n\n"
+                f"the cost of false positives if Olorin blocked this entity.\n\n"
+                f"CRITERIA: nSure APPROVED + IS_FRAUD_TX=0\n"
+                f"These are legitimate transactions that nSure let through.\n"
+                f"If Olorin blocked this entity, these would become False Positives.\n\n"
             )
 
         if count == 0:
@@ -731,16 +742,15 @@ class RevenueCalculator:
                 f"═══════════════════════════════════════════════════════════════\n"
                 f"RESULT\n"
                 f"═══════════════════════════════════════════════════════════════\n\n"
-                f"RESULT: $0.00 - No false positives found.\n\n"
+                f"RESULT: $0.00 - No false positives would occur.\n\n"
                 f"GMV ANALYSIS WINDOW: {gmv_window_start.date()} to {gmv_window_end.date()}\n\n"
                 f"EXPLANATION:\n"
-                f"During the GMV window, no transactions for this entity were both:\n"
-                f"  • BLOCKED by the system (rejected), AND\n"
-                f"  • Actually LEGITIMATE (not fraud)\n\n"
-                f"This is EXCELLENT - it means:\n"
-                f"  1. All blocked transactions were genuine fraud (no false positives), OR\n"
-                f"  2. No transactions were blocked for this entity, OR\n"
-                f"  3. This entity had no legitimate activity in the GMV window\n\n"
+                f"During the GMV window, this entity had no APPROVED legitimate transactions:\n"
+                f"  • All APPROVED transactions were fraud (IS_FRAUD_TX=1), OR\n"
+                f"  • All transactions were already BLOCKED by nSure, OR\n"
+                f"  • This entity had no activity in the GMV window\n\n"
+                f"This means blocking this entity would have ZERO cost!\n"
+                f"No legitimate revenue would be lost.\n\n"
                 f"ZERO FALSE POSITIVES = ZERO LOST REVENUES\n"
             )
 
@@ -763,21 +773,21 @@ class RevenueCalculator:
             f"RESULT: ${lost_revenues:,.2f} WOULD BE LOST in potential revenues\n\n"
             f"GMV ANALYSIS WINDOW: {gmv_window_start.date()} to {gmv_window_end.date()}\n\n"
             f"WHAT THIS MEANS:\n"
-            f"In the GMV window, there were {count} transactions that were BLOCKED\n"
-            f"(rejected) but were actually LEGITIMATE (not fraud).\n\n"
-            f"If Olorin had blocked this entity after the investigation period,\n"
-            f"these FALSE POSITIVES totaling ${blocked_gmv:,.2f} would also have been blocked.\n\n"
+            f"Olorin predicted this entity as FRAUDULENT. If Olorin blocked this entity,\n"
+            f"{count} APPROVED legitimate transactions would be blocked.\n\n"
+            f"These transactions (nSure APPROVED + IS_FRAUD_TX=0) totaling ${legitimate_gmv:,.2f}\n"
+            f"would become FALSE POSITIVES - good transactions incorrectly blocked.\n\n"
             f"REVENUE CALCULATION:\n"
             f"  ┌─────────────────────────────────────────────────────────────┐\n"
-            f"  │ Blocked GMV (legitimate tx):     ${blocked_gmv:>15,.2f}      │\n"
+            f"  │ Legitimate GMV (would be FP):    ${legitimate_gmv:>15,.2f}      │\n"
             f"  │ × Take Rate:                     {rate:>15.2f}%             │\n"
             f"  │ × Lifetime Multiplier:           {multiplier:>15.1f}x             │\n"
             f"  ├─────────────────────────────────────────────────────────────┤\n"
             f"  │ = LOST REVENUES:                 ${lost_revenues:>15,.2f}      │\n"
             f"  └─────────────────────────────────────────────────────────────┘\n\n"
             f"BREAKDOWN:\n"
-            f"  • Total Blocked Legitimate Transactions: {count}\n"
-            f"  • Total Blocked GMV: ${blocked_gmv:,.2f}\n"
+            f"  • Total APPROVED Legitimate Transactions: {count}\n"
+            f"  • Total Legitimate GMV: ${legitimate_gmv:,.2f}\n"
             f"  • Average Transaction Value: ${avg_val:,.2f}\n"
             f"  • Take Rate Applied: {rate}%\n"
             f"  • Lifetime Multiplier: {multiplier}x\n"

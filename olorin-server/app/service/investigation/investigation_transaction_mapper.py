@@ -1516,15 +1516,16 @@ async def map_investigation_to_transactions(
             continue
 
         # Transaction has valid per-transaction score - set predicted_risk and classify
-        mapped_tx["predicted_risk"] = tx_score_float
-
-        # Classify transaction as Fraud or Not Fraud
         # FIX #5: If entity is NOT flagged (below threshold), align all transactions
         if not entity_is_fraud and align_with_entity:
             # Entity decision overrides: Entity is not fraud, so transactions are not fraud
+            # Set predicted_risk to entity-level score (below threshold) to ensure
+            # confusion matrix calculation also treats this as "Not Fraud"
+            mapped_tx["predicted_risk"] = investigation_risk_score if investigation_risk_score else 0.0
             predicted_label = "Not Fraud"
         else:
             # Normal classification based on per-transaction score vs threshold
+            mapped_tx["predicted_risk"] = tx_score_float
             predicted_label = classify_transaction_fraud(tx_score_float, risk_threshold)
 
         mapped_tx["predicted_label"] = predicted_label

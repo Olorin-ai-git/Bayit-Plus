@@ -55,20 +55,33 @@ def load_threshold_config() -> ThresholdConfig:
     """
     Load threshold configuration from environment variables.
 
+    REQUIRES .env file to have RISK_THRESHOLD_DEFAULT and LLM_FRAUD_THRESHOLD set.
+    No defaults - fails fast if not configured.
+
     Returns:
         ThresholdConfig instance with unified threshold values.
     """
+    risk_threshold = os.getenv("RISK_THRESHOLD_DEFAULT")
+    llm_threshold = os.getenv("LLM_FRAUD_THRESHOLD")
+
+    if risk_threshold is None:
+        raise ValueError(
+            "RISK_THRESHOLD_DEFAULT must be set in .env file. "
+            "Example: RISK_THRESHOLD_DEFAULT=0.40"
+        )
+    if llm_threshold is None:
+        raise ValueError(
+            "LLM_FRAUD_THRESHOLD must be set in .env file. "
+            "Example: LLM_FRAUD_THRESHOLD=0.80"
+        )
+
     config = ThresholdConfig(
-        risk_threshold_default=float(
-            os.getenv("RISK_THRESHOLD_DEFAULT", "0.50")
-        ),
-        llm_fraud_threshold=float(
-            os.getenv("LLM_FRAUD_THRESHOLD", "0.80")
-        ),
+        risk_threshold_default=float(risk_threshold),
+        llm_fraud_threshold=float(llm_threshold),
     )
 
     logger.info(
-        f"Threshold config loaded: "
+        f"Threshold config loaded from .env: "
         f"risk_threshold_default={config.risk_threshold_default}, "
         f"llm_fraud_threshold={config.llm_fraud_threshold}"
     )

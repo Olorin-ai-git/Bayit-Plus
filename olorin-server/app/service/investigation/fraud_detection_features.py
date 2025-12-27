@@ -13,6 +13,8 @@ from collections import Counter
 from datetime import datetime, timedelta
 from typing import Any, Dict, List, Optional
 
+from app.config.threshold_config import get_risk_threshold
+
 logger = logging.getLogger(__name__)
 
 
@@ -28,12 +30,17 @@ class FraudDetectionFeatures:
     """
 
     def __init__(self):
-        self.base_threshold = 0.20  # Base threshold for high-volume entities
+        # CRITICAL FIX: Use configured threshold instead of hardcoded value
+        # Previous hardcoded 0.20 caused 99% false positive rate by ignoring config
+        self.base_threshold = get_risk_threshold()
         self.progressive_thresholds = {
-            "high_volume": 0.20,  # 10+ transactions
-            "medium_volume": 0.17,  # 5-9 transactions
-            "low_volume": 0.14,  # 2-4 transactions
+            "high_volume": self.base_threshold,  # 10+ transactions
+            "medium_volume": self.base_threshold * 0.85,  # 5-9 transactions
+            "low_volume": self.base_threshold * 0.70,  # 2-4 transactions
         }
+        logger.info(
+            f"FraudDetectionFeatures initialized with threshold: {self.base_threshold}"
+        )
         self.merchant_risk_multipliers = {
             # High-risk merchants (known for fraud)
             "coinflow": 0.85,  # Lower threshold (easier to flag)
@@ -578,40 +585,40 @@ class FraudDetectionFeatures:
             temporal_risk += 0.4
         risk_score += min(temporal_risk, 1.0) * 0.05
         
-        # NEW: Payment & Geo Risk (20% weight)
-        # RECALIBRATED: Reduced weights to prevent score inflation
-        # These signals have high false positive rates in legitimate commerce
+        # Payment & Geo Risk (10% weight - 2024-12-27 FURTHER REDUCED)
+        # VERY CONSERVATIVE: These signals have extremely high FP rates
+        # Most mismatch signals are common in global/cross-border commerce
         advanced_risk = 0.0
 
-        # Country/Currency Mismatch (Common in global commerce - be conservative)
+        # Country/Currency Mismatch (Common in global commerce - minimal weight)
         if features.get("country_mismatch_ratio", 0) > 0.5:
-            advanced_risk += 0.35  # Reduced from 0.8
+            advanced_risk += 0.10  # REDUCED from 0.35 - very common legitimately
         elif features.get("country_mismatch_ratio", 0) > 0.2:
-            advanced_risk += 0.15  # Reduced from 0.4
+            advanced_risk += 0.05  # REDUCED from 0.15
 
         if features.get("currency_mismatch_ratio", 0) > 0.5:
-            advanced_risk += 0.25  # Reduced from 0.6
+            advanced_risk += 0.10  # REDUCED from 0.25
 
-        # Prepaid Cards (Many legitimate use cases)
+        # Prepaid Cards (Many legitimate use cases - privacy-conscious users)
         if features.get("prepaid_ratio", 0) > 0.8:
-            advanced_risk += 0.20  # Reduced from 0.5
+            advanced_risk += 0.05  # REDUCED from 0.20 - gift cards are normal
         elif features.get("prepaid_ratio", 0) > 0.4:
-            advanced_risk += 0.10  # Reduced from 0.3
+            advanced_risk += 0.03  # REDUCED from 0.10
 
-        # AVS Failures (Less reliable internationally)
+        # AVS Failures (Unreliable internationally - minimal weight)
         if features.get("avs_failure_ratio", 0) > 0.3:
-            advanced_risk += 0.25  # Reduced from 0.7
+            advanced_risk += 0.05  # REDUCED from 0.25 - many int'l false positives
 
-        # Disposable Emails (Strong signal when present)
+        # Disposable Emails (Stronger signal, keep moderate weight)
         if features.get("disposable_email_ratio", 0) > 0.2:
-            advanced_risk += 0.30  # Reduced from 0.6
+            advanced_risk += 0.15  # REDUCED from 0.30 but still meaningful
 
         # External Risk Scores (Validation signal)
         if features.get("high_external_risk_ratio", 0) > 0.2:
-            advanced_risk += 0.25  # Reduced from 0.6
+            advanced_risk += 0.10  # REDUCED from 0.25
 
         # Cap advanced_risk component and reduce weight
-        risk_score += min(advanced_risk, 0.80) * 0.20  # Reduced from 1.0 * 0.30
+        risk_score += min(advanced_risk, 0.40) * 0.10  # REDUCED from 0.80 * 0.20
 
         # Ensure score is between 0 and 1
         return min(max(risk_score, 0.0), 1.0)

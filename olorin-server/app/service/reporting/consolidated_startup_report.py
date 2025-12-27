@@ -126,39 +126,56 @@ def _calculate_global_metrics(
     comparison_results: List[Dict[str, Any]]
 ) -> Dict[str, Any]:
     """Calculate global aggregated metrics across all entities."""
+    # Review Precision metrics (flagged transactions only)
     total_tp = total_fp = total_tn = total_fn = 0
+    # Overall Classification metrics (all transactions)
+    overall_tp = overall_fp = overall_tn = overall_fn = 0
     total_saved = total_lost = 0.0
     total_entities = len(comparison_results)
     total_transactions = 0
-    
+
     for result in comparison_results:
         cm = result.get("confusion_matrix", {})
+        # Review Precision (flagged only)
         total_tp += cm.get("TP", 0)
         total_fp += cm.get("FP", 0)
         total_tn += cm.get("TN", 0)
         total_fn += cm.get("FN", 0)
-        
+        # Overall Classification (all transactions)
+        overall_tp += cm.get("overall_TP", 0)
+        overall_fp += cm.get("overall_FP", 0)
+        overall_tn += cm.get("overall_TN", 0)
+        overall_fn += cm.get("overall_FN", 0)
+
         # Support both "revenue_implications" (old) and "revenue_data" (new)
         revenue = result.get("revenue_data") or result.get("revenue_implications", {})
         total_saved += revenue.get("saved_fraud_gmv", 0.0)
         total_lost += revenue.get("lost_revenues", 0.0)
-        
+
         # Calculate total_transactions from confusion matrix if not present
         txs = result.get("total_transactions", 0)
         if txs == 0:
             txs = cm.get("TP", 0) + cm.get("FP", 0) + cm.get("TN", 0) + cm.get("FN", 0)
         total_transactions += txs
-    
+
+    # Review Precision metrics
     total_all = total_tp + total_fp + total_tn + total_fn
     precision = total_tp / (total_tp + total_fp) if (total_tp + total_fp) > 0 else 0.0
     recall = total_tp / (total_tp + total_fn) if (total_tp + total_fn) > 0 else 0.0
     f1 = 2 * (precision * recall) / (precision + recall) if (precision + recall) > 0 else 0.0
     accuracy = (total_tp + total_tn) / total_all if total_all > 0 else 0.0
+    # Overall Classification metrics
+    overall_all = overall_tp + overall_fp + overall_tn + overall_fn
+    overall_precision = overall_tp / (overall_tp + overall_fp) if (overall_tp + overall_fp) > 0 else 0.0
+    overall_recall = overall_tp / (overall_tp + overall_fn) if (overall_tp + overall_fn) > 0 else 0.0
+    overall_f1 = 2 * (overall_precision * overall_recall) / (overall_precision + overall_recall) if (overall_precision + overall_recall) > 0 else 0.0
+    overall_accuracy = (overall_tp + overall_tn) / overall_all if overall_all > 0 else 0.0
     net_value = total_saved - total_lost
-    
+
     return {
         "total_entities": total_entities,
         "total_transactions": total_transactions,
+        # Review Precision (flagged only)
         "tp": total_tp,
         "fp": total_fp,
         "tn": total_tn,
@@ -167,6 +184,16 @@ def _calculate_global_metrics(
         "recall": recall,
         "f1": f1,
         "accuracy": accuracy,
+        # Overall Classification (all transactions)
+        "overall_tp": overall_tp,
+        "overall_fp": overall_fp,
+        "overall_tn": overall_tn,
+        "overall_fn": overall_fn,
+        "overall_precision": overall_precision,
+        "overall_recall": overall_recall,
+        "overall_f1": overall_f1,
+        "overall_accuracy": overall_accuracy,
+        # Revenue
         "saved_fraud_gmv": total_saved,
         "lost_revenues": total_lost,
         "net_value": net_value,
@@ -588,7 +615,51 @@ def _generate_html(
             </div>
         </div>
         
-        <h3 style="color: var(--text); margin: 24px 0 16px 0;">Global Confusion Matrix</h3>
+        <h3 style="color: var(--text); margin: 24px 0 16px 0;">Overall Classification (All Transactions)</h3>
+        <p style="color: var(--muted); font-size: 12px; margin-bottom: 12px;">
+            Classification across ALL transactions, including entities below threshold.
+        </p>
+        <div class="confusion-matrix">
+            <div class="cm-cell cm-tp">
+                <div class="cm-label">True Positives</div>
+                <div class="cm-value">{global_metrics['overall_tp']}</div>
+            </div>
+            <div class="cm-cell cm-fp">
+                <div class="cm-label">False Positives</div>
+                <div class="cm-value">{global_metrics['overall_fp']}</div>
+            </div>
+            <div class="cm-cell cm-fn">
+                <div class="cm-label">False Negatives</div>
+                <div class="cm-value">{global_metrics['overall_fn']}</div>
+            </div>
+            <div class="cm-cell cm-tn">
+                <div class="cm-label">True Negatives</div>
+                <div class="cm-value">{global_metrics['overall_tn']}</div>
+            </div>
+        </div>
+        <div style="margin-top: 12px; display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px;">
+            <div style="text-align: center; padding: 8px; background: rgba(74, 158, 255, 0.1); border-radius: 6px;">
+                <div style="font-weight: 600; color: var(--accent);">{global_metrics['overall_precision']:.1%}</div>
+                <div style="font-size: 10px; color: var(--muted);">Precision</div>
+            </div>
+            <div style="text-align: center; padding: 8px; background: rgba(74, 158, 255, 0.1); border-radius: 6px;">
+                <div style="font-weight: 600; color: var(--accent);">{global_metrics['overall_recall']:.1%}</div>
+                <div style="font-size: 10px; color: var(--muted);">Recall</div>
+            </div>
+            <div style="text-align: center; padding: 8px; background: rgba(74, 158, 255, 0.1); border-radius: 6px;">
+                <div style="font-weight: 600; color: var(--accent);">{global_metrics['overall_f1']:.1%}</div>
+                <div style="font-size: 10px; color: var(--muted);">F1 Score</div>
+            </div>
+            <div style="text-align: center; padding: 8px; background: rgba(74, 158, 255, 0.1); border-radius: 6px;">
+                <div style="font-weight: 600; color: var(--accent);">{global_metrics['overall_accuracy']:.1%}</div>
+                <div style="font-size: 10px; color: var(--muted);">Accuracy</div>
+            </div>
+        </div>
+
+        <h3 style="color: var(--text); margin: 24px 0 16px 0;">Review Precision (Flagged Transactions Only)</h3>
+        <p style="color: var(--muted); font-size: 12px; margin-bottom: 12px;">
+            Classification for entities flagged as potentially fraudulent (above threshold).
+        </p>
         <div class="confusion-matrix">
             <div class="cm-cell cm-tp">
                 <div class="cm-label">True Positives</div>

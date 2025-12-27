@@ -1046,7 +1046,7 @@ def _generate_confusion_table_section(data: Dict[str, Any]) -> str:
           </div>
           """
 
-    # Extract aggregated metrics
+    # Extract aggregated metrics - Review Precision (flagged transactions only)
     total_tp = aggregated_matrix.total_TP
     total_fp = aggregated_matrix.total_FP
     total_tn = aggregated_matrix.total_TN
@@ -1057,6 +1057,17 @@ def _generate_confusion_table_section(data: Dict[str, Any]) -> str:
     recall = aggregated_matrix.aggregated_recall
     f1_score = aggregated_matrix.aggregated_f1_score
     accuracy = aggregated_matrix.aggregated_accuracy
+
+    # Extract Overall Classification metrics (ALL transactions)
+    overall_tp = aggregated_matrix.overall_total_TP
+    overall_fp = aggregated_matrix.overall_total_FP
+    overall_tn = aggregated_matrix.overall_total_TN
+    overall_fn = aggregated_matrix.overall_total_FN
+
+    overall_precision = aggregated_matrix.overall_aggregated_precision
+    overall_recall = aggregated_matrix.overall_aggregated_recall
+    overall_f1 = aggregated_matrix.overall_aggregated_f1_score
+    overall_accuracy = aggregated_matrix.overall_aggregated_accuracy
 
     risk_threshold = aggregated_matrix.risk_threshold
     entity_count = aggregated_matrix.entity_count
@@ -1116,8 +1127,9 @@ def _generate_confusion_table_section(data: Dict[str, Any]) -> str:
           </details>
         """
 
-    # Handle edge case: no transactions
-    if total_tp + total_fp + total_tn + total_fn == 0:
+    # Handle edge case: no transactions (check OVERALL metrics, not just flagged)
+    overall_total = overall_tp + overall_fp + overall_tn + overall_fn
+    if overall_total == 0:
         return f"""
           <div class="panel">
             <h2>📊 Confusion Table Metrics</h2>
@@ -1149,7 +1161,11 @@ def _generate_confusion_table_section(data: Dict[str, Any]) -> str:
               See the methodology banner at the top of this report for details.
             </p>
 
-            <h3>Aggregated Metrics</h3>
+            <h3>Review Precision (Flagged Transactions Only)</h3>
+            <p style="color: var(--muted); font-size: 12px; margin-bottom: 12px;">
+              Metrics for transactions from entities flagged as potentially fraudulent (risk score &ge; threshold).
+              For entities NOT flagged, all transactions are classified as "Not Fraud" by design.
+            </p>
             <div style="margin: 16px 0;">
               <table style="width: 100%; border-collapse: collapse;">
                 <thead>
@@ -1229,12 +1245,74 @@ def _generate_confusion_table_section(data: Dict[str, Any]) -> str:
               </table>
             </div>
             
+            <h3 style="margin-top: 24px;">Overall Classification (All Transactions)</h3>
+            <p style="color: var(--muted); font-size: 12px; margin-bottom: 12px;">
+              Classification metrics across ALL transactions, including those from entities below the fraud threshold.
+              This shows how the model performs on the complete transaction population.
+            </p>
+            <div style="margin: 16px 0;">
+              <table style="width: 100%; border-collapse: collapse;">
+                <thead>
+                  <tr style="border-bottom: 2px solid var(--border);">
+                    <th style="text-align: left; padding: 12px 8px;">Metric</th>
+                    <th style="text-align: right; padding: 12px 8px;">Count</th>
+                    <th style="text-align: right; padding: 12px 8px;">Rate</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr style="border-bottom: 1px solid var(--border);">
+                    <td style="padding: 10px 8px;"><strong>True Positives (TP)</strong><br><span style="color: var(--muted); font-size: 12px;">Predicted Fraud AND Actually Fraud</span></td>
+                    <td style="text-align: right; padding: 10px 8px; font-weight: 600; color: var(--ok);">{overall_tp}</td>
+                    <td style="text-align: right; padding: 10px 8px;">{fmt_pct(overall_tp / overall_total) if overall_total > 0 else '0%'}</td>
+                  </tr>
+                  <tr style="border-bottom: 1px solid var(--border);">
+                    <td style="padding: 10px 8px;"><strong>False Positives (FP)</strong><br><span style="color: var(--muted); font-size: 12px;">Predicted Fraud BUT Not Actually Fraud</span></td>
+                    <td style="text-align: right; padding: 10px 8px; font-weight: 600; color: var(--warning);">{overall_fp}</td>
+                    <td style="text-align: right; padding: 10px 8px;">{fmt_pct(overall_fp / overall_total) if overall_total > 0 else '0%'}</td>
+                  </tr>
+                  <tr style="border-bottom: 1px solid var(--border);">
+                    <td style="padding: 10px 8px;"><strong>True Negatives (TN)</strong><br><span style="color: var(--muted); font-size: 12px;">Predicted Not Fraud AND Not Actually Fraud</span></td>
+                    <td style="text-align: right; padding: 10px 8px; font-weight: 600; color: var(--ok);">{overall_tn}</td>
+                    <td style="text-align: right; padding: 10px 8px;">{fmt_pct(overall_tn / overall_total) if overall_total > 0 else '0%'}</td>
+                  </tr>
+                  <tr style="border-bottom: 1px solid var(--border);">
+                    <td style="padding: 10px 8px;"><strong>False Negatives (FN)</strong><br><span style="color: var(--muted); font-size: 12px;">Predicted Not Fraud BUT Actually Fraud</span></td>
+                    <td style="text-align: right; padding: 10px 8px; font-weight: 600; color: var(--error);">{overall_fn}</td>
+                    <td style="text-align: right; padding: 10px 8px;">{fmt_pct(overall_fn / overall_total) if overall_total > 0 else '0%'}</td>
+                  </tr>
+                  <tr style="background: var(--panel-glass); border-top: 2px solid var(--border);">
+                    <td style="padding: 10px 8px;"><strong>Total Transactions</strong></td>
+                    <td style="text-align: right; padding: 10px 8px; font-weight: 600;">{overall_total}</td>
+                    <td style="text-align: right; padding: 10px 8px;">100%</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <div style="margin: 16px 0; display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px;">
+              <div style="background: var(--panel-glass); padding: 12px; border-radius: 8px; text-align: center;">
+                <div style="font-size: 18px; font-weight: 600; color: var(--accent);">{fmt_pct(overall_precision)}</div>
+                <div style="font-size: 11px; color: var(--muted);">Precision</div>
+              </div>
+              <div style="background: var(--panel-glass); padding: 12px; border-radius: 8px; text-align: center;">
+                <div style="font-size: 18px; font-weight: 600; color: var(--accent);">{fmt_pct(overall_recall)}</div>
+                <div style="font-size: 11px; color: var(--muted);">Recall</div>
+              </div>
+              <div style="background: var(--panel-glass); padding: 12px; border-radius: 8px; text-align: center;">
+                <div style="font-size: 18px; font-weight: 600; color: var(--accent);">{fmt_pct(overall_f1)}</div>
+                <div style="font-size: 11px; color: var(--muted);">F1 Score</div>
+              </div>
+              <div style="background: var(--panel-glass); padding: 12px; border-radius: 8px; text-align: center;">
+                <div style="font-size: 18px; font-weight: 600; color: var(--accent);">{fmt_pct(overall_accuracy)}</div>
+                <div style="font-size: 11px; color: var(--muted);">Accuracy</div>
+              </div>
+            </div>
+
             <p style="color: var(--muted); font-size: 13px; margin-top: 16px;">
-              <strong>Risk Threshold:</strong> {risk_threshold:.1%} | 
-              <strong>Entities Analyzed:</strong> {entity_count} | 
+              <strong>Risk Threshold:</strong> {risk_threshold:.1%} |
+              <strong>Entities Analyzed:</strong> {entity_count} |
               <strong>Calculation Time:</strong> {aggregated_matrix.calculation_timestamp.strftime('%Y-%m-%d %H:%M:%S UTC') if hasattr(aggregated_matrix.calculation_timestamp, 'strftime') else 'N/A'}
             </p>
-            
+
             {entity_breakdown_html}
           </div>
         """
