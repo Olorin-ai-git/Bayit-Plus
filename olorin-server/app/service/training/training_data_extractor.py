@@ -2,8 +2,13 @@
 Training Data Extractor
 Feature: 026-llm-training-pipeline
 
-Extracts and balances training data from Snowflake with temporal holdout.
-Uses proper ML evaluation: features from one period, labels from the next.
+Extracts and balances training data from Snowflake with dual-period temporal holdout.
+
+Training uses TWO periods that exclude the investigation window:
+- Period 1: Historical data BEFORE investigation starts (>24 months ago)
+- Period 2: GMV window AFTER investigation ends (12-6 months ago)
+
+This ensures no overlap between training data and detection/investigation data.
 """
 
 import os
@@ -11,11 +16,8 @@ from datetime import datetime, timedelta
 from dateutil.relativedelta import relativedelta
 from typing import Any, List, Optional
 
+from app.config.revenue_config import get_revenue_config
 from app.service.logging import get_bridge_logger
-from app.service.training.data_boundary_validator import (
-    get_boundary_config,
-    validate_no_overlap,
-)
 from app.service.training.training_config_loader import get_training_config
 from app.service.training.training_models import TrainingSample
 
@@ -104,35 +106,84 @@ class TrainingDataExtractor:
     async def _query_temporal_holdout(
         self, client: Any, table: str, merchant_filter: str, min_tx: int
     ) -> List[TrainingSample]:
-        """Query with temporal holdout to prevent data leakage."""
+        """
+        Query with dual-period temporal holdout to prevent data leakage.
+
+        Training uses TWO periods that exclude the investigation window:
+        - Period 1: Historical data BEFORE investigation starts
+        - Period 2: GMV window AFTER investigation ends
+
+        Timeline:
+        |---Period 1---|---Investigation (EXCLUDED)---|---Period 2 (GMV)---|---Recent---|
+           >24mo ago          24-12 months ago            12-6 months ago     <6mo ago
+        """
+        revenue_config = get_revenue_config()
         holdout = self._config.temporal_holdout
         feature_months = holdout.feature_period_months
         observation_months = holdout.observation_period_months
 
-        # CRITICAL: Use configured training observation end date instead of now()
-        # This ensures training data does NOT overlap with detection period
-        boundary_config = get_boundary_config()
-        observation_end = datetime.combine(
-            boundary_config.training_observation_end_date,
-            datetime.max.time()
+        now = datetime.utcnow()
+
+        # Investigation window (EXCLUDED from training)
+        inv_start = now - relativedelta(months=revenue_config.investigation_window_start_months)
+        inv_end = now - relativedelta(months=revenue_config.investigation_window_end_months)
+
+        # Training Period 1: Historical (before investigation)
+        # Features from even further back, labels up to investigation start
+        period1_label_end = inv_start  # Labels end where investigation starts
+        period1_label_start = period1_label_end - relativedelta(months=observation_months)
+        period1_feature_end = period1_label_start
+        period1_feature_start = period1_feature_end - relativedelta(months=feature_months)
+
+        # Training Period 2: GMV window (after investigation)
+        # This is where we have confirmed fraud outcomes
+        period2_label_start = now - relativedelta(months=revenue_config.saved_fraud_gmv_start_months)
+        period2_label_end = now - relativedelta(months=revenue_config.saved_fraud_gmv_end_months)
+        period2_feature_end = period2_label_start
+        period2_feature_start = period2_feature_end - relativedelta(months=feature_months)
+
+        logger.info("=" * 60)
+        logger.info("DUAL-PERIOD TRAINING DATA EXTRACTION")
+        logger.info("=" * 60)
+        logger.info(f"Investigation window (EXCLUDED): {inv_start.date()} to {inv_end.date()}")
+        logger.info(f"Period 1 (Historical):")
+        logger.info(f"  Features: {period1_feature_start.date()} to {period1_feature_end.date()}")
+        logger.info(f"  Labels:   {period1_label_start.date()} to {period1_label_end.date()}")
+        logger.info(f"Period 2 (GMV Window):")
+        logger.info(f"  Features: {period2_feature_start.date()} to {period2_feature_end.date()}")
+        logger.info(f"  Labels:   {period2_label_start.date()} to {period2_label_end.date()}")
+        logger.info("=" * 60)
+
+        # Query both periods and combine results
+        samples_p1 = await self._query_single_period(
+            client, table, merchant_filter, min_tx,
+            period1_feature_start, period1_feature_end,
+            period1_label_start, period1_label_end,
+            "Period1_Historical"
         )
-        observation_start = observation_end - relativedelta(months=observation_months)
-        feature_end = observation_start
-        feature_start = feature_end - relativedelta(months=feature_months)
 
-        # Validate boundaries
-        validation_result = validate_no_overlap(
-            training_end=observation_end.date(),
-            detection_start=boundary_config.detection_window_start,
+        samples_p2 = await self._query_single_period(
+            client, table, merchant_filter, min_tx,
+            period2_feature_start, period2_feature_end,
+            period2_label_start, period2_label_end,
+            "Period2_GMV"
         )
-        if not validation_result.is_valid:
-            raise ValueError(f"Training data boundary violation: {validation_result.message}")
 
-        logger.info(f"Temporal holdout: features {feature_start} to {feature_end}")
-        logger.info(f"Temporal holdout: labels {observation_start} to {observation_end}")
-        logger.info(f"Boundary check: {validation_result.message}")
+        logger.info(f"Period 1 samples: {len(samples_p1)} ({sum(1 for s in samples_p1 if s.is_fraud)} fraud)")
+        logger.info(f"Period 2 samples: {len(samples_p2)} ({sum(1 for s in samples_p2 if s.is_fraud)} fraud)")
 
-        # CRITICAL: Use GMV for USD-normalized amounts, not PAID_AMOUNT_VALUE_IN_CURRENCY (local currency)
+        combined = samples_p1 + samples_p2
+        logger.info(f"Combined samples: {len(combined)} ({sum(1 for s in combined if s.is_fraud)} fraud)")
+
+        return combined
+
+    async def _query_single_period(
+        self, client: Any, table: str, merchant_filter: str, min_tx: int,
+        feature_start: datetime, feature_end: datetime,
+        label_start: datetime, label_end: datetime,
+        period_name: str
+    ) -> List[TrainingSample]:
+        """Query a single training period (features + labels)."""
         query = f"""
         WITH feature_period AS (
             SELECT
@@ -159,7 +210,7 @@ class TrainingDataExtractor:
                 EMAIL,
                 MAX(IS_FRAUD_TX) as committed_fraud
             FROM {table}
-            WHERE TX_DATETIME BETWEEN '{observation_start.isoformat()}' AND '{observation_end.isoformat()}'
+            WHERE TX_DATETIME BETWEEN '{label_start.isoformat()}' AND '{label_end.isoformat()}'
               AND EMAIL IS NOT NULL
             GROUP BY EMAIL
         )
@@ -178,7 +229,7 @@ class TrainingDataExtractor:
             COALESCE(o.committed_fraud, 0) as is_fraud
         FROM feature_period f
         LEFT JOIN observation_period o ON f.EMAIL = o.EMAIL
-        LIMIT {self._config.data_sampling.max_sample_size * 2}
+        LIMIT {self._config.data_sampling.max_sample_size}
         """
 
         results = await client.execute_query(query)

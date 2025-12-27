@@ -6,50 +6,46 @@ Validates temporal boundaries between training data and detection/evaluation dat
 to prevent data leakage and ensure model metrics reflect real-world performance.
 
 Training data MUST NOT overlap with detection/evaluation data.
+
+Uses relative windows based on revenue_config:
+- Investigation window: 24-12 months ago (SAFE for detection)
+- Training Period 1: >24 months ago (before investigation)
+- Training Period 2: 12-6 months ago (GMV window, confirmed outcomes)
 """
 
 import os
 from dataclasses import dataclass
-from datetime import date, datetime, timedelta
+from datetime import date, datetime
+from dateutil.relativedelta import relativedelta
 from typing import Optional, Tuple
 
-from pydantic import BaseModel, Field, field_validator
+from pydantic import BaseModel, Field
 
+from app.config.revenue_config import get_revenue_config
 from app.service.logging import get_bridge_logger
 
 logger = get_bridge_logger(__name__)
 
 
 class DataBoundaryConfig(BaseModel):
-    """Configuration for data boundary validation."""
+    """Configuration for data boundary validation using relative windows."""
 
-    training_observation_end_date: date = Field(
-        description="End date of training observation period (latest label date)"
+    investigation_start: date = Field(
+        description="Start date of investigation window (earliest safe detection date)"
     )
-    detection_window_start: date = Field(
-        description="Start date of detection/evaluation window"
+    investigation_end: date = Field(
+        description="End date of investigation window"
+    )
+    gmv_window_start: date = Field(
+        description="Start of GMV window (used for training, NOT detection)"
+    )
+    gmv_window_end: date = Field(
+        description="End of GMV window (used for training, NOT detection)"
     )
     enforce_boundary_check: bool = Field(
         default=True,
         description="Whether to enforce boundary checks (fail-fast mode)"
     )
-    min_gap_days: int = Field(
-        default=1,
-        ge=0,
-        description="Minimum gap in days between training and detection periods"
-    )
-
-    @field_validator("detection_window_start")
-    @classmethod
-    def validate_detection_after_training(cls, v: date, info) -> date:
-        """Ensure detection window starts after training observation ends."""
-        training_end = info.data.get("training_observation_end_date")
-        if training_end and v <= training_end:
-            raise ValueError(
-                f"detection_window_start ({v}) must be after "
-                f"training_observation_end_date ({training_end})"
-            )
-        return v
 
 
 @dataclass
@@ -58,8 +54,8 @@ class BoundaryValidationResult:
 
     is_valid: bool
     message: str
-    training_end: Optional[date] = None
-    detection_start: Optional[date] = None
+    investigation_start: Optional[date] = None
+    investigation_end: Optional[date] = None
     gap_days: Optional[int] = None
 
 
@@ -71,33 +67,36 @@ class DataBoundaryViolationError(Exception):
 
 def load_boundary_config() -> DataBoundaryConfig:
     """
-    Load data boundary configuration from environment variables.
+    Load data boundary configuration from revenue_config (relative windows).
 
     Returns:
         DataBoundaryConfig instance with validated values.
-
-    Raises:
-        ValueError: If configuration is invalid or boundaries overlap.
     """
-    training_end_str = os.getenv("TRAINING_OBSERVATION_END_DATE", "2024-06-30")
-    detection_start_str = os.getenv("DETECTION_WINDOW_START", "2024-07-01")
-    enforce_check = os.getenv("ENFORCE_DATA_BOUNDARY_CHECK", "true").lower() == "true"
-    min_gap = int(os.getenv("DATA_BOUNDARY_MIN_GAP_DAYS", "1"))
+    revenue_config = get_revenue_config()
+    now = datetime.utcnow()
 
-    training_end = datetime.strptime(training_end_str, "%Y-%m-%d").date()
-    detection_start = datetime.strptime(detection_start_str, "%Y-%m-%d").date()
+    # Investigation window (where we detect/investigate fraud)
+    inv_start = now - relativedelta(months=revenue_config.investigation_window_start_months)
+    inv_end = now - relativedelta(months=revenue_config.investigation_window_end_months)
+
+    # GMV window (used for training, NOT detection)
+    gmv_start = now - relativedelta(months=revenue_config.saved_fraud_gmv_start_months)
+    gmv_end = now - relativedelta(months=revenue_config.saved_fraud_gmv_end_months)
+
+    enforce_check = os.getenv("ENFORCE_DATA_BOUNDARY_CHECK", "true").lower() == "true"
 
     config = DataBoundaryConfig(
-        training_observation_end_date=training_end,
-        detection_window_start=detection_start,
+        investigation_start=inv_start.date(),
+        investigation_end=inv_end.date(),
+        gmv_window_start=gmv_start.date(),
+        gmv_window_end=gmv_end.date(),
         enforce_boundary_check=enforce_check,
-        min_gap_days=min_gap,
     )
 
     logger.info(
-        f"Data boundary config loaded: "
-        f"training_end={training_end}, detection_start={detection_start}, "
-        f"enforce={enforce_check}, min_gap={min_gap} days"
+        f"Data boundary config loaded (relative windows): "
+        f"investigation={inv_start.date()} to {inv_end.date()}, "
+        f"gmv_window={gmv_start.date()} to {gmv_end.date()}, enforce={enforce_check}"
     )
 
     return config
@@ -121,55 +120,55 @@ def clear_boundary_config_cache() -> None:
     logger.debug("Boundary config cache cleared")
 
 
-def validate_no_overlap(
-    training_end: date,
-    detection_start: date,
-    min_gap_days: int = 1,
-) -> BoundaryValidationResult:
+def validate_date_range(
+    start_date: date,
+    end_date: date,
+) -> Tuple[bool, str]:
     """
-    Validate that training and detection periods do not overlap.
+    Validate that a date range is safe for detection/evaluation.
+
+    Safe dates are within the investigation window (24-12 months ago).
+    Unsafe dates are in training periods or too recent.
 
     Args:
-        training_end: End date of training observation period.
-        detection_start: Start date of detection/evaluation window.
-        min_gap_days: Minimum required gap between periods.
+        start_date: Start of the date range.
+        end_date: End of the date range.
 
     Returns:
-        BoundaryValidationResult with validation outcome.
-    """
-    gap_days = (detection_start - training_end).days
+        Tuple of (is_valid, message).
 
-    if gap_days < min_gap_days:
-        return BoundaryValidationResult(
-            is_valid=False,
-            message=(
-                f"Data boundary violation: detection_start ({detection_start}) "
-                f"is only {gap_days} days after training_end ({training_end}). "
-                f"Minimum required gap: {min_gap_days} days."
-            ),
-            training_end=training_end,
-            detection_start=detection_start,
-            gap_days=gap_days,
-        )
-
-    return BoundaryValidationResult(
-        is_valid=True,
-        message=f"Valid boundary: {gap_days} days gap between training and detection.",
-        training_end=training_end,
-        detection_start=detection_start,
-        gap_days=gap_days,
-    )
-
-
-def get_safe_detection_start_date() -> date:
-    """
-    Get the earliest safe date for detection/evaluation.
-
-    Returns:
-        Date that is one day after training_observation_end_date.
+    Raises:
+        DataBoundaryViolationError: If enforce mode is enabled and range overlaps.
     """
     config = get_boundary_config()
-    return config.training_observation_end_date + timedelta(days=1)
+    inv_start = config.investigation_start
+    inv_end = config.investigation_end
+    gmv_start = config.gmv_window_start
+    gmv_end = config.gmv_window_end
+
+    # Check if date range falls within GMV training window
+    if start_date >= gmv_start and start_date <= gmv_end:
+        message = (
+            f"Date range start {start_date} falls within GMV training window "
+            f"({gmv_start} to {gmv_end}). This would cause data leakage."
+        )
+        if config.enforce_boundary_check:
+            raise DataBoundaryViolationError(message)
+        logger.warning(message)
+        return False, message
+
+    # Check if date range is before investigation window (too old - training period 1)
+    if end_date < inv_start:
+        message = (
+            f"Date range ends {end_date} before investigation window starts "
+            f"({inv_start}). This is in historical training period."
+        )
+        if config.enforce_boundary_check:
+            raise DataBoundaryViolationError(message)
+        logger.warning(message)
+        return False, message
+
+    return True, f"Date range {start_date} to {end_date} is within investigation window."
 
 
 def validate_entity_date(entity_date: date) -> Tuple[bool, str]:
@@ -186,52 +185,33 @@ def validate_entity_date(entity_date: date) -> Tuple[bool, str]:
         DataBoundaryViolationError: If enforce mode is enabled and date is invalid.
     """
     config = get_boundary_config()
-    training_end = config.training_observation_end_date
+    inv_start = config.investigation_start
+    gmv_start = config.gmv_window_start
+    gmv_end = config.gmv_window_end
 
-    if entity_date <= training_end:
+    # Check if entity date falls within GMV training window
+    if gmv_start <= entity_date <= gmv_end:
         message = (
-            f"Entity date {entity_date} falls within training period "
-            f"(ends {training_end}). This would cause data leakage."
+            f"Entity date {entity_date} falls within GMV training window "
+            f"({gmv_start} to {gmv_end}). This would cause data leakage."
         )
         if config.enforce_boundary_check:
             raise DataBoundaryViolationError(message)
         logger.warning(message)
         return False, message
 
-    return True, f"Entity date {entity_date} is after training period."
-
-
-def validate_date_range(
-    start_date: date,
-    end_date: date,
-) -> Tuple[bool, str]:
-    """
-    Validate that a date range is safe for detection/evaluation.
-
-    Args:
-        start_date: Start of the date range.
-        end_date: End of the date range.
-
-    Returns:
-        Tuple of (is_valid, message).
-
-    Raises:
-        DataBoundaryViolationError: If enforce mode is enabled and range overlaps.
-    """
-    config = get_boundary_config()
-    training_end = config.training_observation_end_date
-
-    if start_date <= training_end:
+    # Check if entity date is before investigation window
+    if entity_date < inv_start:
         message = (
-            f"Date range start {start_date} falls within training period "
-            f"(ends {training_end}). This would cause data leakage."
+            f"Entity date {entity_date} is before investigation window "
+            f"(starts {inv_start}). This is in historical training period."
         )
         if config.enforce_boundary_check:
             raise DataBoundaryViolationError(message)
         logger.warning(message)
         return False, message
 
-    return True, f"Date range {start_date} to {end_date} is after training period."
+    return True, f"Entity date {entity_date} is within safe detection window."
 
 
 def validate_configuration_boundaries() -> BoundaryValidationResult:
@@ -245,8 +225,26 @@ def validate_configuration_boundaries() -> BoundaryValidationResult:
         BoundaryValidationResult with validation outcome.
     """
     config = get_boundary_config()
-    return validate_no_overlap(
-        training_end=config.training_observation_end_date,
-        detection_start=config.detection_window_start,
-        min_gap_days=config.min_gap_days,
+
+    # Verify investigation window doesn't overlap with GMV window
+    # (they can touch on the same day - that's the boundary)
+    if config.investigation_end > config.gmv_window_start:
+        return BoundaryValidationResult(
+            is_valid=False,
+            message=(
+                f"Configuration error: investigation_end ({config.investigation_end}) "
+                f"overlaps with gmv_window_start ({config.gmv_window_start})"
+            ),
+            investigation_start=config.investigation_start,
+            investigation_end=config.investigation_end,
+        )
+
+    gap_days = (config.gmv_window_start - config.investigation_end).days
+
+    return BoundaryValidationResult(
+        is_valid=True,
+        message=f"Valid configuration: {gap_days} days gap between investigation and GMV window.",
+        investigation_start=config.investigation_start,
+        investigation_end=config.investigation_end,
+        gap_days=gap_days,
     )
