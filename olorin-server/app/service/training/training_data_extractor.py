@@ -183,7 +183,8 @@ class TrainingDataExtractor:
         label_start: datetime, label_end: datetime,
         period_name: str
     ) -> List[TrainingSample]:
-        """Query a single training period (features + labels)."""
+        """Query a single training period with stratified sampling."""
+        half_limit = self._config.data_sampling.max_sample_size // 2
         query = f"""
         WITH feature_period AS (
             SELECT
@@ -213,23 +214,33 @@ class TrainingDataExtractor:
             WHERE TX_DATETIME BETWEEN '{label_start.isoformat()}' AND '{label_end.isoformat()}'
               AND EMAIL IS NOT NULL
             GROUP BY EMAIL
+        ),
+        labeled_data AS (
+            SELECT
+                f.EMAIL,
+                f.tx_count,
+                f.total_gmv,
+                f.ip_count,
+                f.device_count,
+                f.merchant_count,
+                f.avg_tx_value,
+                f.std_tx_value,
+                f.first_tx,
+                f.last_tx,
+                f.merchant,
+                COALESCE(o.committed_fraud, 0) as is_fraud
+            FROM feature_period f
+            LEFT JOIN observation_period o ON f.EMAIL = o.EMAIL
+        ),
+        fraud_samples AS (
+            SELECT * FROM labeled_data WHERE is_fraud = 1 LIMIT {half_limit}
+        ),
+        legit_samples AS (
+            SELECT * FROM labeled_data WHERE is_fraud = 0 LIMIT {half_limit}
         )
-        SELECT
-            f.EMAIL,
-            f.tx_count,
-            f.total_gmv,
-            f.ip_count,
-            f.device_count,
-            f.merchant_count,
-            f.avg_tx_value,
-            f.std_tx_value,
-            f.first_tx,
-            f.last_tx,
-            f.merchant,
-            COALESCE(o.committed_fraud, 0) as is_fraud
-        FROM feature_period f
-        LEFT JOIN observation_period o ON f.EMAIL = o.EMAIL
-        LIMIT {self._config.data_sampling.max_sample_size}
+        SELECT * FROM fraud_samples
+        UNION ALL
+        SELECT * FROM legit_samples
         """
 
         results = await client.execute_query(query)

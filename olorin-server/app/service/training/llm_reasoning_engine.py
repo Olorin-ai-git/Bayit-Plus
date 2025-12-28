@@ -118,10 +118,17 @@ class LLMReasoningEngine:
         features: Dict[str, Any],
         merchant_name: Optional[str],
     ) -> str:
-        """Build the fraud analysis prompt from template and features - v4 compatible."""
+        """Build the fraud analysis prompt from template and features."""
         first_tx = features.get("first_tx_date", "N/A")
         last_tx = features.get("last_tx_date", "N/A")
         date_range = f"{first_tx} to {last_tx}"
+
+        # Format all sections for v1-v3 template compatibility
+        fraud_indicators = self._format_fraud_indicators(template, features)
+        velocity_analysis = self._format_velocity_analysis(template, features)
+        geographic_analysis = self._format_geographic_analysis(template, features)
+        device_analysis = self._format_device_analysis(template, features)
+        historical_patterns = self._format_historical_patterns(template, features)
 
         return template.fraud_analysis_prompt.format(
             entity_type=entity_type,
@@ -135,67 +142,125 @@ class LLMReasoningEngine:
             unique_merchants=features.get("merchant_count", 0),
             unique_devices=features.get("device_count", 0),
             unique_ips=features.get("ip_count", 0),
+            fraud_indicators=fraud_indicators,
+            velocity_analysis=velocity_analysis,
+            geographic_analysis=geographic_analysis,
+            device_analysis=device_analysis,
+            historical_patterns=historical_patterns,
         )
 
     def _format_fraud_indicators(
         self, template: Any, features: Dict[str, Any]
     ) -> str:
-        """Format fraud indicators section - v4 uses behavioral features only."""
-        return template.fraud_indicators_template.format(
-            total_transactions=features.get("total_transactions", 0),
-            total_gmv=features.get("total_gmv", 0),
-            avg_tx_value=features.get("avg_tx_value", 0),
-            std_tx_value=features.get("std_tx_value", 0),
-            device_count=features.get("device_count", 0),
-            ip_count=features.get("ip_count", 0),
-            merchant_count=features.get("merchant_count", 0),
-        )
+        """Format fraud indicators section - handles all template versions."""
+        # Provide all possible fields for v1-v15 template compatibility
+        format_args = {
+            # v4+ fields (behavioral)
+            "total_transactions": features.get("total_transactions", 0),
+            "total_gmv": features.get("total_gmv", 0),
+            "avg_tx_value": features.get("avg_tx_value", 0),
+            "std_tx_value": features.get("std_tx_value", 0),
+            "device_count": features.get("device_count", 0),
+            "ip_count": features.get("ip_count", 0),
+            "merchant_count": features.get("merchant_count", 0),
+            # v1-v3 fields (default to 0/N/A if not available)
+            "fraud_tx_count": features.get("fraud_tx_count", 0),
+            "fraud_ratio": features.get("fraud_ratio", 0),
+            "chargeback_count": features.get("chargeback_count", 0),
+            "declined_ratio": features.get("declined_ratio", 0),
+            "high_risk_country_count": features.get("high_risk_country_count", 0),
+        }
+        try:
+            return template.fraud_indicators_template.format(**format_args)
+        except KeyError as e:
+            # Handle any missing keys by using a fallback format
+            logger.debug(f"Missing field in fraud_indicators_template: {e}")
+            return f"Transactions: {format_args['total_transactions']}, GMV: ${format_args['total_gmv']}"
 
     def _format_velocity_analysis(
         self, template: Any, features: Dict[str, Any]
     ) -> str:
-        """Format velocity analysis section - v4 uses transaction patterns."""
-        return template.velocity_analysis_template.format(
-            total_transactions=features.get("total_transactions", 0),
-            avg_tx_value=features.get("avg_tx_value", 0),
-            std_tx_value=features.get("std_tx_value", 0),
-            first_tx_date=features.get("first_tx_date", "N/A"),
-            last_tx_date=features.get("last_tx_date", "N/A"),
-        )
+        """Format velocity analysis section - handles all template versions."""
+        format_args = {
+            "total_transactions": features.get("total_transactions", 0),
+            "avg_tx_value": features.get("avg_tx_value", 0),
+            "std_tx_value": features.get("std_tx_value", 0),
+            "first_tx_date": features.get("first_tx_date", "N/A"),
+            "last_tx_date": features.get("last_tx_date", "N/A"),
+            # v1-v3 additional fields
+            "tx_per_day_avg": features.get("tx_per_day_avg", 0),
+            "tx_per_day_max": features.get("tx_per_day_max", 0),
+            "min_time_between_tx": features.get("min_time_between_tx", "N/A"),
+            "frequency_anomaly_score": features.get("frequency_anomaly_score", 0),
+        }
+        try:
+            return template.velocity_analysis_template.format(**format_args)
+        except KeyError as e:
+            logger.debug(f"Missing field in velocity_analysis_template: {e}")
+            return f"Transactions: {format_args['total_transactions']}, Avg: ${format_args['avg_tx_value']}"
 
     def _format_geographic_analysis(
         self, template: Any, features: Dict[str, Any]
     ) -> str:
-        """Format geographic analysis section - v4 uses IP diversity only."""
+        """Format geographic analysis section - handles all template versions."""
         ip_count = features.get("ip_count", 0)
         total_tx = features.get("total_transactions", 1)
         ip_ratio = round(ip_count / total_tx, 2) if total_tx > 0 else 0
-        return template.geographic_analysis_template.format(
-            ip_count=ip_count,
-            ip_ratio=ip_ratio,
-        )
+        format_args = {
+            "ip_count": ip_count,
+            "ip_ratio": ip_ratio,
+            # v1-v3 additional fields
+            "country_count": features.get("country_count", 0),
+            "countries": features.get("countries", "N/A"),
+            "geo_dispersion_score": features.get("geo_dispersion_score", 0),
+            "impossible_travel": features.get("impossible_travel", "No"),
+        }
+        try:
+            return template.geographic_analysis_template.format(**format_args)
+        except KeyError as e:
+            logger.debug(f"Missing field in geographic_analysis_template: {e}")
+            return f"IPs: {ip_count}, IP Ratio: {ip_ratio}"
 
     def _format_device_analysis(self, template: Any, features: Dict[str, Any]) -> str:
-        """Format device analysis section - v4 uses device/IP counts."""
+        """Format device analysis section - handles all template versions."""
         device_count = features.get("device_count", 0)
         ip_count = features.get("ip_count", 0)
         multi_device = "Yes" if device_count > 1 or ip_count > 1 else "No"
-        return template.device_analysis_template.format(
-            device_count=device_count,
-            ip_count=ip_count,
-            multi_device=multi_device,
-        )
+        format_args = {
+            "device_count": device_count,
+            "ip_count": ip_count,
+            "multi_device": multi_device,
+            # v1-v3 additional fields
+            "device_sharing": features.get("device_sharing", "No"),
+            "emulator_detected": features.get("emulator_detected", "No"),
+            "browser_types": features.get("browser_types", "N/A"),
+            "os_types": features.get("os_types", "N/A"),
+        }
+        try:
+            return template.device_analysis_template.format(**format_args)
+        except KeyError as e:
+            logger.debug(f"Missing field in device_analysis_template: {e}")
+            return f"Devices: {device_count}, IPs: {ip_count}"
 
     def _format_historical_patterns(
         self, template: Any, features: Dict[str, Any]
     ) -> str:
-        """Format historical patterns section - v4 uses account age only."""
-        return template.historical_patterns_template.format(
-            first_tx_date=features.get("first_tx_date", "N/A"),
-            last_tx_date=features.get("last_tx_date", "N/A"),
-            total_transactions=features.get("total_transactions", 0),
-            merchant_count=features.get("merchant_count", 0),
-        )
+        """Format historical patterns section - handles all template versions."""
+        format_args = {
+            "first_tx_date": features.get("first_tx_date", "N/A"),
+            "last_tx_date": features.get("last_tx_date", "N/A"),
+            "total_transactions": features.get("total_transactions", 0),
+            "merchant_count": features.get("merchant_count", 0),
+            # v1-v3 additional fields
+            "account_age_days": features.get("account_age_days", 0),
+            "historical_fraud_rate": features.get("historical_fraud_rate", 0),
+            "previous_investigations": features.get("previous_investigations", 0),
+        }
+        try:
+            return template.historical_patterns_template.format(**format_args)
+        except KeyError as e:
+            logger.debug(f"Missing field in historical_patterns_template: {e}")
+            return f"First TX: {format_args['first_tx_date']}, Last TX: {format_args['last_tx_date']}"
 
     def _parse_response(self, response: str) -> FraudAssessment:
         """Parse LLM response into FraudAssessment."""
