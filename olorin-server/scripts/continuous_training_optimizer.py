@@ -49,9 +49,9 @@ class ParameterGridGenerator:
         self._llm_weight_max = float(os.getenv("CONTINUOUS_TRAINING_LLM_WEIGHT_MAX", "0.45"))
         self._llm_weight_step = float(os.getenv("CONTINUOUS_TRAINING_LLM_WEIGHT_STEP", "0.10"))
 
-        # Test all prompt versions for comprehensive optimization
-        self._prompt_versions = [f"v{i}" for i in range(1, 16)]  # v1-v15
-        self._baseline_scores = [0.20, 0.25, 0.30, 0.35]  # Multiple baselines
+        # Focus on best performing prompt versions for realistic training time
+        self._prompt_versions = ["v13", "v14", "v15"]  # Best 3 versions
+        self._baseline_scores = [0.25, 0.35]  # 2 baselines
 
     def generate(self) -> List[EvaluationConfig]:
         """Generate all parameter combinations."""
