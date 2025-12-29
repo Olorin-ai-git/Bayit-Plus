@@ -347,8 +347,19 @@ class UnifiedLoggingCore:
             logging.getLogger(logger_name).setLevel(logging.ERROR)
 
     def _setup_handlers(self):
-        """Setup logging handlers for configured outputs"""
+        """Setup logging handlers for configured outputs with configurable rotation."""
         self._handlers.clear()
+
+        # Get rotation config from settings or use defaults
+        max_file_size = self._config.get("max_file_size", 10 * 1024 * 1024)
+        backup_count = self._config.get("backup_count", 5)
+        rotation_type = self._config.get("rotation_type", "size")  # "size" or "time"
+        file_path = self._config.get("file_path", "logs/olorin_server.log")
+        json_file_path = self._config.get("json_file_path", "logs/olorin_server.json")
+        structured_file_path = self._config.get("structured_file_path", "logs/olorin_structured.log")
+
+        # Ensure logs directory exists
+        Path("logs").mkdir(exist_ok=True)
 
         for output in self._config["log_outputs"]:
             if output == LogOutput.CONSOLE:
@@ -358,14 +369,10 @@ class UnifiedLoggingCore:
                 self._handlers[output] = handler
 
             elif output == LogOutput.FILE:
-                handler = logging.handlers.RotatingFileHandler(
-                    "logs/olorin_server.log",
-                    maxBytes=10 * 1024 * 1024,  # 10MB
-                    backupCount=5,
-                    encoding="utf8",
+                handler = self._create_file_handler(
+                    file_path, max_file_size, backup_count, rotation_type
                 )
                 handler.setLevel(logging.INFO)
-                # Use plain formatter for file output (no colors)
                 file_formatter = logging.Formatter(
                     "%(asctime)s [%(levelname)s] %(name)s: %(message)s",
                     datefmt="%Y-%m-%d %H:%M:%S",
@@ -374,26 +381,35 @@ class UnifiedLoggingCore:
                 self._handlers[output] = handler
 
             elif output == LogOutput.JSON_FILE:
-                handler = logging.handlers.RotatingFileHandler(
-                    "logs/olorin_server.json",
-                    maxBytes=10 * 1024 * 1024,  # 10MB
-                    backupCount=5,
-                    encoding="utf8",
+                handler = self._create_file_handler(
+                    json_file_path, max_file_size, backup_count, rotation_type
                 )
                 handler.setLevel(logging.INFO)
                 handler.setFormatter(self._formatters[LogFormat.JSON])
                 self._handlers[output] = handler
 
             elif output == LogOutput.STRUCTURED_FILE:
-                handler = logging.handlers.RotatingFileHandler(
-                    "logs/olorin_structured.log",
-                    maxBytes=20 * 1024 * 1024,  # 20MB
-                    backupCount=10,
-                    encoding="utf8",
+                handler = self._create_file_handler(
+                    structured_file_path, max_file_size * 2, backup_count * 2, rotation_type
                 )
                 handler.setLevel(logging.DEBUG)
                 handler.setFormatter(self._formatters[LogFormat.STRUCTURED])
                 self._handlers[output] = handler
+
+    def _create_file_handler(
+        self, file_path: str, max_bytes: int, backup_count: int, rotation_type: str
+    ) -> logging.Handler:
+        """Create file handler with size-based or time-based rotation."""
+        if rotation_type == "time":
+            # Time-based rotation: rotate at midnight, keep backup_count days
+            return logging.handlers.TimedRotatingFileHandler(
+                file_path, when="midnight", backupCount=backup_count, encoding="utf8"
+            )
+        else:
+            # Size-based rotation (default)
+            return logging.handlers.RotatingFileHandler(
+                file_path, maxBytes=max_bytes, backupCount=backup_count, encoding="utf8"
+            )
 
     def _reconfigure_existing_loggers(self):
         """Reconfigure existing loggers with new settings"""

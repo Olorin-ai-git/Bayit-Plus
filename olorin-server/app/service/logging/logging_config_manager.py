@@ -41,6 +41,7 @@ class LoggingConfig:
     structured_file_path: str = "logs/olorin_structured.log"
     max_file_size: int = 10 * 1024 * 1024  # 10MB
     backup_count: int = 5
+    rotation_type: str = "size"  # "size" for size-based, "time" for daily rotation
 
     # Performance settings
     max_memory_usage: int = 50 * 1024 * 1024  # 50MB
@@ -170,6 +171,7 @@ class LoggingConfigManager:
             "OLORIN_LOG_STRUCTURED_FILE_PATH": "structured_file_path",
             "OLORIN_LOG_MAX_FILE_SIZE": "max_file_size",
             "OLORIN_LOG_BACKUP_COUNT": "backup_count",
+            "OLORIN_LOG_ROTATION_TYPE": "rotation_type",  # "size" or "time"
         }
 
         for env_var, config_key in env_mappings.items():
@@ -281,6 +283,9 @@ class LoggingConfigManager:
             "buffer_size": "buffer_size",
             "suppress_noisy": "suppress_noisy_loggers",
             "performance_monitoring": "performance_monitoring",
+            "rotation_type": "rotation_type",
+            "max_file_size": "max_file_size",
+            "backup_count": "backup_count",
         }
 
         for arg_name, config_key in arg_mappings.items():
@@ -435,6 +440,27 @@ class LoggingConfigManager:
             action="store_true",
             default=True,
             help="Enable logging performance monitoring (default: True)",
+        )
+
+        parser.add_argument(
+            "--rotation-type",
+            default="size",
+            choices=["size", "time"],
+            help="Log rotation type: 'size' for size-based, 'time' for daily rotation (default: size)",
+        )
+
+        parser.add_argument(
+            "--max-file-size",
+            type=int,
+            default=10 * 1024 * 1024,
+            help="Max log file size in bytes before rotation (default: 10MB)",
+        )
+
+        parser.add_argument(
+            "--backup-count",
+            type=int,
+            default=5,
+            help="Number of backup log files to keep (default: 5)",
         )
 
         return parser
