@@ -18,6 +18,7 @@ from app.schemas.monthly_analysis import (
     DailyAnalysisResult,
     MonthlyAnalysisResult,
 )
+from app.service.analytics.model_blindspot_analyzer import ModelBlindspotAnalyzer
 from app.service.investigation.auto_comparison import (
     run_auto_comparisons_for_top_entities,
 )
@@ -273,7 +274,23 @@ class MonthlyAnalysisOrchestrator:
             daily_results, started_at, is_final=True
         )
 
-        final_html_path = await generate_monthly_report(final_result)
+        # Run blindspot analysis for final report heatmap
+        blindspot_data = None
+        try:
+            logger.info("Running blindspot analysis for final report...")
+            analyzer = ModelBlindspotAnalyzer()
+            blindspot_data = await analyzer.analyze_blindspots(export_csv=True)
+            if blindspot_data.get("status") == "success":
+                logger.info(
+                    f"Blindspot analysis: {len(blindspot_data.get('blindspots', []))} "
+                    f"blindspots identified"
+                )
+            else:
+                blindspot_data = None
+        except Exception as e:
+            logger.warning(f"Could not run blindspot analysis: {e}")
+
+        final_html_path = await generate_monthly_report(final_result, blindspot_data)
         logger.info(f"\n{'='*60}")
         logger.info(f"MONTHLY ANALYSIS COMPLETE: {month_name} {year}")
         logger.info(f"Days processed: {len(daily_results)}")

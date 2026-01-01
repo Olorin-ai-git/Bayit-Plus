@@ -12,6 +12,7 @@ from app.service.analytics.experiment_manager import ExperimentManager
 from app.service.analytics.explainer import Explainer
 from app.service.analytics.latency_calculator import LatencyCalculator
 from app.service.analytics.metrics_calculator import MetricsCalculator
+from app.service.analytics.model_blindspot_analyzer import ModelBlindspotAnalyzer
 from app.service.analytics.pipeline_monitor import PipelineMonitor
 from app.service.analytics.precision_recall import PrecisionRecallCalculator
 from app.service.analytics.replay_engine import ReplayEngine
@@ -29,4 +30,5 @@ __all__ = [
     "ReplayEngine",
     "Explainer",
     "PipelineMonitor",
+    "ModelBlindspotAnalyzer",
 ]

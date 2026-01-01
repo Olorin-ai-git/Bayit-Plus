@@ -15,6 +15,7 @@ from typing import Any, Dict, List, Optional
 
 from app.config.threshold_config import get_risk_threshold
 from app.service.logging import get_bridge_logger
+from app.service.reporting.components.blindspot_heatmap import generate_blindspot_section
 from app.service.reporting.olorin_logo import OLORIN_FOOTER, get_olorin_header
 
 logger = get_bridge_logger(__name__)
@@ -381,6 +382,11 @@ def _collect_startup_data(
                             entity["risk_score"] = risk_score
                             break
 
+    # Include blindspot_data if available from app_state
+    blindspot_data = getattr(app_state, "blindspot_data", None)
+    if blindspot_data:
+        data["blindspot_data"] = blindspot_data
+
     return data
 
 
@@ -401,6 +407,9 @@ def _generate_html_report(data: Dict[str, Any]) -> str:
     auto_comparisons_section = _generate_auto_comparisons_section(data)
     confusion_table_section = _generate_confusion_table_section(data)
     comparison_metrics_section = _generate_comparison_metrics_section(data)
+    blindspot_section = generate_blindspot_section(
+        data.get("blindspot_data"), include_placeholder=True
+    )
     database_section = _generate_database_section(data)
     risk_entities_section = _generate_risk_entities_section(data)
     investigation_details_section = _generate_investigation_details_section(data)
@@ -597,6 +606,7 @@ def _generate_html_report(data: Dict[str, Any]) -> str:
             {auto_comparisons_section}
             {confusion_table_section}
             {comparison_metrics_section}
+            {blindspot_section}
             {database_section}
             {risk_entities_section}
             {investigation_details_section}

@@ -9,22 +9,27 @@ Feature: monthly-sequential-analysis
 
 from datetime import datetime
 from pathlib import Path
-from typing import Any
+from typing import Any, Optional
 
 from app.schemas.monthly_analysis import DailyAnalysisResult, MonthlyAnalysisResult
 from app.service.logging import get_bridge_logger
+from app.service.reporting.components.blindspot_heatmap import generate_blindspot_section
 
 logger = get_bridge_logger(__name__)
 
 ARTIFACTS_DIR = Path("artifacts")
 
 
-async def generate_monthly_report(result: MonthlyAnalysisResult) -> Path:
+async def generate_monthly_report(
+    result: MonthlyAnalysisResult,
+    blindspot_data: Optional[dict] = None,
+) -> Path:
     """
     Generate the monthly HTML report.
 
     Args:
         result: MonthlyAnalysisResult with aggregated metrics
+        blindspot_data: Optional blindspot analysis data from ModelBlindspotAnalyzer
 
     Returns:
         Path to the generated HTML file
@@ -34,14 +39,17 @@ async def generate_monthly_report(result: MonthlyAnalysisResult) -> Path:
     )
     output_path.parent.mkdir(parents=True, exist_ok=True)
 
-    html = _generate_html(result)
+    html = _generate_html(result, blindspot_data)
     output_path.write_text(html)
 
     logger.info(f"📊 Monthly report generated: {output_path}")
     return output_path
 
 
-def _generate_html(result: MonthlyAnalysisResult) -> str:
+def _generate_html(
+    result: MonthlyAnalysisResult,
+    blindspot_data: Optional[dict] = None,
+) -> str:
     """Generate the full HTML content."""
     timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     status_class = "complete" if result.is_complete else "in-progress"
@@ -63,6 +71,7 @@ def _generate_html(result: MonthlyAnalysisResult) -> str:
     overall_f1_pct = f"{result.overall_f1_score * 100:.2f}%" if hasattr(result, 'overall_f1_score') and result.overall_f1_score else "N/A"
 
     daily_breakdown_html = _generate_daily_breakdown(result.daily_results)
+    blindspot_section_html = generate_blindspot_section(blindspot_data, include_placeholder=True)
 
     return f"""<!DOCTYPE html>
 <html lang="en">
@@ -306,6 +315,8 @@ def _generate_html(result: MonthlyAnalysisResult) -> str:
         <div class="metric-pill"><strong>Overall Recall:</strong> {overall_recall_pct}</div>
         <div class="metric-pill"><strong>Overall F1 Score:</strong> {overall_f1_pct}</div>
     </div>
+
+    {blindspot_section_html}
 
     <div class="section-header">
         <h2>📆 Daily Breakdown</h2>
