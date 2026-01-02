@@ -1,154 +1,153 @@
 """
-Regenerate Monthly Report from Daily HTML Reports
+Regenerate Monthly Report from Database
 
-Parses existing daily HTML reports to extract metrics and regenerates
-the monthly aggregate report.
+Fetches investigation data from the database (same source as startup flow)
+and regenerates the monthly aggregate report.
 
 Usage:
     poetry run python scripts/regenerate_monthly_report.py --year 2024 --month 12
 """
 
 import asyncio
-import os
-import re
+import calendar
 import sys
+from collections import defaultdict
 from datetime import datetime
 from decimal import Decimal
 from pathlib import Path
+from typing import Any, Dict, List
 
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
 from app.schemas.monthly_analysis import DailyAnalysisResult, MonthlyAnalysisResult
 from app.service.analytics.model_blindspot_analyzer import ModelBlindspotAnalyzer
+from app.service.investigation.incremental_report import (
+    _extract_window_date_from_investigations,
+    _fetch_completed_auto_comp_investigations,
+)
 from app.service.logging import get_bridge_logger
 from app.service.reporting.monthly_report_generator import generate_monthly_report
 
 logger = get_bridge_logger(__name__)
 
-ARTIFACTS_DIR = Path("/Users/olorin/Documents/olorin/olorin-server/artifacts")
+
+def _safe_int(val: Any) -> int:
+    """Safely convert to int."""
+    try:
+        return int(val) if val else 0
+    except (ValueError, TypeError):
+        return 0
 
 
-def parse_daily_html(html_path: Path, day: int) -> DailyAnalysisResult:
-    """Parse a daily HTML report to extract metrics."""
-    content = html_path.read_text()
-
-    entities = 0
-    tp, fp, tn, fn = 0, 0, 0, 0
-    overall_tp, overall_fp, overall_tn, overall_fn = 0, 0, 0, 0
-    saved_gmv = Decimal("0")
-    lost_revenues = Decimal("0")
-
-    entities_match = re.search(r'(\d+)\s*high-risk entities analyzed', content)
-    if entities_match:
-        entities = int(entities_match.group(1))
-
-    review_section = re.search(
-        r'Review Precision.*?Overall Classification',
-        content, re.DOTALL
-    )
-    if review_section:
-        section = review_section.group(0)
-        tp_match = re.search(r'True Positives.*?(\d+)', section)
-        fp_match = re.search(r'False Positives.*?(\d+)', section)
-        tn_match = re.search(r'True Negatives.*?(\d+)', section)
-        fn_match = re.search(r'False Negatives.*?(\d+)', section)
-        if tp_match:
-            tp = int(tp_match.group(1))
-        if fp_match:
-            fp = int(fp_match.group(1))
-        if tn_match:
-            tn = int(tn_match.group(1))
-        if fn_match:
-            fn = int(fn_match.group(1))
-
-    overall_section = re.search(
-        r'Overall Classification.*?$',
-        content, re.DOTALL
-    )
-    if overall_section:
-        section = overall_section.group(0)
-        overall_metrics = re.findall(
-            r'(True Positives|False Positives|True Negatives|False Negatives).*?(\d+)',
-            section[:2000]
-        )
-        for label, value in overall_metrics:
-            if 'True Positives' in label:
-                overall_tp = int(value)
-            elif 'False Positives' in label:
-                overall_fp = int(value)
-            elif 'True Negatives' in label:
-                overall_tn = int(value)
-            elif 'False Negatives' in label:
-                overall_fn = int(value)
-
-    gmv_matches = re.findall(r'Saved Fraud GMV.*?\$([0-9,]+\.?\d*)', content)
-    for gmv in gmv_matches:
-        try:
-            saved_gmv += Decimal(gmv.replace(',', ''))
-        except Exception:
-            pass
-
-    rev_matches = re.findall(r'Lost Revenues.*?\$([0-9,]+\.?\d*)', content)
-    for rev in rev_matches:
-        try:
-            lost_revenues += Decimal(rev.replace(',', ''))
-        except Exception:
-            pass
-
-    return DailyAnalysisResult(
-        date=datetime(2024, 12, day),
-        day_of_month=day,
-        entities_discovered=entities,
-        tp=tp,
-        fp=fp,
-        tn=tn,
-        fn=fn,
-        overall_tp=overall_tp,
-        overall_fp=overall_fp,
-        overall_tn=overall_tn,
-        overall_fn=overall_fn,
-        saved_fraud_gmv=saved_gmv,
-        lost_revenues=lost_revenues,
-        net_value=saved_gmv - lost_revenues,
-        started_at=datetime.now(),
-        completed_at=datetime.now(),
-        duration_seconds=0.0,
-    )
+def _safe_float(val: Any) -> float:
+    """Safely convert to float."""
+    try:
+        return float(val) if val else 0.0
+    except (ValueError, TypeError):
+        return 0.0
 
 
 async def regenerate_monthly(year: int, month: int) -> Path:
-    """Regenerate monthly report from existing daily reports."""
-    import calendar
-
+    """Regenerate monthly report from database data."""
     month_name = calendar.month_name[month]
     days_in_month = calendar.monthrange(year, month)[1]
 
-    print(f"DEBUG: ARTIFACTS_DIR = {ARTIFACTS_DIR}")
-    print(f"DEBUG: ARTIFACTS_DIR exists = {ARTIFACTS_DIR.exists()}")
+    logger.info(f"Fetching investigations for {month_name} {year}...")
 
-    daily_results = []
+    # Fetch ALL completed investigations from database (same as startup flow)
+    all_investigations = _fetch_completed_auto_comp_investigations()
+    logger.info(f"Found {len(all_investigations)} total completed investigations")
 
-    for day in range(1, days_in_month + 1):
-        html_path = ARTIFACTS_DIR / f"startup_analysis_DAILY_{year}-{month:02d}-{day:02d}.html"
-        if day == 1:
-            print(f"DEBUG: Day 1 path = {html_path}")
-            print(f"DEBUG: Day 1 exists = {html_path.exists()}")
-        if html_path.exists():
-            logger.info(f"Parsing Day {day}: {html_path}")
-            result = parse_daily_html(html_path, day)
-            daily_results.append(result)
-            logger.info(
-                f"  Entities: {result.entities_discovered}, "
-                f"TP={result.tp}, FP={result.fp}, "
-                f"GMV=${result.saved_fraud_gmv:.2f}"
-            )
-        else:
-            logger.warning(f"Day {day} report not found: {html_path}")
+    # Group investigations by their window date (day of month)
+    by_day: Dict[int, List[Dict[str, Any]]] = defaultdict(list)
+    for inv in all_investigations:
+        inv_date = _extract_window_date_from_investigations([inv])
+        if inv_date and inv_date.year == year and inv_date.month == month:
+            by_day[inv_date.day].append(inv)
 
-    if not daily_results:
-        logger.error("No daily reports found!")
+    if not by_day:
+        logger.error(f"No investigations found for {month_name} {year}")
         return None
 
+    logger.info(f"Found {len(by_day)} days with investigations")
+
+    # Build daily results for each day that has data
+    daily_results: List[DailyAnalysisResult] = []
+    for day_num in sorted(by_day.keys()):
+        day_invs = by_day[day_num]
+
+        # Review Precision Metrics (flagged-only)
+        day_tp = sum(_safe_int(inv.get("confusion_matrix", {}).get("TP", 0)) for inv in day_invs)
+        day_fp = sum(_safe_int(inv.get("confusion_matrix", {}).get("FP", 0)) for inv in day_invs)
+        day_tn = sum(_safe_int(inv.get("confusion_matrix", {}).get("TN", 0)) for inv in day_invs)
+        day_fn = sum(_safe_int(inv.get("confusion_matrix", {}).get("FN", 0)) for inv in day_invs)
+
+        # Overall Classification Metrics (all transactions)
+        day_overall_tp = sum(
+            _safe_int(inv.get("confusion_matrix", {}).get("overall_TP", 0)) for inv in day_invs
+        )
+        day_overall_fp = sum(
+            _safe_int(inv.get("confusion_matrix", {}).get("overall_FP", 0)) for inv in day_invs
+        )
+        day_overall_tn = sum(
+            _safe_int(inv.get("confusion_matrix", {}).get("overall_TN", 0)) for inv in day_invs
+        )
+        day_overall_fn = sum(
+            _safe_int(inv.get("confusion_matrix", {}).get("overall_FN", 0)) for inv in day_invs
+        )
+
+        day_saved = Decimal(
+            str(
+                sum(
+                    _safe_float(inv.get("revenue_data", {}).get("saved_fraud_gmv", 0))
+                    for inv in day_invs
+                )
+            )
+        )
+        day_lost = Decimal(
+            str(
+                sum(
+                    _safe_float(inv.get("revenue_data", {}).get("lost_revenues", 0))
+                    for inv in day_invs
+                )
+            )
+        )
+        day_net = day_saved - day_lost
+
+        entities_discovered = len(day_invs)
+
+        day_date = datetime(year, month, day_num)
+        daily_results.append(
+            DailyAnalysisResult(
+                date=day_date,
+                day_of_month=day_num,
+                entities_expected=entities_discovered,
+                entities_discovered=entities_discovered,
+                tp=day_tp,
+                fp=day_fp,
+                tn=day_tn,
+                fn=day_fn,
+                overall_tp=day_overall_tp,
+                overall_fp=day_overall_fp,
+                overall_tn=day_overall_tn,
+                overall_fn=day_overall_fn,
+                saved_fraud_gmv=day_saved,
+                lost_revenues=day_lost,
+                net_value=day_net,
+                investigation_ids=[inv.get("investigation_id", "") for inv in day_invs],
+                started_at=datetime.now(),
+                completed_at=datetime.now(),
+                duration_seconds=0.0,
+            )
+        )
+
+        logger.info(
+            f"  Day {day_num}: {entities_discovered} entities, "
+            f"TP={day_tp}, FP={day_fp}, TN={day_tn}, FN={day_fn}, "
+            f"GMV=${day_saved:.2f}"
+        )
+
+    # Build monthly result with ALL days
     monthly_result = MonthlyAnalysisResult(
         year=year,
         month=month,
@@ -162,7 +161,7 @@ async def regenerate_monthly(year: int, month: int) -> Path:
 
     logger.info(f"\n{'='*60}")
     logger.info(f"MONTHLY AGGREGATION: {month_name} {year}")
-    logger.info(f"Days parsed: {len(daily_results)}")
+    logger.info(f"Days with data: {len(daily_results)}")
     logger.info(f"Total entities: {monthly_result.total_entities}")
     logger.info(
         f"Confusion: TP={monthly_result.total_tp}, FP={monthly_result.total_fp}, "
@@ -171,12 +170,6 @@ async def regenerate_monthly(year: int, month: int) -> Path:
     logger.info(f"Saved Fraud GMV: ${monthly_result.total_saved_fraud_gmv:.2f}")
     logger.info(f"Lost Revenues: ${monthly_result.total_lost_revenues:.2f}")
     logger.info(f"Net Value: ${monthly_result.total_net_value:.2f}")
-    if monthly_result.precision:
-        logger.info(f"Precision: {monthly_result.precision:.2%}")
-    if monthly_result.recall:
-        logger.info(f"Recall: {monthly_result.recall:.2%}")
-    if monthly_result.f1_score:
-        logger.info(f"F1 Score: {monthly_result.f1_score:.2%}")
     logger.info(f"{'='*60}")
 
     # Run blindspot analysis for the heatmap
@@ -184,7 +177,7 @@ async def regenerate_monthly(year: int, month: int) -> Path:
     blindspot_data = None
     try:
         analyzer = ModelBlindspotAnalyzer()
-        blindspot_data = await analyzer.analyze_blindspots(export_csv=True)
+        blindspot_data = await analyzer.analyze_blindspots(export_csv=False)
         if blindspot_data.get("status") == "success":
             logger.info(
                 f"Blindspot analysis complete: "
@@ -207,7 +200,7 @@ async def regenerate_monthly(year: int, month: int) -> Path:
 if __name__ == "__main__":
     import argparse
 
-    parser = argparse.ArgumentParser(description="Regenerate monthly report")
+    parser = argparse.ArgumentParser(description="Regenerate monthly report from database")
     parser.add_argument("--year", type=int, default=2024)
     parser.add_argument("--month", type=int, default=12)
     args = parser.parse_args()
