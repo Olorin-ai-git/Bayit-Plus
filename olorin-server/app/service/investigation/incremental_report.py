@@ -6,6 +6,7 @@ Fetches data directly from the database to ensure all confusion matrices are inc
 Also updates monthly totals as daily reports are generated.
 """
 
+import asyncio
 import calendar
 import json
 import logging
@@ -18,6 +19,34 @@ from pathlib import Path
 from typing import Any, Dict, List, Optional
 
 logger = logging.getLogger(__name__)
+
+
+def _run_blindspot_analysis() -> Optional[Dict[str, Any]]:
+    """
+    Run blindspot analysis for the heatmap section.
+
+    Returns the blindspot analysis data or None if analysis fails.
+    """
+    try:
+        from app.service.analytics.model_blindspot_analyzer import ModelBlindspotAnalyzer
+
+        analyzer = ModelBlindspotAnalyzer()
+        loop = asyncio.new_event_loop()
+        try:
+            result = loop.run_until_complete(analyzer.analyze_blindspots(export_csv=False))
+            if result.get("status") == "success":
+                logger.info(
+                    f"✅ Blindspot analysis: {len(result.get('matrix', {}).get('cells', []))} cells, "
+                    f"{len(result.get('blindspots', []))} blindspots identified"
+                )
+                return result
+            logger.warning(f"Blindspot analysis returned non-success status: {result.get('error')}")
+            return None
+        finally:
+            loop.close()
+    except Exception as e:
+        logger.warning(f"Could not run blindspot analysis: {e}")
+        return None
 
 # Global lock to prevent concurrent report generation
 _report_generation_lock = threading.Lock()
@@ -131,15 +160,18 @@ def generate_incremental_report(triggering_investigation_id: str) -> Optional[Pa
         # Ensure directory exists
         output_file.parent.mkdir(parents=True, exist_ok=True)
 
-        # Generate HTML
-        html = _generate_incremental_html(investigations)
+        # Run blindspot analysis for heatmap
+        blindspot_data = _run_blindspot_analysis()
+
+        # Generate HTML with blindspot data
+        html = _generate_incremental_html(investigations, blindspot_data)
         output_file.write_text(html)
 
         logger.info(f"✅ Incremental report updated: {output_file}")
 
         # Update the monthly report with this day's data
         if window_date:
-            _update_monthly_report_from_daily(window_date, investigations)
+            _update_monthly_report_from_daily(window_date, investigations, blindspot_data)
 
         return output_file
 
@@ -151,7 +183,9 @@ def generate_incremental_report(triggering_investigation_id: str) -> Optional[Pa
 
 
 def _update_monthly_report_from_daily(
-    window_date: datetime, investigations: List[Dict[str, Any]]
+    window_date: datetime,
+    investigations: List[Dict[str, Any]],
+    blindspot_data: Optional[Dict[str, Any]] = None,
 ) -> None:
     """
     Update the monthly report with aggregated data from ALL daily reports.
@@ -163,7 +197,6 @@ def _update_monthly_report_from_daily(
     try:
         from app.schemas.monthly_analysis import DailyAnalysisResult, MonthlyAnalysisResult
         from app.service.reporting.monthly_report_generator import generate_monthly_report
-        import asyncio
         from collections import defaultdict
 
         year = window_date.year
@@ -257,7 +290,7 @@ def _update_monthly_report_from_daily(
         # Generate the monthly report (async call in sync context)
         loop = asyncio.new_event_loop()
         try:
-            loop.run_until_complete(generate_monthly_report(monthly_result))
+            loop.run_until_complete(generate_monthly_report(monthly_result, blindspot_data))
             days_with_data = len(daily_results)
             total_invs = sum(len(by_day[d]) for d in by_day)
             logger.info(
@@ -619,9 +652,13 @@ def _generate_selector_section_html(
     """
 
 
-def _generate_incremental_html(investigations: List[Dict[str, Any]]) -> str:
+def _generate_incremental_html(
+    investigations: List[Dict[str, Any]],
+    blindspot_data: Optional[Dict[str, Any]] = None,
+) -> str:
     """Generate the incremental HTML report with full financial analysis."""
-    
+    from app.service.reporting.components.blindspot_heatmap import generate_blindspot_section
+
     # Extract selector metadata from first investigation (all share the same metadata)
     selector_metadata = None
     if investigations and len(investigations) > 0:
@@ -916,7 +953,16 @@ def _generate_incremental_html(investigations: List[Dict[str, Any]]) -> str:
         </div>
     </div>
 """
-    
+
+    # Add blindspot heatmap section
+    blindspot_html = generate_blindspot_section(blindspot_data, include_placeholder=True)
+    if blindspot_html:
+        html += f"""
+    <section id="blindspot-analysis" style="margin-top: 40px;">
+        {blindspot_html}
+    </section>
+"""
+
     html += """
     <script>
         function toggleSelector() {
