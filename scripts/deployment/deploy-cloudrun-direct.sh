@@ -16,7 +16,7 @@ NC='\033[0m' # No Color
 
 # Configuration
 SERVICE_NAME="olorin-backend"
-REGION="us-central1"
+REGION="us-east1"
 PORT="8090"
 PROJECT_ID="olorin-ai"
 SOURCE_DIR="./olorin-server"
