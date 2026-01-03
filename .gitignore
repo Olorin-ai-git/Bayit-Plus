@@ -147,6 +147,7 @@ ADMIN_CREDENTIALS.txt
 *secret.yaml
 *.key
 *.pem
+*.p8
 *.p12
 *.jks
 *.pfx

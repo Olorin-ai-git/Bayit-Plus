@@ -1,52 +1,93 @@
 #!/usr/bin/env python3
-"""Test new Snowflake OAuth token."""
+"""
+Test Snowflake OAuth token connection.
+
+Required environment variables:
+  SNOWFLAKE_ACCOUNT - Snowflake account identifier
+  SNOWFLAKE_USER - Snowflake username
+  SNOWFLAKE_OAUTH_TOKEN - OAuth/PAT token for authentication
+  SNOWFLAKE_ROLE - Role to use (default: ANALYST)
+  SNOWFLAKE_WAREHOUSE - Warehouse to use (default: COMPUTE_WH)
+  SNOWFLAKE_DATABASE - Database to use (default: DBT)
+  SNOWFLAKE_SCHEMA - Schema to use (default: DBT_PROD)
+"""
+
+import os
+import sys
 
 import snowflake.connector
 
-TOKEN = "eyJraWQiOiI0MDk2MTEwNTM0MjkwMjIiLCJhbGciOiJFUzI1NiJ9.eyJwIjoiMjQ0MTQ3OTI6NjI1MDE2ODcwOSIsImlzcyI6IlNGOjEwMTYiLCJleHAiOjE3NjM4MDg3NzR9.iTuYRtUNd5oHPFSIOzCuuOBZBhBF47MgBQj9wolWxLGKxkQZcjw6RmqGQqXYVK0w8ajakLyCIZNxvrjTm-7vrw"
 
-print("🔗 Testing new OAuth token...")
-print(f"Token: {TOKEN[:50]}...{TOKEN[-20:]}")
+def get_config():
+    """Load Snowflake configuration from environment variables."""
+    required_vars = ["SNOWFLAKE_ACCOUNT", "SNOWFLAKE_USER", "SNOWFLAKE_OAUTH_TOKEN"]
+    missing = [var for var in required_vars if not os.environ.get(var)]
 
-try:
-    conn = snowflake.connector.connect(
-        account="ETMZUSX-LW98386",
-        user="ZIV@NSURE.AI",
-        authenticator="oauth",
-        token=TOKEN,
-        database="DBT",
-        schema="DBT_PROD",
-        warehouse="COMPUTE_WH",
-        role="ANALYST",
-        disable_ocsp_checks=True,  # Replaces deprecated insecure_mode
-        ocsp_response_cache_filename=None,
-        client_session_keep_alive=True,
-    )
+    if missing:
+        print(f"❌ ERROR: Missing required environment variables: {', '.join(missing)}")
+        print("\nPlease set the following environment variables:")
+        print("  export SNOWFLAKE_ACCOUNT='your-account'")
+        print("  export SNOWFLAKE_USER='your-user@domain.com'")
+        print("  export SNOWFLAKE_OAUTH_TOKEN='your-oauth-token'")
+        sys.exit(1)
 
-    print("✅ Connection successful!")
+    return {
+        "account": os.environ["SNOWFLAKE_ACCOUNT"],
+        "user": os.environ["SNOWFLAKE_USER"],
+        "token": os.environ["SNOWFLAKE_OAUTH_TOKEN"],
+        "role": os.environ.get("SNOWFLAKE_ROLE", "ANALYST"),
+        "warehouse": os.environ.get("SNOWFLAKE_WAREHOUSE", "COMPUTE_WH"),
+        "database": os.environ.get("SNOWFLAKE_DATABASE", "DBT"),
+        "schema": os.environ.get("SNOWFLAKE_SCHEMA", "DBT_PROD"),
+    }
 
-    cursor = conn.cursor()
-    cursor.execute(
-        "SELECT CURRENT_VERSION() as version, CURRENT_DATABASE() as db, CURRENT_SCHEMA() as schema"
-    )
-    result = cursor.fetchone()
 
-    print(f"✅ Query successful!")
-    print(f"   Version: {result[0]}")
-    print(f"   Database: {result[1]}")
-    print(f"   Schema: {result[2]}")
+def main():
+    """Test Snowflake OAuth token connection."""
+    config = get_config()
 
-    # Test table access
-    cursor.execute("SELECT COUNT(*) FROM DBT.DBT_PROD.TXS")
-    count = cursor.fetchone()[0]
-    print(f"✅ Table access successful! Row count: {count:,}")
+    print("🔗 Testing OAuth token connection...")
+    print(f"   Account: {config['account']}")
+    print(f"   User: {config['user']}")
+    print(f"   Token: {config['token'][:20]}...{config['token'][-10:]}")
 
-    cursor.close()
-    conn.close()
+    try:
+        conn = snowflake.connector.connect(
+            account=config["account"],
+            user=config["user"],
+            authenticator="oauth",
+            token=config["token"],
+            database=config["database"],
+            schema=config["schema"],
+            warehouse=config["warehouse"],
+            role=config["role"],
+            disable_ocsp_checks=True,
+            ocsp_response_cache_filename=None,
+            client_session_keep_alive=True,
+        )
 
-    print("\n✅ ALL TESTS PASSED! New token is valid!")
+        print("✅ Connection successful!")
 
-except Exception as e:
-    print(f"❌ ERROR: {e}")
-    print(f"   Type: {type(e).__name__}")
-    exit(1)
+        cursor = conn.cursor()
+        cursor.execute(
+            "SELECT CURRENT_VERSION(), CURRENT_DATABASE(), CURRENT_SCHEMA()"
+        )
+        result = cursor.fetchone()
+
+        print(f"   Version: {result[0]}")
+        print(f"   Database: {result[1]}")
+        print(f"   Schema: {result[2]}")
+
+        cursor.close()
+        conn.close()
+
+        print("\n✅ ALL TESTS PASSED! OAuth token is valid!")
+
+    except Exception as e:
+        print(f"❌ ERROR: {e}")
+        print(f"   Type: {type(e).__name__}")
+        sys.exit(1)
+
+
+if __name__ == "__main__":
+    main()

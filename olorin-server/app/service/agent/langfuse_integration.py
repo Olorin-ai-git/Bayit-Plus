@@ -3,8 +3,16 @@ Langfuse Integration Module - Integrates Langfuse tracing with existing agents.
 
 This module provides integration points for Langfuse tracing throughout
 the Olorin investigation system.
+
+Required environment variables:
+  LANGFUSE_SECRET_KEY - Langfuse secret key
+  LANGFUSE_PUBLIC_KEY - Langfuse public key
+  LANGFUSE_HOST - Langfuse host URL (default: https://us.cloud.langfuse.com)
+  LANGFUSE_RELEASE - Release version tag (default: olorin-1.0.0)
+  LANGFUSE_DEBUG - Enable debug mode (default: false)
 """
 
+import os
 from functools import wraps
 from typing import Any, Dict, Optional
 
@@ -24,18 +32,32 @@ def initialize_langfuse():
     Initialize Langfuse tracing with Olorin-specific configuration.
 
     This should be called once at application startup.
+    Requires LANGFUSE_SECRET_KEY and LANGFUSE_PUBLIC_KEY environment variables.
     """
+    secret_key = os.environ.get("LANGFUSE_SECRET_KEY")
+    public_key = os.environ.get("LANGFUSE_PUBLIC_KEY")
+
+    if not secret_key or not public_key:
+        logger.warning(
+            "Langfuse tracing disabled: LANGFUSE_SECRET_KEY and/or "
+            "LANGFUSE_PUBLIC_KEY environment variables not set"
+        )
+        return None
+
+    host = os.environ.get("LANGFUSE_HOST", "https://us.cloud.langfuse.com")
+    release = os.environ.get("LANGFUSE_RELEASE", "olorin-1.0.0")
+    debug = os.environ.get("LANGFUSE_DEBUG", "false").lower() == "true"
+
     try:
-        # Initialize with provided credentials
         tracer = init_langfuse_tracing(
-            secret_key="sk-lf-dae99134-c97c-41ef-b98a-b88861d66fdd",
-            public_key="pk-lf-0c1b17de-e7c1-43a1-bc05-e15231c5d00a",
-            host="https://us.cloud.langfuse.com",
-            release="olorin-1.0.0",
-            debug=False,
+            secret_key=secret_key,
+            public_key=public_key,
+            host=host,
+            release=release,
+            debug=debug,
         )
 
-        logger.info("✅ Langfuse tracing initialized successfully")
+        logger.info("Langfuse tracing initialized successfully")
         return tracer
 
     except Exception as e:
