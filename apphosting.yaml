@@ -33,8 +33,8 @@ runConfig:
       value: "INFO"
     
     # CORS Configuration
-    - variable: CORS_ORIGINS
-      value: "https://olorin-ai.web.app,https://olorin-ai.firebaseapp.com"
+    - variable: ALLOWED_ORIGINS
+      value: "https://olorin-ai.web.app,https://olorin-ai.firebaseapp.com,https://olorin-ai-fraud.web.app,https://fraud.olorin.ai"
     
     # Database Configuration
     - variable: DB_HOST
