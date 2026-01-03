@@ -50,7 +50,7 @@
     },
     {
       "target": "olorin-frontend",
-      "public": "olorin-front/build",
+      "public": "olorin-front/dist/shell",
       "ignore": [
         "firebase.json",
         "**/.*",
@@ -63,21 +63,11 @@
       ],
       "rewrites": [
         {
-          "source": "/api/**",
-          "function": "api"
-        },
-        {
           "source": "**",
           "destination": "/index.html"
         }
       ],
-      "redirects": [
-        {
-          "source": "/home",
-          "destination": "/",
-          "type": 301
-        }
-      ],
+      "redirects": [],
       "headers": [
         {
           "source": "/",

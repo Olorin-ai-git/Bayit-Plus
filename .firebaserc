@@ -1,10 +1,15 @@
 {
-  "projects": {},
+  "projects": {
+    "default": "olorin-ai"
+  },
   "targets": {
     "olorin-ai": {
       "hosting": {
         "olorin-web-portal": [
           "olorin-ai"
+        ],
+        "olorin-frontend": [
+          "olorin-ai-fraud"
         ]
       }
     }
