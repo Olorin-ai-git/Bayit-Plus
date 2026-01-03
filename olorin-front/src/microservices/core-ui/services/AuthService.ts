@@ -109,32 +109,9 @@ class AuthServiceClass {
     }
   }
 
-  // Mock implementation for development
-  async mockLogin(email: string, password: string): Promise<LoginResponse> {
-    // Simulate API delay
-    await new Promise(resolve => setTimeout(resolve, 1000));
-
-    if (password === 'password') {
-      return {
-        token: 'mock-jwt-token-' + Date.now(),
-        user: {
-          id: '1',
-          email,
-          name: email.split('@')[0],
-          role: 'investigator',
-          avatar: null,
-          permissions: ['read', 'write', 'investigate'],
-          lastLogin: new Date().toISOString(),
-          createdAt: new Date().toISOString(),
-          updatedAt: new Date().toISOString(),
-        },
-      };
-    }
-
-    throw new Error('Invalid credentials');
-  }
-
-  // Check if we're in development mode and backend is not available
+  /**
+   * Check backend availability for health monitoring
+   */
   async checkBackendAvailability(): Promise<boolean> {
     try {
       const response = await axios.get(`${this.baseURL}/api/health`, { timeout: 3000 });
@@ -142,19 +119,6 @@ class AuthServiceClass {
     } catch (error) {
       return false;
     }
-  }
-
-  // Auto-switch to mock mode if backend is not available in development
-  async smartLogin(email: string, password: string): Promise<LoginResponse> {
-    if (env.nodeEnv === 'development') {
-      const isBackendAvailable = await this.checkBackendAvailability();
-      if (!isBackendAvailable) {
-        console.warn('Backend not available, using mock authentication');
-        return this.mockLogin(email, password);
-      }
-    }
-
-    return this.login(email, password);
   }
 }
 

@@ -98,6 +98,8 @@ run_build() {
     export NODE_ENV=production
     export REACT_APP_ENV=$DEPLOY_ENV
     export BUILD_ENV=$DEPLOY_ENV
+    # Firebase Authentication (Feature: firebase-rbac)
+    export REACT_APP_AUTH_ENABLE_GOOGLE_SIGNIN=true
 
     # Run production build
     ./scripts/build-production.sh

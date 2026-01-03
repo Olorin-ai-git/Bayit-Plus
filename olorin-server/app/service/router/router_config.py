@@ -40,8 +40,10 @@ def configure_routes(app: FastAPI, config: SvcSettings) -> None:
 def _include_core_routers(app: FastAPI) -> None:
     """Include all core application routers."""
     from app.router import agent_router, api_router
+    from app.router.admin_role_router import router as admin_role_router
     from app.router.auth_router import router as auth_router
     from app.router.autonomous_investigation_router import router as structured_router
+    from app.router.firebase_auth_router import router as firebase_auth_router
     from app.router.flow_progression_router import router as flow_progression_router
     from app.router.health_router import router as health_router
     from app.router.hybrid_graph_investigations_router import hybrid_graph_router
@@ -72,6 +74,8 @@ def _include_core_routers(app: FastAPI) -> None:
     # Include routers in order of dependency
     app.include_router(health_router)  # Enhanced health endpoints (no auth required)
     app.include_router(auth_router)  # Authentication routes (no auth required)
+    app.include_router(firebase_auth_router)  # Firebase auth (no auth required)
+    app.include_router(admin_role_router)  # Admin role management (requires admin)
     app.include_router(smoke_test_router)  # Smoke test endpoints (no auth required)
     app.include_router(example.router)
     app.include_router(agent_router.router)

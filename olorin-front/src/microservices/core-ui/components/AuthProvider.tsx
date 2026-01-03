@@ -1,113 +1,107 @@
-import React, { createContext, useContext, useEffect, useState, ReactNode } from 'react';
+import React, { createContext, useContext, useEffect, useState, ReactNode, useCallback } from 'react';
+import { FirebaseAuthService } from '../services/FirebaseAuthService';
 import { AuthService } from '../services/AuthService';
-import { User, AuthContextType } from '../types/auth';
+import type { UserRole } from '@shared/types/core/user.types';
+import type { AuthenticatedUser, FirebaseAuthContextType } from '../types/firebase-auth.types';
 
-const AuthContext = createContext<AuthContextType | undefined>(undefined);
+const AuthContext = createContext<FirebaseAuthContextType | undefined>(undefined);
 
 interface AuthProviderProps {
   children: ReactNode;
 }
 
 export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
-  const [user, setUser] = useState<User | null>(null);
+  const [user, setUser] = useState<AuthenticatedUser | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [error, setError] = useState<Error | null>(null);
 
   useEffect(() => {
-    const initAuth = async () => {
-      try {
-        const token = localStorage.getItem('auth_token');
-        if (token) {
-          const userData = await AuthService.validateToken(token);
-          if (userData) {
-            setUser(userData);
-            setIsAuthenticated(true);
-          } else {
-            localStorage.removeItem('auth_token');
-          }
-        }
-      } catch (error) {
-        console.error('Auth initialization failed:', error);
-        localStorage.removeItem('auth_token');
-      } finally {
-        setIsLoading(false);
-      }
-    };
+    const unsubscribe = FirebaseAuthService.onAuthStateChanged((authUser) => {
+      setUser(authUser);
+      setIsAuthenticated(!!authUser);
+      setIsLoading(false);
+    });
 
-    initAuth();
+    return () => unsubscribe();
   }, []);
 
-  const login = async (email: string, password: string): Promise<void> => {
+  const signInWithGoogle = useCallback(async (): Promise<void> => {
     try {
       setIsLoading(true);
-      const response = await AuthService.login(email, password);
-
-      if (response.token && response.user) {
-        localStorage.setItem('auth_token', response.token);
-        setUser(response.user);
-        setIsAuthenticated(true);
-      } else {
-        throw new Error('Invalid login response');
-      }
-    } catch (error) {
-      console.error('Login failed:', error);
-      throw error;
+      setError(null);
+      const authUser = await FirebaseAuthService.signInWithGoogle();
+      setUser(authUser);
+      setIsAuthenticated(true);
+    } catch (err) {
+      setError(err instanceof Error ? err : new Error('Sign in failed'));
+      throw err;
     } finally {
       setIsLoading(false);
     }
-  };
+  }, []);
 
-  const logout = async (): Promise<void> => {
+  const signInWithEmailPassword = useCallback(async (
+    email: string,
+    password: string
+  ): Promise<void> => {
     try {
-      await AuthService.logout();
-    } catch (error) {
-      console.error('Logout error:', error);
+      setIsLoading(true);
+      setError(null);
+      const response = await AuthService.login(email, password);
+      if (response.token && response.user) {
+        localStorage.setItem('auth_token', response.token);
+      }
+    } catch (err) {
+      setError(err instanceof Error ? err : new Error('Login failed'));
+      throw err;
     } finally {
+      setIsLoading(false);
+    }
+  }, []);
+
+  const signOut = useCallback(async (): Promise<void> => {
+    try {
+      await FirebaseAuthService.signOut();
       localStorage.removeItem('auth_token');
       setUser(null);
       setIsAuthenticated(false);
+    } catch (err) {
+      console.error('Logout error:', err);
     }
-  };
+  }, []);
 
-  const refreshToken = async (): Promise<void> => {
+  const refreshToken = useCallback(async (): Promise<string | null> => {
     try {
-      const token = localStorage.getItem('auth_token');
-      if (!token) {
-        throw new Error('No token available');
-      }
-
-      const response = await AuthService.refreshToken(token);
-      if (response.token) {
-        localStorage.setItem('auth_token', response.token);
-        if (response.user) {
-          setUser(response.user);
-        }
-      }
-    } catch (error) {
-      console.error('Token refresh failed:', error);
-      await logout();
-      throw error;
+      return await FirebaseAuthService.getIdToken(true);
+    } catch (err) {
+      console.error('Token refresh failed:', err);
+      return null;
     }
-  };
+  }, []);
 
-  const updateProfile = async (updates: Partial<User>): Promise<void> => {
-    try {
-      const updatedUser = await AuthService.updateProfile(updates);
-      setUser(updatedUser);
-    } catch (error) {
-      console.error('Profile update failed:', error);
-      throw error;
-    }
-  };
+  const hasPermission = useCallback((permission: string): boolean => {
+    if (!user) return false;
+    return user.permissions.includes(permission);
+  }, [user]);
 
-  const value: AuthContextType = {
+  const hasRole = useCallback((role: UserRole | UserRole[]): boolean => {
+    if (!user) return false;
+    const roles = Array.isArray(role) ? role : [role];
+    return roles.includes(user.role);
+  }, [user]);
+
+  const value: FirebaseAuthContextType = {
     user,
     isLoading,
     isAuthenticated,
-    login,
-    logout,
+    error,
+    signInWithGoogle,
+    signInWithEmailPassword,
+    signOut,
     refreshToken,
-    updateProfile
+    hasPermission,
+    hasRole,
   };
 
   return (
@@ -117,7 +111,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   );
 };
 
-export const useAuth = (): AuthContextType => {
+export const useAuth = (): FirebaseAuthContextType => {
   const context = useContext(AuthContext);
   if (context === undefined) {
     throw new Error('useAuth must be used within an AuthProvider');
