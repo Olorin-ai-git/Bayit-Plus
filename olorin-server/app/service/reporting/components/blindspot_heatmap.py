@@ -7,9 +7,14 @@ Used in daily and monthly reports to visualize nSure model blind spots.
 Feature: blindspot-analysis
 """
 
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, Optional
 
 from app.service.logging import get_bridge_logger
+from app.service.reporting.components.blindspot_gmv_chart import generate_gmv_bar_chart
+from app.service.reporting.components.blindspot_summary import (
+    generate_blindspots_list,
+    generate_summary_cards,
+)
 
 logger = get_bridge_logger(__name__)
 
@@ -58,219 +63,134 @@ def _generate_placeholder_section() -> str:
 
 
 def _generate_heatmap_section(data: Dict[str, Any]) -> str:
-    """Generate the full heatmap section with data."""
+    """Generate the blindspot analysis section with column chart (no heatmap)."""
     training_info = data.get("training_info", {})
-    matrix = data.get("matrix", {})
-    summary = data.get("summary", {})
+    approved_summary = data.get("summary", {})
     blindspots = data.get("blindspots", [])
+    gmv_by_score = data.get("gmv_by_score", [])
+    sql_queries = data.get("sql_queries", {})
+
+    # Get all transactions data for toggle (this is the default view)
+    all_tx_data = data.get("all_transactions", {})
+    all_tx_gmv_by_score = all_tx_data.get("gmv_by_score", []) if all_tx_data else None
+    all_tx_summary = all_tx_data.get("summary", {}) if all_tx_data else {}
 
     threshold = training_info.get("olorin_threshold", "N/A")
     prompt_version = training_info.get("prompt_version", "N/A")
 
-    heatmap_html = _generate_heatmap_grid(matrix)
-    blindspots_html = _generate_blindspots_list(blindspots)
-    summary_html = _generate_summary_cards(summary)
+    bar_chart_html = generate_gmv_bar_chart(gmv_by_score, threshold, all_tx_gmv_by_score)
+    blindspots_html = generate_blindspots_list(blindspots)
+
+    # Generate BOTH summary sections for toggle
+    all_tx_summary_html = generate_summary_cards(all_tx_summary) if all_tx_summary else ""
+    approved_summary_html = generate_summary_cards(approved_summary)
+    sql_section_html = _generate_sql_section(sql_queries)
+
+    # Toggleable summary sections (All TX is default)
+    summary_section = f"""
+        <div id="summary-all" style="display: block;">
+            {all_tx_summary_html}
+        </div>
+        <div id="summary-approved" style="display: none;">
+            {approved_summary_html}
+        </div>
+    """ if all_tx_summary else approved_summary_html
 
     return f"""
     <div style="margin-top: 40px;">
         <h2 style="color: var(--accent); margin-bottom: 10px;">
-            🎯 nSure Model Blindspot Analysis
+            🎯 Olorin vs nSure Performance Analysis
         </h2>
         <p style="color: var(--muted); font-size: 0.9rem; margin-bottom: 20px;">
-            2D distribution of confusion matrix metrics across GMV ranges and MODEL_SCORE bins.
+            Confusion matrix comparison across MODEL_SCORE bins.
             <br>Threshold: <strong>{threshold}</strong> | Prompt Version: <strong>{prompt_version}</strong>
         </p>
 
-        {summary_html}
+        {summary_section}
 
-        <div style="background: var(--card); border: 1px solid var(--border);
-                    border-radius: 12px; padding: 20px; margin: 20px 0; overflow-x: auto;">
-            <h3 style="color: var(--text); margin-bottom: 15px; font-size: 1rem;">
-                Fraud Detection Heatmap: Blind Spots (Red) vs Caught (Green)
-            </h3>
-            {heatmap_html}
-            <div style="margin-top: 15px; display: flex; justify-content: center; gap: 15px; flex-wrap: wrap;">
-                <span style="font-size: 0.8rem; color: var(--muted);">
-                    <span style="display: inline-block; width: 20px; height: 12px;
-                                 background: #991b1b; border-radius: 2px; margin-right: 5px;"></span>
-                    Severe Blind Spot
-                </span>
-                <span style="font-size: 0.8rem; color: var(--muted);">
-                    <span style="display: inline-block; width: 20px; height: 12px;
-                                 background: #ef4444; border-radius: 2px; margin-right: 5px;"></span>
-                    Blind Spot (FN)
-                </span>
-                <span style="font-size: 0.8rem; color: var(--muted);">
-                    <span style="display: inline-block; width: 20px; height: 12px;
-                                 background: #22c55e; border-radius: 2px; margin-right: 5px;"></span>
-                    Caught (TP)
-                </span>
-                <span style="font-size: 0.8rem; color: var(--muted);">
-                    <span style="display: inline-block; width: 20px; height: 12px;
-                                 background: #1e293b; border-radius: 2px; margin-right: 5px;"></span>
-                    No Fraud
-                </span>
-            </div>
-        </div>
+        {bar_chart_html}
 
         {blindspots_html}
+
+        {sql_section_html}
     </div>
     """
 
 
-def _generate_heatmap_grid(matrix: Dict[str, Any]) -> str:
-    """Generate the heatmap grid HTML."""
-    score_bins = matrix.get("score_bins", [])
-    gmv_bins = matrix.get("gmv_bins", [])
-    cells = matrix.get("cells", [])
-
-    if not score_bins or not gmv_bins:
-        return "<p style='color: var(--muted);'>No heatmap data available.</p>"
-
-    cell_map = {(c["score_bin"], c["gmv_bin"]): c for c in cells}
-
-    # Find max FN count for color scaling
-    max_fn = max((c.get("fn", 0) for c in cells), default=1) or 1
-
-    header_row = "<div style='font-size: 0.7rem; color: var(--muted);'></div>"
-    for sb in score_bins:
-        header_row += f"<div style='font-size: 0.7rem; color: var(--muted); text-align: center;'>{sb:.2f}</div>"
-
-    rows_html = f"<div style='display: grid; grid-template-columns: 80px repeat({len(score_bins)}, 1fr); gap: 2px;'>{header_row}"
-
-    for gmv_bin in gmv_bins:
-        rows_html += f"<div style='font-size: 0.75rem; color: var(--muted); display: flex; align-items: center;'>${gmv_bin}</div>"
-        for score_bin in score_bins:
-            cell = cell_map.get((score_bin, gmv_bin))
-            if cell:
-                fn = cell.get("fn", 0)
-                tp = cell.get("tp", 0)
-                fp = cell.get("fp", 0)
-                tn = cell.get("tn", 0)
-                total = cell.get("total_transactions", 0)
-
-                # Color based on whether this is a blindspot (has FN) or caught zone (has TP)
-                if fn > 0:
-                    # Blind spot zone - color by FN intensity
-                    intensity = min(fn / max_fn, 1.0)
-                    color = _get_blindspot_color(intensity)
-                    label = f"BLIND SPOT: {fn:,} frauds missed"
-                elif tp > 0:
-                    # Caught zone - green shades by precision
-                    precision = tp / (tp + fp) if (tp + fp) > 0 else 0
-                    color = _get_caught_color(precision)
-                    label = f"CAUGHT: {tp:,} frauds, Precision: {precision*100:.1f}%"
-                else:
-                    color = "#1e293b"  # Empty/no fraud
-                    label = f"No fraud in this bin"
-
-                title = f"{label} | TP:{tp:,} FP:{fp:,} FN:{fn:,} TN:{tn:,} | Total:{total:,}"
-                rows_html += f"<div style='aspect-ratio: 1; background: {color}; border-radius: 3px; cursor: help;' title='{title}'></div>"
-            else:
-                rows_html += "<div style='aspect-ratio: 1; background: var(--border); border-radius: 3px;'></div>"
-
-    rows_html += "</div>"
-    rows_html += "<p style='text-align: center; color: var(--muted); font-size: 0.8rem; margin-top: 10px;'>MODEL_SCORE (nSure) →</p>"
-
-    return rows_html
-
-
-def _get_blindspot_color(intensity: float) -> str:
-    """Get red gradient color for blind spots based on FN intensity."""
-    if intensity >= 0.8:
-        return "#991b1b"  # Dark red - severe blind spot
-    elif intensity >= 0.5:
-        return "#dc2626"  # Red
-    elif intensity >= 0.2:
-        return "#ef4444"  # Light red
-    elif intensity >= 0.05:
-        return "#f87171"  # Pale red
-    else:
-        return "#fca5a5"  # Very light red
-
-
-def _get_caught_color(precision: float) -> str:
-    """Get green gradient color for caught zones based on precision."""
-    if precision >= 0.10:
-        return "#15803d"  # Dark green - good precision
-    elif precision >= 0.05:
-        return "#22c55e"  # Green
-    elif precision >= 0.02:
-        return "#4ade80"  # Light green
-    else:
-        return "#86efac"  # Pale green - low precision but still catching
-
-
-def _generate_blindspots_list(blindspots: List[Dict[str, Any]]) -> str:
-    """Generate HTML for identified blindspots."""
-    if not blindspots:
+def _generate_sql_section(sql_queries: Dict[str, str]) -> str:
+    """Generate collapsible SQL query section."""
+    if not sql_queries:
         return ""
 
-    items = ""
-    for bs in blindspots[:5]:
-        items += f"""
-        <div style="background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.3);
-                    border-radius: 8px; padding: 12px; margin-bottom: 8px;">
-            <div style="display: flex; justify-content: space-between; align-items: center;">
-                <span style="color: var(--text); font-weight: 500;">
-                    Score: {bs.get('score_bin', 'N/A')} | GMV: ${bs.get('gmv_bin', 'N/A')}
-                </span>
-                <span style="color: var(--danger); font-weight: bold;">
-                    FN Rate: {bs.get('fn_rate', 0)*100:.1f}%
-                </span>
-            </div>
-            <p style="color: var(--muted); font-size: 0.85rem; margin-top: 5px;">
-                {bs.get('recommendation', 'Focus Olorin analysis on this segment')}
-            </p>
-        </div>
-        """
+    all_tx_query = sql_queries.get("all_transactions", "")
+    approved_query = sql_queries.get("nsure_approved_only", "")
+
+    # Escape HTML entities in SQL
+    all_tx_query = _escape_html(all_tx_query)
+    approved_query = _escape_html(approved_query)
 
     return f"""
-    <div style="margin-top: 20px;">
-        <h3 style="color: var(--warn); margin-bottom: 15px; font-size: 1rem;">
-            ⚠️ Identified Blind Spots ({len(blindspots)} found)
-        </h3>
-        {items}
+    <div style="margin-top: 30px;">
+        <div style="background: var(--card); border: 1px solid var(--border);
+                    border-radius: 12px; overflow: hidden;">
+            <div onclick="toggleSqlQueries()"
+                 style="padding: 15px 20px; cursor: pointer; display: flex;
+                        justify-content: space-between; align-items: center;
+                        background: rgba(59, 130, 246, 0.1);">
+                <span style="color: var(--text); font-weight: 600;">
+                    🔍 SQL Queries Used
+                </span>
+                <span id="sql-toggle-icon" style="color: var(--accent);">▶</span>
+            </div>
+            <div id="sql-queries-content" style="display: none; padding: 20px;">
+                <div style="margin-bottom: 20px;">
+                    <h4 style="color: var(--accent); margin-bottom: 10px;">
+                        All Transactions Query
+                    </h4>
+                    <pre style="background: rgba(0,0,0,0.3); padding: 15px;
+                                border-radius: 8px; overflow-x: auto;
+                                font-size: 0.75rem; line-height: 1.4;
+                                color: var(--muted); white-space: pre-wrap;
+                                word-wrap: break-word;">{all_tx_query}</pre>
+                </div>
+                <div>
+                    <h4 style="color: var(--accent); margin-bottom: 10px;">
+                        nSure Approved Only Query
+                    </h4>
+                    <pre style="background: rgba(0,0,0,0.3); padding: 15px;
+                                border-radius: 8px; overflow-x: auto;
+                                font-size: 0.75rem; line-height: 1.4;
+                                color: var(--muted); white-space: pre-wrap;
+                                word-wrap: break-word;">{approved_query}</pre>
+                </div>
+            </div>
+        </div>
     </div>
+    <script>
+        function toggleSqlQueries() {{
+            const content = document.getElementById('sql-queries-content');
+            const icon = document.getElementById('sql-toggle-icon');
+            if (content.style.display === 'none') {{
+                content.style.display = 'block';
+                icon.textContent = '▼';
+            }} else {{
+                content.style.display = 'none';
+                icon.textContent = '▶';
+            }}
+        }}
+    </script>
     """
 
 
-def _generate_summary_cards(summary: Dict[str, Any]) -> str:
-    """Generate summary metric cards."""
-    total_tx = summary.get("total_transactions", 0)
-    precision = summary.get("overall_precision", 0)
-    recall = summary.get("overall_recall", 0)
-    fraud_gmv = summary.get("total_fraud_gmv", 0)
+def _escape_html(text: str) -> str:
+    """Escape HTML entities in text."""
+    if not text:
+        return ""
+    return (
+        text.replace("&", "&amp;")
+        .replace("<", "&lt;")
+        .replace(">", "&gt;")
+        .replace('"', "&quot;")
+    )
 
-    return f"""
-    <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px; margin-bottom: 20px;">
-        <div style="background: var(--card); border: 1px solid var(--border);
-                    border-radius: 8px; padding: 15px; text-align: center;">
-            <div style="font-size: 1.3rem; font-weight: bold; color: var(--text);">
-                {total_tx:,}
-            </div>
-            <div style="font-size: 0.8rem; color: var(--muted);">Total Transactions</div>
-        </div>
-        <div style="background: var(--card); border: 1px solid var(--border);
-                    border-radius: 8px; padding: 15px; text-align: center;">
-            <div style="font-size: 1.3rem; font-weight: bold; color: var(--ok);">
-                {precision*100:.1f}%
-            </div>
-            <div style="font-size: 0.8rem; color: var(--muted);">Precision</div>
-        </div>
-        <div style="background: var(--card); border: 1px solid var(--border);
-                    border-radius: 8px; padding: 15px; text-align: center;">
-            <div style="font-size: 1.3rem; font-weight: bold; color: var(--accent);">
-                {recall*100:.1f}%
-            </div>
-            <div style="font-size: 0.8rem; color: var(--muted);">Recall</div>
-        </div>
-        <div style="background: var(--card); border: 1px solid var(--border);
-                    border-radius: 8px; padding: 15px; text-align: center;">
-            <div style="font-size: 1.3rem; font-weight: bold; color: var(--danger);">
-                ${fraud_gmv:,.0f}
-            </div>
-            <div style="font-size: 0.8rem; color: var(--muted);">Fraud GMV</div>
-        </div>
-    </div>
-    """
+
