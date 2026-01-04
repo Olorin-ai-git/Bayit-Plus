@@ -142,7 +142,7 @@
         <div class="header">
             <h1>🛡️ Olorin Fraud Detection Platform</h1>
             <p>Enterprise-Grade AI-Powered Investigation System - Technical Architecture Overview</p>
-            <p><span class="status-badge status-ready">Production Ready</span> <span class="status-badge status-complete">Autonomous Mode Complete</span></p>
+            <p><span class="status-badge status-ready">Production Ready</span> <span class="status-badge status-complete">Structured Mode Complete</span></p>
         </div>
 
         <div class="section">
@@ -157,7 +157,7 @@
                 </div>
                 <div class="stat-card">
                     <div class="stat-number">100%</div>
-                    <div class="stat-label">Autonomous Capability</div>
+                    <div class="stat-label">Structured Capability</div>
                 </div>
             </div>
         </div>
@@ -180,7 +180,7 @@
                         
                         subgraph "🧠 AI Investigation Engine"
                             LANGGRAPH[LangGraph State Engine<br/>Investigation Orchestration]
-                            AUTONOMOUS[🤖 Autonomous Mode<br/>LLM-Driven Tool Selection<br/>6K+ Context Generation]
+                            AUTONOMOUS[🤖 Structured Mode<br/>LLM-Driven Tool Selection<br/>6K+ Context Generation]
                             MANUAL[📋 Manual Mode<br/>Predefined Workflows<br/>Fixed Tool Sequence]
                         end
                         
@@ -235,21 +235,21 @@
         <div class="section">
             <h2 style="text-align: center; color: #2c3e50; margin-bottom: 30px;">Investigation Process Flow</h2>
             <div class="diagram-container">
-                <div class="diagram-title">🔄 Autonomous Investigation Workflow</div>
+                <div class="diagram-title">🔄 Structured Investigation Workflow</div>
                 <div class="mermaid">
                     sequenceDiagram
                         participant User as 👤 Fraud Analyst
                         participant UI as 🖥️ Frontend UI
                         participant API as ⚡ FastAPI Server
                         participant LG as 🧠 LangGraph Engine
-                        participant AA as 🤖 Autonomous Agent
+                        participant AA as 🤖 Structured Agent
                         participant Tools as 🔧 Investigation Tools
                         participant DS as 🗄️ Data Sources
                         
                         User->>UI: Select Entity (phone, email, IP)
-                        UI->>API: POST /investigate/autonomous
+                        UI->>API: POST /investigate/structured
                         API->>LG: Initialize Investigation State
-                        LG->>AA: Create Autonomous Agent
+                        LG->>AA: Create Structured Agent
                         AA->>AA: Generate Rich Context (6K+ chars)
                         
                         loop Dynamic Investigation
@@ -325,7 +325,7 @@
             <h2 style="text-align: center; color: #2c3e50; margin-bottom: 30px;">Key Features & Capabilities</h2>
             <div class="feature-grid">
                 <div class="feature-card">
-                    <h3>🤖 Autonomous Investigation Mode</h3>
+                    <h3>🤖 Structured Investigation Mode</h3>
                     <p>LLM-driven tool selection with 6,000+ character rich context generation. Agents dynamically choose optimal investigation paths based on case specifics.</p>
                     <span class="status-badge status-complete">Complete ✅</span>
                 </div>
@@ -356,7 +356,7 @@
                 </div>
                 <div class="feature-card">
                     <h3>📊 Comprehensive Testing</h3>
-                    <p>1,050+ test cases with comprehensive coverage including unit, integration, and autonomous mode validation tests.</p>
+                    <p>1,050+ test cases with comprehensive coverage including unit, integration, and structured mode validation tests.</p>
                     <span class="status-badge status-ready">Ready ✅</span>
                 </div>
                 <div class="feature-card">
@@ -370,7 +370,7 @@
         <div class="section">
             <h2 style="text-align: center; color: #2c3e50; margin-bottom: 30px;">Investigation Modes Comparison</h2>
             <div class="diagram-container">
-                <div class="diagram-title">🤖 Autonomous vs 📋 Manual Investigation</div>
+                <div class="diagram-title">🤖 Structured vs 📋 Manual Investigation</div>
                 <div class="mermaid">
                     graph LR
                         subgraph "📋 Manual Mode"
@@ -380,7 +380,7 @@
                             M4[Consistent Results<br/>Predictable Output]
                         end
                         
-                        subgraph "🤖 Autonomous Mode ✅"
+                        subgraph "🤖 Structured Mode ✅"
                             A1[LLM Decision Engine<br/>Dynamic Reasoning]
                             A2[Smart Tool Selection<br/>Context-driven]
                             A3[Adaptive Analysis<br/>Case-specific]
@@ -394,12 +394,12 @@
                         A1 --> A2 --> A3 --> A4 --> AUTO_OUT[🧠 Intelligent Analysis<br/>Rich Insights]
                         
                         classDef manual fill:#ffebee,stroke:#c62828
-                        classDef autonomous fill:#e8f5e8,stroke:#2e7d32
+                        classDef structured fill:#e8f5e8,stroke:#2e7d32
                         classDef input fill:#e3f2fd,stroke:#1565c0
                         classDef output fill:#f3e5f5,stroke:#7b1fa2
                         
                         class M1,M2,M3,M4 manual
-                        class A1,A2,A3,A4 autonomous
+                        class A1,A2,A3,A4 structured
                         class INPUT input
                         class MANUAL_OUT,AUTO_OUT output
                 </div>
@@ -419,7 +419,7 @@
                 </div>
                 <div class="stat-card" style="background: linear-gradient(135deg, #27ae60 0%, #2ecc71 100%);">
                     <div class="stat-number">✅</div>
-                    <div class="stat-label">Autonomous Mode</div>
+                    <div class="stat-label">Structured Mode</div>
                 </div>
                 <div class="stat-card" style="background: linear-gradient(135deg, #f39c12 0%, #e67e22 100%);">
                     <div class="stat-number">⚠️</div>

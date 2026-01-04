@@ -1,0 +1,47 @@
+{
+  "timestamp": "2025-09-10T11:25:04.080161",
+  "test_entity": "67.76.8.209",
+  "entity_type": "ip",
+  "fixes_applied": [
+    "AsyncIO event loop conflicts fixed",
+    "Tool result processing pipeline fixed",
+    "Phase transition management fixed",
+    "State management integration fixed"
+  ],
+  "validation_results": {
+    "tool_registry": {
+      "status": "PASS",
+      "tools_loaded": 7,
+      "asyncio_errors": false,
+      "details": "Successfully loaded 7 tools without AsyncIO conflicts"
+    },
+    "enhanced_tool_executor": {
+      "status": "PASS",
+      "health_manager_exists": true,
+      "health_manager_type": "ToolHealthManager",
+      "tools_tracked": 1,
+      "details": "Health manager properly initialized with circuit breakers"
+    },
+    "state_management": {
+      "status": "PASS",
+      "required_fields_present": 6,
+      "total_required_fields": 6,
+      "missing_fields": [],
+      "initial_phase": "initialization",
+      "tools_used_initialized": true,
+      "tool_results_initialized": true
+    },
+    "hybrid_graph_builder": {
+      "status": "PASS",
+      "builder_created": true,
+      "intelligence_mode": "adaptive",
+      "details": "Hybrid graph builder created successfully with enhanced tool processing"
+    }
+  },
+  "summary": {
+    "passed_tests": 4,
+    "total_tests": 4,
+    "success_rate": "100.0%",
+    "overall_status": "PASS"
+  }
+}

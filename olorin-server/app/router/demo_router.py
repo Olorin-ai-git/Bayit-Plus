@@ -7,9 +7,8 @@ from fastapi import APIRouter, BackgroundTasks, HTTPException
 from pydantic import BaseModel, Field
 from starlette.requests import Request
 
-from app.mock import demo_splunk_data
+from app.models.api_models import LocationInfo
 from app.models.location_risk import LocationRiskAssessment
-from app.service.agent.ato_agents.location_data_agent.client import LocationInfo
 from app.service.logging import get_bridge_logger
 
 logger = get_bridge_logger(__name__)

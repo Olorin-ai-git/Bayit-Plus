@@ -1,0 +1,417 @@
+openapi: 3.0.0
+info:
+  title: Schema Validator API Contract
+  version: 1.0.0
+  description: |
+    API contract for SchemaValidator component that validates schema parity
+    between Snowflake and PostgreSQL databases (333 columns must match exactly).
+
+components:
+  schemas:
+    ColumnInfo:
+      type: object
+      description: Column metadata information
+      properties:
+        name:
+          type: string
+          description: Column name (case-insensitive)
+        data_type:
+          type: string
+          description: Data type (normalized)
+        is_nullable:
+          type: boolean
+          description: Whether column allows NULL values
+        column_default:
+          type: string
+          nullable: true
+          description: Default value expression
+
+    SchemaInfo:
+      type: object
+      description: Complete schema information for a table
+      properties:
+        table_name:
+          type: string
+          description: Table name
+        schema_name:
+          type: string
+          description: Schema/database name
+        columns:
+          type: array
+          items:
+            $ref: '#/components/schemas/ColumnInfo'
+        column_count:
+          type: integer
+          description: Total number of columns
+
+    TypeMismatch:
+      type: object
+      description: Type mismatch between schemas
+      properties:
+        column_name:
+          type: string
+        snowflake_type:
+          type: string
+        postgresql_type:
+          type: string
+        severity:
+          type: string
+          enum: [error, warning]
+
+    SchemaDifference:
+      type: object
+      description: Difference between schemas
+      properties:
+        difference_type:
+          type: string
+          enum: [missing_column, extra_column, type_mismatch, nullability_mismatch]
+        column_name:
+          type: string
+        details:
+          type: string
+        severity:
+          type: string
+          enum: [error, warning]
+
+    ValidationResult:
+      type: object
+      description: Schema validation result
+      properties:
+        is_valid:
+          type: boolean
+          description: Overall validation status
+        snowflake_column_count:
+          type: integer
+          description: Number of columns in Snowflake
+        postgresql_column_count:
+          type: integer
+          description: Number of columns in PostgreSQL
+        column_count_match:
+          type: boolean
+          description: Whether column counts match (must be 333)
+        differences:
+          type: array
+          items:
+            $ref: '#/components/schemas/SchemaDifference'
+        type_mismatches:
+          type: array
+          items:
+            $ref: '#/components/schemas/TypeMismatch'
+        errors:
+          type: array
+          items:
+            type: string
+        warnings:
+          type: array
+          items:
+            type: string
+
+paths:
+  /validator/get_schema_info:
+    post:
+      summary: Get schema information for a provider
+      description: |
+        Retrieves complete schema information including all columns,
+        data types, and constraints.
+
+        **Process**:
+        1. Query information_schema (PostgreSQL) or INFORMATION_SCHEMA (Snowflake)
+        2. Extract column metadata
+        3. Normalize data types for comparison
+        4. Return structured schema information
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - provider_name
+              properties:
+                provider_name:
+                  type: string
+                  enum: [snowflake, postgresql]
+                  description: Database provider to query
+      responses:
+        '200':
+          description: Schema information retrieved
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SchemaInfo'
+        '500':
+          description: Failed to retrieve schema
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+
+  /validator/validate_schema_parity:
+    post:
+      summary: Validate schema parity between providers
+      description: |
+        Validates that Snowflake and PostgreSQL schemas match exactly.
+
+        **Validation Rules**:
+        1. Column count must be 333 (exact)
+        2. All column names must match (case-insensitive)
+        3. Data types must be compatible
+        4. Nullability must match
+
+        **Type Mapping**:
+        - Snowflake NUMBER → PostgreSQL NUMERIC
+        - Snowflake TEXT → PostgreSQL TEXT
+        - Snowflake TIMESTAMP_NTZ → PostgreSQL TIMESTAMP
+        - Snowflake VARIANT → PostgreSQL JSONB
+
+        **Exit Criteria**:
+        - is_valid = true: All 333 columns match
+        - is_valid = false: Any mismatch detected
+      responses:
+        '200':
+          description: Validation completed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationResult'
+              examples:
+                valid:
+                  value:
+                    is_valid: true
+                    snowflake_column_count: 333
+                    postgresql_column_count: 333
+                    column_count_match: true
+                    differences: []
+                    type_mismatches: []
+                    errors: []
+                    warnings: []
+                invalid:
+                  value:
+                    is_valid: false
+                    snowflake_column_count: 333
+                    postgresql_column_count: 332
+                    column_count_match: false
+                    differences:
+                      - difference_type: missing_column
+                        column_name: IP_ADDRESS
+                        details: "Column exists in Snowflake but not in PostgreSQL"
+                        severity: error
+                    type_mismatches: []
+                    errors:
+                      - "Column count mismatch: expected 333, got 332"
+                    warnings: []
+
+  /validator/compare_columns:
+    post:
+      summary: Compare columns between schemas
+      description: |
+        Compares column metadata between Snowflake and PostgreSQL schemas.
+
+        **Comparison Process**:
+        1. Normalize column names (uppercase)
+        2. Compare data types with type mapping
+        3. Compare nullability constraints
+        4. Identify missing/extra columns
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - snowflake_schema
+                - postgresql_schema
+              properties:
+                snowflake_schema:
+                  $ref: '#/components/schemas/SchemaInfo'
+                postgresql_schema:
+                  $ref: '#/components/schemas/SchemaInfo'
+      responses:
+        '200':
+          description: Column comparison completed
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  differences:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/SchemaDifference'
+                  type_mismatches:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/TypeMismatch'
+
+  /validator/validate_column_types:
+    post:
+      summary: Validate column type compatibility
+      description: |
+        Validates that column data types are compatible between providers.
+
+        **Type Compatibility Rules**:
+        - Exact match preferred
+        - Compatible types allowed (e.g., NUMBER → NUMERIC)
+        - Incompatible types flagged as errors
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - snowflake_type
+                - postgresql_type
+              properties:
+                snowflake_type:
+                  type: string
+                  example: NUMBER
+                postgresql_type:
+                  type: string
+                  example: NUMERIC
+      responses:
+        '200':
+          description: Type compatibility validated
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  compatible:
+                    type: boolean
+                  normalized_snowflake_type:
+                    type: string
+                  normalized_postgresql_type:
+                    type: string
+                  compatibility_notes:
+                    type: string
+
+validation_rules:
+  required_column_count:
+    value: 333
+    description: Exact number of columns required in transactions_enriched table
+    enforcement: strict
+
+  column_name_matching:
+    case_sensitivity: false
+    normalization: uppercase
+    description: Column names compared case-insensitively
+
+  data_type_mapping:
+    snowflake_to_postgresql:
+      NUMBER: NUMERIC
+      TEXT: TEXT
+      VARCHAR: VARCHAR
+      TIMESTAMP_NTZ: TIMESTAMP
+      TIMESTAMP_LTZ: TIMESTAMPTZ
+      TIMESTAMP_TZ: TIMESTAMPTZ
+      DATE: DATE
+      BOOLEAN: BOOLEAN
+      VARIANT: JSONB
+      OBJECT: JSONB
+      ARRAY: JSONB
+
+  nullability_matching:
+    enforcement: strict
+    description: NOT NULL constraints must match exactly
+
+performance:
+  schema_retrieval:
+    snowflake: "Query INFORMATION_SCHEMA.COLUMNS"
+    postgresql: "Query information_schema.columns"
+    typical_duration: "<1s for 333 columns"
+
+  validation:
+    complexity: O(n)
+    where_n: "Number of columns (333)"
+    typical_duration: "<100ms"
+
+testing:
+  test_coverage:
+    target: 100%
+    test_files:
+      - tests/unit/test_schema_validator.py
+      - tests/unit/test_schema_models.py
+      - tests/unit/test_schema_comparison.py
+      - tests/integration/test_schema_validation.py
+
+  test_scenarios:
+    - name: Exact schema match (333 columns)
+      expected: is_valid = true
+
+    - name: Missing column
+      difference: 332 columns in PostgreSQL
+      expected: is_valid = false, error reported
+
+    - name: Extra column
+      difference: 334 columns in PostgreSQL
+      expected: is_valid = false, error reported
+
+    - name: Type mismatch
+      difference: TEXT vs INTEGER
+      expected: is_valid = false, type_mismatch reported
+
+    - name: Compatible types
+      difference: NUMBER vs NUMERIC
+      expected: is_valid = true (compatible mapping)
+
+    - name: Nullability mismatch
+      difference: NULL vs NOT NULL
+      expected: warning reported
+
+error_handling:
+  database_connection_failure:
+    behavior: Raise ConnectionError with clear message
+    retry: false
+
+  schema_query_failure:
+    behavior: Raise QueryExecutionError
+    logging: Error details logged
+
+  invalid_provider:
+    behavior: Raise ValueError
+    message: "Invalid provider: must be 'snowflake' or 'postgresql'"
+
+constitutional_compliance:
+  no_hardcoded_values:
+    status: compliant
+    description: All configuration from environment variables
+
+  no_mocks:
+    status: compliant
+    description: Uses real database connections for validation
+
+  fail_fast:
+    status: compliant
+    description: Validation fails immediately on first critical error
+
+  file_size_limit:
+    status: compliant
+    description: All schema_*.py files under 200 lines
+
+  complete_implementation:
+    status: compliant
+    description: No TODOs, placeholders, or stubs
+
+limitations:
+  - description: Case-insensitive column matching only
+    impact: Cannot detect case-only differences
+    workaround: PostgreSQL lowercases names anyway
+
+  - description: No semantic type validation
+    impact: Accepts compatible types without data validation
+    workaround: Migration validation tests actual data
+
+  - description: No constraint validation (PK, FK, CHECK)
+    impact: Only validates basic schema structure
+    scope: Primary key validated separately
+
+future_enhancements:
+  - Add constraint validation (PRIMARY KEY, FOREIGN KEY, CHECK)
+  - Add index validation
+  - Add partition validation
+  - Add column statistics comparison
+  - Add data distribution validation

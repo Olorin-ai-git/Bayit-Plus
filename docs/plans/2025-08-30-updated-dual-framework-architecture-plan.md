@@ -12,10 +12,10 @@ This updated plan revises the dual-framework architecture to leverage the sophis
 ### Existing Sophisticated Infrastructure
 
 **1. Highly Modular Agent System:**
-- `autonomous_agents.py` → Compatibility layer importing from specialized modules
-- `base_agents.py` → Core `AutonomousInvestigationAgent` class with `autonomous_llm` (Claude Opus 4.1)
+- `structured_agents.py` → Compatibility layer importing from specialized modules
+- `base_agents.py` → Core `StructuredInvestigationAgent` class with `structured_llm` (Claude Opus 4.1)
 - Individual domain agents: `network_agent.py`, `device_agent.py`, `location_agent.py`, `logs_agent.py`, `risk_agent.py`
-- Supporting modules: `autonomous_base.py`, `autonomous_context.py`, `autonomous_parsing.py`, `autonomous_prompts.py`
+- Supporting modules: `structured_base.py`, `structured_context.py`, `structured_parsing.py`, `structured_prompts.py`
 
 **2. Advanced Pattern Registry System:**
 - Pattern types: `AUGMENTED_LLM`, `PROMPT_CHAINING`, `ROUTING`, `PARALLELIZATION`, `ORCHESTRATOR_WORKERS`, `EVALUATOR_OPTIMIZER`

@@ -1,9 +1,10 @@
 import asyncio
 import logging
-from app.service.logging import get_bridge_logger
 import time
 from functools import wraps
 from typing import Any, Dict
+
+from app.service.logging import get_bridge_logger
 
 logger = get_bridge_logger(__name__)
 

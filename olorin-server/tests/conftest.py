@@ -1,5 +1,5 @@
 """
-Test Configuration for Olorin Autonomous Investigation System.
+Test Configuration for Olorin Structured Investigation System.
 
 This conftest uses ONLY real API calls - NO MOCK DATA.
 - Real Anthropic API (claude-opus-4-1-20250805)
@@ -13,32 +13,35 @@ import json
 import logging
 import os
 import sys
+import urllib.parse
 from datetime import datetime, timedelta
 from pathlib import Path
-from typing import Dict, Any, List, Optional
+from typing import Any, Dict, List, Optional
 from unittest.mock import MagicMock
 
+import psycopg2
 import pytest
 import pytest_asyncio
+from langchain_anthropic import ChatAnthropic
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
-from langchain_anthropic import ChatAnthropic
+from testcontainers.postgres import PostgresContainer
 
 # Add parent directory to path for imports
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
-from app.service.config import get_settings_for_env
-from app.service.agent.autonomous_context import (
-    AutonomousInvestigationContext,
-    InvestigationPhase,
-    EntityType,
-)
 from app.persistence.database import Base, get_db
 from app.persistence.models import (
+    EntityRecord,
     InvestigationRecord,
     UserRecord,
-    EntityRecord,
 )
+from app.service.agent.autonomous_context import (
+    EntityType,
+    InvestigationPhase,
+    StructuredInvestigationContext,
+)
+from app.service.config import get_settings_for_env
 
 logger = logging.getLogger(__name__)
 
@@ -78,11 +81,11 @@ def real_anthropic_client():
     Uses actual API key from Firebase and makes real calls to Claude Opus 4.1.
     """
     from app.utils.firebase_secrets import get_firebase_secret
-    
+
     api_key = get_firebase_secret(settings.anthropic_api_key_secret)
     if not api_key:
         pytest.skip("Anthropic API key not configured in Firebase Secrets Manager")
-    
+
     client = ChatAnthropic(
         api_key=api_key,
         model="claude-opus-4-1-20250805",
@@ -90,7 +93,7 @@ def real_anthropic_client():
         max_tokens=8090,
         timeout=90,
     )
-    
+
     logger.info("Initialized real Anthropic client for testing")
     return client
 
@@ -103,19 +106,19 @@ def real_database():
     """
     # Use test database
     test_db_url = os.getenv("TEST_DATABASE_URL", "sqlite:///./test_olorin.db")
-    
+
     engine = create_engine(
         test_db_url,
         connect_args={"check_same_thread": False} if "sqlite" in test_db_url else {},
     )
-    
+
     # Create all tables
     Base.metadata.create_all(bind=engine)
-    
+
     TestSessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
-    
+
     yield TestSessionLocal
-    
+
     # Cleanup
     Base.metadata.drop_all(bind=engine)
     engine.dispose()
@@ -149,7 +152,7 @@ def real_investigation_context(db_session):
         is_admin=False,
     )
     db_session.add(user)
-    
+
     # Create real entity record
     entity = EntityRecord(
         id=f"entity_{datetime.now().timestamp()}",
@@ -166,7 +169,7 @@ def real_investigation_context(db_session):
         },
     )
     db_session.add(entity)
-    
+
     # Create investigation record
     investigation = InvestigationRecord(
         id=f"inv_{datetime.now().timestamp()}",
@@ -181,16 +184,15 @@ def real_investigation_context(db_session):
     )
     db_session.add(investigation)
     db_session.commit()
-    
-    # Create autonomous context
-    from app.service.agent.autonomous_context import EntityType
-    context = AutonomousInvestigationContext(
+
+    # Create structured context
+    context = StructuredInvestigationContext(
         investigation_id=investigation.id,
         entity_id=entity.entity_id,
         entity_type=EntityType.USER_ID,
-        investigation_type="fraud_investigation"
+        investigation_type="fraud_investigation",
     )
-    
+
     logger.info(f"Created real investigation context: {investigation.id}")
     return context
 
@@ -201,23 +203,26 @@ def api_cost_monitor():
     Monitor and track API costs during tests.
     Provides real-time cost tracking for Anthropic API calls.
     """
+
     class CostMonitor:
         def __init__(self):
             self.calls = []
             self.total_cost = 0.0
-            
+
             # Anthropic Claude Opus 4.1 pricing (per 1M tokens)
             self.pricing = {
                 "input": 15.00,  # $15 per 1M input tokens
                 "output": 75.00,  # $75 per 1M output tokens
             }
-        
-        def track_call(self, input_tokens: int, output_tokens: int, model: str = "claude-opus-4.1"):
+
+        def track_call(
+            self, input_tokens: int, output_tokens: int, model: str = "claude-opus-4.1"
+        ):
             """Track an API call and calculate cost."""
             input_cost = (input_tokens / 1_000_000) * self.pricing["input"]
             output_cost = (output_tokens / 1_000_000) * self.pricing["output"]
             total_cost = input_cost + output_cost
-            
+
             call_data = {
                 "timestamp": datetime.now().isoformat(),
                 "model": model,
@@ -225,10 +230,10 @@ def api_cost_monitor():
                 "output_tokens": output_tokens,
                 "cost": total_cost,
             }
-            
+
             self.calls.append(call_data)
             self.total_cost += total_cost
-            
+
             # Update global tracker
             api_cost_tracker["total_calls"] += 1
             api_cost_tracker["total_tokens"] += input_tokens + output_tokens
@@ -236,32 +241,36 @@ def api_cost_monitor():
             api_cost_tracker["calls_by_model"][model] = (
                 api_cost_tracker["calls_by_model"].get(model, 0) + 1
             )
-            
+
             # Check cost limit
             if self.total_cost > TEST_CONFIG["max_cost_per_session"]:
                 pytest.fail(
                     f"API cost limit exceeded: ${self.total_cost:.2f} > "
                     f"${TEST_CONFIG['max_cost_per_session']:.2f}"
                 )
-            
+
             return call_data
-        
+
         def get_summary(self) -> Dict[str, Any]:
             """Get cost summary."""
             return {
                 "total_calls": len(self.calls),
                 "total_cost": self.total_cost,
-                "average_cost_per_call": self.total_cost / len(self.calls) if self.calls else 0,
+                "average_cost_per_call": (
+                    self.total_cost / len(self.calls) if self.calls else 0
+                ),
                 "calls": self.calls,
             }
-    
+
     monitor = CostMonitor()
     yield monitor
-    
+
     # Print cost summary after test
     if monitor.calls:
         summary = monitor.get_summary()
-        logger.info(f"Test API costs: ${summary['total_cost']:.4f} for {summary['total_calls']} calls")
+        logger.info(
+            f"Test API costs: ${summary['total_cost']:.4f} for {summary['total_calls']} calls"
+        )
 
 
 @pytest.fixture
@@ -270,50 +279,121 @@ def real_webhook_server():
     Real webhook server for testing agent communications.
     Receives real agent progress updates.
     """
-    from aiohttp import web
     import threading
-    
+
+    from aiohttp import web
+
     received_webhooks = []
-    
+
     async def webhook_handler(request):
         """Handle incoming webhooks."""
         data = await request.json()
-        received_webhooks.append({
-            "timestamp": datetime.now().isoformat(),
-            "data": data,
-        })
+        received_webhooks.append(
+            {
+                "timestamp": datetime.now().isoformat(),
+                "data": data,
+            }
+        )
         return web.Response(text="OK", status=200)
-    
+
     app = web.Application()
     app.router.add_post("/webhook", webhook_handler)
-    
+
     runner = web.AppRunner(app)
-    
+
     async def start_server():
         await runner.setup()
         site = web.TCPSite(runner, "localhost", 8899)
         await site.start()
-    
+
     async def stop_server():
         await runner.cleanup()
-    
+
     # Start server in background
     loop = asyncio.new_event_loop()
     asyncio.set_event_loop(loop)
     loop.run_until_complete(start_server())
-    
+
     server_info = {
         "url": "http://localhost:8899/webhook",
         "received": received_webhooks,
         "runner": runner,
         "loop": loop,
     }
-    
+
     yield server_info
-    
+
     # Cleanup
     loop.run_until_complete(stop_server())
     loop.close()
+
+
+# PostgreSQL Docker Fixtures (T010)
+
+
+@pytest.fixture(scope="session")
+def postgresql_container():
+    """
+    Provides a PostgreSQL container for testing using testcontainers.
+
+    This fixture starts a PostgreSQL container at the beginning of the test session
+    and stops it at the end. The container provides an isolated PostgreSQL instance
+    for integration testing.
+
+    Returns:
+        PostgresContainer: Running PostgreSQL container instance
+    """
+    # Start PostgreSQL container
+    postgres = PostgresContainer("postgres:15-alpine")
+    postgres.start()
+
+    # Log connection info
+    logger.info(f"PostgreSQL container started: {postgres.get_connection_url()}")
+
+    yield postgres
+
+    # Cleanup
+    postgres.stop()
+    logger.info("PostgreSQL container stopped")
+
+
+@pytest.fixture(scope="function")
+def postgresql_connection(postgresql_container):
+    """
+    Provides a PostgreSQL connection for each test function.
+
+    This fixture creates a new connection for each test, ensuring test isolation.
+    The connection is automatically closed after the test completes.
+
+    Args:
+        postgresql_container: The PostgreSQL container fixture
+
+    Returns:
+        psycopg2.connection: Active PostgreSQL connection
+    """
+    # Parse connection URL from container
+    connection_url = postgresql_container.get_connection_url()
+    parsed = urllib.parse.urlparse(connection_url)
+
+    # Create connection
+    conn = psycopg2.connect(
+        host=parsed.hostname,
+        port=parsed.port,
+        database=parsed.path[1:],  # Remove leading '/'
+        user=parsed.username,
+        password=parsed.password,
+    )
+
+    # Set autocommit for test isolation
+    conn.autocommit = True
+
+    logger.debug(f"Created PostgreSQL connection for test")
+
+    yield conn
+
+    # Cleanup
+    conn.close()
+    logger.debug("Closed PostgreSQL connection")
 
 
 @pytest.fixture(autouse=True)
@@ -332,16 +412,17 @@ def setup_test_logging():
 @pytest.fixture(scope="session", autouse=True)
 def test_session_summary(request):
     """Print test session summary at the end."""
+
     def print_summary():
-        logger.info("="*50)
+        logger.info("=" * 50)
         logger.info("Test Session Summary")
-        logger.info("="*50)
+        logger.info("=" * 50)
         logger.info(f"Total API calls: {api_cost_tracker['total_calls']}")
         logger.info(f"Total tokens used: {api_cost_tracker['total_tokens']:,}")
         logger.info(f"Estimated cost: ${api_cost_tracker['estimated_cost']:.4f}")
         logger.info(f"Calls by model: {api_cost_tracker['calls_by_model']}")
-        logger.info("="*50)
-    
+        logger.info("=" * 50)
+
     request.addfinalizer(print_summary)
 
 
@@ -353,4 +434,6 @@ __all__ = [
     "real_investigation_context",
     "api_cost_monitor",
     "real_webhook_server",
+    "postgresql_container",
+    "postgresql_connection",
 ]

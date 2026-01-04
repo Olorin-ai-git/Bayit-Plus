@@ -29,11 +29,7 @@ def mock_agent_context():
     context.input = "Test Input"
     context.thread_id = "sample_thread_id"
 
-<<<<<<< HEAD:back/app/test/unit/service/test_agent_service.py
     # Setup olorin header
-=======
-    # Setup olorin header
->>>>>>> restructure-projects:olorin-server/app/test/unit/service/test_agent_service.py
     header = MagicMock(spec=OlorinHeader)
     auth = MagicMock(spec=AuthContext)
     auth.olorin_user_id = "sample_user_id"
@@ -330,26 +326,16 @@ def test_agent_response_str():
     assert "trace123" in s and "bar" in s and "foo" in s
 
 
-<<<<<<< HEAD:back/app/test/unit/service/test_agent_service.py
 def test_olorin_header_str():
-=======
-def test_olorin_header_str():
->>>>>>> restructure-projects:olorin-server/app/test/unit/service/test_agent_service.py
     from app.models.agent_headers import AuthContext, OlorinHeader
 
     auth_ctx = AuthContext(
         olorin_user_id="u", olorin_user_token="t", olorin_realmid="r"
     )
     header = OlorinHeader(
-<<<<<<< HEAD:back/app/test/unit/service/test_agent_service.py
         olorin_tid="tid1",
         olorin_experience_id="expid1",
         olorin_originating_assetalias="alias1",
-=======
-        olorin_tid="tid1",
-        olorin_experience_id="expid1",
-        olorin_originating_assetalias="alias1",
->>>>>>> restructure-projects:olorin-server/app/test/unit/service/test_agent_service.py
         auth_context=auth_ctx,
     )
     s = str(header)

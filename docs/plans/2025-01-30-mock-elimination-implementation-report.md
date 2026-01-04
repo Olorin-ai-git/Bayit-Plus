@@ -9,7 +9,7 @@
 
 ## Executive Summary
 
-The comprehensive mock data elimination and real LLM integration plan has been **successfully implemented**. The Olorin autonomous investigation system now operates with **100% real API calls** to Anthropic Claude Opus 4.1 and contains **ZERO mock data** in production code.
+The comprehensive mock data elimination and real LLM integration plan has been **successfully implemented**. The Olorin structured investigation system now operates with **100% real API calls** to Anthropic Claude Opus 4.1 and contains **ZERO mock data** in production code.
 
 ## Implementation Results
 
@@ -30,8 +30,8 @@ The comprehensive mock data elimination and real LLM integration plan has been *
 #### Files Created
 1. `tests/conftest.py` - Real API fixtures (276 lines)
 2. `tests/fixtures/real_investigation_scenarios.py` - Real scenario generators (457 lines)
-3. `tests/unit/service/agent/test_autonomous_agents.py` - Unit tests with real APIs (748 lines)
-4. `tests/integration/test_autonomous_investigation.py` - E2E tests (1029 lines)
+3. `tests/unit/service/agent/test_structured_agents.py` - Unit tests with real APIs (748 lines)
+4. `tests/integration/test_structured_investigation.py` - E2E tests (1029 lines)
 5. `tests/run_tests.py` - Test runner with cost tracking (335 lines)
 6. `pytest.ini` - Configuration for 87% coverage requirement
 
@@ -39,12 +39,12 @@ The comprehensive mock data elimination and real LLM integration plan has been *
 
 #### Validation Results
 - Frontend → Backend flow uses real API calls
-- Autonomous agents make real Anthropic Claude calls
+- Structured agents make real Anthropic Claude calls
 - WebSocket messages contain authentic agent responses
 - Natural variation in investigation results confirmed
 
 #### Test Runners Created
-1. `run_autonomous_investigation_for_user.py` - Real investigation runner
+1. `run_structured_investigation_for_user.py` - Real investigation runner
 2. `run_scenario_tests.py` - Fraud scenario testing
 3. `run_validation_suite.py` - Mock data and API validation
 
@@ -80,7 +80,7 @@ Test Infrastructure: PASS ✅
 ### 2. Real LLM Integration
 - **Model**: claude-opus-4-1-20250805 (Claude Opus 4.1)
 - **Configuration**: Environment-based API keys
-- **Tool Binding**: Real autonomous tool selection
+- **Tool Binding**: Real structured tool selection
 - **Response Variation**: Natural, context-driven responses
 
 ### 3. Comprehensive Test Suite
@@ -107,13 +107,13 @@ Test Infrastructure: PASS ✅
 
 ### Validation Tools
 - `/tests/validate_real_api.py` - Comprehensive validation script
-- `/autonomous_workflow_validator.py` - Workflow validation
+- `/structured_workflow_validator.py` - Workflow validation
 - `/api_structure_validator.py` - API structure validation
 
 ### Documentation
 - `/docs/plans/2025-01-30-mock-data-elimination-plan.md` - Implementation plan
-- `/docs/diagrams/autonomous_investigation_flow.md` - Workflow diagram
-- `/docs/autonomous_investigation_workflow_validation.md` - Validation documentation
+- `/docs/diagrams/structured_investigation_flow.md` - Workflow diagram
+- `/docs/structured_investigation_workflow_validation.md` - Validation documentation
 
 ## Running the Tests
 
@@ -130,7 +130,7 @@ python tests/run_tests.py --coverage --coverage-min 87
 
 ### Run Specific Scenarios
 ```bash
-python tests/runners/run_autonomous_investigation_for_user.py user_12345
+python tests/runners/run_structured_investigation_for_user.py user_12345
 python tests/runners/run_scenario_tests.py
 ```
 
@@ -156,7 +156,7 @@ With real API usage, expected costs per test run:
 
 ## Conclusion
 
-The mock data elimination and real LLM integration has been **successfully completed**. The Olorin autonomous investigation system now operates with:
+The mock data elimination and real LLM integration has been **successfully completed**. The Olorin structured investigation system now operates with:
 
 - ✅ **ZERO mock data** in production code
 - ✅ **100% real Anthropic Claude API** integration

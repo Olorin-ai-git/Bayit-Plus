@@ -4,11 +4,11 @@ A modern, responsive web portal for Olorin.ai, showcasing cutting-edge Generativ
 
 ## 🚀 About Olorin.ai
 
-Olorin.ai provides next-generation fraud prevention solutions powered by Autonomous AI Agents. Our platform leverages advanced Generative AI technology to detect, investigate, and prevent fraud with unprecedented accuracy and speed.
+Olorin.ai provides next-generation fraud prevention solutions powered by Structured AI Agents. Our platform leverages advanced Generative AI technology to detect, investigate, and prevent fraud with unprecedented accuracy and speed.
 
 ### Key Features
 
-- **Autonomous AI Agents**: Self-learning fraud detection with human-level reasoning
+- **Structured AI Agents**: Self-learning fraud detection with human-level reasoning
 - **Real-time Investigation**: Sub-second response times with comprehensive reporting
 - **Predictive Threat Detection**: Stay ahead of fraudsters with AI-powered predictions
 - **Multi-source Intelligence**: Comprehensive data integration and analysis

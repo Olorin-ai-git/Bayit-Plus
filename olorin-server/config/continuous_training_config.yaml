@@ -1,0 +1,86 @@
+# Continuous Training Optimization Configuration
+# Feature: 026-llm-training-pipeline
+#
+# Automated parameter sweep for finding optimal fraud detection thresholds.
+# All values sourced from environment variables for security.
+
+continuous_training:
+  # Master switch for continuous training
+  enabled: ${CONTINUOUS_TRAINING_ENABLED:false}
+
+  # Maximum optimization iterations before forced stop
+  max_iterations: ${CONTINUOUS_TRAINING_MAX_ITERATIONS:2000}
+
+  # Target F1 score for early stopping (optional)
+  target_f1: ${CONTINUOUS_TRAINING_TARGET_F1:0.70}
+
+  # Parallel execution settings
+  parallel:
+    # Number of concurrent training workers
+    workers: ${CONTINUOUS_TRAINING_WORKERS:5}
+    # Timeout per configuration evaluation (seconds)
+    timeout_per_config: ${CONTINUOUS_TRAINING_TIMEOUT:300}
+
+  # Convergence detection settings
+  convergence:
+    # Number of recent results to analyze for plateau
+    window_size: ${CONTINUOUS_TRAINING_CONVERGENCE_WINDOW:50}
+    # Minimum improvement to count as progress
+    improvement_threshold: ${CONTINUOUS_TRAINING_IMPROVEMENT_THRESHOLD:0.001}
+    # Minimum iterations before convergence check
+    min_iterations: ${CONTINUOUS_TRAINING_MIN_ITERATIONS:100}
+
+  # Parameter grid for optimization (ranges updated from 2025-12-17 training)
+  parameter_grid:
+    # Fraud decision thresholds to test (optimal range 0.40-0.55)
+    thresholds:
+      min: ${CONTINUOUS_TRAINING_THRESHOLD_MIN:0.35}
+      max: ${CONTINUOUS_TRAINING_THRESHOLD_MAX:0.60}
+      step: ${CONTINUOUS_TRAINING_THRESHOLD_STEP:0.05}
+    # Prompt versions to test (v14 is current best)
+    prompt_versions:
+      - v14
+      - v15
+    # LLM weight in hybrid scoring (0.25 is optimal)
+    llm_weights:
+      min: ${CONTINUOUS_TRAINING_LLM_WEIGHT_MIN:0.20}
+      max: ${CONTINUOUS_TRAINING_LLM_WEIGHT_MAX:0.35}
+      step: ${CONTINUOUS_TRAINING_LLM_WEIGHT_STEP:0.05}
+    # Baseline risk scores
+    baseline_scores:
+      - 0.15
+      - 0.20
+      - 0.25
+      - 0.30
+
+  # Temporal isolation settings
+  temporal:
+    # Training windows that do NOT overlap with detection
+    training_windows:
+      - feature_start: "2022-01-01"
+        feature_end: "2022-06-30"
+        observation_start: "2022-07-01"
+        observation_end: "2022-12-31"
+      - feature_start: "2023-01-01"
+        feature_end: "2023-06-30"
+        observation_start: "2023-07-01"
+        observation_end: "2023-12-31"
+      - feature_start: "2023-07-01"
+        feature_end: "2023-12-31"
+        observation_start: "2024-01-01"
+        observation_end: "2024-06-30"
+    # Detection window to exclude from training
+    detection_exclusion:
+      start: ${DETECTION_WINDOW_START:2024-07-01}
+      end: ${DETECTION_WINDOW_END:2025-06-15}
+
+  # Output settings
+  output:
+    # Directory for optimization results
+    results_dir: ${CONTINUOUS_TRAINING_RESULTS_DIR:data/training}
+    # Directory for reports
+    reports_dir: ${CONTINUOUS_TRAINING_REPORTS_DIR:artifacts}
+    # Enable HTML report generation
+    generate_html_report: ${CONTINUOUS_TRAINING_HTML_REPORT:true}
+    # Checkpoint frequency (iterations)
+    checkpoint_frequency: ${CONTINUOUS_TRAINING_CHECKPOINT_FREQ:25}

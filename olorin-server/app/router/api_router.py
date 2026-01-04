@@ -13,7 +13,6 @@ from fastapi.responses import JSONResponse
 from pydantic import BaseModel, Field
 from starlette.requests import Request
 
-from app.mock import demo_splunk_data
 from app.models.agent_context import AgentContext
 from app.models.agent_headers import AuthContext, OlorinHeader
 from app.models.agent_request import AgentRequest
@@ -24,8 +23,6 @@ from app.models.api_models import (
     InvestigationUpdate,
     LocationRiskAnalysisResponse,
 )
-from app.service.logging import get_bridge_logger
-logger = get_bridge_logger(__name__)
 from app.models.device_risk import (
     AnalyzeDeviceResponse,
     DeviceSignalDetail,
@@ -48,32 +45,24 @@ from app.persistence import (
 )
 from app.router.demo_router import demo_cache, demo_mode_users
 from app.security.auth import User, require_read, require_write
-from app.service.agent.ato_agents.location_data_agent.client import (
-    LocationDataClient,
-    LocationInfo,
-)
-from app.service.agent.ato_agents.splunk_agent.fraud_response import FraudResponse
-from app.service.agent.ato_agents.splunk_agent.user_analysis_query_constructor import (
-    get_direct_auth_query,
-)
-# from app.service.agent.tools.oii_tool.oii_tool import OIITool  # Removed non-existent tool
 from app.service.agent_service import ainvoke_agent
 from app.service.config import get_settings_for_env
+from app.service.config_loader import get_config_loader
+from app.service.logging import get_bridge_logger
 from app.utils.auth_utils import get_auth_token
 from app.utils.constants import LIST_FIELDS_PRIORITY, MAX_PROMPT_TOKENS
 from app.utils.firebase_secrets import get_app_secret
 from app.utils.prompt_utils import sanitize_splunk_data, trim_prompt_to_token_limit
 from app.utils.prompts import SYSTEM_PROMPT_FOR_LOG_RISK
-from app.service.config_loader import get_config_loader
 
 from .device_router import analyze_device
 from .device_router import router as device_router
 from .investigations_router import investigations_router
 
-# Configure logging
-logger = logging.getLogger(__name__)
+# Configure logging - use bridge logger for consistency
+logger = get_bridge_logger(__name__)
 
-router = APIRouter(prefix="/api")
+router = APIRouter(prefix="/api/v1")
 
 # Load API key from Firebase Secret Manager
 config_loader = get_config_loader()
@@ -92,9 +81,6 @@ def get_default_headers():
         "olorin_experience_id": "d3d28eaa-7ca9-4aa2-8905-69ac11fd8c58",
         "olorin_originating_assetalias": "Olorin.cas.hri.olorin",
     }
-
-
-location_data_client = LocationDataClient()
 
 
 @router.post("/demo/{user_id}/off")
@@ -122,16 +108,24 @@ async def get_all_demo_agent_responses(user_id: str) -> Dict[str, Any]:
     }
 
 
+from app.api.v1.llm_models import router as llm_models_router
+
 from .comment_router import comment_router
+from .composio_router import router as composio_router
 from .demo_router import router as demo_router
+from .device_signals_router import router as device_signals_router
+from .ip_risk_router import router as ip_risk_router
 from .location_router import router as location_router
 from .logs_router import router as logs_router
 from .mcp_http_router import router as mcp_http_router
 
 # --- IMPORT NEW ROUTERS ---
 from .network_router import router as network_router
+from .rag_router import router as rag_router
 from .risk_assessment_router import risk_assessment_router
 from .settings_router import router as settings_router
+from .soar_playbooks_router import router as soar_playbooks_router
+from .tenant_config_router import router as tenant_config_router
 
 # --- INCLUDE NEW ROUTERS ---
 router.include_router(network_router)
@@ -144,6 +138,44 @@ router.include_router(mcp_http_router)
 router.include_router(settings_router)
 router.include_router(risk_assessment_router)
 router.include_router(investigations_router)
+router.include_router(llm_models_router)
+router.include_router(rag_router)
+router.include_router(composio_router)
+router.include_router(tenant_config_router)
+router.include_router(device_signals_router)
+router.include_router(ip_risk_router)
+router.include_router(soar_playbooks_router)
+
+# Include analytics router (works with both PostgreSQL and Snowflake)
+try:
+    # Use print as fallback since logger might not be initialized at module import time
+    import sys
+
+    print("[API_ROUTER] Attempting to import analytics router...", file=sys.stderr)
+    logger.info("Attempting to import analytics router...")
+    from app.api.routes.analytics import router as analytics_router
+
+    print(
+        f"[API_ROUTER] Analytics router imported: prefix={analytics_router.prefix}, routes={len(analytics_router.routes)}",
+        file=sys.stderr,
+    )
+    logger.info(
+        f"Analytics router imported successfully, prefix: {analytics_router.prefix}, routes: {len(analytics_router.routes)}"
+    )
+    router.include_router(analytics_router)
+    print(f"[API_ROUTER] ✅ Analytics router included successfully", file=sys.stderr)
+    logger.info(
+        f"✅ Analytics router included successfully with prefix: {analytics_router.prefix}"
+    )
+except ImportError as e:
+    print(f"[API_ROUTER] ❌ Analytics router import failed: {e}", file=sys.stderr)
+    logger.error(f"❌ Analytics router import failed: {e}", exc_info=True)
+except Exception as e:
+    print(f"[API_ROUTER] ❌ Analytics router error: {e}", file=sys.stderr)
+    import traceback
+
+    traceback.print_exc(file=sys.stderr)
+    logger.error(f"❌ Analytics router not available: {e}", exc_info=True)
 
 
 @router.get("/oii/{user_id}")
@@ -156,26 +188,40 @@ async def get_online_identity_info(user_id: str, request: Request) -> Dict[str, 
         return demo_cache[user_id]["oii"]
     auth_header = request.headers.get("authorization")
     logger.info(f"Authorization header: {auth_header}")
-    """Retrieve online identity information directly from the OII Tool."""
+    """Retrieve online identity information using intelligence tools."""
     try:
-        # Create OIITool instance
-        oii_tool = OIITool()
+        # Use the people search and social media profiling tools as OII replacement
+        from app.service.agent.tools.intelligence_tools.people_search import (
+            PeopleSearchTool,
+        )
+        from app.service.agent.tools.intelligence_tools.social_media_profiling import (
+            SocialMediaProfilingTool,
+        )
 
-        # Call the tool directly with the user_id
-        response_str = oii_tool._run(user_id=user_id)
+        # Initialize tools
+        people_tool = PeopleSearchTool()
+        social_tool = SocialMediaProfilingTool()
 
-        # Parse the response
-        try:
-            oii_resp = OIIResponse.model_validate_json(response_str)
-            return oii_resp.model_dump()
-        except Exception as e:
-            raise HTTPException(
-                status_code=500, detail=f"Tool returned invalid format: {str(e)}"
-            )
-    except HTTPException:
-        raise
+        # Search for identity information
+        people_result = people_tool._run(user_id)
+        social_result = social_tool._run(user_id)
+
+        # Combine results into OII-like format
+        oii_result = {
+            "user_id": user_id,
+            "identity_verification": people_result.get("identity_verification", {}),
+            "background_records": people_result.get("background_records", {}),
+            "social_media_presence": social_result.get("profiles", {}),
+            "risk_indicators": people_result.get("risk_indicators", []),
+            "timestamp": datetime.now(timezone.utc).isoformat(),
+            "data_sources": ["people_search", "social_media_profiling"],
+        }
+
+        return oii_result
+
     except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+        logger.error(f"Online identity information lookup failed: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Identity lookup failed: {str(e)}")
 
 
 @router.get("/logs/{user_id}")
@@ -214,24 +260,12 @@ async def analyze_logs(
                         status_code=503,
                         detail="Agent service is not available. The server is still initializing or encountered an error.",
                     )
-                # Use SplunkQueryTool for consistency with other domains
-                from app.service.agent.ato_agents.splunk_agent.ato_splunk_query_constructor import (
-                    build_base_search,
-                )
                 from app.service.agent.tools.splunk_tool.splunk_tool import (
                     SplunkQueryTool,
                 )
 
-                # Build the raw SPL query
-                base_query = build_base_search(
-                    id_value=user_id,
-                    id_type="auth_id",
-                )
-                # Add earliest time constraint
-                splunk_query = base_query.replace(
-                    f"search index={settings.splunk_index}",
-                    f"search index={settings.splunk_index} earliest=-{time_range}",
-                )
+                # Build the SPL query directly (no mocks)
+                splunk_query = f'search index={settings.splunk_index} earliest=-{time_range} | where auth_id="{user_id}"'
 
                 logger.info(f"Executing Splunk query for logs: {splunk_query}")
 
@@ -362,52 +396,8 @@ async def analyze_logs(
         }
 
 
-# --- Individual Location Source Endpoints ---
-@router.get("/location/source/oii/{user_id}", response_model=Optional[LocationInfo])
-async def get_oii_source_location(user_id: str) -> Optional[LocationInfo]:
-    try:
-        logger.info(f"Fetching OII location source for user {user_id}")
-        return await location_data_client.get_oii_location_info(user_id)
-    except Exception as e:
-        logger.error(f"Error fetching OII location for {user_id}: {e}", exc_info=True)
-        # Return None or a custom error model, or re-raise as HTTPException
-        # For now, let client return None/LocationInfo with "unavailable"
-        raise HTTPException(
-            status_code=500, detail=f"Failed to get OII location data: {str(e)}"
-        )
-
-
-# Salesforce and Ekata location endpoints removed
-
-
-@router.get(
-    "/location/source/business/{user_id}", response_model=Optional[List[LocationInfo]]
-)
-async def get_business_source_location(user_id: str) -> Optional[List[LocationInfo]]:
-    try:
-        logger.info(f"Fetching Business location source for user {user_id}")
-        return await location_data_client.get_business_location(user_id)
-    except Exception as e:
-        logger.error(
-            f"Error fetching Business location for {user_id}: {e}", exc_info=True
-        )
-        raise HTTPException(
-            status_code=500, detail=f"Failed to get Business location data: {str(e)}"
-        )
-
-
-@router.get(
-    "/location/source/phone/{user_id}", response_model=Optional[List[LocationInfo]]
-)
-async def get_phone_source_location(user_id: str) -> Optional[List[LocationInfo]]:
-    try:
-        logger.info(f"Fetching Phone location source for user {user_id}")
-        return await location_data_client.get_phone_location(user_id)
-    except Exception as e:
-        logger.error(f"Error fetching Phone location for {user_id}: {e}", exc_info=True)
-        raise HTTPException(
-            status_code=500, detail=f"Failed to get Phone location data: {str(e)}"
-        )
+# Location source endpoints removed - no real implementation available
+# These endpoints relied on mock LocationDataClient which has been removed per SYSTEM MANDATE
 
 
 # --- Consolidated Location Risk Analysis Endpoint ---
@@ -424,10 +414,13 @@ async def get_location_risk_analysis(
     try:
         logger.info(f"Starting location risk analysis for user {user_id}")
 
-        # Gather all location data concurrently
-        oii_task = location_data_client.get_oii_location_info(user_id)
-        business_task = location_data_client.get_business_location_info(user_id)
-        phone_task = location_data_client.get_phone_location_info(user_id)
+        # Location data client removed - no real implementation available
+        # Setting location data to None until proper implementation is added
+        oii_location_info = None
+        business_location_info = None
+        phone_location_info = None
+
+        # Get device analysis results
         device_task_obj: Optional[AnalyzeDeviceResponse] = await analyze_device(
             user_id,
             request,
@@ -436,19 +429,6 @@ async def get_location_risk_analysis(
             splunk_host,
             raw_splunk_override=None,
         )
-
-        (
-            oii_loc,
-            business_loc,
-            phone_loc,
-        ) = await asyncio.gather(
-            oii_task,
-            business_task,
-            phone_task,
-            return_exceptions=True,  # Allow individual tasks to fail without stopping others
-        )
-
-        # device_data_raw will be an AnalyzeDeviceResponse object or an Exception
         device_data_raw = device_task_obj
 
         # Helper to process results or log errors
@@ -460,10 +440,6 @@ async def get_location_risk_analysis(
                 )
                 return None
             return result
-
-        oii_location_info = process_result(oii_loc, "OII")
-        business_location_info = process_result(business_loc, "Business")
-        phone_location_info = process_result(phone_loc, "Phone")
 
         # device_analysis_results will be AnalyzeDeviceResponse or None if an exception occurred
         # process_result will pass through device_data_raw (which is AnalyzeDeviceResponse or Exception)
@@ -541,7 +517,6 @@ async def get_location_risk_analysis(
 
                 device_summary_for_prompt.append(
                     {
-                        "city": device_event.get("values(TRUE_IP_CITY)"),
                         "country": country_str,  # Use processed country string
                         "isp": device_event.get("values(TRUE_ISP)"),
                     }
@@ -693,21 +668,136 @@ async def cancel_splunk_job(job_id: str) -> Dict[str, Any]:
 async def verification_stats():
     settings = get_settings_for_env()
     from app.service.llm.verification.log_store import verification_log_store
+
     snapshot = await verification_log_store.snapshot()
     return JSONResponse(
         content={
             "enabled": bool(getattr(settings, "verification_enabled", False)),
             "mode": getattr(settings, "verification_mode", "shadow"),
-            "sample_percent": float(getattr(settings, "verification_sample_percent", 1.0) or 0.0),
-            "opus_model": getattr(settings, "verification_opus_model", "claude-opus-4.1"),
-            "threshold_default": float(getattr(settings, "verification_threshold_default", 0.85)),
-            "max_retries_default": int(getattr(settings, "verification_max_retries_default", 1)),
+            "sample_percent": float(
+                getattr(settings, "verification_sample_percent", 1.0) or 0.0
+            ),
+            "verification_model_name": "DEPRECATED - use LLM_VERIFICATION_MODEL environment variable",
+            "threshold_default": float(
+                getattr(settings, "verification_threshold_default", 0.85)
+            ),
+            "max_retries_default": int(
+                getattr(settings, "verification_max_retries_default", 1)
+            ),
             "task_policies": {
                 "risk_analysis": {
-                    "threshold": float(getattr(settings, "verification_task_policy_risk_analysis_threshold", 0.9)),
-                    "max_retries": int(getattr(settings, "verification_task_policy_risk_analysis_max_retries", 2)),
+                    "threshold": float(
+                        getattr(
+                            settings,
+                            "verification_task_policy_risk_analysis_threshold",
+                            0.9,
+                        )
+                    ),
+                    "max_retries": int(
+                        getattr(
+                            settings,
+                            "verification_task_policy_risk_analysis_max_retries",
+                            2,
+                        )
+                    ),
                 }
             },
             "metrics": snapshot,
         }
     )
+
+
+@router.get("/api/health")
+async def api_health():
+    """
+    API health check endpoint that includes verification settings.
+    Used by the frontend to fetch system status and configuration.
+    """
+    from app.service.config import get_settings_for_env
+
+    settings = get_settings_for_env()
+
+    # Get verification configuration
+    verification_config = {
+        "enabled": bool(getattr(settings, "verification_enabled", False)),
+        "mode": getattr(settings, "verification_mode", "shadow"),
+        "sample_percent": float(
+            getattr(settings, "verification_sample_percent", 1.0) or 0.0
+        ),
+        "threshold_default": float(
+            getattr(settings, "verification_threshold_default", 0.85)
+        ),
+    }
+
+    # Get model configuration
+    from app.service.llm_manager import get_llm_manager
+
+    llm_manager = get_llm_manager()
+
+    return JSONResponse(
+        content={
+            "status": "healthy",
+            "service": "olorin-backend",
+            "timestamp": datetime.now().isoformat(),
+            "verification": verification_config,
+            "models": {
+                "selected": llm_manager.selected_model_id,
+                "verification_model": llm_manager.verification_model_id,
+            },
+        }
+    )
+
+
+@router.post("/api/v1/verification/settings")
+async def update_verification_settings(request: Request):
+    """
+    Update verification settings dynamically.
+    Note: These changes are runtime-only and don't persist to .env file.
+    """
+    try:
+        body = await request.json()
+        settings = get_settings_for_env()
+
+        # Update settings dynamically (runtime only)
+        if "enabled" in body:
+            settings.verification_enabled = bool(body["enabled"])
+        if "mode" in body:
+            settings.verification_mode = str(body["mode"])
+        if "sample_percent" in body:
+            # Convert from decimal (0.0-1.0) if needed
+            val = float(body["sample_percent"])
+            settings.verification_sample_percent = val if val <= 1.0 else val / 100.0
+        if "threshold_default" in body:
+            # Convert from decimal (0.0-1.0) if needed
+            val = float(body["threshold_default"])
+            settings.verification_threshold_default = val if val <= 1.0 else val / 100.0
+
+        # Log the changes
+        logger.info(
+            f"Verification settings updated: enabled={settings.verification_enabled}, "
+            f"mode={settings.verification_mode}, "
+            f"sample_percent={settings.verification_sample_percent}, "
+            f"threshold={settings.verification_threshold_default}"
+        )
+
+        return JSONResponse(
+            content={
+                "success": True,
+                "message": "Verification settings updated successfully",
+                "settings": {
+                    "enabled": settings.verification_enabled,
+                    "mode": settings.verification_mode,
+                    "sample_percent": settings.verification_sample_percent,
+                    "threshold_default": settings.verification_threshold_default,
+                },
+            }
+        )
+    except Exception as e:
+        logger.error(f"Error updating verification settings: {e}")
+        return JSONResponse(
+            status_code=500,
+            content={
+                "success": False,
+                "message": f"Failed to update verification settings: {str(e)}",
+            },
+        )

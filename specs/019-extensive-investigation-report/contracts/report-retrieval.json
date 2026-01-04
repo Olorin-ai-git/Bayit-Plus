@@ -1,0 +1,157 @@
+{
+  "endpoint": "GET /api/v1/reports/investigations/{investigation_id}",
+  "description": "Retrieve a generated investigation report",
+  "authentication": "Required - JWT token in Authorization header",
+  "request": {
+    "path_parameters": {
+      "investigation_id": {
+        "type": "string",
+        "required": true,
+        "description": "Unique identifier of the investigation",
+        "example": "inv-2025-01-11-fraud-001"
+      }
+    },
+    "query_parameters": {
+      "include_html": {
+        "type": "boolean",
+        "default": true,
+        "description": "Include full HTML content in response"
+      },
+      "include_sections": {
+        "type": "boolean",
+        "default": false,
+        "description": "Include section data in response"
+      }
+    }
+  },
+  "response": {
+    "success": {
+      "status": 200,
+      "body": {
+        "id": {
+          "type": "string",
+          "description": "Report UUID",
+          "example": "550e8400-e29b-41d4-a716-446655440000"
+        },
+        "investigation_id": {
+          "type": "string",
+          "example": "inv-2025-01-11-fraud-001"
+        },
+        "investigation_folder": {
+          "type": "string",
+          "example": "/logs/investigations/LIVE_inv-2025-01-11-fraud-001_20250111_143022/"
+        },
+        "title": {
+          "type": "string",
+          "example": "Fraud Investigation Report - Account Takeover Scenario"
+        },
+        "report_type": {
+          "type": "string",
+          "example": "investigation_comprehensive"
+        },
+        "status": {
+          "type": "string",
+          "enum": ["draft", "generating", "ready", "failed"],
+          "example": "ready"
+        },
+        "html_content": {
+          "type": "string",
+          "nullable": true,
+          "description": "Full HTML report content (if include_html=true)"
+        },
+        "metadata": {
+          "type": "object",
+          "properties": {
+            "scenario": "string",
+            "entity_id": "string",
+            "entity_type": "string",
+            "mode": "string",
+            "timestamp": "string",
+            "agents_executed": "array",
+            "tools_used": "array",
+            "critical_findings": "array",
+            "recommendations": "array"
+          }
+        },
+        "risk_score": {
+          "type": "number",
+          "format": "float",
+          "minimum": 0,
+          "maximum": 100,
+          "example": 87.5
+        },
+        "risk_level": {
+          "type": "string",
+          "enum": ["low", "medium", "high", "critical"],
+          "example": "critical"
+        },
+        "agents_count": {
+          "type": "integer",
+          "example": 4
+        },
+        "tools_count": {
+          "type": "integer",
+          "example": 12
+        },
+        "evidence_count": {
+          "type": "integer",
+          "example": 23
+        },
+        "duration_seconds": {
+          "type": "number",
+          "format": "float",
+          "example": 45.7
+        },
+        "owner": {
+          "type": "string",
+          "example": "analyst@olorin.com"
+        },
+        "generated_at": {
+          "type": "string",
+          "format": "iso8601",
+          "example": "2025-01-11T14:32:15Z"
+        },
+        "generated_by": {
+          "type": "string",
+          "example": "system"
+        },
+        "created_at": {
+          "type": "string",
+          "format": "iso8601"
+        },
+        "updated_at": {
+          "type": "string",
+          "format": "iso8601"
+        },
+        "file_size_bytes": {
+          "type": "integer",
+          "example": 3145728
+        },
+        "pdf_url": {
+          "type": "string",
+          "nullable": true,
+          "example": null
+        }
+      }
+    },
+    "errors": {
+      "404": {
+        "description": "Report not found",
+        "body": {
+          "detail": "No report found for investigation inv-xyz"
+        }
+      },
+      "403": {
+        "description": "Unauthorized access",
+        "body": {
+          "detail": "You do not have permission to view this report"
+        }
+      }
+    }
+  },
+  "example_request": {
+    "curl": "curl -X GET 'https://api.olorin.com/api/v1/reports/investigations/inv-2025-01-11-fraud-001?include_html=true' \\\n  -H 'Authorization: Bearer eyJ...'",
+    "python": "import requests\n\nresponse = requests.get(\n    'https://api.olorin.com/api/v1/reports/investigations/inv-2025-01-11-fraud-001',\n    headers={'Authorization': 'Bearer eyJ...'},\n    params={'include_html': True}\n)\nreport = response.json()",
+    "javascript": "const response = await fetch(\n  'https://api.olorin.com/api/v1/reports/investigations/inv-2025-01-11-fraud-001?include_html=true',\n  {\n    headers: {'Authorization': 'Bearer eyJ...'}\n  }\n);\nconst report = await response.json();"
+  }
+}

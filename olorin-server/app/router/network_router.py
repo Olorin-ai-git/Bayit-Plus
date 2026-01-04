@@ -1,12 +1,13 @@
 import logging
-from app.service.logging import get_bridge_logger
 from typing import Any, Dict, List, Optional
 
-from fastapi import APIRouter, Query
+from fastapi import APIRouter, Depends, Query
 from starlette.requests import Request
 
 from app.persistence import ensure_investigation_exists
-from app.service.network_analysis_service import NetworkAnalysisService
+from app.security.auth import User, require_read
+from app.service.llm_network_risk_service import LLMNetworkRiskService
+from app.service.logging import get_bridge_logger
 
 logger = get_bridge_logger(__name__)
 router = APIRouter(prefix="/network")
@@ -27,53 +28,18 @@ async def analyze_network(
     entity_type: str = Query("user_id", pattern="^(user_id|device_id)$"),
     splunk_host: Optional[str] = None,
     raw_splunk_override: Optional[List[Dict[str, Any]]] = None,
+    service: LLMNetworkRiskService = Depends(LLMNetworkRiskService),
+    current_user: User = Depends(require_read),
 ) -> dict:
-    """Analyze network risk for a user or device.
-
-    This is a thin wrapper around NetworkAnalysisService.analyze_network().
-    The actual business logic is handled by the service layer.
-    """
-    try:
-        logger.info(f"=== NETWORK ENDPOINT HIT (router) ===")
-        logger.info(f"Network risk analysis requested for {entity_type}: {entity_id}")
-
-        # Ensure investigation exists
-        ensure_investigation_exists(investigation_id, entity_id, entity_type)
-
-        # Delegate to service layer
-        service = NetworkAnalysisService()
-        result = await service.analyze_network(
-            entity_id=entity_id,
-            entity_type=entity_type,
-            request=request,
-            investigation_id=investigation_id,
-            time_range=time_range,
-            splunk_host=splunk_host,
-            raw_splunk_override=raw_splunk_override,
-        )
-
-        return result
-
-    except Exception as e:
-        logger.error(
-            f"Error in network router for {entity_type} {entity_id}: {e}", exc_info=True
-        )
-        # Return a fallback response
-        fallback_assessment = {
-            "risk_level": 0.0,
-            "risk_factors": [f"Error: {str(e)}"],
-            "anomaly_details": [],
-            "confidence": 0.0,
-            "summary": "Error during network risk assessment.",
-            "thoughts": "No LLM assessment due to error.",
-        }
-
-        # Choose the correct ID key based on entity_type
-        id_key = "userId" if entity_type == "user_id" else "deviceId"
-
-        return {
-            id_key: entity_id,
-            "raw_splunk_results_count": 0,
-            "extracted_network_signals": [],
-            "network_risk_assessment": fallback_assessment,
-        }
+    """Analyze network risk for a user or device - uses LLMNetworkRiskService directly."""
+    # Only keep HTTP-specific logic here
+    ensure_investigation_exists(investigation_id, entity_id, entity_type)
+    return await service.analyze_network(
+        entity_id=entity_id,
+        entity_type=entity_type,
+        request=request,
+        investigation_id=investigation_id,
+        time_range=time_range,
+        splunk_host=splunk_host,
+        raw_splunk_override=raw_splunk_override,
+    )

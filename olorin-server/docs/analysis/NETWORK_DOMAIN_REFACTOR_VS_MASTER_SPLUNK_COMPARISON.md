@@ -225,7 +225,7 @@ splunk_result = await splunk_tool.arun({"query": splunk_query})
 extracted_signals = []
 for event in splunk_results:
     signal = {
-        "ip_address": event.get("true_ip"),
+        "ip": event.get("true_ip"),
         "isp": event.get("isp"), 
         "organization": event.get("organization"),
         "tm_sessionid": event.get("tm_sessionid"),
@@ -242,7 +242,7 @@ def _process_splunk_results(self, splunk_results: List[Dict[str, Any]]) -> List[
         signal = {
             "user_id": event.get("user_id"),
             "timestamp": event.get("_time"),  # Renamed field
-            "ip_address": event.get("ip_address"),
+            "ip": event.get("ip"),
             "country": event.get("country"),
             "isp": event.get("isp"),
             "organization": event.get("organization"),
@@ -256,7 +256,7 @@ def _process_splunk_results(self, splunk_results: List[Dict[str, Any]]) -> List[
 | Master Branch Field | Refactor Branch Field | Status |
 |-------------------|---------------------|--------|
 | `_time` | `timestamp` | ✅ **Renamed for clarity** |
-| `ip_address` (from true_ip) | `ip_address` | ✅ **Same logic** |
+| `ip` (from true_ip) | `ip` | ✅ **Same logic** |
 | `isp` | `isp` | ✅ **Identical** |
 | `organization` | `organization` | ✅ **Identical** |
 | `tm_sessionid` | Not visible | ➖ **Different processing** |
@@ -272,14 +272,14 @@ def _process_splunk_results(self, splunk_results: List[Dict[str, Any]]) -> List[
 {
   "extracted_network_signals": [
     {
-      "ip_address": "207.207.181.8",
+      "ip": "207.207.181.8",
       "isp": "olorin inc.",
       "organization": "olorin inc.",
       "tm_sessionid": "1a977456cfcd4778f2670e3e0cd56efb",
       "_time": "2025-05-15T06:31:46.027-07:00"
     },
     {
-      "ip_address": "223.185.128.58", 
+      "ip": "223.185.128.58", 
       "isp": "bharti airtel ltd.",
       "organization": "bharti",
       "tm_sessionid": "5b2cd1da38f4403d99c2b6fea53604d9",
@@ -395,7 +395,7 @@ def create_fallback_assessment(self, user_id: str, extracted_signals: List[Dict[
   "raw_splunk_results_count": 23,
   "extracted_network_signals": [
     {
-      "ip_address": "207.207.181.8",
+      "ip": "207.207.181.8",
       "isp": "olorin inc.",
       "organization": "olorin inc.", 
       "tm_sessionid": "1a977456cfcd4778f2670e3e0cd56efb",

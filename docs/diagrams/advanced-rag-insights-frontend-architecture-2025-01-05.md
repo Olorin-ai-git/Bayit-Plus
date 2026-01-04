@@ -79,7 +79,7 @@ graph TB
         %% Main Application Components
         IP[Investigation Page]
         ID[Investigation Dashboard]
-        AIP[Autonomous Investigation Panel]
+        AIP[Structured Investigation Panel]
     end
     
     %% Data Flow Connections
@@ -244,7 +244,7 @@ graph TB
     subgraph "Investigation Dashboard Integration"
         IP[Investigation Page]
         ID[Investigation Dashboard]
-        AIP[Autonomous Investigation Panel]
+        AIP[Structured Investigation Panel]
     end
     
     %% Advanced RAG Modal

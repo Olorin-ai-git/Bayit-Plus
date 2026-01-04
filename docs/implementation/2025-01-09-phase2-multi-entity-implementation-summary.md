@@ -4,11 +4,11 @@
 **Author:** Gil Klainert  
 **Phase:** Phase 2 (Multi-Entity Investigation Orchestration)  
 **Status:** ✅ COMPLETED  
-**Implementation Plan:** [Multi-Entity Autonomous Investigation System Plan](/docs/plans/2025-01-09-enhanced-entity-search-system-plan.md)  
+**Implementation Plan:** [Multi-Entity Structured Investigation System Plan](/docs/plans/2025-01-09-enhanced-entity-search-system-plan.md)  
 
 ## 🎯 **Implementation Overview**
 
-Successfully implemented **Phase 2: Multi-Entity Investigation Orchestration** of the comprehensive multi-entity autonomous investigation system. This phase transforms Olorin from single-entity investigations to sophisticated multi-entity investigations with Boolean logic, relationship analysis, and cross-entity pattern detection.
+Successfully implemented **Phase 2: Multi-Entity Investigation Orchestration** of the comprehensive multi-entity structured investigation system. This phase transforms Olorin from single-entity investigations to sophisticated multi-entity investigations with Boolean logic, relationship analysis, and cross-entity pattern detection.
 
 ## ✅ **What Was Completed**
 
@@ -87,30 +87,30 @@ Successfully implemented **Phase 2: Multi-Entity Investigation Orchestration** o
 
 #### **New REST Endpoints:**
 
-1. **`POST /v1/autonomous/multi-entity/start`** - Start multi-entity investigation
+1. **`POST /v1/structured/multi-entity/start`** - Start multi-entity investigation
    - Accepts multi-entity request JSON
    - Returns initial investigation result
    - Executes investigation in background
    - Complete request validation
 
-2. **`GET /v1/autonomous/multi-entity/{investigation_id}/status`** - Get investigation status
+2. **`GET /v1/structured/multi-entity/{investigation_id}/status`** - Get investigation status
    - Real-time progress tracking
    - Entity-level progress details
    - Timeline event streaming
 
-3. **`GET /v1/autonomous/multi-entity/{investigation_id}/results`** - Get results (Phase 2.2)
-4. **`PUT /v1/autonomous/multi-entity/{investigation_id}/relationships`** - Update relationships (Phase 2.2)
+3. **`GET /v1/structured/multi-entity/{investigation_id}/results`** - Get results (Phase 2.2)
+4. **`PUT /v1/structured/multi-entity/{investigation_id}/relationships`** - Update relationships (Phase 2.2)
 
-5. **`GET /v1/autonomous/entities/types/enhanced`** - Get enhanced entity types
+5. **`GET /v1/structured/entities/types/enhanced`** - Get enhanced entity types
    - Core, transaction, and extended entity types
    - Organized by category (60+ types total)
 
-6. **`GET /v1/autonomous/multi-entity/metrics`** - Get orchestrator metrics
+6. **`GET /v1/structured/multi-entity/metrics`** - Get orchestrator metrics
    - Investigation performance metrics
    - Success/failure rates
    - Active investigation counts
 
-7. **Enhanced `/v1/autonomous/health`** - Updated health check
+7. **Enhanced `/v1/structured/health`** - Updated health check
    - Multi-entity feature status
    - Module and capability listing
 
@@ -210,7 +210,7 @@ MultiEntityInvestigationOrchestrator
 
 ### **API Architecture:**
 ```
-/v1/autonomous/multi-entity/
+/v1/structured/multi-entity/
 ├── POST /start              - Start investigation
 ├── GET /{id}/status         - Get status  
 ├── GET /{id}/results        - Get results (Phase 2.2)
@@ -268,7 +268,7 @@ MultiEntityInvestigationOrchestrator
 ### **System Integration Points:**
 - **EntityManager**: Leverages existing entity management system
 - **Logging System**: Uses unified logging infrastructure  
-- **Router Architecture**: Extends autonomous investigation router
+- **Router Architecture**: Extends structured investigation router
 - **Model Architecture**: Consistent with existing investigation models
 
 ## ⏳ **Phase 2.2 Preparation**
@@ -300,7 +300,7 @@ MultiEntityInvestigationOrchestrator
 
 ### **Phase 2.2 Implementation Required:**
 ⏳ **Boolean Logic Evaluation**: Actual query parsing and evaluation  
-⏳ **LangGraph Agent Integration**: Real autonomous agent execution  
+⏳ **LangGraph Agent Integration**: Real structured agent execution  
 ⏳ **Result Persistence**: Investigation result storage and retrieval  
 ⏳ **Advanced Pattern Detection**: Sophisticated cross-entity analysis algorithms  
 

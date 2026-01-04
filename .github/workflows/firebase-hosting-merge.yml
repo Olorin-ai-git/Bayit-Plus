@@ -130,6 +130,8 @@ jobs:
         env:
           CI: true
           GENERATE_SOURCEMAP: false  # Never generate sourcemaps for security
+          # Firebase Authentication (Feature: firebase-rbac)
+          REACT_APP_AUTH_ENABLE_GOOGLE_SIGNIN: true
 
       - name: Finalize Build
         id: build-info

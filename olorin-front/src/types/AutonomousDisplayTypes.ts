@@ -1,4 +1,4 @@
-// TypeScript interfaces for Combined Autonomous Investigation Display components
+// TypeScript interfaces for Combined Structured Investigation Display components
 
 export interface AgentNodeData {
   id: string;

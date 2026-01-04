@@ -1,15 +1,15 @@
-# WebSocket Integration Guide: Autonomous Mode
+# WebSocket Integration Guide: Structured Mode
 
 ## Overview
 
-This guide explains how to integrate with the OLORIN investigation platform's autonomous mode WebSocket API. Autonomous mode provides real-time updates throughout the fraud investigation process via WebSocket messages.
+This guide explains how to integrate with the OLORIN investigation platform's structured mode WebSocket API. Structured mode provides real-time updates throughout the fraud investigation process via WebSocket messages.
 
 ## Quick Start
 
-### 1. Start Autonomous Investigation
+### 1. Start Structured Investigation
 
 ```javascript
-// Start autonomous investigation
+// Start structured investigation
 const response = await fetch('/v1/agent/start/{entity_id}', {
   method: 'POST',
   headers: {
@@ -20,7 +20,7 @@ const response = await fetch('/v1/agent/start/{entity_id}', {
   },
   body: new URLSearchParams({
     entity_type: 'user_id', // or 'device_id'
-    autonomous_mode: 'true',
+    structured_mode: 'true',
     websocket_updates: 'true',
     parallel: 'true', // or 'false' for sequential
     investigation_id: 'your_investigation_id' // optional, will be generated if not provided
@@ -74,7 +74,7 @@ interface BaseWebSocketMessage {
 ```json
 {
   "type": "investigation_started",
-  "message": "Starting autonomous investigation for user_id 4621097846089147992",
+  "message": "Starting structured investigation for user_id 4621097846089147992",
   "timestamp": 1640995200.123,
   "entity_id": "4621097846089147992",
   "entity_type": "user_id",
@@ -87,7 +87,7 @@ interface BaseWebSocketMessage {
 ```json
 {
   "type": "agent_started", 
-  "message": "Agent Device started autonomous investigation",
+  "message": "Agent Device started structured investigation",
   "timestamp": 1640995201.456,
   "agent_name": "Device",
   "entity_id": "4621097846089147992",
@@ -99,7 +99,7 @@ interface BaseWebSocketMessage {
 ```json
 {
   "type": "agent_thinking",
-  "message": "Agent Device making autonomous investigation decisions", 
+  "message": "Agent Device making structured investigation decisions", 
   "timestamp": 1640995202.789,
   "agent_name": "Device",
   "stage": "decision_making"
@@ -138,7 +138,7 @@ interface BaseWebSocketMessage {
 ```json
 {
   "type": "agent_completed",
-  "message": "Agent Device completed autonomous investigation", 
+  "message": "Agent Device completed structured investigation", 
   "timestamp": 1640995205.678,
   "agent_name": "Device",
   "success": true,
@@ -165,7 +165,7 @@ interface BaseWebSocketMessage {
 ```json
 {
   "type": "investigation_completed", 
-  "message": "Autonomous investigation completed for user_id 4621097846089147992",
+  "message": "Structured investigation completed for user_id 4621097846089147992",
   "timestamp": 1640995300.234,
   "isCompletion": true,
   "summary": {
@@ -215,7 +215,7 @@ interface InvestigationProgress {
   overallRiskScore?: number;
 }
 
-export const useAutonomousInvestigation = (investigationId: string, parallel: boolean = true) => {
+export const useStructuredInvestigation = (investigationId: string, parallel: boolean = true) => {
   const [messages, setMessages] = useState<WebSocketMessage[]>([]);
   const [progress, setProgress] = useState<InvestigationProgress>({
     completedAgents: 0,
@@ -566,4 +566,4 @@ export interface ErrorMessage extends WebSocketMessage {
 }
 ```
 
-This guide provides comprehensive coverage of WebSocket integration for autonomous mode. For additional support or questions, please refer to the API documentation or contact the development team.
+This guide provides comprehensive coverage of WebSocket integration for structured mode. For additional support or questions, please refer to the API documentation or contact the development team.

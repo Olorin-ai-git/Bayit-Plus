@@ -110,7 +110,7 @@
   - InvestigationStep.tsx: 22.22%
   - Home.tsx: 0%
   - InvestigationForm.tsx: 0%
-  - AutonomousInvestigationPanel.tsx: 0%
+  - StructuredInvestigationPanel.tsx: 0%
 
 ## Path to 87% Coverage
 

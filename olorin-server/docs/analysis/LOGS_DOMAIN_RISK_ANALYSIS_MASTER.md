@@ -667,10 +667,6 @@ def prioritize_auth_records(auth_records: List[Dict]) -> List[Dict]:
 {
   "splunk_data": [
     {
-<<<<<<< HEAD:back/docs/LOGS_DOMAIN_RISK_ANALYSIS_MASTER.md
-      "olorin_userid": "4621097846089147992",
-      "values(olorin_username)": ["olorin_test_20250515", "iamtestpass_15171910655948"],
-=======
       "olorin_userid": "4621097846089147992",
       "values(olorin_username)": ["olorin_test_20250515", "iamtestpass_15171910655948"],
 >>>>>>> restructure-projects:olorin-server/docs/LOGS_DOMAIN_RISK_ANALYSIS_MASTER.md

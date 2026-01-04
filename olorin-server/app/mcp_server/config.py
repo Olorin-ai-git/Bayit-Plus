@@ -4,6 +4,7 @@ import os
 from typing import Any, Dict, List, Optional
 
 from pydantic import BaseModel, Field
+
 from app.service.config_loader import get_config_loader
 
 
@@ -89,7 +90,7 @@ class MCPConfig(BaseModel):
         config_loader = get_config_loader()
         openai_api_key = config_loader.load_secret("OPENAI_API_KEY")
         langfuse_api_key = config_loader.load_secret("LANGFUSE_API_KEY")
-        
+
         return cls(
             # Server
             server_name=os.getenv("MCP_SERVER_NAME", "olorin-mcp-server"),

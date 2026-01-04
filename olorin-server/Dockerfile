@@ -1,97 +1,46 @@
-# Multi-stage Docker build for Olorin Backend Service - Optimized for Production
-# Build arguments for flexible configuration
-ARG PYTHON_VERSION=3.11
-ARG POETRY_VERSION=1.8.0
-ARG APP_ENV=production
-ARG WORKERS=1
+# Simple Docker build for Olorin Backend Service
+FROM python:3.11-slim
 
-# Stage 1: Base image with common system dependencies
-FROM python:${PYTHON_VERSION}-slim AS base
-ARG POETRY_VERSION
-
-# Set environment variables for build optimization
+# Set environment variables
 ENV PYTHONUNBUFFERED=1 \
     PYTHONDONTWRITEBYTECODE=1 \
-    PYTHONHASHSEED=random \
-    PIP_NO_CACHE_DIR=1 \
-    PIP_DISABLE_PIP_VERSION_CHECK=1
+    PIP_NO_CACHE_DIR=1
 
-# Install system dependencies in single layer
+# Install system dependencies
 RUN apt-get update && apt-get install -y --no-install-recommends \
     gcc \
     g++ \
     libpq-dev \
     curl \
     && apt-get clean \
-    && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
+    && rm -rf /var/lib/apt/lists/*
 
-# Stage 2: Poetry dependency resolver and installer
-FROM base AS poetry-deps
-ARG POETRY_VERSION
-ARG APP_ENV
+# Create application directory
+WORKDIR /app
 
-# Install Poetry with specific version
-RUN pip install --no-cache-dir poetry==${POETRY_VERSION}
+# Install Poetry
+RUN pip install poetry==1.8.0
 
-# Configure Poetry for production builds
-ENV POETRY_NO_INTERACTION=1 \
-    POETRY_VENV_IN_PROJECT=1 \
-    POETRY_CACHE_DIR=/tmp/poetry_cache
-
-# Copy dependency files (separate layer for better caching)
+# Copy dependency files
 COPY pyproject.toml poetry.lock ./
 
-# Install dependencies based on environment
-RUN if [ "$APP_ENV" = "development" ]; then \
-        poetry install --no-root; \
-    else \
-        poetry install --no-dev --no-root; \
-    fi && \
-    rm -rf /tmp/poetry_cache
+# Install dependencies (without dev dependencies, without creating venv)
+RUN poetry config virtualenvs.create false && \
+    poetry install --no-dev --no-root --no-interaction
 
-# Stage 3: Application runtime image
-FROM python:${PYTHON_VERSION}-slim AS runner
-ARG APP_ENV
-ARG WORKERS
+# Copy application code
+COPY app/ /app/app/
+COPY scripts/server/main.py /app/
 
-# Install only runtime dependencies
-RUN apt-get update && apt-get install -y --no-install-recommends \
-    libpq-dev \
-    curl \
-    && apt-get clean \
-    && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* \
-    && groupadd -r olorin \
-    && useradd -r -g olorin -s /bin/bash -m olorin
+# Set Python path
+ENV PYTHONPATH="/app"
 
-# Copy Python packages from poetry-deps stage
-COPY --from=poetry-deps /usr/local/lib/python3.11/site-packages /usr/local/lib/python3.11/site-packages
-COPY --from=poetry-deps /usr/local/bin /usr/local/bin
-
-# Create application directory with proper permissions
-WORKDIR /app
-RUN mkdir -p /app/logs /app/uploads /app/reports /usr/share/fonts/truetype/ \
-    && chown -R olorin:olorin /app /usr/share/fonts/truetype/
-
-# Copy application code with proper ownership
-COPY --chown=olorin:olorin app/ /app/app/
-COPY --chown=olorin:olorin main.py simple_main.py /app/
-
-# Switch to non-root user for security
-USER olorin
-
-# Set optimized environment variables
-ENV PYTHONPATH="/app" \
-    PYTHONUNBUFFERED=1 \
-    PYTHONDONTWRITEBYTECODE=1 \
-    ENVIRONMENT=${APP_ENV} \
-    WORKERS=${WORKERS}
-
-# Expose port (configurable via Cloud Run)
+# Expose port
 EXPOSE 8090
 
-# Enhanced health check with timeout and proper error handling
+# Health check
 HEALTHCHECK --interval=30s --timeout=10s --start-period=60s --retries=3 \
     CMD curl -f http://localhost:${PORT:-8090}/health || exit 1
 
-# Optimized startup command with configurable workers
-CMD ["sh", "-c", "exec python -m uvicorn main:app --host 0.0.0.0 --port ${PORT:-8090} --workers ${WORKERS:-1} --access-log --log-level info"]
+# Start command - use simple main.py with CORS middleware
+CMD ["sh", "-c", "exec python -m uvicorn main:app --host 0.0.0.0 --port ${PORT:-8090} --workers 1 --access-log --log-level info"]

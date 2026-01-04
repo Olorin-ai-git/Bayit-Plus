@@ -11,6 +11,7 @@ class AgentPhase(Enum):
     NETWORK_ANALYSIS = "network_analysis"
     DEVICE_ANALYSIS = "device_analysis"
     BEHAVIOR_ANALYSIS = "behavior_analysis"
+    AUTHENTICATION_ANALYSIS = "authentication_analysis"
     ANOMALY_DETECTION = "anomaly_detection"
     RISK_ASSESSMENT = "risk_assessment"
     COMPLETED = "completed"

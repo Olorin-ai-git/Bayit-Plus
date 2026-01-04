@@ -21,8 +21,8 @@ This implementation plan details the final domain agent RAG integration for the 
 
 ### Risk Agent Current Implementation
 **Existing Components:**
-- `autonomous_risk_agent()` function with LLM-driven analysis
-- Integration with autonomous investigation context
+- `structured_risk_agent()` function with LLM-driven analysis
+- Integration with structured investigation context
 - Journey tracking and WebSocket progress updates
 - Threat intelligence aggregation focus using unified tools
 - 13 specific risk assessment objectives
@@ -156,7 +156,7 @@ except ImportError:
 if RAG_AVAILABLE and rag_config:
     risk_agent = create_rag_agent("risk", tools, rag_config)
 else:
-    risk_agent = create_autonomous_agent("risk", tools)
+    risk_agent = create_structured_agent("risk", tools)
 ```
 
 ### Enhanced Risk Assessment Objectives

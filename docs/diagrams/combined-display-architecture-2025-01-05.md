@@ -1,16 +1,16 @@
-# Combined Autonomous Investigation Display Architecture
+# Combined Structured Investigation Display Architecture
 
 **Date**: 2025-01-05  
 **Author**: Gil Klainert  
-**Plan Reference**: [Combined Display Integration Plan](../plans/2025-01-05-combined-autonomous-investigation-display-integration-plan.md)
+**Plan Reference**: [Combined Display Integration Plan](../plans/2025-01-05-combined-structured-investigation-display-integration-plan.md)
 
 ## System Architecture Overview
 
 ```mermaid
 graph TB
     %% Main Display Component
-    subgraph "Combined Autonomous Investigation Display"
-        CAID[CombinedAutonomousInvestigationDisplay.tsx]
+    subgraph "Combined Structured Investigation Display"
+        CAID[CombinedStructuredInvestigationDisplay.tsx]
         
         subgraph "Neural Network Section"
             NNF[NeuralNetworkFlow.tsx]
@@ -39,12 +39,12 @@ graph TB
         UCD[useCombinedDisplay.ts]
         UIA[useInvestigationAnimation.ts]
         UTT[useTerminalTypewriter.ts]
-        UAI[useAutonomousInvestigation.ts]
+        UAI[useStructuredInvestigation.ts]
     end
     
     %% WebSocket Integration Layer
     subgraph "WebSocket Integration"
-        AIC[AutonomousInvestigationClient.ts]
+        AIC[StructuredInvestigationClient.ts]
         IEH[Investigation Event Handlers]
         SET[Stream Event Types]
     end
@@ -52,7 +52,7 @@ graph TB
     %% Backend Integration
     subgraph "Backend System"
         WSS[WebSocket Streaming Service]
-        AA[Autonomous Agents]
+        AA[Structured Agents]
         JT[Journey Tracker]
         IR[Investigation Router]
     end
@@ -460,7 +460,7 @@ graph LR
         FA[FastAPI]
         WS2[WebSocket Server]
         PY[Python 3.11+]
-        AA[Autonomous Agents]
+        AA[Structured Agents]
     end
     
     subgraph "Real-time Communication"
@@ -490,4 +490,4 @@ graph LR
     style PY fill:#3776ab
 ```
 
-This architecture ensures optimal performance, maintainability, and user experience while providing comprehensive autonomous investigation visualization capabilities without RAG complexity.
+This architecture ensures optimal performance, maintainability, and user experience while providing comprehensive structured investigation visualization capabilities without RAG complexity.

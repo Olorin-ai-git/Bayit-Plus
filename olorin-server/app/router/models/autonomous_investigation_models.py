@@ -1,25 +1,85 @@
 """
-Autonomous Investigation Models
-This module contains all Pydantic models for autonomous investigation requests and responses.
+Structured Investigation Models
+This module contains all Pydantic models for structured investigation requests and responses.
 """
+
 import re
-from pydantic import BaseModel, Field, validator
-from typing import Dict, List, Any, Optional
 from datetime import datetime
+from typing import Any, Dict, List, Optional
+
+from pydantic import BaseModel, Field, validator
+
 from app.utils.entity_validation import validate_entity_type_against_enum
 
 
-class AutonomousInvestigationRequest(BaseModel):
-    """Request model for starting an autonomous investigation"""
-    investigation_id: Optional[str] = Field(None, description="Optional investigation ID (auto-generated if not provided)")
-    entity_id: str = Field(..., description="Entity being investigated (user_id, device_id, etc.)")
-    entity_type: str = Field(..., min_length=1, max_length=100, description="Type of entity (user, device, transaction, etc.)")
-    scenario: Optional[str] = Field(None, description="Mock scenario to use for testing (optional)")
-    enable_verbose_logging: bool = Field(True, description="Enable comprehensive logging of all interactions")
-    enable_journey_tracking: bool = Field(True, description="Enable LangGraph journey tracking")
-    enable_chain_of_thought: bool = Field(True, description="Enable agent reasoning logging")
-    investigation_priority: str = Field("normal", description="Investigation priority (low, normal, high, critical)")
-    metadata: Dict[str, Any] = Field(default_factory=dict, description="Additional investigation metadata")
+class TimeRange(BaseModel):
+    """Time range filter for investigation data"""
+
+    start_time: str = Field(
+        ..., description="Start time in ISO 8601 format (YYYY-MM-DDTHH:MM:SSZ)"
+    )
+    end_time: str = Field(
+        ..., description="End time in ISO 8601 format (YYYY-MM-DDTHH:MM:SSZ)"
+    )
+
+    @validator("start_time", "end_time")
+    def validate_iso_format(cls, v):
+        """Validate that time strings are in valid ISO 8601 format."""
+        try:
+            datetime.fromisoformat(v.replace("Z", "+00:00"))
+            return v
+        except ValueError:
+            raise ValueError(
+                f"Invalid ISO 8601 timestamp format: {v}. Expected format: YYYY-MM-DDTHH:MM:SSZ"
+            )
+
+    @validator("end_time")
+    def validate_end_after_start(cls, v, values):
+        """Validate that end_time is after start_time."""
+        if "start_time" in values:
+            start = datetime.fromisoformat(values["start_time"].replace("Z", "+00:00"))
+            end = datetime.fromisoformat(v.replace("Z", "+00:00"))
+            if end <= start:
+                raise ValueError("end_time must be after start_time")
+        return v
+
+
+class StructuredInvestigationRequest(BaseModel):
+    """Request model for starting an structured investigation"""
+
+    investigation_id: Optional[str] = Field(
+        None, description="Optional investigation ID (auto-generated if not provided)"
+    )
+    entity_id: str = Field(
+        ..., description="Entity being investigated (user_id, device_id, etc.)"
+    )
+    entity_type: str = Field(
+        ...,
+        min_length=1,
+        max_length=100,
+        description="Type of entity (user, device, transaction, etc.)",
+    )
+    time_range: Optional[TimeRange] = Field(
+        None, description="Optional time range filter for investigation data"
+    )
+    scenario: Optional[str] = Field(
+        None, description="Mock scenario to use for testing (optional)"
+    )
+    enable_verbose_logging: bool = Field(
+        True, description="Enable comprehensive logging of all interactions"
+    )
+    enable_journey_tracking: bool = Field(
+        True, description="Enable LangGraph journey tracking"
+    )
+    enable_chain_of_thought: bool = Field(
+        True, description="Enable agent reasoning logging"
+    )
+    investigation_priority: str = Field(
+        "normal", description="Investigation priority (low, normal, high, critical)"
+    )
+    metadata: Dict[str, Any] = Field(
+        default_factory=dict, description="Additional investigation metadata"
+    )
 
     @validator("entity_type")
     def validate_entity_type(cls, v):
@@ -27,12 +87,13 @@ class AutonomousInvestigationRequest(BaseModel):
         is_valid, error_message = validate_entity_type_against_enum(v)
         if not is_valid:
             raise ValueError(error_message)
-        
+
         return v.strip().lower()
 
 
-class AutonomousInvestigationResponse(BaseModel):
+class StructuredInvestigationResponse(BaseModel):
     """Response model for investigation start request"""
+
     investigation_id: str
     status: str
     message: str
@@ -44,6 +105,7 @@ class AutonomousInvestigationResponse(BaseModel):
 
 class InvestigationStatusResponse(BaseModel):
     """Response model for investigation status"""
+
     investigation_id: str
     status: str
     current_phase: str
@@ -56,6 +118,7 @@ class InvestigationStatusResponse(BaseModel):
 
 class InvestigationLogsResponse(BaseModel):
     """Response model for investigation logs"""
+
     investigation_id: str
     log_summary: Dict[str, Any]
     interaction_logs: List[Dict[str, Any]]
@@ -66,8 +129,11 @@ class InvestigationLogsResponse(BaseModel):
 
 class LangGraphJourneyResponse(BaseModel):
     """Response model for LangGraph journey visualization"""
+
     investigation_id: str
     journey_visualization: Dict[str, Any]
-    execution_path: List[Dict[str, Any]]  # Changed from List[str] to List[Dict[str, Any]] to match timeline data
+    execution_path: List[
+        Dict[str, Any]
+    ]  # Changed from List[str] to List[Dict[str, Any]] to match timeline data
     agent_coordination: List[Dict[str, Any]]
     performance_analytics: Dict[str, Any]

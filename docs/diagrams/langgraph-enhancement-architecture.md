@@ -1,5 +1,5 @@
 # LangGraph Enhancement Architecture
-## Olorin Autonomous Investigation System
+## Olorin Structured Investigation System
 
 **Category**: Enhancement Architecture  
 **Purpose**: LangGraph built-in tools and capabilities enhancement strategy  
@@ -10,7 +10,7 @@
 
 ## 🎯 DIAGRAM PURPOSE
 
-This diagram illustrates the comprehensive enhancement architecture for integrating LangGraph built-in tools and capabilities into the Olorin autonomous investigation system, showing:
+This diagram illustrates the comprehensive enhancement architecture for integrating LangGraph built-in tools and capabilities into the Olorin structured investigation system, showing:
 - Current implementation vs enhanced target architecture
 - Phase-based enhancement strategy and dependencies
 - Tool execution flow improvements and resilience patterns

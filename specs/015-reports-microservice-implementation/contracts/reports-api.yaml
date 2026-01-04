@@ -1,0 +1,444 @@
+openapi: 3.0.3
+info:
+  title: Reports API
+  description: API for managing investigation reports
+  version: 1.0.0
+  contact:
+    name: Olorin Platform
+
+servers:
+  - url: /api/v1/reports
+    description: Reports API endpoints
+
+tags:
+  - name: Reports
+    description: Report management operations
+
+paths:
+  /reports:
+    get:
+      tags: [Reports]
+      summary: List reports
+      description: List reports with filtering and pagination
+      operationId: listReports
+      parameters:
+        - name: owner
+          in: query
+          schema:
+            type: string
+          description: Filter by owner
+        - name: status
+          in: query
+          schema:
+            type: string
+            enum: [Draft, Published, Archived]
+          description: Filter by status
+        - name: search
+          in: query
+          schema:
+            type: string
+          description: Search in title
+        - name: page
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            default: 1
+          description: Page number
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 20
+          description: Items per page
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReportListResponse'
+        '401':
+          description: Unauthorized
+        '500':
+          description: Internal server error
+
+    post:
+      tags: [Reports]
+      summary: Create report
+      description: Create a new report
+      operationId: createReport
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ReportCreate'
+      responses:
+        '201':
+          description: Report created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReportResponse'
+        '400':
+          description: Bad request
+        '401':
+          description: Unauthorized
+        '500':
+          description: Internal server error
+
+  /reports/{report_id}:
+    get:
+      tags: [Reports]
+      summary: Get report
+      description: Retrieve report by ID
+      operationId: getReport
+      parameters:
+        - name: report_id
+          in: path
+          required: true
+          schema:
+            type: string
+          description: Report ID
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReportResponse'
+        '404':
+          description: Report not found
+        '401':
+          description: Unauthorized
+
+    put:
+      tags: [Reports]
+      summary: Update report
+      description: Update report fields
+      operationId: updateReport
+      parameters:
+        - name: report_id
+          in: path
+          required: true
+          schema:
+            type: string
+          description: Report ID
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ReportUpdate'
+      responses:
+        '200':
+          description: Report updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReportResponse'
+        '404':
+          description: Report not found
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden (not owner)
+
+    delete:
+      tags: [Reports]
+      summary: Delete report
+      description: Delete report
+      operationId: deleteReport
+      parameters:
+        - name: report_id
+          in: path
+          required: true
+          schema:
+            type: string
+          description: Report ID
+      responses:
+        '204':
+          description: Report deleted
+        '404':
+          description: Report not found
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden (not owner)
+
+  /reports/{report_id}/publish:
+    post:
+      tags: [Reports]
+      summary: Publish report
+      description: Change report status to Published or Draft
+      operationId: publishReport
+      parameters:
+        - name: report_id
+          in: path
+          required: true
+          schema:
+            type: string
+          description: Report ID
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ReportPublishRequest'
+      responses:
+        '200':
+          description: Status updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReportResponse'
+        '404':
+          description: Report not found
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden (not owner)
+
+  /reports/{report_id}/share:
+    post:
+      tags: [Reports]
+      summary: Share report
+      description: Generate shareable URL for report
+      operationId: shareReport
+      parameters:
+        - name: report_id
+          in: path
+          required: true
+          schema:
+            type: string
+          description: Report ID
+      responses:
+        '200':
+          description: Share URL generated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReportShareResponse'
+        '404':
+          description: Report not found
+        '401':
+          description: Unauthorized
+
+  /reports/{report_id}/export:
+    post:
+      tags: [Reports]
+      summary: Export report
+      description: Export report in specified format
+      operationId: exportReport
+      parameters:
+        - name: report_id
+          in: path
+          required: true
+          schema:
+            type: string
+          description: Report ID
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ReportExportRequest'
+      responses:
+        '200':
+          description: Export successful
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  format:
+                    type: string
+                  data:
+                    type: object
+                  exported_at:
+                    type: string
+                    format: date-time
+        '400':
+          description: Unsupported format
+        '404':
+          description: Report not found
+        '401':
+          description: Unauthorized
+
+  /statistics/investigations:
+    get:
+      tags: [Reports]
+      summary: Get investigation statistics
+      description: Get investigation statistics for widget data
+      operationId: getInvestigationStatistics
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InvestigationStatisticsResponse'
+        '401':
+          description: Unauthorized
+        '500':
+          description: Internal server error
+
+components:
+  schemas:
+    Report:
+      type: object
+      required: [id, title, content, owner, status, tags, created_at, updated_at]
+      properties:
+        id:
+          type: string
+          description: Report ID (UUID)
+        title:
+          type: string
+          maxLength: 255
+        content:
+          type: string
+          description: Markdown content
+        owner:
+          type: string
+          description: Owner user ID
+        status:
+          type: string
+          enum: [Draft, Published, Archived]
+        tags:
+          type: array
+          items:
+            type: string
+          default: []
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+
+    ReportCreate:
+      type: object
+      required: [title, content]
+      properties:
+        title:
+          type: string
+          minLength: 1
+          maxLength: 255
+        content:
+          type: string
+          description: Markdown content
+        tags:
+          type: array
+          items:
+            type: string
+          default: []
+
+    ReportUpdate:
+      type: object
+      properties:
+        title:
+          type: string
+          minLength: 1
+          maxLength: 255
+        content:
+          type: string
+        status:
+          type: string
+          enum: [Draft, Published, Archived]
+        tags:
+          type: array
+          items:
+            type: string
+
+    ReportResponse:
+      allOf:
+        - $ref: '#/components/schemas/Report'
+
+    ReportListResponse:
+      type: object
+      required: [reports, total, page, limit]
+      properties:
+        reports:
+          type: array
+          items:
+            $ref: '#/components/schemas/ReportResponse'
+        total:
+          type: integer
+        page:
+          type: integer
+          minimum: 1
+        limit:
+          type: integer
+          minimum: 1
+          maximum: 100
+
+    ReportPublishRequest:
+      type: object
+      required: [status]
+      properties:
+        status:
+          type: string
+          enum: [Published, Draft]
+
+    ReportShareResponse:
+      type: object
+      required: [share_url]
+      properties:
+        share_url:
+          type: string
+          format: uri
+
+    ReportExportRequest:
+      type: object
+      required: [format]
+      properties:
+        format:
+          type: string
+          enum: [json, pdf, html]
+          default: json
+
+    InvestigationStatisticsResponse:
+      type: object
+      required: [total, completed, success_rate, investigations]
+      properties:
+        total:
+          type: integer
+          description: Total number of investigations
+        completed:
+          type: integer
+          description: Number of completed investigations
+        success_rate:
+          type: number
+          format: float
+          minimum: 0
+          maximum: 100
+          description: Success rate percentage
+        investigations:
+          type: array
+          items:
+            type: object
+            properties:
+              id:
+                type: string
+              name:
+                type: string
+              owner:
+                type: string
+              status:
+                type: string
+              updated:
+                type: string
+                format: date-time
+
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+security:
+  - bearerAuth: []
+

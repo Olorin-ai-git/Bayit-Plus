@@ -1,7 +1,8 @@
 """Mock implementation of IPSCacheClient for testing without external dependencies."""
 
-from typing import Any, Dict, List
 import os
+from typing import Any, Dict, List
+
 from app.service.logging import get_bridge_logger
 
 logger = get_bridge_logger(__name__)
@@ -9,12 +10,12 @@ logger = get_bridge_logger(__name__)
 
 class MockIPSCacheClient:
     """Mock client for testing without connecting to external IPS Cache service."""
-    
+
     def __init__(self):
         self.base_url = "http://mock-ipscache-local"
         self.storage = {}  # In-memory storage for testing
         logger.info("🎭 Using MockIPSCacheClient for testing - no external connections")
-    
+
     async def _send_request(
         self,
         method: str,
@@ -24,7 +25,7 @@ class MockIPSCacheClient:
     ):
         """Mock request handler that simulates cache operations."""
         logger.debug(f"Mock {method} request: endpoint={endpoint}, data={data}")
-        
+
         # Simulate successful responses for different operations
         if method == "GET":
             return {}
@@ -42,7 +43,7 @@ class MockIPSCacheClient:
                     return {}
             return []
         return None
-    
+
     async def hset(
         self, key: str, data: List[Any], olorin_header: dict[str, Any] = None
     ):
@@ -50,14 +51,14 @@ class MockIPSCacheClient:
         logger.debug(f"Mock HSET: key={key}, data_length={len(data) if data else 0}")
         self.storage[key] = data
         return "OK"
-    
+
     async def expire(
         self, key: str, seconds: int, olorin_header: dict[str, Any] = None
     ):
         """Mock EXPIRE operation."""
         logger.debug(f"Mock EXPIRE: key={key}, seconds={seconds}")
         return 1
-    
+
     async def zadd(
         self,
         zset_name: str,
@@ -71,49 +72,69 @@ class MockIPSCacheClient:
             self.storage[zset_name] = []
         self.storage[zset_name].append((score, key))
         return 1
-    
+
     async def hgetall(
         self, key: str, olorin_header: dict[str, Any] = None
     ) -> Dict[str, Any]:
         """Mock HGETALL operation."""
         logger.debug(f"Mock HGETALL: key={key}")
         return self.storage.get(key, {})
-    
-    async def zscan(
-        self, zset_name: str, olorin_header: dict[str, Any] = None
-    ) -> list:
+
+    async def zscan(self, zset_name: str, olorin_header: dict[str, Any] = None) -> list:
         """Mock ZSCAN operation."""
         logger.debug(f"Mock ZSCAN: zset={zset_name}")
         # Return empty list to simulate no existing checkpoints
         return []
-    
-    def pipeline(self):
+
+    async def pipeline(self, commands: List[Any], olorin_header: dict[str, Any] = None):
         """Mock pipeline for batch operations."""
-        return MockPipeline(self)
+        logger.debug(f"Mock pipeline: {len(commands) if commands else 0} commands")
+        if not commands:
+            return []
+
+        # Mock pipeline execution - return success results
+        results = []
+        for command in commands:
+            if isinstance(command, list) and command:
+                cmd_name = command[0]
+                if cmd_name == "HSET":
+                    results.append("OK")
+                elif cmd_name == "EXPIRE":
+                    results.append(1)
+                elif cmd_name == "ZADD":
+                    results.append(1)
+                elif cmd_name == "HGETALL":
+                    results.append({})
+                else:
+                    results.append(None)
+            else:
+                results.append(None)
+
+        return results
 
 
 class MockPipeline:
     """Mock pipeline for batch Redis operations."""
-    
+
     def __init__(self, client):
         self.client = client
         self.commands = []
-    
+
     def hset(self, key: str, mapping: dict):
         """Add HSET to pipeline."""
         self.commands.append(("HSET", key, mapping))
         return self
-    
+
     def zadd(self, zset_name: str, mapping: dict):
         """Add ZADD to pipeline."""
         self.commands.append(("ZADD", zset_name, mapping))
         return self
-    
+
     def expire(self, key: str, seconds: int):
         """Add EXPIRE to pipeline."""
         self.commands.append(("EXPIRE", key, seconds))
         return self
-    
+
     async def execute(self):
         """Execute all pipeline commands."""
         results = []
@@ -131,12 +152,13 @@ class MockPipeline:
 
 
 def get_ips_cache_client():
-    """Factory function to get appropriate IPS Cache client based on environment."""
-    use_mock = os.environ.get("USE_MOCK_IPS_CACHE", "false").lower() == "true"
-    
+    """Factory function to get appropriate IPS Cache client based on TEST_MODE."""
+    use_mock = os.environ.get("TEST_MODE", "").lower() == "mock"
+
     if use_mock:
-        logger.info("Using MockIPSCacheClient due to USE_MOCK_IPS_CACHE=true")
+        logger.info("Using MockIPSCacheClient (TEST_MODE=mock)")
         return MockIPSCacheClient()
     else:
         from app.adapters.ips_cache_client import IPSCacheClient
+
         return IPSCacheClient()

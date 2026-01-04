@@ -1,6 +1,5 @@
 import json
 import logging
-from app.service.logging import get_bridge_logger
 from datetime import datetime, timezone
 from typing import Any, Dict, List, Optional
 
@@ -13,6 +12,7 @@ from app.models.upi_response import Metadata
 from app.service.agent_service import ainvoke_agent
 from app.service.base_llm_risk_service import BaseLLMRiskService
 from app.service.config import get_settings_for_env
+from app.service.logging import get_bridge_logger
 from app.utils.auth_utils import get_auth_token
 
 logger = get_bridge_logger(__name__)
@@ -212,7 +212,8 @@ Input:
                 investigation_id=investigation_id,
             )
         except Exception as e:
-            logger.error(f"Error in overall risk assessment: {e}", exc_info=True)
+            logger.error(f"❌ Error in overall risk assessment")
+            logger.error(f"   Error: {e}")
             return self.create_fallback_assessment(
                 user_id=user_id,
                 extracted_signals=[],

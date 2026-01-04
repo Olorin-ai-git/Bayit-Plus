@@ -38,7 +38,8 @@ def test_analyze_device_success(client):
                     "app.service.agent.tools.splunk_tool.splunk_tool.SplunkQueryTool"
                 ) as mock_splunk_client:
                     with patch(
-                        "app.utils.firebase_secrets.get_app_secret", return_value="dummy"
+                        "app.utils.firebase_secrets.get_app_secret",
+                        return_value="dummy",
                     ):
                         mock_get_inv.return_value = None
                         mock_create_inv.return_value = MagicMock()
@@ -60,7 +61,9 @@ def test_analyze_device_invalid_time_range(client):
                 "app.router.device_router.get_settings_for_env",
                 return_value=get_mock_settings(),
             ):
-                with patch("app.utils.firebase_secrets.get_app_secret", return_value="dummy"):
+                with patch(
+                    "app.utils.firebase_secrets.get_app_secret", return_value="dummy"
+                ):
                     with patch(
                         "app.service.agent.tools.splunk_tool.splunk_tool.SplunkQueryTool"
                     ) as mock_splunk_client:
@@ -94,7 +97,9 @@ def test_analyze_device_missing_splunk_password(client):
                 "app.router.device_router.get_settings_for_env",
                 return_value=get_mock_settings(),
             ):
-                with patch("app.utils.firebase_secrets.get_app_secret", return_value=None):
+                with patch(
+                    "app.utils.firebase_secrets.get_app_secret", return_value=None
+                ):
                     with patch(
                         "app.router.device_router.ainvoke_agent",
                         return_value=(
@@ -124,7 +129,8 @@ def test_analyze_device_identity_failure(client):
                     "app.service.agent.tools.splunk_tool.splunk_tool.SplunkQueryTool"
                 ) as mock_splunk_client:
                     with patch(
-                        "app.utils.firebase_secrets.get_app_secret", return_value="dummy"
+                        "app.utils.firebase_secrets.get_app_secret",
+                        return_value="dummy",
                     ):
                         with patch(
                             "app.router.device_router.get_identity_authorization_header",
@@ -155,7 +161,8 @@ def test_analyze_device_chronos_failure(client):
                     "app.service.agent.tools.splunk_tool.splunk_tool.SplunkQueryTool"
                 ) as mock_splunk_client:
                     with patch(
-                        "app.utils.firebase_secrets.get_app_secret", return_value="dummy"
+                        "app.utils.firebase_secrets.get_app_secret",
+                        return_value="dummy",
                     ):
                         with patch(
                             "app.router.device_router.get_identity_authorization_header",
@@ -230,7 +237,9 @@ def test_analyze_device_raw_splunk_override(client):
                 "app.router.device_router.get_settings_for_env",
                 return_value=get_mock_settings(),
             ):
-                with patch("app.utils.firebase_secrets.get_app_secret", return_value="dummy"):
+                with patch(
+                    "app.utils.firebase_secrets.get_app_secret", return_value="dummy"
+                ):
                     with patch(
                         "app.router.device_router.get_identity_authorization_header",
                         return_value="auth",
@@ -264,7 +273,8 @@ def test_analyze_device_missing_profile_id(client):
                     "app.service.agent.tools.splunk_tool.splunk_tool.SplunkQueryTool"
                 ) as mock_splunk_client:
                     with patch(
-                        "app.utils.firebase_secrets.get_app_secret", return_value="dummy"
+                        "app.utils.firebase_secrets.get_app_secret",
+                        return_value="dummy",
                     ):
                         with patch(
                             "app.router.device_router.get_identity_authorization_header",
@@ -295,7 +305,8 @@ def test_analyze_device_splunk_failure(client):
                     "app.service.agent.tools.splunk_tool.splunk_tool.SplunkQueryTool"
                 ) as mock_splunk_client:
                     with patch(
-                        "app.utils.firebase_secrets.get_app_secret", return_value="dummy"
+                        "app.utils.firebase_secrets.get_app_secret",
+                        return_value="dummy",
                     ):
                         with patch(
                             "app.router.device_router.ainvoke_agent",
@@ -479,7 +490,8 @@ def test_analyze_device_tool_failure_removed(client):
                     "app.service.agent.tools.splunk_tool.splunk_tool.SplunkQueryTool"
                 ) as mock_splunk_client:
                     with patch(
-                        "app.utils.firebase_secrets.get_app_secret", return_value="dummy"
+                        "app.utils.firebase_secrets.get_app_secret",
+                        return_value="dummy",
                     ):
                         with patch(
                             "app.router.device_router.get_identity_authorization_header",
@@ -570,7 +582,8 @@ def test_analyze_device_oii_results_branch(client):
                     "app.service.agent.tools.splunk_tool.splunk_tool.SplunkQueryTool"
                 ) as mock_splunk_client:
                     with patch(
-                        "app.utils.firebase_secrets.get_app_secret", return_value="dummy"
+                        "app.utils.firebase_secrets.get_app_secret",
+                        return_value="dummy",
                     ):
                         with patch(
                             "app.router.device_router.get_identity_authorization_header",
@@ -692,7 +705,9 @@ def test_analyze_device_missing_splunk_credentials(client):
                 "app.router.device_router.get_settings_for_env",
                 return_value=get_mock_settings(),
             ):
-                with patch("app.utils.firebase_secrets.get_app_secret", return_value=None):
+                with patch(
+                    "app.utils.firebase_secrets.get_app_secret", return_value=None
+                ):
                     with patch(
                         "app.router.device_router.ainvoke_agent",
                         return_value=(
@@ -722,7 +737,8 @@ def test_analyze_device_generic_exception(client):
                     "app.service.agent.tools.splunk_tool.splunk_tool.SplunkQueryTool"
                 ) as mock_splunk_client:
                     with patch(
-                        "app.utils.firebase_secrets.get_app_secret", return_value="dummy"
+                        "app.utils.firebase_secrets.get_app_secret",
+                        return_value="dummy",
                     ):
                         with patch(
                             "app.service.agent.tools.splunk_tool.splunk_tool.SplunkQueryTool",

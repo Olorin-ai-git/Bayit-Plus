@@ -8,7 +8,7 @@ COPY simple_requirements.txt requirements.txt
 RUN pip install --no-cache-dir -r requirements.txt
 
 # Copy simple application
-COPY simple_main.py main.py
+COPY scripts/server/simple_main.py scripts/server/main.py ./
 
 # Create non-root user
 RUN groupadd -r olorin && useradd -r -g olorin olorin

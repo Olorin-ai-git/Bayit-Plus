@@ -7,6 +7,7 @@ from datetime import datetime
 from typing import Literal, Optional
 
 from pydantic import BaseModel, EmailStr, Field, validator
+
 from app.utils.entity_validation import validate_entity_type_against_enum
 
 
@@ -121,10 +122,7 @@ class ValidatedEntityType(BaseModel):
     """Comprehensive entity type validation supporting all EntityType enum values."""
 
     entity_type: str = Field(
-        ..., 
-        min_length=1,
-        max_length=100,
-        description="Type of entity being analyzed"
+        ..., min_length=1, max_length=100, description="Type of entity being analyzed"
     )
 
     @validator("entity_type")
@@ -133,14 +131,14 @@ class ValidatedEntityType(BaseModel):
         is_valid, error_message = validate_entity_type_against_enum(v)
         if not is_valid:
             raise ValueError(error_message)
-        
+
         return v.strip().lower()
 
 
 class ValidatedAnalysisMode(BaseModel):
     """Validated analysis mode with restricted values."""
 
-    mode: Literal["manual", "autonomous"] = Field(..., description="Analysis mode")
+    mode: Literal["manual", "structured"] = Field(..., description="Analysis mode")
 
 
 class ValidatedComment(SecureString):
@@ -180,7 +178,7 @@ class ValidatedInvestigationRequest(BaseModel):
         ..., min_length=1, max_length=100, description="Investigation identifier"
     )
     time_range: str = Field(..., description="Time range for analysis")
-    mode: Optional[Literal["manual", "autonomous"]] = Field(
+    mode: Optional[Literal["manual", "structured"]] = Field(
         default="manual", description="Analysis mode"
     )
 
@@ -197,7 +195,7 @@ class ValidatedInvestigationRequest(BaseModel):
         is_valid, error_message = validate_entity_type_against_enum(v)
         if not is_valid:
             raise ValueError(error_message)
-        
+
         return v.strip().lower()
 
     @validator("investigation_id")

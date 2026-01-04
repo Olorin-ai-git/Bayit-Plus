@@ -29,7 +29,7 @@ graph TB
     %% Enhanced Agent Architecture
     subgraph "Enhanced Agent System"
         AF --> REIA[RAG-Enhanced Investigation Agent]
-        REIA --> AIA[AutonomousInvestigationAgent Base]
+        REIA --> AIA[StructuredInvestigationAgent Base]
         REIA --> RO
         
         %% Domain Agents

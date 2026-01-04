@@ -44,45 +44,82 @@ check_firebase_cli() {
     print_success "Firebase CLI found"
 }
 
-# Function to retrieve a secret from Firebase
+# Function to retrieve a secret (.env first, then Firebase fallback)
 get_secret() {
     local secret_name=$1
     local secret_value
-    
-    # Check if Firebase CLI is authenticated
+
+    # Determine .env file path - check current directory and olorin-server directory
+    local env_file=".env"
+    if [ ! -f ".env" ] && [ -f "../.env" ]; then
+        env_file="../.env"
+    elif [ ! -f ".env" ] && [ -f "olorin-server/.env" ]; then
+        env_file="olorin-server/.env"
+    fi
+
+    # First check .env file for the secret
+    if [ -f "$env_file" ]; then
+        secret_value=$(grep "^${secret_name}=" "$env_file" 2>/dev/null | cut -d'=' -f2- | sed 's/^[\"'\'']*//;s/[\"'\'']*$//')
+        if [ -n "$secret_value" ]; then
+            echo "$secret_value"
+            return 0
+        fi
+    fi
+
+    # Check environment variables as second priority
+    if [ -n "${!secret_name}" ]; then
+        echo "${!secret_name}"
+        return 0
+    fi
+
+    # Fall back to Firebase if not found in .env or environment
     if ! firebase projects:list &>/dev/null; then
-        print_error "Firebase CLI not authenticated. Run: firebase login"
+        print_warning "Firebase CLI not authenticated and secret '$secret_name' not found in .env. Run: firebase login"
         return 1
     fi
-    
-    # Attempt to retrieve secret with timeout
+
+    # Attempt to retrieve secret from Firebase with timeout
     if secret_value=$(timeout 30 firebase functions:secrets:access "$secret_name" --project "$PROJECT_ID" 2>/dev/null); then
         echo "$secret_value"
         return 0
     else
-        print_warning "Failed to retrieve secret: $secret_name"
+        print_warning "Failed to retrieve secret: $secret_name from both .env and Firebase"
         return 1
     fi
 }
 
 # Function to retrieve all required secrets
 retrieve_secrets() {
-    print_status "Retrieving secrets from Firebase project: $PROJECT_ID"
-    
+    print_status "Retrieving secrets (.env first, then Firebase project: $PROJECT_ID)"
+
     # Core secrets
     export JWT_SECRET_KEY=$(get_secret "JWT_SECRET_KEY")
     export ANTHROPIC_API_KEY=$(get_secret "ANTHROPIC_API_KEY")
     export OPENAI_API_KEY=$(get_secret "OPENAI_API_KEY")
     export OLORIN_API_KEY=$(get_secret "OLORIN_API_KEY")
-    
+
     # Database secrets
     export DATABASE_PASSWORD=$(get_secret "DATABASE_PASSWORD")
     export REDIS_API_KEY=$(get_secret "REDIS_API_KEY")
-    
+    export REDIS_PASSWORD=$(get_secret "REDIS_PASSWORD")
+
     # Splunk secrets
     export SPLUNK_USERNAME=$(get_secret "SPLUNK_USERNAME")
     export SPLUNK_PASSWORD=$(get_secret "SPLUNK_PASSWORD")
-    
+
+    # Snowflake secrets (configurable from .env)
+    export SNOWFLAKE_ACCOUNT=$(get_secret "SNOWFLAKE_ACCOUNT")
+    export SNOWFLAKE_USER=$(get_secret "SNOWFLAKE_USER")
+    export SNOWFLAKE_PASSWORD=$(get_secret "SNOWFLAKE_PASSWORD")
+    export SNOWFLAKE_DATABASE=$(get_secret "SNOWFLAKE_DATABASE")
+    export SNOWFLAKE_SCHEMA=$(get_secret "SNOWFLAKE_SCHEMA")
+    export SNOWFLAKE_WAREHOUSE=$(get_secret "SNOWFLAKE_WAREHOUSE")
+    export SNOWFLAKE_ROLE=$(get_secret "SNOWFLAKE_ROLE")
+    export SNOWFLAKE_AUTHENTICATOR=$(get_secret "SNOWFLAKE_AUTHENTICATOR")
+    export SNOWFLAKE_PRIVATE_KEY_PATH=$(get_secret "SNOWFLAKE_PRIVATE_KEY_PATH")
+    export SNOWFLAKE_PRIVATE_KEY_PASSPHRASE=$(get_secret "SNOWFLAKE_PRIVATE_KEY_PASSPHRASE")
+    export SNOWFLAKE_TRANSACTIONS_TABLE=$(get_secret "SNOWFLAKE_TRANSACTIONS_TABLE")
+
     # Additional secrets (optional)
     export LANGFUSE_PUBLIC_KEY=$(get_secret "LANGFUSE_PUBLIC_KEY")
     export LANGFUSE_SECRET_KEY=$(get_secret "LANGFUSE_SECRET_KEY")
@@ -90,26 +127,71 @@ retrieve_secrets() {
     
     # Validate critical secrets
     local missing_critical=false
-    
+
     if [ -z "$JWT_SECRET_KEY" ]; then
         print_warning "JWT_SECRET_KEY not found, generating temporary key"
         export JWT_SECRET_KEY=$(openssl rand -base64 64)
     else
         print_success "JWT_SECRET_KEY retrieved"
     fi
-    
+
     if [ -z "$ANTHROPIC_API_KEY" ]; then
         print_warning "ANTHROPIC_API_KEY not found - some features may not work"
     else
         print_success "ANTHROPIC_API_KEY retrieved"
     fi
-    
+
     if [ -z "$OPENAI_API_KEY" ]; then
         print_warning "OPENAI_API_KEY not found - some features may not work"
     else
         print_success "OPENAI_API_KEY retrieved"
     fi
+
+    # Validate Snowflake configuration
+    # Check for either password or private key authentication
+    local has_password_auth=false
+    local has_private_key_auth=false
     
+    if [ -n "$SNOWFLAKE_PASSWORD" ]; then
+        has_password_auth=true
+    fi
+    
+    if [ -n "$SNOWFLAKE_PRIVATE_KEY_PATH" ] || [ "$SNOWFLAKE_AUTHENTICATOR" == "private_key" ]; then
+        has_private_key_auth=true
+    fi
+    
+    if [ -z "$SNOWFLAKE_ACCOUNT" ] || [ -z "$SNOWFLAKE_USER" ]; then
+        print_warning "Snowflake configuration incomplete - add to .env file:"
+        [ -z "$SNOWFLAKE_ACCOUNT" ] && print_warning "  SNOWFLAKE_ACCOUNT=your-account"
+        [ -z "$SNOWFLAKE_USER" ] && print_warning "  SNOWFLAKE_USER=your-username"
+    elif [ "$has_password_auth" == "false" ] && [ "$has_private_key_auth" == "false" ]; then
+        print_warning "Snowflake authentication not configured - add to .env file:"
+        print_warning "  Either: SNOWFLAKE_PASSWORD=your-password"
+        print_warning "  Or: SNOWFLAKE_PRIVATE_KEY_PATH=/path/to/key.p8"
+    else
+        print_success "Snowflake configuration loaded"
+        echo -e "${BLUE}   📊 Snowflake Connection Details:${NC}"
+        echo -e "${BLUE}   └─ Account: ${YELLOW}${SNOWFLAKE_ACCOUNT}${NC}"
+        echo -e "${BLUE}   └─ User: ${YELLOW}${SNOWFLAKE_USER}${NC}"
+        
+        # Show authentication method
+        if [ "$has_private_key_auth" == "true" ]; then
+            echo -e "${BLUE}   └─ Auth: ${GREEN}Private Key${NC} (${SNOWFLAKE_PRIVATE_KEY_PATH})"
+        else
+            echo -e "${BLUE}   └─ Auth: ${GREEN}Password${NC}"
+        fi
+        
+        echo -e "${BLUE}   └─ Database: ${YELLOW}${SNOWFLAKE_DATABASE:-not-set}${NC}"
+        echo -e "${BLUE}   └─ Schema: ${YELLOW}${SNOWFLAKE_SCHEMA:-PUBLIC}${NC}"
+        echo -e "${BLUE}   └─ Warehouse: ${YELLOW}${SNOWFLAKE_WAREHOUSE:-COMPUTE_WH}${NC}"
+        echo -e "${BLUE}   └─ Role: ${YELLOW}${SNOWFLAKE_ROLE:-not-set}${NC}"
+
+        # Show full table name
+        local table_name="${SNOWFLAKE_TRANSACTIONS_TABLE:-TRANSACTIONS_ENRICHED}"
+        local full_table="${SNOWFLAKE_DATABASE:-not-set}.${SNOWFLAKE_SCHEMA:-PUBLIC}.${table_name}"
+        echo -e "${BLUE}   └─ Full Table: ${GREEN}${full_table}${NC}"
+    fi
+
     print_success "Secrets loaded successfully"
 }
 
@@ -173,11 +255,14 @@ start_server() {
     echo -e "${GREEN}   Health: http://localhost:$PORT/health${NC}"
     echo -e "${BLUE}════════════════════════════════════════════════════════════════${NC}"
     
-    # Run the server with error handling
-    if ! poetry run python -m app.local_server; then
-        print_error "Server failed to start. Check logs above for details."
-        exit 1
-    fi
+    # Start server directly in foreground to see all startup logs
+    print_status "Starting server in foreground to display all startup and connection logs..."
+    echo ""
+    echo -e "${GREEN}🚀 Server starting - you will see all startup logs including Snowflake connection attempts!${NC}"
+    echo ""
+
+    # Run server directly in foreground
+    poetry run python -m app.local_server
 }
 
 # Function to display usage

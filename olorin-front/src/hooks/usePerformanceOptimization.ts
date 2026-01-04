@@ -194,7 +194,7 @@ export function useIntersectionObserver(
     
     observerRef.current = new IntersectionObserver(
       ([entry]) => {
-        const isVisible = entry.isIntersecting;
+        const isVisible = entry?.isIntersecting ?? false;
         setIsIntersecting(isVisible);
         
         if (isVisible && triggerOnce) {
@@ -226,8 +226,8 @@ export function useDebounce<T extends (...args: any[]) => any>(
     maxWait
   } = options;
   
-  const timeoutRef = useRef<NodeJS.Timeout>();
-  const maxTimeoutRef = useRef<NodeJS.Timeout>();
+  const timeoutRef = useRef<ReturnType<typeof setTimeout>>();
+  const maxTimeoutRef = useRef<ReturnType<typeof setTimeout>>();
   const lastCallTimeRef = useRef<number>();
   const lastInvokeTimeRef = useRef(0);
   const leadingInvokedRef = useRef(false);

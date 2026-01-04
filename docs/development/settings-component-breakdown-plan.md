@@ -67,7 +67,7 @@ Break down the monolithic Settings page (`/olorin-webplugin/src/js/pages/Setting
 
 ### **3. Investigation Mode Selector Component**
 **Lines**: 551-640  
-**Responsibility**: Investigation mode selection (manual/autonomous/review)  
+**Responsibility**: Investigation mode selection (manual/structured/review)  
 **Complexity**: Medium  
 
 **Features**:

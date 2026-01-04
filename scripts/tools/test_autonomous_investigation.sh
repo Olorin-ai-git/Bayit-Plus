@@ -1,13 +1,13 @@
 #!/bin/bash
 
 # ============================================================================
-# Olorin Autonomous Investigation Test Suite
+# Olorin Structured Investigation Test Suite
 # ============================================================================
-# This script orchestrates comprehensive testing of the autonomous investigation
+# This script orchestrates comprehensive testing of the structured investigation
 # system using the python-tests-expert subagent. It runs all scenarios,
 # automatically fixes failures, and provides detailed reporting.
 #
-# Usage: ./test_autonomous_investigation.sh [options]
+# Usage: ./test_structured_investigation.sh [options]
 # Options:
 #   --verbose     Enable verbose output
 #   --no-fix      Skip automatic fixing of failed tests
@@ -32,7 +32,7 @@ PROJECT_ROOT="/Users/gklainert/Documents/olorin"
 BACKEND_DIR="$PROJECT_ROOT/olorin-server"
 REPORT_DIR="$PROJECT_ROOT/reports/test-runs"
 TIMESTAMP=$(date +"%Y%m%d_%H%M%S")
-REPORT_FILE="$REPORT_DIR/autonomous_investigation_test_report_$TIMESTAMP.md"
+REPORT_FILE="$REPORT_DIR/structured_investigation_test_report_$TIMESTAMP.md"
 LOG_FILE="$REPORT_DIR/test_logs_$TIMESTAMP.log"
 
 # Parse arguments
@@ -112,7 +112,7 @@ log_message() {
 # Function to start the test report
 init_report() {
     cat > "$REPORT_FILE" << EOF
-# Autonomous Investigation Test Report
+# Structured Investigation Test Report
 **Generated**: $(date +"%Y-%m-%d %H:%M:%S")
 **Test Suite Version**: 1.0.0
 **Project**: Olorin Fraud Investigation Platform
@@ -121,7 +121,7 @@ init_report() {
 
 ## Executive Summary
 
-This report documents the comprehensive testing of the Olorin autonomous investigation system, including all scenarios, variations, and automatic fixes applied.
+This report documents the comprehensive testing of the Olorin structured investigation system, including all scenarios, variations, and automatic fixes applied.
 
 ## Test Environment
 
@@ -193,8 +193,8 @@ run_test_phase() {
     # Build test command with CSV parameters if provided
     local full_test_command="$test_command"
     if [ -n "$CSV_FILE" ]; then
-        # For autonomous test scripts, add CSV parameters
-        if [[ "$test_command" == *"test_autonomous"* ]] || [[ "$test_command" == *"run_autonomous"* ]]; then
+        # For structured test scripts, add CSV parameters
+        if [[ "$test_command" == *"test_structured"* ]] || [[ "$test_command" == *"run_structured"* ]]; then
             full_test_command="$test_command --csv-file \"$CSV_FILE\" --csv-limit $CSV_LIMIT"
         fi
     fi
@@ -282,41 +282,41 @@ EOF
 # Main test execution
 main() {
     print_color "$BLUE" "╔══════════════════════════════════════════════════════════╗"
-    print_color "$BLUE" "║     Olorin Autonomous Investigation Test Suite          ║"
+    print_color "$BLUE" "║     Olorin Structured Investigation Test Suite          ║"
     print_color "$BLUE" "╚══════════════════════════════════════════════════════════╝"
     
     init_report
     run_preflight_checks
     
-    # Phase 1: Unit Tests for Autonomous Agents
-    run_test_phase "Unit_Tests_Autonomous_Agents" \
-        "pytest tests/unit/service/agent/test_autonomous_agents.py -v" \
+    # Phase 1: Unit Tests for Structured Agents
+    run_test_phase "Unit_Tests_Structured_Agents" \
+        "pytest tests/unit/service/agent/test_structured_agents.py -v" \
         "Testing individual agent components in isolation"
     
-    # Phase 2: Integration Tests for Autonomous Investigation
-    run_test_phase "Integration_Tests_Autonomous" \
-        "python run_autonomous_tests.py" \
-        "Testing full autonomous investigation workflow with comprehensive scenarios"
+    # Phase 2: Integration Tests for Structured Investigation
+    run_test_phase "Integration_Tests_Structured" \
+        "python run_structured_tests.py" \
+        "Testing full structured investigation workflow with comprehensive scenarios"
     
     # Phase 3: WebSocket Real-time Updates
     run_test_phase "WebSocket_Updates" \
-        "pytest tests/integration/test_autonomous_investigation.py::test_websocket_updates -v" \
+        "pytest tests/integration/test_structured_investigation.py::test_websocket_updates -v" \
         "Testing real-time progress updates via WebSocket"
     
     # Phase 4: Agent Orchestration
     run_test_phase "Agent_Orchestration" \
-        "pytest tests/integration/test_autonomous_investigation.py::test_multi_agent_coordination -v" \
+        "pytest tests/integration/test_structured_investigation.py::test_multi_agent_coordination -v" \
         "Testing coordination between Device, Network, Location, and Logs agents"
     
     # Phase 5: Error Scenarios
     run_test_phase "Error_Handling" \
-        "pytest tests/integration/test_autonomous_investigation.py::test_error_scenarios -v" \
+        "pytest tests/integration/test_structured_investigation.py::test_error_scenarios -v" \
         "Testing error handling and recovery mechanisms"
     
     # Phase 6: Performance Testing
     run_test_phase "Performance_Testing" \
-        "python test_autonomous_simple.py" \
-        "Testing basic autonomous investigation with simple workflow"
+        "python test_structured_simple.py" \
+        "Testing basic structured investigation with simple workflow"
     
     # Phase 7: Firebase Secrets Integration
     run_test_phase "Firebase_Secrets" \
@@ -405,7 +405,7 @@ poetry run pytest tests/unit/ -v
 poetry run pytest tests/integration/ -v --asyncio-mode=auto
 
 # Specific test file
-poetry run pytest tests/integration/test_autonomous_investigation.py -v
+poetry run pytest tests/integration/test_structured_investigation.py -v
 
 # With coverage
 poetry run pytest --cov=app --cov-report=html
@@ -414,13 +414,13 @@ poetry run pytest --cov=app --cov-report=html
 ### Debugging Failed Tests
 \`\`\`bash
 # Run with detailed output
-poetry run pytest -vvs tests/integration/test_autonomous_investigation.py
+poetry run pytest -vvs tests/integration/test_structured_investigation.py
 
 # Run specific test
-poetry run pytest tests/integration/test_autonomous_investigation.py::test_name -v
+poetry run pytest tests/integration/test_structured_investigation.py::test_name -v
 
 # Run with pdb on failure
-poetry run pytest --pdb tests/integration/test_autonomous_investigation.py
+poetry run pytest --pdb tests/integration/test_structured_investigation.py
 \`\`\`
 
 ---
@@ -435,7 +435,7 @@ EOF
     print_color "$CYAN" "Logs saved to: $LOG_FILE"
     
     # Check for HTML reports
-    HTML_REPORT=$(ls -t autonomous_test_report_*.html 2>/dev/null | head -1)
+    HTML_REPORT=$(ls -t structured_test_report_*.html 2>/dev/null | head -1)
     if [ -n "$HTML_REPORT" ]; then
         print_color "$PURPLE" "📊 HTML Report generated: $HTML_REPORT"
         

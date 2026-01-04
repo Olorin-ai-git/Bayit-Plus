@@ -7,19 +7,17 @@ web interface, API endpoints, and integration with enterprise systems.
 
 import asyncio
 import json
-from datetime import datetime, timedelta
-from typing import Dict, List, Any, Optional
 from dataclasses import asdict
+from datetime import datetime, timedelta
+from typing import Any, Dict, List, Optional
 
-from fastapi import FastAPI, WebSocket, WebSocketDisconnect, HTTPException
+from fastapi import FastAPI, HTTPException, WebSocket, WebSocketDisconnect
 from fastapi.responses import HTMLResponse, JSONResponse
 from prometheus_client import CONTENT_TYPE_LATEST
 
-from .mcp_monitor import (
-    MCPMonitor, HealthStatus, AlertSeverity,
-    get_mcp_monitor
-)
 from app.service.logging import get_bridge_logger
+
+from .mcp_monitor import AlertSeverity, HealthStatus, MCPMonitor, get_mcp_monitor
 
 logger = get_bridge_logger(__name__)
 
@@ -27,15 +25,15 @@ logger = get_bridge_logger(__name__)
 class MCPDashboard:
     """
     Web-based dashboard for MCP monitoring visualization.
-    
+
     Provides real-time metrics, health status, alerts, and
     comprehensive reporting through web interface and APIs.
     """
-    
+
     def __init__(self, monitor: Optional[MCPMonitor] = None):
         """
         Initialize the dashboard.
-        
+
         Args:
             monitor: MCP monitor instance to use
         """
@@ -43,15 +41,15 @@ class MCPDashboard:
         self.app = FastAPI(title="MCP Monitoring Dashboard")
         self.websocket_clients: List[WebSocket] = []
         self._setup_routes()
-    
+
     def _setup_routes(self):
         """Setup FastAPI routes for the dashboard."""
-        
+
         @self.app.get("/", response_class=HTMLResponse)
         async def dashboard_home():
             """Serve the main dashboard HTML."""
             return self._generate_dashboard_html()
-        
+
         @self.app.get("/api/health")
         async def health_status():
             """Get overall system health status."""
@@ -60,31 +58,29 @@ class MCPDashboard:
                 status = self.monitor.get_server_status(server_name)
                 servers_health[server_name] = {
                     "status": status.value if status else "unknown",
-                    "healthy": status == HealthStatus.HEALTHY if status else False
+                    "healthy": status == HealthStatus.HEALTHY if status else False,
                 }
-            
+
             # Determine overall health
-            all_healthy = all(
-                s["healthy"] for s in servers_health.values()
-            )
-            
+            all_healthy = all(s["healthy"] for s in servers_health.values())
+
             return {
                 "overall_status": "healthy" if all_healthy else "degraded",
                 "servers": servers_health,
-                "timestamp": datetime.now().isoformat()
+                "timestamp": datetime.now().isoformat(),
             }
-        
+
         @self.app.get("/api/metrics")
         async def get_metrics():
             """Get current metrics for all servers."""
             return self.monitor.get_metrics_summary()
-        
+
         @self.app.get("/api/metrics/{server_name}")
         async def get_server_metrics(server_name: str):
             """Get detailed metrics for a specific server."""
             if server_name not in self.monitor.servers:
                 raise HTTPException(status_code=404, detail="Server not found")
-            
+
             metrics = self.monitor.servers[server_name]
             return {
                 "server_name": server_name,
@@ -92,23 +88,27 @@ class MCPDashboard:
                     "response_times": {
                         "average": metrics.avg_response_time,
                         "p95": metrics.p95_response_time,
-                        "p99": metrics.p99_response_time
+                        "p99": metrics.p99_response_time,
                     },
                     "success_rate": metrics.success_rate,
                     "error_rate": metrics.error_rate,
                     "throughput": metrics.throughput,
                     "total_requests": metrics.total_requests,
                     "last_error": metrics.last_error,
-                    "last_error_time": metrics.last_error_time.isoformat() if metrics.last_error_time else None,
+                    "last_error_time": (
+                        metrics.last_error_time.isoformat()
+                        if metrics.last_error_time
+                        else None
+                    ),
                     "resources": {
                         "memory_mb": metrics.memory_usage_mb,
                         "cpu_percent": metrics.cpu_usage_percent,
                         "active_connections": metrics.active_connections,
-                        "queue_depth": metrics.queue_depth
-                    }
-                }
+                        "queue_depth": metrics.queue_depth,
+                    },
+                },
             }
-        
+
         @self.app.get("/api/alerts")
         async def get_alerts():
             """Get active alerts."""
@@ -122,42 +122,38 @@ class MCPDashboard:
                         "severity": alert.severity.value,
                         "title": alert.title,
                         "description": alert.description,
-                        "timestamp": alert.timestamp.isoformat()
+                        "timestamp": alert.timestamp.isoformat(),
                     }
                     for alert in alerts
-                ]
+                ],
             }
-        
+
         @self.app.post("/api/alerts/{alert_id}/resolve")
         async def resolve_alert(alert_id: str):
             """Resolve an alert."""
             await self.monitor.resolve_alert(alert_id)
             return {"status": "resolved", "alert_id": alert_id}
-        
+
         @self.app.get("/api/sla")
         async def get_sla_report():
             """Get SLA compliance report."""
             return await self.monitor._generate_sla_report()
-        
+
         @self.app.get("/api/history/{server_name}")
-        async def get_server_history(
-            server_name: str,
-            hours: int = 1
-        ):
+        async def get_server_history(server_name: str, hours: int = 1):
             """Get historical data for a server."""
             if server_name not in self.monitor.servers:
                 raise HTTPException(status_code=404, detail="Server not found")
-            
+
             # Get health history
             health_history = list(self.monitor.health_history[server_name])
-            
+
             # Filter by time window
             cutoff_time = datetime.now() - timedelta(hours=hours)
             filtered_history = [
-                hc for hc in health_history
-                if hc.timestamp >= cutoff_time
+                hc for hc in health_history if hc.timestamp >= cutoff_time
             ]
-            
+
             return {
                 "server_name": server_name,
                 "time_window_hours": hours,
@@ -166,40 +162,40 @@ class MCPDashboard:
                         "timestamp": hc.timestamp.isoformat(),
                         "status": hc.status.value,
                         "response_time_ms": hc.response_time_ms,
-                        "checks_passed": hc.checks_passed
+                        "checks_passed": hc.checks_passed,
                     }
                     for hc in filtered_history
-                ]
+                ],
             }
-        
+
         @self.app.get("/metrics", response_class=HTMLResponse)
         async def prometheus_metrics():
             """Export Prometheus metrics."""
             metrics = self.monitor.export_prometheus_metrics()
             return metrics
-        
+
         @self.app.websocket("/ws")
         async def websocket_endpoint(websocket: WebSocket):
             """WebSocket endpoint for real-time updates."""
             await websocket.accept()
             self.websocket_clients.append(websocket)
-            
+
             try:
                 # Send initial data
                 await self._send_websocket_update(websocket)
-                
+
                 # Keep connection alive and send updates
                 while True:
                     await asyncio.sleep(5)  # Update every 5 seconds
                     await self._send_websocket_update(websocket)
-                    
+
             except WebSocketDisconnect:
                 self.websocket_clients.remove(websocket)
             except Exception as e:
                 logger.error(f"WebSocket error: {e}")
                 if websocket in self.websocket_clients:
                     self.websocket_clients.remove(websocket)
-    
+
     async def _send_websocket_update(self, websocket: WebSocket):
         """Send real-time update to WebSocket client."""
         try:
@@ -212,34 +208,34 @@ class MCPDashboard:
                     "health": {
                         server: self.monitor.get_server_status(server).value
                         for server in self.monitor.servers.keys()
-                    }
-                }
+                    },
+                },
             }
-            
+
             await websocket.send_json(update)
-            
+
         except Exception as e:
             logger.error(f"Failed to send WebSocket update: {e}")
-    
+
     async def broadcast_update(self, update_type: str, data: Dict[str, Any]):
         """Broadcast update to all connected WebSocket clients."""
         message = {
             "type": update_type,
             "timestamp": datetime.now().isoformat(),
-            "data": data
+            "data": data,
         }
-        
+
         disconnected = []
         for client in self.websocket_clients:
             try:
                 await client.send_json(message)
             except:
                 disconnected.append(client)
-        
+
         # Remove disconnected clients
         for client in disconnected:
             self.websocket_clients.remove(client)
-    
+
     def _generate_dashboard_html(self) -> str:
         """Generate the dashboard HTML page."""
         return """
@@ -631,10 +627,10 @@ class MCPDashboard:
 def create_dashboard_app(monitor: Optional[MCPMonitor] = None) -> FastAPI:
     """
     Create a FastAPI application for the monitoring dashboard.
-    
+
     Args:
         monitor: MCP monitor instance to use
-        
+
     Returns:
         FastAPI application instance
     """

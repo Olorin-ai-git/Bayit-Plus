@@ -1,4 +1,4 @@
-# Autonomous Investigation Workflow - End-to-End Validation
+# Structured Investigation Workflow - End-to-End Validation
 
 **Date:** August 30, 2025  
 **Author:** Gil Klainert  
@@ -6,7 +6,7 @@
 
 ## Executive Summary
 
-The Olorin autonomous investigation system has been comprehensively validated to confirm it uses **real APIs and LLM calls end-to-end** with **no mock data** in the production workflow. This validation covers the complete flow from frontend user interaction to backend LLM processing and real-time WebSocket communication.
+The Olorin structured investigation system has been comprehensively validated to confirm it uses **real APIs and LLM calls end-to-end** with **no mock data** in the production workflow. This validation covers the complete flow from frontend user interaction to backend LLM processing and real-time WebSocket communication.
 
 ## Validation Results Overview
 
@@ -23,7 +23,7 @@ The Olorin autonomous investigation system has been comprehensively validated to
 
 ### 1. Frontend Investigation Client
 
-**File:** `/olorin-front/src/js/services/AutonomousInvestigationClient.ts`
+**File:** `/olorin-front/src/js/services/StructuredInvestigationClient.ts`
 
 **Real API Implementation:**
 ```typescript
@@ -89,12 +89,12 @@ async def astart_investigation(
 
 ### 3. LLM Integration Layer
 
-**File:** `/olorin-server/app/service/agent/autonomous_base.py`
+**File:** `/olorin-server/app/service/agent/structured_base.py`
 
 **Real Claude Opus 4.1 Integration:**
 ```python
 # Real Anthropic Claude Opus 4.1 LLM
-autonomous_llm = ChatAnthropic(
+structured_llm = ChatAnthropic(
     api_key=settings_for_env.anthropic_api_key,
     model="claude-opus-4-1-20250805",  # Claude Opus 4.1 - correct model name
     temperature=0.1,  # Lower temperature for more focused decision making
@@ -102,15 +102,15 @@ autonomous_llm = ChatAnthropic(
     timeout=90,  # Longer timeout for complex reasoning with Anthropic
 )
 
-class AutonomousInvestigationAgent:
+class StructuredInvestigationAgent:
     def __init__(self, domain: str, tools: List[Any]):
         # Real tool binding to LLM
-        self.llm_with_tools = autonomous_llm.bind_tools(tools, strict=True)
+        self.llm_with_tools = structured_llm.bind_tools(tools, strict=True)
 ```
 
 **LLM Validation Evidence:**
 - ✅ Real Anthropic API integration with specific model version
-- ✅ Tool binding enables autonomous tool selection by LLM
+- ✅ Tool binding enables structured tool selection by LLM
 - ✅ Dynamic decision making based on investigation context
 - ✅ Variable response generation (no hardcoded outputs)
 - ✅ Real API timeout and error handling
@@ -189,15 +189,15 @@ class WebSocketManager:
 
 ### Working Test Results
 - **Test Period:** August 29, 2025
-- **Total Successful Runs:** 43+ autonomous investigations
-- **Test Script:** `/tests/run_autonomous_investigation_for_user.py`
+- **Total Successful Runs:** 43+ structured investigations
+- **Test Script:** `/tests/run_structured_investigation_for_user.py`
 - **Success Rate:** 100% completion in recent test runs
 - **Average Execution Time:** 2.0 seconds
 - **Quality Scores:** 75/100 average (indicating real analysis quality)
 
 ### Recent Test Evidence
 ```
-autonomous_investigation_test_report_20250829_223619.md
+structured_investigation_test_report_20250829_223619.md
 - Status: completed ✅
 - Overall Score: 75/100  
 - Execution Time: 2.0s
@@ -211,7 +211,7 @@ autonomous_investigation_test_report_20250829_223619.md
 ```mermaid
 sequenceDiagram
     participant UI as Frontend UI
-    participant AC as AutonomousInvestigationClient
+    participant AC as StructuredInvestigationClient
     participant AR as Agent Router
     participant AS as Agent Service
     participant LG as LangGraph
@@ -224,7 +224,7 @@ sequenceDiagram
     AC->>AR: POST /v1/agent/start/{entityId}
     AR->>AS: ainvoke_agent(agent_context)
     AS->>LG: graph.ainvoke(messages, config)
-    LG->>LLM: autonomous_llm.bind_tools(tools)
+    LG->>LLM: structured_llm.bind_tools(tools)
     LLM->>DS: Tool selection & execution
     DS->>EA: External service calls (Splunk, etc.)
     EA-->>DS: Real data responses
@@ -272,14 +272,14 @@ The system requires real service configuration for full operation:
 
 1. **Frontend Layer:** Real HTTP fetch calls with proper authentication and error handling
 2. **Backend Layer:** Real FastAPI endpoints with comprehensive routing and validation
-3. **LLM Layer:** Real Claude Opus 4.1 API integration with autonomous decision making
+3. **LLM Layer:** Real Claude Opus 4.1 API integration with structured decision making
 4. **Service Layer:** Real external service integrations for data analysis
 5. **Communication Layer:** Real WebSocket connections for bidirectional real-time updates
 6. **Persistence Layer:** Real database integration for investigation state management
 
 ### Key Validation Points
 - **No Mock Data:** Production workflow contains no mock data or fallback responses
-- **Real LLM Usage:** Claude Opus 4.1 makes real autonomous decisions and tool selections
+- **Real LLM Usage:** Claude Opus 4.1 makes real structured decisions and tool selections
 - **External Integration:** Actual API calls to Splunk, location services, and device analysis
 - **Variable Responses:** LLM responses show natural variation across investigation runs
 - **Error Handling:** Robust error handling for real API failures and network issues
@@ -287,7 +287,7 @@ The system requires real service configuration for full operation:
 
 ### Confidence Level: **95% - High Confidence**
 
-The autonomous investigation workflow is confirmed to use real APIs and LLM calls throughout the entire end-to-end process, with comprehensive safeguards against mock data usage in production environments.
+The structured investigation workflow is confirmed to use real APIs and LLM calls throughout the entire end-to-end process, with comprehensive safeguards against mock data usage in production environments.
 
 ---
 

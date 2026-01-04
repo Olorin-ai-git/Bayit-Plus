@@ -9,23 +9,24 @@ from typing import Any, Dict, List, Optional
 
 from langchain_core.messages import AIMessage, BaseMessage, HumanMessage, SystemMessage
 
+from app.service.logging import get_bridge_logger
+
 from .augmented_llm import AugmentedLLMPattern
 from .base import BasePattern, PatternResult
-from app.service.logging import get_bridge_logger
 
 logger = get_bridge_logger(__name__)
 
 
 class ChainStep:
     """Represents a single step in the prompt chain"""
-    
+
     def __init__(
         self,
         name: str,
         prompt_template: str,
         validation_criteria: Optional[Dict[str, Any]] = None,
         max_retries: int = 2,
-        required_context: Optional[List[str]] = None
+        required_context: Optional[List[str]] = None,
     ):
         self.name = name
         self.prompt_template = prompt_template
@@ -40,39 +41,39 @@ class ChainStep:
 class PromptChainingPattern(BasePattern):
     """
     Prompt Chaining Pattern implementation.
-    
+
     Provides:
     - Sequential task decomposition
     - Step-by-step execution with validation
-    - Context passing between steps  
+    - Context passing between steps
     - Retry logic for failed steps
     - Pre-configured fraud investigation chains
     """
-    
+
     def __init__(self, config, tools=None, ws_streaming=None):
         """Initialize the Prompt Chaining pattern"""
         super().__init__(config, tools, ws_streaming)
-        
+
         # Initialize the underlying LLM pattern
         self.llm_pattern = AugmentedLLMPattern(config, tools, ws_streaming)
-        
+
         # Define pre-configured chain templates
         self._chain_templates = self._initialize_chain_templates()
-    
+
     def _initialize_chain_templates(self) -> Dict[str, List[ChainStep]]:
         """Initialize pre-configured chain templates for common investigation types"""
-        
+
         return {
             "fraud_investigation": self._create_fraud_investigation_chain(),
             "device_analysis": self._create_device_analysis_chain(),
             "location_analysis": self._create_location_analysis_chain(),
             "network_analysis": self._create_network_analysis_chain(),
-            "risk_assessment": self._create_risk_assessment_chain()
+            "risk_assessment": self._create_risk_assessment_chain(),
         }
-    
+
     def _create_fraud_investigation_chain(self) -> List[ChainStep]:
         """Create a comprehensive fraud investigation chain"""
-        
+
         return [
             ChainStep(
                 name="initial_assessment",
@@ -88,10 +89,12 @@ class PromptChainingPattern(BasePattern):
                 3. Recommended investigation approach
                 4. Priority level (High/Medium/Low)
                 """,
-                validation_criteria={"min_length": 200, "required_sections": ["Summary", "Risk indicators"]},
-                required_context=["entity_id", "entity_type"]
+                validation_criteria={
+                    "min_length": 200,
+                    "required_sections": ["Summary", "Risk indicators"],
+                },
+                required_context=["entity_id", "entity_type"],
             ),
-            
             ChainStep(
                 name="data_collection",
                 prompt_template="""
@@ -106,9 +109,8 @@ class PromptChainingPattern(BasePattern):
                 Use the appropriate tools to gather comprehensive data.
                 """,
                 validation_criteria={"tool_usage_required": True},
-                required_context=["previous_result"]
+                required_context=["previous_result"],
             ),
-            
             ChainStep(
                 name="pattern_analysis",
                 prompt_template="""
@@ -123,10 +125,12 @@ class PromptChainingPattern(BasePattern):
                 3. Timeline of suspicious activities
                 4. Confidence level for each finding
                 """,
-                validation_criteria={"min_length": 300, "confidence_score_required": True},
-                required_context=["initial_assessment", "data_collection"]
+                validation_criteria={
+                    "min_length": 300,
+                    "confidence_score_required": True,
+                },
+                required_context=["initial_assessment", "data_collection"],
             ),
-            
             ChainStep(
                 name="risk_scoring",
                 prompt_template="""
@@ -141,10 +145,12 @@ class PromptChainingPattern(BasePattern):
                 3. Contributing factors with individual scores
                 4. Confidence level in the assessment
                 """,
-                validation_criteria={"risk_score_required": True, "numeric_score": True},
-                required_context=["initial_assessment", "pattern_analysis"]
+                validation_criteria={
+                    "risk_score_required": True,
+                    "numeric_score": True,
+                },
+                required_context=["initial_assessment", "pattern_analysis"],
             ),
-            
             ChainStep(
                 name="recommendations",
                 prompt_template="""
@@ -161,13 +167,13 @@ class PromptChainingPattern(BasePattern):
                 5. Documentation requirements
                 """,
                 validation_criteria={"min_length": 250, "action_items_required": True},
-                required_context=["risk_scoring", "pattern_analysis"]
-            )
+                required_context=["risk_scoring", "pattern_analysis"],
+            ),
         ]
-    
+
     def _create_device_analysis_chain(self) -> List[ChainStep]:
         """Create device analysis chain"""
-        
+
         return [
             ChainStep(
                 name="device_profiling",
@@ -180,9 +186,8 @@ class PromptChainingPattern(BasePattern):
                 3. Anomaly detection in device patterns
                 4. Cross-device correlation
                 """,
-                required_context=["entity_id"]
+                required_context=["entity_id"],
             ),
-            
             ChainStep(
                 name="risk_evaluation",
                 prompt_template="""
@@ -194,13 +199,13 @@ class PromptChainingPattern(BasePattern):
                 3. Security indicators
                 4. Overall device risk level
                 """,
-                required_context=["device_profiling"]
-            )
+                required_context=["device_profiling"],
+            ),
         ]
-    
+
     def _create_location_analysis_chain(self) -> List[ChainStep]:
         """Create location analysis chain"""
-        
+
         return [
             ChainStep(
                 name="location_mapping",
@@ -213,9 +218,8 @@ class PromptChainingPattern(BasePattern):
                 3. High-risk location indicators
                 4. Velocity analysis
                 """,
-                required_context=["entity_id"]
+                required_context=["entity_id"],
             ),
-            
             ChainStep(
                 name="geo_risk_assessment",
                 prompt_template="""
@@ -227,13 +231,13 @@ class PromptChainingPattern(BasePattern):
                 3. High-risk jurisdiction involvement
                 4. Location spoofing indicators
                 """,
-                required_context=["location_mapping"]
-            )
+                required_context=["location_mapping"],
+            ),
         ]
-    
+
     def _create_network_analysis_chain(self) -> List[ChainStep]:
         """Create network analysis chain"""
-        
+
         return [
             ChainStep(
                 name="network_profiling",
@@ -246,9 +250,8 @@ class PromptChainingPattern(BasePattern):
                 3. Proxy/VPN usage indicators
                 4. Network-based anomalies
                 """,
-                required_context=["entity_id"]
+                required_context=["entity_id"],
             ),
-            
             ChainStep(
                 name="network_risk_scoring",
                 prompt_template="""
@@ -260,13 +263,13 @@ class PromptChainingPattern(BasePattern):
                 3. Proxy/anonymization risks
                 4. Overall network risk level
                 """,
-                required_context=["network_profiling"]
-            )
+                required_context=["network_profiling"],
+            ),
         ]
-    
+
     def _create_risk_assessment_chain(self) -> List[ChainStep]:
         """Create comprehensive risk assessment chain"""
-        
+
         return [
             ChainStep(
                 name="data_aggregation",
@@ -279,9 +282,8 @@ class PromptChainingPattern(BasePattern):
                 3. Network security concerns
                 4. Behavioral pattern analysis
                 """,
-                required_context=["entity_id"]
+                required_context=["entity_id"],
             ),
-            
             ChainStep(
                 name="composite_scoring",
                 prompt_template="""
@@ -294,9 +296,8 @@ class PromptChainingPattern(BasePattern):
                 4. Key contributing factors
                 """,
                 validation_criteria={"numeric_score": True},
-                required_context=["data_aggregation"]
+                required_context=["data_aggregation"],
             ),
-            
             ChainStep(
                 name="action_planning",
                 prompt_template="""
@@ -308,105 +309,113 @@ class PromptChainingPattern(BasePattern):
                 3. Escalation procedures
                 4. Documentation needs
                 """,
-                required_context=["composite_scoring"]
-            )
+                required_context=["composite_scoring"],
+            ),
         ]
-    
-    async def execute(self, messages: List[BaseMessage], context: Dict[str, Any]) -> PatternResult:
+
+    async def execute(
+        self, messages: List[BaseMessage], context: Dict[str, Any]
+    ) -> PatternResult:
         """Execute the Prompt Chaining pattern"""
-        
+
         try:
             # Determine which chain to use
             chain_type = context.get("chain_type", "fraud_investigation")
             chain_steps = self._get_chain_steps(chain_type, context)
-            
+
             if not chain_steps:
                 return PatternResult.error_result(f"Unknown chain type: {chain_type}")
-            
+
             # Stream chain start event
             if self.ws_streaming:
                 await self._stream_chain_start(chain_type, len(chain_steps), context)
-            
+
             # Execute chain steps sequentially
             step_results = {}
-            
+
             for step in chain_steps:
-                step_result = await self._execute_step(step, messages, context, step_results)
-                
+                step_result = await self._execute_step(
+                    step, messages, context, step_results
+                )
+
                 if not step_result.success:
-                    return PatternResult.error_result(f"Step {step.name} failed: {step_result.error_message}")
-                
+                    return PatternResult.error_result(
+                        f"Step {step.name} failed: {step_result.error_message}"
+                    )
+
                 step_results[step.name] = step_result.result
                 step.result = step_result.result
                 step.is_completed = True
-                
+
                 # Stream step completion
                 if self.ws_streaming:
                     await self._stream_step_complete(step, context)
-            
+
             # Combine results
             final_result = self._combine_step_results(chain_steps, step_results)
-            
+
             # Calculate overall confidence
             confidence = self._calculate_chain_confidence(chain_steps)
-            
+
             # Stream chain completion
             if self.ws_streaming:
                 await self._stream_chain_complete(chain_type, confidence, context)
-            
+
             return PatternResult.success_result(
                 result=final_result,
                 confidence=confidence,
-                reasoning=self._extract_chain_reasoning(chain_steps)
+                reasoning=self._extract_chain_reasoning(chain_steps),
             )
-            
+
         except Exception as e:
             logger.error(f"Prompt chaining execution failed: {str(e)}", exc_info=True)
-            
+
             if self.ws_streaming:
                 await self._stream_error(str(e), context)
-            
+
             return PatternResult.error_result(f"Chain execution failed: {str(e)}")
-    
-    def _get_chain_steps(self, chain_type: str, context: Dict[str, Any]) -> List[ChainStep]:
+
+    def _get_chain_steps(
+        self, chain_type: str, context: Dict[str, Any]
+    ) -> List[ChainStep]:
         """Get chain steps for the specified type"""
-        
+
         if chain_type in self._chain_templates:
             return self._chain_templates[chain_type].copy()
-        
+
         # Allow custom chains from context
         if "custom_chain" in context:
             return context["custom_chain"]
-        
+
         return []
-    
+
     async def _execute_step(
         self,
         step: ChainStep,
         original_messages: List[BaseMessage],
         context: Dict[str, Any],
-        previous_results: Dict[str, Any]
+        previous_results: Dict[str, Any],
     ) -> PatternResult:
         """Execute a single step in the chain"""
-        
+
         max_attempts = step.max_retries + 1
-        
+
         for attempt in range(max_attempts):
             try:
                 # Stream step start
                 if self.ws_streaming:
                     await self._stream_step_start(step, attempt, context)
-                
+
                 # Build step context
                 step_context = self._build_step_context(step, context, previous_results)
-                
+
                 # Create step-specific prompt
                 step_prompt = self._create_step_prompt(step, step_context)
                 step_messages = original_messages + [HumanMessage(content=step_prompt)]
-                
+
                 # Execute using underlying LLM pattern
                 result = await self.llm_pattern.execute(step_messages, context)
-                
+
                 if result.success:
                     # Validate step result
                     if self._validate_step_result(step, result):
@@ -417,7 +426,9 @@ class PromptChainingPattern(BasePattern):
                         if attempt < max_attempts - 1:
                             continue
                         else:
-                            return PatternResult.error_result(f"Step validation failed after {max_attempts} attempts")
+                            return PatternResult.error_result(
+                                f"Step validation failed after {max_attempts} attempts"
+                            )
                 else:
                     # Step execution failed, retry if possible
                     step.retry_count += 1
@@ -425,27 +436,28 @@ class PromptChainingPattern(BasePattern):
                         continue
                     else:
                         return result
-                        
+
             except Exception as e:
                 step.retry_count += 1
                 if attempt < max_attempts - 1:
-                    logger.warning(f"Step {step.name} attempt {attempt + 1} failed: {str(e)}")
+                    logger.warning(
+                        f"Step {step.name} attempt {attempt + 1} failed: {str(e)}"
+                    )
                     continue
                 else:
-                    return PatternResult.error_result(f"Step {step.name} failed: {str(e)}")
-        
+                    return PatternResult.error_result(
+                        f"Step {step.name} failed: {str(e)}"
+                    )
+
         return PatternResult.error_result(f"Step {step.name} exhausted all retries")
-    
+
     def _build_step_context(
-        self,
-        step: ChainStep,
-        context: Dict[str, Any],
-        previous_results: Dict[str, Any]
+        self, step: ChainStep, context: Dict[str, Any], previous_results: Dict[str, Any]
     ) -> Dict[str, Any]:
         """Build context for step execution"""
-        
+
         step_context = context.copy()
-        
+
         # Add previous results that this step requires
         for required_key in step.required_context:
             if required_key in previous_results:
@@ -454,198 +466,227 @@ class PromptChainingPattern(BasePattern):
                 # Already in context
                 continue
             else:
-                logger.warning(f"Required context key {required_key} not available for step {step.name}")
-        
+                logger.warning(
+                    f"Required context key {required_key} not available for step {step.name}"
+                )
+
         return step_context
-    
+
     def _create_step_prompt(self, step: ChainStep, step_context: Dict[str, Any]) -> str:
         """Create prompt for step execution"""
-        
+
         try:
             return step.prompt_template.format(**step_context)
         except KeyError as e:
             logger.error(f"Missing context key for step {step.name}: {e}")
             return step.prompt_template  # Return unformatted if formatting fails
-    
+
     def _validate_step_result(self, step: ChainStep, result: PatternResult) -> bool:
         """Validate step result against criteria"""
-        
+
         if not step.validation_criteria:
             return True
-        
+
         result_content = str(result.result)
-        
+
         # Check minimum length
         if "min_length" in step.validation_criteria:
             if len(result_content) < step.validation_criteria["min_length"]:
                 return False
-        
+
         # Check required sections
         if "required_sections" in step.validation_criteria:
             for section in step.validation_criteria["required_sections"]:
                 if section.lower() not in result_content.lower():
                     return False
-        
+
         # Check tool usage requirement
         if step.validation_criteria.get("tool_usage_required", False):
-            if not hasattr(result.result, 'tool_calls') or not result.result.tool_calls:
+            if not hasattr(result.result, "tool_calls") or not result.result.tool_calls:
                 return False
-        
+
         # Check numeric score requirement
         if step.validation_criteria.get("numeric_score", False):
             import re
-            score_pattern = r'\b\d{1,3}\b'
+
+            score_pattern = r"\b\d{1,3}\b"
             if not re.search(score_pattern, result_content):
                 return False
-        
+
         # Check risk score requirement
         if step.validation_criteria.get("risk_score_required", False):
             risk_keywords = ["risk", "score", "level"]
             if not any(keyword in result_content.lower() for keyword in risk_keywords):
                 return False
-        
-        # Check confidence score requirement  
+
+        # Check confidence score requirement
         if step.validation_criteria.get("confidence_score_required", False):
             if result.confidence_score < 0.5:
                 return False
-        
+
         # Check action items requirement
         if step.validation_criteria.get("action_items_required", False):
             action_keywords = ["recommend", "action", "should", "must", "need"]
-            if not any(keyword in result_content.lower() for keyword in action_keywords):
+            if not any(
+                keyword in result_content.lower() for keyword in action_keywords
+            ):
                 return False
-        
+
         return True
-    
-    def _combine_step_results(self, chain_steps: List[ChainStep], step_results: Dict[str, Any]) -> Dict[str, Any]:
+
+    def _combine_step_results(
+        self, chain_steps: List[ChainStep], step_results: Dict[str, Any]
+    ) -> Dict[str, Any]:
         """Combine all step results into final result"""
-        
+
         combined_result = {
-            "chain_type": getattr(self, '_current_chain_type', 'unknown'),
+            "chain_type": getattr(self, "_current_chain_type", "unknown"),
             "steps_completed": len([step for step in chain_steps if step.is_completed]),
             "total_steps": len(chain_steps),
             "step_results": step_results,
-            "execution_summary": self._create_execution_summary(chain_steps)
+            "execution_summary": self._create_execution_summary(chain_steps),
         }
-        
+
         # Extract final recommendation or conclusion if available
         if "recommendations" in step_results:
             combined_result["final_recommendations"] = step_results["recommendations"]
         elif "action_planning" in step_results:
             combined_result["final_recommendations"] = step_results["action_planning"]
-        
+
         # Extract risk score if available
         risk_steps = ["risk_scoring", "composite_scoring", "risk_evaluation"]
         for step_name in risk_steps:
             if step_name in step_results:
                 combined_result["risk_assessment"] = step_results[step_name]
                 break
-        
+
         return combined_result
-    
+
     def _create_execution_summary(self, chain_steps: List[ChainStep]) -> str:
         """Create summary of chain execution"""
-        
+
         summary_parts = []
-        
+
         for step in chain_steps:
             if step.is_completed:
-                retry_info = f" (retries: {step.retry_count})" if step.retry_count > 0 else ""
+                retry_info = (
+                    f" (retries: {step.retry_count})" if step.retry_count > 0 else ""
+                )
                 summary_parts.append(f"✓ {step.name}{retry_info}")
             else:
                 summary_parts.append(f"✗ {step.name} (failed)")
-        
+
         return " → ".join(summary_parts)
-    
+
     def _calculate_chain_confidence(self, chain_steps: List[ChainStep]) -> float:
         """Calculate overall confidence for the chain execution"""
-        
+
         completed_steps = [step for step in chain_steps if step.is_completed]
         if not completed_steps:
             return 0.0
-        
+
         # Base confidence from completion rate
         completion_rate = len(completed_steps) / len(chain_steps)
         base_confidence = completion_rate * 0.6
-        
+
         # Penalty for retries
         total_retries = sum(step.retry_count for step in chain_steps)
         retry_penalty = min(total_retries * 0.05, 0.2)
-        
+
         # Bonus for validation success
-        validation_bonus = 0.2 if all(step.is_completed for step in chain_steps) else 0.0
-        
+        validation_bonus = (
+            0.2 if all(step.is_completed for step in chain_steps) else 0.0
+        )
+
         final_confidence = base_confidence - retry_penalty + validation_bonus
         return max(0.0, min(1.0, final_confidence))
-    
+
     def _extract_chain_reasoning(self, chain_steps: List[ChainStep]) -> str:
         """Extract reasoning from chain execution"""
-        
+
         reasoning_parts = []
-        
+
         for step in chain_steps:
             if step.is_completed and step.result:
                 step_reasoning = f"{step.name}: {str(step.result)[:100]}..."
                 reasoning_parts.append(step_reasoning)
-        
+
         return " | ".join(reasoning_parts)
-    
+
     # WebSocket streaming methods
-    async def _stream_chain_start(self, chain_type: str, step_count: int, context: Dict[str, Any]) -> None:
+    async def _stream_chain_start(
+        self, chain_type: str, step_count: int, context: Dict[str, Any]
+    ) -> None:
         """Stream chain start event"""
         if self.ws_streaming:
-            await self.ws_streaming.send_agent_thought({
-                "type": "chain_start",
-                "pattern": "prompt_chaining",
-                "chain_type": chain_type,
-                "total_steps": step_count,
-                "message": f"Starting {chain_type} chain with {step_count} steps",
-                "context": context.get("investigation_id", "unknown")
-            })
-    
-    async def _stream_step_start(self, step: ChainStep, attempt: int, context: Dict[str, Any]) -> None:
+            await self.ws_streaming.send_agent_thought(
+                {
+                    "type": "chain_start",
+                    "pattern": "prompt_chaining",
+                    "chain_type": chain_type,
+                    "total_steps": step_count,
+                    "message": f"Starting {chain_type} chain with {step_count} steps",
+                    "context": context.get("investigation_id", "unknown"),
+                }
+            )
+
+    async def _stream_step_start(
+        self, step: ChainStep, attempt: int, context: Dict[str, Any]
+    ) -> None:
         """Stream step start event"""
         if self.ws_streaming:
-            await self.ws_streaming.send_agent_thought({
-                "type": "step_start",
-                "pattern": "prompt_chaining",
-                "step_name": step.name,
-                "attempt": attempt + 1,
-                "max_attempts": step.max_retries + 1,
-                "message": f"Executing step: {step.name}",
-                "context": context.get("investigation_id", "unknown")
-            })
-    
-    async def _stream_step_complete(self, step: ChainStep, context: Dict[str, Any]) -> None:
+            await self.ws_streaming.send_agent_thought(
+                {
+                    "type": "step_start",
+                    "pattern": "prompt_chaining",
+                    "step_name": step.name,
+                    "attempt": attempt + 1,
+                    "max_attempts": step.max_retries + 1,
+                    "message": f"Executing step: {step.name}",
+                    "context": context.get("investigation_id", "unknown"),
+                }
+            )
+
+    async def _stream_step_complete(
+        self, step: ChainStep, context: Dict[str, Any]
+    ) -> None:
         """Stream step completion event"""
         if self.ws_streaming:
-            await self.ws_streaming.send_agent_thought({
-                "type": "step_complete",
-                "pattern": "prompt_chaining",
-                "step_name": step.name,
-                "retries_used": step.retry_count,
-                "message": f"Completed step: {step.name}",
-                "context": context.get("investigation_id", "unknown")
-            })
-    
-    async def _stream_chain_complete(self, chain_type: str, confidence: float, context: Dict[str, Any]) -> None:
+            await self.ws_streaming.send_agent_thought(
+                {
+                    "type": "step_complete",
+                    "pattern": "prompt_chaining",
+                    "step_name": step.name,
+                    "retries_used": step.retry_count,
+                    "message": f"Completed step: {step.name}",
+                    "context": context.get("investigation_id", "unknown"),
+                }
+            )
+
+    async def _stream_chain_complete(
+        self, chain_type: str, confidence: float, context: Dict[str, Any]
+    ) -> None:
         """Stream chain completion event"""
         if self.ws_streaming:
-            await self.ws_streaming.send_agent_thought({
-                "type": "chain_complete",
-                "pattern": "prompt_chaining",
-                "chain_type": chain_type,
-                "confidence": confidence,
-                "message": f"Chain {chain_type} completed with confidence {confidence:.2f}",
-                "context": context.get("investigation_id", "unknown")
-            })
-    
+            await self.ws_streaming.send_agent_thought(
+                {
+                    "type": "chain_complete",
+                    "pattern": "prompt_chaining",
+                    "chain_type": chain_type,
+                    "confidence": confidence,
+                    "message": f"Chain {chain_type} completed with confidence {confidence:.2f}",
+                    "context": context.get("investigation_id", "unknown"),
+                }
+            )
+
     async def _stream_error(self, error_message: str, context: Dict[str, Any]) -> None:
         """Stream error event"""
         if self.ws_streaming:
-            await self.ws_streaming.send_agent_thought({
-                "type": "error",
-                "pattern": "prompt_chaining",
-                "message": f"Chain execution failed: {error_message}",
-                "context": context.get("investigation_id", "unknown")
-            })
+            await self.ws_streaming.send_agent_thought(
+                {
+                    "type": "error",
+                    "pattern": "prompt_chaining",
+                    "message": f"Chain execution failed: {error_message}",
+                    "context": context.get("investigation_id", "unknown"),
+                }
+            )

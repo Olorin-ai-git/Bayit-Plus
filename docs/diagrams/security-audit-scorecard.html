@@ -1,0 +1,751 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Olorin Security Audit Scorecard - November 2025</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 20px;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%);
+            color: white;
+            padding: 40px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        .header .subtitle {
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+
+        .overall-score {
+            background: linear-gradient(135deg, #f59e0b 0%, #ef4444 100%);
+            color: white;
+            padding: 40px;
+            text-align: center;
+        }
+
+        .overall-score .score {
+            font-size: 5em;
+            font-weight: bold;
+            margin: 20px 0;
+        }
+
+        .overall-score .label {
+            font-size: 1.5em;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .content {
+            padding: 40px;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            margin: 30px 0;
+        }
+
+        .card {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            border: 2px solid #e5e7eb;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+        }
+
+        .card-title {
+            font-size: 1.3em;
+            font-weight: bold;
+            margin-bottom: 15px;
+            color: #1e3a8a;
+        }
+
+        .score-bar {
+            width: 100%;
+            height: 30px;
+            background: #e5e7eb;
+            border-radius: 15px;
+            overflow: hidden;
+            position: relative;
+            margin: 15px 0;
+        }
+
+        .score-fill {
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            padding-right: 10px;
+            color: white;
+            font-weight: bold;
+            transition: width 1s ease-in-out;
+        }
+
+        .score-critical { background: linear-gradient(90deg, #dc2626 0%, #ef4444 100%); }
+        .score-high { background: linear-gradient(90deg, #f59e0b 0%, #fbbf24 100%); }
+        .score-moderate { background: linear-gradient(90deg, #eab308 0%, #fde047 100%); }
+        .score-good { background: linear-gradient(90deg, #10b981 0%, #34d399 100%); }
+
+        .metric-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 0;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        .metric-row:last-child {
+            border-bottom: none;
+        }
+
+        .metric-label {
+            font-weight: 600;
+            color: #374151;
+        }
+
+        .metric-value {
+            font-weight: bold;
+            font-size: 1.2em;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 0.85em;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .badge-critical { background: #fecaca; color: #991b1b; }
+        .badge-high { background: #fed7aa; color: #9a3412; }
+        .badge-moderate { background: #fef3c7; color: #92400e; }
+        .badge-low { background: #d1fae5; color: #065f46; }
+
+        .chart-container {
+            position: relative;
+            height: 400px;
+            margin: 30px 0;
+        }
+
+        .section-title {
+            font-size: 2em;
+            font-weight: bold;
+            color: #1e3a8a;
+            margin: 40px 0 20px 0;
+            padding-bottom: 10px;
+            border-bottom: 3px solid #3b82f6;
+        }
+
+        .vulnerability-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+            margin: 20px 0;
+        }
+
+        .vulnerability-card {
+            background: #f9fafb;
+            border-left: 4px solid;
+            padding: 20px;
+            border-radius: 8px;
+        }
+
+        .vulnerability-card.critical { border-left-color: #dc2626; }
+        .vulnerability-card.high { border-left-color: #f59e0b; }
+        .vulnerability-card.moderate { border-left-color: #eab308; }
+
+        .phase-card {
+            background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%);
+            border-radius: 15px;
+            padding: 30px;
+            margin: 20px 0;
+            border-left: 5px solid #3b82f6;
+        }
+
+        .phase-header {
+            font-size: 1.5em;
+            font-weight: bold;
+            color: #1e3a8a;
+            margin-bottom: 15px;
+        }
+
+        .phase-details {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+            margin: 15px 0;
+        }
+
+        .phase-stat {
+            text-align: center;
+            padding: 15px;
+            background: white;
+            border-radius: 10px;
+        }
+
+        .phase-stat-value {
+            font-size: 2em;
+            font-weight: bold;
+            color: #3b82f6;
+        }
+
+        .phase-stat-label {
+            font-size: 0.9em;
+            color: #6b7280;
+            margin-top: 5px;
+        }
+
+        .roi-highlight {
+            background: linear-gradient(135deg, #10b981 0%, #34d399 100%);
+            color: white;
+            padding: 40px;
+            border-radius: 15px;
+            text-align: center;
+            margin: 30px 0;
+        }
+
+        .roi-highlight .big-number {
+            font-size: 4em;
+            font-weight: bold;
+            margin: 20px 0;
+        }
+
+        @media print {
+            body {
+                background: white;
+                padding: 0;
+            }
+            .container {
+                box-shadow: none;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .grid, .vulnerability-grid {
+                grid-template-columns: 1fr;
+            }
+            .header h1 {
+                font-size: 1.8em;
+            }
+            .overall-score .score {
+                font-size: 3em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🔒 Olorin Security Audit Scorecard</h1>
+            <div class="subtitle">Comprehensive Security & Compliance Assessment</div>
+            <div class="subtitle">November 1, 2025</div>
+        </div>
+
+        <div class="overall-score">
+            <div class="label">Overall Security Score</div>
+            <div class="score">62<span style="font-size: 0.5em;">/100</span></div>
+            <div class="label">⚠️ MODERATE RISK</div>
+        </div>
+
+        <div class="content">
+            <h2 class="section-title">Security Component Scores</h2>
+
+            <div class="grid">
+                <div class="card">
+                    <div class="card-title">🔐 Dependency Security</div>
+                    <div class="score-bar">
+                        <div class="score-fill score-critical" style="width: 35%;">35/100</div>
+                    </div>
+                    <span class="badge badge-critical">CRITICAL</span>
+                    <div style="margin-top: 15px; color: #6b7280;">
+                        71 frontend vulnerabilities including 10 critical issues
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-title">🔑 Authentication</div>
+                    <div class="score-bar">
+                        <div class="score-fill score-moderate" style="width: 65%;">65/100</div>
+                    </div>
+                    <span class="badge badge-moderate">MODERATE</span>
+                    <div style="margin-top: 15px; color: #6b7280;">
+                        JWT implementation needs hardening and MFA
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-title">🛡️ Authorization</div>
+                    <div class="score-bar">
+                        <div class="score-fill score-moderate" style="width: 70%;">70/100</div>
+                    </div>
+                    <span class="badge badge-moderate">MODERATE</span>
+                    <div style="margin-top: 15px; color: #6b7280;">
+                        API endpoint authorization needs systematic audit
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-title">🔒 Data Protection</div>
+                    <div class="score-bar">
+                        <div class="score-fill score-moderate" style="width: 60%;">60/100</div>
+                    </div>
+                    <span class="badge badge-moderate">MODERATE</span>
+                    <div style="margin-top: 15px; color: #6b7280;">
+                        Encryption at rest and PII handling need improvement
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-title">🌐 API Security</div>
+                    <div class="score-bar">
+                        <div class="score-fill score-moderate" style="width: 65%;">65/100</div>
+                    </div>
+                    <span class="badge badge-moderate">MODERATE</span>
+                    <div style="margin-top: 15px; color: #6b7280;">
+                        Input validation and rate limiting need enhancement
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-title">🏗️ Infrastructure</div>
+                    <div class="score-bar">
+                        <div class="score-fill score-moderate" style="width: 55%;">55/100</div>
+                    </div>
+                    <span class="badge badge-moderate">MODERATE</span>
+                    <div style="margin-top: 15px; color: #6b7280;">
+                        Missing security headers and TLS hardening
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-title">📋 Compliance</div>
+                    <div class="score-bar">
+                        <div class="score-fill score-critical" style="width: 40%;">40/100</div>
+                    </div>
+                    <span class="badge badge-critical">HIGH RISK</span>
+                    <div style="margin-top: 15px; color: #6b7280;">
+                        GDPR and CCPA compliance not implemented
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-title">📊 Monitoring</div>
+                    <div class="score-bar">
+                        <div class="score-fill score-moderate" style="width: 60%;">60/100</div>
+                    </div>
+                    <span class="badge badge-moderate">MODERATE</span>
+                    <div style="margin-top: 15px; color: #6b7280;">
+                        Security event monitoring needs centralization
+                    </div>
+                </div>
+            </div>
+
+            <h2 class="section-title">Critical Vulnerabilities Summary</h2>
+
+            <div class="card" style="background: linear-gradient(135deg, #fee2e2 0%, #fecaca 100%);">
+                <div class="metric-row">
+                    <span class="metric-label">Total Frontend Vulnerabilities</span>
+                    <span class="metric-value" style="color: #dc2626;">71</span>
+                </div>
+                <div class="metric-row">
+                    <span class="metric-label">Critical Severity</span>
+                    <span class="metric-value" style="color: #dc2626;">10 (14%)</span>
+                </div>
+                <div class="metric-row">
+                    <span class="metric-label">High Severity</span>
+                    <span class="metric-value" style="color: #f59e0b;">40 (56%)</span>
+                </div>
+                <div class="metric-row">
+                    <span class="metric-label">Moderate Severity</span>
+                    <span class="metric-value" style="color: #eab308;">14 (20%)</span>
+                </div>
+                <div class="metric-row">
+                    <span class="metric-label">Low Severity</span>
+                    <span class="metric-value" style="color: #10b981;">7 (10%)</span>
+                </div>
+            </div>
+
+            <div class="vulnerability-grid">
+                <div class="vulnerability-card critical">
+                    <div style="font-weight: bold; font-size: 1.1em; margin-bottom: 10px;">
+                        🚨 lodash - Command Injection
+                    </div>
+                    <div style="color: #6b7280; margin-bottom: 5px;">
+                        <strong>Impact:</strong> Remote code execution
+                    </div>
+                    <div style="color: #6b7280;">
+                        <strong>Fix:</strong> Upgrade to 4.17.21+
+                    </div>
+                </div>
+
+                <div class="vulnerability-card critical">
+                    <div style="font-weight: bold; font-size: 1.1em; margin-bottom: 10px;">
+                        🚨 minimist - Prototype Pollution
+                    </div>
+                    <div style="color: #6b7280; margin-bottom: 5px;">
+                        <strong>Impact:</strong> DoS or RCE
+                    </div>
+                    <div style="color: #6b7280;">
+                        <strong>Fix:</strong> Upgrade to 1.2.6+
+                    </div>
+                </div>
+
+                <div class="vulnerability-card critical">
+                    <div style="font-weight: bold; font-size: 1.1em; margin-bottom: 10px;">
+                        🚨 underscore - Arbitrary Code Execution
+                    </div>
+                    <div style="color: #6b7280; margin-bottom: 5px;">
+                        <strong>Impact:</strong> Template injection RCE
+                    </div>
+                    <div style="color: #6b7280;">
+                        <strong>Fix:</strong> Replace with lodash or upgrade
+                    </div>
+                </div>
+
+                <div class="vulnerability-card high">
+                    <div style="font-weight: bold; font-size: 1.1em; margin-bottom: 10px;">
+                        ⚠️ request - SSRF Vulnerability
+                    </div>
+                    <div style="color: #6b7280; margin-bottom: 5px;">
+                        <strong>Impact:</strong> Server-side request forgery
+                    </div>
+                    <div style="color: #6b7280;">
+                        <strong>Fix:</strong> Replace with axios
+                    </div>
+                </div>
+            </div>
+
+            <h2 class="section-title">OWASP Top 10 Compliance</h2>
+
+            <div class="chart-container">
+                <canvas id="owaspChart"></canvas>
+            </div>
+
+            <h2 class="section-title">Phased Remediation Plan</h2>
+
+            <div class="phase-card">
+                <div class="phase-header">Phase 1: Critical Fixes (Weeks 1-2)</div>
+                <div class="phase-details">
+                    <div class="phase-stat">
+                        <div class="phase-stat-value">75-95h</div>
+                        <div class="phase-stat-label">Effort</div>
+                    </div>
+                    <div class="phase-stat">
+                        <div class="phase-stat-value">$11-14K</div>
+                        <div class="phase-stat-label">Budget</div>
+                    </div>
+                    <div class="phase-stat">
+                        <div class="phase-stat-value">60%</div>
+                        <div class="phase-stat-label">Risk Reduction</div>
+                    </div>
+                </div>
+                <div style="margin-top: 15px; color: #374151;">
+                    <strong>Actions:</strong> Critical npm updates, security headers, JWT hardening, API audit, PII sanitization
+                </div>
+            </div>
+
+            <div class="phase-card">
+                <div class="phase-header">Phase 2: High Priority (Weeks 3-4)</div>
+                <div class="phase-details">
+                    <div class="phase-stat">
+                        <div class="phase-stat-value">110-140h</div>
+                        <div class="phase-stat-label">Effort</div>
+                    </div>
+                    <div class="phase-stat">
+                        <div class="phase-stat-value">$17-21K</div>
+                        <div class="phase-stat-label">Budget</div>
+                    </div>
+                    <div class="phase-stat">
+                        <div class="phase-stat-value">70%</div>
+                        <div class="phase-stat-label">Risk Reduction</div>
+                    </div>
+                </div>
+                <div style="margin-top: 15px; color: #374151;">
+                    <strong>Actions:</strong> Remaining updates, input validation, rate limiting, error handling, frontend hardening
+                </div>
+            </div>
+
+            <div class="phase-card">
+                <div class="phase-header">Phase 3: Compliance (Months 2-3)</div>
+                <div class="phase-details">
+                    <div class="phase-stat">
+                        <div class="phase-stat-value">150-200h</div>
+                        <div class="phase-stat-label">Effort</div>
+                    </div>
+                    <div class="phase-stat">
+                        <div class="phase-stat-value">$23-30K</div>
+                        <div class="phase-stat-label">Budget</div>
+                    </div>
+                    <div class="phase-stat">
+                        <div class="phase-stat-value">80%</div>
+                        <div class="phase-stat-label">Risk Reduction</div>
+                    </div>
+                </div>
+                <div style="margin-top: 15px; color: #374151;">
+                    <strong>Actions:</strong> GDPR compliance, database encryption, secrets management, monitoring, threat modeling
+                </div>
+            </div>
+
+            <div class="phase-card">
+                <div class="phase-header">Phase 4: Advanced Security (Ongoing)</div>
+                <div class="phase-details">
+                    <div class="phase-stat">
+                        <div class="phase-stat-value">80-110h</div>
+                        <div class="phase-stat-label">Effort</div>
+                    </div>
+                    <div class="phase-stat">
+                        <div class="phase-stat-value">$12-17K</div>
+                        <div class="phase-stat-label">Budget</div>
+                    </div>
+                    <div class="phase-stat">
+                        <div class="phase-stat-value">90%</div>
+                        <div class="phase-stat-label">Risk Reduction</div>
+                    </div>
+                </div>
+                <div style="margin-top: 15px; color: #374151;">
+                    <strong>Actions:</strong> MFA implementation, automated scanning, LLM security, penetration testing
+                </div>
+            </div>
+
+            <h2 class="section-title">Financial Impact & ROI</h2>
+
+            <div class="roi-highlight">
+                <h3 style="font-size: 1.5em; margin-bottom: 20px;">Return on Investment</h3>
+                <div class="big-number">320-2,200%</div>
+                <div style="font-size: 1.3em; margin: 20px 0;">
+                    Investment: $118K-$182K | Risk Avoided: $590K-$2.98M
+                </div>
+                <div style="font-size: 1.1em; opacity: 0.9;">
+                    Payback Period: 1-3 months
+                </div>
+            </div>
+
+            <div class="grid">
+                <div class="card">
+                    <div class="card-title">💰 Annual Risk Without Fixes</div>
+                    <div class="metric-row">
+                        <span class="metric-label">Data Breach</span>
+                        <span class="metric-value" style="color: #dc2626;">$300K-$2M</span>
+                    </div>
+                    <div class="metric-row">
+                        <span class="metric-label">Ransomware</span>
+                        <span class="metric-value" style="color: #dc2626;">$185K-$278K</span>
+                    </div>
+                    <div class="metric-row">
+                        <span class="metric-label">GDPR Fines</span>
+                        <span class="metric-value" style="color: #dc2626;">$5K-$100K</span>
+                    </div>
+                    <div class="metric-row">
+                        <span class="metric-label">Reputation Damage</span>
+                        <span class="metric-value" style="color: #dc2626;">$100K-$600K</span>
+                    </div>
+                    <div class="metric-row" style="border-top: 2px solid #dc2626; padding-top: 15px; margin-top: 10px;">
+                        <span class="metric-label"><strong>TOTAL RISK</strong></span>
+                        <span class="metric-value" style="color: #dc2626;"><strong>$590K-$2.98M</strong></span>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-title">💵 Required Investment</div>
+                    <div class="metric-row">
+                        <span class="metric-label">Phase 1 (Critical)</span>
+                        <span class="metric-value" style="color: #3b82f6;">$11K-$14K</span>
+                    </div>
+                    <div class="metric-row">
+                        <span class="metric-label">Phase 2 (High Priority)</span>
+                        <span class="metric-value" style="color: #3b82f6;">$17K-$21K</span>
+                    </div>
+                    <div class="metric-row">
+                        <span class="metric-label">Phase 3 (Compliance)</span>
+                        <span class="metric-value" style="color: #3b82f6;">$23K-$30K</span>
+                    </div>
+                    <div class="metric-row">
+                        <span class="metric-label">Phase 4 (Advanced)</span>
+                        <span class="metric-value" style="color: #3b82f6;">$12K-$17K</span>
+                    </div>
+                    <div class="metric-row">
+                        <span class="metric-label">Tools & Services</span>
+                        <span class="metric-value" style="color: #3b82f6;">$25K-$50K</span>
+                    </div>
+                    <div class="metric-row" style="border-top: 2px solid #3b82f6; padding-top: 15px; margin-top: 10px;">
+                        <span class="metric-label"><strong>TOTAL INVESTMENT</strong></span>
+                        <span class="metric-value" style="color: #3b82f6;"><strong>$118K-$182K</strong></span>
+                    </div>
+                </div>
+            </div>
+
+            <h2 class="section-title">Immediate Actions (This Week)</h2>
+
+            <div class="card" style="background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);">
+                <h3 style="color: #92400e; margin-bottom: 20px; font-size: 1.3em;">Quick Wins - 15-20 hours</h3>
+                <div style="display: grid; gap: 15px;">
+                    <div style="padding: 15px; background: white; border-radius: 10px;">
+                        <strong>✅ Security Headers</strong> (6-8h)
+                        <div style="color: #6b7280; margin-top: 5px;">
+                            Implement CSP, HSTS, X-Frame-Options → 15-20% risk reduction
+                        </div>
+                    </div>
+                    <div style="padding: 15px; background: white; border-radius: 10px;">
+                        <strong>✅ Critical npm Updates</strong> (8-10h)
+                        <div style="color: #6b7280; margin-top: 5px;">
+                            lodash, minimist updates → 30-40% risk reduction
+                        </div>
+                    </div>
+                    <div style="padding: 15px; background: white; border-radius: 10px;">
+                        <strong>✅ API Auth Audit</strong> (2-3h)
+                        <div style="color: #6b7280; margin-top: 5px;">
+                            Identify unprotected endpoints → 10-15% risk reduction
+                        </div>
+                    </div>
+                </div>
+                <div style="text-align: center; margin-top: 20px; font-size: 1.2em; font-weight: bold; color: #92400e;">
+                    Total Week 1 Impact: 55-75% Risk Reduction
+                </div>
+            </div>
+
+            <div style="background: #f3f4f6; padding: 30px; border-radius: 15px; margin: 30px 0; text-align: center;">
+                <h3 style="color: #1e3a8a; margin-bottom: 15px;">📊 Full Audit Report Available</h3>
+                <div style="color: #6b7280; margin: 10px 0;">
+                    Comprehensive security audit appended to:<br>
+                    <code style="background: white; padding: 5px 10px; border-radius: 5px; display: inline-block; margin-top: 5px;">
+                        /docs/analysis/comprehensive-codebase-analysis-2025-11-01.md
+                    </code>
+                </div>
+                <div style="color: #6b7280; margin: 10px 0;">
+                    Executive Summary:<br>
+                    <code style="background: white; padding: 5px 10px; border-radius: 5px; display: inline-block; margin-top: 5px;">
+                        /docs/analysis/security-audit-executive-summary.md
+                    </code>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // OWASP Top 10 Chart
+        const owaspCtx = document.getElementById('owaspChart').getContext('2d');
+        new Chart(owaspCtx, {
+            type: 'bar',
+            data: {
+                labels: [
+                    'A01: Access Control',
+                    'A02: Crypto Failures',
+                    'A03: Injection',
+                    'A04: Insecure Design',
+                    'A05: Misconfiguration',
+                    'A06: Vulnerable Components',
+                    'A07: Auth Failures',
+                    'A08: Integrity Failures',
+                    'A09: Logging Failures',
+                    'A10: SSRF'
+                ],
+                datasets: [
+                    {
+                        label: 'Current Score',
+                        data: [70, 60, 85, 60, 35, 35, 65, 60, 60, 60],
+                        backgroundColor: 'rgba(239, 68, 68, 0.8)',
+                        borderColor: 'rgba(220, 38, 38, 1)',
+                        borderWidth: 2
+                    },
+                    {
+                        label: 'Target Score',
+                        data: [90, 85, 90, 80, 85, 90, 85, 80, 85, 80],
+                        backgroundColor: 'rgba(16, 185, 129, 0.8)',
+                        borderColor: 'rgba(5, 150, 105, 1)',
+                        borderWidth: 2
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        max: 100,
+                        title: {
+                            display: true,
+                            text: 'Compliance Score (%)',
+                            font: {
+                                size: 14,
+                                weight: 'bold'
+                            }
+                        }
+                    },
+                    x: {
+                        ticks: {
+                            font: {
+                                size: 11
+                            }
+                        }
+                    }
+                },
+                plugins: {
+                    title: {
+                        display: true,
+                        text: 'OWASP Top 10 Compliance: Current vs Target',
+                        font: {
+                            size: 18,
+                            weight: 'bold'
+                        }
+                    },
+                    legend: {
+                        display: true,
+                        position: 'top'
+                    }
+                }
+            }
+        });
+
+        // Animate score bars on load
+        window.addEventListener('load', () => {
+            const scoreFills = document.querySelectorAll('.score-fill');
+            scoreFills.forEach(fill => {
+                const width = fill.style.width;
+                fill.style.width = '0%';
+                setTimeout(() => {
+                    fill.style.width = width;
+                }, 100);
+            });
+        });
+    </script>
+</body>
+</html>

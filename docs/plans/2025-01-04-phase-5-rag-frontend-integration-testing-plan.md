@@ -30,8 +30,8 @@ This comprehensive implementation plan details Phase 5 of the RAG-Agent integrat
 
 **Existing Components:**
 - `OptimizedInvestigationDashboard.tsx` (469 lines - requires componentization)
-- `AutonomousInvestigationClient.ts` - WebSocket client with event handlers
-- `useAutonomousInvestigation.ts` - React hook for investigation management
+- `StructuredInvestigationClient.ts` - WebSocket client with event handlers
+- `useStructuredInvestigation.ts` - React hook for investigation management
 - WebSocket event types: `onPhaseUpdate`, `onStatusUpdate`, `onError`, `onComplete`
 
 **Current WebSocket Events:**
@@ -53,8 +53,8 @@ interface InvestigationPhaseData {
 
 ## Objectives
 
-### 1. Test Autonomous Investigation RAG Enhancement
-**Goal**: Validate that RAG-enhanced agents are functioning correctly in the autonomous investigation workflow
+### 1. Test Structured Investigation RAG Enhancement
+**Goal**: Validate that RAG-enhanced agents are functioning correctly in the structured investigation workflow
 
 ### 2. Add RAG UI Indicators  
 **Goal**: Provide visual feedback when RAG is being used during investigations
@@ -121,7 +121,7 @@ src/types/
 ### 3. Integration Points
 
 **Frontend Integration:**
-1. **WebSocket Client Enhancement**: Extend `AutonomousInvestigationClient` for RAG events
+1. **WebSocket Client Enhancement**: Extend `StructuredInvestigationClient` for RAG events
 2. **Dashboard Integration**: Add RAG components to `OptimizedInvestigationDashboard`
 3. **Real-time Updates**: RAG status updates via WebSocket streaming
 4. **Performance Monitoring**: Live RAG metrics display
@@ -179,7 +179,7 @@ src/types/
    - Real-time metrics updates
 
 4. **Enhanced WebSocket Client** (Priority: Critical)
-   - Extend `AutonomousInvestigationClient` for RAG events
+   - Extend `StructuredInvestigationClient` for RAG events
    - Add RAG event handlers to `InvestigationEventHandler`
    - Implement RAG status management
    - Add RAG metrics collection
@@ -256,7 +256,7 @@ src/types/
 
 **Tasks**:
 
-1. **Autonomous Investigation Testing** (Priority: Critical)
+1. **Structured Investigation Testing** (Priority: Critical)
    - Create test scenarios for RAG-enhanced investigations
    - Validate knowledge retrieval in real investigations  
    - Test tool recommendation improvements
@@ -429,7 +429,7 @@ interface RAGKnowledgePanelProps {
 ## Success Criteria
 
 ### Functional Requirements
-- [ ] RAG-enhanced autonomous investigations run successfully
+- [ ] RAG-enhanced structured investigations run successfully
 - [ ] RAG status indicators display correctly in real-time
 - [ ] Knowledge sources and attribution are visible to users
 - [ ] RAG performance metrics are accurate and updated live

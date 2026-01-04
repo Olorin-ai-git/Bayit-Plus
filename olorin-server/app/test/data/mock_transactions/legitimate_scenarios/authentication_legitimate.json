@@ -1,0 +1,251 @@
+{
+  "scenario_name": "authentication_legitimate",
+  "description": "Normal user authentication from a new device after legitimate travel, demonstrating proper authentication flow without fraud indicators",
+  "investigation_complexity": "low",
+  "expected_fraud_indicators": [],
+  "transaction": {
+    "transaction_id": "TXN_AUTH_LEGIT_001",
+    "amount": 78.45,
+    "currency": "USD",
+    "timestamp": "2025-09-08T11:30:15Z",
+    "merchant": {
+      "name": "Airport Coffee & News",
+      "category": "food_beverage",
+      "location": {
+        "latitude": 33.9425,
+        "longitude": -118.4081,
+        "city": "Los Angeles",
+        "state": "CA",
+        "country": "United States",
+        "postal_code": "90045"
+      }
+    }
+  },
+  "user": {
+    "user_id": "USER_AUTH_LEGIT_001",
+    "account_age_days": 956,
+    "historical_patterns": {
+      "avg_transaction_amount": 94.23,
+      "common_locations": [
+        {
+          "latitude": 47.6062,
+          "longitude": -122.3321,
+          "city": "Seattle",
+          "state": "WA",
+          "country": "United States",
+          "postal_code": "98101"
+        }
+      ],
+      "typical_spending_categories": ["dining", "travel", "entertainment", "shopping"],
+      "authentication_patterns": {
+        "typical_login_times": ["07:00-09:00", "19:00-22:00"],
+        "usual_devices": ["iPhone 15", "MacBook Air"],
+        "regular_travel": true,
+        "business_traveler": true,
+        "security_conscious": true
+      }
+    }
+  },
+  "device": {
+    "device_id": "DEV_AUTH_LEGIT_001",
+    "fingerprint": {
+      "user_agent": "Mozilla/5.0 (iPhone; CPU iPhone OS 17_1 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.1 Mobile/15E148 Safari/604.1",
+      "screen_resolution": "1179x2556",
+      "timezone": "America/Los_Angeles",
+      "language": "en-US",
+      "platform": "iPhone",
+      "browser": "Safari"
+    },
+    "first_seen": "2025-09-08T09:45:23Z",
+    "is_trusted": false,
+    "fraud_indicators": {
+      "fingerprint_inconsistencies": [],
+      "device_reputation": {
+        "first_time_device": true,
+        "multiple_user_associations": false,
+        "known_fraud_device": false,
+        "legitimate_indicators": {
+          "consistent_with_user_ecosystem": true,
+          "proper_timezone_adjustment": true,
+          "natural_browsing_patterns": true
+        }
+      }
+    }
+  },
+  "location": {
+    "latitude": 33.9425,
+    "longitude": -118.4081,
+    "city": "Los Angeles",
+    "state": "CA",
+    "country": "United States",
+    "postal_code": "90045",
+    "fraud_indicators": {
+      "distance_from_last_login": 1137.5,
+      "impossible_travel": {
+        "detected": false,
+        "last_location": {
+          "latitude": 47.6062,
+          "longitude": -122.3321,
+          "city": "Seattle",
+          "state": "WA"
+        },
+        "last_activity_time": "2025-09-07T20:45:00Z",
+        "travel_time_required_hours": 2.5,
+        "actual_time_elapsed_hours": 13.0
+      },
+      "travel_indicators": {
+        "airport_location": true,
+        "business_travel_pattern": true,
+        "gradual_location_transition": true
+      }
+    }
+  },
+  "network": {
+    "ip": "198.51.100.78",
+    "proxy_detected": false,
+    "vpn_detected": false,
+    "tor_detected": false,
+    "country_code": "US",
+    "asn": "AS7018",
+    "isp": "AT&T Services Inc.",
+    "fraud_indicators": {
+      "ip_reputation": {
+        "malicious": false,
+        "suspicious": false,
+        "bot_activity": false,
+        "abuse_reports": 0
+      },
+      "network_consistency": {
+        "matches_location": true,
+        "legitimate_mobile_carrier": true,
+        "consistent_with_travel": true
+      }
+    }
+  },
+  "behavioral_signals": {
+    "velocity_indicators": {
+      "transactions_last_hour": 1,
+      "transactions_last_day": 3,
+      "unique_devices_last_day": 2,
+      "fraud_flags": {
+        "high_velocity": false,
+        "multiple_devices": false,
+        "unusual_pattern": false
+      }
+    },
+    "session_info": {
+      "session_duration": 125,
+      "pages_visited": 4,
+      "time_on_checkout": 23,
+      "fraud_indicators": {
+        "rushed_checkout": false,
+        "minimal_browsing": false,
+        "automated_behavior_suspected": false,
+        "natural_user_behavior": true
+      }
+    },
+    "authentication_anomalies": {
+      "login_attempts": 1,
+      "failed_attempts": 0,
+      "password_resets_recent": 0,
+      "2fa_bypassed": false,
+      "security_questions_skipped": false,
+      "legitimate_authentication_flow": {
+        "proper_2fa_completion": true,
+        "device_registration_offered": true,
+        "security_notifications_sent": true,
+        "user_acknowledged_new_device": true,
+        "travel_notification_correlation": true
+      }
+    }
+  },
+  "investigation_timeline": [
+    {
+      "timestamp": "2025-09-07T20:45:00Z",
+      "event": "Last activity from Seattle",
+      "details": "User completes work session from MacBook Air before travel"
+    },
+    {
+      "timestamp": "2025-09-08T06:30:00Z",
+      "event": "Flight departure Seattle to LA",
+      "details": "User boards flight, phone enters airplane mode"
+    },
+    {
+      "timestamp": "2025-09-08T09:45:23Z",
+      "event": "Arrival and network reconnection",
+      "details": "Phone reconnects to AT&T network at LAX airport"
+    },
+    {
+      "timestamp": "2025-09-08T09:46:12Z",
+      "event": "First login attempt from new location",
+      "details": "User attempts login, prompted for 2FA due to new location"
+    },
+    {
+      "timestamp": "2025-09-08T09:46:45Z",
+      "event": "2FA completed successfully",
+      "details": "User enters SMS code, confirms new device, receives security notification"
+    },
+    {
+      "timestamp": "2025-09-08T11:30:15Z",
+      "event": "Airport purchase transaction",
+      "details": "Normal coffee and news purchase consistent with travel patterns"
+    }
+  ],
+  "expected_agent_findings": {
+    "authentication_agent": {
+      "risk_level": "LOW",
+      "key_findings": [
+        "Proper 2FA completion for new device/location as expected",
+        "User acknowledged and confirmed new device registration",
+        "Authentication timeline consistent with legitimate travel",
+        "Security notifications sent and received normally",
+        "No authentication bypasses or anomalies detected"
+      ]
+    },
+    "device_analysis_agent": {
+      "risk_level": "LOW",
+      "key_findings": [
+        "iPhone device consistent with user's known device ecosystem",
+        "Natural timezone adjustment from Pacific to Pacific time",
+        "Browser and platform signatures match expected user preferences",
+        "First-time device appropriately handled with security checks"
+      ]
+    },
+    "location_analysis_agent": {
+      "risk_level": "LOW",
+      "key_findings": [
+        "Travel time Seattle to LA reasonable (13 hours including flight)",
+        "Airport location consistent with business travel patterns",
+        "Geographic transition gradual and explainable",
+        "User has established business travel history"
+      ]
+    },
+    "network_analysis_agent": {
+      "risk_level": "LOW",
+      "key_findings": [
+        "AT&T mobile network appropriate for LAX airport location",
+        "Clean IP reputation with no fraud indicators",
+        "Network patterns consistent with mobile device usage",
+        "No proxy/VPN usage suggests genuine location"
+      ]
+    },
+    "logs_analysis_agent": {
+      "risk_level": "LOW",
+      "key_findings": [
+        "Natural browsing patterns and session behavior",
+        "Transaction value and category consistent with user history",
+        "No automated or suspicious behavioral indicators",
+        "Timeline correlates with legitimate business travel"
+      ]
+    }
+  },
+  "investigation_verdict": {
+    "overall_risk_score": 15,
+    "fraud_classification": "LEGITIMATE_ACTIVITY",
+    "primary_fraud_type": "None",
+    "recommended_action": "NO_ACTION_REQUIRED",
+    "confidence_level": 0.92,
+    "classification_reason": "legitimate_business_travel_with_proper_authentication",
+    "security_measures_effective": true
+  }
+}

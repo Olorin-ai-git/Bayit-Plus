@@ -7,10 +7,14 @@ and retrieving structured business data for fraud investigations.
 
 import asyncio
 import json
+import os
 import time
 from concurrent.futures import ThreadPoolExecutor
 from typing import Any, Dict, List, Optional
+
 from app.service.logging import get_bridge_logger
+
+from .schema_constants import get_required_env_var
 
 logger = get_bridge_logger(__name__)
 
@@ -18,17 +22,23 @@ logger = get_bridge_logger(__name__)
 class SnowflakeClient:
     """
     Async client for Snowflake data warehouse.
-    
+
     Provides methods to execute SQL queries and retrieve results from
     Snowflake's cloud data platform for fraud investigation purposes.
     """
 
-    def __init__(self, account: str, username: str, password: str, 
-                 warehouse: str = "COMPUTE_WH", database: str = "FRAUD_ANALYTICS", 
-                 schema: str = "PUBLIC"):
+    def __init__(
+        self,
+        account: str,
+        username: str,
+        password: str,
+        warehouse: str = None,
+        database: str = None,
+        schema: str = None,
+    ):
         """
         Initialize Snowflake client.
-        
+
         Args:
             account: Snowflake account identifier
             username: Username for authentication
@@ -40,56 +50,58 @@ class SnowflakeClient:
         self.account = account
         self.username = username
         self.password = password
-        self.warehouse = warehouse
-        self.database = database
-        self.schema = schema
+        self.warehouse = warehouse or get_required_env_var("SNOWFLAKE_WAREHOUSE")
+        self.database = database or get_required_env_var("SNOWFLAKE_DATABASE")
+        self.schema = schema or get_required_env_var("SNOWFLAKE_SCHEMA")
         self.connection = None
         self._executor = ThreadPoolExecutor(max_workers=1)
-        
+
     async def connect(self) -> None:
         """Establish connection to Snowflake."""
         logger.info(f"Connecting to Snowflake account: {self.account}")
-        logger.info(f"Using warehouse: {self.warehouse}, database: {self.database}, schema: {self.schema}")
+        logger.info(
+            f"Using warehouse: {self.warehouse}, database: {self.database}, schema: {self.schema}"
+        )
         # In real implementation, would use snowflake-connector-python
         # This is a mock implementation for demonstration
-        
+
     async def execute_query(self, query: str) -> List[Dict[str, Any]]:
         """
         Execute a SQL query against Snowflake.
-        
+
         Args:
             query: SQL query string to execute
-            
+
         Returns:
             List of dictionaries representing query results
         """
         if not query.strip():
             raise ValueError("SQL query cannot be empty")
-            
+
         def _execute():
             try:
                 logger.info(f"Executing Snowflake query: {query[:100]}...")
-                
+
                 # Simulate query execution time
                 start_time = time.time()
                 time.sleep(1.5)  # Simulate query execution
-                
+
                 execution_time = time.time() - start_time
                 logger.info(f"Query completed in {execution_time:.2f} seconds")
-                
+
                 # Return mock results based on query type
                 return self._generate_mock_results(query)
-                
+
             except Exception as e:
                 logger.error(f"Error executing Snowflake query: {str(e)}")
                 raise
-                
+
         return await asyncio.get_event_loop().run_in_executor(self._executor, _execute)
-    
+
     def _generate_mock_results(self, query: str) -> List[Dict[str, Any]]:
         """Generate realistic mock results based on query analysis."""
         query_lower = query.lower()
-        
+
         if "users.profile" in query_lower:
             return self._mock_user_profile_data()
         elif "transactions.history" in query_lower:
@@ -102,7 +114,7 @@ class SnowflakeClient:
             return self._mock_similar_users_data()
         else:
             return self._mock_general_analytics_data()
-    
+
     def _mock_user_profile_data(self) -> List[Dict[str, Any]]:
         """Mock user profile data from Snowflake."""
         return [
@@ -122,10 +134,10 @@ class SnowflakeClient:
                 "failed_login_attempts": 0,
                 "account_locked": False,
                 "customer_tier": "gold",
-                "referral_source": "organic"
+                "referral_source": "organic",
             }
         ]
-    
+
     def _mock_transaction_data(self) -> List[Dict[str, Any]]:
         """Mock transaction history data."""
         return [
@@ -143,10 +155,10 @@ class SnowflakeClient:
                 "fraud_flags": ["high_amount", "new_merchant"],
                 "settlement_status": "settled",
                 "processing_time_ms": 1250,
-                "authorization_code": "AUTH123456"
+                "authorization_code": "AUTH123456",
             },
             {
-                "transaction_id": "txn_snowflake_002", 
+                "transaction_id": "txn_snowflake_002",
                 "user_id": "user_1736943425_5678",
                 "transaction_timestamp": "2025-01-15T12:15:30.456Z",
                 "amount": "89.99",
@@ -159,11 +171,11 @@ class SnowflakeClient:
                 "fraud_flags": [],
                 "settlement_status": "settled",
                 "processing_time_ms": 890,
-                "authorization_code": "AUTH789012"
+                "authorization_code": "AUTH789012",
             },
             {
                 "transaction_id": "txn_snowflake_003",
-                "user_id": "user_1736943425_5678", 
+                "user_id": "user_1736943425_5678",
                 "transaction_timestamp": "2025-01-14T18:45:00.789Z",
                 "amount": "150.00",
                 "currency": "USD",
@@ -175,10 +187,10 @@ class SnowflakeClient:
                 "fraud_flags": [],
                 "settlement_status": "settled",
                 "processing_time_ms": 1100,
-                "authorization_code": "AUTH345678"
-            }
+                "authorization_code": "AUTH345678",
+            },
         ]
-    
+
     def _mock_fraud_pattern_data(self) -> List[Dict[str, Any]]:
         """Mock fraud detection patterns."""
         return [
@@ -191,12 +203,12 @@ class SnowflakeClient:
                     "transaction_count": 5,
                     "time_window_minutes": 30,
                     "total_amount": "8500.00",
-                    "distinct_merchants": 4
+                    "distinct_merchants": 4,
                 },
                 "user_id": "user_1736943425_5678",
                 "account_status": "active",
                 "action_taken": "flag_for_review",
-                "analyst_reviewed": False
+                "analyst_reviewed": False,
             },
             {
                 "pattern_id": "pat_geo_001",
@@ -205,17 +217,17 @@ class SnowflakeClient:
                 "detected_at": "2025-01-15T14:28:00.000Z",
                 "pattern_details": {
                     "previous_location": "San Francisco, CA",
-                    "current_location": "New York, NY", 
+                    "current_location": "New York, NY",
                     "travel_time_impossibility": True,
-                    "distance_miles": 2900
+                    "distance_miles": 2900,
                 },
                 "user_id": "user_1736943425_5678",
                 "account_status": "active",
                 "action_taken": "require_additional_auth",
-                "analyst_reviewed": True
-            }
+                "analyst_reviewed": True,
+            },
         ]
-    
+
     def _mock_risk_scoring_data(self) -> List[Dict[str, Any]]:
         """Mock risk scoring data."""
         return [
@@ -226,7 +238,7 @@ class SnowflakeClient:
                 "risk_factors": [
                     "high_transaction_velocity",
                     "new_payment_method",
-                    "geographic_inconsistency"
+                    "geographic_inconsistency",
                 ],
                 "score_updated_at": "2025-01-15T14:30:00.000Z",
                 "velocity_score": 0.85,
@@ -234,25 +246,23 @@ class SnowflakeClient:
                 "device_score": 0.40,
                 "location_score": 0.75,
                 "model_version": "v2.3.1",
-                "features_used": 47
+                "features_used": 47,
             },
             {
                 "user_id": "user_1736943425_5678",
                 "current_risk_score": 0.45,
                 "previous_risk_score": 0.38,
-                "risk_factors": [
-                    "minor_velocity_increase"
-                ],
+                "risk_factors": ["minor_velocity_increase"],
                 "score_updated_at": "2025-01-14T16:15:00.000Z",
                 "velocity_score": 0.52,
                 "behavioral_score": 0.40,
                 "device_score": 0.35,
                 "location_score": 0.38,
                 "model_version": "v2.3.1",
-                "features_used": 47
-            }
+                "features_used": 47,
+            },
         ]
-    
+
     def _mock_similar_users_data(self) -> List[Dict[str, Any]]:
         """Mock similar users analysis data."""
         return [
@@ -264,18 +274,22 @@ class SnowflakeClient:
                 "transaction_count": 42,
                 "total_transaction_value": "3200.75",
                 "similarity_factors": ["same_risk_tier", "same_country", "similar_age"],
-                "fraud_history": False
+                "fraud_history": False,
             },
             {
-                "user_id": "user_similar_002", 
+                "user_id": "user_similar_002",
                 "account_status": "suspended",
                 "risk_tier": "medium",
                 "total_lifetime_value": "8900.25",
                 "transaction_count": 38,
                 "total_transaction_value": "2800.50",
-                "similarity_factors": ["same_risk_tier", "same_country", "similar_payment_method"],
+                "similarity_factors": [
+                    "same_risk_tier",
+                    "same_country",
+                    "similar_payment_method",
+                ],
                 "fraud_history": True,
-                "suspension_reason": "confirmed_fraud"
+                "suspension_reason": "confirmed_fraud",
             },
             {
                 "user_id": "user_similar_003",
@@ -285,10 +299,10 @@ class SnowflakeClient:
                 "transaction_count": 67,
                 "total_transaction_value": "4100.25",
                 "similarity_factors": ["same_risk_tier", "same_country"],
-                "fraud_history": False
-            }
+                "fraud_history": False,
+            },
         ]
-    
+
     def _mock_general_analytics_data(self) -> List[Dict[str, Any]]:
         """Mock general analytics data."""
         return [
@@ -304,10 +318,10 @@ class SnowflakeClient:
                 "distinct_categories": 12,
                 "fraud_flags_count": 3,
                 "successful_transactions": 154,
-                "failed_transactions": 2
+                "failed_transactions": 2,
             }
         ]
-    
+
     async def get_warehouse_info(self) -> Dict[str, Any]:
         """Get information about current warehouse."""
         return {
@@ -315,16 +329,16 @@ class SnowflakeClient:
             "status": "running",
             "size": "X-SMALL",
             "nodes": 1,
-            "credits_per_hour": 1.0
+            "credits_per_hour": 1.0,
         }
-    
+
     async def disconnect(self) -> None:
         """Clean up client connection."""
         logger.info("Disconnecting from Snowflake")
         # Cleanup executor
-        if hasattr(self, '_executor') and self._executor:
+        if hasattr(self, "_executor") and self._executor:
             self._executor.shutdown(wait=False)
-    
+
     def __del__(self):
         """Cleanup when object is destroyed."""
         if getattr(self, "_executor", None) is not None:

@@ -37,7 +37,7 @@ graph TB
     end
 
     subgraph "Investigation Workflow"
-        AA[Autonomous Agent]
+        AA[Structured Agent]
         IC[Investigation Context]
         DF[Domain Findings]
         AR[Augmented Results]
@@ -112,7 +112,7 @@ sequenceDiagram
     participant REE as Result Enhancement Engine
     participant RO as RAG Orchestrator
     participant KB as Knowledge Base
-    participant AA as Autonomous Agent
+    participant AA as Structured Agent
 
     TE->>RET: Tool completes with result
     RET->>RAS: Trigger result augmentation

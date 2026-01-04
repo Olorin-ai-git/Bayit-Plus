@@ -317,12 +317,6 @@ agent_context_for_risk = AgentContext(
         interaction_group_id="location-risk-assessment",
         additional_metadata={"userId": user_id},
     ),
-<<<<<<< HEAD:back/docs/LOCATION_DOMAIN_LLM_ANALYSIS.md
-    olorin_header=OlorinHeader(
-        olorin_tid=olorin_tid_header,
-        olorin_originating_assetalias=olorin_originating_assetalias_header,
-        olorin_experience_id=olorin_experience_id_header,
-=======
     olorin_header=OlorinHeader(
         olorin_tid=olorin_tid_header,
         olorin_originating_assetalias=olorin_originating_assetalias_header,

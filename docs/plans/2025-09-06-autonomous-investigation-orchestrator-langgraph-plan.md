@@ -1,19 +1,19 @@
-# Autonomous Investigation Orchestrator Node - LangGraph Implementation Plan
+# Structured Investigation Orchestrator Node - LangGraph Implementation Plan
 
 **Author**: Gil Klainert  
 **Date**: 2025-09-06  
 **Version**: 1.0  
 **Status**: ⏳ PLANNING PHASE - Awaiting User Approval  
-**Diagram**: [Orchestrator Architecture Visualization](/docs/diagrams/autonomous-investigation-orchestrator-architecture-2025-09-06.html)
+**Diagram**: [Orchestrator Architecture Visualization](/docs/diagrams/structured-investigation-orchestrator-architecture-2025-09-06.html)
 
 ---
 
 ## Executive Summary
 
-This plan implements a comprehensive **Autonomous Investigation Orchestrator Node** in LangGraph that manages the entire investigation flow with bulletproof resilience. Building upon the successful bulletproof investigation system (95% complete), this orchestrator will provide true autonomous investigation management with intelligent agent coordination, exception prevention, and guaranteed flow continuity.
+This plan implements a comprehensive **Structured Investigation Orchestrator Node** in LangGraph that manages the entire investigation flow with bulletproof resilience. Building upon the successful bulletproof investigation system (95% complete), this orchestrator will provide true structured investigation management with intelligent agent coordination, exception prevention, and guaranteed flow continuity.
 
 **Current State**: Olorin has bulletproof tool execution via EnhancedToolNode, multi-entity investigation coordination, and real-time WebSocket communication  
-**Target State**: Fully autonomous orchestrator node that manages complete investigation workflows with AI-driven decision making and bulletproof resilience
+**Target State**: Fully structured orchestrator node that manages complete investigation workflows with AI-driven decision making and bulletproof resilience
 
 ---
 
@@ -23,7 +23,7 @@ This plan implements a comprehensive **Autonomous Investigation Orchestrator Nod
 - **EnhancedToolNode**: 95% complete bulletproof tool execution with circuit breakers, retry logic, and fail-soft responses
 - **Multi-Entity Coordination**: Production-ready multi-entity investigation orchestrator with Boolean logic support
 - **Real-time Communication**: WebSocket tool events and investigation progress streaming
-- **LangGraph Integration**: StateGraph with MessagesState, ToolNode, and autonomous tool routing
+- **LangGraph Integration**: StateGraph with MessagesState, ToolNode, and structured tool routing
 - **RecursionGuard Protection**: Thread-safe execution context management preventing infinite loops
 
 ### 🎯 Orchestrator Integration Opportunity
@@ -40,9 +40,9 @@ This plan implements a comprehensive **Autonomous Investigation Orchestrator Nod
 ### Master Orchestrator Node Structure
 
 ```python
-class AutonomousInvestigationOrchestrator:
+class StructuredInvestigationOrchestrator:
     """
-    Master orchestrator node for autonomous investigation management.
+    Master orchestrator node for structured investigation management.
     Integrates with existing bulletproof infrastructure for maximum resilience.
     """
     
@@ -67,7 +67,7 @@ class AutonomousInvestigationOrchestrator:
 #### Investigation Flow Management
 ```python
 ORCHESTRATOR_SYSTEM_PROMPT = """
-You are the Master Investigation Orchestrator for an autonomous fraud detection system.
+You are the Master Investigation Orchestrator for an structured fraud detection system.
 
 CORE RESPONSIBILITIES:
 1. Analyze investigation context and determine optimal strategy
@@ -114,8 +114,8 @@ Always explain your reasoning and provide confidence scores for decisions.
 **Timeline**: 3-4 days | **Risk Level**: Medium | **Owner**: @orchestrator + @langgraph-expert
 
 ### 1.1 Master Orchestrator Node Creation
-- **File**: `app/service/agent/autonomous_orchestrator.py`
-- **Integration**: Extends existing autonomous investigation patterns
+- **File**: `app/service/agent/structured_orchestrator.py`
+- **Integration**: Extends existing structured investigation patterns
 - **Features**:
   - AI-driven investigation strategy selection
   - Intelligent agent coordination with bulletproof handoffs
@@ -247,7 +247,7 @@ Always explain your reasoning and provide confidence scores for decisions.
 **Timeline**: 3-4 days | **Risk Level**: Medium | **Owner**: @test-writer-fixer + @debugger
 
 ### 5.1 Comprehensive Test Suite
-- **File**: `test/unit/test_autonomous_orchestrator.py`
+- **File**: `test/unit/test_structured_orchestrator.py`
 - **Coverage**:
   - Orchestrator decision making under various scenarios
   - Agent coordination and handoff testing
@@ -283,12 +283,12 @@ Always explain your reasoning and provide confidence scores for decisions.
 ### LangGraph Node Integration Pattern
 
 ```python
-async def autonomous_orchestrator_node(
+async def structured_orchestrator_node(
     state: InvestigationState, 
     config: RunnableConfig
 ) -> InvestigationState:
     """
-    Master orchestrator node for autonomous investigation management.
+    Master orchestrator node for structured investigation management.
     
     Responsibilities:
     1. Analyze investigation context and determine strategy
@@ -297,7 +297,7 @@ async def autonomous_orchestrator_node(
     4. Provide real-time progress updates with reasoning transparency
     """
     
-    orchestrator = AutonomousInvestigationOrchestrator(
+    orchestrator = StructuredInvestigationOrchestrator(
         investigation_id=state.investigation_id,
         tools=state.available_tools
     )
@@ -345,7 +345,7 @@ async def autonomous_orchestrator_node(
 - **Maintain**: Full backward compatibility with existing tool ecosystem
 
 #### 2. Multi-Entity Investigation Integration  
-- **Enhance**: Existing MultiEntityInvestigationOrchestrator with autonomous decision making
+- **Enhance**: Existing MultiEntityInvestigationOrchestrator with structured decision making
 - **Preserve**: All current multi-entity capabilities and APIs
 - **Extend**: Agent coordination intelligence and cross-entity analysis
 
@@ -380,6 +380,6 @@ async def autonomous_orchestrator_node(
 
 ## Conclusion
 
-The Autonomous Investigation Orchestrator Node represents the evolution of the Olorin investigation system from bulletproof tool execution to intelligent autonomous investigation management. Building upon the successful bulletproof infrastructure (95% complete), this orchestrator will provide true autonomous investigation management with AI-driven decision making and bulletproof resilience.
+The Structured Investigation Orchestrator Node represents the evolution of the Olorin investigation system from bulletproof tool execution to intelligent structured investigation management. Building upon the successful bulletproof infrastructure (95% complete), this orchestrator will provide true structured investigation management with AI-driven decision making and bulletproof resilience.
 
 **Ready for user approval to proceed with implementation using orchestrator task flow control.**

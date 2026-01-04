@@ -1,0 +1,735 @@
+openapi: 3.1.0
+info:
+  title: Olorin Investigation WebSocket Events
+  version: 1.0.0
+  description: |
+    WebSocket event schemas for real-time investigation updates. These events are sent
+    from server to client over WebSocket connections to provide immediate state updates
+    without polling overhead.
+
+    **Connection Lifecycle:**
+    1. Client connects to ws://[host]/ws/investigation/{investigation_id}
+    2. Server sends initial `connection_established` event
+    3. Server sends real-time updates as they occur
+    4. Client acknowledges critical events
+    5. Connection maintained until investigation completes or client disconnects
+
+    **Event Flow:**
+    - `state_updated`: Whenever wizard state changes
+    - `step_changed`: When user navigates between wizard steps
+    - `progress_updated`: Real-time investigation progress updates
+    - `tool_execution_started`: When investigation tool begins execution
+    - `tool_execution_completed`: When investigation tool finishes
+    - `phase_changed`: When investigation moves to next phase
+    - `results_available`: When investigation results are ready
+    - `error_occurred`: When error happens during investigation
+
+    **Coordination with Polling:**
+    - WebSocket updates are **authoritative** (override polling data)
+    - If WebSocket connection drops, client falls back to polling
+    - Polling continues at slow interval even with active WebSocket
+    - When WebSocket reconnects, server sends full state sync
+
+    **Configuration:**
+    WebSocket URL comes from REACT_APP_WS_BASE_URL environment variable.
+
+servers:
+  - url: '{wsBaseUrl}/ws'
+    description: Configurable WebSocket server
+    variables:
+      wsBaseUrl:
+        default: 'ws://localhost:8090'
+        description: WebSocket base URL from REACT_APP_WS_BASE_URL environment variable
+
+components:
+  schemas:
+    # Base Event Structure
+    BaseEvent:
+      type: object
+      required:
+        - event_type
+        - investigation_id
+        - timestamp
+        - version
+      properties:
+        event_type:
+          type: string
+          description: Type of event
+        investigation_id:
+          type: string
+          description: Investigation this event relates to
+        timestamp:
+          type: string
+          format: date-time
+          description: When event occurred (ISO 8601)
+        version:
+          type: integer
+          minimum: 1
+          description: State version after this event
+        request_id:
+          type: string
+          description: Optional request identifier for correlation
+
+    # Connection Events
+    ConnectionEstablishedEvent:
+      allOf:
+        - $ref: '#/components/schemas/BaseEvent'
+        - type: object
+          required:
+            - connection_id
+            - current_state
+          properties:
+            event_type:
+              type: string
+              enum: [connection_established]
+            connection_id:
+              type: string
+              description: Unique connection identifier
+            current_state:
+              $ref: '#/components/schemas/WizardStateSummary'
+              description: Current wizard state at connection time
+      example:
+        event_type: "connection_established"
+        investigation_id: "inv_2024_001"
+        timestamp: "2024-01-15T10:00:00Z"
+        version: 5
+        connection_id: "conn_abc123"
+        current_state:
+          wizard_step: "SETTINGS"
+          status: "IN_PROGRESS"
+          last_updated: "2024-01-15T09:55:00Z"
+
+    ConnectionClosedEvent:
+      allOf:
+        - $ref: '#/components/schemas/BaseEvent'
+        - type: object
+          required:
+            - reason
+          properties:
+            event_type:
+              type: string
+              enum: [connection_closed]
+            reason:
+              type: string
+              enum: [client_disconnect, server_shutdown, error, timeout]
+              description: Why connection was closed
+            message:
+              type: string
+              description: Human-readable closure reason
+      example:
+        event_type: "connection_closed"
+        investigation_id: "inv_2024_001"
+        timestamp: "2024-01-15T10:30:00Z"
+        version: 25
+        reason: "client_disconnect"
+        message: "Client closed connection normally"
+
+    # State Events
+    StateUpdatedEvent:
+      allOf:
+        - $ref: '#/components/schemas/BaseEvent'
+        - type: object
+          required:
+            - updated_fields
+            - previous_version
+          properties:
+            event_type:
+              type: string
+              enum: [state_updated]
+            updated_fields:
+              type: array
+              items:
+                type: string
+              description: List of field paths that changed
+            previous_version:
+              type: integer
+              minimum: 1
+              description: State version before update
+            update_source:
+              type: string
+              enum: [user_action, system_update, polling_sync]
+              description: What triggered the update
+            changes:
+              type: object
+              additionalProperties: true
+              description: Details of what changed
+      example:
+        event_type: "state_updated"
+        investigation_id: "inv_2024_001"
+        timestamp: "2024-01-15T10:05:00Z"
+        version: 6
+        updated_fields: ["settings.name", "settings.entities"]
+        previous_version: 5
+        update_source: "user_action"
+        changes:
+          settings:
+            name: "Updated Investigation Name"
+            entities:
+              - entity_type: "user_id"
+                entity_value: "user123"
+              - entity_type: "ip_address"
+                entity_value: "192.168.1.1"
+
+    StepChangedEvent:
+      allOf:
+        - $ref: '#/components/schemas/BaseEvent'
+        - type: object
+          required:
+            - from_step
+            - to_step
+          properties:
+            event_type:
+              type: string
+              enum: [step_changed]
+            from_step:
+              type: string
+              enum: [SETTINGS, PROGRESS, RESULTS]
+              description: Previous wizard step
+            to_step:
+              type: string
+              enum: [SETTINGS, PROGRESS, RESULTS]
+              description: New wizard step
+            triggered_by:
+              type: string
+              enum: [user_navigation, investigation_started, investigation_completed]
+              description: What triggered step change
+      example:
+        event_type: "step_changed"
+        investigation_id: "inv_2024_001"
+        timestamp: "2024-01-15T10:05:30Z"
+        version: 7
+        from_step: "SETTINGS"
+        to_step: "PROGRESS"
+        triggered_by: "investigation_started"
+
+    # Progress Events
+    ProgressUpdatedEvent:
+      allOf:
+        - $ref: '#/components/schemas/BaseEvent'
+        - type: object
+          required:
+            - current_phase
+            - percent_complete
+          properties:
+            event_type:
+              type: string
+              enum: [progress_updated]
+            current_phase:
+              type: string
+              enum: [PLANNING, EXECUTION, ANALYSIS, FINALIZATION]
+              description: Current investigation phase
+            percent_complete:
+              type: integer
+              minimum: 0
+              maximum: 100
+              description: Overall completion percentage
+            phase_details:
+              type: object
+              description: Additional phase-specific details
+            estimated_completion:
+              type: string
+              format: date-time
+              description: Estimated completion time
+      example:
+        event_type: "progress_updated"
+        investigation_id: "inv_2024_001"
+        timestamp: "2024-01-15T10:06:00Z"
+        version: 8
+        current_phase: "EXECUTION"
+        percent_complete: 35
+        phase_details:
+          tools_completed: 1
+          tools_total: 3
+          current_tool: "location_analysis"
+        estimated_completion: "2024-01-15T10:10:00Z"
+
+    PhaseChangedEvent:
+      allOf:
+        - $ref: '#/components/schemas/BaseEvent'
+        - type: object
+          required:
+            - from_phase
+            - to_phase
+          properties:
+            event_type:
+              type: string
+              enum: [phase_changed]
+            from_phase:
+              type: string
+              enum: [PLANNING, EXECUTION, ANALYSIS, FINALIZATION]
+              description: Previous phase
+            to_phase:
+              type: string
+              enum: [PLANNING, EXECUTION, ANALYSIS, FINALIZATION]
+              description: New phase
+            from_phase_duration_ms:
+              type: integer
+              description: How long previous phase took
+      example:
+        event_type: "phase_changed"
+        investigation_id: "inv_2024_001"
+        timestamp: "2024-01-15T10:05:45Z"
+        version: 8
+        from_phase: "PLANNING"
+        to_phase: "EXECUTION"
+        from_phase_duration_ms: 15000
+
+    # Tool Execution Events
+    ToolExecutionStartedEvent:
+      allOf:
+        - $ref: '#/components/schemas/BaseEvent'
+        - type: object
+          required:
+            - tool_name
+          properties:
+            event_type:
+              type: string
+              enum: [tool_execution_started]
+            tool_name:
+              type: string
+              description: Name of tool being executed
+            tool_config:
+              type: object
+              additionalProperties: true
+              description: Tool configuration
+            estimated_duration_ms:
+              type: integer
+              description: Estimated execution time
+      example:
+        event_type: "tool_execution_started"
+        investigation_id: "inv_2024_001"
+        timestamp: "2024-01-15T10:05:50Z"
+        version: 9
+        tool_name: "device_fingerprint"
+        tool_config:
+          threshold: 0.8
+        estimated_duration_ms: 30000
+
+    ToolExecutionProgressEvent:
+      allOf:
+        - $ref: '#/components/schemas/BaseEvent'
+        - type: object
+          required:
+            - tool_name
+            - percent_complete
+          properties:
+            event_type:
+              type: string
+              enum: [tool_execution_progress]
+            tool_name:
+              type: string
+              description: Name of executing tool
+            percent_complete:
+              type: integer
+              minimum: 0
+              maximum: 100
+              description: Tool execution progress
+            message:
+              type: string
+              description: Progress status message
+      example:
+        event_type: "tool_execution_progress"
+        investigation_id: "inv_2024_001"
+        timestamp: "2024-01-15T10:06:05Z"
+        version: 10
+        tool_name: "device_fingerprint"
+        percent_complete: 50
+        message: "Analyzing device patterns..."
+
+    ToolExecutionCompletedEvent:
+      allOf:
+        - $ref: '#/components/schemas/BaseEvent'
+        - type: object
+          required:
+            - tool_name
+            - status
+            - duration_ms
+          properties:
+            event_type:
+              type: string
+              enum: [tool_execution_completed]
+            tool_name:
+              type: string
+              description: Name of completed tool
+            status:
+              type: string
+              enum: [COMPLETED, ERROR, SKIPPED]
+              description: Tool execution result status
+            duration_ms:
+              type: integer
+              description: Actual execution time
+            result_summary:
+              type: string
+              description: Brief summary of results
+            findings_count:
+              type: integer
+              description: Number of findings generated
+      example:
+        event_type: "tool_execution_completed"
+        investigation_id: "inv_2024_001"
+        timestamp: "2024-01-15T10:06:20Z"
+        version: 11
+        tool_name: "device_fingerprint"
+        status: "COMPLETED"
+        duration_ms: 30000
+        result_summary: "Found 3 suspicious device patterns"
+        findings_count: 3
+
+    ToolExecutionErrorEvent:
+      allOf:
+        - $ref: '#/components/schemas/BaseEvent'
+        - type: object
+          required:
+            - tool_name
+            - error_message
+          properties:
+            event_type:
+              type: string
+              enum: [tool_execution_error]
+            tool_name:
+              type: string
+              description: Name of failed tool
+            error_message:
+              type: string
+              description: Error description
+            error_code:
+              type: string
+              description: Error code for categorization
+            retryable:
+              type: boolean
+              description: Whether tool execution can be retried
+      example:
+        event_type: "tool_execution_error"
+        investigation_id: "inv_2024_001"
+        timestamp: "2024-01-15T10:06:25Z"
+        version: 12
+        tool_name: "network_analysis"
+        error_message: "Network service temporarily unavailable"
+        error_code: "SERVICE_UNAVAILABLE"
+        retryable: true
+
+    # Results Events
+    ResultsAvailableEvent:
+      allOf:
+        - $ref: '#/components/schemas/BaseEvent'
+        - type: object
+          required:
+            - risk_score
+            - findings_count
+          properties:
+            event_type:
+              type: string
+              enum: [results_available]
+            risk_score:
+              type: number
+              minimum: 0
+              maximum: 100
+              description: Overall risk score
+            findings_count:
+              type: integer
+              minimum: 0
+              description: Total number of findings
+            summary:
+              type: string
+              description: Brief results summary
+            report_url:
+              type: string
+              format: uri
+              description: URL to download full report
+      example:
+        event_type: "results_available"
+        investigation_id: "inv_2024_001"
+        timestamp: "2024-01-15T10:10:00Z"
+        version: 25
+        risk_score: 75
+        findings_count: 12
+        summary: "High-risk patterns detected across multiple tools"
+        report_url: "https://api.olorin.com/reports/inv_2024_001.pdf"
+
+    # Error Events
+    ErrorOccurredEvent:
+      allOf:
+        - $ref: '#/components/schemas/BaseEvent'
+        - type: object
+          required:
+            - error_message
+            - error_type
+          properties:
+            event_type:
+              type: string
+              enum: [error_occurred]
+            error_message:
+              type: string
+              description: Human-readable error message
+            error_type:
+              type: string
+              enum: [validation_error, execution_error, system_error, timeout_error]
+              description: Error category
+            error_code:
+              type: string
+              description: Machine-readable error code
+            recoverable:
+              type: boolean
+              description: Whether error is recoverable
+            recovery_action:
+              type: string
+              description: Suggested recovery action
+      example:
+        event_type: "error_occurred"
+        investigation_id: "inv_2024_001"
+        timestamp: "2024-01-15T10:07:00Z"
+        version: 13
+        error_message: "Investigation timed out during execution phase"
+        error_type: "timeout_error"
+        error_code: "EXECUTION_TIMEOUT"
+        recoverable: true
+        recovery_action: "Restart investigation with reduced scope"
+
+    # Acknowledgment Events (Client → Server)
+    EventAcknowledgment:
+      type: object
+      required:
+        - ack_type
+        - event_type
+        - version
+        - timestamp
+      properties:
+        ack_type:
+          type: string
+          enum: [acknowledgment]
+          description: Indicates this is an acknowledgment
+        event_type:
+          type: string
+          description: Type of event being acknowledged
+        version:
+          type: integer
+          description: Version of event being acknowledged
+        timestamp:
+          type: string
+          format: date-time
+          description: Client timestamp when ack sent
+        received_at:
+          type: string
+          format: date-time
+          description: When client received the event
+      example:
+        ack_type: "acknowledgment"
+        event_type: "results_available"
+        version: 25
+        timestamp: "2024-01-15T10:10:01Z"
+        received_at: "2024-01-15T10:10:00.500Z"
+
+    # Heartbeat Events (Bidirectional)
+    HeartbeatEvent:
+      type: object
+      required:
+        - event_type
+        - timestamp
+      properties:
+        event_type:
+          type: string
+          enum: [heartbeat]
+        timestamp:
+          type: string
+          format: date-time
+        sender:
+          type: string
+          enum: [client, server]
+      example:
+        event_type: "heartbeat"
+        timestamp: "2024-01-15T10:08:00Z"
+        sender: "server"
+
+    # Sync Events (Server → Client)
+    StateSyncEvent:
+      allOf:
+        - $ref: '#/components/schemas/BaseEvent'
+        - type: object
+          required:
+            - full_state
+            - sync_reason
+          properties:
+            event_type:
+              type: string
+              enum: [state_sync]
+            full_state:
+              type: object
+              description: Complete wizard state snapshot
+              additionalProperties: true
+            sync_reason:
+              type: string
+              enum: [reconnection, version_mismatch, explicit_request]
+              description: Why sync was triggered
+      example:
+        event_type: "state_sync"
+        investigation_id: "inv_2024_001"
+        timestamp: "2024-01-15T10:11:00Z"
+        version: 25
+        sync_reason: "reconnection"
+        full_state:
+          wizard_step: "RESULTS"
+          status: "COMPLETED"
+          settings: {}
+          progress: {}
+          results:
+            risk_score: 75
+            findings_count: 12
+
+    # Helper Schema: Wizard State Summary
+    WizardStateSummary:
+      type: object
+      required:
+        - wizard_step
+        - status
+        - last_updated
+      properties:
+        wizard_step:
+          type: string
+          enum: [SETTINGS, PROGRESS, RESULTS]
+        status:
+          type: string
+          enum: [IN_PROGRESS, COMPLETED, ERROR, CANCELLED]
+        last_updated:
+          type: string
+          format: date-time
+        progress_percent:
+          type: integer
+          minimum: 0
+          maximum: 100
+        risk_score:
+          type: number
+          minimum: 0
+          maximum: 100
+
+  # WebSocket Channel Definitions
+  channels:
+    /investigation/{investigationId}:
+      description: |
+        WebSocket channel for real-time investigation updates.
+
+        **Connection URL:** ws://[host]/ws/investigation/{investigationId}
+
+        **Authentication:**
+        - JWT token in query parameter: ?token={jwt_token}
+        - OR Authorization header: Authorization: Bearer {jwt_token}
+
+        **Message Flow:**
+        1. Client connects
+        2. Server sends connection_established with current state
+        3. Server sends events as they occur
+        4. Client optionally acknowledges critical events
+        5. Heartbeat every 30 seconds (configurable)
+
+        **Reconnection Strategy:**
+        - Client should implement exponential backoff
+        - On reconnect, server sends state_sync event
+        - Client compares version and reconciles any missed updates
+
+        **Error Handling:**
+        - Connection errors trigger fallback to polling
+        - Event processing errors should not close connection
+        - Server sends error_occurred event for investigation errors
+      parameters:
+        investigationId:
+          description: Unique investigation identifier
+          schema:
+            type: string
+            pattern: '^[a-zA-Z0-9_-]+$'
+      subscribe:
+        summary: Receive investigation events
+        message:
+          oneOf:
+            - $ref: '#/components/schemas/ConnectionEstablishedEvent'
+            - $ref: '#/components/schemas/StateUpdatedEvent'
+            - $ref: '#/components/schemas/StepChangedEvent'
+            - $ref: '#/components/schemas/ProgressUpdatedEvent'
+            - $ref: '#/components/schemas/PhaseChangedEvent'
+            - $ref: '#/components/schemas/ToolExecutionStartedEvent'
+            - $ref: '#/components/schemas/ToolExecutionProgressEvent'
+            - $ref: '#/components/schemas/ToolExecutionCompletedEvent'
+            - $ref: '#/components/schemas/ToolExecutionErrorEvent'
+            - $ref: '#/components/schemas/ResultsAvailableEvent'
+            - $ref: '#/components/schemas/ErrorOccurredEvent'
+            - $ref: '#/components/schemas/HeartbeatEvent'
+            - $ref: '#/components/schemas/StateSyncEvent'
+            - $ref: '#/components/schemas/ConnectionClosedEvent'
+      publish:
+        summary: Send acknowledgments and heartbeats
+        message:
+          oneOf:
+            - $ref: '#/components/schemas/EventAcknowledgment'
+            - $ref: '#/components/schemas/HeartbeatEvent'
+
+# Configuration Examples
+x-configuration:
+  environment_variables:
+    REACT_APP_WS_BASE_URL:
+      description: WebSocket base URL
+      example: "ws://localhost:8090"
+      required: true
+    REACT_APP_WS_RECONNECT_INTERVAL_MS:
+      description: Initial reconnection interval
+      example: 1000
+      default: 1000
+    REACT_APP_WS_MAX_RECONNECT_INTERVAL_MS:
+      description: Maximum reconnection interval
+      example: 30000
+      default: 30000
+    REACT_APP_WS_HEARTBEAT_INTERVAL_MS:
+      description: Heartbeat interval
+      example: 30000
+      default: 30000
+    REACT_APP_WS_CONNECTION_TIMEOUT_MS:
+      description: Connection timeout
+      example: 10000
+      default: 10000
+
+# Event Priority and Handling
+x-event-priorities:
+  critical:
+    description: Events requiring immediate handling and acknowledgment
+    events:
+      - results_available
+      - error_occurred
+      - connection_closed
+  high:
+    description: Events requiring timely UI updates
+    events:
+      - step_changed
+      - phase_changed
+      - tool_execution_completed
+  normal:
+    description: Standard progress updates
+    events:
+      - progress_updated
+      - tool_execution_progress
+      - state_updated
+  low:
+    description: Background events
+    events:
+      - heartbeat
+      - connection_established
+
+# Conflict Resolution Strategy
+x-conflict-resolution:
+  websocket_vs_polling:
+    rule: "WebSocket events are authoritative"
+    process:
+      - "Compare event version with local state version"
+      - "If WebSocket version > local version: Apply WebSocket update"
+      - "If polling version > WebSocket version: Keep WebSocket (likely stale polling data)"
+      - "If versions match: No action needed"
+  websocket_vs_local_changes:
+    rule: "Server state is authoritative, but preserve local pending changes"
+    process:
+      - "Store local pending changes separately from synced state"
+      - "Apply WebSocket update to synced state"
+      - "Re-apply local pending changes on top"
+      - "On save, send pending changes with correct version"
+  reconnection:
+    rule: "Full state sync on reconnection"
+    process:
+      - "Server sends state_sync event with full current state"
+      - "Client compares version numbers"
+      - "If client version < server version: Accept full sync"
+      - "If client has local pending changes: Prompt user to review conflicts"

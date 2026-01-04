@@ -91,7 +91,7 @@ Both files comply with the 200-line maximum requirement.
 - RAG agent creation failure
 
 **Fallback Behavior:**
-- Automatically uses standard `create_autonomous_agent()`
+- Automatically uses standard `create_structured_agent()`
 - Maintains all existing functionality
 - Logs fallback events for monitoring
 - Continues with standard 13 objectives
@@ -120,7 +120,7 @@ poetry run python -m py_compile app/service/agent/risk_agent.py ✅
 
 # Import testing
 from app.service.agent.risk_agent_config import * ✅
-from app.service.agent.risk_agent import autonomous_risk_agent ✅
+from app.service.agent.risk_agent import structured_risk_agent ✅
 ```
 
 ### ✅ Configuration Function Testing

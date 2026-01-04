@@ -1,7 +1,7 @@
 import {
   InvestigationResult,
   InvestigationType,
-} from '../../types/investigation';
+} from '../../shared/types/investigation';
 
 export const mockFraudInvestigationResponse: InvestigationResult = {
   id: 'mock-investigation-1',

@@ -1,0 +1,817 @@
+openapi: 3.0.3
+info:
+  title: Olorin Investigation Polling API
+  version: 1.0.0
+  description: |
+    REST API for adaptive polling of investigation wizard state. Implements intelligent polling
+    strategy based on investigation status and activity level.
+
+    **Adaptive Polling Strategy:**
+    - Fast (500ms): Active investigations in PROGRESS step
+    - Normal (2s): Investigations in SETTINGS step or moderate activity
+    - Slow (5s): Completed investigations or minimal activity
+
+    **Polling Optimization:**
+    - ETag-based conditional GET (304 Not Modified)
+    - Exponential backoff on errors
+    - Client-side connection management
+    - Automatic retry with backoff
+
+    **Configuration:**
+    All polling intervals, timeouts, and retry limits are read from environment variables.
+
+servers:
+  - url: '{apiBaseUrl}/api/v1'
+    description: Configurable backend API server
+    variables:
+      apiBaseUrl:
+        default: 'http://localhost:8090'
+        description: Base URL from REACT_APP_API_BASE_URL environment variable
+
+security:
+  - bearerAuth: []
+
+paths:
+  /polling/wizard-state/{investigationId}:
+    parameters:
+      - name: investigationId
+        in: path
+        required: true
+        description: Unique investigation identifier
+        schema:
+          type: string
+          pattern: '^[a-zA-Z0-9_-]+$'
+        example: "inv_2024_001"
+
+    get:
+      summary: Poll investigation wizard state with adaptive intervals
+      description: |
+        Lightweight endpoint optimized for high-frequency polling. Returns current wizard state
+        with minimal overhead.
+
+        **Polling Client Behavior:**
+        1. Check investigation status and wizard_step
+        2. Select appropriate polling interval:
+           - Fast (500ms): status=IN_PROGRESS AND wizard_step=PROGRESS
+           - Normal (2s): status=IN_PROGRESS AND wizard_step=SETTINGS
+           - Slow (5s): status=COMPLETED OR wizard_step=RESULTS
+        3. Include ETag from previous response in If-None-Match header
+        4. Handle 304 Not Modified (no state change)
+        5. On error: Apply exponential backoff (2x, up to 30s max)
+
+        **Conditional GET Support:**
+        Server returns 304 Not Modified if ETag matches, saving bandwidth.
+
+        **Connection Management:**
+        Client should establish persistent HTTP connection (Connection: keep-alive)
+        to reduce connection overhead for frequent polling.
+
+        **Error Handling:**
+        - 429 Too Many Requests: Back off and retry
+        - 500+ Server Error: Exponential backoff (2x interval)
+        - Network error: Exponential backoff with max 3 retries
+      operationId: pollWizardState
+      tags:
+        - Polling
+      parameters:
+        - name: If-None-Match
+          in: header
+          description: ETag from previous response (version identifier)
+          schema:
+            type: string
+          example: '"version-12"'
+        - name: X-Polling-Interval
+          in: header
+          description: Client's current polling interval in milliseconds (for server analytics)
+          schema:
+            type: integer
+            minimum: 500
+            maximum: 30000
+          example: 2000
+      responses:
+        '200':
+          description: Current wizard state
+          headers:
+            ETag:
+              description: Version identifier for conditional GET
+              schema:
+                type: string
+              example: '"version-13"'
+            X-Recommended-Interval:
+              description: Server's recommended polling interval in milliseconds
+              schema:
+                type: integer
+              example: 500
+            Cache-Control:
+              description: Cache policy
+              schema:
+                type: string
+              example: 'no-cache, must-revalidate'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PollingStateResponse'
+              examples:
+                fastPolling:
+                  summary: Fast polling scenario (active investigation)
+                  value:
+                    investigation_id: "inv_2024_001"
+                    wizard_step: "PROGRESS"
+                    status: "IN_PROGRESS"
+                    last_updated: "2024-01-15T10:06:30Z"
+                    version: 13
+                    progress:
+                      percent_complete: 45
+                      current_phase: "EXECUTION"
+                    recommended_interval_ms: 500
+                normalPolling:
+                  summary: Normal polling scenario (settings phase)
+                  value:
+                    investigation_id: "inv_2024_001"
+                    wizard_step: "SETTINGS"
+                    status: "IN_PROGRESS"
+                    last_updated: "2024-01-15T10:05:00Z"
+                    version: 8
+                    recommended_interval_ms: 2000
+                slowPolling:
+                  summary: Slow polling scenario (completed)
+                  value:
+                    investigation_id: "inv_2024_001"
+                    wizard_step: "RESULTS"
+                    status: "COMPLETED"
+                    last_updated: "2024-01-15T10:15:00Z"
+                    version: 25
+                    results:
+                      risk_score: 75
+                      findings_count: 12
+                    recommended_interval_ms: 5000
+        '304':
+          description: Not Modified - State unchanged since last poll
+          headers:
+            ETag:
+              description: Same version identifier
+              schema:
+                type: string
+              example: '"version-12"'
+            X-Recommended-Interval:
+              description: Server's recommended polling interval
+              schema:
+                type: integer
+              example: 2000
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/ServerError'
+
+  /polling/wizard-state/{investigationId}/changes:
+    parameters:
+      - name: investigationId
+        in: path
+        required: true
+        description: Unique investigation identifier
+        schema:
+          type: string
+          pattern: '^[a-zA-Z0-9_-]+$'
+        example: "inv_2024_001"
+
+    get:
+      summary: Poll for state changes since specific version
+      description: |
+        Retrieves only the changes that occurred since a specific version. More efficient
+        than full state polling when only deltas are needed.
+
+        **Use Case:**
+        When client has cached state and only needs to know what changed.
+
+        **Response:**
+        - 200: Returns list of changes since provided version
+        - 304: No changes since provided version
+        - 404: Requested version too old (beyond retention window)
+
+        **Retention:**
+        Changes are retained for configurable duration (default: 24 hours).
+      operationId: pollWizardStateChanges
+      tags:
+        - Polling
+      parameters:
+        - name: since_version
+          in: query
+          required: true
+          description: Version number to get changes since
+          schema:
+            type: integer
+            minimum: 1
+          example: 10
+        - name: include_snapshot
+          in: query
+          description: Include full state snapshot in response
+          schema:
+            type: boolean
+            default: false
+      responses:
+        '200':
+          description: State changes since requested version
+          headers:
+            ETag:
+              description: Current version identifier
+              schema:
+                type: string
+              example: '"version-15"'
+            X-Recommended-Interval:
+              description: Recommended polling interval
+              schema:
+                type: integer
+              example: 500
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StateChangesResponse'
+              examples:
+                withChanges:
+                  summary: Changes detected
+                  value:
+                    investigation_id: "inv_2024_001"
+                    from_version: 10
+                    to_version: 15
+                    changes:
+                      - version: 11
+                        timestamp: "2024-01-15T10:06:00Z"
+                        change_type: "PROGRESS_UPDATE"
+                        fields_changed:
+                          - "progress.percent_complete"
+                          - "progress.current_phase"
+                        details:
+                          progress:
+                            percent_complete: 35
+                            current_phase: "EXECUTION"
+                      - version: 12
+                        timestamp: "2024-01-15T10:06:15Z"
+                        change_type: "TOOL_EXECUTION_UPDATE"
+                        fields_changed:
+                          - "progress.tools_executed[0].status"
+                        details:
+                          tool_name: "device_fingerprint"
+                          status: "COMPLETED"
+                      - version: 15
+                        timestamp: "2024-01-15T10:06:45Z"
+                        change_type: "PROGRESS_UPDATE"
+                        fields_changed:
+                          - "progress.percent_complete"
+                        details:
+                          progress:
+                            percent_complete: 55
+                    current_snapshot:
+                      wizard_step: "PROGRESS"
+                      status: "IN_PROGRESS"
+                      last_updated: "2024-01-15T10:06:45Z"
+        '304':
+          description: No changes since requested version
+          headers:
+            ETag:
+              description: Current version (same as requested)
+              schema:
+                type: string
+              example: '"version-10"'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/ServerError'
+
+  /polling/active-investigations:
+    get:
+      summary: Poll all active investigations for current user
+      description: |
+        Returns summary of all active investigations for authenticated user. Useful for:
+        - Dashboard showing all in-progress investigations
+        - Background monitoring of multiple investigations
+        - Batch state synchronization
+
+        **Filtering:**
+        Can filter by status, wizard_step, date range.
+
+        **Pagination:**
+        Results are paginated with configurable size.
+
+        **Polling Strategy:**
+        Use slower interval (5s+) for dashboard polling to reduce server load.
+      operationId: pollActiveInvestigations
+      tags:
+        - Polling
+      parameters:
+        - name: status
+          in: query
+          description: Filter by investigation status
+          schema:
+            type: string
+            enum: [IN_PROGRESS, COMPLETED, ERROR, CANCELLED]
+        - name: wizard_step
+          in: query
+          description: Filter by wizard step
+          schema:
+            type: string
+            enum: [SETTINGS, PROGRESS, RESULTS]
+        - name: limit
+          in: query
+          description: Maximum number of investigations to return
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 20
+        - name: offset
+          in: query
+          description: Number of investigations to skip
+          schema:
+            type: integer
+            minimum: 0
+            default: 0
+        - name: If-None-Match
+          in: header
+          description: ETag from previous response
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Active investigations summary
+          headers:
+            ETag:
+              description: Version identifier for entire list
+              schema:
+                type: string
+              example: '"list-version-42"'
+            X-Recommended-Interval:
+              description: Recommended polling interval for dashboard
+              schema:
+                type: integer
+              example: 5000
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ActiveInvestigationsResponse'
+              examples:
+                activeList:
+                  summary: List of active investigations
+                  value:
+                    investigations:
+                      - investigation_id: "inv_2024_001"
+                        name: "Account Takeover Investigation"
+                        wizard_step: "PROGRESS"
+                        status: "IN_PROGRESS"
+                        progress_percent: 45
+                        last_updated: "2024-01-15T10:06:30Z"
+                        version: 13
+                      - investigation_id: "inv_2024_002"
+                        name: "Fraud Detection Analysis"
+                        wizard_step: "SETTINGS"
+                        status: "IN_PROGRESS"
+                        last_updated: "2024-01-15T10:00:00Z"
+                        version: 5
+                      - investigation_id: "inv_2024_003"
+                        name: "Transaction Review"
+                        wizard_step: "RESULTS"
+                        status: "COMPLETED"
+                        risk_score: 85
+                        last_updated: "2024-01-15T09:45:00Z"
+                        version: 28
+                    total: 3
+                    limit: 20
+                    offset: 0
+                    timestamp: "2024-01-15T10:07:00Z"
+        '304':
+          description: No changes to active investigations list
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/ServerError'
+
+  /polling/health:
+    get:
+      summary: Health check for polling service
+      description: |
+        Lightweight health check endpoint. Returns server status and recommended
+        polling intervals based on current load.
+
+        **Use Case:**
+        - Monitor polling service availability
+        - Adjust client polling strategy based on server load
+        - Detect connection issues
+
+        **No Authentication Required:**
+        Public endpoint for health monitoring.
+      operationId: getPollingHealth
+      tags:
+        - Polling
+      security: []
+      responses:
+        '200':
+          description: Polling service is healthy
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PollingHealthResponse'
+              examples:
+                healthy:
+                  summary: Service healthy with normal load
+                  value:
+                    status: "healthy"
+                    server_time: "2024-01-15T10:07:00Z"
+                    recommended_intervals:
+                      fast_ms: 500
+                      normal_ms: 2000
+                      slow_ms: 5000
+                    server_load:
+                      active_connections: 250
+                      max_connections: 1000
+                      load_percentage: 25
+                degraded:
+                  summary: Service degraded under high load
+                  value:
+                    status: "degraded"
+                    server_time: "2024-01-15T10:07:00Z"
+                    recommended_intervals:
+                      fast_ms: 1000
+                      normal_ms: 3000
+                      slow_ms: 10000
+                    server_load:
+                      active_connections: 850
+                      max_connections: 1000
+                      load_percentage: 85
+                    message: "Server under high load - please use slower polling intervals"
+        '503':
+          description: Polling service unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PollingHealthResponse'
+              example:
+                status: "unavailable"
+                server_time: "2024-01-15T10:07:00Z"
+                message: "Polling service temporarily unavailable"
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  schemas:
+    PollingStateResponse:
+      type: object
+      required:
+        - investigation_id
+        - wizard_step
+        - status
+        - last_updated
+        - version
+        - recommended_interval_ms
+      properties:
+        investigation_id:
+          type: string
+          description: Unique investigation identifier
+        wizard_step:
+          type: string
+          enum: [SETTINGS, PROGRESS, RESULTS]
+          description: Current wizard step
+        status:
+          type: string
+          enum: [IN_PROGRESS, COMPLETED, ERROR, CANCELLED]
+          description: Investigation status
+        last_updated:
+          type: string
+          format: date-time
+          description: When state was last modified
+        version:
+          type: integer
+          minimum: 1
+          description: Current state version
+        recommended_interval_ms:
+          type: integer
+          minimum: 500
+          maximum: 30000
+          description: Server's recommended polling interval in milliseconds
+        progress:
+          type: object
+          description: Brief progress summary (only if wizard_step=PROGRESS)
+          properties:
+            percent_complete:
+              type: integer
+              minimum: 0
+              maximum: 100
+            current_phase:
+              type: string
+              enum: [PLANNING, EXECUTION, ANALYSIS, FINALIZATION]
+        results:
+          type: object
+          description: Brief results summary (only if wizard_step=RESULTS)
+          properties:
+            risk_score:
+              type: number
+              minimum: 0
+              maximum: 100
+            findings_count:
+              type: integer
+              minimum: 0
+
+    StateChange:
+      type: object
+      required:
+        - version
+        - timestamp
+        - change_type
+        - fields_changed
+      properties:
+        version:
+          type: integer
+          minimum: 1
+          description: Version number when change occurred
+        timestamp:
+          type: string
+          format: date-time
+          description: When change occurred
+        change_type:
+          type: string
+          enum: [PROGRESS_UPDATE, TOOL_EXECUTION_UPDATE, STEP_CHANGE, STATUS_CHANGE, SETTINGS_MODIFIED, RESULTS_FINALIZED]
+          description: Type of change
+        fields_changed:
+          type: array
+          items:
+            type: string
+          description: List of field paths that changed
+        details:
+          type: object
+          additionalProperties: true
+          description: Change details specific to change_type
+
+    StateChangesResponse:
+      type: object
+      required:
+        - investigation_id
+        - from_version
+        - to_version
+        - changes
+        - current_snapshot
+      properties:
+        investigation_id:
+          type: string
+        from_version:
+          type: integer
+          description: Starting version requested
+        to_version:
+          type: integer
+          description: Current version
+        changes:
+          type: array
+          items:
+            $ref: '#/components/schemas/StateChange'
+          description: List of changes between versions
+        current_snapshot:
+          type: object
+          description: Brief current state summary
+          properties:
+            wizard_step:
+              type: string
+              enum: [SETTINGS, PROGRESS, RESULTS]
+            status:
+              type: string
+              enum: [IN_PROGRESS, COMPLETED, ERROR, CANCELLED]
+            last_updated:
+              type: string
+              format: date-time
+
+    InvestigationSummary:
+      type: object
+      required:
+        - investigation_id
+        - name
+        - wizard_step
+        - status
+        - last_updated
+        - version
+      properties:
+        investigation_id:
+          type: string
+        name:
+          type: string
+          description: Investigation name
+        wizard_step:
+          type: string
+          enum: [SETTINGS, PROGRESS, RESULTS]
+        status:
+          type: string
+          enum: [IN_PROGRESS, COMPLETED, ERROR, CANCELLED]
+        progress_percent:
+          type: integer
+          minimum: 0
+          maximum: 100
+          description: Progress percentage (only for IN_PROGRESS)
+        risk_score:
+          type: number
+          minimum: 0
+          maximum: 100
+          description: Risk score (only for COMPLETED)
+        last_updated:
+          type: string
+          format: date-time
+        version:
+          type: integer
+
+    ActiveInvestigationsResponse:
+      type: object
+      required:
+        - investigations
+        - total
+        - limit
+        - offset
+        - timestamp
+      properties:
+        investigations:
+          type: array
+          items:
+            $ref: '#/components/schemas/InvestigationSummary'
+        total:
+          type: integer
+          description: Total number of active investigations
+        limit:
+          type: integer
+          description: Page size
+        offset:
+          type: integer
+          description: Current offset
+        timestamp:
+          type: string
+          format: date-time
+          description: When this snapshot was generated
+
+    PollingHealthResponse:
+      type: object
+      required:
+        - status
+        - server_time
+      properties:
+        status:
+          type: string
+          enum: [healthy, degraded, unavailable]
+          description: Service health status
+        server_time:
+          type: string
+          format: date-time
+          description: Current server time (for clock synchronization)
+        recommended_intervals:
+          type: object
+          description: Recommended polling intervals in milliseconds
+          properties:
+            fast_ms:
+              type: integer
+              minimum: 500
+            normal_ms:
+              type: integer
+              minimum: 1000
+            slow_ms:
+              type: integer
+              minimum: 2000
+        server_load:
+          type: object
+          description: Current server load metrics
+          properties:
+            active_connections:
+              type: integer
+              minimum: 0
+            max_connections:
+              type: integer
+              minimum: 1
+            load_percentage:
+              type: integer
+              minimum: 0
+              maximum: 100
+        message:
+          type: string
+          description: Optional status message
+
+    ErrorResponse:
+      type: object
+      required:
+        - error
+        - message
+      properties:
+        error:
+          type: string
+        message:
+          type: string
+        timestamp:
+          type: string
+          format: date-time
+        request_id:
+          type: string
+
+  responses:
+    BadRequest:
+      description: Bad Request
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            error: "bad_request"
+            message: "Invalid version parameter"
+            timestamp: "2024-01-15T10:07:00Z"
+            request_id: "req_xyz789"
+
+    Unauthorized:
+      description: Unauthorized
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            error: "unauthorized"
+            message: "Authentication required"
+            timestamp: "2024-01-15T10:07:00Z"
+            request_id: "req_xyz789"
+
+    Forbidden:
+      description: Forbidden
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            error: "forbidden"
+            message: "Access denied to this investigation"
+            timestamp: "2024-01-15T10:07:00Z"
+            request_id: "req_xyz789"
+
+    NotFound:
+      description: Not Found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            error: "not_found"
+            message: "Investigation not found or version too old"
+            timestamp: "2024-01-15T10:07:00Z"
+            request_id: "req_xyz789"
+
+    TooManyRequests:
+      description: Too Many Requests - Rate limit exceeded
+      headers:
+        Retry-After:
+          description: Seconds to wait before retrying
+          schema:
+            type: integer
+          example: 5
+        X-RateLimit-Limit:
+          description: Maximum requests per window
+          schema:
+            type: integer
+          example: 100
+        X-RateLimit-Remaining:
+          description: Remaining requests in current window
+          schema:
+            type: integer
+          example: 0
+        X-RateLimit-Reset:
+          description: Unix timestamp when rate limit resets
+          schema:
+            type: integer
+          example: 1705315625
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            error: "rate_limit_exceeded"
+            message: "Polling rate limit exceeded - please slow down"
+            timestamp: "2024-01-15T10:07:00Z"
+            request_id: "req_xyz789"
+
+    ServerError:
+      description: Internal Server Error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            error: "internal_server_error"
+            message: "An unexpected error occurred"
+            timestamp: "2024-01-15T10:07:00Z"
+            request_id: "req_xyz789"
+
+tags:
+  - name: Polling
+    description: Adaptive polling operations for wizard state synchronization

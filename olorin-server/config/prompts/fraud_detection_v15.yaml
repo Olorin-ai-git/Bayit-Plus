@@ -1,0 +1,263 @@
+# Fraud Detection Prompt Templates v15
+# Feature: 026-llm-training-pipeline
+# ITERATION 12: Higher threshold with conservative baseline
+#
+# LEARNINGS FROM STARTUP ANALYSIS:
+# - v14 with threshold 0.3: 154 TP, 50,043 FP, 0 FN, 8 TN → 0.31% precision
+# - Almost ALL entities have risk scores >= 0.3 (99.8% flagged as fraud)
+# - Need MUCH HIGHER threshold and MORE CONSERVATIVE baseline
+#
+# KEY INSIGHT:
+# - Fraud rate is ~0.3% (154 frauds out of ~50,000 entities)
+# - Current model is too aggressive - flags everything
+# - Need to be more selective to improve precision while maintaining recall
+#
+# v15 Strategy:
+# 1. Baseline 0.25 (lower starting point)
+# 2. Threshold 0.65 (much higher - more selective)
+# 3. Require STRONGER signals for fraud prediction
+# 4. More generous legitimate signals to reduce FP
+
+version: v15
+created_at: "2024-12-14"
+description: "Conservative scoring with higher threshold for precision improvement"
+
+# System prompt - CONSERVATIVE approach
+system_prompt: |
+  You are an expert fraud detection analyst predicting FUTURE fraud risk.
+
+  ## Critical Context
+  - Base rate: ~0.3% of entities commit fraud (VERY rare)
+  - MOST entities are LEGITIMATE - default assumption is NOT fraud
+  - Only flag as fraud if MULTIPLE strong signals are present
+  - High false positive rate is costly - be SELECTIVE
+
+  ## CONSERVATIVE Scoring System
+
+  **Baseline: 0.25** (well below fraud threshold - assume legitimate)
+
+  ### FRAUD SIGNALS (Add risk - need STRONG evidence):
+
+  **High-Risk Device/IP Patterns** (add each that applies):
+  - devices > 5 → +0.12
+  - devices > 8 → +0.15 (additional)
+  - ips > devices * 3 → +0.10 (excessive IP diversity)
+  - devices >= transactions * 0.8 → +0.15 (almost 1 device per tx)
+
+  **High-Value Anomalies** (add each that applies):
+  - total_gmv > $2000 AND transactions < 5 → +0.18 (high value, very low activity)
+  - avg_tx_value > $300 → +0.10
+  - avg_tx_value > $500 → +0.12 (additional)
+  - std_tx_value > avg_tx_value * 2 → +0.10 (extreme variance)
+
+  **Suspicious Patterns** (add each that applies):
+  - transactions < 3 AND gmv > $500 → +0.15 (new account, high spend)
+  - transactions < 5 AND devices > 4 → +0.12 (many devices for few txs)
+  - single_merchant AND transactions > 10 AND devices > 3 → +0.10
+
+  ### LEGITIMATE SIGNALS (Subtract risk - generous to reduce FP):
+  - transactions > 20 AND devices <= 2 → -0.15 (established, stable)
+  - transactions > 10 AND std_tx_value < avg_tx_value * 0.3 → -0.12 (very consistent)
+  - devices == 1 AND ips <= 2 → -0.10 (very stable setup)
+  - avg_tx_value < $50 AND transactions > 8 → -0.08 (typical buyer)
+  - transactions > 5 AND devices == 1 → -0.10 (regular single-device user)
+  - gmv < $200 AND transactions > 3 → -0.08 (low value, some history)
+
+  ### Scoring Rules:
+  1. Start at 0.25
+  2. Add fraud signals (each independently)
+  3. Subtract legitimate signals (each independently)
+  4. Cap final score at [0.0, 1.0]
+  5. Predict FRAUD ONLY if score >= 0.65
+
+  ### Score Interpretation:
+  - 0.00-0.40: Low risk → LEGITIMATE
+  - 0.40-0.65: Moderate risk → LEGITIMATE (below threshold)
+  - 0.65-0.80: Elevated risk → FRAUD
+  - 0.80-1.00: High risk → FRAUD
+
+  ## Decision Threshold (CRITICAL)
+  - risk_score >= 0.65 → predict FRAUD
+  - risk_score < 0.65 → predict LEGITIMATE
+
+  Be CONSERVATIVE - when in doubt, predict LEGITIMATE.
+
+  ## Output Format
+  Provide JSON:
+  ```json
+  {
+    "risk_score": <float 0.0-1.0>,
+    "confidence": <float 0.0-1.0>,
+    "prediction": "<FRAUD|LEGITIMATE>",
+    "reasoning": "<brief explanation>",
+    "key_indicators": [<list of signals that influenced the score>],
+    "risk_factors": {
+      "device_risk": <float 0.0-1.0>,
+      "velocity_risk": <float 0.0-1.0>,
+      "value_risk": <float 0.0-1.0>,
+      "pattern_risk": <float 0.0-1.0>
+    }
+  }
+  ```
+
+# Main fraud analysis prompt
+fraud_analysis_prompt: |
+  Analyze this entity for FUTURE fraud risk.
+
+  CONSERVATIVE SCORING (baseline 0.25, threshold 0.65):
+  - Default assumption: LEGITIMATE
+  - Only flag FRAUD if multiple STRONG signals present
+  - Be selective to minimize false positives
+
+  ## Entity Information
+  - Entity Type: {entity_type}
+  - Entity Value: {entity_value}
+  - Merchant: {merchant_name}
+
+  ## Behavioral Features (Feature Period)
+  - Total Transactions: {total_transactions}
+  - Total GMV: ${total_gmv}
+  - Average Transaction Value: ${avg_tx_value}
+  - Transaction Value Std Dev: ${std_tx_value}
+  - Unique Devices: {unique_devices}
+  - Unique IPs: {unique_ips}
+  - Unique Merchants: {unique_merchants}
+  - Date Range: {date_range}
+
+  ## Analysis Steps (CONSERVATIVE - require strong evidence):
+
+  1. **Device/IP Signals** (add each that applies):
+     - devices > 5: +0.12
+     - devices > 8: +0.15 additional
+     - ips > devices * 3: +0.10
+     - devices >= transactions * 0.8: +0.15
+
+  2. **Value Signals** (add each that applies):
+     - GMV > $2000 AND txs < 5: +0.18
+     - avg_tx_value > $300: +0.10
+     - avg_tx_value > $500: +0.12 additional
+     - std_tx_value > avg * 2: +0.10
+
+  3. **Suspicious Patterns** (add each that applies):
+     - txs < 3 AND GMV > $500: +0.15
+     - txs < 5 AND devices > 4: +0.12
+     - single_merchant AND txs > 10 AND devices > 3: +0.10
+
+  4. **Legitimate Signals** (subtract - be generous):
+     - txs > 20 AND devices <= 2: -0.15
+     - txs > 10 AND std < avg * 0.3: -0.12
+     - devices == 1 AND ips <= 2: -0.10
+     - avg < $50 AND txs > 8: -0.08
+     - txs > 5 AND devices == 1: -0.10
+     - gmv < $200 AND txs > 3: -0.08
+
+  CALCULATE: Sum all adjustments from 0.25 baseline
+  DECIDE: >= 0.65 = FRAUD, < 0.65 = LEGITIMATE
+
+  Provide your analysis in JSON format:
+  ```json
+  {{
+    "risk_score": <float 0.0-1.0>,
+    "confidence": <float 0.0-1.0>,
+    "prediction": "<FRAUD|LEGITIMATE>",
+    "reasoning": "<explain which signals added/subtracted and the calculation>",
+    "key_indicators": [<list of detected signals with their +/- values>],
+    "risk_factors": {{
+      "device_risk": <float 0.0-1.0>,
+      "velocity_risk": <float 0.0-1.0>,
+      "value_risk": <float 0.0-1.0>,
+      "pattern_risk": <float 0.0-1.0>
+    }}
+  }}
+  ```
+
+# Template for fraud indicators
+fraud_indicators_template: |
+  ## Behavioral Risk Indicators
+  - Total Transactions: {total_transactions}
+  - Total GMV: ${total_gmv}
+  - Average Transaction Value: ${avg_tx_value}
+  - Transaction Value Std Dev: ${std_tx_value}
+  - Unique Devices: {device_count}
+  - Unique IPs: {ip_count}
+  - Unique Merchants: {merchant_count}
+
+# Template for velocity analysis
+velocity_analysis_template: |
+  ## Transaction Velocity Patterns
+  - Transaction Count: {total_transactions}
+  - Average Transaction Value: ${avg_tx_value}
+  - Value Variance (Std Dev): ${std_tx_value}
+  - Activity Span: {first_tx_date} to {last_tx_date}
+
+# Template for geographic analysis
+geographic_analysis_template: |
+  ## Network Diversity
+  - Unique IP Addresses: {ip_count}
+  - IP per Transaction Ratio: {ip_ratio}
+
+# Template for device/network analysis
+device_analysis_template: |
+  ## Device Fingerprint Analysis
+  - Unique Devices: {device_count}
+  - Unique IPs: {ip_count}
+  - Multi-Device Pattern: {multi_device}
+
+# Template for historical patterns
+historical_patterns_template: |
+  ## Account History
+  - First Transaction: {first_tx_date}
+  - Last Transaction: {last_tx_date}
+  - Transaction Count: {total_transactions}
+  - Merchants Used: {merchant_count}
+
+# Batch analysis prompt
+batch_analysis_prompt: |
+  Analyze {entity_count} entities for future fraud risk.
+
+  Use CONSERVATIVE scoring (baseline 0.25, threshold 0.65).
+  Default to LEGITIMATE unless strong evidence of fraud.
+
+  {entities_data}
+
+  Provide JSON array:
+  ```json
+  [
+    {{
+      "entity_id": "<entity identifier>",
+      "risk_score": <float 0.0-1.0>,
+      "confidence": <float 0.0-1.0>,
+      "prediction": "<FRAUD|LEGITIMATE>",
+      "reasoning": "<brief explanation>"
+    }}
+  ]
+  ```
+
+# Feedback analysis prompt
+feedback_analysis_prompt: |
+  The following prediction was incorrect:
+
+  ## Original Prediction
+  - Entity: {entity_value}
+  - Predicted: {predicted_label}
+  - Actual: {actual_label}
+  - Risk Score: {risk_score}
+
+  ## Entity Behavioral Data
+  {entity_data}
+
+  ## Actual Outcome
+  - Committed Fraud: {committed_fraud}
+
+  Analyze the error:
+  ```json
+  {{
+    "error_type": "<false_positive|false_negative>",
+    "likely_cause": "<explanation>",
+    "missed_patterns": [<patterns that should have been weighted differently>],
+    "suggested_adjustments": {{
+      "signal_adjustments": {{<suggested weight changes>}},
+      "threshold_adjustment": <suggested change>
+    }}
+  }}
+  ```

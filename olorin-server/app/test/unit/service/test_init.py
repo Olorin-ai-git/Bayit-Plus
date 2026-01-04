@@ -10,7 +10,6 @@ from app.service import (
     LocalSettings,
     PRDSettings,
     PRFSettings,
-    QALSettings,
     STGSettings,
     _settings_factory,
     configure_logger,
@@ -122,12 +121,7 @@ def test_settings_factory_local(mock_getenv):
     assert isinstance(settings, LocalSettings)
 
 
-@patch("app.service.os.getenv")
-def test_settings_factory_qal(mock_getenv):
-    """Test _settings_factory for qal environment."""
-    mock_getenv.return_value = "qal"
-    settings = _settings_factory()
-    assert isinstance(settings, QALSettings)
+# QAL environment removed - test removed
 
 
 @patch("app.service.os.getenv")

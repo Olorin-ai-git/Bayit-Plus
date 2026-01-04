@@ -1,1 +1,1 @@
-"""Autonomous investigation tests."""
+"""Structured investigation tests."""

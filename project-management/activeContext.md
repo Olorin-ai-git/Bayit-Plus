@@ -204,10 +204,6 @@ className="text-xs ${getLogTypeColor(log.type)} flex items-baseline break-words"
 ```toml
 # CURRENT BROKEN STATE:
 [tool.poetry]
-<<<<<<< HEAD:back/pyproject.toml
-name = "olorin"
-version = "0.1.0"
-=======
 name = "olorin-service" 
 version = "1.0.0"
 >>>>>>> restructure-projects:olorin-server/pyproject.toml

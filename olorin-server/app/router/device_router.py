@@ -1,6 +1,5 @@
 import json
 import logging
-from app.service.logging import get_bridge_logger
 import os
 import re
 from datetime import datetime, timedelta, timezone
@@ -25,17 +24,18 @@ from app.persistence import (
     get_investigation,
     update_investigation_llm_thoughts,
 )
-# from app.service.agent.tools.di_tool.di_tool import DITool  # Removed non-existent tool
+from app.security.auth import User, require_read
 from app.service.agent.tools.splunk_tool.splunk_tool import SplunkQueryTool
 from app.service.agent_service import ainvoke_agent
 from app.service.config import get_settings_for_env
-from app.service.device_analysis_service import DeviceAnalysisService
+from app.service.config_loader import get_config_loader
+from app.service.llm_device_risk_service import LLMDeviceRiskService
+from app.service.logging import get_bridge_logger
 from app.utils.auth_utils import get_auth_token
 from app.utils.constants import LIST_FIELDS_PRIORITY, MAX_PROMPT_TOKENS
 from app.utils.firebase_secrets import get_app_secret
 from app.utils.prompt_utils import sanitize_splunk_data, trim_prompt_to_token_limit
 from app.utils.prompts import SYSTEM_PROMPT_FOR_DEVICE_RISK
-from app.service.config_loader import get_config_loader
 
 logger = get_bridge_logger(__name__)
 router = APIRouter(prefix="/device")
@@ -47,7 +47,7 @@ async def get_identity_authorization_header(
     # Load app secret from Firebase Secret Manager
     config_loader = get_config_loader()
     olorin_app_secret = config_loader.load_secret("OLORIN_APP_SECRET") or ""
-    
+
     url = "https://identityinternal-e2e.api.olorin.com/v1/graphql"
     headers = {
         "olorin_tid": olorin_tid,
@@ -88,7 +88,8 @@ async def analyze_device(
     raw_splunk_override: Optional[List[Dict[str, Any]]] = None,
     entity_type: str = Query(..., pattern="^(user_id|device_id)$"),
     profile_id: str = "9341450868951246",
-    service: DeviceAnalysisService = Depends(DeviceAnalysisService),
+    service: LLMDeviceRiskService = Depends(LLMDeviceRiskService),
+    current_user: User = Depends(require_read),
 ) -> dict:
     # Only keep HTTP-specific logic here
     ensure_investigation_exists(investigation_id, entity_id, entity_type)

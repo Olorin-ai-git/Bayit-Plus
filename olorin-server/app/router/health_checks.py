@@ -5,7 +5,7 @@ Provides functions for checking service dependencies, system health, and metrics
 """
 
 import os
-from typing import Dict, Any
+from typing import Any, Dict
 
 from app.service.logging import get_bridge_logger
 
@@ -38,11 +38,11 @@ async def check_external_services() -> Dict[str, bool]:
     """Check external service dependencies."""
     services = {
         "anthropic_api": True,  # Placeholder
-        "openai_api": True,     # Placeholder
-        "splunk": True,         # Placeholder
-        "firebase": True,       # Placeholder
+        "openai_api": True,  # Placeholder
+        "splunk": True,  # Placeholder
+        "firebase": True,  # Placeholder
     }
-    
+
     # In production, these would be actual connectivity tests
     return services
 
@@ -60,6 +60,7 @@ def _get_memory_usage() -> float:
     """Get memory usage in MB."""
     try:
         import psutil
+
         process = psutil.Process(os.getpid())
         return process.memory_info().rss / 1024 / 1024
     except ImportError:
@@ -72,6 +73,7 @@ def _get_cpu_usage() -> float:
     """Get CPU usage percentage."""
     try:
         import psutil
+
         return psutil.cpu_percent()
     except ImportError:
         return 0.0
@@ -89,6 +91,7 @@ def check_disk_space() -> bool:
     """Check if sufficient disk space is available."""
     try:
         import shutil
+
         total, used, free = shutil.disk_usage("/")
         # Check if more than 10% is free
         return (free / total) > 0.1
@@ -100,6 +103,7 @@ def check_memory_available() -> bool:
     """Check if sufficient memory is available."""
     try:
         import psutil
+
         memory = psutil.virtual_memory()
         # Check if more than 10% is available
         return memory.available / memory.total > 0.1
@@ -116,11 +120,11 @@ def check_environment_variables() -> bool:
         "FIREBASE_PROJECT_ID",
         "PYTHONPATH",
     ]
-    
+
     missing_vars = [var for var in required_vars if not os.getenv(var)]
-    
+
     if missing_vars:
         logger.warning(f"Missing environment variables: {missing_vars}")
         return False
-    
+
     return True

@@ -1,0 +1,121 @@
+# Proposed additions to .gitignore to prevent reintroduction of cleanup items
+
+# ==========================================
+# Backup and Legacy Files
+# ==========================================
+*.bak
+*.backup
+*.old
+*.orig
+*.rej
+*.disabled
+*.copy
+*.cp
+*.tmp
+*.temp
+*~
+.#*
+#*#
+*.swp
+*.swo
+backup_*
+old_*
+legacy_*
+copy_*
+UNUSED_*
+DEPRECATED_*
+tmp_*
+
+# Backup directories
+backup/
+backups/
+legacy/
+deprecated/
+old/
+attic/
+archive/
+archived/
+.history/
+.trash/
+.recycle_bin/
+tmp/
+temp/
+copies/
+zzz_deprecated/
+
+# ==========================================
+# macOS and OS Garbage
+# ==========================================
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+.AppleDouble
+ehthumbs.db
+Thumbs.db
+Desktop.ini
+
+# ==========================================
+# Temporary Log Files
+# ==========================================
+# Allow only structured logs in dedicated directories
+*.log
+!logs/**/*.log
+!olorin-server/logs/investigations/**/*.log
+
+# Specific temporary logs
+test_output.log
+test-output.log
+test-execution.log
+build-errors.log
+typecheck_full.log
+startup.log
+startup2.log
+
+# ==========================================
+# IDE and Editor Files
+# ==========================================
+# Keep existing IDE ignores but add these if missing
+*.swp
+*.swo
+*~
+.vscode/settings.json
+.idea/workspace.xml
+.idea/tasks.xml
+
+# ==========================================
+# Build and Cache Artifacts
+# ==========================================
+# These should already be ignored, but ensure coverage
+dist/
+build/
+out/
+.next/
+coverage/
+.cache/
+.parcel-cache/
+.turbo/
+.vite/
+.eslintcache
+storybook-static/
+.storybook-cache/
+.tox/
+.pytest_cache/
+__pycache__/
+*.pyc
+*.pyo
+.mypy_cache/
+.ruff_cache/
+
+# ==========================================
+# Investigation Logs (Optional)
+# ==========================================
+# Uncomment if you want to ignore investigation logs
+# logs/investigations/**/*.log
+
+# ==========================================
+# Git Merge Artifacts
+# ==========================================
+*.orig
+*.rej

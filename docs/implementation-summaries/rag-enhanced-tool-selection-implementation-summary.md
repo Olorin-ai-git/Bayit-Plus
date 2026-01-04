@@ -7,14 +7,14 @@
 
 ## Executive Summary
 
-Successfully implemented the RAG-Enhanced Tool Selection Mechanism as requested, integrating the existing `KnowledgeBasedToolRecommender` with the autonomous agent workflow to enable dynamic, intelligent tool selection based on RAG knowledge retrieval. The implementation provides <100ms tool selection overhead with comprehensive fallback mechanisms and performance monitoring.
+Successfully implemented the RAG-Enhanced Tool Selection Mechanism as requested, integrating the existing `KnowledgeBasedToolRecommender` with the structured agent workflow to enable dynamic, intelligent tool selection based on RAG knowledge retrieval. The implementation provides <100ms tool selection overhead with comprehensive fallback mechanisms and performance monitoring.
 
 ## Implementation Overview
 
 ### What Was Implemented
 
 1. **Enhanced AgentFactory** - Added RAG-aware tool selection capabilities
-2. **Tool Refresh Capability** - Added optional dynamic tool selection to base autonomous agent
+2. **Tool Refresh Capability** - Added optional dynamic tool selection to base structured agent
 3. **Domain Agent Integration** - Updated all 5 domain agents to use intelligent tool selection
 4. **Performance Monitoring** - Integrated tool selection metrics with journey tracking
 5. **Graceful Fallbacks** - Comprehensive fallback mechanisms when RAG unavailable
@@ -23,11 +23,11 @@ Successfully implemented the RAG-Enhanced Tool Selection Mechanism as requested,
 
 ```
 Before: Static Tool Selection
-Domain Agent -> Static tools[] -> AutonomousInvestigationAgent
+Domain Agent -> Static tools[] -> StructuredInvestigationAgent
 
 After: RAG-Enhanced Dynamic Tool Selection  
 Domain Agent -> ToolRecommenderAgentFactory -> KnowledgeBasedToolRecommender -> 
-Enhanced Tools[] -> AutonomousInvestigationAgent (with tool refresh capability)
+Enhanced Tools[] -> StructuredInvestigationAgent (with tool refresh capability)
 ```
 
 ## Detailed Implementation
@@ -50,12 +50,12 @@ Enhanced Tools[] -> AutonomousInvestigationAgent (with tool refresh capability)
 - **Graceful Fallback**: Automatic fallback to static tools when RAG unavailable
 - **Statistics Tracking**: Comprehensive metrics on tool selection performance
 
-### 2. Autonomous Base Class Enhancement (`app/service/agent/autonomous_base.py`)
+### 2. Structured Base Class Enhancement (`app/service/agent/structured_base.py`)
 
 **New Capabilities Added:**
 - `enable_tool_refresh()` - Enable dynamic tool refresh with callback
 - `refresh_tools()` - Refresh tools dynamically using RAG recommendations
-- Optional tool refresh integration in `autonomous_investigate()` method
+- Optional tool refresh integration in `structured_investigate()` method
 
 **Key Features:**
 - **Backward Compatibility**: Existing agents work unchanged
@@ -214,7 +214,7 @@ agent = await create_agent_with_intelligent_tools(
 
 ### Core Implementation Files
 1. `/app/service/agent/agent_factory.py` - Enhanced factory with tool recommendation
-2. `/app/service/agent/autonomous_base.py` - Added tool refresh capability
+2. `/app/service/agent/structured_base.py` - Added tool refresh capability
 3. `/app/service/agent/journey_tracker.py` - Added tool selection tracking
 
 ### Domain Agent Files

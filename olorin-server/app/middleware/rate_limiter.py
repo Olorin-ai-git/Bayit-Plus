@@ -3,6 +3,7 @@ Rate limiting middleware for API protection
 """
 
 import asyncio
+import os
 import time
 from collections import defaultdict, deque
 from typing import Dict, Optional
@@ -63,13 +64,29 @@ class RateLimitMiddleware(BaseHTTPMiddleware):
 
     async def dispatch(self, request: Request, call_next) -> Response:
         """Process request with rate limiting."""
-        # Skip rate limiting for health checks and auth endpoints
-        if request.url.path in ["/health", "/", "/docs", "/redoc", "/openapi.json"]:
+        # Skip rate limiting for health checks and documentation
+        if request.url.path in [
+            "/health",
+            "/",
+            "/docs",
+            "/redoc",
+            "/openapi.json",
+            "/health/full",
+            "/version",
+            "/favicon.ico",
+        ]:
             return await call_next(request)
 
         # Skip rate limiting for auth endpoints to allow login attempts
         if request.url.path.startswith("/auth/"):
             return await call_next(request)
+
+        # In development, skip rate limiting for settings endpoints to allow rapid testing
+        import os
+
+        if os.getenv("APP_ENV", "local") != "prd":
+            if request.url.path.startswith("/api/settings/"):
+                return await call_next(request)
 
         client_ip = self.get_client_ip(request)
 
@@ -121,3 +138,15 @@ class EndpointRateLimits:
 
     # Public/health endpoints
     PUBLIC = {"calls": 200, "period": 60}  # 200 requests per minute
+
+    # Log streaming endpoints (configurable via environment)
+    LOG_STREAMING = {
+        "calls": int(os.getenv("LOG_STREAM_RATE_LIMIT_CALLS", "30")),
+        "period": int(os.getenv("LOG_STREAM_RATE_LIMIT_PERIOD", "60")),
+    }  # 30 log stream requests per minute (default)
+
+    # Client log ingestion endpoint (stricter to prevent abuse)
+    LOG_INGESTION = {
+        "calls": int(os.getenv("LOG_INGESTION_RATE_LIMIT_CALLS", "20")),
+        "period": int(os.getenv("LOG_INGESTION_RATE_LIMIT_PERIOD", "60")),
+    }  # 20 log ingestion requests per minute (default)

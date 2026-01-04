@@ -34,8 +34,23 @@
   ],
   "hosting": [
     {
+      "target": "olorin-web-portal",
+      "public": "olorin-web-portal/build",
+      "ignore": [
+        "firebase.json",
+        "**/.*",
+        "**/node_modules/**"
+      ],
+      "rewrites": [
+        {
+          "source": "**",
+          "destination": "/index.html"
+        }
+      ]
+    },
+    {
       "target": "olorin-frontend",
-      "public": "olorin-front/build",
+      "public": "olorin-front/dist/shell",
       "ignore": [
         "firebase.json",
         "**/.*",
@@ -48,21 +63,11 @@
       ],
       "rewrites": [
         {
-          "source": "/api/**",
-          "function": "api"
-        },
-        {
           "source": "**",
           "destination": "/index.html"
         }
       ],
-      "redirects": [
-        {
-          "source": "/home",
-          "destination": "/",
-          "type": 301
-        }
-      ],
+      "redirects": [],
       "headers": [
         {
           "source": "/",

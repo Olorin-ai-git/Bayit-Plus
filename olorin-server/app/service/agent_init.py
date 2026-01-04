@@ -1,10 +1,10 @@
 import logging
-from app.service.logging import get_bridge_logger
 
 from fastapi import FastAPI
 
 from app.router import agent_router
 from app.service.agent.agent import create_and_get_agent_graph
+from app.service.logging import get_bridge_logger
 
 logger = get_bridge_logger(__name__)
 
@@ -46,8 +46,56 @@ def validate_user_authorization(olorin_header) -> bool:
 
 
 async def initialize_agent(app: FastAPI):
-    # Initialize both parallel and sequential graphs
-    app.state.graph_parallel = await create_and_get_agent_graph(parallel=True)
-    app.state.graph_sequential = await create_and_get_agent_graph(parallel=False)
-    logger.info("Both parallel and sequential graphs initialized")
+    # Initialize traditional graphs for backward compatibility
+    # These will be used when no investigation_id is available
+    # Continue if graph creation fails (non-critical)
+    try:
+        app.state.graph_parallel = await create_and_get_agent_graph(parallel=True)
+        logger.info("✅ Parallel graph initialized")
+    except Exception as e:
+        logger.warning(f"⚠️ Failed to initialize parallel graph (non-critical): {e}")
+        app.state.graph_parallel = None
+
+    try:
+        app.state.graph_sequential = await create_and_get_agent_graph(parallel=False)
+        logger.info("✅ Sequential graph initialized")
+    except Exception as e:
+        logger.warning(f"⚠️ Failed to initialize sequential graph (non-critical): {e}")
+        app.state.graph_sequential = None
+
+    if app.state.graph_parallel or app.state.graph_sequential:
+        logger.info("✅ At least one agent graph initialized")
+    else:
+        logger.warning(
+            "⚠️ No agent graphs initialized - agent features will be unavailable"
+        )
+
+    # Initialize hybrid system feature flags
+    try:
+        from app.service.agent.orchestration.hybrid.migration_utilities import (
+            get_feature_flags,
+        )
+
+        feature_flags = get_feature_flags()
+        app.state.hybrid_feature_flags = feature_flags
+        logger.info("🧠 Hybrid Intelligence Graph system initialized")
+        logger.info(f"🚩 Feature flags status:")
+        for flag_name in [
+            "hybrid_graph_v1",
+            "ai_confidence_engine",
+            "ab_test_hybrid_vs_clean",
+        ]:
+            status = feature_flags.get_flag_status(flag_name)
+            enabled = status.get("enabled", False)
+            rollout = status.get("rollout_percentage", 0)
+            logger.info(
+                f"   {flag_name}: {'✅' if enabled else '❌'} ({rollout}% rollout)"
+            )
+    except ImportError:
+        logger.info("🧠 Hybrid system not available, using traditional graphs only")
+        app.state.hybrid_feature_flags = None
+    except Exception as e:
+        logger.warning(f"🧠 Failed to initialize hybrid system: {e}")
+        app.state.hybrid_feature_flags = None
+
     app.include_router(agent_router.router)

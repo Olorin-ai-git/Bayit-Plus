@@ -1,0 +1,1080 @@
+openapi: 3.0.3
+info:
+  title: Olorin Investigation Wizard State API
+  version: 1.0.0
+  description: |
+    REST API for managing investigation wizard state persistence, including state creation,
+    retrieval, updates, and deletion. All endpoints require authentication via JWT token.
+
+    **Key Features:**
+    - Complete CRUD operations for wizard state
+    - Optimistic locking with version control
+    - Conflict detection and resolution
+    - State validation and error handling
+    - User-specific state isolation
+
+    **State Lifecycle:**
+    1. POST /wizard-state - Create initial state
+    2. GET /wizard-state/{id} - Retrieve current state
+    3. PUT /wizard-state/{id} - Update state (optimistic locking)
+    4. DELETE /wizard-state/{id} - Delete state
+
+    **Configuration:**
+    All endpoint URLs, timeouts, and limits are read from environment variables.
+
+servers:
+  - url: '{apiBaseUrl}/api/v1'
+    description: Configurable backend API server
+    variables:
+      apiBaseUrl:
+        default: 'http://localhost:8090'
+        description: Base URL from REACT_APP_API_BASE_URL environment variable
+
+security:
+  - bearerAuth: []
+
+paths:
+  /wizard-state:
+    post:
+      summary: Create new investigation wizard state
+      description: |
+        Creates a new wizard state record for an investigation. This endpoint is called when:
+        - User starts a new investigation from settings page
+        - User initiates investigation with template
+
+        **Validation:**
+        - investigation_id must be unique
+        - wizard_step must be SETTINGS, PROGRESS, or RESULTS
+        - settings_json validates against InvestigationSettings schema
+        - user_id matches authenticated user
+
+        **Idempotency:**
+        If state with investigation_id already exists, returns 409 Conflict with existing state.
+      operationId: createWizardState
+      tags:
+        - Wizard State
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/WizardStateCreate'
+            examples:
+              newInvestigation:
+                summary: New investigation from settings
+                value:
+                  investigation_id: "inv_2024_001"
+                  wizard_step: "SETTINGS"
+                  settings:
+                    name: "Account Takeover Investigation"
+                    entities:
+                      - entity_type: "user_id"
+                        entity_value: "user123"
+                    time_range:
+                      start_time: "2024-01-01T00:00:00Z"
+                      end_time: "2024-01-31T23:59:59Z"
+                    tools:
+                      - tool_name: "device_fingerprint"
+                        enabled: true
+                        config: {}
+                    correlation_mode: "OR"
+                  status: "IN_PROGRESS"
+              fromTemplate:
+                summary: New investigation from template
+                value:
+                  investigation_id: "inv_2024_002"
+                  wizard_step: "SETTINGS"
+                  settings:
+                    name: "Fraud Detection - Credit Card"
+                    entities:
+                      - entity_type: "card_number"
+                        entity_value: "****1234"
+                    time_range:
+                      start_time: "2024-02-01T00:00:00Z"
+                      end_time: "2024-02-28T23:59:59Z"
+                    tools:
+                      - tool_name: "transaction_analysis"
+                        enabled: true
+                        config:
+                          threshold: 0.8
+                    correlation_mode: "AND"
+                  status: "IN_PROGRESS"
+      responses:
+        '201':
+          description: Wizard state created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WizardStateResponse'
+              examples:
+                created:
+                  summary: Successfully created state
+                  value:
+                    investigation_id: "inv_2024_001"
+                    user_id: "user123"
+                    wizard_step: "SETTINGS"
+                    settings:
+                      name: "Account Takeover Investigation"
+                      entities:
+                        - entity_type: "user_id"
+                          entity_value: "user123"
+                      time_range:
+                        start_time: "2024-01-01T00:00:00Z"
+                        end_time: "2024-01-31T23:59:59Z"
+                      tools:
+                        - tool_name: "device_fingerprint"
+                          enabled: true
+                          config: {}
+                      correlation_mode: "OR"
+                    status: "IN_PROGRESS"
+                    created_at: "2024-01-15T10:00:00Z"
+                    updated_at: "2024-01-15T10:00:00Z"
+                    version: 1
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '422':
+          $ref: '#/components/responses/ValidationError'
+        '500':
+          $ref: '#/components/responses/ServerError'
+
+  /wizard-state/{investigationId}:
+    parameters:
+      - name: investigationId
+        in: path
+        required: true
+        description: Unique investigation identifier
+        schema:
+          type: string
+          pattern: '^[a-zA-Z0-9_-]+$'
+          minLength: 1
+          maxLength: 255
+        example: "inv_2024_001"
+
+    get:
+      summary: Retrieve investigation wizard state
+      description: |
+        Retrieves current wizard state for an investigation. Used by polling service to check state changes.
+
+        **Polling Strategy:**
+        - Fast interval (500ms): When status=IN_PROGRESS and wizard_step=PROGRESS
+        - Normal interval (2s): When status=IN_PROGRESS and wizard_step=SETTINGS
+        - Slow interval (5s): When status=COMPLETED or wizard_step=RESULTS
+
+        **Access Control:**
+        Users can only retrieve their own investigation states.
+
+        **If-None-Match Support:**
+        Returns 304 Not Modified if version matches, reducing bandwidth for polling.
+      operationId: getWizardState
+      tags:
+        - Wizard State
+      parameters:
+        - name: If-None-Match
+          in: header
+          description: ETag from previous response for conditional GET
+          schema:
+            type: string
+          example: '"version-5"'
+      responses:
+        '200':
+          description: Wizard state retrieved successfully
+          headers:
+            ETag:
+              description: Version identifier for optimistic locking
+              schema:
+                type: string
+              example: '"version-5"'
+            Cache-Control:
+              description: Cache policy for polling optimization
+              schema:
+                type: string
+              example: 'no-cache, must-revalidate'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WizardStateResponse'
+              examples:
+                settingsStep:
+                  summary: State in settings step
+                  value:
+                    investigation_id: "inv_2024_001"
+                    user_id: "user123"
+                    wizard_step: "SETTINGS"
+                    settings:
+                      name: "Account Takeover Investigation"
+                      entities:
+                        - entity_type: "user_id"
+                          entity_value: "user123"
+                      time_range:
+                        start_time: "2024-01-01T00:00:00Z"
+                        end_time: "2024-01-31T23:59:59Z"
+                      tools:
+                        - tool_name: "device_fingerprint"
+                          enabled: true
+                          config: {}
+                      correlation_mode: "OR"
+                    status: "IN_PROGRESS"
+                    created_at: "2024-01-15T10:00:00Z"
+                    updated_at: "2024-01-15T10:05:00Z"
+                    last_accessed: "2024-01-15T10:10:00Z"
+                    version: 5
+                progressStep:
+                  summary: State in progress step
+                  value:
+                    investigation_id: "inv_2024_001"
+                    user_id: "user123"
+                    wizard_step: "PROGRESS"
+                    settings:
+                      name: "Account Takeover Investigation"
+                      entities:
+                        - entity_type: "user_id"
+                          entity_value: "user123"
+                      time_range:
+                        start_time: "2024-01-01T00:00:00Z"
+                        end_time: "2024-01-31T23:59:59Z"
+                      tools:
+                        - tool_name: "device_fingerprint"
+                          enabled: true
+                          config: {}
+                      correlation_mode: "OR"
+                    progress:
+                      current_phase: "EXECUTION"
+                      phases:
+                        - phase_name: "PLANNING"
+                          status: "COMPLETED"
+                          started_at: "2024-01-15T10:05:00Z"
+                          completed_at: "2024-01-15T10:05:30Z"
+                        - phase_name: "EXECUTION"
+                          status: "IN_PROGRESS"
+                          started_at: "2024-01-15T10:05:30Z"
+                      tools_executed:
+                        - tool_name: "device_fingerprint"
+                          status: "IN_PROGRESS"
+                          started_at: "2024-01-15T10:05:35Z"
+                      percent_complete: 35
+                    status: "IN_PROGRESS"
+                    created_at: "2024-01-15T10:00:00Z"
+                    updated_at: "2024-01-15T10:06:00Z"
+                    last_accessed: "2024-01-15T10:10:00Z"
+                    version: 12
+        '304':
+          description: Not Modified - State unchanged since last request
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/ServerError'
+
+    put:
+      summary: Update investigation wizard state
+      description: |
+        Updates wizard state with optimistic locking. Used when:
+        - User modifies settings
+        - User navigates between wizard steps
+        - Investigation progresses to next phase
+        - Results are finalized
+
+        **Optimistic Locking:**
+        - Client must provide current version in request
+        - Server verifies version matches current state
+        - Returns 409 Conflict if versions don't match
+        - Client must fetch latest state and retry
+
+        **State Transitions:**
+        Valid transitions:
+        - SETTINGS → PROGRESS (when investigation starts)
+        - PROGRESS → RESULTS (when investigation completes)
+        - Any step → SETTINGS (reset/restart)
+
+        **Validation:**
+        - State transitions must be valid
+        - JSON data must match step schema
+        - Settings cannot be modified after PROGRESS step
+      operationId: updateWizardState
+      tags:
+        - Wizard State
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/WizardStateUpdate'
+            examples:
+              updateSettings:
+                summary: Update investigation settings
+                value:
+                  wizard_step: "SETTINGS"
+                  settings:
+                    name: "Updated Investigation Name"
+                    entities:
+                      - entity_type: "user_id"
+                        entity_value: "user123"
+                      - entity_type: "ip_address"
+                        entity_value: "192.168.1.1"
+                    time_range:
+                      start_time: "2024-01-01T00:00:00Z"
+                      end_time: "2024-01-31T23:59:59Z"
+                    tools:
+                      - tool_name: "device_fingerprint"
+                        enabled: true
+                        config: {}
+                      - tool_name: "location_analysis"
+                        enabled: true
+                        config:
+                          radius_km: 100
+                    correlation_mode: "OR"
+                  version: 5
+              transitionToProgress:
+                summary: Start investigation (transition to progress)
+                value:
+                  wizard_step: "PROGRESS"
+                  progress:
+                    current_phase: "PLANNING"
+                    phases:
+                      - phase_name: "PLANNING"
+                        status: "IN_PROGRESS"
+                        started_at: "2024-01-15T10:05:00Z"
+                    tools_executed: []
+                    percent_complete: 0
+                  version: 5
+              updateProgress:
+                summary: Update investigation progress
+                value:
+                  wizard_step: "PROGRESS"
+                  progress:
+                    current_phase: "EXECUTION"
+                    phases:
+                      - phase_name: "PLANNING"
+                        status: "COMPLETED"
+                        started_at: "2024-01-15T10:05:00Z"
+                        completed_at: "2024-01-15T10:05:30Z"
+                      - phase_name: "EXECUTION"
+                        status: "IN_PROGRESS"
+                        started_at: "2024-01-15T10:05:30Z"
+                    tools_executed:
+                      - tool_name: "device_fingerprint"
+                        status: "COMPLETED"
+                        started_at: "2024-01-15T10:05:35Z"
+                        completed_at: "2024-01-15T10:06:00Z"
+                    percent_complete: 75
+                  version: 12
+      responses:
+        '200':
+          description: Wizard state updated successfully
+          headers:
+            ETag:
+              description: New version identifier after update
+              schema:
+                type: string
+              example: '"version-6"'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WizardStateResponse'
+              examples:
+                updated:
+                  summary: Successfully updated state
+                  value:
+                    investigation_id: "inv_2024_001"
+                    user_id: "user123"
+                    wizard_step: "SETTINGS"
+                    settings:
+                      name: "Updated Investigation Name"
+                      entities:
+                        - entity_type: "user_id"
+                          entity_value: "user123"
+                        - entity_type: "ip_address"
+                          entity_value: "192.168.1.1"
+                      time_range:
+                        start_time: "2024-01-01T00:00:00Z"
+                        end_time: "2024-01-31T23:59:59Z"
+                      tools:
+                        - tool_name: "device_fingerprint"
+                          enabled: true
+                          config: {}
+                        - tool_name: "location_analysis"
+                          enabled: true
+                          config:
+                            radius_km: 100
+                      correlation_mode: "OR"
+                    status: "IN_PROGRESS"
+                    created_at: "2024-01-15T10:00:00Z"
+                    updated_at: "2024-01-15T10:12:00Z"
+                    last_accessed: "2024-01-15T10:12:00Z"
+                    version: 6
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '422':
+          $ref: '#/components/responses/ValidationError'
+        '500':
+          $ref: '#/components/responses/ServerError'
+
+    delete:
+      summary: Delete investigation wizard state
+      description: |
+        Permanently deletes wizard state. Used when:
+        - User explicitly deletes an investigation
+        - Investigation is archived or expired
+        - Admin cleanup operations
+
+        **Cascading Deletes:**
+        - Associated audit log entries are retained (audit trail)
+        - Results are moved to archive or deleted based on retention policy
+
+        **Access Control:**
+        - Users can only delete their own investigations
+        - Admin users can delete any investigation
+
+        **Soft Delete Option:**
+        Use status=CANCELLED instead if audit trail must preserve full state.
+      operationId: deleteWizardState
+      tags:
+        - Wizard State
+      responses:
+        '204':
+          description: Wizard state deleted successfully
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/ServerError'
+
+  /wizard-state/{investigationId}/history:
+    parameters:
+      - name: investigationId
+        in: path
+        required: true
+        description: Unique investigation identifier
+        schema:
+          type: string
+          pattern: '^[a-zA-Z0-9_-]+$'
+        example: "inv_2024_001"
+
+    get:
+      summary: Retrieve wizard state change history
+      description: |
+        Returns complete audit log of state changes for an investigation. Useful for:
+        - Debugging state synchronization issues
+        - Reviewing investigation timeline
+        - Compliance and audit requirements
+
+        **Pagination:**
+        Results are paginated with configurable page size from REACT_APP_PAGINATION_SIZE.
+
+        **Filtering:**
+        Can filter by action_type, source, date range.
+      operationId: getWizardStateHistory
+      tags:
+        - Wizard State
+      parameters:
+        - name: action_type
+          in: query
+          description: Filter by action type
+          schema:
+            type: string
+            enum: [STATE_CREATED, STATE_UPDATED, STATE_DELETED, STEP_CHANGED, SETTINGS_MODIFIED, PROGRESS_UPDATED, RESULTS_FINALIZED]
+        - name: source
+          in: query
+          description: Filter by change source
+          schema:
+            type: string
+            enum: [USER_ACTION, SYSTEM_UPDATE, WEBSOCKET_EVENT, POLLING_SYNC]
+        - name: limit
+          in: query
+          description: Maximum number of entries to return
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 20
+        - name: offset
+          in: query
+          description: Number of entries to skip
+          schema:
+            type: integer
+            minimum: 0
+            default: 0
+      responses:
+        '200':
+          description: History retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - entries
+                  - total
+                  - limit
+                  - offset
+                properties:
+                  entries:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/AuditLogEntry'
+                  total:
+                    type: integer
+                    description: Total number of audit entries
+                  limit:
+                    type: integer
+                    description: Page size
+                  offset:
+                    type: integer
+                    description: Current offset
+              examples:
+                history:
+                  summary: Investigation history
+                  value:
+                    entries:
+                      - entry_id: "audit_001"
+                        investigation_id: "inv_2024_001"
+                        user_id: "user123"
+                        action_type: "STATE_CREATED"
+                        wizard_step: "SETTINGS"
+                        source: "USER_ACTION"
+                        timestamp: "2024-01-15T10:00:00Z"
+                        changes:
+                          created: true
+                      - entry_id: "audit_002"
+                        investigation_id: "inv_2024_001"
+                        user_id: "user123"
+                        action_type: "SETTINGS_MODIFIED"
+                        wizard_step: "SETTINGS"
+                        source: "USER_ACTION"
+                        timestamp: "2024-01-15T10:05:00Z"
+                        changes:
+                          field: "entities"
+                          old_value: null
+                          new_value: [{"entity_type": "user_id", "entity_value": "user123"}]
+                      - entry_id: "audit_003"
+                        investigation_id: "inv_2024_001"
+                        user_id: "user123"
+                        action_type: "STEP_CHANGED"
+                        wizard_step: "PROGRESS"
+                        source: "USER_ACTION"
+                        timestamp: "2024-01-15T10:10:00Z"
+                        changes:
+                          from_step: "SETTINGS"
+                          to_step: "PROGRESS"
+                    total: 3
+                    limit: 20
+                    offset: 0
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/ServerError'
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: JWT token obtained from authentication endpoint
+
+  schemas:
+    WizardStep:
+      type: string
+      enum: [SETTINGS, PROGRESS, RESULTS]
+      description: Current step in investigation wizard
+
+    InvestigationStatus:
+      type: string
+      enum: [IN_PROGRESS, COMPLETED, ERROR, CANCELLED]
+      description: Overall investigation status
+
+    EntityType:
+      type: string
+      enum: [user_id, email, ip_address, device_id, phone_number, card_number, account_id, transaction_id]
+      description: Type of entity being investigated
+
+    CorrelationMode:
+      type: string
+      enum: [OR, AND]
+      description: How to correlate multiple entities
+
+    Entity:
+      type: object
+      required:
+        - entity_type
+        - entity_value
+      properties:
+        entity_type:
+          $ref: '#/components/schemas/EntityType'
+        entity_value:
+          type: string
+          minLength: 1
+          maxLength: 255
+          description: Value of the entity (e.g., user ID, email address)
+      example:
+        entity_type: "user_id"
+        entity_value: "user123"
+
+    TimeRange:
+      type: object
+      required:
+        - start_time
+        - end_time
+      properties:
+        start_time:
+          type: string
+          format: date-time
+          description: Investigation start time (ISO 8601)
+        end_time:
+          type: string
+          format: date-time
+          description: Investigation end time (ISO 8601)
+      example:
+        start_time: "2024-01-01T00:00:00Z"
+        end_time: "2024-01-31T23:59:59Z"
+
+    ToolSelection:
+      type: object
+      required:
+        - tool_name
+        - enabled
+      properties:
+        tool_name:
+          type: string
+          minLength: 1
+          maxLength: 100
+          description: Name of investigation tool
+        enabled:
+          type: boolean
+          description: Whether tool is enabled
+        config:
+          type: object
+          additionalProperties: true
+          description: Tool-specific configuration
+      example:
+        tool_name: "device_fingerprint"
+        enabled: true
+        config:
+          threshold: 0.8
+
+    InvestigationSettings:
+      type: object
+      required:
+        - name
+        - entities
+        - time_range
+        - tools
+        - correlation_mode
+      properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 255
+          description: Investigation name
+        entities:
+          type: array
+          items:
+            $ref: '#/components/schemas/Entity'
+          minItems: 1
+          maxItems: 10
+          description: Entities to investigate
+        time_range:
+          $ref: '#/components/schemas/TimeRange'
+        tools:
+          type: array
+          items:
+            $ref: '#/components/schemas/ToolSelection'
+          minItems: 1
+          maxItems: 20
+          description: Investigation tools to use
+        correlation_mode:
+          $ref: '#/components/schemas/CorrelationMode'
+
+    PhaseStatus:
+      type: string
+      enum: [PENDING, IN_PROGRESS, COMPLETED, ERROR]
+      description: Status of investigation phase
+
+    InvestigationPhase:
+      type: object
+      required:
+        - phase_name
+        - status
+      properties:
+        phase_name:
+          type: string
+          enum: [PLANNING, EXECUTION, ANALYSIS, FINALIZATION]
+          description: Name of investigation phase
+        status:
+          $ref: '#/components/schemas/PhaseStatus'
+        started_at:
+          type: string
+          format: date-time
+          description: When phase started
+        completed_at:
+          type: string
+          format: date-time
+          description: When phase completed
+
+    ToolExecutionStatus:
+      type: string
+      enum: [PENDING, IN_PROGRESS, COMPLETED, ERROR, SKIPPED]
+      description: Status of tool execution
+
+    ToolExecution:
+      type: object
+      required:
+        - tool_name
+        - status
+      properties:
+        tool_name:
+          type: string
+          description: Name of executed tool
+        status:
+          $ref: '#/components/schemas/ToolExecutionStatus'
+        started_at:
+          type: string
+          format: date-time
+        completed_at:
+          type: string
+          format: date-time
+        result_summary:
+          type: string
+          description: Brief summary of tool results
+
+    InvestigationProgress:
+      type: object
+      required:
+        - current_phase
+        - phases
+        - tools_executed
+        - percent_complete
+      properties:
+        current_phase:
+          type: string
+          enum: [PLANNING, EXECUTION, ANALYSIS, FINALIZATION]
+        phases:
+          type: array
+          items:
+            $ref: '#/components/schemas/InvestigationPhase'
+        tools_executed:
+          type: array
+          items:
+            $ref: '#/components/schemas/ToolExecution'
+        percent_complete:
+          type: integer
+          minimum: 0
+          maximum: 100
+          description: Overall completion percentage
+
+    InvestigationResults:
+      type: object
+      required:
+        - risk_score
+        - findings
+        - completed_at
+      properties:
+        risk_score:
+          type: number
+          minimum: 0
+          maximum: 100
+          description: Overall risk score
+        findings:
+          type: array
+          items:
+            type: object
+            description: Individual findings from tools
+        completed_at:
+          type: string
+          format: date-time
+        report_url:
+          type: string
+          format: uri
+          description: URL to download full report
+
+    WizardStateCreate:
+      type: object
+      required:
+        - investigation_id
+        - wizard_step
+        - status
+      properties:
+        investigation_id:
+          type: string
+          pattern: '^[a-zA-Z0-9_-]+$'
+          minLength: 1
+          maxLength: 255
+        wizard_step:
+          $ref: '#/components/schemas/WizardStep'
+        settings:
+          $ref: '#/components/schemas/InvestigationSettings'
+        status:
+          $ref: '#/components/schemas/InvestigationStatus'
+
+    WizardStateUpdate:
+      type: object
+      required:
+        - version
+      properties:
+        wizard_step:
+          $ref: '#/components/schemas/WizardStep'
+        settings:
+          $ref: '#/components/schemas/InvestigationSettings'
+        progress:
+          $ref: '#/components/schemas/InvestigationProgress'
+        results:
+          $ref: '#/components/schemas/InvestigationResults'
+        status:
+          $ref: '#/components/schemas/InvestigationStatus'
+        version:
+          type: integer
+          minimum: 1
+          description: Current state version for optimistic locking
+
+    WizardStateResponse:
+      type: object
+      required:
+        - investigation_id
+        - user_id
+        - wizard_step
+        - status
+        - created_at
+        - updated_at
+        - version
+      properties:
+        investigation_id:
+          type: string
+        user_id:
+          type: string
+        wizard_step:
+          $ref: '#/components/schemas/WizardStep'
+        settings:
+          $ref: '#/components/schemas/InvestigationSettings'
+        progress:
+          $ref: '#/components/schemas/InvestigationProgress'
+        results:
+          $ref: '#/components/schemas/InvestigationResults'
+        status:
+          $ref: '#/components/schemas/InvestigationStatus'
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+        last_accessed:
+          type: string
+          format: date-time
+        version:
+          type: integer
+          minimum: 1
+
+    AuditLogEntry:
+      type: object
+      required:
+        - entry_id
+        - investigation_id
+        - user_id
+        - action_type
+        - wizard_step
+        - source
+        - timestamp
+      properties:
+        entry_id:
+          type: string
+        investigation_id:
+          type: string
+        user_id:
+          type: string
+        action_type:
+          type: string
+          enum: [STATE_CREATED, STATE_UPDATED, STATE_DELETED, STEP_CHANGED, SETTINGS_MODIFIED, PROGRESS_UPDATED, RESULTS_FINALIZED]
+        wizard_step:
+          $ref: '#/components/schemas/WizardStep'
+        source:
+          type: string
+          enum: [USER_ACTION, SYSTEM_UPDATE, WEBSOCKET_EVENT, POLLING_SYNC]
+        timestamp:
+          type: string
+          format: date-time
+        changes:
+          type: object
+          additionalProperties: true
+          description: Details of what changed
+        state_snapshot:
+          type: object
+          additionalProperties: true
+          description: Complete state at time of change
+
+    ErrorResponse:
+      type: object
+      required:
+        - error
+        - message
+      properties:
+        error:
+          type: string
+          description: Error code or type
+        message:
+          type: string
+          description: Human-readable error message
+        details:
+          type: object
+          additionalProperties: true
+          description: Additional error context
+        timestamp:
+          type: string
+          format: date-time
+        request_id:
+          type: string
+          description: Request identifier for tracking
+
+    ValidationErrorResponse:
+      type: object
+      required:
+        - error
+        - message
+        - validation_errors
+      properties:
+        error:
+          type: string
+          enum: [validation_error]
+        message:
+          type: string
+        validation_errors:
+          type: array
+          items:
+            type: object
+            required:
+              - field
+              - message
+            properties:
+              field:
+                type: string
+                description: Field path that failed validation
+              message:
+                type: string
+                description: Validation failure reason
+              constraint:
+                type: string
+                description: Validation constraint that was violated
+
+  responses:
+    BadRequest:
+      description: Bad Request - Invalid input parameters
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            error: "bad_request"
+            message: "Invalid wizard step transition"
+            details:
+              current_step: "RESULTS"
+              requested_step: "SETTINGS"
+              reason: "Cannot transition from RESULTS to SETTINGS"
+            timestamp: "2024-01-15T10:15:00Z"
+            request_id: "req_abc123"
+
+    Unauthorized:
+      description: Unauthorized - Authentication required
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            error: "unauthorized"
+            message: "Authentication required"
+            timestamp: "2024-01-15T10:15:00Z"
+            request_id: "req_abc123"
+
+    Forbidden:
+      description: Forbidden - Insufficient permissions
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            error: "forbidden"
+            message: "User does not have permission to access this investigation"
+            timestamp: "2024-01-15T10:15:00Z"
+            request_id: "req_abc123"
+
+    NotFound:
+      description: Not Found - Resource does not exist
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            error: "not_found"
+            message: "Investigation state not found"
+            details:
+              investigation_id: "inv_2024_999"
+            timestamp: "2024-01-15T10:15:00Z"
+            request_id: "req_abc123"
+
+    Conflict:
+      description: Conflict - Resource state conflict (optimistic locking)
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            error: "conflict"
+            message: "State version mismatch - state was modified by another request"
+            details:
+              current_version: 10
+              provided_version: 8
+              action: "Fetch latest state and retry"
+            timestamp: "2024-01-15T10:15:00Z"
+            request_id: "req_abc123"
+
+    ValidationError:
+      description: Validation Error - Request data failed validation
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ValidationErrorResponse'
+          example:
+            error: "validation_error"
+            message: "Request validation failed"
+            validation_errors:
+              - field: "settings.entities"
+                message: "Maximum 10 entities allowed"
+                constraint: "maxItems"
+              - field: "settings.name"
+                message: "Name must be at least 1 character"
+                constraint: "minLength"
+
+    ServerError:
+      description: Internal Server Error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            error: "internal_server_error"
+            message: "An unexpected error occurred"
+            timestamp: "2024-01-15T10:15:00Z"
+            request_id: "req_abc123"
+
+tags:
+  - name: Wizard State
+    description: Investigation wizard state management operations

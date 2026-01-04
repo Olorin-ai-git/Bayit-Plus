@@ -10,7 +10,7 @@
 - [Comments API](#comments-api)
 - [Agent API](#agent-api)
 - [WebSocket API](#websocket-api)
-- [Autonomous Investigation Guide](#autonomous-investigation-guide)
+- [Structured Investigation Guide](#structured-investigation-guide)
 - [Demo Mode APIs](#demo-mode-apis)
 - [Additional Endpoints](#additional-endpoints)
 - [Authentication Headers](#authentication-headers)
@@ -687,7 +687,7 @@ Add comment to investigation
 ## 🤖 **Agent API**
 
 ### **POST /api/agent/start/{entity_id}**
-Start autonomous investigation for an entity
+Start structured investigation for an entity
 
 **Request:**
 ```bash
@@ -701,7 +701,7 @@ POST /api/agent/start/user123456?entity_type=user_id
 ```json
 {
   "agentOutput": {
-    "plainText": "Starting autonomous investigation for user123456. Investigation ID: inv-abc123-def456",
+    "plainText": "Starting structured investigation for user123456. Investigation ID: inv-abc123-def456",
     "outputs": []
   },
   "agentMetadata": {
@@ -711,7 +711,7 @@ POST /api/agent/start/user123456?entity_type=user_id
 ```
 
 ### **WebSocket: /ws/{investigation_id}**
-Real-time autonomous investigation progress monitoring
+Real-time structured investigation progress monitoring
 
 **Connection:**
 ```javascript
@@ -825,7 +825,7 @@ Invoke AI agent for analysis
 ## 🔌 **WebSocket API**
 
 ### **WebSocket Endpoint: /ws/{investigation_id}**
-Real-time monitoring of autonomous investigation progress with complete API response data.
+Real-time monitoring of structured investigation progress with complete API response data.
 
 **Connection URL:**
 ```
@@ -864,7 +864,7 @@ Each WebSocket message contains complete API response data from the investigatio
     "extracted_network_signals": [
       {
         "timestamp": "2024-01-15T10:30:00Z",
-        "ip_address": "192.168.1.1",
+        "ip": "192.168.1.1",
         "country": "US",
         "city": "Mountain View",
         "isp": "olorin inc."
@@ -885,7 +885,7 @@ Each WebSocket message contains complete API response data from the investigatio
 
 ### **Investigation Phases**
 
-The autonomous investigation progresses through these phases:
+The structured investigation progresses through these phases:
 
 | Phase | Description | Typical Duration |
 |-------|-------------|------------------|
@@ -915,7 +915,7 @@ The autonomous investigation progresses through these phases:
 
 **JavaScript Example:**
 ```javascript
-class AutonomousInvestigationClient {
+class StructuredInvestigationClient {
   constructor(investigationId, parallel = true) {
     this.investigationId = investigationId;
     this.parallel = parallel;
@@ -928,7 +928,7 @@ class AutonomousInvestigationClient {
     this.ws = new WebSocket(wsUrl);
     
     this.ws.onopen = () => {
-      console.log('Connected to autonomous investigation');
+      console.log('Connected to structured investigation');
     };
     
     this.ws.onmessage = (event) => {
@@ -976,7 +976,7 @@ class AutonomousInvestigationClient {
 }
 
 // Usage
-const client = new AutonomousInvestigationClient('inv-123', true);
+const client = new StructuredInvestigationClient('inv-123', true);
 client.connect();
 ```
 
@@ -986,7 +986,7 @@ import asyncio
 import json
 import websockets
 
-class AutonomousInvestigationClient:
+class StructuredInvestigationClient:
     def __init__(self, investigation_id, parallel=True):
         self.investigation_id = investigation_id
         self.parallel = parallel
@@ -1026,7 +1026,7 @@ class AutonomousInvestigationClient:
 
 # Usage
 async def main():
-    client = AutonomousInvestigationClient('inv-123', parallel=True)
+    client = StructuredInvestigationClient('inv-123', parallel=True)
     await client.connect()
 
 asyncio.run(main())
@@ -1034,15 +1034,15 @@ asyncio.run(main())
 
 ---
 
-## 🚀 **Autonomous Investigation Guide**
+## 🚀 **Structured Investigation Guide**
 
 ### **Step-by-Step Client Implementation**
 
-This guide shows how to implement autonomous investigation monitoring in your client application.
+This guide shows how to implement structured investigation monitoring in your client application.
 
-#### **Step 1: Start Autonomous Investigation**
+#### **Step 1: Start Structured Investigation**
 
-First, initiate the autonomous investigation for a user or device:
+First, initiate the structured investigation for a user or device:
 
 ```javascript
 async function startInvestigation(entityId, entityType = 'user_id') {
@@ -1279,7 +1279,7 @@ class InvestigationMonitor {
 Here's a complete implementation that ties everything together:
 
 ```javascript
-class AutonomousInvestigationClient {
+class StructuredInvestigationClient {
   constructor(apiBaseUrl = '/api', wsBaseUrl = 'ws://localhost:8090') {
     this.apiBaseUrl = apiBaseUrl;
     this.wsBaseUrl = wsBaseUrl;
@@ -1375,7 +1375,7 @@ class AutonomousInvestigationClient {
 
 // Usage Example
 async function runInvestigation() {
-  const client = new AutonomousInvestigationClient();
+  const client = new StructuredInvestigationClient();
   
   try {
     // Start parallel investigation
@@ -1402,7 +1402,7 @@ runInvestigation();
 #### **Step 6: Error Handling and Best Practices**
 
 ```javascript
-class RobustInvestigationClient extends AutonomousInvestigationClient {
+class RobustInvestigationClient extends StructuredInvestigationClient {
   constructor(apiBaseUrl, wsBaseUrl) {
     super(apiBaseUrl, wsBaseUrl);
     this.retryAttempts = 3;
@@ -1475,7 +1475,7 @@ class RobustInvestigationClient extends AutonomousInvestigationClient {
 ```jsx
 import React, { useState, useEffect } from 'react';
 
-const AutonomousInvestigation = ({ entityId, entityType }) => {
+const StructuredInvestigation = ({ entityId, entityType }) => {
   const [status, setStatus] = useState('idle');
   const [progress, setProgress] = useState(0);
   const [currentPhase, setCurrentPhase] = useState('');
@@ -1485,7 +1485,7 @@ const AutonomousInvestigation = ({ entityId, entityType }) => {
   const startInvestigation = async () => {
     setStatus('starting');
     
-    const client = new AutonomousInvestigationClient();
+    const client = new StructuredInvestigationClient();
     
     try {
       const { investigationId, monitor } = await client.startInvestigation(
@@ -1566,7 +1566,7 @@ const AutonomousInvestigation = ({ entityId, entityType }) => {
 };
 ```
 
-This comprehensive guide provides everything needed to implement autonomous investigation monitoring in client applications, with support for both parallel and sequential execution modes.
+This comprehensive guide provides everything needed to implement structured investigation monitoring in client applications, with support for both parallel and sequential execution modes.
 
 ---
 

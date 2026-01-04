@@ -13,7 +13,7 @@ Top reasons to contribute:
 
 - [Contribution Expectations](#contribution-expectations)
 - [Development Guidelines](#development-guidelines)
-- [Autonomous Investigation Development](#autonomous-investigation-development)
+- [Structured Investigation Development](#structured-investigation-development)
 - [Best Practices](#best-practices-for-contributing)
 - [Contacts](#contacts)
 
@@ -48,9 +48,9 @@ The team that owns this web plugin is expected to practice the following:
 
 The OLORIN Web Plugin follows a modular architecture with these key components:
 
-- **Investigation Modes**: Manual and Autonomous investigation workflows
+- **Investigation Modes**: Manual and Structured investigation workflows
 - **Agent System**: Network, Device, Location, and Logs analysis agents
-- **WebSocket Communication**: Real-time updates for autonomous investigations
+- **WebSocket Communication**: Real-time updates for structured investigations
 - **State Management**: React hooks and context for investigation state
 - **UI Components**: Reusable components for investigation display
 
@@ -59,17 +59,17 @@ The OLORIN Web Plugin follows a modular architecture with these key components:
 ```
 src/
 ├── components/                 # Reusable UI components
-│   ├── AutonomousInvestigationPanel.tsx
+│   ├── StructuredInvestigationPanel.tsx
 │   └── ...
 ├── js/
 │   ├── hooks/                 # Custom React hooks
-│   │   ├── useAutonomousInvestigation.ts
+│   │   ├── useStructuredInvestigation.ts
 │   │   └── ...
 │   ├── pages/                 # Page components
 │   │   ├── InvestigationPage.tsx
 │   │   └── ...
 │   ├── services/              # API and business logic
-│   │   ├── AutonomousInvestigationClient.ts
+│   │   ├── StructuredInvestigationClient.ts
 │   │   ├── OLORINService.ts
 │   │   └── ...
 │   └── types/                 # TypeScript type definitions
@@ -77,29 +77,29 @@ src/
 └── docs/                      # Documentation
 ```
 
-## Autonomous Investigation Development
+## Structured Investigation Development
 
 ### Key Components
 
-When working with autonomous investigations, you'll primarily interact with:
+When working with structured investigations, you'll primarily interact with:
 
-1. **AutonomousInvestigationClient**
-   (`src/js/services/AutonomousInvestigationClient.ts`)
+1. **StructuredInvestigationClient**
+   (`src/js/services/StructuredInvestigationClient.ts`)
 
    - Manages WebSocket connections
    - Handles investigation lifecycle (start/pause/resume/cancel)
    - Provides automatic reconnection and error recovery
 
-2. **useAutonomousInvestigation Hook**
-   (`src/js/hooks/useAutonomousInvestigation.ts`)
+2. **useStructuredInvestigation Hook**
+   (`src/js/hooks/useStructuredInvestigation.ts`)
 
-   - React hook for autonomous investigation state management
+   - React hook for structured investigation state management
    - Handles event listeners and cleanup
    - Provides investigation control methods
 
-3. **AutonomousInvestigationPanel**
-   (`src/components/AutonomousInvestigationPanel.tsx`)
-   - UI component for autonomous investigation interface
+3. **StructuredInvestigationPanel**
+   (`src/components/StructuredInvestigationPanel.tsx`)
+   - UI component for structured investigation interface
    - Real-time progress tracking and status display
    - Investigation control buttons and results display
 
@@ -121,11 +121,11 @@ When working with autonomous investigations, you'll primarily interact with:
    }
    ```
 
-2. **Testing Autonomous Features**:
+2. **Testing Structured Features**:
 
    ```bash
-   # Run autonomous investigation tests
-   yarn test AutonomousInvestigationClient.test.ts
+   # Run structured investigation tests
+   yarn test StructuredInvestigationClient.test.ts
 
    # Run all tests
    yarn test
@@ -136,7 +136,7 @@ When working with autonomous investigations, you'll primarily interact with:
    - WebSocket endpoint: `ws://localhost:8090/ws/{investigation_id}`
    - Test both parallel and sequential execution modes
 
-### Best Practices for Autonomous Investigation
+### Best Practices for Structured Investigation
 
 1. **Error Handling**: Always implement proper error handling for WebSocket
    connections

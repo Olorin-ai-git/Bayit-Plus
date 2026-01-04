@@ -12,7 +12,7 @@ All 18 new fraud investigation tools are available in:
 - Tools sidebar during investigations
 - Default tool lists for demo mode
 
-### 2. **Autonomous Investigation Phases**
+### 2. **Structured Investigation Phases**
 Added 5 new investigation phases that demonstrate fraud-specific analysis:
 
 #### **Transaction Analysis Phase** (Duration: 5s)
@@ -86,7 +86,7 @@ When running an investigation in demo mode:
 
 1. **Enable Demo Mode**: Add `?demo=true` to the URL
 2. **Go to Settings**: Configure which fraud tools each agent should use
-3. **Start Investigation**: Create a new investigation with autonomous mode
+3. **Start Investigation**: Create a new investigation with structured mode
 4. **Watch the Analysis**: See fraud tools in action with realistic logging
 5. **Review Results**: Get comprehensive fraud risk assessment
 

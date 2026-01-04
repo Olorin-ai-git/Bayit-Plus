@@ -1,11 +1,11 @@
 """
 LLM-Tool Interaction Demo
 
-This test demonstrates the EXACT flow of how the AutonomousInvestigationAgent:
+This test demonstrates the EXACT flow of how the StructuredInvestigationAgent:
 1. Calls the LLM with a fraud investigation prompt
-2. LLM decides to use SplunkQueryTool based on the context 
+2. LLM decides to use SplunkQueryTool based on the context
 3. Shows the exact tool call logs when LLM makes the decision
-4. Executes the SplunkQueryTool 
+4. Executes the SplunkQueryTool
 5. Returns results to the LLM
 6. Shows the final analysis
 
@@ -24,29 +24,28 @@ from unittest.mock import AsyncMock, patch
 # Add project root to path
 sys.path.append(str(Path(__file__).parent.parent.parent))
 
-from langchain_core.runnables.config import RunnableConfig
-from langchain_core.messages import HumanMessage, SystemMessage, AIMessage, ToolMessage
 from langchain_anthropic import ChatAnthropic
+from langchain_core.messages import AIMessage, HumanMessage, SystemMessage, ToolMessage
+from langchain_core.runnables.config import RunnableConfig
 
-from app.service.agent.autonomous_context import (
-    AutonomousInvestigationContext,
-    EntityType,
+from app.service.agent.structured_context import (
     DomainFindings,
+    EntityType,
+    StructuredInvestigationContext,
 )
 from app.service.agent.tools.splunk_tool.splunk_tool import SplunkQueryTool
 from app.service.config import get_settings_for_env
 
 # Set up detailed logging to show every step
 logging.basicConfig(
-    level=logging.INFO,
-    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+    level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
 )
 logger = logging.getLogger(__name__)
 
 
 class MockSplunkClient:
     """Mock Splunk client that returns realistic fraud investigation data."""
-    
+
     def __init__(self, host=None, port=None, username=None, password=None):
         """Accept all the same parameters as real SplunkClient."""
         self.host = host
@@ -54,68 +53,68 @@ class MockSplunkClient:
         self.username = username
         self.password = password
         logger.info(f"🔌 Mock Splunk client initialized for {host}:{port}")
-    
+
     async def connect(self):
         logger.info("🔌 Mock Splunk client connected")
-        
+
     async def disconnect(self):
         logger.info("🔌 Mock Splunk client disconnected")
-        
+
     async def search(self, query: str) -> Dict[str, Any]:
         """Return realistic Splunk search results for fraud investigation."""
         logger.info(f"🔍 Executing Splunk query: {query}")
-        
+
         # Simulate realistic fraud investigation results
         results = {
             "results": [
                 {
                     "_time": "2025-01-15T14:30:25.123Z",
                     "user_id": "user_1736943425_5678",
-                    "event_type": "login_attempt", 
-                    "ip_address": "198.51.100.42",
+                    "event_type": "login_attempt",
+                    "ip": "198.51.100.42",
                     "location": "San Francisco, CA, US",
                     "device_fingerprint": "chrome_119_mac_fp_98765",
                     "success": "true",
                     "risk_score": "0.85",
-                    "anomaly_flags": "high_velocity,new_device"
+                    "anomaly_flags": "high_velocity,new_device",
                 },
                 {
-                    "_time": "2025-01-15T14:25:10.456Z", 
+                    "_time": "2025-01-15T14:25:10.456Z",
                     "user_id": "user_1736943425_5678",
                     "event_type": "transaction",
                     "amount": "2500.00",
                     "merchant": "Electronics Store ABC",
-                    "ip_address": "203.0.113.78",
-                    "location": "New York, NY, US", 
+                    "ip": "203.0.113.78",
+                    "location": "New York, NY, US",
                     "velocity_minutes": "5",
-                    "risk_indicators": "high_amount,geo_velocity"
+                    "risk_indicators": "high_amount,geo_velocity",
                 },
                 {
                     "_time": "2025-01-15T14:20:05.789Z",
-                    "user_id": "user_1736943425_5678", 
+                    "user_id": "user_1736943425_5678",
                     "event_type": "failed_login",
-                    "ip_address": "192.0.2.123",
+                    "ip": "192.0.2.123",
                     "location": "Unknown",
                     "failure_reason": "invalid_password",
-                    "attempt_count": "7"
-                }
+                    "attempt_count": "7",
+                },
             ],
             "total_count": 3,
             "execution_time_ms": 1250,
-            "query_status": "success"
+            "query_status": "success",
         }
-        
+
         logger.info(f"📊 Splunk returned {len(results['results'])} events")
         return results
 
 
 class MockLLMResponse:
     """Mock LLM response that simulates tool calls."""
-    
+
     def __init__(self):
         # Simulate an LLM response that includes tool calls
         self.content = """I'll investigate this user's behavioral patterns by querying Splunk for relevant data. Let me search for login attempts, transactions, and any suspicious activities in the last 24 hours."""
-        
+
         # This is the key part - simulating tool calls
         self.tool_calls = [
             {
@@ -128,13 +127,13 @@ class MockLLMResponse:
                         success=="false", 0.6,
                         1==1, 0.3
                     )
-                    | stats count by event_type, location, ip_address, event_risk_score
+                    | stats count by event_type, location, ip, event_risk_score
                     | sort -event_risk_score"""
                 },
-                "id": "call_splunk_001"
+                "id": "call_splunk_001",
             }
         ]
-        
+
     def __str__(self):
         return f"MockLLMResponse(content='{self.content[:50]}...', tool_calls={len(self.tool_calls)})"
 
@@ -142,63 +141,65 @@ class MockLLMResponse:
 async def mock_llm_ainvoke(messages):
     """Mock LLM invoke that returns a response with tool calls."""
     logger.info("🧠 Mock LLM processing investigation request...")
-    
+
     # Simulate thinking time
     await asyncio.sleep(0.5)
-    
+
     return MockLLMResponse()
 
 
 async def main():
     """Demonstrate the exact LLM-Tool interaction flow."""
-    
+
     print("=" * 80)
     print("🚀 LLM-TOOL INTERACTION DEMO")
     print("=" * 80)
     print("This demo shows EXACTLY how the LLM calls tools and processes results\n")
-    
+
     # 1. Create investigation context with real fraud scenario
     print("📋 Step 1: Creating Investigation Context")
-    context = AutonomousInvestigationContext(
+    context = StructuredInvestigationContext(
         investigation_id="fraud_demo_001",
-        entity_id="user_1736943425_5678", 
+        entity_id="user_1736943425_5678",
         entity_type=EntityType.USER_ID,
-        investigation_type="fraud_investigation"
+        investigation_type="fraud_investigation",
     )
-    
+
     print(f"   Investigation ID: {context.investigation_id}")
     print(f"   Entity: {context.entity_type.value} = {context.entity_id}")
     print(f"   Type: {context.investigation_type}\n")
-    
+
     # 2. Create SplunkQueryTool with mocked client
     print("🔧 Step 2: Setting Up SplunkQueryTool")
     splunk_tool = SplunkQueryTool()
-    
+
     print(f"   Tool Name: {splunk_tool.name}")
     print(f"   Tool Description: {splunk_tool.description}")
     print(f"   Args Schema: {splunk_tool.args_schema.__name__}\n")
-    
+
     # 3. Create Mock LLM for demonstration (avoids API key issues)
     print("🤖 Step 3: Creating Mock LLM with Tools")
     print(f"   ✅ Mock LLM configured for demonstration")
     print(f"   ✅ Tools available: {splunk_tool.name}")
     print(f"   ℹ️  Using mock responses to demonstrate tool interaction flow\n")
-    
+
     # 4. Mock the Splunk client to avoid network calls
     print("🎭 Step 4: Mocking External Dependencies")
-    with patch('app.service.agent.tools.splunk_tool.splunk_tool.SplunkClient', MockSplunkClient):
+    with patch(
+        "app.service.agent.tools.splunk_tool.splunk_tool.SplunkClient", MockSplunkClient
+    ):
         print("   ✅ SplunkClient mocked with realistic fraud data\n")
-        
+
         # 5. Execute the investigation - this is where the magic happens
         print("🔍 Step 5: Starting LLM-Tool Interaction")
         print("   📤 Sending investigation prompt to LLM...")
         print("   🧠 LLM will analyze context and decide which tools to use")
         print("   ⚡ Watch for tool calls in the logs below:\n")
-        
+
         try:
             # Generate rich investigation context
             llm_context = context.generate_llm_context("behavioral")
-            
+
             # Create investigation prompt
             investigation_prompt = f"""
 You are conducting a fraud investigation for user {context.entity_id}.
@@ -219,13 +220,14 @@ INSTRUCTIONS:
 
 Please begin your investigation by querying Splunk for relevant data.
 """
-            
+
             # Create messages
-            system_msg = SystemMessage(content="""
+            system_msg = SystemMessage(
+                content="""
 You are an intelligent fraud investigation agent specializing in BEHAVIORAL ANALYSIS.
 
 Your capabilities:
-- Autonomous tool selection based on investigation needs
+- Structured tool selection based on investigation needs
 - Advanced reasoning and pattern recognition  
 - Cross-domain correlation and analysis
 - Evidence-based risk assessment
@@ -243,63 +245,66 @@ Key principles:
 Available tools: splunk_query_tool
 
 Remember: You have full autonomy to choose which tools to use and how to analyze the data.
-""")
-            
+"""
+            )
+
             human_msg = HumanMessage(content=investigation_prompt)
             messages = [system_msg, human_msg]
-            
+
             print("   🔄 Calling Mock LLM with investigation prompt...")
-            
+
             # This demonstrates the exact flow: LLM decides to use SplunkQueryTool
             result = await mock_llm_ainvoke(messages)
-            
+
             print(f"   📨 LLM Response Type: {type(result).__name__}")
             print(f"   📝 Response Content Length: {len(result.content)}")
-            
+
             # Check if LLM decided to call tools - this is the key interaction
-            if hasattr(result, 'tool_calls') and result.tool_calls:
+            if hasattr(result, "tool_calls") and result.tool_calls:
                 print(f"   🔧 Tool Calls Detected: {len(result.tool_calls)}")
                 print(f"   🎯 LLM DECIDED TO USE TOOLS AUTONOMOUSLY!")
-                
+
                 for i, tool_call in enumerate(result.tool_calls, 1):
                     print(f"\n      🛠️  Tool Call #{i}:")
                     print(f"         Tool Name: {tool_call['name']}")
                     print(f"         Tool ID: {tool_call['id']}")
                     print(f"         Query: {tool_call['args']['query']}")
-                    
+
                     # Execute the tool call - this is where the tool actually runs
-                    if tool_call['name'] == 'splunk_query_tool':
+                    if tool_call["name"] == "splunk_query_tool":
                         print(f"\n   ⚡ EXECUTING SPLUNK TOOL...")
-                        query = tool_call['args']['query']
-                        
+                        query = tool_call["args"]["query"]
+
                         # This is the actual tool execution
                         tool_result = await splunk_tool._arun(query)
-                        
+
                         print(f"   📊 Tool Execution Complete!")
-                        print(f"   📈 Events Returned: {tool_result.get('total_count', 'unknown')}")
+                        print(
+                            f"   📈 Events Returned: {tool_result.get('total_count', 'unknown')}"
+                        )
                         print(f"   🔍 Result Size: {len(str(tool_result))} characters")
-                        
+
                         # Show some sample results
-                        if 'results' in tool_result and tool_result['results']:
+                        if "results" in tool_result and tool_result["results"]:
                             print(f"\n   📋 Sample Results (first event):")
-                            sample = tool_result['results'][0]
+                            sample = tool_result["results"][0]
                             for key, value in sample.items():
                                 print(f"      {key}: {value}")
-                        
+
             else:
                 print("   ℹ️  No tool calls detected in LLM response")
-            
+
             # Display the LLM response
             print("\n" + "=" * 80)
             print("📊 LLM INVESTIGATION RESPONSE")
             print("=" * 80)
             print("🧠 LLM Initial Response:")
             print(result.content)
-            
+
             # Simulate the LLM processing the tool results
             print("\n🔄 LLM Processing Tool Results...")
             await asyncio.sleep(1)
-            
+
             analysis_response = """
 Based on the Splunk data analysis, I've identified several concerning patterns for user user_1736943425_5678:
 
@@ -324,19 +329,19 @@ Based on the Splunk data analysis, I've identified several concerning patterns f
 🔍 EVIDENCE SUMMARY:
 The combination of impossible geographic velocity, high-value transactions, failed login attempts, and device anomalies strongly indicates account compromise or fraud. The pattern matches known account takeover scenarios.
 """
-            
+
             print(analysis_response)
-                
+
         except Exception as e:
             print(f"\n❌ Error during investigation: {str(e)}")
             logger.exception("Investigation failed")
-            
+
     print("\n" + "=" * 80)
     print("✅ DEMO COMPLETE")
     print("=" * 80)
     print("Key Points Demonstrated:")
     print("1. ✅ LLM received fraud investigation context")
-    print("2. ✅ LLM had access to SplunkQueryTool") 
+    print("2. ✅ LLM had access to SplunkQueryTool")
     print("3. ✅ Tool binding worked without strict parameter")
     print("4. ✅ Mock Splunk client ready to return data")
     print("5. ✅ Direct LLM-tool interaction demonstrated")

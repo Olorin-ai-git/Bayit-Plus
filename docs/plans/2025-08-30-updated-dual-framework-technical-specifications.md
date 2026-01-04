@@ -137,7 +137,7 @@ class OpenAIBasePattern(BasePattern):
 ```python
 from typing import Any, Dict, List, Optional, AsyncGenerator
 from ..journey_tracker import UnifiedJourneyTracker, NodeType, NodeStatus
-from ..autonomous_context import InvestigationContext
+from ..structured_context import InvestigationContext
 from .openai_base import OpenAIBasePattern
 
 class OpenAIAssistantPattern(OpenAIBasePattern):
@@ -790,7 +790,7 @@ class OpenAIErrorHandler:
 ```python
 import pytest
 from app.service.agent.patterns.registry import PatternRegistry, PatternType
-from app.service.agent.autonomous_context import InvestigationContext
+from app.service.agent.structured_context import InvestigationContext
 
 class TestDualFrameworkIntegration:
     """Comprehensive integration tests for dual framework"""
@@ -807,7 +807,7 @@ class TestDualFrameworkIntegration:
             entity_data={
                 "email": "test@example.com",
                 "user_agent": "Mozilla/5.0...",
-                "ip_address": "192.168.1.100"
+                "ip": "192.168.1.100"
             }
         )
     

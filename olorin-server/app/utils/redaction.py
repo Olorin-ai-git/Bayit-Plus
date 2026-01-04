@@ -1,5 +1,5 @@
 import re
-from typing import Dict, Any
+from typing import Any, Dict
 
 _SECRET_PATTERNS = [
     re.compile(r"sk-[A-Za-z0-9]{16,}"),

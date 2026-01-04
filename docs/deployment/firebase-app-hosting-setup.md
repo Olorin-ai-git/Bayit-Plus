@@ -45,7 +45,7 @@ Extended Firebase configuration supporting both:
 Production environment variables for:
 - **Application Configuration:** Ports, logging, CORS
 - **Database/Redis Configuration:** Connection settings
-- **Feature Flags:** MCP integration, autonomous investigation
+- **Feature Flags:** MCP integration, structured investigation
 - **Performance Tuning:** Workers, connections, timeouts
 - **Security Settings:** JWT, encryption, audit logging
 
@@ -92,7 +92,7 @@ All sensitive configuration is managed through Firebase Secret Manager with the 
 
 ### Complete Tool Integration
 - **200+ Fraud Investigation Tools:** Device analysis, network monitoring, behavioral patterns
-- **LangGraph Agents:** Multi-agent system for autonomous investigations
+- **LangGraph Agents:** Multi-agent system for structured investigations
 - **Real-time Processing:** WebSocket integration for live updates
 - **Advanced Analytics:** Pattern recognition and risk scoring
 

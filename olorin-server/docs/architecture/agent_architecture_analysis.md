@@ -2,13 +2,13 @@
 
 **Author:** Gil Klainert  
 **Date:** 2025-08-30  
-**Focus:** Agent definitions, LangGraph usage, and autonomous investigation flow
+**Focus:** Agent definitions, LangGraph usage, and structured investigation flow
 
 ---
 
 ## Executive Summary
 
-The Olorin autonomous investigation system uses a sophisticated **multi-agent architecture** built on **LangGraph** with **real Anthropic Claude API integration**. The system demonstrates production-grade implementation of autonomous AI agents for fraud detection, with no mock data usage.
+The Olorin structured investigation system uses a sophisticated **multi-agent architecture** built on **LangGraph** with **real Anthropic Claude API integration**. The system demonstrates production-grade implementation of structured AI agents for fraud detection, with no mock data usage.
 
 ---
 
@@ -44,7 +44,7 @@ graph TB
     subgraph "Real API Integration"
         N[Claude Opus 4.1]
         O[Tool Binding]
-        P[Autonomous Decision Making]
+        P[Structured Decision Making]
     end
 ```
 
@@ -59,47 +59,47 @@ The agents mentioned in our investigation analysis are defined across multiple f
 #### **File Structure:**
 ```
 app/service/agent/
-├── autonomous_agents.py          # Main export module
+├── structured_agents.py          # Main export module
 ├── domain_agents.py             # Domain agent imports  
 ├── network_agent.py            # Network analysis agent
 ├── device_agent.py             # Device fraud detection
 ├── location_agent.py           # Geographic analysis
 ├── logs_agent.py               # Log pattern analysis
 ├── risk_agent.py               # Risk aggregation
-└── autonomous_base.py          # Base autonomous agent class
+└── structured_base.py          # Base structured agent class
 ```
 
 #### **Agent Import Chain:**
 ```python
-# autonomous_agents.py (main export)
+# structured_agents.py (main export)
 from .domain_agents import (
-    autonomous_network_agent,      # Network Security Analyst
-    autonomous_device_agent,       # Device Fraud Detector  
-    autonomous_location_agent,     # Location Analysis Agent
-    autonomous_logs_agent,         # Transaction/Logs Specialist
-    autonomous_risk_agent,         # Risk Aggregation Agent
+    structured_network_agent,      # Network Security Analyst
+    structured_device_agent,       # Device Fraud Detector  
+    structured_location_agent,     # Location Analysis Agent
+    structured_logs_agent,         # Transaction/Logs Specialist
+    structured_risk_agent,         # Risk Aggregation Agent
 )
 ```
 
-### 2. Base Autonomous Agent Class
+### 2. Base Structured Agent Class
 
-**File:** `autonomous_base.py`  
-**Core Class:** `AutonomousInvestigationAgent`
+**File:** `structured_base.py`  
+**Core Class:** `StructuredInvestigationAgent`
 
 ```python
-class AutonomousInvestigationAgent:
+class StructuredInvestigationAgent:
     def __init__(self, domain: str, tools: List[Any]):
         self.domain = domain
         self.tools = tools
         
         # REAL API INTEGRATION - No mock data
-        self.llm_with_tools = autonomous_llm.bind_tools(tools, strict=True)
+        self.llm_with_tools = structured_llm.bind_tools(tools, strict=True)
 ```
 
 **Real LLM Configuration:**
 ```python
 # Real Anthropic Claude Opus 4.1 integration
-autonomous_llm = ChatAnthropic(
+structured_llm = ChatAnthropic(
     api_key=settings_for_env.anthropic_api_key,  # From Firebase secrets
     model="claude-opus-4-1-20250805",           # Claude Opus 4.1
     temperature=0.1,                             # Focused decision making
@@ -113,18 +113,18 @@ autonomous_llm = ChatAnthropic(
 **Example:** Network Analysis Agent (`network_agent.py`)
 
 ```python
-async def autonomous_network_agent(state, config) -> dict:
-    """Autonomous network analysis using LLM-driven tool selection"""
+async def structured_network_agent(state, config) -> dict:
+    """Structured network analysis using LLM-driven tool selection"""
     
     # LangGraph state management
     investigation_id = config["configurable"]["thread_id"]
     
-    # Create autonomous agent with tools
-    network_agent = create_autonomous_agent("network", tools)
+    # Create structured agent with tools
+    network_agent = create_structured_agent("network", tools)
     
     # REAL API CALL - No predetermined logic
-    findings = await network_agent.autonomous_investigate(
-        context=autonomous_context,
+    findings = await network_agent.structured_investigate(
+        context=structured_context,
         config=config,
         specific_objectives=[
             "Analyze network patterns for suspicious connections",
@@ -139,8 +139,8 @@ async def autonomous_network_agent(state, config) -> dict:
 
 **Key Features:**
 - **LangGraph Integration**: Uses `state` and `config` parameters
-- **Real Tool Selection**: `create_autonomous_agent()` binds real tools
-- **Claude API Calls**: `autonomous_investigate()` makes real API requests
+- **Real Tool Selection**: `create_structured_agent()` binds real tools
+- **Claude API Calls**: `structured_investigate()` makes real API requests
 - **Dynamic Objectives**: Agents can adapt objectives based on context
 
 ---
@@ -156,12 +156,12 @@ async def autonomous_network_agent(state, config) -> dict:
 def create_parallel_agent_graph():
     builder = StateGraph(MessagesState)
     
-    # Define autonomous agent nodes
-    builder.add_node("network_agent", autonomous_network_agent)
-    builder.add_node("location_agent", autonomous_location_agent)  
-    builder.add_node("logs_agent", autonomous_logs_agent)
-    builder.add_node("device_agent", autonomous_device_agent)
-    builder.add_node("risk_agent", autonomous_risk_agent)
+    # Define structured agent nodes
+    builder.add_node("network_agent", structured_network_agent)
+    builder.add_node("location_agent", structured_location_agent)  
+    builder.add_node("logs_agent", structured_logs_agent)
+    builder.add_node("device_agent", structured_device_agent)
+    builder.add_node("risk_agent", structured_risk_agent)
     
     # Parallel execution edges
     builder.add_edge("fraud_investigation", "network_agent")
@@ -222,7 +222,7 @@ tools = [
 tool_node = ToolNode(tools)
 builder.add_node("tools", tool_node)
 
-# Autonomous tool selection
+# Structured tool selection
 builder.add_conditional_edges("fraud_investigation", tools_condition)
 ```
 
@@ -270,7 +270,7 @@ async def investigate_with_patterns(
     )
 ```
 
-### 2. Autonomous Investigation Process
+### 2. Structured Investigation Process
 
 Each domain agent follows this pattern:
 
@@ -282,12 +282,12 @@ Each domain agent follows this pattern:
 
 2. **Agent Creation:**
    ```python
-   agent = create_autonomous_agent(domain, tools)
+   agent = create_structured_agent(domain, tools)
    ```
 
 3. **Real API Call:**
    ```python
-   findings = await agent.autonomous_investigate(context, config)
+   findings = await agent.structured_investigate(context, config)
    ```
 
 4. **LangGraph Result:**
@@ -297,7 +297,7 @@ Each domain agent follows this pattern:
 
 ### 3. Tool Selection Mechanism
 
-**Autonomous Decision Making:**
+**Structured Decision Making:**
 ```python
 # System message for LLM
 system_msg = SystemMessage(content=f"""
@@ -312,7 +312,7 @@ Key principles:
 Available tools: {', '.join(self.tool_map.keys())}
 """)
 
-# LLM makes autonomous tool selection decisions
+# LLM makes structured tool selection decisions
 result = await self.llm_with_tools.ainvoke(messages, config=config)
 ```
 
@@ -325,7 +325,7 @@ result = await self.llm_with_tools.ainvoke(messages, config=config)
 | Component | Test Implementation | Production Code |
 |-----------|-------------------|-----------------|
 | **Agent Structure** | HTTP calls to Anthropic API | LangGraph + Anthropic via LangChain |
-| **Tool Selection** | Manual prompting | Autonomous LLM-driven selection |
+| **Tool Selection** | Manual prompting | Structured LLM-driven selection |
 | **State Management** | Manual JSON tracking | LangGraph MessagesState |
 | **Memory** | File-based persistence | Redis AsyncRedisSaver |
 | **Parallelization** | Sequential execution | True parallel with LangGraph |
@@ -395,14 +395,14 @@ class AsyncRedisSaver:
 ### Investigation Context Tracking
 
 ```python
-class AutonomousInvestigationContext:
+class StructuredInvestigationContext:
     investigation_id: str
     entity_id: str
     entity_type: str
     domain_findings: Dict[str, DomainFindings]
     
     def record_domain_findings(self, domain: str, findings: DomainFindings):
-        """Store findings from autonomous agent execution"""
+        """Store findings from structured agent execution"""
 ```
 
 ---
@@ -420,7 +420,7 @@ journey_tracker.track_node_execution(
     input_state={"entity_id": entity_id},
     output_state={"findings_count": len(findings)},
     status=NodeStatus.COMPLETED,
-    agent_name="AutonomousNetworkAgent"
+    agent_name="StructuredNetworkAgent"
 )
 ```
 
@@ -432,7 +432,7 @@ await websocket_manager.broadcast_progress(
     investigation_id,
     AgentPhase.NETWORK_ANALYSIS,
     0.5,  # 50% complete
-    "Autonomous network analysis in progress..."
+    "Structured network analysis in progress..."
 )
 ```
 
@@ -451,7 +451,7 @@ guard = get_recursion_guard()
 
 ```python
 try:
-    findings = await agent.autonomous_investigate(context, config)
+    findings = await agent.structured_investigate(context, config)
 except Exception as e:
     # Graceful degradation with error findings
     return DomainFindings(
@@ -467,7 +467,7 @@ except Exception as e:
 ```python
 # Cost tracking built into agent execution
 logger.info(
-    f"Completed autonomous {self.domain} investigation: "
+    f"Completed structured {self.domain} investigation: "
     f"risk_score={findings.risk_score:.2f}, "
     f"confidence={findings.confidence:.2f}, "
     f"findings={len(findings.key_findings)}"
@@ -482,7 +482,7 @@ logger.info(
 
 1. **Real LLM Integration**: 100% authentic Anthropic Claude Opus 4.1 API usage
 2. **LangGraph Framework**: Production-grade orchestration with state management  
-3. **Autonomous Tool Selection**: LLM-driven decision making, not predetermined workflows
+3. **Structured Tool Selection**: LLM-driven decision making, not predetermined workflows
 4. **Parallel Execution**: True concurrent agent analysis for faster investigations
 5. **Persistent Memory**: Redis-based state management for complex workflows
 6. **Real-Time Monitoring**: WebSocket updates and journey tracking
@@ -504,8 +504,8 @@ Our investigation test successfully demonstrated the **core intelligence** of th
 
 1. **Agents are Real**: Each agent makes authentic API calls to Claude Opus 4.1
 2. **LangGraph Orchestrates**: Framework manages parallel execution and state
-3. **Tools are Autonomous**: LLM decides which tools to use based on context
+3. **Tools are Structured**: LLM decides which tools to use based on context
 4. **Memory Persists**: Redis stores investigation state across sessions
 5. **Monitoring is Real-Time**: WebSocket provides live investigation updates
 
-**The Olorin autonomous investigation system represents a production-ready implementation of multi-agent AI for fraud detection, with zero mock data usage and authentic LLM intelligence throughout.**
+**The Olorin structured investigation system represents a production-ready implementation of multi-agent AI for fraud detection, with zero mock data usage and authentic LLM intelligence throughout.**

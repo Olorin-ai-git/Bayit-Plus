@@ -1,5 +1,5 @@
 # LangGraph Built-in Tools & Capabilities Enhancement Plan
-## Olorin Autonomous Investigation System
+## Olorin Structured Investigation System
 
 **Author**: Gil Klainert  
 **Date**: 2025-08-31  
@@ -10,7 +10,7 @@
 
 ## Executive Summary
 
-This comprehensive plan outlines the integration of advanced LangGraph built-in tools and capabilities into the Olorin autonomous investigation system. The enhancement focuses on replacing custom implementations with robust, battle-tested LangGraph patterns while maintaining 100% backward compatibility and achieving significant performance improvements.
+This comprehensive plan outlines the integration of advanced LangGraph built-in tools and capabilities into the Olorin structured investigation system. The enhancement focuses on replacing custom implementations with robust, battle-tested LangGraph patterns while maintaining 100% backward compatibility and achieving significant performance improvements.
 
 **Current State**: Olorin uses basic LangGraph StateGraph, ToolNode, and custom AsyncRedisSaver
 **Target State**: Full LangGraph ecosystem integration with advanced orchestration patterns, enhanced resilience, and comprehensive monitoring
@@ -21,7 +21,7 @@ This comprehensive plan outlines the integration of advanced LangGraph built-in 
 
 ### ✅ Existing LangGraph Implementation Strengths
 - **Core Graph Architecture**: StateGraph with MessagesState for workflow orchestration
-- **Tool Integration**: ToolNode with tools_condition for autonomous tool routing  
+- **Tool Integration**: ToolNode with tools_condition for structured tool routing  
 - **Persistence Layer**: Custom AsyncRedisSaver with Redis-based checkpointing
 - **Agent Coordination**: Parallel and sequential execution patterns
 - **Message Flow**: Proper message handling with LangChain integration

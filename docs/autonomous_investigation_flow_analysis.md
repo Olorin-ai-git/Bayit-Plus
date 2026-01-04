@@ -1,4 +1,4 @@
-# Detailed Analysis of Autonomous Investigation Flow
+# Detailed Analysis of Structured Investigation Flow
 
 **Investigation ID:** `inv_1756566413`  
 **Author:** Gil Klainert  
@@ -10,7 +10,7 @@
 
 ## Executive Summary
 
-This analysis dissects the complete autonomous investigation flow executed with **real Anthropic Claude API calls**. The investigation successfully identified a high-risk fraud scenario through coordinated analysis by multiple AI agents, demonstrating the production-ready capabilities of the Olorin fraud detection system.
+This analysis dissects the complete structured investigation flow executed with **real Anthropic Claude API calls**. The investigation successfully identified a high-risk fraud scenario through coordinated analysis by multiple AI agents, demonstrating the production-ready capabilities of the Olorin fraud detection system.
 
 ---
 
@@ -36,7 +36,7 @@ This analysis dissects the complete autonomous investigation flow executed with 
 ```
 
 #### Step 1.2: Agent Team Assembly
-Four specialized autonomous agents were instantiated:
+Four specialized structured agents were instantiated:
 1. **Network Security Analyst** - Geographic and network analysis
 2. **Device Fraud Detector** - Device fingerprinting and anomaly detection  
 3. **Transaction Monitoring Specialist** - Financial pattern analysis
@@ -55,7 +55,7 @@ Four specialized autonomous agents were instantiated:
 **Analysis Process:**
 1. **Prompt Engineering**: Contextual prompt sent to Claude with network anomaly data
 2. **LLM Processing**: Claude Opus analyzed impossible travel scenario
-3. **Risk Calculation**: Autonomous determination of 95/100 risk score
+3. **Risk Calculation**: Structured determination of 95/100 risk score
 4. **Finding Generation**: Detailed explanation of network security threats
 
 **Key Findings Generated:**
@@ -76,7 +76,7 @@ Four specialized autonomous agents were instantiated:
 **Analysis Process:**
 1. **Device Fingerprinting**: Analyzed Linux device vs historical iPhone/MacBook usage
 2. **Pattern Recognition**: Claude identified deviation from established device profile
-3. **Risk Assessment**: Autonomous scoring based on device anomaly severity
+3. **Risk Assessment**: Structured scoring based on device anomaly severity
 4. **Recommendation Generation**: Specific mitigation strategies
 
 **Key Findings Generated:**
@@ -85,7 +85,7 @@ Four specialized autonomous agents were instantiated:
 - **Historical Analysis**: No previous Linux usage in user profile
 - **Authentication Gap**: New device should trigger additional verification
 
-**Authentication Intelligence**: The LLM autonomously recommended multi-factor authentication escalation.
+**Authentication Intelligence**: The LLM structuredly recommended multi-factor authentication escalation.
 
 ---
 
@@ -140,7 +140,7 @@ Four specialized autonomous agents were instantiated:
 **Consolidation Process:**
 1. **Multi-Domain Analysis**: Combined network, device, transaction, and behavioral intelligence
 2. **Risk Correlation**: Cross-referenced findings to identify attack patterns
-3. **Threat Level Assessment**: Autonomous determination of overall risk severity
+3. **Threat Level Assessment**: Structured determination of overall risk severity
 4. **Action Plan Generation**: Immediate response recommendations
 
 **Final Assessment Output:**
@@ -304,7 +304,7 @@ The investigation successfully identified an extremely high-risk fraud scenario 
 
 ### System Readiness
 
-The Olorin autonomous investigation system demonstrates **production-ready capabilities** with:
+The Olorin structured investigation system demonstrates **production-ready capabilities** with:
 - ✅ Real-time multi-vector fraud detection
 - ✅ Cost-effective LLM integration
 - ✅ Comprehensive audit trails

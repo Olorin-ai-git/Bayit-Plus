@@ -3,8 +3,9 @@ from functools import lru_cache
 from typing import List, Optional
 
 from fastapi import Request
-from pydantic import Field
+from pydantic import Field, field_validator
 from pydantic_settings import BaseSettings
+
 from app.service.logging import get_bridge_logger
 
 preprod_splunk_index: str = "rss-e2eidx"
@@ -25,23 +26,71 @@ class SvcSettings(BaseSettings):
     asset_id: str = "3825825476777495228"
     olorin_originating_assetalias: Optional[str] = "Olorin.cas.hri.olorin"
 
-    # Verification service flags
+    # Verification service flags - mapped from .env
     verification_enabled: bool = Field(
-        default=False, description="Enable Opus verification gating"
+        default=False,
+        description="Enable Opus verification gating",
+        env="LLM_VERIFICATION_ENABLED",
     )
     verification_mode: str = Field(
-        default="shadow", description="shadow|blocking"
+        default="shadow", description="shadow|blocking", env="VERIFICATION_MODE"
     )
     verification_sample_percent: float = Field(
-        default=1.0, description="0.0-1.0 sampling rate for verification"
+        default=1.0,
+        description="0.0-1.0 sampling rate for verification (env var is 0-100)",
+        env="VERIFICATION_SAMPLE_PERCENT",
     )
-    verification_opus_model: str = Field(
-        default="claude-opus-4.1", description="Opus model name"
+    # REMOVED: verification_model_name - now using LLM_VERIFICATION_MODEL from LLM Manager
+    verification_threshold_default: float = Field(
+        default=0.85,
+        description="Pass/fail threshold for verification score (0.0-1.0, env var is 0-100)",
+        env="VERIFICATION_THRESHOLD_DEFAULT",
     )
-    verification_threshold_default: float = Field(default=0.85)
-    verification_max_retries_default: int = Field(default=1)
+    verification_max_retries_default: int = Field(
+        default=1, env="VERIFICATION_MAX_RETRIES"
+    )
     verification_task_policy_risk_analysis_threshold: float = Field(default=0.9)
     verification_task_policy_risk_analysis_max_retries: int = Field(default=2)
+
+    @field_validator("verification_sample_percent", mode="before")
+    @classmethod
+    def convert_sample_percent(cls, v):
+        """Convert percentage (0-100) from env to decimal (0.0-1.0) for internal use."""
+        if v is None:
+            return 1.0
+        # If it's a string from env var
+        if isinstance(v, str):
+            val = float(v)
+            # If value is > 1, assume it's a percentage and convert
+            if val > 1:
+                return val / 100.0
+            return val
+        # If it's already a number
+        if isinstance(v, (int, float)):
+            if v > 1:
+                return v / 100.0
+            return v
+        return 1.0
+
+    @field_validator("verification_threshold_default", mode="before")
+    @classmethod
+    def convert_threshold_percent(cls, v):
+        """Convert percentage (0-100) from env to decimal (0.0-1.0) for internal use."""
+        if v is None:
+            return 0.85
+        # If it's a string from env var
+        if isinstance(v, str):
+            val = float(v)
+            # If value is > 1, assume it's a percentage and convert
+            if val > 1:
+                return val / 100.0
+            return val
+        # If it's already a number
+        if isinstance(v, (int, float)):
+            if v > 1:
+                return v / 100.0
+            return v
+        return 0.85
 
     # Anthropic API - stored in Firebase Secrets Manager ONLY
     anthropic_api_key_secret: str = Field(
@@ -49,16 +98,16 @@ class SvcSettings(BaseSettings):
         description="Firebase secret name for Anthropic API key (REQUIRED - no environment fallback)",
         env="ANTHROPIC_API_KEY_SECRET",
     )
-    
+
     # REMOVED: Environment variable override - API key must come from Firebase Secrets Manager only
-    
+
     # OpenAI API for dual-framework agent support - stored in Firebase Secrets Manager
     openai_api_key_secret: str = Field(
         "OPENAI_API_KEY",
         description="Firebase secret name for OpenAI API key",
         env="OPENAI_API_KEY_SECRET",
     )
-    
+
     # Allow overriding OpenAI API key directly via environment for local/dev
     openai_api_key: Optional[str] = Field(
         default=None,
@@ -70,27 +119,22 @@ class SvcSettings(BaseSettings):
     use_ips_cache: bool = (
         False  # Changing this to True will use IPS cache implementation - AsyncRedisSaver instead of Langgraph's MemorySaver
     )
-    ips_base_url: str = "https://ipscache-qal.api.olorin.com"
-    ips_base_path: str = "/v1/cache"
-    upi_history_conversation_api_config: UpiHistoryConversationApiConfig = (
-        UpiHistoryConversationApiConfig()
-    )
 
     # Firebase settings for secret management
     firebase_project_id: Optional[str] = Field(
         None,
         description="Firebase project ID for secret management",
-        env="FIREBASE_PROJECT_ID"
+        env="FIREBASE_PROJECT_ID",
     )
     firebase_private_key: Optional[str] = Field(
         None,
         description="Firebase service account private key",
-        env="FIREBASE_PRIVATE_KEY"
+        env="FIREBASE_PRIVATE_KEY",
     )
     firebase_client_email: Optional[str] = Field(
         None,
         description="Firebase service account client email",
-        env="FIREBASE_CLIENT_EMAIL"
+        env="FIREBASE_CLIENT_EMAIL",
     )
 
     # App settings
@@ -146,7 +190,7 @@ class SvcSettings(BaseSettings):
         description="Firebase secret name for SumoLogic Access Key",
         env="SUMO_LOGIC_ACCESS_KEY_SECRET",
     )
-    
+
     # Allow overriding SumoLogic credentials directly via environment for local/dev
     sumo_logic_access_id: Optional[str] = Field(
         None,
@@ -158,21 +202,21 @@ class SvcSettings(BaseSettings):
         description="Override SumoLogic Access Key via env var SUMO_LOGIC_ACCESS_KEY",
         env="SUMO_LOGIC_ACCESS_KEY",
     )
-    
+
     # Database secrets - migrated to Firebase Secrets Manager
     database_password_secret: str = Field(
         "DATABASE_PASSWORD",
         description="Firebase secret name for database password",
         env="DATABASE_PASSWORD_SECRET",
     )
-    
-    # Redis secrets - migrated to Firebase Secrets Manager  
+
+    # Redis secrets - migrated to Firebase Secrets Manager
     redis_api_key_secret: str = Field(
         "REDIS_API_KEY",
         description="Firebase secret name for Redis API key",
         env="REDIS_API_KEY_SECRET",
     )
-    
+
     # Redis connection parameters for Redis Cloud
     redis_host: str = Field(
         "redis-13848.c253.us-central1-1.gce.redns.redis-cloud.com",
@@ -189,22 +233,22 @@ class SvcSettings(BaseSettings):
         description="Redis Cloud username",
         env="REDIS_USERNAME",
     )
-    
+
     # JWT secrets - migrated to Firebase Secrets Manager
     jwt_secret_key_secret: str = Field(
         "JWT_SECRET_KEY",
         description="Firebase secret name for JWT secret key",
         env="JWT_SECRET_KEY_SECRET",
     )
-    
+
     # Development API keys - migrated to Firebase Secrets Manager
-    
+
     olorin_api_key_secret: str = Field(
-        "OLORIN_API_KEY", 
+        "OLORIN_API_KEY",
         description="Firebase secret name for Olorin API key",
         env="OLORIN_API_KEY_SECRET",
     )
-    
+
     databricks_token_secret: str = Field(
         "DATABRICKS_TOKEN",
         description="Firebase secret name for Databricks token",
@@ -217,29 +261,29 @@ class SvcSettings(BaseSettings):
         description="Override database password via env var DB_PASSWORD or POSTGRES_PASSWORD",
         env="DB_PASSWORD",
     )
-    
+
     # Allow overriding Redis API key directly via environment for local/dev
     redis_api_key: Optional[str] = Field(
         default=None,
         description="Override Redis API key via env var REDIS_API_KEY",
         env="REDIS_API_KEY",
     )
-    
+
     # Allow overriding JWT secret directly via environment for local/dev
     jwt_secret_key: Optional[str] = Field(
         default=None,
         description="Override JWT secret key via env var JWT_SECRET_KEY",
         env="JWT_SECRET_KEY",
     )
-    
+
     # Allow overriding development API keys directly via environment for local/dev
-    
+
     olorin_api_key: Optional[str] = Field(
         default=None,
-        description="Override Olorin API key via env var OLORIN_API_KEY", 
+        description="Override Olorin API key via env var OLORIN_API_KEY",
         env="OLORIN_API_KEY",
     )
-    
+
     databricks_token: Optional[str] = Field(
         default=None,
         description="Override Databricks token via env var DATABRICKS_TOKEN",
@@ -292,7 +336,7 @@ class SvcSettings(BaseSettings):
         description="Snowflake authentication method",
         env="SNOWFLAKE_AUTHENTICATOR",
     )
-    
+
     # Firebase secret names for Snowflake credentials
     snowflake_account_secret: str = Field(
         "SNOWFLAKE_ACCOUNT",
@@ -319,31 +363,117 @@ class SvcSettings(BaseSettings):
     enabled_log_sources: List[str] = Field(
         ["splunk"],
         description="List of enabled log sources (splunk, sumo_logic)",
-        env="ENABLED_LOG_SOURCES"
+        env="ENABLED_LOG_SOURCES",
     )
     primary_log_source: str = Field(
         "splunk",
         description="Primary log source for analysis",
-        env="PRIMARY_LOG_SOURCE"
+        env="PRIMARY_LOG_SOURCE",
     )
-    
+
     # Data source configuration
     enabled_data_sources: List[str] = Field(
         ["snowflake"],
         description="List of enabled data sources (snowflake)",
-        env="ENABLED_DATA_SOURCES"
+        env="ENABLED_DATA_SOURCES",
     )
     primary_data_source: str = Field(
         "snowflake",
         description="Primary data source for structured data analysis",
-        env="PRIMARY_DATA_SOURCE"
+        env="PRIMARY_DATA_SOURCE",
     )
 
-    enabled_tool_list: List[str] = [
-        "CdcUserTool",
-        "CdcCompanyTool",
-        "OIITool",
-    ]
+    enabled_tool_list: List[str] = []
+
+    # MCP Server Configuration
+    # Enable/disable MCP services
+    mcp_blockchain_enabled: bool = Field(
+        False,
+        description="Enable blockchain analysis MCP client",
+        env="USE_BLOCKCHAIN_MCP_CLIENT",
+    )
+    mcp_intelligence_enabled: bool = Field(
+        False,
+        description="Enable intelligence gathering MCP client",
+        env="USE_INTELLIGENCE_MCP_CLIENT",
+    )
+    mcp_ml_ai_enabled: bool = Field(
+        False, description="Enable ML/AI models MCP client", env="USE_ML_AI_MCP_CLIENT"
+    )
+
+    # MCP Server endpoints
+    mcp_blockchain_endpoint: str = Field(
+        "http://localhost:8080/mcp",
+        description="Blockchain analysis MCP server endpoint",
+        env="BLOCKCHAIN_MCP_ENDPOINT",
+    )
+    mcp_intelligence_endpoint: str = Field(
+        "http://localhost:8081/mcp",
+        description="Intelligence gathering MCP server endpoint",
+        env="INTELLIGENCE_MCP_ENDPOINT",
+    )
+    mcp_ml_ai_endpoint: str = Field(
+        "http://localhost:8082/mcp",
+        description="ML/AI models MCP server endpoint",
+        env="ML_AI_MCP_ENDPOINT",
+    )
+
+    # MCP Server timeouts
+    mcp_blockchain_timeout: int = Field(
+        30,
+        description="Blockchain MCP server timeout in seconds",
+        env="BLOCKCHAIN_MCP_TIMEOUT",
+    )
+    mcp_intelligence_timeout: int = Field(
+        30,
+        description="Intelligence MCP server timeout in seconds",
+        env="INTELLIGENCE_MCP_TIMEOUT",
+    )
+    mcp_ml_ai_timeout: int = Field(
+        45, description="ML/AI MCP server timeout in seconds", env="ML_AI_MCP_TIMEOUT"
+    )
+
+    # MCP API Keys - Firebase Secret Manager integration
+    mcp_blockchain_api_key_secret: str = Field(
+        "BLOCKCHAIN_MCP_API_KEY",
+        description="Firebase secret name for blockchain MCP API key",
+        env="BLOCKCHAIN_MCP_API_KEY_SECRET",
+    )
+    mcp_intelligence_api_key_secret: str = Field(
+        "INTELLIGENCE_MCP_API_KEY",
+        description="Firebase secret name for intelligence MCP API key",
+        env="INTELLIGENCE_MCP_API_KEY_SECRET",
+    )
+    mcp_ml_ai_api_key_secret: str = Field(
+        "ML_AI_MCP_API_KEY",
+        description="Firebase secret name for ML/AI MCP API key",
+        env="ML_AI_MCP_API_KEY_SECRET",
+    )
+
+    # Allow overriding MCP API keys directly via environment for local/dev
+    mcp_blockchain_api_key: Optional[str] = Field(
+        None,
+        description="Override blockchain MCP API key via env var BLOCKCHAIN_MCP_API_KEY",
+        env="BLOCKCHAIN_MCP_API_KEY",
+    )
+    mcp_intelligence_api_key: Optional[str] = Field(
+        None,
+        description="Override intelligence MCP API key via env var INTELLIGENCE_MCP_API_KEY",
+        env="INTELLIGENCE_MCP_API_KEY",
+    )
+    mcp_ml_ai_api_key: Optional[str] = Field(
+        None,
+        description="Override ML/AI MCP API key via env var ML_AI_MCP_API_KEY",
+        env="ML_AI_MCP_API_KEY",
+    )
+
+    # MCP Cache settings
+    mcp_cache_enabled: bool = Field(
+        True, description="Enable MCP response caching", env="MCP_CACHE_ENABLED"
+    )
+    mcp_cache_ttl: int = Field(
+        300, description="MCP cache TTL in seconds", env="MCP_CACHE_TTL"
+    )
 
 
 # see https://fastapi.tiangolo.com/advanced/settings/#settings-in-a-dependency
@@ -392,57 +522,10 @@ class ProdSettings(SvcSettings):
 
 class LocalSettings(PreProdSettings):
     log_level: str = "DEBUG"
-    ips_base_url: str = "https://ipscache-qal.api.olorin.com"
-    ips_base_path: str = "/v1/cache"
-    ceres_endpoint: str = "https://ceres-das-e2e.api.olorin.com"
-    upi_history_conversation_api_config: UpiHistoryConversationApiConfig = (
-        UpiHistoryConversationApiConfig(
-            upi_base_url="https://genosuxsvc-e2e.api.olorin.com", upi_mock_response=True
-        )
-    )
     default_profile_id: str = "9341454513864369"
     splunk_host: str = preprod_splunk_host
     splunk_index: str = preprod_splunk_index
-
-
-class QALSettings(PreProdSettings):
-    log_level: str = "DEBUG"
-    ips_base_url: str = "https://ipscache-qal.api.olorin.com"
-    ips_base_path: str = "/v1/cache"
-    upi_history_conversation_api_config: UpiHistoryConversationApiConfig = (
-        UpiHistoryConversationApiConfig(
-            upi_base_url="https://genosuxsvc-e2e.api.olorin.com"
-        )
-    )
-    default_profile_id: str = "9341454513864369"
-    splunk_host: str = preprod_splunk_host
-    splunk_index: str = preprod_splunk_index
-
-
-class E2ESettings(PreProdSettings):
-    log_level: str = "DEBUG"
-    ips_base_url: str = "https://ipscache-e2e.api.olorin.com"
-    ips_base_path: str = "/v1/cache"
-    upi_history_conversation_api_config: UpiHistoryConversationApiConfig = (
-        UpiHistoryConversationApiConfig(
-            upi_base_url="https://genosuxsvc-e2e.api.olorin.com"
-        )
-    )
-    default_profile_id: str = "9341454513864369"
-    splunk_host: str = preprod_splunk_host
-    splunk_index: str = preprod_splunk_index
-
-
-class PRFSettings(PreProdSettings):
-    log_level: str = "INFO"
-    splunk_host: str = preprod_splunk_host
-    splunk_index: str = preprod_splunk_index
-
-
-class STGSettings(ProdSettings):
-    log_level: str = "INFO"
-    splunk_host: str = preprod_splunk_host
-    splunk_index: str = preprod_splunk_index
+    ips_base_url: str = "http://localhost:8092"
 
 
 class PRDSettings(ProdSettings):
@@ -453,11 +536,6 @@ class PRDSettings(ProdSettings):
 
 _ENV_SETTINGS = {
     "local": LocalSettings,
-    "jenkins": QALSettings,
-    "qal": QALSettings,
-    "e2e": E2ESettings,
-    "prf": PRFSettings,
-    "stg": STGSettings,
     "prd": PRDSettings,
 }
 
@@ -465,26 +543,35 @@ _ENV_SETTINGS = {
 def get_settings_for_env() -> SvcSettings:
     env = os.getenv("APP_ENV", "local")
     config = _ENV_SETTINGS[env]()
-    
+
     # Enhance configuration with secrets from Firebase Secret Manager
     try:
-        from .config_secrets import enhance_config_with_secrets, validate_required_secrets
+        from .config_secrets import (
+            enhance_config_with_secrets,
+            validate_required_secrets,
+        )
+
         config = enhance_config_with_secrets(config)
-        
+
         # Validate required secrets are present
         if not validate_required_secrets(config):
             import structlog
+
             logger = get_bridge_logger(__name__)
-            logger.warning("Some required secrets are missing, using defaults where available")
+            logger.warning(
+                "Some required secrets are missing, using defaults where available"
+            )
     except ImportError as e:
         # If secret manager modules are not available, continue with env-based config
         import structlog
+
         logger = get_bridge_logger(__name__)
         logger.warning(f"Secret Manager integration not available: {e}")
     except Exception as e:
         # Log any other errors but don't fail
         import structlog
+
         logger = get_bridge_logger(__name__)
         logger.error(f"Error loading secrets from Firebase Secret Manager: {e}")
-    
+
     return config

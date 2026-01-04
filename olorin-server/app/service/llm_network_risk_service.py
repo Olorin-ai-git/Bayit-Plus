@@ -1,12 +1,12 @@
 import json
 import logging
-from app.service.logging import get_bridge_logger
 from typing import Any, Dict, List, Optional
 
 from fastapi import Request
 
 from app.models.network_risk import NetworkRiskLLMAssessment
 from app.service.base_llm_risk_service import BaseLLMRiskService
+from app.service.logging import get_bridge_logger
 from app.utils.prompts import SYSTEM_PROMPT_FOR_NETWORK_RISK
 
 logger = get_bridge_logger(__name__)
@@ -98,7 +98,7 @@ class LLMNetworkRiskService(BaseLLMRiskService[NetworkRiskLLMAssessment]):
                     unique_orgs.add(str(org).lower())
 
                 # IP analysis
-                ip = signal.get("ip_address") or signal.get("true_ip")
+                ip = signal.get("ip") or signal.get("true_ip")
                 if ip:
                     unique_ips.add(ip)
 
@@ -178,3 +178,143 @@ class LLMNetworkRiskService(BaseLLMRiskService[NetworkRiskLLMAssessment]):
             request=request,
             oii_country=oii_country,
         )
+
+    async def analyze_network(
+        self,
+        entity_id: str,
+        entity_type: str,
+        request: Request,
+        investigation_id: str,
+        time_range: str = "30d",
+        splunk_host: Optional[str] = None,
+        raw_splunk_override: Optional[List[Dict[str, Any]]] = None,
+    ) -> dict:
+        """
+        Analyze network risk for a user or device - full orchestration method.
+
+        This method coordinates the full network analysis workflow including
+        data extraction, signal processing, and risk assessment.
+        """
+        from app.service.agent.tools.splunk_tool.ato_splunk_query_constructor import (
+            build_base_search,
+        )
+        from app.service.agent.tools.splunk_tool.splunk_tool import SplunkQueryTool
+        from app.service.config import get_settings_for_env
+
+        try:
+            settings = get_settings_for_env()
+            logger.info(f"=== NETWORK ANALYSIS START (service) ===")
+            logger.info(f"Network risk analysis for {entity_type}: {entity_id}")
+
+            # Use raw Splunk override if provided
+            if raw_splunk_override:
+                logger.info("Using raw Splunk override data")
+                raw_splunk_results = raw_splunk_override
+                raw_splunk_results_count = len(raw_splunk_override)
+            else:
+                # Build and execute Splunk query
+                base_query = build_base_search(
+                    id_value=entity_id, id_type=entity_type.replace("_id", "")
+                )
+                splunk_query = base_query.replace(
+                    f"search index={settings.splunk_index}",
+                    f"search index={settings.splunk_index} earliest=-{time_range}",
+                )
+
+                logger.debug(f"Executing Splunk query: {splunk_query}")
+
+                splunk_tool = SplunkQueryTool()
+                splunk_result = await splunk_tool.arun({"query": splunk_query})
+
+                if isinstance(splunk_result, dict) and "results" in splunk_result:
+                    raw_splunk_results = splunk_result["results"]
+                    raw_splunk_results_count = len(raw_splunk_results)
+                else:
+                    logger.warning(
+                        f"Unexpected Splunk result format: {type(splunk_result)}"
+                    )
+                    raw_splunk_results = []
+                    raw_splunk_results_count = 0
+
+            logger.info(f"Retrieved {raw_splunk_results_count} Splunk records")
+
+            # Extract network signals from raw Splunk data
+            extracted_network_signals = []
+            for record in raw_splunk_results:
+                signal = {
+                    "user_id": record.get("user_id"),
+                    "device_id": record.get("device_id"),
+                    "ip": record.get("ip_address") or record.get("true_ip"),
+                    "true_ip": record.get("true_ip"),
+                    "isp": record.get("isp"),
+                    "organization": record.get("organization"),
+                    "country": record.get("country"),
+                    "city": record.get("city"),
+                    "timezone": record.get("timezone"),
+                    "timestamp": record.get("timestamp"),
+                    "user_agent": record.get("user_agent"),
+                }
+                # Remove None values
+                signal = {k: v for k, v in signal.items() if v is not None}
+                if signal:  # Only add if we have some data
+                    extracted_network_signals.append(signal)
+
+            logger.info(f"Extracted {len(extracted_network_signals)} network signals")
+
+            # Assess network risk using LLM
+            if extracted_network_signals:
+                network_risk_assessment = await self.assess_network_risk(
+                    user_id=entity_id,
+                    extracted_signals=extracted_network_signals,
+                    request=request,
+                )
+            else:
+                # Create fallback assessment for no data
+                network_risk_assessment = self.create_fallback_assessment(
+                    user_id=entity_id,
+                    extracted_signals=[],
+                    error_type="no_data",
+                    error_message="No network signals found in Splunk data",
+                )
+
+            # Choose the correct ID key based on entity_type
+            id_key = "userId" if entity_type == "user_id" else "deviceId"
+
+            return {
+                id_key: entity_id,
+                "raw_splunk_results_count": raw_splunk_results_count,
+                "extracted_network_signals": extracted_network_signals,
+                "network_risk_assessment": {
+                    "risk_level": network_risk_assessment.risk_level,
+                    "risk_factors": network_risk_assessment.risk_factors,
+                    "anomaly_details": network_risk_assessment.anomaly_details,
+                    "confidence": network_risk_assessment.confidence,
+                    "summary": network_risk_assessment.summary,
+                    "thoughts": network_risk_assessment.thoughts,
+                },
+            }
+
+        except Exception as e:
+            logger.error(
+                f"Error in network analysis for {entity_type} {entity_id}: {e}",
+                exc_info=True,
+            )
+            # Return a fallback response
+            fallback_assessment = {
+                "risk_level": 0.0,
+                "risk_factors": [f"Error: {str(e)}"],
+                "anomaly_details": [],
+                "confidence": 0.0,
+                "summary": "Error during network risk assessment.",
+                "thoughts": "No LLM assessment due to error.",
+            }
+
+            # Choose the correct ID key based on entity_type
+            id_key = "userId" if entity_type == "user_id" else "deviceId"
+
+            return {
+                id_key: entity_id,
+                "raw_splunk_results_count": 0,
+                "extracted_network_signals": [],
+                "network_risk_assessment": fallback_assessment,
+            }

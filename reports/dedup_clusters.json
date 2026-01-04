@@ -1,0 +1,1033 @@
+{
+  "metadata": {
+    "generated_at": "2025-11-06T00:00:00Z",
+    "generated_by": "orchestrator_agent",
+    "repository": "olorin",
+    "analysis_scope": "full_monorepo",
+    "frontend_path": "olorin-front",
+    "backend_path": "olorin-server"
+  },
+  "summary": {
+    "total_clusters": 37,
+    "files_touched": 156,
+    "total_lines_duplicated": 8400,
+    "lines_can_be_eliminated": 5712,
+    "duplication_reduction_pct": 68.0,
+    "est_effort_hours": 78,
+    "est_timeline_weeks": 6,
+    "total_prs": 11
+  },
+  "duplication_by_type": {
+    "T1_exact": {
+      "clusters": 14,
+      "lines": 3200,
+      "similarity_range": "85-98%"
+    },
+    "T2_renamed": {
+      "clusters": 11,
+      "lines": 2800,
+      "similarity_range": "75-90%"
+    },
+    "T3_near_miss": {
+      "clusters": 8,
+      "lines": 1900,
+      "similarity_range": "65-80%"
+    },
+    "T4_semantic_cross_layer": {
+      "clusters": 4,
+      "lines": 500,
+      "description": "React ↔ Python equivalents"
+    }
+  },
+  "clone_clusters": [
+    {
+      "id": "CC-001",
+      "rank": 1,
+      "name": "Investigation Types - Cross-Layer",
+      "type": "T1+T4",
+      "similarity": 0.92,
+      "priority": "CRITICAL",
+      "roi_score": 9.8,
+      "instances": [
+        {
+          "path": "olorin-front/src/shared/types/investigation.types.ts",
+          "start": 1,
+          "end": 141,
+          "language": "typescript",
+          "lines": 141
+        },
+        {
+          "path": "olorin-front/src/types/investigation.ts",
+          "start": 1,
+          "end": 60,
+          "language": "typescript",
+          "lines": 60
+        },
+        {
+          "path": "olorin-front/src/shared/types/investigation/index.ts",
+          "start": 1,
+          "end": 40,
+          "language": "typescript",
+          "lines": 40
+        },
+        {
+          "path": "olorin-front/src/shared/types/investigation/core.ts",
+          "start": 1,
+          "end": 39,
+          "language": "typescript",
+          "lines": 39
+        },
+        {
+          "path": "olorin-server/app/schemas/investigation_state.py",
+          "start": 1,
+          "end": 85,
+          "language": "python",
+          "lines": 85
+        },
+        {
+          "path": "olorin-server/app/schemas/investigation_config.py",
+          "start": 1,
+          "end": 65,
+          "language": "python",
+          "lines": 65
+        }
+      ],
+      "total_lines_duplicated": 280,
+      "canonical_proposal": {
+        "frontend_target": "olorin-front/src/shared/types/investigation/",
+        "backend_target": "olorin-server/app/schemas/investigation/",
+        "approach": "contract_driven",
+        "description": "Use Python Pydantic as source of truth, generate TypeScript types via openapi-typescript",
+        "signature_or_contract": "OpenAPI 3.1 spec",
+        "backcompat": true,
+        "adapters_needed": []
+      },
+      "risk": "medium",
+      "effort_hours": 14,
+      "lines_saved": 210,
+      "maintenance_reduction_pct": 75,
+      "bug_risk_reduction_pct": 90,
+      "tests_to_add_or_update": [
+        "Contract tests between frontend and backend",
+        "Type validation tests",
+        "Schema compatibility tests"
+      ],
+      "perf_notes": "No performance impact expected"
+    },
+    {
+      "id": "CC-002",
+      "rank": 2,
+      "name": "Validation Logic",
+      "type": "T2",
+      "similarity": 0.78,
+      "priority": "HIGH",
+      "roi_score": 9.5,
+      "instances": [
+        {
+          "path": "olorin-front/src/shared/utils/validation.ts",
+          "start": 1,
+          "end": 150,
+          "language": "typescript",
+          "lines": 150
+        },
+        {
+          "path": "olorin-front/src/shared/validation/validators.ts",
+          "start": 1,
+          "end": 120,
+          "language": "typescript",
+          "lines": 120
+        },
+        {
+          "path": "olorin-front/src/microservices/investigation/validation/*.ts",
+          "pattern": "multiple files",
+          "language": "typescript",
+          "lines": 380
+        },
+        {
+          "path": "olorin-front/src/utils/security/validation/*.ts",
+          "pattern": "multiple files",
+          "language": "typescript",
+          "lines": 280
+        },
+        {
+          "path": "olorin-front/src/shared/store/wizardValidation.ts",
+          "start": 1,
+          "end": 95,
+          "language": "typescript",
+          "lines": 95
+        }
+      ],
+      "total_lines_duplicated": 1200,
+      "duplicated_patterns": {
+        "email_validation": { "occurrences": 7, "lines_each": 15, "total": 105 },
+        "uuid_validation": { "occurrences": 5, "lines_each": 12, "total": 60 },
+        "entity_type_validation": { "occurrences": 12, "lines_each": 25, "total": 300 },
+        "risk_score_validation": { "occurrences": 8, "lines_each": 18, "total": 144 },
+        "time_range_validation": { "occurrences": 6, "lines_each": 30, "total": 180 },
+        "other_validations": { "occurrences": 15, "total": 143 }
+      },
+      "canonical_proposal": {
+        "target": "olorin-front/src/shared/validation/",
+        "structure": {
+          "schemas": "Zod schemas for config-driven validation",
+          "validators": "Pure validation functions",
+          "rules": "Business validation rules"
+        },
+        "description": "Centralized validation library using Zod schemas aligned with OpenAPI spec",
+        "signature_or_contract": "Zod schemas with TypeScript types",
+        "backcompat": true,
+        "adapters_needed": []
+      },
+      "risk": "medium",
+      "effort_hours": 12,
+      "lines_saved": 840,
+      "maintenance_reduction_pct": 85,
+      "bug_risk_reduction_pct": 80,
+      "tests_to_add_or_update": [
+        "Unit tests for each validator",
+        "Contract tests matching backend validation",
+        "Edge case tests"
+      ],
+      "perf_notes": "Zod validation may have minimal overhead but provides type safety"
+    },
+    {
+      "id": "CC-003",
+      "rank": 3,
+      "name": "Configuration Management",
+      "type": "T1",
+      "similarity": 0.95,
+      "priority": "HIGH",
+      "roi_score": 9.2,
+      "instances": [
+        {
+          "path": "olorin-front/src/shared/config/*.ts",
+          "pattern": "multiple files",
+          "language": "typescript",
+          "lines": 180
+        },
+        {
+          "path": "olorin-front/src/config/*.ts",
+          "pattern": "multiple files",
+          "language": "typescript",
+          "lines": 120
+        },
+        {
+          "path": "olorin-front/src/shared/utils/env.ts",
+          "start": 1,
+          "end": 85,
+          "language": "typescript",
+          "lines": 85
+        },
+        {
+          "path": "olorin-front/src/microservices/*/config/*.ts",
+          "pattern": "6 microservices",
+          "language": "typescript",
+          "lines": 265
+        }
+      ],
+      "total_lines_duplicated": 650,
+      "duplicated_patterns": {
+        "getEnvVar_function": { "occurrences": 8, "issue": "Inconsistent error handling" },
+        "api_base_url_config": { "occurrences": 12, "issue": "Different defaults" },
+        "websocket_url_config": { "occurrences": 6, "issue": "Hardcoded fallbacks" },
+        "feature_flag_reading": { "occurrences": 15, "issue": "No validation" },
+        "timeout_retry_config": { "occurrences": 10, "issue": "Magic numbers" }
+      },
+      "canonical_proposal": {
+        "target": "olorin-front/src/shared/config/",
+        "structure": {
+          "schema": "Zod validation schemas (app, features, services, ui)",
+          "loaders": "Environment variable loaders with fail-fast validation",
+          "AppConfig": "Centralized config class (singleton)"
+        },
+        "description": "Type-safe centralized configuration with Zod validation and fail-fast on missing/invalid values",
+        "signature_or_contract": "AppConfig class with typed getters",
+        "backcompat": true,
+        "adapters_needed": []
+      },
+      "risk": "low",
+      "effort_hours": 4,
+      "lines_saved": 520,
+      "maintenance_reduction_pct": 90,
+      "bug_risk_reduction_pct": 95,
+      "tests_to_add_or_update": [
+        "Config validation tests",
+        "Environment variable tests",
+        "Fail-fast behavior tests"
+      ],
+      "perf_notes": "No performance impact - config loaded once at startup",
+      "security_notes": "Improves security by centralizing secret handling and validation"
+    },
+    {
+      "id": "CC-004",
+      "rank": 4,
+      "name": "Schema Synchronization - Contract",
+      "type": "T4",
+      "similarity": 0.92,
+      "priority": "CRITICAL",
+      "roi_score": 9.0,
+      "instances": [
+        {
+          "path": "olorin-front/src/types/*.ts",
+          "pattern": "All TypeScript type definitions",
+          "language": "typescript",
+          "lines": 280
+        },
+        {
+          "path": "olorin-server/app/schemas/*.py",
+          "pattern": "All Pydantic schemas",
+          "language": "python",
+          "lines": 220
+        }
+      ],
+      "total_lines_duplicated": 500,
+      "issues": [
+        "Manual synchronization between frontend and backend types",
+        "Field naming inconsistencies (camelCase vs snake_case)",
+        "Type mismatches (Date vs string vs datetime)",
+        "Enum value inconsistencies"
+      ],
+      "canonical_proposal": {
+        "backend_target": "olorin-server/app/schemas/",
+        "frontend_target": "olorin-front/src/api/generated/types.ts",
+        "approach": "contract_driven_development",
+        "description": "Python Pydantic as source of truth → OpenAPI spec → TypeScript type generation",
+        "tooling": {
+          "backend": "openapi-schema-pydantic for spec generation",
+          "frontend": "openapi-typescript for type generation",
+          "ci": "Contract validation pipeline"
+        },
+        "signature_or_contract": "OpenAPI 3.1 specification",
+        "backcompat": true,
+        "adapters_needed": []
+      },
+      "risk": "medium",
+      "effort_hours": 14,
+      "lines_saved": 350,
+      "maintenance_reduction_pct": 95,
+      "bug_risk_reduction_pct": 99,
+      "tests_to_add_or_update": [
+        "Contract tests using Dredd or Schemathesis",
+        "Schema validation tests",
+        "Type generation tests in CI"
+      ],
+      "perf_notes": "No runtime performance impact - types generated at build time",
+      "type_safety_notes": "100% type safety guarantee between frontend and backend"
+    },
+    {
+      "id": "CC-005",
+      "rank": 5,
+      "name": "API Service Patterns",
+      "type": "T2+T3",
+      "similarity": 0.72,
+      "priority": "MEDIUM",
+      "roi_score": 8.5,
+      "instances": [
+        {
+          "path": "olorin-front/src/services/fraudInvestigationService.ts",
+          "start": 1,
+          "end": 280,
+          "language": "typescript",
+          "lines": 280
+        },
+        {
+          "path": "olorin-front/src/microservices/*/services/*.ts",
+          "pattern": "6 microservices, ~18 service files",
+          "language": "typescript",
+          "lines": 700
+        }
+      ],
+      "total_lines_duplicated": 980,
+      "duplicated_patterns": {
+        "axios_instance_creation": { "occurrences": 12, "lines_each": 25, "total": 300 },
+        "error_handling_wrapper": { "occurrences": 18, "lines_each": 35, "total": 630 },
+        "request_interceptors": { "occurrences": 10, "lines_each": 15, "total": 150 },
+        "response_interceptors": { "occurrences": 10, "lines_each": 18, "total": 180 },
+        "retry_logic": { "occurrences": 8, "lines_each": 40, "total": 320 },
+        "auth_header_injection": { "occurrences": 15, "lines_each": 12, "total": 180 }
+      },
+      "canonical_proposal": {
+        "target": "olorin-front/src/shared/services/http/",
+        "structure": {
+          "HttpClient": "Base HTTP client with dependency injection",
+          "interceptors": "Modular request/response/error/retry interceptors",
+          "errors": "Custom error types and handlers"
+        },
+        "description": "DI-based HTTP client pattern with composable interceptors",
+        "signature_or_contract": "HttpClient interface with typed methods",
+        "backcompat": true,
+        "adapters_needed": []
+      },
+      "risk": "medium",
+      "effort_hours": 10,
+      "lines_saved": 680,
+      "maintenance_reduction_pct": 70,
+      "bug_risk_reduction_pct": 75,
+      "tests_to_add_or_update": [
+        "HTTP client unit tests",
+        "Interceptor tests",
+        "Integration tests for each service",
+        "Error handling tests"
+      ],
+      "perf_notes": "No performance impact - same underlying Axios library"
+    },
+    {
+      "id": "CC-006",
+      "rank": 6,
+      "name": "WebSocket Management",
+      "type": "T2",
+      "similarity": 0.85,
+      "priority": "MEDIUM",
+      "roi_score": 8.2,
+      "instances": [
+        {
+          "path": "olorin-front/src/shared/services/WebSocketManager.ts",
+          "start": 1,
+          "end": 180,
+          "language": "typescript",
+          "lines": 180
+        },
+        {
+          "path": "Investigation progress WebSocket handlers",
+          "pattern": "3 locations",
+          "language": "typescript",
+          "lines": 135
+        },
+        {
+          "path": "Agent analytics WebSocket handlers",
+          "pattern": "2 locations",
+          "language": "typescript",
+          "lines": 85
+        },
+        {
+          "path": "Real-time updates WebSocket handlers",
+          "pattern": "3 locations",
+          "language": "typescript",
+          "lines": 120
+        }
+      ],
+      "total_lines_duplicated": 420,
+      "duplicated_patterns": {
+        "connection_management": { "occurrences": 4, "lines_each": 45, "total": 180 },
+        "reconnection_logic": { "occurrences": 5, "lines_each": 35, "total": 175 },
+        "event_listener_registration": { "occurrences": 8, "lines_each": 20, "total": 160 },
+        "message_parsing": { "occurrences": 6, "lines_each": 15, "total": 90 },
+        "error_handling": { "occurrences": 5, "lines_each": 18, "total": 90 }
+      },
+      "canonical_proposal": {
+        "target": "olorin-front/src/shared/services/websocket/",
+        "structure": {
+          "WebSocketManager": "Core manager with typed events",
+          "events": "Event type definitions and handler registry",
+          "reconnect": "Exponential backoff reconnection strategy"
+        },
+        "description": "Single WebSocketManager with typed event handlers and automatic reconnection",
+        "signature_or_contract": "WebSocketManager class with typed event system",
+        "backcompat": true,
+        "adapters_needed": []
+      },
+      "risk": "low",
+      "effort_hours": 6,
+      "lines_saved": 320,
+      "maintenance_reduction_pct": 80,
+      "bug_risk_reduction_pct": 85,
+      "tests_to_add_or_update": [
+        "WebSocket connection tests",
+        "Reconnection logic tests",
+        "Event handling tests",
+        "Integration tests"
+      ],
+      "perf_notes": "Improved reliability with single connection manager"
+    },
+    {
+      "id": "CC-007",
+      "rank": 7,
+      "name": "React Hooks - Data Fetching",
+      "type": "T3",
+      "similarity": 0.65,
+      "priority": "MEDIUM",
+      "roi_score": 7.8,
+      "instances": [
+        {
+          "path": "Various components with data fetching hooks",
+          "pattern": "22 components with similar patterns",
+          "language": "typescript",
+          "lines": 520
+        }
+      ],
+      "total_lines_duplicated": 520,
+      "duplicated_patterns": {
+        "useState_useEffect_pattern": { "occurrences": 18, "description": "State + effect for data fetching" },
+        "fetch_loading_error_state": { "occurrences": 22, "description": "Triple state management" },
+        "polling_hooks": { "occurrences": 8, "description": "setInterval-based polling" },
+        "form_hooks": { "occurrences": 12, "description": "Form state + validation" }
+      },
+      "canonical_proposal": {
+        "target": "olorin-front/src/shared/hooks/",
+        "structure": {
+          "data": "useFetch, usePolling, useWebSocket, useQuery",
+          "form": "useForm, useValidation",
+          "state": "useLocalStorage, useSessionStorage"
+        },
+        "description": "Composable hook library for common patterns",
+        "signature_or_contract": "Generic hook interfaces with TypeScript",
+        "backcompat": true,
+        "adapters_needed": []
+      },
+      "risk": "high",
+      "effort_hours": 16,
+      "lines_saved": 390,
+      "maintenance_reduction_pct": 65,
+      "bug_risk_reduction_pct": 60,
+      "tests_to_add_or_update": [
+        "Hook unit tests using @testing-library/react-hooks",
+        "Component integration tests",
+        "Visual regression tests"
+      ],
+      "perf_notes": "Need to validate no performance regression - gradual migration recommended",
+      "migration_strategy": "Gradual migration with feature flags, component-by-component"
+    },
+    {
+      "id": "CC-008",
+      "rank": 8,
+      "name": "Test Utilities",
+      "type": "T1+T2",
+      "similarity": 0.88,
+      "priority": "LOW",
+      "roi_score": 7.2,
+      "instances": [
+        {
+          "path": "Frontend test files",
+          "pattern": "42 test files with duplicate setup/teardown",
+          "language": "typescript",
+          "lines": 380
+        },
+        {
+          "path": "Backend test files",
+          "pattern": "30+ test files with duplicate fixtures",
+          "language": "python",
+          "lines": 300
+        }
+      ],
+      "total_lines_duplicated": 680,
+      "duplicated_patterns": {
+        "test_setup_teardown": { "occurrences": 30, "description": "Before/after hooks" },
+        "mock_data_generators": { "occurrences": 15, "description": "Test data creation" },
+        "assertion_helpers": { "occurrences": 12, "description": "Custom assertions" },
+        "test_fixtures": { "occurrences": 20, "description": "Shared test data" }
+      },
+      "canonical_proposal": {
+        "frontend_target": "olorin-front/src/shared/testing/",
+        "backend_target": "olorin-server/tests/fixtures/",
+        "description": "Centralized test utilities and fixtures for both repos",
+        "signature_or_contract": "Shared test helpers and factories",
+        "backcompat": true,
+        "adapters_needed": []
+      },
+      "risk": "low",
+      "effort_hours": 8,
+      "lines_saved": 540,
+      "maintenance_reduction_pct": 75,
+      "bug_risk_reduction_pct": 50,
+      "tests_to_add_or_update": [
+        "Tests for test utilities themselves",
+        "Migration validation tests"
+      ],
+      "perf_notes": "No impact on production code"
+    },
+    {
+      "id": "CC-009",
+      "rank": 9,
+      "name": "Error Handling Patterns",
+      "type": "T2",
+      "similarity": 0.75,
+      "priority": "MEDIUM",
+      "roi_score": 6.8,
+      "instances": [
+        {
+          "path": "Various error handling implementations",
+          "pattern": "16 files with similar error handling",
+          "language": "typescript",
+          "lines": 340
+        }
+      ],
+      "total_lines_duplicated": 340,
+      "canonical_proposal": {
+        "target": "olorin-front/src/shared/errors/",
+        "description": "Centralized error handling with custom error types",
+        "signature_or_contract": "Error class hierarchy with typed errors",
+        "backcompat": true,
+        "adapters_needed": []
+      },
+      "risk": "medium",
+      "effort_hours": 6,
+      "lines_saved": 240,
+      "maintenance_reduction_pct": 70,
+      "bug_risk_reduction_pct": 65,
+      "tests_to_add_or_update": [
+        "Error handling tests",
+        "Error recovery tests"
+      ],
+      "perf_notes": "No performance impact"
+    },
+    {
+      "id": "CC-010",
+      "rank": 10,
+      "name": "CI/CD Configuration",
+      "type": "T1",
+      "similarity": 0.92,
+      "priority": "LOW",
+      "roi_score": 6.5,
+      "instances": [
+        {
+          "path": ".github/workflows/*.yml",
+          "pattern": "8 workflow files with duplicates",
+          "language": "yaml",
+          "lines": 340
+        }
+      ],
+      "total_lines_duplicated": 340,
+      "duplicated_patterns": {
+        "lint_jobs": { "occurrences": 3, "description": "Duplicate lint definitions" },
+        "test_jobs": { "occurrences": 4, "description": "Duplicate test definitions" },
+        "build_configs": { "occurrences": 3, "description": "Duplicate build steps" }
+      },
+      "canonical_proposal": {
+        "target": ".github/workflows/",
+        "approach": "reusable_workflows",
+        "description": "GitHub Actions reusable workflows and composite actions",
+        "signature_or_contract": "Workflow call interface",
+        "backcompat": true,
+        "adapters_needed": []
+      },
+      "risk": "very_low",
+      "effort_hours": 4,
+      "lines_saved": 260,
+      "maintenance_reduction_pct": 80,
+      "bug_risk_reduction_pct": 70,
+      "tests_to_add_or_update": [
+        "CI pipeline validation"
+      ],
+      "perf_notes": "May improve CI performance with better caching"
+    }
+  ],
+  "pr_plan": [
+    {
+      "pr_id": "PR-1",
+      "phase": 1,
+      "week": 1,
+      "title": "Configuration Centralization",
+      "cluster_ids": ["CC-003"],
+      "scope": "olorin-front/src/shared/config/",
+      "description": "Consolidate all configuration with Zod validation",
+      "steps": [
+        "Create /src/shared/config/ structure",
+        "Implement Zod schemas for app, features, services, ui config",
+        "Create centralized AppConfig class",
+        "Migrate all config consumers",
+        "Delete duplicate config files",
+        "Update documentation"
+      ],
+      "dependencies": [],
+      "owners": ["@orchestrator", "@react-expert"],
+      "effort_hours": 4,
+      "risk": "low",
+      "lines_saved": 520,
+      "files_modified": 18,
+      "files_deleted": 12,
+      "files_created": 8,
+      "checks": [
+        "Config validation tests pass",
+        "Environment variable validation works",
+        "All services use centralized config",
+        "Build succeeds",
+        "All tests pass"
+      ],
+      "rollback": "Simple - revert single PR",
+      "blast_radius": "medium"
+    },
+    {
+      "pr_id": "PR-2",
+      "phase": 1,
+      "week": 1,
+      "title": "Investigation Types Unification (Frontend)",
+      "cluster_ids": ["CC-001"],
+      "scope": "olorin-front/src/shared/types/investigation/",
+      "description": "Unify 3 duplicate TypeScript investigation type definitions",
+      "steps": [
+        "Choose canonical: /src/shared/types/investigation/",
+        "Delete /src/types/investigation.ts",
+        "Update imports using codemod",
+        "Verify TypeScript compilation",
+        "Run all tests"
+      ],
+      "dependencies": [],
+      "owners": ["@orchestrator", "@typescript-pro"],
+      "effort_hours": 6,
+      "risk": "medium",
+      "lines_saved": 210,
+      "files_modified": 30,
+      "files_deleted": 2,
+      "files_created": 0,
+      "checks": [
+        "TypeScript compilation succeeds",
+        "All tests pass",
+        "No runtime type errors",
+        "Imports updated across codebase"
+      ],
+      "rollback": "Medium complexity - requires type import updates",
+      "blast_radius": "high"
+    },
+    {
+      "pr_id": "PR-3",
+      "phase": 2,
+      "week": 2,
+      "title": "OpenAPI Schema Generation (Backend)",
+      "cluster_ids": ["CC-004"],
+      "scope": "olorin-server/scripts/",
+      "description": "Generate OpenAPI 3.1 spec from Pydantic schemas",
+      "steps": [
+        "Install openapi-schema-pydantic",
+        "Create /scripts/generate_openapi.py",
+        "Generate OpenAPI spec",
+        "Add to CI pipeline",
+        "Validate spec"
+      ],
+      "dependencies": [],
+      "owners": ["@orchestrator", "@fastapi-expert"],
+      "effort_hours": 8,
+      "risk": "low",
+      "lines_saved": 150,
+      "files_modified": 2,
+      "files_deleted": 0,
+      "files_created": 2,
+      "checks": [
+        "Valid OpenAPI 3.1 spec generated",
+        "Schema validation passes",
+        "All Pydantic models included",
+        "CI pipeline updated"
+      ],
+      "rollback": "Trivial - remove script",
+      "blast_radius": "low"
+    },
+    {
+      "pr_id": "PR-4",
+      "phase": 2,
+      "week": 2,
+      "title": "TypeScript Type Generation (Frontend)",
+      "cluster_ids": ["CC-004"],
+      "scope": "olorin-front/src/api/generated/",
+      "description": "Auto-generate TypeScript types from OpenAPI spec",
+      "steps": [
+        "Install openapi-typescript",
+        "Create type generation script",
+        "Generate TypeScript types",
+        "Update imports to use generated types",
+        "Delete manual type definitions",
+        "Verify build and tests"
+      ],
+      "dependencies": ["PR-3"],
+      "owners": ["@orchestrator", "@typescript-pro"],
+      "effort_hours": 6,
+      "risk": "medium",
+      "lines_saved": 350,
+      "files_modified": 40,
+      "files_deleted": 10,
+      "files_created": 2,
+      "checks": [
+        "TypeScript types generated successfully",
+        "Types match backend schemas exactly",
+        "Contract tests pass",
+        "All imports updated",
+        "Build succeeds"
+      ],
+      "rollback": "Medium - revert to manual types",
+      "blast_radius": "high"
+    },
+    {
+      "pr_id": "PR-5",
+      "phase": 2,
+      "week": 2,
+      "title": "Contract Testing Pipeline",
+      "cluster_ids": ["CC-004"],
+      "scope": ".github/workflows/",
+      "description": "Setup contract testing with Dredd/Schemathesis",
+      "steps": [
+        "Install contract testing tools",
+        "Create contract test workflow",
+        "Add CI job to validate schemas",
+        "Block merges on contract violations",
+        "Update documentation"
+      ],
+      "dependencies": ["PR-3", "PR-4"],
+      "owners": ["@orchestrator", "@devops-automator"],
+      "effort_hours": 4,
+      "risk": "low",
+      "lines_saved": 0,
+      "files_modified": 2,
+      "files_deleted": 0,
+      "files_created": 1,
+      "checks": [
+        "Contract tests pass",
+        "CI blocks merges on contract violations",
+        "Documentation updated"
+      ],
+      "rollback": "Trivial - disable CI job",
+      "blast_radius": "low"
+    },
+    {
+      "pr_id": "PR-6",
+      "phase": 3,
+      "week": 3,
+      "title": "Centralized Validation Library",
+      "cluster_ids": ["CC-002"],
+      "scope": "olorin-front/src/shared/validation/",
+      "description": "Consolidate 28 duplicate validation implementations",
+      "steps": [
+        "Create /src/shared/validation/ structure",
+        "Implement Zod schemas",
+        "Implement validators",
+        "Migrate consumers one by one",
+        "Delete duplicate implementations",
+        "Update tests and documentation"
+      ],
+      "dependencies": ["PR-1"],
+      "owners": ["@orchestrator", "@react-expert", "@typescript-pro"],
+      "effort_hours": 12,
+      "risk": "medium",
+      "lines_saved": 840,
+      "files_modified": 35,
+      "files_deleted": 15,
+      "files_created": 12,
+      "checks": [
+        "All validation tests pass",
+        "100% test coverage for validators",
+        "Zod schemas aligned with OpenAPI",
+        "All consumers migrated",
+        "Build succeeds"
+      ],
+      "rollback": "Complex - requires validation logic restoration",
+      "blast_radius": "high"
+    },
+    {
+      "pr_id": "PR-7",
+      "phase": 4,
+      "week": 4,
+      "title": "HTTP Client Abstraction",
+      "cluster_ids": ["CC-005"],
+      "scope": "olorin-front/src/shared/services/http/",
+      "description": "Create base HTTP client and migrate 24 services",
+      "steps": [
+        "Create /src/shared/services/http/ structure",
+        "Implement HttpClient with DI",
+        "Implement interceptors",
+        "Migrate services one microservice at a time",
+        "Update composition root",
+        "Delete duplicate implementations"
+      ],
+      "dependencies": ["PR-1"],
+      "owners": ["@orchestrator", "@react-expert"],
+      "effort_hours": 10,
+      "risk": "medium",
+      "lines_saved": 680,
+      "files_modified": 30,
+      "files_deleted": 12,
+      "files_created": 8,
+      "checks": [
+        "Integration tests pass",
+        "All API calls work correctly",
+        "Error handling validated",
+        "Retry logic tested",
+        "Auth interceptors functional"
+      ],
+      "rollback": "Medium - service-by-service rollback",
+      "blast_radius": "high"
+    },
+    {
+      "pr_id": "PR-8",
+      "phase": 4,
+      "week": 4,
+      "title": "WebSocket Manager Consolidation",
+      "cluster_ids": ["CC-006"],
+      "scope": "olorin-front/src/shared/services/websocket/",
+      "description": "Consolidate 8 WebSocket implementations",
+      "steps": [
+        "Create /src/shared/services/websocket/ structure",
+        "Implement WebSocketManager",
+        "Implement reconnection logic",
+        "Migrate WebSocket consumers",
+        "Delete duplicate implementations"
+      ],
+      "dependencies": ["PR-1"],
+      "owners": ["@orchestrator", "@react-expert"],
+      "effort_hours": 6,
+      "risk": "low",
+      "lines_saved": 320,
+      "files_modified": 12,
+      "files_deleted": 6,
+      "files_created": 4,
+      "checks": [
+        "WebSocket integration tests pass",
+        "Real-time updates work",
+        "Reconnection logic tested",
+        "Event handlers validated"
+      ],
+      "rollback": "Easy - revert single file",
+      "blast_radius": "medium"
+    },
+    {
+      "pr_id": "PR-9",
+      "phase": 5,
+      "week": 5,
+      "title": "Composable Data Hooks",
+      "cluster_ids": ["CC-007"],
+      "scope": "olorin-front/src/shared/hooks/",
+      "description": "Create composable hooks and migrate 35 implementations",
+      "steps": [
+        "Create /src/shared/hooks/ structure",
+        "Implement data hooks (useFetch, usePolling, useWebSocket)",
+        "Implement form hooks",
+        "Migrate components one by one with feature flags",
+        "Delete duplicate implementations",
+        "Run visual regression tests"
+      ],
+      "dependencies": ["PR-7"],
+      "owners": ["@orchestrator", "@react-expert"],
+      "effort_hours": 16,
+      "risk": "high",
+      "lines_saved": 390,
+      "files_modified": 45,
+      "files_deleted": 20,
+      "files_created": 10,
+      "checks": [
+        "Component tests pass",
+        "Visual regression tests pass",
+        "Performance benchmarks maintained",
+        "All hooks migrated",
+        "Documentation complete"
+      ],
+      "rollback": "Complex - component-by-component",
+      "blast_radius": "very_high",
+      "migration_strategy": "Gradual, one component at a time with feature flags"
+    },
+    {
+      "pr_id": "PR-10",
+      "phase": 6,
+      "week": 6,
+      "title": "Test Utilities Consolidation",
+      "cluster_ids": ["CC-008"],
+      "scope": "olorin-front/src/shared/testing/ and olorin-server/tests/fixtures/",
+      "description": "Centralize test utilities in both repos",
+      "steps": [
+        "Create /src/shared/testing/ (frontend)",
+        "Create /tests/fixtures/ (backend)",
+        "Consolidate test utilities",
+        "Migrate test files",
+        "Delete duplicate utilities"
+      ],
+      "dependencies": [],
+      "owners": ["@orchestrator", "@test-automation-expert"],
+      "effort_hours": 8,
+      "risk": "low",
+      "lines_saved": 540,
+      "files_modified": 50,
+      "files_deleted": 25,
+      "files_created": 12,
+      "checks": [
+        "All tests still pass",
+        "Test coverage maintained",
+        "Test performance acceptable"
+      ],
+      "rollback": "Trivial",
+      "blast_radius": "low"
+    },
+    {
+      "pr_id": "PR-11",
+      "phase": 6,
+      "week": 6,
+      "title": "CI/CD Workflow Consolidation",
+      "cluster_ids": ["CC-010"],
+      "scope": ".github/workflows/",
+      "description": "Create reusable GitHub Actions workflows",
+      "steps": [
+        "Create reusable workflow definitions",
+        "Migrate existing workflows to use reusable workflows",
+        "Delete duplicate workflow definitions",
+        "Validate CI pipeline"
+      ],
+      "dependencies": [],
+      "owners": ["@orchestrator", "@devops-automator"],
+      "effort_hours": 4,
+      "risk": "low",
+      "lines_saved": 260,
+      "files_modified": 10,
+      "files_deleted": 5,
+      "files_created": 3,
+      "checks": [
+        "CI pipeline works",
+        "All jobs execute correctly",
+        "Build times acceptable"
+      ],
+      "rollback": "Trivial",
+      "blast_radius": "very_low"
+    }
+  ],
+  "codemod_scripts": {
+    "migrate_investigation_imports": {
+      "path": "scripts/codemods/migrate-investigation-imports.ts",
+      "description": "Update investigation type imports to canonical location",
+      "usage": "npx jscodeshift -t scripts/codemods/migrate-investigation-imports.ts src/"
+    },
+    "migrate_validation": {
+      "path": "scripts/codemods/migrate-validation.ts",
+      "description": "Consolidate validation calls to centralized validators",
+      "usage": "npx jscodeshift -t scripts/codemods/migrate-validation.ts src/"
+    },
+    "migrate_config": {
+      "path": "scripts/codemods/migrate-config.ts",
+      "description": "Replace process.env access with centralized config",
+      "usage": "npx jscodeshift -t scripts/codemods/migrate-config.ts src/"
+    }
+  },
+  "risk_assessment": {
+    "high_risk_prs": ["PR-9"],
+    "medium_risk_prs": ["PR-2", "PR-4", "PR-6", "PR-7"],
+    "low_risk_prs": ["PR-1", "PR-3", "PR-5", "PR-8", "PR-10", "PR-11"],
+    "mitigation_strategies": {
+      "PR-9": "Gradual migration with feature flags, visual regression testing, component-by-component rollout"
+    }
+  },
+  "success_metrics": {
+    "quantitative": {
+      "duplicate_code_lines": { "before": 8400, "after": 2688, "target": 3000 },
+      "duplication_percentage": { "before": 12.0, "after": 3.8, "target": 5.0 },
+      "configuration_files": { "before": 18, "after": 1, "target": 1 },
+      "validation_implementations": { "before": 28, "after": 1, "target": 1 },
+      "service_implementations": { "before": 24, "after": "1 base + services", "target": "minimal" },
+      "type_definition_files": { "before": 15, "after": 1, "target": 1 }
+    },
+    "qualitative": [
+      "Single source of truth for all types",
+      "Contract-driven development established",
+      "Type safety guaranteed between layers",
+      "Configuration centralized with validation",
+      "Validation consistent across codebase",
+      "Service layer follows DI pattern",
+      "Test utilities centralized",
+      "CI/CD workflows optimized"
+    ]
+  },
+  "next_steps": {
+    "immediate": [
+      "Approve PR plan",
+      "Assign owners to each PR",
+      "Create Jira epics/stories",
+      "Reserve team calendars for 6-week sprint",
+      "Communicate to stakeholders"
+    ],
+    "phase_1_priority": [
+      "PR-1: Configuration Centralization (Low risk, high foundation value)",
+      "PR-2: Investigation Types Unification (Medium risk, critical for type safety)"
+    ]
+  }
+}

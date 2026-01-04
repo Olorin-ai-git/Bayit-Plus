@@ -76,7 +76,7 @@ class AgentFramework(ABC):
 from typing import List, Dict, Any, AsyncIterator
 from langgraph import Graph
 from .base import AgentFramework
-from ..autonomous_agents import AutonomousInvestigationAgent
+from ..structured_agents import StructuredInvestigationAgent
 from ..models.investigation import InvestigationRequest, InvestigationResult
 
 class LangGraphFramework(AgentFramework):
@@ -85,7 +85,7 @@ class LangGraphFramework(AgentFramework):
     def __init__(self, config: Dict[str, Any]):
         super().__init__(config)
         self.graph: Optional[Graph] = None
-        self.agents: Dict[str, AutonomousInvestigationAgent] = {}
+        self.agents: Dict[str, StructuredInvestigationAgent] = {}
     
     async def initialize(self) -> None:
         """Initialize LangGraph components"""
@@ -110,7 +110,7 @@ class LangGraphFramework(AgentFramework):
         request: InvestigationRequest
     ) -> InvestigationResult:
         """Execute investigation using LangGraph orchestration"""
-        # Use existing autonomous_investigate function
+        # Use existing structured_investigate function
         # Adapt to unified interface
         # Handle parallel/sequential execution
         pass
@@ -226,7 +226,7 @@ class FrameworkConfig(BaseModel):
     investigation_timeout_seconds: int = Field(default=300, ge=30, le=1800)
     
     # Feature Flags
-    enable_autonomous_mode: bool = True
+    enable_structured_mode: bool = True
     enable_streaming: bool = True
     enable_tool_validation: bool = True
     enable_result_caching: bool = True
@@ -248,7 +248,7 @@ class FrameworkConfig(BaseModel):
 ENV_MAPPING = {
     "OLORIN_AGENT_FRAMEWORK": "default_framework",
     "OLORIN_AGENT_PARALLEL_MODE": "enable_parallel_execution",
-    "OLORIN_AGENT_AUTONOMOUS_MODE": "enable_autonomous_mode",
+    "OLORIN_AGENT_AUTONOMOUS_MODE": "enable_structured_mode",
     "OLORIN_AGENT_MAX_CONCURRENT": "max_concurrent_agents",
     "OLORIN_AGENT_TIMEOUT": "investigation_timeout_seconds",
 }
@@ -307,7 +307,7 @@ class ConfigLoader:
         
         # Boolean flags
         for env_key, config_key in [
-            ("OLORIN_AGENT_AUTONOMOUS_MODE", "enable_autonomous_mode"),
+            ("OLORIN_AGENT_AUTONOMOUS_MODE", "enable_structured_mode"),
             ("OLORIN_AGENT_STREAMING", "enable_streaming"),
             ("OLORIN_AGENT_TOOL_VALIDATION", "enable_tool_validation"),
         ]:

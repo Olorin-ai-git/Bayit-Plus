@@ -1,16 +1,16 @@
-# Autonomous Mode Default Architecture Diagram
+# Structured Mode Default Architecture Diagram
 
 **Date:** January 4, 2025  
-**Related Plan:** [2025-01-04-autonomous-mode-default-implementation-plan.md](../plans/2025-01-04-autonomous-mode-default-implementation-plan.md)
+**Related Plan:** [2025-01-04-structured-mode-default-implementation-plan.md](../plans/2025-01-04-structured-mode-default-implementation-plan.md)
 
 ## System Architecture Overview
 
 ```mermaid
 graph TB
     subgraph "Frontend Configuration Layer"
-        A[Environment Config<br/>environment.ts] --> B{Default Autonomous Mode?}
-        B -->|Yes| C[autonomousMode = true]
-        B -->|No| D[autonomousMode = false]
+        A[Environment Config<br/>environment.ts] --> B{Default Structured Mode?}
+        B -->|Yes| C[structuredMode = true]
+        B -->|No| D[structuredMode = false]
         
         E[User Local Storage<br/>Preference] --> F{Saved Preference?}
         F -->|Yes| G[Load Saved Preference]
@@ -24,8 +24,8 @@ graph TB
     
     subgraph "Component State Management"
         I --> J[InvestigationPage<br/>useState Hook]
-        J --> K{Autonomous Mode?}
-        K -->|Yes| L[EnhancedAutonomousInvestigationPanel]
+        J --> K{Structured Mode?}
+        K -->|Yes| L[EnhancedStructuredInvestigationPanel]
         K -->|No| M[ManualInvestigationPanel]
     end
     
@@ -37,7 +37,7 @@ graph TB
     end
     
     subgraph "Investigation Flow"
-        L --> S[Autonomous Investigation<br/>WebSocket Flow]
+        L --> S[Structured Investigation<br/>WebSocket Flow]
         M --> T[Manual Investigation<br/>Step-by-step Flow]
         
         S --> U[LangGraph Agents]
@@ -85,7 +85,7 @@ sequenceDiagram
     Note over U,FS: Application Startup
     
     F->>ENV: Load environment config
-    ENV->>F: defaultAutonomousMode = true
+    ENV->>F: defaultStructuredMode = true
     
     F->>LS: Check saved preference
     alt Preference exists
@@ -107,8 +107,8 @@ sequenceDiagram
     F->>LS: Save user preference
     F->>F: Update component state
     
-    alt Autonomous Mode
-        F->>BE: Start autonomous investigation
+    alt Structured Mode
+        F->>BE: Start structured investigation
         BE->>F: WebSocket updates
     else Manual Mode
         F->>U: Display manual tools
@@ -127,27 +127,27 @@ stateDiagram-v2
     CheckLocalStorage --> UseLocalStorage: Preference exists
     CheckLocalStorage --> UseEnvironmentDefault: No preference
     
-    UseLocalStorage --> AutonomousMode: Preference = true
+    UseLocalStorage --> StructuredMode: Preference = true
     UseLocalStorage --> ManualMode: Preference = false
     
-    UseEnvironmentDefault --> AutonomousMode: ENV default = true
+    UseEnvironmentDefault --> StructuredMode: ENV default = true
     UseEnvironmentDefault --> ManualMode: ENV default = false
     
-    AutonomousMode --> InvestigationActive: Start investigation
+    StructuredMode --> InvestigationActive: Start investigation
     ManualMode --> InvestigationActive: Start investigation
     
     InvestigationActive --> UserToggle: User changes mode
     InvestigationActive --> InvestigationComplete: Investigation finished
     
     UserToggle --> SavePreference: Update preference
-    SavePreference --> AutonomousMode: Switch to autonomous
+    SavePreference --> StructuredMode: Switch to structured
     SavePreference --> ManualMode: Switch to manual
     
     InvestigationComplete --> [*]: Investigation closed
     
     note right of UseEnvironmentDefault
         New default behavior:
-        autonomous mode = true
+        structured mode = true
     end note
     
     note left of SavePreference
@@ -161,8 +161,8 @@ stateDiagram-v2
 ```mermaid
 graph TD
     subgraph "InvestigationPage Component"
-        A[State: autonomousMode] --> B{Mode Check}
-        B -->|true| C[EnhancedAutonomousInvestigationPanel]
+        A[State: structuredMode] --> B{Mode Check}
+        B -->|true| C[EnhancedStructuredInvestigationPanel]
         B -->|false| D[ManualInvestigationPanel]
     end
     
@@ -172,7 +172,7 @@ graph TD
         H[3. Server Config<br/>Lowest Priority] --> F
     end
     
-    subgraph "Autonomous Investigation Components"
+    subgraph "Structured Investigation Components"
         C --> I[WebSocket Connection]
         C --> J[Progress Tracker]
         C --> K[Real-time Updates]
@@ -203,12 +203,12 @@ graph TD
     
     %% Styling
     classDef priorityNode fill:#ffecb3,stroke:#ff8f00,stroke-width:2px
-    classDef autonomousNode fill:#c8e6c9,stroke:#4caf50,stroke-width:2px
+    classDef structuredNode fill:#c8e6c9,stroke:#4caf50,stroke-width:2px
     classDef manualNode fill:#ffcdd2,stroke:#f44336,stroke-width:2px
     classDef commonNode fill:#e1bee7,stroke:#9c27b0,stroke-width:2px
     
     class E,G,H,F priorityNode
-    class C,I,J,K,L,M,N autonomousNode
+    class C,I,J,K,L,M,N structuredNode
     class D,O,P,Q,R,S,T manualNode
     class A,B,U,V,W,X commonNode
 ```

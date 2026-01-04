@@ -25,7 +25,7 @@ const LanguageSelector: React.FC = () => {
     <div className="relative">
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="flex items-center space-x-2 px-3 py-2 text-gray-600 hover:text-gray-900 transition-colors duration-200 rounded-lg hover:bg-gray-100"
+        className="flex items-center space-x-2 px-3 py-2 text-corporate-textSecondary hover:text-corporate-accentPrimary transition-colors duration-200 rounded-lg hover:bg-corporate-hover"
         aria-label="Select language"
       >
         <Globe className="h-4 w-4" />
@@ -42,19 +42,19 @@ const LanguageSelector: React.FC = () => {
       </button>
 
       {isOpen && (
-        <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-200 py-1 z-50">
+        <div className="absolute right-0 mt-2 w-48 bg-corporate-bgSecondary rounded-lg shadow-lg border border-corporate-borderPrimary/40 py-1 z-50 backdrop-blur-md">
           {languages.map((language) => (
             <button
               key={language.code}
               onClick={() => handleLanguageChange(language.code)}
-              className={`flex items-center space-x-3 w-full px-4 py-2 text-left hover:bg-gray-50 transition-colors duration-200 ${
-                i18n.language === language.code ? 'bg-blue-50 text-blue-700' : 'text-gray-700'
+              className={`flex items-center space-x-3 w-full px-4 py-2 text-left hover:bg-corporate-hover transition-colors duration-200 ${
+                i18n.language === language.code ? 'bg-corporate-accentPrimary/20 text-corporate-accentPrimary' : 'text-corporate-textSecondary'
               }`}
             >
               <span className="text-lg">{language.flag}</span>
               <span className="text-sm font-medium">{language.name}</span>
               {i18n.language === language.code && (
-                <svg className="h-4 w-4 ml-auto text-blue-600" fill="currentColor" viewBox="0 0 20 20">
+                <svg className="h-4 w-4 ml-auto text-corporate-accentPrimary" fill="currentColor" viewBox="0 0 20 20">
                   <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
                 </svg>
               )}

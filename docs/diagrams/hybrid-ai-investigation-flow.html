@@ -1,0 +1,480 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hybrid AI-Driven Investigation Flow</title>
+    <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            overflow: hidden;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #2c3e50, #3498db);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+        
+        .header h1 {
+            margin: 0;
+            font-size: 2.5em;
+            font-weight: 700;
+        }
+        
+        .header p {
+            margin: 10px 0 0 0;
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+        
+        .content {
+            padding: 30px;
+        }
+        
+        .section {
+            margin-bottom: 40px;
+            padding: 25px;
+            border-radius: 8px;
+            border-left: 4px solid #3498db;
+            background: #f8fafc;
+        }
+        
+        .section h2 {
+            color: #2c3e50;
+            margin-top: 0;
+            font-size: 1.8em;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .confidence-levels {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin: 20px 0;
+        }
+        
+        .confidence-card {
+            padding: 20px;
+            border-radius: 8px;
+            border-left: 4px solid;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .confidence-high {
+            border-left-color: #27ae60;
+            background: #ecf7ed;
+        }
+        
+        .confidence-medium {
+            border-left-color: #f39c12;
+            background: #fef6e7;
+        }
+        
+        .confidence-low {
+            border-left-color: #e74c3c;
+            background: #fdf2f2;
+        }
+        
+        .comparison-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .comparison-table th,
+        .comparison-table td {
+            padding: 15px;
+            text-align: left;
+            border-bottom: 1px solid #e1e8ed;
+        }
+        
+        .comparison-table th {
+            background: #34495e;
+            color: white;
+            font-weight: 600;
+        }
+        
+        .comparison-table tr:hover {
+            background: #f8fafc;
+        }
+        
+        .benefit-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin: 20px 0;
+        }
+        
+        .benefit-card {
+            padding: 20px;
+            border-radius: 8px;
+            background: white;
+            border: 2px solid #e1e8ed;
+            transition: all 0.3s ease;
+        }
+        
+        .benefit-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+            border-color: #3498db;
+        }
+        
+        .benefit-card h3 {
+            color: #2c3e50;
+            margin-top: 0;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .mermaid {
+            background: white;
+            border-radius: 8px;
+            margin: 20px 0;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .implementation-timeline {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin: 20px 0;
+        }
+        
+        .sprint-card {
+            padding: 20px;
+            border-radius: 8px;
+            background: white;
+            border-top: 4px solid #3498db;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .sprint-card h3 {
+            color: #2c3e50;
+            margin-top: 0;
+        }
+        
+        .sprint-card ul {
+            padding-left: 20px;
+        }
+        
+        .sprint-card li {
+            margin-bottom: 8px;
+        }
+        
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2em;
+            }
+            
+            .content {
+                padding: 20px;
+            }
+            
+            .section {
+                padding: 20px;
+            }
+        }
+        
+        .status-indicator {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.8em;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+        
+        .status-pending {
+            background: #fff3cd;
+            color: #856404;
+            border: 1px solid #ffeaa7;
+        }
+        
+        .status-progress {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        
+        .emoji {
+            font-style: normal;
+            font-size: 1.2em;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1><span class="emoji">🧠</span> Hybrid AI-Driven Investigation System</h1>
+            <p>Uniting AI Intelligence with Safety Mechanisms</p>
+            <span class="status-indicator status-pending">Pending Approval</span>
+        </div>
+        
+        <div class="content">
+            <div class="section">
+                <h2><span class="emoji">⚡</span> Current vs Hybrid System Comparison</h2>
+                <table class="comparison-table">
+                    <thead>
+                        <tr>
+                            <th>Aspect</th>
+                            <th>Current System</th>
+                            <th>Hybrid AI System</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Routing Logic</strong></td>
+                            <td>Mechanical counters force progression</td>
+                            <td>AI confidence-based intelligent routing</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Phase Transitions</strong></td>
+                            <td>Rigid sequential phases</td>
+                            <td>Adaptive phase skipping and extension</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Tool Selection</strong></td>
+                            <td>Override AI tool selection with limits</td>
+                            <td>Trust AI selection when confidence ≥ 0.8</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Resource Efficiency</strong></td>
+                            <td>Waste resources on unnecessary tools</td>
+                            <td>Optimize based on AI analysis quality</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Adaptability</strong></td>
+                            <td>One-size-fits-all approach</td>
+                            <td>Dynamic strategy selection per investigation</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            
+            <div class="section">
+                <h2><span class="emoji">🎯</span> AI Confidence-Based Decision Framework</h2>
+                <div class="confidence-levels">
+                    <div class="confidence-card confidence-high">
+                        <h3><span class="emoji">🚀</span> High Confidence (≥0.8)</h3>
+                        <ul>
+                            <li><strong>Action:</strong> Trust AI decisions completely</li>
+                            <li><strong>Benefits:</strong> Skip unnecessary phases</li>
+                            <li><strong>Safety:</strong> Minimal oversight required</li>
+                            <li><strong>Example:</strong> Clear fraud pattern detected</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="confidence-card confidence-medium">
+                        <h3><span class="emoji">⚖️</span> Medium Confidence (0.4-0.8)</h3>
+                        <ul>
+                            <li><strong>Action:</strong> AI decisions with validation</li>
+                            <li><strong>Benefits:</strong> Balanced intelligence and safety</li>
+                            <li><strong>Safety:</strong> Validate before execution</li>
+                            <li><strong>Example:</strong> Mixed signals require analysis</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="confidence-card confidence-low">
+                        <h3><span class="emoji">🛡️</span> Low Confidence (<0.4)</h3>
+                        <ul>
+                            <li><strong>Action:</strong> Enhanced safety mechanisms</li>
+                            <li><strong>Benefits:</strong> Prevent poor decisions</li>
+                            <li><strong>Safety:</strong> Revert to mechanical limits</li>
+                            <li><strong>Example:</strong> Insufficient data for analysis</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="section">
+                <h2><span class="emoji">🔄</span> Hybrid Investigation Flow</h2>
+                <div class="mermaid">
+flowchart TD
+    A[Investigation Start] --> B[Data Ingestion]
+    B --> C[AI Confidence Assessment]
+    C --> D{Confidence Level?}
+    
+    D -->|High ≥0.8| E[Trust AI Decision]
+    D -->|Medium 0.4-0.8| F[AI + Safety Validation]
+    D -->|Low <0.4| G[Enhanced Safety Mode]
+    
+    E --> H{AI Recommendation}
+    H -->|Skip Phase| I[Jump to Optimal Phase]
+    H -->|Extend Phase| J[Deep Analysis]
+    H -->|Continue| K[Standard Flow]
+    
+    F --> L[Validate AI Decision]
+    L --> M{Validation Result}
+    M -->|Pass| N[Execute AI Decision]
+    M -->|Fail| O[Apply Safety Override]
+    
+    G --> P[Mechanical Routing]
+    P --> Q[Conservative Progression]
+    
+    I --> R[Domain Analysis]
+    J --> R
+    K --> R
+    N --> R
+    O --> R
+    Q --> R
+    
+    R --> S[Summary & Risk Assessment]
+    S --> T[Investigation Complete]
+    
+    style A fill:#e1f5fe
+    style E fill:#c8e6c9
+    style F fill:#fff3e0
+    style G fill:#ffebee
+    style T fill:#f3e5f5
+                </div>
+            </div>
+            
+            <div class="section">
+                <h2><span class="emoji">🏗️</span> Implementation Strategy</h2>
+                <div class="implementation-timeline">
+                    <div class="sprint-card">
+                        <h3><span class="emoji">🔧</span> Sprint 1: Foundation</h3>
+                        <ul>
+                            <li>Create intelligent_router.py</li>
+                            <li>Implement AI confidence framework</li>
+                            <li>Add decision tracking to state schema</li>
+                            <li>Unit tests for confidence calculation</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="sprint-card">
+                        <h3><span class="emoji">🔗</span> Sprint 2: Core Integration</h3>
+                        <ul>
+                            <li>Integrate StructuredOrchestrator strategies</li>
+                            <li>Replace mechanical routing logic</li>
+                            <li>Implement progressive safety framework</li>
+                            <li>Add decision history tracking</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="sprint-card">
+                        <h3><span class="emoji">⚡</span> Sprint 3: Advanced Features</h3>
+                        <ul>
+                            <li>Dynamic strategy selection</li>
+                            <li>Confidence-based phase management</li>
+                            <li>Real-time monitoring dashboard</li>
+                            <li>A/B testing framework</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="sprint-card">
+                        <h3><span class="emoji">🔍</span> Sprint 4: Quality Assurance</h3>
+                        <ul>
+                            <li>Comprehensive integration testing</li>
+                            <li>Performance and resource analysis</li>
+                            <li>Safety testing and validation</li>
+                            <li>Documentation and training</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="section">
+                <h2><span class="emoji">📈</span> Expected Benefits</h2>
+                <div class="benefit-grid">
+                    <div class="benefit-card">
+                        <h3><span class="emoji">🎯</span> Investigation Quality</h3>
+                        <p><strong>15% improvement</strong> in fraud detection accuracy through intelligent analysis adaptation</p>
+                    </div>
+                    
+                    <div class="benefit-card">
+                        <h3><span class="emoji">⚡</span> Resource Efficiency</h3>
+                        <p><strong>30% reduction</strong> in unnecessary tool executions by trusting AI confidence</p>
+                    </div>
+                    
+                    <div class="benefit-card">
+                        <h3><span class="emoji">🔄</span> Adaptability</h3>
+                        <p><strong>90% success rate</strong> in handling diverse investigation scenarios intelligently</p>
+                    </div>
+                    
+                    <div class="benefit-card">
+                        <h3><span class="emoji">🛡️</span> Safety Maintained</h3>
+                        <p><strong>99.9% reliability</strong> with progressive safety mechanisms as backup</p>
+                    </div>
+                    
+                    <div class="benefit-card">
+                        <h3><span class="emoji">⏱️</span> Investigation Speed</h3>
+                        <p><strong>25% reduction</strong> in average investigation time through smart routing</p>
+                    </div>
+                    
+                    <div class="benefit-card">
+                        <h3><span class="emoji">📊</span> Transparency</h3>
+                        <p><strong>Complete auditability</strong> of AI decisions with confidence tracking</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="section">
+                <h2><span class="emoji">🔍</span> AI Decision Logic Detail</h2>
+                <div class="mermaid">
+graph TD
+    subgraph "AI Confidence Calculation"
+        A1[Data Quality Score] --> C1[Confidence Calculator]
+        A2[Pattern Recognition Score] --> C1
+        A3[Historical Success Rate] --> C1
+        A4[Resource Availability] --> C1
+        C1 --> C2[Final Confidence 0.0-1.0]
+    end
+    
+    subgraph "Routing Decision Engine"
+        C2 --> D1{Confidence ≥ 0.8?}
+        D1 -->|Yes| E1[AI Priority Mode]
+        D1 -->|No| D2{Confidence ≥ 0.4?}
+        D2 -->|Yes| E2[Hybrid Validation Mode]
+        D2 -->|No| E3[Safety Override Mode]
+    end
+    
+    subgraph "Execution Strategies"
+        E1 --> F1[Skip Unnecessary Phases]
+        E1 --> F2[Extend Critical Analysis]
+        E2 --> F3[Validate AI Decisions]
+        E2 --> F4[Progressive Safety Checks]
+        E3 --> F5[Conservative Routing]
+        E3 --> F6[Mechanical Limits]
+    end
+    
+    style C2 fill:#e3f2fd
+    style E1 fill:#c8e6c9
+    style E2 fill:#fff3e0
+    style E3 fill:#ffebee
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        mermaid.initialize({
+            startOnLoad: true,
+            theme: 'default',
+            flowchart: {
+                curve: 'basis'
+            }
+        });
+    </script>
+</body>
+</html>

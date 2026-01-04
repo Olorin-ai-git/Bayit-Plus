@@ -109,8 +109,8 @@ legacy_compatibility:
 
 # Specialized logger configurations for existing components
 specialized_loggers:
-  # Autonomous investigation loggers
-  autonomous_investigation:
+  # Structured investigation loggers
+  structured_investigation:
     log_level: DEBUG
     log_format: structured
     log_outputs:

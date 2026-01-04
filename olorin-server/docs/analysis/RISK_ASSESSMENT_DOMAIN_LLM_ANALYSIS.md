@@ -226,10 +226,6 @@ Dynamic header extraction with fallback to configuration:
 
 ```python
 # Extract headers with fallback to settings_for_env
-<<<<<<< HEAD:back/docs/RISK_ASSESSMENT_DOMAIN_LLM_ANALYSIS.md
-olorin_tid_header = request.headers.get(
-    "olorin-tid", f"olorin-overall-risk-{user_id}"
-=======
 olorin_tid_header = request.headers.get(
     "olorin-tid", f"olorin-overall-risk-{user_id}"
 >>>>>>> restructure-projects:olorin-server/docs/RISK_ASSESSMENT_DOMAIN_LLM_ANALYSIS.md
@@ -254,12 +250,6 @@ agent_context = AgentContext(
         interaction_group_id=f"overall-risk-{user_id}",
         additional_metadata={"userId": user_id},
     ),
-<<<<<<< HEAD:back/docs/RISK_ASSESSMENT_DOMAIN_LLM_ANALYSIS.md
-    olorin_header=OlorinHeader(
-        olorin_tid=olorin_tid_header,
-        olorin_originating_assetalias=olorin_originating_assetalias_header,
-        olorin_experience_id=olorin_experience_id_header,
-=======
     olorin_header=OlorinHeader(
         olorin_tid=olorin_tid_header,
         olorin_originating_assetalias=olorin_originating_assetalias_header,

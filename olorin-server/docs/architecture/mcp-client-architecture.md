@@ -2,12 +2,12 @@
 
 ## Overview
 
-Olorin operates as an MCP **client**, not a server. It connects to external MCP servers to access specialized fraud detection capabilities while keeping its own tools internal for autonomous investigation workflows.
+Olorin operates as an MCP **client**, not a server. It connects to external MCP servers to access specialized fraud detection capabilities while keeping its own tools internal for structured investigation workflows.
 
 ## Key Architectural Decisions
 
 ### 1. Olorin as MCP Client Only
-- **Rationale**: Olorin runs autonomous investigations, it doesn't serve other clients
+- **Rationale**: Olorin runs structured investigations, it doesn't serve other clients
 - **Implementation**: Remove MCP server code, implement MCP client connections
 - **Benefits**: Clear separation of concerns, focused architecture
 

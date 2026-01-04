@@ -38,7 +38,7 @@ The `useFirebaseAnalytics` hook (`src/js/hooks/useFirebaseAnalytics.ts`) provide
 ### Investigation Events
 - **investigation_started**: When a new investigation is initiated
 - **investigation_completed**: When a manual investigation is completed
-- **autonomous_investigation_completed**: When an autonomous investigation is completed
+- **structured_investigation_completed**: When an structured investigation is completed
 
 ### Agent Activities
 - **analysis_started**: When an AI agent begins analysis

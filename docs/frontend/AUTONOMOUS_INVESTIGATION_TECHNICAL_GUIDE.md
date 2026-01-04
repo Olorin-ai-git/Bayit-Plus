@@ -1,8 +1,8 @@
-# 🤖 Autonomous Investigation Technical Guide
+# 🤖 Structured Investigation Technical Guide
 
 ## Overview
 
-The Autonomous Investigation system provides AI-powered fraud investigation
+The Structured Investigation system provides AI-powered fraud investigation
 capabilities with real-time monitoring and control. This guide covers the
 technical implementation, architecture, and development practices.
 
@@ -24,8 +24,8 @@ technical implementation, architecture, and development practices.
 
 ```mermaid
 graph TB
-    UI[Investigation UI] --> Hook[useAutonomousInvestigation Hook]
-    Hook --> Client[AutonomousInvestigationClient]
+    UI[Investigation UI] --> Hook[useStructuredInvestigation Hook]
+    Hook --> Client[StructuredInvestigationClient]
     Client --> WS[WebSocket Connection]
     WS --> Server[OLORIN Backend Server]
     Server --> Agents[AI Agents]
@@ -40,9 +40,9 @@ graph TB
 
 ```
 InvestigationPage
-├── Mode Toggle (Manual/Autonomous)
+├── Mode Toggle (Manual/Structured)
 ├── Manual Investigation Panel
-└── AutonomousInvestigationPanel
+└── StructuredInvestigationPanel
     ├── Progress Tracking
     ├── Control Buttons
     ├── Status Display
@@ -51,16 +51,16 @@ InvestigationPage
 
 ## Core Components
 
-### 1. AutonomousInvestigationClient
+### 1. StructuredInvestigationClient
 
-**Location**: `src/js/services/AutonomousInvestigationClient.ts`
+**Location**: `src/js/services/StructuredInvestigationClient.ts`
 
 **Purpose**: Manages WebSocket connections and investigation lifecycle.
 
 **Key Methods**:
 
 ```typescript
-class AutonomousInvestigationClient {
+class StructuredInvestigationClient {
   // Connection management
   connect(investigationId: string, parallel: boolean): Promise<void>;
   disconnect(): void;
@@ -86,16 +86,16 @@ class AutonomousInvestigationClient {
 - Heartbeat monitoring
 - Error recovery mechanisms
 
-### 2. useAutonomousInvestigation Hook
+### 2. useStructuredInvestigation Hook
 
-**Location**: `src/js/hooks/useAutonomousInvestigation.ts`
+**Location**: `src/js/hooks/useStructuredInvestigation.ts`
 
-**Purpose**: React hook for autonomous investigation state management.
+**Purpose**: React hook for structured investigation state management.
 
 **Interface**:
 
 ```typescript
-interface UseAutonomousInvestigationReturn {
+interface UseStructuredInvestigationReturn {
   // State
   isConnected: boolean;
   currentPhase: InvestigationPhase;
@@ -129,7 +129,7 @@ const {
   startInvestigation,
   pauseInvestigation,
   results,
-} = useAutonomousInvestigation();
+} = useStructuredInvestigation();
 
 // Start investigation
 await startInvestigation('user123', 'user_id', true);
@@ -140,11 +140,11 @@ useEffect(() => {
 }, [currentPhase, progress]);
 ```
 
-### 3. AutonomousInvestigationPanel Component
+### 3. StructuredInvestigationPanel Component
 
-**Location**: `src/components/AutonomousInvestigationPanel.tsx`
+**Location**: `src/components/StructuredInvestigationPanel.tsx`
 
-**Purpose**: UI component for autonomous investigation interface.
+**Purpose**: UI component for structured investigation interface.
 
 **Features**:
 
@@ -157,7 +157,7 @@ useEffect(() => {
 **Props Interface**:
 
 ```typescript
-interface AutonomousInvestigationPanelProps {
+interface StructuredInvestigationPanelProps {
   entityId: string;
   entityType: EntityType;
   onComplete?: (results: InvestigationResults) => void;
@@ -374,7 +374,7 @@ class ErrorHandler {
 
 **Test Coverage Areas**:
 
-- AutonomousInvestigationClient methods
+- StructuredInvestigationClient methods
 - WebSocket message handling
 - Error scenarios and recovery
 - State transitions
@@ -383,13 +383,13 @@ class ErrorHandler {
 **Example Test**:
 
 ```typescript
-describe('AutonomousInvestigationClient', () => {
-  let client: AutonomousInvestigationClient;
+describe('StructuredInvestigationClient', () => {
+  let client: StructuredInvestigationClient;
   let mockWebSocket: jest.Mocked<WebSocket>;
 
   beforeEach(() => {
     mockWebSocket = createMockWebSocket();
-    client = new AutonomousInvestigationClient();
+    client = new StructuredInvestigationClient();
   });
 
   it('should handle phase updates correctly', async () => {
@@ -436,13 +436,13 @@ describe('AutonomousInvestigationClient', () => {
 **Cypress Tests**:
 
 ```typescript
-describe('Autonomous Investigation', () => {
+describe('Structured Investigation', () => {
   it('should complete full investigation flow', () => {
     cy.visit('/investigation?demo=true');
 
-    // Switch to autonomous mode
+    // Switch to structured mode
     cy.get('[data-testid="mode-toggle"]').click();
-    cy.get('[data-testid="autonomous-mode"]').should('be.visible');
+    cy.get('[data-testid="structured-mode"]').should('be.visible');
 
     // Start investigation
     cy.get('[data-testid="entity-input"]').type('user123');
@@ -625,8 +625,8 @@ const logger = {
 ### Debug Tools
 
 ```typescript
-// Debug utility for autonomous investigations
-class AutonomousInvestigationDebugger {
+// Debug utility for structured investigations
+class StructuredInvestigationDebugger {
   private logs: DebugLog[] = []
 
   log(level: 'info' | 'warn' | 'error', message: string, data?: any): void {
@@ -651,14 +651,14 @@ class AutonomousInvestigationDebugger {
 }
 
 // Usage
-const debugger = new AutonomousInvestigationDebugger()
+const debugger = new StructuredInvestigationDebugger()
 debugger.log('info', 'Investigation started', { investigationId, entityId })
 ```
 
 ### Performance Monitoring
 
 ```typescript
-// Performance monitoring for autonomous investigations
+// Performance monitoring for structured investigations
 class PerformanceMonitor {
   private metrics: Map<string, number> = new Map();
 

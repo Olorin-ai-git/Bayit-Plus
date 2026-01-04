@@ -1,0 +1,169 @@
+/**
+ * Glassmorphic Utility Classes
+ * Feature: 022-olorin-webportal-dark
+ *
+ * Reusable styles for dark glassmorphic effects throughout the marketing portal.
+ * All classes use Tailwind's @apply directive for consistency with corporate color tokens.
+ */
+
+/* ============================================================================
+ * BASE GLASSMORPHIC STYLES
+ * ============================================================================ */
+
+/**
+ * Base glassmorphic card
+ * Semi-transparent background with backdrop blur and subtle border
+ */
+.glass-card {
+  @apply bg-corporate-bgSecondary/80 backdrop-blur-md;
+  @apply border-2 border-corporate-borderPrimary/40;
+  @apply rounded-lg shadow-lg;
+}
+
+/**
+ * Interactive glassmorphic card
+ * Includes hover effects: scale up and brightness increase
+ */
+.glass-card-interactive {
+  @apply glass-card;
+  @apply hover:bg-corporate-bgTertiary/90 hover:scale-105;
+  @apply transition-all duration-200;
+  @apply cursor-pointer;
+}
+
+/* ============================================================================
+ * MODAL GLASSMORPHIC STYLES
+ * ============================================================================ */
+
+/**
+ * Glassmorphic modal overlay
+ * Dark backdrop with blur for modal backgrounds
+ */
+.glass-modal-overlay {
+  @apply fixed inset-0 bg-black/60 backdrop-blur-sm;
+  @apply transition-opacity duration-300;
+}
+
+/**
+ * Glassmorphic modal content
+ * Solid background with border for modal content container
+ */
+.glass-modal-content {
+  @apply bg-corporate-bgPrimary border-2 border-corporate-borderPrimary/40;
+  @apply rounded-lg shadow-2xl;
+}
+
+/* ============================================================================
+ * HEADER & FOOTER GLASSMORPHIC STYLES
+ * ============================================================================ */
+
+/**
+ * Glassmorphic header (sticky navigation)
+ * Semi-transparent with enhanced blur for sticky header effect
+ */
+.glass-header {
+  @apply sticky top-0 bg-corporate-bgPrimary/80 backdrop-blur-lg;
+  @apply border-b border-corporate-borderPrimary/40;
+  @apply z-50 transition-all duration-200;
+}
+
+/**
+ * Glassmorphic footer
+ * Solid background with top border
+ */
+.glass-footer {
+  @apply bg-corporate-bgPrimary border-t border-corporate-borderPrimary/20;
+}
+
+/* ============================================================================
+ * PANEL GLASSMORPHIC STYLES
+ * ============================================================================ */
+
+/**
+ * Glassmorphic panel
+ * Dark semi-transparent panel with accent border and hover effects
+ */
+.glass-panel {
+  @apply bg-black/40 backdrop-blur-md rounded-lg;
+  @apply border-2 border-corporate-accentPrimary/40;
+  @apply hover:border-corporate-accentPrimary/60 transition-all shadow-lg;
+}
+
+/**
+ * Glassmorphic button overlay
+ * Semi-transparent button with brightness hover effect
+ */
+.glass-button {
+  @apply bg-corporate-accentPrimary/90 backdrop-blur-sm;
+  @apply hover:bg-corporate-accentPrimary hover:brightness-110;
+  @apply transition-all duration-200;
+}
+
+/* ============================================================================
+ * MOBILE OPTIMIZATIONS
+ * ============================================================================ */
+
+/**
+ * Mobile Performance Optimization
+ * Reduces backdrop blur on mobile devices for better performance (60fps scrolling)
+ */
+@media (max-width: 768px) {
+  .glass-card,
+  .glass-card-interactive,
+  .glass-panel {
+    @apply backdrop-blur-sm; /* 4px instead of 12px */
+  }
+
+  .glass-header {
+    @apply backdrop-blur-md; /* 12px instead of 16px */
+  }
+
+  .glass-modal-overlay {
+    @apply backdrop-blur-xs; /* 2px for minimal mobile performance impact */
+  }
+}
+
+/* ============================================================================
+ * BROWSER FALLBACK (NO BACKDROP-FILTER SUPPORT)
+ * ============================================================================ */
+
+/**
+ * Graceful degradation for browsers without backdrop-filter support
+ * Falls back to solid semi-transparent backgrounds
+ */
+@supports not (backdrop-filter: blur(12px)) {
+  .glass-card,
+  .glass-card-interactive {
+    @apply bg-corporate-bgSecondary; /* Solid background */
+  }
+
+  .glass-header {
+    @apply bg-corporate-bgPrimary; /* Solid background */
+  }
+
+  .glass-panel {
+    @apply bg-corporate-bgSecondary; /* Solid background */
+  }
+
+  .glass-button {
+    @apply bg-corporate-accentPrimary; /* Solid background */
+  }
+}
+
+/* ============================================================================
+ * ACCESSIBILITY ENHANCEMENTS
+ * ============================================================================ */
+
+/**
+ * Reduced Motion Support
+ * Respects user's prefers-reduced-motion setting
+ */
+@media (prefers-reduced-motion: reduce) {
+  .glass-card-interactive,
+  .glass-modal-overlay,
+  .glass-header,
+  .glass-panel,
+  .glass-button {
+    @apply transition-none;
+  }
+}

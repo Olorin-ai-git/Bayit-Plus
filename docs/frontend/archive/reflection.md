@@ -65,7 +65,7 @@
 
 **Achievement**: 7 components achieved 100% coverage from 0% or failing state
 
-- **Components**: AutonomousInvestigationPanel, DeviceDetailsTable, Home,
+- **Components**: StructuredInvestigationPanel, DeviceDetailsTable, Home,
   InvestigationForm, LogDetailsTable, HelpInfo, UserInfoForm
 - **Strategy**: Zero-to-complete targeting for maximum impact
 - **Patterns**: Established comprehensive testing approaches for each component
@@ -353,7 +353,7 @@ expect(screen.getByText("olorin's Stack Overflow")).toBeInTheDocument();
 
 #### **1. Continue High-Impact Targeting**
 
-- **useAutonomousInvestigation.ts**: 13.95% → 87% (73.05% potential)
+- **useStructuredInvestigation.ts**: 13.95% → 87% (73.05% potential)
 - **StepExecutionManager.ts**: 5.59% → 87% (81.41% potential)
 - **investigation.ts (utils)**: 18.86% → 87% (68.14% potential)
 

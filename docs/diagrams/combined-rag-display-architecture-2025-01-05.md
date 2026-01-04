@@ -1,4 +1,4 @@
-# Combined RAG-Enhanced Autonomous Investigation Display Architecture
+# Combined RAG-Enhanced Structured Investigation Display Architecture
 
 **Date**: 2025-01-05  
 **Author**: Gil Klainert  
@@ -9,8 +9,8 @@
 ```mermaid
 graph TB
     %% Main Display Component
-    subgraph "Combined Autonomous Investigation Display"
-        CAID[CombinedAutonomousInvestigationDisplay.tsx]
+    subgraph "Combined Structured Investigation Display"
+        CAID[CombinedStructuredInvestigationDisplay.tsx]
         
         subgraph "Neural Network Section"
             NNF[NeuralNetworkFlow.tsx]
@@ -39,12 +39,12 @@ graph TB
         UCD[useCombinedDisplay.ts]
         URV[useRAGVisualization.ts]
         URTA[useRealTimeAnimations.ts]
-        UAI[useAutonomousInvestigation.ts]
+        UAI[useStructuredInvestigation.ts]
     end
     
     %% WebSocket Integration Layer
     subgraph "WebSocket Integration"
-        AIC[AutonomousInvestigationClient.ts]
+        AIC[StructuredInvestigationClient.ts]
         REH[RAG Event Handlers]
         SET[Stream Event Types]
     end

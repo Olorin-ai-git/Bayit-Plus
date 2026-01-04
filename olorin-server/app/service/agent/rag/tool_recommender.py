@@ -9,16 +9,16 @@ This module provides a unified interface to the modular tool recommendation syst
 
 # Import all core components
 from .tool_recommender_core import (
-    ToolRecommendationStrategy,
     ToolEffectivenessMetrics,
     ToolRecommendation,
-    ToolRecommenderConfig
+    ToolRecommendationStrategy,
+    ToolRecommenderConfig,
 )
 
 # Import main implementation
 from .tool_recommender_main import (
     KnowledgeBasedToolRecommender,
-    create_tool_recommender
+    create_tool_recommender,
 )
 
 # Import strategies (for advanced usage)
@@ -28,14 +28,12 @@ from .tool_recommender_strategies import ToolRecommendationStrategies
 __all__ = [
     # Core data structures
     "ToolRecommendationStrategy",
-    "ToolEffectivenessMetrics", 
+    "ToolEffectivenessMetrics",
     "ToolRecommendation",
     "ToolRecommenderConfig",
-    
     # Main implementation
     "KnowledgeBasedToolRecommender",
     "create_tool_recommender",
-    
     # Strategy implementation (for advanced usage)
-    "ToolRecommendationStrategies"
+    "ToolRecommendationStrategies",
 ]

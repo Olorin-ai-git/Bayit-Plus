@@ -23,7 +23,7 @@ This implementation plan details the final component of Phase 4: Tools Integrati
 - `RAGEnhancedToolBase` - Has basic result interpretation capabilities
 - `ToolResult` class with metadata support
 - `ToolExecutionContext` with knowledge context
-- Tool execution with RAG enhancement in autonomous agents
+- Tool execution with RAG enhancement in structured agents
 - Performance monitoring with <30ms augmentation target
 
 ### Missing Component
@@ -89,8 +89,8 @@ This implementation plan details the final component of Phase 4: Tools Integrati
    - Add comprehensive knowledge categories support
    - Implement performance monitoring and caching
 
-4. **Autonomous Agent Integration** (Priority: High)  
-   - Update autonomous agents to use enhanced result processing
+4. **Structured Agent Integration** (Priority: High)  
+   - Update structured agents to use enhanced result processing
    - Integrate result augmentation in investigation workflow
    - Add augmented results to investigation context
    - Maintain backward compatibility with existing result processing
@@ -222,9 +222,9 @@ result_augmentation_categories:
 7. **Result Enhancement**: Combine original result with augmented insights
 8. **Performance Tracking**: Monitor augmentation performance and accuracy
 
-### Autonomous Agent Integration
+### Structured Agent Integration
 ```python
-# Enhanced autonomous agent result processing
+# Enhanced structured agent result processing
 async def process_tool_result(self, result: ToolResult, context: dict) -> AugmentedToolResult:
     """Process tool result with RAG augmentation"""
     
@@ -268,7 +268,7 @@ async def process_tool_result(self, result: ToolResult, context: dict) -> Augmen
 | Result Augmentation Service | 2-3 hours | RAG Foundation | Critical |
 | Result Enhancement Engine | 2-3 hours | Augmentation Service | Critical |
 | RAG Tool Base Integration | 1-2 hours | Enhancement Engine | High |
-| Autonomous Agent Integration | 1-2 hours | Tool Base Integration | High |
+| Structured Agent Integration | 1-2 hours | Tool Base Integration | High |
 | Testing & Validation | 1-2 hours | All Components | High |
 | **Total Implementation** | **7-12 hours** | | |
 

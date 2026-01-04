@@ -12,6 +12,7 @@
  */
 
 import axios, { AxiosInstance, AxiosRequestConfig, AxiosResponse } from 'axios';
+import { getConfig } from '../shared/config/env.config';
 import { ExtendedAxiosRequestConfig } from './types';
 
 // Cache interface
@@ -53,7 +54,7 @@ class OptimizedApiService {
   private cache = new Map<string, CacheEntry>();
   private pendingRequests = new Map<string, Promise<any>>();
   private batchQueue: BatchRequestItem[] = [];
-  private batchTimeout: NodeJS.Timeout | null = null;
+  private batchTimeout: ReturnType<typeof setTimeout> | null = null;
   
   // Performance tracking
   private stats: CacheStats = {
@@ -72,14 +73,15 @@ class OptimizedApiService {
   private readonly maxRetries = 3;
   
   constructor(baseURL?: string) {
+    const config = getConfig();
     this.axiosInstance = axios.create({
-      baseURL: baseURL || process.env.REACT_APP_API_BASE_URL || 'http://localhost:8090',
+      baseURL: baseURL || config.api.baseUrl,
       timeout: 30000,
       headers: {
         'Content-Type': 'application/json',
       }
     });
-    
+
     this.setupInterceptors();
     this.startCacheCleanup();
   }

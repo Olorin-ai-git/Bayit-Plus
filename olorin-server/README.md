@@ -8,7 +8,7 @@ For detailed documentation, please see the [`/docs`](./docs) folder:
 
 - **[API Documentation](./docs/OLORIN_API_Documentation.md)** - Complete API reference with examples
 - **[WebSocket API Guide](./docs/websocket_example_responses.md)** - Real-time investigation monitoring
-- **[Autonomous Investigation Guide](./docs/README_autonomous_investigation.md)** - Testing autonomous investigations
+- **[Structured Investigation Guide](./docs/README_structured_investigation.md)** - Testing structured investigations
 - **[Contributing Guide](./docs/CONTRIBUTING.md)** - Development guidelines
 
 ## 📚 Documentation
@@ -20,9 +20,9 @@ All documentation has been organized in the [`/docs`](./docs) folder:
 - [`README.md`](./docs/README.md) - Detailed project overview
 - [`CONTRIBUTING.md`](./docs/CONTRIBUTING.md) - Development and contribution guidelines
 
-### WebSocket & Autonomous Investigation
+### WebSocket & Structured Investigation
 - [`websocket_example_responses.md`](./docs/websocket_example_responses.md) - WebSocket API examples
-- [`README_autonomous_investigation.md`](./docs/README_autonomous_investigation.md) - Autonomous investigation testing
+- [`README_structured_investigation.md`](./docs/README_structured_investigation.md) - Structured investigation testing
 
 ### Analysis & Reports
 - Domain-specific analysis reports (Network, Device, Location, Logs)
@@ -34,11 +34,103 @@ All documentation has been organized in the [`/docs`](./docs) folder:
 
 ```bash
 # Install dependencies
-pip install -r requirements.txt
+poetry install
 
 # Run the application
-python -m app.main
+poetry run python -m app.main
 ```
+
+### Composio Integration Setup
+
+The Olorin platform integrates with Composio to provide unified access to 250+ toolkits for automated fraud response.
+
+#### 1. Configure Composio API Key
+
+Set the Composio API key in your environment:
+
+```bash
+export COMPOSIO_API_KEY="your_composio_api_key"
+```
+
+Or add to `.env` file:
+
+```
+COMPOSIO_API_KEY=your_composio_api_key
+```
+
+#### 2. Configure Graph Database (Optional)
+
+For graph-based fraud detection features, configure Neo4j or TigerGraph:
+
+**Neo4j:**
+```bash
+export NEO4J_URI="bolt://localhost:7687"
+export NEO4J_USERNAME="neo4j"
+export NEO4J_PASSWORD="your_password"
+```
+
+**TigerGraph:**
+```bash
+export TIGERGRAPH_HOST="https://your-instance.i.tgcloud.io"
+export TIGERGRAPH_USERNAME="tigergraph"
+export TIGERGRAPH_PASSWORD="your_password"
+export TIGERGRAPH_GRAPHNAME="fraud_graph"
+```
+
+#### 3. Configure MaxMind minFraud (Optional)
+
+For IP risk scoring:
+
+```bash
+export MAXMIND_ACCOUNT_ID="your_account_id"
+export MAXMIND_LICENSE_KEY="your_license_key"
+```
+
+#### 4. Configure Kafka (Optional)
+
+For real-time event streaming:
+
+```bash
+export KAFKA_BOOTSTRAP_SERVERS="localhost:9092"
+export KAFKA_DEVICE_SIGNALS_TOPIC="device_signals"
+export KAFKA_IP_RISK_TOPIC="ip_risk_scores"
+```
+
+#### 5. Configure SOAR (Optional)
+
+For automated fraud response:
+
+```bash
+export SOAR_HOST="https://your-soar-instance.splunk.com"
+export SOAR_API_TOKEN="your_api_token"
+export SOAR_WEBHOOK_SECRET="your_webhook_secret"
+```
+
+#### 6. Tenant Configuration
+
+Tenants can configure their preferred SDKs and graph databases via the API:
+
+**Device SDK Configuration:**
+```bash
+POST /api/tenants/{tenant_id}/device-sdk-config
+{
+  "sdk_provider": "fingerprint_pro"  # or "seon", "ipqs"
+}
+```
+
+**Graph Database Configuration:**
+```bash
+POST /api/tenants/{tenant_id}/graph-db-config
+{
+  "graph_provider": "neo4j"  # or "tigergraph"
+}
+```
+
+For detailed API documentation, see:
+- [Composio API](./docs/api/composio-api.md)
+- [Device Signals API](./docs/api/device-signals-api.md)
+- [IP Risk API](./docs/api/ip-risk-api.md)
+- [SOAR Playbooks API](./docs/api/soar-playbooks-api.md)
 
 ## 🧪 Testing
 
@@ -46,29 +138,32 @@ python -m app.main
 # Run all tests
 pytest
 
-# Run autonomous investigation tests
-python tests/run_autonomous_investigation_for_user.py
-python tests/run_autonomous_investigation_for_device.py
+# Run structured investigation tests
+python tests/run_structured_investigation_for_user.py
+python tests/run_structured_investigation_for_device.py
 ```
 
 ## 📊 Features
 
 - **Multi-Domain Risk Assessment**: Network, Device, Location, and Behavioral analysis
-- **Autonomous Investigation**: AI-powered investigation workflows with real-time monitoring
+- **Structured Investigation**: AI-powered investigation workflows with real-time monitoring
 - **WebSocket API**: Real-time progress updates with complete API response data
 - **Parallel/Sequential Execution**: Configurable investigation execution modes
 - **Comprehensive Reporting**: PDF generation and detailed risk assessments
+- **Composio Integration**: Unified API for 250+ toolkits (Stripe, Shopify, Okta, Slack, Jira, etc.)
+- **Device Fingerprinting**: Multi-SDK support (Fingerprint Pro, SEON, IPQS) with tenant configuration
+- **IP Risk Scoring**: MaxMind minFraud integration with caching and fallback
+- **SOAR Automation**: Splunk SOAR playbook execution for automated fraud response
+- **Real-Time Feature Pipeline**: Snowpipe Streaming and Dynamic Tables for sub-second feature freshness
+- **Graph-Based Fraud Detection**: Neo4j/TigerGraph integration for mule ring detection
 
 ## 🔗 Quick Links
 
 - [API Documentation](./docs/OLORIN_API_Documentation.md)
 - [WebSocket Guide](./docs/websocket_example_responses.md)
-- [Testing Scripts](./docs/README_autonomous_investigation.md)
+- [Testing Scripts](./docs/README_structured_investigation.md)
 - [Contributing](./docs/CONTRIBUTING.md)
 
-<<<<<<< HEAD:back/README.md
-For more detailed information, explore the [`/docs`](./docs) directory. 
-=======
 After running `poetry install` for the first time, [commit your poetry.lock file to version control](https://python-poetry.org/docs/basic-usage/#commit-your-poetrylock-file-to-version-control).
 
 ## Pre-requisites for running your Agent
@@ -281,9 +376,6 @@ Please see [CONTRIBUTING.md](CONTRIBUTING.md) for details on our code of conduct
 
 ## License
 
-<<<<<<< HEAD
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-=======
 ## OLORIN Backend
 
 

@@ -119,7 +119,7 @@ tools = get_tools_for_agent(categories=["olorin", "threat_intelligence"])
 from app.service.agent.rag.tool_integration_example import get_enhanced_tools_for_agent
 
 tools = await get_enhanced_tools_for_agent(
-    investigation_context=autonomous_context,
+    investigation_context=structured_context,
     domain="risk",
     categories=["olorin", "threat_intelligence"],
     use_rag_recommendations=True
@@ -131,7 +131,7 @@ tools = await get_enhanced_tools_for_agent(
 from app.service.agent.rag.tool_integration_example import get_tool_recommendations_with_reasoning
 
 recommendations = await get_tool_recommendations_with_reasoning(
-    investigation_context=autonomous_context,
+    investigation_context=structured_context,
     domain="network",
     strategy=ToolRecommendationStrategy.HYBRID
 )
@@ -145,12 +145,12 @@ for rec in recommendations[:3]:
 ### Agent Integration Example
 ```python
 # In risk_agent.py or other domain agents
-async def autonomous_risk_agent(state, config) -> dict:
+async def structured_risk_agent(state, config) -> dict:
     # ... existing context setup ...
     
     # Enhanced tool selection
     tools = await get_enhanced_tools_for_agent(
-        investigation_context=autonomous_context,
+        investigation_context=structured_context,
         domain="risk",
         categories=["olorin", "search", "threat_intelligence", "ml_ai"]
     )

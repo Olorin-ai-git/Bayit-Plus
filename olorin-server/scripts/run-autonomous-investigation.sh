@@ -1,15 +1,16 @@
 #!/bin/bash
 
 #
-# Unified Autonomous Investigation Runner
+# Unified Structured Investigation Runner
 # 
-# This script provides a single entry point for running autonomous fraud investigations
+# This script provides a single entry point for running structured fraud investigations
 # with comprehensive configuration options, error handling, and intelligent defaults.
 #
 # Features:
 # - Auto-detection of server status and startup
 # - Firebase secrets integration
-# - Multiple test modes (single scenario, all scenarios, CSV-based)
+# - Multiple test modes (single scenario, all scenarios, entity-based)
+# - Comprehensive dependency validation
 # - Comprehensive logging and reporting
 # - Health checks and validation
 # - Enhanced user experience with progress indicators
@@ -34,8 +35,6 @@ readonly NC='\033[0m' # No Color
 # Configuration defaults
 readonly DEFAULT_SERVER_PORT=8090
 readonly DEFAULT_LOG_LEVEL="INFO"
-readonly DEFAULT_CSV_LIMIT=2000
-readonly DEFAULT_CSV_FILE="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)/transaction_dataset_10k.csv"
 readonly DEFAULT_CONCURRENT=3
 readonly DEFAULT_TIMEOUT=300
 readonly DEFAULT_PROJECT_ID="olorin-ai"
@@ -44,22 +43,22 @@ readonly DEFAULT_PROJECT_ID="olorin-ai"
 readonly SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 readonly BACKEND_ROOT="$(dirname "$SCRIPT_DIR")"
 readonly OLORIN_ROOT="$(dirname "$BACKEND_ROOT")"
-readonly TEST_RUNNER_SCRIPT="$BACKEND_ROOT/scripts/testing/unified_autonomous_test_runner.py"
+readonly TEST_RUNNER_SCRIPT="$BACKEND_ROOT/scripts/testing/unified_structured_test_runner.py"
 
 # Global variables for configuration
 SCENARIO=""
 ALL_SCENARIOS=""
-CSV_FILE="$DEFAULT_CSV_FILE"
-CSV_LIMIT="$DEFAULT_CSV_LIMIT"
+ENTITY_ID=""
+ENTITY_TYPE=""
 CONCURRENT="$DEFAULT_CONCURRENT"
 TIMEOUT="$DEFAULT_TIMEOUT"
 SERVER_URL=""
 SERVER_PORT="$DEFAULT_SERVER_PORT"
 PROJECT_ID="$DEFAULT_PROJECT_ID"
-MODE="demo"
-OUTPUT_FORMAT="terminal"
+MODE="live"
+OUTPUT_FORMAT="html"
 OUTPUT_DIR="."
-HTML_REPORT=""
+HTML_REPORT="true"  # Default to true
 OPEN_REPORT=""
 VERBOSE=""
 LOG_LEVEL="$DEFAULT_LOG_LEVEL"
@@ -69,13 +68,25 @@ MOCK_IPS_CACHE="true"
 AUTO_START_SERVER="true"
 SKIP_SECRETS=""
 
-# Advanced monitoring options
-SHOW_WEBSOCKET=""
-SHOW_LLM=""
-SHOW_LANGGRAPH=""
-SHOW_AGENTS=""
+# Dependency check options
+SKIP_DEPENDENCY_CHECK=""
+CHECK_DEPENDENCIES_ONLY=""
+
+# Custom prompt configuration
+CUSTOM_PROMPT=""
+
+# Snowflake configuration
+USE_SNOWFLAKE="true"
+SNOWFLAKE_TIME_WINDOW="24h"
+SNOWFLAKE_TOP_PERCENT="10"
+
+# Advanced monitoring options - all ON by default
+SHOW_WEBSOCKET="true"
+SHOW_LLM="true"
+SHOW_LANGGRAPH="true"
+SHOW_AGENTS="true"
 SHOW_ALL=""
-FOLLOW_LOGS=""
+FOLLOW_LOGS="true"
 MONITORING_PIDS=""
 
 # Banner function
@@ -101,19 +112,33 @@ show_usage() {
     echo "  $0 --scenario impossible_travel --show-llm --show-websocket"
     echo -e "${CYAN}  # Full investigation visibility (ALL monitoring):${NC}"
     echo "  $0 --all --show-all --follow-logs --html-report"
-    echo -e "${CYAN}  # Test with CSV data and agent conversations:${NC}"
-    echo "  $0 --csv-file ./transactions.csv --csv-limit 50 --show-agents"
+    echo -e "${CYAN}  # Check dependencies before running tests:${NC}"
+    echo "  $0 --check-dependencies-only"
+    echo -e "${CYAN}  # Investigate real user entity:${NC}"
+    echo "  $0 --mode live --entity-id USER_12345 --entity-type user_id --verbose"
+    echo -e "${CYAN}  # Investigate IP address with full monitoring:${NC}"
+    echo "  $0 --mode live --entity-id 192.168.1.100 --entity-type ip --show-all"
+    echo -e "${CYAN}  # Auto-select first high-risk entity from Snowflake:${NC}"
+    echo "  $0 --mode live --verbose"
+    echo -e "${CYAN}  # Skip dependency check (advanced users):${NC}"
+    echo "  $0 --scenario device_spoofing --skip-dependency-check"
     echo ""
-    echo -e "${WHITE}TEST SELECTION (choose one):${NC}"
+    echo -e "${WHITE}TEST SELECTION (choose one, or none for Snowflake auto-selection):${NC}"
     echo "  -s, --scenario SCENARIO     Test single scenario:"
     echo "                              device_spoofing, location_impossible_travel,"
     echo "                              velocity_fraud, account_takeover, synthetic_identity,"
     echo "                              money_laundering, insider_threat, advanced_persistent_fraud"
     echo "  -a, --all                   Test all available scenarios"
     echo ""
-    echo -e "${WHITE}CSV DATA OPTIONS:${NC}"
-    echo "  --csv-file PATH             Path to CSV transaction data file"
-    echo "  --csv-limit N               Number of CSV rows to process (default: $DEFAULT_CSV_LIMIT)"
+    echo -e "${WHITE}REAL INVESTIGATION OPTIONS:${NC}"
+    echo "  --entity-id ID              Entity to investigate (e.g., USER_12345, IP_192.168.1.1)"
+    echo "  --entity-type TYPE          Type of entity: user_id, device_id, ip, transaction_id, etc."
+    echo ""
+    echo -e "${WHITE}DATA SOURCE OPTIONS:${NC}"
+    echo "  --use-snowflake             Use Snowflake for top risk entities (default: enabled)"
+    echo "  --no-snowflake              Disable Snowflake, use synthetic test data instead"
+    echo "  --snowflake-time-window     Time window for Snowflake data: 1h, 6h, 24h, 7d, 30d (default: 24h)"
+    echo "  --snowflake-top-percent     Top percentage of risk entities (default: 10)"
     echo ""
     echo -e "${WHITE}SERVER OPTIONS:${NC}"
     echo "  --server-url URL            Server endpoint URL (default: auto-detect)"
@@ -126,14 +151,15 @@ show_usage() {
     echo -e "${WHITE}EXECUTION OPTIONS:${NC}"
     echo "  -c, --concurrent N          Concurrent tests (default: $DEFAULT_CONCURRENT)"
     echo "  -t, --timeout SECONDS       Test timeout (default: $DEFAULT_TIMEOUT)"
-    echo "  -m, --mode MODE             Test mode: mock, demo, live (default: demo)"
+    echo "  -m, --mode MODE             Test mode: mock, demo, live (default: live)"
     echo "  --mock-ips-cache            Use mocked threat intelligence (default: enabled)"
     echo "  --no-mock-ips-cache         Use real threat intelligence APIs"
     echo ""
     echo -e "${WHITE}OUTPUT OPTIONS:${NC}"
-    echo "  -f, --format FORMAT         Output: html, json, markdown, terminal (default: terminal)"
+    echo "  -f, --format FORMAT         Output: html, json, markdown, terminal (default: html)"
     echo "  -o, --output-dir DIR        Output directory (default: current dir)"
-    echo "  --html-report               Generate HTML report"
+    echo "  --html-report               Generate HTML report (enabled by default)"
+    echo "  --no-html-report            Disable HTML report generation"
     echo "  --open-report               Auto-open HTML report in browser"
     echo ""
     echo -e "${WHITE}LOGGING & MONITORING OPTIONS:${NC}"
@@ -145,6 +171,15 @@ show_usage() {
     echo "  --show-agents               Display agent conversations and collaborations"
     echo "  --show-all                  Enable ALL monitoring options (websocket, llm, langgraph, agents)"
     echo "  --follow-logs               Tail server logs in parallel terminal"
+    echo ""
+    echo -e "${WHITE}CUSTOM INVESTIGATION OPTIONS:${NC}"
+    echo "  --custom-prompt PROMPT      Custom user prompt with highest priority"
+    echo "                              Example: 'Focus on Device Data in Snowflake'"
+    echo "                              Example: 'Prioritize network-based anomalies'"
+    echo ""
+    echo -e "${WHITE}DEPENDENCY MANAGEMENT OPTIONS:${NC}"
+    echo "  --check-dependencies-only   Only run dependency check and exit (useful for setup validation)"
+    echo "  --skip-dependency-check     Skip comprehensive dependency validation (for advanced users only)"
     echo ""
     echo -e "${WHITE}OTHER OPTIONS:${NC}"
     echo "  --dry-run                   Show command without executing"
@@ -206,6 +241,111 @@ command_exists() {
     command -v "$1" >/dev/null 2>&1
 }
 
+# Comprehensive dependency check function
+check_dependencies_comprehensive() {
+    show_progress "Running comprehensive dependency validation"
+
+    local failed=false
+
+    # Check Poetry
+    if ! command_exists poetry; then
+        show_error "Poetry is not installed or not in PATH"
+        echo "   Install Poetry: https://python-poetry.org/docs/"
+        failed=true
+    else
+        show_success "Poetry is available"
+    fi
+
+    # Check Python
+    if ! command_exists python3; then
+        show_error "Python 3 is not installed or not in PATH"
+        failed=true
+    else
+        show_success "Python 3 is available"
+    fi
+
+    # Check Node.js and npm (for frontend development)
+    if ! command_exists node; then
+        show_warning "Node.js not found - needed for frontend development"
+    else
+        show_success "Node.js is available"
+    fi
+
+    if ! command_exists npm; then
+        show_warning "npm not found - needed for frontend dependencies"
+    else
+        show_success "npm is available"
+    fi
+
+    # Check Git
+    if ! command_exists git; then
+        show_error "Git is not installed or not in PATH"
+        failed=true
+    else
+        show_success "Git is available"
+    fi
+
+    # Check Poetry environment
+    cd "$BACKEND_ROOT"
+    if ! poetry env info >/dev/null 2>&1; then
+        show_error "Poetry environment not configured"
+        echo "   Run: poetry install"
+        failed=true
+    else
+        show_success "Poetry environment is configured"
+    fi
+
+    # Check investigation-critical Python packages
+    show_progress "Validating investigation-critical dependencies"
+
+    # Only the packages that are absolutely required for running investigations
+    local critical_packages=(
+        "fastapi"
+        "uvicorn"
+        "langchain"
+        "langchain_openai"
+        "openai"
+        "aiohttp"
+        "requests"
+        "pytest"
+        "structlog"
+        "snowflake"
+    )
+
+    local missing_critical=()
+
+    # Quick check of critical packages
+    for package in "${critical_packages[@]}"; do
+        if ! poetry run python -c "import $package" 2>/dev/null; then
+            missing_critical+=("$package")
+        fi
+    done
+
+    if [[ ${#missing_critical[@]} -eq 0 ]]; then
+        show_success "All investigation-critical dependencies available"
+    else
+        show_error "Missing critical dependencies: ${missing_critical[*]}"
+        echo "   Run: poetry install"
+        failed=true
+    fi
+
+    if [[ "$failed" == "true" ]]; then
+        echo ""
+        show_error "Dependency validation failed"
+        echo ""
+        echo -e "${YELLOW}💡 To resolve dependencies:${NC}"
+        echo "   1. Install Poetry: curl -sSL https://install.python-poetry.org | python3 -"
+        echo "   2. Install dependencies: cd $BACKEND_ROOT && poetry install"
+        echo "   3. Install Node.js: https://nodejs.org/ (optional, for frontend)"
+        echo ""
+        return 1
+    else
+        echo ""
+        show_success "All dependencies validated successfully"
+        return 0
+    fi
+}
+
 # Validate environment
 validate_environment() {
     show_progress "Validating Olorin environment"
@@ -244,50 +384,66 @@ validate_environment() {
     return 0
 }
 
-# Retrieve Firebase secrets
+# Retrieve secrets from .env file
 retrieve_secrets() {
     if [[ "$SKIP_SECRETS" == "true" ]]; then
-        show_warning "Skipping Firebase secrets retrieval"
+        show_warning "Skipping secrets retrieval"
         return 0
     fi
     
-    show_progress "Retrieving secrets from Firebase project: $PROJECT_ID"
+    # Path to .env file
+    local env_file="$BACKEND_ROOT/.env"
     
-    # Core secrets
-    local anthropic_key
-    local jwt_key
-    local openai_key
-    local olorin_key
-    
-    anthropic_key=$(firebase functions:secrets:access ANTHROPIC_API_KEY --project "$PROJECT_ID" 2>/dev/null || echo "")
-    jwt_key=$(firebase functions:secrets:access JWT_SECRET_KEY --project "$PROJECT_ID" 2>/dev/null || echo "")
-    openai_key=$(firebase functions:secrets:access OPENAI_API_KEY --project "$PROJECT_ID" 2>/dev/null || echo "")
-    olorin_key=$(firebase functions:secrets:access OLORIN_API_KEY --project "$PROJECT_ID" 2>/dev/null || echo "")
-    
-    # Export retrieved secrets
-    if [[ -n "$anthropic_key" ]]; then
-        export ANTHROPIC_API_KEY="$anthropic_key"
-        show_success "Anthropic API key retrieved"
-    else
-        show_warning "Anthropic API key not found - some features may not work"
+    # Check if .env file exists
+    if [[ ! -f "$env_file" ]]; then
+        show_error ".env file not found at $env_file"
+        return 1
     fi
     
-    if [[ -n "$jwt_key" ]]; then
-        export JWT_SECRET_KEY="$jwt_key"
-        show_success "JWT secret key retrieved"
+    show_progress "Loading secrets from .env file: $env_file"
+    
+    # Load environment variables from .env file
+    # Export all variables for child processes
+    set -a
+    source "$env_file"
+    set +a
+    
+    # Verify core secrets were loaded
+    if [[ -n "$ANTHROPIC_API_KEY" ]]; then
+        show_success "Anthropic API key loaded from .env"
     else
-        show_warning "JWT secret key not found - generating temporary key"
+        show_warning "Anthropic API key not found in .env - some features may not work"
+    fi
+    
+    if [[ -n "$JWT_SECRET_KEY" ]]; then
+        show_success "JWT secret key loaded from .env"
+    else
+        show_warning "JWT secret key not found in .env - generating temporary key"
         export JWT_SECRET_KEY=$(openssl rand -base64 64)
     fi
     
-    if [[ -n "$openai_key" ]]; then
-        export OPENAI_API_KEY="$openai_key"
-        show_success "OpenAI API key retrieved"
+    if [[ -n "$OPENAI_API_KEY" ]]; then
+        show_success "OpenAI API key loaded from .env"
+    else
+        show_warning "OpenAI API key not found in .env"
     fi
     
-    if [[ -n "$olorin_key" ]]; then
-        export OLORIN_API_KEY="$olorin_key"
-        show_success "Olorin API key retrieved"
+    if [[ -n "$OLORIN_API_KEY" ]]; then
+        show_success "Olorin API key loaded from .env"
+    else
+        show_warning "Olorin API key not found in .env"
+    fi
+    
+    # Verify Snowflake configuration if enabled
+    if [[ "$USE_SNOWFLAKE" == "true" ]]; then
+        if [[ -n "$SNOWFLAKE_ACCOUNT" ]] && [[ -n "$SNOWFLAKE_USER" ]] && [[ -n "$SNOWFLAKE_PASSWORD" ]]; then
+            show_success "Snowflake configuration loaded from .env"
+            show_success "Snowflake integration enabled (time window: $SNOWFLAKE_TIME_WINDOW, top: $SNOWFLAKE_TOP_PERCENT%)"
+        else
+            show_warning "Snowflake enabled but configuration incomplete in .env"
+        fi
+    else
+        show_warning "Snowflake disabled in .env, using CSV data"
     fi
     
     # Additional environment setup
@@ -295,7 +451,7 @@ retrieve_secrets() {
     export OLORIN_USE_DEMO_DATA=true
     export SECRET_MANAGER_LOG_LEVEL=SILENT
     
-    show_success "Secrets configuration completed"
+    show_success "Secrets configuration completed from .env file"
     return 0
 }
 
@@ -449,11 +605,12 @@ build_command_args() {
         cmd_args+=(--all)
     fi
     
-    # CSV options
-    if [[ -n "$CSV_FILE" && -f "$CSV_FILE" ]]; then
-        cmd_args+=(--csv-file "$CSV_FILE")
-        cmd_args+=(--csv-limit "$CSV_LIMIT")
+    # Entity investigation options
+    if [[ -n "$ENTITY_ID" ]]; then
+        cmd_args+=(--entity-id "$ENTITY_ID")
+        cmd_args+=(--entity-type "$ENTITY_TYPE")
     fi
+    
     
     # Execution options
     cmd_args+=(--concurrent "$CONCURRENT")
@@ -467,6 +624,8 @@ build_command_args() {
     
     if [[ "$HTML_REPORT" == "true" ]]; then
         cmd_args+=(--html-report)
+    elif [[ "$HTML_REPORT" == "false" ]]; then
+        cmd_args+=(--no-html-report)
     fi
     
     if [[ "$OPEN_REPORT" == "true" ]]; then
@@ -506,16 +665,35 @@ build_command_args() {
         cmd_args+=(--follow-logs)
     fi
     
+    # Custom prompt option
+    if [[ -n "$CUSTOM_PROMPT" ]]; then
+        cmd_args+=(--custom-prompt "$CUSTOM_PROMPT")
+    fi
+
+
     echo "${cmd_args[@]}"
 }
 
 # Display configuration
 show_configuration() {
     echo -e "${WHITE}🔧 INVESTIGATION CONFIGURATION${NC}"
-    echo -e "   Test Mode: ${CYAN}$(if [[ -n "$SCENARIO" ]]; then echo "Single Scenario ($SCENARIO)"; else echo "All Scenarios"; fi)${NC}"
+    if [[ -n "$ENTITY_ID" ]]; then
+        echo -e "   Investigation Mode: ${CYAN}Real Entity Investigation${NC}"
+        echo -e "   Entity ID: ${CYAN}$ENTITY_ID${NC}"
+        echo -e "   Entity Type: ${CYAN}$ENTITY_TYPE${NC}"
+    elif [[ -n "$SCENARIO" ]]; then
+        echo -e "   Test Mode: ${CYAN}Single Scenario ($SCENARIO)${NC}"
+    elif [[ "$ALL_SCENARIOS" == "true" ]]; then
+        echo -e "   Test Mode: ${CYAN}All Scenarios${NC}"
+    else
+        echo -e "   Investigation Mode: ${CYAN}Snowflake Auto-Selection${NC}"
+        echo -e "   Auto-Select: ${CYAN}First high-risk entity from Snowflake${NC}"
+    fi
     
-    if [[ -n "$CSV_FILE" && -f "$CSV_FILE" ]]; then
-        echo -e "   CSV Data: ${CYAN}$CSV_FILE${NC} (limit: $CSV_LIMIT rows)"
+    if [[ "$USE_SNOWFLAKE" == "true" ]]; then
+        echo -e "   Data Source: ${CYAN}Snowflake Top Risk Entities${NC}"
+        echo -e "   Time Window: ${CYAN}$SNOWFLAKE_TIME_WINDOW${NC}"
+        echo -e "   Top Risk %: ${CYAN}$SNOWFLAKE_TOP_PERCENT%${NC}"
     else
         echo -e "   Data Source: ${CYAN}Synthetic Test Data${NC}"
     fi
@@ -562,6 +740,11 @@ show_configuration() {
         echo -e "   Monitoring: ${YELLOW}Basic (use --show-all for full visibility)${NC}"
     fi
     
+    # Display custom prompt if set
+    if [[ -n "$CUSTOM_PROMPT" ]]; then
+        echo -e "   Custom Focus: ${PURPLE}${CUSTOM_PROMPT}${NC}"
+    fi
+    
     echo ""
 }
 
@@ -577,12 +760,12 @@ parse_arguments() {
                 ALL_SCENARIOS="true"
                 shift
                 ;;
-            --csv-file)
-                CSV_FILE="$2"
+            --entity-id)
+                ENTITY_ID="$2"
                 shift 2
                 ;;
-            --csv-limit)
-                CSV_LIMIT="$2"
+            --entity-type)
+                ENTITY_TYPE="$2"
                 shift 2
                 ;;
             -c|--concurrent)
@@ -619,6 +802,10 @@ parse_arguments() {
                 ;;
             --html-report)
                 HTML_REPORT="true"
+                shift
+                ;;
+            --no-html-report)
+                HTML_REPORT="false"
                 shift
                 ;;
             --open-report)
@@ -689,6 +876,34 @@ parse_arguments() {
                 FOLLOW_LOGS="true"
                 shift
                 ;;
+            --use-snowflake)
+                USE_SNOWFLAKE="true"
+                shift
+                ;;
+            --no-snowflake)
+                USE_SNOWFLAKE="false"
+                shift
+                ;;
+            --snowflake-time-window)
+                SNOWFLAKE_TIME_WINDOW="$2"
+                shift 2
+                ;;
+            --snowflake-top-percent)
+                SNOWFLAKE_TOP_PERCENT="$2"
+                shift 2
+                ;;
+            --custom-prompt)
+                CUSTOM_PROMPT="$2"
+                shift 2
+                ;;
+            --check-dependencies-only)
+                CHECK_DEPENDENCIES_ONLY="true"
+                shift
+                ;;
+            --skip-dependency-check)
+                SKIP_DEPENDENCY_CHECK="true"
+                shift
+                ;;
             -h|--help)
                 show_usage
                 exit 0
@@ -708,34 +923,37 @@ parse_arguments() {
     fi
     
     # Validate required arguments
-    if [[ -z "$SCENARIO" && "$ALL_SCENARIOS" != "true" ]]; then
-        show_error "Must specify either --scenario or --all"
+    # Note: If no scenario, --all, or entity-id is provided, the script will use the first Snowflake entity as fallback
+    # This validation only ensures that if entity-id is provided, entity-type is also provided
+    
+    if [[ -n "$ENTITY_ID" && -z "$ENTITY_TYPE" ]]; then
+        show_error "When using --entity-id, you must also specify --entity-type"
         echo ""
         show_usage
         exit 1
     fi
     
-    if [[ -n "$SCENARIO" && "$ALL_SCENARIOS" == "true" ]]; then
-        show_error "Cannot specify both --scenario and --all"
+    # Check for mutually exclusive options
+    local option_count=0
+    [[ -n "$SCENARIO" ]] && ((option_count++))
+    [[ "$ALL_SCENARIOS" == "true" ]] && ((option_count++))
+    [[ -n "$ENTITY_ID" ]] && ((option_count++))
+    
+    if [[ $option_count -gt 1 ]]; then
+        show_error "Cannot combine --scenario, --all, and --entity-id options"
         echo ""
         show_usage
         exit 1
     fi
     
-    # Validate CSV file if specified
-    if [[ -n "$CSV_FILE" && ! -f "$CSV_FILE" ]]; then
-        show_warning "CSV file not found: $CSV_FILE"
-        show_warning "Will use synthetic test data instead"
-        CSV_FILE=""
-    fi
 }
 
-# Run the autonomous investigation
+# Run the structured investigation
 run_investigation() {
     local cmd_args
     cmd_args=$(build_command_args)
     
-    show_progress "Starting autonomous fraud investigation"
+    show_progress "Starting structured fraud investigation"
     echo ""
     
     cd "$BACKEND_ROOT"
@@ -750,6 +968,12 @@ run_investigation() {
     
     # Set environment variables for enhanced monitoring
     export SECRET_MANAGER_LOG_LEVEL=SILENT
+    
+    # Export custom prompt for Python script
+    if [[ -n "$CUSTOM_PROMPT" ]]; then
+        export CUSTOM_USER_PROMPT="$CUSTOM_PROMPT"
+        show_success "Custom investigation prompt set: '$CUSTOM_PROMPT'"
+    fi
     
     # Enable detailed logging based on monitoring flags
     if [[ "$SHOW_LLM" == "true" ]]; then
@@ -787,7 +1011,7 @@ run_investigation() {
     # Execute the investigation
     if poetry run python "$TEST_RUNNER_SCRIPT" $cmd_args; then
         echo ""
-        show_success "Autonomous investigation completed successfully"
+        show_success "Structured investigation completed successfully"
         
         if [[ "$HTML_REPORT" == "true" ]]; then
             echo ""
@@ -810,6 +1034,52 @@ main() {
     
     # Display banner
     print_banner
+
+    # Handle check-dependencies-only option early
+    if [[ "$CHECK_DEPENDENCIES_ONLY" == "true" ]]; then
+        if check_dependencies_comprehensive; then
+            exit 0
+        else
+            exit 1
+        fi
+    fi
+
+    # Run dependency check by default unless explicitly skipped
+    if [[ "$SKIP_DEPENDENCY_CHECK" != "true" ]]; then
+        if ! check_dependencies_comprehensive; then
+            echo ""
+            echo -e "${YELLOW}💡 To skip dependency check (not recommended):${NC}"
+            echo "   $0 $* --skip-dependency-check"
+            echo ""
+            exit 1
+        fi
+        echo ""
+    else
+        show_warning "Dependency check skipped - proceeding at your own risk"
+        echo ""
+    fi
+
+    # CRITICAL: Require explicit user approval for LIVE mode investigations
+    if [[ "$MODE" == "live" ]]; then
+        echo -e "${RED}⚠️  LIVE MODE INVESTIGATION DETECTED${NC}"
+        echo -e "${YELLOW}   This will use real Anthropic API calls and may incur costs.${NC}"
+        echo -e "${YELLOW}   Real investigation data will be processed.${NC}"
+        echo ""
+        echo -e "${WHITE}Do you want to proceed with LIVE mode investigation? (y/N):${NC} "
+        read -r user_approval
+        
+        case "$user_approval" in
+            [Yy]|[Yy][Ee][Ss])
+                echo -e "${GREEN}✅ User approved LIVE mode investigation${NC}"
+                echo ""
+                ;;
+            *)
+                echo -e "${RED}❌ LIVE mode investigation cancelled by user${NC}"
+                echo -e "${BLUE}💡 Tip: Use '--mode mock' for cost-free testing${NC}"
+                exit 0
+                ;;
+        esac
+    fi
     
     # Show configuration
     show_configuration
@@ -845,7 +1115,7 @@ main() {
     
     echo ""
     echo -e "${BLUE}════════════════════════════════════════════════════════════════════════════════${NC}"
-    echo -e "${GREEN}🎉 Olorin Autonomous Investigation Complete${NC}"
+    echo -e "${GREEN}🎉 Olorin Structured Investigation Complete${NC}"
     echo -e "${BLUE}════════════════════════════════════════════════════════════════════════════════${NC}"
 }
 

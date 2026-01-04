@@ -10,7 +10,7 @@
   "hero": {
     "title": "Next-Generation",
     "titleHighlight": "AI Fraud Prevention",
-    "subtitle": "Harness the power of Autonomous AI Agents to protect your enterprise from fraud. Our Generative AI solutions provide real-time investigation and prevention capabilities that adapt and learn from every threat.",
+    "subtitle": "Harness the power of Structured AI Agents to protect your enterprise from fraud. Our Generative AI solutions provide real-time investigation and prevention capabilities that adapt and learn from every threat.",
     "ctaStart": "Get Started",
     "ctaLearn": "Learn More",
     "ctaDemo": "Try Live Demo"
@@ -21,15 +21,15 @@
     "reduction": "80%",
     "reductionLabel": "Reduction in False Positives",
     "monitoring": "24/7",
-    "monitoringLabel": "Autonomous Monitoring",
+    "monitoringLabel": "Structured Monitoring",
     "response": "< 1s",
     "responseLabel": "Response Time"
   },
   "features": {
     "title": "Powered by Advanced AI Technology",
-    "subtitle": "Our autonomous AI agents work around the clock to protect your business from evolving fraud threats using cutting-edge generative AI technology.",
+    "subtitle": "Our structured AI agents work around the clock to protect your business from evolving fraud threats using cutting-edge generative AI technology.",
     "agent": {
-      "title": "Autonomous AI Agents",
+      "title": "Structured AI Agents",
       "description": "Advanced AI agents that work independently to detect and investigate fraud patterns with human-level intelligence."
     },
     "realtime": {
@@ -54,11 +54,11 @@
       "Automate 90% of routine investigations",
       "Real-time alerts and responses",
       "Seamless integration with existing systems",
-      "24/7 autonomous monitoring"
+      "24/7 structured monitoring"
     ],
     "cta": {
       "title": "AI-Powered Protection",
-      "description": "Experience the next generation of fraud prevention with our autonomous AI agents that learn, adapt, and protect your business 24/7.",
+      "description": "Experience the next generation of fraud prevention with our structured AI agents that learn, adapt, and protect your business 24/7.",
       "button": "Schedule Demo"
     }
   },
@@ -70,10 +70,10 @@
   },
   "about": {
     "title": "About Olorin.ai",
-    "subtitle": "We're pioneering the future of enterprise security with autonomous AI agents that revolutionize fraud prevention and investigation processes.",
+    "subtitle": "We're pioneering the future of enterprise security with structured AI agents that revolutionize fraud prevention and investigation processes.",
     "mission": {
       "title": "Our Mission",
-      "description1": "At Olorin.ai, we believe that every enterprise deserves protection from evolving fraud threats. Our mission is to democratize access to cutting-edge AI technology that can autonomously detect, investigate, and prevent fraud with unprecedented accuracy.",
+      "description1": "At Olorin.ai, we believe that every enterprise deserves protection from evolving fraud threats. Our mission is to democratize access to cutting-edge AI technology that can structuredly detect, investigate, and prevent fraud with unprecedented accuracy.",
       "description2": "Named after the wise protector from Tolkien's world, Olorin represents our commitment to being the guardian of your digital assets, watching over your business with intelligence, vigilance, and unwavering dedication.",
       "recognition": "Industry Recognition",
       "recognitionDesc": "Recognized as a leader in AI-powered fraud prevention solutions"
@@ -112,7 +112,7 @@
     },
     "technology": {
       "title": "Cutting-Edge Technology",
-      "description": "Our platform leverages the latest advances in artificial intelligence, machine learning, and generative AI to create autonomous agents that think and act like expert fraud investigators.",
+      "description": "Our platform leverages the latest advances in artificial intelligence, machine learning, and generative AI to create structured agents that think and act like expert fraud investigators.",
       "features": [
         "Advanced Machine Learning Algorithms",
         "Natural Language Processing",
@@ -131,7 +131,7 @@
   },
   "services": {
     "title": "AI-Powered Fraud Prevention Services",
-    "subtitle": "Comprehensive fraud prevention solutions powered by autonomous AI agents that protect your business 24/7 with unmatched accuracy and speed.",
+    "subtitle": "Comprehensive fraud prevention solutions powered by structured AI agents that protect your business 24/7 with unmatched accuracy and speed.",
     "getStartedToday": "Get Started Today",
     "benefitStats": {
       "detection": "95% Fraud Detection Rate",
@@ -146,8 +146,8 @@
     "ourServices": {
       "title": "Our AI Fraud Prevention Services",
       "subtitle": "Comprehensive solutions that leverage cutting-edge AI technology to protect your business from evolving fraud threats.",
-      "autonomous": {
-        "title": "Autonomous AI Agents",
+      "structured": {
+        "title": "Structured AI Agents",
         "description": "Deploy intelligent agents that work 24/7 to monitor, detect, and investigate fraud attempts with human-level reasoning capabilities.",
         "features": [
           "Self-learning fraud detection",
@@ -249,7 +249,7 @@
     },
     "process": {
       "title": "How Our AI Agents Work",
-      "subtitle": "Our autonomous AI agents follow a sophisticated process to detect, investigate, and prevent fraud in real-time.",
+      "subtitle": "Our structured AI agents follow a sophisticated process to detect, investigate, and prevent fraud in real-time.",
       "detect": {
         "title": "Detect",
         "description": "AI agents continuously monitor transactions and activities, identifying suspicious patterns in real-time."
@@ -265,7 +265,7 @@
     },
     "cta": {
       "title": "Ready to Deploy AI Fraud Prevention?",
-      "subtitle": "Join the future of fraud prevention with our autonomous AI agents. Get started with a personalized demo today.",
+      "subtitle": "Join the future of fraud prevention with our structured AI agents. Get started with a personalized demo today.",
       "demo": "Schedule Demo",
       "learn": "Learn More"
     }
@@ -331,7 +331,7 @@
     }
   },
   "footer": {
-    "description": "Leading the future of enterprise security with Generative AI agentic solutions. Our autonomous AI agents revolutionize fraud prevention and investigation processes.",
+    "description": "Leading the future of enterprise security with Generative AI agentic solutions. Our structured AI agents revolutionize fraud prevention and investigation processes.",
     "quickLinks": "Quick Links",
     "contactInfo": "Contact Info",
     "copyright": "© 2025 Olorin.ai. All rights reserved.",

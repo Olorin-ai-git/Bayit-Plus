@@ -4,7 +4,7 @@ Olorin Endpoint Testing Framework
 This package contains comprehensive endpoint tests for the Olorin fraud detection service.
 It includes tests for:
 - Health endpoints
-- Authentication endpoints  
+- Authentication endpoints
 - Analysis endpoints
 - Investigation endpoints
 - Agent system endpoints

@@ -1,18 +1,18 @@
-# Autonomous Investigation Mode Demo
+# Structured Investigation Mode Demo
 
-This document demonstrates how to use the new autonomous investigation mode in
+This document demonstrates how to use the new structured investigation mode in
 the OLORIN Web Plugin.
 
 ## Overview
 
-The autonomous investigation mode allows users to run fraud investigations
+The structured investigation mode allows users to run fraud investigations
 automatically using AI agents that communicate via WebSocket connections. This
 mode provides real-time progress updates and allows for investigation control
 (pause, resume, cancel).
 
 ## Features
 
-### 🚀 **Autonomous Execution**
+### 🚀 **Structured Execution**
 
 - **Parallel Mode**: All agents run simultaneously for faster results
 - **Sequential Mode**: Agents run one after another for detailed step-by-step
@@ -22,7 +22,7 @@ mode provides real-time progress updates and allows for investigation control
 
 ### 🔧 **Investigation Control**
 
-- **Start**: Begin autonomous investigation with entity ID and type
+- **Start**: Begin structured investigation with entity ID and type
 - **Pause**: Temporarily halt the investigation
 - **Resume**: Continue a paused investigation
 - **Cancel**: Stop and terminate the investigation
@@ -38,12 +38,12 @@ mode provides real-time progress updates and allows for investigation control
 
 ## How to Use
 
-### 1. **Toggle Autonomous Mode**
+### 1. **Toggle Structured Mode**
 
 In the Investigation Page, you'll see a toggle switch at the top:
 
 - **Manual Mode**: Traditional step-by-step investigation control
-- **Autonomous Mode**: AI-powered automatic investigation
+- **Structured Mode**: AI-powered automatic investigation
 
 ### 2. **Configure Investigation**
 
@@ -166,7 +166,7 @@ During execution, you can:
 
 ## Results Display
 
-After completion, the autonomous investigation displays:
+After completion, the structured investigation displays:
 
 ### **Investigation Summary**
 
@@ -204,7 +204,7 @@ After completion, the autonomous investigation displays:
 
 ## Best Practices
 
-### **When to Use Autonomous Mode**
+### **When to Use Structured Mode**
 
 - ✅ Routine fraud investigations
 - ✅ High-volume case processing
@@ -259,6 +259,6 @@ documentation or contact the development team.
 
 ---
 
-_This autonomous investigation mode represents a significant advancement in
+_This structured investigation mode represents a significant advancement in
 automated fraud detection, providing both speed and control for modern
 investigation workflows._

@@ -4,7 +4,7 @@ import emailjs from '@emailjs/browser';
 export const EMAIL_CONFIG = {
   SERVICE_ID: 'olorinai', // Olorin.ai service ID
   TEMPLATE_CLIENT_CONTACT: 'template_contact_reply', // Client contact template
-  PUBLIC_KEY: process.env.REACT_APP_EMAILJS_PUBLIC_KEY || 'kseMiYFPJllTotInz', // Your EmailJS public key from env
+  PUBLIC_KEY: 'kseMiYFPJllTotInz', // Your EmailJS public key
   ADMIN_EMAIL: 'contact@olorin.ai' // Olorin.ai contact email
 };
 
@@ -19,7 +19,7 @@ export const sendClientConfirmationEmail = async (bookingData) => {
     console.log('📧 Attempting to send client confirmation email...');
     console.log('📧 EmailJS Config:', {
       serviceId: EMAIL_CONFIG.SERVICE_ID,
-      templateId: EMAIL_CONFIG.TEMPLATE_CLIENT_CONFIRMATION,
+      templateId: EMAIL_CONFIG.TEMPLATE_CLIENT_CONTACT,
       publicKey: EMAIL_CONFIG.PUBLIC_KEY ? 'Set' : 'Missing'
     });
     // Generate management links
@@ -72,8 +72,9 @@ export const sendClientConfirmationEmail = async (bookingData) => {
 
     const response = await emailjs.send(
       EMAIL_CONFIG.SERVICE_ID,
-      EMAIL_CONFIG.TEMPLATE_CLIENT_CONFIRMATION,
-      templateParams
+      EMAIL_CONFIG.TEMPLATE_CLIENT_CONTACT,
+      templateParams,
+      EMAIL_CONFIG.PUBLIC_KEY
     );
 
     console.log('✅ Client confirmation email sent successfully:', response);
@@ -132,7 +133,8 @@ export const sendAdminNotificationEmail = async (bookingData) => {
     const response = await emailjs.send(
       EMAIL_CONFIG.SERVICE_ID,
       EMAIL_CONFIG.TEMPLATE_ADMIN_NOTIFICATION,
-      templateParams
+      templateParams,
+      EMAIL_CONFIG.PUBLIC_KEY
     );
 
     console.log('✅ Admin notification email sent successfully:', response);
@@ -204,14 +206,15 @@ export const testEmailJSConfig = async () => {
     
     console.log('📧 Sending test email with config:', {
       serviceId: EMAIL_CONFIG.SERVICE_ID,
-      templateId: EMAIL_CONFIG.TEMPLATE_CLIENT_CONFIRMATION,
+      templateId: EMAIL_CONFIG.TEMPLATE_CLIENT_CONTACT,
       params: testParams
     });
     
     const response = await emailjs.send(
       EMAIL_CONFIG.SERVICE_ID,
-      EMAIL_CONFIG.TEMPLATE_CLIENT_CONFIRMATION,
-      testParams
+      EMAIL_CONFIG.TEMPLATE_CLIENT_CONTACT, // Use consistent template ID
+      testParams,
+      EMAIL_CONFIG.PUBLIC_KEY
     );
     
     console.log('✅ Test email sent successfully:', response);
@@ -284,7 +287,8 @@ export const sendContactFormEmail = async (formData) => {
     const response = await emailjs.send(
       EMAIL_CONFIG.SERVICE_ID,
       EMAIL_CONFIG.TEMPLATE_CLIENT_CONTACT,
-      templateParams
+      templateParams,
+      EMAIL_CONFIG.PUBLIC_KEY
     );
 
     console.log('✅ Contact form email sent successfully:', response);
@@ -369,7 +373,8 @@ export const sendCancellationEmail = async (bookingData) => {
     const response = await emailjs.send(
       EMAIL_CONFIG.SERVICE_ID,
       'template_cancellation', // Cancellation confirmation template
-      templateParams
+      templateParams,
+      EMAIL_CONFIG.PUBLIC_KEY
     );
 
     console.log('✅ Cancellation email sent successfully:', response);

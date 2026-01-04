@@ -1,7 +1,7 @@
-# Multi-Entity Autonomous Investigation System Architecture
+# Multi-Entity Structured Investigation System Architecture
 
 **Date:** 2025-01-09  
-**Plan Reference:** [Multi-Entity Autonomous Investigation System Plan](/docs/plans/2025-01-09-enhanced-entity-search-system-plan.md)  
+**Plan Reference:** [Multi-Entity Structured Investigation System Plan](/docs/plans/2025-01-09-enhanced-entity-search-system-plan.md)  
 **Author:** Gil Klainert
 
 ## Multi-Entity Investigation Architecture Overview
@@ -15,8 +15,8 @@ graph TB
         A --> E[InvestigationHistoryPanel]
     end
 
-    subgraph "Autonomous Investigation API"
-        F[AutonomousInvestigationRouter] --> G[MultiEntityInvestigationRequest]
+    subgraph "Structured Investigation API"
+        F[StructuredInvestigationRouter] --> G[MultiEntityInvestigationRequest]
         G --> H[MultiEntityInvestigationResponse]
         F --> I[InvestigationStatusEndpoint]
         F --> J[WebSocketUpdates]
@@ -108,7 +108,7 @@ graph LR
     class O,P,Q,R,S factory
 ```
 
-## Multi-Entity Autonomous Investigation Flow
+## Multi-Entity Structured Investigation Flow
 
 ```mermaid
 sequenceDiagram

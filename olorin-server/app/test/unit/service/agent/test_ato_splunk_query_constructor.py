@@ -2,7 +2,11 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
-import app.service.agent.ato_agents.splunk_agent.ato_splunk_query_constructor as constructor
+# OBSOLETE TEST: ato_splunk_query_constructor from ato_agents has been removed
+# Splunk query construction is now handled by current tools and services
+pytestmark = pytest.mark.skip(
+    reason="ato_splunk_query_constructor from ato_agents removed - obsolete test file"
+)
 
 
 def mock_settings():

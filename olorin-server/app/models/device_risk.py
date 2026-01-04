@@ -5,7 +5,7 @@ from pydantic import BaseModel, Field
 
 
 class DeviceSignalDetail(BaseModel):
-    ip_address: Optional[str] = None
+    ip: Optional[str] = None
     isp: Optional[str] = None
     city: Optional[str] = None
     country: Optional[str] = None

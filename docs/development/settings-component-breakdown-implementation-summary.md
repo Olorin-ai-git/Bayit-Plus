@@ -72,7 +72,7 @@ src/js/components/SettingsPage/
 
 ### **3. Selector Components**
 - **EntityTypeSelector**: User ID vs Device ID selection
-- **InvestigationModeSelector**: Manual/Autonomous/Review modes
+- **InvestigationModeSelector**: Manual/Structured/Review modes
 - **TimeRangeSelector**: Default time range configuration
 - **CommentRoleSelector**: Investigator vs Policy Team roles
 - **Features**: Consistent interface with descriptions and icons
@@ -170,7 +170,7 @@ export interface SettingsState {
   defaultEntityType: 'user_id' | 'device_id';
   selectedAgents: string[];
   agentToolsMapping: Record<string, string[]>;
-  investigationMode: 'manual' | 'autonomous' | 'review';
+  investigationMode: 'manual' | 'structured' | 'review';
   defaultTimeRange?: string;
   defaultCommentRole?: 'Investigator' | 'Policy Team';
   commentPrefix?: string;

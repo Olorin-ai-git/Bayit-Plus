@@ -312,7 +312,7 @@ In the network router, results are transformed into network signals:
 # --- Process Splunk results for network signals ---
 extracted_signals = []
 for event in splunk_results:
-    ip_address = event.get("true_ip")
+    ip = event.get("true_ip")
     isp = event.get("isp") 
     organization = event.get("organization")
     tm_sessionid = event.get("tm_sessionid")
@@ -320,7 +320,7 @@ for event in splunk_results:
     
     # Include all records, even if some fields are missing
     extracted_signals.append({
-        "ip_address": ip_address,
+        "ip": ip,
         "isp": isp,
         "organization": organization, 
         "tm_sessionid": tm_sessionid,
@@ -335,7 +335,7 @@ Additional processing adds country mapping:
 ```python
 device_country_map = {}
 for signal in extracted_signals:
-    device_id = signal["ip_address"]
+    device_id = signal["ip"]
     device_id_key = device_id if device_id is not None else "__NO_DEVICE_ID__"
     signal["countries"] = list(sorted(device_country_map.get(device_id_key, [])))
 ```
@@ -396,7 +396,7 @@ For user `4621097846089147992` with 90-day time range:
   "raw_splunk_results_count": 23,
   "extracted_network_signals": [
     {
-      "ip_address": "207.207.181.8",
+      "ip": "207.207.181.8",
       "isp": "olorin inc.",
       "organization": "olorin inc.", 
       "tm_sessionid": "1a977456cfcd4778f2670e3e0cd56efb",
@@ -404,7 +404,7 @@ For user `4621097846089147992` with 90-day time range:
       "countries": []
     },
     {
-      "ip_address": "223.185.128.58",
+      "ip": "223.185.128.58",
       "isp": "bharti airtel ltd.",
       "organization": "bharti",
       "tm_sessionid": "5b2cd1da38f4403d99c2b6fea53604d9", 
@@ -513,7 +513,7 @@ finally:
 
 The extraction process handles missing fields gracefully:
 ```python
-ip_address = event.get("true_ip")        # Returns None if missing
+ip = event.get("true_ip")        # Returns None if missing
 isp = event.get("isp")                   # Returns None if missing  
 organization = event.get("organization") # Returns None if missing
 ```

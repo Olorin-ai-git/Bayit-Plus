@@ -3,13 +3,13 @@
   "raw_splunk_results_count": 23,
   "extracted_network_signals": [
     {
-      "ip_address": "223.185.128.58",
+      "ip": "223.185.128.58",
       "isp": "bharti airtel ltd.",
       "organization": "bharti",
       "tm_sessionid": "f002651918d540e374a0f1861bd779bb",
       "_time": "2025-05-15T06:24:23.466-07:00",
       "countries": [],
-      "ai_analysis": "Autonomous detection: Unusual ISP for user profile"
+      "ai_analysis": "Structured detection: Unusual ISP for user profile"
     },
     {
       "_time": "2025-05-15T06:24:29.906-07:00",
@@ -17,36 +17,36 @@
       "ai_analysis": "AI processing network transition patterns"
     },
     {
-      "ip_address": "207.207.181.8",
+      "ip": "207.207.181.8",
       "isp": "olorin inc.",
       "organization": "olorin inc.",
       "tm_sessionid": "1a977456cfcd4778f2670e3e0cd56efb",
       "_time": "2025-05-15T06:31:46.027-07:00",
       "countries": [],
-      "ai_analysis": "Autonomous alert: Rapid geographic transition detected"
+      "ai_analysis": "Structured alert: Rapid geographic transition detected"
     }
   ],
   "network_risk_assessment": {
     "risk_level": 0.90,
     "risk_factors": [
       "AI-detected geographic inconsistency / impossible travel scenario",
-      "Autonomous pattern recognition: Multiple distinct ISPs in short timeframe (Bharti Airtel in India and Olorin in the US)",
+      "Structured pattern recognition: Multiple distinct ISPs in short timeframe (Bharti Airtel in India and Olorin in the US)",
       "Machine learning model flagged high-risk network behavior"
     ],
     "anomaly_details": [
-      "Autonomous system detected login from IP 223.185.128.58 (Bharti Airtel) at 2025-05-15T06:24:23.466-07:00 and then from IP 207.207.181.8 (Olorin) at 2025-05-15T06:31:40.056-07:00, indicating impossible travel scenario.",
+      "Structured system detected login from IP 223.185.128.58 (Bharti Airtel) at 2025-05-15T06:24:23.466-07:00 and then from IP 207.207.181.8 (Olorin) at 2025-05-15T06:31:40.056-07:00, indicating impossible travel scenario.",
       "AI confidence: 95% - Pattern matches known fraud scenarios"
     ],
     "confidence": 0.95,
-    "summary": "Autonomous AI analysis: User demonstrates highly suspicious cross-country ISP usage within minutes. AI recommends immediate account lockdown and investigation.",
-    "thoughts": "Autonomous network analysis detected two IPs—one in India, the other in the US—accessed within a 7-minute interval. AI pattern recognition indicates 95% probability of fraudulent activity. Session IDs reveal separate access points at close times, triggering automatic high-risk classification. Recommend immediate intervention.",
+    "summary": "Structured AI analysis: User demonstrates highly suspicious cross-country ISP usage within minutes. AI recommends immediate account lockdown and investigation.",
+    "thoughts": "Structured network analysis detected two IPs—one in India, the other in the US—accessed within a 7-minute interval. AI pattern recognition indicates 95% probability of fraudulent activity. Session IDs reveal separate access points at close times, triggering automatic high-risk classification. Recommend immediate intervention.",
     "timestamp": "2025-05-27T10:56:06.965-07:00",
     "ai_confidence": 0.95,
-    "autonomous_actions": [
+    "structured_actions": [
       "Automatic risk escalation triggered",
       "Real-time monitoring activated",
       "Fraud prevention system alerted"
     ]
   },
-  "llm_thoughts": "Autonomous network analysis detected two IPs—one in India, the other in the US—accessed within a 7-minute interval. AI pattern recognition indicates 95% probability of fraudulent activity. Session IDs reveal separate access points at close times, triggering automatic high-risk classification. Recommend immediate intervention."
+  "llm_thoughts": "Structured network analysis detected two IPs—one in India, the other in the US—accessed within a 7-minute interval. AI pattern recognition indicates 95% probability of fraudulent activity. Session IDs reveal separate access points at close times, triggering automatic high-risk classification. Recommend immediate intervention."
 } 

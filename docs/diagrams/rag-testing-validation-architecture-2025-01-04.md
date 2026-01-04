@@ -12,7 +12,7 @@ graph TB
     subgraph TestInfra["🧪 Test Infrastructure Layer"]
         UnitTests["📋 Unit Tests<br/>test_rag_enhanced_agent.py<br/>19 tests (11✅ 8❌)"]
         IntegrationTests["🔗 Integration Tests<br/>test_rag_tool_integration.py<br/>Component integration"]
-        E2ETests["🌐 E2E Tests<br/>test_autonomous_investigation.py<br/>Full workflow validation"]
+        E2ETests["🌐 E2E Tests<br/>test_structured_investigation.py<br/>Full workflow validation"]
         Fixtures["⚙️ Test Fixtures<br/>conftest.py<br/>real_investigation_context"]
     end
 

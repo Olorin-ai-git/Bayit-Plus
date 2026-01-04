@@ -12,7 +12,7 @@ import websockets
 from fpdf import FPDF
 
 parser = argparse.ArgumentParser(
-    description="Run autonomous investigation flow for a given device and monitor via WebSocket."
+    description="Run structured investigation flow for a given device and monitor via WebSocket."
 )
 parser.add_argument(
     "--device-id",
@@ -81,7 +81,7 @@ def print_response(resp):
 
 
 async def websocket_listener(investigation_id: str):
-    """Listen to WebSocket messages during autonomous investigation."""
+    """Listen to WebSocket messages during structured investigation."""
     global real_investigation_id
 
     uri = f"{WS_URL}/{investigation_id}?parallel={'true' if parallel_execution else 'false'}"
@@ -144,7 +144,7 @@ async def websocket_listener(investigation_id: str):
     except Exception as e:
         print(f"❌ Failed to connect to WebSocket: {e}")
         print(f"   This is expected since we don't know the real investigation ID yet")
-        print(f"   The autonomous investigation is still running in the background")
+        print(f"   The structured investigation is still running in the background")
 
 
 def run_websocket_listener(investigation_id: str):
@@ -154,11 +154,11 @@ def run_websocket_listener(investigation_id: str):
     loop.run_until_complete(websocket_listener(investigation_id))
 
 
-print(f"\n🚀 Starting Autonomous Investigation for {entity_type}: {device_id}")
+print(f"\n🚀 Starting Structured Investigation for {entity_type}: {device_id}")
 print("=" * 60)
 
-# Start autonomous investigation
-print(f"\n1️⃣ Starting autonomous investigation...")
+# Start structured investigation
+print(f"\n1️⃣ Starting structured investigation...")
 start_url = f"{BASE_URL}/agent/start/{device_id}"
 params = {"entity_type": entity_type}
 
@@ -166,7 +166,7 @@ start_resp = requests.post(start_url, params=params, headers=headers)
 print_response(start_resp)
 
 if start_resp.status_code not in (200, 201):
-    print(f"❌ Failed to start autonomous investigation: {start_resp.status_code}")
+    print(f"❌ Failed to start structured investigation: {start_resp.status_code}")
     exit(1)
 
 # Extract investigation ID from response
@@ -212,7 +212,7 @@ websocket_thread.start()
 # Wait for WebSocket to connect
 time.sleep(2)
 
-print(f"\n3️⃣ Monitoring autonomous investigation progress...")
+print(f"\n3️⃣ Monitoring structured investigation progress...")
 print("   (Press Ctrl+C to stop monitoring)")
 
 # Monitor for completion or timeout
@@ -280,13 +280,13 @@ else:
 
     # --- AUTHOR AND DATE ---
     pdf.set_font("DejaVu", "", 10)
-    pdf.cell(0, 8, f"Created by: Autonomous Investigation System", ln=1, align="L")
+    pdf.cell(0, 8, f"Created by: Structured Investigation System", ln=1, align="L")
     pdf.cell(0, 8, f"Date: {datetime.now().strftime('%Y-%m-%d')}", ln=1, align="L")
     pdf.ln(2)
 
     # --- TITLE AND HEADER ---
     pdf.set_font("DejaVu", "B", 16)
-    pdf.cell(0, 15, "Autonomous Device Investigation Report", ln=1, align="C")
+    pdf.cell(0, 15, "Structured Device Investigation Report", ln=1, align="C")
     pdf.ln(5)
 
     # --- INVESTIGATION SUMMARY TABLE ---
@@ -311,7 +311,7 @@ else:
         ("Investigation ID", display_investigation_id),
         ("Device ID", device_id),
         ("Entity Type", entity_type),
-        ("Investigation Type", "Autonomous"),
+        ("Investigation Type", "Structured"),
         ("Overall Risk Score", f"{overall_risk:.2f}"),
         ("Status", "Completed" if completed else "In Progress"),
         ("Generated", datetime.now().strftime("%Y-%m-%d %H:%M:%S")),
@@ -484,16 +484,16 @@ else:
     pdf.cell(
         0,
         5,
-        "Autonomous Device Investigation System - Real-time Fraud Detection",
+        "Structured Device Investigation System - Real-time Fraud Detection",
         ln=1,
         align="C",
     )
 
-    pdf_filename = f"autonomous_investigation_device_{device_id}.pdf"
+    pdf_filename = f"structured_investigation_device_{device_id}.pdf"
     pdf.output(pdf_filename)
     print(f"📄 PDF summary saved as {pdf_filename}")
 
-print(f"\n✅ Autonomous investigation test completed!")
+print(f"\n✅ Structured investigation test completed!")
 print(f"📊 Total WebSocket messages received: {len(all_messages)}")
 print(f"🔍 Investigation phases completed: {len(phases_data)}")
 

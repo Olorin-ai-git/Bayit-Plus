@@ -8,7 +8,7 @@
 
 ## Executive Summary
 
-This comprehensive implementation plan details the integration of the existing RAG (Retrieval-Augmented Generation) system with Olorin's autonomous agent architecture to enhance fraud detection capabilities through knowledge-augmented analysis. The plan builds upon the existing RAGOrchestrator and KnowledgeBase systems while maintaining backward compatibility and following established integration patterns.
+This comprehensive implementation plan details the integration of the existing RAG (Retrieval-Augmented Generation) system with Olorin's structured agent architecture to enhance fraud detection capabilities through knowledge-augmented analysis. The plan builds upon the existing RAGOrchestrator and KnowledgeBase systems while maintaining backward compatibility and following established integration patterns.
 
 ## Current State Analysis
 
@@ -25,7 +25,7 @@ This comprehensive implementation plan details the integration of the existing R
 
 ### Agent Architecture Analysis
 **Existing Structure:**
-- `AutonomousInvestigationAgent` - Base class with LLM-driven decision making
+- `StructuredInvestigationAgent` - Base class with LLM-driven decision making
 - Domain-specific agents: network, device, location, logs, risk
 - OpenAI patterns integration with function calling and streaming
 - Unified logging system integration
@@ -42,11 +42,11 @@ This comprehensive implementation plan details the integration of the existing R
 ## Architecture Design
 
 ### 1. RAG-Enhanced Agent Base Class
-**Component**: Enhanced `AutonomousInvestigationAgent`
+**Component**: Enhanced `StructuredInvestigationAgent`
 **Integration Strategy**: Composition over inheritance
 ```python
-class RAGEnhancedInvestigationAgent(AutonomousInvestigationAgent):
-    """Enhanced autonomous agent with RAG capabilities"""
+class RAGEnhancedInvestigationAgent(StructuredInvestigationAgent):
+    """Enhanced structured agent with RAG capabilities"""
     def __init__(self, rag_orchestrator: RAGOrchestrator = None, **kwargs):
         super().__init__(**kwargs)
         self.rag_orchestrator = rag_orchestrator or get_rag_orchestrator()
@@ -103,10 +103,10 @@ class RAGEnhancedInvestigationAgent(AutonomousInvestigationAgent):
    - ✅ Performance optimization for real-time queries
 
 3. **RAG-Enhanced Agent Base Class** (Priority: Critical) - ✅ COMPLETED
-   - ✅ Extend `AutonomousInvestigationAgent` with RAG capabilities
+   - ✅ Extend `StructuredInvestigationAgent` with RAG capabilities
    - ✅ Add knowledge context injection methods
    - ✅ Implement graceful degradation patterns
-   - ✅ Preserve existing autonomous functionality
+   - ✅ Preserve existing structured functionality
 
 4. **Agent Factory Enhancement** (Priority: High) - ✅ COMPLETED
    - ✅ Update agent factory to include RAG orchestrator
@@ -426,7 +426,7 @@ rag_config:
 
 ## Conclusion
 
-This comprehensive implementation plan provides a structured approach to integrating RAG capabilities with Olorin's autonomous agent system. The phased approach ensures minimal risk while maximizing the benefits of knowledge-augmented fraud detection. The plan follows established architectural patterns and maintains backward compatibility while introducing powerful new capabilities.
+This comprehensive implementation plan provides a structured approach to integrating RAG capabilities with Olorin's structured agent system. The phased approach ensures minimal risk while maximizing the benefits of knowledge-augmented fraud detection. The plan follows established architectural patterns and maintains backward compatibility while introducing powerful new capabilities.
 
 The orchestrator task flow control ensures quality through specialized subagents, and the comprehensive testing strategy validates both functional and non-functional requirements. Production deployment preparation includes monitoring, documentation, and rollback procedures for a smooth transition.
 

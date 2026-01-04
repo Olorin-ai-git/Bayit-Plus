@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Olorin Autonomous Investigation System - User Manual</title>
+    <title>Olorin Structured Investigation System - User Manual</title>
     <style>
         :root {
             --primary-color: #2c3e50;
@@ -391,7 +391,7 @@
 <body>
     <div class="container">
         <header>
-            <h1>🔍 Olorin Autonomous Investigation System</h1>
+            <h1>🔍 Olorin Structured Investigation System</h1>
             <p class="subtitle">Complete User Manual for AI-Driven Fraud Detection</p>
         </header>
 
@@ -414,7 +414,7 @@
                 🎯 System Overview
             </div>
             <div class="section-content">
-                <p>The Olorin Autonomous Investigation System is an AI-powered fraud detection platform that conducts comprehensive, multi-domain investigations automatically. The system uses LangGraph orchestration with specialized AI agents to analyze potential fraud across multiple dimensions.</p>
+                <p>The Olorin Structured Investigation System is an AI-powered fraud detection platform that conducts comprehensive, multi-domain investigations automatically. The system uses LangGraph orchestration with specialized AI agents to analyze potential fraud across multiple dimensions.</p>
 
                 <div class="feature-grid">
                     <div class="feature-card">
@@ -455,12 +455,12 @@
             <div class="section-content">
                 <div class="step">
                     <h4>Step 1: Start an Investigation</h4>
-                    <p>Use the REST API to initiate a new autonomous investigation:</p>
+                    <p>Use the REST API to initiate a new structured investigation:</p>
                     
                     <div class="code-block">
                         <div class="code-header">curl command</div>
                         <button class="copy-btn" onclick="copyToClipboard(this)">Copy</button>
-curl -X POST "http://localhost:8090/v1/autonomous/start_investigation" \
+curl -X POST "http://localhost:8090/v1/structured/start_investigation" \
   -H "Content-Type: application/json" \
   -d '{
     "entity_id": "USER_12345",
@@ -484,12 +484,12 @@ curl -X POST "http://localhost:8090/v1/autonomous/start_investigation" \
 {
   "investigation_id": "AUTO_INVEST_USER_12345_20250906_143000",
   "status": "started",
-  "message": "Autonomous investigation started for user_id: USER_12345",
+  "message": "Structured investigation started for user_id: USER_12345",
   "monitoring_endpoints": {
-    "status": "http://localhost:8090/autonomous/investigation/{id}/status",
-    "logs": "http://localhost:8090/autonomous/investigation/{id}/logs", 
-    "journey": "http://localhost:8090/autonomous/investigation/{id}/journey",
-    "websocket": "ws://localhost:8090/autonomous/investigation/{id}/monitor"
+    "status": "http://localhost:8090/structured/investigation/{id}/status",
+    "logs": "http://localhost:8090/structured/investigation/{id}/logs", 
+    "journey": "http://localhost:8090/structured/investigation/{id}/journey",
+    "websocket": "ws://localhost:8090/structured/investigation/{id}/monitor"
   },
   "estimated_completion_time_ms": 180900
 }
@@ -681,7 +681,7 @@ Conduct comprehensive fraud investigation analyzing:
                         
                         <div class="code-block">
                             <div class="code-header">Tool Selection Process</div>
-async def autonomous_network_agent(state, config):
+async def structured_network_agent(state, config):
     # AI analyzes investigation context
     network_agent = await create_agent_with_intelligent_tools(
         domain="network",
@@ -750,12 +750,12 @@ async def autonomous_network_agent(state, config):
                     <h4>📊 Status Monitoring</h4>
                     <p>Check investigation progress using the status endpoint:</p>
                     
-                    <div class="api-endpoint">GET /v1/autonomous/investigation/{id}/status</div>
+                    <div class="api-endpoint">GET /v1/structured/investigation/{id}/status</div>
                     
                     <div class="code-block">
                         <div class="code-header">curl command</div>
                         <button class="copy-btn" onclick="copyToClipboard(this)">Copy</button>
-curl -X GET "http://localhost:8090/v1/autonomous/investigation/AUTO_INVEST_USER_12345_20250906_143000/status"
+curl -X GET "http://localhost:8090/v1/structured/investigation/AUTO_INVEST_USER_12345_20250906_143000/status"
                     </div>
 
                     <div class="json-response">
@@ -800,12 +800,12 @@ curl -X GET "http://localhost:8090/v1/autonomous/investigation/AUTO_INVEST_USER_
                     <h4>🔍 Detailed Logs</h4>
                     <p>Access comprehensive investigation logs:</p>
                     
-                    <div class="api-endpoint">GET /v1/autonomous/investigation/{id}/logs</div>
+                    <div class="api-endpoint">GET /v1/structured/investigation/{id}/logs</div>
                     
                     <div class="code-block">
                         <div class="code-header">curl command</div>
                         <button class="copy-btn" onclick="copyToClipboard(this)">Copy</button>
-curl -X GET "http://localhost:8090/v1/autonomous/investigation/AUTO_INVEST_USER_12345_20250906_143000/logs"
+curl -X GET "http://localhost:8090/v1/structured/investigation/AUTO_INVEST_USER_12345_20250906_143000/logs"
                     </div>
                 </div>
 
@@ -813,7 +813,7 @@ curl -X GET "http://localhost:8090/v1/autonomous/investigation/AUTO_INVEST_USER_
                     <h4>🗺️ Journey Tracking</h4>
                     <p>View detailed LangGraph execution trace:</p>
                     
-                    <div class="api-endpoint">GET /v1/autonomous/investigation/{id}/journey</div>
+                    <div class="api-endpoint">GET /v1/structured/investigation/{id}/journey</div>
                     
                     <div class="json-response">
                         <strong>Journey Response includes:</strong>
@@ -833,7 +833,7 @@ curl -X GET "http://localhost:8090/v1/autonomous/investigation/AUTO_INVEST_USER_
                     
                     <div class="code-block">
                         <div class="code-header">WebSocket Connection</div>
-const ws = new WebSocket('ws://localhost:8090/v1/autonomous/investigation/{id}/monitor');
+const ws = new WebSocket('ws://localhost:8090/v1/structured/investigation/{id}/monitor');
 
 ws.onmessage = (event) => {
   const update = JSON.parse(event.data);
@@ -877,7 +877,7 @@ ws.onmessage = (event) => {
             <div class="section-content">
                 <div class="step">
                     <h4>🚀 Start Investigation</h4>
-                    <div class="api-endpoint">POST /v1/autonomous/start_investigation</div>
+                    <div class="api-endpoint">POST /v1/structured/start_investigation</div>
                     
                     <strong>Request Body Parameters:</strong>
                     <div class="code-block">
@@ -915,7 +915,7 @@ ws.onmessage = (event) => {
 
                 <div class="step">
                     <h4>📊 Get Investigation Status</h4>
-                    <div class="api-endpoint">GET /v1/autonomous/investigation/{investigation_id}/status</div>
+                    <div class="api-endpoint">GET /v1/structured/investigation/{investigation_id}/status</div>
                     
                     <strong>Response:</strong>
                     <div class="code-block">
@@ -945,7 +945,7 @@ ws.onmessage = (event) => {
 
                 <div class="step">
                     <h4>📝 Get Investigation Logs</h4>
-                    <div class="api-endpoint">GET /v1/autonomous/investigation/{investigation_id}/logs</div>
+                    <div class="api-endpoint">GET /v1/structured/investigation/{investigation_id}/logs</div>
                     
                     <strong>Query Parameters:</strong>
                     <ul style="margin-left: 1rem;">
@@ -958,7 +958,7 @@ ws.onmessage = (event) => {
 
                 <div class="step">
                     <h4>🗺️ Get Journey Tracking</h4>
-                    <div class="api-endpoint">GET /v1/autonomous/investigation/{investigation_id}/journey</div>
+                    <div class="api-endpoint">GET /v1/structured/investigation/{investigation_id}/journey</div>
                     
                     <strong>Response includes:</strong>
                     <ul style="margin-left: 1rem;">
@@ -971,7 +971,7 @@ ws.onmessage = (event) => {
 
                 <div class="step">
                     <h4>🌐 WebSocket Monitoring</h4>
-                    <div class="api-endpoint">WS /v1/autonomous/investigation/{investigation_id}/monitor</div>
+                    <div class="api-endpoint">WS /v1/structured/investigation/{investigation_id}/monitor</div>
                     
                     <strong>Message Types:</strong>
                     <ul style="margin-left: 1rem;">
@@ -1040,10 +1040,10 @@ ws.onmessage = (event) => {
 curl -X GET "http://localhost:8090/health"
 
 # List all active investigations
-curl -X GET "http://localhost:8090/v1/autonomous/investigations/active"
+curl -X GET "http://localhost:8090/v1/structured/investigations/active"
 
 # Get detailed system metrics
-curl -X GET "http://localhost:8090/v1/autonomous/system/metrics"
+curl -X GET "http://localhost:8090/v1/structured/system/metrics"
                     </div>
                 </div>
 
@@ -1106,7 +1106,7 @@ curl -X GET "http://localhost:8090/v1/autonomous/system/metrics"
             <div class="section-content">
                 <div class="info-box">
                     <strong>🎯 Understanding Investigation Data Sources:</strong><br>
-                    The autonomous investigation system supports two distinct data paths: predefined realistic scenarios for testing/demonstration, and real entity investigations using production data.
+                    The structured investigation system supports two distinct data paths: predefined realistic scenarios for testing/demonstration, and real entity investigations using production data.
                 </div>
 
                 <div class="step">
@@ -1187,7 +1187,7 @@ curl -X GET "http://localhost:8090/v1/autonomous/system/metrics"
   },
   
   "network": {
-    "ip_address": "198.51.100.42",
+    "ip": "198.51.100.42",
     "vpn_detected": true,
     "fraud_indicators": {
       "vpn_usage": {
@@ -1422,7 +1422,7 @@ curl -X POST ".../start_investigation" \
                     <div class="code-block">
                         <div class="code-header">Request</div>
                         <button class="copy-btn" onclick="copyToClipboard(this)">Copy</button>
-curl -X POST "http://localhost:8090/v1/autonomous/start_investigation" \
+curl -X POST "http://localhost:8090/v1/structured/start_investigation" \
   -H "Content-Type: application/json" \
   -d '{
     "entity_id": "USER_SUSPICIOUS_789",
@@ -1456,7 +1456,7 @@ curl -X POST "http://localhost:8090/v1/autonomous/start_investigation" \
                     <div class="code-block">
                         <div class="code-header">Request</div>
                         <button class="copy-btn" onclick="copyToClipboard(this)">Copy</button>
-curl -X POST "http://localhost:8090/v1/autonomous/start_investigation" \
+curl -X POST "http://localhost:8090/v1/structured/start_investigation" \
   -H "Content-Type: application/json" \
   -d '{
     "entity_id": "TXN_20250906_123456",
@@ -1479,7 +1479,7 @@ curl -X POST "http://localhost:8090/v1/autonomous/start_investigation" \
                     <div class="code-block">
                         <div class="code-header">Request</div>
                         <button class="copy-btn" onclick="copyToClipboard(this)">Copy</button>
-curl -X POST "http://localhost:8090/v1/autonomous/start_investigation" \
+curl -X POST "http://localhost:8090/v1/structured/start_investigation" \
   -H "Content-Type: application/json" \
   -d '{
     "entity_id": "USER_COMPROMISED_456",
@@ -1508,7 +1508,7 @@ class InvestigationMonitor {
   }
 
   async startInvestigation(entityId, entityType, scenario) {
-    const response = await fetch('/v1/autonomous/start_investigation', {
+    const response = await fetch('/v1/structured/start_investigation', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -1525,7 +1525,7 @@ class InvestigationMonitor {
   }
 
   monitorInvestigation(investigationId) {
-    const ws = new WebSocket(`ws://localhost:8090/v1/autonomous/investigation/${investigationId}/monitor`);
+    const ws = new WebSocket(`ws://localhost:8090/v1/structured/investigation/${investigationId}/monitor`);
     
     ws.onmessage = (event) => {
       const update = JSON.parse(event.data);
@@ -1587,7 +1587,7 @@ monitor.startInvestigation('USER_123', 'user_id', 'device_spoofing');
         </div>
 
         <footer style="text-align: center; margin-top: 3rem; padding: 2rem; background: var(--primary-color); color: white; border-radius: 10px;">
-            <h3>🔍 Olorin Autonomous Investigation System</h3>
+            <h3>🔍 Olorin Structured Investigation System</h3>
             <p>AI-Powered Fraud Detection Platform</p>
             <p style="margin-top: 1rem; opacity: 0.8;">Version 2.1 | Generated: September 2025</p>
         </footer>

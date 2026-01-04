@@ -238,12 +238,6 @@ agent_context = AgentContext(
         interaction_group_id="fraud_flow",
         additional_metadata={"userId": user_id},
     ),
-<<<<<<< HEAD:back/docs/LOGS_DOMAIN_LLM_ANALYSIS.md
-    olorin_header=OlorinHeader(
-        olorin_tid="test",
-        olorin_originating_assetalias="Olorin.cas.hri.olorin",
-        olorin_experience_id=settings.olorin_experience_id,
-=======
     olorin_header=OlorinHeader(
         olorin_tid="test",
         olorin_originating_assetalias="Olorin.cas.hri.olorin",

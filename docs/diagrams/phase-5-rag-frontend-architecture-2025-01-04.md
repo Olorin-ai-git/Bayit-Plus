@@ -23,11 +23,11 @@ graph TB
             URS[useRAGStatus]
             URM[useRAGMetrics]
             URI[useRAGInsights]
-            UAI[useAutonomousInvestigation]
+            UAI[useStructuredInvestigation]
         end
         
         subgraph "WebSocket Client"
-            AIC[AutonomousInvestigationClient]
+            AIC[StructuredInvestigationClient]
             REH[RAG Event Handlers]
         end
         

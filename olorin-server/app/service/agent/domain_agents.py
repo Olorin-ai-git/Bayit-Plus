@@ -1,22 +1,25 @@
 """
-Domain-Specific Autonomous Agents
+Domain-Specific Structured Agents
 
-Autonomous investigation agents for specific domains (network, device, location, logs, risk).
+Structured investigation agents for specific domains (network, device, location, logs, risk, authentication).
 Each agent uses LLM-driven decision making to select tools and analysis approaches.
 """
 
+from .authentication_agent import structured_authentication_agent
+from .device_agent import structured_device_agent
+from .location_agent import structured_location_agent
+from .logs_agent import structured_logs_agent
+
 # Import individual domain agents for backward compatibility
-from .network_agent import autonomous_network_agent
-from .device_agent import autonomous_device_agent
-from .location_agent import autonomous_location_agent
-from .logs_agent import autonomous_logs_agent
-from .risk_agent import autonomous_risk_agent
+from .network_agent import structured_network_agent
+from .risk_agent import structured_risk_agent
 
 # Re-export for backward compatibility
 __all__ = [
-    'autonomous_network_agent',
-    'autonomous_device_agent', 
-    'autonomous_location_agent',
-    'autonomous_logs_agent',
-    'autonomous_risk_agent',
+    "structured_network_agent",
+    "structured_device_agent",
+    "structured_location_agent",
+    "structured_logs_agent",
+    "structured_risk_agent",
+    "structured_authentication_agent",
 ]

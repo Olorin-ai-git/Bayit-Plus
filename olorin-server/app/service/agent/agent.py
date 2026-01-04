@@ -4,7 +4,7 @@ Agent Module - Main API for refactored fraud investigation system.
 This module imports from specialized modules and maintains backward compatibility.
 All major functionality has been moved to:
 - orchestration/: Graph building and coordination
-- investigators/: Domain-specific investigation agents  
+- investigators/: Domain-specific investigation agents
 - core/: Shared utilities and helpers
 """
 
@@ -13,57 +13,110 @@ from typing import List, Optional
 
 from langchain_core.messages import AIMessage, HumanMessage
 
-# Import core functionality from refactored modules
-from app.service.agent.orchestration import (
-    create_parallel_agent_graph,
-    create_sequential_agent_graph,
-    create_and_get_agent_graph,
-    start_investigation,
-    assistant
-)
-from app.service.logging import get_bridge_logger
-from app.service.agent.investigators import (
-    network_agent,
-    location_agent,
-    logs_agent,
-    device_agent,
-    risk_agent
-)
-from app.service.agent.core import (
-    get_config_value as _get_config_value,
-    rehydrate_agent_context as _rehydrate_agent_context
-)
+from app.models.upi_response import Interaction, InteractionsResponse
 
 # Pattern system and legacy compatibility
-from app.service.agent.agent_factory import get_agent_factory, create_agent, execute_agent
-from app.service.agent.patterns import PatternType, PatternConfig
-from app.service.agent.websocket_streaming_service import WebSocketStreamingService
+from app.service.agent.agent_factory import (
+    create_agent,
+    execute_agent,
+    get_agent_factory,
+)
+from app.service.agent.core import get_config_value as _get_config_value
+from app.service.agent.core import rehydrate_agent_context as _rehydrate_agent_context
+from app.service.agent.investigators import (
+    device_agent,
+    location_agent,
+    logs_agent,
+    network_agent,
+    risk_agent,
+)
 
-# Import tools for autonomous agents
+# Import core functionality from refactored modules
+from app.service.agent.orchestration import (
+    assistant,
+    create_and_get_agent_graph,
+    create_parallel_agent_graph,
+    create_sequential_agent_graph,
+    start_investigation,
+)
+from app.service.agent.patterns import PatternConfig, PatternType
+
+# Import tools for structured agents
 from app.service.agent.tools.tool_registry import get_tools_for_agent
-from app.models.upi_response import Interaction, InteractionsResponse
-from app.service.websocket_manager import websocket_manager
+from app.service.logging import get_bridge_logger
 
 logger = get_bridge_logger(__name__)
 
-# Initialize tools for autonomous agents
+# Initialize tools for structured agents
 try:
+    import os
+
     # Initialize the tool registry first
     from app.service.agent.tools.tool_registry import initialize_tools
-    initialize_tools()
-    
-    # Get essential tools for fraud investigation including threat intelligence
-    # Categories will load ALL tools from those categories
-    # tool_names will additionally ensure these specific tools are included
+
+    # CRITICAL: Only create PostgreSQL connection string if DATABASE_PROVIDER is PostgreSQL
+    # When DATABASE_PROVIDER=snowflake, do NOT create DatabaseQueryTool (use SnowflakeQueryTool instead)
+    database_provider = os.getenv("DATABASE_PROVIDER", "snowflake").lower()
+    database_connection_string = None
+
+    if database_provider == "postgresql":
+        # Build PostgreSQL connection string from environment variables
+        postgres_user = os.getenv("POSTGRES_USER", "gklainert")
+        postgres_password = os.getenv("POSTGRES_PASSWORD", "olorin_dev_2025")
+        postgres_host = os.getenv("POSTGRES_HOST", "localhost")
+        postgres_port = os.getenv("POSTGRES_PORT", "5432")
+        postgres_database = os.getenv("POSTGRES_DATABASE", "olorin_db")
+
+        # Build connection string for PostgreSQL
+        # Add gssencmode=disable to avoid GSSAPI errors on local connections
+        database_connection_string = f"postgresql://{postgres_user}:{postgres_password}@{postgres_host}:{postgres_port}/{postgres_database}?gssencmode=disable"
+
+        logger.debug(
+            f"Initializing tools with PostgreSQL database: {postgres_host}:{postgres_port}/{postgres_database}"
+        )
+    else:
+        logger.debug(
+            f"Initializing tools without DatabaseQueryTool (DATABASE_PROVIDER={database_provider}, will use SnowflakeQueryTool)"
+        )
+
+    # Initialize tools with database connection (None for Snowflake)
+    initialize_tools(database_connection_string=database_connection_string)
+
+    # Get ALL available tools for comprehensive fraud investigation
+    # Load all categories to ensure agents have access to the full suite of 45+ tools
     tools = get_tools_for_agent(
-        categories=["olorin", "search", "database", "threat_intelligence"]
-        # Note: Removed tool_names parameter to load ALL tools from the categories
-        # This ensures all threat intelligence tools are loaded, not just the 3 named ones
+        categories=[
+            "olorin",  # Snowflake, Splunk, SumoLogic
+            "threat_intelligence",  # AbuseIPDB, VirusTotal, Shodan
+            "database",  # Database query and schema tools
+            "search",  # Vector search
+            "blockchain",  # Crypto and blockchain analysis
+            "intelligence",  # OSINT, social media, dark web
+            "ml_ai",  # ML-powered analysis tools
+            "web",  # Web search and scraping
+            "file_system",  # File operations
+            "api",  # HTTP and JSON API tools
+            "mcp_clients",  # External MCP server connections
+            "utility",  # Utility tools
+        ]
+        # Loading ALL categories ensures agents have access to all 45+ enabled tools
     )
-    threat_count = len([t for t in tools if 'threat' in t.name or 'virus' in t.name or 'abuse' in t.name])
-    logger.info(f"Initialized {len(tools)} tools for autonomous agents (including {threat_count} threat intelligence tools)")
+    threat_count = len(
+        [
+            t
+            for t in tools
+            if "threat" in t.name or "virus" in t.name or "abuse" in t.name
+        ]
+    )
+    db_tool_count = len([t for t in tools if "database" in t.name or "query" in t.name])
+    logger.info(
+        f"Initialized {len(tools)} tools for structured agents (including {threat_count} threat intelligence tools, {db_tool_count} database tools)"
+    )
 except Exception as e:
     logger.warning(f"Could not initialize tools: {e}")
+    import traceback
+
+    logger.warning(f"Tool initialization error: {traceback.format_exc()}")
     tools = []
 
 
@@ -94,12 +147,20 @@ async def investigate_with_patterns(
     agent_context=None,
     request=None,
     thread_id: Optional[str] = None,
-    parallel: bool = True
+    parallel: bool = True,
+    investigation_id: Optional[str] = None,
+    entity_type: str = "ip",
 ):
-    """Execute pattern-based investigation using configured agent graph."""
-    logger.info(f"Starting investigation: pattern_type={pattern_type}")
-    
-    graph = create_and_get_agent_graph(parallel=parallel)
+    """Execute pattern-based investigation using hybrid intelligence graph selection."""
+    logger.info(
+        f"Starting investigation: pattern_type={pattern_type}, investigation_id={investigation_id}"
+    )
+
+    # Use hybrid graph selection if investigation_id is available
+    graph = await create_and_get_agent_graph(
+        parallel=parallel, investigation_id=investigation_id, entity_type=entity_type
+    )
+
     config = {
         "configurable": {
             "thread_id": thread_id or "default",
@@ -107,11 +168,10 @@ async def investigate_with_patterns(
             "request": request,
         }
     }
-    
+
     try:
         result = await graph.ainvoke(
-            {"messages": [HumanMessage(content=user_message)]},
-            config=config
+            {"messages": [HumanMessage(content=user_message)]}, config=config
         )
         logger.info("✅ Investigation completed successfully")
         return result
@@ -127,42 +187,28 @@ async def investigate_with_enhanced_patterns(
     use_pattern: str = "auto",
     investigation_id: Optional[str] = None,
     agent_context=None,
-    request=None
+    request=None,
 ) -> dict:
-    """Enhanced investigation with WebSocket streaming and pattern-based agents."""
+    """Enhanced investigation with pattern-based agents (WebSocket streaming removed per spec 005)."""
     from uuid import uuid4
-    
+
     if not investigation_id:
         investigation_id = str(uuid4())
-    
-    logger.info(f"Enhanced investigation: {investigation_type} for {entity_type} {entity_id}")
-    
-    # Create streaming service
-    ws_streaming = WebSocketStreamingService(
-        investigation_id=investigation_id,
-        websocket_manager=websocket_manager,
-        entity_context={
-            "entity_id": entity_id,
-            "entity_type": entity_type,
-            "investigation_type": investigation_type
-        }
+
+    logger.info(
+        f"Enhanced investigation: {investigation_type} for {entity_type} {entity_id}"
     )
-    
+
     try:
-        await ws_streaming.send_investigation_start(
-            investigation_type=investigation_type,
-            entity_details={"entity_id": entity_id, "entity_type": entity_type}
-        )
-        
         # Pattern mapping
         agent_type = {
             "auto": "routing",
-            "comprehensive": "comprehensive", 
+            "comprehensive": "comprehensive",
             "parallel": "parallel_analysis",
             "orchestration": "orchestration",
-            "chaining": investigation_type
+            "chaining": investigation_type,
         }.get(use_pattern, use_pattern)
-        
+
         # Create context and agent
         context = {
             "entity_id": entity_id,
@@ -171,17 +217,19 @@ async def investigate_with_enhanced_patterns(
             "investigation_type": investigation_type,
             "agent_context": agent_context,
             "request": request,
-            "time_range": "24h"
+            "time_range": "24h",
         }
-        
-        agent = create_agent(agent_type=agent_type, context=context, ws_streaming=ws_streaming)
-        
+
+        agent = create_agent(agent_type=agent_type, context=context)
+
         # Execute investigation
-        message = HumanMessage(content=f"Investigate {entity_type} {entity_id} for fraud")
+        message = HumanMessage(
+            content=f"Investigate {entity_type} {entity_id} for fraud"
+        )
         result = await execute_agent(agent=agent, messages=[message], context=context)
-        
+
         # Format result
-        success = hasattr(result, 'success') and result.success
+        success = hasattr(result, "success") and result.success
         investigation_result = {
             "investigation_id": investigation_id,
             "entity_id": entity_id,
@@ -189,37 +237,32 @@ async def investigate_with_enhanced_patterns(
             "success": success,
             "pattern_used": use_pattern,
             "agent_type": agent_type,
-            "timestamp": datetime.utcnow().isoformat()
+            "timestamp": datetime.utcnow().isoformat(),
         }
-        
+
         if success:
-            investigation_result.update({
-                "results": result.result,
-                "confidence": getattr(result, 'confidence_score', 0.0)
-            })
+            investigation_result.update(
+                {
+                    "results": result.result,
+                    "confidence": getattr(result, "confidence_score", 0.0),
+                }
+            )
         else:
-            investigation_result["error"] = getattr(result, 'error_message', 'Investigation failed')
-        
-        await ws_streaming.send_investigation_complete(
-            success=success,
-            results=investigation_result,
-            execution_summary={"pattern": use_pattern, "agent_type": agent_type}
-        )
-        
+            investigation_result["error"] = getattr(
+                result, "error_message", "Investigation failed"
+            )
+
         return investigation_result
-        
+
     except Exception as e:
-        logger.error(f"Enhanced investigation failed: {e}", exc_info=True)
-        await ws_streaming.send_error(str(e), {"entity_id": entity_id})
+        logger.error(f"❌ Enhanced investigation failed: {e}")
         return {
             "investigation_id": investigation_id,
             "entity_id": entity_id,
             "success": False,
             "error": str(e),
-            "timestamp": datetime.utcnow().isoformat()
+            "timestamp": datetime.utcnow().isoformat(),
         }
-    finally:
-        await ws_streaming.close()
 
 
 def get_agent_factory_stats() -> dict:
@@ -229,9 +272,20 @@ def get_agent_factory_stats() -> dict:
 
 # Public API exports
 __all__ = [
-    "create_parallel_agent_graph", "create_sequential_agent_graph", "create_and_get_agent_graph",
-    "start_investigation", "network_agent", "location_agent", "logs_agent", "device_agent", 
-    "risk_agent", "assistant", "investigate_with_patterns", "investigate_with_enhanced_patterns",
-    "convert_interaction_to_langgraph_messages", "get_agent_factory_stats",
-    "_get_config_value", "_rehydrate_agent_context"
+    "create_parallel_agent_graph",
+    "create_sequential_agent_graph",
+    "create_and_get_agent_graph",
+    "start_investigation",
+    "network_agent",
+    "location_agent",
+    "logs_agent",
+    "device_agent",
+    "risk_agent",
+    "assistant",
+    "investigate_with_patterns",
+    "investigate_with_enhanced_patterns",
+    "convert_interaction_to_langgraph_messages",
+    "get_agent_factory_stats",
+    "_get_config_value",
+    "_rehydrate_agent_context",
 ]

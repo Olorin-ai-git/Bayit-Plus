@@ -6,7 +6,7 @@ Provides Pydantic models for health status responses, probes, and metrics.
 
 import time
 from datetime import datetime, timezone
-from typing import Dict, Any
+from typing import Any, Dict, Optional
 
 from pydantic import BaseModel
 
@@ -16,6 +16,7 @@ SERVICE_START_TIME = time.time()
 
 class HealthStatus(BaseModel):
     """Basic health status response model."""
+
     status: str
     timestamp: str
     service: str
@@ -26,6 +27,7 @@ class HealthStatus(BaseModel):
 
 class DetailedHealthStatus(BaseModel):
     """Detailed health status with dependency checks."""
+
     status: str
     timestamp: str
     service: str
@@ -35,19 +37,37 @@ class DetailedHealthStatus(BaseModel):
     dependencies: Dict[str, Any]
     checks: Dict[str, bool]
     metrics: Dict[str, Any]
+    verification: Optional[Dict[str, Any]] = None
 
 
 class LivenessProbe(BaseModel):
     """Liveness probe response."""
+
     alive: bool
     timestamp: str
 
 
 class ReadinessProbe(BaseModel):
     """Readiness probe response."""
+
     ready: bool
     timestamp: str
     dependencies_ready: Dict[str, bool]
+
+
+class StartupProbe(BaseModel):
+    """
+    Startup probe response for Kubernetes.
+
+    Constitutional Compliance:
+    - No hardcoded startup thresholds
+    - Startup status from runtime checks
+    - Timestamp from system time (not hardcoded)
+    """
+
+    started: bool
+    timestamp: str
+    startup_time_seconds: Optional[float] = None
 
 
 def get_current_timestamp() -> str:
@@ -68,5 +88,5 @@ def create_basic_health_response(environment: str) -> HealthStatus:
         service="olorin-backend",
         version="1.0.0",
         environment=environment,
-        uptime_seconds=get_service_uptime()
+        uptime_seconds=get_service_uptime(),
     )

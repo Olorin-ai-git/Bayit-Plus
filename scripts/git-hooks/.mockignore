@@ -1,0 +1,48 @@
+# .mockignore - Whitelist for legitimate mock data patterns
+# Lines starting with # are comments
+# Use regex patterns to match file paths or content
+
+# Legitimate test files and directories
+.*/test/.*
+.*/tests/.*
+.*/__tests__/.*
+.*/spec/.*
+.*/fixtures/.*
+.*/mocks/.*
+
+# Documentation and examples
+.*/docs/.*
+.*/examples/.*
+.*README.*
+.*CHANGELOG.*
+
+# Configuration templates
+.*\.example$
+.*\.template$
+.*\.sample$
+
+# Package manager files
+package-lock\.json
+yarn\.lock
+poetry\.lock
+
+# Generated files
+.*\.generated\..*
+.*\.min\..*
+.*\.bundle\..*
+
+# IDE and editor files
+.*\.vscode/.*
+.*\.idea/.*
+
+# Specific legitimate patterns in your codebase
+# Add organization-specific whitelisting here
+
+# Example: Legitimate use of "test" in production code
+# production/config/test-environment-setup.js
+
+# Example: Legitimate placeholder in configuration
+# config/database-template.yaml
+
+# Example: Legitimate mock service for external APIs
+# services/external-api-mock.py

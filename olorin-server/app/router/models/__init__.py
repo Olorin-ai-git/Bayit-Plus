@@ -1,18 +1,19 @@
 """
 Models package for router modules
 """
+
 from .autonomous_investigation_models import (
-    AutonomousInvestigationRequest,
-    AutonomousInvestigationResponse,
-    InvestigationStatusResponse,
     InvestigationLogsResponse,
-    LangGraphJourneyResponse
+    InvestigationStatusResponse,
+    LangGraphJourneyResponse,
+    StructuredInvestigationRequest,
+    StructuredInvestigationResponse,
 )
 
 __all__ = [
-    "AutonomousInvestigationRequest",
-    "AutonomousInvestigationResponse", 
+    "StructuredInvestigationRequest",
+    "StructuredInvestigationResponse",
     "InvestigationStatusResponse",
     "InvestigationLogsResponse",
-    "LangGraphJourneyResponse"
+    "LangGraphJourneyResponse",
 ]

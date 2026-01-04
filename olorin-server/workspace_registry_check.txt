@@ -1,0 +1,37 @@
+Connecting to: /Users/olorin/Documents/olorin/olorin-server/workspace/registry/registry.sqlite
+
+Tables in workspace registry:
+  - investigations
+  - files
+  - sqlite_sequence
+  - comparisons
+  - audit_log
+  - investigations_fts
+  - investigations_fts_data
+  - investigations_fts_idx
+  - investigations_fts_docsize
+  - investigations_fts_config
+
+====================================================================================================
+INVESTIGATIONS IN WORKSPACE REGISTRY
+====================================================================================================
+
+Investigations table columns:
+  - investigation_id (TEXT)
+  - title (TEXT)
+  - investigation_type (TEXT)
+  - graph_type (TEXT)
+  - trigger_source (TEXT)
+  - status (TEXT)
+  - entity_type (TEXT)
+  - entity_ids (TEXT)
+  - tags (TEXT)
+  - canonical_path (TEXT)
+  - created_at (TIMESTAMP)
+  - updated_at (TIMESTAMP)
+  - completed_at (TIMESTAMP)
+  - metadata_json (TEXT)
+Traceback (most recent call last):
+  File "/Users/olorin/Documents/olorin/olorin-server/check_workspace_registry.py", line 57, in <module>
+    rows = cursor.execute(query).fetchall()
+sqlite3.OperationalError: no such column: overall_risk_score

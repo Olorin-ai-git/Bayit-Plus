@@ -288,24 +288,29 @@ jobs:
 
       - name: Build frontend application
         working-directory: olorin-front
+        env:
+          CI: true
+          GENERATE_SOURCEMAP: false
+          # Firebase Authentication (Feature: firebase-rbac)
+          REACT_APP_AUTH_ENABLE_GOOGLE_SIGNIN: true
         run: |
           echo "::group::Frontend Build Process"
-          
+
           # Set backend URL if backend was deployed
           if [[ "${{ needs.deploy-backend.result }}" == "success" ]]; then
             export REACT_APP_BACKEND_URL="${{ needs.deploy-backend.outputs.backend_url }}"
             echo "Using backend URL: $REACT_APP_BACKEND_URL"
           fi
-          
+
           # Build with TypeScript error tolerance for production
           TSC_COMPILE_ON_ERROR=true npm run build
-          
+
           # Verify build output
           if [[ ! -d "build" ]]; then
             echo "::error::Frontend build directory not created"
             exit 1
           fi
-          
+
           echo "✅ Frontend build completed successfully"
           echo "::endgroup::"
 

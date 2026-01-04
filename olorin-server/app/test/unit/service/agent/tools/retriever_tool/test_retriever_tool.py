@@ -1,5 +1,6 @@
-import pytest
 import asyncio
+
+import pytest
 
 from app.service.agent.tools.retriever_tool.retriever_tool import RAGApi
 
@@ -46,5 +47,3 @@ def test_ragapi_asearch_http_error(monkeypatch):
         asyncio.run(RAGApi.asearch({}, {}))
     assert exc.value.status_code == 418
     assert exc.value.detail == "fail"
-
-

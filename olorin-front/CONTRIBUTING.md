@@ -58,9 +58,6 @@ The team that owns this web plugin is expected to practice the following:
 1. Add an upstream to this main repository
 
    ```sh
-<<<<<<< HEAD:front/CONTRIBUTING.md
-   git remote add upstream https://github.olorin.com/cas-hri/olorin-webplugin.git
-=======
    git remote add upstream https://github.olorin.com/cas-hri/olorin-front.git
 >>>>>>> restructure-projects:olorin-front/CONTRIBUTING.md
    ```

@@ -9,5 +9,11 @@
     "install:portal": "cd olorin-web-portal && npm install --legacy-peer-deps",
     "start": "npm run olorin",
     "olorin": "./scripts/development/start_olorin.sh"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.56.1",
+    "@types/node": "^24.10.0",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.9.3"
   }
 }

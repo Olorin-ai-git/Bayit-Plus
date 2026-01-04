@@ -1,0 +1,471 @@
+openapi: 3.0.3
+info:
+  title: Investigations Management API
+  description: |
+    API contract for the Investigations Management Microservice frontend.
+    This microservice uses existing backend endpoints from `/api/investigations`.
+    
+    The frontend microservice provides a UI for managing investigations but
+    delegates all data operations to the backend API.
+  version: 1.0.0
+  contact:
+    name: Olorin Platform Team
+
+servers:
+  - url: http://localhost:8090/api
+    description: Local development server
+  - url: https://api.olorin.example.com/api
+    description: Production server
+
+tags:
+  - name: investigations
+    description: Investigation management operations
+
+paths:
+  /investigations:
+    get:
+      summary: List all investigations
+      description: Retrieve a list of all investigations with optional filtering
+      tags:
+        - investigations
+      parameters:
+        - name: status
+          in: query
+          description: Filter by investigation status
+          required: false
+          schema:
+            type: string
+            enum: [pending, in-progress, completed, failed, archived]
+        - name: owner
+          in: query
+          description: Filter by investigation owner
+          required: false
+          schema:
+            type: string
+        - name: search
+          in: query
+          description: Search investigations by name or description
+          required: false
+          schema:
+            type: string
+      responses:
+        '200':
+          description: List of investigations
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Investigation'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+    post:
+      summary: Create a new investigation
+      description: Create a new fraud investigation with specified parameters
+      tags:
+        - investigations
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateInvestigationRequest'
+      responses:
+        '201':
+          description: Investigation created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Investigation'
+        '400':
+          description: Bad request - validation error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /investigation/{id}:
+    get:
+      summary: Get investigation by ID
+      description: Retrieve a specific investigation by its ID
+      tags:
+        - investigations
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Investigation ID
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Investigation details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Investigation'
+        '404':
+          description: Investigation not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+    put:
+      summary: Update investigation
+      description: Update an existing investigation's properties
+      tags:
+        - investigations
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Investigation ID
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateInvestigationRequest'
+      responses:
+        '200':
+          description: Investigation updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Investigation'
+        '400':
+          description: Bad request - validation error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Investigation not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+    delete:
+      summary: Delete investigation
+      description: Delete a specific investigation by ID
+      tags:
+        - investigations
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Investigation ID
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Investigation deleted successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  deleted:
+                    type: boolean
+                  id:
+                    type: string
+        '404':
+          description: Investigation not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /investigation:
+    delete:
+      summary: Bulk delete investigations
+      description: Delete multiple investigations by their IDs
+      tags:
+        - investigations
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                type: string
+      responses:
+        '200':
+          description: Investigations deleted successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  deleted:
+                    type: boolean
+                  ids:
+                    type: array
+                    items:
+                      type: string
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+components:
+  schemas:
+    Investigation:
+      type: object
+      required:
+        - id
+        - status
+        - created
+        - updated
+        - progress
+      properties:
+        id:
+          type: string
+          description: Unique investigation ID (UUID)
+        name:
+          type: string
+          description: Investigation name/title
+          maxLength: 80
+        owner:
+          type: string
+          description: Owner/creator username
+          maxLength: 50
+        description:
+          type: string
+          description: Optional description
+          maxLength: 240
+        status:
+          type: string
+          enum: [pending, in-progress, completed, failed, archived]
+          description: Current investigation status
+        created:
+          type: string
+          format: date-time
+          description: Creation timestamp (ISO 8601)
+        updated:
+          type: string
+          format: date-time
+          description: Last update timestamp (ISO 8601)
+        riskModel:
+          type: string
+          description: Risk model version (e.g., "v3.2")
+        sources:
+          type: array
+          items:
+            type: string
+          description: Data sources (e.g., ["SIEM", "EDR"])
+        tools:
+          type: array
+          items:
+            type: string
+          description: Investigation tools (e.g., ["YARA", "Sandbox"])
+        from:
+          type: string
+          format: date-time
+          description: Start time (ISO 8601)
+        to:
+          type: string
+          format: date-time
+          description: End time (ISO 8601)
+        progress:
+          type: number
+          minimum: 0
+          maximum: 100
+          description: Overall progress percentage
+        phases:
+          type: array
+          items:
+            $ref: '#/components/schemas/InvestigationPhase'
+          description: Execution phases
+        entity_id:
+          type: string
+          description: Entity being investigated
+        entity_type:
+          type: string
+          description: Entity type (user_id, email, etc.)
+        overall_risk_score:
+          type: number
+          minimum: 0
+          maximum: 1
+          description: Computed risk score
+
+    InvestigationPhase:
+      type: object
+      required:
+        - name
+        - status
+        - pct
+      properties:
+        name:
+          type: string
+          description: Phase name (e.g., "Initialization")
+        status:
+          type: string
+          enum: [pending, in-progress, completed, failed]
+          description: Phase status
+        pct:
+          type: number
+          minimum: 0
+          maximum: 100
+          description: Phase progress percentage
+        started:
+          type: string
+          format: date-time
+          description: Start timestamp (ISO 8601)
+        ended:
+          type: string
+          format: date-time
+          description: End timestamp (ISO 8601)
+        summary:
+          type: string
+          description: Phase summary/description
+
+    CreateInvestigationRequest:
+      type: object
+      required:
+        - name
+        - owner
+      properties:
+        name:
+          type: string
+          maxLength: 80
+          description: Investigation name (required)
+        owner:
+          type: string
+          maxLength: 50
+          description: Owner username (required)
+        description:
+          type: string
+          maxLength: 240
+          description: Optional description
+        riskModel:
+          type: string
+          description: Risk model version
+        sources:
+          type: array
+          items:
+            type: string
+          description: Data sources
+        tools:
+          type: array
+          items:
+            type: string
+          description: Investigation tools
+        from:
+          type: string
+          format: date-time
+          description: Start time (ISO 8601)
+        to:
+          type: string
+          format: date-time
+          description: End time (ISO 8601)
+        status:
+          type: string
+          enum: [pending, in-progress, completed, failed, archived]
+          default: pending
+          description: Initial status
+        autoRun:
+          type: boolean
+          default: false
+          description: Auto-start investigation after creation
+
+    UpdateInvestigationRequest:
+      type: object
+      properties:
+        name:
+          type: string
+          maxLength: 80
+        owner:
+          type: string
+          maxLength: 50
+        description:
+          type: string
+          maxLength: 240
+        status:
+          type: string
+          enum: [pending, in-progress, completed, failed, archived]
+        riskModel:
+          type: string
+        sources:
+          type: array
+          items:
+            type: string
+        tools:
+          type: array
+          items:
+            type: string
+        from:
+          type: string
+          format: date-time
+        to:
+          type: string
+          format: date-time
+
+    ErrorResponse:
+      type: object
+      required:
+        - error
+        - message
+      properties:
+        error:
+          type: string
+          description: Error type/code
+        message:
+          type: string
+          description: Human-readable error message
+        details:
+          type: object
+          description: Additional error details
+
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: JWT Bearer token authentication
+
+security:
+  - bearerAuth: []
+

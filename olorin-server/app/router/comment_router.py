@@ -4,8 +4,7 @@ from fastapi import APIRouter, Depends, HTTPException
 
 from app.models.api_models import Investigation
 from app.models.comment_message import CommentMessageCreate, CommentMessageRead
-
-# Remove all db, SQLAlchemy, and database actions. Use only in-memory storage for comments/messages.
+from app.security.auth import User, require_read, require_write
 
 comment_router = APIRouter()
 
@@ -19,7 +18,11 @@ IN_MEMORY_COMMENTS = []
     summary="Get Comment Messages",
     description="Get all comment messages for an investigation.",
 )
-async def get_comment_messages(investigation_id: str, sender: Optional[str] = None):
+async def get_comment_messages(
+    investigation_id: str,
+    sender: Optional[str] = None,
+    current_user: User = Depends(require_read),
+):
     # Filter in-memory comments by investigation_id and sender
     results = [c for c in IN_MEMORY_COMMENTS if c.investigation_id == investigation_id]
     if sender:
@@ -36,7 +39,11 @@ async def get_comment_messages(investigation_id: str, sender: Optional[str] = No
     summary="Post Comment Message",
     description="Post a new comment message for an investigation.",
 )
-def post_comment_message(investigation_id: str, msg: CommentMessageCreate):
+def post_comment_message(
+    investigation_id: str,
+    msg: CommentMessageCreate,
+    current_user: User = Depends(require_write),
+):
     # Check if investigation exists, create if not (in-memory only)
     from app.persistence import ensure_investigation_exists
 
