@@ -15,6 +15,7 @@ def generate_gmv_bar_chart(
     gmv_by_score: List[Dict[str, Any]],
     threshold: float,
     all_transactions_data: Optional[List[Dict[str, Any]]] = None,
+    investigated_data: Optional[List[Dict[str, Any]]] = None,
 ) -> str:
     """Generate grouped bar chart with optional toggle for all transactions."""
     if not gmv_by_score:
@@ -36,6 +37,13 @@ def generate_gmv_bar_chart(
         )
         toggle_html = _generate_toggle()
 
+    # Generate third chart (Investigated Entities Only) if data provided
+    investigated_chart = ""
+    if investigated_data:
+        investigated_chart = _generate_chart_content(
+            investigated_data, threshold_float, "investigated"
+        )
+
     return f"""
     <div style="background: var(--card); border: 1px solid var(--border);
                 border-radius: 12px; padding: 20px; margin: 20px 0;">
@@ -51,6 +59,9 @@ def generate_gmv_bar_chart(
         </div>
         <div id="chart-all" style="display: block;">
             {all_chart}
+        </div>
+        <div id="chart-investigated" style="display: none;">
+            {investigated_chart}
         </div>
         <p style="text-align: center; color: var(--muted); font-size: 0.8rem; margin-top: 5px;">
             MODEL_SCORE (nSure) → | Yellow border = above Olorin threshold
@@ -80,20 +91,28 @@ def _generate_toggle_script() -> str:
     <script>
         function toggleChartView() {
             const checkbox = document.getElementById('show-approved-toggle');
+            const investigatedCheckbox = document.getElementById('show-investigated-toggle');
             const approvedChart = document.getElementById('chart-approved');
             const allChart = document.getElementById('chart-all');
             const approvedSummary = document.getElementById('summary-approved');
             const allSummary = document.getElementById('summary-all');
+            const scopeText = document.getElementById('scope-text');
+
+            // Don't change if investigated is checked
+            if (investigatedCheckbox && investigatedCheckbox.checked) return;
+
             if (checkbox.checked) {
                 approvedChart.style.display = 'block';
                 allChart.style.display = 'none';
                 if (approvedSummary) approvedSummary.style.display = 'block';
                 if (allSummary) allSummary.style.display = 'none';
+                if (scopeText) scopeText.innerHTML = 'nSure approved transactions';
             } else {
                 approvedChart.style.display = 'none';
                 allChart.style.display = 'block';
                 if (approvedSummary) approvedSummary.style.display = 'none';
                 if (allSummary) allSummary.style.display = 'block';
+                if (scopeText) scopeText.innerHTML = 'all transactions';
             }
         }
     </script>

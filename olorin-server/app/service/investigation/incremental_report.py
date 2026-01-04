@@ -21,9 +21,15 @@ from typing import Any, Dict, List, Optional
 logger = logging.getLogger(__name__)
 
 
-def _run_blindspot_analysis() -> Optional[Dict[str, Any]]:
+def _run_blindspot_analysis(
+    start_date: datetime = None, end_date: datetime = None
+) -> Optional[Dict[str, Any]]:
     """
     Run blindspot analysis for the heatmap section.
+
+    Args:
+        start_date: Optional start date for analysis (e.g., month start)
+        end_date: Optional end date for analysis (e.g., month end)
 
     Returns the blindspot analysis data or None if analysis fails.
     """
@@ -33,10 +39,18 @@ def _run_blindspot_analysis() -> Optional[Dict[str, Any]]:
         analyzer = ModelBlindspotAnalyzer()
         loop = asyncio.new_event_loop()
         try:
-            result = loop.run_until_complete(analyzer.analyze_blindspots(export_csv=False))
+            result = loop.run_until_complete(
+                analyzer.analyze_blindspots(
+                    export_csv=False,
+                    start_date=start_date,
+                    end_date=end_date,
+                )
+            )
             if result.get("status") == "success":
+                period = result.get("analysis_period", {})
                 logger.info(
-                    f"✅ Blindspot analysis: {len(result.get('matrix', {}).get('cells', []))} cells, "
+                    f"✅ Blindspot analysis ({period.get('start_date')} to {period.get('end_date')}): "
+                    f"{len(result.get('matrix', {}).get('cells', []))} cells, "
                     f"{len(result.get('blindspots', []))} blindspots identified"
                 )
                 return result
@@ -46,6 +60,52 @@ def _run_blindspot_analysis() -> Optional[Dict[str, Any]]:
             loop.close()
     except Exception as e:
         logger.warning(f"Could not run blindspot analysis: {e}")
+        return None
+
+
+def _run_investigated_entities_analysis(
+    entity_ids: List[str],
+    start_date: datetime = None,
+    end_date: datetime = None,
+) -> Optional[Dict[str, Any]]:
+    """
+    Run blindspot analysis filtered to specific investigated entity IDs.
+
+    Args:
+        entity_ids: List of entity IDs (emails) to filter by
+        start_date: Optional start date for analysis
+        end_date: Optional end date for analysis
+
+    Returns the analysis data for investigated entities or None if fails.
+    """
+    if not entity_ids:
+        return None
+
+    try:
+        from app.service.analytics.model_blindspot_analyzer import ModelBlindspotAnalyzer
+
+        analyzer = ModelBlindspotAnalyzer()
+        loop = asyncio.new_event_loop()
+        try:
+            result = loop.run_until_complete(
+                analyzer.analyze_investigated_entities(
+                    entity_ids=entity_ids,
+                    start_date=start_date,
+                    end_date=end_date,
+                )
+            )
+            if result.get("status") == "success":
+                logger.info(
+                    f"✅ Investigated entities analysis: {len(entity_ids)} entities, "
+                    f"{result.get('summary', {}).get('total_transactions', 0)} transactions"
+                )
+                return result
+            logger.warning(f"Investigated entities analysis failed: {result.get('error')}")
+            return None
+        finally:
+            loop.close()
+    except Exception as e:
+        logger.warning(f"Could not run investigated entities analysis: {e}")
         return None
 
 # Global lock to prevent concurrent report generation
@@ -126,6 +186,25 @@ def _extract_window_date_from_investigations(
     return None
 
 
+def _filter_investigations_by_date(
+    investigations: List[Dict[str, Any]], target_date: datetime
+) -> List[Dict[str, Any]]:
+    """
+    Filter investigations to only include those matching the target date.
+
+    Compares the investigation's selector_metadata window date with target_date.
+    """
+    filtered = []
+    target_day = target_date.date()
+
+    for inv in investigations:
+        inv_date = _extract_window_date_from_investigations([inv])
+        if inv_date and inv_date.date() == target_day:
+            filtered.append(inv)
+
+    return filtered
+
+
 def generate_incremental_report(triggering_investigation_id: str) -> Optional[Path]:
     """
     Generate/update the INCREMENTAL HTML report.
@@ -154,17 +233,44 @@ def generate_incremental_report(triggering_investigation_id: str) -> Optional[Pa
         # Extract 24h window date from selector_metadata for filename
         window_date = _extract_window_date_from_investigations(investigations)
 
+        # Filter investigations to only include those for the specific window_date
+        if window_date:
+            daily_investigations = _filter_investigations_by_date(investigations, window_date)
+            logger.info(f"   Filtered to {len(daily_investigations)} investigations for {window_date.date()}")
+        else:
+            daily_investigations = investigations
+
         # Get the output file path with the 24h window date
         output_file = _get_incremental_file_path(window_date)
 
         # Ensure directory exists
         output_file.parent.mkdir(parents=True, exist_ok=True)
 
-        # Run blindspot analysis for heatmap
-        blindspot_data = _run_blindspot_analysis()
+        # Run blindspot analysis - scoped to the specific day (24h window)
+        blindspot_start = None
+        blindspot_end = None
+        if window_date:
+            blindspot_start = datetime(window_date.year, window_date.month, window_date.day, 0, 0, 0)
+            blindspot_end = datetime(window_date.year, window_date.month, window_date.day, 23, 59, 59)
 
-        # Generate HTML with blindspot data
-        html = _generate_incremental_html(investigations, blindspot_data)
+        blindspot_data = _run_blindspot_analysis(blindspot_start, blindspot_end)
+
+        # Extract entity IDs and run investigated entities analysis
+        entity_ids = [
+            inv.get("entity_value") or inv.get("email")
+            for inv in daily_investigations
+            if inv.get("entity_value") or inv.get("email")
+        ]
+        investigated_blindspot_data = None
+        if entity_ids:
+            investigated_blindspot_data = _run_investigated_entities_analysis(
+                entity_ids, blindspot_start, blindspot_end
+            )
+
+        # Generate HTML with daily investigations only
+        html = _generate_incremental_html(
+            daily_investigations, blindspot_data, investigated_blindspot_data
+        )
         output_file.write_text(html)
 
         logger.info(f"✅ Incremental report updated: {output_file}")
@@ -624,37 +730,63 @@ def _generate_selector_section_html(
                 </div>
             </div>
             
-            <h3 style="color: var(--accent); margin-bottom: 16px; font-size: 1.1em;">🚨 Entities Flagged for Investigation</h3>
-            <div style="overflow-x: auto;">
-                <table style="width: 100%; border-collapse: collapse; font-size: 0.9em;">
-                    <thead>
-                        <tr style="background: rgba(59, 130, 246, 0.2);">
-                            <th style="padding: 12px 8px; text-align: left; border-bottom: 2px solid var(--border); font-weight: 600;">Email</th>
-                            <th style="padding: 12px 8px; text-align: left; border-bottom: 2px solid var(--border); font-weight: 600;">Merchant</th>
-                            <th style="padding: 12px 8px; text-align: center; border-bottom: 2px solid var(--border); font-weight: 600;">Fraud TX</th>
-                            <th style="padding: 12px 8px; text-align: center; border-bottom: 2px solid var(--border); font-weight: 600;">Total TX</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {entity_rows}
-                    </tbody>
-                </table>
-            </div>
-            
-            <div style="margin-top: 16px; padding: 12px; background: rgba(0, 0, 0, 0.3); border-radius: 8px;">
-                <div style="color: var(--muted); font-size: 0.9em;">
-                    <strong>ℹ️ Note:</strong> This selector window identifies the top 30% riskiest entities based on risk-weighted transaction volume (Risk Score × Amount × Velocity).
-                    Each entity is then investigated using a broader time window (6-12 months historical data) to build comprehensive risk profiles and confusion matrices.
+            <div style="background: rgba(0,0,0,0.2); border-radius: 8px; overflow: hidden;">
+                <div onclick="toggleEntitiesList()"
+                     style="padding: 12px 16px; cursor: pointer; display: flex;
+                            justify-content: space-between; align-items: center;
+                            background: rgba(59, 130, 246, 0.1);">
+                    <h3 style="color: var(--accent); margin: 0; font-size: 1.1em;">
+                        🚨 Entities Flagged for Investigation ({entity_count})
+                    </h3>
+                    <span id="entities-toggle-icon" style="color: var(--accent);">▶</span>
+                </div>
+                <div id="entities-list-content" style="display: none; padding: 16px;">
+                    <div style="overflow-x: auto;">
+                        <table style="width: 100%; border-collapse: collapse; font-size: 0.9em;">
+                            <thead>
+                                <tr style="background: rgba(59, 130, 246, 0.2);">
+                                    <th style="padding: 12px 8px; text-align: left; border-bottom: 2px solid var(--border); font-weight: 600;">Email</th>
+                                    <th style="padding: 12px 8px; text-align: left; border-bottom: 2px solid var(--border); font-weight: 600;">Merchant</th>
+                                    <th style="padding: 12px 8px; text-align: center; border-bottom: 2px solid var(--border); font-weight: 600;">Fraud TX</th>
+                                    <th style="padding: 12px 8px; text-align: center; border-bottom: 2px solid var(--border); font-weight: 600;">Total TX</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {entity_rows}
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div style="margin-top: 16px; padding: 12px; background: rgba(0, 0, 0, 0.3); border-radius: 8px;">
+                        <div style="color: var(--muted); font-size: 0.9em;">
+                            <strong>ℹ️ Note:</strong> This selector window identifies the top 30% riskiest entities based on risk-weighted transaction volume (Risk Score × Amount × Velocity).
+                            Each entity is then investigated using a broader time window (6-12 months historical data) to build comprehensive risk profiles and confusion matrices.
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
+    <script>
+        function toggleEntitiesList() {{
+            const content = document.getElementById('entities-list-content');
+            const icon = document.getElementById('entities-toggle-icon');
+            if (content.style.display === 'none') {{
+                content.style.display = 'block';
+                icon.textContent = '▼';
+            }} else {{
+                content.style.display = 'none';
+                icon.textContent = '▶';
+            }}
+        }}
+    </script>
     """
 
 
 def _generate_incremental_html(
     investigations: List[Dict[str, Any]],
     blindspot_data: Optional[Dict[str, Any]] = None,
+    investigated_blindspot_data: Optional[Dict[str, Any]] = None,
 ) -> str:
     """Generate the incremental HTML report with full financial analysis."""
     from app.service.reporting.components.blindspot_heatmap import generate_blindspot_section
@@ -686,14 +818,50 @@ def _generate_incremental_html(
     overall_fp = sum(_safe_int(inv.get("confusion_matrix", {}).get("overall_FP", 0)) for inv in investigations)
     overall_tn = sum(_safe_int(inv.get("confusion_matrix", {}).get("overall_TN", 0)) for inv in investigations)
     overall_fn = sum(_safe_int(inv.get("confusion_matrix", {}).get("overall_FN", 0)) for inv in investigations)
-    
+
+    # Build investigation summary for blindspot section toggle
+    inv_total_tx = overall_tp + overall_fp + overall_tn + overall_fn
+    inv_precision = overall_tp / (overall_tp + overall_fp) if (overall_tp + overall_fp) > 0 else 0
+    inv_recall = overall_tp / (overall_tp + overall_fn) if (overall_tp + overall_fn) > 0 else 0
+    inv_fraud_gmv = sum(_safe_float(inv.get("revenue_data", {}).get("fraud_gmv", 0)) for inv in investigations)
+    inv_fp_gmv = sum(_safe_float(inv.get("revenue_data", {}).get("lost_revenues", 0)) for inv in investigations)
+
+    investigation_summary = {
+        "total_transactions": inv_total_tx,
+        "overall_precision": inv_precision,
+        "overall_recall": inv_recall,
+        "total_fraud_gmv": inv_fraud_gmv,
+        "total_fp_gmv": inv_fp_gmv,
+        "entity_count": len(investigations),
+    }
+
     # Generate selector section HTML with total investigation count and all investigations
     selector_section_html = _generate_selector_section_html(
         selector_metadata,
         total_investigations=len(investigations),
         all_investigations=investigations
     )
-    
+
+    # Determine status - for daily reports (filtered by date), always mark as complete
+    # since we're showing a historical snapshot of that day's investigations
+    # For real-time reports, check against expected count from metadata
+    is_daily_report = selector_metadata and selector_metadata.get("start_time")
+
+    if is_daily_report:
+        # Daily reports are historical snapshots - always complete
+        is_complete = len(investigations) > 0
+    else:
+        # Real-time report - check expected count
+        expected_count = 0
+        if selector_metadata:
+            expected_count = selector_metadata.get("total_entities_expected", 0)
+        is_complete = len(investigations) > 0 and (
+            expected_count == 0 or len(investigations) >= expected_count
+        )
+    status_class = "complete" if is_complete else "in-progress"
+    status_icon = "✅" if is_complete else "⏳"
+    status_text = "COMPLETED" if is_complete else "IN PROGRESS"
+
     timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     
     html = f"""<!DOCTYPE html>
@@ -732,12 +900,18 @@ def _generate_incremental_html(
         .subtitle {{ color: var(--muted); margin-top: 10px; }}
         .status-badge {{
             display: inline-block;
-            background: var(--warn);
-            color: #000;
             padding: 5px 15px;
             border-radius: 20px;
             font-weight: bold;
             margin-top: 15px;
+        }}
+        .status-badge.in-progress {{
+            background: var(--warn);
+            color: #000;
+        }}
+        .status-badge.complete {{
+            background: var(--ok);
+            color: #000;
         }}
         .global-metrics {{
             display: grid;
@@ -827,15 +1001,18 @@ def _generate_incremental_html(
 </head>
 <body>
     <div class="header">
-        <h1>🔍 Fraud Detection - Incremental Report</h1>
-        <p class="subtitle">Real-time results as investigations complete</p>
-        <div class="status-badge">⏳ IN PROGRESS - {len(investigations)} completed</div>
+        <h1>🔍 Fraud Detection - Daily Report</h1>
+        <p class="subtitle">Investigation results summary</p>
+        <div class="status-badge {status_class}">{status_icon} {status_text} - {len(investigations)} investigations</div>
         <p class="subtitle" style="margin-top: 10px;">Last updated: {timestamp}</p>
     </div>
 
     {selector_section_html}
 
-    <h2 style="margin-bottom: 20px;">💰 Financial Impact Summary</h2>
+    <h2 style="margin-bottom: 10px;">💰 Financial Impact Summary</h2>
+    <p style="color: var(--muted); font-size: 0.85rem; margin-bottom: 15px;">
+        Based on <strong>{len(investigations)} investigated entities</strong> selected by Olorin's risk selector.
+    </p>
     <div class="global-metrics">
         <div class="metric-card">
             <div class="metric-value positive">${total_saved:,.2f}</div>
@@ -955,7 +1132,12 @@ def _generate_incremental_html(
 """
 
     # Add blindspot heatmap section
-    blindspot_html = generate_blindspot_section(blindspot_data, include_placeholder=True)
+    blindspot_html = generate_blindspot_section(
+        blindspot_data,
+        include_placeholder=True,
+        investigation_summary=investigation_summary,
+        investigated_blindspot_data=investigated_blindspot_data,
+    )
     if blindspot_html:
         html += f"""
     <section id="blindspot-analysis" style="margin-top: 40px;">

@@ -22,6 +22,8 @@ logger = get_bridge_logger(__name__)
 def generate_blindspot_section(
     blindspot_data: Optional[Dict[str, Any]] = None,
     include_placeholder: bool = True,
+    investigation_summary: Optional[Dict[str, Any]] = None,
+    investigated_blindspot_data: Optional[Dict[str, Any]] = None,
 ) -> str:
     """
     Generate HTML section for blindspot heatmap analysis.
@@ -29,6 +31,8 @@ def generate_blindspot_section(
     Args:
         blindspot_data: Blindspot analysis data from ModelBlindspotAnalyzer
         include_placeholder: Show placeholder if no data available
+        investigation_summary: Summary data from investigated entities only (local DB)
+        investigated_blindspot_data: Blindspot data filtered to investigated entities (Snowflake)
 
     Returns:
         HTML string for the blindspot section
@@ -39,7 +43,9 @@ def generate_blindspot_section(
     if not blindspot_data:
         return _generate_placeholder_section()
 
-    return _generate_heatmap_section(blindspot_data)
+    return _generate_heatmap_section(
+        blindspot_data, investigation_summary, investigated_blindspot_data
+    )
 
 
 def _generate_placeholder_section() -> str:
@@ -62,7 +68,11 @@ def _generate_placeholder_section() -> str:
     """
 
 
-def _generate_heatmap_section(data: Dict[str, Any]) -> str:
+def _generate_heatmap_section(
+    data: Dict[str, Any],
+    investigation_summary: Optional[Dict[str, Any]] = None,
+    investigated_blindspot_data: Optional[Dict[str, Any]] = None,
+) -> str:
     """Generate the blindspot analysis section with column chart (no heatmap)."""
     training_info = data.get("training_info", {})
     approved_summary = data.get("summary", {})
@@ -75,16 +85,41 @@ def _generate_heatmap_section(data: Dict[str, Any]) -> str:
     all_tx_gmv_by_score = all_tx_data.get("gmv_by_score", []) if all_tx_data else None
     all_tx_summary = all_tx_data.get("summary", {}) if all_tx_data else {}
 
+    # Get investigated entities data from Snowflake (filtered query)
+    inv_gmv_by_score = None
+    inv_summary = None
+    entity_count = 0
+    if investigated_blindspot_data:
+        inv_gmv_by_score = investigated_blindspot_data.get("gmv_by_score", [])
+        inv_summary = investigated_blindspot_data.get("summary", {})
+        entity_count = investigated_blindspot_data.get("entity_count", 0)
+
     threshold = training_info.get("olorin_threshold", "N/A")
     prompt_version = training_info.get("prompt_version", "N/A")
 
-    bar_chart_html = generate_gmv_bar_chart(gmv_by_score, threshold, all_tx_gmv_by_score)
+    # Generate charts - main chart has All TX and Approved views
+    bar_chart_html = generate_gmv_bar_chart(
+        gmv_by_score, threshold, all_tx_gmv_by_score, inv_gmv_by_score
+    )
     blindspots_html = generate_blindspots_list(blindspots)
 
-    # Generate BOTH summary sections for toggle
+    # Generate summary sections for each view (use Snowflake data for investigated)
     all_tx_summary_html = generate_summary_cards(all_tx_summary) if all_tx_summary else ""
     approved_summary_html = generate_summary_cards(approved_summary)
+    investigated_summary_html = generate_summary_cards(inv_summary) if inv_summary else ""
     sql_section_html = _generate_sql_section(sql_queries)
+
+    # Checkbox for investigated entities filter
+    investigated_checkbox = ""
+    if investigated_blindspot_data and inv_gmv_by_score:
+        investigated_checkbox = f"""
+        <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;
+                      font-size: 0.85rem; color: var(--muted);">
+            <input type="checkbox" id="show-investigated-toggle" onchange="toggleInvestigatedView()"
+                   style="width: 16px; height: 16px; cursor: pointer;">
+            <span>Investigated Entities Only ({entity_count})</span>
+        </label>
+        """
 
     # Toggleable summary sections (All TX is default)
     summary_section = f"""
@@ -94,17 +129,26 @@ def _generate_heatmap_section(data: Dict[str, Any]) -> str:
         <div id="summary-approved" style="display: none;">
             {approved_summary_html}
         </div>
+        <div id="summary-investigated" style="display: none;">
+            {investigated_summary_html}
+        </div>
     """ if all_tx_summary else approved_summary_html
+
+    # JavaScript for investigated toggle
+    investigated_script = _generate_investigated_toggle_script() if investigated_blindspot_data else ""
 
     return f"""
     <div style="margin-top: 40px;">
         <h2 style="color: var(--accent); margin-bottom: 10px;">
             🎯 Olorin vs nSure Performance Analysis
         </h2>
-        <p style="color: var(--muted); font-size: 0.9rem; margin-bottom: 20px;">
-            Confusion matrix comparison across MODEL_SCORE bins.
+        <p id="scope-label" style="color: var(--muted); font-size: 0.9rem; margin-bottom: 15px;">
+            Based on <strong id="scope-text">all transactions</strong> from Snowflake.
             <br>Threshold: <strong>{threshold}</strong> | Prompt Version: <strong>{prompt_version}</strong>
         </p>
+        <div style="margin-bottom: 15px;">
+            {investigated_checkbox}
+        </div>
 
         {summary_section}
 
@@ -113,7 +157,58 @@ def _generate_heatmap_section(data: Dict[str, Any]) -> str:
         {blindspots_html}
 
         {sql_section_html}
+        {investigated_script}
     </div>
+    """
+
+
+def _generate_investigated_toggle_script() -> str:
+    """Generate JavaScript for toggling investigated entities view."""
+    return """
+    <script>
+        function toggleInvestigatedView() {
+            const checkbox = document.getElementById('show-investigated-toggle');
+            const approvedCheckbox = document.getElementById('show-approved-toggle');
+            const scopeText = document.getElementById('scope-text');
+            const allSummary = document.getElementById('summary-all');
+            const approvedSummary = document.getElementById('summary-approved');
+            const investigatedSummary = document.getElementById('summary-investigated');
+            const allChart = document.getElementById('chart-all');
+            const approvedChart = document.getElementById('chart-approved');
+            const investigatedChart = document.getElementById('chart-investigated');
+
+            if (checkbox.checked) {
+                // Show investigated entities view
+                if (allSummary) allSummary.style.display = 'none';
+                if (approvedSummary) approvedSummary.style.display = 'none';
+                if (investigatedSummary) investigatedSummary.style.display = 'block';
+                if (allChart) allChart.style.display = 'none';
+                if (approvedChart) approvedChart.style.display = 'none';
+                if (investigatedChart) investigatedChart.style.display = 'block';
+                if (scopeText) scopeText.innerHTML = 'investigated entities only';
+                // Disable the approved toggle when investigated is checked
+                if (approvedCheckbox) approvedCheckbox.disabled = true;
+            } else {
+                // Restore previous view based on approved toggle
+                if (approvedCheckbox) approvedCheckbox.disabled = false;
+                if (investigatedSummary) investigatedSummary.style.display = 'none';
+                if (investigatedChart) investigatedChart.style.display = 'none';
+                if (approvedCheckbox && approvedCheckbox.checked) {
+                    if (allSummary) allSummary.style.display = 'none';
+                    if (approvedSummary) approvedSummary.style.display = 'block';
+                    if (allChart) allChart.style.display = 'none';
+                    if (approvedChart) approvedChart.style.display = 'block';
+                    if (scopeText) scopeText.innerHTML = 'nSure approved transactions';
+                } else {
+                    if (allSummary) allSummary.style.display = 'block';
+                    if (approvedSummary) approvedSummary.style.display = 'none';
+                    if (allChart) allChart.style.display = 'block';
+                    if (approvedChart) approvedChart.style.display = 'none';
+                    if (scopeText) scopeText.innerHTML = 'all transactions';
+                }
+            }
+        }
+    </script>
     """
 
 

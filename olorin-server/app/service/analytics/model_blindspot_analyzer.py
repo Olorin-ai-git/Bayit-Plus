@@ -14,30 +14,20 @@ from typing import Any, Dict, List
 
 from app.config.threshold_config import get_llm_fraud_threshold, get_risk_threshold
 from app.service.agent.tools.database_tool import get_database_provider
-from app.service.agent.tools.snowflake_tool.schema_constants import (
-    GMV,
-    IS_FRAUD_TX,
-    MODEL_SCORE,
-    TX_DATETIME,
-)
+from app.service.analytics.blindspot_query_builder import build_2d_distribution_query
 from app.service.logging import get_bridge_logger
 
 logger = get_bridge_logger(__name__)
 
 
 class ModelBlindspotAnalyzer:
-    """
-    2D distribution analyzer for FN/FP/TP/TN across GMV × MODEL_SCORE.
-    Identifies blind spots where nSure underperforms.
-    """
+    """2D distribution analyzer for FN/FP/TP/TN across GMV × MODEL_SCORE."""
 
     def __init__(self):
         """Initialize the blindspot analyzer."""
         db_provider = os.getenv("DATABASE_PROVIDER", "snowflake")
         self.client = get_database_provider(db_provider)
-        logger.info(
-            f"ModelBlindspotAnalyzer initialized with {db_provider.upper()} provider"
-        )
+        logger.info(f"ModelBlindspotAnalyzer initialized with {db_provider.upper()} provider")
         self._load_configuration()
 
     def _load_configuration(self):
@@ -56,84 +46,94 @@ class ModelBlindspotAnalyzer:
             f"olorin_threshold={self.olorin_threshold}, prompt={self.prompt_version}"
         )
 
-    def _get_time_window(self) -> tuple:
+    def _get_time_window(self, start_date: datetime = None, end_date: datetime = None) -> tuple:
         """Get the analysis time window."""
-        end_date = datetime.utcnow()
-        start_date = end_date - timedelta(days=30 * self.lookback_months)
+        if end_date is None:
+            end_date = datetime.utcnow()
+        if start_date is None:
+            start_date = end_date - timedelta(days=30 * self.lookback_months)
         return start_date, end_date
 
-    def _build_gmv_case_statement(self) -> str:
-        """Build CASE statement for GMV binning."""
-        cases = []
-        for i in range(len(self.gmv_bins) - 1):
-            low, high = self.gmv_bins[i], self.gmv_bins[i + 1]
-            cases.append(f"WHEN {GMV} >= {low} AND {GMV} < {high} THEN '{low}-{high}'")
-        last_bin = self.gmv_bins[-1]
-        cases.append(f"WHEN {GMV} >= {last_bin} THEN '{last_bin}+'")
-        return "CASE " + " ".join(cases) + " ELSE 'unknown' END"
-
-    def _build_2d_distribution_query(self) -> str:
-        """Build SQL query for 2D binning analysis."""
-        start_date, end_date = self._get_time_window()
-        gmv_case = self._build_gmv_case_statement()
-
-        query = f"""
-        WITH binned_transactions AS (
-            SELECT
-                FLOOR({MODEL_SCORE} * {self.num_score_bins}) / {self.num_score_bins} AS score_bin,
-                {gmv_case} AS gmv_bin,
-                CASE WHEN {MODEL_SCORE} >= {self.olorin_threshold} THEN 1 ELSE 0 END AS predicted_fraud,
-                {IS_FRAUD_TX} AS actual_fraud,
-                {GMV},
-                {MODEL_SCORE}
-            FROM {self.client.get_full_table_name()}
-            WHERE {TX_DATETIME} >= '{start_date.isoformat()}'
-              AND {TX_DATETIME} < '{end_date.isoformat()}'
-              AND UPPER(NSURE_LAST_DECISION) = 'APPROVED'
-              AND {MODEL_SCORE} IS NOT NULL
-              AND {GMV} IS NOT NULL
-        )
-        SELECT
-            score_bin,
-            gmv_bin,
-            SUM(CASE WHEN predicted_fraud = 1 AND actual_fraud = 1 THEN 1 ELSE 0 END) AS tp,
-            SUM(CASE WHEN predicted_fraud = 1 AND actual_fraud = 0 THEN 1 ELSE 0 END) AS fp,
-            SUM(CASE WHEN predicted_fraud = 0 AND actual_fraud = 1 THEN 1 ELSE 0 END) AS fn,
-            SUM(CASE WHEN predicted_fraud = 0 AND actual_fraud = 0 THEN 1 ELSE 0 END) AS tn,
-            COUNT(*) AS total_transactions,
-            SUM({GMV}) AS total_gmv,
-            SUM(CASE WHEN actual_fraud = 1 THEN {GMV} ELSE 0 END) AS fraud_gmv,
-            AVG({MODEL_SCORE}) AS avg_score
-        FROM binned_transactions
-        GROUP BY score_bin, gmv_bin
-        ORDER BY gmv_bin, score_bin
-        """
-        return query
-
-    async def analyze_blindspots(self, export_csv: bool = True) -> Dict[str, Any]:
+    async def analyze_blindspots(
+        self,
+        export_csv: bool = True,
+        start_date: datetime = None,
+        end_date: datetime = None,
+    ) -> Dict[str, Any]:
         """
         Run 2D distribution analysis.
 
         Args:
             export_csv: Whether to export results to CSV
+            start_date: Optional start date for analysis window
+            end_date: Optional end date for analysis window
 
         Returns:
             Dictionary with analysis results
         """
         try:
-            logger.info("Starting model blindspot analysis...")
+            actual_start, actual_end = self._get_time_window(start_date, end_date)
+            logger.info(
+                f"Starting model blindspot analysis for period: "
+                f"{actual_start.strftime('%Y-%m-%d')} to {actual_end.strftime('%Y-%m-%d')}"
+            )
             self.client.connect()
 
-            query = self._build_2d_distribution_query()
-            logger.info(f"Blindspot Query:\n{query}")
+            # Query 1: nSure Approved Only (primary blindspot view)
+            query_approved = build_2d_distribution_query(
+                self.client.get_full_table_name(),
+                self.gmv_bins,
+                self.num_score_bins,
+                self.olorin_threshold,
+                actual_start,
+                actual_end,
+                nsure_approved_only=True,
+            )
+            logger.info("Running query for nSure APPROVED transactions...")
+            results_approved = await self.client.execute_query_async(query_approved)
+            logger.info(f"Approved query returned {len(results_approved) if results_approved else 0} rows")
 
-            results = await self.client.execute_query_async(query)
-            logger.info(f"Query returned {len(results) if results else 0} rows")
+            # Query 2: All Transactions
+            query_all = build_2d_distribution_query(
+                self.client.get_full_table_name(),
+                self.gmv_bins,
+                self.num_score_bins,
+                self.olorin_threshold,
+                actual_start,
+                actual_end,
+                nsure_approved_only=False,
+            )
+            logger.info("Running query for ALL transactions...")
+            results_all = await self.client.execute_query_async(query_all)
+            logger.info(f"All transactions query returned {len(results_all) if results_all else 0} rows")
 
-            if not results:
+            if not results_approved and not results_all:
                 return self._empty_result("No data found in specified time window")
 
-            analysis = self._process_results(results)
+            # Process both result sets
+            analysis_approved = self._process_results(results_approved) if results_approved else None
+            analysis_all = self._process_results(results_all) if results_all else None
+
+            # Use approved as primary, include all as secondary
+            analysis = analysis_approved if analysis_approved else analysis_all
+            analysis["analysis_period"] = {
+                "start_date": actual_start.strftime("%Y-%m-%d"),
+                "end_date": actual_end.strftime("%Y-%m-%d"),
+            }
+
+            # Include both datasets for toggle
+            if analysis_all:
+                analysis["all_transactions"] = {
+                    "gmv_by_score": analysis_all.get("gmv_by_score", []),
+                    "matrix": analysis_all.get("matrix", {}),
+                    "summary": analysis_all.get("summary", {}),
+                }
+
+            # Include SQL queries for transparency
+            analysis["sql_queries"] = {
+                "all_transactions": query_all,
+                "nsure_approved_only": query_approved,
+            }
 
             if export_csv:
                 csv_path = self._export_to_csv(analysis)
@@ -146,6 +146,65 @@ class ModelBlindspotAnalyzer:
             logger.error(f"Blindspot analysis failed: {e}")
             import traceback
             logger.error(f"Traceback: {traceback.format_exc()}")
+            return {"status": "failed", "error": str(e)}
+        finally:
+            self._disconnect()
+
+    async def analyze_investigated_entities(
+        self,
+        entity_ids: List[str],
+        start_date: datetime = None,
+        end_date: datetime = None,
+    ) -> Dict[str, Any]:
+        """
+        Run 2D distribution analysis filtered to specific entity IDs.
+
+        Args:
+            entity_ids: List of entity IDs (emails) to filter by
+            start_date: Optional start date for analysis window
+            end_date: Optional end date for analysis window
+
+        Returns:
+            Dictionary with analysis results for investigated entities only
+        """
+        if not entity_ids:
+            return self._empty_result("No entity IDs provided")
+
+        try:
+            actual_start, actual_end = self._get_time_window(start_date, end_date)
+            logger.info(
+                f"Running investigated entities analysis for {len(entity_ids)} entities, "
+                f"period: {actual_start.strftime('%Y-%m-%d')} to {actual_end.strftime('%Y-%m-%d')}"
+            )
+            self.client.connect()
+
+            query = build_2d_distribution_query(
+                self.client.get_full_table_name(),
+                self.gmv_bins,
+                self.num_score_bins,
+                self.olorin_threshold,
+                actual_start,
+                actual_end,
+                nsure_approved_only=False,
+                entity_ids=entity_ids,
+            )
+            logger.info(f"Running query for {len(entity_ids)} investigated entities...")
+            results = await self.client.execute_query_async(query)
+            logger.info(f"Investigated entities query returned {len(results) if results else 0} rows")
+
+            if not results:
+                return self._empty_result("No data found for investigated entities")
+
+            analysis = self._process_results(results)
+            analysis["entity_count"] = len(entity_ids)
+            analysis["analysis_period"] = {
+                "start_date": actual_start.strftime("%Y-%m-%d"),
+                "end_date": actual_end.strftime("%Y-%m-%d"),
+            }
+            return analysis
+
+        except Exception as e:
+            logger.error(f"Investigated entities analysis failed: {e}")
             return {"status": "failed", "error": str(e)}
         finally:
             self._disconnect()
@@ -165,6 +224,7 @@ class ModelBlindspotAnalyzer:
             "message": message,
             "training_info": self._get_training_info(),
             "matrix": {"score_bins": [], "gmv_bins": [], "cells": []},
+            "gmv_by_score": [],
             "blindspots": [],
             "summary": {},
             "timestamp": datetime.now().isoformat(),
@@ -201,7 +261,7 @@ class ModelBlindspotAnalyzer:
             fieldnames = [
                 "score_bin", "gmv_bin", "tp", "fp", "fn", "tn",
                 "fn_rate", "fp_rate", "precision", "recall", "f1",
-                "total_transactions", "fraud_gmv"
+                "total_transactions", "fraud_gmv", "tp_gmv", "fp_gmv", "fn_gmv", "tn_gmv"
             ]
             writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
             writer.writeheader()
