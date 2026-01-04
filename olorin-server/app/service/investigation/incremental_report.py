@@ -1298,12 +1298,33 @@ def _generate_transaction_section(inv: Dict[str, Any], tx_link: Optional[str], t
 
 def _get_transaction_details_link(investigation_id: str) -> Optional[str]:
     """Get link to the transaction-level confusion matrix HTML file."""
-    # Check for confusion matrix file in auto_startup folder
-    cm_path = Path(f"artifacts/comparisons/auto_startup/confusion_matrix_{investigation_id}.html")
-    if cm_path.exists():
-        return str(cm_path.absolute())
-    
-    # Check in investigation folder
+    auto_startup_dir = Path("artifacts/comparisons/auto_startup")
+
+    # Check for confusion_table files (new naming pattern with timestamp)
+    # These may be in the root auto_startup folder or in merchant subdirectories
+    if auto_startup_dir.exists():
+        # First check direct files in auto_startup folder
+        for pattern in [
+            f"confusion_table_{investigation_id}_*.html",
+            f"confusion_matrix_{investigation_id}.html",
+        ]:
+            matches = list(auto_startup_dir.glob(pattern))
+            if matches:
+                # Return the most recent file if multiple matches
+                return str(sorted(matches, key=lambda p: p.stat().st_mtime, reverse=True)[0].absolute())
+
+        # Check in merchant subdirectories
+        for merchant_dir in auto_startup_dir.iterdir():
+            if merchant_dir.is_dir():
+                for pattern in [
+                    f"confusion_table_{investigation_id}_*.html",
+                    f"confusion_matrix_{investigation_id}.html",
+                ]:
+                    matches = list(merchant_dir.glob(pattern))
+                    if matches:
+                        return str(sorted(matches, key=lambda p: p.stat().st_mtime, reverse=True)[0].absolute())
+
+    # Check in investigation folder as fallback
     from app.service.logging.investigation_folder_manager import get_folder_manager
     try:
         folder_manager = get_folder_manager()
@@ -1314,7 +1335,7 @@ def _get_transaction_details_link(investigation_id: str) -> Optional[str]:
                 return str(cm_in_folder.absolute())
     except Exception:
         pass
-    
+
     return None
 
 

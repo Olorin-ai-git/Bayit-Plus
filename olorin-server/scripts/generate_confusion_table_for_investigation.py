@@ -152,17 +152,17 @@ STEP 3: VALUE CALCULATION
         we would have PREVENTED the fraud that occurred afterward.
 
 TIMELINE:
-┌─────────────────────────────────────────────────────────────────┐
-│                                                                  │
-│  [{inv_start_str}]═══════════[{inv_end_str}]═══════════[{gmv_end_str}]      │
-│        │                        │                        │       │
-│        ▼                        ▼                        ▼       │
-│   Investigation           Block Point              GMV End       │
-│   Started                 (Decision)               (Analysis)    │
-│                                                                  │
-│  ◄──── Investigation Window ────►◄── Saved Fraud GMV Window ──► │
-│       (Risk Detection)              (Future Losses Prevented)    │
-└─────────────────────────────────────────────────────────────────┘
+┌──────────────────────────────────────────────────────────────────────────────┐
+│                                                                               │
+│  [{inv_start_str}]═══════════[{inv_end_str}]    [{gmv_start_str}]═══════════[{gmv_end_str}]  │
+│        │                        │                   │                   │     │
+│        ▼                        ▼                   ▼                   ▼     │
+│   Investigation           Block Point          GMV Start           GMV End    │
+│   Started                 (Decision)           (Analysis)          (Analysis) │
+│                                                                               │
+│  ◄──── Investigation Window ────►              ◄── Saved Fraud GMV Window ──► │
+│       (Risk Detection)                             (Future Losses Prevented)  │
+└──────────────────────────────────────────────────────────────────────────────┘
                 </pre>
             </div>
 
@@ -291,9 +291,6 @@ def _build_saved_fraud_reasoning_from_txs(
             f"Among the {total_txs} transactions investigated, none were both:\n"
             f"  • APPROVED by nSure (decision let the transaction through), AND\n"
             f"  • Later confirmed as FRAUD (IS_FRAUD_TX = 1)\n\n"
-            f"This is GOOD NEWS - it means:\n"
-            f"  1. All fraud transactions were correctly BLOCKED (no fraud slipped through), OR\n"
-            f"  2. This entity had no fraud in the investigation period\n\n"
             f"SAVED FRAUD GMV = $0.00 because no fraud was approved.\n"
         )
     
@@ -493,23 +490,40 @@ async def generate_confusion_table(
                 )
 
         # Extract merchant name from investigation name
+        # Support multiple formats:
+        # - "Compound investigation (3 entities) - Merchant: ZeusX"
+        # - "Investigation (Merchant: ZeusX)"
+        import re
         merchant_name = "Unknown"
+
+        def extract_merchant(name: str) -> Optional[str]:
+            """Extract merchant from name using flexible pattern."""
+            if not name:
+                return None
+            match = re.search(r"(?:- Merchant: |\(Merchant: )([^)]+)", name)
+            return match.group(1).strip() if match else None
+
         if state.settings and state.settings.name:
-            import re
-            match = re.search(r"\(Merchant: (.*?)\)", state.settings.name)
-            if match:
-                merchant_name = match.group(1)
-        
+            extracted = extract_merchant(state.settings.name)
+            if extracted:
+                merchant_name = extracted
+
         # Fallback to checking settings_json for raw name if state.settings not populated or match failed
         if merchant_name == "Unknown" and state.settings_json:
-             try:
+            try:
                 s_dict = json.loads(state.settings_json)
                 name = s_dict.get("name", "")
-                match = re.search(r"\(Merchant: (.*?)\)", name)
-                if match:
-                    merchant_name = match.group(1)
-             except:
-                 pass
+                extracted = extract_merchant(name)
+                if extracted:
+                    merchant_name = extracted
+
+                # Also check auto_select_context for merchant_name
+                if merchant_name == "Unknown":
+                    auto_ctx = s_dict.get("auto_select_context", {})
+                    if auto_ctx.get("merchant_name"):
+                        merchant_name = auto_ctx.get("merchant_name")
+            except json.JSONDecodeError:
+                pass
 
         logger.info(f"   Entity: {entity_type}={entity_value}")
         logger.info(f"   Merchant: {merchant_name}")
@@ -1134,7 +1148,7 @@ async def generate_confusion_table(
             </h3>
             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
                 <div style="background: rgba(0,0,0,0.3); padding: 16px; border-radius: 8px;">
-                    <h4 style="color: var(--ok); margin-bottom: 8px;">📊 Confusion Matrix Window</h4>
+                    <h4 style="color: var(--ok); margin-bottom: 8px;">📊 Investigation Period</h4>
                     <p style="color: var(--text); font-size: 14px; margin-bottom: 8px;"><strong>{inv_start_date}</strong> to <strong>{inv_end_date}</strong></p>
                     <p style="color: var(--muted); font-size: 12px;">
                         This is when Olorin analyzed the entity and made its fraud prediction.
