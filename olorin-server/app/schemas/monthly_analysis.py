@@ -8,7 +8,7 @@ Feature: monthly-sequential-analysis
 
 from datetime import datetime
 from decimal import Decimal
-from typing import List, Optional
+from typing import Dict, List, Optional
 
 from pydantic import BaseModel, Field
 
@@ -50,9 +50,18 @@ class DailyAnalysisResult(BaseModel):
         default=Decimal("0"), description="Net Value for this day"
     )
 
+    # Vendor breakdown
+    vendor_gmv_breakdown: Dict[str, float] = Field(
+        default_factory=dict,
+        description="Net GMV breakdown by vendor/merchant name"
+    )
+
     # References
     investigation_ids: List[str] = Field(
         default_factory=list, description="Investigation IDs created this day"
+    )
+    entity_values: List[str] = Field(
+        default_factory=list, description="Entity values (emails) for investigated entities"
     )
 
     # Timing

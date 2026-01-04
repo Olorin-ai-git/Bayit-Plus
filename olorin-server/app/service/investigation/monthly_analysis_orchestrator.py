@@ -12,7 +12,7 @@ import os
 from datetime import datetime
 from decimal import Decimal
 from pathlib import Path
-from typing import List
+from typing import Dict, List
 
 from app.schemas.monthly_analysis import (
     DailyAnalysisResult,
@@ -208,22 +208,51 @@ class MonthlyAnalysisOrchestrator:
                 )
 
                 day_completed = datetime.now()
+                # Review Precision metrics (flagged only)
                 tp = fp = tn = fn = 0
+                # Overall Classification metrics (all transactions)
+                overall_tp = overall_fp = overall_tn = overall_fn = 0
                 investigation_ids: List[str] = []
+                entity_values: List[str] = []  # For investigated entities analysis
                 entities_expected = 0
 
+                vendor_gmv: Dict[str, float] = {}
+                day_saved = Decimal("0")
+                day_lost = Decimal("0")
                 for result in results:
                     cm = result.get("confusion_matrix", {})
+                    # Review Precision (flagged only)
                     tp += cm.get("TP", 0)
                     fp += cm.get("FP", 0)
                     tn += cm.get("TN", 0)
                     fn += cm.get("FN", 0)
+                    # Overall Classification (all transactions)
+                    overall_tp += cm.get("overall_TP", 0)
+                    overall_fp += cm.get("overall_FP", 0)
+                    overall_tn += cm.get("overall_TN", 0)
+                    overall_fn += cm.get("overall_FN", 0)
                     if result.get("investigation_id"):
                         investigation_ids.append(result["investigation_id"])
+                    # Collect entity values for investigated entities analysis
+                    entity_val = result.get("entity_value") or result.get("email")
+                    if entity_val:
+                        entity_values.append(entity_val)
                     # Extract total expected from selector_metadata (set once)
                     if entities_expected == 0:
                         metadata = result.get("selector_metadata", {})
                         entities_expected = metadata.get("total_entities_expected", 0)
+                    # Aggregate vendor GMV and revenue data
+                    merchant = result.get("merchant_name", "Unknown")
+                    rev_data = result.get("revenue_data", {})
+                    if rev_data:
+                        saved = float(rev_data.get("saved_fraud_gmv", 0) or 0)
+                        lost = float(rev_data.get("lost_revenues", 0) or 0)
+                        day_saved += Decimal(str(saved))
+                        day_lost += Decimal(str(lost))
+                        net_val = saved - lost
+                    else:
+                        net_val = 0
+                    vendor_gmv[merchant] = vendor_gmv.get(merchant, 0) + float(net_val)
 
                 day_result = DailyAnalysisResult(
                     date=reference_date,
@@ -234,10 +263,16 @@ class MonthlyAnalysisOrchestrator:
                     fp=fp,
                     tn=tn,
                     fn=fn,
-                    saved_fraud_gmv=Decimal("0"),
-                    lost_revenues=Decimal("0"),
-                    net_value=Decimal("0"),
+                    overall_tp=overall_tp,
+                    overall_fp=overall_fp,
+                    overall_tn=overall_tn,
+                    overall_fn=overall_fn,
+                    saved_fraud_gmv=day_saved,
+                    lost_revenues=day_lost,
+                    net_value=day_saved - day_lost,
+                    vendor_gmv_breakdown=vendor_gmv,
                     investigation_ids=investigation_ids,
+                    entity_values=entity_values,  # For investigated entities analysis
                     started_at=day_started,
                     completed_at=day_completed,
                     duration_seconds=(day_completed - day_started).total_seconds(),
@@ -275,11 +310,17 @@ class MonthlyAnalysisOrchestrator:
         )
 
         # Run blindspot analysis for final report heatmap
+        # Scope to the specific month being analyzed
+        month_start = datetime(year, month, 1)
+        month_end = datetime(year, month, days_in_month, 23, 59, 59)
+
         blindspot_data = None
         try:
             logger.info("Running blindspot analysis for final report...")
             analyzer = ModelBlindspotAnalyzer()
-            blindspot_data = await analyzer.analyze_blindspots(export_csv=True)
+            blindspot_data = await analyzer.analyze_blindspots(
+                export_csv=True, start_date=month_start, end_date=month_end
+            )
             if blindspot_data.get("status") == "success":
                 logger.info(
                     f"Blindspot analysis: {len(blindspot_data.get('blindspots', []))} "
@@ -290,7 +331,35 @@ class MonthlyAnalysisOrchestrator:
         except Exception as e:
             logger.warning(f"Could not run blindspot analysis: {e}")
 
-        final_html_path = await generate_monthly_report(final_result, blindspot_data)
+        # Run investigated entities analysis for the toggle
+        investigated_blindspot_data = None
+        try:
+            # Collect entity IDs from all daily results
+            entity_ids = []
+            for day_result in daily_results:
+                for inv_id in day_result.investigation_ids:
+                    # Extract entity from investigation (stored during processing)
+                    entity_ids.append(inv_id)  # Will be resolved by analyzer
+
+            if entity_ids:
+                logger.info(f"Running investigated entities analysis for {len(entity_ids)} entities...")
+                inv_analyzer = ModelBlindspotAnalyzer()
+                investigated_blindspot_data = await inv_analyzer.analyze_investigated_entities(
+                    entity_ids, month_start, month_end
+                )
+                if investigated_blindspot_data and investigated_blindspot_data.get("gmv_by_score"):
+                    logger.info(
+                        f"Investigated entities analysis: "
+                        f"{len(investigated_blindspot_data.get('gmv_by_score', []))} score bins"
+                    )
+                else:
+                    investigated_blindspot_data = None
+        except Exception as e:
+            logger.warning(f"Could not run investigated entities analysis: {e}")
+
+        final_html_path = await generate_monthly_report(
+            final_result, blindspot_data, investigated_blindspot_data
+        )
         logger.info(f"\n{'='*60}")
         logger.info(f"MONTHLY ANALYSIS COMPLETE: {month_name} {year}")
         logger.info(f"Days processed: {len(daily_results)}")

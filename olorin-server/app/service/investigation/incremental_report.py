@@ -418,6 +418,13 @@ def _update_monthly_report_from_daily(
             # refers to each batch's count, not cumulative across multiple runs)
             entities_expected = entities_discovered
 
+            # Collect entity values for investigated entities analysis
+            day_entity_values = [
+                inv.get("entity_value") or inv.get("email")
+                for inv in day_invs
+                if inv.get("entity_value") or inv.get("email")
+            ]
+
             day_date = datetime(year, month, day_num)
             daily_results.append(DailyAnalysisResult(
                 date=day_date,
@@ -436,6 +443,7 @@ def _update_monthly_report_from_daily(
                 lost_revenues=day_lost,
                 net_value=day_net,
                 investigation_ids=[inv.get("investigation_id", "") for inv in day_invs],
+                entity_values=day_entity_values,
                 started_at=datetime.now(),
                 completed_at=datetime.now(),
                 duration_seconds=0.0,
@@ -456,10 +464,26 @@ def _update_monthly_report_from_daily(
         )
         monthly_result.aggregate_from_daily()
 
+        # Collect all entity values for investigated entities analysis
+        all_entity_values = []
+        for day_result in daily_results:
+            all_entity_values.extend(day_result.entity_values)
+
+        # Run investigated entities analysis for monthly report toggle
+        month_start = datetime(year, month, 1, 0, 0, 0)
+        month_end = datetime(year, month, days_in_month, 23, 59, 59)
+        investigated_blindspot_data = None
+        if all_entity_values:
+            investigated_blindspot_data = _run_investigated_entities_analysis(
+                all_entity_values, month_start, month_end
+            )
+
         # Generate the monthly report (async call in sync context)
         loop = asyncio.new_event_loop()
         try:
-            loop.run_until_complete(generate_monthly_report(monthly_result, blindspot_data))
+            loop.run_until_complete(generate_monthly_report(
+                monthly_result, blindspot_data, investigated_blindspot_data
+            ))
             days_with_data = len(daily_results)
             total_invs = sum(len(by_day[d]) for d in by_day)
             logger.info(
