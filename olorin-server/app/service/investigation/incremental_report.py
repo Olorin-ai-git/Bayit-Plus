@@ -425,6 +425,19 @@ def _update_monthly_report_from_daily(
                 if inv.get("entity_value") or inv.get("email")
             ]
 
+            # Build vendor GMV breakdown for day headers
+            vendor_gmv: Dict[str, float] = {}
+            for inv in day_invs:
+                merchant = inv.get("merchant_name", "Unknown")
+                rev_data = inv.get("revenue_data", {})
+                if rev_data:
+                    saved = _safe_float(rev_data.get("saved_fraud_gmv", 0))
+                    lost = _safe_float(rev_data.get("lost_revenues", 0))
+                    net_val = saved - lost
+                else:
+                    net_val = 0
+                vendor_gmv[merchant] = vendor_gmv.get(merchant, 0) + net_val
+
             day_date = datetime(year, month, day_num)
             daily_results.append(DailyAnalysisResult(
                 date=day_date,
@@ -442,6 +455,7 @@ def _update_monthly_report_from_daily(
                 saved_fraud_gmv=day_saved,
                 lost_revenues=day_lost,
                 net_value=day_net,
+                vendor_gmv_breakdown=vendor_gmv,
                 investigation_ids=[inv.get("investigation_id", "") for inv in day_invs],
                 entity_values=day_entity_values,
                 started_at=datetime.now(),
