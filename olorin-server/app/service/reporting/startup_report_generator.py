@@ -387,6 +387,11 @@ def _collect_startup_data(
     if blindspot_data:
         data["blindspot_data"] = blindspot_data
 
+    # Include investigated_blindspot_data if available from app_state
+    investigated_blindspot_data = getattr(app_state, "investigated_blindspot_data", None)
+    if investigated_blindspot_data:
+        data["investigated_blindspot_data"] = investigated_blindspot_data
+
     return data
 
 
@@ -408,7 +413,9 @@ def _generate_html_report(data: Dict[str, Any]) -> str:
     confusion_table_section = _generate_confusion_table_section(data)
     comparison_metrics_section = _generate_comparison_metrics_section(data)
     blindspot_section = generate_blindspot_section(
-        data.get("blindspot_data"), include_placeholder=True
+        data.get("blindspot_data"),
+        include_placeholder=True,
+        investigated_blindspot_data=data.get("investigated_blindspot_data"),
     )
     database_section = _generate_database_section(data)
     risk_entities_section = _generate_risk_entities_section(data)

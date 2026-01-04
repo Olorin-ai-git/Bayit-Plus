@@ -355,7 +355,9 @@ class RealSnowflakeClient:
                 "Only SELECT queries and CTEs are allowed for security reasons"
             )
 
-        # Check for dangerous keywords
+        # Check for dangerous keywords (using word boundaries to avoid false positives)
+        # e.g., "walter@email.com" should not trigger "ALTER" detection
+        import re
         dangerous_keywords = [
             "DELETE",
             "DROP",
@@ -367,7 +369,7 @@ class RealSnowflakeClient:
             "MERGE",
         ]
         for keyword in dangerous_keywords:
-            if keyword in query_upper:
+            if re.search(rf"\b{keyword}\b", query_upper):
                 raise ValueError(f"Query contains restricted keyword: {keyword}")
 
         # Add LIMIT if not present and limit is specified
@@ -467,9 +469,10 @@ class RealSnowflakeClient:
             else:
                 raise
         except Exception as e:
-            # Handle connection closed errors
+            # Handle connection closed or session expired errors
             error_str = str(e).lower()
-            if "connection is closed" in error_str or "08003" in error_str:
+            # 390111 = Session no longer exists, 08003 = Connection closed
+            if "connection is closed" in error_str or "08003" in error_str or "390111" in str(e) or "session no longer exists" in error_str:
                 logger.warning(
                     "Connection closed during query, reconnecting and retrying..."
                 )

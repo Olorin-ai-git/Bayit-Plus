@@ -131,7 +131,9 @@ class SnowflakeClient:
                     "Only SELECT queries and CTEs (WITH) are allowed for security reasons"
                 )
 
-            # Check for dangerous keywords
+            # Check for dangerous keywords (using word boundaries to avoid false positives)
+            # e.g., "walter@email.com" should not trigger "ALTER" detection
+            import re
             dangerous_keywords = [
                 "DELETE",
                 "DROP",
@@ -142,7 +144,7 @@ class SnowflakeClient:
                 "TRUNCATE",
             ]
             for keyword in dangerous_keywords:
-                if keyword in query_upper:
+                if re.search(rf"\b{keyword}\b", query_upper):
                     raise ValueError(f"Query contains restricted keyword: {keyword}")
 
             # Add LIMIT if not present and limit is specified

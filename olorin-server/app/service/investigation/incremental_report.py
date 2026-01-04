@@ -288,6 +288,69 @@ def generate_incremental_report(triggering_investigation_id: str) -> Optional[Pa
         _report_generation_lock.release()
 
 
+def regenerate_report_for_date(target_date: datetime) -> Optional[Path]:
+    """
+    Regenerate the daily incremental report for a specific date.
+
+    This fetches investigations from the database for the given date
+    and regenerates the HTML report with blindspot analysis.
+
+    Args:
+        target_date: The date to regenerate the report for
+
+    Returns:
+        Path to the generated HTML report, or None if failed
+    """
+    try:
+        logger.info(f"🔄 Regenerating report for {target_date.date()}")
+
+        # Fetch all completed investigations
+        investigations = _fetch_completed_auto_comp_investigations()
+        logger.info(f"   Found {len(investigations)} total completed investigations")
+
+        # Filter to only investigations for the target date
+        daily_investigations = _filter_investigations_by_date(investigations, target_date)
+        logger.info(f"   Filtered to {len(daily_investigations)} for {target_date.date()}")
+
+        if not daily_investigations:
+            logger.warning(f"   No investigations found for {target_date.date()}")
+            return None
+
+        # Get output file path
+        output_file = _get_incremental_file_path(target_date)
+        output_file.parent.mkdir(parents=True, exist_ok=True)
+
+        # Run blindspot analysis scoped to the specific day
+        blindspot_start = datetime(target_date.year, target_date.month, target_date.day, 0, 0, 0)
+        blindspot_end = datetime(target_date.year, target_date.month, target_date.day, 23, 59, 59)
+        blindspot_data = _run_blindspot_analysis(blindspot_start, blindspot_end)
+
+        # Extract entity IDs and run investigated entities analysis
+        entity_ids = [
+            inv.get("entity_value") or inv.get("email")
+            for inv in daily_investigations
+            if inv.get("entity_value") or inv.get("email")
+        ]
+        investigated_blindspot_data = None
+        if entity_ids:
+            investigated_blindspot_data = _run_investigated_entities_analysis(
+                entity_ids, blindspot_start, blindspot_end
+            )
+
+        # Generate HTML
+        html = _generate_incremental_html(
+            daily_investigations, blindspot_data, investigated_blindspot_data
+        )
+        output_file.write_text(html)
+
+        logger.info(f"✅ Report regenerated: {output_file}")
+        return output_file
+
+    except Exception as e:
+        logger.error(f"❌ Failed to regenerate report for {target_date.date()}: {e}", exc_info=True)
+        return None
+
+
 def _update_monthly_report_from_daily(
     window_date: datetime,
     investigations: List[Dict[str, Any]],
