@@ -16,6 +16,9 @@ from typing import Any, Dict, List, Optional
 from app.config.threshold_config import get_risk_threshold
 from app.service.logging import get_bridge_logger
 from app.service.reporting.components.blindspot_heatmap import generate_blindspot_section
+from app.service.reporting.components.confusion_matrix_section import (
+    generate_confusion_matrix_section,
+)
 from app.service.reporting.olorin_logo import OLORIN_FOOTER, get_olorin_header
 
 logger = get_bridge_logger(__name__)
@@ -1030,6 +1033,12 @@ def _generate_confusion_table_section(data: Dict[str, Any]) -> str:
 
     Displays TP, FP, TN, FN counts and derived metrics (precision, recall, F1, accuracy)
     for aggregated results across all investigated entities.
+
+    Note: For individual investigation reports, use the shared component:
+        from app.service.reporting.components import generate_confusion_matrix_section
+
+    This function generates a more complex dual-table structure (Review Precision +
+    Overall Classification) specific to aggregated startup/monthly reports.
     """
     confusion_data = data.get("confusion_matrix", {})
     aggregated_matrix = confusion_data.get("aggregated")
@@ -1049,8 +1058,8 @@ def _generate_confusion_table_section(data: Dict[str, Any]) -> str:
             )
             return """
           <div class="panel">
-            <h2>📊 Confusion Table Metrics</h2>
-            <p style="color: var(--muted);">No confusion matrix data available. Confusion metrics will be calculated after investigations complete.</p>
+            <h2>📊 Transaction Analysis Metrics</h2>
+            <p style="color: var(--muted);">No classification data available. Metrics will be calculated after investigations complete.</p>
             <p style="color: var(--muted); font-size: 13px; margin-top: 8px;">
               <strong>Debug Info:</strong> aggregated_confusion_matrix is None in app.state. This may indicate:
               <ul style="margin: 8px 0 0 20px; color: var(--muted);">
@@ -1149,8 +1158,8 @@ def _generate_confusion_table_section(data: Dict[str, Any]) -> str:
     if overall_total == 0:
         return f"""
           <div class="panel">
-            <h2>📊 Confusion Table Metrics</h2>
-            <p style="color: var(--muted);">No transactions matched the criteria for confusion matrix calculation.</p>
+            <h2>📊 Transaction Analysis Metrics</h2>
+            <p style="color: var(--muted);">No transactions matched the criteria for classification analysis.</p>
             <p style="color: var(--muted); font-size: 13px; margin-top: 8px;">
               This may occur if:
               <ul style="margin: 8px 0 0 20px; color: var(--muted);">
@@ -1167,7 +1176,7 @@ def _generate_confusion_table_section(data: Dict[str, Any]) -> str:
 
     return f"""
           <div class="panel">
-            <h2>📊 Confusion Table Metrics (Investigation Window)</h2>
+            <h2>📊 Transaction Analysis (Investigation Window)</h2>
             <p style="color: var(--muted); margin-bottom: 8px;">
               Aggregated confusion matrix metrics across {entity_count} investigated entities.
               Only APPROVED transactions (NSURE_LAST_DECISION = 'APPROVED') are included.
@@ -1194,22 +1203,22 @@ def _generate_confusion_table_section(data: Dict[str, Any]) -> str:
                 </thead>
                 <tbody>
                   <tr style="border-bottom: 1px solid var(--border);">
-                    <td style="padding: 10px 8px;"><strong>True Positives (TP)</strong><br><span style="color: var(--muted); font-size: 12px;">Predicted Fraud AND Actually Fraud</span></td>
+                    <td style="padding: 10px 8px;"><strong>True Positives (TP)</strong><br><span style="color: var(--muted); font-size: 12px;">Correctly Flagged as Fraud</span></td>
                     <td style="text-align: right; padding: 10px 8px; font-weight: 600;">{total_tp}</td>
                     <td style="text-align: right; padding: 10px 8px; color: var(--ok);">{fmt_pct(total_tp / (total_tp + total_fp + total_tn + total_fn)) if (total_tp + total_fp + total_tn + total_fn) > 0 else '0%'}</td>
                   </tr>
                   <tr style="border-bottom: 1px solid var(--border);">
-                    <td style="padding: 10px 8px;"><strong>False Positives (FP)</strong><br><span style="color: var(--muted); font-size: 12px;">Predicted Fraud BUT Not Actually Fraud</span></td>
+                    <td style="padding: 10px 8px;"><strong>False Positives (FP)</strong><br><span style="color: var(--muted); font-size: 12px;">False Alarm (Not Actually Fraud)</span></td>
                     <td style="text-align: right; padding: 10px 8px; font-weight: 600;">{total_fp}</td>
                     <td style="text-align: right; padding: 10px 8px; color: var(--warn);">{fmt_pct(total_fp / (total_tp + total_fp + total_tn + total_fn)) if (total_tp + total_fp + total_tn + total_fn) > 0 else '0%'}</td>
                   </tr>
                   <tr style="border-bottom: 1px solid var(--border);">
-                    <td style="padding: 10px 8px;"><strong>True Negatives (TN)</strong><br><span style="color: var(--muted); font-size: 12px;">Predicted Not Fraud AND Not Actually Fraud</span></td>
+                    <td style="padding: 10px 8px;"><strong>True Negatives (TN)</strong><br><span style="color: var(--muted); font-size: 12px;">Correctly Cleared</span></td>
                     <td style="text-align: right; padding: 10px 8px; font-weight: 600;">{total_tn}</td>
                     <td style="text-align: right; padding: 10px 8px; color: var(--ok);">{fmt_pct(total_tn / (total_tp + total_fp + total_tn + total_fn)) if (total_tp + total_fp + total_tn + total_fn) > 0 else '0%'}</td>
                   </tr>
                   <tr style="border-bottom: 1px solid var(--border);">
-                    <td style="padding: 10px 8px;"><strong>False Negatives (FN)</strong><br><span style="color: var(--muted); font-size: 12px;">Predicted Not Fraud BUT Actually Fraud</span></td>
+                    <td style="padding: 10px 8px;"><strong>False Negatives (FN)</strong><br><span style="color: var(--muted); font-size: 12px;">Missed Fraud</span></td>
                     <td style="text-align: right; padding: 10px 8px; font-weight: 600;">{total_fn}</td>
                     <td style="text-align: right; padding: 10px 8px; color: var(--danger);">{fmt_pct(total_fn / (total_tp + total_fp + total_tn + total_fn)) if (total_tp + total_fp + total_tn + total_fn) > 0 else '0%'}</td>
                   </tr>
@@ -1278,22 +1287,22 @@ def _generate_confusion_table_section(data: Dict[str, Any]) -> str:
                 </thead>
                 <tbody>
                   <tr style="border-bottom: 1px solid var(--border);">
-                    <td style="padding: 10px 8px;"><strong>True Positives (TP)</strong><br><span style="color: var(--muted); font-size: 12px;">Predicted Fraud AND Actually Fraud</span></td>
+                    <td style="padding: 10px 8px;"><strong>True Positives (TP)</strong><br><span style="color: var(--muted); font-size: 12px;">Correctly Flagged as Fraud</span></td>
                     <td style="text-align: right; padding: 10px 8px; font-weight: 600; color: var(--ok);">{overall_tp}</td>
                     <td style="text-align: right; padding: 10px 8px;">{fmt_pct(overall_tp / overall_total) if overall_total > 0 else '0%'}</td>
                   </tr>
                   <tr style="border-bottom: 1px solid var(--border);">
-                    <td style="padding: 10px 8px;"><strong>False Positives (FP)</strong><br><span style="color: var(--muted); font-size: 12px;">Predicted Fraud BUT Not Actually Fraud</span></td>
+                    <td style="padding: 10px 8px;"><strong>False Positives (FP)</strong><br><span style="color: var(--muted); font-size: 12px;">False Alarm (Not Actually Fraud)</span></td>
                     <td style="text-align: right; padding: 10px 8px; font-weight: 600; color: var(--warning);">{overall_fp}</td>
                     <td style="text-align: right; padding: 10px 8px;">{fmt_pct(overall_fp / overall_total) if overall_total > 0 else '0%'}</td>
                   </tr>
                   <tr style="border-bottom: 1px solid var(--border);">
-                    <td style="padding: 10px 8px;"><strong>True Negatives (TN)</strong><br><span style="color: var(--muted); font-size: 12px;">Predicted Not Fraud AND Not Actually Fraud</span></td>
+                    <td style="padding: 10px 8px;"><strong>True Negatives (TN)</strong><br><span style="color: var(--muted); font-size: 12px;">Correctly Cleared</span></td>
                     <td style="text-align: right; padding: 10px 8px; font-weight: 600; color: var(--ok);">{overall_tn}</td>
                     <td style="text-align: right; padding: 10px 8px;">{fmt_pct(overall_tn / overall_total) if overall_total > 0 else '0%'}</td>
                   </tr>
                   <tr style="border-bottom: 1px solid var(--border);">
-                    <td style="padding: 10px 8px;"><strong>False Negatives (FN)</strong><br><span style="color: var(--muted); font-size: 12px;">Predicted Not Fraud BUT Actually Fraud</span></td>
+                    <td style="padding: 10px 8px;"><strong>False Negatives (FN)</strong><br><span style="color: var(--muted); font-size: 12px;">Missed Fraud</span></td>
                     <td style="text-align: right; padding: 10px 8px; font-weight: 600; color: var(--error);">{overall_fn}</td>
                     <td style="text-align: right; padding: 10px 8px;">{fmt_pct(overall_fn / overall_total) if overall_total > 0 else '0%'}</td>
                   </tr>

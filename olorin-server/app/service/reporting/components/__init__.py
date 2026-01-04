@@ -26,13 +26,20 @@ Features:
 """
 
 from .base_component import BaseVisualizationComponent, ComponentConfig
+from .confusion_matrix_section import generate_confusion_matrix_section
 from .explanations import ExplanationsComponent
+from .financial_analysis_section import (
+    calculate_roi,
+    generate_financial_section,
+    generate_financial_summary_cards,
+)
 from .flow_graph import InvestigationFlowComponent
 from .journey_visualization import JourneyVisualizationComponent
 from .langgraph_visualization import LangGraphVisualizationComponent
 from .llm_timeline import LLMTimelineComponent
 from .risk_dashboard import RiskDashboardComponent
 from .tools_analysis import ToolsAnalysisComponent
+from .transaction_analysis_report import generate_transaction_analysis_report
 
 __all__ = [
     "BaseVisualizationComponent",
@@ -44,6 +51,12 @@ __all__ = [
     "ExplanationsComponent",
     "JourneyVisualizationComponent",
     "LangGraphVisualizationComponent",
+    # Report section components
+    "generate_confusion_matrix_section",
+    "generate_financial_section",
+    "generate_financial_summary_cards",
+    "generate_transaction_analysis_report",
+    "calculate_roi",
 ]
 
 # Component registry for dynamic component loading

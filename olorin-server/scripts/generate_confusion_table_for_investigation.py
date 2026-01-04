@@ -351,9 +351,9 @@ def _build_lost_revenues_reasoning_from_txs(
     
     sample_text = ""
     if sample_txs:
-        sample_text = "\nSAMPLE TRANSACTIONS (BLOCKED + LEGITIMATE):\n"
+        sample_text = "\nSAMPLE TRANSACTIONS (APPROVED + LEGITIMATE - would be blocked if Olorin acted):\n"
         for tx in sample_txs[:5]:
-            sample_text += f"  • TX {str(tx['tx_id'])[:20]}...: ${tx['gmv']:,.2f} (Decision: {tx['decision']}, Fraud: {tx['is_fraud']})\n"
+            sample_text += f"  • TX {str(tx['tx_id'])[:20]}...: ${tx['gmv']:,.2f} (Currently: {tx['decision']}, Would Block: Yes)\n"
     
     return (
         f"LOST REVENUES ANALYSIS for {entity_type}='{entity_value}'{merchant_text}\n"
@@ -1025,6 +1025,29 @@ async def generate_confusion_table(
         # Fix: use "potential_lost_revenues" key (was incorrectly using "lost_revenues" which doesn't exist)
         lost_rev = revenue_data.get("potential_lost_revenues", 0) if revenue_data else 0
 
+        # Calculate ROI
+        roi = (net_val / lost_rev) if lost_rev > 0 else (float("inf") if net_val > 0 else 0)
+        roi_display = f"{roi:,.0f}x" if roi < 10000 else "∞" if roi > 0 else "0x"
+
+        # Calculate fraud rate and determine verdict
+        fraud_rate = aggregated_matrix.aggregated_precision if aggregated_matrix else 0
+        if risk_score is not None and risk_score >= risk_threshold and fraud_rate >= 0.5:
+            verdict_label = "CONFIRMED FRAUDSTER"
+            verdict_icon = "🚨"
+            verdict_color = "var(--error)"
+        elif risk_score is not None and risk_score >= risk_threshold and net_val > 0:
+            verdict_label = "HIGH RISK - PROFITABLE BLOCK"
+            verdict_icon = "⚠️"
+            verdict_color = "var(--warning)"
+        elif risk_score is not None and risk_score >= risk_threshold:
+            verdict_label = "HIGH RISK"
+            verdict_icon = "⚠️"
+            verdict_color = "var(--warning)"
+        else:
+            verdict_label = "LOW RISK"
+            verdict_icon = "✅"
+            verdict_color = "var(--ok)"
+
         # Calculate GMV window info for header
         gmv_start = revenue_data.get("gmv_window_start", "") if revenue_data else ""
         gmv_end = revenue_data.get("gmv_window_end", "") if revenue_data else ""
@@ -1048,7 +1071,7 @@ async def generate_confusion_table(
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Confusion Table & Financial Analysis - {investigation_id}</title>
+    <title>Transaction Analysis Report - {investigation_id}</title>
     <style>
         :root {{
             --bg: #0a0e27;
@@ -1125,17 +1148,68 @@ async def generate_confusion_table(
         pre {{
             overflow-x: auto;
         }}
+        .breadcrumb-nav {{
+            background: var(--panel);
+            padding: 12px 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            border: 1px solid var(--border);
+        }}
+        .breadcrumb-link {{
+            color: var(--accent);
+            text-decoration: none;
+            font-size: 0.9rem;
+        }}
+        .breadcrumb-link:hover {{
+            text-decoration: underline;
+        }}
+        .breadcrumb-separator {{
+            color: var(--muted);
+            margin: 0 8px;
+        }}
+        .breadcrumb-current {{
+            color: var(--text);
+            font-weight: 600;
+            font-size: 0.9rem;
+        }}
+        .verdict-badge {{
+            padding: 20px;
+            border-radius: 12px;
+            text-align: center;
+            margin: 20px 0;
+        }}
+        .footer {{
+            margin-top: 30px;
+            padding: 20px;
+            background: var(--panel);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            text-align: center;
+            color: var(--muted);
+            font-size: 0.85rem;
+        }}
     </style>
 </head>
 <body>
+    <!-- Breadcrumb Navigation -->
+    <nav class="breadcrumb-nav">
+        <a href="../yearly_{window_start.year}.html" class="breadcrumb-link">Yearly {window_start.year}</a>
+        <span class="breadcrumb-separator">›</span>
+        <a href="../startup_analysis_MONTHLY_{window_start.year}_{window_start.month:02d}.html" class="breadcrumb-link">{window_start.strftime('%B')}</a>
+        <span class="breadcrumb-separator">›</span>
+        <a href="../startup_analysis_DAILY_{window_start.strftime('%Y-%m-%d')}.html" class="breadcrumb-link">Day {window_start.day}</a>
+        <span class="breadcrumb-separator">›</span>
+        <span class="breadcrumb-current">{investigation_id[:16]}...</span>
+    </nav>
+
     <div class="panel">
-        <h1>📊 Confusion Table & Financial Analysis Report</h1>
+        <h1>📊 Transaction Analysis Report</h1>
         <div class="metadata">
             <p><strong>Investigation ID:</strong> <code>{investigation_id}</code></p>
             <p><strong>Entity:</strong> <code>{entity_type}:{entity_value}</code></p>
             <p><strong>Merchant:</strong> <span style="color: var(--accent-secondary); font-weight: bold;">{merchant_name}</span></p>
-            <p><strong>Risk Score:</strong> {risk_score if risk_score is not None else 'N/A'}</p>
-            <p><strong>Risk Threshold:</strong> {risk_threshold:.1%}</p>
+            <p><strong>Risk Score:</strong> {f'{risk_score:.1%}' if risk_score is not None else 'N/A'}</p>
+            <p><strong>Risk Threshold:</strong> {risk_threshold:.0%}</p>
             <p><strong>Investigation Window:</strong> {window_start.strftime('%Y-%m-%d %H:%M:%S UTC')} to {window_end.strftime('%Y-%m-%d %H:%M:%S UTC')}</p>
             <p><strong>Total Transactions (Investigation Period):</strong> {len(transactions)}</p>
             <p><strong>Generated:</strong> {datetime.now().strftime('%Y-%m-%d %H:%M:%S UTC')}</p>
@@ -1171,16 +1245,25 @@ async def generate_confusion_table(
             </p>
         </div>
 
+        <!-- Verdict Badge -->
+        <div class="verdict-badge" style="background: linear-gradient(135deg, {verdict_color}22, {verdict_color}11); border: 2px solid {verdict_color};">
+            <div style="font-size: 2rem;">{verdict_icon}</div>
+            <div style="font-size: 1.5rem; font-weight: bold; color: {verdict_color}; margin: 8px 0;">{verdict_label}</div>
+            <div style="color: var(--muted); font-size: 0.9rem;">
+                {fraud_rate:.0%} fraud rate • ${net_val:,.2f} net value • {roi_display} ROI
+            </div>
+        </div>
+
         <!-- Quick Financial Summary in Header -->
-        <div style="margin-top: 16px; padding: 16px; background: var(--panel-glass); border-radius: 8px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; text-align: center;">
+        <div style="margin-top: 16px; padding: 16px; background: var(--panel-glass); border-radius: 8px; display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; text-align: center;">
             <div>
                 <div style="color: var(--ok); font-size: 18px; font-weight: bold;">${saved_gmv:,.2f}</div>
-                <div style="color: var(--muted); font-size: 11px;">Saved Fraud GMV</div>
-                <div style="color: var(--warning); font-size: 9px; margin-top: 2px;">(GMV Window: {gmv_start_date} to {gmv_end_date})</div>
+                <div style="color: var(--muted); font-size: 11px;">Fraud Prevented</div>
+                <div style="color: var(--warning); font-size: 9px; margin-top: 2px;">(GMV Window)</div>
             </div>
             <div>
                 <div style="color: var(--warning); font-size: 18px; font-weight: bold;">${lost_rev:,.2f}</div>
-                <div style="color: var(--muted); font-size: 11px;">Lost Revenues</div>
+                <div style="color: var(--muted); font-size: 11px;">Revenue Impact</div>
                 <div style="color: var(--warning); font-size: 9px; margin-top: 2px;">(GMV Window)</div>
             </div>
             <div>
@@ -1188,12 +1271,23 @@ async def generate_confusion_table(
                 <div style="color: var(--muted); font-size: 11px;">Net Value</div>
                 <div style="color: var(--warning); font-size: 9px; margin-top: 2px;">(GMV Window)</div>
             </div>
+            <div>
+                <div style="color: var(--accent); font-size: 18px; font-weight: bold;">{roi_display}</div>
+                <div style="color: var(--muted); font-size: 11px;">ROI</div>
+                <div style="color: var(--warning); font-size: 9px; margin-top: 2px;">(Return on Investment)</div>
+            </div>
         </div>
     </div>
-    
+
     {confusion_table_html}
-    
+
     {financial_html}
+
+    <!-- Footer -->
+    <div class="footer">
+        <p>Generated by Olorin Transaction Analysis • {datetime.now().strftime('%Y-%m-%d %H:%M:%S UTC')}</p>
+        <p style="margin-top: 8px;">Investigation: {investigation_id} • Merchant: {merchant_name}</p>
+    </div>
 </body>
 </html>
 """
