@@ -172,26 +172,67 @@ async def regenerate_monthly(year: int, month: int) -> Path:
     logger.info(f"Net Value: ${monthly_result.total_net_value:.2f}")
     logger.info(f"{'='*60}")
 
-    # Run blindspot analysis for the heatmap
-    logger.info("\nRunning blindspot analysis for heatmap...")
+    # Calculate the month's date range for consistent analysis
+    month_start = datetime(year, month, 1)
+    month_end = datetime(year, month, days_in_month, 23, 59, 59)
+
+    # Run blindspot analysis for the heatmap - scoped to the specific month
+    print("\nRunning blindspot analysis for heatmap...")
     blindspot_data = None
     try:
         analyzer = ModelBlindspotAnalyzer()
-        blindspot_data = await analyzer.analyze_blindspots(export_csv=False)
+        blindspot_data = await analyzer.analyze_blindspots(
+            export_csv=False,
+            start_date=month_start,
+            end_date=month_end,
+        )
         if blindspot_data.get("status") == "success":
-            logger.info(
-                f"Blindspot analysis complete: "
+            print(
+                f"✅ Blindspot analysis complete: "
                 f"{len(blindspot_data.get('matrix', {}).get('cells', []))} cells, "
                 f"{len(blindspot_data.get('blindspots', []))} blindspots identified"
             )
         else:
-            logger.warning(f"Blindspot analysis failed: {blindspot_data.get('error')}")
+            print(f"⚠️ Blindspot analysis failed: {blindspot_data.get('error')}")
             blindspot_data = None
     except Exception as e:
-        logger.warning(f"Could not run blindspot analysis: {e}")
+        print(f"❌ Could not run blindspot analysis: {e}")
+        import traceback
+        traceback.print_exc()
         blindspot_data = None
 
-    output_path = await generate_monthly_report(monthly_result, blindspot_data)
+    # Extract entity IDs from all investigations in the month
+    all_month_invs = [inv for day_invs in by_day.values() for inv in day_invs]
+    entity_ids = [
+        inv.get("entity_value") or inv.get("email")
+        for inv in all_month_invs
+        if inv.get("entity_value") or inv.get("email")
+    ]
+
+    # Run investigated entities analysis
+    investigated_blindspot_data = None
+    if entity_ids:
+        print(f"\nRunning investigated entities analysis for {len(entity_ids)} entities...")
+        try:
+            inv_analyzer = ModelBlindspotAnalyzer()
+            investigated_blindspot_data = await inv_analyzer.analyze_investigated_entities(
+                entity_ids, month_start, month_end
+            )
+            if investigated_blindspot_data and investigated_blindspot_data.get("gmv_by_score"):
+                print(
+                    f"✅ Investigated entities analysis complete: "
+                    f"{len(investigated_blindspot_data.get('gmv_by_score', []))} score bins"
+                )
+            else:
+                print("⚠️ Investigated entities analysis returned no data")
+                investigated_blindspot_data = None
+        except Exception as e:
+            print(f"❌ Could not run investigated entities analysis: {e}")
+            investigated_blindspot_data = None
+
+    output_path = await generate_monthly_report(
+        monthly_result, blindspot_data, investigated_blindspot_data
+    )
     logger.info(f"\nMonthly report regenerated: {output_path}")
 
     return output_path
