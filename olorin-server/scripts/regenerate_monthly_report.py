@@ -114,6 +114,15 @@ async def regenerate_monthly(year: int, month: int) -> Path:
         )
         day_net = day_saved - day_lost
 
+        # Calculate vendor/merchant breakdown
+        vendor_breakdown: Dict[str, float] = defaultdict(float)
+        for inv in day_invs:
+            merchant = inv.get("merchant_name", "Unknown")
+            rev = inv.get("revenue_data", {})
+            saved = _safe_float(rev.get("saved_fraud_gmv", 0))
+            lost = _safe_float(rev.get("lost_revenues", 0))
+            vendor_breakdown[merchant] += saved - lost
+
         entities_discovered = len(day_invs)
 
         day_date = datetime(year, month, day_num)
@@ -134,6 +143,7 @@ async def regenerate_monthly(year: int, month: int) -> Path:
                 saved_fraud_gmv=day_saved,
                 lost_revenues=day_lost,
                 net_value=day_net,
+                vendor_gmv_breakdown=dict(vendor_breakdown),
                 investigation_ids=[inv.get("investigation_id", "") for inv in day_invs],
                 started_at=datetime.now(),
                 completed_at=datetime.now(),
