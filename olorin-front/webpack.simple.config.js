@@ -94,9 +94,9 @@ module.exports = (env, argv) => {
         'process.env.REACT_APP_ENV': JSON.stringify(process.env.REACT_APP_ENV || 'production'),
         'process.env.REACT_APP_VERSION': JSON.stringify(process.env.REACT_APP_VERSION || '1.0.0'),
         'process.env.REACT_APP_SERVICE_NAME': JSON.stringify(process.env.REACT_APP_SERVICE_NAME || 'olorin-investigation'),
-        'process.env.REACT_APP_API_BASE_URL': JSON.stringify(process.env.REACT_APP_API_BASE_URL || 'https://olorin-backend-682679371769.us-east1.run.app'),
+        'process.env.REACT_APP_API_BASE_URL': JSON.stringify(process.env.REACT_APP_API_BASE_URL || 'https://api.olorin.ai'),
         'process.env.REACT_APP_API_VERSION': JSON.stringify(process.env.REACT_APP_API_VERSION || 'v1'),
-        'process.env.REACT_APP_WS_URL': JSON.stringify(process.env.REACT_APP_WS_URL || 'wss://olorin-backend-682679371769.us-east1.run.app'),
+        'process.env.REACT_APP_WS_URL': JSON.stringify(process.env.REACT_APP_WS_URL || 'wss://api.olorin.ai'),
         'process.env.REACT_APP_FRONTEND_PORT': JSON.stringify(process.env.REACT_APP_FRONTEND_PORT || '443'),
         // Polling config
         'process.env.REACT_APP_POLLING_BASE_INTERVAL_MS': JSON.stringify(process.env.REACT_APP_POLLING_BASE_INTERVAL_MS || '5000'),

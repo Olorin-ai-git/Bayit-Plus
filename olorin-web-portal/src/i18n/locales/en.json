@@ -8,12 +8,19 @@
     "getStarted": "Get Started"
   },
   "hero": {
-    "title": "Next-Generation",
-    "titleHighlight": "AI Fraud Prevention",
-    "subtitle": "Harness the power of Structured AI Agents to protect your enterprise from fraud. Our Generative AI solutions provide real-time investigation and prevention capabilities that adapt and learn from every threat.",
+    "title": "AI Agents That Think Like",
+    "titleHighlight": "Expert Fraud Investigators",
+    "subtitle": "Harness the power of 6 specialized AI agents with 180+ detection tools to protect your enterprise from fraud. Our Generative AI solutions provide real-time investigation and prevention capabilities that adapt and learn from every threat.",
     "ctaStart": "Get Started",
     "ctaLearn": "Learn More",
-    "ctaDemo": "Try Live Demo"
+    "ctaDemo": "Try Live Demo",
+    "ctaROI": "Calculate ROI",
+    "ctaContact": "Contact Sales",
+    "stats": {
+      "agents": "Specialized Agents",
+      "tools": "Detection Tools",
+      "decisions": "Decision Time"
+    }
   },
   "stats": {
     "accuracy": "95%",
@@ -382,5 +389,84 @@
       "errorId": "Error ID",
       "timestamp": "Timestamp"
     }
+  },
+  "demo": {
+    "title": "Interactive Demo",
+    "subtitle": "Experience our AI fraud detection in action",
+    "selectScenario": "Select a Fraud Scenario",
+    "startInvestigation": "Start Investigation",
+    "investigating": "AI Investigation in Progress",
+    "completed": "Investigation Complete",
+    "riskScore": "Risk Score",
+    "agentsActive": "Agents Active",
+    "toolsUsed": "Tools Used",
+    "findings": "Key Findings",
+    "recommendation": "Recommendation",
+    "tryAnother": "Try Another Scenario",
+    "rateLimited": "Rate limit reached. Please try again later.",
+    "error": "An error occurred. Please try again."
+  },
+  "agents": {
+    "title": "Meet Our AI Agents",
+    "subtitle": "Six specialized agents working together to investigate fraud",
+    "viewTools": "View All Tools",
+    "capabilities": "Capabilities",
+    "dataSources": "Data Sources"
+  },
+  "roi": {
+    "title": "ROI Calculator",
+    "subtitle": "Calculate your potential savings with Olorin",
+    "inputs": {
+      "volume": "Annual Transaction Volume",
+      "fraudRate": "Current Fraud Rate (%)",
+      "avgValue": "Average Transaction Value ($)",
+      "teamSize": "Fraud Review Team Size",
+      "falsePositive": "Current False Positive Rate (%)"
+    },
+    "results": {
+      "title": "Your Projected ROI",
+      "fraudSavings": "Annual Fraud Savings",
+      "operationalSavings": "Operational Cost Reduction",
+      "timeSavings": "Investigation Time Saved",
+      "paybackPeriod": "Payback Period",
+      "totalROI": "Total Annual ROI"
+    },
+    "cta": "Get Custom Analysis"
+  },
+  "usecases": {
+    "title": "Industry Solutions",
+    "subtitle": "Fraud protection for every industry",
+    "challenge": "Challenge",
+    "solution": "Our Solution",
+    "results": "Results",
+    "filter": {
+      "all": "All Industries",
+      "financial": "Financial Services",
+      "ecommerce": "E-Commerce",
+      "insurance": "Insurance",
+      "healthcare": "Healthcare"
+    }
+  },
+  "comparison": {
+    "title": "Why Choose Olorin",
+    "subtitle": "See how we compare to traditional solutions",
+    "features": {
+      "aiAgents": "AI-Powered Agents",
+      "realtime": "Real-time Investigation",
+      "falsePositives": "Low False Positive Rate",
+      "integration": "Easy Integration",
+      "customization": "Full Customization",
+      "support": "24/7 Support"
+    },
+    "olorin": "Olorin.ai",
+    "traditional": "Traditional Solutions",
+    "competitors": "Other AI Solutions"
+  },
+  "trust": {
+    "title": "Enterprise-grade security and compliance",
+    "soc2": "SOC 2 Type II",
+    "gdpr": "GDPR Compliant",
+    "ccpa": "CCPA Compliant",
+    "iso27001": "ISO 27001"
   }
 } 

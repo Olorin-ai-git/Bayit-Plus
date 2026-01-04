@@ -21,6 +21,26 @@ class SamplingConfig:
     legit_multiplier: int = 20
     stratify_by_merchant: bool = True
     min_samples_per_merchant: int = 10
+    # Blindspot-aware stratification
+    gmv_stratification_enabled: bool = False
+    score_stratification_enabled: bool = False
+
+
+@dataclass
+class BlindspotSamplingConfig:
+    """Configuration for blindspot-aware sampling.
+
+    Feature: blindspot-aware-training
+    """
+
+    gmv_bins: List[int] = field(
+        default_factory=lambda: [0, 50, 100, 250, 500, 1000, 5000]
+    )
+    score_bins: int = 10
+    min_samples_per_cell: int = 50
+    oversample_blindspots: bool = True
+    blindspot_oversample_factor: float = 2.0
+    blindspot_fn_threshold: float = 0.05
 
 
 @dataclass
@@ -93,9 +113,7 @@ class DatasetMetadata:
                 else None
             ),
             "feature_period_end": (
-                self.feature_period_end.isoformat()
-                if self.feature_period_end
-                else None
+                self.feature_period_end.isoformat() if self.feature_period_end else None
             ),
             "observation_period_start": (
                 self.observation_period_start.isoformat()

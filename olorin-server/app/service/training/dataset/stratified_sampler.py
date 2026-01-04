@@ -2,9 +2,11 @@
 Stratified Sampler
 Feature: 026-llm-training-pipeline
 
-Provides stratified sampling by class and merchant for fraud detection training.
+Provides stratified sampling by class, merchant, and GMV for fraud detection training.
+Supports blindspot-aware oversampling to address model blindspot zones.
 """
 
+import os
 import random
 from collections import defaultdict
 from typing import Dict, List, Optional
@@ -61,12 +63,8 @@ class StratifiedSampler:
         target_legit = target_fraud * self._config.legit_multiplier
 
         if self._config.stratify_by_merchant:
-            sampled_fraud = self._stratified_by_merchant(
-                fraud_samples, target_fraud
-            )
-            sampled_legit = self._stratified_by_merchant(
-                legit_samples, target_legit
-            )
+            sampled_fraud = self._stratified_by_merchant(fraud_samples, target_fraud)
+            sampled_legit = self._stratified_by_merchant(legit_samples, target_legit)
         else:
             sampled_fraud = self._random_sample(fraud_samples, target_fraud)
             sampled_legit = self._random_sample(legit_samples, target_legit)
@@ -74,9 +72,15 @@ class StratifiedSampler:
         result = sampled_fraud + sampled_legit
         random.shuffle(result)
 
-        logger.info(
-            f"Sampled: {len(sampled_fraud)} fraud, {len(sampled_legit)} legit"
-        )
+        logger.info(f"Sampled: {len(sampled_fraud)} fraud, {len(sampled_legit)} legit")
+
+        # Apply GMV stratification if enabled
+        if self._config.gmv_stratification_enabled:
+            result = self._apply_gmv_stratification(result, random_seed)
+
+        # Apply blindspot-aware oversampling if enabled
+        if self._config.score_stratification_enabled:
+            result = self._apply_blindspot_oversampling(result, random_seed)
 
         return result
 
@@ -116,13 +120,13 @@ class StratifiedSampler:
             all_remaining = []
             for merchant, merchant_samples in by_merchant.items():
                 already_sampled = set(id(s) for s in result)
-                not_sampled = [s for s in merchant_samples if id(s) not in already_sampled]
+                not_sampled = [
+                    s for s in merchant_samples if id(s) not in already_sampled
+                ]
                 all_remaining.extend(not_sampled)
 
             if all_remaining:
-                extra = random.sample(
-                    all_remaining, min(len(all_remaining), remaining)
-                )
+                extra = random.sample(all_remaining, min(len(all_remaining), remaining))
                 result.extend(extra)
 
         return result
@@ -153,3 +157,56 @@ class StratifiedSampler:
                 distribution[merchant]["legit"] += 1
 
         return distribution
+
+    def _apply_gmv_stratification(
+        self,
+        samples: List[TrainingSample],
+        random_seed: Optional[int] = None,
+    ) -> List[TrainingSample]:
+        """Apply GMV bin stratification to samples."""
+        try:
+            from app.service.training.dataset.gmv_score_stratifier import (
+                GMVScoreStratifier,
+            )
+
+            stratifier = GMVScoreStratifier()
+            result = stratifier.stratify(
+                samples,
+                target_count=len(samples),
+                gmv_field="total_gmv",
+                random_seed=random_seed,
+            )
+            logger.info(f"GMV stratification applied: {len(result)} samples")
+            return result
+        except ImportError as e:
+            logger.warning(f"GMV stratifier not available: {e}")
+            return samples
+        except Exception as e:
+            logger.warning(f"GMV stratification failed: {e}")
+            return samples
+
+    def _apply_blindspot_oversampling(
+        self,
+        samples: List[TrainingSample],
+        random_seed: Optional[int] = None,
+    ) -> List[TrainingSample]:
+        """Apply blindspot-aware oversampling to samples."""
+        try:
+            from app.service.training.dataset.blindspot_aware_sampler import (
+                BlindspotAwareSampler,
+            )
+
+            sampler = BlindspotAwareSampler()
+            result = sampler.sample_sync(
+                samples,
+                gmv_field="total_gmv",
+                random_seed=random_seed,
+            )
+            logger.info(f"Blindspot oversampling applied: {len(result)} samples")
+            return result
+        except ImportError as e:
+            logger.warning(f"Blindspot sampler not available: {e}")
+            return samples
+        except Exception as e:
+            logger.warning(f"Blindspot oversampling failed: {e}")
+            return samples

@@ -8,12 +8,19 @@
     "getStarted": "Inizia"
   },
   "hero": {
-    "title": "Prevenzione frodi IA",
-    "titleHighlight": "di nuova generazione",
-    "subtitle": "Sfrutta il potere degli Agenti IA Autonomi per proteggere la tua azienda dalle frodi. Le nostre soluzioni di IA Generativa forniscono capacità di investigazione e prevenzione in tempo reale che si adattano e imparano da ogni minaccia.",
+    "title": "Agenti IA che Pensano Come",
+    "titleHighlight": "Investigatori Esperti di Frodi",
+    "subtitle": "Sfrutta il potere di 6 agenti IA specializzati con oltre 180 strumenti di rilevamento per proteggere la tua azienda dalle frodi. Le nostre soluzioni di IA Generativa forniscono capacità di investigazione e prevenzione in tempo reale che si adattano e imparano da ogni minaccia.",
     "ctaStart": "Inizia",
     "ctaLearn": "Scopri di più",
-    "ctaDemo": "Prova la Demo dal Vivo"
+    "ctaDemo": "Prova la Demo dal Vivo",
+    "ctaROI": "Calcola ROI",
+    "ctaContact": "Contatta Vendite",
+    "stats": {
+      "agents": "Agenti Specializzati",
+      "tools": "Strumenti di Rilevamento",
+      "decisions": "Tempo di Decisione"
+    }
   },
   "stats": {
     "accuracy": "95%",
@@ -126,5 +133,84 @@
     "copyright": "© 2025 Olorin.ai. Tutti i diritti riservati.",
     "privacy": "Privacy Policy",
     "terms": "Termini di servizio"
+  },
+  "demo": {
+    "title": "Demo Interattiva",
+    "subtitle": "Sperimenta il nostro rilevamento frodi IA in azione",
+    "selectScenario": "Seleziona uno Scenario di Frode",
+    "startInvestigation": "Avvia Investigazione",
+    "investigating": "Investigazione IA in Corso",
+    "completed": "Investigazione Completata",
+    "riskScore": "Punteggio di Rischio",
+    "agentsActive": "Agenti Attivi",
+    "toolsUsed": "Strumenti Utilizzati",
+    "findings": "Risultati Chiave",
+    "recommendation": "Raccomandazione",
+    "tryAnother": "Prova un Altro Scenario",
+    "rateLimited": "Limite raggiunto. Riprova più tardi.",
+    "error": "Si è verificato un errore. Riprova."
+  },
+  "agents": {
+    "title": "Scopri i Nostri Agenti IA",
+    "subtitle": "Sei agenti specializzati che lavorano insieme per investigare le frodi",
+    "viewTools": "Vedi Tutti gli Strumenti",
+    "capabilities": "Capacità",
+    "dataSources": "Fonti Dati"
+  },
+  "roi": {
+    "title": "Calcolatore ROI",
+    "subtitle": "Calcola i tuoi potenziali risparmi con Olorin",
+    "inputs": {
+      "volume": "Volume Annuale di Transazioni",
+      "fraudRate": "Tasso di Frode Attuale (%)",
+      "avgValue": "Valore Medio Transazione ($)",
+      "teamSize": "Dimensione Team Revisione Frodi",
+      "falsePositive": "Tasso di Falsi Positivi Attuale (%)"
+    },
+    "results": {
+      "title": "Il Tuo ROI Previsto",
+      "fraudSavings": "Risparmi Annuali sulle Frodi",
+      "operationalSavings": "Riduzione Costi Operativi",
+      "timeSavings": "Tempo di Investigazione Risparmiato",
+      "paybackPeriod": "Periodo di Recupero",
+      "totalROI": "ROI Annuale Totale"
+    },
+    "cta": "Ottieni Analisi Personalizzata"
+  },
+  "usecases": {
+    "title": "Soluzioni per Settore",
+    "subtitle": "Protezione dalle frodi per ogni settore",
+    "challenge": "Sfida",
+    "solution": "La Nostra Soluzione",
+    "results": "Risultati",
+    "filter": {
+      "all": "Tutti i Settori",
+      "financial": "Servizi Finanziari",
+      "ecommerce": "E-Commerce",
+      "insurance": "Assicurazioni",
+      "healthcare": "Sanità"
+    }
+  },
+  "comparison": {
+    "title": "Perché Scegliere Olorin",
+    "subtitle": "Scopri come ci confrontiamo con le soluzioni tradizionali",
+    "features": {
+      "aiAgents": "Agenti Alimentati da IA",
+      "realtime": "Investigazione in Tempo Reale",
+      "falsePositives": "Basso Tasso di Falsi Positivi",
+      "integration": "Integrazione Facile",
+      "customization": "Personalizzazione Completa",
+      "support": "Supporto 24/7"
+    },
+    "olorin": "Olorin.ai",
+    "traditional": "Soluzioni Tradizionali",
+    "competitors": "Altre Soluzioni IA"
+  },
+  "trust": {
+    "title": "Sicurezza e conformità di livello aziendale",
+    "soc2": "SOC 2 Tipo II",
+    "gdpr": "Conforme GDPR",
+    "ccpa": "Conforme CCPA",
+    "iso27001": "ISO 27001"
   }
 } 

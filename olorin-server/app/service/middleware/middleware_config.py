@@ -89,9 +89,10 @@ def _configure_rate_limiting(app: FastAPI) -> None:
 def _configure_cors_middleware(app: FastAPI) -> None:
     """Configure CORS middleware with environment-specific security."""
     environment = os.getenv("APP_ENV", "local")
+    is_production = environment in ["prd", "production", "prod"]
 
     # Environment-specific CORS configuration
-    if environment == "prd":
+    if is_production:
         # Production: Use only environment-specified origins, no fallback
         allowed_origins_str = os.getenv("ALLOWED_ORIGINS")
         if not allowed_origins_str:
@@ -173,9 +174,9 @@ def _configure_cors_middleware(app: FastAPI) -> None:
     )
 
     logger.info(
-        f"CORS configured for {environment} environment with {len(allowed_origins)} allowed origins"
+        f"CORS configured for {environment} environment (production={is_production}) with {len(allowed_origins)} allowed origins"
     )
-    if environment != "prd" and len(allowed_origins) > 0:
+    if not is_production and len(allowed_origins) > 0:
         logger.debug(
             f"CORS allowed origins: {allowed_origins[:5]}{'...' if len(allowed_origins) > 5 else ''}"
         )

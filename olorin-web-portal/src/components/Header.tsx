@@ -3,6 +3,7 @@ import { Link, useLocation } from 'react-router-dom';
 import { Menu, X } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import LanguageSelector from './LanguageSelector';
+import NavDropdown from './NavDropdown';
 
 const Header: React.FC = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -13,14 +14,18 @@ const Header: React.FC = () => {
     { name: t('nav.home'), href: '/' },
     { name: t('nav.about'), href: '/about' },
     { name: t('nav.services'), href: '/services' },
-    { name: t('nav.contact'), href: '/contact' },
   ];
 
-  const demoLink = {
-    name: t('nav.demo'),
-    href: 'https://olorin-ai.web.app/investigation?demo=true',
-    isExternal: true
-  };
+  const solutions = [
+    { name: 'AI Agents', href: '/agents', description: 'Explore our 6 specialized agents' },
+    { name: 'ROI Calculator', href: '/roi', description: 'Calculate your potential savings' },
+    { name: 'Compare', href: '/compare', description: 'See how we stack up' },
+  ];
+
+  const resources = [
+    { name: 'Use Cases', href: '/use-cases', description: 'Industry-specific solutions' },
+    { name: 'Contact', href: '/contact', description: 'Get in touch with us' },
+  ];
 
   const isActive = (path: string) => location.pathname === path;
 
@@ -45,28 +50,31 @@ const Header: React.FC = () => {
           </Link>
 
           {/* Desktop Navigation */}
-          <nav className="hidden md:flex space-x-8">
+          <nav className="hidden md:flex items-center space-x-2">
             {navigation.map((item) => (
               <Link
                 key={item.name}
                 to={item.href}
-                className={`text-sm font-medium transition-colors duration-200 ${
+                className={`px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
                   isActive(item.href)
-                    ? 'text-corporate-accentPrimary border-b-2 border-corporate-accentPrimary pb-1'
-                    : 'text-corporate-textSecondary hover:text-corporate-accentPrimary'
+                    ? 'text-corporate-accentPrimary bg-corporate-accentPrimary/10'
+                    : 'text-corporate-textSecondary hover:text-corporate-accentPrimary hover:bg-white/5'
                 }`}
               >
                 {item.name}
               </Link>
             ))}
-            <a
-              href={demoLink.href}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-sm font-medium text-corporate-textSecondary hover:text-corporate-accentPrimary transition-colors duration-200"
+
+            <NavDropdown label="Solutions" items={solutions} />
+            <NavDropdown label="Resources" items={resources} />
+
+            {/* Demo Link */}
+            <Link
+              to="/demo/live"
+              className="px-3 py-2 rounded-lg text-sm font-medium text-corporate-accentPrimary hover:bg-corporate-accentPrimary/10 transition-all duration-200"
             >
-              {demoLink.name}
-            </a>
+              {t('nav.demo')}
+            </Link>
           </nav>
 
           {/* CTA Button */}
@@ -83,7 +91,7 @@ const Header: React.FC = () => {
           {/* Mobile menu button */}
           <button
             onClick={() => setIsMenuOpen(!isMenuOpen)}
-            className="md:hidden p-2 rounded-md text-corporate-textSecondary hover:text-corporate-accentPrimary hover:bg-corporate-hover transition-colors duration-200"
+            className="md:hidden p-2 rounded-lg text-corporate-textSecondary hover:text-corporate-accentPrimary hover:bg-white/5 transition-all duration-200"
           >
             {isMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
           </button>
@@ -91,37 +99,80 @@ const Header: React.FC = () => {
 
         {/* Mobile Navigation */}
         {isMenuOpen && (
-          <div className="md:hidden py-4 border-t border-corporate-borderPrimary/40">
-            <div className="flex flex-col space-y-4">
+          <div className="md:hidden py-4 border-t border-white/10 animate-dropdown-in">
+            <div className="flex flex-col space-y-1">
               {navigation.map((item) => (
                 <Link
                   key={item.name}
                   to={item.href}
-                  className={`text-base font-medium transition-colors duration-200 ${
+                  className={`px-3 py-2.5 rounded-lg text-base font-medium transition-all duration-200 ${
                     isActive(item.href)
-                      ? 'text-corporate-accentPrimary'
-                      : 'text-corporate-textSecondary hover:text-corporate-accentPrimary'
+                      ? 'text-corporate-accentPrimary bg-corporate-accentPrimary/10'
+                      : 'text-corporate-textSecondary hover:text-corporate-accentPrimary hover:bg-white/5'
                   }`}
                   onClick={() => setIsMenuOpen(false)}
                 >
                   {item.name}
                 </Link>
               ))}
-              <a
-                href={demoLink.href}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-base font-medium text-corporate-textSecondary hover:text-corporate-accentPrimary transition-colors duration-200"
+
+              {/* Solutions Section */}
+              <div className="pt-3 pb-1 px-3">
+                <span className="text-xs font-semibold text-corporate-textMuted uppercase tracking-wider">
+                  Solutions
+                </span>
+              </div>
+              {solutions.map((item) => (
+                <Link
+                  key={item.name}
+                  to={item.href}
+                  className={`px-3 py-2.5 rounded-lg text-base font-medium ml-2 transition-all duration-200 ${
+                    isActive(item.href)
+                      ? 'text-corporate-accentPrimary bg-corporate-accentPrimary/10'
+                      : 'text-corporate-textSecondary hover:text-corporate-accentPrimary hover:bg-white/5'
+                  }`}
+                  onClick={() => setIsMenuOpen(false)}
+                >
+                  {item.name}
+                </Link>
+              ))}
+
+              {/* Resources Section */}
+              <div className="pt-3 pb-1 px-3">
+                <span className="text-xs font-semibold text-corporate-textMuted uppercase tracking-wider">
+                  Resources
+                </span>
+              </div>
+              {resources.map((item) => (
+                <Link
+                  key={item.name}
+                  to={item.href}
+                  className={`px-3 py-2.5 rounded-lg text-base font-medium ml-2 transition-all duration-200 ${
+                    isActive(item.href)
+                      ? 'text-corporate-accentPrimary bg-corporate-accentPrimary/10'
+                      : 'text-corporate-textSecondary hover:text-corporate-accentPrimary hover:bg-white/5'
+                  }`}
+                  onClick={() => setIsMenuOpen(false)}
+                >
+                  {item.name}
+                </Link>
+              ))}
+
+              <Link
+                to="/demo/live"
+                className="px-3 py-2.5 rounded-lg text-base font-medium text-corporate-accentPrimary hover:bg-corporate-accentPrimary/10 transition-all duration-200"
                 onClick={() => setIsMenuOpen(false)}
               >
-                {demoLink.name}
-              </a>
-              <div className="pt-2 border-t border-corporate-borderPrimary/20">
+                {t('nav.demo')}
+              </Link>
+
+              <div className="pt-3 border-t border-white/10 mt-2">
                 <LanguageSelector />
               </div>
+
               <Link
                 to="/contact"
-                className="bg-corporate-accentPrimary text-white px-4 py-2 rounded-lg text-sm font-medium hover:brightness-110 transition-all duration-200 text-center"
+                className="mt-2 bg-corporate-accentPrimary text-white px-4 py-3 rounded-lg text-sm font-medium hover:brightness-110 transition-all duration-200 text-center"
                 onClick={() => setIsMenuOpen(false)}
               >
                 {t('nav.getStarted')}
@@ -134,4 +185,4 @@ const Header: React.FC = () => {
   );
 };
 
-export default Header; 
+export default Header;

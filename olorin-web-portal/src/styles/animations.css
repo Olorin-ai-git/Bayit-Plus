@@ -116,9 +116,50 @@
   }
 }
 
+/**
+ * Dropdown slide down animation
+ */
+@keyframes dropdownIn {
+  from {
+    opacity: 0;
+    transform: translateY(-8px) scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/**
+ * Dropdown slide up (close)
+ */
+@keyframes dropdownOut {
+  from {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+  to {
+    opacity: 0;
+    transform: translateY(-8px) scale(0.96);
+  }
+}
+
 /* ============================================================================
  * ENTRANCE ANIMATIONS
  * ============================================================================ */
+
+/**
+ * Dropdown animation class
+ */
+.animate-dropdown-in {
+  animation: dropdownIn 0.2s ease-out forwards;
+  transform-origin: top center;
+}
+
+.animate-dropdown-out {
+  animation: dropdownOut 0.15s ease-in forwards;
+  transform-origin: top center;
+}
 
 /**
  * Fade in up animation

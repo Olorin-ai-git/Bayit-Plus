@@ -8,12 +8,19 @@
     "getStarted": "Comenzar"
   },
   "hero": {
-    "title": "Prevención de fraude IA",
-    "titleHighlight": "de nueva generación",
-    "subtitle": "Aprovecha el poder de los Agentes IA Autónomos para proteger tu empresa del fraude. Nuestras soluciones de IA Generativa proporcionan capacidades de investigación y prevención en tiempo real que se adaptan y aprenden de cada amenaza.",
+    "title": "Agentes IA que Piensan Como",
+    "titleHighlight": "Investigadores Expertos en Fraude",
+    "subtitle": "Aprovecha el poder de 6 agentes IA especializados con más de 180 herramientas de detección para proteger tu empresa del fraude. Nuestras soluciones de IA Generativa proporcionan capacidades de investigación y prevención en tiempo real que se adaptan y aprenden de cada amenaza.",
     "ctaStart": "Comenzar",
     "ctaLearn": "Saber más",
-    "ctaDemo": "Probar Demo en Vivo"
+    "ctaDemo": "Probar Demo en Vivo",
+    "ctaROI": "Calcular ROI",
+    "ctaContact": "Contactar Ventas",
+    "stats": {
+      "agents": "Agentes Especializados",
+      "tools": "Herramientas de Detección",
+      "decisions": "Tiempo de Decisión"
+    }
   },
   "stats": {
     "accuracy": "95%",
@@ -337,5 +344,84 @@
     "copyright": "© 2025 Olorin.ai. Todos los derechos reservados.",
     "privacy": "Política de privacidad",
     "terms": "Términos de servicio"
+  },
+  "demo": {
+    "title": "Demo Interactiva",
+    "subtitle": "Experimenta nuestra detección de fraude IA en acción",
+    "selectScenario": "Seleccionar un Escenario de Fraude",
+    "startInvestigation": "Iniciar Investigación",
+    "investigating": "Investigación IA en Progreso",
+    "completed": "Investigación Completada",
+    "riskScore": "Puntuación de Riesgo",
+    "agentsActive": "Agentes Activos",
+    "toolsUsed": "Herramientas Utilizadas",
+    "findings": "Hallazgos Clave",
+    "recommendation": "Recomendación",
+    "tryAnother": "Probar Otro Escenario",
+    "rateLimited": "Límite alcanzado. Intenta de nuevo más tarde.",
+    "error": "Ocurrió un error. Intenta de nuevo."
+  },
+  "agents": {
+    "title": "Conoce Nuestros Agentes IA",
+    "subtitle": "Seis agentes especializados trabajando juntos para investigar fraudes",
+    "viewTools": "Ver Todas las Herramientas",
+    "capabilities": "Capacidades",
+    "dataSources": "Fuentes de Datos"
+  },
+  "roi": {
+    "title": "Calculadora de ROI",
+    "subtitle": "Calcula tus ahorros potenciales con Olorin",
+    "inputs": {
+      "volume": "Volumen Anual de Transacciones",
+      "fraudRate": "Tasa de Fraude Actual (%)",
+      "avgValue": "Valor Promedio de Transacción ($)",
+      "teamSize": "Tamaño del Equipo de Revisión de Fraude",
+      "falsePositive": "Tasa de Falsos Positivos Actual (%)"
+    },
+    "results": {
+      "title": "Tu ROI Proyectado",
+      "fraudSavings": "Ahorros Anuales en Fraude",
+      "operationalSavings": "Reducción de Costos Operativos",
+      "timeSavings": "Tiempo de Investigación Ahorrado",
+      "paybackPeriod": "Período de Recuperación",
+      "totalROI": "ROI Anual Total"
+    },
+    "cta": "Obtener Análisis Personalizado"
+  },
+  "usecases": {
+    "title": "Soluciones por Industria",
+    "subtitle": "Protección contra fraude para cada industria",
+    "challenge": "Desafío",
+    "solution": "Nuestra Solución",
+    "results": "Resultados",
+    "filter": {
+      "all": "Todas las Industrias",
+      "financial": "Servicios Financieros",
+      "ecommerce": "Comercio Electrónico",
+      "insurance": "Seguros",
+      "healthcare": "Atención Médica"
+    }
+  },
+  "comparison": {
+    "title": "Por Qué Elegir Olorin",
+    "subtitle": "Mira cómo nos comparamos con soluciones tradicionales",
+    "features": {
+      "aiAgents": "Agentes Impulsados por IA",
+      "realtime": "Investigación en Tiempo Real",
+      "falsePositives": "Baja Tasa de Falsos Positivos",
+      "integration": "Integración Fácil",
+      "customization": "Personalización Completa",
+      "support": "Soporte 24/7"
+    },
+    "olorin": "Olorin.ai",
+    "traditional": "Soluciones Tradicionales",
+    "competitors": "Otras Soluciones IA"
+  },
+  "trust": {
+    "title": "Seguridad y cumplimiento de nivel empresarial",
+    "soc2": "SOC 2 Tipo II",
+    "gdpr": "Cumple con GDPR",
+    "ccpa": "Cumple con CCPA",
+    "iso27001": "ISO 27001"
   }
 } 

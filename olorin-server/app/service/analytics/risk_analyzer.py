@@ -21,6 +21,7 @@ from app.service.agent.tools.snowflake_tool.schema_constants import (
     get_required_env_var,
     is_valid_column,
 )
+from app.config.threshold_config import get_blindspot_selector_config
 from app.service.logging import get_bridge_logger
 
 logger = get_bridge_logger(__name__)
@@ -1100,8 +1101,18 @@ class RiskAnalyzer:
                     or r.get("last_transaction"),
                     "first_transaction": r.get("FIRST_TRANSACTION")
                     or r.get("first_transaction"),
+                    # Include GMV for blindspot weighting
+                    "total_gmv": round(
+                        (r.get("TOTAL_AMOUNT") or r.get("total_amount") or 0), 2
+                    ),
+                    "avg_risk_score": round(
+                        (r.get("AVG_RISK_SCORE") or r.get("avg_risk_score") or 0), 3
+                    ),
                 }
             )
+
+        # Apply blindspot-aware weighting if enabled
+        entities = self._apply_blindspot_weighting(entities)
 
         return {
             "status": "success",
@@ -1123,6 +1134,78 @@ class RiskAnalyzer:
             },
             "timestamp": datetime.now().isoformat(),
         }
+
+    def _apply_blindspot_weighting(
+        self, entities: List[Dict[str, Any]]
+    ) -> List[Dict[str, Any]]:
+        """
+        Apply blindspot-aware weighting and GMV stratification to entities.
+
+        Uses blindspot heatmap data to boost entities in known blindspot zones
+        (low-score, low-GMV where model has high false-negative rate).
+
+        Args:
+            entities: List of entity dictionaries with risk_weighted_value.
+
+        Returns:
+            Entities with modified risk_weighted_value based on blindspot weights.
+        """
+        config = get_blindspot_selector_config()
+
+        if not config.enabled:
+            logger.debug("Blindspot-aware selection disabled")
+            return entities
+
+        if not entities:
+            return entities
+
+        try:
+            from app.service.analytics.blindspot_selector import BlindspotSelector
+            from app.service.analytics.gmv_stratified_selector import (
+                GMVStratifiedSelector,
+            )
+
+            # Get blindspot weights synchronously
+            blindspot_selector = BlindspotSelector()
+            weights = blindspot_selector.get_weights_sync()
+
+            if weights:
+                # Apply blindspot weighting to boost entities in blindspot zones
+                entities = blindspot_selector.apply_blindspot_weighting(
+                    entities,
+                    weights,
+                    gmv_field="total_gmv",
+                    score_field="avg_risk_score",
+                    value_field="risk_weighted_value",
+                )
+                logger.info(
+                    f"Applied blindspot weighting to {len(entities)} entities "
+                    f"using {len(weights)} zone weights"
+                )
+            else:
+                logger.debug("No blindspot weights available, skipping weighting")
+
+            # Apply GMV stratification if enabled
+            if config.gmv_stratification_enabled:
+                gmv_selector = GMVStratifiedSelector()
+                coverage_report = gmv_selector.get_coverage_report(
+                    entities, gmv_field="total_gmv"
+                )
+                logger.debug(f"GMV coverage before stratification: {coverage_report}")
+
+            # Sort by weighted risk value (descending)
+            entities.sort(
+                key=lambda e: float(e.get("risk_weighted_value", 0)), reverse=True
+            )
+
+            return entities
+
+        except ImportError as e:
+            logger.warning(f"Blindspot modules not available: {e}")
+            return entities
+        except Exception as e:
+            logger.warning(f"Blindspot weighting failed, using original order: {e}")
+            return entities
 
     async def analyze_entity(
         self, entity_value: str, entity_type: str = "email", time_window: str = "30d"

@@ -10,6 +10,11 @@ Feature: blindspot-analysis
 from datetime import datetime
 from typing import Any, Dict, List
 
+from app.service.analytics.blindspot_metrics import (
+    aggregate_gmv_by_score_bin,
+    calculate_cell_metrics,
+    calculate_summary,
+)
 from app.service.logging import get_bridge_logger
 
 logger = get_bridge_logger(__name__)
@@ -46,7 +51,8 @@ def process_blindspot_results(
     gmv_bins_labels = _build_gmv_bin_labels(gmv_bins)
 
     blindspots = _identify_blindspots(cells)
-    summary = _calculate_summary(cells)
+    summary = calculate_summary(cells)
+    gmv_by_score = aggregate_gmv_by_score_bin(cells, score_bins)
 
     return {
         "status": "success",
@@ -56,6 +62,7 @@ def process_blindspot_results(
             "gmv_bins": gmv_bins_labels,
             "cells": cells,
         },
+        "gmv_by_score": gmv_by_score,
         "blindspots": blindspots,
         "summary": summary,
         "timestamp": datetime.now().isoformat(),
@@ -76,9 +83,24 @@ def _process_cell(row: Dict[str, Any]) -> Dict[str, Any]:
     tn = int(_get_value(row, "tn", "TN") or 0)
     total = int(_get_value(row, "total_transactions", "TOTAL_TRANSACTIONS") or 0)
     fraud_gmv = float(_get_value(row, "fraud_gmv", "FRAUD_GMV") or 0)
+    fp_gmv = float(_get_value(row, "fp_gmv", "FP_GMV") or 0)
     avg_score = float(_get_value(row, "avg_score", "AVG_SCORE") or 0)
 
-    fn_rate, fp_rate, precision, recall, f1 = _calculate_metrics(tp, fp, fn, tn, total)
+    fn_rate, fp_rate, precision, recall, f1 = calculate_cell_metrics(tp, fp, fn, tn, total)
+
+    tp_gmv = float(_get_value(row, "tp_gmv", "TP_GMV") or 0)
+    fn_gmv = float(_get_value(row, "fn_gmv", "FN_GMV") or 0)
+    tn_gmv = float(_get_value(row, "tn_gmv", "TN_GMV") or 0)
+
+    # nSure classifications (based on nSure's actual decision)
+    nsure_tp = int(_get_value(row, "nsure_tp", "NSURE_TP") or 0)
+    nsure_fp = int(_get_value(row, "nsure_fp", "NSURE_FP") or 0)
+    nsure_fn = int(_get_value(row, "nsure_fn", "NSURE_FN") or 0)
+    nsure_tn = int(_get_value(row, "nsure_tn", "NSURE_TN") or 0)
+    nsure_tp_gmv = float(_get_value(row, "nsure_tp_gmv", "NSURE_TP_GMV") or 0)
+    nsure_fp_gmv = float(_get_value(row, "nsure_fp_gmv", "NSURE_FP_GMV") or 0)
+    nsure_fn_gmv = float(_get_value(row, "nsure_fn_gmv", "NSURE_FN_GMV") or 0)
+    nsure_tn_gmv = float(_get_value(row, "nsure_tn_gmv", "NSURE_TN_GMV") or 0)
 
     return {
         "score_bin": float(score_bin),
@@ -95,6 +117,18 @@ def _process_cell(row: Dict[str, Any]) -> Dict[str, Any]:
         "f1": f1,
         "total_transactions": total,
         "fraud_gmv": fraud_gmv,
+        "tp_gmv": tp_gmv,
+        "fp_gmv": fp_gmv,
+        "fn_gmv": fn_gmv,
+        "tn_gmv": tn_gmv,
+        "nsure_tp": nsure_tp,
+        "nsure_fp": nsure_fp,
+        "nsure_fn": nsure_fn,
+        "nsure_tn": nsure_tn,
+        "nsure_tp_gmv": nsure_tp_gmv,
+        "nsure_fp_gmv": nsure_fp_gmv,
+        "nsure_fn_gmv": nsure_fn_gmv,
+        "nsure_tn_gmv": nsure_tn_gmv,
         "avg_score": avg_score,
     }
 
@@ -102,29 +136,6 @@ def _process_cell(row: Dict[str, Any]) -> Dict[str, Any]:
 def _get_value(row: Dict[str, Any], key_lower: str, key_upper: str) -> Any:
     """Get value from row with case-insensitive key lookup."""
     return row.get(key_lower) or row.get(key_upper)
-
-
-def _calculate_metrics(tp: int, fp: int, fn: int, tn: int, total: int) -> tuple:
-    """Calculate classification metrics."""
-    # Fraud miss rate: what % of actual fraud was missed (FN / actual_fraud)
-    actual_fraud = tp + fn
-    fn_rate = fn / actual_fraud if actual_fraud > 0 else 0
-
-    # False alarm rate: what % of predicted fraud was wrong (FP / predicted_fraud)
-    predicted_fraud = tp + fp
-    fp_rate = fp / predicted_fraud if predicted_fraud > 0 else 0
-
-    precision = tp / (tp + fp) if (tp + fp) > 0 else 0
-    recall = tp / (tp + fn) if (tp + fn) > 0 else 0
-    f1 = 2 * precision * recall / (precision + recall) if (precision + recall) > 0 else 0
-
-    return (
-        round(fn_rate, 4),
-        round(fp_rate, 4),
-        round(precision, 4),
-        round(recall, 4),
-        round(f1, 4),
-    )
 
 
 def _build_gmv_bin_labels(gmv_bins: List[int]) -> List[str]:
@@ -192,43 +203,3 @@ def _generate_recommendation(cell: Dict[str, Any]) -> str:
         f"{severity} priority: Focus Olorin analysis on {focus_area} "
         f"in GMV range ${gmv_bin}. nSure FN rate: {fn_rate*100:.1f}%"
     )
-
-
-def _calculate_summary(cells: List[Dict[str, Any]]) -> Dict[str, Any]:
-    """Calculate overall summary statistics."""
-    if not cells:
-        return {}
-
-    total_tx = sum(c["total_transactions"] for c in cells)
-    total_tp = sum(c["tp"] for c in cells)
-    total_fp = sum(c["fp"] for c in cells)
-    total_fn = sum(c["fn"] for c in cells)
-    total_tn = sum(c["tn"] for c in cells)
-    total_fraud_gmv = sum(c["fraud_gmv"] for c in cells)
-
-    overall_precision = total_tp / (total_tp + total_fp) if (total_tp + total_fp) > 0 else 0
-    overall_recall = total_tp / (total_tp + total_fn) if (total_tp + total_fn) > 0 else 0
-    overall_f1 = (
-        2 * overall_precision * overall_recall / (overall_precision + overall_recall)
-        if (overall_precision + overall_recall) > 0 else 0
-    )
-
-    highest_fn = sorted(cells, key=lambda x: x["fn_rate"], reverse=True)[:5]
-    lowest_precision = sorted(cells, key=lambda x: x["precision"])[:5]
-
-    return {
-        "total_transactions": total_tx,
-        "total_fraud": total_tp + total_fn,
-        "total_fraud_gmv": round(total_fraud_gmv, 2),
-        "overall_precision": round(overall_precision, 4),
-        "overall_recall": round(overall_recall, 4),
-        "overall_f1": round(overall_f1, 4),
-        "highest_fn_cells": [
-            {"score_bin": c["score_bin_label"], "gmv_bin": c["gmv_bin"], "fn_rate": c["fn_rate"]}
-            for c in highest_fn
-        ],
-        "lowest_precision_cells": [
-            {"score_bin": c["score_bin_label"], "gmv_bin": c["gmv_bin"], "precision": c["precision"]}
-            for c in lowest_precision
-        ],
-    }

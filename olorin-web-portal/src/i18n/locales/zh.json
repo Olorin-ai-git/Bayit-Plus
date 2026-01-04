@@ -8,12 +8,19 @@
     "getStarted": "开始使用"
   },
   "hero": {
-    "title": "下一代",
-    "titleHighlight": "AI 欺诈防护",
-    "subtitle": "利用自主AI代理的力量保护您的企业免受欺诈。我们的生成式AI解决方案提供实时调查和预防功能，能够适应并从每一个威胁中学习。",
+    "title": "像专家欺诈调查员一样思考的",
+    "titleHighlight": "AI 智能代理",
+    "subtitle": "利用6个专业AI代理和180多种检测工具的力量保护您的企业免受欺诈。我们的生成式AI解决方案提供实时调查和预防功能，能够适应并从每一个威胁中学习。",
     "ctaStart": "开始使用",
     "ctaLearn": "了解更多",
-    "ctaDemo": "试用实时演示"
+    "ctaDemo": "试用实时演示",
+    "ctaROI": "计算ROI",
+    "ctaContact": "联系销售",
+    "stats": {
+      "agents": "专业代理",
+      "tools": "检测工具",
+      "decisions": "决策时间"
+    }
   },
   "stats": {
     "accuracy": "95%",
@@ -126,5 +133,84 @@
     "copyright": "© 2025 Olorin.ai. 版权所有。",
     "privacy": "隐私政策",
     "terms": "服务条款"
+  },
+  "demo": {
+    "title": "互动演示",
+    "subtitle": "体验我们的AI欺诈检测实际运作",
+    "selectScenario": "选择欺诈场景",
+    "startInvestigation": "开始调查",
+    "investigating": "AI调查进行中",
+    "completed": "调查完成",
+    "riskScore": "风险评分",
+    "agentsActive": "活跃代理",
+    "toolsUsed": "使用的工具",
+    "findings": "关键发现",
+    "recommendation": "建议",
+    "tryAnother": "尝试其他场景",
+    "rateLimited": "已达到限制。请稍后再试。",
+    "error": "发生错误。请重试。"
+  },
+  "agents": {
+    "title": "认识我们的AI代理",
+    "subtitle": "六个专业代理协同工作调查欺诈",
+    "viewTools": "查看所有工具",
+    "capabilities": "功能",
+    "dataSources": "数据源"
+  },
+  "roi": {
+    "title": "ROI计算器",
+    "subtitle": "计算使用Olorin的潜在节省",
+    "inputs": {
+      "volume": "年交易量",
+      "fraudRate": "当前欺诈率 (%)",
+      "avgValue": "平均交易金额 ($)",
+      "teamSize": "欺诈审核团队规模",
+      "falsePositive": "当前误报率 (%)"
+    },
+    "results": {
+      "title": "您的预计ROI",
+      "fraudSavings": "年度欺诈节省",
+      "operationalSavings": "运营成本减少",
+      "timeSavings": "调查时间节省",
+      "paybackPeriod": "投资回收期",
+      "totalROI": "年度总ROI"
+    },
+    "cta": "获取定制分析"
+  },
+  "usecases": {
+    "title": "行业解决方案",
+    "subtitle": "适用于各行业的欺诈防护",
+    "challenge": "挑战",
+    "solution": "我们的解决方案",
+    "results": "成果",
+    "filter": {
+      "all": "所有行业",
+      "financial": "金融服务",
+      "ecommerce": "电子商务",
+      "insurance": "保险",
+      "healthcare": "医疗健康"
+    }
+  },
+  "comparison": {
+    "title": "为什么选择Olorin",
+    "subtitle": "了解我们与传统解决方案的对比",
+    "features": {
+      "aiAgents": "AI驱动代理",
+      "realtime": "实时调查",
+      "falsePositives": "低误报率",
+      "integration": "轻松集成",
+      "customization": "完全定制",
+      "support": "24/7支持"
+    },
+    "olorin": "Olorin.ai",
+    "traditional": "传统解决方案",
+    "competitors": "其他AI解决方案"
+  },
+  "trust": {
+    "title": "企业级安全与合规",
+    "soc2": "SOC 2 Type II",
+    "gdpr": "GDPR合规",
+    "ccpa": "CCPA合规",
+    "iso27001": "ISO 27001"
   }
 } 

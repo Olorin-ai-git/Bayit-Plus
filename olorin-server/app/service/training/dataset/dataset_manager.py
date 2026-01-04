@@ -50,12 +50,17 @@ class DatasetManager:
             stratify = getattr(dataset_config, "stratify_by_merchant", stratify)
             min_per_merchant = getattr(dataset_config, "min_samples_per_merchant", min_per_merchant)
 
+        gmv_strat = os.getenv("TRAINING_GMV_STRATIFICATION_ENABLED", "false").lower() == "true"
+        score_strat = os.getenv("TRAINING_SCORE_STRATIFICATION_ENABLED", "false").lower() == "true"
+
         self._sampling_config = SamplingConfig(
             target_fraud_entities=target_fraud,
             max_fraud_entities=max_fraud,
             legit_multiplier=legit_mult,
             stratify_by_merchant=stratify,
             min_samples_per_merchant=min_per_merchant,
+            gmv_stratification_enabled=gmv_strat,
+            score_stratification_enabled=score_strat,
         )
 
         train_ratio = float(os.getenv("LLM_TRAIN_RATIO", "0.70"))
