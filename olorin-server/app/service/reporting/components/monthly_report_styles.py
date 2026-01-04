@@ -10,6 +10,30 @@ Feature: monthly-sequential-analysis
 def get_monthly_report_styles() -> str:
     """Return the CSS styles for the monthly report."""
     return """
+        /* Navigation styles */
+        .breadcrumb-nav {
+            background: var(--card);
+            padding: 12px 20px;
+            border-radius: 8px;
+            margin-bottom: 25px;
+            border: 1px solid var(--border);
+        }
+        .breadcrumb-link {
+            color: var(--accent);
+            font-weight: 500;
+            text-decoration: none;
+        }
+        .breadcrumb-link:hover { text-decoration: underline; }
+        .breadcrumb-separator {
+            color: var(--muted);
+            margin: 0 10px;
+            font-size: 1.1rem;
+        }
+        .breadcrumb-current {
+            color: var(--text);
+            font-weight: 600;
+        }
+
         :root {
             --bg: #0f172a;
             --card: #1e293b;
@@ -83,6 +107,25 @@ def get_monthly_report_styles() -> str:
         .cm-fp { background: rgba(239, 68, 68, 0.2); color: var(--danger); }
         .cm-tn { background: rgba(59, 130, 246, 0.2); color: var(--accent); }
         .cm-fn { background: rgba(245, 158, 11, 0.2); color: var(--warn); }
+        /* Transaction Analysis styles (unified naming) */
+        .transaction-analysis { margin: 30px 0; }
+        .ta-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+            max-width: 400px;
+            margin: 20px auto;
+        }
+        .ta-cell {
+            padding: 15px;
+            text-align: center;
+            border-radius: 8px;
+            font-weight: bold;
+        }
+        .ta-tp { background: rgba(34, 197, 94, 0.2); color: var(--ok); }
+        .ta-fp { background: rgba(239, 68, 68, 0.2); color: var(--danger); }
+        .ta-tn { background: rgba(59, 130, 246, 0.2); color: var(--accent); }
+        .ta-fn { background: rgba(245, 158, 11, 0.2); color: var(--warn); }
         .metrics-row {
             display: flex;
             justify-content: center;

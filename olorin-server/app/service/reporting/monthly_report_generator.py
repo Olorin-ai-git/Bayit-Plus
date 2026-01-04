@@ -16,6 +16,11 @@ from app.service.logging import get_bridge_logger
 from app.service.reporting.components.blindspot_heatmap import generate_blindspot_section
 from app.service.reporting.components.monthly_report_day_card import generate_daily_breakdown
 from app.service.reporting.components.monthly_report_styles import get_monthly_report_styles
+from app.service.reporting.components.navigation import ReportContext, get_monthly_breadcrumbs
+from app.service.reporting.components.report_base import ReportBase
+from app.service.reporting.components.transaction_analysis import (
+    generate_transaction_analysis_section,
+)
 
 logger = get_bridge_logger(__name__)
 
@@ -97,6 +102,12 @@ def _build_html_template(
     """Build the complete HTML template."""
     net_value_class = 'positive' if result.total_net_value >= 0 else 'negative'
 
+    # Generate navigation breadcrumbs
+    ctx = ReportContext(year=result.year, month=result.month, month_name=result.month_name)
+    report_base = ReportBase("monthly", f"Monthly Report - {result.month_name} {result.year}")
+    breadcrumbs = get_monthly_breadcrumbs(ctx)
+    nav_html = report_base.generate_navigation(breadcrumbs)
+
     return f"""<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -106,6 +117,7 @@ def _build_html_template(
     <style>{styles}</style>
 </head>
 <body>
+    {nav_html}
     <div class="header">
         <h1>📅 Monthly Fraud Analysis Report</h1>
         <p class="subtitle">{result.month_name} {result.year}</p>
@@ -135,14 +147,16 @@ def _build_html_template(
         </div>
     </div>
 
-    {_generate_confusion_section("Review Precision", "Flagged Transactions",
-        result.total_tp, result.total_fp, result.total_fn, result.total_tn,
-        precision_pct, recall_pct, f1_pct, roi_display)}
+    {generate_transaction_analysis_section(
+        tp=result.total_tp, fp=result.total_fp, fn=result.total_fn, tn=result.total_tn,
+        title="Review Precision", subtitle="Flagged Transactions",
+        precision=precision_pct, recall=recall_pct, f1_score=f1_pct, roi=roi_display)}
 
-    {_generate_confusion_section("Overall Classification", "All Transactions",
-        result.overall_total_tp, result.overall_total_fp,
-        result.overall_total_fn, result.overall_total_tn,
-        overall_precision_pct, overall_recall_pct, overall_f1_pct, None)}
+    {generate_transaction_analysis_section(
+        tp=result.overall_total_tp, fp=result.overall_total_fp,
+        fn=result.overall_total_fn, tn=result.overall_total_tn,
+        title="Overall Classification", subtitle="All Transactions",
+        precision=overall_precision_pct, recall=overall_recall_pct, f1_score=overall_f1_pct)}
 
     {blindspot_section_html}
 
@@ -205,24 +219,3 @@ def _generate_metrics_explanation() -> str:
     </div>"""
 
 
-def _generate_confusion_section(
-    title: str, subtitle: str, tp: int, fp: int, fn: int, tn: int,
-    precision: str, recall: str, f1: str, roi: Optional[str]
-) -> str:
-    """Generate a confusion matrix section."""
-    roi_pill = f'<div class="metric-pill"><strong>ROI:</strong> {roi}</div>' if roi else ""
-
-    return f"""
-    <h2 style="margin-bottom: 10px; color: var(--accent);">📊 {title} ({subtitle})</h2>
-    <div class="confusion-grid">
-        <div class="cm-cell cm-tp">TP: {tp}<br><small>Fraud Caught</small></div>
-        <div class="cm-cell cm-fp">FP: {fp}<br><small>False Alarms</small></div>
-        <div class="cm-cell cm-fn">FN: {fn}<br><small>Fraud Missed</small></div>
-        <div class="cm-cell cm-tn">TN: {tn}<br><small>Legit Confirmed</small></div>
-    </div>
-    <div class="metrics-row">
-        <div class="metric-pill"><strong>Precision:</strong> {precision}</div>
-        <div class="metric-pill"><strong>Recall:</strong> {recall}</div>
-        <div class="metric-pill"><strong>F1 Score:</strong> {f1}</div>
-        {roi_pill}
-    </div>"""

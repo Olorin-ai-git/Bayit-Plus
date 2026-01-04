@@ -950,7 +950,21 @@ def _generate_incremental_html(
     status_text = "COMPLETED" if is_complete else "IN PROGRESS"
 
     timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-    
+
+    # Extract date info for navigation breadcrumbs
+    report_date = None
+    if selector_metadata and selector_metadata.get("start_time"):
+        try:
+            start_time = selector_metadata.get("start_time")
+            if isinstance(start_time, str):
+                report_date = datetime.fromisoformat(start_time.replace("Z", "+00:00"))
+            elif isinstance(start_time, datetime):
+                report_date = start_time
+        except (ValueError, TypeError):
+            pass
+
+    nav_html = _generate_daily_navigation(report_date)
+
     html = f"""<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -1084,9 +1098,33 @@ def _generate_incremental_html(
         }}
         th {{ color: var(--muted); font-weight: normal; }}
         .toggle {{ font-size: 1.2rem; }}
+        /* Navigation breadcrumbs */
+        .breadcrumb-nav {{
+            background: var(--card);
+            padding: 12px 20px;
+            border-radius: 8px;
+            margin-bottom: 25px;
+            border: 1px solid var(--border);
+        }}
+        .breadcrumb-link {{
+            color: var(--accent);
+            font-weight: 500;
+            text-decoration: none;
+        }}
+        .breadcrumb-link:hover {{ text-decoration: underline; }}
+        .breadcrumb-separator {{
+            color: var(--muted);
+            margin: 0 10px;
+            font-size: 1.1rem;
+        }}
+        .breadcrumb-current {{
+            color: var(--text);
+            font-weight: 600;
+        }}
     </style>
 </head>
 <body>
+    {nav_html}
     <div class="header">
         <h1>🔍 Fraud Detection - Daily Report</h1>
         <p class="subtitle">Investigation results summary</p>
@@ -1361,6 +1399,38 @@ def _get_transaction_details_link(investigation_id: str) -> Optional[str]:
         pass
 
     return None
+
+
+def _generate_daily_navigation(report_date: Optional[datetime]) -> str:
+    """
+    Generate navigation breadcrumbs for daily report.
+
+    Args:
+        report_date: Date of the report (extracted from selector_metadata)
+
+    Returns:
+        HTML string for navigation breadcrumbs
+    """
+    if not report_date:
+        return ""
+
+    year = report_date.year
+    month = report_date.month
+    day = report_date.day
+    month_name = calendar.month_name[month]
+
+    yearly_url = f"yearly_{year}.html"
+    monthly_url = f"startup_analysis_MONTHLY_{year}_{month:02d}.html"
+
+    return f"""
+    <nav class="breadcrumb-nav">
+        <a href="{yearly_url}" class="breadcrumb-link">Yearly {year}</a>
+        <span class="breadcrumb-separator">›</span>
+        <a href="{monthly_url}" class="breadcrumb-link">{month_name}</a>
+        <span class="breadcrumb-separator">›</span>
+        <span class="breadcrumb-current">Day {day}</span>
+    </nav>
+    """
 
 
 def _safe_float(val: Any) -> float:
