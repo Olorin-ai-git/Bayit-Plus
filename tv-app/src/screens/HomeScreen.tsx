@@ -4,12 +4,9 @@ import {
   ScrollView,
   StyleSheet,
   Text,
-  ActivityIndicator,
-  Image,
 } from 'react-native';
-
-const logo = require('../assets/logo.png');
 import { useNavigation } from '@react-navigation/native';
+import { AnimatedLogo } from '../components/AnimatedLogo';
 import { ContentRow } from '../components/ContentRow';
 import { contentService, liveService, historyService } from '../services/api';
 
@@ -99,7 +96,7 @@ export const HomeScreen: React.FC = () => {
   if (isLoading) {
     return (
       <View style={styles.loadingContainer}>
-        <ActivityIndicator size="large" color="#00d9ff" />
+        <AnimatedLogo size="large" />
         <Text style={styles.loadingText}>טוען תוכן...</Text>
       </View>
     );
@@ -109,8 +106,7 @@ export const HomeScreen: React.FC = () => {
     <ScrollView style={styles.container} contentContainerStyle={styles.content}>
       {/* Hero Banner */}
       <View style={styles.hero}>
-        <Image source={logo} style={styles.logo} resizeMode="contain" />
-        <Text style={styles.heroTitle}>ברוכים הבאים לבית+</Text>
+        <AnimatedLogo size="large" />
         <Text style={styles.heroSubtitle}>הבית שלך בארה״ב לתוכן ישראלי</Text>
       </View>
 
@@ -168,31 +164,21 @@ const styles = StyleSheet.create({
   loadingText: {
     color: '#ffffff',
     fontSize: 18,
-    marginTop: 16,
+    marginTop: 32,
   },
   hero: {
     paddingHorizontal: 48,
-    paddingVertical: 60,
+    paddingTop: 20,
+    paddingBottom: 40,
     marginBottom: 20,
-    alignItems: 'flex-end',
+    alignItems: 'center',
     width: '100%',
-  },
-  logo: {
-    width: 120,
-    height: 120,
-    marginBottom: 16,
-  },
-  heroTitle: {
-    fontSize: 48,
-    fontWeight: 'bold',
-    color: '#ffffff',
-    marginBottom: 8,
-    textAlign: 'right',
   },
   heroSubtitle: {
     fontSize: 24,
     color: '#888888',
-    textAlign: 'right',
+    textAlign: 'center',
+    marginTop: 24,
   },
 });
 

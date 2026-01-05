@@ -91,7 +91,7 @@ export const FocusableCard: React.FC<FocusableCardProps> = ({
 
 const styles = StyleSheet.create({
   touchable: {
-    marginRight: 20,
+    marginLeft: 20,
   },
   card: {
     borderRadius: 12,
@@ -135,11 +135,13 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: 'bold',
     color: '#ffffff',
+    textAlign: 'right',
   },
   subtitle: {
     fontSize: 14,
     color: '#aaaaaa',
     marginTop: 2,
+    textAlign: 'right',
   },
 });
 

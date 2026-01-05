@@ -6,10 +6,10 @@ import {
   TouchableOpacity,
   StyleSheet,
   ActivityIndicator,
-  Animated,
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { useAuthStore } from '../stores/authStore';
+import { AnimatedLogo } from '../components/AnimatedLogo';
 
 export const LoginScreen: React.FC = () => {
   const navigation = useNavigation<any>();
@@ -43,7 +43,7 @@ export const LoginScreen: React.FC = () => {
       <View style={styles.content}>
         {/* Logo */}
         <View style={styles.logoContainer}>
-          <Text style={styles.logo}>בית+</Text>
+          <AnimatedLogo size="large" />
           <Text style={styles.tagline}>הבית שלך בארה״ב</Text>
         </View>
 
@@ -156,7 +156,7 @@ const styles = StyleSheet.create({
   },
   content: {
     flex: 1,
-    flexDirection: 'row',
+    flexDirection: 'row-reverse',
     alignItems: 'center',
     justifyContent: 'center',
     paddingHorizontal: 100,
@@ -166,15 +166,10 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  logo: {
-    fontSize: 120,
-    fontWeight: 'bold',
-    color: '#00d9ff',
-  },
   tagline: {
     fontSize: 28,
     color: '#888888',
-    marginTop: 16,
+    marginTop: 32,
   },
   form: {
     flex: 1,
@@ -190,7 +185,7 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     color: '#ffffff',
     marginBottom: 32,
-    textAlign: 'center',
+    textAlign: 'right',
   },
   inputContainer: {
     marginBottom: 24,
@@ -199,6 +194,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: '#888888',
     marginBottom: 8,
+    textAlign: 'right',
   },
   input: {
     backgroundColor: '#0d0d1a',
@@ -208,6 +204,7 @@ const styles = StyleSheet.create({
     padding: 16,
     fontSize: 18,
     color: '#ffffff',
+    textAlign: 'left',
   },
   inputFocused: {
     borderColor: '#00d9ff',

@@ -6,9 +6,27 @@ import {
   TouchableOpacity,
   ActivityIndicator,
   BackHandler,
-  TVEventHandler,
+  Platform,
 } from 'react-native';
-import Video, { VideoRef } from 'react-native-video';
+
+// TVEventHandler only exists on TV platforms
+let TVEventHandler: any = null;
+if (Platform.OS !== 'web') {
+  try {
+    TVEventHandler = require('react-native').TVEventHandler;
+  } catch (e) {
+    // TVEventHandler not available
+  }
+}
+
+// Video component - use native on mobile/TV, HTML5 on web
+let Video: any = null;
+let VideoRef: any = null;
+if (Platform.OS !== 'web') {
+  const videoModule = require('react-native-video');
+  Video = videoModule.default;
+  VideoRef = videoModule.VideoRef;
+}
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { contentService, liveService, historyService } from '../services/api';
 
@@ -44,9 +62,13 @@ export const PlayerScreen: React.FC = () => {
   }, []);
 
   const setupTVEventHandler = () => {
-    // Handle TV remote events
+    // Handle TV remote events - only on TV platforms
+    if (!TVEventHandler || Platform.OS === 'web') {
+      return () => {};
+    }
+
     const tvEventHandler = new TVEventHandler();
-    tvEventHandler.enable(null, (cmp, evt) => {
+    tvEventHandler.enable(null, (cmp: any, evt: any) => {
       if (evt && evt.eventType === 'select') {
         togglePlayPause();
       } else if (evt && evt.eventType === 'playPause') {
@@ -108,9 +130,9 @@ export const PlayerScreen: React.FC = () => {
       duration: data.seekableDuration,
     });
 
-    // Save progress for continue watching
+    // Save progress for continue watching (silently ignore errors)
     if (type !== 'live' && data.seekableDuration > 0) {
-      historyService.updateProgress(id, type, data.currentTime, data.seekableDuration);
+      historyService.updateProgress(id, type, data.currentTime, data.seekableDuration).catch(() => {});
     }
   };
 
@@ -144,9 +166,52 @@ export const PlayerScreen: React.FC = () => {
     );
   }
 
+  // Web video player component
+  const WebVideoPlayer = () => {
+    const webVideoRef = useRef<HTMLVideoElement>(null);
+
+    useEffect(() => {
+      if (webVideoRef.current) {
+        if (isPaused) {
+          webVideoRef.current.pause();
+        } else {
+          webVideoRef.current.play();
+        }
+      }
+    }, [isPaused]);
+
+    useEffect(() => {
+      const video = webVideoRef.current;
+      if (!video) return;
+
+      const handleTimeUpdate = () => {
+        handleProgress({
+          currentTime: video.currentTime,
+          seekableDuration: video.duration || 0,
+        });
+      };
+
+      video.addEventListener('timeupdate', handleTimeUpdate);
+      return () => video.removeEventListener('timeupdate', handleTimeUpdate);
+    }, []);
+
+    return (
+      <video
+        ref={webVideoRef}
+        src={streamUrl || ''}
+        style={{ width: '100%', height: '100%', backgroundColor: '#000' }}
+        autoPlay
+        playsInline
+        onError={() => setError('שגיאה בהפעלת הווידאו')}
+        onLoadedData={() => setIsLoading(false)}
+      />
+    );
+  };
+
   return (
     <View style={styles.container}>
-      {streamUrl && (
+      {streamUrl && Platform.OS === 'web' && <WebVideoPlayer />}
+      {streamUrl && Platform.OS !== 'web' && Video && (
         <Video
           ref={videoRef}
           source={{ uri: streamUrl }}
@@ -155,7 +220,7 @@ export const PlayerScreen: React.FC = () => {
           paused={isPaused}
           onProgress={handleProgress}
           onLoad={() => setIsLoading(false)}
-          onError={(e) => setError('שגיאה בהפעלת הווידאו')}
+          onError={() => setError('שגיאה בהפעלת הווידאו')}
           repeat={type === 'live'}
         />
       )}

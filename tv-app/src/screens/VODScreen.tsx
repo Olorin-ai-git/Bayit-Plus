@@ -292,6 +292,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: spacing.xxl,
     paddingTop: 40,
     paddingBottom: spacing.lg,
+    width: '100%',
   },
   headerIcon: {
     width: 60,

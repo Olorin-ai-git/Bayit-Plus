@@ -180,8 +180,13 @@ export const LiveTVScreen: React.FC = () => {
     <View style={styles.container}>
       {/* Header */}
       <View style={styles.header}>
-        <Text style={styles.title}>שידור חי</Text>
-        <Text style={styles.subtitle}>{filteredChannels.length} ערוצים</Text>
+        <View style={styles.headerIcon}>
+          <Text style={styles.headerIconText}>📺</Text>
+        </View>
+        <View>
+          <Text style={styles.title}>שידור חי</Text>
+          <Text style={styles.subtitle}>{filteredChannels.length} ערוצים</Text>
+        </View>
       </View>
 
       {/* Category Filter */}
@@ -243,10 +248,24 @@ const styles = StyleSheet.create({
     marginTop: 16,
   },
   header: {
+    flexDirection: 'row-reverse',
+    alignItems: 'center',
     paddingHorizontal: 48,
     paddingTop: 40,
     paddingBottom: 20,
-    alignItems: 'flex-end',
+    width: '100%',
+  },
+  headerIcon: {
+    width: 60,
+    height: 60,
+    borderRadius: 30,
+    backgroundColor: 'rgba(0, 217, 255, 0.2)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginLeft: 20,
+  },
+  headerIconText: {
+    fontSize: 28,
   },
   title: {
     fontSize: 42,
