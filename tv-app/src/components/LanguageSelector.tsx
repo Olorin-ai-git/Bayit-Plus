@@ -85,10 +85,13 @@ export const LanguageSelector: React.FC = () => {
                   onPress={() => handleSelectLanguage(lang.code)}
                   style={[
                     styles.languageOption,
-                    { flexDirection: isHebrewMode ? 'row-reverse' : 'row' },
+                    { flexDirection: isHebrewMode ? 'row' : 'row' },
                     currentLang.code === lang.code && styles.languageOptionActive,
                   ]}
                 >
+                  {currentLang.code === lang.code && (
+                    <Text style={styles.checkmark}>✓</Text>
+                  )}
                   <Text style={[styles.languageFlag, isHebrewMode ? { marginLeft: spacing.md } : { marginRight: spacing.md }]}>{lang.flag}</Text>
                   <Text style={[
                     styles.languageName,
@@ -96,9 +99,6 @@ export const LanguageSelector: React.FC = () => {
                   ]}>
                     {lang.name}
                   </Text>
-                  {currentLang.code === lang.code && (
-                    <Text style={styles.checkmark}>✓</Text>
-                  )}
                 </TouchableOpacity>
               ))}
             </GlassView>
@@ -177,6 +177,8 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: colors.primary,
     fontWeight: 'bold',
+    padding: 3,
+    textAlign: 'left',
   },
 });
 

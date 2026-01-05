@@ -64,8 +64,8 @@ export const GlassTopBar: React.FC<GlassTopBarProps> = ({ onMenuPress, sidebarEx
         <UserAccountMenu />
       </View>
 
-      {/* Center - Logo */}
-      <View style={styles.logoContainer}>
+      {/* Logo - Left for RTL, Right for LTR */}
+      <View style={[styles.logoContainer, isRTL ? styles.logoLeft : styles.logoRight]}>
         <Image source={logo} style={styles.logo} resizeMode="contain" />
         <View style={styles.logoTextContainer}>
           <Text style={styles.logoText}>בית</Text>
@@ -112,28 +112,32 @@ const styles = StyleSheet.create({
     color: colors.text,
   },
   logoContainer: {
-    flexDirection: 'row',
+    flexDirection: 'column',
     alignItems: 'center',
     position: 'absolute',
-    left: '50%',
-    transform: [{ translateX: -60 }],
+  },
+  logoLeft: {
+    left: 100,
+  },
+  logoRight: {
+    right: 100,
   },
   logo: {
-    width: 40,
-    height: 20,
-    marginRight: 4,
+    width: 32,
+    height: 24,
+    marginBottom: -5,
   },
   logoTextContainer: {
     flexDirection: 'row',
     alignItems: 'center',
   },
   logoText: {
-    fontSize: 24,
+    fontSize: 18,
     fontWeight: 'bold',
     color: colors.text,
   },
   logoPlus: {
-    fontSize: 22,
+    fontSize: 16,
     fontWeight: 'bold',
     color: colors.primary,
     marginLeft: 2,
