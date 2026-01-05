@@ -10,6 +10,7 @@ import {
 import { useTranslation } from 'react-i18next';
 import { GlassView } from './ui';
 import { colors, borderRadius } from '../theme';
+import { useDirection } from '../hooks/useDirection';
 
 interface CarouselItem {
   id: string;
@@ -34,6 +35,7 @@ export const GlassCarousel: React.FC<GlassCarouselProps> = ({
   height = 320,
 }) => {
   const { t } = useTranslation();
+  const { isRTL } = useDirection();
   const [activeIndex, setActiveIndex] = useState(0);
   const [isFocused, setIsFocused] = useState(false);
   const fadeAnim = useRef(new Animated.Value(1)).current;
@@ -128,35 +130,35 @@ export const GlassCarousel: React.FC<GlassCarouselProps> = ({
 
             {/* Content Container */}
             <View style={styles.contentContainer}>
-              {/* Badge - Top Right */}
+              {/* Badge - Top Right for RTL, Top Left for LTR */}
               {currentItem.badge && (
-                <View style={styles.badgeContainer}>
+                <View style={[styles.badgeContainer, isRTL ? styles.badgeRight : styles.badgeLeft]}>
                   <GlassView intensity="high" style={styles.badge}>
                     <Text style={styles.badgeText}>{currentItem.badge}</Text>
                   </GlassView>
                 </View>
               )}
 
-              {/* Text Content - Bottom Right */}
-              <View style={styles.textSection}>
-                <Text style={styles.title} numberOfLines={2}>
+              {/* Text Content - Right for RTL, Left for LTR */}
+              <View style={[styles.textSection, isRTL ? styles.textSectionRight : styles.textSectionLeft]}>
+                <Text style={[styles.title, { textAlign: isRTL ? 'right' : 'left' }]} numberOfLines={2}>
                   {currentItem.title}
                 </Text>
                 {currentItem.subtitle && (
-                  <Text style={styles.subtitle} numberOfLines={1}>
+                  <Text style={[styles.subtitle, { textAlign: isRTL ? 'right' : 'left' }]} numberOfLines={1}>
                     {currentItem.subtitle}
                   </Text>
                 )}
                 {currentItem.description && (
-                  <Text style={styles.description} numberOfLines={2}>
+                  <Text style={[styles.description, { textAlign: isRTL ? 'right' : 'left' }]} numberOfLines={2}>
                     {currentItem.description}
                   </Text>
                 )}
               </View>
 
-              {/* Play Button - Bottom Left */}
-              <View style={styles.playButtonContainer}>
-                <GlassView intensity="medium" style={styles.playButton}>
+              {/* Play Button - Right for RTL, Left for LTR */}
+              <View style={[styles.playButtonContainer, isRTL ? styles.playButtonRight : styles.playButtonLeft]}>
+                <GlassView intensity="medium" style={[styles.playButton, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
                   <Text style={styles.playIcon}>▶</Text>
                   <Text style={styles.playText}>{t('common.watchNow')}</Text>
                 </GlassView>
@@ -253,7 +255,12 @@ const styles = StyleSheet.create({
   badgeContainer: {
     position: 'absolute',
     top: 32,
+  },
+  badgeRight: {
     right: 80,
+  },
+  badgeLeft: {
+    left: 80,
   },
   badge: {
     paddingHorizontal: 16,
@@ -267,36 +274,44 @@ const styles = StyleSheet.create({
   textSection: {
     position: 'absolute',
     bottom: 100,
+  },
+  textSectionRight: {
     right: 80,
+    alignItems: 'flex-start',
+  },
+  textSectionLeft: {
+    left: 80,
+    alignItems: 'flex-end',
   },
   title: {
     fontSize: 42,
     fontWeight: 'bold',
     color: colors.text,
-    textAlign: 'right',
     marginBottom: 8,
     textShadow: '0px 2px 4px rgba(0, 0, 0, 0.8)',
   },
   subtitle: {
     fontSize: 22,
     color: colors.primary,
-    textAlign: 'right',
     marginBottom: 8,
   },
   description: {
     fontSize: 16,
     color: colors.textSecondary,
-    textAlign: 'right',
     lineHeight: 24,
     maxWidth: 500,
   },
   playButtonContainer: {
     position: 'absolute',
     bottom: 32,
+  },
+  playButtonRight: {
     right: 80,
   },
+  playButtonLeft: {
+    left: 80,
+  },
   playButton: {
-    flexDirection: 'row-reverse',
     alignItems: 'center',
     paddingHorizontal: 24,
     paddingVertical: 14,
