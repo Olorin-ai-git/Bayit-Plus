@@ -102,7 +102,7 @@ const PodcastCard: React.FC<{
             {show.episodeCount !== undefined && (
               <View style={styles.metaItem}>
                 <Text style={styles.metaIcon}>🎧</Text>
-                <Text style={styles.metaText}>{show.episodeCount} פרקים</Text>
+                <Text style={styles.metaText}>{show.episodeCount} {t('content.episodes')}</Text>
               </View>
             )}
             {show.latestEpisode && (
@@ -269,8 +269,8 @@ export const PodcastsScreen: React.FC = () => {
           <View style={styles.emptyState}>
             <GlassView style={styles.emptyCard}>
               <Text style={styles.emptyIcon}>🎙️</Text>
-              <Text style={styles.emptyTitle}>אין פודקאסטים זמינים</Text>
-              <Text style={styles.emptySubtitle}>נסה שוב מאוחר יותר</Text>
+              <Text style={styles.emptyTitle}>{t('empty.noPodcasts')}</Text>
+              <Text style={styles.emptySubtitle}>{t('empty.tryLater')}</Text>
             </GlassView>
           </View>
         }

@@ -258,8 +258,8 @@ export const VODScreen: React.FC = () => {
           <View style={styles.emptyState}>
             <GlassView style={styles.emptyCard}>
               <Text style={styles.emptyIcon}>🎬</Text>
-              <Text style={styles.emptyTitle}>אין תוכן זמין</Text>
-              <Text style={styles.emptySubtitle}>נסה לבחור קטגוריה אחרת</Text>
+              <Text style={styles.emptyTitle}>{t('empty.noContent')}</Text>
+              <Text style={styles.emptySubtitle}>{t('empty.tryAnotherCategory')}</Text>
             </GlassView>
           </View>
         }

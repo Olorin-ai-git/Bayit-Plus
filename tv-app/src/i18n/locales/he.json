@@ -70,7 +70,29 @@
     "liveChannels": "ערוצים בשידור חי",
     "israeliMovies": "סרטים ישראליים",
     "documentaries": "דוקומנטרים",
-    "loadingContent": "טוען תוכן..."
+    "loadingContent": "טוען תוכן...",
+    "carousel": {
+      "fauda": {
+        "title": "פאודה",
+        "subtitle": "עונה 4 - עכשיו בשידור",
+        "description": "הסדרה הישראלית המצליחה חוזרת לעונה רביעית מלאת מתח ואקשן"
+      },
+      "shtisel": {
+        "title": "שטיסל",
+        "subtitle": "כל העונות זמינות",
+        "description": "עקבו אחר משפחת שטיסל בשכונה החרדית בירושלים"
+      },
+      "tehran": {
+        "title": "טהרן",
+        "subtitle": "עונה 2",
+        "description": "סוכנת מוסד בלב איראן במשימה מסוכנת"
+      },
+      "live": {
+        "title": "שידור חי - כאן 11",
+        "subtitle": "צפו עכשיו",
+        "description": "חדשות, תוכניות אקטואליה ותוכן איכותי"
+      }
+    }
   },
   "search": {
     "title": "חיפוש",
@@ -227,6 +249,7 @@
   "settings": {
     "title": "הגדרות",
     "language": "שפה",
+    "selectLanguage": "בחר שפה",
     "notifications": "התראות",
     "playback": "הגדרות ניגון",
     "quality": "איכות",
@@ -244,5 +267,53 @@
     "networkError": "שגיאת רשת",
     "loadingFailed": "טעינה נכשלה",
     "tryAgain": "נסה שוב"
+  },
+  "player": {
+    "loading": "טוען...",
+    "retry": "נסה שוב",
+    "error": "שגיאה בהפעלת הווידאו",
+    "back": "← חזור",
+    "liveBadge": "שידור חי"
+  },
+  "empty": {
+    "noContent": "אין תוכן זמין",
+    "tryAnotherCategory": "נסה לבחור קטגוריה אחרת",
+    "noPodcasts": "אין פודקאסטים זמינים",
+    "tryLater": "נסה שוב מאוחר יותר",
+    "noResults": "לא נמצאו תוצאות"
+  },
+  "profile": {
+    "profileDetails": "פרטי פרופיל",
+    "name": "שם",
+    "notSet": "לא הוגדר",
+    "email": "אימייל",
+    "editProfile": "ערוך פרופיל",
+    "notificationSettings": "הגדרות התראות",
+    "security": "אבטחה",
+    "changePassword": "שנה סיסמה",
+    "updatePassword": "עדכן את הסיסמה שלך",
+    "connectedDevices": "מכשירים מחוברים",
+    "manageDevices": "נהל את המכשירים המחוברים לחשבון",
+    "twoFactorAuth": "אימות דו-שלבי",
+    "addExtraSecurity": "הוסף שכבת אבטחה נוספת",
+    "address": {
+      "line1": "רחוב הראשי 123",
+      "line2": "תל אביב, ישראל 6100000"
+    },
+    "free": "חינם",
+    "premiumPrice": "₪29.90/חודש",
+    "familyPrice": "₪49.90/חודש",
+    "remaining": "נותרו",
+    "notifications": {
+      "newContent": "תוכן חדש",
+      "newContentDesc": "קבל התראות על תוכן חדש",
+      "recommendations": "המלצות",
+      "recommendationsDesc": "קבל המלצות מותאמות אישית",
+      "updates": "עדכוני מערכת",
+      "updatesDesc": "קבל עדכונים על שינויים במערכת"
+    }
+  },
+  "content": {
+    "episodes": "פרקים"
   }
 }

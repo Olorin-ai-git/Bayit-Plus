@@ -70,7 +70,29 @@
     "liveChannels": "Live Channels",
     "israeliMovies": "Israeli Movies",
     "documentaries": "Documentaries",
-    "loadingContent": "Loading content..."
+    "loadingContent": "Loading content...",
+    "carousel": {
+      "fauda": {
+        "title": "Fauda",
+        "subtitle": "Season 4 - Now Streaming",
+        "description": "The hit Israeli series returns for a fourth season full of suspense and action"
+      },
+      "shtisel": {
+        "title": "Shtisel",
+        "subtitle": "All Seasons Available",
+        "description": "Follow the Shtisel family in the ultra-Orthodox neighborhood of Jerusalem"
+      },
+      "tehran": {
+        "title": "Tehran",
+        "subtitle": "Season 2",
+        "description": "A Mossad agent deep in Iran on a dangerous mission"
+      },
+      "live": {
+        "title": "Live - Kan 11",
+        "subtitle": "Watch Now",
+        "description": "News, current affairs and quality content"
+      }
+    }
   },
   "search": {
     "title": "Search",
@@ -227,6 +249,7 @@
   "settings": {
     "title": "Settings",
     "language": "Language",
+    "selectLanguage": "Select Language",
     "notifications": "Notifications",
     "playback": "Playback Settings",
     "quality": "Quality",
@@ -244,5 +267,53 @@
     "networkError": "Network Error",
     "loadingFailed": "Loading Failed",
     "tryAgain": "Try Again"
+  },
+  "player": {
+    "loading": "Loading...",
+    "retry": "Try Again",
+    "error": "Error playing video",
+    "back": "← Back",
+    "liveBadge": "LIVE"
+  },
+  "empty": {
+    "noContent": "No content available",
+    "tryAnotherCategory": "Try selecting another category",
+    "noPodcasts": "No podcasts available",
+    "tryLater": "Try again later",
+    "noResults": "No results found"
+  },
+  "profile": {
+    "profileDetails": "Profile Details",
+    "name": "Name",
+    "notSet": "Not set",
+    "email": "Email",
+    "editProfile": "Edit Profile",
+    "notificationSettings": "Notification Settings",
+    "security": "Security",
+    "changePassword": "Change Password",
+    "updatePassword": "Update your password",
+    "connectedDevices": "Connected Devices",
+    "manageDevices": "Manage devices connected to your account",
+    "twoFactorAuth": "Two-Factor Authentication",
+    "addExtraSecurity": "Add an extra layer of security",
+    "address": {
+      "line1": "123 Main Street",
+      "line2": "Tel Aviv, Israel 6100000"
+    },
+    "free": "Free",
+    "premiumPrice": "$7.99/month",
+    "familyPrice": "$12.99/month",
+    "remaining": "remaining",
+    "notifications": {
+      "newContent": "New Content",
+      "newContentDesc": "Get notified about new content",
+      "recommendations": "Recommendations",
+      "recommendationsDesc": "Get personalized recommendations",
+      "updates": "System Updates",
+      "updatesDesc": "Get notified about system changes"
+    }
+  },
+  "content": {
+    "episodes": "episodes"
   }
 }

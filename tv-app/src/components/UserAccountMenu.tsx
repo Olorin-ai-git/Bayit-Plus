@@ -185,6 +185,8 @@ export const UserAccountMenu: React.FC = () => {
 const styles = StyleSheet.create({
   container: {
     position: 'relative',
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   button: {
     width: 44,

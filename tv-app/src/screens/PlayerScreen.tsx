@@ -28,9 +28,11 @@ if (Platform.OS !== 'web') {
   VideoRef = videoModule.VideoRef;
 }
 import { useNavigation, useRoute } from '@react-navigation/native';
+import { useTranslation } from 'react-i18next';
 import { contentService, liveService, historyService } from '../services/api';
 
 export const PlayerScreen: React.FC = () => {
+  const { t } = useTranslation();
   const navigation = useNavigation();
   const route = useRoute<any>();
   const { id, title, type } = route.params;
@@ -150,7 +152,7 @@ export const PlayerScreen: React.FC = () => {
     return (
       <View style={styles.loadingContainer}>
         <ActivityIndicator size="large" color="#00d9ff" />
-        <Text style={styles.loadingText}>טוען...</Text>
+        <Text style={styles.loadingText}>{t('player.loading')}</Text>
       </View>
     );
   }
@@ -160,7 +162,7 @@ export const PlayerScreen: React.FC = () => {
       <View style={styles.errorContainer}>
         <Text style={styles.errorText}>{error}</Text>
         <TouchableOpacity style={styles.retryButton} onPress={loadStream}>
-          <Text style={styles.retryText}>נסה שוב</Text>
+          <Text style={styles.retryText}>{t('player.retry')}</Text>
         </TouchableOpacity>
       </View>
     );
@@ -202,7 +204,7 @@ export const PlayerScreen: React.FC = () => {
         style={{ width: '100%', height: '100%', backgroundColor: '#000' }}
         autoPlay
         playsInline
-        onError={() => setError('שגיאה בהפעלת הווידאו')}
+        onError={() => setError(t('player.error'))}
         onLoadedData={() => setIsLoading(false)}
       />
     );
@@ -220,7 +222,7 @@ export const PlayerScreen: React.FC = () => {
           paused={isPaused}
           onProgress={handleProgress}
           onLoad={() => setIsLoading(false)}
-          onError={() => setError('שגיאה בהפעלת הווידאו')}
+          onError={() => setError(t('player.error'))}
           repeat={type === 'live'}
         />
       )}
@@ -234,7 +236,7 @@ export const PlayerScreen: React.FC = () => {
               style={styles.backButton}
               onPress={() => navigation.goBack()}
             >
-              <Text style={styles.backButtonText}>← חזור</Text>
+              <Text style={styles.backButtonText}>{t('player.back')}</Text>
             </TouchableOpacity>
             <Text style={styles.title}>{title}</Text>
           </View>
@@ -269,7 +271,7 @@ export const PlayerScreen: React.FC = () => {
           {type === 'live' && (
             <View style={styles.liveIndicator}>
               <View style={styles.liveDot} />
-              <Text style={styles.liveText}>שידור חי</Text>
+              <Text style={styles.liveText}>{t('player.liveBadge')}</Text>
             </View>
           )}
         </View>

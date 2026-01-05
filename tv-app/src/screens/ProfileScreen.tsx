@@ -86,10 +86,9 @@ const MOCK_BILLING_HISTORY = [
 ];
 
 const NOTIFICATION_SETTINGS = [
-  { id: 'newContent', label: 'תוכן חדש', description: 'קבל התראות על סדרות וסרטים חדשים' },
-  { id: 'liveEvents', label: 'אירועים בשידור חי', description: 'התראות על שידורים חיים מיוחדים' },
-  { id: 'recommendations', label: 'המלצות', description: 'המלצות מותאמות אישית' },
-  { id: 'updates', label: 'עדכוני מערכת', description: 'מידע חשוב על השירות' },
+  { id: 'newContent', labelKey: 'profile.notifications.newContent', descKey: 'profile.notifications.newContentDesc' },
+  { id: 'recommendations', labelKey: 'profile.notifications.recommendations', descKey: 'profile.notifications.recommendationsDesc' },
+  { id: 'updates', labelKey: 'profile.notifications.updates', descKey: 'profile.notifications.updatesDesc' },
 ];
 
 export const ProfileScreen: React.FC = () => {
@@ -131,24 +130,24 @@ export const ProfileScreen: React.FC = () => {
 
   const renderProfileTab = () => (
     <GlassView style={styles.contentCard}>
-      <Text style={styles.sectionTitle}>פרטי פרופיל</Text>
+      <Text style={styles.sectionTitle}>{t('profile.profileDetails')}</Text>
 
       <View style={styles.fieldGroup}>
-        <Text style={styles.fieldLabel}>שם</Text>
+        <Text style={styles.fieldLabel}>{t('profile.name')}</Text>
         <View style={styles.fieldValue}>
-          <Text style={styles.fieldValueText}>{user?.name || 'לא הוגדר'}</Text>
+          <Text style={styles.fieldValueText}>{user?.name || t('profile.notSet')}</Text>
         </View>
       </View>
 
       <View style={styles.fieldGroup}>
-        <Text style={styles.fieldLabel}>אימייל</Text>
+        <Text style={styles.fieldLabel}>{t('profile.email')}</Text>
         <View style={styles.fieldValue}>
           <Text style={[styles.fieldValueText, styles.ltrText]}>{user?.email}</Text>
         </View>
       </View>
 
       <GlassButton
-        title="ערוך פרופיל"
+        title={t('profile.editProfile')}
         onPress={() => {}}
         variant="primary"
         style={styles.editButton}
@@ -231,8 +230,8 @@ export const ProfileScreen: React.FC = () => {
         <Text style={styles.sectionTitle}>{t('profile.billing.billingAddress')}</Text>
         <View style={styles.addressCard}>
           <Text style={styles.addressText}>{user?.name}</Text>
-          <Text style={styles.addressText}>רחוב הראשי 123</Text>
-          <Text style={styles.addressText}>תל אביב, ישראל 6100000</Text>
+          <Text style={styles.addressText}>{t('profile.address.line1')}</Text>
+          <Text style={styles.addressText}>{t('profile.address.line2')}</Text>
         </View>
         <GlassButton
           title={t('profile.billing.editAddress')}
@@ -300,7 +299,7 @@ export const ProfileScreen: React.FC = () => {
                   </View>
                 )}
                 <Text style={styles.planCardName}>{t(plan.nameKey)}</Text>
-                <Text style={styles.planCardPrice}>{plan.price}</Text>
+                <Text style={styles.planCardPrice}>{t(plan.priceKey)}</Text>
                 <View style={styles.planFeatures}>
                   {plan.features.map((feature, index) => (
                     <View key={index} style={styles.featureItem}>
@@ -337,13 +336,13 @@ export const ProfileScreen: React.FC = () => {
 
   const renderNotificationsTab = () => (
     <GlassView style={styles.contentCard}>
-      <Text style={styles.sectionTitle}>הגדרות התראות</Text>
+      <Text style={styles.sectionTitle}>{t('profile.notificationSettings')}</Text>
 
       {NOTIFICATION_SETTINGS.map((item) => (
         <View key={item.id} style={styles.notificationItem}>
           <View style={styles.notificationInfo}>
-            <Text style={styles.notificationLabel}>{item.label}</Text>
-            <Text style={styles.notificationDesc}>{item.description}</Text>
+            <Text style={styles.notificationLabel}>{t(item.labelKey)}</Text>
+            <Text style={styles.notificationDesc}>{t(item.descKey)}</Text>
           </View>
           <Switch
             value={notifications[item.id]}
@@ -358,28 +357,28 @@ export const ProfileScreen: React.FC = () => {
 
   const renderSecurityTab = () => (
     <GlassView style={styles.contentCard}>
-      <Text style={styles.sectionTitle}>אבטחה</Text>
+      <Text style={styles.sectionTitle}>{t('profile.security')}</Text>
 
       <TouchableOpacity style={styles.securityItem}>
         <View style={styles.securityInfo}>
-          <Text style={styles.securityLabel}>שנה סיסמה</Text>
-          <Text style={styles.securityDesc}>עדכן את הסיסמה שלך</Text>
+          <Text style={styles.securityLabel}>{t('profile.changePassword')}</Text>
+          <Text style={styles.securityDesc}>{t('profile.updatePassword')}</Text>
         </View>
         <Text style={styles.chevron}>◀</Text>
       </TouchableOpacity>
 
       <TouchableOpacity style={styles.securityItem}>
         <View style={styles.securityInfo}>
-          <Text style={styles.securityLabel}>מכשירים מחוברים</Text>
-          <Text style={styles.securityDesc}>נהל את המכשירים המחוברים לחשבון</Text>
+          <Text style={styles.securityLabel}>{t('profile.connectedDevices')}</Text>
+          <Text style={styles.securityDesc}>{t('profile.manageDevices')}</Text>
         </View>
         <Text style={styles.chevron}>◀</Text>
       </TouchableOpacity>
 
       <TouchableOpacity style={styles.securityItem}>
         <View style={styles.securityInfo}>
-          <Text style={styles.securityLabel}>אימות דו-שלבי</Text>
-          <Text style={styles.securityDesc}>הוסף שכבת אבטחה נוספת</Text>
+          <Text style={styles.securityLabel}>{t('profile.twoFactorAuth')}</Text>
+          <Text style={styles.securityDesc}>{t('profile.addExtraSecurity')}</Text>
         </View>
         <Text style={styles.chevron}>◀</Text>
       </TouchableOpacity>

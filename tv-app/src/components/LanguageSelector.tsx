@@ -14,7 +14,7 @@ import { colors, spacing, borderRadius } from '../theme';
 import { useDirection } from '../hooks/useDirection';
 
 export const LanguageSelector: React.FC = () => {
-  const { i18n } = useTranslation();
+  const { t, i18n } = useTranslation();
   const { isRTL } = useDirection();
   const [isOpen, setIsOpen] = useState(false);
 
@@ -77,7 +77,7 @@ export const LanguageSelector: React.FC = () => {
           >
             <GlassView intensity="high" style={[styles.dropdown, { direction: isHebrewMode ? 'rtl' : 'ltr' }]}>
               <Text style={styles.dropdownTitle}>
-                {i18n.language === 'he' ? 'בחר שפה' : i18n.language === 'es' ? 'Seleccionar idioma' : 'Select Language'}
+                {t('settings.selectLanguage')}
               </Text>
               {languages.map((lang, index) => (
                 <TouchableOpacity
@@ -112,6 +112,8 @@ export const LanguageSelector: React.FC = () => {
 const styles = StyleSheet.create({
   container: {
     position: 'relative',
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   button: {
     width: 44,

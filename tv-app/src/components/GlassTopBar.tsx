@@ -141,7 +141,9 @@ const styles = StyleSheet.create({
   actionsContainer: {
     flexDirection: 'row-reverse',
     alignItems: 'center',
+    justifyContent: 'center',
     gap: spacing.sm,
+    height: '100%',
   },
   actionButton: {
     width: 44,

@@ -7,6 +7,7 @@ import {
   TouchableOpacity,
   Image,
 } from 'react-native';
+import { useTranslation } from 'react-i18next';
 import { GlassView } from './ui';
 import { colors, borderRadius } from '../theme';
 
@@ -32,6 +33,7 @@ export const GlassCarousel: React.FC<GlassCarouselProps> = ({
   autoPlayInterval = 5000,
   height = 320,
 }) => {
+  const { t } = useTranslation();
   const [activeIndex, setActiveIndex] = useState(0);
   const [isFocused, setIsFocused] = useState(false);
   const fadeAnim = useRef(new Animated.Value(1)).current;
@@ -156,7 +158,7 @@ export const GlassCarousel: React.FC<GlassCarouselProps> = ({
               <View style={styles.playButtonContainer}>
                 <GlassView intensity="medium" style={styles.playButton}>
                   <Text style={styles.playIcon}>▶</Text>
-                  <Text style={styles.playText}>צפה עכשיו</Text>
+                  <Text style={styles.playText}>{t('common.watchNow')}</Text>
                 </GlassView>
               </View>
             </View>

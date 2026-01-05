@@ -70,7 +70,29 @@
     "liveChannels": "Canales en Vivo",
     "israeliMovies": "Películas Israelíes",
     "documentaries": "Documentales",
-    "loadingContent": "Cargando contenido..."
+    "loadingContent": "Cargando contenido...",
+    "carousel": {
+      "fauda": {
+        "title": "Fauda",
+        "subtitle": "Temporada 4 - Ahora en Streaming",
+        "description": "La exitosa serie israelí regresa para una cuarta temporada llena de suspenso y acción"
+      },
+      "shtisel": {
+        "title": "Shtisel",
+        "subtitle": "Todas las Temporadas Disponibles",
+        "description": "Sigue a la familia Shtisel en el barrio ultraortodoxo de Jerusalén"
+      },
+      "tehran": {
+        "title": "Teherán",
+        "subtitle": "Temporada 2",
+        "description": "Una agente del Mossad en el corazón de Irán en una misión peligrosa"
+      },
+      "live": {
+        "title": "En Vivo - Kan 11",
+        "subtitle": "Ver Ahora",
+        "description": "Noticias, actualidad y contenido de calidad"
+      }
+    }
   },
   "search": {
     "title": "Buscar",
@@ -227,6 +249,7 @@
   "settings": {
     "title": "Configuración",
     "language": "Idioma",
+    "selectLanguage": "Seleccionar Idioma",
     "notifications": "Notificaciones",
     "playback": "Reproducción",
     "quality": "Calidad",
@@ -244,5 +267,53 @@
     "networkError": "Error de Red",
     "loadingFailed": "Carga Fallida",
     "tryAgain": "Intentar de Nuevo"
+  },
+  "player": {
+    "loading": "Cargando...",
+    "retry": "Reintentar",
+    "error": "Error al reproducir el video",
+    "back": "← Volver",
+    "liveBadge": "EN VIVO"
+  },
+  "empty": {
+    "noContent": "No hay contenido disponible",
+    "tryAnotherCategory": "Intenta seleccionar otra categoría",
+    "noPodcasts": "No hay podcasts disponibles",
+    "tryLater": "Intenta de nuevo más tarde",
+    "noResults": "No se encontraron resultados"
+  },
+  "profile": {
+    "profileDetails": "Detalles del Perfil",
+    "name": "Nombre",
+    "notSet": "No establecido",
+    "email": "Correo",
+    "editProfile": "Editar Perfil",
+    "notificationSettings": "Configuración de Notificaciones",
+    "security": "Seguridad",
+    "changePassword": "Cambiar Contraseña",
+    "updatePassword": "Actualiza tu contraseña",
+    "connectedDevices": "Dispositivos Conectados",
+    "manageDevices": "Administra los dispositivos conectados a tu cuenta",
+    "twoFactorAuth": "Autenticación de Dos Factores",
+    "addExtraSecurity": "Agrega una capa extra de seguridad",
+    "address": {
+      "line1": "Calle Principal 123",
+      "line2": "Tel Aviv, Israel 6100000"
+    },
+    "free": "Gratis",
+    "premiumPrice": "$7.99/mes",
+    "familyPrice": "$12.99/mes",
+    "remaining": "restante",
+    "notifications": {
+      "newContent": "Contenido Nuevo",
+      "newContentDesc": "Recibe notificaciones sobre contenido nuevo",
+      "recommendations": "Recomendaciones",
+      "recommendationsDesc": "Recibe recomendaciones personalizadas",
+      "updates": "Actualizaciones del Sistema",
+      "updatesDesc": "Recibe notificaciones sobre cambios del sistema"
+    }
+  },
+  "content": {
+    "episodes": "episodios"
   }
 }

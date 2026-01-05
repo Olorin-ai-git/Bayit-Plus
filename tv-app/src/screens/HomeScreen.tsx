@@ -6,7 +6,7 @@ import {
   Text,
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
-import { useTranslation } from 'react-i18next';
+import { useTranslation, TFunction } from 'react-i18next';
 import { AnimatedLogo } from '../components/AnimatedLogo';
 import { ContentRow } from '../components/ContentRow';
 import { GlassCarousel } from '../components/GlassCarousel';
@@ -31,7 +31,7 @@ interface CarouselItem {
 }
 
 export const HomeScreen: React.FC = () => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const navigation = useNavigation<any>();
   const [isLoading, setIsLoading] = useState(true);
   const [carouselItems, setCarouselItems] = useState<CarouselItem[]>([]);
@@ -42,7 +42,7 @@ export const HomeScreen: React.FC = () => {
 
   useEffect(() => {
     loadContent();
-  }, []);
+  }, [i18n.language]);
 
   const loadContent = async () => {
     try {
@@ -58,34 +58,34 @@ export const HomeScreen: React.FC = () => {
       setCarouselItems([
         {
           id: 'hero1',
-          title: 'פאודה',
-          subtitle: 'עונה 4 - עכשיו בשידור',
-          description: 'הסדרה הישראלית המצליחה חוזרת לעונה רביעית מלאת מתח ואקשן',
+          title: t('home.carousel.fauda.title'),
+          subtitle: t('home.carousel.fauda.subtitle'),
+          description: t('home.carousel.fauda.description'),
           image: 'https://picsum.photos/1200/600?random=100',
-          badge: 'חדש',
+          badge: t('common.new'),
         },
         {
           id: 'hero2',
-          title: 'שטיסל',
-          subtitle: 'כל העונות זמינות',
-          description: 'עקבו אחר משפחת שטיסל בשכונה החרדית בירושלים',
+          title: t('home.carousel.shtisel.title'),
+          subtitle: t('home.carousel.shtisel.subtitle'),
+          description: t('home.carousel.shtisel.description'),
           image: 'https://picsum.photos/1200/600?random=101',
-          badge: 'מומלץ',
+          badge: t('common.recommended'),
         },
         {
           id: 'hero3',
-          title: 'טהרן',
-          subtitle: 'עונה 2',
-          description: 'סוכנת מוסד בלב איראן במשימה מסוכנת',
+          title: t('home.carousel.tehran.title'),
+          subtitle: t('home.carousel.tehran.subtitle'),
+          description: t('home.carousel.tehran.description'),
           image: 'https://picsum.photos/1200/600?random=102',
         },
         {
           id: 'hero4',
-          title: 'שידור חי - כאן 11',
-          subtitle: 'צפו עכשיו',
-          description: 'חדשות, תוכניות אקטואליה ותוכן איכותי',
+          title: t('home.carousel.live.title'),
+          subtitle: t('home.carousel.live.subtitle'),
+          description: t('home.carousel.live.description'),
           image: 'https://picsum.photos/1200/600?random=103',
-          badge: 'LIVE',
+          badge: t('common.live'),
         },
       ]);
 
