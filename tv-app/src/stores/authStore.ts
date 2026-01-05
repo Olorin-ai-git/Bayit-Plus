@@ -15,6 +15,12 @@ interface User {
   };
 }
 
+interface RegisterData {
+  name: string;
+  email: string;
+  password: string;
+}
+
 interface AuthState {
   user: User | null;
   token: string | null;
@@ -22,6 +28,8 @@ interface AuthState {
   isLoading: boolean;
   error: string | null;
   login: (email: string, password: string) => Promise<void>;
+  register: (data: RegisterData) => Promise<void>;
+  loginWithGoogle: () => Promise<void>;
   logout: () => void;
   setUser: (user: User | null) => void;
   clearError: () => void;
@@ -49,6 +57,46 @@ export const useAuthStore = create<AuthState>()(
         } catch (error: any) {
           set({
             error: error.detail || 'Login failed',
+            isLoading: false,
+          });
+          throw error;
+        }
+      },
+
+      register: async (data: RegisterData) => {
+        set({ isLoading: true, error: null });
+        try {
+          const response: any = await authService.register(data);
+          set({
+            user: response.user,
+            token: response.access_token,
+            isAuthenticated: true,
+            isLoading: false,
+          });
+        } catch (error: any) {
+          set({
+            error: error.detail || 'Registration failed',
+            isLoading: false,
+          });
+          throw error;
+        }
+      },
+
+      loginWithGoogle: async () => {
+        set({ isLoading: true, error: null });
+        try {
+          // For web, redirect to Google OAuth
+          // For native, use Google Sign-In SDK
+          const response: any = await authService.googleAuth();
+          set({
+            user: response.user,
+            token: response.access_token,
+            isAuthenticated: true,
+            isLoading: false,
+          });
+        } catch (error: any) {
+          set({
+            error: error.detail || 'Google login failed',
             isLoading: false,
           });
           throw error;

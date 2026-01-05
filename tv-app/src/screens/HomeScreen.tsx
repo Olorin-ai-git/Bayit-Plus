@@ -157,6 +157,7 @@ const styles = StyleSheet.create({
   },
   content: {
     paddingVertical: 40,
+    direction: 'rtl',
   },
   loadingContainer: {
     flex: 1,
@@ -174,6 +175,7 @@ const styles = StyleSheet.create({
     paddingVertical: 60,
     marginBottom: 20,
     alignItems: 'flex-end',
+    width: '100%',
   },
   logo: {
     width: 120,

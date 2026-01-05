@@ -1,12 +1,27 @@
 import axios from 'axios';
+import { Platform } from 'react-native';
 import { useAuthStore } from '../stores/authStore';
 
-const API_BASE_URL = __DEV__
-  ? 'http://10.0.2.2:8000/api/v1'  // Android emulator localhost
-  : 'https://api.bayit.network/api/v1';
+// Get correct API URL based on platform
+const getApiBaseUrl = () => {
+  if (!__DEV__) {
+    return 'https://api.bayit.network/api/v1';
+  }
+  // In development:
+  if (Platform.OS === 'web') {
+    return 'http://localhost:8000/api/v1';
+  }
+  if (Platform.OS === 'android') {
+    return 'http://10.0.2.2:8000/api/v1';  // Android emulator localhost
+  }
+  return 'http://localhost:8000/api/v1';  // iOS simulator
+};
+
+const API_BASE_URL = getApiBaseUrl();
 
 const api = axios.create({
   baseURL: API_BASE_URL,
+  timeout: 5000,  // 5 second timeout for faster fallback to demo data
   headers: {
     'Content-Type': 'application/json',
   },

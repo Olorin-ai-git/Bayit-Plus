@@ -3,3 +3,8 @@ export { PlayerScreen } from './PlayerScreen';
 export { LoginScreen } from './LoginScreen';
 export { LiveTVScreen } from './LiveTVScreen';
 export { RadioScreen } from './RadioScreen';
+export { VODScreen } from './VODScreen';
+export { PodcastsScreen } from './PodcastsScreen';
+export { SearchScreen } from './SearchScreen';
+export { RegisterScreen } from './RegisterScreen';
+export { ProfileScreen } from './ProfileScreen';

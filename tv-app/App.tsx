@@ -1,5 +1,5 @@
 import React from 'react';
-import { StatusBar, LogBox, View, Text, StyleSheet } from 'react-native';
+import { StatusBar, LogBox, View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
@@ -10,6 +10,11 @@ import {
   LoginScreen,
   LiveTVScreen,
   RadioScreen,
+  VODScreen,
+  PodcastsScreen,
+  SearchScreen,
+  RegisterScreen,
+  ProfileScreen,
 } from './src/screens';
 import { useAuthStore } from './src/stores/authStore';
 
@@ -21,18 +26,23 @@ LogBox.ignoreLogs([
 
 export type RootStackParamList = {
   Login: undefined;
+  Register: undefined;
   Main: undefined;
   Player: {
     id: string;
     title: string;
     type: 'vod' | 'live' | 'radio' | 'podcast';
   };
+  Search: { query?: string };
+  Subscribe: undefined;
 };
 
 export type MainTabParamList = {
   Home: undefined;
+  VOD: undefined;
   LiveTV: undefined;
   Radio: undefined;
+  Podcasts: undefined;
   Profile: undefined;
 };
 
@@ -50,8 +60,10 @@ const TVTabBar: React.FC<any> = ({ state, descriptors, navigation }) => {
 
         const icon = {
           Home: '🏠',
+          VOD: '🎬',
           LiveTV: '📺',
           Radio: '📻',
+          Podcasts: '🎙️',
           Profile: '👤',
         }[route.name] || '•';
 
@@ -68,12 +80,14 @@ const TVTabBar: React.FC<any> = ({ state, descriptors, navigation }) => {
         };
 
         return (
-          <View
+          <TouchableOpacity
             key={route.key}
+            onPress={onPress}
             style={[
               tabStyles.tab,
               isFocused && tabStyles.tabFocused,
             ]}
+            activeOpacity={0.7}
           >
             <Text style={tabStyles.icon}>{icon}</Text>
             <Text
@@ -84,104 +98,12 @@ const TVTabBar: React.FC<any> = ({ state, descriptors, navigation }) => {
             >
               {label}
             </Text>
-          </View>
+          </TouchableOpacity>
         );
       })}
     </View>
   );
 };
-
-// Profile placeholder screen
-const ProfileScreen: React.FC = () => {
-  const { user, logout } = useAuthStore();
-
-  return (
-    <View style={profileStyles.container}>
-      <View style={profileStyles.avatar}>
-        <Text style={profileStyles.avatarText}>
-          {user?.name?.[0] || '?'}
-        </Text>
-      </View>
-      <Text style={profileStyles.name}>{user?.name || 'אורח'}</Text>
-      <Text style={profileStyles.email}>{user?.email || ''}</Text>
-
-      <View style={profileStyles.menu}>
-        <View style={profileStyles.menuItem}>
-          <Text style={profileStyles.menuIcon}>⚙️</Text>
-          <Text style={profileStyles.menuText}>הגדרות</Text>
-        </View>
-        <View style={profileStyles.menuItem}>
-          <Text style={profileStyles.menuIcon}>📋</Text>
-          <Text style={profileStyles.menuText}>הרשימה שלי</Text>
-        </View>
-        <View style={profileStyles.menuItem}>
-          <Text style={profileStyles.menuIcon}>🕐</Text>
-          <Text style={profileStyles.menuText}>היסטוריית צפייה</Text>
-        </View>
-        <View style={profileStyles.menuItem}>
-          <Text style={profileStyles.menuIcon}>❓</Text>
-          <Text style={profileStyles.menuText}>עזרה</Text>
-        </View>
-      </View>
-    </View>
-  );
-};
-
-const profileStyles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#0d0d1a',
-    alignItems: 'center',
-    paddingTop: 60,
-  },
-  avatar: {
-    width: 120,
-    height: 120,
-    borderRadius: 60,
-    backgroundColor: '#00d9ff',
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginBottom: 20,
-  },
-  avatarText: {
-    fontSize: 48,
-    fontWeight: 'bold',
-    color: '#0d0d1a',
-  },
-  name: {
-    fontSize: 32,
-    fontWeight: 'bold',
-    color: '#ffffff',
-    marginBottom: 8,
-  },
-  email: {
-    fontSize: 18,
-    color: '#888888',
-    marginBottom: 40,
-  },
-  menu: {
-    width: '60%',
-    maxWidth: 500,
-  },
-  menuItem: {
-    flexDirection: 'row-reverse',
-    alignItems: 'center',
-    paddingVertical: 20,
-    paddingHorizontal: 24,
-    backgroundColor: '#1a1a2e',
-    borderRadius: 12,
-    marginBottom: 12,
-  },
-  menuIcon: {
-    fontSize: 24,
-    marginLeft: 16,
-  },
-  menuText: {
-    fontSize: 20,
-    color: '#ffffff',
-    textAlign: 'right',
-  },
-});
 
 // Main Tab Navigator
 function MainTabs() {
@@ -198,6 +120,11 @@ function MainTabs() {
         options={{ tabBarLabel: 'ראשי' }}
       />
       <Tab.Screen
+        name="VOD"
+        component={VODScreen}
+        options={{ tabBarLabel: 'סרטים' }}
+      />
+      <Tab.Screen
         name="LiveTV"
         component={LiveTVScreen}
         options={{ tabBarLabel: 'שידור חי' }}
@@ -206,6 +133,11 @@ function MainTabs() {
         name="Radio"
         component={RadioScreen}
         options={{ tabBarLabel: 'רדיו' }}
+      />
+      <Tab.Screen
+        name="Podcasts"
+        component={PodcastsScreen}
+        options={{ tabBarLabel: 'פודקאסטים' }}
       />
       <Tab.Screen
         name="Profile"
@@ -254,6 +186,7 @@ function App(): React.JSX.Element {
 
   return (
     <SafeAreaProvider>
+      <View style={{ flex: 1, direction: 'rtl' }}>
       <NavigationContainer>
         <StatusBar hidden />
         <Stack.Navigator
@@ -265,6 +198,7 @@ function App(): React.JSX.Element {
           initialRouteName={'Main'}
         >
           <Stack.Screen name="Login" component={LoginScreen} />
+          <Stack.Screen name="Register" component={RegisterScreen} />
           <Stack.Screen name="Main" component={MainTabs} />
           <Stack.Screen
             name="Player"
@@ -273,8 +207,10 @@ function App(): React.JSX.Element {
               animation: 'fade',
             }}
           />
+          <Stack.Screen name="Search" component={SearchScreen} />
         </Stack.Navigator>
       </NavigationContainer>
+      </View>
     </SafeAreaProvider>
   );
 }
