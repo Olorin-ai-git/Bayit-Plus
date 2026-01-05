@@ -279,7 +279,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: colors.background,
-    direction: 'rtl',
   },
   loadingContainer: {
     flex: 1,
@@ -372,11 +371,7 @@ const styles = StyleSheet.create({
   },
   cardFocused: {
     borderColor: colors.success,
-    shadowColor: colors.success,
-    shadowOffset: { width: 0, height: 0 },
-    shadowOpacity: 0.5,
-    shadowRadius: 20,
-    elevation: 10,
+    boxShadow: `0 0 20px ${colors.success}`,
   },
   cardImage: {
     width: '100%',

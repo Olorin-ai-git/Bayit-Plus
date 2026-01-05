@@ -23,20 +23,63 @@
       display: flex;
       flex-direction: column;
     }
-    /* Loading spinner */
+    /* Loading screen */
     .loading {
       position: fixed;
-      top: 50%;
+      top: 30%;
       left: 50%;
       transform: translate(-50%, -50%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 24px;
+    }
+    .logo-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    .logo-image {
+      width: 120px;
+      height: 60px;
+      object-fit: contain;
+      margin-bottom: -8px;
+    }
+    .logo-text {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .logo-bayit {
+      font-size: 64px;
+      font-weight: bold;
+      color: #ffffff;
+    }
+    .logo-plus {
+      font-size: 56px;
+      font-weight: bold;
       color: #00d9ff;
-      font-size: 24px;
+      margin-left: 4px;
+    }
+    .loading-text {
+      color: #00d9ff;
+      font-size: 20px;
+      margin-top: 16px;
     }
   </style>
 </head>
 <body>
   <div id="root">
-    <div class="loading">Loading...</div>
+    <div class="loading">
+      <div class="logo-container">
+        <img src="/logo.png" alt="Bayit+" class="logo-image" />
+        <div class="logo-text">
+          <span class="logo-bayit">בית</span>
+          <span class="logo-plus">+</span>
+        </div>
+      </div>
+      <div class="loading-text">טוען...</div>
+    </div>
   </div>
 </body>
 </html>

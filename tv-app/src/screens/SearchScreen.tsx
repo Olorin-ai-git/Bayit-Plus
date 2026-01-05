@@ -333,7 +333,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: colors.background,
-    direction: 'rtl',
   },
   header: {
     flexDirection: 'row',
@@ -473,11 +472,7 @@ const styles = StyleSheet.create({
   },
   cardFocused: {
     borderColor: colors.primary,
-    shadowColor: colors.primary,
-    shadowOffset: { width: 0, height: 0 },
-    shadowOpacity: 0.5,
-    shadowRadius: 20,
-    elevation: 10,
+    boxShadow: `0 0 20px ${colors.primary}`,
   },
   cardImage: {
     width: '100%',

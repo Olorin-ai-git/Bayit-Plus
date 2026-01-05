@@ -275,7 +275,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: colors.background,
-    direction: 'rtl',
   },
   loadingContainer: {
     flex: 1,
@@ -371,11 +370,7 @@ const styles = StyleSheet.create({
   stationCardFocused: {
     borderColor: colors.secondary,
     backgroundColor: colors.backgroundLighter,
-    shadowColor: colors.secondary,
-    shadowOffset: { width: 0, height: 0 },
-    shadowOpacity: 0.5,
-    shadowRadius: 20,
-    elevation: 10,
+    boxShadow: `0 0 20px ${colors.secondary}`,
   },
   logoContainer: {
     height: 70,

@@ -225,11 +225,7 @@ const styles = StyleSheet.create({
   carouselFocused: {
     borderColor: colors.primary,
     borderWidth: 2,
-    shadowColor: colors.primary,
-    shadowOffset: { width: 0, height: 0 },
-    shadowOpacity: 0.5,
-    shadowRadius: 20,
-    elevation: 10,
+    boxShadow: `0 0 20px ${colors.primary}`,
   },
   touchable: {
     flex: 1,
@@ -237,7 +233,6 @@ const styles = StyleSheet.create({
   itemContainer: {
     flex: 1,
     position: 'relative',
-    direction: 'rtl',
   },
   backgroundImage: {
     ...StyleSheet.absoluteFillObject,
@@ -256,7 +251,7 @@ const styles = StyleSheet.create({
   badgeContainer: {
     position: 'absolute',
     top: 32,
-    right: 32,
+    right: 80,
   },
   badge: {
     paddingHorizontal: 16,
@@ -270,8 +265,7 @@ const styles = StyleSheet.create({
   textSection: {
     position: 'absolute',
     bottom: 100,
-    right: 32,
-    alignItems: 'flex-end',
+    right: 80,
   },
   title: {
     fontSize: 42,
@@ -279,9 +273,7 @@ const styles = StyleSheet.create({
     color: colors.text,
     textAlign: 'right',
     marginBottom: 8,
-    textShadowColor: 'rgba(0, 0, 0, 0.8)',
-    textShadowOffset: { width: 0, height: 2 },
-    textShadowRadius: 4,
+    textShadow: '0px 2px 4px rgba(0, 0, 0, 0.8)',
   },
   subtitle: {
     fontSize: 22,
@@ -294,12 +286,12 @@ const styles = StyleSheet.create({
     color: colors.textSecondary,
     textAlign: 'right',
     lineHeight: 24,
-    maxWidth: '60%',
+    maxWidth: 500,
   },
   playButtonContainer: {
     position: 'absolute',
     bottom: 32,
-    right: 32,
+    right: 80,
   },
   playButton: {
     flexDirection: 'row-reverse',

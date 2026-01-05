@@ -217,7 +217,6 @@ const styles = StyleSheet.create({
   },
   content: {
     paddingBottom: 40,
-    direction: 'rtl',
   },
   loadingContainer: {
     flex: 1,

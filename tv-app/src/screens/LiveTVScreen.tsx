@@ -236,7 +236,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: colors.background,
-    direction: 'rtl',
   },
   loadingContainer: {
     flex: 1,
@@ -331,11 +330,7 @@ const styles = StyleSheet.create({
   channelCardFocused: {
     borderColor: colors.primary,
     backgroundColor: colors.backgroundLighter,
-    shadowColor: colors.primary,
-    shadowOffset: { width: 0, height: 0 },
-    shadowOpacity: 0.5,
-    shadowRadius: 20,
-    elevation: 10,
+    boxShadow: `0 0 20px ${colors.primary}`,
   },
   logoContainer: {
     height: 60,
