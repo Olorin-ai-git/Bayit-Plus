@@ -6,6 +6,7 @@ import {
   Text,
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
+import { useTranslation } from 'react-i18next';
 import { AnimatedLogo } from '../components/AnimatedLogo';
 import { ContentRow } from '../components/ContentRow';
 import { GlassCarousel } from '../components/GlassCarousel';
@@ -30,6 +31,7 @@ interface CarouselItem {
 }
 
 export const HomeScreen: React.FC = () => {
+  const { t } = useTranslation();
   const navigation = useNavigation<any>();
   const [isLoading, setIsLoading] = useState(true);
   const [carouselItems, setCarouselItems] = useState<CarouselItem[]>([]);
@@ -109,7 +111,7 @@ export const HomeScreen: React.FC = () => {
 
       setCategories([
         {
-          name: 'סרטים ישראליים',
+          name: 'israeliMovies',
           items: [
             { id: '10', title: 'וואלס עם באשיר', thumbnail: 'https://picsum.photos/400/225?random=11' },
             { id: '11', title: 'לבנון', thumbnail: 'https://picsum.photos/400/225?random=12' },
@@ -117,7 +119,7 @@ export const HomeScreen: React.FC = () => {
           ],
         },
         {
-          name: 'דוקומנטרים',
+          name: 'documentaries',
           items: [
             { id: '20', title: 'עובדה', thumbnail: 'https://picsum.photos/400/225?random=14' },
             { id: '21', title: 'מקור', thumbnail: 'https://picsum.photos/400/225?random=15' },
@@ -144,7 +146,7 @@ export const HomeScreen: React.FC = () => {
     return (
       <View style={styles.loadingContainer}>
         <AnimatedLogo size="large" />
-        <Text style={styles.loadingText}>טוען תוכן...</Text>
+        <Text style={styles.loadingText}>{t('home.loadingContent')}</Text>
       </View>
     );
   }
@@ -177,7 +179,7 @@ export const HomeScreen: React.FC = () => {
       {/* Continue Watching */}
       {continueWatching.length > 0 && (
         <ContentRow
-          title="המשך צפייה"
+          title={t('home.continueWatching')}
           items={continueWatching}
           onItemPress={handleItemPress}
         />
@@ -185,14 +187,14 @@ export const HomeScreen: React.FC = () => {
 
       {/* Live TV */}
       <ContentRow
-        title="שידור חי"
+        title={t('home.liveChannels')}
         items={liveChannels}
         onItemPress={(item) => handleItemPress({ ...item, type: 'live' })}
       />
 
       {/* Featured */}
       <ContentRow
-        title="מומלצים"
+        title={t('home.featuredContent')}
         items={featured}
         onItemPress={handleItemPress}
       />
@@ -201,7 +203,7 @@ export const HomeScreen: React.FC = () => {
       {categories.map((category) => (
         <ContentRow
           key={category.name}
-          title={category.name}
+          title={t(`home.${category.name}`)}
           items={category.items}
           onItemPress={handleItemPress}
         />

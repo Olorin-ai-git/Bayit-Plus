@@ -10,6 +10,7 @@ import {
   Image,
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
+import { useTranslation } from 'react-i18next';
 import { GlassView } from '../components/ui';
 import { contentService } from '../services/api';
 import { colors, spacing, borderRadius } from '../theme';
@@ -107,6 +108,7 @@ const ContentCard: React.FC<{
 };
 
 export const VODScreen: React.FC = () => {
+  const { t } = useTranslation();
   const navigation = useNavigation<any>();
   const [isLoading, setIsLoading] = useState(true);
   const [content, setContent] = useState<ContentItem[]>([]);
@@ -153,11 +155,11 @@ export const VODScreen: React.FC = () => {
 
       if (!categoriesRes.categories?.length) {
         setCategories([
-          { id: 'drama', name: 'דרמה' },
-          { id: 'comedy', name: 'קומדיה' },
-          { id: 'action', name: 'אקשן' },
-          { id: 'documentary', name: 'דוקומנטרי' },
-          { id: 'kids', name: 'ילדים' },
+          { id: 'drama', name: 'vod.categories.drama' },
+          { id: 'comedy', name: 'vod.categories.comedy' },
+          { id: 'action', name: 'vod.categories.action' },
+          { id: 'documentary', name: 'vod.categories.documentary' },
+          { id: 'kids', name: 'vod.categories.kids' },
         ]);
       }
     } catch (error) {
@@ -179,7 +181,7 @@ export const VODScreen: React.FC = () => {
     return (
       <View style={styles.loadingContainer}>
         <ActivityIndicator size="large" color={colors.primary} />
-        <Text style={styles.loadingText}>טוען תוכן...</Text>
+        <Text style={styles.loadingText}>{t('common.loading')}</Text>
       </View>
     );
   }
@@ -192,8 +194,8 @@ export const VODScreen: React.FC = () => {
           <Text style={styles.headerIconText}>🎬</Text>
         </View>
         <View>
-          <Text style={styles.title}>סרטים וסדרות</Text>
-          <Text style={styles.subtitle}>{content.length} פריטים</Text>
+          <Text style={styles.title}>{t('vod.title')}</Text>
+          <Text style={styles.subtitle}>{content.length} {t('vod.movies')}</Text>
         </View>
       </View>
 
@@ -212,7 +214,7 @@ export const VODScreen: React.FC = () => {
               selectedCategory === 'all' && styles.categoryTextActive,
             ]}
           >
-            הכל
+            {t('vod.categories.all')}
           </Text>
         </TouchableOpacity>
         {categories.map((category) => (
@@ -230,7 +232,7 @@ export const VODScreen: React.FC = () => {
                 selectedCategory === category.id && styles.categoryTextActive,
               ]}
             >
-              {category.name}
+              {t(category.name)}
             </Text>
           </TouchableOpacity>
         ))}

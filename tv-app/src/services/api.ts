@@ -103,4 +103,57 @@ export const historyService = {
     api.post('/history/progress', { content_id: contentId, content_type: contentType, position, duration }),
 };
 
+// Search Filters
+export interface SearchFilters {
+  type?: 'all' | 'movies' | 'series' | 'channels' | 'radio' | 'podcasts';
+  language?: string;
+  limit?: number;
+}
+
+// Search Result Types
+export interface SearchResult {
+  id: string;
+  title: string;
+  description?: string;
+  type: 'movie' | 'series' | 'channel' | 'radio' | 'podcast';
+  thumbnail?: string;
+  relevanceScore?: number;
+  metadata?: Record<string, any>;
+}
+
+export interface LLMSearchResponse {
+  results: SearchResult[];
+  query: string;
+  interpretation?: string;  // LLM's interpretation of the query
+  suggestions?: string[];   // Related search suggestions
+  total: number;
+}
+
+// Search Service - LLM-powered natural language search
+export const searchService = {
+  // LLM-powered semantic search
+  search: (query: string, filters?: SearchFilters): Promise<LLMSearchResponse> =>
+    api.post('/search/llm', { query, ...filters }),
+
+  // Quick search (autocomplete suggestions)
+  quickSearch: (query: string, limit: number = 5) =>
+    api.get('/search/quick', { params: { q: query, limit } }),
+
+  // Get search suggestions based on user history
+  getSuggestions: () => api.get('/search/suggestions'),
+
+  // Voice search - sends audio transcription for search
+  voiceSearch: (transcript: string, language: string, filters?: SearchFilters): Promise<LLMSearchResponse> =>
+    api.post('/search/voice', { transcript, language, ...filters }),
+};
+
+// Favorites Service
+export const favoritesService = {
+  getFavorites: () => api.get('/favorites'),
+  addToFavorites: (contentId: string, contentType: string) =>
+    api.post('/favorites', { content_id: contentId, content_type: contentType }),
+  removeFromFavorites: (contentId: string) => api.delete(`/favorites/${contentId}`),
+  isFavorite: (contentId: string) => api.get(`/favorites/check/${contentId}`),
+};
+
 export default api;

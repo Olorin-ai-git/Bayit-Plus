@@ -2,3 +2,8 @@ export { FocusableCard } from './FocusableCard';
 export { ContentRow } from './ContentRow';
 export { SideMenu } from './SideMenu';
 export { AnimatedLogo } from './AnimatedLogo';
+export { GlassTopBar } from './GlassTopBar';
+export { GlassSidebar } from './GlassSidebar';
+export { LanguageSelector } from './LanguageSelector';
+export { UserAccountMenu } from './UserAccountMenu';
+export { VoiceSearchButton } from './VoiceSearchButton';

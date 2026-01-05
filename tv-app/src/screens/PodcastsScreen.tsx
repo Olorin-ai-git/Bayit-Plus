@@ -10,6 +10,7 @@ import {
   Image,
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
+import { useTranslation } from 'react-i18next';
 import { GlassView } from '../components/ui';
 import { podcastService } from '../services/api';
 import { colors, spacing, borderRadius } from '../theme';
@@ -126,6 +127,7 @@ const PodcastCard: React.FC<{
 };
 
 export const PodcastsScreen: React.FC = () => {
+  const { t } = useTranslation();
   const navigation = useNavigation<any>();
   const [isLoading, setIsLoading] = useState(true);
   const [shows, setShows] = useState<PodcastShow[]>([]);
@@ -164,11 +166,11 @@ export const PodcastsScreen: React.FC = () => {
         setCategories(data.categories);
       } else {
         setCategories([
-          { id: 'news', name: 'חדשות' },
-          { id: 'entertainment', name: 'בידור' },
-          { id: 'tech', name: 'טכנולוגיה' },
-          { id: 'sports', name: 'ספורט' },
-          { id: 'stories', name: 'סיפורים' },
+          { id: 'news', name: 'podcasts.categories.news' },
+          { id: 'comedy', name: 'podcasts.categories.comedy' },
+          { id: 'tech', name: 'podcasts.categories.tech' },
+          { id: 'society', name: 'podcasts.categories.society' },
+          { id: 'history', name: 'podcasts.categories.history' },
         ]);
       }
     } catch (error) {
@@ -190,7 +192,7 @@ export const PodcastsScreen: React.FC = () => {
     return (
       <View style={styles.loadingContainer}>
         <ActivityIndicator size="large" color={colors.success} />
-        <Text style={styles.loadingText}>טוען פודקאסטים...</Text>
+        <Text style={styles.loadingText}>{t('common.loading')}</Text>
       </View>
     );
   }
@@ -203,8 +205,8 @@ export const PodcastsScreen: React.FC = () => {
           <Text style={styles.headerIconText}>🎙️</Text>
         </View>
         <View>
-          <Text style={styles.title}>פודקאסטים</Text>
-          <Text style={styles.subtitle}>{shows.length} תוכניות</Text>
+          <Text style={styles.title}>{t('podcasts.title')}</Text>
+          <Text style={styles.subtitle}>{shows.length} {t('podcasts.shows')}</Text>
         </View>
       </View>
 
@@ -223,7 +225,7 @@ export const PodcastsScreen: React.FC = () => {
               selectedCategory === 'all' && styles.categoryTextActive,
             ]}
           >
-            הכל
+            {t('podcasts.categories.all')}
           </Text>
         </TouchableOpacity>
         {categories.map((category) => (
@@ -241,7 +243,7 @@ export const PodcastsScreen: React.FC = () => {
                 selectedCategory === category.id && styles.categoryTextActive,
               ]}
             >
-              {category.name}
+              {t(category.name)}
             </Text>
           </TouchableOpacity>
         ))}

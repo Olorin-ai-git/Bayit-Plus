@@ -1,0 +1,214 @@
+{
+  "common": {
+    "loading": "Loading...",
+    "error": "Error",
+    "retry": "Retry",
+    "cancel": "Cancel",
+    "save": "Save",
+    "close": "Close",
+    "back": "Back",
+    "next": "Next",
+    "search": "Search",
+    "watchNow": "Watch Now",
+    "playNow": "Play Now",
+    "new": "New",
+    "live": "Live",
+    "recommended": "Recommended",
+    "edit": "Edit",
+    "delete": "Delete"
+  },
+  "nav": {
+    "home": "Home",
+    "vod": "Movies",
+    "liveTV": "Live TV",
+    "radio": "Radio",
+    "podcasts": "Podcasts",
+    "profile": "Profile",
+    "search": "Search",
+    "settings": "Settings",
+    "favorites": "Favorites",
+    "watchlist": "Watchlist",
+    "downloads": "Downloads",
+    "help": "Help & Support"
+  },
+  "home": {
+    "continueWatching": "Continue Watching",
+    "featuredContent": "Featured",
+    "liveChannels": "Live Channels",
+    "israeliMovies": "Israeli Movies",
+    "documentaries": "Documentaries",
+    "loadingContent": "Loading content..."
+  },
+  "search": {
+    "title": "Search",
+    "subtitle": "Find content across all platforms",
+    "placeholder": "Search movies, series, channels, podcasts...",
+    "voicePlaceholder": "Speak now...",
+    "searching": "Searching...",
+    "noResults": "No results found",
+    "tryDifferent": "Try different search terms",
+    "filters": {
+      "all": "All",
+      "moviesAndSeries": "Movies & Series",
+      "channels": "Channels",
+      "radio": "Radio",
+      "podcasts": "Podcasts"
+    }
+  },
+  "liveTV": {
+    "title": "Live TV",
+    "channels": "Channels",
+    "nowPlaying": "Now Playing",
+    "categories": {
+      "all": "All",
+      "news": "News",
+      "sports": "Sports",
+      "entertainment": "Entertainment",
+      "kids": "Kids",
+      "documentary": "Documentary"
+    }
+  },
+  "radio": {
+    "title": "Radio",
+    "stations": "Stations",
+    "nowPlaying": "Now Playing",
+    "genres": {
+      "all": "All",
+      "news": "News",
+      "music": "Music",
+      "talk": "Talk",
+      "army": "Army"
+    }
+  },
+  "podcasts": {
+    "title": "Podcasts",
+    "shows": "Shows",
+    "episodes": "Episodes",
+    "categories": {
+      "all": "All",
+      "news": "News",
+      "comedy": "Comedy",
+      "society": "Society",
+      "tech": "Technology",
+      "history": "History"
+    }
+  },
+  "vod": {
+    "title": "Movies & Series",
+    "movies": "Movies",
+    "series": "Series",
+    "categories": {
+      "all": "All",
+      "drama": "Drama",
+      "comedy": "Comedy",
+      "action": "Action",
+      "documentary": "Documentary",
+      "kids": "Kids"
+    }
+  },
+  "account": {
+    "title": "My Account",
+    "profile": "Profile",
+    "settings": "Settings",
+    "subscription": "Subscription",
+    "manageSubscription": "Manage Subscription",
+    "personalDetails": "Personal Details",
+    "billing": "Billing & Payment",
+    "logout": "Logout",
+    "login": "Login",
+    "register": "Register",
+    "email": "Email",
+    "password": "Password",
+    "name": "Name",
+    "guest": "Guest",
+    "premium": "Premium",
+    "basic": "Basic"
+  },
+  "profile": {
+    "title": "Account Settings",
+    "tabs": {
+      "personal": "Profile",
+      "billing": "Billing",
+      "subscription": "Subscription",
+      "notifications": "Notifications",
+      "security": "Security"
+    },
+    "billing": {
+      "paymentMethods": "Payment Methods",
+      "addCard": "Add Card",
+      "expires": "Expires:",
+      "default": "Default",
+      "history": "Billing History",
+      "date": "Date",
+      "description": "Description",
+      "amount": "Amount",
+      "status": "Status",
+      "paid": "Paid",
+      "pending": "Pending",
+      "downloadInvoices": "Download Invoices",
+      "billingAddress": "Billing Address",
+      "editAddress": "Edit Address"
+    },
+    "subscription": {
+      "currentPlan": "Current Plan",
+      "status": "Status",
+      "active": "Active",
+      "renewsOn": "Renews on",
+      "noActivePlan": "No active subscription",
+      "availablePlans": "Available Plans",
+      "choosePlan": "Choose the plan that suits you",
+      "recommended": "Recommended",
+      "selectPlan": "Select Plan",
+      "manageSubscription": "Manage Subscription",
+      "cancelSubscription": "Cancel Subscription",
+      "cancelNote": "Cancellation will take effect at the end of the current billing period"
+    },
+    "plans": {
+      "basic": {
+        "name": "Basic",
+        "price": "Free",
+        "feature1": "Access to basic content",
+        "feature2": "SD quality",
+        "feature3": "1 device"
+      },
+      "premium": {
+        "name": "Premium",
+        "price": "$7.99/month",
+        "feature1": "Access to all content",
+        "feature2": "HD quality",
+        "feature3": "Up to 3 devices",
+        "feature4": "No ads"
+      },
+      "family": {
+        "name": "Family",
+        "price": "$12.99/month",
+        "feature1": "Access to all content",
+        "feature2": "4K quality",
+        "feature3": "Up to 6 devices",
+        "feature4": "No ads",
+        "feature5": "Kids profiles"
+      }
+    }
+  },
+  "settings": {
+    "title": "Settings",
+    "language": "Language",
+    "notifications": "Notifications",
+    "playback": "Playback Settings",
+    "quality": "Quality",
+    "subtitles": "Subtitles",
+    "autoplay": "Autoplay",
+    "about": "About"
+  },
+  "voice": {
+    "listening": "Listening...",
+    "tapToSpeak": "Tap to speak",
+    "processing": "Processing...",
+    "error": "Couldn't hear you, please try again"
+  },
+  "errors": {
+    "networkError": "Network Error",
+    "loadingFailed": "Loading Failed",
+    "tryAgain": "Try Again"
+  }
+}

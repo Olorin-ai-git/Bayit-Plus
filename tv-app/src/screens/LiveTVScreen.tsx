@@ -10,6 +10,7 @@ import {
   Image,
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
+import { useTranslation } from 'react-i18next';
 import { liveService } from '../services/api';
 import { colors } from '../theme';
 
@@ -101,17 +102,18 @@ const ChannelCard: React.FC<{
 };
 
 export const LiveTVScreen: React.FC = () => {
+  const { t } = useTranslation();
   const navigation = useNavigation<any>();
   const [isLoading, setIsLoading] = useState(true);
   const [channels, setChannels] = useState<Channel[]>([]);
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
 
   const categories = [
-    { id: 'all', label: 'הכל' },
-    { id: 'news', label: 'חדשות' },
-    { id: 'entertainment', label: 'בידור' },
-    { id: 'sports', label: 'ספורט' },
-    { id: 'kids', label: 'ילדים' },
+    { id: 'all', labelKey: 'liveTV.categories.all' },
+    { id: 'news', labelKey: 'liveTV.categories.news' },
+    { id: 'entertainment', labelKey: 'liveTV.categories.entertainment' },
+    { id: 'sports', labelKey: 'liveTV.categories.sports' },
+    { id: 'kids', labelKey: 'liveTV.categories.kids' },
   ];
 
   useEffect(() => {
@@ -172,7 +174,7 @@ export const LiveTVScreen: React.FC = () => {
     return (
       <View style={styles.loadingContainer}>
         <ActivityIndicator size="large" color="#00d9ff" />
-        <Text style={styles.loadingText}>טוען ערוצים...</Text>
+        <Text style={styles.loadingText}>{t('common.loading')}</Text>
       </View>
     );
   }
@@ -185,8 +187,8 @@ export const LiveTVScreen: React.FC = () => {
           <Text style={styles.headerIconText}>📺</Text>
         </View>
         <View>
-          <Text style={styles.title}>שידור חי</Text>
-          <Text style={styles.subtitle}>{filteredChannels.length} ערוצים</Text>
+          <Text style={styles.title}>{t('liveTV.title')}</Text>
+          <Text style={styles.subtitle}>{filteredChannels.length} {t('liveTV.channels')}</Text>
         </View>
       </View>
 
@@ -208,7 +210,7 @@ export const LiveTVScreen: React.FC = () => {
                 selectedCategory === cat.id && styles.categoryTextActive,
               ]}
             >
-              {cat.label}
+              {t(cat.labelKey)}
             </Text>
           </TouchableOpacity>
         ))}

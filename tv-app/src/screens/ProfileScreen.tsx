@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
@@ -7,25 +7,82 @@ import {
   ScrollView,
   Switch,
 } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, useRoute } from '@react-navigation/native';
+import { useTranslation } from 'react-i18next';
 import { GlassView, GlassButton } from '../components/ui';
 import { useAuthStore } from '../stores/authStore';
 import { colors, spacing, borderRadius } from '../theme';
 import { isTV } from '../utils/platform';
 
-type TabId = 'profile' | 'subscription' | 'notifications' | 'security';
+type TabId = 'profile' | 'billing' | 'subscription' | 'notifications' | 'security';
 
 interface Tab {
   id: TabId;
   icon: string;
-  label: string;
+  labelKey: string;
 }
 
 const TABS: Tab[] = [
-  { id: 'profile', icon: '👤', label: 'פרופיל' },
-  { id: 'subscription', icon: '💳', label: 'מנוי' },
-  { id: 'notifications', icon: '🔔', label: 'התראות' },
-  { id: 'security', icon: '🛡️', label: 'אבטחה' },
+  { id: 'profile', icon: '👤', labelKey: 'profile.tabs.personal' },
+  { id: 'billing', icon: '💳', labelKey: 'profile.tabs.billing' },
+  { id: 'subscription', icon: '⭐', labelKey: 'profile.tabs.subscription' },
+  { id: 'notifications', icon: '🔔', labelKey: 'profile.tabs.notifications' },
+  { id: 'security', icon: '🛡️', labelKey: 'profile.tabs.security' },
+];
+
+// Subscription plans
+const SUBSCRIPTION_PLANS = [
+  {
+    id: 'basic',
+    nameKey: 'profile.plans.basic.name',
+    price: 'חינם',
+    priceKey: 'profile.plans.basic.price',
+    features: [
+      'profile.plans.basic.feature1',
+      'profile.plans.basic.feature2',
+      'profile.plans.basic.feature3',
+    ],
+    recommended: false,
+  },
+  {
+    id: 'premium',
+    nameKey: 'profile.plans.premium.name',
+    price: '₪29.90/חודש',
+    priceKey: 'profile.plans.premium.price',
+    features: [
+      'profile.plans.premium.feature1',
+      'profile.plans.premium.feature2',
+      'profile.plans.premium.feature3',
+      'profile.plans.premium.feature4',
+    ],
+    recommended: true,
+  },
+  {
+    id: 'family',
+    nameKey: 'profile.plans.family.name',
+    price: '₪49.90/חודש',
+    priceKey: 'profile.plans.family.price',
+    features: [
+      'profile.plans.family.feature1',
+      'profile.plans.family.feature2',
+      'profile.plans.family.feature3',
+      'profile.plans.family.feature4',
+      'profile.plans.family.feature5',
+    ],
+    recommended: false,
+  },
+];
+
+// Mock billing data
+const MOCK_PAYMENT_METHODS = [
+  { id: '1', type: 'visa', last4: '4242', expiry: '12/25', isDefault: true },
+  { id: '2', type: 'mastercard', last4: '8888', expiry: '06/26', isDefault: false },
+];
+
+const MOCK_BILLING_HISTORY = [
+  { id: '1', date: '01/01/2025', amount: '₪29.90', status: 'paid', description: 'מנוי פרימיום - ינואר' },
+  { id: '2', date: '01/12/2024', amount: '₪29.90', status: 'paid', description: 'מנוי פרימיום - דצמבר' },
+  { id: '3', date: '01/11/2024', amount: '₪29.90', status: 'paid', description: 'מנוי פרימיום - נובמבר' },
 ];
 
 const NOTIFICATION_SETTINGS = [
@@ -36,7 +93,9 @@ const NOTIFICATION_SETTINGS = [
 ];
 
 export const ProfileScreen: React.FC = () => {
+  const { t } = useTranslation();
   const navigation = useNavigation<any>();
+  const route = useRoute<any>();
   const { user, isAuthenticated, logout } = useAuthStore();
   const [activeTab, setActiveTab] = useState<TabId>('profile');
   const [notifications, setNotifications] = useState<Record<string, boolean>>({
@@ -45,6 +104,13 @@ export const ProfileScreen: React.FC = () => {
     recommendations: false,
     updates: true,
   });
+
+  // Handle deep linking to specific tab
+  useEffect(() => {
+    if (route.params?.tab) {
+      setActiveTab(route.params.tab as TabId);
+    }
+  }, [route.params?.tab]);
 
   if (!isAuthenticated) {
     navigation.navigate('Login');
@@ -90,52 +156,183 @@ export const ProfileScreen: React.FC = () => {
     </GlassView>
   );
 
-  const renderSubscriptionTab = () => (
-    <GlassView style={styles.contentCard}>
-      <Text style={styles.sectionTitle}>פרטי מנוי</Text>
+  const renderBillingTab = () => (
+    <ScrollView showsVerticalScrollIndicator={false}>
+      {/* Payment Methods */}
+      <GlassView style={styles.contentCard}>
+        <View style={styles.sectionHeader}>
+          <Text style={styles.sectionTitle}>{t('profile.billing.paymentMethods')}</Text>
+          <TouchableOpacity style={styles.addButton}>
+            <Text style={styles.addButtonText}>+ {t('profile.billing.addCard')}</Text>
+          </TouchableOpacity>
+        </View>
 
-      {user?.subscription ? (
-        <View>
-          <GlassView style={styles.subscriptionCard}>
-            <View style={styles.subscriptionHeader}>
-              <Text style={styles.planName}>{user.subscription.plan}</Text>
-              <Text style={styles.planPrice}>פעיל</Text>
+        {MOCK_PAYMENT_METHODS.map((method) => (
+          <View key={method.id} style={styles.paymentMethod}>
+            <View style={styles.cardInfo}>
+              <Text style={styles.cardIcon}>
+                {method.type === 'visa' ? '💳' : '💳'}
+              </Text>
+              <View style={styles.cardDetails}>
+                <Text style={styles.cardType}>
+                  {method.type.toUpperCase()} •••• {method.last4}
+                </Text>
+                <Text style={styles.cardExpiry}>
+                  {t('profile.billing.expires')} {method.expiry}
+                </Text>
+              </View>
             </View>
-            <Text style={styles.subscriptionInfo}>
-              סטטוס: {user.subscription.status}
-            </Text>
+            <View style={styles.cardActions}>
+              {method.isDefault && (
+                <View style={styles.defaultBadge}>
+                  <Text style={styles.defaultBadgeText}>{t('profile.billing.default')}</Text>
+                </View>
+              )}
+              <TouchableOpacity style={styles.cardActionButton}>
+                <Text style={styles.cardActionText}>{t('common.edit')}</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        ))}
+      </GlassView>
+
+      {/* Billing History */}
+      <GlassView style={styles.contentCard}>
+        <Text style={styles.sectionTitle}>{t('profile.billing.history')}</Text>
+
+        <View style={styles.billingTable}>
+          <View style={styles.billingHeader}>
+            <Text style={styles.billingHeaderText}>{t('profile.billing.date')}</Text>
+            <Text style={styles.billingHeaderText}>{t('profile.billing.description')}</Text>
+            <Text style={styles.billingHeaderText}>{t('profile.billing.amount')}</Text>
+            <Text style={styles.billingHeaderText}>{t('profile.billing.status')}</Text>
+          </View>
+          {MOCK_BILLING_HISTORY.map((item) => (
+            <View key={item.id} style={styles.billingRow}>
+              <Text style={styles.billingCell}>{item.date}</Text>
+              <Text style={styles.billingCell}>{item.description}</Text>
+              <Text style={styles.billingCell}>{item.amount}</Text>
+              <View style={[styles.statusBadge, item.status === 'paid' && styles.statusPaid]}>
+                <Text style={styles.statusText}>
+                  {item.status === 'paid' ? t('profile.billing.paid') : t('profile.billing.pending')}
+                </Text>
+              </View>
+            </View>
+          ))}
+        </View>
+
+        <TouchableOpacity style={styles.downloadInvoice}>
+          <Text style={styles.downloadInvoiceText}>📄 {t('profile.billing.downloadInvoices')}</Text>
+        </TouchableOpacity>
+      </GlassView>
+
+      {/* Billing Address */}
+      <GlassView style={styles.contentCard}>
+        <Text style={styles.sectionTitle}>{t('profile.billing.billingAddress')}</Text>
+        <View style={styles.addressCard}>
+          <Text style={styles.addressText}>{user?.name}</Text>
+          <Text style={styles.addressText}>רחוב הראשי 123</Text>
+          <Text style={styles.addressText}>תל אביב, ישראל 6100000</Text>
+        </View>
+        <GlassButton
+          title={t('profile.billing.editAddress')}
+          onPress={() => {}}
+          variant="secondary"
+          style={styles.editAddressButton}
+        />
+      </GlassView>
+    </ScrollView>
+  );
+
+  const renderSubscriptionTab = () => (
+    <ScrollView showsVerticalScrollIndicator={false}>
+      {/* Current Plan */}
+      <GlassView style={styles.contentCard}>
+        <Text style={styles.sectionTitle}>{t('profile.subscription.currentPlan')}</Text>
+
+        {user?.subscription ? (
+          <View style={styles.currentPlanCard}>
+            <View style={styles.currentPlanHeader}>
+              <View>
+                <Text style={styles.currentPlanName}>{user.subscription.plan}</Text>
+                <Text style={styles.currentPlanStatus}>
+                  {t('profile.subscription.status')}: {user.subscription.status}
+                </Text>
+              </View>
+              <View style={styles.activeBadge}>
+                <Text style={styles.activeBadgeText}>{t('profile.subscription.active')}</Text>
+              </View>
+            </View>
             {user.subscription.end_date && (
-              <Text style={styles.subscriptionInfo}>
-                מתחדש ב-{user.subscription.end_date}
+              <Text style={styles.renewalDate}>
+                {t('profile.subscription.renewsOn')} {user.subscription.end_date}
               </Text>
             )}
-          </GlassView>
-
-          <View style={styles.subscriptionActions}>
-            <GlassButton
-              title="שדרג מנוי"
-              onPress={() => navigation.navigate('Subscribe')}
-              variant="primary"
-            />
-            <GlassButton
-              title="בטל מנוי"
-              onPress={() => {}}
-              variant="danger"
-            />
           </View>
+        ) : (
+          <View style={styles.noPlanCard}>
+            <Text style={styles.noPlanIcon}>📺</Text>
+            <Text style={styles.noPlanText}>{t('profile.subscription.noActivePlan')}</Text>
+          </View>
+        )}
+      </GlassView>
+
+      {/* Upgrade Options */}
+      <GlassView style={styles.contentCard}>
+        <Text style={styles.sectionTitle}>{t('profile.subscription.availablePlans')}</Text>
+        <Text style={styles.upgradeSubtitle}>{t('profile.subscription.choosePlan')}</Text>
+
+        <View style={styles.plansGrid}>
+          {SUBSCRIPTION_PLANS.map((plan) => {
+            const isCurrentPlan = user?.subscription?.plan?.toLowerCase() === plan.id;
+            return (
+              <View
+                key={plan.id}
+                style={[
+                  styles.planCard,
+                  plan.recommended && styles.planCardRecommended,
+                  isCurrentPlan && styles.planCardCurrent,
+                ]}
+              >
+                {plan.recommended && (
+                  <View style={styles.recommendedBadge}>
+                    <Text style={styles.recommendedText}>{t('profile.subscription.recommended')}</Text>
+                  </View>
+                )}
+                <Text style={styles.planCardName}>{t(plan.nameKey)}</Text>
+                <Text style={styles.planCardPrice}>{plan.price}</Text>
+                <View style={styles.planFeatures}>
+                  {plan.features.map((feature, index) => (
+                    <View key={index} style={styles.featureItem}>
+                      <Text style={styles.featureCheck}>✓</Text>
+                      <Text style={styles.featureText}>{t(feature)}</Text>
+                    </View>
+                  ))}
+                </View>
+                <GlassButton
+                  title={isCurrentPlan ? t('profile.subscription.currentPlan') : t('profile.subscription.selectPlan')}
+                  onPress={() => !isCurrentPlan && navigation.navigate('Subscribe', { plan: plan.id })}
+                  variant={plan.recommended ? 'primary' : 'secondary'}
+                  disabled={isCurrentPlan}
+                  style={styles.selectPlanButton}
+                />
+              </View>
+            );
+          })}
         </View>
-      ) : (
-        <View style={styles.noSubscription}>
-          <Text style={styles.noSubIcon}>💳</Text>
-          <Text style={styles.noSubText}>אין לך מנוי פעיל</Text>
-          <GlassButton
-            title="הצטרף עכשיו"
-            onPress={() => navigation.navigate('Subscribe')}
-            variant="primary"
-          />
-        </View>
+      </GlassView>
+
+      {/* Cancel Subscription */}
+      {user?.subscription && (
+        <GlassView style={styles.contentCard}>
+          <Text style={styles.sectionTitle}>{t('profile.subscription.manageSubscription')}</Text>
+          <TouchableOpacity style={styles.cancelButton}>
+            <Text style={styles.cancelButtonText}>{t('profile.subscription.cancelSubscription')}</Text>
+          </TouchableOpacity>
+          <Text style={styles.cancelNote}>{t('profile.subscription.cancelNote')}</Text>
+        </GlassView>
       )}
-    </GlassView>
+    </ScrollView>
   );
 
   const renderNotificationsTab = () => (
@@ -193,6 +390,8 @@ export const ProfileScreen: React.FC = () => {
     switch (activeTab) {
       case 'profile':
         return renderProfileTab();
+      case 'billing':
+        return renderBillingTab();
       case 'subscription':
         return renderSubscriptionTab();
       case 'notifications':
@@ -212,7 +411,7 @@ export const ProfileScreen: React.FC = () => {
           <Text style={styles.headerIconText}>⚙️</Text>
         </View>
         <View>
-          <Text style={styles.title}>הגדרות חשבון</Text>
+          <Text style={styles.title}>{t('profile.title')}</Text>
           <Text style={styles.subtitle}>{user?.name}</Text>
         </View>
       </View>
@@ -239,7 +438,7 @@ export const ProfileScreen: React.FC = () => {
                     activeTab === tab.id && styles.tabLabelActive,
                   ]}
                 >
-                  {tab.label}
+                  {t(tab.labelKey)}
                 </Text>
               </TouchableOpacity>
             ))}
@@ -251,7 +450,7 @@ export const ProfileScreen: React.FC = () => {
               style={styles.logoutButton}
             >
               <Text style={styles.tabIcon}>🚪</Text>
-              <Text style={styles.logoutLabel}>התנתקות</Text>
+              <Text style={styles.logoutLabel}>{t('account.logout')}</Text>
             </TouchableOpacity>
           </GlassView>
         </View>
@@ -494,6 +693,298 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: colors.textMuted,
     marginRight: spacing.md,
+  },
+  // Billing styles
+  sectionHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: spacing.lg,
+  },
+  addButton: {
+    paddingHorizontal: spacing.md,
+    paddingVertical: spacing.sm,
+    borderRadius: borderRadius.md,
+    backgroundColor: 'rgba(0, 217, 255, 0.1)',
+  },
+  addButtonText: {
+    color: colors.primary,
+    fontSize: 14,
+    fontWeight: '600',
+  },
+  paymentMethod: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    backgroundColor: colors.backgroundLight,
+    borderRadius: borderRadius.lg,
+    padding: spacing.md,
+    marginBottom: spacing.sm,
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.05)',
+  },
+  cardInfo: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  cardIcon: {
+    fontSize: 28,
+    marginLeft: spacing.md,
+  },
+  cardDetails: {
+    marginLeft: spacing.sm,
+  },
+  cardType: {
+    fontSize: 16,
+    fontWeight: '500',
+    color: colors.text,
+  },
+  cardExpiry: {
+    fontSize: 13,
+    color: colors.textMuted,
+    marginTop: 2,
+  },
+  cardActions: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.sm,
+  },
+  defaultBadge: {
+    backgroundColor: 'rgba(0, 217, 255, 0.2)',
+    paddingHorizontal: spacing.sm,
+    paddingVertical: 4,
+    borderRadius: borderRadius.sm,
+  },
+  defaultBadgeText: {
+    color: colors.primary,
+    fontSize: 12,
+    fontWeight: '600',
+  },
+  cardActionButton: {
+    paddingHorizontal: spacing.sm,
+    paddingVertical: spacing.xs,
+  },
+  cardActionText: {
+    color: colors.textSecondary,
+    fontSize: 14,
+  },
+  billingTable: {
+    marginBottom: spacing.lg,
+  },
+  billingHeader: {
+    flexDirection: 'row',
+    paddingVertical: spacing.sm,
+    borderBottomWidth: 1,
+    borderBottomColor: 'rgba(255, 255, 255, 0.1)',
+  },
+  billingHeaderText: {
+    flex: 1,
+    fontSize: 13,
+    fontWeight: '600',
+    color: colors.textMuted,
+    textAlign: 'right',
+  },
+  billingRow: {
+    flexDirection: 'row',
+    paddingVertical: spacing.md,
+    borderBottomWidth: 1,
+    borderBottomColor: 'rgba(255, 255, 255, 0.05)',
+    alignItems: 'center',
+  },
+  billingCell: {
+    flex: 1,
+    fontSize: 14,
+    color: colors.text,
+    textAlign: 'right',
+  },
+  statusBadge: {
+    flex: 1,
+    alignItems: 'flex-end',
+  },
+  statusPaid: {},
+  statusText: {
+    backgroundColor: 'rgba(34, 197, 94, 0.2)',
+    color: colors.success,
+    paddingHorizontal: spacing.sm,
+    paddingVertical: 2,
+    borderRadius: borderRadius.sm,
+    fontSize: 12,
+    fontWeight: '500',
+    overflow: 'hidden',
+  },
+  downloadInvoice: {
+    alignItems: 'center',
+    paddingVertical: spacing.md,
+  },
+  downloadInvoiceText: {
+    color: colors.primary,
+    fontSize: 14,
+  },
+  addressCard: {
+    backgroundColor: colors.backgroundLight,
+    borderRadius: borderRadius.lg,
+    padding: spacing.lg,
+    marginBottom: spacing.md,
+  },
+  addressText: {
+    fontSize: 14,
+    color: colors.text,
+    textAlign: 'right',
+    marginBottom: spacing.xs,
+  },
+  editAddressButton: {
+    alignSelf: 'flex-start',
+  },
+  // Subscription upgrade styles
+  currentPlanCard: {
+    backgroundColor: colors.backgroundLight,
+    borderRadius: borderRadius.lg,
+    padding: spacing.lg,
+    borderWidth: 2,
+    borderColor: colors.primary,
+  },
+  currentPlanHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'flex-start',
+  },
+  currentPlanName: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    color: colors.text,
+    textAlign: 'right',
+  },
+  currentPlanStatus: {
+    fontSize: 14,
+    color: colors.textSecondary,
+    marginTop: spacing.xs,
+    textAlign: 'right',
+  },
+  activeBadge: {
+    backgroundColor: 'rgba(34, 197, 94, 0.2)',
+    paddingHorizontal: spacing.md,
+    paddingVertical: spacing.xs,
+    borderRadius: borderRadius.md,
+  },
+  activeBadgeText: {
+    color: colors.success,
+    fontSize: 14,
+    fontWeight: '600',
+  },
+  renewalDate: {
+    fontSize: 14,
+    color: colors.textMuted,
+    marginTop: spacing.md,
+    textAlign: 'right',
+  },
+  noPlanCard: {
+    alignItems: 'center',
+    paddingVertical: spacing.xxl,
+  },
+  noPlanIcon: {
+    fontSize: 64,
+    marginBottom: spacing.md,
+  },
+  noPlanText: {
+    fontSize: 18,
+    color: colors.textMuted,
+  },
+  upgradeSubtitle: {
+    fontSize: 14,
+    color: colors.textSecondary,
+    textAlign: 'right',
+    marginBottom: spacing.lg,
+    marginTop: -spacing.md,
+  },
+  plansGrid: {
+    flexDirection: 'row',
+    gap: spacing.lg,
+    flexWrap: 'wrap',
+  },
+  planCard: {
+    flex: 1,
+    minWidth: 250,
+    backgroundColor: colors.backgroundLight,
+    borderRadius: borderRadius.xl,
+    padding: spacing.lg,
+    borderWidth: 2,
+    borderColor: 'rgba(255, 255, 255, 0.1)',
+  },
+  planCardRecommended: {
+    borderColor: colors.primary,
+    backgroundColor: 'rgba(0, 217, 255, 0.05)',
+  },
+  planCardCurrent: {
+    borderColor: colors.success,
+  },
+  recommendedBadge: {
+    position: 'absolute',
+    top: -12,
+    right: spacing.lg,
+    backgroundColor: colors.primary,
+    paddingHorizontal: spacing.md,
+    paddingVertical: spacing.xs,
+    borderRadius: borderRadius.md,
+  },
+  recommendedText: {
+    color: colors.background,
+    fontSize: 12,
+    fontWeight: 'bold',
+  },
+  planCardName: {
+    fontSize: 22,
+    fontWeight: 'bold',
+    color: colors.text,
+    textAlign: 'right',
+    marginBottom: spacing.sm,
+    marginTop: spacing.sm,
+  },
+  planCardPrice: {
+    fontSize: 28,
+    fontWeight: 'bold',
+    color: colors.primary,
+    textAlign: 'right',
+    marginBottom: spacing.lg,
+  },
+  planFeatures: {
+    marginBottom: spacing.lg,
+  },
+  featureItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: spacing.sm,
+  },
+  featureCheck: {
+    fontSize: 16,
+    color: colors.success,
+    marginLeft: spacing.sm,
+  },
+  featureText: {
+    fontSize: 14,
+    color: colors.text,
+    flex: 1,
+    textAlign: 'right',
+  },
+  selectPlanButton: {
+    marginTop: 'auto',
+  },
+  cancelButton: {
+    alignSelf: 'flex-start',
+    paddingVertical: spacing.md,
+    paddingHorizontal: spacing.lg,
+    borderRadius: borderRadius.md,
+    borderWidth: 1,
+    borderColor: colors.error,
+  },
+  cancelButtonText: {
+    color: colors.error,
+    fontSize: 14,
+  },
+  cancelNote: {
+    fontSize: 12,
+    color: colors.textMuted,
+    marginTop: spacing.md,
+    textAlign: 'right',
   },
 });
 

@@ -12,6 +12,7 @@ import {
   TextInput,
 } from 'react-native';
 import { useNavigation, useRoute } from '@react-navigation/native';
+import { useTranslation } from 'react-i18next';
 import { GlassView, GlassInput } from '../components/ui';
 import { contentService } from '../services/api';
 import { colors, spacing, borderRadius } from '../theme';
@@ -29,15 +30,15 @@ interface SearchResult {
 
 interface FilterOption {
   id: string;
-  label: string;
+  labelKey: string;
 }
 
 const FILTER_OPTIONS: FilterOption[] = [
-  { id: 'all', label: 'הכל' },
-  { id: 'vod', label: 'סרטים וסדרות' },
-  { id: 'live', label: 'ערוצים' },
-  { id: 'radio', label: 'רדיו' },
-  { id: 'podcast', label: 'פודקאסטים' },
+  { id: 'all', labelKey: 'search.filters.all' },
+  { id: 'vod', labelKey: 'search.filters.moviesAndSeries' },
+  { id: 'live', labelKey: 'search.filters.channels' },
+  { id: 'radio', labelKey: 'search.filters.radio' },
+  { id: 'podcast', labelKey: 'search.filters.podcasts' },
 ];
 
 const getTypeIcon = (type: string): string => {
@@ -128,6 +129,7 @@ const ResultCard: React.FC<{
 };
 
 export const SearchScreen: React.FC = () => {
+  const { t } = useTranslation();
   const navigation = useNavigation<any>();
   const route = useRoute<any>();
   const [query, setQuery] = useState(route.params?.query || '');
@@ -220,8 +222,8 @@ export const SearchScreen: React.FC = () => {
           <Text style={styles.headerIconText}>🔍</Text>
         </View>
         <View>
-          <Text style={styles.title}>חיפוש</Text>
-          <Text style={styles.subtitle}>מצא תוכן בכל הפלטפורמות</Text>
+          <Text style={styles.title}>{t('search.title')}</Text>
+          <Text style={styles.subtitle}>{t('search.subtitle')}</Text>
         </View>
       </View>
 
@@ -234,7 +236,7 @@ export const SearchScreen: React.FC = () => {
             value={query}
             onChangeText={setQuery}
             onSubmitEditing={handleSearch}
-            placeholder="חפש סרטים, סדרות, ערוצים, פודקאסטים..."
+            placeholder={t('search.placeholder')}
             placeholderTextColor={colors.textMuted}
             returnKeyType="search"
             autoFocus={!isTV}
@@ -274,7 +276,7 @@ export const SearchScreen: React.FC = () => {
                 selectedFilter === filter.id && styles.filterTextActive,
               ]}
             >
-              {filter.label}
+              {t(filter.labelKey)}
             </Text>
           </TouchableOpacity>
         ))}
@@ -284,12 +286,12 @@ export const SearchScreen: React.FC = () => {
       {isLoading ? (
         <View style={styles.loadingContainer}>
           <ActivityIndicator size="large" color={colors.primary} />
-          <Text style={styles.loadingText}>מחפש...</Text>
+          <Text style={styles.loadingText}>{t('search.searching')}</Text>
         </View>
       ) : results.length > 0 ? (
         <View style={styles.resultsContainer}>
           <Text style={styles.resultsCount}>
-            נמצאו {results.length} תוצאות עבור "{query}"
+            {results.length} results for "{query}"
           </Text>
           <FlatList
             data={results}
@@ -310,17 +312,17 @@ export const SearchScreen: React.FC = () => {
         <View style={styles.emptyState}>
           <GlassView style={styles.emptyCard}>
             <Text style={styles.emptyIcon}>🔍</Text>
-            <Text style={styles.emptyTitle}>לא נמצאו תוצאות</Text>
-            <Text style={styles.emptySubtitle}>נסה לחפש משהו אחר או לשנות את הסינון</Text>
+            <Text style={styles.emptyTitle}>{t('search.noResults')}</Text>
+            <Text style={styles.emptySubtitle}>{t('search.tryDifferent')}</Text>
           </GlassView>
         </View>
       ) : (
         <View style={styles.emptyState}>
           <GlassView style={styles.emptyCard}>
             <Text style={styles.emptyIcon}>🔍</Text>
-            <Text style={styles.emptyTitle}>מה אתה מחפש?</Text>
+            <Text style={styles.emptyTitle}>{t('common.search')}</Text>
             <Text style={styles.emptySubtitle}>
-              חפש סרטים, סדרות, ערוצים, תחנות רדיו ופודקאסטים
+              {t('search.placeholder')}
             </Text>
           </GlassView>
         </View>

@@ -10,6 +10,7 @@ import {
   Image,
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
+import { useTranslation } from 'react-i18next';
 import { radioService } from '../services/api';
 import { colors } from '../theme';
 
@@ -143,17 +144,18 @@ const StationCard: React.FC<{
 };
 
 export const RadioScreen: React.FC = () => {
+  const { t } = useTranslation();
   const navigation = useNavigation<any>();
   const [isLoading, setIsLoading] = useState(true);
   const [stations, setStations] = useState<RadioStation[]>([]);
   const [selectedGenre, setSelectedGenre] = useState<string>('all');
 
   const genres = [
-    { id: 'all', label: 'הכל' },
-    { id: 'news', label: 'חדשות' },
-    { id: 'music', label: 'מוזיקה' },
-    { id: 'talk', label: 'טוק' },
-    { id: 'army', label: 'צבאי' },
+    { id: 'all', labelKey: 'radio.genres.all' },
+    { id: 'news', labelKey: 'radio.genres.news' },
+    { id: 'music', labelKey: 'radio.genres.music' },
+    { id: 'talk', labelKey: 'radio.genres.talk' },
+    { id: 'army', labelKey: 'radio.genres.army' },
   ];
 
   useEffect(() => {
@@ -212,7 +214,7 @@ export const RadioScreen: React.FC = () => {
     return (
       <View style={styles.loadingContainer}>
         <ActivityIndicator size="large" color="#00d9ff" />
-        <Text style={styles.loadingText}>טוען תחנות...</Text>
+        <Text style={styles.loadingText}>{t('common.loading')}</Text>
       </View>
     );
   }
@@ -225,8 +227,8 @@ export const RadioScreen: React.FC = () => {
           <Text style={styles.headerIconText}>📻</Text>
         </View>
         <View>
-          <Text style={styles.title}>רדיו</Text>
-          <Text style={styles.subtitle}>{filteredStations.length} תחנות</Text>
+          <Text style={styles.title}>{t('radio.title')}</Text>
+          <Text style={styles.subtitle}>{filteredStations.length} {t('radio.stations')}</Text>
         </View>
       </View>
 
@@ -247,7 +249,7 @@ export const RadioScreen: React.FC = () => {
                 selectedGenre === genre.id && styles.genreButtonTextActive,
               ]}
             >
-              {genre.label}
+              {t(genre.labelKey)}
             </Text>
           </TouchableOpacity>
         ))}

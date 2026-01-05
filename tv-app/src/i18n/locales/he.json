@@ -1,0 +1,214 @@
+{
+  "common": {
+    "loading": "טוען...",
+    "error": "שגיאה",
+    "retry": "נסה שוב",
+    "cancel": "ביטול",
+    "save": "שמור",
+    "close": "סגור",
+    "back": "חזור",
+    "next": "הבא",
+    "search": "חיפוש",
+    "watchNow": "צפה עכשיו",
+    "playNow": "נגן עכשיו",
+    "new": "חדש",
+    "live": "שידור חי",
+    "recommended": "מומלץ",
+    "edit": "ערוך",
+    "delete": "מחק"
+  },
+  "nav": {
+    "home": "ראשי",
+    "vod": "סרטים",
+    "liveTV": "שידור חי",
+    "radio": "רדיו",
+    "podcasts": "פודקאסטים",
+    "profile": "פרופיל",
+    "search": "חיפוש",
+    "settings": "הגדרות",
+    "favorites": "מועדפים",
+    "watchlist": "רשימת צפייה",
+    "downloads": "הורדות",
+    "help": "עזרה ותמיכה"
+  },
+  "home": {
+    "continueWatching": "המשך צפייה",
+    "featuredContent": "מומלצים",
+    "liveChannels": "ערוצים בשידור חי",
+    "israeliMovies": "סרטים ישראליים",
+    "documentaries": "דוקומנטרים",
+    "loadingContent": "טוען תוכן..."
+  },
+  "search": {
+    "title": "חיפוש",
+    "subtitle": "מצא תוכן בכל הפלטפורמות",
+    "placeholder": "חפש סרטים, סדרות, ערוצים, פודקאסטים...",
+    "voicePlaceholder": "דבר עכשיו...",
+    "searching": "מחפש...",
+    "noResults": "לא נמצאו תוצאות",
+    "tryDifferent": "נסה מילות חיפוש אחרות",
+    "filters": {
+      "all": "הכל",
+      "moviesAndSeries": "סרטים וסדרות",
+      "channels": "ערוצים",
+      "radio": "רדיו",
+      "podcasts": "פודקאסטים"
+    }
+  },
+  "liveTV": {
+    "title": "טלוויזיה חיה",
+    "channels": "ערוצים",
+    "nowPlaying": "עכשיו בשידור",
+    "categories": {
+      "all": "הכל",
+      "news": "חדשות",
+      "sports": "ספורט",
+      "entertainment": "בידור",
+      "kids": "ילדים",
+      "documentary": "דוקומנטרי"
+    }
+  },
+  "radio": {
+    "title": "רדיו",
+    "stations": "תחנות",
+    "nowPlaying": "עכשיו משמיע",
+    "genres": {
+      "all": "הכל",
+      "news": "חדשות",
+      "music": "מוזיקה",
+      "talk": "טוק",
+      "army": "צבאי"
+    }
+  },
+  "podcasts": {
+    "title": "פודקאסטים",
+    "shows": "תוכניות",
+    "episodes": "פרקים",
+    "categories": {
+      "all": "הכל",
+      "news": "חדשות",
+      "comedy": "קומדיה",
+      "society": "חברה",
+      "tech": "טכנולוגיה",
+      "history": "היסטוריה"
+    }
+  },
+  "vod": {
+    "title": "סרטים וסדרות",
+    "movies": "סרטים",
+    "series": "סדרות",
+    "categories": {
+      "all": "הכל",
+      "drama": "דרמה",
+      "comedy": "קומדיה",
+      "action": "אקשן",
+      "documentary": "דוקומנטרי",
+      "kids": "ילדים"
+    }
+  },
+  "account": {
+    "title": "החשבון שלי",
+    "profile": "פרופיל",
+    "settings": "הגדרות",
+    "subscription": "מנוי",
+    "manageSubscription": "נהל מנוי",
+    "personalDetails": "פרטים אישיים",
+    "billing": "חיוב ותשלום",
+    "logout": "התנתק",
+    "login": "התחבר",
+    "register": "הרשמה",
+    "email": "אימייל",
+    "password": "סיסמה",
+    "name": "שם",
+    "guest": "אורח",
+    "premium": "פרימיום",
+    "basic": "בסיסי"
+  },
+  "profile": {
+    "title": "הגדרות חשבון",
+    "tabs": {
+      "personal": "פרופיל",
+      "billing": "חיוב",
+      "subscription": "מנוי",
+      "notifications": "התראות",
+      "security": "אבטחה"
+    },
+    "billing": {
+      "paymentMethods": "אמצעי תשלום",
+      "addCard": "הוסף כרטיס",
+      "expires": "תוקף:",
+      "default": "ברירת מחדל",
+      "history": "היסטוריית חיובים",
+      "date": "תאריך",
+      "description": "תיאור",
+      "amount": "סכום",
+      "status": "סטטוס",
+      "paid": "שולם",
+      "pending": "ממתין",
+      "downloadInvoices": "הורד חשבוניות",
+      "billingAddress": "כתובת לחיוב",
+      "editAddress": "ערוך כתובת"
+    },
+    "subscription": {
+      "currentPlan": "המנוי הנוכחי",
+      "status": "סטטוס",
+      "active": "פעיל",
+      "renewsOn": "מתחדש ב-",
+      "noActivePlan": "אין לך מנוי פעיל",
+      "availablePlans": "חבילות זמינות",
+      "choosePlan": "בחר את החבילה המתאימה לך",
+      "recommended": "מומלץ",
+      "selectPlan": "בחר חבילה",
+      "manageSubscription": "ניהול מנוי",
+      "cancelSubscription": "בטל מנוי",
+      "cancelNote": "ביטול המנוי ייכנס לתוקף בסוף תקופת החיוב הנוכחית"
+    },
+    "plans": {
+      "basic": {
+        "name": "בסיסי",
+        "price": "חינם",
+        "feature1": "גישה לתוכן בסיסי",
+        "feature2": "איכות SD",
+        "feature3": "מכשיר אחד"
+      },
+      "premium": {
+        "name": "פרימיום",
+        "price": "₪29.90/חודש",
+        "feature1": "גישה לכל התוכן",
+        "feature2": "איכות HD",
+        "feature3": "עד 3 מכשירים",
+        "feature4": "ללא פרסומות"
+      },
+      "family": {
+        "name": "משפחתי",
+        "price": "₪49.90/חודש",
+        "feature1": "גישה לכל התוכן",
+        "feature2": "איכות 4K",
+        "feature3": "עד 6 מכשירים",
+        "feature4": "ללא פרסומות",
+        "feature5": "פרופילים לילדים"
+      }
+    }
+  },
+  "settings": {
+    "title": "הגדרות",
+    "language": "שפה",
+    "notifications": "התראות",
+    "playback": "הגדרות ניגון",
+    "quality": "איכות",
+    "subtitles": "כתוביות",
+    "autoplay": "ניגון אוטומטי",
+    "about": "אודות"
+  },
+  "voice": {
+    "listening": "מקשיב...",
+    "tapToSpeak": "לחץ לדיבור",
+    "processing": "מעבד...",
+    "error": "לא הצלחתי לשמוע, נסה שוב"
+  },
+  "errors": {
+    "networkError": "שגיאת רשת",
+    "loadingFailed": "טעינה נכשלה",
+    "tryAgain": "נסה שוב"
+  }
+}

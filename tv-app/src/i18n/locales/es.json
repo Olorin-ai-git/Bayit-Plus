@@ -1,0 +1,214 @@
+{
+  "common": {
+    "loading": "Cargando...",
+    "error": "Error",
+    "retry": "Reintentar",
+    "cancel": "Cancelar",
+    "save": "Guardar",
+    "close": "Cerrar",
+    "back": "Volver",
+    "next": "Siguiente",
+    "search": "Buscar",
+    "watchNow": "Ver Ahora",
+    "playNow": "Reproducir",
+    "new": "Nuevo",
+    "live": "En Vivo",
+    "recommended": "Recomendado",
+    "edit": "Editar",
+    "delete": "Eliminar"
+  },
+  "nav": {
+    "home": "Inicio",
+    "vod": "Películas",
+    "liveTV": "TV en Vivo",
+    "radio": "Radio",
+    "podcasts": "Podcasts",
+    "profile": "Perfil",
+    "search": "Buscar",
+    "settings": "Configuración",
+    "favorites": "Favoritos",
+    "watchlist": "Mi Lista",
+    "downloads": "Descargas",
+    "help": "Ayuda y Soporte"
+  },
+  "home": {
+    "continueWatching": "Continuar Viendo",
+    "featuredContent": "Destacados",
+    "liveChannels": "Canales en Vivo",
+    "israeliMovies": "Películas Israelíes",
+    "documentaries": "Documentales",
+    "loadingContent": "Cargando contenido..."
+  },
+  "search": {
+    "title": "Buscar",
+    "subtitle": "Encuentra contenido en todas las plataformas",
+    "placeholder": "Buscar películas, series, canales, podcasts...",
+    "voicePlaceholder": "Habla ahora...",
+    "searching": "Buscando...",
+    "noResults": "Sin resultados",
+    "tryDifferent": "Intenta con otros términos",
+    "filters": {
+      "all": "Todo",
+      "moviesAndSeries": "Películas y Series",
+      "channels": "Canales",
+      "radio": "Radio",
+      "podcasts": "Podcasts"
+    }
+  },
+  "liveTV": {
+    "title": "TV en Vivo",
+    "channels": "Canales",
+    "nowPlaying": "Ahora",
+    "categories": {
+      "all": "Todo",
+      "news": "Noticias",
+      "sports": "Deportes",
+      "entertainment": "Entretenimiento",
+      "kids": "Niños",
+      "documentary": "Documental"
+    }
+  },
+  "radio": {
+    "title": "Radio",
+    "stations": "Estaciones",
+    "nowPlaying": "Reproduciendo",
+    "genres": {
+      "all": "Todo",
+      "news": "Noticias",
+      "music": "Música",
+      "talk": "Talk",
+      "army": "Militar"
+    }
+  },
+  "podcasts": {
+    "title": "Podcasts",
+    "shows": "Programas",
+    "episodes": "Episodios",
+    "categories": {
+      "all": "Todo",
+      "news": "Noticias",
+      "comedy": "Comedia",
+      "society": "Sociedad",
+      "tech": "Tecnología",
+      "history": "Historia"
+    }
+  },
+  "vod": {
+    "title": "Películas y Series",
+    "movies": "Películas",
+    "series": "Series",
+    "categories": {
+      "all": "Todo",
+      "drama": "Drama",
+      "comedy": "Comedia",
+      "action": "Acción",
+      "documentary": "Documental",
+      "kids": "Niños"
+    }
+  },
+  "account": {
+    "title": "Mi Cuenta",
+    "profile": "Perfil",
+    "settings": "Configuración",
+    "subscription": "Suscripción",
+    "manageSubscription": "Gestionar Suscripción",
+    "personalDetails": "Datos Personales",
+    "billing": "Facturación y Pago",
+    "logout": "Cerrar Sesión",
+    "login": "Iniciar Sesión",
+    "register": "Registrarse",
+    "email": "Correo",
+    "password": "Contraseña",
+    "name": "Nombre",
+    "guest": "Invitado",
+    "premium": "Premium",
+    "basic": "Básico"
+  },
+  "profile": {
+    "title": "Configuración de Cuenta",
+    "tabs": {
+      "personal": "Perfil",
+      "billing": "Facturación",
+      "subscription": "Suscripción",
+      "notifications": "Notificaciones",
+      "security": "Seguridad"
+    },
+    "billing": {
+      "paymentMethods": "Métodos de Pago",
+      "addCard": "Agregar Tarjeta",
+      "expires": "Vence:",
+      "default": "Predeterminado",
+      "history": "Historial de Facturación",
+      "date": "Fecha",
+      "description": "Descripción",
+      "amount": "Monto",
+      "status": "Estado",
+      "paid": "Pagado",
+      "pending": "Pendiente",
+      "downloadInvoices": "Descargar Facturas",
+      "billingAddress": "Dirección de Facturación",
+      "editAddress": "Editar Dirección"
+    },
+    "subscription": {
+      "currentPlan": "Plan Actual",
+      "status": "Estado",
+      "active": "Activo",
+      "renewsOn": "Se renueva el",
+      "noActivePlan": "Sin suscripción activa",
+      "availablePlans": "Planes Disponibles",
+      "choosePlan": "Elige el plan que mejor se adapte a ti",
+      "recommended": "Recomendado",
+      "selectPlan": "Seleccionar Plan",
+      "manageSubscription": "Gestionar Suscripción",
+      "cancelSubscription": "Cancelar Suscripción",
+      "cancelNote": "La cancelación entrará en vigor al final del período de facturación actual"
+    },
+    "plans": {
+      "basic": {
+        "name": "Básico",
+        "price": "Gratis",
+        "feature1": "Acceso a contenido básico",
+        "feature2": "Calidad SD",
+        "feature3": "1 dispositivo"
+      },
+      "premium": {
+        "name": "Premium",
+        "price": "$7.99/mes",
+        "feature1": "Acceso a todo el contenido",
+        "feature2": "Calidad HD",
+        "feature3": "Hasta 3 dispositivos",
+        "feature4": "Sin anuncios"
+      },
+      "family": {
+        "name": "Familiar",
+        "price": "$12.99/mes",
+        "feature1": "Acceso a todo el contenido",
+        "feature2": "Calidad 4K",
+        "feature3": "Hasta 6 dispositivos",
+        "feature4": "Sin anuncios",
+        "feature5": "Perfiles para niños"
+      }
+    }
+  },
+  "settings": {
+    "title": "Configuración",
+    "language": "Idioma",
+    "notifications": "Notificaciones",
+    "playback": "Reproducción",
+    "quality": "Calidad",
+    "subtitles": "Subtítulos",
+    "autoplay": "Reproducción Automática",
+    "about": "Acerca de"
+  },
+  "voice": {
+    "listening": "Escuchando...",
+    "tapToSpeak": "Toca para hablar",
+    "processing": "Procesando...",
+    "error": "No te escuché, intenta de nuevo"
+  },
+  "errors": {
+    "networkError": "Error de Red",
+    "loadingFailed": "Carga Fallida",
+    "tryAgain": "Intentar de Nuevo"
+  }
+}
