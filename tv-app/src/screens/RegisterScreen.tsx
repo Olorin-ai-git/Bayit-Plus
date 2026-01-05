@@ -12,12 +12,16 @@ import {
   Platform,
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
+import { useTranslation } from 'react-i18next';
 import { GlassView, GlassButton } from '../components/ui';
 import { useAuthStore } from '../stores/authStore';
 import { colors, spacing, borderRadius } from '../theme';
 import { isTV, isWeb } from '../utils/platform';
+import { useDirection } from '../hooks/useDirection';
 
 export const RegisterScreen: React.FC = () => {
+  const { t } = useTranslation();
+  const { isRTL, textAlign } = useDirection();
   const navigation = useNavigation<any>();
   const { register, loginWithGoogle, isLoading, error, clearError } = useAuthStore();
 
@@ -36,17 +40,17 @@ export const RegisterScreen: React.FC = () => {
     clearError();
 
     if (!formData.name || !formData.email || !formData.password) {
-      setFormError('נא למלא את כל השדות');
+      setFormError(t('register.errors.fillAllFields'));
       return;
     }
 
     if (formData.password !== formData.confirmPassword) {
-      setFormError('הסיסמאות אינן תואמות');
+      setFormError(t('register.errors.passwordMismatch'));
       return;
     }
 
     if (formData.password.length < 8) {
-      setFormError('הסיסמה חייבת להכיל לפחות 8 תווים');
+      setFormError(t('register.errors.passwordTooShort'));
       return;
     }
 
@@ -58,7 +62,7 @@ export const RegisterScreen: React.FC = () => {
       });
       navigation.navigate('Home');
     } catch (err: any) {
-      setFormError(err.message || 'שגיאה בהרשמה. נסה שוב.');
+      setFormError(err.message || t('register.errors.registrationFailed'));
     }
   };
 
@@ -67,7 +71,7 @@ export const RegisterScreen: React.FC = () => {
       await loginWithGoogle();
       navigation.navigate('Home');
     } catch (err: any) {
-      setFormError(err.message || 'שגיאה בהתחברות עם Google');
+      setFormError(err.message || t('register.errors.googleFailed'));
     }
   };
 
@@ -81,8 +85,8 @@ export const RegisterScreen: React.FC = () => {
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
     >
       {/* Background Decorations */}
-      <View style={styles.blurCirclePrimary} />
-      <View style={styles.blurCirclePurple} />
+      <View style={styles.blurCirclePrimary} pointerEvents="none" />
+      <View style={styles.blurCirclePurple} pointerEvents="none" />
 
       <ScrollView
         contentContainerStyle={styles.scrollContent}
@@ -95,28 +99,29 @@ export const RegisterScreen: React.FC = () => {
             style={styles.logo}
             resizeMode="contain"
           />
-          <Text style={styles.brandName}>בית+</Text>
+          <Text style={styles.brandName}>{t('common.appName')}</Text>
         </View>
 
         {/* Form Card */}
         <GlassView style={styles.formCard}>
-          <Text style={styles.title}>יצירת חשבון</Text>
+          <Text style={styles.title}>{t('register.title')}</Text>
 
           {/* Name Input */}
           <View style={styles.inputGroup}>
-            <Text style={styles.label}>שם מלא</Text>
+            <Text style={[styles.label, { textAlign }]}>{t('register.fullName')}</Text>
             <View
               style={[
                 styles.inputContainer,
+                { flexDirection: isRTL ? 'row-reverse' : 'row' },
                 focusedField === 'name' && styles.inputContainerFocused,
               ]}
             >
-              <Text style={styles.inputIcon}>👤</Text>
+              <Text style={[styles.inputIcon, isRTL ? { marginLeft: spacing.sm } : { marginRight: spacing.sm }]}>👤</Text>
               <TextInput
-                style={styles.input}
+                style={[styles.input, { textAlign: isRTL ? 'right' : 'left' }]}
                 value={formData.name}
                 onChangeText={(text) => setFormData({ ...formData, name: text })}
-                placeholder="ישראל ישראלי"
+                placeholder={t('register.namePlaceholder')}
                 placeholderTextColor={colors.textMuted}
                 onFocus={() => setFocusedField('name')}
                 onBlur={() => setFocusedField(null)}
@@ -127,14 +132,15 @@ export const RegisterScreen: React.FC = () => {
 
           {/* Email Input */}
           <View style={styles.inputGroup}>
-            <Text style={styles.label}>אימייל</Text>
+            <Text style={[styles.label, { textAlign }]}>{t('register.email')}</Text>
             <View
               style={[
                 styles.inputContainer,
+                { flexDirection: isRTL ? 'row-reverse' : 'row' },
                 focusedField === 'email' && styles.inputContainerFocused,
               ]}
             >
-              <Text style={styles.inputIcon}>✉️</Text>
+              <Text style={[styles.inputIcon, isRTL ? { marginLeft: spacing.sm } : { marginRight: spacing.sm }]}>✉️</Text>
               <TextInput
                 style={[styles.input, styles.inputLtr]}
                 value={formData.email}
@@ -152,10 +158,11 @@ export const RegisterScreen: React.FC = () => {
 
           {/* Password Input */}
           <View style={styles.inputGroup}>
-            <Text style={styles.label}>סיסמה</Text>
+            <Text style={[styles.label, { textAlign }]}>{t('register.password')}</Text>
             <View
               style={[
                 styles.inputContainer,
+                { flexDirection: isRTL ? 'row-reverse' : 'row' },
                 focusedField === 'password' && styles.inputContainerFocused,
               ]}
             >
@@ -169,7 +176,7 @@ export const RegisterScreen: React.FC = () => {
                 style={[styles.input, styles.inputLtr]}
                 value={formData.password}
                 onChangeText={(text) => setFormData({ ...formData, password: text })}
-                placeholder="לפחות 8 תווים"
+                placeholder={t('register.passwordPlaceholder')}
                 placeholderTextColor={colors.textMuted}
                 secureTextEntry={!showPassword}
                 autoCapitalize="none"
@@ -181,19 +188,20 @@ export const RegisterScreen: React.FC = () => {
 
           {/* Confirm Password Input */}
           <View style={styles.inputGroup}>
-            <Text style={styles.label}>אימות סיסמה</Text>
+            <Text style={[styles.label, { textAlign }]}>{t('register.confirmPassword')}</Text>
             <View
               style={[
                 styles.inputContainer,
+                { flexDirection: isRTL ? 'row-reverse' : 'row' },
                 focusedField === 'confirmPassword' && styles.inputContainerFocused,
               ]}
             >
-              <Text style={styles.inputIcon}>🔒</Text>
+              <Text style={[styles.inputIcon, isRTL ? { marginLeft: spacing.sm } : { marginRight: spacing.sm }]}>🔒</Text>
               <TextInput
                 style={[styles.input, styles.inputLtr]}
                 value={formData.confirmPassword}
                 onChangeText={(text) => setFormData({ ...formData, confirmPassword: text })}
-                placeholder="הזן שוב את הסיסמה"
+                placeholder={t('register.confirmPasswordPlaceholder')}
                 placeholderTextColor={colors.textMuted}
                 secureTextEntry={!showPassword}
                 autoCapitalize="none"
@@ -212,12 +220,12 @@ export const RegisterScreen: React.FC = () => {
 
           {/* Terms */}
           <Text style={styles.termsText}>
-            בהרשמה אתה מאשר את תנאי השימוש ואת מדיניות הפרטיות
+            {t('register.termsText')}
           </Text>
 
           {/* Submit Button */}
           <GlassButton
-            title={isLoading ? 'נרשם...' : 'הרשמה'}
+            title={isLoading ? t('register.registering') : t('register.submit')}
             onPress={handleSubmit}
             variant="primary"
             disabled={isLoading}
@@ -227,14 +235,14 @@ export const RegisterScreen: React.FC = () => {
           {/* Divider */}
           <View style={styles.divider}>
             <View style={styles.dividerLine} />
-            <Text style={styles.dividerText}>או</Text>
+            <Text style={styles.dividerText}>{t('login.or')}</Text>
             <View style={styles.dividerLine} />
           </View>
 
           {/* Google Login */}
           {!isTV && (
             <GlassButton
-              title="הרשמה עם Google"
+              title={t('register.googleSignup')}
               onPress={handleGoogleLogin}
               variant="secondary"
               disabled={isLoading}
@@ -243,10 +251,10 @@ export const RegisterScreen: React.FC = () => {
           )}
 
           {/* Login Link */}
-          <View style={styles.loginLinkContainer}>
-            <Text style={styles.loginLinkText}>כבר יש לך חשבון? </Text>
+          <View style={[styles.loginLinkContainer, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
+            <Text style={styles.loginLinkText}>{t('register.haveAccount')} </Text>
             <TouchableOpacity onPress={navigateToLogin}>
-              <Text style={styles.loginLink}>התחברות</Text>
+              <Text style={styles.loginLink}>{t('register.loginLink')}</Text>
             </TouchableOpacity>
           </View>
         </GlassView>
@@ -326,10 +334,8 @@ const styles = StyleSheet.create({
     fontWeight: '500',
     color: colors.textSecondary,
     marginBottom: spacing.xs,
-    textAlign: 'right',
   },
   inputContainer: {
-    flexDirection: 'row-reverse',
     alignItems: 'center',
     backgroundColor: colors.backgroundLight,
     borderRadius: borderRadius.lg,
@@ -342,7 +348,6 @@ const styles = StyleSheet.create({
   },
   inputIcon: {
     fontSize: 18,
-    marginLeft: spacing.sm,
   },
   passwordToggle: {
     padding: spacing.xs,
@@ -352,7 +357,6 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: colors.text,
     paddingVertical: spacing.md,
-    textAlign: 'right',
   },
   inputLtr: {
     textAlign: 'left',
@@ -396,7 +400,6 @@ const styles = StyleSheet.create({
     marginBottom: spacing.md,
   },
   loginLinkContainer: {
-    flexDirection: 'row-reverse',
     justifyContent: 'center',
     marginTop: spacing.md,
   },

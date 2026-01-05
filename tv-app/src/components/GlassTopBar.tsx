@@ -13,25 +13,35 @@ import { UserAccountMenu } from './UserAccountMenu';
 import { VoiceSearchButton } from './VoiceSearchButton';
 import { colors, spacing, borderRadius } from '../theme';
 import { isWeb } from '../utils/platform';
+import { useDirection } from '../hooks/useDirection';
 
 const logo = require('../assets/logo.png');
 
 interface GlassTopBarProps {
   onMenuPress?: () => void;
+  sidebarExpanded?: boolean;
 }
 
-export const GlassTopBar: React.FC<GlassTopBarProps> = ({ onMenuPress }) => {
+export const GlassTopBar: React.FC<GlassTopBarProps> = ({ onMenuPress, sidebarExpanded = false }) => {
   const navigation = useNavigation<any>();
   const [isSearchFocused, setIsSearchFocused] = useState(false);
+  const { isRTL } = useDirection();
 
   const handleSearchPress = () => {
     navigation.navigate('Search');
   };
 
+  const sidebarWidth = sidebarExpanded ? 280 : 80;
+  const sidebarPadding = sidebarWidth + spacing.lg;
+
   return (
-    <GlassView intensity="medium" style={styles.container}>
-      {/* Left side - Actions */}
-      <View style={styles.actionsContainer}>
+    <GlassView intensity="medium" style={[
+      styles.container,
+      { flexDirection: isRTL ? 'row' : 'row-reverse' },
+      isRTL ? { paddingRight: sidebarPadding } : { paddingLeft: sidebarPadding },
+    ]}>
+      {/* Actions side */}
+      <View style={[styles.actionsContainer, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
         {/* Voice Search Button */}
         <VoiceSearchButton onResult={(text) => {
           navigation.navigate('Search', { query: text });
@@ -85,7 +95,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
     paddingLeft: spacing.lg,
-    paddingRight: isWeb ? spacing.lg : 80 + spacing.lg, // Account for collapsed sidebar width (not on web)
+    paddingRight: spacing.lg, // Dynamic padding applied in component
     borderBottomWidth: 1,
     borderBottomColor: colors.glassBorder,
   },

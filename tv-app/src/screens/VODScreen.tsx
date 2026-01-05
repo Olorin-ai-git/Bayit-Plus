@@ -15,6 +15,7 @@ import { GlassView } from '../components/ui';
 import { contentService } from '../services/api';
 import { colors, spacing, borderRadius } from '../theme';
 import { isTV } from '../utils/platform';
+import { useDirection } from '../hooks/useDirection';
 
 interface ContentItem {
   id: string;
@@ -109,6 +110,7 @@ const ContentCard: React.FC<{
 
 export const VODScreen: React.FC = () => {
   const { t } = useTranslation();
+  const { isRTL, textAlign } = useDirection();
   const navigation = useNavigation<any>();
   const [isLoading, setIsLoading] = useState(true);
   const [content, setContent] = useState<ContentItem[]>([]);
@@ -189,18 +191,18 @@ export const VODScreen: React.FC = () => {
   return (
     <View style={styles.container}>
       {/* Header */}
-      <View style={styles.header}>
-        <View style={styles.headerIcon}>
+      <View style={[styles.header, { flexDirection: isRTL ? 'row' : 'row-reverse' }]}>
+        <View style={[styles.headerIcon, { marginLeft: isRTL ? spacing.lg : 0, marginRight: isRTL ? 0 : spacing.lg }]}>
           <Text style={styles.headerIconText}>🎬</Text>
         </View>
         <View>
-          <Text style={styles.title}>{t('vod.title')}</Text>
-          <Text style={styles.subtitle}>{content.length} {t('vod.movies')}</Text>
+          <Text style={[styles.title, { textAlign }]}>{t('vod.title')}</Text>
+          <Text style={[styles.subtitle, { textAlign }]}>{content.length} {t('vod.movies')}</Text>
         </View>
       </View>
 
       {/* Category Filter */}
-      <View style={styles.categories}>
+      <View style={[styles.categories, { flexDirection: isRTL ? 'row' : 'row-reverse', justifyContent: isRTL ? 'flex-start' : 'flex-start' }]}>
         <TouchableOpacity
           onPress={() => setSelectedCategory('all')}
           style={[

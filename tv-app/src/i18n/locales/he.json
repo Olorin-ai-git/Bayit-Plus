@@ -15,7 +15,40 @@
     "live": "שידור חי",
     "recommended": "מומלץ",
     "edit": "ערוך",
-    "delete": "מחק"
+    "delete": "מחק",
+    "appName": "בית+"
+  },
+  "login": {
+    "title": "התחברות",
+    "tagline": "הבית שלך בארה״ב",
+    "email": "אימייל",
+    "password": "סיסמה",
+    "submit": "התחברות",
+    "or": "או",
+    "qrInstructions": "סרוק את הקוד עם הטלפון להתחברות מהירה"
+  },
+  "register": {
+    "title": "יצירת חשבון",
+    "fullName": "שם מלא",
+    "namePlaceholder": "ישראל ישראלי",
+    "email": "אימייל",
+    "password": "סיסמה",
+    "passwordPlaceholder": "לפחות 8 תווים",
+    "confirmPassword": "אימות סיסמה",
+    "confirmPasswordPlaceholder": "הזן שוב את הסיסמה",
+    "termsText": "בהרשמה אתה מאשר את תנאי השימוש ואת מדיניות הפרטיות",
+    "submit": "הרשמה",
+    "registering": "נרשם...",
+    "googleSignup": "הרשמה עם Google",
+    "haveAccount": "כבר יש לך חשבון?",
+    "loginLink": "התחברות",
+    "errors": {
+      "fillAllFields": "נא למלא את כל השדות",
+      "passwordMismatch": "הסיסמאות אינן תואמות",
+      "passwordTooShort": "הסיסמה חייבת להכיל לפחות 8 תווים",
+      "registrationFailed": "שגיאה בהרשמה. נסה שוב.",
+      "googleFailed": "שגיאה בהתחברות עם Google"
+    }
   },
   "nav": {
     "home": "ראשי",
@@ -47,6 +80,7 @@
     "searching": "מחפש...",
     "noResults": "לא נמצאו תוצאות",
     "tryDifferent": "נסה מילות חיפוש אחרות",
+    "resultsFor": "תוצאות עבור",
     "filters": {
       "all": "הכל",
       "moviesAndSeries": "סרטים וסדרות",

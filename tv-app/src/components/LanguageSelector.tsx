@@ -11,10 +11,15 @@ import { useTranslation } from 'react-i18next';
 import { GlassView } from './ui';
 import { languages, saveLanguage, getCurrentLanguage } from '../i18n';
 import { colors, spacing, borderRadius } from '../theme';
+import { useDirection } from '../hooks/useDirection';
 
 export const LanguageSelector: React.FC = () => {
   const { i18n } = useTranslation();
+  const { isRTL } = useDirection();
   const [isOpen, setIsOpen] = useState(false);
+
+  // Use i18n.language directly for more reliable direction detection
+  const isHebrewMode = i18n.language === 'he';
   const [isFocused, setIsFocused] = useState(false);
   const [currentLang, setCurrentLang] = useState(getCurrentLanguage());
   const fadeAnim = React.useRef(new Animated.Value(0)).current;
@@ -55,7 +60,12 @@ export const LanguageSelector: React.FC = () => {
         onRequestClose={() => setIsOpen(false)}
       >
         <TouchableOpacity
-          style={styles.modalOverlay}
+          style={[
+            styles.modalOverlay,
+            isHebrewMode
+              ? { alignItems: 'flex-start', paddingLeft: spacing.xxl }
+              : { alignItems: 'flex-end', paddingRight: spacing.xxl },
+          ]}
           activeOpacity={1}
           onPress={() => setIsOpen(false)}
         >
@@ -65,7 +75,7 @@ export const LanguageSelector: React.FC = () => {
               { opacity: fadeAnim },
             ]}
           >
-            <GlassView intensity="high" style={styles.dropdown}>
+            <GlassView intensity="high" style={[styles.dropdown, { direction: isHebrewMode ? 'rtl' : 'ltr' }]}>
               <Text style={styles.dropdownTitle}>
                 {i18n.language === 'he' ? 'בחר שפה' : i18n.language === 'es' ? 'Seleccionar idioma' : 'Select Language'}
               </Text>
@@ -75,10 +85,11 @@ export const LanguageSelector: React.FC = () => {
                   onPress={() => handleSelectLanguage(lang.code)}
                   style={[
                     styles.languageOption,
+                    { flexDirection: isHebrewMode ? 'row-reverse' : 'row' },
                     currentLang.code === lang.code && styles.languageOptionActive,
                   ]}
                 >
-                  <Text style={styles.languageFlag}>{lang.flag}</Text>
+                  <Text style={[styles.languageFlag, isHebrewMode ? { marginLeft: spacing.md } : { marginRight: spacing.md }]}>{lang.flag}</Text>
                   <Text style={[
                     styles.languageName,
                     currentLang.code === lang.code && styles.languageNameActive,
@@ -123,9 +134,7 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: 'rgba(0, 0, 0, 0.5)',
     justifyContent: 'flex-start',
-    alignItems: 'flex-start',
     paddingTop: 70,
-    paddingLeft: spacing.xxl,
   },
   dropdownContainer: {
     width: 200,
@@ -141,7 +150,6 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   languageOption: {
-    flexDirection: 'row',
     alignItems: 'center',
     paddingVertical: spacing.sm,
     paddingHorizontal: spacing.md,
@@ -153,7 +161,6 @@ const styles = StyleSheet.create({
   },
   languageFlag: {
     fontSize: 24,
-    marginRight: spacing.md,
   },
   languageName: {
     fontSize: 16,

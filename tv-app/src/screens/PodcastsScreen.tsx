@@ -15,6 +15,7 @@ import { GlassView } from '../components/ui';
 import { podcastService } from '../services/api';
 import { colors, spacing, borderRadius } from '../theme';
 import { isTV } from '../utils/platform';
+import { useDirection } from '../hooks/useDirection';
 
 interface PodcastShow {
   id: string;
@@ -128,6 +129,7 @@ const PodcastCard: React.FC<{
 
 export const PodcastsScreen: React.FC = () => {
   const { t } = useTranslation();
+  const { isRTL, textAlign } = useDirection();
   const navigation = useNavigation<any>();
   const [isLoading, setIsLoading] = useState(true);
   const [shows, setShows] = useState<PodcastShow[]>([]);
@@ -200,18 +202,18 @@ export const PodcastsScreen: React.FC = () => {
   return (
     <View style={styles.container}>
       {/* Header */}
-      <View style={styles.header}>
-        <View style={styles.headerIcon}>
+      <View style={[styles.header, { flexDirection: isRTL ? 'row' : 'row-reverse' }]}>
+        <View style={[styles.headerIcon, { marginLeft: isRTL ? spacing.lg : 0, marginRight: isRTL ? 0 : spacing.lg }]}>
           <Text style={styles.headerIconText}>🎙️</Text>
         </View>
         <View>
-          <Text style={styles.title}>{t('podcasts.title')}</Text>
-          <Text style={styles.subtitle}>{shows.length} {t('podcasts.shows')}</Text>
+          <Text style={[styles.title, { textAlign }]}>{t('podcasts.title')}</Text>
+          <Text style={[styles.subtitle, { textAlign }]}>{shows.length} {t('podcasts.shows')}</Text>
         </View>
       </View>
 
       {/* Category Filter */}
-      <View style={styles.categories}>
+      <View style={[styles.categories, { flexDirection: isRTL ? 'row' : 'row-reverse', justifyContent: isRTL ? 'flex-start' : 'flex-start' }]}>
         <TouchableOpacity
           onPress={() => setSelectedCategory('all')}
           style={[

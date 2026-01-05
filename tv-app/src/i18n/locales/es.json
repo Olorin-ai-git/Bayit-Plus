@@ -15,7 +15,40 @@
     "live": "En Vivo",
     "recommended": "Recomendado",
     "edit": "Editar",
-    "delete": "Eliminar"
+    "delete": "Eliminar",
+    "appName": "Bayit+"
+  },
+  "login": {
+    "title": "Iniciar Sesión",
+    "tagline": "Tu Hogar en EE.UU.",
+    "email": "Correo",
+    "password": "Contraseña",
+    "submit": "Iniciar Sesión",
+    "or": "o",
+    "qrInstructions": "Escanea el código con tu teléfono para acceso rápido"
+  },
+  "register": {
+    "title": "Crear Cuenta",
+    "fullName": "Nombre Completo",
+    "namePlaceholder": "Juan Pérez",
+    "email": "Correo",
+    "password": "Contraseña",
+    "passwordPlaceholder": "Mínimo 8 caracteres",
+    "confirmPassword": "Confirmar Contraseña",
+    "confirmPasswordPlaceholder": "Ingresa la contraseña nuevamente",
+    "termsText": "Al registrarte, aceptas nuestros Términos de Servicio y Política de Privacidad",
+    "submit": "Registrarse",
+    "registering": "Registrando...",
+    "googleSignup": "Registrarse con Google",
+    "haveAccount": "¿Ya tienes una cuenta?",
+    "loginLink": "Iniciar Sesión",
+    "errors": {
+      "fillAllFields": "Por favor, completa todos los campos",
+      "passwordMismatch": "Las contraseñas no coinciden",
+      "passwordTooShort": "La contraseña debe tener al menos 8 caracteres",
+      "registrationFailed": "Error en el registro. Por favor, intenta de nuevo.",
+      "googleFailed": "Error al iniciar sesión con Google"
+    }
   },
   "nav": {
     "home": "Inicio",
@@ -47,6 +80,7 @@
     "searching": "Buscando...",
     "noResults": "Sin resultados",
     "tryDifferent": "Intenta con otros términos",
+    "resultsFor": "resultados para",
     "filters": {
       "all": "Todo",
       "moviesAndSeries": "Películas y Series",

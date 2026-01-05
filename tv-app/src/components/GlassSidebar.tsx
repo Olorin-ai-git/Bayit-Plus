@@ -11,6 +11,7 @@ import { useTranslation } from 'react-i18next';
 import { useNavigation } from '@react-navigation/native';
 import { GlassView } from './ui';
 import { colors, spacing, borderRadius } from '../theme';
+import { useDirection } from '../hooks/useDirection';
 
 interface GlassSidebarProps {
   isExpanded: boolean;
@@ -59,6 +60,7 @@ const menuSections: MenuSection[] = [
 
 export const GlassSidebar: React.FC<GlassSidebarProps> = ({ isExpanded, onToggle, activeRoute }) => {
   const { t } = useTranslation();
+  const { isRTL, textAlign } = useDirection();
   const navigation = useNavigation<any>();
   const widthAnim = useRef(new Animated.Value(isExpanded ? 280 : 80)).current;
   const opacityAnim = useRef(new Animated.Value(isExpanded ? 1 : 0)).current;
@@ -124,6 +126,15 @@ export const GlassSidebar: React.FC<GlassSidebarProps> = ({ isExpanded, onToggle
     return currentRoute === item.route;
   };
 
+  // Toggle icon based on direction and expanded state
+  const getToggleIcon = () => {
+    if (isRTL) {
+      return isExpanded ? '▶' : '◀';
+    } else {
+      return isExpanded ? '◀' : '▶';
+    }
+  };
+
   return (
     <>
       {/* Backdrop overlay when expanded */}
@@ -134,8 +145,17 @@ export const GlassSidebar: React.FC<GlassSidebarProps> = ({ isExpanded, onToggle
           onPress={onToggle}
         />
       )}
-      <Animated.View style={[styles.container, { width: widthAnim }]}>
-        <GlassView intensity="low" style={styles.sidebar}>
+      <Animated.View style={[
+        styles.container,
+        { width: widthAnim },
+        isRTL ? { right: 0 } : { left: 0 },
+      ]}>
+        <GlassView intensity="low" style={[
+          styles.sidebar,
+          isRTL
+            ? { borderLeftWidth: 1, borderLeftColor: colors.glassBorder }
+            : { borderRightWidth: 1, borderRightColor: colors.glassBorder },
+        ]}>
         {/* Toggle Button */}
         <TouchableOpacity
           onPress={onToggle}
@@ -147,7 +167,7 @@ export const GlassSidebar: React.FC<GlassSidebarProps> = ({ isExpanded, onToggle
             styles.toggleIconContainer,
             focusedItem === 'toggle' && styles.toggleIconContainerFocused,
           ]}>
-            <Text style={styles.toggleIcon}>{isExpanded ? '▶' : '◀'}</Text>
+            <Text style={styles.toggleIcon}>{getToggleIcon()}</Text>
           </View>
         </TouchableOpacity>
 
@@ -163,7 +183,7 @@ export const GlassSidebar: React.FC<GlassSidebarProps> = ({ isExpanded, onToggle
                 <Animated.Text
                   style={[
                     styles.sectionTitle,
-                    { opacity: opacityAnim },
+                    { opacity: opacityAnim, textAlign },
                   ]}
                 >
                   {t(section.titleKey)}
@@ -179,6 +199,7 @@ export const GlassSidebar: React.FC<GlassSidebarProps> = ({ isExpanded, onToggle
                   onBlur={() => setFocusedItem(null)}
                   style={[
                     styles.menuItem,
+                    { flexDirection: isRTL ? 'row' : 'row-reverse' },
                     isActive(item) && styles.menuItemActive,
                     focusedItem === item.id && styles.menuItemFocused,
                   ]}
@@ -195,6 +216,7 @@ export const GlassSidebar: React.FC<GlassSidebarProps> = ({ isExpanded, onToggle
                     <Animated.Text
                       style={[
                         styles.menuLabel,
+                        { textAlign, marginRight: isRTL ? 0 : spacing.sm, marginLeft: isRTL ? spacing.sm : 0 },
                         isActive(item) && styles.menuLabelActive,
                         { opacity: opacityAnim },
                       ]}
@@ -204,7 +226,10 @@ export const GlassSidebar: React.FC<GlassSidebarProps> = ({ isExpanded, onToggle
                     </Animated.Text>
                   )}
                   {isActive(item) && (
-                    <View style={styles.activeIndicator} />
+                    <View style={[
+                      styles.activeIndicator,
+                      isRTL ? { right: 0 } : { left: 0 },
+                    ]} />
                   )}
                 </TouchableOpacity>
               ))}
@@ -220,7 +245,7 @@ export const GlassSidebar: React.FC<GlassSidebarProps> = ({ isExpanded, onToggle
         {/* App Version (when expanded) */}
         {isExpanded && (
           <Animated.View style={[styles.versionContainer, { opacity: opacityAnim }]}>
-            <Text style={styles.versionText}>Bayit+ v1.0.0</Text>
+            <Text style={[styles.versionText, { textAlign }]}>Bayit+ v1.0.0</Text>
           </Animated.View>
         )}
       </GlassView>
@@ -242,7 +267,6 @@ const styles = StyleSheet.create({
   container: {
     height: '100%',
     position: 'absolute',
-    right: 0,
     top: 0,
     bottom: 0,
     zIndex: 100,
@@ -251,8 +275,6 @@ const styles = StyleSheet.create({
     flex: 1,
     paddingTop: spacing.lg,
     paddingBottom: spacing.md,
-    borderLeftWidth: 1,
-    borderLeftColor: colors.glassBorder,
   },
   toggleButton: {
     alignItems: 'center',
@@ -295,10 +317,8 @@ const styles = StyleSheet.create({
     paddingHorizontal: spacing.md,
     paddingVertical: spacing.sm,
     marginTop: spacing.sm,
-    textAlign: 'right',
   },
   menuItem: {
-    flexDirection: 'row-reverse',
     alignItems: 'center',
     paddingVertical: spacing.sm,
     paddingHorizontal: spacing.sm,
@@ -329,9 +349,7 @@ const styles = StyleSheet.create({
   menuLabel: {
     fontSize: 16,
     color: colors.text,
-    marginRight: spacing.sm,
     flex: 1,
-    textAlign: 'right',
   },
   menuLabelActive: {
     color: colors.primary,
@@ -339,7 +357,6 @@ const styles = StyleSheet.create({
   },
   activeIndicator: {
     position: 'absolute',
-    right: 0,
     top: '50%',
     marginTop: -12,
     width: 4,
@@ -362,7 +379,6 @@ const styles = StyleSheet.create({
   versionText: {
     fontSize: 12,
     color: colors.textSecondary,
-    textAlign: 'right',
   },
 });
 

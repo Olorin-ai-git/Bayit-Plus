@@ -12,9 +12,11 @@ import { useNavigation } from '@react-navigation/native';
 import { GlassView } from './ui';
 import { useAuthStore } from '../stores/authStore';
 import { colors, spacing, borderRadius } from '../theme';
+import { useDirection } from '../hooks/useDirection';
 
 export const UserAccountMenu: React.FC = () => {
   const { t } = useTranslation();
+  const { isRTL } = useDirection();
   const navigation = useNavigation<any>();
   const { user, isAuthenticated, logout } = useAuthStore();
   const [isOpen, setIsOpen] = useState(false);
@@ -72,7 +74,12 @@ export const UserAccountMenu: React.FC = () => {
         onRequestClose={() => setIsOpen(false)}
       >
         <TouchableOpacity
-          style={styles.modalOverlay}
+          style={[
+            styles.modalOverlay,
+            isRTL
+              ? { alignItems: 'flex-start', paddingLeft: spacing.xxl }
+              : { alignItems: 'flex-end', paddingRight: spacing.xxl },
+          ]}
           activeOpacity={1}
           onPress={() => setIsOpen(false)}
         >
@@ -110,9 +117,9 @@ export const UserAccountMenu: React.FC = () => {
                   setIsOpen(false);
                   navigation.navigate('Profile', { tab: 'profile' });
                 }}
-                style={styles.menuOption}
+                style={[styles.menuOption, { flexDirection: isRTL ? 'row' : 'row-reverse' }]}
               >
-                <Text style={styles.menuIcon}>👤</Text>
+                <Text style={[styles.menuIcon, isRTL ? { marginLeft: spacing.md } : { marginRight: spacing.md }]}>👤</Text>
                 <Text style={styles.menuText}>{t('account.personalDetails')}</Text>
               </TouchableOpacity>
 
@@ -121,9 +128,9 @@ export const UserAccountMenu: React.FC = () => {
                   setIsOpen(false);
                   navigation.navigate('Profile', { tab: 'billing' });
                 }}
-                style={styles.menuOption}
+                style={[styles.menuOption, { flexDirection: isRTL ? 'row' : 'row-reverse' }]}
               >
-                <Text style={styles.menuIcon}>💳</Text>
+                <Text style={[styles.menuIcon, isRTL ? { marginLeft: spacing.md } : { marginRight: spacing.md }]}>💳</Text>
                 <Text style={styles.menuText}>{t('account.billing')}</Text>
               </TouchableOpacity>
 
@@ -132,17 +139,17 @@ export const UserAccountMenu: React.FC = () => {
                   setIsOpen(false);
                   navigation.navigate('Profile', { tab: 'subscription' });
                 }}
-                style={styles.menuOption}
+                style={[styles.menuOption, { flexDirection: isRTL ? 'row' : 'row-reverse' }]}
               >
-                <Text style={styles.menuIcon}>⭐</Text>
+                <Text style={[styles.menuIcon, isRTL ? { marginLeft: spacing.md } : { marginRight: spacing.md }]}>⭐</Text>
                 <Text style={styles.menuText}>{t('account.manageSubscription')}</Text>
               </TouchableOpacity>
 
               <TouchableOpacity
                 onPress={handleSettings}
-                style={styles.menuOption}
+                style={[styles.menuOption, { flexDirection: isRTL ? 'row' : 'row-reverse' }]}
               >
-                <Text style={styles.menuIcon}>⚙️</Text>
+                <Text style={[styles.menuIcon, isRTL ? { marginLeft: spacing.md } : { marginRight: spacing.md }]}>⚙️</Text>
                 <Text style={styles.menuText}>{t('account.settings')}</Text>
               </TouchableOpacity>
 
@@ -153,17 +160,17 @@ export const UserAccountMenu: React.FC = () => {
               {isAuthenticated ? (
                 <TouchableOpacity
                   onPress={handleLogout}
-                  style={[styles.menuOption, styles.logoutOption]}
+                  style={[styles.menuOption, styles.logoutOption, { flexDirection: isRTL ? 'row' : 'row-reverse' }]}
                 >
-                  <Text style={styles.menuIcon}>🚪</Text>
+                  <Text style={[styles.menuIcon, isRTL ? { marginLeft: spacing.md } : { marginRight: spacing.md }]}>🚪</Text>
                   <Text style={[styles.menuText, styles.logoutText]}>{t('account.logout')}</Text>
                 </TouchableOpacity>
               ) : (
                 <TouchableOpacity
                   onPress={handleLogin}
-                  style={[styles.menuOption, styles.loginOption]}
+                  style={[styles.menuOption, styles.loginOption, { flexDirection: isRTL ? 'row' : 'row-reverse' }]}
                 >
-                  <Text style={styles.menuIcon}>🔑</Text>
+                  <Text style={[styles.menuIcon, isRTL ? { marginLeft: spacing.md } : { marginRight: spacing.md }]}>🔑</Text>
                   <Text style={[styles.menuText, styles.loginText]}>{t('account.login')}</Text>
                 </TouchableOpacity>
               )}
@@ -210,9 +217,7 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: 'rgba(0, 0, 0, 0.5)',
     justifyContent: 'flex-start',
-    alignItems: 'flex-start',
     paddingTop: 70,
-    paddingLeft: spacing.xxl,
   },
   dropdownContainer: {
     width: 280,
@@ -274,7 +279,6 @@ const styles = StyleSheet.create({
     marginVertical: spacing.sm,
   },
   menuOption: {
-    flexDirection: 'row',
     alignItems: 'center',
     paddingVertical: spacing.sm,
     paddingHorizontal: spacing.sm,
@@ -282,7 +286,6 @@ const styles = StyleSheet.create({
   },
   menuIcon: {
     fontSize: 20,
-    marginLeft: spacing.md,
   },
   menuText: {
     fontSize: 16,

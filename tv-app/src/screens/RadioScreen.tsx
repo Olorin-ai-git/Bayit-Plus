@@ -13,6 +13,7 @@ import { useNavigation } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
 import { radioService } from '../services/api';
 import { colors } from '../theme';
+import { useDirection } from '../hooks/useDirection';
 
 interface RadioStation {
   id: string;
@@ -145,6 +146,7 @@ const StationCard: React.FC<{
 
 export const RadioScreen: React.FC = () => {
   const { t } = useTranslation();
+  const { isRTL, textAlign } = useDirection();
   const navigation = useNavigation<any>();
   const [isLoading, setIsLoading] = useState(true);
   const [stations, setStations] = useState<RadioStation[]>([]);
@@ -222,18 +224,18 @@ export const RadioScreen: React.FC = () => {
   return (
     <View style={styles.container}>
       {/* Header */}
-      <View style={styles.header}>
-        <View style={styles.headerIcon}>
+      <View style={[styles.header, { flexDirection: isRTL ? 'row' : 'row-reverse' }]}>
+        <View style={[styles.headerIcon, { marginLeft: isRTL ? 20 : 0, marginRight: isRTL ? 0 : 20 }]}>
           <Text style={styles.headerIconText}>📻</Text>
         </View>
         <View>
-          <Text style={styles.title}>{t('radio.title')}</Text>
-          <Text style={styles.subtitle}>{filteredStations.length} {t('radio.stations')}</Text>
+          <Text style={[styles.title, { textAlign }]}>{t('radio.title')}</Text>
+          <Text style={[styles.subtitle, { textAlign }]}>{filteredStations.length} {t('radio.stations')}</Text>
         </View>
       </View>
 
       {/* Genre Filter */}
-      <View style={styles.genres}>
+      <View style={[styles.genres, { flexDirection: isRTL ? 'row' : 'row-reverse', justifyContent: 'flex-start' }]}>
         {genres.map((genre, index) => (
           <TouchableOpacity
             key={genre.id}

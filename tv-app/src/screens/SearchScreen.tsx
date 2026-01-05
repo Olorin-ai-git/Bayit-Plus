@@ -17,6 +17,7 @@ import { GlassView, GlassInput } from '../components/ui';
 import { contentService } from '../services/api';
 import { colors, spacing, borderRadius } from '../theme';
 import { isTV, isWeb } from '../utils/platform';
+import { useDirection } from '../hooks/useDirection';
 
 interface SearchResult {
   id: string;
@@ -130,6 +131,7 @@ const ResultCard: React.FC<{
 
 export const SearchScreen: React.FC = () => {
   const { t } = useTranslation();
+  const { isRTL, textAlign } = useDirection();
   const navigation = useNavigation<any>();
   const route = useRoute<any>();
   const [query, setQuery] = useState(route.params?.query || '');
@@ -217,13 +219,13 @@ export const SearchScreen: React.FC = () => {
   return (
     <View style={styles.container}>
       {/* Header */}
-      <View style={styles.header}>
-        <View style={styles.headerIcon}>
+      <View style={[styles.header, { flexDirection: isRTL ? 'row' : 'row-reverse' }]}>
+        <View style={[styles.headerIcon, { marginLeft: isRTL ? spacing.lg : 0, marginRight: isRTL ? 0 : spacing.lg }]}>
           <Text style={styles.headerIconText}>🔍</Text>
         </View>
         <View>
-          <Text style={styles.title}>{t('search.title')}</Text>
-          <Text style={styles.subtitle}>{t('search.subtitle')}</Text>
+          <Text style={[styles.title, { textAlign }]}>{t('search.title')}</Text>
+          <Text style={[styles.subtitle, { textAlign }]}>{t('search.subtitle')}</Text>
         </View>
       </View>
 
@@ -232,7 +234,7 @@ export const SearchScreen: React.FC = () => {
         <GlassView style={styles.searchBox}>
           <TextInput
             ref={searchInputRef}
-            style={styles.searchInput}
+            style={[styles.searchInput, { textAlign }]}
             value={query}
             onChangeText={setQuery}
             onSubmitEditing={handleSearch}
@@ -290,8 +292,8 @@ export const SearchScreen: React.FC = () => {
         </View>
       ) : results.length > 0 ? (
         <View style={styles.resultsContainer}>
-          <Text style={styles.resultsCount}>
-            {results.length} results for "{query}"
+          <Text style={[styles.resultsCount, { textAlign }]}>
+            {results.length} {t('search.resultsFor')} "{query}"
           </Text>
           <FlatList
             data={results}
@@ -400,7 +402,6 @@ const styles = StyleSheet.create({
     marginLeft: spacing.sm,
   },
   searchButtonIcon: {
-    fontSize: 20,
   },
   filtersScroll: {
     maxHeight: 60,

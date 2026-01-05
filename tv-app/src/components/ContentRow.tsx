@@ -6,6 +6,7 @@ import {
   StyleSheet,
 } from 'react-native';
 import { FocusableCard } from './FocusableCard';
+import { useDirection } from '../hooks/useDirection';
 
 interface ContentItem {
   id: string;
@@ -25,14 +26,16 @@ export const ContentRow: React.FC<ContentRowProps> = ({
   items,
   onItemPress,
 }) => {
+  const { isRTL, textAlign } = useDirection();
+
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>{title}</Text>
-      <View style={styles.scrollContainer}>
+      <Text style={[styles.title, { textAlign, marginRight: isRTL ? 48 : 0, marginLeft: isRTL ? 0 : 48 }]}>{title}</Text>
+      <View style={[styles.scrollContainer, { paddingRight: isRTL ? 48 : 0, paddingLeft: isRTL ? 0 : 48 }]}>
         <ScrollView
           horizontal
           showsHorizontalScrollIndicator={false}
-          contentContainerStyle={styles.scrollContent}
+          contentContainerStyle={[styles.scrollContent, { flexDirection: isRTL ? 'row-reverse' : 'row', paddingLeft: isRTL ? 48 : 0, paddingRight: isRTL ? 0 : 48 }]}
         >
           {items.map((item) => (
             <FocusableCard
@@ -58,15 +61,10 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     color: '#ffffff',
     marginBottom: 16,
-    marginRight: 48,
-    textAlign: 'right',
   },
   scrollContainer: {
-    paddingRight: 48,
   },
   scrollContent: {
-    paddingLeft: 48,
-    flexDirection: 'row-reverse',
   },
 });
 

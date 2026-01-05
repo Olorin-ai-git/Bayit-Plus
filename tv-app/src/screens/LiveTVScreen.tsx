@@ -13,6 +13,7 @@ import { useNavigation } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
 import { liveService } from '../services/api';
 import { colors } from '../theme';
+import { useDirection } from '../hooks/useDirection';
 
 interface Channel {
   id: string;
@@ -103,6 +104,7 @@ const ChannelCard: React.FC<{
 
 export const LiveTVScreen: React.FC = () => {
   const { t } = useTranslation();
+  const { isRTL, textAlign } = useDirection();
   const navigation = useNavigation<any>();
   const [isLoading, setIsLoading] = useState(true);
   const [channels, setChannels] = useState<Channel[]>([]);
@@ -182,18 +184,18 @@ export const LiveTVScreen: React.FC = () => {
   return (
     <View style={styles.container}>
       {/* Header */}
-      <View style={styles.header}>
-        <View style={styles.headerIcon}>
+      <View style={[styles.header, { flexDirection: isRTL ? 'row' : 'row-reverse' }]}>
+        <View style={[styles.headerIcon, { marginLeft: isRTL ? 20 : 0, marginRight: isRTL ? 0 : 20 }]}>
           <Text style={styles.headerIconText}>📺</Text>
         </View>
         <View>
-          <Text style={styles.title}>{t('liveTV.title')}</Text>
-          <Text style={styles.subtitle}>{filteredChannels.length} {t('liveTV.channels')}</Text>
+          <Text style={[styles.title, { textAlign }]}>{t('liveTV.title')}</Text>
+          <Text style={[styles.subtitle, { textAlign }]}>{filteredChannels.length} {t('liveTV.channels')}</Text>
         </View>
       </View>
 
       {/* Category Filter */}
-      <View style={styles.categories}>
+      <View style={[styles.categories, { flexDirection: isRTL ? 'row' : 'row-reverse', justifyContent: isRTL ? 'flex-start' : 'flex-start' }]}>
         {categories.map((cat, index) => (
           <TouchableOpacity
             key={cat.id}

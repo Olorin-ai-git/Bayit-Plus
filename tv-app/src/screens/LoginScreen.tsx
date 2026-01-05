@@ -8,12 +8,16 @@ import {
   ActivityIndicator,
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
+import { useTranslation } from 'react-i18next';
 import { useAuthStore } from '../stores/authStore';
 import { AnimatedLogo } from '../components/AnimatedLogo';
 import { GlassView } from '../components/ui';
 import { colors } from '../theme';
+import { useDirection } from '../hooks/useDirection';
 
 export const LoginScreen: React.FC = () => {
+  const { t } = useTranslation();
+  const { isRTL, textAlign, flexDirection } = useDirection();
   const navigation = useNavigation<any>();
   const { login, isLoading, error, clearError } = useAuthStore();
 
@@ -40,22 +44,22 @@ export const LoginScreen: React.FC = () => {
   return (
     <View style={styles.container}>
       {/* Background Gradient Effect */}
-      <View style={styles.backgroundGradient} />
+      <View style={styles.backgroundGradient} pointerEvents="none" />
 
-      <View style={styles.content}>
+      <View style={[styles.content, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
         {/* Logo */}
         <View style={styles.logoContainer}>
           <AnimatedLogo size="large" />
-          <Text style={styles.tagline}>הבית שלך בארה״ב</Text>
+          <Text style={styles.tagline}>{t('login.tagline')}</Text>
         </View>
 
         {/* Login Form */}
         <GlassView intensity="high" style={styles.form}>
-          <Text style={styles.title}>התחברות</Text>
+          <Text style={[styles.title, { textAlign }]}>{t('login.title')}</Text>
 
           {/* Email Input */}
           <View style={styles.inputContainer}>
-            <Text style={styles.label}>אימייל</Text>
+            <Text style={[styles.label, { textAlign }]}>{t('login.email')}</Text>
             <TextInput
               ref={emailRef}
               style={[
@@ -77,7 +81,7 @@ export const LoginScreen: React.FC = () => {
 
           {/* Password Input */}
           <View style={styles.inputContainer}>
-            <Text style={styles.label}>סיסמה</Text>
+            <Text style={[styles.label, { textAlign }]}>{t('login.password')}</Text>
             <TextInput
               ref={passwordRef}
               style={[
@@ -112,7 +116,7 @@ export const LoginScreen: React.FC = () => {
             {isLoading ? (
               <ActivityIndicator color="#000000" />
             ) : (
-              <Text style={styles.buttonText}>התחברות</Text>
+              <Text style={styles.buttonText}>{t('login.submit')}</Text>
             )}
           </TouchableOpacity>
 
@@ -120,12 +124,12 @@ export const LoginScreen: React.FC = () => {
           <View style={styles.qrSection}>
             <View style={styles.divider}>
               <View style={styles.dividerLine} />
-              <Text style={styles.dividerText}>או</Text>
+              <Text style={styles.dividerText}>{t('login.or')}</Text>
               <View style={styles.dividerLine} />
             </View>
 
             <Text style={styles.qrInstructions}>
-              סרוק את הקוד עם הטלפון להתחברות מהירה
+              {t('login.qrInstructions')}
             </Text>
 
             <View style={styles.qrPlaceholder}>
@@ -158,7 +162,6 @@ const styles = StyleSheet.create({
   },
   content: {
     flex: 1,
-    flexDirection: 'row-reverse',
     alignItems: 'center',
     justifyContent: 'center',
     paddingHorizontal: 100,
@@ -183,7 +186,6 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     color: colors.text,
     marginBottom: 32,
-    textAlign: 'right',
   },
   inputContainer: {
     marginBottom: 24,
@@ -192,7 +194,6 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: colors.textSecondary,
     marginBottom: 8,
-    textAlign: 'right',
   },
   input: {
     backgroundColor: colors.background,

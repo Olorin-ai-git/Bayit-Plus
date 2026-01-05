@@ -15,7 +15,40 @@
     "live": "Live",
     "recommended": "Recommended",
     "edit": "Edit",
-    "delete": "Delete"
+    "delete": "Delete",
+    "appName": "Bayit+"
+  },
+  "login": {
+    "title": "Login",
+    "tagline": "Your Home in the USA",
+    "email": "Email",
+    "password": "Password",
+    "submit": "Login",
+    "or": "or",
+    "qrInstructions": "Scan the code with your phone for quick login"
+  },
+  "register": {
+    "title": "Create Account",
+    "fullName": "Full Name",
+    "namePlaceholder": "John Doe",
+    "email": "Email",
+    "password": "Password",
+    "passwordPlaceholder": "At least 8 characters",
+    "confirmPassword": "Confirm Password",
+    "confirmPasswordPlaceholder": "Enter password again",
+    "termsText": "By signing up, you agree to our Terms of Service and Privacy Policy",
+    "submit": "Sign Up",
+    "registering": "Signing up...",
+    "googleSignup": "Sign up with Google",
+    "haveAccount": "Already have an account?",
+    "loginLink": "Login",
+    "errors": {
+      "fillAllFields": "Please fill in all fields",
+      "passwordMismatch": "Passwords do not match",
+      "passwordTooShort": "Password must be at least 8 characters",
+      "registrationFailed": "Registration failed. Please try again.",
+      "googleFailed": "Google sign-in failed"
+    }
   },
   "nav": {
     "home": "Home",
@@ -47,6 +80,7 @@
     "searching": "Searching...",
     "noResults": "No results found",
     "tryDifferent": "Try different search terms",
+    "resultsFor": "results for",
     "filters": {
       "all": "All",
       "moviesAndSeries": "Movies & Series",

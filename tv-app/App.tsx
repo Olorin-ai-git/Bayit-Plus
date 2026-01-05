@@ -1,11 +1,12 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { StatusBar, LogBox, View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
-import { I18nextProvider } from 'react-i18next';
-import i18n from './src/i18n';
+import { I18nextProvider, useTranslation } from 'react-i18next';
+import i18n, { loadSavedLanguage } from './src/i18n';
+import { useDirection } from './src/hooks/useDirection';
 import {
   HomeScreen,
   PlayerScreen,
@@ -54,14 +55,33 @@ export type MainTabParamList = {
 const Stack = createNativeStackNavigator<RootStackParamList>();
 const Tab = createBottomTabNavigator<MainTabParamList>();
 
-// Custom Tab Bar for TV
+// Custom Tab Bar for TV (hidden on web - uses sidebar instead)
 const TVTabBar: React.FC<any> = ({ state, descriptors, navigation }) => {
+  // Hide tab bar on web - sidebar handles navigation
+  if (isWeb) {
+    return null;
+  }
+
+  const { t, i18n } = useTranslation();
+
+  // Determine direction based on current language
+  const currentLang = i18n.language;
+  const isRTL = currentLang === 'he';
+
+  const tabLabels: Record<string, string> = {
+    Home: t('nav.home'),
+    VOD: t('nav.vod'),
+    LiveTV: t('nav.liveTV'),
+    Radio: t('nav.radio'),
+    Podcasts: t('nav.podcasts'),
+    Profile: t('nav.profile'),
+  };
+
   return (
-    <View style={tabStyles.container}>
+    <View style={[tabStyles.container, { flexDirection: isRTL ? 'row' : 'row-reverse' }]}>
       {state.routes.map((route: any, index: number) => {
-        const { options } = descriptors[route.key];
-        const label = options.tabBarLabel ?? options.title ?? route.name;
         const isFocused = state.index === index;
+        const label = tabLabels[route.name] || route.name;
 
         const icon = {
           Home: '🏠',
@@ -155,7 +175,7 @@ function MainTabs() {
 
 const tabStyles = StyleSheet.create({
   container: {
-    flexDirection: 'row-reverse',
+    flexDirection: 'row', // Dynamic direction applied in component
     backgroundColor: '#0a0a14',
     borderTopWidth: 1,
     borderTopColor: '#1a1a2e',
@@ -193,26 +213,26 @@ const SIDEBAR_EXPANDED_WIDTH = 280;
 // AppContent component that uses navigation hooks
 const AppContent: React.FC = () => {
   const [sidebarExpanded, setSidebarExpanded] = useState(false);
+  const { isRTL } = useDirection();
+  const sidebarWidth = sidebarExpanded ? SIDEBAR_EXPANDED_WIDTH : SIDEBAR_COLLAPSED_WIDTH;
 
   return (
     <View style={appStyles.container}>
       <StatusBar hidden />
 
       {/* Glass Top Bar */}
-      <GlassTopBar onMenuPress={() => setSidebarExpanded(!sidebarExpanded)} />
+      <GlassTopBar onMenuPress={() => setSidebarExpanded(!sidebarExpanded)} sidebarExpanded={sidebarExpanded} />
 
       {/* Main Content Area */}
       <View style={appStyles.mainArea}>
-        {/* Glass Sidebar (hidden on web) */}
-        {!isWeb && (
-          <GlassSidebar
-            isExpanded={sidebarExpanded}
-            onToggle={() => setSidebarExpanded(!sidebarExpanded)}
-          />
-        )}
+        {/* Glass Sidebar - toggleable on all platforms */}
+        <GlassSidebar
+          isExpanded={sidebarExpanded}
+          onToggle={() => setSidebarExpanded(!sidebarExpanded)}
+        />
 
-        {/* Content - with padding for collapsed sidebar (only on non-web) */}
-        <View style={[appStyles.content, !isWeb && { paddingRight: SIDEBAR_COLLAPSED_WIDTH }]}>
+        {/* Content - with padding for sidebar based on direction */}
+        <View style={[appStyles.content, isRTL ? { paddingRight: sidebarWidth } : { paddingLeft: sidebarWidth }]}>
           <Stack.Navigator
             screenOptions={{
               headerShown: false,
@@ -240,6 +260,11 @@ const AppContent: React.FC = () => {
 };
 
 function App(): React.JSX.Element {
+  useEffect(() => {
+    // Load saved language preference on app start
+    loadSavedLanguage();
+  }, []);
+
   return (
     <I18nextProvider i18n={i18n}>
       <SafeAreaProvider>

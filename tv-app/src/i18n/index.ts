@@ -1,12 +1,14 @@
 import i18n from 'i18next';
 import { initReactI18next } from 'react-i18next';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { Platform } from 'react-native';
 
 import he from './locales/he.json';
 import en from './locales/en.json';
 import es from './locales/es.json';
 
 const LANGUAGE_KEY = '@bayit_language';
+const isWeb = Platform.OS === 'web';
 
 export const languages = [
   { code: 'he', name: 'עברית', flag: '🇮🇱', rtl: true },
@@ -38,7 +40,14 @@ i18n
 // Load saved language preference
 export const loadSavedLanguage = async () => {
   try {
-    const savedLang = await AsyncStorage.getItem(LANGUAGE_KEY);
+    let savedLang: string | null = null;
+
+    if (isWeb && typeof localStorage !== 'undefined') {
+      savedLang = localStorage.getItem(LANGUAGE_KEY);
+    } else {
+      savedLang = await AsyncStorage.getItem(LANGUAGE_KEY);
+    }
+
     if (savedLang && ['he', 'en', 'es'].includes(savedLang)) {
       i18n.changeLanguage(savedLang);
     }
@@ -50,7 +59,11 @@ export const loadSavedLanguage = async () => {
 // Save language preference
 export const saveLanguage = async (lang: string) => {
   try {
-    await AsyncStorage.setItem(LANGUAGE_KEY, lang);
+    if (isWeb && typeof localStorage !== 'undefined') {
+      localStorage.setItem(LANGUAGE_KEY, lang);
+    } else {
+      await AsyncStorage.setItem(LANGUAGE_KEY, lang);
+    }
     i18n.changeLanguage(lang);
   } catch (error) {
     console.log('Error saving language:', error);
