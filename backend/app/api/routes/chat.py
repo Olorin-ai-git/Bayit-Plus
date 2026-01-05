@@ -73,13 +73,6 @@ async def send_message(
     current_user: User = Depends(get_current_active_user),
 ):
     """Send a message to the AI assistant."""
-    # Check if user has AI access (premium or family)
-    if current_user.subscription_tier not in ["premium", "family"]:
-        raise HTTPException(
-            status_code=403,
-            detail="AI assistant requires Premium or Family subscription",
-        )
-
     # Get or create conversation
     if request.conversation_id:
         conversation = await Conversation.get(request.conversation_id)
@@ -225,13 +218,6 @@ async def transcribe_audio(
     current_user: User = Depends(get_current_active_user),
 ):
     """Transcribe audio to Hebrew text using ElevenLabs Speech-to-Text."""
-    # Check if user has AI access (premium or family)
-    if current_user.subscription_tier not in ["premium", "family"]:
-        raise HTTPException(
-            status_code=403,
-            detail="Voice transcription requires Premium or Family subscription",
-        )
-
     # Validate file type
     allowed_types = ["audio/webm", "audio/wav", "audio/mp3", "audio/mpeg", "audio/ogg", "audio/m4a"]
     if audio.content_type and audio.content_type not in allowed_types:

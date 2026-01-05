@@ -1,5 +1,8 @@
 from datetime import datetime
+from urllib.parse import urlencode
+import httpx
 from fastapi import APIRouter, HTTPException, status, Depends
+from pydantic import BaseModel
 from app.models.user import User, UserCreate, UserLogin, UserUpdate, UserResponse, TokenResponse
 from app.core.security import (
     get_password_hash,
@@ -7,6 +10,11 @@ from app.core.security import (
     create_access_token,
     get_current_active_user,
 )
+from app.core.config import settings
+
+
+class GoogleAuthCode(BaseModel):
+    code: str
 
 router = APIRouter()
 
@@ -111,3 +119,102 @@ async def reset_password(email: str):
 async def logout(current_user: User = Depends(get_current_active_user)):
     """Logout user (client should delete token)."""
     return {"message": "Logged out successfully"}
+
+
+@router.get("/google/url")
+async def get_google_auth_url():
+    """Get Google OAuth authorization URL."""
+    params = {
+        "client_id": settings.GOOGLE_CLIENT_ID,
+        "redirect_uri": settings.GOOGLE_REDIRECT_URI,
+        "response_type": "code",
+        "scope": "openid email profile",
+        "access_type": "offline",
+        "prompt": "consent",
+    }
+    url = f"https://accounts.google.com/o/oauth2/v2/auth?{urlencode(params)}"
+    return {"url": url}
+
+
+@router.post("/google/callback", response_model=TokenResponse)
+async def google_callback(auth_data: GoogleAuthCode):
+    """Handle Google OAuth callback."""
+    # Exchange code for tokens
+    async with httpx.AsyncClient() as client:
+        token_response = await client.post(
+            "https://oauth2.googleapis.com/token",
+            data={
+                "code": auth_data.code,
+                "client_id": settings.GOOGLE_CLIENT_ID,
+                "client_secret": settings.GOOGLE_CLIENT_SECRET,
+                "redirect_uri": settings.GOOGLE_REDIRECT_URI,
+                "grant_type": "authorization_code",
+            },
+        )
+
+        if token_response.status_code != 200:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Failed to exchange code for token",
+            )
+
+        tokens = token_response.json()
+        access_token = tokens.get("access_token")
+
+        # Get user info from Google
+        userinfo_response = await client.get(
+            "https://www.googleapis.com/oauth2/v2/userinfo",
+            headers={"Authorization": f"Bearer {access_token}"},
+        )
+
+        if userinfo_response.status_code != 200:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Failed to get user info from Google",
+            )
+
+        google_user = userinfo_response.json()
+
+    google_id = google_user.get("id")
+    email = google_user.get("email")
+    name = google_user.get("name", email.split("@")[0])
+
+    # Check if user exists by google_id or email
+    user = await User.find_one(User.google_id == google_id)
+
+    if not user:
+        # Check if email exists (user registered with email/password)
+        user = await User.find_one(User.email == email)
+
+        if user:
+            # Link Google account to existing user
+            user.google_id = google_id
+            user.auth_provider = "google"
+            await user.save()
+        else:
+            # Create new user
+            user = User(
+                email=email,
+                name=name,
+                google_id=google_id,
+                auth_provider="google",
+            )
+            await user.insert()
+
+    if not user.is_active:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Inactive user",
+        )
+
+    # Update last login
+    user.last_login = datetime.utcnow()
+    await user.save()
+
+    # Create JWT token
+    jwt_token = create_access_token(data={"sub": str(user.id)})
+
+    return TokenResponse(
+        access_token=jwt_token,
+        user=user.to_response(),
+    )

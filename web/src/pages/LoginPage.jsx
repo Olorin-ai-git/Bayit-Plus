@@ -6,7 +6,7 @@ import { useAuthStore } from '@/stores/authStore'
 export default function LoginPage() {
   const navigate = useNavigate()
   const location = useLocation()
-  const { login, isLoading, error } = useAuthStore()
+  const { login, loginWithGoogle, isLoading, error } = useAuthStore()
 
   const [formData, setFormData] = useState({
     email: '',
@@ -42,8 +42,13 @@ export default function LoginPage() {
 
       <div className="w-full max-w-md relative z-10">
         {/* Logo */}
-        <Link to="/" className="block text-center mb-8">
-          <span className="text-4xl font-bold text-gradient">
+        <Link to="/" className="flex flex-col items-center gap-2 mb-8">
+          <img
+            src="/logo.png"
+            alt="Bayit+"
+            className="h-20 w-auto"
+          />
+          <span className="text-3xl font-bold text-gradient">
             בית+
           </span>
         </Link>
@@ -63,11 +68,11 @@ export default function LoginPage() {
                   type="email"
                   value={formData.email}
                   onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                  className="glass-input pe-10"
+                  className="glass-input ps-10"
                   placeholder="your@email.com"
                   dir="ltr"
                 />
-                <Mail className="absolute left-4 top-1/2 -translate-y-1/2 text-dark-500" size={20} />
+                <Mail className="absolute right-4 top-1/2 -translate-y-1/2 text-dark-500" size={20} />
               </div>
             </div>
 
@@ -81,14 +86,14 @@ export default function LoginPage() {
                   type={showPassword ? 'text' : 'password'}
                   value={formData.password}
                   onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-                  className="glass-input pe-10"
+                  className="glass-input ps-10"
                   placeholder="••••••••"
                   dir="ltr"
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute left-4 top-1/2 -translate-y-1/2 text-dark-500 hover:text-dark-300 transition-colors"
+                  className="absolute right-4 top-1/2 -translate-y-1/2 text-dark-500 hover:text-dark-300 transition-colors"
                 >
                   {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
                 </button>
@@ -133,7 +138,12 @@ export default function LoginPage() {
           </div>
 
           {/* Social Login */}
-          <button className="glass-btn-secondary w-full justify-center">
+          <button
+            type="button"
+            onClick={() => loginWithGoogle()}
+            disabled={isLoading}
+            className="glass-btn-secondary w-full justify-center"
+          >
             <svg className="w-5 h-5" viewBox="0 0 24 24">
               <path
                 fill="currentColor"

@@ -42,9 +42,13 @@ class UserResponse(BaseModel):
 class User(Document):
     email: EmailStr
     name: str
-    hashed_password: str
+    hashed_password: Optional[str] = None  # Optional for OAuth users
     is_active: bool = True
     is_admin: bool = False
+
+    # OAuth
+    google_id: Optional[str] = None
+    auth_provider: str = "local"  # local, google
 
     # Subscription info
     subscription_id: Optional[str] = None

@@ -10,6 +10,7 @@ import ProfilePage from './pages/ProfilePage'
 import SubscribePage from './pages/SubscribePage'
 import LoginPage from './pages/LoginPage'
 import RegisterPage from './pages/RegisterPage'
+import GoogleCallbackPage from './pages/GoogleCallbackPage'
 import WatchPage from './pages/WatchPage'
 import NotFoundPage from './pages/NotFoundPage'
 
@@ -19,6 +20,7 @@ function App() {
       {/* Auth Routes (no layout) */}
       <Route path="/login" element={<LoginPage />} />
       <Route path="/register" element={<RegisterPage />} />
+      <Route path="/auth/google/callback" element={<GoogleCallbackPage />} />
 
       {/* Main Routes with Layout */}
       <Route element={<Layout />}>

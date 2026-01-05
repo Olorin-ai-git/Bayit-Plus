@@ -27,6 +27,11 @@ class Settings(BaseSettings):
     # Anthropic (Claude)
     ANTHROPIC_API_KEY: str = ""
 
+    # Google OAuth
+    GOOGLE_CLIENT_ID: str = ""
+    GOOGLE_CLIENT_SECRET: str = ""
+    GOOGLE_REDIRECT_URI: str = "http://localhost:3000/auth/google/callback"
+
     # ElevenLabs (speech-to-text)
     ELEVENLABS_API_KEY: str = ""
 

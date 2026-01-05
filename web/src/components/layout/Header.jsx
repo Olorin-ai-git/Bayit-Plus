@@ -21,7 +21,12 @@ export default function Header() {
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
           <Link to="/" className="flex items-center gap-2 group">
-            <span className="text-2xl font-bold text-gradient">
+            <img
+              src="/logo.png"
+              alt="Bayit+"
+              className="h-10 w-auto"
+            />
+            <span className="text-xl font-bold text-gradient">
               בית+
             </span>
           </Link>

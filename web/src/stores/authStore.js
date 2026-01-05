@@ -47,6 +47,34 @@ export const useAuthStore = create(
         }
       },
 
+      loginWithGoogle: async () => {
+        set({ isLoading: true, error: null })
+        try {
+          const response = await authService.getGoogleAuthUrl()
+          window.location.href = response.url
+        } catch (error) {
+          set({ error: error.message, isLoading: false })
+          throw error
+        }
+      },
+
+      handleGoogleCallback: async (code) => {
+        set({ isLoading: true, error: null })
+        try {
+          const response = await authService.googleCallback(code)
+          set({
+            user: response.user,
+            token: response.access_token,
+            isAuthenticated: true,
+            isLoading: false,
+          })
+          return response
+        } catch (error) {
+          set({ error: error.message, isLoading: false })
+          throw error
+        }
+      },
+
       logout: () => {
         set({
           user: null,
