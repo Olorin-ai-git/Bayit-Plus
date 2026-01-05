@@ -7,6 +7,7 @@ import {
   Animated,
   Image,
 } from 'react-native';
+import { colors } from '../theme';
 
 interface MenuItem {
   id: string;
@@ -71,11 +72,11 @@ export const SideMenu: React.FC<SideMenuProps> = ({
 const styles = StyleSheet.create({
   container: {
     width: 80,
-    backgroundColor: '#0d0d1a',
+    backgroundColor: colors.glass,
     paddingVertical: 24,
     alignItems: 'center',
     borderRightWidth: 1,
-    borderRightColor: '#1a1a2e',
+    borderRightColor: colors.glassBorder,
   },
   containerExpanded: {
     width: 240,
@@ -90,7 +91,7 @@ const styles = StyleSheet.create({
   logo: {
     fontSize: 28,
     fontWeight: 'bold',
-    color: '#00d9ff',
+    color: colors.primary,
   },
   menuItems: {
     flex: 1,
@@ -103,25 +104,28 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     borderRadius: 12,
     marginBottom: 8,
+    borderWidth: 1,
+    borderColor: 'transparent',
   },
   menuItemActive: {
     backgroundColor: 'rgba(0, 217, 255, 0.1)',
+    borderColor: colors.glassBorder,
   },
   menuItemFocused: {
     backgroundColor: 'rgba(0, 217, 255, 0.2)',
-    borderWidth: 2,
-    borderColor: '#00d9ff',
+    borderWidth: 1,
+    borderColor: colors.primary,
   },
   menuIcon: {
     fontSize: 24,
   },
   menuLabel: {
     fontSize: 18,
-    color: '#888888',
+    color: colors.textSecondary,
     marginLeft: 16,
   },
   menuLabelActive: {
-    color: '#00d9ff',
+    color: colors.primary,
     fontWeight: 'bold',
   },
 });

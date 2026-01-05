@@ -8,7 +8,9 @@ import {
 import { useNavigation } from '@react-navigation/native';
 import { AnimatedLogo } from '../components/AnimatedLogo';
 import { ContentRow } from '../components/ContentRow';
+import { GlassCarousel } from '../components/GlassCarousel';
 import { contentService, liveService, historyService } from '../services/api';
+import { colors } from '../theme';
 
 interface ContentItem {
   id: string;
@@ -18,9 +20,19 @@ interface ContentItem {
   type?: string;
 }
 
+interface CarouselItem {
+  id: string;
+  title: string;
+  subtitle?: string;
+  description?: string;
+  image?: string;
+  badge?: string;
+}
+
 export const HomeScreen: React.FC = () => {
   const navigation = useNavigation<any>();
   const [isLoading, setIsLoading] = useState(true);
+  const [carouselItems, setCarouselItems] = useState<CarouselItem[]>([]);
   const [continueWatching, setContinueWatching] = useState<ContentItem[]>([]);
   const [featured, setFeatured] = useState<ContentItem[]>([]);
   const [liveChannels, setLiveChannels] = useState<ContentItem[]>([]);
@@ -38,6 +50,41 @@ export const HomeScreen: React.FC = () => {
       const [featuredRes, liveRes] = await Promise.all([
         contentService.getFeatured().catch(() => ({ items: [] })),
         liveService.getChannels().catch(() => ({ channels: [] })),
+      ]);
+
+      // Carousel featured items
+      setCarouselItems([
+        {
+          id: 'hero1',
+          title: 'פאודה',
+          subtitle: 'עונה 4 - עכשיו בשידור',
+          description: 'הסדרה הישראלית המצליחה חוזרת לעונה רביעית מלאת מתח ואקשן',
+          image: 'https://picsum.photos/1200/600?random=100',
+          badge: 'חדש',
+        },
+        {
+          id: 'hero2',
+          title: 'שטיסל',
+          subtitle: 'כל העונות זמינות',
+          description: 'עקבו אחר משפחת שטיסל בשכונה החרדית בירושלים',
+          image: 'https://picsum.photos/1200/600?random=101',
+          badge: 'מומלץ',
+        },
+        {
+          id: 'hero3',
+          title: 'טהרן',
+          subtitle: 'עונה 2',
+          description: 'סוכנת מוסד בלב איראן במשימה מסוכנת',
+          image: 'https://picsum.photos/1200/600?random=102',
+        },
+        {
+          id: 'hero4',
+          title: 'שידור חי - כאן 11',
+          subtitle: 'צפו עכשיו',
+          description: 'חדשות, תוכניות אקטואליה ותוכן איכותי',
+          image: 'https://picsum.photos/1200/600?random=103',
+          badge: 'LIVE',
+        },
       ]);
 
       // Mock data for demo
@@ -102,12 +149,29 @@ export const HomeScreen: React.FC = () => {
     );
   }
 
+  const handleCarouselPress = (item: CarouselItem) => {
+    navigation.navigate('Player', {
+      id: item.id,
+      title: item.title,
+      type: item.badge === 'LIVE' ? 'live' : 'vod',
+    });
+  };
+
   return (
     <ScrollView style={styles.container} contentContainerStyle={styles.content}>
-      {/* Hero Banner */}
-      <View style={styles.hero}>
-        <AnimatedLogo size="large" />
-        <Text style={styles.heroSubtitle}>הבית שלך בארה״ב לתוכן ישראלי</Text>
+      {/* Logo at Top */}
+      <View style={styles.logoSection}>
+        <AnimatedLogo size="medium" />
+      </View>
+
+      {/* Hero Carousel */}
+      <View style={styles.carouselSection}>
+        <GlassCarousel
+          items={carouselItems}
+          onItemPress={handleCarouselPress}
+          height={450}
+          autoPlayInterval={6000}
+        />
       </View>
 
       {/* Continue Watching */}
@@ -149,36 +213,31 @@ export const HomeScreen: React.FC = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#0d0d1a',
+    backgroundColor: colors.background,
   },
   content: {
-    paddingVertical: 40,
+    paddingBottom: 40,
     direction: 'rtl',
   },
   loadingContainer: {
     flex: 1,
-    backgroundColor: '#0d0d1a',
+    backgroundColor: colors.background,
     justifyContent: 'center',
     alignItems: 'center',
   },
   loadingText: {
-    color: '#ffffff',
+    color: colors.text,
     fontSize: 18,
     marginTop: 32,
   },
-  hero: {
-    paddingHorizontal: 48,
-    paddingTop: 20,
-    paddingBottom: 40,
-    marginBottom: 20,
+  logoSection: {
     alignItems: 'center',
-    width: '100%',
+    paddingTop: 24,
+    paddingBottom: 16,
   },
-  heroSubtitle: {
-    fontSize: 24,
-    color: '#888888',
-    textAlign: 'center',
-    marginTop: 24,
+  carouselSection: {
+    paddingHorizontal: 48,
+    marginBottom: 32,
   },
 });
 

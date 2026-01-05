@@ -10,6 +10,8 @@ import {
 import { useNavigation } from '@react-navigation/native';
 import { useAuthStore } from '../stores/authStore';
 import { AnimatedLogo } from '../components/AnimatedLogo';
+import { GlassView } from '../components/ui';
+import { colors } from '../theme';
 
 export const LoginScreen: React.FC = () => {
   const navigation = useNavigation<any>();
@@ -48,7 +50,7 @@ export const LoginScreen: React.FC = () => {
         </View>
 
         {/* Login Form */}
-        <View style={styles.form}>
+        <GlassView intensity="high" style={styles.form}>
           <Text style={styles.title}>התחברות</Text>
 
           {/* Email Input */}
@@ -134,7 +136,7 @@ export const LoginScreen: React.FC = () => {
               bayit.network/tv-login
             </Text>
           </View>
-        </View>
+        </GlassView>
       </View>
     </View>
   );
@@ -143,7 +145,7 @@ export const LoginScreen: React.FC = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#0d0d1a',
+    backgroundColor: colors.background,
   },
   backgroundGradient: {
     position: 'absolute',
@@ -168,22 +170,18 @@ const styles = StyleSheet.create({
   },
   tagline: {
     fontSize: 28,
-    color: '#888888',
+    color: colors.textSecondary,
     marginTop: 32,
   },
   form: {
     flex: 1,
     maxWidth: 500,
     padding: 40,
-    backgroundColor: 'rgba(26, 26, 46, 0.8)',
-    borderRadius: 24,
-    borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.1)',
   },
   title: {
     fontSize: 36,
     fontWeight: 'bold',
-    color: '#ffffff',
+    color: colors.text,
     marginBottom: 32,
     textAlign: 'right',
   },
@@ -192,22 +190,22 @@ const styles = StyleSheet.create({
   },
   label: {
     fontSize: 16,
-    color: '#888888',
+    color: colors.textSecondary,
     marginBottom: 8,
     textAlign: 'right',
   },
   input: {
-    backgroundColor: '#0d0d1a',
+    backgroundColor: colors.background,
     borderWidth: 2,
-    borderColor: '#2d2d44',
+    borderColor: colors.backgroundLighter,
     borderRadius: 12,
     padding: 16,
     fontSize: 18,
-    color: '#ffffff',
+    color: colors.text,
     textAlign: 'left',
   },
   inputFocused: {
-    borderColor: '#00d9ff',
+    borderColor: colors.primary,
   },
   errorContainer: {
     backgroundColor: 'rgba(255, 68, 68, 0.1)',
@@ -216,12 +214,12 @@ const styles = StyleSheet.create({
     marginBottom: 16,
   },
   errorText: {
-    color: '#ff4444',
+    color: colors.error,
     fontSize: 14,
     textAlign: 'center',
   },
   button: {
-    backgroundColor: '#00d9ff',
+    backgroundColor: colors.primary,
     padding: 18,
     borderRadius: 12,
     alignItems: 'center',
@@ -230,7 +228,7 @@ const styles = StyleSheet.create({
     opacity: 0.6,
   },
   buttonText: {
-    color: '#000000',
+    color: colors.background,
     fontSize: 20,
     fontWeight: 'bold',
   },
@@ -246,15 +244,15 @@ const styles = StyleSheet.create({
   dividerLine: {
     flex: 1,
     height: 1,
-    backgroundColor: '#2d2d44',
+    backgroundColor: colors.backgroundLighter,
   },
   dividerText: {
-    color: '#666666',
+    color: colors.textMuted,
     paddingHorizontal: 16,
     fontSize: 14,
   },
   qrInstructions: {
-    color: '#888888',
+    color: colors.textSecondary,
     fontSize: 14,
     marginBottom: 16,
     textAlign: 'center',
@@ -262,7 +260,7 @@ const styles = StyleSheet.create({
   qrPlaceholder: {
     width: 120,
     height: 120,
-    backgroundColor: '#ffffff',
+    backgroundColor: colors.text,
     borderRadius: 12,
     justifyContent: 'center',
     alignItems: 'center',
@@ -271,10 +269,10 @@ const styles = StyleSheet.create({
   qrPlaceholderText: {
     fontSize: 24,
     fontWeight: 'bold',
-    color: '#0d0d1a',
+    color: colors.background,
   },
   qrUrl: {
-    color: '#00d9ff',
+    color: colors.primary,
     fontSize: 14,
   },
 });

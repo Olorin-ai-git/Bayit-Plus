@@ -11,6 +11,7 @@ import {
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { liveService } from '../services/api';
+import { colors } from '../theme';
 
 interface Channel {
   id: string;
@@ -234,17 +235,17 @@ export const LiveTVScreen: React.FC = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#0d0d1a',
+    backgroundColor: colors.background,
     direction: 'rtl',
   },
   loadingContainer: {
     flex: 1,
-    backgroundColor: '#0d0d1a',
+    backgroundColor: colors.background,
     justifyContent: 'center',
     alignItems: 'center',
   },
   loadingText: {
-    color: '#ffffff',
+    color: colors.text,
     fontSize: 18,
     marginTop: 16,
   },
@@ -270,12 +271,12 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 42,
     fontWeight: 'bold',
-    color: '#ffffff',
+    color: colors.text,
     textAlign: 'right',
   },
   subtitle: {
     fontSize: 18,
-    color: '#888888',
+    color: colors.textSecondary,
     marginTop: 4,
     textAlign: 'right',
   },
@@ -290,22 +291,22 @@ const styles = StyleSheet.create({
     paddingHorizontal: 24,
     paddingVertical: 12,
     borderRadius: 24,
-    backgroundColor: '#1a1a2e',
-    borderWidth: 2,
-    borderColor: 'transparent',
+    backgroundColor: colors.glass,
+    borderWidth: 1,
+    borderColor: colors.glassBorder,
     justifyContent: 'center',
     alignItems: 'center',
   },
   categoryButtonActive: {
     backgroundColor: 'rgba(0, 217, 255, 0.2)',
-    borderColor: '#00d9ff',
+    borderColor: colors.primary,
   },
   categoryText: {
     fontSize: 16,
-    color: '#888888',
+    color: colors.textSecondary,
   },
   categoryTextActive: {
-    color: '#00d9ff',
+    color: colors.primary,
     fontWeight: 'bold',
   },
   grid: {
@@ -320,17 +321,17 @@ const styles = StyleSheet.create({
     maxWidth: '25%',
   },
   channelCard: {
-    backgroundColor: '#1a1a2e',
+    backgroundColor: colors.glass,
     borderRadius: 16,
     padding: 20,
-    borderWidth: 3,
-    borderColor: 'transparent',
+    borderWidth: 1,
+    borderColor: colors.glassBorder,
     minHeight: 180,
   },
   channelCardFocused: {
-    borderColor: '#00d9ff',
-    backgroundColor: '#252542',
-    shadowColor: '#00d9ff',
+    borderColor: colors.primary,
+    backgroundColor: colors.backgroundLighter,
+    shadowColor: colors.primary,
     shadowOffset: { width: 0, height: 0 },
     shadowOpacity: 0.5,
     shadowRadius: 20,
@@ -350,14 +351,14 @@ const styles = StyleSheet.create({
     width: 60,
     height: 60,
     borderRadius: 30,
-    backgroundColor: '#2d2d44',
+    backgroundColor: colors.backgroundLighter,
     justifyContent: 'center',
     alignItems: 'center',
   },
   logoText: {
     fontSize: 24,
     fontWeight: 'bold',
-    color: '#00d9ff',
+    color: colors.primary,
   },
   channelInfo: {
     flex: 1,
@@ -365,13 +366,13 @@ const styles = StyleSheet.create({
   channelName: {
     fontSize: 20,
     fontWeight: 'bold',
-    color: '#ffffff',
+    color: colors.text,
     textAlign: 'center',
     marginBottom: 4,
   },
   currentProgram: {
     fontSize: 14,
-    color: '#888888',
+    color: colors.textSecondary,
     textAlign: 'center',
   },
   liveIndicator: {
@@ -384,12 +385,12 @@ const styles = StyleSheet.create({
     width: 8,
     height: 8,
     borderRadius: 4,
-    backgroundColor: '#ff4444',
+    backgroundColor: colors.live,
     marginRight: 6,
   },
   liveText: {
     fontSize: 12,
-    color: '#ff4444',
+    color: colors.live,
     fontWeight: 'bold',
   },
 });

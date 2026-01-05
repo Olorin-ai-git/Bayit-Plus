@@ -8,6 +8,7 @@ import {
   Animated,
   TVFocusGuideView,
 } from 'react-native';
+import { colors } from '../theme';
 
 interface FocusableCardProps {
   title: string;
@@ -96,13 +97,13 @@ const styles = StyleSheet.create({
   card: {
     borderRadius: 12,
     overflow: 'hidden',
-    backgroundColor: '#1a1a2e',
-    borderWidth: 3,
-    borderColor: 'transparent',
+    backgroundColor: colors.glass,
+    borderWidth: 1,
+    borderColor: colors.glassBorder,
   },
   cardFocused: {
-    borderColor: '#00d9ff',
-    shadowColor: '#00d9ff',
+    borderColor: colors.primary,
+    shadowColor: colors.primary,
     shadowOffset: { width: 0, height: 0 },
     shadowOpacity: 0.8,
     shadowRadius: 20,
@@ -114,14 +115,14 @@ const styles = StyleSheet.create({
   },
   placeholder: {
     flex: 1,
-    backgroundColor: '#2d2d44',
+    backgroundColor: colors.backgroundLighter,
     justifyContent: 'center',
     alignItems: 'center',
   },
   placeholderText: {
     fontSize: 48,
     fontWeight: 'bold',
-    color: '#00d9ff',
+    color: colors.primary,
   },
   overlay: {
     position: 'absolute',
@@ -129,17 +130,17 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     padding: 12,
-    backgroundColor: 'rgba(0, 0, 0, 0.7)',
+    backgroundColor: colors.overlay,
   },
   title: {
     fontSize: 18,
     fontWeight: 'bold',
-    color: '#ffffff',
+    color: colors.text,
     textAlign: 'right',
   },
   subtitle: {
     fontSize: 14,
-    color: '#aaaaaa',
+    color: colors.textSecondary,
     marginTop: 2,
     textAlign: 'right',
   },

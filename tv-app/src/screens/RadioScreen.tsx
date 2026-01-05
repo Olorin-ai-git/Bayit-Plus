@@ -11,6 +11,7 @@ import {
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { radioService } from '../services/api';
+import { colors } from '../theme';
 
 interface RadioStation {
   id: string;
@@ -273,17 +274,17 @@ export const RadioScreen: React.FC = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#0d0d1a',
+    backgroundColor: colors.background,
     direction: 'rtl',
   },
   loadingContainer: {
     flex: 1,
-    backgroundColor: '#0d0d1a',
+    backgroundColor: colors.background,
     justifyContent: 'center',
     alignItems: 'center',
   },
   loadingText: {
-    color: '#ffffff',
+    color: colors.text,
     fontSize: 18,
     marginTop: 16,
   },
@@ -298,7 +299,7 @@ const styles = StyleSheet.create({
     width: 60,
     height: 60,
     borderRadius: 30,
-    backgroundColor: 'rgba(0, 217, 255, 0.2)',
+    backgroundColor: 'rgba(138, 43, 226, 0.2)',
     justifyContent: 'center',
     alignItems: 'center',
     marginLeft: 20,
@@ -309,12 +310,12 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 42,
     fontWeight: 'bold',
-    color: '#ffffff',
+    color: colors.text,
     textAlign: 'right',
   },
   subtitle: {
     fontSize: 18,
-    color: '#888888',
+    color: colors.textSecondary,
     marginTop: 2,
     textAlign: 'right',
   },
@@ -329,22 +330,22 @@ const styles = StyleSheet.create({
     paddingHorizontal: 24,
     paddingVertical: 12,
     borderRadius: 24,
-    backgroundColor: '#1a1a2e',
-    borderWidth: 2,
-    borderColor: 'transparent',
+    backgroundColor: colors.glass,
+    borderWidth: 1,
+    borderColor: colors.glassBorder,
     justifyContent: 'center',
     alignItems: 'center',
   },
   genreButtonActive: {
     backgroundColor: 'rgba(138, 43, 226, 0.2)',
-    borderColor: '#8a2be2',
+    borderColor: colors.secondary,
   },
   genreButtonText: {
     fontSize: 16,
-    color: '#888888',
+    color: colors.textSecondary,
   },
   genreButtonTextActive: {
-    color: '#8a2be2',
+    color: colors.secondary,
     fontWeight: 'bold',
   },
   grid: {
@@ -359,18 +360,18 @@ const styles = StyleSheet.create({
     maxWidth: '25%',
   },
   stationCard: {
-    backgroundColor: '#1a1a2e',
+    backgroundColor: colors.glass,
     borderRadius: 16,
     padding: 20,
-    borderWidth: 3,
-    borderColor: 'transparent',
+    borderWidth: 1,
+    borderColor: colors.glassBorder,
     minHeight: 200,
     position: 'relative',
   },
   stationCardFocused: {
-    borderColor: '#8a2be2',
-    backgroundColor: '#252542',
-    shadowColor: '#8a2be2',
+    borderColor: colors.secondary,
+    backgroundColor: colors.backgroundLighter,
+    shadowColor: colors.secondary,
     shadowOffset: { width: 0, height: 0 },
     shadowOpacity: 0.5,
     shadowRadius: 20,
@@ -403,7 +404,7 @@ const styles = StyleSheet.create({
   },
   waveBar: {
     width: 4,
-    backgroundColor: '#8a2be2',
+    backgroundColor: colors.secondary,
     borderRadius: 2,
   },
   waveBar1: {
@@ -422,19 +423,19 @@ const styles = StyleSheet.create({
   stationName: {
     fontSize: 18,
     fontWeight: 'bold',
-    color: '#ffffff',
+    color: colors.text,
     textAlign: 'center',
     marginBottom: 4,
   },
   frequency: {
     fontSize: 14,
-    color: '#8a2be2',
+    color: colors.secondary,
     fontWeight: '600',
     marginBottom: 4,
   },
   currentShow: {
     fontSize: 13,
-    color: '#888888',
+    color: colors.textSecondary,
     textAlign: 'center',
   },
   genreBadge: {
@@ -446,7 +447,7 @@ const styles = StyleSheet.create({
   },
   genreText: {
     fontSize: 11,
-    color: '#8a2be2',
+    color: colors.secondary,
   },
   playIcon: {
     position: 'absolute',
@@ -455,16 +456,16 @@ const styles = StyleSheet.create({
     width: 32,
     height: 32,
     borderRadius: 16,
-    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+    backgroundColor: colors.glassBorder,
     justifyContent: 'center',
     alignItems: 'center',
   },
   playIconFocused: {
-    backgroundColor: '#8a2be2',
+    backgroundColor: colors.secondary,
   },
   playIconText: {
     fontSize: 14,
-    color: '#ffffff',
+    color: colors.text,
   },
 });
 
