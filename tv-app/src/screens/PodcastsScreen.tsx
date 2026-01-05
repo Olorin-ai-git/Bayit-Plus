@@ -5,7 +5,6 @@ import {
   StyleSheet,
   FlatList,
   TouchableOpacity,
-  ScrollView,
   Animated,
   ActivityIndicator,
   Image,
@@ -210,12 +209,7 @@ export const PodcastsScreen: React.FC = () => {
       </View>
 
       {/* Category Filter */}
-      <ScrollView
-        horizontal
-        showsHorizontalScrollIndicator={false}
-        contentContainerStyle={styles.categoriesContainer}
-        style={styles.categoriesScroll}
-      >
+      <View style={styles.categories}>
         <TouchableOpacity
           onPress={() => setSelectedCategory('all')}
           style={[
@@ -251,7 +245,7 @@ export const PodcastsScreen: React.FC = () => {
             </Text>
           </TouchableOpacity>
         ))}
-      </ScrollView>
+      </View>
 
       {/* Shows Grid */}
       <FlatList
@@ -285,6 +279,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: colors.background,
+    direction: 'rtl',
   },
   loadingContainer: {
     flex: 1,
@@ -298,12 +293,11 @@ const styles = StyleSheet.create({
     marginTop: spacing.md,
   },
   header: {
-    flexDirection: 'row-reverse',
+    flexDirection: 'row',
     alignItems: 'center',
     paddingHorizontal: spacing.xxl,
     paddingTop: 40,
     paddingBottom: spacing.lg,
-    width: '100%',
   },
   headerIcon: {
     width: 60,
@@ -329,38 +323,40 @@ const styles = StyleSheet.create({
     marginTop: 2,
     textAlign: 'right',
   },
-  categoriesScroll: {
-    maxHeight: 60,
-  },
-  categoriesContainer: {
-    flexDirection: 'row-reverse',
-    paddingHorizontal: spacing.xxl,
-    paddingBottom: spacing.lg,
-    gap: spacing.sm,
+  categories: {
+    flexDirection: 'row',
+    paddingHorizontal: 48,
+    marginBottom: 24,
+    gap: 12,
+    zIndex: 10,
   },
   categoryButton: {
-    paddingHorizontal: spacing.lg,
-    paddingVertical: spacing.sm,
-    borderRadius: borderRadius.xl,
-    backgroundColor: colors.backgroundLight,
+    paddingHorizontal: 24,
+    paddingVertical: 12,
+    borderRadius: 24,
+    backgroundColor: '#1a1a2e',
     borderWidth: 2,
     borderColor: 'transparent',
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   categoryButtonActive: {
     backgroundColor: 'rgba(16, 185, 129, 0.2)',
-    borderColor: colors.success,
+    borderColor: '#10b981',
   },
   categoryText: {
     fontSize: 16,
-    color: colors.textSecondary,
+    color: '#888888',
   },
   categoryTextActive: {
-    color: colors.success,
+    color: '#10b981',
     fontWeight: 'bold',
   },
   grid: {
     paddingHorizontal: spacing.xl,
     paddingBottom: spacing.xxl,
+    paddingTop: spacing.md,
+    direction: 'ltr',
   },
   cardTouchable: {
     flex: 1,
@@ -413,12 +409,12 @@ const styles = StyleSheet.create({
     marginBottom: spacing.xs,
   },
   cardMeta: {
-    flexDirection: 'row-reverse',
+    flexDirection: 'row',
     flexWrap: 'wrap',
     gap: spacing.sm,
   },
   metaItem: {
-    flexDirection: 'row-reverse',
+    flexDirection: 'row',
     alignItems: 'center',
   },
   metaIcon: {

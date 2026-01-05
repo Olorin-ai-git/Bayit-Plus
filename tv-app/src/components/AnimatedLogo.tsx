@@ -19,9 +19,9 @@ export const AnimatedLogo: React.FC<AnimatedLogoProps> = ({
   const textOpacity = useRef(new Animated.Value(0)).current;
 
   const sizes = {
-    small: { logo: 60, text: 32, plus: 28 },
-    medium: { logo: 90, text: 48, plus: 42 },
-    large: { logo: 120, text: 64, plus: 56 },
+    small: { logo: 60, logoHeight: 30, text: 32, plus: 28 },
+    medium: { logo: 90, logoHeight: 45, text: 48, plus: 42 },
+    large: { logo: 120, logoHeight: 60, text: 64, plus: 56 },
   };
 
   const currentSize = sizes[size];
@@ -84,7 +84,7 @@ export const AnimatedLogo: React.FC<AnimatedLogoProps> = ({
       >
         <Image
           source={logo}
-          style={[styles.logo, { width: currentSize.logo, height: currentSize.logo }]}
+          style={[styles.logo, { width: currentSize.logo, height: currentSize.logoHeight }]}
           resizeMode="contain"
         />
       </Animated.View>
@@ -129,7 +129,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   logoContainer: {
-    marginBottom: 6,
+    marginBottom: -8,
   },
   logo: {
     // Size set dynamically

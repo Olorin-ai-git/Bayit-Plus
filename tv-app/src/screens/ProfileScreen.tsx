@@ -269,14 +269,14 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: colors.background,
+    direction: 'rtl',
   },
   header: {
-    flexDirection: 'row-reverse',
+    flexDirection: 'row',
     alignItems: 'center',
     paddingHorizontal: spacing.xxl,
     paddingTop: 40,
     paddingBottom: spacing.lg,
-    width: '100%',
   },
   headerIcon: {
     width: 60,
@@ -304,7 +304,7 @@ const styles = StyleSheet.create({
   },
   content: {
     flex: 1,
-    flexDirection: 'row-reverse',
+    flexDirection: 'row',
     paddingHorizontal: spacing.xxl,
   },
   sidebar: {
@@ -315,7 +315,7 @@ const styles = StyleSheet.create({
     padding: spacing.sm,
   },
   tabButton: {
-    flexDirection: 'row-reverse',
+    flexDirection: 'row',
     alignItems: 'center',
     paddingVertical: spacing.md,
     paddingHorizontal: spacing.md,
@@ -343,7 +343,7 @@ const styles = StyleSheet.create({
     marginVertical: spacing.md,
   },
   logoutButton: {
-    flexDirection: 'row-reverse',
+    flexDirection: 'row',
     alignItems: 'center',
     paddingVertical: spacing.md,
     paddingHorizontal: spacing.md,
@@ -401,7 +401,7 @@ const styles = StyleSheet.create({
     borderColor: colors.primary,
   },
   subscriptionHeader: {
-    flexDirection: 'row-reverse',
+    flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
     marginBottom: spacing.sm,
@@ -422,7 +422,7 @@ const styles = StyleSheet.create({
     textAlign: 'right',
   },
   subscriptionActions: {
-    flexDirection: 'row-reverse',
+    flexDirection: 'row',
     gap: spacing.md,
   },
   noSubscription: {
@@ -439,7 +439,7 @@ const styles = StyleSheet.create({
     marginBottom: spacing.lg,
   },
   notificationItem: {
-    flexDirection: 'row-reverse',
+    flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
     backgroundColor: colors.backgroundLight,
@@ -466,7 +466,7 @@ const styles = StyleSheet.create({
     marginTop: 2,
   },
   securityItem: {
-    flexDirection: 'row-reverse',
+    flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
     backgroundColor: colors.backgroundLight,

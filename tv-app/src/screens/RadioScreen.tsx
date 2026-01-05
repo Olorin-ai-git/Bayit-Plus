@@ -274,6 +274,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#0d0d1a',
+    direction: 'rtl',
   },
   loadingContainer: {
     flex: 1,
@@ -287,12 +288,11 @@ const styles = StyleSheet.create({
     marginTop: 16,
   },
   header: {
-    flexDirection: 'row-reverse',
+    flexDirection: 'row',
     alignItems: 'center',
     paddingHorizontal: 48,
     paddingTop: 40,
     paddingBottom: 20,
-    width: '100%',
   },
   headerIcon: {
     width: 60,
@@ -319,10 +319,11 @@ const styles = StyleSheet.create({
     textAlign: 'right',
   },
   genres: {
-    flexDirection: 'row-reverse',
+    flexDirection: 'row',
     paddingHorizontal: 48,
     marginBottom: 24,
     gap: 12,
+    zIndex: 10,
   },
   genreButton: {
     paddingHorizontal: 24,
@@ -331,6 +332,8 @@ const styles = StyleSheet.create({
     backgroundColor: '#1a1a2e',
     borderWidth: 2,
     borderColor: 'transparent',
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   genreButtonActive: {
     backgroundColor: 'rgba(138, 43, 226, 0.2)',
@@ -347,6 +350,8 @@ const styles = StyleSheet.create({
   grid: {
     paddingHorizontal: 40,
     paddingBottom: 40,
+    paddingTop: 16,
+    direction: 'ltr',
   },
   cardTouchable: {
     flex: 1,

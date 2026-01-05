@@ -333,14 +333,14 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: colors.background,
+    direction: 'rtl',
   },
   header: {
-    flexDirection: 'row-reverse',
+    flexDirection: 'row',
     alignItems: 'center',
     paddingHorizontal: spacing.xxl,
     paddingTop: 40,
     paddingBottom: spacing.md,
-    width: '100%',
   },
   headerIcon: {
     width: 60,
@@ -371,7 +371,7 @@ const styles = StyleSheet.create({
     paddingBottom: spacing.lg,
   },
   searchBox: {
-    flexDirection: 'row-reverse',
+    flexDirection: 'row',
     alignItems: 'center',
     paddingHorizontal: spacing.lg,
     paddingVertical: spacing.sm,
@@ -403,9 +403,10 @@ const styles = StyleSheet.create({
   },
   filtersScroll: {
     maxHeight: 60,
+    zIndex: 10,
   },
   filtersContainer: {
-    flexDirection: 'row-reverse',
+    flexDirection: 'row',
     paddingHorizontal: spacing.xxl,
     paddingBottom: spacing.lg,
     gap: spacing.sm,
@@ -417,6 +418,8 @@ const styles = StyleSheet.create({
     backgroundColor: colors.backgroundLight,
     borderWidth: 2,
     borderColor: 'transparent',
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   filterButtonActive: {
     backgroundColor: 'rgba(0, 217, 255, 0.2)',
@@ -453,6 +456,8 @@ const styles = StyleSheet.create({
   },
   grid: {
     paddingBottom: spacing.xxl,
+    paddingTop: spacing.md,
+    direction: 'ltr',
   },
   cardTouchable: {
     flex: 1,
