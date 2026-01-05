@@ -1,0 +1,80 @@
+import { create } from 'zustand'
+import { persist } from 'zustand/middleware'
+import { authService } from '@/services/api'
+
+export const useAuthStore = create(
+  persist(
+    (set, get) => ({
+      user: null,
+      token: null,
+      isAuthenticated: false,
+      isLoading: false,
+      error: null,
+
+      setUser: (user) => set({ user, isAuthenticated: !!user }),
+
+      login: async (email, password) => {
+        set({ isLoading: true, error: null })
+        try {
+          const response = await authService.login(email, password)
+          set({
+            user: response.user,
+            token: response.token,
+            isAuthenticated: true,
+            isLoading: false,
+          })
+          return response
+        } catch (error) {
+          set({ error: error.message, isLoading: false })
+          throw error
+        }
+      },
+
+      register: async (userData) => {
+        set({ isLoading: true, error: null })
+        try {
+          const response = await authService.register(userData)
+          set({
+            user: response.user,
+            token: response.token,
+            isAuthenticated: true,
+            isLoading: false,
+          })
+          return response
+        } catch (error) {
+          set({ error: error.message, isLoading: false })
+          throw error
+        }
+      },
+
+      logout: () => {
+        set({
+          user: null,
+          token: null,
+          isAuthenticated: false,
+          error: null,
+        })
+      },
+
+      updateProfile: async (updates) => {
+        set({ isLoading: true, error: null })
+        try {
+          const response = await authService.updateProfile(updates)
+          set({ user: response.user, isLoading: false })
+          return response
+        } catch (error) {
+          set({ error: error.message, isLoading: false })
+          throw error
+        }
+      },
+    }),
+    {
+      name: 'bayit-auth',
+      partialize: (state) => ({
+        user: state.user,
+        token: state.token,
+        isAuthenticated: state.isAuthenticated,
+      }),
+    }
+  )
+)

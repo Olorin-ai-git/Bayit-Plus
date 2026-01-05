@@ -1,0 +1,208 @@
+from datetime import datetime
+from typing import Optional, List
+from beanie import Document
+from pydantic import BaseModel, Field
+
+
+class ContentBase(BaseModel):
+    title: str
+    description: Optional[str] = None
+    thumbnail: Optional[str] = None
+    backdrop: Optional[str] = None
+
+
+class ContentCreate(ContentBase):
+    category_id: str
+    duration: Optional[str] = None
+    year: Optional[int] = None
+    rating: Optional[str] = None
+    genre: Optional[str] = None
+    cast: Optional[List[str]] = None
+    stream_url: str
+    is_drm_protected: bool = False
+
+
+class ContentResponse(ContentBase):
+    id: str
+    category: Optional[str] = None
+    duration: Optional[str] = None
+    year: Optional[int] = None
+    rating: Optional[str] = None
+    type: str = "vod"
+
+    class Config:
+        from_attributes = True
+
+
+class Content(Document):
+    title: str
+    description: Optional[str] = None
+    thumbnail: Optional[str] = None
+    backdrop: Optional[str] = None
+    category_id: str
+    category_name: Optional[str] = None
+
+    # Metadata
+    duration: Optional[str] = None  # e.g., "1:45:00"
+    year: Optional[int] = None
+    rating: Optional[str] = None  # e.g., "PG-13"
+    genre: Optional[str] = None
+    cast: Optional[List[str]] = None
+    director: Optional[str] = None
+
+    # Streaming
+    stream_url: str
+    stream_type: str = "hls"  # hls, dash
+    is_drm_protected: bool = False
+    drm_key_id: Optional[str] = None
+
+    # Series info
+    is_series: bool = False
+    season: Optional[int] = None
+    episode: Optional[int] = None
+    series_id: Optional[str] = None
+
+    # Visibility
+    is_published: bool = True
+    is_featured: bool = False
+    requires_subscription: str = "basic"  # basic, premium, family
+
+    # Analytics
+    view_count: int = 0
+    avg_rating: float = 0.0
+
+    # Timestamps
+    created_at: datetime = Field(default_factory=datetime.utcnow)
+    updated_at: datetime = Field(default_factory=datetime.utcnow)
+    published_at: Optional[datetime] = None
+
+    class Settings:
+        name = "content"
+        indexes = [
+            "category_id",
+            "is_featured",
+            "is_published",
+            "series_id",
+        ]
+
+
+class Category(Document):
+    name: str
+    name_en: Optional[str] = None
+    slug: str
+    description: Optional[str] = None
+    thumbnail: Optional[str] = None
+    order: int = 0
+    is_active: bool = True
+    created_at: datetime = Field(default_factory=datetime.utcnow)
+
+    class Settings:
+        name = "categories"
+
+
+class LiveChannel(Document):
+    name: str
+    description: Optional[str] = None
+    thumbnail: Optional[str] = None
+    logo: Optional[str] = None
+
+    # Stream
+    stream_url: str
+    stream_type: str = "hls"
+    is_drm_protected: bool = False
+
+    # EPG
+    epg_source: Optional[str] = None
+    current_show: Optional[str] = None
+    next_show: Optional[str] = None
+
+    # Visibility
+    is_active: bool = True
+    order: int = 0
+    requires_subscription: str = "premium"
+
+    created_at: datetime = Field(default_factory=datetime.utcnow)
+    updated_at: datetime = Field(default_factory=datetime.utcnow)
+
+    class Settings:
+        name = "live_channels"
+
+
+class EPGEntry(Document):
+    channel_id: str
+    title: str
+    description: Optional[str] = None
+    start_time: datetime
+    end_time: datetime
+    category: Optional[str] = None
+    thumbnail: Optional[str] = None
+
+    class Settings:
+        name = "epg_entries"
+        indexes = [
+            "channel_id",
+            ("channel_id", "start_time"),
+        ]
+
+
+class RadioStation(Document):
+    name: str
+    description: Optional[str] = None
+    logo: Optional[str] = None
+    genre: Optional[str] = None
+
+    stream_url: str
+    stream_type: str = "audio"  # audio, hls
+
+    current_show: Optional[str] = None
+    current_song: Optional[str] = None
+
+    is_active: bool = True
+    order: int = 0
+
+    created_at: datetime = Field(default_factory=datetime.utcnow)
+
+    class Settings:
+        name = "radio_stations"
+
+
+class Podcast(Document):
+    title: str
+    description: Optional[str] = None
+    author: Optional[str] = None
+    cover: Optional[str] = None
+    category: Optional[str] = None
+
+    rss_feed: Optional[str] = None
+    website: Optional[str] = None
+
+    episode_count: int = 0
+    latest_episode_date: Optional[datetime] = None
+
+    is_active: bool = True
+    order: int = 0
+
+    created_at: datetime = Field(default_factory=datetime.utcnow)
+    updated_at: datetime = Field(default_factory=datetime.utcnow)
+
+    class Settings:
+        name = "podcasts"
+
+
+class PodcastEpisode(Document):
+    podcast_id: str
+    title: str
+    description: Optional[str] = None
+    audio_url: str
+    duration: Optional[str] = None
+    episode_number: Optional[int] = None
+    season_number: Optional[int] = None
+    published_at: datetime
+    thumbnail: Optional[str] = None
+
+    class Settings:
+        name = "podcast_episodes"
+        indexes = [
+            "podcast_id",
+            ("podcast_id", "published_at"),
+        ]

@@ -1,0 +1,141 @@
+from datetime import datetime, timedelta
+from typing import Optional
+from fastapi import APIRouter, HTTPException, Depends
+from app.models.content import LiveChannel, EPGEntry
+from app.models.user import User
+from app.core.security import get_optional_user, get_current_active_user
+
+router = APIRouter()
+
+
+@router.get("/channels")
+async def get_channels(current_user: Optional[User] = Depends(get_optional_user)):
+    """Get all live TV channels."""
+    channels = await LiveChannel.find(
+        LiveChannel.is_active == True
+    ).sort("order").to_list()
+
+    return {
+        "channels": [
+            {
+                "id": str(channel.id),
+                "name": channel.name,
+                "description": channel.description,
+                "thumbnail": channel.thumbnail,
+                "logo": channel.logo,
+                "currentShow": channel.current_show,
+                "nextShow": channel.next_show,
+            }
+            for channel in channels
+        ]
+    }
+
+
+@router.get("/{channel_id}")
+async def get_channel(
+    channel_id: str,
+    current_user: Optional[User] = Depends(get_optional_user),
+):
+    """Get channel details with schedule."""
+    channel = await LiveChannel.get(channel_id)
+    if not channel or not channel.is_active:
+        raise HTTPException(status_code=404, detail="Channel not found")
+
+    # Get today's schedule
+    now = datetime.utcnow()
+    today_start = now.replace(hour=0, minute=0, second=0, microsecond=0)
+    today_end = today_start + timedelta(days=1)
+
+    schedule = await EPGEntry.find(
+        EPGEntry.channel_id == channel_id,
+        EPGEntry.start_time >= today_start,
+        EPGEntry.start_time < today_end,
+    ).sort("start_time").to_list()
+
+    return {
+        "id": str(channel.id),
+        "name": channel.name,
+        "description": channel.description,
+        "thumbnail": channel.thumbnail,
+        "logo": channel.logo,
+        "currentShow": channel.current_show,
+        "nextShow": channel.next_show,
+        "schedule": [
+            {
+                "title": entry.title,
+                "description": entry.description,
+                "time": entry.start_time.strftime("%H:%M"),
+                "endTime": entry.end_time.strftime("%H:%M"),
+                "isNow": entry.start_time <= now < entry.end_time,
+            }
+            for entry in schedule
+        ],
+    }
+
+
+@router.get("/{channel_id}/epg")
+async def get_epg(
+    channel_id: str,
+    date: Optional[str] = None,  # YYYY-MM-DD
+):
+    """Get EPG (Electronic Program Guide) for a channel."""
+    channel = await LiveChannel.get(channel_id)
+    if not channel:
+        raise HTTPException(status_code=404, detail="Channel not found")
+
+    if date:
+        target_date = datetime.strptime(date, "%Y-%m-%d")
+    else:
+        target_date = datetime.utcnow()
+
+    day_start = target_date.replace(hour=0, minute=0, second=0, microsecond=0)
+    day_end = day_start + timedelta(days=1)
+
+    entries = await EPGEntry.find(
+        EPGEntry.channel_id == channel_id,
+        EPGEntry.start_time >= day_start,
+        EPGEntry.start_time < day_end,
+    ).sort("start_time").to_list()
+
+    now = datetime.utcnow()
+
+    return {
+        "channel_id": channel_id,
+        "date": day_start.strftime("%Y-%m-%d"),
+        "entries": [
+            {
+                "title": entry.title,
+                "description": entry.description,
+                "start": entry.start_time.isoformat(),
+                "end": entry.end_time.isoformat(),
+                "category": entry.category,
+                "thumbnail": entry.thumbnail,
+                "isNow": entry.start_time <= now < entry.end_time,
+            }
+            for entry in entries
+        ],
+    }
+
+
+@router.get("/{channel_id}/stream")
+async def get_stream_url(
+    channel_id: str,
+    current_user: User = Depends(get_current_active_user),
+):
+    """Get live stream URL (requires premium subscription)."""
+    channel = await LiveChannel.get(channel_id)
+    if not channel or not channel.is_active:
+        raise HTTPException(status_code=404, detail="Channel not found")
+
+    # Check subscription for live TV
+    if not current_user.subscription_tier or current_user.subscription_tier == "basic":
+        raise HTTPException(
+            status_code=403,
+            detail="Live TV requires Premium or Family subscription",
+        )
+
+    return {
+        "url": channel.stream_url,
+        "type": channel.stream_type,
+        "is_drm_protected": channel.is_drm_protected,
+    }

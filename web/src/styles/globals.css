@@ -1,0 +1,611 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Import Inter font */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+/* RTL Base Styles */
+:root {
+  --direction: rtl;
+  --text-align: right;
+
+  /* Glass Variables */
+  --glass-bg: rgba(30, 41, 59, 0.6);
+  --glass-bg-light: rgba(30, 41, 59, 0.4);
+  --glass-bg-strong: rgba(30, 41, 59, 0.8);
+  --glass-border: rgba(255, 255, 255, 0.1);
+  --glass-border-light: rgba(255, 255, 255, 0.05);
+}
+
+html {
+  direction: rtl;
+}
+
+body {
+  @apply text-white font-hebrew;
+  background: linear-gradient(135deg, #0f172a 0%, #0a0f1a 100%);
+  text-align: right;
+  min-height: 100vh;
+}
+
+/* Scrollbar Styling */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  @apply bg-dark-900/50;
+}
+
+::-webkit-scrollbar-thumb {
+  @apply bg-dark-600/80 rounded-full;
+  border: 2px solid transparent;
+  background-clip: padding-box;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  @apply bg-dark-500;
+}
+
+/* Focus Styles */
+*:focus-visible {
+  @apply outline-none ring-2 ring-primary-500/50 ring-offset-2 ring-offset-dark-900;
+}
+
+/* ==================== */
+/* GLASS BASE CLASSES   */
+/* ==================== */
+
+@layer components {
+  /* Base Glass */
+  .glass {
+    background: var(--glass-bg);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid var(--glass-border);
+    border-radius: 12px;
+  }
+
+  .glass-light {
+    background: var(--glass-bg-light);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid var(--glass-border-light);
+    border-radius: 12px;
+  }
+
+  .glass-strong {
+    background: var(--glass-bg-strong);
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
+    border: 1px solid var(--glass-border);
+    border-radius: 12px;
+  }
+
+  /* Glass Card Variants */
+  .glass-card {
+    @apply glass shadow-glass;
+  }
+
+  .glass-card-sm {
+    background: var(--glass-bg-light);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    border: 1px solid var(--glass-border-light);
+    border-radius: 8px;
+    @apply shadow-glass-sm;
+  }
+
+  .glass-card-hover {
+    @apply glass-card transition-all duration-300;
+  }
+
+  .glass-card-hover:hover {
+    @apply shadow-glass-lg;
+    transform: translateY(-2px);
+  }
+
+  .glass-modal {
+    background: rgba(30, 41, 59, 0.95);
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
+    border: 1px solid var(--glass-border);
+    border-radius: 16px;
+    @apply shadow-glass-lg;
+  }
+
+  /* ==================== */
+  /* GLASS BUTTONS        */
+  /* ==================== */
+
+  .glass-btn {
+    @apply inline-flex items-center justify-center gap-2 font-medium transition-all duration-200;
+    @apply px-4 py-2.5 rounded-lg;
+    @apply disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none;
+  }
+
+  .glass-btn:not(:disabled):hover {
+    transform: translateY(-2px);
+  }
+
+  .glass-btn:not(:disabled):active {
+    transform: translateY(0);
+  }
+
+  .glass-btn-primary {
+    @apply glass-btn;
+    background: rgba(59, 130, 246, 0.8);
+    border: 1px solid rgba(59, 130, 246, 0.3);
+    @apply text-white;
+  }
+
+  .glass-btn-primary:not(:disabled):hover {
+    background: rgba(59, 130, 246, 0.9);
+    @apply shadow-glow;
+  }
+
+  .glass-btn-secondary {
+    @apply glass-btn glass;
+    @apply text-dark-200;
+  }
+
+  .glass-btn-secondary:not(:disabled):hover {
+    background: rgba(30, 41, 59, 0.8);
+    @apply text-white;
+  }
+
+  .glass-btn-success {
+    @apply glass-btn;
+    background: rgba(16, 185, 129, 0.8);
+    border: 1px solid rgba(16, 185, 129, 0.3);
+    @apply text-white;
+  }
+
+  .glass-btn-success:not(:disabled):hover {
+    background: rgba(16, 185, 129, 0.9);
+    @apply shadow-glow-success;
+  }
+
+  .glass-btn-danger {
+    @apply glass-btn;
+    background: rgba(239, 68, 68, 0.8);
+    border: 1px solid rgba(239, 68, 68, 0.3);
+    @apply text-white;
+  }
+
+  .glass-btn-danger:not(:disabled):hover {
+    background: rgba(239, 68, 68, 0.9);
+    @apply shadow-glow-danger;
+  }
+
+  .glass-btn-purple {
+    @apply glass-btn;
+    background: rgba(168, 85, 247, 0.8);
+    border: 1px solid rgba(168, 85, 247, 0.3);
+    @apply text-white;
+  }
+
+  .glass-btn-purple:not(:disabled):hover {
+    background: rgba(168, 85, 247, 0.9);
+    @apply shadow-glow-purple;
+  }
+
+  .glass-btn-ghost {
+    @apply glass-btn;
+    background: transparent;
+    border: 1px solid var(--glass-border);
+    @apply text-dark-300;
+  }
+
+  .glass-btn-ghost:not(:disabled):hover {
+    background: var(--glass-bg-light);
+    @apply text-white;
+  }
+
+  /* Button Sizes */
+  .glass-btn-sm {
+    @apply px-3 py-1.5 text-sm rounded-md;
+  }
+
+  .glass-btn-lg {
+    @apply px-6 py-3 text-lg rounded-xl;
+  }
+
+  .glass-btn-icon {
+    @apply p-2.5 rounded-lg;
+  }
+
+  .glass-btn-icon-sm {
+    @apply p-2 rounded-md;
+  }
+
+  /* ==================== */
+  /* GLASS INPUTS         */
+  /* ==================== */
+
+  .glass-input {
+    @apply w-full px-4 py-3 rounded-lg text-white placeholder-dark-400;
+    @apply transition-all duration-200;
+    background: rgba(30, 41, 59, 0.5);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    border: 1px solid var(--glass-border);
+    height: 48px;
+  }
+
+  .glass-input:focus {
+    @apply outline-none;
+    border-color: rgba(59, 130, 246, 0.5);
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+  }
+
+  .glass-input:disabled {
+    @apply opacity-50 cursor-not-allowed;
+  }
+
+  .glass-input-error {
+    border-color: rgba(239, 68, 68, 0.5);
+  }
+
+  .glass-input-error:focus {
+    border-color: rgba(239, 68, 68, 0.7);
+    box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1);
+  }
+
+  .glass-select {
+    @apply glass-input appearance-none cursor-pointer;
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%2394a3b8' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
+    background-position: left 0.75rem center;
+    background-repeat: no-repeat;
+    background-size: 1.5em 1.5em;
+    padding-left: 2.5rem;
+  }
+
+  .glass-textarea {
+    @apply glass-input;
+    height: auto;
+    min-height: 100px;
+    resize: vertical;
+  }
+
+  /* ==================== */
+  /* GLASS BADGES         */
+  /* ==================== */
+
+  .glass-badge {
+    @apply inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium;
+    background: var(--glass-bg-light);
+    border: 1px solid var(--glass-border-light);
+  }
+
+  .glass-badge-primary {
+    @apply glass-badge;
+    background: rgba(59, 130, 246, 0.2);
+    border-color: rgba(59, 130, 246, 0.3);
+    @apply text-primary-300;
+  }
+
+  .glass-badge-success {
+    @apply glass-badge;
+    background: rgba(16, 185, 129, 0.2);
+    border-color: rgba(16, 185, 129, 0.3);
+    @apply text-green-300;
+  }
+
+  .glass-badge-danger {
+    @apply glass-badge;
+    background: rgba(239, 68, 68, 0.2);
+    border-color: rgba(239, 68, 68, 0.3);
+    @apply text-red-300;
+  }
+
+  .glass-badge-warning {
+    @apply glass-badge;
+    background: rgba(245, 158, 11, 0.2);
+    border-color: rgba(245, 158, 11, 0.3);
+    @apply text-amber-300;
+  }
+
+  .glass-badge-purple {
+    @apply glass-badge;
+    background: rgba(168, 85, 247, 0.2);
+    border-color: rgba(168, 85, 247, 0.3);
+    @apply text-purple-300;
+  }
+
+  /* Badge Sizes */
+  .glass-badge-sm {
+    @apply px-2 py-0.5 text-[10px];
+  }
+
+  .glass-badge-lg {
+    @apply px-3 py-1.5 text-sm;
+  }
+
+  /* ==================== */
+  /* GLASS TABS           */
+  /* ==================== */
+
+  .glass-tabs {
+    @apply flex gap-1 p-1 rounded-xl;
+    background: var(--glass-bg-light);
+    border: 1px solid var(--glass-border-light);
+  }
+
+  .glass-tab {
+    @apply px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200;
+    @apply text-dark-400 cursor-pointer;
+  }
+
+  .glass-tab:hover {
+    @apply text-dark-200;
+  }
+
+  .glass-tab-active {
+    @apply text-white;
+    background: var(--glass-bg);
+    @apply shadow-glass-sm;
+  }
+
+  /* Pills Variant */
+  .glass-tabs-pills {
+    @apply flex gap-2 bg-transparent border-0 p-0;
+  }
+
+  .glass-tab-pill {
+    @apply px-4 py-2 rounded-full text-sm font-medium transition-all duration-200;
+    @apply text-dark-400 cursor-pointer;
+    background: var(--glass-bg-light);
+    border: 1px solid var(--glass-border-light);
+  }
+
+  .glass-tab-pill:hover {
+    @apply text-dark-200;
+    background: var(--glass-bg);
+  }
+
+  .glass-tab-pill-active {
+    @apply text-white;
+    background: rgba(59, 130, 246, 0.8);
+    border-color: rgba(59, 130, 246, 0.3);
+  }
+
+  /* ==================== */
+  /* GLASS TABLE          */
+  /* ==================== */
+
+  .glass-table {
+    @apply w-full;
+  }
+
+  .glass-table thead {
+    background: var(--glass-bg-light);
+  }
+
+  .glass-table th {
+    @apply px-4 py-3 text-right text-sm font-medium text-dark-300;
+    border-bottom: 1px solid var(--glass-border);
+  }
+
+  .glass-table td {
+    @apply px-4 py-3 text-sm;
+    border-bottom: 1px solid var(--glass-border-light);
+  }
+
+  .glass-table tbody tr {
+    @apply transition-colors duration-150;
+  }
+
+  .glass-table tbody tr:hover {
+    background: var(--glass-bg-light);
+  }
+
+  /* ==================== */
+  /* DECORATIVE ELEMENTS  */
+  /* ==================== */
+
+  .blur-circle {
+    @apply absolute rounded-full pointer-events-none;
+    filter: blur(100px);
+  }
+
+  .blur-circle-primary {
+    @apply blur-circle;
+    background: rgba(59, 130, 246, 0.15);
+  }
+
+  .blur-circle-purple {
+    @apply blur-circle;
+    background: rgba(168, 85, 247, 0.15);
+  }
+
+  .blur-circle-success {
+    @apply blur-circle;
+    background: rgba(16, 185, 129, 0.15);
+  }
+
+  /* Text Gradient */
+  .text-gradient {
+    @apply bg-clip-text text-transparent;
+    background-image: linear-gradient(135deg, #3b82f6, #a855f7);
+  }
+
+  .text-gradient-success {
+    @apply bg-clip-text text-transparent;
+    background-image: linear-gradient(135deg, #10b981, #3b82f6);
+  }
+}
+
+/* RTL-aware utilities */
+@layer utilities {
+  .start-0 {
+    inset-inline-start: 0;
+  }
+
+  .end-0 {
+    inset-inline-end: 0;
+  }
+
+  .ms-auto {
+    margin-inline-start: auto;
+  }
+
+  .me-auto {
+    margin-inline-end: auto;
+  }
+
+  .ps-4 {
+    padding-inline-start: 1rem;
+  }
+
+  .pe-4 {
+    padding-inline-end: 1rem;
+  }
+
+  .text-start {
+    text-align: start;
+  }
+
+  .text-end {
+    text-align: end;
+  }
+
+  /* Glow on hover utility */
+  .hover-glow:hover {
+    @apply shadow-glow;
+  }
+
+  .hover-glow-success:hover {
+    @apply shadow-glow-success;
+  }
+
+  .hover-glow-danger:hover {
+    @apply shadow-glow-danger;
+  }
+
+  .hover-glow-purple:hover {
+    @apply shadow-glow-purple;
+  }
+
+  /* Lift on hover */
+  .hover-lift {
+    @apply transition-transform duration-200;
+  }
+
+  .hover-lift:hover {
+    transform: translateY(-2px);
+  }
+}
+
+/* Video Player Overrides */
+.video-player {
+  @apply w-full aspect-video bg-black rounded-xl overflow-hidden;
+}
+
+.video-player video {
+  @apply w-full h-full object-contain;
+}
+
+/* Glass Video Controls */
+.video-controls {
+  @apply glass-strong p-4 rounded-b-xl;
+}
+
+/* Content Cards - Updated with Glass */
+.content-card {
+  @apply glass-card-hover relative overflow-hidden;
+}
+
+.content-card img {
+  @apply w-full aspect-video object-cover rounded-t-xl;
+}
+
+.content-card .overlay {
+  @apply absolute inset-0 bg-gradient-to-t from-dark-900/90 via-transparent to-transparent opacity-0 transition-opacity duration-300;
+}
+
+.content-card:hover .overlay {
+  @apply opacity-100;
+}
+
+/* Skeleton Loading */
+.skeleton {
+  @apply animate-pulse rounded-lg;
+  background: linear-gradient(90deg, var(--glass-bg) 25%, var(--glass-bg-light) 50%, var(--glass-bg) 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+/* Hebrew Text Utilities */
+.hebrew-nums {
+  font-feature-settings: "lnum" 1;
+}
+
+/* Live Badge - Updated with Glass */
+.live-badge {
+  @apply inline-flex items-center gap-1.5 px-2.5 py-1 text-xs font-bold rounded-full;
+  background: rgba(239, 68, 68, 0.9);
+  @apply text-white shadow-glow-danger;
+}
+
+.live-badge::before {
+  content: '';
+  @apply w-2 h-2 bg-white rounded-full animate-pulse;
+}
+
+/* Category Pills - Updated with Glass */
+.category-pill {
+  @apply glass-tab-pill;
+}
+
+.category-pill.active {
+  @apply glass-tab-pill-active;
+}
+
+/* Custom Range Slider */
+input[type="range"] {
+  @apply appearance-none bg-transparent cursor-pointer;
+}
+
+input[type="range"]::-webkit-slider-runnable-track {
+  @apply h-1 rounded-full;
+  background: rgba(255, 255, 255, 0.2);
+}
+
+input[type="range"]::-webkit-slider-thumb {
+  @apply appearance-none w-3 h-3 rounded-full bg-white;
+  margin-top: -4px;
+  @apply shadow-glow transition-transform duration-150;
+}
+
+input[type="range"]::-webkit-slider-thumb:hover {
+  transform: scale(1.2);
+}
+
+input[type="range"]::-moz-range-track {
+  @apply h-1 rounded-full;
+  background: rgba(255, 255, 255, 0.2);
+}
+
+input[type="range"]::-moz-range-thumb {
+  @apply w-3 h-3 rounded-full bg-white border-0;
+  @apply shadow-glow;
+}
+
+/* Overlay Backdrop */
+.overlay-backdrop {
+  background: rgba(15, 23, 42, 0.8);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
