@@ -46,9 +46,9 @@ export const SettingsScreen: React.FC = () => {
         trial_days: 7,
         max_devices: 4,
         maintenance_mode: false,
-        support_email: 'support@bayit.network',
-        terms_url: 'https://bayit.network/terms',
-        privacy_url: 'https://bayit.network/privacy',
+        support_email: 'support@bayit.tv',
+        terms_url: 'https://bayit.tv/terms',
+        privacy_url: 'https://bayit.tv/privacy',
       });
       setFeatureFlags({
         new_player: true,

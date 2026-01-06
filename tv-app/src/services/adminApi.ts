@@ -33,7 +33,7 @@ const getBaseUrl = () => {
       return 'http://localhost:8000/api/v1';
     }
   }
-  return 'https://api.bayit.network/api/v1';
+  return 'https://api.bayit.tv/api/v1';
 };
 
 // Create admin API instance

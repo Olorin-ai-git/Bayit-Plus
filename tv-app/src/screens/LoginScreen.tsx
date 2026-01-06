@@ -137,7 +137,7 @@ export const LoginScreen: React.FC = () => {
             </View>
 
             <Text style={styles.qrUrl}>
-              bayit.network/tv-login
+              bayit.tv/tv-login
             </Text>
           </View>
         </GlassView>

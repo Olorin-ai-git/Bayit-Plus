@@ -299,9 +299,9 @@ class SystemSettings(Document):
     trial_days: int = 7
     max_devices: int = 4
     maintenance_mode: bool = False
-    support_email: str = "support@bayit.network"
-    terms_url: str = "https://bayit.network/terms"
-    privacy_url: str = "https://bayit.network/privacy"
+    support_email: str = "support@bayit.tv"
+    terms_url: str = "https://bayit.tv/terms"
+    privacy_url: str = "https://bayit.tv/privacy"
     feature_flags: Dict[str, bool] = Field(default_factory=lambda: {
         "new_player": True,
         "dark_mode": True,

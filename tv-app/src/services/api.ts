@@ -5,7 +5,7 @@ import { useAuthStore } from '../stores/authStore';
 // Get correct API URL based on platform
 const getApiBaseUrl = () => {
   if (!__DEV__) {
-    return 'https://api.bayit.network/api/v1';
+    return 'https://api.bayit.tv/api/v1';
   }
   // In development:
   if (Platform.OS === 'web') {

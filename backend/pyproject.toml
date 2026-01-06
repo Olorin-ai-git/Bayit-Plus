@@ -3,7 +3,7 @@ name = "bayit-plus-backend"
 version = "0.1.0"
 description = "Bayit+ Hebrew streaming platform API"
 authors = [
-    {name = "Bayit+",email = "admin@bayitplus.com"}
+    {name = "Bayit+",email = "admin@bayit.tv"}
 ]
 readme = "README.md"
 requires-python = ">=3.11,<3.14"
