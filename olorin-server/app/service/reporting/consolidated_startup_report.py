@@ -944,7 +944,7 @@ def _generate_entity_card(merchant: str, index: int, entity: Dict[str, Any]) -> 
                 </div>
                 
                 <div style="margin-top: 16px; padding: 12px; background: rgba(74, 158, 255, 0.1); border-radius: 4px;">
-                    <strong>📊 Confusion Matrix Breakdown:</strong>
+                    <strong>📊 Transaction Analysis Breakdown:</strong>
                     <ul style="margin: 8px 0; padding-left: 20px;">
                         <li>TP ({tp}): Predicted FRAUD + Actually FRAUD → Saved GMV</li>
                         <li>FP ({fp}): Predicted FRAUD + Actually LEGIT → Lost Revenue</li>
@@ -954,7 +954,7 @@ def _generate_entity_card(merchant: str, index: int, entity: Dict[str, Any]) -> 
                 </div>
             </div>
             
-            <h4 style="color: var(--accent); margin-bottom: 12px;">Confusion Matrix</h4>
+            <h4 style="color: var(--accent); margin-bottom: 12px;">Transaction Analysis</h4>
             <div class="confusion-matrix">
                 <div class="cm-cell cm-tp">
                     <div class="cm-label">True Positives</div>

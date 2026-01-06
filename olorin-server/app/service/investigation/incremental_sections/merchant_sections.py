@@ -85,7 +85,7 @@ def _build_entity_card_html(
                 </div>
                 <div class="entity-details" id="entity-{safe_entity_id}">
                     <p style="color: var(--muted); margin-bottom: 10px;">Investigation: {inv_id}</p>
-                    <h4 style="margin: 15px 0 10px;">Confusion Matrix</h4>
+                    <h4 style="margin: 15px 0 10px;">Transaction Analysis</h4>
                     <div class="confusion-grid" style="max-width: 300px;">
                         <div class="cm-cell cm-tp">TP: {tp}</div>
                         <div class="cm-cell cm-fp">FP: {fp}</div>

@@ -156,7 +156,7 @@ def generate_comparison_summary(
         <h4 style="margin: 16px 0 8px 0; color: var(--accent);">Understanding the Metrics</h4>
         <p style="margin: 8px 0;"><strong>Risk Threshold:</strong> {threshold:.1%} - Transactions with predicted_risk >= {threshold:.1%} are flagged as potential fraud.</p>
 
-        <h5 style="margin: 16px 0 8px 0; color: var(--accent-secondary);">Confusion Matrix Components:</h5>
+        <h5 style="margin: 16px 0 8px 0; color: var(--accent-secondary);">Transaction Analysis Components:</h5>
         <ul style="margin: 8px 0 0 20px; padding-left: 0;">
           <li><strong>True Positives (TP):</strong> Correctly flagged as fraud</li>
           <li><strong>False Positives (FP):</strong> Incorrectly flagged as fraud</li>

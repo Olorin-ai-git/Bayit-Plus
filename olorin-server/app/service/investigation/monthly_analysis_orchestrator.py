@@ -110,7 +110,7 @@ def _generate_daily_html_report(
         </div>
     </div>
 
-    <h2 style="text-align: center; color: var(--accent); margin: 20px 0;">Confusion Matrix</h2>
+    <h2 style="text-align: center; color: var(--accent); margin: 20px 0;">Transaction Analysis</h2>
     <div class="confusion-grid">
         <div class="cm-cell cm-tp">TP: {day_result.tp}<br><small>Fraud Caught</small></div>
         <div class="cm-cell cm-fp">FP: {day_result.fp}<br><small>False Alarms</small></div>
