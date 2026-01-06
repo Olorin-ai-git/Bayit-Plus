@@ -1,7 +1,8 @@
 import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
-import { User, Mail, CreditCard, Bell, LogOut, ChevronLeft, Shield } from 'lucide-react'
+import { User, Mail, CreditCard, Bell, LogOut, ChevronLeft, Shield, Sunrise } from 'lucide-react'
 import { useAuthStore } from '@/stores/authStore'
+import RitualSettings from '@/components/settings/RitualSettings'
 
 export default function ProfilePage() {
   const navigate = useNavigate()
@@ -28,6 +29,7 @@ export default function ProfilePage() {
           <nav className="glass-card p-2 space-y-1">
             {[
               { id: 'profile', icon: User, label: 'פרופיל' },
+              { id: 'ritual', icon: Sunrise, label: 'טקס הבוקר' },
               { id: 'subscription', icon: CreditCard, label: 'מנוי' },
               { id: 'notifications', icon: Bell, label: 'התראות' },
               { id: 'security', icon: Shield, label: 'אבטחה' },
@@ -57,6 +59,12 @@ export default function ProfilePage() {
 
         {/* Content */}
         <div className="lg:col-span-3">
+          {activeTab === 'ritual' && (
+            <div className="glass-card p-6">
+              <RitualSettings />
+            </div>
+          )}
+
           {activeTab === 'profile' && (
             <div className="glass-card p-6">
               <h2 className="text-xl font-semibold mb-6">פרטי פרופיל</h2>

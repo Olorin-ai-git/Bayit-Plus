@@ -5,10 +5,63 @@
     "retry": "Intentar de nuevo",
     "cancel": "Cancelar",
     "save": "Guardar",
+    "saved": "¡Guardado!",
     "close": "Cerrar",
     "copy": "Copiar",
     "copied": "¡Copiado!",
     "share": "Compartir"
+  },
+  "chapters": {
+    "title": "Capítulos",
+    "noChapters": "No hay capítulos disponibles",
+    "generating": "Generando capítulos...",
+    "jumpTo": "Ir a",
+    "current": "Ahora",
+    "categories": {
+      "intro": "Introducción",
+      "news": "Noticias",
+      "security": "Seguridad",
+      "politics": "Política",
+      "economy": "Economía",
+      "sports": "Deportes",
+      "weather": "Clima",
+      "culture": "Cultura",
+      "conclusion": "Conclusión",
+      "flashback": "Flashback",
+      "journey": "Viaje",
+      "climax": "Clímax",
+      "setup": "Preparación",
+      "action": "Acción",
+      "conflict": "Conflicto",
+      "cliffhanger": "Suspenso",
+      "main": "Historia Principal"
+    }
+  },
+  "voice": {
+    "startRecording": "Clic para hablar",
+    "stopRecording": "Clic para detener",
+    "recording": "Grabando...",
+    "transcribing": "Transcribiendo...",
+    "error": "Error de grabación",
+    "noMicrophone": "Sin acceso al micrófono",
+    "transcribeError": "Error de transcripción"
+  },
+  "settings": {
+    "ritual": {
+      "title": "Ritual Matutino",
+      "description": "Configura tu experiencia matutina personalizada",
+      "enabled": "Habilitar Ritual Matutino",
+      "startTime": "Hora de Inicio",
+      "endTime": "Hora de Fin",
+      "timeRange": "Rango de Tiempo",
+      "contentTypes": "Tipos de Contenido",
+      "options": "Opciones Adicionales",
+      "autoPlay": "Reproducción Automática",
+      "skipWeekends": "Omitir Fines de Semana",
+      "news": "Noticias",
+      "radio": "Radio",
+      "videos": "Videos"
+    }
   },
   "watchParty": {
     "title": "Watch Party",
@@ -47,6 +100,13 @@
       "connectionError": "Error de conexión",
       "createFailed": "Error al crear la fiesta",
       "joinFailed": "Error al unirse"
+    },
+    "audio": {
+      "mute": "Silenciar",
+      "unmute": "Activar sonido",
+      "speaking": "Hablando",
+      "connecting": "Conectando audio...",
+      "noAudio": "Audio no disponible"
     }
   }
 }

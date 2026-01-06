@@ -5,6 +5,7 @@ import GlassButton from '../ui/GlassButton'
 import WatchPartyHeader from './WatchPartyHeader'
 import WatchPartyParticipants from './WatchPartyParticipants'
 import WatchPartyChat from './WatchPartyChat'
+import AudioControls from './AudioControls'
 
 export default function WatchPartyPanel({
   isOpen,
@@ -19,6 +20,13 @@ export default function WatchPartyPanel({
   onLeave,
   onEnd,
   onSendMessage,
+  // Audio props
+  audioEnabled = false,
+  isMuted = true,
+  isSpeaking = false,
+  isAudioConnecting = false,
+  isAudioConnected = false,
+  onToggleMute,
 }) {
   const { t } = useTranslation()
 
@@ -54,6 +62,19 @@ export default function WatchPartyPanel({
           onLeave={onLeave}
           onEnd={onEnd}
         />
+
+        {/* Audio Controls */}
+        {audioEnabled && (
+          <div className="border-t border-white/10 pt-4">
+            <AudioControls
+              isMuted={isMuted}
+              isSpeaking={isSpeaking}
+              isConnecting={isAudioConnecting}
+              isConnected={isAudioConnected}
+              onToggleMute={onToggleMute}
+            />
+          </div>
+        )}
 
         <div className="border-t border-white/10 pt-4">
           <WatchPartyParticipants

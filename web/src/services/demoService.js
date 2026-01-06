@@ -553,6 +553,16 @@ export const demoSubtitlesService = {
 // ===========================================
 // RITUAL SERVICE (Demo)
 // ===========================================
+// Store ritual preferences in memory for demo
+let ritualPreferencesCache = {
+  morning_ritual_enabled: true,
+  morning_ritual_start: 7,
+  morning_ritual_end: 9,
+  morning_ritual_content: ['news', 'radio'],
+  morning_ritual_auto_play: true,
+  morning_ritual_skip_weekends: false,
+};
+
 export const demoRitualService = {
   check: async () => {
     await delay();
@@ -560,13 +570,37 @@ export const demoRitualService = {
   },
   shouldShow: async () => {
     await delay();
-    // For demo, check if it's between 7-9 AM local time or just return true for testing
-    const hour = new Date().getHours();
-    const isRitualTime = hour >= 7 && hour < 9;
+    const prefs = ritualPreferencesCache;
+    const now = new Date();
+    const hour = now.getHours();
+    const dayOfWeek = now.getDay(); // 0 = Sunday, 6 = Saturday
+
+    // Check if ritual is enabled
+    if (!prefs.morning_ritual_enabled) {
+      return {
+        show_ritual: false,
+        reason: 'disabled',
+        auto_play: false,
+      };
+    }
+
+    // Check for weekend skip (Friday-Saturday for Israel, Sat-Sun for US)
+    const isWeekend = dayOfWeek === 0 || dayOfWeek === 6; // Sat-Sun
+    if (prefs.morning_ritual_skip_weekends && isWeekend) {
+      return {
+        show_ritual: false,
+        reason: 'weekend_skip',
+        auto_play: false,
+      };
+    }
+
+    // Check if within time window
+    const isRitualTime = hour >= prefs.morning_ritual_start && hour < prefs.morning_ritual_end;
     return {
-      show_ritual: isRitualTime || false, // Set to true to always show in demo
+      show_ritual: isRitualTime,
       reason: isRitualTime ? 'active' : 'outside_time_window',
-      auto_play: true,
+      auto_play: prefs.morning_ritual_auto_play,
+      content_types: prefs.morning_ritual_content,
     };
   },
   getContent: async () => {
@@ -592,20 +626,15 @@ export const demoRitualService = {
   getPreferences: async () => {
     await delay();
     return {
-      preferences: {
-        morning_ritual_enabled: true,
-        morning_ritual_start: 7,
-        morning_ritual_end: 9,
-        morning_ritual_content: ['news', 'radio'],
-        morning_ritual_auto_play: true,
-        morning_ritual_skip_weekends: false,
-      },
+      ...ritualPreferencesCache,
       local_timezone: 'America/New_York',
     };
   },
   updatePreferences: async (prefs) => {
     await delay();
-    return { message: 'Preferences updated', preferences: prefs };
+    // Update the cache with new preferences
+    ritualPreferencesCache = { ...ritualPreferencesCache, ...prefs };
+    return { message: 'Preferences updated', preferences: ritualPreferencesCache };
   },
   skipToday: async () => {
     await delay();

@@ -444,6 +444,31 @@
       "connectionError": "Error de conexión",
       "createFailed": "Error al crear la fiesta",
       "joinFailed": "Error al unirse"
+    },
+    "audio": {
+      "mute": "Silenciar",
+      "unmute": "Activar sonido",
+      "speaking": "Hablando",
+      "connecting": "Conectando audio...",
+      "noAudio": "Audio no disponible"
+    }
+  },
+  "chapters": {
+    "title": "Capítulos",
+    "noChapters": "No hay capítulos disponibles",
+    "generating": "Generando capítulos...",
+    "jumpTo": "Ir a",
+    "current": "Ahora",
+    "categories": {
+      "intro": "Introducción",
+      "news": "Noticias",
+      "security": "Seguridad",
+      "politics": "Política",
+      "economy": "Economía",
+      "sports": "Deportes",
+      "weather": "Clima",
+      "culture": "Cultura",
+      "conclusion": "Conclusión"
     }
   }
 }

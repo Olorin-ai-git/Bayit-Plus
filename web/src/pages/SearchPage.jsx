@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { useSearchParams } from 'react-router-dom'
 import { Search, X } from 'lucide-react'
 import ContentCard from '@/components/content/ContentCard'
+import VoiceSearchButton from '@/components/search/VoiceSearchButton'
 import { contentService } from '@/services/api'
 
 export default function SearchPage() {
@@ -64,6 +65,14 @@ export default function SearchPage() {
     setSearchParams(searchParams)
   }
 
+  const handleVoiceTranscribed = (text) => {
+    if (text.trim()) {
+      setQuery(text)
+      searchParams.set('q', text)
+      setSearchParams(searchParams)
+    }
+  }
+
   return (
     <div className="container mx-auto px-4 py-8">
       {/* Search Form */}
@@ -78,15 +87,21 @@ export default function SearchPage() {
             autoFocus
           />
           <Search className="absolute right-5 top-1/2 -translate-y-1/2 text-dark-400" size={24} />
-          {query && (
-            <button
-              type="button"
-              onClick={clearSearch}
-              className="absolute left-5 top-1/2 -translate-y-1/2 text-dark-400 hover:text-white transition-colors"
-            >
-              <X size={20} />
-            </button>
-          )}
+          <div className="absolute left-5 top-1/2 -translate-y-1/2 flex items-center gap-2">
+            {query && (
+              <button
+                type="button"
+                onClick={clearSearch}
+                className="text-dark-400 hover:text-white transition-colors"
+              >
+                <X size={20} />
+              </button>
+            )}
+            <VoiceSearchButton
+              onTranscribed={handleVoiceTranscribed}
+              size="sm"
+            />
+          </div>
         </div>
       </form>
 

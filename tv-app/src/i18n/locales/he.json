@@ -444,6 +444,31 @@
       "connectionError": "שגיאת חיבור",
       "createFailed": "שגיאה ביצירת מסיבה",
       "joinFailed": "שגיאה בהצטרפות"
+    },
+    "audio": {
+      "mute": "השתק",
+      "unmute": "בטל השתקה",
+      "speaking": "מדבר",
+      "connecting": "מתחבר לשמע...",
+      "noAudio": "שמע לא זמין"
+    }
+  },
+  "chapters": {
+    "title": "פרקים",
+    "noChapters": "אין פרקים זמינים",
+    "generating": "יוצר פרקים...",
+    "jumpTo": "קפוץ אל",
+    "current": "עכשיו",
+    "categories": {
+      "intro": "פתיחה",
+      "news": "חדשות",
+      "security": "ביטחון",
+      "politics": "פוליטיקה",
+      "economy": "כלכלה",
+      "sports": "ספורט",
+      "weather": "מזג אוויר",
+      "culture": "תרבות",
+      "conclusion": "סיום"
     }
   }
 }

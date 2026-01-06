@@ -5,10 +5,63 @@
     "retry": "נסה שוב",
     "cancel": "ביטול",
     "save": "שמור",
+    "saved": "נשמר!",
     "close": "סגור",
     "copy": "העתק",
     "copied": "הועתק!",
     "share": "שתף"
+  },
+  "chapters": {
+    "title": "פרקים",
+    "noChapters": "אין פרקים זמינים",
+    "generating": "יוצר פרקים...",
+    "jumpTo": "קפוץ אל",
+    "current": "עכשיו",
+    "categories": {
+      "intro": "פתיחה",
+      "news": "חדשות",
+      "security": "ביטחון",
+      "politics": "פוליטיקה",
+      "economy": "כלכלה",
+      "sports": "ספורט",
+      "weather": "מזג אוויר",
+      "culture": "תרבות",
+      "conclusion": "סיום",
+      "flashback": "פלאשבק",
+      "journey": "מסע",
+      "climax": "שיא",
+      "setup": "הכנה",
+      "action": "פעולה",
+      "conflict": "קונפליקט",
+      "cliffhanger": "מתח",
+      "main": "עלילה ראשית"
+    }
+  },
+  "voice": {
+    "startRecording": "לחץ לדיבור",
+    "stopRecording": "לחץ לעצירה",
+    "recording": "מקליט...",
+    "transcribing": "מתמלל...",
+    "error": "שגיאה בהקלטה",
+    "noMicrophone": "אין גישה למיקרופון",
+    "transcribeError": "שגיאה בתמלול"
+  },
+  "settings": {
+    "ritual": {
+      "title": "טקס הבוקר",
+      "description": "הגדר את חוויית הבוקר המותאמת אישית שלך",
+      "enabled": "הפעל טקס בוקר",
+      "startTime": "שעת התחלה",
+      "endTime": "שעת סיום",
+      "timeRange": "טווח זמנים",
+      "contentTypes": "סוגי תוכן",
+      "options": "אפשרויות נוספות",
+      "autoPlay": "נגן אוטומטית",
+      "skipWeekends": "דלג בסופי שבוע",
+      "news": "חדשות",
+      "radio": "רדיו",
+      "videos": "סרטונים"
+    }
   },
   "watchParty": {
     "title": "מסיבת צפייה",
@@ -47,6 +100,13 @@
       "connectionError": "שגיאת חיבור",
       "createFailed": "יצירת המסיבה נכשלה",
       "joinFailed": "ההצטרפות נכשלה"
+    },
+    "audio": {
+      "mute": "השתק",
+      "unmute": "בטל השתקה",
+      "speaking": "מדבר",
+      "connecting": "מתחבר לשמע...",
+      "noAudio": "שמע לא זמין"
     }
   }
 }

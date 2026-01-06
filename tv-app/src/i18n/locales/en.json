@@ -444,6 +444,31 @@
       "connectionError": "Connection error",
       "createFailed": "Failed to create party",
       "joinFailed": "Failed to join party"
+    },
+    "audio": {
+      "mute": "Mute",
+      "unmute": "Unmute",
+      "speaking": "Speaking",
+      "connecting": "Connecting to audio...",
+      "noAudio": "Audio not available"
+    }
+  },
+  "chapters": {
+    "title": "Chapters",
+    "noChapters": "No chapters available",
+    "generating": "Generating chapters...",
+    "jumpTo": "Jump to",
+    "current": "Now",
+    "categories": {
+      "intro": "Introduction",
+      "news": "News",
+      "security": "Security",
+      "politics": "Politics",
+      "economy": "Economy",
+      "sports": "Sports",
+      "weather": "Weather",
+      "culture": "Culture",
+      "conclusion": "Conclusion"
     }
   }
 }

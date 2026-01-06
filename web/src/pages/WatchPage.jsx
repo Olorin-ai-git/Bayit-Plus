@@ -4,7 +4,7 @@ import { ArrowRight, Plus, Share2, ThumbsUp } from 'lucide-react'
 import VideoPlayer from '@/components/player/VideoPlayer'
 import AudioPlayer from '@/components/player/AudioPlayer'
 import ContentCarousel from '@/components/content/ContentCarousel'
-import { contentService, liveService, radioService, podcastService, historyService } from '@/services/api'
+import { contentService, liveService, radioService, podcastService, historyService, chaptersService } from '@/services/api'
 
 export default function WatchPage({ type }) {
   const params = useParams()
@@ -13,6 +13,8 @@ export default function WatchPage({ type }) {
   const [streamUrl, setStreamUrl] = useState(null)
   const [related, setRelated] = useState([])
   const [loading, setLoading] = useState(true)
+  const [chapters, setChapters] = useState([])
+  const [chaptersLoading, setChaptersLoading] = useState(false)
 
   useEffect(() => {
     loadContent()
@@ -53,10 +55,28 @@ export default function WatchPage({ type }) {
       if (data.related) {
         setRelated(data.related)
       }
+
+      // Load chapters for VOD content
+      if (type !== 'live' && type !== 'radio' && type !== 'podcast') {
+        loadChapters()
+      }
     } catch (error) {
       console.error('Failed to load content:', error)
     } finally {
       setLoading(false)
+    }
+  }
+
+  const loadChapters = async () => {
+    setChaptersLoading(true)
+    try {
+      const data = await chaptersService.getChapters(contentId)
+      setChapters(data.chapters || [])
+    } catch (error) {
+      console.error('Failed to load chapters:', error)
+      setChapters([])
+    } finally {
+      setChaptersLoading(false)
     }
   }
 
@@ -121,8 +141,12 @@ export default function WatchPage({ type }) {
             src={streamUrl}
             poster={content.backdrop || content.thumbnail}
             title={content.title || content.name}
+            contentId={contentId}
+            contentType={type}
             onProgress={handleProgress}
             isLive={type === 'live'}
+            chapters={chapters}
+            chaptersLoading={chaptersLoading}
           />
         )}
       </div>

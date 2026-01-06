@@ -10,6 +10,7 @@ import {
   Settings,
   SkipBack,
   SkipForward,
+  List,
 } from 'lucide-react'
 import { useWatchPartyStore } from '@/stores/watchPartyStore'
 import { useAuthStore } from '@/stores/authStore'
@@ -20,6 +21,8 @@ import {
   WatchPartyPanel,
   WatchPartyOverlay,
 } from '@/components/watchparty'
+import ChaptersPanel from './ChaptersPanel'
+import ChapterTimeline from './ChapterTimeline'
 
 export default function VideoPlayer({
   src,
@@ -30,6 +33,8 @@ export default function VideoPlayer({
   onProgress,
   isLive = false,
   autoPlay = false,
+  chapters = [],
+  chaptersLoading = false,
 }) {
   const user = useAuthStore((s) => s.user)
   const {
@@ -54,6 +59,7 @@ export default function VideoPlayer({
   const [showPartyPanel, setShowPartyPanel] = useState(false)
   const [isSynced, setIsSynced] = useState(true)
   const [isMobile, setIsMobile] = useState(false)
+  const [showChaptersPanel, setShowChaptersPanel] = useState(false)
   const lastSyncRef = useRef(0)
   const videoRef = useRef(null)
   const containerRef = useRef(null)
@@ -286,6 +292,12 @@ export default function VideoPlayer({
     }
   }
 
+  const seekToTime = (time) => {
+    if (videoRef.current) {
+      videoRef.current.currentTime = time
+    }
+  }
+
   const formatTime = (time) => {
     if (!time || !isFinite(time)) return '0:00'
     const minutes = Math.floor(time / 60)
@@ -311,6 +323,19 @@ export default function VideoPlayer({
         <div className="absolute inset-0 flex items-center justify-center glass">
           <div className="w-12 h-12 border-4 border-primary-500 border-t-transparent rounded-full animate-spin shadow-glow" />
         </div>
+      )}
+
+      {/* Chapters Panel */}
+      {!isLive && chapters.length > 0 && (
+        <ChaptersPanel
+          chapters={chapters}
+          currentTime={currentTime}
+          duration={duration}
+          isLoading={chaptersLoading}
+          isOpen={showChaptersPanel}
+          onClose={() => setShowChaptersPanel(false)}
+          onSeek={seekToTime}
+        />
       )}
 
       {/* Controls Overlay */}
@@ -348,6 +373,15 @@ export default function VideoPlayer({
               className="h-1.5 bg-white/20 rounded-full cursor-pointer group/progress relative"
               onClick={handleSeek}
             >
+              {/* Chapter Timeline Markers */}
+              {chapters.length > 0 && (
+                <ChapterTimeline
+                  chapters={chapters}
+                  duration={duration}
+                  currentTime={currentTime}
+                  onSeek={seekToTime}
+                />
+              )}
               <div
                 className="h-full bg-primary-500 rounded-full relative shadow-glow"
                 style={{ width: `${(currentTime / duration) * 100 || 0}%` }}
@@ -405,6 +439,15 @@ export default function VideoPlayer({
                   onJoinClick={() => setShowJoinModal(true)}
                   onPanelToggle={() => setShowPartyPanel(!showPartyPanel)}
                 />
+              )}
+              {!isLive && chapters.length > 0 && (
+                <button
+                  onClick={() => setShowChaptersPanel(!showChaptersPanel)}
+                  className={`glass-btn-ghost glass-btn-icon-sm ${showChaptersPanel ? 'text-primary-400' : ''}`}
+                  title="Chapters"
+                >
+                  <List size={18} />
+                </button>
               )}
               <button className="glass-btn-ghost glass-btn-icon-sm">
                 <Settings size={18} />

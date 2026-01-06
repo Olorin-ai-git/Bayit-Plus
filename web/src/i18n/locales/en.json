@@ -5,10 +5,63 @@
     "retry": "Try again",
     "cancel": "Cancel",
     "save": "Save",
+    "saved": "Saved!",
     "close": "Close",
     "copy": "Copy",
     "copied": "Copied!",
     "share": "Share"
+  },
+  "chapters": {
+    "title": "Chapters",
+    "noChapters": "No chapters available",
+    "generating": "Generating chapters...",
+    "jumpTo": "Jump to",
+    "current": "Now",
+    "categories": {
+      "intro": "Introduction",
+      "news": "News",
+      "security": "Security",
+      "politics": "Politics",
+      "economy": "Economy",
+      "sports": "Sports",
+      "weather": "Weather",
+      "culture": "Culture",
+      "conclusion": "Conclusion",
+      "flashback": "Flashback",
+      "journey": "Journey",
+      "climax": "Climax",
+      "setup": "Setup",
+      "action": "Action",
+      "conflict": "Conflict",
+      "cliffhanger": "Cliffhanger",
+      "main": "Main Story"
+    }
+  },
+  "voice": {
+    "startRecording": "Click to speak",
+    "stopRecording": "Click to stop",
+    "recording": "Recording...",
+    "transcribing": "Transcribing...",
+    "error": "Recording error",
+    "noMicrophone": "No microphone access",
+    "transcribeError": "Transcription error"
+  },
+  "settings": {
+    "ritual": {
+      "title": "Morning Ritual",
+      "description": "Configure your personalized morning experience",
+      "enabled": "Enable Morning Ritual",
+      "startTime": "Start Time",
+      "endTime": "End Time",
+      "timeRange": "Time Range",
+      "contentTypes": "Content Types",
+      "options": "Additional Options",
+      "autoPlay": "Auto Play",
+      "skipWeekends": "Skip Weekends",
+      "news": "News",
+      "radio": "Radio",
+      "videos": "Videos"
+    }
   },
   "watchParty": {
     "title": "Watch Party",
@@ -47,6 +100,13 @@
       "connectionError": "Connection error",
       "createFailed": "Failed to create party",
       "joinFailed": "Failed to join party"
+    },
+    "audio": {
+      "mute": "Mute",
+      "unmute": "Unmute",
+      "speaking": "Speaking",
+      "connecting": "Connecting to audio...",
+      "noAudio": "Audio not available"
     }
   }
 }
