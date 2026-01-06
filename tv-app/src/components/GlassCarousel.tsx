@@ -39,7 +39,7 @@ export const GlassCarousel: React.FC<GlassCarouselProps> = ({
   const [activeIndex, setActiveIndex] = useState(0);
   const [isFocused, setIsFocused] = useState(false);
   const fadeAnim = useRef(new Animated.Value(1)).current;
-  const autoPlayRef = useRef<NodeJS.Timeout | null>(null);
+  const autoPlayRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   // Auto-play with fade transition
   useEffect(() => {
@@ -98,7 +98,18 @@ export const GlassCarousel: React.FC<GlassCarouselProps> = ({
     setIsFocused(false);
   };
 
-  if (items.length === 0) return null;
+  if (items.length === 0) {
+    return (
+      <View style={styles.container}>
+        <GlassView intensity="low" style={[styles.carouselWrapper, { height }]}>
+          <View style={styles.emptyContainer}>
+            <Text style={styles.emptyIcon}>🎬</Text>
+            <Text style={styles.emptyText}>{t('empty.noContent')}</Text>
+          </View>
+        </GlassView>
+      </View>
+    );
+  }
 
   const currentItem = items[activeIndex];
 
@@ -226,9 +237,26 @@ const styles = StyleSheet.create({
     borderRadius: borderRadius.lg,
     overflow: 'hidden',
   },
+  emptyContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 32,
+  },
+  emptyIcon: {
+    fontSize: 48,
+    marginBottom: 16,
+  },
+  emptyText: {
+    fontSize: 20,
+    fontWeight: '600',
+    color: colors.text,
+    textAlign: 'center',
+  },
   carouselFocused: {
     borderColor: colors.primary,
     borderWidth: 2,
+    // @ts-ignore - Web CSS property for glow effect
     boxShadow: `0 0 20px ${colors.primary}`,
   },
   touchable: {
@@ -288,7 +316,10 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     color: colors.text,
     marginBottom: 8,
-    textShadow: '0px 2px 4px rgba(0, 0, 0, 0.8)',
+    // Web shadow - native uses textShadow* props
+    textShadowColor: 'rgba(0, 0, 0, 0.8)',
+    textShadowOffset: { width: 0, height: 2 },
+    textShadowRadius: 4,
   },
   subtitle: {
     fontSize: 22,

@@ -1,5 +1,7 @@
 import React, { useEffect, useRef } from 'react';
 import { View, Text, Image, StyleSheet, Animated, Easing } from 'react-native';
+import { useTranslation } from 'react-i18next';
+import { useDirection } from '../hooks/useDirection';
 
 const logo = require('../assets/logo.png');
 
@@ -12,10 +14,14 @@ export const AnimatedLogo: React.FC<AnimatedLogoProps> = ({
   onAnimationComplete,
   size = 'large',
 }) => {
-  // Animation values
+  const { i18n } = useTranslation();
+  const { isRTL } = useDirection();
+  const isHebrew = i18n.language === 'he';
+
+  // Animation values - direction based on language
   const logoOpacity = useRef(new Animated.Value(0)).current;
-  const bayitTranslateX = useRef(new Animated.Value(150)).current; // Start from right
-  const plusTranslateX = useRef(new Animated.Value(-150)).current; // Start from left
+  const bayitTranslateX = useRef(new Animated.Value(isRTL ? 150 : -150)).current;
+  const plusTranslateX = useRef(new Animated.Value(isRTL ? -150 : 150)).current;
   const textOpacity = useRef(new Animated.Value(0)).current;
 
   const sizes = {
@@ -89,35 +95,65 @@ export const AnimatedLogo: React.FC<AnimatedLogoProps> = ({
         />
       </Animated.View>
 
-      {/* Animated Text */}
+      {/* Animated Text - order changes based on language */}
       <View style={styles.textContainer}>
-        {/* בית - slides from right */}
-        <Animated.Text
-          style={[
-            styles.bayitText,
-            {
-              fontSize: currentSize.text,
-              opacity: textOpacity,
-              transform: [{ translateX: bayitTranslateX }],
-            },
-          ]}
-        >
-          בית
-        </Animated.Text>
-
-        {/* + - slides from left */}
-        <Animated.Text
-          style={[
-            styles.plusText,
-            {
-              fontSize: currentSize.plus,
-              opacity: textOpacity,
-              transform: [{ translateX: plusTranslateX }],
-            },
-          ]}
-        >
-          +
-        </Animated.Text>
+        {isHebrew ? (
+          <>
+            {/* Hebrew: בית+ */}
+            <Animated.Text
+              style={[
+                styles.bayitText,
+                {
+                  fontSize: currentSize.text,
+                  opacity: textOpacity,
+                  transform: [{ translateX: bayitTranslateX }],
+                },
+              ]}
+            >
+              בית
+            </Animated.Text>
+            <Animated.Text
+              style={[
+                styles.plusText,
+                {
+                  fontSize: currentSize.plus,
+                  opacity: textOpacity,
+                  transform: [{ translateX: plusTranslateX }],
+                },
+              ]}
+            >
+              +
+            </Animated.Text>
+          </>
+        ) : (
+          <>
+            {/* English/Spanish: +Bayit */}
+            <Animated.Text
+              style={[
+                styles.plusText,
+                {
+                  fontSize: currentSize.plus,
+                  opacity: textOpacity,
+                  transform: [{ translateX: plusTranslateX }],
+                },
+              ]}
+            >
+              +
+            </Animated.Text>
+            <Animated.Text
+              style={[
+                styles.bayitText,
+                {
+                  fontSize: currentSize.text,
+                  opacity: textOpacity,
+                  transform: [{ translateX: bayitTranslateX }],
+                },
+              ]}
+            >
+              Bayit
+            </Animated.Text>
+          </>
+        )}
       </View>
     </View>
   );

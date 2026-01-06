@@ -6,12 +6,14 @@ import {
   Text,
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
-import { useTranslation, TFunction } from 'react-i18next';
+import { useTranslation } from 'react-i18next';
 import { AnimatedLogo } from '../components/AnimatedLogo';
 import { ContentRow } from '../components/ContentRow';
 import { GlassCarousel } from '../components/GlassCarousel';
-import { contentService, liveService, historyService } from '../services/api';
-import { colors } from '../theme';
+import { DualClock } from '../components/DualClock';
+import { TrendingRow } from '../components/TrendingRow';
+import { contentService, liveService, historyService, ritualService } from '../services/api';
+import { colors, spacing } from '../theme';
 
 interface ContentItem {
   id: string;
@@ -41,94 +43,81 @@ export const HomeScreen: React.FC = () => {
   const [categories, setCategories] = useState<{ name: string; items: ContentItem[] }[]>([]);
 
   useEffect(() => {
+    checkMorningRitual();
     loadContent();
   }, [i18n.language]);
+
+  const checkMorningRitual = async () => {
+    try {
+      const result = await ritualService.shouldShow() as { show_ritual: boolean };
+      if (result.show_ritual) {
+        navigation.navigate('MorningRitual' as never);
+      }
+    } catch (err) {
+      // Ritual not enabled or error - continue to home
+      console.log('Morning ritual check:', err);
+    }
+  };
 
   const loadContent = async () => {
     try {
       setIsLoading(true);
 
-      // Load all content in parallel
-      const [featuredRes, liveRes] = await Promise.all([
-        contentService.getFeatured().catch(() => ({ items: [] })),
-        liveService.getChannels().catch(() => ({ channels: [] })),
-      ]);
+      // Load all content in parallel - demo service handles mock data
+      const [featuredRes, liveRes, historyRes, categoriesRes] = await Promise.all([
+        contentService.getFeatured(),
+        liveService.getChannels(),
+        historyService.getContinueWatching(),
+        contentService.getCategories(),
+      ]) as [any, any, any, any];
 
-      // Carousel featured items
-      setCarouselItems([
-        {
-          id: 'hero1',
-          title: t('home.carousel.fauda.title'),
-          subtitle: t('home.carousel.fauda.subtitle'),
-          description: t('home.carousel.fauda.description'),
-          image: 'https://picsum.photos/1200/600?random=100',
-          badge: t('common.new'),
-        },
-        {
-          id: 'hero2',
-          title: t('home.carousel.shtisel.title'),
-          subtitle: t('home.carousel.shtisel.subtitle'),
-          description: t('home.carousel.shtisel.description'),
-          image: 'https://picsum.photos/1200/600?random=101',
-          badge: t('common.recommended'),
-        },
-        {
-          id: 'hero3',
-          title: t('home.carousel.tehran.title'),
-          subtitle: t('home.carousel.tehran.subtitle'),
-          description: t('home.carousel.tehran.description'),
-          image: 'https://picsum.photos/1200/600?random=102',
-        },
-        {
-          id: 'hero4',
-          title: t('home.carousel.live.title'),
-          subtitle: t('home.carousel.live.subtitle'),
-          description: t('home.carousel.live.description'),
-          image: 'https://picsum.photos/1200/600?random=103',
-          badge: t('common.live'),
-        },
-      ]);
+      // Set carousel from featured hero items
+      const heroItems = featuredRes.hero ? [featuredRes.hero] : [];
+      const spotlightItems = featuredRes.spotlight || [];
+      setCarouselItems([...heroItems, ...spotlightItems].map((item: any, index: number) => ({
+        id: item.id,
+        title: item.title,
+        subtitle: item.subtitle || item.title_en,
+        description: item.description,
+        image: item.backdrop || item.thumbnail,
+        badge: index === 0 ? t('common.new') : undefined,
+      })));
 
-      // Mock data for demo
-      setFeatured(featuredRes.items?.length ? featuredRes.items : [
-        { id: '1', title: 'פאודה', subtitle: 'עונה 4', thumbnail: 'https://picsum.photos/400/225?random=1' },
-        { id: '2', title: 'שטיסל', subtitle: 'עונה 3', thumbnail: 'https://picsum.photos/400/225?random=2' },
-        { id: '3', title: 'טהרן', subtitle: 'עונה 2', thumbnail: 'https://picsum.photos/400/225?random=3' },
-        { id: '4', title: 'אופנה', subtitle: 'קומדיה', thumbnail: 'https://picsum.photos/400/225?random=4' },
-      ]);
+      // Set featured content
+      setFeatured(featuredRes.items || featuredRes.picks || []);
 
-      setLiveChannels(liveRes.channels?.length ? liveRes.channels : [
-        { id: 'kan11', title: 'כאן 11', subtitle: 'שידור חי', thumbnail: 'https://picsum.photos/400/225?random=5' },
-        { id: 'keshet12', title: 'קשת 12', subtitle: 'שידור חי', thumbnail: 'https://picsum.photos/400/225?random=6' },
-        { id: 'reshet13', title: 'רשת 13', subtitle: 'שידור חי', thumbnail: 'https://picsum.photos/400/225?random=7' },
-        { id: 'channel14', title: 'ערוץ 14', subtitle: 'שידור חי', thumbnail: 'https://picsum.photos/400/225?random=8' },
-      ]);
+      // Set live channels
+      setLiveChannels((liveRes.channels || []).map((ch: any) => ({
+        id: ch.id,
+        title: ch.name,
+        subtitle: ch.current_program || t('home.liveNow'),
+        thumbnail: ch.logo,
+        type: 'live',
+      })));
 
-      setContinueWatching([
-        { id: '5', title: 'הבורר', subtitle: '45:30 נותרו', thumbnail: 'https://picsum.photos/400/225?random=9' },
-        { id: '6', title: 'עבודה ערבית', subtitle: '22:15 נותרו', thumbnail: 'https://picsum.photos/400/225?random=10' },
-      ]);
+      // Set continue watching from history
+      setContinueWatching((historyRes.items || []).map((item: any) => ({
+        id: item.id,
+        title: item.title,
+        subtitle: item.remaining || item.episode,
+        thumbnail: item.thumbnail,
+        type: item.type,
+      })));
 
-      setCategories([
-        {
-          name: 'israeliMovies',
-          items: [
-            { id: '10', title: 'וואלס עם באשיר', thumbnail: 'https://picsum.photos/400/225?random=11' },
-            { id: '11', title: 'לבנון', thumbnail: 'https://picsum.photos/400/225?random=12' },
-            { id: '12', title: 'פוקסטרוט', thumbnail: 'https://picsum.photos/400/225?random=13' },
-          ],
-        },
-        {
-          name: 'documentaries',
-          items: [
-            { id: '20', title: 'עובדה', thumbnail: 'https://picsum.photos/400/225?random=14' },
-            { id: '21', title: 'מקור', thumbnail: 'https://picsum.photos/400/225?random=15' },
-          ],
-        },
-      ]);
+      // Set categories
+      setCategories((categoriesRes.categories || []).map((cat: any) => ({
+        name: cat.id || cat.name,
+        items: (cat.items || []).map((item: any) => ({
+          id: item.id,
+          title: item.title,
+          thumbnail: item.thumbnail,
+          type: item.type,
+        })),
+      })));
 
     } catch (error) {
       console.error('Failed to load content:', error);
+      // In production, show error state instead of silent failure
     } finally {
       setIsLoading(false);
     }
@@ -161,9 +150,14 @@ export const HomeScreen: React.FC = () => {
 
   return (
     <ScrollView style={styles.container} contentContainerStyle={styles.content}>
-      {/* Logo at Top */}
-      <View style={styles.logoSection}>
+      {/* Header with Logo */}
+      <View style={styles.headerSection}>
         <AnimatedLogo size="medium" />
+      </View>
+
+      {/* Dual Analog Clock */}
+      <View style={styles.clockSection}>
+        <DualClock />
       </View>
 
       {/* Hero Carousel */}
@@ -174,6 +168,11 @@ export const HomeScreen: React.FC = () => {
           height={450}
           autoPlayInterval={6000}
         />
+      </View>
+
+      {/* Trending in Israel */}
+      <View style={styles.trendingSection}>
+        <TrendingRow />
       </View>
 
       {/* Continue Watching */}
@@ -231,14 +230,23 @@ const styles = StyleSheet.create({
     fontSize: 18,
     marginTop: 32,
   },
-  logoSection: {
+  headerSection: {
     alignItems: 'center',
-    paddingTop: 24,
-    paddingBottom: 16,
+    justifyContent: 'center',
+    paddingHorizontal: spacing.lg,
+    paddingTop: spacing.md,
+    paddingBottom: spacing.sm,
+  },
+  clockSection: {
+    paddingHorizontal: spacing.lg,
+    marginBottom: spacing.md,
   },
   carouselSection: {
     paddingHorizontal: 48,
     marginBottom: 32,
+  },
+  trendingSection: {
+    marginBottom: spacing.lg,
   },
 });
 

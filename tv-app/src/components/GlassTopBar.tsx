@@ -7,6 +7,7 @@ import {
   Image,
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
+import { useTranslation } from 'react-i18next';
 import { GlassView } from './ui';
 import { LanguageSelector } from './LanguageSelector';
 import { UserAccountMenu } from './UserAccountMenu';
@@ -24,8 +25,10 @@ interface GlassTopBarProps {
 
 export const GlassTopBar: React.FC<GlassTopBarProps> = ({ onMenuPress, sidebarExpanded = false }) => {
   const navigation = useNavigation<any>();
+  const { i18n } = useTranslation();
   const [isSearchFocused, setIsSearchFocused] = useState(false);
   const { isRTL } = useDirection();
+  const isHebrew = i18n.language === 'he';
 
   const handleSearchPress = () => {
     navigation.navigate('Search');
@@ -64,12 +67,21 @@ export const GlassTopBar: React.FC<GlassTopBarProps> = ({ onMenuPress, sidebarEx
         <UserAccountMenu />
       </View>
 
-      {/* Logo - Left for RTL, Right for LTR */}
+      {/* Logo - Always opposite side of menu icons */}
       <View style={[styles.logoContainer, isRTL ? styles.logoLeft : styles.logoRight]}>
         <Image source={logo} style={styles.logo} resizeMode="contain" />
         <View style={styles.logoTextContainer}>
-          <Text style={styles.logoText}>בית</Text>
-          <Text style={styles.logoPlus}>+</Text>
+          {isHebrew ? (
+            <>
+              <Text style={styles.logoText}>בית</Text>
+              <Text style={styles.logoPlus}>+</Text>
+            </>
+          ) : (
+            <>
+              <Text style={styles.logoPlus}>+</Text>
+              <Text style={styles.logoText}>Bayit</Text>
+            </>
+          )}
         </View>
       </View>
 

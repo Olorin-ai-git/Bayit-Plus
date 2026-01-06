@@ -209,12 +209,12 @@ export const PlanManagementScreen: React.FC = () => {
 
               <View style={styles.planPricing}>
                 <Text style={styles.planPrice}>{formatCurrency(plan.price)}</Text>
-                <Text style={styles.planInterval}>/ {plan.interval === 'monthly' ? 'mo' : 'yr'}</Text>
+                <Text style={styles.planInterval}>/ {plan.interval === 'monthly' ? t('admin.plans.mo') : t('admin.plans.yr')}</Text>
               </View>
 
               {plan.trial_days > 0 && (
                 <View style={styles.trialBadge}>
-                  <Text style={styles.trialBadgeText}>{plan.trial_days} day free trial</Text>
+                  <Text style={styles.trialBadgeText}>{t('admin.plans.freeTrial', { days: plan.trial_days })}</Text>
                 </View>
               )}
 
@@ -285,7 +285,7 @@ export const PlanManagementScreen: React.FC = () => {
                         onPress={() => setFormData(prev => ({ ...prev, interval }))}
                       >
                         <Text style={[styles.intervalOptionText, formData.interval === interval && styles.intervalOptionTextActive]}>
-                          {interval === 'monthly' ? 'Monthly' : 'Yearly'}
+                          {interval === 'monthly' ? t('admin.plans.monthly') : t('admin.plans.yearly')}
                         </Text>
                       </TouchableOpacity>
                     ))}

@@ -71,6 +71,7 @@
     "israeliMovies": "Israeli Movies",
     "documentaries": "Documentaries",
     "loadingContent": "Loading content...",
+    "liveNow": "Live Now",
     "carousel": {
       "fauda": {
         "title": "Fauda",
@@ -115,6 +116,7 @@
     "title": "Live TV",
     "channels": "Channels",
     "nowPlaying": "Now Playing",
+    "loadError": "Failed to load channels",
     "categories": {
       "all": "All",
       "news": "News",
@@ -128,6 +130,7 @@
     "title": "Radio",
     "stations": "Stations",
     "nowPlaying": "Now Playing",
+    "loadError": "Failed to load stations",
     "genres": {
       "all": "All",
       "news": "News",
@@ -140,6 +143,7 @@
     "title": "Podcasts",
     "shows": "Shows",
     "episodes": "Episodes",
+    "loadError": "Failed to load podcasts",
     "categories": {
       "all": "All",
       "news": "News",
@@ -153,6 +157,7 @@
     "title": "Movies & Series",
     "movies": "Movies",
     "series": "Series",
+    "loadError": "Failed to load content",
     "categories": {
       "all": "All",
       "drama": "Drama",
@@ -203,7 +208,9 @@
       "pending": "Pending",
       "downloadInvoices": "Download Invoices",
       "billingAddress": "Billing Address",
-      "editAddress": "Edit Address"
+      "editAddress": "Edit Address",
+      "noPaymentMethods": "No payment methods added",
+      "noHistory": "No billing history"
     },
     "subscription": {
       "currentPlan": "Current Plan",
@@ -273,7 +280,9 @@
     "retry": "Try Again",
     "error": "Error playing video",
     "back": "← Back",
-    "liveBadge": "LIVE"
+    "liveBadge": "LIVE",
+    "noStream": "Stream not available",
+    "loadError": "Failed to load stream"
   },
   "empty": {
     "noContent": "No content available",
@@ -315,5 +324,57 @@
   },
   "content": {
     "episodes": "episodes"
+  },
+  "trending": {
+    "title": "What's Trending in Israel",
+    "noTopics": "No trending topics available",
+    "topStory": "TOP STORY",
+    "sources": "Sources",
+    "categories": {
+      "security": "Security",
+      "politics": "Politics",
+      "tech": "Tech",
+      "culture": "Culture",
+      "sports": "Sports",
+      "economy": "Economy",
+      "entertainment": "Entertainment",
+      "weather": "Weather",
+      "health": "Health",
+      "general": "General"
+    }
+  },
+  "clock": {
+    "israel": "Israel",
+    "local": "Local",
+    "shabbatShalom": "Shabbat Shalom!",
+    "erevShabbat": "Erev Shabbat",
+    "candleLighting": "Candle Lighting",
+    "parasha": "Parasha"
+  },
+  "ritual": {
+    "title": "Morning Ritual",
+    "preparingRitual": "Preparing your morning ritual...",
+    "israelTime": "Israel Time",
+    "day": "Day",
+    "letsStart": "Let's Start",
+    "skipToday": "Skip for Today",
+    "finish": "Finish",
+    "noContentNow": "No content available right now",
+    "typeLive": "Live",
+    "typeRadio": "Radio",
+    "typeVideo": "Video"
+  },
+  "admin": {
+    "plans": {
+      "mo": "mo",
+      "yr": "yr",
+      "monthly": "Monthly",
+      "yearly": "Yearly",
+      "freeTrial": "{{days}} day free trial"
+    },
+    "users": {
+      "active": "Active",
+      "inactive": "Inactive"
+    }
   }
 }

@@ -27,7 +27,8 @@ const ChannelCard: React.FC<{
   channel: Channel;
   onPress: () => void;
   index: number;
-}> = ({ channel, onPress, index }) => {
+  liveLabel: string;
+}> = ({ channel, onPress, index, liveLabel }) => {
   const [isFocused, setIsFocused] = useState(false);
   const scaleAnim = useRef(new Animated.Value(1)).current;
 
@@ -95,7 +96,7 @@ const ChannelCard: React.FC<{
         {/* Live Indicator */}
         <View style={styles.liveIndicator}>
           <View style={styles.liveDot} />
-          <Text style={styles.liveText}>LIVE</Text>
+          <Text style={styles.liveText}>{liveLabel}</Text>
         </View>
       </Animated.View>
     </TouchableOpacity>
@@ -207,6 +208,7 @@ export const LiveTVScreen: React.FC = () => {
             channel={item}
             onPress={() => handleChannelPress(item)}
             index={index}
+            liveLabel={t('common.live')}
           />
         )}
       />

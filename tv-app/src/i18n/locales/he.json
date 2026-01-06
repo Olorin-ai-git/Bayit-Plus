@@ -71,6 +71,7 @@
     "israeliMovies": "סרטים ישראליים",
     "documentaries": "דוקומנטרים",
     "loadingContent": "טוען תוכן...",
+    "liveNow": "עכשיו בשידור",
     "carousel": {
       "fauda": {
         "title": "פאודה",
@@ -115,6 +116,7 @@
     "title": "טלוויזיה חיה",
     "channels": "ערוצים",
     "nowPlaying": "עכשיו בשידור",
+    "loadError": "שגיאה בטעינת הערוצים",
     "categories": {
       "all": "הכל",
       "news": "חדשות",
@@ -128,6 +130,7 @@
     "title": "רדיו",
     "stations": "תחנות",
     "nowPlaying": "עכשיו משמיע",
+    "loadError": "שגיאה בטעינת התחנות",
     "genres": {
       "all": "הכל",
       "news": "חדשות",
@@ -140,6 +143,7 @@
     "title": "פודקאסטים",
     "shows": "תוכניות",
     "episodes": "פרקים",
+    "loadError": "שגיאה בטעינת הפודקאסטים",
     "categories": {
       "all": "הכל",
       "news": "חדשות",
@@ -153,6 +157,7 @@
     "title": "סרטים וסדרות",
     "movies": "סרטים",
     "series": "סדרות",
+    "loadError": "שגיאה בטעינת התוכן",
     "categories": {
       "all": "הכל",
       "drama": "דרמה",
@@ -203,7 +208,9 @@
       "pending": "ממתין",
       "downloadInvoices": "הורד חשבוניות",
       "billingAddress": "כתובת לחיוב",
-      "editAddress": "ערוך כתובת"
+      "editAddress": "ערוך כתובת",
+      "noPaymentMethods": "לא נוספו אמצעי תשלום",
+      "noHistory": "אין היסטוריית חיובים"
     },
     "subscription": {
       "currentPlan": "המנוי הנוכחי",
@@ -273,7 +280,9 @@
     "retry": "נסה שוב",
     "error": "שגיאה בהפעלת הווידאו",
     "back": "← חזור",
-    "liveBadge": "שידור חי"
+    "liveBadge": "שידור חי",
+    "noStream": "הזרם אינו זמין",
+    "loadError": "שגיאה בטעינת הזרם"
   },
   "empty": {
     "noContent": "אין תוכן זמין",
@@ -315,5 +324,57 @@
   },
   "content": {
     "episodes": "פרקים"
+  },
+  "trending": {
+    "title": "מה חם בישראל",
+    "noTopics": "אין נושאים חמים כרגע",
+    "topStory": "הכותרת הראשית",
+    "sources": "מקורות",
+    "categories": {
+      "security": "ביטחון",
+      "politics": "פוליטיקה",
+      "tech": "טכנולוגיה",
+      "culture": "תרבות",
+      "sports": "ספורט",
+      "economy": "כלכלה",
+      "entertainment": "בידור",
+      "weather": "מזג אוויר",
+      "health": "בריאות",
+      "general": "כללי"
+    }
+  },
+  "clock": {
+    "israel": "ישראל",
+    "local": "מקומי",
+    "shabbatShalom": "שבת שלום!",
+    "erevShabbat": "ערב שבת",
+    "candleLighting": "הדלקת נרות",
+    "parasha": "פרשת"
+  },
+  "ritual": {
+    "title": "☀️ טקס הבוקר",
+    "preparingRitual": "מכין את טקס הבוקר שלך...",
+    "israelTime": "שעה בישראל",
+    "day": "יום",
+    "letsStart": "בואו נתחיל",
+    "skipToday": "דלג להיום",
+    "finish": "סיום",
+    "noContentNow": "אין תוכן זמין כרגע",
+    "typeLive": "שידור חי",
+    "typeRadio": "רדיו",
+    "typeVideo": "וידאו"
+  },
+  "admin": {
+    "plans": {
+      "mo": "חודש",
+      "yr": "שנה",
+      "monthly": "חודשי",
+      "yearly": "שנתי",
+      "freeTrial": "{{days}} ימי ניסיון חינם"
+    },
+    "users": {
+      "active": "פעיל",
+      "inactive": "לא פעיל"
+    }
   }
 }

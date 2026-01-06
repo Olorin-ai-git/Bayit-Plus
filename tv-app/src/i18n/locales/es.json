@@ -71,6 +71,7 @@
     "israeliMovies": "Películas Israelíes",
     "documentaries": "Documentales",
     "loadingContent": "Cargando contenido...",
+    "liveNow": "En Vivo",
     "carousel": {
       "fauda": {
         "title": "Fauda",
@@ -115,6 +116,7 @@
     "title": "TV en Vivo",
     "channels": "Canales",
     "nowPlaying": "Ahora",
+    "loadError": "Error al cargar los canales",
     "categories": {
       "all": "Todo",
       "news": "Noticias",
@@ -128,6 +130,7 @@
     "title": "Radio",
     "stations": "Estaciones",
     "nowPlaying": "Reproduciendo",
+    "loadError": "Error al cargar las estaciones",
     "genres": {
       "all": "Todo",
       "news": "Noticias",
@@ -140,6 +143,7 @@
     "title": "Podcasts",
     "shows": "Programas",
     "episodes": "Episodios",
+    "loadError": "Error al cargar los podcasts",
     "categories": {
       "all": "Todo",
       "news": "Noticias",
@@ -153,6 +157,7 @@
     "title": "Películas y Series",
     "movies": "Películas",
     "series": "Series",
+    "loadError": "Error al cargar el contenido",
     "categories": {
       "all": "Todo",
       "drama": "Drama",
@@ -203,7 +208,9 @@
       "pending": "Pendiente",
       "downloadInvoices": "Descargar Facturas",
       "billingAddress": "Dirección de Facturación",
-      "editAddress": "Editar Dirección"
+      "editAddress": "Editar Dirección",
+      "noPaymentMethods": "No hay métodos de pago agregados",
+      "noHistory": "No hay historial de facturación"
     },
     "subscription": {
       "currentPlan": "Plan Actual",
@@ -273,7 +280,9 @@
     "retry": "Reintentar",
     "error": "Error al reproducir el video",
     "back": "← Volver",
-    "liveBadge": "EN VIVO"
+    "liveBadge": "EN VIVO",
+    "noStream": "Transmisión no disponible",
+    "loadError": "Error al cargar la transmisión"
   },
   "empty": {
     "noContent": "No hay contenido disponible",
@@ -315,5 +324,57 @@
   },
   "content": {
     "episodes": "episodios"
+  },
+  "trending": {
+    "title": "Tendencias en Israel",
+    "noTopics": "No hay temas de tendencia disponibles",
+    "topStory": "HISTORIA PRINCIPAL",
+    "sources": "Fuentes",
+    "categories": {
+      "security": "Seguridad",
+      "politics": "Politica",
+      "tech": "Tecnologia",
+      "culture": "Cultura",
+      "sports": "Deportes",
+      "economy": "Economia",
+      "entertainment": "Entretenimiento",
+      "weather": "Clima",
+      "health": "Salud",
+      "general": "General"
+    }
+  },
+  "clock": {
+    "israel": "Israel",
+    "local": "Local",
+    "shabbatShalom": "Shabat Shalom!",
+    "erevShabbat": "Erev Shabat",
+    "candleLighting": "Encendido de Velas",
+    "parasha": "Parasha"
+  },
+  "ritual": {
+    "title": "Ritual Matutino",
+    "preparingRitual": "Preparando tu ritual matutino...",
+    "israelTime": "Hora en Israel",
+    "day": "Dia",
+    "letsStart": "Empecemos",
+    "skipToday": "Saltar por Hoy",
+    "finish": "Terminar",
+    "noContentNow": "No hay contenido disponible ahora",
+    "typeLive": "En Vivo",
+    "typeRadio": "Radio",
+    "typeVideo": "Video"
+  },
+  "admin": {
+    "plans": {
+      "mo": "mes",
+      "yr": "año",
+      "monthly": "Mensual",
+      "yearly": "Anual",
+      "freeTrial": "{{days}} dias de prueba gratis"
+    },
+    "users": {
+      "active": "Activo",
+      "inactive": "Inactivo"
+    }
   }
 }

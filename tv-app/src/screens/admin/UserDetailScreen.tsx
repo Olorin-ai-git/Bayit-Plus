@@ -319,7 +319,7 @@ export const UserDetailScreen: React.FC = () => {
                 </View>
                 <View style={[styles.statusBadge, { backgroundColor: user.is_active ? colors.success + '30' : colors.error + '30' }]}>
                   <Text style={[styles.statusBadgeText, { color: user.is_active ? colors.success : colors.error }]}>
-                    {user.is_active ? 'Active' : 'Inactive'}
+                    {user.is_active ? t('admin.users.active') : t('admin.users.inactive')}
                   </Text>
                 </View>
               </View>

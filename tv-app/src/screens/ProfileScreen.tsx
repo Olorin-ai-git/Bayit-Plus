@@ -6,13 +6,32 @@ import {
   TouchableOpacity,
   ScrollView,
   Switch,
+  ActivityIndicator,
 } from 'react-native';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
 import { GlassView, GlassButton } from '../components/ui';
 import { useAuthStore } from '../stores/authStore';
-import { colors, spacing, borderRadius } from '../theme';
+import { subscriptionService } from '../services/api';
+import { colors, spacing, borderRadius, fontSize } from '../theme';
 import { isTV } from '../utils/platform';
+
+interface PaymentMethod {
+  id: string;
+  type: string;
+  last4: string;
+  expiry: string;
+  is_default: boolean;
+}
+
+interface BillingHistoryItem {
+  id: string;
+  date: string;
+  amount: number;
+  currency: string;
+  status: string;
+  description: string;
+}
 
 type TabId = 'profile' | 'billing' | 'subscription' | 'notifications' | 'security';
 
@@ -35,7 +54,6 @@ const SUBSCRIPTION_PLANS = [
   {
     id: 'basic',
     nameKey: 'profile.plans.basic.name',
-    price: 'חינם',
     priceKey: 'profile.plans.basic.price',
     features: [
       'profile.plans.basic.feature1',
@@ -47,7 +65,6 @@ const SUBSCRIPTION_PLANS = [
   {
     id: 'premium',
     nameKey: 'profile.plans.premium.name',
-    price: '₪29.90/חודש',
     priceKey: 'profile.plans.premium.price',
     features: [
       'profile.plans.premium.feature1',
@@ -60,7 +77,6 @@ const SUBSCRIPTION_PLANS = [
   {
     id: 'family',
     nameKey: 'profile.plans.family.name',
-    price: '₪49.90/חודש',
     priceKey: 'profile.plans.family.price',
     features: [
       'profile.plans.family.feature1',
@@ -71,18 +87,6 @@ const SUBSCRIPTION_PLANS = [
     ],
     recommended: false,
   },
-];
-
-// Mock billing data
-const MOCK_PAYMENT_METHODS = [
-  { id: '1', type: 'visa', last4: '4242', expiry: '12/25', isDefault: true },
-  { id: '2', type: 'mastercard', last4: '8888', expiry: '06/26', isDefault: false },
-];
-
-const MOCK_BILLING_HISTORY = [
-  { id: '1', date: '01/01/2025', amount: '₪29.90', status: 'paid', description: 'מנוי פרימיום - ינואר' },
-  { id: '2', date: '01/12/2024', amount: '₪29.90', status: 'paid', description: 'מנוי פרימיום - דצמבר' },
-  { id: '3', date: '01/11/2024', amount: '₪29.90', status: 'paid', description: 'מנוי פרימיום - נובמבר' },
 ];
 
 const NOTIFICATION_SETTINGS = [
@@ -103,6 +107,9 @@ export const ProfileScreen: React.FC = () => {
     recommendations: false,
     updates: true,
   });
+  const [paymentMethods, setPaymentMethods] = useState<PaymentMethod[]>([]);
+  const [billingHistory, setBillingHistory] = useState<BillingHistoryItem[]>([]);
+  const [billingLoading, setBillingLoading] = useState(false);
 
   // Handle deep linking to specific tab
   useEffect(() => {
@@ -110,6 +117,29 @@ export const ProfileScreen: React.FC = () => {
       setActiveTab(route.params.tab as TabId);
     }
   }, [route.params?.tab]);
+
+  // Fetch billing data when billing tab is active
+  useEffect(() => {
+    if (activeTab === 'billing' && isAuthenticated) {
+      loadBillingData();
+    }
+  }, [activeTab, isAuthenticated]);
+
+  const loadBillingData = async () => {
+    setBillingLoading(true);
+    try {
+      const [methodsRes, invoicesRes] = await Promise.all([
+        subscriptionService.getPaymentMethods(),
+        subscriptionService.getInvoices(),
+      ]) as [any, any];
+      setPaymentMethods(methodsRes.payment_methods || []);
+      setBillingHistory(invoicesRes.invoices || []);
+    } catch (error) {
+      console.error('Failed to load billing data:', error);
+    } finally {
+      setBillingLoading(false);
+    }
+  };
 
   if (!isAuthenticated) {
     navigation.navigate('Login');
@@ -155,93 +185,111 @@ export const ProfileScreen: React.FC = () => {
     </GlassView>
   );
 
-  const renderBillingTab = () => (
-    <ScrollView showsVerticalScrollIndicator={false}>
-      {/* Payment Methods */}
-      <GlassView style={styles.contentCard}>
-        <View style={styles.sectionHeader}>
-          <Text style={styles.sectionTitle}>{t('profile.billing.paymentMethods')}</Text>
-          <TouchableOpacity style={styles.addButton}>
-            <Text style={styles.addButtonText}>+ {t('profile.billing.addCard')}</Text>
-          </TouchableOpacity>
+  const renderBillingTab = () => {
+    if (billingLoading) {
+      return (
+        <View style={styles.loadingContainer}>
+          <ActivityIndicator size="large" color={colors.primary} />
         </View>
+      );
+    }
 
-        {MOCK_PAYMENT_METHODS.map((method) => (
-          <View key={method.id} style={styles.paymentMethod}>
-            <View style={styles.cardInfo}>
-              <Text style={styles.cardIcon}>
-                {method.type === 'visa' ? '💳' : '💳'}
-              </Text>
-              <View style={styles.cardDetails}>
-                <Text style={styles.cardType}>
-                  {method.type.toUpperCase()} •••• {method.last4}
-                </Text>
-                <Text style={styles.cardExpiry}>
-                  {t('profile.billing.expires')} {method.expiry}
-                </Text>
-              </View>
-            </View>
-            <View style={styles.cardActions}>
-              {method.isDefault && (
-                <View style={styles.defaultBadge}>
-                  <Text style={styles.defaultBadgeText}>{t('profile.billing.default')}</Text>
+    return (
+      <ScrollView showsVerticalScrollIndicator={false}>
+        {/* Payment Methods */}
+        <GlassView style={styles.contentCard}>
+          <View style={styles.sectionHeader}>
+            <Text style={styles.sectionTitle}>{t('profile.billing.paymentMethods')}</Text>
+            <TouchableOpacity style={styles.addButton}>
+              <Text style={styles.addButtonText}>+ {t('profile.billing.addCard')}</Text>
+            </TouchableOpacity>
+          </View>
+
+          {paymentMethods.length === 0 ? (
+            <Text style={styles.emptyText}>{t('profile.billing.noPaymentMethods')}</Text>
+          ) : (
+            paymentMethods.map((method) => (
+              <View key={method.id} style={styles.paymentMethod}>
+                <View style={styles.cardInfo}>
+                  <Text style={styles.cardIcon}>
+                    {method.type === 'visa' ? '💳' : '💳'}
+                  </Text>
+                  <View style={styles.cardDetails}>
+                    <Text style={styles.cardType}>
+                      {method.type.toUpperCase()} •••• {method.last4}
+                    </Text>
+                    <Text style={styles.cardExpiry}>
+                      {t('profile.billing.expires')} {method.expiry}
+                    </Text>
+                  </View>
                 </View>
-              )}
-              <TouchableOpacity style={styles.cardActionButton}>
-                <Text style={styles.cardActionText}>{t('common.edit')}</Text>
-              </TouchableOpacity>
-            </View>
-          </View>
-        ))}
-      </GlassView>
-
-      {/* Billing History */}
-      <GlassView style={styles.contentCard}>
-        <Text style={styles.sectionTitle}>{t('profile.billing.history')}</Text>
-
-        <View style={styles.billingTable}>
-          <View style={styles.billingHeader}>
-            <Text style={styles.billingHeaderText}>{t('profile.billing.date')}</Text>
-            <Text style={styles.billingHeaderText}>{t('profile.billing.description')}</Text>
-            <Text style={styles.billingHeaderText}>{t('profile.billing.amount')}</Text>
-            <Text style={styles.billingHeaderText}>{t('profile.billing.status')}</Text>
-          </View>
-          {MOCK_BILLING_HISTORY.map((item) => (
-            <View key={item.id} style={styles.billingRow}>
-              <Text style={styles.billingCell}>{item.date}</Text>
-              <Text style={styles.billingCell}>{item.description}</Text>
-              <Text style={styles.billingCell}>{item.amount}</Text>
-              <View style={[styles.statusBadge, item.status === 'paid' && styles.statusPaid]}>
-                <Text style={styles.statusText}>
-                  {item.status === 'paid' ? t('profile.billing.paid') : t('profile.billing.pending')}
-                </Text>
+                <View style={styles.cardActions}>
+                  {method.is_default && (
+                    <View style={styles.defaultBadge}>
+                      <Text style={styles.defaultBadgeText}>{t('profile.billing.default')}</Text>
+                    </View>
+                  )}
+                  <TouchableOpacity style={styles.cardActionButton}>
+                    <Text style={styles.cardActionText}>{t('common.edit')}</Text>
+                  </TouchableOpacity>
+                </View>
               </View>
+            ))
+          )}
+        </GlassView>
+
+        {/* Billing History */}
+        <GlassView style={styles.contentCard}>
+          <Text style={styles.sectionTitle}>{t('profile.billing.history')}</Text>
+
+          {billingHistory.length === 0 ? (
+            <Text style={styles.emptyText}>{t('profile.billing.noHistory')}</Text>
+          ) : (
+            <View style={styles.billingTable}>
+              <View style={styles.billingHeader}>
+                <Text style={styles.billingHeaderText}>{t('profile.billing.date')}</Text>
+                <Text style={styles.billingHeaderText}>{t('profile.billing.description')}</Text>
+                <Text style={styles.billingHeaderText}>{t('profile.billing.amount')}</Text>
+                <Text style={styles.billingHeaderText}>{t('profile.billing.status')}</Text>
+              </View>
+              {billingHistory.map((item) => (
+                <View key={item.id} style={styles.billingRow}>
+                  <Text style={styles.billingCell}>{item.date}</Text>
+                  <Text style={styles.billingCell}>{item.description}</Text>
+                  <Text style={styles.billingCell}>₪{item.amount.toFixed(2)}</Text>
+                  <View style={[styles.statusBadge, item.status === 'paid' && styles.statusPaid]}>
+                    <Text style={styles.statusText}>
+                      {item.status === 'paid' ? t('profile.billing.paid') : t('profile.billing.pending')}
+                    </Text>
+                  </View>
+                </View>
+              ))}
             </View>
-          ))}
-        </View>
+          )}
 
-        <TouchableOpacity style={styles.downloadInvoice}>
-          <Text style={styles.downloadInvoiceText}>📄 {t('profile.billing.downloadInvoices')}</Text>
-        </TouchableOpacity>
-      </GlassView>
+          <TouchableOpacity style={styles.downloadInvoice}>
+            <Text style={styles.downloadInvoiceText}>📄 {t('profile.billing.downloadInvoices')}</Text>
+          </TouchableOpacity>
+        </GlassView>
 
-      {/* Billing Address */}
-      <GlassView style={styles.contentCard}>
-        <Text style={styles.sectionTitle}>{t('profile.billing.billingAddress')}</Text>
-        <View style={styles.addressCard}>
-          <Text style={styles.addressText}>{user?.name}</Text>
-          <Text style={styles.addressText}>{t('profile.address.line1')}</Text>
-          <Text style={styles.addressText}>{t('profile.address.line2')}</Text>
-        </View>
-        <GlassButton
-          title={t('profile.billing.editAddress')}
-          onPress={() => {}}
-          variant="secondary"
-          style={styles.editAddressButton}
-        />
-      </GlassView>
-    </ScrollView>
-  );
+        {/* Billing Address */}
+        <GlassView style={styles.contentCard}>
+          <Text style={styles.sectionTitle}>{t('profile.billing.billingAddress')}</Text>
+          <View style={styles.addressCard}>
+            <Text style={styles.addressText}>{user?.name}</Text>
+            <Text style={styles.addressText}>{t('profile.address.line1')}</Text>
+            <Text style={styles.addressText}>{t('profile.address.line2')}</Text>
+          </View>
+          <GlassButton
+            title={t('profile.billing.editAddress')}
+            onPress={() => {}}
+            variant="secondary"
+            style={styles.editAddressButton}
+          />
+        </GlassView>
+      </ScrollView>
+    );
+  };
 
   const renderSubscriptionTab = () => (
     <ScrollView showsVerticalScrollIndicator={false}>
@@ -398,7 +446,7 @@ export const ProfileScreen: React.FC = () => {
       case 'security':
         return renderSecurityTab();
       default:
-        return null;
+        return renderProfileTab();
     }
   };
 
@@ -467,6 +515,17 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: colors.background,
+  },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  emptyText: {
+    fontSize: fontSize.md,
+    color: colors.textSecondary,
+    textAlign: 'center',
+    paddingVertical: spacing.lg,
   },
   header: {
     flexDirection: 'row',
