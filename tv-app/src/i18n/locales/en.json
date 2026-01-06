@@ -406,5 +406,44 @@
       "active": "Active",
       "inactive": "Inactive"
     }
+  },
+  "watchParty": {
+    "title": "Watch Party",
+    "create": "Create Party",
+    "join": "Join Party",
+    "active": "Party Active",
+    "createTitle": "Create Watch Party",
+    "joinTitle": "Join Party",
+    "enterCode": "Enter Room Code",
+    "roomCode": "Room Code",
+    "copyCode": "Copy Code",
+    "codeCopied": "Code Copied!",
+    "participants": "Participants",
+    "host": "Host",
+    "you": "You",
+    "leave": "Leave Party",
+    "end": "End Party",
+    "chat": "Chat",
+    "sendMessage": "Send Message",
+    "typeMessage": "Type a message...",
+    "synced": "Synced",
+    "syncing": "Syncing...",
+    "hostPaused": "Host Paused",
+    "userJoined": "{{name}} joined",
+    "userLeft": "{{name}} left",
+    "partyEnded": "The party has ended",
+    "connecting": "Connecting...",
+    "options": {
+      "chatEnabled": "Enable Chat",
+      "syncPlayback": "Sync Playback"
+    },
+    "errors": {
+      "invalidCode": "Invalid code",
+      "partyFull": "Party is full",
+      "partyEnded": "Party has ended",
+      "connectionError": "Connection error",
+      "createFailed": "Failed to create party",
+      "joinFailed": "Failed to join party"
+    }
   }
 }

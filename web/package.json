@@ -7,22 +7,26 @@
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview",
-    "lint": "eslint . --ext js,jsx --report-unused-disable-directives --max-warnings 0"
+    "lint": "eslint . --ext js,jsx --report-unused-disable-directives --max-warnings 0",
+    "deploy": "npm run build && firebase deploy --only hosting:web",
+    "deploy:preview": "npm run build && firebase hosting:channel:deploy preview --only web"
   },
   "dependencies": {
-    "react": "^18.2.0",
-    "react-dom": "^18.2.0",
-    "react-router-dom": "^6.21.0",
-    "zustand": "^4.4.7",
+    "@stripe/react-stripe-js": "^2.4.0",
+    "@stripe/stripe-js": "^2.2.2",
+    "@tanstack/react-query": "^5.62.0",
     "axios": "^1.6.2",
-    "hls.js": "^1.4.14",
     "date-fns": "^3.0.6",
     "date-fns-tz": "^3.2.0",
-    "@tanstack/react-query": "^5.62.0",
+    "hls.js": "^1.4.14",
+    "i18next": "^25.7.3",
     "livekit-client": "^2.7.0",
-    "@stripe/stripe-js": "^2.2.2",
-    "@stripe/react-stripe-js": "^2.4.0",
-    "lucide-react": "^0.303.0"
+    "lucide-react": "^0.303.0",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "react-i18next": "^16.5.1",
+    "react-router-dom": "^6.21.0",
+    "zustand": "^4.4.7"
   },
   "devDependencies": {
     "@types/react": "^18.2.45",

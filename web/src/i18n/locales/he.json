@@ -1,0 +1,52 @@
+{
+  "common": {
+    "loading": "טוען...",
+    "error": "שגיאה",
+    "retry": "נסה שוב",
+    "cancel": "ביטול",
+    "save": "שמור",
+    "close": "סגור",
+    "copy": "העתק",
+    "copied": "הועתק!",
+    "share": "שתף"
+  },
+  "watchParty": {
+    "title": "מסיבת צפייה",
+    "create": "צור מסיבה",
+    "join": "הצטרף למסיבה",
+    "active": "מסיבה פעילה",
+    "createTitle": "יצירת מסיבת צפייה",
+    "joinTitle": "הצטרפות למסיבה",
+    "enterCode": "הזן קוד חדר",
+    "roomCode": "קוד החדר",
+    "copyCode": "העתק קוד",
+    "codeCopied": "הקוד הועתק!",
+    "participants": "משתתפים",
+    "host": "מארח",
+    "you": "אתה",
+    "leave": "עזוב מסיבה",
+    "end": "סיים מסיבה",
+    "chat": "צ'אט",
+    "sendMessage": "שלח הודעה",
+    "typeMessage": "הקלד הודעה...",
+    "synced": "מסונכרן",
+    "syncing": "מסנכרן...",
+    "hostPaused": "המארח השהה",
+    "userJoined": "{{name}} הצטרף/ה",
+    "userLeft": "{{name}} עזב/ה",
+    "partyEnded": "המסיבה הסתיימה",
+    "connecting": "מתחבר...",
+    "options": {
+      "chatEnabled": "אפשר צ'אט",
+      "syncPlayback": "סנכרן ניגון"
+    },
+    "errors": {
+      "invalidCode": "קוד לא תקין",
+      "partyFull": "המסיבה מלאה",
+      "partyEnded": "המסיבה הסתיימה",
+      "connectionError": "שגיאת חיבור",
+      "createFailed": "יצירת המסיבה נכשלה",
+      "joinFailed": "ההצטרפות נכשלה"
+    }
+  }
+}

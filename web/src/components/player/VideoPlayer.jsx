@@ -1,4 +1,4 @@
-import { useRef, useState, useEffect } from 'react'
+import { useRef, useState, useEffect, useCallback } from 'react'
 import Hls from 'hls.js'
 import {
   Play,
@@ -11,15 +11,50 @@ import {
   SkipBack,
   SkipForward,
 } from 'lucide-react'
+import { useWatchPartyStore } from '@/stores/watchPartyStore'
+import { useAuthStore } from '@/stores/authStore'
+import {
+  WatchPartyButton,
+  WatchPartyCreateModal,
+  WatchPartyJoinModal,
+  WatchPartyPanel,
+  WatchPartyOverlay,
+} from '@/components/watchparty'
 
 export default function VideoPlayer({
   src,
   poster,
   title,
+  contentId,
+  contentType = 'vod',
   onProgress,
   isLive = false,
   autoPlay = false,
 }) {
+  const user = useAuthStore((s) => s.user)
+  const {
+    party,
+    participants,
+    messages,
+    isHost,
+    isConnected,
+    syncedPosition,
+    isPlaying: partySyncPlaying,
+    createParty,
+    joinByCode,
+    connect,
+    sendMessage,
+    syncPlayback,
+    leaveParty,
+    endParty,
+  } = useWatchPartyStore()
+
+  const [showCreateModal, setShowCreateModal] = useState(false)
+  const [showJoinModal, setShowJoinModal] = useState(false)
+  const [showPartyPanel, setShowPartyPanel] = useState(false)
+  const [isSynced, setIsSynced] = useState(true)
+  const [isMobile, setIsMobile] = useState(false)
+  const lastSyncRef = useRef(0)
   const videoRef = useRef(null)
   const containerRef = useRef(null)
   const hlsRef = useRef(null)
@@ -135,6 +170,71 @@ export default function VideoPlayer({
       clearTimeout(timeout)
     }
   }, [isPlaying])
+
+  useEffect(() => {
+    setIsMobile(window.innerWidth < 768)
+    const handleResize = () => setIsMobile(window.innerWidth < 768)
+    window.addEventListener('resize', handleResize)
+    return () => window.removeEventListener('resize', handleResize)
+  }, [])
+
+  useEffect(() => {
+    if (!party || isHost || !isConnected) return
+    const video = videoRef.current
+    if (!video) return
+
+    const diff = Math.abs(video.currentTime - syncedPosition)
+    if (diff > 2) {
+      video.currentTime = syncedPosition
+      setIsSynced(false)
+      setTimeout(() => setIsSynced(true), 500)
+    }
+
+    if (partySyncPlaying && video.paused) {
+      video.play()
+    } else if (!partySyncPlaying && !video.paused) {
+      video.pause()
+    }
+  }, [syncedPosition, partySyncPlaying, party, isHost, isConnected])
+
+  useEffect(() => {
+    if (!party || !isHost || !isConnected) return
+    const video = videoRef.current
+    if (!video) return
+
+    const now = Date.now()
+    if (now - lastSyncRef.current < 1000) return
+    lastSyncRef.current = now
+
+    syncPlayback(video.currentTime, !video.paused)
+  }, [currentTime, isPlaying, party, isHost, isConnected, syncPlayback])
+
+  const handleCreateParty = async (options) => {
+    if (!contentId) return
+    const newParty = await createParty(contentId, contentType, {
+      title,
+      chatEnabled: options.chatEnabled,
+      syncPlayback: options.syncPlayback,
+    })
+    connect(newParty.id, user?.token)
+    setShowPartyPanel(true)
+  }
+
+  const handleJoinParty = async (roomCode) => {
+    const joinedParty = await joinByCode(roomCode)
+    connect(joinedParty.id, user?.token)
+    setShowPartyPanel(true)
+  }
+
+  const handleLeaveParty = async () => {
+    await leaveParty()
+    setShowPartyPanel(false)
+  }
+
+  const handleEndParty = async () => {
+    await endParty()
+    setShowPartyPanel(false)
+  }
 
   const togglePlay = () => {
     if (videoRef.current) {
@@ -298,6 +398,14 @@ export default function VideoPlayer({
             </div>
 
             <div className="flex items-center gap-2">
+              {user && contentId && (
+                <WatchPartyButton
+                  hasActiveParty={!!party}
+                  onCreateClick={() => setShowCreateModal(true)}
+                  onJoinClick={() => setShowJoinModal(true)}
+                  onPanelToggle={() => setShowPartyPanel(!showPartyPanel)}
+                />
+              )}
               <button className="glass-btn-ghost glass-btn-icon-sm">
                 <Settings size={18} />
               </button>
@@ -308,6 +416,61 @@ export default function VideoPlayer({
           </div>
         </div>
       </div>
+
+      {/* Watch Party Panel (Desktop) */}
+      {!isMobile && (
+        <WatchPartyPanel
+          isOpen={showPartyPanel && !!party}
+          onClose={() => setShowPartyPanel(false)}
+          party={party}
+          participants={participants}
+          messages={messages}
+          isHost={isHost}
+          isSynced={isSynced}
+          hostPaused={party && !partySyncPlaying}
+          currentUserId={user?.id}
+          onLeave={handleLeaveParty}
+          onEnd={handleEndParty}
+          onSendMessage={sendMessage}
+        />
+      )}
+
+      {/* Watch Party Overlay (Mobile) */}
+      {isMobile && (
+        <WatchPartyOverlay
+          isOpen={showPartyPanel && !!party}
+          onClose={() => setShowPartyPanel(false)}
+          party={party}
+          participants={participants}
+          messages={messages}
+          isHost={isHost}
+          isSynced={isSynced}
+          hostPaused={party && !partySyncPlaying}
+          currentUserId={user?.id}
+          onLeave={handleLeaveParty}
+          onEnd={handleEndParty}
+          onSendMessage={sendMessage}
+        />
+      )}
+
+      {/* Modals */}
+      <WatchPartyCreateModal
+        isOpen={showCreateModal}
+        onClose={() => setShowCreateModal(false)}
+        onCreate={handleCreateParty}
+        contentTitle={title}
+      />
+
+      <WatchPartyJoinModal
+        isOpen={showJoinModal}
+        onClose={() => setShowJoinModal(false)}
+        onJoin={handleJoinParty}
+      />
+
+      {/* Party Active Indicator Border */}
+      {party && (
+        <div className="absolute inset-0 pointer-events-none border-2 border-emerald-500/50 rounded-xl animate-pulse" />
+      )}
     </div>
   )
 }

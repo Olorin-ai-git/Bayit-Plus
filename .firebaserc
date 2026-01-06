@@ -1,0 +1,13 @@
+{
+  "projects": {
+    "default": "bayit-plus"
+  },
+  "targets": {
+    "bayit-plus": {
+      "hosting": {
+        "web": ["bayit-plus-tv"],
+        "tv": ["bayit-tv"]
+      }
+    }
+  }
+}

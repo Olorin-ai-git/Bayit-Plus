@@ -1,0 +1,23 @@
+{
+  "name": "bayit-plus",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Bayit Plus - Monorepo deployment scripts",
+  "scripts": {
+    "build:all": "npm run build:web && npm run build:tv",
+    "build:web": "cd web && npm run build",
+    "build:tv": "cd tv-app && npm run build:web",
+    "deploy": "npm run build:all && firebase deploy --only hosting",
+    "deploy:web": "cd web && npm run deploy",
+    "deploy:tv": "cd tv-app && npm run deploy",
+    "deploy:preview": "npm run build:all && firebase hosting:channel:deploy preview",
+    "firebase:login": "firebase login",
+    "firebase:init": "firebase init hosting"
+  },
+  "devDependencies": {
+    "firebase-tools": "^13.0.0"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}

@@ -30,12 +30,39 @@ if (Platform.OS !== 'web') {
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
 import { contentService, liveService, historyService } from '../services/api';
+import { useWatchPartyStore } from '../stores/watchPartyStore';
+import { useAuthStore } from '../stores/authStore';
+import {
+  WatchPartyButton,
+  WatchPartyCreateModal,
+  WatchPartyJoinModal,
+  WatchPartyOverlay,
+} from '../components/watchparty';
 
 export const PlayerScreen: React.FC = () => {
   const { t } = useTranslation();
   const navigation = useNavigation();
   const route = useRoute<any>();
   const { id, title, type } = route.params;
+
+  const user = useAuthStore((s) => s.user);
+  const token = useAuthStore((s) => s.token);
+  const {
+    party,
+    participants,
+    messages,
+    isHost,
+    isConnected,
+    syncedPosition,
+    isPlaying: partySyncPlaying,
+    createParty,
+    joinByCode,
+    connect,
+    sendMessage,
+    syncPlayback,
+    leaveParty,
+    endParty,
+  } = useWatchPartyStore();
 
   const videoRef = useRef<typeof VideoRef | HTMLVideoElement | null>(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -45,6 +72,12 @@ export const PlayerScreen: React.FC = () => {
   const [showControls, setShowControls] = useState(true);
   const [progress, setProgress] = useState({ currentTime: 0, duration: 0 });
   const controlsTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const [showCreateModal, setShowCreateModal] = useState(false);
+  const [showJoinModal, setShowJoinModal] = useState(false);
+  const [showPartyOverlay, setShowPartyOverlay] = useState(false);
+  const [isSynced, setIsSynced] = useState(true);
+  const lastSyncRef = useRef(0);
 
   useEffect(() => {
     loadStream();
@@ -144,6 +177,64 @@ export const PlayerScreen: React.FC = () => {
     return `${mins}:${secs.toString().padStart(2, '0')}`;
   };
 
+  // Watch Party Sync - Participant follows host
+  useEffect(() => {
+    if (!party || isHost || !isConnected) return;
+    const video = videoRef.current as HTMLVideoElement | null;
+    if (!video || Platform.OS !== 'web') return;
+
+    const diff = Math.abs(video.currentTime - syncedPosition);
+    if (diff > 2) {
+      video.currentTime = syncedPosition;
+      setIsSynced(false);
+      setTimeout(() => setIsSynced(true), 500);
+    }
+
+    if (partySyncPlaying && video.paused) {
+      video.play();
+    } else if (!partySyncPlaying && !video.paused) {
+      video.pause();
+    }
+  }, [syncedPosition, partySyncPlaying, party, isHost, isConnected]);
+
+  // Watch Party Sync - Host broadcasts position
+  useEffect(() => {
+    if (!party || !isHost || !isConnected) return;
+
+    const now = Date.now();
+    if (now - lastSyncRef.current < 1000) return;
+    lastSyncRef.current = now;
+
+    syncPlayback(progress.currentTime, !isPaused);
+  }, [progress.currentTime, isPaused, party, isHost, isConnected, syncPlayback]);
+
+  const handleCreateParty = async (options: { chatEnabled: boolean; syncPlayback: boolean }) => {
+    if (!id) return;
+    const newParty = await createParty(id, type, {
+      title,
+      chatEnabled: options.chatEnabled,
+      syncPlayback: options.syncPlayback,
+    });
+    connect(newParty.id);
+    setShowPartyOverlay(true);
+  };
+
+  const handleJoinParty = async (roomCode: string) => {
+    const joinedParty = await joinByCode(roomCode);
+    connect(joinedParty.id);
+    setShowPartyOverlay(true);
+  };
+
+  const handleLeaveParty = async () => {
+    await leaveParty();
+    setShowPartyOverlay(false);
+  };
+
+  const handleEndParty = async () => {
+    await endParty();
+    setShowPartyOverlay(false);
+  };
+
   const progressPercentage = progress.duration > 0
     ? (progress.currentTime / progress.duration) * 100
     : 0;
@@ -239,6 +330,16 @@ export const PlayerScreen: React.FC = () => {
               <Text style={styles.backButtonText}>{t('player.back')}</Text>
             </TouchableOpacity>
             <Text style={styles.title}>{title}</Text>
+            {user && id && (
+              <View style={styles.partyButtonContainer}>
+                <WatchPartyButton
+                  hasActiveParty={!!party}
+                  onCreatePress={() => setShowCreateModal(true)}
+                  onJoinPress={() => setShowJoinModal(true)}
+                  onPanelToggle={() => setShowPartyOverlay(!showPartyOverlay)}
+                />
+              </View>
+            )}
           </View>
 
           {/* Center Play/Pause */}
@@ -275,6 +376,41 @@ export const PlayerScreen: React.FC = () => {
             </View>
           )}
         </View>
+      )}
+
+      {/* Watch Party Overlay */}
+      <WatchPartyOverlay
+        visible={showPartyOverlay && !!party}
+        onClose={() => setShowPartyOverlay(false)}
+        party={party}
+        participants={participants}
+        messages={messages}
+        isHost={isHost}
+        isSynced={isSynced}
+        hostPaused={party && !partySyncPlaying}
+        currentUserId={user?.id || ''}
+        onLeave={handleLeaveParty}
+        onEnd={handleEndParty}
+        onSendMessage={sendMessage}
+      />
+
+      {/* Modals */}
+      <WatchPartyCreateModal
+        visible={showCreateModal}
+        onClose={() => setShowCreateModal(false)}
+        onCreate={handleCreateParty}
+        contentTitle={title}
+      />
+
+      <WatchPartyJoinModal
+        visible={showJoinModal}
+        onClose={() => setShowJoinModal(false)}
+        onJoin={handleJoinParty}
+      />
+
+      {/* Party Active Indicator */}
+      {party && (
+        <View style={styles.partyIndicator} pointerEvents="none" />
       )}
     </View>
   );
@@ -404,6 +540,15 @@ const styles = StyleSheet.create({
     color: '#ffffff',
     fontSize: 16,
     fontWeight: 'bold',
+  },
+  partyButtonContainer: {
+    marginLeft: 'auto',
+  },
+  partyIndicator: {
+    ...StyleSheet.absoluteFillObject,
+    borderWidth: 2,
+    borderColor: 'rgba(16, 185, 129, 0.5)',
+    borderRadius: 8,
   },
 });
 

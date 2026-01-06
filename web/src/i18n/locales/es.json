@@ -1,0 +1,52 @@
+{
+  "common": {
+    "loading": "Cargando...",
+    "error": "Error",
+    "retry": "Intentar de nuevo",
+    "cancel": "Cancelar",
+    "save": "Guardar",
+    "close": "Cerrar",
+    "copy": "Copiar",
+    "copied": "¡Copiado!",
+    "share": "Compartir"
+  },
+  "watchParty": {
+    "title": "Watch Party",
+    "create": "Crear fiesta",
+    "join": "Unirse a la fiesta",
+    "active": "Fiesta activa",
+    "createTitle": "Crear Watch Party",
+    "joinTitle": "Unirse a la fiesta",
+    "enterCode": "Ingresa el código de la sala",
+    "roomCode": "Código de la sala",
+    "copyCode": "Copiar código",
+    "codeCopied": "¡Código copiado!",
+    "participants": "Participantes",
+    "host": "Anfitrión",
+    "you": "Tú",
+    "leave": "Salir de la fiesta",
+    "end": "Terminar fiesta",
+    "chat": "Chat",
+    "sendMessage": "Enviar mensaje",
+    "typeMessage": "Escribe un mensaje...",
+    "synced": "Sincronizado",
+    "syncing": "Sincronizando...",
+    "hostPaused": "El anfitrión pausó",
+    "userJoined": "{{name}} se unió",
+    "userLeft": "{{name}} salió",
+    "partyEnded": "La fiesta ha terminado",
+    "connecting": "Conectando...",
+    "options": {
+      "chatEnabled": "Habilitar chat",
+      "syncPlayback": "Sincronizar reproducción"
+    },
+    "errors": {
+      "invalidCode": "Código inválido",
+      "partyFull": "La fiesta está llena",
+      "partyEnded": "La fiesta ha terminado",
+      "connectionError": "Error de conexión",
+      "createFailed": "Error al crear la fiesta",
+      "joinFailed": "Error al unirse"
+    }
+  }
+}
