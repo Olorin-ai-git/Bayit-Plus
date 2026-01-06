@@ -174,6 +174,44 @@ class ReportSummaryGenerator:
             critical_findings = validation.get("critical_issues", [])
             recommendations = validation.get("recommendations", [])
 
+        # Extract evidence points and geographic data from agents data
+        evidence_points = 0
+        geographic_countries = 0
+        geographic_cities = 0
+
+        if agents_data and "agent_results" in agents_data:
+            agent_results = agents_data.get("agent_results", {})
+            countries_set = set()
+            cities_set = set()
+
+            for agent_name, result in agent_results.items():
+                findings = result.get("findings", {})
+
+                # Count evidence points from findings
+                if isinstance(findings, dict):
+                    evidence_points += len(findings.get("evidence", []))
+                    evidence_points += len(findings.get("anomalies", []))
+                    evidence_points += len(findings.get("risk_factors", []))
+
+                    # Extract geographic data
+                    geo_data = findings.get("geographic_data", {})
+                    if isinstance(geo_data, dict):
+                        if geo_data.get("country"):
+                            countries_set.add(geo_data.get("country"))
+                        if geo_data.get("city"):
+                            cities_set.add(geo_data.get("city"))
+
+                        # Handle lists of locations
+                        for loc in geo_data.get("locations", []):
+                            if isinstance(loc, dict):
+                                if loc.get("country"):
+                                    countries_set.add(loc.get("country"))
+                                if loc.get("city"):
+                                    cities_set.add(loc.get("city"))
+
+            geographic_countries = len(countries_set)
+            geographic_cities = len(cities_set)
+
         return InvestigationSummary(
             investigation_id=investigation_id,
             scenario=scenario,
@@ -185,9 +223,9 @@ class ReportSummaryGenerator:
             status=status,
             agents_executed=agents_executed,
             tools_used=tools_used,
-            evidence_points=0,  # TODO: Extract from data
-            geographic_countries=0,  # TODO: Extract from data
-            geographic_cities=0,  # TODO: Extract from data
+            evidence_points=evidence_points,
+            geographic_countries=geographic_countries,
+            geographic_cities=geographic_cities,
             critical_findings=critical_findings,
             recommendations=recommendations,
         )

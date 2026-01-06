@@ -26,6 +26,7 @@ from app.schemas.rag_schemas import (
     RAGQueryRequest,
     RAGQueryResponse,
 )
+from app.security.auth import User, require_read_or_dev
 from app.service.database.models import RAGDataSource
 from app.service.logging import get_bridge_logger
 from app.service.rag.chat_service import get_chat_service
@@ -399,14 +400,16 @@ async def upload_document(document: DocumentUpload):
 )
 async def create_chat_session(
     session_data: ChatSessionCreate,
-    user_id: str = "demo-user",  # TODO: Get from auth context
+    current_user: User = Depends(require_read_or_dev),
 ):
     """Create a new chat session."""
     _check_rag_enabled()
     try:
         chat_service = get_chat_service()
         chat_session = await chat_service.create_session(
-            user_id=user_id, title=session_data.title, metadata=session_data.metadata
+            user_id=current_user.username,
+            title=session_data.title,
+            metadata=session_data.metadata,
         )
 
         return ChatSessionResponse(
@@ -429,15 +432,15 @@ async def create_chat_session(
 
 @router.get("/chats", response_model=List[ChatSessionResponse])
 async def list_chat_sessions(
-    user_id: str = "demo-user",  # TODO: Get from auth context
     include_inactive: bool = False,
+    current_user: User = Depends(require_read_or_dev),
 ):
     """List chat sessions for a user."""
     _check_rag_enabled()
     try:
         chat_service = get_chat_service()
         sessions = await chat_service.list_sessions(
-            user_id=user_id, include_inactive=include_inactive
+            user_id=current_user.username, include_inactive=include_inactive
         )
 
         # Get message counts for each session
@@ -468,13 +471,14 @@ async def list_chat_sessions(
 
 @router.get("/chats/{session_id}", response_model=ChatSessionWithMessages)
 async def get_chat_session(
-    session_id: str, user_id: str = "demo-user"  # TODO: Get from auth context
+    session_id: str,
+    current_user: User = Depends(require_read_or_dev),
 ):
     """Get a chat session with all messages."""
     _check_rag_enabled()
     try:
         chat_service = get_chat_service()
-        session = await chat_service.get_session(session_id, user_id)
+        session = await chat_service.get_session(session_id, current_user.username)
 
         if not session:
             raise HTTPException(
@@ -523,7 +527,7 @@ async def get_chat_session(
 async def update_chat_session(
     session_id: str,
     session_data: ChatSessionUpdate,
-    user_id: str = "demo-user",  # TODO: Get from auth context
+    current_user: User = Depends(require_read_or_dev),
 ):
     """Update a chat session."""
     _check_rag_enabled()
@@ -531,7 +535,7 @@ async def update_chat_session(
         chat_service = get_chat_service()
         session = await chat_service.update_session(
             session_id=session_id,
-            user_id=user_id,
+            user_id=current_user.username,
             title=session_data.title,
             is_active=session_data.is_active,
             metadata=session_data.metadata,
@@ -573,13 +577,14 @@ async def update_chat_session(
 
 @router.delete("/chats/{session_id}", status_code=status.HTTP_204_NO_CONTENT)
 async def delete_chat_session(
-    session_id: str, user_id: str = "demo-user"  # TODO: Get from auth context
+    session_id: str,
+    current_user: User = Depends(require_read_or_dev),
 ):
     """Delete a chat session."""
     _check_rag_enabled()
     try:
         chat_service = get_chat_service()
-        success = await chat_service.delete_session(session_id, user_id)
+        success = await chat_service.delete_session(session_id, current_user.username)
 
         if not success:
             raise HTTPException(
@@ -603,7 +608,7 @@ async def delete_chat_session(
 async def add_chat_message(
     session_id: str,
     message_data: ChatMessageCreate,
-    user_id: str = "demo-user",  # TODO: Get from auth context
+    current_user: User = Depends(require_read_or_dev),
 ):
     """Add a message to a chat session."""
     _check_rag_enabled()
@@ -611,7 +616,7 @@ async def add_chat_message(
         chat_service = get_chat_service()
 
         # Verify session belongs to user
-        session = await chat_service.get_session(session_id, user_id)
+        session = await chat_service.get_session(session_id, current_user.username)
         if not session:
             raise HTTPException(
                 status_code=status.HTTP_404_NOT_FOUND, detail="Chat session not found"

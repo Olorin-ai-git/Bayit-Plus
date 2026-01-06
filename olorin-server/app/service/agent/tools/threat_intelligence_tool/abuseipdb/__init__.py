@@ -7,8 +7,8 @@ Provides IP reputation checking, bulk analysis, CIDR scanning, and abuse reporti
 
 from .abuse_reporting_tool import AbuseReportingTool
 from .abuseipdb_client import AbuseIPDBClient
-from .bulk_ip_tool import BulkIPAnalysisTool
-from .cidr_analysis_tool import CIDRAnalysisTool
+from .bulk_analysis_tool import BulkIPAnalysisTool
+from .cidr_block_tool import CIDRBlockAnalysisTool
 from .ip_reputation_tool import IPReputationTool
 from .models import (
     AbuseIPDBConfig,
@@ -17,6 +17,7 @@ from .models import (
     CIDRAnalysisResponse,
     IPReputationResponse,
 )
+from .simple_ip_reputation_tool import SimpleIPReputationTool
 
 __all__ = [
     "AbuseIPDBClient",
@@ -26,7 +27,8 @@ __all__ = [
     "CIDRAnalysisResponse",
     "AbuseReportResponse",
     "IPReputationTool",
+    "SimpleIPReputationTool",
     "BulkIPAnalysisTool",
-    "CIDRAnalysisTool",
+    "CIDRBlockAnalysisTool",
     "AbuseReportingTool",
 ]

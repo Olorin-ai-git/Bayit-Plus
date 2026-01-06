@@ -2,6 +2,7 @@
 Device Fingerprint Tool for LangChain Agents
 
 Provides device fingerprint analysis capabilities for fraud investigation agents.
+Uses DeviceRiskScorer for real device feature queries from PostgreSQL views.
 """
 
 from typing import Any, Dict, List, Optional
@@ -9,6 +10,7 @@ from typing import Any, Dict, List, Optional
 from langchain_core.tools import BaseTool
 from pydantic import BaseModel, ConfigDict, Field
 
+from app.service.device_fingerprint.risk_scorer import DeviceRiskScorer
 from app.service.device_fingerprint.sdk_manager import SDKManager
 from app.service.device_fingerprint.signal_processor import SignalProcessor
 from app.service.logging import get_bridge_logger
@@ -56,12 +58,14 @@ class DeviceFingerprintTool(BaseTool):
 
     signal_processor: Optional[SignalProcessor] = None
     sdk_manager: Optional[SDKManager] = None
+    risk_scorer: Optional[DeviceRiskScorer] = None
 
     def __init__(self, **kwargs):
         """Initialize device fingerprint tool."""
         super().__init__(**kwargs)
         object.__setattr__(self, "signal_processor", SignalProcessor())
         object.__setattr__(self, "sdk_manager", SDKManager())
+        object.__setattr__(self, "risk_scorer", DeviceRiskScorer())
 
     def _run(
         self,
@@ -70,7 +74,7 @@ class DeviceFingerprintTool(BaseTool):
         user_id: Optional[str] = None,
     ) -> str:
         """
-        Analyze device fingerprint.
+        Analyze device fingerprint using DeviceRiskScorer.
 
         Args:
             device_id: Device ID to analyze
@@ -84,58 +88,39 @@ class DeviceFingerprintTool(BaseTool):
         from datetime import datetime
 
         logger.info(
-            f"🔍 [DeviceFingerprintTool] Starting analysis for device_id={device_id}, transaction_id={transaction_id}, user_id={user_id}"
+            f"[DeviceFingerprintTool] Starting analysis for device_id={device_id}"
         )
 
         try:
-            # TODO: Query Snowflake for device signals and compute features
-            # For now, return placeholder analysis
-
-            logger.debug(
-                f"🔍 [DeviceFingerprintTool] Initializing signal processor and SDK manager"
-            )
-            signal_processor_initialized = self.signal_processor is not None
-            sdk_manager_initialized = self.sdk_manager is not None
-            logger.debug(
-                f"🔍 [DeviceFingerprintTool] SignalProcessor initialized: {signal_processor_initialized}, SDKManager initialized: {sdk_manager_initialized}"
-            )
+            # Compute device risk score using DeviceRiskScorer service
+            risk_data = self.risk_scorer.compute_device_risk_score(device_id)
 
             analysis = {
                 "device_id": device_id,
                 "transaction_id": transaction_id,
                 "user_id": user_id,
-                "shared_device_count": 0,  # TODO: Query from Snowflake
-                "device_age_days": 0,  # TODO: Query from Snowflake
-                "device_risk_score": 0.5,  # TODO: Compute from features
-                "risk_factors": [],
-                "associated_accounts": [],  # TODO: Query from Snowflake
+                "shared_device_count": risk_data.get("shared_device_count", 0),
+                "device_age_days": risk_data.get("device_age_days", 0),
+                "device_risk_score": risk_data.get("risk_score", 0.5),
+                "risk_factors": risk_data.get("risk_factors", []),
+                "associated_accounts": [],
                 "analysis_timestamp": datetime.utcnow().isoformat(),
             }
 
             logger.info(
-                f"🔍 [DeviceFingerprintTool] Computed analysis: device_id={device_id}, risk_score={analysis['device_risk_score']}, shared_devices={analysis['shared_device_count']}"
+                f"[DeviceFingerprintTool] Computed analysis: device_id={device_id}, "
+                f"risk_score={analysis['device_risk_score']}, "
+                f"shared_devices={analysis['shared_device_count']}"
             )
 
-            # Placeholder: In production, this would:
-            # 1. Query Snowflake device_signals table for this device_id
-            # 2. Compute shared_device_count (count of unique user_ids for this device)
-            # 3. Compute device_age (time since first_seen)
-            # 4. Compute device_risk_score using risk_scorer service
-            # 5. Identify associated accounts (users sharing this device)
-
-            result_json = json.dumps(analysis, indent=2)
-            logger.info(
-                f"✅ [DeviceFingerprintTool] Analysis completed successfully for device_id={device_id}, result_length={len(result_json)}"
-            )
-
-            return result_json
+            return json.dumps(analysis, indent=2)
 
         except Exception as e:
             logger.error(
-                f"❌ [DeviceFingerprintTool] Analysis failed for device_id={device_id}: {e}",
+                f"[DeviceFingerprintTool] Analysis failed for device_id={device_id}: {e}",
                 exc_info=True,
             )
-            error_result = json.dumps(
+            return json.dumps(
                 {
                     "error": str(e),
                     "device_id": device_id,
@@ -143,10 +128,6 @@ class DeviceFingerprintTool(BaseTool):
                     "user_id": user_id,
                 }
             )
-            logger.error(
-                f"❌ [DeviceFingerprintTool] Returning error result: {error_result}"
-            )
-            return error_result
 
     async def _arun(
         self,
