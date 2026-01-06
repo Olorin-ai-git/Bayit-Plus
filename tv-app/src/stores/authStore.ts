@@ -2,17 +2,23 @@ import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { authService } from '../services/api';
+import { Role, Permission, ROLE_PERMISSIONS } from '../types/rbac';
 
 interface User {
   id: string;
   email: string;
   name: string;
+  avatar?: string;
   is_active: boolean;
+  role: Role;
+  permissions?: Permission[];  // Custom permission overrides
   subscription?: {
     plan: string;
     status: string;
     end_date?: string;
   };
+  created_at?: string;
+  last_login?: string;
 }
 
 interface RegisterData {
@@ -33,11 +39,17 @@ interface AuthState {
   logout: () => void;
   setUser: (user: User | null) => void;
   clearError: () => void;
+  // RBAC helpers
+  hasPermission: (permission: Permission) => boolean;
+  hasAnyPermission: (permissions: Permission[]) => boolean;
+  hasAllPermissions: (permissions: Permission[]) => boolean;
+  isAdmin: () => boolean;
+  getPermissions: () => Permission[];
 }
 
 export const useAuthStore = create<AuthState>()(
   persist(
-    (set) => ({
+    (set, get) => ({
       user: null,
       token: null,
       isAuthenticated: false,
@@ -115,6 +127,40 @@ export const useAuthStore = create<AuthState>()(
       setUser: (user) => set({ user, isAuthenticated: !!user }),
 
       clearError: () => set({ error: null }),
+
+      // RBAC helper implementations
+      getPermissions: () => {
+        const { user } = get();
+        if (!user) return [];
+        // Get base permissions from role
+        const rolePermissions = ROLE_PERMISSIONS[user.role] || [];
+        // Merge with custom permissions if any
+        const customPermissions = user.permissions || [];
+        // Return unique permissions
+        return [...new Set([...rolePermissions, ...customPermissions])];
+      },
+
+      hasPermission: (permission: Permission) => {
+        const permissions = get().getPermissions();
+        return permissions.includes(permission);
+      },
+
+      hasAnyPermission: (permissions: Permission[]) => {
+        const userPermissions = get().getPermissions();
+        return permissions.some(p => userPermissions.includes(p));
+      },
+
+      hasAllPermissions: (permissions: Permission[]) => {
+        const userPermissions = get().getPermissions();
+        return permissions.every(p => userPermissions.includes(p));
+      },
+
+      isAdmin: () => {
+        const { user } = get();
+        if (!user) return false;
+        const adminRoles: Role[] = ['super_admin', 'admin', 'content_manager', 'billing_admin', 'support'];
+        return adminRoles.includes(user.role);
+      },
     }),
     {
       name: 'bayit-auth',

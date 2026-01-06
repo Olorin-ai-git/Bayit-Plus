@@ -5,7 +5,7 @@ from app.core.config import settings
 from app.core.database import connect_to_mongo, close_mongo_connection
 
 # Import routers
-from app.api.routes import auth, content, live, radio, podcasts, subscriptions, chat, watchlist, history
+from app.api.routes import auth, content, live, radio, podcasts, subscriptions, chat, watchlist, history, admin
 
 
 @asynccontextmanager
@@ -49,6 +49,7 @@ app.include_router(subscriptions.router, prefix=f"{settings.API_V1_PREFIX}/subsc
 app.include_router(chat.router, prefix=f"{settings.API_V1_PREFIX}/chat", tags=["chat"])
 app.include_router(watchlist.router, prefix=f"{settings.API_V1_PREFIX}/watchlist", tags=["watchlist"])
 app.include_router(history.router, prefix=f"{settings.API_V1_PREFIX}/history", tags=["history"])
+app.include_router(admin.router, prefix=f"{settings.API_V1_PREFIX}/admin", tags=["admin"])
 
 
 if __name__ == "__main__":

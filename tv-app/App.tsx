@@ -20,6 +20,7 @@ import {
   ProfileScreen,
 } from './src/screens';
 import { useAuthStore } from './src/stores/authStore';
+import { AdminNavigator } from './src/navigation/AdminNavigator';
 import { GlassTopBar } from './src/components/GlassTopBar';
 import { GlassSidebar } from './src/components/GlassSidebar';
 import { isWeb } from './src/utils/platform';
@@ -34,6 +35,7 @@ export type RootStackParamList = {
   Login: undefined;
   Register: undefined;
   Main: undefined;
+  Admin: undefined;
   Player: {
     id: string;
     title: string;
@@ -252,6 +254,7 @@ const AppContent: React.FC = () => {
               }}
             />
             <Stack.Screen name="Search" component={SearchScreen} />
+            <Stack.Screen name="Admin" component={AdminNavigator} />
           </Stack.Navigator>
         </View>
       </View>

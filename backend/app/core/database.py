@@ -7,6 +7,10 @@ from app.models.user import User
 from app.models.content import Content, Category, LiveChannel, EPGEntry, RadioStation, Podcast, PodcastEpisode
 from app.models.subscription import Subscription, Invoice
 from app.models.watchlist import WatchlistItem, WatchHistory, Conversation
+from app.models.admin import (
+    Campaign, Transaction, Refund, AuditLog,
+    EmailCampaign, PushNotification, SystemSettings, SubscriptionPlan,
+)
 
 
 class Database:
@@ -37,6 +41,15 @@ async def connect_to_mongo():
             WatchlistItem,
             WatchHistory,
             Conversation,
+            # Admin models
+            Campaign,
+            Transaction,
+            Refund,
+            AuditLog,
+            EmailCampaign,
+            PushNotification,
+            SystemSettings,
+            SubscriptionPlan,
         ],
     )
     print(f"Connected to MongoDB: {settings.MONGODB_DB_NAME}")
