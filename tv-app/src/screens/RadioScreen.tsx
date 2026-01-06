@@ -149,6 +149,7 @@ export const RadioScreen: React.FC = () => {
   const { isRTL, textAlign } = useDirection();
   const navigation = useNavigation<any>();
   const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [stations, setStations] = useState<RadioStation[]>([]);
   const [selectedGenre, setSelectedGenre] = useState<string>('all');
 
@@ -167,34 +168,13 @@ export const RadioScreen: React.FC = () => {
   const loadStations = async () => {
     try {
       setIsLoading(true);
-      const response = await radioService.getStations();
-
-      if (response.stations?.length) {
-        setStations(response.stations);
-      } else {
-        // Demo data
-        setStations([
-          { id: 'glz', name: 'גלי צה"ל', frequency: '102.3 FM', currentShow: 'מוזיקה ישראלית', genre: 'army' },
-          { id: 'kan_bet', name: 'כאן בית', frequency: '95.5 FM', currentShow: 'סיפורי בוקר', genre: 'talk' },
-          { id: 'kan_gimel', name: 'כאן גימל', frequency: '97.8 FM', currentShow: 'להיטים ישראליים', genre: 'music' },
-          { id: '88fm', name: 'כאן 88', frequency: '88 FM', currentShow: 'רוק ישראלי', genre: 'music' },
-          { id: 'reshet_aleph', name: 'רשת א', frequency: '104.5 FM', currentShow: 'חדשות', genre: 'news' },
-          { id: '103fm', name: '103FM', frequency: '103 FM', currentShow: 'מוזיקה לועזית', genre: 'music' },
-          { id: 'eco99', name: 'Eco 99FM', frequency: '99 FM', currentShow: 'להיטים בינלאומיים', genre: 'music' },
-          { id: 'radius100', name: 'רדיוס 100', frequency: '100 FM', currentShow: 'בוקר טוב', genre: 'talk' },
-          { id: 'fm100', name: '100FM', frequency: '100 FM', currentShow: 'מגזין ערב', genre: 'talk' },
-          { id: 'kan_moreshet', name: 'כאן מורשת', frequency: '93.0 FM', currentShow: 'מוזיקה מזרחית', genre: 'music' },
-          { id: 'galatz', name: 'גלצ', frequency: '102.3 FM', currentShow: 'תוכנית הבוקר', genre: 'army' },
-          { id: 'kol_hai', name: 'קול חי', frequency: '93.0 FM', currentShow: 'מוזיקה חסידית', genre: 'music' },
-        ]);
-      }
-    } catch (error) {
-      console.error('Failed to load stations:', error);
-      setStations([
-        { id: 'glz', name: 'גלי צה"ל', frequency: '102.3 FM', genre: 'army' },
-        { id: 'kan_bet', name: 'כאן בית', frequency: '95.5 FM', genre: 'talk' },
-        { id: 'kan_gimel', name: 'כאן גימל', frequency: '97.8 FM', genre: 'music' },
-      ]);
+      setError(null);
+      const response = await radioService.getStations() as any;
+      setStations(response.stations || []);
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : t('radio.loadError', 'Failed to load stations');
+      setError(errorMessage);
+      setStations([]);
     } finally {
       setIsLoading(false);
     }
@@ -374,6 +354,7 @@ const styles = StyleSheet.create({
   stationCardFocused: {
     borderColor: colors.secondary,
     backgroundColor: colors.backgroundLighter,
+    // @ts-ignore - Web CSS property for glow effect
     boxShadow: `0 0 20px ${colors.secondary}`,
   },
   logoContainer: {

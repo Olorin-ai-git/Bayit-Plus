@@ -109,6 +109,7 @@ export const LiveTVScreen: React.FC = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [channels, setChannels] = useState<Channel[]>([]);
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
+  const [error, setError] = useState<string | null>(null);
 
   const categories = [
     { id: 'all', labelKey: 'liveTV.categories.all' },
@@ -125,36 +126,13 @@ export const LiveTVScreen: React.FC = () => {
   const loadChannels = async () => {
     try {
       setIsLoading(true);
-      const response = await liveService.getChannels();
-
-      if (response.channels?.length) {
-        setChannels(response.channels);
-      } else {
-        // Demo data
-        setChannels([
-          { id: 'kan11', name: 'כאן 11', currentProgram: 'מבט', category: 'news', logo: 'https://upload.wikimedia.org/wikipedia/commons/thumb/a/a7/Kan_11_Logo.svg/200px-Kan_11_Logo.svg.png' },
-          { id: 'keshet12', name: 'קשת 12', currentProgram: 'חדשות 12', category: 'news', logo: 'https://upload.wikimedia.org/wikipedia/he/thumb/3/3f/Keshet_12_logo.svg/200px-Keshet_12_logo.svg.png' },
-          { id: 'reshet13', name: 'רשת 13', currentProgram: 'חדשות 13', category: 'news', logo: 'https://upload.wikimedia.org/wikipedia/he/thumb/5/54/Reshet_13_Logo.svg/200px-Reshet_13_Logo.svg.png' },
-          { id: 'channel14', name: 'ערוץ 14', currentProgram: 'פאנל', category: 'news' },
-          { id: 'sport5', name: 'ספורט 5', currentProgram: 'כדורגל חי', category: 'sports' },
-          { id: 'yes_sport', name: 'ספורט 1', currentProgram: 'NBA', category: 'sports' },
-          { id: 'hop', name: 'הופ!', currentProgram: 'דורה', category: 'kids' },
-          { id: 'logi', name: 'לוגי', currentProgram: 'ספוג בוב', category: 'kids' },
-          { id: 'hot3', name: 'HOT 3', currentProgram: 'סרט ערב', category: 'entertainment' },
-          { id: 'yes_drama', name: 'yes דרמה', currentProgram: 'פאודה', category: 'entertainment' },
-          { id: 'comedy', name: 'קומדי סנטרל', currentProgram: 'סיינפלד', category: 'entertainment' },
-          { id: 'i24', name: 'i24NEWS', currentProgram: 'World News', category: 'news' },
-        ]);
-      }
-    } catch (error) {
-      console.error('Failed to load channels:', error);
-      // Set demo data on error
-      setChannels([
-        { id: 'kan11', name: 'כאן 11', currentProgram: 'מבט', category: 'news' },
-        { id: 'keshet12', name: 'קשת 12', currentProgram: 'חדשות 12', category: 'news' },
-        { id: 'reshet13', name: 'רשת 13', currentProgram: 'חדשות 13', category: 'news' },
-        { id: 'channel14', name: 'ערוץ 14', currentProgram: 'פאנל', category: 'news' },
-      ]);
+      setError(null);
+      const response = await liveService.getChannels() as any;
+      setChannels(response.channels || []);
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : t('liveTv.loadError', 'Failed to load channels');
+      setError(errorMessage);
+      setChannels([]);
     } finally {
       setIsLoading(false);
     }
@@ -334,6 +312,7 @@ const styles = StyleSheet.create({
   channelCardFocused: {
     borderColor: colors.primary,
     backgroundColor: colors.backgroundLighter,
+    // @ts-ignore - Web CSS property for glow effect
     boxShadow: `0 0 20px ${colors.primary}`,
   },
   logoContainer: {

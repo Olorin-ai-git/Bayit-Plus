@@ -14,7 +14,7 @@ import {
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
 import { GlassView, GlassInput } from '../components/ui';
-import { contentService } from '../services/api';
+import { contentService, searchService } from '../services/api';
 import { colors, spacing, borderRadius } from '../theme';
 import { isTV, isWeb } from '../utils/platform';
 import { useDirection } from '../hooks/useDirection';
@@ -158,27 +158,11 @@ export const SearchScreen: React.FC = () => {
     setHasSearched(true);
     try {
       const params = selectedFilter !== 'all' ? { type: selectedFilter } : undefined;
-      const data = await contentService.search(searchQuery, params).catch(() => ({ results: [] }));
-
-      if (data.results?.length) {
-        setResults(data.results);
-      } else {
-        // Demo search results
-        const demoResults: SearchResult[] = [
-          { id: '1', title: 'פאודה', type: 'vod', year: '2023', thumbnail: 'https://picsum.photos/400/225?random=50' },
-          { id: '2', title: 'גלגלצ', type: 'radio', subtitle: '100 FM', thumbnail: 'https://picsum.photos/400/225?random=51' },
-          { id: '3', title: 'כאן 11', type: 'live', subtitle: 'ערוץ חדשות', thumbnail: 'https://picsum.photos/400/225?random=52' },
-          { id: '4', title: 'עושים היסטוריה', type: 'podcast', subtitle: 'רן לוי', thumbnail: 'https://picsum.photos/400/225?random=53' },
-          { id: '5', title: 'שטיסל', type: 'vod', year: '2021', thumbnail: 'https://picsum.photos/400/225?random=54' },
-          { id: '6', title: 'רדיו תל אביב', type: 'radio', subtitle: '102 FM', thumbnail: 'https://picsum.photos/400/225?random=55' },
-        ].filter(item => {
-          if (selectedFilter === 'all') return true;
-          return item.type === selectedFilter;
-        });
-        setResults(demoResults);
-      }
+      const data = await (searchService as any).search(searchQuery, params) as any;
+      setResults(data.results || []);
     } catch (error) {
       console.error('Search failed:', error);
+      setResults([]);
     } finally {
       setIsLoading(false);
     }
@@ -475,6 +459,7 @@ const styles = StyleSheet.create({
   },
   cardFocused: {
     borderColor: colors.primary,
+    // @ts-ignore - Web CSS property for glow effect
     boxShadow: `0 0 20px ${colors.primary}`,
   },
   cardImage: {

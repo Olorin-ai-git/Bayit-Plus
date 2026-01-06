@@ -37,6 +37,7 @@ const PodcastCard: React.FC<{
   onPress: () => void;
   index: number;
 }> = ({ show, onPress, index }) => {
+  const { t } = useTranslation();
   const [isFocused, setIsFocused] = useState(false);
   const scaleAnim = useRef(new Animated.Value(1)).current;
 
@@ -132,6 +133,7 @@ export const PodcastsScreen: React.FC = () => {
   const { isRTL, textAlign } = useDirection();
   const navigation = useNavigation<any>();
   const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [shows, setShows] = useState<PodcastShow[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
@@ -143,40 +145,15 @@ export const PodcastsScreen: React.FC = () => {
   const loadShows = async () => {
     try {
       setIsLoading(true);
-      const params = selectedCategory !== 'all' ? { category: selectedCategory } : undefined;
-      const data = await podcastService.getShows(params).catch(() => ({ shows: [], categories: [] }));
-
-      if (data.shows?.length) {
-        setShows(data.shows);
-      } else {
-        // Demo data
-        setShows([
-          { id: '1', title: 'עושים היסטוריה', author: 'רן לוי', episodeCount: 350, cover: 'https://picsum.photos/300/300?random=40' },
-          { id: '2', title: 'הפודקאסט של גלי ומיקי', author: 'גלי ומיקי', episodeCount: 120, cover: 'https://picsum.photos/300/300?random=41' },
-          { id: '3', title: 'שני בכל', author: 'שני שניצר', episodeCount: 85, cover: 'https://picsum.photos/300/300?random=42' },
-          { id: '4', title: 'עוד יום טוב', author: 'דניאל ברקין', episodeCount: 200, cover: 'https://picsum.photos/300/300?random=43' },
-          { id: '5', title: 'איך זה עובד', author: 'רון קופמן', episodeCount: 95, cover: 'https://picsum.photos/300/300?random=44' },
-          { id: '6', title: 'הכל אישי', author: 'קרן ברגר', episodeCount: 75, cover: 'https://picsum.photos/300/300?random=45' },
-          { id: '7', title: 'חדשות השבוע', author: 'כאן חדשות', episodeCount: 500, cover: 'https://picsum.photos/300/300?random=46' },
-          { id: '8', title: 'ספורט בלילה', author: 'ערוץ הספורט', episodeCount: 150, cover: 'https://picsum.photos/300/300?random=47' },
-          { id: '9', title: 'טכנולוגיה היום', author: 'Geektime', episodeCount: 280, cover: 'https://picsum.photos/300/300?random=48' },
-          { id: '10', title: 'סיפורי לילה', author: 'נטע', episodeCount: 60, cover: 'https://picsum.photos/300/300?random=49' },
-        ]);
-      }
-
-      if (data.categories?.length) {
-        setCategories(data.categories);
-      } else {
-        setCategories([
-          { id: 'news', name: 'podcasts.categories.news' },
-          { id: 'comedy', name: 'podcasts.categories.comedy' },
-          { id: 'tech', name: 'podcasts.categories.tech' },
-          { id: 'society', name: 'podcasts.categories.society' },
-          { id: 'history', name: 'podcasts.categories.history' },
-        ]);
-      }
-    } catch (error) {
-      console.error('Failed to load podcasts:', error);
+      setError(null);
+      const data = await podcastService.getShows() as any;
+      setShows(data.shows || []);
+      setCategories(data.categories || []);
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : t('podcasts.loadError', 'Failed to load podcasts');
+      setError(errorMessage);
+      setShows([]);
+      setCategories([]);
     } finally {
       setIsLoading(false);
     }
@@ -375,6 +352,7 @@ const styles = StyleSheet.create({
   },
   cardFocused: {
     borderColor: colors.success,
+    // @ts-ignore - Web CSS property for glow effect
     boxShadow: `0 0 20px ${colors.success}`,
   },
   cardImage: {

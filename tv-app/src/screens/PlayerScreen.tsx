@@ -37,14 +37,14 @@ export const PlayerScreen: React.FC = () => {
   const route = useRoute<any>();
   const { id, title, type } = route.params;
 
-  const videoRef = useRef<VideoRef>(null);
+  const videoRef = useRef<typeof VideoRef | HTMLVideoElement | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [streamUrl, setStreamUrl] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [isPaused, setIsPaused] = useState(false);
   const [showControls, setShowControls] = useState(true);
   const [progress, setProgress] = useState({ currentTime: 0, duration: 0 });
-  const controlsTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const controlsTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
     loadStream();
@@ -87,23 +87,23 @@ export const PlayerScreen: React.FC = () => {
       setIsLoading(true);
       setError(null);
 
-      let response;
+      let response: any;
       if (type === 'live') {
         response = await liveService.getStreamUrl(id);
       } else {
         response = await contentService.getStreamUrl(id);
       }
 
-      if (response.url) {
-        setStreamUrl(response.url);
+      const url = response.url || response.stream_url;
+      if (url) {
+        setStreamUrl(url);
       } else {
-        // Demo stream for testing
-        setStreamUrl('https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8');
+        setError(t('player.noStream', 'Stream not available'));
       }
     } catch (err) {
       console.error('Failed to load stream:', err);
-      // Use demo stream on error
-      setStreamUrl('https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8');
+      const errorMessage = err instanceof Error ? err.message : t('player.loadError', 'Failed to load stream');
+      setError(errorMessage);
     } finally {
       setIsLoading(false);
     }

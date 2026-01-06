@@ -113,6 +113,7 @@ export const VODScreen: React.FC = () => {
   const { isRTL, textAlign } = useDirection();
   const navigation = useNavigation<any>();
   const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [content, setContent] = useState<ContentItem[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
@@ -124,48 +125,22 @@ export const VODScreen: React.FC = () => {
   const loadContent = async () => {
     try {
       setIsLoading(true);
+      setError(null);
       const [categoriesRes, contentRes] = await Promise.all([
-        contentService.getCategories().catch(() => ({ categories: [] })),
+        contentService.getCategories(),
         selectedCategory === 'all'
-          ? contentService.getFeatured().catch(() => ({ items: [] }))
-          : contentService.getByCategory(selectedCategory).catch(() => ({ items: [] })),
-      ]);
+          ? contentService.getFeatured()
+          : contentService.getByCategory(selectedCategory),
+      ]) as [any, any];
 
       setCategories(categoriesRes.categories || []);
-
       const items = contentRes.items || contentRes.categories?.flatMap((c: any) => c.items) || [];
-
-      if (items.length) {
-        setContent(items);
-      } else {
-        // Demo data
-        setContent([
-          { id: '1', title: 'פאודה', year: '2023', thumbnail: 'https://picsum.photos/400/225?random=20' },
-          { id: '2', title: 'שטיסל', year: '2021', thumbnail: 'https://picsum.photos/400/225?random=21' },
-          { id: '3', title: 'טהרן', year: '2022', thumbnail: 'https://picsum.photos/400/225?random=22' },
-          { id: '4', title: 'הבורר', year: '2020', thumbnail: 'https://picsum.photos/400/225?random=23' },
-          { id: '5', title: 'עבודה ערבית', year: '2019', thumbnail: 'https://picsum.photos/400/225?random=24' },
-          { id: '6', title: 'בית הבובות', year: '2023', thumbnail: 'https://picsum.photos/400/225?random=25' },
-          { id: '7', title: 'סרוגים', year: '2018', thumbnail: 'https://picsum.photos/400/225?random=26' },
-          { id: '8', title: 'רמזור', year: '2017', thumbnail: 'https://picsum.photos/400/225?random=27' },
-          { id: '9', title: 'פוליטיקה', year: '2022', thumbnail: 'https://picsum.photos/400/225?random=28' },
-          { id: '10', title: 'אופנה', year: '2021', thumbnail: 'https://picsum.photos/400/225?random=29' },
-          { id: '11', title: 'בטיפול', year: '2020', thumbnail: 'https://picsum.photos/400/225?random=30' },
-          { id: '12', title: 'מאחורי הקלעים', year: '2019', thumbnail: 'https://picsum.photos/400/225?random=31' },
-        ]);
-      }
-
-      if (!categoriesRes.categories?.length) {
-        setCategories([
-          { id: 'drama', name: 'vod.categories.drama' },
-          { id: 'comedy', name: 'vod.categories.comedy' },
-          { id: 'action', name: 'vod.categories.action' },
-          { id: 'documentary', name: 'vod.categories.documentary' },
-          { id: 'kids', name: 'vod.categories.kids' },
-        ]);
-      }
-    } catch (error) {
-      console.error('Failed to load content:', error);
+      setContent(items);
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : t('vod.loadError', 'Failed to load content');
+      setError(errorMessage);
+      setContent([]);
+      setCategories([]);
     } finally {
       setIsLoading(false);
     }
@@ -364,6 +339,7 @@ const styles = StyleSheet.create({
   },
   cardFocused: {
     borderColor: colors.primary,
+    // @ts-ignore - Web CSS property for glow effect
     boxShadow: `0 0 20px ${colors.primary}`,
   },
   cardImage: {
