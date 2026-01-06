@@ -20,6 +20,74 @@ client = anthropic.Anthropic(api_key=settings.ANTHROPIC_API_KEY)
 # ElevenLabs API endpoint
 ELEVENLABS_STT_URL = "https://api.elevenlabs.io/v1/speech-to-text"
 
+
+async def process_hebronics_input(text: str) -> dict:
+    """
+    Process "Hebronics" - Hebrew-English mixed input common among Israeli expats.
+    Uses Claude to normalize mixed language queries into coherent Hebrew search terms.
+
+    Examples:
+    - "אני רוצה לראות movie עם action" -> "אני רוצה לראות סרט פעולה"
+    - "תראה לי את ה-shows החדשים" -> "תראה לי את התוכניות החדשות"
+    - "יש לכם documentaries על history?" -> "יש לכם דוקומנטרים על היסטוריה?"
+    """
+    if not text or not text.strip():
+        return {"original": text, "normalized": text, "intent": None}
+
+    prompt = f"""אתה מעבד קלט קולי מישראלים שגרים בארה"ב. הם לפעמים מערבבים עברית ואנגלית ("עברנגלית" או "Hebronics").
+
+הקלט: "{text}"
+
+עליך לעשות:
+1. לזהות את הכוונה (חיפוש, שאלה, בקשה)
+2. לנרמל את הטקסט לעברית תקנית
+3. לחלץ מילות מפתח לחיפוש
+
+החזר JSON בפורמט:
+{{
+    "normalized": "הטקסט המנורמל בעברית",
+    "intent": "search|question|browse|play",
+    "keywords": ["מילה1", "מילה2"],
+    "content_type": "movie|series|channel|radio|podcast|any",
+    "genre": "action|comedy|drama|documentary|news|kids|null",
+    "english_terms": ["original", "english", "words"]
+}}"""
+
+    try:
+        response = client.messages.create(
+            model="claude-sonnet-4-20250514",
+            max_tokens=300,
+            messages=[{"role": "user", "content": prompt}]
+        )
+
+        response_text = response.content[0].text.strip()
+
+        # Parse JSON from response
+        import json
+        if response_text.startswith("```json"):
+            response_text = response_text[7:]
+        if response_text.startswith("```"):
+            response_text = response_text[3:]
+        if response_text.endswith("```"):
+            response_text = response_text[:-3]
+
+        result = json.loads(response_text)
+        result["original"] = text
+        return result
+
+    except Exception as e:
+        print(f"Hebronics processing error: {e}")
+        return {
+            "original": text,
+            "normalized": text,
+            "intent": "search",
+            "keywords": text.split(),
+            "content_type": "any",
+            "genre": None,
+            "english_terms": []
+        }
+
+
 SYSTEM_PROMPT = """אתה העוזר החכם של בית+, פלטפורמת סטרימינג ישראלית לישראלים בארה"ב.
 
 התפקיד שלך:
@@ -268,3 +336,130 @@ async def transcribe_audio(
         raise HTTPException(status_code=504, detail="Transcription timed out. Please try again.")
     except httpx.RequestError as e:
         raise HTTPException(status_code=500, detail=f"Transcription service error: {str(e)}")
+
+
+class HebronicsRequest(BaseModel):
+    text: str
+
+
+class HebronicsResponse(BaseModel):
+    original: str
+    normalized: str
+    intent: Optional[str] = None
+    keywords: list = []
+    content_type: Optional[str] = None
+    genre: Optional[str] = None
+    english_terms: list = []
+
+
+@router.post("/hebronics", response_model=HebronicsResponse)
+async def process_hebronics(
+    request: HebronicsRequest,
+    current_user: User = Depends(get_current_active_user),
+):
+    """
+    Process Hebronics (Hebrew-English mixed) input.
+    Normalizes mixed language queries and extracts search intent.
+
+    Useful for voice search where Israeli expats commonly mix Hebrew and English.
+    """
+    result = await process_hebronics_input(request.text)
+    return HebronicsResponse(**result)
+
+
+class VoiceSearchRequest(BaseModel):
+    transcript: str
+    language: str = "he"
+
+
+class VoiceSearchResponse(BaseModel):
+    original_transcript: str
+    normalized_query: str
+    intent: Optional[str] = None
+    keywords: list = []
+    content_type: Optional[str] = None
+    genre: Optional[str] = None
+    search_results: list = []
+
+
+@router.post("/voice-search", response_model=VoiceSearchResponse)
+async def voice_search(
+    request: VoiceSearchRequest,
+    current_user: User = Depends(get_current_active_user),
+):
+    """
+    Process voice search with Hebronics support.
+    Combines speech transcription processing with content search.
+    """
+    # Process the transcript with Hebronics normalization
+    processed = await process_hebronics_input(request.transcript)
+
+    # Search for content based on processed query
+    search_results = []
+
+    if processed.get("intent") in ["search", "browse", "play"]:
+        # Build search query
+        keywords = processed.get("keywords", [])
+        content_type = processed.get("content_type", "any")
+
+        # Search in VOD content
+        if content_type in ["any", "movie", "series"]:
+            vod_results = await Content.find(
+                Content.is_published == True
+            ).limit(6).to_list()
+
+            search_results.extend([
+                {
+                    "id": str(item.id),
+                    "title": item.title,
+                    "description": item.description,
+                    "thumbnail": item.thumbnail,
+                    "type": "vod",
+                    "content_type": item.content_type,
+                }
+                for item in vod_results
+            ])
+
+        # Search in live channels
+        if content_type in ["any", "channel"]:
+            channels = await LiveChannel.find(
+                LiveChannel.is_active == True
+            ).limit(4).to_list()
+
+            search_results.extend([
+                {
+                    "id": str(ch.id),
+                    "title": ch.name,
+                    "description": ch.description,
+                    "thumbnail": ch.logo,
+                    "type": "live",
+                }
+                for ch in channels
+            ])
+
+        # Search in podcasts
+        if content_type in ["any", "podcast"]:
+            podcasts = await Podcast.find(
+                Podcast.is_published == True
+            ).limit(4).to_list()
+
+            search_results.extend([
+                {
+                    "id": str(pod.id),
+                    "title": pod.title,
+                    "description": pod.description,
+                    "thumbnail": pod.thumbnail,
+                    "type": "podcast",
+                }
+                for pod in podcasts
+            ])
+
+    return VoiceSearchResponse(
+        original_transcript=request.transcript,
+        normalized_query=processed.get("normalized", request.transcript),
+        intent=processed.get("intent"),
+        keywords=processed.get("keywords", []),
+        content_type=processed.get("content_type"),
+        genre=processed.get("genre"),
+        search_results=search_results,
+    )

@@ -69,6 +69,11 @@
     "featuredContent": "Destacados",
     "liveChannels": "Canales en Vivo",
     "israeliMovies": "Películas Israelíes",
+    "israeli-movies": "Películas Israelíes",
+    "israeli-series": "Series Israelíes",
+    "action": "Acción y Suspenso",
+    "comedy": "Comedia",
+    "drama": "Drama",
     "documentaries": "Documentales",
     "loadingContent": "Cargando contenido...",
     "liveNow": "En Vivo",
@@ -324,6 +329,31 @@
   },
   "content": {
     "episodes": "episodios"
+  },
+  "favorites": {
+    "title": "Favoritos",
+    "items": "elementos",
+    "empty": "Sin favoritos",
+    "emptyHint": "Agrega contenido a favoritos para verlo facilmente"
+  },
+  "downloads": {
+    "title": "Descargas",
+    "items": "elementos",
+    "storage": "Almacenamiento",
+    "empty": "Sin descargas",
+    "emptyHint": "Descarga contenido para ver sin conexion"
+  },
+  "watchlist": {
+    "title": "Mi Lista",
+    "items": "elementos",
+    "empty": "Tu lista esta vacia",
+    "emptyHint": "Agrega peliculas y series a tu lista",
+    "filters": {
+      "all": "Todo",
+      "continue": "Continuar Viendo",
+      "movies": "Peliculas",
+      "series": "Series"
+    }
   },
   "trending": {
     "title": "Tendencias en Israel",

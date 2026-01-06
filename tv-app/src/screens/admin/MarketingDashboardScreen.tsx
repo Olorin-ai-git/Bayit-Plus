@@ -3,7 +3,7 @@
  * Marketing analytics and campaign overview
  */
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import {
   View,
   Text,
@@ -11,49 +11,79 @@ import {
   ScrollView,
   TouchableOpacity,
   RefreshControl,
+  ActivityIndicator,
 } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { useNavigation } from '@react-navigation/native';
 import { AdminLayout } from '../../components/admin/AdminLayout';
 import { StatCard } from '../../components/admin/StatCard';
+import { marketingService, MarketingMetrics, RecentCampaign, AudienceSegment } from '../../services/adminApi';
+import { useModal } from '../../contexts/ModalContext';
 import { colors, spacing, borderRadius, fontSize } from '../../theme';
 
 export const MarketingDashboardScreen: React.FC = () => {
   const { t } = useTranslation();
   const navigation = useNavigation<any>();
+  const { showError } = useModal();
+  const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [metrics, setMetrics] = useState<MarketingMetrics | null>(null);
+  const [recentCampaigns, setRecentCampaigns] = useState<RecentCampaign[]>([]);
+  const [segments, setSegments] = useState<AudienceSegment[]>([]);
+
+  const loadData = useCallback(async () => {
+    setError(null);
+    try {
+      const [metricsData, campaignsData, segmentsData] = await Promise.all([
+        marketingService.getMetrics(),
+        marketingService.getRecentCampaigns(4),
+        marketingService.getAudienceSegments(),
+      ]);
+      setMetrics(metricsData);
+      setRecentCampaigns(campaignsData);
+      setSegments(segmentsData);
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : t('admin.marketing.loadError', 'Failed to load marketing data');
+      setError(errorMessage);
+      showError(errorMessage);
+    } finally {
+      setLoading(false);
+      setRefreshing(false);
+    }
+  }, [t, showError]);
+
+  useEffect(() => {
+    loadData();
+  }, [loadData]);
 
   const handleRefresh = () => {
     setRefreshing(true);
-    setTimeout(() => setRefreshing(false), 1000);
+    loadData();
   };
 
-  // Mock data for marketing metrics
-  const metrics = {
-    emailsSent: 15234,
-    emailOpenRate: 32.5,
-    emailClickRate: 8.2,
-    pushSent: 45678,
-    pushOpenRate: 28.4,
-    activeSegments: 12,
-    conversionRate: 4.8,
-    unsubscribeRate: 0.8,
-  };
+  if (loading) {
+    return (
+      <AdminLayout title={t('admin.titles.marketingDashboard', 'Marketing Dashboard')}>
+        <View style={styles.loadingContainer}>
+          <ActivityIndicator size="large" color={colors.primary} />
+        </View>
+      </AdminLayout>
+    );
+  }
 
-  const recentCampaigns = [
-    { id: '1', name: 'Welcome Series', type: 'email', status: 'active', sent: 2500, opened: 1250, clicked: 312 },
-    { id: '2', name: 'Weekly Newsletter', type: 'email', status: 'completed', sent: 10000, opened: 3200, clicked: 640 },
-    { id: '3', name: 'New Feature Alert', type: 'push', status: 'active', sent: 8500, opened: 2975, clicked: 425 },
-    { id: '4', name: 'Promo Reminder', type: 'push', status: 'scheduled', sent: 0, opened: 0, clicked: 0 },
-  ];
-
-  const segments = [
-    { name: 'Active Users', count: 8500 },
-    { name: 'Premium Subscribers', count: 3200 },
-    { name: 'Inactive 30 days', count: 1500 },
-    { name: 'New Users (7 days)', count: 450 },
-    { name: 'High Value', count: 890 },
-  ];
+  if (error || !metrics) {
+    return (
+      <AdminLayout title={t('admin.titles.marketingDashboard', 'Marketing Dashboard')}>
+        <View style={styles.errorContainer}>
+          <Text style={styles.errorText}>{error || t('admin.marketing.noData', 'No data available')}</Text>
+          <TouchableOpacity style={styles.retryButton} onPress={loadData}>
+            <Text style={styles.retryButtonText}>{t('common.retry', 'Retry')}</Text>
+          </TouchableOpacity>
+        </View>
+      </AdminLayout>
+    );
+  }
 
   return (
     <AdminLayout title={t('admin.titles.marketingDashboard', 'Marketing Dashboard')}>
@@ -186,6 +216,11 @@ const getStatusColor = (status: string): string => {
 const styles = StyleSheet.create({
   container: { flex: 1 },
   contentContainer: { padding: spacing.lg },
+  loadingContainer: { flex: 1, justifyContent: 'center', alignItems: 'center' },
+  errorContainer: { flex: 1, justifyContent: 'center', alignItems: 'center', padding: spacing.xl },
+  errorText: { fontSize: fontSize.md, color: colors.error, textAlign: 'center', marginBottom: spacing.md },
+  retryButton: { paddingHorizontal: spacing.lg, paddingVertical: spacing.sm, backgroundColor: colors.primary, borderRadius: borderRadius.md },
+  retryButtonText: { fontSize: fontSize.sm, color: colors.text, fontWeight: '600' },
   section: { marginBottom: spacing.xl },
   sectionHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: spacing.md },
   sectionTitle: { fontSize: fontSize.lg, fontWeight: 'bold', color: colors.text, marginBottom: spacing.md },

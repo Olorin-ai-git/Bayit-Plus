@@ -1,6 +1,25 @@
 import axios from 'axios';
 import { Platform } from 'react-native';
 import { useAuthStore } from '../stores/authStore';
+import { isDemo } from '../config/appConfig';
+import {
+  demoAuthService,
+  demoContentService,
+  demoLiveService,
+  demoRadioService,
+  demoPodcastService,
+  demoSubscriptionService,
+  demoWatchlistService,
+  demoHistoryService,
+  demoSearchService,
+  demoFavoritesService,
+  demoZmanService,
+  demoTrendingService,
+  demoRitualService,
+  demoSubtitlesService,
+  demoChaptersService,
+  demoPartyService,
+} from './demoService';
 
 // Get correct API URL based on platform
 const getApiBaseUrl = () => {
@@ -47,8 +66,8 @@ api.interceptors.response.use(
   }
 );
 
-// Auth Service
-export const authService = {
+// Auth Service (API)
+const apiAuthService = {
   login: (email: string, password: string) =>
     api.post('/auth/login', { email, password }),
   register: (userData: { email: string; name: string; password: string }) =>
@@ -58,8 +77,8 @@ export const authService = {
   googleCallback: (code: string) => api.post('/auth/google/callback', { code }),
 };
 
-// Content Service
-export const contentService = {
+// Content Service (API)
+const apiContentService = {
   getFeatured: () => api.get('/content/featured'),
   getCategories: () => api.get('/content/categories'),
   getByCategory: (categoryId: string) => api.get(`/content/category/${categoryId}`),
@@ -67,37 +86,51 @@ export const contentService = {
   getStreamUrl: (contentId: string) => api.get(`/content/${contentId}/stream`),
 };
 
-// Live TV Service
-export const liveService = {
+// Live TV Service (API)
+const apiLiveService = {
   getChannels: () => api.get('/live/channels'),
   getChannel: (channelId: string) => api.get(`/live/${channelId}`),
   getStreamUrl: (channelId: string) => api.get(`/live/${channelId}/stream`),
 };
 
-// Radio Service
-export const radioService = {
+// Radio Service (API)
+const apiRadioService = {
   getStations: () => api.get('/radio/stations'),
   getStation: (stationId: string) => api.get(`/radio/${stationId}`),
   getStreamUrl: (stationId: string) => api.get(`/radio/${stationId}/stream`),
 };
 
-// Podcast Service
-export const podcastService = {
-  getShows: () => api.get('/podcasts'),
+// Podcast Service (API)
+const apiPodcastService = {
+  getShows: (categoryId?: string) => api.get('/podcasts', { params: categoryId ? { category: categoryId } : {} }),
   getShow: (showId: string) => api.get(`/podcasts/${showId}`),
   getEpisodes: (showId: string) => api.get(`/podcasts/${showId}/episodes`),
+  getCategories: () => api.get('/podcasts/categories'),
 };
 
-// Watchlist Service
-export const watchlistService = {
+// Subscription Service (API)
+const apiSubscriptionService = {
+  getPlans: () => api.get('/subscriptions/plans'),
+  getCurrentPlan: () => api.get('/subscriptions/current'),
+  createCheckout: (planId: string) => api.post('/subscriptions/checkout', { plan_id: planId }),
+  cancelSubscription: () => api.post('/subscriptions/cancel'),
+  getInvoices: () => api.get('/subscriptions/invoices'),
+  getPaymentMethods: () => api.get('/subscriptions/payment-methods'),
+  addPaymentMethod: (token: string) => api.post('/subscriptions/payment-methods', { token }),
+  removePaymentMethod: (methodId: string) => api.delete(`/subscriptions/payment-methods/${methodId}`),
+  setDefaultPaymentMethod: (methodId: string) => api.post(`/subscriptions/payment-methods/${methodId}/default`),
+};
+
+// Watchlist Service (API)
+const apiWatchlistService = {
   getWatchlist: () => api.get('/watchlist'),
   addToWatchlist: (contentId: string, contentType: string) =>
     api.post('/watchlist', { content_id: contentId, content_type: contentType }),
   removeFromWatchlist: (contentId: string) => api.delete(`/watchlist/${contentId}`),
 };
 
-// History Service
-export const historyService = {
+// History Service (API)
+const apiHistoryService = {
   getContinueWatching: () => api.get('/history/continue'),
   updateProgress: (contentId: string, contentType: string, position: number, duration: number) =>
     api.post('/history/progress', { content_id: contentId, content_type: contentType, position, duration }),
@@ -129,31 +162,141 @@ export interface LLMSearchResponse {
   total: number;
 }
 
-// Search Service - LLM-powered natural language search
-export const searchService = {
-  // LLM-powered semantic search
+// Search Service (API)
+const apiSearchService = {
   search: (query: string, filters?: SearchFilters): Promise<LLMSearchResponse> =>
     api.post('/search/llm', { query, ...filters }),
-
-  // Quick search (autocomplete suggestions)
   quickSearch: (query: string, limit: number = 5) =>
     api.get('/search/quick', { params: { q: query, limit } }),
-
-  // Get search suggestions based on user history
   getSuggestions: () => api.get('/search/suggestions'),
-
-  // Voice search - sends audio transcription for search
   voiceSearch: (transcript: string, language: string, filters?: SearchFilters): Promise<LLMSearchResponse> =>
     api.post('/search/voice', { transcript, language, ...filters }),
 };
 
-// Favorites Service
-export const favoritesService = {
+// Favorites Service (API)
+const apiFavoritesService = {
   getFavorites: () => api.get('/favorites'),
   addToFavorites: (contentId: string, contentType: string) =>
     api.post('/favorites', { content_id: contentId, content_type: contentType }),
   removeFromFavorites: (contentId: string) => api.delete(`/favorites/${contentId}`),
   isFavorite: (contentId: string) => api.get(`/favorites/check/${contentId}`),
 };
+
+// Zman Yisrael Service (API)
+const apiZmanService = {
+  getTime: (timezone?: string) => api.get('/zman/time', { params: { timezone } }),
+  getShabbatTimes: (latitude?: number, longitude?: number) =>
+    api.get('/zman/shabbat', { params: { latitude, longitude } }),
+  getShabbatContent: () => api.get('/zman/shabbat-content'),
+  updatePreferences: (prefs: {
+    show_israel_time?: boolean;
+    shabbat_mode_enabled?: boolean;
+    local_timezone?: string;
+  }) => api.post('/zman/preferences', prefs),
+  getTimezones: () => api.get('/zman/timezones'),
+};
+
+// Trending Service (API)
+const apiTrendingService = {
+  getTopics: () => api.get('/trending/topics'),
+  getHeadlines: (source?: string, limit: number = 20) =>
+    api.get('/trending/headlines', { params: { source, limit } }),
+  getRecommendations: (limit: number = 10) =>
+    api.get('/trending/recommendations', { params: { limit } }),
+  getSummary: () => api.get('/trending/summary'),
+  getByCategory: (category: string) => api.get(`/trending/category/${category}`),
+};
+
+// Morning Ritual Service (API)
+const apiRitualService = {
+  check: () => api.get('/ritual/check'),
+  shouldShow: () => api.get('/ritual/should-show'),
+  getContent: () => api.get('/ritual/content'),
+  getAIBrief: () => api.get('/ritual/ai-brief'),
+  getIsraelNow: () => api.get('/ritual/israel-now'),
+  getPreferences: () => api.get('/ritual/preferences'),
+  updatePreferences: (prefs: Record<string, any>) => api.post('/ritual/preferences', prefs),
+  skipToday: () => api.post('/ritual/skip-today'),
+};
+
+// Subtitles Service (API)
+const apiSubtitlesService = {
+  getLanguages: () => api.get('/subtitles/languages'),
+  getTracks: (contentId: string, language?: string) =>
+    api.get(`/subtitles/${contentId}`, { params: { language } }),
+  getCues: (contentId: string, language: string = 'he', withNikud: boolean = false, startTime?: number, endTime?: number) =>
+    api.get(`/subtitles/${contentId}/cues`, {
+      params: { language, with_nikud: withNikud, start_time: startTime, end_time: endTime }
+    }),
+  generateNikud: (contentId: string, language: string = 'he', force: boolean = false) =>
+    api.post(`/subtitles/${contentId}/nikud`, null, { params: { language, force } }),
+  translateWord: (word: string, sourceLang: string = 'he', targetLang: string = 'en') =>
+    api.post('/subtitles/translate/word', null, {
+      params: { word, source_lang: sourceLang, target_lang: targetLang }
+    }),
+  translatePhrase: (phrase: string, sourceLang: string = 'he', targetLang: string = 'en') =>
+    api.post('/subtitles/translate/phrase', null, {
+      params: { phrase, source_lang: sourceLang, target_lang: targetLang }
+    }),
+  addNikudToText: (text: string) =>
+    api.post('/subtitles/nikud/text', null, { params: { text } }),
+};
+
+// Chapters Service (API)
+const apiChaptersService = {
+  getChapters: (contentId: string) => api.get(`/chapters/${contentId}`),
+  generateChapters: (contentId: string, force: boolean = false, transcript?: string) =>
+    api.post(`/chapters/${contentId}/generate`, { transcript }, { params: { force } }),
+  getLiveChapters: (channelId: string) => api.get(`/chapters/live/${channelId}`),
+  getCategories: () => api.get('/chapters/categories/list'),
+};
+
+// Watch Party Service (API)
+const apiPartyService = {
+  create: (data: {
+    content_id: string;
+    content_type: string;
+    content_title?: string;
+    is_private?: boolean;
+    audio_enabled?: boolean;
+    chat_enabled?: boolean;
+    sync_playback?: boolean;
+  }) => api.post('/party/create', data),
+  getMyParties: () => api.get('/party/my-parties'),
+  joinByCode: (roomCode: string) => api.get(`/party/join/${roomCode}`),
+  getParty: (partyId: string) => api.get(`/party/${partyId}`),
+  joinParty: (partyId: string) => api.post(`/party/${partyId}/join`),
+  leaveParty: (partyId: string) => api.post(`/party/${partyId}/leave`),
+  endParty: (partyId: string) => api.post(`/party/${partyId}/end`),
+  sendMessage: (partyId: string, message: string, messageType: string = 'text') =>
+    api.post(`/party/${partyId}/chat`, { message, message_type: messageType }),
+  getChatHistory: (partyId: string, limit: number = 50, before?: string) =>
+    api.get(`/party/${partyId}/chat`, { params: { limit, before } }),
+  syncPlayback: (partyId: string, position: number, isPlaying: boolean = true) =>
+    api.post(`/party/${partyId}/sync`, null, { params: { position, is_playing: isPlaying } }),
+};
+
+// ===========================================
+// CONDITIONAL SERVICE EXPORTS
+// In demo mode: use mock services only, no API calls
+// In production mode: use API services only, fail fast
+// ===========================================
+
+export const authService = isDemo ? demoAuthService : apiAuthService;
+export const contentService = isDemo ? demoContentService : apiContentService;
+export const liveService = isDemo ? demoLiveService : apiLiveService;
+export const radioService = isDemo ? demoRadioService : apiRadioService;
+export const podcastService = isDemo ? demoPodcastService : apiPodcastService;
+export const subscriptionService = isDemo ? demoSubscriptionService : apiSubscriptionService;
+export const watchlistService = isDemo ? demoWatchlistService : apiWatchlistService;
+export const historyService = isDemo ? demoHistoryService : apiHistoryService;
+export const searchService = isDemo ? demoSearchService : apiSearchService;
+export const favoritesService = isDemo ? demoFavoritesService : apiFavoritesService;
+export const zmanService = isDemo ? demoZmanService : apiZmanService;
+export const trendingService = isDemo ? demoTrendingService : apiTrendingService;
+export const ritualService = isDemo ? demoRitualService : apiRitualService;
+export const subtitlesService = isDemo ? demoSubtitlesService : apiSubtitlesService;
+export const chaptersService = isDemo ? demoChaptersService : apiChaptersService;
+export const partyService = isDemo ? demoPartyService : apiPartyService;
 
 export default api;

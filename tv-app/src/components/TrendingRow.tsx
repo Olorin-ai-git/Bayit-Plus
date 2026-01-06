@@ -18,18 +18,25 @@ import { useDirection } from '../hooks/useDirection';
 interface TrendingTopic {
   title: string;
   title_en?: string;
+  title_es?: string;
   category: string;
-  category_label: { he: string; en: string };
+  category_label: { he: string; en: string; es?: string };
   sentiment: string;
   importance: number;
   summary?: string;
+  summary_en?: string;
+  summary_es?: string;
   keywords: string[];
 }
 
 interface TrendingData {
   topics: TrendingTopic[];
   overall_mood: string;
+  overall_mood_en?: string;
+  overall_mood_es?: string;
   top_story?: string;
+  top_story_en?: string;
+  top_story_es?: string;
   sources: string[];
   analyzed_at: string;
 }
@@ -62,6 +69,14 @@ export const TrendingRow: React.FC<TrendingRowProps> = ({ onTopicPress }) => {
   const [loading, setLoading] = useState(true);
   const [focusedIndex, setFocusedIndex] = useState(-1);
   const currentLang = i18n.language;
+  const isHebrew = currentLang === 'he';
+
+  // Helper to get localized text
+  const getLocalizedText = (heText: string, enText?: string, esText?: string) => {
+    if (currentLang === 'he') return heText;
+    if (currentLang === 'es') return esText || enText || heText;
+    return enText || heText;
+  };
 
   const fetchTrending = async () => {
     try {
@@ -110,17 +125,6 @@ export const TrendingRow: React.FC<TrendingRowProps> = ({ onTopicPress }) => {
     );
   }
 
-  const getSentimentStyle = (sentiment: string) => {
-    switch (sentiment) {
-      case 'positive':
-        return { borderColor: colors.success };
-      case 'negative':
-        return { borderColor: colors.error };
-      default:
-        return { borderColor: colors.glassBorder };
-    }
-  };
-
   // Get category label from translations
   const getCategoryLabel = (topic: TrendingTopic) => {
     // Use translation keys for known categories
@@ -130,6 +134,9 @@ export const TrendingRow: React.FC<TrendingRowProps> = ({ onTopicPress }) => {
     if (translated === categoryKey) {
       if (currentLang === 'he') {
         return topic.category_label?.he || topic.category;
+      }
+      if (currentLang === 'es') {
+        return topic.category_label?.es || topic.category_label?.en || topic.category;
       }
       return topic.category_label?.en || topic.category;
     }
@@ -147,7 +154,7 @@ export const TrendingRow: React.FC<TrendingRowProps> = ({ onTopicPress }) => {
       {/* Overall Mood */}
       {data.overall_mood && (
         <Text style={[styles.overallMood, { textAlign: isRTL ? 'right' : 'left' }]}>
-          🇮🇱 {data.overall_mood}
+          🇮🇱 {getLocalizedText(data.overall_mood, data.overall_mood_en, data.overall_mood_es)}
         </Text>
       )}
 
@@ -161,6 +168,8 @@ export const TrendingRow: React.FC<TrendingRowProps> = ({ onTopicPress }) => {
           <TopicCard
             key={index}
             topic={topic}
+            title={getLocalizedText(topic.title, topic.title_en, topic.title_es)}
+            summary={topic.summary ? getLocalizedText(topic.summary, topic.summary_en, topic.summary_es) : undefined}
             categoryLabel={getCategoryLabel(topic)}
             isFocused={focusedIndex === index}
             onFocus={() => setFocusedIndex(index)}
@@ -177,7 +186,7 @@ export const TrendingRow: React.FC<TrendingRowProps> = ({ onTopicPress }) => {
             {t('trending.topStory')}
           </Text>
           <Text style={[styles.topStoryText, { textAlign: isRTL ? 'right' : 'left' }]}>
-            {data.top_story}
+            {getLocalizedText(data.top_story, data.top_story_en, data.top_story_es)}
           </Text>
         </GlassView>
       )}
@@ -193,6 +202,8 @@ export const TrendingRow: React.FC<TrendingRowProps> = ({ onTopicPress }) => {
 
 interface TopicCardProps {
   topic: TrendingTopic;
+  title: string;
+  summary?: string;
   categoryLabel: string;
   isFocused: boolean;
   onFocus: () => void;
@@ -202,12 +213,15 @@ interface TopicCardProps {
 
 const TopicCard: React.FC<TopicCardProps> = ({
   topic,
+  title,
+  summary,
   categoryLabel,
   isFocused,
   onFocus,
   onBlur,
   onPress,
 }) => {
+  const { isRTL } = useDirection();
   const scaleAnim = useRef(new Animated.Value(1)).current;
 
   useEffect(() => {
@@ -220,17 +234,6 @@ const TopicCard: React.FC<TopicCardProps> = ({
     }
   }, [isFocused, scaleAnim]);
 
-  const getSentimentBorder = () => {
-    switch (topic.sentiment) {
-      case 'positive':
-        return colors.success;
-      case 'negative':
-        return colors.error;
-      default:
-        return colors.glassBorder;
-    }
-  };
-
   return (
     <TouchableOpacity
       onFocus={onFocus}
@@ -242,7 +245,6 @@ const TopicCard: React.FC<TopicCardProps> = ({
         <GlassView
           style={[
             styles.topicCard,
-            { borderColor: getSentimentBorder() },
             isFocused && styles.topicCardFocused,
           ]}
           intensity="medium"
@@ -258,13 +260,13 @@ const TopicCard: React.FC<TopicCardProps> = ({
             </View>
           </View>
 
-          <Text style={styles.topicTitle} numberOfLines={2}>
-            {topic.title}
+          <Text style={[styles.topicTitle, { textAlign: isRTL ? 'right' : 'left' }]} numberOfLines={2}>
+            {title}
           </Text>
 
-          {topic.summary && (
-            <Text style={styles.topicSummary} numberOfLines={2}>
-              {topic.summary}
+          {summary && (
+            <Text style={[styles.topicSummary, { textAlign: isRTL ? 'right' : 'left' }]} numberOfLines={2}>
+              {summary}
             </Text>
           )}
 
@@ -333,9 +335,11 @@ const styles = StyleSheet.create({
   },
   topicCard: {
     width: 220,
+    height: 180,
     padding: spacing.md,
     borderRadius: borderRadius.lg,
-    borderWidth: 1,
+    borderWidth: 2,
+    borderColor: 'transparent',
     marginRight: spacing.md,
   },
   topicCardFocused: {
@@ -368,13 +372,11 @@ const styles = StyleSheet.create({
     fontSize: fontSize.sm,
     fontWeight: '600',
     color: colors.text,
-    textAlign: 'right',
     marginBottom: spacing.xs,
   },
   topicSummary: {
     fontSize: fontSize.xs,
     color: colors.textSecondary,
-    textAlign: 'right',
     marginBottom: spacing.sm,
   },
   importanceContainer: {
@@ -405,7 +407,6 @@ const styles = StyleSheet.create({
   topStoryText: {
     fontSize: fontSize.sm,
     color: colors.text,
-    textAlign: 'right',
   },
   sourcesContainer: {
     flexDirection: 'row',

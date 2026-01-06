@@ -69,6 +69,11 @@
     "featuredContent": "Featured",
     "liveChannels": "Live Channels",
     "israeliMovies": "Israeli Movies",
+    "israeli-movies": "Israeli Movies",
+    "israeli-series": "Israeli Series",
+    "action": "Action & Thriller",
+    "comedy": "Comedy",
+    "drama": "Drama",
     "documentaries": "Documentaries",
     "loadingContent": "Loading content...",
     "liveNow": "Live Now",
@@ -324,6 +329,31 @@
   },
   "content": {
     "episodes": "episodes"
+  },
+  "favorites": {
+    "title": "Favorites",
+    "items": "items",
+    "empty": "No favorites yet",
+    "emptyHint": "Add content to favorites to watch it easily"
+  },
+  "downloads": {
+    "title": "Downloads",
+    "items": "items",
+    "storage": "Storage",
+    "empty": "No downloads",
+    "emptyHint": "Download content for offline viewing"
+  },
+  "watchlist": {
+    "title": "My List",
+    "items": "items",
+    "empty": "Your list is empty",
+    "emptyHint": "Add movies and series to your list",
+    "filters": {
+      "all": "All",
+      "continue": "Continue Watching",
+      "movies": "Movies",
+      "series": "Series"
+    }
   },
   "trending": {
     "title": "What's Trending in Israel",

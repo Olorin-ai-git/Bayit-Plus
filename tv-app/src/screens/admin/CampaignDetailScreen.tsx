@@ -12,7 +12,6 @@ import {
   TouchableOpacity,
   TextInput,
   Modal,
-  Alert,
   ActivityIndicator,
   Switch,
 } from 'react-native';
@@ -23,6 +22,7 @@ import { campaignsService } from '../../services/adminApi';
 import { Campaign, AudienceFilter } from '../../types/rbac';
 import { colors, spacing, borderRadius, fontSize } from '../../theme';
 import { AdminStackParamList } from '../../navigation/AdminNavigator';
+import { useModal } from '../../contexts/ModalContext';
 
 type CampaignDetailRouteProp = RouteProp<AdminStackParamList, 'CampaignDetail'>;
 
@@ -34,11 +34,13 @@ export const CampaignDetailScreen: React.FC = () => {
   const navigation = useNavigation<any>();
   const route = useRoute<CampaignDetailRouteProp>();
   const { campaignId } = route.params;
+  const { showError, showConfirm, showSuccess } = useModal();
 
   const isNewCampaign = !campaignId;
 
   const [loading, setLoading] = useState(!isNewCampaign);
   const [saving, setSaving] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const [campaign, setCampaign] = useState<Campaign | null>(null);
   const [showDatePicker, setShowDatePicker] = useState<'start' | 'end' | null>(null);
   const [showAudienceBuilder, setShowAudienceBuilder] = useState(false);
@@ -70,6 +72,7 @@ export const CampaignDetailScreen: React.FC = () => {
 
   const loadCampaign = async () => {
     setLoading(true);
+    setError(null);
     try {
       const data = await campaignsService.getCampaign(campaignId!);
       setCampaign(data);
@@ -91,27 +94,10 @@ export const CampaignDetailScreen: React.FC = () => {
         first_purchase_only: false,
         stackable: false,
       });
-    } catch (error) {
-      console.error('Error loading campaign:', error);
-      // Mock data
-      setFormData({
-        name: 'Summer Sale 2024',
-        description: 'Get 20% off all premium subscriptions',
-        type: 'discount',
-        promo_code: 'SUMMER20',
-        discount_type: 'percentage',
-        discount_value: 20,
-        usage_limit: 500,
-        start_date: new Date().toISOString().split('T')[0],
-        end_date: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
-        target_audience: {},
-        is_active: true,
-        auto_apply: false,
-        minimum_purchase: 0,
-        max_discount_amount: 50,
-        first_purchase_only: false,
-        stackable: false,
-      });
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : t('admin.campaigns.loadError', 'Failed to load campaign');
+      setError(errorMessage);
+      showError(errorMessage);
     } finally {
       setLoading(false);
     }
@@ -119,12 +105,12 @@ export const CampaignDetailScreen: React.FC = () => {
 
   const handleSave = async () => {
     if (!formData.name.trim()) {
-      Alert.alert(t('common.error', 'Error'), t('admin.campaigns.nameRequired', 'Campaign name is required'));
+      showError(t('admin.campaigns.nameRequired', 'Campaign name is required'));
       return;
     }
 
     if (formData.discount_value <= 0) {
-      Alert.alert(t('common.error', 'Error'), t('admin.campaigns.discountRequired', 'Discount value must be greater than 0'));
+      showError(t('admin.campaigns.discountRequired', 'Discount value must be greater than 0'));
       return;
     }
 
@@ -146,21 +132,21 @@ export const CampaignDetailScreen: React.FC = () => {
 
       if (isNewCampaign) {
         await campaignsService.createCampaign(payload);
-        Alert.alert(
-          t('admin.campaigns.created', 'Campaign Created'),
-          t('admin.campaigns.createdSuccess', 'Campaign has been created successfully.')
+        showSuccess(
+          t('admin.campaigns.createdSuccess', 'Campaign has been created successfully.'),
+          t('admin.campaigns.created', 'Campaign Created')
         );
       } else {
         await campaignsService.updateCampaign(campaignId!, payload);
-        Alert.alert(
-          t('admin.campaigns.updated', 'Campaign Updated'),
-          t('admin.campaigns.updatedSuccess', 'Campaign has been updated successfully.')
+        showSuccess(
+          t('admin.campaigns.updatedSuccess', 'Campaign has been updated successfully.'),
+          t('admin.campaigns.updated', 'Campaign Updated')
         );
       }
       navigation.goBack();
-    } catch (error) {
-      console.error('Error saving campaign:', error);
-      Alert.alert(t('common.error', 'Error'), t('admin.campaigns.saveError', 'Failed to save campaign'));
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : t('admin.campaigns.saveError', 'Failed to save campaign');
+      showError(errorMessage);
     } finally {
       setSaving(false);
     }
@@ -171,9 +157,11 @@ export const CampaignDetailScreen: React.FC = () => {
     try {
       await campaignsService.activateCampaign(campaignId);
       setFormData(prev => ({ ...prev, is_active: true }));
+      showSuccess(t('admin.campaigns.activatedSuccess', 'Campaign has been activated.'));
       loadCampaign();
-    } catch (error) {
-      console.error('Error activating campaign:', error);
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : t('admin.campaigns.activateError', 'Failed to activate campaign');
+      showError(errorMessage);
     }
   };
 
@@ -182,31 +170,27 @@ export const CampaignDetailScreen: React.FC = () => {
     try {
       await campaignsService.deactivateCampaign(campaignId);
       setFormData(prev => ({ ...prev, is_active: false }));
+      showSuccess(t('admin.campaigns.deactivatedSuccess', 'Campaign has been deactivated.'));
       loadCampaign();
-    } catch (error) {
-      console.error('Error deactivating campaign:', error);
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : t('admin.campaigns.deactivateError', 'Failed to deactivate campaign');
+      showError(errorMessage);
     }
   };
 
-  const handleDelete = async () => {
-    Alert.alert(
-      t('admin.campaigns.deleteConfirm', 'Delete Campaign'),
+  const handleDelete = () => {
+    showConfirm(
       t('admin.campaigns.deleteMessage', 'Are you sure you want to delete this campaign?'),
-      [
-        { text: t('common.cancel', 'Cancel'), style: 'cancel' },
-        {
-          text: t('common.delete', 'Delete'),
-          style: 'destructive',
-          onPress: async () => {
-            try {
-              await campaignsService.deleteCampaign(campaignId!);
-              navigation.goBack();
-            } catch (error) {
-              console.error('Error deleting campaign:', error);
-            }
-          },
-        },
-      ]
+      async () => {
+        await campaignsService.deleteCampaign(campaignId!);
+        navigation.goBack();
+      },
+      {
+        title: t('admin.campaigns.deleteConfirm', 'Delete Campaign'),
+        confirmText: t('common.delete', 'Delete'),
+        cancelText: t('common.cancel', 'Cancel'),
+        destructive: true,
+      }
     );
   };
 

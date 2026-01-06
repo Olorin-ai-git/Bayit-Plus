@@ -109,7 +109,7 @@ const ContentCard: React.FC<{
 };
 
 export const VODScreen: React.FC = () => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const { isRTL, textAlign } = useDirection();
   const navigation = useNavigation<any>();
   const [isLoading, setIsLoading] = useState(true);
@@ -117,6 +117,14 @@ export const VODScreen: React.FC = () => {
   const [content, setContent] = useState<ContentItem[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
+  const currentLang = i18n.language;
+
+  // Helper to get localized text
+  const getLocalizedText = (item: any, field: string) => {
+    if (currentLang === 'he') return item[field] || item.title || item.name;
+    if (currentLang === 'es') return item[`${field}_es`] || item[`${field}_en`] || item[field];
+    return item[`${field}_en`] || item[field];
+  };
 
   useEffect(() => {
     loadContent();
@@ -135,7 +143,11 @@ export const VODScreen: React.FC = () => {
 
       setCategories(categoriesRes.categories || []);
       const items = contentRes.items || contentRes.categories?.flatMap((c: any) => c.items) || [];
-      setContent(items);
+      // Map items with localized titles
+      setContent(items.map((item: any) => ({
+        ...item,
+        title: getLocalizedText(item, 'title'),
+      })));
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : t('vod.loadError', 'Failed to load content');
       setError(errorMessage);
@@ -194,7 +206,7 @@ export const VODScreen: React.FC = () => {
             {t('vod.categories.all')}
           </Text>
         </TouchableOpacity>
-        {categories.map((category) => (
+        {categories.map((category: any) => (
           <TouchableOpacity
             key={category.id}
             onPress={() => setSelectedCategory(category.id)}
@@ -209,7 +221,7 @@ export const VODScreen: React.FC = () => {
                 selectedCategory === category.id && styles.categoryTextActive,
               ]}
             >
-              {t(category.name)}
+              {getLocalizedText(category, 'name')}
             </Text>
           </TouchableOpacity>
         ))}

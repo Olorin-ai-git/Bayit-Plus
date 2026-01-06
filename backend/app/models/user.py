@@ -98,6 +98,34 @@ class User(Document):
         "updates": True,
     })
 
+    # Extended preferences for new features
+    preferences: dict = Field(default_factory=lambda: {
+        # Zman Yisrael settings
+        "show_israel_time": True,
+        "shabbat_mode_enabled": True,
+        "local_timezone": "America/New_York",
+
+        # Morning Ritual settings
+        "morning_ritual_enabled": False,
+        "morning_ritual_start": "07:00",
+        "morning_ritual_end": "09:00",
+        "morning_ritual_content": "news",  # news, ai_brief, custom
+
+        # Subtitle settings
+        "subtitles_enabled": True,
+        "nikud_enabled": False,
+        "tap_translate_enabled": True,
+        "subtitle_language": "he",
+
+        # Layout preferences
+        "layout_phone": "vertical",  # vertical, grid
+        "layout_tv": "cinematic",  # cinematic, grid
+
+        # Watch party settings
+        "auto_join_audio": False,
+        "push_to_talk": False,
+    })
+
     # Device management
     devices: List[dict] = Field(default_factory=list)
     max_concurrent_streams: int = 1

@@ -1,0 +1,330 @@
+/* Vertical Feed Layout - TikTok Style */
+
+.vertical-feed {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: #000;
+  overflow: hidden;
+  touch-action: pan-y;
+}
+
+.vertical-feed.empty {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.feed-container {
+  height: 100%;
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.feed-slide {
+  height: 100vh;
+  width: 100%;
+  position: relative;
+  cursor: pointer;
+}
+
+/* Feed Item */
+.feed-item {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+}
+
+.feed-item video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.feed-thumbnail {
+  width: 100%;
+  height: 100%;
+  background-size: cover;
+  background-position: center;
+}
+
+/* Overlay */
+.feed-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(
+    transparent 40%,
+    rgba(0, 0, 0, 0.3) 60%,
+    rgba(0, 0, 0, 0.8) 100%
+  );
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  padding: 24px;
+  padding-bottom: 100px;
+}
+
+.feed-content {
+  max-width: 70%;
+  margin-bottom: 24px;
+}
+
+.feed-title {
+  font-size: 24px;
+  font-weight: 700;
+  color: white;
+  margin-bottom: 8px;
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
+  line-height: 1.3;
+}
+
+.feed-description {
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.9);
+  margin-bottom: 12px;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.feed-meta {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+.feed-category {
+  font-size: 12px;
+  color: white;
+  background: rgba(255, 255, 255, 0.2);
+  padding: 4px 12px;
+  border-radius: 12px;
+  backdrop-filter: blur(4px);
+}
+
+.feed-duration {
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+/* Actions */
+.feed-actions {
+  position: absolute;
+  right: 16px;
+  bottom: 120px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  align-items: center;
+}
+
+.action-button {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  transition: transform 0.2s ease;
+}
+
+.action-button:hover {
+  transform: scale(1.1);
+}
+
+.action-button:active {
+  transform: scale(0.95);
+}
+
+.action-icon {
+  font-size: 28px;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
+}
+
+.action-label {
+  font-size: 11px;
+  color: white;
+  font-weight: 500;
+}
+
+/* Progress Bar */
+.progress-bar {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: rgba(255, 255, 255, 0.2);
+  z-index: 100;
+}
+
+.progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #3b82f6, #8b5cf6);
+  transition: width 1s linear;
+}
+
+/* Navigation Dots */
+.feed-dots {
+  position: absolute;
+  right: 16px;
+  top: 50%;
+  transform: translateY(-50%);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  z-index: 50;
+}
+
+.dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.3);
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.dot.active {
+  background: white;
+  transform: scale(1.2);
+  box-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+}
+
+.dot:hover:not(.active) {
+  background: rgba(255, 255, 255, 0.5);
+}
+
+/* Swipe Hints */
+.swipe-hints {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 50;
+  pointer-events: none;
+}
+
+.hint {
+  position: fixed;
+  left: 50%;
+  transform: translateX(-50%);
+  color: rgba(255, 255, 255, 0.4);
+  font-size: 20px;
+  animation: bounce 2s infinite;
+}
+
+.hint-up {
+  top: 80px;
+}
+
+.hint-down {
+  bottom: 80px;
+}
+
+@keyframes bounce {
+  0%, 100% {
+    transform: translateX(-50%) translateY(0);
+    opacity: 0.4;
+  }
+  50% {
+    transform: translateX(-50%) translateY(5px);
+    opacity: 0.8;
+  }
+}
+
+/* Counter */
+.feed-counter {
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.6);
+  background: rgba(0, 0, 0, 0.3);
+  padding: 4px 12px;
+  border-radius: 12px;
+  backdrop-filter: blur(4px);
+  z-index: 50;
+}
+
+/* Active State */
+.feed-item.active video {
+  opacity: 1;
+}
+
+/* Responsive - Desktop */
+@media (min-width: 768px) {
+  .feed-overlay {
+    padding: 48px;
+    padding-bottom: 120px;
+  }
+
+  .feed-title {
+    font-size: 32px;
+  }
+
+  .feed-description {
+    font-size: 16px;
+  }
+
+  .feed-actions {
+    right: 32px;
+    bottom: 150px;
+    gap: 32px;
+  }
+
+  .action-icon {
+    font-size: 36px;
+  }
+
+  .action-label {
+    font-size: 13px;
+  }
+
+  .feed-dots {
+    right: 32px;
+    gap: 12px;
+  }
+
+  .dot {
+    width: 10px;
+    height: 10px;
+  }
+}
+
+/* Landscape phone */
+@media (max-height: 500px) {
+  .feed-overlay {
+    flex-direction: row;
+    align-items: flex-end;
+    justify-content: space-between;
+    padding-bottom: 24px;
+  }
+
+  .feed-content {
+    max-width: 60%;
+    margin-bottom: 0;
+  }
+
+  .feed-actions {
+    position: relative;
+    right: auto;
+    bottom: auto;
+    flex-direction: row;
+    gap: 24px;
+  }
+
+  .feed-dots {
+    display: none;
+  }
+}

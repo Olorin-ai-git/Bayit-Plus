@@ -327,7 +327,43 @@ export interface MarketingFilter {
   page_size?: number;
 }
 
+export interface MarketingMetrics {
+  emailsSent: number;
+  emailOpenRate: number;
+  emailClickRate: number;
+  pushSent: number;
+  pushOpenRate: number;
+  activeSegments: number;
+  conversionRate: number;
+  unsubscribeRate: number;
+}
+
+export interface RecentCampaign {
+  id: string;
+  name: string;
+  type: 'email' | 'push';
+  status: 'active' | 'completed' | 'scheduled' | 'draft';
+  sent: number;
+  opened: number;
+  clicked: number;
+}
+
+export interface AudienceSegment {
+  name: string;
+  count: number;
+}
+
 export const marketingService = {
+  // Dashboard metrics
+  getMetrics: (): Promise<MarketingMetrics> =>
+    adminApi.get('/admin/marketing/metrics'),
+
+  getRecentCampaigns: (limit: number = 5): Promise<RecentCampaign[]> =>
+    adminApi.get('/admin/marketing/campaigns/recent', { params: { limit } }),
+
+  getAudienceSegments: (): Promise<AudienceSegment[]> =>
+    adminApi.get('/admin/marketing/segments/summary'),
+
   // Email Campaigns
   getEmailCampaigns: (filters?: MarketingFilter): Promise<PaginatedResponse<EmailCampaign>> =>
     adminApi.get('/admin/marketing/emails', { params: filters }),
@@ -405,6 +441,12 @@ export const settingsService = {
 
   updateFeatureFlag: (flag: string, enabled: boolean): Promise<void> =>
     adminApi.put(`/admin/settings/features/${flag}`, { enabled }),
+
+  clearCache: (): Promise<{ success: boolean }> =>
+    adminApi.post('/admin/settings/cache/clear'),
+
+  resetAnalytics: (): Promise<{ success: boolean }> =>
+    adminApi.post('/admin/settings/analytics/reset'),
 };
 
 // ============================================

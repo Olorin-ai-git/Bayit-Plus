@@ -3,7 +3,10 @@ import { Link } from 'react-router-dom'
 import { ChevronLeft } from 'lucide-react'
 import ContentCarousel from '@/components/content/ContentCarousel'
 import HeroSection from '@/components/content/HeroSection'
-import { contentService, liveService, historyService } from '@/services/api'
+import DualClock from '@/components/zman/DualClock'
+import TrendingRow from '@/components/trending/TrendingRow'
+import MorningRitual from '@/components/ritual/MorningRitual'
+import { contentService, liveService, historyService, ritualService } from '@/services/api'
 
 export default function HomePage() {
   const [featured, setFeatured] = useState(null)
@@ -11,10 +14,24 @@ export default function HomePage() {
   const [liveChannels, setLiveChannels] = useState([])
   const [continueWatching, setContinueWatching] = useState([])
   const [loading, setLoading] = useState(true)
+  const [showMorningRitual, setShowMorningRitual] = useState(false)
 
   useEffect(() => {
+    checkMorningRitual()
     loadHomeContent()
   }, [])
+
+  const checkMorningRitual = async () => {
+    try {
+      const result = await ritualService.shouldShow()
+      if (result.show_ritual) {
+        setShowMorningRitual(true)
+      }
+    } catch (err) {
+      // Ritual not enabled or error - continue to home
+      console.log('Morning ritual check:', err)
+    }
+  }
 
   const loadHomeContent = async () => {
     try {
@@ -40,10 +57,30 @@ export default function HomePage() {
     return <HomePageSkeleton />
   }
 
+  // Show Morning Ritual if active
+  if (showMorningRitual) {
+    return (
+      <MorningRitual
+        onComplete={() => setShowMorningRitual(false)}
+        onSkip={() => setShowMorningRitual(false)}
+      />
+    )
+  }
+
   return (
     <div className="pb-16">
+      {/* Dual Clock - Israel Time */}
+      <div className="container mx-auto px-4 py-4">
+        <DualClock variant="compact" />
+      </div>
+
       {/* Hero Section */}
       {featured && <HeroSection content={featured} />}
+
+      {/* Trending in Israel */}
+      <section className="container mx-auto px-4 mt-8">
+        <TrendingRow />
+      </section>
 
       {/* Continue Watching */}
       {continueWatching.length > 0 && (

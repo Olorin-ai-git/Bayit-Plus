@@ -12,7 +12,6 @@ import {
   TouchableOpacity,
   TextInput,
   Switch,
-  Alert,
   ActivityIndicator,
 } from 'react-native';
 import { useTranslation } from 'react-i18next';
@@ -20,10 +19,13 @@ import { AdminLayout } from '../../components/admin/AdminLayout';
 import { settingsService } from '../../services/adminApi';
 import { SystemSettings } from '../../types/rbac';
 import { colors, spacing, borderRadius, fontSize } from '../../theme';
+import { useModal } from '../../contexts/ModalContext';
 
 export const SettingsScreen: React.FC = () => {
   const { t } = useTranslation();
+  const { showError, showSuccess, showConfirm } = useModal();
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
   const [settings, setSettings] = useState<SystemSettings | null>(null);
   const [featureFlags, setFeatureFlags] = useState<Record<string, boolean>>({});
@@ -31,6 +33,7 @@ export const SettingsScreen: React.FC = () => {
 
   const loadSettings = async () => {
     setLoading(true);
+    setError(null);
     try {
       const [settingsData, flagsData] = await Promise.all([
         settingsService.getSettings(),
@@ -38,27 +41,10 @@ export const SettingsScreen: React.FC = () => {
       ]);
       setSettings(settingsData);
       setFeatureFlags(flagsData);
-    } catch (error) {
-      console.error('Error loading settings:', error);
-      // Mock data
-      setSettings({
-        default_plan: 'free',
-        trial_days: 7,
-        max_devices: 4,
-        maintenance_mode: false,
-        support_email: 'support@bayit.tv',
-        terms_url: 'https://bayit.tv/terms',
-        privacy_url: 'https://bayit.tv/privacy',
-      });
-      setFeatureFlags({
-        new_player: true,
-        dark_mode: true,
-        offline_mode: false,
-        recommendations: true,
-        social_features: false,
-        live_chat: true,
-        analytics_v2: false,
-      });
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : t('admin.settings.loadError', 'Failed to load settings');
+      setError(errorMessage);
+      showError(errorMessage);
     } finally {
       setLoading(false);
     }
@@ -77,8 +63,9 @@ export const SettingsScreen: React.FC = () => {
     try {
       await settingsService.updateFeatureFlag(flag, enabled);
       setFeatureFlags(prev => ({ ...prev, [flag]: enabled }));
-    } catch (error) {
-      console.error('Error updating feature flag:', error);
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : t('admin.settings.flagError', 'Failed to update feature flag');
+      showError(errorMessage);
     }
   };
 
@@ -88,13 +75,51 @@ export const SettingsScreen: React.FC = () => {
     try {
       await settingsService.updateSettings(settings);
       setHasChanges(false);
-      Alert.alert(t('admin.settings.saved', 'Saved'), t('admin.settings.savedMessage', 'Settings have been saved successfully'));
-    } catch (error) {
-      console.error('Error saving settings:', error);
-      Alert.alert(t('common.error', 'Error'), t('admin.settings.saveError', 'Failed to save settings'));
+      showSuccess(t('admin.settings.savedMessage', 'Settings have been saved successfully'), t('admin.settings.saved', 'Saved'));
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : t('admin.settings.saveError', 'Failed to save settings');
+      showError(errorMessage);
     } finally {
       setSaving(false);
     }
+  };
+
+  const handleClearCache = () => {
+    showConfirm(
+      t('admin.settings.clearCacheConfirm', 'Are you sure you want to clear the system cache?'),
+      async () => {
+        try {
+          await settingsService.clearCache();
+          showSuccess(t('admin.settings.cacheCleared', 'Cache has been cleared successfully.'));
+        } catch (err) {
+          throw err;
+        }
+      },
+      {
+        title: t('admin.settings.clearCache', 'Clear Cache'),
+        confirmText: t('admin.settings.clear', 'Clear'),
+        destructive: true,
+      }
+    );
+  };
+
+  const handleResetAnalytics = () => {
+    showConfirm(
+      t('admin.settings.resetAnalyticsConfirm', 'Are you sure you want to reset all analytics data? This action cannot be undone.'),
+      async () => {
+        try {
+          await settingsService.resetAnalytics();
+          showSuccess(t('admin.settings.analyticsReset', 'Analytics have been reset successfully.'));
+        } catch (err) {
+          throw err;
+        }
+      },
+      {
+        title: t('admin.settings.resetAnalytics', 'Reset Analytics'),
+        confirmText: t('admin.settings.reset', 'Reset'),
+        destructive: true,
+      }
+    );
   };
 
   if (loading) {
@@ -215,7 +240,7 @@ export const SettingsScreen: React.FC = () => {
               <Text style={styles.settingLabel}>{t('admin.settings.clearCache', 'Clear System Cache')}</Text>
               <Text style={styles.settingDescription}>{t('admin.settings.clearCacheDesc', 'Clear all cached data from the system')}</Text>
             </View>
-            <TouchableOpacity style={styles.dangerButton} onPress={() => Alert.alert(t('admin.settings.clearCache', 'Clear Cache'), t('admin.settings.clearCacheConfirm', 'Are you sure?'))}>
+            <TouchableOpacity style={styles.dangerButton} onPress={handleClearCache}>
               <Text style={styles.dangerButtonText}>{t('admin.settings.clear', 'Clear')}</Text>
             </TouchableOpacity>
           </View>
@@ -225,7 +250,7 @@ export const SettingsScreen: React.FC = () => {
               <Text style={styles.settingLabel}>{t('admin.settings.resetAnalytics', 'Reset Analytics')}</Text>
               <Text style={styles.settingDescription}>{t('admin.settings.resetAnalyticsDesc', 'Reset all analytics data')}</Text>
             </View>
-            <TouchableOpacity style={styles.dangerButton} onPress={() => Alert.alert(t('admin.settings.resetAnalytics', 'Reset Analytics'), t('admin.settings.resetAnalyticsConfirm', 'Are you sure?'))}>
+            <TouchableOpacity style={styles.dangerButton} onPress={handleResetAnalytics}>
               <Text style={styles.dangerButtonText}>{t('admin.settings.reset', 'Reset')}</Text>
             </TouchableOpacity>
           </View>

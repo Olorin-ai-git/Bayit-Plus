@@ -42,6 +42,43 @@ export const HomeScreen: React.FC = () => {
   const [liveChannels, setLiveChannels] = useState<ContentItem[]>([]);
   const [categories, setCategories] = useState<{ name: string; items: ContentItem[] }[]>([]);
 
+  const currentLang = i18n.language;
+  const isHebrew = currentLang === 'he';
+
+  // Helper to get localized title based on current language
+  const getLocalizedTitle = (item: any) => {
+    if (currentLang === 'he') {
+      return item.title || item.name;
+    }
+    if (currentLang === 'es') {
+      return item.title_es || item.name_es || item.title_en || item.name_en || item.title || item.name;
+    }
+    // Default to English
+    return item.title_en || item.name_en || item.title || item.name;
+  };
+
+  // Helper to get localized description
+  const getLocalizedDescription = (item: any) => {
+    if (currentLang === 'he') {
+      return item.description;
+    }
+    if (currentLang === 'es') {
+      return item.description_es || item.description_en || item.description;
+    }
+    return item.description_en || item.description;
+  };
+
+  // Helper to get any localized field
+  const getLocalizedField = (item: any, field: string) => {
+    if (currentLang === 'he') {
+      return item[field];
+    }
+    if (currentLang === 'es') {
+      return item[`${field}_es`] || item[`${field}_en`] || item[field];
+    }
+    return item[`${field}_en`] || item[field];
+  };
+
   useEffect(() => {
     checkMorningRitual();
     loadContent();
@@ -76,21 +113,24 @@ export const HomeScreen: React.FC = () => {
       const spotlightItems = featuredRes.spotlight || [];
       setCarouselItems([...heroItems, ...spotlightItems].map((item: any, index: number) => ({
         id: item.id,
-        title: item.title,
-        subtitle: item.subtitle || item.title_en,
-        description: item.description,
+        title: getLocalizedTitle(item),
+        subtitle: getLocalizedDescription(item),
+        description: getLocalizedDescription(item),
         image: item.backdrop || item.thumbnail,
         badge: index === 0 ? t('common.new') : undefined,
       })));
 
       // Set featured content
-      setFeatured(featuredRes.items || featuredRes.picks || []);
+      setFeatured((featuredRes.items || featuredRes.picks || []).map((item: any) => ({
+        ...item,
+        title: getLocalizedTitle(item),
+      })));
 
       // Set live channels
       setLiveChannels((liveRes.channels || []).map((ch: any) => ({
         id: ch.id,
-        title: ch.name,
-        subtitle: ch.current_program || t('home.liveNow'),
+        title: getLocalizedTitle(ch),
+        subtitle: getLocalizedField(ch, 'current_program') || t('home.liveNow'),
         thumbnail: ch.logo,
         type: 'live',
       })));
@@ -98,8 +138,8 @@ export const HomeScreen: React.FC = () => {
       // Set continue watching from history
       setContinueWatching((historyRes.items || []).map((item: any) => ({
         id: item.id,
-        title: item.title,
-        subtitle: item.remaining || item.episode,
+        title: getLocalizedTitle(item),
+        subtitle: item.remaining || getLocalizedField(item, 'episode') || '',
         thumbnail: item.thumbnail,
         type: item.type,
       })));
@@ -109,7 +149,7 @@ export const HomeScreen: React.FC = () => {
         name: cat.id || cat.name,
         items: (cat.items || []).map((item: any) => ({
           id: item.id,
-          title: item.title,
+          title: getLocalizedTitle(item),
           thumbnail: item.thumbnail,
           type: item.type,
         })),
@@ -172,7 +212,18 @@ export const HomeScreen: React.FC = () => {
 
       {/* Trending in Israel */}
       <View style={styles.trendingSection}>
-        <TrendingRow />
+        <TrendingRow
+          onTopicPress={(topic) => {
+            // Navigate to search with localized topic title
+            const lang = i18n.language;
+            const localizedTitle = lang === 'he'
+              ? topic.title
+              : lang === 'es'
+                ? (topic.title_es || topic.title_en || topic.title)
+                : (topic.title_en || topic.title);
+            navigation.navigate('Search', { query: localizedTitle });
+          }}
+        />
       </View>
 
       {/* Continue Watching */}

@@ -57,6 +57,7 @@ const ResultCard: React.FC<{
   onPress: () => void;
   index: number;
 }> = ({ item, onPress, index }) => {
+  const { textAlign } = useDirection();
   const [isFocused, setIsFocused] = useState(false);
   const scaleAnim = useRef(new Animated.Value(1)).current;
 
@@ -108,11 +109,11 @@ const ResultCard: React.FC<{
           <View style={styles.typeBadge}>
             <Text style={styles.typeBadgeText}>{getTypeIcon(item.type)}</Text>
           </View>
-          <Text style={styles.cardTitle} numberOfLines={1}>
+          <Text style={[styles.cardTitle, { textAlign }]} numberOfLines={1}>
             {item.title}
           </Text>
           {item.subtitle && (
-            <Text style={styles.cardSubtitle} numberOfLines={1}>
+            <Text style={[styles.cardSubtitle, { textAlign }]} numberOfLines={1}>
               {item.subtitle}
             </Text>
           )}
@@ -130,7 +131,7 @@ const ResultCard: React.FC<{
 };
 
 export const SearchScreen: React.FC = () => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const { isRTL, textAlign } = useDirection();
   const navigation = useNavigation<any>();
   const route = useRoute<any>();
@@ -140,6 +141,13 @@ export const SearchScreen: React.FC = () => {
   const [selectedFilter, setSelectedFilter] = useState<string>('all');
   const [hasSearched, setHasSearched] = useState(false);
   const searchInputRef = useRef<TextInput>(null);
+  const isHebrew = i18n.language === 'he';
+
+  // Helper to get localized title
+  const getLocalizedTitle = (item: any) => {
+    if (isHebrew) return item.title || item.name;
+    return item.title_en || item.name_en || item.title || item.name;
+  };
 
   useEffect(() => {
     if (route.params?.query) {
@@ -159,7 +167,13 @@ export const SearchScreen: React.FC = () => {
     try {
       const params = selectedFilter !== 'all' ? { type: selectedFilter } : undefined;
       const data = await (searchService as any).search(searchQuery, params) as any;
-      setResults(data.results || []);
+      // Map results to localized titles
+      const localizedResults = (data.results || []).map((item: any) => ({
+        ...item,
+        title: getLocalizedTitle(item),
+        subtitle: isHebrew ? item.description : (item.description_en || item.description),
+      }));
+      setResults(localizedResults);
     } catch (error) {
       console.error('Search failed:', error);
       setResults([]);
@@ -215,7 +229,7 @@ export const SearchScreen: React.FC = () => {
 
       {/* Search Input */}
       <View style={styles.searchContainer}>
-        <GlassView style={styles.searchBox}>
+        <GlassView style={[styles.searchBox, { flexDirection: isRTL ? 'row' : 'row-reverse' }]}>
           <TextInput
             ref={searchInputRef}
             style={[styles.searchInput, { textAlign }]}
@@ -238,14 +252,14 @@ export const SearchScreen: React.FC = () => {
         </GlassView>
       </View>
 
-      {/* Filter Tabs */}
+      {/* Filter Tabs - reversed for LTR languages so visual order matches reading direction */}
       <ScrollView
         horizontal
         showsHorizontalScrollIndicator={false}
         contentContainerStyle={styles.filtersContainer}
         style={styles.filtersScroll}
       >
-        {FILTER_OPTIONS.map((filter, index) => (
+        {(isRTL ? FILTER_OPTIONS : [...FILTER_OPTIONS].reverse()).map((filter, index) => (
           <TouchableOpacity
             key={filter.id}
             onPress={() => handleFilterChange(filter.id)}
@@ -495,13 +509,11 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontWeight: '600',
     color: colors.text,
-    textAlign: 'right',
   },
   cardSubtitle: {
     fontSize: 12,
     color: colors.textSecondary,
     marginTop: 2,
-    textAlign: 'right',
   },
   playOverlay: {
     ...StyleSheet.absoluteFillObject,

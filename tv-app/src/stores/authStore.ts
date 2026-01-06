@@ -99,7 +99,7 @@ export const useAuthStore = create<AuthState>()(
         try {
           // For web, redirect to Google OAuth
           // For native, use Google Sign-In SDK
-          const response: any = await authService.googleAuth();
+          const response: any = await (authService as any).googleAuth();
           set({
             user: response.user,
             token: response.access_token,

@@ -37,13 +37,22 @@ i18n
     },
   });
 
+// Type-safe localStorage access for web
+const getWebStorage = (): Storage | null => {
+  if (isWeb && typeof window !== 'undefined' && window.localStorage) {
+    return window.localStorage;
+  }
+  return null;
+};
+
 // Load saved language preference
 export const loadSavedLanguage = async () => {
   try {
     let savedLang: string | null = null;
+    const webStorage = getWebStorage();
 
-    if (isWeb && typeof localStorage !== 'undefined') {
-      savedLang = localStorage.getItem(LANGUAGE_KEY);
+    if (webStorage) {
+      savedLang = webStorage.getItem(LANGUAGE_KEY);
     } else {
       savedLang = await AsyncStorage.getItem(LANGUAGE_KEY);
     }
@@ -59,8 +68,10 @@ export const loadSavedLanguage = async () => {
 // Save language preference
 export const saveLanguage = async (lang: string) => {
   try {
-    if (isWeb && typeof localStorage !== 'undefined') {
-      localStorage.setItem(LANGUAGE_KEY, lang);
+    const webStorage = getWebStorage();
+
+    if (webStorage) {
+      webStorage.setItem(LANGUAGE_KEY, lang);
     } else {
       await AsyncStorage.setItem(LANGUAGE_KEY, lang);
     }

@@ -5,11 +5,18 @@ import { colors, borderRadius } from '../../theme';
 
 interface GlassViewProps {
   children: React.ReactNode;
-  intensity?: 'low' | 'medium' | 'high';
+  intensity?: 'low' | 'medium' | 'high' | 'light' | 'heavy';
   style?: StyleProp<ViewStyle>;
   borderColor?: string;
   noBorder?: boolean;
 }
+
+// Map intensity aliases to base levels
+const normalizeIntensity = (intensity: 'low' | 'medium' | 'high' | 'light' | 'heavy'): 'low' | 'medium' | 'high' => {
+  if (intensity === 'light') return 'low';
+  if (intensity === 'heavy') return 'high';
+  return intensity;
+};
 
 export const GlassView: React.FC<GlassViewProps> = ({
   children,
@@ -18,6 +25,8 @@ export const GlassView: React.FC<GlassViewProps> = ({
   borderColor,
   noBorder = false,
 }) => {
+  const normalizedIntensity = normalizeIntensity(intensity);
+
   const intensityStyles = {
     low: { backgroundColor: 'rgba(26, 26, 46, 0.4)' },
     medium: { backgroundColor: 'rgba(26, 26, 46, 0.7)' },
@@ -36,13 +45,13 @@ export const GlassView: React.FC<GlassViewProps> = ({
       <View
         style={[
           styles.glass,
-          intensityStyles[intensity],
+          intensityStyles[normalizedIntensity],
           !noBorder && styles.border,
           borderColor && { borderColor },
           {
             // @ts-ignore - Web-specific CSS properties
-            backdropFilter: `blur(${blurAmount[intensity]}px)`,
-            WebkitBackdropFilter: `blur(${blurAmount[intensity]}px)`,
+            backdropFilter: `blur(${blurAmount[normalizedIntensity]}px)`,
+            WebkitBackdropFilter: `blur(${blurAmount[normalizedIntensity]}px)`,
           },
           style,
         ]}
@@ -60,8 +69,8 @@ export const GlassView: React.FC<GlassViewProps> = ({
   return (
     <LinearGradient
       colors={[
-        intensity === 'high' ? 'rgba(30, 30, 50, 0.9)' : 'rgba(30, 30, 50, 0.7)',
-        intensity === 'high' ? 'rgba(20, 20, 40, 0.95)' : 'rgba(20, 20, 40, 0.8)',
+        normalizedIntensity === 'high' ? 'rgba(30, 30, 50, 0.9)' : 'rgba(30, 30, 50, 0.7)',
+        normalizedIntensity === 'high' ? 'rgba(20, 20, 40, 0.95)' : 'rgba(20, 20, 40, 0.8)',
       ]}
       style={[
         styles.glass,

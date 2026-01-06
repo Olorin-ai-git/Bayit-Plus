@@ -20,24 +20,35 @@ import { useDirection } from '../hooks/useDirection';
 interface PodcastShow {
   id: string;
   title: string;
-  author?: string;
-  cover?: string;
+  title_en?: string;
+  title_es?: string;
+  host?: string;
+  host_en?: string;
+  host_es?: string;
+  description?: string;
+  description_en?: string;
+  description_es?: string;
+  thumbnail?: string;
   episodeCount?: number;
-  latestEpisode?: string;
+  episodes?: any[];
   category?: string;
 }
 
 interface Category {
   id: string;
   name: string;
+  name_en?: string;
+  name_es?: string;
 }
 
 const PodcastCard: React.FC<{
   show: PodcastShow;
   onPress: () => void;
   index: number;
-}> = ({ show, onPress, index }) => {
+  getLocalizedText: (item: any, field: string) => string;
+}> = ({ show, onPress, index, getLocalizedText }) => {
   const { t } = useTranslation();
+  const { isRTL, textAlign } = useDirection();
   const [isFocused, setIsFocused] = useState(false);
   const scaleAnim = useRef(new Animated.Value(1)).current;
 
@@ -77,9 +88,9 @@ const PodcastCard: React.FC<{
         ]}
       >
         {/* Cover Image */}
-        {show.cover ? (
+        {show.thumbnail ? (
           <Image
-            source={{ uri: show.cover }}
+            source={{ uri: show.thumbnail }}
             style={styles.cardImage}
             resizeMode="cover"
           />
@@ -91,25 +102,19 @@ const PodcastCard: React.FC<{
 
         {/* Content */}
         <View style={styles.cardContent}>
-          <Text style={styles.cardTitle} numberOfLines={2}>
-            {show.title}
+          <Text style={[styles.cardTitle, { textAlign }]} numberOfLines={2}>
+            {getLocalizedText(show, 'title')}
           </Text>
-          {show.author && (
-            <Text style={styles.cardAuthor} numberOfLines={1}>
-              {show.author}
+          {show.host && (
+            <Text style={[styles.cardAuthor, { textAlign }]} numberOfLines={1}>
+              {getLocalizedText(show, 'host')}
             </Text>
           )}
-          <View style={styles.cardMeta}>
-            {show.episodeCount !== undefined && (
-              <View style={styles.metaItem}>
+          <View style={[styles.cardMeta, { flexDirection: isRTL ? 'row' : 'row-reverse' }]}>
+            {show.episodes && show.episodes.length > 0 && (
+              <View style={[styles.metaItem, { flexDirection: isRTL ? 'row' : 'row-reverse' }]}>
                 <Text style={styles.metaIcon}>🎧</Text>
-                <Text style={styles.metaText}>{show.episodeCount} {t('content.episodes')}</Text>
-              </View>
-            )}
-            {show.latestEpisode && (
-              <View style={styles.metaItem}>
-                <Text style={styles.metaIcon}>🕐</Text>
-                <Text style={styles.metaText}>{show.latestEpisode}</Text>
+                <Text style={styles.metaText}>{show.episodes.length} {t('content.episodes')}</Text>
               </View>
             )}
           </View>
@@ -129,7 +134,7 @@ const PodcastCard: React.FC<{
 };
 
 export const PodcastsScreen: React.FC = () => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const { isRTL, textAlign } = useDirection();
   const navigation = useNavigation<any>();
   const [isLoading, setIsLoading] = useState(true);
@@ -137,6 +142,14 @@ export const PodcastsScreen: React.FC = () => {
   const [shows, setShows] = useState<PodcastShow[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
+  const currentLang = i18n.language;
+
+  // Helper to get localized text
+  const getLocalizedText = (item: any, field: string) => {
+    if (currentLang === 'he') return item[field] || item.title || item.name;
+    if (currentLang === 'es') return item[`${field}_es`] || item[`${field}_en`] || item[field];
+    return item[`${field}_en`] || item[field];
+  };
 
   useEffect(() => {
     loadShows();
@@ -146,7 +159,7 @@ export const PodcastsScreen: React.FC = () => {
     try {
       setIsLoading(true);
       setError(null);
-      const data = await podcastService.getShows() as any;
+      const data = await podcastService.getShows(selectedCategory) as any;
       setShows(data.shows || []);
       setCategories(data.categories || []);
     } catch (err) {
@@ -162,7 +175,7 @@ export const PodcastsScreen: React.FC = () => {
   const handleShowPress = (show: PodcastShow) => {
     navigation.navigate('Player', {
       id: show.id,
-      title: show.title,
+      title: getLocalizedText(show, 'title'),
       type: 'podcast',
     });
   };
@@ -207,7 +220,7 @@ export const PodcastsScreen: React.FC = () => {
             {t('podcasts.categories.all')}
           </Text>
         </TouchableOpacity>
-        {categories.map((category) => (
+        {(isRTL ? categories : [...categories].reverse()).map((category) => (
           <TouchableOpacity
             key={category.id}
             onPress={() => setSelectedCategory(category.id)}
@@ -222,7 +235,7 @@ export const PodcastsScreen: React.FC = () => {
                 selectedCategory === category.id && styles.categoryTextActive,
               ]}
             >
-              {t(category.name)}
+              {getLocalizedText(category, 'name')}
             </Text>
           </TouchableOpacity>
         ))}
@@ -240,6 +253,7 @@ export const PodcastsScreen: React.FC = () => {
             show={item}
             onPress={() => handleShowPress(item)}
             index={index}
+            getLocalizedText={getLocalizedText}
           />
         )}
         ListEmptyComponent={

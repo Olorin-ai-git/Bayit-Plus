@@ -82,7 +82,7 @@ export const GlassInput: React.FC<GlassInputProps> = ({
             {...props}
             style={[
               styles.input,
-              icon && styles.inputWithIcon,
+              icon ? styles.inputWithIcon : undefined,
               inputStyle,
             ]}
             placeholderTextColor={colors.textMuted}

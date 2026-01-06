@@ -6,9 +6,9 @@ import {
   Image,
   StyleSheet,
   Animated,
-  TVFocusGuideView,
 } from 'react-native';
 import { colors } from '../theme';
+import { useDirection } from '../hooks/useDirection';
 
 interface FocusableCardProps {
   title: string;
@@ -27,6 +27,7 @@ export const FocusableCard: React.FC<FocusableCardProps> = ({
   width = 280,
   height = 160,
 }) => {
+  const { textAlign } = useDirection();
   const [isFocused, setIsFocused] = useState(false);
   const scaleAnim = useRef(new Animated.Value(1)).current;
 
@@ -72,15 +73,15 @@ export const FocusableCard: React.FC<FocusableCardProps> = ({
           />
         ) : (
           <View style={styles.placeholder}>
-            <Text style={styles.placeholderText}>{title[0]}</Text>
+            <Text style={styles.placeholderText}>{title?.[0] || '?'}</Text>
           </View>
         )}
         <View style={styles.overlay}>
-          <Text style={styles.title} numberOfLines={1}>
-            {title}
+          <Text style={[styles.title, { textAlign }]} numberOfLines={1}>
+            {title || ''}
           </Text>
           {subtitle && (
-            <Text style={styles.subtitle} numberOfLines={1}>
+            <Text style={[styles.subtitle, { textAlign }]} numberOfLines={1}>
               {subtitle}
             </Text>
           )}
@@ -103,6 +104,7 @@ const styles = StyleSheet.create({
   },
   cardFocused: {
     borderColor: colors.primary,
+    // @ts-ignore - Web CSS property for glow effect
     boxShadow: `0 0 20px ${colors.primary}`,
   },
   image: {
@@ -132,13 +134,11 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: 'bold',
     color: colors.text,
-    textAlign: 'right',
   },
   subtitle: {
     fontSize: 14,
     color: colors.textSecondary,
     marginTop: 2,
-    textAlign: 'right',
   },
 });
 

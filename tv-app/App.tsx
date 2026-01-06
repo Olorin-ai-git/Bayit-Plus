@@ -18,11 +18,17 @@ import {
   SearchScreen,
   RegisterScreen,
   ProfileScreen,
+  FavoritesScreen,
+  DownloadsScreen,
+  WatchlistScreen,
 } from './src/screens';
+import MorningRitualScreen from './src/screens/MorningRitualScreen';
 import { useAuthStore } from './src/stores/authStore';
 import { AdminNavigator } from './src/navigation/AdminNavigator';
 import { GlassTopBar } from './src/components/GlassTopBar';
 import { GlassSidebar } from './src/components/GlassSidebar';
+import { DemoBanner } from './src/components/DemoBanner';
+import { ModalProvider } from './src/contexts/ModalContext';
 import { isWeb } from './src/utils/platform';
 
 // Ignore specific warnings for TV
@@ -36,6 +42,7 @@ export type RootStackParamList = {
   Register: undefined;
   Main: undefined;
   Admin: undefined;
+  MorningRitual: undefined;
   Player: {
     id: string;
     title: string;
@@ -43,6 +50,9 @@ export type RootStackParamList = {
   };
   Search: { query?: string };
   Subscribe: undefined;
+  Favorites: undefined;
+  Downloads: undefined;
+  Watchlist: undefined;
 };
 
 export type MainTabParamList = {
@@ -85,14 +95,15 @@ const TVTabBar: React.FC<any> = ({ state, descriptors, navigation }) => {
         const isFocused = state.index === index;
         const label = tabLabels[route.name] || route.name;
 
-        const icon = {
+        const icons: Record<string, string> = {
           Home: '🏠',
           VOD: '🎬',
           LiveTV: '📺',
           Radio: '📻',
           Podcasts: '🎙️',
           Profile: '👤',
-        }[route.name] || '•';
+        };
+        const icon = icons[route.name as string] || '•';
 
         const onPress = () => {
           const event = navigation.emit({
@@ -222,6 +233,9 @@ const AppContent: React.FC = () => {
     <View style={appStyles.container}>
       <StatusBar hidden />
 
+      {/* Demo Mode Banner */}
+      <DemoBanner />
+
       {/* Glass Top Bar */}
       <GlassTopBar onMenuPress={() => setSidebarExpanded(!sidebarExpanded)} sidebarExpanded={sidebarExpanded} />
 
@@ -247,6 +261,13 @@ const AppContent: React.FC = () => {
             <Stack.Screen name="Register" component={RegisterScreen} />
             <Stack.Screen name="Main" component={MainTabs} />
             <Stack.Screen
+              name="MorningRitual"
+              component={MorningRitualScreen}
+              options={{
+                animation: 'fade',
+              }}
+            />
+            <Stack.Screen
               name="Player"
               component={PlayerScreen}
               options={{
@@ -254,6 +275,9 @@ const AppContent: React.FC = () => {
               }}
             />
             <Stack.Screen name="Search" component={SearchScreen} />
+            <Stack.Screen name="Favorites" component={FavoritesScreen} />
+            <Stack.Screen name="Downloads" component={DownloadsScreen} />
+            <Stack.Screen name="Watchlist" component={WatchlistScreen} />
             <Stack.Screen name="Admin" component={AdminNavigator} />
           </Stack.Navigator>
         </View>
@@ -271,9 +295,11 @@ function App(): React.JSX.Element {
   return (
     <I18nextProvider i18n={i18n}>
       <SafeAreaProvider>
-        <NavigationContainer>
-          <AppContent />
-        </NavigationContainer>
+        <ModalProvider>
+          <NavigationContainer>
+            <AppContent />
+          </NavigationContainer>
+        </ModalProvider>
       </SafeAreaProvider>
     </I18nextProvider>
   );

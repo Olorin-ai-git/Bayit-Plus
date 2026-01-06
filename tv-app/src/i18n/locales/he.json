@@ -69,6 +69,11 @@
     "featuredContent": "מומלצים",
     "liveChannels": "ערוצים בשידור חי",
     "israeliMovies": "סרטים ישראליים",
+    "israeli-movies": "סרטים ישראליים",
+    "israeli-series": "סדרות ישראליות",
+    "action": "אקשן ומתח",
+    "comedy": "קומדיה",
+    "drama": "דרמה",
     "documentaries": "דוקומנטרים",
     "loadingContent": "טוען תוכן...",
     "liveNow": "עכשיו בשידור",
@@ -324,6 +329,31 @@
   },
   "content": {
     "episodes": "פרקים"
+  },
+  "favorites": {
+    "title": "מועדפים",
+    "items": "פריטים",
+    "empty": "אין מועדפים",
+    "emptyHint": "הוסף תוכן למועדפים כדי לצפות בו בקלות"
+  },
+  "downloads": {
+    "title": "הורדות",
+    "items": "פריטים",
+    "storage": "אחסון",
+    "empty": "אין הורדות",
+    "emptyHint": "הורד תוכן לצפייה במצב לא מקוון"
+  },
+  "watchlist": {
+    "title": "רשימת צפייה",
+    "items": "פריטים",
+    "empty": "הרשימה ריקה",
+    "emptyHint": "הוסף סרטים וסדרות לרשימה שלך",
+    "filters": {
+      "all": "הכל",
+      "continue": "המשך צפייה",
+      "movies": "סרטים",
+      "series": "סדרות"
+    }
   },
   "trending": {
     "title": "מה חם בישראל",

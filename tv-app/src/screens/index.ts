@@ -8,3 +8,6 @@ export { PodcastsScreen } from './PodcastsScreen';
 export { SearchScreen } from './SearchScreen';
 export { RegisterScreen } from './RegisterScreen';
 export { ProfileScreen } from './ProfileScreen';
+export { FavoritesScreen } from './FavoritesScreen';
+export { DownloadsScreen } from './DownloadsScreen';
+export { WatchlistScreen } from './WatchlistScreen';
