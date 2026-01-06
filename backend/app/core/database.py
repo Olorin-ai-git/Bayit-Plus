@@ -7,6 +7,8 @@ from app.models.user import User
 from app.models.content import Content, Category, LiveChannel, EPGEntry, RadioStation, Podcast, PodcastEpisode
 from app.models.subscription import Subscription, Invoice
 from app.models.watchlist import WatchlistItem, WatchHistory, Conversation
+from app.models.profile import Profile
+from app.models.flow import Flow
 from app.models.realtime import WatchParty, ChatMessage
 from app.models.trending import TrendingSnapshot, ContentTrendMatch
 from app.models.chapters import VideoChapters
@@ -45,6 +47,8 @@ async def connect_to_mongo():
             WatchlistItem,
             WatchHistory,
             Conversation,
+            Profile,
+            Flow,
             # Real-time models
             WatchParty,
             ChatMessage,

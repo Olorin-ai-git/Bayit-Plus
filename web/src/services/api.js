@@ -202,6 +202,56 @@ const apiRitualService = {
   skipToday: () => api.post('/ritual/skip-today'),
 }
 
+// Profiles Service (API)
+const apiProfilesService = {
+  getProfiles: () => api.get('/profiles'),
+  createProfile: (data) => api.post('/profiles', data),
+  getProfile: (profileId) => api.get(`/profiles/${profileId}`),
+  updateProfile: (profileId, data) => api.put(`/profiles/${profileId}`, data),
+  deleteProfile: (profileId) => api.delete(`/profiles/${profileId}`),
+  selectProfile: (profileId, pin) => api.post(`/profiles/${profileId}/select`, { pin }),
+  verifyPin: (profileId, pin) => api.post(`/profiles/${profileId}/verify-pin`, { pin }),
+  getRecommendations: (profileId) => api.get(`/profiles/${profileId}/recommendations`),
+  setKidsPin: (pin) => api.post('/profiles/kids-pin/set', { pin }),
+  verifyKidsPin: (pin) => api.post('/profiles/kids-pin/verify', { pin }),
+}
+
+// Children Service (API)
+const apiChildrenService = {
+  getContent: (category, maxAge, limit) =>
+    api.get('/children/content', { params: { category, max_age: maxAge, limit } }),
+  getCategories: () => api.get('/children/categories'),
+  toggleParentalControls: (enabled) =>
+    api.post('/children/parental-controls', { enabled }),
+  verifyPin: (pin) => api.post('/children/verify-pin', { pin }),
+  setPin: (pin) => api.post('/children/set-pin', { pin }),
+  getSettings: () => api.get('/children/settings'),
+  updateSettings: (settings) => api.put('/children/settings', settings),
+}
+
+// Judaism Service (API)
+const apiJudaismService = {
+  getContent: (category, limit) =>
+    api.get('/judaism/content', { params: { category, limit } }),
+  getCategories: () => api.get('/judaism/categories'),
+  getLiveShiurim: () => api.get('/judaism/live'),
+  getDailyContent: () => api.get('/judaism/daily'),
+}
+
+// Flows Service (API)
+const apiFlowsService = {
+  getFlows: () => api.get('/flows'),
+  getActiveFlow: () => api.get('/flows/active'),
+  getFlow: (flowId) => api.get(`/flows/${flowId}`),
+  createFlow: (data) => api.post('/flows', data),
+  updateFlow: (flowId, data) => api.put(`/flows/${flowId}`, data),
+  deleteFlow: (flowId) => api.delete(`/flows/${flowId}`),
+  addFlowItem: (flowId, item) => api.post(`/flows/${flowId}/items`, item),
+  removeFlowItem: (flowId, itemIndex) => api.delete(`/flows/${flowId}/items/${itemIndex}`),
+  skipFlowToday: (flowId) => api.post(`/flows/${flowId}/skip-today`),
+  getFlowContent: (flowId) => api.get(`/flows/${flowId}/content`),
+}
+
 // Watch Party Service (API)
 const apiPartyService = {
   create: (data) => api.post('/party/create', data),
@@ -244,5 +294,9 @@ export const chaptersService = isDemo ? demoChaptersService : apiChaptersService
 export const subtitlesService = isDemo ? demoSubtitlesService : apiSubtitlesService
 export const ritualService = isDemo ? demoRitualService : apiRitualService
 export const partyService = isDemo ? demoPartyService : apiPartyService
+export const profilesService = apiProfilesService // No demo mode for profiles - requires real auth
+export const childrenService = apiChildrenService // No demo mode for children
+export const judaismService = apiJudaismService // No demo mode for judaism
+export const flowsService = apiFlowsService // No demo mode for flows
 
 export default api

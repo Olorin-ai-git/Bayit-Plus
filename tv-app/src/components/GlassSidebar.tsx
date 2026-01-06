@@ -42,6 +42,14 @@ const menuSections: MenuSection[] = [
     ],
   },
   {
+    titleKey: 'nav.discover',
+    items: [
+      { id: 'flows', icon: '✨', labelKey: 'nav.flows', route: 'Flows' },
+      { id: 'judaism', icon: '✡️', labelKey: 'nav.judaism', route: 'Judaism' },
+      { id: 'children', icon: '👶', labelKey: 'nav.children', route: 'Children' },
+    ],
+  },
+  {
     titleKey: 'nav.favorites',
     items: [
       { id: 'favorites', icon: '⭐', labelKey: 'nav.favorites', route: 'Favorites' },

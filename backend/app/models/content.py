@@ -67,6 +67,12 @@ class Content(Document):
     is_featured: bool = False
     requires_subscription: str = "basic"  # basic, premium, family
 
+    # Children content fields
+    is_kids_content: bool = False
+    age_rating: Optional[int] = None  # Minimum age (e.g., 3, 7, 12)
+    content_rating: Optional[str] = None  # G, PG, etc.
+    educational_tags: List[str] = Field(default_factory=list)  # ["hebrew", "math", "music"]
+
     # Analytics
     view_count: int = 0
     avg_rating: float = 0.0

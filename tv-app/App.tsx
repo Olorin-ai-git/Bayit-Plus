@@ -23,7 +23,11 @@ import {
   WatchlistScreen,
 } from './src/screens';
 import MorningRitualScreen from './src/screens/MorningRitualScreen';
+import ProfileSelectionScreen from './src/screens/ProfileSelectionScreen';
+import ChildrenScreen from './src/screens/ChildrenScreen';
+import FlowsScreen from './src/screens/FlowsScreen';
 import { useAuthStore } from './src/stores/authStore';
+import { ProfileProvider, useProfile } from './src/contexts/ProfileContext';
 import { AdminNavigator } from './src/navigation/AdminNavigator';
 import { GlassTopBar } from './src/components/GlassTopBar';
 import { GlassSidebar } from './src/components/GlassSidebar';
@@ -40,9 +44,15 @@ LogBox.ignoreLogs([
 export type RootStackParamList = {
   Login: undefined;
   Register: undefined;
+  ProfileSelection: undefined;
+  CreateProfile: undefined;
+  EditProfile: { profileId: string };
   Main: undefined;
   Admin: undefined;
   MorningRitual: undefined;
+  Judaism: undefined;
+  Children: undefined;
+  Flows: undefined;
   Player: {
     id: string;
     title: string;
@@ -259,10 +269,32 @@ const AppContent: React.FC = () => {
           >
             <Stack.Screen name="Login" component={LoginScreen} />
             <Stack.Screen name="Register" component={RegisterScreen} />
+            <Stack.Screen name="ProfileSelection" component={ProfileSelectionScreen} />
             <Stack.Screen name="Main" component={MainTabs} />
             <Stack.Screen
               name="MorningRitual"
               component={MorningRitualScreen}
+              options={{
+                animation: 'fade',
+              }}
+            />
+            <Stack.Screen
+              name="Judaism"
+              component={require('./src/screens/JudaismScreen').default}
+              options={{
+                animation: 'fade',
+              }}
+            />
+            <Stack.Screen
+              name="Children"
+              component={ChildrenScreen}
+              options={{
+                animation: 'fade',
+              }}
+            />
+            <Stack.Screen
+              name="Flows"
+              component={FlowsScreen}
               options={{
                 animation: 'fade',
               }}
@@ -296,9 +328,11 @@ function App(): React.JSX.Element {
     <I18nextProvider i18n={i18n}>
       <SafeAreaProvider>
         <ModalProvider>
-          <NavigationContainer>
-            <AppContent />
-          </NavigationContainer>
+          <ProfileProvider>
+            <NavigationContainer>
+              <AppContent />
+            </NavigationContainer>
+          </ProfileProvider>
         </ModalProvider>
       </SafeAreaProvider>
     </I18nextProvider>

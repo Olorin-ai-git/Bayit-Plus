@@ -13,6 +13,10 @@ import RegisterPage from './pages/RegisterPage'
 import GoogleCallbackPage from './pages/GoogleCallbackPage'
 import WatchPage from './pages/WatchPage'
 import NotFoundPage from './pages/NotFoundPage'
+import ProfileSelectionPage from './pages/ProfileSelectionPage'
+import JudaismPage from './pages/JudaismPage'
+import ChildrenPage from './pages/ChildrenPage'
+import FlowsPage from './pages/FlowsPage'
 
 function App() {
   return (
@@ -21,6 +25,7 @@ function App() {
       <Route path="/login" element={<LoginPage />} />
       <Route path="/register" element={<RegisterPage />} />
       <Route path="/auth/google/callback" element={<GoogleCallbackPage />} />
+      <Route path="/profiles" element={<ProfileSelectionPage />} />
 
       {/* Main Routes with Layout */}
       <Route element={<Layout />}>
@@ -36,6 +41,9 @@ function App() {
         <Route path="/search" element={<SearchPage />} />
         <Route path="/profile" element={<ProfilePage />} />
         <Route path="/subscribe" element={<SubscribePage />} />
+        <Route path="/judaism" element={<JudaismPage />} />
+        <Route path="/children" element={<ChildrenPage />} />
+        <Route path="/flows" element={<FlowsPage />} />
         <Route path="*" element={<NotFoundPage />} />
       </Route>
     </Routes>

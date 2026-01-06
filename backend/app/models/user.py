@@ -130,6 +130,10 @@ class User(Document):
     devices: List[dict] = Field(default_factory=list)
     max_concurrent_streams: int = 1
 
+    # Profile management
+    active_profile_id: Optional[str] = None
+    kids_pin: Optional[str] = None  # Master PIN for exiting kids profiles
+
     # Ban info
     is_banned: bool = False
     ban_reason: Optional[str] = None

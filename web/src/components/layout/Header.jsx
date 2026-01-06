@@ -9,6 +9,8 @@ const navLinks = [
   { to: '/vod', label: 'VOD' },
   { to: '/radio', label: 'רדיו' },
   { to: '/podcasts', label: 'פודקאסטים' },
+  { to: '/judaism', label: 'יהדות' },
+  { to: '/children', label: 'ילדים' },
 ]
 
 export default function Header() {

@@ -1,3 +1,8 @@
+/**
+ * ChildrenScreen - Kid-friendly content page
+ * Features age-appropriate content, parental controls, and colorful UI
+ */
+
 import React, { useEffect, useState, useRef } from 'react';
 import {
   View,
@@ -16,43 +21,40 @@ import { GlassView } from '../components/ui';
 import { colors, spacing, borderRadius } from '../theme';
 import { isTV } from '../utils/platform';
 import { useDirection } from '../hooks/useDirection';
-import { judaismService } from '../services/api';
+import { useProfile } from '../contexts/ProfileContext';
+import { childrenService } from '../services/api';
 
-interface JudaismItem {
+interface KidsItem {
   id: string;
   title: string;
   title_en?: string;
-  title_es?: string;
-  subtitle?: string;
-  subtitle_en?: string;
-  subtitle_es?: string;
+  description?: string;
   thumbnail?: string;
-  type: 'shiur' | 'prayer' | 'music' | 'documentary' | 'lecture' | 'holiday';
+  category: string;
   duration?: string;
-  rabbi?: string;
-  rabbi_en?: string;
-  rabbi_es?: string;
+  age_rating?: number;
+  educational_tags?: string[];
 }
 
 interface Category {
   id: string;
   name: string;
   name_en?: string;
-  name_es?: string;
   icon: string;
 }
 
-const TYPE_ICONS: Record<string, string> = {
-  shiur: '📖',
-  prayer: '🕯️',
+const CATEGORY_ICONS: Record<string, string> = {
+  all: '🌈',
+  cartoons: '🎬',
+  educational: '📚',
   music: '🎵',
-  documentary: '🎬',
-  lecture: '🎓',
-  holiday: '🕎',
+  hebrew: 'א',
+  stories: '📖',
+  jewish: '✡️',
 };
 
-const JudaismCard: React.FC<{
-  item: JudaismItem;
+const KidsCard: React.FC<{
+  item: KidsItem;
   onPress: () => void;
   index: number;
   getLocalizedText: (item: any, field: string) => string;
@@ -79,6 +81,8 @@ const JudaismCard: React.FC<{
     }).start();
   };
 
+  const categoryIcon = CATEGORY_ICONS[item.category] || '🌈';
+
   return (
     <TouchableOpacity
       onPress={onPress}
@@ -104,29 +108,29 @@ const JudaismCard: React.FC<{
           />
         ) : (
           <View style={styles.cardImagePlaceholder}>
-            <Text style={styles.placeholderIcon}>{TYPE_ICONS[item.type] || '✡️'}</Text>
+            <Text style={styles.placeholderIcon}>{categoryIcon}</Text>
           </View>
         )}
-        <View style={[styles.typeBadge, isRTL ? { left: 8 } : { right: 8 }]}>
-          <Text style={styles.typeBadgeText}>{TYPE_ICONS[item.type]}</Text>
+        <View style={[styles.categoryBadge, isRTL ? { left: 8 } : { right: 8 }]}>
+          <Text style={styles.categoryBadgeText}>{categoryIcon}</Text>
         </View>
-        {item.duration && (
-          <View style={[styles.durationBadge, isRTL ? { right: 8 } : { left: 8 }]}>
-            <Text style={styles.durationText}>{item.duration}</Text>
+        {item.age_rating !== undefined && (
+          <View style={[styles.ageBadge, isRTL ? { right: 8 } : { left: 8 }]}>
+            <Text style={styles.ageText}>{item.age_rating}+</Text>
           </View>
         )}
         <View style={styles.cardContent}>
           <Text style={[styles.cardTitle, { textAlign }]} numberOfLines={2}>
             {getLocalizedText(item, 'title')}
           </Text>
-          {item.rabbi && (
-            <Text style={[styles.cardRabbi, { textAlign }]} numberOfLines={1}>
-              {getLocalizedText(item, 'rabbi')}
+          {item.description && (
+            <Text style={[styles.cardDescription, { textAlign }]} numberOfLines={1}>
+              {item.description}
             </Text>
           )}
-          {item.subtitle && (
-            <Text style={[styles.cardSubtitle, { textAlign }]} numberOfLines={1}>
-              {getLocalizedText(item, 'subtitle')}
+          {item.duration && (
+            <Text style={[styles.cardDuration, { textAlign }]}>
+              ⏱️ {item.duration}
             </Text>
           )}
         </View>
@@ -142,19 +146,19 @@ const JudaismCard: React.FC<{
   );
 };
 
-export const JudaismScreen: React.FC = () => {
+export const ChildrenScreen: React.FC = () => {
   const { t, i18n } = useTranslation();
   const { isRTL, textAlign } = useDirection();
   const navigation = useNavigation<any>();
+  const { currentProfile: activeProfile } = useProfile();
   const [isLoading, setIsLoading] = useState(true);
-  const [content, setContent] = useState<JudaismItem[]>([]);
+  const [content, setContent] = useState<KidsItem[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
   const currentLang = i18n.language;
 
   const getLocalizedText = (item: any, field: string) => {
     if (currentLang === 'he') return item[field] || item.title || item.name;
-    if (currentLang === 'es') return item[`${field}_es`] || item[`${field}_en`] || item[field];
     return item[`${field}_en`] || item[field];
   };
 
@@ -164,16 +168,16 @@ export const JudaismScreen: React.FC = () => {
 
   useEffect(() => {
     loadContent();
-  }, [selectedCategory]);
+  }, [selectedCategory, activeProfile]);
 
   const loadCategories = async () => {
     try {
-      const response = await judaismService.getCategories();
+      const response = await childrenService.getCategories();
       if (response?.data && Array.isArray(response.data)) {
         setCategories(response.data);
       }
     } catch (err) {
-      console.error('Failed to load Judaism categories:', err);
+      console.error('Failed to load children categories:', err);
     }
   };
 
@@ -181,30 +185,31 @@ export const JudaismScreen: React.FC = () => {
     try {
       setIsLoading(true);
       const category = selectedCategory !== 'all' ? selectedCategory : undefined;
-      const response = await judaismService.getContent(category);
+      const maxAge = activeProfile?.is_kids_profile ? activeProfile.kids_age_limit : undefined;
+      const response = await childrenService.getContent(category, maxAge);
       if (response?.data && Array.isArray(response.data)) {
         setContent(response.data);
       }
     } catch (err) {
-      console.error('Failed to load Judaism content:', err);
+      console.error('Failed to load kids content:', err);
       setContent([]);
     } finally {
       setIsLoading(false);
     }
   };
 
-  const handleItemPress = (item: JudaismItem) => {
+  const handleItemPress = (item: KidsItem) => {
     navigation.navigate('Player', {
       id: item.id,
       title: getLocalizedText(item, 'title'),
-      type: item.type === 'music' ? 'radio' : 'vod',
+      type: item.category === 'music' ? 'radio' : 'vod',
     });
   };
 
   if (isLoading && content.length === 0) {
     return (
       <View style={styles.loadingContainer}>
-        <ActivityIndicator size="large" color={colors.primary} />
+        <ActivityIndicator size="large" color="#ffd93d" />
         <Text style={styles.loadingText}>{t('common.loading')}</Text>
       </View>
     );
@@ -214,12 +219,12 @@ export const JudaismScreen: React.FC = () => {
     <View style={styles.container}>
       <View style={[styles.header, { flexDirection: isRTL ? 'row' : 'row-reverse' }]}>
         <View style={[styles.headerIcon, { marginLeft: isRTL ? spacing.lg : 0, marginRight: isRTL ? 0 : spacing.lg }]}>
-          <Text style={styles.headerIconText}>✡️</Text>
+          <Text style={styles.headerIconText}>👶</Text>
         </View>
         <View>
-          <Text style={[styles.title, { textAlign }]}>{t('judaism.title')}</Text>
+          <Text style={[styles.title, { textAlign }]}>{t('children.title', 'ילדים')}</Text>
           <Text style={[styles.subtitle, { textAlign }]}>
-            {content.length} {t('judaism.items')}
+            {content.length} {t('children.items', 'פריטים')}
           </Text>
         </View>
       </View>
@@ -239,7 +244,7 @@ export const JudaismScreen: React.FC = () => {
                 selectedCategory === category.id && styles.categoryButtonActive,
               ]}
             >
-              <Text style={styles.categoryIcon}>{category.icon}</Text>
+              <Text style={styles.categoryIcon}>{CATEGORY_ICONS[category.id] || '🌈'}</Text>
               <Text
                 style={[
                   styles.categoryText,
@@ -260,7 +265,7 @@ export const JudaismScreen: React.FC = () => {
         key={isTV ? 'tv' : 'mobile'}
         contentContainerStyle={styles.grid}
         renderItem={({ item, index }) => (
-          <JudaismCard
+          <KidsCard
             item={item}
             onPress={() => handleItemPress(item)}
             index={index}
@@ -270,9 +275,9 @@ export const JudaismScreen: React.FC = () => {
         ListEmptyComponent={
           <View style={styles.emptyState}>
             <GlassView style={styles.emptyCard}>
-              <Text style={styles.emptyIcon}>✡️</Text>
-              <Text style={[styles.emptyTitle, { textAlign }]}>{t('judaism.empty')}</Text>
-              <Text style={[styles.emptySubtitle, { textAlign }]}>{t('judaism.emptyHint')}</Text>
+              <Text style={styles.emptyIcon}>🌈</Text>
+              <Text style={[styles.emptyTitle, { textAlign }]}>{t('children.empty', 'אין תוכן זמין')}</Text>
+              <Text style={[styles.emptySubtitle, { textAlign }]}>{t('children.emptyHint', 'נסה קטגוריה אחרת')}</Text>
             </GlassView>
           </View>
         }
@@ -284,16 +289,16 @@ export const JudaismScreen: React.FC = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: colors.background,
+    backgroundColor: '#1a1525',
   },
   loadingContainer: {
     flex: 1,
-    backgroundColor: colors.background,
+    backgroundColor: '#1a1525',
     justifyContent: 'center',
     alignItems: 'center',
   },
   loadingText: {
-    color: colors.text,
+    color: '#ffd93d',
     fontSize: 18,
     marginTop: spacing.md,
   },
@@ -308,7 +313,7 @@ const styles = StyleSheet.create({
     width: 60,
     height: 60,
     borderRadius: 30,
-    backgroundColor: 'rgba(70, 130, 180, 0.2)',
+    backgroundColor: 'rgba(255, 217, 61, 0.2)',
     justifyContent: 'center',
     alignItems: 'center',
     marginLeft: spacing.lg,
@@ -319,11 +324,11 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 42,
     fontWeight: 'bold',
-    color: colors.text,
+    color: '#ffd93d',
   },
   subtitle: {
     fontSize: 18,
-    color: colors.textSecondary,
+    color: 'rgba(255, 217, 61, 0.7)',
     marginTop: 2,
   },
   categories: {
@@ -337,24 +342,24 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     paddingVertical: 12,
     borderRadius: 24,
-    backgroundColor: '#1a1a2e',
+    backgroundColor: 'rgba(255, 217, 61, 0.1)',
     borderWidth: 2,
     borderColor: 'transparent',
     gap: 8,
   },
   categoryButtonActive: {
-    backgroundColor: 'rgba(70, 130, 180, 0.2)',
-    borderColor: '#4682b4',
+    backgroundColor: 'rgba(255, 217, 61, 0.25)',
+    borderColor: '#ffd93d',
   },
   categoryIcon: {
     fontSize: 18,
   },
   categoryText: {
     fontSize: 16,
-    color: '#888888',
+    color: 'rgba(255, 217, 61, 0.7)',
   },
   categoryTextActive: {
-    color: '#4682b4',
+    color: '#ffd93d',
     fontWeight: 'bold',
   },
   grid: {
@@ -368,14 +373,14 @@ const styles = StyleSheet.create({
     maxWidth: isTV ? '20%' : '33.33%',
   },
   card: {
-    backgroundColor: colors.backgroundLight,
+    backgroundColor: '#2d2540',
     borderRadius: borderRadius.lg,
     overflow: 'hidden',
     borderWidth: 3,
     borderColor: 'transparent',
   },
   cardFocused: {
-    borderColor: '#4682b4',
+    borderColor: '#ffd93d',
   },
   cardImage: {
     width: '100%',
@@ -384,14 +389,14 @@ const styles = StyleSheet.create({
   cardImagePlaceholder: {
     width: '100%',
     aspectRatio: 16 / 9,
-    backgroundColor: colors.backgroundLighter,
+    backgroundColor: 'rgba(255, 217, 61, 0.1)',
     justifyContent: 'center',
     alignItems: 'center',
   },
   placeholderIcon: {
     fontSize: 48,
   },
-  typeBadge: {
+  categoryBadge: {
     position: 'absolute',
     top: 8,
     backgroundColor: 'rgba(0, 0, 0, 0.7)',
@@ -399,20 +404,20 @@ const styles = StyleSheet.create({
     paddingHorizontal: 8,
     paddingVertical: 4,
   },
-  typeBadgeText: {
+  categoryBadgeText: {
     fontSize: 14,
   },
-  durationBadge: {
+  ageBadge: {
     position: 'absolute',
     top: 8,
-    backgroundColor: 'rgba(70, 130, 180, 0.9)',
+    backgroundColor: 'rgba(255, 217, 61, 0.9)',
     borderRadius: 8,
     paddingHorizontal: 6,
     paddingVertical: 2,
   },
-  durationText: {
+  ageText: {
     fontSize: 10,
-    color: '#ffffff',
+    color: '#1a1525',
     fontWeight: 'bold',
   },
   cardContent: {
@@ -421,17 +426,17 @@ const styles = StyleSheet.create({
   cardTitle: {
     fontSize: 14,
     fontWeight: '600',
-    color: colors.text,
+    color: '#ffffff',
   },
-  cardRabbi: {
-    fontSize: 12,
-    color: '#4682b4',
-    marginTop: 2,
-  },
-  cardSubtitle: {
+  cardDescription: {
     fontSize: 11,
-    color: colors.textSecondary,
+    color: 'rgba(255, 255, 255, 0.6)',
     marginTop: 2,
+  },
+  cardDuration: {
+    fontSize: 10,
+    color: '#ffd93d',
+    marginTop: 4,
   },
   overlay: {
     ...StyleSheet.absoluteFillObject,
@@ -443,13 +448,13 @@ const styles = StyleSheet.create({
     width: 56,
     height: 56,
     borderRadius: 28,
-    backgroundColor: '#4682b4',
+    backgroundColor: '#ffd93d',
     justifyContent: 'center',
     alignItems: 'center',
   },
   playIcon: {
     fontSize: 24,
-    color: '#ffffff',
+    color: '#1a1525',
     marginLeft: 4,
   },
   emptyState: {
@@ -461,6 +466,7 @@ const styles = StyleSheet.create({
   emptyCard: {
     padding: spacing.xxl,
     alignItems: 'center',
+    backgroundColor: 'rgba(255, 217, 61, 0.1)',
   },
   emptyIcon: {
     fontSize: 64,
@@ -469,13 +475,13 @@ const styles = StyleSheet.create({
   emptyTitle: {
     fontSize: 20,
     fontWeight: '600',
-    color: colors.text,
+    color: '#ffd93d',
     marginBottom: spacing.sm,
   },
   emptySubtitle: {
     fontSize: 16,
-    color: colors.textSecondary,
+    color: 'rgba(255, 217, 61, 0.7)',
   },
 });
 
-export default JudaismScreen;
+export default ChildrenScreen;

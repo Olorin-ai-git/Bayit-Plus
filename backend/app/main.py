@@ -5,7 +5,7 @@ from app.core.config import settings
 from app.core.database import connect_to_mongo, close_mongo_connection
 
 # Import routers
-from app.api.routes import auth, content, live, radio, podcasts, subscriptions, chat, watchlist, history, admin, party, websocket, zman, trending, chapters, subtitles, ritual
+from app.api.routes import auth, content, live, radio, podcasts, subscriptions, chat, watchlist, history, admin, party, websocket, zman, trending, chapters, subtitles, ritual, profiles, children, judaism, flows
 
 
 @asynccontextmanager
@@ -57,6 +57,10 @@ app.include_router(trending.router, prefix=f"{settings.API_V1_PREFIX}/trending",
 app.include_router(chapters.router, prefix=f"{settings.API_V1_PREFIX}/chapters", tags=["chapters"])
 app.include_router(subtitles.router, prefix=f"{settings.API_V1_PREFIX}", tags=["subtitles"])
 app.include_router(ritual.router, prefix=f"{settings.API_V1_PREFIX}", tags=["ritual"])
+app.include_router(profiles.router, prefix=f"{settings.API_V1_PREFIX}/profiles", tags=["profiles"])
+app.include_router(children.router, prefix=f"{settings.API_V1_PREFIX}/children", tags=["children"])
+app.include_router(judaism.router, prefix=f"{settings.API_V1_PREFIX}/judaism", tags=["judaism"])
+app.include_router(flows.router, prefix=f"{settings.API_V1_PREFIX}/flows", tags=["flows"])
 
 
 if __name__ == "__main__":
