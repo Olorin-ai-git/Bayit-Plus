@@ -162,10 +162,18 @@ def regenerate_report_for_date(target_date: datetime) -> Optional[Path]:
 
 
 def _get_blindspot_window(window_date: Optional[datetime]) -> tuple:
-    """Get blindspot analysis window dates."""
+    """
+    Get blindspot analysis window dates.
+
+    Uses the full month window for blindspot analysis to ensure enough data
+    for meaningful 2D distribution. Single-day windows often return no data.
+    """
     if not window_date:
         return None, None
+    # Use full month window for blindspot analysis
+    import calendar
+    last_day = calendar.monthrange(window_date.year, window_date.month)[1]
     return (
-        datetime(window_date.year, window_date.month, window_date.day, 0, 0, 0),
-        datetime(window_date.year, window_date.month, window_date.day, 23, 59, 59),
+        datetime(window_date.year, window_date.month, 1, 0, 0, 0),
+        datetime(window_date.year, window_date.month, last_day, 23, 59, 59),
     )

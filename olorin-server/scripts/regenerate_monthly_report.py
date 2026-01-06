@@ -22,8 +22,8 @@ sys.path.insert(0, str(Path(__file__).parent.parent))
 from app.schemas.monthly_analysis import DailyAnalysisResult, MonthlyAnalysisResult
 from app.service.analytics.model_blindspot_analyzer import ModelBlindspotAnalyzer
 from app.service.investigation.incremental_report import (
-    _extract_window_date_from_investigations,
-    _fetch_completed_auto_comp_investigations,
+    extract_window_date_from_investigations,
+    fetch_completed_auto_comp_investigations,
 )
 from app.service.logging import get_bridge_logger
 from app.service.reporting.monthly_report_generator import generate_monthly_report
@@ -55,13 +55,13 @@ async def regenerate_monthly(year: int, month: int) -> Path:
     logger.info(f"Fetching investigations for {month_name} {year}...")
 
     # Fetch ALL completed investigations from database (same as startup flow)
-    all_investigations = _fetch_completed_auto_comp_investigations()
+    all_investigations = fetch_completed_auto_comp_investigations()
     logger.info(f"Found {len(all_investigations)} total completed investigations")
 
     # Group investigations by their window date (day of month)
     by_day: Dict[int, List[Dict[str, Any]]] = defaultdict(list)
     for inv in all_investigations:
-        inv_date = _extract_window_date_from_investigations([inv])
+        inv_date = extract_window_date_from_investigations([inv])
         if inv_date and inv_date.year == year and inv_date.month == month:
             by_day[inv_date.day].append(inv)
 

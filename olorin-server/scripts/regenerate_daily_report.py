@@ -18,8 +18,8 @@ from typing import List
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
 from app.service.investigation.incremental_report import (
-    _fetch_completed_auto_comp_investigations,
-    _extract_window_date_from_investigations,
+    fetch_completed_auto_comp_investigations,
+    extract_window_date_from_investigations,
     regenerate_report_for_date,
 )
 from app.service.logging import get_bridge_logger
@@ -29,11 +29,11 @@ logger = get_bridge_logger(__name__)
 
 def get_dates_with_data(year: int, month: int) -> List[datetime]:
     """Find all dates in a month that have investigation data."""
-    investigations = _fetch_completed_auto_comp_investigations()
+    investigations = fetch_completed_auto_comp_investigations()
 
     dates_with_data = set()
     for inv in investigations:
-        inv_date = _extract_window_date_from_investigations([inv])
+        inv_date = extract_window_date_from_investigations([inv])
         if inv_date and inv_date.year == year and inv_date.month == month:
             dates_with_data.add(inv_date.date())
 
