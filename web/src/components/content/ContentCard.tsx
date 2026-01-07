@@ -109,7 +109,7 @@ export default function ContentCard({ content, showProgress = false }: ContentCa
 
 const styles = StyleSheet.create({
   card: {
-    width: 200,
+    width: '100%',
     padding: 0,
     overflow: 'hidden',
   },

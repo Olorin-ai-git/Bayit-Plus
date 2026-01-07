@@ -1,0 +1,11 @@
+{
+  "name": "@bayit/shared-i18n",
+  "version": "1.0.0",
+  "description": "Shared i18n configuration and locales for Bayit+ apps",
+  "main": "index.ts",
+  "types": "index.ts",
+  "peerDependencies": {
+    "i18next": ">=21",
+    "react-i18next": ">=12"
+  }
+}

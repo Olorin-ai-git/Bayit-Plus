@@ -15,10 +15,9 @@ export {
   GlassModal,
   GlassBadge,
   GlassTabs,
-} from '@bayit/shared/ui';
+  AnimatedLogo,
+  DemoBanner,
+} from '@bayit/shared';
 
 // Re-export types
 export type { GlassModalProps, ModalType, ModalButton } from '@bayit/shared/ui';
-
-// Keep AnimatedLogo locally (web-specific)
-export { default as AnimatedLogo } from './AnimatedLogo';

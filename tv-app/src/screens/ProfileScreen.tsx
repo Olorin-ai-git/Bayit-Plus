@@ -10,7 +10,7 @@ import {
 } from 'react-native';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
-import { GlassView, GlassButton } from '../components/ui';
+import { GlassView, GlassButton } from '../components';
 import { useAuthStore } from '../stores/authStore';
 import { subscriptionService } from '../services/api';
 import { colors, spacing, borderRadius, fontSize } from '../theme';

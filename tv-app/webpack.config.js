@@ -9,7 +9,7 @@ const babelLoaderConfiguration = {
     path.resolve(__dirname, 'src'),
     path.resolve(__dirname, 'App.tsx'),
     path.resolve(__dirname, 'index.web.js'),
-    path.resolve(__dirname, '../shared/components'),
+    path.resolve(__dirname, '../shared'),
   ],
   use: {
     loader: 'babel-loader',
@@ -98,8 +98,23 @@ module.exports = {
       'react-native-linear-gradient': 'react-native-web-linear-gradient',
       // AsyncStorage web shim
       '@react-native-async-storage/async-storage': path.resolve(__dirname, 'src/utils/asyncStorageWeb.ts'),
-      // Shared components
+      // Shared packages
       '@bayit/shared': path.resolve(__dirname, '../shared/components'),
+      '@bayit/shared/components': path.resolve(__dirname, '../shared/components'),
+      '@bayit/shared/components/ai': path.resolve(__dirname, '../shared/components/ai'),
+      '@bayit/shared/components/ui': path.resolve(__dirname, '../shared/components/ui'),
+      '@bayit/shared/ui': path.resolve(__dirname, '../shared/components/ui'),
+      '@bayit/shared/theme': path.resolve(__dirname, '../shared/theme'),
+      '@bayit/shared/stores': path.resolve(__dirname, '../shared/stores'),
+      '@bayit/shared/services': path.resolve(__dirname, '../shared/services'),
+      '@bayit/shared/hooks': path.resolve(__dirname, '../shared/hooks'),
+      '@bayit/shared/admin': path.resolve(__dirname, '../shared/components/admin'),
+      '@bayit/shared-screens': path.resolve(__dirname, '../shared/screens'),
+      '@bayit/shared-services': path.resolve(__dirname, '../shared/services'),
+      '@bayit/shared-stores': path.resolve(__dirname, '../shared/stores'),
+      '@bayit/shared-hooks': path.resolve(__dirname, '../shared/hooks'),
+      '@bayit/shared-contexts': path.resolve(__dirname, '../shared/contexts'),
+      '@bayit/shared-i18n': path.resolve(__dirname, '../shared/i18n'),
     },
     // Allow shared components to resolve node_modules from this directory
     modules: [

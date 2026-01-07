@@ -11,3 +11,5 @@ export { ProfileScreen } from './ProfileScreen';
 export { FavoritesScreen } from './FavoritesScreen';
 export { DownloadsScreen } from './DownloadsScreen';
 export { WatchlistScreen } from './WatchlistScreen';
+export { SubscribeScreen } from './SubscribeScreen';
+export { NotFoundScreen } from './NotFoundScreen';

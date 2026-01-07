@@ -15,11 +15,10 @@ import {
 } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { useNavigation } from '@react-navigation/native';
-import { AdminLayout } from '../../components/admin/AdminLayout';
-import { StatCard } from '../../components/admin/StatCard';
+import { AdminLayout, StatCard } from '@bayit/shared/admin';
 import { marketingService, MarketingMetrics, RecentCampaign, AudienceSegment } from '../../services/adminApi';
 import { useModal } from '../../contexts/ModalContext';
-import { colors, spacing, borderRadius, fontSize } from '../../theme';
+import { colors, spacing, borderRadius, fontSize } from '@bayit/shared/theme';
 
 export const MarketingDashboardScreen: React.FC = () => {
   const { t } = useTranslation();

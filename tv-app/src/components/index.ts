@@ -1,9 +1,34 @@
-export { FocusableCard } from './FocusableCard';
-export { ContentRow } from './ContentRow';
-export { SideMenu } from './SideMenu';
-export { AnimatedLogo } from './AnimatedLogo';
-export { GlassTopBar } from './GlassTopBar';
-export { GlassSidebar } from './GlassSidebar';
-export { LanguageSelector } from './LanguageSelector';
-export { UserAccountMenu } from './UserAccountMenu';
-export { VoiceSearchButton } from './VoiceSearchButton';
+/**
+ * TV App Components
+ * Re-exports from shared library for backward compatibility
+ */
+
+// Re-export all shared components
+export {
+  AnimatedLogo,
+  ContentRow,
+  DemoBanner,
+  DualClock,
+  FocusableCard,
+  GlassCarousel,
+  GlassSidebar,
+  GlassTopBar,
+  InteractiveSubtitles,
+  LanguageSelector,
+  SideMenu,
+  TrendingRow,
+  UserAccountMenu,
+  VoiceSearchButton,
+} from '@bayit/shared';
+
+// Re-export UI components
+export * from './ui';
+
+// Re-export player components (local)
+export * from './player';
+
+// Re-export watchparty components
+export * from './watchparty';
+
+// Re-export chat components
+export * from './chat';

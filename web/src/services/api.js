@@ -18,6 +18,8 @@ import {
   demoPartyService,
   demoFavoritesService,
   demoDownloadsService,
+  demoJudaismService,
+  demoChildrenService,
 } from './demoService'
 
 const API_BASE_URL = import.meta.env.VITE_API_URL || '/api/v1'
@@ -319,8 +321,8 @@ export const partyService = isDemo ? demoPartyService : apiPartyService
 export const favoritesService = isDemo ? demoFavoritesService : apiFavoritesService
 export const downloadsService = isDemo ? demoDownloadsService : apiDownloadsService
 export const profilesService = apiProfilesService // No demo mode for profiles - requires real auth
-export const childrenService = apiChildrenService // No demo mode for children
-export const judaismService = apiJudaismService // No demo mode for judaism
+export const childrenService = isDemo ? demoChildrenService : apiChildrenService
+export const judaismService = isDemo ? demoJudaismService : apiJudaismService
 export const flowsService = apiFlowsService // No demo mode for flows
 
 export default api

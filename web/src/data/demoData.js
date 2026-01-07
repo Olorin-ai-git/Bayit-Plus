@@ -871,6 +871,8 @@ export const demoFeatured = {
   hero: demoSeries[0], // Fauda
   spotlight: demoSeries.filter(s => s.is_featured),
   new_releases: [...demoMovies.slice(0, 3), ...demoSeries.slice(0, 3)],
+  // All content for "All" category view
+  items: [...demoMovies, ...demoSeries],
 };
 
 // ===========================================
@@ -892,6 +894,201 @@ export const demoSearchResults = (query) => {
     total: allContent.length,
   };
 };
+
+// ===========================================
+// JUDAISM CONTENT
+// ===========================================
+export const demoJudaismCategories = [
+  { id: 'all', name: 'הכל', name_en: 'All', name_es: 'Todo' },
+  { id: 'shiurim', name: 'שיעורים', name_en: 'Torah Classes', name_es: 'Clases de Torá' },
+  { id: 'tefila', name: 'תפילה', name_en: 'Prayer', name_es: 'Oración' },
+  { id: 'music', name: 'מוזיקה', name_en: 'Music', name_es: 'Música' },
+  { id: 'holidays', name: 'חגים', name_en: 'Holidays', name_es: 'Fiestas' },
+  { id: 'documentaries', name: 'תיעודי', name_en: 'Documentaries', name_es: 'Documentales' },
+];
+
+export const demoJudaismContent = [
+  {
+    id: 'judaism-1',
+    title: 'פרשת השבוע - בראשית',
+    title_en: 'Weekly Torah Portion - Bereishit',
+    title_es: 'Porción Semanal - Bereshit',
+    description: 'שיעור מעמיק על פרשת בראשית',
+    description_en: 'In-depth class on Parashat Bereishit',
+    description_es: 'Clase profunda sobre Parashat Bereshit',
+    thumbnail: 'https://picsum.photos/seed/torah1/400/225',
+    category: 'shiurim',
+    rabbi: 'הרב יוסף כהן',
+    rabbi_en: 'Rabbi Yosef Cohen',
+    rabbi_es: 'Rabino Yosef Cohen',
+    duration: '45:00',
+  },
+  {
+    id: 'judaism-2',
+    title: 'תפילת שחרית המלאה',
+    title_en: 'Complete Morning Prayer',
+    title_es: 'Oración Matutina Completa',
+    description: 'תפילת שחרית עם הסברים וכוונות',
+    description_en: 'Morning prayer with explanations and intentions',
+    description_es: 'Oración matutina con explicaciones e intenciones',
+    thumbnail: 'https://picsum.photos/seed/prayer1/400/225',
+    category: 'tefila',
+    rabbi: 'הרב משה לוי',
+    rabbi_en: 'Rabbi Moshe Levi',
+    rabbi_es: 'Rabino Moshe Levi',
+    duration: '30:00',
+  },
+  {
+    id: 'judaism-3',
+    title: 'ניגוני חסידות',
+    title_en: 'Hasidic Melodies',
+    title_es: 'Melodías Jasídicas',
+    description: 'אוסף ניגונים חסידיים מרגשים',
+    description_en: 'Collection of moving Hasidic melodies',
+    description_es: 'Colección de melodías jasídicas emotivas',
+    thumbnail: 'https://picsum.photos/seed/music2/400/225',
+    category: 'music',
+    duration: '60:00',
+  },
+  {
+    id: 'judaism-4',
+    title: 'הלכות חנוכה',
+    title_en: 'Laws of Hanukkah',
+    title_es: 'Leyes de Janucá',
+    description: 'כל ההלכות והמנהגים של חג החנוכה',
+    description_en: 'All laws and customs of Hanukkah',
+    description_es: 'Todas las leyes y costumbres de Janucá',
+    thumbnail: 'https://picsum.photos/seed/hanukah/400/225',
+    category: 'holidays',
+    rabbi: 'הרב אברהם שפירא',
+    rabbi_en: 'Rabbi Avraham Shapira',
+    rabbi_es: 'Rabino Avraham Shapira',
+    duration: '25:00',
+  },
+  {
+    id: 'judaism-5',
+    title: 'הכותל המערבי - היסטוריה',
+    title_en: 'Western Wall - History',
+    title_es: 'Muro de los Lamentos - Historia',
+    description: 'סרט תיעודי על ההיסטוריה של הכותל המערבי',
+    description_en: 'Documentary about the history of the Western Wall',
+    description_es: 'Documental sobre la historia del Muro de los Lamentos',
+    thumbnail: 'https://picsum.photos/seed/kotel/400/225',
+    category: 'documentaries',
+    duration: '55:00',
+  },
+  {
+    id: 'judaism-6',
+    title: 'פרקי אבות - פרק א',
+    title_en: 'Ethics of the Fathers - Chapter 1',
+    title_es: 'Ética de los Padres - Capítulo 1',
+    description: 'לימוד מעמיק של פרקי אבות',
+    description_en: 'In-depth study of Pirkei Avot',
+    description_es: 'Estudio profundo de Pirkei Avot',
+    thumbnail: 'https://picsum.photos/seed/avot/400/225',
+    category: 'shiurim',
+    rabbi: 'הרב דוד שטרן',
+    rabbi_en: 'Rabbi David Stern',
+    rabbi_es: 'Rabino David Stern',
+    duration: '40:00',
+  },
+];
+
+// ===========================================
+// CHILDREN CONTENT
+// ===========================================
+export const demoChildrenCategories = [
+  { id: 'all', name: 'הכל' },
+  { id: 'cartoons', name: 'סרטונים' },
+  { id: 'educational', name: 'לימודי' },
+  { id: 'music', name: 'שירים' },
+  { id: 'hebrew', name: 'עברית' },
+  { id: 'stories', name: 'סיפורים' },
+  { id: 'jewish', name: 'יהדות' },
+];
+
+export const demoChildrenContent = [
+  {
+    id: 'kids-1',
+    title: 'שירי ילדים ישראליים',
+    description: 'אוסף שירי ילדים קלאסיים',
+    thumbnail: 'https://picsum.photos/seed/kids1/400/225',
+    category: 'music',
+    age_rating: 3,
+    duration: '25:00',
+    educational_tags: ['מוזיקה', 'עברית'],
+  },
+  {
+    id: 'kids-2',
+    title: 'אותיות בכיף',
+    description: 'לומדים את האותיות בדרך מהנה',
+    thumbnail: 'https://picsum.photos/seed/kids2/400/225',
+    category: 'hebrew',
+    age_rating: 4,
+    duration: '15:00',
+    educational_tags: ['קריאה', 'עברית'],
+  },
+  {
+    id: 'kids-3',
+    title: 'סיפורי התנ״ך לילדים',
+    description: 'סיפורים מהתנ״ך בשפה פשוטה',
+    thumbnail: 'https://picsum.photos/seed/kids3/400/225',
+    category: 'jewish',
+    age_rating: 5,
+    duration: '20:00',
+    educational_tags: ['יהדות', 'סיפורים'],
+  },
+  {
+    id: 'kids-4',
+    title: 'חשבון לכיתה א',
+    description: 'לומדים חשבון בדרך משעשעת',
+    thumbnail: 'https://picsum.photos/seed/kids4/400/225',
+    category: 'educational',
+    age_rating: 6,
+    duration: '30:00',
+    educational_tags: ['מתמטיקה', 'לימודים'],
+  },
+  {
+    id: 'kids-5',
+    title: 'הרפתקאות דני הדינוזאור',
+    description: 'סדרת אנימציה חינוכית',
+    thumbnail: 'https://picsum.photos/seed/kids5/400/225',
+    category: 'cartoons',
+    age_rating: 3,
+    duration: '12:00',
+    educational_tags: ['אנימציה', 'דינוזאורים'],
+  },
+  {
+    id: 'kids-6',
+    title: 'סיפור לפני השינה',
+    description: 'סיפורים קצרים לשעת הלילה',
+    thumbnail: 'https://picsum.photos/seed/kids6/400/225',
+    category: 'stories',
+    age_rating: 3,
+    duration: '10:00',
+    educational_tags: ['סיפורים', 'שינה'],
+  },
+  {
+    id: 'kids-7',
+    title: 'שירי שבת לילדים',
+    description: 'שירים ליום השבת',
+    thumbnail: 'https://picsum.photos/seed/kids7/400/225',
+    category: 'jewish',
+    age_rating: 3,
+    duration: '18:00',
+    educational_tags: ['שבת', 'מוזיקה'],
+  },
+  {
+    id: 'kids-8',
+    title: 'צבעים וצורות',
+    description: 'לומדים על צבעים וצורות בסיסיות',
+    thumbnail: 'https://picsum.photos/seed/kids8/400/225',
+    category: 'educational',
+    age_rating: 2,
+    duration: '8:00',
+    educational_tags: ['צבעים', 'צורות'],
+  },
+];
 
 export default {
   user: demoUser,

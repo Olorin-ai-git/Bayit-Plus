@@ -16,11 +16,10 @@ import {
 } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { useNavigation } from '@react-navigation/native';
-import { AdminLayout } from '../../components/admin/AdminLayout';
-import { DataTable, Column } from '../../components/admin/DataTable';
+import { AdminLayout, DataTable, Column } from '@bayit/shared/admin';
 import { usersService, UsersFilter } from '../../services/adminApi';
 import { User, Subscription } from '../../types/rbac';
-import { colors, spacing, borderRadius, fontSize } from '../../theme';
+import { colors, spacing, borderRadius, fontSize } from '@bayit/shared/theme';
 import { formatDate } from '../../utils/formatters';
 import { getRoleColor } from '../../utils/adminConstants';
 

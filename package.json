@@ -12,12 +12,20 @@
     "deploy:tv": "cd tv-app && npm run deploy",
     "deploy:preview": "npm run build:all && firebase hosting:channel:deploy preview",
     "firebase:login": "firebase login",
-    "firebase:init": "firebase init hosting"
+    "firebase:init": "firebase init hosting",
+    "tvos": "cd tvos-app && npm run tvos",
+    "tvos:start": "cd tvos-app && npm run start",
+    "android-tv": "cd tv-app && npm run android",
+    "install:tvos": "cd tvos-app && npm install && cd tvos && pod install"
   },
   "devDependencies": {
     "firebase-tools": "^13.0.0"
   },
   "engines": {
     "node": ">=20"
+  },
+  "dependencies": {
+    "react-native-linear-gradient": "^2.8.3",
+    "react-native-vector-icons": "^10.3.0"
   }
 }

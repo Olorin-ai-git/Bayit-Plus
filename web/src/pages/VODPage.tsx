@@ -70,18 +70,18 @@ export default function VODPage() {
   return (
     <View style={styles.container}>
       {/* Header */}
-      <View style={styles.header}>
+      <View style={[styles.header, { direction: 'rtl' }]}>
+        <Text style={styles.title}>סרטים וסדרות</Text>
         <GlassView style={styles.headerIcon}>
           <Film size={24} color={colors.primary} />
         </GlassView>
-        <Text style={styles.title}>סרטים וסדרות</Text>
       </View>
 
       {/* Category Filter */}
       <ScrollView
         horizontal
         showsHorizontalScrollIndicator={false}
-        style={styles.categoriesScroll}
+        style={[styles.categoriesScroll, { direction: 'rtl' }]}
         contentContainerStyle={styles.categoriesContent}
       >
         <Pressable
@@ -107,9 +107,9 @@ export default function VODPage() {
 
       {/* Loading State */}
       {loading ? (
-        <View style={styles.grid}>
+        <View style={[styles.grid, { direction: 'rtl' }]}>
           {[...Array(12)].map((_, i) => (
-            <View key={i} style={styles.skeletonCard}>
+            <View key={i} style={[styles.skeletonCard, { width: `${100 / numColumns - 2}%` }]}>
               <View style={styles.skeletonThumbnail} />
             </View>
           ))}
@@ -122,10 +122,11 @@ export default function VODPage() {
             keyExtractor={(item) => item.id}
             numColumns={numColumns}
             key={numColumns}
+            style={{ direction: 'rtl' }}
             contentContainerStyle={styles.gridContent}
             columnWrapperStyle={numColumns > 1 ? styles.row : undefined}
             renderItem={({ item }) => (
-              <View style={{ flex: 1, maxWidth: `${100 / numColumns}%`, padding: spacing.xs }}>
+              <View style={{ flex: 1, maxWidth: `${100 / numColumns}%`, padding: spacing.xs, direction: 'ltr' }}>
                 <ContentCard content={item} />
               </View>
             )}
@@ -180,12 +181,13 @@ const styles = StyleSheet.create({
     paddingBottom: spacing.sm,
   },
   categoryPill: {
-    paddingHorizontal: spacing.md,
+    paddingHorizontal: spacing.lg,
     paddingVertical: spacing.sm,
-    borderRadius: borderRadius.full,
-    backgroundColor: colors.glass,
+    borderRadius: borderRadius.xl,
+    backgroundColor: colors.backgroundLight,
     borderWidth: 1,
     borderColor: colors.glassBorder,
+    minWidth: 60,
   },
   categoryPillActive: {
     backgroundColor: colors.primary,
@@ -233,10 +235,8 @@ const styles = StyleSheet.create({
     color: colors.textSecondary,
   },
   skeletonCard: {
-    flex: 1,
     margin: spacing.xs,
     minWidth: 150,
-    maxWidth: `${100 / 6}%`,
   },
   skeletonThumbnail: {
     aspectRatio: 16 / 9,

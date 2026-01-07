@@ -3,7 +3,7 @@ import { View, Text, StyleSheet, TextInput, Pressable, FlatList, useWindowDimens
 import { useSearchParams } from 'react-router-dom';
 import { Search, X } from 'lucide-react';
 import ContentCard from '@/components/content/ContentCard';
-import VoiceSearchButton from '@/components/search/VoiceSearchButton';
+import { VoiceSearchButton } from '@bayit/shared';
 import { contentService } from '@/services/api';
 import { colors, spacing, borderRadius } from '@bayit/shared/theme';
 import { GlassView, GlassCard, GlassInput } from '@bayit/shared/ui';

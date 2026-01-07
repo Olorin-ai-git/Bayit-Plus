@@ -17,10 +17,10 @@ import {
 } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { useNavigation, useRoute, RouteProp } from '@react-navigation/native';
-import { AdminLayout } from '../../components/admin/AdminLayout';
+import { AdminLayout } from '@bayit/shared/admin';
 import { campaignsService } from '../../services/adminApi';
 import { Campaign, AudienceFilter } from '../../types/rbac';
-import { colors, spacing, borderRadius, fontSize } from '../../theme';
+import { colors, spacing, borderRadius, fontSize } from '@bayit/shared/theme';
 import { AdminStackParamList } from '../../navigation/AdminNavigator';
 import { useModal } from '../../contexts/ModalContext';
 

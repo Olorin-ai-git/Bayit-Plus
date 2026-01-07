@@ -1,6 +1,7 @@
 import { View, Text, StyleSheet, Image, Pressable, useWindowDimensions } from 'react-native'
 import { Link } from 'react-router-dom'
 import { Play, Info, Plus } from 'lucide-react'
+import { useTranslation } from 'react-i18next'
 import { colors, spacing, borderRadius } from '@bayit/shared/theme'
 import { GlassBadge } from '@bayit/shared/ui'
 
@@ -21,6 +22,7 @@ interface HeroSectionProps {
 }
 
 export default function HeroSection({ content }: HeroSectionProps) {
+  const { t } = useTranslation()
   const { height: windowHeight } = useWindowDimensions()
 
   if (!content) return null
@@ -82,7 +84,7 @@ export default function HeroSection({ content }: HeroSectionProps) {
                 ]}
               >
                 <Play size={20} fill={colors.background} color={colors.background} />
-                <Text style={styles.primaryButtonText}>צפייה</Text>
+                <Text style={styles.primaryButtonText}>{t('hero.watch')}</Text>
               </Pressable>
             </Link>
 
@@ -94,7 +96,7 @@ export default function HeroSection({ content }: HeroSectionProps) {
                 ]}
               >
                 <Info size={20} color={colors.text} />
-                <Text style={styles.secondaryButtonText}>מידע נוסף</Text>
+                <Text style={styles.secondaryButtonText}>{t('hero.moreInfo')}</Text>
               </Pressable>
             </Link>
 
@@ -103,7 +105,7 @@ export default function HeroSection({ content }: HeroSectionProps) {
                 styles.iconButton,
                 hovered && styles.iconButtonHovered,
               ]}
-              accessibilityLabel="הוסף לרשימה"
+              accessibilityLabel={t('hero.addToList')}
             >
               <Plus size={20} color={colors.text} />
             </Pressable>
@@ -200,16 +202,22 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: spacing.sm,
-    backgroundColor: colors.secondary,
+    backgroundColor: 'rgba(26, 26, 46, 0.6)',
     paddingHorizontal: spacing.lg,
     paddingVertical: spacing.md,
     borderRadius: borderRadius.md,
+    borderWidth: 1,
+    borderColor: colors.glassBorder,
+    // @ts-ignore - Web-specific CSS
+    backdropFilter: 'blur(12px)',
+    WebkitBackdropFilter: 'blur(12px)',
   },
   secondaryButtonHovered: {
-    shadowColor: colors.secondary,
+    backgroundColor: colors.glassStrong,
+    shadowColor: colors.primary,
     shadowOffset: { width: 0, height: 0 },
-    shadowOpacity: 0.5,
-    shadowRadius: 16,
+    shadowOpacity: 0.3,
+    shadowRadius: 12,
     transform: [{ scale: 1.02 }],
   },
   secondaryButtonText: {

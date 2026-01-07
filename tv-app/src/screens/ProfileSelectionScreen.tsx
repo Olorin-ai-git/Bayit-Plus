@@ -18,8 +18,7 @@ import {
 import { useNavigation } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
 import { useProfile, Profile } from '../contexts/ProfileContext';
-import { AnimatedLogo } from '../components/AnimatedLogo';
-import { GlassView } from '../components/ui';
+import { AnimatedLogo, GlassView } from '../components';
 import { colors } from '../theme';
 import { useDirection } from '../hooks/useDirection';
 

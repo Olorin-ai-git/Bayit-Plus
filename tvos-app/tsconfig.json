@@ -1,0 +1,17 @@
+{
+  "extends": "@react-native/typescript-config",
+  "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "@bayit/shared": ["../shared/components"],
+      "@bayit/shared-screens": ["../shared/screens"],
+      "@bayit/shared-services": ["../shared/services"],
+      "@bayit/shared-stores": ["../shared/stores"],
+      "@bayit/shared-hooks": ["../shared/hooks"],
+      "@bayit/shared-contexts": ["../shared/contexts"],
+      "@bayit/shared-i18n": ["../shared/i18n"]
+    }
+  },
+  "include": ["**/*.ts", "**/*.tsx", "../shared/**/*.ts", "../shared/**/*.tsx"],
+  "exclude": ["**/node_modules", "**/Pods"]
+}

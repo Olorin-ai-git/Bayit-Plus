@@ -16,11 +16,10 @@ import {
   ActivityIndicator,
 } from 'react-native';
 import { useTranslation } from 'react-i18next';
-import { AdminLayout } from '../../components/admin/AdminLayout';
-import { DataTable, Column } from '../../components/admin/DataTable';
+import { AdminLayout, DataTable, Column } from '@bayit/shared/admin';
 import { marketingService, MarketingFilter } from '../../services/adminApi';
 import { PushNotification, AudienceFilter } from '../../types/rbac';
-import { colors, spacing, borderRadius, fontSize } from '../../theme';
+import { colors, spacing, borderRadius, fontSize } from '@bayit/shared/theme';
 import { formatDate, formatDateTime } from '../../utils/formatters';
 import { getStatusColor } from '../../utils/adminConstants';
 

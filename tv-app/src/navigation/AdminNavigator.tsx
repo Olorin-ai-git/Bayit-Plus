@@ -24,8 +24,8 @@ import PushNotificationsScreen from '../screens/admin/PushNotificationsScreen';
 import SettingsScreen from '../screens/admin/SettingsScreen';
 import AuditLogsScreen from '../screens/admin/AuditLogsScreen';
 
-import { PermissionGate } from '../components/admin/PermissionGate';
-import { colors } from '../theme';
+import { PermissionGate } from '@bayit/shared/admin';
+import { colors } from '@bayit/shared/theme';
 
 // Define admin route param types
 export type AdminStackParamList = {

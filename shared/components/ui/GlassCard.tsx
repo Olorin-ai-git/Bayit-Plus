@@ -70,19 +70,25 @@ export const GlassCard: React.FC<GlassCardProps> = ({
     }
   };
 
+  // Only show image/placeholder area when being used as a full card (has title or imageUrl)
+  // When only children are passed, act as a simple wrapper
+  const isFullCard = title || subtitle || imageUrl;
+
   const cardContent = (
     <>
-      {/* Image */}
-      {imageUrl ? (
-        <Image
-          source={{ uri: imageUrl }}
-          style={[styles.image, { width, height: height * 0.65 }]}
-          resizeMode="cover"
-        />
-      ) : (
-        <View style={[styles.imagePlaceholder, { width, height: height * 0.65 }]}>
-          <Text style={styles.placeholderIcon}>🎬</Text>
-        </View>
+      {/* Image - only render when used as full card */}
+      {isFullCard && (
+        imageUrl ? (
+          <Image
+            source={{ uri: imageUrl }}
+            style={[styles.image, { width, height: height * 0.65 }]}
+            resizeMode="cover"
+          />
+        ) : (
+          <View style={[styles.imagePlaceholder, { width, height: height * 0.65 }]}>
+            <Text style={styles.placeholderIcon}>🎬</Text>
+          </View>
+        )
       )}
 
       {/* Badge */}

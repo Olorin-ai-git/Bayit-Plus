@@ -1,9 +1,15 @@
-export { WatchPartyButton } from './WatchPartyButton';
-export { WatchPartyCreateModal } from './WatchPartyCreateModal';
-export { WatchPartyJoinModal } from './WatchPartyJoinModal';
-export { WatchPartyOverlay } from './WatchPartyOverlay';
-export { WatchPartyHeader } from './WatchPartyHeader';
-export { WatchPartyParticipants } from './WatchPartyParticipants';
-export { WatchPartyChat } from './WatchPartyChat';
-export { WatchPartyChatInput } from './WatchPartyChatInput';
-export { WatchPartySyncIndicator } from './WatchPartySyncIndicator';
+/**
+ * WatchParty Components
+ * Re-exports from shared library for backward compatibility
+ */
+export {
+  WatchPartyButton,
+  WatchPartyChat,
+  WatchPartyChatInput,
+  WatchPartyCreateModal,
+  WatchPartyHeader,
+  WatchPartyJoinModal,
+  WatchPartyOverlay,
+  WatchPartyParticipants,
+  WatchPartySyncIndicator,
+} from '@bayit/shared/watchparty';

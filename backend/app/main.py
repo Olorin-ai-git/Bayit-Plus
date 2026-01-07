@@ -5,7 +5,7 @@ from app.core.config import settings
 from app.core.database import connect_to_mongo, close_mongo_connection
 
 # Import routers
-from app.api.routes import auth, content, live, radio, podcasts, subscriptions, chat, watchlist, history, admin, party, websocket, zman, trending, chapters, subtitles, ritual, profiles, children, judaism, flows
+from app.api.routes import auth, content, live, radio, podcasts, subscriptions, chat, watchlist, history, admin, party, websocket, zman, trending, chapters, subtitles, ritual, profiles, children, judaism, flows, device_pairing, onboarding
 
 
 @asynccontextmanager
@@ -61,6 +61,8 @@ app.include_router(profiles.router, prefix=f"{settings.API_V1_PREFIX}/profiles",
 app.include_router(children.router, prefix=f"{settings.API_V1_PREFIX}/children", tags=["children"])
 app.include_router(judaism.router, prefix=f"{settings.API_V1_PREFIX}/judaism", tags=["judaism"])
 app.include_router(flows.router, prefix=f"{settings.API_V1_PREFIX}/flows", tags=["flows"])
+app.include_router(device_pairing.router, prefix=f"{settings.API_V1_PREFIX}/auth/device-pairing", tags=["device-pairing"])
+app.include_router(onboarding.router, prefix=f"{settings.API_V1_PREFIX}/onboarding/ai", tags=["ai-onboarding"])
 
 
 if __name__ == "__main__":

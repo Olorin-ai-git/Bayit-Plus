@@ -1,29 +1,31 @@
-import { View, Text, StyleSheet, Pressable, Image, useWindowDimensions } from 'react-native';
+import { View, Text, StyleSheet, Pressable, useWindowDimensions } from 'react-native';
 import { Link, NavLink, useNavigate } from 'react-router-dom';
 import { useState } from 'react';
 import { Search, User, Menu, X } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import { useAuthStore } from '@/stores/authStore';
-import VoiceSearchButton from '@/components/search/VoiceSearchButton';
-import LanguageSelector from './LanguageSelector';
+import { VoiceSearchButton, LanguageSelector, AnimatedLogo } from '@bayit/shared';
 import { colors, spacing } from '@bayit/shared/theme';
 import { GlassView } from '@bayit/shared/ui';
 
-const navLinks = [
-  { to: '/', label: 'ראשי' },
-  { to: '/live', label: 'שידור חי' },
-  { to: '/vod', label: 'VOD' },
-  { to: '/radio', label: 'רדיו' },
-  { to: '/podcasts', label: 'פודקאסטים' },
-  { to: '/judaism', label: 'יהדות' },
-  { to: '/children', label: 'ילדים' },
+const navLinkKeys = [
+  { to: '/', key: 'nav.home' },
+  { to: '/live', key: 'nav.liveTV' },
+  { to: '/vod', key: 'nav.vod' },
+  { to: '/radio', key: 'nav.radio' },
+  { to: '/podcasts', key: 'nav.podcasts' },
+  { to: '/judaism', key: 'nav.judaism' },
+  { to: '/children', key: 'nav.children' },
 ];
 
 export default function Header() {
+  const { i18n, t } = useTranslation();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const { user, isAuthenticated } = useAuthStore();
   const navigate = useNavigate();
   const { width } = useWindowDimensions();
   const isMobile = width < 768;
+  const isRTL = i18n.language === 'he' || i18n.language === 'ar';
 
   const handleVoiceTranscribed = (text: string) => {
     if (text) {
@@ -31,94 +33,106 @@ export default function Header() {
     }
   };
 
+  // Logo component
+  const LogoSection = (
+    <Link to="/" style={{ textDecoration: 'none' }}>
+      <AnimatedLogo size="small" />
+    </Link>
+  );
+
+  // Navigation component - reverse order for LTR languages
+  const navItems = isRTL ? navLinkKeys : [...navLinkKeys].reverse();
+  const NavSection = !isMobile && (
+    <View style={styles.nav}>
+      {navItems.map((link) => (
+        <NavLink
+          key={link.to}
+          to={link.to}
+          style={({ isActive }) => ({
+            textDecoration: 'none',
+          })}
+        >
+          {({ isActive }) => (
+            <View style={[styles.navLink, isActive && styles.navLinkActive]}>
+              <Text style={[styles.navLinkText, isActive && styles.navLinkTextActive]}>
+                {t(link.key)}
+              </Text>
+            </View>
+          )}
+        </NavLink>
+      ))}
+    </View>
+  );
+
+  // Actions component
+  const ActionsSection = (
+    <View style={styles.actions}>
+      {isAuthenticated ? (
+        <Link to="/profile" style={{ textDecoration: 'none' }}>
+          <View style={styles.iconButton}>
+            <User size={20} color={colors.text} />
+          </View>
+        </Link>
+      ) : (
+        <Link to="/login" style={{ textDecoration: 'none' }}>
+          <View style={styles.loginButton}>
+            <Text style={styles.loginButtonText}>{t('account.login')}</Text>
+          </View>
+        </Link>
+      )}
+
+      <LanguageSelector />
+
+      <Link to="/search" style={{ textDecoration: 'none' }}>
+        <View style={styles.iconButton}>
+          <Search size={20} color={colors.text} />
+        </View>
+      </Link>
+
+      <VoiceSearchButton
+        onTranscribed={handleVoiceTranscribed}
+        size="sm"
+      />
+
+      {/* Mobile Menu Toggle */}
+      {isMobile && (
+        <Pressable
+          onPress={() => setMobileMenuOpen(!mobileMenuOpen)}
+          style={styles.iconButton}
+        >
+          {mobileMenuOpen ? (
+            <X size={20} color={colors.text} />
+          ) : (
+            <Menu size={20} color={colors.text} />
+          )}
+        </Pressable>
+      )}
+    </View>
+  );
+
   return (
     <GlassView style={styles.header}>
       <View style={styles.container}>
         <View style={styles.headerContent}>
-          {/* Logo */}
-          <Link to="/" style={{ textDecoration: 'none' }}>
-            <View style={styles.logoContainer}>
-              <Image
-                source={{ uri: '/logo.png' }}
-                style={styles.logo}
-                resizeMode="contain"
-              />
-              <Text style={styles.logoText}>בית+</Text>
-            </View>
-          </Link>
-
-          {/* Desktop Navigation */}
-          {!isMobile && (
-            <View style={styles.nav}>
-              {navLinks.map((link) => (
-                <NavLink
-                  key={link.to}
-                  to={link.to}
-                  style={({ isActive }) => ({
-                    textDecoration: 'none',
-                  })}
-                >
-                  {({ isActive }) => (
-                    <View style={[styles.navLink, isActive && styles.navLinkActive]}>
-                      <Text style={[styles.navLinkText, isActive && styles.navLinkTextActive]}>
-                        {link.label}
-                      </Text>
-                    </View>
-                  )}
-                </NavLink>
-              ))}
-            </View>
+          {isRTL ? (
+            <>
+              {ActionsSection}
+              {NavSection}
+              {LogoSection}
+            </>
+          ) : (
+            <>
+              {LogoSection}
+              {NavSection}
+              {ActionsSection}
+            </>
           )}
-
-          {/* Actions */}
-          <View style={styles.actions}>
-            <VoiceSearchButton
-              onTranscribed={handleVoiceTranscribed}
-              size="sm"
-            />
-
-            <Link to="/search" style={{ textDecoration: 'none' }}>
-              <View style={styles.iconButton}>
-                <Search size={20} color={colors.text} />
-              </View>
-            </Link>
-
-            <LanguageSelector compact />
-
-            {isAuthenticated ? (
-              <Link to="/profile" style={{ textDecoration: 'none' }}>
-                <View style={styles.iconButton}>
-                  <User size={20} color={colors.text} />
-                </View>
-              </Link>
-            ) : (
-              <Link to="/login" style={{ textDecoration: 'none' }}>
-                <View style={styles.loginButton}>
-                  <Text style={styles.loginButtonText}>התחברות</Text>
-                </View>
-              </Link>
-            )}
-
-            {/* Mobile Menu Toggle */}
-            {isMobile && (
-              <Pressable
-                onPress={() => setMobileMenuOpen(!mobileMenuOpen)}
-                style={styles.iconButton}
-              >
-                {mobileMenuOpen ? (
-                  <X size={20} color={colors.text} />
-                ) : (
-                  <Menu size={20} color={colors.text} />
-                )}
-              </Pressable>
-            )}
-          </View>
         </View>
 
         {/* Mobile Navigation */}
         {isMobile && mobileMenuOpen && (
           <View style={styles.mobileNav}>
-            {navLinks.map((link) => (
+            {navLinkKeys.map((link) => (
               <NavLink
                 key={link.to}
                 to={link.to}
@@ -128,7 +142,7 @@ export default function Header() {
                 {({ isActive }) => (
                   <View style={[styles.mobileNavLink, isActive && styles.navLinkActive]}>
                     <Text style={[styles.navLinkText, isActive && styles.navLinkTextActive]}>
-                      {link.label}
+                      {t(link.key)}
                     </Text>
                   </View>
                 )}
@@ -150,6 +164,7 @@ const styles = StyleSheet.create({
     borderBottomColor: 'rgba(255, 255, 255, 0.05)',
   },
   container: {
+    width: '100%',
     maxWidth: 1280,
     marginHorizontal: 'auto',
     paddingHorizontal: spacing.md,
@@ -158,21 +173,8 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
+    width: '100%',
     height: 64,
-  },
-  logoContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing.sm,
-  },
-  logo: {
-    height: 40,
-    width: 40,
-  },
-  logoText: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    color: colors.primary,
   },
   nav: {
     flexDirection: 'row',

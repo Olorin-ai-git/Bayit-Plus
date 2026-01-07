@@ -9,8 +9,8 @@ import { AppRegistry } from 'react-native';
 import React from 'react';
 import { BrowserRouter } from 'react-router-dom';
 import App from './src/App';
-import './src/styles/globals.css';
-import './src/i18n';
+import '../shared/styles/globals.css';
+import '@bayit/shared-i18n';
 
 // Wrapper component that provides routing context
 const BayitWebApp = () => (

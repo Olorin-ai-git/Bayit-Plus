@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react'
 import { View, Text, StyleSheet, Pressable, Image, ActivityIndicator, ScrollView } from 'react-native'
 import { useNavigate } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 import { ritualService } from '../../services/api'
 import logger from '@/utils/logger'
 import { colors, spacing, borderRadius } from '@bayit/shared/theme'
@@ -42,6 +43,7 @@ interface MorningRitualProps {
  * Shows AI brief, Israel context, and curated morning playlist.
  */
 export default function MorningRitual({ onComplete, onSkip }: MorningRitualProps) {
+  const { t } = useTranslation()
   const navigate = useNavigate()
   const [ritualData, setRitualData] = useState<RitualData | null>(null)
   const [aiBrief, setAIBrief] = useState<AIBrief | null>(null)
@@ -119,7 +121,7 @@ export default function MorningRitual({ onComplete, onSkip }: MorningRitualProps
         <View style={styles.loaderContainer}>
           <Text style={styles.loaderIcon}>☀️</Text>
           <ActivityIndicator size="large" color={colors.primary} />
-          <Text style={styles.loaderText}>מכין את טקס הבוקר שלך...</Text>
+          <Text style={styles.loaderText}>{t('ritual.preparingRitual')}</Text>
         </View>
       </View>
     )
@@ -137,25 +139,25 @@ export default function MorningRitual({ onComplete, onSkip }: MorningRitualProps
         <View style={styles.briefOverlay}>
           <GlassView style={styles.briefContent} intensity="high">
             <Text style={styles.briefEmoji}>☀️</Text>
-            <Text style={styles.briefGreeting}>{aiBrief.greeting}</Text>
-            <Text style={styles.briefIsrael}>{aiBrief.israel_update}</Text>
-            <Text style={styles.briefRecommendation}>{aiBrief.recommendation}</Text>
+            <Text style={styles.briefGreeting}>{t('ritual.greeting')}</Text>
+            <Text style={styles.briefIsrael}>{t('ritual.israelUpdate')}</Text>
+            <Text style={styles.briefRecommendation}>{t('ritual.recommendation')}</Text>
 
             <View style={styles.israelContext}>
               <View style={styles.contextItem}>
                 <Text style={styles.contextIcon}>🇮🇱</Text>
-                <Text style={styles.contextLabel}>שעה בישראל</Text>
+                <Text style={styles.contextLabel}>{t('ritual.israelTime')}</Text>
                 <Text style={styles.contextValue}>{aiBrief.israel_context?.israel_time}</Text>
               </View>
               <View style={styles.contextItem}>
                 <Text style={styles.contextIcon}>📅</Text>
-                <Text style={styles.contextLabel}>יום</Text>
+                <Text style={styles.contextLabel}>{t('ritual.day')}</Text>
                 <Text style={styles.contextValue}>{aiBrief.israel_context?.day_name_he}</Text>
               </View>
               {aiBrief.israel_context?.is_shabbat && (
                 <View style={[styles.contextItem, styles.contextShabbat]}>
                   <Text style={styles.contextIcon}>🕯️</Text>
-                  <Text style={[styles.contextValue, styles.shabbatText]}>שבת שלום!</Text>
+                  <Text style={[styles.contextValue, styles.shabbatText]}>{t('clock.shabbatShalom')}</Text>
                 </View>
               )}
             </View>
@@ -164,7 +166,7 @@ export default function MorningRitual({ onComplete, onSkip }: MorningRitualProps
               onPress={() => setShowBrief(false)}
               style={styles.startButton}
             >
-              <Text style={styles.startButtonText}>בואו נתחיל</Text>
+              <Text style={styles.startButtonText}>{t('ritual.letsStart')}</Text>
             </GlassButton>
           </GlassView>
         </View>
@@ -176,7 +178,7 @@ export default function MorningRitual({ onComplete, onSkip }: MorningRitualProps
           {/* Header */}
           <View style={styles.header}>
             <View style={styles.headerLeft}>
-              <Text style={styles.ritualTitle}>☀️ טקס הבוקר</Text>
+              <Text style={styles.ritualTitle}>☀️ {t('ritual.title')}</Text>
               <Text style={styles.ritualTime}>{ritualData?.local_time}</Text>
             </View>
             <View style={styles.headerRight}>
@@ -187,7 +189,7 @@ export default function MorningRitual({ onComplete, onSkip }: MorningRitualProps
                   hovered && styles.headerButtonHovered,
                 ]}
               >
-                <Text style={styles.headerButtonText}>דלג להיום</Text>
+                <Text style={styles.headerButtonText}>{t('ritual.skipToday')}</Text>
               </Pressable>
               <Pressable
                 onPress={handleComplete}
@@ -197,7 +199,7 @@ export default function MorningRitual({ onComplete, onSkip }: MorningRitualProps
                   hovered && styles.exitButtonHovered,
                 ]}
               >
-                <Text style={styles.exitButtonText}>סיום</Text>
+                <Text style={styles.exitButtonText}>{t('ritual.finish')}</Text>
               </Pressable>
             </View>
           </View>
@@ -246,7 +248,7 @@ export default function MorningRitual({ onComplete, onSkip }: MorningRitualProps
               </View>
             ) : (
               <View style={styles.noContent}>
-                <Text style={styles.noContentText}>אין תוכן זמין כרגע</Text>
+                <Text style={styles.noContentText}>{t('ritual.noContentNow')}</Text>
               </View>
             )}
           </View>
@@ -280,8 +282,8 @@ export default function MorningRitual({ onComplete, onSkip }: MorningRitualProps
                       {item.title}
                     </Text>
                     <Text style={styles.playlistItemType}>
-                      {item.type === 'live' ? '🔴 שידור חי' :
-                       item.type === 'radio' ? '📻 רדיו' : '🎬 וידאו'}
+                      {item.type === 'live' ? `🔴 ${t('ritual.typeLive')}` :
+                       item.type === 'radio' ? `📻 ${t('ritual.typeRadio')}` : `🎬 ${t('ritual.typeVideo')}`}
                     </Text>
                   </View>
                   {index === currentIndex && <View style={styles.playingIndicator} />}

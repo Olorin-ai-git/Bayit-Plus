@@ -19,6 +19,10 @@ stripe==7.10.0
 # AI
 anthropic==0.18.1
 
+# QR Code generation
+qrcode[pil]==7.4.2
+Pillow>=10.0.0
+
 # Utilities
 pydantic==2.5.3
 pydantic-settings==2.1.0

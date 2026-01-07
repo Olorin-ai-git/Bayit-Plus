@@ -1,0 +1,648 @@
+{
+  "common": {
+    "loading": "Loading...",
+    "error": "Error",
+    "retry": "Retry",
+    "cancel": "Cancel",
+    "save": "Save",
+    "close": "Close",
+    "back": "Back",
+    "next": "Next",
+    "search": "Search",
+    "watchNow": "Watch Now",
+    "playNow": "Play Now",
+    "new": "New",
+    "live": "Live",
+    "recommended": "Recommended",
+    "edit": "Edit",
+    "delete": "Delete",
+    "appName": "Bayit+"
+  },
+  "hero": {
+    "watch": "Watch",
+    "moreInfo": "More Info",
+    "addToList": "Add to List"
+  },
+  "login": {
+    "title": "Login",
+    "tagline": "Your Home in the USA",
+    "email": "Email",
+    "password": "Password",
+    "submit": "Login",
+    "loggingIn": "Logging in...",
+    "or": "or",
+    "forgotPassword": "Forgot password?",
+    "continueWithGoogle": "Continue with Google",
+    "noAccount": "Don't have an account?",
+    "signUp": "Sign Up",
+    "register": "Register",
+    "name": "Name",
+    "qrInstructions": "Scan the code with your phone for quick login",
+    "methodQR": "QR Code",
+    "methodVoice": "Voice",
+    "methodTraditional": "Email",
+    "qrTitle": "Scan to Login",
+    "qrDescription": "Scan this QR code with your phone to login without typing",
+    "expiresIn": "Expires in 5 minutes",
+    "companionConnected": "Phone connected!",
+    "authenticating": "Logging you in...",
+    "sessionExpired": "Session expired",
+    "refreshQR": "Generate New Code",
+    "generatingQR": "Generating QR code...",
+    "howItWorks": "How it works:",
+    "step1": "Open camera on your phone",
+    "step2": "Scan the QR code above",
+    "step3": "Login on your phone",
+    "step4": "TV logs in automatically!",
+    "voicePlaceholder": "Type your response...",
+    "send": "Send",
+    "createAccount": "Create Account",
+    "bayitThinking": "Bayit is thinking...",
+    "errors": {
+      "fillAllFields": "Please fill in all fields",
+      "loginFailed": "Login failed. Please try again."
+    }
+  },
+  "tvLogin": {
+    "invalidQR": "Invalid QR code. Please scan again from your TV.",
+    "sessionInvalid": "This QR code has expired. Please generate a new one on your TV.",
+    "verificationFailed": "Failed to verify session. Please try again.",
+    "fillAllFields": "Please fill in all fields",
+    "loginFailed": "Login failed. Please check your credentials.",
+    "notLoggedIn": "You are not logged in on this device.",
+    "enterCredentials": "Please enter your credentials to authorize your TV.",
+    "authFailed": "Authorization failed.",
+    "verifying": "Verifying...",
+    "verifyingDescription": "Connecting to your TV...",
+    "loginTitle": "Login to Your TV",
+    "loginDescription": "Enter your credentials to authorize your TV",
+    "authorizing": "Authorizing...",
+    "authorizingDescription": "Logging you in on your TV...",
+    "authorizeTV": "Authorize TV",
+    "success": "Success!",
+    "successDescription": "Your TV is now logged in. You can close this page.",
+    "goToHome": "Go to Home",
+    "error": "Something went wrong",
+    "tryAgain": "Try Again",
+    "securityNote": "Your credentials are sent securely and are never stored on the TV.",
+    "footer": "Having trouble? Make sure you scanned a fresh QR code from your TV."
+  },
+  "register": {
+    "title": "Create Account",
+    "fullName": "Full Name",
+    "namePlaceholder": "John Doe",
+    "email": "Email",
+    "password": "Password",
+    "passwordPlaceholder": "At least 8 characters",
+    "confirmPassword": "Confirm Password",
+    "confirmPasswordPlaceholder": "Enter password again",
+    "termsText": "By signing up, you agree to our Terms of Service and Privacy Policy",
+    "submit": "Sign Up",
+    "registering": "Signing up...",
+    "googleSignup": "Sign up with Google",
+    "haveAccount": "Already have an account?",
+    "loginLink": "Login",
+    "errors": {
+      "fillAllFields": "Please fill in all fields",
+      "passwordMismatch": "Passwords do not match",
+      "passwordTooShort": "Password must be at least 8 characters",
+      "registrationFailed": "Registration failed. Please try again.",
+      "googleFailed": "Google sign-in failed"
+    }
+  },
+  "nav": {
+    "home": "Home",
+    "vod": "VOD",
+    "liveTV": "Live TV",
+    "radio": "Radio",
+    "podcasts": "Podcasts",
+    "judaism": "Judaism",
+    "children": "Kids",
+    "profile": "Profile",
+    "search": "Search",
+    "settings": "Settings",
+    "favorites": "Favorites",
+    "watchlist": "Watchlist",
+    "downloads": "Downloads",
+    "help": "Help & Support"
+  },
+  "home": {
+    "continueWatching": "Continue Watching",
+    "featuredContent": "Featured",
+    "liveTV": "Live TV",
+    "allChannels": "All Channels",
+    "liveChannels": "Live Channels",
+    "israeliMovies": "Israeli Movies",
+    "israeli-movies": "Israeli Movies",
+    "israeli-series": "Israeli Series",
+    "action": "Action & Thriller",
+    "comedy": "Comedy",
+    "drama": "Drama",
+    "documentaries": "Documentaries",
+    "loadingContent": "Loading content...",
+    "liveNow": "Live Now",
+    "carousel": {
+      "fauda": {
+        "title": "Fauda",
+        "subtitle": "Season 4 - Now Streaming",
+        "description": "The hit Israeli series returns for a fourth season full of suspense and action"
+      },
+      "shtisel": {
+        "title": "Shtisel",
+        "subtitle": "All Seasons Available",
+        "description": "Follow the Shtisel family in the ultra-Orthodox neighborhood of Jerusalem"
+      },
+      "tehran": {
+        "title": "Tehran",
+        "subtitle": "Season 2",
+        "description": "A Mossad agent deep in Iran on a dangerous mission"
+      },
+      "live": {
+        "title": "Live - Kan 11",
+        "subtitle": "Watch Now",
+        "description": "News, current affairs and quality content"
+      }
+    }
+  },
+  "search": {
+    "title": "Search",
+    "subtitle": "Find content across all platforms",
+    "placeholder": "Search movies, series, channels, podcasts...",
+    "voicePlaceholder": "Speak now...",
+    "searching": "Searching...",
+    "noResults": "No results found",
+    "tryDifferent": "Try different search terms",
+    "resultsFor": "results for",
+    "filters": {
+      "all": "All",
+      "moviesAndSeries": "Movies & Series",
+      "channels": "Channels",
+      "radio": "Radio",
+      "podcasts": "Podcasts"
+    }
+  },
+  "liveTV": {
+    "title": "Live TV",
+    "channels": "Channels",
+    "nowPlaying": "Now Playing",
+    "loadError": "Failed to load channels",
+    "categories": {
+      "all": "All",
+      "news": "News",
+      "sports": "Sports",
+      "entertainment": "Entertainment",
+      "kids": "Kids",
+      "documentary": "Documentary"
+    }
+  },
+  "radio": {
+    "title": "Radio",
+    "stations": "Stations",
+    "nowPlaying": "Now Playing",
+    "loadError": "Failed to load stations",
+    "genres": {
+      "all": "All",
+      "news": "News",
+      "music": "Music",
+      "talk": "Talk",
+      "army": "Army"
+    }
+  },
+  "podcasts": {
+    "title": "Podcasts",
+    "shows": "Shows",
+    "episodes": "Episodes",
+    "loadError": "Failed to load podcasts",
+    "categories": {
+      "all": "All",
+      "news": "News",
+      "comedy": "Comedy",
+      "society": "Society",
+      "tech": "Technology",
+      "history": "History"
+    }
+  },
+  "vod": {
+    "title": "Movies & Series",
+    "movies": "Movies",
+    "series": "Series",
+    "loadError": "Failed to load content",
+    "categories": {
+      "all": "All",
+      "drama": "Drama",
+      "comedy": "Comedy",
+      "action": "Action",
+      "documentary": "Documentary",
+      "kids": "Kids"
+    }
+  },
+  "account": {
+    "title": "My Account",
+    "profile": "Profile",
+    "settings": "Settings",
+    "subscription": "Subscription",
+    "manageSubscription": "Manage Subscription",
+    "personalDetails": "Personal Details",
+    "billing": "Billing & Payment",
+    "logout": "Logout",
+    "login": "Login",
+    "register": "Register",
+    "email": "Email",
+    "password": "Password",
+    "name": "Name",
+    "guest": "Guest",
+    "premium": "Premium",
+    "basic": "Basic"
+  },
+  "profile": {
+    "title": "Account Settings",
+    "tabs": {
+      "personal": "Profile",
+      "billing": "Billing",
+      "subscription": "Subscription",
+      "notifications": "Notifications",
+      "security": "Security"
+    },
+    "billing": {
+      "paymentMethods": "Payment Methods",
+      "addCard": "Add Card",
+      "expires": "Expires:",
+      "default": "Default",
+      "history": "Billing History",
+      "date": "Date",
+      "description": "Description",
+      "amount": "Amount",
+      "status": "Status",
+      "paid": "Paid",
+      "pending": "Pending",
+      "downloadInvoices": "Download Invoices",
+      "billingAddress": "Billing Address",
+      "editAddress": "Edit Address",
+      "noPaymentMethods": "No payment methods added",
+      "noHistory": "No billing history"
+    },
+    "subscription": {
+      "currentPlan": "Current Plan",
+      "status": "Status",
+      "active": "Active",
+      "renewsOn": "Renews on",
+      "noActivePlan": "No active subscription",
+      "availablePlans": "Available Plans",
+      "choosePlan": "Choose the plan that suits you",
+      "recommended": "Recommended",
+      "selectPlan": "Select Plan",
+      "manageSubscription": "Manage Subscription",
+      "cancelSubscription": "Cancel Subscription",
+      "cancelNote": "Cancellation will take effect at the end of the current billing period"
+    },
+    "plans": {
+      "basic": {
+        "name": "Basic",
+        "price": "Free",
+        "feature1": "Access to basic content",
+        "feature2": "SD quality",
+        "feature3": "1 device"
+      },
+      "premium": {
+        "name": "Premium",
+        "price": "$7.99/month",
+        "feature1": "Access to all content",
+        "feature2": "HD quality",
+        "feature3": "Up to 3 devices",
+        "feature4": "No ads"
+      },
+      "family": {
+        "name": "Family",
+        "price": "$12.99/month",
+        "feature1": "Access to all content",
+        "feature2": "4K quality",
+        "feature3": "Up to 6 devices",
+        "feature4": "No ads",
+        "feature5": "Kids profiles"
+      }
+    }
+  },
+  "settings": {
+    "title": "Settings",
+    "language": "Language",
+    "selectLanguage": "Select Language",
+    "notifications": "Notifications",
+    "playback": "Playback Settings",
+    "quality": "Quality",
+    "subtitles": "Subtitles",
+    "autoplay": "Autoplay",
+    "about": "About"
+  },
+  "voice": {
+    "listening": "Listening...",
+    "tapToSpeak": "Tap to speak",
+    "processing": "Processing...",
+    "error": "Couldn't hear you, please try again"
+  },
+  "errors": {
+    "networkError": "Network Error",
+    "loadingFailed": "Loading Failed",
+    "tryAgain": "Try Again"
+  },
+  "player": {
+    "loading": "Loading...",
+    "retry": "Try Again",
+    "error": "Error playing video",
+    "back": "← Back",
+    "liveBadge": "LIVE",
+    "noStream": "Stream not available",
+    "loadError": "Failed to load stream"
+  },
+  "empty": {
+    "noContent": "No content available",
+    "tryAnotherCategory": "Try selecting another category",
+    "noPodcasts": "No podcasts available",
+    "tryLater": "Try again later",
+    "noResults": "No results found"
+  },
+  "profile": {
+    "profileDetails": "Profile Details",
+    "name": "Name",
+    "notSet": "Not set",
+    "email": "Email",
+    "editProfile": "Edit Profile",
+    "notificationSettings": "Notification Settings",
+    "security": "Security",
+    "changePassword": "Change Password",
+    "updatePassword": "Update your password",
+    "connectedDevices": "Connected Devices",
+    "manageDevices": "Manage devices connected to your account",
+    "twoFactorAuth": "Two-Factor Authentication",
+    "addExtraSecurity": "Add an extra layer of security",
+    "address": {
+      "line1": "123 Main Street",
+      "line2": "Tel Aviv, Israel 6100000"
+    },
+    "free": "Free",
+    "premiumPrice": "$7.99/month",
+    "familyPrice": "$12.99/month",
+    "remaining": "remaining",
+    "notifications": {
+      "newContent": "New Content",
+      "newContentDesc": "Get notified about new content",
+      "liveEvents": "Live Events",
+      "liveEventsDesc": "Get notified about special live broadcasts",
+      "recommendations": "Recommendations",
+      "recommendationsDesc": "Get personalized recommendations",
+      "updates": "System Updates",
+      "updatesDesc": "Get notified about system changes"
+    },
+    "morningRitual": "Morning Ritual"
+  },
+  "content": {
+    "episodes": "episodes"
+  },
+  "favorites": {
+    "title": "Favorites",
+    "items": "items",
+    "empty": "No favorites yet",
+    "emptyHint": "Add content to favorites to watch it easily"
+  },
+  "downloads": {
+    "title": "Downloads",
+    "items": "items",
+    "storage": "Storage",
+    "empty": "No downloads",
+    "emptyHint": "Download content for offline viewing"
+  },
+  "watchlist": {
+    "title": "My List",
+    "items": "items",
+    "empty": "Your list is empty",
+    "emptyHint": "Add movies and series to your list",
+    "filters": {
+      "all": "All",
+      "continue": "Continue Watching",
+      "movies": "Movies",
+      "series": "Series"
+    }
+  },
+  "trending": {
+    "title": "What's Trending in Israel",
+    "noTopics": "No trending topics available",
+    "topStory": "TOP STORY",
+    "sources": "Sources",
+    "categories": {
+      "security": "Security",
+      "politics": "Politics",
+      "tech": "Tech",
+      "culture": "Culture",
+      "sports": "Sports",
+      "economy": "Economy",
+      "entertainment": "Entertainment",
+      "weather": "Weather",
+      "health": "Health",
+      "general": "General"
+    }
+  },
+  "clock": {
+    "israel": "Israel",
+    "local": "Local",
+    "shabbatShalom": "Shabbat Shalom!",
+    "erevShabbat": "Erev Shabbat",
+    "candleLighting": "Candle Lighting",
+    "parasha": "Parasha"
+  },
+  "ritual": {
+    "title": "Morning Ritual",
+    "greeting": "Good Morning!",
+    "israelUpdate": "It's afternoon in Israel, news is reporting on ongoing developments",
+    "recommendation": "We recommend starting with morning news then switching to radio",
+    "preparingRitual": "Preparing your morning ritual...",
+    "israelTime": "Israel Time",
+    "day": "Day",
+    "letsStart": "Let's Start",
+    "skipToday": "Skip for Today",
+    "finish": "Finish",
+    "noContentNow": "No content available right now",
+    "typeLive": "Live",
+    "typeRadio": "Radio",
+    "typeVideo": "Video"
+  },
+  "admin": {
+    "dashboard": "Dashboard",
+    "users": {
+      "title": "Users",
+      "subtitle": "View and manage system users",
+      "addUser": "Add User",
+      "searchPlaceholder": "Search user...",
+      "noUsersFound": "No users found",
+      "active": "Active",
+      "inactive": "Inactive",
+      "banned": "Banned",
+      "allUsers": "All",
+      "activeUsers": "Active",
+      "inactiveUsers": "Inactive",
+      "bannedUsers": "Banned"
+    },
+    "plans": {
+      "title": "Plan Management",
+      "mo": "mo",
+      "yr": "yr",
+      "monthly": "Monthly",
+      "yearly": "Yearly",
+      "freeTrial": "{{days}} day free trial",
+      "premium": "Premium"
+    },
+    "campaigns": {
+      "title": "Campaigns",
+      "name": "Name",
+      "discount": "Discount",
+      "uses": "Uses",
+      "validUntil": "Valid Until",
+      "status": "Status"
+    },
+    "subscriptions": {
+      "title": "Subscriptions",
+      "user": "User",
+      "plan": "Plan",
+      "price": "Price",
+      "status": "Status"
+    },
+    "transactions": {
+      "title": "Transactions",
+      "id": "ID",
+      "user": "User",
+      "amount": "Amount",
+      "type": "Type",
+      "status": "Status",
+      "date": "Date"
+    },
+    "refunds": {
+      "title": "Refunds",
+      "id": "ID",
+      "user": "User",
+      "amount": "Amount",
+      "reason": "Reason",
+      "status": "Status"
+    },
+    "auditLogs": {
+      "title": "Audit Logs",
+      "action": "Action",
+      "user": "User",
+      "resource": "Resource",
+      "details": "Details",
+      "date": "Date"
+    },
+    "emails": {
+      "title": "Email Campaigns",
+      "status": "Status",
+      "sent": "Sent",
+      "opened": "Opened",
+      "clicked": "Clicked",
+      "created": "Created"
+    },
+    "push": {
+      "title": "Push Notifications",
+      "notificationTitle": "Title"
+    },
+    "marketing": {
+      "title": "Marketing Dashboard",
+      "active": "Active",
+      "completed": "Completed",
+      "scheduled": "Scheduled",
+      "draft": "Draft"
+    },
+    "settings": {
+      "title": "Settings",
+      "downloads": "Downloads",
+      "language": "Language"
+    },
+    "table": {
+      "name": "Name",
+      "email": "Email",
+      "role": "Role",
+      "subscription": "Subscription",
+      "noSubscription": "No subscription",
+      "status": "Status",
+      "created": "Created",
+      "all": "All"
+    }
+  },
+  "watchParty": {
+    "title": "Watch Party",
+    "create": "Create Party",
+    "join": "Join Party",
+    "active": "Party Active",
+    "createTitle": "Create Watch Party",
+    "joinTitle": "Join Party",
+    "enterCode": "Enter Room Code",
+    "roomCode": "Room Code",
+    "copyCode": "Copy Code",
+    "codeCopied": "Code Copied!",
+    "participants": "Participants",
+    "host": "Host",
+    "you": "You",
+    "leave": "Leave Party",
+    "end": "End Party",
+    "chat": "Chat",
+    "sendMessage": "Send Message",
+    "typeMessage": "Type a message...",
+    "synced": "Synced",
+    "syncing": "Syncing...",
+    "hostPaused": "Host Paused",
+    "userJoined": "{{name}} joined",
+    "userLeft": "{{name}} left",
+    "partyEnded": "The party has ended",
+    "connecting": "Connecting...",
+    "options": {
+      "chatEnabled": "Enable Chat",
+      "syncPlayback": "Sync Playback"
+    },
+    "errors": {
+      "invalidCode": "Invalid code",
+      "partyFull": "Party is full",
+      "partyEnded": "Party has ended",
+      "connectionError": "Connection error",
+      "createFailed": "Failed to create party",
+      "joinFailed": "Failed to join party"
+    },
+    "audio": {
+      "mute": "Mute",
+      "unmute": "Unmute",
+      "speaking": "Speaking",
+      "connecting": "Connecting to audio...",
+      "noAudio": "Audio not available"
+    }
+  },
+  "footer": {
+    "brandDescription": "Your home in the USA. TV broadcasts, VOD, radio and podcasts in Hebrew.",
+    "navigation": "Navigation",
+    "account": "Account",
+    "legal": "Legal",
+    "liveTV": "Live TV",
+    "moviesAndSeries": "Movies & Series",
+    "radioStations": "Radio Stations",
+    "podcasts": "Podcasts",
+    "myProfile": "My Profile",
+    "subscriptions": "Subscriptions",
+    "helpAndSupport": "Help & Support",
+    "termsOfUse": "Terms of Use",
+    "privacyPolicy": "Privacy Policy",
+    "contactUs": "Contact Us",
+    "copyright": "© {{year}} Bayit+. All rights reserved."
+  },
+  "chapters": {
+    "title": "Chapters",
+    "noChapters": "No chapters available",
+    "generating": "Generating chapters...",
+    "jumpTo": "Jump to",
+    "current": "Now",
+    "categories": {
+      "intro": "Introduction",
+      "news": "News",
+      "security": "Security",
+      "politics": "Politics",
+      "economy": "Economy",
+      "sports": "Sports",
+      "weather": "Weather",
+      "culture": "Culture",
+      "conclusion": "Conclusion"
+    }
+  }
+}

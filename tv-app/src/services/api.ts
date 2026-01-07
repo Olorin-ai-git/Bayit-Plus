@@ -19,6 +19,7 @@ import {
   demoSubtitlesService,
   demoChaptersService,
   demoPartyService,
+  demoChatService,
 } from './demoService';
 
 // Get correct API URL based on platform
@@ -395,6 +396,21 @@ const apiPartyService = {
     api.post(`/party/${partyId}/sync`, null, { params: { position, is_playing: isPlaying } }),
 };
 
+// Chat / AI Assistant Service (API)
+const apiChatService = {
+  sendMessage: (message: string, conversationId?: string) =>
+    api.post('/chat', { message, conversation_id: conversationId }),
+  getConversation: (conversationId: string) => api.get(`/chat/${conversationId}`),
+  clearConversation: (conversationId: string) => api.delete(`/chat/${conversationId}`),
+  transcribeAudio: async (audioBlob: Blob) => {
+    const formData = new FormData();
+    formData.append('audio', audioBlob, 'recording.webm');
+    return api.post('/chat/transcribe', formData, {
+      headers: { 'Content-Type': 'multipart/form-data' },
+    });
+  },
+};
+
 // ===========================================
 // CONDITIONAL SERVICE EXPORTS
 // In demo mode: use mock services only, no API calls
@@ -417,6 +433,7 @@ export const ritualService = isDemo ? demoRitualService : apiRitualService;
 export const subtitlesService = isDemo ? demoSubtitlesService : apiSubtitlesService;
 export const chaptersService = isDemo ? demoChaptersService : apiChaptersService;
 export const partyService = isDemo ? demoPartyService : apiPartyService;
+export const chatService = isDemo ? demoChatService : apiChatService;
 export const profilesService = apiProfilesService; // No demo mode for profiles - requires real auth
 export const childrenService = apiChildrenService; // No demo mode for children
 export const judaismService = apiJudaismService; // No demo mode for judaism

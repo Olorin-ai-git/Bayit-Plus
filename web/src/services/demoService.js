@@ -21,6 +21,10 @@ import demoData, {
   demoCategories,
   demoFeatured,
   demoSearchResults,
+  demoJudaismCategories,
+  demoJudaismContent,
+  demoChildrenCategories,
+  demoChildrenContent,
 } from '../data/demoData';
 
 // Simulate network delay
@@ -152,7 +156,14 @@ export const demoRadioService = {
 export const demoPodcastService = {
   getShows: async (params) => {
     await delay();
-    return { shows: demoPodcasts };
+    // Map demo data fields to expected interface
+    const shows = demoPodcasts.map(p => ({
+      ...p,
+      cover: p.thumbnail, // Map thumbnail to cover
+      author: p.host, // Map host to author
+      episodeCount: p.episode_count || p.episodes?.length || 0,
+    }));
+    return { shows };
   },
   getShow: async (showId) => {
     await delay();
@@ -845,6 +856,79 @@ export const demoDownloadsService = {
   },
 };
 
+// ===========================================
+// JUDAISM SERVICE (Demo)
+// ===========================================
+export const demoJudaismService = {
+  getContent: async (category, limit) => {
+    await delay();
+    let content = demoJudaismContent;
+    if (category && category !== 'all') {
+      content = content.filter(item => item.category === category);
+    }
+    if (limit) {
+      content = content.slice(0, limit);
+    }
+    return { data: content };
+  },
+  getCategories: async () => {
+    await delay();
+    return { data: demoJudaismCategories };
+  },
+  getLiveShiurim: async () => {
+    await delay();
+    return { data: [] };
+  },
+  getDailyContent: async () => {
+    await delay();
+    return { data: demoJudaismContent.slice(0, 3) };
+  },
+};
+
+// ===========================================
+// CHILDREN SERVICE (Demo)
+// ===========================================
+export const demoChildrenService = {
+  getContent: async (category, maxAge) => {
+    await delay();
+    let content = demoChildrenContent;
+    if (category && category !== 'all') {
+      content = content.filter(item => item.category === category);
+    }
+    if (maxAge) {
+      content = content.filter(item => !item.age_rating || item.age_rating <= maxAge);
+    }
+    return { data: content };
+  },
+  getCategories: async () => {
+    await delay();
+    return { data: demoChildrenCategories };
+  },
+  toggleParentalControls: async (enabled) => {
+    await delay();
+    return { message: 'Parental controls updated' };
+  },
+  verifyPin: async (pin) => {
+    await delay();
+    if (pin === '1234') {
+      return { verified: true };
+    }
+    throw new Error('Invalid PIN');
+  },
+  setPin: async (pin) => {
+    await delay();
+    return { message: 'PIN set successfully' };
+  },
+  getSettings: async () => {
+    await delay();
+    return { data: { parental_controls: true, max_age: 12 } };
+  },
+  updateSettings: async (settings) => {
+    await delay();
+    return { message: 'Settings updated', data: settings };
+  },
+};
+
 export default {
   auth: demoAuthService,
   content: demoContentService,
@@ -864,4 +948,6 @@ export default {
   search: demoSearchService,
   favorites: demoFavoritesService,
   downloads: demoDownloadsService,
+  judaism: demoJudaismService,
+  children: demoChildrenService,
 };

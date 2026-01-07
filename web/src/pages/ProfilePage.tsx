@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { View, Text, StyleSheet, Pressable, Switch, useWindowDimensions } from 'react-native';
 import { Link, useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { User, Mail, CreditCard, Bell, LogOut, ChevronLeft, Shield, Sunrise, Star, Download } from 'lucide-react';
 import { useAuthStore } from '@/stores/authStore';
 import RitualSettings from '@/components/settings/RitualSettings';
@@ -9,24 +10,25 @@ import { GlassCard, GlassButton, GlassView } from '@bayit/shared/ui';
 
 type TabId = 'profile' | 'ritual' | 'subscription' | 'notifications' | 'security';
 
-const menuItems = [
-  { id: 'profile' as TabId, icon: User, label: 'פרופיל' },
-  { id: 'ritual' as TabId, icon: Sunrise, label: 'טקס הבוקר' },
-  { id: 'subscription' as TabId, icon: CreditCard, label: 'מנוי' },
-  { id: 'notifications' as TabId, icon: Bell, label: 'התראות' },
-  { id: 'security' as TabId, icon: Shield, label: 'אבטחה' },
-];
-
-const notificationSettings = [
-  { id: 'newContent', label: 'תוכן חדש', description: 'קבל התראות על סדרות וסרטים חדשים' },
-  { id: 'liveEvents', label: 'אירועים בשידור חי', description: 'התראות על שידורים חיים מיוחדים' },
-  { id: 'recommendations', label: 'המלצות', description: 'המלצות מותאמות אישית' },
-  { id: 'updates', label: 'עדכוני מערכת', description: 'מידע חשוב על השירות' },
-];
-
 export default function ProfilePage() {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const { user, logout, isAuthenticated } = useAuthStore();
+
+  const menuItems = [
+    { id: 'profile' as TabId, icon: User, labelKey: 'profile.tabs.personal' },
+    { id: 'ritual' as TabId, icon: Sunrise, labelKey: 'profile.morningRitual' },
+    { id: 'subscription' as TabId, icon: CreditCard, labelKey: 'profile.tabs.subscription' },
+    { id: 'notifications' as TabId, icon: Bell, labelKey: 'profile.tabs.notifications' },
+    { id: 'security' as TabId, icon: Shield, labelKey: 'profile.tabs.security' },
+  ];
+
+  const notificationSettings = [
+    { id: 'newContent', labelKey: 'profile.notifications.newContent', descKey: 'profile.notifications.newContentDesc' },
+    { id: 'liveEvents', labelKey: 'profile.notifications.liveEvents', descKey: 'profile.notifications.liveEventsDesc' },
+    { id: 'recommendations', labelKey: 'profile.notifications.recommendations', descKey: 'profile.notifications.recommendationsDesc' },
+    { id: 'updates', labelKey: 'profile.notifications.updates', descKey: 'profile.notifications.updatesDesc' },
+  ];
   const [activeTab, setActiveTab] = useState<TabId>('profile');
   const { width } = useWindowDimensions();
   const isDesktop = width >= 1024;
@@ -43,7 +45,7 @@ export default function ProfilePage() {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.pageTitle}>הגדרות חשבון</Text>
+      <Text style={styles.pageTitle}>{t('profile.title')}</Text>
 
       <View style={[styles.grid, !isDesktop && styles.gridMobile]}>
         {/* Sidebar */}
@@ -53,13 +55,13 @@ export default function ProfilePage() {
             <Link to="/favorites" style={{ textDecoration: 'none' }}>
               <View style={styles.menuLink}>
                 <Star size={20} color={colors.warning} />
-                <Text style={styles.menuLinkText}>מועדפים</Text>
+                <Text style={styles.menuLinkText}>{t('nav.favorites')}</Text>
               </View>
             </Link>
             <Link to="/downloads" style={{ textDecoration: 'none' }}>
               <View style={styles.menuLink}>
                 <Download size={20} color={colors.primary} />
-                <Text style={styles.menuLinkText}>הורדות</Text>
+                <Text style={styles.menuLinkText}>{t('nav.downloads')}</Text>
               </View>
             </Link>
 
@@ -74,14 +76,14 @@ export default function ProfilePage() {
               >
                 <item.icon size={20} color={activeTab === item.id ? colors.text : colors.textSecondary} />
                 <Text style={[styles.menuItemText, activeTab === item.id && styles.menuItemTextActive]}>
-                  {item.label}
+                  {t(item.labelKey)}
                 </Text>
               </Pressable>
             ))}
 
             <Pressable onPress={handleLogout} style={styles.logoutButton}>
               <LogOut size={20} color={colors.error} />
-              <Text style={styles.logoutText}>התנתקות</Text>
+              <Text style={styles.logoutText}>{t('account.logout')}</Text>
             </Pressable>
           </GlassCard>
         </View>
@@ -96,48 +98,48 @@ export default function ProfilePage() {
 
           {activeTab === 'profile' && (
             <GlassCard style={styles.contentCard}>
-              <Text style={styles.sectionTitle}>פרטי פרופיל</Text>
+              <Text style={styles.sectionTitle}>{t('profile.profileDetails')}</Text>
               <View style={styles.formGroup}>
-                <Text style={styles.label}>שם</Text>
+                <Text style={styles.label}>{t('profile.name')}</Text>
                 <GlassView style={styles.readOnlyInput}>
-                  <Text style={styles.inputText}>{user?.name || 'לא הוגדר'}</Text>
+                  <Text style={styles.inputText}>{user?.name || t('profile.notSet')}</Text>
                 </GlassView>
               </View>
               <View style={styles.formGroup}>
-                <Text style={styles.label}>אימייל</Text>
+                <Text style={styles.label}>{t('profile.email')}</Text>
                 <GlassView style={styles.readOnlyInput}>
                   <Text style={styles.inputText}>{user?.email}</Text>
                 </GlassView>
               </View>
-              <GlassButton title="ערוך פרופיל" variant="primary" />
+              <GlassButton title={t('profile.editProfile')} variant="primary" />
             </GlassCard>
           )}
 
           {activeTab === 'subscription' && (
             <GlassCard style={styles.contentCard}>
-              <Text style={styles.sectionTitle}>פרטי מנוי</Text>
+              <Text style={styles.sectionTitle}>{t('profile.subscription.currentPlan')}</Text>
               {user?.subscription ? (
                 <>
                   <GlassView style={styles.subscriptionCard}>
                     <View style={styles.subscriptionHeader}>
                       <Text style={styles.planName}>{user.subscription.plan}</Text>
-                      <Text style={styles.planPrice}>{user.subscription.price}/חודש</Text>
+                      <Text style={styles.planPrice}>{user.subscription.price}/{t('admin.plans.mo')}</Text>
                     </View>
-                    <Text style={styles.billingDate}>מתחדש ב-{user.subscription.nextBilling}</Text>
+                    <Text style={styles.billingDate}>{t('profile.subscription.renewsOn')} {user.subscription.nextBilling}</Text>
                   </GlassView>
                   <View style={styles.buttonRow}>
                     <Link to="/subscribe" style={{ textDecoration: 'none' }}>
-                      <GlassButton title="שדרג מנוי" variant="primary" />
+                      <GlassButton title={t('profile.subscription.manageSubscription')} variant="primary" />
                     </Link>
-                    <GlassButton title="בטל מנוי" variant="danger" />
+                    <GlassButton title={t('profile.subscription.cancelSubscription')} variant="danger" />
                   </View>
                 </>
               ) : (
                 <View style={styles.emptyState}>
                   <CreditCard size={48} color={colors.textMuted} />
-                  <Text style={styles.emptyText}>אין לך מנוי פעיל</Text>
+                  <Text style={styles.emptyText}>{t('profile.subscription.noActivePlan')}</Text>
                   <Link to="/subscribe" style={{ textDecoration: 'none' }}>
-                    <GlassButton title="הצטרף עכשיו" variant="primary" />
+                    <GlassButton title={t('profile.subscription.selectPlan')} variant="primary" />
                   </Link>
                 </View>
               )}
@@ -146,12 +148,12 @@ export default function ProfilePage() {
 
           {activeTab === 'notifications' && (
             <GlassCard style={styles.contentCard}>
-              <Text style={styles.sectionTitle}>הגדרות התראות</Text>
+              <Text style={styles.sectionTitle}>{t('profile.notificationSettings')}</Text>
               {notificationSettings.map((item) => (
                 <View key={item.id} style={styles.notificationItem}>
                   <View style={styles.notificationInfo}>
-                    <Text style={styles.notificationLabel}>{item.label}</Text>
-                    <Text style={styles.notificationDesc}>{item.description}</Text>
+                    <Text style={styles.notificationLabel}>{t(item.labelKey)}</Text>
+                    <Text style={styles.notificationDesc}>{t(item.descKey)}</Text>
                   </View>
                   <Switch
                     value={true}
@@ -165,18 +167,18 @@ export default function ProfilePage() {
 
           {activeTab === 'security' && (
             <GlassCard style={styles.contentCard}>
-              <Text style={styles.sectionTitle}>אבטחה</Text>
+              <Text style={styles.sectionTitle}>{t('profile.security')}</Text>
               <Pressable style={styles.securityItem}>
                 <View>
-                  <Text style={styles.securityLabel}>שנה סיסמה</Text>
-                  <Text style={styles.securityDesc}>עדכן את הסיסמה שלך</Text>
+                  <Text style={styles.securityLabel}>{t('profile.changePassword')}</Text>
+                  <Text style={styles.securityDesc}>{t('profile.updatePassword')}</Text>
                 </View>
                 <ChevronLeft size={20} color={colors.textMuted} />
               </Pressable>
               <Pressable style={styles.securityItem}>
                 <View>
-                  <Text style={styles.securityLabel}>מכשירים מחוברים</Text>
-                  <Text style={styles.securityDesc}>נהל את המכשירים המחוברים לחשבון</Text>
+                  <Text style={styles.securityLabel}>{t('profile.connectedDevices')}</Text>
+                  <Text style={styles.securityDesc}>{t('profile.manageDevices')}</Text>
                 </View>
                 <ChevronLeft size={20} color={colors.textMuted} />
               </Pressable>

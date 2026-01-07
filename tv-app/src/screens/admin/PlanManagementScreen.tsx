@@ -17,9 +17,9 @@ import {
   ActivityIndicator,
 } from 'react-native';
 import { useTranslation } from 'react-i18next';
-import { AdminLayout } from '../../components/admin/AdminLayout';
+import { AdminLayout } from '@bayit/shared/admin';
 import { subscriptionsService, SubscriptionPlan } from '../../services/adminApi';
-import { colors, spacing, borderRadius, fontSize } from '../../theme';
+import { colors, spacing, borderRadius, fontSize } from '@bayit/shared/theme';
 import { formatCurrency } from '../../utils/formatters';
 import { getPlanColor } from '../../utils/adminConstants';
 

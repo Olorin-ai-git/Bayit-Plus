@@ -1,30 +1,33 @@
 import { View, Text, StyleSheet, useWindowDimensions } from 'react-native';
 import { Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { colors, spacing } from '@bayit/shared/theme';
 import { GlassView } from '@bayit/shared/ui';
 
-const footerLinks = {
-  navigation: [
-    { to: '/live', label: 'שידור חי' },
-    { to: '/vod', label: 'סרטים וסדרות' },
-    { to: '/radio', label: 'תחנות רדיו' },
-    { to: '/podcasts', label: 'פודקאסטים' },
-  ],
-  account: [
-    { to: '/profile', label: 'הפרופיל שלי' },
-    { to: '/subscribe', label: 'מנויים' },
-    { to: '/help', label: 'עזרה ותמיכה' },
-  ],
-  legal: [
-    { to: '/terms', label: 'תנאי שימוש' },
-    { to: '/privacy', label: 'מדיניות פרטיות' },
-    { to: '/contact', label: 'צור קשר' },
-  ],
-};
-
 export default function Footer() {
+  const { t, i18n } = useTranslation();
   const { width } = useWindowDimensions();
   const isMobile = width < 768;
+  const isHebrew = i18n.language === 'he';
+
+  const footerLinks = {
+    navigation: [
+      { to: '/live', labelKey: 'footer.liveTV' },
+      { to: '/vod', labelKey: 'footer.moviesAndSeries' },
+      { to: '/radio', labelKey: 'footer.radioStations' },
+      { to: '/podcasts', labelKey: 'footer.podcasts' },
+    ],
+    account: [
+      { to: '/profile', labelKey: 'footer.myProfile' },
+      { to: '/subscribe', labelKey: 'footer.subscriptions' },
+      { to: '/help', labelKey: 'footer.helpAndSupport' },
+    ],
+    legal: [
+      { to: '/terms', labelKey: 'footer.termsOfUse' },
+      { to: '/privacy', labelKey: 'footer.privacyPolicy' },
+      { to: '/contact', labelKey: 'footer.contactUs' },
+    ],
+  };
 
   return (
     <GlassView style={styles.footer}>
@@ -33,39 +36,39 @@ export default function Footer() {
           {/* Brand */}
           <View style={[styles.column, !isMobile && styles.columnBrand]}>
             <Link to="/" style={{ textDecoration: 'none' }}>
-              <Text style={styles.brandText}>בית+</Text>
+              <Text style={styles.brandText}>{isHebrew ? 'בית+' : 'Bayit+'}</Text>
             </Link>
             <Text style={styles.brandDescription}>
-              הבית שלך בארה״ב. שידורי טלוויזיה, VOD, רדיו ופודקאסטים בעברית.
+              {t('footer.brandDescription')}
             </Text>
           </View>
 
           {/* Navigation */}
           <View style={styles.column}>
-            <Text style={styles.columnTitle}>ניווט</Text>
+            <Text style={styles.columnTitle}>{t('footer.navigation')}</Text>
             {footerLinks.navigation.map((link) => (
               <Link key={link.to} to={link.to} style={{ textDecoration: 'none' }}>
-                <Text style={styles.link}>{link.label}</Text>
+                <Text style={styles.link}>{t(link.labelKey)}</Text>
               </Link>
             ))}
           </View>
 
           {/* Account */}
           <View style={styles.column}>
-            <Text style={styles.columnTitle}>חשבון</Text>
+            <Text style={styles.columnTitle}>{t('footer.account')}</Text>
             {footerLinks.account.map((link) => (
               <Link key={link.to} to={link.to} style={{ textDecoration: 'none' }}>
-                <Text style={styles.link}>{link.label}</Text>
+                <Text style={styles.link}>{t(link.labelKey)}</Text>
               </Link>
             ))}
           </View>
 
           {/* Legal */}
           <View style={styles.column}>
-            <Text style={styles.columnTitle}>משפטי</Text>
+            <Text style={styles.columnTitle}>{t('footer.legal')}</Text>
             {footerLinks.legal.map((link) => (
               <Link key={link.to} to={link.to} style={{ textDecoration: 'none' }}>
-                <Text style={styles.link}>{link.label}</Text>
+                <Text style={styles.link}>{t(link.labelKey)}</Text>
               </Link>
             ))}
           </View>
@@ -74,7 +77,7 @@ export default function Footer() {
         {/* Copyright */}
         <View style={styles.copyright}>
           <Text style={styles.copyrightText}>
-            © {new Date().getFullYear()} בית+. כל הזכויות שמורות.
+            {t('footer.copyright', { year: new Date().getFullYear() })}
           </Text>
         </View>
       </View>

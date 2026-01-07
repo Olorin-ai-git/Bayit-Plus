@@ -16,6 +16,8 @@ export { GlassCheckbox } from './GlassCheckbox';
 export { GlassModal } from './GlassModal';
 export { GlassBadge } from './GlassBadge';
 export { GlassTabs } from './GlassTabs';
+export { AnalogClock } from './AnalogClock';
 
 // Types
 export type { GlassModalProps, ModalType, ModalButton } from './GlassModal';
+export type { AnalogClockProps } from './AnalogClock';

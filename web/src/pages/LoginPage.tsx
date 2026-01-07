@@ -1,15 +1,18 @@
 import { useState } from 'react';
-import { View, Text, StyleSheet, TextInput, Pressable, Image } from 'react-native';
+import { View, Text, StyleSheet } from 'react-native';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { Eye, EyeOff, Mail } from 'lucide-react';
 import { useAuthStore } from '@/stores/authStore';
 import { colors, spacing, borderRadius } from '@bayit/shared/theme';
-import { GlassCard, GlassButton, GlassInput } from '@bayit/shared/ui';
+import { GlassCard, GlassButton, GlassInput, AnimatedLogo } from '@bayit/shared';
 
 export default function LoginPage() {
+  const { t, i18n } = useTranslation();
   const navigate = useNavigate();
   const location = useLocation();
   const { login, loginWithGoogle, isLoading, error } = useAuthStore();
+  const isRTL = i18n.language === 'he' || i18n.language === 'ar';
 
   const [formData, setFormData] = useState({
     email: '',
@@ -24,7 +27,7 @@ export default function LoginPage() {
     setFormError('');
 
     if (!formData.email || !formData.password) {
-      setFormError('נא למלא את כל השדות');
+      setFormError(t('login.errors.fillAllFields'));
       return;
     }
 
@@ -32,7 +35,7 @@ export default function LoginPage() {
       await login(formData.email, formData.password);
       navigate(from, { replace: true });
     } catch (err: any) {
-      setFormError(err.message || 'שגיאה בהתחברות. נסה שוב.');
+      setFormError(err.message || t('login.errors.loginFailed'));
     }
   };
 
@@ -46,62 +49,46 @@ export default function LoginPage() {
         {/* Logo */}
         <Link to="/" style={{ textDecoration: 'none' }}>
           <View style={styles.logoContainer}>
-            <Image
-              source={{ uri: '/logo.png' }}
-              style={styles.logo}
-              resizeMode="contain"
-            />
-            <Text style={styles.logoText}>בית+</Text>
+            <AnimatedLogo size="medium" />
           </View>
         </Link>
 
         {/* Form Card */}
         <GlassCard style={styles.formCard}>
-          <Text style={styles.title}>התחברות</Text>
+          <Text style={styles.title}>{t('login.title')}</Text>
 
           {/* Email */}
-          <View style={styles.inputGroup}>
-            <Text style={styles.label}>אימייל</Text>
-            <View style={styles.inputContainer}>
-              <Mail size={20} color={colors.textMuted} style={styles.inputIcon} />
-              <TextInput
-                value={formData.email}
-                onChangeText={(text) => setFormData({ ...formData, email: text })}
-                placeholder="your@email.com"
-                placeholderTextColor={colors.textMuted}
-                keyboardType="email-address"
-                autoCapitalize="none"
-                style={styles.input}
-              />
-            </View>
-          </View>
+          <GlassInput
+            label={t('login.email')}
+            value={formData.email}
+            onChangeText={(text) => setFormData({ ...formData, email: text })}
+            placeholder="your@email.com"
+            keyboardType="email-address"
+            autoCapitalize="none"
+            icon={<Mail size={20} color={colors.textMuted} />}
+          />
 
           {/* Password */}
-          <View style={styles.inputGroup}>
-            <Text style={styles.label}>סיסמה</Text>
-            <View style={styles.inputContainer}>
-              <Pressable onPress={() => setShowPassword(!showPassword)} style={styles.inputIcon}>
-                {showPassword ? (
-                  <EyeOff size={20} color={colors.textMuted} />
-                ) : (
-                  <Eye size={20} color={colors.textMuted} />
-                )}
-              </Pressable>
-              <TextInput
-                value={formData.password}
-                onChangeText={(text) => setFormData({ ...formData, password: text })}
-                placeholder="••••••••"
-                placeholderTextColor={colors.textMuted}
-                secureTextEntry={!showPassword}
-                style={styles.input}
-              />
-            </View>
-          </View>
+          <GlassInput
+            label={t('login.password')}
+            value={formData.password}
+            onChangeText={(text) => setFormData({ ...formData, password: text })}
+            placeholder="••••••••"
+            secureTextEntry={!showPassword}
+            onRightIconPress={() => setShowPassword(!showPassword)}
+            rightIcon={
+              showPassword ? (
+                <EyeOff size={20} color={colors.textMuted} />
+              ) : (
+                <Eye size={20} color={colors.textMuted} />
+              )
+            }
+          />
 
           {/* Forgot Password */}
-          <View style={styles.forgotPassword}>
+          <View style={[styles.forgotPassword, isRTL && styles.forgotPasswordRTL]}>
             <Link to="/forgot-password" style={{ textDecoration: 'none' }}>
-              <Text style={styles.forgotPasswordText}>שכחת סיסמה?</Text>
+              <Text style={styles.forgotPasswordText}>{t('login.forgotPassword')}</Text>
             </Link>
           </View>
 
@@ -114,7 +101,7 @@ export default function LoginPage() {
 
           {/* Submit Button */}
           <GlassButton
-            title={isLoading ? 'מתחבר...' : 'התחברות'}
+            title={isLoading ? t('login.loggingIn') : t('login.submit')}
             variant="primary"
             onPress={handleSubmit}
             disabled={isLoading}
@@ -124,13 +111,13 @@ export default function LoginPage() {
           {/* Divider */}
           <View style={styles.divider}>
             <View style={styles.dividerLine} />
-            <Text style={styles.dividerText}>או</Text>
+            <Text style={styles.dividerText}>{t('login.or')}</Text>
             <View style={styles.dividerLine} />
           </View>
 
           {/* Google Login */}
           <GlassButton
-            title="המשך עם Google"
+            title={t('login.continueWithGoogle')}
             variant="secondary"
             onPress={() => loginWithGoogle()}
             disabled={isLoading}
@@ -139,10 +126,10 @@ export default function LoginPage() {
           />
 
           {/* Register Link */}
-          <View style={styles.registerLink}>
-            <Text style={styles.registerText}>אין לך חשבון? </Text>
+          <View style={[styles.registerLink, isRTL && styles.registerLinkRTL]}>
+            <Text style={styles.registerText}>{t('login.noAccount')} </Text>
             <Link to="/register" style={{ textDecoration: 'none' }}>
-              <Text style={styles.registerLinkText}>הרשמה</Text>
+              <Text style={styles.registerLinkText}>{t('login.signUp')}</Text>
             </Link>
           </View>
         </GlassCard>
@@ -192,22 +179,12 @@ const styles = StyleSheet.create({
   },
   content: {
     width: '100%',
-    maxWidth: 448,
+    maxWidth: 400,
     zIndex: 10,
   },
   logoContainer: {
     alignItems: 'center',
     marginBottom: spacing.lg,
-  },
-  logo: {
-    width: 80,
-    height: 80,
-  },
-  logoText: {
-    fontSize: 32,
-    fontWeight: 'bold',
-    color: colors.primary,
-    marginTop: spacing.sm,
   },
   formCard: {
     padding: spacing.lg,
@@ -219,36 +196,12 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     marginBottom: spacing.lg,
   },
-  inputGroup: {
-    marginBottom: spacing.md,
-  },
-  label: {
-    fontSize: 14,
-    fontWeight: '500',
-    color: colors.textSecondary,
-    marginBottom: spacing.sm,
-  },
-  inputContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: colors.glass,
-    borderWidth: 1,
-    borderColor: colors.glassBorder,
-    borderRadius: borderRadius.md,
-    paddingHorizontal: spacing.md,
-  },
-  inputIcon: {
-    marginRight: spacing.sm,
-  },
-  input: {
-    flex: 1,
-    paddingVertical: spacing.md,
-    fontSize: 16,
-    color: colors.text,
-  },
   forgotPassword: {
     alignItems: 'flex-start',
     marginBottom: spacing.md,
+  },
+  forgotPasswordRTL: {
+    alignItems: 'flex-end',
   },
   forgotPasswordText: {
     fontSize: 14,
@@ -284,6 +237,9 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'center',
     marginTop: spacing.lg,
+  },
+  registerLinkRTL: {
+    flexDirection: 'row-reverse',
   },
   registerText: {
     fontSize: 14,

@@ -1,0 +1,643 @@
+{
+  "common": {
+    "loading": "Cargando...",
+    "error": "Error",
+    "retry": "Reintentar",
+    "cancel": "Cancelar",
+    "save": "Guardar",
+    "close": "Cerrar",
+    "back": "Volver",
+    "next": "Siguiente",
+    "search": "Buscar",
+    "watchNow": "Ver Ahora",
+    "playNow": "Reproducir",
+    "new": "Nuevo",
+    "live": "En Vivo",
+    "recommended": "Recomendado",
+    "edit": "Editar",
+    "delete": "Eliminar",
+    "appName": "Bayit+"
+  },
+  "login": {
+    "title": "Iniciar Sesión",
+    "tagline": "Tu Hogar en EE.UU.",
+    "email": "Correo",
+    "password": "Contraseña",
+    "submit": "Iniciar Sesión",
+    "loggingIn": "Iniciando sesión...",
+    "or": "o",
+    "forgotPassword": "¿Olvidaste tu contraseña?",
+    "continueWithGoogle": "Continuar con Google",
+    "noAccount": "¿No tienes una cuenta?",
+    "signUp": "Regístrate",
+    "register": "Registrarse",
+    "name": "Nombre",
+    "qrInstructions": "Escanea el código con tu teléfono para acceso rápido",
+    "methodQR": "Código QR",
+    "methodVoice": "Voz",
+    "methodTraditional": "Correo",
+    "qrTitle": "Escanea para Iniciar Sesión",
+    "qrDescription": "Escanea este código QR con tu teléfono para iniciar sesión sin escribir",
+    "expiresIn": "Expira en 5 minutos",
+    "companionConnected": "¡Teléfono conectado!",
+    "authenticating": "Iniciando sesión...",
+    "sessionExpired": "Sesión expirada",
+    "refreshQR": "Generar Nuevo Código",
+    "generatingQR": "Generando código QR...",
+    "howItWorks": "¿Cómo funciona?",
+    "step1": "Abre la cámara en tu teléfono",
+    "step2": "Escanea el código QR arriba",
+    "step3": "Inicia sesión en tu teléfono",
+    "step4": "¡El TV inicia sesión automáticamente!",
+    "voicePlaceholder": "Escribe tu respuesta...",
+    "send": "Enviar",
+    "createAccount": "Crear Cuenta",
+    "bayitThinking": "Bayit está pensando...",
+    "errors": {
+      "fillAllFields": "Por favor, completa todos los campos",
+      "loginFailed": "Error al iniciar sesión. Intenta de nuevo."
+    }
+  },
+  "tvLogin": {
+    "invalidQR": "Código QR inválido. Escanea de nuevo desde tu TV.",
+    "sessionInvalid": "Este código QR ha expirado. Genera uno nuevo en tu TV.",
+    "verificationFailed": "Error al verificar. Intenta de nuevo.",
+    "fillAllFields": "Por favor, completa todos los campos",
+    "loginFailed": "Error al iniciar sesión. Verifica tus credenciales.",
+    "notLoggedIn": "No has iniciado sesión en este dispositivo.",
+    "enterCredentials": "Ingresa tus credenciales para autorizar tu TV.",
+    "authFailed": "Error de autorización.",
+    "verifying": "Verificando...",
+    "verifyingDescription": "Conectando a tu TV...",
+    "loginTitle": "Iniciar Sesión en tu TV",
+    "loginDescription": "Ingresa tus credenciales para autorizar tu TV",
+    "authorizing": "Autorizando...",
+    "authorizingDescription": "Iniciando sesión en tu TV...",
+    "authorizeTV": "Autorizar TV",
+    "success": "¡Éxito!",
+    "successDescription": "Tu TV está conectado. Puedes cerrar esta página.",
+    "goToHome": "Ir al Inicio",
+    "error": "Algo salió mal",
+    "tryAgain": "Intentar de Nuevo",
+    "securityNote": "Tus credenciales se envían de forma segura y nunca se almacenan en el TV.",
+    "footer": "¿Tienes problemas? Asegúrate de haber escaneado un código QR nuevo desde tu TV."
+  },
+  "register": {
+    "title": "Crear Cuenta",
+    "fullName": "Nombre Completo",
+    "namePlaceholder": "Juan Pérez",
+    "email": "Correo",
+    "password": "Contraseña",
+    "passwordPlaceholder": "Mínimo 8 caracteres",
+    "confirmPassword": "Confirmar Contraseña",
+    "confirmPasswordPlaceholder": "Ingresa la contraseña nuevamente",
+    "termsText": "Al registrarte, aceptas nuestros Términos de Servicio y Política de Privacidad",
+    "submit": "Registrarse",
+    "registering": "Registrando...",
+    "googleSignup": "Registrarse con Google",
+    "haveAccount": "¿Ya tienes una cuenta?",
+    "loginLink": "Iniciar Sesión",
+    "errors": {
+      "fillAllFields": "Por favor, completa todos los campos",
+      "passwordMismatch": "Las contraseñas no coinciden",
+      "passwordTooShort": "La contraseña debe tener al menos 8 caracteres",
+      "registrationFailed": "Error en el registro. Por favor, intenta de nuevo.",
+      "googleFailed": "Error al iniciar sesión con Google"
+    }
+  },
+  "nav": {
+    "home": "Inicio",
+    "vod": "VOD",
+    "liveTV": "TV en Vivo",
+    "radio": "Radio",
+    "podcasts": "Podcasts",
+    "judaism": "Judaísmo",
+    "children": "Niños",
+    "profile": "Perfil",
+    "search": "Buscar",
+    "settings": "Configuración",
+    "favorites": "Favoritos",
+    "watchlist": "Mi Lista",
+    "downloads": "Descargas",
+    "help": "Ayuda y Soporte"
+  },
+  "home": {
+    "continueWatching": "Continuar Viendo",
+    "featuredContent": "Destacados",
+    "liveTV": "TV en Vivo",
+    "allChannels": "Todos los Canales",
+    "liveChannels": "Canales en Vivo",
+    "israeliMovies": "Películas Israelíes",
+    "israeli-movies": "Películas Israelíes",
+    "israeli-series": "Series Israelíes",
+    "action": "Acción y Suspenso",
+    "comedy": "Comedia",
+    "drama": "Drama",
+    "documentaries": "Documentales",
+    "loadingContent": "Cargando contenido...",
+    "liveNow": "En Vivo",
+    "carousel": {
+      "fauda": {
+        "title": "Fauda",
+        "subtitle": "Temporada 4 - Ahora en Streaming",
+        "description": "La exitosa serie israelí regresa para una cuarta temporada llena de suspenso y acción"
+      },
+      "shtisel": {
+        "title": "Shtisel",
+        "subtitle": "Todas las Temporadas Disponibles",
+        "description": "Sigue a la familia Shtisel en el barrio ultraortodoxo de Jerusalén"
+      },
+      "tehran": {
+        "title": "Teherán",
+        "subtitle": "Temporada 2",
+        "description": "Una agente del Mossad en el corazón de Irán en una misión peligrosa"
+      },
+      "live": {
+        "title": "En Vivo - Kan 11",
+        "subtitle": "Ver Ahora",
+        "description": "Noticias, actualidad y contenido de calidad"
+      }
+    }
+  },
+  "search": {
+    "title": "Buscar",
+    "subtitle": "Encuentra contenido en todas las plataformas",
+    "placeholder": "Buscar películas, series, canales, podcasts...",
+    "voicePlaceholder": "Habla ahora...",
+    "searching": "Buscando...",
+    "noResults": "Sin resultados",
+    "tryDifferent": "Intenta con otros términos",
+    "resultsFor": "resultados para",
+    "filters": {
+      "all": "Todo",
+      "moviesAndSeries": "Películas y Series",
+      "channels": "Canales",
+      "radio": "Radio",
+      "podcasts": "Podcasts"
+    }
+  },
+  "liveTV": {
+    "title": "TV en Vivo",
+    "channels": "Canales",
+    "nowPlaying": "Ahora",
+    "loadError": "Error al cargar los canales",
+    "categories": {
+      "all": "Todo",
+      "news": "Noticias",
+      "sports": "Deportes",
+      "entertainment": "Entretenimiento",
+      "kids": "Niños",
+      "documentary": "Documental"
+    }
+  },
+  "radio": {
+    "title": "Radio",
+    "stations": "Estaciones",
+    "nowPlaying": "Reproduciendo",
+    "loadError": "Error al cargar las estaciones",
+    "genres": {
+      "all": "Todo",
+      "news": "Noticias",
+      "music": "Música",
+      "talk": "Talk",
+      "army": "Militar"
+    }
+  },
+  "podcasts": {
+    "title": "Podcasts",
+    "shows": "Programas",
+    "episodes": "Episodios",
+    "loadError": "Error al cargar los podcasts",
+    "categories": {
+      "all": "Todo",
+      "news": "Noticias",
+      "comedy": "Comedia",
+      "society": "Sociedad",
+      "tech": "Tecnología",
+      "history": "Historia"
+    }
+  },
+  "vod": {
+    "title": "Películas y Series",
+    "movies": "Películas",
+    "series": "Series",
+    "loadError": "Error al cargar el contenido",
+    "categories": {
+      "all": "Todo",
+      "drama": "Drama",
+      "comedy": "Comedia",
+      "action": "Acción",
+      "documentary": "Documental",
+      "kids": "Niños"
+    }
+  },
+  "account": {
+    "title": "Mi Cuenta",
+    "profile": "Perfil",
+    "settings": "Configuración",
+    "subscription": "Suscripción",
+    "manageSubscription": "Gestionar Suscripción",
+    "personalDetails": "Datos Personales",
+    "billing": "Facturación y Pago",
+    "logout": "Cerrar Sesión",
+    "login": "Iniciar Sesión",
+    "register": "Registrarse",
+    "email": "Correo",
+    "password": "Contraseña",
+    "name": "Nombre",
+    "guest": "Invitado",
+    "premium": "Premium",
+    "basic": "Básico"
+  },
+  "profile": {
+    "title": "Configuración de Cuenta",
+    "tabs": {
+      "personal": "Perfil",
+      "billing": "Facturación",
+      "subscription": "Suscripción",
+      "notifications": "Notificaciones",
+      "security": "Seguridad"
+    },
+    "billing": {
+      "paymentMethods": "Métodos de Pago",
+      "addCard": "Agregar Tarjeta",
+      "expires": "Vence:",
+      "default": "Predeterminado",
+      "history": "Historial de Facturación",
+      "date": "Fecha",
+      "description": "Descripción",
+      "amount": "Monto",
+      "status": "Estado",
+      "paid": "Pagado",
+      "pending": "Pendiente",
+      "downloadInvoices": "Descargar Facturas",
+      "billingAddress": "Dirección de Facturación",
+      "editAddress": "Editar Dirección",
+      "noPaymentMethods": "No hay métodos de pago agregados",
+      "noHistory": "No hay historial de facturación"
+    },
+    "subscription": {
+      "currentPlan": "Plan Actual",
+      "status": "Estado",
+      "active": "Activo",
+      "renewsOn": "Se renueva el",
+      "noActivePlan": "Sin suscripción activa",
+      "availablePlans": "Planes Disponibles",
+      "choosePlan": "Elige el plan que mejor se adapte a ti",
+      "recommended": "Recomendado",
+      "selectPlan": "Seleccionar Plan",
+      "manageSubscription": "Gestionar Suscripción",
+      "cancelSubscription": "Cancelar Suscripción",
+      "cancelNote": "La cancelación entrará en vigor al final del período de facturación actual"
+    },
+    "plans": {
+      "basic": {
+        "name": "Básico",
+        "price": "Gratis",
+        "feature1": "Acceso a contenido básico",
+        "feature2": "Calidad SD",
+        "feature3": "1 dispositivo"
+      },
+      "premium": {
+        "name": "Premium",
+        "price": "$7.99/mes",
+        "feature1": "Acceso a todo el contenido",
+        "feature2": "Calidad HD",
+        "feature3": "Hasta 3 dispositivos",
+        "feature4": "Sin anuncios"
+      },
+      "family": {
+        "name": "Familiar",
+        "price": "$12.99/mes",
+        "feature1": "Acceso a todo el contenido",
+        "feature2": "Calidad 4K",
+        "feature3": "Hasta 6 dispositivos",
+        "feature4": "Sin anuncios",
+        "feature5": "Perfiles para niños"
+      }
+    }
+  },
+  "settings": {
+    "title": "Configuración",
+    "language": "Idioma",
+    "selectLanguage": "Seleccionar Idioma",
+    "notifications": "Notificaciones",
+    "playback": "Reproducción",
+    "quality": "Calidad",
+    "subtitles": "Subtítulos",
+    "autoplay": "Reproducción Automática",
+    "about": "Acerca de"
+  },
+  "voice": {
+    "listening": "Escuchando...",
+    "tapToSpeak": "Toca para hablar",
+    "processing": "Procesando...",
+    "error": "No te escuché, intenta de nuevo"
+  },
+  "errors": {
+    "networkError": "Error de Red",
+    "loadingFailed": "Carga Fallida",
+    "tryAgain": "Intentar de Nuevo"
+  },
+  "player": {
+    "loading": "Cargando...",
+    "retry": "Reintentar",
+    "error": "Error al reproducir el video",
+    "back": "← Volver",
+    "liveBadge": "EN VIVO",
+    "noStream": "Transmisión no disponible",
+    "loadError": "Error al cargar la transmisión"
+  },
+  "empty": {
+    "noContent": "No hay contenido disponible",
+    "tryAnotherCategory": "Intenta seleccionar otra categoría",
+    "noPodcasts": "No hay podcasts disponibles",
+    "tryLater": "Intenta de nuevo más tarde",
+    "noResults": "No se encontraron resultados"
+  },
+  "profile": {
+    "profileDetails": "Detalles del Perfil",
+    "name": "Nombre",
+    "notSet": "No establecido",
+    "email": "Correo",
+    "editProfile": "Editar Perfil",
+    "notificationSettings": "Configuración de Notificaciones",
+    "security": "Seguridad",
+    "changePassword": "Cambiar Contraseña",
+    "updatePassword": "Actualiza tu contraseña",
+    "connectedDevices": "Dispositivos Conectados",
+    "manageDevices": "Administra los dispositivos conectados a tu cuenta",
+    "twoFactorAuth": "Autenticación de Dos Factores",
+    "addExtraSecurity": "Agrega una capa extra de seguridad",
+    "address": {
+      "line1": "Calle Principal 123",
+      "line2": "Tel Aviv, Israel 6100000"
+    },
+    "free": "Gratis",
+    "premiumPrice": "$7.99/mes",
+    "familyPrice": "$12.99/mes",
+    "remaining": "restante",
+    "notifications": {
+      "newContent": "Contenido Nuevo",
+      "newContentDesc": "Recibe notificaciones sobre contenido nuevo",
+      "liveEvents": "Eventos en Vivo",
+      "liveEventsDesc": "Recibe notificaciones sobre transmisiones especiales en vivo",
+      "recommendations": "Recomendaciones",
+      "recommendationsDesc": "Recibe recomendaciones personalizadas",
+      "updates": "Actualizaciones del Sistema",
+      "updatesDesc": "Recibe notificaciones sobre cambios del sistema"
+    },
+    "morningRitual": "Ritual Matutino"
+  },
+  "content": {
+    "episodes": "episodios"
+  },
+  "favorites": {
+    "title": "Favoritos",
+    "items": "elementos",
+    "empty": "Sin favoritos",
+    "emptyHint": "Agrega contenido a favoritos para verlo facilmente"
+  },
+  "downloads": {
+    "title": "Descargas",
+    "items": "elementos",
+    "storage": "Almacenamiento",
+    "empty": "Sin descargas",
+    "emptyHint": "Descarga contenido para ver sin conexion"
+  },
+  "watchlist": {
+    "title": "Mi Lista",
+    "items": "elementos",
+    "empty": "Tu lista esta vacia",
+    "emptyHint": "Agrega peliculas y series a tu lista",
+    "filters": {
+      "all": "Todo",
+      "continue": "Continuar Viendo",
+      "movies": "Peliculas",
+      "series": "Series"
+    }
+  },
+  "trending": {
+    "title": "Tendencias en Israel",
+    "noTopics": "No hay temas de tendencia disponibles",
+    "topStory": "HISTORIA PRINCIPAL",
+    "sources": "Fuentes",
+    "categories": {
+      "security": "Seguridad",
+      "politics": "Politica",
+      "tech": "Tecnologia",
+      "culture": "Cultura",
+      "sports": "Deportes",
+      "economy": "Economia",
+      "entertainment": "Entretenimiento",
+      "weather": "Clima",
+      "health": "Salud",
+      "general": "General"
+    }
+  },
+  "clock": {
+    "israel": "Israel",
+    "local": "Local",
+    "shabbatShalom": "Shabat Shalom!",
+    "erevShabbat": "Erev Shabat",
+    "candleLighting": "Encendido de Velas",
+    "parasha": "Parasha"
+  },
+  "ritual": {
+    "title": "Ritual Matutino",
+    "greeting": "¡Buenos Días!",
+    "israelUpdate": "Es la tarde en Israel, las noticias informan sobre desarrollos en curso",
+    "recommendation": "Te recomendamos empezar con las noticias de la mañana y luego pasar a la radio",
+    "preparingRitual": "Preparando tu ritual matutino...",
+    "israelTime": "Hora en Israel",
+    "day": "Día",
+    "letsStart": "Empecemos",
+    "skipToday": "Saltar por Hoy",
+    "finish": "Terminar",
+    "noContentNow": "No hay contenido disponible ahora",
+    "typeLive": "En Vivo",
+    "typeRadio": "Radio",
+    "typeVideo": "Video"
+  },
+  "admin": {
+    "dashboard": "Panel de Control",
+    "users": {
+      "title": "Usuarios",
+      "subtitle": "Ver y gestionar usuarios del sistema",
+      "addUser": "Agregar Usuario",
+      "searchPlaceholder": "Buscar usuario...",
+      "noUsersFound": "No se encontraron usuarios",
+      "active": "Activo",
+      "inactive": "Inactivo",
+      "banned": "Bloqueado",
+      "allUsers": "Todos",
+      "activeUsers": "Activos",
+      "inactiveUsers": "Inactivos",
+      "bannedUsers": "Bloqueados"
+    },
+    "plans": {
+      "title": "Gestión de Planes",
+      "mo": "mes",
+      "yr": "año",
+      "monthly": "Mensual",
+      "yearly": "Anual",
+      "freeTrial": "{{days}} días de prueba gratis",
+      "premium": "Premium"
+    },
+    "campaigns": {
+      "title": "Campañas",
+      "name": "Nombre",
+      "discount": "Descuento",
+      "uses": "Usos",
+      "validUntil": "Válido Hasta",
+      "status": "Estado"
+    },
+    "subscriptions": {
+      "title": "Suscripciones",
+      "user": "Usuario",
+      "plan": "Plan",
+      "price": "Precio",
+      "status": "Estado"
+    },
+    "transactions": {
+      "title": "Transacciones",
+      "id": "ID",
+      "user": "Usuario",
+      "amount": "Monto",
+      "type": "Tipo",
+      "status": "Estado",
+      "date": "Fecha"
+    },
+    "refunds": {
+      "title": "Reembolsos",
+      "id": "ID",
+      "user": "Usuario",
+      "amount": "Monto",
+      "reason": "Razón",
+      "status": "Estado"
+    },
+    "auditLogs": {
+      "title": "Registros de Auditoría",
+      "action": "Acción",
+      "user": "Usuario",
+      "resource": "Recurso",
+      "details": "Detalles",
+      "date": "Fecha"
+    },
+    "emails": {
+      "title": "Campañas de Email",
+      "status": "Estado",
+      "sent": "Enviados",
+      "opened": "Abiertos",
+      "clicked": "Clicks",
+      "created": "Creado"
+    },
+    "push": {
+      "title": "Notificaciones Push",
+      "notificationTitle": "Título"
+    },
+    "marketing": {
+      "title": "Panel de Marketing",
+      "active": "Activo",
+      "completed": "Completado",
+      "scheduled": "Programado",
+      "draft": "Borrador"
+    },
+    "settings": {
+      "title": "Configuración",
+      "downloads": "Descargas",
+      "language": "Idioma"
+    },
+    "table": {
+      "name": "Nombre",
+      "email": "Correo",
+      "role": "Rol",
+      "subscription": "Suscripción",
+      "noSubscription": "Sin suscripción",
+      "status": "Estado",
+      "created": "Creado",
+      "all": "Todos"
+    }
+  },
+  "watchParty": {
+    "title": "Watch Party",
+    "create": "Crear fiesta",
+    "join": "Unirse a la fiesta",
+    "active": "Fiesta activa",
+    "createTitle": "Crear Watch Party",
+    "joinTitle": "Unirse a la fiesta",
+    "enterCode": "Ingresa el código de la sala",
+    "roomCode": "Código de la sala",
+    "copyCode": "Copiar código",
+    "codeCopied": "¡Código copiado!",
+    "participants": "Participantes",
+    "host": "Anfitrión",
+    "you": "Tú",
+    "leave": "Salir de la fiesta",
+    "end": "Terminar fiesta",
+    "chat": "Chat",
+    "sendMessage": "Enviar mensaje",
+    "typeMessage": "Escribe un mensaje...",
+    "synced": "Sincronizado",
+    "syncing": "Sincronizando...",
+    "hostPaused": "El anfitrión pausó",
+    "userJoined": "{{name}} se unió",
+    "userLeft": "{{name}} salió",
+    "partyEnded": "La fiesta ha terminado",
+    "connecting": "Conectando...",
+    "options": {
+      "chatEnabled": "Habilitar chat",
+      "syncPlayback": "Sincronizar reproducción"
+    },
+    "errors": {
+      "invalidCode": "Código inválido",
+      "partyFull": "La fiesta está llena",
+      "partyEnded": "La fiesta ha terminado",
+      "connectionError": "Error de conexión",
+      "createFailed": "Error al crear la fiesta",
+      "joinFailed": "Error al unirse"
+    },
+    "audio": {
+      "mute": "Silenciar",
+      "unmute": "Activar sonido",
+      "speaking": "Hablando",
+      "connecting": "Conectando audio...",
+      "noAudio": "Audio no disponible"
+    }
+  },
+  "footer": {
+    "brandDescription": "Tu hogar en EE.UU. Transmisiones de TV, VOD, radio y podcasts en hebreo.",
+    "navigation": "Navegación",
+    "account": "Cuenta",
+    "legal": "Legal",
+    "liveTV": "TV en Vivo",
+    "moviesAndSeries": "Películas y Series",
+    "radioStations": "Estaciones de Radio",
+    "podcasts": "Podcasts",
+    "myProfile": "Mi Perfil",
+    "subscriptions": "Suscripciones",
+    "helpAndSupport": "Ayuda y Soporte",
+    "termsOfUse": "Términos de Uso",
+    "privacyPolicy": "Política de Privacidad",
+    "contactUs": "Contáctenos",
+    "copyright": "© {{year}} Bayit+. Todos los derechos reservados."
+  },
+  "chapters": {
+    "title": "Capítulos",
+    "noChapters": "No hay capítulos disponibles",
+    "generating": "Generando capítulos...",
+    "jumpTo": "Ir a",
+    "current": "Ahora",
+    "categories": {
+      "intro": "Introducción",
+      "news": "Noticias",
+      "security": "Seguridad",
+      "politics": "Política",
+      "economy": "Economía",
+      "sports": "Deportes",
+      "weather": "Clima",
+      "culture": "Cultura",
+      "conclusion": "Conclusión"
+    }
+  }
+}

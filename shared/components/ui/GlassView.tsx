@@ -39,10 +39,14 @@ export const GlassView: React.FC<GlassViewProps> = ({
     high: 20,
   };
 
-  // Web: Use CSS backdrop-filter
+  // Web: Use CSS backdrop-filter with className for reliability
   if (Platform.OS === 'web') {
+    const glassClassName = normalizedIntensity === 'high' ? 'glass-strong' :
+                           normalizedIntensity === 'low' ? 'glass-light' : 'glass';
     return (
       <View
+        // @ts-ignore - Web-specific className
+        className={glassClassName}
         style={[
           styles.glass,
           intensityStyles[normalizedIntensity],

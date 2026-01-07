@@ -1,0 +1,648 @@
+{
+  "common": {
+    "loading": "טוען...",
+    "error": "שגיאה",
+    "retry": "נסה שוב",
+    "cancel": "ביטול",
+    "save": "שמור",
+    "close": "סגור",
+    "back": "חזור",
+    "next": "הבא",
+    "search": "חיפוש",
+    "watchNow": "צפה עכשיו",
+    "playNow": "נגן עכשיו",
+    "new": "חדש",
+    "live": "שידור חי",
+    "recommended": "מומלץ",
+    "edit": "ערוך",
+    "delete": "מחק",
+    "appName": "בית+"
+  },
+  "hero": {
+    "watch": "צפייה",
+    "moreInfo": "מידע נוסף",
+    "addToList": "הוסף לרשימה"
+  },
+  "login": {
+    "title": "התחברות",
+    "tagline": "הבית שלך בארה״ב",
+    "email": "אימייל",
+    "password": "סיסמה",
+    "submit": "התחברות",
+    "loggingIn": "מתחבר...",
+    "or": "או",
+    "forgotPassword": "שכחת סיסמה?",
+    "continueWithGoogle": "המשך עם Google",
+    "noAccount": "אין לך חשבון?",
+    "signUp": "הרשמה",
+    "register": "הרשמה",
+    "name": "שם",
+    "qrInstructions": "סרוק את הקוד עם הטלפון להתחברות מהירה",
+    "methodQR": "קוד QR",
+    "methodVoice": "קולי",
+    "methodTraditional": "אימייל",
+    "qrTitle": "סרוק להתחברות",
+    "qrDescription": "סרוק את קוד ה-QR עם הטלפון להתחברות בלי להקליד",
+    "expiresIn": "תוקף 5 דקות",
+    "companionConnected": "הטלפון התחבר!",
+    "authenticating": "מתחבר...",
+    "sessionExpired": "פג תוקף",
+    "refreshQR": "צור קוד חדש",
+    "generatingQR": "יוצר קוד QR...",
+    "howItWorks": "איך זה עובד:",
+    "step1": "פתח מצלמה בטלפון",
+    "step2": "סרוק את הקוד למעלה",
+    "step3": "התחבר בטלפון",
+    "step4": "הטלוויזיה מתחברת אוטומטית!",
+    "voicePlaceholder": "הקלד את תשובתך...",
+    "send": "שלח",
+    "createAccount": "צור חשבון",
+    "bayitThinking": "בית חושב...",
+    "errors": {
+      "fillAllFields": "נא למלא את כל השדות",
+      "loginFailed": "שגיאה בהתחברות. נסה שוב."
+    }
+  },
+  "tvLogin": {
+    "invalidQR": "קוד QR לא תקין. סרוק שוב מהטלוויזיה.",
+    "sessionInvalid": "פג תוקף קוד ה-QR. צור קוד חדש בטלוויזיה.",
+    "verificationFailed": "שגיאה באימות. נסה שוב.",
+    "fillAllFields": "נא למלא את כל השדות",
+    "loginFailed": "שגיאה בהתחברות. בדוק את הפרטים.",
+    "notLoggedIn": "אינך מחובר במכשיר זה.",
+    "enterCredentials": "הזן את פרטי ההתחברות לאישור הטלוויזיה.",
+    "authFailed": "שגיאה באישור.",
+    "verifying": "מאמת...",
+    "verifyingDescription": "מתחבר לטלוויזיה...",
+    "loginTitle": "התחבר לטלוויזיה",
+    "loginDescription": "הזן פרטים לאישור הטלוויזיה",
+    "authorizing": "מאשר...",
+    "authorizingDescription": "מחבר אותך לטלוויזיה...",
+    "authorizeTV": "אשר טלוויזיה",
+    "success": "הצלחה!",
+    "successDescription": "הטלוויזיה מחוברת. אפשר לסגור את העמוד.",
+    "goToHome": "לדף הבית",
+    "error": "משהו השתבש",
+    "tryAgain": "נסה שוב",
+    "securityNote": "הפרטים נשלחים בצורה מאובטחת ואינם נשמרים בטלוויזיה.",
+    "footer": "יש בעיה? וודא שסרקת קוד QR חדש מהטלוויזיה."
+  },
+  "register": {
+    "title": "יצירת חשבון",
+    "fullName": "שם מלא",
+    "namePlaceholder": "ישראל ישראלי",
+    "email": "אימייל",
+    "password": "סיסמה",
+    "passwordPlaceholder": "לפחות 8 תווים",
+    "confirmPassword": "אימות סיסמה",
+    "confirmPasswordPlaceholder": "הזן שוב את הסיסמה",
+    "termsText": "בהרשמה אתה מאשר את תנאי השימוש ואת מדיניות הפרטיות",
+    "submit": "הרשמה",
+    "registering": "נרשם...",
+    "googleSignup": "הרשמה עם Google",
+    "haveAccount": "כבר יש לך חשבון?",
+    "loginLink": "התחברות",
+    "errors": {
+      "fillAllFields": "נא למלא את כל השדות",
+      "passwordMismatch": "הסיסמאות אינן תואמות",
+      "passwordTooShort": "הסיסמה חייבת להכיל לפחות 8 תווים",
+      "registrationFailed": "שגיאה בהרשמה. נסה שוב.",
+      "googleFailed": "שגיאה בהתחברות עם Google"
+    }
+  },
+  "nav": {
+    "home": "ראשי",
+    "vod": "VOD",
+    "liveTV": "שידור חי",
+    "radio": "רדיו",
+    "podcasts": "פודקאסטים",
+    "judaism": "יהדות",
+    "children": "ילדים",
+    "profile": "פרופיל",
+    "search": "חיפוש",
+    "settings": "הגדרות",
+    "favorites": "מועדפים",
+    "watchlist": "רשימת צפייה",
+    "downloads": "הורדות",
+    "help": "עזרה ותמיכה"
+  },
+  "home": {
+    "continueWatching": "המשך צפייה",
+    "featuredContent": "מומלצים",
+    "liveTV": "שידור חי",
+    "allChannels": "לכל הערוצים",
+    "liveChannels": "ערוצים בשידור חי",
+    "israeliMovies": "סרטים ישראליים",
+    "israeli-movies": "סרטים ישראליים",
+    "israeli-series": "סדרות ישראליות",
+    "action": "אקשן ומתח",
+    "comedy": "קומדיה",
+    "drama": "דרמה",
+    "documentaries": "דוקומנטרים",
+    "loadingContent": "טוען תוכן...",
+    "liveNow": "עכשיו בשידור",
+    "carousel": {
+      "fauda": {
+        "title": "פאודה",
+        "subtitle": "עונה 4 - עכשיו בשידור",
+        "description": "הסדרה הישראלית המצליחה חוזרת לעונה רביעית מלאת מתח ואקשן"
+      },
+      "shtisel": {
+        "title": "שטיסל",
+        "subtitle": "כל העונות זמינות",
+        "description": "עקבו אחר משפחת שטיסל בשכונה החרדית בירושלים"
+      },
+      "tehran": {
+        "title": "טהרן",
+        "subtitle": "עונה 2",
+        "description": "סוכנת מוסד בלב איראן במשימה מסוכנת"
+      },
+      "live": {
+        "title": "שידור חי - כאן 11",
+        "subtitle": "צפו עכשיו",
+        "description": "חדשות, תוכניות אקטואליה ותוכן איכותי"
+      }
+    }
+  },
+  "search": {
+    "title": "חיפוש",
+    "subtitle": "מצא תוכן בכל הפלטפורמות",
+    "placeholder": "חפש סרטים, סדרות, ערוצים, פודקאסטים...",
+    "voicePlaceholder": "דבר עכשיו...",
+    "searching": "מחפש...",
+    "noResults": "לא נמצאו תוצאות",
+    "tryDifferent": "נסה מילות חיפוש אחרות",
+    "resultsFor": "תוצאות עבור",
+    "filters": {
+      "all": "הכל",
+      "moviesAndSeries": "סרטים וסדרות",
+      "channels": "ערוצים",
+      "radio": "רדיו",
+      "podcasts": "פודקאסטים"
+    }
+  },
+  "liveTV": {
+    "title": "טלוויזיה חיה",
+    "channels": "ערוצים",
+    "nowPlaying": "עכשיו בשידור",
+    "loadError": "שגיאה בטעינת הערוצים",
+    "categories": {
+      "all": "הכל",
+      "news": "חדשות",
+      "sports": "ספורט",
+      "entertainment": "בידור",
+      "kids": "ילדים",
+      "documentary": "דוקומנטרי"
+    }
+  },
+  "radio": {
+    "title": "רדיו",
+    "stations": "תחנות",
+    "nowPlaying": "עכשיו משמיע",
+    "loadError": "שגיאה בטעינת התחנות",
+    "genres": {
+      "all": "הכל",
+      "news": "חדשות",
+      "music": "מוזיקה",
+      "talk": "טוק",
+      "army": "צבאי"
+    }
+  },
+  "podcasts": {
+    "title": "פודקאסטים",
+    "shows": "תוכניות",
+    "episodes": "פרקים",
+    "loadError": "שגיאה בטעינת הפודקאסטים",
+    "categories": {
+      "all": "הכל",
+      "news": "חדשות",
+      "comedy": "קומדיה",
+      "society": "חברה",
+      "tech": "טכנולוגיה",
+      "history": "היסטוריה"
+    }
+  },
+  "vod": {
+    "title": "סרטים וסדרות",
+    "movies": "סרטים",
+    "series": "סדרות",
+    "loadError": "שגיאה בטעינת התוכן",
+    "categories": {
+      "all": "הכל",
+      "drama": "דרמה",
+      "comedy": "קומדיה",
+      "action": "אקשן",
+      "documentary": "דוקומנטרי",
+      "kids": "ילדים"
+    }
+  },
+  "account": {
+    "title": "החשבון שלי",
+    "profile": "פרופיל",
+    "settings": "הגדרות",
+    "subscription": "מנוי",
+    "manageSubscription": "נהל מנוי",
+    "personalDetails": "פרטים אישיים",
+    "billing": "חיוב ותשלום",
+    "logout": "התנתק",
+    "login": "התחבר",
+    "register": "הרשמה",
+    "email": "אימייל",
+    "password": "סיסמה",
+    "name": "שם",
+    "guest": "אורח",
+    "premium": "פרימיום",
+    "basic": "בסיסי"
+  },
+  "profile": {
+    "title": "הגדרות חשבון",
+    "tabs": {
+      "personal": "פרופיל",
+      "billing": "חיוב",
+      "subscription": "מנוי",
+      "notifications": "התראות",
+      "security": "אבטחה"
+    },
+    "billing": {
+      "paymentMethods": "אמצעי תשלום",
+      "addCard": "הוסף כרטיס",
+      "expires": "תוקף:",
+      "default": "ברירת מחדל",
+      "history": "היסטוריית חיובים",
+      "date": "תאריך",
+      "description": "תיאור",
+      "amount": "סכום",
+      "status": "סטטוס",
+      "paid": "שולם",
+      "pending": "ממתין",
+      "downloadInvoices": "הורד חשבוניות",
+      "billingAddress": "כתובת לחיוב",
+      "editAddress": "ערוך כתובת",
+      "noPaymentMethods": "לא נוספו אמצעי תשלום",
+      "noHistory": "אין היסטוריית חיובים"
+    },
+    "subscription": {
+      "currentPlan": "המנוי הנוכחי",
+      "status": "סטטוס",
+      "active": "פעיל",
+      "renewsOn": "מתחדש ב-",
+      "noActivePlan": "אין לך מנוי פעיל",
+      "availablePlans": "חבילות זמינות",
+      "choosePlan": "בחר את החבילה המתאימה לך",
+      "recommended": "מומלץ",
+      "selectPlan": "בחר חבילה",
+      "manageSubscription": "ניהול מנוי",
+      "cancelSubscription": "בטל מנוי",
+      "cancelNote": "ביטול המנוי ייכנס לתוקף בסוף תקופת החיוב הנוכחית"
+    },
+    "plans": {
+      "basic": {
+        "name": "בסיסי",
+        "price": "חינם",
+        "feature1": "גישה לתוכן בסיסי",
+        "feature2": "איכות SD",
+        "feature3": "מכשיר אחד"
+      },
+      "premium": {
+        "name": "פרימיום",
+        "price": "₪29.90/חודש",
+        "feature1": "גישה לכל התוכן",
+        "feature2": "איכות HD",
+        "feature3": "עד 3 מכשירים",
+        "feature4": "ללא פרסומות"
+      },
+      "family": {
+        "name": "משפחתי",
+        "price": "₪49.90/חודש",
+        "feature1": "גישה לכל התוכן",
+        "feature2": "איכות 4K",
+        "feature3": "עד 6 מכשירים",
+        "feature4": "ללא פרסומות",
+        "feature5": "פרופילים לילדים"
+      }
+    }
+  },
+  "settings": {
+    "title": "הגדרות",
+    "language": "שפה",
+    "selectLanguage": "בחר שפה",
+    "notifications": "התראות",
+    "playback": "הגדרות ניגון",
+    "quality": "איכות",
+    "subtitles": "כתוביות",
+    "autoplay": "ניגון אוטומטי",
+    "about": "אודות"
+  },
+  "voice": {
+    "listening": "מקשיב...",
+    "tapToSpeak": "לחץ לדיבור",
+    "processing": "מעבד...",
+    "error": "לא הצלחתי לשמוע, נסה שוב"
+  },
+  "errors": {
+    "networkError": "שגיאת רשת",
+    "loadingFailed": "טעינה נכשלה",
+    "tryAgain": "נסה שוב"
+  },
+  "player": {
+    "loading": "טוען...",
+    "retry": "נסה שוב",
+    "error": "שגיאה בהפעלת הווידאו",
+    "back": "← חזור",
+    "liveBadge": "שידור חי",
+    "noStream": "הזרם אינו זמין",
+    "loadError": "שגיאה בטעינת הזרם"
+  },
+  "empty": {
+    "noContent": "אין תוכן זמין",
+    "tryAnotherCategory": "נסה לבחור קטגוריה אחרת",
+    "noPodcasts": "אין פודקאסטים זמינים",
+    "tryLater": "נסה שוב מאוחר יותר",
+    "noResults": "לא נמצאו תוצאות"
+  },
+  "profile": {
+    "profileDetails": "פרטי פרופיל",
+    "name": "שם",
+    "notSet": "לא הוגדר",
+    "email": "אימייל",
+    "editProfile": "ערוך פרופיל",
+    "notificationSettings": "הגדרות התראות",
+    "security": "אבטחה",
+    "changePassword": "שנה סיסמה",
+    "updatePassword": "עדכן את הסיסמה שלך",
+    "connectedDevices": "מכשירים מחוברים",
+    "manageDevices": "נהל את המכשירים המחוברים לחשבון",
+    "twoFactorAuth": "אימות דו-שלבי",
+    "addExtraSecurity": "הוסף שכבת אבטחה נוספת",
+    "address": {
+      "line1": "רחוב הראשי 123",
+      "line2": "תל אביב, ישראל 6100000"
+    },
+    "free": "חינם",
+    "premiumPrice": "₪29.90/חודש",
+    "familyPrice": "₪49.90/חודש",
+    "remaining": "נותרו",
+    "notifications": {
+      "newContent": "תוכן חדש",
+      "newContentDesc": "קבל התראות על תוכן חדש",
+      "liveEvents": "אירועים בשידור חי",
+      "liveEventsDesc": "התראות על שידורים חיים מיוחדים",
+      "recommendations": "המלצות",
+      "recommendationsDesc": "קבל המלצות מותאמות אישית",
+      "updates": "עדכוני מערכת",
+      "updatesDesc": "קבל עדכונים על שינויים במערכת"
+    },
+    "morningRitual": "טקס הבוקר"
+  },
+  "content": {
+    "episodes": "פרקים"
+  },
+  "favorites": {
+    "title": "מועדפים",
+    "items": "פריטים",
+    "empty": "אין מועדפים",
+    "emptyHint": "הוסף תוכן למועדפים כדי לצפות בו בקלות"
+  },
+  "downloads": {
+    "title": "הורדות",
+    "items": "פריטים",
+    "storage": "אחסון",
+    "empty": "אין הורדות",
+    "emptyHint": "הורד תוכן לצפייה במצב לא מקוון"
+  },
+  "watchlist": {
+    "title": "רשימת צפייה",
+    "items": "פריטים",
+    "empty": "הרשימה ריקה",
+    "emptyHint": "הוסף סרטים וסדרות לרשימה שלך",
+    "filters": {
+      "all": "הכל",
+      "continue": "המשך צפייה",
+      "movies": "סרטים",
+      "series": "סדרות"
+    }
+  },
+  "trending": {
+    "title": "מה חם בישראל",
+    "noTopics": "אין נושאים חמים כרגע",
+    "topStory": "הכותרת הראשית",
+    "sources": "מקורות",
+    "categories": {
+      "security": "ביטחון",
+      "politics": "פוליטיקה",
+      "tech": "טכנולוגיה",
+      "culture": "תרבות",
+      "sports": "ספורט",
+      "economy": "כלכלה",
+      "entertainment": "בידור",
+      "weather": "מזג אוויר",
+      "health": "בריאות",
+      "general": "כללי"
+    }
+  },
+  "clock": {
+    "israel": "ישראל",
+    "local": "מקומי",
+    "shabbatShalom": "שבת שלום!",
+    "erevShabbat": "ערב שבת",
+    "candleLighting": "הדלקת נרות",
+    "parasha": "פרשת"
+  },
+  "ritual": {
+    "title": "☀️ טקס הבוקר",
+    "greeting": "בוקר טוב!",
+    "israelUpdate": "בישראל עכשיו אחר הצהריים, והחדשות מדווחות על התקדמות במשא ומתן",
+    "recommendation": "מומלץ להתחיל עם חדשות הבוקר ואז לעבור לרדיו",
+    "preparingRitual": "מכין את טקס הבוקר שלך...",
+    "israelTime": "שעה בישראל",
+    "day": "יום",
+    "letsStart": "בואו נתחיל",
+    "skipToday": "דלג להיום",
+    "finish": "סיום",
+    "noContentNow": "אין תוכן זמין כרגע",
+    "typeLive": "שידור חי",
+    "typeRadio": "רדיו",
+    "typeVideo": "וידאו"
+  },
+  "admin": {
+    "dashboard": "לוח בקרה",
+    "users": {
+      "title": "משתמשים",
+      "subtitle": "צפה ונהל את משתמשי המערכת",
+      "addUser": "הוסף משתמש",
+      "searchPlaceholder": "חפש משתמש...",
+      "noUsersFound": "לא נמצאו משתמשים",
+      "active": "פעיל",
+      "inactive": "לא פעיל",
+      "banned": "חסום",
+      "allUsers": "הכל",
+      "activeUsers": "פעילים",
+      "inactiveUsers": "לא פעילים",
+      "bannedUsers": "חסומים"
+    },
+    "plans": {
+      "title": "ניהול תוכניות",
+      "mo": "חודש",
+      "yr": "שנה",
+      "monthly": "חודשי",
+      "yearly": "שנתי",
+      "freeTrial": "{{days}} ימי ניסיון חינם",
+      "premium": "פרימיום"
+    },
+    "campaigns": {
+      "title": "קמפיינים",
+      "name": "שם",
+      "discount": "הנחה",
+      "uses": "שימושים",
+      "validUntil": "תוקף",
+      "status": "סטטוס"
+    },
+    "subscriptions": {
+      "title": "מנויים",
+      "user": "משתמש",
+      "plan": "תוכנית",
+      "price": "מחיר",
+      "status": "סטטוס"
+    },
+    "transactions": {
+      "title": "עסקאות",
+      "id": "מזהה",
+      "user": "משתמש",
+      "amount": "סכום",
+      "type": "סוג",
+      "status": "סטטוס",
+      "date": "תאריך"
+    },
+    "refunds": {
+      "title": "החזרים",
+      "id": "מזהה",
+      "user": "משתמש",
+      "amount": "סכום",
+      "reason": "סיבה",
+      "status": "סטטוס"
+    },
+    "auditLogs": {
+      "title": "יומן פעילות",
+      "action": "פעולה",
+      "user": "משתמש",
+      "resource": "משאב",
+      "details": "פרטים",
+      "date": "תאריך"
+    },
+    "emails": {
+      "title": "קמפייני אימייל",
+      "status": "סטטוס",
+      "sent": "נשלחו",
+      "opened": "נפתחו",
+      "clicked": "הקליקו",
+      "created": "נוצר"
+    },
+    "push": {
+      "title": "התראות פוש",
+      "notificationTitle": "כותרת"
+    },
+    "marketing": {
+      "title": "לוח שיווק",
+      "active": "פעיל",
+      "completed": "הושלם",
+      "scheduled": "מתוזמן",
+      "draft": "טיוטה"
+    },
+    "settings": {
+      "title": "הגדרות",
+      "downloads": "הורדות",
+      "language": "שפה"
+    },
+    "table": {
+      "name": "שם",
+      "email": "אימייל",
+      "role": "תפקיד",
+      "subscription": "מנוי",
+      "noSubscription": "ללא מנוי",
+      "status": "סטטוס",
+      "created": "נוצר",
+      "all": "הכל"
+    }
+  },
+  "watchParty": {
+    "title": "מסיבת צפייה",
+    "create": "צור מסיבה",
+    "join": "הצטרף למסיבה",
+    "active": "מסיבה פעילה",
+    "createTitle": "יצירת מסיבת צפייה",
+    "joinTitle": "הצטרפות למסיבה",
+    "enterCode": "הזן קוד חדר",
+    "roomCode": "קוד החדר",
+    "copyCode": "העתק קוד",
+    "codeCopied": "הקוד הועתק!",
+    "participants": "משתתפים",
+    "host": "מארח",
+    "you": "אתה",
+    "leave": "עזוב מסיבה",
+    "end": "סיים מסיבה",
+    "chat": "צ'אט",
+    "sendMessage": "שלח הודעה",
+    "typeMessage": "הקלד הודעה...",
+    "synced": "מסונכרן",
+    "syncing": "מסנכרן...",
+    "hostPaused": "המארח השהה",
+    "userJoined": "{{name}} הצטרף/ה",
+    "userLeft": "{{name}} עזב/ה",
+    "partyEnded": "המסיבה הסתיימה",
+    "connecting": "מתחבר...",
+    "options": {
+      "chatEnabled": "אפשר צ'אט",
+      "syncPlayback": "סנכרן ניגון"
+    },
+    "errors": {
+      "invalidCode": "קוד לא תקין",
+      "partyFull": "המסיבה מלאה",
+      "partyEnded": "המסיבה הסתיימה",
+      "connectionError": "שגיאת חיבור",
+      "createFailed": "שגיאה ביצירת מסיבה",
+      "joinFailed": "שגיאה בהצטרפות"
+    },
+    "audio": {
+      "mute": "השתק",
+      "unmute": "בטל השתקה",
+      "speaking": "מדבר",
+      "connecting": "מתחבר לשמע...",
+      "noAudio": "שמע לא זמין"
+    }
+  },
+  "footer": {
+    "brandDescription": "הבית שלך בארה״ב. שידורי טלוויזיה, VOD, רדיו ופודקאסטים בעברית.",
+    "navigation": "ניווט",
+    "account": "חשבון",
+    "legal": "משפטי",
+    "liveTV": "שידור חי",
+    "moviesAndSeries": "סרטים וסדרות",
+    "radioStations": "תחנות רדיו",
+    "podcasts": "פודקאסטים",
+    "myProfile": "הפרופיל שלי",
+    "subscriptions": "מנויים",
+    "helpAndSupport": "עזרה ותמיכה",
+    "termsOfUse": "תנאי שימוש",
+    "privacyPolicy": "מדיניות פרטיות",
+    "contactUs": "צור קשר",
+    "copyright": "© {{year}} בית+. כל הזכויות שמורות."
+  },
+  "chapters": {
+    "title": "פרקים",
+    "noChapters": "אין פרקים זמינים",
+    "generating": "יוצר פרקים...",
+    "jumpTo": "קפוץ אל",
+    "current": "עכשיו",
+    "categories": {
+      "intro": "פתיחה",
+      "news": "חדשות",
+      "security": "ביטחון",
+      "politics": "פוליטיקה",
+      "economy": "כלכלה",
+      "sports": "ספורט",
+      "weather": "מזג אוויר",
+      "culture": "תרבות",
+      "conclusion": "סיום"
+    }
+  }
+}

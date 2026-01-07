@@ -7,11 +7,13 @@ import {
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
-import { AnimatedLogo } from '../components/AnimatedLogo';
-import { ContentRow } from '../components/ContentRow';
-import { GlassCarousel } from '../components/GlassCarousel';
-import { DualClock } from '../components/DualClock';
-import { TrendingRow } from '../components/TrendingRow';
+import {
+  AnimatedLogo,
+  ContentRow,
+  GlassCarousel,
+  DualClock,
+  TrendingRow,
+} from '../components';
 import { contentService, liveService, historyService, ritualService } from '../services/api';
 import { colors, spacing } from '../theme';
 

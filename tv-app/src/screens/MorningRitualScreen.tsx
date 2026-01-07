@@ -13,7 +13,7 @@ import {
 import { useNavigation } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
 import Video from 'react-native-video';
-import { GlassView } from '../components/ui/GlassView';
+import { GlassView } from '../components';
 import { colors, spacing, fontSize, borderRadius } from '../theme';
 import { ritualService } from '../services/api';
 import { isTV } from '../utils/platform';

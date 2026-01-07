@@ -2,172 +2,182 @@ const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const webpack = require('webpack');
 
-// Main source code configuration
-const babelLoaderConfiguration = {
-  test: /\.(js|jsx|ts|tsx)$/,
-  include: [
-    path.resolve(__dirname, 'src'),
-    path.resolve(__dirname, 'index.web.js'),
-    // Include shared components
-    path.resolve(__dirname, '../shared/components'),
-  ],
-  use: {
-    loader: 'babel-loader',
-    options: {
-      babelrc: false,
-      configFile: false,
-      presets: [
-        ['@babel/preset-env', { loose: true, modules: false }],
-        ['@babel/preset-react', { runtime: 'automatic' }],
-        '@babel/preset-typescript',
-      ],
-      plugins: [
-        'react-native-web',
-        ['@babel/plugin-transform-class-properties', { loose: true }],
-        ['@babel/plugin-transform-private-methods', { loose: true }],
-        ['@babel/plugin-transform-private-property-in-object', { loose: true }],
-      ],
-    },
-  },
-};
-
-// Node modules that need transpilation for react-native-web
-const nodeModulesConfiguration = {
-  test: /\.(js|jsx|ts|tsx)$/,
-  include: /node_modules\/(react-native-web|react-native-safe-area-context|react-native-screens|@react-native|@expo|expo-linear-gradient|expo-font|expo-asset|expo-modules-core)/,
-  exclude: /node_modules\/@react-navigation/,
-  use: {
-    loader: 'babel-loader',
-    options: {
-      babelrc: false,
-      configFile: false,
-      presets: [
-        ['@babel/preset-env', {
-          loose: true,
-          modules: false,
-          targets: { browsers: ['last 2 versions'] }
-        }],
-        ['@babel/preset-react', { runtime: 'automatic' }],
-        '@babel/preset-typescript',
-      ],
-      plugins: [
-        'react-native-web',
-      ],
-      sourceType: 'unambiguous',
-    },
-  },
-};
-
-const imageLoaderConfiguration = {
-  test: /\.(gif|jpe?g|png|svg)$/,
-  type: 'asset/resource',
-};
-
-const fontLoaderConfiguration = {
-  test: /\.(woff|woff2|eot|ttf|otf)$/,
-  type: 'asset/resource',
-};
-
-// CSS with PostCSS for Tailwind (during migration)
-const cssLoaderConfiguration = {
-  test: /\.css$/,
-  use: ['style-loader', 'css-loader', 'postcss-loader'],
-};
-
-// Fix for ESM modules that don't specify extensions
-const esmFixConfiguration = {
-  test: /\.m?js/,
-  resolve: {
-    fullySpecified: false,
-  },
-};
+// Paths - use absolute paths to avoid resolution issues
+const sharedPath = path.resolve(__dirname, '../shared');
+const srcPath = path.resolve(__dirname, 'src');
 
 module.exports = (env, argv) => {
   const isProduction = argv.mode === 'production';
 
   return {
-  entry: './index.web.js',
-  output: {
-    path: path.resolve(__dirname, 'dist'),
-    filename: isProduction ? 'bundle.[contenthash].js' : 'bundle.js',
-    publicPath: '/',
-    clean: true,
-  },
-  resolve: {
-    extensions: ['.web.tsx', '.web.ts', '.web.jsx', '.web.js', '.tsx', '.ts', '.jsx', '.js', '.json'],
-    // Allow shared components to resolve node_modules from this directory
-    modules: [
-      path.resolve(__dirname, 'node_modules'),
-      'node_modules',
-    ],
-    alias: {
-      // React Native Web
-      'react-native$': 'react-native-web',
-      'react-native-linear-gradient': 'react-native-web-linear-gradient',
-      // AsyncStorage web shim
-      '@react-native-async-storage/async-storage': path.resolve(__dirname, 'src/utils/asyncStorageWeb.ts'),
-      // Path aliases (from vite.config.js)
-      '@': path.resolve(__dirname, 'src'),
-      '@components': path.resolve(__dirname, 'src/components'),
-      '@pages': path.resolve(__dirname, 'src/pages'),
-      '@hooks': path.resolve(__dirname, 'src/hooks'),
-      '@services': path.resolve(__dirname, 'src/services'),
-      '@stores': path.resolve(__dirname, 'src/stores'),
-      '@utils': path.resolve(__dirname, 'src/utils'),
-      // Shared components
-      '@bayit/shared': path.resolve(__dirname, '../shared/components'),
-    },
-  },
-  module: {
-    rules: [
-      babelLoaderConfiguration,
-      nodeModulesConfiguration,
-      imageLoaderConfiguration,
-      fontLoaderConfiguration,
-      cssLoaderConfiguration,
-      esmFixConfiguration,
-    ],
-  },
-  plugins: [
-    new webpack.DefinePlugin({
-      __DEV__: process.env.NODE_ENV !== 'production',
-      'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV || 'development'),
-      'process.env': JSON.stringify({}),
-    }),
-    new webpack.ProvidePlugin({
-      process: 'process/browser',
-    }),
-    new HtmlWebpackPlugin({
-      template: './public/index.html',
-    }),
-  ],
-  devServer: {
-    static: {
-      directory: path.join(__dirname, 'public'),
+    entry: path.resolve(__dirname, 'index.web.js'),
+    output: {
+      path: path.resolve(__dirname, 'dist'),
+      filename: isProduction ? 'bundle.[contenthash].js' : 'bundle.js',
       publicPath: '/',
+      clean: true,
     },
-    port: 3000,
-    hot: true,
-    historyApiFallback: {
-      disableDotRule: true,
-      rewrites: [
-        { from: /\.js$/, to: context => context.parsedUrl.pathname },
-        { from: /\.css$/, to: context => context.parsedUrl.pathname },
-        { from: /\.json$/, to: context => context.parsedUrl.pathname },
-        { from: /./, to: '/index.html' },
+    // Set the context to web folder
+    context: __dirname,
+    resolve: {
+      extensions: ['.web.tsx', '.web.ts', '.web.jsx', '.web.js', '.tsx', '.ts', '.jsx', '.js', '.json'],
+      modules: [
+        path.resolve(__dirname, 'node_modules'),
+        'node_modules',
+      ],
+      alias: {
+        // React Native Web
+        'react-native$': 'react-native-web',
+        'react-native-linear-gradient': 'react-native-web-linear-gradient',
+        // Native module shims
+        '@react-native-async-storage/async-storage': path.resolve(__dirname, 'src/utils/asyncStorageWeb.ts'),
+        '@react-native-clipboard/clipboard': path.resolve(__dirname, 'src/utils/clipboardWeb.ts'),
+        // Local path aliases
+        '@': srcPath,
+        '@components': path.resolve(srcPath, 'components'),
+        '@pages': path.resolve(srcPath, 'pages'),
+        '@hooks': path.resolve(srcPath, 'hooks'),
+        '@services': path.resolve(srcPath, 'services'),
+        '@stores': path.resolve(srcPath, 'stores'),
+        '@utils': path.resolve(srcPath, 'utils'),
+        // Shared library aliases
+        '@bayit/shared': path.resolve(sharedPath, 'components'),
+        '@bayit/shared/components': path.resolve(sharedPath, 'components'),
+        '@bayit/shared/components/ai': path.resolve(sharedPath, 'components/ai'),
+        '@bayit/shared/ui': path.resolve(sharedPath, 'components/ui'),
+        '@bayit/shared/theme': path.resolve(sharedPath, 'theme'),
+        '@bayit/shared/stores': path.resolve(sharedPath, 'stores'),
+        '@bayit/shared/services': path.resolve(sharedPath, 'services'),
+        '@bayit/shared/hooks': path.resolve(sharedPath, 'hooks'),
+        '@bayit/shared/watchparty': path.resolve(sharedPath, 'components/watchparty'),
+        '@bayit/shared/chat': path.resolve(sharedPath, 'components/chat'),
+        '@bayit/shared/admin': path.resolve(sharedPath, 'components/admin'),
+        '@bayit/shared-hooks': path.resolve(sharedPath, 'hooks'),
+        '@bayit/shared-services': path.resolve(sharedPath, 'services'),
+        '@bayit/shared-stores': path.resolve(sharedPath, 'stores'),
+        '@bayit/shared-contexts': path.resolve(sharedPath, 'contexts'),
+        '@bayit/shared-i18n': path.resolve(sharedPath, 'i18n'),
+        '@bayit/shared-styles/globals.css': path.resolve(sharedPath, 'styles/globals.css'),
+        '@bayit/shared-styles': path.resolve(sharedPath, 'styles'),
+        '@bayit/shared-config': path.resolve(sharedPath, 'config'),
+        '@bayit/shared-types': path.resolve(sharedPath, 'types'),
+        '@bayit/shared-utils': path.resolve(sharedPath, 'utils'),
+      },
+      symlinks: true,
+    },
+    // Prevent webpack from treating shared folder as immutable
+    snapshot: {
+      managedPaths: [],
+    },
+    module: {
+      rules: [
+        // Process all TypeScript and JavaScript files with babel
+        {
+          test: /\.(ts|tsx|js|jsx)$/,
+          exclude: /node_modules/,
+          type: 'javascript/auto',
+          use: {
+            loader: 'babel-loader',
+            options: {
+              babelrc: false,
+              configFile: false,
+              cacheDirectory: true,
+              presets: [
+                ['@babel/preset-env', { loose: true, modules: false }],
+                ['@babel/preset-react', { runtime: 'automatic' }],
+                '@babel/preset-typescript',
+              ],
+              plugins: [
+                'react-native-web',
+                ['@babel/plugin-transform-class-properties', { loose: true }],
+                ['@babel/plugin-transform-private-methods', { loose: true }],
+                ['@babel/plugin-transform-private-property-in-object', { loose: true }],
+              ],
+            },
+          },
+        },
+        // Process specific node_modules that need transpilation
+        {
+          test: /\.(js|jsx|ts|tsx)$/,
+          include: /node_modules\/(react-native-web|react-native-safe-area-context|react-native-screens|@react-native|@expo|expo-linear-gradient|expo-font|expo-asset|expo-modules-core)/,
+          type: 'javascript/auto',
+          use: {
+            loader: 'babel-loader',
+            options: {
+              babelrc: false,
+              configFile: false,
+              cacheDirectory: true,
+              presets: [
+                ['@babel/preset-env', { loose: true, modules: false }],
+                ['@babel/preset-react', { runtime: 'automatic' }],
+                '@babel/preset-typescript',
+              ],
+              plugins: ['react-native-web'],
+              sourceType: 'unambiguous',
+            },
+          },
+        },
+        // Images
+        {
+          test: /\.(gif|jpe?g|png|svg)$/,
+          type: 'asset/resource',
+        },
+        // Fonts
+        {
+          test: /\.(woff|woff2|eot|ttf|otf)$/,
+          type: 'asset/resource',
+        },
+        // CSS
+        {
+          test: /\.css$/,
+          use: ['style-loader', 'css-loader', 'postcss-loader'],
+        },
+        // Fix ESM modules
+        {
+          test: /\.m?js/,
+          resolve: {
+            fullySpecified: false,
+          },
+        },
       ],
     },
-    open: true,
-    proxy: [
-      {
-        context: ['/api'],
-        target: 'http://localhost:8000',
-        changeOrigin: true,
-      },
+    plugins: [
+      new webpack.DefinePlugin({
+        __DEV__: !isProduction,
+        'process.env.NODE_ENV': JSON.stringify(isProduction ? 'production' : 'development'),
+      }),
+      new webpack.ProvidePlugin({
+        process: 'process/browser',
+      }),
+      new HtmlWebpackPlugin({
+        template: path.resolve(__dirname, 'public/index.html'),
+      }),
     ],
-  },
-  performance: {
-    hints: false,
-  },
-};
+    devServer: {
+      static: {
+        directory: path.join(__dirname, 'public'),
+      },
+      port: 3000,
+      hot: true,
+      historyApiFallback: true,
+      open: true,
+      proxy: [
+        {
+          context: ['/api'],
+          target: 'http://localhost:8000',
+          changeOrigin: true,
+        },
+      ],
+    },
+    performance: {
+      hints: false,
+    },
+    // Disable persistent caching in dev to avoid stale issues
+    cache: isProduction ? {
+      type: 'filesystem',
+      buildDependencies: {
+        config: [__filename],
+      },
+    } : false,
+  };
 };

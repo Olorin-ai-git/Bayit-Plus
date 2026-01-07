@@ -18,10 +18,10 @@ import {
 } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { useNavigation, useRoute, RouteProp } from '@react-navigation/native';
-import { AdminLayout } from '../../components/admin/AdminLayout';
+import { AdminLayout } from '@bayit/shared/admin';
 import { usersService } from '../../services/adminApi';
 import { User, Role, Permission, AuditLog, Transaction, ROLE_PERMISSIONS } from '../../types/rbac';
-import { colors, spacing, borderRadius, fontSize } from '../../theme';
+import { colors, spacing, borderRadius, fontSize } from '@bayit/shared/theme';
 import { AdminStackParamList } from '../../navigation/AdminNavigator';
 import { formatDate, formatCurrency } from '../../utils/formatters';
 import { getRoleColor, getRoleLabel } from '../../utils/adminConstants';

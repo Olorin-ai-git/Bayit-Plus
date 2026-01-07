@@ -13,7 +13,7 @@ import {
 } from 'react-native';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
-import { GlassView, GlassInput } from '../components/ui';
+import { GlassView, GlassInput } from '../components';
 import { contentService, searchService } from '../services/api';
 import { colors, spacing, borderRadius } from '../theme';
 import { isTV, isWeb } from '../utils/platform';

@@ -15,10 +15,10 @@ import {
   ActivityIndicator,
 } from 'react-native';
 import { useTranslation } from 'react-i18next';
-import { AdminLayout } from '../../components/admin/AdminLayout';
+import { AdminLayout } from '@bayit/shared/admin';
 import { settingsService } from '../../services/adminApi';
 import { SystemSettings } from '../../types/rbac';
-import { colors, spacing, borderRadius, fontSize } from '../../theme';
+import { colors, spacing, borderRadius, fontSize } from '@bayit/shared/theme';
 import { useModal } from '../../contexts/ModalContext';
 
 export const SettingsScreen: React.FC = () => {

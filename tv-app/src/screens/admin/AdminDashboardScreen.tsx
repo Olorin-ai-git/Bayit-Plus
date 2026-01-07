@@ -15,11 +15,10 @@ import {
 } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { useNavigation } from '@react-navigation/native';
-import { AdminLayout } from '../../components/admin/AdminLayout';
-import { StatCard } from '../../components/admin/StatCard';
+import { AdminLayout, StatCard } from '@bayit/shared/admin';
 import { dashboardService } from '../../services/adminApi';
 import { DashboardStats, AuditLog, ChartDataPoint } from '../../types/rbac';
-import { colors, spacing, borderRadius, fontSize } from '../../theme';
+import { colors, spacing, borderRadius, fontSize } from '@bayit/shared/theme';
 import { formatNumber, formatCurrency, formatDateTime } from '../../utils/formatters';
 import { getActivityIcon } from '../../utils/adminConstants';
 

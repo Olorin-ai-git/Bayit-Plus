@@ -635,6 +635,38 @@ export const demoChaptersService = {
 };
 
 // ===========================================
+// CHAT SERVICE (Demo)
+// ===========================================
+export const demoChatService = {
+  sendMessage: async (message: string, conversationId?: string) => {
+    await delay(500);
+    return {
+      message: `זו תשובה לדוגמה על "${message}". במצב דמו, הבינה המלאכותית לא פעילה.`,
+      conversation_id: conversationId || 'demo-conv-1',
+      recommendations: demoSeries.slice(0, 3),
+    };
+  },
+  getConversation: async (conversationId: string) => {
+    await delay();
+    return {
+      id: conversationId,
+      messages: [
+        { role: 'user', content: 'מה כדאי לראות?', timestamp: new Date().toISOString() },
+        { role: 'assistant', content: 'אני ממליץ על פאודה - סדרת מתח מעולה!', timestamp: new Date().toISOString() },
+      ],
+    };
+  },
+  clearConversation: async (conversationId: string) => {
+    await delay();
+    return { message: 'Conversation cleared' };
+  },
+  transcribeAudio: async (audioBlob: Blob) => {
+    await delay(1000);
+    return { text: 'אני רוצה לראות סרט פעולה', language: 'he' };
+  },
+};
+
+// ===========================================
 // PARTY SERVICE (Demo)
 // ===========================================
 export const demoPartyService = {
@@ -712,4 +744,5 @@ export default {
   subtitles: demoSubtitlesService,
   chapters: demoChaptersService,
   party: demoPartyService,
+  chat: demoChatService,
 };

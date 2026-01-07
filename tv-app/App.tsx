@@ -5,8 +5,8 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { I18nextProvider, useTranslation } from 'react-i18next';
-import i18n, { loadSavedLanguage } from './src/i18n';
-import { useDirection } from './src/hooks/useDirection';
+import i18n, { loadSavedLanguage } from '@bayit/shared-i18n';
+import { useDirection } from '@bayit/shared-hooks';
 import {
   HomeScreen,
   PlayerScreen,
@@ -21,18 +21,17 @@ import {
   FavoritesScreen,
   DownloadsScreen,
   WatchlistScreen,
-} from './src/screens';
-import MorningRitualScreen from './src/screens/MorningRitualScreen';
-import ProfileSelectionScreen from './src/screens/ProfileSelectionScreen';
-import ChildrenScreen from './src/screens/ChildrenScreen';
-import FlowsScreen from './src/screens/FlowsScreen';
-import { useAuthStore } from './src/stores/authStore';
-import { ProfileProvider, useProfile } from './src/contexts/ProfileContext';
+  MorningRitualScreen,
+  ProfileSelectionScreen,
+  ChildrenScreen,
+  FlowsScreen,
+  JudaismScreen,
+} from '@bayit/shared-screens';
+import { useAuthStore } from '@bayit/shared-stores';
+import { ProfileProvider } from '@bayit/shared-contexts';
+import { ModalProvider } from '@bayit/shared-contexts';
 import { AdminNavigator } from './src/navigation/AdminNavigator';
-import { GlassTopBar } from './src/components/GlassTopBar';
-import { GlassSidebar } from './src/components/GlassSidebar';
-import { DemoBanner } from './src/components/DemoBanner';
-import { ModalProvider } from './src/contexts/ModalContext';
+import { GlassTopBar, GlassSidebar, DemoBanner } from '@bayit/shared';
 import { isWeb } from './src/utils/platform';
 
 // Ignore specific warnings for TV
@@ -280,7 +279,7 @@ const AppContent: React.FC = () => {
             />
             <Stack.Screen
               name="Judaism"
-              component={require('./src/screens/JudaismScreen').default}
+              component={JudaismScreen}
               options={{
                 animation: 'fade',
               }}
