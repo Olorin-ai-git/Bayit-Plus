@@ -13,7 +13,7 @@ import { useNavigation } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
 import { liveService } from '../services/api';
 import { colors, spacing } from '../theme';
-import { useDirection } from '../hooks/useDirection';
+import { useDirection } from '@bayit/shared/hooks';
 import { GlassCategoryPill } from '../components';
 import { getLocalizedName, getLocalizedCurrentProgram } from '@bayit/shared-utils/contentLocalization';
 
@@ -114,7 +114,7 @@ const ChannelCard: React.FC<{
 
 export const LiveTVScreen: React.FC = () => {
   const { t, i18n } = useTranslation();
-  const { isRTL, textAlign } = useDirection();
+  const { isRTL, textAlign, flexDirection } = useDirection();
   const navigation = useNavigation<any>();
   const [isLoading, setIsLoading] = useState(true);
   const [channels, setChannels] = useState<Channel[]>([]);

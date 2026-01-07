@@ -12,6 +12,7 @@ import {
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
+import { useDirection } from '@bayit/shared/hooks';
 import Video from 'react-native-video';
 import { GlassView } from '../components';
 import { colors, spacing, fontSize, borderRadius } from '../theme';
@@ -57,6 +58,7 @@ interface RitualData {
  */
 export default function MorningRitualScreen() {
   const { t } = useTranslation();
+  const { isRTL, textAlign, flexDirection } = useDirection();
   const navigation = useNavigation();
   const [ritualData, setRitualData] = useState<RitualData | null>(null);
   const [aiBrief, setAIBrief] = useState<AIBrief | null>(null);

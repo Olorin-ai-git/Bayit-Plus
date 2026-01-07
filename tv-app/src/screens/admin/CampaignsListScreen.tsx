@@ -15,6 +15,7 @@ import {
 } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { useNavigation } from '@react-navigation/native';
+import { useDirection } from '@bayit/shared/hooks';
 import { AdminLayout, DataTable, Column } from '@bayit/shared/admin';
 import { campaignsService, CampaignsFilter } from '../../services/adminApi';
 import { Campaign } from '../../types/rbac';
@@ -27,6 +28,7 @@ type CampaignType = 'discount' | 'trial' | 'referral' | 'promotional' | 'all';
 
 export const CampaignsListScreen: React.FC = () => {
   const { t } = useTranslation();
+  const { isRTL, textAlign, flexDirection } = useDirection();
   const navigation = useNavigation<any>();
 
   const [campaigns, setCampaigns] = useState<Campaign[]>([]);

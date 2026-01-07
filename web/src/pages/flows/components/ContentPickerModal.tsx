@@ -134,11 +134,11 @@ export const ContentPickerModal: React.FC<ContentPickerModalProps> = ({
             {loading && content.length === 0 ? (
               <View style={styles.loadingContainer}>
                 <ActivityIndicator size="large" color={colors.primary} />
-                <Text style={styles.loadingText}>{t('common.loading')}</Text>
+                <Text style={[styles.loadingText, isRTL && styles.textRTL]}>{t('common.loading')}</Text>
               </View>
             ) : error ? (
               <View style={styles.errorContainer}>
-                <Text style={styles.errorText}>{error}</Text>
+                <Text style={[styles.errorText, isRTL && styles.textRTL]}>{error}</Text>
                 <GlassButton
                   title={t('common.retry')}
                   onPress={() => setActiveTab(activeTab)}
@@ -147,7 +147,7 @@ export const ContentPickerModal: React.FC<ContentPickerModalProps> = ({
               </View>
             ) : content.length === 0 ? (
               <View style={styles.emptyContainer}>
-                <Text style={styles.emptyText}>
+                <Text style={[styles.emptyText, isRTL && styles.textRTL]}>
                   {t('flows.contentPicker.noResults')}
                 </Text>
               </View>
@@ -259,6 +259,19 @@ const styles = StyleSheet.create({
   textRTL: {
     textAlign: 'right',
   },
+  loadingText: {
+    marginTop: spacing.md,
+    fontSize: 14,
+    color: colors.textMuted,
+  },
+  errorText: {
+    fontSize: 14,
+    color: colors.error,
+  },
+  emptyText: {
+    fontSize: 14,
+    color: colors.textMuted,
+  },
   closeButton: {
     padding: spacing.sm,
   },
@@ -307,27 +320,14 @@ const styles = StyleSheet.create({
     paddingVertical: spacing.xl * 2,
     alignItems: 'center',
   },
-  loadingText: {
-    marginTop: spacing.md,
-    fontSize: 14,
-    color: colors.textMuted,
-  },
   errorContainer: {
     paddingVertical: spacing.xl * 2,
     alignItems: 'center',
     gap: spacing.md,
   },
-  errorText: {
-    fontSize: 14,
-    color: colors.error,
-  },
   emptyContainer: {
     paddingVertical: spacing.xl * 2,
     alignItems: 'center',
-  },
-  emptyText: {
-    fontSize: 14,
-    color: colors.textMuted,
   },
   loadMoreButton: {
     alignSelf: 'center',

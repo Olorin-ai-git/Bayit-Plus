@@ -17,6 +17,7 @@ import {
   ActivityIndicator,
 } from 'react-native';
 import { useTranslation } from 'react-i18next';
+import { useDirection } from '@bayit/shared/hooks';
 import { AdminLayout } from '@bayit/shared/admin';
 import { subscriptionsService, SubscriptionPlan } from '../../services/adminApi';
 import { colors, spacing, borderRadius, fontSize } from '@bayit/shared/theme';
@@ -25,6 +26,7 @@ import { getPlanColor } from '../../utils/adminConstants';
 
 export const PlanManagementScreen: React.FC = () => {
   const { t } = useTranslation();
+  const { isRTL, textAlign, flexDirection } = useDirection();
   const [plans, setPlans] = useState<SubscriptionPlan[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);

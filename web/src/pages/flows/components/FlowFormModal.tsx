@@ -216,7 +216,7 @@ export function FlowFormModal({
               {errors.length > 0 && (
                 <GlassView style={styles.errorBox} intensity="low">
                   {errors.map((error, index) => (
-                    <Text key={index} style={styles.errorText}>
+                    <Text key={index} style={[styles.errorText, isRTL && styles.textRTL]}>
                       {error}
                     </Text>
                   ))}
@@ -435,7 +435,7 @@ export function FlowFormModal({
                       <View style={styles.tooltipArrow} />
                       <View style={styles.tooltipContent}>
                         {validationErrors.map((error, index) => (
-                          <Text key={index} style={styles.tooltipText}>
+                          <Text key={index} style={[styles.tooltipText, isRTL && styles.textRTL]}>
                             • {error}
                           </Text>
                         ))}

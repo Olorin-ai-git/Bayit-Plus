@@ -20,7 +20,7 @@ import { useTranslation } from 'react-i18next';
 import { useProfile, Profile } from '../contexts/ProfileContext';
 import { AnimatedLogo, GlassView } from '../components';
 import { colors } from '../theme';
-import { useDirection } from '../hooks/useDirection';
+import { useDirection } from '@bayit/shared/hooks';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 const PROFILE_SIZE = Platform.OS === 'web' ? 140 : 100;

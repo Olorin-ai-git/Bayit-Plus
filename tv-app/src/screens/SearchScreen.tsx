@@ -17,7 +17,7 @@ import { GlassView, GlassInput } from '../components';
 import { contentService, searchService } from '../services/api';
 import { colors, spacing, borderRadius } from '../theme';
 import { isTV, isWeb } from '../utils/platform';
-import { useDirection } from '../hooks/useDirection';
+import { useDirection } from '@bayit/shared/hooks';
 
 interface SearchResult {
   id: string;
@@ -132,7 +132,7 @@ const ResultCard: React.FC<{
 
 export const SearchScreen: React.FC = () => {
   const { t, i18n } = useTranslation();
-  const { isRTL, textAlign } = useDirection();
+  const { isRTL, textAlign, flexDirection } = useDirection();
   const navigation = useNavigation<any>();
   const route = useRoute<any>();
   const [query, setQuery] = useState(route.params?.query || '');

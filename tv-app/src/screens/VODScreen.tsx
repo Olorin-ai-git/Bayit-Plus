@@ -15,7 +15,7 @@ import { GlassView, GlassCategoryPill } from '../components';
 import { contentService } from '../services/api';
 import { colors, spacing, borderRadius } from '../theme';
 import { isTV } from '../utils/platform';
-import { useDirection } from '../hooks/useDirection';
+import { useDirection } from '@bayit/shared/hooks';
 
 interface ContentItem {
   id: string;
@@ -110,7 +110,7 @@ const ContentCard: React.FC<{
 
 export const VODScreen: React.FC = () => {
   const { t, i18n } = useTranslation();
-  const { isRTL, textAlign } = useDirection();
+  const { isRTL, textAlign, flexDirection } = useDirection();
   const navigation = useNavigation<any>();
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);

@@ -13,7 +13,7 @@ import { useNavigation } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
 import { radioService } from '../services/api';
 import { colors } from '../theme';
-import { useDirection } from '../hooks/useDirection';
+import { useDirection } from '@bayit/shared/hooks';
 
 interface RadioStation {
   id: string;

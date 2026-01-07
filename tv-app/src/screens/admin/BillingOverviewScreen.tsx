@@ -15,6 +15,7 @@ import {
 } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { useNavigation } from '@react-navigation/native';
+import { useDirection } from '@bayit/shared/hooks';
 import { AdminLayout, StatCard } from '@bayit/shared/admin';
 import { billingService } from '../../services/adminApi';
 import { Transaction } from '../../types/rbac';
@@ -33,6 +34,7 @@ interface BillingOverview {
 
 export const BillingOverviewScreen: React.FC = () => {
   const { t } = useTranslation();
+  const { isRTL, textAlign, flexDirection } = useDirection();
   const navigation = useNavigation<any>();
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);

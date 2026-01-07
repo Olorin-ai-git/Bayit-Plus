@@ -17,11 +17,11 @@ import { GlassView, GlassButton } from '../components';
 import { useAuthStore } from '../stores/authStore';
 import { colors, spacing, borderRadius } from '../theme';
 import { isTV, isWeb } from '../utils/platform';
-import { useDirection } from '../hooks/useDirection';
+import { useDirection } from '@bayit/shared/hooks';
 
 export const RegisterScreen: React.FC = () => {
   const { t } = useTranslation();
-  const { isRTL, textAlign } = useDirection();
+  const { isRTL, textAlign, flexDirection } = useDirection();
   const navigation = useNavigation<any>();
   const { register, loginWithGoogle, isLoading, error, clearError } = useAuthStore();
 

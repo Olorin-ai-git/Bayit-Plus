@@ -16,6 +16,7 @@ import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
 import { useTranslation } from 'react-i18next';
+import { useDirection } from '@bayit/shared/hooks';
 import { useProfile } from '../contexts/ProfileContext';
 import api from '../services/api';
 
@@ -64,6 +65,7 @@ const FLOW_ICONS: { [key: string]: { icon: string; colors: string[] } } = {
 const FlowsScreen = () => {
   const navigation = useNavigation<any>();
   const { t, i18n } = useTranslation();
+  const { isRTL, textAlign, flexDirection } = useDirection();
   const { currentProfile } = useProfile();
 
   const [flows, setFlows] = useState<Flow[]>([]);

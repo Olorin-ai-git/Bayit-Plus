@@ -29,6 +29,7 @@ if (Platform.OS !== 'web') {
 }
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
+import { useDirection } from '@bayit/shared/hooks';
 import { contentService, liveService, historyService, chaptersService } from '../services/api';
 import { useWatchPartyStore } from '../stores/watchPartyStore';
 import { useAuthStore } from '../stores/authStore';
@@ -42,6 +43,7 @@ import { ChaptersOverlay, Chapter } from '../components/player';
 
 export const PlayerScreen: React.FC = () => {
   const { t } = useTranslation();
+  const { isRTL, textAlign, flexDirection } = useDirection();
   const navigation = useNavigation();
   const route = useRoute<any>();
   const { id, title, type } = route.params;

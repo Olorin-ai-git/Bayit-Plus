@@ -14,6 +14,7 @@ import {
   Alert,
 } from 'react-native';
 import { useTranslation } from 'react-i18next';
+import { useDirection } from '@bayit/shared/hooks';
 import { AdminLayout, DataTable, Column } from '@bayit/shared/admin';
 import { billingService, BillingFilter } from '../../services/adminApi';
 import { Refund } from '../../types/rbac';
@@ -23,6 +24,7 @@ import { getStatusColor } from '../../utils/adminConstants';
 
 export const RefundsScreen: React.FC = () => {
   const { t } = useTranslation();
+  const { isRTL, textAlign, flexDirection } = useDirection();
   const [refunds, setRefunds] = useState<Refund[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);

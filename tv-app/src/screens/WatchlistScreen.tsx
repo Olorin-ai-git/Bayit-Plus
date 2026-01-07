@@ -14,7 +14,7 @@ import { useTranslation } from 'react-i18next';
 import { GlassView } from '../components';
 import { colors, spacing, borderRadius } from '../theme';
 import { isTV } from '../utils/platform';
-import { useDirection } from '../hooks/useDirection';
+import { useDirection } from '@bayit/shared/hooks';
 
 interface WatchlistItem {
   id: string;
@@ -220,7 +220,7 @@ const WatchlistCard: React.FC<{
 
 export const WatchlistScreen: React.FC = () => {
   const { t, i18n } = useTranslation();
-  const { isRTL, textAlign } = useDirection();
+  const { isRTL, textAlign, flexDirection } = useDirection();
   const navigation = useNavigation<any>();
   const [isLoading, setIsLoading] = useState(true);
   const [watchlist, setWatchlist] = useState<WatchlistItem[]>([]);

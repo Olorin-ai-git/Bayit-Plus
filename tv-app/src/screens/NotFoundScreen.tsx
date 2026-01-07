@@ -2,11 +2,13 @@ import React from 'react';
 import { View, Text, StyleSheet, Pressable } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
+import { useDirection } from '@bayit/shared/hooks';
 import { GlassCard, GlassView } from '../components';
 import { colors, spacing, borderRadius } from '../theme';
 
 export function NotFoundScreen() {
   const { t } = useTranslation();
+  const { isRTL, textAlign, flexDirection } = useDirection();
   const navigation = useNavigation<any>();
 
   const handleGoHome = () => {

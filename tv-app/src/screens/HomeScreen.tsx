@@ -7,6 +7,7 @@ import {
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
+import { useDirection } from '@bayit/shared/hooks';
 import {
   AnimatedLogo,
   ContentRow,
@@ -37,6 +38,7 @@ interface CarouselItem {
 export const HomeScreen: React.FC = () => {
   const { t, i18n } = useTranslation();
   const navigation = useNavigation<any>();
+  const { isRTL, textAlign, flexDirection } = useDirection();
   const [isLoading, setIsLoading] = useState(true);
   const [carouselItems, setCarouselItems] = useState<CarouselItem[]>([]);
   const [continueWatching, setContinueWatching] = useState<ContentItem[]>([]);
@@ -177,7 +179,7 @@ export const HomeScreen: React.FC = () => {
     return (
       <View style={styles.loadingContainer}>
         <AnimatedLogo size="large" />
-        <Text style={styles.loadingText}>{t('home.loadingContent')}</Text>
+        <Text style={[styles.loadingText, { textAlign }]}>{t('home.loadingContent')}</Text>
       </View>
     );
   }

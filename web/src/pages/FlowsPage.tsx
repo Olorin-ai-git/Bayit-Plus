@@ -12,6 +12,7 @@ import { Menu, ChevronLeft, ChevronRight, Plus } from 'lucide-react';
 import { flowsService } from '@/services/api';
 import { colors, spacing, borderRadius } from '@bayit/shared/theme';
 import { GlassView, GlassCategoryPill, GlassCard } from '@bayit/shared/ui';
+import { useDirection } from '@/hooks/useDirection';
 import logger from '@/utils/logger';
 import {
   FlowCard,
@@ -26,9 +27,9 @@ const SIDEBAR_DEFAULT_WIDTH = 340;
 
 export default function FlowsPage() {
   const { t, i18n } = useTranslation();
+  const { isRTL, textAlign, flexDirection } = useDirection();
   const navigate = useNavigate();
   const { width } = useWindowDimensions();
-  const isRTL = i18n.language === 'he' || i18n.language === 'ar';
   const isMobile = width < 768;
   const isTablet = width < 1024;
 
@@ -197,9 +198,9 @@ export default function FlowsPage() {
         )}
 
         {/* Hero Header */}
-        <View style={[styles.header, isRTL && styles.headerRTL]}>
-          <Text style={[styles.title, isRTL && styles.textRTL]}>{t('flows.title')}</Text>
-          <Text style={[styles.subtitle, isRTL && styles.textRTL]}>{t('flows.subtitle')}</Text>
+        <View style={[styles.header, { alignItems: isRTL ? 'flex-end' : 'flex-start' }]}>
+          <Text style={[styles.title, { textAlign }]}>{t('flows.title')}</Text>
+          <Text style={[styles.subtitle, { textAlign }]}>{t('flows.subtitle')}</Text>
         </View>
 
         {/* Category Filter */}
@@ -245,8 +246,8 @@ export default function FlowsPage() {
         {/* Empty State */}
         {customFlows.length === 0 && (
           <GlassCard style={styles.emptyState}>
-            <Text style={[styles.emptyText, isRTL && styles.textRTL]}>{t('flows.createHint')}</Text>
-            <Pressable onPress={openCreateModal} style={[styles.emptyBtn, isRTL && styles.emptyBtnRTL]}>
+            <Text style={[styles.emptyText, { textAlign }]}>{t('flows.createHint')}</Text>
+            <Pressable onPress={openCreateModal} style={[styles.emptyBtn, { flexDirection }]}>
               <Plus size={16} color={colors.primary} />
               <Text style={styles.emptyBtnText}>{t('flows.createCustom')}</Text>
             </Pressable>

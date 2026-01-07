@@ -10,6 +10,7 @@ import {
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
+import { useDirection } from '@bayit/shared/hooks';
 import { GlassView, GlassCard, GlassButton } from '../components';
 import { colors, spacing, borderRadius } from '../theme';
 import { subscriptionService } from '../services/api';
@@ -278,6 +279,7 @@ function PlanCard({ plan, isSelected, isFocused, onSelect, onFocus, billingPerio
 
 export default function SubscribeScreen() {
   const { t, i18n } = useTranslation();
+  const { isRTL, textAlign, flexDirection } = useDirection();
   const navigation = useNavigation<any>();
   const { isAuthenticated } = useAuthStore();
   const [selectedPlan, setSelectedPlan] = useState('premium');

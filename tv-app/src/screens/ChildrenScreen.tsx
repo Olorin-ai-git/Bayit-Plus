@@ -20,7 +20,7 @@ import { useTranslation } from 'react-i18next';
 import { GlassView, GlassCategoryPill } from '../components';
 import { colors, spacing, borderRadius } from '../theme';
 import { isTV } from '../utils/platform';
-import { useDirection } from '../hooks/useDirection';
+import { useDirection } from '@bayit/shared/hooks';
 import { useProfile } from '../contexts/ProfileContext';
 import { childrenService } from '../services/api';
 
@@ -148,7 +148,7 @@ const KidsCard: React.FC<{
 
 export const ChildrenScreen: React.FC = () => {
   const { t, i18n } = useTranslation();
-  const { isRTL, textAlign } = useDirection();
+  const { isRTL, textAlign, flexDirection } = useDirection();
   const navigation = useNavigation<any>();
   const { currentProfile: activeProfile } = useProfile();
   const [isLoading, setIsLoading] = useState(true);

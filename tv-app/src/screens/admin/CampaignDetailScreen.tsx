@@ -17,6 +17,7 @@ import {
 } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { useNavigation, useRoute, RouteProp } from '@react-navigation/native';
+import { useDirection } from '@bayit/shared/hooks';
 import { AdminLayout } from '@bayit/shared/admin';
 import { campaignsService } from '../../services/adminApi';
 import { Campaign, AudienceFilter } from '../../types/rbac';
@@ -31,6 +32,7 @@ type DiscountType = 'percentage' | 'fixed' | 'trial_days';
 
 export const CampaignDetailScreen: React.FC = () => {
   const { t } = useTranslation();
+  const { isRTL, textAlign, flexDirection } = useDirection();
   const navigation = useNavigation<any>();
   const route = useRoute<CampaignDetailRouteProp>();
   const { campaignId } = route.params;

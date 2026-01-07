@@ -14,6 +14,7 @@ import {
   Alert,
 } from 'react-native';
 import { useTranslation } from 'react-i18next';
+import { useDirection } from '@bayit/shared/hooks';
 import { AdminLayout, DataTable, Column } from '@bayit/shared/admin';
 import { auditLogsService, AuditLogsFilter } from '../../services/adminApi';
 import { AuditLog, AuditAction } from '../../types/rbac';
@@ -23,6 +24,7 @@ import { getActivityIcon } from '../../utils/adminConstants';
 
 export const AuditLogsScreen: React.FC = () => {
   const { t } = useTranslation();
+  const { isRTL, textAlign, flexDirection } = useDirection();
   const [logs, setLogs] = useState<AuditLog[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);

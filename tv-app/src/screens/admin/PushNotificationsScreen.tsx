@@ -16,6 +16,7 @@ import {
   ActivityIndicator,
 } from 'react-native';
 import { useTranslation } from 'react-i18next';
+import { useDirection } from '@bayit/shared/hooks';
 import { AdminLayout, DataTable, Column } from '@bayit/shared/admin';
 import { marketingService, MarketingFilter } from '../../services/adminApi';
 import { PushNotification, AudienceFilter } from '../../types/rbac';
@@ -25,6 +26,7 @@ import { getStatusColor } from '../../utils/adminConstants';
 
 export const PushNotificationsScreen: React.FC = () => {
   const { t } = useTranslation();
+  const { isRTL, textAlign, flexDirection } = useDirection();
   const [notifications, setNotifications] = useState<PushNotification[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);

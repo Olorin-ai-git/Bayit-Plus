@@ -10,6 +10,7 @@ import {
 } from 'react-native';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
+import { useDirection } from '@bayit/shared/hooks';
 import { GlassView, GlassButton } from '../components';
 import { useAuthStore } from '../stores/authStore';
 import { subscriptionService } from '../services/api';
@@ -97,6 +98,7 @@ const NOTIFICATION_SETTINGS = [
 
 export const ProfileScreen: React.FC = () => {
   const { t } = useTranslation();
+  const { isRTL, textAlign, flexDirection } = useDirection();
   const navigation = useNavigation<any>();
   const route = useRoute<any>();
   const { user, isAuthenticated, logout } = useAuthStore();
