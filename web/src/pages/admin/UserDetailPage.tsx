@@ -6,6 +6,7 @@ import { ArrowRight, Mail, Key, Ban, UserCheck, Edit2 } from 'lucide-react';
 import { usersService } from '@/services/adminApi';
 import { colors, spacing, borderRadius } from '@bayit/shared/theme';
 import { GlassCard, GlassButton } from '@bayit/shared/ui';
+import { useDirection } from '@/hooks/useDirection';
 import logger from '@/utils/logger';
 
 interface User {
@@ -53,6 +54,7 @@ const formatCurrency = (amount: number, currency = 'USD') => {
 
 export default function UserDetailPage() {
   const { t } = useTranslation();
+  const { isRTL, textAlign, flexDirection } = useDirection();
   const { userId } = useParams<{ userId: string }>();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
@@ -141,13 +143,13 @@ export default function UserDetailPage() {
   return (
     <ScrollView style={styles.container} contentContainerStyle={styles.contentContainer}>
       <View style={styles.header}>
-        <Pressable onPress={() => navigate('/admin/users')} style={styles.backButton}>
+        <Pressable onPress={() => navigate('/admin/users')} style={[styles.backButton, { flexDirection }]}>
           <ArrowRight size={20} color={colors.text} />
-          <Text style={styles.backText}>חזרה לרשימה</Text>
+          <Text style={[styles.backText, { textAlign }]}>חזרה לרשימה</Text>
         </Pressable>
       </View>
 
-      <View style={styles.mainContent}>
+      <View style={[styles.mainContent, { flexDirection }]}>
         <GlassCard style={styles.profileCard}>
           <View style={styles.avatar}>
             <Text style={styles.avatarText}>{user.name?.charAt(0).toUpperCase() || '?'}</Text>
@@ -172,33 +174,33 @@ export default function UserDetailPage() {
 
         <View style={styles.detailsSection}>
           <GlassCard style={styles.infoCard}>
-            <Text style={styles.sectionTitle}>פרטי משתמש</Text>
-            <View style={styles.infoRow}>
+            <Text style={[styles.sectionTitle, { textAlign }]}>פרטי משתמש</Text>
+            <View style={[styles.infoRow, { flexDirection }]}>
               <Text style={styles.infoLabel}>מזהה:</Text>
               <Text style={styles.infoValue}>{user.id}</Text>
             </View>
-            <View style={styles.infoRow}>
+            <View style={[styles.infoRow, { flexDirection }]}>
               <Text style={styles.infoLabel}>תפקיד:</Text>
               <Text style={styles.infoValue}>{user.role}</Text>
             </View>
-            <View style={styles.infoRow}>
+            <View style={[styles.infoRow, { flexDirection }]}>
               <Text style={styles.infoLabel}>מנוי:</Text>
               <Text style={styles.infoValue}>{user.subscription?.plan || 'ללא מנוי'}</Text>
             </View>
-            <View style={styles.infoRow}>
+            <View style={[styles.infoRow, { flexDirection }]}>
               <Text style={styles.infoLabel}>נרשם:</Text>
               <Text style={styles.infoValue}>{formatDate(user.created_at)}</Text>
             </View>
           </GlassCard>
 
           <GlassCard style={styles.activityCard}>
-            <Text style={styles.sectionTitle}>פעילות אחרונה</Text>
+            <Text style={[styles.sectionTitle, { textAlign }]}>פעילות אחרונה</Text>
             {activity.length === 0 ? (
               <Text style={styles.emptyText}>אין פעילות</Text>
             ) : (
               activity.map((item) => (
-                <View key={item.id} style={styles.activityItem}>
-                  <Text style={styles.activityAction}>{item.action.replace('.', ' ').replace(/_/g, ' ')}</Text>
+                <View key={item.id} style={[styles.activityItem, { flexDirection }]}>
+                  <Text style={[styles.activityAction, { textAlign }]}>{item.action.replace('.', ' ').replace(/_/g, ' ')}</Text>
                   <Text style={styles.activityDate}>{formatDate(item.created_at)}</Text>
                 </View>
               ))
@@ -206,14 +208,14 @@ export default function UserDetailPage() {
           </GlassCard>
 
           <GlassCard style={styles.billingCard}>
-            <Text style={styles.sectionTitle}>היסטוריית תשלומים</Text>
+            <Text style={[styles.sectionTitle, { textAlign }]}>היסטוריית תשלומים</Text>
             {billingHistory.length === 0 ? (
               <Text style={styles.emptyText}>אין תשלומים</Text>
             ) : (
               billingHistory.map((tx) => (
-                <View key={tx.id} style={styles.billingItem}>
+                <View key={tx.id} style={[styles.billingItem, { flexDirection }]}>
                   <View>
-                    <Text style={styles.billingType}>{tx.type}</Text>
+                    <Text style={[styles.billingType, { textAlign }]}>{tx.type}</Text>
                     <Text style={styles.billingDate}>{formatDate(tx.created_at)}</Text>
                   </View>
                   <Text style={styles.billingAmount}>{formatCurrency(tx.amount, tx.currency)}</Text>

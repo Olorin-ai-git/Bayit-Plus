@@ -32,6 +32,8 @@ module.exports = (env, argv) => {
         // Native module shims
         '@react-native-async-storage/async-storage': path.resolve(__dirname, 'src/utils/asyncStorageWeb.ts'),
         '@react-native-clipboard/clipboard': path.resolve(__dirname, 'src/utils/clipboardWeb.ts'),
+        '@react-native/assets-registry/registry': path.resolve(__dirname, 'src/utils/assetsRegistryShim.js'),
+        '@react-native/assets-registry': path.resolve(__dirname, 'src/utils/assetsRegistryShim.js'),
         // Local path aliases
         '@': srcPath,
         '@components': path.resolve(srcPath, 'components'),
@@ -71,6 +73,8 @@ module.exports = (env, argv) => {
       managedPaths: [],
     },
     module: {
+      // Don't parse @react-native packages (they use Flow types)
+      noParse: /node_modules\/@react-native/,
       rules: [
         // Process all TypeScript and JavaScript files with babel
         {
@@ -100,7 +104,8 @@ module.exports = (env, argv) => {
         // Process specific node_modules that need transpilation
         {
           test: /\.(js|jsx|ts|tsx)$/,
-          include: /node_modules\/(react-native-web|react-native-safe-area-context|react-native-screens|@react-native|@expo|expo-linear-gradient|expo-font|expo-asset|expo-modules-core)/,
+          include: /node_modules\/(react-native-web|react-native-safe-area-context|react-native-screens|@expo|expo-linear-gradient|expo-font|expo-asset|expo-modules-core)/,
+          exclude: /node_modules\/@react-native/,
           type: 'javascript/auto',
           use: {
             loader: 'babel-loader',

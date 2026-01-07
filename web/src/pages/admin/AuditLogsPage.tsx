@@ -6,6 +6,7 @@ import DataTable from '@/components/admin/DataTable';
 import { auditLogsService } from '@/services/adminApi';
 import { colors, spacing, borderRadius } from '@bayit/shared/theme';
 import { GlassButton, GlassModal, GlassSelect } from '@bayit/shared/ui';
+import { useDirection } from '@/hooks/useDirection';
 import logger from '@/utils/logger';
 
 interface AuditLog {
@@ -54,6 +55,7 @@ const getActionIcon = (action: string) => {
 
 export default function AuditLogsPage() {
   const { t } = useTranslation();
+  const { isRTL, textAlign, flexDirection } = useDirection();
   const [logs, setLogs] = useState<AuditLog[]>([]);
   const [loading, setLoading] = useState(true);
   const [pagination, setPagination] = useState<Pagination>({ page: 1, pageSize: 20, total: 0 });
@@ -141,10 +143,10 @@ export default function AuditLogsPage() {
 
   return (
     <ScrollView style={styles.container} contentContainerStyle={styles.contentContainer}>
-      <View style={styles.header}>
+      <View style={[styles.header, { flexDirection }]}>
         <View>
-          <Text style={styles.pageTitle}>{t('admin.titles.auditLogs')}</Text>
-          <Text style={styles.subtitle}>{t('admin.auditLogs.subtitle')}</Text>
+          <Text style={[styles.pageTitle, { textAlign }]}>{t('admin.titles.auditLogs')}</Text>
+          <Text style={[styles.subtitle, { textAlign }]}>{t('admin.auditLogs.subtitle')}</Text>
         </View>
         <View style={styles.headerActions}>
           <GlassButton title={t('admin.auditLogs.filter')} variant="secondary" icon={<Filter size={16} color={colors.text} />} onPress={() => setShowFilterModal(true)} />

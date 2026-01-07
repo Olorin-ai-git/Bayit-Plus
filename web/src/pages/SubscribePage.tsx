@@ -3,6 +3,7 @@ import { View, Text, StyleSheet, Pressable, ScrollView, ActivityIndicator } from
 import { useNavigate } from 'react-router-dom';
 import { Check, Sparkles, X } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
+import { useDirection } from '@/hooks/useDirection';
 import { useAuthStore } from '@/stores/authStore';
 import { subscriptionService } from '@/services/api';
 import { colors, spacing, borderRadius } from '@bayit/shared/theme';
@@ -116,6 +117,7 @@ function PlanCard({ planId, isSelected, onSelect, billingPeriod }: {
 
 export default function SubscribePage() {
   const { t } = useTranslation();
+  const { isRTL, textAlign, flexDirection } = useDirection();
   const navigate = useNavigate();
   const { isAuthenticated } = useAuthStore();
   const [selectedPlan, setSelectedPlan] = useState('premium');

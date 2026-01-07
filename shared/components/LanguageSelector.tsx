@@ -6,12 +6,22 @@ import {
   StyleSheet,
   Animated,
   Platform,
+  Modal,
 } from 'react-native';
-import { createPortal } from 'react-dom';
 import { useTranslation } from 'react-i18next';
 import { GlassView } from './ui';
 import { languages, saveLanguage, getCurrentLanguage } from '../i18n';
 import { colors, spacing, borderRadius } from '../theme';
+
+// Conditionally import createPortal for web only
+let createPortal: typeof import('react-dom').createPortal | null = null;
+if (Platform.OS === 'web') {
+  try {
+    createPortal = require('react-dom').createPortal;
+  } catch {
+    // react-dom not available
+  }
+}
 
 export const LanguageSelector: React.FC = () => {
   const { t, i18n } = useTranslation();
@@ -72,7 +82,8 @@ export const LanguageSelector: React.FC = () => {
         <Text style={styles.flag}>{currentLang.flag}</Text>
       </TouchableOpacity>
 
-      {isOpen && typeof document !== 'undefined' && createPortal(
+      {/* Web: Use portal for dropdown */}
+      {isOpen && Platform.OS === 'web' && createPortal && typeof document !== 'undefined' && createPortal(
         <>
           {/* Backdrop to close on click outside */}
           <TouchableOpacity
@@ -116,6 +127,51 @@ export const LanguageSelector: React.FC = () => {
           </Animated.View>
         </>,
         document.body
+      )}
+
+      {/* Native: Use Modal for dropdown */}
+      {Platform.OS !== 'web' && (
+        <Modal
+          visible={isOpen}
+          transparent
+          animationType="fade"
+          onRequestClose={() => setIsOpen(false)}
+        >
+          <TouchableOpacity
+            style={styles.modalBackdrop}
+            activeOpacity={1}
+            onPress={() => setIsOpen(false)}
+          >
+            <View style={styles.modalContent}>
+              <GlassView intensity="high" style={styles.dropdown}>
+                <Text style={styles.dropdownTitle}>
+                  {t('settings.selectLanguage')}
+                </Text>
+                {languages.map((lang) => (
+                  <TouchableOpacity
+                    key={lang.code}
+                    onPress={() => handleSelectLanguage(lang.code)}
+                    style={[
+                      styles.languageOption,
+                      currentLang.code === lang.code && styles.languageOptionActive,
+                    ]}
+                  >
+                    {currentLang.code === lang.code && (
+                      <Text style={styles.checkmark}>✓</Text>
+                    )}
+                    <Text style={styles.languageFlag}>{lang.flag}</Text>
+                    <Text style={[
+                      styles.languageName,
+                      currentLang.code === lang.code && styles.languageNameActive,
+                    ]}>
+                      {lang.name}
+                    </Text>
+                  </TouchableOpacity>
+                ))}
+              </GlassView>
+            </View>
+          </TouchableOpacity>
+        </Modal>
       )}
     </View>
   );
@@ -199,6 +255,16 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     width: 24,
     textAlign: 'center',
+  },
+  modalBackdrop: {
+    flex: 1,
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  modalContent: {
+    width: 280,
+    maxWidth: '80%',
   },
 });
 

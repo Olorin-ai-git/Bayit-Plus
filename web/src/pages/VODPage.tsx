@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, FlatList, ScrollView, useWindowDimensions } from 'react-native';
 import { useSearchParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
+import { useDirection } from '@/hooks/useDirection';
 import { Film } from 'lucide-react';
 import ContentCard from '@/components/content/ContentCard';
 import { contentService } from '@/services/api';
@@ -26,6 +27,7 @@ interface ContentItem {
 
 export default function VODPage() {
   const { t } = useTranslation();
+  const { isRTL, textAlign, flexDirection } = useDirection();
   const [searchParams, setSearchParams] = useSearchParams();
   const [content, setContent] = useState<ContentItem[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
@@ -72,8 +74,8 @@ export default function VODPage() {
   return (
     <View style={styles.container}>
       {/* Header */}
-      <View style={styles.header}>
-        <Text style={styles.title}>{t('vod.title')}</Text>
+      <View style={[styles.header, { flexDirection }]}>
+        <Text style={[styles.title, { textAlign }]}>{t('vod.title')}</Text>
         <GlassView style={styles.headerIcon}>
           <Film size={24} color={colors.primary} />
         </GlassView>

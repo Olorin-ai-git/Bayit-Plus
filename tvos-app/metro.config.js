@@ -66,6 +66,13 @@ const config = {
       /react-native-webrtc/,
       /@livekit/,
     ],
+    // Stub out react-dom for React Native (used conditionally in some shared components)
+    resolveRequest: (context, moduleName, platform) => {
+      if (moduleName === 'react-dom') {
+        return { type: 'empty' };
+      }
+      return context.resolveRequest(context, moduleName, platform);
+    },
   },
 };
 

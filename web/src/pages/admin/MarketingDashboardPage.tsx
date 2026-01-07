@@ -7,6 +7,7 @@ import StatCard from '@/components/admin/StatCard';
 import { marketingService } from '@/services/adminApi';
 import { colors, spacing, borderRadius } from '@bayit/shared/theme';
 import { GlassCard, GlassButton } from '@bayit/shared/ui';
+import { useDirection } from '@/hooks/useDirection';
 import logger from '@/utils/logger';
 
 interface MarketingMetrics {
@@ -37,6 +38,7 @@ interface AudienceSegment {
 
 export default function MarketingDashboardPage() {
   const { t } = useTranslation();
+  const { isRTL, textAlign, flexDirection } = useDirection();
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -104,16 +106,16 @@ export default function MarketingDashboardPage() {
 
   return (
     <ScrollView style={styles.container} contentContainerStyle={styles.contentContainer}>
-      <View style={styles.header}>
+      <View style={[styles.header, { flexDirection }]}>
         <View>
-          <Text style={styles.pageTitle}>{t('admin.titles.marketing')}</Text>
-          <Text style={styles.subtitle}>סקירת קמפיינים וביצועים</Text>
+          <Text style={[styles.pageTitle, { textAlign }]}>{t('admin.titles.marketing')}</Text>
+          <Text style={[styles.subtitle, { textAlign }]}>סקירת קמפיינים וביצועים</Text>
         </View>
         <GlassButton title="רענן" variant="secondary" icon={<RefreshCw size={16} color={colors.text} />} onPress={handleRefresh} disabled={refreshing} />
       </View>
 
       <View style={styles.section}>
-        <Text style={styles.sectionTitle}>{t('admin.marketing.emailMetrics')}</Text>
+        <Text style={[styles.sectionTitle, { textAlign }]}>{t('admin.marketing.emailMetrics')}</Text>
         <View style={styles.statsGrid}>
           <StatCard title="נשלחו" value={metrics.emailsSent.toLocaleString()} icon="📧" color="primary" to="/admin/emails" />
           <StatCard title="שיעור פתיחה" value={`${metrics.emailOpenRate}%`} icon="📬" color="success" />
@@ -123,7 +125,7 @@ export default function MarketingDashboardPage() {
       </View>
 
       <View style={styles.section}>
-        <Text style={styles.sectionTitle}>{t('admin.marketing.pushMetrics')}</Text>
+        <Text style={[styles.sectionTitle, { textAlign }]}>{t('admin.marketing.pushMetrics')}</Text>
         <View style={styles.statsGrid}>
           <StatCard title="נשלחו" value={metrics.pushSent.toLocaleString()} icon="🔔" color="warning" to="/admin/push" />
           <StatCard title="שיעור פתיחה" value={`${metrics.pushOpenRate}%`} icon="👆" color="success" />
@@ -132,18 +134,18 @@ export default function MarketingDashboardPage() {
         </View>
       </View>
 
-      <View style={styles.bottomSection}>
+      <View style={[styles.bottomSection, { flexDirection }]}>
         <View style={styles.campaignsSection}>
-          <Text style={styles.sectionTitle}>{t('admin.marketing.recentCampaigns')}</Text>
+          <Text style={[styles.sectionTitle, { textAlign }]}>{t('admin.marketing.recentCampaigns')}</Text>
           <GlassCard style={styles.campaignsList}>
             {recentCampaigns.map((campaign) => (
-              <View key={campaign.id} style={styles.campaignItem}>
+              <View key={campaign.id} style={[styles.campaignItem, { flexDirection }]}>
                 <View style={styles.campaignIcon}>
                   {campaign.type === 'email' ? <Mail size={18} color={colors.primary} /> : <Bell size={18} color={colors.warning} />}
                 </View>
                 <View style={styles.campaignInfo}>
-                  <Text style={styles.campaignName}>{campaign.name}</Text>
-                  <Text style={styles.campaignStats}>
+                  <Text style={[styles.campaignName, { textAlign }]}>{campaign.name}</Text>
+                  <Text style={[styles.campaignStats, { textAlign }]}>
                     {campaign.sent.toLocaleString()} נשלחו • {campaign.opened.toLocaleString()} נפתחו
                   </Text>
                 </View>
@@ -158,15 +160,15 @@ export default function MarketingDashboardPage() {
         </View>
 
         <View style={styles.segmentsSection}>
-          <Text style={styles.sectionTitle}>{t('admin.marketing.audienceSegments')}</Text>
+          <Text style={[styles.sectionTitle, { textAlign }]}>{t('admin.marketing.audienceSegments')}</Text>
           <GlassCard style={styles.segmentsList}>
             {segments.map((segment, index) => (
-              <View key={index} style={styles.segmentItem}>
+              <View key={index} style={[styles.segmentItem, { flexDirection }]}>
                 <View style={styles.segmentIcon}>
                   <Users size={18} color={colors.secondary} />
                 </View>
                 <View style={styles.segmentInfo}>
-                  <Text style={styles.segmentName}>{segment.name}</Text>
+                  <Text style={[styles.segmentName, { textAlign }]}>{segment.name}</Text>
                 </View>
                 <Text style={styles.segmentCount}>{segment.count.toLocaleString()}</Text>
               </View>
@@ -176,8 +178,8 @@ export default function MarketingDashboardPage() {
       </View>
 
       <View style={styles.quickLinksSection}>
-        <Text style={styles.sectionTitle}>{t('admin.marketing.quickActions')}</Text>
-        <View style={styles.quickLinks}>
+        <Text style={[styles.sectionTitle, { textAlign }]}>{t('admin.marketing.quickActions')}</Text>
+        <View style={[styles.quickLinks, { flexDirection }]}>
           <Link to="/admin/emails" style={{ textDecoration: 'none', flex: 1 }}>
             <GlassCard style={styles.quickLinkCard}>
               <Mail size={24} color={colors.primary} />

@@ -7,6 +7,7 @@ import { useProfileStore } from '@/stores/profileStore';
 import { childrenService } from '../services/api';
 import { colors, spacing, borderRadius } from '@bayit/shared/theme';
 import { GlassCard, GlassView, GlassButton, GlassCategoryPill } from '@bayit/shared/ui';
+import { useDirection } from '@/hooks/useDirection';
 import LinearGradient from 'react-native-linear-gradient';
 import logger from '@/utils/logger';
 
@@ -161,6 +162,7 @@ function ExitKidsModeModal({ isOpen, onClose, onVerify }: { isOpen: boolean; onC
 
 export default function ChildrenPage() {
   const { t } = useTranslation();
+  const { isRTL, textAlign, flexDirection } = useDirection();
   const navigate = useNavigate();
   const { activeProfile, isKidsMode } = useProfileStore();
   const [selectedCategory, setSelectedCategory] = useState('all');
@@ -226,14 +228,14 @@ export default function ChildrenPage() {
         style={StyleSheet.absoluteFill}
       />
       <View style={styles.content}>
-        <View style={styles.header}>
-          <View style={styles.headerLeft}>
+        <View style={[styles.header, { flexDirection }]}>
+          <View style={[styles.headerLeft, { flexDirection }]}>
             <View style={styles.headerIcon}>
               <Baby size={32} color="#facc15" />
             </View>
             <View>
-              <Text style={styles.pageTitle}>{t('children.title')}</Text>
-              <Text style={styles.itemCount}>{content.length} {t('children.items')}</Text>
+              <Text style={[styles.pageTitle, { textAlign }]}>{t('children.title')}</Text>
+              <Text style={[styles.itemCount, { textAlign }]}>{content.length} {t('children.items')}</Text>
             </View>
           </View>
           {isKidsMode && isKidsMode() && (

@@ -7,7 +7,7 @@
 import React, { useState } from 'react';
 import { View, Text, Image, StyleSheet, Platform } from 'react-native';
 import { useTranslation } from 'react-i18next';
-import { Check, Radio, Headphones, Film, Mic } from 'lucide-react';
+import { Ionicons } from '@expo/vector-icons';
 import { GlassCard, GlassBadge } from '../ui';
 import { colors, spacing, borderRadius } from '../theme';
 
@@ -34,10 +34,10 @@ interface ContentItemCardProps {
 }
 
 const CONTENT_TYPE_ICONS: Record<ContentType, React.ReactNode> = {
-  live: <Radio size={16} color={colors.error} />,
-  radio: <Headphones size={16} color={colors.success} />,
-  vod: <Film size={16} color={colors.primary} />,
-  podcast: <Mic size={16} color={colors.warning} />,
+  live: <Ionicons name="radio" size={16} color={colors.error} />,
+  radio: <Ionicons name="headset" size={16} color={colors.success} />,
+  vod: <Ionicons name="film" size={16} color={colors.primary} />,
+  podcast: <Ionicons name="mic" size={16} color={colors.warning} />,
 };
 
 export const ContentItemCard: React.FC<ContentItemCardProps> = ({
@@ -105,8 +105,8 @@ export const ContentItemCard: React.FC<ContentItemCardProps> = ({
             isSelected && styles.checkboxSelected,
             isAlreadyAdded && styles.checkboxDisabled,
           ]}>
-            {isSelected && <Check size={14} color="#fff" strokeWidth={3} />}
-            {isAlreadyAdded && <Check size={14} color={colors.textMuted} strokeWidth={3} />}
+            {isSelected && <Ionicons name="checkmark" size={14} color="#fff" />}
+            {isAlreadyAdded && <Ionicons name="checkmark" size={14} color={colors.textMuted} />}
           </View>
 
           {/* Live Badge */}

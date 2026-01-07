@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { View, Text, StyleSheet, Pressable, ActivityIndicator, ScrollView, Image } from 'react-native';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
+import { useDirection } from '@/hooks/useDirection';
 import { ChevronLeft, ChevronRight, X, SkipForward } from 'lucide-react';
 import { GlassView, GlassButton } from '@bayit/shared/ui';
 import { colors, spacing, borderRadius } from '@bayit/shared/theme';
@@ -40,6 +41,7 @@ interface RitualData {
 
 export default function MorningRitualPage() {
   const { t } = useTranslation();
+  const { isRTL, textAlign, flexDirection } = useDirection();
   const navigate = useNavigate();
   const [ritualData, setRitualData] = useState<RitualData | null>(null);
   const [aiBrief, setAIBrief] = useState<AIBrief | null>(null);

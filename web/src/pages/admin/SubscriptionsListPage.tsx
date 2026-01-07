@@ -6,6 +6,7 @@ import DataTable from '@/components/admin/DataTable';
 import StatCard from '@/components/admin/StatCard';
 import { subscriptionsService } from '@/services/adminApi';
 import { colors, spacing, borderRadius } from '@bayit/shared/theme';
+import { useDirection } from '@/hooks/useDirection';
 import logger from '@/utils/logger';
 
 interface User {
@@ -51,6 +52,7 @@ const planColors: Record<string, { bg: string; text: string }> = {
 
 export default function SubscriptionsListPage() {
   const { t } = useTranslation();
+  const { isRTL, textAlign, flexDirection } = useDirection();
   const [subscriptions, setSubscriptions] = useState<Subscription[]>([]);
   const [plans, setPlans] = useState<Plan[]>([]);
   const [loading, setLoading] = useState(true);

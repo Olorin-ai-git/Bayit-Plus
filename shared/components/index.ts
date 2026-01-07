@@ -21,18 +21,17 @@ export { GlassSidebar } from './GlassSidebar';
 export { GlassTopBar } from './GlassTopBar';
 export { InteractiveSubtitles } from './InteractiveSubtitles';
 export { LanguageSelector } from './LanguageSelector';
-export { ProfileDropdown } from './ProfileDropdown';
+// ProfileDropdown is web-only (uses lucide-react and react-dom portal)
+// Import directly from './ProfileDropdown' in web app
 export { SideMenu } from './SideMenu';
 export { TrendingRow } from './TrendingRow';
 export { UserAccountMenu } from './UserAccountMenu';
 export { VoiceSearchButton } from './VoiceSearchButton';
 export { SoundwaveVisualizer } from './SoundwaveVisualizer';
 
-// Admin Components
-export * from './admin';
-
-// WatchParty Components
-export * from './watchparty';
-
-// Chat Components
-export * from './chat';
+// Note: Admin, WatchParty, and Chat components are web-only
+// They use lucide-react icons which are not available in React Native
+// Import them directly in web app if needed:
+// - Admin: './admin'
+// - WatchParty: './watchparty'
+// - Chat: './chat'

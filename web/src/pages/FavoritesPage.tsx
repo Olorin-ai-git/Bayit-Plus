@@ -3,6 +3,7 @@ import { View, Text, StyleSheet, FlatList, Pressable, Image, useWindowDimensions
 import { Link } from 'react-router-dom';
 import { Star, Play, X } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
+import { useDirection } from '@/hooks/useDirection';
 import { favoritesService } from '@/services/api';
 import { colors, spacing, borderRadius } from '@bayit/shared/theme';
 import { GlassCard, GlassView } from '@bayit/shared/ui';
@@ -111,6 +112,7 @@ function FavoriteCard({ item, onRemove }: { item: FavoriteItem; onRemove: (id: s
 
 export default function FavoritesPage() {
   const { t } = useTranslation();
+  const { isRTL, textAlign, flexDirection } = useDirection();
   const [favorites, setFavorites] = useState<FavoriteItem[]>([]);
   const [loading, setLoading] = useState(true);
   const { width } = useWindowDimensions();
@@ -145,13 +147,13 @@ export default function FavoritesPage() {
   return (
     <View style={styles.container}>
       {/* Header */}
-      <View style={styles.header}>
+      <View style={[styles.header, { flexDirection }]}>
         <View style={styles.headerIcon}>
           <Star size={28} color={colors.warning} />
         </View>
         <View>
-          <Text style={styles.pageTitle}>{t('favorites.title')}</Text>
-          <Text style={styles.itemCount}>{favorites.length} {t('favorites.items')}</Text>
+          <Text style={[styles.pageTitle, { textAlign }]}>{t('favorites.title')}</Text>
+          <Text style={[styles.itemCount, { textAlign }]}>{favorites.length} {t('favorites.items')}</Text>
         </View>
       </View>
 

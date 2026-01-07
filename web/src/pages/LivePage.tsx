@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, FlatList, Pressable, Image, ScrollView, useWindowDimensions } from 'react-native';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
+import { useDirection } from '@/hooks/useDirection';
 import { Radio, Clock } from 'lucide-react';
 import { liveService } from '@/services/api';
 import { colors, spacing, borderRadius } from '@bayit/shared/theme';
@@ -85,6 +86,7 @@ function SkeletonCard() {
 
 export default function LivePage() {
   const { t } = useTranslation();
+  const { isRTL, textAlign, flexDirection } = useDirection();
   const [channels, setChannels] = useState<Channel[]>([]);
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [loading, setLoading] = useState(true);
@@ -128,11 +130,11 @@ export default function LivePage() {
   return (
     <View style={styles.container}>
       {/* Header */}
-      <View style={styles.header}>
+      <View style={[styles.header, { flexDirection }]}>
         <GlassView style={styles.headerIcon}>
           <Radio size={24} color={colors.error} />
         </GlassView>
-        <Text style={styles.title}>{t('live.title')}</Text>
+        <Text style={[styles.title, { textAlign }]}>{t('live.title')}</Text>
       </View>
 
       {/* Category Filter */}

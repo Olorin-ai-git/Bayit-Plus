@@ -7,6 +7,7 @@ import StatCard from '@/components/admin/StatCard';
 import { dashboardService } from '@/services/adminApi';
 import { colors, spacing, borderRadius } from '@bayit/shared/theme';
 import { GlassCard, GlassButton } from '@bayit/shared/ui';
+import { useDirection } from '@/hooks/useDirection';
 import logger from '@/utils/logger';
 
 interface DashboardStats {
@@ -50,7 +51,7 @@ const getActivityIcon = (action: string) => {
 
 export default function AdminDashboardPage() {
   const { t, i18n } = useTranslation();
-  const isRTL = i18n.language === 'he' || i18n.language === 'ar';
+  const { isRTL, textAlign, flexDirection } = useDirection();
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -125,10 +126,10 @@ export default function AdminDashboardPage() {
   return (
     <ScrollView style={styles.container} contentContainerStyle={styles.contentContainer}>
       {/* Header */}
-      <View style={styles.header}>
+      <View style={[styles.header, { flexDirection }]}>
         <View>
-          <Text style={styles.pageTitle}>{t('admin.dashboard.title')}</Text>
-          <Text style={styles.subtitle}>{t('admin.dashboard.subtitle')}</Text>
+          <Text style={[styles.pageTitle, { textAlign }]}>{t('admin.dashboard.title')}</Text>
+          <Text style={[styles.subtitle, { textAlign }]}>{t('admin.dashboard.subtitle')}</Text>
         </View>
         <Pressable onPress={handleRefresh} disabled={refreshing} style={styles.refreshButton}>
           <RefreshCw size={18} color={colors.text} />
@@ -138,7 +139,7 @@ export default function AdminDashboardPage() {
 
       {/* Users Section */}
       <View style={styles.section}>
-        <Text style={styles.sectionTitle}>{t('admin.dashboard.users')}</Text>
+        <Text style={[styles.sectionTitle, { textAlign }]}>{t('admin.dashboard.users')}</Text>
         <View style={styles.statsGrid}>
           <StatCard
             title={t('admin.stats.totalUsers')}
@@ -172,7 +173,7 @@ export default function AdminDashboardPage() {
 
       {/* Revenue Section */}
       <View style={styles.section}>
-        <Text style={styles.sectionTitle}>{t('admin.dashboard.revenue')}</Text>
+        <Text style={[styles.sectionTitle, { textAlign }]}>{t('admin.dashboard.revenue')}</Text>
         <View style={styles.statsGrid}>
           <StatCard
             title={t('admin.stats.totalRevenue')}
@@ -205,7 +206,7 @@ export default function AdminDashboardPage() {
 
       {/* Subscriptions Section */}
       <View style={styles.section}>
-        <Text style={styles.sectionTitle}>{t('admin.dashboard.subscriptions')}</Text>
+        <Text style={[styles.sectionTitle, { textAlign }]}>{t('admin.dashboard.subscriptions')}</Text>
         <View style={styles.statsGridHalf}>
           <StatCard
             title={t('admin.stats.activeSubscriptions')}
@@ -224,63 +225,24 @@ export default function AdminDashboardPage() {
         </View>
       </View>
 
-      {/* Quick Actions & Recent Activity */}
-      <View style={[styles.bottomSection, isRTL && styles.bottomSectionRTL]}>
-        {/* Quick Actions */}
-        <View style={styles.quickActionsSection}>
-          <Text style={[styles.sectionTitle, isRTL && styles.textRTL]}>{t('admin.dashboard.quickActions')}</Text>
-          <GlassCard style={styles.quickActionsCard}>
-            <Link to="/admin/users/new" style={{ textDecoration: 'none' }}>
-              <Pressable style={[styles.quickAction, isRTL && styles.quickActionRTL]}>
-                <View style={[styles.quickActionIcon, { backgroundColor: 'rgba(0, 217, 255, 0.2)' }]}>
-                  <UserPlus size={20} color={colors.primary} />
-                </View>
-                <Text style={[styles.quickActionText, isRTL && styles.textRTL]}>{t('admin.actions.addUser')}</Text>
-              </Pressable>
-            </Link>
-            <Link to="/admin/campaigns/new" style={{ textDecoration: 'none' }}>
-              <Pressable style={[styles.quickAction, isRTL && styles.quickActionRTL]}>
-                <View style={[styles.quickActionIcon, { backgroundColor: 'rgba(139, 92, 246, 0.2)' }]}>
-                  <Tag size={20} color="#8B5CF6" />
-                </View>
-                <Text style={[styles.quickActionText, isRTL && styles.textRTL]}>{t('admin.actions.newCampaign')}</Text>
-              </Pressable>
-            </Link>
-            <Link to="/admin/emails" style={{ textDecoration: 'none' }}>
-              <Pressable style={[styles.quickAction, isRTL && styles.quickActionRTL]}>
-                <View style={[styles.quickActionIcon, { backgroundColor: 'rgba(245, 158, 11, 0.2)' }]}>
-                  <Mail size={20} color="#F59E0B" />
-                </View>
-                <Text style={[styles.quickActionText, isRTL && styles.textRTL]}>{t('admin.actions.sendEmail')}</Text>
-              </Pressable>
-            </Link>
-            <Link to="/admin/billing" style={{ textDecoration: 'none' }}>
-              <Pressable style={[styles.quickAction, isRTL && styles.quickActionRTL]}>
-                <View style={[styles.quickActionIcon, { backgroundColor: 'rgba(34, 197, 94, 0.2)' }]}>
-                  <BarChart3 size={20} color="#22C55E" />
-                </View>
-                <Text style={[styles.quickActionText, isRTL && styles.textRTL]}>{t('admin.actions.viewReports')}</Text>
-              </Pressable>
-            </Link>
-          </GlassCard>
-        </View>
-
+      {/* Recent Activity & Quick Actions */}
+      <View style={[styles.bottomSection, { flexDirection }]}>
         {/* Recent Activity */}
         <View style={styles.activitySection}>
-          <Text style={[styles.sectionTitle, isRTL && styles.textRTL]}>{t('admin.dashboard.recentActivity')}</Text>
+          <Text style={[styles.sectionTitle, { textAlign }]}>{t('admin.dashboard.recentActivity')}</Text>
           <GlassCard style={styles.activityCard}>
             {recentActivity.length > 0 ? (
               recentActivity.map((activity) => (
-                <View key={activity.id} style={[styles.activityItem, isRTL && styles.activityItemRTL]}>
+                <View key={activity.id} style={[styles.activityItem, { flexDirection }]}>
                   <View style={styles.activityIcon}>
                     <Text style={styles.activityIconText}>{getActivityIcon(activity.action)}</Text>
                   </View>
                   <View style={styles.activityContent}>
-                    <Text style={[styles.activityAction, isRTL && styles.textRTL]}>
+                    <Text style={[styles.activityAction, { textAlign }]}>
                       {activity.action.replace('.', ' ').replace(/_/g, ' ')}
                     </Text>
                     {activity.details && (
-                      <Text style={[styles.activityDetails, isRTL && styles.textRTL]} numberOfLines={1}>
+                      <Text style={[styles.activityDetails, { textAlign }]} numberOfLines={1}>
                         {Object.values(activity.details).join(' - ')}
                       </Text>
                     )}
@@ -293,6 +255,45 @@ export default function AdminDashboardPage() {
                 <Text style={styles.emptyActivityText}>{t('admin.dashboard.noRecentActivity', 'No recent activity')}</Text>
               </View>
             )}
+          </GlassCard>
+        </View>
+
+        {/* Quick Actions */}
+        <View style={styles.quickActionsSection}>
+          <Text style={[styles.sectionTitle, { textAlign }]}>{t('admin.dashboard.quickActions')}</Text>
+          <GlassCard style={styles.quickActionsCard}>
+            <Link to="/admin/users/new" style={{ textDecoration: 'none' }}>
+              <Pressable style={[styles.quickAction, { flexDirection }]}>
+                <View style={[styles.quickActionIcon, { backgroundColor: 'rgba(0, 217, 255, 0.2)' }]}>
+                  <UserPlus size={20} color={colors.primary} />
+                </View>
+                <Text style={[styles.quickActionText, { textAlign }]}>{t('admin.actions.addUser')}</Text>
+              </Pressable>
+            </Link>
+            <Link to="/admin/campaigns/new" style={{ textDecoration: 'none' }}>
+              <Pressable style={[styles.quickAction, { flexDirection }]}>
+                <View style={[styles.quickActionIcon, { backgroundColor: 'rgba(139, 92, 246, 0.2)' }]}>
+                  <Tag size={20} color="#8B5CF6" />
+                </View>
+                <Text style={[styles.quickActionText, { textAlign }]}>{t('admin.actions.newCampaign')}</Text>
+              </Pressable>
+            </Link>
+            <Link to="/admin/emails" style={{ textDecoration: 'none' }}>
+              <Pressable style={[styles.quickAction, { flexDirection }]}>
+                <View style={[styles.quickActionIcon, { backgroundColor: 'rgba(245, 158, 11, 0.2)' }]}>
+                  <Mail size={20} color="#F59E0B" />
+                </View>
+                <Text style={[styles.quickActionText, { textAlign }]}>{t('admin.actions.sendEmail')}</Text>
+              </Pressable>
+            </Link>
+            <Link to="/admin/billing" style={{ textDecoration: 'none' }}>
+              <Pressable style={[styles.quickAction, { flexDirection }]}>
+                <View style={[styles.quickActionIcon, { backgroundColor: 'rgba(34, 197, 94, 0.2)' }]}>
+                  <BarChart3 size={20} color="#22C55E" />
+                </View>
+                <Text style={[styles.quickActionText, { textAlign }]}>{t('admin.actions.viewReports')}</Text>
+              </Pressable>
+            </Link>
           </GlassCard>
         </View>
       </View>
@@ -373,13 +374,12 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     flexWrap: 'wrap',
     gap: spacing.md,
-    justifyContent: 'flex-start',
+    alignItems: 'stretch',
   },
   statsGridHalf: {
     flexDirection: 'row',
     gap: spacing.md,
-    justifyContent: 'flex-start',
-    maxWidth: 600,
+    maxWidth: 620,
   },
   bottomSection: {
     flexDirection: 'row',
@@ -448,9 +448,11 @@ const styles = StyleSheet.create({
   },
   quickActionsSection: {
     flex: 1,
+    minWidth: 250,
   },
   quickActionsCard: {
     padding: spacing.md,
+    flex: 1,
   },
   quickAction: {
     flexDirection: 'row',

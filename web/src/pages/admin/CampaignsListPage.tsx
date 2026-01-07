@@ -7,6 +7,7 @@ import DataTable from '@/components/admin/DataTable';
 import { campaignsService } from '@/services/adminApi';
 import { colors, spacing, borderRadius } from '@bayit/shared/theme';
 import { GlassButton } from '@bayit/shared/ui';
+import { useDirection } from '@/hooks/useDirection';
 import logger from '@/utils/logger';
 
 interface Campaign {
@@ -34,6 +35,7 @@ const statusColors: Record<string, { bg: string; text: string; label: string }> 
 
 export default function CampaignsListPage() {
   const { t } = useTranslation();
+  const { isRTL, textAlign, flexDirection } = useDirection();
   const [campaigns, setCampaigns] = useState<Campaign[]>([]);
   const [loading, setLoading] = useState(true);
   const [pagination, setPagination] = useState<Pagination>({ page: 1, pageSize: 20, total: 0 });
@@ -150,10 +152,10 @@ export default function CampaignsListPage() {
   return (
     <ScrollView style={styles.container} contentContainerStyle={styles.contentContainer}>
       {/* Header */}
-      <View style={styles.header}>
+      <View style={[styles.header, { flexDirection }]}>
         <View>
-          <Text style={styles.pageTitle}>{t('admin.titles.campaigns')}</Text>
-          <Text style={styles.subtitle}>נהל קודי קופון והנחות</Text>
+          <Text style={[styles.pageTitle, { textAlign }]}>{t('admin.titles.campaigns')}</Text>
+          <Text style={[styles.subtitle, { textAlign }]}>נהל קודי קופון והנחות</Text>
         </View>
         <Link to="/admin/campaigns/new" style={{ textDecoration: 'none' }}>
           <GlassButton

@@ -3,6 +3,7 @@ import { View, Text, StyleSheet, FlatList, Pressable, Image, ActivityIndicator, 
 import { Link } from 'react-router-dom';
 import { Play, Clock, User } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
+import { useDirection } from '@/hooks/useDirection';
 import { judaismService } from '@/services/api';
 import { colors, spacing, borderRadius } from '@bayit/shared/theme';
 import { GlassCard, GlassCategoryPill } from '@bayit/shared/ui';
@@ -115,6 +116,7 @@ function JudaismCard({ item }: { item: JudaismItem }) {
 
 export default function JudaismPage() {
   const { t, i18n } = useTranslation();
+  const { isRTL, textAlign, flexDirection } = useDirection();
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [content, setContent] = useState<JudaismItem[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
@@ -168,13 +170,13 @@ export default function JudaismPage() {
   return (
     <View style={styles.container}>
       {/* Header */}
-      <View style={styles.header}>
+      <View style={[styles.header, { flexDirection }]}>
         <View style={styles.headerIcon}>
           <Text style={styles.headerEmoji}>✡️</Text>
         </View>
         <View>
-          <Text style={styles.pageTitle}>{t('judaism.title')}</Text>
-          <Text style={styles.itemCount}>{content.length} {t('judaism.items')}</Text>
+          <Text style={[styles.pageTitle, { textAlign }]}>{t('judaism.title')}</Text>
+          <Text style={[styles.itemCount, { textAlign }]}>{content.length} {t('judaism.items')}</Text>
         </View>
       </View>
 

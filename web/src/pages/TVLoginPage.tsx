@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { View, Text, StyleSheet, TextInput, Pressable, ActivityIndicator } from 'react-native';
 import { useSearchParams, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
+import { useDirection } from '@/hooks/useDirection';
 import { CheckCircle, XCircle, Smartphone, Tv, Lock } from 'lucide-react';
 import { GlassView, GlassButton } from '@bayit/shared/ui';
 import { colors, spacing, borderRadius } from '@bayit/shared/theme';
@@ -13,6 +14,7 @@ type PageState = 'verifying' | 'login' | 'authenticating' | 'success' | 'error';
 
 export default function TVLoginPage() {
   const { t } = useTranslation();
+  const { isRTL, textAlign, flexDirection } = useDirection();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
 

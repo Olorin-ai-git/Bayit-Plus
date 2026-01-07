@@ -6,6 +6,7 @@ import DataTable from '@/components/admin/DataTable';
 import { marketingService } from '@/services/adminApi';
 import { colors, spacing, borderRadius } from '@bayit/shared/theme';
 import { GlassButton, GlassModal } from '@bayit/shared/ui';
+import { useDirection } from '@/hooks/useDirection';
 import logger from '@/utils/logger';
 
 interface PushNotification {
@@ -39,6 +40,7 @@ const formatDate = (dateStr: string) => {
 
 export default function PushNotificationsPage() {
   const { t } = useTranslation();
+  const { isRTL, textAlign, flexDirection } = useDirection();
   const [notifications, setNotifications] = useState<PushNotification[]>([]);
   const [loading, setLoading] = useState(true);
   const [pagination, setPagination] = useState<Pagination>({ page: 1, pageSize: 20, total: 0 });
@@ -189,18 +191,18 @@ export default function PushNotificationsPage() {
 
   return (
     <ScrollView style={styles.container} contentContainerStyle={styles.contentContainer}>
-      <View style={styles.header}>
+      <View style={[styles.header, { flexDirection }]}>
         <View>
-          <Text style={styles.pageTitle}>{t('admin.titles.pushNotifications')}</Text>
-          <Text style={styles.subtitle}>צור ושלח התראות למשתמשים</Text>
+          <Text style={[styles.pageTitle, { textAlign }]}>{t('admin.titles.pushNotifications')}</Text>
+          <Text style={[styles.subtitle, { textAlign }]}>צור ושלח התראות למשתמשים</Text>
         </View>
         <GlassButton title="התראה חדשה" variant="primary" icon={<Plus size={16} color={colors.text} />} onPress={() => setShowCreateModal(true)} />
       </View>
 
-      <View style={styles.filtersRow}>
+      <View style={[styles.filtersRow, { flexDirection }]}>
         {['all', 'draft', 'sent', 'scheduled'].map((status) => (
           <Pressable key={status} onPress={() => setFilters((prev) => ({ ...prev, status }))} style={[styles.filterButton, filters.status === status && styles.filterButtonActive]}>
-            <Text style={[styles.filterText, filters.status === status && styles.filterTextActive]}>
+            <Text style={[styles.filterText, filters.status === status && styles.filterTextActive, { textAlign }]}>
               {status === 'all' ? 'הכל' : statusColors[status]?.label || status}
             </Text>
           </Pressable>
@@ -212,11 +214,11 @@ export default function PushNotificationsPage() {
       <GlassModal visible={showCreateModal} onClose={() => setShowCreateModal(false)} title="התראת פוש חדשה">
         <View style={styles.modalContent}>
           <View style={styles.formGroup}>
-            <Text style={styles.formLabel}>כותרת</Text>
+            <Text style={[styles.formLabel, { textAlign }]}>כותרת</Text>
             <TextInput style={styles.input} value={newNotification.title} onChangeText={(title) => setNewNotification((p) => ({ ...p, title }))} placeholder={t('admin.push.titlePlaceholder')} placeholderTextColor={colors.textMuted} />
           </View>
           <View style={styles.formGroup}>
-            <Text style={styles.formLabel}>תוכן</Text>
+            <Text style={[styles.formLabel, { textAlign }]}>תוכן</Text>
             <TextInput style={[styles.input, styles.textArea]} value={newNotification.body} onChangeText={(body) => setNewNotification((p) => ({ ...p, body }))} placeholder={t('admin.push.bodyPlaceholder')} placeholderTextColor={colors.textMuted} multiline numberOfLines={3} />
           </View>
           <View style={styles.modalActions}>
@@ -229,7 +231,7 @@ export default function PushNotificationsPage() {
       <GlassModal visible={showScheduleModal} onClose={() => setShowScheduleModal(false)} title="תזמון התראה">
         <View style={styles.modalContent}>
           <View style={styles.formGroup}>
-            <Text style={styles.formLabel}>תאריך ושעה</Text>
+            <Text style={[styles.formLabel, { textAlign }]}>תאריך ושעה</Text>
             <TextInput style={styles.input} value={scheduleDate} onChangeText={setScheduleDate} placeholder={t('placeholder.datetime')} placeholderTextColor={colors.textMuted} />
           </View>
           <View style={styles.modalActions}>

@@ -7,6 +7,7 @@ import DataTable from '@/components/admin/DataTable';
 import { usersService } from '@/services/adminApi';
 import { colors, spacing, borderRadius } from '@bayit/shared/theme';
 import { GlassCard, GlassButton } from '@bayit/shared/ui';
+import { useDirection } from '@/hooks/useDirection';
 import logger from '@/utils/logger';
 
 interface User {
@@ -42,6 +43,7 @@ const filterLabels: Record<string, string> = {
 
 export default function UsersListPage() {
   const { t } = useTranslation();
+  const { isRTL, textAlign, flexDirection } = useDirection();
   const [users, setUsers] = useState<User[]>([]);
   const [loading, setLoading] = useState(true);
   const [pagination, setPagination] = useState<Pagination>({ page: 1, pageSize: 20, total: 0 });
@@ -148,10 +150,10 @@ export default function UsersListPage() {
   return (
     <ScrollView style={styles.container} contentContainerStyle={styles.contentContainer}>
       {/* Header */}
-      <View style={styles.header}>
+      <View style={[styles.header, { flexDirection }]}>
         <View>
-          <Text style={styles.pageTitle}>{t('admin.titles.users')}</Text>
-          <Text style={styles.subtitle}>צפה ונהל את משתמשי המערכת</Text>
+          <Text style={[styles.pageTitle, { textAlign }]}>{t('admin.titles.users')}</Text>
+          <Text style={[styles.subtitle, { textAlign }]}>צפה ונהל את משתמשי המערכת</Text>
         </View>
         <Link to="/admin/users/new" style={{ textDecoration: 'none' }}>
           <GlassButton
@@ -163,7 +165,7 @@ export default function UsersListPage() {
       </View>
 
       {/* Filters */}
-      <View style={styles.filtersRow}>
+      <View style={[styles.filtersRow, { flexDirection }]}>
         {(['all', 'active', 'inactive', 'banned'] as const).map((status) => (
           <Pressable
             key={status}

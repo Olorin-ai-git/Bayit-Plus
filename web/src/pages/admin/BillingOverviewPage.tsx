@@ -7,6 +7,7 @@ import StatCard from '@/components/admin/StatCard';
 import { billingService, subscriptionsService } from '@/services/adminApi';
 import { colors, spacing, borderRadius } from '@bayit/shared/theme';
 import { GlassCard, GlassButton } from '@bayit/shared/ui';
+import { useDirection } from '@/hooks/useDirection';
 import logger from '@/utils/logger';
 
 interface BillingOverview {
@@ -33,6 +34,7 @@ const formatCurrency = (amount: number) => {
 
 export default function BillingOverviewPage() {
   const { t } = useTranslation();
+  const { isRTL, textAlign, flexDirection } = useDirection();
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -88,10 +90,10 @@ export default function BillingOverviewPage() {
 
   return (
     <ScrollView style={styles.container} contentContainerStyle={styles.contentContainer}>
-      <View style={styles.header}>
+      <View style={[styles.header, { flexDirection }]}>
         <View>
-          <Text style={styles.pageTitle}>{t('admin.titles.billing')}</Text>
-          <Text style={styles.subtitle}>{t('admin.billing.subtitle')}</Text>
+          <Text style={[styles.pageTitle, { textAlign }]}>{t('admin.titles.billing')}</Text>
+          <Text style={[styles.subtitle, { textAlign }]}>{t('admin.billing.subtitle')}</Text>
         </View>
         <View style={styles.headerActions}>
           <GlassButton
@@ -105,7 +107,7 @@ export default function BillingOverviewPage() {
       </View>
 
       <View style={styles.section}>
-        <Text style={styles.sectionTitle}>{t('admin.billing.revenue')}</Text>
+        <Text style={[styles.sectionTitle, { textAlign }]}>{t('admin.billing.revenue')}</Text>
         <View style={styles.statsGrid}>
           <StatCard
             title={t('admin.billing.today')}
@@ -135,7 +137,7 @@ export default function BillingOverviewPage() {
       </View>
 
       <View style={styles.section}>
-        <Text style={styles.sectionTitle}>{t('admin.billing.metrics')}</Text>
+        <Text style={[styles.sectionTitle, { textAlign }]}>{t('admin.billing.metrics')}</Text>
         <View style={styles.statsGrid}>
           <StatCard
             title={t('admin.billing.totalTransactions')}

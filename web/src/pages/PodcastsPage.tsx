@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, FlatList, Pressable, Image, ScrollView, useWindowDimensions } from 'react-native';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
+import { useDirection } from '@/hooks/useDirection';
 import { Podcast, Headphones, Clock } from 'lucide-react';
 import { podcastService } from '@/services/api';
 import { colors, spacing, borderRadius } from '@bayit/shared/theme';
@@ -79,6 +80,7 @@ function SkeletonCard() {
 
 export default function PodcastsPage() {
   const { t } = useTranslation();
+  const { isRTL, textAlign, flexDirection } = useDirection();
   const [shows, setShows] = useState<Show[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
   const [loading, setLoading] = useState(true);
@@ -124,11 +126,11 @@ export default function PodcastsPage() {
   return (
     <View style={styles.container}>
       {/* Header */}
-      <View style={styles.header}>
+      <View style={[styles.header, { flexDirection }]}>
         <GlassView style={styles.headerIcon}>
           <Podcast size={24} color={colors.success} />
         </GlassView>
-        <Text style={styles.title}>{t('podcasts.title')}</Text>
+        <Text style={[styles.title, { textAlign }]}>{t('podcasts.title')}</Text>
       </View>
 
       {/* Category Filter */}

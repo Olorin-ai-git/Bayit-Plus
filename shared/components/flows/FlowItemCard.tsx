@@ -7,7 +7,7 @@
 import React, { useState } from 'react';
 import { View, Text, Image, StyleSheet, Pressable, Platform } from 'react-native';
 import { useTranslation } from 'react-i18next';
-import { ChevronUp, ChevronDown, X, Radio, Headphones, Film, Mic } from 'lucide-react';
+import { Ionicons } from '@expo/vector-icons';
 import { GlassView, GlassBadge } from '../ui';
 import { colors, spacing, borderRadius } from '../theme';
 
@@ -35,10 +35,10 @@ interface FlowItemCardProps {
 }
 
 const CONTENT_TYPE_ICONS: Record<ContentType, React.ReactNode> = {
-  live: <Radio size={14} color={colors.error} />,
-  radio: <Headphones size={14} color={colors.success} />,
-  vod: <Film size={14} color={colors.primary} />,
-  podcast: <Mic size={14} color={colors.warning} />,
+  live: <Ionicons name="radio" size={14} color={colors.error} />,
+  radio: <Ionicons name="headset" size={14} color={colors.success} />,
+  vod: <Ionicons name="film" size={14} color={colors.primary} />,
+  podcast: <Ionicons name="mic" size={14} color={colors.warning} />,
 };
 
 const CONTENT_TYPE_COLORS: Record<ContentType, string> = {
@@ -153,7 +153,8 @@ export const FlowItemCard: React.FC<FlowItemCardProps> = ({
               ]}
               accessibilityLabel={t('flows.flowItems.moveUp')}
             >
-              <ChevronUp
+              <Ionicons
+                name="chevron-up"
                 size={18}
                 color={canMoveUp ? colors.text : colors.textMuted}
               />
@@ -170,7 +171,8 @@ export const FlowItemCard: React.FC<FlowItemCardProps> = ({
               ]}
               accessibilityLabel={t('flows.flowItems.moveDown')}
             >
-              <ChevronDown
+              <Ionicons
+                name="chevron-down"
                 size={18}
                 color={canMoveDown ? colors.text : colors.textMuted}
               />
@@ -186,7 +188,7 @@ export const FlowItemCard: React.FC<FlowItemCardProps> = ({
               ]}
               accessibilityLabel={t('flows.flowItems.remove')}
             >
-              <X size={18} color={colors.error} />
+              <Ionicons name="close" size={18} color={colors.error} />
             </Pressable>
           </View>
         )}

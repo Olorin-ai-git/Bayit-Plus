@@ -7,11 +7,20 @@ import {
   Animated,
   Platform,
 } from 'react-native';
-import { createPortal } from 'react-dom';
 import { useTranslation } from 'react-i18next';
-import { User, Star, Download, LogOut, ChevronRight } from 'lucide-react';
+import { Ionicons } from '@expo/vector-icons';
 import { GlassView } from './ui';
 import { colors, spacing, borderRadius } from '../theme';
+
+// Web-only: createPortal for dropdown positioning
+let createPortal: typeof import('react-dom').createPortal | null = null;
+if (Platform.OS === 'web') {
+  try {
+    createPortal = require('react-dom').createPortal;
+  } catch {
+    // react-dom not available
+  }
+}
 
 interface ProfileDropdownProps {
   user: {
@@ -104,7 +113,7 @@ export const ProfileDropdown: React.FC<ProfileDropdownProps> = ({
         onBlur={() => setIsFocused(false)}
         style={[styles.button, isFocused && styles.buttonFocused]}
       >
-        <User size={20} color={colors.text} />
+        <Ionicons name="person" size={20} color={colors.text} />
       </TouchableOpacity>
 
       {isOpen && Platform.OS === 'web' && typeof document !== 'undefined' && createPortal(
@@ -152,33 +161,33 @@ export const ProfileDropdown: React.FC<ProfileDropdownProps> = ({
                 style={styles.menuItem}
                 onPress={() => handleNavigate('/profile')}
               >
-                <User size={18} color={colors.textSecondary} />
+                <Ionicons name="person" size={18} color={colors.textSecondary} />
                 <Text style={styles.menuItemText}>
                   {t('profile.dropdown.myProfile', 'My Profile')}
                 </Text>
-                <ChevronRight size={16} color={colors.textMuted} />
+                <Ionicons name="chevron-forward" size={16} color={colors.textMuted} />
               </TouchableOpacity>
 
               <TouchableOpacity
                 style={styles.menuItem}
                 onPress={() => handleNavigate('/favorites')}
               >
-                <Star size={18} color={colors.warning} />
+                <Ionicons name="star" size={18} color={colors.warning} />
                 <Text style={styles.menuItemText}>
                   {t('profile.dropdown.favorites', 'Favorites')}
                 </Text>
-                <ChevronRight size={16} color={colors.textMuted} />
+                <Ionicons name="chevron-forward" size={16} color={colors.textMuted} />
               </TouchableOpacity>
 
               <TouchableOpacity
                 style={styles.menuItem}
                 onPress={() => handleNavigate('/downloads')}
               >
-                <Download size={18} color={colors.primary} />
+                <Ionicons name="download" size={18} color={colors.primary} />
                 <Text style={styles.menuItemText}>
                   {t('profile.dropdown.downloads', 'Downloads')}
                 </Text>
-                <ChevronRight size={16} color={colors.textMuted} />
+                <Ionicons name="chevron-forward" size={16} color={colors.textMuted} />
               </TouchableOpacity>
 
               <View style={styles.divider} />
@@ -188,7 +197,7 @@ export const ProfileDropdown: React.FC<ProfileDropdownProps> = ({
                 style={styles.logoutItem}
                 onPress={handleLogout}
               >
-                <LogOut size={18} color={colors.error} />
+                <Ionicons name="log-out" size={18} color={colors.error} />
                 <Text style={styles.logoutText}>
                   {t('profile.dropdown.signOut', 'Sign Out')}
                 </Text>

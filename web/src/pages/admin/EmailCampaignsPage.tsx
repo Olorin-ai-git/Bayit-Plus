@@ -6,6 +6,7 @@ import DataTable from '@/components/admin/DataTable';
 import { marketingService } from '@/services/adminApi';
 import { colors, spacing, borderRadius } from '@bayit/shared/theme';
 import { GlassButton, GlassModal, GlassInput, GlassTextarea } from '@bayit/shared/ui';
+import { useDirection } from '@/hooks/useDirection';
 import logger from '@/utils/logger';
 
 interface EmailCampaign {
@@ -35,6 +36,7 @@ const statusColors: Record<string, { bg: string; text: string }> = {
 
 export default function EmailCampaignsPage() {
   const { t, i18n } = useTranslation();
+  const { isRTL, textAlign, flexDirection } = useDirection();
   const [campaigns, setCampaigns] = useState<EmailCampaign[]>([]);
   const [loading, setLoading] = useState(true);
   const [pagination, setPagination] = useState<Pagination>({ page: 1, pageSize: 20, total: 0 });
@@ -221,18 +223,18 @@ export default function EmailCampaignsPage() {
 
   return (
     <ScrollView style={styles.container} contentContainerStyle={styles.contentContainer}>
-      <View style={styles.header}>
+      <View style={[styles.header, { flexDirection }]}>
         <View>
-          <Text style={styles.pageTitle}>{t('admin.emailCampaigns.title')}</Text>
-          <Text style={styles.subtitle}>{t('admin.emailCampaigns.subtitle')}</Text>
+          <Text style={[styles.pageTitle, { textAlign }]}>{t('admin.emailCampaigns.title')}</Text>
+          <Text style={[styles.subtitle, { textAlign }]}>{t('admin.emailCampaigns.subtitle')}</Text>
         </View>
         <GlassButton title={t('admin.emailCampaigns.createButton')} variant="primary" icon={<Plus size={16} color={colors.text} />} onPress={() => setShowCreateModal(true)} />
       </View>
 
-      <View style={styles.filtersRow}>
+      <View style={[styles.filtersRow, { flexDirection }]}>
         {['all', 'draft', 'active', 'scheduled', 'completed'].map((status) => (
           <Pressable key={status} onPress={() => setFilters((prev) => ({ ...prev, status }))} style={[styles.filterButton, filters.status === status && styles.filterButtonActive]}>
-            <Text style={[styles.filterText, filters.status === status && styles.filterTextActive]}>
+            <Text style={[styles.filterText, filters.status === status && styles.filterTextActive, { textAlign }]}>
               {status === 'all' ? t('admin.common.all') : getStatusLabel(status)}
             </Text>
           </Pressable>
@@ -253,15 +255,15 @@ export default function EmailCampaignsPage() {
       <GlassModal visible={showCreateModal} onClose={() => setShowCreateModal(false)} title={t('admin.emailCampaigns.createModal.title')}>
         <View style={styles.modalContent}>
           <View style={styles.formGroup}>
-            <Text style={styles.formLabel}>{t('admin.emailCampaigns.form.name')}</Text>
+            <Text style={[styles.formLabel, { textAlign }]}>{t('admin.emailCampaigns.form.name')}</Text>
             <TextInput style={styles.input} value={newCampaign.name} onChangeText={(name) => setNewCampaign((p) => ({ ...p, name }))} placeholderTextColor={colors.textMuted} />
           </View>
           <View style={styles.formGroup}>
-            <Text style={styles.formLabel}>{t('admin.emailCampaigns.form.subject')}</Text>
+            <Text style={[styles.formLabel, { textAlign }]}>{t('admin.emailCampaigns.form.subject')}</Text>
             <TextInput style={styles.input} value={newCampaign.subject} onChangeText={(subject) => setNewCampaign((p) => ({ ...p, subject }))} placeholderTextColor={colors.textMuted} />
           </View>
           <View style={styles.formGroup}>
-            <Text style={styles.formLabel}>{t('admin.emailCampaigns.form.body')}</Text>
+            <Text style={[styles.formLabel, { textAlign }]}>{t('admin.emailCampaigns.form.body')}</Text>
             <TextInput style={[styles.input, styles.textArea]} value={newCampaign.body} onChangeText={(body) => setNewCampaign((p) => ({ ...p, body }))} placeholderTextColor={colors.textMuted} multiline numberOfLines={5} />
           </View>
           <View style={styles.modalActions}>
@@ -274,7 +276,7 @@ export default function EmailCampaignsPage() {
       <GlassModal visible={showTestModal} onClose={() => setShowTestModal(false)} title={t('admin.emailCampaigns.testModal.title')}>
         <View style={styles.modalContent}>
           <View style={styles.formGroup}>
-            <Text style={styles.formLabel}>{t('admin.emailCampaigns.testModal.emailLabel')}</Text>
+            <Text style={[styles.formLabel, { textAlign }]}>{t('admin.emailCampaigns.testModal.emailLabel')}</Text>
             <TextInput style={styles.input} value={testEmail} onChangeText={setTestEmail} placeholderTextColor={colors.textMuted} keyboardType="email-address" />
           </View>
           <View style={styles.modalActions}>

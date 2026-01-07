@@ -6,7 +6,8 @@ import { useTranslation } from 'react-i18next';
 import { useAuthStore } from '@/stores/authStore';
 import { useChatbotStore } from '@/stores/chatbotStore';
 import { chatService } from '@/services/api';
-import { VoiceSearchButton, LanguageSelector, AnimatedLogo, ProfileDropdown } from '@bayit/shared';
+import { VoiceSearchButton, LanguageSelector, AnimatedLogo } from '@bayit/shared';
+import { ProfileDropdown } from '@bayit/shared/ProfileDropdown';
 import { colors, spacing } from '@bayit/shared/theme';
 import { GlassView } from '@bayit/shared/ui';
 

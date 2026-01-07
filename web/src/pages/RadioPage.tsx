@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, FlatList, Pressable, Image, ActivityIndicator, ScrollView, useWindowDimensions } from 'react-native';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
+import { useDirection } from '@/hooks/useDirection';
 import { Radio, Volume2, Play } from 'lucide-react';
 import { radioService } from '@/services/api';
 import { colors, spacing, borderRadius } from '@bayit/shared/theme';
@@ -85,6 +86,7 @@ function SkeletonCard() {
 
 export default function RadioPage() {
   const { t } = useTranslation();
+  const { isRTL, textAlign, flexDirection } = useDirection();
   const [stations, setStations] = useState<Station[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
   const [selectedCategory, setSelectedCategory] = useState('all');
@@ -133,11 +135,11 @@ export default function RadioPage() {
   return (
     <View style={styles.container}>
       {/* Header */}
-      <View style={styles.header}>
+      <View style={[styles.header, { flexDirection }]}>
         <GlassView style={styles.headerIcon}>
           <Radio size={24} color={colors.secondary} />
         </GlassView>
-        <Text style={styles.title}>{t('radio.title')}</Text>
+        <Text style={[styles.title, { textAlign }]}>{t('radio.title')}</Text>
       </View>
 
       {/* Category Filter */}

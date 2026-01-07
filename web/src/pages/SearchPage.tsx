@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { View, Text, StyleSheet, ScrollView, Pressable, Image, ActivityIndicator } from 'react-native';
 import { useSearchParams, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
+import { useDirection } from '@/hooks/useDirection';
 import { Search, X, Film, Tv, Radio, Podcast, Grid, Clock, TrendingUp, Mic } from 'lucide-react';
 import { colors, spacing, borderRadius } from '@bayit/shared/theme';
 import {
@@ -41,9 +42,9 @@ const FILTER_ICONS: Record<string, React.ReactNode> = {
 
 export default function SearchPage() {
   const { t, i18n } = useTranslation();
+  const { isRTL, textAlign, flexDirection } = useDirection();
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
-  const isRTL = i18n.language === 'he' || i18n.language === 'ar';
 
   const [query, setQuery] = useState(searchParams.get('q') || '');
   const [results, setResults] = useState<SearchResult[]>([]);

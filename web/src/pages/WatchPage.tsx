@@ -3,6 +3,7 @@ import { View, Text, StyleSheet, ScrollView, Pressable, ActivityIndicator } from
 import { useParams, Link } from 'react-router-dom';
 import { ArrowRight, Plus, Share2, ThumbsUp } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
+import { useDirection } from '@/hooks/useDirection';
 import VideoPlayer from '@/components/player/VideoPlayer';
 import AudioPlayer from '@/components/player/AudioPlayer';
 import ContentCarousel from '@/components/content/ContentCarousel';
@@ -59,6 +60,7 @@ interface Chapter {
 
 export default function WatchPage({ type = 'vod' }: WatchPageProps) {
   const { t } = useTranslation();
+  const { isRTL, textAlign, flexDirection } = useDirection();
   const params = useParams();
   const contentId = params.contentId || params.channelId || params.stationId || params.showId || '';
   const [content, setContent] = useState<ContentData | null>(null);

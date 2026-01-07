@@ -6,6 +6,7 @@ import { Eye, EyeOff, Mail, Lock, ChevronDown, Globe } from 'lucide-react';
 import { useAuthStore } from '@bayit/shared-stores';
 import { colors, spacing, borderRadius } from '@bayit/shared/theme';
 import { AnimatedLogo } from '@bayit/shared';
+import { useDirection } from '@/hooks/useDirection';
 
 const LANGUAGE_CODES = [
   { code: 'en', flag: '🇺🇸' },
@@ -15,10 +16,10 @@ const LANGUAGE_CODES = [
 
 export default function LoginPage() {
   const { t, i18n } = useTranslation();
+  const { isRTL } = useDirection();
   const navigate = useNavigate();
   const location = useLocation();
   const { login, loginWithGoogle, isLoading } = useAuthStore();
-  const isRTL = i18n.language === 'he' || i18n.language === 'ar';
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');

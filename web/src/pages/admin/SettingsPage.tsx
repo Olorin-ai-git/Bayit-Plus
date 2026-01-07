@@ -5,6 +5,7 @@ import { Save, RefreshCw, Trash2, AlertTriangle } from 'lucide-react';
 import { settingsService } from '@/services/adminApi';
 import { colors, spacing, borderRadius } from '@bayit/shared/theme';
 import { GlassCard, GlassButton } from '@bayit/shared/ui';
+import { useDirection } from '@/hooks/useDirection';
 import logger from '@/utils/logger';
 
 interface SystemSettings {
@@ -32,6 +33,7 @@ const featureFlagLabels: Record<string, string> = {
 
 export default function SettingsPage() {
   const { t } = useTranslation();
+  const { isRTL, textAlign, flexDirection } = useDirection();
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [settings, setSettings] = useState<SystemSettings | null>(null);
@@ -118,17 +120,17 @@ export default function SettingsPage() {
 
   return (
     <ScrollView style={styles.container} contentContainerStyle={styles.contentContainer}>
-      <View style={styles.header}>
+      <View style={[styles.header, { flexDirection }]}>
         <View>
-          <Text style={styles.pageTitle}>{t('admin.titles.settings')}</Text>
-          <Text style={styles.subtitle}>הגדר את פרמטרי המערכת</Text>
+          <Text style={[styles.pageTitle, { textAlign }]}>{t('admin.titles.settings')}</Text>
+          <Text style={[styles.subtitle, { textAlign }]}>הגדר את פרמטרי המערכת</Text>
         </View>
         <GlassButton title="שמור שינויים" variant="primary" icon={<Save size={16} color={colors.text} />} onPress={handleSave} disabled={!hasChanges || saving} />
       </View>
 
       <View style={styles.sectionsContainer}>
         <GlassCard style={styles.section}>
-          <Text style={styles.sectionTitle}>הגדרות כלליות</Text>
+          <Text style={[styles.sectionTitle, { textAlign }]}>הגדרות כלליות</Text>
 
           <View style={styles.formGroup}>
             <Text style={styles.formLabel}>אימייל תמיכה</Text>

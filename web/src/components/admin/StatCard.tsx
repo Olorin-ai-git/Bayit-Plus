@@ -80,13 +80,15 @@ export default function StatCard({
 
 const styles = StyleSheet.create({
   wrapper: {
-    flex: 1,
+    flexBasis: '23%',
+    flexGrow: 1,
+    flexShrink: 0,
     minWidth: 200,
-    maxWidth: 280,
+    maxWidth: 300,
   },
   card: {
     padding: spacing.md,
-    flex: 1,
+    height: '100%',
   },
   cardClickable: {
     // Hover styles handled by web CSS

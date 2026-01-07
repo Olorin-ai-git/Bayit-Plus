@@ -3,6 +3,7 @@ import { View, Text, StyleSheet, FlatList, Pressable, Image, ActivityIndicator, 
 import { Link } from 'react-router-dom';
 import { Download, Play, Trash2, HardDrive } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
+import { useDirection } from '@/hooks/useDirection';
 import { downloadsService } from '@/services/api';
 import { colors, spacing, borderRadius } from '@bayit/shared/theme';
 import { GlassCard, GlassView } from '@bayit/shared/ui';
@@ -130,6 +131,7 @@ function DownloadCard({ item, onDelete, pausedText }: { item: DownloadItem; onDe
 
 export default function DownloadsPage() {
   const { t } = useTranslation();
+  const { isRTL, textAlign, flexDirection } = useDirection();
   const [downloads, setDownloads] = useState<DownloadItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [storageInfo, setStorageInfo] = useState({ used: 0, total: 32 });
@@ -189,13 +191,13 @@ export default function DownloadsPage() {
   return (
     <View style={styles.container}>
       {/* Header */}
-      <View style={styles.header}>
+      <View style={[styles.header, { flexDirection }]}>
         <View style={styles.headerIcon}>
           <Download size={28} color={colors.primary} />
         </View>
         <View>
-          <Text style={styles.pageTitle}>{t('downloads.title')}</Text>
-          <Text style={styles.itemCount}>{downloads.length} {t('downloads.items')}</Text>
+          <Text style={[styles.pageTitle, { textAlign }]}>{t('downloads.title')}</Text>
+          <Text style={[styles.itemCount, { textAlign }]}>{downloads.length} {t('downloads.items')}</Text>
         </View>
       </View>
 

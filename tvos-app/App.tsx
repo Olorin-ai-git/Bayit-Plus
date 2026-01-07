@@ -74,7 +74,7 @@ const Tab = createBottomTabNavigator<MainTabParamList>();
 const TVTabBar: React.FC<any> = ({ state, descriptors, navigation }) => {
   const { t, i18n } = useTranslation();
   const currentLang = i18n.language;
-  const isRTL = currentLang === 'he';
+  const isRTL = currentLang === 'he' || currentLang === 'ar';
 
   const tabLabels: Record<string, string> = {
     Home: t('nav.home'),
@@ -183,6 +183,7 @@ const tabStyles = StyleSheet.create({
   label: {
     fontSize: 16,
     color: '#666666',
+    textAlign: 'center',
   },
   labelFocused: {
     color: '#00d9ff',

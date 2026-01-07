@@ -3,6 +3,7 @@ import { View, Text, StyleSheet, ScrollView, Pressable, Image, FlatList, useWind
 import { Link } from 'react-router-dom';
 import { ChevronLeft } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
+import { useDirection } from '@/hooks/useDirection';
 import ContentCarousel from '@/components/content/ContentCarousel';
 import HeroSection from '@/components/content/HeroSection';
 import { TrendingRow, AnimatedLogo } from '@bayit/shared';
@@ -142,6 +143,7 @@ interface TimeData {
 
 export default function HomePage() {
   const { t } = useTranslation();
+  const { isRTL } = useDirection();
   const [featured, setFeatured] = useState<any>(null);
   const [categories, setCategories] = useState<Category[]>([]);
   const [liveChannels, setLiveChannels] = useState<Channel[]>([]);
@@ -152,6 +154,47 @@ export default function HomePage() {
   const { width } = useWindowDimensions();
 
   const liveColumnsCount = width >= 1024 ? 6 : width >= 768 ? 4 : width >= 640 ? 3 : 2;
+
+  // Helper to render clocks in correct order based on RTL
+  const renderClocks = () => {
+    const localClock = (
+      <View style={styles.clockSide} key="local">
+        {timeData && (
+          <MiniClock
+            time={timeData.local.time}
+            label={t('clock.local')}
+            flag="📍"
+            sublabel={timeData.local.timezone.split('/')[1]?.replace('_', ' ')}
+            accentColor={colors.primary}
+          />
+        )}
+      </View>
+    );
+
+    const logo = (
+      <View style={styles.logoCenter} key="logo">
+        <AnimatedLogo size="large" />
+      </View>
+    );
+
+    const israelClock = (
+      <View style={styles.clockSide} key="israel">
+        {timeData && (
+          <MiniClock
+            time={timeData.israel.time}
+            label={t('clock.israel')}
+            flag="🇮🇱"
+            sublabel={timeData.israel.day}
+            accentColor={colors.primary}
+          />
+        )}
+      </View>
+    );
+
+    // RTL: Israel | Logo | Local
+    // LTR: Local | Logo | Israel
+    return isRTL ? [israelClock, logo, localClock] : [localClock, logo, israelClock];
+  };
 
   // Fetch time data
   const fetchTime = useCallback(async () => {
@@ -232,38 +275,9 @@ export default function HomePage() {
 
   return (
     <ScrollView style={styles.container} contentContainerStyle={styles.content}>
-      {/* Header Row: Local Clock | Logo | Israel Clock */}
+      {/* Header Row: Clocks with RTL support */}
       <View style={styles.headerRow}>
-        {/* Local Clock - Left side */}
-        <View style={styles.clockSide}>
-          {timeData && (
-            <MiniClock
-              time={timeData.local.time}
-              label={t('clock.local')}
-              flag="📍"
-              sublabel={timeData.local.timezone.split('/')[1]?.replace('_', ' ')}
-              accentColor={colors.primary}
-            />
-          )}
-        </View>
-
-        {/* Logo - Center */}
-        <View style={styles.logoCenter}>
-          <AnimatedLogo size="large" />
-        </View>
-
-        {/* Israel Clock - Right side */}
-        <View style={styles.clockSide}>
-          {timeData && (
-            <MiniClock
-              time={timeData.israel.time}
-              label={t('clock.israel')}
-              flag="🇮🇱"
-              sublabel={timeData.israel.day}
-              accentColor={colors.primary}
-            />
-          )}
-        </View>
+        {renderClocks()}
       </View>
 
       {/* Hero Section */}

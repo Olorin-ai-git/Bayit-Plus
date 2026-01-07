@@ -5,6 +5,7 @@ import { Plus, Edit2, Trash2, Check } from 'lucide-react';
 import { subscriptionsService } from '@/services/adminApi';
 import { colors, spacing, borderRadius } from '@bayit/shared/theme';
 import { GlassCard, GlassButton, GlassModal } from '@bayit/shared/ui';
+import { useDirection } from '@/hooks/useDirection';
 import logger from '@/utils/logger';
 
 interface Plan {
@@ -25,6 +26,7 @@ const formatCurrency = (amount: number) => {
 
 export default function PlanManagementPage() {
   const { t } = useTranslation();
+  const { isRTL, textAlign, flexDirection } = useDirection();
   const [plans, setPlans] = useState<Plan[]>([]);
   const [loading, setLoading] = useState(true);
   const [showEditModal, setShowEditModal] = useState(false);
@@ -131,10 +133,10 @@ export default function PlanManagementPage() {
 
   return (
     <ScrollView style={styles.container} contentContainerStyle={styles.contentContainer}>
-      <View style={styles.header}>
+      <View style={[styles.header, { flexDirection }]}>
         <View>
-          <Text style={styles.pageTitle}>{t('admin.plans.title')}</Text>
-          <Text style={styles.subtitle}>{t('admin.plans.subtitle')}</Text>
+          <Text style={[styles.pageTitle, { textAlign }]}>{t('admin.plans.title')}</Text>
+          <Text style={[styles.subtitle, { textAlign }]}>{t('admin.plans.subtitle')}</Text>
         </View>
         <GlassButton title={t('admin.plans.createButton')} variant="primary" icon={<Plus size={16} color={colors.text} />} onPress={openCreateModal} />
       </View>
@@ -142,10 +144,10 @@ export default function PlanManagementPage() {
       <View style={styles.plansGrid}>
         {plans.map((plan) => (
           <GlassCard key={plan.id} style={[styles.planCard, !plan.is_active && styles.planCardInactive]}>
-            <View style={styles.planHeader}>
+            <View style={[styles.planHeader, { flexDirection }]}>
               <View>
-                <Text style={styles.planName}>{plan.name_he || plan.name}</Text>
-                <Text style={styles.planNameEn}>{plan.name}</Text>
+                <Text style={[styles.planName, { textAlign }]}>{plan.name_he || plan.name}</Text>
+                <Text style={[styles.planNameEn, { textAlign }]}>{plan.name}</Text>
               </View>
               {!plan.is_active && (
                 <View style={styles.inactiveBadge}>
@@ -165,14 +167,14 @@ export default function PlanManagementPage() {
 
             <View style={styles.featuresContainer}>
               {plan.features.map((feature, index) => (
-                <View key={index} style={styles.featureRow}>
+                <View key={index} style={[styles.featureRow, { flexDirection }]}>
                   <Check size={14} color={colors.success} />
-                  <Text style={styles.featureText}>{feature}</Text>
+                  <Text style={[styles.featureText, { textAlign }]}>{feature}</Text>
                 </View>
               ))}
             </View>
 
-            <View style={styles.subscribersRow}>
+            <View style={[styles.subscribersRow, { flexDirection }]}>
               <Text style={styles.subscribersLabel}>{t('admin.plans.subscribersLabel')}</Text>
               <Text style={styles.subscribersCount}>{(plan.subscribers || 0).toLocaleString()}</Text>
             </View>
@@ -195,25 +197,25 @@ export default function PlanManagementPage() {
         title={editingPlan ? t('admin.plans.modal.editTitle') : t('admin.plans.modal.createTitle')}
       >
         <View style={styles.modalContent}>
-          <View style={styles.formRow}>
+          <View style={[styles.formRow, { flexDirection }]}>
             <View style={styles.formGroup}>
-              <Text style={styles.formLabel}>{t('admin.plans.form.nameEn')}</Text>
+              <Text style={[styles.formLabel, { textAlign }]}>{t('admin.plans.form.nameEn')}</Text>
               <TextInput style={styles.input} value={formData.name} onChangeText={(name) => setFormData((p) => ({ ...p, name }))} placeholderTextColor={colors.textMuted} />
             </View>
             <View style={styles.formGroup}>
-              <Text style={styles.formLabel}>{t('admin.plans.form.nameHe')}</Text>
+              <Text style={[styles.formLabel, { textAlign }]}>{t('admin.plans.form.nameHe')}</Text>
               <TextInput style={styles.input} value={formData.name_he} onChangeText={(name_he) => setFormData((p) => ({ ...p, name_he }))} placeholderTextColor={colors.textMuted} />
             </View>
           </View>
 
-          <View style={styles.formRow}>
+          <View style={[styles.formRow, { flexDirection }]}>
             <View style={styles.formGroup}>
-              <Text style={styles.formLabel}>{t('admin.plans.form.price')}</Text>
+              <Text style={[styles.formLabel, { textAlign }]}>{t('admin.plans.form.price')}</Text>
               <TextInput style={styles.input} value={formData.price} onChangeText={(price) => setFormData((p) => ({ ...p, price }))} placeholderTextColor={colors.textMuted} keyboardType="decimal-pad" />
             </View>
             <View style={styles.formGroup}>
-              <Text style={styles.formLabel}>{t('admin.plans.form.interval')}</Text>
-              <View style={styles.intervalButtons}>
+              <Text style={[styles.formLabel, { textAlign }]}>{t('admin.plans.form.interval')}</Text>
+              <View style={[styles.intervalButtons, { flexDirection }]}>
                 <Pressable style={[styles.intervalButton, formData.interval === 'monthly' && styles.intervalButtonActive]} onPress={() => setFormData((p) => ({ ...p, interval: 'monthly' }))}>
                   <Text style={[styles.intervalButtonText, formData.interval === 'monthly' && styles.intervalButtonTextActive]}>{t('admin.plans.intervals.monthly')}</Text>
                 </Pressable>
@@ -225,17 +227,17 @@ export default function PlanManagementPage() {
           </View>
 
           <View style={styles.formGroup}>
-            <Text style={styles.formLabel}>{t('admin.plans.form.trialDays')}</Text>
+            <Text style={[styles.formLabel, { textAlign }]}>{t('admin.plans.form.trialDays')}</Text>
             <TextInput style={styles.input} value={formData.trial_days} onChangeText={(trial_days) => setFormData((p) => ({ ...p, trial_days }))} placeholderTextColor={colors.textMuted} keyboardType="number-pad" />
           </View>
 
           <View style={styles.formGroup}>
-            <Text style={styles.formLabel}>{t('admin.plans.form.features')}</Text>
+            <Text style={[styles.formLabel, { textAlign }]}>{t('admin.plans.form.features')}</Text>
             <TextInput style={[styles.input, styles.textArea]} value={formData.features} onChangeText={(features) => setFormData((p) => ({ ...p, features }))} placeholderTextColor={colors.textMuted} multiline numberOfLines={4} />
           </View>
 
-          <View style={styles.switchRow}>
-            <Text style={styles.formLabel}>{t('admin.plans.form.active')}</Text>
+          <View style={[styles.switchRow, { flexDirection }]}>
+            <Text style={[styles.formLabel, { textAlign }]}>{t('admin.plans.form.active')}</Text>
             <Switch value={formData.is_active} onValueChange={(is_active) => setFormData((p) => ({ ...p, is_active }))} trackColor={{ false: colors.backgroundLighter, true: colors.primary }} />
           </View>
 

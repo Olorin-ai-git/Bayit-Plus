@@ -7,6 +7,7 @@ import StatCard from '@/components/admin/StatCard';
 import { billingService } from '@/services/adminApi';
 import { colors, spacing, borderRadius } from '@bayit/shared/theme';
 import { GlassModal, GlassButton } from '@bayit/shared/ui';
+import { useDirection } from '@/hooks/useDirection';
 import logger from '@/utils/logger';
 
 interface Refund {
@@ -39,6 +40,7 @@ const formatCurrency = (amount: number) => {
 
 export default function RefundsPage() {
   const { t, i18n } = useTranslation();
+  const { isRTL, textAlign, flexDirection } = useDirection();
   const [refunds, setRefunds] = useState<Refund[]>([]);
   const [loading, setLoading] = useState(true);
   const [pagination, setPagination] = useState<Pagination>({ page: 1, pageSize: 20, total: 0 });

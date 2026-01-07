@@ -1,6 +1,7 @@
 import { View, Text, StyleSheet, Pressable } from 'react-native';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
+import { useDirection } from '@/hooks/useDirection';
 import { Home, Search, ArrowRight } from 'lucide-react';
 import { colors, spacing, borderRadius } from '@bayit/shared/theme';
 import { GlassCard, GlassView } from '@bayit/shared/ui';
@@ -8,6 +9,7 @@ import { GlassCard, GlassView } from '@bayit/shared/ui';
 export default function NotFoundPage() {
   const navigate = useNavigate();
   const { t } = useTranslation();
+  const { isRTL, textAlign, flexDirection } = useDirection();
 
   return (
     <View style={styles.container}>
