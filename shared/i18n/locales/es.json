@@ -16,7 +16,17 @@
     "recommended": "Recomendado",
     "edit": "Editar",
     "delete": "Eliminar",
-    "appName": "Bayit+"
+    "appName": "Bayit+",
+    "ok": "Aceptar",
+    "success": "Éxito",
+    "warning": "Advertencia",
+    "confirm": "Confirmar",
+    "yes": "Sí",
+    "no": "No",
+    "apply": "Aplicar",
+    "errors": {
+      "unexpected": "Ocurrió un error inesperado"
+    }
   },
   "login": {
     "title": "Bienvenido de Nuevo",
@@ -61,7 +71,8 @@
       "emailRequired": "El correo es requerido",
       "passwordRequired": "La contraseña es requerida",
       "fillAllFields": "Por favor, completa todos los campos",
-      "loginFailed": "Error al iniciar sesión. Verifica tus credenciales."
+      "loginFailed": "Error al iniciar sesión. Verifica tus credenciales.",
+      "googleFailed": "Error al iniciar sesión con Google. Intenta de nuevo."
     }
   },
   "tvLogin": {
@@ -91,24 +102,24 @@
   "register": {
     "title": "Crear Cuenta",
     "fullName": "Nombre Completo",
-    "namePlaceholder": "Juan Pérez",
     "email": "Correo",
     "password": "Contraseña",
-    "passwordPlaceholder": "Mínimo 8 caracteres",
     "confirmPassword": "Confirmar Contraseña",
-    "confirmPasswordPlaceholder": "Ingresa la contraseña nuevamente",
-    "termsText": "Al registrarte, aceptas nuestros Términos de Servicio y Política de Privacidad",
     "submit": "Registrarse",
     "registering": "Registrando...",
-    "googleSignup": "Registrarse con Google",
     "haveAccount": "¿Ya tienes una cuenta?",
-    "loginLink": "Iniciar Sesión",
+    "loginLink": "Inicia Sesión",
+    "placeholders": {
+      "fullName": "Juan Pérez",
+      "email": "your@email.com",
+      "password": "Al menos 8 caracteres",
+      "confirmPassword": "Ingresa tu contraseña nuevamente"
+    },
     "errors": {
-      "fillAllFields": "Por favor, completa todos los campos",
+      "fillAllFields": "Por favor completa todos los campos",
       "passwordMismatch": "Las contraseñas no coinciden",
       "passwordTooShort": "La contraseña debe tener al menos 8 caracteres",
-      "registrationFailed": "Error en el registro. Por favor, intenta de nuevo.",
-      "googleFailed": "Error al iniciar sesión con Google"
+      "registrationFailed": "El registro falló. Intenta de nuevo."
     }
   },
   "nav": {
@@ -167,19 +178,38 @@
   },
   "search": {
     "title": "Buscar",
-    "subtitle": "Encuentra contenido en todas las plataformas",
-    "placeholder": "Buscar películas, series, canales, podcasts...",
+    "subtitle": "Encuentra películas, series, canales, estaciones de radio y podcasts",
+    "placeholder": "Buscar contenido...",
     "voicePlaceholder": "Habla ahora...",
     "searching": "Buscando...",
+    "listening": "Escuchando...",
     "noResults": "Sin resultados",
+    "noResultsHint": "Intenta con otras palabras o cambia los filtros",
     "tryDifferent": "Intenta con otros términos",
     "resultsFor": "resultados para",
+    "resultsFound": "{{count}} resultados encontrados para \"{{query}}\"",
+    "recentSearches": "Búsquedas Recientes",
+    "clearAll": "Limpiar Todo",
+    "trending": "Búsquedas Populares",
+    "promptTitle": "¿Qué estás buscando?",
+    "promptDescription": "Busca tu contenido favorito o usa la búsqueda por voz",
     "filters": {
       "all": "Todo",
+      "vod": "Películas y Series",
+      "live": "Canales",
+      "radio": "Radio",
+      "podcast": "Podcasts",
       "moviesAndSeries": "Películas y Series",
       "channels": "Canales",
-      "radio": "Radio",
       "podcasts": "Podcasts"
+    },
+    "suggestions": {
+      "movies": "Películas",
+      "series": "Series",
+      "liveTV": "TV en Vivo",
+      "news": "Noticias",
+      "sports": "Deportes",
+      "kids": "Niños"
     }
   },
   "liveTV": {
@@ -256,72 +286,38 @@
     "basic": "Básico"
   },
   "profile": {
-    "title": "Configuración de Cuenta",
-    "tabs": {
-      "personal": "Perfil",
-      "billing": "Facturación",
-      "subscription": "Suscripción",
-      "notifications": "Notificaciones",
-      "security": "Seguridad"
+    "profileDetails": "Detalles del Perfil",
+    "name": "Nombre",
+    "notSet": "No establecido",
+    "email": "Correo",
+    "editProfile": "Editar Perfil",
+    "notificationSettings": "Configuración de Notificaciones",
+    "security": "Seguridad",
+    "changePassword": "Cambiar Contraseña",
+    "updatePassword": "Actualiza tu contraseña",
+    "connectedDevices": "Dispositivos Conectados",
+    "manageDevices": "Administra los dispositivos conectados a tu cuenta",
+    "twoFactorAuth": "Autenticación de Dos Factores",
+    "addExtraSecurity": "Agrega una capa extra de seguridad",
+    "address": {
+      "line1": "Calle Principal 123",
+      "line2": "Tel Aviv, Israel 6100000"
     },
-    "billing": {
-      "paymentMethods": "Métodos de Pago",
-      "addCard": "Agregar Tarjeta",
-      "expires": "Vence:",
-      "default": "Predeterminado",
-      "history": "Historial de Facturación",
-      "date": "Fecha",
-      "description": "Descripción",
-      "amount": "Monto",
-      "status": "Estado",
-      "paid": "Pagado",
-      "pending": "Pendiente",
-      "downloadInvoices": "Descargar Facturas",
-      "billingAddress": "Dirección de Facturación",
-      "editAddress": "Editar Dirección",
-      "noPaymentMethods": "No hay métodos de pago agregados",
-      "noHistory": "No hay historial de facturación"
+    "free": "Gratis",
+    "premiumPrice": "$7.99/mes",
+    "familyPrice": "$12.99/mes",
+    "remaining": "restante",
+    "notifications": {
+      "newContent": "Contenido Nuevo",
+      "newContentDesc": "Recibe notificaciones sobre contenido nuevo",
+      "liveEvents": "Eventos en Vivo",
+      "liveEventsDesc": "Recibe notificaciones sobre transmisiones especiales en vivo",
+      "recommendations": "Recomendaciones",
+      "recommendationsDesc": "Recibe recomendaciones personalizadas",
+      "updates": "Actualizaciones del Sistema",
+      "updatesDesc": "Recibe notificaciones sobre cambios del sistema"
     },
-    "subscription": {
-      "currentPlan": "Plan Actual",
-      "status": "Estado",
-      "active": "Activo",
-      "renewsOn": "Se renueva el",
-      "noActivePlan": "Sin suscripción activa",
-      "availablePlans": "Planes Disponibles",
-      "choosePlan": "Elige el plan que mejor se adapte a ti",
-      "recommended": "Recomendado",
-      "selectPlan": "Seleccionar Plan",
-      "manageSubscription": "Gestionar Suscripción",
-      "cancelSubscription": "Cancelar Suscripción",
-      "cancelNote": "La cancelación entrará en vigor al final del período de facturación actual"
-    },
-    "plans": {
-      "basic": {
-        "name": "Básico",
-        "price": "Gratis",
-        "feature1": "Acceso a contenido básico",
-        "feature2": "Calidad SD",
-        "feature3": "1 dispositivo"
-      },
-      "premium": {
-        "name": "Premium",
-        "price": "$7.99/mes",
-        "feature1": "Acceso a todo el contenido",
-        "feature2": "Calidad HD",
-        "feature3": "Hasta 3 dispositivos",
-        "feature4": "Sin anuncios"
-      },
-      "family": {
-        "name": "Familiar",
-        "price": "$12.99/mes",
-        "feature1": "Acceso a todo el contenido",
-        "feature2": "Calidad 4K",
-        "feature3": "Hasta 6 dispositivos",
-        "feature4": "Sin anuncios",
-        "feature5": "Perfiles para niños"
-      }
-    }
+    "morningRitual": "Ritual Matutino"
   },
   "settings": {
     "title": "Configuración",
@@ -360,40 +356,6 @@
     "noPodcasts": "No hay podcasts disponibles",
     "tryLater": "Intenta de nuevo más tarde",
     "noResults": "No se encontraron resultados"
-  },
-  "profile": {
-    "profileDetails": "Detalles del Perfil",
-    "name": "Nombre",
-    "notSet": "No establecido",
-    "email": "Correo",
-    "editProfile": "Editar Perfil",
-    "notificationSettings": "Configuración de Notificaciones",
-    "security": "Seguridad",
-    "changePassword": "Cambiar Contraseña",
-    "updatePassword": "Actualiza tu contraseña",
-    "connectedDevices": "Dispositivos Conectados",
-    "manageDevices": "Administra los dispositivos conectados a tu cuenta",
-    "twoFactorAuth": "Autenticación de Dos Factores",
-    "addExtraSecurity": "Agrega una capa extra de seguridad",
-    "address": {
-      "line1": "Calle Principal 123",
-      "line2": "Tel Aviv, Israel 6100000"
-    },
-    "free": "Gratis",
-    "premiumPrice": "$7.99/mes",
-    "familyPrice": "$12.99/mes",
-    "remaining": "restante",
-    "notifications": {
-      "newContent": "Contenido Nuevo",
-      "newContentDesc": "Recibe notificaciones sobre contenido nuevo",
-      "liveEvents": "Eventos en Vivo",
-      "liveEventsDesc": "Recibe notificaciones sobre transmisiones especiales en vivo",
-      "recommendations": "Recomendaciones",
-      "recommendationsDesc": "Recibe recomendaciones personalizadas",
-      "updates": "Actualizaciones del Sistema",
-      "updatesDesc": "Recibe notificaciones sobre cambios del sistema"
-    },
-    "morningRitual": "Ritual Matutino"
   },
   "content": {
     "episodes": "episodios"
@@ -466,102 +428,126 @@
     "typeVideo": "Video"
   },
   "admin": {
-    "dashboard": "Panel de Control",
-    "users": {
-      "title": "Usuarios",
-      "subtitle": "Ver y gestionar usuarios del sistema",
-      "addUser": "Agregar Usuario",
-      "searchPlaceholder": "Buscar usuario...",
-      "noUsersFound": "No se encontraron usuarios",
-      "active": "Activo",
-      "inactive": "Inactivo",
-      "banned": "Bloqueado",
-      "allUsers": "Todos",
-      "activeUsers": "Activos",
-      "inactiveUsers": "Inactivos",
-      "bannedUsers": "Bloqueados"
+    "refunds": {
+      "subtitle": "Gestionar solicitudes de reembolso",
+      "approveModal": {
+        "title": "Confirmar Aprobación",
+        "message": "¿Aprobar reembolso de {{amount}}?"
+      },
+      "confirmApprove": "¿Aprobar reembolso de {{amount}}?",
+      "confirmDelete": "¿Eliminar solicitud de reembolso?",
+      "rejectModal": {
+        "title": "Rechazar Solicitud de Reembolso",
+        "message": "Rechazando reembolso de {{amount}}",
+        "reasonLabel": "Motivo del Rechazo",
+        "reasonPlaceholder": "Por favor ingresa el motivo del rechazo...",
+        "submitButton": "Rechazar Solicitud"
+      },
+      "status": {
+        "pending": "Pendiente",
+        "approved": "Aprobado",
+        "rejected": "Rechazado"
+      },
+      "columns": {
+        "id": "ID",
+        "user": "Usuario",
+        "amount": "Monto",
+        "reason": "Motivo",
+        "status": "Estado",
+        "requestDate": "Fecha de Solicitud"
+      },
+      "stats": {
+        "pendingTitle": "Pendiente de Aprobación",
+        "approvedTitle": "Aprobados",
+        "rejectedTitle": "Rechazados",
+        "totalRefunded": "Total Reembolsado"
+      },
+      "emptyMessage": "No se encontraron solicitudes de reembolso",
+      "errors": {
+        "rejectReasonRequired": "Por favor ingresa un motivo de rechazo"
+      }
     },
     "plans": {
-      "title": "Gestión de Planes",
-      "mo": "mes",
-      "yr": "año",
-      "monthly": "Mensual",
-      "yearly": "Anual",
-      "freeTrial": "{{days}} días de prueba gratis",
-      "premium": "Premium"
+      "subtitle": "Configurar y gestionar planes de suscripción",
+      "createButton": "Nuevo Plan",
+      "inactive": "Inactivo",
+      "subscribersLabel": "Suscriptores:",
+      "intervals": {
+        "monthly": "mes",
+        "yearly": "año"
+      },
+      "trialDays": "Prueba gratis de {{days}} días",
+      "modal": {
+        "editTitle": "Editar Plan",
+        "createTitle": "Nuevo Plan"
+      },
+      "form": {
+        "nameEn": "Nombre (Inglés)",
+        "nameHe": "Nombre (Hebreo)",
+        "price": "Precio ($)",
+        "interval": "Período",
+        "trialDays": "Días de Prueba",
+        "features": "Características (una por línea)",
+        "active": "Plan Activo"
+      },
+      "errors": {
+        "requiredFields": "El nombre y el precio son obligatorios"
+      },
+      "confirmDelete": "¿Eliminar el plan \"{{name}}\"?"
     },
-    "campaigns": {
-      "title": "Campañas",
-      "name": "Nombre",
-      "discount": "Descuento",
-      "uses": "Usos",
-      "validUntil": "Válido Hasta",
-      "status": "Estado"
+    "emailCampaigns": {
+      "subtitle": "Crear y gestionar campañas de correo",
+      "createButton": "Nueva Campaña",
+      "searchPlaceholder": "Buscar campaña...",
+      "emptyMessage": "No se encontraron campañas",
+      "status": {
+        "draft": "Borrador",
+        "active": "Activo",
+        "scheduled": "Programado",
+        "completed": "Completado"
+      },
+      "columns": {
+        "name": "Nombre de Campaña",
+        "status": "Estado",
+        "sent": "Enviados",
+        "opened": "Abiertos",
+        "clicked": "Clickeados",
+        "created": "Creado"
+      },
+      "confirmSend": "¿Enviar la campaña \"{{name}}\"?",
+      "confirmDelete": "¿Eliminar la campaña \"{{name}}\"?",
+      "testEmailSent": "¡Correo de prueba enviado!",
+      "createModal": {
+        "title": "Nueva Campaña de Correo"
+      },
+      "form": {
+        "name": "Nombre de Campaña",
+        "namePlaceholder": "Por ej., Oferta de Fin de Año",
+        "subject": "Asunto del Correo",
+        "subjectPlaceholder": "Asunto que verán los destinatarios",
+        "body": "Contenido",
+        "bodyPlaceholder": "Contenido del correo...",
+        "submitButton": "Crear Campaña"
+      },
+      "testModal": {
+        "title": "Enviar Correo de Prueba",
+        "emailLabel": "Dirección de Correo",
+        "emailPlaceholder": "test@example.com",
+        "submitButton": "Enviar Prueba"
+      },
+      "errors": {
+        "requiredFields": "El nombre y el asunto son obligatorios"
+      }
     },
-    "subscriptions": {
-      "title": "Suscripciones",
-      "user": "Usuario",
-      "plan": "Plan",
-      "price": "Precio",
-      "status": "Estado"
+    "dashboard": {
+      "subtitle": "Descripción General del Sistema",
+      "refresh": "Actualizar",
+      "timeAgo": {
+        "minutes": "hace {{count}} minutos",
+        "hours": "hace {{count}} horas"
+      }
     },
-    "transactions": {
-      "title": "Transacciones",
-      "id": "ID",
-      "user": "Usuario",
-      "amount": "Monto",
-      "type": "Tipo",
-      "status": "Estado",
-      "date": "Fecha"
-    },
-    "refunds": {
-      "title": "Reembolsos",
-      "id": "ID",
-      "user": "Usuario",
-      "amount": "Monto",
-      "reason": "Razón",
-      "status": "Estado"
-    },
-    "auditLogs": {
-      "title": "Registros de Auditoría",
-      "action": "Acción",
-      "user": "Usuario",
-      "resource": "Recurso",
-      "details": "Detalles",
-      "date": "Fecha"
-    },
-    "emails": {
-      "title": "Campañas de Email",
-      "status": "Estado",
-      "sent": "Enviados",
-      "opened": "Abiertos",
-      "clicked": "Clicks",
-      "created": "Creado"
-    },
-    "push": {
-      "title": "Notificaciones Push",
-      "notificationTitle": "Título"
-    },
-    "marketing": {
-      "title": "Panel de Marketing",
-      "active": "Activo",
-      "completed": "Completado",
-      "scheduled": "Programado",
-      "draft": "Borrador"
-    },
-    "settings": {
-      "title": "Configuración",
-      "downloads": "Descargas",
-      "language": "Idioma"
-    },
-    "table": {
-      "name": "Nombre",
-      "email": "Correo",
-      "role": "Rol",
-      "subscription": "Suscripción",
-      "noSubscription": "Sin suscripción",
-      "status": "Estado",
-      "created": "Creado",
+    "common": {
       "all": "Todos"
     }
   },
@@ -613,9 +599,47 @@
   },
   "footer": {
     "brandDescription": "Tu hogar en EE.UU. Transmisiones de TV, VOD, radio y podcasts en hebreo.",
-    "navigation": "Navegación",
+    "browse": "Explorar",
     "account": "Cuenta",
+    "support": "Soporte",
     "legal": "Legal",
+    "location": "EE.UU.",
+    "links": {
+      "home": "Inicio",
+      "liveTV": "TV en Vivo",
+      "vod": "Películas y Series",
+      "radio": "Radio",
+      "podcasts": "Podcasts",
+      "judaism": "Judaísmo",
+      "profile": "Mi Perfil",
+      "favorites": "Favoritos",
+      "watchlist": "Mi Lista",
+      "subscribe": "Suscripción",
+      "downloads": "Descargas",
+      "help": "Centro de Ayuda",
+      "faq": "Preguntas Frecuentes",
+      "contact": "Contáctenos",
+      "feedback": "Enviar Comentarios",
+      "terms": "Términos de Servicio",
+      "privacy": "Política de Privacidad",
+      "cookies": "Política de Cookies",
+      "licenses": "Licencias"
+    },
+    "newsletter": {
+      "title": "Mantente Conectado",
+      "description": "Recibe actualizaciones sobre nuevos contenidos y funciones",
+      "placeholder": "Tu correo electrónico",
+      "success": "¡Gracias por suscribirte!"
+    },
+    "apps": {
+      "title": "Descarga Nuestra App",
+      "downloadOn": "Descargar en",
+      "getItOn": "Disponible en"
+    },
+    "copyright": "© {{year}} Bayit+. Todos los derechos reservados.",
+    "sitemap": "Mapa del Sitio",
+    "accessibility": "Accesibilidad",
+    "navigation": "Navegación",
     "liveTV": "TV en Vivo",
     "moviesAndSeries": "Películas y Series",
     "radioStations": "Estaciones de Radio",
@@ -625,8 +649,7 @@
     "helpAndSupport": "Ayuda y Soporte",
     "termsOfUse": "Términos de Uso",
     "privacyPolicy": "Política de Privacidad",
-    "contactUs": "Contáctenos",
-    "copyright": "© {{year}} Bayit+. Todos los derechos reservados."
+    "contactUs": "Contáctenos"
   },
   "chapters": {
     "title": "Capítulos",

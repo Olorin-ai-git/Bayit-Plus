@@ -16,7 +16,17 @@
     "recommended": "מומלץ",
     "edit": "ערוך",
     "delete": "מחק",
-    "appName": "בית+"
+    "appName": "בית+",
+    "ok": "אישור",
+    "success": "הצליח",
+    "warning": "אזהרה",
+    "confirm": "אישור",
+    "yes": "כן",
+    "no": "לא",
+    "apply": "החל",
+    "errors": {
+      "unexpected": "אירעה שגיאה בלתי צפויה"
+    }
   },
   "hero": {
     "watch": "צפייה",
@@ -42,10 +52,8 @@
     "name": "שם",
     "termsNotice": "בהתחברות, אתה מסכים לתנאי השימוש ומדיניות הפרטיות שלנו",
     "errors": {
-      "emailRequired": "נדרש אימייל",
-      "passwordRequired": "נדרשת סיסמה",
-      "loginFailed": "ההתחברות נכשלה. אנא בדוק את הפרטים שלך.",
-      "fillAllFields": "אנא מלא את כל השדות"
+      "fillAllFields": "נא למלא את כל השדות",
+      "loginFailed": "שגיאה בהתחברות. נסה שוב."
     },
     "qrInstructions": "סרוק את הקוד עם הטלפון להתחברות מהירה",
     "methodQR": "קוד QR",
@@ -67,11 +75,7 @@
     "voicePlaceholder": "הקלד את תשובתך...",
     "send": "שלח",
     "createAccount": "צור חשבון",
-    "bayitThinking": "בית חושב...",
-    "errors": {
-      "fillAllFields": "נא למלא את כל השדות",
-      "loginFailed": "שגיאה בהתחברות. נסה שוב."
-    }
+    "bayitThinking": "בית חושב..."
   },
   "tvLogin": {
     "invalidQR": "קוד QR לא תקין. סרוק שוב מהטלוויזיה.",
@@ -100,24 +104,24 @@
   "register": {
     "title": "יצירת חשבון",
     "fullName": "שם מלא",
-    "namePlaceholder": "ישראל ישראלי",
     "email": "אימייל",
     "password": "סיסמה",
-    "passwordPlaceholder": "לפחות 8 תווים",
     "confirmPassword": "אימות סיסמה",
-    "confirmPasswordPlaceholder": "הזן שוב את הסיסמה",
-    "termsText": "בהרשמה אתה מאשר את תנאי השימוש ואת מדיניות הפרטיות",
     "submit": "הרשמה",
-    "registering": "נרשם...",
-    "googleSignup": "הרשמה עם Google",
+    "registering": "מתבצעת הרשמה...",
     "haveAccount": "כבר יש לך חשבון?",
     "loginLink": "התחברות",
+    "placeholders": {
+      "fullName": "דוד כהן",
+      "email": "your@email.com",
+      "password": "לפחות 8 תווים",
+      "confirmPassword": "הזן שוב את הסיסמה"
+    },
     "errors": {
       "fillAllFields": "נא למלא את כל השדות",
       "passwordMismatch": "הסיסמאות אינן תואמות",
       "passwordTooShort": "הסיסמה חייבת להכיל לפחות 8 תווים",
-      "registrationFailed": "שגיאה בהרשמה. נסה שוב.",
-      "googleFailed": "שגיאה בהתחברות עם Google"
+      "registrationFailed": "ההרשמה נכשלה. נסה שוב."
     }
   },
   "nav": {
@@ -176,19 +180,38 @@
   },
   "search": {
     "title": "חיפוש",
-    "subtitle": "מצא תוכן בכל הפלטפורמות",
-    "placeholder": "חפש סרטים, סדרות, ערוצים, פודקאסטים...",
+    "subtitle": "מצא סרטים, סדרות, ערוצים, תחנות רדיו ופודקאסטים",
+    "placeholder": "חפש תוכן...",
     "voicePlaceholder": "דבר עכשיו...",
     "searching": "מחפש...",
+    "listening": "מאזין...",
     "noResults": "לא נמצאו תוצאות",
+    "noResultsHint": "נסה מילים אחרות או שנה את הסינון",
     "tryDifferent": "נסה מילות חיפוש אחרות",
     "resultsFor": "תוצאות עבור",
+    "resultsFound": "נמצאו {{count}} תוצאות עבור \"{{query}}\"",
+    "recentSearches": "חיפושים אחרונים",
+    "clearAll": "נקה הכל",
+    "trending": "חיפושים פופולריים",
+    "promptTitle": "מה אתה מחפש?",
+    "promptDescription": "חפש את התוכן האהוב עליך או השתמש בחיפוש קולי",
     "filters": {
       "all": "הכל",
+      "vod": "סרטים וסדרות",
+      "live": "ערוצים",
+      "radio": "רדיו",
+      "podcast": "פודקאסטים",
       "moviesAndSeries": "סרטים וסדרות",
       "channels": "ערוצים",
-      "radio": "רדיו",
       "podcasts": "פודקאסטים"
+    },
+    "suggestions": {
+      "movies": "סרטים",
+      "series": "סדרות",
+      "liveTV": "טלוויזיה חיה",
+      "news": "חדשות",
+      "sports": "ספורט",
+      "kids": "ילדים"
     }
   },
   "liveTV": {
@@ -265,72 +288,38 @@
     "basic": "בסיסי"
   },
   "profile": {
-    "title": "הגדרות חשבון",
-    "tabs": {
-      "personal": "פרופיל",
-      "billing": "חיוב",
-      "subscription": "מנוי",
-      "notifications": "התראות",
-      "security": "אבטחה"
+    "profileDetails": "פרטי פרופיל",
+    "name": "שם",
+    "notSet": "לא הוגדר",
+    "email": "אימייל",
+    "editProfile": "ערוך פרופיל",
+    "notificationSettings": "הגדרות התראות",
+    "security": "אבטחה",
+    "changePassword": "שנה סיסמה",
+    "updatePassword": "עדכן את הסיסמה שלך",
+    "connectedDevices": "מכשירים מחוברים",
+    "manageDevices": "נהל את המכשירים המחוברים לחשבון",
+    "twoFactorAuth": "אימות דו-שלבי",
+    "addExtraSecurity": "הוסף שכבת אבטחה נוספת",
+    "address": {
+      "line1": "רחוב הראשי 123",
+      "line2": "תל אביב, ישראל 6100000"
     },
-    "billing": {
-      "paymentMethods": "אמצעי תשלום",
-      "addCard": "הוסף כרטיס",
-      "expires": "תוקף:",
-      "default": "ברירת מחדל",
-      "history": "היסטוריית חיובים",
-      "date": "תאריך",
-      "description": "תיאור",
-      "amount": "סכום",
-      "status": "סטטוס",
-      "paid": "שולם",
-      "pending": "ממתין",
-      "downloadInvoices": "הורד חשבוניות",
-      "billingAddress": "כתובת לחיוב",
-      "editAddress": "ערוך כתובת",
-      "noPaymentMethods": "לא נוספו אמצעי תשלום",
-      "noHistory": "אין היסטוריית חיובים"
+    "free": "חינם",
+    "premiumPrice": "₪29.90/חודש",
+    "familyPrice": "₪49.90/חודש",
+    "remaining": "נותרו",
+    "notifications": {
+      "newContent": "תוכן חדש",
+      "newContentDesc": "קבל התראות על תוכן חדש",
+      "liveEvents": "אירועים בשידור חי",
+      "liveEventsDesc": "התראות על שידורים חיים מיוחדים",
+      "recommendations": "המלצות",
+      "recommendationsDesc": "קבל המלצות מותאמות אישית",
+      "updates": "עדכוני מערכת",
+      "updatesDesc": "קבל עדכונים על שינויים במערכת"
     },
-    "subscription": {
-      "currentPlan": "המנוי הנוכחי",
-      "status": "סטטוס",
-      "active": "פעיל",
-      "renewsOn": "מתחדש ב-",
-      "noActivePlan": "אין לך מנוי פעיל",
-      "availablePlans": "חבילות זמינות",
-      "choosePlan": "בחר את החבילה המתאימה לך",
-      "recommended": "מומלץ",
-      "selectPlan": "בחר חבילה",
-      "manageSubscription": "ניהול מנוי",
-      "cancelSubscription": "בטל מנוי",
-      "cancelNote": "ביטול המנוי ייכנס לתוקף בסוף תקופת החיוב הנוכחית"
-    },
-    "plans": {
-      "basic": {
-        "name": "בסיסי",
-        "price": "חינם",
-        "feature1": "גישה לתוכן בסיסי",
-        "feature2": "איכות SD",
-        "feature3": "מכשיר אחד"
-      },
-      "premium": {
-        "name": "פרימיום",
-        "price": "₪29.90/חודש",
-        "feature1": "גישה לכל התוכן",
-        "feature2": "איכות HD",
-        "feature3": "עד 3 מכשירים",
-        "feature4": "ללא פרסומות"
-      },
-      "family": {
-        "name": "משפחתי",
-        "price": "₪49.90/חודש",
-        "feature1": "גישה לכל התוכן",
-        "feature2": "איכות 4K",
-        "feature3": "עד 6 מכשירים",
-        "feature4": "ללא פרסומות",
-        "feature5": "פרופילים לילדים"
-      }
-    }
+    "morningRitual": "טקס הבוקר"
   },
   "settings": {
     "title": "הגדרות",
@@ -369,40 +358,6 @@
     "noPodcasts": "אין פודקאסטים זמינים",
     "tryLater": "נסה שוב מאוחר יותר",
     "noResults": "לא נמצאו תוצאות"
-  },
-  "profile": {
-    "profileDetails": "פרטי פרופיל",
-    "name": "שם",
-    "notSet": "לא הוגדר",
-    "email": "אימייל",
-    "editProfile": "ערוך פרופיל",
-    "notificationSettings": "הגדרות התראות",
-    "security": "אבטחה",
-    "changePassword": "שנה סיסמה",
-    "updatePassword": "עדכן את הסיסמה שלך",
-    "connectedDevices": "מכשירים מחוברים",
-    "manageDevices": "נהל את המכשירים המחוברים לחשבון",
-    "twoFactorAuth": "אימות דו-שלבי",
-    "addExtraSecurity": "הוסף שכבת אבטחה נוספת",
-    "address": {
-      "line1": "רחוב הראשי 123",
-      "line2": "תל אביב, ישראל 6100000"
-    },
-    "free": "חינם",
-    "premiumPrice": "₪29.90/חודש",
-    "familyPrice": "₪49.90/חודש",
-    "remaining": "נותרו",
-    "notifications": {
-      "newContent": "תוכן חדש",
-      "newContentDesc": "קבל התראות על תוכן חדש",
-      "liveEvents": "אירועים בשידור חי",
-      "liveEventsDesc": "התראות על שידורים חיים מיוחדים",
-      "recommendations": "המלצות",
-      "recommendationsDesc": "קבל המלצות מותאמות אישית",
-      "updates": "עדכוני מערכת",
-      "updatesDesc": "קבל עדכונים על שינויים במערכת"
-    },
-    "morningRitual": "טקס הבוקר"
   },
   "content": {
     "episodes": "פרקים"
@@ -475,102 +430,126 @@
     "typeVideo": "וידאו"
   },
   "admin": {
-    "dashboard": "לוח בקרה",
-    "users": {
-      "title": "משתמשים",
-      "subtitle": "צפה ונהל את משתמשי המערכת",
-      "addUser": "הוסף משתמש",
-      "searchPlaceholder": "חפש משתמש...",
-      "noUsersFound": "לא נמצאו משתמשים",
-      "active": "פעיל",
-      "inactive": "לא פעיל",
-      "banned": "חסום",
-      "allUsers": "הכל",
-      "activeUsers": "פעילים",
-      "inactiveUsers": "לא פעילים",
-      "bannedUsers": "חסומים"
+    "refunds": {
+      "subtitle": "ניהול בקשות להחזר כספי",
+      "approveModal": {
+        "title": "אישור אישור",
+        "message": "אשר החזר של {{amount}}?"
+      },
+      "confirmApprove": "אשר החזר של {{amount}}?",
+      "confirmDelete": "מחק בקשת החזר?",
+      "rejectModal": {
+        "title": "דחיית בקשת החזר",
+        "message": "דחיית החזר בסך {{amount}}",
+        "reasonLabel": "סיבת הדחייה",
+        "reasonPlaceholder": "נא להזין את סיבת הדחייה...",
+        "submitButton": "דחה בקשה"
+      },
+      "status": {
+        "pending": "ממתין",
+        "approved": "אושר",
+        "rejected": "נדחה"
+      },
+      "columns": {
+        "id": "מזהה",
+        "user": "משתמש",
+        "amount": "סכום",
+        "reason": "סיבה",
+        "status": "סטטוס",
+        "requestDate": "תאריך בקשה"
+      },
+      "stats": {
+        "pendingTitle": "ממתינים לאישור",
+        "approvedTitle": "אושרו",
+        "rejectedTitle": "נדחו",
+        "totalRefunded": "סה״כ הוחזר"
+      },
+      "emptyMessage": "לא נמצאו בקשות להחזר",
+      "errors": {
+        "rejectReasonRequired": "נא להזין סיבת דחייה"
+      }
     },
     "plans": {
-      "title": "ניהול תוכניות",
-      "mo": "חודש",
-      "yr": "שנה",
-      "monthly": "חודשי",
-      "yearly": "שנתי",
-      "freeTrial": "{{days}} ימי ניסיון חינם",
-      "premium": "פרימיום"
+      "subtitle": "הגדר ונהל את תוכניות המנוי",
+      "createButton": "תוכנית חדשה",
+      "inactive": "לא פעיל",
+      "subscribersLabel": "מנויים:",
+      "intervals": {
+        "monthly": "חודש",
+        "yearly": "שנה"
+      },
+      "trialDays": "{{days}} ימי נסיון",
+      "modal": {
+        "editTitle": "עריכת תוכנית",
+        "createTitle": "תוכנית חדשה"
+      },
+      "form": {
+        "nameEn": "שם (אנגלית)",
+        "nameHe": "שם (עברית)",
+        "price": "מחיר ($)",
+        "interval": "תקופה",
+        "trialDays": "ימי נסיון",
+        "features": "תכונות (אחת בכל שורה)",
+        "active": "תוכנית פעילה"
+      },
+      "errors": {
+        "requiredFields": "שם ומחיר הם חובה"
+      },
+      "confirmDelete": "מחק את התוכנית \"{{name}}\"?"
     },
-    "campaigns": {
-      "title": "קמפיינים",
-      "name": "שם",
-      "discount": "הנחה",
-      "uses": "שימושים",
-      "validUntil": "תוקף",
-      "status": "סטטוס"
+    "emailCampaigns": {
+      "subtitle": "צור ונהל קמפייני דיוור",
+      "createButton": "קמפיין חדש",
+      "searchPlaceholder": "חפש קמפיין...",
+      "emptyMessage": "לא נמצאו קמפיינים",
+      "status": {
+        "draft": "טיוטה",
+        "active": "פעיל",
+        "scheduled": "מתוזמן",
+        "completed": "הושלם"
+      },
+      "columns": {
+        "name": "שם הקמפיין",
+        "status": "סטטוס",
+        "sent": "נשלחו",
+        "opened": "נפתחו",
+        "clicked": "הקליקו",
+        "created": "נוצר"
+      },
+      "confirmSend": "שלח את הקמפיין \"{{name}}\"?",
+      "confirmDelete": "מחק את הקמפיין \"{{name}}\"?",
+      "testEmailSent": "אימייל בדיקה נשלח!",
+      "createModal": {
+        "title": "קמפיין אימייל חדש"
+      },
+      "form": {
+        "name": "שם הקמפיין",
+        "namePlaceholder": "לדוגמה: מבצע סוף שנה",
+        "subject": "נושא האימייל",
+        "subjectPlaceholder": "נושא שיופיע לנמענים",
+        "body": "תוכן",
+        "bodyPlaceholder": "תוכן האימייל...",
+        "submitButton": "צור קמפיין"
+      },
+      "testModal": {
+        "title": "שלח אימייל בדיקה",
+        "emailLabel": "כתובת אימייל",
+        "emailPlaceholder": "test@example.com",
+        "submitButton": "שלח בדיקה"
+      },
+      "errors": {
+        "requiredFields": "שם ונושא הם חובה"
+      }
     },
-    "subscriptions": {
-      "title": "מנויים",
-      "user": "משתמש",
-      "plan": "תוכנית",
-      "price": "מחיר",
-      "status": "סטטוס"
+    "dashboard": {
+      "subtitle": "סקירה כללית של המערכת",
+      "refresh": "רענן",
+      "timeAgo": {
+        "minutes": "לפני {{count}} דקות",
+        "hours": "לפני {{count}} שעות"
+      }
     },
-    "transactions": {
-      "title": "עסקאות",
-      "id": "מזהה",
-      "user": "משתמש",
-      "amount": "סכום",
-      "type": "סוג",
-      "status": "סטטוס",
-      "date": "תאריך"
-    },
-    "refunds": {
-      "title": "החזרים",
-      "id": "מזהה",
-      "user": "משתמש",
-      "amount": "סכום",
-      "reason": "סיבה",
-      "status": "סטטוס"
-    },
-    "auditLogs": {
-      "title": "יומן פעילות",
-      "action": "פעולה",
-      "user": "משתמש",
-      "resource": "משאב",
-      "details": "פרטים",
-      "date": "תאריך"
-    },
-    "emails": {
-      "title": "קמפייני אימייל",
-      "status": "סטטוס",
-      "sent": "נשלחו",
-      "opened": "נפתחו",
-      "clicked": "הקליקו",
-      "created": "נוצר"
-    },
-    "push": {
-      "title": "התראות פוש",
-      "notificationTitle": "כותרת"
-    },
-    "marketing": {
-      "title": "לוח שיווק",
-      "active": "פעיל",
-      "completed": "הושלם",
-      "scheduled": "מתוזמן",
-      "draft": "טיוטה"
-    },
-    "settings": {
-      "title": "הגדרות",
-      "downloads": "הורדות",
-      "language": "שפה"
-    },
-    "table": {
-      "name": "שם",
-      "email": "אימייל",
-      "role": "תפקיד",
-      "subscription": "מנוי",
-      "noSubscription": "ללא מנוי",
-      "status": "סטטוס",
-      "created": "נוצר",
+    "common": {
       "all": "הכל"
     }
   },
@@ -622,20 +601,56 @@
   },
   "footer": {
     "brandDescription": "הבית שלך בארה״ב. שידורי טלוויזיה, VOD, רדיו ופודקאסטים בעברית.",
-    "navigation": "ניווט",
+    "browse": "עיון",
     "account": "חשבון",
+    "support": "תמיכה",
     "legal": "משפטי",
+    "location": "ניו יורק, ארה״ב",
+    "links": {
+      "home": "דף הבית",
+      "liveTV": "שידור חי",
+      "vod": "סרטים וסדרות",
+      "radio": "רדיו",
+      "podcasts": "פודקאסטים",
+      "judaism": "יהדות",
+      "profile": "הפרופיל שלי",
+      "favorites": "מועדפים",
+      "watchlist": "רשימת צפייה",
+      "subscribe": "הרשמה",
+      "downloads": "הורדות",
+      "help": "מרכז עזרה",
+      "faq": "שאלות נפוצות",
+      "contact": "צור קשר",
+      "feedback": "משוב",
+      "terms": "תנאי שימוש",
+      "privacy": "מדיניות פרטיות",
+      "cookies": "מדיניות עוגיות",
+      "licenses": "רישיונות"
+    },
+    "newsletter": {
+      "title": "הישאר מעודכן",
+      "description": "הירשם לניוזלטר שלנו לקבלת עדכונים ותוכן בלעדי.",
+      "placeholder": "הזן את האימייל שלך",
+      "success": "תודה על ההרשמה!"
+    },
+    "apps": {
+      "title": "הורד את האפליקציה",
+      "downloadOn": "הורד מ",
+      "getItOn": "קבל ב"
+    },
+    "copyright": "© {{year}} בית+. כל הזכויות שמורות.",
+    "sitemap": "מפת אתר",
+    "accessibility": "נגישות",
+    "navigation": "ניווט",
     "liveTV": "שידור חי",
     "moviesAndSeries": "סרטים וסדרות",
     "radioStations": "תחנות רדיו",
-    "podcasts": "פודקאסטים",
     "myProfile": "הפרופיל שלי",
     "subscriptions": "מנויים",
     "helpAndSupport": "עזרה ותמיכה",
     "termsOfUse": "תנאי שימוש",
     "privacyPolicy": "מדיניות פרטיות",
-    "contactUs": "צור קשר",
-    "copyright": "© {{year}} בית+. כל הזכויות שמורות."
+    "contactUs": "צור קשר"
   },
   "chapters": {
     "title": "פרקים",

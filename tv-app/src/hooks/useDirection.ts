@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react';
 import { I18nManager, FlexStyle, TextStyle } from 'react-native';
-import i18n from '../i18n';
-import { languages } from '../i18n';
+import i18n, { languages } from '@bayit/shared-i18n';
 
 type Direction = 'rtl' | 'ltr';
 type FlexDirection = 'row' | 'row-reverse';

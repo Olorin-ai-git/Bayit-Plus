@@ -27,29 +27,26 @@ interface Pagination {
   total: number;
 }
 
-const statusColors: Record<string, { bg: string; text: string; label: string }> = {
-  pending: { bg: 'rgba(245, 158, 11, 0.2)', text: '#F59E0B', label: 'ממתין' },
-  approved: { bg: 'rgba(34, 197, 94, 0.2)', text: '#22C55E', label: 'אושר' },
-  rejected: { bg: 'rgba(239, 68, 68, 0.2)', text: '#EF4444', label: 'נדחה' },
+const statusColors: Record<string, { bg: string; text: string }> = {
+  pending: { bg: 'rgba(245, 158, 11, 0.2)', text: '#F59E0B' },
+  approved: { bg: 'rgba(34, 197, 94, 0.2)', text: '#22C55E' },
+  rejected: { bg: 'rgba(239, 68, 68, 0.2)', text: '#EF4444' },
 };
 
 const formatCurrency = (amount: number) => {
   return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(amount);
 };
 
-const formatDate = (dateStr: string) => {
-  return new Date(dateStr).toLocaleDateString('he-IL', {
-    year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit',
-  });
-};
-
 export default function RefundsPage() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const [refunds, setRefunds] = useState<Refund[]>([]);
   const [loading, setLoading] = useState(true);
   const [pagination, setPagination] = useState<Pagination>({ page: 1, pageSize: 20, total: 0 });
   const [statusFilter, setStatusFilter] = useState('');
   const [showRejectModal, setShowRejectModal] = useState(false);
+  const [showApproveConfirm, setShowApproveConfirm] = useState(false);
+  const [showErrorModal, setShowErrorModal] = useState(false);
+  const [errorMessage, setErrorMessage] = useState('');
   const [selectedRefund, setSelectedRefund] = useState<Refund | null>(null);
   const [rejectReason, setRejectReason] = useState('');
 
@@ -78,13 +75,27 @@ export default function RefundsPage() {
     setPagination((prev) => ({ ...prev, page }));
   };
 
-  const handleApprove = async (refund: Refund) => {
-    if (!window.confirm(`אשר החזר של ${formatCurrency(refund.amount)}?`)) return;
+  const formatDate = (dateStr: string) => {
+    return new Date(dateStr).toLocaleDateString(i18n.language === 'he' ? 'he-IL' : i18n.language === 'es' ? 'es-ES' : 'en-US', {
+      year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit',
+    });
+  };
+
+  const handleApprove = (refund: Refund) => {
+    setSelectedRefund(refund);
+    setShowApproveConfirm(true);
+  };
+
+  const handleConfirmApprove = async () => {
+    if (!selectedRefund) return;
     try {
-      await billingService.approveRefund(refund.id);
+      await billingService.approveRefund(selectedRefund.id);
+      setShowApproveConfirm(false);
       loadRefunds();
     } catch (error) {
       logger.error('Failed to approve refund', 'RefundsPage', error);
+      setErrorMessage(t('common.errors.unexpected', 'An unexpected error occurred'));
+      setShowErrorModal(true);
     }
   };
 
@@ -96,7 +107,8 @@ export default function RefundsPage() {
 
   const handleConfirmReject = async () => {
     if (!selectedRefund || !rejectReason.trim()) {
-      alert('נא להזין סיבת דחייה');
+      setErrorMessage(t('admin.refunds.errors.rejectReasonRequired', 'Please enter rejection reason'));
+      setShowErrorModal(true);
       return;
     }
     try {
@@ -105,6 +117,8 @@ export default function RefundsPage() {
       loadRefunds();
     } catch (error) {
       logger.error('Failed to reject refund', 'RefundsPage', error);
+      setErrorMessage(t('common.errors.unexpected', 'An unexpected error occurred'));
+      setShowErrorModal(true);
     }
   };
 
@@ -120,13 +134,13 @@ export default function RefundsPage() {
   const columns = [
     {
       key: 'id',
-      label: 'מזהה',
+      label: t('admin.refunds.columns.id', 'ID'),
       width: 100,
       render: (id: string) => <Text style={styles.idText}>{id.slice(0, 8)}...</Text>,
     },
     {
       key: 'user',
-      label: 'משתמש',
+      label: t('admin.refunds.columns.user', 'User'),
       render: (_: any, refund: Refund) => (
         <View>
           <Text style={styles.userName}>{refund.user?.name || 'N/A'}</Text>
@@ -136,7 +150,7 @@ export default function RefundsPage() {
     },
     {
       key: 'amount',
-      label: 'סכום',
+      label: t('admin.refunds.columns.amount', 'Amount'),
       width: 100,
       render: (_: any, refund: Refund) => (
         <Text style={styles.amountText}>{formatCurrency(refund.amount)}</Text>
@@ -144,7 +158,7 @@ export default function RefundsPage() {
     },
     {
       key: 'reason',
-      label: 'סיבה',
+      label: t('admin.refunds.columns.reason', 'Reason'),
       width: 200,
       render: (reason: string) => (
         <Text style={styles.reasonText} numberOfLines={2}>{reason}</Text>
@@ -152,13 +166,13 @@ export default function RefundsPage() {
     },
     {
       key: 'status',
-      label: 'סטטוס',
+      label: t('admin.refunds.columns.status', 'Status'),
       width: 100,
       render: (status: string) => getStatusBadge(status),
     },
     {
       key: 'created_at',
-      label: 'תאריך בקשה',
+      label: t('admin.refunds.columns.requestDate', 'Request Date'),
       width: 150,
       render: (date: string) => <Text style={styles.dateText}>{formatDate(date)}</Text>,
     },
@@ -190,30 +204,39 @@ export default function RefundsPage() {
     <ScrollView style={styles.container} contentContainerStyle={styles.contentContainer}>
       <View style={styles.header}>
         <View>
-          <Text style={styles.pageTitle}>{t('admin.titles.refunds', 'החזרים')}</Text>
-          <Text style={styles.subtitle}>ניהול בקשות להחזר כספי</Text>
+          <Text style={styles.pageTitle}>{t('admin.refunds.title', 'Refunds')}</Text>
+          <Text style={styles.subtitle}>{t('admin.refunds.subtitle', 'Manage refund requests')}</Text>
         </View>
       </View>
 
       <View style={styles.summaryCards}>
-        <StatCard title="ממתינים לאישור" value={pendingCount.toString()} icon="⏳" color="warning" />
-        <StatCard title="אושרו" value={approvedCount.toString()} icon="✅" color="success" />
-        <StatCard title="נדחו" value={rejectedCount.toString()} icon="❌" color="error" />
-        <StatCard title="סה״כ הוחזר" value={formatCurrency(totalApproved)} icon="💰" color="primary" />
+        <StatCard title={t('admin.refunds.stats.pendingTitle', 'Pending Approval')} value={pendingCount.toString()} icon="⏳" color="warning" />
+        <StatCard title={t('admin.refunds.stats.approvedTitle', 'Approved')} value={approvedCount.toString()} icon="✅" color="success" />
+        <StatCard title={t('admin.refunds.stats.rejectedTitle', 'Rejected')} value={rejectedCount.toString()} icon="❌" color="error" />
+        <StatCard title={t('admin.refunds.stats.totalRefunded', 'Total Refunded')} value={formatCurrency(totalApproved)} icon="💰" color="primary" />
       </View>
 
       <View style={styles.filtersRow}>
-        {['', 'pending', 'approved', 'rejected'].map((status) => (
-          <Pressable
-            key={status}
-            onPress={() => setStatusFilter(status)}
-            style={[styles.filterButton, statusFilter === status && styles.filterButtonActive]}
-          >
-            <Text style={[styles.filterText, statusFilter === status && styles.filterTextActive]}>
-              {status === '' ? 'הכל' : statusColors[status]?.label || status}
-            </Text>
-          </Pressable>
-        ))}
+        {['', 'pending', 'approved', 'rejected'].map((status) => {
+          const getStatusLabel = (s: string) => {
+            if (s === '') return t('admin.common.all', 'All');
+            if (s === 'pending') return t('admin.refunds.status.pending', 'Pending');
+            if (s === 'approved') return t('admin.refunds.status.approved', 'Approved');
+            if (s === 'rejected') return t('admin.refunds.status.rejected', 'Rejected');
+            return s;
+          };
+          return (
+            <Pressable
+              key={status}
+              onPress={() => setStatusFilter(status)}
+              style={[styles.filterButton, statusFilter === status && styles.filterButtonActive]}
+            >
+              <Text style={[styles.filterText, statusFilter === status && styles.filterTextActive]}>
+                {getStatusLabel(status)}
+              </Text>
+            </Pressable>
+          );
+        })}
       </View>
 
       <DataTable
@@ -222,36 +245,67 @@ export default function RefundsPage() {
         loading={loading}
         pagination={pagination}
         onPageChange={handlePageChange}
-        emptyMessage="לא נמצאו בקשות להחזר"
+        emptyMessage={t('admin.refunds.emptyMessage', 'No refund requests found')}
         searchable={false}
       />
 
       <GlassModal
-        visible={showRejectModal}
-        onClose={() => setShowRejectModal(false)}
-        title="דחיית בקשת החזר"
+        visible={showApproveConfirm}
+        onClose={() => setShowApproveConfirm(false)}
+        title={t('admin.refunds.approveModal.title', 'Confirm Approval')}
       >
         <View style={styles.modalContent}>
           {selectedRefund && (
             <Text style={styles.refundInfo}>
-              דחיית החזר בסך {formatCurrency(selectedRefund.amount)}
+              {t('admin.refunds.approveModal.message', 'Approve refund of')} {formatCurrency(selectedRefund.amount)}?
+            </Text>
+          )}
+          <View style={styles.modalActions}>
+            <GlassButton title={t('common.cancel', 'Cancel')} variant="secondary" onPress={() => setShowApproveConfirm(false)} />
+            <GlassButton title={t('common.confirm', 'Confirm')} variant="primary" onPress={handleConfirmApprove} />
+          </View>
+        </View>
+      </GlassModal>
+
+      <GlassModal
+        visible={showErrorModal}
+        onClose={() => setShowErrorModal(false)}
+        title={t('common.error', 'Error')}
+      >
+        <View style={styles.modalContent}>
+          <Text style={styles.errorText}>{errorMessage}</Text>
+          <View style={styles.modalActions}>
+            <GlassButton title={t('common.ok', 'OK')} variant="primary" onPress={() => setShowErrorModal(false)} />
+          </View>
+        </View>
+      </GlassModal>
+
+      <GlassModal
+        visible={showRejectModal}
+        onClose={() => setShowRejectModal(false)}
+        title={t('admin.refunds.rejectModal.title', 'Reject Refund Request')}
+      >
+        <View style={styles.modalContent}>
+          {selectedRefund && (
+            <Text style={styles.refundInfo}>
+              {t('admin.refunds.rejectModal.message', 'Rejecting refund of')} {formatCurrency(selectedRefund.amount)}
             </Text>
           )}
           <View style={styles.formGroup}>
-            <Text style={styles.formLabel}>סיבת הדחייה</Text>
+            <Text style={styles.formLabel}>{t('admin.refunds.rejectModal.reasonLabel', 'Rejection Reason')}</Text>
             <TextInput
               style={styles.textArea}
               value={rejectReason}
               onChangeText={setRejectReason}
-              placeholder="נא להזין את סיבת הדחייה..."
+              placeholder={t('admin.refunds.rejectModal.reasonPlaceholder', 'Please enter rejection reason...')}
               placeholderTextColor={colors.textMuted}
               multiline
               numberOfLines={3}
             />
           </View>
           <View style={styles.modalActions}>
-            <GlassButton title="ביטול" variant="secondary" onPress={() => setShowRejectModal(false)} />
-            <GlassButton title="דחה בקשה" variant="primary" onPress={handleConfirmReject} />
+            <GlassButton title={t('common.cancel', 'Cancel')} variant="secondary" onPress={() => setShowRejectModal(false)} />
+            <GlassButton title={t('admin.refunds.rejectModal.submitButton', 'Reject Request')} variant="primary" onPress={handleConfirmReject} />
           </View>
         </View>
       </GlassModal>
@@ -285,6 +339,7 @@ const styles = StyleSheet.create({
   rejectButton: { backgroundColor: 'rgba(239, 68, 68, 0.2)' },
   modalContent: { gap: spacing.md },
   refundInfo: { fontSize: 14, color: colors.textSecondary },
+  errorText: { fontSize: 14, color: colors.text, marginBottom: spacing.md },
   formGroup: { gap: spacing.xs },
   formLabel: { fontSize: 14, fontWeight: '600', color: colors.text },
   textArea: { backgroundColor: colors.backgroundLighter, borderRadius: borderRadius.md, borderWidth: 1, borderColor: colors.glassBorder, padding: spacing.md, color: colors.text, fontSize: 14, minHeight: 80, textAlignVertical: 'top' },

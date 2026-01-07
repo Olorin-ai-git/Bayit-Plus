@@ -154,6 +154,11 @@ const TabButton: React.FC<TabButtonProps> = ({
 
   const getTextStyles = () => {
     switch (variant) {
+      case 'pills':
+        return [
+          styles.tabText,
+          isActive ? styles.pillTabTextActive : styles.tabTextInactive,
+        ];
       case 'underline':
         return [
           styles.tabText,
@@ -265,6 +270,10 @@ const styles = StyleSheet.create({
   tabTextActive: {
     color: colors.primary,
     fontWeight: '600',
+  },
+  pillTabTextActive: {
+    color: '#000000',
+    fontWeight: '700',
   },
   tabTextInactive: {
     color: colors.textSecondary,

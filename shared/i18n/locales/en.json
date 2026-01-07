@@ -16,7 +16,17 @@
     "recommended": "Recommended",
     "edit": "Edit",
     "delete": "Delete",
-    "appName": "Bayit+"
+    "appName": "Bayit+",
+    "ok": "OK",
+    "success": "Success",
+    "warning": "Warning",
+    "confirm": "Confirm",
+    "yes": "Yes",
+    "no": "No",
+    "apply": "Apply",
+    "errors": {
+      "unexpected": "An unexpected error occurred"
+    }
   },
   "hero": {
     "watch": "Watch",
@@ -45,6 +55,7 @@
       "emailRequired": "Email is required",
       "passwordRequired": "Password is required",
       "loginFailed": "Login failed. Please check your credentials.",
+      "googleFailed": "Google sign-in failed. Please try again.",
       "fillAllFields": "Please fill in all fields"
     },
     "qrInstructions": "Scan the code with your phone for quick login",
@@ -68,10 +79,7 @@
     "send": "Send",
     "createAccount": "Create Account",
     "bayitThinking": "Bayit is thinking...",
-    "errors": {
-      "fillAllFields": "Please fill in all fields",
-      "loginFailed": "Login failed. Please try again."
-    }
+    "unexpectedError": "An unexpected error occurred"
   },
   "tvLogin": {
     "invalidQR": "Invalid QR code. Please scan again from your TV.",
@@ -99,25 +107,34 @@
   },
   "register": {
     "title": "Create Account",
-    "fullName": "Full Name",
-    "namePlaceholder": "John Doe",
+    "subtitle": "Join Bayit+ and start watching",
+    "name": "Full Name",
+    "namePlaceholder": "Enter your full name",
     "email": "Email",
+    "emailPlaceholder": "Enter your email",
     "password": "Password",
     "passwordPlaceholder": "At least 8 characters",
     "confirmPassword": "Confirm Password",
-    "confirmPasswordPlaceholder": "Enter password again",
-    "termsText": "By signing up, you agree to our Terms of Service and Privacy Policy",
-    "submit": "Sign Up",
-    "registering": "Signing up...",
-    "googleSignup": "Sign up with Google",
+    "confirmPasswordPlaceholder": "Re-enter your password",
+    "acceptTerms": "I agree to the",
+    "termsOfService": "Terms of Service",
+    "and": "and",
+    "privacyPolicy": "Privacy Policy",
+    "submit": "Create Account",
+    "registering": "Creating account...",
+    "continueWithGoogle": "Continue with Google",
     "haveAccount": "Already have an account?",
-    "loginLink": "Login",
+    "signIn": "Sign In",
     "errors": {
+      "nameRequired": "Name is required",
+      "emailRequired": "Email is required",
+      "passwordRequired": "Password is required",
       "fillAllFields": "Please fill in all fields",
       "passwordMismatch": "Passwords do not match",
       "passwordTooShort": "Password must be at least 8 characters",
+      "acceptTerms": "You must accept the terms and conditions",
       "registrationFailed": "Registration failed. Please try again.",
-      "googleFailed": "Google sign-in failed"
+      "googleFailed": "Google sign-up failed. Please try again."
     }
   },
   "nav": {
@@ -176,19 +193,38 @@
   },
   "search": {
     "title": "Search",
-    "subtitle": "Find content across all platforms",
-    "placeholder": "Search movies, series, channels, podcasts...",
+    "subtitle": "Find movies, series, channels, radio stations and podcasts",
+    "placeholder": "Search for content...",
     "voicePlaceholder": "Speak now...",
     "searching": "Searching...",
+    "listening": "Listening...",
     "noResults": "No results found",
+    "noResultsHint": "Try different keywords or change your filters",
     "tryDifferent": "Try different search terms",
     "resultsFor": "results for",
+    "resultsFound": "{{count}} results found for \"{{query}}\"",
+    "recentSearches": "Recent Searches",
+    "clearAll": "Clear All",
+    "trending": "Trending Searches",
+    "promptTitle": "What are you looking for?",
+    "promptDescription": "Search for your favorite content or use voice search",
     "filters": {
       "all": "All",
+      "vod": "Movies & Series",
+      "live": "Channels",
+      "radio": "Radio",
+      "podcast": "Podcasts",
       "moviesAndSeries": "Movies & Series",
       "channels": "Channels",
-      "radio": "Radio",
       "podcasts": "Podcasts"
+    },
+    "suggestions": {
+      "movies": "Movies",
+      "series": "Series",
+      "liveTV": "Live TV",
+      "news": "News",
+      "sports": "Sports",
+      "kids": "Kids"
     }
   },
   "liveTV": {
@@ -474,106 +510,6 @@
     "typeRadio": "Radio",
     "typeVideo": "Video"
   },
-  "admin": {
-    "dashboard": "Dashboard",
-    "users": {
-      "title": "Users",
-      "subtitle": "View and manage system users",
-      "addUser": "Add User",
-      "searchPlaceholder": "Search user...",
-      "noUsersFound": "No users found",
-      "active": "Active",
-      "inactive": "Inactive",
-      "banned": "Banned",
-      "allUsers": "All",
-      "activeUsers": "Active",
-      "inactiveUsers": "Inactive",
-      "bannedUsers": "Banned"
-    },
-    "plans": {
-      "title": "Plan Management",
-      "mo": "mo",
-      "yr": "yr",
-      "monthly": "Monthly",
-      "yearly": "Yearly",
-      "freeTrial": "{{days}} day free trial",
-      "premium": "Premium"
-    },
-    "campaigns": {
-      "title": "Campaigns",
-      "name": "Name",
-      "discount": "Discount",
-      "uses": "Uses",
-      "validUntil": "Valid Until",
-      "status": "Status"
-    },
-    "subscriptions": {
-      "title": "Subscriptions",
-      "user": "User",
-      "plan": "Plan",
-      "price": "Price",
-      "status": "Status"
-    },
-    "transactions": {
-      "title": "Transactions",
-      "id": "ID",
-      "user": "User",
-      "amount": "Amount",
-      "type": "Type",
-      "status": "Status",
-      "date": "Date"
-    },
-    "refunds": {
-      "title": "Refunds",
-      "id": "ID",
-      "user": "User",
-      "amount": "Amount",
-      "reason": "Reason",
-      "status": "Status"
-    },
-    "auditLogs": {
-      "title": "Audit Logs",
-      "action": "Action",
-      "user": "User",
-      "resource": "Resource",
-      "details": "Details",
-      "date": "Date"
-    },
-    "emails": {
-      "title": "Email Campaigns",
-      "status": "Status",
-      "sent": "Sent",
-      "opened": "Opened",
-      "clicked": "Clicked",
-      "created": "Created"
-    },
-    "push": {
-      "title": "Push Notifications",
-      "notificationTitle": "Title"
-    },
-    "marketing": {
-      "title": "Marketing Dashboard",
-      "active": "Active",
-      "completed": "Completed",
-      "scheduled": "Scheduled",
-      "draft": "Draft"
-    },
-    "settings": {
-      "title": "Settings",
-      "downloads": "Downloads",
-      "language": "Language"
-    },
-    "table": {
-      "name": "Name",
-      "email": "Email",
-      "role": "Role",
-      "subscription": "Subscription",
-      "noSubscription": "No subscription",
-      "status": "Status",
-      "created": "Created",
-      "all": "All"
-    }
-  },
   "watchParty": {
     "title": "Watch Party",
     "create": "Create Party",
@@ -622,20 +558,56 @@
   },
   "footer": {
     "brandDescription": "Your home in the USA. TV broadcasts, VOD, radio and podcasts in Hebrew.",
-    "navigation": "Navigation",
+    "browse": "Browse",
     "account": "Account",
+    "support": "Support",
     "legal": "Legal",
+    "location": "New York, USA",
+    "links": {
+      "home": "Home",
+      "liveTV": "Live TV",
+      "vod": "Movies & Series",
+      "radio": "Radio",
+      "podcasts": "Podcasts",
+      "judaism": "Judaism",
+      "profile": "My Profile",
+      "favorites": "Favorites",
+      "watchlist": "Watchlist",
+      "subscribe": "Subscribe",
+      "downloads": "Downloads",
+      "help": "Help Center",
+      "faq": "FAQ",
+      "contact": "Contact Us",
+      "feedback": "Feedback",
+      "terms": "Terms of Service",
+      "privacy": "Privacy Policy",
+      "cookies": "Cookie Policy",
+      "licenses": "Licenses"
+    },
+    "newsletter": {
+      "title": "Stay Updated",
+      "description": "Subscribe to our newsletter for the latest updates and exclusive content.",
+      "placeholder": "Enter your email",
+      "success": "Thanks for subscribing!"
+    },
+    "apps": {
+      "title": "Get the App",
+      "downloadOn": "Download on",
+      "getItOn": "Get it on"
+    },
+    "copyright": "© {{year}} Bayit+. All rights reserved.",
+    "sitemap": "Sitemap",
+    "accessibility": "Accessibility",
+    "navigation": "Navigation",
     "liveTV": "Live TV",
     "moviesAndSeries": "Movies & Series",
     "radioStations": "Radio Stations",
-    "podcasts": "Podcasts",
     "myProfile": "My Profile",
     "subscriptions": "Subscriptions",
     "helpAndSupport": "Help & Support",
     "termsOfUse": "Terms of Use",
     "privacyPolicy": "Privacy Policy",
-    "contactUs": "Contact Us",
-    "copyright": "© {{year}} Bayit+. All rights reserved."
+    "contactUs": "Contact Us"
   },
   "chapters": {
     "title": "Chapters",
@@ -653,6 +625,153 @@
       "weather": "Weather",
       "culture": "Culture",
       "conclusion": "Conclusion"
+    }
+  },
+  "register": {
+    "title": "Create Account",
+    "fullName": "Full Name",
+    "email": "Email",
+    "password": "Password",
+    "confirmPassword": "Confirm Password",
+    "submit": "Sign Up",
+    "registering": "Signing up...",
+    "haveAccount": "Already have an account?",
+    "loginLink": "Login",
+    "placeholders": {
+      "fullName": "John Doe",
+      "email": "your@email.com",
+      "password": "At least 8 characters",
+      "confirmPassword": "Enter password again"
+    },
+    "errors": {
+      "fillAllFields": "Please fill in all fields",
+      "passwordMismatch": "Passwords do not match",
+      "passwordTooShort": "Password must be at least 8 characters",
+      "registrationFailed": "Registration failed. Please try again."
+    }
+  },
+  "admin": {
+    "refunds": {
+      "subtitle": "Manage refund requests",
+      "approveModal": {
+        "title": "Confirm Approval",
+        "message": "Approve refund of {{amount}}?"
+      },
+      "confirmApprove": "Approve refund of {{amount}}?",
+      "confirmDelete": "Delete refund request?",
+      "rejectModal": {
+        "title": "Reject Refund Request",
+        "message": "Rejecting refund of {{amount}}",
+        "reasonLabel": "Rejection Reason",
+        "reasonPlaceholder": "Please enter rejection reason...",
+        "submitButton": "Reject Request"
+      },
+      "status": {
+        "pending": "Pending",
+        "approved": "Approved",
+        "rejected": "Rejected"
+      },
+      "columns": {
+        "id": "ID",
+        "user": "User",
+        "amount": "Amount",
+        "reason": "Reason",
+        "status": "Status",
+        "requestDate": "Request Date"
+      },
+      "stats": {
+        "pendingTitle": "Pending Approval",
+        "approvedTitle": "Approved",
+        "rejectedTitle": "Rejected",
+        "totalRefunded": "Total Refunded"
+      },
+      "emptyMessage": "No refund requests found",
+      "errors": {
+        "rejectReasonRequired": "Please enter rejection reason"
+      }
+    },
+    "plans": {
+      "subtitle": "Configure and manage subscription plans",
+      "createButton": "New Plan",
+      "inactive": "Inactive",
+      "subscribersLabel": "Subscribers:",
+      "intervals": {
+        "monthly": "month",
+        "yearly": "year"
+      },
+      "trialDays": "{{days}} day trial",
+      "modal": {
+        "editTitle": "Edit Plan",
+        "createTitle": "New Plan"
+      },
+      "form": {
+        "nameEn": "Name (English)",
+        "nameHe": "Name (Hebrew)",
+        "price": "Price ($)",
+        "interval": "Billing Period",
+        "trialDays": "Trial Days",
+        "features": "Features (one per line)",
+        "active": "Active Plan"
+      },
+      "errors": {
+        "requiredFields": "Name and price are required"
+      },
+      "confirmDelete": "Delete plan \"{{name}}\"?"
+    },
+    "emailCampaigns": {
+      "subtitle": "Create and manage email campaigns",
+      "createButton": "New Campaign",
+      "searchPlaceholder": "Search campaign...",
+      "emptyMessage": "No campaigns found",
+      "status": {
+        "draft": "Draft",
+        "active": "Active",
+        "scheduled": "Scheduled",
+        "completed": "Completed"
+      },
+      "columns": {
+        "name": "Campaign Name",
+        "status": "Status",
+        "sent": "Sent",
+        "opened": "Opened",
+        "clicked": "Clicked",
+        "created": "Created"
+      },
+      "confirmSend": "Send campaign \"{{name}}\"?",
+      "confirmDelete": "Delete campaign \"{{name}}\"?",
+      "testEmailSent": "Test email sent!",
+      "createModal": {
+        "title": "New Email Campaign"
+      },
+      "form": {
+        "name": "Campaign Name",
+        "namePlaceholder": "e.g., Year End Sale",
+        "subject": "Email Subject",
+        "subjectPlaceholder": "Subject shown to recipients",
+        "body": "Content",
+        "bodyPlaceholder": "Email content...",
+        "submitButton": "Create Campaign"
+      },
+      "testModal": {
+        "title": "Send Test Email",
+        "emailLabel": "Email Address",
+        "emailPlaceholder": "test@example.com",
+        "submitButton": "Send Test"
+      },
+      "errors": {
+        "requiredFields": "Name and subject are required"
+      }
+    },
+    "dashboard": {
+      "subtitle": "System Overview",
+      "refresh": "Refresh",
+      "timeAgo": {
+        "minutes": "{{count}} minutes ago",
+        "hours": "{{count}} hours ago"
+      }
+    },
+    "common": {
+      "all": "All"
     }
   }
 }
