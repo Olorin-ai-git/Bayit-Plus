@@ -67,18 +67,26 @@ export default function StatCard({
 
   if (to) {
     return (
-      <Link to={to} style={{ textDecoration: 'none', flex: 1 }}>
-        {content}
-      </Link>
+      <View style={styles.wrapper}>
+        <Link to={to} style={{ textDecoration: 'none', flex: 1 }}>
+          {content}
+        </Link>
+      </View>
     );
   }
 
-  return content;
+  return <View style={styles.wrapper}>{content}</View>;
 }
 
 const styles = StyleSheet.create({
+  wrapper: {
+    flex: 1,
+    minWidth: 200,
+    maxWidth: 280,
+  },
   card: {
     padding: spacing.md,
+    flex: 1,
   },
   cardClickable: {
     // Hover styles handled by web CSS

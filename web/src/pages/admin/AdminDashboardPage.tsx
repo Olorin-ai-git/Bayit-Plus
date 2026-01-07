@@ -373,24 +373,30 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     flexWrap: 'wrap',
     gap: spacing.md,
+    justifyContent: 'flex-start',
   },
   statsGridHalf: {
     flexDirection: 'row',
     gap: spacing.md,
+    justifyContent: 'flex-start',
+    maxWidth: 600,
   },
   bottomSection: {
     flexDirection: 'row',
     gap: spacing.lg,
+    flexWrap: 'wrap',
   },
   bottomSectionRTL: {
     flexDirection: 'row-reverse',
   },
   activitySection: {
     flex: 2,
+    minWidth: 300,
   },
   activityCard: {
     padding: 0,
     minHeight: 200,
+    flex: 1,
   },
   activityItem: {
     flexDirection: 'row',
