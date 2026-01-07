@@ -24,10 +24,13 @@
     "addToList": "הוסף לרשימה"
   },
   "login": {
-    "title": "התחברות",
+    "title": "ברוך שובך",
+    "subtitle": "התחבר כדי להמשיך ל-Bayit+",
     "tagline": "הבית שלך בארה״ב",
     "email": "אימייל",
+    "emailPlaceholder": "הזן את האימייל שלך",
     "password": "סיסמה",
+    "passwordPlaceholder": "הזן את הסיסמה שלך",
     "submit": "התחברות",
     "loggingIn": "מתחבר...",
     "or": "או",
@@ -37,6 +40,13 @@
     "signUp": "הרשמה",
     "register": "הרשמה",
     "name": "שם",
+    "termsNotice": "בהתחברות, אתה מסכים לתנאי השימוש ומדיניות הפרטיות שלנו",
+    "errors": {
+      "emailRequired": "נדרש אימייל",
+      "passwordRequired": "נדרשת סיסמה",
+      "loginFailed": "ההתחברות נכשלה. אנא בדוק את הפרטים שלך.",
+      "fillAllFields": "אנא מלא את כל השדות"
+    },
     "qrInstructions": "סרוק את הקוד עם הטלפון להתחברות מהירה",
     "methodQR": "קוד QR",
     "methodVoice": "קולי",

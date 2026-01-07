@@ -19,10 +19,13 @@
     "appName": "Bayit+"
   },
   "login": {
-    "title": "Iniciar Sesión",
+    "title": "Bienvenido de Nuevo",
+    "subtitle": "Inicia sesión para continuar en Bayit+",
     "tagline": "Tu Hogar en EE.UU.",
     "email": "Correo",
+    "emailPlaceholder": "Ingresa tu correo",
     "password": "Contraseña",
+    "passwordPlaceholder": "Ingresa tu contraseña",
     "submit": "Iniciar Sesión",
     "loggingIn": "Iniciando sesión...",
     "or": "o",
@@ -32,6 +35,7 @@
     "signUp": "Regístrate",
     "register": "Registrarse",
     "name": "Nombre",
+    "termsNotice": "Al iniciar sesión, aceptas nuestros Términos de Servicio y Política de Privacidad",
     "qrInstructions": "Escanea el código con tu teléfono para acceso rápido",
     "methodQR": "Código QR",
     "methodVoice": "Voz",
@@ -54,8 +58,10 @@
     "createAccount": "Crear Cuenta",
     "bayitThinking": "Bayit está pensando...",
     "errors": {
+      "emailRequired": "El correo es requerido",
+      "passwordRequired": "La contraseña es requerida",
       "fillAllFields": "Por favor, completa todos los campos",
-      "loginFailed": "Error al iniciar sesión. Intenta de nuevo."
+      "loginFailed": "Error al iniciar sesión. Verifica tus credenciales."
     }
   },
   "tvLogin": {

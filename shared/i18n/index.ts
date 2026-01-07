@@ -35,6 +35,8 @@ i18n
     react: {
       useSuspense: false,
     },
+    // Use v3 format for environments without Intl.PluralRules (like tvOS)
+    compatibilityJSON: 'v3',
   });
 
 // Type-safe localStorage access for web

@@ -24,12 +24,15 @@
     "addToList": "Add to List"
   },
   "login": {
-    "title": "Login",
+    "title": "Welcome Back",
+    "subtitle": "Sign in to continue to Bayit+",
     "tagline": "Your Home in the USA",
     "email": "Email",
+    "emailPlaceholder": "Enter your email",
     "password": "Password",
-    "submit": "Login",
-    "loggingIn": "Logging in...",
+    "passwordPlaceholder": "Enter your password",
+    "submit": "Sign In",
+    "loggingIn": "Signing in...",
     "or": "or",
     "forgotPassword": "Forgot password?",
     "continueWithGoogle": "Continue with Google",
@@ -37,6 +40,13 @@
     "signUp": "Sign Up",
     "register": "Register",
     "name": "Name",
+    "termsNotice": "By signing in, you agree to our Terms of Service and Privacy Policy",
+    "errors": {
+      "emailRequired": "Email is required",
+      "passwordRequired": "Password is required",
+      "loginFailed": "Login failed. Please check your credentials.",
+      "fillAllFields": "Please fill in all fields"
+    },
     "qrInstructions": "Scan the code with your phone for quick login",
     "methodQR": "QR Code",
     "methodVoice": "Voice",
