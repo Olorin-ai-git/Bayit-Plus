@@ -31,7 +31,7 @@ const babelLoaderConfiguration = {
 // Node modules that need transpilation (only react-native, not react-navigation which is already ESM)
 const nodeModulesConfiguration = {
   test: /\.(js|jsx|ts|tsx)$/,
-  include: /node_modules\/(react-native-web|react-native-safe-area-context|react-native-screens|@react-native)/,
+  include: /node_modules\/(react-native-web|react-native-safe-area-context|react-native-screens|@react-native|@expo|expo-linear-gradient|expo-font|expo-asset|expo-modules-core)/,
   exclude: /node_modules\/@react-navigation/,
   use: {
     loader: 'babel-loader',
@@ -100,6 +100,10 @@ module.exports = {
     new webpack.DefinePlugin({
       __DEV__: process.env.NODE_ENV !== 'production',
       'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV || 'development'),
+      'process.env': JSON.stringify({}),
+    }),
+    new webpack.ProvidePlugin({
+      process: 'process/browser',
     }),
     new HtmlWebpackPlugin({
       template: './public/index.html',
@@ -110,7 +114,7 @@ module.exports = {
     static: {
       directory: path.join(__dirname, 'public'),
     },
-    port: 3000,
+    port: 3001,
     hot: true,
     historyApiFallback: true,
     open: true,

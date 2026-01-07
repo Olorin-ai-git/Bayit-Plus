@@ -6,6 +6,7 @@ import HeroSection from '@/components/content/HeroSection'
 import DualClock from '@/components/zman/DualClock'
 import TrendingRow from '@/components/trending/TrendingRow'
 import MorningRitual from '@/components/ritual/MorningRitual'
+import AnimatedLogo from '@/components/ui/AnimatedLogo'
 import { contentService, liveService, historyService, ritualService } from '@/services/api'
 
 export default function HomePage() {
@@ -69,9 +70,16 @@ export default function HomePage() {
 
   return (
     <div className="pb-16">
+      {/* Header with Animated Logo */}
+      <div className="container mx-auto px-4 pt-6 pb-4">
+        <div className="flex justify-center">
+          <AnimatedLogo size="large" />
+        </div>
+      </div>
+
       {/* Dual Clock - Israel Time */}
       <div className="container mx-auto px-4 py-4">
-        <DualClock variant="compact" />
+        <DualClock />
       </div>
 
       {/* Hero Section */}
@@ -155,6 +163,12 @@ export default function HomePage() {
 function HomePageSkeleton() {
   return (
     <div className="pb-16">
+      {/* Loading with Animated Logo */}
+      <div className="flex flex-col items-center justify-center py-12">
+        <AnimatedLogo size="large" />
+        <p className="mt-4 text-white/60 animate-pulse">טוען...</p>
+      </div>
+
       {/* Hero Skeleton */}
       <div className="relative h-[60vh] skeleton" />
 
