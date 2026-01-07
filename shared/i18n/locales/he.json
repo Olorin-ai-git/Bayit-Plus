@@ -5,6 +5,7 @@
     "retry": "נסה שוב",
     "cancel": "ביטול",
     "save": "שמור",
+    "saving": "שומר...",
     "close": "סגור",
     "back": "חזור",
     "next": "הבא",
@@ -27,7 +28,35 @@
     "errors": {
       "unexpected": "אירעה שגיאה בלתי צפויה"
     },
-    "send": "שלח"
+    "send": "שלח",
+    "done": "סיום",
+    "all": "הכל"
+  },
+  "demo": {
+    "banner": "מצב הדמו",
+    "bannerSubtext": "שימוש בנתונים מדומים - ללא קריאות API",
+    "days": {
+      "sunday": "יום ראשון",
+      "monday": "יום שני",
+      "tuesday": "יום שלישי",
+      "wednesday": "יום רביעי",
+      "thursday": "יום חמישי",
+      "friday": "יום שישי",
+      "saturday": "שבת"
+    },
+    "shabbat": "שבת",
+    "until_shabbat": "עד שבת",
+    "search_interpretation": "חיפוש עבור \"{{query}}\"",
+    "suggestions": {
+      "0": "פאודה",
+      "1": "שטיסל",
+      "2": "טהרן",
+      "3": "הבורר",
+      "4": "עבודה ערבית"
+    },
+    "premium_plan": "פרימיום",
+    "assistant_response": "אני ממליץ על פאודה - סדרת מתח מעולה!",
+    "morning_greeting": "בוקר טוב! היום מזג האוויר נעים, יש כמה חדשות חשובות מישראל, ובחרתי לך תוכן שיתאים לך במיוחד."
   },
   "hero": {
     "watch": "צפייה",
@@ -102,15 +131,34 @@
     "securityNote": "הפרטים נשלחים בצורה מאובטחת ואינם נשמרים בטלוויזיה.",
     "footer": "יש בעיה? וודא שסרקת קוד QR חדש מהטלוויזיה."
   },
+  "googleLogin": {
+    "cancelledError": "ההתחברות עם Google בוטלה",
+    "missingCode": "קוד אימות חסר",
+    "loginError": "שגיאה בהתחברות עם Google",
+    "redirecting": "מעביר לדף ההתחברות...",
+    "connecting": "מתחבר עם Google..."
+  },
   "register": {
     "title": "יצירת חשבון",
-    "fullName": "שם מלא",
+    "subtitle": "הצטרף ל-Bayit+ כדי לצפות בתוכן המועדף עליך",
+    "name": "שם מלא",
+    "namePlaceholder": "דוד כהן",
     "email": "אימייל",
+    "emailPlaceholder": "your@email.com",
     "password": "סיסמה",
+    "passwordPlaceholder": "לפחות 8 תווים",
     "confirmPassword": "אימות סיסמה",
+    "confirmPasswordPlaceholder": "הזן שוב את הסיסמה",
     "submit": "הרשמה",
     "registering": "מתבצעת הרשמה...",
+    "acceptTerms": "אני מסכים ל",
+    "termsOfService": "תנאי השימוש",
+    "and": "ו",
+    "privacyPolicy": "מדיניות הפרטיות",
+    "continueWithGoogle": "הרשם עם Google",
     "haveAccount": "כבר יש לך חשבון?",
+    "signIn": "התחבר",
+    "fullName": "שם מלא",
     "loginLink": "התחברות",
     "placeholders": {
       "fullName": "דוד כהן",
@@ -119,10 +167,15 @@
       "confirmPassword": "הזן שוב את הסיסמה"
     },
     "errors": {
-      "fillAllFields": "נא למלא את כל השדות",
-      "passwordMismatch": "הסיסמאות אינן תואמות",
+      "nameRequired": "שם נדרש",
+      "emailRequired": "אימייל נדרש",
+      "passwordRequired": "סיסמה נדרשת",
       "passwordTooShort": "הסיסמה חייבת להכיל לפחות 8 תווים",
-      "registrationFailed": "ההרשמה נכשלה. נסה שוב."
+      "passwordMismatch": "הסיסמאות אינן תואמות",
+      "acceptTerms": "עליך לקבל את תנאי השימוש ומדיניות הפרטיות",
+      "fillAllFields": "נא למלא את כל השדות",
+      "registrationFailed": "ההרשמה נכשלה. נסה שוב.",
+      "googleFailed": "ההרשמה עם Google נכשלה. נסה שוב."
     }
   },
   "nav": {
@@ -255,7 +308,9 @@
       "society": "חברה",
       "tech": "טכנולוגיה",
       "history": "היסטוריה"
-    }
+    },
+    "noPodcasts": "אין פודקאסטים זמינים",
+    "tryLater": "נסה שוב מאוחר יותר"
   },
   "vod": {
     "title": "סרטים וסדרות",
@@ -269,7 +324,10 @@
       "action": "אקשן",
       "documentary": "דוקומנטרי",
       "kids": "ילדים"
-    }
+    },
+    "allCategories": "הכל",
+    "emptyTitle": "אין תוכן זמין",
+    "emptyDescription": "נסה לבחור קטגוריה אחרת"
   },
   "account": {
     "title": "החשבון שלי",
@@ -311,7 +369,7 @@
     "items": "פריטים",
     "aiGenerated": "נוצר ע״י AI",
     "autoPlay": "ניגון אוטומטי",
-    "aiEnabled": "סיכום AI",
+    "aiEnabled": "אוצרות AI",
     "shabbatTrigger": "ליל שבת",
     "manual": "ידני",
     "flowName": "שם הפלו",
@@ -322,11 +380,106 @@
     "endTime": "שעת סיום",
     "actions": "פעולות",
     "details": "פרטים",
-    "createFlowDesc": "עצב את החוויה המותאמת שלך",
+    "createFlowDesc": "עצב את חוויית התוכן המותאמת שלך",
+    "editFlowDesc": "עדכן את הגדרות הפלו והתוכן",
+    "basicInfo": "מידע בסיסי",
+    "options": "אפשרויות",
+    "autoPlayDesc": "נגן אוטומטית את הפריט הבא כשהנוכחי מסתיים",
+    "aiEnabledDesc": "תן ל-AI לאצור תוכן לפי ההעדפות שלך",
     "startFlow": "התחל פלו",
-    "deleteFlow": "מחק פלו"
+    "deleteFlow": "מחק פלו",
+    "custom": "מותאם אישית",
+    "morning": "בוקר",
+    "evening": "ערב",
+    "shabbat": "שבת",
+    "addContent": "הוסף תוכן",
+    "contentPicker": {
+      "title": "הוסף תוכן לפלו",
+      "tabs": {
+        "live": "טלוויזיה חיה",
+        "radio": "רדיו",
+        "vod": "לפי דרישה",
+        "podcast": "פודקאסטים"
+      },
+      "search": "חפש תוכן...",
+      "selected": "{{count}} נבחרו",
+      "addSelected": "הוסף נבחרים",
+      "noResults": "לא נמצא תוכן",
+      "alreadyAdded": "כבר בפלו",
+      "loadMore": "טען עוד"
+    },
+    "flowItems": {
+      "title": "תוכן הפלו",
+      "empty": "אין עדיין תוכן. לחץ על הוסף תוכן כדי להתחיל.",
+      "count": "{{count}} פריטים",
+      "remove": "הסר",
+      "moveUp": "הזז למעלה",
+      "moveDown": "הזז למטה",
+      "order": "סדר",
+      "removeConfirm": "להסיר פריט זה?",
+      "removeConfirmYes": "כן, הסר",
+      "removeConfirmNo": "ביטול",
+      "maxItems": "מקסימום {{max}} פריטים. הסר פריט כדי להוסיף עוד.",
+      "emptyAi": "ה-AI יבחר תוכן אוטומטית בהתאם להעדפותיך.",
+      "more": "פריטים נוספים"
+    },
+    "days": {
+      "sunday": "ראשון",
+      "monday": "שני",
+      "tuesday": "שלישי",
+      "wednesday": "רביעי",
+      "thursday": "חמישי",
+      "friday": "שישי",
+      "saturday": "שבת",
+      "sundayShort": "א",
+      "mondayShort": "ב",
+      "tuesdayShort": "ג",
+      "wednesdayShort": "ד",
+      "thursdayShort": "ה",
+      "fridayShort": "ו",
+      "saturdayShort": "ש",
+      "selectAll": "בחר הכל",
+      "deselectAll": "בטל בחירה",
+      "title": "ימים פעילים",
+      "allDays": "כל 7 הימים",
+      "everyDay": "כל יום",
+      "everyday": "כל יום",
+      "noneSelected": "לא נבחרו ימים",
+      "selectedCount": "{{count}} ימים נבחרו",
+      "weekdays": "ימי חול",
+      "weekends": "סופי שבוע",
+      "dayCount": "{{count}} ימים"
+    },
+    "trigger": {
+      "type": "סוג טריגר",
+      "time": "לפי זמן",
+      "shabbat": "ליל שבת",
+      "holiday": "חג",
+      "skipShabbat": "דלג בשבת",
+      "skipShabbatDesc": "אל תפעיל פלו זה בערב שבת או בשבת",
+      "shabbatOffset": "דקות לפני הדלקת נרות",
+      "shabbatOffsetDesc": "כמה דקות לפני השבת הפלו יתחיל?",
+      "calculatedTime": "זמן מחושב",
+      "thisWeek": "השבוע: {{day}} ב-{{time}}",
+      "comingSoon": "טריגרים לחגים בקרוב",
+      "startTime": "שעת התחלה",
+      "endTime": "שעת סיום"
+    },
+    "aiBrief": "סיכום AI",
+    "aiBriefDesc": "קבל סיכום מותאם אישית שנוצר ע״י AI לפני תחילת הפלו",
+    "aiBriefEnabled": "סיכום AI מופעל",
+    "validation": {
+      "nameRequired": "שם הפלו נדרש",
+      "startTimeRequired": "שעת התחלה נדרשת לטריגר לפי זמן",
+      "noDaysSelected": "בחר לפחות יום אחד",
+      "invalidTime": "פורמט זמן לא תקין"
+    },
+    "tv": {
+      "useCompanion": "להתאמה מלאה, השתמש באפליקציית Bayit+ בטלפון או בקר ב-bayit.plus במחשב."
+    }
   },
   "profile": {
+    "title": "הפרופיל שלי",
     "profileDetails": "פרטי פרופיל",
     "name": "שם",
     "notSet": "לא הוגדר",
@@ -348,6 +501,20 @@
     "premiumPrice": "₪29.90/חודש",
     "familyPrice": "₪49.90/חודש",
     "remaining": "נותרו",
+    "tabs": {
+      "personal": "אישי",
+      "subscription": "מנוי",
+      "notifications": "התראות",
+      "security": "אבטחה"
+    },
+    "subscription": {
+      "currentPlan": "התוכנית הנוכחית",
+      "renewsOn": "מתחדשת בתאריך",
+      "manageSubscription": "נהל מנוי",
+      "cancelSubscription": "בטל מנוי",
+      "noActivePlan": "אין מנוי פעיל",
+      "selectPlan": "בחר תוכנית"
+    },
     "notifications": {
       "newContent": "תוכן חדש",
       "newContentDesc": "קבל התראות על תוכן חדש",
@@ -364,6 +531,11 @@
     "title": "הגדרות",
     "language": "שפה",
     "selectLanguage": "בחר שפה",
+    "languages": {
+      "en": "English",
+      "he": "עברית",
+      "es": "Español"
+    },
     "notifications": "התראות",
     "playback": "הגדרות ניגון",
     "quality": "איכות",
@@ -412,7 +584,8 @@
     "items": "פריטים",
     "storage": "אחסון",
     "empty": "אין הורדות",
-    "emptyHint": "הורד תוכן לצפייה במצב לא מקוון"
+    "emptyHint": "הורד תוכן לצפייה במצב לא מקוון",
+    "paused": "מושהה"
   },
   "watchlist": {
     "title": "רשימת צפייה",
@@ -616,6 +789,75 @@
       "newCampaign": "קמפיין חדש",
       "sendEmail": "שלח אימייל",
       "viewReports": "צפה בדוחות"
+    },
+    "placeholder": {
+      "userId": "הזן מזהה משתמש",
+      "discount": "0"
+    },
+    "titles": {
+      "users": "משתמשים",
+      "transactions": "עסקאות",
+      "subscriptions": "מנויים",
+      "refunds": "החזרים",
+      "plans": "תוכניות",
+      "campaigns": "קמפיינים",
+      "auditLogs": "יומני ביקורת",
+      "pushNotifications": "הודעות דחיפה",
+      "billing": "חיוב",
+      "marketing": "שיווק",
+      "settings": "הגדרות"
+    },
+    "nav": {
+      "transactions": "עסקאות",
+      "refunds": "החזרים",
+      "plans": "תוכניות"
+    },
+    "billing": {
+      "subtitle": "מעקב אחר הכנסות ותשלומים",
+      "revenue": "הכנסות",
+      "today": "היום",
+      "thisWeek": "השבוע",
+      "thisMonth": "החודש הזה",
+      "thisYear": "השנה הזו",
+      "metrics": "מדדים עיקריים",
+      "totalTransactions": "סך הכל עסקאות",
+      "avgTransaction": "ממוצע עסקה",
+      "pendingRefunds": "החזרים ממתינים",
+      "refundRate": "שיעור החזר",
+      "retention": "שימור",
+      "retentionRate": "שיעור שימור",
+      "churnRate": "שיעור הפירוק",
+      "atRiskUsers": "משתמשים בסיכון",
+      "churnedUsers": "משתמשים שעזבו",
+      "quickLinks": "קישורים מהירים"
+    },
+    "marketing": {
+      "recentCampaigns": "קמפיינים אחרונים",
+      "audienceSegments": "קטעי קהל",
+      "emailMetrics": "מדדי דוא״ל",
+      "pushMetrics": "מדדי דחיפה",
+      "quickActions": "פעולות מהירות"
+    },
+    "push": {
+      "titlePlaceholder": "כותרת הודעה",
+      "bodyPlaceholder": "תוכן ההודעה"
+    },
+    "refunds": {
+      "title": "החזרים"
+    },
+    "emailCampaigns": {
+      "title": "קמפיינים בדוא״ל"
+    },
+    "auditLogs": {
+      "subtitle": "מעקב אחר כל הפעולות במערכת",
+      "filter": "סנן",
+      "export": "ייצא",
+      "all": "הכל",
+      "advancedFiltering": "סינון מתקדם",
+      "actionType": "סוג פעולה",
+      "clear": "נקה",
+      "apply": "החל",
+      "noRecords": "לא נמצאו רשומות"
     }
   },
   "watchParty": {
@@ -701,7 +943,15 @@
     "apps": {
       "title": "הורד את האפליקציה",
       "downloadOn": "הורד מ",
-      "getItOn": "קבל ב"
+      "getItOn": "קבל ב",
+      "appStore": "App Store",
+      "googlePlay": "Google Play"
+    },
+    "social": {
+      "facebook": "Facebook",
+      "twitter": "Twitter",
+      "instagram": "Instagram",
+      "youtube": "YouTube"
     },
     "copyright": "© {{year}} בית+. כל הזכויות שמורות.",
     "sitemap": "מפת אתר",
@@ -734,5 +984,206 @@
       "culture": "תרבות",
       "conclusion": "סיום"
     }
+  },
+  "placeholder": {
+    "email": "your@email.com",
+    "password": "••••••••",
+    "pin": "••••",
+    "dateRange": {
+      "from": "מ- (YYYY-MM-DD)",
+      "to": "עד (YYYY-MM-DD)"
+    },
+    "amount": {
+      "min": "מינימום",
+      "max": "מקסימום",
+      "price": "0.00"
+    },
+    "chatMessage": "או הקלד כאן...",
+    "deepLink": "bayitplus://content/123",
+    "scheduleDateTime": "YYYY-MM-DDTHH:mm",
+    "roomCode": "ABCD1234",
+    "time": {
+      "start": "08:00",
+      "end": "10:00"
+    },
+    "filter": {
+      "userId": "הזן ID משתמש"
+    },
+    "datetime": "YYYY-MM-DDTHH:mm",
+    "number": "0",
+    "chat": "הקלד הודעה..."
+  },
+  "components": {
+    "select": {
+      "default": "בחר..."
+    }
+  },
+  "plans": {
+    "basic": {
+      "name": "בסיסי",
+      "features": [
+        "כל תוכן ה-VOD",
+        "רדיו ופודקאסטים",
+        "צפייה על מכשיר אחד",
+        "איכות SD"
+      ],
+      "notIncluded": [
+        "ערוצי שידור חי",
+        "עוזר AI",
+        "צפייה אופליין"
+      ]
+    },
+    "premium": {
+      "name": "פרימיום",
+      "features": [
+        "כל תוכן ה-VOD",
+        "ערוצי שידור חי",
+        "רדיו ופודקאסטים",
+        "עוזר AI חכם",
+        "צפייה על 2 מכשירים",
+        "איכות HD"
+      ],
+      "notIncluded": [
+        "צפייה אופליין",
+        "פרופילים משפחתיים"
+      ]
+    },
+    "family": {
+      "name": "משפחתי",
+      "features": [
+        "כל תוכן ה-VOD",
+        "ערוצי שידור חי",
+        "רדיו ופודקאסטים",
+        "עוזר AI חכם",
+        "צפייה על 4 מכשירים",
+        "איכות 4K",
+        "5 פרופילים משפחתיים",
+        "הורדה לצפייה אופליין"
+      ],
+      "notIncluded": []
+    }
+  },
+  "subscribe": {
+    "title": "בחר את המסלול שלך",
+    "subtitle": "7 ימי ניסיון חינם לכל מסלול. בטל בכל עת.",
+    "monthly": "חודשי",
+    "yearly": "שנתי",
+    "save2Months": "חסכו 2 חודשים",
+    "popular": "הכי פופולרי",
+    "period": "לחודש",
+    "perYear": "לשנה",
+    "select": "בחר מסלול",
+    "selected": "נבחר",
+    "processing": "מעבד...",
+    "startTrial": "התחל ניסיון חינם",
+    "noCharge": "לא יחויב כרטיס האשראי במהלך תקופת הניסיון"
+  },
+  "notFound": {
+    "title": "הדף לא נמצא",
+    "description": "הדף שחיפשת לא קיים או הועבר למקום אחר.",
+    "homeButton": "לדף הבית",
+    "searchButton": "חיפוש",
+    "orTry": "או נסה:",
+    "liveChannel": "שידור חי",
+    "vodLabel": "VOD",
+    "podcastsLabel": "פודקאסטים"
+  },
+  "profiles": {
+    "addProfile": "הוסף פרופיל",
+    "enterPin": "הזן קוד PIN",
+    "selectError": "שגיאה בבחירת פרופיל",
+    "wrongPin": "קוד PIN שגוי",
+    "loading": "טוען פרופילים...",
+    "manage": "ניהול פרופילים",
+    "whoIsWatching": "מי צופה?",
+    "manageProfiles": "ניהול פרופילים"
+  },
+  "watch": {
+    "notFound": "התוכן לא נמצא",
+    "backToHome": "חזרה לדף הבית",
+    "episodes": "פרקים",
+    "addToList": "הוסף לרשימה",
+    "like": "אהבתי",
+    "share": "שתף",
+    "cast": "שחקנים",
+    "episodesList": "פרקים",
+    "schedule": "לוח שידורים",
+    "now": "עכשיו",
+    "related": "תוכן דומה"
+  },
+  "live": {
+    "title": "שידור חי",
+    "next": "הבא:",
+    "noChannels": "אין ערוצים זמינים",
+    "tryLater": "נסה שוב מאוחר יותר",
+    "categories": {
+      "all": "הכל",
+      "news": "חדשות",
+      "entertainment": "בידור",
+      "sports": "ספורט",
+      "kids": "ילדים",
+      "music": "מוזיקה"
+    }
+  },
+  "judaism": {
+    "title": "יהדות",
+    "items": "פריטים",
+    "empty": "אין תוכן זמין",
+    "emptyHint": "נסה לבחור קטגוריה אחרת"
+  },
+  "children": {
+    "title": "ילדים",
+    "items": "פריטים",
+    "exitKidsMode": "יציאה ממצב ילדים",
+    "exitDescription": "הזן את קוד ההורה כדי לצאת",
+    "parentCode": "קוד הורה",
+    "confirm": "אישור",
+    "wrongCode": "קוד PIN שגוי",
+    "noContent": "אין תוכן זמין",
+    "tryAnotherCategory": "נסה לבחור קטגוריה אחרת"
+  },
+  "radio": {
+    "title": "תחנות רדיו",
+    "categories": {
+      "all": "הכל",
+      "music": "מוזיקה",
+      "news": "חדשות",
+      "talk": "שיחה",
+      "jewish": "יהודי"
+    },
+    "noStations": "אין תחנות רדיו זמינות",
+    "tryLater": "נסה שוב מאוחר יותר"
+  },
+  "podcasts": {
+    "title": "פודקאסטים",
+    "episodes": "פרקים",
+    "categories": {
+      "all": "הכל",
+      "news": "חדשות",
+      "tech": "טכנולוגיה",
+      "jewish": "יהדות",
+      "entertainment": "בידור",
+      "sports": "ספורט"
+    },
+    "noPodcasts": "אין פודקאסטים זמינים",
+    "tryLater": "נסה שוב מאוחר יותר"
+  },
+  "watchlist": {
+    "filters": {
+      "all": "הכל",
+      "continue": "המשך צפייה",
+      "movies": "סרטים",
+      "series": "סדרות"
+    },
+    "title": "רשימת הצפייה",
+    "items": "פריטים",
+    "empty": "רשימת הצפייה שלך ריקה",
+    "emptyHint": "התחל לצפות והפריטים יופיעו כאן"
+  },
+  "favorites": {
+    "title": "מועדפים",
+    "items": "פריטים",
+    "empty": "אין מועדפים עדיין",
+    "emptyHint": "הוסף פריטים למועדפים שלך"
   }
 }

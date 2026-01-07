@@ -5,6 +5,7 @@
     "retry": "Reintentar",
     "cancel": "Cancelar",
     "save": "Guardar",
+    "saving": "Guardando...",
     "close": "Cerrar",
     "back": "Volver",
     "next": "Siguiente",
@@ -27,7 +28,35 @@
     "errors": {
       "unexpected": "Ocurrió un error inesperado"
     },
-    "send": "Enviar"
+    "send": "Enviar",
+    "done": "Hecho",
+    "all": "Todo"
+  },
+  "demo": {
+    "banner": "MODO DEMOSTRACIÓN",
+    "bannerSubtext": "Usando datos simulados - Sin llamadas API",
+    "days": {
+      "sunday": "Domingo",
+      "monday": "Lunes",
+      "tuesday": "Martes",
+      "wednesday": "Miércoles",
+      "thursday": "Jueves",
+      "friday": "Viernes",
+      "saturday": "Sábado"
+    },
+    "shabbat": "Sábado",
+    "until_shabbat": "Hasta Sábado",
+    "search_interpretation": "Buscar \"{{query}}\"",
+    "suggestions": {
+      "0": "Fauda",
+      "1": "Shtisel",
+      "2": "Teherán",
+      "3": "El Árbitro",
+      "4": "Labor Árabe"
+    },
+    "premium_plan": "Premium",
+    "assistant_response": "¡Te recomiendo Fauda - una excelente serie de suspenso!",
+    "morning_greeting": "¡Buenos días! Hoy hace buen clima, hay algunas noticias importantes de Israel, y he seleccionado contenido especialmente para ti."
   },
   "login": {
     "title": "Bienvenido de Nuevo",
@@ -100,15 +129,34 @@
     "securityNote": "Tus credenciales se envían de forma segura y nunca se almacenan en el TV.",
     "footer": "¿Tienes problemas? Asegúrate de haber escaneado un código QR nuevo desde tu TV."
   },
+  "googleLogin": {
+    "cancelledError": "Inicio de sesión con Google cancelado",
+    "missingCode": "Código de autenticación faltante",
+    "loginError": "Error al iniciar sesión con Google",
+    "redirecting": "Redirigiendo a la página de inicio de sesión...",
+    "connecting": "Conectando con Google..."
+  },
   "register": {
     "title": "Crear Cuenta",
-    "fullName": "Nombre Completo",
+    "subtitle": "Únete a Bayit+ para ver tu contenido favorito",
+    "name": "Nombre Completo",
+    "namePlaceholder": "Juan Pérez",
     "email": "Correo",
+    "emailPlaceholder": "your@email.com",
     "password": "Contraseña",
+    "passwordPlaceholder": "Al menos 8 caracteres",
     "confirmPassword": "Confirmar Contraseña",
+    "confirmPasswordPlaceholder": "Ingresa tu contraseña nuevamente",
     "submit": "Registrarse",
     "registering": "Registrando...",
+    "acceptTerms": "Estoy de acuerdo con los",
+    "termsOfService": "Términos de Servicio",
+    "and": "y la",
+    "privacyPolicy": "Política de Privacidad",
+    "continueWithGoogle": "Regístrate con Google",
     "haveAccount": "¿Ya tienes una cuenta?",
+    "signIn": "Inicia Sesión",
+    "fullName": "Nombre Completo",
     "loginLink": "Inicia Sesión",
     "placeholders": {
       "fullName": "Juan Pérez",
@@ -117,10 +165,15 @@
       "confirmPassword": "Ingresa tu contraseña nuevamente"
     },
     "errors": {
-      "fillAllFields": "Por favor completa todos los campos",
-      "passwordMismatch": "Las contraseñas no coinciden",
+      "nameRequired": "El nombre es requerido",
+      "emailRequired": "El correo es requerido",
+      "passwordRequired": "La contraseña es requerida",
       "passwordTooShort": "La contraseña debe tener al menos 8 caracteres",
-      "registrationFailed": "El registro falló. Intenta de nuevo."
+      "passwordMismatch": "Las contraseñas no coinciden",
+      "acceptTerms": "Debes aceptar los Términos de Servicio y la Política de Privacidad",
+      "fillAllFields": "Por favor completa todos los campos",
+      "registrationFailed": "El registro falló. Intenta de nuevo.",
+      "googleFailed": "El registro con Google falló. Intenta de nuevo."
     }
   },
   "nav": {
@@ -253,7 +306,9 @@
       "society": "Sociedad",
       "tech": "Tecnología",
       "history": "Historia"
-    }
+    },
+    "noPodcasts": "Sin podcasts disponibles",
+    "tryLater": "Intenta de nuevo más tarde"
   },
   "vod": {
     "title": "Películas y Series",
@@ -267,7 +322,10 @@
       "action": "Acción",
       "documentary": "Documental",
       "kids": "Niños"
-    }
+    },
+    "allCategories": "Todos",
+    "emptyTitle": "Sin contenido disponible",
+    "emptyDescription": "Intenta seleccionar otra categoría"
   },
   "account": {
     "title": "Mi Cuenta",
@@ -309,7 +367,7 @@
     "items": "elementos",
     "aiGenerated": "Generado por AI",
     "autoPlay": "Auto Reproducir",
-    "aiEnabled": "Resumen AI",
+    "aiEnabled": "Curación AI",
     "shabbatTrigger": "Noche de Shabat",
     "manual": "Manual",
     "flowName": "Nombre del Flujo",
@@ -320,11 +378,106 @@
     "endTime": "Hora de Fin",
     "actions": "Acciones",
     "details": "Detalles",
-    "createFlowDesc": "Diseña tu experiencia personalizada",
+    "createFlowDesc": "Diseña tu experiencia de contenido personalizada",
+    "editFlowDesc": "Actualiza la configuración y el contenido de tu flujo",
+    "basicInfo": "Información Básica",
+    "options": "Opciones",
+    "autoPlayDesc": "Reproducir automáticamente el siguiente elemento cuando termine el actual",
+    "aiEnabledDesc": "Deja que la IA seleccione contenido según tus preferencias",
     "startFlow": "Iniciar Flujo",
-    "deleteFlow": "Eliminar Flujo"
+    "deleteFlow": "Eliminar Flujo",
+    "custom": "Personalizado",
+    "morning": "Mañana",
+    "evening": "Noche",
+    "shabbat": "Shabat",
+    "addContent": "Agregar Contenido",
+    "contentPicker": {
+      "title": "Agregar Contenido al Flujo",
+      "tabs": {
+        "live": "TV en Vivo",
+        "radio": "Radio",
+        "vod": "Bajo Demanda",
+        "podcast": "Podcasts"
+      },
+      "search": "Buscar contenido...",
+      "selected": "{{count}} seleccionados",
+      "addSelected": "Agregar Seleccionados",
+      "noResults": "No se encontró contenido",
+      "alreadyAdded": "Ya está en el flujo",
+      "loadMore": "Cargar Más"
+    },
+    "flowItems": {
+      "title": "Contenido del Flujo",
+      "empty": "Sin contenido aún. Haz clic en Agregar Contenido para comenzar.",
+      "count": "{{count}} elementos",
+      "remove": "Eliminar",
+      "moveUp": "Mover Arriba",
+      "moveDown": "Mover Abajo",
+      "order": "Orden",
+      "removeConfirm": "¿Eliminar este elemento?",
+      "removeConfirmYes": "Sí, Eliminar",
+      "removeConfirmNo": "Cancelar",
+      "maxItems": "Máximo {{max}} elementos. Elimina uno para agregar más.",
+      "emptyAi": "La AI seleccionará contenido automáticamente según tus preferencias.",
+      "more": "elementos más"
+    },
+    "days": {
+      "sunday": "Domingo",
+      "monday": "Lunes",
+      "tuesday": "Martes",
+      "wednesday": "Miércoles",
+      "thursday": "Jueves",
+      "friday": "Viernes",
+      "saturday": "Sábado",
+      "sundayShort": "Dom",
+      "mondayShort": "Lun",
+      "tuesdayShort": "Mar",
+      "wednesdayShort": "Mié",
+      "thursdayShort": "Jue",
+      "fridayShort": "Vie",
+      "saturdayShort": "Sáb",
+      "selectAll": "Seleccionar Todo",
+      "deselectAll": "Deseleccionar Todo",
+      "title": "Días Activos",
+      "allDays": "Los 7 días",
+      "everyDay": "Todos los días",
+      "everyday": "Todos los días",
+      "noneSelected": "No hay días seleccionados",
+      "selectedCount": "{{count}} días seleccionados",
+      "weekdays": "Días de semana",
+      "weekends": "Fines de semana",
+      "dayCount": "{{count}} días"
+    },
+    "trigger": {
+      "type": "Tipo de Activación",
+      "time": "Basado en Tiempo",
+      "shabbat": "Noche de Shabat",
+      "holiday": "Día Festivo",
+      "skipShabbat": "Saltar en Shabat",
+      "skipShabbatDesc": "No ejecutar este flujo en viernes por la noche o sábado",
+      "shabbatOffset": "Minutos antes del encendido de velas",
+      "shabbatOffsetDesc": "¿Cuántos minutos antes de Shabat debe iniciar este flujo?",
+      "calculatedTime": "Hora calculada",
+      "thisWeek": "Esta semana: {{day}} a las {{time}}",
+      "comingSoon": "Activadores de días festivos próximamente",
+      "startTime": "Hora de Inicio",
+      "endTime": "Hora de Fin"
+    },
+    "aiBrief": "Resumen AI",
+    "aiBriefDesc": "Recibe un resumen personalizado generado por AI antes de que comience el flujo",
+    "aiBriefEnabled": "Resumen AI Activado",
+    "validation": {
+      "nameRequired": "Se requiere el nombre del flujo",
+      "startTimeRequired": "Se requiere hora de inicio para activación por tiempo",
+      "noDaysSelected": "Selecciona al menos un día",
+      "invalidTime": "Formato de hora inválido"
+    },
+    "tv": {
+      "useCompanion": "Para personalización completa, usa la app Bayit+ en tu teléfono o visita bayit.plus en tu computadora."
+    }
   },
   "profile": {
+    "title": "Mi Perfil",
     "profileDetails": "Detalles del Perfil",
     "name": "Nombre",
     "notSet": "No establecido",
@@ -346,6 +499,20 @@
     "premiumPrice": "$7.99/mes",
     "familyPrice": "$12.99/mes",
     "remaining": "restante",
+    "tabs": {
+      "personal": "Personal",
+      "subscription": "Suscripción",
+      "notifications": "Notificaciones",
+      "security": "Seguridad"
+    },
+    "subscription": {
+      "currentPlan": "Plan Actual",
+      "renewsOn": "Se renueva el",
+      "manageSubscription": "Administrar Suscripción",
+      "cancelSubscription": "Cancelar Suscripción",
+      "noActivePlan": "Sin suscripción activa",
+      "selectPlan": "Seleccionar Plan"
+    },
     "notifications": {
       "newContent": "Contenido Nuevo",
       "newContentDesc": "Recibe notificaciones sobre contenido nuevo",
@@ -362,6 +529,11 @@
     "title": "Configuración",
     "language": "Idioma",
     "selectLanguage": "Seleccionar Idioma",
+    "languages": {
+      "en": "English",
+      "he": "עברית",
+      "es": "Español"
+    },
     "notifications": "Notificaciones",
     "playback": "Reproducción",
     "quality": "Calidad",
@@ -410,7 +582,8 @@
     "items": "elementos",
     "storage": "Almacenamiento",
     "empty": "Sin descargas",
-    "emptyHint": "Descarga contenido para ver sin conexion"
+    "emptyHint": "Descarga contenido para ver sin conexion",
+    "paused": "Pausado"
   },
   "watchlist": {
     "title": "Mi Lista",
@@ -614,6 +787,75 @@
       "newCampaign": "Nueva Campaña",
       "sendEmail": "Enviar Correo",
       "viewReports": "Ver Reportes"
+    },
+    "placeholder": {
+      "userId": "Ingresa ID de usuario",
+      "discount": "0"
+    },
+    "titles": {
+      "users": "Usuarios",
+      "transactions": "Transacciones",
+      "subscriptions": "Suscripciones",
+      "refunds": "Reembolsos",
+      "plans": "Planes",
+      "campaigns": "Campañas",
+      "auditLogs": "Registros de Auditoría",
+      "pushNotifications": "Notificaciones Push",
+      "billing": "Facturación",
+      "marketing": "Marketing",
+      "settings": "Configuración"
+    },
+    "nav": {
+      "transactions": "Transacciones",
+      "refunds": "Reembolsos",
+      "plans": "Planes"
+    },
+    "billing": {
+      "subtitle": "Rastrear ingresos y pagos",
+      "revenue": "Ingresos",
+      "today": "Hoy",
+      "thisWeek": "Esta Semana",
+      "thisMonth": "Este Mes",
+      "thisYear": "Este Año",
+      "metrics": "Métricas Clave",
+      "totalTransactions": "Total de Transacciones",
+      "avgTransaction": "Transacción Promedio",
+      "pendingRefunds": "Reembolsos Pendientes",
+      "refundRate": "Tasa de Reembolso",
+      "retention": "Retención",
+      "retentionRate": "Tasa de Retención",
+      "churnRate": "Tasa de Abandono",
+      "atRiskUsers": "Usuarios en Riesgo",
+      "churnedUsers": "Usuarios Perdidos",
+      "quickLinks": "Enlaces Rápidos"
+    },
+    "marketing": {
+      "recentCampaigns": "Campañas Recientes",
+      "audienceSegments": "Segmentos de Audiencia",
+      "emailMetrics": "Métricas de Correo",
+      "pushMetrics": "Métricas de Push",
+      "quickActions": "Acciones Rápidas"
+    },
+    "push": {
+      "titlePlaceholder": "Título de Notificación",
+      "bodyPlaceholder": "Mensaje de Notificación"
+    },
+    "refunds": {
+      "title": "Reembolsos"
+    },
+    "emailCampaigns": {
+      "title": "Campañas de Correo"
+    },
+    "auditLogs": {
+      "subtitle": "Rastrear todas las acciones del sistema",
+      "filter": "Filtro",
+      "export": "Exportar",
+      "all": "Todo",
+      "advancedFiltering": "Filtrado Avanzado",
+      "actionType": "Tipo de Acción",
+      "clear": "Limpiar",
+      "apply": "Aplicar",
+      "noRecords": "No se encontraron registros"
     }
   },
   "watchParty": {
@@ -699,7 +941,15 @@
     "apps": {
       "title": "Descarga Nuestra App",
       "downloadOn": "Descargar en",
-      "getItOn": "Disponible en"
+      "getItOn": "Disponible en",
+      "appStore": "App Store",
+      "googlePlay": "Google Play"
+    },
+    "social": {
+      "facebook": "Facebook",
+      "twitter": "Twitter",
+      "instagram": "Instagram",
+      "youtube": "YouTube"
     },
     "copyright": "© {{year}} Bayit+. Todos los derechos reservados.",
     "sitemap": "Mapa del Sitio",
@@ -733,5 +983,206 @@
       "culture": "Cultura",
       "conclusion": "Conclusión"
     }
+  },
+  "placeholder": {
+    "email": "your@email.com",
+    "password": "••••••••",
+    "pin": "••••",
+    "dateRange": {
+      "from": "Desde (YYYY-MM-DD)",
+      "to": "Hasta (YYYY-MM-DD)"
+    },
+    "amount": {
+      "min": "Mín",
+      "max": "Máx",
+      "price": "0.00"
+    },
+    "chatMessage": "Escribe aquí...",
+    "deepLink": "bayitplus://content/123",
+    "scheduleDateTime": "YYYY-MM-DDTHH:mm",
+    "roomCode": "ABCD1234",
+    "time": {
+      "start": "08:00",
+      "end": "10:00"
+    },
+    "filter": {
+      "userId": "Ingrese ID de usuario"
+    },
+    "datetime": "YYYY-MM-DDTHH:mm",
+    "number": "0",
+    "chat": "Escribe tu mensaje..."
+  },
+  "components": {
+    "select": {
+      "default": "Seleccionar..."
+    }
+  },
+  "plans": {
+    "basic": {
+      "name": "Básico",
+      "features": [
+        "Todo el contenido VOD",
+        "Radio y Podcasts",
+        "Ver en 1 dispositivo",
+        "Calidad SD"
+      ],
+      "notIncluded": [
+        "Canales en vivo",
+        "Asistente AI",
+        "Ver sin conexión"
+      ]
+    },
+    "premium": {
+      "name": "Premium",
+      "features": [
+        "Todo el contenido VOD",
+        "Canales en vivo",
+        "Radio y Podcasts",
+        "Asistente AI inteligente",
+        "Ver en 2 dispositivos",
+        "Calidad HD"
+      ],
+      "notIncluded": [
+        "Ver sin conexión",
+        "Perfiles familiares"
+      ]
+    },
+    "family": {
+      "name": "Familiar",
+      "features": [
+        "Todo el contenido VOD",
+        "Canales en vivo",
+        "Radio y Podcasts",
+        "Asistente AI inteligente",
+        "Ver en 4 dispositivos",
+        "Calidad 4K",
+        "5 perfiles familiares",
+        "Descargar sin conexión"
+      ],
+      "notIncluded": []
+    }
+  },
+  "subscribe": {
+    "title": "Elige tu plan",
+    "subtitle": "7 días de prueba gratis para cualquier plan. Cancela en cualquier momento.",
+    "monthly": "Mensual",
+    "yearly": "Anual",
+    "save2Months": "Ahorra 2 meses",
+    "popular": "Más Popular",
+    "period": "/mes",
+    "perYear": "/año",
+    "select": "Seleccionar plan",
+    "selected": "Seleccionado",
+    "processing": "Procesando...",
+    "startTrial": "Comenzar Prueba Gratis",
+    "noCharge": "Tu tarjeta de crédito no será cobrada durante el período de prueba"
+  },
+  "notFound": {
+    "title": "Página no encontrada",
+    "description": "La página que buscas no existe o se ha movido.",
+    "homeButton": "Ir al inicio",
+    "searchButton": "Buscar",
+    "orTry": "O intenta:",
+    "liveChannel": "En vivo",
+    "vodLabel": "Películas",
+    "podcastsLabel": "Podcasts"
+  },
+  "profiles": {
+    "addProfile": "Añadir perfil",
+    "enterPin": "Ingresa PIN",
+    "selectError": "Error al seleccionar perfil",
+    "wrongPin": "PIN incorrecto",
+    "loading": "Cargando perfiles...",
+    "manage": "Administrar perfiles",
+    "whoIsWatching": "¿Quién está viendo?",
+    "manageProfiles": "Administrar perfiles"
+  },
+  "watch": {
+    "notFound": "Contenido no encontrado",
+    "backToHome": "Volver al inicio",
+    "episodes": "Episodios",
+    "addToList": "Añadir a lista",
+    "like": "Me gusta",
+    "share": "Compartir",
+    "cast": "Elenco",
+    "episodesList": "Episodios",
+    "schedule": "Horario",
+    "now": "Ahora",
+    "related": "Contenido relacionado"
+  },
+  "live": {
+    "title": "Televisión en Vivo",
+    "next": "Siguiente:",
+    "noChannels": "Sin canales disponibles",
+    "tryLater": "Intenta de nuevo más tarde",
+    "categories": {
+      "all": "Todos",
+      "news": "Noticias",
+      "entertainment": "Entretenimiento",
+      "sports": "Deportes",
+      "kids": "Niños",
+      "music": "Música"
+    }
+  },
+  "judaism": {
+    "title": "Judaísmo",
+    "items": "elementos",
+    "empty": "Sin contenido disponible",
+    "emptyHint": "Intenta seleccionar otra categoría"
+  },
+  "children": {
+    "title": "Niños",
+    "items": "elementos",
+    "exitKidsMode": "Salir del modo niños",
+    "exitDescription": "Ingresa el código de padre para salir",
+    "parentCode": "Código de padre",
+    "confirm": "Confirmar",
+    "wrongCode": "Código incorrecto",
+    "noContent": "Sin contenido disponible",
+    "tryAnotherCategory": "Intenta seleccionar otra categoría"
+  },
+  "radio": {
+    "title": "Radio",
+    "categories": {
+      "all": "Todos",
+      "music": "Música",
+      "news": "Noticias",
+      "talk": "Conversación",
+      "jewish": "Judío"
+    },
+    "noStations": "Sin estaciones de radio disponibles",
+    "tryLater": "Intenta de nuevo más tarde"
+  },
+  "podcasts": {
+    "title": "Podcasts",
+    "episodes": "episodios",
+    "categories": {
+      "all": "Todos",
+      "news": "Noticias",
+      "tech": "Tecnología",
+      "jewish": "Judaísmo",
+      "entertainment": "Entretenimiento",
+      "sports": "Deportes"
+    },
+    "noPodcasts": "Sin podcasts disponibles",
+    "tryLater": "Intenta de nuevo más tarde"
+  },
+  "watchlist": {
+    "filters": {
+      "all": "Todos",
+      "continue": "Continuar viendo",
+      "movies": "Películas",
+      "series": "Series"
+    },
+    "title": "Mi lista",
+    "items": "elementos",
+    "empty": "Tu lista está vacía",
+    "emptyHint": "Comienza a ver y los elementos aparecerán aquí"
+  },
+  "favorites": {
+    "title": "Favoritos",
+    "items": "elementos",
+    "empty": "Sin favoritos aún",
+    "emptyHint": "Añade elementos a tus favoritos"
   }
 }
