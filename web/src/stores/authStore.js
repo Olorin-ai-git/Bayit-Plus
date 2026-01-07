@@ -95,6 +95,16 @@ export const useAuthStore = create(
           throw error
         }
       },
+
+      // RBAC helper - check if user has admin role
+      isAdmin: () => {
+        const { user } = get()
+        if (!user) return false
+        const adminRoles = ['super_admin', 'admin', 'content_manager', 'billing_admin', 'support']
+        return adminRoles.includes(user.role)
+      },
+
+      clearError: () => set({ error: null }),
     }),
     {
       name: 'bayit-auth',

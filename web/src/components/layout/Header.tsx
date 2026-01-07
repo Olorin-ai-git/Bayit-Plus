@@ -1,7 +1,7 @@
 import { View, Text, StyleSheet, Pressable, useWindowDimensions } from 'react-native';
 import { Link, NavLink, useNavigate } from 'react-router-dom';
 import { useState } from 'react';
-import { Search, User, Menu, X } from 'lucide-react';
+import { Search, User, Menu, X, Shield } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useAuthStore } from '@/stores/authStore';
 import { VoiceSearchButton, LanguageSelector, AnimatedLogo } from '@bayit/shared';
@@ -22,11 +22,12 @@ const navLinkKeys = [
 export default function Header() {
   const { i18n, t } = useTranslation();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const { user, isAuthenticated } = useAuthStore();
+  const { user, isAuthenticated, isAdmin } = useAuthStore();
   const navigate = useNavigate();
   const { width } = useWindowDimensions();
   const isMobile = width < 768;
   const isRTL = i18n.language === 'he' || i18n.language === 'ar';
+  const showAdmin = isAuthenticated && isAdmin();
 
   const handleVoiceTranscribed = (text: string) => {
     if (text) {
@@ -68,6 +69,14 @@ export default function Header() {
   // Actions component
   const ActionsSection = (
     <View style={styles.actions}>
+      {showAdmin && (
+        <Link to="/admin" style={{ textDecoration: 'none' }}>
+          <View style={styles.adminButton}>
+            <Shield size={16} color={colors.text} />
+            <Text style={styles.adminButtonText}>{t('nav.admin', 'Admin')}</Text>
+          </View>
+        </Link>
+      )}
       {isAuthenticated ? (
         <Link to="/profile" style={{ textDecoration: 'none' }}>
           <View style={styles.iconButton}>
@@ -149,6 +158,22 @@ export default function Header() {
                 )}
               </NavLink>
             ))}
+            {showAdmin && (
+              <NavLink
+                to="/admin"
+                onClick={() => setMobileMenuOpen(false)}
+                style={{ textDecoration: 'none' }}
+              >
+                {({ isActive }) => (
+                  <View style={[styles.mobileNavLink, styles.mobileAdminLink, isActive && styles.navLinkActive]}>
+                    <Shield size={16} color="#ef4444" />
+                    <Text style={[styles.navLinkText, styles.adminLinkText, isActive && styles.navLinkTextActive]}>
+                      {t('nav.admin', 'Admin')}
+                    </Text>
+                  </View>
+                )}
+              </NavLink>
+            )}
           </View>
         )}
       </View>
@@ -222,6 +247,22 @@ const styles = StyleSheet.create({
     fontWeight: '500',
     color: colors.text,
   },
+  adminButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+    paddingHorizontal: spacing.md,
+    paddingVertical: spacing.sm,
+    borderRadius: 8,
+    backgroundColor: 'rgba(239, 68, 68, 0.2)',
+    borderWidth: 1,
+    borderColor: 'rgba(239, 68, 68, 0.3)',
+  },
+  adminButtonText: {
+    fontSize: 13,
+    fontWeight: '600',
+    color: '#ef4444',
+  },
   mobileNav: {
     paddingVertical: spacing.md,
     borderTopWidth: 1,
@@ -231,5 +272,17 @@ const styles = StyleSheet.create({
     paddingHorizontal: spacing.md,
     paddingVertical: spacing.sm + 4,
     borderRadius: 8,
+  },
+  mobileAdminLink: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+    marginTop: spacing.sm,
+    borderTopWidth: 1,
+    borderTopColor: 'rgba(255, 255, 255, 0.05)',
+    paddingTop: spacing.md,
+  },
+  adminLinkText: {
+    color: '#ef4444',
   },
 });

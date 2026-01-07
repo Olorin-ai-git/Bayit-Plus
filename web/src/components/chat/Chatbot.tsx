@@ -11,6 +11,7 @@ import {
   ActivityIndicator,
 } from 'react-native'
 import { X, Send, Sparkles, Mic, Square } from 'lucide-react'
+import { useTranslation } from 'react-i18next'
 import { chatService } from '@/services/api'
 import { useAuthStore } from '@/stores/authStore'
 import logger from '@/utils/logger'
@@ -25,6 +26,7 @@ interface Message {
 }
 
 export default function Chatbot() {
+  const { t } = useTranslation()
   const { isAuthenticated } = useAuthStore()
   const [isOpen, setIsOpen] = useState(false)
   const [messages, setMessages] = useState<Message[]>([
@@ -415,7 +417,7 @@ export default function Chatbot() {
                     style={styles.textInput}
                     value={input}
                     onChangeText={setInput}
-                    placeholder="או הקלד כאן..."
+                    placeholder={t('placeholder.chat', 'או הקלד כאן...')}
                     placeholderTextColor={colors.textMuted}
                     editable={!isLoading && !isRecording && !isTranscribing}
                     onSubmitEditing={handleSubmit}

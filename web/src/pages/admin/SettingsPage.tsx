@@ -8,15 +8,13 @@ import { GlassCard, GlassButton } from '@bayit/shared/ui';
 import logger from '@/utils/logger';
 
 interface SystemSettings {
-  site_name: string;
-  support_email: string;
-  default_language: string;
+  default_plan: string;
+  trial_days: number;
+  max_devices: number;
   maintenance_mode: boolean;
-  allow_registration: boolean;
-  require_email_verification: boolean;
-  max_profiles_per_account: number;
-  trial_period_days: number;
-  currency: string;
+  support_email: string;
+  terms_url: string;
+  privacy_url: string;
 }
 
 interface FeatureFlags {
@@ -113,7 +111,7 @@ export default function SettingsPage() {
     return (
       <View style={styles.loadingContainer}>
         <ActivityIndicator size="large" color={colors.primary} />
-        <Text style={styles.loadingText}>{t('common.loading', 'טוען...')}</Text>
+        <Text style={styles.loadingText}>{t('common.loading')}</Text>
       </View>
     );
   }
@@ -122,7 +120,7 @@ export default function SettingsPage() {
     <ScrollView style={styles.container} contentContainerStyle={styles.contentContainer}>
       <View style={styles.header}>
         <View>
-          <Text style={styles.pageTitle}>{t('admin.titles.settings', 'הגדרות מערכת')}</Text>
+          <Text style={styles.pageTitle}>{t('admin.titles.settings')}</Text>
           <Text style={styles.subtitle}>הגדר את פרמטרי המערכת</Text>
         </View>
         <GlassButton title="שמור שינויים" variant="primary" icon={<Save size={16} color={colors.text} />} onPress={handleSave} disabled={!hasChanges || saving} />
@@ -133,61 +131,37 @@ export default function SettingsPage() {
           <Text style={styles.sectionTitle}>הגדרות כלליות</Text>
 
           <View style={styles.formGroup}>
-            <Text style={styles.formLabel}>שם האתר</Text>
-            <TextInput style={styles.input} value={settings.site_name} onChangeText={(v) => handleSettingChange('site_name', v)} />
-          </View>
-
-          <View style={styles.formGroup}>
             <Text style={styles.formLabel}>אימייל תמיכה</Text>
-            <TextInput style={styles.input} value={settings.support_email} onChangeText={(v) => handleSettingChange('support_email', v)} keyboardType="email-address" />
+            <TextInput style={styles.input} value={settings.support_email || ''} onChangeText={(v) => handleSettingChange('support_email', v)} keyboardType="email-address" />
           </View>
 
           <View style={styles.formGroup}>
-            <Text style={styles.formLabel}>שפת ברירת מחדל</Text>
-            <View style={styles.languageButtons}>
-              {['he', 'en'].map((lang) => (
-                <Pressable key={lang} style={[styles.languageButton, settings.default_language === lang && styles.languageButtonActive]} onPress={() => handleSettingChange('default_language', lang)}>
-                  <Text style={[styles.languageButtonText, settings.default_language === lang && styles.languageButtonTextActive]}>
-                    {lang === 'he' ? 'עברית' : 'English'}
-                  </Text>
-                </Pressable>
-              ))}
-            </View>
+            <Text style={styles.formLabel}>תוכנית ברירת מחדל</Text>
+            <TextInput style={styles.input} value={settings.default_plan || ''} onChangeText={(v) => handleSettingChange('default_plan', v)} />
           </View>
 
           <View style={styles.formGroup}>
-            <Text style={styles.formLabel}>מטבע</Text>
-            <TextInput style={styles.input} value={settings.currency} onChangeText={(v) => handleSettingChange('currency', v)} />
+            <Text style={styles.formLabel}>קישור לתנאי שימוש</Text>
+            <TextInput style={styles.input} value={settings.terms_url || ''} onChangeText={(v) => handleSettingChange('terms_url', v)} />
+          </View>
+
+          <View style={styles.formGroup}>
+            <Text style={styles.formLabel}>קישור למדיניות פרטיות</Text>
+            <TextInput style={styles.input} value={settings.privacy_url || ''} onChangeText={(v) => handleSettingChange('privacy_url', v)} />
           </View>
         </GlassCard>
 
         <GlassCard style={styles.section}>
           <Text style={styles.sectionTitle}>הגדרות משתמשים</Text>
 
-          <View style={styles.switchRow}>
-            <View>
-              <Text style={styles.switchLabel}>אפשר הרשמה</Text>
-              <Text style={styles.switchDescription}>משתמשים חדשים יכולים להירשם</Text>
-            </View>
-            <Switch value={settings.allow_registration} onValueChange={(v) => handleSettingChange('allow_registration', v)} trackColor={{ false: colors.backgroundLighter, true: colors.primary }} />
-          </View>
-
-          <View style={styles.switchRow}>
-            <View>
-              <Text style={styles.switchLabel}>אימות אימייל</Text>
-              <Text style={styles.switchDescription}>דרוש אימות אימייל בהרשמה</Text>
-            </View>
-            <Switch value={settings.require_email_verification} onValueChange={(v) => handleSettingChange('require_email_verification', v)} trackColor={{ false: colors.backgroundLighter, true: colors.primary }} />
-          </View>
-
           <View style={styles.formGroup}>
-            <Text style={styles.formLabel}>מקסימום פרופילים לחשבון</Text>
-            <TextInput style={styles.input} value={settings.max_profiles_per_account.toString()} onChangeText={(v) => handleSettingChange('max_profiles_per_account', parseInt(v) || 1)} keyboardType="number-pad" />
+            <Text style={styles.formLabel}>מקסימום מכשירים לחשבון</Text>
+            <TextInput style={styles.input} value={(settings.max_devices || 1).toString()} onChangeText={(v) => handleSettingChange('max_devices', parseInt(v) || 1)} keyboardType="number-pad" />
           </View>
 
           <View style={styles.formGroup}>
             <Text style={styles.formLabel}>ימי תקופת נסיון</Text>
-            <TextInput style={styles.input} value={settings.trial_period_days.toString()} onChangeText={(v) => handleSettingChange('trial_period_days', parseInt(v) || 0)} keyboardType="number-pad" />
+            <TextInput style={styles.input} value={(settings.trial_days || 0).toString()} onChangeText={(v) => handleSettingChange('trial_days', parseInt(v) || 0)} keyboardType="number-pad" />
           </View>
         </GlassCard>
 
@@ -246,11 +220,6 @@ const styles = StyleSheet.create({
   formGroup: { marginBottom: spacing.md },
   formLabel: { fontSize: 14, fontWeight: '600', color: colors.text, marginBottom: spacing.xs },
   input: { backgroundColor: colors.backgroundLighter, borderRadius: borderRadius.md, borderWidth: 1, borderColor: colors.glassBorder, paddingHorizontal: spacing.md, paddingVertical: spacing.sm, color: colors.text, fontSize: 14 },
-  languageButtons: { flexDirection: 'row', gap: spacing.sm },
-  languageButton: { flex: 1, paddingVertical: spacing.sm, borderRadius: borderRadius.md, backgroundColor: colors.backgroundLighter, alignItems: 'center' },
-  languageButtonActive: { backgroundColor: colors.primary },
-  languageButtonText: { fontSize: 14, color: colors.textMuted },
-  languageButtonTextActive: { color: colors.text, fontWeight: '500' },
   switchRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingVertical: spacing.sm, borderBottomWidth: 1, borderBottomColor: 'rgba(255,255,255,0.05)' },
   switchLabel: { fontSize: 14, fontWeight: '500', color: colors.text },
   switchDescription: { fontSize: 12, color: colors.textMuted, marginTop: 2 },

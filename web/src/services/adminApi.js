@@ -593,9 +593,9 @@ const demoMarketingService = {
 
 const apiSettingsService = {
   getSettings: () => adminApi.get('/admin/settings'),
-  updateSettings: (data) => adminApi.put('/admin/settings', data),
-  getFeatureFlags: () => adminApi.get('/admin/settings/features'),
-  updateFeatureFlag: (flag, enabled) => adminApi.put(`/admin/settings/features/${flag}`, { enabled }),
+  updateSettings: (data) => adminApi.patch('/admin/settings', data),
+  getFeatureFlags: () => adminApi.get('/admin/settings/feature-flags'),
+  updateFeatureFlag: (flag, enabled) => adminApi.patch(`/admin/settings/feature-flags/${flag}`, { enabled }),
   clearCache: () => adminApi.post('/admin/settings/cache/clear'),
   resetAnalytics: () => adminApi.post('/admin/settings/analytics/reset'),
 }
@@ -604,15 +604,13 @@ const demoSettingsService = {
   getSettings: async () => {
     await delay()
     return {
-      site_name: 'Bayit+',
-      support_email: 'support@bayit.tv',
-      default_language: 'he',
+      default_plan: 'basic',
+      trial_days: 7,
+      max_devices: 3,
       maintenance_mode: false,
-      allow_registration: true,
-      require_email_verification: true,
-      max_profiles_per_account: 5,
-      trial_period_days: 7,
-      currency: 'USD',
+      support_email: 'support@bayit.tv',
+      terms_url: '/terms',
+      privacy_url: '/privacy',
     }
   },
   updateSettings: async (data) => {
