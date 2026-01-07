@@ -18,6 +18,7 @@ import {
 } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { useNavigation, useRoute, RouteProp } from '@react-navigation/native';
+import { useDirection } from '@bayit/shared/hooks';
 import { AdminLayout } from '@bayit/shared/admin';
 import { usersService } from '../../services/adminApi';
 import { User, Role, Permission, AuditLog, Transaction, ROLE_PERMISSIONS } from '../../types/rbac';

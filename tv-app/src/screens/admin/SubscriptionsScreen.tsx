@@ -16,6 +16,7 @@ import {
 } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { useNavigation } from '@react-navigation/native';
+import { useDirection } from '@bayit/shared/hooks';
 import { AdminLayout, DataTable, Column, StatCard } from '@bayit/shared/admin';
 import { subscriptionsService, SubscriptionsFilter } from '../../services/adminApi';
 import { Subscription, User } from '../../types/rbac';
@@ -27,6 +28,7 @@ type SubscriptionWithUser = Subscription & { user: User };
 
 export const SubscriptionsScreen: React.FC = () => {
   const { t } = useTranslation();
+  const { isRTL, textAlign, flexDirection } = useDirection();
   const navigation = useNavigation<any>();
   const [subscriptions, setSubscriptions] = useState<SubscriptionWithUser[]>([]);
   const [loading, setLoading] = useState(true);

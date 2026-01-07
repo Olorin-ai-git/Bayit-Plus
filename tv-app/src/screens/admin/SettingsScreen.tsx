@@ -15,6 +15,7 @@ import {
   ActivityIndicator,
 } from 'react-native';
 import { useTranslation } from 'react-i18next';
+import { useDirection } from '@bayit/shared/hooks';
 import { AdminLayout } from '@bayit/shared/admin';
 import { settingsService } from '../../services/adminApi';
 import { SystemSettings } from '../../types/rbac';
@@ -23,6 +24,7 @@ import { useModal } from '../../contexts/ModalContext';
 
 export const SettingsScreen: React.FC = () => {
   const { t } = useTranslation();
+  const { isRTL, textAlign, flexDirection } = useDirection();
   const { showError, showSuccess, showConfirm } = useModal();
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);

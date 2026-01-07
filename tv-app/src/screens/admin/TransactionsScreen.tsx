@@ -14,6 +14,7 @@ import {
   Alert,
 } from 'react-native';
 import { useTranslation } from 'react-i18next';
+import { useDirection } from '@bayit/shared/hooks';
 import { AdminLayout, DataTable, Column } from '@bayit/shared/admin';
 import { billingService, BillingFilter } from '../../services/adminApi';
 import { Transaction } from '../../types/rbac';
@@ -23,6 +24,7 @@ import { getStatusColor, getPaymentMethodIcon } from '../../utils/adminConstants
 
 export const TransactionsScreen: React.FC = () => {
   const { t } = useTranslation();
+  const { isRTL, textAlign, flexDirection } = useDirection();
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [loading, setLoading] = useState(true);
   const [totalTransactions, setTotalTransactions] = useState(0);
