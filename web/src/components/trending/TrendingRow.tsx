@@ -1,16 +1,35 @@
 import { useState, useEffect } from 'react'
-import { TrendingUp, ExternalLink, RefreshCw } from 'lucide-react'
+import { View, Text, StyleSheet, Pressable, ScrollView, ActivityIndicator } from 'react-native'
+import { TrendingUp, RefreshCw } from 'lucide-react'
 import { trendingService } from '../../services/api'
 import logger from '@/utils/logger'
+import { colors, spacing, borderRadius } from '@bayit/shared/theme'
+import { GlassView } from '@bayit/shared/ui'
 
-/**
- * TrendingRow Component
- * Displays "What's Trending in Israel" with topics from Israeli news.
- */
-export default function TrendingRow({ onTopicClick, className = '' }) {
-  const [data, setData] = useState(null)
+interface Topic {
+  title: string
+  summary?: string
+  category: string
+  category_label?: { he: string; en: string }
+  sentiment?: 'positive' | 'negative' | 'neutral'
+  importance: number
+}
+
+interface TrendingData {
+  topics: Topic[]
+  overall_mood?: string
+  top_story?: string
+  sources?: string[]
+}
+
+interface TrendingRowProps {
+  onTopicClick?: (topic: Topic) => void
+}
+
+export default function TrendingRow({ onTopicClick }: TrendingRowProps) {
+  const [data, setData] = useState<TrendingData | null>(null)
   const [loading, setLoading] = useState(true)
-  const [error, setError] = useState(null)
+  const [error, setError] = useState<string | null>(null)
 
   const fetchTrending = async () => {
     try {
@@ -28,36 +47,12 @@ export default function TrendingRow({ onTopicClick, className = '' }) {
 
   useEffect(() => {
     fetchTrending()
-    // Refresh every 30 minutes
     const interval = setInterval(fetchTrending, 30 * 60 * 1000)
     return () => clearInterval(interval)
   }, [])
 
-  if (loading) {
-    return (
-      <div className={`glass-card p-4 ${className}`}>
-        <div className="flex items-center gap-2 mb-4">
-          <TrendingUp className="w-5 h-5 text-cyan-400" />
-          <h3 className="text-lg font-semibold">מה חם בישראל</h3>
-        </div>
-        <div className="flex gap-3 overflow-x-auto pb-2">
-          {[1, 2, 3, 4].map((i) => (
-            <div
-              key={i}
-              className="flex-shrink-0 w-48 h-24 bg-white/5 rounded-lg animate-pulse"
-            />
-          ))}
-        </div>
-      </div>
-    )
-  }
-
-  if (error || !data?.topics?.length) {
-    return null
-  }
-
-  const getCategoryEmoji = (category) => {
-    const emojis = {
+  const getCategoryEmoji = (category: string) => {
+    const emojis: Record<string, string> = {
       security: '🔒',
       politics: '🏛️',
       tech: '💻',
@@ -72,119 +67,132 @@ export default function TrendingRow({ onTopicClick, className = '' }) {
     return emojis[category] || '📌'
   }
 
-  const getSentimentColor = (sentiment) => {
+  const getSentimentColors = (sentiment?: string) => {
     switch (sentiment) {
       case 'positive':
-        return 'border-green-500/30 bg-green-500/5'
+        return { borderColor: 'rgba(34, 197, 94, 0.3)', backgroundColor: 'rgba(34, 197, 94, 0.05)' }
       case 'negative':
-        return 'border-red-500/30 bg-red-500/5'
+        return { borderColor: 'rgba(239, 68, 68, 0.3)', backgroundColor: 'rgba(239, 68, 68, 0.05)' }
       default:
-        return 'border-white/10 bg-white/5'
+        return { borderColor: 'rgba(255, 255, 255, 0.1)', backgroundColor: 'rgba(255, 255, 255, 0.05)' }
     }
   }
 
+  if (loading) {
+    return (
+      <GlassView style={styles.container}>
+        <View style={styles.header}>
+          <TrendingUp size={20} color={colors.primary} />
+          <Text style={styles.headerTitle}>מה חם בישראל</Text>
+        </View>
+        <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+          <View style={styles.loadingRow}>
+            {[1, 2, 3, 4].map((i) => (
+              <View key={i} style={styles.loadingCard} />
+            ))}
+          </View>
+        </ScrollView>
+      </GlassView>
+    )
+  }
+
+  if (error || !data?.topics?.length) {
+    return null
+  }
+
   return (
-    <div className={`${className}`}>
+    <View>
       {/* Header */}
-      <div className="flex items-center justify-between mb-4">
-        <div className="flex items-center gap-2">
-          <TrendingUp className="w-5 h-5 text-cyan-400" />
-          <h3 className="text-lg font-semibold">מה חם בישראל</h3>
-          <span className="text-xs text-white/40">What's Trending in Israel</span>
-        </div>
-        <button
-          onClick={fetchTrending}
-          className="p-2 rounded-full hover:bg-white/10 transition-colors"
-          title="Refresh"
+      <View style={styles.headerRow}>
+        <View style={styles.header}>
+          <TrendingUp size={20} color={colors.primary} />
+          <Text style={styles.headerTitle}>מה חם בישראל</Text>
+          <Text style={styles.headerSubtitle}>What's Trending in Israel</Text>
+        </View>
+        <Pressable
+          onPress={fetchTrending}
+          style={({ hovered }) => [styles.refreshButton, hovered && styles.refreshButtonHovered]}
         >
-          <RefreshCw className="w-4 h-4 text-white/60" />
-        </button>
-      </div>
+          <RefreshCw size={16} color={colors.textMuted} />
+        </Pressable>
+      </View>
 
       {/* Overall Mood */}
       {data.overall_mood && (
-        <p className="text-sm text-white/60 mb-4 pr-1">
-          🇮🇱 {data.overall_mood}
-        </p>
+        <Text style={styles.moodText}>🇮🇱 {data.overall_mood}</Text>
       )}
 
       {/* Topics Row */}
-      <div className="flex gap-3 overflow-x-auto pb-2 scrollbar-hide">
-        {data.topics.map((topic, index) => (
-          <button
-            key={index}
-            onClick={() => onTopicClick?.(topic)}
-            className={`flex-shrink-0 p-4 rounded-xl border transition-all
-              hover:scale-[1.02] hover:shadow-lg
-              ${getSentimentColor(topic.sentiment)}`}
-            style={{ minWidth: '200px', maxWidth: '280px' }}
-          >
-            <div className="flex items-start justify-between gap-2 mb-2">
-              <span className="text-2xl">{getCategoryEmoji(topic.category)}</span>
-              <span
-                className="text-xs px-2 py-0.5 rounded-full bg-white/10"
-                title={topic.category_label?.en}
-              >
-                {topic.category_label?.he}
-              </span>
-            </div>
+      <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.topicsScroll}>
+        {data.topics.map((topic, index) => {
+          const sentimentColors = getSentimentColors(topic.sentiment)
+          return (
+            <Pressable
+              key={index}
+              onPress={() => onTopicClick?.(topic)}
+              style={({ hovered }) => [
+                styles.topicCard,
+                sentimentColors,
+                hovered && styles.topicCardHovered,
+              ]}
+            >
+              <View style={styles.topicHeader}>
+                <Text style={styles.topicEmoji}>{getCategoryEmoji(topic.category)}</Text>
+                <View style={styles.categoryBadge}>
+                  <Text style={styles.categoryText}>{topic.category_label?.he}</Text>
+                </View>
+              </View>
 
-            <h4 className="text-sm font-medium text-right mb-1 line-clamp-2">
-              {topic.title}
-            </h4>
+              <Text style={styles.topicTitle} numberOfLines={2}>{topic.title}</Text>
 
-            {topic.summary && (
-              <p className="text-xs text-white/50 text-right line-clamp-2">
-                {topic.summary}
-              </p>
-            )}
+              {topic.summary && (
+                <Text style={styles.topicSummary} numberOfLines={2}>{topic.summary}</Text>
+              )}
 
-            {/* Importance indicator */}
-            <div className="flex items-center gap-1 mt-2">
-              {[...Array(5)].map((_, i) => (
-                <div
-                  key={i}
-                  className={`w-1.5 h-1.5 rounded-full ${
-                    i < Math.ceil(topic.importance / 2)
-                      ? 'bg-cyan-400'
-                      : 'bg-white/20'
-                  }`}
-                />
-              ))}
-            </div>
-          </button>
-        ))}
-      </div>
+              {/* Importance indicator */}
+              <View style={styles.importanceRow}>
+                {[...Array(5)].map((_, i) => (
+                  <View
+                    key={i}
+                    style={[
+                      styles.importanceDot,
+                      i < Math.ceil(topic.importance / 2) && styles.importanceDotActive,
+                    ]}
+                  />
+                ))}
+              </View>
+            </Pressable>
+          )
+        })}
+      </ScrollView>
 
       {/* Top Story Highlight */}
       {data.top_story && (
-        <div className="mt-4 p-3 rounded-lg bg-gradient-to-r from-cyan-500/10 to-purple-500/10 border border-white/10">
-          <div className="flex items-center gap-2 mb-1">
-            <span className="text-xs font-medium text-cyan-400">TOP STORY</span>
-          </div>
-          <p className="text-sm text-white/80">{data.top_story}</p>
-        </div>
+        <View style={styles.topStory}>
+          <View style={styles.topStoryBadge}>
+            <Text style={styles.topStoryLabel}>TOP STORY</Text>
+          </View>
+          <Text style={styles.topStoryText}>{data.top_story}</Text>
+        </View>
       )}
 
       {/* Sources */}
-      <div className="flex items-center gap-2 mt-3 text-xs text-white/40">
-        <span>מקורות:</span>
-        {data.sources?.map((source, i) => (
-          <span key={source} className="capitalize">
-            {source}
-            {i < data.sources.length - 1 ? ',' : ''}
-          </span>
-        ))}
-      </div>
-    </div>
+      {data.sources && data.sources.length > 0 && (
+        <View style={styles.sourcesRow}>
+          <Text style={styles.sourcesLabel}>מקורות:</Text>
+          {data.sources.map((source, i) => (
+            <Text key={source} style={styles.sourceText}>
+              {source}{i < data.sources!.length - 1 ? ',' : ''}
+            </Text>
+          ))}
+        </View>
+      )}
+    </View>
   )
 }
 
-/**
- * Compact trending topics bar for header/sidebar
- */
-export function TrendingBar({ className = '' }) {
-  const [topics, setTopics] = useState([])
+export function TrendingBar() {
+  const [topics, setTopics] = useState<Topic[]>([])
 
   useEffect(() => {
     const fetchTopics = async () => {
@@ -204,18 +212,182 @@ export function TrendingBar({ className = '' }) {
   if (!topics.length) return null
 
   return (
-    <div className={`flex items-center gap-3 text-sm ${className}`}>
-      <TrendingUp className="w-4 h-4 text-cyan-400" />
-      <div className="flex items-center gap-2 overflow-x-auto">
-        {topics.map((topic, i) => (
-          <span
-            key={i}
-            className="flex-shrink-0 px-2 py-1 rounded-full bg-white/10 text-xs"
-          >
-            {topic.title}
-          </span>
-        ))}
-      </div>
-    </div>
+    <View style={styles.bar}>
+      <TrendingUp size={16} color={colors.primary} />
+      <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+        <View style={styles.barTopics}>
+          {topics.map((topic, i) => (
+            <View key={i} style={styles.barTopic}>
+              <Text style={styles.barTopicText}>{topic.title}</Text>
+            </View>
+          ))}
+        </View>
+      </ScrollView>
+    </View>
   )
 }
+
+const styles = StyleSheet.create({
+  container: {
+    padding: spacing.md,
+  },
+  headerRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginBottom: spacing.md,
+  },
+  header: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.sm,
+  },
+  headerTitle: {
+    fontSize: 18,
+    fontWeight: '600',
+    color: colors.text,
+  },
+  headerSubtitle: {
+    fontSize: 12,
+    color: colors.textMuted,
+  },
+  refreshButton: {
+    padding: spacing.sm,
+    borderRadius: borderRadius.full,
+  },
+  refreshButtonHovered: {
+    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+  },
+  loadingRow: {
+    flexDirection: 'row',
+    gap: spacing.sm,
+  },
+  loadingCard: {
+    width: 192,
+    height: 96,
+    backgroundColor: 'rgba(255, 255, 255, 0.05)',
+    borderRadius: borderRadius.md,
+  },
+  moodText: {
+    fontSize: 14,
+    color: colors.textMuted,
+    marginBottom: spacing.md,
+    paddingRight: spacing.xs,
+  },
+  topicsScroll: {
+    marginBottom: spacing.md,
+  },
+  topicCard: {
+    minWidth: 200,
+    maxWidth: 280,
+    padding: spacing.md,
+    borderRadius: borderRadius.lg,
+    borderWidth: 1,
+    marginRight: spacing.sm,
+  },
+  topicCardHovered: {
+    transform: [{ scale: 1.02 }],
+  },
+  topicHeader: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    justifyContent: 'space-between',
+    gap: spacing.sm,
+    marginBottom: spacing.sm,
+  },
+  topicEmoji: {
+    fontSize: 24,
+  },
+  categoryBadge: {
+    paddingHorizontal: spacing.sm,
+    paddingVertical: 2,
+    borderRadius: borderRadius.full,
+    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+  },
+  categoryText: {
+    fontSize: 11,
+    color: colors.textSecondary,
+  },
+  topicTitle: {
+    fontSize: 14,
+    fontWeight: '500',
+    color: colors.text,
+    textAlign: 'right',
+    marginBottom: spacing.xs,
+  },
+  topicSummary: {
+    fontSize: 12,
+    color: colors.textMuted,
+    textAlign: 'right',
+  },
+  importanceRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.xs,
+    marginTop: spacing.sm,
+  },
+  importanceDot: {
+    width: 6,
+    height: 6,
+    borderRadius: 3,
+    backgroundColor: 'rgba(255, 255, 255, 0.2)',
+  },
+  importanceDotActive: {
+    backgroundColor: colors.primary,
+  },
+  topStory: {
+    marginTop: spacing.md,
+    padding: spacing.sm,
+    borderRadius: borderRadius.md,
+    backgroundImage: 'linear-gradient(to right, rgba(0, 217, 255, 0.1), rgba(138, 43, 226, 0.1))' as any,
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.1)',
+  },
+  topStoryBadge: {
+    marginBottom: spacing.xs,
+  },
+  topStoryLabel: {
+    fontSize: 11,
+    fontWeight: '500',
+    color: colors.primary,
+  },
+  topStoryText: {
+    fontSize: 14,
+    color: 'rgba(255, 255, 255, 0.8)',
+  },
+  sourcesRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.sm,
+    marginTop: spacing.sm,
+  },
+  sourcesLabel: {
+    fontSize: 12,
+    color: colors.textMuted,
+  },
+  sourceText: {
+    fontSize: 12,
+    color: colors.textMuted,
+    textTransform: 'capitalize',
+  },
+  bar: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.sm,
+  },
+  barTopics: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.sm,
+  },
+  barTopic: {
+    paddingHorizontal: spacing.sm,
+    paddingVertical: spacing.xs,
+    borderRadius: borderRadius.full,
+    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+  },
+  barTopicText: {
+    fontSize: 12,
+    color: colors.text,
+  },
+})

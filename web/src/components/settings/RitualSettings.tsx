@@ -1,12 +1,24 @@
 import { useState, useEffect } from 'react'
+import { View, Text, StyleSheet, Pressable, ActivityIndicator } from 'react-native'
 import { useTranslation } from 'react-i18next'
-import { Sunrise, Loader2, Check } from 'lucide-react'
+import { Sunrise, Check } from 'lucide-react'
 import { ritualService } from '@/services/api'
 import logger from '@/utils/logger'
+import { colors, spacing, borderRadius } from '@bayit/shared/theme'
+import { GlassView } from '@bayit/shared/ui'
+
+interface Preferences {
+  morning_ritual_enabled: boolean
+  morning_ritual_start: number
+  morning_ritual_end: number
+  morning_ritual_content: string[]
+  morning_ritual_auto_play: boolean
+  morning_ritual_skip_weekends: boolean
+}
 
 export default function RitualSettings() {
   const { t } = useTranslation()
-  const [preferences, setPreferences] = useState(null)
+  const [preferences, setPreferences] = useState<Preferences | null>(null)
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
   const [saved, setSaved] = useState(false)
@@ -26,16 +38,13 @@ export default function RitualSettings() {
     }
   }
 
-  const handleChange = (key, value) => {
-    setPreferences((prev) => ({
-      ...prev,
-      [key]: value,
-    }))
+  const handleChange = (key: keyof Preferences, value: any) => {
+    setPreferences((prev) => prev ? { ...prev, [key]: value } : null)
     setSaved(false)
   }
 
-  const handleContentToggle = (contentType) => {
-    const current = preferences.morning_ritual_content || []
+  const handleContentToggle = (contentType: string) => {
+    const current = preferences?.morning_ritual_content || []
     const updated = current.includes(contentType)
       ? current.filter((c) => c !== contentType)
       : [...current, contentType]
@@ -43,6 +52,7 @@ export default function RitualSettings() {
   }
 
   const handleSave = async () => {
+    if (!preferences) return
     setSaving(true)
     try {
       await ritualService.updatePreferences(preferences)
@@ -57,104 +67,105 @@ export default function RitualSettings() {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center p-8">
-        <Loader2 size={24} className="animate-spin text-primary-400" />
-      </div>
+      <View style={styles.loadingContainer}>
+        <ActivityIndicator size="small" color={colors.primary} />
+      </View>
     )
   }
 
   if (!preferences) {
     return (
-      <div className="text-center p-8 text-dark-400">
-        {t('common.error')}
-      </div>
+      <View style={styles.errorContainer}>
+        <Text style={styles.errorText}>{t('common.error')}</Text>
+      </View>
     )
   }
 
+  const Toggle = ({ value, onToggle, disabled }: { value: boolean; onToggle: () => void; disabled?: boolean }) => (
+    <Pressable
+      onPress={onToggle}
+      disabled={disabled}
+      style={[styles.toggle, value && styles.toggleActive]}
+    >
+      <View style={[styles.toggleKnob, value && styles.toggleKnobActive]} />
+    </Pressable>
+  )
+
   return (
-    <div className="space-y-6" dir="rtl">
+    <View style={styles.container}>
       {/* Header */}
-      <div className="flex items-center gap-3">
-        <div className="p-2 rounded-lg bg-amber-500/20">
-          <Sunrise size={24} className="text-amber-400" />
-        </div>
-        <div>
-          <h3 className="text-lg font-semibold">{t('settings.ritual.title')}</h3>
-          <p className="text-sm text-dark-400">
+      <View style={styles.header}>
+        <View style={styles.headerIcon}>
+          <Sunrise size={24} color="#F59E0B" />
+        </View>
+        <View>
+          <Text style={styles.headerTitle}>{t('settings.ritual.title')}</Text>
+          <Text style={styles.headerSubtitle}>
             {t('settings.ritual.description', 'הגדר את חוויית הבוקר המותאמת אישית שלך')}
-          </p>
-        </div>
-      </div>
+          </Text>
+        </View>
+      </View>
 
       {/* Enable Toggle */}
-      <div className="glass-card p-4">
-        <label className="flex items-center justify-between cursor-pointer">
-          <span className="font-medium">{t('settings.ritual.enabled')}</span>
-          <div
-            className={`
-              relative w-12 h-6 rounded-full transition-colors duration-300
-              ${preferences.morning_ritual_enabled ? 'bg-primary-500' : 'bg-dark-600'}
-            `}
-            onClick={() => handleChange('morning_ritual_enabled', !preferences.morning_ritual_enabled)}
-          >
-            <div
-              className={`
-                absolute top-1 w-4 h-4 rounded-full bg-white transition-transform duration-300
-                ${preferences.morning_ritual_enabled ? 'left-7' : 'left-1'}
-              `}
-            />
-          </div>
-        </label>
-      </div>
+      <GlassView style={styles.card}>
+        <Pressable
+          onPress={() => handleChange('morning_ritual_enabled', !preferences.morning_ritual_enabled)}
+          style={styles.toggleRow}
+        >
+          <Text style={styles.toggleLabel}>{t('settings.ritual.enabled')}</Text>
+          <Toggle
+            value={preferences.morning_ritual_enabled}
+            onToggle={() => handleChange('morning_ritual_enabled', !preferences.morning_ritual_enabled)}
+          />
+        </Pressable>
+      </GlassView>
 
       {/* Time Settings */}
-      <div className={`glass-card p-4 space-y-4 transition-opacity ${!preferences.morning_ritual_enabled ? 'opacity-50 pointer-events-none' : ''}`}>
-        <h4 className="font-medium text-dark-300">{t('settings.ritual.timeRange', 'טווח זמנים')}</h4>
+      <GlassView style={[styles.card, !preferences.morning_ritual_enabled && styles.cardDisabled]}>
+        <Text style={styles.cardTitle}>{t('settings.ritual.timeRange', 'טווח זמנים')}</Text>
 
-        <div className="grid grid-cols-2 gap-4">
+        <View style={styles.timeRow}>
           {/* Start Time */}
-          <div>
-            <label className="block text-sm text-dark-400 mb-2">
-              {t('settings.ritual.startTime')}
-            </label>
-            <select
-              value={preferences.morning_ritual_start}
-              onChange={(e) => handleChange('morning_ritual_start', parseInt(e.target.value))}
-              className="glass-input w-full"
-            >
-              {[5, 6, 7, 8, 9, 10, 11, 12].map((hour) => (
-                <option key={hour} value={hour}>
-                  {hour}:00
-                </option>
-              ))}
-            </select>
-          </div>
+          <View style={styles.timeField}>
+            <Text style={styles.timeLabel}>{t('settings.ritual.startTime')}</Text>
+            <View style={styles.selectWrapper}>
+              <select
+                value={preferences.morning_ritual_start}
+                onChange={(e) => handleChange('morning_ritual_start', parseInt(e.target.value))}
+                style={selectStyles}
+                disabled={!preferences.morning_ritual_enabled}
+              >
+                {[5, 6, 7, 8, 9, 10, 11, 12].map((hour) => (
+                  <option key={hour} value={hour}>{hour}:00</option>
+                ))}
+              </select>
+            </View>
+          </View>
 
           {/* End Time */}
-          <div>
-            <label className="block text-sm text-dark-400 mb-2">
-              {t('settings.ritual.endTime')}
-            </label>
-            <select
-              value={preferences.morning_ritual_end}
-              onChange={(e) => handleChange('morning_ritual_end', parseInt(e.target.value))}
-              className="glass-input w-full"
-            >
-              {[6, 7, 8, 9, 10, 11, 12, 13, 14].map((hour) => (
-                <option key={hour} value={hour}>
-                  {hour}:00
-                </option>
-              ))}
-            </select>
-          </div>
-        </div>
-      </div>
+          <View style={styles.timeField}>
+            <Text style={styles.timeLabel}>{t('settings.ritual.endTime')}</Text>
+            <View style={styles.selectWrapper}>
+              <select
+                value={preferences.morning_ritual_end}
+                onChange={(e) => handleChange('morning_ritual_end', parseInt(e.target.value))}
+                style={selectStyles}
+                disabled={!preferences.morning_ritual_enabled}
+              >
+                {[6, 7, 8, 9, 10, 11, 12, 13, 14].map((hour) => (
+                  <option key={hour} value={hour}>{hour}:00</option>
+                ))}
+              </select>
+            </View>
+          </View>
+        </View>
+      </GlassView>
 
       {/* Content Types */}
-      <div className={`glass-card p-4 space-y-4 transition-opacity ${!preferences.morning_ritual_enabled ? 'opacity-50 pointer-events-none' : ''}`}>
-        <h4 className="font-medium text-dark-300">{t('settings.ritual.contentTypes')}</h4>
+      <GlassView style={[styles.card, !preferences.morning_ritual_enabled && styles.cardDisabled]}>
+        <Text style={styles.cardTitle}>{t('settings.ritual.contentTypes')}</Text>
 
-        <div className="space-y-2">
+        <View style={styles.contentList}>
           {[
             { id: 'news', label: t('settings.ritual.news'), icon: '📰' },
             { id: 'radio', label: t('settings.ritual.radio'), icon: '📻' },
@@ -162,96 +173,237 @@ export default function RitualSettings() {
           ].map((content) => {
             const isSelected = (preferences.morning_ritual_content || []).includes(content.id)
             return (
-              <label
+              <Pressable
                 key={content.id}
-                className={`
-                  flex items-center gap-3 p-3 rounded-lg cursor-pointer transition-all
-                  ${isSelected ? 'glass-strong ring-1 ring-primary-500/50' : 'glass hover:bg-white/5'}
-                `}
+                onPress={() => preferences.morning_ritual_enabled && handleContentToggle(content.id)}
+                style={({ hovered }) => [
+                  styles.contentOption,
+                  isSelected && styles.contentOptionSelected,
+                  hovered && preferences.morning_ritual_enabled && styles.contentOptionHovered,
+                ]}
               >
-                <input
-                  type="checkbox"
-                  checked={isSelected}
-                  onChange={() => handleContentToggle(content.id)}
-                  className="sr-only"
-                />
-                <span className="text-xl">{content.icon}</span>
-                <span className="flex-1">{content.label}</span>
-                {isSelected && (
-                  <Check size={18} className="text-primary-400" />
-                )}
-              </label>
+                <Text style={styles.contentIcon}>{content.icon}</Text>
+                <Text style={styles.contentLabel}>{content.label}</Text>
+                {isSelected && <Check size={18} color={colors.primary} />}
+              </Pressable>
             )
           })}
-        </div>
-      </div>
+        </View>
+      </GlassView>
 
       {/* Additional Options */}
-      <div className={`glass-card p-4 space-y-4 transition-opacity ${!preferences.morning_ritual_enabled ? 'opacity-50 pointer-events-none' : ''}`}>
-        <h4 className="font-medium text-dark-300">{t('settings.ritual.options', 'אפשרויות נוספות')}</h4>
+      <GlassView style={[styles.card, !preferences.morning_ritual_enabled && styles.cardDisabled]}>
+        <Text style={styles.cardTitle}>{t('settings.ritual.options', 'אפשרויות נוספות')}</Text>
 
-        {/* Auto Play */}
-        <label className="flex items-center justify-between cursor-pointer">
-          <span>{t('settings.ritual.autoPlay')}</span>
-          <div
-            className={`
-              relative w-12 h-6 rounded-full transition-colors duration-300
-              ${preferences.morning_ritual_auto_play ? 'bg-primary-500' : 'bg-dark-600'}
-            `}
-            onClick={() => handleChange('morning_ritual_auto_play', !preferences.morning_ritual_auto_play)}
-          >
-            <div
-              className={`
-                absolute top-1 w-4 h-4 rounded-full bg-white transition-transform duration-300
-                ${preferences.morning_ritual_auto_play ? 'left-7' : 'left-1'}
-              `}
-            />
-          </div>
-        </label>
+        <Pressable
+          onPress={() => preferences.morning_ritual_enabled && handleChange('morning_ritual_auto_play', !preferences.morning_ritual_auto_play)}
+          style={styles.toggleRow}
+        >
+          <Text style={styles.toggleLabel}>{t('settings.ritual.autoPlay')}</Text>
+          <Toggle
+            value={preferences.morning_ritual_auto_play}
+            onToggle={() => handleChange('morning_ritual_auto_play', !preferences.morning_ritual_auto_play)}
+            disabled={!preferences.morning_ritual_enabled}
+          />
+        </Pressable>
 
-        {/* Skip Weekends */}
-        <label className="flex items-center justify-between cursor-pointer">
-          <span>{t('settings.ritual.skipWeekends')}</span>
-          <div
-            className={`
-              relative w-12 h-6 rounded-full transition-colors duration-300
-              ${preferences.morning_ritual_skip_weekends ? 'bg-primary-500' : 'bg-dark-600'}
-            `}
-            onClick={() => handleChange('morning_ritual_skip_weekends', !preferences.morning_ritual_skip_weekends)}
-          >
-            <div
-              className={`
-                absolute top-1 w-4 h-4 rounded-full bg-white transition-transform duration-300
-                ${preferences.morning_ritual_skip_weekends ? 'left-7' : 'left-1'}
-              `}
-            />
-          </div>
-        </label>
-      </div>
+        <Pressable
+          onPress={() => preferences.morning_ritual_enabled && handleChange('morning_ritual_skip_weekends', !preferences.morning_ritual_skip_weekends)}
+          style={styles.toggleRow}
+        >
+          <Text style={styles.toggleLabel}>{t('settings.ritual.skipWeekends')}</Text>
+          <Toggle
+            value={preferences.morning_ritual_skip_weekends}
+            onToggle={() => handleChange('morning_ritual_skip_weekends', !preferences.morning_ritual_skip_weekends)}
+            disabled={!preferences.morning_ritual_enabled}
+          />
+        </Pressable>
+      </GlassView>
 
       {/* Save Button */}
-      <button
-        onClick={handleSave}
+      <Pressable
+        onPress={handleSave}
         disabled={saving || saved}
-        className={`
-          w-full py-3 rounded-xl font-medium transition-all duration-300
-          ${saved
-            ? 'bg-green-500/20 text-green-400'
-            : 'glass-btn-primary'
-          }
-        `}
+        style={({ hovered }) => [
+          styles.saveButton,
+          saved && styles.saveButtonSaved,
+          hovered && !saved && !saving && styles.saveButtonHovered,
+        ]}
       >
         {saving ? (
-          <Loader2 size={20} className="animate-spin mx-auto" />
+          <ActivityIndicator size="small" color={colors.text} />
         ) : saved ? (
-          <span className="flex items-center justify-center gap-2">
-            <Check size={20} />
-            {t('common.saved', 'נשמר!')}
-          </span>
+          <View style={styles.savedContent}>
+            <Check size={20} color="#22C55E" />
+            <Text style={styles.savedText}>{t('common.saved', 'נשמר!')}</Text>
+          </View>
         ) : (
-          t('common.save')
+          <Text style={styles.saveText}>{t('common.save')}</Text>
         )}
-      </button>
-    </div>
+      </Pressable>
+    </View>
   )
 }
+
+const selectStyles: React.CSSProperties = {
+  width: '100%',
+  padding: '8px 12px',
+  backgroundColor: 'rgba(255, 255, 255, 0.05)',
+  border: `1px solid ${colors.glassBorder}`,
+  borderRadius: borderRadius.md,
+  color: colors.text,
+  fontSize: 14,
+  appearance: 'none',
+  cursor: 'pointer',
+}
+
+const styles = StyleSheet.create({
+  container: {
+    gap: spacing.lg,
+  },
+  loadingContainer: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: spacing.xl,
+  },
+  errorContainer: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: spacing.xl,
+  },
+  errorText: {
+    color: colors.textMuted,
+  },
+  header: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.sm,
+  },
+  headerIcon: {
+    padding: spacing.sm,
+    borderRadius: borderRadius.md,
+    backgroundColor: 'rgba(245, 158, 11, 0.2)',
+  },
+  headerTitle: {
+    fontSize: 18,
+    fontWeight: '600',
+    color: colors.text,
+  },
+  headerSubtitle: {
+    fontSize: 14,
+    color: colors.textMuted,
+  },
+  card: {
+    padding: spacing.md,
+    gap: spacing.md,
+  },
+  cardDisabled: {
+    opacity: 0.5,
+  },
+  cardTitle: {
+    fontSize: 14,
+    fontWeight: '500',
+    color: colors.textSecondary,
+  },
+  toggleRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+  toggleLabel: {
+    fontSize: 14,
+    color: colors.text,
+  },
+  toggle: {
+    width: 48,
+    height: 24,
+    borderRadius: 12,
+    backgroundColor: colors.backgroundLighter,
+    padding: 2,
+  },
+  toggleActive: {
+    backgroundColor: colors.primary,
+  },
+  toggleKnob: {
+    width: 20,
+    height: 20,
+    borderRadius: 10,
+    backgroundColor: colors.text,
+  },
+  toggleKnobActive: {
+    transform: [{ translateX: 24 }],
+  },
+  timeRow: {
+    flexDirection: 'row',
+    gap: spacing.md,
+  },
+  timeField: {
+    flex: 1,
+  },
+  timeLabel: {
+    fontSize: 14,
+    color: colors.textMuted,
+    marginBottom: spacing.sm,
+  },
+  selectWrapper: {
+    position: 'relative',
+  },
+  contentList: {
+    gap: spacing.sm,
+  },
+  contentOption: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.sm,
+    padding: spacing.sm,
+    borderRadius: borderRadius.md,
+    backgroundColor: 'rgba(255, 255, 255, 0.03)',
+  },
+  contentOptionSelected: {
+    backgroundColor: 'rgba(0, 217, 255, 0.1)',
+    borderWidth: 1,
+    borderColor: 'rgba(0, 217, 255, 0.3)',
+  },
+  contentOptionHovered: {
+    backgroundColor: 'rgba(255, 255, 255, 0.05)',
+  },
+  contentIcon: {
+    fontSize: 20,
+  },
+  contentLabel: {
+    flex: 1,
+    fontSize: 14,
+    color: colors.text,
+  },
+  saveButton: {
+    backgroundColor: colors.primary,
+    paddingVertical: spacing.md,
+    borderRadius: borderRadius.lg,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  saveButtonHovered: {
+    shadowColor: colors.primary,
+    shadowOffset: { width: 0, height: 0 },
+    shadowOpacity: 0.5,
+    shadowRadius: 12,
+  },
+  saveButtonSaved: {
+    backgroundColor: 'rgba(34, 197, 94, 0.2)',
+  },
+  saveText: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: colors.background,
+  },
+  savedContent: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.sm,
+  },
+  savedText: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#22C55E',
+  },
+})

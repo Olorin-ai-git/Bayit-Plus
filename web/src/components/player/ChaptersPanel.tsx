@@ -1,7 +1,27 @@
-import { useState, useEffect, useRef } from 'react'
+import { useEffect, useRef } from 'react'
+import { View, Text, StyleSheet, Pressable, ScrollView, ActivityIndicator } from 'react-native'
 import { useTranslation } from 'react-i18next'
 import { List, X, Loader2 } from 'lucide-react'
+import { colors, spacing, borderRadius } from '@bayit/shared/theme'
+import { GlassView } from '@bayit/shared/ui'
 import ChapterCard from './ChapterCard'
+
+interface Chapter {
+  start_time: number
+  end_time: number
+  title?: string
+  summary?: string
+}
+
+interface ChaptersPanelProps {
+  chapters?: Chapter[]
+  currentTime?: number
+  duration?: number
+  isLoading?: boolean
+  isOpen?: boolean
+  onClose?: () => void
+  onSeek?: (time: number) => void
+}
 
 export default function ChaptersPanel({
   chapters = [],
@@ -11,11 +31,9 @@ export default function ChaptersPanel({
   isOpen = false,
   onClose,
   onSeek,
-  className = '',
-}) {
+}: ChaptersPanelProps) {
   const { t } = useTranslation()
-  const panelRef = useRef(null)
-  const activeChapterRef = useRef(null)
+  const panelRef = useRef<ScrollView>(null)
 
   // Find active chapter based on current time
   const activeChapterIndex = chapters.findIndex(
@@ -24,80 +42,150 @@ export default function ChaptersPanel({
 
   // Auto-scroll to active chapter
   useEffect(() => {
-    if (activeChapterRef.current && panelRef.current) {
-      activeChapterRef.current.scrollIntoView({
-        behavior: 'smooth',
-        block: 'center',
-      })
+    if (panelRef.current && activeChapterIndex >= 0) {
+      // Scroll to position (approximate since RN ScrollView doesn't have scrollIntoView)
+      const scrollPosition = activeChapterIndex * 80 // Approximate card height
+      panelRef.current.scrollTo({ y: scrollPosition, animated: true })
     }
   }, [activeChapterIndex])
 
-  const handleChapterClick = (chapter) => {
+  const handleChapterClick = (chapter: Chapter) => {
     onSeek?.(chapter.start_time)
   }
 
   if (!isOpen) return null
 
   return (
-    <div
-      className={`
-        absolute top-0 left-0 h-full w-72 z-40
-        glass-strong rounded-r-xl
-        transform transition-transform duration-300 ease-out
-        ${isOpen ? 'translate-x-0' : '-translate-x-full'}
-        ${className}
-      `}
-      dir="rtl"
+    <GlassView
+      style={[
+        styles.container,
+        isOpen ? styles.containerOpen : styles.containerClosed,
+      ]}
+      intensity="high"
     >
       {/* Header */}
-      <div className="flex items-center justify-between p-4 border-b border-white/10">
-        <div className="flex items-center gap-2">
-          <List size={18} className="text-primary-400" />
-          <h3 className="font-semibold">{t('chapters.title')}</h3>
-          <span className="text-xs text-dark-400">
-            ({chapters.length})
-          </span>
-        </div>
-        <button
-          onClick={onClose}
-          className="glass-btn-ghost glass-btn-icon-sm"
-          aria-label={t('common.close')}
+      <View style={styles.header}>
+        <View style={styles.headerLeft}>
+          <List size={18} color={colors.primary} />
+          <Text style={styles.headerTitle}>{t('chapters.title')}</Text>
+          <Text style={styles.headerCount}>({chapters.length})</Text>
+        </View>
+        <Pressable
+          onPress={onClose}
+          style={({ hovered }) => [
+            styles.closeButton,
+            hovered && styles.closeButtonHovered,
+          ]}
+          accessibilityLabel={t('common.close')}
         >
-          <X size={18} />
-        </button>
-      </div>
+          <X size={18} color={colors.textSecondary} />
+        </Pressable>
+      </View>
 
       {/* Chapters List */}
-      <div
+      <ScrollView
         ref={panelRef}
-        className="overflow-y-auto p-3 space-y-2"
-        style={{ height: 'calc(100% - 60px)' }}
+        style={styles.listContainer}
+        contentContainerStyle={styles.listContent}
       >
         {isLoading ? (
-          <div className="flex flex-col items-center justify-center py-8 text-dark-400">
-            <Loader2 size={24} className="animate-spin mb-2" />
-            <span className="text-sm">{t('chapters.generating')}</span>
-          </div>
+          <View style={styles.emptyState}>
+            <ActivityIndicator size="small" color={colors.primary} />
+            <Text style={styles.emptyText}>{t('chapters.generating')}</Text>
+          </View>
         ) : chapters.length === 0 ? (
-          <div className="flex flex-col items-center justify-center py-8 text-dark-400">
-            <List size={32} className="mb-2 opacity-50" />
-            <span className="text-sm">{t('chapters.noChapters')}</span>
-          </div>
+          <View style={styles.emptyState}>
+            <List size={32} color={colors.textMuted} style={styles.emptyIcon} />
+            <Text style={styles.emptyText}>{t('chapters.noChapters')}</Text>
+          </View>
         ) : (
           chapters.map((chapter, index) => (
-            <div
-              key={`${chapter.start_time}-${index}`}
-              ref={index === activeChapterIndex ? activeChapterRef : null}
-            >
+            <View key={`${chapter.start_time}-${index}`} style={styles.chapterItem}>
               <ChapterCard
                 chapter={chapter}
                 isActive={index === activeChapterIndex}
                 onClick={() => handleChapterClick(chapter)}
               />
-            </div>
+            </View>
           ))
         )}
-      </div>
-    </div>
+      </ScrollView>
+    </GlassView>
   )
 }
+
+const styles = StyleSheet.create({
+  container: {
+    position: 'absolute',
+    top: 0,
+    right: 0, // RTL - positioned on the right
+    height: '100%',
+    width: 288,
+    zIndex: 40,
+    borderTopLeftRadius: borderRadius.lg,
+    borderBottomLeftRadius: borderRadius.lg,
+  },
+  containerOpen: {
+    transform: [{ translateX: 0 }],
+  },
+  containerClosed: {
+    transform: [{ translateX: 288 }],
+  },
+  header: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    padding: spacing.md,
+    borderBottomWidth: 1,
+    borderBottomColor: 'rgba(255, 255, 255, 0.1)',
+  },
+  headerLeft: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.sm,
+  },
+  headerTitle: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: colors.text,
+  },
+  headerCount: {
+    fontSize: 12,
+    color: colors.textMuted,
+  },
+  closeButton: {
+    width: 32,
+    height: 32,
+    borderRadius: borderRadius.md,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  closeButtonHovered: {
+    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+  },
+  listContainer: {
+    flex: 1,
+  },
+  listContent: {
+    padding: spacing.sm,
+    gap: spacing.sm,
+  },
+  chapterItem: {
+    marginBottom: spacing.sm,
+  },
+  emptyState: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: spacing.xl * 2,
+  },
+  emptyIcon: {
+    opacity: 0.5,
+    marginBottom: spacing.sm,
+  },
+  emptyText: {
+    fontSize: 14,
+    color: colors.textMuted,
+    marginTop: spacing.sm,
+  },
+})

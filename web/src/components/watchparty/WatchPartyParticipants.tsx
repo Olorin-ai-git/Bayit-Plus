@@ -1,8 +1,22 @@
+import { View, Text, StyleSheet } from 'react-native'
 import { useTranslation } from 'react-i18next'
 import { Crown, Mic, MicOff, User } from 'lucide-react'
-import { clsx } from 'clsx'
+import { colors, spacing, borderRadius } from '@bayit/shared/theme'
 
-export default function WatchPartyParticipants({ participants, hostId, currentUserId }) {
+interface Participant {
+  user_id: string
+  user_name: string
+  is_muted?: boolean
+  is_speaking?: boolean
+}
+
+interface WatchPartyParticipantsProps {
+  participants: Participant[]
+  hostId: string
+  currentUserId: string
+}
+
+export default function WatchPartyParticipants({ participants, hostId, currentUserId }: WatchPartyParticipantsProps) {
   const { t } = useTranslation()
 
   if (!participants?.length) return null
@@ -14,73 +28,129 @@ export default function WatchPartyParticipants({ participants, hostId, currentUs
   })
 
   return (
-    <div className="space-y-2">
-      <h3 className="text-sm font-medium text-dark-300 px-1">
+    <View style={styles.container}>
+      <Text style={styles.title}>
         {t('watchParty.participants')} ({participants.length})
-      </h3>
-      <div className="space-y-1">
+      </Text>
+      <View style={styles.list}>
         {sortedParticipants.map((participant) => {
           const isHost = participant.user_id === hostId
           const isCurrentUser = participant.user_id === currentUserId
 
           return (
-            <div
+            <View
               key={participant.user_id}
-              className={clsx(
-                'flex items-center gap-3 p-2.5 rounded-xl transition-all duration-200',
-                'bg-white/5 hover:bg-white/10 border border-transparent',
-                participant.is_speaking && 'border-emerald-500/50 bg-emerald-500/10'
-              )}
+              style={[
+                styles.participant,
+                participant.is_speaking && styles.participantSpeaking,
+              ]}
             >
-              <div
-                className={clsx(
-                  'w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium',
-                  isHost
-                    ? 'bg-amber-500/20 text-amber-400'
-                    : 'bg-white/10 text-dark-300'
-                )}
-              >
+              <View style={[styles.avatar, isHost && styles.avatarHost]}>
                 {isHost ? (
-                  <Crown size={16} />
+                  <Crown size={16} color="#FBBF24" />
                 ) : (
-                  <User size={16} />
+                  <User size={16} color={colors.textMuted} />
                 )}
-              </div>
+              </View>
 
-              <div className="flex-1 min-w-0">
-                <div className="flex items-center gap-2">
-                  <span className="text-sm font-medium text-white truncate">
+              <View style={styles.info}>
+                <View style={styles.nameRow}>
+                  <Text style={styles.name} numberOfLines={1}>
                     {participant.user_name}
-                  </span>
+                  </Text>
                   {isCurrentUser && (
-                    <span className="text-xs text-dark-400">
+                    <Text style={styles.youLabel}>
                       ({t('watchParty.you')})
-                    </span>
+                    </Text>
                   )}
-                </div>
+                </View>
                 {isHost && (
-                  <span className="text-xs text-amber-400">
+                  <Text style={styles.hostLabel}>
                     {t('watchParty.host')}
-                  </span>
+                  </Text>
                 )}
-              </div>
+              </View>
 
-              <div className="text-dark-400">
+              <View style={styles.micContainer}>
                 {participant.is_muted ? (
-                  <MicOff size={16} className="text-red-400" />
+                  <MicOff size={16} color="#F87171" />
                 ) : (
                   <Mic
                     size={16}
-                    className={clsx(
-                      participant.is_speaking && 'text-emerald-400 animate-pulse'
-                    )}
+                    color={participant.is_speaking ? '#34D399' : colors.textMuted}
                   />
                 )}
-              </div>
-            </div>
+              </View>
+            </View>
           )
         })}
-      </div>
-    </div>
+      </View>
+    </View>
   )
 }
+
+const styles = StyleSheet.create({
+  container: {
+    gap: spacing.sm,
+  },
+  title: {
+    fontSize: 14,
+    fontWeight: '500',
+    color: colors.textMuted,
+    paddingHorizontal: spacing.xs,
+  },
+  list: {
+    gap: spacing.xs,
+  },
+  participant: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.md,
+    padding: spacing.sm + 2,
+    borderRadius: borderRadius.lg,
+    backgroundColor: 'rgba(255, 255, 255, 0.05)',
+    borderWidth: 1,
+    borderColor: 'transparent',
+  },
+  participantSpeaking: {
+    borderColor: 'rgba(16, 185, 129, 0.5)',
+    backgroundColor: 'rgba(16, 185, 129, 0.1)',
+  },
+  avatar: {
+    width: 32,
+    height: 32,
+    borderRadius: 16,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+  },
+  avatarHost: {
+    backgroundColor: 'rgba(245, 158, 11, 0.2)',
+  },
+  info: {
+    flex: 1,
+    minWidth: 0,
+  },
+  nameRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.sm,
+  },
+  name: {
+    fontSize: 14,
+    fontWeight: '500',
+    color: colors.text,
+  },
+  youLabel: {
+    fontSize: 12,
+    color: colors.textMuted,
+  },
+  hostLabel: {
+    fontSize: 12,
+    color: '#FBBF24',
+  },
+  micContainer: {
+    width: 24,
+    alignItems: 'center',
+  },
+})

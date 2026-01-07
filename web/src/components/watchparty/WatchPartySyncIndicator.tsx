@@ -1,45 +1,102 @@
+import { View, Text, StyleSheet, Animated } from 'react-native'
 import { useTranslation } from 'react-i18next'
 import { RefreshCw, Check, Pause } from 'lucide-react'
-import { clsx } from 'clsx'
+import { colors, spacing, borderRadius } from '@bayit/shared/theme'
+import { useRef, useEffect } from 'react'
 
-export default function WatchPartySyncIndicator({ isHost, isSynced, hostPaused }) {
+interface WatchPartySyncIndicatorProps {
+  isHost: boolean
+  isSynced: boolean
+  hostPaused: boolean
+}
+
+export default function WatchPartySyncIndicator({ isHost, isSynced, hostPaused }: WatchPartySyncIndicatorProps) {
   const { t } = useTranslation()
+  const spinAnim = useRef(new Animated.Value(0)).current
+
+  useEffect(() => {
+    if (!isSynced && !hostPaused) {
+      const animation = Animated.loop(
+        Animated.timing(spinAnim, {
+          toValue: 1,
+          duration: 1000,
+          useNativeDriver: true,
+        })
+      )
+      animation.start()
+      return () => animation.stop()
+    }
+  }, [isSynced, hostPaused])
 
   if (isHost) return null
 
   const getState = () => {
     if (hostPaused) {
       return {
-        icon: <Pause size={14} />,
+        icon: <Pause size={14} color="#FBBF24" />,
         text: t('watchParty.hostPaused'),
-        className: 'text-amber-400 bg-amber-500/10 border-amber-500/20',
+        style: styles.amber,
       }
     }
     if (isSynced) {
       return {
-        icon: <Check size={14} />,
+        icon: <Check size={14} color="#34D399" />,
         text: t('watchParty.synced'),
-        className: 'text-emerald-400 bg-emerald-500/10 border-emerald-500/20',
+        style: styles.emerald,
       }
     }
+    const spin = spinAnim.interpolate({
+      inputRange: [0, 1],
+      outputRange: ['0deg', '360deg'],
+    })
     return {
-      icon: <RefreshCw size={14} className="animate-spin" />,
+      icon: (
+        <Animated.View style={{ transform: [{ rotate: spin }] }}>
+          <RefreshCw size={14} color="#60A5FA" />
+        </Animated.View>
+      ),
       text: t('watchParty.syncing'),
-      className: 'text-blue-400 bg-blue-500/10 border-blue-500/20',
+      style: styles.blue,
     }
   }
 
   const state = getState()
 
   return (
-    <div
-      className={clsx(
-        'inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full border text-xs font-medium',
-        state.className
-      )}
-    >
+    <View style={[styles.container, state.style]}>
       {state.icon}
-      <span>{state.text}</span>
-    </div>
+      <Text style={[styles.text, state.style]}>{state.text}</Text>
+    </View>
   )
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.xs,
+    paddingHorizontal: spacing.sm,
+    paddingVertical: spacing.xs,
+    borderRadius: borderRadius.full,
+    borderWidth: 1,
+  },
+  text: {
+    fontSize: 12,
+    fontWeight: '500',
+  },
+  amber: {
+    backgroundColor: 'rgba(245, 158, 11, 0.1)',
+    borderColor: 'rgba(245, 158, 11, 0.2)',
+    color: '#FBBF24',
+  },
+  emerald: {
+    backgroundColor: 'rgba(16, 185, 129, 0.1)',
+    borderColor: 'rgba(16, 185, 129, 0.2)',
+    color: '#34D399',
+  },
+  blue: {
+    backgroundColor: 'rgba(59, 130, 246, 0.1)',
+    borderColor: 'rgba(59, 130, 246, 0.2)',
+    color: '#60A5FA',
+  },
+})

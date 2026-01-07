@@ -1,5 +1,16 @@
 import { useRef, useState, useEffect } from 'react'
+import { View, Text, StyleSheet, Pressable, Image, ActivityIndicator } from 'react-native'
 import { Play, Pause, Volume2, VolumeX, SkipBack, SkipForward } from 'lucide-react'
+import { colors, spacing, borderRadius } from '@bayit/shared/theme'
+import { GlassView, GlassBadge } from '@bayit/shared/ui'
+
+interface AudioPlayerProps {
+  src: string
+  title: string
+  artist?: string
+  cover?: string
+  isLive?: boolean
+}
 
 export default function AudioPlayer({
   src,
@@ -7,8 +18,8 @@ export default function AudioPlayer({
   artist,
   cover,
   isLive = false,
-}) {
-  const audioRef = useRef(null)
+}: AudioPlayerProps) {
+  const audioRef = useRef<HTMLAudioElement | null>(null)
   const [isPlaying, setIsPlaying] = useState(false)
   const [isMuted, setIsMuted] = useState(false)
   const [volume, setVolume] = useState(1)
@@ -17,7 +28,12 @@ export default function AudioPlayer({
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    if (!src || !audioRef.current) return
+    if (!src) return
+
+    // Create audio element if it doesn't exist
+    if (!audioRef.current) {
+      audioRef.current = new Audio()
+    }
 
     const audio = audioRef.current
     audio.src = src
@@ -60,7 +76,7 @@ export default function AudioPlayer({
     }
   }
 
-  const handleVolumeChange = (e) => {
+  const handleVolumeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newVolume = parseFloat(e.target.value)
     setVolume(newVolume)
     if (audioRef.current) {
@@ -69,7 +85,7 @@ export default function AudioPlayer({
     }
   }
 
-  const handleSeek = (e) => {
+  const handleSeek = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newTime = parseFloat(e.target.value)
     setCurrentTime(newTime)
     if (audioRef.current) {
@@ -77,103 +93,129 @@ export default function AudioPlayer({
     }
   }
 
-  const skip = (seconds) => {
+  const skip = (seconds: number) => {
     if (audioRef.current) {
       audioRef.current.currentTime += seconds
     }
   }
 
-  const formatTime = (time) => {
+  const formatTime = (time: number) => {
     if (!time || !isFinite(time)) return '0:00'
     const minutes = Math.floor(time / 60)
     const seconds = Math.floor(time % 60)
     return `${minutes}:${seconds.toString().padStart(2, '0')}`
   }
 
-  return (
-    <div className="glass-card p-6">
-      <audio ref={audioRef} />
+  const progress = duration > 0 ? (currentTime / duration) * 100 : 0
 
-      <div className="flex items-center gap-6">
+  return (
+    <GlassView style={styles.container}>
+      <View style={styles.content}>
         {/* Cover Art */}
-        <div className="relative w-32 h-32 flex-shrink-0 rounded-xl overflow-hidden shadow-glass">
-          <img
-            src={cover || '/placeholder-audio.png'}
-            alt={title}
-            className="w-full h-full object-cover"
+        <View style={styles.coverContainer}>
+          <Image
+            source={{ uri: cover || '/placeholder-audio.png' }}
+            style={styles.coverImage}
+            resizeMode="cover"
           />
           {isLive && (
-            <div className="absolute inset-0 glass flex items-center justify-center">
-              <div className="w-4 h-4 bg-red-500 rounded-full animate-pulse shadow-glow-danger" />
-            </div>
+            <View style={styles.liveOverlay}>
+              <View style={styles.liveDot} />
+            </View>
           )}
-        </div>
+        </View>
 
         {/* Info & Controls */}
-        <div className="flex-1 min-w-0">
+        <View style={styles.infoContainer}>
           {/* Title & Artist */}
-          <div className="mb-4">
-            {isLive && <span className="live-badge mb-2">LIVE</span>}
-            <h2 className="text-xl font-bold truncate">{title}</h2>
-            {artist && <p className="text-dark-400 truncate">{artist}</p>}
-          </div>
+          <View style={styles.titleContainer}>
+            {isLive && (
+              <GlassBadge variant="danger" size="sm" style={styles.liveBadge}>
+                LIVE
+              </GlassBadge>
+            )}
+            <Text style={styles.title} numberOfLines={1}>{title}</Text>
+            {artist && <Text style={styles.artist} numberOfLines={1}>{artist}</Text>}
+          </View>
 
           {/* Progress Bar (not for live) */}
           {!isLive && duration > 0 && (
-            <div className="mb-4">
+            <View style={styles.progressContainer}>
+              <View style={styles.progressTrack}>
+                <View style={[styles.progressFill, { width: `${progress}%` }]} />
+              </View>
               <input
                 type="range"
                 min="0"
                 max={duration}
                 value={currentTime}
                 onChange={handleSeek}
-                className="w-full"
+                style={styles.progressInput as any}
               />
-              <div className="flex justify-between text-xs text-dark-400 mt-1">
-                <span>{formatTime(currentTime)}</span>
-                <span>{formatTime(duration)}</span>
-              </div>
-            </div>
+              <View style={styles.timeContainer}>
+                <Text style={styles.timeText}>{formatTime(currentTime)}</Text>
+                <Text style={styles.timeText}>{formatTime(duration)}</Text>
+              </View>
+            </View>
           )}
 
           {/* Controls */}
-          <div className="flex items-center gap-3">
+          <View style={styles.controlsContainer}>
             {!isLive && (
-              <button
-                onClick={() => skip(-15)}
-                className="glass-btn-ghost glass-btn-icon"
+              <Pressable
+                onPress={() => skip(-15)}
+                style={({ hovered }) => [
+                  styles.controlButton,
+                  hovered && styles.controlButtonHovered,
+                ]}
               >
-                <SkipBack size={22} />
-              </button>
+                <SkipBack size={22} color={colors.text} />
+              </Pressable>
             )}
 
-            <button
-              onClick={togglePlay}
+            <Pressable
+              onPress={togglePlay}
               disabled={loading}
-              className="glass-btn-primary w-14 h-14 rounded-full flex items-center justify-center hover:shadow-glow transition-all"
+              style={({ hovered }) => [
+                styles.playButton,
+                hovered && styles.playButtonHovered,
+              ]}
             >
               {loading ? (
-                <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                <ActivityIndicator size="small" color={colors.background} />
               ) : isPlaying ? (
-                <Pause size={28} fill="white" className="text-white" />
+                <Pause size={28} fill={colors.background} color={colors.background} />
               ) : (
-                <Play size={28} fill="white" className="text-white mr-[-2px]" />
+                <Play size={28} fill={colors.background} color={colors.background} style={{ marginLeft: 2 }} />
               )}
-            </button>
+            </Pressable>
 
             {!isLive && (
-              <button
-                onClick={() => skip(15)}
-                className="glass-btn-ghost glass-btn-icon"
+              <Pressable
+                onPress={() => skip(15)}
+                style={({ hovered }) => [
+                  styles.controlButton,
+                  hovered && styles.controlButtonHovered,
+                ]}
               >
-                <SkipForward size={22} />
-              </button>
+                <SkipForward size={22} color={colors.text} />
+              </Pressable>
             )}
 
-            <div className="flex items-center gap-2 mr-auto">
-              <button onClick={toggleMute} className="glass-btn-ghost glass-btn-icon-sm">
-                {isMuted ? <VolumeX size={18} /> : <Volume2 size={18} />}
-              </button>
+            <View style={styles.volumeContainer}>
+              <Pressable
+                onPress={toggleMute}
+                style={({ hovered }) => [
+                  styles.volumeButton,
+                  hovered && styles.volumeButtonHovered,
+                ]}
+              >
+                {isMuted ? (
+                  <VolumeX size={18} color={colors.textSecondary} />
+                ) : (
+                  <Volume2 size={18} color={colors.textSecondary} />
+                )}
+              </Pressable>
               <input
                 type="range"
                 min="0"
@@ -181,12 +223,157 @@ export default function AudioPlayer({
                 step="0.1"
                 value={isMuted ? 0 : volume}
                 onChange={handleVolumeChange}
-                className="w-24"
+                style={styles.volumeSlider as any}
               />
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
+            </View>
+          </View>
+        </View>
+      </View>
+    </GlassView>
   )
 }
+
+const styles = StyleSheet.create({
+  container: {
+    padding: spacing.lg,
+  },
+  content: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.lg,
+  },
+  coverContainer: {
+    position: 'relative',
+    width: 128,
+    height: 128,
+    borderRadius: borderRadius.lg,
+    overflow: 'hidden',
+    shadowColor: colors.primary,
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.2,
+    shadowRadius: 12,
+  },
+  coverImage: {
+    width: '100%',
+    height: '100%',
+  },
+  liveOverlay: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: 'rgba(26, 26, 46, 0.5)',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  liveDot: {
+    width: 16,
+    height: 16,
+    borderRadius: 8,
+    backgroundColor: colors.error,
+    shadowColor: colors.error,
+    shadowOffset: { width: 0, height: 0 },
+    shadowOpacity: 0.8,
+    shadowRadius: 8,
+  },
+  infoContainer: {
+    flex: 1,
+    minWidth: 0,
+  },
+  titleContainer: {
+    marginBottom: spacing.md,
+  },
+  liveBadge: {
+    marginBottom: spacing.sm,
+  },
+  title: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    color: colors.text,
+  },
+  artist: {
+    fontSize: 14,
+    color: colors.textSecondary,
+    marginTop: spacing.xs,
+  },
+  progressContainer: {
+    marginBottom: spacing.md,
+    position: 'relative',
+  },
+  progressTrack: {
+    height: 4,
+    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+    borderRadius: 2,
+    overflow: 'hidden',
+  },
+  progressFill: {
+    height: '100%',
+    backgroundColor: colors.primary,
+  },
+  progressInput: {
+    position: 'absolute',
+    top: -6,
+    left: 0,
+    right: 0,
+    width: '100%',
+    height: 16,
+    opacity: 0,
+    cursor: 'pointer',
+  },
+  timeContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginTop: spacing.xs,
+  },
+  timeText: {
+    fontSize: 12,
+    color: colors.textMuted,
+  },
+  controlsContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.sm,
+  },
+  controlButton: {
+    width: 44,
+    height: 44,
+    borderRadius: 22,
+    backgroundColor: 'rgba(255, 255, 255, 0.05)',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  controlButtonHovered: {
+    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+  },
+  playButton: {
+    width: 56,
+    height: 56,
+    borderRadius: 28,
+    backgroundColor: colors.primary,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  playButtonHovered: {
+    shadowColor: colors.primary,
+    shadowOffset: { width: 0, height: 0 },
+    shadowOpacity: 0.5,
+    shadowRadius: 12,
+  },
+  volumeContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.sm,
+    marginLeft: 'auto' as any,
+  },
+  volumeButton: {
+    width: 36,
+    height: 36,
+    borderRadius: 18,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  volumeButtonHovered: {
+    backgroundColor: 'rgba(255, 255, 255, 0.05)',
+  },
+  volumeSlider: {
+    width: 96,
+    accentColor: colors.primary,
+  },
+})

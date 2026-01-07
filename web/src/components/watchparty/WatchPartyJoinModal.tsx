@@ -1,19 +1,23 @@
 import { useState } from 'react'
+import { View, Text, TextInput, StyleSheet, Pressable, ActivityIndicator, Modal } from 'react-native'
 import { useTranslation } from 'react-i18next'
-import { UserPlus } from 'lucide-react'
-import GlassModal from '../ui/GlassModal'
-import GlassButton from '../ui/GlassButton'
-import GlassInput from '../ui/GlassInput'
+import { UserPlus, X } from 'lucide-react'
+import { colors, spacing, borderRadius } from '@bayit/shared/theme'
+import { GlassView } from '@bayit/shared/ui'
 
-export default function WatchPartyJoinModal({ isOpen, onClose, onJoin }) {
+interface WatchPartyJoinModalProps {
+  isOpen: boolean
+  onClose: () => void
+  onJoin: (code: string) => Promise<void>
+}
+
+export default function WatchPartyJoinModal({ isOpen, onClose, onJoin }: WatchPartyJoinModalProps) {
   const { t } = useTranslation()
   const [roomCode, setRoomCode] = useState('')
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
 
-  const handleSubmit = async (e) => {
-    e.preventDefault()
-
+  const handleSubmit = async () => {
     const code = roomCode.trim().toUpperCase()
     if (!code) {
       setError(t('watchParty.errors.invalidCode'))
@@ -26,7 +30,7 @@ export default function WatchPartyJoinModal({ isOpen, onClose, onJoin }) {
     try {
       await onJoin(code)
       onClose()
-    } catch (err) {
+    } catch (err: any) {
       const errorKey = err.code || 'connectionError'
       setError(t(`watchParty.errors.${errorKey}`, t('watchParty.errors.joinFailed')))
     } finally {
@@ -34,9 +38,9 @@ export default function WatchPartyJoinModal({ isOpen, onClose, onJoin }) {
     }
   }
 
-  const handleCodeChange = (e) => {
-    const value = e.target.value.toUpperCase().replace(/[^A-Z0-9]/g, '')
-    setRoomCode(value.slice(0, 8))
+  const handleCodeChange = (value: string) => {
+    const cleaned = value.toUpperCase().replace(/[^A-Z0-9]/g, '')
+    setRoomCode(cleaned.slice(0, 8))
     if (error) setError('')
   }
 
@@ -46,54 +50,213 @@ export default function WatchPartyJoinModal({ isOpen, onClose, onJoin }) {
     onClose()
   }
 
+  if (!isOpen) return null
+
   return (
-    <GlassModal
-      isOpen={isOpen}
-      onClose={handleClose}
-      title={t('watchParty.joinTitle')}
-      size="sm"
+    <Modal
+      transparent
+      visible={isOpen}
+      animationType="fade"
+      onRequestClose={handleClose}
     >
-      <form onSubmit={handleSubmit} className="space-y-6">
-        <div className="flex justify-center">
-          <div className="w-16 h-16 rounded-2xl bg-primary-500/20 flex items-center justify-center">
-            <UserPlus size={32} className="text-primary-400" />
-          </div>
-        </div>
+      <Pressable style={styles.overlay} onPress={handleClose}>
+        <Pressable onPress={(e) => e.stopPropagation()}>
+          <GlassView style={styles.modal} intensity="high">
+            <View style={styles.header}>
+              <Text style={styles.title}>{t('watchParty.joinTitle')}</Text>
+              <Pressable
+                onPress={handleClose}
+                style={({ hovered }) => [
+                  styles.closeButton,
+                  hovered && styles.closeButtonHovered,
+                ]}
+              >
+                <X size={20} color={colors.textSecondary} />
+              </Pressable>
+            </View>
 
-        <div className="text-center text-dark-300 text-sm">
-          {t('watchParty.enterCode')}
-        </div>
+            <View style={styles.content}>
+              <View style={styles.iconContainer}>
+                <View style={styles.icon}>
+                  <UserPlus size={32} color={colors.primary} />
+                </View>
+              </View>
 
-        <GlassInput
-          value={roomCode}
-          onChange={handleCodeChange}
-          placeholder="ABCD1234"
-          error={error}
-          className="text-center font-mono text-2xl tracking-[0.3em] uppercase"
-          autoFocus
-          autoComplete="off"
-        />
+              <Text style={styles.description}>
+                {t('watchParty.enterCode')}
+              </Text>
 
-        <div className="flex gap-3">
-          <GlassButton
-            type="button"
-            variant="ghost"
-            onClick={handleClose}
-            className="flex-1"
-          >
-            {t('common.cancel')}
-          </GlassButton>
-          <GlassButton
-            type="submit"
-            variant="primary"
-            loading={loading}
-            disabled={roomCode.length < 4}
-            className="flex-1"
-          >
-            {t('watchParty.join')}
-          </GlassButton>
-        </div>
-      </form>
-    </GlassModal>
+              <View style={styles.inputContainer}>
+                <TextInput
+                  value={roomCode}
+                  onChangeText={handleCodeChange}
+                  placeholder="ABCD1234"
+                  placeholderTextColor={colors.textMuted}
+                  style={[styles.input, error && styles.inputError]}
+                  autoFocus
+                  autoCapitalize="characters"
+                  maxLength={8}
+                />
+                {error ? (
+                  <Text style={styles.errorText}>{error}</Text>
+                ) : null}
+              </View>
+
+              <View style={styles.actions}>
+                <Pressable
+                  onPress={handleClose}
+                  style={({ hovered }) => [
+                    styles.button,
+                    styles.ghostButton,
+                    hovered && styles.ghostButtonHovered,
+                  ]}
+                >
+                  <Text style={styles.ghostButtonText}>{t('common.cancel')}</Text>
+                </Pressable>
+                <Pressable
+                  onPress={handleSubmit}
+                  disabled={loading || roomCode.length < 4}
+                  style={({ hovered }) => [
+                    styles.button,
+                    styles.primaryButton,
+                    hovered && !loading && roomCode.length >= 4 && styles.primaryButtonHovered,
+                    (loading || roomCode.length < 4) && styles.buttonDisabled,
+                  ]}
+                >
+                  {loading ? (
+                    <ActivityIndicator size="small" color={colors.background} />
+                  ) : (
+                    <Text style={styles.primaryButtonText}>{t('watchParty.join')}</Text>
+                  )}
+                </Pressable>
+              </View>
+            </View>
+          </GlassView>
+        </Pressable>
+      </Pressable>
+    </Modal>
   )
 }
+
+const styles = StyleSheet.create({
+  overlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0, 0, 0, 0.6)',
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: spacing.lg,
+  },
+  modal: {
+    width: 360,
+    maxWidth: '100%',
+  },
+  header: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    padding: spacing.md,
+    borderBottomWidth: 1,
+    borderBottomColor: 'rgba(255, 255, 255, 0.1)',
+  },
+  title: {
+    fontSize: 18,
+    fontWeight: '600',
+    color: colors.text,
+  },
+  closeButton: {
+    width: 32,
+    height: 32,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderRadius: borderRadius.md,
+  },
+  closeButtonHovered: {
+    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+  },
+  content: {
+    padding: spacing.lg,
+    gap: spacing.lg,
+  },
+  iconContainer: {
+    alignItems: 'center',
+  },
+  icon: {
+    width: 64,
+    height: 64,
+    borderRadius: borderRadius.xl,
+    backgroundColor: 'rgba(0, 217, 255, 0.2)',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  description: {
+    fontSize: 14,
+    color: colors.textMuted,
+    textAlign: 'center',
+  },
+  inputContainer: {
+    gap: spacing.sm,
+  },
+  input: {
+    backgroundColor: 'rgba(255, 255, 255, 0.05)',
+    borderWidth: 1,
+    borderColor: colors.glassBorder,
+    borderRadius: borderRadius.lg,
+    paddingHorizontal: spacing.lg,
+    paddingVertical: spacing.md,
+    fontSize: 24,
+    fontFamily: 'monospace',
+    color: colors.text,
+    textAlign: 'center',
+    letterSpacing: 6,
+    outlineStyle: 'none',
+  } as any,
+  inputError: {
+    borderColor: colors.error,
+  },
+  errorText: {
+    fontSize: 12,
+    color: colors.error,
+    textAlign: 'center',
+  },
+  actions: {
+    flexDirection: 'row',
+    gap: spacing.md,
+  },
+  button: {
+    flex: 1,
+    paddingVertical: spacing.sm + 2,
+    borderRadius: borderRadius.md,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  ghostButton: {
+    backgroundColor: 'rgba(255, 255, 255, 0.05)',
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.1)',
+  },
+  ghostButtonHovered: {
+    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+  },
+  ghostButtonText: {
+    fontSize: 14,
+    fontWeight: '500',
+    color: colors.textSecondary,
+  },
+  primaryButton: {
+    backgroundColor: colors.primary,
+  },
+  primaryButtonHovered: {
+    shadowColor: colors.primary,
+    shadowOffset: { width: 0, height: 0 },
+    shadowOpacity: 0.5,
+    shadowRadius: 12,
+  },
+  primaryButtonText: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: colors.background,
+  },
+  buttonDisabled: {
+    opacity: 0.5,
+  },
+})

@@ -1,16 +1,30 @@
+import { View, StyleSheet } from 'react-native'
 import { Outlet } from 'react-router-dom'
 import AdminSidebar from './AdminSidebar'
+import { colors } from '@bayit/shared/theme'
 
 export default function AdminLayout() {
   return (
-    <div className="flex h-screen bg-dark-900" dir="rtl">
+    <View style={styles.container}>
       {/* Sidebar */}
       <AdminSidebar />
 
       {/* Main Content */}
-      <div className="flex-1 overflow-auto">
+      <View style={styles.content}>
         <Outlet />
-      </div>
-    </div>
+      </View>
+    </View>
   )
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flexDirection: 'row',
+    height: '100vh' as any,
+    backgroundColor: colors.background,
+  },
+  content: {
+    flex: 1,
+    overflow: 'auto' as any,
+  },
+})

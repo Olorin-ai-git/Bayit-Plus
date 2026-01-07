@@ -1,24 +1,56 @@
 import { useState, useEffect, useRef } from 'react'
+import { View, Text, StyleSheet, Pressable, Image, ActivityIndicator, ScrollView } from 'react-native'
 import { useNavigate } from 'react-router-dom'
 import { ritualService } from '../../services/api'
 import logger from '@/utils/logger'
-import './MorningRitual.css'
+import { colors, spacing, borderRadius } from '@bayit/shared/theme'
+import { GlassView, GlassButton } from '@bayit/shared/ui'
+
+interface PlaylistItem {
+  id: string
+  title: string
+  type: 'live' | 'vod' | 'radio'
+  category?: string
+  thumbnail?: string
+  stream_url?: string
+}
+
+interface RitualData {
+  playlist?: PlaylistItem[]
+  local_time?: string
+}
+
+interface AIBrief {
+  greeting: string
+  israel_update: string
+  recommendation: string
+  israel_context?: {
+    israel_time: string
+    day_name_he: string
+    is_shabbat: boolean
+  }
+}
+
+interface MorningRitualProps {
+  onComplete?: () => void
+  onSkip?: () => void
+}
 
 /**
  * MorningRitual Component
  * Full-screen morning ritual experience with auto-play content.
  * Shows AI brief, Israel context, and curated morning playlist.
  */
-export default function MorningRitual({ onComplete, onSkip }) {
+export default function MorningRitual({ onComplete, onSkip }: MorningRitualProps) {
   const navigate = useNavigate()
-  const [ritualData, setRitualData] = useState(null)
-  const [aiBrief, setAIBrief] = useState(null)
+  const [ritualData, setRitualData] = useState<RitualData | null>(null)
+  const [aiBrief, setAIBrief] = useState<AIBrief | null>(null)
   const [loading, setLoading] = useState(true)
   const [currentIndex, setCurrentIndex] = useState(0)
   const [showBrief, setShowBrief] = useState(true)
   const [isPlaying, setIsPlaying] = useState(false)
-  const videoRef = useRef(null)
-  const audioRef = useRef(null)
+  const videoRef = useRef<HTMLVideoElement>(null)
+  const audioRef = useRef<HTMLAudioElement>(null)
 
   useEffect(() => {
     const fetchRitualData = async () => {
@@ -83,161 +115,561 @@ export default function MorningRitual({ onComplete, onSkip }) {
 
   if (loading) {
     return (
-      <div className="morning-ritual loading">
-        <div className="ritual-loader">
-          <div className="loader-icon">☀️</div>
-          <div className="loader-text">מכין את טקס הבוקר שלך...</div>
-        </div>
-      </div>
+      <View style={styles.container}>
+        <View style={styles.loaderContainer}>
+          <Text style={styles.loaderIcon}>☀️</Text>
+          <ActivityIndicator size="large" color={colors.primary} />
+          <Text style={styles.loaderText}>מכין את טקס הבוקר שלך...</Text>
+        </View>
+      </View>
     )
   }
 
   return (
-    <div className="morning-ritual">
+    <View style={styles.container}>
       {/* Background gradient */}
-      <div className="ritual-background">
-        <div className="gradient-overlay" />
-      </div>
+      <View style={styles.background}>
+        <View style={styles.gradientOverlay} />
+      </View>
 
       {/* AI Brief Overlay */}
       {showBrief && aiBrief && (
-        <div className="ai-brief-overlay">
-          <div className="brief-content">
-            <div className="brief-emoji">☀️</div>
-            <h1 className="brief-greeting">{aiBrief.greeting}</h1>
-            <p className="brief-israel">{aiBrief.israel_update}</p>
-            <p className="brief-recommendation">{aiBrief.recommendation}</p>
+        <View style={styles.briefOverlay}>
+          <GlassView style={styles.briefContent} intensity="high">
+            <Text style={styles.briefEmoji}>☀️</Text>
+            <Text style={styles.briefGreeting}>{aiBrief.greeting}</Text>
+            <Text style={styles.briefIsrael}>{aiBrief.israel_update}</Text>
+            <Text style={styles.briefRecommendation}>{aiBrief.recommendation}</Text>
 
-            <div className="israel-context">
-              <div className="context-item">
-                <span className="context-icon">🇮🇱</span>
-                <span className="context-label">שעה בישראל</span>
-                <span className="context-value">{aiBrief.israel_context?.israel_time}</span>
-              </div>
-              <div className="context-item">
-                <span className="context-icon">📅</span>
-                <span className="context-label">יום</span>
-                <span className="context-value">{aiBrief.israel_context?.day_name_he}</span>
-              </div>
+            <View style={styles.israelContext}>
+              <View style={styles.contextItem}>
+                <Text style={styles.contextIcon}>🇮🇱</Text>
+                <Text style={styles.contextLabel}>שעה בישראל</Text>
+                <Text style={styles.contextValue}>{aiBrief.israel_context?.israel_time}</Text>
+              </View>
+              <View style={styles.contextItem}>
+                <Text style={styles.contextIcon}>📅</Text>
+                <Text style={styles.contextLabel}>יום</Text>
+                <Text style={styles.contextValue}>{aiBrief.israel_context?.day_name_he}</Text>
+              </View>
               {aiBrief.israel_context?.is_shabbat && (
-                <div className="context-item shabbat">
-                  <span className="context-icon">🕯️</span>
-                  <span className="context-value">שבת שלום!</span>
-                </div>
+                <View style={[styles.contextItem, styles.contextShabbat]}>
+                  <Text style={styles.contextIcon}>🕯️</Text>
+                  <Text style={[styles.contextValue, styles.shabbatText]}>שבת שלום!</Text>
+                </View>
               )}
-            </div>
+            </View>
 
-            <button className="start-button" onClick={() => setShowBrief(false)}>
-              בואו נתחיל
-            </button>
-          </div>
-        </div>
+            <GlassButton
+              onPress={() => setShowBrief(false)}
+              style={styles.startButton}
+            >
+              <Text style={styles.startButtonText}>בואו נתחיל</Text>
+            </GlassButton>
+          </GlassView>
+        </View>
       )}
 
       {/* Main Content Area */}
       {!showBrief && (
-        <div className="ritual-main">
+        <View style={styles.mainContent}>
           {/* Header */}
-          <div className="ritual-header">
-            <div className="header-left">
-              <span className="ritual-title">☀️ טקס הבוקר</span>
-              <span className="ritual-time">{ritualData?.local_time}</span>
-            </div>
-            <div className="header-right">
-              <button className="skip-button" onClick={handleSkip}>
-                דלג להיום
-              </button>
-              <button className="exit-button" onClick={handleComplete}>
-                סיום
-              </button>
-            </div>
-          </div>
+          <View style={styles.header}>
+            <View style={styles.headerLeft}>
+              <Text style={styles.ritualTitle}>☀️ טקס הבוקר</Text>
+              <Text style={styles.ritualTime}>{ritualData?.local_time}</Text>
+            </View>
+            <View style={styles.headerRight}>
+              <Pressable
+                onPress={handleSkip}
+                style={({ hovered }) => [
+                  styles.headerButton,
+                  hovered && styles.headerButtonHovered,
+                ]}
+              >
+                <Text style={styles.headerButtonText}>דלג להיום</Text>
+              </Pressable>
+              <Pressable
+                onPress={handleComplete}
+                style={({ hovered }) => [
+                  styles.headerButton,
+                  styles.exitButton,
+                  hovered && styles.exitButtonHovered,
+                ]}
+              >
+                <Text style={styles.exitButtonText}>סיום</Text>
+              </Pressable>
+            </View>
+          </View>
 
           {/* Player Area */}
-          <div className="player-area">
+          <View style={styles.playerArea}>
             {currentItem?.type === 'live' || currentItem?.type === 'vod' ? (
-              <div className="video-container">
+              <View style={styles.videoContainer}>
                 <video
                   ref={videoRef}
                   src={currentItem.stream_url}
                   autoPlay={isPlaying}
                   controls
                   onEnded={handleNextItem}
+                  style={{ width: '100%', height: '100%', borderRadius: 12 }}
                 />
-                <div className="video-info">
-                  <h2>{currentItem.title}</h2>
-                  <span className="video-category">{currentItem.category}</span>
-                </div>
-              </div>
+                <View style={styles.videoInfo}>
+                  <Text style={styles.videoTitle}>{currentItem.title}</Text>
+                  <Text style={styles.videoCategory}>{currentItem.category}</Text>
+                </View>
+              </View>
             ) : currentItem?.type === 'radio' ? (
-              <div className="radio-container">
-                <div className="radio-visual">
-                  <img src={currentItem.thumbnail} alt={currentItem.title} />
-                  <div className="radio-waves">
-                    <div className="wave" />
-                    <div className="wave" />
-                    <div className="wave" />
-                  </div>
-                </div>
-                <h2>{currentItem.title}</h2>
+              <View style={styles.radioContainer}>
+                <View style={styles.radioVisual}>
+                  {currentItem.thumbnail && (
+                    <Image
+                      source={{ uri: currentItem.thumbnail }}
+                      style={styles.radioThumbnail}
+                      resizeMode="cover"
+                    />
+                  )}
+                  <View style={styles.radioWaves}>
+                    <View style={[styles.wave, styles.wave1]} />
+                    <View style={[styles.wave, styles.wave2]} />
+                    <View style={[styles.wave, styles.wave3]} />
+                  </View>
+                </View>
+                <Text style={styles.radioTitle}>{currentItem.title}</Text>
                 <audio
                   ref={audioRef}
                   src={currentItem.stream_url}
                   autoPlay={isPlaying}
                   controls
+                  style={{ width: '100%', marginTop: 16 }}
                 />
-              </div>
+              </View>
             ) : (
-              <div className="no-content">
-                <p>אין תוכן זמין כרגע</p>
-              </div>
+              <View style={styles.noContent}>
+                <Text style={styles.noContentText}>אין תוכן זמין כרגע</Text>
+              </View>
             )}
-          </div>
+          </View>
 
           {/* Playlist */}
-          <div className="playlist-bar">
-            <div className="playlist-items">
+          <GlassView style={styles.playlistBar} intensity="medium">
+            <ScrollView
+              horizontal
+              showsHorizontalScrollIndicator={false}
+              contentContainerStyle={styles.playlistItems}
+            >
               {ritualData?.playlist?.map((item, index) => (
-                <button
+                <Pressable
                   key={item.id}
-                  className={`playlist-item ${index === currentIndex ? 'active' : ''}`}
-                  onClick={() => setCurrentIndex(index)}
+                  onPress={() => setCurrentIndex(index)}
+                  style={({ hovered }) => [
+                    styles.playlistItem,
+                    index === currentIndex && styles.playlistItemActive,
+                    hovered && styles.playlistItemHovered,
+                  ]}
                 >
-                  <img src={item.thumbnail} alt={item.title} />
-                  <div className="item-info">
-                    <span className="item-title">{item.title}</span>
-                    <span className="item-type">
+                  {item.thumbnail && (
+                    <Image
+                      source={{ uri: item.thumbnail }}
+                      style={styles.playlistThumbnail}
+                      resizeMode="cover"
+                    />
+                  )}
+                  <View style={styles.playlistItemInfo}>
+                    <Text style={styles.playlistItemTitle} numberOfLines={1}>
+                      {item.title}
+                    </Text>
+                    <Text style={styles.playlistItemType}>
                       {item.type === 'live' ? '🔴 שידור חי' :
                        item.type === 'radio' ? '📻 רדיו' : '🎬 וידאו'}
-                    </span>
-                  </div>
-                  {index === currentIndex && <div className="playing-indicator" />}
-                </button>
+                    </Text>
+                  </View>
+                  {index === currentIndex && <View style={styles.playingIndicator} />}
+                </Pressable>
               ))}
-            </div>
+            </ScrollView>
 
-            <div className="playlist-nav">
-              <button
-                className="nav-button"
-                onClick={handlePreviousItem}
+            <View style={styles.playlistNav}>
+              <Pressable
+                onPress={handlePreviousItem}
                 disabled={currentIndex === 0}
+                style={({ hovered }) => [
+                  styles.navButton,
+                  currentIndex === 0 && styles.navButtonDisabled,
+                  hovered && currentIndex !== 0 && styles.navButtonHovered,
+                ]}
               >
-                ←
-              </button>
-              <span className="nav-counter">
+                <Text style={[
+                  styles.navButtonText,
+                  currentIndex === 0 && styles.navButtonTextDisabled,
+                ]}>
+                  ←
+                </Text>
+              </Pressable>
+              <Text style={styles.navCounter}>
                 {currentIndex + 1} / {ritualData?.playlist?.length || 0}
-              </span>
-              <button
-                className="nav-button"
-                onClick={handleNextItem}
+              </Text>
+              <Pressable
+                onPress={handleNextItem}
                 disabled={currentIndex >= (ritualData?.playlist?.length || 0) - 1}
+                style={({ hovered }) => [
+                  styles.navButton,
+                  currentIndex >= (ritualData?.playlist?.length || 0) - 1 && styles.navButtonDisabled,
+                  hovered && currentIndex < (ritualData?.playlist?.length || 0) - 1 && styles.navButtonHovered,
+                ]}
               >
-                →
-              </button>
-            </div>
-          </div>
-        </div>
+                <Text style={[
+                  styles.navButtonText,
+                  currentIndex >= (ritualData?.playlist?.length || 0) - 1 && styles.navButtonTextDisabled,
+                ]}>
+                  →
+                </Text>
+              </Pressable>
+            </View>
+          </GlassView>
+        </View>
       )}
-    </div>
+    </View>
   )
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: colors.background,
+  },
+  background: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+  },
+  gradientOverlay: {
+    flex: 1,
+    backgroundColor: 'linear-gradient(135deg, #1a1a2e 0%, #0f0f1a 50%, #1a0a20 100%)' as any,
+  },
+  loaderContainer: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: spacing.md,
+  },
+  loaderIcon: {
+    fontSize: 64,
+    marginBottom: spacing.md,
+  },
+  loaderText: {
+    fontSize: 18,
+    color: colors.text,
+    marginTop: spacing.md,
+  },
+  briefOverlay: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: 'rgba(0, 0, 0, 0.8)',
+    zIndex: 100,
+  },
+  briefContent: {
+    maxWidth: 500,
+    padding: spacing.xl,
+    alignItems: 'center',
+  },
+  briefEmoji: {
+    fontSize: 64,
+    marginBottom: spacing.md,
+  },
+  briefGreeting: {
+    fontSize: 28,
+    fontWeight: 'bold',
+    color: colors.text,
+    textAlign: 'center',
+    marginBottom: spacing.md,
+  },
+  briefIsrael: {
+    fontSize: 16,
+    color: colors.textSecondary,
+    textAlign: 'center',
+    marginBottom: spacing.sm,
+  },
+  briefRecommendation: {
+    fontSize: 14,
+    color: colors.textMuted,
+    textAlign: 'center',
+    marginBottom: spacing.lg,
+  },
+  israelContext: {
+    flexDirection: 'row',
+    gap: spacing.lg,
+    marginBottom: spacing.xl,
+  },
+  contextItem: {
+    alignItems: 'center',
+    gap: spacing.xs,
+  },
+  contextShabbat: {
+    backgroundColor: 'rgba(251, 191, 36, 0.1)',
+    paddingHorizontal: spacing.md,
+    paddingVertical: spacing.sm,
+    borderRadius: borderRadius.md,
+  },
+  contextIcon: {
+    fontSize: 24,
+  },
+  contextLabel: {
+    fontSize: 12,
+    color: colors.textMuted,
+  },
+  contextValue: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: colors.text,
+  },
+  shabbatText: {
+    color: colors.warning,
+  },
+  startButton: {
+    paddingHorizontal: spacing.xl,
+    paddingVertical: spacing.md,
+  },
+  startButtonText: {
+    fontSize: 18,
+    fontWeight: '600',
+    color: colors.text,
+  },
+  mainContent: {
+    flex: 1,
+    padding: spacing.lg,
+  },
+  header: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: spacing.lg,
+  },
+  headerLeft: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.md,
+  },
+  ritualTitle: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    color: colors.text,
+  },
+  ritualTime: {
+    fontSize: 14,
+    color: colors.textMuted,
+  },
+  headerRight: {
+    flexDirection: 'row',
+    gap: spacing.sm,
+  },
+  headerButton: {
+    paddingHorizontal: spacing.md,
+    paddingVertical: spacing.sm,
+    borderRadius: borderRadius.md,
+    backgroundColor: 'rgba(255, 255, 255, 0.05)',
+    borderWidth: 1,
+    borderColor: colors.glassBorder,
+  },
+  headerButtonHovered: {
+    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+  },
+  headerButtonText: {
+    fontSize: 14,
+    color: colors.textSecondary,
+  },
+  exitButton: {
+    backgroundColor: colors.primary,
+    borderColor: colors.primary,
+  },
+  exitButtonHovered: {
+    backgroundColor: colors.primaryHover,
+  },
+  exitButtonText: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: colors.text,
+  },
+  playerArea: {
+    flex: 1,
+    marginBottom: spacing.lg,
+  },
+  videoContainer: {
+    flex: 1,
+    borderRadius: borderRadius.lg,
+    overflow: 'hidden',
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+  },
+  videoInfo: {
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    right: 0,
+    padding: spacing.md,
+    backgroundColor: 'rgba(0, 0, 0, 0.7)',
+  },
+  videoTitle: {
+    fontSize: 18,
+    fontWeight: '600',
+    color: colors.text,
+  },
+  videoCategory: {
+    fontSize: 12,
+    color: colors.primary,
+    marginTop: spacing.xs,
+  },
+  radioContainer: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: spacing.xl,
+  },
+  radioVisual: {
+    position: 'relative',
+    width: 200,
+    height: 200,
+    marginBottom: spacing.lg,
+  },
+  radioThumbnail: {
+    width: '100%',
+    height: '100%',
+    borderRadius: borderRadius.full,
+  },
+  radioWaves: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  wave: {
+    position: 'absolute',
+    width: '100%',
+    height: '100%',
+    borderRadius: borderRadius.full,
+    borderWidth: 2,
+    borderColor: colors.primary,
+    opacity: 0.3,
+  },
+  wave1: {
+    transform: [{ scale: 1.2 }],
+  },
+  wave2: {
+    transform: [{ scale: 1.4 }],
+    opacity: 0.2,
+  },
+  wave3: {
+    transform: [{ scale: 1.6 }],
+    opacity: 0.1,
+  },
+  radioTitle: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    color: colors.text,
+    textAlign: 'center',
+  },
+  noContent: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  noContentText: {
+    fontSize: 16,
+    color: colors.textMuted,
+  },
+  playlistBar: {
+    padding: spacing.md,
+  },
+  playlistItems: {
+    flexDirection: 'row',
+    gap: spacing.sm,
+    paddingBottom: spacing.sm,
+  },
+  playlistItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.sm,
+    padding: spacing.sm,
+    borderRadius: borderRadius.md,
+    backgroundColor: 'rgba(255, 255, 255, 0.05)',
+    borderWidth: 1,
+    borderColor: 'transparent',
+  },
+  playlistItemActive: {
+    borderColor: colors.primary,
+    backgroundColor: 'rgba(0, 217, 255, 0.1)',
+  },
+  playlistItemHovered: {
+    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+  },
+  playlistThumbnail: {
+    width: 48,
+    height: 48,
+    borderRadius: borderRadius.sm,
+  },
+  playlistItemInfo: {
+    gap: 2,
+  },
+  playlistItemTitle: {
+    fontSize: 14,
+    fontWeight: '500',
+    color: colors.text,
+    maxWidth: 120,
+  },
+  playlistItemType: {
+    fontSize: 11,
+    color: colors.textMuted,
+  },
+  playingIndicator: {
+    width: 8,
+    height: 8,
+    borderRadius: 4,
+    backgroundColor: colors.primary,
+    marginLeft: spacing.sm,
+  },
+  playlistNav: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: spacing.md,
+    marginTop: spacing.md,
+    paddingTop: spacing.md,
+    borderTopWidth: 1,
+    borderTopColor: 'rgba(255, 255, 255, 0.1)',
+  },
+  navButton: {
+    width: 36,
+    height: 36,
+    borderRadius: borderRadius.full,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+  },
+  navButtonHovered: {
+    backgroundColor: 'rgba(255, 255, 255, 0.2)',
+  },
+  navButtonDisabled: {
+    opacity: 0.3,
+  },
+  navButtonText: {
+    fontSize: 18,
+    color: colors.text,
+  },
+  navButtonTextDisabled: {
+    color: colors.textMuted,
+  },
+  navCounter: {
+    fontSize: 14,
+    color: colors.textSecondary,
+    fontFamily: 'monospace',
+  },
+})

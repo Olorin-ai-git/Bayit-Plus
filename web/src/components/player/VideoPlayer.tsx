@@ -1,4 +1,5 @@
-import { useRef, useState, useEffect, useCallback } from 'react'
+import { useRef, useState, useEffect } from 'react'
+import { View, Text, StyleSheet, Pressable, ActivityIndicator } from 'react-native'
 import Hls from 'hls.js'
 import {
   Play,
@@ -15,6 +16,8 @@ import {
 import { useWatchPartyStore } from '@/stores/watchPartyStore'
 import { useAuthStore } from '@/stores/authStore'
 import logger from '@/utils/logger'
+import { colors, spacing, borderRadius } from '@bayit/shared/theme'
+import { GlassView, GlassBadge } from '@bayit/shared/ui'
 import {
   WatchPartyButton,
   WatchPartyCreateModal,
@@ -24,6 +27,25 @@ import {
 } from '@/components/watchparty'
 import ChaptersPanel from './ChaptersPanel'
 import ChapterTimeline from './ChapterTimeline'
+
+interface Chapter {
+  start_time: number
+  end_time: number
+  title?: string
+}
+
+interface VideoPlayerProps {
+  src: string
+  poster?: string
+  title?: string
+  contentId?: string
+  contentType?: string
+  onProgress?: (currentTime: number, duration: number) => void
+  isLive?: boolean
+  autoPlay?: boolean
+  chapters?: Chapter[]
+  chaptersLoading?: boolean
+}
 
 export default function VideoPlayer({
   src,
@@ -36,7 +58,7 @@ export default function VideoPlayer({
   autoPlay = false,
   chapters = [],
   chaptersLoading = false,
-}) {
+}: VideoPlayerProps) {
   const user = useAuthStore((s) => s.user)
   const {
     party,
@@ -62,10 +84,10 @@ export default function VideoPlayer({
   const [isMobile, setIsMobile] = useState(false)
   const [showChaptersPanel, setShowChaptersPanel] = useState(false)
   const lastSyncRef = useRef(0)
-  const videoRef = useRef(null)
-  const containerRef = useRef(null)
-  const hlsRef = useRef(null)
-  const progressInterval = useRef(null)
+  const videoRef = useRef<HTMLVideoElement>(null)
+  const containerRef = useRef<HTMLDivElement>(null)
+  const hlsRef = useRef<Hls | null>(null)
+  const progressInterval = useRef<NodeJS.Timeout | null>(null)
 
   const [isPlaying, setIsPlaying] = useState(false)
   const [isMuted, setIsMuted] = useState(false)
@@ -158,7 +180,7 @@ export default function VideoPlayer({
   }, [isPlaying, isLive, onProgress])
 
   useEffect(() => {
-    let timeout
+    let timeout: NodeJS.Timeout
     const handleMouseMove = () => {
       setShowControls(true)
       clearTimeout(timeout)
@@ -216,7 +238,7 @@ export default function VideoPlayer({
     syncPlayback(video.currentTime, !video.paused)
   }, [currentTime, isPlaying, party, isHost, isConnected, syncPlayback])
 
-  const handleCreateParty = async (options) => {
+  const handleCreateParty = async (options: { chatEnabled: boolean; syncPlayback: boolean }) => {
     if (!contentId) return
     const newParty = await createParty(contentId, contentType, {
       title,
@@ -227,7 +249,7 @@ export default function VideoPlayer({
     setShowPartyPanel(true)
   }
 
-  const handleJoinParty = async (roomCode) => {
+  const handleJoinParty = async (roomCode: string) => {
     const joinedParty = await joinByCode(roomCode)
     connect(joinedParty.id, user?.token)
     setShowPartyPanel(true)
@@ -260,7 +282,7 @@ export default function VideoPlayer({
     }
   }
 
-  const handleVolumeChange = (e) => {
+  const handleVolumeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newVolume = parseFloat(e.target.value)
     setVolume(newVolume)
     if (videoRef.current) {
@@ -269,7 +291,7 @@ export default function VideoPlayer({
     }
   }
 
-  const handleSeek = (e) => {
+  const handleSeek = (e: React.MouseEvent<HTMLDivElement>) => {
     const rect = e.currentTarget.getBoundingClientRect()
     const pos = (e.clientX - rect.left) / rect.width
     if (videoRef.current && duration) {
@@ -287,43 +309,47 @@ export default function VideoPlayer({
     }
   }
 
-  const skip = (seconds) => {
+  const skip = (seconds: number) => {
     if (videoRef.current) {
       videoRef.current.currentTime += seconds
     }
   }
 
-  const seekToTime = (time) => {
+  const seekToTime = (time: number) => {
     if (videoRef.current) {
       videoRef.current.currentTime = time
     }
   }
 
-  const formatTime = (time) => {
+  const formatTime = (time: number) => {
     if (!time || !isFinite(time)) return '0:00'
     const minutes = Math.floor(time / 60)
     const seconds = Math.floor(time % 60)
     return `${minutes}:${seconds.toString().padStart(2, '0')}`
   }
 
+  const progress = duration > 0 ? (currentTime / duration) * 100 : 0
+
   return (
     <div
       ref={containerRef}
-      className="video-player relative bg-black group"
+      style={webStyles.container}
       onClick={togglePlay}
     >
       <video
         ref={videoRef}
         poster={poster}
-        className="w-full h-full"
+        style={webStyles.video}
         playsInline
       />
 
       {/* Loading Spinner */}
       {loading && (
-        <div className="absolute inset-0 flex items-center justify-center glass">
-          <div className="w-12 h-12 border-4 border-primary-500 border-t-transparent rounded-full animate-spin shadow-glow" />
-        </div>
+        <View style={styles.loadingOverlay}>
+          <View style={styles.spinner}>
+            <ActivityIndicator size="large" color={colors.primary} />
+          </View>
+        </View>
       )}
 
       {/* Chapters Panel */}
@@ -340,41 +366,46 @@ export default function VideoPlayer({
       )}
 
       {/* Controls Overlay */}
-      <div
-        className={`absolute inset-0 bg-gradient-to-t from-dark-900/90 via-transparent to-dark-900/40 transition-opacity duration-300 ${
-          showControls ? 'opacity-100' : 'opacity-0 pointer-events-none'
-        }`}
-        onClick={(e) => e.stopPropagation()}
+      <View
+        style={[
+          styles.controlsOverlay,
+          !showControls && styles.controlsHidden,
+        ]}
+        pointerEvents={showControls ? 'auto' : 'none'}
       >
         {/* Top Bar */}
-        <div className="absolute top-0 left-0 right-0 p-4 flex items-center justify-between">
-          <h2 className="text-lg font-semibold truncate drop-shadow-lg">{title}</h2>
-          {isLive && <span className="live-badge">LIVE</span>}
-        </div>
+        <View style={styles.topBar}>
+          <Text style={styles.title} numberOfLines={1}>{title}</Text>
+          {isLive && (
+            <GlassBadge variant="danger" size="sm">LIVE</GlassBadge>
+          )}
+        </View>
 
         {/* Center Play Button */}
-        <div className="absolute inset-0 flex items-center justify-center">
-          <button
-            onClick={togglePlay}
-            className="w-20 h-20 rounded-full glass flex items-center justify-center hover:shadow-glow transition-all duration-300 group/play"
+        <View style={styles.centerControls}>
+          <Pressable
+            onPress={(e) => {
+              e.stopPropagation?.()
+              togglePlay()
+            }}
+            style={({ hovered }) => [
+              styles.centerPlayButton,
+              hovered && styles.centerPlayButtonHovered,
+            ]}
           >
             {isPlaying ? (
-              <Pause size={40} fill="white" className="text-white" />
+              <Pause size={40} fill={colors.text} color={colors.text} />
             ) : (
-              <Play size={40} fill="white" className="text-white mr-[-4px] group-hover/play:scale-110 transition-transform" />
+              <Play size={40} fill={colors.text} color={colors.text} style={{ marginLeft: 4 }} />
             )}
-          </button>
-        </div>
+          </Pressable>
+        </View>
 
         {/* Bottom Controls */}
-        <div className="absolute bottom-0 left-0 right-0 glass-strong p-4 space-y-3 rounded-b-xl">
+        <GlassView style={styles.bottomControls} intensity="high" noBorder>
           {/* Progress Bar */}
           {!isLive && (
-            <div
-              className="h-1.5 bg-white/20 rounded-full cursor-pointer group/progress relative"
-              onClick={handleSeek}
-            >
-              {/* Chapter Timeline Markers */}
+            <Pressable onPress={handleSeek as any} style={styles.progressContainer}>
               {chapters.length > 0 && (
                 <ChapterTimeline
                   chapters={chapters}
@@ -383,37 +414,46 @@ export default function VideoPlayer({
                   onSeek={seekToTime}
                 />
               )}
-              <div
-                className="h-full bg-primary-500 rounded-full relative shadow-glow"
-                style={{ width: `${(currentTime / duration) * 100 || 0}%` }}
-              >
-                <div className="absolute left-0 top-1/2 -translate-y-1/2 w-4 h-4 bg-white rounded-full opacity-0 group-hover/progress:opacity-100 transition-opacity shadow-glow" />
-              </div>
-            </div>
+              <View style={styles.progressTrack}>
+                <View style={[styles.progressFill, { width: `${progress}%` }]} />
+              </View>
+            </Pressable>
           )}
 
           {/* Controls Row */}
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <button onClick={togglePlay} className="glass-btn-ghost glass-btn-icon-sm">
-                {isPlaying ? <Pause size={22} /> : <Play size={22} />}
-              </button>
+          <View style={styles.controlsRow}>
+            <View style={styles.leftControls}>
+              <Pressable
+                onPress={(e) => { e.stopPropagation?.(); togglePlay() }}
+                style={({ hovered }) => [styles.controlButton, hovered && styles.controlButtonHovered]}
+              >
+                {isPlaying ? <Pause size={22} color={colors.text} /> : <Play size={22} color={colors.text} />}
+              </Pressable>
 
               {!isLive && (
                 <>
-                  <button onClick={() => skip(-10)} className="glass-btn-ghost glass-btn-icon-sm">
-                    <SkipBack size={18} />
-                  </button>
-                  <button onClick={() => skip(10)} className="glass-btn-ghost glass-btn-icon-sm">
-                    <SkipForward size={18} />
-                  </button>
+                  <Pressable
+                    onPress={(e) => { e.stopPropagation?.(); skip(-10) }}
+                    style={({ hovered }) => [styles.controlButton, hovered && styles.controlButtonHovered]}
+                  >
+                    <SkipBack size={18} color={colors.text} />
+                  </Pressable>
+                  <Pressable
+                    onPress={(e) => { e.stopPropagation?.(); skip(10) }}
+                    style={({ hovered }) => [styles.controlButton, hovered && styles.controlButtonHovered]}
+                  >
+                    <SkipForward size={18} color={colors.text} />
+                  </Pressable>
                 </>
               )}
 
-              <div className="flex items-center gap-2">
-                <button onClick={toggleMute} className="glass-btn-ghost glass-btn-icon-sm">
-                  {isMuted ? <VolumeX size={18} /> : <Volume2 size={18} />}
-                </button>
+              <View style={styles.volumeControls}>
+                <Pressable
+                  onPress={(e) => { e.stopPropagation?.(); toggleMute() }}
+                  style={({ hovered }) => [styles.controlButton, hovered && styles.controlButtonHovered]}
+                >
+                  {isMuted ? <VolumeX size={18} color={colors.text} /> : <Volume2 size={18} color={colors.text} />}
+                </Pressable>
                 <input
                   type="range"
                   min="0"
@@ -421,18 +461,19 @@ export default function VideoPlayer({
                   step="0.1"
                   value={isMuted ? 0 : volume}
                   onChange={handleVolumeChange}
-                  className="w-20"
+                  onClick={(e) => e.stopPropagation()}
+                  style={webStyles.volumeSlider}
                 />
-              </div>
+              </View>
 
               {!isLive && (
-                <span className="text-sm tabular-nums text-dark-300">
+                <Text style={styles.timeText}>
                   {formatTime(currentTime)} / {formatTime(duration)}
-                </span>
+                </Text>
               )}
-            </div>
+            </View>
 
-            <div className="flex items-center gap-2">
+            <View style={styles.rightControls}>
               {user && contentId && (
                 <WatchPartyButton
                   hasActiveParty={!!party}
@@ -442,24 +483,33 @@ export default function VideoPlayer({
                 />
               )}
               {!isLive && chapters.length > 0 && (
-                <button
-                  onClick={() => setShowChaptersPanel(!showChaptersPanel)}
-                  className={`glass-btn-ghost glass-btn-icon-sm ${showChaptersPanel ? 'text-primary-400' : ''}`}
-                  title="Chapters"
+                <Pressable
+                  onPress={(e) => { e.stopPropagation?.(); setShowChaptersPanel(!showChaptersPanel) }}
+                  style={({ hovered }) => [
+                    styles.controlButton,
+                    hovered && styles.controlButtonHovered,
+                    showChaptersPanel && styles.controlButtonActive,
+                  ]}
                 >
-                  <List size={18} />
-                </button>
+                  <List size={18} color={showChaptersPanel ? colors.primary : colors.text} />
+                </Pressable>
               )}
-              <button className="glass-btn-ghost glass-btn-icon-sm">
-                <Settings size={18} />
-              </button>
-              <button onClick={toggleFullscreen} className="glass-btn-ghost glass-btn-icon-sm">
-                {isFullscreen ? <Minimize size={18} /> : <Maximize size={18} />}
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
+              <Pressable
+                onPress={(e) => e.stopPropagation?.()}
+                style={({ hovered }) => [styles.controlButton, hovered && styles.controlButtonHovered]}
+              >
+                <Settings size={18} color={colors.text} />
+              </Pressable>
+              <Pressable
+                onPress={(e) => { e.stopPropagation?.(); toggleFullscreen() }}
+                style={({ hovered }) => [styles.controlButton, hovered && styles.controlButtonHovered]}
+              >
+                {isFullscreen ? <Minimize size={18} color={colors.text} /> : <Maximize size={18} color={colors.text} />}
+              </Pressable>
+            </View>
+          </View>
+        </GlassView>
+      </View>
 
       {/* Watch Party Panel (Desktop) */}
       {!isMobile && (
@@ -513,8 +563,158 @@ export default function VideoPlayer({
 
       {/* Party Active Indicator Border */}
       {party && (
-        <div className="absolute inset-0 pointer-events-none border-2 border-emerald-500/50 rounded-xl animate-pulse" />
+        <View style={styles.partyIndicator} pointerEvents="none" />
       )}
     </div>
   )
 }
+
+const webStyles: Record<string, React.CSSProperties> = {
+  container: {
+    position: 'relative',
+    backgroundColor: '#000',
+    width: '100%',
+    height: '100%',
+  },
+  video: {
+    width: '100%',
+    height: '100%',
+  },
+  volumeSlider: {
+    width: 80,
+    accentColor: colors.primary,
+  },
+}
+
+const styles = StyleSheet.create({
+  loadingOverlay: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: 'rgba(26, 26, 46, 0.7)',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  spinner: {
+    width: 48,
+    height: 48,
+  },
+  controlsOverlay: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundImage: 'linear-gradient(to top, rgba(17, 17, 34, 0.9), transparent 40%, transparent 60%, rgba(17, 17, 34, 0.4))' as any,
+  },
+  controlsHidden: {
+    opacity: 0,
+  },
+  topBar: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    padding: spacing.md,
+  },
+  title: {
+    fontSize: 18,
+    fontWeight: '600',
+    color: colors.text,
+    textShadowColor: 'rgba(0, 0, 0, 0.5)',
+    textShadowOffset: { width: 0, height: 1 },
+    textShadowRadius: 2,
+  },
+  centerControls: {
+    ...StyleSheet.absoluteFillObject,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  centerPlayButton: {
+    width: 80,
+    height: 80,
+    borderRadius: 40,
+    backgroundColor: 'rgba(26, 26, 46, 0.7)',
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderWidth: 1,
+    borderColor: colors.glassBorder,
+  },
+  centerPlayButtonHovered: {
+    shadowColor: colors.primary,
+    shadowOffset: { width: 0, height: 0 },
+    shadowOpacity: 0.5,
+    shadowRadius: 16,
+  },
+  bottomControls: {
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    right: 0,
+    padding: spacing.md,
+    gap: spacing.sm,
+    borderRadius: 0,
+    borderBottomLeftRadius: borderRadius.lg,
+    borderBottomRightRadius: borderRadius.lg,
+  },
+  progressContainer: {
+    height: 6,
+    position: 'relative',
+  },
+  progressTrack: {
+    height: 6,
+    backgroundColor: 'rgba(255, 255, 255, 0.2)',
+    borderRadius: 3,
+    overflow: 'hidden',
+  },
+  progressFill: {
+    height: '100%',
+    backgroundColor: colors.primary,
+    borderRadius: 3,
+    shadowColor: colors.primary,
+    shadowOffset: { width: 0, height: 0 },
+    shadowOpacity: 0.5,
+    shadowRadius: 4,
+  },
+  controlsRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+  leftControls: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.sm,
+  },
+  rightControls: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.sm,
+  },
+  controlButton: {
+    width: 36,
+    height: 36,
+    borderRadius: borderRadius.md,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  controlButtonHovered: {
+    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+  },
+  controlButtonActive: {
+    backgroundColor: 'rgba(0, 217, 255, 0.2)',
+  },
+  volumeControls: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.xs,
+  },
+  timeText: {
+    fontSize: 14,
+    color: colors.textSecondary,
+    fontVariant: ['tabular-nums'],
+  },
+  partyIndicator: {
+    ...StyleSheet.absoluteFillObject,
+    borderWidth: 2,
+    borderColor: 'rgba(16, 185, 129, 0.5)',
+    borderRadius: borderRadius.lg,
+  },
+})

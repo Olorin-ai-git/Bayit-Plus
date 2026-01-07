@@ -1,202 +1,295 @@
-import { useState, useEffect, useCallback } from 'react'
-import { Clock, MapPin, Sun, Moon, Star } from 'lucide-react'
-import { zmanService } from '../../services/api'
-import logger from '@/utils/logger'
+import { useState, useEffect, useCallback } from 'react';
+import { View, Text, StyleSheet, ActivityIndicator } from 'react-native';
+import { Star, Clock } from 'lucide-react';
+import { zmanService } from '../../services/api';
+import { AnalogClock } from '@bayit/shared/ui';
+import { colors, spacing } from '@bayit/shared/theme';
+import logger from '@/utils/logger';
+
+interface TimeData {
+  israel: { time: string; day: string };
+  local: { time: string; timezone: string };
+  shabbat: {
+    is_shabbat: boolean;
+    is_erev_shabbat: boolean;
+    countdown?: string;
+    countdown_label?: string;
+    candle_lighting?: string;
+    parasha_hebrew?: string;
+  };
+}
+
+interface DualClockProps {
+  showShabbatStatus?: boolean;
+  compact?: boolean;
+  style?: any;
+}
 
 /**
  * DualClock Component
- * Displays current time in Israel alongside local time.
+ * Displays analog clocks for Israel and local time.
  * Shows Shabbat status and countdown when applicable.
  */
 export default function DualClock({
   showShabbatStatus = true,
   compact = false,
-  className = '',
-}) {
-  const [timeData, setTimeData] = useState(null)
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState(null)
+  style,
+}: DualClockProps) {
+  const [timeData, setTimeData] = useState<TimeData | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   const fetchTime = useCallback(async () => {
     try {
-      const data = await zmanService.getTime()
-      setTimeData(data)
-      setError(null)
+      const data = await zmanService.getTime();
+      setTimeData(data);
+      setError(null);
     } catch (err) {
-      logger.error('Failed to fetch time', 'DualClock', err)
-      setError('Unable to fetch time')
+      logger.error('Failed to fetch time', 'DualClock', err);
+      setError('Unable to fetch time');
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }, [])
+  }, []);
 
   useEffect(() => {
-    fetchTime()
-    // Update every minute
-    const interval = setInterval(fetchTime, 60000)
-    return () => clearInterval(interval)
-  }, [fetchTime])
+    fetchTime();
+    const interval = setInterval(fetchTime, 60000);
+    return () => clearInterval(interval);
+  }, [fetchTime]);
 
   if (loading) {
     return (
-      <div className={`glass-card-sm p-3 animate-pulse ${className}`}>
-        <div className="flex gap-4">
-          <div className="h-8 w-20 bg-white/10 rounded" />
-          <div className="h-8 w-20 bg-white/10 rounded" />
-        </div>
-      </div>
-    )
+      <View style={[styles.loadingContainer, style]}>
+        <ActivityIndicator size="small" color={colors.primary} />
+      </View>
+    );
   }
 
   if (error || !timeData) {
-    return null
+    return null;
   }
 
-  const { israel, local, shabbat } = timeData
-
-  // Determine if it's daytime in Israel (rough estimate)
-  const israelHour = parseInt(israel.time.split(':')[0], 10)
-  const isDayInIsrael = israelHour >= 6 && israelHour < 20
+  const { israel, local, shabbat } = timeData;
+  const [israelHours, israelMinutes] = israel.time.split(':').map(Number);
+  const [localHours, localMinutes] = local.time.split(':').map(Number);
+  const localTimezone = local.timezone.split('/')[1]?.replace('_', ' ') || local.timezone;
 
   if (compact) {
     return (
-      <div className={`flex items-center gap-3 text-sm ${className}`}>
-        <div className="flex items-center gap-1.5 text-white/80">
-          <span className="text-xs">🇮🇱</span>
-          <span className="font-mono">{israel.time}</span>
-        </div>
+      <View style={[styles.compactContainer, style]}>
+        <AnalogClock
+          hours={israelHours}
+          minutes={israelMinutes}
+          size={50}
+          flag="🇮🇱"
+          accentColor={colors.primary}
+          isShabbat={shabbat.is_shabbat}
+        />
         {shabbat.is_shabbat && (
-          <div className="flex items-center gap-1 text-amber-400">
-            <Star className="w-3 h-3" />
-            <span className="text-xs">שבת</span>
-          </div>
+          <View style={styles.compactShabbat}>
+            <Star size={12} color={colors.warning} />
+            <Text style={styles.compactShabbatText}>שבת</Text>
+          </View>
         )}
-      </div>
-    )
+      </View>
+    );
   }
 
   return (
-    <div className={`glass-card-sm p-4 ${className}`}>
-      <div className="flex items-center justify-between gap-6">
-        {/* Israel Time */}
-        <div className="flex items-center gap-3">
-          <div className="flex items-center justify-center w-10 h-10 rounded-full bg-gradient-to-br from-blue-500/20 to-white/10">
-            {isDayInIsrael ? (
-              <Sun className="w-5 h-5 text-amber-400" />
-            ) : (
-              <Moon className="w-5 h-5 text-blue-300" />
-            )}
-          </div>
-          <div className="text-right">
-            <div className="text-xs text-white/60 flex items-center gap-1">
-              <span>🇮🇱</span>
-              <span>ישראל</span>
-            </div>
-            <div className="text-xl font-mono font-semibold text-white">
-              {israel.time}
-            </div>
-            <div className="text-xs text-white/50">{israel.day}</div>
-          </div>
-        </div>
+    <View style={[styles.container, style]}>
+      <View style={styles.clocksRow}>
+        {/* Israel Clock */}
+        <AnalogClock
+          hours={israelHours}
+          minutes={israelMinutes}
+          size={100}
+          label="ישראל"
+          flag="🇮🇱"
+          sublabel={israel.day}
+          accentColor={colors.primary}
+          isShabbat={shabbat.is_shabbat}
+        />
 
         {/* Divider */}
-        <div className="w-px h-12 bg-white/10" />
+        <View style={styles.divider} />
 
-        {/* Local Time */}
-        <div className="flex items-center gap-3">
-          <div className="flex items-center justify-center w-10 h-10 rounded-full bg-white/5">
-            <MapPin className="w-5 h-5 text-cyan-400" />
-          </div>
-          <div className="text-right">
-            <div className="text-xs text-white/60">מקומי</div>
-            <div className="text-xl font-mono font-semibold text-white/80">
-              {local.time}
-            </div>
-            <div className="text-xs text-white/50">
-              {local.timezone.split('/')[1]?.replace('_', ' ')}
-            </div>
-          </div>
-        </div>
-      </div>
+        {/* Local Clock */}
+        <AnalogClock
+          hours={localHours}
+          minutes={localMinutes}
+          size={100}
+          label="מקומי"
+          sublabel={localTimezone}
+          accentColor={colors.secondary}
+        />
+      </View>
 
       {/* Shabbat Status */}
       {showShabbatStatus && (shabbat.is_shabbat || shabbat.is_erev_shabbat) && (
-        <div className="mt-3 pt-3 border-t border-white/10">
+        <View style={styles.shabbatContainer}>
           {shabbat.is_shabbat ? (
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <Star className="w-4 h-4 text-amber-400" />
-                <span className="text-amber-400 font-medium">שבת שלום!</span>
-              </div>
+            <View style={styles.shabbatRow}>
+              <View style={styles.shabbatLabel}>
+                <Star size={14} color={colors.warning} />
+                <Text style={styles.shabbatText}>שבת שלום!</Text>
+              </View>
               {shabbat.countdown && (
-                <div className="text-xs text-white/60">
-                  <span>{shabbat.countdown_label}: </span>
-                  <span className="font-mono">{shabbat.countdown}</span>
-                </div>
+                <Text style={styles.countdownText}>
+                  {shabbat.countdown_label}: {shabbat.countdown}
+                </Text>
               )}
-            </div>
+            </View>
           ) : shabbat.is_erev_shabbat ? (
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <Clock className="w-4 h-4 text-purple-400" />
-                <span className="text-purple-400 font-medium">ערב שבת</span>
-              </div>
-              <div className="text-xs text-white/60">
-                {shabbat.countdown && (
-                  <>
-                    <span>{shabbat.countdown_label}: </span>
-                    <span className="font-mono">{shabbat.countdown}</span>
-                  </>
-                )}
+            <View style={styles.shabbatRow}>
+              <View style={styles.shabbatLabel}>
+                <Clock size={14} color={colors.accent} />
+                <Text style={[styles.shabbatText, { color: colors.accent }]}>ערב שבת</Text>
+              </View>
+              <View style={styles.erevDetails}>
                 {shabbat.candle_lighting && (
-                  <span className="mr-2">הדלקת נרות: {shabbat.candle_lighting}</span>
+                  <Text style={styles.candleLighting}>הדלקת נרות: {shabbat.candle_lighting}</Text>
                 )}
-              </div>
-            </div>
+                {shabbat.countdown && (
+                  <Text style={styles.countdownText}>
+                    {shabbat.countdown_label}: {shabbat.countdown}
+                  </Text>
+                )}
+              </View>
+            </View>
           ) : null}
 
-          {/* Parasha */}
           {shabbat.parasha_hebrew && (
-            <div className="mt-2 text-xs text-white/50 text-center">
-              פרשת {shabbat.parasha_hebrew}
-            </div>
+            <Text style={styles.parasha}>פרשת {shabbat.parasha_hebrew}</Text>
           )}
-        </div>
+        </View>
       )}
-    </div>
-  )
+    </View>
+  );
 }
 
 /**
  * Minimal clock display for header/navbar
  */
-export function MiniClock({ className = '' }) {
-  const [time, setTime] = useState('')
-  const [isShabbat, setIsShabbat] = useState(false)
+export function MiniClock({ style }: { style?: any }) {
+  const [timeData, setTimeData] = useState<{ hours: number; minutes: number; isShabbat: boolean } | null>(null);
 
   useEffect(() => {
     const fetchTime = async () => {
       try {
-        const data = await zmanService.getTime()
-        setTime(data.israel.time)
-        setIsShabbat(data.shabbat.is_shabbat)
+        const data = await zmanService.getTime();
+        const [hours, minutes] = data.israel.time.split(':').map(Number);
+        setTimeData({ hours, minutes, isShabbat: data.shabbat.is_shabbat });
       } catch (err) {
-        logger.error('Failed to fetch time', 'MiniClock', err)
+        logger.error('Failed to fetch time', 'MiniClock', err);
       }
-    }
+    };
 
-    fetchTime()
-    const interval = setInterval(fetchTime, 60000)
-    return () => clearInterval(interval)
-  }, [])
+    fetchTime();
+    const interval = setInterval(fetchTime, 60000);
+    return () => clearInterval(interval);
+  }, []);
 
-  if (!time) return null
+  if (!timeData) return null;
 
   return (
-    <div className={`flex items-center gap-2 ${className}`}>
-      <span className="text-xs">🇮🇱</span>
-      <span className="font-mono text-sm text-white/80">{time}</span>
-      {isShabbat && <Star className="w-3 h-3 text-amber-400" />}
-    </div>
-  )
+    <View style={[styles.miniContainer, style]}>
+      <AnalogClock
+        hours={timeData.hours}
+        minutes={timeData.minutes}
+        size={36}
+        accentColor={colors.primary}
+        isShabbat={timeData.isShabbat}
+      />
+      {timeData.isShabbat && <Star size={10} color={colors.warning} />}
+    </View>
+  );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    backgroundColor: 'rgba(255, 255, 255, 0.05)',
+    borderRadius: 12,
+    padding: spacing.md,
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.1)',
+  },
+  loadingContainer: {
+    backgroundColor: 'rgba(255, 255, 255, 0.05)',
+    borderRadius: 12,
+    padding: spacing.md,
+    justifyContent: 'center',
+    alignItems: 'center',
+    minHeight: 140,
+  },
+  clocksRow: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'flex-start',
+    gap: spacing.xl,
+  },
+  divider: {
+    width: 1,
+    height: 100,
+    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+  },
+  compactContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.sm,
+  },
+  compactShabbat: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+  },
+  compactShabbatText: {
+    fontSize: 11,
+    color: colors.warning,
+  },
+  shabbatContainer: {
+    marginTop: spacing.md,
+    paddingTop: spacing.md,
+    borderTopWidth: 1,
+    borderTopColor: 'rgba(255, 255, 255, 0.1)',
+  },
+  shabbatRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  shabbatLabel: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.xs,
+  },
+  shabbatText: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: colors.warning,
+  },
+  countdownText: {
+    fontSize: 12,
+    color: 'rgba(255, 255, 255, 0.6)',
+    fontFamily: 'monospace',
+  },
+  erevDetails: {
+    alignItems: 'flex-end',
+    gap: 2,
+  },
+  candleLighting: {
+    fontSize: 12,
+    color: 'rgba(255, 255, 255, 0.6)',
+  },
+  parasha: {
+    marginTop: spacing.sm,
+    fontSize: 12,
+    color: 'rgba(255, 255, 255, 0.5)',
+    textAlign: 'center',
+  },
+  miniContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.xs,
+  },
+});

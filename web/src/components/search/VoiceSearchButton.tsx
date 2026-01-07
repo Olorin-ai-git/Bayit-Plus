@@ -1,13 +1,23 @@
+import { View, Text, StyleSheet, Pressable, Animated } from 'react-native'
 import { useTranslation } from 'react-i18next'
 import { Mic, MicOff, Loader2, Square } from 'lucide-react'
 import { useVoiceRecording } from '@/hooks/useVoiceRecording'
+import { useRef, useEffect } from 'react'
+import { colors, spacing, borderRadius } from '@bayit/shared/theme'
+
+interface VoiceSearchButtonProps {
+  onTranscribed: (text: string) => void
+  onError?: (error: string) => void
+  style?: any
+  size?: 'sm' | 'md' | 'lg'
+}
 
 export default function VoiceSearchButton({
   onTranscribed,
   onError,
-  className = '',
+  style,
   size = 'md',
-}) {
+}: VoiceSearchButtonProps) {
   const { t } = useTranslation()
   const {
     isRecording,
@@ -16,76 +26,172 @@ export default function VoiceSearchButton({
     hasPermission,
     isSupported,
     toggleRecording,
-    cancelRecording,
   } = useVoiceRecording({
     onTranscribed,
     onError,
   })
 
-  // Size variants
-  const sizeClasses = {
-    sm: 'w-8 h-8',
-    md: 'w-10 h-10',
-    lg: 'w-12 h-12',
+  const pulseAnim = useRef(new Animated.Value(0)).current
+  const spinAnim = useRef(new Animated.Value(0)).current
+
+  useEffect(() => {
+    if (isRecording) {
+      const animation = Animated.loop(
+        Animated.sequence([
+          Animated.timing(pulseAnim, {
+            toValue: 1,
+            duration: 500,
+            useNativeDriver: true,
+          }),
+          Animated.timing(pulseAnim, {
+            toValue: 0,
+            duration: 500,
+            useNativeDriver: true,
+          }),
+        ])
+      )
+      animation.start()
+      return () => animation.stop()
+    } else {
+      pulseAnim.setValue(0)
+    }
+  }, [isRecording])
+
+  useEffect(() => {
+    if (isTranscribing) {
+      const animation = Animated.loop(
+        Animated.timing(spinAnim, {
+          toValue: 1,
+          duration: 1000,
+          useNativeDriver: true,
+        })
+      )
+      animation.start()
+      return () => animation.stop()
+    }
+  }, [isTranscribing])
+
+  const sizeStyles = {
+    sm: { button: styles.buttonSm, icon: 16 },
+    md: { button: styles.buttonMd, icon: 20 },
+    lg: { button: styles.buttonLg, icon: 24 },
   }
 
-  const iconSizes = {
-    sm: 16,
-    md: 20,
-    lg: 24,
-  }
+  const currentSize = sizeStyles[size]
 
   if (!isSupported) {
     return null
   }
 
-  const getTooltip = () => {
-    if (isTranscribing) return t('voice.transcribing')
-    if (isRecording) return t('voice.stopRecording')
-    if (error === 'noMicrophone') return t('voice.noMicrophone')
-    return t('voice.startRecording')
+  const getButtonStyle = () => {
+    if (isRecording) return styles.buttonRecording
+    if (isTranscribing) return styles.buttonTranscribing
+    if (hasPermission === false) return styles.buttonNoPermission
+    return styles.buttonDefault
   }
 
+  const spin = spinAnim.interpolate({
+    inputRange: [0, 1],
+    outputRange: ['0deg', '360deg'],
+  })
+
   return (
-    <div className={`relative ${className}`}>
-      <button
-        onClick={toggleRecording}
+    <View style={[styles.container, style]}>
+      <Pressable
+        onPress={toggleRecording}
         disabled={isTranscribing}
-        title={getTooltip()}
-        className={`
-          ${sizeClasses[size]}
-          rounded-full flex items-center justify-center
-          transition-all duration-300
-          ${isRecording
-            ? 'bg-red-500 text-white animate-pulse shadow-[0_0_20px_rgba(239,68,68,0.5)]'
-            : isTranscribing
-              ? 'glass text-primary-400'
-              : hasPermission === false
-                ? 'glass text-red-400 opacity-50 cursor-not-allowed'
-                : 'glass hover:bg-white/10 text-white hover:text-primary-400'
-          }
-        `}
+        style={({ hovered }) => [
+          styles.button,
+          currentSize.button,
+          getButtonStyle(),
+          hovered && !isRecording && !isTranscribing && styles.buttonHovered,
+        ]}
       >
         {isTranscribing ? (
-          <Loader2 size={iconSizes[size]} className="animate-spin" />
+          <Animated.View style={{ transform: [{ rotate: spin }] }}>
+            <Loader2 size={currentSize.icon} color={colors.primary} />
+          </Animated.View>
         ) : isRecording ? (
-          <Square size={iconSizes[size] - 4} fill="currentColor" />
+          <Square size={currentSize.icon - 4} fill={colors.text} color={colors.text} />
         ) : hasPermission === false ? (
-          <MicOff size={iconSizes[size]} />
+          <MicOff size={currentSize.icon} color="#F87171" />
         ) : (
-          <Mic size={iconSizes[size]} />
+          <Mic size={currentSize.icon} color={colors.text} />
         )}
-      </button>
+      </Pressable>
 
       {/* Recording indicator ring */}
       {isRecording && (
-        <div className="absolute inset-0 rounded-full border-2 border-red-500 animate-ping" />
+        <Animated.View
+          style={[
+            styles.pulseRing,
+            currentSize.button,
+            {
+              opacity: pulseAnim.interpolate({
+                inputRange: [0, 1],
+                outputRange: [0.5, 0],
+              }),
+              transform: [{
+                scale: pulseAnim.interpolate({
+                  inputRange: [0, 1],
+                  outputRange: [1, 1.5],
+                }),
+              }],
+            },
+          ]}
+        />
       )}
-
-      {/* Status text for accessibility */}
-      {isRecording && (
-        <span className="sr-only">{t('voice.recording')}</span>
-      )}
-    </div>
+    </View>
   )
 }
+
+const styles = StyleSheet.create({
+  container: {
+    position: 'relative',
+  },
+  button: {
+    borderRadius: borderRadius.full,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  buttonSm: {
+    width: 32,
+    height: 32,
+  },
+  buttonMd: {
+    width: 40,
+    height: 40,
+  },
+  buttonLg: {
+    width: 48,
+    height: 48,
+  },
+  buttonDefault: {
+    backgroundColor: 'rgba(255, 255, 255, 0.05)',
+    borderWidth: 1,
+    borderColor: colors.glassBorder,
+  },
+  buttonHovered: {
+    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+  },
+  buttonRecording: {
+    backgroundColor: '#EF4444',
+  },
+  buttonTranscribing: {
+    backgroundColor: 'rgba(255, 255, 255, 0.05)',
+    borderWidth: 1,
+    borderColor: colors.glassBorder,
+  },
+  buttonNoPermission: {
+    backgroundColor: 'rgba(255, 255, 255, 0.05)',
+    opacity: 0.5,
+  },
+  pulseRing: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    borderRadius: borderRadius.full,
+    borderWidth: 2,
+    borderColor: '#EF4444',
+  },
+})

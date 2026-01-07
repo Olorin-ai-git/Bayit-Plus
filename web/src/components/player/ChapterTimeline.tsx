@@ -1,28 +1,46 @@
 import { useState, useRef } from 'react'
+import { View, Text, StyleSheet, Pressable } from 'react-native'
 import { useTranslation } from 'react-i18next'
+import { colors, spacing, borderRadius } from '@bayit/shared/theme'
+import { GlassView } from '@bayit/shared/ui'
 
 // Category colors matching ChapterCard
-const categoryColors = {
-  intro: 'bg-blue-500',
-  news: 'bg-red-500',
-  security: 'bg-orange-500',
-  politics: 'bg-purple-500',
-  economy: 'bg-green-500',
-  sports: 'bg-yellow-500',
-  weather: 'bg-cyan-500',
-  culture: 'bg-pink-500',
-  conclusion: 'bg-gray-500',
-  flashback: 'bg-indigo-500',
-  journey: 'bg-teal-500',
-  climax: 'bg-rose-500',
-  setup: 'bg-amber-500',
-  action: 'bg-red-600',
-  conflict: 'bg-orange-600',
-  cliffhanger: 'bg-violet-500',
-  main: 'bg-blue-600',
+const categoryColors: Record<string, string> = {
+  intro: '#3B82F6',      // blue-500
+  news: '#EF4444',       // red-500
+  security: '#F97316',   // orange-500
+  politics: '#A855F7',   // purple-500
+  economy: '#22C55E',    // green-500
+  sports: '#EAB308',     // yellow-500
+  weather: '#06B6D4',    // cyan-500
+  culture: '#EC4899',    // pink-500
+  conclusion: '#6B7280', // gray-500
+  flashback: '#6366F1',  // indigo-500
+  journey: '#14B8A6',    // teal-500
+  climax: '#F43F5E',     // rose-500
+  setup: '#F59E0B',      // amber-500
+  action: '#DC2626',     // red-600
+  conflict: '#EA580C',   // orange-600
+  cliffhanger: '#8B5CF6', // violet-500
+  main: '#2563EB',       // blue-600
 }
 
-function formatTime(seconds) {
+interface Chapter {
+  title: string
+  category: string
+  start_time: number
+  end_time: number
+}
+
+interface ChapterTimelineProps {
+  chapters?: Chapter[]
+  duration?: number
+  currentTime?: number
+  onSeek?: (time: number) => void
+  style?: any
+}
+
+function formatTime(seconds: number): string {
   const mins = Math.floor(seconds / 60)
   const secs = Math.floor(seconds % 60)
   return `${mins}:${secs.toString().padStart(2, '0')}`
@@ -33,22 +51,21 @@ export default function ChapterTimeline({
   duration = 0,
   currentTime = 0,
   onSeek,
-  className = '',
-}) {
+  style,
+}: ChapterTimelineProps) {
   const { t } = useTranslation()
-  const [hoveredChapter, setHoveredChapter] = useState(null)
+  const [hoveredChapter, setHoveredChapter] = useState<Chapter | null>(null)
   const [tooltipPosition, setTooltipPosition] = useState({ x: 0, visible: false })
-  const containerRef = useRef(null)
+  const containerRef = useRef<View>(null)
 
   if (!chapters.length || !duration) return null
 
-  const handleChapterClick = (chapter, e) => {
-    e.stopPropagation()
+  const handleChapterClick = (chapter: Chapter) => {
     onSeek?.(chapter.start_time)
   }
 
-  const handleMouseEnter = (chapter, e) => {
-    const rect = containerRef.current?.getBoundingClientRect()
+  const handleMouseEnter = (chapter: Chapter, e: any) => {
+    const rect = (containerRef.current as any)?.getBoundingClientRect?.()
     if (rect) {
       const x = e.clientX - rect.left
       setTooltipPosition({ x, visible: true })
@@ -61,76 +78,168 @@ export default function ChapterTimeline({
     setTooltipPosition({ x: 0, visible: false })
   }
 
+  const getChapterColor = (category: string): string => {
+    return categoryColors[category] || colors.primary
+  }
+
   return (
-    <div
-      ref={containerRef}
-      className={`absolute inset-x-0 top-0 h-full pointer-events-none ${className}`}
-    >
+    <View ref={containerRef} style={[styles.container, style]}>
       {/* Chapter markers */}
       {chapters.map((chapter, index) => {
         const startPercent = (chapter.start_time / duration) * 100
         const widthPercent = ((chapter.end_time - chapter.start_time) / duration) * 100
-        const colorClass = categoryColors[chapter.category] || 'bg-primary-500'
+        const chapterColor = getChapterColor(chapter.category)
         const isActive = currentTime >= chapter.start_time && currentTime < chapter.end_time
 
         return (
-          <div
+          <Pressable
             key={`${chapter.start_time}-${index}`}
-            className="pointer-events-auto absolute top-0 h-full cursor-pointer group"
-            style={{
-              left: `${startPercent}%`,
-              width: `${widthPercent}%`,
-            }}
-            onClick={(e) => handleChapterClick(chapter, e)}
-            onMouseEnter={(e) => handleMouseEnter(chapter, e)}
-            onMouseLeave={handleMouseLeave}
+            onPress={() => handleChapterClick(chapter)}
+            onHoverIn={(e) => handleMouseEnter(chapter, e)}
+            onHoverOut={handleMouseLeave}
+            style={[
+              styles.chapterSegment,
+              {
+                left: `${startPercent}%` as any,
+                width: `${widthPercent}%` as any,
+              },
+            ]}
           >
             {/* Marker line at chapter start */}
             {index > 0 && (
-              <div
-                className={`
-                  absolute left-0 top-0 w-0.5 h-full
-                  ${colorClass} opacity-60
-                  transition-opacity duration-200
-                  group-hover:opacity-100
-                `}
+              <View
+                style={[
+                  styles.markerLine,
+                  { backgroundColor: chapterColor },
+                ]}
               />
             )}
 
-            {/* Hover highlight */}
-            <div
-              className={`
-                absolute inset-0 rounded-sm transition-all duration-200
-                ${isActive ? `${colorClass}/20` : 'group-hover:bg-white/5'}
-              `}
+            {/* Hover/Active highlight */}
+            <View
+              style={[
+                styles.highlight,
+                isActive && { backgroundColor: `${chapterColor}33` },
+              ]}
             />
-          </div>
+          </Pressable>
         )
       })}
 
       {/* Tooltip */}
       {hoveredChapter && tooltipPosition.visible && (
-        <div
-          className="absolute bottom-full mb-2 transform -translate-x-1/2 pointer-events-none z-50"
-          style={{ left: tooltipPosition.x }}
+        <View
+          style={[
+            styles.tooltipContainer,
+            { left: tooltipPosition.x },
+          ]}
         >
-          <div className="glass-strong rounded-lg px-3 py-2 text-sm whitespace-nowrap shadow-xl" dir="rtl">
-            <div className="font-medium text-white">{hoveredChapter.title}</div>
-            <div className="flex items-center gap-2 mt-1">
-              <span className={`w-2 h-2 rounded-full ${categoryColors[hoveredChapter.category] || 'bg-primary-500'}`} />
-              <span className="text-xs text-dark-400">
+          <GlassView style={styles.tooltip} intensity="high">
+            <Text style={styles.tooltipTitle}>{hoveredChapter.title}</Text>
+            <View style={styles.tooltipMeta}>
+              <View
+                style={[
+                  styles.categoryDot,
+                  { backgroundColor: getChapterColor(hoveredChapter.category) },
+                ]}
+              />
+              <Text style={styles.tooltipCategory}>
                 {t(`chapters.categories.${hoveredChapter.category}`, hoveredChapter.category)}
-              </span>
-              <span className="text-xs text-dark-500">•</span>
-              <span className="text-xs text-dark-400 tabular-nums">
+              </Text>
+              <Text style={styles.tooltipDivider}>•</Text>
+              <Text style={styles.tooltipTime}>
                 {formatTime(hoveredChapter.start_time)}
-              </span>
-            </div>
-          </div>
+              </Text>
+            </View>
+          </GlassView>
           {/* Tooltip arrow */}
-          <div className="absolute left-1/2 -translate-x-1/2 top-full w-2 h-2 rotate-45 glass-strong -mt-1" />
-        </div>
+          <View style={styles.tooltipArrow} />
+        </View>
       )}
-    </div>
+    </View>
   )
 }
+
+const styles = StyleSheet.create({
+  container: {
+    position: 'absolute',
+    left: 0,
+    right: 0,
+    top: 0,
+    height: '100%',
+  },
+  chapterSegment: {
+    position: 'absolute',
+    top: 0,
+    height: '100%',
+    cursor: 'pointer',
+  } as any,
+  markerLine: {
+    position: 'absolute',
+    left: 0,
+    top: 0,
+    width: 2,
+    height: '100%',
+    opacity: 0.6,
+  },
+  highlight: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    borderRadius: borderRadius.sm,
+  },
+  tooltipContainer: {
+    position: 'absolute',
+    bottom: '100%',
+    marginBottom: spacing.sm,
+    transform: [{ translateX: -50 }],
+    zIndex: 50,
+  } as any,
+  tooltip: {
+    paddingHorizontal: spacing.md,
+    paddingVertical: spacing.sm,
+  },
+  tooltipTitle: {
+    fontSize: 14,
+    fontWeight: '500',
+    color: colors.text,
+    textAlign: 'right',
+  },
+  tooltipMeta: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.sm,
+    marginTop: spacing.xs,
+  },
+  categoryDot: {
+    width: 8,
+    height: 8,
+    borderRadius: 4,
+  },
+  tooltipCategory: {
+    fontSize: 12,
+    color: colors.textMuted,
+  },
+  tooltipDivider: {
+    fontSize: 12,
+    color: colors.textMuted,
+  },
+  tooltipTime: {
+    fontSize: 12,
+    color: colors.textMuted,
+    fontVariant: ['tabular-nums'],
+  },
+  tooltipArrow: {
+    position: 'absolute',
+    left: '50%',
+    top: '100%',
+    marginLeft: -4,
+    marginTop: -4,
+    width: 8,
+    height: 8,
+    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+    transform: [{ rotate: '45deg' }],
+  } as any,
+})

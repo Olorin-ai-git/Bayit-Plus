@@ -1,5 +1,13 @@
 import { useState, useEffect } from 'react'
+import { View, Text, Image, StyleSheet, Animated } from 'react-native'
 import { useTranslation } from 'react-i18next'
+import { useRef } from 'react'
+import { colors, spacing, borderRadius } from '@bayit/shared/theme'
+
+interface AnimatedLogoProps {
+  size?: 'small' | 'medium' | 'large'
+  onAnimationComplete?: () => void
+}
 
 /**
  * AnimatedLogo Component
@@ -10,56 +18,69 @@ import { useTranslation } from 'react-i18next'
 export default function AnimatedLogo({
   size = 'large',
   onAnimationComplete,
-}) {
+}: AnimatedLogoProps) {
   const { i18n } = useTranslation()
   const isHebrew = i18n.language === 'he'
 
-  const [textVisible, setTextVisible] = useState(false)
-  const [bayitPosition, setBayitPosition] = useState(isHebrew ? 150 : -150)
-  const [plusPosition, setPlusPosition] = useState(isHebrew ? -150 : 150)
-  const [logoVisible, setLogoVisible] = useState(false)
+  const bayitAnim = useRef(new Animated.Value(isHebrew ? 150 : -150)).current
+  const plusAnim = useRef(new Animated.Value(isHebrew ? -150 : 150)).current
+  const textOpacity = useRef(new Animated.Value(0)).current
+  const logoOpacity = useRef(new Animated.Value(0)).current
+  const logoScale = useRef(new Animated.Value(0.9)).current
 
   const sizes = {
-    small: {
-      logo: 'w-16 h-8',
-      text: 'text-2xl',
-      plus: 'text-xl',
-      container: 'gap-1'
-    },
-    medium: {
-      logo: 'w-24 h-12',
-      text: 'text-4xl',
-      plus: 'text-3xl',
-      container: 'gap-2'
-    },
-    large: {
-      logo: 'w-32 h-16',
-      text: 'text-6xl',
-      plus: 'text-5xl',
-      container: 'gap-3'
-    },
+    small: { logo: 64, text: 24, plus: 20, gap: spacing.xs },
+    medium: { logo: 96, text: 36, plus: 28, gap: spacing.sm },
+    large: { logo: 128, text: 48, plus: 40, gap: spacing.md },
   }
 
   const currentSize = sizes[size] || sizes.large
 
   useEffect(() => {
     // Animation sequence matching TV app
-    const timers = []
+    const timers: NodeJS.Timeout[] = []
 
     // 1. Show text and start sliding
     timers.push(setTimeout(() => {
-      setTextVisible(true)
+      Animated.timing(textOpacity, {
+        toValue: 1,
+        duration: 100,
+        useNativeDriver: true,
+      }).start()
     }, 100))
 
-    // 2. Animate text to center (spring-like with CSS)
+    // 2. Animate text to center
     timers.push(setTimeout(() => {
-      setBayitPosition(0)
-      setPlusPosition(0)
+      Animated.parallel([
+        Animated.spring(bayitAnim, {
+          toValue: 0,
+          friction: 8,
+          tension: 40,
+          useNativeDriver: true,
+        }),
+        Animated.spring(plusAnim, {
+          toValue: 0,
+          friction: 8,
+          tension: 40,
+          useNativeDriver: true,
+        }),
+      ]).start()
     }, 150))
 
-    // 3. Delay before logo
+    // 3. Fade in logo
     timers.push(setTimeout(() => {
-      setLogoVisible(true)
+      Animated.parallel([
+        Animated.timing(logoOpacity, {
+          toValue: 1,
+          duration: 1000,
+          useNativeDriver: true,
+        }),
+        Animated.timing(logoScale, {
+          toValue: 1,
+          duration: 1000,
+          useNativeDriver: true,
+        }),
+      ]).start()
     }, 1000))
 
     // 4. Animation complete callback
@@ -71,73 +92,122 @@ export default function AnimatedLogo({
   }, [onAnimationComplete])
 
   return (
-    <div className={`flex flex-col items-center justify-center ${currentSize.container}`}>
+    <View style={[styles.container, { gap: currentSize.gap }]}>
       {/* Logo Image - fades in after text */}
-      <div
-        className={`transition-all duration-1000 ease-out ${currentSize.logo} ${
-          logoVisible ? 'opacity-100 scale-100' : 'opacity-0 scale-90'
-        }`}
-        style={{ marginBottom: '-8px' }}
+      <Animated.View
+        style={[
+          styles.logoContainer,
+          {
+            width: currentSize.logo,
+            height: currentSize.logo / 2,
+            opacity: logoOpacity,
+            transform: [{ scale: logoScale }],
+          },
+        ]}
       >
-        <img
-          src="/logo.png"
-          alt="Bayit+"
-          className="w-full h-full object-contain drop-shadow-[0_0_15px_rgba(0,217,255,0.5)]"
+        <Image
+          source={{ uri: '/logo.png' }}
+          style={styles.logo}
+          resizeMode="contain"
         />
-      </div>
+      </Animated.View>
 
       {/* Animated Text */}
-      <div className="flex items-center justify-center overflow-visible">
+      <View style={styles.textContainer}>
         {isHebrew ? (
           <>
             {/* Hebrew: בית+ */}
-            <span
-              className={`font-bold text-white transition-all duration-700 ease-out ${currentSize.text}`}
-              style={{
-                transform: `translateX(${bayitPosition}px)`,
-                opacity: textVisible ? 1 : 0,
-                textShadow: '0 0 20px rgba(255,255,255,0.3)',
-              }}
+            <Animated.Text
+              style={[
+                styles.bayitText,
+                {
+                  fontSize: currentSize.text,
+                  opacity: textOpacity,
+                  transform: [{ translateX: bayitAnim }],
+                },
+              ]}
             >
               בית
-            </span>
-            <span
-              className={`font-bold text-cyan-400 transition-all duration-700 ease-out ${currentSize.plus} ml-1`}
-              style={{
-                transform: `translateX(${plusPosition}px)`,
-                opacity: textVisible ? 1 : 0,
-                textShadow: '0 0 20px rgba(0,217,255,0.5)',
-              }}
+            </Animated.Text>
+            <Animated.Text
+              style={[
+                styles.plusText,
+                {
+                  fontSize: currentSize.plus,
+                  opacity: textOpacity,
+                  transform: [{ translateX: plusAnim }],
+                  marginLeft: spacing.xs,
+                },
+              ]}
             >
               +
-            </span>
+            </Animated.Text>
           </>
         ) : (
           <>
             {/* English/Spanish: Bayit+ */}
-            <span
-              className={`font-bold text-cyan-400 transition-all duration-700 ease-out ${currentSize.plus} mr-1`}
-              style={{
-                transform: `translateX(${plusPosition}px)`,
-                opacity: textVisible ? 1 : 0,
-                textShadow: '0 0 20px rgba(0,217,255,0.5)',
-              }}
+            <Animated.Text
+              style={[
+                styles.plusText,
+                {
+                  fontSize: currentSize.plus,
+                  opacity: textOpacity,
+                  transform: [{ translateX: plusAnim }],
+                  marginRight: spacing.xs,
+                },
+              ]}
             >
               +
-            </span>
-            <span
-              className={`font-bold text-white transition-all duration-700 ease-out ${currentSize.text}`}
-              style={{
-                transform: `translateX(${bayitPosition}px)`,
-                opacity: textVisible ? 1 : 0,
-                textShadow: '0 0 20px rgba(255,255,255,0.3)',
-              }}
+            </Animated.Text>
+            <Animated.Text
+              style={[
+                styles.bayitText,
+                {
+                  fontSize: currentSize.text,
+                  opacity: textOpacity,
+                  transform: [{ translateX: bayitAnim }],
+                },
+              ]}
             >
               Bayit
-            </span>
+            </Animated.Text>
           </>
         )}
-      </div>
-    </div>
+      </View>
+    </View>
   )
 }
+
+const styles = StyleSheet.create({
+  container: {
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  logoContainer: {
+    marginBottom: -8,
+  },
+  logo: {
+    width: '100%',
+    height: '100%',
+  },
+  textContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    overflow: 'visible',
+  },
+  bayitText: {
+    fontWeight: 'bold',
+    color: colors.text,
+    textShadowColor: 'rgba(255, 255, 255, 0.3)',
+    textShadowOffset: { width: 0, height: 0 },
+    textShadowRadius: 20,
+  },
+  plusText: {
+    fontWeight: 'bold',
+    color: colors.primary,
+    textShadowColor: 'rgba(0, 217, 255, 0.5)',
+    textShadowOffset: { width: 0, height: 0 },
+    textShadowRadius: 20,
+  },
+})

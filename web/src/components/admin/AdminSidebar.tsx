@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { View, Text, StyleSheet, Pressable, ScrollView } from 'react-native'
 import { NavLink, Link, useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import {
@@ -11,13 +12,22 @@ import {
   Settings,
   FileText,
   ChevronDown,
-  ChevronLeft,
   LogOut,
   Home,
 } from 'lucide-react'
 import { useAuthStore } from '@/stores/authStore'
+import { colors, spacing, borderRadius } from '@bayit/shared/theme'
+import { GlassView } from '@bayit/shared/ui'
 
-const NAV_ITEMS = [
+interface NavItem {
+  key: string
+  labelKey: string
+  icon?: any
+  route?: string
+  children?: NavItem[]
+}
+
+const NAV_ITEMS: NavItem[] = [
   {
     key: 'dashboard',
     labelKey: 'admin.nav.dashboard',
@@ -60,6 +70,7 @@ const NAV_ITEMS = [
     labelKey: 'admin.nav.marketing',
     icon: Megaphone,
     children: [
+      { key: 'marketing-dashboard', labelKey: 'admin.nav.marketingDashboard', route: '/admin/marketing' },
       { key: 'email-campaigns', labelKey: 'admin.nav.emailCampaigns', route: '/admin/emails' },
       { key: 'push-notifications', labelKey: 'admin.nav.pushNotifications', route: '/admin/push' },
     ],
@@ -84,7 +95,7 @@ export default function AdminSidebar() {
   const { user, logout } = useAuthStore()
   const [expandedItems, setExpandedItems] = useState(['billing', 'subscriptions', 'marketing'])
 
-  const toggleExpand = (key) => {
+  const toggleExpand = (key: string) => {
     setExpandedItems((prev) =>
       prev.includes(key) ? prev.filter((k) => k !== key) : [...prev, key]
     )
@@ -95,107 +106,276 @@ export default function AdminSidebar() {
     navigate('/')
   }
 
-  const renderNavItem = (item, isChild = false) => {
+  const renderNavItem = (item: NavItem, isChild = false) => {
     const hasChildren = item.children && item.children.length > 0
     const isExpanded = expandedItems.includes(item.key)
     const Icon = item.icon
 
     if (hasChildren) {
       return (
-        <div key={item.key}>
-          <button
-            onClick={() => toggleExpand(item.key)}
-            className={`w-full flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm transition-colors text-dark-300 hover:text-white hover:bg-white/5`}
+        <View key={item.key}>
+          <Pressable
+            onPress={() => toggleExpand(item.key)}
+            style={({ hovered }) => [
+              styles.navButton,
+              hovered && styles.navButtonHovered,
+            ]}
           >
-            {Icon && <Icon size={18} />}
-            <span className="flex-1 text-right">{t(item.labelKey, item.key)}</span>
-            <ChevronDown
-              size={16}
-              className={`transition-transform ${isExpanded ? 'rotate-180' : ''}`}
-            />
-          </button>
+            {Icon && <Icon size={18} color={colors.textSecondary} />}
+            <Text style={styles.navText}>{t(item.labelKey, item.key)}</Text>
+            <View style={[styles.chevron, isExpanded && styles.chevronExpanded]}>
+              <ChevronDown size={16} color={colors.textSecondary} />
+            </View>
+          </Pressable>
           {isExpanded && (
-            <div className="mr-6 mt-1 space-y-1">
-              {item.children.map((child) => renderNavItem(child, true))}
-            </div>
+            <View style={styles.childrenContainer}>
+              {item.children!.map((child) => renderNavItem(child, true))}
+            </View>
           )}
-        </div>
+        </View>
       )
     }
 
     return (
       <NavLink
         key={item.key}
-        to={item.route}
+        to={item.route!}
         end={item.route === '/admin'}
-        className={({ isActive }) =>
-          `flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm transition-colors ${
-            isActive
-              ? 'bg-primary-500/20 text-primary-400'
-              : 'text-dark-300 hover:text-white hover:bg-white/5'
-          } ${isChild ? 'pr-8' : ''}`
-        }
+        style={{ textDecoration: 'none' }}
       >
-        {Icon && <Icon size={18} />}
-        <span>{t(item.labelKey, item.key)}</span>
+        {({ isActive }) => (
+          <View style={[
+            styles.navButton,
+            isActive && styles.navButtonActive,
+            isChild && styles.navButtonChild,
+          ]}>
+            {Icon && <Icon size={18} color={isActive ? colors.primary : colors.textSecondary} />}
+            <Text style={[styles.navText, isActive && styles.navTextActive]}>
+              {t(item.labelKey, item.key)}
+            </Text>
+          </View>
+        )}
       </NavLink>
     )
   }
 
   return (
-    <div className="w-64 h-screen glass-strong border-l border-white/5 flex flex-col">
+    <GlassView style={styles.container} intensity="high" noBorder>
       {/* Brand */}
-      <div className="p-4 border-b border-white/5">
-        <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-lg bg-primary-500 flex items-center justify-center">
-            <span className="text-lg">🏠</span>
-          </div>
-          <div>
-            <h2 className="font-bold text-gradient">Bayit+ Admin</h2>
-            <span className="text-xs text-dark-400">ניהול מערכת</span>
-          </div>
-        </div>
-      </div>
+      <View style={styles.brandSection}>
+        <View style={styles.brandContent}>
+          <View style={styles.brandIcon}>
+            <Text style={styles.brandEmoji}>🏠</Text>
+          </View>
+          <View>
+            <Text style={styles.brandTitle}>Bayit+ Admin</Text>
+            <Text style={styles.brandSubtitle}>ניהול מערכת</Text>
+          </View>
+        </View>
+      </View>
 
       {/* User Info */}
-      <div className="p-4 border-b border-white/5">
-        <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-full bg-secondary-500 flex items-center justify-center">
-            <span className="font-semibold">
+      <View style={styles.userSection}>
+        <View style={styles.userContent}>
+          <View style={styles.userAvatar}>
+            <Text style={styles.userInitial}>
               {user?.name?.charAt(0).toUpperCase() || 'A'}
-            </span>
-          </div>
-          <div className="flex-1 min-w-0">
-            <p className="font-medium truncate">{user?.name || 'Admin'}</p>
-            <span className="text-xs px-2 py-0.5 rounded-full bg-secondary-500/20 text-secondary-400">
-              {user?.role || 'Admin'}
-            </span>
-          </div>
-        </div>
-      </div>
+            </Text>
+          </View>
+          <View style={styles.userInfo}>
+            <Text style={styles.userName} numberOfLines={1}>{user?.name || 'Admin'}</Text>
+            <View style={styles.roleBadge}>
+              <Text style={styles.roleText}>{user?.role || 'Admin'}</Text>
+            </View>
+          </View>
+        </View>
+      </View>
 
       {/* Navigation */}
-      <nav className="flex-1 overflow-y-auto p-2 space-y-1">
+      <ScrollView style={styles.nav} contentContainerStyle={styles.navContent}>
         {NAV_ITEMS.map((item) => renderNavItem(item))}
-      </nav>
+      </ScrollView>
 
       {/* Footer */}
-      <div className="p-2 border-t border-white/5 space-y-1">
-        <Link
-          to="/"
-          className="flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm text-dark-300 hover:text-white hover:bg-white/5 transition-colors"
-        >
-          <Home size={18} />
-          <span>חזרה לאפליקציה</span>
+      <View style={styles.footer}>
+        <Link to="/" style={{ textDecoration: 'none' }}>
+          <Pressable style={({ hovered }) => [
+            styles.footerButton,
+            hovered && styles.footerButtonHovered,
+          ]}>
+            <Home size={18} color={colors.textSecondary} />
+            <Text style={styles.footerText}>חזרה לאפליקציה</Text>
+          </Pressable>
         </Link>
-        <button
-          onClick={handleLogout}
-          className="w-full flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm text-red-400 hover:bg-red-500/10 transition-colors"
+        <Pressable
+          onPress={handleLogout}
+          style={({ hovered }) => [
+            styles.footerButton,
+            styles.logoutButton,
+            hovered && styles.logoutButtonHovered,
+          ]}
         >
-          <LogOut size={18} />
-          <span>התנתקות</span>
-        </button>
-      </div>
-    </div>
+          <LogOut size={18} color={colors.error} />
+          <Text style={styles.logoutText}>התנתקות</Text>
+        </Pressable>
+      </View>
+    </GlassView>
   )
 }
+
+const styles = StyleSheet.create({
+  container: {
+    width: 256,
+    height: '100vh' as any,
+    borderLeftWidth: 1,
+    borderLeftColor: 'rgba(255, 255, 255, 0.05)',
+    borderRadius: 0,
+  },
+  brandSection: {
+    padding: spacing.md,
+    borderBottomWidth: 1,
+    borderBottomColor: 'rgba(255, 255, 255, 0.05)',
+  },
+  brandContent: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.sm,
+  },
+  brandIcon: {
+    width: 40,
+    height: 40,
+    borderRadius: borderRadius.md,
+    backgroundColor: colors.primary,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  brandEmoji: {
+    fontSize: 18,
+  },
+  brandTitle: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    color: colors.primary,
+  },
+  brandSubtitle: {
+    fontSize: 12,
+    color: colors.textMuted,
+  },
+  userSection: {
+    padding: spacing.md,
+    borderBottomWidth: 1,
+    borderBottomColor: 'rgba(255, 255, 255, 0.05)',
+  },
+  userContent: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.sm,
+  },
+  userAvatar: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    backgroundColor: colors.secondary,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  userInitial: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: colors.text,
+  },
+  userInfo: {
+    flex: 1,
+    minWidth: 0,
+  },
+  userName: {
+    fontSize: 14,
+    fontWeight: '500',
+    color: colors.text,
+  },
+  roleBadge: {
+    alignSelf: 'flex-start',
+    marginTop: spacing.xs,
+    paddingHorizontal: spacing.sm,
+    paddingVertical: 2,
+    borderRadius: borderRadius.full,
+    backgroundColor: 'rgba(138, 43, 226, 0.2)',
+  },
+  roleText: {
+    fontSize: 11,
+    color: colors.secondary,
+  },
+  nav: {
+    flex: 1,
+  },
+  navContent: {
+    padding: spacing.sm,
+    gap: spacing.xs,
+  },
+  navButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.sm,
+    paddingHorizontal: spacing.md,
+    paddingVertical: spacing.sm + 2,
+    borderRadius: borderRadius.md,
+  },
+  navButtonHovered: {
+    backgroundColor: 'rgba(255, 255, 255, 0.05)',
+  },
+  navButtonActive: {
+    backgroundColor: 'rgba(0, 217, 255, 0.2)',
+  },
+  navButtonChild: {
+    paddingRight: spacing.xl,
+  },
+  navText: {
+    flex: 1,
+    fontSize: 14,
+    color: colors.textSecondary,
+    textAlign: 'right',
+  },
+  navTextActive: {
+    color: colors.primary,
+  },
+  chevron: {
+    transform: [{ rotate: '0deg' }],
+  },
+  chevronExpanded: {
+    transform: [{ rotate: '180deg' }],
+  },
+  childrenContainer: {
+    marginRight: spacing.lg,
+    marginTop: spacing.xs,
+    gap: spacing.xs,
+  },
+  footer: {
+    padding: spacing.sm,
+    borderTopWidth: 1,
+    borderTopColor: 'rgba(255, 255, 255, 0.05)',
+    gap: spacing.xs,
+  },
+  footerButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.sm,
+    paddingHorizontal: spacing.md,
+    paddingVertical: spacing.sm + 2,
+    borderRadius: borderRadius.md,
+  },
+  footerButtonHovered: {
+    backgroundColor: 'rgba(255, 255, 255, 0.05)',
+  },
+  footerText: {
+    fontSize: 14,
+    color: colors.textSecondary,
+  },
+  logoutButton: {},
+  logoutButtonHovered: {
+    backgroundColor: 'rgba(239, 68, 68, 0.1)',
+  },
+  logoutText: {
+    fontSize: 14,
+    color: colors.error,
+  },
+})

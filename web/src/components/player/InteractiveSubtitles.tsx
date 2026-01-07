@@ -1,7 +1,40 @@
 import { useState, useEffect, useCallback, useRef } from 'react'
+import { View, Text, StyleSheet, Pressable, ActivityIndicator } from 'react-native'
 import { subtitlesService } from '../../services/api'
 import logger from '@/utils/logger'
-import './InteractiveSubtitles.css'
+import { colors, spacing, borderRadius } from '@bayit/shared/theme'
+import { GlassView } from '@bayit/shared/ui'
+
+interface Word {
+  word: string
+  is_hebrew: boolean
+}
+
+interface Cue {
+  index: number
+  start_time: number
+  end_time: number
+  formatted_start: string
+  formatted_end: string
+  words: Word[]
+}
+
+interface Translation {
+  word: string
+  translation: string
+  transliteration?: string
+  part_of_speech?: string
+  example?: string
+  example_translation?: string
+}
+
+interface InteractiveSubtitlesProps {
+  contentId: string
+  currentTime?: number
+  language?: string
+  onWordTranslate?: (translation: Translation) => void
+  style?: any
+}
 
 /**
  * InteractiveSubtitles Component
@@ -13,17 +46,17 @@ export default function InteractiveSubtitles({
   currentTime = 0,
   language = 'he',
   onWordTranslate,
-  className = '',
-}) {
-  const [cues, setCues] = useState([])
-  const [currentCue, setCurrentCue] = useState(null)
+  style,
+}: InteractiveSubtitlesProps) {
+  const [cues, setCues] = useState<Cue[]>([])
+  const [currentCue, setCurrentCue] = useState<Cue | null>(null)
   const [showNikud, setShowNikud] = useState(false)
   const [hasNikud, setHasNikud] = useState(false)
-  const [translation, setTranslation] = useState(null)
+  const [translation, setTranslation] = useState<Translation | null>(null)
   const [translationPosition, setTranslationPosition] = useState({ x: 0, y: 0 })
   const [isLoading, setIsLoading] = useState(false)
   const [isTranslating, setIsTranslating] = useState(false)
-  const subtitleRef = useRef(null)
+  const subtitleRef = useRef<View>(null)
 
   // Fetch subtitle cues
   useEffect(() => {
@@ -60,14 +93,14 @@ export default function InteractiveSubtitles({
   }, [currentTime, cues])
 
   // Handle word click for translation
-  const handleWordClick = useCallback(async (word, event) => {
+  const handleWordClick = useCallback(async (word: Word, event: any) => {
     if (!word.is_hebrew) return
 
     // Position the translation popup near the clicked word
-    const rect = event.target.getBoundingClientRect()
-    const containerRect = subtitleRef.current?.getBoundingClientRect()
+    const rect = event.target?.getBoundingClientRect?.()
+    const containerRect = (subtitleRef.current as any)?.getBoundingClientRect?.()
 
-    if (containerRect) {
+    if (containerRect && rect) {
       setTranslationPosition({
         x: rect.left - containerRect.left + rect.width / 2,
         y: rect.top - containerRect.top - 10,
@@ -109,112 +142,263 @@ export default function InteractiveSubtitles({
 
   // Handle click outside to close translation
   useEffect(() => {
-    const handleClickOutside = (e) => {
-      if (translation && !e.target.closest('.translation-popup')) {
+    const handleClickOutside = () => {
+      if (translation) {
         closeTranslation()
       }
     }
 
-    document.addEventListener('click', handleClickOutside)
-    return () => document.removeEventListener('click', handleClickOutside)
+    if (translation) {
+      document.addEventListener('click', handleClickOutside)
+      return () => document.removeEventListener('click', handleClickOutside)
+    }
   }, [translation, closeTranslation])
 
   if (isLoading) {
     return (
-      <div className={`interactive-subtitles ${className}`}>
-        <div className="subtitle-loading">טוען כתוביות...</div>
-      </div>
-    )
-  }
-
-  if (!currentCue) {
-    return (
-      <div className={`interactive-subtitles ${className}`} ref={subtitleRef}>
-        <div className="subtitle-controls">
-          <button
-            className={`nikud-toggle ${showNikud ? 'active' : ''}`}
-            onClick={toggleNikud}
-            title={showNikud ? 'הסתר ניקוד' : 'הצג ניקוד'}
-          >
-            <span className="nikud-icon">אָ</span>
-            <span className="nikud-label">{showNikud ? 'ניקוד' : 'ניקוד'}</span>
-          </button>
-        </div>
-      </div>
+      <View style={[styles.container, style]}>
+        <View style={styles.loading}>
+          <ActivityIndicator size="small" color={colors.primary} />
+          <Text style={styles.loadingText}>טוען כתוביות...</Text>
+        </View>
+      </View>
     )
   }
 
   return (
-    <div className={`interactive-subtitles ${className}`} ref={subtitleRef}>
+    <View style={[styles.container, style]} ref={subtitleRef}>
       {/* Controls */}
-      <div className="subtitle-controls">
-        <button
-          className={`nikud-toggle ${showNikud ? 'active' : ''}`}
-          onClick={toggleNikud}
-          title={showNikud ? 'הסתר ניקוד' : 'הצג ניקוד'}
+      <View style={styles.controls}>
+        <Pressable
+          onPress={toggleNikud}
+          style={({ hovered }) => [
+            styles.nikudToggle,
+            showNikud && styles.nikudToggleActive,
+            hovered && styles.nikudToggleHovered,
+          ]}
         >
-          <span className="nikud-icon">אָ</span>
-          <span className="nikud-label">{showNikud ? 'ניקוד' : 'ניקוד'}</span>
-        </button>
-      </div>
+          <Text style={styles.nikudIcon}>אָ</Text>
+          <Text style={styles.nikudLabel}>ניקוד</Text>
+        </Pressable>
+      </View>
 
       {/* Subtitle Text */}
-      <div className="subtitle-text" dir="rtl">
-        {currentCue.words.map((word, index) => (
-          <span
-            key={`${currentCue.index}-${index}`}
-            className={`subtitle-word ${word.is_hebrew ? 'hebrew clickable' : ''}`}
-            onClick={(e) => word.is_hebrew && handleWordClick(word, e)}
-          >
-            {word.word}
-          </span>
-        ))}
-      </div>
+      {currentCue && (
+        <View style={styles.subtitleText}>
+          {currentCue.words.map((word, index) => (
+            <Pressable
+              key={`${currentCue.index}-${index}`}
+              onPress={(e) => word.is_hebrew && handleWordClick(word, e)}
+              style={({ hovered }) => [
+                styles.word,
+                word.is_hebrew && styles.hebrewWord,
+                word.is_hebrew && hovered && styles.wordHovered,
+              ]}
+            >
+              <Text style={[styles.wordText, word.is_hebrew && styles.hebrewWordText]}>
+                {word.word}
+              </Text>
+            </Pressable>
+          ))}
+        </View>
+      )}
 
       {/* Translation Popup */}
       {translation && (
-        <div
-          className="translation-popup"
-          style={{
-            left: `${translationPosition.x}px`,
-            top: `${translationPosition.y}px`,
-          }}
+        <GlassView
+          style={[
+            styles.translationPopup,
+            { left: translationPosition.x, top: translationPosition.y },
+          ]}
+          intensity="high"
         >
-          <button className="close-popup" onClick={closeTranslation}>×</button>
+          <Pressable onPress={closeTranslation} style={styles.closePopup}>
+            <Text style={styles.closePopupText}>×</Text>
+          </Pressable>
 
-          <div className="translation-header">
-            <span className="original-word">{translation.word}</span>
+          <View style={styles.translationHeader}>
+            <Text style={styles.originalWord}>{translation.word}</Text>
             {translation.transliteration && (
-              <span className="transliteration">{translation.transliteration}</span>
+              <Text style={styles.transliteration}>{translation.transliteration}</Text>
             )}
-          </div>
+          </View>
 
-          <div className="translation-content">
-            <span className="translation-text">{translation.translation}</span>
+          <View style={styles.translationContent}>
+            <Text style={styles.translationText}>{translation.translation}</Text>
             {translation.part_of_speech && (
-              <span className="part-of-speech">{translation.part_of_speech}</span>
+              <Text style={styles.partOfSpeech}>{translation.part_of_speech}</Text>
             )}
-          </div>
+          </View>
 
           {translation.example && (
-            <div className="translation-example">
-              <div className="example-hebrew" dir="rtl">{translation.example}</div>
+            <View style={styles.translationExample}>
+              <Text style={styles.exampleHebrew}>{translation.example}</Text>
               {translation.example_translation && (
-                <div className="example-english">{translation.example_translation}</div>
+                <Text style={styles.exampleEnglish}>{translation.example_translation}</Text>
               )}
-            </div>
+            </View>
           )}
 
           {isTranslating && (
-            <div className="translation-loading">מתרגם...</div>
+            <Text style={styles.translatingText}>מתרגם...</Text>
           )}
-        </div>
+        </GlassView>
       )}
 
       {/* Timestamp */}
-      <div className="subtitle-timestamp">
-        {currentCue.formatted_start} - {currentCue.formatted_end}
-      </div>
-    </div>
+      {currentCue && (
+        <Text style={styles.timestamp}>
+          {currentCue.formatted_start} - {currentCue.formatted_end}
+        </Text>
+      )}
+    </View>
   )
 }
+
+const styles = StyleSheet.create({
+  container: {
+    padding: spacing.md,
+  },
+  loading: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: spacing.sm,
+  },
+  loadingText: {
+    fontSize: 14,
+    color: colors.textMuted,
+  },
+  controls: {
+    flexDirection: 'row',
+    justifyContent: 'flex-end',
+    marginBottom: spacing.sm,
+  },
+  nikudToggle: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.xs,
+    paddingHorizontal: spacing.sm,
+    paddingVertical: spacing.xs,
+    borderRadius: borderRadius.md,
+    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+  },
+  nikudToggleActive: {
+    backgroundColor: colors.primary,
+  },
+  nikudToggleHovered: {
+    backgroundColor: 'rgba(255, 255, 255, 0.15)',
+  },
+  nikudIcon: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: colors.text,
+  },
+  nikudLabel: {
+    fontSize: 12,
+    color: colors.text,
+  },
+  subtitleText: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    justifyContent: 'center',
+    gap: spacing.xs,
+  },
+  word: {
+    paddingHorizontal: spacing.xs,
+    paddingVertical: 2,
+    borderRadius: borderRadius.sm,
+  },
+  hebrewWord: {
+    cursor: 'pointer' as any,
+  },
+  wordHovered: {
+    backgroundColor: 'rgba(0, 217, 255, 0.2)',
+  },
+  wordText: {
+    fontSize: 20,
+    color: colors.text,
+  },
+  hebrewWordText: {
+    color: colors.text,
+  },
+  translationPopup: {
+    position: 'absolute',
+    transform: [{ translateX: -100 }],
+    width: 200,
+    padding: spacing.md,
+    zIndex: 100,
+  } as any,
+  closePopup: {
+    position: 'absolute',
+    top: spacing.xs,
+    right: spacing.xs,
+    width: 24,
+    height: 24,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  closePopupText: {
+    fontSize: 20,
+    color: colors.textMuted,
+  },
+  translationHeader: {
+    marginBottom: spacing.sm,
+  },
+  originalWord: {
+    fontSize: 18,
+    fontWeight: '600',
+    color: colors.text,
+    textAlign: 'right',
+  },
+  transliteration: {
+    fontSize: 12,
+    color: colors.textMuted,
+    fontStyle: 'italic',
+  },
+  translationContent: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.sm,
+  },
+  translationText: {
+    fontSize: 14,
+    color: colors.text,
+  },
+  partOfSpeech: {
+    fontSize: 10,
+    color: colors.textMuted,
+    paddingHorizontal: spacing.xs,
+    paddingVertical: 2,
+    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+    borderRadius: borderRadius.sm,
+  },
+  translationExample: {
+    marginTop: spacing.sm,
+    paddingTop: spacing.sm,
+    borderTopWidth: 1,
+    borderTopColor: 'rgba(255, 255, 255, 0.1)',
+  },
+  exampleHebrew: {
+    fontSize: 12,
+    color: colors.textSecondary,
+    textAlign: 'right',
+  },
+  exampleEnglish: {
+    fontSize: 12,
+    color: colors.textMuted,
+  },
+  translatingText: {
+    fontSize: 12,
+    color: colors.primary,
+    textAlign: 'center',
+    marginTop: spacing.sm,
+  },
+  timestamp: {
+    fontSize: 10,
+    color: colors.textMuted,
+    textAlign: 'center',
+    marginTop: spacing.sm,
+    fontFamily: 'monospace',
+  },
+})

@@ -1,90 +1,202 @@
 import { useState, useRef, useEffect } from 'react'
+import { View, Text, StyleSheet, Pressable, Animated } from 'react-native'
 import { useTranslation } from 'react-i18next'
 import { Users, Plus, UserPlus, ChevronDown } from 'lucide-react'
-import { clsx } from 'clsx'
+import { colors, spacing, borderRadius } from '@bayit/shared/theme'
+import { GlassView } from '@bayit/shared/ui'
+
+interface WatchPartyButtonProps {
+  hasActiveParty: boolean
+  onCreateClick: () => void
+  onJoinClick: () => void
+  onPanelToggle: () => void
+}
 
 export default function WatchPartyButton({
   hasActiveParty,
   onCreateClick,
   onJoinClick,
   onPanelToggle,
-}) {
+}: WatchPartyButtonProps) {
   const { t } = useTranslation()
   const [isOpen, setIsOpen] = useState(false)
-  const dropdownRef = useRef(null)
+  const dropdownRef = useRef<View>(null)
+  const rotateAnim = useRef(new Animated.Value(0)).current
 
   useEffect(() => {
-    const handleClickOutside = (e) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(e.target)) {
-        setIsOpen(false)
-      }
+    Animated.timing(rotateAnim, {
+      toValue: isOpen ? 1 : 0,
+      duration: 200,
+      useNativeDriver: true,
+    }).start()
+  }, [isOpen])
+
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      // Close dropdown on outside click
+      setIsOpen(false)
     }
-    document.addEventListener('mousedown', handleClickOutside)
+    if (isOpen) {
+      document.addEventListener('mousedown', handleClickOutside)
+    }
     return () => document.removeEventListener('mousedown', handleClickOutside)
-  }, [])
+  }, [isOpen])
+
+  const rotate = rotateAnim.interpolate({
+    inputRange: [0, 1],
+    outputRange: ['0deg', '180deg'],
+  })
 
   if (hasActiveParty) {
     return (
-      <button
-        onClick={onPanelToggle}
-        className={clsx(
-          'glass-btn-ghost flex items-center gap-2 px-3 py-2 rounded-xl',
-          'border border-emerald-500/30 bg-emerald-500/10',
-          'hover:bg-emerald-500/20 transition-all duration-200'
-        )}
+      <Pressable
+        onPress={onPanelToggle}
+        style={({ hovered }) => [
+          styles.activeButton,
+          hovered && styles.activeButtonHovered,
+        ]}
       >
-        <Users size={18} className="text-emerald-400" />
-        <span className="text-sm font-medium text-emerald-400">
-          {t('watchParty.active')}
-        </span>
-        <span className="relative flex h-2 w-2">
-          <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
-          <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500" />
-        </span>
-      </button>
+        <Users size={18} color="#34D399" />
+        <Text style={styles.activeText}>{t('watchParty.active')}</Text>
+        <View style={styles.pulseContainer}>
+          <View style={styles.pulseDot} />
+          <View style={styles.pulseRing} />
+        </View>
+      </Pressable>
     )
   }
 
   return (
-    <div ref={dropdownRef} className="relative">
-      <button
-        onClick={() => setIsOpen(!isOpen)}
-        className="glass-btn-ghost flex items-center gap-2 px-3 py-2 rounded-xl"
+    <View style={styles.container} ref={dropdownRef}>
+      <Pressable
+        onPress={() => setIsOpen(!isOpen)}
+        style={({ hovered }) => [
+          styles.button,
+          hovered && styles.buttonHovered,
+        ]}
       >
-        <Users size={18} />
-        <span className="text-sm font-medium hidden sm:inline">
-          {t('watchParty.title')}
-        </span>
-        <ChevronDown
-          size={14}
-          className={clsx('transition-transform', isOpen && 'rotate-180')}
-        />
-      </button>
+        <Users size={18} color={colors.text} />
+        <Text style={styles.buttonText}>{t('watchParty.title')}</Text>
+        <Animated.View style={{ transform: [{ rotate }] }}>
+          <ChevronDown size={14} color={colors.textSecondary} />
+        </Animated.View>
+      </Pressable>
 
       {isOpen && (
-        <div className="absolute left-0 bottom-full mb-2 w-48 py-1 rounded-xl glass border border-white/10 shadow-xl animate-slide-up z-50">
-          <button
-            onClick={() => {
+        <GlassView style={styles.dropdown} intensity="high">
+          <Pressable
+            onPress={() => {
               setIsOpen(false)
               onCreateClick()
             }}
-            className="w-full flex items-center gap-3 px-4 py-2.5 text-right hover:bg-white/10 transition-colors"
+            style={({ hovered }) => [
+              styles.dropdownItem,
+              hovered && styles.dropdownItemHovered,
+            ]}
           >
-            <Plus size={18} className="text-primary-400" />
-            <span className="text-sm">{t('watchParty.create')}</span>
-          </button>
-          <button
-            onClick={() => {
+            <Plus size={18} color={colors.primary} />
+            <Text style={styles.dropdownText}>{t('watchParty.create')}</Text>
+          </Pressable>
+          <Pressable
+            onPress={() => {
               setIsOpen(false)
               onJoinClick()
             }}
-            className="w-full flex items-center gap-3 px-4 py-2.5 text-right hover:bg-white/10 transition-colors"
+            style={({ hovered }) => [
+              styles.dropdownItem,
+              hovered && styles.dropdownItemHovered,
+            ]}
           >
-            <UserPlus size={18} className="text-blue-400" />
-            <span className="text-sm">{t('watchParty.join')}</span>
-          </button>
-        </div>
+            <UserPlus size={18} color="#3B82F6" />
+            <Text style={styles.dropdownText}>{t('watchParty.join')}</Text>
+          </Pressable>
+        </GlassView>
       )}
-    </div>
+    </View>
   )
 }
+
+const styles = StyleSheet.create({
+  container: {
+    position: 'relative',
+  },
+  button: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.sm,
+    paddingHorizontal: spacing.sm,
+    paddingVertical: spacing.sm,
+    borderRadius: borderRadius.lg,
+  },
+  buttonHovered: {
+    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+  },
+  buttonText: {
+    fontSize: 14,
+    fontWeight: '500',
+    color: colors.text,
+  },
+  activeButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.sm,
+    paddingHorizontal: spacing.sm,
+    paddingVertical: spacing.sm,
+    borderRadius: borderRadius.lg,
+    borderWidth: 1,
+    borderColor: 'rgba(52, 211, 153, 0.3)',
+    backgroundColor: 'rgba(52, 211, 153, 0.1)',
+  },
+  activeButtonHovered: {
+    backgroundColor: 'rgba(52, 211, 153, 0.2)',
+  },
+  activeText: {
+    fontSize: 14,
+    fontWeight: '500',
+    color: '#34D399',
+  },
+  pulseContainer: {
+    position: 'relative',
+    width: 8,
+    height: 8,
+  },
+  pulseDot: {
+    position: 'absolute',
+    width: 8,
+    height: 8,
+    borderRadius: 4,
+    backgroundColor: '#10B981',
+  },
+  pulseRing: {
+    position: 'absolute',
+    width: 8,
+    height: 8,
+    borderRadius: 4,
+    backgroundColor: '#34D399',
+    opacity: 0.75,
+  },
+  dropdown: {
+    position: 'absolute',
+    left: 0,
+    bottom: '100%',
+    marginBottom: spacing.sm,
+    width: 192,
+    paddingVertical: spacing.xs,
+    zIndex: 50,
+  },
+  dropdownItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.sm,
+    paddingHorizontal: spacing.md,
+    paddingVertical: spacing.sm + 2,
+    textAlign: 'right',
+  },
+  dropdownItemHovered: {
+    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+  },
+  dropdownText: {
+    fontSize: 14,
+    color: colors.text,
+  },
+})

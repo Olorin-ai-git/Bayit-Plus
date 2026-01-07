@@ -1,8 +1,18 @@
 import { useState } from 'react'
+import { View, Text, StyleSheet, Pressable } from 'react-native'
 import { useTranslation } from 'react-i18next'
 import { Copy, Check, LogOut, X, Share2 } from 'lucide-react'
-import GlassButton from '../ui/GlassButton'
+import { colors, spacing, borderRadius } from '@bayit/shared/theme'
 import WatchPartySyncIndicator from './WatchPartySyncIndicator'
+
+interface WatchPartyHeaderProps {
+  roomCode: string
+  isHost: boolean
+  isSynced: boolean
+  hostPaused: boolean
+  onLeave: () => void
+  onEnd: () => void
+}
 
 export default function WatchPartyHeader({
   roomCode,
@@ -11,7 +21,7 @@ export default function WatchPartyHeader({
   hostPaused,
   onLeave,
   onEnd,
-}) {
+}: WatchPartyHeaderProps) {
   const { t } = useTranslation()
   const [copied, setCopied] = useState(false)
 
@@ -36,72 +46,167 @@ export default function WatchPartyHeader({
   }
 
   return (
-    <div className="space-y-3">
-      <div className="flex items-center justify-between">
-        <h2 className="text-lg font-semibold text-white">
-          {t('watchParty.title')}
-        </h2>
+    <View style={styles.container}>
+      <View style={styles.headerRow}>
+        <Text style={styles.title}>{t('watchParty.title')}</Text>
         <WatchPartySyncIndicator
           isHost={isHost}
           isSynced={isSynced}
           hostPaused={hostPaused}
         />
-      </div>
+      </View>
 
-      <div className="flex items-center gap-2">
-        <div className="flex-1 flex items-center gap-2 bg-white/5 rounded-xl px-3 py-2 border border-white/10">
-          <span className="text-xs text-dark-400">{t('watchParty.roomCode')}:</span>
-          <span className="font-mono font-semibold text-white tracking-wider">
-            {roomCode}
-          </span>
-        </div>
+      <View style={styles.codeRow}>
+        <View style={styles.codeBox}>
+          <Text style={styles.codeLabel}>{t('watchParty.roomCode')}:</Text>
+          <Text style={styles.code}>{roomCode}</Text>
+        </View>
 
-        <GlassButton
-          variant="ghost"
-          size="icon-sm"
-          onClick={handleCopyCode}
-          aria-label={t('watchParty.copyCode')}
+        <Pressable
+          onPress={handleCopyCode}
+          style={({ hovered }) => [
+            styles.iconButton,
+            hovered && styles.iconButtonHovered,
+          ]}
         >
           {copied ? (
-            <Check size={16} className="text-emerald-400" />
+            <Check size={16} color="#34D399" />
           ) : (
-            <Copy size={16} />
+            <Copy size={16} color={colors.textSecondary} />
           )}
-        </GlassButton>
+        </Pressable>
 
-        <GlassButton
-          variant="ghost"
-          size="icon-sm"
-          onClick={handleShare}
-          aria-label={t('common.share')}
+        <Pressable
+          onPress={handleShare}
+          style={({ hovered }) => [
+            styles.iconButton,
+            hovered && styles.iconButtonHovered,
+          ]}
         >
-          <Share2 size={16} />
-        </GlassButton>
-      </div>
+          <Share2 size={16} color={colors.textSecondary} />
+        </Pressable>
+      </View>
 
-      <div className="flex items-center gap-2">
+      <View style={styles.actionsRow}>
         {isHost ? (
-          <GlassButton
-            variant="danger"
-            size="sm"
-            onClick={onEnd}
-            icon={<X size={16} />}
-            className="flex-1"
+          <Pressable
+            onPress={onEnd}
+            style={({ hovered }) => [
+              styles.actionButton,
+              styles.dangerButton,
+              hovered && styles.dangerButtonHovered,
+            ]}
           >
-            {t('watchParty.end')}
-          </GlassButton>
+            <X size={16} color={colors.error} />
+            <Text style={styles.dangerText}>{t('watchParty.end')}</Text>
+          </Pressable>
         ) : (
-          <GlassButton
-            variant="secondary"
-            size="sm"
-            onClick={onLeave}
-            icon={<LogOut size={16} />}
-            className="flex-1"
+          <Pressable
+            onPress={onLeave}
+            style={({ hovered }) => [
+              styles.actionButton,
+              styles.secondaryButton,
+              hovered && styles.secondaryButtonHovered,
+            ]}
           >
-            {t('watchParty.leave')}
-          </GlassButton>
+            <LogOut size={16} color={colors.textSecondary} />
+            <Text style={styles.secondaryText}>{t('watchParty.leave')}</Text>
+          </Pressable>
         )}
-      </div>
-    </div>
+      </View>
+    </View>
   )
 }
+
+const styles = StyleSheet.create({
+  container: {
+    gap: spacing.md,
+  },
+  headerRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+  title: {
+    fontSize: 18,
+    fontWeight: '600',
+    color: colors.text,
+  },
+  codeRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.sm,
+  },
+  codeBox: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.sm,
+    backgroundColor: 'rgba(255, 255, 255, 0.05)',
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.1)',
+    borderRadius: borderRadius.lg,
+    paddingHorizontal: spacing.md,
+    paddingVertical: spacing.sm,
+  },
+  codeLabel: {
+    fontSize: 12,
+    color: colors.textMuted,
+  },
+  code: {
+    fontSize: 14,
+    fontWeight: '600',
+    fontFamily: 'monospace',
+    color: colors.text,
+    letterSpacing: 2,
+  },
+  iconButton: {
+    width: 36,
+    height: 36,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderRadius: borderRadius.md,
+  },
+  iconButtonHovered: {
+    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+  },
+  actionsRow: {
+    flexDirection: 'row',
+    gap: spacing.sm,
+  },
+  actionButton: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: spacing.sm,
+    paddingVertical: spacing.sm,
+    borderRadius: borderRadius.md,
+  },
+  dangerButton: {
+    backgroundColor: 'rgba(239, 68, 68, 0.1)',
+    borderWidth: 1,
+    borderColor: 'rgba(239, 68, 68, 0.2)',
+  },
+  dangerButtonHovered: {
+    backgroundColor: 'rgba(239, 68, 68, 0.2)',
+  },
+  dangerText: {
+    fontSize: 14,
+    fontWeight: '500',
+    color: colors.error,
+  },
+  secondaryButton: {
+    backgroundColor: 'rgba(255, 255, 255, 0.05)',
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.1)',
+  },
+  secondaryButtonHovered: {
+    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+  },
+  secondaryText: {
+    fontSize: 14,
+    fontWeight: '500',
+    color: colors.textSecondary,
+  },
+})

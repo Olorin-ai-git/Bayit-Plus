@@ -1,13 +1,33 @@
 import { useState, useRef, useEffect, useCallback } from 'react'
-import { MessageCircle, X, Send, Sparkles, Loader2, Mic, MicOff, Square } from 'lucide-react'
+import {
+  View,
+  Text,
+  StyleSheet,
+  Pressable,
+  TextInput,
+  ScrollView,
+  Image,
+  Animated,
+  ActivityIndicator,
+} from 'react-native'
+import { X, Send, Sparkles, Mic, Square } from 'lucide-react'
 import { chatService } from '@/services/api'
 import { useAuthStore } from '@/stores/authStore'
 import logger from '@/utils/logger'
+import { colors, spacing, borderRadius } from '@bayit/shared/theme'
+import { GlassView, GlassCard, GlassButton, GlassBadge } from '@bayit/shared/ui'
+
+interface Message {
+  role: 'user' | 'assistant'
+  content: string | Array<{ id: string; title: string; thumbnail: string }>
+  type?: 'recommendations'
+  isError?: boolean
+}
 
 export default function Chatbot() {
-  const { isAuthenticated, user } = useAuthStore()
+  const { isAuthenticated } = useAuthStore()
   const [isOpen, setIsOpen] = useState(false)
-  const [messages, setMessages] = useState([
+  const [messages, setMessages] = useState<Message[]>([
     {
       role: 'assistant',
       content: 'שלום! אני העוזר החכם של בית+. איך אוכל לעזור לך היום? לחץ על המיקרופון ודבר אליי בעברית, או הקלד הודעה.',
@@ -15,23 +35,36 @@ export default function Chatbot() {
   ])
   const [input, setInput] = useState('')
   const [isLoading, setIsLoading] = useState(false)
-  const [conversationId, setConversationId] = useState(null)
+  const [conversationId, setConversationId] = useState<string | null>(null)
   const [isRecording, setIsRecording] = useState(false)
   const [isTranscribing, setIsTranscribing] = useState(false)
-  const messagesEndRef = useRef(null)
-  const inputRef = useRef(null)
-  const mediaRecorderRef = useRef(null)
-  const audioChunksRef = useRef([])
+  const messagesEndRef = useRef<ScrollView>(null)
+  const inputRef = useRef<TextInput>(null)
+  const mediaRecorderRef = useRef<MediaRecorder | null>(null)
+  const audioChunksRef = useRef<Blob[]>([])
+  const slideAnim = useRef(new Animated.Value(100)).current
+  const opacityAnim = useRef(new Animated.Value(0)).current
 
   useEffect(() => {
-    if (isOpen && inputRef.current) {
-      inputRef.current.focus()
+    if (isOpen) {
+      Animated.parallel([
+        Animated.timing(slideAnim, {
+          toValue: 0,
+          duration: 300,
+          useNativeDriver: true,
+        }),
+        Animated.timing(opacityAnim, {
+          toValue: 1,
+          duration: 200,
+          useNativeDriver: true,
+        }),
+      ]).start()
+      inputRef.current?.focus()
+    } else {
+      slideAnim.setValue(100)
+      opacityAnim.setValue(0)
     }
   }, [isOpen])
-
-  useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
-  }, [messages])
 
   // Voice recording functions
   const startRecording = useCallback(async () => {
@@ -51,13 +84,8 @@ export default function Chatbot() {
       }
 
       mediaRecorder.onstop = async () => {
-        // Stop all tracks
         stream.getTracks().forEach((track) => track.stop())
-
-        // Create blob from recorded chunks
         const audioBlob = new Blob(audioChunksRef.current, { type: 'audio/webm' })
-
-        // Transcribe audio
         await transcribeAudio(audioBlob)
       }
 
@@ -83,14 +111,13 @@ export default function Chatbot() {
     }
   }, [isRecording])
 
-  const transcribeAudio = async (audioBlob) => {
+  const transcribeAudio = async (audioBlob: Blob) => {
     setIsTranscribing(true)
     try {
       const response = await chatService.transcribeAudio(audioBlob)
       const transcribedText = response.text
 
       if (transcribedText) {
-        // Auto-send the transcribed message
         setInput('')
         setMessages((prev) => [...prev, { role: 'user', content: transcribedText }])
         setIsLoading(true)
@@ -113,7 +140,7 @@ export default function Chatbot() {
               },
             ])
           }
-        } catch (error) {
+        } catch {
           setMessages((prev) => [
             ...prev,
             {
@@ -126,7 +153,7 @@ export default function Chatbot() {
           setIsLoading(false)
         }
       }
-    } catch (error) {
+    } catch {
       setMessages((prev) => [
         ...prev,
         {
@@ -148,8 +175,7 @@ export default function Chatbot() {
     }
   }, [isRecording, startRecording, stopRecording])
 
-  const handleSubmit = async (e) => {
-    e.preventDefault()
+  const handleSubmit = async () => {
     if (!input.trim() || isLoading) return
 
     const userMessage = input.trim()
@@ -175,7 +201,7 @@ export default function Chatbot() {
           },
         ])
       }
-    } catch (error) {
+    } catch {
       setMessages((prev) => [
         ...prev,
         {
@@ -196,7 +222,7 @@ export default function Chatbot() {
     'פודקאסטים פופולריים',
   ]
 
-  const handleSuggestion = (question) => {
+  const handleSuggestion = (question: string) => {
     setInput(question)
     inputRef.current?.focus()
   }
@@ -208,166 +234,459 @@ export default function Chatbot() {
   return (
     <>
       {/* Chat Button */}
-      <button
-        onClick={() => setIsOpen(true)}
-        className={`fixed bottom-6 left-6 z-50 w-14 h-14 glass-btn-purple rounded-full shadow-glass flex items-center justify-center hover:shadow-glow-purple hover:scale-110 transition-all duration-300 ${
-          isOpen ? 'hidden' : ''
-        }`}
-        aria-label="פתח צ'אט"
-      >
-        <Sparkles size={24} className="text-white" />
-      </button>
+      {!isOpen && (
+        <Pressable
+          onPress={() => setIsOpen(true)}
+          style={({ hovered }) => [
+            styles.chatButton,
+            hovered && styles.chatButtonHovered,
+          ]}
+          accessibilityLabel="פתח צ'אט"
+        >
+          <View style={styles.chatButtonInner}>
+            <Sparkles size={24} color={colors.text} />
+          </View>
+        </Pressable>
+      )}
 
       {/* Chat Window */}
       {isOpen && (
-        <div className="fixed bottom-6 left-6 z-50 w-96 max-w-[calc(100vw-3rem)] h-[500px] max-h-[70vh] glass-modal flex flex-col overflow-hidden animate-slide-up">
-          {/* Header */}
-          <div className="flex items-center justify-between px-4 py-3 border-b border-white/10 bg-gradient-to-l from-primary-600/20 to-purple-600/20">
-            <div className="flex items-center gap-2">
-              <div className="w-8 h-8 rounded-full glass-btn-purple flex items-center justify-center">
-                <Sparkles size={16} />
-              </div>
-              <span className="font-semibold">עוזר בית+</span>
-            </div>
-            <button
-              onClick={() => setIsOpen(false)}
-              className="glass-btn-ghost glass-btn-icon-sm"
+        <Animated.View
+          style={[
+            styles.chatWindow,
+            {
+              transform: [{ translateY: slideAnim }],
+              opacity: opacityAnim,
+            },
+          ]}
+        >
+          <GlassView style={styles.chatContainer} intensity="high">
+            {/* Header */}
+            <View style={styles.header}>
+              <View style={styles.headerLeft}>
+                <View style={styles.headerIcon}>
+                  <Sparkles size={16} color={colors.text} />
+                </View>
+                <Text style={styles.headerTitle}>עוזר בית+</Text>
+              </View>
+              <Pressable
+                onPress={() => setIsOpen(false)}
+                style={({ hovered }) => [
+                  styles.closeButton,
+                  hovered && styles.closeButtonHovered,
+                ]}
+              >
+                <X size={18} color={colors.textSecondary} />
+              </Pressable>
+            </View>
+
+            {/* Messages */}
+            <ScrollView
+              ref={messagesEndRef}
+              style={styles.messagesContainer}
+              contentContainerStyle={styles.messagesContent}
             >
-              <X size={18} />
-            </button>
-          </div>
+              {messages.map((message, i) => (
+                <View
+                  key={i}
+                  style={[
+                    styles.messageRow,
+                    message.role === 'user' ? styles.messageRowUser : styles.messageRowAssistant,
+                  ]}
+                >
+                  {message.type === 'recommendations' ? (
+                    <View style={styles.recommendationsContainer}>
+                      <Text style={styles.recommendationsTitle}>הנה כמה המלצות:</Text>
+                      <View style={styles.recommendationsGrid}>
+                        {Array.isArray(message.content) && message.content.map((item) => (
+                          <Pressable
+                            key={item.id}
+                            onPress={() => window.location.href = `/vod/${item.id}`}
+                            style={styles.recommendationCard}
+                          >
+                            <GlassCard style={styles.recommendationCardInner}>
+                              <Image
+                                source={{ uri: item.thumbnail }}
+                                style={styles.recommendationImage}
+                                resizeMode="cover"
+                              />
+                              <Text style={styles.recommendationTitle} numberOfLines={1}>
+                                {item.title}
+                              </Text>
+                            </GlassCard>
+                          </Pressable>
+                        ))}
+                      </View>
+                    </View>
+                  ) : (
+                    <View
+                      style={[
+                        styles.messageBubble,
+                        message.role === 'user' && styles.messageBubbleUser,
+                        message.role === 'assistant' && !message.isError && styles.messageBubbleAssistant,
+                        message.isError && styles.messageBubbleError,
+                      ]}
+                    >
+                      <Text style={[
+                        styles.messageText,
+                        message.isError && styles.messageTextError,
+                      ]}>
+                        {typeof message.content === 'string' ? message.content : ''}
+                      </Text>
+                    </View>
+                  )}
+                </View>
+              ))}
 
-          {/* Messages */}
-          <div className="flex-1 overflow-y-auto p-4 space-y-4">
-            {messages.map((message, i) => (
-              <div
-                key={i}
-                className={`flex ${message.role === 'user' ? 'justify-start' : 'justify-end'} animate-fade-in`}
-              >
-                {message.type === 'recommendations' ? (
-                  <div className="w-full">
-                    <p className="text-sm text-dark-400 mb-2">הנה כמה המלצות:</p>
-                    <div className="grid grid-cols-2 gap-2">
-                      {message.content.map((item) => (
-                        <a
-                          key={item.id}
-                          href={`/vod/${item.id}`}
-                          className="block glass-card-sm p-2 hover:shadow-glow transition-all"
-                        >
-                          <img
-                            src={item.thumbnail}
-                            alt={item.title}
-                            className="w-full aspect-video object-cover rounded-lg mb-1"
-                          />
-                          <p className="text-sm truncate">{item.title}</p>
-                        </a>
-                      ))}
-                    </div>
-                  </div>
-                ) : (
-                  <div
-                    className={`max-w-[80%] px-4 py-2.5 rounded-2xl ${
-                      message.role === 'user'
-                        ? 'glass-btn-primary rounded-tr-sm'
-                        : message.isError
-                        ? 'glass-badge-danger rounded-tl-sm'
-                        : 'glass-card-sm rounded-tl-sm'
-                    }`}
-                  >
-                    <p className="text-sm whitespace-pre-wrap leading-relaxed">{message.content}</p>
-                  </div>
-                )}
-              </div>
-            ))}
+              {isLoading && (
+                <View style={[styles.messageRow, styles.messageRowAssistant]}>
+                  <View style={styles.loadingBubble}>
+                    <ActivityIndicator size="small" color={colors.primary} />
+                  </View>
+                </View>
+              )}
+            </ScrollView>
 
-            {isLoading && (
-              <div className="flex justify-end animate-fade-in">
-                <div className="px-4 py-2.5 glass-card-sm rounded-2xl rounded-tl-sm">
-                  <Loader2 size={20} className="animate-spin text-primary-400" />
-                </div>
-              </div>
+            {/* Suggestions */}
+            {messages.length <= 1 && (
+              <View style={styles.suggestionsContainer}>
+                <View style={styles.suggestionsList}>
+                  {suggestedQuestions.map((q, i) => (
+                    <Pressable
+                      key={i}
+                      onPress={() => handleSuggestion(q)}
+                      style={({ hovered }) => [
+                        styles.suggestionButton,
+                        hovered && styles.suggestionButtonHovered,
+                      ]}
+                    >
+                      <Text style={styles.suggestionText}>{q}</Text>
+                    </Pressable>
+                  ))}
+                </View>
+              </View>
             )}
 
-            <div ref={messagesEndRef} />
-          </div>
+            {/* Input */}
+            <View style={styles.inputContainer}>
+              {/* Recording/Transcribing Status */}
+              {(isRecording || isTranscribing) && (
+                <View style={styles.statusContainer}>
+                  {isRecording && (
+                    <GlassBadge variant="danger" dot dotColor="danger" size="sm">
+                      מקליט... לחץ שוב לסיום
+                    </GlassBadge>
+                  )}
+                  {isTranscribing && (
+                    <GlassBadge
+                      variant="primary"
+                      size="sm"
+                      icon={<ActivityIndicator size="small" color={colors.primary} />}
+                    >
+                      מתמלל...
+                    </GlassBadge>
+                  )}
+                </View>
+              )}
 
-          {/* Suggestions */}
-          {messages.length <= 1 && (
-            <div className="px-4 pb-2">
-              <div className="flex flex-wrap gap-2">
-                {suggestedQuestions.map((q, i) => (
-                  <button
-                    key={i}
-                    onClick={() => handleSuggestion(q)}
-                    className="glass-tab-pill text-xs"
-                  >
-                    {q}
-                  </button>
-                ))}
-              </div>
-            </div>
-          )}
+              <View style={styles.inputRow}>
+                {/* Microphone Button */}
+                <Pressable
+                  onPress={toggleRecording}
+                  disabled={isLoading || isTranscribing}
+                  style={({ hovered }) => [
+                    styles.micButton,
+                    isRecording && styles.micButtonRecording,
+                    hovered && !isRecording && styles.micButtonHovered,
+                  ]}
+                  accessibilityLabel={isRecording ? 'עצור הקלטה' : 'התחל הקלטה קולית'}
+                >
+                  {isRecording ? (
+                    <Square size={16} fill={colors.text} color={colors.text} />
+                  ) : (
+                    <Mic size={18} color={colors.text} />
+                  )}
+                </Pressable>
 
-          {/* Input */}
-          <form onSubmit={handleSubmit} className="p-4 border-t border-white/10">
-            {/* Recording/Transcribing Status */}
-            {(isRecording || isTranscribing) && (
-              <div className="flex items-center justify-center gap-2 mb-3 text-sm">
-                {isRecording && (
-                  <>
-                    <span className="w-2 h-2 bg-red-500 rounded-full animate-pulse" />
-                    <span className="text-red-400">מקליט... לחץ שוב לסיום</span>
-                  </>
-                )}
-                {isTranscribing && (
-                  <>
-                    <Loader2 size={16} className="animate-spin text-primary-400" />
-                    <span className="text-primary-400">מתמלל...</span>
-                  </>
-                )}
-              </div>
-            )}
+                {/* Text Input */}
+                <View style={styles.textInputContainer}>
+                  <TextInput
+                    ref={inputRef}
+                    style={styles.textInput}
+                    value={input}
+                    onChangeText={setInput}
+                    placeholder="או הקלד כאן..."
+                    placeholderTextColor={colors.textMuted}
+                    editable={!isLoading && !isRecording && !isTranscribing}
+                    onSubmitEditing={handleSubmit}
+                  />
+                </View>
 
-            <div className="flex gap-2">
-              {/* Microphone Button - Primary for TV remote */}
-              <button
-                type="button"
-                onClick={toggleRecording}
-                disabled={isLoading || isTranscribing}
-                className={`w-12 h-10 rounded-full flex items-center justify-center transition-all duration-300 ${
-                  isRecording
-                    ? 'glass-btn-danger animate-pulse shadow-glow-danger'
-                    : 'glass-btn-purple hover:shadow-glow-purple'
-                }`}
-                aria-label={isRecording ? 'עצור הקלטה' : 'התחל הקלטה קולית'}
-              >
-                {isRecording ? (
-                  <Square size={16} fill="white" />
-                ) : (
-                  <Mic size={18} />
-                )}
-              </button>
-
-              <input
-                ref={inputRef}
-                type="text"
-                value={input}
-                onChange={(e) => setInput(e.target.value)}
-                placeholder="או הקלד כאן..."
-                className="glass-input flex-1 rounded-full h-10 text-sm"
-                disabled={isLoading || isRecording || isTranscribing}
-              />
-              <button
-                type="submit"
-                disabled={!input.trim() || isLoading || isRecording || isTranscribing}
-                className="glass-btn-primary w-10 h-10 rounded-full flex items-center justify-center"
-              >
-                <Send size={16} className="mr-[-2px]" />
-              </button>
-            </div>
-          </form>
-        </div>
+                {/* Send Button */}
+                <Pressable
+                  onPress={handleSubmit}
+                  disabled={!input.trim() || isLoading || isRecording || isTranscribing}
+                  style={({ hovered }) => [
+                    styles.sendButton,
+                    (!input.trim() || isLoading) && styles.sendButtonDisabled,
+                    hovered && input.trim() && !isLoading && styles.sendButtonHovered,
+                  ]}
+                >
+                  <Send size={16} color={colors.text} />
+                </Pressable>
+              </View>
+            </View>
+          </GlassView>
+        </Animated.View>
       )}
     </>
   )
 }
+
+const styles = StyleSheet.create({
+  chatButton: {
+    position: 'fixed' as any,
+    bottom: spacing.lg,
+    left: spacing.lg,
+    zIndex: 50,
+    width: 56,
+    height: 56,
+    borderRadius: 28,
+    backgroundColor: colors.secondary,
+    shadowColor: colors.secondary,
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 12,
+    elevation: 8,
+  },
+  chatButtonHovered: {
+    transform: [{ scale: 1.1 }],
+    shadowOpacity: 0.5,
+  },
+  chatButtonInner: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  chatWindow: {
+    position: 'fixed' as any,
+    bottom: spacing.lg,
+    left: spacing.lg,
+    zIndex: 50,
+    width: 384,
+    maxWidth: 'calc(100vw - 3rem)' as any,
+    height: 500,
+    maxHeight: '70vh' as any,
+  },
+  chatContainer: {
+    flex: 1,
+    overflow: 'hidden',
+  },
+  header: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingHorizontal: spacing.md,
+    paddingVertical: spacing.sm + 4,
+    borderBottomWidth: 1,
+    borderBottomColor: 'rgba(255, 255, 255, 0.1)',
+    backgroundImage: 'linear-gradient(to left, rgba(0, 217, 255, 0.2), rgba(138, 43, 226, 0.2))' as any,
+  },
+  headerLeft: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.sm,
+  },
+  headerIcon: {
+    width: 32,
+    height: 32,
+    borderRadius: 16,
+    backgroundColor: colors.secondary,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  headerTitle: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: colors.text,
+  },
+  closeButton: {
+    padding: spacing.sm,
+    borderRadius: borderRadius.md,
+  },
+  closeButtonHovered: {
+    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+  },
+  messagesContainer: {
+    flex: 1,
+  },
+  messagesContent: {
+    padding: spacing.md,
+    gap: spacing.md,
+  },
+  messageRow: {
+    marginBottom: spacing.sm,
+  },
+  messageRowUser: {
+    alignItems: 'flex-start',
+  },
+  messageRowAssistant: {
+    alignItems: 'flex-end',
+  },
+  messageBubble: {
+    maxWidth: '80%',
+    paddingHorizontal: spacing.md,
+    paddingVertical: spacing.sm + 2,
+    borderRadius: borderRadius.lg,
+  },
+  messageBubbleUser: {
+    backgroundColor: colors.primary,
+    borderTopRightRadius: borderRadius.sm,
+  },
+  messageBubbleAssistant: {
+    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+    borderTopLeftRadius: borderRadius.sm,
+  },
+  messageBubbleError: {
+    backgroundColor: 'rgba(239, 68, 68, 0.2)',
+    borderTopLeftRadius: borderRadius.sm,
+  },
+  messageText: {
+    fontSize: 14,
+    color: colors.text,
+    lineHeight: 20,
+  },
+  messageTextError: {
+    color: colors.error,
+  },
+  loadingBubble: {
+    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+    paddingHorizontal: spacing.md,
+    paddingVertical: spacing.sm + 2,
+    borderRadius: borderRadius.lg,
+    borderTopLeftRadius: borderRadius.sm,
+  },
+  recommendationsContainer: {
+    width: '100%',
+  },
+  recommendationsTitle: {
+    fontSize: 14,
+    color: colors.textSecondary,
+    marginBottom: spacing.sm,
+    textAlign: 'right',
+  },
+  recommendationsGrid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: spacing.sm,
+  },
+  recommendationCard: {
+    width: '48%',
+  },
+  recommendationCardInner: {
+    padding: spacing.sm,
+  },
+  recommendationImage: {
+    width: '100%',
+    aspectRatio: 16 / 9,
+    borderRadius: borderRadius.md,
+    marginBottom: spacing.xs,
+  },
+  recommendationTitle: {
+    fontSize: 14,
+    color: colors.text,
+  },
+  suggestionsContainer: {
+    paddingHorizontal: spacing.md,
+    paddingBottom: spacing.sm,
+  },
+  suggestionsList: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: spacing.sm,
+  },
+  suggestionButton: {
+    paddingHorizontal: spacing.md,
+    paddingVertical: spacing.xs + 2,
+    borderRadius: borderRadius.full,
+    backgroundColor: 'rgba(255, 255, 255, 0.05)',
+    borderWidth: 1,
+    borderColor: colors.glassBorder,
+  },
+  suggestionButtonHovered: {
+    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+    borderColor: colors.primary,
+  },
+  suggestionText: {
+    fontSize: 12,
+    color: colors.textSecondary,
+  },
+  inputContainer: {
+    padding: spacing.md,
+    borderTopWidth: 1,
+    borderTopColor: 'rgba(255, 255, 255, 0.1)',
+  },
+  statusContainer: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    marginBottom: spacing.sm,
+  },
+  inputRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.sm,
+  },
+  micButton: {
+    width: 48,
+    height: 40,
+    borderRadius: 20,
+    backgroundColor: colors.secondary,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  micButtonRecording: {
+    backgroundColor: colors.error,
+    shadowColor: colors.error,
+    shadowOffset: { width: 0, height: 0 },
+    shadowOpacity: 0.5,
+    shadowRadius: 8,
+  },
+  micButtonHovered: {
+    shadowColor: colors.secondary,
+    shadowOffset: { width: 0, height: 0 },
+    shadowOpacity: 0.5,
+    shadowRadius: 8,
+  },
+  textInputContainer: {
+    flex: 1,
+    height: 40,
+    borderRadius: 20,
+    backgroundColor: 'rgba(255, 255, 255, 0.05)',
+    borderWidth: 1,
+    borderColor: colors.glassBorder,
+    paddingHorizontal: spacing.md,
+    justifyContent: 'center',
+  },
+  textInput: {
+    fontSize: 14,
+    color: colors.text,
+    textAlign: 'right',
+  },
+  sendButton: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    backgroundColor: colors.primary,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  sendButtonDisabled: {
+    opacity: 0.5,
+  },
+  sendButtonHovered: {
+    shadowColor: colors.primary,
+    shadowOffset: { width: 0, height: 0 },
+    shadowOpacity: 0.5,
+    shadowRadius: 8,
+  },
+})

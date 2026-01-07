@@ -1,6 +1,29 @@
-import { useState, useEffect, useRef, useCallback } from 'react'
+import { useState, useEffect, useRef, useCallback, ReactNode } from 'react'
+import { View, Text, StyleSheet, Pressable, Image, Animated } from 'react-native'
 import { useNavigate } from 'react-router-dom'
-import './VerticalFeed.css'
+import { colors, spacing, borderRadius } from '@bayit/shared/theme'
+import { GlassView } from '@bayit/shared/ui'
+
+interface FeedItem {
+  id?: string
+  title: string
+  description?: string
+  category?: string
+  duration?: number
+  type?: string
+  stream_url?: string
+  url?: string
+  thumbnail?: string
+}
+
+interface VerticalFeedProps {
+  items?: FeedItem[]
+  onItemChange?: (item: FeedItem, index: number) => void
+  onItemPress?: (item: FeedItem, index: number) => void
+  renderItem?: (item: FeedItem, index: number, isActive: boolean) => ReactNode
+  autoPlay?: boolean
+  showProgress?: boolean
+}
 
 /**
  * VerticalFeed Layout
@@ -14,26 +37,33 @@ export default function VerticalFeed({
   renderItem,
   autoPlay = true,
   showProgress = true,
-}) {
+}: VerticalFeedProps) {
   const navigate = useNavigate()
   const [currentIndex, setCurrentIndex] = useState(0)
   const [isTransitioning, setIsTransitioning] = useState(false)
   const [touchStart, setTouchStart] = useState(0)
   const [touchEnd, setTouchEnd] = useState(0)
   const [progress, setProgress] = useState(0)
-  const containerRef = useRef(null)
-  const videoRefs = useRef({})
+  const containerRef = useRef<View>(null)
+  const videoRefs = useRef<Record<number, HTMLVideoElement | null>>({})
+  const translateY = useRef(new Animated.Value(0)).current
 
   const currentItem = items[currentIndex]
 
-  // Handle swipe gestures
-  const handleTouchStart = (e) => {
-    setTouchStart(e.touches[0].clientY)
-    setTouchEnd(e.touches[0].clientY)
+  // Handle touch gestures
+  const handleTouchStart = (e: any) => {
+    const touch = e.nativeEvent?.touches?.[0] || e.touches?.[0]
+    if (touch) {
+      setTouchStart(touch.clientY)
+      setTouchEnd(touch.clientY)
+    }
   }
 
-  const handleTouchMove = (e) => {
-    setTouchEnd(e.touches[0].clientY)
+  const handleTouchMove = (e: any) => {
+    const touch = e.nativeEvent?.touches?.[0] || e.touches?.[0]
+    if (touch) {
+      setTouchEnd(touch.clientY)
+    }
   }
 
   const handleTouchEnd = () => {
@@ -42,17 +72,15 @@ export default function VerticalFeed({
 
     if (Math.abs(diff) > swipeThreshold) {
       if (diff > 0) {
-        // Swipe up - next item
         goToNext()
       } else {
-        // Swipe down - previous item
         goToPrevious()
       }
     }
   }
 
   // Handle wheel scroll on desktop
-  const handleWheel = useCallback((e) => {
+  const handleWheel = useCallback((e: WheelEvent) => {
     if (isTransitioning) return
 
     if (e.deltaY > 0) {
@@ -64,7 +92,7 @@ export default function VerticalFeed({
 
   // Handle keyboard navigation
   useEffect(() => {
-    const handleKeyDown = (e) => {
+    const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === 'ArrowDown' || e.key === 'j') {
         goToNext()
       } else if (e.key === 'ArrowUp' || e.key === 'k') {
@@ -77,6 +105,15 @@ export default function VerticalFeed({
     window.addEventListener('keydown', handleKeyDown)
     return () => window.removeEventListener('keydown', handleKeyDown)
   }, [currentIndex, items])
+
+  // Add wheel listener
+  useEffect(() => {
+    const container = containerRef.current as any
+    if (container) {
+      container.addEventListener?.('wheel', handleWheel, { passive: true })
+      return () => container.removeEventListener?.('wheel', handleWheel)
+    }
+  }, [handleWheel])
 
   const goToNext = useCallback(() => {
     if (currentIndex < items.length - 1 && !isTransitioning) {
@@ -96,7 +133,7 @@ export default function VerticalFeed({
     }
   }, [currentIndex, isTransitioning])
 
-  const goToIndex = useCallback((index) => {
+  const goToIndex = useCallback((index: number) => {
     if (index >= 0 && index < items.length && index !== currentIndex) {
       setIsTransitioning(true)
       setCurrentIndex(index)
@@ -107,7 +144,9 @@ export default function VerticalFeed({
 
   // Notify parent of item changes
   useEffect(() => {
-    onItemChange?.(currentItem, currentIndex)
+    if (currentItem) {
+      onItemChange?.(currentItem, currentIndex)
+    }
   }, [currentIndex, currentItem, onItemChange])
 
   // Auto-advance for clips with duration
@@ -116,7 +155,7 @@ export default function VerticalFeed({
 
     const interval = setInterval(() => {
       setProgress((prev) => {
-        const next = prev + (100 / currentItem.duration)
+        const next = prev + (100 / currentItem.duration!)
         if (next >= 100) {
           goToNext()
           return 0
@@ -135,8 +174,8 @@ export default function VerticalFeed({
   }
 
   // Default item renderer
-  const defaultRenderItem = (item, index, isActive) => (
-    <div className={`feed-item ${isActive ? 'active' : ''}`}>
+  const defaultRenderItem = (item: FeedItem, index: number, isActive: boolean) => (
+    <View style={[styles.feedItem, isActive && styles.feedItemActive]}>
       {item.type === 'video' || item.stream_url ? (
         <video
           ref={(el) => (videoRefs.current[index] = el)}
@@ -146,128 +185,326 @@ export default function VerticalFeed({
           playsInline
           loop
           autoPlay={isActive && autoPlay}
+          style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+        />
+      ) : item.thumbnail ? (
+        <Image
+          source={{ uri: item.thumbnail }}
+          style={styles.feedThumbnail}
+          resizeMode="cover"
         />
       ) : (
-        <div
-          className="feed-thumbnail"
-          style={{ backgroundImage: `url(${item.thumbnail})` }}
-        />
+        <View style={styles.feedThumbnail} />
       )}
 
-      <div className="feed-overlay">
-        <div className="feed-content" dir="rtl">
-          <h2 className="feed-title">{item.title}</h2>
+      <View style={styles.feedOverlay}>
+        <View style={styles.feedContent}>
+          <Text style={styles.feedTitle}>{item.title}</Text>
           {item.description && (
-            <p className="feed-description">{item.description}</p>
+            <Text style={styles.feedDescription} numberOfLines={2}>
+              {item.description}
+            </Text>
           )}
-          <div className="feed-meta">
-            {item.category && <span className="feed-category">{item.category}</span>}
-            {item.duration && (
-              <span className="feed-duration">
-                {Math.floor(item.duration / 60)}:{String(item.duration % 60).padStart(2, '0')}
-              </span>
+          <View style={styles.feedMeta}>
+            {item.category && (
+              <Text style={styles.feedCategory}>{item.category}</Text>
             )}
-          </div>
-        </div>
+            {item.duration && (
+              <Text style={styles.feedDuration}>
+                {Math.floor(item.duration / 60)}:{String(item.duration % 60).padStart(2, '0')}
+              </Text>
+            )}
+          </View>
+        </View>
 
-        <div className="feed-actions">
-          <button className="action-button" onClick={() => navigate(`/watch/${item.id}`)}>
-            <span className="action-icon">▶️</span>
-            <span className="action-label">צפה</span>
-          </button>
-          <button className="action-button">
-            <span className="action-icon">➕</span>
-            <span className="action-label">שמור</span>
-          </button>
-          <button className="action-button">
-            <span className="action-icon">↗️</span>
-            <span className="action-label">שתף</span>
-          </button>
-        </div>
-      </div>
-    </div>
+        <View style={styles.feedActions}>
+          <Pressable
+            style={({ hovered }) => [
+              styles.actionButton,
+              hovered && styles.actionButtonHovered,
+            ]}
+            onPress={() => navigate(`/watch/${item.id}`)}
+          >
+            <Text style={styles.actionIcon}>▶️</Text>
+            <Text style={styles.actionLabel}>צפה</Text>
+          </Pressable>
+          <Pressable
+            style={({ hovered }) => [
+              styles.actionButton,
+              hovered && styles.actionButtonHovered,
+            ]}
+          >
+            <Text style={styles.actionIcon}>➕</Text>
+            <Text style={styles.actionLabel}>שמור</Text>
+          </Pressable>
+          <Pressable
+            style={({ hovered }) => [
+              styles.actionButton,
+              hovered && styles.actionButtonHovered,
+            ]}
+          >
+            <Text style={styles.actionIcon}>↗️</Text>
+            <Text style={styles.actionLabel}>שתף</Text>
+          </Pressable>
+        </View>
+      </View>
+    </View>
   )
 
   if (!items.length) {
     return (
-      <div className="vertical-feed empty">
-        <p>אין תוכן להצגה</p>
-      </div>
+      <View style={styles.container}>
+        <View style={styles.emptyState}>
+          <Text style={styles.emptyText}>אין תוכן להצגה</Text>
+        </View>
+      </View>
     )
   }
 
   return (
-    <div
+    <View
       ref={containerRef}
-      className="vertical-feed"
+      style={styles.container}
       onTouchStart={handleTouchStart}
       onTouchMove={handleTouchMove}
       onTouchEnd={handleTouchEnd}
-      onWheel={handleWheel}
     >
       {/* Items Container */}
-      <div
-        className="feed-container"
-        style={{
-          transform: `translateY(-${currentIndex * 100}%)`,
-        }}
+      <Animated.View
+        style={[
+          styles.feedContainer,
+          {
+            transform: [{ translateY: Animated.multiply(new Animated.Value(-currentIndex * 100), new Animated.Value(1)) }],
+          },
+        ]}
       >
         {items.map((item, index) => (
-          <div
+          <Pressable
             key={item.id || index}
-            className="feed-slide"
-            onClick={handleItemPress}
+            style={styles.feedSlide}
+            onPress={handleItemPress}
           >
             {renderItem
               ? renderItem(item, index, index === currentIndex)
               : defaultRenderItem(item, index, index === currentIndex)
             }
-          </div>
+          </Pressable>
         ))}
-      </div>
+      </Animated.View>
 
       {/* Progress Bar */}
       {showProgress && currentItem?.duration && (
-        <div className="progress-bar">
-          <div className="progress-fill" style={{ width: `${progress}%` }} />
-        </div>
+        <View style={styles.progressBar}>
+          <View style={[styles.progressFill, { width: `${progress}%` as any }]} />
+        </View>
       )}
 
       {/* Navigation Dots */}
-      <div className="feed-dots">
+      <View style={styles.feedDots}>
         {items.slice(
           Math.max(0, currentIndex - 2),
           Math.min(items.length, currentIndex + 3)
         ).map((_, i) => {
           const actualIndex = Math.max(0, currentIndex - 2) + i
           return (
-            <button
+            <Pressable
               key={actualIndex}
-              className={`dot ${actualIndex === currentIndex ? 'active' : ''}`}
-              onClick={() => goToIndex(actualIndex)}
+              style={[
+                styles.dot,
+                actualIndex === currentIndex && styles.dotActive,
+              ]}
+              onPress={() => goToIndex(actualIndex)}
             />
           )
         })}
-      </div>
+      </View>
 
       {/* Swipe Hints */}
-      <div className="swipe-hints">
+      <View style={styles.swipeHints}>
         {currentIndex > 0 && (
-          <div className="hint hint-up">
-            <span>↑</span>
-          </div>
+          <View style={[styles.hint, styles.hintUp]}>
+            <Text style={styles.hintText}>↑</Text>
+          </View>
         )}
         {currentIndex < items.length - 1 && (
-          <div className="hint hint-down">
-            <span>↓</span>
-          </div>
+          <View style={[styles.hint, styles.hintDown]}>
+            <Text style={styles.hintText}>↓</Text>
+          </View>
         )}
-      </div>
+      </View>
 
       {/* Counter */}
-      <div className="feed-counter">
-        {currentIndex + 1} / {items.length}
-      </div>
-    </div>
+      <GlassView style={styles.feedCounter} intensity="low">
+        <Text style={styles.counterText}>
+          {currentIndex + 1} / {items.length}
+        </Text>
+      </GlassView>
+    </View>
   )
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: colors.background,
+    overflow: 'hidden',
+  },
+  feedContainer: {
+    flex: 1,
+  },
+  feedSlide: {
+    height: '100%',
+    width: '100%',
+  },
+  feedItem: {
+    flex: 1,
+    position: 'relative',
+  },
+  feedItemActive: {
+    // Active state styles if needed
+  },
+  feedThumbnail: {
+    width: '100%',
+    height: '100%',
+    backgroundColor: 'rgba(0, 0, 0, 0.3)',
+  },
+  feedOverlay: {
+    position: 'absolute',
+    left: 0,
+    right: 0,
+    bottom: 0,
+    padding: spacing.lg,
+    paddingBottom: spacing.xl * 2,
+    backgroundColor: 'linear-gradient(transparent, rgba(0, 0, 0, 0.8))' as any,
+  },
+  feedContent: {
+    marginBottom: spacing.lg,
+  },
+  feedTitle: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    color: colors.text,
+    textAlign: 'right',
+    marginBottom: spacing.sm,
+  },
+  feedDescription: {
+    fontSize: 14,
+    color: colors.textSecondary,
+    textAlign: 'right',
+    marginBottom: spacing.sm,
+  },
+  feedMeta: {
+    flexDirection: 'row',
+    justifyContent: 'flex-end',
+    gap: spacing.md,
+  },
+  feedCategory: {
+    fontSize: 12,
+    color: colors.primary,
+    paddingHorizontal: spacing.sm,
+    paddingVertical: spacing.xs,
+    backgroundColor: 'rgba(0, 217, 255, 0.1)',
+    borderRadius: borderRadius.sm,
+  },
+  feedDuration: {
+    fontSize: 12,
+    color: colors.textMuted,
+    fontFamily: 'monospace',
+  },
+  feedActions: {
+    flexDirection: 'column',
+    position: 'absolute',
+    right: spacing.md,
+    bottom: spacing.xl * 3,
+    gap: spacing.lg,
+  },
+  actionButton: {
+    alignItems: 'center',
+    gap: spacing.xs,
+    padding: spacing.sm,
+    borderRadius: borderRadius.md,
+  },
+  actionButtonHovered: {
+    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+  },
+  actionIcon: {
+    fontSize: 24,
+  },
+  actionLabel: {
+    fontSize: 11,
+    color: colors.text,
+  },
+  progressBar: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    height: 3,
+    backgroundColor: 'rgba(255, 255, 255, 0.2)',
+  },
+  progressFill: {
+    height: '100%',
+    backgroundColor: colors.primary,
+  },
+  feedDots: {
+    position: 'absolute',
+    right: spacing.sm,
+    top: '50%',
+    transform: [{ translateY: -50 }],
+    gap: spacing.sm,
+  },
+  dot: {
+    width: 8,
+    height: 8,
+    borderRadius: 4,
+    backgroundColor: 'rgba(255, 255, 255, 0.3)',
+  },
+  dotActive: {
+    backgroundColor: colors.primary,
+    height: 20,
+    borderRadius: 4,
+  },
+  swipeHints: {
+    position: 'absolute',
+    left: 0,
+    right: 0,
+    alignItems: 'center',
+  },
+  hint: {
+    position: 'absolute',
+    padding: spacing.sm,
+    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+    borderRadius: borderRadius.full,
+  },
+  hintUp: {
+    top: spacing.xl,
+  },
+  hintDown: {
+    bottom: spacing.xl,
+  },
+  hintText: {
+    fontSize: 16,
+    color: colors.textMuted,
+  },
+  feedCounter: {
+    position: 'absolute',
+    top: spacing.md,
+    left: spacing.md,
+    paddingHorizontal: spacing.sm,
+    paddingVertical: spacing.xs,
+  },
+  counterText: {
+    fontSize: 12,
+    color: colors.text,
+    fontFamily: 'monospace',
+  },
+  emptyState: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  emptyText: {
+    fontSize: 16,
+    color: colors.textMuted,
+  },
+})

@@ -1,64 +1,67 @@
 import { useEffect, useRef } from 'react'
+import { View, Text, StyleSheet, ScrollView } from 'react-native'
 import { useTranslation } from 'react-i18next'
-import { clsx } from 'clsx'
+import { colors, spacing, borderRadius } from '@bayit/shared/theme'
 import WatchPartyChatInput from './WatchPartyChatInput'
 
-function formatTime(timestamp) {
+interface Message {
+  id?: string
+  user_id: string
+  user_name: string
+  content: string
+  message_type?: 'text' | 'emoji' | 'system'
+  created_at: string
+}
+
+interface WatchPartyChatProps {
+  messages: Message[]
+  currentUserId: string
+  onSendMessage: (message: string, type?: string) => void
+  chatEnabled: boolean
+}
+
+function formatTime(timestamp: string): string {
   const date = new Date(timestamp)
   return date.toLocaleTimeString('he-IL', { hour: '2-digit', minute: '2-digit' })
 }
 
-function ChatMessage({ message, isOwnMessage }) {
+function ChatMessage({ message, isOwnMessage }: { message: Message; isOwnMessage: boolean }) {
   const isEmoji = message.message_type === 'emoji'
   const isSystem = message.message_type === 'system'
 
   if (isSystem) {
     return (
-      <div className="text-center py-1">
-        <span className="text-xs text-dark-400 bg-white/5 px-3 py-1 rounded-full">
-          {message.content}
-        </span>
-      </div>
+      <View style={styles.systemMessage}>
+        <Text style={styles.systemText}>{message.content}</Text>
+      </View>
     )
   }
 
   return (
-    <div
-      className={clsx(
-        'flex gap-2 group',
-        isOwnMessage ? 'flex-row-reverse' : 'flex-row'
-      )}
-    >
-      <div
-        className={clsx(
-          'max-w-[80%] rounded-2xl px-3 py-2',
+    <View style={[styles.messageRow, isOwnMessage && styles.messageRowOwn]}>
+      <View
+        style={[
+          styles.messageBubble,
           isEmoji
-            ? 'bg-transparent text-3xl'
+            ? styles.emojiBubble
             : isOwnMessage
-              ? 'bg-primary-500/20 text-white'
-              : 'bg-white/10 text-white'
-        )}
+              ? styles.ownBubble
+              : styles.otherBubble,
+        ]}
       >
         {!isOwnMessage && !isEmoji && (
-          <div className="text-xs font-medium text-primary-400 mb-0.5">
-            {message.user_name}
-          </div>
+          <Text style={styles.senderName}>{message.user_name}</Text>
         )}
-        <div className={clsx('break-words', !isEmoji && 'text-sm')}>
+        <Text style={[styles.messageText, isEmoji && styles.emojiText]}>
           {message.content}
-        </div>
+        </Text>
         {!isEmoji && (
-          <div
-            className={clsx(
-              'text-[10px] mt-1 opacity-0 group-hover:opacity-100 transition-opacity',
-              isOwnMessage ? 'text-primary-300' : 'text-dark-400'
-            )}
-          >
+          <Text style={[styles.timestamp, isOwnMessage && styles.timestampOwn]}>
             {formatTime(message.created_at)}
-          </div>
+          </Text>
         )}
-      </div>
-    </div>
+      </View>
+    </View>
   )
 }
 
@@ -67,25 +70,27 @@ export default function WatchPartyChat({
   currentUserId,
   onSendMessage,
   chatEnabled,
-}) {
+}: WatchPartyChatProps) {
   const { t } = useTranslation()
-  const messagesEndRef = useRef(null)
+  const scrollViewRef = useRef<ScrollView>(null)
 
   useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
+    scrollViewRef.current?.scrollToEnd({ animated: true })
   }, [messages])
 
   return (
-    <div className="flex flex-col h-full">
-      <h3 className="text-sm font-medium text-dark-300 px-1 mb-2 flex-shrink-0">
-        {t('watchParty.chat')}
-      </h3>
+    <View style={styles.container}>
+      <Text style={styles.title}>{t('watchParty.chat')}</Text>
 
-      <div className="flex-1 overflow-y-auto space-y-2 min-h-0 px-1 scrollbar-thin">
+      <ScrollView
+        ref={scrollViewRef}
+        style={styles.messagesList}
+        contentContainerStyle={styles.messagesContent}
+      >
         {messages.length === 0 ? (
-          <div className="text-center text-dark-400 text-sm py-8">
-            {t('watchParty.typeMessage')}
-          </div>
+          <View style={styles.emptyState}>
+            <Text style={styles.emptyText}>{t('watchParty.typeMessage')}</Text>
+          </View>
         ) : (
           messages.map((msg, idx) => (
             <ChatMessage
@@ -95,15 +100,106 @@ export default function WatchPartyChat({
             />
           ))
         )}
-        <div ref={messagesEndRef} />
-      </div>
+      </ScrollView>
 
-      <div className="flex-shrink-0 pt-3 border-t border-white/10 mt-2">
+      <View style={styles.inputContainer}>
         <WatchPartyChatInput
           onSend={onSendMessage}
           disabled={!chatEnabled}
         />
-      </div>
-    </div>
+      </View>
+    </View>
   )
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+  },
+  title: {
+    fontSize: 14,
+    fontWeight: '500',
+    color: colors.textMuted,
+    paddingHorizontal: spacing.xs,
+    marginBottom: spacing.sm,
+  },
+  messagesList: {
+    flex: 1,
+    minHeight: 0,
+  },
+  messagesContent: {
+    gap: spacing.sm,
+    paddingHorizontal: spacing.xs,
+  },
+  emptyState: {
+    alignItems: 'center',
+    paddingVertical: spacing.xl * 2,
+  },
+  emptyText: {
+    fontSize: 14,
+    color: colors.textMuted,
+  },
+  messageRow: {
+    flexDirection: 'row',
+  },
+  messageRowOwn: {
+    flexDirection: 'row-reverse',
+  },
+  messageBubble: {
+    maxWidth: '80%',
+    borderRadius: borderRadius.xl,
+    paddingHorizontal: spacing.md,
+    paddingVertical: spacing.sm,
+  },
+  emojiBubble: {
+    backgroundColor: 'transparent',
+    paddingHorizontal: 0,
+    paddingVertical: 0,
+  },
+  ownBubble: {
+    backgroundColor: 'rgba(0, 217, 255, 0.2)',
+  },
+  otherBubble: {
+    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+  },
+  senderName: {
+    fontSize: 12,
+    fontWeight: '500',
+    color: colors.primary,
+    marginBottom: 2,
+  },
+  messageText: {
+    fontSize: 14,
+    color: colors.text,
+  },
+  emojiText: {
+    fontSize: 28,
+  },
+  timestamp: {
+    fontSize: 10,
+    color: colors.textMuted,
+    marginTop: spacing.xs,
+    opacity: 0,
+  },
+  timestampOwn: {
+    color: 'rgba(0, 217, 255, 0.6)',
+  },
+  systemMessage: {
+    alignItems: 'center',
+    paddingVertical: spacing.xs,
+  },
+  systemText: {
+    fontSize: 12,
+    color: colors.textMuted,
+    backgroundColor: 'rgba(255, 255, 255, 0.05)',
+    paddingHorizontal: spacing.md,
+    paddingVertical: spacing.xs,
+    borderRadius: borderRadius.full,
+  },
+  inputContainer: {
+    paddingTop: spacing.md,
+    marginTop: spacing.sm,
+    borderTopWidth: 1,
+    borderTopColor: 'rgba(255, 255, 255, 0.1)',
+  },
+})

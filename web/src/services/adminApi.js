@@ -149,6 +149,8 @@ const apiUsersService = {
   updateRole: (userId, role, permissions) => adminApi.put(`/admin/users/${userId}/role`, { role, permissions }),
   banUser: (userId, reason) => adminApi.post(`/admin/users/${userId}/ban`, { reason }),
   unbanUser: (userId) => adminApi.post(`/admin/users/${userId}/unban`),
+  getUserActivity: (userId, limit = 10) => adminApi.get(`/admin/users/${userId}/activity`, { params: { limit } }),
+  getUserBillingHistory: (userId) => adminApi.get(`/admin/users/${userId}/billing`),
 }
 
 const demoUsersService = {
@@ -195,6 +197,19 @@ const demoUsersService = {
   unbanUser: async (userId) => {
     await delay()
     return { id: userId, status: 'active' }
+  },
+  getUserActivity: async (userId, limit = 10) => {
+    await delay()
+    return Array.from({ length: Math.min(limit, 5) }, (_, i) => ({
+      id: `act-${i}`,
+      action: ['user.login', 'content.viewed', 'subscription.created', 'settings.updated'][i % 4],
+      details: { resource: `content-${i}` },
+      created_at: new Date(Date.now() - i * 3600000).toISOString(),
+    }))
+  },
+  getUserBillingHistory: async (userId) => {
+    await delay()
+    return demoTransactions.slice(0, 3)
   },
 }
 
@@ -261,7 +276,17 @@ const apiBillingService = {
   getTransaction: (transactionId) => adminApi.get(`/admin/billing/transactions/${transactionId}`),
   getRefunds: (filters) => adminApi.get('/admin/billing/refunds', { params: filters }),
   processRefund: (transactionId, data) => adminApi.post('/admin/billing/refunds', { transaction_id: transactionId, ...data }),
+  approveRefund: (refundId) => adminApi.post(`/admin/billing/refunds/${refundId}/approve`),
+  rejectRefund: (refundId, reason) => adminApi.post(`/admin/billing/refunds/${refundId}/reject`, { reason }),
+  exportTransactions: (filters) => adminApi.get('/admin/billing/export', { params: filters, responseType: 'blob' }),
+  generateInvoice: (transactionId) => adminApi.get(`/admin/billing/transactions/${transactionId}/invoice`, { responseType: 'blob' }),
 }
+
+const demoRefunds = [
+  { id: 'r1', transaction_id: 't1', user: { name: 'דני כהן', email: 'dani@example.com' }, amount: 14.99, reason: 'לא שבע רצון מהשירות', status: 'pending', created_at: new Date().toISOString() },
+  { id: 'r2', transaction_id: 't2', user: { name: 'שרה לוי', email: 'sara@example.com' }, amount: 9.99, reason: 'חיוב כפול', status: 'approved', created_at: new Date(Date.now() - 86400000).toISOString(), processed_at: new Date().toISOString() },
+  { id: 'r3', transaction_id: 't3', user: { name: 'יוסי מזרחי', email: 'yossi@example.com' }, amount: 19.99, reason: 'ביטול מנוי', status: 'rejected', created_at: new Date(Date.now() - 172800000).toISOString(), rejection_reason: 'מחוץ לתקופת ההחזר' },
+]
 
 const demoBillingService = {
   getOverview: async () => {
@@ -272,11 +297,22 @@ const demoBillingService = {
       this_month: 45200,
       this_year: 245680,
       pending_refunds: 3,
+      total_transactions: 1250,
+      avg_transaction: 12.50,
+      refund_rate: 2.1,
     }
   },
   getTransactions: async (filters = {}) => {
     await delay()
-    return { items: demoTransactions, total: demoTransactions.length, page: 1, page_size: 20 }
+    let filtered = [...demoTransactions]
+    if (filters.status && filters.status !== 'all') {
+      filtered = filtered.filter(t => t.status === filters.status)
+    }
+    if (filters.search) {
+      const search = filters.search.toLowerCase()
+      filtered = filtered.filter(t => t.user.name.toLowerCase().includes(search) || t.user.email.toLowerCase().includes(search))
+    }
+    return { items: filtered, total: filtered.length, page: filters.page || 1, page_size: filters.page_size || 20 }
   },
   getTransaction: async (transactionId) => {
     await delay()
@@ -284,11 +320,31 @@ const demoBillingService = {
   },
   getRefunds: async (filters = {}) => {
     await delay()
-    return { items: [], total: 0, page: 1, page_size: 20 }
+    let filtered = [...demoRefunds]
+    if (filters.status && filters.status !== 'all' && filters.status !== '') {
+      filtered = filtered.filter(r => r.status === filters.status)
+    }
+    return { items: filtered, total: filtered.length, page: filters.page || 1, page_size: filters.page_size || 20 }
   },
   processRefund: async (transactionId, data) => {
     await delay()
-    return { id: Date.now().toString(), transaction_id: transactionId, ...data, status: 'pending' }
+    return { id: Date.now().toString(), transaction_id: transactionId, ...data, status: 'pending', created_at: new Date().toISOString() }
+  },
+  approveRefund: async (refundId) => {
+    await delay()
+    return { id: refundId, status: 'approved', processed_at: new Date().toISOString() }
+  },
+  rejectRefund: async (refundId, reason) => {
+    await delay()
+    return { id: refundId, status: 'rejected', rejection_reason: reason, processed_at: new Date().toISOString() }
+  },
+  exportTransactions: async (filters) => {
+    await delay()
+    return new Blob(['Transaction data export'], { type: 'text/csv' })
+  },
+  generateInvoice: async (transactionId) => {
+    await delay()
+    return new Blob(['Invoice PDF content'], { type: 'application/pdf' })
   },
 }
 
@@ -301,6 +357,10 @@ const apiSubscriptionsService = {
   getSubscription: (subscriptionId) => adminApi.get(`/admin/subscriptions/${subscriptionId}`),
   cancelSubscription: (subscriptionId, reason) => adminApi.post(`/admin/subscriptions/${subscriptionId}/cancel`, { reason }),
   extendSubscription: (subscriptionId, days) => adminApi.post(`/admin/subscriptions/${subscriptionId}/extend`, { days }),
+  pauseSubscription: (subscriptionId) => adminApi.post(`/admin/subscriptions/${subscriptionId}/pause`),
+  resumeSubscription: (subscriptionId) => adminApi.post(`/admin/subscriptions/${subscriptionId}/resume`),
+  applyDiscount: (subscriptionId, discountPercent, months) => adminApi.post(`/admin/subscriptions/${subscriptionId}/discount`, { discount_percent: discountPercent, months }),
+  getChurnAnalytics: () => adminApi.get('/admin/subscriptions/analytics/churn'),
   getPlans: () => adminApi.get('/admin/plans'),
   getPlan: (planId) => adminApi.get(`/admin/plans/${planId}`),
   createPlan: (data) => adminApi.post('/admin/plans', data),
@@ -325,6 +385,22 @@ const demoSubscriptionsService = {
     await delay()
     return { id: subscriptionId, extended_days: days }
   },
+  pauseSubscription: async (subscriptionId) => {
+    await delay()
+    return { id: subscriptionId, status: 'paused' }
+  },
+  resumeSubscription: async (subscriptionId) => {
+    await delay()
+    return { id: subscriptionId, status: 'active' }
+  },
+  applyDiscount: async (subscriptionId, discountPercent, months) => {
+    await delay()
+    return { id: subscriptionId, discount_percent: discountPercent, discount_months: months }
+  },
+  getChurnAnalytics: async () => {
+    await delay()
+    return { churn_rate: 3.2, churned_users: 45, at_risk_users: 120, retention_rate: 96.8 }
+  },
   getPlans: async () => {
     await delay()
     return demoPlans
@@ -348,26 +424,267 @@ const demoSubscriptionsService = {
 }
 
 // ============================================
+// Marketing Service
+// ============================================
+
+const demoEmailCampaigns = [
+  { id: 'e1', name: 'ברוכים הבאים למשתמשים חדשים', subject: 'ברוך הבא ל-Bayit+!', status: 'active', sent: 1250, opened: 890, clicked: 320, created_at: new Date(Date.now() - 86400000 * 7).toISOString() },
+  { id: 'e2', name: 'מבצע סוף שנה', subject: '🎉 הנחה מיוחדת לסוף שנה!', status: 'completed', sent: 5000, opened: 3200, clicked: 1100, created_at: new Date(Date.now() - 86400000 * 14).toISOString() },
+  { id: 'e3', name: 'תזכורת חידוש מנוי', subject: 'המנוי שלך עומד להסתיים', status: 'scheduled', sent: 0, opened: 0, clicked: 0, scheduled_at: new Date(Date.now() + 86400000).toISOString(), created_at: new Date().toISOString() },
+]
+
+const demoPushNotifications = [
+  { id: 'p1', title: 'תוכן חדש זמין!', body: 'סדרה חדשה התווספה לספריה', status: 'sent', sent: 8500, opened: 2100, created_at: new Date(Date.now() - 3600000).toISOString() },
+  { id: 'p2', title: 'אל תפספסו!', body: 'שידור חי מתחיל בעוד שעה', status: 'scheduled', sent: 0, opened: 0, scheduled_at: new Date(Date.now() + 3600000).toISOString(), created_at: new Date().toISOString() },
+  { id: 'p3', title: 'מבצע בלעדי', body: 'הנחה של 20% למנויים', status: 'draft', sent: 0, opened: 0, created_at: new Date().toISOString() },
+]
+
+const apiMarketingService = {
+  getMetrics: () => adminApi.get('/admin/marketing/metrics'),
+  getRecentCampaigns: (limit = 5) => adminApi.get('/admin/marketing/campaigns/recent', { params: { limit } }),
+  getAudienceSegments: () => adminApi.get('/admin/marketing/segments/summary'),
+  getEmailCampaigns: (filters) => adminApi.get('/admin/marketing/emails', { params: filters }),
+  getEmailCampaign: (campaignId) => adminApi.get(`/admin/marketing/emails/${campaignId}`),
+  createEmailCampaign: (data) => adminApi.post('/admin/marketing/emails', data),
+  updateEmailCampaign: (campaignId, data) => adminApi.put(`/admin/marketing/emails/${campaignId}`, data),
+  deleteEmailCampaign: (campaignId) => adminApi.delete(`/admin/marketing/emails/${campaignId}`),
+  sendEmailCampaign: (campaignId) => adminApi.post(`/admin/marketing/emails/${campaignId}/send`),
+  scheduleEmailCampaign: (campaignId, scheduledAt) => adminApi.post(`/admin/marketing/emails/${campaignId}/schedule`, { scheduled_at: scheduledAt }),
+  sendTestEmail: (campaignId, email) => adminApi.post(`/admin/marketing/emails/${campaignId}/test`, { email }),
+  getPushNotifications: (filters) => adminApi.get('/admin/marketing/push', { params: filters }),
+  getPushNotification: (notificationId) => adminApi.get(`/admin/marketing/push/${notificationId}`),
+  createPushNotification: (data) => adminApi.post('/admin/marketing/push', data),
+  updatePushNotification: (notificationId, data) => adminApi.put(`/admin/marketing/push/${notificationId}`, data),
+  deletePushNotification: (notificationId) => adminApi.delete(`/admin/marketing/push/${notificationId}`),
+  sendPushNotification: (notificationId) => adminApi.post(`/admin/marketing/push/${notificationId}/send`),
+  schedulePushNotification: (notificationId, scheduledAt) => adminApi.post(`/admin/marketing/push/${notificationId}/schedule`, { scheduled_at: scheduledAt }),
+  getAudienceCount: (filter) => adminApi.post('/admin/marketing/audience/count', filter),
+  getSegments: () => adminApi.get('/admin/marketing/segments'),
+  createSegment: (data) => adminApi.post('/admin/marketing/segments', data),
+  deleteSegment: (segmentId) => adminApi.delete(`/admin/marketing/segments/${segmentId}`),
+}
+
+const demoMarketingService = {
+  getMetrics: async () => {
+    await delay()
+    return { emailsSent: 15200, emailOpenRate: 62.5, emailClickRate: 28.3, pushSent: 42000, pushOpenRate: 31.2, activeSegments: 8, conversionRate: 4.5, unsubscribeRate: 0.8 }
+  },
+  getRecentCampaigns: async (limit = 5) => {
+    await delay()
+    return [...demoEmailCampaigns, ...demoPushNotifications].slice(0, limit).map(c => ({
+      id: c.id,
+      name: c.name || c.title,
+      type: c.subject ? 'email' : 'push',
+      status: c.status,
+      sent: c.sent,
+      opened: c.opened,
+      clicked: c.clicked || 0,
+    }))
+  },
+  getAudienceSegments: async () => {
+    await delay()
+    return [
+      { name: 'כל המשתמשים', count: 15420 },
+      { name: 'מנויים פעילים', count: 8450 },
+      { name: 'משתמשים חדשים (7 ימים)', count: 523 },
+      { name: 'מנויים שפג תוקפם', count: 890 },
+    ]
+  },
+  getEmailCampaigns: async (filters = {}) => {
+    await delay()
+    let filtered = [...demoEmailCampaigns]
+    if (filters.status && filters.status !== 'all') {
+      filtered = filtered.filter(e => e.status === filters.status)
+    }
+    if (filters.search) {
+      const search = filters.search.toLowerCase()
+      filtered = filtered.filter(e => e.name.toLowerCase().includes(search) || e.subject.toLowerCase().includes(search))
+    }
+    return { items: filtered, total: filtered.length, page: filters.page || 1, page_size: filters.page_size || 20 }
+  },
+  getEmailCampaign: async (campaignId) => {
+    await delay()
+    return demoEmailCampaigns.find(e => e.id === campaignId) || null
+  },
+  createEmailCampaign: async (data) => {
+    await delay()
+    return { id: Date.now().toString(), ...data, status: 'draft', sent: 0, opened: 0, clicked: 0, created_at: new Date().toISOString() }
+  },
+  updateEmailCampaign: async (campaignId, data) => {
+    await delay()
+    return { id: campaignId, ...data }
+  },
+  deleteEmailCampaign: async (campaignId) => {
+    await delay()
+    return { message: 'Email campaign deleted' }
+  },
+  sendEmailCampaign: async (campaignId) => {
+    await delay()
+    return { id: campaignId, status: 'active', sent: 1000 }
+  },
+  scheduleEmailCampaign: async (campaignId, scheduledAt) => {
+    await delay()
+    return { id: campaignId, status: 'scheduled', scheduled_at: scheduledAt }
+  },
+  sendTestEmail: async (campaignId, email) => {
+    await delay()
+    return { success: true }
+  },
+  getPushNotifications: async (filters = {}) => {
+    await delay()
+    let filtered = [...demoPushNotifications]
+    if (filters.status && filters.status !== 'all') {
+      filtered = filtered.filter(p => p.status === filters.status)
+    }
+    if (filters.search) {
+      const search = filters.search.toLowerCase()
+      filtered = filtered.filter(p => p.title.toLowerCase().includes(search) || p.body.toLowerCase().includes(search))
+    }
+    return { items: filtered, total: filtered.length, page: filters.page || 1, page_size: filters.page_size || 20 }
+  },
+  getPushNotification: async (notificationId) => {
+    await delay()
+    return demoPushNotifications.find(p => p.id === notificationId) || null
+  },
+  createPushNotification: async (data) => {
+    await delay()
+    return { id: Date.now().toString(), ...data, status: 'draft', sent: 0, opened: 0, created_at: new Date().toISOString() }
+  },
+  updatePushNotification: async (notificationId, data) => {
+    await delay()
+    return { id: notificationId, ...data }
+  },
+  deletePushNotification: async (notificationId) => {
+    await delay()
+    return { message: 'Push notification deleted' }
+  },
+  sendPushNotification: async (notificationId) => {
+    await delay()
+    return { id: notificationId, status: 'sent', sent: 8500 }
+  },
+  schedulePushNotification: async (notificationId, scheduledAt) => {
+    await delay()
+    return { id: notificationId, status: 'scheduled', scheduled_at: scheduledAt }
+  },
+  getAudienceCount: async (filter) => {
+    await delay()
+    return { count: Math.floor(Math.random() * 5000) + 1000 }
+  },
+  getSegments: async () => {
+    await delay()
+    return [
+      { id: 's1', name: 'מנויים פעילים', filter: { subscription_status: 'active' }, count: 8450 },
+      { id: 's2', name: 'משתמשים חדשים', filter: { created_after: new Date(Date.now() - 86400000 * 7).toISOString() }, count: 523 },
+    ]
+  },
+  createSegment: async (data) => {
+    await delay()
+    return { id: Date.now().toString() }
+  },
+  deleteSegment: async (segmentId) => {
+    await delay()
+    return { message: 'Segment deleted' }
+  },
+}
+
+// ============================================
+// Settings Service
+// ============================================
+
+const apiSettingsService = {
+  getSettings: () => adminApi.get('/admin/settings'),
+  updateSettings: (data) => adminApi.put('/admin/settings', data),
+  getFeatureFlags: () => adminApi.get('/admin/settings/features'),
+  updateFeatureFlag: (flag, enabled) => adminApi.put(`/admin/settings/features/${flag}`, { enabled }),
+  clearCache: () => adminApi.post('/admin/settings/cache/clear'),
+  resetAnalytics: () => adminApi.post('/admin/settings/analytics/reset'),
+}
+
+const demoSettingsService = {
+  getSettings: async () => {
+    await delay()
+    return {
+      site_name: 'Bayit+',
+      support_email: 'support@bayit.tv',
+      default_language: 'he',
+      maintenance_mode: false,
+      allow_registration: true,
+      require_email_verification: true,
+      max_profiles_per_account: 5,
+      trial_period_days: 7,
+      currency: 'USD',
+    }
+  },
+  updateSettings: async (data) => {
+    await delay()
+    return data
+  },
+  getFeatureFlags: async () => {
+    await delay()
+    return {
+      new_player: true,
+      live_chat: false,
+      downloads: true,
+      watch_party: true,
+      voice_search: false,
+      ai_recommendations: true,
+    }
+  },
+  updateFeatureFlag: async (flag, enabled) => {
+    await delay()
+    return { [flag]: enabled }
+  },
+  clearCache: async () => {
+    await delay()
+    return { success: true }
+  },
+  resetAnalytics: async () => {
+    await delay()
+    return { success: true }
+  },
+}
+
+// ============================================
 // Audit Logs Service
 // ============================================
 
 const apiAuditLogsService = {
   getLogs: (filters) => adminApi.get('/admin/logs', { params: filters }),
+  exportLogs: (filters) => adminApi.get('/admin/logs/export', { params: filters, responseType: 'blob' }),
 }
 
 const demoAuditLogsService = {
   getLogs: async (filters = {}) => {
     await delay()
-    const logs = Array.from({ length: 20 }, (_, i) => ({
+    const actions = ['user.login', 'user.created', 'user.updated', 'subscription.created', 'subscription.cancelled', 'payment.completed', 'payment.refunded', 'settings.updated', 'campaign.created', 'content.published']
+    const users = ['Admin', 'דני כהן', 'שרה לוי', 'יוסי מזרחי', 'רחל אברהם']
+    const logs = Array.from({ length: 50 }, (_, i) => ({
       id: `log-${i}`,
-      action: ['user.login', 'user.created', 'subscription.created', 'payment.completed', 'settings.updated'][i % 5],
+      action: actions[i % actions.length],
       user_id: `user-${i % 5}`,
-      user_name: ['Admin', 'דני כהן', 'שרה לוי', 'יוסי מזרחי'][i % 4],
-      ip_address: `192.168.1.${100 + i}`,
-      details: {},
-      created_at: new Date(Date.now() - i * 3600000).toISOString(),
+      user_name: users[i % users.length],
+      ip_address: `192.168.1.${100 + (i % 50)}`,
+      resource_type: actions[i % actions.length].split('.')[0],
+      resource_id: `res-${i}`,
+      details: { changed_fields: ['status', 'email'] },
+      created_at: new Date(Date.now() - i * 1800000).toISOString(),
     }))
-    return { items: logs, total: logs.length, page: 1, page_size: 20 }
+    let filtered = logs
+    if (filters.action) {
+      filtered = filtered.filter(l => l.action.includes(filters.action))
+    }
+    if (filters.user_id) {
+      filtered = filtered.filter(l => l.user_id === filters.user_id)
+    }
+    const page = filters.page || 1
+    const pageSize = filters.page_size || 20
+    const start = (page - 1) * pageSize
+    const paged = filtered.slice(start, start + pageSize)
+    return { items: paged, total: filtered.length, page, page_size: pageSize }
+  },
+  exportLogs: async (filters) => {
+    await delay()
+    return new Blob(['Audit logs export'], { type: 'text/csv' })
   },
 }
 
@@ -380,6 +697,8 @@ export const usersService = isDemo ? demoUsersService : apiUsersService
 export const campaignsService = isDemo ? demoCampaignsService : apiCampaignsService
 export const billingService = isDemo ? demoBillingService : apiBillingService
 export const subscriptionsService = isDemo ? demoSubscriptionsService : apiSubscriptionsService
+export const marketingService = isDemo ? demoMarketingService : apiMarketingService
+export const settingsService = isDemo ? demoSettingsService : apiSettingsService
 export const auditLogsService = isDemo ? demoAuditLogsService : apiAuditLogsService
 
 export default {
@@ -388,5 +707,7 @@ export default {
   campaigns: campaignsService,
   billing: billingService,
   subscriptions: subscriptionsService,
+  marketing: marketingService,
+  settings: settingsService,
   auditLogs: auditLogsService,
 }
