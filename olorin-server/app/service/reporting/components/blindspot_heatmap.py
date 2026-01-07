@@ -79,6 +79,7 @@ def _generate_heatmap_section(
     blindspots = data.get("blindspots", [])
     gmv_by_score = data.get("gmv_by_score", [])
     sql_queries = data.get("sql_queries", {})
+    score_source = data.get("score_source", {})
 
     # Get all transactions data for toggle (this is the default view)
     all_tx_data = data.get("all_transactions", {})
@@ -96,6 +97,16 @@ def _generate_heatmap_section(
 
     threshold = training_info.get("olorin_threshold", "N/A")
     prompt_version = training_info.get("prompt_version", "N/A")
+
+    # Score source indicator - always actual Olorin scores
+    olorin_scored_count = score_source.get("olorin_scored_transactions", 0)
+    score_source_badge = f"""
+    <span style="background: #22c55e; color: white; padding: 4px 10px;
+                 border-radius: 12px; font-size: 0.75rem; font-weight: 600;">
+        ✓ Using Actual Olorin Scores ({olorin_scored_count:,} transactions)
+    </span>
+    """
+    score_source_note = "Olorin bars show actual EnhancedRiskScorer predictions from investigation analysis."
 
     # Generate charts - main chart has All TX and Approved views
     bar_chart_html = generate_gmv_bar_chart(
@@ -142,9 +153,13 @@ def _generate_heatmap_section(
         <h2 style="color: var(--accent); margin-bottom: 10px;">
             🎯 Olorin vs nSure Performance Analysis
         </h2>
+        <div style="margin-bottom: 10px;">
+            {score_source_badge}
+        </div>
         <p id="scope-label" style="color: var(--muted); font-size: 0.9rem; margin-bottom: 15px;">
             Based on <strong id="scope-text">all transactions</strong> from Snowflake.
             <br>Threshold: <strong>{threshold}</strong> | Prompt Version: <strong>{prompt_version}</strong>
+            <br><em style="font-size: 0.8rem;">{score_source_note}</em>
         </p>
         <div style="margin-bottom: 15px;">
             {investigated_checkbox}

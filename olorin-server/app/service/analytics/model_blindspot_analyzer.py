@@ -4,6 +4,9 @@ Model Blindspot Analyzer for nSure vs Olorin Performance Analysis.
 2D distribution analyzer for FN/FP/TP/TN across GMV × MODEL_SCORE.
 Identifies blind spots where nSure underperforms that Olorin should focus on.
 
+NEW: Now uses actual Olorin-computed scores from PostgreSQL transaction_scores table
+instead of simply applying MODEL_SCORE >= threshold.
+
 Feature: blindspot-analysis
 """
 
@@ -14,7 +17,8 @@ from typing import Any, Dict, List
 
 from app.config.threshold_config import get_llm_fraud_threshold, get_risk_threshold
 from app.service.agent.tools.database_tool import get_database_provider
-from app.service.analytics.blindspot_query_builder import build_2d_distribution_query
+from app.service.analytics.blindspot_query_builder import build_olorin_comparison_query
+from app.service.analytics.olorin_score_fetcher import fetch_olorin_transaction_scores
 from app.service.logging import get_bridge_logger
 
 logger = get_bridge_logger(__name__)
@@ -61,7 +65,7 @@ class ModelBlindspotAnalyzer:
         end_date: datetime = None,
     ) -> Dict[str, Any]:
         """
-        Run 2D distribution analysis.
+        Run 2D distribution analysis using actual Olorin-computed scores.
 
         Args:
             export_csv: Whether to export results to CSV
@@ -77,32 +81,56 @@ class ModelBlindspotAnalyzer:
                 f"Starting model blindspot analysis for period: "
                 f"{actual_start.strftime('%Y-%m-%d')} to {actual_end.strftime('%Y-%m-%d')}"
             )
+
+            # Fetch actual Olorin scores from PostgreSQL - REQUIRED
+            logger.info("Fetching actual Olorin scores from PostgreSQL...")
+            olorin_scores = fetch_olorin_transaction_scores(actual_start, actual_end)
+            logger.info(f"Found {len(olorin_scores)} actual Olorin transaction scores")
+
+            if not olorin_scores:
+                return self._empty_result(
+                    "No Olorin transaction scores found. "
+                    "Run investigations first to generate scores in transaction_scores table."
+                )
+
             self.client.connect()
 
-            # Query 1: nSure Approved Only (primary blindspot view)
-            query_approved = build_2d_distribution_query(
+            # Build queries with actual Olorin scores
+            logger.info("Using ACTUAL Olorin scores for blindspot analysis")
+            query_approved = build_olorin_comparison_query(
                 self.client.get_full_table_name(),
                 self.gmv_bins,
                 self.num_score_bins,
                 self.olorin_threshold,
                 actual_start,
                 actual_end,
+                olorin_scores,
                 nsure_approved_only=True,
             )
+            query_all = build_olorin_comparison_query(
+                self.client.get_full_table_name(),
+                self.gmv_bins,
+                self.num_score_bins,
+                self.olorin_threshold,
+                actual_start,
+                actual_end,
+                olorin_scores,
+                nsure_approved_only=False,
+            )
+
+            # If too many scores for inline embedding, return error
+            if query_approved is None or query_all is None:
+                return self._empty_result(
+                    f"Too many Olorin scores ({len(olorin_scores)}) for inline SQL embedding. "
+                    "Contact support to enable batch processing for large datasets."
+                )
+
+            # Query 1: nSure Approved Only (primary blindspot view)
             logger.info("Running query for nSure APPROVED transactions...")
             results_approved = await self.client.execute_query_async(query_approved)
             logger.info(f"Approved query returned {len(results_approved) if results_approved else 0} rows")
 
             # Query 2: All Transactions
-            query_all = build_2d_distribution_query(
-                self.client.get_full_table_name(),
-                self.gmv_bins,
-                self.num_score_bins,
-                self.olorin_threshold,
-                actual_start,
-                actual_end,
-                nsure_approved_only=False,
-            )
             logger.info("Running query for ALL transactions...")
             results_all = await self.client.execute_query_async(query_all)
             logger.info(f"All transactions query returned {len(results_all) if results_all else 0} rows")
@@ -119,6 +147,13 @@ class ModelBlindspotAnalyzer:
             analysis["analysis_period"] = {
                 "start_date": actual_start.strftime("%Y-%m-%d"),
                 "end_date": actual_end.strftime("%Y-%m-%d"),
+            }
+
+            # Add metadata about score source
+            analysis["score_source"] = {
+                "method": "actual_olorin_scores",
+                "olorin_scored_transactions": len(olorin_scores),
+                "description": "Using actual Olorin-computed risk scores from EnhancedRiskScorer",
             }
 
             # Include both datasets for toggle
@@ -158,6 +193,7 @@ class ModelBlindspotAnalyzer:
     ) -> Dict[str, Any]:
         """
         Run 2D distribution analysis filtered to specific entity IDs.
+        Uses actual Olorin-computed scores from PostgreSQL.
 
         Args:
             entity_ids: List of entity IDs (emails) to filter by
@@ -176,18 +212,37 @@ class ModelBlindspotAnalyzer:
                 f"Running investigated entities analysis for {len(entity_ids)} entities, "
                 f"period: {actual_start.strftime('%Y-%m-%d')} to {actual_end.strftime('%Y-%m-%d')}"
             )
+
+            # Fetch actual Olorin scores - REQUIRED
+            logger.info("Fetching actual Olorin scores for investigated entities...")
+            olorin_scores = fetch_olorin_transaction_scores(actual_start, actual_end)
+            logger.info(f"Found {len(olorin_scores)} actual Olorin transaction scores")
+
+            if not olorin_scores:
+                return self._empty_result(
+                    "No Olorin transaction scores found for investigated entities. "
+                    "Run investigations first to generate scores."
+                )
+
             self.client.connect()
 
-            query = build_2d_distribution_query(
+            # Build query with actual Olorin scores
+            query = build_olorin_comparison_query(
                 self.client.get_full_table_name(),
                 self.gmv_bins,
                 self.num_score_bins,
                 self.olorin_threshold,
                 actual_start,
                 actual_end,
+                olorin_scores,
                 nsure_approved_only=False,
-                entity_ids=entity_ids,
             )
+
+            if query is None:
+                return self._empty_result(
+                    f"Too many Olorin scores ({len(olorin_scores)}) for inline SQL embedding."
+                )
+
             logger.info(f"Running query for {len(entity_ids)} investigated entities...")
             results = await self.client.execute_query_async(query)
             logger.info(f"Investigated entities query returned {len(results) if results else 0} rows")
@@ -200,6 +255,10 @@ class ModelBlindspotAnalyzer:
             analysis["analysis_period"] = {
                 "start_date": actual_start.strftime("%Y-%m-%d"),
                 "end_date": actual_end.strftime("%Y-%m-%d"),
+            }
+            analysis["score_source"] = {
+                "method": "actual_olorin_scores",
+                "olorin_scored_transactions": len(olorin_scores),
             }
             return analysis
 
