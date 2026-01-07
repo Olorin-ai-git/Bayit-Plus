@@ -428,7 +428,7 @@ const apiPartyService = {
 // In production mode: use API services only, fail fast
 // ===========================================
 
-export const authService = isDemo ? demoAuthService : apiAuthService;
+export const authService = apiAuthService; // Always use real auth - no demo mode
 export const contentService = isDemo ? demoContentService : apiContentService;
 export const liveService = isDemo ? demoLiveService : apiLiveService;
 export const radioService = isDemo ? demoRadioService : apiRadioService;

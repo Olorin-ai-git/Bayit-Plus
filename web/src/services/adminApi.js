@@ -692,14 +692,15 @@ const demoAuditLogsService = {
 // Exports
 // ============================================
 
-export const dashboardService = isDemo ? demoDashboardService : apiDashboardService
-export const usersService = isDemo ? demoUsersService : apiUsersService
-export const campaignsService = isDemo ? demoCampaignsService : apiCampaignsService
-export const billingService = isDemo ? demoBillingService : apiBillingService
-export const subscriptionsService = isDemo ? demoSubscriptionsService : apiSubscriptionsService
-export const marketingService = isDemo ? demoMarketingService : apiMarketingService
-export const settingsService = isDemo ? demoSettingsService : apiSettingsService
-export const auditLogsService = isDemo ? demoAuditLogsService : apiAuditLogsService
+// Admin/RBAC services always use production mode - no demo data for security
+export const dashboardService = apiDashboardService
+export const usersService = apiUsersService
+export const campaignsService = apiCampaignsService
+export const billingService = apiBillingService
+export const subscriptionsService = apiSubscriptionsService
+export const marketingService = apiMarketingService
+export const settingsService = apiSettingsService
+export const auditLogsService = apiAuditLogsService
 
 export default {
   dashboard: dashboardService,
