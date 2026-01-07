@@ -852,26 +852,65 @@ export const demoTranslations: Record<string, any> = {
 // =====================================
 // ZMAN (Israel Time) DATA
 // =====================================
-const now = new Date();
-const israelTime = new Date(now.toLocaleString('en-US', { timeZone: 'Asia/Jerusalem' }));
-const localTime = now;
+// Safe initialization that works on tvOS (which has limited Intl support)
+const getZmanInitData = () => {
+  const now = new Date();
+  let israelTimeStr = '12:00';
+  let israelDayStr = 'יום שני';
+  let localTimeStr = '12:00';
+  let localTimezone = 'America/New_York';
+  let dayOfWeek = 1;
+
+  try {
+    israelTimeStr = now.toLocaleTimeString('he-IL', {
+      hour: '2-digit',
+      minute: '2-digit',
+      timeZone: 'Asia/Jerusalem'
+    });
+    israelDayStr = now.toLocaleDateString('he-IL', {
+      weekday: 'long',
+      timeZone: 'Asia/Jerusalem'
+    });
+    localTimeStr = now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+    localTimezone = Intl?.DateTimeFormat?.()?.resolvedOptions?.()?.timeZone || 'America/New_York';
+    // Get Israel day of week
+    const israelDateParts = new Intl.DateTimeFormat('en-US', {
+      weekday: 'short',
+      timeZone: 'Asia/Jerusalem'
+    }).format(now);
+    dayOfWeek = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].indexOf(israelDateParts);
+  } catch {
+    // Fallback for tvOS - use local time with UTC+2 offset for Israel
+    const hours = now.getHours().toString().padStart(2, '0');
+    const minutes = now.getMinutes().toString().padStart(2, '0');
+    israelTimeStr = `${hours}:${minutes}`;
+    localTimeStr = `${hours}:${minutes}`;
+    dayOfWeek = now.getDay();
+    const days = ['יום ראשון', 'יום שני', 'יום שלישי', 'יום רביעי', 'יום חמישי', 'יום שישי', 'שבת'];
+    israelDayStr = days[dayOfWeek];
+  }
+
+  return { now, israelTimeStr, israelDayStr, localTimeStr, localTimezone, dayOfWeek };
+};
+
+const zmanInit = getZmanInitData();
 
 export const demoZmanData = {
   // Time data in the format expected by DualClock component
   time: {
     israel: {
-      time: israelTime.toLocaleTimeString('he-IL', { hour: '2-digit', minute: '2-digit' }),
-      datetime: israelTime.toISOString(),
-      day: israelTime.toLocaleDateString('he-IL', { weekday: 'long' }),
+      time: zmanInit.israelTimeStr,
+      datetime: zmanInit.now.toISOString(),
+      day: zmanInit.israelDayStr,
     },
     local: {
-      time: localTime.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' }),
-      datetime: localTime.toISOString(),
-      timezone: Intl.DateTimeFormat().resolvedOptions().timeZone || 'America/New_York',
+      time: zmanInit.localTimeStr,
+      datetime: zmanInit.now.toISOString(),
+      timezone: zmanInit.localTimezone,
     },
     shabbat: {
-      is_shabbat: false,
-      is_erev_shabbat: israelTime.getDay() === 5,
+      is_shabbat: zmanInit.dayOfWeek === 6,
+      is_erev_shabbat: zmanInit.dayOfWeek === 5,
       countdown: '48:00',
       countdown_label: 'עד שבת',
       candle_lighting: '16:45',
@@ -882,8 +921,8 @@ export const demoZmanData = {
     hebrew_date: 'כ"ה בטבת תשפ"ה',
   },
   shabbat: {
-    is_shabbat: false,
-    is_erev_shabbat: israelTime.getDay() === 5,
+    is_shabbat: zmanInit.dayOfWeek === 6,
+    is_erev_shabbat: zmanInit.dayOfWeek === 5,
     candle_lighting: '16:45',
     havdalah: '17:50',
     parasha: 'וארא',

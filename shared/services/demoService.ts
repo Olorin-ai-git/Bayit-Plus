@@ -290,21 +290,68 @@ export const demoZmanService = {
     await delay();
     // Return fresh time data on each call
     const now = new Date();
-    const israelTime = new Date(now.toLocaleString('en-US', { timeZone: 'Asia/Jerusalem' }));
+
+    // Safe time formatting that works on tvOS
+    let israelTimeStr: string;
+    let israelDayStr: string;
+    let localTimeStr: string;
+    let localTimezone: string;
+    let dayOfWeek: number;
+
+    try {
+      // Try using Intl APIs (may fail on tvOS)
+      israelTimeStr = now.toLocaleTimeString('he-IL', {
+        hour: '2-digit',
+        minute: '2-digit',
+        timeZone: 'Asia/Jerusalem'
+      });
+      israelDayStr = now.toLocaleDateString('he-IL', {
+        weekday: 'long',
+        timeZone: 'Asia/Jerusalem'
+      });
+      localTimeStr = now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+      localTimezone = timezone || Intl?.DateTimeFormat?.()?.resolvedOptions?.()?.timeZone || 'America/New_York';
+      // Get Israel day of week (Friday = 5)
+      const israelDateParts = new Intl.DateTimeFormat('en-US', {
+        weekday: 'short',
+        timeZone: 'Asia/Jerusalem'
+      }).format(now);
+      dayOfWeek = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].indexOf(israelDateParts);
+    } catch {
+      // Fallback for tvOS/environments with limited Intl support
+      // Israel is UTC+2 (or UTC+3 during DST) - approximate with UTC+2
+      const israelOffset = 2 * 60 * 60 * 1000; // 2 hours in ms
+      const israelMs = now.getTime() + israelOffset + (now.getTimezoneOffset() * 60 * 1000);
+      const israelDate = new Date(israelMs);
+
+      const hours = israelDate.getUTCHours().toString().padStart(2, '0');
+      const minutes = israelDate.getUTCMinutes().toString().padStart(2, '0');
+      israelTimeStr = `${hours}:${minutes}`;
+
+      const days = ['יום ראשון', 'יום שני', 'יום שלישי', 'יום רביעי', 'יום חמישי', 'יום שישי', 'שבת'];
+      dayOfWeek = israelDate.getUTCDay();
+      israelDayStr = days[dayOfWeek];
+
+      const localHours = now.getHours().toString().padStart(2, '0');
+      const localMins = now.getMinutes().toString().padStart(2, '0');
+      localTimeStr = `${localHours}:${localMins}`;
+      localTimezone = timezone || 'Local';
+    }
+
     return {
       israel: {
-        time: israelTime.toLocaleTimeString('he-IL', { hour: '2-digit', minute: '2-digit' }),
-        datetime: israelTime.toISOString(),
-        day: israelTime.toLocaleDateString('he-IL', { weekday: 'long' }),
+        time: israelTimeStr,
+        datetime: now.toISOString(),
+        day: israelDayStr,
       },
       local: {
-        time: now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' }),
+        time: localTimeStr,
         datetime: now.toISOString(),
-        timezone: timezone || Intl.DateTimeFormat().resolvedOptions().timeZone || 'America/New_York',
+        timezone: localTimezone,
       },
       shabbat: {
-        is_shabbat: false,
-        is_erev_shabbat: israelTime.getDay() === 5,
+        is_shabbat: dayOfWeek === 6,
+        is_erev_shabbat: dayOfWeek === 5,
         countdown: '48:00',
         countdown_label: 'עד שבת',
         candle_lighting: '16:45',
