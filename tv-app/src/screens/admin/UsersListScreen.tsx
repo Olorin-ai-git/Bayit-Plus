@@ -16,6 +16,7 @@ import {
 } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { useNavigation } from '@react-navigation/native';
+import { useDirection } from '@bayit/shared/hooks';
 import { AdminLayout, DataTable, Column } from '@bayit/shared/admin';
 import { usersService, UsersFilter } from '../../services/adminApi';
 import { User, Subscription } from '../../types/rbac';
@@ -27,6 +28,7 @@ type UserStatus = 'active' | 'inactive' | 'all';
 
 export const UsersListScreen: React.FC = () => {
   const { t } = useTranslation();
+  const { isRTL, textAlign, flexDirection } = useDirection();
   const navigation = useNavigation<any>();
 
   // State

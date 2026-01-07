@@ -33,6 +33,7 @@ type TabType = 'profile' | 'permissions' | 'activity' | 'billing' | 'subscriptio
 
 export const UserDetailScreen: React.FC = () => {
   const { t } = useTranslation();
+  const { isRTL, textAlign, flexDirection } = useDirection();
   const navigation = useNavigation<any>();
   const route = useRoute<UserDetailRouteProp>();
   const { userId } = route.params;
