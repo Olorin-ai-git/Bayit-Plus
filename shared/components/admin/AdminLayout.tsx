@@ -5,6 +5,7 @@
 
 import React, { ReactNode } from 'react';
 import { View, StyleSheet, Platform } from 'react-native';
+import { useDirection } from '../../hooks/useDirection';
 import { AdminSidebar } from './AdminSidebar';
 import { AdminTopBar } from './AdminTopBar';
 import { colors } from '../../theme';
@@ -33,9 +34,10 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({
 }) => {
   // On TV, we might want a simplified layout
   const isTV = Platform.isTV;
+  const { flexDirection } = useDirection();
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, { flexDirection }]}>
       {/* Sidebar - hidden on TV or when explicitly disabled */}
       {!hideSidebar && !isTV && (
         <AdminSidebar />

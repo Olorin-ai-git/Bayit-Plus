@@ -11,9 +11,15 @@
     "preview": "vite preview",
     "lint": "eslint . --ext js,jsx --report-unused-disable-directives --max-warnings 0",
     "deploy": "npm run build && firebase deploy --only hosting:web",
-    "deploy:preview": "npm run build && firebase hosting:channel:deploy preview --only web"
+    "deploy:preview": "npm run build && firebase hosting:channel:deploy preview --only web",
+    "build:webos": "TARGET=webos webpack --mode production --config webpack.config.cjs",
+    "package:webos": "npm run build:webos && cd ../webos && ./package-webos.sh",
+    "deploy:webos": "npm run package:webos && ares-install -d lg-tv ../webos/*.ipk",
+    "launch:webos": "ares-launch -d lg-tv com.bayitplus.app",
+    "debug:webos": "ares-inspect -d lg-tv com.bayitplus.app"
   },
   "dependencies": {
+    "@noriginmedia/norigin-spatial-navigation": "^2.3.0",
     "@react-navigation/bottom-tabs": "^7.9.0",
     "@react-navigation/native": "^7.1.26",
     "@react-navigation/native-stack": "^7.9.0",

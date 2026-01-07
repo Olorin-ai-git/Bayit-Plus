@@ -1,6 +1,7 @@
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import { useTranslation } from 'react-i18next';
+import { useDirection } from '../hooks/useDirection';
 import { isDemo } from '../config/appConfig';
 import { colors, fontSize } from '../theme';
 
@@ -11,16 +12,17 @@ import { colors, fontSize } from '../theme';
  */
 export const DemoBanner: React.FC = () => {
   const { t } = useTranslation();
+  const { flexDirection, textAlign } = useDirection();
 
   if (!isDemo) {
     return null;
   }
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, { flexDirection }]}>
       <Text style={styles.icon}>🎭</Text>
-      <Text style={styles.text}>{t('demo.banner')}</Text>
-      <Text style={styles.subtext}>{t('demo.bannerSubtext')}</Text>
+      <Text style={[styles.text, { textAlign }]}>{t('demo.banner')}</Text>
+      <Text style={[styles.subtext, { textAlign }]}>{t('demo.bannerSubtext')}</Text>
     </View>
   );
 };

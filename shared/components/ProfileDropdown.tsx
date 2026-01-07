@@ -8,6 +8,7 @@ import {
   Platform,
 } from 'react-native';
 import { useTranslation } from 'react-i18next';
+import { useDirection } from '../hooks/useDirection';
 import { Ionicons } from '@expo/vector-icons';
 import { GlassView } from './ui';
 import { colors, spacing, borderRadius } from '../theme';
@@ -42,9 +43,10 @@ export const ProfileDropdown: React.FC<ProfileDropdownProps> = ({
   onLogout,
 }) => {
   const { t } = useTranslation();
+  const { isRTL } = useDirection();
   const [isOpen, setIsOpen] = useState(false);
   const [isFocused, setIsFocused] = useState(false);
-  const [dropdownPosition, setDropdownPosition] = useState({ top: 0, left: 0 });
+  const [dropdownPosition, setDropdownPosition] = useState({ top: 0, left: 0, right: 0 });
   const buttonRef = useRef<View>(null);
   const fadeAnim = useRef(new Animated.Value(0)).current;
 
@@ -61,14 +63,22 @@ export const ProfileDropdown: React.FC<ProfileDropdownProps> = ({
       const node = buttonRef.current as any;
       if (node && node.measure) {
         node.measure((x: number, y: number, width: number, height: number, pageX: number, pageY: number) => {
-          setDropdownPosition({ top: pageY + height + 8, left: pageX - 200 + width });
+          setDropdownPosition({
+            top: pageY + height + 8,
+            left: isRTL ? undefined : (pageX - 200 + width),
+            right: isRTL ? window.innerWidth - pageX - width : undefined,
+          });
         });
       } else if (typeof document !== 'undefined') {
         const element = node as HTMLElement;
         if (element && element.getBoundingClientRect) {
           const rect = element.getBoundingClientRect();
           // Position dropdown to align right edge with button
-          setDropdownPosition({ top: rect.bottom + 8, left: rect.right - 280 });
+          setDropdownPosition({
+            top: rect.bottom + 8,
+            left: isRTL ? undefined : (rect.right - 280),
+            right: isRTL ? window.innerWidth - rect.right : undefined,
+          });
         }
       }
     }
@@ -128,7 +138,12 @@ export const ProfileDropdown: React.FC<ProfileDropdownProps> = ({
           <Animated.View
             style={[
               styles.dropdownContainer,
-              { opacity: fadeAnim, top: dropdownPosition.top, left: dropdownPosition.left },
+              {
+                opacity: fadeAnim,
+                top: dropdownPosition.top,
+                left: dropdownPosition.left,
+                right: dropdownPosition.right,
+              },
             ]}
           >
             <GlassView intensity="high" style={styles.dropdown}>

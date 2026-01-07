@@ -8,6 +8,7 @@ import {
   Image,
 } from 'react-native';
 import { useTranslation } from 'react-i18next';
+import { useDirection } from '../hooks/useDirection';
 import { colors } from '../theme';
 
 interface MenuItem {
@@ -30,6 +31,7 @@ export const SideMenu: React.FC<SideMenuProps> = ({
   isExpanded,
 }) => {
   const { i18n } = useTranslation();
+  const { isRTL, textAlign, flexDirection } = useDirection();
   const [focusedItem, setFocusedItem] = useState<string | null>(null);
   const isHebrew = i18n.language === 'he';
 
@@ -50,6 +52,7 @@ export const SideMenu: React.FC<SideMenuProps> = ({
             onBlur={() => setFocusedItem(null)}
             style={[
               styles.menuItem,
+              { flexDirection },
               activeItem === item.id && styles.menuItemActive,
               focusedItem === item.id && styles.menuItemFocused,
             ]}
@@ -59,6 +62,7 @@ export const SideMenu: React.FC<SideMenuProps> = ({
               <Text
                 style={[
                   styles.menuLabel,
+                  { textAlign, marginLeft: isRTL ? 0 : 16, marginRight: isRTL ? 16 : 0 },
                   activeItem === item.id && styles.menuLabelActive,
                 ]}
               >
@@ -101,7 +105,6 @@ const styles = StyleSheet.create({
     width: '100%',
   },
   menuItem: {
-    flexDirection: 'row',
     alignItems: 'center',
     paddingVertical: 16,
     paddingHorizontal: 16,
@@ -125,7 +128,6 @@ const styles = StyleSheet.create({
   menuLabel: {
     fontSize: 18,
     color: colors.textSecondary,
-    marginLeft: 16,
   },
   menuLabelActive: {
     color: colors.primary,

@@ -10,7 +10,15 @@ import React from 'react';
 import { BrowserRouter } from 'react-router-dom';
 import App from './src/App';
 import '../shared/styles/globals.css';
+import './src/styles/tv.css';
 import '@bayit/shared-i18n';
+import { initSpatialNav, setupTVEnvironment, isWebOS } from './src/utils/spatialNavigation';
+
+// Initialize spatial navigation for TV environments
+if (isWebOS()) {
+  initSpatialNav();
+  setupTVEnvironment();
+}
 
 // Wrapper component that provides routing context
 const BayitWebApp = () => (

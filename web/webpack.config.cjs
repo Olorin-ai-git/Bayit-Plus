@@ -1,6 +1,7 @@
 const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const webpack = require('webpack');
+require('dotenv').config({ path: path.resolve(__dirname, '.env') });
 
 // Paths - use absolute paths to avoid resolution issues
 const sharedPath = path.resolve(__dirname, '../shared');
@@ -8,13 +9,21 @@ const srcPath = path.resolve(__dirname, 'src');
 
 module.exports = (env, argv) => {
   const isProduction = argv.mode === 'production';
+  // Demo mode is controlled by VITE_APP_MODE env var, not webpack mode
+  const isDemoMode = process.env.VITE_APP_MODE === 'demo';
+  // webOS target for LG TV builds
+  const isWebOS = process.env.TARGET === 'webos';
 
   return {
     entry: path.resolve(__dirname, 'index.web.js'),
     output: {
-      path: path.resolve(__dirname, 'dist'),
+      // Output to webos/dist for TV builds, web/dist for regular web
+      path: isWebOS
+        ? path.resolve(__dirname, '../webos/dist')
+        : path.resolve(__dirname, 'dist'),
       filename: isProduction ? 'bundle.[contenthash].js' : 'bundle.js',
-      publicPath: '/',
+      // Use relative paths for webOS (packaged app), absolute for web
+      publicPath: isWebOS ? './' : '/',
       clean: true,
     },
     // Set the context to web folder
@@ -149,8 +158,13 @@ module.exports = (env, argv) => {
     },
     plugins: [
       new webpack.DefinePlugin({
-        __DEV__: !isProduction,
+        // Use isDemoMode to control demo data, not just webpack mode
+        __DEV__: isDemoMode || !isProduction,
+        // webOS TV build flag for conditional code
+        __WEBOS__: isWebOS,
         'process.env.NODE_ENV': JSON.stringify(isProduction ? 'production' : 'development'),
+        'process.env.VITE_APP_MODE': JSON.stringify(process.env.VITE_APP_MODE || 'demo'),
+        'process.env.TARGET': JSON.stringify(process.env.TARGET || 'web'),
       }),
       new webpack.ProvidePlugin({
         process: 'process/browser',

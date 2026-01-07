@@ -9,6 +9,7 @@ import {
   Modal,
 } from 'react-native';
 import { useTranslation } from 'react-i18next';
+import { useDirection } from '../hooks/useDirection';
 import { GlassView } from './ui';
 import { languages, saveLanguage, getCurrentLanguage } from '../i18n';
 import { colors, spacing, borderRadius } from '../theme';
@@ -25,10 +26,11 @@ if (Platform.OS === 'web') {
 
 export const LanguageSelector: React.FC = () => {
   const { t, i18n } = useTranslation();
+  const { isRTL } = useDirection();
   const [isOpen, setIsOpen] = useState(false);
   const [isFocused, setIsFocused] = useState(false);
   const [currentLang, setCurrentLang] = useState(getCurrentLanguage());
-  const [dropdownPosition, setDropdownPosition] = useState({ top: 0, left: 0 });
+  const [dropdownPosition, setDropdownPosition] = useState({ top: 0, left: 0, right: 0 });
   const buttonRef = useRef<View>(null);
   const fadeAnim = useRef(new Animated.Value(0)).current;
 
@@ -56,14 +58,22 @@ export const LanguageSelector: React.FC = () => {
       const node = buttonRef.current as any;
       if (node && node.measure) {
         node.measure((x: number, y: number, width: number, height: number, pageX: number, pageY: number) => {
-          setDropdownPosition({ top: pageY + height + 8, left: pageX });
+          setDropdownPosition({
+            top: pageY + height + 8,
+            left: isRTL ? undefined : pageX,
+            right: isRTL ? window.innerWidth - (pageX + width) : undefined,
+          });
         });
       } else if (typeof document !== 'undefined') {
         // Direct DOM access for web
         const element = node as HTMLElement;
         if (element && element.getBoundingClientRect) {
           const rect = element.getBoundingClientRect();
-          setDropdownPosition({ top: rect.bottom + 8, left: rect.left });
+          setDropdownPosition({
+            top: rect.bottom + 8,
+            left: isRTL ? undefined : rect.left,
+            right: isRTL ? window.innerWidth - rect.right : undefined,
+          });
         }
       }
     }
@@ -95,7 +105,12 @@ export const LanguageSelector: React.FC = () => {
           <Animated.View
             style={[
               styles.dropdownContainer,
-              { opacity: fadeAnim, top: dropdownPosition.top, left: dropdownPosition.left },
+              {
+                opacity: fadeAnim,
+                top: dropdownPosition.top,
+                left: dropdownPosition.left,
+                right: dropdownPosition.right,
+              },
             ]}
           >
             <GlassView intensity="high" style={styles.dropdown}>

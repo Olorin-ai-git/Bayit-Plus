@@ -1,15 +1,18 @@
 import { View, Text, StyleSheet, Pressable, useWindowDimensions } from 'react-native';
 import { Link, NavLink, useNavigate } from 'react-router-dom';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Search, Menu, X, Shield } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useAuthStore } from '@/stores/authStore';
 import { useChatbotStore } from '@/stores/chatbotStore';
+import { useVoiceSettingsStore } from '@/stores/voiceSettingsStore';
 import { chatService } from '@/services/api';
-import { VoiceSearchButton, LanguageSelector, AnimatedLogo } from '@bayit/shared';
+import { VoiceSearchButton, LanguageSelector, AnimatedLogo, SoundwaveVisualizer } from '@bayit/shared';
+import { useConstantListening } from '@bayit/shared-hooks';
 import { ProfileDropdown } from '@bayit/shared/ProfileDropdown';
 import { colors, spacing } from '@bayit/shared/theme';
 import { GlassView } from '@bayit/shared/ui';
+import { isWebOS } from '@/utils/spatialNavigation';
 
 const navLinkKeys = [
   { to: '/', key: 'nav.home' },
@@ -27,11 +30,34 @@ export default function Header() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const { user, isAuthenticated, isAdmin, logout } = useAuthStore();
   const { sendMessage } = useChatbotStore();
+  const { preferences } = useVoiceSettingsStore();
   const navigate = useNavigate();
   const { width } = useWindowDimensions();
   const isMobile = width < 768;
+  const isTV = isWebOS();
   const isRTL = i18n.language === 'he' || i18n.language === 'ar';
   const showAdmin = isAuthenticated && isAdmin();
+
+  // Constant listening for TV mode (always-on voice input)
+  const {
+    isListening,
+    isProcessing,
+    isSendingToServer,
+    audioLevel,
+  } = useConstantListening({
+    enabled: isTV && preferences.constant_listening_enabled,
+    onTranscript: (text) => {
+      if (text) {
+        sendMessage(text);
+      }
+    },
+    onError: (error) => {
+      console.error('Voice listening error:', error);
+    },
+    silenceThresholdMs: preferences.silence_threshold_ms,
+    vadSensitivity: preferences.vad_sensitivity,
+    transcribeAudio: chatService.transcribeAudio,
+  });
 
   const handleVoiceTranscribed = (text: string) => {
     if (text) {
@@ -113,10 +139,26 @@ export default function Header() {
         </View>
       </Link>
 
-      <VoiceSearchButton
-        onResult={handleVoiceTranscribed}
-        transcribeAudio={chatService.transcribeAudio}
-      />
+      {/* Constant listening soundwave for TV mode */}
+      {isTV && isListening && (
+        <View style={styles.soundwaveContainer}>
+          <SoundwaveVisualizer
+            audioLevel={audioLevel}
+            isListening={isListening}
+            isProcessing={isProcessing}
+            isSendingToServer={isSendingToServer}
+            compact={true}
+          />
+        </View>
+      )}
+
+      {/* Regular voice search button for non-TV */}
+      {!isTV && (
+        <VoiceSearchButton
+          onResult={handleVoiceTranscribed}
+          transcribeAudio={chatService.transcribeAudio}
+        />
+      )}
 
       {/* Mobile Menu Toggle */}
       {isMobile && (
@@ -298,5 +340,15 @@ const styles = StyleSheet.create({
   },
   adminLinkText: {
     color: '#ef4444',
+  },
+  soundwaveContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: spacing.sm,
+    height: 40,
+    borderRadius: 8,
+    backgroundColor: 'rgba(0, 217, 255, 0.1)',
+    borderWidth: 1,
+    borderColor: 'rgba(0, 217, 255, 0.2)',
   },
 });

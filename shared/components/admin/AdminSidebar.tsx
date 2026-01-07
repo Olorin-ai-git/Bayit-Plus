@@ -14,6 +14,8 @@ import {
 } from 'react-native';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
+import { useDirection } from '../../hooks/useDirection';
+import { rtlSpacing, rtlMargin } from '../../utils/rtlHelpers';
 import { usePermissions } from '../../hooks/usePermissions';
 import { useAuthStore } from '../../stores/authStore';
 import { colors, spacing, borderRadius, fontSize } from '../../theme';
@@ -140,6 +142,7 @@ export const AdminSidebar: React.FC = () => {
   const { t } = useTranslation();
   const navigation = useNavigation<any>();
   const route = useRoute();
+  const { isRTL, flexDirection, textAlign } = useDirection();
   const { can, isAdmin, isSuperAdmin, role } = usePermissions();
   const { user, logout } = useAuthStore();
   const [expandedItems, setExpandedItems] = useState<string[]>(['billing', 'subscriptions', 'marketing']);
@@ -176,6 +179,7 @@ export const AdminSidebar: React.FC = () => {
             styles.navItem,
             isChild && styles.navItemChild,
             isActive && styles.navItemActive,
+            { flexDirection },
           ]}
           onPress={() => {
             if (hasChildren) {
@@ -186,7 +190,7 @@ export const AdminSidebar: React.FC = () => {
           }}
         >
           <Text style={styles.navIcon}>{item.icon}</Text>
-          <Text style={[styles.navLabel, isActive && styles.navLabelActive]}>
+          <Text style={[styles.navLabel, isActive && styles.navLabelActive, { textAlign }]}>
             {t(item.labelKey, item.key)}
           </Text>
           {hasChildren && (
@@ -197,7 +201,7 @@ export const AdminSidebar: React.FC = () => {
         </TouchableOpacity>
 
         {hasChildren && isExpanded && (
-          <View style={styles.childrenContainer}>
+          <View style={[styles.childrenContainer, rtlMargin(isRTL, { left: spacing.sm })]}>
             {item.children!.map(child => renderNavItem(child, true))}
           </View>
         )}
@@ -225,16 +229,16 @@ export const AdminSidebar: React.FC = () => {
   return (
     <View style={styles.container}>
       {/* Logo / Brand */}
-      <View style={styles.brandContainer}>
-        <View style={styles.brandLogo}>
+      <View style={[styles.brandContainer, { flexDirection }]}>
+        <View style={[styles.brandLogo, rtlSpacing(isRTL, spacing.sm)]}>
           <Text style={styles.brandIcon}>🏠</Text>
         </View>
-        <Text style={styles.brandText}>Bayit+ Admin</Text>
+        <Text style={[styles.brandText, { textAlign }]}>Bayit+ Admin</Text>
       </View>
 
       {/* User Info */}
-      <View style={styles.userContainer}>
-        <View style={styles.userAvatar}>
+      <View style={[styles.userContainer, { flexDirection }]}>
+        <View style={[styles.userAvatar, rtlSpacing(isRTL, spacing.sm)]}>
           {user?.avatar ? (
             <Image source={{ uri: user.avatar }} style={styles.avatarImage} />
           ) : (
@@ -244,11 +248,11 @@ export const AdminSidebar: React.FC = () => {
           )}
         </View>
         <View style={styles.userInfo}>
-          <Text style={styles.userName} numberOfLines={1}>
+          <Text style={[styles.userName, { textAlign }]} numberOfLines={1}>
             {user?.name || 'Admin'}
           </Text>
           <View style={[styles.roleBadge, { backgroundColor: getRoleBadgeColor() }]}>
-            <Text style={styles.roleText}>
+            <Text style={[styles.roleText, { textAlign }]}>
               {t(`admin.roles.${role || 'user'}`, (role || 'user').replace('_', ' '))}
             </Text>
           </View>
@@ -263,19 +267,19 @@ export const AdminSidebar: React.FC = () => {
       {/* Footer Actions */}
       <View style={styles.footerContainer}>
         <TouchableOpacity
-          style={styles.footerButton}
+          style={[styles.footerButton, { flexDirection }]}
           onPress={() => navigation.navigate('Home')}
         >
           <Text style={styles.footerIcon}>🏠</Text>
-          <Text style={styles.footerText}>{t('admin.nav.backToApp', 'Back to App')}</Text>
+          <Text style={[styles.footerText, { textAlign }]}>{t('admin.nav.backToApp', 'Back to App')}</Text>
         </TouchableOpacity>
 
         <TouchableOpacity
-          style={[styles.footerButton, styles.logoutButton]}
+          style={[styles.footerButton, styles.logoutButton, { flexDirection }]}
           onPress={logout}
         >
           <Text style={styles.footerIcon}>🚪</Text>
-          <Text style={styles.footerText}>{t('admin.nav.logout', 'Logout')}</Text>
+          <Text style={[styles.footerText, { textAlign }]}>{t('admin.nav.logout', 'Logout')}</Text>
         </TouchableOpacity>
       </View>
     </View>

@@ -10,6 +10,7 @@ import {
   StyleSheet,
   TouchableOpacity,
 } from 'react-native';
+import { useDirection } from '../../hooks/useDirection';
 import { colors, spacing, borderRadius, fontSize } from '../../theme';
 
 export interface StatCardProps {
@@ -34,6 +35,7 @@ export const StatCard: React.FC<StatCardProps> = ({
   color = colors.primary,
   onPress,
 }) => {
+  const { isRTL, textAlign, flexDirection } = useDirection();
   const Container = onPress ? TouchableOpacity : View;
 
   return (
@@ -42,15 +44,22 @@ export const StatCard: React.FC<StatCardProps> = ({
       onPress={onPress}
       activeOpacity={0.7}
     >
-      <View style={styles.header}>
+      <View style={[styles.header, { flexDirection }]}>
         {icon && (
-          <View style={[styles.iconContainer, { backgroundColor: color + '20' }]}>
+          <View style={[
+            styles.iconContainer,
+            {
+              backgroundColor: color + '20',
+              marginLeft: isRTL ? 0 : spacing.sm,
+              marginRight: isRTL ? spacing.sm : 0,
+            }
+          ]}>
             <Text style={styles.icon}>{icon}</Text>
           </View>
         )}
         <View style={styles.titleContainer}>
-          <Text style={styles.title}>{title}</Text>
-          {subtitle && <Text style={styles.subtitle}>{subtitle}</Text>}
+          <Text style={[styles.title, { textAlign }]}>{title}</Text>
+          {subtitle && <Text style={[styles.subtitle, { textAlign }]}>{subtitle}</Text>}
         </View>
       </View>
 
@@ -85,7 +94,6 @@ const styles = StyleSheet.create({
     minWidth: 200,
   },
   header: {
-    flexDirection: 'row',
     alignItems: 'flex-start',
     marginBottom: spacing.md,
   },
@@ -95,7 +103,6 @@ const styles = StyleSheet.create({
     borderRadius: borderRadius.md,
     justifyContent: 'center',
     alignItems: 'center',
-    marginRight: spacing.sm,
   },
   icon: {
     fontSize: 22,

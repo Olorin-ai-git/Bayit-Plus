@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { View, Text, StyleSheet, ActivityIndicator } from 'react-native';
 import { useTranslation } from 'react-i18next';
+import { useDirection } from '../hooks/useDirection';
 import { GlassView } from './ui/GlassView';
 import { colors, spacing, fontSize, borderRadius } from '../theme';
 import { zmanService } from '../services/api';
@@ -58,6 +59,7 @@ const AnalogClock: React.FC<AnalogClockProps> = ({
   accentColor = colors.primary,
   isShabbat = false,
 }) => {
+  const { textAlign } = useDirection();
   // Calculate hand rotations
   const hourRotation = ((hours % 12) + minutes / 60) * 30; // 30 degrees per hour
   const minuteRotation = minutes * 6; // 6 degrees per minute
@@ -171,11 +173,11 @@ const AnalogClock: React.FC<AnalogClockProps> = ({
 
       {/* Label */}
       <View style={styles.clockLabelContainer}>
-        <View style={styles.clockLabelRow}>
+        <View style={[styles.clockLabelRow, { flexDirection: 'row' }]}>
           <Text style={styles.clockFlag}>{flag}</Text>
-          <Text style={[styles.clockLabel, { color: accentColor }]}>{label}</Text>
+          <Text style={[styles.clockLabel, { color: accentColor, textAlign }]}>{label}</Text>
         </View>
-        {sublabel && <Text style={styles.clockSublabel}>{sublabel}</Text>}
+        {sublabel && <Text style={[styles.clockSublabel, { textAlign }]}>{sublabel}</Text>}
       </View>
     </View>
   );
@@ -191,6 +193,7 @@ export const DualClock: React.FC<DualClockProps> = ({
   compact = false,
 }) => {
   const { t } = useTranslation();
+  const { flexDirection, textAlign } = useDirection();
   const [timeData, setTimeData] = useState<TimeData | null>(null);
   const [loading, setLoading] = useState(true);
 
@@ -288,9 +291,9 @@ export const DualClock: React.FC<DualClockProps> = ({
 
   if (compact) {
     return (
-      <View style={styles.compactContainer}>
+      <View style={[styles.compactContainer, { flexDirection }]}>
         <Text style={styles.flagEmoji}>🇮🇱</Text>
-        <Text style={styles.compactTime}>{israel.time}</Text>
+        <Text style={[styles.compactTime, { textAlign }]}>{israel.time}</Text>
         {shabbat.is_shabbat && <Text style={styles.starEmoji}>✡</Text>}
       </View>
     );
@@ -298,7 +301,7 @@ export const DualClock: React.FC<DualClockProps> = ({
 
   return (
     <GlassView style={styles.container} intensity="medium">
-      <View style={styles.clocksRow}>
+      <View style={[styles.clocksRow, { flexDirection }]}>
         {/* Israel Clock */}
         <AnalogClock
           hours={israelParsed.hours}
@@ -329,7 +332,7 @@ export const DualClock: React.FC<DualClockProps> = ({
       </View>
 
       {/* Digital time display */}
-      <View style={styles.digitalTimeRow}>
+      <View style={[styles.digitalTimeRow, { flexDirection }]}>
         <Text style={styles.digitalTime}>{israel.time}</Text>
         <Text style={styles.digitalTimeSeparator}>|</Text>
         <Text style={[styles.digitalTime, styles.digitalTimeLocal]}>{local.time}</Text>
@@ -339,32 +342,32 @@ export const DualClock: React.FC<DualClockProps> = ({
       {showShabbatStatus && (shabbat.is_shabbat || shabbat.is_erev_shabbat) && (
         <View style={styles.shabbatSection}>
           {shabbat.is_shabbat ? (
-            <View style={styles.shabbatRow}>
-              <View style={styles.shabbatLabel}>
+            <View style={[styles.shabbatRow, { flexDirection }]}>
+              <View style={[styles.shabbatLabel, { flexDirection }]}>
                 <Text style={styles.starEmoji}>✡</Text>
-                <Text style={styles.shabbatText}>{t('clock.shabbatShalom')}</Text>
+                <Text style={[styles.shabbatText, { textAlign }]}>{t('clock.shabbatShalom')}</Text>
               </View>
               {shabbat.countdown && (
-                <View style={styles.countdownContainer}>
-                  <Text style={styles.countdownLabel}>{shabbat.countdown_label}: </Text>
-                  <Text style={styles.countdownTime}>{shabbat.countdown}</Text>
+                <View style={[styles.countdownContainer, { flexDirection }]}>
+                  <Text style={[styles.countdownLabel, { textAlign }]}>{shabbat.countdown_label}: </Text>
+                  <Text style={[styles.countdownTime, { textAlign }]}>{shabbat.countdown}</Text>
                 </View>
               )}
             </View>
           ) : shabbat.is_erev_shabbat ? (
-            <View style={styles.shabbatRow}>
-              <View style={styles.shabbatLabel}>
+            <View style={[styles.shabbatRow, { flexDirection }]}>
+              <View style={[styles.shabbatLabel, { flexDirection }]}>
                 <Text style={styles.candleEmoji}>🕯️</Text>
-                <Text style={styles.erevShabbatText}>{t('clock.erevShabbat')}</Text>
+                <Text style={[styles.erevShabbatText, { textAlign }]}>{t('clock.erevShabbat')}</Text>
               </View>
-              <View style={styles.countdownContainer}>
+              <View style={[styles.countdownContainer, { flexDirection }]}>
                 {shabbat.candle_lighting && (
-                  <Text style={styles.candleLighting}>
+                  <Text style={[styles.candleLighting, { textAlign }]}>
                     {t('clock.candleLighting')}: {shabbat.candle_lighting}
                   </Text>
                 )}
                 {shabbat.countdown && (
-                  <Text style={styles.countdownTime}> ({shabbat.countdown})</Text>
+                  <Text style={[styles.countdownTime, { textAlign }]}> ({shabbat.countdown})</Text>
                 )}
               </View>
             </View>
@@ -372,7 +375,7 @@ export const DualClock: React.FC<DualClockProps> = ({
 
           {/* Parasha */}
           {shabbat.parasha_hebrew && (
-            <Text style={styles.parasha}>{t('clock.parasha')} {shabbat.parasha_hebrew}</Text>
+            <Text style={[styles.parasha, { textAlign }]}>{t('clock.parasha')} {shabbat.parasha_hebrew}</Text>
           )}
         </View>
       )}
@@ -384,6 +387,7 @@ export const DualClock: React.FC<DualClockProps> = ({
  * Minimal clock display for header/navbar
  */
 export const MiniClock: React.FC = () => {
+  const { flexDirection, textAlign } = useDirection();
   const [time, setTime] = useState('');
   const [isShabbat, setIsShabbat] = useState(false);
 
@@ -404,9 +408,9 @@ export const MiniClock: React.FC = () => {
   }, []);
 
   return (
-    <View style={styles.miniContainer}>
+    <View style={[styles.miniContainer, { flexDirection }]}>
       <Text style={styles.miniFlag}>🇮🇱</Text>
-      <Text style={styles.miniTime}>{time || '--:--'}</Text>
+      <Text style={[styles.miniTime, { textAlign }]}>{time || '--:--'}</Text>
       {isShabbat && <Text style={styles.miniStar}>✡</Text>}
     </View>
   );

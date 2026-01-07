@@ -12,6 +12,7 @@ import {
 } from 'react-native';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
+import { useDirection } from '../../hooks/useDirection';
 import { colors, spacing, borderRadius, fontSize } from '../../theme';
 
 interface Breadcrumb {
@@ -101,6 +102,7 @@ export const AdminTopBar: React.FC<AdminTopBarProps> = ({
   const { t } = useTranslation();
   const navigation = useNavigation<any>();
   const route = useRoute();
+  const { flexDirection, textAlign } = useDirection();
 
   const routeName = route.name;
   const breadcrumbs = customBreadcrumbs || ROUTE_BREADCRUMBS[routeName] || [];
@@ -113,31 +115,31 @@ export const AdminTopBar: React.FC<AdminTopBarProps> = ({
   };
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, { flexDirection }]}>
       <View style={styles.leftSection}>
         {/* Breadcrumbs */}
-        <View style={styles.breadcrumbsContainer}>
+        <View style={[styles.breadcrumbsContainer, { flexDirection }]}>
           <TouchableOpacity
             onPress={() => navigation.navigate('AdminDashboard')}
-            style={styles.breadcrumbItem}
+            style={[styles.breadcrumbItem, { flexDirection }]}
           >
             <Text style={styles.breadcrumbIcon}>🏠</Text>
           </TouchableOpacity>
 
           {breadcrumbs.map((crumb, index) => (
             <React.Fragment key={index}>
-              <Text style={styles.breadcrumbSeparator}>/</Text>
+              <Text style={[styles.breadcrumbSeparator, { textAlign }]}>/</Text>
               {crumb.route ? (
                 <TouchableOpacity
                   onPress={() => handleBreadcrumbPress(crumb)}
-                  style={styles.breadcrumbItem}
+                  style={[styles.breadcrumbItem, { flexDirection }]}
                 >
-                  <Text style={styles.breadcrumbLink}>
+                  <Text style={[styles.breadcrumbLink, { textAlign }]}>
                     {t(crumb.label, crumb.label)}
                   </Text>
                 </TouchableOpacity>
               ) : (
-                <Text style={styles.breadcrumbCurrent}>
+                <Text style={[styles.breadcrumbCurrent, { textAlign }]}>
                   {t(crumb.label, crumb.label)}
                 </Text>
               )}
@@ -146,11 +148,11 @@ export const AdminTopBar: React.FC<AdminTopBarProps> = ({
         </View>
 
         {/* Page Title */}
-        <Text style={styles.title}>{title}</Text>
+        <Text style={[styles.title, { textAlign }]}>{title}</Text>
       </View>
 
       {/* Actions */}
-      <View style={styles.rightSection}>
+      <View style={[styles.rightSection, { flexDirection }]}>
         {actions}
 
         {/* Quick Actions */}
