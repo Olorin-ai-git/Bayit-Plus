@@ -1,6 +1,7 @@
 import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { Platform } from 'react-native';
 import { authService } from '../services/api';
 import { Role, Permission, ROLE_PERMISSIONS } from '../types/rbac';
 
@@ -35,7 +36,8 @@ interface AuthState {
   error: string | null;
   login: (email: string, password: string) => Promise<void>;
   register: (data: RegisterData) => Promise<void>;
-  loginWithGoogle: () => Promise<void>;
+  loginWithGoogle: () => Promise<string | void>;
+  handleGoogleCallback: (code: string) => Promise<any>;
   logout: () => void;
   setUser: (user: User | null) => void;
   clearError: () => void;
@@ -97,15 +99,34 @@ export const useAuthStore = create<AuthState>()(
       loginWithGoogle: async () => {
         set({ isLoading: true, error: null });
         try {
-          // For web, redirect to Google OAuth
-          // For native, use Google Sign-In SDK
-          const response: any = await (authService as any).googleAuth();
+          // Get Google OAuth URL from backend
+          const response: any = await authService.getGoogleAuthUrl();
+          // For web, redirect to Google OAuth URL
+          if (Platform.OS === 'web' && typeof window !== 'undefined') {
+            window.location.href = response.url;
+          }
+          // For native apps, return the URL (caller handles deep linking)
+          return response.url;
+        } catch (error: any) {
+          set({
+            error: error.detail || 'Google login failed',
+            isLoading: false,
+          });
+          throw error;
+        }
+      },
+
+      handleGoogleCallback: async (code: string) => {
+        set({ isLoading: true, error: null });
+        try {
+          const response: any = await authService.googleCallback(code);
           set({
             user: response.user,
             token: response.access_token,
             isAuthenticated: true,
             isLoading: false,
           });
+          return response;
         } catch (error: any) {
           set({
             error: error.detail || 'Google login failed',
