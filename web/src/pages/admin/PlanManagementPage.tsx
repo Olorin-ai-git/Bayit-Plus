@@ -28,7 +28,11 @@ export default function PlanManagementPage() {
   const [plans, setPlans] = useState<Plan[]>([]);
   const [loading, setLoading] = useState(true);
   const [showEditModal, setShowEditModal] = useState(false);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [showErrorModal, setShowErrorModal] = useState(false);
+  const [errorMessage, setErrorMessage] = useState('');
   const [editingPlan, setEditingPlan] = useState<Plan | null>(null);
+  const [planToDelete, setPlanToDelete] = useState<Plan | null>(null);
   const [formData, setFormData] = useState({
     name: '',
     name_he: '',
@@ -77,7 +81,8 @@ export default function PlanManagementPage() {
 
   const handleSave = async () => {
     if (!formData.name || !formData.price) {
-      alert('נא למלא שם ומחיר');
+      setErrorMessage(t('admin.plans.errors.requiredFields', 'Name and price are required'));
+      setShowErrorModal(true);
       return;
     }
     try {
@@ -100,27 +105,38 @@ export default function PlanManagementPage() {
       loadPlans();
     } catch (error) {
       logger.error('Failed to save plan', 'PlanManagementPage', error);
+      setErrorMessage(t('common.errors.unexpected', 'An unexpected error occurred'));
+      setShowErrorModal(true);
     }
   };
 
-  const handleDelete = async (plan: Plan) => {
-    if (!window.confirm(`מחק את התוכנית "${plan.name}"?`)) return;
+  const handleDeleteConfirm = async () => {
+    if (!planToDelete) return;
     try {
-      await subscriptionsService.deletePlan(plan.id);
+      await subscriptionsService.deletePlan(planToDelete.id);
+      setShowDeleteConfirm(false);
+      setPlanToDelete(null);
       loadPlans();
     } catch (error) {
       logger.error('Failed to delete plan', 'PlanManagementPage', error);
+      setErrorMessage(t('common.errors.unexpected', 'An unexpected error occurred'));
+      setShowErrorModal(true);
     }
+  };
+
+  const handleDelete = (plan: Plan) => {
+    setPlanToDelete(plan);
+    setShowDeleteConfirm(true);
   };
 
   return (
     <ScrollView style={styles.container} contentContainerStyle={styles.contentContainer}>
       <View style={styles.header}>
         <View>
-          <Text style={styles.pageTitle}>{t('admin.titles.plans', 'ניהול תוכניות')}</Text>
-          <Text style={styles.subtitle}>הגדר ונהל את תוכניות המנוי</Text>
+          <Text style={styles.pageTitle}>{t('admin.plans.title', 'Plan Management')}</Text>
+          <Text style={styles.subtitle}>{t('admin.plans.subtitle', 'Configure and manage subscription plans')}</Text>
         </View>
-        <GlassButton title="תוכנית חדשה" variant="primary" icon={<Plus size={16} color={colors.text} />} onPress={openCreateModal} />
+        <GlassButton title={t('admin.plans.createButton', 'New Plan')} variant="primary" icon={<Plus size={16} color={colors.text} />} onPress={openCreateModal} />
       </View>
 
       <View style={styles.plansGrid}>
@@ -133,18 +149,18 @@ export default function PlanManagementPage() {
               </View>
               {!plan.is_active && (
                 <View style={styles.inactiveBadge}>
-                  <Text style={styles.inactiveBadgeText}>לא פעיל</Text>
+                  <Text style={styles.inactiveBadgeText}>{t('admin.plans.inactive', 'Inactive')}</Text>
                 </View>
               )}
             </View>
 
             <View style={styles.priceContainer}>
               <Text style={styles.priceAmount}>{formatCurrency(plan.price)}</Text>
-              <Text style={styles.priceInterval}>/ {plan.interval === 'monthly' ? 'חודש' : 'שנה'}</Text>
+              <Text style={styles.priceInterval}>/ {t(`admin.plans.intervals.${plan.interval}`, plan.interval === 'monthly' ? 'month' : 'year')}</Text>
             </View>
 
             {plan.trial_days && plan.trial_days > 0 && (
-              <Text style={styles.trialText}>{plan.trial_days} ימי נסיון</Text>
+              <Text style={styles.trialText}>{t('admin.plans.trialDays', '{{days}} day trial', { days: plan.trial_days })}</Text>
             )}
 
             <View style={styles.featuresContainer}>
@@ -157,7 +173,7 @@ export default function PlanManagementPage() {
             </View>
 
             <View style={styles.subscribersRow}>
-              <Text style={styles.subscribersLabel}>מנויים:</Text>
+              <Text style={styles.subscribersLabel}>{t('admin.plans.subscribersLabel', 'Subscribers:')}</Text>
               <Text style={styles.subscribersCount}>{(plan.subscribers || 0).toLocaleString()}</Text>
             </View>
 
@@ -173,55 +189,90 @@ export default function PlanManagementPage() {
         ))}
       </View>
 
-      <GlassModal visible={showEditModal} onClose={() => setShowEditModal(false)} title={editingPlan ? 'עריכת תוכנית' : 'תוכנית חדשה'}>
+      <GlassModal
+        visible={showEditModal}
+        onClose={() => setShowEditModal(false)}
+        title={editingPlan ? t('admin.plans.modal.editTitle', 'Edit Plan') : t('admin.plans.modal.createTitle', 'New Plan')}
+      >
         <View style={styles.modalContent}>
           <View style={styles.formRow}>
             <View style={styles.formGroup}>
-              <Text style={styles.formLabel}>שם (אנגלית)</Text>
-              <TextInput style={styles.input} value={formData.name} onChangeText={(name) => setFormData((p) => ({ ...p, name }))} placeholder="Premium" placeholderTextColor={colors.textMuted} />
+              <Text style={styles.formLabel}>{t('admin.plans.form.nameEn', 'Name (English)')}</Text>
+              <TextInput style={styles.input} value={formData.name} onChangeText={(name) => setFormData((p) => ({ ...p, name }))} placeholderTextColor={colors.textMuted} />
             </View>
             <View style={styles.formGroup}>
-              <Text style={styles.formLabel}>שם (עברית)</Text>
-              <TextInput style={styles.input} value={formData.name_he} onChangeText={(name_he) => setFormData((p) => ({ ...p, name_he }))} placeholder="פרימיום" placeholderTextColor={colors.textMuted} />
+              <Text style={styles.formLabel}>{t('admin.plans.form.nameHe', 'Name (Hebrew)')}</Text>
+              <TextInput style={styles.input} value={formData.name_he} onChangeText={(name_he) => setFormData((p) => ({ ...p, name_he }))} placeholderTextColor={colors.textMuted} />
             </View>
           </View>
 
           <View style={styles.formRow}>
             <View style={styles.formGroup}>
-              <Text style={styles.formLabel}>מחיר ($)</Text>
-              <TextInput style={styles.input} value={formData.price} onChangeText={(price) => setFormData((p) => ({ ...p, price }))} placeholder="14.99" placeholderTextColor={colors.textMuted} keyboardType="decimal-pad" />
+              <Text style={styles.formLabel}>{t('admin.plans.form.price', 'Price ($)')}</Text>
+              <TextInput style={styles.input} value={formData.price} onChangeText={(price) => setFormData((p) => ({ ...p, price }))} placeholderTextColor={colors.textMuted} keyboardType="decimal-pad" />
             </View>
             <View style={styles.formGroup}>
-              <Text style={styles.formLabel}>תקופה</Text>
+              <Text style={styles.formLabel}>{t('admin.plans.form.interval', 'Billing Period')}</Text>
               <View style={styles.intervalButtons}>
                 <Pressable style={[styles.intervalButton, formData.interval === 'monthly' && styles.intervalButtonActive]} onPress={() => setFormData((p) => ({ ...p, interval: 'monthly' }))}>
-                  <Text style={[styles.intervalButtonText, formData.interval === 'monthly' && styles.intervalButtonTextActive]}>חודשי</Text>
+                  <Text style={[styles.intervalButtonText, formData.interval === 'monthly' && styles.intervalButtonTextActive]}>{t('admin.plans.intervals.monthly', 'month')}</Text>
                 </Pressable>
                 <Pressable style={[styles.intervalButton, formData.interval === 'yearly' && styles.intervalButtonActive]} onPress={() => setFormData((p) => ({ ...p, interval: 'yearly' }))}>
-                  <Text style={[styles.intervalButtonText, formData.interval === 'yearly' && styles.intervalButtonTextActive]}>שנתי</Text>
+                  <Text style={[styles.intervalButtonText, formData.interval === 'yearly' && styles.intervalButtonTextActive]}>{t('admin.plans.intervals.yearly', 'year')}</Text>
                 </Pressable>
               </View>
             </View>
           </View>
 
           <View style={styles.formGroup}>
-            <Text style={styles.formLabel}>ימי נסיון</Text>
-            <TextInput style={styles.input} value={formData.trial_days} onChangeText={(trial_days) => setFormData((p) => ({ ...p, trial_days }))} placeholder="7" placeholderTextColor={colors.textMuted} keyboardType="number-pad" />
+            <Text style={styles.formLabel}>{t('admin.plans.form.trialDays', 'Trial Days')}</Text>
+            <TextInput style={styles.input} value={formData.trial_days} onChangeText={(trial_days) => setFormData((p) => ({ ...p, trial_days }))} placeholderTextColor={colors.textMuted} keyboardType="number-pad" />
           </View>
 
           <View style={styles.formGroup}>
-            <Text style={styles.formLabel}>תכונות (אחת בכל שורה)</Text>
-            <TextInput style={[styles.input, styles.textArea]} value={formData.features} onChangeText={(features) => setFormData((p) => ({ ...p, features }))} placeholder="HD Streaming\n4 Devices\nDownloads" placeholderTextColor={colors.textMuted} multiline numberOfLines={4} />
+            <Text style={styles.formLabel}>{t('admin.plans.form.features', 'Features (one per line)')}</Text>
+            <TextInput style={[styles.input, styles.textArea]} value={formData.features} onChangeText={(features) => setFormData((p) => ({ ...p, features }))} placeholderTextColor={colors.textMuted} multiline numberOfLines={4} />
           </View>
 
           <View style={styles.switchRow}>
-            <Text style={styles.formLabel}>תוכנית פעילה</Text>
+            <Text style={styles.formLabel}>{t('admin.plans.form.active', 'Active Plan')}</Text>
             <Switch value={formData.is_active} onValueChange={(is_active) => setFormData((p) => ({ ...p, is_active }))} trackColor={{ false: colors.backgroundLighter, true: colors.primary }} />
           </View>
 
           <View style={styles.modalActions}>
-            <GlassButton title="ביטול" variant="secondary" onPress={() => setShowEditModal(false)} />
-            <GlassButton title="שמור" variant="primary" onPress={handleSave} />
+            <GlassButton title={t('common.cancel', 'Cancel')} variant="secondary" onPress={() => setShowEditModal(false)} />
+            <GlassButton title={t('common.save', 'Save')} variant="primary" onPress={handleSave} />
+          </View>
+        </View>
+      </GlassModal>
+
+      <GlassModal
+        visible={showDeleteConfirm}
+        onClose={() => setShowDeleteConfirm(false)}
+        title={t('common.confirm', 'Confirm')}
+      >
+        <View style={styles.modalContent}>
+          {planToDelete && (
+            <Text style={styles.modalMessage}>
+              {t('admin.plans.confirmDelete', 'Delete plan "{{name}}"?', { name: planToDelete.name })}
+            </Text>
+          )}
+          <View style={styles.modalActions}>
+            <GlassButton title={t('common.cancel', 'Cancel')} variant="secondary" onPress={() => setShowDeleteConfirm(false)} />
+            <GlassButton title={t('common.delete', 'Delete')} variant="primary" onPress={handleDeleteConfirm} />
+          </View>
+        </View>
+      </GlassModal>
+
+      <GlassModal
+        visible={showErrorModal}
+        onClose={() => setShowErrorModal(false)}
+        title={t('common.error', 'Error')}
+      >
+        <View style={styles.modalContent}>
+          <Text style={styles.errorText}>{errorMessage}</Text>
+          <View style={styles.modalActions}>
+            <GlassButton title={t('common.ok', 'OK')} variant="primary" onPress={() => setShowErrorModal(false)} />
           </View>
         </View>
       </GlassModal>
@@ -268,4 +319,6 @@ const styles = StyleSheet.create({
   intervalButtonTextActive: { color: colors.text, fontWeight: '500' },
   switchRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
   modalActions: { flexDirection: 'row', justifyContent: 'flex-end', gap: spacing.sm, marginTop: spacing.md },
+  modalMessage: { fontSize: 14, color: colors.text, marginBottom: spacing.md },
+  errorText: { fontSize: 14, color: colors.text, marginBottom: spacing.md },
 });

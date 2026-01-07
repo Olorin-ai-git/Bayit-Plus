@@ -1090,6 +1090,88 @@ export const demoChildrenContent = [
   },
 ];
 
+// ===========================================
+// FLOWS
+// ===========================================
+export const demoFlows = [
+  {
+    id: 'flow-morning',
+    name: 'טקס בוקר',
+    name_en: 'Morning Ritual',
+    name_es: 'Ritual Matutino',
+    description: 'התחל את היום עם חדשות, מזג אוויר ותוכן מותאם אישית',
+    description_en: 'Start your day with news, weather and personalized content',
+    description_es: 'Comienza tu día con noticias, clima y contenido personalizado',
+    flow_type: 'system',
+    icon: 'sun',
+    triggers: [{ type: 'time', start_time: '07:00', end_time: '09:00', days: [0, 1, 2, 3, 4, 5, 6] }],
+    items: [
+      { content_id: 'channel-1', content_type: 'live', title: 'חדשות הבוקר', order: 0 },
+      { content_id: 'radio-1', content_type: 'radio', title: 'רדיו תל אביב', order: 1 },
+    ],
+    ai_enabled: true,
+    ai_brief_enabled: true,
+    auto_play: true,
+    is_active: true,
+  },
+  {
+    id: 'flow-shabbat',
+    name: 'ליל שבת',
+    name_en: 'Shabbat Evening',
+    name_es: 'Noche de Shabat',
+    description: 'תוכן מיוחד לכניסת השבת',
+    description_en: 'Special content for Shabbat evening',
+    description_es: 'Contenido especial para la noche de Shabat',
+    flow_type: 'system',
+    icon: 'candle',
+    triggers: [{ type: 'shabbat', skip_shabbat: false }],
+    items: [
+      { content_id: 'judaism-1', content_type: 'vod', title: 'הדלקת נרות', order: 0 },
+      { content_id: 'judaism-2', content_type: 'vod', title: 'קבלת שבת', order: 1 },
+    ],
+    ai_enabled: false,
+    auto_play: true,
+    is_active: true,
+  },
+  {
+    id: 'flow-sleep',
+    name: 'שעת שינה',
+    name_en: 'Sleep Time',
+    name_es: 'Hora de Dormir',
+    description: 'תוכן מרגיע לפני השינה',
+    description_en: 'Relaxing content before sleep',
+    description_es: 'Contenido relajante antes de dormir',
+    flow_type: 'system',
+    icon: 'moon',
+    triggers: [{ type: 'time', start_time: '21:00', end_time: '23:00', days: [0, 1, 2, 3, 4, 5, 6] }],
+    items: [
+      { content_id: 'radio-3', content_type: 'radio', title: 'מוזיקה קלאסית', order: 0 },
+    ],
+    ai_enabled: false,
+    auto_play: false,
+    is_active: true,
+  },
+  {
+    id: 'flow-kids',
+    name: 'זמן ילדים',
+    name_en: 'Kids Time',
+    name_es: 'Hora de Niños',
+    description: 'תוכן מתאים לילדים',
+    description_en: 'Kid-friendly content',
+    description_es: 'Contenido para niños',
+    flow_type: 'system',
+    icon: 'child',
+    triggers: [{ type: 'time', start_time: '16:00', end_time: '18:00', days: [0, 1, 2, 3, 4, 5, 6] }],
+    items: [
+      { content_id: 'kids-1', content_type: 'vod', title: 'קריקטורות', order: 0 },
+      { content_id: 'kids-2', content_type: 'vod', title: 'שירים לילדים', order: 1 },
+    ],
+    ai_enabled: false,
+    auto_play: true,
+    is_active: true,
+  },
+];
+
 export default {
   user: demoUser,
   movies: demoMovies,
@@ -1108,4 +1190,5 @@ export default {
   categories: demoCategories,
   featured: demoFeatured,
   search: demoSearchResults,
+  flows: demoFlows,
 };

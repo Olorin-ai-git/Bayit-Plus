@@ -25,6 +25,7 @@ import demoData, {
   demoJudaismContent,
   demoChildrenCategories,
   demoChildrenContent,
+  demoFlows,
 } from '../data/demoData';
 
 // Simulate network delay
@@ -929,6 +930,114 @@ export const demoChildrenService = {
   },
 };
 
+// ===========================================
+// FLOWS SERVICE (Demo)
+// ===========================================
+let flowsState = [...demoFlows];
+
+export const demoFlowsService = {
+  getFlows: async () => {
+    await delay();
+    return { data: flowsState };
+  },
+  getActiveFlow: async () => {
+    await delay();
+    const now = new Date();
+    const currentHour = now.getHours();
+    const currentDay = now.getDay();
+
+    // Find active flow based on current time
+    const activeFlow = flowsState.find(flow => {
+      if (!flow.is_active) return false;
+      const trigger = flow.triggers[0];
+      if (!trigger) return false;
+
+      if (trigger.type === 'time' && trigger.start_time && trigger.end_time) {
+        const startHour = parseInt(trigger.start_time.split(':')[0]);
+        const endHour = parseInt(trigger.end_time.split(':')[0]);
+        const days = trigger.days || [0, 1, 2, 3, 4, 5, 6];
+        return currentHour >= startHour && currentHour < endHour && days.includes(currentDay);
+      }
+      return false;
+    });
+
+    return {
+      data: {
+        should_show: !!activeFlow,
+        active_flow: activeFlow || null,
+      }
+    };
+  },
+  getFlow: async (flowId) => {
+    await delay();
+    const flow = flowsState.find(f => f.id === flowId);
+    return { data: flow || null };
+  },
+  getFlowContent: async (flowId) => {
+    await delay();
+    const flow = flowsState.find(f => f.id === flowId);
+    if (!flow) return { data: { content: [], ai_brief: null } };
+
+    // Generate sample content
+    const content = flow.items.map((item, index) => ({
+      id: item.content_id,
+      title: item.title,
+      thumbnail: `https://picsum.photos/seed/${item.content_id}/400/225`,
+      type: item.content_type,
+      duration: '30:00',
+      order: item.order,
+    }));
+
+    const aiBrief = flow.ai_enabled
+      ? 'בוקר טוב! היום מזג האוויר נעים, יש כמה חדשות חשובות מישראל, ובחרתי לך תוכן שיתאים לך במיוחד.'
+      : null;
+
+    return { data: { content, ai_brief: aiBrief } };
+  },
+  createFlow: async (flowData) => {
+    await delay();
+    const newFlow = {
+      id: `flow-custom-${Date.now()}`,
+      ...flowData,
+      flow_type: 'custom',
+      is_active: true,
+      created_at: new Date().toISOString(),
+    };
+    flowsState.push(newFlow);
+    return { data: newFlow };
+  },
+  updateFlow: async (flowId, flowData) => {
+    await delay();
+    const index = flowsState.findIndex(f => f.id === flowId);
+    if (index === -1) throw new Error('Flow not found');
+    flowsState[index] = { ...flowsState[index], ...flowData };
+    return { data: flowsState[index] };
+  },
+  deleteFlow: async (flowId) => {
+    await delay();
+    flowsState = flowsState.filter(f => f.id !== flowId);
+    return { message: 'Flow deleted' };
+  },
+  addFlowItem: async (flowId, item) => {
+    await delay();
+    const flow = flowsState.find(f => f.id === flowId);
+    if (!flow) throw new Error('Flow not found');
+    flow.items.push({ ...item, order: flow.items.length });
+    return { data: flow };
+  },
+  removeFlowItem: async (flowId, itemIndex) => {
+    await delay();
+    const flow = flowsState.find(f => f.id === flowId);
+    if (!flow) throw new Error('Flow not found');
+    flow.items.splice(itemIndex, 1);
+    return { data: flow };
+  },
+  skipFlowToday: async (flowId) => {
+    await delay();
+    return { message: 'Flow skipped for today' };
+  },
+};
+
 export default {
   auth: demoAuthService,
   content: demoContentService,
@@ -950,4 +1059,5 @@ export default {
   downloads: demoDownloadsService,
   judaism: demoJudaismService,
   children: demoChildrenService,
+  flows: demoFlowsService,
 };

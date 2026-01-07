@@ -26,7 +26,8 @@
     "apply": "החל",
     "errors": {
       "unexpected": "אירעה שגיאה בלתי צפויה"
-    }
+    },
+    "send": "שלח"
   },
   "hero": {
     "watch": "צפייה",
@@ -130,6 +131,7 @@
     "liveTV": "שידור חי",
     "radio": "רדיו",
     "podcasts": "פודקאסטים",
+    "flows": "פלואים",
     "judaism": "יהדות",
     "children": "ילדים",
     "profile": "פרופיל",
@@ -286,6 +288,43 @@
     "guest": "אורח",
     "premium": "פרימיום",
     "basic": "בסיסי"
+  },
+  "flows": {
+    "title": "פלואים",
+    "subtitle": "חוויות תוכן מותאמות אישית לכל רגע",
+    "activeNow": "פעיל עכשיו",
+    "start": "התחל",
+    "skipToday": "דלג היום",
+    "systemFlows": "פלואים מוכנים",
+    "customFlows": "הפלואים שלי",
+    "system": "מערכת",
+    "noCustomFlows": "אין עדיין פלואים מותאמים",
+    "createHint": "צור את הפלו האישי הראשון שלך",
+    "createCustom": "צור פלו מותאם",
+    "createFlow": "צור פלו",
+    "editFlow": "ערוך פלו",
+    "type": "סוג",
+    "systemFlow": "פלו מערכת",
+    "customFlow": "פלו מותאם",
+    "schedule": "לוח זמנים",
+    "content": "תוכן",
+    "items": "פריטים",
+    "aiGenerated": "נוצר ע״י AI",
+    "autoPlay": "ניגון אוטומטי",
+    "aiEnabled": "סיכום AI",
+    "shabbatTrigger": "ליל שבת",
+    "manual": "ידני",
+    "flowName": "שם הפלו",
+    "flowNamePlaceholder": "לדוגמה: שגרת הבוקר שלי",
+    "description": "תיאור",
+    "descriptionPlaceholder": "למה מיועד הפלו הזה?",
+    "startTime": "שעת התחלה",
+    "endTime": "שעת סיום",
+    "actions": "פעולות",
+    "details": "פרטים",
+    "createFlowDesc": "עצב את החוויה המותאמת שלך",
+    "startFlow": "התחל פלו",
+    "deleteFlow": "מחק פלו"
   },
   "profile": {
     "profileDetails": "פרטי פרופיל",
@@ -470,6 +509,7 @@
       }
     },
     "plans": {
+      "title": "ניהול תוכניות",
       "subtitle": "הגדר ונהל את תוכניות המנוי",
       "createButton": "תוכנית חדשה",
       "inactive": "לא פעיל",
@@ -529,7 +569,8 @@
         "subjectPlaceholder": "נושא שיופיע לנמענים",
         "body": "תוכן",
         "bodyPlaceholder": "תוכן האימייל...",
-        "submitButton": "צור קמפיין"
+        "submitButton": "צור קמפיין",
+        "requiredFields": "שם ונושא נדרשים"
       },
       "testModal": {
         "title": "שלח אימייל בדיקה",
@@ -547,10 +588,34 @@
       "timeAgo": {
         "minutes": "לפני {{count}} דקות",
         "hours": "לפני {{count}} שעות"
-      }
+      },
+      "title": "לוח בקרה",
+      "users": "משתמשים",
+      "revenue": "הכנסות",
+      "subscriptions": "מנויים",
+      "recentActivity": "פעילות אחרונה",
+      "quickActions": "פעולות מהירות"
     },
     "common": {
       "all": "הכל"
+    },
+    "stats": {
+      "totalUsers": "סה״כ משתמשים",
+      "activeUsers": "משתמשים פעילים",
+      "newToday": "חדשים היום",
+      "newThisWeek": "חדשים השבוע",
+      "totalRevenue": "סה״כ הכנסות",
+      "revenueToday": "הכנסות היום",
+      "revenueMonth": "הכנסות החודש",
+      "arpu": "ARPU",
+      "activeSubscriptions": "מנויים פעילים",
+      "churnRate": "שיעור נטישה"
+    },
+    "actions": {
+      "addUser": "הוסף משתמש",
+      "newCampaign": "קמפיין חדש",
+      "sendEmail": "שלח אימייל",
+      "viewReports": "צפה בדוחות"
     }
   },
   "watchParty": {

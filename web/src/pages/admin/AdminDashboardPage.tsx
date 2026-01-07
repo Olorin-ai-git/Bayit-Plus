@@ -39,18 +39,6 @@ const formatCurrency = (amount: number) => {
   return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(amount);
 };
 
-const formatDateTime = (dateStr: string) => {
-  const date = new Date(dateStr);
-  const now = new Date();
-  const diffMs = now.getTime() - date.getTime();
-  const diffMins = Math.floor(diffMs / 60000);
-  const diffHours = Math.floor(diffMs / 3600000);
-
-  if (diffMins < 60) return `לפני ${diffMins} דקות`;
-  if (diffHours < 24) return `לפני ${diffHours} שעות`;
-  return date.toLocaleDateString('he-IL');
-};
-
 const getActivityIcon = (action: string) => {
   if (action.includes('user')) return '👤';
   if (action.includes('subscription')) return '📦';
@@ -61,12 +49,30 @@ const getActivityIcon = (action: string) => {
 };
 
 export default function AdminDashboardPage() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [stats, setStats] = useState<DashboardStats | null>(null);
   const [recentActivity, setRecentActivity] = useState<Activity[]>([]);
+
+  const formatDateTime = (dateStr: string) => {
+    const date = new Date(dateStr);
+    const now = new Date();
+    const diffMs = now.getTime() - date.getTime();
+    const diffMins = Math.floor(diffMs / 60000);
+    const diffHours = Math.floor(diffMs / 3600000);
+
+    if (diffMins < 60) {
+      return t('admin.dashboard.timeAgo.minutes', '{{count}} minutes ago', { count: diffMins });
+    }
+    if (diffHours < 24) {
+      return t('admin.dashboard.timeAgo.hours', '{{count}} hours ago', { count: diffHours });
+    }
+    return date.toLocaleDateString(
+      i18n.language === 'he' ? 'he-IL' : i18n.language === 'es' ? 'es-ES' : 'en-US'
+    );
+  };
 
   const loadDashboardData = async () => {
     try {
@@ -101,7 +107,7 @@ export default function AdminDashboardPage() {
       <View style={styles.errorContainer}>
         <Text style={styles.errorIcon}>⚠️</Text>
         <Text style={styles.errorText}>{error}</Text>
-        <GlassButton title={t('common.retry', 'נסה שוב')} onPress={loadDashboardData} variant="primary" />
+        <GlassButton title={t('common.retry', 'Retry')} onPress={loadDashboardData} variant="primary" />
       </View>
     );
   }
@@ -110,7 +116,7 @@ export default function AdminDashboardPage() {
     return (
       <View style={styles.loadingContainer}>
         <ActivityIndicator size="large" color={colors.primary} />
-        <Text style={styles.loadingText}>{t('common.loading', 'טוען...')}</Text>
+        <Text style={styles.loadingText}>{t('common.loading', 'Loading...')}</Text>
       </View>
     );
   }
@@ -120,42 +126,42 @@ export default function AdminDashboardPage() {
       {/* Header */}
       <View style={styles.header}>
         <View>
-          <Text style={styles.pageTitle}>{t('admin.titles.dashboard', 'לוח בקרה')}</Text>
-          <Text style={styles.subtitle}>סקירה כללית של המערכת</Text>
+          <Text style={styles.pageTitle}>{t('admin.dashboard.title', 'Dashboard')}</Text>
+          <Text style={styles.subtitle}>{t('admin.dashboard.subtitle', 'System Overview')}</Text>
         </View>
         <Pressable onPress={handleRefresh} disabled={refreshing} style={styles.refreshButton}>
           <RefreshCw size={18} color={colors.text} />
-          <Text style={styles.refreshText}>רענן</Text>
+          <Text style={styles.refreshText}>{t('admin.dashboard.refresh', 'Refresh')}</Text>
         </Pressable>
       </View>
 
       {/* Users Section */}
       <View style={styles.section}>
-        <Text style={styles.sectionTitle}>{t('admin.dashboard.users', 'משתמשים')}</Text>
+        <Text style={styles.sectionTitle}>{t('admin.dashboard.users', 'Users')}</Text>
         <View style={styles.statsGrid}>
           <StatCard
-            title={t('admin.stats.totalUsers', 'סה״כ משתמשים')}
+            title={t('admin.stats.totalUsers', 'Total Users')}
             value={formatNumber(stats.total_users)}
             icon="👥"
             color="primary"
             to="/admin/users"
           />
           <StatCard
-            title={t('admin.stats.activeUsers', 'משתמשים פעילים')}
+            title={t('admin.stats.activeUsers', 'Active Users')}
             value={formatNumber(stats.active_users)}
             icon="✅"
             color="success"
             trend={{ value: 12.5, isPositive: true }}
           />
           <StatCard
-            title={t('admin.stats.newToday', 'חדשים היום')}
+            title={t('admin.stats.newToday', 'New Today')}
             value={formatNumber(stats.new_users_today)}
             icon="🆕"
             color="secondary"
             trend={{ value: 8.2, isPositive: true }}
           />
           <StatCard
-            title={t('admin.stats.newThisWeek', 'חדשים השבוע')}
+            title={t('admin.stats.newThisWeek', 'New This Week')}
             value={formatNumber(stats.new_users_this_week)}
             icon="📈"
             color="warning"
@@ -165,24 +171,24 @@ export default function AdminDashboardPage() {
 
       {/* Revenue Section */}
       <View style={styles.section}>
-        <Text style={styles.sectionTitle}>{t('admin.dashboard.revenue', 'הכנסות')}</Text>
+        <Text style={styles.sectionTitle}>{t('admin.dashboard.revenue', 'Revenue')}</Text>
         <View style={styles.statsGrid}>
           <StatCard
-            title={t('admin.stats.totalRevenue', 'סה״כ הכנסות')}
+            title={t('admin.stats.totalRevenue', 'Total Revenue')}
             value={formatCurrency(stats.total_revenue)}
             icon="💰"
             color="success"
             to="/admin/billing"
           />
           <StatCard
-            title={t('admin.stats.revenueToday', 'הכנסות היום')}
+            title={t('admin.stats.revenueToday', 'Revenue Today')}
             value={formatCurrency(stats.revenue_today)}
             icon="📊"
             color="primary"
             trend={{ value: 15.3, isPositive: true }}
           />
           <StatCard
-            title={t('admin.stats.revenueMonth', 'הכנסות החודש')}
+            title={t('admin.stats.revenueMonth', 'Revenue This Month')}
             value={formatCurrency(stats.revenue_this_month)}
             icon="📅"
             color="secondary"
@@ -198,17 +204,17 @@ export default function AdminDashboardPage() {
 
       {/* Subscriptions Section */}
       <View style={styles.section}>
-        <Text style={styles.sectionTitle}>{t('admin.dashboard.subscriptions', 'מנויים')}</Text>
+        <Text style={styles.sectionTitle}>{t('admin.dashboard.subscriptions', 'Subscriptions')}</Text>
         <View style={styles.statsGridHalf}>
           <StatCard
-            title={t('admin.stats.activeSubscriptions', 'מנויים פעילים')}
+            title={t('admin.stats.activeSubscriptions', 'Active Subscriptions')}
             value={formatNumber(stats.active_subscriptions)}
             icon="📦"
             color="primary"
             to="/admin/subscriptions"
           />
           <StatCard
-            title={t('admin.stats.churnRate', 'שיעור נטישה')}
+            title={t('admin.stats.churnRate', 'Churn Rate')}
             value={`${stats.churn_rate}%`}
             icon="📉"
             color={stats.churn_rate < 5 ? 'success' : 'error'}
@@ -221,7 +227,7 @@ export default function AdminDashboardPage() {
       <View style={styles.bottomSection}>
         {/* Recent Activity */}
         <View style={styles.activitySection}>
-          <Text style={styles.sectionTitle}>{t('admin.dashboard.recentActivity', 'פעילות אחרונה')}</Text>
+          <Text style={styles.sectionTitle}>{t('admin.dashboard.recentActivity', 'Recent Activity')}</Text>
           <GlassCard style={styles.activityCard}>
             {recentActivity.map((activity) => (
               <View key={activity.id} style={styles.activityItem}>
@@ -246,14 +252,14 @@ export default function AdminDashboardPage() {
 
         {/* Quick Actions */}
         <View style={styles.quickActionsSection}>
-          <Text style={styles.sectionTitle}>{t('admin.dashboard.quickActions', 'פעולות מהירות')}</Text>
+          <Text style={styles.sectionTitle}>{t('admin.dashboard.quickActions', 'Quick Actions')}</Text>
           <GlassCard style={styles.quickActionsCard}>
             <Link to="/admin/users/new" style={{ textDecoration: 'none' }}>
               <Pressable style={styles.quickAction}>
                 <View style={[styles.quickActionIcon, { backgroundColor: 'rgba(0, 217, 255, 0.2)' }]}>
                   <UserPlus size={20} color={colors.primary} />
                 </View>
-                <Text style={styles.quickActionText}>{t('admin.actions.addUser', 'הוסף משתמש')}</Text>
+                <Text style={styles.quickActionText}>{t('admin.actions.addUser', 'Add User')}</Text>
               </Pressable>
             </Link>
             <Link to="/admin/campaigns/new" style={{ textDecoration: 'none' }}>
@@ -261,7 +267,7 @@ export default function AdminDashboardPage() {
                 <View style={[styles.quickActionIcon, { backgroundColor: 'rgba(139, 92, 246, 0.2)' }]}>
                   <Tag size={20} color="#8B5CF6" />
                 </View>
-                <Text style={styles.quickActionText}>{t('admin.actions.newCampaign', 'קמפיין חדש')}</Text>
+                <Text style={styles.quickActionText}>{t('admin.actions.newCampaign', 'New Campaign')}</Text>
               </Pressable>
             </Link>
             <Link to="/admin/emails" style={{ textDecoration: 'none' }}>
@@ -269,7 +275,7 @@ export default function AdminDashboardPage() {
                 <View style={[styles.quickActionIcon, { backgroundColor: 'rgba(245, 158, 11, 0.2)' }]}>
                   <Mail size={20} color="#F59E0B" />
                 </View>
-                <Text style={styles.quickActionText}>{t('admin.actions.sendEmail', 'שלח אימייל')}</Text>
+                <Text style={styles.quickActionText}>{t('admin.actions.sendEmail', 'Send Email')}</Text>
               </Pressable>
             </Link>
             <Link to="/admin/billing" style={{ textDecoration: 'none' }}>
@@ -277,7 +283,7 @@ export default function AdminDashboardPage() {
                 <View style={[styles.quickActionIcon, { backgroundColor: 'rgba(34, 197, 94, 0.2)' }]}>
                   <BarChart3 size={20} color="#22C55E" />
                 </View>
-                <Text style={styles.quickActionText}>{t('admin.actions.viewReports', 'צפה בדוחות')}</Text>
+                <Text style={styles.quickActionText}>{t('admin.actions.viewReports', 'View Reports')}</Text>
               </Pressable>
             </Link>
           </GlassCard>

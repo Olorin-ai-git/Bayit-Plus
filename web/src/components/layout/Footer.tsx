@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { View, Text, StyleSheet, Pressable, useWindowDimensions } from 'react-native';
+import { useState, useCallback } from 'react';
+import { View, Text, StyleSheet, Pressable, useWindowDimensions, Animated } from 'react-native';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import {
@@ -12,9 +12,10 @@ import {
   MapPin,
   Globe,
   ChevronDown,
-  ExternalLink,
+  ChevronUp,
   Smartphone,
   Send,
+  GripHorizontal,
 } from 'lucide-react';
 import { colors, spacing, borderRadius } from '@bayit/shared/theme';
 import { GlassView, GlassCard, GlassInput, GlassButton, AnimatedLogo } from '@bayit/shared';
@@ -32,6 +33,11 @@ const SOCIAL_LINKS = [
   { icon: Youtube, url: 'https://youtube.com/bayitplus', label: 'YouTube' },
 ];
 
+const COLLAPSED_HEIGHT = 48;
+const EXPANDED_HEIGHT = 320;
+const MIN_HEIGHT = 48;
+const MAX_HEIGHT = 500;
+
 export default function Footer() {
   const { t, i18n } = useTranslation();
   const { width } = useWindowDimensions();
@@ -39,6 +45,9 @@ export default function Footer() {
   const isTablet = width < 1024;
   const isRTL = i18n.language === 'he' || i18n.language === 'ar';
 
+  const [isExpanded, setIsExpanded] = useState(false);
+  const [height, setHeight] = useState(COLLAPSED_HEIGHT);
+  const [isDragging, setIsDragging] = useState(false);
   const [email, setEmail] = useState('');
   const [showLanguageMenu, setShowLanguageMenu] = useState(false);
   const [subscribed, setSubscribed] = useState(false);
@@ -52,12 +61,55 @@ export default function Footer() {
 
   const handleSubscribe = () => {
     if (email.trim()) {
-      // TODO: Implement newsletter subscription
       setSubscribed(true);
       setEmail('');
       setTimeout(() => setSubscribed(false), 3000);
     }
   };
+
+  const toggleExpanded = () => {
+    const newExpanded = !isExpanded;
+    setIsExpanded(newExpanded);
+    setHeight(newExpanded ? EXPANDED_HEIGHT : COLLAPSED_HEIGHT);
+  };
+
+  const handleDragStart = useCallback((e: any) => {
+    e.preventDefault();
+    setIsDragging(true);
+
+    const startY = e.clientY || (e.touches && e.touches[0].clientY);
+    const startHeight = height;
+
+    const handleDrag = (moveEvent: any) => {
+      const currentY = moveEvent.clientY || (moveEvent.touches && moveEvent.touches[0].clientY);
+      const deltaY = startY - currentY;
+      const newHeight = Math.min(MAX_HEIGHT, Math.max(MIN_HEIGHT, startHeight + deltaY));
+      setHeight(newHeight);
+      setIsExpanded(newHeight > COLLAPSED_HEIGHT + 20);
+    };
+
+    const handleDragEnd = () => {
+      setIsDragging(false);
+      document.removeEventListener('mousemove', handleDrag);
+      document.removeEventListener('mouseup', handleDragEnd);
+      document.removeEventListener('touchmove', handleDrag);
+      document.removeEventListener('touchend', handleDragEnd);
+
+      // Snap to collapsed or expanded
+      if (height < (COLLAPSED_HEIGHT + EXPANDED_HEIGHT) / 2) {
+        setHeight(COLLAPSED_HEIGHT);
+        setIsExpanded(false);
+      } else {
+        setHeight(EXPANDED_HEIGHT);
+        setIsExpanded(true);
+      }
+    };
+
+    document.addEventListener('mousemove', handleDrag);
+    document.addEventListener('mouseup', handleDragEnd);
+    document.addEventListener('touchmove', handleDrag);
+    document.addEventListener('touchend', handleDragEnd);
+  }, [height]);
 
   const footerLinks = {
     browse: [
@@ -90,263 +142,290 @@ export default function Footer() {
   };
 
   return (
-    <GlassView style={styles.footer} intensity="high">
-      <View style={styles.container}>
-        {/* Main Footer Content */}
-        <View style={[styles.mainContent, isMobile && styles.mainContentMobile]}>
-          {/* Brand Section */}
-          <View style={[styles.brandSection, isMobile && styles.brandSectionMobile]}>
-            <Link to="/" style={{ textDecoration: 'none' }}>
-              <View style={styles.logoContainer}>
-                <AnimatedLogo size="medium" />
+    <GlassView
+      style={[
+        styles.footer,
+        { height },
+        isDragging && styles.footerDragging,
+      ]}
+      intensity="high"
+    >
+      {/* Splitter Handle */}
+      <Pressable
+        style={[styles.splitterHandle, isDragging && styles.splitterHandleActive]}
+        onPress={toggleExpanded}
+        onPressIn={handleDragStart as any}
+      >
+        <View style={styles.splitterGrip}>
+          <GripHorizontal size={20} color={colors.textMuted} />
+        </View>
+        <View style={[styles.splitterContent, isRTL && styles.splitterContentRTL]}>
+          {!isExpanded && (
+            <>
+              <View style={styles.collapsedBrand}>
+                <AnimatedLogo size="small" />
+                <Text style={styles.collapsedTitle}>Bayit+</Text>
               </View>
-            </Link>
-            <Text style={[styles.brandDescription, isRTL && styles.textRTL]}>
-              {t('footer.brandDescription', 'Your home in the USA. TV broadcasts, VOD, radio and podcasts in Hebrew.')}
-            </Text>
+              <Text style={styles.collapsedCopyright}>
+                {t('footer.copyright', '© {{year}} Bayit+. All rights reserved.', {
+                  year: new Date().getFullYear(),
+                })}
+              </Text>
+            </>
+          )}
+          <Pressable
+            style={styles.expandButton}
+            onPress={toggleExpanded}
+          >
+            {isExpanded ? (
+              <ChevronDown size={18} color={colors.textSecondary} />
+            ) : (
+              <ChevronUp size={18} color={colors.textSecondary} />
+            )}
+          </Pressable>
+        </View>
+      </Pressable>
 
-            {/* Contact Info */}
-            <View style={styles.contactInfo}>
-              <View style={[styles.contactItem, isRTL && styles.contactItemRTL]}>
-                <Mail size={16} color={colors.textMuted} />
-                <Text style={styles.contactText}>support@bayitplus.com</Text>
+      {/* Expanded Content */}
+      {isExpanded && (
+        <View style={styles.container}>
+          <View style={[styles.mainContent, isMobile && styles.mainContentMobile]}>
+            {/* Brand Section */}
+            <View style={[styles.brandSection, isMobile && styles.brandSectionMobile]}>
+              <Link to="/" style={{ textDecoration: 'none' }}>
+                <View style={styles.logoContainer}>
+                  <AnimatedLogo size="medium" />
+                </View>
+              </Link>
+              <Text style={[styles.brandDescription, isRTL && styles.textRTL]}>
+                {t('footer.brandDescription', 'Your home in the USA. TV broadcasts, VOD, radio and podcasts in Hebrew.')}
+              </Text>
+
+              {/* Contact Info */}
+              <View style={styles.contactInfo}>
+                <View style={[styles.contactItem, isRTL && styles.contactItemRTL]}>
+                  <Mail size={14} color={colors.textMuted} />
+                  <Text style={styles.contactText}>support@bayitplus.com</Text>
+                </View>
+                <View style={[styles.contactItem, isRTL && styles.contactItemRTL]}>
+                  <Phone size={14} color={colors.textMuted} />
+                  <Text style={styles.contactText}>1-800-BAYIT-TV</Text>
+                </View>
               </View>
-              <View style={[styles.contactItem, isRTL && styles.contactItemRTL]}>
-                <Phone size={16} color={colors.textMuted} />
-                <Text style={styles.contactText}>1-800-BAYIT-TV</Text>
+
+              {/* Social Links */}
+              <View style={styles.socialLinks}>
+                {SOCIAL_LINKS.map((social) => (
+                  <Pressable
+                    key={social.label}
+                    onPress={() => window.open(social.url, '_blank')}
+                    style={({ pressed }) => [
+                      styles.socialButton,
+                      pressed && styles.socialButtonPressed,
+                    ]}
+                  >
+                    <social.icon size={16} color={colors.text} />
+                  </Pressable>
+                ))}
               </View>
-              <View style={[styles.contactItem, isRTL && styles.contactItemRTL]}>
-                <MapPin size={16} color={colors.textMuted} />
-                <Text style={styles.contactText}>{t('footer.location', 'New York, USA')}</Text>
+            </View>
+
+            {/* Links Grid - Horizontal */}
+            <View style={[styles.linksGrid, isMobile && styles.linksGridMobile]}>
+              {/* Browse Column */}
+              <View style={styles.linkColumn}>
+                <Text style={[styles.columnTitle, isRTL && styles.textRTL]}>
+                  {t('footer.browse', 'Browse')}
+                </Text>
+                <View style={styles.linksList}>
+                  {footerLinks.browse.map((link) => (
+                    <Link key={link.to} to={link.to} style={{ textDecoration: 'none' }}>
+                      <Text style={[styles.linkText, isRTL && styles.textRTL]}>
+                        {link.label}
+                      </Text>
+                    </Link>
+                  ))}
+                </View>
+              </View>
+
+              {/* Account Column */}
+              <View style={styles.linkColumn}>
+                <Text style={[styles.columnTitle, isRTL && styles.textRTL]}>
+                  {t('footer.account', 'Account')}
+                </Text>
+                <View style={styles.linksList}>
+                  {footerLinks.account.map((link) => (
+                    <Link key={link.to} to={link.to} style={{ textDecoration: 'none' }}>
+                      <Text style={[styles.linkText, isRTL && styles.textRTL]}>
+                        {link.label}
+                      </Text>
+                    </Link>
+                  ))}
+                </View>
+              </View>
+
+              {/* Support Column */}
+              <View style={styles.linkColumn}>
+                <Text style={[styles.columnTitle, isRTL && styles.textRTL]}>
+                  {t('footer.support', 'Support')}
+                </Text>
+                <View style={styles.linksList}>
+                  {footerLinks.support.map((link) => (
+                    <Link key={link.to} to={link.to} style={{ textDecoration: 'none' }}>
+                      <Text style={[styles.linkText, isRTL && styles.textRTL]}>
+                        {link.label}
+                      </Text>
+                    </Link>
+                  ))}
+                </View>
+              </View>
+
+              {/* Legal Column */}
+              <View style={styles.linkColumn}>
+                <Text style={[styles.columnTitle, isRTL && styles.textRTL]}>
+                  {t('footer.legal', 'Legal')}
+                </Text>
+                <View style={styles.linksList}>
+                  {footerLinks.legal.map((link) => (
+                    <Link key={link.to} to={link.to} style={{ textDecoration: 'none' }}>
+                      <Text style={[styles.linkText, isRTL && styles.textRTL]}>
+                        {link.label}
+                      </Text>
+                    </Link>
+                  ))}
+                </View>
               </View>
             </View>
 
-            {/* Social Links */}
-            <View style={styles.socialLinks}>
-              {SOCIAL_LINKS.map((social) => (
-                <Pressable
-                  key={social.label}
-                  onPress={() => window.open(social.url, '_blank')}
-                  style={({ pressed }) => [
-                    styles.socialButton,
-                    pressed && styles.socialButtonPressed,
-                  ]}
-                >
-                  <social.icon size={20} color={colors.text} />
-                </Pressable>
-              ))}
-            </View>
-          </View>
-
-          {/* Links Grid */}
-          <View style={[styles.linksGrid, isMobile && styles.linksGridMobile]}>
-            {/* Browse Column */}
-            <View style={styles.linkColumn}>
-              <Text style={[styles.columnTitle, isRTL && styles.textRTL]}>
-                {t('footer.browse', 'Browse')}
-              </Text>
-              {footerLinks.browse.map((link) => (
-                <Link key={link.to} to={link.to} style={{ textDecoration: 'none' }}>
-                  <Text style={[styles.linkText, isRTL && styles.textRTL]}>
-                    {link.label}
-                  </Text>
-                </Link>
-              ))}
-            </View>
-
-            {/* Account Column */}
-            <View style={styles.linkColumn}>
-              <Text style={[styles.columnTitle, isRTL && styles.textRTL]}>
-                {t('footer.account', 'Account')}
-              </Text>
-              {footerLinks.account.map((link) => (
-                <Link key={link.to} to={link.to} style={{ textDecoration: 'none' }}>
-                  <Text style={[styles.linkText, isRTL && styles.textRTL]}>
-                    {link.label}
-                  </Text>
-                </Link>
-              ))}
-            </View>
-
-            {/* Support Column */}
-            <View style={styles.linkColumn}>
-              <Text style={[styles.columnTitle, isRTL && styles.textRTL]}>
-                {t('footer.support', 'Support')}
-              </Text>
-              {footerLinks.support.map((link) => (
-                <Link key={link.to} to={link.to} style={{ textDecoration: 'none' }}>
-                  <Text style={[styles.linkText, isRTL && styles.textRTL]}>
-                    {link.label}
-                  </Text>
-                </Link>
-              ))}
-            </View>
-
-            {/* Legal Column */}
-            <View style={styles.linkColumn}>
-              <Text style={[styles.columnTitle, isRTL && styles.textRTL]}>
-                {t('footer.legal', 'Legal')}
-              </Text>
-              {footerLinks.legal.map((link) => (
-                <Link key={link.to} to={link.to} style={{ textDecoration: 'none' }}>
-                  <Text style={[styles.linkText, isRTL && styles.textRTL]}>
-                    {link.label}
-                  </Text>
-                </Link>
-              ))}
-            </View>
-          </View>
-
-          {/* Newsletter & Apps Section */}
-          <View style={[styles.rightSection, isMobile && styles.rightSectionMobile]}>
-            {/* Newsletter */}
-            <GlassCard style={styles.newsletterCard}>
-              <Text style={[styles.newsletterTitle, isRTL && styles.textRTL]}>
-                {t('footer.newsletter.title', 'Stay Updated')}
-              </Text>
-              <Text style={[styles.newsletterDescription, isRTL && styles.textRTL]}>
-                {t('footer.newsletter.description', 'Subscribe to our newsletter for the latest updates and exclusive content.')}
-              </Text>
-
-              {subscribed ? (
-                <View style={styles.subscribedMessage}>
+            {/* Newsletter & Actions */}
+            <View style={[styles.rightSection, isMobile && styles.rightSectionMobile]}>
+              {/* Newsletter */}
+              <View style={styles.newsletterSection}>
+                <Text style={[styles.newsletterTitle, isRTL && styles.textRTL]}>
+                  {t('footer.newsletter.title', 'Stay Updated')}
+                </Text>
+                {subscribed ? (
                   <Text style={styles.subscribedText}>
                     {t('footer.newsletter.success', 'Thanks for subscribing!')}
                   </Text>
-                </View>
-              ) : (
-                <View style={[styles.newsletterForm, isRTL && styles.newsletterFormRTL]}>
-                  <View style={styles.inputWrapper}>
-                    <GlassInput
-                      value={email}
-                      onChangeText={setEmail}
-                      placeholder={t('footer.newsletter.placeholder', 'Enter your email')}
-                      keyboardType="email-address"
-                      autoCapitalize="none"
-                      containerStyle={styles.emailInput}
-                      icon={<Mail size={18} color={colors.textMuted} />}
-                    />
+                ) : (
+                  <View style={[styles.newsletterForm, isRTL && styles.newsletterFormRTL]}>
+                    <View style={styles.inputWrapper}>
+                      <GlassInput
+                        value={email}
+                        onChangeText={setEmail}
+                        placeholder={t('footer.newsletter.placeholder', 'Enter your email')}
+                        keyboardType="email-address"
+                        autoCapitalize="none"
+                        containerStyle={styles.emailInput}
+                        icon={<Mail size={16} color={colors.textMuted} />}
+                      />
+                    </View>
+                    <Pressable
+                      onPress={handleSubscribe}
+                      style={({ pressed }) => [
+                        styles.subscribeButton,
+                        pressed && styles.subscribeButtonPressed,
+                      ]}
+                    >
+                      <Send size={16} color="#000" />
+                    </Pressable>
                   </View>
+                )}
+              </View>
+
+              {/* Language Selector */}
+              <View style={styles.languageSelector}>
+                <Pressable
+                  style={styles.languageButton}
+                  onPress={() => setShowLanguageMenu(!showLanguageMenu)}
+                >
+                  <Globe size={14} color={colors.textSecondary} />
+                  <Text style={styles.languageButtonText}>
+                    {currentLanguage.flag} {currentLanguage.label}
+                  </Text>
+                  <ChevronUp size={12} color={colors.textSecondary} />
+                </Pressable>
+
+                {showLanguageMenu && (
+                  <View style={styles.languageMenu}>
+                    {LANGUAGES.map((lang) => (
+                      <Pressable
+                        key={lang.code}
+                        style={[
+                          styles.languageOption,
+                          lang.code === i18n.language && styles.languageOptionActive,
+                        ]}
+                        onPress={() => handleLanguageChange(lang.code)}
+                      >
+                        <Text style={styles.languageOptionFlag}>{lang.flag}</Text>
+                        <Text
+                          style={[
+                            styles.languageOptionText,
+                            lang.code === i18n.language && styles.languageOptionTextActive,
+                          ]}
+                        >
+                          {lang.label}
+                        </Text>
+                      </Pressable>
+                    ))}
+                  </View>
+                )}
+              </View>
+
+              {/* App Downloads */}
+              <View style={styles.appDownloads}>
+                <View style={styles.appButtons}>
                   <Pressable
-                    onPress={handleSubscribe}
+                    onPress={() => window.open('https://apps.apple.com/app/bayitplus', '_blank')}
                     style={({ pressed }) => [
-                      styles.subscribeButton,
-                      pressed && styles.subscribeButtonPressed,
+                      styles.appButton,
+                      pressed && styles.appButtonPressed,
                     ]}
                   >
-                    <Send size={18} color="#000" />
+                    <GlassView style={styles.appButtonContent} intensity="low">
+                      <Smartphone size={14} color={colors.text} />
+                      <Text style={styles.appButtonStore}>App Store</Text>
+                    </GlassView>
+                  </Pressable>
+                  <Pressable
+                    onPress={() => window.open('https://play.google.com/store/apps/details?id=com.bayitplus', '_blank')}
+                    style={({ pressed }) => [
+                      styles.appButton,
+                      pressed && styles.appButtonPressed,
+                    ]}
+                  >
+                    <GlassView style={styles.appButtonContent} intensity="low">
+                      <Smartphone size={14} color={colors.text} />
+                      <Text style={styles.appButtonStore}>Google Play</Text>
+                    </GlassView>
                   </Pressable>
                 </View>
-              )}
-            </GlassCard>
+              </View>
+            </View>
+          </View>
 
-            {/* App Downloads */}
-            <View style={styles.appDownloads}>
-              <Text style={[styles.appTitle, isRTL && styles.textRTL]}>
-                {t('footer.apps.title', 'Get the App')}
+          {/* Bottom Bar */}
+          <View style={styles.bottomBar}>
+            <View style={[styles.bottomBarContent, isRTL && styles.bottomBarContentRTL]}>
+              <Text style={styles.copyrightText}>
+                {t('footer.copyright', '© {{year}} Bayit+. All rights reserved.', {
+                  year: new Date().getFullYear(),
+                })}
               </Text>
-              <View style={styles.appButtons}>
-                <Pressable
-                  onPress={() => window.open('https://apps.apple.com/app/bayitplus', '_blank')}
-                  style={({ pressed }) => [
-                    styles.appButton,
-                    pressed && styles.appButtonPressed,
-                  ]}
-                >
-                  <GlassView style={styles.appButtonContent} intensity="low">
-                    <Smartphone size={20} color={colors.text} />
-                    <View>
-                      <Text style={styles.appButtonLabel}>
-                        {t('footer.apps.downloadOn', 'Download on')}
-                      </Text>
-                      <Text style={styles.appButtonStore}>App Store</Text>
-                    </View>
-                  </GlassView>
-                </Pressable>
-                <Pressable
-                  onPress={() => window.open('https://play.google.com/store/apps/details?id=com.bayitplus', '_blank')}
-                  style={({ pressed }) => [
-                    styles.appButton,
-                    pressed && styles.appButtonPressed,
-                  ]}
-                >
-                  <GlassView style={styles.appButtonContent} intensity="low">
-                    <Smartphone size={20} color={colors.text} />
-                    <View>
-                      <Text style={styles.appButtonLabel}>
-                        {t('footer.apps.getItOn', 'Get it on')}
-                      </Text>
-                      <Text style={styles.appButtonStore}>Google Play</Text>
-                    </View>
-                  </GlassView>
-                </Pressable>
+              <View style={[styles.bottomLinks, isRTL && styles.bottomLinksRTL]}>
+                <Link to="/sitemap" style={{ textDecoration: 'none' }}>
+                  <Text style={styles.bottomLink}>{t('footer.sitemap', 'Sitemap')}</Text>
+                </Link>
+                <Text style={styles.bottomDivider}>•</Text>
+                <Link to="/accessibility" style={{ textDecoration: 'none' }}>
+                  <Text style={styles.bottomLink}>{t('footer.accessibility', 'Accessibility')}</Text>
+                </Link>
               </View>
             </View>
           </View>
         </View>
-
-        {/* Bottom Bar */}
-        <View style={styles.bottomBar}>
-          <View style={[styles.bottomBarContent, isRTL && styles.bottomBarContentRTL]}>
-            {/* Copyright */}
-            <Text style={styles.copyrightText}>
-              {t('footer.copyright', '© {{year}} Bayit+. All rights reserved.', {
-                year: new Date().getFullYear(),
-              })}
-            </Text>
-
-            {/* Language Selector */}
-            <View style={styles.languageSelector}>
-              <Pressable
-                style={styles.languageButton}
-                onPress={() => setShowLanguageMenu(!showLanguageMenu)}
-              >
-                <Globe size={16} color={colors.textSecondary} />
-                <Text style={styles.languageButtonText}>
-                  {currentLanguage.flag} {currentLanguage.label}
-                </Text>
-                <ChevronDown size={14} color={colors.textSecondary} />
-              </Pressable>
-
-              {showLanguageMenu && (
-                <View style={styles.languageMenu}>
-                  {LANGUAGES.map((lang) => (
-                    <Pressable
-                      key={lang.code}
-                      style={[
-                        styles.languageOption,
-                        lang.code === i18n.language && styles.languageOptionActive,
-                      ]}
-                      onPress={() => handleLanguageChange(lang.code)}
-                    >
-                      <Text style={styles.languageOptionFlag}>{lang.flag}</Text>
-                      <Text
-                        style={[
-                          styles.languageOptionText,
-                          lang.code === i18n.language && styles.languageOptionTextActive,
-                        ]}
-                      >
-                        {lang.label}
-                      </Text>
-                    </Pressable>
-                  ))}
-                </View>
-              )}
-            </View>
-
-            {/* Additional Links */}
-            <View style={[styles.bottomLinks, isRTL && styles.bottomLinksRTL]}>
-              <Link to="/sitemap" style={{ textDecoration: 'none' }}>
-                <Text style={styles.bottomLink}>{t('footer.sitemap', 'Sitemap')}</Text>
-              </Link>
-              <Text style={styles.bottomDivider}>•</Text>
-              <Link to="/accessibility" style={{ textDecoration: 'none' }}>
-                <Text style={styles.bottomLink}>{t('footer.accessibility', 'Accessibility')}</Text>
-              </Link>
-            </View>
-          </View>
-        </View>
-      </View>
+      )}
     </GlassView>
   );
 }
@@ -356,65 +435,126 @@ const styles = StyleSheet.create({
     marginTop: 'auto' as any,
     borderTopWidth: 1,
     borderTopColor: 'rgba(255, 255, 255, 0.08)',
+    overflow: 'hidden',
+    // @ts-ignore
+    transition: 'height 0.3s ease',
+  },
+  footerDragging: {
+    // @ts-ignore
+    transition: 'none',
+    // @ts-ignore
+    userSelect: 'none',
+  },
+  splitterHandle: {
+    height: COLLAPSED_HEIGHT,
+    borderBottomWidth: 1,
+    borderBottomColor: 'rgba(255, 255, 255, 0.05)',
+    // @ts-ignore
+    cursor: 'ns-resize',
+  },
+  splitterHandleActive: {
+    backgroundColor: 'rgba(0, 217, 255, 0.05)',
+  },
+  splitterGrip: {
+    position: 'absolute',
+    top: 0,
+    left: '50%',
+    // @ts-ignore
+    transform: 'translateX(-50%)',
+    paddingVertical: 4,
+    paddingHorizontal: spacing.md,
+    opacity: 0.6,
+  },
+  splitterContent: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingHorizontal: spacing.lg,
+    height: '100%',
+  },
+  splitterContentRTL: {
+    flexDirection: 'row-reverse',
+  },
+  collapsedBrand: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.sm,
+  },
+  collapsedTitle: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: colors.text,
+  },
+  collapsedCopyright: {
+    fontSize: 12,
+    color: colors.textMuted,
+  },
+  expandButton: {
+    padding: spacing.sm,
+    borderRadius: borderRadius.full,
+    backgroundColor: 'rgba(255, 255, 255, 0.05)',
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.1)',
   },
   container: {
+    flex: 1,
     maxWidth: 1400,
     marginHorizontal: 'auto',
     width: '100%',
   },
   mainContent: {
+    flex: 1,
     flexDirection: 'row',
-    padding: spacing.xl,
-    paddingBottom: spacing.lg,
-    gap: spacing.xl,
+    padding: spacing.md,
+    paddingTop: spacing.sm,
+    gap: spacing.lg,
   },
   mainContentMobile: {
     flexDirection: 'column',
   },
   brandSection: {
-    flex: 1,
-    maxWidth: 280,
-    gap: spacing.md,
+    minWidth: 180,
+    gap: spacing.xs,
   },
   brandSectionMobile: {
-    maxWidth: '100%',
     alignItems: 'center',
   },
   logoContainer: {
-    marginBottom: spacing.sm,
+    marginBottom: spacing.xs,
   },
   brandDescription: {
-    fontSize: 14,
+    fontSize: 12,
     color: colors.textSecondary,
-    lineHeight: 22,
+    lineHeight: 18,
   },
   textRTL: {
     textAlign: 'right',
   },
   contactInfo: {
-    gap: spacing.sm,
-    marginTop: spacing.sm,
+    gap: 4,
+    marginTop: spacing.xs,
   },
   contactItem: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: spacing.sm,
+    gap: spacing.xs,
   },
   contactItemRTL: {
     flexDirection: 'row-reverse',
   },
   contactText: {
-    fontSize: 13,
+    fontSize: 11,
     color: colors.textMuted,
   },
   socialLinks: {
     flexDirection: 'row',
-    gap: spacing.sm,
-    marginTop: spacing.md,
+    gap: spacing.xs,
+    marginTop: spacing.sm,
   },
   socialButton: {
-    width: 40,
-    height: 40,
+    width: 32,
+    height: 32,
     borderRadius: borderRadius.full,
     backgroundColor: 'rgba(255, 255, 255, 0.05)',
     borderWidth: 1,
@@ -430,72 +570,68 @@ const styles = StyleSheet.create({
     transform: 'scale(0.95)',
   },
   linksGrid: {
-    flex: 2,
+    flex: 1,
     flexDirection: 'row',
-    flexWrap: 'wrap',
     gap: spacing.lg,
+    justifyContent: 'center',
   },
   linksGridMobile: {
-    justifyContent: 'space-between',
+    flexWrap: 'wrap',
+    justifyContent: 'space-around',
   },
   linkColumn: {
-    minWidth: 120,
-    gap: spacing.sm,
+    gap: spacing.xs,
   },
   columnTitle: {
-    fontSize: 15,
+    fontSize: 12,
     fontWeight: '600',
     color: colors.text,
-    marginBottom: spacing.sm,
+    marginBottom: 4,
+  },
+  linksList: {
+    gap: 2,
   },
   linkText: {
-    fontSize: 14,
+    fontSize: 11,
     color: colors.textSecondary,
-    paddingVertical: 4,
+    paddingVertical: 2,
     // @ts-ignore
     transition: 'color 0.2s ease',
   },
   rightSection: {
-    flex: 1,
-    maxWidth: 320,
-    gap: spacing.lg,
+    minWidth: 200,
+    gap: spacing.sm,
+    alignItems: 'flex-end',
   },
   rightSectionMobile: {
-    maxWidth: '100%',
+    alignItems: 'center',
   },
-  newsletterCard: {
-    padding: spacing.lg,
+  newsletterSection: {
+    gap: spacing.xs,
   },
   newsletterTitle: {
-    fontSize: 16,
+    fontSize: 12,
     fontWeight: '600',
     color: colors.text,
-    marginBottom: spacing.xs,
-  },
-  newsletterDescription: {
-    fontSize: 13,
-    color: colors.textSecondary,
-    marginBottom: spacing.md,
-    lineHeight: 20,
   },
   newsletterForm: {
     flexDirection: 'row',
-    gap: spacing.sm,
+    gap: spacing.xs,
     alignItems: 'flex-start',
   },
   newsletterFormRTL: {
     flexDirection: 'row-reverse',
   },
   inputWrapper: {
-    flex: 1,
+    width: 160,
   },
   emailInput: {
     marginBottom: 0,
   },
   subscribeButton: {
-    width: 48,
-    height: 48,
-    borderRadius: borderRadius.lg,
+    width: 36,
+    height: 36,
+    borderRadius: borderRadius.md,
     backgroundColor: colors.primary,
     justifyContent: 'center',
     alignItems: 'center',
@@ -507,34 +643,74 @@ const styles = StyleSheet.create({
     // @ts-ignore
     transform: 'scale(0.95)',
   },
-  subscribedMessage: {
-    backgroundColor: 'rgba(16, 185, 129, 0.15)',
-    borderRadius: borderRadius.md,
-    padding: spacing.md,
-  },
   subscribedText: {
-    fontSize: 14,
+    fontSize: 11,
     color: colors.success,
-    textAlign: 'center',
     fontWeight: '500',
   },
-  appDownloads: {
-    gap: spacing.sm,
+  languageSelector: {
+    position: 'relative',
   },
-  appTitle: {
-    fontSize: 15,
-    fontWeight: '600',
-    color: colors.text,
+  languageButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+    backgroundColor: 'rgba(255, 255, 255, 0.05)',
+    paddingVertical: spacing.xs,
+    paddingHorizontal: spacing.sm,
+    borderRadius: borderRadius.sm,
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.1)',
+  },
+  languageButtonText: {
+    fontSize: 11,
+    color: colors.textSecondary,
+  },
+  languageMenu: {
+    position: 'absolute',
+    bottom: '100%',
+    right: 0,
     marginBottom: spacing.xs,
+    backgroundColor: 'rgba(20, 20, 30, 0.95)',
+    borderRadius: borderRadius.md,
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.1)',
+    overflow: 'hidden',
+    minWidth: 120,
+    // @ts-ignore
+    backdropFilter: 'blur(20px)',
+    boxShadow: '0 -10px 40px rgba(0, 0, 0, 0.5)',
+    zIndex: 100,
+  },
+  languageOption: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.xs,
+    paddingVertical: spacing.xs,
+    paddingHorizontal: spacing.sm,
+  },
+  languageOptionActive: {
+    backgroundColor: 'rgba(0, 217, 255, 0.1)',
+  },
+  languageOptionFlag: {
+    fontSize: 14,
+  },
+  languageOptionText: {
+    fontSize: 11,
+    color: colors.textSecondary,
+  },
+  languageOptionTextActive: {
+    color: colors.primary,
+    fontWeight: '600',
+  },
+  appDownloads: {
+    gap: spacing.xs,
   },
   appButtons: {
     flexDirection: 'row',
-    gap: spacing.sm,
-    flexWrap: 'wrap',
+    gap: spacing.xs,
   },
   appButton: {
-    flex: 1,
-    minWidth: 140,
     // @ts-ignore
     transition: 'all 0.2s ease',
   },
@@ -546,109 +722,49 @@ const styles = StyleSheet.create({
   appButtonContent: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: spacing.sm,
-    padding: spacing.sm,
-    paddingHorizontal: spacing.md,
-    borderRadius: borderRadius.md,
-  },
-  appButtonLabel: {
-    fontSize: 10,
-    color: colors.textMuted,
+    gap: spacing.xs,
+    paddingVertical: spacing.xs,
+    paddingHorizontal: spacing.sm,
+    borderRadius: borderRadius.sm,
   },
   appButtonStore: {
-    fontSize: 14,
+    fontSize: 11,
     fontWeight: '600',
     color: colors.text,
   },
   bottomBar: {
     borderTopWidth: 1,
-    borderTopColor: 'rgba(255, 255, 255, 0.08)',
-    padding: spacing.lg,
-    paddingVertical: spacing.md,
+    borderTopColor: 'rgba(255, 255, 255, 0.05)',
+    paddingHorizontal: spacing.md,
+    paddingVertical: spacing.xs,
   },
   bottomBarContent: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    flexWrap: 'wrap',
     gap: spacing.md,
   },
   bottomBarContentRTL: {
     flexDirection: 'row-reverse',
   },
   copyrightText: {
-    fontSize: 13,
+    fontSize: 10,
     color: colors.textMuted,
-  },
-  languageSelector: {
-    position: 'relative',
-  },
-  languageButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing.xs,
-    backgroundColor: 'rgba(255, 255, 255, 0.05)',
-    paddingVertical: spacing.sm,
-    paddingHorizontal: spacing.md,
-    borderRadius: borderRadius.md,
-    borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.1)',
-  },
-  languageButtonText: {
-    fontSize: 13,
-    color: colors.textSecondary,
-  },
-  languageMenu: {
-    position: 'absolute',
-    bottom: '100%',
-    left: 0,
-    marginBottom: spacing.xs,
-    backgroundColor: 'rgba(20, 20, 30, 0.95)',
-    borderRadius: borderRadius.md,
-    borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.1)',
-    overflow: 'hidden',
-    minWidth: 140,
-    // @ts-ignore
-    backdropFilter: 'blur(20px)',
-    boxShadow: '0 -10px 40px rgba(0, 0, 0, 0.5)',
-    zIndex: 100,
-  },
-  languageOption: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing.sm,
-    paddingVertical: spacing.sm,
-    paddingHorizontal: spacing.md,
-  },
-  languageOptionActive: {
-    backgroundColor: 'rgba(0, 217, 255, 0.1)',
-  },
-  languageOptionFlag: {
-    fontSize: 16,
-  },
-  languageOptionText: {
-    fontSize: 13,
-    color: colors.textSecondary,
-  },
-  languageOptionTextActive: {
-    color: colors.primary,
-    fontWeight: '600',
   },
   bottomLinks: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: spacing.sm,
+    gap: spacing.xs,
   },
   bottomLinksRTL: {
     flexDirection: 'row-reverse',
   },
   bottomLink: {
-    fontSize: 13,
+    fontSize: 10,
     color: colors.textMuted,
   },
   bottomDivider: {
     color: colors.textMuted,
-    fontSize: 13,
+    fontSize: 10,
   },
 });

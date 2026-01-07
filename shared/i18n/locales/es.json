@@ -26,7 +26,8 @@
     "apply": "Aplicar",
     "errors": {
       "unexpected": "Ocurrió un error inesperado"
-    }
+    },
+    "send": "Enviar"
   },
   "login": {
     "title": "Bienvenido de Nuevo",
@@ -128,6 +129,7 @@
     "liveTV": "TV en Vivo",
     "radio": "Radio",
     "podcasts": "Podcasts",
+    "flows": "Flujos",
     "judaism": "Judaísmo",
     "children": "Niños",
     "profile": "Perfil",
@@ -284,6 +286,43 @@
     "guest": "Invitado",
     "premium": "Premium",
     "basic": "Básico"
+  },
+  "flows": {
+    "title": "Flujos",
+    "subtitle": "Experiencias de contenido personalizadas para cada momento",
+    "activeNow": "Activo Ahora",
+    "start": "Iniciar",
+    "skipToday": "Saltar Hoy",
+    "systemFlows": "Flujos Predefinidos",
+    "customFlows": "Mis Flujos",
+    "system": "Sistema",
+    "noCustomFlows": "Aún no hay flujos personalizados",
+    "createHint": "Crea tu primer flujo personalizado",
+    "createCustom": "Crear Flujo Personalizado",
+    "createFlow": "Crear Flujo",
+    "editFlow": "Editar Flujo",
+    "type": "Tipo",
+    "systemFlow": "Flujo del Sistema",
+    "customFlow": "Flujo Personalizado",
+    "schedule": "Horario",
+    "content": "Contenido",
+    "items": "elementos",
+    "aiGenerated": "Generado por AI",
+    "autoPlay": "Auto Reproducir",
+    "aiEnabled": "Resumen AI",
+    "shabbatTrigger": "Noche de Shabat",
+    "manual": "Manual",
+    "flowName": "Nombre del Flujo",
+    "flowNamePlaceholder": "ej., Mi Rutina Matutina",
+    "description": "Descripción",
+    "descriptionPlaceholder": "¿Para qué es este flujo?",
+    "startTime": "Hora de Inicio",
+    "endTime": "Hora de Fin",
+    "actions": "Acciones",
+    "details": "Detalles",
+    "createFlowDesc": "Diseña tu experiencia personalizada",
+    "startFlow": "Iniciar Flujo",
+    "deleteFlow": "Eliminar Flujo"
   },
   "profile": {
     "profileDetails": "Detalles del Perfil",
@@ -468,6 +507,7 @@
       }
     },
     "plans": {
+      "title": "Gestión de Planes",
       "subtitle": "Configurar y gestionar planes de suscripción",
       "createButton": "Nuevo Plan",
       "inactive": "Inactivo",
@@ -527,7 +567,8 @@
         "subjectPlaceholder": "Asunto que verán los destinatarios",
         "body": "Contenido",
         "bodyPlaceholder": "Contenido del correo...",
-        "submitButton": "Crear Campaña"
+        "submitButton": "Crear Campaña",
+        "requiredFields": "Se requieren nombre y asunto"
       },
       "testModal": {
         "title": "Enviar Correo de Prueba",
@@ -545,10 +586,34 @@
       "timeAgo": {
         "minutes": "hace {{count}} minutos",
         "hours": "hace {{count}} horas"
-      }
+      },
+      "title": "Panel de Control",
+      "users": "Usuarios",
+      "revenue": "Ingresos",
+      "subscriptions": "Suscripciones",
+      "recentActivity": "Actividad Reciente",
+      "quickActions": "Acciones Rápidas"
     },
     "common": {
       "all": "Todos"
+    },
+    "stats": {
+      "totalUsers": "Total de Usuarios",
+      "activeUsers": "Usuarios Activos",
+      "newToday": "Nuevos Hoy",
+      "newThisWeek": "Nuevos Esta Semana",
+      "totalRevenue": "Ingresos Totales",
+      "revenueToday": "Ingresos Hoy",
+      "revenueMonth": "Ingresos Este Mes",
+      "arpu": "ARPU",
+      "activeSubscriptions": "Suscripciones Activas",
+      "churnRate": "Tasa de Pérdida"
+    },
+    "actions": {
+      "addUser": "Agregar Usuario",
+      "newCampaign": "Nueva Campaña",
+      "sendEmail": "Enviar Correo",
+      "viewReports": "Ver Reportes"
     }
   },
   "watchParty": {

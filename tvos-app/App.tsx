@@ -1,14 +1,13 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect } from 'react';
 import { StatusBar, LogBox, View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
-import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import { createStackNavigator } from '@react-navigation/stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { I18nextProvider, useTranslation } from 'react-i18next';
 import i18n, { loadSavedLanguage } from '@bayit/shared-i18n';
-import { useDirection } from '@bayit/shared-hooks';
 import {
-  // HomeScreen,  // Temporarily disabled to test
+  HomeScreen,
   PlayerScreen,
   LoginScreen,
   LiveTVScreen,
@@ -27,7 +26,6 @@ import {
   FlowsScreen,
   JudaismScreen,
 } from '@bayit/shared-screens';
-import { TestHomeScreen as HomeScreen } from './src/screens/TestHomeScreen';
 import { ProfileProvider } from '@bayit/shared-contexts';
 import { ModalProvider } from '@bayit/shared-contexts';
 
@@ -35,36 +33,7 @@ import { ModalProvider } from '@bayit/shared-contexts';
 LogBox.ignoreLogs([
   'ViewPropTypes will be removed',
   'ColorPropType will be removed',
-  'right operand of',
 ]);
-
-// Error Boundary to catch rendering errors
-class ErrorBoundary extends React.Component<{children: React.ReactNode}, {hasError: boolean, error: any}> {
-  constructor(props: {children: React.ReactNode}) {
-    super(props);
-    this.state = { hasError: false, error: null };
-  }
-
-  static getDerivedStateFromError(error: any) {
-    return { hasError: true, error };
-  }
-
-  componentDidCatch(error: any, errorInfo: any) {
-    console.log('Error caught by boundary:', error, errorInfo);
-  }
-
-  render() {
-    if (this.state.hasError) {
-      return (
-        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: '#0d0d1a' }}>
-          <Text style={{ color: 'white', fontSize: 24 }}>Something went wrong</Text>
-          <Text style={{ color: '#666', fontSize: 14, marginTop: 16 }}>{String(this.state.error)}</Text>
-        </View>
-      );
-    }
-    return this.props.children;
-  }
-}
 
 export type RootStackParamList = {
   Login: undefined;
@@ -95,7 +64,7 @@ export type MainTabParamList = {
   Profile: undefined;
 };
 
-const Stack = createNativeStackNavigator<RootStackParamList>();
+const Stack = createStackNavigator<RootStackParamList>();
 const Tab = createBottomTabNavigator<MainTabParamList>();
 
 // Custom Tab Bar for Apple TV
@@ -226,8 +195,7 @@ const AppContent: React.FC = () => {
       <Stack.Navigator
         screenOptions={{
           headerShown: false,
-          animation: 'fade',
-          contentStyle: { backgroundColor: '#0d0d1a' },
+          cardStyle: { backgroundColor: '#0d0d1a' },
         }}
         initialRouteName="Main"
       >
@@ -252,20 +220,21 @@ const AppContent: React.FC = () => {
 function App(): React.JSX.Element {
   useEffect(() => {
     loadSavedLanguage();
-    console.log('🎬 Bayit+ TV App starting...');
+    console.log('🎬 Bayit+ tvOS App starting...');
   }, []);
 
   return (
-    <ErrorBoundary>
-      <I18nextProvider i18n={i18n}>
-        <SafeAreaProvider>
-          {/* Temporarily remove ModalProvider and ProfileProvider to test */}
-          <NavigationContainer>
-            <AppContent />
-          </NavigationContainer>
-        </SafeAreaProvider>
-      </I18nextProvider>
-    </ErrorBoundary>
+    <I18nextProvider i18n={i18n}>
+      <SafeAreaProvider>
+        <ModalProvider>
+          <ProfileProvider>
+            <NavigationContainer>
+              <AppContent />
+            </NavigationContainer>
+          </ProfileProvider>
+        </ModalProvider>
+      </SafeAreaProvider>
+    </I18nextProvider>
   );
 }
 

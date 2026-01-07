@@ -26,7 +26,8 @@
     "apply": "Apply",
     "errors": {
       "unexpected": "An unexpected error occurred"
-    }
+    },
+    "send": "Send"
   },
   "hero": {
     "watch": "Watch",
@@ -107,34 +108,25 @@
   },
   "register": {
     "title": "Create Account",
-    "subtitle": "Join Bayit+ and start watching",
-    "name": "Full Name",
-    "namePlaceholder": "Enter your full name",
+    "fullName": "Full Name",
     "email": "Email",
-    "emailPlaceholder": "Enter your email",
     "password": "Password",
-    "passwordPlaceholder": "At least 8 characters",
     "confirmPassword": "Confirm Password",
-    "confirmPasswordPlaceholder": "Re-enter your password",
-    "acceptTerms": "I agree to the",
-    "termsOfService": "Terms of Service",
-    "and": "and",
-    "privacyPolicy": "Privacy Policy",
-    "submit": "Create Account",
-    "registering": "Creating account...",
-    "continueWithGoogle": "Continue with Google",
+    "submit": "Sign Up",
+    "registering": "Signing up...",
     "haveAccount": "Already have an account?",
-    "signIn": "Sign In",
+    "loginLink": "Login",
+    "placeholders": {
+      "fullName": "John Doe",
+      "email": "your@email.com",
+      "password": "At least 8 characters",
+      "confirmPassword": "Enter password again"
+    },
     "errors": {
-      "nameRequired": "Name is required",
-      "emailRequired": "Email is required",
-      "passwordRequired": "Password is required",
       "fillAllFields": "Please fill in all fields",
       "passwordMismatch": "Passwords do not match",
       "passwordTooShort": "Password must be at least 8 characters",
-      "acceptTerms": "You must accept the terms and conditions",
-      "registrationFailed": "Registration failed. Please try again.",
-      "googleFailed": "Google sign-up failed. Please try again."
+      "registrationFailed": "Registration failed. Please try again."
     }
   },
   "nav": {
@@ -143,6 +135,7 @@
     "liveTV": "Live TV",
     "radio": "Radio",
     "podcasts": "Podcasts",
+    "flows": "Flows",
     "judaism": "Judaism",
     "children": "Kids",
     "profile": "Profile",
@@ -300,73 +293,76 @@
     "premium": "Premium",
     "basic": "Basic"
   },
+  "flows": {
+    "title": "Flows",
+    "subtitle": "Personalized content experiences for every moment",
+    "activeNow": "Active Now",
+    "start": "Start",
+    "skipToday": "Skip Today",
+    "systemFlows": "Ready-Made Flows",
+    "customFlows": "My Flows",
+    "system": "System",
+    "noCustomFlows": "No custom flows yet",
+    "createHint": "Create your first personalized flow",
+    "createCustom": "Create Custom Flow",
+    "createFlow": "Create Flow",
+    "editFlow": "Edit Flow",
+    "type": "Type",
+    "systemFlow": "System Flow",
+    "customFlow": "Custom Flow",
+    "schedule": "Schedule",
+    "content": "Content",
+    "items": "items",
+    "aiGenerated": "AI Generated",
+    "autoPlay": "Auto Play",
+    "aiEnabled": "AI Brief",
+    "shabbatTrigger": "Shabbat Evening",
+    "manual": "Manual",
+    "flowName": "Flow Name",
+    "flowNamePlaceholder": "e.g., My Morning Routine",
+    "description": "Description",
+    "descriptionPlaceholder": "What is this flow for?",
+    "startTime": "Start Time",
+    "endTime": "End Time",
+    "actions": "Actions",
+    "details": "Details",
+    "createFlowDesc": "Design your personalized experience",
+    "startFlow": "Start Flow",
+    "deleteFlow": "Delete Flow"
+  },
   "profile": {
-    "title": "Account Settings",
-    "tabs": {
-      "personal": "Profile",
-      "billing": "Billing",
-      "subscription": "Subscription",
-      "notifications": "Notifications",
-      "security": "Security"
+    "profileDetails": "Profile Details",
+    "name": "Name",
+    "notSet": "Not set",
+    "email": "Email",
+    "editProfile": "Edit Profile",
+    "notificationSettings": "Notification Settings",
+    "security": "Security",
+    "changePassword": "Change Password",
+    "updatePassword": "Update your password",
+    "connectedDevices": "Connected Devices",
+    "manageDevices": "Manage devices connected to your account",
+    "twoFactorAuth": "Two-Factor Authentication",
+    "addExtraSecurity": "Add an extra layer of security",
+    "address": {
+      "line1": "123 Main Street",
+      "line2": "Tel Aviv, Israel 6100000"
     },
-    "billing": {
-      "paymentMethods": "Payment Methods",
-      "addCard": "Add Card",
-      "expires": "Expires:",
-      "default": "Default",
-      "history": "Billing History",
-      "date": "Date",
-      "description": "Description",
-      "amount": "Amount",
-      "status": "Status",
-      "paid": "Paid",
-      "pending": "Pending",
-      "downloadInvoices": "Download Invoices",
-      "billingAddress": "Billing Address",
-      "editAddress": "Edit Address",
-      "noPaymentMethods": "No payment methods added",
-      "noHistory": "No billing history"
+    "free": "Free",
+    "premiumPrice": "$7.99/month",
+    "familyPrice": "$12.99/month",
+    "remaining": "remaining",
+    "notifications": {
+      "newContent": "New Content",
+      "newContentDesc": "Get notified about new content",
+      "liveEvents": "Live Events",
+      "liveEventsDesc": "Get notified about special live broadcasts",
+      "recommendations": "Recommendations",
+      "recommendationsDesc": "Get personalized recommendations",
+      "updates": "System Updates",
+      "updatesDesc": "Get notified about system changes"
     },
-    "subscription": {
-      "currentPlan": "Current Plan",
-      "status": "Status",
-      "active": "Active",
-      "renewsOn": "Renews on",
-      "noActivePlan": "No active subscription",
-      "availablePlans": "Available Plans",
-      "choosePlan": "Choose the plan that suits you",
-      "recommended": "Recommended",
-      "selectPlan": "Select Plan",
-      "manageSubscription": "Manage Subscription",
-      "cancelSubscription": "Cancel Subscription",
-      "cancelNote": "Cancellation will take effect at the end of the current billing period"
-    },
-    "plans": {
-      "basic": {
-        "name": "Basic",
-        "price": "Free",
-        "feature1": "Access to basic content",
-        "feature2": "SD quality",
-        "feature3": "1 device"
-      },
-      "premium": {
-        "name": "Premium",
-        "price": "$7.99/month",
-        "feature1": "Access to all content",
-        "feature2": "HD quality",
-        "feature3": "Up to 3 devices",
-        "feature4": "No ads"
-      },
-      "family": {
-        "name": "Family",
-        "price": "$12.99/month",
-        "feature1": "Access to all content",
-        "feature2": "4K quality",
-        "feature3": "Up to 6 devices",
-        "feature4": "No ads",
-        "feature5": "Kids profiles"
-      }
-    }
+    "morningRitual": "Morning Ritual"
   },
   "settings": {
     "title": "Settings",
@@ -405,40 +401,6 @@
     "noPodcasts": "No podcasts available",
     "tryLater": "Try again later",
     "noResults": "No results found"
-  },
-  "profile": {
-    "profileDetails": "Profile Details",
-    "name": "Name",
-    "notSet": "Not set",
-    "email": "Email",
-    "editProfile": "Edit Profile",
-    "notificationSettings": "Notification Settings",
-    "security": "Security",
-    "changePassword": "Change Password",
-    "updatePassword": "Update your password",
-    "connectedDevices": "Connected Devices",
-    "manageDevices": "Manage devices connected to your account",
-    "twoFactorAuth": "Two-Factor Authentication",
-    "addExtraSecurity": "Add an extra layer of security",
-    "address": {
-      "line1": "123 Main Street",
-      "line2": "Tel Aviv, Israel 6100000"
-    },
-    "free": "Free",
-    "premiumPrice": "$7.99/month",
-    "familyPrice": "$12.99/month",
-    "remaining": "remaining",
-    "notifications": {
-      "newContent": "New Content",
-      "newContentDesc": "Get notified about new content",
-      "liveEvents": "Live Events",
-      "liveEventsDesc": "Get notified about special live broadcasts",
-      "recommendations": "Recommendations",
-      "recommendationsDesc": "Get personalized recommendations",
-      "updates": "System Updates",
-      "updatesDesc": "Get notified about system changes"
-    },
-    "morningRitual": "Morning Ritual"
   },
   "content": {
     "episodes": "episodes"
@@ -627,29 +589,6 @@
       "conclusion": "Conclusion"
     }
   },
-  "register": {
-    "title": "Create Account",
-    "fullName": "Full Name",
-    "email": "Email",
-    "password": "Password",
-    "confirmPassword": "Confirm Password",
-    "submit": "Sign Up",
-    "registering": "Signing up...",
-    "haveAccount": "Already have an account?",
-    "loginLink": "Login",
-    "placeholders": {
-      "fullName": "John Doe",
-      "email": "your@email.com",
-      "password": "At least 8 characters",
-      "confirmPassword": "Enter password again"
-    },
-    "errors": {
-      "fillAllFields": "Please fill in all fields",
-      "passwordMismatch": "Passwords do not match",
-      "passwordTooShort": "Password must be at least 8 characters",
-      "registrationFailed": "Registration failed. Please try again."
-    }
-  },
   "admin": {
     "refunds": {
       "subtitle": "Manage refund requests",
@@ -691,6 +630,7 @@
       }
     },
     "plans": {
+      "title": "Plan Management",
       "subtitle": "Configure and manage subscription plans",
       "createButton": "New Plan",
       "inactive": "Inactive",
@@ -750,7 +690,8 @@
         "subjectPlaceholder": "Subject shown to recipients",
         "body": "Content",
         "bodyPlaceholder": "Email content...",
-        "submitButton": "Create Campaign"
+        "submitButton": "Create Campaign",
+        "requiredFields": "Name and subject are required"
       },
       "testModal": {
         "title": "Send Test Email",
@@ -768,10 +709,34 @@
       "timeAgo": {
         "minutes": "{{count}} minutes ago",
         "hours": "{{count}} hours ago"
-      }
+      },
+      "title": "Dashboard",
+      "users": "Users",
+      "revenue": "Revenue",
+      "subscriptions": "Subscriptions",
+      "recentActivity": "Recent Activity",
+      "quickActions": "Quick Actions"
     },
     "common": {
       "all": "All"
+    },
+    "stats": {
+      "totalUsers": "Total Users",
+      "activeUsers": "Active Users",
+      "newToday": "New Today",
+      "newThisWeek": "New This Week",
+      "totalRevenue": "Total Revenue",
+      "revenueToday": "Revenue Today",
+      "revenueMonth": "Revenue This Month",
+      "arpu": "ARPU",
+      "activeSubscriptions": "Active Subscriptions",
+      "churnRate": "Churn Rate"
+    },
+    "actions": {
+      "addUser": "Add User",
+      "newCampaign": "New Campaign",
+      "sendEmail": "Send Email",
+      "viewReports": "View Reports"
     }
   }
 }

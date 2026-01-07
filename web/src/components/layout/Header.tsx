@@ -14,6 +14,7 @@ const navLinkKeys = [
   { to: '/vod', key: 'nav.vod' },
   { to: '/radio', key: 'nav.radio' },
   { to: '/podcasts', key: 'nav.podcasts' },
+  { to: '/flows', key: 'nav.flows' },
   { to: '/judaism', key: 'nav.judaism' },
   { to: '/children', key: 'nav.children' },
 ];

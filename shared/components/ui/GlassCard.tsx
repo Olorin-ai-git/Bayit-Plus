@@ -28,6 +28,8 @@ interface GlassCardProps {
   showPlayIcon?: boolean;
   progress?: number;
   hasTVPreferredFocus?: boolean;
+  /** When true, bypasses default width/height for custom sizing (e.g., modals) */
+  autoSize?: boolean;
 }
 
 export const GlassCard: React.FC<GlassCardProps> = ({
@@ -44,6 +46,7 @@ export const GlassCard: React.FC<GlassCardProps> = ({
   showPlayIcon = false,
   progress,
   hasTVPreferredFocus = false,
+  autoSize = false,
 }) => {
   const [isFocused, setIsFocused] = useState(false);
   const scaleAnim = useRef(new Animated.Value(1)).current;
@@ -71,8 +74,9 @@ export const GlassCard: React.FC<GlassCardProps> = ({
   };
 
   // Only show image/placeholder area when being used as a full card (has title or imageUrl)
-  // When only children are passed, act as a simple wrapper
   const isFullCard = title || subtitle || imageUrl;
+  // Use autoSize prop to explicitly bypass default dimensions (for modals, custom layouts)
+  const shouldBypassDimensions = autoSize;
 
   const cardContent = (
     <>
@@ -141,7 +145,7 @@ export const GlassCard: React.FC<GlassCardProps> = ({
       onFocus={handleFocus}
       onBlur={handleBlur}
       activeOpacity={0.9}
-      style={[styles.touchable, { width }]}
+      style={[!shouldBypassDimensions && styles.touchable, !shouldBypassDimensions && { width }]}
       // @ts-ignore - TV-specific prop
       hasTVPreferredFocus={hasTVPreferredFocus}
     >
@@ -154,7 +158,7 @@ export const GlassCard: React.FC<GlassCardProps> = ({
         <GlassView
           style={[
             styles.card,
-            { width, minHeight: height },
+            !shouldBypassDimensions && { width, minHeight: height },
             isFocused && styles.cardFocused,
             style,
           ]}
