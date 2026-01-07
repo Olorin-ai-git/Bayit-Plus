@@ -6,6 +6,8 @@
  * PRODUCTION MODE: Uses only API data, fails fast, no mocks
  */
 
+import logger from '@/utils/logger';
+
 // Set this based on environment or build flag
 export const APP_MODE = import.meta.env.VITE_APP_MODE || 'demo';
 
@@ -49,6 +51,6 @@ export const config = {
 };
 
 // Log mode on startup
-console.log(`🎬 Bayit+ running in ${APP_MODE.toUpperCase()} mode`);
+logger.info(`Bayit+ running in ${APP_MODE.toUpperCase()} mode`, 'appConfig');
 
 export default config;

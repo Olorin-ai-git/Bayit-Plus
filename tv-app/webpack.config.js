@@ -9,10 +9,14 @@ const babelLoaderConfiguration = {
     path.resolve(__dirname, 'src'),
     path.resolve(__dirname, 'App.tsx'),
     path.resolve(__dirname, 'index.web.js'),
+    path.resolve(__dirname, '../shared/components'),
   ],
   use: {
     loader: 'babel-loader',
     options: {
+      // Don't use babel.config.js (it has NativeWind which is native-only)
+      babelrc: false,
+      configFile: false,
       presets: [
         ['@babel/preset-env', { loose: true, modules: false }],
         ['@babel/preset-react', { runtime: 'automatic' }],
@@ -36,6 +40,8 @@ const nodeModulesConfiguration = {
   use: {
     loader: 'babel-loader',
     options: {
+      babelrc: false,
+      configFile: false,
       presets: [
         ['@babel/preset-env', {
           loose: true,
@@ -43,6 +49,8 @@ const nodeModulesConfiguration = {
           targets: { browsers: ['last 2 versions'] }
         }],
         ['@babel/preset-react', { runtime: 'automatic' }],
+        '@babel/preset-typescript',
+        '@babel/preset-flow',
       ],
       plugins: [
         'react-native-web',
@@ -60,6 +68,11 @@ const imageLoaderConfiguration = {
 const fontLoaderConfiguration = {
   test: /\.(woff|woff2|eot|ttf|otf)$/,
   type: 'asset/resource',
+};
+
+const cssLoaderConfiguration = {
+  test: /\.css$/,
+  use: ['style-loader', 'css-loader', 'postcss-loader'],
 };
 
 // Fix for ESM modules that don't specify extensions
@@ -85,7 +98,14 @@ module.exports = {
       'react-native-linear-gradient': 'react-native-web-linear-gradient',
       // AsyncStorage web shim
       '@react-native-async-storage/async-storage': path.resolve(__dirname, 'src/utils/asyncStorageWeb.ts'),
+      // Shared components
+      '@bayit/shared': path.resolve(__dirname, '../shared/components'),
     },
+    // Allow shared components to resolve node_modules from this directory
+    modules: [
+      path.resolve(__dirname, 'node_modules'),
+      'node_modules',
+    ],
   },
   module: {
     rules: [
@@ -93,6 +113,7 @@ module.exports = {
       nodeModulesConfiguration,
       imageLoaderConfiguration,
       fontLoaderConfiguration,
+      cssLoaderConfiguration,
       esmFixConfiguration,
     ],
   },

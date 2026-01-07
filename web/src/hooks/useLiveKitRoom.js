@@ -6,6 +6,7 @@ import {
   createLocalAudioTrack,
   ConnectionState,
 } from 'livekit-client'
+import logger from '@/utils/logger'
 
 /**
  * useLiveKitRoom hook
@@ -138,7 +139,7 @@ export function useLiveKitRoom(options = {}) {
       updateParticipants()
 
     } catch (err) {
-      console.error('Failed to connect to LiveKit room:', err)
+      logger.error('Failed to connect to LiveKit room', 'useLiveKitRoom', err)
       setError(err.message || 'Connection failed')
       onError?.(err)
     } finally {
@@ -184,7 +185,7 @@ export function useLiveKitRoom(options = {}) {
         await localParticipant.publishTrack(track)
         setIsMuted(false)
       } catch (err) {
-        console.error('Failed to enable microphone:', err)
+        logger.error('Failed to enable microphone', 'useLiveKitRoom', err)
         setError('Failed to enable microphone')
         onError?.(err)
       }

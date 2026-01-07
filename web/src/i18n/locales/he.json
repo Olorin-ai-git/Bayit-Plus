@@ -108,5 +108,71 @@
       "connecting": "מתחבר לשמע...",
       "noAudio": "שמע לא זמין"
     }
+  },
+  "favorites": {
+    "title": "מועדפים",
+    "items": "פריטים",
+    "empty": "אין מועדפים",
+    "emptyHint": "הוסף תוכן למועדפים כדי לגשת אליו בקלות"
+  },
+  "downloads": {
+    "title": "הורדות",
+    "items": "פריטים",
+    "storage": "שטח אחסון",
+    "empty": "אין הורדות",
+    "emptyHint": "הורד תוכן לצפייה במצב לא מקוון"
+  },
+  "admin": {
+    "titles": {
+      "dashboard": "לוח בקרה",
+      "users": "ניהול משתמשים",
+      "campaigns": "קמפיינים",
+      "billing": "חיוב",
+      "subscriptions": "מנויים",
+      "settings": "הגדרות",
+      "logs": "יומני פעילות"
+    },
+    "nav": {
+      "dashboard": "לוח בקרה",
+      "users": "משתמשים",
+      "campaigns": "קמפיינים",
+      "billing": "חיוב",
+      "billingOverview": "סקירת חיוב",
+      "transactions": "עסקאות",
+      "refunds": "החזרים",
+      "subscriptions": "מנויים",
+      "subscriptionsList": "רשימת מנויים",
+      "plans": "תוכניות",
+      "marketing": "שיווק",
+      "emailCampaigns": "קמפיינים במייל",
+      "pushNotifications": "התראות פוש",
+      "settings": "הגדרות",
+      "auditLogs": "יומני פעילות"
+    },
+    "dashboard": {
+      "users": "משתמשים",
+      "revenue": "הכנסות",
+      "subscriptions": "מנויים",
+      "recentActivity": "פעילות אחרונה",
+      "quickActions": "פעולות מהירות"
+    },
+    "stats": {
+      "totalUsers": "סה״כ משתמשים",
+      "activeUsers": "משתמשים פעילים",
+      "newToday": "חדשים היום",
+      "newThisWeek": "חדשים השבוע",
+      "totalRevenue": "סה״כ הכנסות",
+      "revenueToday": "הכנסות היום",
+      "revenueMonth": "הכנסות החודש",
+      "arpu": "הכנסה ממוצעת למשתמש",
+      "activeSubscriptions": "מנויים פעילים",
+      "churnRate": "שיעור נטישה"
+    },
+    "actions": {
+      "addUser": "הוסף משתמש",
+      "newCampaign": "קמפיין חדש",
+      "sendEmail": "שלח אימייל",
+      "viewReports": "צפה בדוחות"
+    }
   }
 }

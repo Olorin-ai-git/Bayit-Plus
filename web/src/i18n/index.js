@@ -1,5 +1,6 @@
 import i18n from 'i18next'
 import { initReactI18next } from 'react-i18next'
+import logger from '@/utils/logger'
 
 import he from './locales/he.json'
 import en from './locales/en.json'
@@ -38,7 +39,7 @@ export const loadSavedLanguage = () => {
       i18n.changeLanguage(savedLang)
     }
   } catch (error) {
-    console.log('Error loading saved language:', error)
+    logger.debug('Error loading saved language', 'i18n', error)
   }
 }
 
@@ -47,7 +48,7 @@ export const saveLanguage = (lang) => {
     localStorage.setItem(LANGUAGE_KEY, lang)
     i18n.changeLanguage(lang)
   } catch (error) {
-    console.log('Error saving language:', error)
+    logger.debug('Error saving language', 'i18n', error)
   }
 }
 

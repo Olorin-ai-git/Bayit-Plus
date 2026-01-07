@@ -1,9 +1,24 @@
-export { default as GlassButton } from './GlassButton';
-export { default as GlassInput } from './GlassInput';
-export { default as GlassSelect } from './GlassSelect';
-export { default as GlassTextarea } from './GlassTextarea';
-export { default as GlassCheckbox } from './GlassCheckbox';
-export { default as GlassCard } from './GlassCard';
-export { default as GlassModal } from './GlassModal';
-export { default as GlassBadge } from './GlassBadge';
-export { default as GlassTabs } from './GlassTabs';
+/**
+ * Web App UI Components
+ * Re-exports shared components for backward compatibility
+ */
+
+// Re-export all shared Glass components
+export {
+  GlassView,
+  GlassCard,
+  GlassButton,
+  GlassInput,
+  GlassSelect,
+  GlassTextarea,
+  GlassCheckbox,
+  GlassModal,
+  GlassBadge,
+  GlassTabs,
+} from '@bayit/shared/ui';
+
+// Re-export types
+export type { GlassModalProps, ModalType, ModalButton } from '@bayit/shared/ui';
+
+// Keep AnimatedLogo locally (web-specific)
+export { default as AnimatedLogo } from './AnimatedLogo';

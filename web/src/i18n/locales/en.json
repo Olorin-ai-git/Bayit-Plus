@@ -108,5 +108,71 @@
       "connecting": "Connecting to audio...",
       "noAudio": "Audio not available"
     }
+  },
+  "favorites": {
+    "title": "Favorites",
+    "items": "items",
+    "empty": "No favorites",
+    "emptyHint": "Add content to favorites for easy access"
+  },
+  "downloads": {
+    "title": "Downloads",
+    "items": "items",
+    "storage": "Storage",
+    "empty": "No downloads",
+    "emptyHint": "Download content for offline viewing"
+  },
+  "admin": {
+    "titles": {
+      "dashboard": "Dashboard",
+      "users": "User Management",
+      "campaigns": "Campaigns",
+      "billing": "Billing",
+      "subscriptions": "Subscriptions",
+      "settings": "Settings",
+      "logs": "Audit Logs"
+    },
+    "nav": {
+      "dashboard": "Dashboard",
+      "users": "Users",
+      "campaigns": "Campaigns",
+      "billing": "Billing",
+      "billingOverview": "Billing Overview",
+      "transactions": "Transactions",
+      "refunds": "Refunds",
+      "subscriptions": "Subscriptions",
+      "subscriptionsList": "Subscription List",
+      "plans": "Plans",
+      "marketing": "Marketing",
+      "emailCampaigns": "Email Campaigns",
+      "pushNotifications": "Push Notifications",
+      "settings": "Settings",
+      "auditLogs": "Audit Logs"
+    },
+    "dashboard": {
+      "users": "Users",
+      "revenue": "Revenue",
+      "subscriptions": "Subscriptions",
+      "recentActivity": "Recent Activity",
+      "quickActions": "Quick Actions"
+    },
+    "stats": {
+      "totalUsers": "Total Users",
+      "activeUsers": "Active Users",
+      "newToday": "New Today",
+      "newThisWeek": "New This Week",
+      "totalRevenue": "Total Revenue",
+      "revenueToday": "Revenue Today",
+      "revenueMonth": "Revenue This Month",
+      "arpu": "ARPU",
+      "activeSubscriptions": "Active Subscriptions",
+      "churnRate": "Churn Rate"
+    },
+    "actions": {
+      "addUser": "Add User",
+      "newCampaign": "New Campaign",
+      "sendEmail": "Send Email",
+      "viewReports": "View Reports"
+    }
   }
 }

@@ -16,6 +16,8 @@ import {
   demoSubtitlesService,
   demoRitualService,
   demoPartyService,
+  demoFavoritesService,
+  demoDownloadsService,
 } from './demoService'
 
 const API_BASE_URL = import.meta.env.VITE_API_URL || '/api/v1'
@@ -252,6 +254,26 @@ const apiFlowsService = {
   getFlowContent: (flowId) => api.get(`/flows/${flowId}/content`),
 }
 
+// Favorites Service (API)
+const apiFavoritesService = {
+  getFavorites: () => api.get('/favorites'),
+  addFavorite: (contentId, contentType) =>
+    api.post('/favorites', { content_id: contentId, content_type: contentType }),
+  removeFavorite: (contentId) => api.delete(`/favorites/${contentId}`),
+  isFavorite: (contentId) => api.get(`/favorites/${contentId}/check`),
+}
+
+// Downloads Service (API)
+const apiDownloadsService = {
+  getDownloads: () => api.get('/downloads'),
+  startDownload: (contentId, contentType, quality = 'hd') =>
+    api.post('/downloads', { content_id: contentId, content_type: contentType, quality }),
+  deleteDownload: (downloadId) => api.delete(`/downloads/${downloadId}`),
+  pauseDownload: (downloadId) => api.post(`/downloads/${downloadId}/pause`),
+  resumeDownload: (downloadId) => api.post(`/downloads/${downloadId}/resume`),
+  getDownloadProgress: (downloadId) => api.get(`/downloads/${downloadId}/progress`),
+}
+
 // Watch Party Service (API)
 const apiPartyService = {
   create: (data) => api.post('/party/create', data),
@@ -294,6 +316,8 @@ export const chaptersService = isDemo ? demoChaptersService : apiChaptersService
 export const subtitlesService = isDemo ? demoSubtitlesService : apiSubtitlesService
 export const ritualService = isDemo ? demoRitualService : apiRitualService
 export const partyService = isDemo ? demoPartyService : apiPartyService
+export const favoritesService = isDemo ? demoFavoritesService : apiFavoritesService
+export const downloadsService = isDemo ? demoDownloadsService : apiDownloadsService
 export const profilesService = apiProfilesService // No demo mode for profiles - requires real auth
 export const childrenService = apiChildrenService // No demo mode for children
 export const judaismService = apiJudaismService // No demo mode for judaism

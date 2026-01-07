@@ -1,5 +1,6 @@
 import { create } from 'zustand'
 import { partyService } from '../services/api'
+import logger from '@/utils/logger'
 
 const API_BASE_URL = import.meta.env.VITE_API_URL || '/api/v1'
 const WS_BASE_URL = API_BASE_URL.replace('http', 'ws')
@@ -93,7 +94,7 @@ export const useWatchPartyStore = create((set, get) => ({
     }
 
     ws.onerror = (error) => {
-      console.error('WebSocket error:', error)
+      logger.error('WebSocket error', 'watchPartyStore', error)
       set({ error: 'Connection error', isConnecting: false })
     }
 
@@ -199,7 +200,7 @@ export const useWatchPartyStore = create((set, get) => ({
         break
 
       default:
-        console.log('Unknown message type:', type)
+        logger.debug('Unknown message type', 'watchPartyStore', { type })
     }
   },
 
@@ -265,7 +266,7 @@ export const useWatchPartyStore = create((set, get) => ({
       try {
         await partyService.leaveParty(party.id)
       } catch (error) {
-        console.error('Failed to leave party:', error)
+        logger.error('Failed to leave party', 'watchPartyStore', error)
       }
     }
 
@@ -320,7 +321,7 @@ export const useWatchPartyStore = create((set, get) => ({
       const messages = await partyService.getChatHistory(party.id, 50)
       set({ messages: messages || [] })
     } catch (error) {
-      console.error('Failed to load chat history:', error)
+      logger.error('Failed to load chat history', 'watchPartyStore', error)
     }
   },
 

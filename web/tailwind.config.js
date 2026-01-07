@@ -1,3 +1,21 @@
+/**
+ * Bayit+ Web App - Tailwind Config
+ * Uses shared design tokens for consistency with TV app
+ */
+
+// Import shared design tokens
+import {
+  primary,
+  secondary,
+  dark,
+  success,
+  warning,
+  error,
+} from '../shared/design-tokens/colors.js'
+import { fontFamily } from '../shared/design-tokens/typography.js'
+import { boxShadow } from '../shared/design-tokens/shadows.js'
+import { keyframes, animation } from '../shared/design-tokens/animations.js'
+
 /** @type {import('tailwindcss').Config} */
 export default {
   content: [
@@ -7,62 +25,22 @@ export default {
   theme: {
     extend: {
       colors: {
-        primary: {
-          50: '#eff6ff',
-          100: '#dbeafe',
-          200: '#bfdbfe',
-          300: '#93c5fd',
-          400: '#60a5fa',
-          500: '#3b82f6',
-          600: '#2563eb',
-          700: '#1d4ed8',
-          800: '#1e40af',
-          900: '#1e3a8a',
-        },
-        accent: {
-          50: '#fdf4ff',
-          100: '#fae8ff',
-          200: '#f5d0fe',
-          300: '#f0abfc',
-          400: '#e879f9',
-          500: '#d946ef',
-          600: '#c026d3',
-          700: '#a21caf',
-          800: '#86198f',
-          900: '#701a75',
-        },
-        dark: {
-          50: '#f8fafc',
-          100: '#f1f5f9',
-          200: '#e2e8f0',
-          300: '#cbd5e1',
-          400: '#94a3b8',
-          500: '#64748b',
-          600: '#475569',
-          700: '#334155',
-          800: '#1e293b',
-          900: '#0f172a',
-          950: '#020617',
-        },
-        success: {
-          400: '#4ade80',
-          500: '#22c55e',
-          600: '#16a34a',
-        },
-        danger: {
-          400: '#f87171',
-          500: '#ef4444',
-          600: '#dc2626',
-        },
-        warning: {
+        // Brand colors from shared tokens
+        primary,
+        secondary,
+        dark,
+        success,
+        warning,
+        error,
+        // Aliases
+        purple: secondary,
+        green: success,
+        red: error,
+        // Amber for warnings
+        amber: {
           400: '#fbbf24',
           500: '#f59e0b',
           600: '#d97706',
-        },
-        purple: {
-          400: '#c084fc',
-          500: '#a855f7',
-          600: '#9333ea',
         },
       },
       fontFamily: {

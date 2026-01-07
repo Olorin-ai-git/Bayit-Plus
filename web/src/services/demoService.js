@@ -742,17 +742,106 @@ export const demoFavoritesService = {
     await delay();
     return { items: demoSeries.slice(0, 4) };
   },
-  addToFavorites: async (contentId, contentType) => {
+  addFavorite: async (contentId, contentType) => {
     await delay();
     return { message: 'Added to favorites' };
   },
-  removeFromFavorites: async (contentId) => {
+  removeFavorite: async (contentId) => {
     await delay();
     return { message: 'Removed from favorites' };
   },
   isFavorite: async (contentId) => {
     await delay();
     return { is_favorite: Math.random() > 0.5 };
+  },
+};
+
+// ===========================================
+// DOWNLOADS SERVICE (Demo)
+// ===========================================
+export const demoDownloadsService = {
+  getDownloads: async () => {
+    await delay();
+    return {
+      items: [
+        {
+          id: 'dl-1',
+          title: 'פאודה - עונה 4',
+          title_en: 'Fauda - Season 4',
+          subtitle: 'פרק 1',
+          subtitle_en: 'Episode 1',
+          type: 'episode',
+          thumbnail: 'https://picsum.photos/seed/fauda/400/225',
+          size: '1.2 GB',
+          status: 'completed',
+          progress: 100,
+          downloaded_at: new Date().toISOString(),
+        },
+        {
+          id: 'dl-2',
+          title: 'שטיסל - עונה 3',
+          title_en: 'Shtisel - Season 3',
+          subtitle: 'פרק 5',
+          subtitle_en: 'Episode 5',
+          type: 'episode',
+          thumbnail: 'https://picsum.photos/seed/shtisel/400/225',
+          size: '980 MB',
+          status: 'completed',
+          progress: 100,
+          downloaded_at: new Date().toISOString(),
+        },
+        {
+          id: 'dl-3',
+          title: 'הבורר',
+          title_en: 'The Arbitrator',
+          type: 'movie',
+          thumbnail: 'https://picsum.photos/seed/borer/400/225',
+          size: '2.4 GB',
+          status: 'downloading',
+          progress: 67,
+        },
+        {
+          id: 'dl-4',
+          title: 'עכשיו בישראל - פודקאסט',
+          title_en: 'Now in Israel - Podcast',
+          subtitle: 'פרק 42',
+          subtitle_en: 'Episode 42',
+          type: 'podcast',
+          thumbnail: 'https://picsum.photos/seed/podcast1/400/225',
+          size: '45 MB',
+          status: 'completed',
+          progress: 100,
+          downloaded_at: new Date().toISOString(),
+        },
+      ],
+    };
+  },
+  startDownload: async (contentId, contentType, quality = 'hd') => {
+    await delay();
+    return {
+      id: 'dl-' + Date.now(),
+      content_id: contentId,
+      content_type: contentType,
+      quality,
+      status: 'downloading',
+      progress: 0,
+    };
+  },
+  deleteDownload: async (downloadId) => {
+    await delay();
+    return { message: 'Download deleted' };
+  },
+  pauseDownload: async (downloadId) => {
+    await delay();
+    return { message: 'Download paused' };
+  },
+  resumeDownload: async (downloadId) => {
+    await delay();
+    return { message: 'Download resumed' };
+  },
+  getDownloadProgress: async (downloadId) => {
+    await delay();
+    return { progress: Math.floor(Math.random() * 100) };
   },
 };
 
@@ -774,4 +863,5 @@ export default {
   party: demoPartyService,
   search: demoSearchService,
   favorites: demoFavoritesService,
+  downloads: demoDownloadsService,
 };

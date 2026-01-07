@@ -108,5 +108,71 @@
       "connecting": "Conectando audio...",
       "noAudio": "Audio no disponible"
     }
+  },
+  "favorites": {
+    "title": "Favoritos",
+    "items": "elementos",
+    "empty": "Sin favoritos",
+    "emptyHint": "Agrega contenido a favoritos para acceder fácilmente"
+  },
+  "downloads": {
+    "title": "Descargas",
+    "items": "elementos",
+    "storage": "Almacenamiento",
+    "empty": "Sin descargas",
+    "emptyHint": "Descarga contenido para ver sin conexión"
+  },
+  "admin": {
+    "titles": {
+      "dashboard": "Panel de Control",
+      "users": "Gestión de Usuarios",
+      "campaigns": "Campañas",
+      "billing": "Facturación",
+      "subscriptions": "Suscripciones",
+      "settings": "Configuración",
+      "logs": "Registros de Auditoría"
+    },
+    "nav": {
+      "dashboard": "Panel",
+      "users": "Usuarios",
+      "campaigns": "Campañas",
+      "billing": "Facturación",
+      "billingOverview": "Resumen de Facturación",
+      "transactions": "Transacciones",
+      "refunds": "Reembolsos",
+      "subscriptions": "Suscripciones",
+      "subscriptionsList": "Lista de Suscripciones",
+      "plans": "Planes",
+      "marketing": "Marketing",
+      "emailCampaigns": "Campañas de Email",
+      "pushNotifications": "Notificaciones Push",
+      "settings": "Configuración",
+      "auditLogs": "Registros de Auditoría"
+    },
+    "dashboard": {
+      "users": "Usuarios",
+      "revenue": "Ingresos",
+      "subscriptions": "Suscripciones",
+      "recentActivity": "Actividad Reciente",
+      "quickActions": "Acciones Rápidas"
+    },
+    "stats": {
+      "totalUsers": "Total de Usuarios",
+      "activeUsers": "Usuarios Activos",
+      "newToday": "Nuevos Hoy",
+      "newThisWeek": "Nuevos Esta Semana",
+      "totalRevenue": "Ingresos Totales",
+      "revenueToday": "Ingresos de Hoy",
+      "revenueMonth": "Ingresos del Mes",
+      "arpu": "ARPU",
+      "activeSubscriptions": "Suscripciones Activas",
+      "churnRate": "Tasa de Abandono"
+    },
+    "actions": {
+      "addUser": "Agregar Usuario",
+      "newCampaign": "Nueva Campaña",
+      "sendEmail": "Enviar Email",
+      "viewReports": "Ver Reportes"
+    }
   }
 }

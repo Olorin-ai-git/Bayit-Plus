@@ -1,0 +1,13 @@
+{
+  "name": "@bayit/shared-components",
+  "version": "1.0.0",
+  "description": "Shared components for Bayit+ web and TV apps",
+  "main": "index.ts",
+  "types": "index.ts",
+  "peerDependencies": {
+    "react": ">=18",
+    "react-native": ">=0.70",
+    "react-native-web": ">=0.19",
+    "react-native-linear-gradient": "*"
+  }
+}

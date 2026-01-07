@@ -29,7 +29,7 @@ if (Platform.OS !== 'web') {
 }
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
-import { contentService, liveService, historyService } from '../services/api';
+import { contentService, liveService, historyService, chaptersService } from '../services/api';
 import { useWatchPartyStore } from '../stores/watchPartyStore';
 import { useAuthStore } from '../stores/authStore';
 import {
@@ -38,6 +38,7 @@ import {
   WatchPartyJoinModal,
   WatchPartyOverlay,
 } from '../components/watchparty';
+import { ChaptersOverlay, Chapter } from '../components/player';
 
 export const PlayerScreen: React.FC = () => {
   const { t } = useTranslation();
@@ -78,6 +79,11 @@ export const PlayerScreen: React.FC = () => {
   const [showPartyOverlay, setShowPartyOverlay] = useState(false);
   const [isSynced, setIsSynced] = useState(true);
   const lastSyncRef = useRef(0);
+
+  // Chapters state
+  const [chapters, setChapters] = useState<Chapter[]>([]);
+  const [chaptersLoading, setChaptersLoading] = useState(false);
+  const [showChaptersOverlay, setShowChaptersOverlay] = useState(false);
 
   useEffect(() => {
     loadStream();
@@ -130,6 +136,8 @@ export const PlayerScreen: React.FC = () => {
       const url = response.url || response.stream_url;
       if (url) {
         setStreamUrl(url);
+        // Load chapters after stream URL is obtained
+        loadChapters();
       } else {
         setError(t('player.noStream', 'Stream not available'));
       }
@@ -139,6 +147,22 @@ export const PlayerScreen: React.FC = () => {
       setError(errorMessage);
     } finally {
       setIsLoading(false);
+    }
+  };
+
+  const loadChapters = async () => {
+    if (!id) return;
+    try {
+      setChaptersLoading(true);
+      const response = type === 'live'
+        ? await chaptersService.getLiveChapters(id)
+        : await chaptersService.getChapters(id);
+      setChapters(response.chapters || []);
+    } catch (err) {
+      console.error('Failed to load chapters:', err);
+      setChapters([]);
+    } finally {
+      setChaptersLoading(false);
     }
   };
 
@@ -233,6 +257,18 @@ export const PlayerScreen: React.FC = () => {
   const handleEndParty = async () => {
     await endParty();
     setShowPartyOverlay(false);
+  };
+
+  const handleChapterSeek = (time: number) => {
+    if (Platform.OS === 'web') {
+      const video = videoRef.current as HTMLVideoElement | null;
+      if (video) {
+        video.currentTime = time;
+      }
+    } else if (videoRef.current && 'seek' in videoRef.current) {
+      videoRef.current.seek(time);
+    }
+    showControlsTemporarily();
   };
 
   const progressPercentage = progress.duration > 0
@@ -330,16 +366,27 @@ export const PlayerScreen: React.FC = () => {
               <Text style={styles.backButtonText}>{t('player.back')}</Text>
             </TouchableOpacity>
             <Text style={styles.title}>{title}</Text>
-            {user && id && (
-              <View style={styles.partyButtonContainer}>
+            <View style={styles.topBarActions}>
+              {/* Chapters Button */}
+              {chapters.length > 0 && (
+                <TouchableOpacity
+                  style={styles.chaptersButton}
+                  onPress={() => setShowChaptersOverlay(!showChaptersOverlay)}
+                >
+                  <Text style={styles.chaptersButtonIcon}>📑</Text>
+                  <Text style={styles.chaptersButtonText}>{t('chapters.title')}</Text>
+                </TouchableOpacity>
+              )}
+              {/* Watch Party Button */}
+              {user && id && (
                 <WatchPartyButton
                   hasActiveParty={!!party}
                   onCreatePress={() => setShowCreateModal(true)}
                   onJoinPress={() => setShowJoinModal(true)}
                   onPanelToggle={() => setShowPartyOverlay(!showPartyOverlay)}
                 />
-              </View>
-            )}
+              )}
+            </View>
           </View>
 
           {/* Center Play/Pause */}
@@ -392,6 +439,16 @@ export const PlayerScreen: React.FC = () => {
         onLeave={handleLeaveParty}
         onEnd={handleEndParty}
         onSendMessage={sendMessage}
+      />
+
+      {/* Chapters Overlay */}
+      <ChaptersOverlay
+        chapters={chapters}
+        currentTime={progress.currentTime}
+        isLoading={chaptersLoading}
+        visible={showChaptersOverlay}
+        onClose={() => setShowChaptersOverlay(false)}
+        onSeek={handleChapterSeek}
       />
 
       {/* Modals */}
@@ -541,8 +598,28 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: 'bold',
   },
-  partyButtonContainer: {
+  topBarActions: {
+    flexDirection: 'row',
+    alignItems: 'center',
     marginLeft: 'auto',
+    gap: 12,
+  },
+  chaptersButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 16,
+    paddingVertical: 10,
+    borderRadius: 8,
+    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+    gap: 8,
+  },
+  chaptersButtonIcon: {
+    fontSize: 16,
+  },
+  chaptersButtonText: {
+    color: '#ffffff',
+    fontSize: 14,
+    fontWeight: '500',
   },
   partyIndicator: {
     ...StyleSheet.absoluteFillObject,

@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback, createContext, useContext } from 'react'
 import { zmanService } from '../services/api'
 import { useAuthStore } from '../stores/authStore'
+import logger from '@/utils/logger'
 
 /**
  * Shabbat Mode Context and Hook
@@ -47,7 +48,7 @@ export function ShabbatModeProvider({ children }) {
         loading: false,
       }))
     } catch (err) {
-      console.error('Failed to fetch Shabbat status:', err)
+      logger.error('Failed to fetch Shabbat status', 'useShabbatMode', err)
       setState(prev => ({ ...prev, loading: false }))
     }
   }, [shabbatModeEnabled])

@@ -1,0 +1,438 @@
+import { useState, useEffect } from 'react';
+import { View, Text, StyleSheet, Pressable, ScrollView, ActivityIndicator } from 'react-native';
+import { Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
+import { RefreshCw, UserPlus, Tag, Mail, BarChart3 } from 'lucide-react';
+import StatCard from '@/components/admin/StatCard';
+import { dashboardService } from '@/services/adminApi';
+import { colors, spacing, borderRadius } from '@bayit/shared/theme';
+import { GlassCard, GlassButton } from '@bayit/shared/ui';
+import logger from '@/utils/logger';
+
+interface DashboardStats {
+  total_users: number;
+  active_users: number;
+  new_users_today: number;
+  new_users_this_week: number;
+  total_revenue: number;
+  revenue_today: number;
+  revenue_this_month: number;
+  avg_revenue_per_user: number;
+  active_subscriptions: number;
+  churn_rate: number;
+}
+
+interface Activity {
+  id: string;
+  action: string;
+  details?: Record<string, string>;
+  created_at: string;
+}
+
+const formatNumber = (num: number) => {
+  if (num >= 1000000) return `${(num / 1000000).toFixed(1)}M`;
+  if (num >= 1000) return `${(num / 1000).toFixed(1)}K`;
+  return num.toString();
+};
+
+const formatCurrency = (amount: number) => {
+  return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(amount);
+};
+
+const formatDateTime = (dateStr: string) => {
+  const date = new Date(dateStr);
+  const now = new Date();
+  const diffMs = now.getTime() - date.getTime();
+  const diffMins = Math.floor(diffMs / 60000);
+  const diffHours = Math.floor(diffMs / 3600000);
+
+  if (diffMins < 60) return `לפני ${diffMins} דקות`;
+  if (diffHours < 24) return `לפני ${diffHours} שעות`;
+  return date.toLocaleDateString('he-IL');
+};
+
+const getActivityIcon = (action: string) => {
+  if (action.includes('user')) return '👤';
+  if (action.includes('subscription')) return '📦';
+  if (action.includes('payment')) return '💰';
+  if (action.includes('campaign')) return '🎯';
+  if (action.includes('login')) return '🔑';
+  return '📋';
+};
+
+export default function AdminDashboardPage() {
+  const { t } = useTranslation();
+  const [loading, setLoading] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [stats, setStats] = useState<DashboardStats | null>(null);
+  const [recentActivity, setRecentActivity] = useState<Activity[]>([]);
+
+  const loadDashboardData = async () => {
+    try {
+      setError(null);
+      const [statsData, activityData] = await Promise.all([
+        dashboardService.getStats(),
+        dashboardService.getRecentActivity(10),
+      ]);
+      setStats(statsData);
+      setRecentActivity(activityData);
+    } catch (err: any) {
+      const message = err?.message || 'Failed to load dashboard data';
+      setError(message);
+      logger.error('Failed to load dashboard data', 'AdminDashboard', err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleRefresh = async () => {
+    setRefreshing(true);
+    await loadDashboardData();
+    setRefreshing(false);
+  };
+
+  useEffect(() => {
+    loadDashboardData();
+  }, []);
+
+  if (error) {
+    return (
+      <View style={styles.errorContainer}>
+        <Text style={styles.errorIcon}>⚠️</Text>
+        <Text style={styles.errorText}>{error}</Text>
+        <GlassButton title={t('common.retry', 'נסה שוב')} onPress={loadDashboardData} variant="primary" />
+      </View>
+    );
+  }
+
+  if (loading || !stats) {
+    return (
+      <View style={styles.loadingContainer}>
+        <ActivityIndicator size="large" color={colors.primary} />
+        <Text style={styles.loadingText}>{t('common.loading', 'טוען...')}</Text>
+      </View>
+    );
+  }
+
+  return (
+    <ScrollView style={styles.container} contentContainerStyle={styles.contentContainer}>
+      {/* Header */}
+      <View style={styles.header}>
+        <View>
+          <Text style={styles.pageTitle}>{t('admin.titles.dashboard', 'לוח בקרה')}</Text>
+          <Text style={styles.subtitle}>סקירה כללית של המערכת</Text>
+        </View>
+        <Pressable onPress={handleRefresh} disabled={refreshing} style={styles.refreshButton}>
+          <RefreshCw size={18} color={colors.text} />
+          <Text style={styles.refreshText}>רענן</Text>
+        </Pressable>
+      </View>
+
+      {/* Users Section */}
+      <View style={styles.section}>
+        <Text style={styles.sectionTitle}>{t('admin.dashboard.users', 'משתמשים')}</Text>
+        <View style={styles.statsGrid}>
+          <StatCard
+            title={t('admin.stats.totalUsers', 'סה״כ משתמשים')}
+            value={formatNumber(stats.total_users)}
+            icon="👥"
+            color="primary"
+            to="/admin/users"
+          />
+          <StatCard
+            title={t('admin.stats.activeUsers', 'משתמשים פעילים')}
+            value={formatNumber(stats.active_users)}
+            icon="✅"
+            color="success"
+            trend={{ value: 12.5, isPositive: true }}
+          />
+          <StatCard
+            title={t('admin.stats.newToday', 'חדשים היום')}
+            value={formatNumber(stats.new_users_today)}
+            icon="🆕"
+            color="secondary"
+            trend={{ value: 8.2, isPositive: true }}
+          />
+          <StatCard
+            title={t('admin.stats.newThisWeek', 'חדשים השבוע')}
+            value={formatNumber(stats.new_users_this_week)}
+            icon="📈"
+            color="warning"
+          />
+        </View>
+      </View>
+
+      {/* Revenue Section */}
+      <View style={styles.section}>
+        <Text style={styles.sectionTitle}>{t('admin.dashboard.revenue', 'הכנסות')}</Text>
+        <View style={styles.statsGrid}>
+          <StatCard
+            title={t('admin.stats.totalRevenue', 'סה״כ הכנסות')}
+            value={formatCurrency(stats.total_revenue)}
+            icon="💰"
+            color="success"
+            to="/admin/billing"
+          />
+          <StatCard
+            title={t('admin.stats.revenueToday', 'הכנסות היום')}
+            value={formatCurrency(stats.revenue_today)}
+            icon="📊"
+            color="primary"
+            trend={{ value: 15.3, isPositive: true }}
+          />
+          <StatCard
+            title={t('admin.stats.revenueMonth', 'הכנסות החודש')}
+            value={formatCurrency(stats.revenue_this_month)}
+            icon="📅"
+            color="secondary"
+          />
+          <StatCard
+            title={t('admin.stats.arpu', 'ARPU')}
+            value={`$${stats.avg_revenue_per_user.toFixed(2)}`}
+            icon="💵"
+            color="warning"
+          />
+        </View>
+      </View>
+
+      {/* Subscriptions Section */}
+      <View style={styles.section}>
+        <Text style={styles.sectionTitle}>{t('admin.dashboard.subscriptions', 'מנויים')}</Text>
+        <View style={styles.statsGridHalf}>
+          <StatCard
+            title={t('admin.stats.activeSubscriptions', 'מנויים פעילים')}
+            value={formatNumber(stats.active_subscriptions)}
+            icon="📦"
+            color="primary"
+            to="/admin/subscriptions"
+          />
+          <StatCard
+            title={t('admin.stats.churnRate', 'שיעור נטישה')}
+            value={`${stats.churn_rate}%`}
+            icon="📉"
+            color={stats.churn_rate < 5 ? 'success' : 'error'}
+            trend={{ value: 0.5, isPositive: stats.churn_rate < 5 }}
+          />
+        </View>
+      </View>
+
+      {/* Recent Activity & Quick Actions */}
+      <View style={styles.bottomSection}>
+        {/* Recent Activity */}
+        <View style={styles.activitySection}>
+          <Text style={styles.sectionTitle}>{t('admin.dashboard.recentActivity', 'פעילות אחרונה')}</Text>
+          <GlassCard style={styles.activityCard}>
+            {recentActivity.map((activity) => (
+              <View key={activity.id} style={styles.activityItem}>
+                <View style={styles.activityIcon}>
+                  <Text style={styles.activityIconText}>{getActivityIcon(activity.action)}</Text>
+                </View>
+                <View style={styles.activityContent}>
+                  <Text style={styles.activityAction}>
+                    {activity.action.replace('.', ' ').replace(/_/g, ' ')}
+                  </Text>
+                  {activity.details && (
+                    <Text style={styles.activityDetails} numberOfLines={1}>
+                      {Object.values(activity.details).join(' - ')}
+                    </Text>
+                  )}
+                </View>
+                <Text style={styles.activityTime}>{formatDateTime(activity.created_at)}</Text>
+              </View>
+            ))}
+          </GlassCard>
+        </View>
+
+        {/* Quick Actions */}
+        <View style={styles.quickActionsSection}>
+          <Text style={styles.sectionTitle}>{t('admin.dashboard.quickActions', 'פעולות מהירות')}</Text>
+          <GlassCard style={styles.quickActionsCard}>
+            <Link to="/admin/users/new" style={{ textDecoration: 'none' }}>
+              <Pressable style={styles.quickAction}>
+                <View style={[styles.quickActionIcon, { backgroundColor: 'rgba(0, 217, 255, 0.2)' }]}>
+                  <UserPlus size={20} color={colors.primary} />
+                </View>
+                <Text style={styles.quickActionText}>{t('admin.actions.addUser', 'הוסף משתמש')}</Text>
+              </Pressable>
+            </Link>
+            <Link to="/admin/campaigns/new" style={{ textDecoration: 'none' }}>
+              <Pressable style={styles.quickAction}>
+                <View style={[styles.quickActionIcon, { backgroundColor: 'rgba(139, 92, 246, 0.2)' }]}>
+                  <Tag size={20} color="#8B5CF6" />
+                </View>
+                <Text style={styles.quickActionText}>{t('admin.actions.newCampaign', 'קמפיין חדש')}</Text>
+              </Pressable>
+            </Link>
+            <Link to="/admin/emails" style={{ textDecoration: 'none' }}>
+              <Pressable style={styles.quickAction}>
+                <View style={[styles.quickActionIcon, { backgroundColor: 'rgba(245, 158, 11, 0.2)' }]}>
+                  <Mail size={20} color="#F59E0B" />
+                </View>
+                <Text style={styles.quickActionText}>{t('admin.actions.sendEmail', 'שלח אימייל')}</Text>
+              </Pressable>
+            </Link>
+            <Link to="/admin/billing" style={{ textDecoration: 'none' }}>
+              <Pressable style={styles.quickAction}>
+                <View style={[styles.quickActionIcon, { backgroundColor: 'rgba(34, 197, 94, 0.2)' }]}>
+                  <BarChart3 size={20} color="#22C55E" />
+                </View>
+                <Text style={styles.quickActionText}>{t('admin.actions.viewReports', 'צפה בדוחות')}</Text>
+              </Pressable>
+            </Link>
+          </GlassCard>
+        </View>
+      </View>
+    </ScrollView>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+  },
+  contentContainer: {
+    padding: spacing.lg,
+  },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    gap: spacing.sm,
+  },
+  loadingText: {
+    fontSize: 14,
+    color: colors.textMuted,
+  },
+  errorContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: spacing.lg,
+  },
+  errorIcon: {
+    fontSize: 48,
+    marginBottom: spacing.md,
+  },
+  errorText: {
+    fontSize: 16,
+    color: colors.error,
+    marginBottom: spacing.md,
+  },
+  header: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginBottom: spacing.lg,
+  },
+  pageTitle: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    color: colors.text,
+  },
+  subtitle: {
+    fontSize: 14,
+    color: colors.textMuted,
+    marginTop: spacing.xs,
+  },
+  refreshButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.sm,
+    padding: spacing.sm,
+    backgroundColor: colors.glass,
+    borderRadius: borderRadius.md,
+  },
+  refreshText: {
+    fontSize: 14,
+    color: colors.text,
+  },
+  section: {
+    marginBottom: spacing.lg,
+  },
+  sectionTitle: {
+    fontSize: 18,
+    fontWeight: '600',
+    color: colors.text,
+    marginBottom: spacing.md,
+  },
+  statsGrid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: spacing.md,
+  },
+  statsGridHalf: {
+    flexDirection: 'row',
+    gap: spacing.md,
+  },
+  bottomSection: {
+    flexDirection: 'row',
+    gap: spacing.lg,
+  },
+  activitySection: {
+    flex: 2,
+  },
+  activityCard: {
+    padding: 0,
+  },
+  activityItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.md,
+    padding: spacing.md,
+    borderBottomWidth: 1,
+    borderBottomColor: 'rgba(255, 255, 255, 0.05)',
+  },
+  activityIcon: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    backgroundColor: colors.backgroundLighter,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  activityIconText: {
+    fontSize: 18,
+  },
+  activityContent: {
+    flex: 1,
+  },
+  activityAction: {
+    fontSize: 14,
+    fontWeight: '500',
+    color: colors.text,
+    textTransform: 'capitalize',
+  },
+  activityDetails: {
+    fontSize: 12,
+    color: colors.textMuted,
+  },
+  activityTime: {
+    fontSize: 12,
+    color: colors.textMuted,
+  },
+  quickActionsSection: {
+    flex: 1,
+  },
+  quickActionsCard: {
+    padding: spacing.md,
+  },
+  quickAction: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.sm,
+    padding: spacing.sm,
+    borderRadius: borderRadius.md,
+  },
+  quickActionIcon: {
+    width: 40,
+    height: 40,
+    borderRadius: borderRadius.md,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  quickActionText: {
+    fontSize: 14,
+    color: colors.text,
+  },
+});

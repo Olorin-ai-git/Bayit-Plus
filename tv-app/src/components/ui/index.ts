@@ -1,6 +1,21 @@
-export { GlassView } from './GlassView';
-export { GlassCard } from './GlassCard';
-export { GlassButton } from './GlassButton';
-export { GlassInput } from './GlassInput';
-export { GlassModal } from './GlassModal';
-export type { GlassModalProps, ModalType, ModalButton } from './GlassModal';
+/**
+ * TV App UI Components
+ * Re-exports shared components for backward compatibility
+ */
+
+// Re-export all shared Glass components
+export {
+  GlassView,
+  GlassCard,
+  GlassButton,
+  GlassInput,
+  GlassSelect,
+  GlassTextarea,
+  GlassCheckbox,
+  GlassModal,
+  GlassBadge,
+  GlassTabs,
+} from '@bayit/shared/ui';
+
+// Re-export types
+export type { GlassModalProps, ModalType, ModalButton } from '@bayit/shared/ui';

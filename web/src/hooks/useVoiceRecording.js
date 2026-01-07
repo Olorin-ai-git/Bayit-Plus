@@ -1,5 +1,6 @@
 import { useState, useRef, useCallback } from 'react'
 import { chatService } from '@/services/api'
+import logger from '@/utils/logger'
 
 /**
  * useVoiceRecording hook
@@ -55,7 +56,7 @@ export function useVoiceRecording(options = {}) {
 
       return text
     } catch (err) {
-      console.error('Transcription failed:', err)
+      logger.error('Transcription failed', 'useVoiceRecording', err)
       setError('transcribeError')
       onError?.('transcribeError')
       return ''
@@ -107,7 +108,7 @@ export function useVoiceRecording(options = {}) {
       setIsRecording(true)
       setHasPermission(true)
     } catch (err) {
-      console.error('Failed to start recording:', err)
+      logger.error('Failed to start recording', 'useVoiceRecording', err)
       setError('recordingError')
       setHasPermission(false)
       onError?.('recordingError')
