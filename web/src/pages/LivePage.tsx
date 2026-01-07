@@ -1,10 +1,11 @@
 import { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, FlatList, Pressable, Image, useWindowDimensions } from 'react-native';
+import { View, Text, StyleSheet, FlatList, Pressable, Image, ScrollView, useWindowDimensions } from 'react-native';
 import { Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { Radio, Clock } from 'lucide-react';
 import { liveService } from '@/services/api';
 import { colors, spacing, borderRadius } from '@bayit/shared/theme';
-import { GlassView, GlassCard, GlassBadge } from '@bayit/shared/ui';
+import { GlassView, GlassCard, GlassBadge, GlassCategoryPill } from '@bayit/shared/ui';
 import LinearGradient from 'react-native-linear-gradient';
 import logger from '@/utils/logger';
 
@@ -14,9 +15,10 @@ interface Channel {
   thumbnail?: string;
   currentShow?: string;
   nextShow?: string;
+  category?: string;
 }
 
-function ChannelCard({ channel }: { channel: Channel }) {
+function ChannelCard({ channel, nextLabel }: { channel: Channel; nextLabel: string }) {
   const [isHovered, setIsHovered] = useState(false);
 
   return (
@@ -62,7 +64,7 @@ function ChannelCard({ channel }: { channel: Channel }) {
               {channel.nextShow && (
                 <View style={styles.nextShowRow}>
                   <Clock size={12} color={colors.textMuted} />
-                  <Text style={styles.nextShow}>הבא: {channel.nextShow}</Text>
+                  <Text style={styles.nextShow}>{nextLabel} {channel.nextShow}</Text>
                 </View>
               )}
             </View>
@@ -82,9 +84,12 @@ function SkeletonCard() {
 }
 
 export default function LivePage() {
+  const { t } = useTranslation();
   const [channels, setChannels] = useState<Channel[]>([]);
+  const [selectedCategory, setSelectedCategory] = useState('all');
   const [loading, setLoading] = useState(true);
   const { width } = useWindowDimensions();
+  const nextLabel = t('live.next');
 
   const numColumns = width >= 1280 ? 5 : width >= 1024 ? 4 : width >= 768 ? 3 : 2;
 
@@ -95,13 +100,17 @@ export default function LivePage() {
   const loadChannels = async () => {
     try {
       const data = await liveService.getChannels();
-      setChannels(data.channels);
+      setChannels(data.channels || []);
     } catch (error) {
       logger.error('Failed to load channels', 'LivePage', error);
     } finally {
       setLoading(false);
     }
   };
+
+  const filteredChannels = selectedCategory === 'all'
+    ? channels
+    : channels.filter(c => c.category === selectedCategory);
 
   if (loading) {
     return (
@@ -123,12 +132,57 @@ export default function LivePage() {
         <GlassView style={styles.headerIcon}>
           <Radio size={24} color={colors.error} />
         </GlassView>
-        <Text style={styles.title}>שידור חי</Text>
+        <Text style={styles.title}>{t('live.title')}</Text>
       </View>
+
+      {/* Category Filter */}
+      <ScrollView
+        horizontal
+        showsHorizontalScrollIndicator={false}
+        style={styles.categoriesScroll}
+        contentContainerStyle={styles.categoriesContent}
+      >
+        <GlassCategoryPill
+          label={t('live.categories.all')}
+          emoji="📺"
+          isActive={selectedCategory === 'all'}
+          onPress={() => setSelectedCategory('all')}
+        />
+        <GlassCategoryPill
+          label={t('live.categories.news')}
+          emoji="📰"
+          isActive={selectedCategory === 'news'}
+          onPress={() => setSelectedCategory('news')}
+        />
+        <GlassCategoryPill
+          label={t('live.categories.entertainment')}
+          emoji="🎬"
+          isActive={selectedCategory === 'entertainment'}
+          onPress={() => setSelectedCategory('entertainment')}
+        />
+        <GlassCategoryPill
+          label={t('live.categories.sports')}
+          emoji="⚽"
+          isActive={selectedCategory === 'sports'}
+          onPress={() => setSelectedCategory('sports')}
+        />
+        <GlassCategoryPill
+          label={t('live.categories.kids')}
+          emoji="👶"
+          isActive={selectedCategory === 'kids'}
+          onPress={() => setSelectedCategory('kids')}
+        />
+        <GlassCategoryPill
+          label={t('live.categories.music')}
+          emoji="🎵"
+          isActive={selectedCategory === 'music'}
+          onPress={() => setSelectedCategory('music')}
+        />
+      </ScrollView>
 
       {/* Channels Grid */}
       <FlatList
-        data={channels}
+        data={filteredChannels}
         keyExtractor={(item) => item.id}
         numColumns={numColumns}
         key={numColumns}
@@ -136,15 +190,15 @@ export default function LivePage() {
         columnWrapperStyle={numColumns > 1 ? styles.row : undefined}
         renderItem={({ item }) => (
           <View style={{ flex: 1, maxWidth: `${100 / numColumns}%` }}>
-            <ChannelCard channel={item} />
+            <ChannelCard channel={item} nextLabel={nextLabel} />
           </View>
         )}
         ListEmptyComponent={
           <View style={styles.emptyState}>
             <GlassCard style={styles.emptyCard}>
               <Radio size={64} color={colors.textMuted} />
-              <Text style={styles.emptyTitle}>אין ערוצים זמינים</Text>
-              <Text style={styles.emptyDescription}>נסה שוב מאוחר יותר</Text>
+              <Text style={styles.emptyTitle}>{t('live.noChannels')}</Text>
+              <Text style={styles.emptyDescription}>{t('live.tryLater')}</Text>
             </GlassCard>
           </View>
         }
@@ -180,6 +234,13 @@ const styles = StyleSheet.create({
     fontSize: 32,
     fontWeight: 'bold',
     color: colors.text,
+  },
+  categoriesScroll: {
+    marginBottom: spacing.lg,
+  },
+  categoriesContent: {
+    gap: spacing.sm,
+    paddingBottom: spacing.sm,
   },
   grid: {
     flexDirection: 'row',

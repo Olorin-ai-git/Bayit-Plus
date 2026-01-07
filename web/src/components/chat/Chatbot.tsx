@@ -10,10 +10,12 @@ import {
   Animated,
   ActivityIndicator,
 } from 'react-native'
+import { useNavigate } from 'react-router-dom'
 import { X, Send, Sparkles, Mic, Square } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { chatService } from '@/services/api'
 import { useAuthStore } from '@/stores/authStore'
+import { useChatbotStore, type ChatbotAction } from '@/stores/chatbotStore'
 import logger from '@/utils/logger'
 import { colors, spacing, borderRadius } from '@bayit/shared/theme'
 import { GlassView, GlassCard, GlassButton, GlassBadge } from '@bayit/shared/ui'
@@ -26,15 +28,21 @@ interface Message {
 }
 
 export default function Chatbot() {
-  const { t } = useTranslation()
+  const { t, i18n } = useTranslation()
+  const navigate = useNavigate()
   const { isAuthenticated } = useAuthStore()
-  const [isOpen, setIsOpen] = useState(false)
-  const [messages, setMessages] = useState<Message[]>([
-    {
-      role: 'assistant',
-      content: 'שלום! אני העוזר החכם של בית+. איך אוכל לעזור לך היום? לחץ על המיקרופון ודבר אליי בעברית, או הקלד הודעה.',
-    },
-  ])
+  const {
+    isOpen,
+    setOpen,
+    pendingMessage,
+    clearPendingMessage,
+    context,
+    loadContext,
+    registerActionHandler,
+    executeAction,
+  } = useChatbotStore()
+  const isRTL = i18n.language === 'he' || i18n.language === 'ar'
+  const [messages, setMessages] = useState<Message[]>([])
   const [input, setInput] = useState('')
   const [isLoading, setIsLoading] = useState(false)
   const [conversationId, setConversationId] = useState<string | null>(null)
@@ -46,6 +54,91 @@ export default function Chatbot() {
   const audioChunksRef = useRef<Blob[]>([])
   const slideAnim = useRef(new Animated.Value(100)).current
   const opacityAnim = useRef(new Animated.Value(0)).current
+
+  // Initialize welcome message with translation
+  useEffect(() => {
+    setMessages([
+      {
+        role: 'assistant',
+        content: t('chatbot.welcome'),
+      },
+    ])
+  }, [t])
+
+  // Load context when component mounts
+  useEffect(() => {
+    loadContext()
+  }, [loadContext])
+
+  // Register action handlers for chatbot actions
+  useEffect(() => {
+    registerActionHandler('navigate', (payload) => {
+      navigate(payload.path)
+      setOpen(false)
+    })
+    registerActionHandler('search', (payload) => {
+      navigate(`/search?q=${encodeURIComponent(payload.query)}`)
+      setOpen(false)
+    })
+    registerActionHandler('create_flow', (payload) => {
+      navigate('/flows', { state: { createFlow: true, template: payload.template } })
+      setOpen(false)
+    })
+    registerActionHandler('start_flow', (payload) => {
+      navigate('/flows', { state: { startFlowId: payload.flowId } })
+      setOpen(false)
+    })
+  }, [registerActionHandler, navigate, setOpen])
+
+  // Handle pending messages from voice input or external triggers
+  useEffect(() => {
+    if (pendingMessage) {
+      handleExternalMessage(pendingMessage)
+      clearPendingMessage()
+    }
+  }, [pendingMessage, clearPendingMessage])
+
+  // Handle external message (from voice button)
+  const handleExternalMessage = async (message: string) => {
+    setMessages((prev) => [...prev, { role: 'user', content: message }])
+    setIsLoading(true)
+
+    try {
+      const response = await chatService.sendMessage(message, conversationId, context)
+      setConversationId(response.conversation_id)
+      setMessages((prev) => [
+        ...prev,
+        { role: 'assistant', content: response.message },
+      ])
+
+      // Handle actions from the chatbot response
+      if (response.action) {
+        executeAction(response.action as ChatbotAction)
+      }
+
+      if (response.recommendations) {
+        setMessages((prev) => [
+          ...prev,
+          {
+            role: 'assistant',
+            type: 'recommendations',
+            content: response.recommendations,
+          },
+        ])
+      }
+    } catch {
+      setMessages((prev) => [
+        ...prev,
+        {
+          role: 'assistant',
+          content: t('chatbot.errors.general'),
+          isError: true,
+        },
+      ])
+    } finally {
+      setIsLoading(false)
+    }
+  }
 
   useEffect(() => {
     if (isOpen) {
@@ -99,12 +192,12 @@ export default function Chatbot() {
         ...prev,
         {
           role: 'assistant',
-          content: 'לא הצלחתי לגשת למיקרופון. אנא בדוק את הרשאות המיקרופון בדפדפן.',
+          content: t('chatbot.errors.micPermission'),
           isError: true,
         },
       ])
     }
-  }, [])
+  }, [t])
 
   const stopRecording = useCallback(() => {
     if (mediaRecorderRef.current && isRecording) {
@@ -147,7 +240,7 @@ export default function Chatbot() {
             ...prev,
             {
               role: 'assistant',
-              content: 'מצטער, משהו השתבש. אנא נסה שוב.',
+              content: t('chatbot.errors.general'),
               isError: true,
             },
           ])
@@ -160,7 +253,7 @@ export default function Chatbot() {
         ...prev,
         {
           role: 'assistant',
-          content: 'לא הצלחתי לתמלל את ההקלטה. אנא נסה שוב.',
+          content: t('chatbot.errors.transcribeFailed'),
           isError: true,
         },
       ])
@@ -186,12 +279,17 @@ export default function Chatbot() {
     setIsLoading(true)
 
     try {
-      const response = await chatService.sendMessage(userMessage, conversationId)
+      const response = await chatService.sendMessage(userMessage, conversationId, context)
       setConversationId(response.conversation_id)
       setMessages((prev) => [
         ...prev,
         { role: 'assistant', content: response.message },
       ])
+
+      // Handle actions from the chatbot response
+      if (response.action) {
+        executeAction(response.action as ChatbotAction)
+      }
 
       if (response.recommendations) {
         setMessages((prev) => [
@@ -208,7 +306,7 @@ export default function Chatbot() {
         ...prev,
         {
           role: 'assistant',
-          content: 'מצטער, משהו השתבש. אנא נסה שוב.',
+          content: t('chatbot.errors.general'),
           isError: true,
         },
       ])
@@ -218,10 +316,10 @@ export default function Chatbot() {
   }
 
   const suggestedQuestions = [
-    'מה לראות היום?',
-    'סרטים ישראליים מומלצים',
-    'מה משודר עכשיו?',
-    'פודקאסטים פופולריים',
+    t('chatbot.suggestions.whatToWatch'),
+    t('chatbot.suggestions.israeliMovies'),
+    t('chatbot.suggestions.whatsOnNow'),
+    t('chatbot.suggestions.popularPodcasts'),
   ]
 
   const handleSuggestion = (question: string) => {
@@ -238,12 +336,12 @@ export default function Chatbot() {
       {/* Chat Button */}
       {!isOpen && (
         <Pressable
-          onPress={() => setIsOpen(true)}
+          onPress={() => setOpen(true)}
           style={({ hovered }) => [
             styles.chatButton,
             hovered && styles.chatButtonHovered,
           ]}
-          accessibilityLabel="פתח צ'אט"
+          accessibilityLabel={t('chatbot.openChat')}
         >
           <View style={styles.chatButtonInner}>
             <Sparkles size={24} color={colors.text} />
@@ -264,15 +362,15 @@ export default function Chatbot() {
         >
           <GlassView style={styles.chatContainer} intensity="high">
             {/* Header */}
-            <View style={styles.header}>
-              <View style={styles.headerLeft}>
+            <View style={[styles.header, isRTL && styles.headerRTL]}>
+              <View style={[styles.headerLeft, isRTL && styles.headerLeftRTL]}>
                 <View style={styles.headerIcon}>
                   <Sparkles size={16} color={colors.text} />
                 </View>
-                <Text style={styles.headerTitle}>עוזר בית+</Text>
+                <Text style={styles.headerTitle}>{t('chatbot.title')}</Text>
               </View>
               <Pressable
-                onPress={() => setIsOpen(false)}
+                onPress={() => setOpen(false)}
                 style={({ hovered }) => [
                   styles.closeButton,
                   hovered && styles.closeButtonHovered,
@@ -298,7 +396,7 @@ export default function Chatbot() {
                 >
                   {message.type === 'recommendations' ? (
                     <View style={styles.recommendationsContainer}>
-                      <Text style={styles.recommendationsTitle}>הנה כמה המלצות:</Text>
+                      <Text style={[styles.recommendationsTitle, isRTL && styles.textRTL]}>{t('chatbot.recommendations')}</Text>
                       <View style={styles.recommendationsGrid}>
                         {Array.isArray(message.content) && message.content.map((item) => (
                           <Pressable
@@ -376,7 +474,7 @@ export default function Chatbot() {
                 <View style={styles.statusContainer}>
                   {isRecording && (
                     <GlassBadge variant="danger" dot dotColor="danger" size="sm">
-                      מקליט... לחץ שוב לסיום
+                      {t('chatbot.recording')}
                     </GlassBadge>
                   )}
                   {isTranscribing && (
@@ -385,13 +483,13 @@ export default function Chatbot() {
                       size="sm"
                       icon={<ActivityIndicator size="small" color={colors.primary} />}
                     >
-                      מתמלל...
+                      {t('chatbot.transcribing')}
                     </GlassBadge>
                   )}
                 </View>
               )}
 
-              <View style={styles.inputRow}>
+              <View style={[styles.inputRow, isRTL && styles.inputRowRTL]}>
                 {/* Microphone Button */}
                 <Pressable
                   onPress={toggleRecording}
@@ -401,7 +499,7 @@ export default function Chatbot() {
                     isRecording && styles.micButtonRecording,
                     hovered && !isRecording && styles.micButtonHovered,
                   ]}
-                  accessibilityLabel={isRecording ? 'עצור הקלטה' : 'התחל הקלטה קולית'}
+                  accessibilityLabel={isRecording ? t('chatbot.stopRecording') : t('chatbot.startRecording')}
                 >
                   {isRecording ? (
                     <Square size={16} fill={colors.text} color={colors.text} />
@@ -414,10 +512,10 @@ export default function Chatbot() {
                 <View style={styles.textInputContainer}>
                   <TextInput
                     ref={inputRef}
-                    style={styles.textInput}
+                    style={[styles.textInput, isRTL && styles.textInputRTL]}
                     value={input}
                     onChangeText={setInput}
-                    placeholder={t('placeholder.chat', 'או הקלד כאן...')}
+                    placeholder={t('chatbot.placeholder')}
                     placeholderTextColor={colors.textMuted}
                     editable={!isLoading && !isRecording && !isTranscribing}
                     onSubmitEditing={handleSubmit}
@@ -494,10 +592,16 @@ const styles = StyleSheet.create({
     borderBottomColor: 'rgba(255, 255, 255, 0.1)',
     backgroundImage: 'linear-gradient(to left, rgba(0, 217, 255, 0.2), rgba(138, 43, 226, 0.2))' as any,
   },
+  headerRTL: {
+    flexDirection: 'row-reverse',
+  },
   headerLeft: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: spacing.sm,
+  },
+  headerLeftRTL: {
+    flexDirection: 'row-reverse',
   },
   headerIcon: {
     width: 32,
@@ -575,6 +679,8 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: colors.textSecondary,
     marginBottom: spacing.sm,
+  },
+  textRTL: {
     textAlign: 'right',
   },
   recommendationsGrid: {
@@ -638,6 +744,9 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: spacing.sm,
   },
+  inputRowRTL: {
+    flexDirection: 'row-reverse',
+  },
   micButton: {
     width: 48,
     height: 40,
@@ -672,6 +781,8 @@ const styles = StyleSheet.create({
   textInput: {
     fontSize: 14,
     color: colors.text,
+  },
+  textInputRTL: {
     textAlign: 'right',
   },
   sendButton: {

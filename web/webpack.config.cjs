@@ -44,6 +44,7 @@ module.exports = (env, argv) => {
         '@bayit/shared': path.resolve(sharedPath, 'components'),
         '@bayit/shared/components': path.resolve(sharedPath, 'components'),
         '@bayit/shared/components/ai': path.resolve(sharedPath, 'components/ai'),
+        '@bayit/shared/components/flows': path.resolve(sharedPath, 'components/flows'),
         '@bayit/shared/ui': path.resolve(sharedPath, 'components/ui'),
         '@bayit/shared/theme': path.resolve(sharedPath, 'theme'),
         '@bayit/shared/stores': path.resolve(sharedPath, 'stores'),

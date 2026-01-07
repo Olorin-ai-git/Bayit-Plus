@@ -8,10 +8,12 @@ import { colors } from '@bayit/shared/theme';
 export default function Layout() {
   return (
     <View style={styles.container}>
-      {/* Decorative blur circles */}
-      <View style={[styles.blurCircle, styles.blurCirclePrimary]} />
-      <View style={[styles.blurCircle, styles.blurCirclePurple]} />
-      <View style={[styles.blurCircle, styles.blurCircleSuccess]} />
+      {/* Decorative blur circles - wrapped to contain overflow */}
+      <View style={styles.blurContainer}>
+        <View style={[styles.blurCircle, styles.blurCirclePrimary]} />
+        <View style={[styles.blurCircle, styles.blurCirclePurple]} />
+        <View style={[styles.blurCircle, styles.blurCircleSuccess]} />
+      </View>
 
       <Header />
       <View style={styles.main}>
@@ -29,7 +31,16 @@ const styles = StyleSheet.create({
     minHeight: '100vh' as any,
     backgroundColor: colors.background,
     position: 'relative',
+  },
+  blurContainer: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
     overflow: 'hidden',
+    pointerEvents: 'none' as any,
+    zIndex: 0,
   },
   blurCircle: {
     position: 'absolute',

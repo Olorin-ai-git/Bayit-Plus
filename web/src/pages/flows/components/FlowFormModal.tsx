@@ -4,7 +4,7 @@
  * Language is determined by app-wide language setting
  */
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import {
   View,
   Text,
@@ -36,6 +36,7 @@ import {
 interface FlowFormModalProps {
   visible: boolean;
   flow?: Flow | null;
+  initialTemplate?: Partial<Flow> | null;
   onClose: () => void;
   onSave: (flowData: any) => Promise<void>;
 }
@@ -43,6 +44,7 @@ interface FlowFormModalProps {
 export function FlowFormModal({
   visible,
   flow,
+  initialTemplate,
   onClose,
   onSave,
 }: FlowFormModalProps) {
@@ -56,18 +58,53 @@ export function FlowFormModal({
   const [saving, setSaving] = useState(false);
   const [errors, setErrors] = useState<string[]>([]);
   const [showContentPicker, setShowContentPicker] = useState(false);
+  const [showTooltip, setShowTooltip] = useState(false);
+
+  // Real-time validation for button state
+  const validationErrors = useMemo(() => {
+    return validateFlowForm(formState, t);
+  }, [formState, t]);
+
+  const isFormValid = validationErrors.length === 0;
 
   // Initialize form state when flow changes
   useEffect(() => {
     if (visible) {
       if (flow) {
         setFormState(flowToFormState(flow));
+      } else if (initialTemplate) {
+        // Use template to pre-fill form for new flow
+        const templateState = createEmptyFormState();
+        if (initialTemplate.name) {
+          if (typeof initialTemplate.name === 'object') {
+            templateState.name = initialTemplate.name.he || '';
+            templateState.name_en = initialTemplate.name.en || '';
+          } else {
+            templateState.name = initialTemplate.name;
+          }
+        }
+        if (initialTemplate.triggers && initialTemplate.triggers.length > 0) {
+          const trigger = initialTemplate.triggers[0];
+          templateState.trigger = {
+            type: trigger.type || 'time',
+            time: trigger.time || '08:00',
+            days: trigger.days || [0, 1, 2, 3, 4, 5, 6],
+            shabbatOffset: trigger.shabbat_offset || 30,
+          };
+        }
+        templateState.auto_play = initialTemplate.auto_play ?? true;
+        templateState.ai_enabled = initialTemplate.ai_enabled ?? false;
+        templateState.ai_brief_enabled = initialTemplate.ai_brief_enabled ?? false;
+        setFormState(templateState);
       } else {
         setFormState(createEmptyFormState());
       }
       setErrors([]);
+    } else {
+      // Reset content picker when modal closes
+      setShowContentPicker(false);
     }
-  }, [visible, flow]);
+  }, [visible, flow, initialTemplate]);
 
   // Update form field
   const updateField = <K extends keyof FlowFormState>(
@@ -102,26 +139,31 @@ export function FlowFormModal({
     updateField('items', items);
   };
 
-  // Handle content picker add
-  const handleAddContent = (newItems: FlowItem[]) => {
+  // Handle content picker add - converts ContentItem[] to FlowItem[]
+  const handleAddContent = (newItems: any[]) => {
     const existingIds = new Set(formState.items.map((item) => item.content_id));
     const filteredNew = newItems.filter(
-      (item) => !existingIds.has(item.content_id)
+      (item) => !existingIds.has(item.id)
     );
     const startOrder = formState.items.length;
-    const itemsWithOrder = filteredNew.map((item, index) => ({
-      ...item,
+    // Convert ContentItem to FlowItem format
+    const flowItems: FlowItem[] = filteredNew.map((item, index) => ({
+      content_id: item.id,
+      content_type: item.type,
+      title: item.title,
+      thumbnail: item.thumbnail,
+      duration_hint: item.duration,
       order: startOrder + index,
     }));
-    updateField('items', [...formState.items, ...itemsWithOrder]);
+    updateField('items', [...formState.items, ...flowItems]);
     setShowContentPicker(false);
   };
 
   // Handle save
   const handleSave = async () => {
-    const validationErrors = validateFlowForm(formState, t);
-    if (validationErrors.length > 0) {
-      setErrors(validationErrors);
+    const errors = validateFlowForm(formState, t);
+    if (errors.length > 0) {
+      setErrors(errors);
       return;
     }
 
@@ -373,27 +415,47 @@ export function FlowFormModal({
                   variant="ghost"
                   style={styles.footerButton}
                 />
-                <GlassButton
-                  title={saving ? t('common.saving') : t('common.save')}
-                  onPress={handleSave}
-                  variant="primary"
-                  loading={saving}
-                  disabled={saving}
-                  style={styles.footerButton}
-                />
+                <View
+                  style={styles.saveButtonWrapper}
+                  // @ts-ignore - Web hover events
+                  onMouseEnter={() => !isFormValid && setShowTooltip(true)}
+                  onMouseLeave={() => setShowTooltip(false)}
+                >
+                  <GlassButton
+                    title={saving ? t('common.saving') : t('common.save')}
+                    onPress={handleSave}
+                    variant="primary"
+                    loading={saving}
+                    disabled={saving || !isFormValid}
+                    style={styles.footerButton}
+                  />
+                  {/* Validation Tooltip */}
+                  {showTooltip && !isFormValid && (
+                    <View style={[styles.tooltip, isRTL && styles.tooltipRTL]}>
+                      <View style={styles.tooltipArrow} />
+                      <View style={styles.tooltipContent}>
+                        {validationErrors.map((error, index) => (
+                          <Text key={index} style={styles.tooltipText}>
+                            • {error}
+                          </Text>
+                        ))}
+                      </View>
+                    </View>
+                  )}
+                </View>
               </View>
             </View>
           </GlassView>
+
+          {/* Content Picker Modal - rendered inside parent modal for proper stacking */}
+          <ContentPickerModal
+            visible={showContentPicker}
+            onClose={() => setShowContentPicker(false)}
+            onAdd={handleAddContent}
+            existingItems={formState.items}
+          />
         </View>
       </Modal>
-
-      {/* Content Picker Modal */}
-      <ContentPickerModal
-        visible={showContentPicker}
-        onClose={() => setShowContentPicker(false)}
-        onAdd={handleAddContent}
-        existingItems={formState.items}
-      />
     </>
   );
 }
@@ -566,6 +628,47 @@ const styles = StyleSheet.create({
   },
   footerButton: {
     flex: 1,
+  },
+  saveButtonWrapper: {
+    position: 'relative',
+    flex: 1,
+  },
+  tooltip: {
+    position: 'absolute',
+    bottom: '100%',
+    left: 0,
+    right: 0,
+    marginBottom: spacing.sm,
+    // @ts-ignore - Web z-index
+    zIndex: 100,
+  },
+  tooltipRTL: {
+    // Same positioning for RTL
+  },
+  tooltipArrow: {
+    position: 'absolute',
+    bottom: -6,
+    left: '50%',
+    marginLeft: -6,
+    width: 0,
+    height: 0,
+    borderLeftWidth: 6,
+    borderRightWidth: 6,
+    borderTopWidth: 6,
+    borderLeftColor: 'transparent',
+    borderRightColor: 'transparent',
+    borderTopColor: 'rgba(239, 68, 68, 0.95)',
+  },
+  tooltipContent: {
+    backgroundColor: 'rgba(239, 68, 68, 0.95)',
+    borderRadius: borderRadius.md,
+    padding: spacing.sm,
+    paddingHorizontal: spacing.md,
+  },
+  tooltipText: {
+    fontSize: 12,
+    color: '#fff',
+    lineHeight: 18,
   },
   textRTL: {
     textAlign: 'right',

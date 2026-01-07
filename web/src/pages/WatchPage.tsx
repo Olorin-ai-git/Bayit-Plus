@@ -150,9 +150,9 @@ export default function WatchPage({ type = 'vod' }: WatchPageProps) {
     return (
       <View style={styles.notFoundContainer}>
         <GlassCard style={styles.notFoundCard}>
-          <Text style={styles.notFoundTitle}>{t('watch.notFound', 'התוכן לא נמצא')}</Text>
+          <Text style={styles.notFoundTitle}>{t('watch.notFound')}</Text>
           <Link to="/" style={{ textDecoration: 'none' }}>
-            <Text style={styles.notFoundLink}>{t('watch.backToHome', 'חזרה לדף הבית')}</Text>
+            <Text style={styles.notFoundLink}>{t('watch.backToHome')}</Text>
           </Link>
         </GlassCard>
       </View>
@@ -168,7 +168,7 @@ export default function WatchPage({ type = 'vod' }: WatchPageProps) {
       <View style={styles.backContainer}>
         <Pressable onPress={() => window.history.back()} style={styles.backButton}>
           <ArrowRight size={20} color={colors.text} />
-          <Text style={styles.backText}>{t('common.back', 'חזרה')}</Text>
+          <Text style={styles.backText}>{t('common.back')}</Text>
         </Pressable>
       </View>
 
@@ -233,7 +233,7 @@ export default function WatchPage({ type = 'vod' }: WatchPageProps) {
             )}
             {content.episodeCount && (
               <GlassView style={styles.badge}>
-                <Text style={styles.badgeText}>{content.episodeCount} {t('watch.episodes', 'פרקים')}</Text>
+                <Text style={styles.badgeText}>{content.episodeCount} {t('watch.episodes')}</Text>
               </GlassView>
             )}
           </View>
@@ -246,23 +246,23 @@ export default function WatchPage({ type = 'vod' }: WatchPageProps) {
           {/* Actions */}
           <View style={styles.actionsRow}>
             <GlassButton
-              title={t('watch.addToList', 'הוסף לרשימה')}
+              title={t('watch.addToList')}
               icon={<Plus size={18} color={colors.text} />}
             />
             <GlassButton
-              title={t('watch.like', 'אהבתי')}
+              title={t('watch.like')}
               icon={<ThumbsUp size={18} color={colors.text} />}
             />
             <Pressable style={styles.ghostButton}>
               <Share2 size={18} color={colors.textMuted} />
-              <Text style={styles.ghostButtonText}>{t('watch.share', 'שתף')}</Text>
+              <Text style={styles.ghostButtonText}>{t('watch.share')}</Text>
             </Pressable>
           </View>
 
           {/* Cast/Credits */}
           {content.cast && content.cast.length > 0 && (
             <View style={styles.castSection}>
-              <Text style={styles.sectionTitle}>{t('watch.cast', 'שחקנים')}</Text>
+              <Text style={styles.sectionTitle}>{t('watch.cast')}</Text>
               <Text style={styles.castText}>{content.cast.join(', ')}</Text>
             </View>
           )}
@@ -270,7 +270,7 @@ export default function WatchPage({ type = 'vod' }: WatchPageProps) {
           {/* Episodes */}
           {content.episodes && content.episodes.length > 0 && (
             <View style={styles.episodesSection}>
-              <Text style={styles.sectionTitle}>{t('watch.episodesList', 'פרקים')}</Text>
+              <Text style={styles.sectionTitle}>{t('watch.episodesList')}</Text>
               {content.episodes.map((episode, i) => (
                 <Pressable key={episode.id} style={styles.episodeItem}>
                   <Text style={styles.episodeNumber}>{i + 1}</Text>
@@ -287,7 +287,7 @@ export default function WatchPage({ type = 'vod' }: WatchPageProps) {
         {/* EPG / Schedule (for live) */}
         {type === 'live' && content.schedule && content.schedule.length > 0 && (
           <View style={styles.scheduleSection}>
-            <Text style={styles.sectionTitle}>{t('watch.schedule', 'לוח שידורים')}</Text>
+            <Text style={styles.sectionTitle}>{t('watch.schedule')}</Text>
             {content.schedule.map((show, i) => (
               <GlassCard
                 key={i}
@@ -297,7 +297,7 @@ export default function WatchPage({ type = 'vod' }: WatchPageProps) {
                   <Text style={styles.scheduleTime}>{show.time}</Text>
                   {show.isNow && (
                     <View style={styles.nowBadge}>
-                      <Text style={styles.nowBadgeText}>{t('watch.now', 'עכשיו')}</Text>
+                      <Text style={styles.nowBadgeText}>{t('watch.now')}</Text>
                     </View>
                   )}
                 </View>
@@ -311,7 +311,7 @@ export default function WatchPage({ type = 'vod' }: WatchPageProps) {
       {/* Related Content */}
       {related.length > 0 && (
         <ContentCarousel
-          title={t('watch.related', 'תוכן דומה')}
+          title={t('watch.related')}
           items={related}
         />
       )}

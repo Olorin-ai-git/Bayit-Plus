@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useRef, useCallback } from 'react';
 import {
   View,
   Text,
@@ -7,35 +7,34 @@ import {
   Modal,
   Animated,
   Platform,
+  ActivityIndicator,
 } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { GlassView } from './ui';
-import { getCurrentLanguage } from '../i18n';
 import { colors, spacing, borderRadius } from '../theme';
 
 interface VoiceSearchButtonProps {
   onResult: (text: string) => void;
+  transcribeAudio?: (audioBlob: Blob) => Promise<{ text: string }>;
 }
 
-// Language codes for speech recognition
-const speechLanguageCodes: Record<string, string> = {
-  he: 'he-IL',
-  en: 'en-US',
-  es: 'es-ES',
-};
-
-export const VoiceSearchButton: React.FC<VoiceSearchButtonProps> = ({ onResult }) => {
+export const VoiceSearchButton: React.FC<VoiceSearchButtonProps> = ({
+  onResult,
+  transcribeAudio,
+}) => {
   const { t } = useTranslation();
-  const [isListening, setIsListening] = useState(false);
+  const [isRecording, setIsRecording] = useState(false);
+  const [isTranscribing, setIsTranscribing] = useState(false);
   const [isFocused, setIsFocused] = useState(false);
-  const [transcript, setTranscript] = useState('');
   const [showModal, setShowModal] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const pulseAnim = useRef(new Animated.Value(1)).current;
-  const recognitionRef = useRef<any>(null);
+  const mediaRecorderRef = useRef<MediaRecorder | null>(null);
+  const audioChunksRef = useRef<Blob[]>([]);
 
   // Pulse animation for recording state
-  useEffect(() => {
-    if (isListening) {
+  React.useEffect(() => {
+    if (isRecording) {
       Animated.loop(
         Animated.sequence([
           Animated.timing(pulseAnim, {
@@ -53,80 +52,99 @@ export const VoiceSearchButton: React.FC<VoiceSearchButtonProps> = ({ onResult }
     } else {
       pulseAnim.setValue(1);
     }
-  }, [isListening]);
+  }, [isRecording, pulseAnim]);
 
-  const startListening = () => {
-    // Web Speech API (for web/browser)
-    if (Platform.OS === 'web' && typeof globalThis !== 'undefined' && typeof globalThis === 'object' && ('SpeechRecognition' in globalThis || 'webkitSpeechRecognition' in globalThis)) {
-      const SpeechRecognition = (globalThis as any).SpeechRecognition || (globalThis as any).webkitSpeechRecognition;
+  const handleTranscription = useCallback(async (audioBlob: Blob) => {
+    if (!transcribeAudio) {
+      console.error('No transcribeAudio function provided');
+      setError(t('voice.transcriptionNotAvailable', 'Transcription not available'));
+      setShowModal(false);
+      return;
+    }
 
-      if (SpeechRecognition) {
-        const recognition = new SpeechRecognition();
-        recognitionRef.current = recognition;
+    setIsTranscribing(true);
+    setError(null);
 
-        const currentLang = getCurrentLanguage();
-        recognition.lang = speechLanguageCodes[currentLang.code] || 'en-US';
-        recognition.continuous = false;
-        recognition.interimResults = true;
+    try {
+      const response = await transcribeAudio(audioBlob);
+      const transcribedText = response.text;
 
-        recognition.onstart = () => {
-          setIsListening(true);
-          setShowModal(true);
-          setTranscript('');
-        };
-
-        recognition.onresult = (event: any) => {
-          const current = event.resultIndex;
-          const result = event.results[current];
-          const text = result[0].transcript;
-          setTranscript(text);
-
-          if (result.isFinal) {
-            setIsListening(false);
-            setTimeout(() => {
-              setShowModal(false);
-              if (text.trim()) {
-                onResult(text.trim());
-              }
-            }, 500);
-          }
-        };
-
-        recognition.onerror = (event: any) => {
-          console.log('Speech recognition error:', event.error);
-          setIsListening(false);
-          setShowModal(false);
-        };
-
-        recognition.onend = () => {
-          setIsListening(false);
-        };
-
-        recognition.start();
-      } else {
-        console.log('Speech recognition not supported');
-        // Show error or fallback
+      if (transcribedText?.trim()) {
+        onResult(transcribedText.trim());
       }
-    } else {
-      // For native platforms, we would use @react-native-voice/voice
-      // For now, show a message that it's not supported
-      console.log('Voice search not supported on this platform yet');
+      setShowModal(false);
+    } catch (err) {
+      console.error('Transcription failed:', err);
+      setError(t('voice.transcriptionFailed', 'Transcription failed'));
+    } finally {
+      setIsTranscribing(false);
     }
-  };
+  }, [transcribeAudio, onResult, t]);
 
-  const stopListening = () => {
-    if (recognitionRef.current) {
-      recognitionRef.current.stop();
+  const startRecording = useCallback(async () => {
+    if (Platform.OS !== 'web') {
+      console.log('Voice recording not supported on this platform yet');
+      return;
     }
-    setIsListening(false);
-  };
+
+    try {
+      setError(null);
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      const mediaRecorder = new MediaRecorder(stream, {
+        mimeType: 'audio/webm;codecs=opus',
+      });
+
+      audioChunksRef.current = [];
+      mediaRecorderRef.current = mediaRecorder;
+
+      mediaRecorder.ondataavailable = (event) => {
+        if (event.data.size > 0) {
+          audioChunksRef.current.push(event.data);
+        }
+      };
+
+      mediaRecorder.onstop = async () => {
+        stream.getTracks().forEach((track) => track.stop());
+        const audioBlob = new Blob(audioChunksRef.current, { type: 'audio/webm' });
+        await handleTranscription(audioBlob);
+      };
+
+      mediaRecorder.start();
+      setIsRecording(true);
+      setShowModal(true);
+    } catch (err) {
+      console.error('Failed to start recording:', err);
+      setError(t('voice.micPermissionDenied', 'Microphone permission denied'));
+      setShowModal(true);
+    }
+  }, [handleTranscription, t]);
+
+  const stopRecording = useCallback(() => {
+    if (mediaRecorderRef.current && isRecording) {
+      mediaRecorderRef.current.stop();
+      setIsRecording(false);
+    }
+  }, [isRecording]);
 
   const handlePress = () => {
-    if (isListening) {
-      stopListening();
+    if (isRecording) {
+      stopRecording();
     } else {
-      startListening();
+      startRecording();
     }
+  };
+
+  const handleCancel = () => {
+    if (isRecording && mediaRecorderRef.current) {
+      // Stop without triggering onstop handler
+      const stream = mediaRecorderRef.current.stream;
+      stream?.getTracks().forEach((track) => track.stop());
+      mediaRecorderRef.current = null;
+      setIsRecording(false);
+    }
+    setShowModal(false);
+    setError(null);
+    setIsTranscribing(false);
   };
 
   return (
@@ -138,11 +156,11 @@ export const VoiceSearchButton: React.FC<VoiceSearchButtonProps> = ({ onResult }
         style={[
           styles.button,
           isFocused && styles.buttonFocused,
-          isListening && styles.buttonActive,
+          isRecording && styles.buttonActive,
         ]}
       >
-        <Animated.View style={{ transform: [{ scale: isListening ? pulseAnim : 1 }] }}>
-          <Text style={[styles.icon, isListening && styles.iconActive]}>🎤</Text>
+        <Animated.View style={{ transform: [{ scale: isRecording ? pulseAnim : 1 }] }}>
+          <Text style={[styles.icon, isRecording && styles.iconActive]}>🎤</Text>
         </Animated.View>
       </TouchableOpacity>
 
@@ -150,42 +168,52 @@ export const VoiceSearchButton: React.FC<VoiceSearchButtonProps> = ({ onResult }
         visible={showModal}
         transparent
         animationType="fade"
-        onRequestClose={() => {
-          stopListening();
-          setShowModal(false);
-        }}
+        onRequestClose={handleCancel}
       >
         <View style={styles.modalOverlay}>
           <GlassView intensity="high" style={styles.modalContent}>
             <Animated.View
               style={[
                 styles.micContainer,
-                { transform: [{ scale: pulseAnim }] },
+                { transform: [{ scale: isRecording ? pulseAnim : 1 }] },
               ]}
             >
-              <View style={[styles.micCircle, isListening && styles.micCircleActive]}>
-                <Text style={styles.micIcon}>🎤</Text>
+              <View style={[
+                styles.micCircle,
+                isRecording && styles.micCircleActive,
+                isTranscribing && styles.micCircleTranscribing,
+              ]}>
+                {isTranscribing ? (
+                  <ActivityIndicator size="large" color={colors.primary} />
+                ) : (
+                  <Text style={styles.micIcon}>🎤</Text>
+                )}
               </View>
             </Animated.View>
 
             <Text style={styles.statusText}>
-              {isListening ? t('voice.listening') : t('voice.processing')}
+              {isRecording
+                ? t('voice.listening', 'Listening...')
+                : isTranscribing
+                  ? t('voice.transcribing', 'Transcribing...')
+                  : t('voice.processing', 'Processing...')}
             </Text>
 
-            {transcript ? (
-              <Text style={styles.transcript}>"{transcript}"</Text>
+            {error ? (
+              <Text style={styles.errorText}>{error}</Text>
             ) : (
-              <Text style={styles.hint}>{t('voice.tapToSpeak')}</Text>
+              <Text style={styles.hint}>
+                {isRecording
+                  ? t('voice.tapToStop', 'Tap to stop recording')
+                  : t('voice.pleaseWait', 'Please wait...')}
+              </Text>
             )}
 
             <TouchableOpacity
-              onPress={() => {
-                stopListening();
-                setShowModal(false);
-              }}
+              onPress={handleCancel}
               style={styles.cancelButton}
             >
-              <Text style={styles.cancelText}>{t('common.cancel')}</Text>
+              <Text style={styles.cancelText}>{t('common.cancel', 'Cancel')}</Text>
             </TouchableOpacity>
           </GlassView>
         </View>
@@ -248,6 +276,10 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(239, 68, 68, 0.2)',
     borderColor: colors.error,
   },
+  micCircleTranscribing: {
+    backgroundColor: 'rgba(0, 217, 255, 0.2)',
+    borderColor: colors.primary,
+  },
   micIcon: {
     fontSize: 40,
   },
@@ -257,17 +289,17 @@ const styles = StyleSheet.create({
     color: colors.text,
     marginBottom: spacing.md,
   },
-  transcript: {
-    fontSize: 18,
-    color: colors.primary,
-    textAlign: 'center',
-    marginBottom: spacing.lg,
-    fontStyle: 'italic',
-  },
   hint: {
     fontSize: 14,
     color: colors.textSecondary,
     marginBottom: spacing.lg,
+    textAlign: 'center',
+  },
+  errorText: {
+    fontSize: 14,
+    color: colors.error,
+    marginBottom: spacing.lg,
+    textAlign: 'center',
   },
   cancelButton: {
     paddingVertical: spacing.sm,

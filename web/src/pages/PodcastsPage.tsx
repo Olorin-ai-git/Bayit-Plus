@@ -1,10 +1,11 @@
 import { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, FlatList, Pressable, Image, ScrollView, useWindowDimensions } from 'react-native';
 import { Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { Podcast, Headphones, Clock } from 'lucide-react';
 import { podcastService } from '@/services/api';
 import { colors, spacing, borderRadius } from '@bayit/shared/theme';
-import { GlassView, GlassCard } from '@bayit/shared/ui';
+import { GlassView, GlassCard, GlassCategoryPill } from '@bayit/shared/ui';
 import logger from '@/utils/logger';
 
 interface Category {
@@ -21,7 +22,7 @@ interface Show {
   latestEpisode?: string;
 }
 
-function ShowCard({ show }: { show: Show }) {
+function ShowCard({ show, episodesLabel }: { show: Show; episodesLabel: string }) {
   const [isHovered, setIsHovered] = useState(false);
 
   return (
@@ -53,7 +54,7 @@ function ShowCard({ show }: { show: Show }) {
           <View style={styles.showMeta}>
             <View style={styles.metaItem}>
               <Headphones size={12} color={colors.textMuted} />
-              <Text style={styles.metaText}>{show.episodeCount || 0} פרקים</Text>
+              <Text style={styles.metaText}>{show.episodeCount || 0} {episodesLabel}</Text>
             </View>
             {show.latestEpisode && (
               <View style={styles.metaItem}>
@@ -77,11 +78,13 @@ function SkeletonCard() {
 }
 
 export default function PodcastsPage() {
+  const { t } = useTranslation();
   const [shows, setShows] = useState<Show[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedCategory, setSelectedCategory] = useState('all');
   const { width } = useWindowDimensions();
+  const episodesLabel = t('podcasts.episodes');
 
   const numColumns = width >= 1280 ? 5 : width >= 1024 ? 4 : width >= 768 ? 3 : 2;
 
@@ -125,38 +128,61 @@ export default function PodcastsPage() {
         <GlassView style={styles.headerIcon}>
           <Podcast size={24} color={colors.success} />
         </GlassView>
-        <Text style={styles.title}>פודקאסטים</Text>
+        <Text style={styles.title}>{t('podcasts.title')}</Text>
       </View>
 
       {/* Category Filter */}
-      {categories.length > 0 && (
-        <ScrollView
-          horizontal
-          showsHorizontalScrollIndicator={false}
-          style={styles.categoriesScroll}
-          contentContainerStyle={styles.categoriesContent}
-        >
-          <Pressable
-            onPress={() => setSelectedCategory('all')}
-            style={[styles.categoryPill, selectedCategory === 'all' && styles.categoryPillActive]}
-          >
-            <Text style={[styles.categoryText, selectedCategory === 'all' && styles.categoryTextActive]}>
-              הכל
-            </Text>
-          </Pressable>
-          {categories.map((category) => (
-            <Pressable
-              key={category.id}
-              onPress={() => setSelectedCategory(category.id)}
-              style={[styles.categoryPill, selectedCategory === category.id && styles.categoryPillActive]}
-            >
-              <Text style={[styles.categoryText, selectedCategory === category.id && styles.categoryTextActive]}>
-                {category.name}
-              </Text>
-            </Pressable>
-          ))}
-        </ScrollView>
-      )}
+      <ScrollView
+        horizontal
+        showsHorizontalScrollIndicator={false}
+        style={styles.categoriesScroll}
+        contentContainerStyle={styles.categoriesContent}
+      >
+        <GlassCategoryPill
+          label={t('podcasts.categories.all')}
+          emoji="🎧"
+          isActive={selectedCategory === 'all'}
+          onPress={() => setSelectedCategory('all')}
+        />
+        <GlassCategoryPill
+          label={t('podcasts.categories.news')}
+          emoji="📰"
+          isActive={selectedCategory === 'news'}
+          onPress={() => setSelectedCategory('news')}
+        />
+        <GlassCategoryPill
+          label={t('podcasts.categories.tech')}
+          emoji="💻"
+          isActive={selectedCategory === 'tech'}
+          onPress={() => setSelectedCategory('tech')}
+        />
+        <GlassCategoryPill
+          label={t('podcasts.categories.jewish')}
+          emoji="✡️"
+          isActive={selectedCategory === 'jewish'}
+          onPress={() => setSelectedCategory('jewish')}
+        />
+        <GlassCategoryPill
+          label={t('podcasts.categories.entertainment')}
+          emoji="🎭"
+          isActive={selectedCategory === 'entertainment'}
+          onPress={() => setSelectedCategory('entertainment')}
+        />
+        <GlassCategoryPill
+          label={t('podcasts.categories.sports')}
+          emoji="⚽"
+          isActive={selectedCategory === 'sports'}
+          onPress={() => setSelectedCategory('sports')}
+        />
+        {categories.map((category) => (
+          <GlassCategoryPill
+            key={category.id}
+            label={category.name}
+            isActive={selectedCategory === category.id}
+            onPress={() => setSelectedCategory(category.id)}
+          />
+        ))}
+      </ScrollView>
 
       {/* Shows Grid */}
       <FlatList
@@ -168,15 +194,15 @@ export default function PodcastsPage() {
         columnWrapperStyle={numColumns > 1 ? styles.row : undefined}
         renderItem={({ item }) => (
           <View style={{ flex: 1, maxWidth: `${100 / numColumns}%` }}>
-            <ShowCard show={item} />
+            <ShowCard show={item} episodesLabel={episodesLabel} />
           </View>
         )}
         ListEmptyComponent={
           <View style={styles.emptyState}>
             <GlassCard style={styles.emptyCard}>
               <Podcast size={64} color={colors.textMuted} />
-              <Text style={styles.emptyTitle}>אין פודקאסטים זמינים</Text>
-              <Text style={styles.emptyDescription}>נסה שוב מאוחר יותר</Text>
+              <Text style={styles.emptyTitle}>{t('podcasts.noPodcasts')}</Text>
+              <Text style={styles.emptyDescription}>{t('podcasts.tryLater')}</Text>
             </GlassCard>
           </View>
         }
@@ -219,27 +245,6 @@ const styles = StyleSheet.create({
   categoriesContent: {
     gap: spacing.sm,
     paddingBottom: spacing.sm,
-  },
-  categoryPill: {
-    paddingHorizontal: spacing.md,
-    paddingVertical: spacing.sm,
-    borderRadius: borderRadius.full,
-    backgroundColor: colors.glass,
-    borderWidth: 1,
-    borderColor: colors.glassBorder,
-  },
-  categoryPillActive: {
-    backgroundColor: colors.success,
-    borderColor: colors.success,
-  },
-  categoryText: {
-    fontSize: 14,
-    fontWeight: '500',
-    color: colors.textSecondary,
-  },
-  categoryTextActive: {
-    color: colors.background,
-    fontWeight: '600',
   },
   grid: {
     flexDirection: 'row',

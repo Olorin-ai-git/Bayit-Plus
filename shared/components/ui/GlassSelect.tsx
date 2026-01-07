@@ -32,7 +32,7 @@ interface GlassSelectProps {
 
 export const GlassSelect: React.FC<GlassSelectProps> = ({
   label,
-  placeholder = 'בחר...',
+  placeholder = 'Select...',
   options,
   value,
   onChange,

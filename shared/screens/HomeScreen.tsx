@@ -14,6 +14,7 @@ import { DualClock } from '../components/DualClock';
 import { TrendingRow } from '../components/TrendingRow';
 import { contentService, liveService, historyService, ritualService } from '../services/api';
 import { colors, spacing } from '../theme';
+import { getLocalizedName, getLocalizedDescription } from '../utils/contentLocalization';
 
 interface ContentItem {
   id: string;
@@ -45,27 +46,14 @@ export const HomeScreen: React.FC = () => {
   const currentLang = i18n.language;
   const isHebrew = currentLang === 'he';
 
-  // Helper to get localized title based on current language
+  // Helper to get localized title (uses centralized utility)
   const getLocalizedTitle = (item: any) => {
-    if (currentLang === 'he') {
-      return item.title || item.name;
-    }
-    if (currentLang === 'es') {
-      return item.title_es || item.name_es || item.title_en || item.name_en || item.title || item.name;
-    }
-    // Default to English
-    return item.title_en || item.name_en || item.title || item.name;
+    return getLocalizedName(item, currentLang);
   };
 
-  // Helper to get localized description
-  const getLocalizedDescription = (item: any) => {
-    if (currentLang === 'he') {
-      return item.description;
-    }
-    if (currentLang === 'es') {
-      return item.description_es || item.description_en || item.description;
-    }
-    return item.description_en || item.description;
+  // Helper to get localized description (uses centralized utility)
+  const getLocalizedDesc = (item: any) => {
+    return getLocalizedDescription(item, currentLang);
   };
 
   // Helper to get any localized field

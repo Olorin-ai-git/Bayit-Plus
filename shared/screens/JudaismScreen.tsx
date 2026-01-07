@@ -12,10 +12,11 @@ import {
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
-import { GlassView } from '../components/ui';
+import { GlassView, GlassCategoryPill } from '../components/ui';
 import { colors, spacing, borderRadius } from '../theme';
 import { isTV } from '../utils/platform';
 import { useDirection } from '../hooks/useDirection';
+import { getLocalizedName, getLocalizedDescription } from '../utils/contentLocalization';
 import { judaismService } from '../services/api';
 
 interface JudaismItem {
@@ -153,6 +154,9 @@ export const JudaismScreen: React.FC = () => {
   const currentLang = i18n.language;
 
   const getLocalizedText = (item: any, field: string) => {
+    if (field === 'title') return getLocalizedName(item, currentLang);
+    if (field === 'description') return getLocalizedDescription(item, currentLang);
+    // Fallback for other fields
     if (currentLang === 'he') return item[field] || item.title || item.name;
     if (currentLang === 'es') return item[`${field}_es`] || item[`${field}_en`] || item[field];
     return item[`${field}_en`] || item[field];
@@ -230,25 +234,15 @@ export const JudaismScreen: React.FC = () => {
           showsHorizontalScrollIndicator={false}
           contentContainerStyle={[styles.categories, { flexDirection: isRTL ? 'row' : 'row-reverse' }]}
         >
-          {(isRTL ? categories : [...categories].reverse()).map((category) => (
-            <TouchableOpacity
+          {(isRTL ? categories : [...categories].reverse()).map((category, index) => (
+            <GlassCategoryPill
               key={category.id}
+              label={getLocalizedText(category, 'name')}
+              emoji={category.icon}
+              isActive={selectedCategory === category.id}
               onPress={() => setSelectedCategory(category.id)}
-              style={[
-                styles.categoryButton,
-                selectedCategory === category.id && styles.categoryButtonActive,
-              ]}
-            >
-              <Text style={styles.categoryIcon}>{category.icon}</Text>
-              <Text
-                style={[
-                  styles.categoryText,
-                  selectedCategory === category.id && styles.categoryTextActive,
-                ]}
-              >
-                {getLocalizedText(category, 'name')}
-              </Text>
-            </TouchableOpacity>
+              hasTVPreferredFocus={index === 0}
+            />
           ))}
         </ScrollView>
       )}
@@ -330,32 +324,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: 48,
     marginBottom: 24,
     gap: 12,
-  },
-  categoryButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingHorizontal: 20,
-    paddingVertical: 12,
-    borderRadius: 24,
-    backgroundColor: '#1a1a2e',
-    borderWidth: 2,
-    borderColor: 'transparent',
-    gap: 8,
-  },
-  categoryButtonActive: {
-    backgroundColor: 'rgba(70, 130, 180, 0.2)',
-    borderColor: '#4682b4',
-  },
-  categoryIcon: {
-    fontSize: 18,
-  },
-  categoryText: {
-    fontSize: 16,
-    color: '#888888',
-  },
-  categoryTextActive: {
-    color: '#4682b4',
-    fontWeight: 'bold',
   },
   grid: {
     paddingHorizontal: spacing.xl,

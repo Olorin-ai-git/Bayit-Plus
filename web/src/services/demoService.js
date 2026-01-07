@@ -3,6 +3,7 @@
  * Provides mock implementations of all API services for demo mode.
  * Returns comprehensive demo data with simulated network delay.
  */
+import i18n from 'i18next';
 import { config } from '../config/appConfig';
 import demoData, {
   demoUser,
@@ -253,13 +254,113 @@ export const demoSubscriptionService = {
 // ===========================================
 // CHAT SERVICE (Demo)
 // ===========================================
-export const demoChatService = {
-  sendMessage: async (message, conversationId) => {
-    await delay(500);
+const generateChatResponse = (message, context) => {
+  const lowerMessage = message.toLowerCase();
+  const lang = i18n.language || 'he';
+
+  // Check for flow-related queries
+  if (lowerMessage.includes('flow') || lowerMessage.includes('פלו') || lowerMessage.includes('רצף')) {
+    if (lowerMessage.includes('create') || lowerMessage.includes('צור') || lowerMessage.includes('חדש')) {
+      return {
+        message: lang === 'he'
+          ? 'אשמח ליצור עבורך רצף חדש! מה תרצה שהרצף יכלול? בוקר, ערב או שבת?'
+          : 'I\'d be happy to create a new flow for you! What would you like the flow to include? Morning, evening, or Shabbat?',
+        action: null,
+      };
+    }
+    if (context?.flows?.length > 0) {
+      const flowNames = context.flows.map(f => f.name).join(', ');
+      return {
+        message: lang === 'he'
+          ? `יש לך את הרצפים הבאים: ${flowNames}. מה תרצה לעשות?`
+          : `You have the following flows: ${flowNames}. What would you like to do?`,
+        action: null,
+      };
+    }
+  }
+
+  // Check for live TV queries
+  if (lowerMessage.includes('live') || lowerMessage.includes('שידור') || lowerMessage.includes('ערוץ') || lowerMessage.includes('channel')) {
+    if (context?.liveChannels?.length > 0) {
+      return {
+        message: lang === 'he'
+          ? `יש ${context.liveChannels.length} ערוצים זמינים. רוצה שאנווט אותך לשידור חי?`
+          : `There are ${context.liveChannels.length} channels available. Would you like me to navigate to live TV?`,
+        action: { type: 'navigate', payload: { path: '/live' } },
+      };
+    }
+  }
+
+  // Check for search queries
+  if (lowerMessage.includes('search') || lowerMessage.includes('find') || lowerMessage.includes('חפש') || lowerMessage.includes('מצא')) {
+    const searchTerm = message.replace(/search|find|חפש|מצא/gi, '').trim();
+    if (searchTerm) {
+      return {
+        message: lang === 'he'
+          ? `מחפש "${searchTerm}"...`
+          : `Searching for "${searchTerm}"...`,
+        action: { type: 'search', payload: { query: searchTerm } },
+      };
+    }
+  }
+
+  // Check for morning routine
+  if (lowerMessage.includes('morning') || lowerMessage.includes('בוקר')) {
     return {
-      message: `זו תשובה לדוגמה על "${message}". במצב דמו, הבינה המלאכותית לא פעילה.`,
-      conversation_id: conversationId || 'demo-conv-1',
+      message: lang === 'he'
+        ? 'אשמח ליצור עבורך רצף בוקר עם חדשות, מזג אוויר ותוכן מעודד!'
+        : 'I\'d love to create a morning flow for you with news, weather, and uplifting content!',
+      action: { type: 'create_flow', payload: { template: { name: { en: 'Morning Routine', he: 'שגרת בוקר' }, triggers: [{ type: 'time', time: '07:00' }] } } },
+    };
+  }
+
+  // Check for what to watch queries
+  if (lowerMessage.includes('watch') || lowerMessage.includes('לראות') || lowerMessage.includes('לצפות') || lowerMessage.includes('recommend') || lowerMessage.includes('המלצ')) {
+    return {
+      message: lang === 'he'
+        ? 'הנה כמה המלצות שעשויות לעניין אותך:'
+        : 'Here are some recommendations you might like:',
       recommendations: demoSeries.slice(0, 3),
+      action: null,
+    };
+  }
+
+  // Check for podcast queries
+  if (lowerMessage.includes('podcast') || lowerMessage.includes('פודקאסט')) {
+    return {
+      message: lang === 'he'
+        ? 'אנווט אותך לפודקאסטים שלנו.'
+        : 'I\'ll navigate you to our podcasts.',
+      action: { type: 'navigate', payload: { path: '/podcasts' } },
+    };
+  }
+
+  // Check for radio queries
+  if (lowerMessage.includes('radio') || lowerMessage.includes('רדיו')) {
+    return {
+      message: lang === 'he'
+        ? 'אנווט אותך לתחנות הרדיו שלנו.'
+        : 'I\'ll navigate you to our radio stations.',
+      action: { type: 'navigate', payload: { path: '/radio' } },
+    };
+  }
+
+  // Default response with recommendations
+  return {
+    message: lang === 'he'
+      ? `הבנתי: "${message}". איך אוכל לעזור לך? אפשר לחפש תוכן, ליצור רצף, או לנווט לשידור חי.`
+      : `Got it: "${message}". How can I help you? I can search for content, create a flow, or navigate to live TV.`,
+    action: null,
+  };
+};
+
+export const demoChatService = {
+  sendMessage: async (message, conversationId, context = null) => {
+    await delay(500);
+    const response = generateChatResponse(message, context);
+    return {
+      ...response,
+      conversation_id: conversationId || 'demo-conv-1',
     };
   },
   getConversation: async (conversationId) => {
@@ -295,7 +396,7 @@ export const demoZmanService = {
       israel: {
         time: israelTime.toLocaleTimeString('he-IL', { hour: '2-digit', minute: '2-digit' }),
         datetime: israelTime.toISOString(),
-        day: israelTime.toLocaleDateString('he-IL', { weekday: 'long' }),
+        day: israelTime.toLocaleDateString(i18n.language === 'he' ? 'he-IL' : i18n.language === 'es' ? 'es-ES' : 'en-US', { weekday: 'long' }),
       },
       local: {
         time: now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' }),
@@ -306,7 +407,7 @@ export const demoZmanService = {
         is_shabbat: false,
         is_erev_shabbat: israelTime.getDay() === 5,
         countdown: '48:00',
-        countdown_label: 'עד שבת',
+        countdown_label: i18n.t('demo.until_shabbat'),
         candle_lighting: '16:45',
         havdalah: '17:50',
         parasha: 'Vaera',
@@ -729,7 +830,17 @@ export const demoPartyService = {
 export const demoSearchService = {
   search: async (query, filters) => {
     await delay();
-    return demoSearchResults(query);
+    const results = demoSearchResults(query);
+    return {
+      ...results,
+      interpretation: i18n.t('demo.search_interpretation', { query }),
+      suggestions: [
+        i18n.t('demo.suggestions.0'),
+        i18n.t('demo.suggestions.1'),
+        i18n.t('demo.suggestions.2'),
+        i18n.t('demo.suggestions.3'),
+      ],
+    };
   },
   quickSearch: async (query, limit = 5) => {
     await delay();
@@ -738,7 +849,15 @@ export const demoSearchService = {
   },
   getSuggestions: async () => {
     await delay();
-    return { suggestions: ['פאודה', 'שטיסל', 'טהרן', 'הבורר', 'עבודה ערבית'] };
+    return {
+      suggestions: [
+        i18n.t('demo.suggestions.0'),
+        i18n.t('demo.suggestions.1'),
+        i18n.t('demo.suggestions.2'),
+        i18n.t('demo.suggestions.3'),
+        i18n.t('demo.suggestions.4'),
+      ],
+    };
   },
   voiceSearch: async (transcript, language, filters) => {
     await delay();

@@ -527,7 +527,9 @@
       "personal": "Personal",
       "subscription": "Suscripción",
       "notifications": "Notificaciones",
-      "security": "Seguridad"
+      "security": "Seguridad",
+      "ai": "IA y Personalización",
+      "voice": "Voz y Accesibilidad"
     },
     "subscription": {
       "currentPlan": "Plan Actual",
@@ -547,6 +549,47 @@
       "updates": "Actualizaciones del Sistema",
       "updatesDesc": "Recibe notificaciones sobre cambios del sistema"
     },
+    "ai": {
+      "title": "IA y Personalización",
+      "description": "Configura las funciones impulsadas por IA",
+      "chatbot": "Asistente de IA",
+      "chatbotEnabled": "Habilitar Asistente de IA",
+      "chatbotEnabledDesc": "Obtén ayuda para navegar contenido y recomendaciones personalizadas",
+      "saveHistory": "Guardar historial de conversación",
+      "saveHistoryDesc": "Recordar conversaciones anteriores para mejor contexto",
+      "recommendations": "Recomendaciones",
+      "personalizedRecs": "Recomendaciones personalizadas",
+      "personalizedRecsDesc": "Obtén sugerencias de contenido basadas en tu historial de visualización",
+      "privacy": "Privacidad y Datos",
+      "dataConsent": "Permitir recopilación de datos para mejoras",
+      "dataConsentDesc": "Ayuda a mejorar las funciones de IA compartiendo datos de uso anónimos",
+      "privacyNote": "Tus datos están encriptados y seguros"
+    },
+    "voice": {
+      "title": "Voz y Accesibilidad",
+      "description": "Configura las funciones de voz y accesibilidad",
+      "voiceSearch": "Búsqueda por Voz",
+      "voiceSearchEnabled": "Habilitar búsqueda por voz",
+      "voiceSearchEnabledDesc": "Busca contenido usando tu voz",
+      "language": "Idioma de voz",
+      "accessibility": "Accesibilidad",
+      "autoSubtitle": "Habilitar subtítulos automáticamente",
+      "autoSubtitleDesc": "Mostrar subtítulos automáticamente al reproducir contenido",
+      "highContrast": "Modo de alto contraste",
+      "highContrastDesc": "Aumentar contraste para mejor visibilidad",
+      "textSize": "Tamaño de texto",
+      "textSizeSmall": "Pequeño",
+      "textSizeMedium": "Mediano",
+      "textSizeLarge": "Grande"
+    },
+    "dropdown": {
+      "myProfile": "Mi Perfil",
+      "subscription": "Suscripción",
+      "favorites": "Favoritos",
+      "downloads": "Descargas",
+      "signOut": "Cerrar Sesión"
+    },
+    "guest": "Invitado",
     "morningRitual": "Ritual Matutino"
   },
   "settings": {
@@ -569,6 +612,12 @@
     "listening": "Escuchando...",
     "tapToSpeak": "Toca para hablar",
     "processing": "Procesando...",
+    "transcribing": "Transcribiendo...",
+    "tapToStop": "Toca para detener la grabación",
+    "pleaseWait": "Por favor espera...",
+    "transcriptionNotAvailable": "Transcripción no disponible",
+    "transcriptionFailed": "La transcripción falló",
+    "micPermissionDenied": "Permiso de micrófono denegado",
     "error": "No te escuché, intenta de nuevo"
   },
   "errors": {

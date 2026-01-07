@@ -5,12 +5,11 @@ import {
   StyleSheet,
   ScrollView,
   TouchableOpacity,
-  Image,
   ActivityIndicator,
   Dimensions,
   Modal,
-  FlatList,
   Animated,
+  Platform,
 } from 'react-native';
 import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -18,6 +17,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { useTranslation } from 'react-i18next';
 import { useProfile } from '../contexts/ProfileContext';
 import api from '../services/api';
+import { FlowItemCard } from '../components/flows';
 
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window');
 
@@ -31,11 +31,12 @@ interface FlowItem {
 }
 
 interface FlowTrigger {
-  type: string;
+  type: 'time' | 'shabbat' | 'holiday';
   start_time?: string;
   end_time?: string;
   days?: number[];
-  skip_shabbat: boolean;
+  skip_shabbat?: boolean;
+  candle_lighting_offset?: number;
 }
 
 interface Flow {
@@ -65,12 +66,15 @@ const FlowsScreen = () => {
   const navigation = useNavigation<any>();
   const { t, i18n } = useTranslation();
   const { currentProfile } = useProfile();
+  const isRTL = i18n.language === 'he' || i18n.language === 'ar';
+  const isTV = Platform.isTV || Platform.OS === 'tvos';
 
   const [flows, setFlows] = useState<Flow[]>([]);
   const [activeFlow, setActiveFlow] = useState<Flow | null>(null);
   const [loading, setLoading] = useState(true);
   const [selectedFlow, setSelectedFlow] = useState<Flow | null>(null);
   const [showFlowModal, setShowFlowModal] = useState(false);
+  const [showCreateModal, setShowCreateModal] = useState(false);
   const [focusedIndex, setFocusedIndex] = useState(0);
 
   const pulseAnim = useRef(new Animated.Value(1)).current;
@@ -180,12 +184,31 @@ const FlowsScreen = () => {
 
   const formatTriggerTime = (trigger: FlowTrigger) => {
     if (trigger.type === 'shabbat') {
-      return t('flows.shabbatTrigger', 'Shabbat evening');
+      return t('flows.trigger.shabbat');
+    }
+    if (trigger.type === 'holiday') {
+      return t('flows.trigger.holiday');
     }
     if (trigger.start_time && trigger.end_time) {
       return `${trigger.start_time} - ${trigger.end_time}`;
     }
-    return '';
+    return t('flows.trigger.time');
+  };
+
+  const getDaysDisplay = (days: number[] | undefined) => {
+    if (!days || days.length === 0 || days.length === 7) {
+      return t('flows.days.everyDay');
+    }
+    const dayNames = [
+      t('flows.days.sundayShort'),
+      t('flows.days.mondayShort'),
+      t('flows.days.tuesdayShort'),
+      t('flows.days.wednesdayShort'),
+      t('flows.days.thursdayShort'),
+      t('flows.days.fridayShort'),
+      t('flows.days.saturdayShort'),
+    ];
+    return days.map(d => dayNames[d]).join(', ');
   };
 
   const renderActiveFlowBanner = () => {
@@ -320,6 +343,49 @@ const FlowsScreen = () => {
     );
   };
 
+  const renderCreateModal = () => (
+    <Modal
+      visible={showCreateModal}
+      transparent
+      animationType="fade"
+      onRequestClose={() => setShowCreateModal(false)}
+    >
+      <View style={styles.modalOverlay}>
+        <View style={styles.createModalContent}>
+          <LinearGradient
+            colors={['#00d9ff', '#0099cc']}
+            style={styles.createModalIcon}
+          >
+            <Ionicons name="add-circle" size={48} color="#fff" />
+          </LinearGradient>
+
+          <Text style={styles.createModalTitle}>
+            {t('flows.createFlow')}
+          </Text>
+          <Text style={styles.createModalDesc}>
+            {t('flows.createFlowDesc')}
+          </Text>
+
+          <View style={styles.createModalInfo}>
+            <Ionicons name="phone-portrait-outline" size={24} color="#00d9ff" />
+            <Text style={styles.createModalInfoText}>
+              {t('flows.tv.useCompanion', 'For full customization, use the Bayit+ app on your phone or visit bayit.plus on your computer.')}
+            </Text>
+          </View>
+
+          <View style={styles.createModalActions}>
+            <TouchableOpacity
+              style={styles.createModalButton}
+              onPress={() => setShowCreateModal(false)}
+            >
+              <Text style={styles.createModalButtonText}>{t('common.close')}</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </View>
+    </Modal>
+  );
+
   const renderFlowModal = () => (
     <Modal
       visible={showFlowModal}
@@ -348,38 +414,114 @@ const FlowsScreen = () => {
               )}
 
               <View style={styles.modalInfo}>
-                <Text style={styles.modalInfoLabel}>{t('flows.type', 'Type')}:</Text>
+                <Text style={styles.modalInfoLabel}>{t('flows.type')}:</Text>
                 <Text style={styles.modalInfoValue}>
                   {selectedFlow.flow_type === 'system'
-                    ? t('flows.systemFlow', 'System Flow')
-                    : t('flows.customFlow', 'Custom Flow')}
+                    ? t('flows.systemFlow')
+                    : t('flows.customFlow')}
                 </Text>
               </View>
 
               {selectedFlow.triggers.length > 0 && (
-                <View style={styles.modalInfo}>
-                  <Text style={styles.modalInfoLabel}>{t('flows.schedule', 'Schedule')}:</Text>
-                  <Text style={styles.modalInfoValue}>
-                    {formatTriggerTime(selectedFlow.triggers[0])}
-                  </Text>
-                </View>
+                <>
+                  <View style={styles.modalInfo}>
+                    <Text style={styles.modalInfoLabel}>{t('flows.schedule')}:</Text>
+                    <Text style={styles.modalInfoValue}>
+                      {formatTriggerTime(selectedFlow.triggers[0])}
+                    </Text>
+                  </View>
+                  {selectedFlow.triggers[0].type === 'time' && selectedFlow.triggers[0].days && (
+                    <View style={styles.modalInfo}>
+                      <Text style={styles.modalInfoLabel}>{t('flows.days.title')}:</Text>
+                      <Text style={styles.modalInfoValue}>
+                        {getDaysDisplay(selectedFlow.triggers[0].days)}
+                      </Text>
+                    </View>
+                  )}
+                </>
               )}
 
-              <View style={styles.modalInfo}>
-                <Text style={styles.modalInfoLabel}>{t('flows.content', 'Content')}:</Text>
-                <Text style={styles.modalInfoValue}>
-                  {selectedFlow.items.length > 0
-                    ? `${selectedFlow.items.length} ${t('flows.items', 'items')}`
-                    : t('flows.aiGenerated', 'AI Generated')}
+              {/* Feature badges */}
+              <View style={styles.modalFeatures}>
+                {selectedFlow.ai_enabled && (
+                  <View style={[styles.modalFeatureBadge, styles.aiBadge]}>
+                    <Ionicons name="sparkles" size={14} color="#00d9ff" />
+                    <Text style={styles.modalFeatureText}>{t('flows.aiEnabled')}</Text>
+                  </View>
+                )}
+                {selectedFlow.ai_brief_enabled && (
+                  <View style={[styles.modalFeatureBadge, styles.briefBadge]}>
+                    <Ionicons name="document-text" size={14} color="#8b5cf6" />
+                    <Text style={[styles.modalFeatureText, { color: '#8b5cf6' }]}>
+                      {t('flows.aiBrief')}
+                    </Text>
+                  </View>
+                )}
+                {selectedFlow.auto_play && (
+                  <View style={styles.modalFeatureBadge}>
+                    <Ionicons name="play-circle" size={14} color="#00d9ff" />
+                    <Text style={styles.modalFeatureText}>{t('flows.autoPlay')}</Text>
+                  </View>
+                )}
+              </View>
+
+              {/* Flow Items */}
+              <View style={styles.modalItemsSection}>
+                <Text style={styles.modalItemsTitle}>
+                  {t('flows.content')} ({selectedFlow.items.length})
                 </Text>
+                {selectedFlow.items.length > 0 ? (
+                  <ScrollView
+                    style={styles.modalItemsList}
+                    showsVerticalScrollIndicator={false}
+                  >
+                    {selectedFlow.items.slice(0, 5).map((item, index) => (
+                      <FlowItemCard
+                        key={`${item.content_id}-${index}`}
+                        item={item}
+                        index={index}
+                        totalItems={selectedFlow.items.length}
+                        editable={false}
+                        isRTL={isRTL}
+                      />
+                    ))}
+                    {selectedFlow.items.length > 5 && (
+                      <Text style={styles.moreItemsText}>
+                        +{selectedFlow.items.length - 5} {t('flows.flowItems.more')}
+                      </Text>
+                    )}
+                  </ScrollView>
+                ) : (
+                  <View style={styles.aiGeneratedNote}>
+                    <Ionicons name="sparkles" size={20} color="#ff9500" />
+                    <Text style={styles.aiGeneratedText}>
+                      {t('flows.aiGenerated')}
+                    </Text>
+                  </View>
+                )}
               </View>
 
               <View style={styles.modalActions}>
                 <TouchableOpacity
+                  style={styles.modalStartButton}
+                  onPress={() => {
+                    setShowFlowModal(false);
+                    handleStartFlow(selectedFlow);
+                  }}
+                >
+                  <LinearGradient
+                    colors={['#00d9ff', '#0099cc']}
+                    style={styles.modalStartGradient}
+                  >
+                    <Ionicons name="play" size={20} color="#fff" />
+                    <Text style={styles.modalStartText}>{t('flows.start')}</Text>
+                  </LinearGradient>
+                </TouchableOpacity>
+                <TouchableOpacity
                   style={styles.modalButton}
                   onPress={() => setShowFlowModal(false)}
                 >
-                  <Text style={styles.modalButtonText}>{t('common.close', 'Close')}</Text>
+                  <Text style={styles.modalButtonText}>{t('common.close')}</Text>
                 </TouchableOpacity>
               </View>
             </>
@@ -448,20 +590,24 @@ const FlowsScreen = () => {
         )}
 
         {/* Create Flow Button */}
-        <TouchableOpacity style={styles.createButton}>
+        <TouchableOpacity
+          style={styles.createButton}
+          onPress={() => setShowCreateModal(true)}
+        >
           <LinearGradient
             colors={['rgba(0,217,255,0.1)', 'rgba(0,217,255,0.05)']}
             style={styles.createButtonGradient}
           >
             <Ionicons name="add-circle-outline" size={24} color="#00d9ff" />
             <Text style={styles.createButtonText}>
-              {t('flows.createCustom', 'Create Custom Flow')}
+              {t('flows.createCustom')}
             </Text>
           </LinearGradient>
         </TouchableOpacity>
       </ScrollView>
 
       {renderFlowModal()}
+      {renderCreateModal()}
     </View>
   );
 };
@@ -752,6 +898,150 @@ const styles = StyleSheet.create({
     borderRadius: 8,
   },
   modalButtonText: {
+    fontSize: 16,
+    color: '#fff',
+    fontWeight: '600',
+  },
+  modalFeatures: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    gap: 12,
+    marginTop: 16,
+    marginBottom: 8,
+    flexWrap: 'wrap',
+  },
+  modalFeatureBadge: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+    backgroundColor: 'rgba(0,217,255,0.1)',
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 8,
+  },
+  aiBadge: {
+    backgroundColor: 'rgba(0,217,255,0.1)',
+  },
+  briefBadge: {
+    backgroundColor: 'rgba(139,92,246,0.1)',
+  },
+  modalFeatureText: {
+    fontSize: 13,
+    color: '#00d9ff',
+    fontWeight: '500',
+  },
+  modalItemsSection: {
+    width: '100%',
+    marginTop: 16,
+    borderTopWidth: 1,
+    borderTopColor: 'rgba(255,255,255,0.1)',
+    paddingTop: 16,
+  },
+  modalItemsTitle: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: '#888',
+    marginBottom: 12,
+    textTransform: 'uppercase',
+    letterSpacing: 0.5,
+  },
+  modalItemsList: {
+    maxHeight: 200,
+  },
+  moreItemsText: {
+    fontSize: 13,
+    color: '#00d9ff',
+    textAlign: 'center',
+    marginTop: 8,
+    fontWeight: '500',
+  },
+  aiGeneratedNote: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 8,
+    paddingVertical: 16,
+    backgroundColor: 'rgba(255,149,0,0.1)',
+    borderRadius: 8,
+  },
+  aiGeneratedText: {
+    fontSize: 14,
+    color: '#ff9500',
+    fontWeight: '500',
+  },
+  modalStartButton: {
+    borderRadius: 10,
+    overflow: 'hidden',
+  },
+  modalStartGradient: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+    paddingHorizontal: 24,
+    paddingVertical: 12,
+  },
+  modalStartText: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#fff',
+  },
+  createModalContent: {
+    width: SCREEN_WIDTH * 0.45,
+    backgroundColor: '#1a1a2e',
+    borderRadius: 20,
+    padding: 40,
+    alignItems: 'center',
+    borderWidth: 1,
+    borderColor: 'rgba(255,255,255,0.1)',
+  },
+  createModalIcon: {
+    width: 96,
+    height: 96,
+    borderRadius: 24,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: 24,
+  },
+  createModalTitle: {
+    fontSize: 28,
+    fontWeight: 'bold',
+    color: '#fff',
+    marginBottom: 12,
+    textAlign: 'center',
+  },
+  createModalDesc: {
+    fontSize: 16,
+    color: '#888',
+    textAlign: 'center',
+    marginBottom: 24,
+    lineHeight: 24,
+  },
+  createModalInfo: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 16,
+    backgroundColor: 'rgba(0,217,255,0.1)',
+    padding: 20,
+    borderRadius: 12,
+    marginBottom: 24,
+  },
+  createModalInfoText: {
+    flex: 1,
+    fontSize: 14,
+    color: '#00d9ff',
+    lineHeight: 20,
+  },
+  createModalActions: {
+    flexDirection: 'row',
+    gap: 16,
+  },
+  createModalButton: {
+    backgroundColor: 'rgba(255,255,255,0.1)',
+    paddingHorizontal: 40,
+    paddingVertical: 14,
+    borderRadius: 10,
+  },
+  createModalButtonText: {
     fontSize: 16,
     color: '#fff',
     fontWeight: '600',

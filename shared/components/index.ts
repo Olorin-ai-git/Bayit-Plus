@@ -21,6 +21,7 @@ export { GlassSidebar } from './GlassSidebar';
 export { GlassTopBar } from './GlassTopBar';
 export { InteractiveSubtitles } from './InteractiveSubtitles';
 export { LanguageSelector } from './LanguageSelector';
+export { ProfileDropdown } from './ProfileDropdown';
 export { SideMenu } from './SideMenu';
 export { TrendingRow } from './TrendingRow';
 export { UserAccountMenu } from './UserAccountMenu';

@@ -255,7 +255,7 @@ export const PushNotificationsScreen: React.FC = () => {
 
                 <View style={styles.formGroup}>
                   <Text style={styles.formLabel}>{t('admin.push.deepLink', 'Deep Link (optional)')}</Text>
-                  <TextInput style={styles.formInput} value={formData.deep_link} onChangeText={(text) => setFormData(prev => ({ ...prev, deep_link: text }))} placeholder="bayitplus://content/123" placeholderTextColor={colors.textMuted} autoCapitalize="none" />
+                  <TextInput style={styles.formInput} value={formData.deep_link} onChangeText={(text) => setFormData(prev => ({ ...prev, deep_link: text }))} placeholder={t('placeholder.deepLink', 'bayitplus://content/123')} placeholderTextColor={colors.textMuted} autoCapitalize="none" />
                 </View>
 
                 <View style={styles.formGroup}>
@@ -287,7 +287,7 @@ export const PushNotificationsScreen: React.FC = () => {
               <Text style={styles.modalTitle}>{t('admin.push.scheduleNotification', 'Schedule Notification')}</Text>
               <View style={styles.formGroup}>
                 <Text style={styles.formLabel}>{t('admin.push.scheduleDate', 'Date & Time')}</Text>
-                <TextInput style={styles.formInput} value={scheduleDate} onChangeText={setScheduleDate} placeholder="YYYY-MM-DDTHH:mm" placeholderTextColor={colors.textMuted} />
+                <TextInput style={styles.formInput} value={scheduleDate} onChangeText={setScheduleDate} placeholder={t('placeholder.datetime', 'YYYY-MM-DDTHH:mm')} placeholderTextColor={colors.textMuted} />
               </View>
               <View style={styles.modalActions}>
                 <TouchableOpacity style={styles.cancelButton} onPress={() => setShowScheduleModal(false)}><Text style={styles.cancelButtonText}>{t('common.cancel', 'Cancel')}</Text></TouchableOpacity>

@@ -271,7 +271,7 @@ export const PlanManagementScreen: React.FC = () => {
                     value={formData.price}
                     onChangeText={(text) => setFormData(prev => ({ ...prev, price: text }))}
                     keyboardType="numeric"
-                    placeholder="0.00"
+                    placeholder={t('placeholder.amount.price', '0.00')}
                     placeholderTextColor={colors.textMuted}
                   />
                 </View>
@@ -300,7 +300,7 @@ export const PlanManagementScreen: React.FC = () => {
                   value={formData.trial_days}
                   onChangeText={(text) => setFormData(prev => ({ ...prev, trial_days: text }))}
                   keyboardType="numeric"
-                  placeholder="0"
+                  placeholder={t('placeholder.number', '0')}
                   placeholderTextColor={colors.textMuted}
                 />
               </View>

@@ -153,7 +153,7 @@ export default function SubscriptionsListPage() {
     <ScrollView style={styles.container} contentContainerStyle={styles.contentContainer}>
       {/* Header */}
       <View style={styles.header}>
-        <Text style={styles.pageTitle}>{t('admin.titles.subscriptions', 'ניהול מנויים')}</Text>
+        <Text style={styles.pageTitle}>{t('admin.titles.subscriptions')}</Text>
         <Text style={styles.subtitle}>צפה ונהל מנויי המערכת</Text>
       </View>
 

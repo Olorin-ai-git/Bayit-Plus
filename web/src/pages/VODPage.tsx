@@ -1,11 +1,12 @@
 import { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, FlatList, Pressable, ScrollView, useWindowDimensions } from 'react-native';
+import { View, Text, StyleSheet, FlatList, ScrollView, useWindowDimensions } from 'react-native';
 import { useSearchParams } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { Film } from 'lucide-react';
 import ContentCard from '@/components/content/ContentCard';
 import { contentService } from '@/services/api';
 import { colors, spacing, borderRadius } from '@bayit/shared/theme';
-import { GlassView, GlassCard } from '@bayit/shared/ui';
+import { GlassView, GlassCard, GlassCategoryPill } from '@bayit/shared/ui';
 import logger from '@/utils/logger';
 
 interface Category {
@@ -24,6 +25,7 @@ interface ContentItem {
 }
 
 export default function VODPage() {
+  const { t } = useTranslation();
   const [searchParams, setSearchParams] = useSearchParams();
   const [content, setContent] = useState<ContentItem[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
@@ -70,8 +72,8 @@ export default function VODPage() {
   return (
     <View style={styles.container}>
       {/* Header */}
-      <View style={[styles.header, { direction: 'rtl' }]}>
-        <Text style={styles.title}>סרטים וסדרות</Text>
+      <View style={styles.header}>
+        <Text style={styles.title}>{t('vod.title')}</Text>
         <GlassView style={styles.headerIcon}>
           <Film size={24} color={colors.primary} />
         </GlassView>
@@ -81,33 +83,27 @@ export default function VODPage() {
       <ScrollView
         horizontal
         showsHorizontalScrollIndicator={false}
-        style={[styles.categoriesScroll, { direction: 'rtl' }]}
+        style={styles.categoriesScroll}
         contentContainerStyle={styles.categoriesContent}
       >
-        <Pressable
+        <GlassCategoryPill
+          label={t('vod.allCategories')}
+          isActive={selectedCategory === 'all'}
           onPress={() => handleCategoryChange('all')}
-          style={[styles.categoryPill, selectedCategory === 'all' && styles.categoryPillActive]}
-        >
-          <Text style={[styles.categoryText, selectedCategory === 'all' && styles.categoryTextActive]}>
-            הכל
-          </Text>
-        </Pressable>
+        />
         {categories.map((category) => (
-          <Pressable
+          <GlassCategoryPill
             key={category.id}
+            label={category.name}
+            isActive={selectedCategory === category.id}
             onPress={() => handleCategoryChange(category.id)}
-            style={[styles.categoryPill, selectedCategory === category.id && styles.categoryPillActive]}
-          >
-            <Text style={[styles.categoryText, selectedCategory === category.id && styles.categoryTextActive]}>
-              {category.name}
-            </Text>
-          </Pressable>
+          />
         ))}
       </ScrollView>
 
       {/* Loading State */}
       {loading ? (
-        <View style={[styles.grid, { direction: 'rtl' }]}>
+        <View style={styles.grid}>
           {[...Array(12)].map((_, i) => (
             <View key={i} style={[styles.skeletonCard, { width: `${100 / numColumns - 2}%` }]}>
               <View style={styles.skeletonThumbnail} />
@@ -122,11 +118,10 @@ export default function VODPage() {
             keyExtractor={(item) => item.id}
             numColumns={numColumns}
             key={numColumns}
-            style={{ direction: 'rtl' }}
             contentContainerStyle={styles.gridContent}
             columnWrapperStyle={numColumns > 1 ? styles.row : undefined}
             renderItem={({ item }) => (
-              <View style={{ flex: 1, maxWidth: `${100 / numColumns}%`, padding: spacing.xs, direction: 'ltr' }}>
+              <View style={{ flex: 1, maxWidth: `${100 / numColumns}%`, padding: spacing.xs }}>
                 <ContentCard content={item} />
               </View>
             )}
@@ -134,8 +129,8 @@ export default function VODPage() {
               <View style={styles.emptyState}>
                 <GlassCard style={styles.emptyCard}>
                   <Film size={64} color={colors.textMuted} />
-                  <Text style={styles.emptyTitle}>אין תוכן זמין</Text>
-                  <Text style={styles.emptyDescription}>נסה לבחור קטגוריה אחרת</Text>
+                  <Text style={styles.emptyTitle}>{t('vod.emptyTitle')}</Text>
+                  <Text style={styles.emptyDescription}>{t('vod.emptyDescription')}</Text>
                 </GlassCard>
               </View>
             }
@@ -179,28 +174,6 @@ const styles = StyleSheet.create({
   categoriesContent: {
     gap: spacing.sm,
     paddingBottom: spacing.sm,
-  },
-  categoryPill: {
-    paddingHorizontal: spacing.lg,
-    paddingVertical: spacing.sm,
-    borderRadius: borderRadius.xl,
-    backgroundColor: colors.backgroundLight,
-    borderWidth: 1,
-    borderColor: colors.glassBorder,
-    minWidth: 60,
-  },
-  categoryPillActive: {
-    backgroundColor: colors.primary,
-    borderColor: colors.primary,
-  },
-  categoryText: {
-    fontSize: 14,
-    fontWeight: '500',
-    color: colors.textSecondary,
-  },
-  categoryTextActive: {
-    color: colors.background,
-    fontWeight: '600',
   },
   grid: {
     flexDirection: 'row',

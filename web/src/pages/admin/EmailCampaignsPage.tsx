@@ -89,7 +89,7 @@ export default function EmailCampaignsPage() {
 
   const handleCreate = async () => {
     if (!newCampaign.name || !newCampaign.subject) {
-      setErrorMessage(t('admin.emailCampaigns.form.requiredFields', 'Name and subject are required'));
+      setErrorMessage(t('admin.emailCampaigns.form.requiredFields'));
       setShowErrorModal(true);
       return;
     }
@@ -100,7 +100,7 @@ export default function EmailCampaignsPage() {
       loadCampaigns();
     } catch (error) {
       logger.error('Failed to create email campaign', 'EmailCampaignsPage', error);
-      setErrorMessage(t('common.errors.unexpected', 'An unexpected error occurred'));
+      setErrorMessage(t('common.errors.unexpected'));
       setShowErrorModal(true);
     }
   };
@@ -114,7 +114,7 @@ export default function EmailCampaignsPage() {
       loadCampaigns();
     } catch (error) {
       logger.error('Failed to send email campaign', 'EmailCampaignsPage', error);
-      setErrorMessage(t('common.errors.unexpected', 'An unexpected error occurred'));
+      setErrorMessage(t('common.errors.unexpected'));
       setShowErrorModal(true);
     }
   };
@@ -133,7 +133,7 @@ export default function EmailCampaignsPage() {
       loadCampaigns();
     } catch (error) {
       logger.error('Failed to delete email campaign', 'EmailCampaignsPage', error);
-      setErrorMessage(t('common.errors.unexpected', 'An unexpected error occurred'));
+      setErrorMessage(t('common.errors.unexpected'));
       setShowErrorModal(true);
     }
   };
@@ -152,7 +152,7 @@ export default function EmailCampaignsPage() {
       setShowSuccessModal(true);
     } catch (error) {
       logger.error('Failed to send test email', 'EmailCampaignsPage', error);
-      setErrorMessage(t('common.errors.unexpected', 'An unexpected error occurred'));
+      setErrorMessage(t('common.errors.unexpected'));
       setShowErrorModal(true);
     }
   };
@@ -184,7 +184,7 @@ export default function EmailCampaignsPage() {
   const columns = [
     {
       key: 'name',
-      label: t('admin.emailCampaigns.columns.name', 'Campaign Name'),
+      label: t('admin.emailCampaigns.columns.name'),
       render: (_: any, campaign: EmailCampaign) => (
         <View>
           <Text style={styles.campaignName}>{campaign.name}</Text>
@@ -192,11 +192,11 @@ export default function EmailCampaignsPage() {
         </View>
       ),
     },
-    { key: 'status', label: t('admin.emailCampaigns.columns.status', 'Status'), width: 100, render: (status: string) => getStatusBadge(status) },
-    { key: 'sent', label: t('admin.emailCampaigns.columns.sent', 'Sent'), width: 80, render: (sent: number) => <Text style={styles.statText}>{sent.toLocaleString()}</Text> },
-    { key: 'opened', label: t('admin.emailCampaigns.columns.opened', 'Opened'), width: 80, render: (opened: number) => <Text style={styles.statText}>{opened.toLocaleString()}</Text> },
-    { key: 'clicked', label: t('admin.emailCampaigns.columns.clicked', 'Clicked'), width: 80, render: (clicked: number) => <Text style={styles.statText}>{clicked.toLocaleString()}</Text> },
-    { key: 'created_at', label: t('admin.emailCampaigns.columns.created', 'Created'), width: 150, render: (date: string) => <Text style={styles.dateText}>{formatDate(date)}</Text> },
+    { key: 'status', label: t('admin.emailCampaigns.columns.status'), width: 100, render: (status: string) => getStatusBadge(status) },
+    { key: 'sent', label: t('admin.emailCampaigns.columns.sent'), width: 80, render: (sent: number) => <Text style={styles.statText}>{sent.toLocaleString()}</Text> },
+    { key: 'opened', label: t('admin.emailCampaigns.columns.opened'), width: 80, render: (opened: number) => <Text style={styles.statText}>{opened.toLocaleString()}</Text> },
+    { key: 'clicked', label: t('admin.emailCampaigns.columns.clicked'), width: 80, render: (clicked: number) => <Text style={styles.statText}>{clicked.toLocaleString()}</Text> },
+    { key: 'created_at', label: t('admin.emailCampaigns.columns.created'), width: 150, render: (date: string) => <Text style={styles.dateText}>{formatDate(date)}</Text> },
     {
       key: 'actions',
       label: '',
@@ -223,17 +223,17 @@ export default function EmailCampaignsPage() {
     <ScrollView style={styles.container} contentContainerStyle={styles.contentContainer}>
       <View style={styles.header}>
         <View>
-          <Text style={styles.pageTitle}>{t('admin.emailCampaigns.title', 'Email Campaigns')}</Text>
-          <Text style={styles.subtitle}>{t('admin.emailCampaigns.subtitle', 'Create and manage email campaigns')}</Text>
+          <Text style={styles.pageTitle}>{t('admin.emailCampaigns.title')}</Text>
+          <Text style={styles.subtitle}>{t('admin.emailCampaigns.subtitle')}</Text>
         </View>
-        <GlassButton title={t('admin.emailCampaigns.createButton', 'New Campaign')} variant="primary" icon={<Plus size={16} color={colors.text} />} onPress={() => setShowCreateModal(true)} />
+        <GlassButton title={t('admin.emailCampaigns.createButton')} variant="primary" icon={<Plus size={16} color={colors.text} />} onPress={() => setShowCreateModal(true)} />
       </View>
 
       <View style={styles.filtersRow}>
         {['all', 'draft', 'active', 'scheduled', 'completed'].map((status) => (
           <Pressable key={status} onPress={() => setFilters((prev) => ({ ...prev, status }))} style={[styles.filterButton, filters.status === status && styles.filterButtonActive]}>
             <Text style={[styles.filterText, filters.status === status && styles.filterTextActive]}>
-              {status === 'all' ? t('admin.common.all', 'All') : getStatusLabel(status)}
+              {status === 'all' ? t('admin.common.all') : getStatusLabel(status)}
             </Text>
           </Pressable>
         ))}
@@ -243,43 +243,43 @@ export default function EmailCampaignsPage() {
         columns={columns}
         data={campaigns}
         loading={loading}
-        searchPlaceholder={t('admin.emailCampaigns.searchPlaceholder', 'Search campaign...')}
+        searchPlaceholder={t('admin.emailCampaigns.searchPlaceholder')}
         onSearch={handleSearch}
         pagination={pagination}
         onPageChange={handlePageChange}
-        emptyMessage={t('admin.emailCampaigns.emptyMessage', 'No campaigns found')}
+        emptyMessage={t('admin.emailCampaigns.emptyMessage')}
       />
 
-      <GlassModal visible={showCreateModal} onClose={() => setShowCreateModal(false)} title={t('admin.emailCampaigns.createModal.title', 'New Email Campaign')}>
+      <GlassModal visible={showCreateModal} onClose={() => setShowCreateModal(false)} title={t('admin.emailCampaigns.createModal.title')}>
         <View style={styles.modalContent}>
           <View style={styles.formGroup}>
-            <Text style={styles.formLabel}>{t('admin.emailCampaigns.form.name', 'Campaign Name')}</Text>
+            <Text style={styles.formLabel}>{t('admin.emailCampaigns.form.name')}</Text>
             <TextInput style={styles.input} value={newCampaign.name} onChangeText={(name) => setNewCampaign((p) => ({ ...p, name }))} placeholderTextColor={colors.textMuted} />
           </View>
           <View style={styles.formGroup}>
-            <Text style={styles.formLabel}>{t('admin.emailCampaigns.form.subject', 'Email Subject')}</Text>
+            <Text style={styles.formLabel}>{t('admin.emailCampaigns.form.subject')}</Text>
             <TextInput style={styles.input} value={newCampaign.subject} onChangeText={(subject) => setNewCampaign((p) => ({ ...p, subject }))} placeholderTextColor={colors.textMuted} />
           </View>
           <View style={styles.formGroup}>
-            <Text style={styles.formLabel}>{t('admin.emailCampaigns.form.body', 'Content')}</Text>
+            <Text style={styles.formLabel}>{t('admin.emailCampaigns.form.body')}</Text>
             <TextInput style={[styles.input, styles.textArea]} value={newCampaign.body} onChangeText={(body) => setNewCampaign((p) => ({ ...p, body }))} placeholderTextColor={colors.textMuted} multiline numberOfLines={5} />
           </View>
           <View style={styles.modalActions}>
-            <GlassButton title={t('common.cancel', 'Cancel')} variant="secondary" onPress={() => setShowCreateModal(false)} />
-            <GlassButton title={t('admin.emailCampaigns.createButton', 'New Campaign')} variant="primary" onPress={handleCreate} />
+            <GlassButton title={t('common.cancel')} variant="secondary" onPress={() => setShowCreateModal(false)} />
+            <GlassButton title={t('admin.emailCampaigns.createButton')} variant="primary" onPress={handleCreate} />
           </View>
         </View>
       </GlassModal>
 
-      <GlassModal visible={showTestModal} onClose={() => setShowTestModal(false)} title={t('admin.emailCampaigns.testModal.title', 'Send Test Email')}>
+      <GlassModal visible={showTestModal} onClose={() => setShowTestModal(false)} title={t('admin.emailCampaigns.testModal.title')}>
         <View style={styles.modalContent}>
           <View style={styles.formGroup}>
-            <Text style={styles.formLabel}>{t('admin.emailCampaigns.testModal.emailLabel', 'Email Address')}</Text>
+            <Text style={styles.formLabel}>{t('admin.emailCampaigns.testModal.emailLabel')}</Text>
             <TextInput style={styles.input} value={testEmail} onChangeText={setTestEmail} placeholderTextColor={colors.textMuted} keyboardType="email-address" />
           </View>
           <View style={styles.modalActions}>
-            <GlassButton title={t('common.cancel', 'Cancel')} variant="secondary" onPress={() => setShowTestModal(false)} />
-            <GlassButton title={t('admin.emailCampaigns.testModal.submitButton', 'Send Test')} variant="primary" onPress={handleSendTest} />
+            <GlassButton title={t('common.cancel')} variant="secondary" onPress={() => setShowTestModal(false)} />
+            <GlassButton title={t('admin.emailCampaigns.testModal.submitButton')} variant="primary" onPress={handleSendTest} />
           </View>
         </View>
       </GlassModal>
@@ -287,17 +287,17 @@ export default function EmailCampaignsPage() {
       <GlassModal
         visible={showSendConfirm}
         onClose={() => setShowSendConfirm(false)}
-        title={t('common.confirm', 'Confirm')}
+        title={t('common.confirm')}
       >
         <View style={styles.modalContent}>
           {selectedCampaign && (
             <Text style={styles.modalMessage}>
-              {t('admin.emailCampaigns.confirmSend', 'Send campaign "{{name}}"?', { name: selectedCampaign.name })}
+              {t('admin.emailCampaigns.confirmSend', { name: selectedCampaign.name })}
             </Text>
           )}
           <View style={styles.modalActions}>
-            <GlassButton title={t('common.cancel', 'Cancel')} variant="secondary" onPress={() => setShowSendConfirm(false)} />
-            <GlassButton title={t('common.send', 'Send')} variant="primary" onPress={handleSendConfirm} />
+            <GlassButton title={t('common.cancel')} variant="secondary" onPress={() => setShowSendConfirm(false)} />
+            <GlassButton title={t('common.send')} variant="primary" onPress={handleSendConfirm} />
           </View>
         </View>
       </GlassModal>
@@ -305,17 +305,17 @@ export default function EmailCampaignsPage() {
       <GlassModal
         visible={showDeleteConfirm}
         onClose={() => setShowDeleteConfirm(false)}
-        title={t('common.confirm', 'Confirm')}
+        title={t('common.confirm')}
       >
         <View style={styles.modalContent}>
           {selectedCampaign && (
             <Text style={styles.modalMessage}>
-              {t('admin.emailCampaigns.confirmDelete', 'Delete campaign "{{name}}"?', { name: selectedCampaign.name })}
+              {t('admin.emailCampaigns.confirmDelete', { name: selectedCampaign.name })}
             </Text>
           )}
           <View style={styles.modalActions}>
-            <GlassButton title={t('common.cancel', 'Cancel')} variant="secondary" onPress={() => setShowDeleteConfirm(false)} />
-            <GlassButton title={t('common.delete', 'Delete')} variant="primary" onPress={handleDeleteConfirm} />
+            <GlassButton title={t('common.cancel')} variant="secondary" onPress={() => setShowDeleteConfirm(false)} />
+            <GlassButton title={t('common.delete')} variant="primary" onPress={handleDeleteConfirm} />
           </View>
         </View>
       </GlassModal>
@@ -323,12 +323,12 @@ export default function EmailCampaignsPage() {
       <GlassModal
         visible={showSuccessModal}
         onClose={() => setShowSuccessModal(false)}
-        title={t('common.success', 'Success')}
+        title={t('common.success')}
       >
         <View style={styles.modalContent}>
-          <Text style={styles.successText}>{t('admin.emailCampaigns.testEmailSent', 'Test email sent!')}</Text>
+          <Text style={styles.successText}>{t('admin.emailCampaigns.testEmailSent')}</Text>
           <View style={styles.modalActions}>
-            <GlassButton title={t('common.ok', 'OK')} variant="primary" onPress={() => setShowSuccessModal(false)} />
+            <GlassButton title={t('common.ok')} variant="primary" onPress={() => setShowSuccessModal(false)} />
           </View>
         </View>
       </GlassModal>
@@ -336,12 +336,12 @@ export default function EmailCampaignsPage() {
       <GlassModal
         visible={showErrorModal}
         onClose={() => setShowErrorModal(false)}
-        title={t('common.error', 'Error')}
+        title={t('common.error')}
       >
         <View style={styles.modalContent}>
           <Text style={styles.errorText}>{errorMessage}</Text>
           <View style={styles.modalActions}>
-            <GlassButton title={t('common.ok', 'OK')} variant="primary" onPress={() => setShowErrorModal(false)} />
+            <GlassButton title={t('common.ok')} variant="primary" onPress={() => setShowErrorModal(false)} />
           </View>
         </View>
       </GlassModal>

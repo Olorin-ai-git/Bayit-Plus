@@ -1,5 +1,6 @@
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
+import { useTranslation } from 'react-i18next';
 import { isDemo } from '../config/appConfig';
 import { colors, fontSize } from '../theme';
 
@@ -9,6 +10,8 @@ import { colors, fontSize } from '../theme';
  * Only renders when isDemo is true (development mode).
  */
 export const DemoBanner: React.FC = () => {
+  const { t } = useTranslation();
+
   if (!isDemo) {
     return null;
   }
@@ -16,8 +19,8 @@ export const DemoBanner: React.FC = () => {
   return (
     <View style={styles.container}>
       <Text style={styles.icon}>🎭</Text>
-      <Text style={styles.text}>DEMO MODE</Text>
-      <Text style={styles.subtext}>Using mock data - No API calls</Text>
+      <Text style={styles.text}>{t('demo.banner')}</Text>
+      <Text style={styles.subtext}>{t('demo.bannerSubtext')}</Text>
     </View>
   );
 };

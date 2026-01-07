@@ -7,6 +7,7 @@ import { GlassView, GlassCard } from '@bayit/shared/ui';
 import { colors, spacing, borderRadius } from '@bayit/shared/theme';
 import { watchlistService } from '@/services/api';
 import { useDirection } from '@/hooks/useDirection';
+import { getLocalizedName, getLocalizedDescription } from '@bayit/shared-utils/contentLocalization';
 import logger from '@/utils/logger';
 
 interface WatchlistItem {
@@ -98,9 +99,9 @@ export default function WatchlistPage() {
   const [filter, setFilter] = useState<'all' | 'movies' | 'series' | 'continue'>('all');
 
   const getLocalizedText = (item: any, field: string) => {
-    if (i18n.language === 'he') return item[field] || item.title || item.name;
-    if (i18n.language === 'es') return item[`${field}_es`] || item[`${field}_en`] || item[field];
-    return item[`${field}_en`] || item[field];
+    if (field === 'title') return getLocalizedName(item, currentLang);
+    if (field === 'description') return getLocalizedDescription(item, currentLang);
+    // Fallback for other fields
   };
 
   useEffect(() => {
@@ -141,17 +142,17 @@ export default function WatchlistPage() {
   };
 
   const filterOptions = [
-    { id: 'all', labelKey: 'watchlist.filters.all', label: 'הכל' },
-    { id: 'continue', labelKey: 'watchlist.filters.continue', label: 'המשך צפייה' },
-    { id: 'movies', labelKey: 'watchlist.filters.movies', label: 'סרטים' },
-    { id: 'series', labelKey: 'watchlist.filters.series', label: 'סדרות' },
+    { id: 'all', labelKey: 'watchlist.filters.all' },
+    { id: 'continue', labelKey: 'watchlist.filters.continue' },
+    { id: 'movies', labelKey: 'watchlist.filters.movies' },
+    { id: 'series', labelKey: 'watchlist.filters.series' },
   ];
 
   if (isLoading) {
     return (
       <View style={styles.loadingContainer}>
         <ActivityIndicator size="large" color={colors.primary} />
-        <Text style={styles.loadingText}>{t('common.loading', 'טוען...')}</Text>
+        <Text style={styles.loadingText}>{t('common.loading')}</Text>
       </View>
     );
   }
@@ -163,9 +164,9 @@ export default function WatchlistPage() {
           <Text style={styles.headerIconText}>📋</Text>
         </View>
         <View>
-          <Text style={[styles.title, { textAlign }]}>{t('watchlist.title', 'רשימת הצפייה שלי')}</Text>
+          <Text style={[styles.title, { textAlign }]}>{t('watchlist.title')}</Text>
           <Text style={[styles.subtitle, { textAlign }]}>
-            {watchlist.length} {t('watchlist.items', 'פריטים')}
+            {watchlist.length} {t('watchlist.items')}
           </Text>
         </View>
       </View>
@@ -178,7 +179,7 @@ export default function WatchlistPage() {
             style={[styles.filterButton, filter === option.id && styles.filterButtonActive]}
           >
             <Text style={[styles.filterText, filter === option.id && styles.filterTextActive]}>
-              {t(option.labelKey, option.label)}
+              {t(option.labelKey)}
             </Text>
           </Pressable>
         ))}
@@ -201,9 +202,9 @@ export default function WatchlistPage() {
           <View style={styles.emptyState}>
             <GlassCard style={styles.emptyCard}>
               <Text style={styles.emptyIcon}>📋</Text>
-              <Text style={[styles.emptyTitle, { textAlign }]}>{t('watchlist.empty', 'הרשימה ריקה')}</Text>
+              <Text style={[styles.emptyTitle, { textAlign }]}>{t('watchlist.empty')}</Text>
               <Text style={[styles.emptySubtitle, { textAlign }]}>
-                {t('watchlist.emptyHint', 'הוסף סרטים וסדרות לרשימת הצפייה שלך')}
+                {t('watchlist.emptyHint')}
               </Text>
             </GlassCard>
           </View>

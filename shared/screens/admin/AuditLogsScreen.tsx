@@ -234,14 +234,14 @@ export const AuditLogsScreen: React.FC = () => {
 
               <View style={styles.filterSection}>
                 <Text style={styles.filterLabel}>{t('admin.logs.filterUser', 'User ID')}</Text>
-                <TextInput style={styles.filterInput} value={filters.user_id || ''} onChangeText={(text) => setFilters(prev => ({ ...prev, user_id: text }))} placeholder="Enter user ID" placeholderTextColor={colors.textMuted} />
+                <TextInput style={styles.filterInput} value={filters.user_id || ''} onChangeText={(text) => setFilters(prev => ({ ...prev, user_id: text }))} placeholder={t('placeholder.filter.userId', 'Enter user ID')} placeholderTextColor={colors.textMuted} />
               </View>
 
               <View style={styles.filterSection}>
                 <Text style={styles.filterLabel}>{t('admin.logs.filterDateRange', 'Date Range')}</Text>
                 <View style={styles.dateInputs}>
-                  <TextInput style={styles.dateInput} value={filters.date_from || ''} onChangeText={(text) => setFilters(prev => ({ ...prev, date_from: text }))} placeholder="From (YYYY-MM-DD)" placeholderTextColor={colors.textMuted} />
-                  <TextInput style={styles.dateInput} value={filters.date_to || ''} onChangeText={(text) => setFilters(prev => ({ ...prev, date_to: text }))} placeholder="To (YYYY-MM-DD)" placeholderTextColor={colors.textMuted} />
+                  <TextInput style={styles.dateInput} value={filters.date_from || ''} onChangeText={(text) => setFilters(prev => ({ ...prev, date_from: text }))} placeholder={t('placeholder.dateRange.from', 'From (YYYY-MM-DD)')} placeholderTextColor={colors.textMuted} />
+                  <TextInput style={styles.dateInput} value={filters.date_to || ''} onChangeText={(text) => setFilters(prev => ({ ...prev, date_to: text }))} placeholder={t('placeholder.dateRange.to', 'To (YYYY-MM-DD)')} placeholderTextColor={colors.textMuted} />
                 </View>
               </View>
 

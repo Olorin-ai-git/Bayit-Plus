@@ -1,11 +1,13 @@
 import { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, ActivityIndicator } from 'react-native';
 import { useNavigate, useSearchParams } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { useAuthStore } from '@/stores/authStore';
 import { colors, spacing, borderRadius } from '@bayit/shared/theme';
 import { GlassCard } from '@bayit/shared/ui';
 
 export default function GoogleCallbackPage() {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const { handleGoogleCallback } = useAuthStore();
@@ -16,13 +18,13 @@ export default function GoogleCallbackPage() {
     const errorParam = searchParams.get('error');
 
     if (errorParam) {
-      setError('ההתחברות עם Google בוטלה');
+      setError(t('googleLogin.cancelledError'));
       setTimeout(() => navigate('/login'), 3000);
       return;
     }
 
     if (!code) {
-      setError('קוד אימות חסר');
+      setError(t('googleLogin.missingCode'));
       setTimeout(() => navigate('/login'), 3000);
       return;
     }
@@ -32,7 +34,7 @@ export default function GoogleCallbackPage() {
         navigate('/', { replace: true });
       })
       .catch((err: any) => {
-        setError(err.detail || err.message || 'שגיאה בהתחברות עם Google');
+        setError(err.detail || err.message || t('googleLogin.loginError'));
         setTimeout(() => navigate('/login'), 3000);
       });
   }, [searchParams, handleGoogleCallback, navigate]);
@@ -47,12 +49,12 @@ export default function GoogleCallbackPage() {
         {error ? (
           <>
             <Text style={styles.errorText}>{error}</Text>
-            <Text style={styles.redirectText}>מעביר לדף ההתחברות...</Text>
+            <Text style={styles.redirectText}>{t('googleLogin.redirecting')}</Text>
           </>
         ) : (
           <>
             <ActivityIndicator size="large" color={colors.primary} style={styles.spinner} />
-            <Text style={styles.loadingText}>מתחבר עם Google...</Text>
+            <Text style={styles.loadingText}>{t('googleLogin.connecting')}</Text>
           </>
         )}
       </GlassCard>

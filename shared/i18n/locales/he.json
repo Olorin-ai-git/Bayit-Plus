@@ -529,7 +529,9 @@
       "personal": "אישי",
       "subscription": "מנוי",
       "notifications": "התראות",
-      "security": "אבטחה"
+      "security": "אבטחה",
+      "ai": "בינה מלאכותית והתאמה אישית",
+      "voice": "קול ונגישות"
     },
     "subscription": {
       "currentPlan": "התוכנית הנוכחית",
@@ -549,6 +551,47 @@
       "updates": "עדכוני מערכת",
       "updatesDesc": "קבל עדכונים על שינויים במערכת"
     },
+    "ai": {
+      "title": "בינה מלאכותית והתאמה אישית",
+      "description": "הגדר תכונות מונעות בינה מלאכותית",
+      "chatbot": "עוזר AI",
+      "chatbotEnabled": "הפעל עוזר AI",
+      "chatbotEnabledDesc": "קבל עזרה בניווט בתוכן והמלצות מותאמות אישית",
+      "saveHistory": "שמור היסטוריית שיחות",
+      "saveHistoryDesc": "זכור שיחות קודמות להקשר טוב יותר",
+      "recommendations": "המלצות",
+      "personalizedRecs": "המלצות מותאמות אישית",
+      "personalizedRecsDesc": "קבל הצעות תוכן בהתבסס על היסטוריית הצפייה שלך",
+      "privacy": "פרטיות ונתונים",
+      "dataConsent": "אפשר איסוף נתונים לשיפור",
+      "dataConsentDesc": "עזור לשפר את תכונות ה-AI על ידי שיתוף נתוני שימוש אנונימיים",
+      "privacyNote": "הנתונים שלך מוצפנים ומאובטחים"
+    },
+    "voice": {
+      "title": "קול ונגישות",
+      "description": "הגדר תכונות קול ונגישות",
+      "voiceSearch": "חיפוש קולי",
+      "voiceSearchEnabled": "הפעל חיפוש קולי",
+      "voiceSearchEnabledDesc": "חפש תוכן באמצעות הקול שלך",
+      "language": "שפת קול",
+      "accessibility": "נגישות",
+      "autoSubtitle": "הפעל כתוביות אוטומטית",
+      "autoSubtitleDesc": "הצג כתוביות אוטומטית בעת השמעת תוכן",
+      "highContrast": "מצב ניגודיות גבוהה",
+      "highContrastDesc": "הגבר ניגודיות לראות טובה יותר",
+      "textSize": "גודל טקסט",
+      "textSizeSmall": "קטן",
+      "textSizeMedium": "בינוני",
+      "textSizeLarge": "גדול"
+    },
+    "dropdown": {
+      "myProfile": "הפרופיל שלי",
+      "subscription": "מנוי",
+      "favorites": "מועדפים",
+      "downloads": "הורדות",
+      "signOut": "התנתק"
+    },
+    "guest": "אורח",
     "morningRitual": "טקס הבוקר"
   },
   "settings": {
@@ -571,6 +614,12 @@
     "listening": "מקשיב...",
     "tapToSpeak": "לחץ לדיבור",
     "processing": "מעבד...",
+    "transcribing": "מתמלל...",
+    "tapToStop": "לחץ להפסקת הקלטה",
+    "pleaseWait": "אנא המתן...",
+    "transcriptionNotAvailable": "תמלול לא זמין",
+    "transcriptionFailed": "התמלול נכשל",
+    "micPermissionDenied": "הרשאת מיקרופון נדחתה",
     "error": "לא הצלחתי לשמוע, נסה שוב"
   },
   "errors": {

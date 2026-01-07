@@ -187,7 +187,7 @@ export default function TransactionsPage() {
     <ScrollView style={styles.container} contentContainerStyle={styles.contentContainer}>
       <View style={styles.header}>
         <View>
-          <Text style={styles.pageTitle}>{t('admin.titles.transactions', 'עסקאות')}</Text>
+          <Text style={styles.pageTitle}>{t('admin.titles.transactions')}</Text>
           <Text style={styles.subtitle}>צפה בהיסטוריית התשלומים</Text>
         </View>
         <GlassButton

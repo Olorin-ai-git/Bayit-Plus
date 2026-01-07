@@ -152,7 +152,7 @@ export default function CampaignsListPage() {
       {/* Header */}
       <View style={styles.header}>
         <View>
-          <Text style={styles.pageTitle}>{t('admin.titles.campaigns', 'קמפיינים והנחות')}</Text>
+          <Text style={styles.pageTitle}>{t('admin.titles.campaigns')}</Text>
           <Text style={styles.subtitle}>נהל קודי קופון והנחות</Text>
         </View>
         <Link to="/admin/campaigns/new" style={{ textDecoration: 'none' }}>

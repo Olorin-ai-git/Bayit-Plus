@@ -1,10 +1,12 @@
 import { View, Text, StyleSheet, Pressable, useWindowDimensions } from 'react-native';
 import { Link, NavLink, useNavigate } from 'react-router-dom';
 import { useState } from 'react';
-import { Search, User, Menu, X, Shield } from 'lucide-react';
+import { Search, Menu, X, Shield } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useAuthStore } from '@/stores/authStore';
-import { VoiceSearchButton, LanguageSelector, AnimatedLogo } from '@bayit/shared';
+import { useChatbotStore } from '@/stores/chatbotStore';
+import { chatService } from '@/services/api';
+import { VoiceSearchButton, LanguageSelector, AnimatedLogo, ProfileDropdown } from '@bayit/shared';
 import { colors, spacing } from '@bayit/shared/theme';
 import { GlassView } from '@bayit/shared/ui';
 
@@ -22,7 +24,8 @@ const navLinkKeys = [
 export default function Header() {
   const { i18n, t } = useTranslation();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const { user, isAuthenticated, isAdmin } = useAuthStore();
+  const { user, isAuthenticated, isAdmin, logout } = useAuthStore();
+  const { sendMessage } = useChatbotStore();
   const navigate = useNavigate();
   const { width } = useWindowDimensions();
   const isMobile = width < 768;
@@ -31,8 +34,18 @@ export default function Header() {
 
   const handleVoiceTranscribed = (text: string) => {
     if (text) {
-      navigate(`/search?q=${encodeURIComponent(text)}`);
+      // Send voice input to chatbot instead of search
+      sendMessage(text);
     }
+  };
+
+  const handleProfileNavigate = (path: string) => {
+    navigate(path);
+  };
+
+  const handleLogout = () => {
+    logout();
+    navigate('/');
   };
 
   // Logo component
@@ -78,11 +91,11 @@ export default function Header() {
         </Link>
       )}
       {isAuthenticated ? (
-        <Link to="/profile" style={{ textDecoration: 'none' }}>
-          <View style={styles.iconButton}>
-            <User size={20} color={colors.text} />
-          </View>
-        </Link>
+        <ProfileDropdown
+          user={user}
+          onNavigate={handleProfileNavigate}
+          onLogout={handleLogout}
+        />
       ) : (
         <Link to="/login" style={{ textDecoration: 'none' }}>
           <View style={styles.loginButton}>
@@ -100,8 +113,8 @@ export default function Header() {
       </Link>
 
       <VoiceSearchButton
-        onTranscribed={handleVoiceTranscribed}
-        size="sm"
+        onResult={handleVoiceTranscribed}
+        transcribeAudio={chatService.transcribeAudio}
       />
 
       {/* Mobile Menu Toggle */}
@@ -185,7 +198,7 @@ const styles = StyleSheet.create({
   header: {
     position: 'sticky' as any,
     top: 0,
-    zIndex: 50,
+    zIndex: 100,
     borderBottomWidth: 1,
     borderBottomColor: 'rgba(255, 255, 255, 0.05)',
   },

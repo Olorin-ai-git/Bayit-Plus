@@ -11,7 +11,7 @@ import {
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
-import { GlassView } from '../components';
+import { GlassView, GlassCategoryPill } from '../components';
 import { contentService } from '../services/api';
 import { colors, spacing, borderRadius } from '../theme';
 import { isTV } from '../utils/platform';
@@ -190,40 +190,19 @@ export const VODScreen: React.FC = () => {
 
       {/* Category Filter */}
       <View style={[styles.categories, { flexDirection: isRTL ? 'row' : 'row-reverse', justifyContent: isRTL ? 'flex-start' : 'flex-start' }]}>
-        <TouchableOpacity
+        <GlassCategoryPill
+          label={t('vod.categories.all')}
+          isActive={selectedCategory === 'all'}
           onPress={() => setSelectedCategory('all')}
-          style={[
-            styles.categoryButton,
-            selectedCategory === 'all' && styles.categoryButtonActive,
-          ]}
-        >
-          <Text
-            style={[
-              styles.categoryText,
-              selectedCategory === 'all' && styles.categoryTextActive,
-            ]}
-          >
-            {t('vod.categories.all')}
-          </Text>
-        </TouchableOpacity>
+          hasTVPreferredFocus
+        />
         {categories.map((category: any) => (
-          <TouchableOpacity
+          <GlassCategoryPill
             key={category.id}
+            label={getLocalizedText(category, 'name')}
+            isActive={selectedCategory === category.id}
             onPress={() => setSelectedCategory(category.id)}
-            style={[
-              styles.categoryButton,
-              selectedCategory === category.id && styles.categoryButtonActive,
-            ]}
-          >
-            <Text
-              style={[
-                styles.categoryText,
-                selectedCategory === category.id && styles.categoryTextActive,
-              ]}
-            >
-              {getLocalizedText(category, 'name')}
-            </Text>
-          </TouchableOpacity>
+          />
         ))}
       </View>
 
@@ -308,28 +287,6 @@ const styles = StyleSheet.create({
     marginBottom: 24,
     gap: 12,
     zIndex: 10,
-  },
-  categoryButton: {
-    paddingHorizontal: 24,
-    paddingVertical: 12,
-    borderRadius: 24,
-    backgroundColor: '#1a1a2e',
-    borderWidth: 2,
-    borderColor: 'transparent',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  categoryButtonActive: {
-    backgroundColor: 'rgba(0, 217, 255, 0.2)',
-    borderColor: '#00d9ff',
-  },
-  categoryText: {
-    fontSize: 16,
-    color: '#888888',
-  },
-  categoryTextActive: {
-    color: '#00d9ff',
-    fontWeight: 'bold',
   },
   grid: {
     paddingHorizontal: spacing.xl,

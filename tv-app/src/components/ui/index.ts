@@ -15,6 +15,7 @@ export {
   GlassModal,
   GlassBadge,
   GlassTabs,
+  GlassCategoryPill,
 } from '@bayit/shared/ui';
 
 // Re-export types

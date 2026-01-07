@@ -21,9 +21,10 @@ const logo = require('../assets/logo.png');
 interface GlassTopBarProps {
   onMenuPress?: () => void;
   sidebarExpanded?: boolean;
+  transcribeAudio?: (audioBlob: Blob) => Promise<{ text: string }>;
 }
 
-export const GlassTopBar: React.FC<GlassTopBarProps> = ({ onMenuPress, sidebarExpanded = false }) => {
+export const GlassTopBar: React.FC<GlassTopBarProps> = ({ onMenuPress, sidebarExpanded = false, transcribeAudio }) => {
   const navigation = useNavigation<any>();
   const { i18n } = useTranslation();
   const [isSearchFocused, setIsSearchFocused] = useState(false);
@@ -46,9 +47,12 @@ export const GlassTopBar: React.FC<GlassTopBarProps> = ({ onMenuPress, sidebarEx
       {/* Actions side */}
       <View style={[styles.actionsContainer, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
         {/* Voice Search Button */}
-        <VoiceSearchButton onResult={(text) => {
-          navigation.navigate('Search', { query: text });
-        }} />
+        <VoiceSearchButton
+          onResult={(text) => {
+            navigation.navigate('Search', { query: text });
+          }}
+          transcribeAudio={transcribeAudio}
+        />
 
         {/* Search Button */}
         <TouchableOpacity

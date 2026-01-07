@@ -81,7 +81,7 @@ export default function PlanManagementPage() {
 
   const handleSave = async () => {
     if (!formData.name || !formData.price) {
-      setErrorMessage(t('admin.plans.errors.requiredFields', 'Name and price are required'));
+      setErrorMessage(t('admin.plans.errors.requiredFields'));
       setShowErrorModal(true);
       return;
     }
@@ -105,7 +105,7 @@ export default function PlanManagementPage() {
       loadPlans();
     } catch (error) {
       logger.error('Failed to save plan', 'PlanManagementPage', error);
-      setErrorMessage(t('common.errors.unexpected', 'An unexpected error occurred'));
+      setErrorMessage(t('common.errors.unexpected'));
       setShowErrorModal(true);
     }
   };
@@ -119,7 +119,7 @@ export default function PlanManagementPage() {
       loadPlans();
     } catch (error) {
       logger.error('Failed to delete plan', 'PlanManagementPage', error);
-      setErrorMessage(t('common.errors.unexpected', 'An unexpected error occurred'));
+      setErrorMessage(t('common.errors.unexpected'));
       setShowErrorModal(true);
     }
   };
@@ -133,10 +133,10 @@ export default function PlanManagementPage() {
     <ScrollView style={styles.container} contentContainerStyle={styles.contentContainer}>
       <View style={styles.header}>
         <View>
-          <Text style={styles.pageTitle}>{t('admin.plans.title', 'Plan Management')}</Text>
-          <Text style={styles.subtitle}>{t('admin.plans.subtitle', 'Configure and manage subscription plans')}</Text>
+          <Text style={styles.pageTitle}>{t('admin.plans.title')}</Text>
+          <Text style={styles.subtitle}>{t('admin.plans.subtitle')}</Text>
         </View>
-        <GlassButton title={t('admin.plans.createButton', 'New Plan')} variant="primary" icon={<Plus size={16} color={colors.text} />} onPress={openCreateModal} />
+        <GlassButton title={t('admin.plans.createButton')} variant="primary" icon={<Plus size={16} color={colors.text} />} onPress={openCreateModal} />
       </View>
 
       <View style={styles.plansGrid}>
@@ -149,7 +149,7 @@ export default function PlanManagementPage() {
               </View>
               {!plan.is_active && (
                 <View style={styles.inactiveBadge}>
-                  <Text style={styles.inactiveBadgeText}>{t('admin.plans.inactive', 'Inactive')}</Text>
+                  <Text style={styles.inactiveBadgeText}>{t('admin.plans.inactive')}</Text>
                 </View>
               )}
             </View>
@@ -160,7 +160,7 @@ export default function PlanManagementPage() {
             </View>
 
             {plan.trial_days && plan.trial_days > 0 && (
-              <Text style={styles.trialText}>{t('admin.plans.trialDays', '{{days}} day trial', { days: plan.trial_days })}</Text>
+              <Text style={styles.trialText}>{t('admin.plans.trialDays', { days: plan.trial_days })}</Text>
             )}
 
             <View style={styles.featuresContainer}>
@@ -173,7 +173,7 @@ export default function PlanManagementPage() {
             </View>
 
             <View style={styles.subscribersRow}>
-              <Text style={styles.subscribersLabel}>{t('admin.plans.subscribersLabel', 'Subscribers:')}</Text>
+              <Text style={styles.subscribersLabel}>{t('admin.plans.subscribersLabel')}</Text>
               <Text style={styles.subscribersCount}>{(plan.subscribers || 0).toLocaleString()}</Text>
             </View>
 
@@ -192,56 +192,56 @@ export default function PlanManagementPage() {
       <GlassModal
         visible={showEditModal}
         onClose={() => setShowEditModal(false)}
-        title={editingPlan ? t('admin.plans.modal.editTitle', 'Edit Plan') : t('admin.plans.modal.createTitle', 'New Plan')}
+        title={editingPlan ? t('admin.plans.modal.editTitle') : t('admin.plans.modal.createTitle')}
       >
         <View style={styles.modalContent}>
           <View style={styles.formRow}>
             <View style={styles.formGroup}>
-              <Text style={styles.formLabel}>{t('admin.plans.form.nameEn', 'Name (English)')}</Text>
+              <Text style={styles.formLabel}>{t('admin.plans.form.nameEn')}</Text>
               <TextInput style={styles.input} value={formData.name} onChangeText={(name) => setFormData((p) => ({ ...p, name }))} placeholderTextColor={colors.textMuted} />
             </View>
             <View style={styles.formGroup}>
-              <Text style={styles.formLabel}>{t('admin.plans.form.nameHe', 'Name (Hebrew)')}</Text>
+              <Text style={styles.formLabel}>{t('admin.plans.form.nameHe')}</Text>
               <TextInput style={styles.input} value={formData.name_he} onChangeText={(name_he) => setFormData((p) => ({ ...p, name_he }))} placeholderTextColor={colors.textMuted} />
             </View>
           </View>
 
           <View style={styles.formRow}>
             <View style={styles.formGroup}>
-              <Text style={styles.formLabel}>{t('admin.plans.form.price', 'Price ($)')}</Text>
+              <Text style={styles.formLabel}>{t('admin.plans.form.price')}</Text>
               <TextInput style={styles.input} value={formData.price} onChangeText={(price) => setFormData((p) => ({ ...p, price }))} placeholderTextColor={colors.textMuted} keyboardType="decimal-pad" />
             </View>
             <View style={styles.formGroup}>
-              <Text style={styles.formLabel}>{t('admin.plans.form.interval', 'Billing Period')}</Text>
+              <Text style={styles.formLabel}>{t('admin.plans.form.interval')}</Text>
               <View style={styles.intervalButtons}>
                 <Pressable style={[styles.intervalButton, formData.interval === 'monthly' && styles.intervalButtonActive]} onPress={() => setFormData((p) => ({ ...p, interval: 'monthly' }))}>
-                  <Text style={[styles.intervalButtonText, formData.interval === 'monthly' && styles.intervalButtonTextActive]}>{t('admin.plans.intervals.monthly', 'month')}</Text>
+                  <Text style={[styles.intervalButtonText, formData.interval === 'monthly' && styles.intervalButtonTextActive]}>{t('admin.plans.intervals.monthly')}</Text>
                 </Pressable>
                 <Pressable style={[styles.intervalButton, formData.interval === 'yearly' && styles.intervalButtonActive]} onPress={() => setFormData((p) => ({ ...p, interval: 'yearly' }))}>
-                  <Text style={[styles.intervalButtonText, formData.interval === 'yearly' && styles.intervalButtonTextActive]}>{t('admin.plans.intervals.yearly', 'year')}</Text>
+                  <Text style={[styles.intervalButtonText, formData.interval === 'yearly' && styles.intervalButtonTextActive]}>{t('admin.plans.intervals.yearly')}</Text>
                 </Pressable>
               </View>
             </View>
           </View>
 
           <View style={styles.formGroup}>
-            <Text style={styles.formLabel}>{t('admin.plans.form.trialDays', 'Trial Days')}</Text>
+            <Text style={styles.formLabel}>{t('admin.plans.form.trialDays')}</Text>
             <TextInput style={styles.input} value={formData.trial_days} onChangeText={(trial_days) => setFormData((p) => ({ ...p, trial_days }))} placeholderTextColor={colors.textMuted} keyboardType="number-pad" />
           </View>
 
           <View style={styles.formGroup}>
-            <Text style={styles.formLabel}>{t('admin.plans.form.features', 'Features (one per line)')}</Text>
+            <Text style={styles.formLabel}>{t('admin.plans.form.features')}</Text>
             <TextInput style={[styles.input, styles.textArea]} value={formData.features} onChangeText={(features) => setFormData((p) => ({ ...p, features }))} placeholderTextColor={colors.textMuted} multiline numberOfLines={4} />
           </View>
 
           <View style={styles.switchRow}>
-            <Text style={styles.formLabel}>{t('admin.plans.form.active', 'Active Plan')}</Text>
+            <Text style={styles.formLabel}>{t('admin.plans.form.active')}</Text>
             <Switch value={formData.is_active} onValueChange={(is_active) => setFormData((p) => ({ ...p, is_active }))} trackColor={{ false: colors.backgroundLighter, true: colors.primary }} />
           </View>
 
           <View style={styles.modalActions}>
-            <GlassButton title={t('common.cancel', 'Cancel')} variant="secondary" onPress={() => setShowEditModal(false)} />
-            <GlassButton title={t('common.save', 'Save')} variant="primary" onPress={handleSave} />
+            <GlassButton title={t('common.cancel')} variant="secondary" onPress={() => setShowEditModal(false)} />
+            <GlassButton title={t('common.save')} variant="primary" onPress={handleSave} />
           </View>
         </View>
       </GlassModal>
@@ -249,17 +249,17 @@ export default function PlanManagementPage() {
       <GlassModal
         visible={showDeleteConfirm}
         onClose={() => setShowDeleteConfirm(false)}
-        title={t('common.confirm', 'Confirm')}
+        title={t('common.confirm')}
       >
         <View style={styles.modalContent}>
           {planToDelete && (
             <Text style={styles.modalMessage}>
-              {t('admin.plans.confirmDelete', 'Delete plan "{{name}}"?', { name: planToDelete.name })}
+              {t('admin.plans.confirmDelete', { name: planToDelete.name })}
             </Text>
           )}
           <View style={styles.modalActions}>
-            <GlassButton title={t('common.cancel', 'Cancel')} variant="secondary" onPress={() => setShowDeleteConfirm(false)} />
-            <GlassButton title={t('common.delete', 'Delete')} variant="primary" onPress={handleDeleteConfirm} />
+            <GlassButton title={t('common.cancel')} variant="secondary" onPress={() => setShowDeleteConfirm(false)} />
+            <GlassButton title={t('common.delete')} variant="primary" onPress={handleDeleteConfirm} />
           </View>
         </View>
       </GlassModal>
@@ -267,12 +267,12 @@ export default function PlanManagementPage() {
       <GlassModal
         visible={showErrorModal}
         onClose={() => setShowErrorModal(false)}
-        title={t('common.error', 'Error')}
+        title={t('common.error')}
       >
         <View style={styles.modalContent}>
           <Text style={styles.errorText}>{errorMessage}</Text>
           <View style={styles.modalActions}>
-            <GlassButton title={t('common.ok', 'OK')} variant="primary" onPress={() => setShowErrorModal(false)} />
+            <GlassButton title={t('common.ok')} variant="primary" onPress={() => setShowErrorModal(false)} />
           </View>
         </View>
       </GlassModal>

@@ -145,7 +145,7 @@ export const RegisterScreen: React.FC = () => {
                 style={[styles.input, styles.inputLtr]}
                 value={formData.email}
                 onChangeText={(text) => setFormData({ ...formData, email: text })}
-                placeholder="your@email.com"
+                placeholder={t('placeholder.email', 'your@email.com')}
                 placeholderTextColor={colors.textMuted}
                 keyboardType="email-address"
                 autoCapitalize="none"

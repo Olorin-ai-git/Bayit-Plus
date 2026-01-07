@@ -191,7 +191,7 @@ export default function PushNotificationsPage() {
     <ScrollView style={styles.container} contentContainerStyle={styles.contentContainer}>
       <View style={styles.header}>
         <View>
-          <Text style={styles.pageTitle}>{t('admin.titles.pushNotifications', 'התראות פוש')}</Text>
+          <Text style={styles.pageTitle}>{t('admin.titles.pushNotifications')}</Text>
           <Text style={styles.subtitle}>צור ושלח התראות למשתמשים</Text>
         </View>
         <GlassButton title="התראה חדשה" variant="primary" icon={<Plus size={16} color={colors.text} />} onPress={() => setShowCreateModal(true)} />
@@ -213,11 +213,11 @@ export default function PushNotificationsPage() {
         <View style={styles.modalContent}>
           <View style={styles.formGroup}>
             <Text style={styles.formLabel}>כותרת</Text>
-            <TextInput style={styles.input} value={newNotification.title} onChangeText={(title) => setNewNotification((p) => ({ ...p, title }))} placeholder="כותרת ההתראה" placeholderTextColor={colors.textMuted} />
+            <TextInput style={styles.input} value={newNotification.title} onChangeText={(title) => setNewNotification((p) => ({ ...p, title }))} placeholder={t('admin.push.titlePlaceholder')} placeholderTextColor={colors.textMuted} />
           </View>
           <View style={styles.formGroup}>
             <Text style={styles.formLabel}>תוכן</Text>
-            <TextInput style={[styles.input, styles.textArea]} value={newNotification.body} onChangeText={(body) => setNewNotification((p) => ({ ...p, body }))} placeholder="תוכן ההתראה..." placeholderTextColor={colors.textMuted} multiline numberOfLines={3} />
+            <TextInput style={[styles.input, styles.textArea]} value={newNotification.body} onChangeText={(body) => setNewNotification((p) => ({ ...p, body }))} placeholder={t('admin.push.bodyPlaceholder')} placeholderTextColor={colors.textMuted} multiline numberOfLines={3} />
           </View>
           <View style={styles.modalActions}>
             <GlassButton title="ביטול" variant="secondary" onPress={() => setShowCreateModal(false)} />
@@ -230,7 +230,7 @@ export default function PushNotificationsPage() {
         <View style={styles.modalContent}>
           <View style={styles.formGroup}>
             <Text style={styles.formLabel}>תאריך ושעה</Text>
-            <TextInput style={styles.input} value={scheduleDate} onChangeText={setScheduleDate} placeholder="2025-01-15T10:00" placeholderTextColor={colors.textMuted} />
+            <TextInput style={styles.input} value={scheduleDate} onChangeText={setScheduleDate} placeholder={t('placeholder.datetime')} placeholderTextColor={colors.textMuted} />
           </View>
           <View style={styles.modalActions}>
             <GlassButton title="ביטול" variant="secondary" onPress={() => setShowScheduleModal(false)} />

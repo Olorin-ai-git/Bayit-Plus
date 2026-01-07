@@ -16,6 +16,7 @@ export { GlassCheckbox } from './GlassCheckbox';
 export { GlassModal } from './GlassModal';
 export { GlassBadge } from './GlassBadge';
 export { GlassTabs } from './GlassTabs';
+export { GlassCategoryPill } from './GlassCategoryPill';
 export { AnalogClock } from './AnalogClock';
 
 // Types

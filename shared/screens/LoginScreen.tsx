@@ -68,7 +68,7 @@ export const LoginScreen: React.FC = () => {
               ]}
               value={email}
               onChangeText={setEmail}
-              placeholder="your@email.com"
+              placeholder={t('placeholder.email', 'your@email.com')}
               placeholderTextColor="#666666"
               keyboardType="email-address"
               autoCapitalize="none"
@@ -90,7 +90,7 @@ export const LoginScreen: React.FC = () => {
               ]}
               value={password}
               onChangeText={setPassword}
-              placeholder="••••••••"
+              placeholder={t('placeholder.password', '••••••••')}
               placeholderTextColor="#666666"
               secureTextEntry
               onFocus={() => setFocusedField('password')}

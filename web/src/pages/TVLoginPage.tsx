@@ -34,7 +34,7 @@ export default function TVLoginPage() {
   useEffect(() => {
     if (!sessionId || !token) {
       setPageState('error');
-      setError(t('tvLogin.invalidQR', 'Invalid QR code. Please scan again from your TV.'));
+      setError(t('tvLogin.invalidQR'));
       return;
     }
 
@@ -47,7 +47,7 @@ export default function TVLoginPage() {
 
       if (!response.valid) {
         setPageState('error');
-        setError(t('tvLogin.sessionInvalid', 'This QR code has expired. Please generate a new one on your TV.'));
+        setError(t('tvLogin.sessionInvalid'));
         return;
       }
 
@@ -60,13 +60,13 @@ export default function TVLoginPage() {
       setPageState('login');
     } catch (err: any) {
       setPageState('error');
-      setError(err.detail || t('tvLogin.verificationFailed', 'Failed to verify session. Please try again.'));
+      setError(err.detail || t('tvLogin.verificationFailed'));
     }
   };
 
   const handleLogin = async () => {
     if (!email || !password) {
-      setError(t('tvLogin.fillAllFields', 'Please fill in all fields'));
+      setError(t('tvLogin.fillAllFields'));
       return;
     }
 
@@ -84,7 +84,7 @@ export default function TVLoginPage() {
       setPageState('success');
     } catch (err: any) {
       setPageState('login');
-      setError(err.detail || t('tvLogin.loginFailed', 'Login failed. Please check your credentials.'));
+      setError(err.detail || t('tvLogin.loginFailed'));
     } finally {
       setIsLoading(false);
     }
@@ -92,7 +92,7 @@ export default function TVLoginPage() {
 
   const handleUseExistingAccount = async () => {
     if (!isAuthenticated || !authToken) {
-      setError(t('tvLogin.notLoggedIn', 'You are not logged in on this device.'));
+      setError(t('tvLogin.notLoggedIn'));
       return;
     }
 
@@ -104,10 +104,10 @@ export default function TVLoginPage() {
       // Need to re-authenticate with credentials to complete pairing
       // For now, show the login form
       setPageState('login');
-      setError(t('tvLogin.enterCredentials', 'Please enter your credentials to authorize your TV.'));
+      setError(t('tvLogin.enterCredentials'));
     } catch (err: any) {
       setPageState('login');
-      setError(err.detail || t('tvLogin.authFailed', 'Authorization failed.'));
+      setError(err.detail || t('tvLogin.authFailed'));
     } finally {
       setIsLoading(false);
     }
@@ -116,9 +116,9 @@ export default function TVLoginPage() {
   const renderVerifying = () => (
     <View style={styles.stateContainer}>
       <ActivityIndicator size="large" color={colors.primary} />
-      <Text style={styles.stateTitle}>{t('tvLogin.verifying', 'Verifying...')}</Text>
+      <Text style={styles.stateTitle}>{t('tvLogin.verifying')}</Text>
       <Text style={styles.stateDescription}>
-        {t('tvLogin.verifyingDescription', 'Connecting to your TV...')}
+        {t('tvLogin.verifyingDescription')}
       </Text>
     </View>
   );
@@ -131,9 +131,9 @@ export default function TVLoginPage() {
         <Tv size={32} color={colors.primary} />
       </View>
 
-      <Text style={styles.loginTitle}>{t('tvLogin.loginTitle', 'Login to Your TV')}</Text>
+      <Text style={styles.loginTitle}>{t('tvLogin.loginTitle')}</Text>
       <Text style={styles.loginDescription}>
-        {t('tvLogin.loginDescription', 'Enter your credentials to authorize your TV')}
+        {t('tvLogin.loginDescription')}
       </Text>
 
       {error && (
@@ -149,7 +149,7 @@ export default function TVLoginPage() {
           style={styles.input}
           value={email}
           onChangeText={setEmail}
-          placeholder="your@email.com"
+          placeholder={t('placeholder.email')}
           placeholderTextColor={colors.textMuted}
           keyboardType="email-address"
           autoCapitalize="none"
@@ -166,7 +166,7 @@ export default function TVLoginPage() {
           style={styles.input}
           value={password}
           onChangeText={setPassword}
-          placeholder="••••••••"
+          placeholder={t('placeholder.password')}
           placeholderTextColor={colors.textMuted}
           secureTextEntry
           autoComplete="password"
@@ -176,7 +176,7 @@ export default function TVLoginPage() {
       </View>
 
       <GlassButton
-        title={isLoading ? t('tvLogin.authorizing', 'Authorizing...') : t('tvLogin.authorizeTV', 'Authorize TV')}
+        title={isLoading ? t('tvLogin.authorizing') : t('tvLogin.authorizeTV')}
         onPress={handleLogin}
         variant="primary"
         disabled={isLoading}
@@ -186,7 +186,7 @@ export default function TVLoginPage() {
       <View style={styles.securityNote}>
         <Lock size={16} color={colors.textSecondary} />
         <Text style={styles.securityText}>
-          {t('tvLogin.securityNote', 'Your credentials are sent securely and are never stored on the TV.')}
+          {t('tvLogin.securityNote')}
         </Text>
       </View>
     </View>
@@ -195,9 +195,9 @@ export default function TVLoginPage() {
   const renderAuthenticating = () => (
     <View style={styles.stateContainer}>
       <ActivityIndicator size="large" color={colors.primary} />
-      <Text style={styles.stateTitle}>{t('tvLogin.authorizing', 'Authorizing...')}</Text>
+      <Text style={styles.stateTitle}>{t('tvLogin.authorizing')}</Text>
       <Text style={styles.stateDescription}>
-        {t('tvLogin.authorizingDescription', 'Logging you in on your TV...')}
+        {t('tvLogin.authorizingDescription')}
       </Text>
     </View>
   );
@@ -207,13 +207,13 @@ export default function TVLoginPage() {
       <View style={styles.successIcon}>
         <CheckCircle size={64} color="#10b981" />
       </View>
-      <Text style={styles.stateTitle}>{t('tvLogin.success', 'Success!')}</Text>
+      <Text style={styles.stateTitle}>{t('tvLogin.success')}</Text>
       <Text style={styles.stateDescription}>
-        {t('tvLogin.successDescription', 'Your TV is now logged in. You can close this page.')}
+        {t('tvLogin.successDescription')}
       </Text>
 
       <GlassButton
-        title={t('tvLogin.goToHome', 'Go to Home')}
+        title={t('tvLogin.goToHome')}
         onPress={() => navigate('/')}
         variant="secondary"
         style={styles.homeButton}
@@ -226,11 +226,11 @@ export default function TVLoginPage() {
       <View style={styles.errorIcon}>
         <XCircle size={64} color={colors.error} />
       </View>
-      <Text style={styles.stateTitle}>{t('tvLogin.error', 'Something went wrong')}</Text>
+      <Text style={styles.stateTitle}>{t('tvLogin.error')}</Text>
       <Text style={styles.stateDescription}>{error}</Text>
 
       <GlassButton
-        title={t('tvLogin.tryAgain', 'Try Again')}
+        title={t('tvLogin.tryAgain')}
         onPress={() => navigate('/')}
         variant="secondary"
         style={styles.homeButton}
@@ -256,7 +256,7 @@ export default function TVLoginPage() {
         </GlassView>
 
         <Text style={styles.footerText}>
-          {t('tvLogin.footer', 'Having trouble? Make sure you scanned a fresh QR code from your TV.')}
+          {t('tvLogin.footer')}
         </Text>
       </View>
     </View>

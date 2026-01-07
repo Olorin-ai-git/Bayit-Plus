@@ -12,7 +12,7 @@ import {
   GlassBadge,
   VoiceSearchButton,
 } from '@bayit/shared';
-import { contentService } from '@/services/api';
+import { contentService, chatService } from '@/services/api';
 import logger from '@/utils/logger';
 
 interface SearchResult {
@@ -53,11 +53,11 @@ export default function SearchPage() {
   const [showVoiceListening, setShowVoiceListening] = useState(false);
 
   const filterTabs = [
-    { id: 'all', label: t('search.filters.all', 'All') },
-    { id: 'vod', label: t('search.filters.vod', 'Movies & Series') },
-    { id: 'live', label: t('search.filters.live', 'Channels') },
-    { id: 'radio', label: t('search.filters.radio', 'Radio') },
-    { id: 'podcast', label: t('search.filters.podcast', 'Podcasts') },
+    { id: 'all', label: t('search.filters.all') },
+    { id: 'vod', label: t('search.filters.vod') },
+    { id: 'live', label: t('search.filters.live') },
+    { id: 'radio', label: t('search.filters.radio') },
+    { id: 'podcast', label: t('search.filters.podcast') },
   ];
 
   // Load recent searches from localStorage
@@ -192,10 +192,10 @@ export default function SearchPage() {
         {/* Header */}
         <View style={styles.header}>
           <Text style={[styles.title, isRTL && styles.titleRTL]}>
-            {t('search.title', 'Search')}
+            {t('search.title')}
           </Text>
           <Text style={[styles.subtitle, isRTL && styles.subtitleRTL]}>
-            {t('search.subtitle', 'Find movies, series, channels, radio stations and podcasts')}
+            {t('search.subtitle')}
           </Text>
         </View>
 
@@ -209,7 +209,7 @@ export default function SearchPage() {
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
                 onKeyDown={(e) => e.key === 'Enter' && handleSubmit()}
-                placeholder={t('search.placeholder', 'Search for content...')}
+                placeholder={t('search.placeholder')}
                 style={{
                   flex: 1,
                   background: 'transparent',
@@ -229,9 +229,8 @@ export default function SearchPage() {
                 )}
                 <View style={styles.voiceButtonWrapper}>
                   <VoiceSearchButton
-                    onTranscribed={handleVoiceTranscribed}
-                    onListeningChange={setShowVoiceListening}
-                    size="sm"
+                    onResult={handleVoiceTranscribed}
+                    transcribeAudio={chatService.transcribeAudio}
                   />
                 </View>
               </View>
@@ -244,7 +243,7 @@ export default function SearchPage() {
               <GlassView style={styles.voiceListeningContent} intensity="high">
                 <Mic size={24} color={colors.primary} />
                 <Text style={styles.voiceListeningText}>
-                  {t('search.listening', 'Listening...')}
+                  {t('search.listening')}
                 </Text>
               </GlassView>
             </View>
@@ -266,7 +265,7 @@ export default function SearchPage() {
           <View style={styles.loadingContainer}>
             <ActivityIndicator size="large" color={colors.primary} />
             <Text style={styles.loadingText}>
-              {t('search.searching', 'Searching...')}
+              {t('search.searching')}
             </Text>
           </View>
         ) : results.length > 0 ? (
@@ -274,7 +273,7 @@ export default function SearchPage() {
             {/* Results Count */}
             <View style={[styles.resultsHeader, isRTL && styles.resultsHeaderRTL]}>
               <Text style={styles.resultsCount}>
-                {t('search.resultsFound', '{{count}} results found for "{{query}}"', {
+                {t('search.resultsFound', {
                   count: results.length,
                   query: hasQuery,
                 })}
@@ -343,10 +342,10 @@ export default function SearchPage() {
             <GlassCard style={styles.emptyCard}>
               <Search size={80} color={colors.textMuted} />
               <Text style={styles.emptyTitle}>
-                {t('search.noResults', 'No results found')}
+                {t('search.noResults')}
               </Text>
               <Text style={styles.emptyDescription}>
-                {t('search.noResultsHint', 'Try different keywords or change your filters')}
+                {t('search.noResultsHint')}
               </Text>
             </GlassCard>
           </View>
@@ -360,12 +359,12 @@ export default function SearchPage() {
                   <View style={styles.sectionTitleRow}>
                     <Clock size={18} color={colors.textSecondary} />
                     <Text style={styles.sectionTitle}>
-                      {t('search.recentSearches', 'Recent Searches')}
+                      {t('search.recentSearches')}
                     </Text>
                   </View>
                   <Pressable onPress={clearRecentSearches}>
                     <Text style={styles.clearText}>
-                      {t('search.clearAll', 'Clear All')}
+                      {t('search.clearAll')}
                     </Text>
                   </Pressable>
                 </View>
@@ -396,19 +395,19 @@ export default function SearchPage() {
                 <View style={styles.sectionTitleRow}>
                   <TrendingUp size={18} color={colors.textSecondary} />
                   <Text style={styles.sectionTitle}>
-                    {t('search.trending', 'Trending Searches')}
+                    {t('search.trending')}
                   </Text>
                 </View>
               </View>
 
               <View style={styles.suggestionsList}>
                 {[
-                  t('search.suggestions.movies', 'Movies'),
-                  t('search.suggestions.series', 'Series'),
-                  t('search.suggestions.liveTV', 'Live TV'),
-                  t('search.suggestions.news', 'News'),
-                  t('search.suggestions.sports', 'Sports'),
-                  t('search.suggestions.kids', 'Kids'),
+                  t('search.suggestions.movies'),
+                  t('search.suggestions.series'),
+                  t('search.suggestions.liveTV'),
+                  t('search.suggestions.news'),
+                  t('search.suggestions.sports'),
+                  t('search.suggestions.kids'),
                 ].map((suggestion, index) => (
                   <Pressable
                     key={index}
@@ -431,10 +430,10 @@ export default function SearchPage() {
               <GlassCard style={styles.promptCard}>
                 <Search size={72} color={colors.textMuted} />
                 <Text style={styles.promptTitle}>
-                  {t('search.promptTitle', 'What are you looking for?')}
+                  {t('search.promptTitle')}
                 </Text>
                 <Text style={styles.promptDescription}>
-                  {t('search.promptDescription', 'Search for your favorite content or use voice search')}
+                  {t('search.promptDescription')}
                 </Text>
               </GlassCard>
             </View>

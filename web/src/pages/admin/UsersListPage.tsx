@@ -150,7 +150,7 @@ export default function UsersListPage() {
       {/* Header */}
       <View style={styles.header}>
         <View>
-          <Text style={styles.pageTitle}>{t('admin.titles.users', 'ניהול משתמשים')}</Text>
+          <Text style={styles.pageTitle}>{t('admin.titles.users')}</Text>
           <Text style={styles.subtitle}>צפה ונהל את משתמשי המערכת</Text>
         </View>
         <Link to="/admin/users/new" style={{ textDecoration: 'none' }}>

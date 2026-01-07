@@ -1,11 +1,12 @@
 import { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, FlatList, Pressable, Image, TextInput, ActivityIndicator, Modal, useWindowDimensions } from 'react-native';
 import { Link, useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { Play, Clock, Baby, Lock, X } from 'lucide-react';
 import { useProfileStore } from '@/stores/profileStore';
 import { childrenService } from '../services/api';
 import { colors, spacing, borderRadius } from '@bayit/shared/theme';
-import { GlassCard, GlassView, GlassButton } from '@bayit/shared/ui';
+import { GlassCard, GlassView, GlassButton, GlassCategoryPill } from '@bayit/shared/ui';
 import LinearGradient from 'react-native-linear-gradient';
 import logger from '@/utils/logger';
 
@@ -98,6 +99,7 @@ function KidsContentCard({ item }: { item: KidsContentItem }) {
 }
 
 function ExitKidsModeModal({ isOpen, onClose, onVerify }: { isOpen: boolean; onClose: () => void; onVerify: (pin: string) => Promise<void> }) {
+  const { t } = useTranslation();
   const [pin, setPin] = useState('');
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -112,7 +114,7 @@ function ExitKidsModeModal({ isOpen, onClose, onVerify }: { isOpen: boolean; onC
       await onVerify(pin);
       onClose();
     } catch (err: any) {
-      setError(err.message || 'קוד PIN שגוי');
+      setError(err.message || t('children.wrongCode'));
     } finally {
       setIsLoading(false);
     }
@@ -128,8 +130,8 @@ function ExitKidsModeModal({ isOpen, onClose, onVerify }: { isOpen: boolean; onC
           <View style={styles.modalIcon}>
             <Lock size={32} color="#facc15" />
           </View>
-          <Text style={styles.modalTitle}>יציאה ממצב ילדים</Text>
-          <Text style={styles.modalSubtitle}>הזן את קוד ההורה כדי לצאת</Text>
+          <Text style={styles.modalTitle}>{t('children.exitKidsMode')}</Text>
+          <Text style={styles.modalSubtitle}>{t('children.exitDescription')}</Text>
           <TextInput
             value={pin}
             onChangeText={(text) => setPin(text.replace(/\D/g, ''))}
@@ -148,7 +150,7 @@ function ExitKidsModeModal({ isOpen, onClose, onVerify }: { isOpen: boolean; onC
             {isLoading ? (
               <ActivityIndicator color="#854d0e" />
             ) : (
-              <Text style={styles.confirmButtonText}>אישור</Text>
+              <Text style={styles.confirmButtonText}>{t('children.confirm')}</Text>
             )}
           </Pressable>
         </GlassCard>
@@ -158,6 +160,7 @@ function ExitKidsModeModal({ isOpen, onClose, onVerify }: { isOpen: boolean; onC
 }
 
 export default function ChildrenPage() {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const { activeProfile, isKidsMode } = useProfileStore();
   const [selectedCategory, setSelectedCategory] = useState('all');
@@ -210,7 +213,7 @@ export default function ChildrenPage() {
       await childrenService.verifyPin(pin);
       navigate('/');
     } catch (err) {
-      throw new Error('קוד PIN שגוי');
+      throw new Error(t('children.wrongCode'));
     }
   };
 
@@ -229,14 +232,14 @@ export default function ChildrenPage() {
               <Baby size={32} color="#facc15" />
             </View>
             <View>
-              <Text style={styles.pageTitle}>ילדים</Text>
-              <Text style={styles.itemCount}>{content.length} פריטים</Text>
+              <Text style={styles.pageTitle}>{t('children.title')}</Text>
+              <Text style={styles.itemCount}>{content.length} {t('children.items')}</Text>
             </View>
           </View>
           {isKidsMode && isKidsMode() && (
             <Pressable onPress={() => setShowExitModal(true)} style={styles.exitButton}>
               <Lock size={16} color={colors.textMuted} />
-              <Text style={styles.exitButtonText}>יציאה</Text>
+              <Text style={styles.exitButtonText}>{t('children.exitKidsMode')}</Text>
             </Pressable>
           )}
         </View>
@@ -244,16 +247,13 @@ export default function ChildrenPage() {
         {categories.length > 0 && (
           <View style={styles.categories}>
             {categories.map((category) => (
-              <Pressable
+              <GlassCategoryPill
                 key={category.id}
+                label={category.name}
+                emoji={CATEGORY_ICONS[category.id] || '🌈'}
+                isActive={selectedCategory === category.id}
                 onPress={() => setSelectedCategory(category.id)}
-                style={[styles.categoryPill, selectedCategory === category.id && styles.categoryPillActive]}
-              >
-                <Text style={styles.catIcon}>{CATEGORY_ICONS[category.id] || '🌈'}</Text>
-                <Text style={[styles.categoryText, selectedCategory === category.id && styles.categoryTextActive]}>
-                  {category.name}
-                </Text>
-              </Pressable>
+              />
             ))}
           </View>
         )}
@@ -280,8 +280,8 @@ export default function ChildrenPage() {
           <View style={styles.emptyState}>
             <GlassCard style={styles.emptyCard}>
               <Text style={styles.emptyIcon}>🌈</Text>
-              <Text style={styles.emptyTitle}>אין תוכן זמין</Text>
-              <Text style={styles.emptyDescription}>נסה לבחור קטגוריה אחרת</Text>
+              <Text style={styles.emptyTitle}>{t('children.noContent')}</Text>
+              <Text style={styles.emptyDescription}>{t('children.tryAnotherCategory')}</Text>
             </GlassCard>
           </View>
         )}
@@ -357,31 +357,6 @@ const styles = StyleSheet.create({
     flexWrap: 'wrap',
     gap: spacing.sm,
     marginBottom: spacing.lg,
-  },
-  categoryPill: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing.sm,
-    paddingHorizontal: spacing.md,
-    paddingVertical: spacing.sm,
-    borderRadius: borderRadius.full,
-    backgroundColor: colors.backgroundLighter,
-    borderWidth: 2,
-    borderColor: 'transparent',
-  },
-  categoryPillActive: {
-    backgroundColor: 'rgba(250, 204, 21, 0.2)',
-    borderColor: '#facc15',
-  },
-  catIcon: {
-    fontSize: 14,
-  },
-  categoryText: {
-    fontSize: 14,
-    color: colors.textMuted,
-  },
-  categoryTextActive: {
-    color: '#facc15',
   },
   loadingContainer: {
     flex: 1,

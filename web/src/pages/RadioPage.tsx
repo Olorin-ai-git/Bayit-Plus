@@ -1,11 +1,17 @@
 import { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, FlatList, Pressable, Image, ActivityIndicator, useWindowDimensions } from 'react-native';
+import { View, Text, StyleSheet, FlatList, Pressable, Image, ActivityIndicator, ScrollView, useWindowDimensions } from 'react-native';
 import { Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { Radio, Volume2, Play } from 'lucide-react';
 import { radioService } from '@/services/api';
 import { colors, spacing, borderRadius } from '@bayit/shared/theme';
-import { GlassCard, GlassView, GlassBadge } from '@bayit/shared/ui';
+import { GlassCard, GlassView, GlassBadge, GlassCategoryPill } from '@bayit/shared/ui';
 import logger from '@/utils/logger';
+
+interface Category {
+  id: string;
+  name: string;
+}
 
 interface Station {
   id: string;
@@ -13,6 +19,7 @@ interface Station {
   logo?: string;
   currentShow?: string;
   genre?: string;
+  category?: string;
 }
 
 function StationCard({ station }: { station: Station }) {
@@ -77,7 +84,10 @@ function SkeletonCard() {
 }
 
 export default function RadioPage() {
+  const { t } = useTranslation();
   const [stations, setStations] = useState<Station[]>([]);
+  const [categories, setCategories] = useState<Category[]>([]);
+  const [selectedCategory, setSelectedCategory] = useState('all');
   const [loading, setLoading] = useState(true);
   const { width } = useWindowDimensions();
 
@@ -85,18 +95,27 @@ export default function RadioPage() {
 
   useEffect(() => {
     loadStations();
-  }, []);
+  }, [selectedCategory]);
 
   const loadStations = async () => {
     try {
-      const data = await radioService.getStations();
-      setStations(data.stations);
+      const data = await radioService.getStations({
+        category: selectedCategory !== 'all' ? selectedCategory : undefined,
+      });
+      setStations(data.stations || []);
+      if (data.categories) {
+        setCategories(data.categories);
+      }
     } catch (error) {
       logger.error('Failed to load stations', 'RadioPage', error);
     } finally {
       setLoading(false);
     }
   };
+
+  const filteredStations = selectedCategory === 'all'
+    ? stations
+    : stations.filter(s => s.genre === selectedCategory || s.category === selectedCategory);
 
   if (loading) {
     return (
@@ -118,12 +137,59 @@ export default function RadioPage() {
         <GlassView style={styles.headerIcon}>
           <Radio size={24} color={colors.secondary} />
         </GlassView>
-        <Text style={styles.title}>תחנות רדיו</Text>
+        <Text style={styles.title}>{t('radio.title')}</Text>
       </View>
+
+      {/* Category Filter */}
+      <ScrollView
+        horizontal
+        showsHorizontalScrollIndicator={false}
+        style={styles.categoriesScroll}
+        contentContainerStyle={styles.categoriesContent}
+      >
+        <GlassCategoryPill
+          label={t('radio.categories.all')}
+          emoji="📻"
+          isActive={selectedCategory === 'all'}
+          onPress={() => setSelectedCategory('all')}
+        />
+        <GlassCategoryPill
+          label={t('radio.categories.music')}
+          emoji="🎵"
+          isActive={selectedCategory === 'music'}
+          onPress={() => setSelectedCategory('music')}
+        />
+        <GlassCategoryPill
+          label={t('radio.categories.news')}
+          emoji="📰"
+          isActive={selectedCategory === 'news'}
+          onPress={() => setSelectedCategory('news')}
+        />
+        <GlassCategoryPill
+          label={t('radio.categories.talk')}
+          emoji="🎙️"
+          isActive={selectedCategory === 'talk'}
+          onPress={() => setSelectedCategory('talk')}
+        />
+        <GlassCategoryPill
+          label={t('radio.categories.jewish')}
+          emoji="✡️"
+          isActive={selectedCategory === 'jewish'}
+          onPress={() => setSelectedCategory('jewish')}
+        />
+        {categories.map((category) => (
+          <GlassCategoryPill
+            key={category.id}
+            label={category.name}
+            isActive={selectedCategory === category.id}
+            onPress={() => setSelectedCategory(category.id)}
+          />
+        ))}
+      </ScrollView>
 
       {/* Stations Grid */}
       <FlatList
-        data={stations}
+        data={filteredStations}
         keyExtractor={(item) => item.id}
         numColumns={numColumns}
         key={numColumns}
@@ -138,8 +204,8 @@ export default function RadioPage() {
           <View style={styles.emptyState}>
             <GlassCard style={styles.emptyCard}>
               <Radio size={64} color={colors.textMuted} />
-              <Text style={styles.emptyTitle}>אין תחנות רדיו זמינות</Text>
-              <Text style={styles.emptyDescription}>נסה שוב מאוחר יותר</Text>
+              <Text style={styles.emptyTitle}>{t('radio.noStations')}</Text>
+              <Text style={styles.emptyDescription}>{t('radio.tryLater')}</Text>
             </GlassCard>
           </View>
         }
@@ -174,6 +240,13 @@ const styles = StyleSheet.create({
     fontSize: 32,
     fontWeight: 'bold',
     color: colors.text,
+  },
+  categoriesScroll: {
+    marginBottom: spacing.lg,
+  },
+  categoriesContent: {
+    gap: spacing.sm,
+    paddingBottom: spacing.sm,
   },
   grid: {
     flexDirection: 'row',

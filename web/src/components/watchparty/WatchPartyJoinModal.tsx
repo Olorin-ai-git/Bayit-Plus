@@ -90,7 +90,7 @@ export default function WatchPartyJoinModal({ isOpen, onClose, onJoin }: WatchPa
                 <TextInput
                   value={roomCode}
                   onChangeText={handleCodeChange}
-                  placeholder="ABCD1234"
+                  placeholder={t('placeholder.roomCode', 'ABCD1234')}
                   placeholderTextColor={colors.textMuted}
                   style={[styles.input, error && styles.inputError]}
                   autoFocus

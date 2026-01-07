@@ -124,8 +124,8 @@ const apiHistoryService = {
 
 // Chat Service (API)
 const apiChatService = {
-  sendMessage: (message, conversationId) =>
-    api.post('/chat', { message, conversation_id: conversationId }),
+  sendMessage: (message, conversationId, context = null) =>
+    api.post('/chat', { message, conversation_id: conversationId, context }),
   getConversation: (conversationId) => api.get(`/chat/${conversationId}`),
   clearConversation: (conversationId) => api.delete(`/chat/${conversationId}`),
   transcribeAudio: (audioBlob) => {
@@ -219,6 +219,12 @@ const apiProfilesService = {
   getRecommendations: (profileId) => api.get(`/profiles/${profileId}/recommendations`),
   setKidsPin: (pin) => api.post('/profiles/kids-pin/set', { pin }),
   verifyKidsPin: (pin) => api.post('/profiles/kids-pin/verify', { pin }),
+  // AI preferences
+  getAIPreferences: () => api.get('/profiles/preferences/ai'),
+  updateAIPreferences: (prefs) => api.put('/profiles/preferences/ai', prefs),
+  // Voice & accessibility preferences
+  getVoicePreferences: () => api.get('/profiles/preferences/voice'),
+  updateVoicePreferences: (prefs) => api.put('/profiles/preferences/voice', prefs),
 }
 
 // Children Service (API)

@@ -94,7 +94,7 @@ export default function RefundsPage() {
       loadRefunds();
     } catch (error) {
       logger.error('Failed to approve refund', 'RefundsPage', error);
-      setErrorMessage(t('common.errors.unexpected', 'An unexpected error occurred'));
+      setErrorMessage(t('common.errors.unexpected'));
       setShowErrorModal(true);
     }
   };
@@ -107,7 +107,7 @@ export default function RefundsPage() {
 
   const handleConfirmReject = async () => {
     if (!selectedRefund || !rejectReason.trim()) {
-      setErrorMessage(t('admin.refunds.errors.rejectReasonRequired', 'Please enter rejection reason'));
+      setErrorMessage(t('admin.refunds.errors.rejectReasonRequired'));
       setShowErrorModal(true);
       return;
     }
@@ -117,7 +117,7 @@ export default function RefundsPage() {
       loadRefunds();
     } catch (error) {
       logger.error('Failed to reject refund', 'RefundsPage', error);
-      setErrorMessage(t('common.errors.unexpected', 'An unexpected error occurred'));
+      setErrorMessage(t('common.errors.unexpected'));
       setShowErrorModal(true);
     }
   };
@@ -134,13 +134,13 @@ export default function RefundsPage() {
   const columns = [
     {
       key: 'id',
-      label: t('admin.refunds.columns.id', 'ID'),
+      label: t('admin.refunds.columns.id'),
       width: 100,
       render: (id: string) => <Text style={styles.idText}>{id.slice(0, 8)}...</Text>,
     },
     {
       key: 'user',
-      label: t('admin.refunds.columns.user', 'User'),
+      label: t('admin.refunds.columns.user'),
       render: (_: any, refund: Refund) => (
         <View>
           <Text style={styles.userName}>{refund.user?.name || 'N/A'}</Text>
@@ -150,7 +150,7 @@ export default function RefundsPage() {
     },
     {
       key: 'amount',
-      label: t('admin.refunds.columns.amount', 'Amount'),
+      label: t('admin.refunds.columns.amount'),
       width: 100,
       render: (_: any, refund: Refund) => (
         <Text style={styles.amountText}>{formatCurrency(refund.amount)}</Text>
@@ -158,7 +158,7 @@ export default function RefundsPage() {
     },
     {
       key: 'reason',
-      label: t('admin.refunds.columns.reason', 'Reason'),
+      label: t('admin.refunds.columns.reason'),
       width: 200,
       render: (reason: string) => (
         <Text style={styles.reasonText} numberOfLines={2}>{reason}</Text>
@@ -166,13 +166,13 @@ export default function RefundsPage() {
     },
     {
       key: 'status',
-      label: t('admin.refunds.columns.status', 'Status'),
+      label: t('admin.refunds.columns.status'),
       width: 100,
       render: (status: string) => getStatusBadge(status),
     },
     {
       key: 'created_at',
-      label: t('admin.refunds.columns.requestDate', 'Request Date'),
+      label: t('admin.refunds.columns.requestDate'),
       width: 150,
       render: (date: string) => <Text style={styles.dateText}>{formatDate(date)}</Text>,
     },
@@ -204,25 +204,25 @@ export default function RefundsPage() {
     <ScrollView style={styles.container} contentContainerStyle={styles.contentContainer}>
       <View style={styles.header}>
         <View>
-          <Text style={styles.pageTitle}>{t('admin.refunds.title', 'Refunds')}</Text>
-          <Text style={styles.subtitle}>{t('admin.refunds.subtitle', 'Manage refund requests')}</Text>
+          <Text style={styles.pageTitle}>{t('admin.refunds.title')}</Text>
+          <Text style={styles.subtitle}>{t('admin.refunds.subtitle')}</Text>
         </View>
       </View>
 
       <View style={styles.summaryCards}>
-        <StatCard title={t('admin.refunds.stats.pendingTitle', 'Pending Approval')} value={pendingCount.toString()} icon="⏳" color="warning" />
-        <StatCard title={t('admin.refunds.stats.approvedTitle', 'Approved')} value={approvedCount.toString()} icon="✅" color="success" />
-        <StatCard title={t('admin.refunds.stats.rejectedTitle', 'Rejected')} value={rejectedCount.toString()} icon="❌" color="error" />
-        <StatCard title={t('admin.refunds.stats.totalRefunded', 'Total Refunded')} value={formatCurrency(totalApproved)} icon="💰" color="primary" />
+        <StatCard title={t('admin.refunds.stats.pendingTitle')} value={pendingCount.toString()} icon="⏳" color="warning" />
+        <StatCard title={t('admin.refunds.stats.approvedTitle')} value={approvedCount.toString()} icon="✅" color="success" />
+        <StatCard title={t('admin.refunds.stats.rejectedTitle')} value={rejectedCount.toString()} icon="❌" color="error" />
+        <StatCard title={t('admin.refunds.stats.totalRefunded')} value={formatCurrency(totalApproved)} icon="💰" color="primary" />
       </View>
 
       <View style={styles.filtersRow}>
         {['', 'pending', 'approved', 'rejected'].map((status) => {
           const getStatusLabel = (s: string) => {
-            if (s === '') return t('admin.common.all', 'All');
-            if (s === 'pending') return t('admin.refunds.status.pending', 'Pending');
-            if (s === 'approved') return t('admin.refunds.status.approved', 'Approved');
-            if (s === 'rejected') return t('admin.refunds.status.rejected', 'Rejected');
+            if (s === '') return t('admin.common.all');
+            if (s === 'pending') return t('admin.refunds.status.pending');
+            if (s === 'approved') return t('admin.refunds.status.approved');
+            if (s === 'rejected') return t('admin.refunds.status.rejected');
             return s;
           };
           return (
@@ -245,24 +245,24 @@ export default function RefundsPage() {
         loading={loading}
         pagination={pagination}
         onPageChange={handlePageChange}
-        emptyMessage={t('admin.refunds.emptyMessage', 'No refund requests found')}
+        emptyMessage={t('admin.refunds.emptyMessage')}
         searchable={false}
       />
 
       <GlassModal
         visible={showApproveConfirm}
         onClose={() => setShowApproveConfirm(false)}
-        title={t('admin.refunds.approveModal.title', 'Confirm Approval')}
+        title={t('admin.refunds.approveModal.title')}
       >
         <View style={styles.modalContent}>
           {selectedRefund && (
             <Text style={styles.refundInfo}>
-              {t('admin.refunds.approveModal.message', 'Approve refund of')} {formatCurrency(selectedRefund.amount)}?
+              {t('admin.refunds.approveModal.message')} {formatCurrency(selectedRefund.amount)}?
             </Text>
           )}
           <View style={styles.modalActions}>
-            <GlassButton title={t('common.cancel', 'Cancel')} variant="secondary" onPress={() => setShowApproveConfirm(false)} />
-            <GlassButton title={t('common.confirm', 'Confirm')} variant="primary" onPress={handleConfirmApprove} />
+            <GlassButton title={t('common.cancel')} variant="secondary" onPress={() => setShowApproveConfirm(false)} />
+            <GlassButton title={t('common.confirm')} variant="primary" onPress={handleConfirmApprove} />
           </View>
         </View>
       </GlassModal>
@@ -270,12 +270,12 @@ export default function RefundsPage() {
       <GlassModal
         visible={showErrorModal}
         onClose={() => setShowErrorModal(false)}
-        title={t('common.error', 'Error')}
+        title={t('common.error')}
       >
         <View style={styles.modalContent}>
           <Text style={styles.errorText}>{errorMessage}</Text>
           <View style={styles.modalActions}>
-            <GlassButton title={t('common.ok', 'OK')} variant="primary" onPress={() => setShowErrorModal(false)} />
+            <GlassButton title={t('common.ok')} variant="primary" onPress={() => setShowErrorModal(false)} />
           </View>
         </View>
       </GlassModal>
@@ -283,29 +283,29 @@ export default function RefundsPage() {
       <GlassModal
         visible={showRejectModal}
         onClose={() => setShowRejectModal(false)}
-        title={t('admin.refunds.rejectModal.title', 'Reject Refund Request')}
+        title={t('admin.refunds.rejectModal.title')}
       >
         <View style={styles.modalContent}>
           {selectedRefund && (
             <Text style={styles.refundInfo}>
-              {t('admin.refunds.rejectModal.message', 'Rejecting refund of')} {formatCurrency(selectedRefund.amount)}
+              {t('admin.refunds.rejectModal.message')} {formatCurrency(selectedRefund.amount)}
             </Text>
           )}
           <View style={styles.formGroup}>
-            <Text style={styles.formLabel}>{t('admin.refunds.rejectModal.reasonLabel', 'Rejection Reason')}</Text>
+            <Text style={styles.formLabel}>{t('admin.refunds.rejectModal.reasonLabel')}</Text>
             <TextInput
               style={styles.textArea}
               value={rejectReason}
               onChangeText={setRejectReason}
-              placeholder={t('admin.refunds.rejectModal.reasonPlaceholder', 'Please enter rejection reason...')}
+              placeholder={t('admin.refunds.rejectModal.reasonPlaceholder')}
               placeholderTextColor={colors.textMuted}
               multiline
               numberOfLines={3}
             />
           </View>
           <View style={styles.modalActions}>
-            <GlassButton title={t('common.cancel', 'Cancel')} variant="secondary" onPress={() => setShowRejectModal(false)} />
-            <GlassButton title={t('admin.refunds.rejectModal.submitButton', 'Reject Request')} variant="primary" onPress={handleConfirmReject} />
+            <GlassButton title={t('common.cancel')} variant="secondary" onPress={() => setShowRejectModal(false)} />
+            <GlassButton title={t('admin.refunds.rejectModal.submitButton')} variant="primary" onPress={handleConfirmReject} />
           </View>
         </View>
       </GlassModal>

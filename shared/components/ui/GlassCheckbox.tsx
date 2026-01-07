@@ -96,7 +96,7 @@ export const GlassCheckbox: React.FC<GlassCheckboxProps> = ({
 
 const styles = StyleSheet.create({
   container: {
-    width: '100%',
+    //width: '100%',
   },
   row: {
     flexDirection: 'row',

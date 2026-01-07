@@ -50,6 +50,7 @@ const getActivityIcon = (action: string) => {
 
 export default function AdminDashboardPage() {
   const { t, i18n } = useTranslation();
+  const isRTL = i18n.language === 'he' || i18n.language === 'ar';
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -64,10 +65,10 @@ export default function AdminDashboardPage() {
     const diffHours = Math.floor(diffMs / 3600000);
 
     if (diffMins < 60) {
-      return t('admin.dashboard.timeAgo.minutes', '{{count}} minutes ago', { count: diffMins });
+      return t('admin.dashboard.timeAgo.minutes', { count: diffMins });
     }
     if (diffHours < 24) {
-      return t('admin.dashboard.timeAgo.hours', '{{count}} hours ago', { count: diffHours });
+      return t('admin.dashboard.timeAgo.hours', { count: diffHours });
     }
     return date.toLocaleDateString(
       i18n.language === 'he' ? 'he-IL' : i18n.language === 'es' ? 'es-ES' : 'en-US'
@@ -107,7 +108,7 @@ export default function AdminDashboardPage() {
       <View style={styles.errorContainer}>
         <Text style={styles.errorIcon}>⚠️</Text>
         <Text style={styles.errorText}>{error}</Text>
-        <GlassButton title={t('common.retry', 'Retry')} onPress={loadDashboardData} variant="primary" />
+        <GlassButton title={t('common.retry')} onPress={loadDashboardData} variant="primary" />
       </View>
     );
   }
@@ -116,7 +117,7 @@ export default function AdminDashboardPage() {
     return (
       <View style={styles.loadingContainer}>
         <ActivityIndicator size="large" color={colors.primary} />
-        <Text style={styles.loadingText}>{t('common.loading', 'Loading...')}</Text>
+        <Text style={styles.loadingText}>{t('common.loading')}</Text>
       </View>
     );
   }
@@ -126,42 +127,42 @@ export default function AdminDashboardPage() {
       {/* Header */}
       <View style={styles.header}>
         <View>
-          <Text style={styles.pageTitle}>{t('admin.dashboard.title', 'Dashboard')}</Text>
-          <Text style={styles.subtitle}>{t('admin.dashboard.subtitle', 'System Overview')}</Text>
+          <Text style={styles.pageTitle}>{t('admin.dashboard.title')}</Text>
+          <Text style={styles.subtitle}>{t('admin.dashboard.subtitle')}</Text>
         </View>
         <Pressable onPress={handleRefresh} disabled={refreshing} style={styles.refreshButton}>
           <RefreshCw size={18} color={colors.text} />
-          <Text style={styles.refreshText}>{t('admin.dashboard.refresh', 'Refresh')}</Text>
+          <Text style={styles.refreshText}>{t('admin.dashboard.refresh')}</Text>
         </Pressable>
       </View>
 
       {/* Users Section */}
       <View style={styles.section}>
-        <Text style={styles.sectionTitle}>{t('admin.dashboard.users', 'Users')}</Text>
+        <Text style={styles.sectionTitle}>{t('admin.dashboard.users')}</Text>
         <View style={styles.statsGrid}>
           <StatCard
-            title={t('admin.stats.totalUsers', 'Total Users')}
+            title={t('admin.stats.totalUsers')}
             value={formatNumber(stats.total_users)}
             icon="👥"
             color="primary"
             to="/admin/users"
           />
           <StatCard
-            title={t('admin.stats.activeUsers', 'Active Users')}
+            title={t('admin.stats.activeUsers')}
             value={formatNumber(stats.active_users)}
             icon="✅"
             color="success"
             trend={{ value: 12.5, isPositive: true }}
           />
           <StatCard
-            title={t('admin.stats.newToday', 'New Today')}
+            title={t('admin.stats.newToday')}
             value={formatNumber(stats.new_users_today)}
             icon="🆕"
             color="secondary"
             trend={{ value: 8.2, isPositive: true }}
           />
           <StatCard
-            title={t('admin.stats.newThisWeek', 'New This Week')}
+            title={t('admin.stats.newThisWeek')}
             value={formatNumber(stats.new_users_this_week)}
             icon="📈"
             color="warning"
@@ -171,30 +172,30 @@ export default function AdminDashboardPage() {
 
       {/* Revenue Section */}
       <View style={styles.section}>
-        <Text style={styles.sectionTitle}>{t('admin.dashboard.revenue', 'Revenue')}</Text>
+        <Text style={styles.sectionTitle}>{t('admin.dashboard.revenue')}</Text>
         <View style={styles.statsGrid}>
           <StatCard
-            title={t('admin.stats.totalRevenue', 'Total Revenue')}
+            title={t('admin.stats.totalRevenue')}
             value={formatCurrency(stats.total_revenue)}
             icon="💰"
             color="success"
             to="/admin/billing"
           />
           <StatCard
-            title={t('admin.stats.revenueToday', 'Revenue Today')}
+            title={t('admin.stats.revenueToday')}
             value={formatCurrency(stats.revenue_today)}
             icon="📊"
             color="primary"
             trend={{ value: 15.3, isPositive: true }}
           />
           <StatCard
-            title={t('admin.stats.revenueMonth', 'Revenue This Month')}
+            title={t('admin.stats.revenueMonth')}
             value={formatCurrency(stats.revenue_this_month)}
             icon="📅"
             color="secondary"
           />
           <StatCard
-            title={t('admin.stats.arpu', 'ARPU')}
+            title={t('admin.stats.arpu')}
             value={`$${stats.avg_revenue_per_user.toFixed(2)}`}
             icon="💵"
             color="warning"
@@ -204,17 +205,17 @@ export default function AdminDashboardPage() {
 
       {/* Subscriptions Section */}
       <View style={styles.section}>
-        <Text style={styles.sectionTitle}>{t('admin.dashboard.subscriptions', 'Subscriptions')}</Text>
+        <Text style={styles.sectionTitle}>{t('admin.dashboard.subscriptions')}</Text>
         <View style={styles.statsGridHalf}>
           <StatCard
-            title={t('admin.stats.activeSubscriptions', 'Active Subscriptions')}
+            title={t('admin.stats.activeSubscriptions')}
             value={formatNumber(stats.active_subscriptions)}
             icon="📦"
             color="primary"
             to="/admin/subscriptions"
           />
           <StatCard
-            title={t('admin.stats.churnRate', 'Churn Rate')}
+            title={t('admin.stats.churnRate')}
             value={`${stats.churn_rate}%`}
             icon="📉"
             color={stats.churn_rate < 5 ? 'success' : 'error'}
@@ -223,69 +224,75 @@ export default function AdminDashboardPage() {
         </View>
       </View>
 
-      {/* Recent Activity & Quick Actions */}
-      <View style={styles.bottomSection}>
-        {/* Recent Activity */}
-        <View style={styles.activitySection}>
-          <Text style={styles.sectionTitle}>{t('admin.dashboard.recentActivity', 'Recent Activity')}</Text>
-          <GlassCard style={styles.activityCard}>
-            {recentActivity.map((activity) => (
-              <View key={activity.id} style={styles.activityItem}>
-                <View style={styles.activityIcon}>
-                  <Text style={styles.activityIconText}>{getActivityIcon(activity.action)}</Text>
-                </View>
-                <View style={styles.activityContent}>
-                  <Text style={styles.activityAction}>
-                    {activity.action.replace('.', ' ').replace(/_/g, ' ')}
-                  </Text>
-                  {activity.details && (
-                    <Text style={styles.activityDetails} numberOfLines={1}>
-                      {Object.values(activity.details).join(' - ')}
-                    </Text>
-                  )}
-                </View>
-                <Text style={styles.activityTime}>{formatDateTime(activity.created_at)}</Text>
-              </View>
-            ))}
-          </GlassCard>
-        </View>
-
+      {/* Quick Actions & Recent Activity */}
+      <View style={[styles.bottomSection, isRTL && styles.bottomSectionRTL]}>
         {/* Quick Actions */}
         <View style={styles.quickActionsSection}>
-          <Text style={styles.sectionTitle}>{t('admin.dashboard.quickActions', 'Quick Actions')}</Text>
+          <Text style={[styles.sectionTitle, isRTL && styles.textRTL]}>{t('admin.dashboard.quickActions')}</Text>
           <GlassCard style={styles.quickActionsCard}>
             <Link to="/admin/users/new" style={{ textDecoration: 'none' }}>
-              <Pressable style={styles.quickAction}>
+              <Pressable style={[styles.quickAction, isRTL && styles.quickActionRTL]}>
                 <View style={[styles.quickActionIcon, { backgroundColor: 'rgba(0, 217, 255, 0.2)' }]}>
                   <UserPlus size={20} color={colors.primary} />
                 </View>
-                <Text style={styles.quickActionText}>{t('admin.actions.addUser', 'Add User')}</Text>
+                <Text style={[styles.quickActionText, isRTL && styles.textRTL]}>{t('admin.actions.addUser')}</Text>
               </Pressable>
             </Link>
             <Link to="/admin/campaigns/new" style={{ textDecoration: 'none' }}>
-              <Pressable style={styles.quickAction}>
+              <Pressable style={[styles.quickAction, isRTL && styles.quickActionRTL]}>
                 <View style={[styles.quickActionIcon, { backgroundColor: 'rgba(139, 92, 246, 0.2)' }]}>
                   <Tag size={20} color="#8B5CF6" />
                 </View>
-                <Text style={styles.quickActionText}>{t('admin.actions.newCampaign', 'New Campaign')}</Text>
+                <Text style={[styles.quickActionText, isRTL && styles.textRTL]}>{t('admin.actions.newCampaign')}</Text>
               </Pressable>
             </Link>
             <Link to="/admin/emails" style={{ textDecoration: 'none' }}>
-              <Pressable style={styles.quickAction}>
+              <Pressable style={[styles.quickAction, isRTL && styles.quickActionRTL]}>
                 <View style={[styles.quickActionIcon, { backgroundColor: 'rgba(245, 158, 11, 0.2)' }]}>
                   <Mail size={20} color="#F59E0B" />
                 </View>
-                <Text style={styles.quickActionText}>{t('admin.actions.sendEmail', 'Send Email')}</Text>
+                <Text style={[styles.quickActionText, isRTL && styles.textRTL]}>{t('admin.actions.sendEmail')}</Text>
               </Pressable>
             </Link>
             <Link to="/admin/billing" style={{ textDecoration: 'none' }}>
-              <Pressable style={styles.quickAction}>
+              <Pressable style={[styles.quickAction, isRTL && styles.quickActionRTL]}>
                 <View style={[styles.quickActionIcon, { backgroundColor: 'rgba(34, 197, 94, 0.2)' }]}>
                   <BarChart3 size={20} color="#22C55E" />
                 </View>
-                <Text style={styles.quickActionText}>{t('admin.actions.viewReports', 'View Reports')}</Text>
+                <Text style={[styles.quickActionText, isRTL && styles.textRTL]}>{t('admin.actions.viewReports')}</Text>
               </Pressable>
             </Link>
+          </GlassCard>
+        </View>
+
+        {/* Recent Activity */}
+        <View style={styles.activitySection}>
+          <Text style={[styles.sectionTitle, isRTL && styles.textRTL]}>{t('admin.dashboard.recentActivity')}</Text>
+          <GlassCard style={styles.activityCard}>
+            {recentActivity.length > 0 ? (
+              recentActivity.map((activity) => (
+                <View key={activity.id} style={[styles.activityItem, isRTL && styles.activityItemRTL]}>
+                  <View style={styles.activityIcon}>
+                    <Text style={styles.activityIconText}>{getActivityIcon(activity.action)}</Text>
+                  </View>
+                  <View style={styles.activityContent}>
+                    <Text style={[styles.activityAction, isRTL && styles.textRTL]}>
+                      {activity.action.replace('.', ' ').replace(/_/g, ' ')}
+                    </Text>
+                    {activity.details && (
+                      <Text style={[styles.activityDetails, isRTL && styles.textRTL]} numberOfLines={1}>
+                        {Object.values(activity.details).join(' - ')}
+                      </Text>
+                    )}
+                  </View>
+                  <Text style={styles.activityTime}>{formatDateTime(activity.created_at)}</Text>
+                </View>
+              ))
+            ) : (
+              <View style={styles.emptyActivity}>
+                <Text style={styles.emptyActivityText}>{t('admin.dashboard.noRecentActivity', 'No recent activity')}</Text>
+              </View>
+            )}
           </GlassCard>
         </View>
       </View>
@@ -375,11 +382,15 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     gap: spacing.lg,
   },
+  bottomSectionRTL: {
+    flexDirection: 'row-reverse',
+  },
   activitySection: {
     flex: 2,
   },
   activityCard: {
     padding: 0,
+    minHeight: 200,
   },
   activityItem: {
     flexDirection: 'row',
@@ -388,6 +399,18 @@ const styles = StyleSheet.create({
     padding: spacing.md,
     borderBottomWidth: 1,
     borderBottomColor: 'rgba(255, 255, 255, 0.05)',
+  },
+  activityItemRTL: {
+    flexDirection: 'row-reverse',
+  },
+  emptyActivity: {
+    padding: spacing.xl,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  emptyActivityText: {
+    fontSize: 14,
+    color: colors.textMuted,
   },
   activityIcon: {
     width: 40,
@@ -426,9 +449,12 @@ const styles = StyleSheet.create({
   quickAction: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: spacing.sm,
-    padding: spacing.sm,
+    gap: spacing.md,
+    padding: spacing.md,
     borderRadius: borderRadius.md,
+  },
+  quickActionRTL: {
+    flexDirection: 'row-reverse',
   },
   quickActionIcon: {
     width: 40,
@@ -439,6 +465,11 @@ const styles = StyleSheet.create({
   },
   quickActionText: {
     fontSize: 14,
+    fontWeight: '500',
     color: colors.text,
+    flex: 1,
+  },
+  textRTL: {
+    textAlign: 'right',
   },
 });

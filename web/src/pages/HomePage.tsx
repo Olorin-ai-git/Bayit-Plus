@@ -290,7 +290,7 @@ export default function HomePage() {
             <View style={styles.liveTitleRow}>
               <View style={styles.liveBadge}>
                 <View style={styles.liveDot} />
-                <Text style={styles.liveBadgeText}>LIVE</Text>
+                <Text style={styles.liveBadgeText}>{t('common.live')}</Text>
               </View>
               <Text style={styles.sectionTitle}>{t('home.liveTV')}</Text>
             </View>
@@ -326,6 +326,7 @@ export default function HomePage() {
 }
 
 function LiveChannelCard({ channel }: { channel: Channel }) {
+  const { t } = useTranslation();
   const [isHovered, setIsHovered] = useState(false);
 
   return (
@@ -351,7 +352,7 @@ function LiveChannelCard({ channel }: { channel: Channel }) {
           <View style={styles.channelInfo}>
             <View style={styles.channelLiveBadge}>
               <View style={styles.liveDotSmall} />
-              <Text style={styles.channelLiveText}>LIVE</Text>
+              <Text style={styles.channelLiveText}>{t('common.live')}</Text>
             </View>
             <Text style={styles.channelName} numberOfLines={1}>{channel.name}</Text>
             {channel.currentShow && (

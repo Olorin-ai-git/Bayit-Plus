@@ -163,19 +163,19 @@ export default function MorningRitualPage() {
         <View style={styles.mainContent}>
           <View style={styles.header}>
             <View style={styles.headerLeft}>
-              <Text style={styles.ritualTitle}>{t('ritual.title', 'בוקר טוב')}</Text>
+              <Text style={styles.ritualTitle}>{t('ritual.title')}</Text>
               <Text style={styles.ritualTime}>{ritualData?.local_time}</Text>
             </View>
 
             <View style={styles.headerRight}>
               <Pressable style={styles.headerButton} onPress={handleSkip}>
                 <SkipForward size={18} color={colors.text} />
-                <Text style={styles.headerButtonText}>{t('ritual.skipToday', 'דלג להיום')}</Text>
+                <Text style={styles.headerButtonText}>{t('ritual.skipToday')}</Text>
               </Pressable>
 
               <Pressable style={[styles.headerButton, styles.exitButton]} onPress={handleExit}>
                 <X size={18} color={colors.text} />
-                <Text style={styles.headerButtonText}>{t('ritual.finish', 'סיום')}</Text>
+                <Text style={styles.headerButtonText}>{t('ritual.finish')}</Text>
               </Pressable>
             </View>
           </View>
@@ -213,7 +213,7 @@ export default function MorningRitualPage() {
               </GlassView>
             ) : (
               <View style={styles.noContent}>
-                <Text style={styles.noContentText}>{t('ritual.noContentNow', 'אין תוכן זמין כרגע')}</Text>
+                <Text style={styles.noContentText}>{t('ritual.noContentNow')}</Text>
               </View>
             )}
           </View>
@@ -232,8 +232,8 @@ export default function MorningRitualPage() {
                   <View style={styles.playlistInfo}>
                     <Text style={styles.playlistTitle} numberOfLines={1}>{item.title}</Text>
                     <Text style={styles.playlistType}>
-                      {item.type === 'live' ? `🔴 ${t('ritual.typeLive', 'שידור חי')}` :
-                       item.type === 'radio' ? `📻 ${t('ritual.typeRadio', 'רדיו')}` : `🎬 ${t('ritual.typeVideo', 'וידאו')}`}
+                      {item.type === 'live' ? `🔴 ${t('ritual.typeLive')}` :
+                       item.type === 'radio' ? `📻 ${t('ritual.typeRadio')}` : `🎬 ${t('ritual.typeVideo')}`}
                     </Text>
                   </View>
                   {index === currentIndex && <View style={styles.playingIndicator} />}

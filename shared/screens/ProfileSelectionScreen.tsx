@@ -148,7 +148,7 @@ const PinModal: React.FC<PinModalProps> = ({
           keyboardType="number-pad"
           secureTextEntry
           maxLength={6}
-          placeholder="••••"
+          placeholder={t('placeholder.pin', '••••')}
           placeholderTextColor="#666666"
           onSubmitEditing={handleSubmit}
         />

@@ -3,6 +3,7 @@
  * Provides mock implementations of all API services for demo mode.
  * Returns comprehensive demo data with simulated network delay.
  */
+import i18n from '@bayit/shared-i18n';
 import { config } from '../config/appConfig';
 import {
   demoUser,
@@ -243,7 +244,17 @@ export const demoHistoryService = {
 export const demoSearchService = {
   search: async (query: string, filters?: any) => {
     await delay();
-    return demoSearchResults(query);
+    const results = demoSearchResults(query);
+    return {
+      ...results,
+      interpretation: i18n.t('demo.search_interpretation', { query }),
+      suggestions: [
+        i18n.t('demo.suggestions.0'),
+        i18n.t('demo.suggestions.1'),
+        i18n.t('demo.suggestions.2'),
+        i18n.t('demo.suggestions.3'),
+      ],
+    };
   },
   quickSearch: async (query: string, limit: number = 5) => {
     await delay();
@@ -252,7 +263,15 @@ export const demoSearchService = {
   },
   getSuggestions: async () => {
     await delay();
-    return { suggestions: ['פאודה', 'שטיסל', 'טהרן', 'הבורר', 'עבודה ערבית'] };
+    return {
+      suggestions: [
+        i18n.t('demo.suggestions.0'),
+        i18n.t('demo.suggestions.1'),
+        i18n.t('demo.suggestions.2'),
+        i18n.t('demo.suggestions.3'),
+        i18n.t('demo.suggestions.4'),
+      ],
+    };
   },
   voiceSearch: async (transcript: string, language: string, filters?: any) => {
     await delay();
@@ -328,7 +347,15 @@ export const demoZmanService = {
       const minutes = israelDate.getUTCMinutes().toString().padStart(2, '0');
       israelTimeStr = `${hours}:${minutes}`;
 
-      const days = ['יום ראשון', 'יום שני', 'יום שלישי', 'יום רביעי', 'יום חמישי', 'יום שישי', 'שבת'];
+      const days = [
+        i18n.t('demo.days.sunday'),
+        i18n.t('demo.days.monday'),
+        i18n.t('demo.days.tuesday'),
+        i18n.t('demo.days.wednesday'),
+        i18n.t('demo.days.thursday'),
+        i18n.t('demo.days.friday'),
+        i18n.t('demo.days.saturday'),
+      ];
       dayOfWeek = israelDate.getUTCDay();
       israelDayStr = days[dayOfWeek];
 
@@ -353,7 +380,7 @@ export const demoZmanService = {
         is_shabbat: dayOfWeek === 6,
         is_erev_shabbat: dayOfWeek === 5,
         countdown: '48:00',
-        countdown_label: 'עד שבת',
+        countdown_label: i18n.t('demo.until_shabbat'),
         candle_lighting: '16:45',
         havdalah: '17:50',
         parasha: 'Vaera',

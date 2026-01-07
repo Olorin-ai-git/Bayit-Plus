@@ -8,15 +8,15 @@ import {
   View,
   Text,
   StyleSheet,
-  Modal,
   Pressable,
   ScrollView,
   ActivityIndicator,
   useWindowDimensions,
+  Platform,
 } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { X, Search, Radio, Headphones, Film, Mic } from 'lucide-react';
-import { GlassCard, GlassButton, GlassInput, GlassTabs, GlassView } from '@bayit/shared/ui';
+import { GlassButton, GlassInput, GlassTabs, GlassView } from '@bayit/shared/ui';
 import { ContentItemCard } from '../../../../../shared/components/flows';
 import { colors, spacing, borderRadius } from '@bayit/shared/theme';
 import { useContentPicker } from '../hooks/useContentPicker';
@@ -81,12 +81,16 @@ export const ContentPickerModal: React.FC<ContentPickerModalProps> = ({
 
   const numColumns = isMobile ? 2 : width >= 1024 ? 4 : 3;
 
-  return (
-    <Modal visible={visible} transparent animationType="fade">
-      <View style={styles.overlay}>
-        <Pressable style={styles.backdrop} onPress={onClose} />
+  // Don't render if not visible
+  if (!visible) return null;
 
-        <GlassCard autoSize style={[styles.modal, isMobile && styles.modalMobile]}>
+  // On web, render as fixed-position overlay (no Modal needed since we're already in a modal context)
+  // This ensures proper z-index stacking
+  return (
+    <View style={styles.overlay}>
+      <Pressable style={styles.backdrop} onPress={onClose} />
+
+        <GlassView style={[styles.modal, isMobile && styles.modalMobile]} intensity="high">
           {/* Header */}
           <View style={[styles.header, isRTL && styles.headerRTL]}>
             <Text style={[styles.title, isRTL && styles.textRTL]}>
@@ -98,12 +102,14 @@ export const ContentPickerModal: React.FC<ContentPickerModalProps> = ({
           </View>
 
           {/* Tabs */}
-          <GlassTabs
-            tabs={tabs}
-            activeTab={activeTab}
-            onChange={(tabId) => setActiveTab(tabId as ContentType)}
-            variant="pills"
-          />
+          <View style={styles.tabsContainer}>
+            <GlassTabs
+              tabs={tabs}
+              activeTab={activeTab}
+              onChange={(tabId) => setActiveTab(tabId as ContentType)}
+              variant="pills"
+            />
+          </View>
 
           {/* Search */}
           <View style={styles.searchContainer}>
@@ -196,21 +202,25 @@ export const ContentPickerModal: React.FC<ContentPickerModalProps> = ({
               style={styles.footerButton}
             />
           </View>
-        </GlassCard>
-      </View>
-    </Modal>
+        </GlassView>
+    </View>
   );
 };
 
 const styles = StyleSheet.create({
   overlay: {
-    flex: 1,
-    backgroundColor: 'rgba(0, 0, 0, 0.85)',
+    // @ts-ignore - Web fixed positioning
+    position: Platform.OS === 'web' ? 'fixed' : 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    backgroundColor: 'rgba(0, 0, 0, 0.7)',
     justifyContent: 'center',
     alignItems: 'center',
     padding: spacing.lg,
-    // @ts-ignore - Web z-index
-    zIndex: 1100,
+    // @ts-ignore - Web z-index (higher than parent modal)
+    zIndex: 9999,
   },
   backdrop: {
     ...StyleSheet.absoluteFillObject,
@@ -218,10 +228,14 @@ const styles = StyleSheet.create({
   modal: {
     width: '100%',
     maxWidth: 900,
-    maxHeight: '90%',
+    maxHeight: 600,
     padding: spacing.lg,
-    // @ts-ignore - Web z-index
-    zIndex: 1101,
+    borderRadius: borderRadius.xl,
+    // @ts-ignore - Web z-index and flex
+    zIndex: 10000,
+    display: 'flex',
+    flexDirection: 'column',
+    overflow: 'hidden',
   },
   modalMobile: {
     maxWidth: '100%',
@@ -232,6 +246,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
     marginBottom: spacing.lg,
+    flexShrink: 0,
   },
   headerRTL: {
     flexDirection: 'row-reverse',
@@ -247,12 +262,16 @@ const styles = StyleSheet.create({
   closeButton: {
     padding: spacing.sm,
   },
+  tabsContainer: {
+    flexShrink: 0,
+  },
   searchContainer: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: spacing.md,
     marginTop: spacing.md,
     marginBottom: spacing.lg,
+    flexShrink: 0,
   },
   searchInput: {
     flex: 1,
@@ -270,6 +289,9 @@ const styles = StyleSheet.create({
   contentScroll: {
     flex: 1,
     marginBottom: spacing.md,
+    minHeight: 0,
+    // @ts-ignore - Web overflow
+    overflow: 'auto',
   },
   contentGrid: {
     paddingBottom: spacing.md,
@@ -321,6 +343,7 @@ const styles = StyleSheet.create({
     paddingTop: spacing.md,
     borderTopWidth: 1,
     borderTopColor: 'rgba(255, 255, 255, 0.1)',
+    flexShrink: 0,
   },
   footerRTL: {
     flexDirection: 'row-reverse',

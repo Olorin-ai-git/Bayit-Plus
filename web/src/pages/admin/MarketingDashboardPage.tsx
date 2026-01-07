@@ -79,7 +79,7 @@ export default function MarketingDashboardPage() {
       <View style={styles.errorContainer}>
         <Text style={styles.errorIcon}>⚠️</Text>
         <Text style={styles.errorText}>{error}</Text>
-        <GlassButton title={t('common.retry', 'נסה שוב')} onPress={loadData} variant="primary" />
+        <GlassButton title={t('common.retry')} onPress={loadData} variant="primary" />
       </View>
     );
   }
@@ -88,7 +88,7 @@ export default function MarketingDashboardPage() {
     return (
       <View style={styles.loadingContainer}>
         <ActivityIndicator size="large" color={colors.primary} />
-        <Text style={styles.loadingText}>{t('common.loading', 'טוען...')}</Text>
+        <Text style={styles.loadingText}>{t('common.loading')}</Text>
       </View>
     );
   }
@@ -106,14 +106,14 @@ export default function MarketingDashboardPage() {
     <ScrollView style={styles.container} contentContainerStyle={styles.contentContainer}>
       <View style={styles.header}>
         <View>
-          <Text style={styles.pageTitle}>{t('admin.titles.marketing', 'לוח שיווק')}</Text>
+          <Text style={styles.pageTitle}>{t('admin.titles.marketing')}</Text>
           <Text style={styles.subtitle}>סקירת קמפיינים וביצועים</Text>
         </View>
         <GlassButton title="רענן" variant="secondary" icon={<RefreshCw size={16} color={colors.text} />} onPress={handleRefresh} disabled={refreshing} />
       </View>
 
       <View style={styles.section}>
-        <Text style={styles.sectionTitle}>{t('admin.marketing.emailMetrics', 'אימייל')}</Text>
+        <Text style={styles.sectionTitle}>{t('admin.marketing.emailMetrics')}</Text>
         <View style={styles.statsGrid}>
           <StatCard title="נשלחו" value={metrics.emailsSent.toLocaleString()} icon="📧" color="primary" to="/admin/emails" />
           <StatCard title="שיעור פתיחה" value={`${metrics.emailOpenRate}%`} icon="📬" color="success" />
@@ -123,7 +123,7 @@ export default function MarketingDashboardPage() {
       </View>
 
       <View style={styles.section}>
-        <Text style={styles.sectionTitle}>{t('admin.marketing.pushMetrics', 'התראות פוש')}</Text>
+        <Text style={styles.sectionTitle}>{t('admin.marketing.pushMetrics')}</Text>
         <View style={styles.statsGrid}>
           <StatCard title="נשלחו" value={metrics.pushSent.toLocaleString()} icon="🔔" color="warning" to="/admin/push" />
           <StatCard title="שיעור פתיחה" value={`${metrics.pushOpenRate}%`} icon="👆" color="success" />
@@ -134,7 +134,7 @@ export default function MarketingDashboardPage() {
 
       <View style={styles.bottomSection}>
         <View style={styles.campaignsSection}>
-          <Text style={styles.sectionTitle}>{t('admin.marketing.recentCampaigns', 'קמפיינים אחרונים')}</Text>
+          <Text style={styles.sectionTitle}>{t('admin.marketing.recentCampaigns')}</Text>
           <GlassCard style={styles.campaignsList}>
             {recentCampaigns.map((campaign) => (
               <View key={campaign.id} style={styles.campaignItem}>
@@ -158,7 +158,7 @@ export default function MarketingDashboardPage() {
         </View>
 
         <View style={styles.segmentsSection}>
-          <Text style={styles.sectionTitle}>{t('admin.marketing.audienceSegments', 'סגמנטי קהל')}</Text>
+          <Text style={styles.sectionTitle}>{t('admin.marketing.audienceSegments')}</Text>
           <GlassCard style={styles.segmentsList}>
             {segments.map((segment, index) => (
               <View key={index} style={styles.segmentItem}>
@@ -176,7 +176,7 @@ export default function MarketingDashboardPage() {
       </View>
 
       <View style={styles.quickLinksSection}>
-        <Text style={styles.sectionTitle}>{t('admin.marketing.quickActions', 'פעולות מהירות')}</Text>
+        <Text style={styles.sectionTitle}>{t('admin.marketing.quickActions')}</Text>
         <View style={styles.quickLinks}>
           <Link to="/admin/emails" style={{ textDecoration: 'none', flex: 1 }}>
             <GlassCard style={styles.quickLinkCard}>

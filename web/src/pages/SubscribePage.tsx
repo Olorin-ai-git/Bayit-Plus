@@ -11,191 +11,42 @@ import logger from '@/utils/logger';
 
 interface Plan {
   id: string;
-  name: string;
-  name_en?: string;
-  name_es?: string;
   price: string;
-  period: string;
-  period_en?: string;
-  period_es?: string;
-  features: string[];
-  features_en?: string[];
-  features_es?: string[];
-  notIncluded: string[];
-  notIncluded_en?: string[];
-  notIncluded_es?: string[];
   popular?: boolean;
 }
 
-const plans: Plan[] = [
+const plansConfig: Plan[] = [
   {
     id: 'basic',
-    name: 'בסיסי',
-    name_en: 'Basic',
-    name_es: 'Básico',
     price: '$9.99',
-    period: 'לחודש',
-    period_en: '/month',
-    period_es: '/mes',
-    features: [
-      'כל תוכן ה-VOD',
-      'רדיו ופודקאסטים',
-      'צפייה על מכשיר אחד',
-      'איכות SD',
-    ],
-    features_en: [
-      'All VOD content',
-      'Radio & Podcasts',
-      'Watch on 1 device',
-      'SD quality',
-    ],
-    features_es: [
-      'Todo el contenido VOD',
-      'Radio y Podcasts',
-      'Ver en 1 dispositivo',
-      'Calidad SD',
-    ],
-    notIncluded: [
-      'ערוצי שידור חי',
-      'עוזר AI',
-      'צפייה אופליין',
-    ],
-    notIncluded_en: [
-      'Live channels',
-      'AI Assistant',
-      'Offline viewing',
-    ],
-    notIncluded_es: [
-      'Canales en vivo',
-      'Asistente AI',
-      'Ver sin conexión',
-    ],
   },
   {
     id: 'premium',
-    name: 'פרימיום',
-    name_en: 'Premium',
-    name_es: 'Premium',
     price: '$14.99',
-    period: 'לחודש',
-    period_en: '/month',
-    period_es: '/mes',
     popular: true,
-    features: [
-      'כל תוכן ה-VOD',
-      'ערוצי שידור חי',
-      'רדיו ופודקאסטים',
-      'עוזר AI חכם',
-      'צפייה על 2 מכשירים',
-      'איכות HD',
-    ],
-    features_en: [
-      'All VOD content',
-      'Live channels',
-      'Radio & Podcasts',
-      'Smart AI Assistant',
-      'Watch on 2 devices',
-      'HD quality',
-    ],
-    features_es: [
-      'Todo el contenido VOD',
-      'Canales en vivo',
-      'Radio y Podcasts',
-      'Asistente AI inteligente',
-      'Ver en 2 dispositivos',
-      'Calidad HD',
-    ],
-    notIncluded: [
-      'צפייה אופליין',
-      'פרופילים משפחתיים',
-    ],
-    notIncluded_en: [
-      'Offline viewing',
-      'Family profiles',
-    ],
-    notIncluded_es: [
-      'Ver sin conexión',
-      'Perfiles familiares',
-    ],
   },
   {
     id: 'family',
-    name: 'משפחתי',
-    name_en: 'Family',
-    name_es: 'Familiar',
     price: '$19.99',
-    period: 'לחודש',
-    period_en: '/month',
-    period_es: '/mes',
-    features: [
-      'כל תוכן ה-VOD',
-      'ערוצי שידור חי',
-      'רדיו ופודקאסטים',
-      'עוזר AI חכם',
-      'צפייה על 4 מכשירים',
-      'איכות 4K',
-      '5 פרופילים משפחתיים',
-      'הורדה לצפייה אופליין',
-    ],
-    features_en: [
-      'All VOD content',
-      'Live channels',
-      'Radio & Podcasts',
-      'Smart AI Assistant',
-      'Watch on 4 devices',
-      '4K quality',
-      '5 family profiles',
-      'Download for offline',
-    ],
-    features_es: [
-      'Todo el contenido VOD',
-      'Canales en vivo',
-      'Radio y Podcasts',
-      'Asistente AI inteligente',
-      'Ver en 4 dispositivos',
-      'Calidad 4K',
-      '5 perfiles familiares',
-      'Descargar sin conexión',
-    ],
-    notIncluded: [],
-    notIncluded_en: [],
-    notIncluded_es: [],
   },
 ];
 
-function PlanCard({ plan, isSelected, onSelect, billingPeriod, language }: {
-  plan: Plan;
+function PlanCard({ planId, isSelected, onSelect, billingPeriod }: {
+  planId: string;
   isSelected: boolean;
   onSelect: () => void;
   billingPeriod: 'monthly' | 'yearly';
-  language: string;
 }) {
   const { t } = useTranslation();
   const [isHovered, setIsHovered] = useState(false);
+  const plan = plansConfig.find(p => p.id === planId);
 
-  const getName = () => {
-    if (language === 'en' && plan.name_en) return plan.name_en;
-    if (language === 'es' && plan.name_es) return plan.name_es;
-    return plan.name;
-  };
+  if (!plan) return null;
 
-  const getPeriod = () => {
-    if (language === 'en' && plan.period_en) return plan.period_en;
-    if (language === 'es' && plan.period_es) return plan.period_es;
-    return plan.period;
-  };
-
-  const getFeatures = () => {
-    if (language === 'en' && plan.features_en) return plan.features_en;
-    if (language === 'es' && plan.features_es) return plan.features_es;
-    return plan.features;
-  };
-
-  const getNotIncluded = () => {
-    if (language === 'en' && plan.notIncluded_en) return plan.notIncluded_en;
-    if (language === 'es' && plan.notIncluded_es) return plan.notIncluded_es;
-    return plan.notIncluded;
-  };
+  const planKey = `plans.${planId}`;
+  const name = t(`${planKey}.name`);
+  const features = t(`${planKey}.features`, [], { returnObjects: true });
+  const notIncluded = t(`${planKey}.notIncluded`, [], { returnObjects: true });
 
   const yearlyPrice = (parseFloat(plan.price.slice(1)) * 10).toFixed(2);
 
@@ -217,25 +68,25 @@ function PlanCard({ plan, isSelected, onSelect, billingPeriod, language }: {
         {plan.popular && (
           <View style={styles.popularBadge}>
             <Sparkles size={14} color={colors.text} />
-            <Text style={styles.popularBadgeText}>{t('subscribe.popular', 'הכי פופולרי')}</Text>
+            <Text style={styles.popularBadgeText}>{t('subscribe.popular')}</Text>
           </View>
         )}
 
         {/* Plan Header */}
         <View style={styles.planHeader}>
-          <Text style={styles.planName}>{getName()}</Text>
+          <Text style={styles.planName}>{name}</Text>
           <View style={styles.priceRow}>
             <Text style={styles.price}>{plan.price}</Text>
-            <Text style={styles.period}>{getPeriod()}</Text>
+            <Text style={styles.period}>{t('subscribe.period')}</Text>
           </View>
           {billingPeriod === 'yearly' && (
-            <Text style={styles.yearlyPrice}>${yearlyPrice} {t('subscribe.perYear', 'לשנה')}</Text>
+            <Text style={styles.yearlyPrice}>${yearlyPrice} {t('subscribe.perYear')}</Text>
           )}
         </View>
 
         {/* Features */}
         <View style={styles.featuresList}>
-          {getFeatures().map((feature, i) => (
+          {Array.isArray(features) && features.map((feature, i) => (
             <View key={i} style={styles.featureItem}>
               <View style={styles.featureIcon}>
                 <Check size={12} color={colors.success} />
@@ -243,7 +94,7 @@ function PlanCard({ plan, isSelected, onSelect, billingPeriod, language }: {
               <Text style={styles.featureText}>{feature}</Text>
             </View>
           ))}
-          {getNotIncluded().map((feature, i) => (
+          {Array.isArray(notIncluded) && notIncluded.map((feature, i) => (
             <View key={i} style={styles.featureItem}>
               <View style={styles.notIncludedLine} />
               <Text style={styles.notIncludedText}>{feature}</Text>
@@ -253,7 +104,7 @@ function PlanCard({ plan, isSelected, onSelect, billingPeriod, language }: {
 
         {/* Select Button */}
         <GlassButton
-          title={isSelected ? t('subscribe.selected', 'נבחר') : t('subscribe.select', 'בחר מסלול')}
+          title={isSelected ? t('subscribe.selected') : t('subscribe.select')}
           onPress={onSelect}
           variant={isSelected ? 'primary' : 'secondary'}
           style={styles.selectButton}
@@ -264,7 +115,7 @@ function PlanCard({ plan, isSelected, onSelect, billingPeriod, language }: {
 }
 
 export default function SubscribePage() {
-  const { t, i18n } = useTranslation();
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const { isAuthenticated } = useAuthStore();
   const [selectedPlan, setSelectedPlan] = useState('premium');
@@ -296,9 +147,9 @@ export default function SubscribePage() {
 
       {/* Header */}
       <View style={styles.header}>
-        <Text style={styles.title}>{t('subscribe.title', 'בחר את המסלול שלך')}</Text>
+        <Text style={styles.title}>{t('subscribe.title')}</Text>
         <Text style={styles.subtitle}>
-          {t('subscribe.subtitle', '7 ימי ניסיון חינם לכל מסלול. בטל בכל עת.')}
+          {t('subscribe.subtitle')}
         </Text>
       </View>
 
@@ -310,7 +161,7 @@ export default function SubscribePage() {
             style={[styles.tab, billingPeriod === 'monthly' && styles.tabActive]}
           >
             <Text style={[styles.tabText, billingPeriod === 'monthly' && styles.tabTextActive]}>
-              {t('subscribe.monthly', 'חודשי')}
+              {t('subscribe.monthly')}
             </Text>
           </Pressable>
           <Pressable
@@ -318,10 +169,10 @@ export default function SubscribePage() {
             style={[styles.tab, billingPeriod === 'yearly' && styles.tabActive]}
           >
             <Text style={[styles.tabText, billingPeriod === 'yearly' && styles.tabTextActive]}>
-              {t('subscribe.yearly', 'שנתי')}
+              {t('subscribe.yearly')}
             </Text>
             <View style={styles.saveBadge}>
-              <Text style={styles.saveBadgeText}>{t('subscribe.save2Months', 'חסכו 2 חודשים')}</Text>
+              <Text style={styles.saveBadgeText}>{t('subscribe.save2Months')}</Text>
             </View>
           </Pressable>
         </GlassView>
@@ -329,14 +180,13 @@ export default function SubscribePage() {
 
       {/* Plans Grid */}
       <View style={styles.plansGrid}>
-        {plans.map((plan) => (
+        {plansConfig.map((plan) => (
           <PlanCard
             key={plan.id}
-            plan={plan}
+            planId={plan.id}
             isSelected={selectedPlan === plan.id}
             onSelect={() => setSelectedPlan(plan.id)}
             billingPeriod={billingPeriod}
-            language={i18n.language}
           />
         ))}
       </View>
@@ -344,14 +194,14 @@ export default function SubscribePage() {
       {/* CTA */}
       <View style={styles.ctaSection}>
         <GlassButton
-          title={loading ? t('subscribe.processing', 'מעבד...') : t('subscribe.startTrial', 'התחל ניסיון חינם')}
+          title={loading ? t('subscribe.processing') : t('subscribe.startTrial')}
           onPress={handleSubscribe}
           disabled={loading}
           variant="primary"
           style={styles.ctaButton}
         />
         <Text style={styles.ctaNote}>
-          {t('subscribe.noCharge', 'לא יחויב כרטיס האשראי במהלך תקופת הניסיון')}
+          {t('subscribe.noCharge')}
         </Text>
       </View>
     </ScrollView>

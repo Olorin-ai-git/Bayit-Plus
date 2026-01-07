@@ -325,3 +325,77 @@ async def verify_kids_pin(
 
     is_valid = verify_password(data.pin, current_user.kids_pin)
     return {"valid": is_valid}
+
+
+# Default settings for AI and voice preferences
+DEFAULT_AI_SETTINGS = {
+    "chatbot_enabled": True,
+    "save_conversation_history": True,
+    "personalized_recommendations": True,
+    "data_collection_consent": False,
+}
+
+DEFAULT_VOICE_SETTINGS = {
+    "voice_search_enabled": True,
+    "voice_language": "he",
+    "auto_subtitle": False,
+    "high_contrast_mode": False,
+    "text_size": "medium",
+}
+
+
+class AIPreferences(BaseModel):
+    chatbot_enabled: bool = True
+    save_conversation_history: bool = True
+    personalized_recommendations: bool = True
+    data_collection_consent: bool = False
+
+
+class VoicePreferences(BaseModel):
+    voice_search_enabled: bool = True
+    voice_language: str = "he"
+    auto_subtitle: bool = False
+    high_contrast_mode: bool = False
+    text_size: str = "medium"  # small, medium, large
+
+
+@router.get("/preferences/ai")
+async def get_ai_preferences(
+    current_user: User = Depends(get_current_active_user),
+):
+    """Get AI preferences for current user."""
+    ai_settings = current_user.preferences.get("ai_settings", DEFAULT_AI_SETTINGS.copy())
+    return ai_settings
+
+
+@router.put("/preferences/ai")
+async def update_ai_preferences(
+    preferences: AIPreferences,
+    current_user: User = Depends(get_current_active_user),
+):
+    """Update AI preferences."""
+    current_user.preferences["ai_settings"] = preferences.model_dump()
+    current_user.updated_at = datetime.utcnow()
+    await current_user.save()
+    return {"message": "AI preferences updated", "preferences": current_user.preferences["ai_settings"]}
+
+
+@router.get("/preferences/voice")
+async def get_voice_preferences(
+    current_user: User = Depends(get_current_active_user),
+):
+    """Get voice and accessibility preferences for current user."""
+    voice_settings = current_user.preferences.get("voice_settings", DEFAULT_VOICE_SETTINGS.copy())
+    return voice_settings
+
+
+@router.put("/preferences/voice")
+async def update_voice_preferences(
+    preferences: VoicePreferences,
+    current_user: User = Depends(get_current_active_user),
+):
+    """Update voice and accessibility preferences."""
+    current_user.preferences["voice_settings"] = preferences.model_dump()
+    current_user.updated_at = datetime.utcnow()
+    await current_user.save()
+    return {"message": "Voice preferences updated", "preferences": current_user.preferences["voice_settings"]}

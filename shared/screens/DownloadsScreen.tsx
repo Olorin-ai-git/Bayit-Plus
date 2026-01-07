@@ -15,6 +15,7 @@ import { GlassView } from '../components/ui';
 import { colors, spacing, borderRadius } from '../theme';
 import { isTV } from '../utils/platform';
 import { useDirection } from '../hooks/useDirection';
+import { getLocalizedName, getLocalizedDescription } from '../utils/contentLocalization';
 
 interface DownloadItem {
   id: string;
@@ -231,6 +232,9 @@ export const DownloadsScreen: React.FC = () => {
 
   // Helper to get localized text
   const getLocalizedText = (item: any, field: string) => {
+    if (field === 'title') return getLocalizedName(item, currentLang);
+    if (field === 'description') return getLocalizedDescription(item, currentLang);
+    // Fallback for other fields
     if (currentLang === 'he') return item[field] || item.title || item.name;
     if (currentLang === 'es') return item[`${field}_es`] || item[`${field}_en`] || item[field];
     return item[`${field}_en`] || item[field];

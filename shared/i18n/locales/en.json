@@ -529,7 +529,9 @@
       "personal": "Personal",
       "subscription": "Subscription",
       "notifications": "Notifications",
-      "security": "Security"
+      "security": "Security",
+      "ai": "AI & Personalization",
+      "voice": "Voice & Accessibility"
     },
     "subscription": {
       "currentPlan": "Current Plan",
@@ -549,6 +551,47 @@
       "updates": "System Updates",
       "updatesDesc": "Get notified about system changes"
     },
+    "ai": {
+      "title": "AI & Personalization",
+      "description": "Configure AI-powered features",
+      "chatbot": "AI Assistant",
+      "chatbotEnabled": "Enable AI Assistant",
+      "chatbotEnabledDesc": "Get help navigating content and personalized recommendations",
+      "saveHistory": "Save conversation history",
+      "saveHistoryDesc": "Remember previous conversations for better context",
+      "recommendations": "Recommendations",
+      "personalizedRecs": "Personalized recommendations",
+      "personalizedRecsDesc": "Get content suggestions based on your viewing history",
+      "privacy": "Privacy & Data",
+      "dataConsent": "Allow data collection for improvements",
+      "dataConsentDesc": "Help improve AI features by sharing anonymous usage data",
+      "privacyNote": "Your data is encrypted and secure"
+    },
+    "voice": {
+      "title": "Voice & Accessibility",
+      "description": "Configure voice and accessibility features",
+      "voiceSearch": "Voice Search",
+      "voiceSearchEnabled": "Enable voice search",
+      "voiceSearchEnabledDesc": "Search for content using your voice",
+      "language": "Voice language",
+      "accessibility": "Accessibility",
+      "autoSubtitle": "Auto-enable subtitles",
+      "autoSubtitleDesc": "Automatically show subtitles when playing content",
+      "highContrast": "High contrast mode",
+      "highContrastDesc": "Increase contrast for better visibility",
+      "textSize": "Text size",
+      "textSizeSmall": "Small",
+      "textSizeMedium": "Medium",
+      "textSizeLarge": "Large"
+    },
+    "dropdown": {
+      "myProfile": "My Profile",
+      "subscription": "Subscription",
+      "favorites": "Favorites",
+      "downloads": "Downloads",
+      "signOut": "Sign Out"
+    },
+    "guest": "Guest",
     "morningRitual": "Morning Ritual"
   },
   "settings": {
@@ -571,6 +614,12 @@
     "listening": "Listening...",
     "tapToSpeak": "Tap to speak",
     "processing": "Processing...",
+    "transcribing": "Transcribing...",
+    "tapToStop": "Tap to stop recording",
+    "pleaseWait": "Please wait...",
+    "transcriptionNotAvailable": "Transcription not available",
+    "transcriptionFailed": "Transcription failed",
+    "micPermissionDenied": "Microphone permission denied",
     "error": "Couldn't hear you, please try again"
   },
   "errors": {

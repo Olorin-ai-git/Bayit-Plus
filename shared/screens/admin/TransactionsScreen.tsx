@@ -330,14 +330,14 @@ export const TransactionsScreen: React.FC = () => {
                     style={styles.dateInput}
                     value={filters.date_from}
                     onChangeText={(text) => setFilters(prev => ({ ...prev, date_from: text }))}
-                    placeholder="From (YYYY-MM-DD)"
+                    placeholder={t('placeholder.dateRange.from', 'From (YYYY-MM-DD)')}
                     placeholderTextColor={colors.textMuted}
                   />
                   <TextInput
                     style={styles.dateInput}
                     value={filters.date_to}
                     onChangeText={(text) => setFilters(prev => ({ ...prev, date_to: text }))}
-                    placeholder="To (YYYY-MM-DD)"
+                    placeholder={t('placeholder.dateRange.to', 'To (YYYY-MM-DD)')}
                     placeholderTextColor={colors.textMuted}
                   />
                 </View>
@@ -350,7 +350,7 @@ export const TransactionsScreen: React.FC = () => {
                     style={styles.amountInput}
                     value={filters.amount_min?.toString() || ''}
                     onChangeText={(text) => setFilters(prev => ({ ...prev, amount_min: text ? parseFloat(text) : undefined }))}
-                    placeholder="Min"
+                    placeholder={t('placeholder.amount.min', 'Min')}
                     placeholderTextColor={colors.textMuted}
                     keyboardType="numeric"
                   />
@@ -359,7 +359,7 @@ export const TransactionsScreen: React.FC = () => {
                     style={styles.amountInput}
                     value={filters.amount_max?.toString() || ''}
                     onChangeText={(text) => setFilters(prev => ({ ...prev, amount_max: text ? parseFloat(text) : undefined }))}
-                    placeholder="Max"
+                    placeholder={t('placeholder.amount.max', 'Max')}
                     placeholderTextColor={colors.textMuted}
                     keyboardType="numeric"
                   />

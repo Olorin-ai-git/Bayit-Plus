@@ -196,17 +196,44 @@ export const DualClock: React.FC<DualClockProps> = ({
 
   const generateFallbackTime = (): TimeData => {
     const now = new Date();
-    const israelTime = new Date(now.toLocaleString('en-US', { timeZone: 'Asia/Jerusalem' }));
+    // Format time for Israel (UTC+2 or UTC+3 during DST)
+    let israelTimeStr: string;
+    let israelDayStr: string;
+    let localTimeStr: string;
+    let localTimezone: string;
+
+    try {
+      israelTimeStr = now.toLocaleTimeString('he-IL', {
+        hour: '2-digit',
+        minute: '2-digit',
+        timeZone: 'Asia/Jerusalem',
+      });
+      israelDayStr = now.toLocaleDateString('he-IL', {
+        weekday: 'long',
+        timeZone: 'Asia/Jerusalem',
+      });
+      localTimeStr = now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+      localTimezone = Intl?.DateTimeFormat?.()?.resolvedOptions?.()?.timeZone || 'America/New_York';
+    } catch {
+      // Fallback for environments with limited Intl support (like tvOS)
+      const hours = now.getHours().toString().padStart(2, '0');
+      const minutes = now.getMinutes().toString().padStart(2, '0');
+      israelTimeStr = `${hours}:${minutes}`;
+      israelDayStr = '';
+      localTimeStr = `${hours}:${minutes}`;
+      localTimezone = 'Local';
+    }
+
     return {
       israel: {
-        time: israelTime.toLocaleTimeString('he-IL', { hour: '2-digit', minute: '2-digit' }),
-        datetime: israelTime.toISOString(),
-        day: israelTime.toLocaleDateString('he-IL', { weekday: 'long' }),
+        time: israelTimeStr,
+        datetime: now.toISOString(),
+        day: israelDayStr,
       },
       local: {
-        time: now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' }),
+        time: localTimeStr,
         datetime: now.toISOString(),
-        timezone: Intl.DateTimeFormat().resolvedOptions().timeZone || 'America/New_York',
+        timezone: localTimezone,
       },
       shabbat: {
         is_shabbat: false,

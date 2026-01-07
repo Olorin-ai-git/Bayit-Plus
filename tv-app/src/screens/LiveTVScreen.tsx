@@ -12,14 +12,21 @@ import {
 import { useNavigation } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
 import { liveService } from '../services/api';
-import { colors } from '../theme';
+import { colors, spacing } from '../theme';
 import { useDirection } from '../hooks/useDirection';
+import { GlassCategoryPill } from '../components';
+import { getLocalizedName, getLocalizedCurrentProgram } from '@bayit/shared-utils/contentLocalization';
 
 interface Channel {
   id: string;
   name: string;
+  name_en?: string;
+  name_es?: string;
   logo?: string;
   currentProgram?: string;
+  current_program?: string;
+  current_program_en?: string;
+  current_program_es?: string;
   category?: string;
 }
 
@@ -28,7 +35,9 @@ const ChannelCard: React.FC<{
   onPress: () => void;
   index: number;
   liveLabel: string;
-}> = ({ channel, onPress, index, liveLabel }) => {
+  localizedName: string;
+  localizedProgram: string;
+}> = ({ channel, onPress, index, liveLabel, localizedName, localizedProgram }) => {
   const [isFocused, setIsFocused] = useState(false);
   const scaleAnim = useRef(new Animated.Value(1)).current;
 
@@ -84,11 +93,11 @@ const ChannelCard: React.FC<{
         {/* Channel Info */}
         <View style={styles.channelInfo}>
           <Text style={styles.channelName} numberOfLines={1}>
-            {channel.name}
+            {localizedName}
           </Text>
-          {channel.currentProgram && (
+          {localizedProgram && (
             <Text style={styles.currentProgram} numberOfLines={1}>
-              {channel.currentProgram}
+              {localizedProgram}
             </Text>
           )}
         </View>
@@ -104,7 +113,7 @@ const ChannelCard: React.FC<{
 };
 
 export const LiveTVScreen: React.FC = () => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const { isRTL, textAlign } = useDirection();
   const navigation = useNavigation<any>();
   const [isLoading, setIsLoading] = useState(true);
@@ -144,9 +153,10 @@ export const LiveTVScreen: React.FC = () => {
     : channels.filter(c => c.category === selectedCategory);
 
   const handleChannelPress = (channel: Channel) => {
+    const localizedTitle = getLocalizedName(channel, i18n.language);
     navigation.navigate('Player', {
       id: channel.id,
-      title: channel.name,
+      title: localizedTitle,
       type: 'live',
     });
   };
@@ -176,24 +186,13 @@ export const LiveTVScreen: React.FC = () => {
       {/* Category Filter */}
       <View style={[styles.categories, { flexDirection: isRTL ? 'row' : 'row-reverse', justifyContent: isRTL ? 'flex-start' : 'flex-start' }]}>
         {categories.map((cat, index) => (
-          <TouchableOpacity
+          <GlassCategoryPill
             key={cat.id}
+            label={t(cat.labelKey)}
+            isActive={selectedCategory === cat.id}
             onPress={() => setSelectedCategory(cat.id)}
-            style={[
-              styles.categoryButton,
-              selectedCategory === cat.id && styles.categoryButtonActive,
-            ]}
             hasTVPreferredFocus={index === 0}
-          >
-            <Text
-              style={[
-                styles.categoryText,
-                selectedCategory === cat.id && styles.categoryTextActive,
-              ]}
-            >
-              {t(cat.labelKey)}
-            </Text>
-          </TouchableOpacity>
+          />
         ))}
       </View>
 
@@ -209,6 +208,8 @@ export const LiveTVScreen: React.FC = () => {
             onPress={() => handleChannelPress(item)}
             index={index}
             liveLabel={t('common.live')}
+            localizedName={getLocalizedName(item, i18n.language)}
+            localizedProgram={getLocalizedCurrentProgram(item, i18n.language)}
           />
         )}
       />
@@ -269,28 +270,6 @@ const styles = StyleSheet.create({
     marginBottom: 24,
     gap: 12,
     zIndex: 10,
-  },
-  categoryButton: {
-    paddingHorizontal: 24,
-    paddingVertical: 12,
-    borderRadius: 24,
-    backgroundColor: colors.glass,
-    borderWidth: 1,
-    borderColor: colors.glassBorder,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  categoryButtonActive: {
-    backgroundColor: 'rgba(0, 217, 255, 0.2)',
-    borderColor: colors.primary,
-  },
-  categoryText: {
-    fontSize: 16,
-    color: colors.textSecondary,
-  },
-  categoryTextActive: {
-    color: colors.primary,
-    fontWeight: 'bold',
   },
   grid: {
     paddingHorizontal: 40,

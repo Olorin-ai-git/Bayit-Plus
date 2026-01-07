@@ -122,6 +122,7 @@ export const GlassInput: React.FC<GlassInputProps> = ({
 const styles = StyleSheet.create({
   container: {
     marginBottom: spacing.md,
+    width: '100%' as any,
   },
   label: {
     fontSize: 14,
@@ -138,6 +139,7 @@ const styles = StyleSheet.create({
     minHeight: 50,
     paddingHorizontal: spacing.md,
     gap: spacing.sm,
+    width: '100%' as any,
   },
   inputContainerRTL: {
     flexDirection: 'row-reverse',
@@ -154,6 +156,8 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: colors.text,
     paddingVertical: spacing.sm,
+    // @ts-ignore - Web outline removal
+    outline: 'none',
   },
   inputRTL: {
     textAlign: 'right',

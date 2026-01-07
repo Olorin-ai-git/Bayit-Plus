@@ -14,12 +14,18 @@ import { useTranslation } from 'react-i18next';
 import { radioService } from '../services/api';
 import { colors } from '../theme';
 import { useDirection } from '../hooks/useDirection';
+import { getLocalizedName } from '../utils/contentLocalization';
 
 interface RadioStation {
   id: string;
   name: string;
+  name_en?: string;
+  name_es?: string;
   logo?: string;
   currentShow?: string;
+  current_show?: string;
+  current_show_en?: string;
+  current_show_es?: string;
   genre?: string;
   frequency?: string;
 }
@@ -28,7 +34,8 @@ const StationCard: React.FC<{
   station: RadioStation;
   onPress: () => void;
   index: number;
-}> = ({ station, onPress, index }) => {
+  localizedName: string;
+}> = ({ station, onPress, index, localizedName }) => {
   const [isFocused, setIsFocused] = useState(false);
   const scaleAnim = useRef(new Animated.Value(1)).current;
   const pulseAnim = useRef(new Animated.Value(1)).current;
@@ -118,7 +125,7 @@ const StationCard: React.FC<{
         {/* Station Info */}
         <View style={styles.stationInfo}>
           <Text style={styles.stationName} numberOfLines={1}>
-            {station.name}
+            {localizedName}
           </Text>
           {station.frequency && (
             <Text style={styles.frequency}>{station.frequency}</Text>
@@ -145,7 +152,7 @@ const StationCard: React.FC<{
 };
 
 export const RadioScreen: React.FC = () => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const { isRTL, textAlign } = useDirection();
   const navigation = useNavigation<any>();
   const [isLoading, setIsLoading] = useState(true);
@@ -185,9 +192,10 @@ export const RadioScreen: React.FC = () => {
     : stations.filter(s => s.genre === selectedGenre);
 
   const handleStationPress = (station: RadioStation) => {
+    const localizedTitle = getLocalizedName(station, i18n.language);
     navigation.navigate('Player', {
       id: station.id,
-      title: station.name,
+      title: localizedTitle,
       type: 'radio',
     });
   };
@@ -248,6 +256,7 @@ export const RadioScreen: React.FC = () => {
             station={item}
             onPress={() => handleStationPress(item)}
             index={index}
+            localizedName={getLocalizedName(item, i18n.language)}
           />
         )}
       />

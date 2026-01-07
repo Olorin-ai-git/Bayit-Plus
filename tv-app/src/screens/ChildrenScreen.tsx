@@ -17,7 +17,7 @@ import {
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
-import { GlassView } from '../components';
+import { GlassView, GlassCategoryPill } from '../components';
 import { colors, spacing, borderRadius } from '../theme';
 import { isTV } from '../utils/platform';
 import { useDirection } from '../hooks/useDirection';
@@ -235,25 +235,15 @@ export const ChildrenScreen: React.FC = () => {
           showsHorizontalScrollIndicator={false}
           contentContainerStyle={[styles.categories, { flexDirection: isRTL ? 'row' : 'row-reverse' }]}
         >
-          {(isRTL ? categories : [...categories].reverse()).map((category) => (
-            <TouchableOpacity
+          {(isRTL ? categories : [...categories].reverse()).map((category, index) => (
+            <GlassCategoryPill
               key={category.id}
+              label={getLocalizedText(category, 'name')}
+              emoji={CATEGORY_ICONS[category.id] || '🌈'}
+              isActive={selectedCategory === category.id}
               onPress={() => setSelectedCategory(category.id)}
-              style={[
-                styles.categoryButton,
-                selectedCategory === category.id && styles.categoryButtonActive,
-              ]}
-            >
-              <Text style={styles.categoryIcon}>{CATEGORY_ICONS[category.id] || '🌈'}</Text>
-              <Text
-                style={[
-                  styles.categoryText,
-                  selectedCategory === category.id && styles.categoryTextActive,
-                ]}
-              >
-                {getLocalizedText(category, 'name')}
-              </Text>
-            </TouchableOpacity>
+              hasTVPreferredFocus={index === 0}
+            />
           ))}
         </ScrollView>
       )}
@@ -335,32 +325,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: 48,
     marginBottom: 24,
     gap: 12,
-  },
-  categoryButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingHorizontal: 20,
-    paddingVertical: 12,
-    borderRadius: 24,
-    backgroundColor: 'rgba(255, 217, 61, 0.1)',
-    borderWidth: 2,
-    borderColor: 'transparent',
-    gap: 8,
-  },
-  categoryButtonActive: {
-    backgroundColor: 'rgba(255, 217, 61, 0.25)',
-    borderColor: '#ffd93d',
-  },
-  categoryIcon: {
-    fontSize: 18,
-  },
-  categoryText: {
-    fontSize: 16,
-    color: 'rgba(255, 217, 61, 0.7)',
-  },
-  categoryTextActive: {
-    color: '#ffd93d',
-    fontWeight: 'bold',
   },
   grid: {
     paddingHorizontal: spacing.xl,
