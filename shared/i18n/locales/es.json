@@ -571,6 +571,18 @@
       "voiceSearch": "Búsqueda por Voz",
       "voiceSearchEnabled": "Habilitar búsqueda por voz",
       "voiceSearchEnabledDesc": "Busca contenido usando tu voz",
+      "constantListening": "Modo Escucha Siempre",
+      "constantListeningDesc": "Escuchar continuamente comandos de voz sin presionar un botón",
+      "constantListeningPrivacy": "El audio solo se envía a los servidores cuando se detecta habla",
+      "holdButtonMode": "Mantener Botón para Hablar",
+      "holdButtonModeDesc": "Presionar y mantener el botón del micrófono en lugar de escucha continua",
+      "sensitivity": "Sensibilidad de Detección de Voz",
+      "sensitivityDesc": "Ajusta la sensibilidad de la detección de voz",
+      "sensitivityLow": "Baja (menos falsas alarmas)",
+      "sensitivityMedium": "Media (equilibrada)",
+      "sensitivityHigh": "Alta (más sensible)",
+      "silenceThreshold": "Detección de Silencio",
+      "silenceThresholdDesc": "Tiempo de espera después de hablar antes de procesar",
       "language": "Idioma de voz",
       "accessibility": "Accesibilidad",
       "autoSubtitle": "Habilitar subtítulos automáticamente",
@@ -713,6 +725,11 @@
     "typeVideo": "Video"
   },
   "admin": {
+    "brand": {
+      "title": "Bayit+ Admin",
+      "subtitle": "Gestión del Sistema"
+    },
+    "backToApp": "Volver a la App",
     "refunds": {
       "subtitle": "Gestionar solicitudes de reembolso",
       "approveModal": {
@@ -879,9 +896,22 @@
       "settings": "Configuración"
     },
     "nav": {
+      "dashboard": "Panel de Control",
+      "users": "Usuarios",
+      "campaigns": "Campañas",
+      "billing": "Facturación",
+      "billingOverview": "Resumen",
       "transactions": "Transacciones",
       "refunds": "Reembolsos",
-      "plans": "Planes"
+      "subscriptions": "Suscripciones",
+      "subscriptionsList": "Suscriptores",
+      "plans": "Planes",
+      "marketing": "Marketing",
+      "marketingDashboard": "Resumen",
+      "emailCampaigns": "Campañas de Correo",
+      "pushNotifications": "Notificaciones Push",
+      "settings": "Configuración",
+      "auditLogs": "Registro de Auditoría"
     },
     "billing": {
       "subtitle": "Rastrear ingresos y pagos",

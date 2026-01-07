@@ -1,39 +1,26 @@
 /**
- * Voice & Accessibility Settings Store
+ * Voice Settings Store
  * Manages voice search, constant listening, and accessibility preferences
+ * Used across TV, tvOS, and web apps for voice-controlled UI
  */
 
 import { create } from 'zustand';
-import { persist } from 'zustand/middleware';
-import { profilesService } from '@/services/api';
-import logger from '@/utils/logger';
+import { persist, createJSONStorage } from 'zustand/middleware';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { profilesService, VoicePreferences, VoiceLanguage, TextSize, VADSensitivity } from '../services/api';
 
-export type VoiceLanguage = 'he' | 'en' | 'es';
-export type TextSize = 'small' | 'medium' | 'large';
-export type VADSensitivity = 'low' | 'medium' | 'high';
-
-export interface VoicePreferences {
-  voice_search_enabled: boolean;
-  constant_listening_enabled: boolean;
-  voice_language: VoiceLanguage;
-  auto_subtitle: boolean;
-  high_contrast_mode: boolean;
-  text_size: TextSize;
-  hold_button_mode: boolean;
-  silence_threshold_ms: number;
-  vad_sensitivity: VADSensitivity;
-}
+export type { VoicePreferences, VoiceLanguage, TextSize, VADSensitivity };
 
 const DEFAULT_VOICE_PREFERENCES: VoicePreferences = {
   voice_search_enabled: true,
-  constant_listening_enabled: true,
+  constant_listening_enabled: true,  // Enabled by default per requirements
   voice_language: 'he',
   auto_subtitle: false,
   high_contrast_mode: false,
   text_size: 'medium',
-  hold_button_mode: false,
-  silence_threshold_ms: 2000,
-  vad_sensitivity: 'medium',
+  hold_button_mode: false,           // Press-and-hold fallback disabled by default
+  silence_threshold_ms: 2000,        // 2 seconds of silence before sending
+  vad_sensitivity: 'medium',         // Balanced VAD sensitivity
 };
 
 interface VoiceSettingsStore {
@@ -42,6 +29,7 @@ interface VoiceSettingsStore {
   saving: boolean;
   error: string | null;
 
+  // Actions
   loadPreferences: () => Promise<void>;
   updatePreferences: (updates: Partial<VoicePreferences>) => Promise<void>;
   toggleSetting: (key: keyof Pick<VoicePreferences,
@@ -56,6 +44,7 @@ interface VoiceSettingsStore {
   setVADSensitivity: (sensitivity: VADSensitivity) => Promise<void>;
   setSilenceThreshold: (ms: number) => Promise<void>;
   resetToDefaults: () => void;
+  clearError: () => void;
 }
 
 export const useVoiceSettingsStore = create<VoiceSettingsStore>()(
@@ -75,7 +64,7 @@ export const useVoiceSettingsStore = create<VoiceSettingsStore>()(
             loading: false,
           });
         } catch (error: any) {
-          logger.error('Failed to load voice preferences', 'voiceSettingsStore', error);
+          console.error('[VoiceSettingsStore] Failed to load preferences:', error);
           set({ loading: false, error: error.message || 'Failed to load preferences' });
         }
       },
@@ -84,7 +73,7 @@ export const useVoiceSettingsStore = create<VoiceSettingsStore>()(
         const current = get().preferences;
         const updated = { ...current, ...updates };
 
-        // Optimistic update
+        // Optimistic update - UI changes immediately
         set({ preferences: updated, saving: true, error: null });
 
         try {
@@ -92,7 +81,7 @@ export const useVoiceSettingsStore = create<VoiceSettingsStore>()(
           set({ saving: false });
         } catch (error: any) {
           // Rollback on error
-          logger.error('Failed to update voice preferences', 'voiceSettingsStore', error);
+          console.error('[VoiceSettingsStore] Failed to update preferences:', error);
           set({
             preferences: current,
             saving: false,
@@ -127,9 +116,14 @@ export const useVoiceSettingsStore = create<VoiceSettingsStore>()(
       resetToDefaults: () => {
         set({ preferences: DEFAULT_VOICE_PREFERENCES });
       },
+
+      clearError: () => {
+        set({ error: null });
+      },
     }),
     {
       name: 'bayit-voice-settings',
+      storage: createJSONStorage(() => AsyncStorage),
       partialize: (state) => ({
         preferences: state.preferences,
       }),

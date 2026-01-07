@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useCallback } from 'react';
 import {
   View,
   Text,
@@ -12,9 +12,12 @@ import { GlassView } from './ui';
 import { LanguageSelector } from './LanguageSelector';
 import { UserAccountMenu } from './UserAccountMenu';
 import { VoiceSearchButton } from './VoiceSearchButton';
+import { SoundwaveVisualizer } from './SoundwaveVisualizer';
 import { colors, spacing, borderRadius } from '../theme';
-import { isWeb } from '../utils/platform';
+import { isWeb, isTV } from '../utils/platform';
 import { useDirection } from '../hooks/useDirection';
+import { useConstantListening } from '../hooks/useConstantListening';
+import { useVoiceSettingsStore } from '../stores/voiceSettingsStore';
 
 const logo = require('../assets/logo.png');
 
@@ -22,14 +25,56 @@ interface GlassTopBarProps {
   onMenuPress?: () => void;
   sidebarExpanded?: boolean;
   transcribeAudio?: (audioBlob: Blob) => Promise<{ text: string }>;
+  onVoiceCommand?: (text: string) => void;
 }
 
-export const GlassTopBar: React.FC<GlassTopBarProps> = ({ onMenuPress, sidebarExpanded = false, transcribeAudio }) => {
+export const GlassTopBar: React.FC<GlassTopBarProps> = ({
+  onMenuPress,
+  sidebarExpanded = false,
+  transcribeAudio,
+  onVoiceCommand,
+}) => {
   const navigation = useNavigation<any>();
   const { i18n } = useTranslation();
   const [isSearchFocused, setIsSearchFocused] = useState(false);
   const { isRTL } = useDirection();
   const isHebrew = i18n.language === 'he';
+
+  // Voice settings
+  const { preferences } = useVoiceSettingsStore();
+  const constantListeningEnabled = preferences.constant_listening_enabled && (isTV || isWeb);
+  const holdButtonModeEnabled = preferences.hold_button_mode;
+
+  // Handle voice transcript - send to chatbot or custom handler
+  const handleTranscript = useCallback((text: string) => {
+    if (onVoiceCommand) {
+      onVoiceCommand(text);
+    } else {
+      // Default: navigate to search with the voice query
+      navigation.navigate('Search', { query: text });
+    }
+  }, [navigation, onVoiceCommand]);
+
+  // Handle voice errors
+  const handleVoiceError = useCallback((error: Error) => {
+    console.warn('[GlassTopBar] Voice error:', error.message);
+  }, []);
+
+  // Constant listening hook
+  const {
+    isListening,
+    isProcessing,
+    isSendingToServer,
+    audioLevel,
+    isSupported: constantListeningSupported,
+  } = useConstantListening({
+    enabled: constantListeningEnabled && !holdButtonModeEnabled,
+    onTranscript: handleTranscript,
+    onError: handleVoiceError,
+    silenceThresholdMs: preferences.silence_threshold_ms,
+    vadSensitivity: preferences.vad_sensitivity,
+    transcribeAudio,
+  });
 
   const handleSearchPress = () => {
     navigation.navigate('Search');
@@ -37,6 +82,12 @@ export const GlassTopBar: React.FC<GlassTopBarProps> = ({ onMenuPress, sidebarEx
 
   const sidebarWidth = sidebarExpanded ? 280 : 80;
   const sidebarPadding = sidebarWidth + spacing.lg;
+
+  // Show soundwave if constant listening is enabled and supported
+  const showSoundwave = constantListeningEnabled && constantListeningSupported && !holdButtonModeEnabled;
+
+  // Show voice button if hold button mode is enabled OR constant listening not supported
+  const showVoiceButton = holdButtonModeEnabled || !constantListeningSupported;
 
   return (
     <GlassView intensity="medium" style={[
@@ -46,13 +97,26 @@ export const GlassTopBar: React.FC<GlassTopBarProps> = ({ onMenuPress, sidebarEx
     ]}>
       {/* Actions side */}
       <View style={[styles.actionsContainer, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
-        {/* Voice Search Button */}
-        <VoiceSearchButton
-          onResult={(text) => {
-            navigation.navigate('Search', { query: text });
-          }}
-          transcribeAudio={transcribeAudio}
-        />
+        {/* Soundwave Visualizer - for constant listening mode */}
+        {showSoundwave && (
+          <View style={styles.soundwaveContainer}>
+            <SoundwaveVisualizer
+              audioLevel={audioLevel}
+              isListening={isListening}
+              isProcessing={isProcessing}
+              isSendingToServer={isSendingToServer}
+              compact
+            />
+          </View>
+        )}
+
+        {/* Voice Search Button - for hold-to-talk mode or fallback */}
+        {showVoiceButton && (
+          <VoiceSearchButton
+            onResult={handleTranscript}
+            transcribeAudio={transcribeAudio}
+          />
+        )}
 
         {/* Search Button */}
         <TouchableOpacity
@@ -164,6 +228,16 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     gap: spacing.sm,
     height: '100%',
+  },
+  soundwaveContainer: {
+    height: 44,
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingHorizontal: spacing.xs,
+    backgroundColor: 'rgba(255, 255, 255, 0.03)',
+    borderRadius: borderRadius.md,
+    borderWidth: 1,
+    borderColor: 'rgba(0, 217, 255, 0.2)',
   },
   actionButton: {
     width: 44,

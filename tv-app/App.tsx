@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { StatusBar, LogBox, View, Text, StyleSheet, TouchableOpacity } from 'react-native';
-import { NavigationContainer } from '@react-navigation/native';
+import { NavigationContainer, useNavigation } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
@@ -27,7 +27,7 @@ import {
   FlowsScreen,
   JudaismScreen,
 } from '@bayit/shared-screens';
-import { useAuthStore } from '@bayit/shared-stores';
+import { useAuthStore, useChatbotStore } from '@bayit/shared-stores';
 import { ProfileProvider } from '@bayit/shared-contexts';
 import { ModalProvider } from '@bayit/shared-contexts';
 import { AdminNavigator } from './src/navigation/AdminNavigator';
@@ -317,6 +317,52 @@ const AppContent: React.FC = () => {
   );
 };
 
+// Wrapper component that registers chatbot action handlers
+const AppContentWithHandlers: React.FC = () => {
+  const navigation = useNavigation<any>();
+  const { registerActionHandler, unregisterActionHandler } = useChatbotStore();
+
+  // Register chatbot action handlers for voice commands
+  useEffect(() => {
+    // Navigate to a specific screen
+    registerActionHandler('navigate', (payload: { screen: string; params?: any }) => {
+      navigation.navigate(payload.screen, payload.params);
+    });
+
+    // Search for content
+    registerActionHandler('search', (payload: { query: string }) => {
+      navigation.navigate('Search', { query: payload.query });
+    });
+
+    // Play content
+    registerActionHandler('play', (payload: { id: string; title: string; type: 'vod' | 'live' | 'radio' | 'podcast' }) => {
+      navigation.navigate('Player', payload);
+    });
+
+    // Start a flow
+    registerActionHandler('start_flow', (payload: { flowId: string }) => {
+      navigation.navigate('Flows', { flowId: payload.flowId, autoStart: true });
+    });
+
+    // Add to watchlist
+    registerActionHandler('add_to_watchlist', (payload: { contentId: string; contentType: string }) => {
+      console.log('[Chatbot] Add to watchlist:', payload);
+      // TODO: Integrate with watchlist API
+    });
+
+    // Cleanup handlers on unmount
+    return () => {
+      unregisterActionHandler('navigate');
+      unregisterActionHandler('search');
+      unregisterActionHandler('play');
+      unregisterActionHandler('start_flow');
+      unregisterActionHandler('add_to_watchlist');
+    };
+  }, [navigation, registerActionHandler, unregisterActionHandler]);
+
+  return <AppContent />;
+};
+
 function App(): React.JSX.Element {
   useEffect(() => {
     // Load saved language preference on app start
@@ -329,7 +375,7 @@ function App(): React.JSX.Element {
         <ModalProvider>
           <ProfileProvider>
             <NavigationContainer>
-              <AppContent />
+              <AppContentWithHandlers />
             </NavigationContainer>
           </ProfileProvider>
         </ModalProvider>

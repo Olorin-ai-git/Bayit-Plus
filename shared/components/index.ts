@@ -26,6 +26,7 @@ export { SideMenu } from './SideMenu';
 export { TrendingRow } from './TrendingRow';
 export { UserAccountMenu } from './UserAccountMenu';
 export { VoiceSearchButton } from './VoiceSearchButton';
+export { SoundwaveVisualizer } from './SoundwaveVisualizer';
 
 // Admin Components
 export * from './admin';

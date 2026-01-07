@@ -34,6 +34,7 @@ class Settings(BaseSettings):
 
     # ElevenLabs (speech-to-text)
     ELEVENLABS_API_KEY: str = ""
+    ELEVENLABS_WEBHOOK_SECRET: str = ""
 
     # CORS
     BACKEND_CORS_ORIGINS: list[str] = [

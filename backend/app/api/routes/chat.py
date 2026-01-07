@@ -2,8 +2,10 @@ from datetime import datetime
 from typing import Optional
 import tempfile
 import os
+import hmac
+import hashlib
 import httpx
-from fastapi import APIRouter, HTTPException, Depends, UploadFile, File
+from fastapi import APIRouter, HTTPException, Depends, UploadFile, File, Request, Header, BackgroundTasks
 from pydantic import BaseModel
 import anthropic
 from app.models.user import User
@@ -13,6 +15,9 @@ from app.core.config import settings
 from app.core.security import get_current_active_user
 
 router = APIRouter()
+
+# In-memory store for pending transcriptions (use Redis in production)
+pending_transcriptions: dict[str, dict] = {}
 
 # Initialize Anthropic client
 client = anthropic.Anthropic(api_key=settings.ANTHROPIC_API_KEY)
@@ -462,4 +467,245 @@ async def voice_search(
         content_type=processed.get("content_type"),
         genre=processed.get("genre"),
         search_results=search_results,
+    )
+
+
+# ============================================================================
+# ElevenLabs Webhook Handler
+# ============================================================================
+
+def verify_elevenlabs_signature(payload: bytes, signature: str, secret: str) -> bool:
+    """
+    Verify ElevenLabs webhook signature using HMAC-SHA256.
+
+    ElevenLabs signs webhooks with: HMAC-SHA256(webhook_secret, raw_body)
+    The signature is sent in the 'elevenlabs-signature' header.
+    """
+    if not secret:
+        return False
+
+    try:
+        expected_signature = hmac.new(
+            secret.encode('utf-8'),
+            payload,
+            hashlib.sha256
+        ).hexdigest()
+
+        # Compare signatures (constant-time comparison to prevent timing attacks)
+        return hmac.compare_digest(expected_signature, signature)
+    except Exception:
+        return False
+
+
+class ElevenLabsWebhookEvent(BaseModel):
+    """ElevenLabs webhook event payload."""
+    event_type: str
+    request_id: Optional[str] = None
+    transcription_id: Optional[str] = None
+    status: Optional[str] = None
+    text: Optional[str] = None
+    language_code: Optional[str] = None
+    audio_duration: Optional[float] = None
+    error: Optional[str] = None
+    metadata: Optional[dict] = None
+
+
+class WebhookResponse(BaseModel):
+    """Response for webhook acknowledgment."""
+    received: bool = True
+    event_type: str
+    message: str
+
+
+@router.post("/webhook/elevenlabs", response_model=WebhookResponse)
+async def elevenlabs_webhook(
+    request: Request,
+    background_tasks: BackgroundTasks,
+    elevenlabs_signature: Optional[str] = Header(None, alias="elevenlabs-signature"),
+    x_elevenlabs_signature: Optional[str] = Header(None, alias="x-elevenlabs-signature"),
+):
+    """
+    Handle ElevenLabs webhook events for transcription completion.
+
+    Events:
+    - transcription.completed: Transcription finished successfully
+    - transcription.failed: Transcription failed
+    - transcription.started: Transcription job started (optional)
+
+    The webhook verifies the signature using the ELEVENLABS_WEBHOOK_SECRET.
+    """
+    # Get raw body for signature verification
+    body = await request.body()
+
+    # Try both header formats
+    signature = elevenlabs_signature or x_elevenlabs_signature
+
+    # Verify signature if secret is configured
+    if settings.ELEVENLABS_WEBHOOK_SECRET:
+        if not signature:
+            raise HTTPException(
+                status_code=401,
+                detail="Missing webhook signature header"
+            )
+
+        if not verify_elevenlabs_signature(body, signature, settings.ELEVENLABS_WEBHOOK_SECRET):
+            raise HTTPException(
+                status_code=401,
+                detail="Invalid webhook signature"
+            )
+
+    # Parse the event payload
+    try:
+        import json
+        payload = json.loads(body)
+        event = ElevenLabsWebhookEvent(**payload)
+    except Exception as e:
+        raise HTTPException(
+            status_code=400,
+            detail=f"Invalid webhook payload: {str(e)}"
+        )
+
+    # Handle different event types
+    if event.event_type == "transcription.completed":
+        # Process completed transcription
+        background_tasks.add_task(
+            process_transcription_completed,
+            event.transcription_id or event.request_id,
+            event.text,
+            event.language_code,
+            event.audio_duration,
+            event.metadata
+        )
+
+        return WebhookResponse(
+            event_type=event.event_type,
+            message=f"Transcription completed: {len(event.text or '')} characters"
+        )
+
+    elif event.event_type == "transcription.failed":
+        # Log failed transcription
+        print(f"[ElevenLabs Webhook] Transcription failed: {event.error}")
+
+        # Clean up pending transcription
+        if event.transcription_id and event.transcription_id in pending_transcriptions:
+            pending_transcriptions[event.transcription_id]["status"] = "failed"
+            pending_transcriptions[event.transcription_id]["error"] = event.error
+
+        return WebhookResponse(
+            event_type=event.event_type,
+            message=f"Transcription failed: {event.error}"
+        )
+
+    elif event.event_type == "transcription.started":
+        # Track started transcription
+        if event.transcription_id:
+            pending_transcriptions[event.transcription_id] = {
+                "status": "processing",
+                "started_at": datetime.utcnow().isoformat(),
+                "metadata": event.metadata
+            }
+
+        return WebhookResponse(
+            event_type=event.event_type,
+            message="Transcription started"
+        )
+
+    else:
+        # Unknown event type - acknowledge receipt
+        print(f"[ElevenLabs Webhook] Unknown event type: {event.event_type}")
+        return WebhookResponse(
+            event_type=event.event_type,
+            message=f"Event received: {event.event_type}"
+        )
+
+
+async def process_transcription_completed(
+    transcription_id: Optional[str],
+    text: Optional[str],
+    language_code: Optional[str],
+    audio_duration: Optional[float],
+    metadata: Optional[dict]
+):
+    """
+    Background task to process completed transcription.
+
+    This can be extended to:
+    - Store transcriptions in database
+    - Trigger chatbot actions based on voice commands
+    - Send notifications to connected clients via WebSocket
+    - Process Hebronics normalization
+    """
+    print(f"[ElevenLabs Webhook] Processing transcription: {transcription_id}")
+    print(f"  Text: {text}")
+    print(f"  Language: {language_code}")
+    print(f"  Duration: {audio_duration}s")
+
+    if not text:
+        return
+
+    # Update pending transcription status
+    if transcription_id and transcription_id in pending_transcriptions:
+        pending_transcriptions[transcription_id].update({
+            "status": "completed",
+            "text": text,
+            "language_code": language_code,
+            "audio_duration": audio_duration,
+            "completed_at": datetime.utcnow().isoformat()
+        })
+
+    # Process Hebronics normalization if needed
+    if language_code in ["he", "iw"]:  # Hebrew
+        try:
+            processed = await process_hebronics_input(text)
+            print(f"  Normalized: {processed.get('normalized')}")
+            print(f"  Intent: {processed.get('intent')}")
+
+            if transcription_id and transcription_id in pending_transcriptions:
+                pending_transcriptions[transcription_id]["processed"] = processed
+        except Exception as e:
+            print(f"  Hebronics processing error: {e}")
+
+    # TODO: Integrate with WebSocket to push results to connected clients
+    # TODO: Store transcription in database for history
+    # TODO: Trigger chatbot action if metadata contains user context
+
+
+class TranscriptionStatusResponse(BaseModel):
+    """Response for transcription status check."""
+    transcription_id: str
+    status: str
+    text: Optional[str] = None
+    language_code: Optional[str] = None
+    audio_duration: Optional[float] = None
+    error: Optional[str] = None
+    processed: Optional[dict] = None
+
+
+@router.get("/transcription/{transcription_id}", response_model=TranscriptionStatusResponse)
+async def get_transcription_status(
+    transcription_id: str,
+    current_user: User = Depends(get_current_active_user),
+):
+    """
+    Check the status of a pending transcription.
+
+    This endpoint allows clients to poll for transcription completion
+    when using async transcription with webhooks.
+    """
+    if transcription_id not in pending_transcriptions:
+        raise HTTPException(
+            status_code=404,
+            detail="Transcription not found"
+        )
+
+    data = pending_transcriptions[transcription_id]
+
+    return TranscriptionStatusResponse(
+        transcription_id=transcription_id,
+        status=data.get("status", "unknown"),
+        text=data.get("text"),
+        language_code=data.get("language_code"),
+        audio_duration=data.get("audio_duration"),
+        error=data.get("error"),
+        processed=data.get("processed")
     )

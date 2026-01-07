@@ -251,6 +251,23 @@ const apiChaptersService = {
   getCategories: () => api.get('/chapters/categories/list'),
 };
 
+// Voice Preferences Types
+export type VoiceLanguage = 'he' | 'en' | 'es';
+export type TextSize = 'small' | 'medium' | 'large';
+export type VADSensitivity = 'low' | 'medium' | 'high';
+
+export interface VoicePreferences {
+  voice_search_enabled: boolean;
+  constant_listening_enabled: boolean;
+  voice_language: VoiceLanguage;
+  auto_subtitle: boolean;
+  high_contrast_mode: boolean;
+  text_size: TextSize;
+  hold_button_mode: boolean;
+  silence_threshold_ms: number;
+  vad_sensitivity: VADSensitivity;
+}
+
 // Profiles Service (API)
 const apiProfilesService = {
   getProfiles: () => api.get('/profiles'),
@@ -281,6 +298,10 @@ const apiProfilesService = {
     api.get(`/profiles/${profileId}/recommendations`),
   setKidsPin: (pin: string) => api.post('/profiles/kids-pin/set', { pin }),
   verifyKidsPin: (pin: string) => api.post('/profiles/kids-pin/verify', { pin }),
+  // Voice Preferences
+  getVoicePreferences: (): Promise<VoicePreferences> => api.get('/profiles/preferences/voice'),
+  updateVoicePreferences: (prefs: VoicePreferences): Promise<{ message: string; preferences: VoicePreferences }> =>
+    api.put('/profiles/preferences/voice', prefs),
 };
 
 // Children Service (API)

@@ -573,6 +573,18 @@
       "voiceSearch": "חיפוש קולי",
       "voiceSearchEnabled": "הפעל חיפוש קולי",
       "voiceSearchEnabledDesc": "חפש תוכן באמצעות הקול שלך",
+      "constantListening": "מצב האזנה קבועה",
+      "constantListeningDesc": "האזנה רציפה לפקודות קוליות ללא לחיצה על כפתור",
+      "constantListeningPrivacy": "אודיו נשלח לשרתים רק כשמזוהה דיבור",
+      "holdButtonMode": "לחץ והחזק לדיבור",
+      "holdButtonModeDesc": "לחץ והחזק את כפתור המיקרופון במקום האזנה קבועה",
+      "sensitivity": "רגישות זיהוי קול",
+      "sensitivityDesc": "התאם את רמת התגובה של זיהוי הקול",
+      "sensitivityLow": "נמוכה (פחות התרעות שווא)",
+      "sensitivityMedium": "בינונית (מאוזן)",
+      "sensitivityHigh": "גבוהה (הכי רגיש)",
+      "silenceThreshold": "זיהוי שקט",
+      "silenceThresholdDesc": "כמה זמן לחכות אחרי דיבור לפני עיבוד",
       "language": "שפת קול",
       "accessibility": "נגישות",
       "autoSubtitle": "הפעל כתוביות אוטומטית",
@@ -715,6 +727,11 @@
     "typeVideo": "וידאו"
   },
   "admin": {
+    "brand": {
+      "title": "ביית+ ניהול",
+      "subtitle": "ניהול מערכת"
+    },
+    "backToApp": "חזרה לאפליקציה",
     "refunds": {
       "subtitle": "ניהול בקשות להחזר כספי",
       "approveModal": {
@@ -881,9 +898,22 @@
       "settings": "הגדרות"
     },
     "nav": {
+      "dashboard": "לוח בקרה",
+      "users": "משתמשים",
+      "campaigns": "קמפיינים",
+      "billing": "חיוב",
+      "billingOverview": "סקירה",
       "transactions": "עסקאות",
       "refunds": "החזרים",
-      "plans": "תוכניות"
+      "subscriptions": "מנויים",
+      "subscriptionsList": "רשימת מנויים",
+      "plans": "תוכניות",
+      "marketing": "שיווק",
+      "marketingDashboard": "סקירה",
+      "emailCampaigns": "קמפייני דוא״ל",
+      "pushNotifications": "התראות פוש",
+      "settings": "הגדרות",
+      "auditLogs": "יומן פעילות"
     },
     "billing": {
       "subtitle": "מעקב אחר הכנסות ותשלומים",

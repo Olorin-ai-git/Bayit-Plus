@@ -1,8 +1,8 @@
 import { useEffect } from 'react';
 import { View, Text, StyleSheet, Pressable, ActivityIndicator } from 'react-native';
 import { useTranslation } from 'react-i18next';
-import { Mic, Eye, Type } from 'lucide-react';
-import { useVoiceSettingsStore, TextSize } from '@/stores/voiceSettingsStore';
+import { Mic, Eye, Type, Radio, ShieldCheck } from 'lucide-react';
+import { useVoiceSettingsStore, TextSize, VADSensitivity } from '@/stores/voiceSettingsStore';
 import { colors, spacing, borderRadius } from '@bayit/shared/theme';
 import { GlassView } from '@bayit/shared/ui';
 
@@ -10,6 +10,12 @@ const TEXT_SIZES: { value: TextSize; label: string }[] = [
   { value: 'small', label: 'Small' },
   { value: 'medium', label: 'Medium' },
   { value: 'large', label: 'Large' },
+];
+
+const VAD_SENSITIVITIES: { value: VADSensitivity; labelKey: string }[] = [
+  { value: 'low', labelKey: 'sensitivityLow' },
+  { value: 'medium', labelKey: 'sensitivityMedium' },
+  { value: 'high', labelKey: 'sensitivityHigh' },
 ];
 
 export default function VoiceSettings() {
@@ -22,6 +28,7 @@ export default function VoiceSettings() {
     loadPreferences,
     toggleSetting,
     setTextSize,
+    setVADSensitivity,
   } = useVoiceSettingsStore();
 
   useEffect(() => {
@@ -113,6 +120,76 @@ export default function VoiceSettings() {
           value={preferences.voice_search_enabled}
           onToggle={() => toggleSetting('voice_search_enabled')}
         />
+      </GlassView>
+
+      {/* Constant Listening Settings (TV/tvOS) */}
+      <GlassView style={styles.section}>
+        <View style={[styles.sectionHeader, isRTL && styles.sectionHeaderRTL]}>
+          <Radio size={16} color={colors.primary} />
+          <Text style={[styles.sectionTitle, { marginBottom: 0 }]}>
+            {t('profile.voice.constantListening', 'Always Listening Mode')}
+          </Text>
+        </View>
+
+        <SettingRow
+          label={t('profile.voice.constantListening', 'Always Listening Mode')}
+          description={t('profile.voice.constantListeningDesc', 'Continuously listen for voice commands without pressing a button')}
+          value={preferences.constant_listening_enabled}
+          onToggle={() => toggleSetting('constant_listening_enabled')}
+        />
+
+        <SettingRow
+          label={t('profile.voice.holdButtonMode', 'Hold Button to Talk')}
+          description={t('profile.voice.holdButtonModeDesc', 'Press and hold the microphone button instead of always listening')}
+          value={preferences.hold_button_mode}
+          onToggle={() => toggleSetting('hold_button_mode')}
+          disabled={!preferences.constant_listening_enabled}
+        />
+
+        {/* VAD Sensitivity Selection */}
+        {preferences.constant_listening_enabled && !preferences.hold_button_mode && (
+          <View style={styles.sensitivitySection}>
+            <Text style={[styles.sensitivityLabel, isRTL && styles.textRTL]}>
+              {t('profile.voice.sensitivity', 'Voice Detection Sensitivity')}
+            </Text>
+            <Text style={[styles.sensitivityDesc, isRTL && styles.textRTL]}>
+              {t('profile.voice.sensitivityDesc', 'Adjust how responsive the voice detection is')}
+            </Text>
+            <View style={[styles.sensitivityOptions, isRTL && styles.sensitivityOptionsRTL]}>
+              {VAD_SENSITIVITIES.map((sensitivity) => {
+                const isSelected = preferences.vad_sensitivity === sensitivity.value;
+                return (
+                  <Pressable
+                    key={sensitivity.value}
+                    onPress={() => setVADSensitivity(sensitivity.value)}
+                    style={({ hovered }: any) => [
+                      styles.sensitivityOption,
+                      isSelected && styles.sensitivityOptionSelected,
+                      hovered && styles.sensitivityOptionHovered,
+                    ]}
+                  >
+                    <Text
+                      style={[
+                        styles.sensitivityText,
+                        isSelected && styles.sensitivityTextSelected,
+                      ]}
+                    >
+                      {t(`profile.voice.${sensitivity.labelKey}`, sensitivity.labelKey)}
+                    </Text>
+                  </Pressable>
+                );
+              })}
+            </View>
+          </View>
+        )}
+
+        {/* Privacy Notice */}
+        <View style={[styles.privacyNotice, isRTL && styles.privacyNoticeRTL]}>
+          <ShieldCheck size={14} color={colors.success} />
+          <Text style={[styles.privacyText, isRTL && styles.textRTL]}>
+            {t('profile.voice.constantListeningPrivacy', 'Audio is only sent to servers when speech is detected')}
+          </Text>
+        </View>
       </GlassView>
 
       {/* Accessibility Settings */}
@@ -361,5 +438,70 @@ const styles = StyleSheet.create({
   savingText: {
     fontSize: 14,
     color: colors.textMuted,
+  },
+  sensitivitySection: {
+    paddingTop: spacing.sm,
+    borderTopWidth: 1,
+    borderTopColor: 'rgba(255, 255, 255, 0.05)',
+    marginTop: spacing.sm,
+  },
+  sensitivityLabel: {
+    fontSize: 14,
+    fontWeight: '500',
+    color: colors.text,
+    marginBottom: 4,
+  },
+  sensitivityDesc: {
+    fontSize: 13,
+    color: colors.textMuted,
+    marginBottom: spacing.md,
+  },
+  sensitivityOptions: {
+    flexDirection: 'row',
+    gap: spacing.sm,
+  },
+  sensitivityOptionsRTL: {
+    flexDirection: 'row-reverse',
+  },
+  sensitivityOption: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: spacing.md,
+    borderRadius: borderRadius.md,
+    backgroundColor: 'rgba(255, 255, 255, 0.05)',
+  },
+  sensitivityOptionSelected: {
+    backgroundColor: 'rgba(0, 217, 255, 0.15)',
+    borderWidth: 1,
+    borderColor: 'rgba(0, 217, 255, 0.4)',
+  },
+  sensitivityOptionHovered: {
+    backgroundColor: 'rgba(255, 255, 255, 0.08)',
+  },
+  sensitivityText: {
+    fontSize: 13,
+    color: colors.text,
+  },
+  sensitivityTextSelected: {
+    color: colors.primary,
+    fontWeight: '500',
+  },
+  privacyNotice: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.sm,
+    paddingTop: spacing.md,
+    borderTopWidth: 1,
+    borderTopColor: 'rgba(255, 255, 255, 0.05)',
+    marginTop: spacing.sm,
+  },
+  privacyNoticeRTL: {
+    flexDirection: 'row-reverse',
+  },
+  privacyText: {
+    fontSize: 12,
+    color: colors.textMuted,
+    flex: 1,
   },
 });

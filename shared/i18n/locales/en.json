@@ -573,6 +573,18 @@
       "voiceSearch": "Voice Search",
       "voiceSearchEnabled": "Enable voice search",
       "voiceSearchEnabledDesc": "Search for content using your voice",
+      "constantListening": "Always Listening Mode",
+      "constantListeningDesc": "Continuously listen for voice commands without pressing a button",
+      "constantListeningPrivacy": "Audio is only sent to servers when speech is detected",
+      "holdButtonMode": "Hold Button to Talk",
+      "holdButtonModeDesc": "Press and hold the microphone button instead of always listening",
+      "sensitivity": "Voice Detection Sensitivity",
+      "sensitivityDesc": "Adjust how responsive the voice detection is",
+      "sensitivityLow": "Low (fewer false triggers)",
+      "sensitivityMedium": "Medium (balanced)",
+      "sensitivityHigh": "High (most responsive)",
+      "silenceThreshold": "Silence Detection",
+      "silenceThresholdDesc": "How long to wait after speaking before processing",
       "language": "Voice language",
       "accessibility": "Accessibility",
       "autoSubtitle": "Auto-enable subtitles",
@@ -840,6 +852,11 @@
     }
   },
   "admin": {
+    "brand": {
+      "title": "Bayit+ Admin",
+      "subtitle": "System Management"
+    },
+    "backToApp": "Back to App",
     "refunds": {
       "subtitle": "Manage refund requests",
       "approveModal": {
@@ -1006,9 +1023,22 @@
       "settings": "Settings"
     },
     "nav": {
+      "dashboard": "Dashboard",
+      "users": "Users",
+      "campaigns": "Campaigns",
+      "billing": "Billing",
+      "billingOverview": "Overview",
       "transactions": "Transactions",
       "refunds": "Refunds",
-      "plans": "Plans"
+      "subscriptions": "Subscriptions",
+      "subscriptionsList": "Subscribers",
+      "plans": "Plans",
+      "marketing": "Marketing",
+      "marketingDashboard": "Overview",
+      "emailCampaigns": "Email Campaigns",
+      "pushNotifications": "Push Notifications",
+      "settings": "Settings",
+      "auditLogs": "Audit Logs"
     },
     "billing": {
       "subtitle": "Track revenue and payments",

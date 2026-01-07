@@ -337,10 +337,14 @@ DEFAULT_AI_SETTINGS = {
 
 DEFAULT_VOICE_SETTINGS = {
     "voice_search_enabled": True,
+    "constant_listening_enabled": True,  # Always-on listening for TV/tvOS apps
     "voice_language": "he",
     "auto_subtitle": False,
     "high_contrast_mode": False,
     "text_size": "medium",
+    "hold_button_mode": False,  # Fallback to press-and-hold remote button
+    "silence_threshold_ms": 2000,  # Wait 2 seconds of silence before processing
+    "vad_sensitivity": "medium",  # Voice Activity Detection sensitivity: low, medium, high
 }
 
 
@@ -353,10 +357,14 @@ class AIPreferences(BaseModel):
 
 class VoicePreferences(BaseModel):
     voice_search_enabled: bool = True
-    voice_language: str = "he"
+    constant_listening_enabled: bool = True  # Always-on listening for TV/tvOS apps
+    voice_language: str = "he"  # he, en, es
     auto_subtitle: bool = False
     high_contrast_mode: bool = False
     text_size: str = "medium"  # small, medium, large
+    hold_button_mode: bool = False  # Fallback to press-and-hold remote button
+    silence_threshold_ms: int = 2000  # Wait N ms of silence before processing
+    vad_sensitivity: str = "medium"  # Voice Activity Detection sensitivity: low, medium, high
 
 
 @router.get("/preferences/ai")

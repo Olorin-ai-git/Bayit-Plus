@@ -1,11 +1,12 @@
-import React, { useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { StatusBar, LogBox, View, Text, StyleSheet, TouchableOpacity } from 'react-native';
-import { NavigationContainer } from '@react-navigation/native';
+import { NavigationContainer, useNavigation } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { I18nextProvider, useTranslation } from 'react-i18next';
 import i18n, { loadSavedLanguage } from '@bayit/shared-i18n';
+import { useDirection } from '@bayit/shared-hooks';
 import {
   HomeScreen,
   PlayerScreen,
@@ -28,6 +29,8 @@ import {
 } from '@bayit/shared-screens';
 import { ProfileProvider } from '@bayit/shared-contexts';
 import { ModalProvider } from '@bayit/shared-contexts';
+import { GlassTopBar, GlassSidebar, DemoBanner } from '@bayit/shared';
+import { useChatbotStore } from '@bayit/shared-stores';
 
 // Ignore specific warnings for TV
 LogBox.ignoreLogs([
@@ -187,34 +190,110 @@ const tabStyles = StyleSheet.create({
   },
 });
 
+// Layout constants
+const SIDEBAR_COLLAPSED_WIDTH = 80;
+const SIDEBAR_EXPANDED_WIDTH = 280;
+
 // App Content with Navigation
 const AppContent: React.FC = () => {
+  const [sidebarExpanded, setSidebarExpanded] = useState(false);
+  const { isRTL } = useDirection();
+  const sidebarWidth = sidebarExpanded ? SIDEBAR_EXPANDED_WIDTH : SIDEBAR_COLLAPSED_WIDTH;
+
   return (
     <View style={appStyles.container}>
       <StatusBar hidden />
-      <Stack.Navigator
-        screenOptions={{
-          headerShown: false,
-          cardStyle: { backgroundColor: '#0d0d1a' },
-        }}
-        initialRouteName="Main"
-      >
-        <Stack.Screen name="Login" component={LoginScreen} />
-        <Stack.Screen name="Register" component={RegisterScreen} />
-        <Stack.Screen name="ProfileSelection" component={ProfileSelectionScreen} />
-        <Stack.Screen name="Main" component={MainTabs} />
-        <Stack.Screen name="MorningRitual" component={MorningRitualScreen} />
-        <Stack.Screen name="Judaism" component={JudaismScreen} />
-        <Stack.Screen name="Children" component={ChildrenScreen} />
-        <Stack.Screen name="Flows" component={FlowsScreen} />
-        <Stack.Screen name="Player" component={PlayerScreen} />
-        <Stack.Screen name="Search" component={SearchScreen} />
-        <Stack.Screen name="Favorites" component={FavoritesScreen} />
-        <Stack.Screen name="Downloads" component={DownloadsScreen} />
-        <Stack.Screen name="Watchlist" component={WatchlistScreen} />
-      </Stack.Navigator>
+
+      {/* Demo Mode Banner */}
+      <DemoBanner />
+
+      {/* Glass Top Bar with Soundwave Visualizer */}
+      <GlassTopBar
+        onMenuPress={() => setSidebarExpanded(!sidebarExpanded)}
+        sidebarExpanded={sidebarExpanded}
+      />
+
+      {/* Main Content Area */}
+      <View style={appStyles.mainArea}>
+        {/* Glass Sidebar */}
+        <GlassSidebar
+          isExpanded={sidebarExpanded}
+          onToggle={() => setSidebarExpanded(!sidebarExpanded)}
+        />
+
+        {/* Content - with padding for sidebar based on direction */}
+        <View style={[appStyles.content, isRTL ? { paddingRight: sidebarWidth } : { paddingLeft: sidebarWidth }]}>
+          <Stack.Navigator
+            screenOptions={{
+              headerShown: false,
+              cardStyle: { backgroundColor: '#0d0d1a' },
+            }}
+            initialRouteName="Main"
+          >
+            <Stack.Screen name="Login" component={LoginScreen} />
+            <Stack.Screen name="Register" component={RegisterScreen} />
+            <Stack.Screen name="ProfileSelection" component={ProfileSelectionScreen} />
+            <Stack.Screen name="Main" component={MainTabs} />
+            <Stack.Screen name="MorningRitual" component={MorningRitualScreen} />
+            <Stack.Screen name="Judaism" component={JudaismScreen} />
+            <Stack.Screen name="Children" component={ChildrenScreen} />
+            <Stack.Screen name="Flows" component={FlowsScreen} />
+            <Stack.Screen name="Player" component={PlayerScreen} />
+            <Stack.Screen name="Search" component={SearchScreen} />
+            <Stack.Screen name="Favorites" component={FavoritesScreen} />
+            <Stack.Screen name="Downloads" component={DownloadsScreen} />
+            <Stack.Screen name="Watchlist" component={WatchlistScreen} />
+          </Stack.Navigator>
+        </View>
+      </View>
     </View>
   );
+};
+
+// Wrapper component that registers chatbot action handlers
+const AppContentWithHandlers: React.FC = () => {
+  const navigation = useNavigation<any>();
+  const { registerActionHandler, unregisterActionHandler } = useChatbotStore();
+
+  // Register chatbot action handlers
+  useEffect(() => {
+    // Navigate to a specific screen
+    registerActionHandler('navigate', (payload: { screen: string; params?: any }) => {
+      navigation.navigate(payload.screen, payload.params);
+    });
+
+    // Search for content
+    registerActionHandler('search', (payload: { query: string }) => {
+      navigation.navigate('Search', { query: payload.query });
+    });
+
+    // Play content
+    registerActionHandler('play', (payload: { id: string; title: string; type: 'vod' | 'live' | 'radio' | 'podcast' }) => {
+      navigation.navigate('Player', payload);
+    });
+
+    // Start a flow
+    registerActionHandler('start_flow', (payload: { flowId: string }) => {
+      navigation.navigate('Flows', { flowId: payload.flowId, autoStart: true });
+    });
+
+    // Add to watchlist (would need API integration)
+    registerActionHandler('add_to_watchlist', (payload: { contentId: string; contentType: string }) => {
+      console.log('[Chatbot] Add to watchlist:', payload);
+      // TODO: Integrate with watchlist API
+    });
+
+    // Cleanup handlers on unmount
+    return () => {
+      unregisterActionHandler('navigate');
+      unregisterActionHandler('search');
+      unregisterActionHandler('play');
+      unregisterActionHandler('start_flow');
+      unregisterActionHandler('add_to_watchlist');
+    };
+  }, [navigation, registerActionHandler, unregisterActionHandler]);
+
+  return <AppContent />;
 };
 
 function App(): React.JSX.Element {
@@ -229,7 +308,7 @@ function App(): React.JSX.Element {
         <ModalProvider>
           <ProfileProvider>
             <NavigationContainer>
-              <AppContent />
+              <AppContentWithHandlers />
             </NavigationContainer>
           </ProfileProvider>
         </ModalProvider>
@@ -242,6 +321,13 @@ const appStyles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#0d0d1a',
+  },
+  mainArea: {
+    flex: 1,
+    flexDirection: 'row',
+  },
+  content: {
+    flex: 1,
   },
 });
 
