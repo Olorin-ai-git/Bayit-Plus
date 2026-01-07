@@ -102,7 +102,7 @@ function AddProfileCard({ onClick }: { onClick: () => void }) {
         <Plus size={40} color={isHovered ? colors.primary : colors.textMuted} />
       </View>
       <Text style={[styles.addProfileText, isHovered && styles.addProfileTextHovered]}>
-        {t('profiles.addProfile', 'הוסף פרופיל')}
+        {t('profiles.addProfile')}
       </Text>
     </Pressable>
   );
@@ -140,7 +140,7 @@ function PinModal({ isOpen, onClose, onSubmit, error, isLoading }: {
             <X size={24} color={colors.textMuted} />
           </Pressable>
 
-          <Text style={styles.modalTitle}>{t('profiles.enterPin', 'הזן קוד PIN')}</Text>
+          <Text style={styles.modalTitle}>{t('profiles.enterPin')}</Text>
 
           <TextInput
             ref={inputRef}
@@ -150,7 +150,7 @@ function PinModal({ isOpen, onClose, onSubmit, error, isLoading }: {
             value={pin}
             onChangeText={(text) => setPin(text.replace(/\D/g, ''))}
             style={styles.pinInput}
-            placeholder="••••"
+            placeholder={t('placeholder.pin')}
             placeholderTextColor={colors.textMuted}
           />
 
@@ -160,12 +160,12 @@ function PinModal({ isOpen, onClose, onSubmit, error, isLoading }: {
 
           <View style={styles.modalButtons}>
             <GlassButton
-              title={t('common.cancel', 'ביטול')}
+              title={t('common.cancel')}
               onPress={onClose}
               style={styles.modalButton}
             />
             <GlassButton
-              title={isLoading ? '' : t('common.confirm', 'אישור')}
+              title={isLoading ? '' : t('common.confirm')}
               onPress={handleSubmit}
               disabled={pin.length < 4 || isLoading}
               variant="primary"
@@ -220,7 +220,7 @@ export default function ProfileSelectionPage() {
       await selectProfile(profile.id);
       navigate('/', { replace: true });
     } catch (err: any) {
-      setPinError(err.detail || t('profiles.selectError', 'שגיאה בבחירת פרופיל'));
+      setPinError(err.detail || t('profiles.selectError'));
     }
   };
 
@@ -233,7 +233,7 @@ export default function ProfileSelectionPage() {
       setSelectedProfile(null);
       navigate('/', { replace: true });
     } catch (err: any) {
-      setPinError(err.detail || t('profiles.wrongPin', 'קוד PIN שגוי'));
+      setPinError(err.detail || t('profiles.wrongPin'));
     }
   };
 
@@ -247,7 +247,7 @@ export default function ProfileSelectionPage() {
     return (
       <View style={styles.loadingContainer}>
         <ActivityIndicator size="large" color={colors.primary} />
-        <Text style={styles.loadingText}>{t('profiles.loading', 'טוען פרופילים...')}</Text>
+        <Text style={styles.loadingText}>{t('profiles.loading')}</Text>
       </View>
     );
   }
@@ -270,7 +270,7 @@ export default function ProfileSelectionPage() {
 
         {/* Title */}
         <Text style={styles.title}>
-          {isManageMode ? t('profiles.manage', 'ניהול פרופילים') : t('profiles.whoIsWatching', 'מי צופה?')}
+          {isManageMode ? t('profiles.manage') : t('profiles.whoIsWatching')}
         </Text>
 
         {/* Profiles Grid */}
@@ -295,7 +295,7 @@ export default function ProfileSelectionPage() {
           style={styles.manageButton}
         >
           <Text style={styles.manageButtonText}>
-            {isManageMode ? t('common.done', 'סיום') : t('profiles.manageProfiles', 'ניהול פרופילים')}
+            {isManageMode ? t('common.done') : t('profiles.manageProfiles')}
           </Text>
         </Pressable>
 

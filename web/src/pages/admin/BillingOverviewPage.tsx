@@ -72,7 +72,7 @@ export default function BillingOverviewPage() {
       <View style={styles.errorContainer}>
         <Text style={styles.errorIcon}>⚠️</Text>
         <Text style={styles.errorText}>{error}</Text>
-        <GlassButton title={t('common.retry', 'נסה שוב')} onPress={loadData} variant="primary" />
+        <GlassButton title={t('common.retry')} onPress={loadData} variant="primary" />
       </View>
     );
   }
@@ -81,7 +81,7 @@ export default function BillingOverviewPage() {
     return (
       <View style={styles.loadingContainer}>
         <ActivityIndicator size="large" color={colors.primary} />
-        <Text style={styles.loadingText}>{t('common.loading', 'טוען...')}</Text>
+        <Text style={styles.loadingText}>{t('common.loading')}</Text>
       </View>
     );
   }
@@ -90,12 +90,12 @@ export default function BillingOverviewPage() {
     <ScrollView style={styles.container} contentContainerStyle={styles.contentContainer}>
       <View style={styles.header}>
         <View>
-          <Text style={styles.pageTitle}>{t('admin.titles.billing', 'סקירת חיובים')}</Text>
-          <Text style={styles.subtitle}>מעקב אחר הכנסות ותשלומים</Text>
+          <Text style={styles.pageTitle}>{t('admin.titles.billing')}</Text>
+          <Text style={styles.subtitle}>{t('admin.billing.subtitle')}</Text>
         </View>
         <View style={styles.headerActions}>
           <GlassButton
-            title="רענן"
+            title={t('admin.dashboard.refresh')}
             variant="secondary"
             icon={<RefreshCw size={16} color={colors.text} />}
             onPress={handleRefresh}
@@ -105,28 +105,28 @@ export default function BillingOverviewPage() {
       </View>
 
       <View style={styles.section}>
-        <Text style={styles.sectionTitle}>{t('admin.billing.revenue', 'הכנסות')}</Text>
+        <Text style={styles.sectionTitle}>{t('admin.billing.revenue')}</Text>
         <View style={styles.statsGrid}>
           <StatCard
-            title={t('admin.billing.today', 'היום')}
+            title={t('admin.billing.today')}
             value={formatCurrency(overview.today)}
             icon="💵"
             color="success"
           />
           <StatCard
-            title={t('admin.billing.thisWeek', 'השבוע')}
+            title={t('admin.billing.thisWeek')}
             value={formatCurrency(overview.this_week)}
             icon="📅"
             color="primary"
           />
           <StatCard
-            title={t('admin.billing.thisMonth', 'החודש')}
+            title={t('admin.billing.thisMonth')}
             value={formatCurrency(overview.this_month)}
             icon="📊"
             color="secondary"
           />
           <StatCard
-            title={t('admin.billing.thisYear', 'השנה')}
+            title={t('admin.billing.thisYear')}
             value={formatCurrency(overview.this_year)}
             icon="📈"
             color="warning"
@@ -135,30 +135,30 @@ export default function BillingOverviewPage() {
       </View>
 
       <View style={styles.section}>
-        <Text style={styles.sectionTitle}>{t('admin.billing.metrics', 'מדדים')}</Text>
+        <Text style={styles.sectionTitle}>{t('admin.billing.metrics')}</Text>
         <View style={styles.statsGrid}>
           <StatCard
-            title={t('admin.billing.totalTransactions', 'סה״כ עסקאות')}
+            title={t('admin.billing.totalTransactions')}
             value={overview.total_transactions?.toLocaleString() || '0'}
             icon="💳"
             color="primary"
             to="/admin/transactions"
           />
           <StatCard
-            title={t('admin.billing.avgTransaction', 'ממוצע עסקה')}
+            title={t('admin.billing.avgTransaction')}
             value={formatCurrency(overview.avg_transaction || 0)}
             icon="📉"
             color="secondary"
           />
           <StatCard
-            title={t('admin.billing.pendingRefunds', 'החזרים בהמתנה')}
+            title={t('admin.billing.pendingRefunds')}
             value={overview.pending_refunds.toString()}
             icon="⏳"
             color={overview.pending_refunds > 0 ? 'warning' : 'success'}
             to="/admin/refunds"
           />
           <StatCard
-            title={t('admin.billing.refundRate', 'אחוז החזרים')}
+            title={t('admin.billing.refundRate')}
             value={`${overview.refund_rate || 0}%`}
             icon="↩️"
             color={overview.refund_rate > 5 ? 'error' : 'success'}
@@ -168,28 +168,28 @@ export default function BillingOverviewPage() {
 
       {churnData && (
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>{t('admin.billing.retention', 'שימור לקוחות')}</Text>
+          <Text style={styles.sectionTitle}>{t('admin.billing.retention')}</Text>
           <View style={styles.statsGrid}>
             <StatCard
-              title={t('admin.billing.retentionRate', 'שיעור שימור')}
+              title={t('admin.billing.retentionRate')}
               value={`${churnData.retention_rate}%`}
               icon="🎯"
               color="success"
             />
             <StatCard
-              title={t('admin.billing.churnRate', 'שיעור נטישה')}
+              title={t('admin.billing.churnRate')}
               value={`${churnData.churn_rate}%`}
               icon="📉"
               color={churnData.churn_rate > 5 ? 'error' : 'success'}
             />
             <StatCard
-              title={t('admin.billing.atRiskUsers', 'משתמשים בסיכון')}
+              title={t('admin.billing.atRiskUsers')}
               value={churnData.at_risk_users.toString()}
               icon="⚠️"
               color="warning"
             />
             <StatCard
-              title={t('admin.billing.churnedUsers', 'עזבו החודש')}
+              title={t('admin.billing.churnedUsers')}
               value={churnData.churned_users.toString()}
               icon="👋"
               color="error"
@@ -199,24 +199,24 @@ export default function BillingOverviewPage() {
       )}
 
       <View style={styles.quickLinksSection}>
-        <Text style={styles.sectionTitle}>{t('admin.billing.quickLinks', 'קישורים מהירים')}</Text>
+        <Text style={styles.sectionTitle}>{t('admin.billing.quickLinks')}</Text>
         <View style={styles.quickLinks}>
           <Link to="/admin/transactions" style={{ textDecoration: 'none', flex: 1 }}>
             <GlassCard style={styles.quickLinkCard}>
               <CreditCard size={24} color={colors.primary} />
-              <Text style={styles.quickLinkText}>{t('admin.nav.transactions', 'עסקאות')}</Text>
+              <Text style={styles.quickLinkText}>{t('admin.nav.transactions')}</Text>
             </GlassCard>
           </Link>
           <Link to="/admin/refunds" style={{ textDecoration: 'none', flex: 1 }}>
             <GlassCard style={styles.quickLinkCard}>
               <AlertCircle size={24} color={colors.warning} />
-              <Text style={styles.quickLinkText}>{t('admin.nav.refunds', 'החזרים')}</Text>
+              <Text style={styles.quickLinkText}>{t('admin.nav.refunds')}</Text>
             </GlassCard>
           </Link>
           <Link to="/admin/plans" style={{ textDecoration: 'none', flex: 1 }}>
             <GlassCard style={styles.quickLinkCard}>
               <DollarSign size={24} color={colors.success} />
-              <Text style={styles.quickLinkText}>{t('admin.nav.plans', 'תוכניות')}</Text>
+              <Text style={styles.quickLinkText}>{t('admin.nav.plans')}</Text>
             </GlassCard>
           </Link>
         </View>

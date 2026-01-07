@@ -7,10 +7,10 @@ import { useAuthStore } from '@bayit/shared-stores';
 import { colors, spacing, borderRadius } from '@bayit/shared/theme';
 import { AnimatedLogo } from '@bayit/shared';
 
-const LANGUAGES = [
-  { code: 'en', label: 'English', flag: '🇺🇸' },
-  { code: 'he', label: 'עברית', flag: '🇮🇱' },
-  { code: 'es', label: 'Español', flag: '🇪🇸' },
+const LANGUAGE_CODES = [
+  { code: 'en', flag: '🇺🇸' },
+  { code: 'he', flag: '🇮🇱' },
+  { code: 'es', flag: '🇪🇸' },
 ];
 
 export default function RegisterPage() {
@@ -29,7 +29,8 @@ export default function RegisterPage() {
   const [error, setError] = useState('');
   const [showLanguageMenu, setShowLanguageMenu] = useState(false);
 
-  const currentLanguage = LANGUAGES.find(lang => lang.code === i18n.language) || LANGUAGES[0];
+  const currentLanguage = LANGUAGE_CODES.find(lang => lang.code === i18n.language) || LANGUAGE_CODES[0];
+  const currentLanguageLabel = t(`settings.languages.${i18n.language}`);
 
   const handleLanguageChange = (langCode: string) => {
     i18n.changeLanguage(langCode);
@@ -40,32 +41,32 @@ export default function RegisterPage() {
     setError('');
 
     if (!name.trim()) {
-      setError(t('register.errors.nameRequired', 'Name is required'));
+      setError(t('register.errors.nameRequired'));
       return;
     }
 
     if (!email.trim()) {
-      setError(t('register.errors.emailRequired', 'Email is required'));
+      setError(t('register.errors.emailRequired'));
       return;
     }
 
     if (!password) {
-      setError(t('register.errors.passwordRequired', 'Password is required'));
+      setError(t('register.errors.passwordRequired'));
       return;
     }
 
     if (password.length < 8) {
-      setError(t('register.errors.passwordTooShort', 'Password must be at least 8 characters'));
+      setError(t('register.errors.passwordTooShort'));
       return;
     }
 
     if (password !== confirmPassword) {
-      setError(t('register.errors.passwordMismatch', 'Passwords do not match'));
+      setError(t('register.errors.passwordMismatch'));
       return;
     }
 
     if (!acceptTerms) {
-      setError(t('register.errors.acceptTerms', 'You must accept the terms and conditions'));
+      setError(t('register.errors.acceptTerms'));
       return;
     }
 
@@ -73,7 +74,7 @@ export default function RegisterPage() {
       await register({ name, email, password });
       navigate('/', { replace: true });
     } catch (err: any) {
-      setError(err.message || t('register.errors.registrationFailed', 'Registration failed. Please try again.'));
+      setError(err.message || t('register.errors.registrationFailed'));
     }
   };
 
@@ -83,7 +84,7 @@ export default function RegisterPage() {
       await loginWithGoogle();
       navigate('/', { replace: true });
     } catch (err: any) {
-      setError(err.message || t('register.errors.googleFailed', 'Google sign-up failed. Please try again.'));
+      setError(err.message || t('register.errors.googleFailed'));
     }
   };
 
@@ -102,13 +103,13 @@ export default function RegisterPage() {
             onPress={() => setShowLanguageMenu(!showLanguageMenu)}
           >
             <Globe size={18} color={colors.textSecondary} />
-            <Text style={styles.languageButtonText}>{currentLanguage.flag} {currentLanguage.label}</Text>
+            <Text style={styles.languageButtonText}>{currentLanguage.flag} {currentLanguageLabel}</Text>
             <ChevronDown size={16} color={colors.textSecondary} />
           </Pressable>
 
           {showLanguageMenu && (
             <View style={styles.languageMenu}>
-              {LANGUAGES.map((lang) => (
+              {LANGUAGE_CODES.map((lang) => (
                 <Pressable
                   key={lang.code}
                   style={[
@@ -124,7 +125,7 @@ export default function RegisterPage() {
                       lang.code === i18n.language && styles.languageOptionTextActive,
                     ]}
                   >
-                    {lang.label}
+                    {t(`settings.languages.${lang.code}`)}
                   </Text>
                 </Pressable>
               ))}
@@ -143,9 +144,9 @@ export default function RegisterPage() {
 
           {/* Register Card */}
           <View style={styles.card}>
-            <Text style={styles.title}>{t('register.title', 'Create Account')}</Text>
+            <Text style={styles.title}>{t('register.title')}</Text>
             <Text style={styles.subtitle}>
-              {t('register.subtitle', 'Join Bayit+ and start watching')}
+              {t('register.subtitle')}
             </Text>
 
             {/* Error Message */}
@@ -157,7 +158,7 @@ export default function RegisterPage() {
 
             {/* Name Input */}
             <View style={styles.inputGroup}>
-              <Text style={[styles.label, isRTL && styles.labelRTL]}>{t('register.name', 'Full Name')}</Text>
+              <Text style={[styles.label, isRTL && styles.labelRTL]}>{t('register.name')}</Text>
               <View style={styles.inputWrapper}>
                 <View style={[styles.inputIcon, isRTL && styles.inputIconRTL]}>
                   <User size={20} color={colors.textMuted} />
@@ -166,7 +167,7 @@ export default function RegisterPage() {
                   style={[styles.input, isRTL && styles.inputRTL]}
                   value={name}
                   onChangeText={setName}
-                  placeholder={t('register.namePlaceholder', 'Enter your full name')}
+                  placeholder={t('register.namePlaceholder')}
                   placeholderTextColor={colors.textMuted}
                   autoCapitalize="words"
                   autoComplete="name"
@@ -176,7 +177,7 @@ export default function RegisterPage() {
 
             {/* Email Input */}
             <View style={styles.inputGroup}>
-              <Text style={[styles.label, isRTL && styles.labelRTL]}>{t('register.email', 'Email')}</Text>
+              <Text style={[styles.label, isRTL && styles.labelRTL]}>{t('register.email')}</Text>
               <View style={styles.inputWrapper}>
                 <View style={[styles.inputIcon, isRTL && styles.inputIconRTL]}>
                   <Mail size={20} color={colors.textMuted} />
@@ -185,7 +186,7 @@ export default function RegisterPage() {
                   style={[styles.input, isRTL && styles.inputRTL]}
                   value={email}
                   onChangeText={setEmail}
-                  placeholder={t('register.emailPlaceholder', 'Enter your email')}
+                  placeholder={t('register.emailPlaceholder')}
                   placeholderTextColor={colors.textMuted}
                   keyboardType="email-address"
                   autoCapitalize="none"
@@ -196,7 +197,7 @@ export default function RegisterPage() {
 
             {/* Password Input */}
             <View style={styles.inputGroup}>
-              <Text style={[styles.label, isRTL && styles.labelRTL]}>{t('register.password', 'Password')}</Text>
+              <Text style={[styles.label, isRTL && styles.labelRTL]}>{t('register.password')}</Text>
               <View style={styles.inputWrapper}>
                 <View style={[styles.inputIcon, isRTL && styles.inputIconRTL]}>
                   <Lock size={20} color={colors.textMuted} />
@@ -205,7 +206,7 @@ export default function RegisterPage() {
                   style={[styles.input, styles.inputWithRightIcon, isRTL && styles.inputRTL]}
                   value={password}
                   onChangeText={setPassword}
-                  placeholder={t('register.passwordPlaceholder', 'At least 8 characters')}
+                  placeholder={t('register.passwordPlaceholder')}
                   placeholderTextColor={colors.textMuted}
                   secureTextEntry={!showPassword}
                   autoComplete="new-password"
@@ -225,7 +226,7 @@ export default function RegisterPage() {
 
             {/* Confirm Password Input */}
             <View style={styles.inputGroup}>
-              <Text style={[styles.label, isRTL && styles.labelRTL]}>{t('register.confirmPassword', 'Confirm Password')}</Text>
+              <Text style={[styles.label, isRTL && styles.labelRTL]}>{t('register.confirmPassword')}</Text>
               <View style={styles.inputWrapper}>
                 <View style={[styles.inputIcon, isRTL && styles.inputIconRTL]}>
                   <Lock size={20} color={colors.textMuted} />
@@ -234,7 +235,7 @@ export default function RegisterPage() {
                   style={[styles.input, styles.inputWithRightIcon, isRTL && styles.inputRTL]}
                   value={confirmPassword}
                   onChangeText={setConfirmPassword}
-                  placeholder={t('register.confirmPasswordPlaceholder', 'Re-enter your password')}
+                  placeholder={t('register.confirmPasswordPlaceholder')}
                   placeholderTextColor={colors.textMuted}
                   secureTextEntry={!showConfirmPassword}
                   autoComplete="new-password"
@@ -261,13 +262,13 @@ export default function RegisterPage() {
                 {acceptTerms && <Check size={14} color="#000" strokeWidth={3} />}
               </View>
               <Text style={styles.termsText}>
-                {t('register.acceptTerms', 'I agree to the')}{' '}
+                {t('register.acceptTerms')}{' '}
                 <Link to="/terms" style={{ textDecoration: 'none' }}>
-                  <Text style={styles.termsLink}>{t('register.termsOfService', 'Terms of Service')}</Text>
+                  <Text style={styles.termsLink}>{t('register.termsOfService')}</Text>
                 </Link>
-                {' '}{t('register.and', 'and')}{' '}
+                {' '}{t('register.and')}{' '}
                 <Link to="/privacy" style={{ textDecoration: 'none' }}>
-                  <Text style={styles.termsLink}>{t('register.privacyPolicy', 'Privacy Policy')}</Text>
+                  <Text style={styles.termsLink}>{t('register.privacyPolicy')}</Text>
                 </Link>
               </Text>
             </Pressable>
@@ -285,14 +286,14 @@ export default function RegisterPage() {
               {isLoading ? (
                 <ActivityIndicator color="#000" size="small" />
               ) : (
-                <Text style={styles.registerButtonText}>{t('register.submit', 'Create Account')}</Text>
+                <Text style={styles.registerButtonText}>{t('register.submit')}</Text>
               )}
             </Pressable>
 
             {/* Divider */}
             <View style={styles.divider}>
               <View style={styles.dividerLine} />
-              <Text style={styles.dividerText}>{t('login.or', 'or')}</Text>
+              <Text style={styles.dividerText}>{t('login.or')}</Text>
               <View style={styles.dividerLine} />
             </View>
 
@@ -325,17 +326,17 @@ export default function RegisterPage() {
                 />
               </svg>
               <Text style={styles.googleButtonText}>
-                {t('register.continueWithGoogle', 'Continue with Google')}
+                {t('register.continueWithGoogle')}
               </Text>
             </Pressable>
 
             {/* Login Link */}
             <View style={[styles.loginContainer, isRTL && styles.loginContainerRTL]}>
               <Text style={styles.loginText}>
-                {t('register.haveAccount', 'Already have an account?')}
+                {t('register.haveAccount')}
               </Text>
               <Link to="/login" style={{ textDecoration: 'none' }}>
-                <Text style={styles.loginLink}>{t('register.signIn', 'Sign In')}</Text>
+                <Text style={styles.loginLink}>{t('register.signIn')}</Text>
               </Link>
             </View>
           </View>

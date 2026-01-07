@@ -7,10 +7,10 @@ import { useAuthStore } from '@bayit/shared-stores';
 import { colors, spacing, borderRadius } from '@bayit/shared/theme';
 import { AnimatedLogo } from '@bayit/shared';
 
-const LANGUAGES = [
-  { code: 'en', label: 'English', flag: '🇺🇸' },
-  { code: 'he', label: 'עברית', flag: '🇮🇱' },
-  { code: 'es', label: 'Español', flag: '🇪🇸' },
+const LANGUAGE_CODES = [
+  { code: 'en', flag: '🇺🇸' },
+  { code: 'he', flag: '🇮🇱' },
+  { code: 'es', flag: '🇪🇸' },
 ];
 
 export default function LoginPage() {
@@ -28,7 +28,8 @@ export default function LoginPage() {
 
   const from = (location.state as any)?.from?.pathname || '/';
 
-  const currentLanguage = LANGUAGES.find(lang => lang.code === i18n.language) || LANGUAGES[0];
+  const currentLanguage = LANGUAGE_CODES.find(lang => lang.code === i18n.language) || LANGUAGE_CODES[0];
+  const currentLanguageLabel = t(`settings.languages.${i18n.language}`);
 
   const handleLanguageChange = (langCode: string) => {
     i18n.changeLanguage(langCode);
@@ -39,12 +40,12 @@ export default function LoginPage() {
     setError('');
 
     if (!email.trim()) {
-      setError(t('login.errors.emailRequired', 'Email is required'));
+      setError(t('login.errors.emailRequired'));
       return;
     }
 
     if (!password) {
-      setError(t('login.errors.passwordRequired', 'Password is required'));
+      setError(t('login.errors.passwordRequired'));
       return;
     }
 
@@ -52,7 +53,7 @@ export default function LoginPage() {
       await login(email, password);
       navigate(from, { replace: true });
     } catch (err: any) {
-      setError(err.message || t('login.errors.loginFailed', 'Login failed. Please try again.'));
+      setError(err.message || t('login.errors.loginFailed'));
     }
   };
 
@@ -62,7 +63,7 @@ export default function LoginPage() {
       await loginWithGoogle();
       navigate(from, { replace: true });
     } catch (err: any) {
-      setError(err.message || t('login.errors.googleFailed', 'Google sign-in failed. Please try again.'));
+      setError(err.message || t('login.errors.googleFailed'));
     }
   };
 
@@ -80,13 +81,13 @@ export default function LoginPage() {
           onPress={() => setShowLanguageMenu(!showLanguageMenu)}
         >
           <Globe size={18} color={colors.textSecondary} />
-          <Text style={styles.languageButtonText}>{currentLanguage.flag} {currentLanguage.label}</Text>
+          <Text style={styles.languageButtonText}>{currentLanguage.flag} {currentLanguageLabel}</Text>
           <ChevronDown size={16} color={colors.textSecondary} />
         </Pressable>
 
         {showLanguageMenu && (
           <View style={styles.languageMenu}>
-            {LANGUAGES.map((lang) => (
+            {LANGUAGE_CODES.map((lang) => (
               <Pressable
                 key={lang.code}
                 style={[
@@ -102,7 +103,7 @@ export default function LoginPage() {
                     lang.code === i18n.language && styles.languageOptionTextActive,
                   ]}
                 >
-                  {lang.label}
+                  {t(`settings.languages.${lang.code}`)}
                 </Text>
               </Pressable>
             ))}
@@ -121,9 +122,9 @@ export default function LoginPage() {
 
         {/* Login Card */}
         <View style={styles.card}>
-          <Text style={styles.title}>{t('login.title', 'Welcome Back')}</Text>
+          <Text style={styles.title}>{t('login.title')}</Text>
           <Text style={styles.subtitle}>
-            {t('login.subtitle', 'Sign in to continue to Bayit+')}
+            {t('login.subtitle')}
           </Text>
 
           {/* Error Message */}
@@ -135,7 +136,7 @@ export default function LoginPage() {
 
           {/* Email Input */}
           <View style={styles.inputGroup}>
-            <Text style={[styles.label, isRTL && styles.labelRTL]}>{t('login.email', 'Email')}</Text>
+            <Text style={[styles.label, isRTL && styles.labelRTL]}>{t('login.email')}</Text>
             <View style={styles.inputWrapper}>
               <View style={[styles.inputIcon, isRTL && styles.inputIconRTL]}>
                 <Mail size={20} color={colors.textMuted} />
@@ -144,7 +145,7 @@ export default function LoginPage() {
                 style={[styles.input, isRTL && styles.inputRTL]}
                 value={email}
                 onChangeText={setEmail}
-                placeholder={t('login.emailPlaceholder', 'Enter your email')}
+                placeholder={t('login.emailPlaceholder')}
                 placeholderTextColor={colors.textMuted}
                 keyboardType="email-address"
                 autoCapitalize="none"
@@ -156,9 +157,9 @@ export default function LoginPage() {
           {/* Password Input */}
           <View style={styles.inputGroup}>
             <View style={[styles.labelRow, isRTL && styles.labelRowRTL]}>
-              <Text style={styles.label}>{t('login.password', 'Password')}</Text>
+              <Text style={styles.label}>{t('login.password')}</Text>
               <Link to="/forgot-password" style={{ textDecoration: 'none' }}>
-                <Text style={styles.forgotLink}>{t('login.forgotPassword', 'Forgot password?')}</Text>
+                <Text style={styles.forgotLink}>{t('login.forgotPassword')}</Text>
               </Link>
             </View>
             <View style={styles.inputWrapper}>
@@ -169,7 +170,7 @@ export default function LoginPage() {
                 style={[styles.input, styles.inputWithRightIcon, isRTL && styles.inputRTL]}
                 value={password}
                 onChangeText={setPassword}
-                placeholder={t('login.passwordPlaceholder', 'Enter your password')}
+                placeholder={t('login.passwordPlaceholder')}
                 placeholderTextColor={colors.textMuted}
                 secureTextEntry={!showPassword}
                 autoComplete="password"
@@ -200,14 +201,14 @@ export default function LoginPage() {
             {isLoading ? (
               <ActivityIndicator color="#000" size="small" />
             ) : (
-              <Text style={styles.loginButtonText}>{t('login.submit', 'Sign In')}</Text>
+              <Text style={styles.loginButtonText}>{t('login.submit')}</Text>
             )}
           </Pressable>
 
           {/* Divider */}
           <View style={styles.divider}>
             <View style={styles.dividerLine} />
-            <Text style={styles.dividerText}>{t('login.or', 'or')}</Text>
+            <Text style={styles.dividerText}>{t('login.or')}</Text>
             <View style={styles.dividerLine} />
           </View>
 
@@ -240,24 +241,24 @@ export default function LoginPage() {
               />
             </svg>
             <Text style={styles.googleButtonText}>
-              {t('login.continueWithGoogle', 'Continue with Google')}
+              {t('login.continueWithGoogle')}
             </Text>
           </Pressable>
 
           {/* Sign Up Link */}
           <View style={[styles.signUpContainer, isRTL && styles.signUpContainerRTL]}>
             <Text style={styles.signUpText}>
-              {t('login.noAccount', "Don't have an account?")}
+              {t('login.noAccount')}
             </Text>
             <Link to="/register" style={{ textDecoration: 'none' }}>
-              <Text style={styles.signUpLink}>{t('login.signUp', 'Sign Up')}</Text>
+              <Text style={styles.signUpLink}>{t('login.signUp')}</Text>
             </Link>
           </View>
         </View>
 
         {/* Footer */}
         <Text style={styles.footer}>
-          {t('login.termsNotice', 'By signing in, you agree to our Terms of Service and Privacy Policy')}
+          {t('login.termsNotice')}
         </Text>
       </View>
     </View>

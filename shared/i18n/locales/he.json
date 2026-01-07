@@ -184,7 +184,7 @@
     "liveTV": "שידור חי",
     "radio": "רדיו",
     "podcasts": "פודקאסטים",
-    "flows": "פלואים",
+    "flows": "רצפים",
     "judaism": "יהדות",
     "children": "ילדים",
     "profile": "פרופיל",
@@ -348,22 +348,22 @@
     "basic": "בסיסי"
   },
   "flows": {
-    "title": "פלואים",
+    "title": "רצפים",
     "subtitle": "חוויות תוכן מותאמות אישית לכל רגע",
     "activeNow": "פעיל עכשיו",
     "start": "התחל",
     "skipToday": "דלג היום",
-    "systemFlows": "פלואים מוכנים",
-    "customFlows": "הפלואים שלי",
+    "systemFlows": "רצפים מוכנים",
+    "customFlows": "הרצפים שלי",
     "system": "מערכת",
-    "noCustomFlows": "אין עדיין פלואים מותאמים",
-    "createHint": "צור את הפלו האישי הראשון שלך",
-    "createCustom": "צור פלו מותאם",
-    "createFlow": "צור פלו",
-    "editFlow": "ערוך פלו",
+    "noCustomFlows": "אין עדיין רצפים מותאמים",
+    "createHint": "צור את הרצף האישי הראשון שלך",
+    "createCustom": "צור רצף מותאם",
+    "createFlow": "צור רצף",
+    "editFlow": "ערוך רצף",
     "type": "סוג",
-    "systemFlow": "פלו מערכת",
-    "customFlow": "פלו מותאם",
+    "systemFlow": "רצף מערכת",
+    "customFlow": "רצף מותאם",
     "schedule": "לוח זמנים",
     "content": "תוכן",
     "items": "פריטים",
@@ -372,29 +372,29 @@
     "aiEnabled": "אוצרות AI",
     "shabbatTrigger": "ליל שבת",
     "manual": "ידני",
-    "flowName": "שם הפלו",
+    "flowName": "שם הרצף",
     "flowNamePlaceholder": "לדוגמה: שגרת הבוקר שלי",
     "description": "תיאור",
-    "descriptionPlaceholder": "למה מיועד הפלו הזה?",
+    "descriptionPlaceholder": "למה מיועד הרצף הזה?",
     "startTime": "שעת התחלה",
     "endTime": "שעת סיום",
     "actions": "פעולות",
     "details": "פרטים",
     "createFlowDesc": "עצב את חוויית התוכן המותאמת שלך",
-    "editFlowDesc": "עדכן את הגדרות הפלו והתוכן",
+    "editFlowDesc": "עדכן את הגדרות הרצף והתוכן",
     "basicInfo": "מידע בסיסי",
     "options": "אפשרויות",
     "autoPlayDesc": "נגן אוטומטית את הפריט הבא כשהנוכחי מסתיים",
     "aiEnabledDesc": "תן ל-AI לאצור תוכן לפי ההעדפות שלך",
-    "startFlow": "התחל פלו",
-    "deleteFlow": "מחק פלו",
+    "startFlow": "התחל רצף",
+    "deleteFlow": "מחק רצף",
     "custom": "מותאם אישית",
     "morning": "בוקר",
     "evening": "ערב",
     "shabbat": "שבת",
     "addContent": "הוסף תוכן",
     "contentPicker": {
-      "title": "הוסף תוכן לפלו",
+      "title": "הוסף תוכן לרצף",
       "tabs": {
         "live": "טלוויזיה חיה",
         "radio": "רדיו",
@@ -405,11 +405,11 @@
       "selected": "{{count}} נבחרו",
       "addSelected": "הוסף נבחרים",
       "noResults": "לא נמצא תוכן",
-      "alreadyAdded": "כבר בפלו",
+      "alreadyAdded": "כבר ברצף",
       "loadMore": "טען עוד"
     },
     "flowItems": {
-      "title": "תוכן הפלו",
+      "title": "תוכן הרצף",
       "empty": "אין עדיין תוכן. לחץ על הוסף תוכן כדי להתחיל.",
       "count": "{{count}} פריטים",
       "remove": "הסר",
@@ -456,20 +456,44 @@
       "shabbat": "ליל שבת",
       "holiday": "חג",
       "skipShabbat": "דלג בשבת",
-      "skipShabbatDesc": "אל תפעיל פלו זה בערב שבת או בשבת",
+      "skipShabbatDesc": "אל תפעיל רצף זה בערב שבת או בשבת",
       "shabbatOffset": "דקות לפני הדלקת נרות",
-      "shabbatOffsetDesc": "כמה דקות לפני השבת הפלו יתחיל?",
+      "shabbatOffsetDesc": "כמה דקות לפני השבת הרצף יתחיל?",
       "calculatedTime": "זמן מחושב",
       "thisWeek": "השבוע: {{day}} ב-{{time}}",
       "comingSoon": "טריגרים לחגים בקרוב",
       "startTime": "שעת התחלה",
       "endTime": "שעת סיום"
     },
+    "examples": {
+      "title": "רצפים לדוגמה",
+      "subtitle": "לחץ להשתמש כתבנית",
+      "morningRoutine": {
+        "name": "שגרת בוקר",
+        "desc": "התחל את היום עם חדשות, מזג אוויר ותוכן מעודד"
+      },
+      "eveningWindDown": {
+        "name": "רגיעה ערבית",
+        "desc": "נרגע עם מוזיקה רגועה ובידור קליל"
+      },
+      "shabbatPrep": {
+        "name": "הכנות לשבת",
+        "desc": "צור אווירה לשבת עם תוכן מיוחד"
+      },
+      "coffeeBreak": {
+        "name": "הפסקת קפה",
+        "desc": "בידור מהיר להפסקה קצרה"
+      },
+      "sunsetVibes": {
+        "name": "אווירת שקיעה",
+        "desc": "רגיעה בסוף השבוע עם מוזיקה ותוכן אווירתי"
+      }
+    },
     "aiBrief": "סיכום AI",
-    "aiBriefDesc": "קבל סיכום מותאם אישית שנוצר ע״י AI לפני תחילת הפלו",
+    "aiBriefDesc": "קבל סיכום מותאם אישית שנוצר ע״י AI לפני תחילת הרצף",
     "aiBriefEnabled": "סיכום AI מופעל",
     "validation": {
-      "nameRequired": "שם הפלו נדרש",
+      "nameRequired": "שם הרצף נדרש",
       "startTimeRequired": "שעת התחלה נדרשת לטריגר לפי זמן",
       "noDaysSelected": "בחר לפחות יום אחד",
       "invalidTime": "פורמט זמן לא תקין"
@@ -1185,5 +1209,27 @@
     "items": "פריטים",
     "empty": "אין מועדפים עדיין",
     "emptyHint": "הוסף פריטים למועדפים שלך"
+  },
+  "chatbot": {
+    "title": "עוזר בית+",
+    "openChat": "פתח צ'אט",
+    "welcome": "שלום! אני העוזר החכם של בית+. איך אוכל לעזור לך היום? לחץ על המיקרופון ודבר אליי, או הקלד הודעה.",
+    "placeholder": "או הקלד כאן...",
+    "recording": "מקליט... לחץ שוב לסיום",
+    "transcribing": "מתמלל...",
+    "stopRecording": "עצור הקלטה",
+    "startRecording": "התחל הקלטה קולית",
+    "recommendations": "הנה כמה המלצות:",
+    "errors": {
+      "micPermission": "לא הצלחתי לגשת למיקרופון. אנא בדוק את הרשאות המיקרופון בדפדפן.",
+      "transcribeFailed": "לא הצלחתי לתמלל את ההקלטה. אנא נסה שוב.",
+      "general": "מצטער, משהו השתבש. אנא נסה שוב."
+    },
+    "suggestions": {
+      "whatToWatch": "מה לראות היום?",
+      "israeliMovies": "סרטים ישראליים מומלצים",
+      "whatsOnNow": "מה משודר עכשיו?",
+      "popularPodcasts": "פודקאסטים פופולריים"
+    }
   }
 }

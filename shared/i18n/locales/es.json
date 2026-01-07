@@ -463,6 +463,30 @@
       "startTime": "Hora de Inicio",
       "endTime": "Hora de Fin"
     },
+    "examples": {
+      "title": "Flujos de Ejemplo",
+      "subtitle": "Toca para usar como plantilla",
+      "morningRoutine": {
+        "name": "Rutina Matutina",
+        "desc": "Comienza tu día con noticias, clima y contenido inspirador"
+      },
+      "eveningWindDown": {
+        "name": "Relajación Nocturna",
+        "desc": "Relájate con música tranquila y entretenimiento ligero"
+      },
+      "shabbatPrep": {
+        "name": "Preparación para Shabat",
+        "desc": "Crea el ambiente para Shabat con contenido especial"
+      },
+      "coffeeBreak": {
+        "name": "Pausa para Café",
+        "desc": "Entretenimiento rápido para un descanso corto"
+      },
+      "sunsetVibes": {
+        "name": "Vibraciones del Atardecer",
+        "desc": "Relajación de fin de semana con música y contenido ambiental"
+      }
+    },
     "aiBrief": "Resumen AI",
     "aiBriefDesc": "Recibe un resumen personalizado generado por AI antes de que comience el flujo",
     "aiBriefEnabled": "Resumen AI Activado",
@@ -1184,5 +1208,27 @@
     "items": "elementos",
     "empty": "Sin favoritos aún",
     "emptyHint": "Añade elementos a tus favoritos"
+  },
+  "chatbot": {
+    "title": "Asistente Bayit+",
+    "openChat": "Abrir chat",
+    "welcome": "¡Hola! Soy el asistente inteligente de Bayit+. ¿Cómo puedo ayudarte hoy? Haz clic en el micrófono y habla, o escribe un mensaje.",
+    "placeholder": "Escribe aquí...",
+    "recording": "Grabando... haz clic de nuevo para detener",
+    "transcribing": "Transcribiendo...",
+    "stopRecording": "Detener grabación",
+    "startRecording": "Iniciar grabación de voz",
+    "recommendations": "Aquí tienes algunas recomendaciones:",
+    "errors": {
+      "micPermission": "No se pudo acceder al micrófono. Por favor, verifica los permisos del micrófono en tu navegador.",
+      "transcribeFailed": "No se pudo transcribir la grabación. Por favor, inténtalo de nuevo.",
+      "general": "Lo siento, algo salió mal. Por favor, inténtalo de nuevo."
+    },
+    "suggestions": {
+      "whatToWatch": "¿Qué ver hoy?",
+      "israeliMovies": "Películas israelíes recomendadas",
+      "whatsOnNow": "¿Qué hay ahora?",
+      "popularPodcasts": "Podcasts populares"
+    }
   }
 }

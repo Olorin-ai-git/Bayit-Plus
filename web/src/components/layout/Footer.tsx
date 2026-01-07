@@ -20,17 +20,17 @@ import {
 import { colors, spacing, borderRadius } from '@bayit/shared/theme';
 import { GlassView, GlassCard, GlassInput, GlassButton, AnimatedLogo } from '@bayit/shared';
 
-const LANGUAGES = [
-  { code: 'en', label: 'English', flag: '🇺🇸' },
-  { code: 'he', label: 'עברית', flag: '🇮🇱' },
-  { code: 'es', label: 'Español', flag: '🇪🇸' },
+const LANGUAGE_CODES = [
+  { code: 'en', flag: '🇺🇸' },
+  { code: 'he', flag: '🇮🇱' },
+  { code: 'es', flag: '🇪🇸' },
 ];
 
-const SOCIAL_LINKS = [
-  { icon: Facebook, url: 'https://facebook.com/bayitplus', label: 'Facebook' },
-  { icon: Twitter, url: 'https://twitter.com/bayitplus', label: 'Twitter' },
-  { icon: Instagram, url: 'https://instagram.com/bayitplus', label: 'Instagram' },
-  { icon: Youtube, url: 'https://youtube.com/bayitplus', label: 'YouTube' },
+const SOCIAL_PLATFORMS = [
+  { icon: Facebook, url: 'https://facebook.com/bayitplus', key: 'facebook' },
+  { icon: Twitter, url: 'https://twitter.com/bayitplus', key: 'twitter' },
+  { icon: Instagram, url: 'https://instagram.com/bayitplus', key: 'instagram' },
+  { icon: Youtube, url: 'https://youtube.com/bayitplus', key: 'youtube' },
 ];
 
 const COLLAPSED_HEIGHT = 48;
@@ -52,7 +52,8 @@ export default function Footer() {
   const [showLanguageMenu, setShowLanguageMenu] = useState(false);
   const [subscribed, setSubscribed] = useState(false);
 
-  const currentLanguage = LANGUAGES.find(lang => lang.code === i18n.language) || LANGUAGES[0];
+  const currentLanguage = LANGUAGE_CODES.find(lang => lang.code === i18n.language) || LANGUAGE_CODES[0];
+  const currentLanguageLabel = t(`settings.languages.${i18n.language}`);
 
   const handleLanguageChange = (langCode: string) => {
     i18n.changeLanguage(langCode);
@@ -215,14 +216,15 @@ export default function Footer() {
 
               {/* Social Links */}
               <View style={styles.socialLinks}>
-                {SOCIAL_LINKS.map((social) => (
+                {SOCIAL_PLATFORMS.map((social) => (
                   <Pressable
-                    key={social.label}
+                    key={social.key}
                     onPress={() => window.open(social.url, '_blank')}
                     style={({ pressed }) => [
                       styles.socialButton,
                       pressed && styles.socialButtonPressed,
                     ]}
+                    aria-label={t(`footer.social.${social.key}`)}
                   >
                     <social.icon size={16} color={colors.text} />
                   </Pressable>
@@ -342,14 +344,14 @@ export default function Footer() {
                 >
                   <Globe size={14} color={colors.textSecondary} />
                   <Text style={styles.languageButtonText}>
-                    {currentLanguage.flag} {currentLanguage.label}
+                    {currentLanguage.flag} {currentLanguageLabel}
                   </Text>
                   <ChevronUp size={12} color={colors.textSecondary} />
                 </Pressable>
 
                 {showLanguageMenu && (
                   <View style={styles.languageMenu}>
-                    {LANGUAGES.map((lang) => (
+                    {LANGUAGE_CODES.map((lang) => (
                       <Pressable
                         key={lang.code}
                         style={[
@@ -365,7 +367,7 @@ export default function Footer() {
                             lang.code === i18n.language && styles.languageOptionTextActive,
                           ]}
                         >
-                          {lang.label}
+                          {t(`settings.languages.${lang.code}`)}
                         </Text>
                       </Pressable>
                     ))}
@@ -385,7 +387,7 @@ export default function Footer() {
                   >
                     <GlassView style={styles.appButtonContent} intensity="low">
                       <Smartphone size={14} color={colors.text} />
-                      <Text style={styles.appButtonStore}>App Store</Text>
+                      <Text style={styles.appButtonStore}>{t('footer.apps.appStore')}</Text>
                     </GlassView>
                   </Pressable>
                   <Pressable
@@ -397,7 +399,7 @@ export default function Footer() {
                   >
                     <GlassView style={styles.appButtonContent} intensity="low">
                       <Smartphone size={14} color={colors.text} />
-                      <Text style={styles.appButtonStore}>Google Play</Text>
+                      <Text style={styles.appButtonStore}>{t('footer.apps.googlePlay')}</Text>
                     </GlassView>
                   </Pressable>
                 </View>

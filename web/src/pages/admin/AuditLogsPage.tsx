@@ -143,12 +143,12 @@ export default function AuditLogsPage() {
     <ScrollView style={styles.container} contentContainerStyle={styles.contentContainer}>
       <View style={styles.header}>
         <View>
-          <Text style={styles.pageTitle}>{t('admin.titles.auditLogs', 'לוג פעילות')}</Text>
-          <Text style={styles.subtitle}>מעקב אחר כל הפעולות במערכת</Text>
+          <Text style={styles.pageTitle}>{t('admin.titles.auditLogs')}</Text>
+          <Text style={styles.subtitle}>{t('admin.auditLogs.subtitle')}</Text>
         </View>
         <View style={styles.headerActions}>
-          <GlassButton title="סנן" variant="secondary" icon={<Filter size={16} color={colors.text} />} onPress={() => setShowFilterModal(true)} />
-          <GlassButton title="ייצא" variant="secondary" icon={<Download size={16} color={colors.text} />} onPress={handleExport} />
+          <GlassButton title={t('admin.auditLogs.filter')} variant="secondary" icon={<Filter size={16} color={colors.text} />} onPress={() => setShowFilterModal(true)} />
+          <GlassButton title={t('admin.auditLogs.export')} variant="secondary" icon={<Download size={16} color={colors.text} />} onPress={handleExport} />
         </View>
       </View>
 
@@ -156,31 +156,31 @@ export default function AuditLogsPage() {
         {actionFilters.map((action) => (
           <Pressable key={action} onPress={() => setFilters((prev) => ({ ...prev, action }))} style={[styles.filterButton, filters.action === action && styles.filterButtonActive]}>
             <Text style={[styles.filterText, filters.action === action && styles.filterTextActive]}>
-              {action === '' ? 'הכל' : action}
+              {action === '' ? t('admin.auditLogs.all') : action}
             </Text>
           </Pressable>
         ))}
       </View>
 
-      <DataTable columns={columns} data={logs} loading={loading} pagination={pagination} onPageChange={handlePageChange} emptyMessage="לא נמצאו רשומות" searchable={false} />
+      <DataTable columns={columns} data={logs} loading={loading} pagination={pagination} onPageChange={handlePageChange} emptyMessage={t('admin.auditLogs.noRecords')} searchable={false} />
 
-      <GlassModal visible={showFilterModal} onClose={() => setShowFilterModal(false)} title="סינון מתקדם">
+      <GlassModal visible={showFilterModal} onClose={() => setShowFilterModal(false)} title={t('admin.auditLogs.advancedFiltering')}>
         <View style={styles.modalContent}>
           <View style={styles.formGroup}>
-            <Text style={styles.formLabel}>סוג פעולה</Text>
+            <Text style={styles.formLabel}>{t('admin.auditLogs.actionType')}</Text>
             <View style={styles.filterOptions}>
               {actionFilters.map((action) => (
                 <Pressable key={action} onPress={() => setFilters((prev) => ({ ...prev, action }))} style={[styles.filterOption, filters.action === action && styles.filterOptionActive]}>
                   <Text style={[styles.filterOptionText, filters.action === action && styles.filterOptionTextActive]}>
-                    {action === '' ? 'הכל' : action}
+                    {action === '' ? t('admin.auditLogs.all') : action}
                   </Text>
                 </Pressable>
               ))}
             </View>
           </View>
           <View style={styles.modalActions}>
-            <GlassButton title="נקה" variant="secondary" onPress={() => setFilters({ action: '', user_id: '' })} />
-            <GlassButton title="החל" variant="primary" onPress={() => setShowFilterModal(false)} />
+            <GlassButton title={t('admin.auditLogs.clear')} variant="secondary" onPress={() => setFilters({ action: '', user_id: '' })} />
+            <GlassButton title={t('admin.auditLogs.apply')} variant="primary" onPress={() => setShowFilterModal(false)} />
           </View>
         </View>
       </GlassModal>
