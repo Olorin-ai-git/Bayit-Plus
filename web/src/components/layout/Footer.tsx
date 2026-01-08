@@ -160,10 +160,10 @@ export default function Footer() {
         <View style={styles.splitterGrip}>
           <GripHorizontal size={20} color={colors.textMuted} />
         </View>
-        <View style={[styles.splitterContent, isRTL && styles.splitterContentRTL]}>
+        <View style={styles.splitterContent}>
           {!isExpanded && (
             <>
-              <View style={[styles.collapsedBrand, isRTL && styles.collapsedBrandRTL]}>
+              <View style={styles.collapsedBrand}>
                 <AnimatedLogo size="small" />
               </View>
               <Text style={styles.collapsedCopyright}>
@@ -203,11 +203,11 @@ export default function Footer() {
 
               {/* Contact Info */}
               <View style={styles.contactInfo}>
-                <View style={[styles.contactItem, isRTL && styles.contactItemRTL]}>
+                <View style={styles.contactItem}>
                   <Mail size={14} color={colors.textMuted} />
                   <Text style={styles.contactText}>support@bayitplus.com</Text>
                 </View>
-                <View style={[styles.contactItem, isRTL && styles.contactItemRTL]}>
+                <View style={styles.contactItem}>
                   <Phone size={14} color={colors.textMuted} />
                   <Text style={styles.contactText}>1-800-BAYIT-TV</Text>
                 </View>
@@ -310,7 +310,7 @@ export default function Footer() {
                     {t('footer.newsletter.success', 'Thanks for subscribing!')}
                   </Text>
                 ) : (
-                  <View style={[styles.newsletterForm, isRTL && styles.newsletterFormRTL]}>
+                  <View style={styles.newsletterForm}>
                     <View style={styles.inputWrapper}>
                       <GlassInput
                         value={email}
@@ -408,13 +408,13 @@ export default function Footer() {
 
           {/* Bottom Bar */}
           <View style={styles.bottomBar}>
-            <View style={[styles.bottomBarContent, isRTL && styles.bottomBarContentRTL]}>
+            <View style={styles.bottomBarContent}>
               <Text style={styles.copyrightText}>
                 {t('footer.copyright', '© {{year}} Bayit+. All rights reserved.', {
                   year: new Date().getFullYear(),
                 })}
               </Text>
-              <View style={[styles.bottomLinks, isRTL && styles.bottomLinksRTL]}>
+              <View style={styles.bottomLinks}>
                 <Link to="/sitemap" style={{ textDecoration: 'none' }}>
                   <Text style={styles.bottomLink}>{t('footer.sitemap', 'Sitemap')}</Text>
                 </Link>
@@ -474,16 +474,10 @@ const styles = StyleSheet.create({
     paddingHorizontal: spacing.lg,
     height: '100%',
   },
-  splitterContentRTL: {
-    flexDirection: 'row-reverse',
-  },
   collapsedBrand: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: spacing.sm,
-  },
-  collapsedBrandRTL: {
-    flexDirection: 'row-reverse',
   },
   collapsedTitle: {
     fontSize: 14,
@@ -544,9 +538,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: spacing.xs,
   },
-  contactItemRTL: {
-    flexDirection: 'row-reverse',
-  },
   contactText: {
     fontSize: 11,
     color: colors.textMuted,
@@ -605,7 +596,7 @@ const styles = StyleSheet.create({
   rightSection: {
     minWidth: 200,
     gap: spacing.sm,
-    alignItems: 'flex-end',
+    alignItems: 'flex-start', // document.dir handles visual direction
   },
   rightSectionMobile: {
     alignItems: 'center',
@@ -621,10 +612,7 @@ const styles = StyleSheet.create({
   newsletterForm: {
     flexDirection: 'row',
     gap: spacing.xs,
-    alignItems: 'flex-start',
-  },
-  newsletterFormRTL: {
-    flexDirection: 'row-reverse',
+    alignItems: 'center',
   },
   inputWrapper: {
     width: 160,
@@ -748,9 +736,6 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     gap: spacing.md,
   },
-  bottomBarContentRTL: {
-    flexDirection: 'row-reverse',
-  },
   copyrightText: {
     fontSize: 10,
     color: colors.textMuted,
@@ -759,9 +744,6 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: spacing.xs,
-  },
-  bottomLinksRTL: {
-    flexDirection: 'row-reverse',
   },
   bottomLink: {
     fontSize: 10,

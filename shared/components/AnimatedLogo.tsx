@@ -130,19 +130,7 @@ export const AnimatedLogo: React.FC<AnimatedLogoProps> = ({
           </>
         ) : (
           <>
-            {/* English/Spanish: +Bayit */}
-            <Animated.Text
-              style={[
-                styles.plusText,
-                {
-                  fontSize: currentSize.plus,
-                  opacity: textOpacity,
-                  transform: [{ translateX: plusTranslateX }],
-                },
-              ]}
-            >
-              +
-            </Animated.Text>
+            {/* English/Spanish: Bayit+ */}
             <Animated.Text
               style={[
                 styles.bayitText,
@@ -154,6 +142,18 @@ export const AnimatedLogo: React.FC<AnimatedLogoProps> = ({
               ]}
             >
               Bayit
+            </Animated.Text>
+            <Animated.Text
+              style={[
+                styles.plusText,
+                {
+                  fontSize: currentSize.plus,
+                  opacity: textOpacity,
+                  transform: [{ translateX: plusTranslateX }],
+                },
+              ]}
+            >
+              +
             </Animated.Text>
           </>
         )}

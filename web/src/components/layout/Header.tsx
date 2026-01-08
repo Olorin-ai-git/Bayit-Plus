@@ -82,11 +82,10 @@ export default function Header() {
     </Link>
   );
 
-  // Navigation component - reverse order for LTR languages
-  const navItems = isRTL ? navLinkKeys : [...navLinkKeys].reverse();
+  // Navigation component - document.dir handles visual direction
   const NavSection = !isMobile && (
     <View style={styles.nav}>
-      {navItems.map((link) => (
+      {navLinkKeys.map((link) => (
         <NavLink
           key={link.to}
           to={link.to}
@@ -180,19 +179,10 @@ export default function Header() {
     <GlassView style={styles.header}>
       <View style={styles.container}>
         <View style={styles.headerContent}>
-          {isRTL ? (
-            <>
-              {ActionsSection}
-              {NavSection}
-              {LogoSection}
-            </>
-          ) : (
-            <>
-              {LogoSection}
-              {NavSection}
-              {ActionsSection}
-            </>
-          )}
+          {/* document.dir handles visual direction - keep natural order */}
+          {LogoSection}
+          {NavSection}
+          {ActionsSection}
         </View>
 
         {/* Mobile Navigation */}
