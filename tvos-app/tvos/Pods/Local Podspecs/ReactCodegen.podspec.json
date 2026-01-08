@@ -43,7 +43,9 @@
   "script_phases": {
     "name": "Generate Specs",
     "execution_position": "before_compile",
-    "input_files": [],
+    "input_files": [
+      "${PODS_ROOT}/../../src/specs/NativeAudioCaptureModule.ts"
+    ],
     "show_env_vars_in_log": true,
     "output_files": [
       "${DERIVED_FILE_DIR}/react-codegen.log"

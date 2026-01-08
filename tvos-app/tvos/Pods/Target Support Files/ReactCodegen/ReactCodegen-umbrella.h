@@ -10,6 +10,8 @@
 #endif
 #endif
 
+#import "AudioCaptureModuleSpec/AudioCaptureModuleSpec.h"
+#import "AudioCaptureModuleSpecJSI.h"
 #import "FBReactNativeSpec/FBReactNativeSpec.h"
 #import "FBReactNativeSpecJSI.h"
 #import "RCTModulesConformingToProtocolsProvider.h"

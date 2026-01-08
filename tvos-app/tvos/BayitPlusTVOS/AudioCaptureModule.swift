@@ -1,9 +1,11 @@
 /**
- * AudioCaptureModule - Native tvOS Audio Capture for Constant Listening
+ * AudioCaptureModule - Native tvOS Audio Capture TurboModule
  *
  * This module provides native audio capture capabilities for the tvOS app,
  * enabling real-time audio level monitoring and voice activity detection
  * for the constant listening feature.
+ *
+ * Updated for React Native 0.76 New Architecture (TurboModule)
  */
 
 import Foundation
@@ -21,6 +23,7 @@ class AudioCaptureModule: RCTEventEmitter {
     private var tempAudioFileURL: URL?
     private var audioBuffer: [Float] = []
     private let bufferLock = NSLock()
+    private var hasListeners: Bool = false
 
     // Configuration
     private let sampleRate: Double = 16000.0
@@ -44,6 +47,14 @@ class AudioCaptureModule: RCTEventEmitter {
             "onSilenceDetected",
             "onError"
         ]
+    }
+
+    override func startObserving() {
+        hasListeners = true
+    }
+
+    override func stopObserving() {
+        hasListeners = false
     }
 
     // MARK: - Public Methods
@@ -154,6 +165,18 @@ class AudioCaptureModule: RCTEventEmitter {
         resolve(["listening": isListening])
     }
 
+    // MARK: - Event Emitter Methods for TurboModule
+
+    @objc
+    func addListener(_ eventName: String) {
+        // Required for TurboModule event support
+    }
+
+    @objc
+    func removeListeners(_ count: Double) {
+        // Required for TurboModule event support
+    }
+
     // MARK: - Private Methods
 
     private func setupAudioSession() throws {
@@ -251,11 +274,13 @@ class AudioCaptureModule: RCTEventEmitter {
         }
         bufferLock.unlock()
 
-        // Emit audio level event
-        sendEvent(withName: "onAudioLevel", body: [
-            "average": min(1.0, rms),
-            "peak": min(1.0, peak)
-        ])
+        // Emit audio level event only if we have listeners
+        if hasListeners {
+            sendEvent(withName: "onAudioLevel", body: [
+                "average": min(1.0, rms),
+                "peak": min(1.0, peak)
+            ])
+        }
     }
 
     private func exportAudioBuffer() throws -> String? {

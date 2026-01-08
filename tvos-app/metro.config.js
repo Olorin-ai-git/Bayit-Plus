@@ -54,6 +54,8 @@ function getExtraNodeModules() {
   modules['@bayit/shared/stores'] = path.resolve(sharedRoot, 'stores');
   modules['@bayit/shared/contexts'] = path.resolve(sharedRoot, 'contexts');
   modules['@bayit/shared/services'] = path.resolve(sharedRoot, 'services');
+  modules['@bayit/shared/chat'] = path.resolve(sharedRoot, 'components/chat');
+  modules['@bayit/shared/ui'] = path.resolve(sharedRoot, 'components/ui');
 
   // Shim Expo packages to React Native alternatives
   modules['expo-linear-gradient'] = path.resolve(shimsRoot, 'expo-linear-gradient.ts');
@@ -88,6 +90,38 @@ const config = {
         return { type: 'empty' };
       }
 
+      // Shim react-router-dom for React Native
+      if (moduleName === 'react-router-dom') {
+        return {
+          filePath: path.resolve(shimsRoot, 'react-router-dom.tsx'),
+          type: 'sourceFile',
+        };
+      }
+
+      // Shim lucide-react for React Native
+      if (moduleName === 'lucide-react') {
+        return {
+          filePath: path.resolve(shimsRoot, 'lucide-react.tsx'),
+          type: 'sourceFile',
+        };
+      }
+
+      // Shim Watch Party components (WebRTC not supported on tvOS)
+      if (moduleName === '../components/watchparty' || moduleName.includes('/watchparty')) {
+        return {
+          filePath: path.resolve(shimsRoot, 'watchparty.tsx'),
+          type: 'sourceFile',
+        };
+      }
+
+      // Shim Watch Party store (WebRTC not supported on tvOS)
+      if (moduleName === '../stores/watchPartyStore' || moduleName.includes('watchPartyStore')) {
+        return {
+          filePath: path.resolve(shimsRoot, 'watchPartyStore.ts'),
+          type: 'sourceFile',
+        };
+      }
+
       // Handle @bayit/shared/X subpath imports from tv-app
       const sharedSubpaths = {
         '@bayit/shared/hooks': path.resolve(sharedRoot, 'hooks'),
@@ -97,7 +131,21 @@ const config = {
         '@bayit/shared/services': path.resolve(sharedRoot, 'services'),
         '@bayit/shared/admin': path.resolve(sharedRoot, 'components/admin'),
         '@bayit/shared/theme': path.resolve(sharedRoot, 'theme'),
+        '@bayit/shared/chat': path.resolve(sharedRoot, 'components/chat'),
+        '@bayit/shared/ui': path.resolve(sharedRoot, 'components/ui'),
       };
+
+      // Handle single-file imports (not folders)
+      const singleFileImports = {
+        '@bayit/shared/ProfileDropdown': path.resolve(sharedRoot, 'components/ProfileDropdown.tsx'),
+      };
+
+      if (singleFileImports[moduleName]) {
+        return {
+          filePath: singleFileImports[moduleName],
+          type: 'sourceFile',
+        };
+      }
 
       if (sharedSubpaths[moduleName]) {
         return {

@@ -1,3 +1,6 @@
+# Disable new architecture BEFORE any React Native configuration
+ENV['RCT_NEW_ARCH_ENABLED'] = '0'
+
 # Resolve react_native_pods.rb with node to allow for hoisting
 require Pod::Executable.execute_command('node', ['-p',
   'require.resolve(
@@ -20,7 +23,9 @@ target 'BayitPlusTVOS' do
   use_react_native!(
     :path => config[:reactNativePath],
     # An absolute path to your application root.
-    :app_path => "#{Pod::Config.instance.installation_root}/.."
+    :app_path => "#{Pod::Config.instance.installation_root}/..",
+    # Explicitly disable new architecture
+    :new_arch_enabled => false
   )
 
   # Manually add pods that aren't auto-linked

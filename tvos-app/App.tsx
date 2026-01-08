@@ -1,13 +1,11 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { StatusBar, LogBox, View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import { StatusBar, LogBox, View, StyleSheet, Pressable, Text } from 'react-native';
 import { NavigationContainer, useNavigation } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
-import { I18nextProvider, useTranslation } from 'react-i18next';
+import { I18nextProvider } from 'react-i18next';
 import i18n, { loadSavedLanguage } from '@bayit/shared-i18n';
-import { useDirection } from '@bayit/shared-hooks';
-import { isTVOS } from './src/utils/platform';
 import {
   HomeScreen,
   PlayerScreen,
@@ -33,14 +31,95 @@ import ProfileFormScreen from './src/screens/ProfileFormScreen';
 import SubscribeScreen from './src/screens/SubscribeScreen';
 import { ProfileProvider } from '@bayit/shared-contexts';
 import { ModalProvider } from '@bayit/shared-contexts';
-import { GlassTopBar, GlassSidebar, DemoBanner } from '@bayit/shared';
-import { useChatbotStore, useAuthStore } from '@bayit/shared-stores';
+import { DemoBanner, SoundwaveVisualizer } from '@bayit/shared';
+import { Chatbot } from '@bayit/shared/chat';
+import { useChatbotStore, useAuthStore, useVoiceSettingsStore } from '@bayit/shared-stores';
+import { chatService } from '@bayit/shared-services';
+import { TVHeader } from './src/components/TVHeader';
+import { useTVConstantListening } from './src/hooks/useTVConstantListening';
 
 // Ignore specific warnings for TV
 LogBox.ignoreLogs([
   'ViewPropTypes will be removed',
   'ColorPropType will be removed',
+  'new NativeEventEmitter',
+  'Persistent storage is not supported',
+  '[TV Voice]',
 ]);
+
+// Hide LogBox in development for TV (the yellow bar covers the header)
+LogBox.ignoreAllLogs(true);
+
+// Full-width Soundwave Component
+const FullWidthSoundwave: React.FC<{
+  audioLevel: number;
+  isListening: boolean;
+  isProcessing: boolean;
+}> = ({ audioLevel, isListening, isProcessing }) => {
+  const [tick, setTick] = useState(0);
+
+  // Animate when listening
+  useEffect(() => {
+    if (isListening) {
+      const interval = setInterval(() => setTick(t => t + 1), 100);
+      return () => clearInterval(interval);
+    }
+  }, [isListening]);
+
+  const barCount = 100;
+  const baseHeight = 4;
+  const maxHeight = 28;
+
+  return (
+    <View style={soundwaveStyles.container}>
+      {Array.from({ length: barCount }).map((_, i) => {
+        const phase = (tick * 0.3) + (i / barCount) * Math.PI * 6;
+        const wave = Math.sin(phase) * 0.5 + 0.5;
+
+        let height = baseHeight;
+        if (isProcessing && audioLevel > 0.01) {
+          // Active speaking - react to audio level
+          height = baseHeight + (maxHeight - baseHeight) * audioLevel * 3 * (0.5 + wave * 0.5);
+        } else if (isListening) {
+          // Idle listening - gentle wave
+          height = baseHeight + 6 * wave;
+        }
+
+        return (
+          <View
+            key={i}
+            style={[
+              soundwaveStyles.bar,
+              {
+                height: Math.max(baseHeight, Math.min(maxHeight, height)),
+                opacity: isListening ? 0.9 : 0.25,
+              }
+            ]}
+          />
+        );
+      })}
+    </View>
+  );
+};
+
+const soundwaveStyles = StyleSheet.create({
+  container: {
+    height: 36,
+    width: '100%',
+    backgroundColor: 'rgba(0, 12, 24, 0.95)',
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderBottomWidth: 1,
+    borderBottomColor: 'rgba(0, 217, 255, 0.15)',
+  },
+  bar: {
+    width: 3,
+    marginHorizontal: 2,
+    backgroundColor: '#00d9ff',
+    borderRadius: 2,
+  },
+});
 
 export type RootStackParamList = {
   Login: undefined;
@@ -78,80 +157,11 @@ export type MainTabParamList = {
 const Stack = createStackNavigator<RootStackParamList>();
 const Tab = createBottomTabNavigator<MainTabParamList>();
 
-// Custom Tab Bar for Apple TV
-const TVTabBar: React.FC<any> = ({ state, descriptors, navigation }) => {
-  const { t, i18n } = useTranslation();
-  const currentLang = i18n.language;
-  const isRTL = currentLang === 'he' || currentLang === 'ar';
-
-  const tabLabels: Record<string, string> = {
-    Home: t('nav.home'),
-    VOD: t('nav.vod'),
-    LiveTV: t('nav.liveTV'),
-    Radio: t('nav.radio'),
-    Podcasts: t('nav.podcasts'),
-    Profile: t('nav.profile'),
-  };
-
-  return (
-    <View style={[tabStyles.container, { flexDirection: isRTL ? 'row' : 'row-reverse' }]}>
-      {state.routes.map((route: any, index: number) => {
-        const isFocused = state.index === index;
-        const label = tabLabels[route.name] || route.name;
-
-        const icons: Record<string, string> = {
-          Home: '🏠',
-          VOD: '🎬',
-          LiveTV: '📺',
-          Radio: '📻',
-          Podcasts: '🎙️',
-          Profile: '👤',
-        };
-        const icon = icons[route.name as string] || '•';
-
-        const onPress = () => {
-          const event = navigation.emit({
-            type: 'tabPress',
-            target: route.key,
-            canPreventDefault: true,
-          });
-
-          if (!isFocused && !event.defaultPrevented) {
-            navigation.navigate(route.name);
-          }
-        };
-
-        return (
-          <TouchableOpacity
-            key={route.key}
-            onPress={onPress}
-            style={[
-              tabStyles.tab,
-              isFocused && tabStyles.tabFocused,
-            ]}
-            activeOpacity={0.7}
-          >
-            <Text style={tabStyles.icon}>{icon}</Text>
-            <Text
-              style={[
-                tabStyles.label,
-                isFocused && tabStyles.labelFocused,
-              ]}
-            >
-              {label}
-            </Text>
-          </TouchableOpacity>
-        );
-      })}
-    </View>
-  );
-};
-
-// Main Tab Navigator
+// Main Tab Navigator (tabs hidden - using header navigation)
 function MainTabs() {
   return (
     <Tab.Navigator
-      tabBar={(props) => isTVOS ? null : <TVTabBar {...props} />}
+      tabBar={() => null}
       screenOptions={{
         headerShown: false,
       }}
@@ -166,99 +176,140 @@ function MainTabs() {
   );
 }
 
-const tabStyles = StyleSheet.create({
-  container: {
-    flexDirection: 'row',
-    backgroundColor: '#0a0a14',
-    borderTopWidth: 1,
-    borderTopColor: '#1a1a2e',
-    paddingVertical: 8,
-    paddingHorizontal: 48,
-  },
-  tab: {
-    flex: 1,
-    alignItems: 'center',
-    paddingVertical: 12,
-    borderRadius: 12,
-  },
-  tabFocused: {
-    backgroundColor: 'rgba(0, 217, 255, 0.1)',
-  },
-  icon: {
-    fontSize: 28,
-    marginBottom: 4,
-  },
-  label: {
-    fontSize: 16,
-    color: '#666666',
-    textAlign: 'center',
-  },
-  labelFocused: {
-    color: '#00d9ff',
-    fontWeight: 'bold',
-  },
-});
-
-// Layout constants
-const SIDEBAR_COLLAPSED_WIDTH = 80;
-const SIDEBAR_EXPANDED_WIDTH = 280;
-
-// App Content with Navigation
+// App Content with Navigation (matching web app layout)
 const AppContent: React.FC = () => {
-  const [sidebarExpanded, setSidebarExpanded] = useState(false);
-  const { isRTL } = useDirection();
-  const sidebarWidth = sidebarExpanded ? SIDEBAR_EXPANDED_WIDTH : SIDEBAR_COLLAPSED_WIDTH;
+  const navigation = useNavigation<any>();
+  const [currentRoute, setCurrentRoute] = useState('Home');
+  const [chatbotVisible, setChatbotVisible] = useState(false);
+  const { sendMessage, toggleOpen } = useChatbotStore();
+  const { preferences } = useVoiceSettingsStore();
+
+  // Voice control - constant listening for TV
+  const handleVoiceTranscript = useCallback((text: string) => {
+    if (text) {
+      console.log('[TV Voice] Transcript:', text);
+      toggleOpen();
+      sendMessage(text);
+    }
+  }, [sendMessage, toggleOpen]);
+
+  // Use tvOS-specific TurboModule for audio capture
+  const {
+    isListening,
+    isProcessing,
+    isSendingToServer,
+    audioLevel,
+  } = useTVConstantListening({
+    enabled: preferences?.constant_listening_enabled ?? true,
+    onTranscript: handleVoiceTranscript,
+    onError: (error) => console.warn('[TV Voice]', error.message),
+    silenceThresholdMs: preferences?.silence_threshold_ms || 2500,
+    vadSensitivity: preferences?.vad_sensitivity || 'medium',
+    transcribeAudio: chatService.transcribeAudio,
+  });
+
+  // Track navigation state changes
+  useEffect(() => {
+    const unsubscribe = navigation.addListener('state', (e: any) => {
+      const state = e.data?.state;
+      if (state?.routes) {
+        const route = state.routes[state.index];
+        // Handle nested navigators (e.g., Main tabs)
+        if (route.state?.routes) {
+          setCurrentRoute(route.state.routes[route.state.index]?.name || 'Home');
+        } else {
+          setCurrentRoute(route.name);
+        }
+      }
+    });
+    return unsubscribe;
+  }, [navigation]);
+
+  // Handle navigation from header tabs
+  const handleNavigate = useCallback((route: string) => {
+    // Main tab screens navigate within Main
+    const mainTabScreens = ['Home', 'LiveTV', 'VOD', 'Radio', 'Podcasts', 'Profile'];
+    if (mainTabScreens.includes(route)) {
+      navigation.navigate('Main', { screen: route });
+    } else {
+      navigation.navigate(route);
+    }
+    setCurrentRoute(route);
+  }, [navigation]);
+
+  // Open chatbot
+  const handleChatbotOpen = useCallback(() => {
+    setChatbotVisible(true);
+  }, []);
 
   return (
-    <View style={appStyles.container}>
+    <View style={styles.container}>
       <StatusBar hidden />
 
       {/* Demo Mode Banner */}
       <DemoBanner />
 
-      {/* Glass Top Bar with Soundwave Visualizer */}
-      <GlassTopBar
-        onMenuPress={() => setSidebarExpanded(!sidebarExpanded)}
-        sidebarExpanded={sidebarExpanded}
+      {/* TV Header with Horizontal Navigation (matching web layout) */}
+      <TVHeader
+        currentRoute={currentRoute}
+        onNavigate={handleNavigate}
+        onChatbotOpen={handleChatbotOpen}
       />
 
-      {/* Main Content Area */}
-      <View style={appStyles.mainArea}>
-        {/* Glass Sidebar */}
-        <GlassSidebar
-          isExpanded={sidebarExpanded}
-          onToggle={() => setSidebarExpanded(!sidebarExpanded)}
-        />
+      {/* Full-width Soundwave Indicator Bar */}
+      <FullWidthSoundwave
+        audioLevel={audioLevel?.average || 0}
+        isListening={isListening}
+        isProcessing={isProcessing}
+      />
 
-        {/* Content - with padding for sidebar based on direction */}
-        <View style={[appStyles.content, isRTL ? { paddingRight: sidebarWidth } : { paddingLeft: sidebarWidth }]}>
-          <Stack.Navigator
-            screenOptions={{
-              headerShown: false,
-              cardStyle: { backgroundColor: '#0d0d1a' },
-            }}
-            initialRouteName="Main"
-          >
-            <Stack.Screen name="Login" component={LoginScreen} />
-            <Stack.Screen name="Register" component={RegisterScreen} />
-            <Stack.Screen name="ProfileSelection" component={ProfileSelectionScreen} />
-            <Stack.Screen name="CreateProfile" component={ProfileFormScreen} />
-            <Stack.Screen name="EditProfile" component={ProfileFormScreen} />
-            <Stack.Screen name="Main" component={MainTabs} />
-            <Stack.Screen name="MorningRitual" component={MorningRitualScreen} />
-            <Stack.Screen name="Judaism" component={JudaismScreen} />
-            <Stack.Screen name="Children" component={ChildrenScreen} />
-            <Stack.Screen name="Flows" component={FlowsScreen} />
-            <Stack.Screen name="Player" component={PlayerScreen} />
-            <Stack.Screen name="Search" component={SearchScreen} />
-            <Stack.Screen name="Subscribe" component={SubscribeScreen} />
-            <Stack.Screen name="Admin" component={AdminNavigator} />
-            <Stack.Screen name="Favorites" component={FavoritesScreen} />
-            <Stack.Screen name="Downloads" component={DownloadsScreen} />
-            <Stack.Screen name="Watchlist" component={WatchlistScreen} />
-          </Stack.Navigator>
-        </View>
+      {/* Main Content Area - Full Width (no sidebar) */}
+      <View style={styles.content}>
+        <Stack.Navigator
+          screenOptions={{
+            headerShown: false,
+            cardStyle: { backgroundColor: '#0d0d1a' },
+          }}
+          initialRouteName="Main"
+        >
+          <Stack.Screen name="Login" component={LoginScreen} />
+          <Stack.Screen name="Register" component={RegisterScreen} />
+          <Stack.Screen name="ProfileSelection" component={ProfileSelectionScreen} />
+          <Stack.Screen name="CreateProfile" component={ProfileFormScreen} />
+          <Stack.Screen name="EditProfile" component={ProfileFormScreen} />
+          <Stack.Screen name="Main" component={MainTabs} />
+          <Stack.Screen name="MorningRitual" component={MorningRitualScreen} />
+          <Stack.Screen name="Judaism" component={JudaismScreen} />
+          <Stack.Screen name="Children" component={ChildrenScreen} />
+          <Stack.Screen name="Flows" component={FlowsScreen} />
+          <Stack.Screen name="Player" component={PlayerScreen} />
+          <Stack.Screen name="Search" component={SearchScreen} />
+          <Stack.Screen name="Subscribe" component={SubscribeScreen} />
+          <Stack.Screen name="Admin" component={AdminNavigator} />
+          <Stack.Screen name="Favorites" component={FavoritesScreen} />
+          <Stack.Screen name="Downloads" component={DownloadsScreen} />
+          <Stack.Screen name="Watchlist" component={WatchlistScreen} />
+        </Stack.Navigator>
       </View>
+
+      {/* Floating Chatbot Button */}
+      {!chatbotVisible && (
+        <Pressable
+          onPress={handleChatbotOpen}
+          style={({ focused }) => [
+            styles.chatFab,
+            focused && styles.chatFabFocused,
+          ]}
+        >
+          <Text style={styles.chatFabIcon}>✨</Text>
+        </Pressable>
+      )}
+
+      {/* Chatbot Modal */}
+      <Chatbot
+        visible={chatbotVisible}
+        onClose={() => setChatbotVisible(false)}
+      />
     </View>
   );
 };
@@ -291,10 +342,9 @@ const AppContentWithHandlers: React.FC = () => {
       navigation.navigate('Flows', { flowId: payload.flowId, autoStart: true });
     });
 
-    // Add to watchlist (would need API integration)
+    // Add to watchlist
     registerActionHandler('add_to_watchlist', (payload: { contentId: string; contentType: string }) => {
       console.log('[Chatbot] Add to watchlist:', payload);
-      // TODO: Integrate with watchlist API
     });
 
     // Navigate to subscribe screen
@@ -353,17 +403,38 @@ function App(): React.JSX.Element {
   );
 }
 
-const appStyles = StyleSheet.create({
+const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#0d0d1a',
   },
-  mainArea: {
-    flex: 1,
-    flexDirection: 'row',
-  },
   content: {
     flex: 1,
+  },
+  chatFab: {
+    position: 'absolute',
+    bottom: 40,
+    right: 40,
+    width: 70,
+    height: 70,
+    borderRadius: 35,
+    backgroundColor: 'rgba(0, 217, 255, 0.2)',
+    borderWidth: 2,
+    borderColor: 'rgba(0, 217, 255, 0.5)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    shadowColor: '#00d9ff',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+  },
+  chatFabFocused: {
+    backgroundColor: 'rgba(0, 217, 255, 0.4)',
+    borderColor: '#00d9ff',
+    transform: [{ scale: 1.1 }],
+  },
+  chatFabIcon: {
+    fontSize: 32,
   },
 });
 

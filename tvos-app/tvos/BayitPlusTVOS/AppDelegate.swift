@@ -25,4 +25,14 @@ class AppDelegate: RCTAppDelegate {
     return Bundle.main.url(forResource: "main", withExtension: "jsbundle")
 #endif
   }
+
+  // Disable new architecture to use classic bridge for native modules
+  override func newArchEnabled() -> Bool {
+    return false
+  }
+
+  // Disable bridgeless mode to use classic bridge
+  override func bridgelessEnabled() -> Bool {
+    return false
+  }
 }
