@@ -5,6 +5,10 @@ import Footer from './Footer';
 import Chatbot from '../chat/Chatbot';
 import { colors } from '@bayit/shared/theme';
 
+// Check if this is a TV build (set by webpack)
+declare const __TV__: boolean;
+const IS_TV_BUILD = typeof __TV__ !== 'undefined' && __TV__;
+
 export default function Layout() {
   return (
     <View style={styles.container}>
@@ -19,8 +23,8 @@ export default function Layout() {
       <View style={styles.main}>
         <Outlet />
       </View>
-      <Footer />
-      <Chatbot />
+      {!IS_TV_BUILD && <Footer />}
+      {!IS_TV_BUILD && <Chatbot />}
     </View>
   );
 }

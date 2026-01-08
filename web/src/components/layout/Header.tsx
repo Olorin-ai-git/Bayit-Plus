@@ -1,18 +1,19 @@
 import { View, Text, StyleSheet, Pressable, useWindowDimensions } from 'react-native';
 import { Link, NavLink, useNavigate } from 'react-router-dom';
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { Search, Menu, X, Shield } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useAuthStore } from '@/stores/authStore';
 import { useChatbotStore } from '@/stores/chatbotStore';
-import { useVoiceSettingsStore } from '@/stores/voiceSettingsStore';
 import { chatService } from '@/services/api';
-import { VoiceSearchButton, LanguageSelector, AnimatedLogo, SoundwaveVisualizer } from '@bayit/shared';
-import { useConstantListening } from '@bayit/shared-hooks';
+import { VoiceSearchButton, LanguageSelector, AnimatedLogo } from '@bayit/shared';
 import { ProfileDropdown } from '@bayit/shared/ProfileDropdown';
 import { colors, spacing } from '@bayit/shared/theme';
 import { GlassView } from '@bayit/shared/ui';
-import { isWebOS } from '@/utils/spatialNavigation';
+
+// Check if this is a TV build (set by webpack)
+declare const __TV__: boolean;
+const IS_TV_BUILD = typeof __TV__ !== 'undefined' && __TV__;
 
 const navLinkKeys = [
   { to: '/', key: 'nav.home' },
@@ -30,38 +31,14 @@ export default function Header() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const { user, isAuthenticated, isAdmin, logout } = useAuthStore();
   const { sendMessage } = useChatbotStore();
-  const { preferences } = useVoiceSettingsStore();
   const navigate = useNavigate();
   const { width } = useWindowDimensions();
-  const isMobile = width < 768;
-  const isTV = isWebOS();
+  const isMobile = width < 768 && !IS_TV_BUILD;
   const isRTL = i18n.language === 'he' || i18n.language === 'ar';
-  const showAdmin = isAuthenticated && isAdmin();
-
-  // Constant listening for TV mode (always-on voice input)
-  const {
-    isListening,
-    isProcessing,
-    isSendingToServer,
-    audioLevel,
-  } = useConstantListening({
-    enabled: isTV && preferences.constant_listening_enabled,
-    onTranscript: (text) => {
-      if (text) {
-        sendMessage(text);
-      }
-    },
-    onError: (error) => {
-      console.error('Voice listening error:', error);
-    },
-    silenceThresholdMs: preferences.silence_threshold_ms,
-    vadSensitivity: preferences.vad_sensitivity,
-    transcribeAudio: chatService.transcribeAudio,
-  });
+  const showAdmin = isAuthenticated && isAdmin() && !IS_TV_BUILD; // Hide admin on TV
 
   const handleVoiceTranscribed = (text: string) => {
     if (text) {
-      // Send voice input to chatbot instead of search
       sendMessage(text);
     }
   };
@@ -134,25 +111,12 @@ export default function Header() {
 
       <Link to="/search" style={{ textDecoration: 'none' }}>
         <View style={styles.iconButton}>
-          <Search size={20} color={colors.text} />
+          <Search size={IS_TV_BUILD ? 32 : 20} color={colors.text} />
         </View>
       </Link>
 
-      {/* Constant listening soundwave for TV mode */}
-      {isTV && isListening && (
-        <View style={styles.soundwaveContainer}>
-          <SoundwaveVisualizer
-            audioLevel={audioLevel}
-            isListening={isListening}
-            isProcessing={isProcessing}
-            isSendingToServer={isSendingToServer}
-            compact={true}
-          />
-        </View>
-      )}
-
-      {/* Regular voice search button for non-TV */}
-      {!isTV && (
+      {/* Voice search button - hide on TV */}
+      {!IS_TV_BUILD && (
         <VoiceSearchButton
           onResult={handleVoiceTranscribed}
           transcribeAudio={chatService.transcribeAudio}
@@ -237,32 +201,32 @@ const styles = StyleSheet.create({
   },
   container: {
     width: '100%',
-    maxWidth: 1280,
+    maxWidth: IS_TV_BUILD ? '100%' : 1280,
     marginHorizontal: 'auto',
-    paddingHorizontal: spacing.md,
+    paddingHorizontal: IS_TV_BUILD ? spacing.xl : spacing.md,
   },
   headerContent: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
     width: '100%',
-    height: 64,
+    height: IS_TV_BUILD ? 100 : 64,
   },
   nav: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: spacing.xs,
+    gap: IS_TV_BUILD ? spacing.md : spacing.xs,
   },
   navLink: {
-    paddingHorizontal: spacing.md,
-    paddingVertical: spacing.sm,
+    paddingHorizontal: IS_TV_BUILD ? spacing.lg : spacing.md,
+    paddingVertical: IS_TV_BUILD ? spacing.md : spacing.sm,
     borderRadius: 8,
   },
   navLinkActive: {
     backgroundColor: colors.primary,
   },
   navLinkText: {
-    fontSize: 14,
+    fontSize: IS_TV_BUILD ? 24 : 14,
     fontWeight: '500',
     color: colors.textSecondary,
   },
@@ -272,24 +236,24 @@ const styles = StyleSheet.create({
   actions: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: spacing.sm,
+    gap: IS_TV_BUILD ? spacing.md : spacing.sm,
   },
   iconButton: {
-    width: 40,
-    height: 40,
+    width: IS_TV_BUILD ? 60 : 40,
+    height: IS_TV_BUILD ? 60 : 40,
     borderRadius: 8,
     backgroundColor: 'rgba(255, 255, 255, 0.05)',
     justifyContent: 'center',
     alignItems: 'center',
   },
   loginButton: {
-    paddingHorizontal: spacing.md,
-    paddingVertical: spacing.sm,
+    paddingHorizontal: IS_TV_BUILD ? spacing.lg : spacing.md,
+    paddingVertical: IS_TV_BUILD ? spacing.md : spacing.sm,
     borderRadius: 8,
     backgroundColor: colors.primary,
   },
   loginButtonText: {
-    fontSize: 14,
+    fontSize: IS_TV_BUILD ? 20 : 14,
     fontWeight: '500',
     color: colors.text,
   },
@@ -330,15 +294,5 @@ const styles = StyleSheet.create({
   },
   adminLinkText: {
     color: '#ef4444',
-  },
-  soundwaveContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingHorizontal: spacing.sm,
-    height: 40,
-    borderRadius: 8,
-    backgroundColor: 'rgba(0, 217, 255, 0.1)',
-    borderWidth: 1,
-    borderColor: 'rgba(0, 217, 255, 0.2)',
   },
 });

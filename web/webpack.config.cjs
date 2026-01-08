@@ -11,19 +11,25 @@ module.exports = (env, argv) => {
   const isProduction = argv.mode === 'production';
   // Demo mode is controlled by VITE_APP_MODE env var, not webpack mode
   const isDemoMode = process.env.VITE_APP_MODE === 'demo';
-  // webOS target for LG TV builds
+  // TV platform targets
   const isWebOS = process.env.TARGET === 'webos';
+  const isTizen = process.env.TARGET === 'tizen';
+  const isTV = isWebOS || isTizen;
+
+  // Determine output path based on target
+  const getOutputPath = () => {
+    if (isWebOS) return path.resolve(__dirname, '../webos/dist');
+    if (isTizen) return path.resolve(__dirname, '../tizen/dist');
+    return path.resolve(__dirname, 'dist');
+  };
 
   return {
     entry: path.resolve(__dirname, 'index.web.js'),
     output: {
-      // Output to webos/dist for TV builds, web/dist for regular web
-      path: isWebOS
-        ? path.resolve(__dirname, '../webos/dist')
-        : path.resolve(__dirname, 'dist'),
+      path: getOutputPath(),
       filename: isProduction ? 'bundle.[contenthash].js' : 'bundle.js',
-      // Use relative paths for webOS (packaged app), absolute for web
-      publicPath: isWebOS ? './' : '/',
+      // Use relative paths for TV apps (packaged), absolute for web
+      publicPath: isTV ? './' : '/',
       clean: true,
     },
     // Set the context to web folder
@@ -160,8 +166,10 @@ module.exports = (env, argv) => {
       new webpack.DefinePlugin({
         // Use isDemoMode to control demo data, not just webpack mode
         __DEV__: isDemoMode || !isProduction,
-        // webOS TV build flag for conditional code
+        // TV platform build flags for conditional code
         __WEBOS__: isWebOS,
+        __TIZEN__: isTizen,
+        __TV__: isTV,
         'process.env.NODE_ENV': JSON.stringify(isProduction ? 'production' : 'development'),
         'process.env.VITE_APP_MODE': JSON.stringify(process.env.VITE_APP_MODE || 'demo'),
         'process.env.TARGET': JSON.stringify(process.env.TARGET || 'web'),

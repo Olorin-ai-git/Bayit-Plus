@@ -16,7 +16,12 @@
     "package:webos": "npm run build:webos && cd ../webos && ./package-webos.sh",
     "deploy:webos": "npm run package:webos && ares-install -d lg-tv ../webos/*.ipk",
     "launch:webos": "ares-launch -d lg-tv com.bayitplus.app",
-    "debug:webos": "ares-inspect -d lg-tv com.bayitplus.app"
+    "debug:webos": "ares-inspect -d lg-tv com.bayitplus.app",
+    "build:tizen": "TARGET=tizen webpack --mode production --config webpack.config.cjs",
+    "package:tizen": "npm run build:tizen && cd ../tizen && ./package-tizen.sh",
+    "deploy:tizen": "npm run package:tizen && ~/tizen-studio/tools/ide/bin/tizen install -n ../tizen/Bayit+.wgt -s 192.168.1.165:26101",
+    "launch:tizen": "~/tizen-studio/tools/ide/bin/tizen run -p AprZAARz4r.BayitPlus -s 192.168.1.165:26101",
+    "build:tv": "npm run build:webos && npm run build:tizen"
   },
   "dependencies": {
     "@noriginmedia/norigin-spatial-navigation": "^2.3.0",

@@ -8,6 +8,10 @@ import { colors, spacing, borderRadius } from '@bayit/shared/theme';
 import { AnimatedLogo } from '@bayit/shared';
 import { useDirection } from '@/hooks/useDirection';
 
+// Check if this is a TV build (set by webpack)
+declare const __TV__: boolean;
+const IS_TV_BUILD = typeof __TV__ !== 'undefined' && __TV__;
+
 const LANGUAGE_CODES = [
   { code: 'en', flag: '🇺🇸' },
   { code: 'he', flag: '🇮🇱' },
@@ -421,13 +425,13 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   inputGroup: {
-    marginBottom: spacing.lg,
+    marginBottom: IS_TV_BUILD ? spacing.xl : spacing.lg,
   },
   label: {
-    fontSize: 14,
+    fontSize: IS_TV_BUILD ? 20 : 14,
     fontWeight: '500',
     color: colors.textSecondary,
-    marginBottom: spacing.xs,
+    marginBottom: IS_TV_BUILD ? spacing.sm : spacing.xs,
   },
   labelRTL: {
     textAlign: 'right',
@@ -463,13 +467,14 @@ const styles = StyleSheet.create({
   },
   input: {
     backgroundColor: 'rgba(255, 255, 255, 0.05)',
-    borderWidth: 1,
+    borderWidth: IS_TV_BUILD ? 2 : 1,
     borderColor: 'rgba(255, 255, 255, 0.1)',
     borderRadius: borderRadius.lg,
-    paddingVertical: spacing.md,
-    paddingLeft: 48,
-    paddingRight: spacing.md,
-    fontSize: 16,
+    paddingVertical: IS_TV_BUILD ? spacing.lg : spacing.md,
+    paddingLeft: IS_TV_BUILD ? 56 : 48,
+    paddingRight: IS_TV_BUILD ? spacing.lg : spacing.md,
+    fontSize: IS_TV_BUILD ? 22 : 16,
+    minHeight: IS_TV_BUILD ? 60 : 48,
     color: colors.text,
     // @ts-ignore - web only
     outlineStyle: 'none',
@@ -564,23 +569,26 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'center',
-    gap: spacing.xs,
-    marginTop: spacing.xl,
-    paddingTop: spacing.lg,
+    gap: IS_TV_BUILD ? spacing.sm : spacing.xs,
+    marginTop: IS_TV_BUILD ? spacing.xl + 8 : spacing.xl,
+    paddingTop: IS_TV_BUILD ? spacing.xl : spacing.lg,
     borderTopWidth: 1,
     borderTopColor: 'rgba(255, 255, 255, 0.08)',
+    flexWrap: 'nowrap',
   },
   signUpContainerRTL: {
     flexDirection: 'row-reverse',
   },
   signUpText: {
-    fontSize: 14,
+    fontSize: IS_TV_BUILD ? 20 : 14,
     color: colors.textSecondary,
+    lineHeight: IS_TV_BUILD ? 28 : 20,
   },
   signUpLink: {
-    fontSize: 14,
+    fontSize: IS_TV_BUILD ? 20 : 14,
     color: colors.primary,
     fontWeight: '600',
+    lineHeight: IS_TV_BUILD ? 28 : 20,
   },
   footer: {
     fontSize: 12,

@@ -8,6 +8,10 @@ import {
 import { FocusableCard } from './FocusableCard';
 import { useDirection } from '../hooks/useDirection';
 
+// Check if this is a TV build (set by webpack)
+declare const __TV__: boolean;
+const IS_TV_BUILD = typeof __TV__ !== 'undefined' && __TV__;
+
 interface ContentItem {
   id: string;
   title: string;
@@ -54,13 +58,13 @@ export const ContentRow: React.FC<ContentRowProps> = ({
 
 const styles = StyleSheet.create({
   container: {
-    marginBottom: 40,
+    marginBottom: IS_TV_BUILD ? 60 : 40,
   },
   title: {
-    fontSize: 28,
+    fontSize: IS_TV_BUILD ? 36 : 28,
     fontWeight: 'bold',
     color: '#ffffff',
-    marginBottom: 16,
+    marginBottom: IS_TV_BUILD ? 24 : 16,
   },
   scrollContainer: {
   },

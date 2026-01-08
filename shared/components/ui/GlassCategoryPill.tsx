@@ -10,6 +10,10 @@ import {
 } from 'react-native';
 import { colors, spacing, borderRadius } from '../theme';
 
+// Check if this is a TV build (set by webpack)
+declare const __TV__: boolean;
+const IS_TV_BUILD = typeof __TV__ !== 'undefined' && __TV__;
+
 export interface GlassCategoryPillProps {
   /** The text label to display */
   label: string;
@@ -45,7 +49,30 @@ export const GlassCategoryPill: React.FC<GlassCategoryPillProps> = ({
   const [isHovered, setIsHovered] = useState(false);
   const [isFocused, setIsFocused] = useState(false);
 
-  const sizeStyles = {
+  // TV builds get larger sizes for 10-foot UI
+  const sizeStyles = IS_TV_BUILD ? {
+    small: {
+      paddingHorizontal: spacing.lg,
+      paddingVertical: 10,
+      fontSize: 18,
+      iconSize: 18,
+      gap: spacing.sm,
+    },
+    medium: {
+      paddingHorizontal: spacing.xl,
+      paddingVertical: 14,
+      fontSize: 22,
+      iconSize: 22,
+      gap: spacing.md,
+    },
+    large: {
+      paddingHorizontal: spacing.xl + 8,
+      paddingVertical: 18,
+      fontSize: 26,
+      iconSize: 26,
+      gap: spacing.md,
+    },
+  } : {
     small: {
       paddingHorizontal: spacing.md,
       paddingVertical: 6,

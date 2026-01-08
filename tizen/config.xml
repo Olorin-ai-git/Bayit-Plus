@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<widget xmlns="http://www.w3.org/ns/widgets" xmlns:tizen="http://tizen.org/ns/widgets" id="http://bayitplus.com/app" version="1.0.0" viewmodes="maximized">
+    <tizen:application id="AprZAARz4r.BayitPlus" package="AprZAARz4r" required_version="6.0"/>
+    <content src="index.html"/>
+    <feature name="http://tizen.org/feature/screen.size.all"/>
+    <icon src="icon.png"/>
+    <name>Bayit+</name>
+    <!-- Allow external resources (images, API calls, etc.) -->
+    <access origin="*" subdomains="true"/>
+    <tizen:privilege name="http://tizen.org/privilege/internet"/>
+    <tizen:privilege name="http://tizen.org/privilege/mediacapture"/>
+    <tizen:privilege name="http://tizen.org/privilege/tv.audio"/>
+    <tizen:privilege name="http://tizen.org/privilege/tv.inputdevice"/>
+    <tizen:privilege name="http://tizen.org/privilege/application.launch"/>
+    <tizen:profile name="tv"/>
+    <tizen:setting screen-orientation="landscape" context-menu="enable" background-support="disable" encryption="disable" install-location="auto" hwkey-event="enable"/>
+    <!-- Content Security Policy to allow external resources -->
+    <tizen:content-security-policy>default-src * 'self' 'unsafe-inline' 'unsafe-eval' data: blob:; img-src * data: blob:; media-src *; connect-src *;</tizen:content-security-policy>
+</widget>

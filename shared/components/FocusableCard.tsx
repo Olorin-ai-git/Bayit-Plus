@@ -10,6 +10,14 @@ import {
 import { colors } from '../theme';
 import { useDirection } from '../hooks/useDirection';
 
+// Check if this is a TV build (set by webpack)
+declare const __TV__: boolean;
+const IS_TV_BUILD = typeof __TV__ !== 'undefined' && __TV__;
+
+// TV cards are larger for 10-foot UI
+const DEFAULT_WIDTH = IS_TV_BUILD ? 380 : 280;
+const DEFAULT_HEIGHT = IS_TV_BUILD ? 220 : 160;
+
 interface FocusableCardProps {
   title: string;
   subtitle?: string;
@@ -24,8 +32,8 @@ export const FocusableCard: React.FC<FocusableCardProps> = ({
   subtitle,
   imageUrl,
   onPress,
-  width = 280,
-  height = 160,
+  width = DEFAULT_WIDTH,
+  height = DEFAULT_HEIGHT,
 }) => {
   const { textAlign } = useDirection();
   const [isFocused, setIsFocused] = useState(false);
@@ -131,12 +139,12 @@ const styles = StyleSheet.create({
     backgroundColor: colors.overlay,
   },
   title: {
-    fontSize: 18,
+    fontSize: IS_TV_BUILD ? 24 : 18,
     fontWeight: 'bold',
     color: colors.text,
   },
   subtitle: {
-    fontSize: 14,
+    fontSize: IS_TV_BUILD ? 18 : 14,
     color: colors.textSecondary,
     marginTop: 2,
   },
