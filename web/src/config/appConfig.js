@@ -8,11 +8,16 @@
 
 import logger from '@/utils/logger';
 
-// Set this based on environment or build flag
-export const APP_MODE = import.meta.env.VITE_APP_MODE || 'demo';
+// Check if this is a TV build (set by webpack DefinePlugin)
+// eslint-disable-next-line no-undef
+const IS_TV_BUILD = typeof __TV__ !== 'undefined' && __TV__;
 
-export const isDemo = APP_MODE === 'demo';
-export const isProduction = APP_MODE === 'production';
+// Set this based on environment or build flag
+// TV builds ALWAYS use demo mode since there's no accessible backend
+export const APP_MODE = IS_TV_BUILD ? 'demo' : (import.meta.env.VITE_APP_MODE || 'demo');
+
+export const isDemo = APP_MODE === 'demo' || IS_TV_BUILD;
+export const isProduction = APP_MODE === 'production' && !IS_TV_BUILD;
 
 // Strict mode settings
 export const config = {

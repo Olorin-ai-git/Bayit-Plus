@@ -22,6 +22,10 @@ import {
   GlassInput,
   GlassCheckbox,
 } from '@bayit/shared/ui';
+
+// Check if this is a TV build (set by webpack)
+declare const __TV__: boolean;
+const IS_TV_BUILD = typeof __TV__ !== 'undefined' && __TV__;
 import { TriggerConfigPanel } from './TriggerConfigPanel';
 import { FlowItemList } from './FlowItemList';
 import { ContentPickerModal } from './ContentPickerModal';
@@ -475,8 +479,8 @@ const styles = StyleSheet.create({
   },
   modal: {
     width: '100%',
-    maxWidth: 560,
-    maxHeight: '90%',
+    maxWidth: IS_TV_BUILD ? 800 : 560,
+    maxHeight: IS_TV_BUILD ? '85%' : '90%',
     borderRadius: borderRadius.xl,
     overflow: 'hidden',
     // Explicit flex layout for proper child rendering
@@ -504,13 +508,13 @@ const styles = StyleSheet.create({
     flexShrink: 0,
   },
   title: {
-    fontSize: 22,
+    fontSize: IS_TV_BUILD ? 28 : 22,
     fontWeight: '700',
     color: colors.text,
     marginBottom: spacing.xs,
   },
   subtitle: {
-    fontSize: 14,
+    fontSize: IS_TV_BUILD ? 18 : 14,
     color: colors.textMuted,
   },
   scroll: {

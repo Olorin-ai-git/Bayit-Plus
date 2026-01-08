@@ -235,7 +235,7 @@ const styles = StyleSheet.create({
   },
   carouselWrapper: {
     borderRadius: borderRadius.lg,
-    overflow: 'hidden',
+    overflow: 'visible' as any,
   },
   emptyContainer: {
     flex: 1,

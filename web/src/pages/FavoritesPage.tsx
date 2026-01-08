@@ -237,7 +237,7 @@ const styles = StyleSheet.create({
   card: {
     padding: 0,
     margin: spacing.xs,
-    overflow: 'hidden',
+    overflow: 'visible' as any,
     position: 'relative',
   },
   cardHovered: {

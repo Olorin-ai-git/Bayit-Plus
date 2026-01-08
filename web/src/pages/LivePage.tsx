@@ -258,7 +258,7 @@ const styles = StyleSheet.create({
   channelCard: {
     padding: 0,
     margin: spacing.xs,
-    overflow: 'hidden',
+    overflow: 'visible' as any,
   },
   channelCardHovered: {
     transform: [{ scale: 1.02 }],

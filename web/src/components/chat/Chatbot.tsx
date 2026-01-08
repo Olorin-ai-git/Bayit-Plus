@@ -10,10 +10,14 @@ import {
   Animated,
   ActivityIndicator,
 } from 'react-native'
+
+// Check if this is a TV build (set by webpack)
+declare const __TV__: boolean;
 import { useNavigate } from 'react-router-dom'
 import { X, Send, Sparkles, Mic, Square } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { chatService } from '@/services/api'
+import { SoundwaveVisualizer } from '@bayit/shared'
 import { useAuthStore } from '@/stores/authStore'
 import { useChatbotStore, type ChatbotAction } from '@/stores/chatbotStore'
 import logger from '@/utils/logger'
@@ -327,7 +331,11 @@ export default function Chatbot() {
     inputRef.current?.focus()
   }
 
-  if (!isAuthenticated) {
+  // Check if this is a TV build (set by webpack)
+  const IS_TV_BUILD = typeof __TV__ !== 'undefined' && __TV__;
+
+  // On TV, show chatbot even without auth for voice interaction
+  if (!isAuthenticated && !IS_TV_BUILD) {
     return null
   }
 
@@ -467,75 +475,94 @@ export default function Chatbot() {
               </View>
             )}
 
-            {/* Input */}
-            <View style={styles.inputContainer}>
-              {/* Recording/Transcribing Status */}
-              {(isRecording || isTranscribing) && (
-                <View style={styles.statusContainer}>
-                  {isRecording && (
-                    <GlassBadge variant="danger" dot dotColor="danger" size="sm">
-                      {t('chatbot.recording')}
-                    </GlassBadge>
-                  )}
-                  {isTranscribing && (
-                    <GlassBadge
-                      variant="primary"
-                      size="sm"
-                      icon={<ActivityIndicator size="small" color={colors.primary} />}
-                    >
-                      {t('chatbot.transcribing')}
-                    </GlassBadge>
-                  )}
-                </View>
-              )}
-
-              <View style={[styles.inputRow, isRTL && styles.inputRowRTL]}>
-                {/* Microphone Button */}
-                <Pressable
-                  onPress={toggleRecording}
-                  disabled={isLoading || isTranscribing}
-                  style={({ hovered }) => [
-                    styles.micButton,
-                    isRecording && styles.micButtonRecording,
-                    hovered && !isRecording && styles.micButtonHovered,
-                  ]}
-                  accessibilityLabel={isRecording ? t('chatbot.stopRecording') : t('chatbot.startRecording')}
-                >
-                  {isRecording ? (
-                    <Square size={16} fill={colors.text} color={colors.text} />
-                  ) : (
-                    <Mic size={18} color={colors.text} />
-                  )}
-                </Pressable>
-
-                {/* Text Input */}
-                <View style={styles.textInputContainer}>
-                  <TextInput
-                    ref={inputRef}
-                    style={[styles.textInput, isRTL && styles.textInputRTL]}
-                    value={input}
-                    onChangeText={setInput}
-                    placeholder={t('chatbot.placeholder')}
-                    placeholderTextColor={colors.textMuted}
-                    editable={!isLoading && !isRecording && !isTranscribing}
-                    onSubmitEditing={handleSubmit}
+            {/* Input - TV uses constant listening, web uses manual input */}
+            {IS_TV_BUILD ? (
+              /* TV: Show listening status with soundwave animation */
+              <View style={styles.tvListeningContainer}>
+                <View style={styles.tvListeningIndicator}>
+                  <SoundwaveVisualizer
+                    audioLevel={0.5}
+                    isListening={true}
+                    isProcessing={isLoading}
+                    isSendingToServer={isLoading}
+                    compact={false}
                   />
+                  <Text style={styles.tvListeningText}>
+                    {isLoading ? t('chatbot.processing', 'Processing...') : t('chatbot.listening', 'Listening...')}
+                  </Text>
                 </View>
-
-                {/* Send Button */}
-                <Pressable
-                  onPress={handleSubmit}
-                  disabled={!input.trim() || isLoading || isRecording || isTranscribing}
-                  style={({ hovered }) => [
-                    styles.sendButton,
-                    (!input.trim() || isLoading) && styles.sendButtonDisabled,
-                    hovered && input.trim() && !isLoading && styles.sendButtonHovered,
-                  ]}
-                >
-                  <Send size={16} color={colors.text} />
-                </Pressable>
               </View>
-            </View>
+            ) : (
+              /* Web: Full input controls */
+              <View style={styles.inputContainer}>
+                {/* Recording/Transcribing Status */}
+                {(isRecording || isTranscribing) && (
+                  <View style={styles.statusContainer}>
+                    {isRecording && (
+                      <GlassBadge variant="danger" dot dotColor="danger" size="sm">
+                        {t('chatbot.recording')}
+                      </GlassBadge>
+                    )}
+                    {isTranscribing && (
+                      <GlassBadge
+                        variant="primary"
+                        size="sm"
+                        icon={<ActivityIndicator size="small" color={colors.primary} />}
+                      >
+                        {t('chatbot.transcribing')}
+                      </GlassBadge>
+                    )}
+                  </View>
+                )}
+
+                <View style={[styles.inputRow, isRTL && styles.inputRowRTL]}>
+                  {/* Microphone Button */}
+                  <Pressable
+                    onPress={toggleRecording}
+                    disabled={isLoading || isTranscribing}
+                    style={({ hovered }) => [
+                      styles.micButton,
+                      isRecording && styles.micButtonRecording,
+                      hovered && !isRecording && styles.micButtonHovered,
+                    ]}
+                    accessibilityLabel={isRecording ? t('chatbot.stopRecording') : t('chatbot.startRecording')}
+                  >
+                    {isRecording ? (
+                      <Square size={16} fill={colors.text} color={colors.text} />
+                    ) : (
+                      <Mic size={18} color={colors.text} />
+                    )}
+                  </Pressable>
+
+                  {/* Text Input */}
+                  <View style={styles.textInputContainer}>
+                    <TextInput
+                      ref={inputRef}
+                      style={[styles.textInput, isRTL && styles.textInputRTL]}
+                      value={input}
+                      onChangeText={setInput}
+                      placeholder={t('chatbot.placeholder')}
+                      placeholderTextColor={colors.textMuted}
+                      editable={!isLoading && !isRecording && !isTranscribing}
+                      onSubmitEditing={handleSubmit}
+                    />
+                  </View>
+
+                  {/* Send Button */}
+                  <Pressable
+                    onPress={handleSubmit}
+                    disabled={!input.trim() || isLoading || isRecording || isTranscribing}
+                    style={({ hovered }) => [
+                      styles.sendButton,
+                      (!input.trim() || isLoading) && styles.sendButtonDisabled,
+                      hovered && input.trim() && !isLoading && styles.sendButtonHovered,
+                    ]}
+                  >
+                    <Send size={16} color={colors.text} />
+                  </Pressable>
+                </View>
+              </View>
+            )}
           </GlassView>
         </Animated.View>
       )}
@@ -543,15 +570,18 @@ export default function Chatbot() {
   )
 }
 
+// Check if this is a TV build
+const IS_TV = typeof __TV__ !== 'undefined' && __TV__;
+
 const styles = StyleSheet.create({
   chatButton: {
     position: 'fixed' as any,
-    bottom: spacing.lg,
-    left: spacing.lg,
+    bottom: IS_TV ? spacing.xl : spacing.lg,
+    left: IS_TV ? spacing.xl : spacing.lg,
     zIndex: 50,
-    width: 56,
-    height: 56,
-    borderRadius: 28,
+    width: IS_TV ? 80 : 56,
+    height: IS_TV ? 80 : 56,
+    borderRadius: IS_TV ? 40 : 28,
     backgroundColor: colors.secondary,
     shadowColor: colors.secondary,
     shadowOffset: { width: 0, height: 4 },
@@ -570,13 +600,13 @@ const styles = StyleSheet.create({
   },
   chatWindow: {
     position: 'fixed' as any,
-    bottom: spacing.lg,
-    left: spacing.lg,
+    bottom: IS_TV ? spacing.xl : spacing.lg,
+    left: IS_TV ? spacing.xl : spacing.lg,
     zIndex: 50,
-    width: 384,
+    width: IS_TV ? 600 : 384,
     maxWidth: 'calc(100vw - 3rem)' as any,
-    height: 500,
-    maxHeight: '70vh' as any,
+    height: IS_TV ? 700 : 500,
+    maxHeight: IS_TV ? '80vh' as any : '70vh' as any,
   },
   chatContainer: {
     flex: 1,
@@ -604,15 +634,15 @@ const styles = StyleSheet.create({
     flexDirection: 'row-reverse',
   },
   headerIcon: {
-    width: 32,
-    height: 32,
-    borderRadius: 16,
+    width: IS_TV ? 48 : 32,
+    height: IS_TV ? 48 : 32,
+    borderRadius: IS_TV ? 24 : 16,
     backgroundColor: colors.secondary,
     alignItems: 'center',
     justifyContent: 'center',
   },
   headerTitle: {
-    fontSize: 16,
+    fontSize: IS_TV ? 24 : 16,
     fontWeight: '600',
     color: colors.text,
   },
@@ -641,8 +671,8 @@ const styles = StyleSheet.create({
   },
   messageBubble: {
     maxWidth: '80%',
-    paddingHorizontal: spacing.md,
-    paddingVertical: spacing.sm + 2,
+    paddingHorizontal: IS_TV ? spacing.lg : spacing.md,
+    paddingVertical: IS_TV ? spacing.md : spacing.sm + 2,
     borderRadius: borderRadius.lg,
   },
   messageBubbleUser: {
@@ -658,9 +688,9 @@ const styles = StyleSheet.create({
     borderTopLeftRadius: borderRadius.sm,
   },
   messageText: {
-    fontSize: 14,
+    fontSize: IS_TV ? 22 : 14,
     color: colors.text,
-    lineHeight: 20,
+    lineHeight: IS_TV ? 32 : 20,
   },
   messageTextError: {
     color: colors.error,
@@ -726,11 +756,11 @@ const styles = StyleSheet.create({
     borderColor: colors.primary,
   },
   suggestionText: {
-    fontSize: 12,
+    fontSize: IS_TV ? 18 : 12,
     color: colors.textSecondary,
   },
   inputContainer: {
-    padding: spacing.md,
+    padding: IS_TV ? spacing.lg : spacing.md,
     borderTopWidth: 1,
     borderTopColor: 'rgba(255, 255, 255, 0.1)',
   },
@@ -748,9 +778,9 @@ const styles = StyleSheet.create({
     flexDirection: 'row-reverse',
   },
   micButton: {
-    width: 48,
-    height: 40,
-    borderRadius: 20,
+    width: IS_TV ? 64 : 48,
+    height: IS_TV ? 56 : 40,
+    borderRadius: IS_TV ? 28 : 20,
     backgroundColor: colors.secondary,
     alignItems: 'center',
     justifyContent: 'center',
@@ -770,25 +800,25 @@ const styles = StyleSheet.create({
   },
   textInputContainer: {
     flex: 1,
-    height: 40,
-    borderRadius: 20,
+    height: IS_TV ? 56 : 40,
+    borderRadius: IS_TV ? 28 : 20,
     backgroundColor: 'rgba(255, 255, 255, 0.05)',
-    borderWidth: 1,
+    borderWidth: IS_TV ? 2 : 1,
     borderColor: colors.glassBorder,
-    paddingHorizontal: spacing.md,
+    paddingHorizontal: IS_TV ? spacing.lg : spacing.md,
     justifyContent: 'center',
   },
   textInput: {
-    fontSize: 14,
+    fontSize: IS_TV ? 20 : 14,
     color: colors.text,
   },
   textInputRTL: {
     textAlign: 'right',
   },
   sendButton: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
+    width: IS_TV ? 56 : 40,
+    height: IS_TV ? 56 : 40,
+    borderRadius: IS_TV ? 28 : 20,
     backgroundColor: colors.primary,
     alignItems: 'center',
     justifyContent: 'center',
@@ -801,5 +831,27 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 0 },
     shadowOpacity: 0.5,
     shadowRadius: 8,
+  },
+  // TV Listening Mode Styles
+  tvListeningContainer: {
+    padding: spacing.lg,
+    borderTopWidth: 1,
+    borderTopColor: 'rgba(255, 255, 255, 0.1)',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  tvListeningIndicator: {
+    flexDirection: 'column',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: spacing.md,
+    paddingVertical: spacing.lg,
+    paddingHorizontal: spacing.xl,
+  },
+  tvListeningText: {
+    fontSize: 22,
+    color: colors.primary,
+    fontWeight: '600',
+    marginTop: spacing.sm,
   },
 })

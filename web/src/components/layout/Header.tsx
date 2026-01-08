@@ -1,12 +1,14 @@
 import { View, Text, StyleSheet, Pressable, useWindowDimensions } from 'react-native';
 import { Link, NavLink, useNavigate } from 'react-router-dom';
-import { useState } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import { Search, Menu, X, Shield } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useAuthStore } from '@/stores/authStore';
 import { useChatbotStore } from '@/stores/chatbotStore';
+import { useVoiceSettingsStore } from '@/stores/voiceSettingsStore';
 import { chatService } from '@/services/api';
-import { VoiceSearchButton, LanguageSelector, AnimatedLogo } from '@bayit/shared';
+import { VoiceSearchButton, LanguageSelector, AnimatedLogo, SoundwaveVisualizer } from '@bayit/shared';
+import { useConstantListening } from '@bayit/shared-hooks';
 import { ProfileDropdown } from '@bayit/shared/ProfileDropdown';
 import { colors, spacing } from '@bayit/shared/theme';
 import { GlassView } from '@bayit/shared/ui';
@@ -30,12 +32,72 @@ export default function Header() {
   const { i18n, t } = useTranslation();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const { user, isAuthenticated, isAdmin, logout } = useAuthStore();
-  const { sendMessage } = useChatbotStore();
+  const { sendMessage, toggleOpen } = useChatbotStore();
+  const { preferences } = useVoiceSettingsStore();
   const navigate = useNavigate();
   const { width } = useWindowDimensions();
   const isMobile = width < 768 && !IS_TV_BUILD;
   const isRTL = i18n.language === 'he' || i18n.language === 'ar';
   const showAdmin = isAuthenticated && isAdmin() && !IS_TV_BUILD; // Hide admin on TV
+
+  // Voice settings for TV - only enable if mic is available
+  const [micAvailable, setMicAvailable] = useState<boolean | null>(null);
+  const constantListeningEnabled = IS_TV_BUILD && preferences.constant_listening_enabled && micAvailable === true;
+
+  // Check if microphone is available on TV (only check once)
+  useEffect(() => {
+    if (!IS_TV_BUILD) return;
+
+    const checkMic = async () => {
+      try {
+        const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+        // Mic is available - stop the test stream
+        stream.getTracks().forEach(track => track.stop());
+        setMicAvailable(true);
+        console.log('[TV] Microphone available');
+      } catch (err) {
+        // No mic available - disable constant listening
+        setMicAvailable(false);
+        console.log('[TV] No microphone available:', err);
+      }
+    };
+
+    checkMic();
+  }, []);
+
+  // Handle voice transcript - send to chatbot
+  const handleVoiceTranscript = useCallback((text: string) => {
+    if (text) {
+      console.log('[TV Voice] Transcript received:', text);
+      // Open chatbot and send message
+      toggleOpen();
+      sendMessage(text);
+    }
+  }, [sendMessage, toggleOpen]);
+
+  // Handle voice errors
+  const handleVoiceError = useCallback((error: Error) => {
+    console.warn('[TV Voice] Error:', error.message);
+  }, []);
+
+  // Constant listening hook for TV
+  const {
+    isListening,
+    isProcessing,
+    isSendingToServer,
+    audioLevel,
+    isSupported: constantListeningSupported,
+  } = useConstantListening({
+    enabled: constantListeningEnabled,
+    onTranscript: handleVoiceTranscript,
+    onError: handleVoiceError,
+    silenceThresholdMs: preferences.silence_threshold_ms || 2500,
+    vadSensitivity: preferences.vad_sensitivity || 'medium',
+    transcribeAudio: chatService.transcribeAudio,
+  });
+
+  // Show soundwave on TV only if mic is available
+  const showSoundwave = IS_TV_BUILD && micAvailable === true;
 
   const handleVoiceTranscribed = (text: string) => {
     if (text) {
@@ -115,7 +177,20 @@ export default function Header() {
         </View>
       </Link>
 
-      {/* Voice search button - hide on TV */}
+      {/* Soundwave Visualizer - for TV constant listening mode */}
+      {showSoundwave && (
+        <View style={styles.soundwaveContainer}>
+          <SoundwaveVisualizer
+            audioLevel={audioLevel || 0}
+            isListening={isListening || constantListeningEnabled}
+            isProcessing={isProcessing}
+            isSendingToServer={isSendingToServer}
+            compact
+          />
+        </View>
+      )}
+
+      {/* Voice search button - show on web only (not TV) */}
       {!IS_TV_BUILD && (
         <VoiceSearchButton
           onResult={handleVoiceTranscribed}
@@ -294,5 +369,16 @@ const styles = StyleSheet.create({
   },
   adminLinkText: {
     color: '#ef4444',
+  },
+  soundwaveContainer: {
+    height: IS_TV_BUILD ? 60 : 44,
+    minWidth: IS_TV_BUILD ? 120 : 80,
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingHorizontal: spacing.sm,
+    backgroundColor: 'rgba(0, 217, 255, 0.1)',
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: 'rgba(0, 217, 255, 0.3)',
   },
 });

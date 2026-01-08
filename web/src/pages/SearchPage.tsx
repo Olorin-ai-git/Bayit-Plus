@@ -16,6 +16,10 @@ import {
 import { contentService, chatService } from '@/services/api';
 import logger from '@/utils/logger';
 
+// Check if this is a TV build (set by webpack)
+declare const __TV__: boolean;
+const IS_TV_BUILD = typeof __TV__ !== 'undefined' && __TV__;
+
 interface SearchResult {
   id: string;
   title: string;
@@ -228,12 +232,14 @@ export default function SearchPage() {
                     <X size={20} color={colors.textMuted} />
                   </Pressable>
                 )}
-                <View style={styles.voiceButtonWrapper}>
-                  <VoiceSearchButton
-                    onResult={handleVoiceTranscribed}
-                    transcribeAudio={chatService.transcribeAudio}
-                  />
-                </View>
+                {!IS_TV_BUILD && (
+                  <View style={styles.voiceButtonWrapper}>
+                    <VoiceSearchButton
+                      onResult={handleVoiceTranscribed}
+                      transcribeAudio={chatService.transcribeAudio}
+                    />
+                  </View>
+                )}
               </View>
             </View>
           </GlassView>
@@ -491,7 +497,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   title: {
-    fontSize: 32,
+    fontSize: IS_TV_BUILD ? 48 : 32,
     fontWeight: '700',
     color: colors.text,
     marginBottom: spacing.xs,
@@ -500,7 +506,7 @@ const styles = StyleSheet.create({
     textAlign: 'right',
   },
   subtitle: {
-    fontSize: 16,
+    fontSize: IS_TV_BUILD ? 24 : 16,
     color: colors.textSecondary,
     textAlign: 'center',
   },
@@ -585,11 +591,11 @@ const styles = StyleSheet.create({
   resultsGrid: {
     flexDirection: 'row',
     flexWrap: 'wrap',
-    gap: spacing.lg,
+    gap: IS_TV_BUILD ? spacing.xl : spacing.lg,
   },
   resultCardWrapper: {
-    width: 'calc(25% - 18px)' as any,
-    minWidth: 240,
+    width: IS_TV_BUILD ? 'calc(33.33% - 24px)' as any : 'calc(25% - 18px)' as any,
+    minWidth: IS_TV_BUILD ? 380 : 240,
   },
   resultCardPressed: {
     opacity: 0.8,
@@ -597,7 +603,7 @@ const styles = StyleSheet.create({
     transform: 'scale(0.98)',
   },
   resultCard: {
-    overflow: 'hidden',
+    overflow: 'visible' as any,
     padding: 0,
   },
   thumbnailContainer: {
@@ -635,14 +641,14 @@ const styles = StyleSheet.create({
     fontWeight: '500',
   },
   resultInfo: {
-    padding: spacing.md,
+    padding: IS_TV_BUILD ? spacing.lg : spacing.md,
   },
   resultTitle: {
-    fontSize: 15,
+    fontSize: IS_TV_BUILD ? 22 : 15,
     fontWeight: '600',
     color: colors.text,
     marginBottom: spacing.xs,
-    lineHeight: 20,
+    lineHeight: IS_TV_BUILD ? 30 : 20,
   },
   resultTitleRTL: {
     textAlign: 'right',
@@ -661,23 +667,23 @@ const styles = StyleSheet.create({
     paddingVertical: spacing.xl * 2,
   },
   emptyCard: {
-    padding: spacing.xl * 2,
+    padding: IS_TV_BUILD ? spacing.xl * 3 : spacing.xl * 2,
     alignItems: 'center',
-    minWidth: 500,
-    maxWidth: 600,
+    minWidth: IS_TV_BUILD ? 700 : 500,
+    maxWidth: IS_TV_BUILD ? 900 : 600,
   },
   emptyTitle: {
-    fontSize: 24,
+    fontSize: IS_TV_BUILD ? 36 : 24,
     fontWeight: '600',
     color: colors.text,
     marginTop: spacing.xl,
     marginBottom: spacing.md,
   },
   emptyDescription: {
-    fontSize: 18,
+    fontSize: IS_TV_BUILD ? 24 : 18,
     color: colors.textSecondary,
     textAlign: 'center',
-    lineHeight: 26,
+    lineHeight: IS_TV_BUILD ? 36 : 26,
   },
   initialState: {
     flex: 1,
@@ -763,13 +769,13 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   promptCard: {
-    padding: spacing.xl * 2,
+    padding: IS_TV_BUILD ? spacing.xl * 3 : spacing.xl * 2,
     alignItems: 'center',
-    minWidth: 500,
-    maxWidth: 600,
+    minWidth: IS_TV_BUILD ? 700 : 500,
+    maxWidth: IS_TV_BUILD ? 900 : 600,
   },
   promptTitle: {
-    fontSize: 24,
+    fontSize: IS_TV_BUILD ? 36 : 24,
     fontWeight: '600',
     color: colors.text,
     marginTop: spacing.xl,
@@ -777,9 +783,9 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   promptDescription: {
-    fontSize: 18,
+    fontSize: IS_TV_BUILD ? 24 : 18,
     color: colors.textSecondary,
     textAlign: 'center',
-    lineHeight: 26,
+    lineHeight: IS_TV_BUILD ? 36 : 26,
   },
 });

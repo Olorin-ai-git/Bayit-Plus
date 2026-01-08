@@ -24,7 +24,8 @@ export default function Layout() {
         <Outlet />
       </View>
       {!IS_TV_BUILD && <Footer />}
-      {!IS_TV_BUILD && <Chatbot />}
+      {/* Chatbot enabled on both web and TV for voice interaction */}
+      <Chatbot />
     </View>
   );
 }

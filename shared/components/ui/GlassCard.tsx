@@ -175,12 +175,14 @@ export const GlassCard: React.FC<GlassCardProps> = ({
 const styles = StyleSheet.create({
   touchable: {
     marginRight: spacing.md,
+    overflow: 'visible' as any,
   },
   card: {
-    overflow: 'hidden',
+    overflow: 'visible' as any,
   },
   cardFocused: {
     borderColor: colors.primary,
+    borderWidth: 3,
   },
   image: {
     borderTopLeftRadius: borderRadius.lg,

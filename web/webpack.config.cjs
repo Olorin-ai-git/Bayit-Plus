@@ -171,8 +171,12 @@ module.exports = (env, argv) => {
         __TIZEN__: isTizen,
         __TV__: isTV,
         'process.env.NODE_ENV': JSON.stringify(isProduction ? 'production' : 'development'),
-        'process.env.VITE_APP_MODE': JSON.stringify(process.env.VITE_APP_MODE || 'demo'),
+        // TV builds MUST use demo mode since there's no accessible backend
+        'process.env.VITE_APP_MODE': JSON.stringify(isTV ? 'demo' : (process.env.VITE_APP_MODE || 'demo')),
         'process.env.TARGET': JSON.stringify(process.env.TARGET || 'web'),
+        // Also support import.meta.env syntax
+        'import.meta.env.VITE_APP_MODE': JSON.stringify(isTV ? 'demo' : (process.env.VITE_APP_MODE || 'demo')),
+        'import.meta.env.VITE_API_URL': JSON.stringify(isTV ? '' : (process.env.VITE_API_URL || '/api/v1')),
       }),
       new webpack.ProvidePlugin({
         process: 'process/browser',

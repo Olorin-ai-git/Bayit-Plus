@@ -102,10 +102,11 @@ export const FocusableCard: React.FC<FocusableCardProps> = ({
 const styles = StyleSheet.create({
   touchable: {
     marginLeft: 20,
+    overflow: 'visible' as any,
   },
   card: {
     borderRadius: 12,
-    overflow: 'hidden',
+    overflow: 'visible' as any,
     backgroundColor: colors.glass,
     borderWidth: 1,
     borderColor: colors.glassBorder,

@@ -500,7 +500,7 @@ const styles = StyleSheet.create({
   },
   channelCard: {
     padding: 0,
-    overflow: 'hidden',
+    overflow: 'visible' as any,
     margin: spacing.xs,
   },
   channelCardHovered: {

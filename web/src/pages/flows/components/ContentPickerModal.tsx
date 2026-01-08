@@ -22,6 +22,10 @@ import { colors, spacing, borderRadius } from '@bayit/shared/theme';
 import { useContentPicker } from '../hooks/useContentPicker';
 import type { ContentItem, FlowItem, ContentType } from '../types/flows.types';
 
+// Check if this is a TV build (set by webpack)
+declare const __TV__: boolean;
+const IS_TV_BUILD = typeof __TV__ !== 'undefined' && __TV__;
+
 interface ContentPickerModalProps {
   visible: boolean;
   onClose: () => void;
@@ -227,9 +231,9 @@ const styles = StyleSheet.create({
   },
   modal: {
     width: '100%',
-    maxWidth: 900,
-    maxHeight: 600,
-    padding: spacing.lg,
+    maxWidth: IS_TV_BUILD ? 1200 : 900,
+    maxHeight: IS_TV_BUILD ? 700 : 600,
+    padding: IS_TV_BUILD ? spacing.xl : spacing.lg,
     borderRadius: borderRadius.xl,
     // @ts-ignore - Web z-index and flex
     zIndex: 10000,

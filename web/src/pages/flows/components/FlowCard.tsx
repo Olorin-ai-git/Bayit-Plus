@@ -13,6 +13,10 @@ import { GlassView, GlassButton } from '@bayit/shared/ui';
 import type { Flow, FlowTrigger } from '../types/flows.types';
 import { getLocalizedName, getLocalizedDescription, formatTriggerTime } from '../utils/flowHelpers';
 
+// Check if this is a TV build (set by webpack)
+declare const __TV__: boolean;
+const IS_TV_BUILD = typeof __TV__ !== 'undefined' && __TV__;
+
 // Flow icon configurations by name
 const FLOW_CONFIGS: Record<string, { colors: string[]; bgColor: string }> = {
   'טקס בוקר': { colors: ['#ff9500', '#ff6b00'], bgColor: 'rgba(255, 149, 0, 0.15)' },
@@ -159,11 +163,11 @@ export function FlowCard({
 
 const styles = StyleSheet.create({
   flowCard: {
-    width: 'calc(50% - 12px)' as any,
-    minWidth: 300,
-    padding: spacing.xl,
+    width: IS_TV_BUILD ? 'calc(50% - 24px)' as any : 'calc(50% - 12px)' as any,
+    minWidth: IS_TV_BUILD ? 420 : 300,
+    padding: IS_TV_BUILD ? spacing.xl + 8 : spacing.xl,
     borderRadius: borderRadius.xl,
-    borderWidth: 1,
+    borderWidth: IS_TV_BUILD ? 2 : 1,
     borderColor: 'rgba(255, 255, 255, 0.1)',
     // @ts-ignore
     transition: 'all 0.2s ease',
@@ -202,16 +206,16 @@ const styles = StyleSheet.create({
     textTransform: 'uppercase',
   },
   flowName: {
-    fontSize: 22,
+    fontSize: IS_TV_BUILD ? 28 : 22,
     fontWeight: '700',
     color: colors.text,
-    marginBottom: spacing.sm,
+    marginBottom: IS_TV_BUILD ? spacing.md : spacing.sm,
     width: '100%',
   },
   flowDesc: {
-    fontSize: 14,
+    fontSize: IS_TV_BUILD ? 18 : 14,
     color: colors.textMuted,
-    lineHeight: 22,
+    lineHeight: IS_TV_BUILD ? 28 : 22,
     marginBottom: spacing.md,
     width: '100%',
   },

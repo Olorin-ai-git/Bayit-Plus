@@ -230,7 +230,7 @@ const styles = StyleSheet.create({
   filterTextActive: { color: colors.secondary, fontWeight: 'bold' },
   grid: { paddingHorizontal: spacing.lg, paddingBottom: spacing.xl, paddingTop: spacing.md },
   cardTouchable: { flex: 1, margin: spacing.sm, maxWidth: '20%' },
-  card: { backgroundColor: colors.backgroundLight, borderRadius: borderRadius.lg, overflow: 'hidden', borderWidth: 3, borderColor: 'transparent' },
+  card: { backgroundColor: colors.backgroundLight, borderRadius: borderRadius.lg, overflow: 'visible' as any, borderWidth: 3, borderColor: 'transparent' },
   cardHovered: { borderColor: colors.secondary, transform: [{ scale: 1.05 }] },
   cardImage: { width: '100%', aspectRatio: 16 / 9 },
   cardImagePlaceholder: { width: '100%', aspectRatio: 16 / 9, backgroundColor: colors.backgroundLighter, justifyContent: 'center', alignItems: 'center' },

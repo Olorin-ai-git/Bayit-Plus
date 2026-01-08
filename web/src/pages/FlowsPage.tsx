@@ -23,6 +23,10 @@ import {
 import type { Flow } from './flows/types/flows.types';
 import { getLocalizedName } from './flows/utils/flowHelpers';
 
+// Check if this is a TV build (set by webpack)
+declare const __TV__: boolean;
+const IS_TV_BUILD = typeof __TV__ !== 'undefined' && __TV__;
+
 const SIDEBAR_DEFAULT_WIDTH = 340;
 
 export default function FlowsPage() {
@@ -303,21 +307,21 @@ export default function FlowsPage() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, flexDirection: 'row', position: 'relative' },
-  main: { flex: 1, transition: 'margin 0.3s ease' as any },
-  mainInner: { padding: spacing.xl, paddingBottom: spacing.xl * 2, maxWidth: 1200, marginHorizontal: 'auto', width: '100%', position: 'relative' },
+  container: { flex: 1, flexDirection: 'row', position: 'relative', overflow: 'visible' as any },
+  main: { flex: 1, transition: 'margin 0.3s ease' as any, overflow: 'visible' as any },
+  mainInner: { padding: IS_TV_BUILD ? spacing.xl * 2 : spacing.xl, paddingBottom: spacing.xl * 2, maxWidth: IS_TV_BUILD ? '100%' : 1200, marginHorizontal: 'auto', width: '100%', position: 'relative', overflow: 'visible' as any },
   bgGradient1: { position: 'absolute', width: 600, height: 600, borderRadius: 300, backgroundColor: colors.primary, opacity: 0.05, top: -200, right: -200, filter: 'blur(120px)' as any },
   bgGradient2: { position: 'absolute', width: 500, height: 500, borderRadius: 250, backgroundColor: '#8b5cf6', opacity: 0.04, bottom: 0, left: -150, filter: 'blur(100px)' as any },
   menuBtn: { position: 'absolute', top: spacing.md, right: spacing.md, width: 44, height: 44, borderRadius: 12, backgroundColor: colors.glass, justifyContent: 'center', alignItems: 'center', zIndex: 10 },
   menuBtnRTL: { right: 'auto' as any, left: spacing.md },
   loadingContainer: { flex: 1, justifyContent: 'center', alignItems: 'center', minHeight: 400 },
-  loadingText: { marginTop: spacing.md, fontSize: 16, color: colors.textSecondary },
+  loadingText: { marginTop: spacing.md, fontSize: IS_TV_BUILD ? 24 : 16, color: colors.textSecondary },
   header: { marginBottom: spacing.xl, paddingTop: spacing.md },
   headerRTL: { alignItems: 'flex-end' },
-  title: { fontSize: 40, fontWeight: '800', color: colors.text, marginBottom: spacing.xs, letterSpacing: -1 },
-  subtitle: { fontSize: 18, color: colors.textMuted, lineHeight: 26 },
-  categories: { marginBottom: spacing.xl },
-  grid: { flexDirection: 'row', flexWrap: 'wrap', gap: spacing.lg, marginBottom: spacing.xl },
+  title: { fontSize: IS_TV_BUILD ? 56 : 40, fontWeight: '800', color: colors.text, marginBottom: spacing.xs, letterSpacing: -1 },
+  subtitle: { fontSize: IS_TV_BUILD ? 24 : 18, color: colors.textMuted, lineHeight: IS_TV_BUILD ? 36 : 26 },
+  categories: { marginBottom: spacing.xl, overflow: 'visible' as any },
+  grid: { flexDirection: 'row', flexWrap: 'wrap', gap: IS_TV_BUILD ? spacing.xl : spacing.lg, marginBottom: spacing.xl, overflow: 'visible' as any },
   gridTablet: { gap: spacing.md },
   emptyState: { padding: spacing.xl, alignItems: 'center', marginTop: spacing.lg },
   emptyText: { fontSize: 16, color: colors.textMuted, marginBottom: spacing.md, textAlign: 'center' },

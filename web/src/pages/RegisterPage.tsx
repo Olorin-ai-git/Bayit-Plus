@@ -8,6 +8,10 @@ import { colors, spacing, borderRadius } from '@bayit/shared/theme';
 import { AnimatedLogo } from '@bayit/shared';
 import { useDirection } from '@/hooks/useDirection';
 
+// Check if this is a TV build (set by webpack)
+declare const __TV__: boolean;
+const IS_TV_BUILD = typeof __TV__ !== 'undefined' && __TV__;
+
 const LANGUAGE_CODES = [
   { code: 'en', flag: '🇺🇸' },
   { code: 'he', flag: '🇮🇱' },
@@ -162,7 +166,7 @@ export default function RegisterPage() {
               <Text style={[styles.label, isRTL && styles.labelRTL]}>{t('register.name')}</Text>
               <View style={styles.inputWrapper}>
                 <View style={[styles.inputIcon, isRTL && styles.inputIconRTL]}>
-                  <User size={20} color={colors.textMuted} />
+                  <User size={IS_TV_BUILD ? 28 : 20} color={colors.textMuted} />
                 </View>
                 <TextInput
                   style={[styles.input, isRTL && styles.inputRTL]}
@@ -181,7 +185,7 @@ export default function RegisterPage() {
               <Text style={[styles.label, isRTL && styles.labelRTL]}>{t('register.email')}</Text>
               <View style={styles.inputWrapper}>
                 <View style={[styles.inputIcon, isRTL && styles.inputIconRTL]}>
-                  <Mail size={20} color={colors.textMuted} />
+                  <Mail size={IS_TV_BUILD ? 28 : 20} color={colors.textMuted} />
                 </View>
                 <TextInput
                   style={[styles.input, isRTL && styles.inputRTL]}
@@ -201,7 +205,7 @@ export default function RegisterPage() {
               <Text style={[styles.label, isRTL && styles.labelRTL]}>{t('register.password')}</Text>
               <View style={styles.inputWrapper}>
                 <View style={[styles.inputIcon, isRTL && styles.inputIconRTL]}>
-                  <Lock size={20} color={colors.textMuted} />
+                  <Lock size={IS_TV_BUILD ? 28 : 20} color={colors.textMuted} />
                 </View>
                 <TextInput
                   style={[styles.input, styles.inputWithRightIcon, isRTL && styles.inputRTL]}
@@ -217,9 +221,9 @@ export default function RegisterPage() {
                   onPress={() => setShowPassword(!showPassword)}
                 >
                   {showPassword ? (
-                    <EyeOff size={20} color={colors.textMuted} />
+                    <EyeOff size={IS_TV_BUILD ? 28 : 20} color={colors.textMuted} />
                   ) : (
-                    <Eye size={20} color={colors.textMuted} />
+                    <Eye size={IS_TV_BUILD ? 28 : 20} color={colors.textMuted} />
                   )}
                 </Pressable>
               </View>
@@ -230,7 +234,7 @@ export default function RegisterPage() {
               <Text style={[styles.label, isRTL && styles.labelRTL]}>{t('register.confirmPassword')}</Text>
               <View style={styles.inputWrapper}>
                 <View style={[styles.inputIcon, isRTL && styles.inputIconRTL]}>
-                  <Lock size={20} color={colors.textMuted} />
+                  <Lock size={IS_TV_BUILD ? 28 : 20} color={colors.textMuted} />
                 </View>
                 <TextInput
                   style={[styles.input, styles.inputWithRightIcon, isRTL && styles.inputRTL]}
@@ -246,9 +250,9 @@ export default function RegisterPage() {
                   onPress={() => setShowConfirmPassword(!showConfirmPassword)}
                 >
                   {showConfirmPassword ? (
-                    <EyeOff size={20} color={colors.textMuted} />
+                    <EyeOff size={IS_TV_BUILD ? 28 : 20} color={colors.textMuted} />
                   ) : (
-                    <Eye size={20} color={colors.textMuted} />
+                    <Eye size={IS_TV_BUILD ? 28 : 20} color={colors.textMuted} />
                   )}
                 </Pressable>
               </View>
@@ -510,13 +514,13 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   inputGroup: {
-    marginBottom: spacing.md,
+    marginBottom: IS_TV_BUILD ? spacing.xl : spacing.md,
   },
   label: {
-    fontSize: 14,
+    fontSize: IS_TV_BUILD ? 20 : 14,
     fontWeight: '500',
     color: colors.textSecondary,
-    marginBottom: spacing.xs,
+    marginBottom: IS_TV_BUILD ? spacing.sm : spacing.xs,
   },
   labelRTL: {
     textAlign: 'right',
@@ -526,7 +530,7 @@ const styles = StyleSheet.create({
   },
   inputIcon: {
     position: 'absolute',
-    left: spacing.md,
+    left: IS_TV_BUILD ? spacing.lg : spacing.md,
     top: '50%',
     // @ts-ignore - web only
     transform: 'translateY(-50%)',
@@ -534,40 +538,41 @@ const styles = StyleSheet.create({
   },
   inputIconRTL: {
     left: 'auto',
-    right: spacing.md,
+    right: IS_TV_BUILD ? spacing.lg : spacing.md,
   },
   input: {
     backgroundColor: 'rgba(255, 255, 255, 0.05)',
-    borderWidth: 1,
+    borderWidth: IS_TV_BUILD ? 2 : 1,
     borderColor: 'rgba(255, 255, 255, 0.1)',
     borderRadius: borderRadius.lg,
-    paddingVertical: spacing.md,
-    paddingLeft: 48,
-    paddingRight: spacing.md,
-    fontSize: 16,
+    paddingVertical: IS_TV_BUILD ? spacing.lg : spacing.md,
+    paddingLeft: IS_TV_BUILD ? 56 : 48,
+    paddingRight: IS_TV_BUILD ? spacing.lg : spacing.md,
+    fontSize: IS_TV_BUILD ? 22 : 16,
+    minHeight: IS_TV_BUILD ? 60 : 48,
     color: colors.text,
     // @ts-ignore - web only
     outlineStyle: 'none',
   },
   inputRTL: {
-    paddingLeft: spacing.md,
-    paddingRight: 48,
+    paddingLeft: IS_TV_BUILD ? spacing.lg : spacing.md,
+    paddingRight: IS_TV_BUILD ? 56 : 48,
     textAlign: 'right',
   },
   inputWithRightIcon: {
-    paddingRight: 48,
+    paddingRight: IS_TV_BUILD ? 64 : 48,
   },
   passwordToggle: {
     position: 'absolute',
-    right: spacing.md,
+    right: IS_TV_BUILD ? spacing.lg : spacing.md,
     top: '50%',
     // @ts-ignore - web only
     transform: 'translateY(-50%)',
-    padding: spacing.xs,
+    padding: IS_TV_BUILD ? spacing.sm : spacing.xs,
   },
   passwordToggleRTL: {
     right: 'auto',
-    left: spacing.md,
+    left: IS_TV_BUILD ? spacing.lg : spacing.md,
   },
   termsRow: {
     flexDirection: 'row',
