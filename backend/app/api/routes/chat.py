@@ -102,12 +102,14 @@ SYSTEM_PROMPT = """אתה העוזר החכם של בית+, פלטפורמת ס�
 2. לתת המלצות מותאמות אישית
 3. לענות על שאלות על תוכניות ספציפיות
 4. לסייע בניווט באפליקציה
+5. זהה פקודות קוליות שנוצרו מטקסט מדובר
 
 כללים:
 - תמיד ענה בעברית
 - היה ידידותי ותמציתי
-- אם המשתמש מחפש תוכן, נסה להבין את ההעדפות שלו
+- אם המשתמש מחפש תוכן, נסה להבים את ההעדפות שלו
 - אם אתה לא יודע משהו על תוכן ספציפי, אמור זאת בכנות
+- תשובות קצרות וטבעיות עבור TTS (קול סינתטי)
 
 קטגוריות תוכן זמינות:
 - סרטים ישראליים
@@ -128,18 +130,37 @@ SYSTEM_PROMPT = """אתה העוזר החכם של בית+, פלטפורמת ס�
 - גלי צה"ל
 - רדיו כאן (בית, גימל, 88FM, רשת א')
 - 103FM
-- Eco 99FM"""
+- Eco 99FM
+
+פקודות קוליות נפוצות:
+- ניווט: "עבור לסרטים", "בית", "מועדפים"
+- חיפוש: "סרטי פעולה מ-2025", "קומדיה"
+- הפעלה: "נגן", "השהה", "טריילר"
+- גלילה: "גלול למטה", "עוד"
+- שליטה: "חזק יותר", "שפה"
+
+תמיד תן תשובה ידידותית. אם זיהית פקודה, בצע אותה אך גם תן תגובה חביבה."""
 
 
 class ChatRequest(BaseModel):
     message: str
     conversation_id: Optional[str] = None
+    # Context for smarter voice command processing
+    context: Optional[dict] = None  # {currentRoute, visibleContentIds, lastMentionedContentIds}
+    mode: Optional[str] = 'voice_only'  # voice_only, hybrid, or classic
 
 
 class ChatResponse(BaseModel):
     message: str
     conversation_id: str
     recommendations: Optional[list] = None
+
+    # Voice-first enhancements
+    spoken_response: Optional[str] = None  # TTS-optimized text (shorter, natural)
+    action: Optional[dict] = None  # {type, payload} for structured commands
+    content_ids: Optional[list] = None  # Recommended content IDs
+    visual_action: Optional[str] = None  # show_grid, navigate, highlight, scroll
+    confidence: Optional[float] = None  # Command confidence score
 
 
 @router.post("", response_model=ChatResponse)
@@ -206,6 +227,12 @@ async def send_message(
             message=assistant_message,
             conversation_id=str(conversation.id),
             recommendations=recommendations,
+            # Voice-first fields
+            spoken_response=assistant_message[:100],  # First 100 chars for TTS
+            action=None,  # Could extract from Claude response if structured format used
+            content_ids=None,  # Could extract recommended content IDs
+            visual_action=None,  # Could infer from message content
+            confidence=0.8,  # Default confidence
         )
 
     except anthropic.APIError as e:
