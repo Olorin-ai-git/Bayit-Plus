@@ -4,6 +4,7 @@ import { Link } from 'react-router-dom';
 import { Play } from 'lucide-react';
 import { colors, spacing, borderRadius } from '@bayit/shared/theme';
 import { GlassCard, GlassBadge } from '@bayit/shared/ui';
+import { useModeEnforcement } from '@bayit/shared-hooks';
 import LinearGradient from 'react-native-linear-gradient';
 
 interface Content {
@@ -24,6 +25,7 @@ interface ContentCardProps {
 
 export default function ContentCard({ content, showProgress = false }: ContentCardProps) {
   const [isHovered, setIsHovered] = useState(false);
+  const { isUIInteractionEnabled } = useModeEnforcement();
 
   const linkTo = content.type === 'live'
     ? `/live/${content.id}`
@@ -33,13 +35,19 @@ export default function ContentCard({ content, showProgress = false }: ContentCa
     ? `/podcasts/${content.id}`
     : `/vod/${content.id}`;
 
-  return (
-    <Link to={linkTo} style={{ textDecoration: 'none', flexShrink: 0 }}>
-      <Pressable
-        onHoverIn={() => setIsHovered(true)}
-        onHoverOut={() => setIsHovered(false)}
-      >
-        <GlassCard style={[styles.card, isHovered && styles.cardHovered]}>
+  // In Voice Only mode, wrap in non-interactive View instead of Link
+  const CardContent = (
+    <Pressable
+      onHoverIn={() => setIsHovered(true)}
+      onHoverOut={() => setIsHovered(false)}
+      disabled={!isUIInteractionEnabled}
+      style={!isUIInteractionEnabled ? { pointerEvents: 'none' } : undefined}
+    >
+      <GlassCard style={[
+        styles.card,
+        isHovered && styles.cardHovered,
+        !isUIInteractionEnabled && { opacity: 0.6 },
+      ]}>
           {/* Thumbnail */}
           <View style={styles.thumbnailContainer}>
             {content.thumbnail ? (
@@ -103,8 +111,19 @@ export default function ContentCard({ content, showProgress = false }: ContentCa
           </View>
         </GlassCard>
       </Pressable>
-    </Link>
   );
+
+  // Wrap with Link only if UI interactions are enabled
+  if (isUIInteractionEnabled) {
+    return (
+      <Link to={linkTo} style={{ textDecoration: 'none', flexShrink: 0 }}>
+        {CardContent}
+      </Link>
+    );
+  }
+
+  // Otherwise return as unwrapped View for Voice Only mode
+  return <View style={{ flexShrink: 0 }}>{CardContent}</View>;
 }
 
 const styles = StyleSheet.create({

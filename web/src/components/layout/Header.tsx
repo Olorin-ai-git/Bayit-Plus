@@ -6,7 +6,7 @@ import { useTranslation } from 'react-i18next';
 import { useAuthStore } from '@/stores/authStore';
 import { useChatbotStore } from '@/stores/chatbotStore';
 import { useVoiceSettingsStore } from '@/stores/voiceSettingsStore';
-import { useModeEnforcement } from '@bayit/shared/hooks/useModeEnforcement';
+import { useModeEnforcement } from '@bayit/shared-hooks';
 import { chatService } from '@/services/api';
 import { VoiceSearchButton, LanguageSelector, AnimatedLogo, SoundwaveVisualizer } from '@bayit/shared';
 import { useConstantListening } from '@bayit/shared-hooks';

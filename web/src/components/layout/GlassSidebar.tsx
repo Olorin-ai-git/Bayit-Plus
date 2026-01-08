@@ -18,6 +18,7 @@ import {
 import { useTranslation } from 'react-i18next';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { GlassView } from '@bayit/shared/ui';
+import { useModeEnforcement } from '@bayit/shared-hooks';
 import { colors, spacing, borderRadius } from '@bayit/shared/theme';
 import { useDirection } from '@/hooks/useDirection';
 import { useAuthStore } from '@bayit/shared-stores/authStore';
@@ -85,6 +86,7 @@ export const GlassSidebar: React.FC<GlassSidebarProps> = ({ isExpanded, onToggle
   const navigate = useNavigate();
   const location = useLocation();
   const { user } = useAuthStore();
+  const { isUIInteractionEnabled } = useModeEnforcement();
   const widthAnim = useRef(new Animated.Value(isExpanded ? 280 : 80)).current;
   const opacityAnim = useRef(new Animated.Value(isExpanded ? 1 : 0)).current;
   const [focusedItem, setFocusedItem] = useState<string | null>(null);
@@ -124,6 +126,10 @@ export const GlassSidebar: React.FC<GlassSidebarProps> = ({ isExpanded, onToggle
   }, [isExpanded, widthAnim, opacityAnim]);
 
   const handleItemPress = (item: MenuItem) => {
+    // Respect mode enforcement - only allow clicks in allowed modes
+    if (!isUIInteractionEnabled) {
+      return;
+    }
     if (item.path) {
       navigate(item.path);
       // Collapse sidebar after navigation on TV
@@ -173,14 +179,19 @@ export const GlassSidebar: React.FC<GlassSidebarProps> = ({ isExpanded, onToggle
         ]}>
           {/* Toggle Button */}
           <TouchableOpacity
-            onPress={onToggle}
-            style={styles.toggleButton}
+            onPress={isUIInteractionEnabled ? onToggle : undefined}
+            disabled={!isUIInteractionEnabled}
+            style={[
+              styles.toggleButton,
+              !isUIInteractionEnabled && { pointerEvents: 'none' },
+            ]}
             onFocus={() => setFocusedItem('toggle')}
             onBlur={() => setFocusedItem(null)}
           >
             <View style={[
               styles.toggleIconContainer,
               focusedItem === 'toggle' && styles.toggleIconContainerFocused,
+              !isUIInteractionEnabled && { opacity: 0.5 },
             ]}>
               <Text style={styles.toggleIcon}>{getToggleIcon()}</Text>
             </View>
@@ -210,6 +221,7 @@ export const GlassSidebar: React.FC<GlassSidebarProps> = ({ isExpanded, onToggle
                   <TouchableOpacity
                     key={item.id}
                     onPress={() => handleItemPress(item)}
+                    disabled={!isUIInteractionEnabled}
                     onFocus={() => setFocusedItem(item.id)}
                     onBlur={() => setFocusedItem(null)}
                     style={[
@@ -217,6 +229,10 @@ export const GlassSidebar: React.FC<GlassSidebarProps> = ({ isExpanded, onToggle
                       { flexDirection: isRTL ? 'row' : 'row-reverse' },
                       isActive(item) && styles.menuItemActive,
                       focusedItem === item.id && styles.menuItemFocused,
+                      !isUIInteractionEnabled && {
+                        pointerEvents: 'none',
+                        opacity: 0.5,
+                      },
                     ]}
                   >
                     <View style={styles.iconContainer}>
