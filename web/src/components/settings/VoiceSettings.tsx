@@ -1,8 +1,8 @@
 import { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, Pressable, ActivityIndicator } from 'react-native';
+import { View, Text, StyleSheet, Pressable, ActivityIndicator, ScrollView } from 'react-native';
 import { useTranslation } from 'react-i18next';
-import { Mic, Eye, Type, Radio, ShieldCheck, Volume2, Zap } from 'lucide-react';
-import { useVoiceSettingsStore, TextSize, VADSensitivity } from '@/stores/voiceSettingsStore';
+import { Mic, Eye, Type, Radio, ShieldCheck, Volume2, Zap, Radio as RadioIcon, Check, Volume, Gauge, Plus, Minus } from 'lucide-react';
+import { useVoiceSettingsStore, TextSize, VADSensitivity, VoiceMode } from '@/stores/voiceSettingsStore';
 import { colors, spacing, borderRadius } from '@bayit/shared/theme';
 import { GlassView } from '@bayit/shared/ui';
 
@@ -24,6 +24,27 @@ const WAKE_WORD_SENSITIVITIES = [
   { value: 0.9, labelKey: 'sensitivityHigh' },
 ];
 
+const VOICE_MODES = [
+  {
+    value: VoiceMode.VOICE_ONLY,
+    labelKey: 'voiceMode.voiceOnly',
+    descKey: 'voiceMode.voiceOnlyDesc',
+    icon: '🎙️'
+  },
+  {
+    value: VoiceMode.HYBRID,
+    labelKey: 'voiceMode.hybrid',
+    descKey: 'voiceMode.hybridDesc',
+    icon: '🎙️✨'
+  },
+  {
+    value: VoiceMode.CLASSIC,
+    labelKey: 'voiceMode.classic',
+    descKey: 'voiceMode.classicDesc',
+    icon: '📺'
+  },
+];
+
 export default function VoiceSettings() {
   const { t, i18n } = useTranslation();
   const isRTL = i18n.language === 'he' || i18n.language === 'ar';
@@ -37,6 +58,10 @@ export default function VoiceSettings() {
     setVADSensitivity,
     setWakeWordEnabled,
     setWakeWordSensitivity,
+    setMode,
+    setVoiceFeedbackEnabled,
+    setTTSVolume,
+    setTTSSpeed,
   } = useVoiceSettingsStore();
   const [testingWakeWord, setTestingWakeWord] = useState(false);
 
@@ -116,6 +141,205 @@ export default function VoiceSettings() {
           </Text>
         </View>
       </View>
+
+      {/* Voice Mode Selection - CRITICAL SETTING */}
+      <GlassView style={styles.section}>
+        <View style={[styles.sectionHeader, isRTL && styles.sectionHeaderRTL]}>
+          <RadioIcon size={16} color={colors.primary} />
+          <Text style={[styles.sectionTitle, { marginBottom: 0 }]}>
+            {t('profile.voice.operationMode', 'Voice Operation Mode')}
+          </Text>
+        </View>
+
+        <Text style={[styles.modeDescription, isRTL && styles.textRTL]}>
+          {t('profile.voice.operationModeDesc', 'Choose how you interact with the app')}
+        </Text>
+
+        <View style={styles.modesContainer}>
+          {VOICE_MODES.map((modeOption) => {
+            const isSelected = preferences.voice_mode === modeOption.value;
+            return (
+              <Pressable
+                key={modeOption.value}
+                onPress={() => setMode(modeOption.value)}
+                style={({ hovered }: any) => [
+                  styles.modeCard,
+                  isRTL && styles.modeCardRTL,
+                  isSelected && styles.modeCardSelected,
+                  hovered && styles.modeCardHovered,
+                ]}
+              >
+                <View style={styles.modeCardContent}>
+                  <Text style={styles.modeIcon}>{modeOption.icon}</Text>
+                  <View style={styles.modeCardText}>
+                    <Text style={[styles.modeName, isSelected && styles.modeNameSelected]}>
+                      {t(modeOption.labelKey, modeOption.labelKey)}
+                    </Text>
+                    <Text style={[styles.modeDesc, isRTL && styles.textRTL]}>
+                      {t(modeOption.descKey, modeOption.descKey)}
+                    </Text>
+                  </View>
+                  {isSelected && (
+                    <Check size={20} color={colors.primary} style={styles.checkIcon} />
+                  )}
+                </View>
+              </Pressable>
+            );
+          })}
+        </View>
+
+        {/* Mode Information */}
+        <View style={[styles.modeInfo, isRTL && styles.modeInfoRTL]}>
+          {preferences.voice_mode === VoiceMode.VOICE_ONLY && (
+            <>
+              <Text style={[styles.modeInfoLabel, isRTL && styles.textRTL]}>
+                {t('profile.voice.voiceOnlyInfo', 'Voice Only Mode')}
+              </Text>
+              <Text style={[styles.modeInfoText, isRTL && styles.textRTL]}>
+                {t('profile.voice.voiceOnlyDetails', 'Say "Hey Bayit" to activate. Remote control disabled. Navigate entirely with voice commands.')}
+              </Text>
+            </>
+          )}
+          {preferences.voice_mode === VoiceMode.HYBRID && (
+            <>
+              <Text style={[styles.modeInfoLabel, isRTL && styles.textRTL]}>
+                {t('profile.voice.hybridInfo', 'Hybrid Mode')}
+              </Text>
+              <Text style={[styles.modeInfoText, isRTL && styles.textRTL]}>
+                {t('profile.voice.hybridDetails', 'Use both voice and remote control. Get voice feedback on your button presses and interactions.')}
+              </Text>
+            </>
+          )}
+          {preferences.voice_mode === VoiceMode.CLASSIC && (
+            <>
+              <Text style={[styles.modeInfoLabel, isRTL && styles.textRTL]}>
+                {t('profile.voice.classicInfo', 'Classic Mode')}
+              </Text>
+              <Text style={[styles.modeInfoText, isRTL && styles.textRTL]}>
+                {t('profile.voice.classicDetails', 'Traditional remote-only experience. Voice features disabled.')}
+              </Text>
+            </>
+          )}
+        </View>
+      </GlassView>
+
+      {/* TTS Settings (Voice Only & Hybrid modes) */}
+      {preferences.voice_mode !== VoiceMode.CLASSIC && (
+        <GlassView style={styles.section}>
+          <View style={[styles.sectionHeader, isRTL && styles.sectionHeaderRTL]}>
+            <Volume size={16} color={colors.primary} />
+            <Text style={[styles.sectionTitle, { marginBottom: 0 }]}>
+              {t('profile.voice.textToSpeech', 'Voice Responses')}
+            </Text>
+          </View>
+
+          <SettingRow
+            label={t('profile.voice.ttsEnabled', 'Enable voice responses')}
+            description={t('profile.voice.ttsEnabledDesc', 'App will speak responses to your voice commands')}
+            value={preferences.tts_enabled}
+            onToggle={() => toggleSetting('tts_enabled')}
+          />
+
+          {/* TTS Volume Control */}
+          {preferences.tts_enabled && (
+            <View style={styles.controlSection}>
+              <View style={[styles.controlHeader, isRTL && styles.controlHeaderRTL]}>
+                <Volume2 size={14} color={colors.textMuted} />
+                <Text style={[styles.controlLabel, isRTL && styles.textRTL]}>
+                  {t('profile.voice.ttsVolume', 'Voice Volume')}
+                </Text>
+                <Text style={styles.controlValue}>
+                  {Math.round(preferences.tts_volume * 100)}%
+                </Text>
+              </View>
+              <View style={[styles.volumeControls, isRTL && styles.volumeControlsRTL]}>
+                <Pressable
+                  onPress={() => setTTSVolume(Math.max(0, preferences.tts_volume - 0.1))}
+                  style={styles.volumeButton}
+                >
+                  <Minus size={14} color={colors.text} />
+                </Pressable>
+                <View style={styles.sliderContainer}>
+                  <View
+                    style={[
+                      styles.slider,
+                      { width: `${preferences.tts_volume * 100}%` },
+                    ]}
+                  />
+                </View>
+                <Pressable
+                  onPress={() => setTTSVolume(Math.min(1, preferences.tts_volume + 0.1))}
+                  style={styles.volumeButton}
+                >
+                  <Plus size={14} color={colors.text} />
+                </Pressable>
+              </View>
+            </View>
+          )}
+
+          {/* TTS Speed Control */}
+          {preferences.tts_enabled && (
+            <View style={styles.controlSection}>
+              <View style={[styles.controlHeader, isRTL && styles.controlHeaderRTL]}>
+                <Gauge size={14} color={colors.textMuted} />
+                <Text style={[styles.controlLabel, isRTL && styles.textRTL]}>
+                  {t('profile.voice.ttsSpeed', 'Speaking Speed')}
+                </Text>
+                <Text style={styles.controlValue}>
+                  {preferences.tts_speed.toFixed(1)}x
+                </Text>
+              </View>
+              <View style={[styles.speedOptions, isRTL && styles.speedOptionsRTL]}>
+                {[0.75, 1.0, 1.25, 1.5].map((speed) => {
+                  const isSelected = Math.abs(preferences.tts_speed - speed) < 0.05;
+                  return (
+                    <Pressable
+                      key={speed}
+                      onPress={() => setTTSSpeed(speed)}
+                      style={[
+                        styles.speedOption,
+                        isSelected && styles.speedOptionSelected,
+                      ]}
+                    >
+                      <Text
+                        style={[
+                          styles.speedText,
+                          isSelected && styles.speedTextSelected,
+                        ]}
+                      >
+                        {speed === 1.0 ? t('common.normal', 'Normal') : `${speed}x`}
+                      </Text>
+                    </Pressable>
+                  );
+                })}
+              </View>
+            </View>
+          )}
+        </GlassView>
+      )}
+
+      {/* Hybrid Mode Feedback Settings */}
+      {preferences.voice_mode === VoiceMode.HYBRID && (
+        <GlassView style={styles.section}>
+          <View style={[styles.sectionHeader, isRTL && styles.sectionHeaderRTL]}>
+            <Zap size={16} color={colors.warning} />
+            <Text style={[styles.sectionTitle, { marginBottom: 0 }]}>
+              {t('profile.voice.hybridFeedback', 'Interactive Feedback')}
+            </Text>
+          </View>
+
+          <SettingRow
+            label={t('profile.voice.voiceFeedback', 'Voice feedback on actions')}
+            description={t('profile.voice.voiceFeedbackDesc', 'Get voice confirmation when you use the remote or click buttons')}
+            value={preferences.voice_feedback_enabled}
+            onToggle={() => setVoiceFeedbackEnabled(!preferences.voice_feedback_enabled)}
+          />
+
+          <Text style={[styles.feedbackExample, isRTL && styles.textRTL]}>
+            {t('profile.voice.feedbackExample', 'Example: Click a movie → App says "Playing [Movie Name]"')}
+          </Text>
+        </GlassView>
+      )}
 
       {/* Voice Search Settings */}
       <GlassView style={styles.section}>
@@ -619,5 +843,171 @@ const styles = StyleSheet.create({
   },
   testButtonTextActive: {
     color: colors.primary,
+  },
+  // Voice Mode Selector Styles
+  modeDescription: {
+    fontSize: 13,
+    color: colors.textMuted,
+    marginBottom: spacing.md,
+  },
+  modesContainer: {
+    gap: spacing.md,
+  },
+  modeCard: {
+    padding: spacing.md,
+    borderRadius: borderRadius.md,
+    backgroundColor: 'rgba(255, 255, 255, 0.05)',
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.1)',
+  },
+  modeCardRTL: {
+    flexDirection: 'row-reverse',
+  },
+  modeCardSelected: {
+    backgroundColor: 'rgba(0, 217, 255, 0.15)',
+    borderColor: 'rgba(0, 217, 255, 0.4)',
+  },
+  modeCardHovered: {
+    backgroundColor: 'rgba(255, 255, 255, 0.08)',
+  },
+  modeCardContent: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.md,
+  },
+  modeIcon: {
+    fontSize: 28,
+  },
+  modeCardText: {
+    flex: 1,
+  },
+  modeName: {
+    fontSize: 15,
+    fontWeight: '600',
+    color: colors.text,
+  },
+  modeNameSelected: {
+    color: colors.primary,
+  },
+  modeDesc: {
+    fontSize: 12,
+    color: colors.textMuted,
+    marginTop: 2,
+  },
+  checkIcon: {
+    marginLeft: spacing.sm,
+  },
+  modeInfo: {
+    paddingTop: spacing.md,
+    borderTopWidth: 1,
+    borderTopColor: 'rgba(255, 255, 255, 0.05)',
+    marginTop: spacing.md,
+  },
+  modeInfoRTL: {
+    flexDirection: 'row-reverse',
+  },
+  modeInfoLabel: {
+    fontSize: 13,
+    fontWeight: '600',
+    color: colors.primary,
+    marginBottom: spacing.xs,
+  },
+  modeInfoText: {
+    fontSize: 12,
+    color: colors.textMuted,
+    lineHeight: 16,
+  },
+  // TTS Control Styles
+  controlSection: {
+    paddingTop: spacing.sm,
+    borderTopWidth: 1,
+    borderTopColor: 'rgba(255, 255, 255, 0.05)',
+    marginTop: spacing.md,
+  },
+  controlHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.sm,
+    marginBottom: spacing.md,
+  },
+  controlHeaderRTL: {
+    flexDirection: 'row-reverse',
+  },
+  controlLabel: {
+    flex: 1,
+    fontSize: 13,
+    fontWeight: '500',
+    color: colors.text,
+  },
+  controlValue: {
+    fontSize: 13,
+    fontWeight: '600',
+    color: colors.primary,
+  },
+  volumeControls: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.md,
+  },
+  volumeControlsRTL: {
+    flexDirection: 'row-reverse',
+  },
+  volumeButton: {
+    width: 32,
+    height: 32,
+    borderRadius: borderRadius.sm,
+    backgroundColor: 'rgba(255, 255, 255, 0.05)',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  sliderContainer: {
+    flex: 1,
+    height: 4,
+    backgroundColor: 'rgba(255, 255, 255, 0.05)',
+    borderRadius: 2,
+    overflow: 'hidden',
+  },
+  slider: {
+    height: '100%',
+    backgroundColor: colors.primary,
+    borderRadius: 2,
+  },
+  speedOptions: {
+    flexDirection: 'row',
+    gap: spacing.sm,
+  },
+  speedOptionsRTL: {
+    flexDirection: 'row-reverse',
+  },
+  speedOption: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: spacing.sm,
+    borderRadius: borderRadius.sm,
+    backgroundColor: 'rgba(255, 255, 255, 0.05)',
+  },
+  speedOptionSelected: {
+    backgroundColor: 'rgba(0, 217, 255, 0.15)',
+    borderWidth: 1,
+    borderColor: 'rgba(0, 217, 255, 0.4)',
+  },
+  speedText: {
+    fontSize: 12,
+    color: colors.text,
+    fontWeight: '500',
+  },
+  speedTextSelected: {
+    color: colors.primary,
+  },
+  // Feedback Example
+  feedbackExample: {
+    fontSize: 12,
+    color: colors.textMuted,
+    fontStyle: 'italic',
+    paddingTop: spacing.md,
+    borderTopWidth: 1,
+    borderTopColor: 'rgba(255, 255, 255, 0.05)',
+    marginTop: spacing.md,
   },
 });

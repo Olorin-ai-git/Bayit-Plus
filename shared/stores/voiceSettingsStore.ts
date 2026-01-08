@@ -56,7 +56,8 @@ interface VoiceSettingsStore {
     'auto_subtitle' |
     'high_contrast_mode' |
     'hold_button_mode' |
-    'wake_word_enabled'
+    'wake_word_enabled' |
+    'tts_enabled'
   >) => Promise<void>;
   setVoiceLanguage: (language: VoiceLanguage) => Promise<void>;
   setTextSize: (size: TextSize) => Promise<void>;
