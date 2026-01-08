@@ -21,7 +21,7 @@ import { SoundwaveVisualizer, VoiceStatusOverlay } from '@bayit/shared'
 import { useAuthStore } from '@/stores/authStore'
 import { useChatbotStore, type ChatbotAction } from '@/stores/chatbotStore'
 import { useVoiceSettingsStore, VoiceMode } from '@bayit/shared-stores/voiceSettingsStore'
-import { useModeEnforcement } from '@bayit/shared-hooks'
+import { useModeEnforcement, useVoiceResponseCoordinator, useConversationContext } from '@bayit/shared-hooks'
 import logger from '@/utils/logger'
 import { colors, spacing, borderRadius } from '@bayit/shared/theme'
 import { GlassView, GlassCard, GlassButton, GlassBadge } from '@bayit/shared/ui'
@@ -49,6 +49,26 @@ export default function Chatbot() {
     registerActionHandler,
     executeAction,
   } = useChatbotStore()
+
+  // Voice response orchestration hooks
+  const {
+    isProcessing: isVoiceProcessing,
+    handleVoiceResponse,
+  } = useVoiceResponseCoordinator({
+    onNavigate: (path) => navigate(path),
+    onSearch: (query) => navigate(`/search?q=${encodeURIComponent(query)}`),
+    onPlay: (contentId) => navigate(`/vod/${contentId}`),
+    onProcessingStart: () => setIsLoading(true),
+    onProcessingEnd: () => setIsLoading(false),
+  })
+
+  const {
+    registerVisibleContent,
+    mentionContent,
+    recordCommand,
+    recordSearchQuery,
+  } = useConversationContext()
+
   const isRTL = i18n.language === 'he' || i18n.language === 'ar'
   const isVoiceOnlyMode = currentMode === VoiceMode.VOICE_ONLY
   const [messages, setMessages] = useState<Message[]>([])
@@ -227,17 +247,53 @@ export default function Chatbot() {
         setCurrentTranscript(transcribedText)
         setVoiceStatusVisible(true)
         setInput('')
+
+        // Record the voice command for context tracking
+        recordCommand(transcribedText)
+
+        // Add user message to chat
         setMessages((prev) => [...prev, { role: 'user', content: transcribedText }])
         setIsLoading(true)
 
         try {
-          const chatResponse = await chatService.sendMessage(transcribedText, conversationId)
+          // Get response from backend (with enhanced voice fields from Phase 5)
+          const chatResponse = await chatService.sendMessage(
+            transcribedText,
+            conversationId,
+            context
+          )
           setConversationId(chatResponse.conversation_id)
+
+          // Add assistant message to chat
           setMessages((prev) => [
             ...prev,
             { role: 'assistant', content: chatResponse.message },
           ])
 
+          // Track mentioned content for context (for "play that one" commands, etc.)
+          if (chatResponse.content_ids && chatResponse.content_ids.length > 0) {
+            mentionContent(chatResponse.content_ids)
+          }
+
+          // Track search queries for context
+          if (chatResponse.action?.type === 'search' && chatResponse.action?.payload?.query) {
+            recordSearchQuery(chatResponse.action.payload.query)
+          }
+
+          // Use voice response coordinator to orchestrate the full response
+          // This handles: visual actions, TTS speaking, command execution
+          await handleVoiceResponse({
+            message: chatResponse.message,
+            conversation_id: chatResponse.conversation_id,
+            recommendations: chatResponse.recommendations,
+            spoken_response: chatResponse.spoken_response,
+            action: chatResponse.action,
+            content_ids: chatResponse.content_ids,
+            visual_action: chatResponse.visual_action,
+            confidence: chatResponse.confidence,
+          })
+
+          // Display recommendations if provided
           if (chatResponse.recommendations) {
             setMessages((prev) => [
               ...prev,
@@ -248,7 +304,8 @@ export default function Chatbot() {
               },
             ])
           }
-        } catch {
+        } catch (error) {
+          logger.error('Failed to process voice command:', 'Chatbot', error)
           setMessages((prev) => [
             ...prev,
             {
@@ -261,7 +318,8 @@ export default function Chatbot() {
           setIsLoading(false)
         }
       }
-    } catch {
+    } catch (error) {
+      logger.error('Failed to transcribe audio:', 'Chatbot', error)
       setMessages((prev) => [
         ...prev,
         {
