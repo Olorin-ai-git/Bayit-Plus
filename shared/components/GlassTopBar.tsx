@@ -92,7 +92,7 @@ export const GlassTopBar: React.FC<GlassTopBarProps> = ({
   return (
     <GlassView intensity="medium" style={[
       styles.container,
-      { flexDirection: isRTL ? 'row' : 'row-reverse' },
+      { flexDirection: isRTL ? 'row-reverse' : 'row' },
       isRTL ? { paddingRight: sidebarPadding } : { paddingLeft: sidebarPadding },
     ]}>
       {/* Actions side */}
@@ -136,7 +136,7 @@ export const GlassTopBar: React.FC<GlassTopBarProps> = ({
       </View>
 
       {/* Logo - Always opposite side of menu icons */}
-      <View style={[styles.logoContainer, isRTL ? styles.logoLeft : styles.logoRight]}>
+      <View style={[styles.logoContainer, isRTL ? styles.logoRight : styles.logoLeft]}>
         <Image source={logo} style={styles.logo} resizeMode="contain" />
         <View style={styles.logoTextContainer}>
           {isHebrew ? (
@@ -197,10 +197,10 @@ const styles = StyleSheet.create({
     position: 'absolute',
   },
   logoLeft: {
-    left: 100,
+    left: spacing.lg,
   },
   logoRight: {
-    right: 100,
+    right: spacing.lg,
   },
   logo: {
     width: 32,

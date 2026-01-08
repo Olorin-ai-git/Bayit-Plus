@@ -369,7 +369,7 @@ const FlowsScreen = () => {
           <View style={styles.createModalInfo}>
             <Ionicons name="phone-portrait-outline" size={24} color="#00d9ff" />
             <Text style={styles.createModalInfoText}>
-              {t('flows.tv.useCompanion', 'For full customization, use the Bayit+ app on your phone or visit bayit.plus on your computer.')}
+              {t('flows.tv.useCompanion', `For full customization, use the ${t('common.appName', 'Bayit+')} app on your phone or visit bayit.plus on your computer.`)}
             </Text>
           </View>
 

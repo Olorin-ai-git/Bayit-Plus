@@ -49,7 +49,7 @@ export const Chatbot: React.FC<ChatbotProps> = ({ visible, onClose }) => {
   const [messages, setMessages] = useState<Message[]>([
     {
       role: 'assistant',
-      content: 'שלום! אני העוזר החכם של בית+. איך אוכל לעזור לך היום? לחץ על כפתור המיקרופון ודבר אליי, או הקלד הודעה.',
+      content: t('chat.greeting', 'שלום! אני העוזר החכם של בית+. איך אוכל לעזור לך היום? לחץ על כפתור המיקרופון ודבר אליי, או הקלד הודעה.'),
     },
   ]);
   const [input, setInput] = useState('');
@@ -273,7 +273,7 @@ export const Chatbot: React.FC<ChatbotProps> = ({ visible, onClose }) => {
     setMessages([
       {
         role: 'assistant',
-        content: 'שלום! אני העוזר החכם של בית+. איך אוכל לעזור לך היום?',
+        content: t('chat.greeting', 'שלום! אני העוזר החכם של בית+. איך אוכל לעזור לך היום?'),
       },
     ]);
   };

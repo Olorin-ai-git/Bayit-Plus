@@ -233,7 +233,7 @@ export const AdminSidebar: React.FC = () => {
         <View style={[styles.brandLogo, rtlSpacing(isRTL, spacing.sm)]}>
           <Text style={styles.brandIcon}>🏠</Text>
         </View>
-        <Text style={[styles.brandText, { textAlign }]}>Bayit+ Admin</Text>
+        <Text style={[styles.brandText, { textAlign }]}>{t('admin.brand.title', 'Bayit+ Admin')}</Text>
       </View>
 
       {/* User Info */}

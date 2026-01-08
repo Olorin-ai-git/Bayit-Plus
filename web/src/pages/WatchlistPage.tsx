@@ -33,7 +33,7 @@ const WatchlistCard: React.FC<{
   getLocalizedText: (item: any, field: string) => string;
 }> = ({ item, onPress, onRemove, getLocalizedText }) => {
   const [isHovered, setIsHovered] = useState(false);
-  const { isRTL, textAlign } = useDirection();
+  const { isRTL, textAlign, flexDirection, justifyContent } = useDirection();
 
   return (
     <Pressable
@@ -92,16 +92,16 @@ const WatchlistCard: React.FC<{
 
 export default function WatchlistPage() {
   const { t, i18n } = useTranslation();
-  const { isRTL, textAlign, flexDirection } = useDirection();
+  const { isRTL, textAlign, flexDirection, justifyContent } = useDirection();
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(true);
   const [watchlist, setWatchlist] = useState<WatchlistItem[]>([]);
   const [filter, setFilter] = useState<'all' | 'movies' | 'series' | 'continue'>('all');
 
   const getLocalizedText = (item: any, field: string) => {
-    if (field === 'title') return getLocalizedName(item, currentLang);
-    if (field === 'description') return getLocalizedDescription(item, currentLang);
-    // Fallback for other fields
+    if (field === 'title') return getLocalizedName(item, i18n.language);
+    if (field === 'description') return getLocalizedDescription(item, i18n.language);
+    return item[field] || '';
   };
 
   useEffect(() => {
@@ -159,7 +159,7 @@ export default function WatchlistPage() {
 
   return (
     <View style={styles.container}>
-      <View style={[styles.header, { flexDirection }]}>
+      <View style={[styles.header, { flexDirection, justifyContent }]}>
         <View style={[styles.headerIcon, isRTL ? { marginLeft: spacing.lg } : { marginRight: spacing.lg }]}>
           <Text style={styles.headerIconText}>📋</Text>
         </View>

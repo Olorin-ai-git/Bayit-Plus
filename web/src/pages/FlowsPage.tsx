@@ -27,7 +27,7 @@ const SIDEBAR_DEFAULT_WIDTH = 340;
 
 export default function FlowsPage() {
   const { t, i18n } = useTranslation();
-  const { isRTL, textAlign, flexDirection } = useDirection();
+  const { isRTL, textAlign, flexDirection, justifyContent, alignItems } = useDirection();
   const navigate = useNavigate();
   const { width } = useWindowDimensions();
   const isMobile = width < 768;
@@ -198,7 +198,7 @@ export default function FlowsPage() {
         )}
 
         {/* Hero Header */}
-        <View style={[styles.header, { alignItems: isRTL ? 'flex-end' : 'flex-start' }]}>
+        <View style={[styles.header, { alignItems, width: '100%' }]}>
           <Text style={[styles.title, { textAlign }]}>{t('flows.title')}</Text>
           <Text style={[styles.subtitle, { textAlign }]}>{t('flows.subtitle')}</Text>
         </View>

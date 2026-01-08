@@ -253,7 +253,7 @@ export const GlassSidebar: React.FC<GlassSidebarProps> = ({ isExpanded, onToggle
         {/* App Version (when expanded) */}
         {isExpanded && (
           <Animated.View style={[styles.versionContainer, { opacity: opacityAnim }]}>
-            <Text style={[styles.versionText, { textAlign }]}>Bayit+ v1.0.0</Text>
+            <Text style={[styles.versionText, { textAlign }]}>{t('common.appVersion', 'Bayit+ v1.0.0')}</Text>
           </Animated.View>
         )}
       </GlassView>

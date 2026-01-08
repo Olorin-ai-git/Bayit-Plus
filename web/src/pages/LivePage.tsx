@@ -86,7 +86,7 @@ function SkeletonCard() {
 
 export default function LivePage() {
   const { t } = useTranslation();
-  const { isRTL, textAlign, flexDirection } = useDirection();
+  const { isRTL, textAlign, flexDirection, justifyContent } = useDirection();
   const [channels, setChannels] = useState<Channel[]>([]);
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [loading, setLoading] = useState(true);
@@ -130,7 +130,7 @@ export default function LivePage() {
   return (
     <View style={styles.container}>
       {/* Header */}
-      <View style={[styles.header, { flexDirection }]}>
+      <View style={[styles.header, { flexDirection, justifyContent }]}>
         <GlassView style={styles.headerIcon}>
           <Radio size={24} color={colors.error} />
         </GlassView>

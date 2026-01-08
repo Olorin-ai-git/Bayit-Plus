@@ -6,12 +6,16 @@ import { languages } from '../i18n';
 type Direction = 'rtl' | 'ltr';
 type FlexDirection = 'row' | 'row-reverse';
 type TextAlign = 'left' | 'right';
+type JustifyContent = 'flex-start' | 'flex-end';
+type AlignItems = 'flex-start' | 'flex-end';
 
 interface DirectionResult {
   isRTL: boolean;
   direction: Direction;
   flexDirection: FlexDirection;
   textAlign: TextAlign;
+  justifyContent: JustifyContent;
+  alignItems: AlignItems;
 }
 
 export const useDirection = (): DirectionResult => {
@@ -44,6 +48,8 @@ export const useDirection = (): DirectionResult => {
     direction: isRTL ? 'rtl' : 'ltr',
     flexDirection: isRTL ? 'row-reverse' : 'row',
     textAlign: isRTL ? 'right' : 'left',
+    justifyContent: isRTL ? 'flex-end' : 'flex-start',
+    alignItems: isRTL ? 'flex-end' : 'flex-start',
   };
 };
 

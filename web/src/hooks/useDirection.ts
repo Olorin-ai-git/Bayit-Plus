@@ -2,14 +2,18 @@ import { useState, useEffect } from 'react';
 import i18n from '@bayit/shared-i18n';
 
 type Direction = 'rtl' | 'ltr';
-type FlexDirection = 'row' | 'row-reverse';
+type FlexDirection = 'row';
 type TextAlign = 'left' | 'right';
+type JustifyContent = 'flex-start';
+type AlignItems = 'flex-start';
 
 interface DirectionResult {
   isRTL: boolean;
   direction: Direction;
-  flexDirection: FlexDirection;
+  flexDirection: FlexDirection;  // always 'row', document.dir handles visual direction
   textAlign: TextAlign;
+  justifyContent: JustifyContent;  // always 'flex-start', document.dir handles visual direction
+  alignItems: AlignItems;          // always 'flex-start', document.dir handles visual direction
 }
 
 const RTL_LANGUAGES = ['he', 'ar'];
@@ -41,8 +45,10 @@ export const useDirection = (): DirectionResult => {
   return {
     isRTL,
     direction: isRTL ? 'rtl' : 'ltr',
-    flexDirection: isRTL ? 'row-reverse' : 'row',
+    flexDirection: 'row', // document.dir handles the visual direction
     textAlign: isRTL ? 'right' : 'left',
+    justifyContent: 'flex-start', // document.dir handles the visual direction
+    alignItems: 'flex-start', // document.dir handles the visual direction
   };
 };
 

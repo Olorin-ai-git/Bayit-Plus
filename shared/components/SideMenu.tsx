@@ -30,7 +30,7 @@ export const SideMenu: React.FC<SideMenuProps> = ({
   onItemSelect,
   isExpanded,
 }) => {
-  const { i18n } = useTranslation();
+  const { i18n, t } = useTranslation();
   const { isRTL, textAlign, flexDirection } = useDirection();
   const [focusedItem, setFocusedItem] = useState<string | null>(null);
   const isHebrew = i18n.language === 'he';
@@ -39,7 +39,7 @@ export const SideMenu: React.FC<SideMenuProps> = ({
     <View style={[styles.container, isExpanded && styles.containerExpanded]}>
       {/* Logo */}
       <View style={styles.logoContainer}>
-        <Text style={styles.logo}>{isHebrew ? 'בית+' : 'Bayit+'}</Text>
+        <Text style={styles.logo}>{t('common.appName', 'Bayit+')}</Text>
       </View>
 
       {/* Menu Items */}

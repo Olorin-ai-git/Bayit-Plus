@@ -233,7 +233,7 @@ export const PushNotificationsScreen: React.FC = () => {
                   <Text style={styles.previewLabel}>{t('admin.push.preview', 'Preview')}</Text>
                   <View style={styles.previewCard}>
                     <View style={styles.previewHeader}>
-                      <Text style={styles.previewAppName}>Bayit+</Text>
+                      <Text style={styles.previewAppName}>{t('common.appName', 'Bayit+')}</Text>
                       <Text style={styles.previewTime}>now</Text>
                     </View>
                     <Text style={styles.previewTitle}>{formData.title || 'Notification Title'}</Text>

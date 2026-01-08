@@ -18,6 +18,7 @@
     "edit": "Edit",
     "delete": "Delete",
     "appName": "Bayit+",
+    "appVersion": "Bayit+ v1.0.0",
     "ok": "OK",
     "success": "Success",
     "warning": "Warning",
@@ -1291,6 +1292,7 @@
   },
   "chatbot": {
     "title": "Bayit+ Assistant",
+    "greeting": "Hello! I'm Bayit+ smart assistant. How can I help you today? Click the microphone and speak, or type a message.",
     "openChat": "Open chat",
     "welcome": "Hello! I'm the Bayit+ smart assistant. How can I help you today? Click the microphone and speak, or type a message.",
     "placeholder": "Type here...",
@@ -1310,5 +1312,9 @@
       "whatsOnNow": "What's on now?",
       "popularPodcasts": "Popular podcasts"
     }
+  },
+  "chat": {
+    "title": "Bayit+ Assistant",
+    "greeting": "Hello! I'm Bayit+ smart assistant. How can I help you today? Click the microphone and speak, or type a message."
   }
 }

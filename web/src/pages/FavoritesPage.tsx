@@ -112,7 +112,7 @@ function FavoriteCard({ item, onRemove }: { item: FavoriteItem; onRemove: (id: s
 
 export default function FavoritesPage() {
   const { t } = useTranslation();
-  const { isRTL, textAlign, flexDirection } = useDirection();
+  const { isRTL, textAlign, flexDirection, justifyContent } = useDirection();
   const [favorites, setFavorites] = useState<FavoriteItem[]>([]);
   const [loading, setLoading] = useState(true);
   const { width } = useWindowDimensions();
@@ -147,7 +147,7 @@ export default function FavoritesPage() {
   return (
     <View style={styles.container}>
       {/* Header */}
-      <View style={[styles.header, { flexDirection }]}>
+      <View style={[styles.header, { flexDirection, justifyContent }]}>
         <View style={styles.headerIcon}>
           <Star size={28} color={colors.warning} />
         </View>

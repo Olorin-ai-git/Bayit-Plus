@@ -8,11 +8,14 @@ import ContentCard from '@/components/content/ContentCard';
 import { contentService } from '@/services/api';
 import { colors, spacing, borderRadius } from '@bayit/shared/theme';
 import { GlassView, GlassCard, GlassCategoryPill } from '@bayit/shared/ui';
+import { getLocalizedName } from '@bayit/shared-utils/contentLocalization';
 import logger from '@/utils/logger';
 
 interface Category {
   id: string;
   name: string;
+  name_en?: string;
+  name_es?: string;
 }
 
 interface ContentItem {
@@ -26,8 +29,9 @@ interface ContentItem {
 }
 
 export default function VODPage() {
-  const { t } = useTranslation();
-  const { isRTL, textAlign, flexDirection } = useDirection();
+  const { t, i18n } = useTranslation();
+  const { isRTL, textAlign, flexDirection, justifyContent } = useDirection();
+
   const [searchParams, setSearchParams] = useSearchParams();
   const [content, setContent] = useState<ContentItem[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
@@ -74,7 +78,7 @@ export default function VODPage() {
   return (
     <View style={styles.container}>
       {/* Header */}
-      <View style={[styles.header, { flexDirection }]}>
+      <View style={[styles.header, { flexDirection, justifyContent }]}>
         <Text style={[styles.title, { textAlign }]}>{t('vod.title')}</Text>
         <GlassView style={styles.headerIcon}>
           <Film size={24} color={colors.primary} />
@@ -96,7 +100,7 @@ export default function VODPage() {
         {categories.map((category) => (
           <GlassCategoryPill
             key={category.id}
-            label={category.name}
+            label={getLocalizedName(category, i18n.language)}
             isActive={selectedCategory === category.id}
             onPress={() => handleCategoryChange(category.id)}
           />

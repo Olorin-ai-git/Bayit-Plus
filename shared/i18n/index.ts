@@ -10,6 +10,22 @@ import es from './locales/es.json';
 const LANGUAGE_KEY = '@bayit_language';
 const isWeb = Platform.OS === 'web';
 
+// Get initial language synchronously for web
+// Note: Check window directly since Platform.OS may not be set at module init time
+const getInitialLanguage = (): string => {
+  try {
+    if (typeof window !== 'undefined' && window.localStorage) {
+      const saved = window.localStorage.getItem(LANGUAGE_KEY);
+      if (saved && ['he', 'en', 'es'].includes(saved)) {
+        return saved;
+      }
+    }
+  } catch (e) {
+    // Ignore errors (e.g., in SSR or restricted environments)
+  }
+  return 'he'; // Default fallback
+};
+
 export const languages = [
   { code: 'he', name: 'עברית', flag: '🇮🇱', rtl: true },
   { code: 'en', name: 'English', flag: '🇺🇸', rtl: false },
@@ -22,12 +38,13 @@ const resources = {
   es: { translation: es },
 };
 
-// Initialize i18n
+// Initialize i18n with saved language (or default to Hebrew)
+const initialLang = getInitialLanguage();
 i18n
   .use(initReactI18next)
   .init({
     resources,
-    lng: 'he', // Default language
+    lng: initialLang,
     fallbackLng: 'he',
     interpolation: {
       escapeValue: false,

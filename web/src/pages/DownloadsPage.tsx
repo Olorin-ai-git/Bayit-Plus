@@ -131,7 +131,7 @@ function DownloadCard({ item, onDelete, pausedText }: { item: DownloadItem; onDe
 
 export default function DownloadsPage() {
   const { t } = useTranslation();
-  const { isRTL, textAlign, flexDirection } = useDirection();
+  const { isRTL, textAlign, flexDirection, justifyContent } = useDirection();
   const [downloads, setDownloads] = useState<DownloadItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [storageInfo, setStorageInfo] = useState({ used: 0, total: 32 });
@@ -191,7 +191,7 @@ export default function DownloadsPage() {
   return (
     <View style={styles.container}>
       {/* Header */}
-      <View style={[styles.header, { flexDirection }]}>
+      <View style={[styles.header, { flexDirection, justifyContent }]}>
         <View style={styles.headerIcon}>
           <Download size={28} color={colors.primary} />
         </View>

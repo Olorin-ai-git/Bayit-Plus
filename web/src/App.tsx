@@ -1,6 +1,7 @@
 import { useEffect } from 'react'
 import { Routes, Route } from 'react-router-dom'
 import { loadSavedLanguage } from '@bayit/shared-i18n'
+import { useDirection } from '@/hooks/useDirection'
 import Layout from './components/layout/Layout'
 import HomePage from './pages/HomePage'
 import LivePage from './pages/LivePage'
@@ -43,6 +44,9 @@ import AuditLogsPage from './pages/admin/AuditLogsPage'
 import SettingsPage from './pages/admin/SettingsPage'
 
 function App() {
+  // Set document direction based on language (RTL for Hebrew/Arabic, LTR for others)
+  useDirection()
+
   useEffect(() => {
     loadSavedLanguage()
   }, [])

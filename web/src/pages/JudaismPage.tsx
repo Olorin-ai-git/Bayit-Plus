@@ -116,7 +116,7 @@ function JudaismCard({ item }: { item: JudaismItem }) {
 
 export default function JudaismPage() {
   const { t, i18n } = useTranslation();
-  const { isRTL, textAlign, flexDirection } = useDirection();
+  const { isRTL, textAlign, flexDirection, justifyContent, alignItems } = useDirection();
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [content, setContent] = useState<JudaismItem[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
@@ -170,7 +170,7 @@ export default function JudaismPage() {
   return (
     <View style={styles.container}>
       {/* Header */}
-      <View style={[styles.header, { flexDirection }]}>
+      <View style={[styles.header, { flexDirection, justifyContent }]}>
         <View style={styles.headerIcon}>
           <Text style={styles.headerEmoji}>✡️</Text>
         </View>

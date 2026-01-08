@@ -7,6 +7,7 @@ import { Radio, Volume2, Play } from 'lucide-react';
 import { radioService } from '@/services/api';
 import { colors, spacing, borderRadius } from '@bayit/shared/theme';
 import { GlassCard, GlassView, GlassBadge, GlassCategoryPill } from '@bayit/shared/ui';
+import { getLocalizedName } from '@bayit/shared-utils/contentLocalization';
 import logger from '@/utils/logger';
 
 interface Category {
@@ -85,8 +86,8 @@ function SkeletonCard() {
 }
 
 export default function RadioPage() {
-  const { t } = useTranslation();
-  const { isRTL, textAlign, flexDirection } = useDirection();
+  const { t, i18n } = useTranslation();
+  const { isRTL, textAlign, flexDirection, justifyContent } = useDirection();
   const [stations, setStations] = useState<Station[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
   const [selectedCategory, setSelectedCategory] = useState('all');
@@ -135,7 +136,7 @@ export default function RadioPage() {
   return (
     <View style={styles.container}>
       {/* Header */}
-      <View style={[styles.header, { flexDirection }]}>
+      <View style={[styles.header, { flexDirection, justifyContent }]}>
         <GlassView style={styles.headerIcon}>
           <Radio size={24} color={colors.secondary} />
         </GlassView>
@@ -182,7 +183,7 @@ export default function RadioPage() {
         {categories.map((category) => (
           <GlassCategoryPill
             key={category.id}
-            label={category.name}
+            label={getLocalizedName(category, i18n.language)}
             isActive={selectedCategory === category.id}
             onPress={() => setSelectedCategory(category.id)}
           />

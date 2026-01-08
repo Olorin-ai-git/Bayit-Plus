@@ -12,9 +12,6 @@
 
 /* Glass Variables */
 :root {
-  --direction: rtl;
-  --text-align: right;
-
   /* Glass Variables */
   --glass-bg: rgba(30, 41, 59, 0.6);
   --glass-bg-light: rgba(30, 41, 59, 0.4);
@@ -23,15 +20,12 @@
   --glass-border-light: rgba(255, 255, 255, 0.05);
 }
 
-html {
-  direction: rtl;
-}
+/* Direction is controlled by JavaScript via document.documentElement.dir */
 
 body {
   @apply text-white;
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   background: linear-gradient(135deg, #0f172a 0%, #0a0f1a 100%);
-  text-align: right;
   min-height: 100vh;
 }
 

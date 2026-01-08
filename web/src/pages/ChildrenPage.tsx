@@ -7,6 +7,7 @@ import { useProfileStore } from '@/stores/profileStore';
 import { childrenService } from '../services/api';
 import { colors, spacing, borderRadius } from '@bayit/shared/theme';
 import { GlassCard, GlassView, GlassButton, GlassCategoryPill } from '@bayit/shared/ui';
+import { getLocalizedName } from '@bayit/shared-utils/contentLocalization';
 import { useDirection } from '@/hooks/useDirection';
 import LinearGradient from 'react-native-linear-gradient';
 import logger from '@/utils/logger';
@@ -161,8 +162,8 @@ function ExitKidsModeModal({ isOpen, onClose, onVerify }: { isOpen: boolean; onC
 }
 
 export default function ChildrenPage() {
-  const { t } = useTranslation();
-  const { isRTL, textAlign, flexDirection } = useDirection();
+  const { t, i18n } = useTranslation();
+  const { isRTL, textAlign, flexDirection, justifyContent } = useDirection();
   const navigate = useNavigate();
   const { activeProfile, isKidsMode } = useProfileStore();
   const [selectedCategory, setSelectedCategory] = useState('all');
@@ -228,8 +229,8 @@ export default function ChildrenPage() {
         style={StyleSheet.absoluteFill}
       />
       <View style={styles.content}>
-        <View style={[styles.header, { flexDirection }]}>
-          <View style={[styles.headerLeft, { flexDirection }]}>
+        <View style={[styles.header, { flexDirection, justifyContent }]}>
+          <View style={[styles.headerLeft, { flexDirection, justifyContent }]}>
             <View style={styles.headerIcon}>
               <Baby size={32} color="#facc15" />
             </View>
@@ -251,7 +252,7 @@ export default function ChildrenPage() {
             {categories.map((category) => (
               <GlassCategoryPill
                 key={category.id}
-                label={category.name}
+                label={getLocalizedName(category, i18n.language)}
                 emoji={CATEGORY_ICONS[category.id] || '🌈'}
                 isActive={selectedCategory === category.id}
                 onPress={() => setSelectedCategory(category.id)}

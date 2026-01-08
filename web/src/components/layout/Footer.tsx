@@ -163,9 +163,8 @@ export default function Footer() {
         <View style={[styles.splitterContent, isRTL && styles.splitterContentRTL]}>
           {!isExpanded && (
             <>
-              <View style={styles.collapsedBrand}>
+              <View style={[styles.collapsedBrand, isRTL && styles.collapsedBrandRTL]}>
                 <AnimatedLogo size="small" />
-                <Text style={styles.collapsedTitle}>Bayit+</Text>
               </View>
               <Text style={styles.collapsedCopyright}>
                 {t('footer.copyright', '© {{year}} Bayit+. All rights reserved.', {
@@ -482,6 +481,9 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: spacing.sm,
+  },
+  collapsedBrandRTL: {
+    flexDirection: 'row-reverse',
   },
   collapsedTitle: {
     fontSize: 14,

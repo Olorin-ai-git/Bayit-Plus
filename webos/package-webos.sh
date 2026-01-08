@@ -18,9 +18,16 @@ for file in icon.png largeIcon.png splash.png appinfo.json; do
   fi
 done
 
-# Package the app
+# Copy manifest and icons to dist folder (required by ares-package)
+echo "📋 Preparing package contents..."
+cp appinfo.json dist/
+cp icon.png dist/
+cp largeIcon.png dist/
+cp splash.png dist/
+
+# Package the app (--no-minify because webpack already minified)
 echo "📦 Creating IPK package..."
-ares-package dist icon.png largeIcon.png splash.png appinfo.json
+ares-package dist -o . --no-minify
 
 PACKAGE_NAME=$(ls -t *.ipk 2>/dev/null | head -1)
 

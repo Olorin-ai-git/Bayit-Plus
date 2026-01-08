@@ -226,7 +226,7 @@ export const EmailCampaignsScreen: React.FC = () => {
 
                 <View style={styles.formGroup}>
                   <Text style={styles.formLabel}>{t('admin.email.subject', 'Email Subject')}</Text>
-                  <TextInput style={styles.formInput} value={formData.subject} onChangeText={(text) => setFormData(prev => ({ ...prev, subject: text }))} placeholder={t('admin.email.subjectPlaceholder', 'e.g., Your weekly update from Bayit+')} placeholderTextColor={colors.textMuted} />
+                  <TextInput style={styles.formInput} value={formData.subject} onChangeText={(text) => setFormData(prev => ({ ...prev, subject: text }))} placeholder={t('admin.email.subjectPlaceholder', `e.g., Your weekly update from ${t('common.appName', 'Bayit+')}`)} placeholderTextColor={colors.textMuted} />
                 </View>
 
                 <View style={styles.formGroup}>

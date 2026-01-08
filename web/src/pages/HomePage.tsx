@@ -11,6 +11,7 @@ import { GlassView } from '@bayit/shared/ui';
 import MorningRitual from '@/components/ritual/MorningRitual';
 import { contentService, liveService, historyService, ritualService, zmanService } from '@/services/api';
 import { colors, spacing, borderRadius, fontSize } from '@bayit/shared/theme';
+import { getLocalizedName } from '@bayit/shared-utils/contentLocalization';
 import { GlassCard } from '@bayit/shared/ui';
 import LinearGradient from 'react-native-linear-gradient';
 import logger from '@/utils/logger';
@@ -142,7 +143,7 @@ interface TimeData {
 }
 
 export default function HomePage() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const { isRTL } = useDirection();
   const [featured, setFeatured] = useState<any>(null);
   const [categories, setCategories] = useState<Category[]>([]);
@@ -329,7 +330,7 @@ export default function HomePage() {
       {categories.map((category) => (
         <ContentCarousel
           key={category.id}
-          title={category.name}
+          title={getLocalizedName(category, i18n.language)}
           items={category.items}
           seeAllLink={`/vod?category=${category.id}`}
           style={styles.carousel}

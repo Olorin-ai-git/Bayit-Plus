@@ -7,6 +7,7 @@ import { Podcast, Headphones, Clock } from 'lucide-react';
 import { podcastService } from '@/services/api';
 import { colors, spacing, borderRadius } from '@bayit/shared/theme';
 import { GlassView, GlassCard, GlassCategoryPill } from '@bayit/shared/ui';
+import { getLocalizedName } from '@bayit/shared-utils/contentLocalization';
 import logger from '@/utils/logger';
 
 interface Category {
@@ -79,8 +80,8 @@ function SkeletonCard() {
 }
 
 export default function PodcastsPage() {
-  const { t } = useTranslation();
-  const { isRTL, textAlign, flexDirection } = useDirection();
+  const { t, i18n } = useTranslation();
+  const { isRTL, textAlign, flexDirection, justifyContent } = useDirection();
   const [shows, setShows] = useState<Show[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
   const [loading, setLoading] = useState(true);
@@ -126,7 +127,7 @@ export default function PodcastsPage() {
   return (
     <View style={styles.container}>
       {/* Header */}
-      <View style={[styles.header, { flexDirection }]}>
+      <View style={[styles.header, { flexDirection, justifyContent }]}>
         <GlassView style={styles.headerIcon}>
           <Podcast size={24} color={colors.success} />
         </GlassView>
@@ -179,7 +180,7 @@ export default function PodcastsPage() {
         {categories.map((category) => (
           <GlassCategoryPill
             key={category.id}
-            label={category.name}
+            label={getLocalizedName(category, i18n.language)}
             isActive={selectedCategory === category.id}
             onPress={() => setSelectedCategory(category.id)}
           />
