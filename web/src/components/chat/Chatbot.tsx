@@ -17,9 +17,11 @@ import { useNavigate } from 'react-router-dom'
 import { X, Send, Sparkles, Mic, Square } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { chatService } from '@/services/api'
-import { SoundwaveVisualizer } from '@bayit/shared'
+import { SoundwaveVisualizer, VoiceStatusOverlay } from '@bayit/shared'
 import { useAuthStore } from '@/stores/authStore'
 import { useChatbotStore, type ChatbotAction } from '@/stores/chatbotStore'
+import { useVoiceSettingsStore, VoiceMode } from '@bayit/shared/stores/voiceSettingsStore'
+import { useModeEnforcement } from '@bayit/shared/hooks/useModeEnforcement'
 import logger from '@/utils/logger'
 import { colors, spacing, borderRadius } from '@bayit/shared/theme'
 import { GlassView, GlassCard, GlassButton, GlassBadge } from '@bayit/shared/ui'
@@ -35,6 +37,8 @@ export default function Chatbot() {
   const { t, i18n } = useTranslation()
   const navigate = useNavigate()
   const { isAuthenticated } = useAuthStore()
+  const { preferences } = useVoiceSettingsStore()
+  const { currentMode } = useModeEnforcement()
   const {
     isOpen,
     setOpen,
@@ -46,12 +50,15 @@ export default function Chatbot() {
     executeAction,
   } = useChatbotStore()
   const isRTL = i18n.language === 'he' || i18n.language === 'ar'
+  const isVoiceOnlyMode = currentMode === VoiceMode.VOICE_ONLY
   const [messages, setMessages] = useState<Message[]>([])
   const [input, setInput] = useState('')
   const [isLoading, setIsLoading] = useState(false)
   const [conversationId, setConversationId] = useState<string | null>(null)
   const [isRecording, setIsRecording] = useState(false)
   const [isTranscribing, setIsTranscribing] = useState(false)
+  const [currentTranscript, setCurrentTranscript] = useState('')
+  const [voiceStatusVisible, setVoiceStatusVisible] = useState(false)
   const messagesEndRef = useRef<ScrollView>(null)
   const inputRef = useRef<TextInput>(null)
   const mediaRecorderRef = useRef<MediaRecorder | null>(null)
@@ -217,6 +224,8 @@ export default function Chatbot() {
       const transcribedText = response.text
 
       if (transcribedText) {
+        setCurrentTranscript(transcribedText)
+        setVoiceStatusVisible(true)
         setInput('')
         setMessages((prev) => [...prev, { role: 'user', content: transcribedText }])
         setIsLoading(true)
@@ -339,6 +348,24 @@ export default function Chatbot() {
     return null
   }
 
+  // Voice Only Mode: Show only VoiceStatusOverlay, hide chat UI
+  if (isVoiceOnlyMode) {
+    return (
+      <VoiceStatusOverlay
+        isListening={isRecording && !isTranscribing}
+        isProcessing={isLoading && !currentTranscript}
+        isSpeaking={isLoading && !!currentTranscript}
+        currentTranscript={currentTranscript}
+        autoHideDuration={3000}
+        onAutoHide={() => {
+          setVoiceStatusVisible(false)
+          setCurrentTranscript('')
+        }}
+      />
+    )
+  }
+
+  // Hybrid/Classic Mode: Show full chat UI
   return (
     <>
       {/* Chat Button */}

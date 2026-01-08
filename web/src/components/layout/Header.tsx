@@ -6,6 +6,7 @@ import { useTranslation } from 'react-i18next';
 import { useAuthStore } from '@/stores/authStore';
 import { useChatbotStore } from '@/stores/chatbotStore';
 import { useVoiceSettingsStore } from '@/stores/voiceSettingsStore';
+import { useModeEnforcement } from '@bayit/shared/hooks/useModeEnforcement';
 import { chatService } from '@/services/api';
 import { VoiceSearchButton, LanguageSelector, AnimatedLogo, SoundwaveVisualizer } from '@bayit/shared';
 import { useConstantListening } from '@bayit/shared-hooks';
@@ -38,6 +39,7 @@ export default function Header({ onMenuPress }: HeaderProps) {
   const { user, isAuthenticated, isAdmin, logout } = useAuthStore();
   const { sendMessage, toggleOpen } = useChatbotStore();
   const { preferences } = useVoiceSettingsStore();
+  const { isRemoteControlEnabled } = useModeEnforcement();
   const navigate = useNavigate();
   const { width } = useWindowDimensions();
   const isMobile = width < 768 && !IS_TV_BUILD;
@@ -126,7 +128,8 @@ export default function Header({ onMenuPress }: HeaderProps) {
   );
 
   // Navigation component - document.dir handles visual direction
-  const NavSection = !isMobile && (
+  // Disabled in Voice Only mode
+  const NavSection = !isMobile && isRemoteControlEnabled && (
     <View style={styles.nav}>
       {navLinkKeys.map((link) => (
         <NavLink
@@ -134,6 +137,8 @@ export default function Header({ onMenuPress }: HeaderProps) {
           to={link.to}
           style={({ isActive }) => ({
             textDecoration: 'none',
+            pointerEvents: isRemoteControlEnabled ? 'auto' : 'none',
+            opacity: isRemoteControlEnabled ? 1 : 0.5,
           })}
         >
           {({ isActive }) => (
