@@ -266,6 +266,11 @@ export interface VoicePreferences {
   hold_button_mode: boolean;
   silence_threshold_ms: number;
   vad_sensitivity: VADSensitivity;
+  // Wake word settings for "Hi Bayit" activation
+  wake_word_enabled: boolean;
+  wake_word: string;
+  wake_word_sensitivity: number;
+  wake_word_cooldown_ms: number;
 }
 
 // Profiles Service (API)

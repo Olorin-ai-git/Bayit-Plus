@@ -26,6 +26,7 @@
   },
   "dependencies": {
     "react-native-linear-gradient": "^2.8.3",
-    "react-native-vector-icons": "^10.3.0"
+    "react-native-vector-icons": "^10.3.0",
+    "vosk-browser": "^0.0.8"
   }
 }

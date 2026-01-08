@@ -1,15 +1,27 @@
+import { useState, useCallback } from 'react';
 import { View, StyleSheet } from 'react-native';
 import { Outlet } from 'react-router-dom';
 import Header from './Header';
 import Footer from './Footer';
+import GlassSidebar from './GlassSidebar';
 import Chatbot from '../chat/Chatbot';
-import { colors } from '@bayit/shared/theme';
+import { colors, spacing } from '@bayit/shared/theme';
 
 // Check if this is a TV build (set by webpack)
 declare const __TV__: boolean;
 const IS_TV_BUILD = typeof __TV__ !== 'undefined' && __TV__;
 
 export default function Layout() {
+  // Sidebar state for TV builds
+  const [isSidebarExpanded, setIsSidebarExpanded] = useState(false);
+
+  const toggleSidebar = useCallback(() => {
+    setIsSidebarExpanded(prev => !prev);
+  }, []);
+
+  // Calculate content margin based on sidebar state
+  const sidebarWidth = IS_TV_BUILD ? (isSidebarExpanded ? 280 : 80) : 0;
+
   return (
     <View style={styles.container}>
       {/* Decorative blur circles - wrapped to contain overflow */}
@@ -19,11 +31,26 @@ export default function Layout() {
         <View style={[styles.blurCircle, styles.blurCircleSuccess]} />
       </View>
 
-      <Header />
-      <View style={styles.main}>
-        <Outlet />
+      {/* TV Sidebar */}
+      {IS_TV_BUILD && (
+        <GlassSidebar
+          isExpanded={isSidebarExpanded}
+          onToggle={toggleSidebar}
+        />
+      )}
+
+      {/* Main content wrapper with sidebar offset */}
+      <View style={[
+        styles.contentWrapper,
+        IS_TV_BUILD && { marginLeft: sidebarWidth },
+      ]}>
+        <Header onMenuPress={IS_TV_BUILD ? toggleSidebar : undefined} />
+        <View style={styles.main}>
+          <Outlet />
+        </View>
+        {!IS_TV_BUILD && <Footer />}
       </View>
-      {!IS_TV_BUILD && <Footer />}
+
       {/* Chatbot enabled on both web and TV for voice interaction */}
       <Chatbot />
     </View>
@@ -36,7 +63,14 @@ const styles = StyleSheet.create({
     minHeight: '100vh' as any,
     backgroundColor: colors.background,
     position: 'relative',
+    flexDirection: 'row',
   },
+  contentWrapper: {
+    flex: 1,
+    flexDirection: 'column',
+    minHeight: '100vh' as any,
+    transition: 'margin-left 0.3s ease-out',
+  } as any,
   blurContainer: {
     position: 'absolute',
     top: 0,

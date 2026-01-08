@@ -1,5 +1,6 @@
 const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
+const CopyWebpackPlugin = require('copy-webpack-plugin');
 const webpack = require('webpack');
 require('dotenv').config({ path: path.resolve(__dirname, '.env') });
 
@@ -184,6 +185,27 @@ module.exports = (env, argv) => {
       new HtmlWebpackPlugin({
         template: path.resolve(__dirname, 'public/index.html'),
       }),
+      // Copy Vosk WebAssembly files for wake word detection (TV builds only)
+      // Note: Vosk model (~10-50MB) must be downloaded separately from https://alphacephei.com/vosk/models
+      // and placed in shared/models/vosk-model-wakeword-en-us/
+      ...(isTV ? [
+        new CopyWebpackPlugin({
+          patterns: [
+            {
+              // Copy Vosk WebAssembly files from root node_modules
+              from: path.resolve(__dirname, '../node_modules/vosk-browser/dist'),
+              to: path.resolve(getOutputPath(), 'vosk'),
+              noErrorOnMissing: true,
+            },
+            {
+              // Copy Vosk model if available (needs to be downloaded manually)
+              from: path.resolve(__dirname, '../shared/models/vosk-model-wakeword-en-us'),
+              to: path.resolve(getOutputPath(), 'vosk/model'),
+              noErrorOnMissing: true,
+            },
+          ],
+        }),
+      ] : []),
     ],
     devServer: {
       static: {

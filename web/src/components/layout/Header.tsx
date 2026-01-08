@@ -28,7 +28,11 @@ const navLinkKeys = [
   { to: '/children', key: 'nav.children' },
 ];
 
-export default function Header() {
+interface HeaderProps {
+  onMenuPress?: () => void;
+}
+
+export default function Header({ onMenuPress }: HeaderProps) {
   const { i18n, t } = useTranslation();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const { user, isAuthenticated, isAdmin, logout } = useAuthStore();
