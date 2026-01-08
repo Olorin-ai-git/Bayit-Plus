@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useMemo } from 'react';
 import {
   View,
   Text,
@@ -12,6 +12,7 @@ import { useNavigation } from '@react-navigation/native';
 import { GlassView } from './ui';
 import { colors, spacing, borderRadius } from '../theme';
 import { useDirection } from '../hooks/useDirection';
+import { useAuthStore } from '../stores/authStore';
 
 interface GlassSidebarProps {
   isExpanded: boolean;
@@ -31,7 +32,8 @@ interface MenuSection {
   items: MenuItem[];
 }
 
-const menuSections: MenuSection[] = [
+// Base menu sections (without admin - that's added dynamically based on user role)
+const baseMenuSections: MenuSection[] = [
   {
     items: [
       { id: 'home', icon: '🏠', labelKey: 'nav.home', route: 'Home' },
@@ -58,6 +60,13 @@ const menuSections: MenuSection[] = [
     ],
   },
   {
+    titleKey: 'nav.account',
+    items: [
+      { id: 'profile', icon: '👤', labelKey: 'nav.profile', route: 'Profile' },
+      { id: 'subscribe', icon: '💎', labelKey: 'nav.subscribe', route: 'Subscribe' },
+    ],
+  },
+  {
     titleKey: 'nav.settings',
     items: [
       { id: 'settings', icon: '⚙️', labelKey: 'nav.settings', route: 'Settings' },
@@ -70,10 +79,31 @@ export const GlassSidebar: React.FC<GlassSidebarProps> = ({ isExpanded, onToggle
   const { t } = useTranslation();
   const { isRTL, textAlign } = useDirection();
   const navigation = useNavigation<any>();
+  const { user } = useAuthStore();
   const widthAnim = useRef(new Animated.Value(isExpanded ? 280 : 80)).current;
   const opacityAnim = useRef(new Animated.Value(isExpanded ? 1 : 0)).current;
   const [focusedItem, setFocusedItem] = useState<string | null>(null);
   const [currentRoute, setCurrentRoute] = useState<string>(activeRoute || 'Home');
+
+  // Dynamically add Admin menu item if user is admin
+  const menuSections = useMemo(() => {
+    const isAdmin = user?.role === 'admin';
+    if (!isAdmin) return baseMenuSections;
+
+    // Add Admin to Settings section
+    return baseMenuSections.map(section => {
+      if (section.titleKey === 'nav.settings') {
+        return {
+          ...section,
+          items: [
+            { id: 'admin', icon: '👨‍💼', labelKey: 'nav.admin', route: 'Admin' },
+            ...section.items,
+          ],
+        };
+      }
+      return section;
+    });
+  }, [user?.role]);
 
   // Update current route when activeRoute prop changes
   useEffect(() => {

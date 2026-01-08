@@ -198,7 +198,11 @@
     "favorites": "Favorites",
     "watchlist": "Watchlist",
     "downloads": "Downloads",
-    "help": "Help & Support"
+    "help": "Help & Support",
+    "discover": "Discover",
+    "account": "Account",
+    "subscribe": "Subscribe",
+    "admin": "Admin"
   },
   "home": {
     "continueWatching": "Continue Watching",

@@ -46,8 +46,8 @@ export function useAudioCapture(options: UseAudioCaptureOptions = {}): UseAudioC
   const eventEmitterRef = useRef<NativeEventEmitter | null>(null);
   const subscriptionsRef = useRef<any[]>([]);
 
-  // Check if native module is supported
-  const isSupported = Platform.OS === 'ios' && !!AudioCaptureModule;
+  // Check if native module is supported (specifically for tvOS)
+  const isSupported = Platform.OS === 'ios' && Platform.isTV && !!AudioCaptureModule;
 
   // Set up event listeners
   useEffect(() => {

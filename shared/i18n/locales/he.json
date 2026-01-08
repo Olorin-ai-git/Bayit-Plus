@@ -194,7 +194,11 @@
     "favorites": "מועדפים",
     "watchlist": "רשימת צפייה",
     "downloads": "הורדות",
-    "help": "עזרה ותמיכה"
+    "help": "עזרה ותמיכה",
+    "discover": "גילוי",
+    "account": "חשבון",
+    "subscribe": "הרשמה למנוי",
+    "admin": "ניהול"
   },
   "home": {
     "continueWatching": "המשך צפייה",

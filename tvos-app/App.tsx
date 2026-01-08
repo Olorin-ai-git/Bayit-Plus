@@ -7,6 +7,7 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { I18nextProvider, useTranslation } from 'react-i18next';
 import i18n, { loadSavedLanguage } from '@bayit/shared-i18n';
 import { useDirection } from '@bayit/shared-hooks';
+import { isTVOS } from './src/utils/platform';
 import {
   HomeScreen,
   PlayerScreen,
@@ -27,10 +28,13 @@ import {
   FlowsScreen,
   JudaismScreen,
 } from '@bayit/shared-screens';
+import { AdminNavigator } from './src/navigation/AdminNavigator';
+import ProfileFormScreen from './src/screens/ProfileFormScreen';
+import SubscribeScreen from './src/screens/SubscribeScreen';
 import { ProfileProvider } from '@bayit/shared-contexts';
 import { ModalProvider } from '@bayit/shared-contexts';
 import { GlassTopBar, GlassSidebar, DemoBanner } from '@bayit/shared';
-import { useChatbotStore } from '@bayit/shared-stores';
+import { useChatbotStore, useAuthStore } from '@bayit/shared-stores';
 
 // Ignore specific warnings for TV
 LogBox.ignoreLogs([
@@ -42,6 +46,8 @@ export type RootStackParamList = {
   Login: undefined;
   Register: undefined;
   ProfileSelection: undefined;
+  CreateProfile: undefined;
+  EditProfile: { profileId: string };
   Main: undefined;
   MorningRitual: undefined;
   Judaism: undefined;
@@ -53,6 +59,8 @@ export type RootStackParamList = {
     type: 'vod' | 'live' | 'radio' | 'podcast';
   };
   Search: { query?: string };
+  Subscribe: undefined;
+  Admin: undefined;
   Favorites: undefined;
   Downloads: undefined;
   Watchlist: undefined;
@@ -143,7 +151,7 @@ const TVTabBar: React.FC<any> = ({ state, descriptors, navigation }) => {
 function MainTabs() {
   return (
     <Tab.Navigator
-      tabBar={(props) => <TVTabBar {...props} />}
+      tabBar={(props) => isTVOS ? null : <TVTabBar {...props} />}
       screenOptions={{
         headerShown: false,
       }}
@@ -234,6 +242,8 @@ const AppContent: React.FC = () => {
             <Stack.Screen name="Login" component={LoginScreen} />
             <Stack.Screen name="Register" component={RegisterScreen} />
             <Stack.Screen name="ProfileSelection" component={ProfileSelectionScreen} />
+            <Stack.Screen name="CreateProfile" component={ProfileFormScreen} />
+            <Stack.Screen name="EditProfile" component={ProfileFormScreen} />
             <Stack.Screen name="Main" component={MainTabs} />
             <Stack.Screen name="MorningRitual" component={MorningRitualScreen} />
             <Stack.Screen name="Judaism" component={JudaismScreen} />
@@ -241,6 +251,8 @@ const AppContent: React.FC = () => {
             <Stack.Screen name="Flows" component={FlowsScreen} />
             <Stack.Screen name="Player" component={PlayerScreen} />
             <Stack.Screen name="Search" component={SearchScreen} />
+            <Stack.Screen name="Subscribe" component={SubscribeScreen} />
+            <Stack.Screen name="Admin" component={AdminNavigator} />
             <Stack.Screen name="Favorites" component={FavoritesScreen} />
             <Stack.Screen name="Downloads" component={DownloadsScreen} />
             <Stack.Screen name="Watchlist" component={WatchlistScreen} />
@@ -255,6 +267,7 @@ const AppContent: React.FC = () => {
 const AppContentWithHandlers: React.FC = () => {
   const navigation = useNavigation<any>();
   const { registerActionHandler, unregisterActionHandler } = useChatbotStore();
+  const { user } = useAuthStore();
 
   // Register chatbot action handlers
   useEffect(() => {
@@ -284,6 +297,25 @@ const AppContentWithHandlers: React.FC = () => {
       // TODO: Integrate with watchlist API
     });
 
+    // Navigate to subscribe screen
+    registerActionHandler('subscribe', () => {
+      navigation.navigate('Subscribe');
+    });
+
+    // Manage profiles
+    registerActionHandler('manage_profiles', () => {
+      navigation.navigate('ProfileSelection');
+    });
+
+    // Open admin (only for admin users)
+    registerActionHandler('open_admin', () => {
+      if (user?.role === 'admin') {
+        navigation.navigate('Admin');
+      } else {
+        console.log('[Chatbot] Admin access denied - user is not admin');
+      }
+    });
+
     // Cleanup handlers on unmount
     return () => {
       unregisterActionHandler('navigate');
@@ -291,8 +323,11 @@ const AppContentWithHandlers: React.FC = () => {
       unregisterActionHandler('play');
       unregisterActionHandler('start_flow');
       unregisterActionHandler('add_to_watchlist');
+      unregisterActionHandler('subscribe');
+      unregisterActionHandler('manage_profiles');
+      unregisterActionHandler('open_admin');
     };
-  }, [navigation, registerActionHandler, unregisterActionHandler]);
+  }, [navigation, registerActionHandler, unregisterActionHandler, user?.role]);
 
   return <AppContent />;
 };

@@ -4,6 +4,7 @@ const fs = require('fs');
 
 const projectRoot = __dirname;
 const sharedRoot = path.resolve(__dirname, '../shared');
+const tvAppRoot = path.resolve(__dirname, '../tv-app');
 const nodeModulesPath = path.resolve(projectRoot, 'node_modules');
 
 const shimsRoot = path.resolve(__dirname, 'src/shims');
@@ -12,20 +13,7 @@ const shimsRoot = path.resolve(__dirname, 'src/shims');
 function getExtraNodeModules() {
   const modules = {};
 
-  // Add shared package aliases
-  modules['@bayit/shared'] = path.resolve(sharedRoot, 'components');
-  modules['@bayit/shared-screens'] = path.resolve(sharedRoot, 'screens');
-  modules['@bayit/shared-services'] = path.resolve(sharedRoot, 'services');
-  modules['@bayit/shared-stores'] = path.resolve(sharedRoot, 'stores');
-  modules['@bayit/shared-hooks'] = path.resolve(sharedRoot, 'hooks');
-  modules['@bayit/shared-contexts'] = path.resolve(sharedRoot, 'contexts');
-  modules['@bayit/shared-i18n'] = path.resolve(sharedRoot, 'i18n');
-
-  // Shim Expo packages to React Native alternatives
-  modules['expo-linear-gradient'] = path.resolve(shimsRoot, 'expo-linear-gradient.ts');
-  modules['@expo/vector-icons'] = path.resolve(shimsRoot, 'expo-vector-icons.ts');
-
-  // Map all node_modules from tvos-app
+  // Map all node_modules from tvos-app FIRST
   const nodeModulesList = fs.readdirSync(nodeModulesPath);
 
   for (const name of nodeModulesList) {
@@ -46,6 +34,31 @@ function getExtraNodeModules() {
     }
   }
 
+  // Add shared package aliases AFTER node_modules (to override if needed)
+  modules['@bayit/shared'] = path.resolve(sharedRoot, 'components');
+  modules['@bayit/shared-screens'] = path.resolve(sharedRoot, 'screens');
+  modules['@bayit/shared-services'] = path.resolve(sharedRoot, 'services');
+  modules['@bayit/shared-stores'] = path.resolve(sharedRoot, 'stores');
+  modules['@bayit/shared-hooks'] = path.resolve(sharedRoot, 'hooks');
+  modules['@bayit/shared-contexts'] = path.resolve(sharedRoot, 'contexts');
+  modules['@bayit/shared-i18n'] = path.resolve(sharedRoot, 'i18n');
+
+  // Add tv-app admin screens alias
+  modules['@bayit/admin-screens'] = path.resolve(tvAppRoot, 'src/screens/admin');
+  modules['@bayit/shared/admin'] = path.resolve(sharedRoot, 'components/admin');
+  modules['@bayit/shared/theme'] = path.resolve(sharedRoot, 'theme');
+
+  // Additional shared package subpath aliases for tv-app compatibility
+  modules['@bayit/shared/hooks'] = path.resolve(sharedRoot, 'hooks');
+  modules['@bayit/shared/utils'] = path.resolve(sharedRoot, 'utils');
+  modules['@bayit/shared/stores'] = path.resolve(sharedRoot, 'stores');
+  modules['@bayit/shared/contexts'] = path.resolve(sharedRoot, 'contexts');
+  modules['@bayit/shared/services'] = path.resolve(sharedRoot, 'services');
+
+  // Shim Expo packages to React Native alternatives
+  modules['expo-linear-gradient'] = path.resolve(shimsRoot, 'expo-linear-gradient.ts');
+  modules['@expo/vector-icons'] = path.resolve(shimsRoot, 'expo-vector-icons.ts');
+
   return modules;
 }
 
@@ -56,21 +69,43 @@ function getExtraNodeModules() {
  * @type {import('@react-native/metro-config').MetroConfig}
  */
 const config = {
-  watchFolders: [sharedRoot],
+  watchFolders: [sharedRoot, tvAppRoot],
   resolver: {
     // Make sure shared packages can find node_modules from tvos-app
     nodeModulesPaths: [nodeModulesPath],
     extraNodeModules: getExtraNodeModules(),
     // Block WebRTC/LiveKit packages that don't support tvOS
+    // Also block tv-app's node_modules to avoid version conflicts
     blockList: [
       /react-native-webrtc/,
       /@livekit/,
+      /tv-app\/node_modules/,
     ],
-    // Stub out react-dom for React Native (used conditionally in some shared components)
+    // Custom resolution for shared package subpaths and react-dom stub
     resolveRequest: (context, moduleName, platform) => {
+      // Stub out react-dom for React Native
       if (moduleName === 'react-dom') {
         return { type: 'empty' };
       }
+
+      // Handle @bayit/shared/X subpath imports from tv-app
+      const sharedSubpaths = {
+        '@bayit/shared/hooks': path.resolve(sharedRoot, 'hooks'),
+        '@bayit/shared/utils': path.resolve(sharedRoot, 'utils'),
+        '@bayit/shared/stores': path.resolve(sharedRoot, 'stores'),
+        '@bayit/shared/contexts': path.resolve(sharedRoot, 'contexts'),
+        '@bayit/shared/services': path.resolve(sharedRoot, 'services'),
+        '@bayit/shared/admin': path.resolve(sharedRoot, 'components/admin'),
+        '@bayit/shared/theme': path.resolve(sharedRoot, 'theme'),
+      };
+
+      if (sharedSubpaths[moduleName]) {
+        return {
+          filePath: path.resolve(sharedSubpaths[moduleName], 'index.ts'),
+          type: 'sourceFile',
+        };
+      }
+
       return context.resolveRequest(context, moduleName, platform);
     },
   },

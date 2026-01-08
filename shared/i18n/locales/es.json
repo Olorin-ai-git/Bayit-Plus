@@ -192,7 +192,11 @@
     "favorites": "Favoritos",
     "watchlist": "Mi Lista",
     "downloads": "Descargas",
-    "help": "Ayuda y Soporte"
+    "help": "Ayuda y Soporte",
+    "discover": "Descubrir",
+    "account": "Cuenta",
+    "subscribe": "Suscribir",
+    "admin": "Administración"
   },
   "home": {
     "continueWatching": "Continuar Viendo",
