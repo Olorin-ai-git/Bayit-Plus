@@ -22,6 +22,11 @@ export interface VoicePreferences {
   hold_button_mode: boolean;
   silence_threshold_ms: number;
   vad_sensitivity: VADSensitivity;
+  // Wake word settings
+  wake_word_enabled: boolean;
+  wake_word: string;
+  wake_word_sensitivity: number;
+  wake_word_cooldown_ms: number;
 }
 
 const DEFAULT_VOICE_PREFERENCES: VoicePreferences = {
@@ -34,6 +39,11 @@ const DEFAULT_VOICE_PREFERENCES: VoicePreferences = {
   hold_button_mode: false,
   silence_threshold_ms: 2000,
   vad_sensitivity: 'medium',
+  // Wake word settings
+  wake_word_enabled: true,
+  wake_word: 'hi bayit',
+  wake_word_sensitivity: 0.7,
+  wake_word_cooldown_ms: 2000,
 };
 
 interface VoiceSettingsStore {
@@ -49,12 +59,16 @@ interface VoiceSettingsStore {
     'constant_listening_enabled' |
     'auto_subtitle' |
     'high_contrast_mode' |
-    'hold_button_mode'
+    'hold_button_mode' |
+    'wake_word_enabled'
   >) => Promise<void>;
   setVoiceLanguage: (language: VoiceLanguage) => Promise<void>;
   setTextSize: (size: TextSize) => Promise<void>;
   setVADSensitivity: (sensitivity: VADSensitivity) => Promise<void>;
   setSilenceThreshold: (ms: number) => Promise<void>;
+  setWakeWordEnabled: (enabled: boolean) => Promise<void>;
+  setWakeWordSensitivity: (sensitivity: number) => Promise<void>;
+  setWakeWordCooldown: (ms: number) => Promise<void>;
   resetToDefaults: () => void;
 }
 
@@ -122,6 +136,22 @@ export const useVoiceSettingsStore = create<VoiceSettingsStore>()(
         // Clamp between 1-5 seconds
         const clampedMs = Math.max(1000, Math.min(5000, ms));
         await get().updatePreferences({ silence_threshold_ms: clampedMs });
+      },
+
+      setWakeWordEnabled: async (enabled) => {
+        await get().updatePreferences({ wake_word_enabled: enabled });
+      },
+
+      setWakeWordSensitivity: async (sensitivity) => {
+        // Clamp between 0-1
+        const clampedSensitivity = Math.max(0, Math.min(1, sensitivity));
+        await get().updatePreferences({ wake_word_sensitivity: clampedSensitivity });
+      },
+
+      setWakeWordCooldown: async (ms) => {
+        // Clamp between 500ms-5000ms
+        const clampedMs = Math.max(500, Math.min(5000, ms));
+        await get().updatePreferences({ wake_word_cooldown_ms: clampedMs });
       },
 
       resetToDefaults: () => {

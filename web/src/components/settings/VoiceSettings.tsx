@@ -1,7 +1,7 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, Pressable, ActivityIndicator } from 'react-native';
 import { useTranslation } from 'react-i18next';
-import { Mic, Eye, Type, Radio, ShieldCheck } from 'lucide-react';
+import { Mic, Eye, Type, Radio, ShieldCheck, Volume2, Zap } from 'lucide-react';
 import { useVoiceSettingsStore, TextSize, VADSensitivity } from '@/stores/voiceSettingsStore';
 import { colors, spacing, borderRadius } from '@bayit/shared/theme';
 import { GlassView } from '@bayit/shared/ui';
@@ -18,6 +18,12 @@ const VAD_SENSITIVITIES: { value: VADSensitivity; labelKey: string }[] = [
   { value: 'high', labelKey: 'sensitivityHigh' },
 ];
 
+const WAKE_WORD_SENSITIVITIES = [
+  { value: 0.5, labelKey: 'sensitivityLow' },
+  { value: 0.7, labelKey: 'sensitivityMedium' },
+  { value: 0.9, labelKey: 'sensitivityHigh' },
+];
+
 export default function VoiceSettings() {
   const { t, i18n } = useTranslation();
   const isRTL = i18n.language === 'he' || i18n.language === 'ar';
@@ -29,7 +35,10 @@ export default function VoiceSettings() {
     toggleSetting,
     setTextSize,
     setVADSensitivity,
+    setWakeWordEnabled,
+    setWakeWordSensitivity,
   } = useVoiceSettingsStore();
+  const [testingWakeWord, setTestingWakeWord] = useState(false);
 
   useEffect(() => {
     loadPreferences();
@@ -190,6 +199,89 @@ export default function VoiceSettings() {
             {t('profile.voice.constantListeningPrivacy', 'Audio is only sent to servers when speech is detected')}
           </Text>
         </View>
+      </GlassView>
+
+      {/* Wake Word Settings */}
+      <GlassView style={styles.section}>
+        <View style={[styles.sectionHeader, isRTL && styles.sectionHeaderRTL]}>
+          <Zap size={16} color={colors.warning} />
+          <Text style={[styles.sectionTitle, { marginBottom: 0 }]}>
+            {t('profile.voice.wakeWord', '"Hi Bayit" Wake Word')}
+          </Text>
+        </View>
+
+        <SettingRow
+          label={t('profile.voice.wakeWordEnabled', 'Enable "Hi Bayit" wake word')}
+          description={t('profile.voice.wakeWordEnabledDesc', 'Say "Hi Bayit" to activate voice commands without pressing a button')}
+          value={preferences.wake_word_enabled}
+          onToggle={() => setWakeWordEnabled(!preferences.wake_word_enabled)}
+          disabled={!preferences.constant_listening_enabled}
+        />
+
+        {/* Wake Word Sensitivity */}
+        {preferences.constant_listening_enabled && preferences.wake_word_enabled && (
+          <View style={styles.sensitivitySection}>
+            <Text style={[styles.sensitivityLabel, isRTL && styles.textRTL]}>
+              {t('profile.voice.wakeWordSensitivity', 'Wake Word Sensitivity')}
+            </Text>
+            <Text style={[styles.sensitivityDesc, isRTL && styles.textRTL]}>
+              {t('profile.voice.wakeWordSensitivityDesc', 'Higher sensitivity detects the wake word more easily but may cause false triggers')}
+            </Text>
+            <View style={[styles.sensitivityOptions, isRTL && styles.sensitivityOptionsRTL]}>
+              {WAKE_WORD_SENSITIVITIES.map((sensitivity) => {
+                const isSelected = Math.abs(preferences.wake_word_sensitivity - sensitivity.value) < 0.1;
+                return (
+                  <Pressable
+                    key={sensitivity.value}
+                    onPress={() => setWakeWordSensitivity(sensitivity.value)}
+                    style={({ hovered }: any) => [
+                      styles.sensitivityOption,
+                      isSelected && styles.sensitivityOptionSelected,
+                      hovered && styles.sensitivityOptionHovered,
+                    ]}
+                  >
+                    <Text
+                      style={[
+                        styles.sensitivityText,
+                        isSelected && styles.sensitivityTextSelected,
+                      ]}
+                    >
+                      {t(`profile.voice.${sensitivity.labelKey}`, sensitivity.labelKey)}
+                    </Text>
+                  </Pressable>
+                );
+              })}
+            </View>
+          </View>
+        )}
+
+        {/* Wake Word Privacy Notice */}
+        <View style={[styles.privacyNotice, isRTL && styles.privacyNoticeRTL]}>
+          <ShieldCheck size={14} color={colors.success} />
+          <Text style={[styles.privacyText, isRTL && styles.textRTL]}>
+            {t('profile.voice.wakeWordPrivacy', 'Wake word detection is processed locally on your device - no audio is sent until after "Hi Bayit" is detected')}
+          </Text>
+        </View>
+
+        {/* Test Wake Word Button */}
+        {preferences.constant_listening_enabled && preferences.wake_word_enabled && (
+          <Pressable
+            style={[styles.testButton, testingWakeWord && styles.testButtonActive]}
+            onPress={() => {
+              setTestingWakeWord(true);
+              // Simulate testing - in real app this would trigger a test
+              setTimeout(() => setTestingWakeWord(false), 3000);
+            }}
+            disabled={testingWakeWord}
+          >
+            <Volume2 size={16} color={testingWakeWord ? colors.primary : colors.text} />
+            <Text style={[styles.testButtonText, testingWakeWord && styles.testButtonTextActive]}>
+              {testingWakeWord
+                ? t('profile.voice.testingWakeWord', 'Say "Hi Bayit"...')
+                : t('profile.voice.testWakeWord', 'Test Wake Word')}
+            </Text>
+          </Pressable>
+        )}
       </GlassView>
 
       {/* Accessibility Settings */}
@@ -503,5 +595,29 @@ const styles = StyleSheet.create({
     fontSize: 12,
     color: colors.textMuted,
     flex: 1,
+  },
+  testButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: spacing.sm,
+    paddingVertical: spacing.md,
+    paddingHorizontal: spacing.lg,
+    borderRadius: borderRadius.md,
+    backgroundColor: 'rgba(255, 255, 255, 0.05)',
+    marginTop: spacing.md,
+  },
+  testButtonActive: {
+    backgroundColor: 'rgba(0, 217, 255, 0.15)',
+    borderWidth: 1,
+    borderColor: 'rgba(0, 217, 255, 0.4)',
+  },
+  testButtonText: {
+    fontSize: 14,
+    fontWeight: '500',
+    color: colors.text,
+  },
+  testButtonTextActive: {
+    color: colors.primary,
   },
 });

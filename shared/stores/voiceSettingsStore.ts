@@ -1,6 +1,7 @@
 /**
  * Voice Settings Store
  * Manages voice search, constant listening, and accessibility preferences
+ * Includes three-mode system: Voice Only, Hybrid, Classic
  * Used across TV, tvOS, and web apps for voice-controlled UI
  */
 
@@ -8,8 +9,10 @@ import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { profilesService, VoicePreferences, VoiceLanguage, TextSize, VADSensitivity } from '../services/api';
+import { VoiceMode, ModeConfig, MODE_CONFIGS } from '../types/voiceModes';
 
 export type { VoicePreferences, VoiceLanguage, TextSize, VADSensitivity };
+export { VoiceMode };
 
 const DEFAULT_VOICE_PREFERENCES: VoicePreferences = {
   voice_search_enabled: true,
@@ -26,6 +29,13 @@ const DEFAULT_VOICE_PREFERENCES: VoicePreferences = {
   wake_word: 'hi bayit',             // Default wake phrase
   wake_word_sensitivity: 0.7,        // 0-1 sensitivity (0.7 balanced)
   wake_word_cooldown_ms: 2000,       // Cooldown between detections
+  // Three-mode system
+  voice_mode: VoiceMode.VOICE_ONLY,  // Default: Voice Only mode (no remote)
+  voice_feedback_enabled: true,      // Voice feedback on interactions (default for Hybrid)
+  tts_enabled: true,                 // TTS enabled by default
+  tts_voice_id: 'EXAVITQu4VqLrzJuXi3n', // ElevenLabs Hebrew female voice
+  tts_speed: 1.0,                    // Normal speech speed (0.5-2.0)
+  tts_volume: 1.0,                   // Max volume (0-1)
 };
 
 interface VoiceSettingsStore {
@@ -33,6 +43,9 @@ interface VoiceSettingsStore {
   loading: boolean;
   saving: boolean;
   error: string | null;
+
+  // Derived state - current mode configuration based on selected mode
+  modeConfig: ModeConfig;
 
   // Actions
   loadPreferences: () => Promise<void>;
@@ -53,6 +66,12 @@ interface VoiceSettingsStore {
   setWakeWordEnabled: (enabled: boolean) => Promise<void>;
   setWakeWordSensitivity: (sensitivity: number) => Promise<void>;
   setWakeWordCooldown: (ms: number) => Promise<void>;
+  // Mode system actions
+  setMode: (mode: VoiceMode) => Promise<void>;
+  setVoiceFeedbackEnabled: (enabled: boolean) => Promise<void>;
+  setTTSVolume: (volume: number) => Promise<void>;
+  setTTSSpeed: (speed: number) => Promise<void>;
+  setTTSVoiceId: (voiceId: string) => Promise<void>;
   resetToDefaults: () => void;
   clearError: () => void;
 }
@@ -64,6 +83,12 @@ export const useVoiceSettingsStore = create<VoiceSettingsStore>()(
       loading: false,
       saving: false,
       error: null,
+
+      // Derived state: Get current mode configuration
+      get modeConfig(): ModeConfig {
+        const currentMode = get().preferences.voice_mode || VoiceMode.VOICE_ONLY;
+        return MODE_CONFIGS[currentMode];
+      },
 
       loadPreferences: async () => {
         set({ loading: true, error: null });
@@ -138,6 +163,31 @@ export const useVoiceSettingsStore = create<VoiceSettingsStore>()(
         // Clamp between 500ms-5000ms
         const clampedMs = Math.max(500, Math.min(5000, ms));
         await get().updatePreferences({ wake_word_cooldown_ms: clampedMs });
+      },
+
+      // Mode system actions
+      setMode: async (mode: VoiceMode) => {
+        await get().updatePreferences({ voice_mode: mode });
+      },
+
+      setVoiceFeedbackEnabled: async (enabled: boolean) => {
+        await get().updatePreferences({ voice_feedback_enabled: enabled });
+      },
+
+      setTTSVolume: async (volume: number) => {
+        // Clamp between 0-1
+        const clampedVolume = Math.max(0, Math.min(1, volume));
+        await get().updatePreferences({ tts_volume: clampedVolume });
+      },
+
+      setTTSSpeed: async (speed: number) => {
+        // Clamp between 0.5-2.0
+        const clampedSpeed = Math.max(0.5, Math.min(2.0, speed));
+        await get().updatePreferences({ tts_speed: clampedSpeed });
+      },
+
+      setTTSVoiceId: async (voiceId: string) => {
+        await get().updatePreferences({ tts_voice_id: voiceId });
       },
 
       resetToDefaults: () => {

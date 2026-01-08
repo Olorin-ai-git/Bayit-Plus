@@ -6,6 +6,7 @@ import hmac
 import hashlib
 import httpx
 from fastapi import APIRouter, HTTPException, Depends, UploadFile, File, Request, Header, BackgroundTasks
+from fastapi.responses import StreamingResponse
 from pydantic import BaseModel
 import anthropic
 from app.models.user import User
@@ -22,8 +23,9 @@ pending_transcriptions: dict[str, dict] = {}
 # Initialize Anthropic client
 client = anthropic.Anthropic(api_key=settings.ANTHROPIC_API_KEY)
 
-# ElevenLabs API endpoint
+# ElevenLabs API endpoints
 ELEVENLABS_STT_URL = "https://api.elevenlabs.io/v1/speech-to-text"
+ELEVENLABS_TTS_URL = "https://api.elevenlabs.io/v1/text-to-speech"
 
 
 async def process_hebronics_input(text: str) -> dict:
@@ -285,6 +287,13 @@ class TranscriptionResponse(BaseModel):
     language: str = "he"
 
 
+class TTSRequest(BaseModel):
+    text: str
+    voice_id: Optional[str] = None  # If None, uses default Hebrew voice
+    language: str = "he"
+    model_id: str = "eleven_turbo_v2"  # Fast, low-latency model
+
+
 @router.post("/transcribe", response_model=TranscriptionResponse)
 async def transcribe_audio(
     audio: UploadFile = File(...),
@@ -341,6 +350,88 @@ async def transcribe_audio(
         raise HTTPException(status_code=504, detail="Transcription timed out. Please try again.")
     except httpx.RequestError as e:
         raise HTTPException(status_code=500, detail=f"Transcription service error: {str(e)}")
+
+
+@router.post("/text-to-speech")
+async def text_to_speech(
+    request: TTSRequest,
+    current_user: User = Depends(get_current_active_user),
+):
+    """
+    Convert text to speech using ElevenLabs Text-to-Speech API.
+    Returns audio stream (audio/mpeg) that can be played directly in browser.
+
+    Supports:
+    - Hebrew and English text
+    - Multiple voice options
+    - Low-latency streaming via eleven_turbo_v2 model
+    - Audio ducking for video integration
+    """
+    # Validate text input
+    if not request.text or not request.text.strip():
+        raise HTTPException(
+            status_code=400,
+            detail="Text cannot be empty"
+        )
+
+    # Limit text length to prevent abuse (ElevenLabs has limits)
+    if len(request.text) > 5000:
+        raise HTTPException(
+            status_code=400,
+            detail="Text is too long (max 5000 characters)"
+        )
+
+    # Default to Hebrew female voice if not specified
+    voice_id = request.voice_id or "EXAVITQu4VqLrzJuXi3n"  # ElevenLabs Hebrew female voice
+
+    try:
+        # Build ElevenLabs TTS API request
+        tts_url = f"{ELEVENLABS_TTS_URL}/{voice_id}/stream"
+
+        request_body = {
+            "text": request.text,
+            "model_id": request.model_id,
+            "voice_settings": {
+                "stability": 0.5,  # Balanced - not too robotic, not too variable
+                "similarity_boost": 0.75,  # Good speaker consistency
+            }
+        }
+
+        # Call ElevenLabs TTS API with streaming
+        async with httpx.AsyncClient() as http_client:
+            response = await http_client.post(
+                tts_url,
+                headers={
+                    "xi-api-key": settings.ELEVENLABS_API_KEY,
+                    "Content-Type": "application/json",
+                },
+                json=request_body,
+                timeout=60.0,
+            )
+
+            if response.status_code != 200:
+                # Log the actual error from ElevenLabs
+                error_detail = response.text if response.text else "Unknown error"
+                raise HTTPException(
+                    status_code=500,
+                    detail=f"ElevenLabs TTS error: {error_detail}",
+                )
+
+            # Return audio stream as audio/mpeg
+            # This allows the browser to stream and play the audio directly
+            return StreamingResponse(
+                iter([response.content]),  # Wrap content in iterator for streaming
+                media_type="audio/mpeg",
+                headers={
+                    "Content-Disposition": 'inline; filename="tts.mp3"',
+                    "Cache-Control": "no-store",
+                }
+            )
+
+    except httpx.TimeoutException:
+        raise HTTPException(status_code=504, detail="TTS service timed out. Please try again.")
+    except httpx.RequestError as e:
+        raise HTTPException(status_code=500, detail=f"TTS service error: {str(e)}")
 
 
 class HebronicsRequest(BaseModel):

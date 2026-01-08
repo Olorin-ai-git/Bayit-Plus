@@ -19,6 +19,8 @@ interface VoiceSearchButtonProps {
   onResult: (text: string) => void;
   transcribeAudio?: (audioBlob: Blob) => Promise<{ text: string }>;
   showConstantListening?: boolean;
+  /** Show larger UI for TV mode */
+  tvMode?: boolean;
 }
 
 // Check if this is a TV build (set by webpack)
@@ -28,7 +30,8 @@ const IS_TV_BUILD = typeof __TV__ !== 'undefined' && __TV__;
 export const VoiceSearchButton: React.FC<VoiceSearchButtonProps> = ({
   onResult,
   transcribeAudio,
-  showConstantListening = IS_TV_BUILD,
+  showConstantListening,
+  tvMode = IS_TV_BUILD,
 }) => {
   const { t } = useTranslation();
   const [isRecording, setIsRecording] = useState(false);
@@ -45,7 +48,13 @@ export const VoiceSearchButton: React.FC<VoiceSearchButtonProps> = ({
   // Voice settings
   const { preferences } = useVoiceSettingsStore();
 
-  // Wake word listening (for TV constant listening mode)
+  // Determine if constant listening should be enabled
+  // Use prop if provided, otherwise use preferences (allows web to enable it too)
+  const shouldEnableConstantListening = showConstantListening !== undefined
+    ? showConstantListening
+    : preferences.constant_listening_enabled;
+
+  // Wake word listening (for constant listening mode - works on web and TV)
   const {
     isListening: isConstantListening,
     isAwake,
@@ -56,7 +65,7 @@ export const VoiceSearchButton: React.FC<VoiceSearchButtonProps> = ({
     error: wakeWordError,
     wakeWordReady,
   } = useWakeWordListening({
-    enabled: showConstantListening && preferences.constant_listening_enabled,
+    enabled: shouldEnableConstantListening,
     wakeWordEnabled: preferences.wake_word_enabled,
     wakeWord: preferences.wake_word,
     wakeWordSensitivity: preferences.wake_word_sensitivity,
@@ -388,10 +397,10 @@ export const VoiceSearchButton: React.FC<VoiceSearchButtonProps> = ({
         </View>
       </Modal>
 
-      {/* Constant listening status indicator (for TV) */}
-      {showConstantListening && isConstantListening && (
-        <View style={styles.listeningIndicator}>
-          <Text style={styles.listeningText}>
+      {/* Constant listening status indicator (for both TV and web) */}
+      {isConstantListening && (
+        <View style={[styles.listeningIndicator, tvMode && styles.listeningIndicatorTV]}>
+          <Text style={[styles.listeningText, tvMode && styles.listeningTextTV]}>
             {preferences.wake_word_enabled
               ? t('voice.sayHiBayit', 'Say "Hi Bayit"')
               : t('voice.listening', 'Listening...')}
@@ -563,19 +572,27 @@ const styles = StyleSheet.create({
   },
   listeningIndicator: {
     position: 'absolute',
-    bottom: -30,
+    bottom: -24,
     left: '50%',
-    transform: [{ translateX: -60 }] as any,
+    transform: [{ translateX: -50 }] as any,
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    backgroundColor: 'rgba(0, 0, 0, 0.7)',
     paddingHorizontal: spacing.sm,
-    paddingVertical: spacing.xs,
+    paddingVertical: 2,
     borderRadius: borderRadius.sm,
+    whiteSpace: 'nowrap',
+  } as any,
+  listeningIndicatorTV: {
+    bottom: -30,
+    paddingVertical: spacing.xs,
   },
   listeningText: {
-    fontSize: 10,
+    fontSize: 9,
     color: colors.textSecondary,
+  },
+  listeningTextTV: {
+    fontSize: 10,
   },
   readyIndicator: {
     marginLeft: spacing.xs,

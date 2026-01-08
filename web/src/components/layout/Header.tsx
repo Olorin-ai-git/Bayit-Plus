@@ -194,13 +194,14 @@ export default function Header({ onMenuPress }: HeaderProps) {
         </View>
       )}
 
-      {/* Voice search button - show on web only (not TV) */}
-      {!IS_TV_BUILD && (
+      {/* Voice search button - show on all platforms with wake word support */}
+      <View style={styles.voiceButtonContainer}>
         <VoiceSearchButton
           onResult={handleVoiceTranscribed}
           transcribeAudio={chatService.transcribeAudio}
+          tvMode={IS_TV_BUILD}
         />
-      )}
+      </View>
 
       {/* Mobile Menu Toggle */}
       {isMobile && (
@@ -316,6 +317,10 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: IS_TV_BUILD ? spacing.md : spacing.sm,
+  },
+  voiceButtonContainer: {
+    position: 'relative',
+    marginHorizontal: spacing.xs,
   },
   iconButton: {
     width: IS_TV_BUILD ? 60 : 40,
