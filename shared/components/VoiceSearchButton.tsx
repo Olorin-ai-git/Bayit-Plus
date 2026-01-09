@@ -282,15 +282,7 @@ export const VoiceSearchButton: React.FC<VoiceSearchButtonProps> = ({
   }, [isRecording]);
 
   const handlePress = () => {
-    // Prevent toggling off while processing request (must wait for current request to complete)
-    const isProcessing = isWakeWordProcessing || isSendingToServer || isProcessingTranscription;
-
-    if (isListeningToggle && isProcessing) {
-      console.log('[VoiceSearchButton] Cannot toggle off while processing request. Wait for current request to complete.');
-      return;
-    }
-
-    // Toggle voice listening on/off
+    // Toggle voice listening on/off - always enabled
     setIsListeningToggle(!isListeningToggle);
     console.log('[VoiceSearchButton] Voice listening toggled:', !isListeningToggle);
   };
@@ -324,7 +316,6 @@ export const VoiceSearchButton: React.FC<VoiceSearchButtonProps> = ({
         onPress={handlePress}
         onFocus={() => setIsFocused(true)}
         onBlur={() => setIsFocused(false)}
-        disabled={isListeningToggle && (isWakeWordProcessing || isSendingToServer || isProcessingTranscription)}
         style={[
           styles.button,
           isFocused && styles.buttonFocused,
@@ -333,7 +324,6 @@ export const VoiceSearchButton: React.FC<VoiceSearchButtonProps> = ({
           buttonState === 'wakeword' && styles.buttonWakeWord,
           buttonState === 'processing' && styles.buttonProcessing,
           buttonState === 'listening' && styles.buttonListening,
-          isListeningToggle && (isWakeWordProcessing || isSendingToServer || isProcessingTranscription) && { opacity: 0.6 },
         ]}
       >
         <Animated.View
