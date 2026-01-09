@@ -39,6 +39,25 @@ export default function Chatbot() {
   const { isAuthenticated } = useAuthStore()
   const { preferences, loadPreferences } = useVoiceSettingsStore()
   const { currentMode } = useModeEnforcement()
+
+  // Debug logging
+  useEffect(() => {
+    console.log('[Chatbot] Mode:', currentMode)
+    console.log('[Chatbot] Preferences:', preferences)
+    console.log('[Chatbot] Wake word enabled:', preferences?.wake_word_enabled)
+  }, [currentMode, preferences])
+
+  // Debug voice listening state
+  useEffect(() => {
+    console.log('[Chatbot] Listening state:', {
+      isListening,
+      isAwake,
+      isProcessing,
+      wakeWordDetected,
+      wakeWordError,
+      audioLevel,
+    })
+  }, [isListening, isAwake, isProcessing, wakeWordDetected, wakeWordError, audioLevel])
   const {
     isOpen,
     setOpen,
@@ -138,23 +157,31 @@ export default function Chatbot() {
     error: wakeWordError,
   } = useWakeWordListening({
     enabled: currentMode === VoiceMode.VOICE_ONLY, // Only listen in Voice Only mode
-    wakeWordEnabled: preferences.wake_word_enabled, // Use actual setting from preferences (default: false)
-    wakeWord: preferences.wake_word || 'hi bayit',
-    wakeWordSensitivity: preferences.wake_word_sensitivity,
-    wakeWordCooldownMs: preferences.wake_word_cooldown_ms,
+    wakeWordEnabled: preferences?.wake_word_enabled ?? false, // Default: false (disabled)
+    wakeWord: preferences?.wake_word ?? 'hi bayit',
+    wakeWordSensitivity: preferences?.wake_word_sensitivity ?? 0.7,
+    wakeWordCooldownMs: preferences?.wake_word_cooldown_ms ?? 2000,
     onTranscript: handleWakeWordTranscript,
     onWakeWordDetected: () => {
-      console.log('Wake word detected!')
+      console.log('[Chatbot] Wake word detected!')
       setVoiceStatusVisible(true)
     },
     onError: (error) => {
+      console.error('[Chatbot] Wake word listening error:', error)
       logger.error('Wake word listening error:', 'Chatbot', error)
     },
-    silenceThresholdMs: preferences.silence_threshold_ms,
-    vadSensitivity: preferences.vad_sensitivity,
+    silenceThresholdMs: preferences?.silence_threshold_ms ?? 2000,
+    vadSensitivity: preferences?.vad_sensitivity ?? 'medium',
     transcribeAudio: async (audioBlob) => {
-      const response = await chatService.transcribeAudio(audioBlob)
-      return response
+      try {
+        console.log('[Chatbot] Transcribing audio blob, size:', audioBlob.size)
+        const response = await chatService.transcribeAudio(audioBlob)
+        console.log('[Chatbot] Transcription result:', response)
+        return response
+      } catch (error) {
+        console.error('[Chatbot] Transcription error:', error)
+        throw error
+      }
     },
   })
 
