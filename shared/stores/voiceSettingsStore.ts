@@ -16,7 +16,6 @@ export { VoiceMode };
 
 const DEFAULT_VOICE_PREFERENCES: VoicePreferences = {
   voice_search_enabled: true,
-  constant_listening_enabled: false,  // DISABLED - use wake word instead
   // Note: voice_language is now derived from i18n.language instead of stored
   auto_subtitle: false,
   high_contrast_mode: false,
@@ -24,7 +23,7 @@ const DEFAULT_VOICE_PREFERENCES: VoicePreferences = {
   hold_button_mode: false,           // Press-and-hold fallback disabled by default
   silence_threshold_ms: 2000,        // 2 seconds of silence before sending
   vad_sensitivity: 'medium',         // Balanced VAD sensitivity
-  // Wake word settings for "Hi Bayit" activation
+  // Wake word activation (mutually exclusive with always-listening - we use wake word only)
   wake_word_enabled: true,           // Wake word detection ENABLED by default - listen for "Hi Bayit"
   wake_word: 'hi bayit',             // Default wake phrase
   wake_word_sensitivity: 0.7,        // 0-1 sensitivity (0.7 balanced)
@@ -52,7 +51,6 @@ interface VoiceSettingsStore {
   updatePreferences: (updates: Partial<VoicePreferences>) => Promise<void>;
   toggleSetting: (key: keyof Pick<VoicePreferences,
     'voice_search_enabled' |
-    'constant_listening_enabled' |
     'auto_subtitle' |
     'high_contrast_mode' |
     'hold_button_mode' |
@@ -94,16 +92,8 @@ export const useVoiceSettingsStore = create<VoiceSettingsStore>()(
         set({ loading: true, error: null });
         try {
           const data = await profilesService.getVoicePreferences();
-          let preferences = { ...DEFAULT_VOICE_PREFERENCES, ...data };
-
-          // Enforce wake word mode: if wake_word_enabled is true, constant_listening_enabled must be false
-          if (preferences.wake_word_enabled && preferences.constant_listening_enabled) {
-            console.warn('[VoiceSettingsStore] Disabling constant_listening_enabled because wake_word_enabled is true');
-            preferences.constant_listening_enabled = false;
-          }
-
           set({
-            preferences,
+            preferences: { ...DEFAULT_VOICE_PREFERENCES, ...data },
             loading: false,
           });
         } catch (error: any) {

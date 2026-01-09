@@ -338,7 +338,6 @@ DEFAULT_AI_SETTINGS = {
 
 DEFAULT_VOICE_SETTINGS = {
     "voice_search_enabled": True,
-    "constant_listening_enabled": False,  # DISABLED - use wake word instead
     "voice_language": "he",
     "auto_subtitle": False,
     "high_contrast_mode": False,
@@ -346,7 +345,7 @@ DEFAULT_VOICE_SETTINGS = {
     "hold_button_mode": False,  # Fallback to press-and-hold remote button
     "silence_threshold_ms": 2000,  # Wait 2 seconds of silence before processing
     "vad_sensitivity": "medium",  # Voice Activity Detection sensitivity: low, medium, high
-    # Wake word settings
+    # Wake word activation (mutually exclusive with always-listening - we use wake word only)
     "wake_word_enabled": True,  # ENABLED by default - listen for "Hi Bayit"
     "wake_word": "hi bayit",
     "wake_word_sensitivity": 0.7,  # 0-1 sensitivity
@@ -371,7 +370,6 @@ class AIPreferences(BaseModel):
 
 class VoicePreferences(BaseModel):
     voice_search_enabled: bool = True
-    constant_listening_enabled: bool = True  # Always-on listening for TV/tvOS apps
     voice_language: str = "he"  # he, en, es
     auto_subtitle: bool = False
     high_contrast_mode: bool = False
@@ -379,8 +377,8 @@ class VoicePreferences(BaseModel):
     hold_button_mode: bool = False  # Fallback to press-and-hold remote button
     silence_threshold_ms: int = 2000  # Wait N ms of silence before processing
     vad_sensitivity: str = "medium"  # Voice Activity Detection sensitivity: low, medium, high
-    # Wake word settings
-    wake_word_enabled: bool = False  # DISABLED by default - respond immediately without wake word
+    # Wake word activation (mutually exclusive with always-listening - we use wake word only)
+    wake_word_enabled: bool = True  # ENABLED by default - listen for "Hi Bayit"
     wake_word: str = "hi bayit"
     wake_word_sensitivity: float = 0.7  # 0-1 sensitivity
     wake_word_cooldown_ms: int = 2000
@@ -423,11 +421,6 @@ async def get_voice_preferences(
     # Get saved settings and merge with defaults (so new fields get default values)
     saved_settings = current_user.preferences.get("voice_settings", {})
     voice_settings = {**DEFAULT_VOICE_SETTINGS.copy(), **saved_settings}
-
-    # Enforce wake word mode: if wake_word_enabled is true, constant_listening_enabled must be false
-    if voice_settings.get("wake_word_enabled") and voice_settings.get("constant_listening_enabled"):
-        voice_settings["constant_listening_enabled"] = False
-
     return voice_settings
 
 
@@ -437,13 +430,7 @@ async def update_voice_preferences(
     current_user: User = Depends(get_current_active_user),
 ):
     """Update voice and accessibility preferences."""
-    prefs_dict = preferences.model_dump()
-
-    # Enforce wake word mode: if wake_word_enabled is true, constant_listening_enabled must be false
-    if prefs_dict.get("wake_word_enabled") and prefs_dict.get("constant_listening_enabled"):
-        prefs_dict["constant_listening_enabled"] = False
-
-    current_user.preferences["voice_settings"] = prefs_dict
+    current_user.preferences["voice_settings"] = preferences.model_dump()
     current_user.updated_at = datetime.utcnow()
     await current_user.save()
     return {"message": "Voice preferences updated", "preferences": current_user.preferences["voice_settings"]}
