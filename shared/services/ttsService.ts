@@ -39,10 +39,19 @@ class TTSService extends EventEmitter {
   private audioCache: Map<string, CachedAudio> = new Map();
   private CACHE_EXPIRY_MS = 1000 * 60 * 60; // 1 hour
   private MAX_CACHE_SIZE = 100;
-  private API_ENDPOINT = '/api/v1/text-to-speech';
+  private API_ENDPOINT: string;
+
+  private getApiEndpoint(): string {
+    // For development with separate backend (localhost:8000)
+    if (typeof window !== 'undefined' && window.location.hostname === 'localhost') {
+      return 'http://localhost:8000/api/v1/chat/text-to-speech';
+    }
+    // For production, use relative path (handled by reverse proxy)
+    return '/api/v1/chat/text-to-speech';
+  }
 
   private config: TTSConfig = {
-    voiceId: 'EXAVITQu4VqLrzJuXi3n', // Default Hebrew female voice (ElevenLabs)
+    voiceId: 'zGjIP4SZlMnY9m93k97r', // Default voice (Adam - works with free tier)
     language: 'he',
     model: 'eleven_turbo_v2',
     stability: 0.5,
@@ -70,12 +79,24 @@ class TTSService extends EventEmitter {
   ): Promise<void> {
     const id = `${Date.now()}-${Math.random()}`;
 
+    console.log('[TTS] speak() called:', {
+      id,
+      priority,
+      text: text.substring(0, 50),
+      voiceId: voiceId || this.config.voiceId,
+      language: this.config.language,
+      currentlyPlaying: this.isPlaying,
+      queueLength: this.playQueue.length,
+    });
+
     if (priority === 'high') {
       // Stop current playback and clear queue
+      console.log('[TTS] HIGH priority: stopping current playback and clearing queue');
       this.stop();
       this.playQueue = [];
     } else if (priority === 'low' && this.isPlaying) {
       // Skip if already playing
+      console.log('[TTS] LOW priority and already playing, skipping');
       return;
     }
 
@@ -90,11 +111,15 @@ class TTSService extends EventEmitter {
     };
 
     this.playQueue.push(queueItem);
+    console.log('[TTS] Added to queue, new queue length:', this.playQueue.length);
     this.emit('queue-updated', { length: this.playQueue.length });
 
     // Process queue if not playing
     if (!this.isPlaying) {
+      console.log('[TTS] Not currently playing, processing queue immediately');
       await this.processQueue();
+    } else {
+      console.log('[TTS] Currently playing, will process queue after current playback');
     }
   }
 
@@ -102,6 +127,8 @@ class TTSService extends EventEmitter {
     if (this.playQueue.length === 0 || this.isPlaying) {
       return;
     }
+
+    console.log('[TTS] Processing queue, items:', this.playQueue.length);
 
     // Sort by priority
     this.playQueue.sort((a, b) => {
@@ -112,78 +139,142 @@ class TTSService extends EventEmitter {
     const item = this.playQueue.shift();
     if (!item) return;
 
+    console.log('[TTS] Playing queue item:', { id: item.id, priority: item.priority, text: item.text.substring(0, 50) });
+
     this.isPlaying = true;
     this.emit('playing', item);
 
     try {
+      console.log('[TTS] Calling onStart callback');
       item.onStart?.();
 
       // Try cache first
       const cacheKey = `${item.text}-${item.voiceId || this.config.voiceId}`;
+      console.log('[TTS] Checking cache for key:', cacheKey);
       let audioBlob = await this.getCachedAudio(cacheKey);
 
       // If not in cache, fetch from API
       if (!audioBlob) {
+        console.log('[TTS] Not in cache, fetching from API');
         audioBlob = await this.fetchAudioFromAPI(
           item.text,
           item.voiceId || this.config.voiceId
         );
 
         // Cache the audio
+        console.log('[TTS] Caching audio for key:', cacheKey);
         this.cacheAudio(cacheKey, item.text, audioBlob);
+      } else {
+        console.log('[TTS] Using cached audio');
       }
 
       // Play the audio
+      console.log('[TTS] Calling playAudio');
       await this.playAudio(audioBlob);
 
+      console.log('[TTS] Playback completed, calling onComplete');
       item.onComplete?.();
       this.emit('completed', item);
     } catch (error) {
       const err = error instanceof Error ? error : new Error(String(error));
+      console.error('[TTS] Queue processing error:', err);
       item.onError?.(err);
       this.emit('error', { item, error: err });
     } finally {
       this.isPlaying = false;
       // Process next in queue
+      console.log('[TTS] Processing next in queue');
       await this.processQueue();
     }
   }
 
   private async fetchAudioFromAPI(text: string, voiceId: string): Promise<Blob> {
-    // Get auth token from store
-    const token = localStorage.getItem('auth_token');
+    console.log('[TTS] Fetching audio from API:', { text: text.substring(0, 50), voiceId, language: this.config.language });
+
+    // Get auth token from localStorage (stored by Zustand persist middleware)
+    let token: string | null = null;
+
+    try {
+      // Try to get from Zustand persist store (bayit-auth key)
+      const authData = localStorage.getItem('bayit-auth');
+      if (authData) {
+        const parsed = JSON.parse(authData);
+        token = parsed?.state?.token;
+        console.log('[TTS] Retrieved token from bayit-auth store:', !!token);
+      }
+
+      // Fallback: check old auth_token key (legacy)
+      if (!token) {
+        token = localStorage.getItem('auth_token');
+        if (token) {
+          console.log('[TTS] Retrieved token from legacy auth_token key');
+        }
+      }
+    } catch (error) {
+      console.error('[TTS] Error parsing auth token from localStorage:', error);
+    }
+
     if (!token) {
+      console.error('[TTS] No auth token found in localStorage');
       throw new Error('Authentication required for TTS');
     }
 
-    const response = await fetch(this.API_ENDPOINT, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${token}`,
-      },
-      body: JSON.stringify({
-        text,
-        voice_id: voiceId,
-        language: this.config.language,
-        model_id: this.config.model,
-        voice_settings: {
-          stability: this.config.stability,
-          similarity_boost: this.config.similarityBoost,
+    try {
+      const apiUrl = this.getApiEndpoint();
+      console.log('[TTS] Fetching from API URL:', apiUrl);
+      const response = await fetch(apiUrl, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
         },
-      }),
-    });
+        body: JSON.stringify({
+          text,
+          voice_id: voiceId,
+          language: this.config.language,
+          model_id: this.config.model,
+          voice_settings: {
+            stability: this.config.stability,
+            similarity_boost: this.config.similarityBoost,
+          },
+        }),
+      });
 
-    if (!response.ok) {
-      throw new Error(`TTS API failed: ${response.statusText}`);
+      console.log('[TTS] API response status:', response.status, response.statusText);
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error('[TTS] API error response:', errorText);
+        throw new Error(`TTS API failed: ${response.statusText} - ${errorText}`);
+      }
+
+      const blob = await response.blob();
+      console.log('[TTS] Audio blob received, size:', blob.size, 'type:', blob.type);
+
+      if (blob.size === 0) {
+        console.error('[TTS] Received empty audio blob from API');
+        throw new Error('API returned empty audio blob');
+      }
+
+      return blob;
+    } catch (error) {
+      console.error('[TTS] fetchAudioFromAPI error:', error);
+      throw error;
     }
-
-    return response.blob();
   }
 
   private async playAudio(blob: Blob): Promise<void> {
     return new Promise((resolve, reject) => {
       try {
+        console.log('[TTS] Starting audio playback, blob size:', blob.size);
+
+        // Validate blob
+        if (!blob || blob.size === 0) {
+          console.error('[TTS] Invalid blob: empty or null');
+          reject(new Error('Invalid audio blob: empty or null'));
+          return;
+        }
+
         // Stop current playback
         if (this.currentPlayback) {
           this.currentPlayback.pause();
@@ -192,28 +283,87 @@ class TTSService extends EventEmitter {
 
         // Create new audio element
         const audio = new Audio();
-        audio.src = URL.createObjectURL(blob);
+        const objectUrl = URL.createObjectURL(blob);
+        audio.src = objectUrl;
         audio.volume = this.getVolume();
+
+        console.log('[TTS] Audio element created, url:', objectUrl, 'volume:', audio.volume);
 
         // Apply audio ducking if video is playing
         this.applyAudioDucking(audio, true);
 
-        audio.onended = () => {
-          URL.revokeObjectURL(audio.src);
+        // Cleanup function
+        const cleanup = () => {
+          try {
+            URL.revokeObjectURL(objectUrl);
+          } catch (e) {
+            console.warn('[TTS] Error revoking object URL:', e);
+          }
           this.applyAudioDucking(audio, false);
-          resolve();
         };
 
-        audio.onerror = () => {
-          URL.revokeObjectURL(audio.src);
-          this.applyAudioDucking(audio, false);
-          reject(new Error('Audio playback failed'));
+        // Track if callback has been called
+        let callbackCalled = false;
+        const safeResolve = () => {
+          if (!callbackCalled) {
+            callbackCalled = true;
+            cleanup();
+            resolve();
+          }
+        };
+
+        const safeReject = (error: Error) => {
+          if (!callbackCalled) {
+            callbackCalled = true;
+            cleanup();
+            reject(error);
+          }
+        };
+
+        // Timeout after 30 seconds to prevent hanging
+        const timeoutId = setTimeout(() => {
+          console.warn('[TTS] Audio playback timeout after 30s');
+          safeReject(new Error('Audio playback timeout'));
+        }, 30000);
+
+        audio.oncanplay = () => {
+          console.log('[TTS] Audio ready to play');
+        };
+
+        audio.onloadedmetadata = () => {
+          console.log('[TTS] Audio metadata loaded, duration:', audio.duration);
+        };
+
+        audio.onplaying = () => {
+          console.log('[TTS] Audio playback started');
+        };
+
+        audio.onended = () => {
+          console.log('[TTS] Audio playback completed');
+          clearTimeout(timeoutId);
+          safeResolve();
+        };
+
+        audio.onerror = (event) => {
+          console.error('[TTS] Audio error:', event, 'error code:', audio.error?.code, audio.error?.message);
+          clearTimeout(timeoutId);
+          safeReject(new Error(`Audio playback error: ${audio.error?.message || 'Unknown error'}`));
         };
 
         this.currentPlayback = audio;
-        audio.play().catch(reject);
+
+        // Attempt to play and handle promise rejection (e.g., autoplay blocked)
+        const playPromise = audio.play();
+        if (playPromise && typeof playPromise.catch === 'function') {
+          playPromise.catch((playError) => {
+            console.error('[TTS] Play promise rejected:', playError);
+            clearTimeout(timeoutId);
+            safeReject(new Error(`Play failed: ${playError.message || String(playError)}`));
+          });
+        }
       } catch (error) {
-        reject(error);
+        console.error('[TTS] Exception in playAudio:', error);
+        reject(error instanceof Error ? error : new Error(String(error)));
       }
     });
   }
@@ -324,10 +474,10 @@ class TTSService extends EventEmitter {
     // Set appropriate voice ID for language
     if (language === 'en') {
       // Use English voice
-      this.config.voiceId = 'EXAVITQu4VqLrzJuXi3n'; // You can change this to a different English voice if needed
+      this.config.voiceId = 'pNInz6obpgDQGcFmaJgB'; // Adam - works with free tier
     } else {
       // Use Hebrew voice
-      this.config.voiceId = 'EXAVITQu4VqLrzJuXi3n'; // Hebrew female voice
+      this.config.voiceId = 'pNInz6obpgDQGcFmaJgB'; // Adam - works with free tier for Hebrew too
     }
   }
 
