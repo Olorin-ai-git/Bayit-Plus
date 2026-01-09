@@ -6,7 +6,7 @@
  * Supports TV remote control with focus states.
  */
 
-import React, { useState, useRef, useEffect, useMemo } from 'react';
+import React, { useState, useRef, useEffect, useMemo, useCallback } from 'react';
 import {
   View,
   Text,
@@ -17,7 +17,6 @@ import {
 } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { GlassView } from '@bayit/shared/ui';
 import { useModeEnforcement } from '@bayit/shared-hooks';
 import { colors, spacing, borderRadius } from '@bayit/shared/theme';
 import { useDirection } from '@/hooks/useDirection';
@@ -87,9 +86,24 @@ export const GlassSidebar: React.FC<GlassSidebarProps> = ({ isExpanded, onToggle
   const location = useLocation();
   const { user } = useAuthStore();
   const { isUIInteractionEnabled } = useModeEnforcement();
-  const widthAnim = useRef(new Animated.Value(isExpanded ? 280 : 80)).current;
+  // Sidebar is always visible - collapsed shows icons only, expanded shows full menu
+  const collapsedWidth = 80;
+  const expandedWidth = 280;
+  const widthAnim = useRef(new Animated.Value(isExpanded ? expandedWidth : collapsedWidth)).current;
   const opacityAnim = useRef(new Animated.Value(isExpanded ? 1 : 0)).current;
   const [focusedItem, setFocusedItem] = useState<string | null>(null);
+  // Debounce to prevent double-toggle from onPress + onClick firing together
+  const lastToggleTime = useRef<number>(0);
+
+  // Debounced toggle handler
+  const handleToggle = useCallback(() => {
+    const now = Date.now();
+    if (now - lastToggleTime.current < 300) {
+      return;
+    }
+    lastToggleTime.current = now;
+    onToggle();
+  }, [onToggle]);
 
   // Dynamically add Admin menu item if user is admin
   const menuSections = useMemo(() => {
@@ -112,7 +126,7 @@ export const GlassSidebar: React.FC<GlassSidebarProps> = ({ isExpanded, onToggle
   useEffect(() => {
     Animated.parallel([
       Animated.spring(widthAnim, {
-        toValue: isExpanded ? 280 : 80,
+        toValue: isExpanded ? expandedWidth : collapsedWidth,
         friction: 8,
         tension: 65,
         useNativeDriver: false,
@@ -134,7 +148,7 @@ export const GlassSidebar: React.FC<GlassSidebarProps> = ({ isExpanded, onToggle
       navigate(item.path);
       // Collapse sidebar after navigation on TV
       if (IS_TV_BUILD && isExpanded) {
-        onToggle();
+        handleToggle();
       }
     }
   };
@@ -157,29 +171,21 @@ export const GlassSidebar: React.FC<GlassSidebarProps> = ({ isExpanded, onToggle
   };
 
   return (
-    <>
-      {/* Backdrop overlay when expanded */}
-      {isExpanded && (
-        <TouchableOpacity
-          style={styles.backdrop}
-          activeOpacity={1}
-          onPress={onToggle}
-        />
-      )}
-      <Animated.View style={[
-        styles.container,
-        { width: widthAnim },
-        isRTL ? { right: 0 } : { left: 0 },
-      ]}>
-        <GlassView intensity="low" style={[
+    <Animated.View style={[
+      styles.container,
+      { width: widthAnim },
+      isRTL ? { right: 0, left: 'auto' } : { left: 0, right: 'auto' },
+    ]}>
+        <View style={[
           styles.sidebar,
+          styles.glassEffect,
           isRTL
             ? { borderLeftWidth: 1, borderLeftColor: colors.glassBorder }
             : { borderRightWidth: 1, borderRightColor: colors.glassBorder },
         ]}>
           {/* Toggle Button */}
           <TouchableOpacity
-            onPress={isUIInteractionEnabled ? onToggle : undefined}
+            onPress={isUIInteractionEnabled ? handleToggle : undefined}
             disabled={!isUIInteractionEnabled}
             style={[
               styles.toggleButton,
@@ -279,44 +285,44 @@ export const GlassSidebar: React.FC<GlassSidebarProps> = ({ isExpanded, onToggle
               <Text style={[styles.versionText, { textAlign }]}>{t('common.appVersion', 'Bayit+ v1.0.0')}</Text>
             </Animated.View>
           )}
-        </GlassView>
-      </Animated.View>
-    </>
+        </View>
+    </Animated.View>
   );
 };
 
 const styles = StyleSheet.create({
-  backdrop: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
-    zIndex: 99,
-  },
   container: {
     height: '100%',
     position: 'absolute',
     top: 0,
     bottom: 0,
     zIndex: 100,
+    overflow: 'hidden',
   },
   sidebar: {
     flex: 1,
     paddingTop: spacing.lg,
     paddingBottom: spacing.md,
   },
+  glassEffect: {
+    backgroundColor: 'rgba(10, 10, 20, 0.3)',
+    // @ts-ignore - Web CSS
+    backdropFilter: 'blur(20px)',
+    WebkitBackdropFilter: 'blur(20px)',
+  } as any,
   toggleButton: {
     alignItems: 'center',
+    justifyContent: 'center',
     paddingVertical: spacing.sm,
     marginBottom: spacing.md,
+    width: 80,
+    alignSelf: 'center',
   },
   toggleIconContainer: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    backgroundColor: 'rgba(255, 255, 255, 0.05)',
+    width: 48,
+    height: 48,
+    borderRadius: 24,
+    backgroundColor: 'transparent',
     justifyContent: 'center',
     alignItems: 'center',
     borderWidth: 1,

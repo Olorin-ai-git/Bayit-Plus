@@ -37,11 +37,11 @@ interface Pagination {
   total: number;
 }
 
-const statusColors: Record<string, { bg: string; text: string; label: string }> = {
-  active: { bg: 'rgba(34, 197, 94, 0.2)', text: '#22C55E', label: 'פעיל' },
-  paused: { bg: 'rgba(245, 158, 11, 0.2)', text: '#F59E0B', label: 'מושהה' },
-  cancelled: { bg: 'rgba(239, 68, 68, 0.2)', text: '#EF4444', label: 'בוטל' },
-  expired: { bg: 'rgba(107, 114, 128, 0.2)', text: '#6B7280', label: 'פג תוקף' },
+const statusColors: Record<string, { bg: string; text: string; labelKey: string }> = {
+  active: { bg: 'rgba(34, 197, 94, 0.2)', text: '#22C55E', labelKey: 'admin.subscriptions.status.active' },
+  paused: { bg: 'rgba(245, 158, 11, 0.2)', text: '#F59E0B', labelKey: 'admin.subscriptions.status.paused' },
+  cancelled: { bg: 'rgba(239, 68, 68, 0.2)', text: '#EF4444', labelKey: 'admin.subscriptions.status.cancelled' },
+  expired: { bg: 'rgba(107, 114, 128, 0.2)', text: '#6B7280', labelKey: 'admin.subscriptions.status.expired' },
 };
 
 const planColors: Record<string, { bg: string; text: string }> = {
@@ -86,7 +86,7 @@ export default function SubscriptionsListPage() {
     const style = statusColors[status] || statusColors.active;
     return (
       <View style={[styles.badge, { backgroundColor: style.bg }]}>
-        <Text style={[styles.badgeText, { color: style.text }]}>{style.label}</Text>
+        <Text style={[styles.badgeText, { color: style.text }]}>{t(style.labelKey)}</Text>
       </View>
     );
   };
@@ -103,7 +103,7 @@ export default function SubscriptionsListPage() {
   const columns = [
     {
       key: 'user',
-      label: 'משתמש',
+      label: t('admin.subscriptions.columns.user'),
       render: (user: User) => (
         <View>
           <Text style={styles.userName}>{user?.name}</Text>
@@ -113,19 +113,19 @@ export default function SubscriptionsListPage() {
     },
     {
       key: 'plan',
-      label: 'תוכנית',
+      label: t('admin.subscriptions.columns.plan'),
       render: (plan: string) => getPlanBadge(plan),
     },
     {
       key: 'amount',
-      label: 'מחיר',
+      label: t('admin.subscriptions.columns.price'),
       render: (amount: number) => (
-        <Text style={styles.amountText}>${amount}/חודש</Text>
+        <Text style={styles.amountText}>${amount}{t('admin.subscriptions.perMonth')}</Text>
       ),
     },
     {
       key: 'next_billing',
-      label: 'חיוב הבא',
+      label: t('admin.subscriptions.columns.nextBilling'),
       render: (date: string) => (
         <Text style={styles.dateText}>
           {new Date(date).toLocaleDateString('he-IL')}
@@ -134,7 +134,7 @@ export default function SubscriptionsListPage() {
     },
     {
       key: 'status',
-      label: 'סטטוס',
+      label: t('admin.subscriptions.columns.status'),
       render: (status: string) => getStatusBadge(status),
     },
     {
@@ -156,7 +156,7 @@ export default function SubscriptionsListPage() {
       {/* Header */}
       <View style={styles.header}>
         <Text style={styles.pageTitle}>{t('admin.titles.subscriptions')}</Text>
-        <Text style={styles.subtitle}>צפה ונהל מנויי המערכת</Text>
+        <Text style={styles.subtitle}>{t('admin.subscriptions.subtitle')}</Text>
       </View>
 
       {/* Plan Stats */}
@@ -166,7 +166,7 @@ export default function SubscriptionsListPage() {
             key={plan.id}
             title={plan.name_he || plan.name}
             value={plan.subscribers || 0}
-            subtitle={`$${plan.price}/חודש`}
+            subtitle={`$${plan.price}${t('admin.subscriptions.perMonth')}`}
             icon="📦"
             color={plan.name === 'Premium' ? 'secondary' : plan.name === 'Family' ? 'warning' : 'primary'}
           />
@@ -178,10 +178,10 @@ export default function SubscriptionsListPage() {
         columns={columns}
         data={subscriptions}
         loading={loading}
-        searchPlaceholder="חפש מנוי..."
+        searchPlaceholder={t('admin.subscriptions.searchPlaceholder')}
         pagination={pagination}
         onPageChange={(page) => setPagination((prev) => ({ ...prev, page }))}
-        emptyMessage="לא נמצאו מנויים"
+        emptyMessage={t('admin.subscriptions.emptyMessage')}
       />
     </ScrollView>
   );

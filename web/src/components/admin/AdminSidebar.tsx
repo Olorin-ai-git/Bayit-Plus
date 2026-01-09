@@ -9,6 +9,7 @@ import {
   CreditCard,
   Package,
   Megaphone,
+  Film,
   Settings,
   FileText,
   ChevronDown,
@@ -77,6 +78,19 @@ const NAV_ITEMS: NavItem[] = [
     ],
   },
   {
+    key: 'content',
+    labelKey: 'admin.nav.content',
+    icon: Film,
+    children: [
+      { key: 'content-library', labelKey: 'admin.nav.contentLibrary', route: '/admin/content' },
+      { key: 'content-import', labelKey: 'admin.nav.contentImport', route: '/admin/content/import' },
+      { key: 'categories', labelKey: 'admin.nav.categories', route: '/admin/categories' },
+      { key: 'live-channels', labelKey: 'admin.nav.liveChannels', route: '/admin/live-channels' },
+      { key: 'radio-stations', labelKey: 'admin.nav.radioStations', route: '/admin/radio-stations' },
+      { key: 'podcasts', labelKey: 'admin.nav.podcasts', route: '/admin/podcasts' },
+    ],
+  },
+  {
     key: 'settings',
     labelKey: 'admin.nav.settings',
     icon: Settings,
@@ -112,7 +126,7 @@ export default function AdminSidebar({
   const { t } = useTranslation()
   const navigate = useNavigate()
   const { user, logout } = useAuthStore()
-  const [expandedItems, setExpandedItems] = useState(['billing', 'subscriptions', 'marketing'])
+  const [expandedItems, setExpandedItems] = useState(['billing', 'subscriptions', 'marketing', 'content'])
 
   const toggleExpand = (key: string) => {
     setExpandedItems((prev) =>

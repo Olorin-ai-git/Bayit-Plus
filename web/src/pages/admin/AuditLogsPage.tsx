@@ -113,10 +113,10 @@ export default function AuditLogsPage() {
   };
 
   const columns = [
-    { key: 'action', label: 'פעולה', width: 200, render: (action: string) => getActionBadge(action) },
+    { key: 'action', label: t('admin.auditLogs.columns.action'), width: 200, render: (action: string) => getActionBadge(action) },
     {
       key: 'user_name',
-      label: 'משתמש',
+      label: t('admin.auditLogs.columns.user'),
       render: (_: any, log: AuditLog) => (
         <View>
           <Text style={styles.userName}>{log.user_name}</Text>
@@ -124,19 +124,19 @@ export default function AuditLogsPage() {
         </View>
       ),
     },
-    { key: 'resource_type', label: 'משאב', width: 100, render: (type: string) => <Text style={styles.resourceText}>{type}</Text> },
-    { key: 'ip_address', label: 'IP', width: 120, render: (ip: string) => <Text style={styles.ipText}>{ip}</Text> },
+    { key: 'resource_type', label: t('admin.auditLogs.columns.resource'), width: 100, render: (type: string) => <Text style={styles.resourceText}>{type}</Text> },
+    { key: 'ip_address', label: t('admin.auditLogs.columns.ip'), width: 120, render: (ip: string) => <Text style={styles.ipText}>{ip}</Text> },
     {
       key: 'details',
-      label: 'פרטים',
+      label: t('admin.auditLogs.columns.details'),
       width: 150,
       render: (details: Record<string, any>) => (
         <Text style={styles.detailsText} numberOfLines={1}>
-          {details?.changed_fields ? `שונה: ${details.changed_fields.join(', ')}` : '-'}
+          {details?.changed_fields ? `${t('admin.auditLogs.changed')}: ${details.changed_fields.join(', ')}` : '-'}
         </Text>
       ),
     },
-    { key: 'created_at', label: 'תאריך', width: 180, render: (date: string) => <Text style={styles.dateText}>{formatDate(date)}</Text> },
+    { key: 'created_at', label: t('admin.auditLogs.columns.date'), width: 180, render: (date: string) => <Text style={styles.dateText}>{formatDate(date)}</Text> },
   ];
 
   const actionFilters = ['', 'user', 'subscription', 'payment', 'settings', 'campaign', 'content'];

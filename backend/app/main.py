@@ -5,7 +5,13 @@ from app.core.config import settings
 from app.core.database import connect_to_mongo, close_mongo_connection
 
 # Import routers
-from app.api.routes import auth, content, live, radio, podcasts, subscriptions, chat, watchlist, history, admin, party, websocket, zman, trending, chapters, subtitles, ritual, profiles, children, judaism, flows, device_pairing, onboarding
+from app.api.routes import (
+    auth, content, live, radio, podcasts, subscriptions, chat, watchlist, history, admin, admin_uploads,
+    party, websocket, zman, trending, chapters, subtitles, ritual, profiles, children, judaism, flows,
+    device_pairing, onboarding, widgets,
+    admin_content_vod_read, admin_content_vod_write, admin_categories, admin_live_channels,
+    admin_radio_stations, admin_podcasts, admin_podcast_episodes, admin_content_importer, admin_widgets
+)
 
 
 @asynccontextmanager
@@ -50,6 +56,17 @@ app.include_router(chat.router, prefix=f"{settings.API_V1_PREFIX}/chat", tags=["
 app.include_router(watchlist.router, prefix=f"{settings.API_V1_PREFIX}/watchlist", tags=["watchlist"])
 app.include_router(history.router, prefix=f"{settings.API_V1_PREFIX}/history", tags=["history"])
 app.include_router(admin.router, prefix=f"{settings.API_V1_PREFIX}/admin", tags=["admin"])
+app.include_router(admin_content_vod_read.router, prefix=f"{settings.API_V1_PREFIX}/admin", tags=["admin-content"])
+app.include_router(admin_content_vod_write.router, prefix=f"{settings.API_V1_PREFIX}/admin", tags=["admin-content"])
+app.include_router(admin_categories.router, prefix=f"{settings.API_V1_PREFIX}/admin", tags=["admin-content"])
+app.include_router(admin_live_channels.router, prefix=f"{settings.API_V1_PREFIX}/admin", tags=["admin-content"])
+app.include_router(admin_radio_stations.router, prefix=f"{settings.API_V1_PREFIX}/admin", tags=["admin-content"])
+app.include_router(admin_podcasts.router, prefix=f"{settings.API_V1_PREFIX}/admin", tags=["admin-content"])
+app.include_router(admin_podcast_episodes.router, prefix=f"{settings.API_V1_PREFIX}/admin", tags=["admin-content"])
+app.include_router(admin_content_importer.router, prefix=f"{settings.API_V1_PREFIX}/admin", tags=["admin-content"])
+app.include_router(admin_widgets.router, prefix=f"{settings.API_V1_PREFIX}/admin", tags=["admin-widgets"])
+app.include_router(admin_uploads.router, prefix=f"{settings.API_V1_PREFIX}/admin", tags=["admin-uploads"])
+app.include_router(widgets.router, prefix=f"{settings.API_V1_PREFIX}/widgets", tags=["widgets"])
 app.include_router(party.router, prefix=f"{settings.API_V1_PREFIX}/party", tags=["party"])
 app.include_router(websocket.router, prefix=f"{settings.API_V1_PREFIX}", tags=["websocket"])
 app.include_router(zman.router, prefix=f"{settings.API_V1_PREFIX}/zman", tags=["zman"])

@@ -1,14 +1,20 @@
 import { useState, useCallback, useEffect } from 'react';
-import { View, StyleSheet } from 'react-native';
+import { View, Text, StyleSheet } from 'react-native';
 import { Outlet } from 'react-router-dom';
 import Header from './Header';
 import Footer from './Footer';
 import GlassSidebar from './GlassSidebar';
 import Chatbot from '../chat/Chatbot';
 import SoundwaveParticles from '../content/SoundwaveParticles';
+import RunningFlowBanner from '../flow/RunningFlowBanner';
 import { useVoiceListeningContext } from '@bayit/shared-contexts';
 import { ttsService } from '@bayit/shared-services';
 import { colors, spacing } from '@bayit/shared/theme';
+import { useTizenRemoteKeys } from '@/hooks/useTizenRemoteKeys';
+import { useSamsungVoice } from '@/hooks/useSamsungVoice';
+import { useChatbotStore } from '@/stores/chatbotStore';
+import { useDirection } from '@/hooks/useDirection';
+import { useFlowStore } from '@/stores/flowStore';
 
 // Check if this is a TV build (set by webpack)
 declare const __TV__: boolean;
@@ -17,10 +23,57 @@ const IS_TV_BUILD = typeof __TV__ !== 'undefined' && __TV__;
 export default function Layout() {
   // Sidebar state for TV builds
   const [isSidebarExpanded, setIsSidebarExpanded] = useState(false);
+  const { isRTL } = useDirection();
 
   const toggleSidebar = useCallback(() => {
     setIsSidebarExpanded(prev => !prev);
   }, []);
+
+  // Handle Red button on TV remote to toggle voice listening
+  const handleRedButton = useCallback(() => {
+    console.log('[Layout] Red button pressed - toggling voice');
+    // Dispatch custom event that VoiceSearchButton listens for
+    window.dispatchEvent(new CustomEvent('bayit:toggle-voice'));
+  }, []);
+
+  // Register TV remote key handlers
+  useTizenRemoteKeys({
+    onRedButton: handleRedButton,
+    onGreenButton: toggleSidebar, // Green button toggles sidebar
+    enabled: IS_TV_BUILD,
+  });
+
+  // Samsung Voice Integration (Bixby)
+  // When user says "Hey Bixby, search for X", the search query is sent to chatbot
+  const { sendMessage, toggleOpen } = useChatbotStore();
+
+  const handleBixbySearch = useCallback((query: string) => {
+    console.log('[Layout] Bixby search received:', query);
+    toggleOpen(); // Open chatbot
+    sendMessage(query); // Send the voice query to chatbot
+  }, [sendMessage, toggleOpen]);
+
+  const handleBixbyCommand = useCallback((command: string, data?: any) => {
+    console.log('[Layout] Bixby command:', command, data);
+    // Could handle play/pause/etc commands here
+  }, []);
+
+  // Bixby voice integration disabled - requires voicecontrol privilege
+  const bixbyAvailable = false;
+  const bixbyError: string | null = null;
+  // const { isAvailable: bixbyAvailable, error: bixbyError } = useSamsungVoice({
+  //   enabled: IS_TV_BUILD,
+  //   onSearch: handleBixbySearch,
+  //   onCommand: handleBixbyCommand,
+  //   currentState: 'Home',
+  // });
+
+  // Log Bixby availability
+  useEffect(() => {
+    if (IS_TV_BUILD) {
+      console.log('[Layout] Bixby voice integration available:', bixbyAvailable);
+    }
+  }, [bixbyAvailable]);
 
   // Voice listening context - shared across all pages
   const { isListening, isAwake, isProcessing, audioLevel } = useVoiceListeningContext();
@@ -88,6 +141,7 @@ export default function Layout() {
   }, []);
 
   // Calculate content margin based on sidebar state
+  // Sidebar is always visible: collapsed = 80px (icons), expanded = 280px (full)
   const sidebarWidth = IS_TV_BUILD ? (isSidebarExpanded ? 280 : 80) : 0;
 
   return (
@@ -110,9 +164,12 @@ export default function Layout() {
       {/* Main content wrapper with sidebar offset */}
       <View style={[
         styles.contentWrapper,
-        IS_TV_BUILD && { marginLeft: sidebarWidth },
+        IS_TV_BUILD && (isRTL ? { marginRight: sidebarWidth } : { marginLeft: sidebarWidth }),
       ]}>
-        <Header onMenuPress={IS_TV_BUILD ? toggleSidebar : undefined} />
+        <Header />
+
+        {/* Running Flow Banner - shows when a flow is active */}
+        <RunningFlowBanner />
 
         {/* Voice Soundwave Particles - visible on all pages (100px high) */}
         <SoundwaveParticles
@@ -132,7 +189,8 @@ export default function Layout() {
 
       {/* Chatbot enabled on both web and TV for voice interaction */}
       <Chatbot />
-    </View>
+
+          </View>
   );
 }
 

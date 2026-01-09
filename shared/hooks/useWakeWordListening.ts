@@ -98,12 +98,27 @@ export function useWakeWordListening(options: UseWakeWordListeningOptions): UseW
   const pendingTranscriptionRef = useRef<Promise<any> | null>(null);
   const lastTranscribedBlobRef = useRef<Blob | null>(null);
 
-  // Check platform support
+  // Check platform support with verbose logging
   const isWeb = Platform.OS === 'web';
-  const isSupported = isWeb &&
-    typeof AudioContext !== 'undefined' &&
-    typeof navigator !== 'undefined' &&
-    !!navigator.mediaDevices?.getUserMedia;
+  const hasAudioContext = typeof AudioContext !== 'undefined' || typeof (window as any).webkitAudioContext !== 'undefined';
+  const hasNavigator = typeof navigator !== 'undefined';
+  const hasMediaDevices = hasNavigator && !!navigator.mediaDevices;
+  const hasGetUserMedia = hasMediaDevices && !!(navigator.mediaDevices.getUserMedia || (navigator as any).webkitGetUserMedia || (navigator as any).mozGetUserMedia);
+
+  const isSupported = isWeb && hasAudioContext && hasGetUserMedia;
+
+  // Log support status on mount (for debugging Tizen)
+  useEffect(() => {
+    console.log('[WakeWordListening] Platform support check:', {
+      isWeb,
+      hasAudioContext,
+      hasNavigator,
+      hasMediaDevices,
+      hasGetUserMedia,
+      isSupported,
+      userAgent: typeof navigator !== 'undefined' ? navigator.userAgent : 'N/A',
+    });
+  }, []);
 
   /**
    * Initialize wake word detector
@@ -301,21 +316,52 @@ export function useWakeWordListening(options: UseWakeWordListeningOptions): UseW
     try {
       console.log('[WakeWordListening] Requesting microphone permission...');
 
-      // Get microphone stream
-      const stream = await navigator.mediaDevices.getUserMedia({
-        audio: {
-          echoCancellation: true,
-          noiseSuppression: true,
-          autoGainControl: true,
-          sampleRate: 16000,
-        },
-      });
+      // Check if mediaDevices API is available
+      if (!navigator.mediaDevices) {
+        throw new Error('mediaDevices API not available');
+      }
+      if (!navigator.mediaDevices.getUserMedia) {
+        throw new Error('getUserMedia not available');
+      }
+
+      console.log('[WakeWordListening] mediaDevices available, requesting mic...');
+
+      // Get microphone stream - try with constraints first, fall back to simple audio: true
+      // Samsung TVs may not support all audio constraints
+      let stream: MediaStream;
+      try {
+        stream = await navigator.mediaDevices.getUserMedia({
+          audio: {
+            echoCancellation: true,
+            noiseSuppression: true,
+            autoGainControl: true,
+            sampleRate: 16000,
+          },
+        });
+        console.log('[WakeWordListening] Got stream with constraints');
+      } catch (constraintErr: any) {
+        console.warn('[WakeWordListening] Constraints failed:', constraintErr?.message || constraintErr);
+        // Fallback for devices that don't support specific constraints (e.g., Samsung TV)
+        try {
+          stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+          console.log('[WakeWordListening] Got stream with simple audio:true');
+        } catch (simpleErr: any) {
+          console.error('[WakeWordListening] Simple audio also failed:', simpleErr?.message || simpleErr);
+          throw new Error(`Mic access denied: ${simpleErr?.message || 'Permission denied'}`);
+        }
+      }
 
       console.log('[WakeWordListening] Microphone granted, stream active:', stream.active);
       streamRef.current = stream;
 
-      // Create audio context
-      const audioContext = new AudioContext({ sampleRate: 16000 });
+      // Create audio context - use default sample rate if 16kHz not supported
+      let audioContext: AudioContext;
+      try {
+        audioContext = new AudioContext({ sampleRate: 16000 });
+      } catch (audioCtxErr) {
+        console.warn('[WakeWordListening] 16kHz AudioContext failed, using default:', audioCtxErr);
+        audioContext = new AudioContext();
+      }
       audioContextRef.current = audioContext;
       console.log('[WakeWordListening] Audio context created, state:', audioContext.state);
 
@@ -450,10 +496,22 @@ registerProcessor('audio-processor', AudioProcessorWorklet);
 
     try {
       console.log('[WakeWordListening] Starting audio capture...');
-      if (isWeb && isSupported) {
+      if (!isWeb) {
+        throw new Error('Not a web platform');
+      }
+      if (!hasAudioContext) {
+        throw new Error('AudioContext not available');
+      }
+      if (!hasMediaDevices) {
+        throw new Error('mediaDevices not available');
+      }
+      if (!hasGetUserMedia) {
+        throw new Error('getUserMedia not available');
+      }
+      if (isSupported) {
         await startWebAudio();
       } else {
-        throw new Error(`Audio capture not supported - isWeb: ${isWeb}, isSupported: ${isSupported}`);
+        throw new Error(`Audio not supported`);
       }
 
       isListeningRef.current = true;
@@ -465,7 +523,7 @@ registerProcessor('audio-processor', AudioProcessorWorklet);
       setError(error);
       onError(error);
     }
-  }, [isListening, enabled, isWeb, isSupported, startWebAudio, initializeVAD, initializeWakeWord, onError]);
+  }, [isListening, enabled, isWeb, isSupported, hasAudioContext, hasMediaDevices, hasGetUserMedia, startWebAudio, initializeVAD, initializeWakeWord, onError]);
 
   /**
    * Stop listening

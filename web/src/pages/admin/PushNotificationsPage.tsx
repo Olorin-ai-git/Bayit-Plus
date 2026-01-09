@@ -26,10 +26,10 @@ interface Pagination {
   total: number;
 }
 
-const statusColors: Record<string, { bg: string; text: string; label: string }> = {
-  draft: { bg: 'rgba(107, 114, 128, 0.2)', text: '#6B7280', label: 'טיוטה' },
-  sent: { bg: 'rgba(34, 197, 94, 0.2)', text: '#22C55E', label: 'נשלח' },
-  scheduled: { bg: 'rgba(245, 158, 11, 0.2)', text: '#F59E0B', label: 'מתוזמן' },
+const statusColors: Record<string, { bg: string; text: string; labelKey: string }> = {
+  draft: { bg: 'rgba(107, 114, 128, 0.2)', text: '#6B7280', labelKey: 'admin.pushNotifications.status.draft' },
+  sent: { bg: 'rgba(34, 197, 94, 0.2)', text: '#22C55E', labelKey: 'admin.pushNotifications.status.sent' },
+  scheduled: { bg: 'rgba(245, 158, 11, 0.2)', text: '#F59E0B', labelKey: 'admin.pushNotifications.status.scheduled' },
 };
 
 const formatDate = (dateStr: string) => {
@@ -83,7 +83,7 @@ export default function PushNotificationsPage() {
 
   const handleCreate = async () => {
     if (!newNotification.title || !newNotification.body) {
-      alert('נא למלא כותרת ותוכן');
+      alert(t('admin.pushNotifications.fillRequired'));
       return;
     }
     try {
@@ -97,7 +97,7 @@ export default function PushNotificationsPage() {
   };
 
   const handleSend = async (notification: PushNotification) => {
-    if (!window.confirm(`שלח את ההתראה "${notification.title}"?`)) return;
+    if (!window.confirm(t('admin.pushNotifications.confirmSend', { title: notification.title }))) return;
     try {
       await marketingService.sendPushNotification(notification.id);
       loadNotifications();
@@ -107,7 +107,7 @@ export default function PushNotificationsPage() {
   };
 
   const handleDelete = async (notification: PushNotification) => {
-    if (!window.confirm(`מחק את ההתראה "${notification.title}"?`)) return;
+    if (!window.confirm(t('admin.pushNotifications.confirmDelete', { title: notification.title }))) return;
     try {
       await marketingService.deletePushNotification(notification.id);
       loadNotifications();
@@ -137,7 +137,7 @@ export default function PushNotificationsPage() {
     const style = statusColors[status] || statusColors.draft;
     return (
       <View style={[styles.badge, { backgroundColor: style.bg }]}>
-        <Text style={[styles.badgeText, { color: style.text }]}>{style.label}</Text>
+        <Text style={[styles.badgeText, { color: style.text }]}>{t(style.labelKey)}</Text>
       </View>
     );
   };
@@ -145,7 +145,7 @@ export default function PushNotificationsPage() {
   const columns = [
     {
       key: 'title',
-      label: 'כותרת',
+      label: t('admin.pushNotifications.columns.title'),
       render: (_: any, notification: PushNotification) => (
         <View>
           <Text style={styles.notificationTitle}>{notification.title}</Text>
@@ -153,18 +153,18 @@ export default function PushNotificationsPage() {
         </View>
       ),
     },
-    { key: 'status', label: 'סטטוס', width: 100, render: (status: string) => getStatusBadge(status) },
-    { key: 'sent', label: 'נשלחו', width: 80, render: (sent: number) => <Text style={styles.statText}>{sent.toLocaleString()}</Text> },
-    { key: 'opened', label: 'נפתחו', width: 80, render: (opened: number) => <Text style={styles.statText}>{opened.toLocaleString()}</Text> },
+    { key: 'status', label: t('admin.pushNotifications.columns.status'), width: 100, render: (status: string) => getStatusBadge(status) },
+    { key: 'sent', label: t('admin.pushNotifications.columns.sent'), width: 80, render: (sent: number) => <Text style={styles.statText}>{sent.toLocaleString()}</Text> },
+    { key: 'opened', label: t('admin.pushNotifications.columns.opened'), width: 80, render: (opened: number) => <Text style={styles.statText}>{opened.toLocaleString()}</Text> },
     {
       key: 'scheduled_at',
-      label: 'מתוזמן ל',
+      label: t('admin.pushNotifications.columns.scheduledAt'),
       width: 150,
       render: (date: string, notification: PushNotification) => (
         <Text style={styles.dateText}>{date ? formatDate(date) : '-'}</Text>
       ),
     },
-    { key: 'created_at', label: 'נוצר', width: 150, render: (date: string) => <Text style={styles.dateText}>{formatDate(date)}</Text> },
+    { key: 'created_at', label: t('admin.pushNotifications.columns.created'), width: 150, render: (date: string) => <Text style={styles.dateText}>{formatDate(date)}</Text> },
     {
       key: 'actions',
       label: '',
@@ -194,49 +194,49 @@ export default function PushNotificationsPage() {
       <View style={[styles.header, { flexDirection }]}>
         <View>
           <Text style={[styles.pageTitle, { textAlign }]}>{t('admin.titles.pushNotifications')}</Text>
-          <Text style={[styles.subtitle, { textAlign }]}>צור ושלח התראות למשתמשים</Text>
+          <Text style={[styles.subtitle, { textAlign }]}>{t('admin.pushNotifications.subtitle')}</Text>
         </View>
-        <GlassButton title="התראה חדשה" variant="primary" icon={<Plus size={16} color={colors.text} />} onPress={() => setShowCreateModal(true)} />
+        <GlassButton title={t('admin.pushNotifications.newNotification')} variant="primary" icon={<Plus size={16} color={colors.text} />} onPress={() => setShowCreateModal(true)} />
       </View>
 
       <View style={[styles.filtersRow, { flexDirection }]}>
         {['all', 'draft', 'sent', 'scheduled'].map((status) => (
           <Pressable key={status} onPress={() => setFilters((prev) => ({ ...prev, status }))} style={[styles.filterButton, filters.status === status && styles.filterButtonActive]}>
             <Text style={[styles.filterText, filters.status === status && styles.filterTextActive, { textAlign }]}>
-              {status === 'all' ? 'הכל' : statusColors[status]?.label || status}
+              {status === 'all' ? t('admin.pushNotifications.filters.all') : t(statusColors[status]?.labelKey)}
             </Text>
           </Pressable>
         ))}
       </View>
 
-      <DataTable columns={columns} data={notifications} loading={loading} searchPlaceholder="חפש התראה..." onSearch={handleSearch} pagination={pagination} onPageChange={handlePageChange} emptyMessage="לא נמצאו התראות" />
+      <DataTable columns={columns} data={notifications} loading={loading} searchPlaceholder={t('admin.pushNotifications.searchPlaceholder')} onSearch={handleSearch} pagination={pagination} onPageChange={handlePageChange} emptyMessage={t('admin.pushNotifications.emptyMessage')} />
 
-      <GlassModal visible={showCreateModal} onClose={() => setShowCreateModal(false)} title="התראת פוש חדשה">
+      <GlassModal visible={showCreateModal} onClose={() => setShowCreateModal(false)} title={t('admin.pushNotifications.createModal')}>
         <View style={styles.modalContent}>
           <View style={styles.formGroup}>
-            <Text style={[styles.formLabel, { textAlign }]}>כותרת</Text>
+            <Text style={[styles.formLabel, { textAlign }]}>{t('admin.pushNotifications.titleLabel')}</Text>
             <TextInput style={styles.input} value={newNotification.title} onChangeText={(title) => setNewNotification((p) => ({ ...p, title }))} placeholder={t('admin.push.titlePlaceholder')} placeholderTextColor={colors.textMuted} />
           </View>
           <View style={styles.formGroup}>
-            <Text style={[styles.formLabel, { textAlign }]}>תוכן</Text>
+            <Text style={[styles.formLabel, { textAlign }]}>{t('admin.pushNotifications.bodyLabel')}</Text>
             <TextInput style={[styles.input, styles.textArea]} value={newNotification.body} onChangeText={(body) => setNewNotification((p) => ({ ...p, body }))} placeholder={t('admin.push.bodyPlaceholder')} placeholderTextColor={colors.textMuted} multiline numberOfLines={3} />
           </View>
           <View style={styles.modalActions}>
-            <GlassButton title="ביטול" variant="secondary" onPress={() => setShowCreateModal(false)} />
-            <GlassButton title="צור התראה" variant="primary" onPress={handleCreate} />
+            <GlassButton title={t('admin.pushNotifications.cancel')} variant="secondary" onPress={() => setShowCreateModal(false)} />
+            <GlassButton title={t('admin.pushNotifications.create')} variant="primary" onPress={handleCreate} />
           </View>
         </View>
       </GlassModal>
 
-      <GlassModal visible={showScheduleModal} onClose={() => setShowScheduleModal(false)} title="תזמון התראה">
+      <GlassModal visible={showScheduleModal} onClose={() => setShowScheduleModal(false)} title={t('admin.pushNotifications.scheduleModal')}>
         <View style={styles.modalContent}>
           <View style={styles.formGroup}>
-            <Text style={[styles.formLabel, { textAlign }]}>תאריך ושעה</Text>
+            <Text style={[styles.formLabel, { textAlign }]}>{t('admin.pushNotifications.dateTimeLabel')}</Text>
             <TextInput style={styles.input} value={scheduleDate} onChangeText={setScheduleDate} placeholder={t('placeholder.datetime')} placeholderTextColor={colors.textMuted} />
           </View>
           <View style={styles.modalActions}>
-            <GlassButton title="ביטול" variant="secondary" onPress={() => setShowScheduleModal(false)} />
-            <GlassButton title="תזמן" variant="primary" onPress={handleSchedule} />
+            <GlassButton title={t('admin.pushNotifications.cancel')} variant="secondary" onPress={() => setShowScheduleModal(false)} />
+            <GlassButton title={t('admin.pushNotifications.schedule')} variant="primary" onPress={handleSchedule} />
           </View>
         </View>
       </GlassModal>

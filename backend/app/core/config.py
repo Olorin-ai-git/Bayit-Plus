@@ -48,6 +48,17 @@ class Settings(BaseSettings):
     DRM_LICENSE_URL: str = ""
     DRM_API_KEY: str = ""
 
+    # Storage (local or S3)
+    STORAGE_TYPE: str = "local"  # "local" or "s3"
+    UPLOAD_DIR: str = "uploads"
+
+    # AWS S3 (optional, only needed if STORAGE_TYPE is "s3")
+    AWS_ACCESS_KEY_ID: str = ""
+    AWS_SECRET_ACCESS_KEY: str = ""
+    AWS_S3_BUCKET: str = ""
+    AWS_S3_REGION: str = "us-east-1"
+    CDN_BASE_URL: str = ""  # Optional CloudFront URL
+
     class Config:
         env_file = ".env"
         case_sensitive = True

@@ -14,9 +14,13 @@ import { GlassView } from './ui';
 import { languages, saveLanguage, getCurrentLanguage } from '../i18n';
 import { colors, spacing, borderRadius } from '../theme';
 
-// Conditionally import createPortal for web only
+// Check if this is a TV build (set by webpack)
+declare const __TV__: boolean;
+const IS_TV_BUILD = typeof __TV__ !== 'undefined' && __TV__;
+
+// Conditionally import createPortal for web only (not TV)
 let createPortal: typeof import('react-dom').createPortal | null = null;
-if (Platform.OS === 'web') {
+if (Platform.OS === 'web' && !IS_TV_BUILD) {
   try {
     createPortal = require('react-dom').createPortal;
   } catch {
@@ -28,11 +32,15 @@ export const LanguageSelector: React.FC = () => {
   const { t, i18n } = useTranslation();
   const { isRTL } = useDirection();
   const [isOpen, setIsOpen] = useState(false);
+  const [backdropActive, setBackdropActive] = useState(false);
   const [isFocused, setIsFocused] = useState(false);
+  const [focusedLang, setFocusedLang] = useState<string | null>(null);
   const [currentLang, setCurrentLang] = useState(getCurrentLanguage());
   const [dropdownPosition, setDropdownPosition] = useState({ top: 0, left: 0, right: 0 });
   const buttonRef = useRef<View>(null);
   const fadeAnim = useRef(new Animated.Value(0)).current;
+  // Debounce to prevent double-toggle from onPress + onClick firing together
+  const lastToggleTime = useRef<number>(0);
 
   useEffect(() => {
     setCurrentLang(getCurrentLanguage());
@@ -46,13 +54,36 @@ export const LanguageSelector: React.FC = () => {
     }).start();
   }, [isOpen]);
 
+  // Delay backdrop activation to prevent immediate close on open
+  // Using 500ms to handle slow remote button releases
+  useEffect(() => {
+    if (isOpen) {
+      const timer = setTimeout(() => setBackdropActive(true), 500);
+      return () => clearTimeout(timer);
+    } else {
+      setBackdropActive(false);
+    }
+  }, [isOpen]);
+
   const handleSelectLanguage = async (langCode: string) => {
     await saveLanguage(langCode);
     setCurrentLang(languages.find(l => l.code === langCode) || languages[0]);
     setIsOpen(false);
   };
 
-  const handleOpenDropdown = () => {
+  const handleOpenDropdown = (e?: any) => {
+    // Debounce: prevent double-toggle within 300ms (onPress + onClick can fire together)
+    const now = Date.now();
+    if (now - lastToggleTime.current < 300) {
+      return;
+    }
+    lastToggleTime.current = now;
+
+    // Stop propagation to prevent immediate close
+    if (e) {
+      e.stopPropagation();
+      e.preventDefault?.();
+    }
     if (!isOpen && buttonRef.current) {
       // For web, get the DOM node and measure
       const node = buttonRef.current as any;
@@ -87,13 +118,23 @@ export const LanguageSelector: React.FC = () => {
         onPress={handleOpenDropdown}
         onFocus={() => setIsFocused(true)}
         onBlur={() => setIsFocused(false)}
+        // @ts-ignore - Web props for TV remote
+        tabIndex={0}
+        onClick={handleOpenDropdown}
+        onKeyDown={(e: any) => {
+          if (e.keyCode === 13 || e.keyCode === 32) {
+            e.preventDefault();
+            e.stopPropagation();
+            handleOpenDropdown(e);
+          }
+        }}
         style={[styles.button, isFocused && styles.buttonFocused]}
       >
         <Text style={styles.flag}>{currentLang.flag}</Text>
       </TouchableOpacity>
 
-      {/* Web: Use portal for dropdown */}
-      {isOpen && Platform.OS === 'web' && createPortal && typeof document !== 'undefined' && createPortal(
+      {/* Web (non-TV): Use portal for dropdown */}
+      {isOpen && Platform.OS === 'web' && !IS_TV_BUILD && createPortal && typeof document !== 'undefined' && createPortal(
         <>
           {/* Backdrop to close on click outside */}
           <TouchableOpacity
@@ -144,8 +185,8 @@ export const LanguageSelector: React.FC = () => {
         document.body
       )}
 
-      {/* Native: Use Modal for dropdown */}
-      {Platform.OS !== 'web' && (
+      {/* Native & TV: Use Modal for dropdown */}
+      {(Platform.OS !== 'web' || IS_TV_BUILD) && (
         <Modal
           visible={isOpen}
           transparent
@@ -155,20 +196,30 @@ export const LanguageSelector: React.FC = () => {
           <TouchableOpacity
             style={styles.modalBackdrop}
             activeOpacity={1}
-            onPress={() => setIsOpen(false)}
+            onPress={backdropActive ? () => setIsOpen(false) : undefined}
           >
-            <View style={styles.modalContent}>
+            <View
+              style={styles.modalContent}
+              onStartShouldSetResponder={() => true}
+              onTouchEnd={(e) => e.stopPropagation()}
+            >
               <GlassView intensity="high" style={styles.dropdown}>
                 <Text style={styles.dropdownTitle}>
                   {t('settings.selectLanguage')}
                 </Text>
-                {languages.map((lang) => (
+                {languages.map((lang, index) => (
                   <TouchableOpacity
                     key={lang.code}
                     onPress={() => handleSelectLanguage(lang.code)}
+                    onFocus={() => setFocusedLang(lang.code)}
+                    onBlur={() => setFocusedLang(null)}
+                    // @ts-ignore - Web props for TV
+                    tabIndex={0}
+                    autoFocus={index === 0}
                     style={[
                       styles.languageOption,
                       currentLang.code === lang.code && styles.languageOptionActive,
+                      focusedLang === lang.code && styles.languageOptionFocused,
                     ]}
                   >
                     {currentLang.code === lang.code && (
@@ -200,12 +251,12 @@ const styles = StyleSheet.create({
     zIndex: 9999,
   },
   button: {
-    width: 44,
-    height: 44,
+    width: IS_TV_BUILD ? 60 : 44,
+    height: IS_TV_BUILD ? 60 : 44,
     justifyContent: 'center',
     alignItems: 'center',
     borderRadius: borderRadius.md,
-    backgroundColor: 'rgba(255, 255, 255, 0.05)',
+    backgroundColor: 'transparent',
     borderWidth: 1,
     borderColor: 'transparent',
   },
@@ -214,7 +265,7 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(0, 217, 255, 0.1)',
   },
   flag: {
-    fontSize: 24,
+    fontSize: IS_TV_BUILD ? 32 : 24,
   },
   backdrop: {
     position: 'fixed' as any,
@@ -250,6 +301,11 @@ const styles = StyleSheet.create({
   },
   languageOptionActive: {
     backgroundColor: 'rgba(0, 217, 255, 0.1)',
+  },
+  languageOptionFocused: {
+    backgroundColor: 'rgba(0, 217, 255, 0.2)',
+    borderWidth: 2,
+    borderColor: colors.primary,
   },
   languageFlag: {
     fontSize: 24,

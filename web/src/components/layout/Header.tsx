@@ -1,7 +1,7 @@
 import { View, Text, StyleSheet, Pressable, useWindowDimensions } from 'react-native';
 import { Link, NavLink, useNavigate } from 'react-router-dom';
 import { useState, useCallback, useEffect } from 'react';
-import { Search, Menu, X, Shield } from 'lucide-react';
+import { Search, Menu, X, Shield } from 'lucide-react'; // Menu and X kept for mobile menu
 import { useTranslation } from 'react-i18next';
 import { useAuthStore } from '@/stores/authStore';
 import { useChatbotStore } from '@/stores/chatbotStore';
@@ -29,11 +29,7 @@ const navLinkKeys = [
   { to: '/children', key: 'nav.children' },
 ];
 
-interface HeaderProps {
-  onMenuPress?: () => void;
-}
-
-export default function Header({ onMenuPress }: HeaderProps) {
+export default function Header() {
   const { i18n, t } = useTranslation();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const { user, isAuthenticated, isAdmin, logout } = useAuthStore();
@@ -45,45 +41,19 @@ export default function Header({ onMenuPress }: HeaderProps) {
   const isMobile = width < 768 && !IS_TV_BUILD;
   const isRTL = i18n.language === 'he' || i18n.language === 'ar';
   const showAdmin = isAuthenticated && isAdmin() && !IS_TV_BUILD; // Hide admin on TV
+  const [loginFocused, setLoginFocused] = useState(false);
 
   // Voice settings for TV - only enable if mic is available
   const [micAvailable, setMicAvailable] = useState<boolean | null>(null);
   // Use wake word activation (no more always-listening mode)
   const wakeWordActive = IS_TV_BUILD && preferences.wake_word_enabled && micAvailable === true;
 
-  // Check if microphone is available on TV (only check once)
+  // Microphone check disabled for TV - Samsung TV doesn't support getUserMedia
+  // The mic would need external USB microphone which we don't support yet
   useEffect(() => {
-    if (!IS_TV_BUILD) return;
-
-    // Track if component is mounted to avoid state updates after unmount
-    let isMounted = true;
-
-    const checkMic = async () => {
-      try {
-        const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-        // Mic is available - stop the test stream
-        stream.getTracks().forEach(track => track.stop());
-        // Only update state if component is still mounted
-        if (isMounted) {
-          setMicAvailable(true);
-          console.log('[TV] Microphone available');
-        }
-      } catch (err) {
-        // No mic available - disable constant listening
-        // Only update state if component is still mounted
-        if (isMounted) {
-          setMicAvailable(false);
-          console.log('[TV] No microphone available:', err);
-        }
-      }
-    };
-
-    checkMic();
-
-    // Cleanup: mark component as unmounted to prevent state updates
-    return () => {
-      isMounted = false;
-    };
+    if (IS_TV_BUILD) {
+      setMicAvailable(false);
+    }
   }, []);
 
   // Handle voice transcript - send to chatbot
@@ -135,11 +105,13 @@ export default function Header({ onMenuPress }: HeaderProps) {
     navigate('/');
   };
 
-  // Logo component
+  // Logo component - use medium size for TV for better visibility
   const LogoSection = (
-    <Link to="/" style={{ textDecoration: 'none' }}>
-      <AnimatedLogo size="small" />
-    </Link>
+    <View style={styles.logoSection}>
+      <Link to="/" style={{ textDecoration: 'none', display: 'flex', alignItems: 'center' }}>
+        <AnimatedLogo size={IS_TV_BUILD ? 'medium' : 'small'} />
+      </Link>
+    </View>
   );
 
   // Navigation component - document.dir handles visual direction
@@ -186,11 +158,17 @@ export default function Header({ onMenuPress }: HeaderProps) {
           onLogout={handleLogout}
         />
       ) : (
-        <Link to="/login" style={{ textDecoration: 'none' }}>
-          <View style={styles.loginButton}>
-            <Text style={styles.loginButtonText}>{t('account.login')}</Text>
-          </View>
-        </Link>
+        <Pressable
+          onPress={() => navigate('/login')}
+          onFocus={() => setLoginFocused(true)}
+          onBlur={() => setLoginFocused(false)}
+          style={[
+            styles.loginButton,
+            loginFocused && styles.loginButtonFocused,
+          ]}
+        >
+          <Text style={styles.loginButtonText}>{t('account.login')}</Text>
+        </Pressable>
       )}
 
       <LanguageSelector />
@@ -214,14 +192,16 @@ export default function Header({ onMenuPress }: HeaderProps) {
         </View>
       )}
 
-      {/* Voice search button - show on all platforms with wake word support */}
-      <View style={styles.voiceButtonContainer}>
-        <VoiceSearchButton
-          onResult={handleVoiceTranscribed}
-          transcribeAudio={chatService.transcribeAudio}
-          tvMode={IS_TV_BUILD}
-        />
-      </View>
+      {/* Voice search button - hide on TV when Hebrew is selected (voice doesn't support Hebrew) */}
+      {(!IS_TV_BUILD || (i18n.language !== 'he')) && (
+        <View style={styles.voiceButtonContainer}>
+          <VoiceSearchButton
+            onResult={handleVoiceTranscribed}
+            transcribeAudio={chatService.transcribeAudio}
+            tvMode={IS_TV_BUILD}
+          />
+        </View>
+      )}
 
       {/* Mobile Menu Toggle */}
       {isMobile && (
@@ -346,7 +326,7 @@ const styles = StyleSheet.create({
     width: IS_TV_BUILD ? 60 : 40,
     height: IS_TV_BUILD ? 60 : 40,
     borderRadius: 8,
-    backgroundColor: 'rgba(255, 255, 255, 0.05)',
+    backgroundColor: 'transparent',
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -354,7 +334,13 @@ const styles = StyleSheet.create({
     paddingHorizontal: IS_TV_BUILD ? spacing.lg : spacing.md,
     paddingVertical: IS_TV_BUILD ? spacing.md : spacing.sm,
     borderRadius: 8,
+    backgroundColor: IS_TV_BUILD ? 'rgba(255, 255, 255, 0.1)' : colors.primary,
+    borderWidth: IS_TV_BUILD ? 1 : 0,
+    borderColor: 'rgba(255, 255, 255, 0.2)',
+  },
+  loginButtonFocused: {
     backgroundColor: colors.primary,
+    borderColor: colors.primary,
   },
   loginButtonText: {
     fontSize: IS_TV_BUILD ? 20 : 14,
@@ -398,6 +384,11 @@ const styles = StyleSheet.create({
   },
   adminLinkText: {
     color: '#ef4444',
+  },
+  logoSection: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.md,
   },
   soundwaveContainer: {
     height: IS_TV_BUILD ? 60 : 44,

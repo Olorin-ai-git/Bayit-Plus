@@ -12,6 +12,8 @@
     "search": "חיפוש",
     "watchNow": "צפה עכשיו",
     "playNow": "נגן עכשיו",
+    "play": "נגן",
+    "moreInfo": "מידע נוסף",
     "new": "חדש",
     "live": "שידור חי",
     "recommended": "מומלץ",
@@ -907,6 +909,7 @@
       "churnRate": "שיעור נטישה"
     },
     "actions": {
+      "new": "חדש",
       "addUser": "הוסף משתמש",
       "newCampaign": "קמפיין חדש",
       "sendEmail": "שלח אימייל",
@@ -927,6 +930,11 @@
       "pushNotifications": "הודעות דחיפה",
       "billing": "חיוב",
       "marketing": "שיווק",
+      "content": "ספריית תוכן",
+      "categories": "קטגוריות",
+      "liveChannels": "ערוצים חיים",
+      "radioStations": "תחנות רדיו",
+      "podcasts": "פודקאסטים",
       "settings": "הגדרות"
     },
     "nav": {
@@ -944,6 +952,13 @@
       "marketingDashboard": "סקירה",
       "emailCampaigns": "קמפייני דוא״ל",
       "pushNotifications": "התראות פוש",
+      "content": "תוכן",
+      "contentLibrary": "ספריית תוכן",
+      "contentImport": "ייבוא תוכן",
+      "categories": "קטגוריות",
+      "liveChannels": "ערוצים חיים",
+      "radioStations": "תחנות רדיו",
+      "podcasts": "פודקאסטים",
       "settings": "הגדרות",
       "auditLogs": "יומן פעילות"
     },
@@ -992,7 +1007,16 @@
       "actionType": "סוג פעולה",
       "clear": "נקה",
       "apply": "החל",
-      "noRecords": "לא נמצאו רשומות"
+      "noRecords": "לא נמצאו רשומות",
+      "columns": {
+        "action": "פעולה",
+        "user": "משתמש",
+        "resource": "משאב",
+        "details": "פרטים",
+        "date": "תאריך",
+        "ip": "IP"
+      },
+      "changed": "שונה"
     },
     "settings": {
       "subtitle": "הגדר את פרמטרי המערכת",
@@ -1025,6 +1049,60 @@
         "voice_search": "חיפוש קולי",
         "ai_recommendations": "המלצות AI"
       }
+    },
+    "content": {
+      "title": "ספריית תוכן",
+      "subtitle": "ניהול סרטונים וסדרות",
+      "importFree": "ייבא תוכן חינמי",
+      "searchPlaceholder": "חפש תוכן...",
+      "emptyMessage": "לא נמצא תוכן",
+      "confirmDelete": "למחוק תוכן זה?",
+      "status": {
+        "published": "פורסם",
+        "draft": "טיוטה"
+      },
+      "columns": {
+        "title": "כותרת",
+        "category": "קטגוריה",
+        "year": "שנה",
+        "status": "סטטוס",
+        "views": "צפיות",
+        "rating": "דירוג",
+        "streamUrl": "כתובת Stream",
+        "epgSource": "מקור EPG",
+        "genre": "ז'אנר",
+        "episodeNumber": "מספר פרק",
+        "description": "תיאור",
+        "duration": "משך",
+        "publishedDate": "פורסם",
+        "episodes": "פרקים",
+        "order": "סדר",
+        "name": "שם"
+      },
+      "validation": {
+        "titleRequired": "כותרת נדרשת",
+        "nameRequired": "שם נדרש",
+        "streamUrlRequired": "כתובת Stream נדרשת",
+        "audioUrlRequired": "כתובת Audio נדרשת"
+      }
+    },
+    "categories": {
+      "subtitle": "ניהול קטגוריות תוכן",
+      "emptyMessage": "לא נמצאו קטגוריות"
+    },
+    "liveChannels": {
+      "subtitle": "ניהול ערוצי טלוויזיה חיים",
+      "emptyMessage": "לא נמצאו ערוצים חיים"
+    },
+    "radioStations": {
+      "subtitle": "ניהול תחנות רדיו",
+      "emptyMessage": "לא נמצאו תחנות רדיו"
+    },
+    "podcasts": {
+      "subtitle": "ניהול פודקאסטים ופרקים",
+      "episodesSubtitle": "ניהול פרקים",
+      "emptyMessage": "לא נמצאו פודקאסטים",
+      "noEpisodes": "לא נמצאו פרקים"
     },
     "users": {
       "subtitle": "ניהול משתמשים וחשבונות",
@@ -1082,9 +1160,23 @@
       }
     },
     "subscriptions": {
+      "subtitle": "צפה ונהל מנויי המערכת",
       "status": {
-        "active": "פעיל"
-      }
+        "active": "פעיל",
+        "paused": "מושהה",
+        "cancelled": "בוטל",
+        "expired": "פג תוקף"
+      },
+      "columns": {
+        "user": "משתמש",
+        "plan": "תוכנית",
+        "price": "מחיר",
+        "nextBilling": "חיוב הבא",
+        "status": "סטטוס"
+      },
+      "perMonth": "/חודש",
+      "searchPlaceholder": "חפש מנוי...",
+      "emptyMessage": "לא נמצאו מנויים"
     },
     "marketingDashboard": {
       "subtitle": "סקירת שיווק",
@@ -1101,15 +1193,62 @@
       }
     },
     "transactions": {
-      "subtitle": "היסטוריית עסקאות",
+      "subtitle": "צפה בהיסטוריית התשלומים",
+      "exportCsv": "ייצא CSV",
+      "status": {
+        "completed": "הושלם",
+        "pending": "ממתין",
+        "failed": "נכשל",
+        "refunded": "הוחזר"
+      },
+      "columns": {
+        "id": "מזהה",
+        "user": "משתמש",
+        "amount": "סכום",
+        "type": "סוג",
+        "status": "סטטוס",
+        "date": "תאריך"
+      },
       "filters": {
         "all": "הכל"
-      }
+      },
+      "searchPlaceholder": "חפש עסקה...",
+      "emptyMessage": "לא נמצאו עסקאות",
+      "details": "פרטי עסקה",
+      "email": "אימייל"
     },
     "pushNotifications": {
+      "subtitle": "צור ושלח התראות למשתמשים",
+      "newNotification": "התראה חדשה",
+      "status": {
+        "draft": "טיוטה",
+        "sent": "נשלח",
+        "scheduled": "מתוזמן"
+      },
+      "columns": {
+        "title": "כותרת",
+        "status": "סטטוס",
+        "sent": "נשלחו",
+        "opened": "נפתחו",
+        "scheduledAt": "מתוזמן ל",
+        "created": "נוצר"
+      },
       "filters": {
         "all": "הכל"
-      }
+      },
+      "searchPlaceholder": "חפש התראה...",
+      "emptyMessage": "לא נמצאו התראות",
+      "createModal": "התראת פוש חדשה",
+      "scheduleModal": "תזמון התראה",
+      "titleLabel": "כותרת",
+      "bodyLabel": "תוכן",
+      "dateTimeLabel": "תאריך ושעה",
+      "cancel": "ביטול",
+      "create": "צור התראה",
+      "schedule": "תזמן",
+      "confirmSend": "שלח את ההתראה \"{{title}}\"?",
+      "confirmDelete": "מחק את ההתראה \"{{title}}\"?",
+      "fillRequired": "נא למלא כותרת ותוכן"
     }
   },
   "watchParty": {

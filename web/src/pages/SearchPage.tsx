@@ -1,18 +1,11 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { View, Text, StyleSheet, ScrollView, Pressable, Image, ActivityIndicator } from 'react-native';
 import { useSearchParams, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useDirection } from '@/hooks/useDirection';
-import { Search, X, Film, Tv, Radio, Podcast, Grid, Clock, TrendingUp, Mic } from 'lucide-react';
+import { Search, Film, Tv, Radio, Podcast, Grid, Clock, X } from 'lucide-react';
 import { colors, spacing, borderRadius } from '@bayit/shared/theme';
-import {
-  GlassView,
-  GlassCard,
-  GlassInput,
-  GlassTabs,
-  GlassBadge,
-  VoiceSearchButton,
-} from '@bayit/shared';
+import { VoiceSearchButton } from '@bayit/shared';
 import { contentService, chatService } from '@/services/api';
 import logger from '@/utils/logger';
 
@@ -36,60 +29,45 @@ interface RecentSearch {
   timestamp: number;
 }
 
-const FILTER_ICONS: Record<string, React.ReactNode> = {
-  all: <Grid size={16} color={colors.textSecondary} />,
-  vod: <Film size={16} color={colors.textSecondary} />,
-  live: <Tv size={16} color={colors.textSecondary} />,
-  radio: <Radio size={16} color={colors.textSecondary} />,
-  podcast: <Podcast size={16} color={colors.textSecondary} />,
-};
+const FILTERS = [
+  { id: 'all', icon: Grid, labelKey: 'search.filters.all' },
+  { id: 'vod', icon: Film, labelKey: 'search.filters.vod' },
+  { id: 'live', icon: Tv, labelKey: 'search.filters.live' },
+  { id: 'radio', icon: Radio, labelKey: 'search.filters.radio' },
+  { id: 'podcast', icon: Podcast, labelKey: 'search.filters.podcast' },
+];
 
 export default function SearchPage() {
-  const { t, i18n } = useTranslation();
-  const { isRTL, textAlign, flexDirection } = useDirection();
+  const { t } = useTranslation();
+  const { isRTL } = useDirection();
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
+  const inputRef = useRef<HTMLInputElement>(null);
 
   const [query, setQuery] = useState(searchParams.get('q') || '');
   const [results, setResults] = useState<SearchResult[]>([]);
   const [loading, setLoading] = useState(false);
   const [activeFilter, setActiveFilter] = useState(searchParams.get('type') || 'all');
   const [recentSearches, setRecentSearches] = useState<RecentSearch[]>([]);
-  const [showVoiceListening, setShowVoiceListening] = useState(false);
+  const [focusedItem, setFocusedItem] = useState<string | null>(null);
 
-  const filterTabs = [
-    { id: 'all', label: t('search.filters.all') },
-    { id: 'vod', label: t('search.filters.vod') },
-    { id: 'live', label: t('search.filters.live') },
-    { id: 'radio', label: t('search.filters.radio') },
-    { id: 'podcast', label: t('search.filters.podcast') },
-  ];
-
-  // Load recent searches from localStorage
+  // Load recent searches
   useEffect(() => {
     try {
       const stored = localStorage.getItem('recentSearches');
-      if (stored) {
-        setRecentSearches(JSON.parse(stored));
-      }
-    } catch (e) {
-      // Ignore localStorage errors
-    }
+      if (stored) setRecentSearches(JSON.parse(stored));
+    } catch (e) {}
   }, []);
 
-  // Save to recent searches
+  // Save recent search
   const saveRecentSearch = useCallback((searchQuery: string) => {
     if (!searchQuery.trim()) return;
-
     const newSearch: RecentSearch = { query: searchQuery, timestamp: Date.now() };
     const updated = [newSearch, ...recentSearches.filter(s => s.query !== searchQuery)].slice(0, 5);
     setRecentSearches(updated);
-
     try {
       localStorage.setItem('recentSearches', JSON.stringify(updated));
-    } catch (e) {
-      // Ignore localStorage errors
-    }
+    } catch (e) {}
   }, [recentSearches]);
 
   // Perform search
@@ -98,7 +76,6 @@ export default function SearchPage() {
       setResults([]);
       return;
     }
-
     setLoading(true);
     try {
       const data = await contentService.search(searchQuery, {
@@ -117,10 +94,8 @@ export default function SearchPage() {
   // React to URL changes
   useEffect(() => {
     const q = searchParams.get('q');
-    if (q && q !== query) {
+    if (q) {
       setQuery(q);
-      performSearch(q);
-    } else if (q) {
       performSearch(q);
     }
   }, [searchParams]);
@@ -142,11 +117,7 @@ export default function SearchPage() {
       searchParams.set('type', filterId);
     }
     setSearchParams(searchParams);
-
-    // Re-run search with new filter
-    if (query.trim()) {
-      performSearch(query);
-    }
+    if (query.trim()) performSearch(query);
   };
 
   // Clear search
@@ -155,26 +126,20 @@ export default function SearchPage() {
     setResults([]);
     searchParams.delete('q');
     setSearchParams(searchParams);
+    inputRef.current?.focus();
   };
 
-  // Handle voice transcription
-  const handleVoiceTranscribed = (text: string) => {
+  // Handle voice result
+  const handleVoiceResult = (text: string) => {
     if (text.trim()) {
       setQuery(text);
       searchParams.set('q', text);
       setSearchParams(searchParams);
-      setShowVoiceListening(false);
     }
   };
 
-  // Clear recent searches
-  const clearRecentSearches = () => {
-    setRecentSearches([]);
-    localStorage.removeItem('recentSearches');
-  };
-
   // Handle recent search click
-  const handleRecentSearchClick = (searchQuery: string) => {
+  const handleRecentClick = (searchQuery: string) => {
     setQuery(searchQuery);
     searchParams.set('q', searchQuery);
     setSearchParams(searchParams);
@@ -186,606 +151,416 @@ export default function SearchPage() {
   };
 
   const hasQuery = searchParams.get('q');
+  const showInitialState = !hasQuery && !loading && results.length === 0;
 
   return (
-    <ScrollView style={styles.scrollView} contentContainerStyle={styles.scrollContent}>
-      <View style={styles.container}>
-        {/* Background Effects */}
-        <View style={styles.backgroundGradient1} />
-        <View style={styles.backgroundGradient2} />
-
-        {/* Header */}
-        <View style={styles.header}>
-          <Text style={[styles.title, isRTL && styles.titleRTL]}>
-            {t('search.title')}
-          </Text>
-          <Text style={[styles.subtitle, isRTL && styles.subtitleRTL]}>
-            {t('search.subtitle')}
-          </Text>
-        </View>
-
-        {/* Search Input */}
-        <View style={styles.searchSection}>
-          <GlassView style={styles.searchContainer} intensity="medium">
-            <View style={[styles.searchInputWrapper, isRTL && styles.searchInputWrapperRTL]}>
-              <Search size={22} color={colors.textMuted} />
-              <input
-                type="text"
-                value={query}
-                onChange={(e) => setQuery(e.target.value)}
-                onKeyDown={(e) => e.key === 'Enter' && handleSubmit()}
-                placeholder={t('search.placeholder')}
-                style={{
-                  flex: 1,
-                  background: 'transparent',
-                  border: 'none',
-                  outline: 'none',
-                  fontSize: 18,
-                  color: colors.text,
-                  padding: `${spacing.md}px`,
-                  direction: isRTL ? 'rtl' : 'ltr',
-                }}
-              />
-              <View style={styles.searchActions}>
-                {query && (
-                  <Pressable onPress={clearSearch} style={styles.clearButton}>
-                    <X size={20} color={colors.textMuted} />
-                  </Pressable>
-                )}
-                {!IS_TV_BUILD && (
-                  <View style={styles.voiceButtonWrapper}>
-                    <VoiceSearchButton
-                      onResult={handleVoiceTranscribed}
-                      transcribeAudio={chatService.transcribeAudio}
-                    />
-                  </View>
-                )}
-              </View>
-            </View>
-          </GlassView>
-
-          {/* Voice Listening Indicator */}
-          {showVoiceListening && (
-            <View style={styles.voiceListeningBanner}>
-              <GlassView style={styles.voiceListeningContent} intensity="high">
-                <Mic size={24} color={colors.primary} />
-                <Text style={styles.voiceListeningText}>
-                  {t('search.listening')}
-                </Text>
-              </GlassView>
-            </View>
+    <ScrollView style={styles.page} contentContainerStyle={styles.pageContent}>
+      {/* Search Bar */}
+      <View style={styles.searchBar}>
+        <View style={[styles.searchInputContainer, focusedItem === 'input' && styles.searchInputFocused]}>
+          <Search size={IS_TV_BUILD ? 28 : 22} color={colors.textMuted} />
+          <input
+            ref={inputRef}
+            type="text"
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            onKeyDown={(e) => e.key === 'Enter' && handleSubmit()}
+            onFocus={() => setFocusedItem('input')}
+            onBlur={() => setFocusedItem(null)}
+            placeholder={t('search.placeholder')}
+            autoFocus={!IS_TV_BUILD}
+            style={{
+              flex: 1,
+              background: 'transparent',
+              border: 'none',
+              outline: 'none',
+              fontSize: IS_TV_BUILD ? 24 : 18,
+              color: colors.text,
+              padding: IS_TV_BUILD ? 20 : 16,
+              direction: isRTL ? 'rtl' : 'ltr',
+            }}
+          />
+          {query && (
+            <Pressable
+              onPress={clearSearch}
+              onFocus={() => setFocusedItem('clear')}
+              onBlur={() => setFocusedItem(null)}
+              style={[styles.clearBtn, focusedItem === 'clear' && styles.clearBtnFocused]}
+            >
+              <X size={IS_TV_BUILD ? 24 : 20} color={colors.textMuted} />
+            </Pressable>
           )}
-        </View>
-
-        {/* Filter Tabs */}
-        <View style={styles.filtersSection}>
-          <GlassTabs
-            tabs={filterTabs}
-            activeTab={activeFilter}
-            onChange={handleFilterChange}
-            variant="pills"
+          <VoiceSearchButton
+            onResult={handleVoiceResult}
+            transcribeAudio={chatService.transcribeAudio}
+            tvMode={IS_TV_BUILD}
           />
         </View>
+      </View>
 
-        {/* Content Area */}
-        {loading ? (
-          <View style={styles.loadingContainer}>
-            <ActivityIndicator size="large" color={colors.primary} />
-            <Text style={styles.loadingText}>
-              {t('search.searching')}
-            </Text>
-          </View>
-        ) : results.length > 0 ? (
-          <View style={styles.resultsSection}>
-            {/* Results Count */}
-            <View style={[styles.resultsHeader, isRTL && styles.resultsHeaderRTL]}>
-              <Text style={styles.resultsCount}>
-                {t('search.resultsFound', {
-                  count: results.length,
-                  query: hasQuery,
-                })}
+      {/* Filters */}
+      <View style={styles.filters}>
+        {FILTERS.map((filter) => {
+          const Icon = filter.icon;
+          const isActive = activeFilter === filter.id;
+          const isFocused = focusedItem === `filter-${filter.id}`;
+          return (
+            <Pressable
+              key={filter.id}
+              onPress={() => handleFilterChange(filter.id)}
+              onFocus={() => setFocusedItem(`filter-${filter.id}`)}
+              onBlur={() => setFocusedItem(null)}
+              style={[
+                styles.filterBtn,
+                isActive && styles.filterBtnActive,
+                isFocused && styles.filterBtnFocused,
+              ]}
+            >
+              <Icon size={IS_TV_BUILD ? 24 : 18} color={isActive ? colors.text : colors.textSecondary} />
+              <Text style={[styles.filterText, isActive && styles.filterTextActive]}>
+                {t(filter.labelKey)}
               </Text>
-            </View>
+            </Pressable>
+          );
+        })}
+      </View>
 
-            {/* Results Grid */}
-            <View style={styles.resultsGrid}>
-              {results.map((item) => (
+      {/* Content */}
+      {loading ? (
+        <View style={styles.centered}>
+          <ActivityIndicator size="large" color={colors.primary} />
+          <Text style={styles.loadingText}>{t('search.searching')}</Text>
+        </View>
+      ) : results.length > 0 ? (
+        <View style={styles.results}>
+          <Text style={styles.resultsCount}>
+            {t('search.resultsFound', { count: results.length, query: hasQuery })}
+          </Text>
+          <View style={styles.grid}>
+            {results.map((item) => {
+              const isFocused = focusedItem === `result-${item.id}`;
+              return (
                 <Pressable
                   key={item.id}
                   onPress={() => handleResultClick(item)}
-                  style={({ pressed }) => [
-                    styles.resultCardWrapper,
-                    pressed && styles.resultCardPressed,
-                  ]}
+                  onFocus={() => setFocusedItem(`result-${item.id}`)}
+                  onBlur={() => setFocusedItem(null)}
+                  style={[styles.card, isFocused && styles.cardFocused]}
                 >
-                  <GlassCard style={styles.resultCard}>
-                    {/* Thumbnail */}
-                    <View style={styles.thumbnailContainer}>
-                      {item.thumbnail ? (
-                        <Image
-                          source={{ uri: item.thumbnail }}
-                          style={styles.thumbnail}
-                          resizeMode="cover"
-                        />
-                      ) : (
-                        <View style={styles.thumbnailPlaceholder}>
-                          <Film size={32} color={colors.textMuted} />
-                        </View>
-                      )}
-                      {item.type && (
-                        <View style={styles.typeBadge}>
-                          <GlassBadge variant="primary" size="sm">
-                            {item.type}
-                          </GlassBadge>
-                        </View>
-                      )}
-                      {item.duration && (
-                        <View style={styles.durationBadge}>
-                          <Text style={styles.durationText}>{item.duration}</Text>
-                        </View>
-                      )}
-                    </View>
-
-                    {/* Info */}
-                    <View style={styles.resultInfo}>
-                      <Text style={[styles.resultTitle, isRTL && styles.resultTitleRTL]} numberOfLines={2}>
-                        {item.title}
-                      </Text>
-                      {item.year && (
-                        <Text style={[styles.resultMeta, isRTL && styles.resultMetaRTL]}>
-                          {item.year}
-                          {item.category && ` • ${item.category}`}
-                        </Text>
-                      )}
-                    </View>
-                  </GlassCard>
-                </Pressable>
-              ))}
-            </View>
-          </View>
-        ) : hasQuery ? (
-          /* No Results */
-          <View style={styles.emptyState}>
-            <GlassCard style={styles.emptyCard}>
-              <Search size={80} color={colors.textMuted} />
-              <Text style={styles.emptyTitle}>
-                {t('search.noResults')}
-              </Text>
-              <Text style={styles.emptyDescription}>
-                {t('search.noResultsHint')}
-              </Text>
-            </GlassCard>
-          </View>
-        ) : (
-          /* Initial State - Show Recent Searches or Suggestions */
-          <View style={styles.initialState}>
-            {/* Recent Searches */}
-            {recentSearches.length > 0 && (
-              <View style={styles.recentSection}>
-                <View style={[styles.sectionHeader, isRTL && styles.sectionHeaderRTL]}>
-                  <View style={styles.sectionTitleRow}>
-                    <Clock size={18} color={colors.textSecondary} />
-                    <Text style={styles.sectionTitle}>
-                      {t('search.recentSearches')}
-                    </Text>
+                  <View style={styles.cardThumb}>
+                    {item.thumbnail ? (
+                      <Image source={{ uri: item.thumbnail }} style={styles.cardImage} resizeMode="cover" />
+                    ) : (
+                      <View style={styles.cardPlaceholder}>
+                        <Film size={IS_TV_BUILD ? 48 : 32} color={colors.textMuted} />
+                      </View>
+                    )}
+                    {item.duration && (
+                      <View style={styles.duration}>
+                        <Text style={styles.durationText}>{item.duration}</Text>
+                      </View>
+                    )}
+                    {item.type && (
+                      <View style={styles.typeBadge}>
+                        <Text style={styles.typeText}>{item.type}</Text>
+                      </View>
+                    )}
                   </View>
-                  <Pressable onPress={clearRecentSearches}>
-                    <Text style={styles.clearText}>
-                      {t('search.clearAll')}
+                  <View style={styles.cardInfo}>
+                    <Text style={[styles.cardTitle, isRTL && { textAlign: 'right' }]} numberOfLines={2}>
+                      {item.title}
                     </Text>
-                  </Pressable>
-                </View>
-
-                <View style={styles.recentList}>
-                  {recentSearches.map((item, index) => (
-                    <Pressable
-                      key={index}
-                      onPress={() => handleRecentSearchClick(item.query)}
-                      style={({ pressed }) => [
-                        styles.recentItem,
-                        pressed && styles.recentItemPressed,
-                      ]}
-                    >
-                      <GlassView style={styles.recentItemContent} intensity="low">
-                        <Clock size={14} color={colors.textMuted} />
-                        <Text style={styles.recentItemText}>{item.query}</Text>
-                      </GlassView>
-                    </Pressable>
-                  ))}
-                </View>
-              </View>
-            )}
-
-            {/* Trending Suggestions */}
-            <View style={styles.suggestionsSection}>
-              <View style={[styles.sectionHeader, isRTL && styles.sectionHeaderRTL]}>
-                <View style={styles.sectionTitleRow}>
-                  <TrendingUp size={18} color={colors.textSecondary} />
-                  <Text style={styles.sectionTitle}>
-                    {t('search.trending')}
-                  </Text>
-                </View>
-              </View>
-
-              <View style={styles.suggestionsList}>
-                {[
-                  t('search.suggestions.movies'),
-                  t('search.suggestions.series'),
-                  t('search.suggestions.liveTV'),
-                  t('search.suggestions.news'),
-                  t('search.suggestions.sports'),
-                  t('search.suggestions.kids'),
-                ].map((suggestion, index) => (
-                  <Pressable
-                    key={index}
-                    onPress={() => handleRecentSearchClick(suggestion)}
-                    style={({ pressed }) => [
-                      styles.suggestionChip,
-                      pressed && styles.suggestionChipPressed,
-                    ]}
-                  >
-                    <GlassView style={styles.suggestionContent} intensity="low">
-                      <Text style={styles.suggestionText}>{suggestion}</Text>
-                    </GlassView>
-                  </Pressable>
-                ))}
-              </View>
-            </View>
-
-            {/* Search Prompt */}
-            <View style={styles.promptSection}>
-              <GlassCard style={styles.promptCard}>
-                <Search size={72} color={colors.textMuted} />
-                <Text style={styles.promptTitle}>
-                  {t('search.promptTitle')}
-                </Text>
-                <Text style={styles.promptDescription}>
-                  {t('search.promptDescription')}
-                </Text>
-              </GlassCard>
-            </View>
+                    {item.year && (
+                      <Text style={[styles.cardMeta, isRTL && { textAlign: 'right' }]}>
+                        {item.year}{item.category ? ` • ${item.category}` : ''}
+                      </Text>
+                    )}
+                  </View>
+                </Pressable>
+              );
+            })}
           </View>
-        )}
-      </View>
+        </View>
+      ) : hasQuery ? (
+        <View style={styles.centered}>
+          <Search size={IS_TV_BUILD ? 100 : 64} color={colors.textMuted} />
+          <Text style={styles.emptyTitle}>{t('search.noResults')}</Text>
+          <Text style={styles.emptyText}>{t('search.noResultsHint')}</Text>
+        </View>
+      ) : showInitialState ? (
+        <View style={styles.initial}>
+          {/* Recent Searches */}
+          {recentSearches.length > 0 && (
+            <View style={styles.section}>
+              <View style={styles.sectionHeader}>
+                <Clock size={IS_TV_BUILD ? 24 : 18} color={colors.textSecondary} />
+                <Text style={styles.sectionTitle}>{t('search.recentSearches')}</Text>
+              </View>
+              <View style={styles.chips}>
+                {recentSearches.map((item, idx) => {
+                  const isFocused = focusedItem === `recent-${idx}`;
+                  return (
+                    <Pressable
+                      key={idx}
+                      onPress={() => handleRecentClick(item.query)}
+                      onFocus={() => setFocusedItem(`recent-${idx}`)}
+                      onBlur={() => setFocusedItem(null)}
+                      style={[styles.chip, isFocused && styles.chipFocused]}
+                    >
+                      <Text style={styles.chipText}>{item.query}</Text>
+                    </Pressable>
+                  );
+                })}
+              </View>
+            </View>
+          )}
+
+          {/* Prompt */}
+          <View style={styles.prompt}>
+            <Search size={IS_TV_BUILD ? 80 : 56} color={colors.textMuted} />
+            <Text style={styles.promptTitle}>{t('search.promptTitle')}</Text>
+            <Text style={styles.promptText}>{t('search.promptDescription')}</Text>
+          </View>
+        </View>
+      ) : null}
     </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
-  scrollView: {
+  page: {
     flex: 1,
     backgroundColor: colors.background,
   },
-  scrollContent: {
-    flexGrow: 1,
-  },
-  container: {
-    flex: 1,
-    minHeight: '100vh' as any,
-    position: 'relative',
-    maxWidth: 1200,
+  pageContent: {
+    padding: IS_TV_BUILD ? spacing.xl : spacing.lg,
+    maxWidth: IS_TV_BUILD ? '100%' : 1400,
     marginHorizontal: 'auto',
     width: '100%',
-    padding: spacing.lg,
   },
-  backgroundGradient1: {
-    position: 'absolute',
-    width: 500,
-    height: 500,
-    borderRadius: 250,
+  searchBar: {
+    marginBottom: IS_TV_BUILD ? spacing.xl : spacing.lg,
+  },
+  searchInputContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: 'rgba(255, 255, 255, 0.05)',
+    borderRadius: IS_TV_BUILD ? 16 : 12,
+    paddingHorizontal: IS_TV_BUILD ? spacing.lg : spacing.md,
+    borderWidth: 2,
+    borderColor: 'transparent',
+  },
+  searchInputFocused: {
+    borderColor: colors.primary,
+    backgroundColor: 'rgba(0, 217, 255, 0.05)',
+  },
+  clearBtn: {
+    padding: spacing.sm,
+    borderRadius: 8,
+  },
+  clearBtnFocused: {
+    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+  },
+  filters: {
+    flexDirection: 'row',
+    gap: IS_TV_BUILD ? spacing.md : spacing.sm,
+    marginBottom: IS_TV_BUILD ? spacing.xl : spacing.lg,
+    flexWrap: 'wrap',
+  },
+  filterBtn: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.sm,
+    paddingHorizontal: IS_TV_BUILD ? spacing.lg : spacing.md,
+    paddingVertical: IS_TV_BUILD ? spacing.md : spacing.sm,
+    borderRadius: IS_TV_BUILD ? 12 : 8,
+    backgroundColor: 'rgba(255, 255, 255, 0.05)',
+    borderWidth: 2,
+    borderColor: 'transparent',
+  },
+  filterBtnActive: {
     backgroundColor: colors.primary,
-    opacity: 0.06,
-    top: -150,
-    right: -150,
-    // @ts-ignore
-    filter: 'blur(100px)',
   },
-  backgroundGradient2: {
-    position: 'absolute',
-    width: 400,
-    height: 400,
-    borderRadius: 200,
-    backgroundColor: '#8b5cf6',
-    opacity: 0.04,
-    bottom: 100,
-    left: -100,
-    // @ts-ignore
-    filter: 'blur(80px)',
+  filterBtnFocused: {
+    borderColor: colors.primary,
   },
-  header: {
-    marginBottom: spacing.xl,
-    alignItems: 'center',
-  },
-  title: {
-    fontSize: IS_TV_BUILD ? 48 : 32,
-    fontWeight: '700',
-    color: colors.text,
-    marginBottom: spacing.xs,
-  },
-  titleRTL: {
-    textAlign: 'right',
-  },
-  subtitle: {
-    fontSize: IS_TV_BUILD ? 24 : 16,
+  filterText: {
+    fontSize: IS_TV_BUILD ? 20 : 14,
     color: colors.textSecondary,
-    textAlign: 'center',
-  },
-  subtitleRTL: {
-    textAlign: 'right',
-  },
-  searchSection: {
-    marginBottom: spacing.lg,
-  },
-  searchContainer: {
-    borderRadius: borderRadius.xl,
-  },
-  searchInputWrapper: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingHorizontal: spacing.lg,
-    gap: spacing.sm,
-  },
-  searchInputWrapperRTL: {
-    flexDirection: 'row-reverse',
-  },
-  searchActions: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing.sm,
-  },
-  clearButton: {
-    padding: spacing.xs,
-    borderRadius: borderRadius.full,
-    // @ts-ignore
-    ':hover': {
-      backgroundColor: 'rgba(255, 255, 255, 0.1)',
-    },
-  },
-  voiceButtonWrapper: {
-    marginLeft: spacing.xs,
-  },
-  voiceListeningBanner: {
-    marginTop: spacing.md,
-  },
-  voiceListeningContent: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: spacing.sm,
-    padding: spacing.md,
-    borderRadius: borderRadius.lg,
-  },
-  voiceListeningText: {
-    fontSize: 16,
-    color: colors.primary,
     fontWeight: '500',
   },
-  filtersSection: {
-    marginBottom: spacing.xl,
-    alignItems: 'center',
+  filterTextActive: {
+    color: colors.text,
   },
-  loadingContainer: {
+  centered: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    paddingVertical: spacing.xl * 3,
+    paddingVertical: IS_TV_BUILD ? 100 : 60,
   },
   loadingText: {
     marginTop: spacing.md,
-    fontSize: 16,
+    fontSize: IS_TV_BUILD ? 20 : 16,
     color: colors.textSecondary,
   },
-  resultsSection: {
+  results: {
     flex: 1,
   },
-  resultsHeader: {
-    marginBottom: spacing.lg,
-  },
-  resultsHeaderRTL: {
-    alignItems: 'flex-end',
-  },
   resultsCount: {
-    fontSize: 14,
+    fontSize: IS_TV_BUILD ? 18 : 14,
     color: colors.textMuted,
+    marginBottom: IS_TV_BUILD ? spacing.lg : spacing.md,
   },
-  resultsGrid: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: IS_TV_BUILD ? spacing.xl : spacing.lg,
+  grid: {
+    // @ts-ignore - CSS Grid for web
+    display: 'grid',
+    gridTemplateColumns: IS_TV_BUILD
+      ? 'repeat(auto-fill, minmax(300px, 1fr))'
+      : 'repeat(auto-fill, minmax(200px, 1fr))',
+    gap: IS_TV_BUILD ? spacing.lg : spacing.md,
+  } as any,
+  card: {
+    backgroundColor: 'rgba(255, 255, 255, 0.03)',
+    borderRadius: IS_TV_BUILD ? 16 : 12,
+    overflow: 'hidden',
+    borderWidth: 2,
+    borderColor: 'transparent',
   },
-  resultCardWrapper: {
-    width: IS_TV_BUILD ? 'calc(33.33% - 24px)' as any : 'calc(25% - 18px)' as any,
-    minWidth: IS_TV_BUILD ? 380 : 240,
-  },
-  resultCardPressed: {
-    opacity: 0.8,
+  cardFocused: {
+    borderColor: colors.primary,
+    backgroundColor: 'rgba(0, 217, 255, 0.08)',
+    transform: [{ scale: 1.03 }],
     // @ts-ignore
-    transform: 'scale(0.98)',
+    boxShadow: '0 0 20px rgba(0, 217, 255, 0.3)',
   },
-  resultCard: {
-    overflow: 'visible' as any,
-    padding: 0,
-  },
-  thumbnailContainer: {
-    position: 'relative',
+  cardThumb: {
     aspectRatio: 16 / 9,
+    position: 'relative',
+    backgroundColor: 'rgba(255, 255, 255, 0.02)',
+    overflow: 'hidden',
+    borderTopLeftRadius: IS_TV_BUILD ? 14 : 10,
+    borderTopRightRadius: IS_TV_BUILD ? 14 : 10,
   },
-  thumbnail: {
+  cardImage: {
     width: '100%',
     height: '100%',
   },
-  thumbnailPlaceholder: {
-    width: '100%',
-    height: '100%',
-    backgroundColor: colors.backgroundLighter,
+  cardPlaceholder: {
+    flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
+    backgroundColor: 'rgba(255, 255, 255, 0.02)',
+  },
+  duration: {
+    position: 'absolute',
+    bottom: spacing.sm,
+    right: spacing.sm,
+    backgroundColor: 'rgba(0, 0, 0, 0.8)',
+    paddingHorizontal: spacing.sm,
+    paddingVertical: 2,
+    borderRadius: 4,
+  },
+  durationText: {
+    fontSize: IS_TV_BUILD ? 14 : 12,
+    color: colors.text,
+    fontWeight: '500',
   },
   typeBadge: {
     position: 'absolute',
     top: spacing.sm,
-    right: spacing.sm,
-  },
-  durationBadge: {
-    position: 'absolute',
-    bottom: spacing.sm,
-    right: spacing.sm,
-    backgroundColor: 'rgba(0, 0, 0, 0.7)',
+    left: spacing.sm,
+    backgroundColor: colors.primary,
     paddingHorizontal: spacing.sm,
     paddingVertical: 2,
-    borderRadius: borderRadius.sm,
+    borderRadius: 4,
   },
-  durationText: {
-    fontSize: 12,
+  typeText: {
+    fontSize: IS_TV_BUILD ? 12 : 10,
     color: colors.text,
-    fontWeight: '500',
+    fontWeight: '600',
+    textTransform: 'uppercase',
   },
-  resultInfo: {
-    padding: IS_TV_BUILD ? spacing.lg : spacing.md,
+  cardInfo: {
+    padding: IS_TV_BUILD ? spacing.md : spacing.sm,
+    paddingTop: IS_TV_BUILD ? spacing.sm : spacing.xs,
   },
-  resultTitle: {
-    fontSize: IS_TV_BUILD ? 22 : 15,
+  cardTitle: {
+    fontSize: IS_TV_BUILD ? 18 : 14,
     fontWeight: '600',
     color: colors.text,
-    marginBottom: spacing.xs,
-    lineHeight: IS_TV_BUILD ? 30 : 20,
+    marginBottom: 4,
+    lineHeight: IS_TV_BUILD ? 24 : 18,
   },
-  resultTitleRTL: {
-    textAlign: 'right',
-  },
-  resultMeta: {
-    fontSize: 12,
+  cardMeta: {
+    fontSize: IS_TV_BUILD ? 14 : 12,
     color: colors.textMuted,
   },
-  resultMetaRTL: {
-    textAlign: 'right',
-  },
-  emptyState: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    paddingVertical: spacing.xl * 2,
-  },
-  emptyCard: {
-    padding: IS_TV_BUILD ? spacing.xl * 3 : spacing.xl * 2,
-    alignItems: 'center',
-    minWidth: IS_TV_BUILD ? 700 : 500,
-    maxWidth: IS_TV_BUILD ? 900 : 600,
-  },
   emptyTitle: {
-    fontSize: IS_TV_BUILD ? 36 : 24,
+    fontSize: IS_TV_BUILD ? 32 : 24,
     fontWeight: '600',
     color: colors.text,
     marginTop: spacing.xl,
-    marginBottom: spacing.md,
+    marginBottom: spacing.sm,
   },
-  emptyDescription: {
-    fontSize: IS_TV_BUILD ? 24 : 18,
+  emptyText: {
+    fontSize: IS_TV_BUILD ? 20 : 16,
     color: colors.textSecondary,
     textAlign: 'center',
-    lineHeight: IS_TV_BUILD ? 36 : 26,
   },
-  initialState: {
+  initial: {
     flex: 1,
   },
-  recentSection: {
-    marginBottom: spacing.xl,
+  section: {
+    marginBottom: IS_TV_BUILD ? spacing.xl : spacing.lg,
   },
   sectionHeader: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: spacing.md,
-  },
-  sectionHeaderRTL: {
-    flexDirection: 'row-reverse',
-  },
-  sectionTitleRow: {
-    flexDirection: 'row',
     alignItems: 'center',
     gap: spacing.sm,
+    marginBottom: spacing.md,
   },
   sectionTitle: {
-    fontSize: 16,
+    fontSize: IS_TV_BUILD ? 22 : 16,
     fontWeight: '600',
     color: colors.text,
   },
-  clearText: {
-    fontSize: 14,
-    color: colors.primary,
-    fontWeight: '500',
-  },
-  recentList: {
+  chips: {
     flexDirection: 'row',
     flexWrap: 'wrap',
-    gap: spacing.sm,
+    gap: IS_TV_BUILD ? spacing.md : spacing.sm,
   },
-  recentItem: {
-    // @ts-ignore
-    transition: 'all 0.2s ease',
+  chip: {
+    paddingHorizontal: IS_TV_BUILD ? spacing.lg : spacing.md,
+    paddingVertical: IS_TV_BUILD ? spacing.md : spacing.sm,
+    backgroundColor: 'rgba(255, 255, 255, 0.05)',
+    borderRadius: IS_TV_BUILD ? 12 : 8,
+    borderWidth: 2,
+    borderColor: 'transparent',
   },
-  recentItemPressed: {
-    opacity: 0.7,
+  chipFocused: {
+    borderColor: colors.primary,
+    backgroundColor: 'rgba(0, 217, 255, 0.1)',
   },
-  recentItemContent: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing.sm,
-    paddingHorizontal: spacing.md,
-    paddingVertical: spacing.sm,
-    borderRadius: borderRadius.full,
-  },
-  recentItemText: {
-    fontSize: 14,
+  chipText: {
+    fontSize: IS_TV_BUILD ? 18 : 14,
     color: colors.text,
   },
-  suggestionsSection: {
-    marginBottom: spacing.xl,
-  },
-  suggestionsList: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: spacing.sm,
-  },
-  suggestionChip: {
-    // @ts-ignore
-    transition: 'all 0.2s ease',
-  },
-  suggestionChipPressed: {
-    opacity: 0.7,
-  },
-  suggestionContent: {
-    paddingHorizontal: spacing.lg,
-    paddingVertical: spacing.sm,
-    borderRadius: borderRadius.full,
-  },
-  suggestionText: {
-    fontSize: 14,
-    color: colors.text,
-    fontWeight: '500',
-  },
-  promptSection: {
-    paddingVertical: spacing.xl,
+  prompt: {
     alignItems: 'center',
-  },
-  promptCard: {
-    padding: IS_TV_BUILD ? spacing.xl * 3 : spacing.xl * 2,
-    alignItems: 'center',
-    minWidth: IS_TV_BUILD ? 700 : 500,
-    maxWidth: IS_TV_BUILD ? 900 : 600,
+    paddingVertical: IS_TV_BUILD ? 80 : 40,
   },
   promptTitle: {
-    fontSize: IS_TV_BUILD ? 36 : 24,
+    fontSize: IS_TV_BUILD ? 32 : 24,
     fontWeight: '600',
     color: colors.text,
     marginTop: spacing.xl,
-    marginBottom: spacing.md,
+    marginBottom: spacing.sm,
     textAlign: 'center',
   },
-  promptDescription: {
-    fontSize: IS_TV_BUILD ? 24 : 18,
+  promptText: {
+    fontSize: IS_TV_BUILD ? 20 : 16,
     color: colors.textSecondary,
     textAlign: 'center',
-    lineHeight: IS_TV_BUILD ? 36 : 26,
+    maxWidth: 500,
   },
 });

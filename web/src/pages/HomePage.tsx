@@ -1,128 +1,32 @@
-import { useState, useEffect, useCallback } from 'react';
-import { View, Text, StyleSheet, ScrollView, Pressable, Image, FlatList, useWindowDimensions } from 'react-native';
-import { Link } from 'react-router-dom';
-import { ChevronLeft } from 'lucide-react';
+import { useState, useEffect, useCallback, useRef } from 'react';
+import { View, Text, StyleSheet, ScrollView, Pressable, Image } from 'react-native';
+import { Link, useNavigate } from 'react-router-dom';
+import { Play, ChevronRight, Info, Volume2, VolumeX } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useDirection } from '@/hooks/useDirection';
 import ContentCarousel from '@/components/content/ContentCarousel';
-import HeroSection from '@/components/content/HeroSection';
-import { TrendingRow, AnimatedLogo } from '@bayit/shared';
-import { GlassView } from '@bayit/shared/ui';
+import { TrendingRow } from '@bayit/shared';
 import MorningRitual from '@/components/ritual/MorningRitual';
-import { contentService, liveService, historyService, ritualService, zmanService } from '@/services/api';
-import { colors, spacing, borderRadius, fontSize } from '@bayit/shared/theme';
+import { contentService, liveService, historyService, ritualService } from '@/services/api';
+import { colors, spacing, borderRadius } from '@bayit/shared/theme';
 import { getLocalizedName } from '@bayit/shared-utils/contentLocalization';
-import { GlassCard } from '@bayit/shared/ui';
 import LinearGradient from 'react-native-linear-gradient';
 import logger from '@/utils/logger';
 
-// Compact single clock component for header
-interface MiniClockProps {
-  time: string;
-  label: string;
-  flag: string;
-  sublabel?: string;
-  accentColor?: string;
+declare const __TV__: boolean;
+const IS_TV_BUILD = typeof __TV__ !== 'undefined' && __TV__;
+
+interface FeaturedContent {
+  id: string;
+  title: string;
+  description?: string;
+  thumbnail?: string;
+  videoUrl?: string;
+  type?: string;
+  year?: string;
+  duration?: string;
+  rating?: string;
 }
-
-const MiniClock: React.FC<MiniClockProps> = ({ time, label, flag, sublabel, accentColor = colors.primary }) => {
-  const parts = time.split(':');
-  const hours = parseInt(parts[0], 10) || 0;
-  const minutes = parseInt(parts[1], 10) || 0;
-  const size = 80;
-  const clockRadius = size / 2;
-  const hourHandLength = clockRadius * 0.5;
-  const minuteHandLength = clockRadius * 0.65;
-  const hourRotation = ((hours % 12) + minutes / 60) * 30;
-  const minuteRotation = minutes * 6;
-
-  return (
-    <View style={miniClockStyles.container}>
-      <View style={[miniClockStyles.clockFace, { width: size, height: size, borderColor: accentColor }]}>
-        {/* Hour markers */}
-        {[0, 3, 6, 9].map((i) => {
-          const angle = (i * 30 - 90) * (Math.PI / 180);
-          const pos = clockRadius - 6;
-          return (
-            <View
-              key={i}
-              style={[
-                miniClockStyles.marker,
-                {
-                  left: clockRadius + Math.cos(angle) * pos - 1,
-                  top: clockRadius + Math.sin(angle) * pos - 4,
-                  transform: [{ rotate: `${i * 30}deg` }],
-                },
-              ]}
-            />
-          );
-        })}
-        {/* Hour hand */}
-        <View
-          style={[
-            miniClockStyles.hand,
-            {
-              width: 3,
-              height: hourHandLength,
-              backgroundColor: colors.text,
-              left: clockRadius - 1.5,
-              top: clockRadius - hourHandLength,
-              transform: [{ rotate: `${hourRotation}deg` }],
-              transformOrigin: 'center bottom',
-            },
-          ]}
-        />
-        {/* Minute hand */}
-        <View
-          style={[
-            miniClockStyles.hand,
-            {
-              width: 2,
-              height: minuteHandLength,
-              backgroundColor: accentColor,
-              left: clockRadius - 1,
-              top: clockRadius - minuteHandLength,
-              transform: [{ rotate: `${minuteRotation}deg` }],
-              transformOrigin: 'center bottom',
-            },
-          ]}
-        />
-        {/* Center dot */}
-        <View style={[miniClockStyles.centerDot, { backgroundColor: accentColor, left: clockRadius - 4, top: clockRadius - 4 }]} />
-      </View>
-      <View style={miniClockStyles.labelContainer}>
-        <Text style={miniClockStyles.flag}>{flag}</Text>
-        <Text style={[miniClockStyles.label, { color: accentColor }]}>{label}</Text>
-      </View>
-      {sublabel && <Text style={miniClockStyles.sublabel}>{sublabel}</Text>}
-      <Text style={miniClockStyles.digitalTime}>{time}</Text>
-    </View>
-  );
-};
-
-const miniClockStyles = StyleSheet.create({
-  container: { alignItems: 'center' },
-  clockFace: {
-    borderRadius: 40,
-    borderWidth: 2,
-    backgroundColor: 'rgba(0, 0, 0, 0.3)',
-    position: 'relative',
-  },
-  marker: {
-    position: 'absolute',
-    width: 2,
-    height: 6,
-    backgroundColor: 'rgba(255, 255, 255, 0.4)',
-    borderRadius: 1,
-  },
-  hand: { position: 'absolute', borderRadius: 2 },
-  centerDot: { position: 'absolute', width: 8, height: 8, borderRadius: 4 },
-  labelContainer: { flexDirection: 'row', alignItems: 'center', gap: 4, marginTop: spacing.xs },
-  flag: { fontSize: 14 },
-  label: { fontSize: 12, fontWeight: '600' },
-  sublabel: { fontSize: 10, color: colors.textMuted, marginTop: 2 },
-  digitalTime: { fontSize: 14, fontWeight: '600', color: colors.text, marginTop: 4, fontFamily: 'monospace' },
-});
 
 interface Channel {
   id: string;
@@ -137,95 +41,41 @@ interface Category {
   items: any[];
 }
 
-interface TimeData {
-  israel: { time: string; day: string };
-  local: { time: string; timezone: string };
-}
-
 export default function HomePage() {
   const { t, i18n } = useTranslation();
   const { isRTL } = useDirection();
-  const [featured, setFeatured] = useState<any>(null);
+  const navigate = useNavigate();
+  const videoRef = useRef<HTMLVideoElement>(null);
+
+  const [featured, setFeatured] = useState<FeaturedContent[]>([]);
+  const [currentFeaturedIndex, setCurrentFeaturedIndex] = useState(0);
   const [categories, setCategories] = useState<Category[]>([]);
   const [liveChannels, setLiveChannels] = useState<Channel[]>([]);
   const [continueWatching, setContinueWatching] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [showMorningRitual, setShowMorningRitual] = useState(false);
-  const [timeData, setTimeData] = useState<TimeData | null>(null);
-  const { width } = useWindowDimensions();
+  const [isMuted, setIsMuted] = useState(true);
+  const [focusedItem, setFocusedItem] = useState<string | null>(null);
+  const [currentTime, setCurrentTime] = useState(new Date());
 
-  // Calculate how many columns fit in the live grid (each card is ~200px wide)
-  const liveColumnsCount = Math.max(1, Math.floor((width - spacing.md * 2) / (200 + spacing.md)));
-
-  // Helper to render clocks in correct order based on RTL
-  const renderClocks = () => {
-    const localClock = (
-      <View style={styles.clockSide} key="local">
-        {timeData && (
-          <MiniClock
-            time={timeData.local.time}
-            label={t('clock.local')}
-            flag="📍"
-            sublabel={timeData.local.timezone.split('/')[1]?.replace('_', ' ')}
-            accentColor={colors.primary}
-          />
-        )}
-      </View>
-    );
-
-    const logo = (
-      <View style={styles.logoCenter} key="logo">
-        <AnimatedLogo size="large" />
-      </View>
-    );
-
-    const israelClock = (
-      <View style={styles.clockSide} key="israel">
-        {timeData && (
-          <MiniClock
-            time={timeData.israel.time}
-            label={t('clock.israel')}
-            flag="🇮🇱"
-            sublabel={timeData.israel.day}
-            accentColor={colors.primary}
-          />
-        )}
-      </View>
-    );
-
-    // RTL: Israel | Logo | Local
-    // LTR: Local | Logo | Israel
-    return isRTL ? [israelClock, logo, localClock] : [localClock, logo, israelClock];
-  };
-
-  // Fetch time data
-  const fetchTime = useCallback(async () => {
-    try {
-      const data = await zmanService.getTime();
-      setTimeData(data as TimeData);
-    } catch (err) {
-      // Fallback to local time
-      const now = new Date();
-      const israelTime = new Date(now.toLocaleString('en-US', { timeZone: 'Asia/Jerusalem' }));
-      setTimeData({
-        israel: {
-          time: israelTime.toLocaleTimeString('he-IL', { hour: '2-digit', minute: '2-digit' }),
-          day: israelTime.toLocaleDateString('he-IL', { weekday: 'long' }),
-        },
-        local: {
-          time: now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' }),
-          timezone: Intl.DateTimeFormat().resolvedOptions().timeZone || 'America/New_York',
-        },
-      });
-    }
+  // Update clock every minute
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setCurrentTime(new Date());
+    }, 60000);
+    return () => clearInterval(timer);
   }, []);
 
+  // Auto-rotate featured content
   useEffect(() => {
-    fetchTime();
-    const interval = setInterval(fetchTime, 60000);
+    if (featured.length <= 1) return;
+    const interval = setInterval(() => {
+      setCurrentFeaturedIndex((prev) => (prev + 1) % featured.length);
+    }, 10000); // 10 seconds per item
     return () => clearInterval(interval);
-  }, [fetchTime]);
+  }, [featured.length]);
 
+  // Load content
   useEffect(() => {
     checkMorningRitual();
     loadHomeContent();
@@ -234,9 +84,7 @@ export default function HomePage() {
   const checkMorningRitual = async () => {
     try {
       const result = await ritualService.shouldShow();
-      if (result.show_ritual) {
-        setShowMorningRitual(true);
-      }
+      if (result.show_ritual) setShowMorningRitual(true);
     } catch (err) {
       logger.debug('Morning ritual check failed', 'HomePage', err);
     }
@@ -251,16 +99,52 @@ export default function HomePage() {
         historyService.getContinueWatching().catch(() => ({ items: [] })),
       ]);
 
-      setFeatured(featuredData.hero);
-      setCategories(categoriesData.categories);
-      setLiveChannels(liveData.channels);
-      setContinueWatching(continueData.items);
+      // Get featured items array (or wrap single item)
+      const featuredItems = featuredData.items || (featuredData.hero ? [featuredData.hero] : []);
+      setFeatured(featuredItems);
+      setCategories(categoriesData.categories || []);
+      setLiveChannels(liveData.channels || []);
+      setContinueWatching(continueData.items || []);
     } catch (error) {
       logger.error('Failed to load home content', 'HomePage', error);
     } finally {
       setLoading(false);
     }
   };
+
+  const currentFeatured = featured[currentFeaturedIndex];
+
+  const handlePlayFeatured = () => {
+    if (currentFeatured) {
+      navigate(`/watch/${currentFeatured.id}`);
+    }
+  };
+
+  const handleMoreInfo = () => {
+    if (currentFeatured) {
+      navigate(`/details/${currentFeatured.id}`);
+    }
+  };
+
+  const toggleMute = () => {
+    setIsMuted(!isMuted);
+    if (videoRef.current) {
+      videoRef.current.muted = !isMuted;
+    }
+  };
+
+  // Format time for display
+  const formatTime = (date: Date, timeZone?: string) => {
+    return date.toLocaleTimeString(i18n.language === 'he' ? 'he-IL' : 'en-US', {
+      hour: '2-digit',
+      minute: '2-digit',
+      hour12: false,
+      timeZone,
+    });
+  };
+
+  const israelTime = formatTime(currentTime, 'Asia/Jerusalem');
+  const localTime = formatTime(currentTime);
 
   if (loading) {
     return <HomePageSkeleton />;
@@ -276,34 +160,165 @@ export default function HomePage() {
   }
 
   return (
-    <ScrollView style={styles.container} contentContainerStyle={styles.content}>
-      {/* Header Row: Clocks with RTL support */}
-      <View style={styles.headerRow}>
-        {renderClocks()}
-      </View>
+    <ScrollView style={styles.page} contentContainerStyle={styles.pageContent}>
+      {/* Hero Section with Autoplay */}
+      {currentFeatured && (
+        <View style={styles.hero}>
+          {/* Background Video/Image */}
+          <View style={styles.heroMedia}>
+            {currentFeatured.videoUrl ? (
+              <video
+                ref={videoRef}
+                src={currentFeatured.videoUrl}
+                autoPlay
+                loop
+                muted={isMuted}
+                playsInline
+                style={{
+                  width: '100%',
+                  height: '100%',
+                  objectFit: 'cover',
+                }}
+              />
+            ) : currentFeatured.thumbnail ? (
+              <Image
+                source={{ uri: currentFeatured.thumbnail }}
+                style={styles.heroImage}
+                resizeMode="cover"
+              />
+            ) : (
+              <View style={styles.heroPlaceholder} />
+            )}
+            {/* Gradient Overlay */}
+            <LinearGradient
+              colors={['transparent', 'rgba(10, 10, 20, 0.6)', 'rgba(10, 10, 20, 0.95)']}
+              locations={[0, 0.5, 1]}
+              style={styles.heroGradient}
+            />
+          </View>
 
-      {/* Hero Section */}
-      {featured && <HeroSection content={featured} />}
+          {/* Dual Clock Display */}
+          <View style={[styles.clockContainer, isRTL && styles.clockContainerRTL]}>
+            <View style={styles.clockItem}>
+              <Text style={styles.flagIcon}>🇮🇱</Text>
+              <Text style={styles.clockTime}>{israelTime}</Text>
+            </View>
+            <View style={styles.clockDivider} />
+            <View style={styles.clockItem}>
+              <Text style={styles.flagIcon}>🇺🇸</Text>
+              <Text style={styles.clockTime}>{localTime}</Text>
+            </View>
+          </View>
 
-      {/* Trending in Israel */}
-      <View style={styles.section}>
-        <TrendingRow />
-      </View>
+          {/* Hero Content */}
+          <View style={[styles.heroContent, isRTL && styles.heroContentRTL]}>
+            <View style={styles.heroInfo}>
+              {/* Badges */}
+              <View style={styles.heroBadges}>
+                {currentFeatured.type && (
+                  <View style={styles.typeBadge}>
+                    <Text style={styles.typeBadgeText}>{currentFeatured.type}</Text>
+                  </View>
+                )}
+                {currentFeatured.rating && (
+                  <View style={styles.ratingBadge}>
+                    <Text style={styles.ratingText}>{currentFeatured.rating}</Text>
+                  </View>
+                )}
+              </View>
+
+              {/* Title */}
+              <Text style={[styles.heroTitle, isRTL && styles.textRTL]}>
+                {currentFeatured.title}
+              </Text>
+
+              {/* Meta */}
+              {(currentFeatured.year || currentFeatured.duration) && (
+                <Text style={[styles.heroMeta, isRTL && styles.textRTL]}>
+                  {[currentFeatured.year, currentFeatured.duration].filter(Boolean).join(' • ')}
+                </Text>
+              )}
+
+              {/* Description */}
+              {currentFeatured.description && (
+                <Text style={[styles.heroDescription, isRTL && styles.textRTL]} numberOfLines={3}>
+                  {currentFeatured.description}
+                </Text>
+              )}
+
+              {/* Action Buttons */}
+              <View style={styles.heroActions}>
+                <Pressable
+                  onPress={handlePlayFeatured}
+                  onFocus={() => setFocusedItem('play')}
+                  onBlur={() => setFocusedItem(null)}
+                  style={[styles.playButton, focusedItem === 'play' && styles.buttonFocused]}
+                >
+                  <Play size={IS_TV_BUILD ? 28 : 22} color="#000" fill="#000" />
+                  <Text style={styles.playButtonText}>{t('common.play')}</Text>
+                </Pressable>
+
+                <Pressable
+                  onPress={handleMoreInfo}
+                  onFocus={() => setFocusedItem('info')}
+                  onBlur={() => setFocusedItem(null)}
+                  style={[styles.infoButton, focusedItem === 'info' && styles.infoButtonFocused]}
+                >
+                  <Info size={IS_TV_BUILD ? 24 : 20} color={colors.text} />
+                  <Text style={styles.infoButtonText}>{t('common.moreInfo')}</Text>
+                </Pressable>
+              </View>
+            </View>
+
+            {/* Mute Button */}
+            {currentFeatured.videoUrl && (
+              <Pressable
+                onPress={toggleMute}
+                onFocus={() => setFocusedItem('mute')}
+                onBlur={() => setFocusedItem(null)}
+                style={[styles.muteButton, focusedItem === 'mute' && styles.muteButtonFocused]}
+              >
+                {isMuted ? (
+                  <VolumeX size={IS_TV_BUILD ? 24 : 20} color={colors.text} />
+                ) : (
+                  <Volume2 size={IS_TV_BUILD ? 24 : 20} color={colors.text} />
+                )}
+              </Pressable>
+            )}
+          </View>
+
+          {/* Featured Indicators */}
+          {featured.length > 1 && (
+            <View style={styles.indicators}>
+              {featured.map((_, index) => (
+                <Pressable
+                  key={index}
+                  onPress={() => setCurrentFeaturedIndex(index)}
+                  style={[
+                    styles.indicator,
+                    index === currentFeaturedIndex && styles.indicatorActive,
+                  ]}
+                />
+              ))}
+            </View>
+          )}
+        </View>
+      )}
 
       {/* Continue Watching */}
       {continueWatching.length > 0 && (
         <ContentCarousel
           title={t('home.continueWatching')}
           items={continueWatching}
-          style={styles.carousel}
+          style={styles.section}
         />
       )}
 
-      {/* Live TV Preview */}
+      {/* Live TV */}
       {liveChannels.length > 0 && (
-        <View style={styles.liveSection}>
+        <View style={styles.section}>
           <View style={styles.sectionHeader}>
-            <View style={styles.liveTitleRow}>
+            <View style={styles.sectionTitleRow}>
               <View style={styles.liveBadge}>
                 <View style={styles.liveDot} />
                 <Text style={styles.liveBadgeText}>{t('common.live')}</Text>
@@ -311,90 +326,78 @@ export default function HomePage() {
               <Text style={styles.sectionTitle}>{t('home.liveTV')}</Text>
             </View>
             <Link to="/live" style={{ textDecoration: 'none' }}>
-              <View style={styles.seeAllButton}>
-                <Text style={styles.seeAllText}>{t('home.allChannels')}</Text>
-                <ChevronLeft size={16} color={colors.primary} />
-              </View>
+              <Text style={styles.seeAll}>{t('home.allChannels')}</Text>
             </Link>
           </View>
-          <View style={[styles.liveGrid, { maxWidth: liveColumnsCount * 200 + (liveColumnsCount - 1) * spacing.md }]}>
-            {liveChannels.slice(0, 6).map((channel) => (
-              <Link key={channel.id} to={`/live/${channel.id}`} style={{ textDecoration: 'none', flex: 1 }}>
-                <LiveChannelCard channel={channel} />
-              </Link>
+          <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.liveRow}>
+            {liveChannels.slice(0, 8).map((channel) => (
+              <LiveCard key={channel.id} channel={channel} focusedItem={focusedItem} setFocusedItem={setFocusedItem} />
             ))}
-          </View>
+          </ScrollView>
         </View>
       )}
 
-      {/* Content Categories */}
+      {/* Trending */}
+      <View style={styles.section}>
+        <TrendingRow />
+      </View>
+
+      {/* Categories */}
       {categories.map((category) => (
         <ContentCarousel
           key={category.id}
           title={getLocalizedName(category, i18n.language)}
           items={category.items}
           seeAllLink={`/vod?category=${category.id}`}
-          style={styles.carousel}
+          style={styles.section}
         />
       ))}
     </ScrollView>
   );
 }
 
-function LiveChannelCard({ channel }: { channel: Channel }) {
+function LiveCard({ channel, focusedItem, setFocusedItem }: { channel: Channel; focusedItem: string | null; setFocusedItem: (id: string | null) => void }) {
   const { t } = useTranslation();
-  const [isHovered, setIsHovered] = useState(false);
+  const navigate = useNavigate();
+  const isFocused = focusedItem === `live-${channel.id}`;
 
   return (
     <Pressable
-      onHoverIn={() => setIsHovered(true)}
-      onHoverOut={() => setIsHovered(false)}
+      onPress={() => navigate(`/live/${channel.id}`)}
+      onFocus={() => setFocusedItem(`live-${channel.id}`)}
+      onBlur={() => setFocusedItem(null)}
+      style={[styles.liveCard, isFocused && styles.liveCardFocused]}
     >
-      <GlassCard style={[styles.channelCard, isHovered && styles.channelCardHovered]}>
-        <View style={styles.channelThumbnail}>
-          {channel.thumbnail ? (
-            <Image
-              source={{ uri: channel.thumbnail }}
-              style={styles.channelImage}
-              resizeMode="cover"
-            />
-          ) : (
-            <View style={styles.channelPlaceholder} />
-          )}
-          <LinearGradient
-            colors={['transparent', 'rgba(10, 10, 20, 0.9)']}
-            style={styles.channelGradient}
-          />
-          <View style={styles.channelInfo}>
-            <View style={styles.channelLiveBadge}>
-              <View style={styles.liveDotSmall} />
-              <Text style={styles.channelLiveText}>{t('common.live')}</Text>
-            </View>
-            <Text style={styles.channelName} numberOfLines={1}>{channel.name}</Text>
-            {channel.currentShow && (
-              <Text style={styles.channelShow} numberOfLines={1}>{channel.currentShow}</Text>
-            )}
-          </View>
+      <View style={styles.liveCardThumb}>
+        {channel.thumbnail ? (
+          <Image source={{ uri: channel.thumbnail }} style={styles.liveCardImage} resizeMode="cover" />
+        ) : (
+          <View style={styles.liveCardPlaceholder} />
+        )}
+        <View style={styles.liveCardBadge}>
+          <View style={styles.liveDotSmall} />
+          <Text style={styles.liveCardBadgeText}>{t('common.live')}</Text>
         </View>
-      </GlassCard>
+      </View>
+      <View style={styles.liveCardInfo}>
+        <Text style={styles.liveCardName} numberOfLines={1}>{channel.name}</Text>
+        {channel.currentShow && (
+          <Text style={styles.liveCardShow} numberOfLines={1}>{channel.currentShow}</Text>
+        )}
+      </View>
     </Pressable>
   );
 }
 
 function HomePageSkeleton() {
-  const { t } = useTranslation();
   return (
-    <View style={styles.container}>
-      <View style={styles.skeletonLogo}>
-        <AnimatedLogo size="large" />
-        <Text style={styles.skeletonText}>{t('common.loading')}</Text>
-      </View>
+    <View style={styles.page}>
       <View style={styles.skeletonHero} />
       {[1, 2, 3].map((i) => (
         <View key={i} style={styles.skeletonSection}>
           <View style={styles.skeletonTitle} />
-          <View style={styles.skeletonGrid}>
-            {[1, 2, 3, 4, 5, 6].map((j) => (
+          <View style={styles.skeletonRow}>
+            {[1, 2, 3, 4, 5].map((j) => (
               <View key={j} style={styles.skeletonCard} />
             ))}
           </View>
@@ -405,49 +408,215 @@ function HomePageSkeleton() {
 }
 
 const styles = StyleSheet.create({
-  container: {
+  page: {
     flex: 1,
+    backgroundColor: colors.background,
   },
-  content: {
+  pageContent: {
     paddingBottom: spacing.xl * 2,
   },
-  headerRow: {
+  // Hero
+  hero: {
+    height: IS_TV_BUILD ? 600 : 500,
+    position: 'relative',
+  },
+  heroMedia: {
+    ...StyleSheet.absoluteFillObject,
+  },
+  heroImage: {
+    width: '100%',
+    height: '100%',
+  },
+  heroPlaceholder: {
+    flex: 1,
+    backgroundColor: colors.backgroundLighter,
+  },
+  heroGradient: {
+    ...StyleSheet.absoluteFillObject,
+  },
+  // Dual Clock
+  clockContainer: {
+    position: 'absolute',
+    top: IS_TV_BUILD ? spacing.xl : spacing.lg,
+    right: IS_TV_BUILD ? spacing.xl * 2 : spacing.lg,
     flexDirection: 'row',
     alignItems: 'center',
+    backgroundColor: 'rgba(10, 10, 20, 0.8)',
+    paddingHorizontal: IS_TV_BUILD ? spacing.lg : spacing.md,
+    paddingVertical: IS_TV_BUILD ? spacing.sm : spacing.xs,
+    borderRadius: IS_TV_BUILD ? 16 : 12,
+    borderWidth: 1,
+    borderColor: 'rgba(0, 217, 255, 0.2)',
+    gap: IS_TV_BUILD ? spacing.md : spacing.sm,
+    zIndex: 20,
+  },
+  clockContainerRTL: {
+    right: 'auto' as any,
+    left: IS_TV_BUILD ? spacing.xl * 2 : spacing.lg,
+    flexDirection: 'row-reverse',
+  },
+  clockItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: IS_TV_BUILD ? spacing.sm : spacing.xs,
+  },
+  flagIcon: {
+    fontSize: IS_TV_BUILD ? 32 : 24,
+  },
+  clockTime: {
+    fontSize: IS_TV_BUILD ? 28 : 20,
+    fontWeight: '700',
+    color: colors.text,
+    fontVariant: ['tabular-nums'] as any,
+  },
+  clockDivider: {
+    width: 1,
+    height: IS_TV_BUILD ? 40 : 32,
+    backgroundColor: 'rgba(255, 255, 255, 0.2)',
+  },
+  heroContent: {
+    position: 'absolute',
+    bottom: IS_TV_BUILD ? 80 : 60,
+    left: IS_TV_BUILD ? spacing.xl * 2 : spacing.lg,
+    right: IS_TV_BUILD ? spacing.xl * 2 : spacing.lg,
+    flexDirection: 'row',
     justifyContent: 'space-between',
-    maxWidth: 1400,
-    marginHorizontal: 'auto',
-    width: '100%',
-    paddingHorizontal: spacing.xl,
-    paddingTop: spacing.lg,
-    paddingBottom: spacing.md,
+    alignItems: 'flex-end',
   },
-  clockSide: {
+  heroContentRTL: {
+    flexDirection: 'row-reverse',
+  },
+  heroInfo: {
     flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
+    maxWidth: IS_TV_BUILD ? 700 : 500,
   },
-  logoCenter: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
+  heroBadges: {
+    flexDirection: 'row',
+    gap: spacing.sm,
+    marginBottom: spacing.sm,
   },
+  typeBadge: {
+    backgroundColor: colors.primary,
+    paddingHorizontal: spacing.sm,
+    paddingVertical: 4,
+    borderRadius: 4,
+  },
+  typeBadgeText: {
+    fontSize: IS_TV_BUILD ? 14 : 12,
+    fontWeight: '600',
+    color: colors.text,
+    textTransform: 'uppercase',
+  },
+  ratingBadge: {
+    backgroundColor: 'rgba(255, 255, 255, 0.2)',
+    paddingHorizontal: spacing.sm,
+    paddingVertical: 4,
+    borderRadius: 4,
+  },
+  ratingText: {
+    fontSize: IS_TV_BUILD ? 14 : 12,
+    fontWeight: '600',
+    color: colors.text,
+  },
+  heroTitle: {
+    fontSize: IS_TV_BUILD ? 48 : 36,
+    fontWeight: '700',
+    color: colors.text,
+    marginBottom: spacing.xs,
+  },
+  heroMeta: {
+    fontSize: IS_TV_BUILD ? 18 : 14,
+    color: colors.textSecondary,
+    marginBottom: spacing.sm,
+  },
+  heroDescription: {
+    fontSize: IS_TV_BUILD ? 18 : 15,
+    color: colors.textSecondary,
+    lineHeight: IS_TV_BUILD ? 28 : 22,
+    marginBottom: spacing.lg,
+  },
+  heroActions: {
+    flexDirection: 'row',
+    gap: spacing.md,
+  },
+  playButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.sm,
+    backgroundColor: '#fff',
+    paddingHorizontal: IS_TV_BUILD ? spacing.xl : spacing.lg,
+    paddingVertical: IS_TV_BUILD ? spacing.md : spacing.sm,
+    borderRadius: IS_TV_BUILD ? 12 : 8,
+    borderWidth: 2,
+    borderColor: 'transparent',
+  },
+  playButtonText: {
+    fontSize: IS_TV_BUILD ? 20 : 16,
+    fontWeight: '600',
+    color: '#000',
+  },
+  infoButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.sm,
+    backgroundColor: 'rgba(255, 255, 255, 0.2)',
+    paddingHorizontal: IS_TV_BUILD ? spacing.xl : spacing.lg,
+    paddingVertical: IS_TV_BUILD ? spacing.md : spacing.sm,
+    borderRadius: IS_TV_BUILD ? 12 : 8,
+    borderWidth: 2,
+    borderColor: 'transparent',
+  },
+  infoButtonFocused: {
+    borderColor: colors.primary,
+    backgroundColor: 'rgba(0, 217, 255, 0.2)',
+  },
+  infoButtonText: {
+    fontSize: IS_TV_BUILD ? 20 : 16,
+    fontWeight: '600',
+    color: colors.text,
+  },
+  buttonFocused: {
+    borderColor: colors.primary,
+    transform: [{ scale: 1.05 }],
+  },
+  muteButton: {
+    width: IS_TV_BUILD ? 56 : 44,
+    height: IS_TV_BUILD ? 56 : 44,
+    borderRadius: IS_TV_BUILD ? 28 : 22,
+    backgroundColor: 'rgba(255, 255, 255, 0.2)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderWidth: 2,
+    borderColor: 'transparent',
+  },
+  muteButtonFocused: {
+    borderColor: colors.primary,
+  },
+  indicators: {
+    position: 'absolute',
+    bottom: IS_TV_BUILD ? 30 : 20,
+    left: 0,
+    right: 0,
+    flexDirection: 'row',
+    justifyContent: 'center',
+    gap: spacing.sm,
+  },
+  indicator: {
+    width: IS_TV_BUILD ? 40 : 30,
+    height: 4,
+    backgroundColor: 'rgba(255, 255, 255, 0.3)',
+    borderRadius: 2,
+  },
+  indicatorActive: {
+    backgroundColor: colors.primary,
+  },
+  textRTL: {
+    textAlign: 'right',
+  },
+  // Sections
   section: {
-    maxWidth: 1400,
-    marginHorizontal: 'auto',
-    width: '100%',
-    paddingHorizontal: spacing.md,
-    marginTop: spacing.lg,
-  },
-  carousel: {
-    marginTop: spacing.xl,
-  },
-  liveSection: {
-    maxWidth: 1400,
-    marginHorizontal: 'auto',
-    width: '100%',
-    paddingHorizontal: spacing.md,
-    marginTop: spacing.xl * 1.5,
+    marginTop: IS_TV_BUILD ? spacing.xl * 1.5 : spacing.xl,
+    paddingHorizontal: IS_TV_BUILD ? spacing.xl : spacing.md,
   },
   sectionHeader: {
     flexDirection: 'row',
@@ -455,24 +624,20 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     marginBottom: spacing.md,
   },
-  liveTitleRow: {
+  sectionTitleRow: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: spacing.sm,
   },
   sectionTitle: {
-    fontSize: 20,
-    fontWeight: 'bold',
+    fontSize: IS_TV_BUILD ? 28 : 20,
+    fontWeight: '700',
     color: colors.text,
   },
-  seeAllButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing.xs,
-  },
-  seeAllText: {
-    fontSize: 14,
+  seeAll: {
+    fontSize: IS_TV_BUILD ? 18 : 14,
     color: colors.primary,
+    fontWeight: '500',
   },
   liveBadge: {
     flexDirection: 'row',
@@ -480,7 +645,7 @@ const styles = StyleSheet.create({
     backgroundColor: colors.error,
     paddingHorizontal: spacing.sm,
     paddingVertical: 4,
-    borderRadius: borderRadius.sm,
+    borderRadius: 4,
     gap: 4,
   },
   liveDot: {
@@ -490,56 +655,49 @@ const styles = StyleSheet.create({
     backgroundColor: colors.text,
   },
   liveBadgeText: {
-    fontSize: 10,
-    fontWeight: 'bold',
+    fontSize: IS_TV_BUILD ? 12 : 10,
+    fontWeight: '700',
     color: colors.text,
   },
-  liveGrid: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: spacing.md,
+  liveRow: {
+    gap: IS_TV_BUILD ? spacing.md : spacing.sm,
+    paddingRight: spacing.md,
   },
-  channelCard: {
-    padding: 0,
-    overflow: 'visible' as any,
-    margin: spacing.xs,
+  liveCard: {
+    width: IS_TV_BUILD ? 280 : 200,
+    backgroundColor: 'rgba(255, 255, 255, 0.03)',
+    borderRadius: IS_TV_BUILD ? 16 : 12,
+    overflow: 'hidden',
+    borderWidth: 2,
+    borderColor: 'transparent',
   },
-  channelCardHovered: {
-    transform: [{ scale: 1.02 }],
+  liveCardFocused: {
+    borderColor: colors.primary,
+    transform: [{ scale: 1.03 }],
   },
-  channelThumbnail: {
+  liveCardThumb: {
     aspectRatio: 16 / 9,
     position: 'relative',
   },
-  channelImage: {
+  liveCardImage: {
     width: '100%',
     height: '100%',
   },
-  channelPlaceholder: {
-    width: '100%',
-    height: '100%',
-    backgroundColor: colors.glass,
+  liveCardPlaceholder: {
+    flex: 1,
+    backgroundColor: 'rgba(255, 255, 255, 0.03)',
   },
-  channelGradient: {
-    ...StyleSheet.absoluteFillObject,
-  },
-  channelInfo: {
+  liveCardBadge: {
     position: 'absolute',
-    bottom: 0,
-    left: 0,
-    right: 0,
-    padding: spacing.sm,
-  },
-  channelLiveBadge: {
+    top: spacing.sm,
+    left: spacing.sm,
     flexDirection: 'row',
     alignItems: 'center',
     backgroundColor: colors.error,
     paddingHorizontal: 6,
     paddingVertical: 2,
-    borderRadius: borderRadius.xs,
-    alignSelf: 'flex-start',
+    borderRadius: 4,
     gap: 4,
-    marginBottom: spacing.xs,
   },
   liveDotSmall: {
     width: 4,
@@ -547,60 +705,48 @@ const styles = StyleSheet.create({
     borderRadius: 2,
     backgroundColor: colors.text,
   },
-  channelLiveText: {
-    fontSize: 8,
-    fontWeight: 'bold',
+  liveCardBadgeText: {
+    fontSize: IS_TV_BUILD ? 10 : 8,
+    fontWeight: '700',
     color: colors.text,
   },
-  channelName: {
-    fontSize: 14,
-    fontWeight: '500',
+  liveCardInfo: {
+    padding: IS_TV_BUILD ? spacing.md : spacing.sm,
+  },
+  liveCardName: {
+    fontSize: IS_TV_BUILD ? 16 : 14,
+    fontWeight: '600',
     color: colors.text,
   },
-  channelShow: {
-    fontSize: 12,
+  liveCardShow: {
+    fontSize: IS_TV_BUILD ? 14 : 12,
     color: colors.textMuted,
     marginTop: 2,
   },
-  // Skeleton styles
-  skeletonLogo: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingVertical: spacing.xl * 1.5,
-  },
-  skeletonText: {
-    marginTop: spacing.md,
-    color: 'rgba(255, 255, 255, 0.6)',
-  },
+  // Skeleton
   skeletonHero: {
-    height: 400,
-    backgroundColor: colors.glass,
+    height: IS_TV_BUILD ? 600 : 500,
+    backgroundColor: 'rgba(255, 255, 255, 0.03)',
   },
   skeletonSection: {
-    maxWidth: 1400,
-    marginHorizontal: 'auto',
-    width: '100%',
-    paddingHorizontal: spacing.md,
     marginTop: spacing.xl,
+    paddingHorizontal: spacing.md,
   },
   skeletonTitle: {
-    width: 128,
-    height: 32,
-    backgroundColor: colors.glass,
-    borderRadius: borderRadius.md,
+    width: 150,
+    height: 28,
+    backgroundColor: 'rgba(255, 255, 255, 0.05)',
+    borderRadius: 8,
     marginBottom: spacing.md,
   },
-  skeletonGrid: {
+  skeletonRow: {
     flexDirection: 'row',
-    flexWrap: 'wrap',
     gap: spacing.md,
   },
   skeletonCard: {
-    flex: 1,
-    minWidth: 150,
-    maxWidth: '16.66%',
+    width: IS_TV_BUILD ? 280 : 200,
     aspectRatio: 16 / 9,
-    backgroundColor: colors.glass,
-    borderRadius: borderRadius.lg,
+    backgroundColor: 'rgba(255, 255, 255, 0.03)',
+    borderRadius: 12,
   },
 });

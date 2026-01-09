@@ -97,6 +97,7 @@ export const VoiceSearchButton: React.FC<VoiceSearchButtonProps> = ({
     },
     onError: (err) => {
       console.error('[VoiceSearchButton] Voice listening error:', err);
+      setError(err.message || 'Microphone error');
     },
     transcribeAudio,
   });
@@ -245,9 +246,21 @@ export const VoiceSearchButton: React.FC<VoiceSearchButtonProps> = ({
     try {
       setError(null);
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-      const mediaRecorder = new MediaRecorder(stream, {
-        mimeType: 'audio/webm;codecs=opus',
-      });
+
+      // Try with opus codec first, fall back to basic webm for Samsung TV compatibility
+      let mediaRecorder: MediaRecorder;
+      if (MediaRecorder.isTypeSupported('audio/webm;codecs=opus')) {
+        mediaRecorder = new MediaRecorder(stream, {
+          mimeType: 'audio/webm;codecs=opus',
+        });
+      } else if (MediaRecorder.isTypeSupported('audio/webm')) {
+        mediaRecorder = new MediaRecorder(stream, {
+          mimeType: 'audio/webm',
+        });
+      } else {
+        // Fallback - let browser choose format
+        mediaRecorder = new MediaRecorder(stream);
+      }
 
       audioChunksRef.current = [];
       mediaRecorderRef.current = mediaRecorder;
@@ -281,11 +294,38 @@ export const VoiceSearchButton: React.FC<VoiceSearchButtonProps> = ({
     }
   }, [isRecording]);
 
-  const handlePress = () => {
+  // Visual debug state - shows if button was pressed
+  const [debugFlash, setDebugFlash] = useState(false);
+
+  const handlePress = useCallback(() => {
+    console.log('[VoiceSearchButton] handlePress called!');
+
+    // Visual feedback - flash the button to confirm press was received
+    setDebugFlash(true);
+    setTimeout(() => setDebugFlash(false), 500);
+
     // Toggle voice listening on/off - always enabled
-    setIsListeningToggle(!isListeningToggle);
-    console.log('[VoiceSearchButton] Voice listening toggled:', !isListeningToggle);
-  };
+    setIsListeningToggle(prev => {
+      const newValue = !prev;
+      console.log('[VoiceSearchButton] Voice listening toggled to:', newValue);
+      return newValue;
+    });
+  }, []);
+
+  // Listen for custom event from TV remote (Red button triggers voice)
+  useEffect(() => {
+    if (Platform.OS !== 'web') return;
+
+    const handleRemoteVoiceTrigger = () => {
+      console.log('[VoiceSearchButton] Remote voice trigger received');
+      handlePress();
+    };
+
+    window.addEventListener('bayit:toggle-voice', handleRemoteVoiceTrigger);
+    return () => {
+      window.removeEventListener('bayit:toggle-voice', handleRemoteVoiceTrigger);
+    };
+  }, [handlePress]);
 
   const handleCancel = () => {
     if (isRecording && mediaRecorderRef.current) {
@@ -310,12 +350,37 @@ export const VoiceSearchButton: React.FC<VoiceSearchButtonProps> = ({
 
   const buttonState = getButtonState();
 
+  // Handle keyboard events for TV remote (Enter/OK button)
+  const handleKeyDown = useCallback((event: any) => {
+    console.log('[VoiceSearchButton] keyDown event:', event.keyCode);
+    // Enter key (13) or Space (32) triggers the button
+    if (event.keyCode === 13 || event.keyCode === 32) {
+      event.preventDefault();
+      event.stopPropagation();
+      handlePress();
+    }
+  }, [handlePress]);
+
+  // Native click handler for Tizen compatibility
+  const handleClick = useCallback((event: any) => {
+    console.log('[VoiceSearchButton] click event received');
+    event.preventDefault();
+    event.stopPropagation();
+    handlePress();
+  }, [handlePress]);
+
   return (
     <>
       <TouchableOpacity
         onPress={handlePress}
         onFocus={() => setIsFocused(true)}
         onBlur={() => setIsFocused(false)}
+        // @ts-ignore - Web-specific props for TV remote support
+        tabIndex={0}
+        onKeyDown={handleKeyDown}
+        onClick={handleClick}
+        accessibilityRole="button"
+        accessibilityLabel="Toggle voice listening"
         style={[
           styles.button,
           isFocused && styles.buttonFocused,
@@ -324,6 +389,7 @@ export const VoiceSearchButton: React.FC<VoiceSearchButtonProps> = ({
           buttonState === 'wakeword' && styles.buttonWakeWord,
           buttonState === 'processing' && styles.buttonProcessing,
           buttonState === 'listening' && styles.buttonListening,
+          debugFlash && styles.buttonDebugFlash,
         ]}
       >
         <Animated.View
@@ -446,14 +512,22 @@ export const VoiceSearchButton: React.FC<VoiceSearchButtonProps> = ({
       </Modal>
 
       {/* Voice listening status indicator */}
-      {isListeningToggle && isConstantListening && (
+      {isListeningToggle && (
         <View style={[styles.listeningIndicator, tvMode && styles.listeningIndicatorTV]}>
           <Text style={[styles.listeningText, tvMode && styles.listeningTextTV]}>
-            {t('voice.active', 'Voice Active')}
+            {error ? `Error: ${error}` :
+             wakeWordError ? `Mic Error: ${wakeWordError.message}` :
+             isConstantListening ? t('voice.active', 'Voice Active') :
+             'Starting...'}
           </Text>
-          {wakeWordReady && (
+          {isConstantListening && !error && !wakeWordError && (
             <View style={styles.readyIndicator}>
               <Text style={styles.readyText}>✓</Text>
+            </View>
+          )}
+          {(error || wakeWordError) && (
+            <View style={[styles.readyIndicator, { backgroundColor: '#ef4444' }]}>
+              <Text style={styles.readyText}>!</Text>
             </View>
           )}
         </View>
@@ -464,12 +538,12 @@ export const VoiceSearchButton: React.FC<VoiceSearchButtonProps> = ({
 
 const styles = StyleSheet.create({
   button: {
-    width: 44,
-    height: 44,
+    width: IS_TV_BUILD ? 60 : 44,
+    height: IS_TV_BUILD ? 60 : 44,
     justifyContent: 'center',
     alignItems: 'center',
     borderRadius: borderRadius.md,
-    backgroundColor: 'rgba(255, 255, 255, 0.05)',
+    backgroundColor: 'transparent',
     borderWidth: 1,
     borderColor: 'transparent',
     position: 'relative',
@@ -478,6 +552,10 @@ const styles = StyleSheet.create({
   buttonFocused: {
     borderColor: colors.primary,
     backgroundColor: 'rgba(0, 217, 255, 0.1)',
+  },
+  buttonDebugFlash: {
+    backgroundColor: '#22c55e',
+    borderColor: '#22c55e',
   },
   buttonToggleActive: {
     backgroundColor: 'rgba(0, 217, 255, 0.15)',
@@ -622,27 +700,32 @@ const styles = StyleSheet.create({
   },
   listeningIndicator: {
     position: 'absolute',
-    bottom: -24,
+    bottom: -28,
     left: '50%',
-    transform: [{ translateX: -50 }] as any,
+    transform: [{ translateX: -100 }] as any,
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: 'rgba(0, 0, 0, 0.7)',
+    backgroundColor: 'rgba(0, 0, 0, 0.85)',
     paddingHorizontal: spacing.sm,
-    paddingVertical: 2,
+    paddingVertical: 4,
     borderRadius: borderRadius.sm,
     whiteSpace: 'nowrap',
+    minWidth: 120,
+    maxWidth: 200,
   } as any,
   listeningIndicatorTV: {
-    bottom: -30,
+    bottom: -36,
     paddingVertical: spacing.xs,
+    minWidth: 150,
+    maxWidth: 300,
   },
   listeningText: {
-    fontSize: 9,
-    color: colors.textSecondary,
+    fontSize: 10,
+    color: colors.text,
+    flexShrink: 1,
   },
   listeningTextTV: {
-    fontSize: 10,
+    fontSize: 12,
   },
   readyIndicator: {
     marginLeft: spacing.xs,

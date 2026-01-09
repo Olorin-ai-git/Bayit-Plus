@@ -43,6 +43,14 @@ import EmailCampaignsPage from './pages/admin/EmailCampaignsPage'
 import PushNotificationsPage from './pages/admin/PushNotificationsPage'
 import AuditLogsPage from './pages/admin/AuditLogsPage'
 import SettingsPage from './pages/admin/SettingsPage'
+import ContentLibraryPage from './pages/admin/ContentLibraryPage'
+import ContentEditorPage from './pages/admin/ContentEditorPage'
+import CategoriesPage from './pages/admin/CategoriesPage'
+import LiveChannelsPage from './pages/admin/LiveChannelsPage'
+import RadioStationsPage from './pages/admin/RadioStationsPage'
+import AdminPodcastsPage from './pages/admin/PodcastsPage'
+import PodcastEpisodesPage from './pages/admin/PodcastEpisodesPage'
+import FreeContentImportPage from './pages/admin/FreeContentImportPage'
 
 function App() {
   // Set document direction based on language (RTL for Hebrew/Arabic, LTR for others)
@@ -77,6 +85,15 @@ function App() {
         <Route path="push" element={<PushNotificationsPage />} />
         <Route path="logs" element={<AuditLogsPage />} />
         <Route path="settings" element={<SettingsPage />} />
+        <Route path="content" element={<ContentLibraryPage />} />
+        <Route path="content/new" element={<ContentEditorPage />} />
+        <Route path="content/:contentId/edit" element={<ContentEditorPage />} />
+        <Route path="content/import" element={<FreeContentImportPage />} />
+        <Route path="categories" element={<CategoriesPage />} />
+        <Route path="live-channels" element={<LiveChannelsPage />} />
+        <Route path="radio-stations" element={<RadioStationsPage />} />
+        <Route path="podcasts" element={<AdminPodcastsPage />} />
+        <Route path="podcasts/:podcastId/episodes" element={<PodcastEpisodesPage />} />
       </Route>
 
       {/* Main Routes with Layout */}

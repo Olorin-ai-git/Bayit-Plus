@@ -12,6 +12,8 @@
     "search": "Search",
     "watchNow": "Watch Now",
     "playNow": "Play Now",
+    "play": "Play",
+    "moreInfo": "More Info",
     "new": "New",
     "live": "LIVE",
     "recommended": "Recommended",
@@ -1032,6 +1034,7 @@
       "churnRate": "Churn Rate"
     },
     "actions": {
+      "new": "New",
       "addUser": "Add User",
       "newCampaign": "New Campaign",
       "sendEmail": "Send Email",
@@ -1052,6 +1055,11 @@
       "pushNotifications": "Push Notifications",
       "billing": "Billing",
       "marketing": "Marketing",
+      "content": "Content Library",
+      "categories": "Categories",
+      "liveChannels": "Live Channels",
+      "radioStations": "Radio Stations",
+      "podcasts": "Podcasts",
       "settings": "Settings"
     },
     "nav": {
@@ -1069,6 +1077,13 @@
       "marketingDashboard": "Overview",
       "emailCampaigns": "Email Campaigns",
       "pushNotifications": "Push Notifications",
+      "content": "Content",
+      "contentLibrary": "Content Library",
+      "contentImport": "Import Content",
+      "categories": "Categories",
+      "liveChannels": "Live Channels",
+      "radioStations": "Radio Stations",
+      "podcasts": "Podcasts",
       "settings": "Settings",
       "auditLogs": "Audit Logs"
     },
@@ -1117,7 +1132,16 @@
       "actionType": "Action Type",
       "clear": "Clear",
       "apply": "Apply",
-      "noRecords": "No records found"
+      "noRecords": "No records found",
+      "columns": {
+        "action": "Action",
+        "user": "User",
+        "resource": "Resource",
+        "details": "Details",
+        "date": "Date",
+        "ip": "IP"
+      },
+      "changed": "Changed"
     },
     "settings": {
       "subtitle": "Configure system parameters",
@@ -1150,6 +1174,60 @@
         "voice_search": "Voice Search",
         "ai_recommendations": "AI Recommendations"
       }
+    },
+    "content": {
+      "title": "Content Library",
+      "subtitle": "Manage movies, series, and video content",
+      "importFree": "Import Free Content",
+      "searchPlaceholder": "Search content...",
+      "emptyMessage": "No content found",
+      "confirmDelete": "Delete this content?",
+      "status": {
+        "published": "Published",
+        "draft": "Draft"
+      },
+      "columns": {
+        "title": "Title",
+        "category": "Category",
+        "year": "Year",
+        "status": "Status",
+        "views": "Views",
+        "rating": "Rating",
+        "streamUrl": "Stream URL",
+        "epgSource": "EPG Source",
+        "genre": "Genre",
+        "episodeNumber": "Episode #",
+        "description": "Description",
+        "duration": "Duration",
+        "publishedDate": "Published",
+        "episodes": "Episodes",
+        "order": "Order",
+        "name": "Name"
+      },
+      "validation": {
+        "titleRequired": "Title is required",
+        "nameRequired": "Name is required",
+        "streamUrlRequired": "Stream URL is required",
+        "audioUrlRequired": "Audio URL is required"
+      }
+    },
+    "categories": {
+      "subtitle": "Manage content categories",
+      "emptyMessage": "No categories found"
+    },
+    "liveChannels": {
+      "subtitle": "Manage live TV channels",
+      "emptyMessage": "No live channels found"
+    },
+    "radioStations": {
+      "subtitle": "Manage radio stations",
+      "emptyMessage": "No radio stations found"
+    },
+    "podcasts": {
+      "subtitle": "Manage podcasts and episodes",
+      "episodesSubtitle": "Manage episodes",
+      "emptyMessage": "No podcasts found",
+      "noEpisodes": "No episodes found"
     },
     "users": {
       "subtitle": "Manage users and accounts",
@@ -1207,9 +1285,23 @@
       }
     },
     "subscriptions": {
+      "subtitle": "View and manage system subscribers",
       "status": {
-        "active": "Active"
-      }
+        "active": "Active",
+        "paused": "Paused",
+        "cancelled": "Cancelled",
+        "expired": "Expired"
+      },
+      "columns": {
+        "user": "User",
+        "plan": "Plan",
+        "price": "Price",
+        "nextBilling": "Next Billing",
+        "status": "Status"
+      },
+      "perMonth": "/month",
+      "searchPlaceholder": "Search subscription...",
+      "emptyMessage": "No subscriptions found"
     },
     "marketingDashboard": {
       "subtitle": "Marketing Overview",
@@ -1226,15 +1318,62 @@
       }
     },
     "transactions": {
-      "subtitle": "Transaction History",
+      "subtitle": "View payment history",
+      "exportCsv": "Export CSV",
+      "status": {
+        "completed": "Completed",
+        "pending": "Pending",
+        "failed": "Failed",
+        "refunded": "Refunded"
+      },
+      "columns": {
+        "id": "ID",
+        "user": "User",
+        "amount": "Amount",
+        "type": "Type",
+        "status": "Status",
+        "date": "Date"
+      },
       "filters": {
         "all": "All"
-      }
+      },
+      "searchPlaceholder": "Search transaction...",
+      "emptyMessage": "No transactions found",
+      "details": "Transaction Details",
+      "email": "Email"
     },
     "pushNotifications": {
+      "subtitle": "Create and send notifications to users",
+      "newNotification": "New Notification",
+      "status": {
+        "draft": "Draft",
+        "sent": "Sent",
+        "scheduled": "Scheduled"
+      },
+      "columns": {
+        "title": "Title",
+        "status": "Status",
+        "sent": "Sent",
+        "opened": "Opened",
+        "scheduledAt": "Scheduled At",
+        "created": "Created"
+      },
       "filters": {
         "all": "All"
-      }
+      },
+      "searchPlaceholder": "Search notification...",
+      "emptyMessage": "No notifications found",
+      "createModal": "New Push Notification",
+      "scheduleModal": "Schedule Notification",
+      "titleLabel": "Title",
+      "bodyLabel": "Body",
+      "dateTimeLabel": "Date and Time",
+      "cancel": "Cancel",
+      "create": "Create Notification",
+      "schedule": "Schedule",
+      "confirmSend": "Send notification \"{{title}}\"?",
+      "confirmDelete": "Delete notification \"{{title}}\"?",
+      "fillRequired": "Please fill in title and body"
     }
   },
   "placeholder": {

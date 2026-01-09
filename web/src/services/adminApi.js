@@ -98,6 +98,151 @@ const demoPlans = [
 ]
 
 // ============================================
+// Content Demo Data
+// ============================================
+
+const demoCategories = [
+  { id: 'cat1', name: 'סרטים', name_en: 'Movies', slug: 'movies', description: 'סרטים וקולנוע', order: 1, is_active: true, created_at: new Date().toISOString() },
+  { id: 'cat2', name: 'סדרות', name_en: 'Series', slug: 'series', description: 'סדרות טלוויזיה', order: 2, is_active: true, created_at: new Date().toISOString() },
+  { id: 'cat3', name: 'דוקומנטרים', name_en: 'Documentaries', slug: 'documentaries', description: 'סרטים דוקומנטריים', order: 3, is_active: true, created_at: new Date().toISOString() },
+]
+
+const demoContent = [
+  { id: 'c1', title: 'Night of the Living Dead', description: 'Classic zombie horror film', thumbnail: 'https://via.placeholder.com/300x450?text=Night+of+Living+Dead', category_id: 'cat1', category_name: 'Movies', year: 1968, duration: '1:36:00', rating: 'Not Rated', genre: 'Horror', director: 'George A. Romero', stream_url: 'https://archive.org/download/night_of_the_living_dead/night_of_the_living_dead_512kb.mp4', stream_type: 'hls', is_published: true, is_featured: false, is_drm_protected: false, is_series: false, requires_subscription: 'basic', is_kids_content: false, view_count: 1250, avg_rating: 4.2, created_at: new Date(Date.now() - 86400000 * 7).toISOString(), updated_at: new Date(Date.now() - 86400000 * 7).toISOString() },
+  { id: 'c2', title: 'His Girl Friday', description: 'Classic screwball comedy', thumbnail: 'https://via.placeholder.com/300x450?text=His+Girl+Friday', category_id: 'cat1', category_name: 'Movies', year: 1940, duration: '1:32:00', rating: 'Not Rated', genre: 'Comedy', director: 'Howard Hawks', stream_url: 'https://archive.org/download/hgf_512kb.mp4/hgf_512kb.mp4', stream_type: 'hls', is_published: true, is_featured: true, is_drm_protected: false, is_series: false, requires_subscription: 'basic', is_kids_content: false, view_count: 890, avg_rating: 4.5, created_at: new Date(Date.now() - 86400000 * 14).toISOString(), updated_at: new Date(Date.now() - 86400000 * 14).toISOString() },
+  { id: 'c3', title: 'Test Documentary Series', description: 'Educational documentary series', thumbnail: 'https://via.placeholder.com/300x450?text=Documentary', category_id: 'cat3', category_name: 'Documentaries', year: 2024, duration: '45:00', is_published: true, is_featured: false, is_drm_protected: false, is_series: true, season: 1, episode: 1, series_id: 'series1', requires_subscription: 'premium', is_kids_content: false, view_count: 420, avg_rating: 4.7, created_at: new Date().toISOString(), updated_at: new Date().toISOString() },
+]
+
+const demoLiveChannels = [
+  { id: 'live1', name: 'Apple BipBop Basic', description: 'Apple test HLS stream', logo: 'https://via.placeholder.com/200x100?text=Apple', stream_url: 'https://devstreaming-cdn.apple.com/videos/streaming/examples/bipbop_4x3/bipbop_4x3_variant.m3u8', stream_type: 'hls', is_active: true, order: 1, requires_subscription: 'basic', is_drm_protected: false, created_at: new Date().toISOString(), updated_at: new Date().toISOString() },
+  { id: 'live2', name: 'Apple BipBop Advanced', description: 'Apple advanced TS stream', logo: 'https://via.placeholder.com/200x100?text=Apple', stream_url: 'https://devstreaming-cdn.apple.com/videos/streaming/examples/img_bipbop_adv_example_ts/master.m3u8', stream_type: 'hls', is_active: true, order: 2, requires_subscription: 'premium', is_drm_protected: false, created_at: new Date().toISOString(), updated_at: new Date().toISOString() },
+]
+
+const demoRadioStations = [
+  { id: 'radio1', name: 'Soma FM - Groove Salad', description: 'Eclectic lounge music', logo: 'https://via.placeholder.com/200x100?text=Soma+FM', genre: 'Electronic', stream_url: 'https://somafm.com/groovesalad.pls', stream_type: 'audio', is_active: true, order: 1, created_at: new Date().toISOString() },
+  { id: 'radio2', name: 'BBC World Service', description: 'International news', logo: 'https://via.placeholder.com/200x100?text=BBC', genre: 'News', stream_url: 'http://bbcwssc.akamaized.net/live/manifest/audio/en_wwws_drm_p.m3u8', stream_type: 'audio', is_active: true, order: 2, created_at: new Date().toISOString() },
+]
+
+const demoPodcasts = [
+  { id: 'pod1', title: 'The Daily', author: 'The New York Times', description: 'A daily show from The New York Times', cover: 'https://via.placeholder.com/300x300?text=The+Daily', category: 'News', rss_feed: 'https://feeds.simplecast.com/54nAGcIl', website: 'https://www.nytimes.com/podcasts/the-daily', episode_count: 450, latest_episode_date: new Date().toISOString(), is_active: true, order: 1, created_at: new Date().toISOString(), updated_at: new Date().toISOString() },
+  { id: 'pod2', title: 'Up First', author: 'NPR', description: 'NPR newscast in podcast form', cover: 'https://via.placeholder.com/300x300?text=Up+First', category: 'News', rss_feed: 'https://feeds.npr.org/510318/rss.xml', website: 'https://www.npr.org/podcasts/510318/up-first', episode_count: 320, latest_episode_date: new Date().toISOString(), is_active: true, order: 2, created_at: new Date().toISOString(), updated_at: new Date().toISOString() },
+]
+
+const demoEpisodes = [
+  { id: 'ep1', podcast_id: 'pod1', title: 'Breaking News Today', description: 'Latest news update', audio_url: 'https://example.com/episode1.mp3', duration: '12:45', episode_number: 1, season_number: 1, published_at: new Date().toISOString() },
+  { id: 'ep2', podcast_id: 'pod1', title: 'News Review', description: 'Weekly news review', audio_url: 'https://example.com/episode2.mp3', duration: '15:30', episode_number: 2, season_number: 1, published_at: new Date(Date.now() - 86400000).toISOString() },
+]
+
+const demoWidgets = [
+  {
+    id: 'widget1',
+    type: 'system',
+    user_id: null,
+    title: 'Channel 12 Live',
+    description: 'ערוץ 12 שידור חי',
+    icon: '📺',
+    content: {
+      content_type: 'live_channel',
+      live_channel_id: 'live1',
+      iframe_url: null,
+      iframe_title: null,
+    },
+    position: { x: 20, y: 100, width: 320, height: 180, z_index: 100 },
+    is_active: true,
+    is_muted: true,
+    is_visible: true,
+    is_closable: true,
+    is_draggable: true,
+    visible_to_roles: ['user', 'admin'],
+    visible_to_subscription_tiers: [],
+    target_pages: [],
+    order: 0,
+    created_by: 'admin',
+    created_at: new Date().toISOString(),
+    updated_at: new Date().toISOString(),
+  },
+  {
+    id: 'widget2',
+    type: 'system',
+    user_id: null,
+    title: 'News Ticker',
+    description: 'Live news feed',
+    icon: '📰',
+    content: {
+      content_type: 'iframe',
+      live_channel_id: null,
+      iframe_url: 'https://example.com/news-widget',
+      iframe_title: 'News Widget',
+    },
+    position: { x: 360, y: 100, width: 280, height: 200, z_index: 99 },
+    is_active: false,
+    is_muted: true,
+    is_visible: true,
+    is_closable: true,
+    is_draggable: true,
+    visible_to_roles: ['user', 'admin'],
+    visible_to_subscription_tiers: ['premium'],
+    target_pages: ['/'],
+    order: 1,
+    created_by: 'admin',
+    created_at: new Date(Date.now() - 86400000).toISOString(),
+    updated_at: new Date(Date.now() - 86400000).toISOString(),
+  },
+]
+
+const demoFreeSources = {
+  live_tv: {
+    apple_bipbop: {
+      name: 'Apple BipBop Test Streams',
+      description: 'Official Apple test HLS streams',
+      items: [
+        { id: 'bipbop_basic', name: 'Apple BipBop Basic', description: 'Apple basic test HLS stream' },
+        { id: 'bipbop_advanced', name: 'Apple BipBop Advanced (TS)', description: 'Apple advanced test stream with Transport Stream' },
+        { id: 'bipbop_fmp4', name: 'Apple BipBop (fMP4)', description: 'Apple fragmented MP4 test stream' },
+      ],
+    },
+  },
+  vod: {
+    public_domain: {
+      name: 'Public Domain Movies',
+      description: 'Classic films from archive.org',
+      items: [
+        { id: 'notld_1968', title: 'Night of the Living Dead', year: 1968, director: 'George A. Romero' },
+        { id: 'hgf_1940', title: 'His Girl Friday', year: 1940, director: 'Howard Hawks' },
+        { id: 'charade_1963', title: 'Charade', year: 1963, director: 'Stanley Donen' },
+      ],
+    },
+  },
+  radio: {
+    somafm: {
+      name: 'Soma FM Streams',
+      description: 'Quality internet radio from Soma FM',
+      items: [
+        { id: 'somafm_groovesalad', name: 'Groove Salad', genre: 'Electronic' },
+        { id: 'somafm_dronezone', name: 'Drone Zone', genre: 'Ambient' },
+        { id: 'somafm_liveshift', name: 'Live Shift', genre: 'Rock' },
+      ],
+    },
+    bbc: {
+      name: 'BBC World Service',
+      description: "BBC's international news service",
+      items: [{ id: 'bbcws', name: 'BBC World Service', genre: 'News' }],
+    },
+  },
+  podcasts: {
+    public_feeds: {
+      name: 'Public Podcast Feeds',
+      description: 'Popular public podcasts',
+      items: [
+        { id: 'nytimes_daily', title: 'The Daily', author: 'The New York Times' },
+        { id: 'npr_up_first', title: 'Up First', author: 'NPR' },
+        { id: 'science_vs', title: 'Science Vs', author: 'Gimlet Media' },
+      ],
+    },
+  },
+}
+
+// ============================================
 // Dashboard Service
 // ============================================
 
@@ -687,18 +832,411 @@ const demoAuditLogsService = {
 }
 
 // ============================================
+// Content Service
+// ============================================
+
+const apiContentService = {
+  // VOD Content
+  getContent: (filters) => adminApi.get('/admin/content', { params: filters }),
+  getContentItem: (id) => adminApi.get(`/admin/content/${id}`),
+  createContent: (data) => adminApi.post('/admin/content', data),
+  updateContent: (id, data) => adminApi.patch(`/admin/content/${id}`, data),
+  deleteContent: (id) => adminApi.delete(`/admin/content/${id}`),
+  publishContent: (id) => adminApi.post(`/admin/content/${id}/publish`),
+  featureContent: (id) => adminApi.post(`/admin/content/${id}/feature`),
+
+  // Categories
+  getCategories: (filters) => adminApi.get('/admin/categories', { params: filters }),
+  getCategory: (id) => adminApi.get(`/admin/categories/${id}`),
+  createCategory: (data) => adminApi.post('/admin/categories', data),
+  updateCategory: (id, data) => adminApi.patch(`/admin/categories/${id}`, data),
+  deleteCategory: (id) => adminApi.delete(`/admin/categories/${id}`),
+  reorderCategories: (data) => adminApi.post('/admin/categories/reorder', data),
+
+  // Live Channels
+  getLiveChannels: (filters) => adminApi.get('/admin/live-channels', { params: filters }),
+  getLiveChannel: (id) => adminApi.get(`/admin/live-channels/${id}`),
+  createLiveChannel: (data) => adminApi.post('/admin/live-channels', data),
+  updateLiveChannel: (id, data) => adminApi.patch(`/admin/live-channels/${id}`, data),
+  deleteLiveChannel: (id) => adminApi.delete(`/admin/live-channels/${id}`),
+  reorderLiveChannels: (data) => adminApi.post('/admin/live-channels/reorder', data),
+
+  // Radio Stations
+  getRadioStations: (filters) => adminApi.get('/admin/radio-stations', { params: filters }),
+  getRadioStation: (id) => adminApi.get(`/admin/radio-stations/${id}`),
+  createRadioStation: (data) => adminApi.post('/admin/radio-stations', data),
+  updateRadioStation: (id, data) => adminApi.patch(`/admin/radio-stations/${id}`, data),
+  deleteRadioStation: (id) => adminApi.delete(`/admin/radio-stations/${id}`),
+
+  // Podcasts
+  getPodcasts: (filters) => adminApi.get('/admin/podcasts', { params: filters }),
+  getPodcast: (id) => adminApi.get(`/admin/podcasts/${id}`),
+  createPodcast: (data) => adminApi.post('/admin/podcasts', data),
+  updatePodcast: (id, data) => adminApi.patch(`/admin/podcasts/${id}`, data),
+  deletePodcast: (id) => adminApi.delete(`/admin/podcasts/${id}`),
+
+  // Podcast Episodes
+  getEpisodes: (podcastId, filters) => adminApi.get(`/admin/podcasts/${podcastId}/episodes`, { params: filters }),
+  getEpisode: (podcastId, episodeId) => adminApi.get(`/admin/podcasts/${podcastId}/episodes/${episodeId}`),
+  createEpisode: (podcastId, data) => adminApi.post(`/admin/podcasts/${podcastId}/episodes`, data),
+  updateEpisode: (podcastId, episodeId, data) => adminApi.patch(`/admin/podcasts/${podcastId}/episodes/${episodeId}`, data),
+  deleteEpisode: (podcastId, episodeId) => adminApi.delete(`/admin/podcasts/${podcastId}/episodes/${episodeId}`),
+}
+
+const demoContentService = {
+  // VOD Content
+  getContent: async (filters = {}) => {
+    await delay()
+    let filtered = [...demoContent]
+    if (filters.search) {
+      const search = filters.search.toLowerCase()
+      filtered = filtered.filter(c => c.title.toLowerCase().includes(search))
+    }
+    if (filters.category_id) {
+      filtered = filtered.filter(c => c.category_id === filters.category_id)
+    }
+    if (filters.is_published !== undefined) {
+      filtered = filtered.filter(c => c.is_published === filters.is_published)
+    }
+    if (filters.is_featured !== undefined) {
+      filtered = filtered.filter(c => c.is_featured === filters.is_featured)
+    }
+    const page = filters.page || 1
+    const pageSize = filters.page_size || 20
+    const start = (page - 1) * pageSize
+    return { items: filtered.slice(start, start + pageSize), total: filtered.length, page, page_size: pageSize }
+  },
+  getContentItem: async (id) => {
+    await delay()
+    return demoContent.find(c => c.id === id) || null
+  },
+  createContent: async (data) => {
+    await delay()
+    return { id: Date.now().toString(), ...data, created_at: new Date().toISOString(), updated_at: new Date().toISOString() }
+  },
+  updateContent: async (id, data) => {
+    await delay()
+    return { id, ...data, updated_at: new Date().toISOString() }
+  },
+  deleteContent: async (id) => {
+    await delay()
+    return { message: 'Content deleted' }
+  },
+  publishContent: async (id) => {
+    await delay()
+    return { id, is_published: true }
+  },
+  featureContent: async (id) => {
+    await delay()
+    return { id, is_featured: true }
+  },
+
+  // Categories
+  getCategories: async (filters = {}) => {
+    await delay()
+    return { items: demoCategories, total: demoCategories.length, page: 1, page_size: 20 }
+  },
+  getCategory: async (id) => {
+    await delay()
+    return demoCategories.find(c => c.id === id) || null
+  },
+  createCategory: async (data) => {
+    await delay()
+    return { id: Date.now().toString(), ...data, created_at: new Date().toISOString() }
+  },
+  updateCategory: async (id, data) => {
+    await delay()
+    return { id, ...data }
+  },
+  deleteCategory: async (id) => {
+    await delay()
+    return { message: 'Category deleted' }
+  },
+  reorderCategories: async (data) => {
+    await delay()
+    return { message: 'Categories reordered' }
+  },
+
+  // Live Channels
+  getLiveChannels: async (filters = {}) => {
+    await delay()
+    return { items: demoLiveChannels, total: demoLiveChannels.length, page: 1, page_size: 20 }
+  },
+  getLiveChannel: async (id) => {
+    await delay()
+    return demoLiveChannels.find(c => c.id === id) || null
+  },
+  createLiveChannel: async (data) => {
+    await delay()
+    return { id: Date.now().toString(), ...data, created_at: new Date().toISOString(), updated_at: new Date().toISOString() }
+  },
+  updateLiveChannel: async (id, data) => {
+    await delay()
+    return { id, ...data, updated_at: new Date().toISOString() }
+  },
+  deleteLiveChannel: async (id) => {
+    await delay()
+    return { message: 'Live channel deleted' }
+  },
+  reorderLiveChannels: async (data) => {
+    await delay()
+    return { message: 'Live channels reordered' }
+  },
+
+  // Radio Stations
+  getRadioStations: async (filters = {}) => {
+    await delay()
+    return { items: demoRadioStations, total: demoRadioStations.length, page: 1, page_size: 20 }
+  },
+  getRadioStation: async (id) => {
+    await delay()
+    return demoRadioStations.find(s => s.id === id) || null
+  },
+  createRadioStation: async (data) => {
+    await delay()
+    return { id: Date.now().toString(), ...data, created_at: new Date().toISOString() }
+  },
+  updateRadioStation: async (id, data) => {
+    await delay()
+    return { id, ...data }
+  },
+  deleteRadioStation: async (id) => {
+    await delay()
+    return { message: 'Radio station deleted' }
+  },
+
+  // Podcasts
+  getPodcasts: async (filters = {}) => {
+    await delay()
+    return { items: demoPodcasts, total: demoPodcasts.length, page: 1, page_size: 20 }
+  },
+  getPodcast: async (id) => {
+    await delay()
+    return demoPodcasts.find(p => p.id === id) || null
+  },
+  createPodcast: async (data) => {
+    await delay()
+    return { id: Date.now().toString(), ...data, created_at: new Date().toISOString(), updated_at: new Date().toISOString() }
+  },
+  updatePodcast: async (id, data) => {
+    await delay()
+    return { id, ...data, updated_at: new Date().toISOString() }
+  },
+  deletePodcast: async (id) => {
+    await delay()
+    return { message: 'Podcast deleted' }
+  },
+
+  // Podcast Episodes
+  getEpisodes: async (podcastId, filters = {}) => {
+    await delay()
+    const episodes = demoEpisodes.filter(e => e.podcast_id === podcastId)
+    const page = filters.page || 1
+    const pageSize = filters.page_size || 20
+    const start = (page - 1) * pageSize
+    return { items: episodes.slice(start, start + pageSize), total: episodes.length, page, page_size: pageSize }
+  },
+  getEpisode: async (podcastId, episodeId) => {
+    await delay()
+    return demoEpisodes.find(e => e.id === episodeId && e.podcast_id === podcastId) || null
+  },
+  createEpisode: async (podcastId, data) => {
+    await delay()
+    return { id: Date.now().toString(), podcast_id: podcastId, ...data }
+  },
+  updateEpisode: async (podcastId, episodeId, data) => {
+    await delay()
+    return { id: episodeId, podcast_id: podcastId, ...data }
+  },
+  deleteEpisode: async (podcastId, episodeId) => {
+    await delay()
+    return { message: 'Episode deleted' }
+  },
+}
+
+// ============================================
+// Uploads Service
+// ============================================
+
+const apiUploadsService = {
+  uploadImage: (file, type) => {
+    const formData = new FormData()
+    formData.append('file', file)
+    formData.append('type', type)
+    return adminApi.post('/admin/uploads/image', formData, {
+      headers: { 'Content-Type': 'multipart/form-data' },
+    })
+  },
+  validateUrl: (url) => adminApi.post('/admin/uploads/validate-url', { url }),
+  getPresignedUrl: (filename, contentType) => adminApi.post('/admin/uploads/presigned-url', { filename, content_type: contentType }),
+}
+
+const demoUploadsService = {
+  uploadImage: async (file, type) => {
+    await delay(500)
+    return {
+      url: `https://via.placeholder.com/400x600?text=${file.name}`,
+      filename: file.name,
+      size: file.size,
+    }
+  },
+  validateUrl: async (url) => {
+    await delay()
+    return { valid: true, message: 'URL is valid' }
+  },
+  getPresignedUrl: async (filename, contentType) => {
+    await delay()
+    return {
+      upload_url: `https://s3.example.com/presigned/${filename}`,
+      fields: { key: filename },
+      key: filename,
+    }
+  },
+}
+
+// ============================================
+// Import Service
+// ============================================
+
+const apiImportService = {
+  getFreeSources: (sourceType) => adminApi.get(`/admin/content/import/free-sources/${sourceType}`),
+  importFreeContent: (data) => adminApi.post('/admin/content/import/free-sources', data),
+}
+
+const demoImportService = {
+  getFreeSources: async (sourceType) => {
+    await delay()
+    return demoFreeSources[sourceType] || {}
+  },
+  importFreeContent: async (data) => {
+    await delay(800)
+    const type = data.source_type
+    const itemCount = data.items?.length || (data.import_all ? 3 : 1)
+    return {
+      message: `Successfully imported ${itemCount} items`,
+      source_type: type,
+      source_name: data.source_name,
+      imported_count: itemCount,
+    }
+  },
+}
+
+// ============================================
+// Widgets Service
+// ============================================
+
+const apiWidgetsService = {
+  // Admin endpoints
+  getWidgets: (filters) => adminApi.get('/admin/widgets', { params: filters }),
+  getWidget: (id) => adminApi.get(`/admin/widgets/${id}`),
+  createWidget: (data) => adminApi.post('/admin/widgets', data),
+  updateWidget: (id, data) => adminApi.patch(`/admin/widgets/${id}`, data),
+  deleteWidget: (id) => adminApi.delete(`/admin/widgets/${id}`),
+  publishWidget: (id) => adminApi.post(`/admin/widgets/${id}/publish`),
+  unpublishWidget: (id) => adminApi.post(`/admin/widgets/${id}/unpublish`),
+  reorderWidgets: (orderData) => adminApi.post('/admin/widgets/reorder', { order_data: orderData }),
+
+  // User endpoints (for fetching applicable widgets)
+  getMyWidgets: (pagePath) => adminApi.get('/widgets', { params: { page_path: pagePath } }),
+  createPersonalWidget: (data) => adminApi.post('/widgets', data),
+  updatePersonalWidget: (id, data) => adminApi.patch(`/widgets/${id}`, data),
+  deletePersonalWidget: (id) => adminApi.delete(`/widgets/${id}`),
+  updateWidgetPosition: (id, position) => adminApi.post(`/widgets/${id}/position`, position),
+  closeWidget: (id) => adminApi.post(`/widgets/${id}/close`),
+}
+
+const demoWidgetsService = {
+  getWidgets: async (filters = {}) => {
+    await delay()
+    let filtered = [...demoWidgets]
+    if (filters.widget_type) {
+      filtered = filtered.filter(w => w.type === filters.widget_type)
+    }
+    if (filters.is_active !== undefined) {
+      filtered = filtered.filter(w => w.is_active === filters.is_active)
+    }
+    const page = filters.page || 1
+    const pageSize = filters.page_size || 20
+    const start = (page - 1) * pageSize
+    return { items: filtered.slice(start, start + pageSize), total: filtered.length, page, page_size: pageSize, total_pages: Math.ceil(filtered.length / pageSize) }
+  },
+  getWidget: async (id) => {
+    await delay()
+    return demoWidgets.find(w => w.id === id) || null
+  },
+  createWidget: async (data) => {
+    await delay()
+    return { id: Date.now().toString(), title: data.title }
+  },
+  updateWidget: async (id, data) => {
+    await delay()
+    return { message: 'Widget updated', id }
+  },
+  deleteWidget: async (id) => {
+    await delay()
+    return { message: 'Widget deleted' }
+  },
+  publishWidget: async (id) => {
+    await delay()
+    return { message: 'Widget published', id }
+  },
+  unpublishWidget: async (id) => {
+    await delay()
+    return { message: 'Widget unpublished', id }
+  },
+  reorderWidgets: async (orderData) => {
+    await delay()
+    return { message: 'Widgets reordered' }
+  },
+  getMyWidgets: async (pagePath) => {
+    await delay()
+    let filtered = demoWidgets.filter(w => w.is_active)
+    if (pagePath) {
+      filtered = filtered.filter(w => w.target_pages.length === 0 || w.target_pages.some(p => pagePath.startsWith(p)))
+    }
+    return { items: filtered, total: filtered.length }
+  },
+  createPersonalWidget: async (data) => {
+    await delay()
+    return { id: Date.now().toString(), title: data.title }
+  },
+  updatePersonalWidget: async (id, data) => {
+    await delay()
+    return { message: 'Widget updated', id }
+  },
+  deletePersonalWidget: async (id) => {
+    await delay()
+    return { message: 'Widget deleted' }
+  },
+  updateWidgetPosition: async (id, position) => {
+    await delay()
+    return { message: 'Position updated' }
+  },
+  closeWidget: async (id) => {
+    await delay()
+    return { message: 'Widget closed' }
+  },
+}
+
+// ============================================
 // Exports
 // ============================================
 
-// Admin/RBAC services always use production mode - no demo data for security
-export const dashboardService = apiDashboardService
+// Export services
+// Demo mode can be toggled via config for development
+export const dashboardService = isDemo ? demoDashboardService : apiDashboardService
 export const usersService = apiUsersService
-export const campaignsService = apiCampaignsService
-export const billingService = apiBillingService
-export const subscriptionsService = apiSubscriptionsService
-export const marketingService = apiMarketingService
-export const settingsService = apiSettingsService
-export const auditLogsService = apiAuditLogsService
+export const campaignsService = isDemo ? demoCampaignsService : apiCampaignsService
+export const billingService = isDemo ? demoBillingService : apiBillingService
+export const subscriptionsService = isDemo ? demoSubscriptionsService : apiSubscriptionsService
+export const marketingService = isDemo ? demoMarketingService : apiMarketingService
+export const settingsService = isDemo ? demoSettingsService : apiSettingsService
+export const auditLogsService = isDemo ? demoAuditLogsService : apiAuditLogsService
+
+// Content management services
+export const contentService = isDemo ? demoContentService : apiContentService
+export const uploadsService = isDemo ? demoUploadsService : apiUploadsService
+export const importService = isDemo ? demoImportService : apiImportService
 
 export default {
   dashboard: dashboardService,
@@ -709,4 +1247,7 @@ export default {
   marketing: marketingService,
   settings: settingsService,
   auditLogs: auditLogsService,
+  content: contentService,
+  uploads: uploadsService,
+  import: importService,
 }

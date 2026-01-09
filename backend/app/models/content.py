@@ -89,6 +89,10 @@ class Content(Document):
             "is_featured",
             "is_published",
             "series_id",
+            "created_at",
+            "updated_at",
+            ("category_id", "is_published"),
+            ("is_featured", "is_published"),
         ]
 
 
@@ -132,6 +136,11 @@ class LiveChannel(Document):
 
     class Settings:
         name = "live_channels"
+        indexes = [
+            "order",
+            "is_active",
+            "created_at",
+        ]
 
 
 class EPGEntry(Document):
@@ -170,6 +179,11 @@ class RadioStation(Document):
 
     class Settings:
         name = "radio_stations"
+        indexes = [
+            "order",
+            "is_active",
+            "genre",
+        ]
 
 
 class Podcast(Document):
@@ -193,6 +207,11 @@ class Podcast(Document):
 
     class Settings:
         name = "podcasts"
+        indexes = [
+            "category",
+            "is_active",
+            "latest_episode_date",
+        ]
 
 
 class PodcastEpisode(Document):

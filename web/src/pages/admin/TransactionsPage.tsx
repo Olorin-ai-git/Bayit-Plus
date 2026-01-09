@@ -25,11 +25,11 @@ interface Pagination {
   total: number;
 }
 
-const statusColors: Record<string, { bg: string; text: string; label: string }> = {
-  completed: { bg: 'rgba(34, 197, 94, 0.2)', text: '#22C55E', label: 'הושלם' },
-  pending: { bg: 'rgba(245, 158, 11, 0.2)', text: '#F59E0B', label: 'ממתין' },
-  failed: { bg: 'rgba(239, 68, 68, 0.2)', text: '#EF4444', label: 'נכשל' },
-  refunded: { bg: 'rgba(139, 92, 246, 0.2)', text: '#8B5CF6', label: 'הוחזר' },
+const statusColors: Record<string, { bg: string; text: string; labelKey: string }> = {
+  completed: { bg: 'rgba(34, 197, 94, 0.2)', text: '#22C55E', labelKey: 'admin.transactions.status.completed' },
+  pending: { bg: 'rgba(245, 158, 11, 0.2)', text: '#F59E0B', labelKey: 'admin.transactions.status.pending' },
+  failed: { bg: 'rgba(239, 68, 68, 0.2)', text: '#EF4444', labelKey: 'admin.transactions.status.failed' },
+  refunded: { bg: 'rgba(139, 92, 246, 0.2)', text: '#8B5CF6', labelKey: 'admin.transactions.status.refunded' },
 };
 
 const formatCurrency = (amount: number, currency = 'USD') => {
@@ -109,7 +109,7 @@ export default function TransactionsPage() {
     const style = statusColors[status] || statusColors.pending;
     return (
       <View style={[styles.badge, { backgroundColor: style.bg }]}>
-        <Text style={[styles.badgeText, { color: style.text }]}>{style.label}</Text>
+        <Text style={[styles.badgeText, { color: style.text }]}>{t(style.labelKey)}</Text>
       </View>
     );
   };
@@ -117,13 +117,13 @@ export default function TransactionsPage() {
   const columns = [
     {
       key: 'id',
-      label: 'מזהה',
+      label: t('admin.transactions.columns.id'),
       width: 100,
       render: (id: string) => <Text style={styles.idText}>{id.slice(0, 8)}...</Text>,
     },
     {
       key: 'user',
-      label: 'משתמש',
+      label: t('admin.transactions.columns.user'),
       render: (_: any, tx: Transaction) => (
         <View>
           <Text style={styles.userName}>{tx.user.name}</Text>
@@ -133,7 +133,7 @@ export default function TransactionsPage() {
     },
     {
       key: 'amount',
-      label: 'סכום',
+      label: t('admin.transactions.columns.amount'),
       width: 100,
       render: (_: any, tx: Transaction) => (
         <Text style={styles.amountText}>{formatCurrency(tx.amount, tx.currency)}</Text>
@@ -141,19 +141,19 @@ export default function TransactionsPage() {
     },
     {
       key: 'type',
-      label: 'סוג',
+      label: t('admin.transactions.columns.type'),
       width: 100,
       render: (type: string) => <Text style={styles.cellText}>{type}</Text>,
     },
     {
       key: 'status',
-      label: 'סטטוס',
+      label: t('admin.transactions.columns.status'),
       width: 100,
       render: (status: string) => getStatusBadge(status),
     },
     {
       key: 'created_at',
-      label: 'תאריך',
+      label: t('admin.transactions.columns.date'),
       width: 160,
       render: (date: string) => <Text style={styles.dateText}>{formatDate(date)}</Text>,
     },
@@ -178,7 +178,7 @@ export default function TransactionsPage() {
           style={[styles.filterButton, filters.status === status && styles.filterButtonActive]}
         >
           <Text style={[styles.filterText, filters.status === status && styles.filterTextActive]}>
-            {status === 'all' ? 'הכל' : statusColors[status]?.label || status}
+            {status === 'all' ? t('admin.transactions.filters.all') : t(statusColors[status]?.labelKey)}
           </Text>
         </Pressable>
       ))}
@@ -190,10 +190,10 @@ export default function TransactionsPage() {
       <View style={styles.header}>
         <View>
           <Text style={styles.pageTitle}>{t('admin.titles.transactions')}</Text>
-          <Text style={styles.subtitle}>צפה בהיסטוריית התשלומים</Text>
+          <Text style={styles.subtitle}>{t('admin.transactions.subtitle')}</Text>
         </View>
         <GlassButton
-          title="ייצא CSV"
+          title={t('admin.transactions.exportCsv')}
           variant="secondary"
           icon={<Download size={16} color={colors.text} />}
           onPress={handleExport}
@@ -206,48 +206,48 @@ export default function TransactionsPage() {
         columns={columns}
         data={transactions}
         loading={loading}
-        searchPlaceholder="חפש עסקה..."
+        searchPlaceholder={t('admin.transactions.searchPlaceholder')}
         onSearch={handleSearch}
         pagination={pagination}
         onPageChange={handlePageChange}
-        emptyMessage="לא נמצאו עסקאות"
+        emptyMessage={t('admin.transactions.emptyMessage')}
       />
 
       <GlassModal
         visible={showDetailModal}
         onClose={() => setShowDetailModal(false)}
-        title="פרטי עסקה"
+        title={t('admin.transactions.details')}
       >
         {selectedTransaction && (
           <View style={styles.modalContent}>
             <View style={styles.detailRow}>
-              <Text style={styles.detailLabel}>מזהה:</Text>
+              <Text style={styles.detailLabel}>{t('admin.transactions.columns.id')}:</Text>
               <Text style={styles.detailValue}>{selectedTransaction.id}</Text>
             </View>
             <View style={styles.detailRow}>
-              <Text style={styles.detailLabel}>משתמש:</Text>
+              <Text style={styles.detailLabel}>{t('admin.transactions.columns.user')}:</Text>
               <Text style={styles.detailValue}>{selectedTransaction.user.name}</Text>
             </View>
             <View style={styles.detailRow}>
-              <Text style={styles.detailLabel}>אימייל:</Text>
+              <Text style={styles.detailLabel}>{t('admin.transactions.email')}:</Text>
               <Text style={styles.detailValue}>{selectedTransaction.user.email}</Text>
             </View>
             <View style={styles.detailRow}>
-              <Text style={styles.detailLabel}>סכום:</Text>
+              <Text style={styles.detailLabel}>{t('admin.transactions.columns.amount')}:</Text>
               <Text style={styles.detailValue}>
                 {formatCurrency(selectedTransaction.amount, selectedTransaction.currency)}
               </Text>
             </View>
             <View style={styles.detailRow}>
-              <Text style={styles.detailLabel}>סוג:</Text>
+              <Text style={styles.detailLabel}>{t('admin.transactions.columns.type')}:</Text>
               <Text style={styles.detailValue}>{selectedTransaction.type}</Text>
             </View>
             <View style={styles.detailRow}>
-              <Text style={styles.detailLabel}>סטטוס:</Text>
+              <Text style={styles.detailLabel}>{t('admin.transactions.columns.status')}:</Text>
               {getStatusBadge(selectedTransaction.status)}
             </View>
             <View style={styles.detailRow}>
-              <Text style={styles.detailLabel}>תאריך:</Text>
+              <Text style={styles.detailLabel}>{t('admin.transactions.columns.date')}:</Text>
               <Text style={styles.detailValue}>{formatDate(selectedTransaction.created_at)}</Text>
             </View>
           </View>
