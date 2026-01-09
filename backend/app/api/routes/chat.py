@@ -140,7 +140,7 @@ SYSTEM_PROMPT = """אתה עוזר של בית+ (מבוטא "בויית").
 def extract_json_from_response(text: str) -> tuple[str, Optional[dict]]:
     """
     Extract JSON from Claude's response text.
-    Claude sometimes includes JSON blocks in its response which we need to separate.
+    Claude includes JSON in multiple formats - code blocks or XML tags.
 
     Returns: (cleaned_text, json_dict)
     """
@@ -150,21 +150,75 @@ def extract_json_from_response(text: str) -> tuple[str, Optional[dict]]:
     import re
     import json
 
-    # Look for JSON code blocks: ```json\n{...}\n```
+    json_data = None
+
+    # Try XML format first: <action>{...}</action>
+    xml_pattern = r'<action>\s*\n(\{[^}]+\})\s*\n</action>'
+    match = re.search(xml_pattern, text, re.DOTALL)
+    if match:
+        try:
+            json_str = match.group(1)
+            json_data = json.loads(json_str)
+            # Remove the XML block from text
+            text = re.sub(xml_pattern, '', text, flags=re.DOTALL).strip()
+            return text, json_data
+        except json.JSONDecodeError:
+            pass
+
+    # Try JSON code blocks: ```json\n{...}\n```
     json_pattern = r'```(?:json)?\s*\n(\{[^}]+\})\n```'
     match = re.search(json_pattern, text, re.DOTALL)
-
-    json_data = None
     if match:
         try:
             json_str = match.group(1)
             json_data = json.loads(json_str)
             # Remove the JSON block from text
             text = re.sub(json_pattern, '', text, flags=re.DOTALL).strip()
+            return text, json_data
         except json.JSONDecodeError:
             pass
 
     return text, json_data
+
+
+async def extract_content_name_from_query(query: str, language: str = "he") -> str:
+    """
+    Use Claude to extract just the content/movie name from a voice command.
+
+    Examples:
+    - "נגן את הסרט אסקימו לימון" → "אסקימו לימון"
+    - "play the movie Inception" → "Inception"
+    """
+    if not query:
+        return query
+
+    try:
+        if language == "he":
+            prompt = f"""Extract just the movie/show/content name from this Hebrew voice command.
+Return ONLY the content name, nothing else.
+
+Command: "{query}"
+
+Content name:"""
+        else:
+            prompt = f"""Extract just the movie/show/content name from this English voice command.
+Return ONLY the content name, nothing else.
+
+Command: "{query}"
+
+Content name:"""
+
+        response = client.messages.create(
+            model="claude-sonnet-4-20250514",
+            max_tokens=50,
+            messages=[{"role": "user", "content": prompt}]
+        )
+
+        content_name = response.content[0].text.strip()
+        return content_name
+    except Exception as e:
+        print(f"[CHAT] Error extracting content name: {e}")
+        return query
 
 
 def strip_markdown(text: str) -> str:
@@ -351,9 +405,12 @@ async def send_message(
         # CRITICAL: Ensure message/action alignment for voice
         # If message says "playing" but action is "search", fix the message
         final_message = assistant_message
+        print(f"[CHAT] ACTION DEBUG: action={action}, type={type(action)}")
         if action:
             action_type = action.get("type")
             msg_lower = assistant_message.lower()
+
+            print(f"[CHAT] ACTION DEBUG: action_type='{action_type}', msg has play words={any(w in msg_lower for w in ['מנגן', 'נוגן', 'תנגן', 'משדרת', 'צופה', 'מפעיל', 'תפעל', 'מנסה לנגן', 'מנסה'])}")
 
             # If action is search but message says "playing/playing/תנגן/מנסה לנגן"
             if action_type == "search":
@@ -366,12 +423,17 @@ async def send_message(
                 if any(word in msg_lower for word in playback_words):
                     print(f"[CHAT] ⚠️ Message/action mismatch: message says playing but action is search")
                     print(f"[CHAT] Original message: {assistant_message}")
+                    # Use Claude to extract just the content name from the user's request
+                    content_name = await extract_content_name_from_query(request.message, user_language)
+                    print(f"[CHAT] Extracted content name: {content_name}")
                     # Correcting the message to match the search action
                     if user_language == "he":
-                        final_message = f"מחפשת את {request.message}..."
+                        final_message = f"מחפשת את {content_name}..."
                     else:
-                        final_message = f"Searching for {request.message}..."
+                        final_message = f"Searching for {content_name}..."
                     print(f"[CHAT] Corrected message: {final_message}")
+            else:
+                print(f"[CHAT] ACTION DEBUG: Not search action, skipping message alignment check (action_type={action_type})")
 
         return ChatResponse(
             message=final_message,
