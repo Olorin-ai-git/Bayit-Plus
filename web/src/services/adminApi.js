@@ -1237,6 +1237,7 @@ export const auditLogsService = isDemo ? demoAuditLogsService : apiAuditLogsServ
 export const contentService = isDemo ? demoContentService : apiContentService
 export const uploadsService = isDemo ? demoUploadsService : apiUploadsService
 export const importService = isDemo ? demoImportService : apiImportService
+export const widgetsService = isDemo ? demoWidgetsService : apiWidgetsService
 
 export default {
   dashboard: dashboardService,
@@ -1250,4 +1251,5 @@ export default {
   content: contentService,
   uploads: uploadsService,
   import: importService,
+  widgets: widgetsService,
 }

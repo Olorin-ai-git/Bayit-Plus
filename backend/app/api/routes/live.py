@@ -122,17 +122,31 @@ async def get_stream_url(
     channel_id: str,
     current_user: User = Depends(get_current_active_user),
 ):
-    """Get live stream URL (requires premium subscription)."""
+    """Get live stream URL with subscription check based on channel requirements."""
     channel = await LiveChannel.get(channel_id)
     if not channel or not channel.is_active:
         raise HTTPException(status_code=404, detail="Channel not found")
 
-    # Check subscription for live TV
-    if not current_user.subscription_tier or current_user.subscription_tier == "basic":
-        raise HTTPException(
-            status_code=403,
-            detail="Live TV requires Premium or Family subscription",
-        )
+    # Admin users bypass subscription checks
+    is_admin = current_user.role in ["super_admin", "admin"]
+
+    # Check channel subscription requirements (skip for admins)
+    if not is_admin:
+        required_tier = channel.requires_subscription or "basic"
+
+        # If channel requires no subscription (free), allow access
+        if required_tier != "none":
+            user_tier = current_user.subscription_tier
+
+            # Define tier levels
+            tier_levels = {"basic": 1, "premium": 2, "family": 3}
+
+            # Check if user has required tier
+            if not user_tier or tier_levels.get(user_tier, 0) < tier_levels.get(required_tier, 1):
+                raise HTTPException(
+                    status_code=403,
+                    detail=f"This channel requires {required_tier} subscription",
+                )
 
     return {
         "url": channel.stream_url,

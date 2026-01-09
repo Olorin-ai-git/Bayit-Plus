@@ -88,6 +88,7 @@ const NAV_ITEMS: NavItem[] = [
       { key: 'live-channels', labelKey: 'admin.nav.liveChannels', route: '/admin/live-channels' },
       { key: 'radio-stations', labelKey: 'admin.nav.radioStations', route: '/admin/radio-stations' },
       { key: 'podcasts', labelKey: 'admin.nav.podcasts', route: '/admin/podcasts' },
+      { key: 'widgets', labelKey: 'admin.nav.widgets', route: '/admin/widgets' },
     ],
   },
   {

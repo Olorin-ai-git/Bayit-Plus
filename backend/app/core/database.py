@@ -17,6 +17,7 @@ from app.models.admin import (
     Campaign, Transaction, Refund, AuditLog,
     EmailCampaign, PushNotification, SystemSettings, SubscriptionPlan,
 )
+from app.models.widget import Widget
 
 
 class Database:
@@ -69,6 +70,8 @@ async def connect_to_mongo():
             PushNotification,
             SystemSettings,
             SubscriptionPlan,
+            # Widget model
+            Widget,
         ],
     )
     print(f"Connected to MongoDB: {settings.MONGODB_DB_NAME}")

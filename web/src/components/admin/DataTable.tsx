@@ -78,7 +78,7 @@ export default function DataTable({
       )}
 
       {/* Table */}
-      <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+      <View style={styles.tableWrapper}>
         <View style={styles.table}>
           {/* Table Header */}
           <View style={styles.tableHeader}>
@@ -116,7 +116,7 @@ export default function DataTable({
             ))
           )}
         </View>
-      </ScrollView>
+      </View>
 
       {/* Pagination */}
       {pagination && pagination.total > pagination.pageSize && (
@@ -155,6 +155,7 @@ const styles = StyleSheet.create({
   container: {
     padding: 0,
     overflow: 'hidden',
+    width: '100%' as any,
   },
   header: {
     flexDirection: 'row',
@@ -187,17 +188,28 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: spacing.sm,
   },
+  tableWrapper: {
+    width: '100%' as any,
+    minHeight: 200,
+    overflowX: 'auto' as any,
+  },
   table: {
-    minWidth: 800,
+    width: '100%' as any,
+    minWidth: 600,
+    display: 'flex' as any,
+    flexDirection: 'column',
   },
   tableHeader: {
+    display: 'flex' as any,
     flexDirection: 'row',
     borderBottomWidth: 1,
     borderBottomColor: 'rgba(255, 255, 255, 0.05)',
+    width: '100%' as any,
   },
   headerCell: {
     paddingHorizontal: spacing.md,
     paddingVertical: spacing.sm,
+    minWidth: 80,
   },
   headerText: {
     fontSize: 14,
@@ -206,7 +218,9 @@ const styles = StyleSheet.create({
     textAlign: 'right',
   },
   tableRow: {
+    display: 'flex' as any,
     flexDirection: 'row',
+    width: '100%' as any,
   },
   tableRowBorder: {
     borderBottomWidth: 1,
@@ -216,6 +230,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: spacing.md,
     paddingVertical: spacing.sm,
     justifyContent: 'center',
+    minWidth: 80,
   },
   cellText: {
     fontSize: 14,

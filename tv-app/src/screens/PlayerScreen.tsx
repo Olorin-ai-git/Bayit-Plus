@@ -39,7 +39,7 @@ import {
   WatchPartyJoinModal,
   WatchPartyOverlay,
 } from '../components/watchparty';
-import { ChaptersOverlay, Chapter } from '../components/player';
+import { ChaptersOverlay, Chapter, SubscriptionGateModal } from '../components/player';
 
 export const PlayerScreen: React.FC = () => {
   const { t } = useTranslation();
@@ -87,6 +87,10 @@ export const PlayerScreen: React.FC = () => {
   const [chaptersLoading, setChaptersLoading] = useState(false);
   const [showChaptersOverlay, setShowChaptersOverlay] = useState(false);
 
+  // Subscription gate state
+  const [showSubscriptionGate, setShowSubscriptionGate] = useState(false);
+  const [subscriptionRequired, setSubscriptionRequired] = useState<'basic' | 'premium' | 'family' | undefined>(undefined);
+
   useEffect(() => {
     loadStream();
     setupTVEventHandler();
@@ -127,6 +131,7 @@ export const PlayerScreen: React.FC = () => {
     try {
       setIsLoading(true);
       setError(null);
+      setShowSubscriptionGate(false);
 
       let response: any;
       if (type === 'live') {
@@ -145,8 +150,20 @@ export const PlayerScreen: React.FC = () => {
       }
     } catch (err) {
       console.error('Failed to load stream:', err);
-      const errorMessage = err instanceof Error ? err.message : t('player.loadError', 'Failed to load stream');
-      setError(errorMessage);
+
+      // Check if error is subscription-related (403 Forbidden)
+      if (err && typeof err === 'object' && 'status' in err && err.status === 403) {
+        setShowSubscriptionGate(true);
+        setSubscriptionRequired('premium'); // Default to premium
+        setError(null);
+      } else if (err && typeof err === 'object' && 'response' in err && err.response?.status === 403) {
+        setShowSubscriptionGate(true);
+        setSubscriptionRequired('premium');
+        setError(null);
+      } else {
+        const errorMessage = err instanceof Error ? err.message : t('player.loadError', 'Failed to load stream');
+        setError(errorMessage);
+      }
     } finally {
       setIsLoading(false);
     }
@@ -271,6 +288,11 @@ export const PlayerScreen: React.FC = () => {
       videoRef.current.seek(time);
     }
     showControlsTemporarily();
+  };
+
+  const handleSubscriptionUpgrade = () => {
+    setShowSubscriptionGate(false);
+    navigation.navigate('Subscribe' as never);
   };
 
   const progressPercentage = progress.duration > 0
@@ -465,6 +487,16 @@ export const PlayerScreen: React.FC = () => {
         visible={showJoinModal}
         onClose={() => setShowJoinModal(false)}
         onJoin={handleJoinParty}
+      />
+
+      {/* Subscription Gate Modal */}
+      <SubscriptionGateModal
+        visible={showSubscriptionGate}
+        onClose={() => setShowSubscriptionGate(false)}
+        onUpgrade={handleSubscriptionUpgrade}
+        requiredTier={subscriptionRequired}
+        contentTitle={title}
+        contentType={type}
       />
 
       {/* Party Active Indicator */}

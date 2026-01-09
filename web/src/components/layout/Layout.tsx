@@ -7,6 +7,7 @@ import GlassSidebar from './GlassSidebar';
 import Chatbot from '../chat/Chatbot';
 import SoundwaveParticles from '../content/SoundwaveParticles';
 import RunningFlowBanner from '../flow/RunningFlowBanner';
+import { WidgetManager } from '../widgets';
 import { useVoiceListeningContext } from '@bayit/shared-contexts';
 import { ttsService } from '@bayit/shared-services';
 import { colors, spacing } from '@bayit/shared/theme';
@@ -190,7 +191,9 @@ export default function Layout() {
       {/* Chatbot enabled on both web and TV for voice interaction */}
       <Chatbot />
 
-          </View>
+      {/* Widget Manager - renders floating overlay widgets */}
+      <WidgetManager />
+    </View>
   );
 }
 

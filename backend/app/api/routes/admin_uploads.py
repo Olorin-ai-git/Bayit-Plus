@@ -55,7 +55,7 @@ class PresignedUrlResponse(BaseModel):
 @router.post("/uploads/image")
 async def upload_image(
     file: UploadFile = File(...),
-    image_type: str = Query(default="general", regex="^(thumbnails|backdrops|logos|covers|general)$"),
+    image_type: str = Query(default="general", pattern="^(thumbnails|backdrops|logos|covers|general)$"),
     current_user: User = Depends(has_permission(Permission.CONTENT_CREATE))
 ):
     """

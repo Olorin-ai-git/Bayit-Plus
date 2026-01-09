@@ -192,16 +192,23 @@ async def get_stream_url(
     if not content or not content.is_published:
         raise HTTPException(status_code=404, detail="Content not found")
 
-    # Check subscription
-    required_tier = content.requires_subscription
-    user_tier = current_user.subscription_tier
+    # Admin users bypass subscription checks
+    is_admin = current_user.role in ["super_admin", "admin"]
 
-    tier_levels = {"basic": 1, "premium": 2, "family": 3}
-    if not user_tier or tier_levels.get(user_tier, 0) < tier_levels.get(required_tier, 1):
-        raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN,
-            detail="Subscription upgrade required",
-        )
+    # Check subscription (skip for admins)
+    if not is_admin:
+        required_tier = content.requires_subscription or "basic"
+
+        # If content requires no subscription (free), allow access
+        if required_tier != "none":
+            user_tier = current_user.subscription_tier
+
+            tier_levels = {"basic": 1, "premium": 2, "family": 3}
+            if not user_tier or tier_levels.get(user_tier, 0) < tier_levels.get(required_tier, 1):
+                raise HTTPException(
+                    status_code=status.HTTP_403_FORBIDDEN,
+                    detail="Subscription upgrade required",
+                )
 
     return {
         "url": content.stream_url,

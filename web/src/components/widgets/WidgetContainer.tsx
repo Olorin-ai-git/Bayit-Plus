@@ -1,0 +1,355 @@
+/**
+ * WidgetContainer - Draggable floating widget overlay
+ *
+ * Displays live streams or iframe content in a picture-in-picture style overlay.
+ * Supports drag-and-drop repositioning, mute/unmute, and close functionality.
+ */
+
+import React, { useRef, useState, useEffect, useCallback } from 'react';
+import { View, Text, StyleSheet, Pressable } from 'react-native';
+import { X, Volume2, VolumeX, GripVertical } from 'lucide-react';
+import Hls from 'hls.js';
+import { colors, spacing, borderRadius } from '@bayit/shared/theme';
+import type { Widget, WidgetPosition } from '@/types/widget';
+
+interface WidgetContainerProps {
+  widget: Widget;
+  isMuted: boolean;
+  position: WidgetPosition;
+  onToggleMute: () => void;
+  onClose: () => void;
+  onPositionChange: (position: Partial<WidgetPosition>) => void;
+  liveChannelStreamUrl?: string;
+}
+
+export default function WidgetContainer({
+  widget,
+  isMuted,
+  position,
+  onToggleMute,
+  onClose,
+  onPositionChange,
+  liveChannelStreamUrl,
+}: WidgetContainerProps) {
+  const containerRef = useRef<HTMLDivElement>(null);
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const hlsRef = useRef<Hls | null>(null);
+
+  const [isDragging, setIsDragging] = useState(false);
+  const [dragOffset, setDragOffset] = useState({ x: 0, y: 0 });
+  const [showControls, setShowControls] = useState(false);
+  const [videoError, setVideoError] = useState(false);
+
+  // Initialize HLS for live channel content
+  useEffect(() => {
+    if (widget.content.content_type !== 'live_channel') return;
+
+    const streamUrl = liveChannelStreamUrl;
+    if (!streamUrl || !videoRef.current) return;
+
+    const video = videoRef.current;
+
+    if (Hls.isSupported()) {
+      const hls = new Hls({
+        enableWorker: true,
+        lowLatencyMode: true,
+        backBufferLength: 90,
+      });
+
+      hls.loadSource(streamUrl);
+      hls.attachMedia(video);
+
+      hls.on(Hls.Events.MANIFEST_PARSED, () => {
+        if (!isMuted) {
+          video.play().catch(() => {});
+        }
+      });
+
+      hls.on(Hls.Events.ERROR, (event, data) => {
+        if (data.fatal) {
+          setVideoError(true);
+          console.error('[Widget] HLS fatal error:', data.type, data.details);
+        }
+      });
+
+      hlsRef.current = hls;
+    } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
+      // Safari native HLS
+      video.src = streamUrl;
+      video.addEventListener('loadedmetadata', () => {
+        if (!isMuted) {
+          video.play().catch(() => {});
+        }
+      });
+    }
+
+    return () => {
+      if (hlsRef.current) {
+        hlsRef.current.destroy();
+        hlsRef.current = null;
+      }
+    };
+  }, [widget.content.content_type, liveChannelStreamUrl]);
+
+  // Handle mute state changes
+  useEffect(() => {
+    if (videoRef.current) {
+      videoRef.current.muted = isMuted;
+      if (!isMuted) {
+        videoRef.current.play().catch(() => {});
+      }
+    }
+  }, [isMuted]);
+
+  // Drag handlers
+  const handleDragStart = useCallback((e: React.MouseEvent) => {
+    if (!widget.is_draggable) return;
+
+    const rect = containerRef.current?.getBoundingClientRect();
+    if (!rect) return;
+
+    setIsDragging(true);
+    setDragOffset({
+      x: e.clientX - rect.left,
+      y: e.clientY - rect.top,
+    });
+
+    e.preventDefault();
+  }, [widget.is_draggable]);
+
+  const handleDrag = useCallback((e: MouseEvent) => {
+    if (!isDragging) return;
+
+    const maxX = window.innerWidth - position.width;
+    const maxY = window.innerHeight - position.height;
+
+    const newX = Math.max(0, Math.min(e.clientX - dragOffset.x, maxX));
+    const newY = Math.max(0, Math.min(e.clientY - dragOffset.y, maxY));
+
+    onPositionChange({ x: newX, y: newY });
+  }, [isDragging, dragOffset, position.width, position.height, onPositionChange]);
+
+  const handleDragEnd = useCallback(() => {
+    setIsDragging(false);
+  }, []);
+
+  // Global mouse listeners for dragging
+  useEffect(() => {
+    if (isDragging) {
+      window.addEventListener('mousemove', handleDrag);
+      window.addEventListener('mouseup', handleDragEnd);
+      return () => {
+        window.removeEventListener('mousemove', handleDrag);
+        window.removeEventListener('mouseup', handleDragEnd);
+      };
+    }
+  }, [isDragging, handleDrag, handleDragEnd]);
+
+  // Render content based on type
+  const renderContent = () => {
+    if (widget.content.content_type === 'live_channel') {
+      if (videoError) {
+        return (
+          <View style={styles.errorContainer}>
+            <Text style={styles.errorText}>Stream unavailable</Text>
+          </View>
+        );
+      }
+
+      return (
+        <video
+          ref={videoRef}
+          style={styles.video as any}
+          muted={isMuted}
+          autoPlay
+          playsInline
+        />
+      );
+    }
+
+    if (widget.content.content_type === 'iframe' && widget.content.iframe_url) {
+      return (
+        <iframe
+          src={widget.content.iframe_url}
+          title={widget.content.iframe_title || widget.title}
+          style={styles.iframe as any}
+          sandbox="allow-scripts allow-same-origin"
+          allow="autoplay; encrypted-media"
+        />
+      );
+    }
+
+    return (
+      <View style={styles.errorContainer}>
+        <Text style={styles.errorText}>No content configured</Text>
+      </View>
+    );
+  };
+
+  return (
+    <div
+      ref={containerRef}
+      style={{
+        position: 'fixed',
+        left: position.x,
+        top: position.y,
+        width: position.width,
+        height: position.height,
+        zIndex: position.z_index,
+        cursor: isDragging ? 'grabbing' : 'default',
+      }}
+      onMouseEnter={() => setShowControls(true)}
+      onMouseLeave={() => !isDragging && setShowControls(false)}
+    >
+      <View style={styles.container}>
+        {/* Content */}
+        <View style={styles.contentWrapper}>
+          {renderContent()}
+        </View>
+
+        {/* Control Bar - shown on hover */}
+        {showControls && (
+          <View style={styles.controlBar}>
+            {/* Drag Handle */}
+            {widget.is_draggable && (
+              <Pressable
+                style={styles.dragHandle}
+                onMouseDown={handleDragStart as any}
+              >
+                <GripVertical size={16} color={colors.text} />
+              </Pressable>
+            )}
+
+            {/* Title */}
+            <View style={styles.titleContainer}>
+              {widget.icon && <Text style={styles.icon}>{widget.icon}</Text>}
+              <Text style={styles.title} numberOfLines={1}>{widget.title}</Text>
+            </View>
+
+            {/* Spacer */}
+            <View style={styles.spacer} />
+
+            {/* Mute Button */}
+            <Pressable style={styles.controlButton} onPress={onToggleMute}>
+              {isMuted ? (
+                <VolumeX size={16} color={colors.text} />
+              ) : (
+                <Volume2 size={16} color={colors.text} />
+              )}
+            </Pressable>
+
+            {/* Close Button */}
+            {widget.is_closable && (
+              <Pressable style={styles.controlButton} onPress={onClose}>
+                <X size={16} color={colors.text} />
+              </Pressable>
+            )}
+          </View>
+        )}
+
+        {/* Muted indicator when controls are hidden */}
+        {!showControls && isMuted && (
+          <View style={styles.mutedIndicator}>
+            <VolumeX size={14} color={colors.textSecondary} />
+          </View>
+        )}
+      </View>
+    </div>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: {
+    width: '100%',
+    height: '100%',
+    borderRadius: borderRadius.md,
+    overflow: 'hidden',
+    backgroundColor: colors.background,
+    borderWidth: 1,
+    borderColor: colors.glassBorder,
+    // @ts-ignore - Web CSS
+    boxShadow: '0 8px 32px rgba(0, 0, 0, 0.4)',
+  },
+  contentWrapper: {
+    width: '100%',
+    height: '100%',
+    backgroundColor: '#000',
+  },
+  video: {
+    width: '100%',
+    height: '100%',
+    objectFit: 'cover',
+  },
+  iframe: {
+    width: '100%',
+    height: '100%',
+    border: 'none',
+  },
+  controlBar: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: spacing.xs,
+    paddingVertical: spacing.xs,
+    backgroundColor: 'rgba(0, 0, 0, 0.7)',
+    // @ts-ignore - Web CSS
+    backdropFilter: 'blur(8px)',
+  },
+  dragHandle: {
+    padding: spacing.xs,
+    cursor: 'grab',
+    opacity: 0.7,
+  } as any,
+  titleContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.xs,
+    flex: 1,
+    marginLeft: spacing.xs,
+  },
+  icon: {
+    fontSize: 14,
+  },
+  title: {
+    fontSize: 12,
+    fontWeight: '600',
+    color: colors.text,
+    flex: 1,
+  },
+  spacer: {
+    flex: 1,
+  },
+  controlButton: {
+    width: 28,
+    height: 28,
+    borderRadius: 14,
+    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginLeft: spacing.xs,
+  },
+  mutedIndicator: {
+    position: 'absolute',
+    bottom: spacing.xs,
+    right: spacing.xs,
+    width: 24,
+    height: 24,
+    borderRadius: 12,
+    backgroundColor: 'rgba(0, 0, 0, 0.6)',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  errorContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'rgba(0, 0, 0, 0.8)',
+  },
+  errorText: {
+    fontSize: 12,
+    color: colors.textSecondary,
+  },
+});

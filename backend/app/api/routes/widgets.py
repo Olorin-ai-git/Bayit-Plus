@@ -11,7 +11,7 @@ from app.models.widget import (
     Widget, WidgetType, WidgetContent, WidgetPosition,
     WidgetCreateRequest, WidgetUpdateRequest, WidgetPositionUpdate
 )
-from app.api.routes.auth import get_current_user
+from app.core.security import get_current_active_user
 
 router = APIRouter()
 
@@ -56,7 +56,7 @@ def _widget_dict(w: Widget) -> dict:
 @router.get("")
 async def get_my_widgets(
     page_path: Optional[str] = None,
-    current_user: User = Depends(get_current_user)
+    current_user: User = Depends(get_current_active_user)
 ):
     """
     Get all widgets applicable to current user.
@@ -118,7 +118,7 @@ async def get_my_widgets(
 @router.get("/{widget_id}")
 async def get_widget(
     widget_id: str,
-    current_user: User = Depends(get_current_user)
+    current_user: User = Depends(get_current_active_user)
 ):
     """Get a specific widget by ID."""
     try:
@@ -140,7 +140,7 @@ async def get_widget(
 @router.post("")
 async def create_personal_widget(
     data: WidgetCreateRequest,
-    current_user: User = Depends(get_current_user)
+    current_user: User = Depends(get_current_active_user)
 ):
     """Create a new personal widget for the current user."""
     widget = Widget(
@@ -171,7 +171,7 @@ async def create_personal_widget(
 async def update_personal_widget(
     widget_id: str,
     data: WidgetUpdateRequest,
-    current_user: User = Depends(get_current_user)
+    current_user: User = Depends(get_current_active_user)
 ):
     """Update a personal widget (owner only)."""
     try:
@@ -225,7 +225,7 @@ async def update_personal_widget(
 @router.delete("/{widget_id}")
 async def delete_personal_widget(
     widget_id: str,
-    current_user: User = Depends(get_current_user)
+    current_user: User = Depends(get_current_active_user)
 ):
     """Delete a personal widget (owner only)."""
     try:
@@ -253,7 +253,7 @@ async def delete_personal_widget(
 async def update_widget_position(
     widget_id: str,
     data: WidgetPositionUpdate,
-    current_user: User = Depends(get_current_user)
+    current_user: User = Depends(get_current_active_user)
 ):
     """
     Update widget position (lightweight endpoint for drag operations).
@@ -291,7 +291,7 @@ async def update_widget_position(
 @router.post("/{widget_id}/close")
 async def close_widget(
     widget_id: str,
-    current_user: User = Depends(get_current_user)
+    current_user: User = Depends(get_current_active_user)
 ):
     """
     Close/hide a widget for the current user.

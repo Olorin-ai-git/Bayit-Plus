@@ -680,7 +680,13 @@
     "back": "← Back",
     "liveBadge": "LIVE",
     "noStream": "Stream not available",
-    "loadError": "Failed to load stream"
+    "loadError": "Failed to load stream",
+    "subscription": {
+      "requiredTitle": "Subscription Required",
+      "requiredMessage": "requires a paid subscription",
+      "upgradeInfo": "Upgrade your subscription to access premium content",
+      "upgrade": "Upgrade Now"
+    }
   },
   "empty": {
     "noContent": "No content available",
@@ -1084,8 +1090,62 @@
       "liveChannels": "Live Channels",
       "radioStations": "Radio Stations",
       "podcasts": "Podcasts",
+      "widgets": "Widgets",
       "settings": "Settings",
       "auditLogs": "Audit Logs"
+    },
+    "widgets": {
+      "title": "Widgets",
+      "subtitle": "Manage floating overlay widgets for live streams and embeds",
+      "newWidget": "New Widget",
+      "editWidget": "Edit Widget",
+      "columns": {
+        "title": "Title",
+        "contentType": "Content Type",
+        "targetRoles": "Target Roles",
+        "targetPages": "Target Pages",
+        "status": "Status",
+        "order": "Order"
+      },
+      "contentTypes": {
+        "liveChannel": "Live Channel",
+        "iframe": "Iframe"
+      },
+      "status": {
+        "active": "Active",
+        "inactive": "Inactive"
+      },
+      "form": {
+        "title": "Widget title",
+        "description": "Description (optional)",
+        "icon": "Icon emoji (optional)",
+        "contentType": "Content Type",
+        "selectChannel": "Select Live Channel",
+        "channelPlaceholder": "-- Select Channel --",
+        "iframeUrl": "Iframe URL",
+        "iframeTitle": "Iframe title (for accessibility)",
+        "position": "Default Position",
+        "behavior": "Behavior",
+        "mutedByDefault": "Muted by default",
+        "closable": "Closable",
+        "draggable": "Draggable",
+        "targetPages": "Target Pages (comma-separated, empty = all)",
+        "targetPagesPlaceholder": "/, /live, /vod",
+        "order": "Order"
+      },
+      "actions": {
+        "save": "Save",
+        "cancel": "Cancel"
+      },
+      "confirmDelete": "Are you sure you want to delete this widget?",
+      "emptyMessage": "No widgets found. Create one to get started.",
+      "allPages": "All pages",
+      "allRoles": "All",
+      "errors": {
+        "titleRequired": "Title is required",
+        "selectChannel": "Please select a live channel",
+        "iframeUrlRequired": "Iframe URL is required"
+      }
     },
     "billing": {
       "subtitle": "Track revenue and payments",

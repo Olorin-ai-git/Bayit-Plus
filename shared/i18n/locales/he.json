@@ -680,7 +680,13 @@
     "back": "← חזור",
     "liveBadge": "שידור חי",
     "noStream": "הזרם אינו זמין",
-    "loadError": "שגיאה בטעינת הזרם"
+    "loadError": "שגיאה בטעינת הזרם",
+    "subscription": {
+      "requiredTitle": "נדרשת הנתקה",
+      "requiredMessage": "דורש מנוי בתשלום",
+      "upgradeInfo": "שדרג את המנוי שלך כדי לגשת לתוכן פרימיום",
+      "upgrade": "שדרג כעת"
+    }
   },
   "empty": {
     "noContent": "אין תוכן זמין",
@@ -959,8 +965,62 @@
       "liveChannels": "ערוצים חיים",
       "radioStations": "תחנות רדיו",
       "podcasts": "פודקאסטים",
+      "widgets": "ווידג'טים",
       "settings": "הגדרות",
       "auditLogs": "יומן פעילות"
+    },
+    "widgets": {
+      "title": "ווידג'טים",
+      "subtitle": "ניהול ווידג'טים צפים לשידורים חיים ותוכן מוטמע",
+      "newWidget": "ווידג'ט חדש",
+      "editWidget": "עריכת ווידג'ט",
+      "columns": {
+        "title": "כותרת",
+        "contentType": "סוג תוכן",
+        "targetRoles": "תפקידי יעד",
+        "targetPages": "דפי יעד",
+        "status": "סטטוס",
+        "order": "סדר"
+      },
+      "contentTypes": {
+        "liveChannel": "ערוץ חי",
+        "iframe": "תוכן מוטמע"
+      },
+      "status": {
+        "active": "פעיל",
+        "inactive": "לא פעיל"
+      },
+      "form": {
+        "title": "כותרת הווידג'ט",
+        "description": "תיאור (אופציונלי)",
+        "icon": "אימוג'י (אופציונלי)",
+        "contentType": "סוג תוכן",
+        "selectChannel": "בחר ערוץ חי",
+        "channelPlaceholder": "-- בחר ערוץ --",
+        "iframeUrl": "כתובת URL",
+        "iframeTitle": "כותרת (לנגישות)",
+        "position": "מיקום ברירת מחדל",
+        "behavior": "התנהגות",
+        "mutedByDefault": "מושתק כברירת מחדל",
+        "closable": "ניתן לסגירה",
+        "draggable": "ניתן לגרירה",
+        "targetPages": "דפי יעד (מופרדים בפסיק, ריק = כולם)",
+        "targetPagesPlaceholder": "/, /live, /vod",
+        "order": "סדר"
+      },
+      "actions": {
+        "save": "שמור",
+        "cancel": "ביטול"
+      },
+      "confirmDelete": "האם אתה בטוח שברצונך למחוק ווידג'ט זה?",
+      "emptyMessage": "לא נמצאו ווידג'טים. צור אחד כדי להתחיל.",
+      "allPages": "כל הדפים",
+      "allRoles": "הכל",
+      "errors": {
+        "titleRequired": "כותרת נדרשת",
+        "selectChannel": "יש לבחור ערוץ חי",
+        "iframeUrlRequired": "כתובת URL נדרשת"
+      }
     },
     "billing": {
       "subtitle": "מעקב אחר הכנסות ותשלומים",

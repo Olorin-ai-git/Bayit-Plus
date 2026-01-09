@@ -51,6 +51,7 @@ import RadioStationsPage from './pages/admin/RadioStationsPage'
 import AdminPodcastsPage from './pages/admin/PodcastsPage'
 import PodcastEpisodesPage from './pages/admin/PodcastEpisodesPage'
 import FreeContentImportPage from './pages/admin/FreeContentImportPage'
+import WidgetsPage from './pages/admin/WidgetsPage'
 
 function App() {
   // Set document direction based on language (RTL for Hebrew/Arabic, LTR for others)
@@ -94,6 +95,7 @@ function App() {
         <Route path="radio-stations" element={<RadioStationsPage />} />
         <Route path="podcasts" element={<AdminPodcastsPage />} />
         <Route path="podcasts/:podcastId/episodes" element={<PodcastEpisodesPage />} />
+        <Route path="widgets" element={<WidgetsPage />} />
       </Route>
 
       {/* Main Routes with Layout */}
