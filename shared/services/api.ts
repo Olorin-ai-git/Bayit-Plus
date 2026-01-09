@@ -258,7 +258,6 @@ export type VADSensitivity = 'low' | 'medium' | 'high';
 
 export interface VoicePreferences {
   voice_search_enabled: boolean;
-  constant_listening_enabled: boolean;
   // Note: voice_language is now derived from i18n.language instead of stored
   auto_subtitle: boolean;
   high_contrast_mode: boolean;
@@ -266,7 +265,7 @@ export interface VoicePreferences {
   hold_button_mode: boolean;
   silence_threshold_ms: number;
   vad_sensitivity: VADSensitivity;
-  // Wake word settings for "Hi Bayit" activation
+  // Wake word activation (mutually exclusive with always-listening - we use wake word only)
   wake_word_enabled: boolean;
   wake_word: string;
   wake_word_sensitivity: number;
