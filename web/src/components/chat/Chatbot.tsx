@@ -16,6 +16,7 @@ declare const __TV__: boolean;
 import { useNavigate } from 'react-router-dom'
 import { X, Send, Sparkles, Mic, Square } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
+import { useVoiceListeningContext } from '@/contexts/VoiceListeningContext'
 import { chatService } from '@/services/api'
 import { SoundwaveVisualizer, VoiceStatusOverlay } from '@bayit/shared'
 import { useAuthStore } from '@/stores/authStore'
@@ -39,6 +40,7 @@ export default function Chatbot() {
   const { isAuthenticated } = useAuthStore()
   const { preferences, loadPreferences } = useVoiceSettingsStore()
   const { currentMode } = useModeEnforcement()
+  const { setListeningState } = useVoiceListeningContext()
 
   // Debug logging
   useEffect(() => {
@@ -53,11 +55,28 @@ export default function Chatbot() {
       isListening,
       isAwake,
       isProcessing,
+      isTTSSpeaking,
       wakeWordDetected,
       wakeWordError,
       audioLevel,
     })
-  }, [isListening, isAwake, isProcessing, wakeWordDetected, wakeWordError, audioLevel])
+  }, [isListening, isAwake, isProcessing, isTTSSpeaking, wakeWordDetected, wakeWordError, audioLevel])
+
+  // Share listening states with HomePage via context
+  useEffect(() => {
+    console.log('[Chatbot] Updating context with listening states:', {
+      isListening,
+      isAwake,
+      isProcessing,
+      audioLevel,
+    });
+    setListeningState({
+      isListening,
+      isAwake,
+      isProcessing,
+      audioLevel,
+    })
+  }, [isListening, isAwake, isProcessing, audioLevel, setListeningState])
   const {
     isOpen,
     setOpen,
@@ -125,12 +144,14 @@ export default function Chatbot() {
       setIsLoading(true)
 
       try {
+        console.log('[Chatbot] Calling chatService.sendMessage...')
         const chatResponse = await chatService.sendMessage(
           transcript,
           conversationId,
           context,
           language
         )
+        console.log('[Chatbot] chatService.sendMessage response:', chatResponse)
         setConversationId(chatResponse.conversation_id)
 
         // Only add assistant message in non-Voice Only modes
@@ -149,6 +170,11 @@ export default function Chatbot() {
           recordSearchQuery(chatResponse.action.payload.query)
         }
 
+        console.log('[Chatbot] Calling handleVoiceResponse with:', {
+          spoken_response: chatResponse.spoken_response,
+          action: chatResponse.action?.type,
+          message: chatResponse.message?.substring(0, 50),
+        })
         await handleVoiceResponse({
           message: chatResponse.message,
           conversation_id: chatResponse.conversation_id,
@@ -159,7 +185,9 @@ export default function Chatbot() {
           visual_action: chatResponse.visual_action,
           confidence: chatResponse.confidence,
         })
+        console.log('[Chatbot] handleVoiceResponse completed')
       } catch (error) {
+        console.error('[Chatbot] Error in catch block:', error)
         logger.error('Failed to process voice command:', 'Chatbot', error)
         setMessages((prev) => [
           ...prev,
@@ -211,6 +239,7 @@ export default function Chatbot() {
     isProcessing,
     wakeWordDetected,
     audioLevel,
+    isTTSSpeaking,
     error: wakeWordError,
   } = useWakeWordListening({
     enabled: currentMode === VoiceMode.VOICE_ONLY, // Only listen in Voice Only mode
@@ -567,21 +596,10 @@ export default function Chatbot() {
     return null
   }
 
-  // Voice Only Mode: Show voice status overlay
+  // Voice Only Mode: Keep component active for voice processing, but don't render UI
+  // The hook still needs to be mounted to process voice responses
   if (isVoiceOnlyMode) {
-    return (
-      <VoiceStatusOverlay
-        isListening={isListening && !isAwake && !isProcessing}
-        isProcessing={isAwake || isProcessing}
-        isSpeaking={isLoading}
-        currentTranscript={currentTranscript}
-        autoHideDuration={3000}
-        onAutoHide={() => {
-          setVoiceStatusVisible(false)
-          setCurrentTranscript('')
-        }}
-      />
-    )
+    return <></>  // Render empty fragment instead of null to keep component mounted
   }
 
   // Hybrid/Classic Mode: Show full chat UI

@@ -60,7 +60,11 @@ export function useVoiceResponseCoordinator(
   const [isProcessing, setIsProcessing] = useState(false);
 
   useEffect(() => {
+    console.log('[VoiceResponseCoordinator] Hook mounted, isMountedRef set to true');
+    isMountedRef.current = true;
+
     return () => {
+      console.log('[VoiceResponseCoordinator] Hook cleanup running, setting isMountedRef to false');
       isMountedRef.current = false;
       // Cancel any pending operations if component unmounts
       abortControllerRef.current?.abort();
@@ -72,7 +76,17 @@ export function useVoiceResponseCoordinator(
    */
   const handleVoiceResponse = useCallback(
     async (response: ChatResponse) => {
-      if (!isMountedRef.current) return;
+      console.log('[VoiceResponseCoordinator] handleVoiceResponse called with:', {
+        hasSpokenResponse: !!response.spoken_response,
+        language: response.language,
+        hasAction: !!response.action,
+        isMounted: isMountedRef.current,
+      });
+
+      if (!isMountedRef.current) {
+        console.warn('[VoiceResponseCoordinator] Component not mounted, skipping');
+        return;
+      }
 
       // Cancel any previous operation
       if (abortControllerRef.current) {
@@ -81,6 +95,7 @@ export function useVoiceResponseCoordinator(
       abortControllerRef.current = new AbortController();
 
       try {
+        console.log('[VoiceResponseCoordinator] Starting processing');
         onProcessingStart?.();
         setIsProcessing(true);
 
@@ -118,27 +133,33 @@ export function useVoiceResponseCoordinator(
         // Use spoken_response if available (optimized for voice), fall back to message
         const textToSpeak = response.spoken_response || response.message;
 
+        console.log('[VoiceResponseCoordinator] Ready to speak, textToSpeak length:', textToSpeak?.length);
+        console.log('[VoiceResponseCoordinator] textToSpeak:', textToSpeak?.substring(0, 100));
+
         if (textToSpeak) {
           // Set language for TTS if available
           const language = response.language === 'en' ? 'en' : 'he';
+          console.log('[VoiceResponseCoordinator] Setting TTS language to:', language);
           ttsService.setLanguage(language);
 
+          console.log('[VoiceResponseCoordinator] Calling ttsService.speak() with text:', textToSpeak.substring(0, 50));
+          console.log('[VoiceResponseCoordinator] ttsService:', ttsService);
           await ttsService.speak(
             textToSpeak,
             'normal', // priority
             undefined, // voiceId - uses default
             {
               onStart: () => {
-                // Called when speech starts
+                console.log('[VoiceResponseCoordinator] TTS started');
               },
               onComplete: () => {
-                // Called when speech completes
+                console.log('[VoiceResponseCoordinator] TTS completed');
                 if (isMountedRef.current) {
                   onProcessingEnd?.();
                 }
               },
               onError: (error) => {
-                console.error('TTS Error:', error);
+                console.error('[VoiceResponseCoordinator] TTS Error:', error);
                 if (isMountedRef.current) {
                   onProcessingEnd?.();
                 }
@@ -146,6 +167,7 @@ export function useVoiceResponseCoordinator(
             }
           );
         } else {
+          console.warn('[VoiceResponseCoordinator] No text to speak, calling onProcessingEnd');
           onProcessingEnd?.();
         }
       } catch (error) {

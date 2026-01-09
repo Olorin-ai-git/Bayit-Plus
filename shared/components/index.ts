@@ -31,6 +31,7 @@ export { SoundwaveVisualizer } from './SoundwaveVisualizer';
 
 // Voice-first conversational interface components (Phases 3, 10)
 export { VoiceStatusOverlay } from './VoiceStatusOverlay';
+export { VoiceVideoIndicator } from './VoiceVideoIndicator';
 export { VisualFeedbackSystem } from './VisualFeedbackSystem';
 
 // Note: Admin, WatchParty, and Chat components are web-only

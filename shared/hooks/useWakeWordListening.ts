@@ -12,6 +12,7 @@ import { WakeWordDetector, WakeWordConfig, WakeWordResult, createWakeWordDetecto
 import { VADDetector, AudioLevel, calculateAudioLevel, createVADDetector } from '../utils/vadDetector';
 import { AudioBufferManager, createAudioBuffer } from '../utils/audioBufferManager';
 import { VADSensitivity } from '../services/api';
+import { ttsService } from '../services/ttsService';
 
 // Type for transcription service
 type TranscribeFunction = (audioBlob: Blob) => Promise<{ text: string; language?: string }>;
@@ -37,6 +38,7 @@ export interface UseWakeWordListeningReturn {
   isProcessing: boolean;        // Processing speech
   isSendingToServer: boolean;   // Sending to transcription API
   wakeWordDetected: boolean;    // Visual feedback for wake word
+  isTTSSpeaking: boolean;       // TTS is currently playing (audio processing paused)
   audioLevel: AudioLevel;
   start: () => Promise<void>;
   stop: () => void;
@@ -76,6 +78,7 @@ export function useWakeWordListening(options: UseWakeWordListeningOptions): UseW
   const [audioLevel, setAudioLevel] = useState<AudioLevel>({ average: 0, peak: 0 });
   const [error, setError] = useState<Error | null>(null);
   const [wakeWordReady, setWakeWordReady] = useState(false);
+  const [isTTSSpeaking, setIsTTSSpeaking] = useState(false);
 
   // Refs for audio capture
   const audioContextRef = useRef<AudioContext | null>(null);
@@ -90,6 +93,8 @@ export function useWakeWordListening(options: UseWakeWordListeningOptions): UseW
   const isListeningRef = useRef(false);
   const isAwakeRef = useRef(false);
   const isSendingToServerRef = useRef(false);
+  const isTTSSpeakingRef = useRef(false);
+  const lastTTSLogRef = useRef<number>(0);
 
   // Check platform support
   const isWeb = Platform.OS === 'web';
@@ -189,6 +194,17 @@ export function useWakeWordListening(options: UseWakeWordListeningOptions): UseW
 
     // Update audio level for visualization
     setAudioLevel(level);
+
+    // SKIP audio processing while TTS is speaking (prevent feedback loops)
+    if (isTTSSpeakingRef.current) {
+      // Log only once per second to avoid flooding console
+      const now = Date.now();
+      if (now - lastTTSLogRef.current > 1000) {
+        console.log('[WakeWordListening] TTS speaking, audio processing paused');
+        lastTTSLogRef.current = now;
+      }
+      return;
+    }
 
     // Wake word detection disabled - skip wake word processing
 
@@ -438,6 +454,39 @@ registerProcessor('audio-processor', AudioProcessorWorklet);
     };
   }, [enabled, isListening, isSupported]);
 
+  // Subscribe to TTS events to prevent feedback loops
+  useEffect(() => {
+    const handleTTSPlaying = () => {
+      console.log('[WakeWordListening] TTS playing - pausing audio processing');
+      isTTSSpeakingRef.current = true;
+      setIsTTSSpeaking(true);
+    };
+
+    const handleTTSCompleted = () => {
+      console.log('[WakeWordListening] TTS completed - resuming audio processing');
+      isTTSSpeakingRef.current = false;
+      setIsTTSSpeaking(false);
+    };
+
+    const handleTTSError = () => {
+      console.log('[WakeWordListening] TTS error - resuming audio processing');
+      isTTSSpeakingRef.current = false;
+      setIsTTSSpeaking(false);
+    };
+
+    // Subscribe to TTS events
+    ttsService.on('playing', handleTTSPlaying);
+    ttsService.on('completed', handleTTSCompleted);
+    ttsService.on('error', handleTTSError);
+
+    return () => {
+      // Cleanup event listeners
+      ttsService.off('playing', handleTTSPlaying);
+      ttsService.off('completed', handleTTSCompleted);
+      ttsService.off('error', handleTTSError);
+    };
+  }, []);
+
   // Update wake word config when settings change
   useEffect(() => {
     if (wakeWordDetectorRef.current) {
@@ -464,6 +513,7 @@ registerProcessor('audio-processor', AudioProcessorWorklet);
     isProcessing,
     isSendingToServer,
     wakeWordDetected,
+    isTTSSpeaking,
     audioLevel,
     start,
     stop,

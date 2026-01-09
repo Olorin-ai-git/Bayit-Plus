@@ -4,8 +4,10 @@ import { Link } from 'react-router-dom';
 import { ChevronLeft } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useDirection } from '@/hooks/useDirection';
+import { useVoiceListeningContext } from '@/contexts/VoiceListeningContext';
 import ContentCarousel from '@/components/content/ContentCarousel';
 import HeroSection from '@/components/content/HeroSection';
+import SoundwaveParticles from '@/components/content/SoundwaveParticles';
 import { TrendingRow, AnimatedLogo } from '@bayit/shared';
 import { GlassView } from '@bayit/shared/ui';
 import MorningRitual from '@/components/ritual/MorningRitual';
@@ -15,6 +17,7 @@ import { getLocalizedName } from '@bayit/shared-utils/contentLocalization';
 import { GlassCard } from '@bayit/shared/ui';
 import LinearGradient from 'react-native-linear-gradient';
 import logger from '@/utils/logger';
+import { ttsService } from '@bayit/shared-services';
 
 // Compact single clock component for header
 interface MiniClockProps {
@@ -152,9 +155,80 @@ export default function HomePage() {
   const [loading, setLoading] = useState(true);
   const [showMorningRitual, setShowMorningRitual] = useState(false);
   const [timeData, setTimeData] = useState<TimeData | null>(null);
+  const [voiceResponse, setVoiceResponse] = useState<string>('');
+  const [voiceError, setVoiceError] = useState<boolean>(false);
+  const [isResponding, setIsResponding] = useState<boolean>(false);
+  const [isTTSSpeaking, setIsTTSSpeaking] = useState<boolean>(false);
   const { width } = useWindowDimensions();
 
+  // Get voice listening states from Chatbot via context
+  // This displays the listening/processing states without needing separate microphone access
+  const { isListening, isAwake, isProcessing, audioLevel } = useVoiceListeningContext();
+
+  // Debug: Log context values
+  useEffect(() => {
+    console.log('[HomePage] Context values from VoiceListeningContext:', {
+      isListening,
+      isAwake,
+      isProcessing,
+      audioLevel,
+    });
+  }, [isListening, isAwake, isProcessing, audioLevel]);
+
+  // Debug: log voice response state changes
+  useEffect(() => {
+    console.log('[HomePage] Voice response state changed:', {
+      isResponding,
+      isTTSSpeaking,
+      voiceResponse: voiceResponse.substring(0, 50),
+      voiceError,
+    });
+  }, [isResponding, isTTSSpeaking, voiceResponse, voiceError]);
+
   const liveColumnsCount = width >= 1024 ? 6 : width >= 768 ? 4 : width >= 640 ? 3 : 2;
+
+  // Listen for TTS events to track response speaking state
+  useEffect(() => {
+    console.log('[HomePage] Setting up TTS event listeners');
+    console.log('[HomePage] ttsService instance:', ttsService);
+    console.log('[HomePage] ttsService listeners:', ttsService.listenerCount?.('playing'), ttsService.listenerCount?.('completed'));
+
+    const handlePlaying = (item: any) => {
+      console.log('[HomePage] TTS playing event fired:', item.text?.substring(0, 50));
+      setIsResponding(true);
+      setIsTTSSpeaking(true);
+      setVoiceResponse(item.text || '');
+    };
+
+    const handleCompleted = () => {
+      console.log('[HomePage] TTS completed event fired');
+      setIsResponding(false);
+      setIsTTSSpeaking(false);
+      // Keep response text for a moment before clearing
+      setTimeout(() => setVoiceResponse(''), 2000);
+    };
+
+    const handleError = (data: any) => {
+      console.error('[HomePage] TTS error event fired:', data?.error);
+      setVoiceError(true);
+      setIsResponding(false);
+      setIsTTSSpeaking(false);
+      setTimeout(() => setVoiceError(false), 3000);
+    };
+
+    // Listen to TTS events
+    console.log('[HomePage] Registering TTS event listeners - playing, completed, error');
+    ttsService.on('playing', handlePlaying);
+    ttsService.on('completed', handleCompleted);
+    ttsService.on('error', handleError);
+
+    return () => {
+      console.log('[HomePage] Cleanup: removing TTS event listeners');
+      ttsService.off('playing', handlePlaying);
+      ttsService.off('completed', handleCompleted);
+      ttsService.off('error', handleError);
+    };
+  }, []);
 
   // Helper to render clocks in correct order based on RTL
   const renderClocks = () => {
@@ -283,6 +357,16 @@ export default function HomePage() {
 
       {/* Hero Section */}
       {featured && <HeroSection content={featured} />}
+
+      {/* Voice Soundwave Particles - 100px high */}
+      <SoundwaveParticles
+        isListening={isListening && !isAwake && !isProcessing && !isResponding && !isTTSSpeaking}
+        isProcessing={isAwake || isProcessing}
+        audioLevel={audioLevel}
+        hasError={voiceError}
+        isResponding={isResponding || isTTSSpeaking}
+        responseText={voiceResponse}
+      />
 
       {/* Trending in Israel */}
       <View style={styles.section}>

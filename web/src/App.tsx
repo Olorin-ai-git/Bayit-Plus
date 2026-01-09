@@ -2,6 +2,7 @@ import { useEffect } from 'react'
 import { Routes, Route } from 'react-router-dom'
 import { loadSavedLanguage } from '@bayit/shared-i18n'
 import { useDirection } from '@/hooks/useDirection'
+import { VoiceListeningProvider } from '@/contexts/VoiceListeningContext'
 import Layout from './components/layout/Layout'
 import HomePage from './pages/HomePage'
 import LivePage from './pages/LivePage'
@@ -79,7 +80,7 @@ function App() {
       </Route>
 
       {/* Main Routes with Layout */}
-      <Route element={<Layout />}>
+      <Route element={<VoiceListeningProvider><Layout /></VoiceListeningProvider>}>
         <Route path="/" element={<HomePage />} />
         <Route path="/live" element={<LivePage />} />
         <Route path="/live/:channelId" element={<WatchPage type="live" />} />

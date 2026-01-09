@@ -400,11 +400,7 @@ export const VoiceSearchButton: React.FC<VoiceSearchButtonProps> = ({
       {/* Constant listening status indicator (for both TV and web) */}
       {isConstantListening && (
         <View style={[styles.listeningIndicator, tvMode && styles.listeningIndicatorTV]}>
-          <Text style={[styles.listeningText, tvMode && styles.listeningTextTV]}>
-            {preferences.wake_word_enabled
-              ? t('voice.sayHiBayit', 'Say "Hi Bayit"')
-              : t('voice.listening', 'Listening...')}
-          </Text>
+          
           {wakeWordReady && (
             <View style={styles.readyIndicator}>
               <Text style={styles.readyText}>✓</Text>
