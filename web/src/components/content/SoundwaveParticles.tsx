@@ -202,6 +202,12 @@ const SoundwaveParticles: React.FC<SoundwaveParticlesProps> = ({
             <Text style={styles.statusText}>Listening</Text>
           </View>
         )}
+        {!isListening && !isProcessing && !isResponding && !hasError && (
+          <View style={styles.statusBadge}>
+            <View style={[styles.statusDot, styles.statusDotIdle]} />
+            <Text style={styles.statusText}>Ready</Text>
+          </View>
+        )}
       </View>
     </View>
   );
@@ -251,6 +257,9 @@ const styles = StyleSheet.create({
   },
   statusDotError: {
     backgroundColor: '#ef4444', // Red
+  },
+  statusDotIdle: {
+    backgroundColor: '#6366f1', // Indigo
   },
   statusText: {
     color: colors.text,

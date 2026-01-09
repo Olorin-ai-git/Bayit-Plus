@@ -245,7 +245,7 @@ export default function Chatbot() {
     isTTSSpeaking,
     error: wakeWordError,
   } = useWakeWordListening({
-    enabled: currentMode === VoiceMode.VOICE_ONLY, // Only listen in Voice Only mode
+    enabled: currentMode === VoiceMode.VOICE_ONLY || currentMode === VoiceMode.HYBRID, // Listen in Voice Only and Hybrid modes
     wakeWordEnabled: preferences?.wake_word_enabled ?? false, // Default: false (disabled)
     wakeWord: preferences?.wake_word ?? 'hi bayit',
     wakeWordSensitivity: preferences?.wake_word_sensitivity ?? 0.7,
