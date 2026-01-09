@@ -89,29 +89,57 @@ export default function Chatbot() {
   } = useConversationContext()
 
   // Memoize the transcript handler for wake word listening
-  const handleWakeWordTranscript = useCallback(async (transcript: string) => {
+  const handleWakeWordTranscript = useCallback(async (transcript: string, language?: string) => {
     // Hook has already transcribed the audio - just process the result
     if (transcript && transcript.trim()) {
+      console.log('[Chatbot] handleWakeWordTranscript called with:', {
+        transcript,
+        language,
+        currentMode,
+      })
+
+      // Deduplication: Skip if same transcript received within 2 seconds
+      const now = Date.now()
+      if (
+        lastTranscriptRef.current &&
+        lastTranscriptRef.current.text === transcript &&
+        now - lastTranscriptRef.current.timestamp < 2000
+      ) {
+        console.log('[Chatbot] Skipping duplicate transcript:', transcript)
+        return
+      }
+
+      lastTranscriptRef.current = { text: transcript, timestamp: now }
+
       setCurrentTranscript(transcript)
+      setCurrentLanguage(language || null)
+      console.log('[Chatbot] Sending message with language:', language)
       setVoiceStatusVisible(true)
       recordCommand(transcript)
 
-      // Add user message and get AI response
-      setMessages((prev) => [...prev, { role: 'user', content: transcript }])
+      // In Voice Only mode: don't add text to chat, just process voice
+      // In other modes: add messages to chat display
+      if (currentMode !== VoiceMode.VOICE_ONLY) {
+        setMessages((prev) => [...prev, { role: 'user', content: transcript }])
+      }
       setIsLoading(true)
 
       try {
         const chatResponse = await chatService.sendMessage(
           transcript,
           conversationId,
-          context
+          context,
+          language
         )
         setConversationId(chatResponse.conversation_id)
 
-        setMessages((prev) => [
-          ...prev,
-          { role: 'assistant', content: chatResponse.message },
-        ])
+        // Only add assistant message in non-Voice Only modes
+        if (currentMode !== VoiceMode.VOICE_ONLY) {
+          setMessages((prev) => [
+            ...prev,
+            { role: 'assistant', content: chatResponse.message },
+          ])
+        }
 
         if (chatResponse.content_ids && chatResponse.content_ids.length > 0) {
           mentionContent(chatResponse.content_ids)
@@ -145,7 +173,36 @@ export default function Chatbot() {
         setIsLoading(false)
       }
     }
-  }, [conversationId, context, recordCommand, mentionContent, recordSearchQuery, handleVoiceResponse, t])
+  }, [conversationId, context, recordCommand, mentionContent, recordSearchQuery, handleVoiceResponse, t, currentMode])
+
+  // Memoize callbacks for useWakeWordListening to prevent infinite loop
+  const handleWakeWordDetected = useCallback(() => {
+    console.log('[Chatbot] Wake word detected!')
+    setVoiceStatusVisible(true)
+  }, [])
+
+  const handleListeningError = useCallback((error: Error) => {
+    console.error('[Chatbot] Wake word listening error:', error)
+    logger.error('Wake word listening error:', 'Chatbot', error)
+  }, [])
+
+  const transcribeAudioBlob = useCallback(async (audioBlob: Blob) => {
+    try {
+      console.log('[Chatbot] Transcribing audio blob, size:', audioBlob.size)
+      const response = await chatService.transcribeAudio(audioBlob)
+      console.log('[Chatbot] Transcription result:', response)
+      console.log('[Chatbot] Detected language:', response.language, 'Text:', response.text)
+      // Store language for use when sending message
+      if (response.language) {
+        setCurrentLanguage(response.language)
+        console.log('[Chatbot] Set current language to:', response.language)
+      }
+      return response
+    } catch (error) {
+      console.error('[Chatbot] Transcription error:', error)
+      throw error
+    }
+  }, [])
 
   // Initialize wake word listening for Voice Only mode
   const {
@@ -162,27 +219,11 @@ export default function Chatbot() {
     wakeWordSensitivity: preferences?.wake_word_sensitivity ?? 0.7,
     wakeWordCooldownMs: preferences?.wake_word_cooldown_ms ?? 2000,
     onTranscript: handleWakeWordTranscript,
-    onWakeWordDetected: () => {
-      console.log('[Chatbot] Wake word detected!')
-      setVoiceStatusVisible(true)
-    },
-    onError: (error) => {
-      console.error('[Chatbot] Wake word listening error:', error)
-      logger.error('Wake word listening error:', 'Chatbot', error)
-    },
+    onWakeWordDetected: handleWakeWordDetected,
+    onError: handleListeningError,
     silenceThresholdMs: preferences?.silence_threshold_ms ?? 2000,
     vadSensitivity: preferences?.vad_sensitivity ?? 'medium',
-    transcribeAudio: async (audioBlob) => {
-      try {
-        console.log('[Chatbot] Transcribing audio blob, size:', audioBlob.size)
-        const response = await chatService.transcribeAudio(audioBlob)
-        console.log('[Chatbot] Transcription result:', response)
-        return response
-      } catch (error) {
-        console.error('[Chatbot] Transcription error:', error)
-        throw error
-      }
-    },
+    transcribeAudio: transcribeAudioBlob,
   })
 
   const isRTL = i18n.language === 'he' || i18n.language === 'ar'
@@ -195,12 +236,15 @@ export default function Chatbot() {
   const [isTranscribing, setIsTranscribing] = useState(false)
   const [currentTranscript, setCurrentTranscript] = useState('')
   const [voiceStatusVisible, setVoiceStatusVisible] = useState(false)
+  const [currentLanguage, setCurrentLanguage] = useState<string | null>(null)
   const messagesEndRef = useRef<ScrollView>(null)
   const inputRef = useRef<TextInput>(null)
   const mediaRecorderRef = useRef<MediaRecorder | null>(null)
   const audioChunksRef = useRef<Blob[]>([])
   const slideAnim = useRef(new Animated.Value(100)).current
   const opacityAnim = useRef(new Animated.Value(0)).current
+  // Deduplication for transcription results
+  const lastTranscriptRef = useRef<{ text: string; timestamp: number } | null>(null)
 
   // Initialize welcome message with translation
   useEffect(() => {

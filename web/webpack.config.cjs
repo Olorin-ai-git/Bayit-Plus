@@ -45,6 +45,8 @@ module.exports = (env, argv) => {
         // React Native Web
         'react-native$': 'react-native-web',
         'react-native-linear-gradient': 'react-native-web-linear-gradient',
+        // Voice detection
+        'vosk-browser': path.resolve(__dirname, '../node_modules/vosk-browser/dist/vosk.js'),
         // Native module shims
         '@react-native-async-storage/async-storage': path.resolve(__dirname, 'src/utils/asyncStorageWeb.ts'),
         '@react-native-clipboard/clipboard': path.resolve(__dirname, 'src/utils/clipboardWeb.ts'),
@@ -120,7 +122,7 @@ module.exports = (env, argv) => {
         // Process specific node_modules that need transpilation
         {
           test: /\.(js|jsx|ts|tsx)$/,
-          include: /node_modules\/(react-native-web|react-native-safe-area-context|react-native-screens|@expo|expo-linear-gradient|expo-font|expo-asset|expo-modules-core)/,
+          include: /node_modules\/(react-native-web|react-native-safe-area-context|react-native-screens|@expo|expo-linear-gradient|expo-font|expo-asset|expo-modules-core|vosk-browser)/,
           exclude: /node_modules\/@react-native/,
           type: 'javascript/auto',
           use: {
@@ -172,11 +174,11 @@ module.exports = (env, argv) => {
         __TIZEN__: isTizen,
         __TV__: isTV,
         'process.env.NODE_ENV': JSON.stringify(isProduction ? 'production' : 'development'),
-        // TV builds MUST use demo mode since there's no accessible backend
-        'process.env.VITE_APP_MODE': JSON.stringify(isTV ? 'demo' : (process.env.VITE_APP_MODE || 'demo')),
+        // Single source of truth: .env file. TV builds override to demo mode.
+        'process.env.VITE_APP_MODE': JSON.stringify(isTV ? 'demo' : process.env.VITE_APP_MODE),
         'process.env.TARGET': JSON.stringify(process.env.TARGET || 'web'),
         // Also support import.meta.env syntax
-        'import.meta.env.VITE_APP_MODE': JSON.stringify(isTV ? 'demo' : (process.env.VITE_APP_MODE || 'demo')),
+        'import.meta.env.VITE_APP_MODE': JSON.stringify(isTV ? 'demo' : process.env.VITE_APP_MODE),
         'import.meta.env.VITE_API_URL': JSON.stringify(isTV ? '' : (process.env.VITE_API_URL || '/api/v1')),
       }),
       new webpack.ProvidePlugin({

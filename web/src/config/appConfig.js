@@ -12,9 +12,9 @@ import logger from '@/utils/logger';
 // eslint-disable-next-line no-undef
 const IS_TV_BUILD = typeof __TV__ !== 'undefined' && __TV__;
 
-// Set this based on environment or build flag
+// Single source of truth: .env file (VITE_APP_MODE)
 // TV builds ALWAYS use demo mode since there's no accessible backend
-export const APP_MODE = IS_TV_BUILD ? 'demo' : (import.meta.env.VITE_APP_MODE || 'demo');
+export const APP_MODE = IS_TV_BUILD ? 'demo' : import.meta.env.VITE_APP_MODE;
 
 export const isDemo = APP_MODE === 'demo' || IS_TV_BUILD;
 export const isProduction = APP_MODE === 'production' && !IS_TV_BUILD;

@@ -21,6 +21,7 @@ interface ChatResponse {
   message: string;
   conversation_id: string;
   recommendations?: Array<{ id: string; title: string; thumbnail: string }>;
+  language?: string;  // Response language (en, he, etc.)
   spoken_response?: string;
   action?: { type: string; payload: Record<string, any> };
   content_ids?: string[];
@@ -118,6 +119,10 @@ export function useVoiceResponseCoordinator(
         const textToSpeak = response.spoken_response || response.message;
 
         if (textToSpeak) {
+          // Set language for TTS if available
+          const language = response.language === 'en' ? 'en' : 'he';
+          ttsService.setLanguage(language);
+
           await ttsService.speak(
             textToSpeak,
             'normal', // priority

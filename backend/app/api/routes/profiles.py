@@ -419,7 +419,9 @@ async def get_voice_preferences(
     current_user: User = Depends(get_current_active_user),
 ):
     """Get voice and accessibility preferences for current user."""
-    voice_settings = current_user.preferences.get("voice_settings", DEFAULT_VOICE_SETTINGS.copy())
+    # Get saved settings and merge with defaults (so new fields get default values)
+    saved_settings = current_user.preferences.get("voice_settings", {})
+    voice_settings = {**DEFAULT_VOICE_SETTINGS.copy(), **saved_settings}
     return voice_settings
 
 

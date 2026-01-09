@@ -1,4 +1,4 @@
-import { View, Text, StyleSheet, Image, Pressable, useWindowDimensions } from 'react-native'
+import { View, Text, StyleSheet, Image, Pressable, useWindowDimensions, Platform } from 'react-native'
 import { Link } from 'react-router-dom'
 import { Play, Info, Plus } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
@@ -152,9 +152,14 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     color: colors.text,
     marginBottom: spacing.md,
-    textShadowColor: 'rgba(0, 0, 0, 0.5)',
-    textShadowOffset: { width: 0, height: 2 },
-    textShadowRadius: 4,
+    ...Platform.select({
+      ios: {
+        textShadowColor: 'rgba(0, 0, 0, 0.5)',
+        textShadowOffset: { width: 0, height: 2 },
+        textShadowRadius: 4,
+      },
+      default: {},
+    }),
   },
   metadata: {
     flexDirection: 'row',
@@ -187,10 +192,15 @@ const styles = StyleSheet.create({
     borderRadius: borderRadius.md,
   },
   primaryButtonHovered: {
-    shadowColor: colors.primary,
-    shadowOffset: { width: 0, height: 0 },
-    shadowOpacity: 0.5,
-    shadowRadius: 16,
+    ...Platform.select({
+      ios: {
+        shadowColor: colors.primary,
+        shadowOffset: { width: 0, height: 0 },
+        shadowOpacity: 0.5,
+        shadowRadius: 16,
+      },
+      default: {},
+    }),
     transform: [{ scale: 1.02 }],
   },
   primaryButtonText: {
@@ -214,10 +224,15 @@ const styles = StyleSheet.create({
   },
   secondaryButtonHovered: {
     backgroundColor: colors.glassStrong,
-    shadowColor: colors.primary,
-    shadowOffset: { width: 0, height: 0 },
-    shadowOpacity: 0.3,
-    shadowRadius: 12,
+    ...Platform.select({
+      ios: {
+        shadowColor: colors.primary,
+        shadowOffset: { width: 0, height: 0 },
+        shadowOpacity: 0.3,
+        shadowRadius: 12,
+      },
+      default: {},
+    }),
     transform: [{ scale: 1.02 }],
   },
   secondaryButtonText: {
@@ -237,9 +252,14 @@ const styles = StyleSheet.create({
   },
   iconButtonHovered: {
     backgroundColor: 'rgba(255, 255, 255, 0.15)',
-    shadowColor: colors.primary,
-    shadowOffset: { width: 0, height: 0 },
-    shadowOpacity: 0.3,
-    shadowRadius: 8,
+    ...Platform.select({
+      ios: {
+        shadowColor: colors.primary,
+        shadowOffset: { width: 0, height: 0 },
+        shadowOpacity: 0.3,
+        shadowRadius: 8,
+      },
+      default: {},
+    }),
   },
 })

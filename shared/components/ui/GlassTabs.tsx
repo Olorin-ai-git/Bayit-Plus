@@ -226,11 +226,17 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(0, 217, 255, 0.15)',
   },
   tabFocused: {
-    shadowColor: colors.primary,
-    shadowOffset: { width: 0, height: 0 },
-    shadowOpacity: 0.4,
-    shadowRadius: 8,
-    elevation: 5,
+    ...Platform.select({
+      ios: {
+        shadowColor: colors.primary,
+        shadowOffset: { width: 0, height: 0 },
+        shadowOpacity: 0.4,
+        shadowRadius: 8,
+      },
+      default: {
+        elevation: 5,
+      },
+    }),
   },
   pillTab: {
     flexDirection: 'row',

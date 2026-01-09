@@ -124,8 +124,8 @@ const apiHistoryService = {
 
 // Chat Service (API)
 const apiChatService = {
-  sendMessage: (message, conversationId, context = null) =>
-    api.post('/chat', { message, conversation_id: conversationId, context }),
+  sendMessage: (message, conversationId, context = null, language = null) =>
+    api.post('/chat', { message, conversation_id: conversationId, context, language }),
   getConversation: (conversationId) => api.get(`/chat/${conversationId}`),
   clearConversation: (conversationId) => api.delete(`/chat/${conversationId}`),
   transcribeAudio: (audioBlob) => {

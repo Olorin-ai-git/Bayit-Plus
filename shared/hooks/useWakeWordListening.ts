@@ -14,7 +14,7 @@ import { AudioBufferManager, createAudioBuffer } from '../utils/audioBufferManag
 import { VADSensitivity } from '../services/api';
 
 // Type for transcription service
-type TranscribeFunction = (audioBlob: Blob) => Promise<{ text: string }>;
+type TranscribeFunction = (audioBlob: Blob) => Promise<{ text: string; language?: string }>;
 
 export interface UseWakeWordListeningOptions {
   enabled: boolean;
@@ -22,7 +22,7 @@ export interface UseWakeWordListeningOptions {
   wakeWord?: string;
   wakeWordSensitivity?: number;
   wakeWordCooldownMs?: number;
-  onTranscript: (text: string) => void;
+  onTranscript: (text: string, language?: string) => void;
   onWakeWordDetected?: () => void;
   onError: (error: Error) => void;
   silenceThresholdMs?: number;
@@ -89,6 +89,7 @@ export function useWakeWordListening(options: UseWakeWordListeningOptions): UseW
   const bufferRef = useRef<AudioBufferManager | null>(null);
   const isListeningRef = useRef(false);
   const isAwakeRef = useRef(false);
+  const isSendingToServerRef = useRef(false);
 
   // Check platform support
   const isWeb = Platform.OS === 'web';
@@ -101,31 +102,9 @@ export function useWakeWordListening(options: UseWakeWordListeningOptions): UseW
    * Initialize wake word detector
    */
   const initializeWakeWord = useCallback(async () => {
-    if (!wakeWordEnabled) return;
-
-    try {
-      const detector = createWakeWordDetector({
-        wakeWord,
-        sensitivity: wakeWordSensitivity,
-        cooldownMs: wakeWordCooldownMs,
-        enabled: true,
-      });
-
-      // Try to initialize with Vosk model
-      try {
-        await detector.initialize(modelPath);
-        setWakeWordReady(true);
-        console.log('[WakeWordListening] Vosk model loaded');
-      } catch (err) {
-        console.warn('[WakeWordListening] Vosk model not available, using fallback');
-        // Continue without Vosk - will use simplified detection
-      }
-
-      wakeWordDetectorRef.current = detector;
-    } catch (err) {
-      console.error('[WakeWordListening] Failed to initialize wake word detector:', err);
-    }
-  }, [wakeWordEnabled, wakeWord, wakeWordSensitivity, wakeWordCooldownMs, modelPath]);
+    // Wake word detection disabled
+    return;
+  }, []);
 
   /**
    * Initialize VAD and buffer
@@ -185,7 +164,7 @@ export function useWakeWordListening(options: UseWakeWordListeningOptions): UseW
       const result = await transcribeAudio(audioBlob);
 
       if (result.text && result.text.trim()) {
-        onTranscript(result.text.trim());
+        onTranscript(result.text.trim(), result.language);
       }
     } catch (err) {
       const error = err instanceof Error ? err : new Error('Transcription failed');
@@ -193,6 +172,7 @@ export function useWakeWordListening(options: UseWakeWordListeningOptions): UseW
       onError(error);
     } finally {
       setIsSendingToServer(false);
+      isSendingToServerRef.current = false;
       vadRef.current?.reset();
       bufferRef.current?.clear();
       setIsAwake(false);
@@ -210,65 +190,39 @@ export function useWakeWordListening(options: UseWakeWordListeningOptions): UseW
     // Update audio level for visualization
     setAudioLevel(level);
 
-    // If wake word is enabled and not yet awake, check for wake word
-    if (wakeWordEnabled && !isAwakeRef.current && samples && wakeWordDetectorRef.current) {
-      const result = await wakeWordDetectorRef.current.processAudio(samples);
+    // Wake word detection disabled - skip wake word processing
 
-      if (result.detected) {
-        console.log('[WakeWordListening] Wake word detected!', result);
+    // Add samples to buffer
+    if (samples) {
+      bufferRef.current.addChunk(samples);
+    }
 
-        // Wake up!
-        isAwakeRef.current = true;
-        setIsAwake(true);
-        setWakeWordDetected(true);
+    const vadState = vadRef.current.process(level);
 
-        // Play feedback
-        playWakeWordFeedback();
-
-        // Notify callback
-        onWakeWordDetected?.();
-
-        // Start recording
+    if (vadState === 'speech') {
+      // Speech detected - continue recording
+      if (!bufferRef.current.isRecording()) {
         bufferRef.current.startSpeech();
         setIsProcessing(true);
-
-        // Reset wake word detected visual after 1 second
-        setTimeout(() => setWakeWordDetected(false), 1000);
-
-        return;
       }
+    } else if (vadState === 'silence_after_speech' && vadRef.current.shouldSendToAPI() && !isSendingToServerRef.current) {
+      // Silence after speech - send to API (prevent concurrent requests)
+      bufferRef.current.endSpeech();
+      setIsProcessing(false);
+      setIsSendingToServer(true);
+      isSendingToServerRef.current = true;
+
+      await sendToTranscription();
     }
-
-    // If awake (or wake word disabled), process normally with VAD
-    if (isAwakeRef.current || !wakeWordEnabled) {
-      // Add samples to buffer
-      if (samples) {
-        bufferRef.current.addChunk(samples);
-      }
-
-      const vadState = vadRef.current.process(level);
-
-      if (vadState === 'speech') {
-        // Speech detected - continue recording
-        if (!bufferRef.current.isRecording()) {
-          bufferRef.current.startSpeech();
-          setIsProcessing(true);
-        }
-      } else if (vadState === 'silence_after_speech' && vadRef.current.shouldSendToAPI()) {
-        // Silence after speech - send to API
-        bufferRef.current.endSpeech();
-        setIsProcessing(false);
-
-        await sendToTranscription();
-      }
-    }
-  }, [wakeWordEnabled, onWakeWordDetected, playWakeWordFeedback, sendToTranscription]);
+  }, [sendToTranscription]);
 
   /**
    * Start audio capture
    */
   const startWebAudio = useCallback(async () => {
     try {
+      console.log('[WakeWordListening] Requesting microphone permission...');
+
       // Get microphone stream
       const stream = await navigator.mediaDevices.getUserMedia({
         audio: {
@@ -279,11 +233,13 @@ export function useWakeWordListening(options: UseWakeWordListeningOptions): UseW
         },
       });
 
+      console.log('[WakeWordListening] Microphone granted, stream active:', stream.active);
       streamRef.current = stream;
 
       // Create audio context
       const audioContext = new AudioContext({ sampleRate: 16000 });
       audioContextRef.current = audioContext;
+      console.log('[WakeWordListening] Audio context created, state:', audioContext.state);
 
       // Create analyser for visualization
       const analyser = audioContext.createAnalyser();
@@ -295,21 +251,59 @@ export function useWakeWordListening(options: UseWakeWordListeningOptions): UseW
       const source = audioContext.createMediaStreamSource(stream);
       source.connect(analyser);
 
-      // Create script processor for audio level monitoring
-      const scriptProcessor = audioContext.createScriptProcessor(4096, 1, 1);
+      // Create AudioWorklet processor for audio level monitoring
+      const workletCode = `
+class AudioProcessorWorklet extends AudioWorkletProcessor {
+  process(inputs) {
+    if (inputs[0] && inputs[0][0]) {
+      this.port.postMessage({
+        samples: inputs[0][0]
+      });
+    }
+    return true;
+  }
+}
 
-      scriptProcessor.onaudioprocess = (event) => {
-        if (!isListeningRef.current) return;
+registerProcessor('audio-processor', AudioProcessorWorklet);
+`;
 
-        const inputData = event.inputBuffer.getChannelData(0);
-        const samples = new Float32Array(inputData);
-        const level = calculateAudioLevel(samples);
+      try {
+        const workletBlob = new Blob([workletCode], { type: 'application/javascript' });
+        const workletUrl = URL.createObjectURL(workletBlob);
 
-        processAudioLevel(level, samples);
-      };
+        await audioContext.audioWorklet.addModule(workletUrl);
 
-      source.connect(scriptProcessor);
-      scriptProcessor.connect(audioContext.destination);
+        const audioWorkletNode = new AudioWorkletNode(audioContext, 'audio-processor');
+
+        audioWorkletNode.port.onmessage = (event) => {
+          if (!isListeningRef.current) return;
+
+          const samples = new Float32Array(event.data.samples);
+          const level = calculateAudioLevel(samples);
+
+          processAudioLevel(level, samples);
+        };
+
+        source.connect(audioWorkletNode);
+        audioWorkletNode.connect(audioContext.destination);
+      } catch (err) {
+        console.warn('[WakeWordListening] AudioWorklet not supported, falling back to ScriptProcessor:', err);
+        // Fallback to ScriptProcessorNode if AudioWorklet is not available
+        const scriptProcessor = audioContext.createScriptProcessor(4096, 1, 1);
+
+        scriptProcessor.onaudioprocess = (event) => {
+          if (!isListeningRef.current) return;
+
+          const inputData = event.inputBuffer.getChannelData(0);
+          const samples = new Float32Array(inputData);
+          const level = calculateAudioLevel(samples);
+
+          processAudioLevel(level, samples);
+        };
+
+        source.connect(scriptProcessor);
+        scriptProcessor.connect(audioContext.destination);
+      }
 
       // Start animation frame for UI updates
       const updateUI = () => {
@@ -330,7 +324,8 @@ export function useWakeWordListening(options: UseWakeWordListeningOptions): UseW
       return true;
     } catch (err) {
       const error = err instanceof Error ? err : new Error('Failed to start audio capture');
-      console.error('[WakeWordListening] Failed to start web audio:', error);
+      console.error('[WakeWordListening] Failed to start web audio:', error.message);
+      console.error('[WakeWordListening] Error details:', err);
       throw error;
     }
   }, [processAudioLevel]);
@@ -364,24 +359,31 @@ export function useWakeWordListening(options: UseWakeWordListeningOptions): UseW
    * Start listening
    */
   const start = useCallback(async () => {
-    if (isListening || !enabled) return;
+    console.log('[WakeWordListening] start() called with:', { isListening, enabled, isWeb, isSupported });
+
+    if (isListening || !enabled) {
+      console.log('[WakeWordListening] start() skipped - isListening:', isListening, 'enabled:', enabled);
+      return;
+    }
 
     setError(null);
     initializeVAD();
     await initializeWakeWord();
 
     try {
+      console.log('[WakeWordListening] Starting audio capture...');
       if (isWeb && isSupported) {
         await startWebAudio();
       } else {
-        throw new Error('Audio capture not supported on this platform');
+        throw new Error(`Audio capture not supported - isWeb: ${isWeb}, isSupported: ${isSupported}`);
       }
 
       isListeningRef.current = true;
       setIsListening(true);
-      console.log('[WakeWordListening] Started listening');
+      console.log('[WakeWordListening] Started listening successfully');
     } catch (err) {
       const error = err instanceof Error ? err : new Error('Failed to start listening');
+      console.error('[WakeWordListening] Failed to start:', error.message);
       setError(error);
       onError(error);
     }
@@ -418,18 +420,23 @@ export function useWakeWordListening(options: UseWakeWordListeningOptions): UseW
 
   // Auto-start/stop based on enabled state
   useEffect(() => {
+    console.log('[WakeWordListening] useEffect triggered:', { enabled, isListening, isSupported });
+
     if (enabled && !isListening && isSupported) {
+      console.log('[WakeWordListening] Triggering start()...');
       start();
     } else if (!enabled && isListening) {
+      console.log('[WakeWordListening] Triggering stop()...');
       stop();
     }
 
     return () => {
       if (isListening) {
+        console.log('[WakeWordListening] Cleanup: stopping...');
         stop();
       }
     };
-  }, [enabled]);
+  }, [enabled, isListening, isSupported]);
 
   // Update wake word config when settings change
   useEffect(() => {

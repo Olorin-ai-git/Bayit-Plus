@@ -320,6 +320,15 @@ class TTSService extends EventEmitter {
 
   setLanguage(language: 'he' | 'en'): void {
     this.config.language = language;
+
+    // Set appropriate voice ID for language
+    if (language === 'en') {
+      // Use English voice
+      this.config.voiceId = 'EXAVITQu4VqLrzJuXi3n'; // You can change this to a different English voice if needed
+    } else {
+      // Use Hebrew voice
+      this.config.voiceId = 'EXAVITQu4VqLrzJuXi3n'; // Hebrew female voice
+    }
   }
 
   setVolume(volume: number): void {

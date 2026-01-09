@@ -148,12 +148,14 @@ class ChatRequest(BaseModel):
     # Context for smarter voice command processing
     context: Optional[dict] = None  # {currentRoute, visibleContentIds, lastMentionedContentIds}
     mode: Optional[str] = 'voice_only'  # voice_only, hybrid, or classic
+    language: Optional[str] = None  # Language of the user's message ('en', 'he', etc.)
 
 
 class ChatResponse(BaseModel):
     message: str
     conversation_id: str
     recommendations: Optional[list] = None
+    language: str = "he"  # Response language (en, he, etc.)
 
     # Voice-first enhancements
     spoken_response: Optional[str] = None  # TTS-optimized text (shorter, natural)
@@ -163,12 +165,66 @@ class ChatResponse(BaseModel):
     confidence: Optional[float] = None  # Command confidence score
 
 
+def get_system_prompt(language: Optional[str] = None) -> str:
+    """Get language-appropriate system prompt."""
+    lang = (language or "he").lower()
+
+    if lang == "en":
+        return """You are Bayit+'s smart assistant, a streaming platform for Israeli expats in the USA.
+
+Your role:
+1. Help users find content to watch (movies, series, live channels, radio, podcasts)
+2. Give personalized recommendations
+3. Answer questions about specific shows
+4. Assist with app navigation
+5. Identify voice commands from spoken text
+
+Rules:
+- Always answer in English (user spoke English)
+- Be friendly and concise
+- If user is searching for content, try to understand their preferences
+- If you don't know about specific content, say so honestly
+- Keep responses short and natural for TTS (voice synthesis)
+- Respond conversationally
+
+Available content categories:
+- Israeli movies and series
+- Drama, comedy, documentaries
+- Kids & family content
+- News & current affairs
+
+Live channels:
+- Kan, Reshet 12, Reshet 13, Channel 14, i24NEWS
+
+Radio stations:
+- Galei Tzahal, Radio Kan, 103FM, Eco 99FM
+
+Common voice commands:
+- Navigation: "Go to movies", "Home", "Favorites"
+- Search: "Action movies from 2025", "Comedy"
+- Playback: "Play", "Pause", "Trailer"
+- Scrolling: "Scroll down", "More"
+- Control: "Volume up", "Language"
+
+Always be helpful. If you identify a command, execute it but also give a friendly response."""
+
+    else:  # Hebrew or default
+        return SYSTEM_PROMPT
+
+
 @router.post("", response_model=ChatResponse)
 async def send_message(
     request: ChatRequest,
     current_user: User = Depends(get_current_active_user),
 ):
     """Send a message to the AI assistant."""
+    # Determine language - use provided language or default to Hebrew
+    user_language = (request.language or "he").lower()
+
+    print(f"[CHAT] Received message: '{request.message}'")
+    print(f"[CHAT] Language parameter: {request.language}")
+    print(f"[CHAT] Resolved language: {user_language}")
+
     # Get or create conversation
     if request.conversation_id:
         conversation = await Conversation.get(request.conversation_id)
@@ -199,11 +255,14 @@ async def send_message(
     ]
 
     try:
+        # Get appropriate system prompt for language
+        system_prompt = get_system_prompt(user_language)
+
         # Call Claude API
         response = client.messages.create(
             model="claude-sonnet-4-20250514",
             max_tokens=1024,
-            system=SYSTEM_PROMPT,
+            system=system_prompt,
             messages=messages,
         )
 
@@ -227,8 +286,9 @@ async def send_message(
             message=assistant_message,
             conversation_id=str(conversation.id),
             recommendations=recommendations,
+            language=user_language,  # Return the language used
             # Voice-first fields
-            spoken_response=assistant_message[:100],  # First 100 chars for TTS
+            spoken_response=assistant_message,  # Full message for TTS
             action=None,  # Could extract from Claude response if structured format used
             content_ids=None,  # Could extract recommended content IDs
             visual_action=None,  # Could infer from message content
@@ -326,7 +386,7 @@ async def transcribe_audio(
     audio: UploadFile = File(...),
     current_user: User = Depends(get_current_active_user),
 ):
-    """Transcribe audio to Hebrew text using ElevenLabs Speech-to-Text."""
+    """Transcribe audio using ElevenLabs Speech-to-Text with auto language detection."""
     # Validate file type
     allowed_types = ["audio/webm", "audio/wav", "audio/mp3", "audio/mpeg", "audio/ogg", "audio/m4a"]
     if audio.content_type and audio.content_type not in allowed_types:
@@ -339,7 +399,7 @@ async def transcribe_audio(
         # Read audio content
         content = await audio.read()
 
-        # Call ElevenLabs Speech-to-Text API
+        # Call ElevenLabs Speech-to-Text API v3 with explicit language auto-detection
         async with httpx.AsyncClient() as http_client:
             response = await http_client.post(
                 ELEVENLABS_STT_URL,
@@ -347,23 +407,29 @@ async def transcribe_audio(
                     "xi-api-key": settings.ELEVENLABS_API_KEY,
                 },
                 files={
-                    "audio": (audio.filename or "recording.webm", content, audio.content_type),
+                    "file": (audio.filename or "recording.webm", content, audio.content_type),
                 },
                 data={
-                    "model_id": "scribe_v2_realtime",
-                    "language_code": "he",  # Hebrew
+                    "model_id": "scribe_v2",  # Latest available model (v3 not yet available)
+                    # Don't include language_code to enable auto-detection (None)
                 },
                 timeout=60.0,
             )
 
             if response.status_code != 200:
+                error_detail = response.text
+                print(f"[STT] ElevenLabs API error {response.status_code}: {error_detail}")
                 raise HTTPException(
                     status_code=500,
-                    detail=f"ElevenLabs API error: {response.text}",
+                    detail=f"ElevenLabs API error: {error_detail}",
                 )
 
             result = response.json()
             transcribed_text = result.get("text", "").strip()
+            detected_language = result.get("language", "en").lower()  # Default to English if not detected
+
+            print(f"[STT] Transcription result: text='{transcribed_text}', detected_language='{detected_language}'")
+            print(f"[STT] Full API response: {result}")
 
             if not transcribed_text:
                 raise HTTPException(
@@ -371,7 +437,7 @@ async def transcribe_audio(
                     detail="Could not transcribe audio. Please try again.",
                 )
 
-            return TranscriptionResponse(text=transcribed_text, language="he")
+            return TranscriptionResponse(text=transcribed_text, language=detected_language)
 
     except httpx.TimeoutException:
         raise HTTPException(status_code=504, detail="Transcription timed out. Please try again.")

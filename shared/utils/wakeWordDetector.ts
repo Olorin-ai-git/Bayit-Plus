@@ -108,26 +108,55 @@ export class WakeWordDetector {
     if (this.isInitialized) return;
 
     try {
+      // Test if Vosk is available before creating worker
+      try {
+        const voskModule = (globalThis as any).Vosk;
+        if (!voskModule) {
+          console.warn('[WakeWordDetector] Vosk not available globally, attempting to load from module');
+        }
+      } catch (e) {
+        console.warn('[WakeWordDetector] Could not check for global Vosk:', e);
+      }
+
       // Create a web worker for Vosk processing
       const workerCode = `
         let model = null;
         let recognizer = null;
+        let Vosk = null;
 
         self.onmessage = async function(e) {
           const { type, data } = e.data;
 
           if (type === 'init') {
             try {
-              // Dynamic import of Vosk - works with bundlers
-              const { createModel } = await import('vosk-browser');
+              // Try to access Vosk from global scope first
+              if (typeof self !== 'undefined' && self.Vosk) {
+                Vosk = self.Vosk;
+              } else {
+                // Try dynamic import as fallback
+                try {
+                  const voskModule = await import('vosk-browser');
+                  Vosk = voskModule;
+                } catch (importError) {
+                  const errorMsg = importError && importError.message ? importError.message : String(importError);
+                  console.error('Failed to import vosk-browser:', errorMsg);
+                  self.postMessage({ type: 'error', error: 'Vosk module not available: ' + errorMsg });
+                  return;
+                }
+              }
 
-              model = await createModel(data.modelPath);
+              if (!Vosk || !Vosk.createModel) {
+                throw new Error('Vosk.createModel not available');
+              }
+
+              model = await Vosk.createModel(data.modelPath);
               recognizer = new model.KaldiRecognizer(data.sampleRate);
               recognizer.setWords(true);
 
               self.postMessage({ type: 'ready' });
             } catch (error) {
-              self.postMessage({ type: 'error', error: error.message });
+              const errorMsg = error && error.message ? error.message : String(error);
+              self.postMessage({ type: 'error', error: errorMsg });
             }
           }
 
@@ -159,7 +188,8 @@ export class WakeWordDetector {
                 });
               }
             } catch (error) {
-              self.postMessage({ type: 'error', error: error.message });
+              const errorMsg = error && error.message ? error.message : String(error);
+              self.postMessage({ type: 'error', error: errorMsg });
             }
           }
 
@@ -169,9 +199,9 @@ export class WakeWordDetector {
         };
       `;
 
-      // Create worker from blob
+      // Create worker from blob without module type to avoid module resolution issues
       const blob = new Blob([workerCode], { type: 'application/javascript' });
-      this.worker = new Worker(URL.createObjectURL(blob), { type: 'module' });
+      this.worker = new Worker(URL.createObjectURL(blob));
 
       // Wait for worker to be ready
       await new Promise<void>((resolve, reject) => {
@@ -180,12 +210,23 @@ export class WakeWordDetector {
           return;
         }
 
+        const timeout = setTimeout(() => {
+          reject(new Error('Worker initialization timeout'));
+        }, 5000);
+
         this.worker.onmessage = (e) => {
           if (e.data.type === 'ready') {
+            clearTimeout(timeout);
             resolve();
           } else if (e.data.type === 'error') {
-            reject(new Error(e.data.error));
+            clearTimeout(timeout);
+            reject(new Error(`Worker error: ${e.data.error}`));
           }
+        };
+
+        this.worker.onerror = (error) => {
+          clearTimeout(timeout);
+          reject(new Error(`Worker error: ${error.message}`));
         };
 
         this.worker.postMessage({
@@ -197,8 +238,9 @@ export class WakeWordDetector {
       this.isInitialized = true;
       console.log('[WakeWordDetector] Initialized successfully');
     } catch (error) {
-      console.error('[WakeWordDetector] Failed to initialize:', error);
-      throw error;
+      console.error('[WakeWordDetector] Failed to initialize:', error instanceof Error ? error.message : error);
+      // Don't throw - allow fallback mode to work
+      this.isInitialized = false;
     }
   }
 
