@@ -11,7 +11,7 @@ from app.models.widget import (
     Widget, WidgetType, WidgetContent, WidgetPosition,
     WidgetCreateRequest, WidgetUpdateRequest, WidgetPositionUpdate
 )
-from app.core.security import get_current_active_user
+from app.core.security import get_current_active_user, get_optional_user
 
 router = APIRouter()
 
@@ -56,42 +56,44 @@ def _widget_dict(w: Widget) -> dict:
 @router.get("")
 async def get_my_widgets(
     page_path: Optional[str] = None,
-    current_user: User = Depends(get_current_active_user)
+    current_user: Optional[User] = Depends(get_optional_user)
 ):
     """
     Get all widgets applicable to current user.
 
     Returns:
     - System widgets matching user's role and subscription
-    - Personal widgets created by user
+    - Personal widgets created by user (if authenticated)
 
     Optionally filter by page path for targeted widgets.
+    Works without authentication (returns only public system widgets).
     """
-    user_id = str(current_user.id)
-    user_role = current_user.role or "user"
-    user_subscription = getattr(current_user, 'subscription_tier', None)
+    user_id = str(current_user.id) if current_user else None
+    user_role = (current_user.role if current_user else None) or "user"
+    user_subscription = getattr(current_user, 'subscription_tier', None) if current_user else None
 
-    # Get personal widgets for this user
-    personal_widgets = await Widget.find(
-        Widget.type == WidgetType.PERSONAL,
-        Widget.user_id == user_id,
-        Widget.is_active == True
-    ).sort(Widget.order).to_list()
+    # Get personal widgets for this user (only if authenticated)
+    personal_widgets = []
+    if user_id:
+        personal_widgets = await Widget.find(
+            Widget.type == WidgetType.PERSONAL,
+            Widget.user_id == user_id,
+            Widget.is_active == True
+        ).sort(Widget.order).to_list()
 
-    # Get system widgets that target this user's role
-    system_query = Widget.find(
+    # Get system widgets
+    system_widgets = await Widget.find(
         Widget.type == WidgetType.SYSTEM,
         Widget.is_active == True
-    )
-
-    system_widgets = await system_query.sort(Widget.order).to_list()
+    ).sort(Widget.order).to_list()
 
     # Filter system widgets by role and subscription
     filtered_system = []
     for widget in system_widgets:
-        # Check role targeting
-        if widget.visible_to_roles and user_role not in widget.visible_to_roles:
-            continue
+        # Check role targeting - if "user" is in visible_to_roles, show to everyone
+        if widget.visible_to_roles:
+            if "user" not in widget.visible_to_roles and user_role not in widget.visible_to_roles:
+                continue
 
         # Check subscription tier targeting (if specified)
         if widget.visible_to_subscription_tiers:

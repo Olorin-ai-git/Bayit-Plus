@@ -58,6 +58,8 @@ async def get_channel(
         "description": channel.description,
         "thumbnail": channel.thumbnail,
         "logo": channel.logo,
+        "stream_url": channel.stream_url,
+        "stream_type": channel.stream_type,
         "currentShow": channel.current_show,
         "nextShow": channel.next_show,
         "schedule": [

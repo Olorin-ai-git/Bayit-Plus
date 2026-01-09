@@ -8,7 +8,8 @@
 import React, { useEffect, useCallback, useMemo } from 'react';
 import { useLocation } from 'react-router-dom';
 import { useWidgetStore } from '@/stores/widgetStore';
-import { widgetsService, contentService } from '@/services/adminApi';
+import { widgetsService } from '@/services/adminApi';
+import { liveService } from '@/services/api';
 import { useAuthStore } from '@/stores/authStore';
 import WidgetContainer from './WidgetContainer';
 import type { Widget, WidgetPosition } from '@/types/widget';
@@ -52,14 +53,15 @@ export default function WidgetManager() {
     loadWidgets();
   }, [loadWidgets]);
 
-  // Get live channel URL for a widget
+  // Get live channel URL for a widget (uses public API endpoint)
   const getLiveChannelUrl = useCallback(async (channelId: string): Promise<string | undefined> => {
     if (channelUrlCache[channelId]) {
       return channelUrlCache[channelId];
     }
 
     try {
-      const channel = await contentService.getLiveChannel(channelId);
+      // Use public live service endpoint (not admin endpoint)
+      const channel = await liveService.getChannel(channelId);
       if (channel?.stream_url) {
         channelUrlCache[channelId] = channel.stream_url;
         return channel.stream_url;
