@@ -423,6 +423,11 @@ async def get_voice_preferences(
     # Get saved settings and merge with defaults (so new fields get default values)
     saved_settings = current_user.preferences.get("voice_settings", {})
     voice_settings = {**DEFAULT_VOICE_SETTINGS.copy(), **saved_settings}
+
+    # Enforce wake word mode: if wake_word_enabled is true, constant_listening_enabled must be false
+    if voice_settings.get("wake_word_enabled") and voice_settings.get("constant_listening_enabled"):
+        voice_settings["constant_listening_enabled"] = False
+
     return voice_settings
 
 
@@ -432,7 +437,13 @@ async def update_voice_preferences(
     current_user: User = Depends(get_current_active_user),
 ):
     """Update voice and accessibility preferences."""
-    current_user.preferences["voice_settings"] = preferences.model_dump()
+    prefs_dict = preferences.model_dump()
+
+    # Enforce wake word mode: if wake_word_enabled is true, constant_listening_enabled must be false
+    if prefs_dict.get("wake_word_enabled") and prefs_dict.get("constant_listening_enabled"):
+        prefs_dict["constant_listening_enabled"] = False
+
+    current_user.preferences["voice_settings"] = prefs_dict
     current_user.updated_at = datetime.utcnow()
     await current_user.save()
     return {"message": "Voice preferences updated", "preferences": current_user.preferences["voice_settings"]}

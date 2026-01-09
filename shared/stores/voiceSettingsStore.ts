@@ -94,8 +94,16 @@ export const useVoiceSettingsStore = create<VoiceSettingsStore>()(
         set({ loading: true, error: null });
         try {
           const data = await profilesService.getVoicePreferences();
+          let preferences = { ...DEFAULT_VOICE_PREFERENCES, ...data };
+
+          // Enforce wake word mode: if wake_word_enabled is true, constant_listening_enabled must be false
+          if (preferences.wake_word_enabled && preferences.constant_listening_enabled) {
+            console.warn('[VoiceSettingsStore] Disabling constant_listening_enabled because wake_word_enabled is true');
+            preferences.constant_listening_enabled = false;
+          }
+
           set({
-            preferences: { ...DEFAULT_VOICE_PREFERENCES, ...data },
+            preferences,
             loading: false,
           });
         } catch (error: any) {
