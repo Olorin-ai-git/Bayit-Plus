@@ -6,6 +6,7 @@ import {
   Animated,
   TouchableOpacity,
   Image,
+  Platform,
 } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { GlassView } from './ui';
@@ -316,10 +317,15 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     color: colors.text,
     marginBottom: 8,
-    // Web shadow - native uses textShadow* props
-    textShadowColor: 'rgba(0, 0, 0, 0.8)',
-    textShadowOffset: { width: 0, height: 2 },
-    textShadowRadius: 4,
+    // Text shadow - iOS only (web uses textShadow CSS property)
+    ...Platform.select({
+      ios: {
+        textShadowColor: 'rgba(0, 0, 0, 0.8)',
+        textShadowOffset: { width: 0, height: 2 },
+        textShadowRadius: 4,
+      },
+      default: {},
+    }),
   },
   subtitle: {
     fontSize: 22,

@@ -119,11 +119,17 @@ const styles = StyleSheet.create({
   },
   checkboxFocused: {
     borderColor: colors.primary,
-    shadowColor: colors.primary,
-    shadowOffset: { width: 0, height: 0 },
-    shadowOpacity: 0.5,
-    shadowRadius: 8,
-    elevation: 5,
+    ...Platform.select({
+      ios: {
+        shadowColor: colors.primary,
+        shadowOffset: { width: 0, height: 0 },
+        shadowOpacity: 0.5,
+        shadowRadius: 8,
+      },
+      default: {
+        elevation: 5,
+      },
+    }),
   },
   checkboxDisabled: {
     opacity: 0.5,

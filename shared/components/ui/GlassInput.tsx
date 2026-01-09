@@ -156,8 +156,6 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: colors.text,
     paddingVertical: spacing.sm,
-    // @ts-ignore - Web outline removal
-    outline: 'none',
   },
   inputRTL: {
     textAlign: 'right',

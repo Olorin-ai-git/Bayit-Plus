@@ -37,7 +37,7 @@ export default function Chatbot() {
   const { t, i18n } = useTranslation()
   const navigate = useNavigate()
   const { isAuthenticated } = useAuthStore()
-  const { preferences } = useVoiceSettingsStore()
+  const { preferences, loadPreferences } = useVoiceSettingsStore()
   const { currentMode } = useModeEnforcement()
   const {
     isOpen,
@@ -185,10 +185,11 @@ export default function Chatbot() {
     ])
   }, [t])
 
-  // Load context when component mounts
+  // Load context and preferences when component mounts
   useEffect(() => {
     loadContext()
-  }, [loadContext])
+    loadPreferences()
+  }, [loadContext, loadPreferences])
 
   // Register action handlers for chatbot actions
   useEffect(() => {
