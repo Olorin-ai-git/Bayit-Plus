@@ -14,7 +14,7 @@ interface VoiceListeningContextType {
   }) => void;
 }
 
-const VoiceListeningContext = createContext<VoiceListeningContextType | undefined>(undefined);
+export const VoiceListeningContext = createContext<VoiceListeningContextType | undefined>(undefined);
 
 export function VoiceListeningProvider({ children }: { children: ReactNode }) {
   const [state, setState] = useState<{
@@ -54,3 +54,5 @@ export function useVoiceListeningContext() {
   }
   return context;
 }
+
+export type { VoiceListeningContextType };

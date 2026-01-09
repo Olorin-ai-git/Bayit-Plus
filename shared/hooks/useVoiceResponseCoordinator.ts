@@ -110,12 +110,34 @@ export function useVoiceResponseCoordinator(
           }
         }
 
-        // Step 2: Execute navigation if specified
-        if (response.action?.type === 'navigate' && response.action?.payload?.path) {
-          console.log('[VoiceResponseCoordinator] Navigating to:', response.action.payload.path);
-          navigate(response.action.payload.path);
-        } else if (response.action?.type === 'navigate') {
-          console.warn('[VoiceResponseCoordinator] Navigate action missing path:', response.action);
+        // Step 2: Execute navigation immediately (don't wait for user response)
+        if (response.action?.type === 'navigate') {
+          const navigationTarget = response.action.payload?.path || response.action.payload?.target;
+          if (navigationTarget) {
+            // Map target names to paths if needed
+            const pathMap: Record<string, string> = {
+              'home': '/',
+              'live': '/live',
+              'vod': '/vod',
+              'movies': '/vod',
+              'radio': '/radio',
+              'podcasts': '/podcasts',
+              'search': '/search',
+              'children': '/children',
+              'favorites': '/favorites',
+              'flows': '/flows',
+              'judaism': '/judaism',
+              'watchlist': '/watchlist',
+              'downloads': '/downloads',
+            };
+
+            const path = pathMap[navigationTarget] || (navigationTarget.startsWith('/') ? navigationTarget : `/${navigationTarget}`);
+            console.log('[VoiceResponseCoordinator] Navigating to:', path, '(target:', navigationTarget + ')');
+            // Navigate immediately without waiting for speech to complete
+            navigate(path);
+          } else {
+            console.warn('[VoiceResponseCoordinator] Navigate action missing path or target:', response.action);
+          }
         }
 
         // Step 3: Execute search if specified

@@ -22,14 +22,7 @@ interface FeatureFlags {
   [key: string]: boolean;
 }
 
-const featureFlagLabels: Record<string, string> = {
-  new_player: 'נגן חדש',
-  live_chat: 'צ׳אט חי',
-  downloads: 'הורדות',
-  watch_party: 'צפייה משותפת',
-  voice_search: 'חיפוש קולי',
-  ai_recommendations: 'המלצות AI',
-};
+const FEATURE_FLAG_KEYS = ['new_player', 'live_chat', 'downloads', 'watch_party', 'voice_search', 'ai_recommendations'] as const;
 
 export default function SettingsPage() {
   const { t } = useTranslation();
@@ -81,7 +74,7 @@ export default function SettingsPage() {
     try {
       await settingsService.updateSettings(settings);
       setHasChanges(false);
-      alert('ההגדרות נשמרו בהצלחה');
+      alert(t('admin.settings.savingSuccess'));
     } catch (error) {
       logger.error('Failed to save settings', 'SettingsPage', error);
     } finally {
@@ -90,20 +83,20 @@ export default function SettingsPage() {
   };
 
   const handleClearCache = async () => {
-    if (!window.confirm('לנקות את הקאש? זה עשוי להשפיע על הביצועים באופן זמני.')) return;
+    if (!window.confirm(t('admin.settings.confirmClearCache'))) return;
     try {
       await settingsService.clearCache();
-      alert('הקאש נוקה בהצלחה');
+      alert(t('admin.settings.cacheCleared'));
     } catch (error) {
       logger.error('Failed to clear cache', 'SettingsPage', error);
     }
   };
 
   const handleResetAnalytics = async () => {
-    if (!window.confirm('לאפס את נתוני האנליטיקס? פעולה זו אינה הפיכה!')) return;
+    if (!window.confirm(t('admin.settings.confirmResetAnalytics'))) return;
     try {
       await settingsService.resetAnalytics();
-      alert('נתוני האנליטיקס אופסו');
+      alert(t('admin.settings.analyticsReset'));
     } catch (error) {
       logger.error('Failed to reset analytics', 'SettingsPage', error);
     }
@@ -123,84 +116,84 @@ export default function SettingsPage() {
       <View style={[styles.header, { flexDirection }]}>
         <View>
           <Text style={[styles.pageTitle, { textAlign }]}>{t('admin.titles.settings')}</Text>
-          <Text style={[styles.subtitle, { textAlign }]}>הגדר את פרמטרי המערכת</Text>
+          <Text style={[styles.subtitle, { textAlign }]}>{t('admin.settings.subtitle')}</Text>
         </View>
-        <GlassButton title="שמור שינויים" variant="primary" icon={<Save size={16} color={colors.text} />} onPress={handleSave} disabled={!hasChanges || saving} />
+        <GlassButton title={t('admin.settings.saveChanges')} variant="primary" icon={<Save size={16} color={colors.text} />} onPress={handleSave} disabled={!hasChanges || saving} />
       </View>
 
       <View style={styles.sectionsContainer}>
         <GlassCard style={styles.section}>
-          <Text style={[styles.sectionTitle, { textAlign }]}>הגדרות כלליות</Text>
+          <Text style={[styles.sectionTitle, { textAlign }]}>{t('admin.settings.generalSettings')}</Text>
 
           <View style={styles.formGroup}>
-            <Text style={styles.formLabel}>אימייל תמיכה</Text>
+            <Text style={styles.formLabel}>{t('admin.settings.supportEmail')}</Text>
             <TextInput style={styles.input} value={settings.support_email || ''} onChangeText={(v) => handleSettingChange('support_email', v)} keyboardType="email-address" />
           </View>
 
           <View style={styles.formGroup}>
-            <Text style={styles.formLabel}>תוכנית ברירת מחדל</Text>
+            <Text style={styles.formLabel}>{t('admin.settings.defaultPlan')}</Text>
             <TextInput style={styles.input} value={settings.default_plan || ''} onChangeText={(v) => handleSettingChange('default_plan', v)} />
           </View>
 
           <View style={styles.formGroup}>
-            <Text style={styles.formLabel}>קישור לתנאי שימוש</Text>
+            <Text style={styles.formLabel}>{t('admin.settings.termsUrl')}</Text>
             <TextInput style={styles.input} value={settings.terms_url || ''} onChangeText={(v) => handleSettingChange('terms_url', v)} />
           </View>
 
           <View style={styles.formGroup}>
-            <Text style={styles.formLabel}>קישור למדיניות פרטיות</Text>
+            <Text style={styles.formLabel}>{t('admin.settings.privacyUrl')}</Text>
             <TextInput style={styles.input} value={settings.privacy_url || ''} onChangeText={(v) => handleSettingChange('privacy_url', v)} />
           </View>
         </GlassCard>
 
         <GlassCard style={styles.section}>
-          <Text style={styles.sectionTitle}>הגדרות משתמשים</Text>
+          <Text style={styles.sectionTitle}>{t('admin.settings.userSettings')}</Text>
 
           <View style={styles.formGroup}>
-            <Text style={styles.formLabel}>מקסימום מכשירים לחשבון</Text>
+            <Text style={styles.formLabel}>{t('admin.settings.maxDevices')}</Text>
             <TextInput style={styles.input} value={(settings.max_devices || 1).toString()} onChangeText={(v) => handleSettingChange('max_devices', parseInt(v) || 1)} keyboardType="number-pad" />
           </View>
 
           <View style={styles.formGroup}>
-            <Text style={styles.formLabel}>ימי תקופת נסיון</Text>
+            <Text style={styles.formLabel}>{t('admin.settings.trialDays')}</Text>
             <TextInput style={styles.input} value={(settings.trial_days || 0).toString()} onChangeText={(v) => handleSettingChange('trial_days', parseInt(v) || 0)} keyboardType="number-pad" />
           </View>
         </GlassCard>
 
         <GlassCard style={styles.section}>
-          <Text style={styles.sectionTitle}>מצב תחזוקה</Text>
+          <Text style={styles.sectionTitle}>{t('admin.settings.maintenanceMode')}</Text>
 
           <View style={styles.switchRow}>
             <View>
-              <Text style={styles.switchLabel}>מצב תחזוקה</Text>
-              <Text style={styles.switchDescription}>כאשר פעיל, המערכת תהיה לא נגישה למשתמשים</Text>
+              <Text style={styles.switchLabel}>{t('admin.settings.maintenanceMode')}</Text>
+              <Text style={styles.switchDescription}>{t('admin.settings.maintenanceModeDesc')}</Text>
             </View>
             <Switch value={settings.maintenance_mode} onValueChange={(v) => handleSettingChange('maintenance_mode', v)} trackColor={{ false: colors.backgroundLighter, true: colors.warning }} />
           </View>
         </GlassCard>
 
         <GlassCard style={styles.section}>
-          <Text style={styles.sectionTitle}>Feature Flags</Text>
+          <Text style={styles.sectionTitle}>{t('admin.settings.featureFlags')}</Text>
 
           {Object.entries(featureFlags).map(([flag, enabled]) => (
             <View key={flag} style={styles.switchRow}>
-              <Text style={styles.switchLabel}>{featureFlagLabels[flag] || flag}</Text>
+              <Text style={styles.switchLabel}>{t(`admin.settings.featureFlagLabels.${flag}`, { defaultValue: flag })}</Text>
               <Switch value={enabled} onValueChange={(v) => handleFeatureFlagChange(flag, v)} trackColor={{ false: colors.backgroundLighter, true: colors.primary }} />
             </View>
           ))}
         </GlassCard>
 
         <GlassCard style={[styles.section, styles.dangerSection]}>
-          <Text style={styles.sectionTitle}>פעולות מערכת</Text>
+          <Text style={styles.sectionTitle}>{t('admin.settings.systemActions')}</Text>
 
           <View style={styles.dangerActions}>
-            <GlassButton title="נקה קאש" variant="secondary" icon={<RefreshCw size={16} color={colors.warning} />} onPress={handleClearCache} />
-            <GlassButton title="אפס אנליטיקס" variant="secondary" icon={<Trash2 size={16} color={colors.error} />} onPress={handleResetAnalytics} />
+            <GlassButton title={t('admin.settings.clearCache')} variant="secondary" icon={<RefreshCw size={16} color={colors.warning} />} onPress={handleClearCache} />
+            <GlassButton title={t('admin.settings.resetAnalytics')} variant="secondary" icon={<Trash2 size={16} color={colors.error} />} onPress={handleResetAnalytics} />
           </View>
 
           <View style={styles.warningBox}>
             <AlertTriangle size={16} color={colors.warning} />
-            <Text style={styles.warningText}>פעולות אלו עשויות להשפיע על תפקוד המערכת. השתמש בזהירות.</Text>
+            <Text style={styles.warningText}>{t('admin.settings.actionsWarning')}</Text>
           </View>
         </GlassCard>
       </View>

@@ -55,21 +55,35 @@ export default function Header({ onMenuPress }: HeaderProps) {
   useEffect(() => {
     if (!IS_TV_BUILD) return;
 
+    // Track if component is mounted to avoid state updates after unmount
+    let isMounted = true;
+
     const checkMic = async () => {
       try {
         const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
         // Mic is available - stop the test stream
         stream.getTracks().forEach(track => track.stop());
-        setMicAvailable(true);
-        console.log('[TV] Microphone available');
+        // Only update state if component is still mounted
+        if (isMounted) {
+          setMicAvailable(true);
+          console.log('[TV] Microphone available');
+        }
       } catch (err) {
         // No mic available - disable constant listening
-        setMicAvailable(false);
-        console.log('[TV] No microphone available:', err);
+        // Only update state if component is still mounted
+        if (isMounted) {
+          setMicAvailable(false);
+          console.log('[TV] No microphone available:', err);
+        }
       }
     };
 
     checkMic();
+
+    // Cleanup: mark component as unmounted to prevent state updates
+    return () => {
+      isMounted = false;
+    };
   }, []);
 
   // Handle voice transcript - send to chatbot
@@ -99,7 +113,7 @@ export default function Header({ onMenuPress }: HeaderProps) {
     onTranscript: handleVoiceTranscript,
     onError: handleVoiceError,
     silenceThresholdMs: preferences.silence_threshold_ms || 2500,
-    vadSensitivity: preferences.vad_sensitivity || 'medium',
+    vadSensitivity: preferences.vad_sensitivity || 'low',
     transcribeAudio: chatService.transcribeAudio,
   });
 

@@ -35,10 +35,10 @@ const DEFAULT_VOICE_PREFERENCES: VoicePreferences = {
   text_size: 'medium',
   hold_button_mode: false,
   silence_threshold_ms: 2000,
-  vad_sensitivity: 'medium',
+  vad_sensitivity: 'low',
   // Wake word activation (mutually exclusive with always-listening - we use wake word only)
-  wake_word_enabled: true,           // Wake word detection ENABLED by default - listen for "Hi Bayit"
-  wake_word: 'hi bayit',
+  wake_word_enabled: true,           // Wake word detection ENABLED by default - listen for "Buyit"
+  wake_word: 'buyit',
   wake_word_sensitivity: 0.7,
   wake_word_cooldown_ms: 2000,
 };

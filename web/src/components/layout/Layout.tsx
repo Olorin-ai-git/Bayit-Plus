@@ -6,7 +6,7 @@ import Footer from './Footer';
 import GlassSidebar from './GlassSidebar';
 import Chatbot from '../chat/Chatbot';
 import SoundwaveParticles from '../content/SoundwaveParticles';
-import { useVoiceListeningContext } from '@/contexts/VoiceListeningContext';
+import { useVoiceListeningContext } from '@bayit/shared-contexts';
 import { ttsService } from '@bayit/shared-services';
 import { colors, spacing } from '@bayit/shared/theme';
 
@@ -25,6 +25,18 @@ export default function Layout() {
   // Voice listening context - shared across all pages
   const { isListening, isAwake, isProcessing, audioLevel } = useVoiceListeningContext();
 
+  // Debug: Log when processing state is received
+  useEffect(() => {
+    if (isProcessing || isAwake) {
+      console.log('[Layout] 📊 CONTEXT RECEIVED - Processing:', {
+        isProcessing,
+        isAwake,
+        isListening,
+        audioLevel,
+      });
+    }
+  }, [isProcessing, isAwake]);
+
   // TTS event state - tracks when system is speaking
   const [voiceResponse, setVoiceResponse] = useState<string>('');
   const [voiceError, setVoiceError] = useState<boolean>(false);
@@ -37,7 +49,10 @@ export default function Layout() {
 
     const handlePlaying = (item: any) => {
       console.log('[Layout] TTS playing event fired:', item.text?.substring(0, 50));
-      setIsResponding(true);
+      // Delay setting isResponding to allow Processing state to be visible first
+      setTimeout(() => {
+        setIsResponding(true);
+      }, 300);
       setIsTTSSpeaking(true);
       setVoiceResponse(item.text || '');
     };

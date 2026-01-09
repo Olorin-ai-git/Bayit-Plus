@@ -16,7 +16,7 @@ declare const __TV__: boolean;
 import { useNavigate } from 'react-router-dom'
 import { X, Send, Sparkles, Mic, Square } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
-import { useVoiceListeningContext } from '@/contexts/VoiceListeningContext'
+import { useVoiceListeningContext } from '@bayit/shared-contexts'
 import { chatService } from '@/services/api'
 import { SoundwaveVisualizer, VoiceStatusOverlay } from '@bayit/shared'
 import { useAuthStore } from '@/stores/authStore'
@@ -42,41 +42,42 @@ export default function Chatbot() {
   const { currentMode } = useModeEnforcement()
   const { setListeningState } = useVoiceListeningContext()
 
-  // Debug logging
+  // Debug logging (only log when mode changes, don't include preferences to avoid infinite loops)
   useEffect(() => {
-    console.log('[Chatbot] Mode:', currentMode)
-    console.log('[Chatbot] Preferences:', preferences)
-    console.log('[Chatbot] Wake word enabled:', preferences?.wake_word_enabled)
-  }, [currentMode, preferences])
+    console.log('[Chatbot] Current mode changed:', currentMode)
+  }, [currentMode])
 
-  // Debug voice listening state
+  // Debug voice listening state (reduced logging to avoid infinite loops)
   useEffect(() => {
-    console.log('[Chatbot] Listening state:', {
-      isListening,
-      isAwake,
-      isProcessing,
-      isTTSSpeaking,
-      wakeWordDetected,
-      wakeWordError,
-      audioLevel,
-    })
-  }, [isListening, isAwake, isProcessing, isTTSSpeaking, wakeWordDetected, wakeWordError, audioLevel])
+    if (isProcessing || isAwake) {
+      console.log('[Chatbot] Processing state changed:', {
+        isProcessing,
+        isAwake,
+        isTTSSpeaking,
+      })
+    }
+  }, [isProcessing, isAwake, isTTSSpeaking])
 
-  // Share listening states with HomePage via context
+  // Share listening states with Layout via context
+  // Include isLoading so soundwave shows "Processing" while waiting for API response
   useEffect(() => {
-    console.log('[Chatbot] Updating context with listening states:', {
-      isListening,
-      isAwake,
-      isProcessing,
-      audioLevel,
-    });
+    const contextIsProcessing = isProcessing || isLoading;
+    if (contextIsProcessing || isAwake) {
+      console.log('[Chatbot] ✓ CONTEXT UPDATE - isProcessing:', {
+        hookIsProcessing: isProcessing,
+        isLoading,
+        contextIsProcessing,
+        isAwake,
+        audioLevel,
+      });
+    }
     setListeningState({
       isListening,
       isAwake,
-      isProcessing,
+      isProcessing: contextIsProcessing,
       audioLevel,
     })
-  }, [isListening, isAwake, isProcessing, audioLevel, setListeningState])
+  }, [isListening, isAwake, isProcessing, isLoading, audioLevel])
   const {
     isOpen,
     setOpen,
@@ -219,8 +220,11 @@ export default function Chatbot() {
 
   const transcribeAudioBlob = useCallback(async (audioBlob: Blob) => {
     try {
-      console.log('[Chatbot] Transcribing audio blob, size:', audioBlob.size, 'i18n language:', i18n.language)
-      const response = await chatService.transcribeAudio(audioBlob, i18n.language)
+      console.log('[Chatbot] Transcribing audio blob, size:', audioBlob.size)
+      // Use current i18n language for transcription (defaults to Hebrew)
+      const transcriptionLanguage = i18n.language || 'he'
+      console.log('[Chatbot] Using language for transcription:', transcriptionLanguage)
+      const response = await chatService.transcribeAudio(audioBlob, transcriptionLanguage)
       console.log('[Chatbot] Transcription result:', response)
       console.log('[Chatbot] Detected language:', response.language, 'Text:', response.text)
       // Store language for use when sending message
@@ -254,7 +258,7 @@ export default function Chatbot() {
     onWakeWordDetected: handleWakeWordDetected,
     onError: handleListeningError,
     silenceThresholdMs: preferences?.silence_threshold_ms ?? 2000,
-    vadSensitivity: preferences?.vad_sensitivity ?? 'medium',
+    vadSensitivity: preferences?.vad_sensitivity ?? 'low',
     transcribeAudio: transcribeAudioBlob,
   })
 

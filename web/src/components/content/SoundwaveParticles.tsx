@@ -25,16 +25,16 @@ const SoundwaveParticles: React.FC<SoundwaveParticlesProps> = ({
   const timeRef = useRef(0);
 
   // Debug: Log props
-  useEffect(() => {
-    console.log('[SoundwaveParticles] Received props:', {
-      isListening,
-      isProcessing,
-      hasError,
-      isResponding,
-      audioLevel,
-      responseText: responseText?.substring(0, 50),
-    });
-  }, [isListening, isProcessing, hasError, isResponding, audioLevel, responseText]);
+  // useEffect(() => {
+  //   console.log('[SoundwaveParticles] Received props:', {
+  //     isListening,
+  //     isProcessing,
+  //     hasError,
+  //     isResponding,
+  //     audioLevel,
+  //     responseText: responseText?.substring(0, 50),
+  //   });
+  // }, [isListening, isProcessing, hasError, isResponding, audioLevel, responseText]);
 
   // Determine current state
   const getState = () => {
@@ -48,6 +48,7 @@ const SoundwaveParticles: React.FC<SoundwaveParticlesProps> = ({
   // Determine color based on state
   const getColor = () => {
     const state = getState();
+    // console.log('[SoundwaveParticles] getColor - state:', state, '{ hasError:', hasError, ', isResponding:', isResponding, ', isProcessing:', isProcessing, ', isListening:', isListening, '}');
     if (state === 'error') return '#ef4444'; // Red for error
     if (state === 'responding') return '#10b981'; // Green for response
     if (state === 'processing') return '#fbbf24'; // Yellow for processing

@@ -1,4 +1,4 @@
-import React, { useState, useRef, useCallback, useEffect } from 'react';
+import React, { useState, useRef, useCallback, useEffect, useContext } from 'react';
 import {
   View,
   Text,
@@ -14,6 +14,7 @@ import { GlassView } from './ui';
 import { colors, spacing, borderRadius } from '../theme';
 import { useVoiceSettingsStore } from '../stores/voiceSettingsStore';
 import { useWakeWordListening } from '../hooks/useWakeWordListening';
+import { VoiceListeningContext } from '../contexts/VoiceListeningContext';
 
 interface VoiceSearchButtonProps {
   onResult: (text: string) => void;
@@ -47,6 +48,9 @@ export const VoiceSearchButton: React.FC<VoiceSearchButtonProps> = ({
 
   // Voice settings
   const { preferences } = useVoiceSettingsStore();
+
+  // Get the global voice listening context (optional, gracefully handles if not available)
+  const voiceContext = useContext(VoiceListeningContext);
 
   // Determine if wake word listening should be enabled
   // Use prop if provided, otherwise use preferences (allows web to enable it too)
@@ -159,6 +163,27 @@ export const VoiceSearchButton: React.FC<VoiceSearchButtonProps> = ({
       ).start();
     }
   }, [isConstantListening, isAwake, isRecording, glowAnim]);
+
+  // Update global voice listening context when this button's processing state changes
+  // This ensures the soundwave indicator updates when the user clicks the voice button
+  // Store the setListeningState function in a ref to avoid dependency loops
+  const setListeningStateRef = useRef(voiceContext?.setListeningState);
+
+  // Update the ref when context changes (stable due to useCallback in context)
+  useEffect(() => {
+    if (voiceContext?.setListeningState) {
+      setListeningStateRef.current = voiceContext.setListeningState;
+    }
+  }, [voiceContext?.setListeningState]);
+
+  // Only depend on the actual state changes, not the context object
+  useEffect(() => {
+    const isProcessing = isRecording || isTranscribing;
+    if (setListeningStateRef.current) {
+      console.log('[VoiceSearchButton] Updating context isProcessing:', isProcessing, { isRecording, isTranscribing });
+      setListeningStateRef.current({ isProcessing });
+    }
+  }, [isRecording, isTranscribing]);
 
   const handleTranscription = useCallback(async (audioBlob: Blob) => {
     if (!transcribeAudio) {

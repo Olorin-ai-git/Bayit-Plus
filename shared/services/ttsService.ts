@@ -20,7 +20,7 @@ export interface TTSQueueItem {
 export interface TTSConfig {
   voiceId: string;
   language: 'he' | 'en';
-  model: 'eleven_turbo_v2' | 'eleven_monolingual_v1';
+  model: 'eleven_v3' | 'eleven_turbo_v2' | 'eleven_monolingual_v1';
   stability: number; // 0-1
   similarityBoost: number; // 0-1
 }
@@ -53,14 +53,14 @@ class TTSService extends EventEmitter {
   private config: TTSConfig = {
     voiceId: this.getDefaultVoiceId(),
     language: 'he',
-    model: 'eleven_turbo_v2',
+    model: 'eleven_v3',
     stability: 0.5,
     similarityBoost: 0.75,
   };
 
   private getDefaultVoiceId(): string {
-    // Use env variable from Vite config, otherwise fallback to Jessica
-    return (import.meta.env.VITE_ELEVENLABS_DEFAULT_VOICE_ID as string) || 'cgSgspJ2msm6clMCkdW9';
+    // Use env variable from Vite config, otherwise fallback to Rachel (multilingual, excellent for Hebrew)
+    return (import.meta.env.VITE_ELEVENLABS_DEFAULT_VOICE_ID as string) || 'EXAVITQu4vr4xnSDxMaL'; // Default: Rachel - multilingual voice
   }
 
   constructor() {
@@ -167,7 +167,7 @@ class TTSService extends EventEmitter {
         );
 
         // Cache the audio
-        console.log('[TTS] Caching audio for key:', cacheKey);
+        console.log('[TTS] Caching audio for text:', item.text.substring(0, 100) + (item.text.length > 100 ? '...' : ''));
         this.cacheAudio(cacheKey, item.text, audioBlob);
       } else {
         console.log('[TTS] Using cached audio');

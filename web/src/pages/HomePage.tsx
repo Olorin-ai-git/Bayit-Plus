@@ -154,6 +154,9 @@ export default function HomePage() {
   const [timeData, setTimeData] = useState<TimeData | null>(null);
   const { width } = useWindowDimensions();
 
+  // Calculate how many columns fit in the live grid (each card is ~200px wide)
+  const liveColumnsCount = Math.max(1, Math.floor((width - spacing.md * 2) / (200 + spacing.md)));
+
   // Helper to render clocks in correct order based on RTL
   const renderClocks = () => {
     const localClock = (

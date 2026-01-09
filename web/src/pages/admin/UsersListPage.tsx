@@ -28,17 +28,17 @@ interface Pagination {
   total: number;
 }
 
-const statusColors: Record<string, { bg: string; text: string; label: string }> = {
-  active: { bg: 'rgba(34, 197, 94, 0.2)', text: '#22C55E', label: 'פעיל' },
-  inactive: { bg: 'rgba(107, 114, 128, 0.2)', text: '#6B7280', label: 'לא פעיל' },
-  banned: { bg: 'rgba(239, 68, 68, 0.2)', text: '#EF4444', label: 'חסום' },
+const statusColors: Record<string, { bg: string; text: string; labelKey: string }> = {
+  active: { bg: 'rgba(34, 197, 94, 0.2)', text: '#22C55E', labelKey: 'admin.users.status.active' },
+  inactive: { bg: 'rgba(107, 114, 128, 0.2)', text: '#6B7280', labelKey: 'admin.users.status.inactive' },
+  banned: { bg: 'rgba(239, 68, 68, 0.2)', text: '#EF4444', labelKey: 'admin.users.status.blocked' },
 };
 
-const filterLabels: Record<string, string> = {
-  all: 'הכל',
-  active: 'פעילים',
-  inactive: 'לא פעילים',
-  banned: 'חסומים',
+const filterKeys: Record<string, string> = {
+  all: 'admin.users.filters.all',
+  active: 'admin.users.filters.active',
+  inactive: 'admin.users.filters.inactive',
+  banned: 'admin.users.filters.blocked',
 };
 
 export default function UsersListPage() {
@@ -83,7 +83,7 @@ export default function UsersListPage() {
     const style = statusColors[status] || statusColors.inactive;
     return (
       <View style={[styles.badge, { backgroundColor: style.bg }]}>
-        <Text style={[styles.badgeText, { color: style.text }]}>{style.label}</Text>
+        <Text style={[styles.badgeText, { color: style.text }]}>{t(style.labelKey)}</Text>
       </View>
     );
   };
@@ -91,7 +91,7 @@ export default function UsersListPage() {
   const columns = [
     {
       key: 'name',
-      label: 'שם',
+      label: t('admin.users.columns.name'),
       render: (_: any, user: User) => (
         <View style={styles.userCell}>
           <View style={styles.avatar}>
@@ -106,26 +106,26 @@ export default function UsersListPage() {
     },
     {
       key: 'role',
-      label: 'תפקיד',
+      label: t('admin.users.columns.role'),
       render: (role: string) => (
         <Text style={styles.cellText}>{role || 'user'}</Text>
       ),
     },
     {
       key: 'subscription',
-      label: 'מנוי',
+      label: t('admin.users.columns.subscription'),
       render: (sub: User['subscription']) => (
-        <Text style={styles.cellText}>{sub?.plan || 'ללא מנוי'}</Text>
+        <Text style={styles.cellText}>{sub?.plan || t('admin.users.columns.noSubscription')}</Text>
       ),
     },
     {
       key: 'status',
-      label: 'סטטוס',
+      label: t('admin.users.columns.status'),
       render: (status: string) => getStatusBadge(status),
     },
     {
       key: 'created_at',
-      label: 'נוצר',
+      label: t('admin.users.columns.created'),
       render: (date: string) => (
         <Text style={styles.dateText}>
           {new Date(date).toLocaleDateString('he-IL')}
@@ -153,11 +153,11 @@ export default function UsersListPage() {
       <View style={[styles.header, { flexDirection }]}>
         <View>
           <Text style={[styles.pageTitle, { textAlign }]}>{t('admin.titles.users')}</Text>
-          <Text style={[styles.subtitle, { textAlign }]}>צפה ונהל את משתמשי המערכת</Text>
+          <Text style={[styles.subtitle, { textAlign }]}>{t('admin.users.subtitle')}</Text>
         </View>
         <Link to="/admin/users/new" style={{ textDecoration: 'none' }}>
           <GlassButton
-            title="הוסף משתמש"
+            title={t('admin.users.addUser')}
             variant="primary"
             icon={<UserPlus size={18} color={colors.text} />}
           />
@@ -173,7 +173,7 @@ export default function UsersListPage() {
             style={[styles.filterButton, filters.status === status && styles.filterButtonActive]}
           >
             <Text style={[styles.filterText, filters.status === status && styles.filterTextActive]}>
-              {filterLabels[status]}
+              {t(filterKeys[status])}
             </Text>
           </Pressable>
         ))}
@@ -184,11 +184,11 @@ export default function UsersListPage() {
         columns={columns}
         data={users}
         loading={loading}
-        searchPlaceholder="חפש משתמש..."
+        searchPlaceholder={t('search.placeholder')}
         onSearch={handleSearch}
         pagination={pagination}
         onPageChange={handlePageChange}
-        emptyMessage="לא נמצאו משתמשים"
+        emptyMessage={t('admin.auditLogs.noRecords')}
       />
     </ScrollView>
   );

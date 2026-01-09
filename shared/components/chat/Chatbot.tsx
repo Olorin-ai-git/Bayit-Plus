@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect, useCallback } from 'react';
+import React, { useState, useRef, useEffect, useCallback, useContext } from 'react';
 import {
   View,
   Text,
@@ -20,6 +20,7 @@ import { colors, spacing, borderRadius } from '../../theme';
 import { chatService } from '../../services/api';
 import { useAuthStore } from '../../stores/authStore';
 import { getCurrentLanguage } from '../../i18n';
+import { VoiceListeningContext } from '../../contexts/VoiceListeningContext';
 import logger from '../../utils/logger';
 
 interface Message {
@@ -45,6 +46,7 @@ export const Chatbot: React.FC<ChatbotProps> = ({ visible, onClose }) => {
   const { t } = useTranslation();
   const navigation = useNavigation<any>();
   const { isAuthenticated } = useAuthStore();
+  const voiceContext = useContext(VoiceListeningContext);
 
   const [messages, setMessages] = useState<Message[]>([
     {
@@ -63,6 +65,14 @@ export const Chatbot: React.FC<ChatbotProps> = ({ visible, onClose }) => {
   const inputRef = useRef<TextInput>(null);
   const pulseAnim = useRef(new Animated.Value(1)).current;
   const recognitionRef = useRef<any>(null);
+
+  // Update voice listening context when processing state changes
+  useEffect(() => {
+    const isProcessing = isLoading || isTranscribing;
+    if (voiceContext?.setListeningState) {
+      voiceContext.setListeningState({ isProcessing });
+    }
+  }, [isLoading, isTranscribing]);
 
   // Scroll to bottom when messages change
   useEffect(() => {

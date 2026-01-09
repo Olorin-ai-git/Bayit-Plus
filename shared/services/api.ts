@@ -405,17 +405,25 @@ const apiFlowsService = {
 
 // Chat Service (API)
 const apiChatService = {
-  sendMessage: (message: string, conversationId?: string) =>
-    api.post('/chat/message', { message, conversation_id: conversationId }),
+  sendMessage: (message: string, conversationId?: string, context?: any, language?: string) =>
+    api.post('/chat/message', { message, conversation_id: conversationId, context, language }),
   clearConversation: (conversationId: string) =>
     api.delete(`/chat/conversation/${conversationId}`),
   getConversation: (conversationId: string) =>
     api.get(`/chat/conversation/${conversationId}`),
+  transcribeAudio: (audioBlob: Blob, language: string = 'he') => {
+    const formData = new FormData();
+    formData.append('audio', audioBlob);
+    formData.append('language', language);
+    return api.post('/chat/transcribe', formData, {
+      headers: { 'Content-Type': 'multipart/form-data' },
+    });
+  },
 };
 
 // Demo Chat Service
 const demoChatService = {
-  sendMessage: async (message: string, _conversationId?: string) => {
+  sendMessage: async (message: string, _conversationId?: string, _context?: any, _language?: string) => {
     await new Promise(resolve => setTimeout(resolve, 500));
     return {
       response: 'This is a demo response. In production, you would get AI-powered recommendations.',
@@ -427,6 +435,10 @@ const demoChatService = {
   },
   getConversation: async (_conversationId: string) => {
     return { messages: [] };
+  },
+  transcribeAudio: async (_audioBlob: Blob, _language: string = 'he') => {
+    await new Promise(resolve => setTimeout(resolve, 500));
+    return { text: 'Demo transcription', language: _language };
   },
 };
 

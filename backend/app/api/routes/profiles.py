@@ -344,10 +344,10 @@ DEFAULT_VOICE_SETTINGS = {
     "text_size": "medium",
     "hold_button_mode": False,  # Fallback to press-and-hold remote button
     "silence_threshold_ms": 2000,  # Wait 2 seconds of silence before processing
-    "vad_sensitivity": "medium",  # Voice Activity Detection sensitivity: low, medium, high
+    "vad_sensitivity": "low",  # Voice Activity Detection sensitivity: low, medium, high
     # Wake word activation (mutually exclusive with always-listening - we use wake word only)
-    "wake_word_enabled": True,  # ENABLED by default - listen for "Hi Bayit"
-    "wake_word": "hi bayit",
+    "wake_word_enabled": True,  # ENABLED by default - listen for "Buyit"
+    "wake_word": "buyit",
     "wake_word_sensitivity": 0.7,  # 0-1 sensitivity
     "wake_word_cooldown_ms": 2000,
     # Three-mode system
@@ -376,10 +376,10 @@ class VoicePreferences(BaseModel):
     text_size: str = "medium"  # small, medium, large
     hold_button_mode: bool = False  # Fallback to press-and-hold remote button
     silence_threshold_ms: int = 2000  # Wait N ms of silence before processing
-    vad_sensitivity: str = "medium"  # Voice Activity Detection sensitivity: low, medium, high
+    vad_sensitivity: str = "low"  # Voice Activity Detection sensitivity: low, medium, high
     # Wake word activation (mutually exclusive with always-listening - we use wake word only)
-    wake_word_enabled: bool = True  # ENABLED by default - listen for "Hi Bayit"
-    wake_word: str = "hi bayit"
+    wake_word_enabled: bool = True  # ENABLED by default - listen for "Buyit"
+    wake_word: str = "buyit"
     wake_word_sensitivity: float = 0.7  # 0-1 sensitivity
     wake_word_cooldown_ms: int = 2000
     # Three-mode system

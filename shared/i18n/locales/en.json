@@ -1116,6 +1116,123 @@
       "clear": "Clear",
       "apply": "Apply",
       "noRecords": "No records found"
+    },
+    "settings": {
+      "subtitle": "Configure system parameters",
+      "saveChanges": "Save Changes",
+      "generalSettings": "General Settings",
+      "supportEmail": "Support Email",
+      "defaultPlan": "Default Plan",
+      "termsUrl": "Terms of Service URL",
+      "privacyUrl": "Privacy Policy URL",
+      "userSettings": "User Settings",
+      "maxDevices": "Maximum Devices per Account",
+      "trialDays": "Trial Period Days",
+      "maintenanceMode": "Maintenance Mode",
+      "maintenanceModeDesc": "When enabled, the system will be inaccessible to users",
+      "featureFlags": "Feature Flags",
+      "systemActions": "System Actions",
+      "clearCache": "Clear Cache",
+      "resetAnalytics": "Reset Analytics",
+      "actionsWarning": "These actions may affect system performance. Use with caution.",
+      "savingSuccess": "Settings saved successfully",
+      "confirmClearCache": "Clear cache? This may temporarily affect performance.",
+      "cacheCleared": "Cache cleared successfully",
+      "confirmResetAnalytics": "Reset analytics data? This action cannot be undone!",
+      "analyticsReset": "Analytics data has been reset",
+      "featureFlagLabels": {
+        "new_player": "New Player",
+        "live_chat": "Live Chat",
+        "downloads": "Downloads",
+        "watch_party": "Watch Party",
+        "voice_search": "Voice Search",
+        "ai_recommendations": "AI Recommendations"
+      }
+    },
+    "users": {
+      "subtitle": "Manage users and accounts",
+      "addUser": "Add User",
+      "status": {
+        "active": "Active",
+        "inactive": "Inactive",
+        "blocked": "Blocked"
+      },
+      "filters": {
+        "all": "All",
+        "active": "Active",
+        "inactive": "Inactive",
+        "blocked": "Blocked"
+      },
+      "columns": {
+        "name": "Name",
+        "role": "Role",
+        "subscription": "Subscription",
+        "noSubscription": "No Subscription",
+        "status": "Status",
+        "created": "Created"
+      },
+      "resetPassword": "Reset Password",
+      "block": "Block",
+      "unban": "Unban",
+      "confirmResetPassword": "Send password reset email to {{email}}?",
+      "resetPasswordSent": "Password reset email sent",
+      "recentActivity": "Recent Activity",
+      "noActivity": "No activity",
+      "notFound": "User not found",
+      "backToList": "Back to list",
+      "banReason": "Ban reason",
+      "banReasonPrompt": "Ban reason:",
+      "confirmUnban": "Unban user?",
+      "userDetails": "User Details",
+      "id": "ID",
+      "registered": "Registered",
+      "billingHistory": "Billing History",
+      "noPayments": "No payments"
+    },
+    "campaigns": {
+      "subtitle": "Manage coupon codes and discounts",
+      "expired": "Expired",
+      "status": {
+        "active": "Active",
+        "inactive": "Inactive"
+      },
+      "columns": {
+        "name": "Name",
+        "discount": "Discount",
+        "usage": "Uses",
+        "validUntil": "Valid Until",
+        "status": "Status"
+      }
+    },
+    "subscriptions": {
+      "status": {
+        "active": "Active"
+      }
+    },
+    "marketingDashboard": {
+      "subtitle": "Marketing Overview",
+      "refresh": "Refresh",
+      "totalSubscribers": "Total Subscribers",
+      "emailOpenRate": "Email Open Rate",
+      "pushClickRate": "Push Click Rate",
+      "activeSegments": "Active Segments",
+      "campaignStatus": {
+        "active": "Active",
+        "completed": "Completed",
+        "scheduled": "Scheduled",
+        "draft": "Draft"
+      }
+    },
+    "transactions": {
+      "subtitle": "Transaction History",
+      "filters": {
+        "all": "All"
+      }
+    },
+    "pushNotifications": {
+      "filters": {
+        "all": "All"
+      }
     }
   },
   "placeholder": {

@@ -36,10 +36,10 @@ interface Transaction {
   created_at: string;
 }
 
-const statusColors: Record<string, { bg: string; text: string; label: string }> = {
-  active: { bg: 'rgba(34, 197, 94, 0.2)', text: '#22C55E', label: 'פעיל' },
-  inactive: { bg: 'rgba(107, 114, 128, 0.2)', text: '#6B7280', label: 'לא פעיל' },
-  banned: { bg: 'rgba(239, 68, 68, 0.2)', text: '#EF4444', label: 'חסום' },
+const statusColors: Record<string, { bg: string; text: string; labelKey: string }> = {
+  active: { bg: 'rgba(34, 197, 94, 0.2)', text: '#22C55E', labelKey: 'admin.users.status.active' },
+  inactive: { bg: 'rgba(107, 114, 128, 0.2)', text: '#6B7280', labelKey: 'admin.users.status.inactive' },
+  banned: { bg: 'rgba(239, 68, 68, 0.2)', text: '#EF4444', labelKey: 'admin.users.status.blocked' },
 };
 
 const formatDate = (dateStr: string) => {
@@ -88,10 +88,10 @@ export default function UserDetailPage() {
   }, [userId]);
 
   const handleResetPassword = async () => {
-    if (!user || !window.confirm(`שלח אימייל לאיפוס סיסמה ל-${user.email}?`)) return;
+    if (!user || !window.confirm(t('admin.users.confirmResetPassword', { email: user.email }))) return;
     try {
       await usersService.resetPassword(user.id);
-      alert('אימייל לאיפוס סיסמה נשלח');
+      alert(t('admin.users.resetPasswordSent'));
     } catch (error) {
       logger.error('Failed to reset password', 'UserDetailPage', error);
     }
@@ -99,7 +99,7 @@ export default function UserDetailPage() {
 
   const handleBan = async () => {
     if (!user) return;
-    const reason = window.prompt('סיבת החסימה:');
+    const reason = window.prompt(t('admin.users.banReasonPrompt', { defaultValue: 'Ban reason:' }));
     if (!reason) return;
     try {
       await usersService.banUser(user.id, reason);
@@ -110,7 +110,7 @@ export default function UserDetailPage() {
   };
 
   const handleUnban = async () => {
-    if (!user || !window.confirm('בטל חסימת משתמש?')) return;
+    if (!user || !window.confirm(t('admin.users.confirmUnban', { defaultValue: 'Unban user?' }))) return;
     try {
       await usersService.unbanUser(user.id);
       loadUserData();
@@ -132,8 +132,8 @@ export default function UserDetailPage() {
     return (
       <View style={styles.errorContainer}>
         <Text style={styles.errorIcon}>⚠️</Text>
-        <Text style={styles.errorText}>{error || 'משתמש לא נמצא'}</Text>
-        <GlassButton title="חזור" onPress={() => navigate('/admin/users')} variant="primary" />
+        <Text style={styles.errorText}>{error || t('admin.users.notFound', { defaultValue: 'User not found' })}</Text>
+        <GlassButton title={t('common.back')} onPress={() => navigate('/admin/users')} variant="primary" />
       </View>
     );
   }
@@ -145,7 +145,7 @@ export default function UserDetailPage() {
       <View style={styles.header}>
         <Pressable onPress={() => navigate('/admin/users')} style={[styles.backButton, { flexDirection }]}>
           <ArrowRight size={20} color={colors.text} />
-          <Text style={[styles.backText, { textAlign }]}>חזרה לרשימה</Text>
+          <Text style={[styles.backText, { textAlign }]}>{t('admin.users.backToList', { defaultValue: 'Back to list' })}</Text>
         </Pressable>
       </View>
 
@@ -157,46 +157,46 @@ export default function UserDetailPage() {
           <Text style={styles.userName}>{user.name}</Text>
           <Text style={styles.userEmail}>{user.email}</Text>
           <View style={[styles.statusBadge, { backgroundColor: statusStyle.bg }]}>
-            <Text style={[styles.statusText, { color: statusStyle.text }]}>{statusStyle.label}</Text>
+            <Text style={[styles.statusText, { color: statusStyle.text }]}>{t(statusStyle.labelKey)}</Text>
           </View>
           {user.ban_reason && (
-            <Text style={styles.banReason}>סיבת חסימה: {user.ban_reason}</Text>
+            <Text style={styles.banReason}>{t('admin.users.banReason', { defaultValue: 'Ban reason' })}: {user.ban_reason}</Text>
           )}
           <View style={styles.actionButtons}>
-            <GlassButton title="איפוס סיסמה" variant="secondary" icon={<Key size={16} color={colors.text} />} onPress={handleResetPassword} />
+            <GlassButton title={t('admin.users.resetPassword')} variant="secondary" icon={<Key size={16} color={colors.text} />} onPress={handleResetPassword} />
             {user.status === 'banned' ? (
-              <GlassButton title="בטל חסימה" variant="primary" icon={<UserCheck size={16} color={colors.text} />} onPress={handleUnban} />
+              <GlassButton title={t('admin.users.unban', { defaultValue: 'Unban' })} variant="primary" icon={<UserCheck size={16} color={colors.text} />} onPress={handleUnban} />
             ) : (
-              <GlassButton title="חסום" variant="secondary" icon={<Ban size={16} color={colors.error} />} onPress={handleBan} />
+              <GlassButton title={t('admin.users.block')} variant="secondary" icon={<Ban size={16} color={colors.error} />} onPress={handleBan} />
             )}
           </View>
         </GlassCard>
 
         <View style={styles.detailsSection}>
           <GlassCard style={styles.infoCard}>
-            <Text style={[styles.sectionTitle, { textAlign }]}>פרטי משתמש</Text>
+            <Text style={[styles.sectionTitle, { textAlign }]}>{t('admin.users.userDetails', { defaultValue: 'User Details' })}</Text>
             <View style={[styles.infoRow, { flexDirection }]}>
-              <Text style={styles.infoLabel}>מזהה:</Text>
+              <Text style={styles.infoLabel}>{t('admin.users.id', { defaultValue: 'ID' })}:</Text>
               <Text style={styles.infoValue}>{user.id}</Text>
             </View>
             <View style={[styles.infoRow, { flexDirection }]}>
-              <Text style={styles.infoLabel}>תפקיד:</Text>
+              <Text style={styles.infoLabel}>{t('admin.users.columns.role')}:</Text>
               <Text style={styles.infoValue}>{user.role}</Text>
             </View>
             <View style={[styles.infoRow, { flexDirection }]}>
-              <Text style={styles.infoLabel}>מנוי:</Text>
-              <Text style={styles.infoValue}>{user.subscription?.plan || 'ללא מנוי'}</Text>
+              <Text style={styles.infoLabel}>{t('admin.users.columns.subscription')}:</Text>
+              <Text style={styles.infoValue}>{user.subscription?.plan || t('admin.users.columns.noSubscription')}</Text>
             </View>
             <View style={[styles.infoRow, { flexDirection }]}>
-              <Text style={styles.infoLabel}>נרשם:</Text>
+              <Text style={styles.infoLabel}>{t('admin.users.registered', { defaultValue: 'Registered' })}:</Text>
               <Text style={styles.infoValue}>{formatDate(user.created_at)}</Text>
             </View>
           </GlassCard>
 
           <GlassCard style={styles.activityCard}>
-            <Text style={[styles.sectionTitle, { textAlign }]}>פעילות אחרונה</Text>
+            <Text style={[styles.sectionTitle, { textAlign }]}>{t('admin.users.recentActivity')}</Text>
             {activity.length === 0 ? (
-              <Text style={styles.emptyText}>אין פעילות</Text>
+              <Text style={styles.emptyText}>{t('admin.users.noActivity')}</Text>
             ) : (
               activity.map((item) => (
                 <View key={item.id} style={[styles.activityItem, { flexDirection }]}>
@@ -208,9 +208,9 @@ export default function UserDetailPage() {
           </GlassCard>
 
           <GlassCard style={styles.billingCard}>
-            <Text style={[styles.sectionTitle, { textAlign }]}>היסטוריית תשלומים</Text>
+            <Text style={[styles.sectionTitle, { textAlign }]}>{t('admin.users.billingHistory', { defaultValue: 'Billing History' })}</Text>
             {billingHistory.length === 0 ? (
-              <Text style={styles.emptyText}>אין תשלומים</Text>
+              <Text style={styles.emptyText}>{t('admin.users.noPayments', { defaultValue: 'No payments' })}</Text>
             ) : (
               billingHistory.map((tx) => (
                 <View key={tx.id} style={[styles.billingItem, { flexDirection }]}>

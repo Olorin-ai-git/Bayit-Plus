@@ -58,7 +58,8 @@ export function usePresenceAwarePlayback(options: UsePresenceAwarePlaybackOption
       }
     });
 
-    // Handle user return - greet and offer resume
+    // Handle user return - disabled automatic conversation/resume on idle return
+    // Users must manually interact to resume when returning from idle
     const unsubscribeReturn = presenceDetectionService.onUserReturn(async (state) => {
       setIsPresent(true);
 
@@ -66,32 +67,8 @@ export function usePresenceAwarePlayback(options: UsePresenceAwarePlaybackOption
         onUserReturn();
       }
 
-      // Play greeting and offer resume
-      try {
-        const greeting = 'ברוך הבא! רוצה להמשיך לצפות?';
-        await ttsService.speak(greeting, 'normal');
-
-        // Auto-resume if user doesn't respond
-        presencePauseTimeoutRef.current = setTimeout(() => {
-          if (isPausedByPresence) {
-            setIsPausedByPresence(false);
-            if (onResumeByPresence) {
-              onResumeByPresence();
-            }
-          }
-        }, autoResumeAfterMs);
-      } catch (error) {
-        console.warn('Failed to play greeting:', error);
-        // Even if TTS fails, offer resume with timeout
-        presencePauseTimeoutRef.current = setTimeout(() => {
-          if (isPausedByPresence) {
-            setIsPausedByPresence(false);
-            if (onResumeByPresence) {
-              onResumeByPresence();
-            }
-          }
-        }, autoResumeAfterMs);
-      }
+      // Automatic greeting and resume on idle return is disabled
+      // Users must manually resume content
     });
 
     presenceUnsubscribeRef.current = unsubscribeAbsence;
@@ -109,7 +86,7 @@ export function usePresenceAwarePlayback(options: UsePresenceAwarePlaybackOption
         clearTimeout(presencePauseTimeoutRef.current);
       }
     };
-  }, [isPausedByPresence, onPauseByPresence, onResumeByPresence, onUserReturn, onUserAbsent, autoResumeAfterMs]);
+  }, [onPauseByPresence, onResumeByPresence, onUserReturn, onUserAbsent, autoResumeAfterMs]);
 
   /**
    * Cancel auto-resume timeout

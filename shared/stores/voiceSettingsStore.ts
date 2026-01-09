@@ -22,17 +22,17 @@ const DEFAULT_VOICE_PREFERENCES: VoicePreferences = {
   text_size: 'medium',
   hold_button_mode: false,           // Press-and-hold fallback disabled by default
   silence_threshold_ms: 2000,        // 2 seconds of silence before sending
-  vad_sensitivity: 'medium',         // Balanced VAD sensitivity
+  vad_sensitivity: 'low',            // Low sensitivity - fewer false positives from static/noise
   // Wake word activation (mutually exclusive with always-listening - we use wake word only)
-  wake_word_enabled: true,           // Wake word detection ENABLED by default - listen for "Hi Bayit"
-  wake_word: 'hi bayit',             // Default wake phrase
+  wake_word_enabled: true,           // Wake word detection ENABLED by default - listen for "Buyit"
+  wake_word: 'buyit',                // Default wake phrase (pronounced "Buyit")
   wake_word_sensitivity: 0.7,        // 0-1 sensitivity (0.7 balanced)
   wake_word_cooldown_ms: 2000,       // Cooldown between detections
   // Three-mode system
   voice_mode: VoiceMode.VOICE_ONLY,  // Default: Voice Only mode (no remote)
   voice_feedback_enabled: true,      // Voice feedback on interactions (default for Hybrid)
   tts_enabled: true,                 // TTS enabled by default
-  tts_voice_id: 'cgSgspJ2msm6clMCkdW9', // Jessica - female, young, expressive, conversational (configured in .env via VITE_ELEVENLABS_DEFAULT_VOICE_ID)
+  tts_voice_id: 'EXAVITQu4vr4xnSDxMaL', // Rachel - multilingual voice, excellent for Hebrew (configured in .env via VITE_ELEVENLABS_DEFAULT_VOICE_ID)
   tts_speed: 1.0,                    // Normal speech speed (0.5-2.0)
   tts_volume: 1.0,                   // Max volume (0-1)
 };

@@ -35,7 +35,7 @@ class Settings(BaseSettings):
     # ElevenLabs (speech-to-text and text-to-speech)
     ELEVENLABS_API_KEY: str = ""
     ELEVENLABS_WEBHOOK_SECRET: str = ""
-    ELEVENLABS_DEFAULT_VOICE_ID: str = "cgSgspJ2msm6clMCkdW9"  # Jessica - female, young, expressive, conversational, multilingual
+    ELEVENLABS_DEFAULT_VOICE_ID: str = "EXAVITQu4vr4xnSDxMaL"  # Rachel - multilingual voice, excellent for Hebrew
 
     # CORS
     BACKEND_CORS_ORIGINS: list[str] = [

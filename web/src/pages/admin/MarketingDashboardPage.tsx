@@ -109,28 +109,28 @@ export default function MarketingDashboardPage() {
       <View style={[styles.header, { flexDirection }]}>
         <View>
           <Text style={[styles.pageTitle, { textAlign }]}>{t('admin.titles.marketing')}</Text>
-          <Text style={[styles.subtitle, { textAlign }]}>סקירת קמפיינים וביצועים</Text>
+          <Text style={[styles.subtitle, { textAlign }]}>{t('admin.marketingDashboard.subtitle')}</Text>
         </View>
-        <GlassButton title="רענן" variant="secondary" icon={<RefreshCw size={16} color={colors.text} />} onPress={handleRefresh} disabled={refreshing} />
+        <GlassButton title={t('admin.marketingDashboard.refresh')} variant="secondary" icon={<RefreshCw size={16} color={colors.text} />} onPress={handleRefresh} disabled={refreshing} />
       </View>
 
       <View style={styles.section}>
         <Text style={[styles.sectionTitle, { textAlign }]}>{t('admin.marketing.emailMetrics')}</Text>
         <View style={styles.statsGrid}>
-          <StatCard title="נשלחו" value={metrics.emailsSent.toLocaleString()} icon="📧" color="primary" to="/admin/emails" />
-          <StatCard title="שיעור פתיחה" value={`${metrics.emailOpenRate}%`} icon="📬" color="success" />
-          <StatCard title="שיעור הקלקה" value={`${metrics.emailClickRate}%`} icon="🖱️" color="secondary" />
-          <StatCard title="הסרת מנוי" value={`${metrics.unsubscribeRate}%`} icon="🚫" color={metrics.unsubscribeRate > 2 ? 'error' : 'success'} />
+          <StatCard title={t('admin.marketingDashboard.sent', { defaultValue: 'Sent' })} value={metrics.emailsSent.toLocaleString()} icon="📧" color="primary" to="/admin/emails" />
+          <StatCard title={t('admin.marketingDashboard.emailOpenRate')} value={`${metrics.emailOpenRate}%`} icon="📬" color="success" />
+          <StatCard title={t('admin.marketingDashboard.clickRate', { defaultValue: 'Click Rate' })} value={`${metrics.emailClickRate}%`} icon="🖱️" color="secondary" />
+          <StatCard title={t('admin.marketingDashboard.unsubscribeRate', { defaultValue: 'Unsubscribe Rate' })} value={`${metrics.unsubscribeRate}%`} icon="🚫" color={metrics.unsubscribeRate > 2 ? 'error' : 'success'} />
         </View>
       </View>
 
       <View style={styles.section}>
         <Text style={[styles.sectionTitle, { textAlign }]}>{t('admin.marketing.pushMetrics')}</Text>
         <View style={styles.statsGrid}>
-          <StatCard title="נשלחו" value={metrics.pushSent.toLocaleString()} icon="🔔" color="warning" to="/admin/push" />
-          <StatCard title="שיעור פתיחה" value={`${metrics.pushOpenRate}%`} icon="👆" color="success" />
-          <StatCard title="סגמנטים פעילים" value={metrics.activeSegments.toString()} icon="👥" color="primary" />
-          <StatCard title="שיעור המרה" value={`${metrics.conversionRate}%`} icon="🎯" color="success" />
+          <StatCard title={t('admin.marketingDashboard.sent', { defaultValue: 'Sent' })} value={metrics.pushSent.toLocaleString()} icon="🔔" color="warning" to="/admin/push" />
+          <StatCard title={t('admin.marketingDashboard.openRate', { defaultValue: 'Open Rate' })} value={`${metrics.pushOpenRate}%`} icon="👆" color="success" />
+          <StatCard title={t('admin.marketingDashboard.activeSegments')} value={metrics.activeSegments.toString()} icon="👥" color="primary" />
+          <StatCard title={t('admin.marketingDashboard.conversionRate', { defaultValue: 'Conversion Rate' })} value={`${metrics.conversionRate}%`} icon="🎯" color="success" />
         </View>
       </View>
 
@@ -146,12 +146,12 @@ export default function MarketingDashboardPage() {
                 <View style={styles.campaignInfo}>
                   <Text style={[styles.campaignName, { textAlign }]}>{campaign.name}</Text>
                   <Text style={[styles.campaignStats, { textAlign }]}>
-                    {campaign.sent.toLocaleString()} נשלחו • {campaign.opened.toLocaleString()} נפתחו
+                    {campaign.sent.toLocaleString()} {t('admin.emailCampaigns.columns.sent').toLowerCase()} • {campaign.opened.toLocaleString()} {t('admin.emailCampaigns.columns.opened').toLowerCase()}
                   </Text>
                 </View>
                 <View style={[styles.campaignStatus, { backgroundColor: getStatusColor(campaign.status) + '20' }]}>
                   <Text style={[styles.campaignStatusText, { color: getStatusColor(campaign.status) }]}>
-                    {campaign.status === 'active' ? 'פעיל' : campaign.status === 'completed' ? 'הושלם' : campaign.status === 'scheduled' ? 'מתוזמן' : 'טיוטה'}
+                    {t(`admin.marketingDashboard.campaignStatus.${campaign.status}`, { defaultValue: campaign.status })}
                   </Text>
                 </View>
               </View>
@@ -183,13 +183,13 @@ export default function MarketingDashboardPage() {
           <Link to="/admin/emails" style={{ textDecoration: 'none', flex: 1 }}>
             <GlassCard style={styles.quickLinkCard}>
               <Mail size={24} color={colors.primary} />
-              <Text style={styles.quickLinkText}>קמפייני אימייל</Text>
+              <Text style={styles.quickLinkText}>{t('admin.nav.emailCampaigns')}</Text>
             </GlassCard>
           </Link>
           <Link to="/admin/push" style={{ textDecoration: 'none', flex: 1 }}>
             <GlassCard style={styles.quickLinkCard}>
               <Bell size={24} color={colors.warning} />
-              <Text style={styles.quickLinkText}>התראות פוש</Text>
+              <Text style={styles.quickLinkText}>{t('admin.nav.pushNotifications')}</Text>
             </GlassCard>
           </Link>
         </View>

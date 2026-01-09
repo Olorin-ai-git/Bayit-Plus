@@ -5,6 +5,7 @@ import os
 import hmac
 import hashlib
 import httpx
+import difflib
 from fastapi import APIRouter, HTTPException, Depends, UploadFile, File, Request, Header, BackgroundTasks, Form
 from fastapi.responses import StreamingResponse
 from pydantic import BaseModel
@@ -26,6 +27,10 @@ client = anthropic.Anthropic(api_key=settings.ANTHROPIC_API_KEY)
 # ElevenLabs API endpoints
 ELEVENLABS_STT_URL = "https://api.elevenlabs.io/v1/speech-to-text"
 ELEVENLABS_TTS_URL = "https://api.elevenlabs.io/v1/text-to-speech"
+
+# Wake word fuzzy matching - currently disabled
+# WAKE_WORDS = ["buyit", "בויית"]
+# FUZZY_MATCH_THRESHOLD = 0.65
 
 
 async def process_hebronics_input(text: str) -> dict:
@@ -95,29 +100,60 @@ async def process_hebronics_input(text: str) -> dict:
         }
 
 
-SYSTEM_PROMPT = """אתה העוזר החכם של בית+. תפקידך להשיג מה שהמשתמש רוצה - לנווט, לחפש או לנגן.
+SYSTEM_PROMPT = """אתה עוזר של בית+ (מבוטא "בויית").
 
-עקוב אחרי הכללים הבאים בדיוק:
-- תשובות קצרות מאוד (משפט אחד או שניים)
-- התמקד בביצוע הפעולה, לא בהסברים
-- אתן תוכן מידע רק אם ישנה בקשה ישירה
-- אין סיפורים, אין המלצות, אין שיחה חברתית
+**חובה: תשיב בעברית בלבד. כל התשובות שלך חייבות להיות בעברית.**
 
-תוכן זמין: סרטים (The Troupe, Footnote, Waltz with Bashir, Bonjour Monsieur Shlomi, Beaufort), ערוצים (Kan, Channel 2, Channel 13, i24NEWS), רדיו (גלי צה"ל, Radio Kan Beyt, 103FM, Eco 99FM), פודקאסטים.
+עקוב אחרי הכללים הבאים:
+- תשובות קצרות בלבד (1-2 משפטים בעברית)
+- תשובה ישירה לבקשה ללא הצעות נוספות
+- כלול מילות פעולה בתשובתך
+- אל תמחייק או תציע עזרה
+- אל תתרגם לאנגלית
 
-פעולות שניתן לבצע (שמור את הטקסט המדויק):
-- ניווט: "עבור לסרטים" / "עבור לסדרות" / "עבור לערוצים" / "עבור לרדיו" / "עבור לפודקאסטים" / "חזור הביתה"
+דוגמאות תשובות (בעברית בלבד):
+✓ "עברתי לסרטים"
+✓ "מחפש דוקומנטרים"
+✓ "מנגן רדיו"
+
+פעולות:
+- ניווט: "עבור לסרטים" / "עבור לסדרות" / "עבור לערוצים" / "עבור לרדיו" / "עבור לפודקאסטים" / "עבור לזרמים" / "עבור ליהדות" / "עבור לילדים" / "חזור הביתה"
 - נגינה: "נגן את [שם]" / "השהה" / "המשך" / "דלג"
 - חיפוש: "חפש [מילים]"
 - שמירה: "הוסף למועדפים" / "הוסף לרשימה"
-- הגדרות: "הגבר קול" / "הנמך קול" / "הצג כתוביות"
 
-דוגמאות תשובות:
-- "עבור לסרטים עכשיו" (לא: "יש לנו הרבה סרטים שאולי יעניינו אותך...")
-- "נגן את The Troupe" (לא: "זה סרט מעולה שזכה לשבחים...")
-- "חיפוש עבור דוקומנטרים" (לא: "יש הרבה דוקומנטרים טובים...")
+לא תהיה עזרה עודפת או הצעות. רק תענה לבקשה הספציפית בעברית."""
 
-חשוב: כלול תמיד את מילת המפתח בתשובתך כדי להפעיל את הפעולה. אם המשתמש לא ביקש משהו ספציפי, שאל בקצרה: "מה אתה רוצה? (סרטים / חיפוש / נגינה)"."""
+
+def strip_markdown(text: str) -> str:
+    """
+    Strip markdown formatting from text for TTS readability.
+    Removes: **bold**, __bold__, *italic*, _italic_, [link](url), etc.
+    """
+    if not text:
+        return text
+
+    import re
+
+    # Remove bold: **text** or __text__
+    text = re.sub(r'\*\*(.+?)\*\*', r'\1', text)
+    text = re.sub(r'__(.+?)__', r'\1', text)
+
+    # Remove italic: *text* or _text_
+    text = re.sub(r'\*(.+?)\*', r'\1', text)
+    text = re.sub(r'_(.+?)_', r'\1', text)
+
+    # Remove markdown links: [text](url)
+    text = re.sub(r'\[(.+?)\]\(.+?\)', r'\1', text)
+
+    # Remove code blocks: `code` or ```code```
+    text = re.sub(r'`{3}[^`]*`{3}', '', text)
+    text = re.sub(r'`(.+?)`', r'\1', text)
+
+    # Remove HTML comments and other markdown syntax
+    text = re.sub(r'<!--.*?-->', '', text, flags=re.DOTALL)
+
+    return text.strip()
 
 
 class ChatRequest(BaseModel):
@@ -148,29 +184,29 @@ def get_system_prompt(language: Optional[str] = None) -> str:
     lang = (language or "he").lower()
 
     if lang == "en":
-        return """You are Bayit+'s smart assistant. Your job: get users to what they want - navigate pages, search, or play content.
+        return """You are an assistant for Bayit+ (pronounced "Buyit").
 
-Follow these rules exactly:
-- Very short responses (1-2 sentences max)
-- Focus on the action, not explanations
-- Only give information if directly asked
-- No stories, no recommendations, no small talk
+**REQUIREMENT: You MUST respond in English only. All your responses must be in English.**
 
-Available content: Movies (The Troupe, Footnote, Waltz with Bashir, Bonjour Monsieur Shlomi, Beaufort), Channels (Kan, Channel 2, Channel 13, i24NEWS), Radio (Galei Tzahal, Radio Kan Beyt, 103FM, Eco 99FM), Podcasts.
+Follow these rules:
+- Short responses only (1-2 sentences in English)
+- Direct answer to the request with no extra offers
+- Include action keywords in your response
+- No excessive politeness or help offers
+- Do NOT translate to Hebrew
 
-Actions you can trigger (use exact text):
-- Navigation: "Go to movies" / "Go to series" / "Go to channels" / "Go to radio" / "Go to podcasts" / "Go home"
+Example responses (English only):
+✓ "Going to movies"
+✓ "Searching for documentaries"
+✓ "Playing radio"
+
+Actions:
+- Navigation: "Go to movies" / "Go to series" / "Go to channels" / "Go to radio" / "Go to podcasts" / "Go to flows" / "Go to judaism" / "Go to children" / "Go home"
 - Playback: "Play [name]" / "Pause" / "Resume" / "Skip"
 - Search: "Search for [query]"
 - Save: "Add to favorites" / "Add to watchlist"
-- Settings: "Volume up" / "Volume down" / "Enable subtitles"
 
-Example responses:
-- "Going to movies now" (NOT: "We have amazing movies from Israel that you might enjoy...")
-- "Playing Beaufort" (NOT: "This is an acclaimed film with great reviews...")
-- "Searching for documentaries" (NOT: "There are many great documentaries available...")
-
-Critical: Always include the action keyword in your response to trigger the action. If user didn't ask for something specific, ask briefly: "What do you want? (movies / search / play)"."""
+No extra help or suggestions. Only answer the specific request in English."""
 
     else:  # Hebrew or default
         return SYSTEM_PROMPT
@@ -188,6 +224,10 @@ async def send_message(
     print(f"[CHAT] Received message: '{request.message}'")
     print(f"[CHAT] Language parameter: {request.language}")
     print(f"[CHAT] Resolved language: {user_language}")
+
+    # Wake word filtering temporarily disabled for testing
+    # Accept any input for now
+    print(f"[CHAT] Wake word filtering disabled - accepting all input")
 
     # Get or create conversation
     if request.conversation_id:
@@ -232,6 +272,9 @@ async def send_message(
 
         assistant_message = response.content[0].text
 
+        # Log Claude response for language verification
+        print(f"[CHAT] Claude response: language='{user_language}', response='{assistant_message[:100]}'...")
+
         # Add assistant response to history
         conversation.messages.append({
             "role": "assistant",
@@ -257,7 +300,7 @@ async def send_message(
             recommendations=recommendations,
             language=user_language,  # Return the language used
             # Voice-first fields
-            spoken_response=assistant_message,  # Full message for TTS
+            spoken_response=strip_markdown(assistant_message),  # Clean text for TTS
             action=action,  # Structured command for frontend
             content_ids=None,  # Could extract recommended content IDs
             visual_action=None,  # Could infer from message content
@@ -329,13 +372,82 @@ async def extract_action_from_response(
 
     # ===== NAVIGATION ACTIONS =====
     nav_patterns = {
-        "movies": ["סרטים", "movies", "show me the movies", "תראה לי סרטים", "עבור לסרטים", "go to movies"],
-        "series": ["סדרות", "series", "shows", "תראה לי סדרות", "עבור לסדרות", "go to series"],
-        "channels": ["ערוצים", "channels", "live tv", "שידור חי", "עבור לערוצים", "live channels", "open channels"],
-        "radio": ["רדיו", "radio", "stations", "תחנות רדיו", "עבור לרדיו", "radio stations"],
-        "podcasts": ["פודקאסטים", "podcasts", "עבור לפודקאסטים", "podcast"],
-        "home": ["בית", "home", "main page", "דף הבית", "חזור הביתה"],
-        "search": ["חפש", "search", "find"],
+        "movies": [
+            # Hebrew
+            "סרטים", "סרט", "תראה לי סרטים", "עבור לסרטים", "הצג סרטים", "תוכל להראות סרטים",
+            # English
+            "movies", "movie", "show me the movies", "go to movies", "display movies",
+            "take me to movies", "films", "film", "cinema", "watch a movie", "show films",
+            "i want movies", "can you show movies"
+        ],
+        "series": [
+            # Hebrew
+            "סדרות", "סדרה", "תראה לי סדרות", "עבור לסדרות", "הצג סדרות", "תוכניות",
+            # English
+            "series", "show", "shows", "go to series", "display series", "take me to series",
+            "tv shows", "tv series", "television series", "show me series", "what shows do you have",
+            "can you show series"
+        ],
+        "channels": [
+            # Hebrew
+            "ערוצים", "ערוץ", "תראה לי ערוצים", "עבור לערוצים", "הצג ערוצים", "שידור חי",
+            # English
+            "channels", "channel", "live tv", "open channels", "display channels", "go to channels",
+            "show channels", "live", "streaming channels", "tv channels", "what channels",
+            "what live channels do you have"
+        ],
+        "radio": [
+            # Hebrew
+            "רדיו", "תחנות רדיו", "עבור לרדיו", "הצג רדיו", "תראה לי רדיו",
+            # English
+            "radio", "stations", "radio stations", "go to radio", "display radio", "listen to radio",
+            "take me to radio", "show radio", "show stations", "what radio", "what radio stations"
+        ],
+        "podcasts": [
+            # Hebrew
+            "פודקאסטים", "פודקסט", "עבור לפודקאסטים", "הצג פודקאסטים", "תראה פודקאסטים",
+            # English
+            "podcasts", "podcast", "go to podcasts", "display podcasts", "show podcasts",
+            "take me to podcasts", "what podcasts", "show me podcasts"
+        ],
+        "flows": [
+            # Hebrew
+            "זרמים", "זרם", "עבור לזרמים", "הצג זרמים", "תראה זרמים",
+            # English
+            "flows", "flow", "streams", "stream", "go to flows", "display flows", "show flows",
+            "take me to flows", "show me flows", "streaming content"
+        ],
+        "judaism": [
+            # Hebrew
+            "יהדות", "עברית", "עבור ליהדות", "הצג יהדות", "תראה יהדות", "תורה",
+            "שבת", "חזינויים", "דתי", "סרטים דתיים",
+            # English
+            "judaism", "jewish", "jewish content", "go to judaism", "display judaism", "show judaism",
+            "take me to judaism", "torah", "religious", "shabbat", "hebrew", "jewish studies",
+            "jewish culture"
+        ],
+        "children": [
+            # Hebrew
+            "ילדים", "ילד", "עבור לילדים", "הצג ילדים", "תראה לילדים", "קרטונים",
+            "תוכניות לילדים", "קטנטנים",
+            # English
+            "children", "child", "kids", "kid", "go to children", "display children", "show kids",
+            "take me to children", "show children", "cartoons", "kids content", "children's shows",
+            "family", "children's programs", "kids programs", "show me cartoons"
+        ],
+        "home": [
+            # Hebrew
+            "בית", "דף הבית", "דף הראשית", "חזור הביתה", "חזור לבית", "עמוד בית",
+            # English
+            "home", "main page", "go home", "back home", "return home", "start page", "homepage",
+            "back to home", "go back home"
+        ],
+        "search": [
+            # Hebrew
+            "חפש", "חפש לי", "תראה לי", "מצא", "מצא לי",
+            # English
+            "search", "find", "look for", "find me", "search for", "can you find", "help me find"
+        ],
     }
 
     for target, patterns in nav_patterns.items():
@@ -348,7 +460,13 @@ async def extract_action_from_response(
                 }
 
     # ===== PLAYBACK CONTROL ACTIONS =====
-    pause_triggers = ["pause", "השהה", "עצור", "stop playback", "עצור נגינה"]
+    pause_triggers = [
+        # English
+        "pause", "stop", "stop playback", "stop playing", "pause video", "pause playback",
+        "halt", "freeze",
+        # Hebrew
+        "השהה", "עצור", "עצור נגינה", "עצור את הנגינה", "עצור את הוידאו", "תעצור",
+    ]
     for trigger in pause_triggers:
         if trigger in response_lower or trigger in query_lower:
             return {
@@ -357,7 +475,13 @@ async def extract_action_from_response(
                 "confidence": 0.9,
             }
 
-    resume_triggers = ["resume", "המשך", "continue", "המשך נגינה", "start playing"]
+    resume_triggers = [
+        # English
+        "resume", "continue", "continue playing", "start playing", "play again", "keep playing",
+        "unpause", "go on",
+        # Hebrew
+        "המשך", "המשך נגינה", "המשך את הנגינה", "התחל לנגן", "תמשיך", "המשך עכשיו",
+    ]
     for trigger in resume_triggers:
         if trigger in response_lower or trigger in query_lower:
             return {
@@ -366,7 +490,13 @@ async def extract_action_from_response(
                 "confidence": 0.9,
             }
 
-    skip_triggers = ["skip", "דלג", "next song", "song הבא", "דלג לשיר הבא"]
+    skip_triggers = [
+        # English
+        "skip", "next", "next episode", "next song", "next track", "skip to next", "forward",
+        "jump to next", "go to next",
+        # Hebrew
+        "דלג", "הבא", "הפרק הבא", "השיר הבא", "דלג לשיר הבא", "דלג הלאה", "דלג קדימה",
+    ]
     for trigger in skip_triggers:
         if trigger in response_lower or trigger in query_lower:
             return {
@@ -376,7 +506,13 @@ async def extract_action_from_response(
             }
 
     # ===== PLAY CONTENT ACTIONS =====
-    play_triggers = ["play", "נגן", "start", "watch", "צפה", "הפעל", "watch now"]
+    play_triggers = [
+        # English
+        "play", "start", "watch", "watch now", "start playing", "begin", "begin playing",
+        "start watching", "turn on",
+        # Hebrew
+        "נגן", "צפה", "הפעל", "התחל", "צפה עכשיו", "הפעל עכשיו", "תנגן",
+    ]
     known_titles = {
         "the troupe": "the_troupe",
         "footnote": "footnote",
@@ -411,7 +547,13 @@ async def extract_action_from_response(
             }
 
     # ===== SEARCH ACTIONS =====
-    search_triggers = ["search", "find", "look for", "חפש", "מצא", "חפש עבור"]
+    search_triggers = [
+        # English
+        "search", "find", "look for", "search for", "can you find", "help me find",
+        "show me", "find me", "i want to watch", "i want to find",
+        # Hebrew
+        "חפש", "מצא", "חפש עבור", "מצא לי", "תמצא", "חפש לי", "תחפש",
+    ]
     for trigger in search_triggers:
         if trigger in response_lower or trigger in query_lower:
             return {
@@ -428,7 +570,13 @@ async def extract_action_from_response(
             }
 
     # ===== WATCHLIST/FAVORITES ACTIONS =====
-    watchlist_triggers = ["add to watchlist", "הוסף לרשימת הצפייה", "add to my list"]
+    watchlist_triggers = [
+        # English
+        "add to watchlist", "add to my list", "save for later", "watch later",
+        "save this", "add this", "bookmark", "remember this",
+        # Hebrew
+        "הוסף לרשימת הצפייה", "הוסף לרשימה", "שמור עבור מאוחר יותר", "שמור", "תזכור את זה",
+    ]
     for trigger in watchlist_triggers:
         if trigger in response_lower or trigger in query_lower:
             return {
@@ -437,7 +585,13 @@ async def extract_action_from_response(
                 "confidence": 0.85,
             }
 
-    favorites_triggers = ["add to favorites", "הוסף למועדפים", "mark as favorite", "like"]
+    favorites_triggers = [
+        # English
+        "add to favorites", "mark as favorite", "like", "love this", "this is great",
+        "add to my favorites", "favorite it", "make it favorite",
+        # Hebrew
+        "הוסף למועדפים", "הוסף למועדף", "אני אוהב את זה", "כיפוף", "סמן כמועדף",
+    ]
     for trigger in favorites_triggers:
         if trigger in response_lower or trigger in query_lower:
             return {
@@ -447,7 +601,13 @@ async def extract_action_from_response(
             }
 
     # ===== VOLUME/SETTINGS ACTIONS =====
-    volume_increase = ["volume up", "עוצמה יותר", "increase volume", "הגבר קול"]
+    volume_increase = [
+        # English
+        "volume up", "increase volume", "make it louder", "louder", "turn it up",
+        "boost volume", "volume higher",
+        # Hebrew
+        "עוצמה יותר", "הגבר קול", "עוצמה יותר גבוהה", "התחזק", "תגביר קול",
+    ]
     for trigger in volume_increase:
         if trigger in response_lower or trigger in query_lower:
             return {
@@ -456,7 +616,13 @@ async def extract_action_from_response(
                 "confidence": 0.9,
             }
 
-    volume_decrease = ["volume down", "עוצמה פחות", "decrease volume", "הנמך קול"]
+    volume_decrease = [
+        # English
+        "volume down", "decrease volume", "make it quieter", "quieter", "turn it down",
+        "lower volume", "volume lower", "mute",
+        # Hebrew
+        "עוצמה פחות", "הנמך קול", "עוצמה נמוכה יותר", "שהה", "הנמך",
+    ]
     for trigger in volume_decrease:
         if trigger in response_lower or trigger in query_lower:
             return {
@@ -465,10 +631,15 @@ async def extract_action_from_response(
                 "confidence": 0.9,
             }
 
-    language_triggers = ["change language", "שנה שפה", "switch language", "hebrew", "english"]
+    language_triggers = [
+        # English
+        "change language", "switch language", "english", "hebrew", "עברית", "אנגלית",
+        # Hebrew
+        "שנה שפה", "החלף שפה",
+    ]
     for trigger in language_triggers:
         if trigger in response_lower or trigger in query_lower:
-            detected_lang = "en" if "english" in response_lower else "he"
+            detected_lang = "en" if "english" in response_lower or "אנגלית" in response_lower else "he"
             return {
                 "type": "language",
                 "payload": {"language": detected_lang},
@@ -476,10 +647,16 @@ async def extract_action_from_response(
             }
 
     # ===== SUBTITLE ACTIONS =====
-    subtitle_triggers = ["subtitle", "subtitles", "captions", "כתוביות"]
+    subtitle_triggers = [
+        # English
+        "subtitle", "subtitles", "captions", "show subtitles", "turn on subtitles",
+        "enable subtitles", "disable subtitles", "turn off subtitles",
+        # Hebrew
+        "כתוביות", "הצג כתוביות", "פעל כתוביות", "כבה כתוביות",
+    ]
     for trigger in subtitle_triggers:
         if trigger in response_lower or trigger in query_lower:
-            enable = not any(x in response_lower for x in ["off", "disable", "כבה", "בטל"])
+            enable = not any(x in response_lower for x in ["off", "disable", "כבה", "בטל", "turn off"])
             return {
                 "type": "subtitles",
                 "payload": {"enabled": enable},
@@ -487,7 +664,13 @@ async def extract_action_from_response(
             }
 
     # ===== INFO ACTIONS =====
-    info_triggers = ["tell me about", "info about", "details", "סיפור על", "מידע על"]
+    info_triggers = [
+        # English
+        "tell me about", "info about", "details about", "information", "סיפור על",
+        "describe", "what is", "more info", "more details",
+        # Hebrew
+        "מידע על", "תגיד לי על", "מה זה", "סיפור", "תיאור",
+    ]
     for trigger in info_triggers:
         if trigger in response_lower or trigger in query_lower:
             return {
@@ -497,7 +680,13 @@ async def extract_action_from_response(
             }
 
     # ===== HELP ACTIONS =====
-    help_triggers = ["help", "how to", "עזרה", "איך", "instructions"]
+    help_triggers = [
+        # English
+        "help", "how to", "instructions", "guide", "what can you do", "what are the commands",
+        "teach me", "tell me how", "how do i",
+        # Hebrew
+        "עזרה", "איך", "הוראות", "מה אתה יכול לעשות", "מה הפקודות", "תלמד אותי",
+    ]
     for trigger in help_triggers:
         if trigger in response_lower or trigger in query_lower:
             return {
@@ -656,6 +845,9 @@ async def text_to_speech(
     - Low-latency streaming via eleven_turbo_v2 model
     - Audio ducking for video integration
     """
+    # Log TTS request for language detection
+    print(f"[TTS] Text-to-speech request: language='{request.language}', text='{request.text[:100]}'...")
+
     # Validate text input
     if not request.text or not request.text.strip():
         raise HTTPException(
@@ -676,13 +868,25 @@ async def text_to_speech(
     else:
         voice_id = settings.ELEVENLABS_DEFAULT_VOICE_ID  # From environment config
 
+    print(f"[TTS] Using voice_id='{voice_id}', language='{request.language}', model='{request.model_id}'")
+    print(f"[TTS] Text preview: '{request.text[:100]}'")
+
     try:
         # Build ElevenLabs TTS API request
         tts_url = f"{ELEVENLABS_TTS_URL}/{voice_id}/stream"
 
+        # Use eleven_v3 model for Hebrew since turbo doesn't support it
+        model_to_use = request.model_id
+        if request.language == 'he':
+            # Use eleven_v3 which has excellent Hebrew support
+            model_to_use = 'eleven_v3'
+            print(f"[TTS] Using eleven_v3 model for Hebrew text")
+
         request_body = {
             "text": request.text,
-            "model_id": request.model_id,
+            "model_id": model_to_use,
+            # NOTE: Do NOT include language_code - ElevenLabs API doesn't support it
+            # The voice itself (Rachel) handles multilingual content automatically
             "voice_settings": {
                 "stability": 0.5,  # Balanced - not too robotic, not too variable
                 "similarity_boost": 0.75,  # Good speaker consistency
@@ -704,6 +908,7 @@ async def text_to_speech(
             if response.status_code != 200:
                 # Log the actual error from ElevenLabs
                 error_detail = response.text if response.text else "Unknown error"
+                print(f"[TTS] ElevenLabs API error status={response.status_code}: {error_detail}")
                 raise HTTPException(
                     status_code=500,
                     detail=f"ElevenLabs TTS error: {error_detail}",

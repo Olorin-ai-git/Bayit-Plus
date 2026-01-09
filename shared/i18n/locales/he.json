@@ -991,6 +991,123 @@
       "clear": "נקה",
       "apply": "החל",
       "noRecords": "לא נמצאו רשומות"
+    },
+    "settings": {
+      "subtitle": "הגדר את פרמטרי המערכת",
+      "saveChanges": "שמור שינויים",
+      "generalSettings": "הגדרות כלליות",
+      "supportEmail": "אימייל תמיכה",
+      "defaultPlan": "תוכנית ברירת מחדל",
+      "termsUrl": "קישור לתנאי שימוש",
+      "privacyUrl": "קישור למדיניות פרטיות",
+      "userSettings": "הגדרות משתמשים",
+      "maxDevices": "מקסימום מכשירים לחשבון",
+      "trialDays": "ימי תקופת ניסיון",
+      "maintenanceMode": "מצב תחזוקה",
+      "maintenanceModeDesc": "כאשר פעיל, המערכת תהיה לא נגישה למשתמשים",
+      "featureFlags": "Feature Flags",
+      "systemActions": "פעולות מערכת",
+      "clearCache": "נקה קאש",
+      "resetAnalytics": "אפס אנליטיקס",
+      "actionsWarning": "פעולות אלו עשויות להשפיע על תפקוד המערכת. השתמש בזהירות.",
+      "savingSuccess": "ההגדרות נשמרו בהצלחה",
+      "confirmClearCache": "לנקות את הקאש? זה עשוי להשפיע על הביצועים באופן זמני.",
+      "cacheCleared": "הקאש נוקה בהצלחה",
+      "confirmResetAnalytics": "לאפס את נתוני האנליטיקס? פעולה זו אינה הפיכה!",
+      "analyticsReset": "נתוני האנליטיקס אופסו",
+      "featureFlagLabels": {
+        "new_player": "נגן חדש",
+        "live_chat": "צ׳אט חי",
+        "downloads": "הורדות",
+        "watch_party": "צפייה משותפת",
+        "voice_search": "חיפוש קולי",
+        "ai_recommendations": "המלצות AI"
+      }
+    },
+    "users": {
+      "subtitle": "ניהול משתמשים וחשבונות",
+      "addUser": "הוסף משתמש",
+      "status": {
+        "active": "פעיל",
+        "inactive": "לא פעיל",
+        "blocked": "חסום"
+      },
+      "filters": {
+        "all": "הכל",
+        "active": "פעילים",
+        "inactive": "לא פעילים",
+        "blocked": "חסומים"
+      },
+      "columns": {
+        "name": "שם",
+        "role": "תפקיד",
+        "subscription": "מנוי",
+        "noSubscription": "ללא מנוי",
+        "status": "סטטוס",
+        "created": "נוצר"
+      },
+      "resetPassword": "איפוס סיסמה",
+      "block": "חסום",
+      "unban": "בטל חסימה",
+      "confirmResetPassword": "לשלוח אימייל לאיפוס סיסמה ל-{{email}}?",
+      "resetPasswordSent": "אימייל לאיפוס סיסמה נשלח",
+      "recentActivity": "פעילות אחרונה",
+      "noActivity": "אין פעילות",
+      "notFound": "משתמש לא נמצא",
+      "backToList": "חזרה לרשימה",
+      "banReason": "סיבת חסימה",
+      "banReasonPrompt": "סיבת החסימה:",
+      "confirmUnban": "בטל חסימת משתמש?",
+      "userDetails": "פרטי משתמש",
+      "id": "מזהה",
+      "registered": "נרשם",
+      "billingHistory": "היסטוריית תשלומים",
+      "noPayments": "אין תשלומים"
+    },
+    "campaigns": {
+      "subtitle": "נהל קודי קופון והנחות",
+      "expired": "פג תוקף",
+      "status": {
+        "active": "פעיל",
+        "inactive": "לא פעיל"
+      },
+      "columns": {
+        "name": "שם",
+        "discount": "הנחה",
+        "usage": "שימושים",
+        "validUntil": "תוקף",
+        "status": "סטטוס"
+      }
+    },
+    "subscriptions": {
+      "status": {
+        "active": "פעיל"
+      }
+    },
+    "marketingDashboard": {
+      "subtitle": "סקירת שיווק",
+      "refresh": "רענן",
+      "totalSubscribers": "סה״כ מנויים",
+      "emailOpenRate": "שיעור פתיחת אימיילים",
+      "pushClickRate": "שיעור לחיצה על התראות",
+      "activeSegments": "סגמנטים פעילים",
+      "campaignStatus": {
+        "active": "פעיל",
+        "completed": "הושלם",
+        "scheduled": "מתוזמן",
+        "draft": "טיוטה"
+      }
+    },
+    "transactions": {
+      "subtitle": "היסטוריית עסקאות",
+      "filters": {
+        "all": "הכל"
+      }
+    },
+    "pushNotifications": {
+      "filters": {
+        "all": "הכל"
+      }
     }
   },
   "watchParty": {

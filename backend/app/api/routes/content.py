@@ -82,20 +82,34 @@ async def get_by_category(
     page: int = Query(1, ge=1),
     limit: int = Query(20, ge=1, le=50),
 ):
-    """Get content by category."""
+    """Get content by category (accepts ID or slug)."""
     skip = (page - 1) * limit
 
-    category = await Category.get(category_id)
+    # Try to get category by ID first, then by slug
+    category = None
+    try:
+        category = await Category.get(category_id)
+    except Exception:
+        # ID parsing failed, try slug lookup
+        pass
+
+    if not category:
+        # Try to get by slug (e.g., "movies" -> Category with slug="movies")
+        category = await Category.find_one(Category.slug == category_id)
+
     if not category:
         raise HTTPException(status_code=404, detail="Category not found")
 
+    # Use the actual category ID from the found category object
+    category_obj_id = str(category.id)
+
     items = await Content.find(
-        Content.category_id == category_id,
+        Content.category_id == category_obj_id,
         Content.is_published == True,
     ).skip(skip).limit(limit).to_list()
 
     total = await Content.find(
-        Content.category_id == category_id,
+        Content.category_id == category_obj_id,
         Content.is_published == True,
     ).count()
 

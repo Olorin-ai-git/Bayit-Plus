@@ -156,19 +156,23 @@ export function useWakeWordListening(options: UseWakeWordListeningOptions): UseW
 
     // Skip if audio is too short (less than 0.5 seconds)
     if (audioBlob.size < 16000) {
+      console.log('[WakeWordListening] Audio blob too short, skipping transcription');
       vadRef.current?.reset();
       bufferRef.current.clear();
       setIsAwake(false);
       isAwakeRef.current = false;
+      setIsProcessing(false);
       return;
     }
 
     setIsSendingToServer(true);
+    console.log('[WakeWordListening] Sending audio to transcription API');
 
     try {
       const result = await transcribeAudio(audioBlob);
 
       if (result.text && result.text.trim()) {
+        console.log('[WakeWordListening] Transcription received:', result.text.substring(0, 100));
         onTranscript(result.text.trim(), result.language);
       }
     } catch (err) {
@@ -178,11 +182,19 @@ export function useWakeWordListening(options: UseWakeWordListeningOptions): UseW
     } finally {
       setIsSendingToServer(false);
       isSendingToServerRef.current = false;
+      // Keep isProcessing true - it will be reset by onTranscript or after timeout
+      // Don't reset it here to avoid flickering
+      console.log('[WakeWordListening] Transcription complete, waiting for response');
       vadRef.current?.reset();
       bufferRef.current?.clear();
       setIsAwake(false);
       isAwakeRef.current = false;
       setWakeWordDetected(false);
+
+      // Reset processing state after a short delay to ensure UI updates
+      setTimeout(() => {
+        setIsProcessing(false);
+      }, 500);
     }
   }, [transcribeAudio, onTranscript, onError]);
 
@@ -214,17 +226,35 @@ export function useWakeWordListening(options: UseWakeWordListeningOptions): UseW
     }
 
     const vadState = vadRef.current.process(level);
+    const energyThreshold = vadRef.current.getEnergyThreshold();
+    const speechDuration = vadRef.current.getSpeechDuration();
+    const silenceDuration = vadRef.current.getSilenceDuration();
+
+    // Only log when audio exceeds threshold or state changes
+    if (level.average >= energyThreshold || vadState !== 'silence') {
+      // console.log('[WakeWordListening] THRESHOLD REACHED:', {
+      //   average: level.average.toFixed(4),
+      //   peak: level.peak.toFixed(4),
+      //   threshold: energyThreshold.toFixed(4),
+      //   exceeded: level.average >= energyThreshold,
+      //   state: vadState,
+      //   speechDuration,
+      //   silenceDuration,
+      // });
+    }
 
     if (vadState === 'speech') {
       // Speech detected - continue recording
       if (!bufferRef.current.isRecording()) {
+        console.log('[WakeWordListening] Speech detected! Setting isProcessing=true');
         bufferRef.current.startSpeech();
         setIsProcessing(true);
       }
     } else if (vadState === 'silence_after_speech' && vadRef.current.shouldSendToAPI() && !isSendingToServerRef.current) {
       // Silence after speech - send to API (prevent concurrent requests)
+      console.log('[WakeWordListening] Silence after speech detected! Sending to transcription API');
       bufferRef.current.endSpeech();
-      setIsProcessing(false);
+      // Keep isProcessing true while transcribing - shows "Processing" status in UI
       setIsSendingToServer(true);
       isSendingToServerRef.current = true;
 
@@ -435,6 +465,8 @@ registerProcessor('audio-processor', AudioProcessorWorklet);
   }, [isWeb, stopWebAudio]);
 
   // Auto-start/stop based on enabled state
+  // Note: Do NOT include isListening in dependencies to avoid circular dependency
+  // isListening changes are triggered by start()/stop() which are called here
   useEffect(() => {
     console.log('[WakeWordListening] useEffect triggered:', { enabled, isListening, isSupported });
 
@@ -447,12 +479,13 @@ registerProcessor('audio-processor', AudioProcessorWorklet);
     }
 
     return () => {
-      if (isListening) {
+      // Cleanup: stop listening if still active when effect unmounts or dependencies change
+      if (isListeningRef.current) {
         console.log('[WakeWordListening] Cleanup: stopping...');
         stop();
       }
     };
-  }, [enabled, isListening, isSupported]);
+  }, [enabled, isSupported]);
 
   // Subscribe to TTS events to prevent feedback loops
   useEffect(() => {

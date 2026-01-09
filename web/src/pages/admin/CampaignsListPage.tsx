@@ -27,10 +27,10 @@ interface Pagination {
   total: number;
 }
 
-const statusColors: Record<string, { bg: string; text: string; label: string }> = {
-  active: { bg: 'rgba(34, 197, 94, 0.2)', text: '#22C55E', label: 'פעיל' },
-  inactive: { bg: 'rgba(107, 114, 128, 0.2)', text: '#6B7280', label: 'לא פעיל' },
-  expired: { bg: 'rgba(239, 68, 68, 0.2)', text: '#EF4444', label: 'פג תוקף' },
+const statusColors: Record<string, { bg: string; text: string; labelKey: string }> = {
+  active: { bg: 'rgba(34, 197, 94, 0.2)', text: '#22C55E', labelKey: 'admin.campaigns.status.active' },
+  inactive: { bg: 'rgba(107, 114, 128, 0.2)', text: '#6B7280', labelKey: 'admin.campaigns.status.inactive' },
+  expired: { bg: 'rgba(239, 68, 68, 0.2)', text: '#EF4444', labelKey: 'admin.campaigns.expired' },
 };
 
 export default function CampaignsListPage() {
@@ -81,7 +81,7 @@ export default function CampaignsListPage() {
     const style = statusColors[status] || statusColors.inactive;
     return (
       <View style={[styles.badge, { backgroundColor: style.bg }]}>
-        <Text style={[styles.badgeText, { color: style.text }]}>{style.label}</Text>
+        <Text style={[styles.badgeText, { color: style.text }]}>{t(style.labelKey, { defaultValue: status })}</Text>
       </View>
     );
   };
@@ -89,7 +89,7 @@ export default function CampaignsListPage() {
   const columns = [
     {
       key: 'name',
-      label: 'שם',
+      label: t('admin.campaigns.columns.name', { defaultValue: 'Name' }),
       render: (name: string, campaign: Campaign) => (
         <View>
           <Text style={styles.campaignName}>{name}</Text>
@@ -106,14 +106,14 @@ export default function CampaignsListPage() {
     },
     {
       key: 'discount_percent',
-      label: 'הנחה',
+      label: t('admin.campaigns.columns.discount', { defaultValue: 'Discount' }),
       render: (discount: number) => (
         <Text style={styles.discountText}>{discount}%</Text>
       ),
     },
     {
       key: 'usage_count',
-      label: 'שימושים',
+      label: t('admin.campaigns.columns.usage', { defaultValue: 'Uses' }),
       render: (count: number, campaign: Campaign) => (
         <Text style={styles.cellText}>
           {count}
@@ -123,7 +123,7 @@ export default function CampaignsListPage() {
     },
     {
       key: 'valid_until',
-      label: 'תוקף',
+      label: t('admin.campaigns.columns.validUntil', { defaultValue: 'Valid Until' }),
       render: (date: string) => (
         <Text style={styles.dateText}>
           {new Date(date).toLocaleDateString('he-IL')}
@@ -132,7 +132,7 @@ export default function CampaignsListPage() {
     },
     {
       key: 'status',
-      label: 'סטטוס',
+      label: t('admin.campaigns.columns.status', { defaultValue: 'Status' }),
       render: (status: string) => getStatusBadge(status),
     },
     {
@@ -155,11 +155,11 @@ export default function CampaignsListPage() {
       <View style={[styles.header, { flexDirection }]}>
         <View>
           <Text style={[styles.pageTitle, { textAlign }]}>{t('admin.titles.campaigns')}</Text>
-          <Text style={[styles.subtitle, { textAlign }]}>נהל קודי קופון והנחות</Text>
+          <Text style={[styles.subtitle, { textAlign }]}>{t('admin.campaigns.subtitle', { defaultValue: 'Manage coupon codes and discounts' })}</Text>
         </View>
         <Link to="/admin/campaigns/new" style={{ textDecoration: 'none' }}>
           <GlassButton
-            title="קמפיין חדש"
+            title={t('admin.actions.newCampaign')}
             variant="primary"
             icon={<Plus size={18} color={colors.text} />}
           />
@@ -171,10 +171,10 @@ export default function CampaignsListPage() {
         columns={columns}
         data={campaigns}
         loading={loading}
-        searchPlaceholder="חפש קמפיין..."
+        searchPlaceholder={t('admin.emailCampaigns.searchPlaceholder')}
         pagination={pagination}
         onPageChange={(page) => setPagination((prev) => ({ ...prev, page }))}
-        emptyMessage="לא נמצאו קמפיינים"
+        emptyMessage={t('admin.emailCampaigns.emptyMessage')}
       />
     </ScrollView>
   );
