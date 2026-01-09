@@ -25,7 +25,7 @@ const DEFAULT_VOICE_PREFERENCES: VoicePreferences = {
   silence_threshold_ms: 2000,        // 2 seconds of silence before sending
   vad_sensitivity: 'medium',         // Balanced VAD sensitivity
   // Wake word settings for "Hi Bayit" activation
-  wake_word_enabled: true,           // Wake word detection enabled by default
+  wake_word_enabled: false,          // Wake word detection DISABLED by default - respond immediately
   wake_word: 'hi bayit',             // Default wake phrase
   wake_word_sensitivity: 0.7,        // 0-1 sensitivity (0.7 balanced)
   wake_word_cooldown_ms: 2000,       // Cooldown between detections

@@ -2,7 +2,8 @@ import { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, Pressable, ActivityIndicator, ScrollView } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { Mic, Eye, Type, Radio, ShieldCheck, Volume2, Zap, Radio as RadioIcon, Check, Volume, Gauge, Plus, Minus } from 'lucide-react';
-import { useVoiceSettingsStore, TextSize, VADSensitivity, VoiceMode } from '@/stores/voiceSettingsStore';
+import { useVoiceSettingsStore, TextSize, VADSensitivity } from '@/stores/voiceSettingsStore';
+import { VoiceMode } from '@bayit/shared-types/voiceModes';
 import { colors, spacing, borderRadius } from '@bayit/shared/theme';
 import { GlassView } from '@bayit/shared/ui';
 
@@ -249,12 +250,12 @@ export default function VoiceSettings() {
                   {t('profile.voice.ttsVolume', 'Voice Volume')}
                 </Text>
                 <Text style={styles.controlValue}>
-                  {Math.round(preferences.tts_volume * 100)}%
+                  {Math.round((preferences.tts_volume ?? 1.0) * 100)}%
                 </Text>
               </View>
               <View style={[styles.volumeControls, isRTL && styles.volumeControlsRTL]}>
                 <Pressable
-                  onPress={() => setTTSVolume(Math.max(0, preferences.tts_volume - 0.1))}
+                  onPress={() => setTTSVolume(Math.max(0, (preferences.tts_volume ?? 1.0) - 0.1))}
                   style={styles.volumeButton}
                 >
                   <Minus size={14} color={colors.text} />
@@ -263,12 +264,12 @@ export default function VoiceSettings() {
                   <View
                     style={[
                       styles.slider,
-                      { width: `${preferences.tts_volume * 100}%` },
+                      { width: `${(preferences.tts_volume ?? 1.0) * 100}%` },
                     ]}
                   />
                 </View>
                 <Pressable
-                  onPress={() => setTTSVolume(Math.min(1, preferences.tts_volume + 0.1))}
+                  onPress={() => setTTSVolume(Math.min(1, (preferences.tts_volume ?? 1.0) + 0.1))}
                   style={styles.volumeButton}
                 >
                   <Plus size={14} color={colors.text} />
@@ -286,12 +287,12 @@ export default function VoiceSettings() {
                   {t('profile.voice.ttsSpeed', 'Speaking Speed')}
                 </Text>
                 <Text style={styles.controlValue}>
-                  {preferences.tts_speed.toFixed(1)}x
+                  {(preferences.tts_speed ?? 1.0).toFixed(1)}x
                 </Text>
               </View>
               <View style={[styles.speedOptions, isRTL && styles.speedOptionsRTL]}>
                 {[0.75, 1.0, 1.25, 1.5].map((speed) => {
-                  const isSelected = Math.abs(preferences.tts_speed - speed) < 0.05;
+                  const isSelected = Math.abs((preferences.tts_speed ?? 1.0) - speed) < 0.05;
                   return (
                     <Pressable
                       key={speed}

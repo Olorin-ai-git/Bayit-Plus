@@ -29,6 +29,10 @@ export { UserAccountMenu } from './UserAccountMenu';
 export { VoiceSearchButton } from './VoiceSearchButton';
 export { SoundwaveVisualizer } from './SoundwaveVisualizer';
 
+// Voice-first conversational interface components (Phases 3, 10)
+export { VoiceStatusOverlay } from './VoiceStatusOverlay';
+export { VisualFeedbackSystem } from './VisualFeedbackSystem';
+
 // Note: Admin, WatchParty, and Chat components are web-only
 // They use lucide-react icons which are not available in React Native
 // Import them directly in web app if needed:

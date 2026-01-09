@@ -575,6 +575,8 @@
     "voice": {
       "title": "קול ונגישות",
       "description": "הגדר תכונות קול ונגישות",
+      "operationMode": "מצב ההפעלה",
+      "operationModeDesc": "בחר כיצד תשתמש באפליקציה",
       "voiceSearch": "חיפוש קולי",
       "voiceSearchEnabled": "הפעל חיפוש קולי",
       "voiceSearchEnabledDesc": "חפש תוכן באמצעות הקול שלך",
@@ -599,7 +601,22 @@
       "textSize": "גודל טקסט",
       "textSizeSmall": "קטן",
       "textSizeMedium": "בינוני",
-      "textSizeLarge": "גדול"
+      "textSizeLarge": "גדול",
+      "voiceOnlyInfo": "מצב קולי בלבד",
+      "voiceOnlyDetails": "אמור \"Hi Bayit\" להפעלה. שלט רחוק מבוטל. ניווט מלא דרך פקודות קוליות.",
+      "hybridInfo": "מצב היברידי",
+      "hybridDetails": "שימוש בקול או בשלט רחוק. משוב קולי על פעולות ללא קול.",
+      "classicInfo": "מצב קלאסי",
+      "classicDetails": "כל התכונות הקוליות מבוטלות. שלט רחוק בלבד.",
+      "textToSpeech": "תגובות קוליות",
+      "ttsEnabled": "אפשר תגובות קוליות",
+      "ttsEnabledDesc": "היישום ישתמע תגובות לפקודות הקול שלך",
+      "ttsVolume": "עוצמת קול",
+      "ttsSpeed": "מהירות דיבור",
+      "hybridFeedback": "משוב אינטראקטיבי",
+      "voiceFeedback": "משוב קולי על פעולות",
+      "voiceFeedbackDesc": "קבל אישור קולי כשאתה משתמש בשלט רחוק או לוחץ על כפתורים",
+      "feedbackExample": "דוגמה: לחץ על סרט → היישום אומר \"מנגן [שם הסרט]\""
     },
     "dropdown": {
       "myProfile": "הפרופיל שלי",
@@ -610,6 +627,14 @@
     },
     "guest": "אורח",
     "morningRitual": "טקס הבוקר"
+  },
+  "voiceMode": {
+    "voiceOnly": "קולי בלבד",
+    "voiceOnlyDesc": "ללא שלט רחוק - ניווט מלא דרך קול",
+    "hybrid": "היברידי",
+    "hybridDesc": "קול + שלט רחוק - משוב קולי על פעולות",
+    "classic": "קלאסי",
+    "classicDesc": "ללא קול - שלט רחוק בלבד"
   },
   "settings": {
     "title": "הגדרות",

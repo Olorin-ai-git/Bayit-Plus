@@ -271,6 +271,14 @@ export interface VoicePreferences {
   wake_word: string;
   wake_word_sensitivity: number;
   wake_word_cooldown_ms: number;
+  // Three-mode system (Voice Only, Hybrid, Classic)
+  voice_mode: string;
+  voice_feedback_enabled: boolean;
+  // TTS settings
+  tts_enabled: boolean;
+  tts_voice_id: string;
+  tts_speed: number;
+  tts_volume: number;
 }
 
 // Profiles Service (API)

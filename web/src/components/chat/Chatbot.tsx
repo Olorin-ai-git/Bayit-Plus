@@ -21,7 +21,7 @@ import { SoundwaveVisualizer, VoiceStatusOverlay } from '@bayit/shared'
 import { useAuthStore } from '@/stores/authStore'
 import { useChatbotStore, type ChatbotAction } from '@/stores/chatbotStore'
 import { useVoiceSettingsStore, VoiceMode } from '@bayit/shared-stores/voiceSettingsStore'
-import { useModeEnforcement, useVoiceResponseCoordinator, useConversationContext } from '@bayit/shared-hooks'
+import { useModeEnforcement, useVoiceResponseCoordinator, useConversationContext, useWakeWordListening } from '@bayit/shared-hooks'
 import logger from '@/utils/logger'
 import { colors, spacing, borderRadius } from '@bayit/shared/theme'
 import { GlassView, GlassCard, GlassButton, GlassBadge } from '@bayit/shared/ui'
@@ -68,6 +68,95 @@ export default function Chatbot() {
     recordCommand,
     recordSearchQuery,
   } = useConversationContext()
+
+  // Memoize the transcript handler for wake word listening
+  const handleWakeWordTranscript = useCallback(async (transcript: string) => {
+    // Hook has already transcribed the audio - just process the result
+    if (transcript && transcript.trim()) {
+      setCurrentTranscript(transcript)
+      setVoiceStatusVisible(true)
+      recordCommand(transcript)
+
+      // Add user message and get AI response
+      setMessages((prev) => [...prev, { role: 'user', content: transcript }])
+      setIsLoading(true)
+
+      try {
+        const chatResponse = await chatService.sendMessage(
+          transcript,
+          conversationId,
+          context
+        )
+        setConversationId(chatResponse.conversation_id)
+
+        setMessages((prev) => [
+          ...prev,
+          { role: 'assistant', content: chatResponse.message },
+        ])
+
+        if (chatResponse.content_ids && chatResponse.content_ids.length > 0) {
+          mentionContent(chatResponse.content_ids)
+        }
+
+        if (chatResponse.action?.type === 'search' && chatResponse.action?.payload?.query) {
+          recordSearchQuery(chatResponse.action.payload.query)
+        }
+
+        await handleVoiceResponse({
+          message: chatResponse.message,
+          conversation_id: chatResponse.conversation_id,
+          recommendations: chatResponse.recommendations,
+          spoken_response: chatResponse.spoken_response,
+          action: chatResponse.action,
+          content_ids: chatResponse.content_ids,
+          visual_action: chatResponse.visual_action,
+          confidence: chatResponse.confidence,
+        })
+      } catch (error) {
+        logger.error('Failed to process voice command:', 'Chatbot', error)
+        setMessages((prev) => [
+          ...prev,
+          {
+            role: 'assistant',
+            content: t('chatbot.errors.general'),
+            isError: true,
+          },
+        ])
+      } finally {
+        setIsLoading(false)
+      }
+    }
+  }, [conversationId, context, recordCommand, mentionContent, recordSearchQuery, handleVoiceResponse, t])
+
+  // Initialize wake word listening for Voice Only mode
+  const {
+    isListening,
+    isAwake,
+    isProcessing,
+    wakeWordDetected,
+    audioLevel,
+    error: wakeWordError,
+  } = useWakeWordListening({
+    enabled: currentMode === VoiceMode.VOICE_ONLY, // Only listen in Voice Only mode
+    wakeWordEnabled: preferences.wake_word_enabled, // Use actual setting from preferences (default: false)
+    wakeWord: preferences.wake_word || 'hi bayit',
+    wakeWordSensitivity: preferences.wake_word_sensitivity,
+    wakeWordCooldownMs: preferences.wake_word_cooldown_ms,
+    onTranscript: handleWakeWordTranscript,
+    onWakeWordDetected: () => {
+      console.log('Wake word detected!')
+      setVoiceStatusVisible(true)
+    },
+    onError: (error) => {
+      logger.error('Wake word listening error:', 'Chatbot', error)
+    },
+    silenceThresholdMs: preferences.silence_threshold_ms,
+    vadSensitivity: preferences.vad_sensitivity,
+    transcribeAudio: async (audioBlob) => {
+      const response = await chatService.transcribeAudio(audioBlob)
+      return response
+    },
+  })
 
   const isRTL = i18n.language === 'he' || i18n.language === 'ar'
   const isVoiceOnlyMode = currentMode === VoiceMode.VOICE_ONLY
@@ -406,13 +495,13 @@ export default function Chatbot() {
     return null
   }
 
-  // Voice Only Mode: Show only VoiceStatusOverlay, hide chat UI
+  // Voice Only Mode: Show voice status overlay
   if (isVoiceOnlyMode) {
     return (
       <VoiceStatusOverlay
-        isListening={isRecording && !isTranscribing}
-        isProcessing={isLoading && !currentTranscript}
-        isSpeaking={isLoading && !!currentTranscript}
+        isListening={isListening && !isAwake && !isProcessing}
+        isProcessing={isAwake || isProcessing}
+        isSpeaking={isLoading}
         currentTranscript={currentTranscript}
         autoHideDuration={3000}
         onAutoHide={() => {

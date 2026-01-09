@@ -19,6 +19,9 @@ export { GlassTabs } from './GlassTabs';
 export { GlassCategoryPill } from './GlassCategoryPill';
 export { AnalogClock } from './AnalogClock';
 
+// Voice-first conversational interface components (Phases 10)
+export { GlassParticleLayer } from './GlassParticleLayer';
+
 // Types
 export type { GlassModalProps, ModalType, ModalButton } from './GlassModal';
 export type { AnalogClockProps } from './AnalogClock';

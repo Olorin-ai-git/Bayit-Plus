@@ -5,11 +5,8 @@
  * Auto-hides after response completes
  */
 
-import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, Animated, Platform } from 'react-native';
-import { Mic } from 'lucide-react';
+import React, { useEffect } from 'react';
 import { SoundwaveVisualizer } from './SoundwaveVisualizer';
-import { GlassView } from './ui';
 import { colors, spacing, borderRadius } from '../theme';
 
 interface VoiceStatusOverlayProps {
@@ -26,62 +23,55 @@ export function VoiceStatusOverlay({
   isProcessing,
   isSpeaking,
   currentTranscript = '',
-  autoHideDuration = 3000, // Default 3 seconds
+  autoHideDuration = 3000,
   onAutoHide,
 }: VoiceStatusOverlayProps) {
-  const [fadeAnim] = useState(new Animated.Value(0));
   const isActive = isListening || isProcessing || isSpeaking;
 
   // Auto-hide after speaking completes
   useEffect(() => {
     if (isSpeaking) {
       const hideTimer = setTimeout(() => {
-        Animated.timing(fadeAnim, {
-          toValue: 0,
-          duration: 300,
-          useNativeDriver: true,
-        }).start(() => {
-          onAutoHide?.();
-        });
+        onAutoHide?.();
       }, autoHideDuration);
 
       return () => clearTimeout(hideTimer);
     }
-  }, [isSpeaking, autoHideDuration, fadeAnim, onAutoHide]);
-
-  // Show/hide overlay based on active state
-  useEffect(() => {
-    Animated.timing(fadeAnim, {
-      toValue: isActive ? 1 : 0,
-      duration: 300,
-      useNativeDriver: true,
-    }).start();
-  }, [isActive, fadeAnim]);
+  }, [isSpeaking, autoHideDuration, onAutoHide]);
 
   if (!isActive) {
     return null;
   }
 
   return (
-    <Animated.View
-      style={[
-        styles.container,
-        {
-          opacity: fadeAnim,
-        },
-      ]}
-    >
-      <GlassView intensity="high" style={styles.overlay}>
+    <div style={styles.container as any}>
+      <style>{`
+        @keyframes pulse {
+          0%, 100% { opacity: 0.3; transform: scale(0.8); }
+          50% { opacity: 1; transform: scale(1); }
+        }
+        @keyframes pulse-ring {
+          0%, 100% { opacity: 0.5; transform: scale(1); }
+          50% { opacity: 0; transform: scale(1.4); }
+        }
+        .processing-dot-animated {
+          animation: pulse 1.5s ease-in-out infinite;
+        }
+        .processing-ring {
+          position: absolute;
+          width: 100%;
+          height: 100%;
+          border: 2px solid rgba(0, 217, 255, 0.6);
+          border-radius: 50%;
+          animation: pulse-ring 1.5s ease-in-out infinite;
+        }
+      `}</style>
+      <div style={styles.overlay as any}>
         {/* Visual Indicator Section */}
-        <View
-          style={[
-            styles.indicatorSection,
-            currentTranscript && { marginBottom: spacing.md },
-          ]}
-        >
+        <div style={styles.indicatorSection as any}>
           {isListening && (
-            <>
-              <View style={styles.visualizerContainer}>
+            <div style={styles.contentWrapper as any}>
+              <div style={styles.visualizerContainer as any}>
                 <SoundwaveVisualizer
                   audioLevel={0.6}
                   isListening={true}
@@ -89,30 +79,24 @@ export function VoiceStatusOverlay({
                   isSendingToServer={false}
                   compact={true}
                 />
-              </View>
-              <Text style={styles.statusText}>Listening...</Text>
-            </>
+              </div>
+              <div style={styles.statusText as any}>Listening...</div>
+            </div>
           )}
 
           {isProcessing && (
-            <>
-              <View style={styles.processingIndicator}>
-                <Animated.View
-                  style={[
-                    styles.processingDot,
-                    {
-                      opacity: createPulseAnimation(),
-                    },
-                  ]}
-                />
-              </View>
-              <Text style={styles.statusText}>Processing...</Text>
-            </>
+            <div style={styles.contentWrapper as any}>
+              <div style={styles.processingIndicator as any}>
+                <div className="processing-ring" />
+                <div style={styles.processingDot as any} className="processing-dot-animated" />
+              </div>
+              <div style={styles.statusText as any}>Processing...</div>
+            </div>
           )}
 
           {isSpeaking && (
-            <>
-              <View style={styles.visualizerContainer}>
+            <div style={styles.contentWrapper as any}>
+              <div style={styles.visualizerContainer as any}>
                 <SoundwaveVisualizer
                   audioLevel={0.7}
                   isListening={false}
@@ -120,111 +104,108 @@ export function VoiceStatusOverlay({
                   isSendingToServer={false}
                   compact={true}
                 />
-              </View>
-              <Text style={styles.statusText}>Speaking...</Text>
-            </>
+              </div>
+              <div style={styles.statusText as any}>Speaking...</div>
+            </div>
           )}
-        </View>
+        </div>
 
         {/* Transcript Section */}
         {currentTranscript && (
-          <View style={styles.transcriptSection}>
-            <Text style={styles.transcriptLabel}>You said:</Text>
-            <Text style={styles.transcriptText} numberOfLines={2}>
+          <div style={styles.transcriptSection as any}>
+            <div style={styles.transcriptLabel as any}>You said:</div>
+            <div style={styles.transcriptText as any}>
               {currentTranscript}
-            </Text>
-          </View>
+            </div>
+          </div>
         )}
-      </GlassView>
-    </Animated.View>
+      </div>
+    </div>
   );
 }
 
-/**
- * Helper function to create pulse animation
- */
-function createPulseAnimation(): Animated.Value {
-  const anim = new Animated.Value(1);
 
-  Animated.loop(
-    Animated.sequence([
-      Animated.timing(anim, {
-        toValue: 0.3,
-        duration: 600,
-        useNativeDriver: true,
-      }),
-      Animated.timing(anim, {
-        toValue: 1,
-        duration: 600,
-        useNativeDriver: true,
-      }),
-    ])
-  ).start();
-
-  return anim;
-}
-
-const styles = StyleSheet.create({
+const styles = {
   container: {
-    position: 'fixed' as any,
+    position: 'fixed',
     bottom: spacing.lg,
     left: 0,
     right: 0,
+    display: 'flex',
+    justifyContent: 'center',
     alignItems: 'center',
     zIndex: 40,
+    pointerEvents: 'none' as any,
   },
   overlay: {
+    display: 'flex',
+    flexDirection: 'column' as any,
     alignItems: 'center',
     justifyContent: 'center',
-    paddingVertical: spacing.lg,
-    paddingHorizontal: spacing.xl,
+    padding: `${spacing.lg}px ${spacing.xl}px`,
     minWidth: 280,
     maxWidth: '90%',
+    backgroundColor: 'rgba(26, 26, 46, 0.85)',
+    borderRadius: borderRadius.xl,
+    border: '1px solid rgba(255, 255, 255, 0.1)',
+    backdropFilter: 'blur(20px)',
   },
   indicatorSection: {
+    display: 'flex',
+    flexDirection: 'column' as any,
     alignItems: 'center',
-    gap: spacing.md,
+    gap: spacing.sm,
+  },
+  contentWrapper: {
+    display: 'flex',
+    flexDirection: 'column' as any,
+    alignItems: 'center',
+    gap: spacing.sm,
   },
   visualizerContainer: {
     height: 60,
+    display: 'flex',
     justifyContent: 'center',
     alignItems: 'center',
   },
   processingIndicator: {
+    position: 'relative' as any,
     width: 48,
     height: 48,
+    display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
   },
   processingDot: {
+    position: 'relative' as any,
     width: 12,
     height: 12,
     borderRadius: 6,
     backgroundColor: colors.primary,
+    zIndex: 1,
   },
   statusText: {
     fontSize: 14,
     color: colors.textSecondary,
-    fontWeight: '500',
-    marginTop: spacing.sm,
+    fontWeight: 500,
   },
   transcriptSection: {
-    borderTopWidth: 1,
-    borderTopColor: 'rgba(255, 255, 255, 0.1)',
+    borderTop: '1px solid rgba(255, 255, 255, 0.1)',
     paddingTop: spacing.md,
+    marginTop: spacing.md,
     width: '100%',
   },
   transcriptLabel: {
     fontSize: 12,
     color: colors.textMuted,
     marginBottom: spacing.xs,
-    textTransform: 'uppercase',
+    textTransform: 'uppercase' as any,
   },
   transcriptText: {
     fontSize: 14,
     color: colors.text,
     lineHeight: 20,
   },
-});
+};
 
 export default VoiceStatusOverlay;

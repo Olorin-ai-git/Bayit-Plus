@@ -345,6 +345,19 @@ DEFAULT_VOICE_SETTINGS = {
     "hold_button_mode": False,  # Fallback to press-and-hold remote button
     "silence_threshold_ms": 2000,  # Wait 2 seconds of silence before processing
     "vad_sensitivity": "medium",  # Voice Activity Detection sensitivity: low, medium, high
+    # Wake word settings
+    "wake_word_enabled": False,  # DISABLED by default - respond immediately without wake word
+    "wake_word": "hi bayit",
+    "wake_word_sensitivity": 0.7,  # 0-1 sensitivity
+    "wake_word_cooldown_ms": 2000,
+    # Three-mode system
+    "voice_mode": "voice_only",  # voice_only, hybrid, classic
+    "voice_feedback_enabled": True,
+    # TTS settings
+    "tts_enabled": True,
+    "tts_voice_id": "EXAVITQu4VqLrzJuXi3n",  # ElevenLabs Hebrew female voice
+    "tts_speed": 1.0,  # 0.5-2.0
+    "tts_volume": 1.0,  # 0-1
 }
 
 
@@ -365,6 +378,19 @@ class VoicePreferences(BaseModel):
     hold_button_mode: bool = False  # Fallback to press-and-hold remote button
     silence_threshold_ms: int = 2000  # Wait N ms of silence before processing
     vad_sensitivity: str = "medium"  # Voice Activity Detection sensitivity: low, medium, high
+    # Wake word settings
+    wake_word_enabled: bool = False  # DISABLED by default - respond immediately without wake word
+    wake_word: str = "hi bayit"
+    wake_word_sensitivity: float = 0.7  # 0-1 sensitivity
+    wake_word_cooldown_ms: int = 2000
+    # Three-mode system
+    voice_mode: str = "voice_only"  # voice_only, hybrid, classic
+    voice_feedback_enabled: bool = True
+    # TTS settings
+    tts_enabled: bool = True
+    tts_voice_id: str = "EXAVITQu4VqLrzJuXi3n"  # ElevenLabs Hebrew female voice
+    tts_speed: float = 1.0  # 0.5-2.0
+    tts_volume: float = 1.0  # 0-1
 
 
 @router.get("/preferences/ai")
