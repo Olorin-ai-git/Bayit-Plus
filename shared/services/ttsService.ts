@@ -59,8 +59,8 @@ class TTSService extends EventEmitter {
   };
 
   private getDefaultVoiceId(): string {
-    // Use env variable from Vite config, otherwise fallback to George
-    return (import.meta.env.VITE_ELEVENLABS_DEFAULT_VOICE_ID as string) || 'JBFqnCBsd6RMkjVDRZzb';
+    // Use env variable from Vite config, otherwise fallback to Jessica
+    return (import.meta.env.VITE_ELEVENLABS_DEFAULT_VOICE_ID as string) || 'cgSgspJ2msm6clMCkdW9';
   }
 
   constructor() {

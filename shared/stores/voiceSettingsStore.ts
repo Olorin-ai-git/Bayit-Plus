@@ -32,7 +32,7 @@ const DEFAULT_VOICE_PREFERENCES: VoicePreferences = {
   voice_mode: VoiceMode.VOICE_ONLY,  // Default: Voice Only mode (no remote)
   voice_feedback_enabled: true,      // Voice feedback on interactions (default for Hybrid)
   tts_enabled: true,                 // TTS enabled by default
-  tts_voice_id: 'JBFqnCBsd6RMkjVDRZzb', // Default voice (configured in .env via VITE_ELEVENLABS_DEFAULT_VOICE_ID)
+  tts_voice_id: 'cgSgspJ2msm6clMCkdW9', // Jessica - female, young, expressive, conversational (configured in .env via VITE_ELEVENLABS_DEFAULT_VOICE_ID)
   tts_speed: 1.0,                    // Normal speech speed (0.5-2.0)
   tts_volume: 1.0,                   // Max volume (0-1)
 };
