@@ -778,7 +778,7 @@ async def transcribe_audio(
 
         # Build request data with language hint for better accuracy
         request_data = {
-            "model_id": "scribe_v2",  # Latest available model (v3 not yet available)
+            "model_id": "scribe_v2",  # Latest STT model - supports 99+ languages including Hebrew (3.1% WER)
             "language_code": language_code,  # Always send language code (ElevenLabs expects ISO 639-1: 'en', 'he', etc.)
         }
 
