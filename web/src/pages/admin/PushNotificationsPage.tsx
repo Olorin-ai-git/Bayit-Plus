@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { View, Text, StyleSheet, Pressable, ScrollView, TextInput } from 'react-native';
 import { useTranslation } from 'react-i18next';
-import { Plus, Send, Clock, Trash2, Bell } from 'lucide-react';
+import { Plus, Send, Clock, Trash2, Edit } from 'lucide-react';
 import DataTable from '@/components/admin/DataTable';
 import { marketingService } from '@/services/adminApi';
 import { colors, spacing, borderRadius } from '@bayit/shared/theme';
@@ -50,6 +50,7 @@ export default function PushNotificationsPage() {
   const [selectedNotification, setSelectedNotification] = useState<PushNotification | null>(null);
   const [scheduleDate, setScheduleDate] = useState('');
   const [newNotification, setNewNotification] = useState({ title: '', body: '' });
+  const [editingNotification, setEditingNotification] = useState<PushNotification | null>(null);
 
   const loadNotifications = useCallback(async () => {
     setLoading(true);
@@ -87,13 +88,30 @@ export default function PushNotificationsPage() {
       return;
     }
     try {
-      await marketingService.createPushNotification(newNotification);
+      if (editingNotification) {
+        await marketingService.updatePushNotification(editingNotification.id, newNotification);
+      } else {
+        await marketingService.createPushNotification(newNotification);
+      }
       setShowCreateModal(false);
       setNewNotification({ title: '', body: '' });
+      setEditingNotification(null);
       loadNotifications();
     } catch (error) {
-      logger.error('Failed to create push notification', 'PushNotificationsPage', error);
+      logger.error('Failed to create/update push notification', 'PushNotificationsPage', error);
     }
+  };
+
+  const handleEdit = (notification: PushNotification) => {
+    setEditingNotification(notification);
+    setNewNotification({ title: notification.title, body: notification.body });
+    setShowCreateModal(true);
+  };
+
+  const handleCloseModal = () => {
+    setShowCreateModal(false);
+    setNewNotification({ title: '', body: '' });
+    setEditingNotification(null);
   };
 
   const handleSend = async (notification: PushNotification) => {
@@ -167,21 +185,24 @@ export default function PushNotificationsPage() {
     { key: 'created_at', label: t('admin.pushNotifications.columns.created'), width: 150, render: (date: string) => <Text style={styles.dateText}>{formatDate(date)}</Text> },
     {
       key: 'actions',
-      label: '',
-      width: 120,
+      label: t('admin.pushNotifications.columns.actions', 'Actions'),
+      width: 150,
       render: (_: any, notification: PushNotification) => (
         <View style={styles.actionsRow}>
           {notification.status === 'draft' && (
             <>
-              <Pressable style={styles.actionButton} onPress={() => handleSend(notification)}>
+              <Pressable style={styles.actionButton} onPress={() => handleEdit(notification)} title={t('common.edit', 'Edit')}>
+                <Edit size={14} color={colors.primary} />
+              </Pressable>
+              <Pressable style={styles.actionButton} onPress={() => handleSend(notification)} title={t('admin.pushNotifications.send', 'Send')}>
                 <Send size={14} color={colors.success} />
               </Pressable>
-              <Pressable style={styles.actionButton} onPress={() => openScheduleModal(notification)}>
+              <Pressable style={styles.actionButton} onPress={() => openScheduleModal(notification)} title={t('admin.pushNotifications.schedule', 'Schedule')}>
                 <Clock size={14} color={colors.warning} />
               </Pressable>
             </>
           )}
-          <Pressable style={styles.actionButton} onPress={() => handleDelete(notification)}>
+          <Pressable style={styles.actionButton} onPress={() => handleDelete(notification)} title={t('common.delete', 'Delete')}>
             <Trash2 size={14} color={colors.error} />
           </Pressable>
         </View>
@@ -211,7 +232,7 @@ export default function PushNotificationsPage() {
 
       <DataTable columns={columns} data={notifications} loading={loading} searchPlaceholder={t('admin.pushNotifications.searchPlaceholder')} onSearch={handleSearch} pagination={pagination} onPageChange={handlePageChange} emptyMessage={t('admin.pushNotifications.emptyMessage')} />
 
-      <GlassModal visible={showCreateModal} onClose={() => setShowCreateModal(false)} title={t('admin.pushNotifications.createModal')}>
+      <GlassModal visible={showCreateModal} onClose={handleCloseModal} title={editingNotification ? t('admin.pushNotifications.editModal', 'Edit Notification') : t('admin.pushNotifications.createModal')}>
         <View style={styles.modalContent}>
           <View style={styles.formGroup}>
             <Text style={[styles.formLabel, { textAlign }]}>{t('admin.pushNotifications.titleLabel')}</Text>
@@ -222,8 +243,8 @@ export default function PushNotificationsPage() {
             <TextInput style={[styles.input, styles.textArea]} value={newNotification.body} onChangeText={(body) => setNewNotification((p) => ({ ...p, body }))} placeholder={t('admin.push.bodyPlaceholder')} placeholderTextColor={colors.textMuted} multiline numberOfLines={3} />
           </View>
           <View style={styles.modalActions}>
-            <GlassButton title={t('admin.pushNotifications.cancel')} variant="secondary" onPress={() => setShowCreateModal(false)} />
-            <GlassButton title={t('admin.pushNotifications.create')} variant="primary" onPress={handleCreate} />
+            <GlassButton title={t('common.cancel', 'Cancel')} variant="secondary" onPress={handleCloseModal} />
+            <GlassButton title={editingNotification ? t('common.save', 'Save') : t('admin.pushNotifications.create')} variant="primary" onPress={handleCreate} />
           </View>
         </View>
       </GlassModal>

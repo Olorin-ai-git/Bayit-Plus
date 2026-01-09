@@ -57,7 +57,7 @@ export default function DataTable({
   const totalPages = pagination ? Math.ceil(pagination.total / pagination.pageSize) : 0;
 
   return (
-    <GlassCard style={styles.container}>
+    <GlassCard style={styles.container} autoSize>
       {/* Header */}
       {(searchable || actions) && (
         <View style={styles.header}>

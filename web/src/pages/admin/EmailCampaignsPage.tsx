@@ -51,6 +51,7 @@ export default function EmailCampaignsPage() {
   const [selectedCampaign, setSelectedCampaign] = useState<EmailCampaign | null>(null);
   const [testEmail, setTestEmail] = useState('');
   const [newCampaign, setNewCampaign] = useState({ name: '', subject: '', body: '' });
+  const [editingCampaign, setEditingCampaign] = useState<EmailCampaign | null>(null);
 
   const formatDate = (dateStr: string) => {
     return new Date(dateStr).toLocaleDateString(
@@ -96,15 +97,32 @@ export default function EmailCampaignsPage() {
       return;
     }
     try {
-      await marketingService.createEmailCampaign(newCampaign);
+      if (editingCampaign) {
+        await marketingService.updateEmailCampaign(editingCampaign.id, newCampaign);
+      } else {
+        await marketingService.createEmailCampaign(newCampaign);
+      }
       setShowCreateModal(false);
       setNewCampaign({ name: '', subject: '', body: '' });
+      setEditingCampaign(null);
       loadCampaigns();
     } catch (error) {
-      logger.error('Failed to create email campaign', 'EmailCampaignsPage', error);
+      logger.error('Failed to create/update email campaign', 'EmailCampaignsPage', error);
       setErrorMessage(t('common.errors.unexpected'));
       setShowErrorModal(true);
     }
+  };
+
+  const handleEdit = (campaign: EmailCampaign) => {
+    setEditingCampaign(campaign);
+    setNewCampaign({ name: campaign.name, subject: campaign.subject, body: '' });
+    setShowCreateModal(true);
+  };
+
+  const handleCloseCreateModal = () => {
+    setShowCreateModal(false);
+    setNewCampaign({ name: '', subject: '', body: '' });
+    setEditingCampaign(null);
   };
 
   const handleSendConfirm = async () => {
@@ -201,19 +219,24 @@ export default function EmailCampaignsPage() {
     { key: 'created_at', label: t('admin.emailCampaigns.columns.created'), width: 150, render: (date: string) => <Text style={styles.dateText}>{formatDate(date)}</Text> },
     {
       key: 'actions',
-      label: '',
-      width: 140,
+      label: t('admin.emailCampaigns.columns.actions', 'Actions'),
+      width: 160,
       render: (_: any, campaign: EmailCampaign) => (
         <View style={styles.actionsRow}>
           {campaign.status === 'draft' && (
-            <Pressable style={styles.actionButton} onPress={() => handleSend(campaign)}>
-              <Send size={14} color={colors.success} />
-            </Pressable>
+            <>
+              <Pressable style={styles.actionButton} onPress={() => handleEdit(campaign)} title={t('common.edit', 'Edit')}>
+                <Edit2 size={14} color={colors.primary} />
+              </Pressable>
+              <Pressable style={styles.actionButton} onPress={() => handleSend(campaign)} title={t('common.send', 'Send')}>
+                <Send size={14} color={colors.success} />
+              </Pressable>
+            </>
           )}
-          <Pressable style={styles.actionButton} onPress={() => openTestModal(campaign)}>
-            <TestTube size={14} color={colors.primary} />
+          <Pressable style={styles.actionButton} onPress={() => openTestModal(campaign)} title={t('admin.emailCampaigns.sendTestEmail', 'Send Test')}>
+            <TestTube size={14} color={colors.textMuted} />
           </Pressable>
-          <Pressable style={styles.actionButton} onPress={() => handleDelete(campaign)}>
+          <Pressable style={styles.actionButton} onPress={() => handleDelete(campaign)} title={t('common.delete', 'Delete')}>
             <Trash2 size={14} color={colors.error} />
           </Pressable>
         </View>
@@ -252,7 +275,7 @@ export default function EmailCampaignsPage() {
         emptyMessage={t('admin.emailCampaigns.emptyMessage')}
       />
 
-      <GlassModal visible={showCreateModal} onClose={() => setShowCreateModal(false)} title={t('admin.emailCampaigns.createModal.title')}>
+      <GlassModal visible={showCreateModal} onClose={handleCloseCreateModal} title={editingCampaign ? t('admin.emailCampaigns.editModal.title', 'Edit Campaign') : t('admin.emailCampaigns.createModal.title')}>
         <View style={styles.modalContent}>
           <View style={styles.formGroup}>
             <Text style={[styles.formLabel, { textAlign }]}>{t('admin.emailCampaigns.form.name')}</Text>
@@ -267,8 +290,8 @@ export default function EmailCampaignsPage() {
             <TextInput style={[styles.input, styles.textArea]} value={newCampaign.body} onChangeText={(body) => setNewCampaign((p) => ({ ...p, body }))} placeholderTextColor={colors.textMuted} multiline numberOfLines={5} />
           </View>
           <View style={styles.modalActions}>
-            <GlassButton title={t('common.cancel')} variant="secondary" onPress={() => setShowCreateModal(false)} />
-            <GlassButton title={t('admin.emailCampaigns.createButton')} variant="primary" onPress={handleCreate} />
+            <GlassButton title={t('common.cancel')} variant="secondary" onPress={handleCloseCreateModal} />
+            <GlassButton title={editingCampaign ? t('common.save', 'Save') : t('admin.emailCampaigns.createButton')} variant="primary" onPress={handleCreate} />
           </View>
         </View>
       </GlassModal>

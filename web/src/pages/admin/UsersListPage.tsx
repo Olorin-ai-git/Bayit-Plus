@@ -1,12 +1,12 @@
 import { useState, useEffect, useCallback, ReactNode } from 'react';
-import { View, Text, StyleSheet, Pressable, ScrollView } from 'react-native';
-import { Link } from 'react-router-dom';
+import { View, Text, StyleSheet, Pressable, ScrollView, Modal, TextInput } from 'react-native';
+import { Link, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { UserPlus, MoreVertical, Edit, Ban, Key, Trash2 } from 'lucide-react';
+import { UserPlus, Edit, Ban, Key, Trash2, X, CheckCircle } from 'lucide-react';
 import DataTable from '@/components/admin/DataTable';
 import { usersService } from '@/services/adminApi';
 import { colors, spacing, borderRadius } from '@bayit/shared/theme';
-import { GlassCard, GlassButton } from '@bayit/shared/ui';
+import { GlassCard, GlassButton, GlassView } from '@bayit/shared/ui';
 import { useDirection } from '@/hooks/useDirection';
 import logger from '@/utils/logger';
 
@@ -43,11 +43,18 @@ const filterKeys: Record<string, string> = {
 
 export default function UsersListPage() {
   const { t } = useTranslation();
+  const navigate = useNavigate();
   const { isRTL, textAlign, flexDirection } = useDirection();
   const [users, setUsers] = useState<User[]>([]);
   const [loading, setLoading] = useState(true);
   const [pagination, setPagination] = useState<Pagination>({ page: 1, pageSize: 20, total: 0 });
   const [filters, setFilters] = useState({ search: '', status: 'all' });
+
+  // Modal states
+  const [deleteModal, setDeleteModal] = useState<{ open: boolean; user: User | null }>({ open: false, user: null });
+  const [banModal, setBanModal] = useState<{ open: boolean; user: User | null }>({ open: false, user: null });
+  const [banReason, setBanReason] = useState('');
+  const [actionLoading, setActionLoading] = useState(false);
 
   const loadUsers = useCallback(async () => {
     setLoading(true);
@@ -77,6 +84,61 @@ export default function UsersListPage() {
 
   const handlePageChange = (page: number) => {
     setPagination((prev) => ({ ...prev, page }));
+  };
+
+  const handleEdit = (user: User) => {
+    navigate(`/admin/users/${user.id}`);
+  };
+
+  const handleDeleteClick = (user: User) => {
+    setDeleteModal({ open: true, user });
+  };
+
+  const handleDeleteConfirm = async () => {
+    if (!deleteModal.user) return;
+    setActionLoading(true);
+    try {
+      await usersService.deleteUser(deleteModal.user.id);
+      setDeleteModal({ open: false, user: null });
+      loadUsers();
+    } catch (error) {
+      logger.error('Failed to delete user', 'UsersListPage', error);
+    } finally {
+      setActionLoading(false);
+    }
+  };
+
+  const handleBanClick = (user: User) => {
+    setBanModal({ open: true, user });
+    setBanReason('');
+  };
+
+  const handleBanConfirm = async () => {
+    if (!banModal.user) return;
+    setActionLoading(true);
+    try {
+      if (banModal.user.status === 'banned') {
+        await usersService.unbanUser(banModal.user.id);
+      } else {
+        await usersService.banUser(banModal.user.id, banReason);
+      }
+      setBanModal({ open: false, user: null });
+      loadUsers();
+    } catch (error) {
+      logger.error('Failed to ban/unban user', 'UsersListPage', error);
+    } finally {
+      setActionLoading(false);
+    }
+  };
+
+  const handleResetPassword = async (user: User) => {
+    if (!confirm(t('admin.users.confirmResetPassword', { email: user.email }))) return;
+    try {
+      await usersService.resetPassword(user.id);
+      alert(t('admin.users.resetPasswordSent'));
+    } catch (error) {
+      logger.error('Failed to reset password', 'UsersListPage', error);
+    }
   };
 
   const getStatusBadge = (status: string) => {
@@ -134,14 +196,38 @@ export default function UsersListPage() {
     },
     {
       key: 'actions',
-      label: '',
-      width: 50,
+      label: t('admin.users.columns.actions', 'Actions'),
+      width: 160,
       render: (_: any, user: User) => (
         <View style={styles.actionsCell}>
-          <Pressable style={styles.actionButton}>
-            <MoreVertical size={16} color={colors.textMuted} />
+          <Pressable
+            style={styles.actionButton}
+            onPress={() => handleEdit(user)}
+            title={t('common.edit', 'Edit')}
+          >
+            <Edit size={16} color={colors.primary} />
           </Pressable>
-          {/* Dropdown menu would be implemented with a modal or native menu */}
+          <Pressable
+            style={styles.actionButton}
+            onPress={() => handleResetPassword(user)}
+            title={t('admin.users.resetPassword')}
+          >
+            <Key size={16} color={colors.textMuted} />
+          </Pressable>
+          <Pressable
+            style={styles.actionButton}
+            onPress={() => handleBanClick(user)}
+            title={user.status === 'banned' ? t('admin.users.unban') : t('admin.users.block')}
+          >
+            <Ban size={16} color={user.status === 'banned' ? '#22C55E' : '#F59E0B'} />
+          </Pressable>
+          <Pressable
+            style={styles.actionButton}
+            onPress={() => handleDeleteClick(user)}
+            title={t('common.delete', 'Delete')}
+          >
+            <Trash2 size={16} color={colors.error} />
+          </Pressable>
         </View>
       ),
     },
@@ -190,6 +276,101 @@ export default function UsersListPage() {
         onPageChange={handlePageChange}
         emptyMessage={t('admin.auditLogs.noRecords')}
       />
+
+      {/* Delete Confirmation Modal */}
+      <Modal
+        visible={deleteModal.open}
+        transparent
+        animationType="fade"
+        onRequestClose={() => setDeleteModal({ open: false, user: null })}
+      >
+        <View style={styles.modalOverlay}>
+          <GlassView style={styles.modalContent}>
+            <View style={styles.modalHeader}>
+              <Text style={styles.modalTitle}>{t('admin.users.confirmDelete', 'Delete User')}</Text>
+              <Pressable onPress={() => setDeleteModal({ open: false, user: null })}>
+                <X size={20} color={colors.textMuted} />
+              </Pressable>
+            </View>
+            <Text style={styles.modalText}>
+              {t('admin.users.confirmDeleteMessage', 'Are you sure you want to delete {{name}}? This action cannot be undone.', { name: deleteModal.user?.name })}
+            </Text>
+            <View style={styles.modalActions}>
+              <GlassButton
+                title={t('common.cancel', 'Cancel')}
+                variant="secondary"
+                onPress={() => setDeleteModal({ open: false, user: null })}
+              />
+              <GlassButton
+                title={actionLoading ? t('common.deleting', 'Deleting...') : t('common.delete', 'Delete')}
+                variant="primary"
+                onPress={handleDeleteConfirm}
+                disabled={actionLoading}
+                style={{ backgroundColor: colors.error }}
+              />
+            </View>
+          </GlassView>
+        </View>
+      </Modal>
+
+      {/* Ban/Unban Modal */}
+      <Modal
+        visible={banModal.open}
+        transparent
+        animationType="fade"
+        onRequestClose={() => setBanModal({ open: false, user: null })}
+      >
+        <View style={styles.modalOverlay}>
+          <GlassView style={styles.modalContent}>
+            <View style={styles.modalHeader}>
+              <Text style={styles.modalTitle}>
+                {banModal.user?.status === 'banned'
+                  ? t('admin.users.unban')
+                  : t('admin.users.block')}
+              </Text>
+              <Pressable onPress={() => setBanModal({ open: false, user: null })}>
+                <X size={20} color={colors.textMuted} />
+              </Pressable>
+            </View>
+            {banModal.user?.status !== 'banned' && (
+              <>
+                <Text style={styles.modalLabel}>{t('admin.users.banReasonPrompt')}</Text>
+                <TextInput
+                  value={banReason}
+                  onChangeText={setBanReason}
+                  placeholder={t('admin.users.banReason')}
+                  placeholderTextColor={colors.textMuted}
+                  style={styles.modalInput}
+                  multiline
+                />
+              </>
+            )}
+            {banModal.user?.status === 'banned' && (
+              <Text style={styles.modalText}>
+                {t('admin.users.confirmUnban')}
+              </Text>
+            )}
+            <View style={styles.modalActions}>
+              <GlassButton
+                title={t('common.cancel', 'Cancel')}
+                variant="secondary"
+                onPress={() => setBanModal({ open: false, user: null })}
+              />
+              <GlassButton
+                title={actionLoading
+                  ? t('common.saving', 'Saving...')
+                  : banModal.user?.status === 'banned'
+                    ? t('admin.users.unban')
+                    : t('admin.users.block')}
+                variant="primary"
+                onPress={handleBanConfirm}
+                disabled={actionLoading}
+                style={{ backgroundColor: banModal.user?.status === 'banned' ? '#22C55E' : '#F59E0B' }}
+              />
+            </View>
+          </GlassView>
+        </View>
+      </Modal>
     </ScrollView>
   );
 }
@@ -284,9 +465,62 @@ const styles = StyleSheet.create({
     fontWeight: '500',
   },
   actionsCell: {
-    position: 'relative',
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.xs,
   },
   actionButton: {
     padding: spacing.xs,
+    borderRadius: borderRadius.sm,
+  },
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0, 0, 0, 0.7)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: spacing.lg,
+  },
+  modalContent: {
+    width: '100%',
+    maxWidth: 400,
+    padding: spacing.lg,
+    borderRadius: borderRadius.lg,
+  },
+  modalHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: spacing.md,
+  },
+  modalTitle: {
+    fontSize: 18,
+    fontWeight: '600',
+    color: colors.text,
+  },
+  modalText: {
+    fontSize: 14,
+    color: colors.textSecondary,
+    marginBottom: spacing.lg,
+    lineHeight: 20,
+  },
+  modalLabel: {
+    fontSize: 14,
+    color: colors.text,
+    marginBottom: spacing.sm,
+  },
+  modalInput: {
+    backgroundColor: 'rgba(255, 255, 255, 0.05)',
+    borderRadius: borderRadius.md,
+    padding: spacing.md,
+    fontSize: 14,
+    color: colors.text,
+    marginBottom: spacing.lg,
+    minHeight: 80,
+    textAlignVertical: 'top',
+  },
+  modalActions: {
+    flexDirection: 'row',
+    justifyContent: 'flex-end',
+    gap: spacing.sm,
   },
 });

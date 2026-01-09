@@ -33,7 +33,8 @@
     },
     "send": "Send",
     "done": "Done",
-    "all": "All"
+    "all": "All",
+    "deleting": "Deleting..."
   },
   "demo": {
     "banner": "DEMO MODE",
@@ -982,8 +983,13 @@
         "sent": "Sent",
         "opened": "Opened",
         "clicked": "Clicked",
-        "created": "Created"
+        "created": "Created",
+        "actions": "Actions"
       },
+      "editModal": {
+        "title": "Edit Campaign"
+      },
+      "sendTestEmail": "Send Test",
       "confirmSend": "Send campaign \"{{name}}\"?",
       "confirmDelete": "Delete campaign \"{{name}}\"?",
       "testEmailSent": "Test email sent!",
@@ -1309,8 +1315,11 @@
         "subscription": "Subscription",
         "noSubscription": "No Subscription",
         "status": "Status",
-        "created": "Created"
+        "created": "Created",
+        "actions": "Actions"
       },
+      "confirmDelete": "Delete User",
+      "confirmDeleteMessage": "Are you sure you want to delete {{name}}? This action cannot be undone.",
       "resetPassword": "Reset Password",
       "block": "Block",
       "unban": "Unban",
@@ -1341,8 +1350,15 @@
         "discount": "Discount",
         "usage": "Uses",
         "validUntil": "Valid Until",
-        "status": "Status"
-      }
+        "status": "Status",
+        "actions": "Actions"
+      },
+      "confirmDelete": "Delete Campaign",
+      "confirmDeleteMessage": "Are you sure you want to delete \"{{name}}\"? This action cannot be undone.",
+      "searchPlaceholder": "Search campaigns...",
+      "emptyMessage": "No campaigns found",
+      "deactivate": "Deactivate",
+      "activate": "Activate"
     },
     "subscriptions": {
       "subtitle": "View and manage system subscribers",
@@ -1416,7 +1432,8 @@
         "sent": "Sent",
         "opened": "Opened",
         "scheduledAt": "Scheduled At",
-        "created": "Created"
+        "created": "Created",
+        "actions": "Actions"
       },
       "filters": {
         "all": "All"
@@ -1424,6 +1441,7 @@
       "searchPlaceholder": "Search notification...",
       "emptyMessage": "No notifications found",
       "createModal": "New Push Notification",
+      "editModal": "Edit Notification",
       "scheduleModal": "Schedule Notification",
       "titleLabel": "Title",
       "bodyLabel": "Body",
@@ -1431,6 +1449,7 @@
       "cancel": "Cancel",
       "create": "Create Notification",
       "schedule": "Schedule",
+      "send": "Send Now",
       "confirmSend": "Send notification \"{{title}}\"?",
       "confirmDelete": "Delete notification \"{{title}}\"?",
       "fillRequired": "Please fill in title and body"

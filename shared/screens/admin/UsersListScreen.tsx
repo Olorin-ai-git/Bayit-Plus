@@ -192,7 +192,7 @@ export const UsersListScreen: React.FC = () => {
     {
       key: 'name',
       header: t('admin.users.columns.name', 'Name'),
-      width: 200,
+      // width: 200,
       sortable: true,
       render: (user) => (
         <View style={styles.userCell}>

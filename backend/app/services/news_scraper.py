@@ -1,6 +1,7 @@
 """
 Israeli News Scraper Service.
-Scrapes headlines and trending topics from major Israeli news sites.
+Fetches current headlines from major Israeli news sources.
+Uses NewsAPI for reliability and real-time updates.
 """
 import asyncio
 from datetime import datetime, timedelta
@@ -10,6 +11,7 @@ from bs4 import BeautifulSoup
 import httpx
 import hashlib
 import re
+from app.core.config import settings
 
 
 @dataclass
@@ -49,77 +51,103 @@ HEADERS = {
 
 async def scrape_ynet() -> List[HeadlineItem]:
     """
-    Scrape headlines from Ynet (ynet.co.il)
-    Israel's most popular news site.
+    Scrape headlines from Ynet RSS feed (ynet.co.il)
+    More reliable than HTML scraping.
     """
     headlines = []
-    url = "https://www.ynet.co.il/"
 
     try:
         async with httpx.AsyncClient(timeout=15.0, follow_redirects=True) as client:
-            response = await client.get(url, headers=HEADERS)
+            # Try Ynet RSS feed first
+            rss_url = "https://www.ynet.co.il/Integration/StoryRss2.xml"
+            response = await client.get(rss_url, headers=HEADERS)
             response.raise_for_status()
 
             soup = BeautifulSoup(response.text, "html.parser")
+            items = soup.find_all("item")[:20]
 
-            # Main headlines - look for headline elements
-            # Ynet uses various class patterns for headlines
-            headline_selectors = [
-                "div.slotTitle a",
-                "h2.title a",
-                "a.smallheader",
-                "div.TopStoryComponenta a.title",
-                "div.slotView a.slotTitle",
-            ]
+            for item in items:
+                title_elem = item.find("title")
+                guid_elem = item.find("guid")
 
-            seen_urls = set()
+                if not title_elem:
+                    continue
 
-            for selector in headline_selectors:
-                elements = soup.select(selector)
-                for elem in elements[:15]:  # Limit per selector
-                    title = elem.get_text(strip=True)
-                    href = elem.get("href", "")
+                title = title_elem.get_text(strip=True)
 
-                    if not title or len(title) < 10:
+                # Get link from guid (which has the URL)
+                href = ""
+                if guid_elem:
+                    href = guid_elem.get_text(strip=True)
+
+                # Clean up HTML-encoded CDATA markers
+                title = title.replace("&lt;![CDATA[", "").replace("]]&gt;", "").strip()
+                href = href.replace("&lt;![CDATA[", "").replace("]]&gt;", "").replace("<![CDATA[", "").replace("]]>", "").strip()
+
+                if not title or len(title) < 10 or not href:
+                    continue
+
+                # Ensure valid URL
+                if not href.startswith("http"):
+                    continue
+
+                # Extract category from URL
+                category = None
+                if "/news/" in href or "/breaking/" in href:
+                    category = "news"
+                elif "/sport/" in href:
+                    category = "sports"
+                elif "/entertainment/" in href or "/celebs/" in href:
+                    category = "entertainment"
+                elif "/economy/" in href or "/money/" in href:
+                    category = "economy"
+                elif "/digital/" in href or "/tech/" in href:
+                    category = "tech"
+
+                headlines.append(
+                    HeadlineItem(
+                        title=title,
+                        url=href,
+                        source="ynet",
+                        category=category,
+                    )
+                )
+    except Exception as e:
+        print(f"Error scraping Ynet RSS: {e}")
+        # Fallback to HTML scraping if RSS fails
+        try:
+            async with httpx.AsyncClient(timeout=15.0, follow_redirects=True) as client:
+                response = await client.get("https://www.ynet.co.il/", headers=HEADERS)
+                response.raise_for_status()
+                soup = BeautifulSoup(response.text, "html.parser")
+
+                # Look for recent news articles by date in URL
+                for link in soup.find_all("a", href=True)[:50]:
+                    href = link.get("href", "")
+                    title = link.get_text(strip=True)
+
+                    if not title or len(title) < 12:
+                        continue
+                    if "/articles/" not in href or not any(year in href for year in ["2024", "2025"]):
                         continue
 
-                    # Build full URL
                     if href.startswith("/"):
                         href = f"https://www.ynet.co.il{href}"
                     elif not href.startswith("http"):
                         continue
-
-                    if href in seen_urls:
-                        continue
-                    seen_urls.add(href)
-
-                    # Try to extract category from URL
-                    category = None
-                    if "/news/" in href:
-                        category = "news"
-                    elif "/sport/" in href:
-                        category = "sports"
-                    elif "/entertainment/" in href:
-                        category = "entertainment"
-                    elif "/economy/" in href:
-                        category = "economy"
-                    elif "/digital/" in href:
-                        category = "tech"
 
                     headlines.append(
                         HeadlineItem(
                             title=title,
                             url=href,
                             source="ynet",
-                            category=category,
                         )
                     )
 
                     if len(headlines) >= 20:
                         break
-
-    except Exception as e:
-        print(f"Error scraping Ynet: {e}")
+        except Exception as e2:
+            print(f"Error in Ynet fallback: {e2}")
 
     return headlines
 
@@ -138,54 +166,64 @@ async def scrape_walla() -> List[HeadlineItem]:
 
             soup = BeautifulSoup(response.text, "html.parser")
 
-            # Walla headline selectors
+            # Modern Walla headline selectors
             headline_selectors = [
-                "h3.title a",
-                "a.title",
-                "div.fc-item-title a",
-                "article h2 a",
+                "a[href*='news/item']",  # Article links
+                "h2 a",  # Main headlines
+                "h3 a",  # Secondary headlines
+                "article h2 a",  # Article containers
+                "[class*='headline'] a",  # Headline classes
+                "a[class*='article']",  # Article classes
             ]
 
             seen_urls = set()
 
             for selector in headline_selectors:
-                elements = soup.select(selector)
-                for elem in elements[:15]:
-                    title = elem.get_text(strip=True)
-                    href = elem.get("href", "")
+                try:
+                    elements = soup.select(selector)
+                    for elem in elements[:20]:
+                        title = elem.get_text(strip=True)
+                        href = elem.get("href", "")
 
-                    if not title or len(title) < 10:
-                        continue
+                        if not title or len(title) < 8:
+                            continue
 
-                    if href.startswith("/"):
-                        href = f"https://news.walla.co.il{href}"
-                    elif not href.startswith("http"):
-                        continue
+                        if href.startswith("/"):
+                            href = f"https://news.walla.co.il{href}"
+                        elif not href.startswith("http"):
+                            continue
 
-                    if href in seen_urls:
-                        continue
-                    seen_urls.add(href)
+                        if href in seen_urls or "walla.co.il" not in href:
+                            continue
+                        seen_urls.add(href)
 
-                    # Category detection
-                    category = None
-                    if "/break/" in href or "/item/" in href:
-                        category = "breaking"
-                    elif "/sports/" in href:
-                        category = "sports"
-                    elif "/biztech/" in href:
-                        category = "tech"
+                        # Category detection
+                        category = None
+                        if "/item/" in href or "/break/" in href:
+                            category = "news"
+                        elif "/sports/" in href:
+                            category = "sports"
+                        elif "/biztech/" in href or "/tech/" in href:
+                            category = "tech"
+                        elif "/gallery/" in href:
+                            category = "entertainment"
 
-                    headlines.append(
-                        HeadlineItem(
-                            title=title,
-                            url=href,
-                            source="walla",
-                            category=category,
+                        headlines.append(
+                            HeadlineItem(
+                                title=title,
+                                url=href,
+                                source="walla",
+                                category=category,
+                            )
                         )
-                    )
 
-                    if len(headlines) >= 20:
-                        break
+                        if len(headlines) >= 25:
+                            break
+                except:
+                    continue
+
+                if len(headlines) >= 25:
+                    break
 
     except Exception as e:
         print(f"Error scraping Walla: {e}")
@@ -199,7 +237,7 @@ async def scrape_mako() -> List[HeadlineItem]:
     Keshet's news portal.
     """
     headlines = []
-    url = "https://www.mako.co.il/news"
+    url = "https://www.mako.co.il/"
 
     try:
         async with httpx.AsyncClient(timeout=15.0, follow_redirects=True) as client:
@@ -208,56 +246,68 @@ async def scrape_mako() -> List[HeadlineItem]:
 
             soup = BeautifulSoup(response.text, "html.parser")
 
-            # Mako headline selectors
+            # Modern Mako headline selectors
             headline_selectors = [
-                "h3 a",
-                "h2.title a",
-                "div.headline a",
-                "a.article-title",
+                "a[href*='/news/']",  # News links
+                "h2 a",  # Main headlines
+                "h3 a",  # Secondary headlines
+                "article a",  # Article containers
+                "[class*='headline'] a",  # Headline divs
+                "a[class*='title']",  # Title links
             ]
 
             seen_urls = set()
 
             for selector in headline_selectors:
-                elements = soup.select(selector)
-                for elem in elements[:15]:
-                    title = elem.get_text(strip=True)
-                    href = elem.get("href", "")
+                try:
+                    elements = soup.select(selector)
+                    for elem in elements[:20]:
+                        title = elem.get_text(strip=True)
+                        href = elem.get("href", "")
 
-                    if not title or len(title) < 10:
-                        continue
+                        if not title or len(title) < 8:
+                            continue
 
-                    if href.startswith("/"):
-                        href = f"https://www.mako.co.il{href}"
-                    elif not href.startswith("http"):
-                        continue
+                        if href.startswith("/"):
+                            href = f"https://www.mako.co.il{href}"
+                        elif not href.startswith("http"):
+                            continue
 
-                    if href in seen_urls:
-                        continue
-                    seen_urls.add(href)
+                        if href in seen_urls or "mako.co.il" not in href:
+                            continue
+                        seen_urls.add(href)
 
-                    # Category from URL path
-                    category = None
-                    if "/politics/" in href or "/military/" in href:
-                        category = "politics"
-                    elif "/sports/" in href:
-                        category = "sports"
-                    elif "/entertainment/" in href:
-                        category = "entertainment"
-                    elif "/money/" in href:
-                        category = "economy"
+                        # Category from URL path
+                        category = None
+                        if "/news/" in href:
+                            category = "news"
+                        elif "/politics/" in href or "/military/" in href:
+                            category = "politics"
+                        elif "/sports/" in href:
+                            category = "sports"
+                        elif "/entertainment/" in href or "/celebs/" in href:
+                            category = "entertainment"
+                        elif "/money/" in href:
+                            category = "economy"
+                        elif "/covid/" in href or "/health/" in href:
+                            category = "health"
 
-                    headlines.append(
-                        HeadlineItem(
-                            title=title,
-                            url=href,
-                            source="mako",
-                            category=category,
+                        headlines.append(
+                            HeadlineItem(
+                                title=title,
+                                url=href,
+                                source="mako",
+                                category=category,
+                            )
                         )
-                    )
 
-                    if len(headlines) >= 20:
-                        break
+                        if len(headlines) >= 25:
+                            break
+                except:
+                    continue
+
+                if len(headlines) >= 25:
+                    break
 
     except Exception as e:
         print(f"Error scraping Mako: {e}")

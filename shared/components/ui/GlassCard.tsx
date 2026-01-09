@@ -75,8 +75,8 @@ export const GlassCard: React.FC<GlassCardProps> = ({
 
   // Only show image/placeholder area when being used as a full card (has title or imageUrl)
   const isFullCard = title || subtitle || imageUrl;
-  // Use autoSize prop to explicitly bypass default dimensions (for modals, custom layouts)
-  const shouldBypassDimensions = autoSize;
+  // Bypass default dimensions when: autoSize is true, OR used as container (no title/imageUrl)
+  const shouldBypassDimensions = autoSize || !isFullCard;
 
   const cardContent = (
     <>

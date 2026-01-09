@@ -33,7 +33,8 @@
     },
     "send": "שלח",
     "done": "סיום",
-    "all": "הכל"
+    "all": "הכל",
+    "deleting": "מוחק..."
   },
   "demo": {
     "banner": "מצב הדמו",
@@ -857,8 +858,13 @@
         "sent": "נשלחו",
         "opened": "נפתחו",
         "clicked": "הקליקו",
-        "created": "נוצר"
+        "created": "נוצר",
+        "actions": "פעולות"
       },
+      "editModal": {
+        "title": "עריכת קמפיין"
+      },
+      "sendTestEmail": "שלח בדיקה",
       "confirmSend": "שלח את הקמפיין \"{{name}}\"?",
       "confirmDelete": "מחק את הקמפיין \"{{name}}\"?",
       "testEmailSent": "אימייל בדיקה נשלח!",
@@ -1184,8 +1190,11 @@
         "subscription": "מנוי",
         "noSubscription": "ללא מנוי",
         "status": "סטטוס",
-        "created": "נוצר"
+        "created": "נוצר",
+        "actions": "פעולות"
       },
+      "confirmDelete": "מחיקת משתמש",
+      "confirmDeleteMessage": "האם אתה בטוח שברצונך למחוק את {{name}}? פעולה זו לא ניתנת לביטול.",
       "resetPassword": "איפוס סיסמה",
       "block": "חסום",
       "unban": "בטל חסימה",
@@ -1216,8 +1225,15 @@
         "discount": "הנחה",
         "usage": "שימושים",
         "validUntil": "תוקף",
-        "status": "סטטוס"
-      }
+        "status": "סטטוס",
+        "actions": "פעולות"
+      },
+      "confirmDelete": "מחיקת קמפיין",
+      "confirmDeleteMessage": "האם אתה בטוח שברצונך למחוק את \"{{name}}\"? פעולה זו לא ניתנת לביטול.",
+      "searchPlaceholder": "חיפוש קמפיינים...",
+      "emptyMessage": "לא נמצאו קמפיינים",
+      "deactivate": "השבתה",
+      "activate": "הפעלה"
     },
     "subscriptions": {
       "subtitle": "צפה ונהל מנויי המערכת",
@@ -1291,7 +1307,8 @@
         "sent": "נשלחו",
         "opened": "נפתחו",
         "scheduledAt": "מתוזמן ל",
-        "created": "נוצר"
+        "created": "נוצר",
+        "actions": "פעולות"
       },
       "filters": {
         "all": "הכל"
@@ -1299,6 +1316,7 @@
       "searchPlaceholder": "חפש התראה...",
       "emptyMessage": "לא נמצאו התראות",
       "createModal": "התראת פוש חדשה",
+      "editModal": "עריכת התראה",
       "scheduleModal": "תזמון התראה",
       "titleLabel": "כותרת",
       "bodyLabel": "תוכן",
@@ -1306,6 +1324,7 @@
       "cancel": "ביטול",
       "create": "צור התראה",
       "schedule": "תזמן",
+      "send": "שלח עכשיו",
       "confirmSend": "שלח את ההתראה \"{{title}}\"?",
       "confirmDelete": "מחק את ההתראה \"{{title}}\"?",
       "fillRequired": "נא למלא כותרת ותוכן"
