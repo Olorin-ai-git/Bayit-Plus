@@ -654,6 +654,8 @@
   },
   "voice": {
     "listening": "Listening...",
+    "speaking": "Speaking",
+    "ready": "Ready",
     "tapToSpeak": "Tap to speak",
     "processing": "Processing...",
     "transcribing": "Transcribing...",

@@ -239,7 +239,7 @@ export default function Chatbot() {
     }
   }, [i18n.language])
 
-  // Initialize wake word listening for Voice Only mode
+  // Initialize wake word listening - disabled here since toggle button in header controls it
   const {
     isListening,
     isAwake,
@@ -249,8 +249,8 @@ export default function Chatbot() {
     isTTSSpeaking,
     error: wakeWordError,
   } = useWakeWordListening({
-    enabled: currentMode === VoiceMode.VOICE_ONLY || currentMode === VoiceMode.HYBRID, // Listen in Voice Only and Hybrid modes
-    wakeWordEnabled: preferences?.wake_word_enabled ?? false, // Default: false (disabled)
+    enabled: false, // Voice listening is controlled by toggle button in header
+    wakeWordEnabled: false,
     wakeWord: preferences?.wake_word ?? 'hi bayit',
     wakeWordSensitivity: preferences?.wake_word_sensitivity ?? 0.7,
     wakeWordCooldownMs: preferences?.wake_word_cooldown_ms ?? 2000,
@@ -535,6 +535,19 @@ export default function Chatbot() {
           },
         ])
       }
+
+      // Trigger voice response with TTS playback for external voice messages
+      console.log('[Chatbot] Handling external message, calling handleVoiceResponse')
+      await handleVoiceResponse({
+        message: response.message,
+        conversation_id: response.conversation_id,
+        recommendations: response.recommendations,
+        spoken_response: response.spoken_response,
+        action: response.action,
+        content_ids: response.content_ids,
+        visual_action: response.visual_action,
+        confidence: response.confidence,
+      })
     } catch {
       setMessages((prev) => [
         ...prev,

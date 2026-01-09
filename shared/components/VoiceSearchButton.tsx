@@ -37,9 +37,11 @@ export const VoiceSearchButton: React.FC<VoiceSearchButtonProps> = ({
   const { t } = useTranslation();
   const [isRecording, setIsRecording] = useState(false);
   const [isTranscribing, setIsTranscribing] = useState(false);
+  const [isProcessingTranscription, setIsProcessingTranscription] = useState(false);
   const [isFocused, setIsFocused] = useState(false);
   const [showModal, setShowModal] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [isListeningToggle, setIsListeningToggle] = useState(false);
   const pulseAnim = useRef(new Animated.Value(1)).current;
   const wakeWordPulseAnim = useRef(new Animated.Value(1)).current;
   const glowAnim = useRef(new Animated.Value(0)).current;
@@ -53,10 +55,23 @@ export const VoiceSearchButton: React.FC<VoiceSearchButtonProps> = ({
   const voiceContext = useContext(VoiceListeningContext);
 
   // Determine if wake word listening should be enabled
-  // Use prop if provided, otherwise use preferences (allows web to enable it too)
-  const shouldEnableConstantListening = showConstantListening !== undefined
-    ? showConstantListening
-    : preferences.wake_word_enabled;
+  // Only enable if the toggle button is pressed
+  const shouldEnableConstantListening = isListeningToggle;
+
+  // Memoize transcript handler to set processing state
+  const handleTranscriptReceived = useCallback((text: string) => {
+    console.log('[VoiceSearchButton] Transcript received:', text.substring(0, 50));
+    // Set processing state to show "Processing..." on soundwave
+    setIsProcessingTranscription(true);
+
+    // Call the parent's result handler
+    onResult(text);
+
+    // Clear processing state after 2 seconds (allows backend to take over)
+    setTimeout(() => {
+      setIsProcessingTranscription(false);
+    }, 2000);
+  }, [onResult]);
 
   // Wake word listening (for wake word mode - works on web and TV)
   const {
@@ -70,20 +85,18 @@ export const VoiceSearchButton: React.FC<VoiceSearchButtonProps> = ({
     wakeWordReady,
   } = useWakeWordListening({
     enabled: shouldEnableConstantListening,
-    wakeWordEnabled: preferences.wake_word_enabled,
-    wakeWord: preferences.wake_word,
-    wakeWordSensitivity: preferences.wake_word_sensitivity,
-    wakeWordCooldownMs: preferences.wake_word_cooldown_ms,
-    silenceThresholdMs: preferences.silence_threshold_ms,
-    vadSensitivity: preferences.vad_sensitivity,
-    onTranscript: (text) => {
-      onResult(text);
-    },
+    wakeWordEnabled: false,
+    wakeWord: 'hi bayit',
+    wakeWordSensitivity: 0.7,
+    wakeWordCooldownMs: 2000,
+    silenceThresholdMs: preferences.silence_threshold_ms || 2000,
+    vadSensitivity: preferences.vad_sensitivity || 'medium',
+    onTranscript: handleTranscriptReceived,
     onWakeWordDetected: () => {
       // Trigger visual feedback
     },
     onError: (err) => {
-      console.error('[VoiceSearchButton] Wake word error:', err);
+      console.error('[VoiceSearchButton] Voice listening error:', err);
     },
     transcribeAudio,
   });
@@ -164,7 +177,7 @@ export const VoiceSearchButton: React.FC<VoiceSearchButtonProps> = ({
     }
   }, [isConstantListening, isAwake, isRecording, glowAnim]);
 
-  // Update global voice listening context when this button's processing state changes
+  // Update global voice listening context when this button's state changes
   // This ensures the soundwave indicator updates when the user clicks the voice button
   // Store the setListeningState function in a ref to avoid dependency loops
   const setListeningStateRef = useRef(voiceContext?.setListeningState);
@@ -176,14 +189,25 @@ export const VoiceSearchButton: React.FC<VoiceSearchButtonProps> = ({
     }
   }, [voiceContext?.setListeningState]);
 
-  // Only depend on the actual state changes, not the context object
+  // Update context with listening and processing states
   useEffect(() => {
-    const isProcessing = isRecording || isTranscribing;
+    const isProcessing = isRecording || isTranscribing || isProcessingTranscription;
     if (setListeningStateRef.current) {
-      console.log('[VoiceSearchButton] Updating context isProcessing:', isProcessing, { isRecording, isTranscribing });
-      setListeningStateRef.current({ isProcessing });
+      console.log('[VoiceSearchButton] Updating context:', {
+        isListening: isListeningToggle && isConstantListening,
+        isProcessing,
+        isRecording,
+        isTranscribing,
+        isProcessingTranscription,
+        isListeningToggle,
+        isConstantListening,
+      });
+      setListeningStateRef.current({
+        isListening: isListeningToggle && isConstantListening,
+        isProcessing,
+      });
     }
-  }, [isRecording, isTranscribing]);
+  }, [isRecording, isTranscribing, isProcessingTranscription, isListeningToggle, isConstantListening]);
 
   const handleTranscription = useCallback(async (audioBlob: Blob) => {
     if (!transcribeAudio) {
@@ -258,11 +282,9 @@ export const VoiceSearchButton: React.FC<VoiceSearchButtonProps> = ({
   }, [isRecording]);
 
   const handlePress = () => {
-    if (isRecording) {
-      stopRecording();
-    } else {
-      startRecording();
-    }
+    // Toggle voice listening on/off
+    setIsListeningToggle(!isListeningToggle);
+    console.log('[VoiceSearchButton] Voice listening toggled:', !isListeningToggle);
   };
 
   const handleCancel = () => {
@@ -282,7 +304,7 @@ export const VoiceSearchButton: React.FC<VoiceSearchButtonProps> = ({
     if (isRecording || isAwake) return 'recording';
     if (isTranscribing || isSendingToServer) return 'processing';
     if (wakeWordDetected) return 'wakeword';
-    if (isConstantListening) return 'listening';
+    if (isListeningToggle && isConstantListening) return 'listening';
     return 'idle';
   };
 
@@ -297,6 +319,7 @@ export const VoiceSearchButton: React.FC<VoiceSearchButtonProps> = ({
         style={[
           styles.button,
           isFocused && styles.buttonFocused,
+          isListeningToggle && styles.buttonToggleActive,
           buttonState === 'recording' && styles.buttonRecording,
           buttonState === 'wakeword' && styles.buttonWakeWord,
           buttonState === 'processing' && styles.buttonProcessing,
@@ -422,10 +445,12 @@ export const VoiceSearchButton: React.FC<VoiceSearchButtonProps> = ({
         </View>
       </Modal>
 
-      {/* Wake word listening status indicator (for both TV and web) */}
-      {isConstantListening && (
+      {/* Voice listening status indicator */}
+      {isListeningToggle && isConstantListening && (
         <View style={[styles.listeningIndicator, tvMode && styles.listeningIndicatorTV]}>
-          
+          <Text style={[styles.listeningText, tvMode && styles.listeningTextTV]}>
+            {t('voice.active', 'Voice Active')}
+          </Text>
           {wakeWordReady && (
             <View style={styles.readyIndicator}>
               <Text style={styles.readyText}>✓</Text>
@@ -453,6 +478,10 @@ const styles = StyleSheet.create({
   buttonFocused: {
     borderColor: colors.primary,
     backgroundColor: 'rgba(0, 217, 255, 0.1)',
+  },
+  buttonToggleActive: {
+    backgroundColor: 'rgba(0, 217, 255, 0.15)',
+    borderColor: colors.primary,
   },
   buttonRecording: {
     backgroundColor: 'rgba(239, 68, 68, 0.2)',

@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { View, StyleSheet, Text } from 'react-native';
+import { useTranslation } from 'react-i18next';
 import { colors, spacing } from '@bayit/shared/theme';
 import type { AudioLevel } from '@bayit/shared-utils/vadDetector';
 
@@ -20,6 +21,7 @@ const SoundwaveParticles: React.FC<SoundwaveParticlesProps> = ({
   isResponding = false,
   responseText = '',
 }) => {
+  const { t } = useTranslation();
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const animationRef = useRef<number>();
   const timeRef = useRef(0);
@@ -182,31 +184,31 @@ const SoundwaveParticles: React.FC<SoundwaveParticlesProps> = ({
         {hasError && (
           <View style={styles.statusBadge}>
             <View style={[styles.statusDot, styles.statusDotError]} />
-            <Text style={styles.statusText}>Error</Text>
+            <Text style={styles.statusText}>{t('common.error', 'Error')}</Text>
           </View>
         )}
         {isResponding && !hasError && (
           <View style={styles.statusBadge}>
             <View style={[styles.statusDot, styles.statusDotResponding]} />
-            <Text style={styles.statusText}>Speaking</Text>
+            <Text style={styles.statusText}>{t('voice.speaking', 'Speaking')}</Text>
           </View>
         )}
         {isProcessing && !isResponding && !hasError && (
           <View style={styles.statusBadge}>
             <View style={[styles.statusDot, styles.statusDotProcessing]} />
-            <Text style={styles.statusText}>Processing</Text>
+            <Text style={styles.statusText}>{t('voice.processing', 'Processing')}</Text>
           </View>
         )}
         {isListening && !isProcessing && !isResponding && !hasError && (
           <View style={styles.statusBadge}>
             <View style={[styles.statusDot, styles.statusDotListening]} />
-            <Text style={styles.statusText}>Listening</Text>
+            <Text style={styles.statusText}>{t('voice.listening', 'Listening...')}</Text>
           </View>
         )}
         {!isListening && !isProcessing && !isResponding && !hasError && (
           <View style={styles.statusBadge}>
             <View style={[styles.statusDot, styles.statusDotIdle]} />
-            <Text style={styles.statusText}>Ready</Text>
+            <Text style={styles.statusText}>{t('voice.ready', 'Ready')}</Text>
           </View>
         )}
       </View>

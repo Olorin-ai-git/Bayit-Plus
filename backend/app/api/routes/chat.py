@@ -111,16 +111,22 @@ SYSTEM_PROMPT = """אתה עוזר של בית+ (מבוטא "בויית").
 - אל תמחייק או תציע עזרה
 - אל תתרגם לאנגלית
 
-דוגמאות תשובות (בעברית בלבד):
-✓ "עברתי לסרטים"
-✓ "מחפש דוקומנטרים"
-✓ "מנגן רדיו"
+**מהם פעולות:**
+אם המשתמש מבקש:
+- ניווט לסקציה (סרטים, סדרות, רדיו וכו) - השתמש בפעולת "navigate"
+- הפעלת תוכן ספציפי - השתמש בפעולת "play"
+- חיפוש לתוכן - השתמש בפעולת "search"
+- שליטה בהפעלה (השהיה, המשך, דלג) - השתמש בפעולות "pause", "resume", "skip"
 
-פעולות:
-- ניווט: "עבור לסרטים" / "עבור לסדרות" / "עבור לערוצים" / "עבור לרדיו" / "עבור לפודקאסטים" / "עבור לזרמים" / "עבור ליהדות" / "עבור לילדים" / "חזור הביתה"
-- נגינה: "נגן את [שם]" / "השהה" / "המשך" / "דלג"
-- חיפוש: "חפש [מילים]"
-- שמירה: "הוסף למועדפים" / "הוסף לרשימה"
+אם המשתמש:
+- רק שואל שאלה או מחפש המלצה - אל תשתמש בפעולה, רק תענה
+- משוחח בדברים כלליים - אל תשתמש בפעולה, רק תענה
+
+דוגמאות:
+✓ "תמליץ לי על סרט?" → רק תשובה (אין פעולה)
+✓ "עבור לסרטים" → navigate action
+✓ "תנגן את [שם]" → play action
+✓ "חפש סרטי אקשן" → search action
 
 לא תהיה עזרה עודפת או הצעות. רק תענה לבקשה הספציפית בעברית."""
 
@@ -344,359 +350,59 @@ async def extract_action_from_response(
     response: str, query: str, language: str = "he"
 ) -> Optional[dict]:
     """
-    Extract structured action commands from Claude's response.
-
-    Supported action types:
-    - navigate: Go to a section (movies, channels, etc.)
-    - play: Play specific content
-    - search: Search for content
-    - pause: Pause playback
-    - resume: Resume playback
-    - skip: Skip to next
-    - add_to_watchlist: Add content to watchlist
-    - add_to_favorites: Mark as favorite
-    - info: Get information about content
-    - volume: Adjust volume
-    - language: Change language/subtitle
-
-    Returns:
-    {
-        "type": str,
-        "payload": {...},  # Action-specific data
-        "confidence": float  # 0-1 confidence score
-    }
+    Ask Claude to determine if an action is needed based on the user's request.
+    The LLM is responsible for understanding context and deciding on actions.
     """
+    # Use Claude to determine if an action is needed
+    try:
+        action_prompt = f"""Based on this user request: "{query}"
 
-    response_lower = response.lower()
-    query_lower = query.lower()
+Should the app take an action? Return ONLY a JSON response (no other text).
 
-    # ===== NAVIGATION ACTIONS =====
-    nav_patterns = {
-        "movies": [
-            # Hebrew
-            "סרטים", "סרט", "תראה לי סרטים", "עבור לסרטים", "הצג סרטים", "תוכל להראות סרטים",
-            # English
-            "movies", "movie", "show me the movies", "go to movies", "display movies",
-            "take me to movies", "films", "film", "cinema", "watch a movie", "show films",
-            "i want movies", "can you show movies"
-        ],
-        "series": [
-            # Hebrew
-            "סדרות", "סדרה", "תראה לי סדרות", "עבור לסדרות", "הצג סדרות", "תוכניות",
-            # English
-            "series", "show", "shows", "go to series", "display series", "take me to series",
-            "tv shows", "tv series", "television series", "show me series", "what shows do you have",
-            "can you show series"
-        ],
-        "channels": [
-            # Hebrew
-            "ערוצים", "ערוץ", "תראה לי ערוצים", "עבור לערוצים", "הצג ערוצים", "שידור חי",
-            # English
-            "channels", "channel", "live tv", "open channels", "display channels", "go to channels",
-            "show channels", "live", "streaming channels", "tv channels", "what channels",
-            "what live channels do you have"
-        ],
-        "radio": [
-            # Hebrew
-            "רדיו", "תחנות רדיו", "עבור לרדיו", "הצג רדיו", "תראה לי רדיו",
-            # English
-            "radio", "stations", "radio stations", "go to radio", "display radio", "listen to radio",
-            "take me to radio", "show radio", "show stations", "what radio", "what radio stations"
-        ],
-        "podcasts": [
-            # Hebrew
-            "פודקאסטים", "פודקסט", "עבור לפודקאסטים", "הצג פודקאסטים", "תראה פודקאסטים",
-            # English
-            "podcasts", "podcast", "go to podcasts", "display podcasts", "show podcasts",
-            "take me to podcasts", "what podcasts", "show me podcasts"
-        ],
-        "flows": [
-            # Hebrew
-            "זרמים", "זרם", "עבור לזרמים", "הצג זרמים", "תראה זרמים",
-            # English
-            "flows", "flow", "streams", "stream", "go to flows", "display flows", "show flows",
-            "take me to flows", "show me flows", "streaming content"
-        ],
-        "judaism": [
-            # Hebrew
-            "יהדות", "עברית", "עבור ליהדות", "הצג יהדות", "תראה יהדות", "תורה",
-            "שבת", "חזינויים", "דתי", "סרטים דתיים",
-            # English
-            "judaism", "jewish", "jewish content", "go to judaism", "display judaism", "show judaism",
-            "take me to judaism", "torah", "religious", "shabbat", "hebrew", "jewish studies",
-            "jewish culture"
-        ],
-        "children": [
-            # Hebrew
-            "ילדים", "ילד", "עבור לילדים", "הצג ילדים", "תראה לילדים", "קרטונים",
-            "תוכניות לילדים", "קטנטנים",
-            # English
-            "children", "child", "kids", "kid", "go to children", "display children", "show kids",
-            "take me to children", "show children", "cartoons", "kids content", "children's shows",
-            "family", "children's programs", "kids programs", "show me cartoons"
-        ],
-        "home": [
-            # Hebrew
-            "בית", "דף הבית", "דף הראשית", "חזור הביתה", "חזור לבית", "עמוד בית",
-            # English
-            "home", "main page", "go home", "back home", "return home", "start page", "homepage",
-            "back to home", "go back home"
-        ],
-        "search": [
-            # Hebrew
-            "חפש", "חפש לי", "תראה לי", "מצא", "מצא לי",
-            # English
-            "search", "find", "look for", "find me", "search for", "can you find", "help me find"
-        ],
-    }
+If NO action needed, return: {{"action": null}}
 
-    for target, patterns in nav_patterns.items():
-        for pattern in patterns:
-            if pattern in response_lower or pattern in query_lower:
+If action IS needed, return ONE of these formats:
+- Navigation: {{"action": "navigate", "target": "movies|series|channels|radio|podcasts|flows|judaism|children|home"}}
+- Play: {{"action": "play"}}
+- Search: {{"action": "search", "query": "{query}"}}
+- Pause/Resume/Skip: {{"action": "pause"|"resume"|"skip"}}
+
+Rules:
+- "תמליץ לי על סרט" (recommend a movie) = NO action
+- "עבור לסרטים" (go to movies) = navigate to movies
+- "תנגן את X" (play X) = play action
+- "חפש סרטי אקשן" (search action movies) = search action
+
+Return ONLY valid JSON, nothing else."""
+
+        action_response = client.messages.create(
+            model="claude-sonnet-4-20250514",
+            max_tokens=100,
+            messages=[{"role": "user", "content": action_prompt}]
+        )
+
+        action_text = action_response.content[0].text.strip()
+        print(f"[CHAT] Claude action decision: {action_text}")
+
+        # Parse JSON response
+        import json
+        try:
+            action_data = json.loads(action_text)
+            if action_data.get("action"):
                 return {
-                    "type": "navigate",
-                    "payload": {"target": target},
+                    "type": action_data["action"],
+                    "payload": action_data.get("payload") or {"target": action_data.get("target")} if action_data.get("target") else {"query": action_data.get("query")} if action_data.get("query") else {},
                     "confidence": 0.9,
                 }
+        except json.JSONDecodeError:
+            print(f"[CHAT] Failed to parse action JSON: {action_text}")
+            return None
 
-    # ===== PLAYBACK CONTROL ACTIONS =====
-    pause_triggers = [
-        # English
-        "pause", "stop", "stop playback", "stop playing", "pause video", "pause playback",
-        "halt", "freeze",
-        # Hebrew
-        "השהה", "עצור", "עצור נגינה", "עצור את הנגינה", "עצור את הוידאו", "תעצור",
-    ]
-    for trigger in pause_triggers:
-        if trigger in response_lower or trigger in query_lower:
-            return {
-                "type": "pause",
-                "payload": {},
-                "confidence": 0.9,
-            }
+        return None
 
-    resume_triggers = [
-        # English
-        "resume", "continue", "continue playing", "start playing", "play again", "keep playing",
-        "unpause", "go on",
-        # Hebrew
-        "המשך", "המשך נגינה", "המשך את הנגינה", "התחל לנגן", "תמשיך", "המשך עכשיו",
-    ]
-    for trigger in resume_triggers:
-        if trigger in response_lower or trigger in query_lower:
-            return {
-                "type": "resume",
-                "payload": {},
-                "confidence": 0.9,
-            }
-
-    skip_triggers = [
-        # English
-        "skip", "next", "next episode", "next song", "next track", "skip to next", "forward",
-        "jump to next", "go to next",
-        # Hebrew
-        "דלג", "הבא", "הפרק הבא", "השיר הבא", "דלג לשיר הבא", "דלג הלאה", "דלג קדימה",
-    ]
-    for trigger in skip_triggers:
-        if trigger in response_lower or trigger in query_lower:
-            return {
-                "type": "skip",
-                "payload": {},
-                "confidence": 0.9,
-            }
-
-    # ===== PLAY CONTENT ACTIONS =====
-    play_triggers = [
-        # English
-        "play", "start", "watch", "watch now", "start playing", "begin", "begin playing",
-        "start watching", "turn on",
-        # Hebrew
-        "נגן", "צפה", "הפעל", "התחל", "צפה עכשיו", "הפעל עכשיו", "תנגן",
-    ]
-    known_titles = {
-        "the troupe": "the_troupe",
-        "footnote": "footnote",
-        "waltz with bashir": "waltz_bashir",
-        "bonjour monsieur shlomi": "shlomi",
-        "beaufort": "beaufort",
-        "tick tock": "tick_tock",
-        "kan": "kan",
-        "channel 2": "channel2",
-        "channel 13": "channel13",
-        "i24news": "i24news",
-    }
-
-    for trigger in play_triggers:
-        if trigger in response_lower or trigger in query_lower:
-            # Look for specific title
-            for title, content_id in known_titles.items():
-                if title in response_lower or title in query_lower:
-                    return {
-                        "type": "play",
-                        "payload": {
-                            "content_id": content_id,
-                            "title": title,
-                        },
-                        "confidence": 0.85,
-                    }
-            # Generic play action
-            return {
-                "type": "play",
-                "payload": {},
-                "confidence": 0.7,
-            }
-
-    # ===== SEARCH ACTIONS =====
-    search_triggers = [
-        # English
-        "search", "find", "look for", "search for", "can you find", "help me find",
-        "show me", "find me", "i want to watch", "i want to find",
-        # Hebrew
-        "חפש", "מצא", "חפש עבור", "מצא לי", "תמצא", "חפש לי", "תחפש",
-    ]
-    for trigger in search_triggers:
-        if trigger in response_lower or trigger in query_lower:
-            return {
-                "type": "search",
-                "payload": {
-                    "query": query,
-                    "filters": {
-                        "category": None,
-                        "genre": None,
-                        "type": None,
-                    }
-                },
-                "confidence": 0.8,
-            }
-
-    # ===== WATCHLIST/FAVORITES ACTIONS =====
-    watchlist_triggers = [
-        # English
-        "add to watchlist", "add to my list", "save for later", "watch later",
-        "save this", "add this", "bookmark", "remember this",
-        # Hebrew
-        "הוסף לרשימת הצפייה", "הוסף לרשימה", "שמור עבור מאוחר יותר", "שמור", "תזכור את זה",
-    ]
-    for trigger in watchlist_triggers:
-        if trigger in response_lower or trigger in query_lower:
-            return {
-                "type": "add_to_watchlist",
-                "payload": {},
-                "confidence": 0.85,
-            }
-
-    favorites_triggers = [
-        # English
-        "add to favorites", "mark as favorite", "like", "love this", "this is great",
-        "add to my favorites", "favorite it", "make it favorite",
-        # Hebrew
-        "הוסף למועדפים", "הוסף למועדף", "אני אוהב את זה", "כיפוף", "סמן כמועדף",
-    ]
-    for trigger in favorites_triggers:
-        if trigger in response_lower or trigger in query_lower:
-            return {
-                "type": "add_to_favorites",
-                "payload": {},
-                "confidence": 0.85,
-            }
-
-    # ===== VOLUME/SETTINGS ACTIONS =====
-    volume_increase = [
-        # English
-        "volume up", "increase volume", "make it louder", "louder", "turn it up",
-        "boost volume", "volume higher",
-        # Hebrew
-        "עוצמה יותר", "הגבר קול", "עוצמה יותר גבוהה", "התחזק", "תגביר קול",
-    ]
-    for trigger in volume_increase:
-        if trigger in response_lower or trigger in query_lower:
-            return {
-                "type": "volume",
-                "payload": {"change": "increase"},
-                "confidence": 0.9,
-            }
-
-    volume_decrease = [
-        # English
-        "volume down", "decrease volume", "make it quieter", "quieter", "turn it down",
-        "lower volume", "volume lower", "mute",
-        # Hebrew
-        "עוצמה פחות", "הנמך קול", "עוצמה נמוכה יותר", "שהה", "הנמך",
-    ]
-    for trigger in volume_decrease:
-        if trigger in response_lower or trigger in query_lower:
-            return {
-                "type": "volume",
-                "payload": {"change": "decrease"},
-                "confidence": 0.9,
-            }
-
-    language_triggers = [
-        # English
-        "change language", "switch language", "english", "hebrew", "עברית", "אנגלית",
-        # Hebrew
-        "שנה שפה", "החלף שפה",
-    ]
-    for trigger in language_triggers:
-        if trigger in response_lower or trigger in query_lower:
-            detected_lang = "en" if "english" in response_lower or "אנגלית" in response_lower else "he"
-            return {
-                "type": "language",
-                "payload": {"language": detected_lang},
-                "confidence": 0.85,
-            }
-
-    # ===== SUBTITLE ACTIONS =====
-    subtitle_triggers = [
-        # English
-        "subtitle", "subtitles", "captions", "show subtitles", "turn on subtitles",
-        "enable subtitles", "disable subtitles", "turn off subtitles",
-        # Hebrew
-        "כתוביות", "הצג כתוביות", "פעל כתוביות", "כבה כתוביות",
-    ]
-    for trigger in subtitle_triggers:
-        if trigger in response_lower or trigger in query_lower:
-            enable = not any(x in response_lower for x in ["off", "disable", "כבה", "בטל", "turn off"])
-            return {
-                "type": "subtitles",
-                "payload": {"enabled": enable},
-                "confidence": 0.8,
-            }
-
-    # ===== INFO ACTIONS =====
-    info_triggers = [
-        # English
-        "tell me about", "info about", "details about", "information", "סיפור על",
-        "describe", "what is", "more info", "more details",
-        # Hebrew
-        "מידע על", "תגיד לי על", "מה זה", "סיפור", "תיאור",
-    ]
-    for trigger in info_triggers:
-        if trigger in response_lower or trigger in query_lower:
-            return {
-                "type": "info",
-                "payload": {"query": query},
-                "confidence": 0.75,
-            }
-
-    # ===== HELP ACTIONS =====
-    help_triggers = [
-        # English
-        "help", "how to", "instructions", "guide", "what can you do", "what are the commands",
-        "teach me", "tell me how", "how do i",
-        # Hebrew
-        "עזרה", "איך", "הוראות", "מה אתה יכול לעשות", "מה הפקודות", "תלמד אותי",
-    ]
-    for trigger in help_triggers:
-        if trigger in response_lower or trigger in query_lower:
-            return {
-                "type": "help",
-                "payload": {},
-                "confidence": 0.85,
-            }
-
-    # No action identified
-    return None
+    except Exception as e:
+        print(f"[CHAT] Error extracting action: {e}")
+        return None
 
 
 @router.get("/{conversation_id}")

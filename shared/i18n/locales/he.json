@@ -654,6 +654,8 @@
   },
   "voice": {
     "listening": "מקשיב...",
+    "speaking": "מדבר",
+    "ready": "מוכן",
     "tapToSpeak": "לחץ לדיבור",
     "processing": "מעבד...",
     "transcribing": "מתמלל...",

@@ -175,6 +175,8 @@ export function useVoiceResponseCoordinator(
 
           console.log('[VoiceResponseCoordinator] Calling ttsService.speak() with text:', textToSpeak.substring(0, 50));
           console.log('[VoiceResponseCoordinator] ttsService:', ttsService);
+
+          // Speak the response
           await ttsService.speak(
             textToSpeak,
             'normal', // priority

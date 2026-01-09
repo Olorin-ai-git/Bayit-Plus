@@ -6,7 +6,7 @@
  * Audio is only sent to transcription API after wake word is detected.
  */
 
-import { useState, useRef, useCallback, useEffect } from 'react';
+import { useState, useRef, useCallback, useEffect, useMemo } from 'react';
 import { Platform } from 'react-native';
 import { WakeWordDetector, WakeWordConfig, WakeWordResult, createWakeWordDetector } from '../utils/wakeWordDetector';
 import { VADDetector, AudioLevel, calculateAudioLevel, createVADDetector } from '../utils/vadDetector';
@@ -95,6 +95,8 @@ export function useWakeWordListening(options: UseWakeWordListeningOptions): UseW
   const isSendingToServerRef = useRef(false);
   const isTTSSpeakingRef = useRef(false);
   const lastTTSLogRef = useRef<number>(0);
+  const pendingTranscriptionRef = useRef<Promise<any> | null>(null);
+  const lastTranscribedBlobRef = useRef<Blob | null>(null);
 
   // Check platform support
   const isWeb = Platform.OS === 'web';
@@ -148,6 +150,7 @@ export function useWakeWordListening(options: UseWakeWordListeningOptions): UseW
 
   /**
    * Send buffered audio to transcription API
+   * Implements deduplication to prevent duplicate requests
    */
   const sendToTranscription = useCallback(async () => {
     if (!bufferRef.current || !transcribeAudio) return;
@@ -165,37 +168,61 @@ export function useWakeWordListening(options: UseWakeWordListeningOptions): UseW
       return;
     }
 
-    setIsSendingToServer(true);
-    console.log('[WakeWordListening] Sending audio to transcription API');
-
-    try {
-      const result = await transcribeAudio(audioBlob);
-
-      if (result.text && result.text.trim()) {
-        console.log('[WakeWordListening] Transcription received:', result.text.substring(0, 100));
-        onTranscript(result.text.trim(), result.language);
-      }
-    } catch (err) {
-      const error = err instanceof Error ? err : new Error('Transcription failed');
-      console.error('[WakeWordListening] Transcription error:', error);
-      onError(error);
-    } finally {
-      setIsSendingToServer(false);
-      isSendingToServerRef.current = false;
-      // Keep isProcessing true - it will be reset by onTranscript or after timeout
-      // Don't reset it here to avoid flickering
-      console.log('[WakeWordListening] Transcription complete, waiting for response');
-      vadRef.current?.reset();
-      bufferRef.current?.clear();
-      setIsAwake(false);
-      isAwakeRef.current = false;
-      setWakeWordDetected(false);
-
-      // Reset processing state after a short delay to ensure UI updates
-      setTimeout(() => {
-        setIsProcessing(false);
-      }, 500);
+    // DEDUPLICATION: Skip if we're already transcribing the exact same audio blob
+    if (lastTranscribedBlobRef.current === audioBlob) {
+      console.log('[WakeWordListening] Duplicate audio blob detected, skipping transcription');
+      return;
     }
+
+    // DEDUPLICATION: Skip if a transcription request is already in flight
+    if (pendingTranscriptionRef.current) {
+      console.log('[WakeWordListening] Transcription already in flight, skipping duplicate request');
+      return;
+    }
+
+    setIsSendingToServer(true);
+    console.log('[WakeWordListening] Sending audio to transcription API, blob size:', audioBlob.size);
+
+    // Create a promise to track the in-flight request
+    const transcriptionPromise = (async () => {
+      try {
+        const result = await transcribeAudio(audioBlob);
+
+        if (result.text && result.text.trim()) {
+          console.log('[WakeWordListening] Transcription received:', result.text.substring(0, 100));
+          onTranscript(result.text.trim(), result.language);
+        }
+      } catch (err) {
+        const error = err instanceof Error ? err : new Error('Transcription failed');
+        console.error('[WakeWordListening] Transcription error:', error);
+        onError(error);
+      } finally {
+        setIsSendingToServer(false);
+        isSendingToServerRef.current = false;
+        // Keep isProcessing true - it will be reset by onTranscript or after timeout
+        // Don't reset it here to avoid flickering
+        console.log('[WakeWordListening] Transcription complete, waiting for response');
+        vadRef.current?.reset();
+        bufferRef.current?.clear();
+        setIsAwake(false);
+        isAwakeRef.current = false;
+        setWakeWordDetected(false);
+
+        // Reset processing state after a short delay to ensure UI updates
+        setTimeout(() => {
+          setIsProcessing(false);
+        }, 500);
+
+        // Clear the pending request reference
+        pendingTranscriptionRef.current = null;
+      }
+    })();
+
+    // Store the pending promise and blob to prevent duplicates
+    pendingTranscriptionRef.current = transcriptionPromise;
+    lastTranscribedBlobRef.current = audioBlob;
+
+    await transcriptionPromise;
   }, [transcribeAudio, onTranscript, onError]);
 
   /**
