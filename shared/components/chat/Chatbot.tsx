@@ -181,7 +181,9 @@ export const Chatbot: React.FC<ChatbotProps> = ({ visible, onClose }) => {
     setTranscript('');
 
     try {
-      const response = await chatService.sendMessage(text, conversationId || undefined);
+      // Get current language from i18n
+      const currentLang = getCurrentLanguage();
+      const response = await chatService.sendMessage(text, conversationId || undefined, undefined, currentLang.code);
       setConversationId(response.conversation_id);
       setMessages(prev => [
         ...prev,
@@ -222,7 +224,9 @@ export const Chatbot: React.FC<ChatbotProps> = ({ visible, onClose }) => {
     setIsLoading(true);
 
     try {
-      const response = await chatService.sendMessage(userMessage, conversationId || undefined);
+      // Get current language from i18n
+      const currentLang = getCurrentLanguage();
+      const response = await chatService.sendMessage(userMessage, conversationId || undefined, undefined, currentLang.code);
       setConversationId(response.conversation_id);
       setMessages(prev => [
         ...prev,

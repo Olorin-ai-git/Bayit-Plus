@@ -510,7 +510,7 @@ export default function Chatbot() {
     setIsLoading(true)
 
     try {
-      const response = await chatService.sendMessage(message, conversationId, context)
+      const response = await chatService.sendMessage(message, conversationId, context, i18n.language)
       setConversationId(response.conversation_id)
       setMessages((prev) => [
         ...prev,
@@ -651,7 +651,8 @@ export default function Chatbot() {
           const chatResponse = await chatService.sendMessage(
             transcribedText,
             conversationId,
-            context
+            context,
+            i18n.language
           )
           setConversationId(chatResponse.conversation_id)
 
@@ -741,7 +742,7 @@ export default function Chatbot() {
     setIsLoading(true)
 
     try {
-      const response = await chatService.sendMessage(userMessage, conversationId, context)
+      const response = await chatService.sendMessage(userMessage, conversationId, context, i18n.language)
       setConversationId(response.conversation_id)
       setMessages((prev) => [
         ...prev,

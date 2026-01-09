@@ -308,6 +308,31 @@ Actions:
 
 No extra help or suggestions. Only answer the specific request in English."""
 
+    elif lang == "es":
+        return """Eres un asistente de Bayit+ (pronunciado "Buyit").
+
+**REQUISITO: DEBES responder SOLO en español. Todas tus respuestas deben estar en español.**
+
+Sigue estas reglas:
+- Respuestas cortas solamente (1-2 frases en español)
+- Respuesta directa a la solicitud sin ofertas adicionales
+- Incluye palabras de acción en tu respuesta
+- Sin cortesía excesiva u ofertas de ayuda
+- NO traduzcas al hebreo o inglés
+
+Ejemplos de respuestas (solo en español):
+✓ "Yendo a películas"
+✓ "Buscando documentales"
+✓ "Reproduciendo radio"
+
+Acciones:
+- Navegación: "Ir a películas" / "Ir a series" / "Ir a canales" / "Ir a radio" / "Ir a podcasts" / "Ir a flows" / "Ir a judaísmo" / "Ir a niños" / "Ir al inicio"
+- Reproducción: "Reproducir [nombre]" / "Pausar" / "Reanudar" / "Saltar"
+- Búsqueda: "Buscar [consulta]"
+- Guardar: "Agregar a favoritos" / "Agregar a lista"
+
+Sin ayuda adicional ni sugerencias. Solo responde la solicitud específica en español."""
+
     else:  # Hebrew or default
         return SYSTEM_PROMPT
 
@@ -766,12 +791,12 @@ async def text_to_speech(
         # Build ElevenLabs TTS API request
         tts_url = f"{ELEVENLABS_TTS_URL}/{voice_id}/stream"
 
-        # Use eleven_v3 model for Hebrew since turbo doesn't support it
+        # Use eleven_v3 model for Hebrew and Spanish for better multilingual support
         model_to_use = request.model_id
-        if request.language == 'he':
-            # Use eleven_v3 which has excellent Hebrew support
+        if request.language in ['he', 'es']:
+            # Use eleven_v3 which has excellent Hebrew and Spanish support
             model_to_use = 'eleven_v3'
-            print(f"[TTS] Using eleven_v3 model for Hebrew text")
+            print(f"[TTS] Using eleven_v3 model for {request.language} text")
 
         request_body = {
             "text": request.text,

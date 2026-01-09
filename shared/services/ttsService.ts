@@ -1,11 +1,13 @@
 /**
  * Text-to-Speech Service
- * Provides Hebrew and English TTS via ElevenLabs API
+ * Provides Hebrew, English, and Spanish TTS via ElevenLabs API
  * Manages audio playback queue with priority system
+ * Syncs language with i18n configuration
  * NO MOCKS - Real API integration only
  */
 
 import { EventEmitter } from 'eventemitter3';
+import i18n from '../i18n';
 
 export interface TTSQueueItem {
   id: string;
@@ -19,7 +21,7 @@ export interface TTSQueueItem {
 
 export interface TTSConfig {
   voiceId: string;
-  language: 'he' | 'en';
+  language: 'he' | 'en' | 'es';
   model: 'eleven_v3' | 'eleven_turbo_v2' | 'eleven_monolingual_v1';
   stability: number; // 0-1
   similarityBoost: number; // 0-1
@@ -52,7 +54,7 @@ class TTSService extends EventEmitter {
 
   private config: TTSConfig = {
     voiceId: this.getDefaultVoiceId(),
-    language: 'he',
+    language: (typeof window !== 'undefined' && (i18n.language as 'he' | 'en' | 'es')) || 'he',
     model: 'eleven_v3',
     stability: 0.5,
     similarityBoost: 0.75,
@@ -67,6 +69,17 @@ class TTSService extends EventEmitter {
     super();
     if (typeof window !== 'undefined') {
       this.audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
+
+      // Initialize with current i18n language
+      const currentLang = i18n.language as 'he' | 'en' | 'es' || 'he';
+      this.config.language = currentLang;
+      console.log('[TTS] Initialized with language:', currentLang);
+
+      // Listen to i18n language changes
+      i18n.on('languageChanged', (lng: string) => {
+        console.log('[TTS] Language changed event received:', lng);
+        this.setLanguage(lng as 'he' | 'en' | 'es');
+      });
     }
   }
 
@@ -473,10 +486,12 @@ class TTSService extends EventEmitter {
     this.config.voiceId = voiceId;
   }
 
-  setLanguage(language: 'he' | 'en'): void {
+  setLanguage(language: 'he' | 'en' | 'es'): void {
+    console.log('[TTS] setLanguage() called with:', language);
     this.config.language = language;
     // Use configured voice for all languages
     this.config.voiceId = this.getDefaultVoiceId();
+    this.emit('language-changed', language);
   }
 
   setVolume(volume: number): void {
