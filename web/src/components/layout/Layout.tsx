@@ -1,10 +1,13 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import { View, StyleSheet } from 'react-native';
 import { Outlet } from 'react-router-dom';
 import Header from './Header';
 import Footer from './Footer';
 import GlassSidebar from './GlassSidebar';
 import Chatbot from '../chat/Chatbot';
+import SoundwaveParticles from '../content/SoundwaveParticles';
+import { useVoiceListeningContext } from '@/contexts/VoiceListeningContext';
+import { ttsService } from '@bayit/shared-services';
 import { colors, spacing } from '@bayit/shared/theme';
 
 // Check if this is a TV build (set by webpack)
@@ -17,6 +20,56 @@ export default function Layout() {
 
   const toggleSidebar = useCallback(() => {
     setIsSidebarExpanded(prev => !prev);
+  }, []);
+
+  // Voice listening context - shared across all pages
+  const { isListening, isAwake, isProcessing, audioLevel } = useVoiceListeningContext();
+
+  // TTS event state - tracks when system is speaking
+  const [voiceResponse, setVoiceResponse] = useState<string>('');
+  const [voiceError, setVoiceError] = useState<boolean>(false);
+  const [isResponding, setIsResponding] = useState<boolean>(false);
+  const [isTTSSpeaking, setIsTTSSpeaking] = useState<boolean>(false);
+
+  // Listen for TTS events to track response speaking state
+  useEffect(() => {
+    console.log('[Layout] Setting up TTS event listeners');
+
+    const handlePlaying = (item: any) => {
+      console.log('[Layout] TTS playing event fired:', item.text?.substring(0, 50));
+      setIsResponding(true);
+      setIsTTSSpeaking(true);
+      setVoiceResponse(item.text || '');
+    };
+
+    const handleCompleted = () => {
+      console.log('[Layout] TTS completed event fired');
+      setIsResponding(false);
+      setIsTTSSpeaking(false);
+      // Keep response text for a moment before clearing
+      setTimeout(() => setVoiceResponse(''), 2000);
+    };
+
+    const handleError = (data: any) => {
+      console.error('[Layout] TTS error event fired:', data?.error);
+      setVoiceError(true);
+      setIsResponding(false);
+      setIsTTSSpeaking(false);
+      setTimeout(() => setVoiceError(false), 3000);
+    };
+
+    // Listen to TTS events
+    console.log('[Layout] Registering TTS event listeners - playing, completed, error');
+    ttsService.on('playing', handlePlaying);
+    ttsService.on('completed', handleCompleted);
+    ttsService.on('error', handleError);
+
+    return () => {
+      console.log('[Layout] Cleanup: removing TTS event listeners');
+      ttsService.off('playing', handlePlaying);
+      ttsService.off('completed', handleCompleted);
+      ttsService.off('error', handleError);
+    };
   }, []);
 
   // Calculate content margin based on sidebar state
@@ -45,6 +98,17 @@ export default function Layout() {
         IS_TV_BUILD && { marginLeft: sidebarWidth },
       ]}>
         <Header onMenuPress={IS_TV_BUILD ? toggleSidebar : undefined} />
+
+        {/* Voice Soundwave Particles - visible on all pages (100px high) */}
+        <SoundwaveParticles
+          isListening={isListening}
+          isProcessing={isAwake || isProcessing}
+          audioLevel={audioLevel}
+          hasError={voiceError}
+          isResponding={isResponding || isTTSSpeaking}
+          responseText={voiceResponse}
+        />
+
         <View style={styles.main}>
           <Outlet />
         </View>
