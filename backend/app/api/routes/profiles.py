@@ -1,10 +1,11 @@
 from datetime import datetime
 from typing import List, Optional
 from fastapi import APIRouter, HTTPException, status, Depends
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 from app.models.user import User
 from app.models.profile import Profile, ProfileCreate, ProfileUpdate, ProfileResponse
 from app.core.security import get_current_active_user, get_password_hash, verify_password
+from app.core.config import settings
 
 
 # Profile limits by subscription tier
@@ -337,7 +338,7 @@ DEFAULT_AI_SETTINGS = {
 
 DEFAULT_VOICE_SETTINGS = {
     "voice_search_enabled": True,
-    "constant_listening_enabled": True,  # Always-on listening for TV/tvOS apps
+    "constant_listening_enabled": False,  # DISABLED - use wake word instead
     "voice_language": "he",
     "auto_subtitle": False,
     "high_contrast_mode": False,
@@ -346,7 +347,7 @@ DEFAULT_VOICE_SETTINGS = {
     "silence_threshold_ms": 2000,  # Wait 2 seconds of silence before processing
     "vad_sensitivity": "medium",  # Voice Activity Detection sensitivity: low, medium, high
     # Wake word settings
-    "wake_word_enabled": False,  # DISABLED by default - respond immediately without wake word
+    "wake_word_enabled": True,  # ENABLED by default - listen for "Hi Bayit"
     "wake_word": "hi bayit",
     "wake_word_sensitivity": 0.7,  # 0-1 sensitivity
     "wake_word_cooldown_ms": 2000,
@@ -355,7 +356,7 @@ DEFAULT_VOICE_SETTINGS = {
     "voice_feedback_enabled": True,
     # TTS settings
     "tts_enabled": True,
-    "tts_voice_id": "EXAVITQu4VqLrzJuXi3n",  # ElevenLabs Hebrew female voice
+    "tts_voice_id": settings.ELEVENLABS_DEFAULT_VOICE_ID,  # From environment config
     "tts_speed": 1.0,  # 0.5-2.0
     "tts_volume": 1.0,  # 0-1
 }
@@ -388,7 +389,7 @@ class VoicePreferences(BaseModel):
     voice_feedback_enabled: bool = True
     # TTS settings
     tts_enabled: bool = True
-    tts_voice_id: str = "EXAVITQu4VqLrzJuXi3n"  # ElevenLabs Hebrew female voice
+    tts_voice_id: str = Field(default_factory=lambda: settings.ELEVENLABS_DEFAULT_VOICE_ID)  # From environment config
     tts_speed: float = 1.0  # 0.5-2.0
     tts_volume: float = 1.0  # 0-1
 

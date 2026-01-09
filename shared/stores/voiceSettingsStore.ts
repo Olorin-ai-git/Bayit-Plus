@@ -16,8 +16,8 @@ export { VoiceMode };
 
 const DEFAULT_VOICE_PREFERENCES: VoicePreferences = {
   voice_search_enabled: true,
-  constant_listening_enabled: true,  // Enabled by default per requirements
-  voice_language: 'he',
+  constant_listening_enabled: false,  // DISABLED - use wake word instead
+  // Note: voice_language is now derived from i18n.language instead of stored
   auto_subtitle: false,
   high_contrast_mode: false,
   text_size: 'medium',
@@ -25,7 +25,7 @@ const DEFAULT_VOICE_PREFERENCES: VoicePreferences = {
   silence_threshold_ms: 2000,        // 2 seconds of silence before sending
   vad_sensitivity: 'medium',         // Balanced VAD sensitivity
   // Wake word settings for "Hi Bayit" activation
-  wake_word_enabled: false,          // Wake word detection DISABLED by default - respond immediately
+  wake_word_enabled: true,           // Wake word detection ENABLED by default - listen for "Hi Bayit"
   wake_word: 'hi bayit',             // Default wake phrase
   wake_word_sensitivity: 0.7,        // 0-1 sensitivity (0.7 balanced)
   wake_word_cooldown_ms: 2000,       // Cooldown between detections
@@ -33,7 +33,7 @@ const DEFAULT_VOICE_PREFERENCES: VoicePreferences = {
   voice_mode: VoiceMode.VOICE_ONLY,  // Default: Voice Only mode (no remote)
   voice_feedback_enabled: true,      // Voice feedback on interactions (default for Hybrid)
   tts_enabled: true,                 // TTS enabled by default
-  tts_voice_id: 'EXAVITQu4VqLrzJuXi3n', // ElevenLabs Hebrew female voice
+  tts_voice_id: 'JBFqnCBsd6RMkjVDRZzb', // Default voice (configured in .env via VITE_ELEVENLABS_DEFAULT_VOICE_ID)
   tts_speed: 1.0,                    // Normal speech speed (0.5-2.0)
   tts_volume: 1.0,                   // Max volume (0-1)
 };
@@ -59,7 +59,6 @@ interface VoiceSettingsStore {
     'wake_word_enabled' |
     'tts_enabled'
   >) => Promise<void>;
-  setVoiceLanguage: (language: VoiceLanguage) => Promise<void>;
   setTextSize: (size: TextSize) => Promise<void>;
   setVADSensitivity: (sensitivity: VADSensitivity) => Promise<void>;
   setSilenceThreshold: (ms: number) => Promise<void>;
@@ -129,10 +128,6 @@ export const useVoiceSettingsStore = create<VoiceSettingsStore>()(
       toggleSetting: async (key) => {
         const current = get().preferences;
         await get().updatePreferences({ [key]: !current[key] });
-      },
-
-      setVoiceLanguage: async (language) => {
-        await get().updatePreferences({ voice_language: language });
       },
 
       setTextSize: async (size) => {

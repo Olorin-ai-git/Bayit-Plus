@@ -15,7 +15,7 @@ export type VADSensitivity = 'low' | 'medium' | 'high';
 export interface VoicePreferences {
   voice_search_enabled: boolean;
   constant_listening_enabled: boolean;
-  voice_language: VoiceLanguage;
+  // Note: voice_language is now derived from i18n.language instead of stored
   auto_subtitle: boolean;
   high_contrast_mode: boolean;
   text_size: TextSize;
@@ -31,8 +31,7 @@ export interface VoicePreferences {
 
 const DEFAULT_VOICE_PREFERENCES: VoicePreferences = {
   voice_search_enabled: true,
-  constant_listening_enabled: true,
-  voice_language: 'he',
+  constant_listening_enabled: false,  // DISABLED - use wake word instead
   auto_subtitle: false,
   high_contrast_mode: false,
   text_size: 'medium',
@@ -40,7 +39,7 @@ const DEFAULT_VOICE_PREFERENCES: VoicePreferences = {
   silence_threshold_ms: 2000,
   vad_sensitivity: 'medium',
   // Wake word settings
-  wake_word_enabled: true,
+  wake_word_enabled: true,           // Wake word detection ENABLED by default - listen for "Hi Bayit"
   wake_word: 'hi bayit',
   wake_word_sensitivity: 0.7,
   wake_word_cooldown_ms: 2000,
@@ -62,7 +61,6 @@ interface VoiceSettingsStore {
     'hold_button_mode' |
     'wake_word_enabled'
   >) => Promise<void>;
-  setVoiceLanguage: (language: VoiceLanguage) => Promise<void>;
   setTextSize: (size: TextSize) => Promise<void>;
   setVADSensitivity: (sensitivity: VADSensitivity) => Promise<void>;
   setSilenceThreshold: (ms: number) => Promise<void>;
@@ -118,10 +116,6 @@ export const useVoiceSettingsStore = create<VoiceSettingsStore>()(
       toggleSetting: async (key) => {
         const current = get().preferences;
         await get().updatePreferences({ [key]: !current[key] });
-      },
-
-      setVoiceLanguage: async (language) => {
-        await get().updatePreferences({ voice_language: language });
       },
 
       setTextSize: async (size) => {
