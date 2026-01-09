@@ -48,13 +48,13 @@ export const VoiceSearchButton: React.FC<VoiceSearchButtonProps> = ({
   // Voice settings
   const { preferences } = useVoiceSettingsStore();
 
-  // Determine if constant listening should be enabled
+  // Determine if wake word listening should be enabled
   // Use prop if provided, otherwise use preferences (allows web to enable it too)
   const shouldEnableConstantListening = showConstantListening !== undefined
     ? showConstantListening
-    : preferences.constant_listening_enabled;
+    : preferences.wake_word_enabled;
 
-  // Wake word listening (for constant listening mode - works on web and TV)
+  // Wake word listening (for wake word mode - works on web and TV)
   const {
     isListening: isConstantListening,
     isAwake,
@@ -139,10 +139,10 @@ export const VoiceSearchButton: React.FC<VoiceSearchButtonProps> = ({
     }
   }, [wakeWordDetected, wakeWordPulseAnim, glowAnim]);
 
-  // Subtle listening animation when constant listening is active
+  // Subtle listening animation when wake word listening is active
   useEffect(() => {
     if (isConstantListening && !isAwake && !isRecording) {
-      // Subtle glow pulse for idle listening
+      // Subtle glow pulse for idle wake word listening
       Animated.loop(
         Animated.sequence([
           Animated.timing(glowAnim, {
@@ -317,7 +317,7 @@ export const VoiceSearchButton: React.FC<VoiceSearchButtonProps> = ({
           )}
         </Animated.View>
 
-        {/* Audio level indicator for constant listening */}
+        {/* Audio level indicator for wake word listening */}
         {isConstantListening && audioLevel.average > 0.01 && (
           <View style={styles.audioLevelContainer}>
             <View
@@ -397,7 +397,7 @@ export const VoiceSearchButton: React.FC<VoiceSearchButtonProps> = ({
         </View>
       </Modal>
 
-      {/* Constant listening status indicator (for both TV and web) */}
+      {/* Wake word listening status indicator (for both TV and web) */}
       {isConstantListening && (
         <View style={[styles.listeningIndicator, tvMode && styles.listeningIndicatorTV]}>
           

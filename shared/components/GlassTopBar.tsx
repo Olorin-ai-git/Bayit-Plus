@@ -42,7 +42,7 @@ export const GlassTopBar: React.FC<GlassTopBarProps> = ({
 
   // Voice settings
   const { preferences } = useVoiceSettingsStore();
-  const constantListeningEnabled = preferences.constant_listening_enabled && (isTV || isWeb);
+  const wakeWordActive = preferences.wake_word_enabled && (isTV || isWeb);
   const holdButtonModeEnabled = preferences.hold_button_mode;
 
   // Handle voice transcript - send to chatbot or custom handler
@@ -60,15 +60,15 @@ export const GlassTopBar: React.FC<GlassTopBarProps> = ({
     console.warn('[GlassTopBar] Voice error:', error.message);
   }, []);
 
-  // Constant listening hook
+  // Wake word listening hook
   const {
     isListening,
     isProcessing,
     isSendingToServer,
     audioLevel,
-    isSupported: constantListeningSupported,
+    isSupported: wakeWordSupported,
   } = useConstantListening({
-    enabled: constantListeningEnabled && !holdButtonModeEnabled,
+    enabled: wakeWordActive && !holdButtonModeEnabled,
     onTranscript: handleTranscript,
     onError: handleVoiceError,
     silenceThresholdMs: preferences.silence_threshold_ms,
@@ -83,11 +83,11 @@ export const GlassTopBar: React.FC<GlassTopBarProps> = ({
   const sidebarWidth = sidebarExpanded ? 280 : 80;
   const sidebarPadding = sidebarWidth + spacing.lg;
 
-  // Show soundwave if constant listening is enabled and supported
-  const showSoundwave = constantListeningEnabled && constantListeningSupported && !holdButtonModeEnabled;
+  // Show soundwave if wake word is enabled and supported
+  const showSoundwave = wakeWordActive && wakeWordSupported && !holdButtonModeEnabled;
 
-  // Show voice button if hold button mode is enabled OR constant listening not supported
-  const showVoiceButton = holdButtonModeEnabled || !constantListeningSupported;
+  // Show voice button if hold button mode is enabled OR wake word not supported
+  const showVoiceButton = holdButtonModeEnabled || !wakeWordSupported;
 
   return (
     <GlassView intensity="medium" style={[
@@ -97,7 +97,7 @@ export const GlassTopBar: React.FC<GlassTopBarProps> = ({
     ]}>
       {/* Actions side */}
       <View style={[styles.actionsContainer, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
-        {/* Soundwave Visualizer - for constant listening mode */}
+        {/* Soundwave Visualizer - for wake word listening mode */}
         {showSoundwave && (
           <View style={styles.soundwaveContainer}>
             <SoundwaveVisualizer

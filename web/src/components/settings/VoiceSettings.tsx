@@ -356,76 +356,6 @@ export default function VoiceSettings() {
         />
       </GlassView>
 
-      {/* Constant Listening Settings (TV/tvOS) */}
-      <GlassView style={styles.section}>
-        <View style={[styles.sectionHeader, isRTL && styles.sectionHeaderRTL]}>
-          <Radio size={16} color={colors.primary} />
-          <Text style={[styles.sectionTitle, { marginBottom: 0 }]}>
-            {t('profile.voice.constantListening', 'Always Listening Mode')}
-          </Text>
-        </View>
-
-        <SettingRow
-          label={t('profile.voice.constantListening', 'Always Listening Mode')}
-          description={t('profile.voice.constantListeningDesc', 'Continuously listen for voice commands without pressing a button')}
-          value={preferences.constant_listening_enabled}
-          onToggle={() => toggleSetting('constant_listening_enabled')}
-        />
-
-        <SettingRow
-          label={t('profile.voice.holdButtonMode', 'Hold Button to Talk')}
-          description={t('profile.voice.holdButtonModeDesc', 'Press and hold the microphone button instead of always listening')}
-          value={preferences.hold_button_mode}
-          onToggle={() => toggleSetting('hold_button_mode')}
-          disabled={!preferences.constant_listening_enabled}
-        />
-
-        {/* VAD Sensitivity Selection */}
-        {preferences.constant_listening_enabled && !preferences.hold_button_mode && (
-          <View style={styles.sensitivitySection}>
-            <Text style={[styles.sensitivityLabel, isRTL && styles.textRTL]}>
-              {t('profile.voice.sensitivity', 'Voice Detection Sensitivity')}
-            </Text>
-            <Text style={[styles.sensitivityDesc, isRTL && styles.textRTL]}>
-              {t('profile.voice.sensitivityDesc', 'Adjust how responsive the voice detection is')}
-            </Text>
-            <View style={[styles.sensitivityOptions, isRTL && styles.sensitivityOptionsRTL]}>
-              {VAD_SENSITIVITIES.map((sensitivity) => {
-                const isSelected = preferences.vad_sensitivity === sensitivity.value;
-                return (
-                  <Pressable
-                    key={sensitivity.value}
-                    onPress={() => setVADSensitivity(sensitivity.value)}
-                    style={({ hovered }: any) => [
-                      styles.sensitivityOption,
-                      isSelected && styles.sensitivityOptionSelected,
-                      hovered && styles.sensitivityOptionHovered,
-                    ]}
-                  >
-                    <Text
-                      style={[
-                        styles.sensitivityText,
-                        isSelected && styles.sensitivityTextSelected,
-                      ]}
-                    >
-                      {t(`profile.voice.${sensitivity.labelKey}`, sensitivity.labelKey)}
-                    </Text>
-                  </Pressable>
-                );
-              })}
-            </View>
-          </View>
-        )}
-
-        {/* Privacy Notice */}
-        <View style={[styles.privacyNotice, isRTL && styles.privacyNoticeRTL]}>
-          <ShieldCheck size={14} color={colors.success} />
-          <Text style={[styles.privacyText, isRTL && styles.textRTL]}>
-            {t('profile.voice.constantListeningPrivacy', 'Audio is only sent to servers when speech is detected')}
-          </Text>
-        </View>
-      </GlassView>
-
       {/* Wake Word Settings */}
       <GlassView style={styles.section}>
         <View style={[styles.sectionHeader, isRTL && styles.sectionHeaderRTL]}>
@@ -440,11 +370,10 @@ export default function VoiceSettings() {
           description={t('profile.voice.wakeWordEnabledDesc', 'Say "Hi Bayit" to activate voice commands without pressing a button')}
           value={preferences.wake_word_enabled}
           onToggle={() => setWakeWordEnabled(!preferences.wake_word_enabled)}
-          disabled={!preferences.constant_listening_enabled}
         />
 
         {/* Wake Word Sensitivity */}
-        {preferences.constant_listening_enabled && preferences.wake_word_enabled && (
+        {preferences.wake_word_enabled && (
           <View style={styles.sensitivitySection}>
             <Text style={[styles.sensitivityLabel, isRTL && styles.textRTL]}>
               {t('profile.voice.wakeWordSensitivity', 'Wake Word Sensitivity')}
@@ -489,7 +418,7 @@ export default function VoiceSettings() {
         </View>
 
         {/* Test Wake Word Button */}
-        {preferences.constant_listening_enabled && preferences.wake_word_enabled && (
+        {preferences.wake_word_enabled && (
           <Pressable
             style={[styles.testButton, testingWakeWord && styles.testButtonActive]}
             onPress={() => {

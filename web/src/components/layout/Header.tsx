@@ -48,7 +48,8 @@ export default function Header({ onMenuPress }: HeaderProps) {
 
   // Voice settings for TV - only enable if mic is available
   const [micAvailable, setMicAvailable] = useState<boolean | null>(null);
-  const constantListeningEnabled = IS_TV_BUILD && preferences.constant_listening_enabled && micAvailable === true;
+  // Use wake word activation (no more always-listening mode)
+  const wakeWordActive = IS_TV_BUILD && preferences.wake_word_enabled && micAvailable === true;
 
   // Check if microphone is available on TV (only check once)
   useEffect(() => {
@@ -86,15 +87,15 @@ export default function Header({ onMenuPress }: HeaderProps) {
     console.warn('[TV Voice] Error:', error.message);
   }, []);
 
-  // Constant listening hook for TV
+  // Wake word listening hook for TV
   const {
     isListening,
     isProcessing,
     isSendingToServer,
     audioLevel,
-    isSupported: constantListeningSupported,
+    isSupported: wakeWordSupported,
   } = useConstantListening({
-    enabled: constantListeningEnabled,
+    enabled: wakeWordActive,
     onTranscript: handleVoiceTranscript,
     onError: handleVoiceError,
     silenceThresholdMs: preferences.silence_threshold_ms || 2500,
@@ -186,12 +187,12 @@ export default function Header({ onMenuPress }: HeaderProps) {
         </View>
       </Link>
 
-      {/* Soundwave Visualizer - for TV constant listening mode */}
+      {/* Soundwave Visualizer - for TV wake word listening mode */}
       {showSoundwave && (
         <View style={styles.soundwaveContainer}>
           <SoundwaveVisualizer
             audioLevel={audioLevel || 0}
-            isListening={isListening || constantListeningEnabled}
+            isListening={isListening || wakeWordActive}
             isProcessing={isProcessing}
             isSendingToServer={isSendingToServer}
             compact

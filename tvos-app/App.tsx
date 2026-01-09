@@ -193,14 +193,14 @@ const AppContent: React.FC = () => {
     }
   }, [sendMessage, toggleOpen]);
 
-  // Use tvOS-specific TurboModule for audio capture
+  // Use tvOS-specific TurboModule for wake word listening
   const {
     isListening,
     isProcessing,
     isSendingToServer,
     audioLevel,
   } = useTVConstantListening({
-    enabled: preferences?.constant_listening_enabled ?? true,
+    enabled: preferences?.wake_word_enabled ?? true,
     onTranscript: handleVoiceTranscript,
     onError: (error) => console.warn('[TV Voice]', error.message),
     silenceThresholdMs: preferences?.silence_threshold_ms || 2500,

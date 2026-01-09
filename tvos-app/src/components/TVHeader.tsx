@@ -61,7 +61,7 @@ export const TVHeader: React.FC<TVHeaderProps> = ({
 
   // Voice settings for TV
   const [micAvailable, setMicAvailable] = useState<boolean | null>(null);
-  const constantListeningEnabled = preferences?.constant_listening_enabled && micAvailable === true;
+  const wakeWordActive = preferences?.wake_word_enabled && micAvailable === true;
 
   // Check if microphone is available
   useEffect(() => {
@@ -84,15 +84,15 @@ export const TVHeader: React.FC<TVHeaderProps> = ({
     console.warn('[TV Voice] Error:', error.message);
   }, []);
 
-  // Constant listening hook for TV
+  // Wake word listening hook for TV
   const {
     isListening,
     isProcessing,
     isSendingToServer,
     audioLevel,
-    isSupported: constantListeningSupported,
+    isSupported: wakeWordSupported,
   } = useConstantListening({
-    enabled: constantListeningEnabled,
+    enabled: wakeWordActive,
     onTranscript: handleVoiceTranscript,
     onError: handleVoiceError,
     silenceThresholdMs: preferences?.silence_threshold_ms || 2500,
@@ -225,12 +225,12 @@ export const TVHeader: React.FC<TVHeaderProps> = ({
         <Text style={styles.iconText}>🔍</Text>
       </Pressable>
 
-      {/* Soundwave Visualizer - for TV constant listening mode */}
+      {/* Soundwave Visualizer - for TV wake word listening mode */}
       {showSoundwave && (
         <View style={styles.soundwaveContainer}>
           <SoundwaveVisualizer
             audioLevel={audioLevel || 0}
-            isListening={isListening || constantListeningEnabled}
+            isListening={isListening || wakeWordActive}
             isProcessing={isProcessing}
             isSendingToServer={isSendingToServer}
             compact
