@@ -110,12 +110,13 @@ SYSTEM_PROMPT = """אתה עוזר של בית+ (מבוטא "בויית").
 - כלול מילות פעולה בתשובתך
 - אל תמחייק או תציע עזרה
 - אל תתרגם לאנגלית
+- **אל תהבטח הפעלה או חיפוש - רק הכריז מה אתה עומד לעשות**
 
 **מהם פעולות:**
 אם המשתמש מבקש:
 - ניווט לסקציה (סרטים, סדרות, רדיו וכו) - השתמש בפעולת "navigate"
-- הפעלת תוכן ספציפי - השתמש בפעולת "play"
-- חיפוש לתוכן - השתמש בפעולת "search"
+- הפעלת תוכן ספציפי - השתמש בפעולת "play" (רק אם בקשה ברורה להפעל)
+- חיפוש לתוכן - השתמש בפעולת "search" (כשהשם לא בטוח או שחיפוש בו)
 - שליטה בהפעלה (השהיה, המשך, דלג) - השתמש בפעולות "pause", "resume", "skip"
 
 אם המשתמש:
@@ -124,22 +125,65 @@ SYSTEM_PROMPT = """אתה עוזר של בית+ (מבוטא "בויית").
 
 דוגמאות:
 ✓ "תמליץ לי על סרט?" → רק תשובה (אין פעולה)
-✓ "עבור לסרטים" → navigate action
-✓ "תנגן את [שם]" → play action
-✓ "חפש סרטי אקשן" → search action
+✓ "עבור לסרטים" → navigate action (תשובה: "עוברת לסרטים")
+✓ "תנגן את אסקימו לימון" → play action (תשובה: "מנסה לנגן אסקימו לימון")
+✓ "חפש סרטי אקשן" → search action (תשובה: "מחפשת סרטי אקשן")
+
+**חשוב: התשובה שלך חייבת להתאים לפעולה:**
+- אם play action → התשובה צריכה לומר "מנסה לנגן" או "מחדלת"
+- אם search action → התשובה צריכה לומר "מחפשת" או "משודרגת"
+- אל תומר "מנגן" אם הפעולה היא search!
 
 לא תהיה עזרה עודפת או הצעות. רק תענה לבקשה הספציפית בעברית."""
+
+
+def extract_json_from_response(text: str) -> tuple[str, Optional[dict]]:
+    """
+    Extract JSON from Claude's response text.
+    Claude sometimes includes JSON blocks in its response which we need to separate.
+
+    Returns: (cleaned_text, json_dict)
+    """
+    if not text:
+        return text, None
+
+    import re
+    import json
+
+    # Look for JSON code blocks: ```json\n{...}\n```
+    json_pattern = r'```(?:json)?\s*\n(\{[^}]+\})\n```'
+    match = re.search(json_pattern, text, re.DOTALL)
+
+    json_data = None
+    if match:
+        try:
+            json_str = match.group(1)
+            json_data = json.loads(json_str)
+            # Remove the JSON block from text
+            text = re.sub(json_pattern, '', text, flags=re.DOTALL).strip()
+        except json.JSONDecodeError:
+            pass
+
+    return text, json_data
 
 
 def strip_markdown(text: str) -> str:
     """
     Strip markdown formatting from text for TTS readability.
     Removes: **bold**, __bold__, *italic*, _italic_, [link](url), etc.
+    Also removes JSON blocks and code formatting.
     """
     if not text:
         return text
 
     import re
+
+    # Remove JSON code blocks first: ```json\n{...}\n```
+    text = re.sub(r'```(?:json)?\s*\n\{[^}]+\}\n```', '', text, flags=re.DOTALL)
+
+    # Remove any remaining code blocks: ```code``` or `code`
+    text = re.sub(r'`{3}[^`]*`{3}', '', text, flags=re.DOTALL)
+    text = re.sub(r'`(.+?)`', r'\1', text)
 
     # Remove bold: **text** or __text__
     text = re.sub(r'\*\*(.+?)\*\*', r'\1', text)
@@ -151,10 +195,6 @@ def strip_markdown(text: str) -> str:
 
     # Remove markdown links: [text](url)
     text = re.sub(r'\[(.+?)\]\(.+?\)', r'\1', text)
-
-    # Remove code blocks: `code` or ```code```
-    text = re.sub(r'`{3}[^`]*`{3}', '', text)
-    text = re.sub(r'`(.+?)`', r'\1', text)
 
     # Remove HTML comments and other markdown syntax
     text = re.sub(r'<!--.*?-->', '', text, flags=re.DOTALL)
@@ -276,10 +316,18 @@ async def send_message(
             messages=messages,
         )
 
-        assistant_message = response.content[0].text
+        raw_response = response.content[0].text
+
+        # Log Claude raw response
+        print(f"[CHAT] Claude raw response (first 200 chars): {raw_response[:200]}")
+
+        # Extract JSON if Claude included it in the response (shouldn't happen but handle it)
+        assistant_message, embedded_json = extract_json_from_response(raw_response)
 
         # Log Claude response for language verification
         print(f"[CHAT] Claude response: language='{user_language}', response='{assistant_message[:100]}'...")
+        if embedded_json:
+            print(f"[CHAT] Found embedded JSON in response: {embedded_json}")
 
         # Add assistant response to history
         conversation.messages.append({
@@ -300,13 +348,38 @@ async def send_message(
             assistant_message, request.message, user_language
         )
 
+        # CRITICAL: Ensure message/action alignment for voice
+        # If message says "playing" but action is "search", fix the message
+        final_message = assistant_message
+        if action:
+            action_type = action.get("type")
+            msg_lower = assistant_message.lower()
+
+            # If action is search but message says "playing/playing/תנגן/מנסה לנגן"
+            if action_type == "search":
+                # Check if message incorrectly claims playback or attempting playback
+                playback_words = [
+                    "מנגן", "נוגן", "תנגן", "משדרת", "צופה", "מפעיל", "תפעל",  # Hebrew playback
+                    "מנסה לנגן", "מנסה",  # Hebrew "trying to play"
+                    "playing", "attempting", "trying to play"  # English
+                ]
+                if any(word in msg_lower for word in playback_words):
+                    print(f"[CHAT] ⚠️ Message/action mismatch: message says playing but action is search")
+                    print(f"[CHAT] Original message: {assistant_message}")
+                    # Correcting the message to match the search action
+                    if user_language == "he":
+                        final_message = f"מחפשת את {request.message}..."
+                    else:
+                        final_message = f"Searching for {request.message}..."
+                    print(f"[CHAT] Corrected message: {final_message}")
+
         return ChatResponse(
-            message=assistant_message,
+            message=final_message,
             conversation_id=str(conversation.id),
             recommendations=recommendations,
             language=user_language,  # Return the language used
             # Voice-first fields
-            spoken_response=strip_markdown(assistant_message),  # Clean text for TTS
+            spoken_response=strip_markdown(final_message),  # Clean text for TTS
             action=action,  # Structured command for frontend
             content_ids=None,  # Could extract recommended content IDs
             visual_action=None,  # Could infer from message content
@@ -352,6 +425,10 @@ async def extract_action_from_response(
     """
     Ask Claude to determine if an action is needed based on the user's request.
     The LLM is responsible for understanding context and deciding on actions.
+
+    Special handling:
+    - If user asks to play specific content, validate it exists in DB
+    - If content doesn't exist but user asked to play, convert to search
     """
     # Use Claude to determine if an action is needed
     try:
@@ -370,7 +447,7 @@ If action IS needed, return ONE of these formats:
 Rules:
 - "תמליץ לי על סרט" (recommend a movie) = NO action
 - "עבור לסרטים" (go to movies) = navigate to movies
-- "תנגן את X" (play X) = play action
+- "תנגן את X" (play X) = play action (we'll check if X exists)
 - "חפש סרטי אקשן" (search action movies) = search action
 
 Return ONLY valid JSON, nothing else."""
@@ -389,8 +466,54 @@ Return ONLY valid JSON, nothing else."""
         try:
             action_data = json.loads(action_text)
             if action_data.get("action"):
+                action_type = action_data["action"]
+
+                # If it's a play action, validate the content exists in our library
+                if action_type == "play":
+                    try:
+                        # Try to find the content by title (fuzzy match)
+                        # If not found, convert to search action
+                        print(f"[CHAT] Validating play action: checking if '{query}' exists in library")
+                        content_found = await Content.find(
+                            Content.is_published == True
+                        ).to_list()
+
+                        print(f"[CHAT] Found {len(content_found)} published content items in library")
+
+                        # Simple check: does query appear in any content title?
+                        query_lower = query.lower()
+                        found = None
+                        for c in content_found:
+                            title = str(c.title).lower()
+                            print(f"[CHAT]   Checking: '{title}' vs query '{query_lower}'")
+                            if query_lower in title:
+                                found = c
+                                print(f"[CHAT]   ✓ Match found!")
+                                break
+                            if hasattr(c, 'name'):
+                                name = str(c.name).lower()
+                                if query_lower in name:
+                                    found = c
+                                    print(f"[CHAT]   ✓ Match found in name!")
+                                    break
+
+                        if not found:
+                            # Content doesn't exist - convert to search instead of play
+                            print(f"[CHAT] ⚠️ Content '{query}' not found in library, converting play to search action")
+                            return {
+                                "type": "search",
+                                "payload": {"query": query},
+                                "confidence": 0.8,
+                            }
+                        else:
+                            print(f"[CHAT] ✓ Content '{query}' found in library, keeping play action")
+                    except Exception as e:
+                        print(f"[CHAT] Error validating content in library: {e}")
+                        # If there's an error checking, don't convert - let play action through
+                        pass
+
                 return {
-                    "type": action_data["action"],
+                    "type": action_type,
                     "payload": action_data.get("payload") or {"target": action_data.get("target")} if action_data.get("target") else {"query": action_data.get("query")} if action_data.get("query") else {},
                     "confidence": 0.9,
                 }

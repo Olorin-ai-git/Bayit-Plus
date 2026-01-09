@@ -245,6 +245,11 @@ export function useWakeWordListening(options: UseWakeWordListeningOptions): UseW
       return;
     }
 
+    // SKIP audio processing if request is already being sent/processed (prevent overlapping requests)
+    if (isSendingToServerRef.current) {
+      return;
+    }
+
     // Wake word detection disabled - skip wake word processing
 
     // Add samples to buffer
