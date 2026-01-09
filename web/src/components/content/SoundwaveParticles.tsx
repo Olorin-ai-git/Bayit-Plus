@@ -24,6 +24,18 @@ const SoundwaveParticles: React.FC<SoundwaveParticlesProps> = ({
   const animationRef = useRef<number>();
   const timeRef = useRef(0);
 
+  // Debug: Log props
+  useEffect(() => {
+    console.log('[SoundwaveParticles] Received props:', {
+      isListening,
+      isProcessing,
+      hasError,
+      isResponding,
+      audioLevel,
+      responseText: responseText?.substring(0, 50),
+    });
+  }, [isListening, isProcessing, hasError, isResponding, audioLevel, responseText]);
+
   // Determine current state
   const getState = () => {
     if (hasError) return 'error';

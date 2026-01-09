@@ -51,12 +51,17 @@ class TTSService extends EventEmitter {
   }
 
   private config: TTSConfig = {
-    voiceId: 'zGjIP4SZlMnY9m93k97r', // Default voice (Adam - works with free tier)
+    voiceId: this.getDefaultVoiceId(),
     language: 'he',
     model: 'eleven_turbo_v2',
     stability: 0.5,
     similarityBoost: 0.75,
   };
+
+  private getDefaultVoiceId(): string {
+    // Use env variable from Vite config, otherwise fallback to George
+    return (import.meta.env.VITE_ELEVENLABS_DEFAULT_VOICE_ID as string) || 'JBFqnCBsd6RMkjVDRZzb';
+  }
 
   constructor() {
     super();
@@ -470,15 +475,8 @@ class TTSService extends EventEmitter {
 
   setLanguage(language: 'he' | 'en'): void {
     this.config.language = language;
-
-    // Set appropriate voice ID for language
-    if (language === 'en') {
-      // Use English voice
-      this.config.voiceId = 'pNInz6obpgDQGcFmaJgB'; // Adam - works with free tier
-    } else {
-      // Use Hebrew voice
-      this.config.voiceId = 'pNInz6obpgDQGcFmaJgB'; // Adam - works with free tier for Hebrew too
-    }
+    // Use configured voice for all languages
+    this.config.voiceId = this.getDefaultVoiceId();
   }
 
   setVolume(volume: number): void {

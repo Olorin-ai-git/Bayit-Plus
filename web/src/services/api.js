@@ -128,9 +128,13 @@ const apiChatService = {
     api.post('/chat', { message, conversation_id: conversationId, context, language }),
   getConversation: (conversationId) => api.get(`/chat/${conversationId}`),
   clearConversation: (conversationId) => api.delete(`/chat/${conversationId}`),
-  transcribeAudio: (audioBlob) => {
+  // Transcribe audio blob to text with language hint for better accuracy
+  // language: ISO 639-1 code ('he' for Hebrew, 'en' for English, etc.)
+  // Defaults to 'he' (Hebrew) but should be overridden by the caller with current UI language
+  transcribeAudio: (audioBlob, language = 'he') => {
     const formData = new FormData()
     formData.append('audio', audioBlob, 'recording.webm')
+    formData.append('language', language)
     return api.post('/chat/transcribe', formData, {
       headers: { 'Content-Type': 'multipart/form-data' },
     })

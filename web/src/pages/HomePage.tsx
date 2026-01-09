@@ -360,7 +360,7 @@ export default function HomePage() {
 
       {/* Voice Soundwave Particles - 100px high */}
       <SoundwaveParticles
-        isListening={isListening && !isAwake && !isProcessing && !isResponding && !isTTSSpeaking}
+        isListening={isListening}
         isProcessing={isAwake || isProcessing}
         audioLevel={audioLevel}
         hasError={voiceError}

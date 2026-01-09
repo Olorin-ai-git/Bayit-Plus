@@ -96,6 +96,7 @@ export function useVoiceResponseCoordinator(
 
       try {
         console.log('[VoiceResponseCoordinator] Starting processing');
+        console.log('[VoiceResponseCoordinator] Full response object:', JSON.stringify(response, null, 2));
         onProcessingStart?.();
         setIsProcessing(true);
 
@@ -111,21 +112,29 @@ export function useVoiceResponseCoordinator(
 
         // Step 2: Execute navigation if specified
         if (response.action?.type === 'navigate' && response.action?.payload?.path) {
+          console.log('[VoiceResponseCoordinator] Navigating to:', response.action.payload.path);
           navigate(response.action.payload.path);
+        } else if (response.action?.type === 'navigate') {
+          console.warn('[VoiceResponseCoordinator] Navigate action missing path:', response.action);
         }
 
         // Step 3: Execute search if specified
         if (response.action?.type === 'search' && response.action?.payload?.query) {
+          console.log('[VoiceResponseCoordinator] Searching for:', response.action.payload.query);
           onSearch?.(response.action.payload.query);
         }
 
         // Step 4: Play content if specified
         if (response.action?.type === 'play' && response.content_ids?.[0]) {
+          console.log('[VoiceResponseCoordinator] Playing content:', response.content_ids[0]);
           onPlay?.(response.content_ids[0]);
+        } else if (response.action?.type === 'play') {
+          console.warn('[VoiceResponseCoordinator] Play action missing content_ids:', response.action);
         }
 
         // Step 5: Handle scrolling
         if (response.action?.type === 'scroll' && response.action?.payload?.direction) {
+          console.log('[VoiceResponseCoordinator] Scrolling:', response.action.payload.direction);
           onScroll?.(response.action.payload.direction);
         }
 

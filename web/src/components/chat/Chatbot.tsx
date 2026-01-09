@@ -170,9 +170,12 @@ export default function Chatbot() {
           recordSearchQuery(chatResponse.action.payload.query)
         }
 
+        console.log('[Chatbot] Full chatResponse from backend:', JSON.stringify(chatResponse, null, 2))
+        console.log('[Chatbot] Action from response:', chatResponse.action)
         console.log('[Chatbot] Calling handleVoiceResponse with:', {
           spoken_response: chatResponse.spoken_response,
           action: chatResponse.action?.type,
+          actionPayload: chatResponse.action?.payload,
           message: chatResponse.message?.substring(0, 50),
         })
         await handleVoiceResponse({
@@ -216,8 +219,8 @@ export default function Chatbot() {
 
   const transcribeAudioBlob = useCallback(async (audioBlob: Blob) => {
     try {
-      console.log('[Chatbot] Transcribing audio blob, size:', audioBlob.size)
-      const response = await chatService.transcribeAudio(audioBlob)
+      console.log('[Chatbot] Transcribing audio blob, size:', audioBlob.size, 'i18n language:', i18n.language)
+      const response = await chatService.transcribeAudio(audioBlob, i18n.language)
       console.log('[Chatbot] Transcription result:', response)
       console.log('[Chatbot] Detected language:', response.language, 'Text:', response.text)
       // Store language for use when sending message
@@ -230,7 +233,7 @@ export default function Chatbot() {
       console.error('[Chatbot] Transcription error:', error)
       throw error
     }
-  }, [])
+  }, [i18n.language])
 
   // Initialize wake word listening for Voice Only mode
   const {
@@ -291,20 +294,198 @@ export default function Chatbot() {
     loadPreferences()
   }, [loadContext, loadPreferences])
 
+  // Convert backend action format to ChatbotAction format
+  const convertBackendActionToChatbotAction = (backendAction: any): ChatbotAction | null => {
+    if (!backendAction) return null
+
+    console.log('[Chatbot] Converting backend action:', backendAction)
+
+    // Backend action structure: { type, payload, confidence }
+    const { type, payload } = backendAction
+
+    switch (type) {
+      // Navigation actions
+      case 'navigate':
+        return {
+          type: 'navigate',
+          payload: { target: payload?.target || 'home' },
+        }
+
+      // Content playback
+      case 'play':
+        return {
+          type: 'play',
+          payload: { content_id: payload?.content_id },
+        }
+
+      // Playback controls
+      case 'pause':
+        return {
+          type: 'pause',
+          payload: {},
+        }
+
+      case 'resume':
+        return {
+          type: 'resume',
+          payload: {},
+        }
+
+      case 'skip':
+        return {
+          type: 'skip',
+          payload: {},
+        }
+
+      // Search
+      case 'search':
+        return {
+          type: 'search',
+          payload: { query: payload?.query },
+        }
+
+      // Watchlist & Favorites
+      case 'add_to_watchlist':
+        return {
+          type: 'add_to_watchlist',
+          payload: {},
+        }
+
+      case 'add_to_favorites':
+        return {
+          type: 'add_to_favorites',
+          payload: {},
+        }
+
+      // Settings
+      case 'volume':
+        return {
+          type: 'volume',
+          payload: { change: payload?.change },
+        }
+
+      case 'language':
+        return {
+          type: 'language',
+          payload: { language: payload?.language },
+        }
+
+      case 'subtitles':
+        return {
+          type: 'subtitles',
+          payload: { enabled: payload?.enabled },
+        }
+
+      // Info & Help
+      case 'info':
+        return {
+          type: 'info',
+          payload: { query: payload?.query },
+        }
+
+      case 'help':
+        return {
+          type: 'help',
+          payload: {},
+        }
+
+      default:
+        console.warn(`[Chatbot] Unknown action type: ${type}`)
+        return null
+    }
+  }
+
   // Register action handlers for chatbot actions
   useEffect(() => {
+    // Navigation
     registerActionHandler('navigate', (payload) => {
-      navigate(payload.path)
+      const navigationMap: Record<string, string> = {
+        movies: '/vod?category=movies',
+        series: '/vod?category=series',
+        channels: '/live',
+        radio: '/radio',
+        podcasts: '/podcasts',
+        home: '/',
+      }
+      navigate(navigationMap[payload.target] || '/')
       setOpen(false)
     })
+
+    // Search
     registerActionHandler('search', (payload) => {
       navigate(`/search?q=${encodeURIComponent(payload.query)}`)
       setOpen(false)
     })
+
+    // Playback
+    registerActionHandler('play', (payload) => {
+      if (payload.content_id) {
+        navigate(`/vod/${payload.content_id}`)
+      }
+      setOpen(false)
+    })
+
+    registerActionHandler('pause', () => {
+      console.log('[Chatbot] Pause action triggered')
+      // This would typically be handled by the player component
+      // Dispatch to player store or emit event
+    })
+
+    registerActionHandler('resume', () => {
+      console.log('[Chatbot] Resume action triggered')
+      // This would typically be handled by the player component
+    })
+
+    registerActionHandler('skip', () => {
+      console.log('[Chatbot] Skip action triggered')
+      // This would typically be handled by the player component
+    })
+
+    // Watchlist/Favorites
+    registerActionHandler('add_to_watchlist', () => {
+      console.log('[Chatbot] Added to watchlist')
+      // This would typically update the user's watchlist
+    })
+
+    registerActionHandler('add_to_favorites', () => {
+      console.log('[Chatbot] Added to favorites')
+      // This would typically update the user's favorites
+    })
+
+    // Settings
+    registerActionHandler('volume', (payload) => {
+      console.log('[Chatbot] Volume', payload.change)
+      // This would typically adjust the volume
+    })
+
+    registerActionHandler('language', (payload) => {
+      console.log('[Chatbot] Switching to language:', payload.language)
+      // This would typically switch the language
+    })
+
+    registerActionHandler('subtitles', (payload) => {
+      console.log('[Chatbot] Subtitles', payload.enabled ? 'enabled' : 'disabled')
+      // This would typically toggle subtitles
+    })
+
+    // Info
+    registerActionHandler('info', (payload) => {
+      console.log('[Chatbot] Getting info for:', payload.query)
+      // This would typically show detailed info
+    })
+
+    // Help
+    registerActionHandler('help', () => {
+      console.log('[Chatbot] Help requested')
+      // This would typically show help content
+    })
+
+    // Flows (from original)
     registerActionHandler('create_flow', (payload) => {
       navigate('/flows', { state: { createFlow: true, template: payload.template } })
       setOpen(false)
     })
+
     registerActionHandler('start_flow', (payload) => {
       navigate('/flows', { state: { startFlowId: payload.flowId } })
       setOpen(false)
@@ -334,7 +515,10 @@ export default function Chatbot() {
 
       // Handle actions from the chatbot response
       if (response.action) {
-        executeAction(response.action as ChatbotAction)
+        const chatbotAction = convertBackendActionToChatbotAction(response.action)
+        if (chatbotAction) {
+          executeAction(chatbotAction)
+        }
       }
 
       if (response.recommendations) {
@@ -549,7 +733,10 @@ export default function Chatbot() {
 
       // Handle actions from the chatbot response
       if (response.action) {
-        executeAction(response.action as ChatbotAction)
+        const chatbotAction = convertBackendActionToChatbotAction(response.action)
+        if (chatbotAction) {
+          executeAction(chatbotAction)
+        }
       }
 
       if (response.recommendations) {

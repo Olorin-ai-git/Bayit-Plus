@@ -32,9 +32,10 @@ class Settings(BaseSettings):
     GOOGLE_CLIENT_SECRET: str = ""
     GOOGLE_REDIRECT_URI: str = "http://localhost:3000/auth/google/callback"
 
-    # ElevenLabs (speech-to-text)
+    # ElevenLabs (speech-to-text and text-to-speech)
     ELEVENLABS_API_KEY: str = ""
     ELEVENLABS_WEBHOOK_SECRET: str = ""
+    ELEVENLABS_DEFAULT_VOICE_ID: str = "JBFqnCBsd6RMkjVDRZzb"  # George - multilingual
 
     # CORS
     BACKEND_CORS_ORIGINS: list[str] = [

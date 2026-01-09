@@ -259,7 +259,7 @@ export type VADSensitivity = 'low' | 'medium' | 'high';
 export interface VoicePreferences {
   voice_search_enabled: boolean;
   constant_listening_enabled: boolean;
-  voice_language: VoiceLanguage;
+  // Note: voice_language is now derived from i18n.language instead of stored
   auto_subtitle: boolean;
   high_contrast_mode: boolean;
   text_size: TextSize;
