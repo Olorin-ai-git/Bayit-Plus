@@ -9,6 +9,7 @@ import {
 } from 'react-native';
 import { colors } from '../theme';
 import { useDirection } from '../hooks/useDirection';
+import { useTVFocus } from './hooks/useTVFocus';
 
 // Check if this is a TV build (set by webpack)
 declare const __TV__: boolean;
@@ -36,26 +37,9 @@ export const FocusableCard: React.FC<FocusableCardProps> = ({
   height = DEFAULT_HEIGHT,
 }) => {
   const { textAlign } = useDirection();
-  const [isFocused, setIsFocused] = useState(false);
-  const scaleAnim = useRef(new Animated.Value(1)).current;
-
-  const handleFocus = () => {
-    setIsFocused(true);
-    Animated.spring(scaleAnim, {
-      toValue: 1.1,
-      friction: 5,
-      useNativeDriver: true,
-    }).start();
-  };
-
-  const handleBlur = () => {
-    setIsFocused(false);
-    Animated.spring(scaleAnim, {
-      toValue: 1,
-      friction: 5,
-      useNativeDriver: true,
-    }).start();
-  };
+  const { handleFocus, handleBlur, scaleTransform, focusStyle } = useTVFocus({
+    styleType: 'card',
+  });
 
   return (
     <TouchableOpacity
@@ -69,8 +53,8 @@ export const FocusableCard: React.FC<FocusableCardProps> = ({
         style={[
           styles.card,
           { width, height },
-          { transform: [{ scale: scaleAnim }] },
-          isFocused && styles.cardFocused,
+          scaleTransform,
+          focusStyle,
         ]}
       >
         {imageUrl ? (
@@ -110,11 +94,6 @@ const styles = StyleSheet.create({
     backgroundColor: colors.glass,
     borderWidth: 1,
     borderColor: colors.glassBorder,
-  },
-  cardFocused: {
-    borderColor: colors.primary,
-    // @ts-ignore - Web CSS property for glow effect
-    boxShadow: `0 0 20px ${colors.primary}`,
   },
   image: {
     width: '100%',

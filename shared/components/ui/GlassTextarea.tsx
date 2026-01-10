@@ -11,6 +11,7 @@ import {
 import { GlassView } from './GlassView';
 import { colors, borderRadius, spacing } from '../theme';
 import { isTV } from '../utils/platform';
+import { useTVFocus } from '../hooks/useTVFocus';
 
 interface GlassTextareaProps extends Omit<TextInputProps, 'style'> {
   label?: string;
@@ -28,40 +29,19 @@ export const GlassTextarea: React.FC<GlassTextareaProps> = ({
   hasTVPreferredFocus = false,
   ...props
 }) => {
-  const [isFocused, setIsFocused] = useState(false);
-  const scaleAnim = useRef(new Animated.Value(1)).current;
-
-  const handleFocus = () => {
-    setIsFocused(true);
-    if (isTV || Platform.OS !== 'web') {
-      Animated.spring(scaleAnim, {
-        toValue: 1.01,
-        friction: 5,
-        useNativeDriver: true,
-      }).start();
-    }
-  };
-
-  const handleBlur = () => {
-    setIsFocused(false);
-    if (isTV || Platform.OS !== 'web') {
-      Animated.spring(scaleAnim, {
-        toValue: 1,
-        friction: 5,
-        useNativeDriver: true,
-      }).start();
-    }
-  };
+  const { isFocused, handleFocus, handleBlur, scaleTransform, focusStyle } = useTVFocus({
+    styleType: 'input',
+  });
 
   return (
     <View style={styles.container}>
       {label && <Text style={styles.label}>{label}</Text>}
 
-      <Animated.View style={{ transform: [{ scale: scaleAnim }] }}>
+      <Animated.View style={scaleTransform}>
         <GlassView
           style={[
             styles.inputContainer,
-            isFocused && styles.inputFocused,
+            !error && focusStyle,
             error && styles.inputError,
           ]}
           intensity="medium"
@@ -106,9 +86,6 @@ const styles = StyleSheet.create({
   },
   inputContainer: {
     overflow: 'hidden',
-  },
-  inputFocused: {
-    borderColor: colors.primary,
   },
   inputError: {
     borderColor: colors.error,

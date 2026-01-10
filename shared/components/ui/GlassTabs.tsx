@@ -11,6 +11,7 @@ import {
 import { GlassView } from './GlassView';
 import { colors, borderRadius, spacing } from '../theme';
 import { isTV } from '../utils/platform';
+import { useTVFocus } from '../hooks/useTVFocus';
 
 interface Tab {
   id: string;
@@ -104,30 +105,9 @@ const TabButton: React.FC<TabButtonProps> = ({
   variant,
   isFirst,
 }) => {
-  const [isFocused, setIsFocused] = useState(false);
-  const scaleAnim = useRef(new Animated.Value(1)).current;
-
-  const handleFocus = () => {
-    setIsFocused(true);
-    if (isTV || Platform.OS !== 'web') {
-      Animated.spring(scaleAnim, {
-        toValue: 1.05,
-        friction: 5,
-        useNativeDriver: true,
-      }).start();
-    }
-  };
-
-  const handleBlur = () => {
-    setIsFocused(false);
-    if (isTV || Platform.OS !== 'web') {
-      Animated.spring(scaleAnim, {
-        toValue: 1,
-        friction: 5,
-        useNativeDriver: true,
-      }).start();
-    }
-  };
+  const { isFocused, handleFocus, handleBlur, scaleTransform, focusStyle } = useTVFocus({
+    styleType: 'button',
+  });
 
   const getButtonStyles = () => {
     switch (variant) {
@@ -135,19 +115,19 @@ const TabButton: React.FC<TabButtonProps> = ({
         return [
           styles.pillTab,
           isActive && styles.pillTabActive,
-          isFocused && styles.tabFocused,
+          focusStyle,
         ];
       case 'underline':
         return [
           styles.underlineTab,
           isActive && styles.underlineTabActive,
-          isFocused && styles.tabFocused,
+          focusStyle,
         ];
       default:
         return [
           styles.tab,
           isActive && styles.tabActive,
-          isFocused && styles.tabFocused,
+          focusStyle,
         ];
     }
   };
@@ -182,7 +162,7 @@ const TabButton: React.FC<TabButtonProps> = ({
       // @ts-ignore - TV focus
       hasTVPreferredFocus={isFirst && isActive}
     >
-      <Animated.View style={[getButtonStyles(), { transform: [{ scale: scaleAnim }] }]}>
+      <Animated.View style={[getButtonStyles(), scaleTransform]}>
         {tab.icon && <View style={styles.icon}>{tab.icon}</View>}
         <Text style={getTextStyles()}>{tab.label}</Text>
         {tab.badge !== undefined && (
@@ -224,19 +204,6 @@ const styles = StyleSheet.create({
   },
   tabActive: {
     backgroundColor: 'rgba(0, 217, 255, 0.15)',
-  },
-  tabFocused: {
-    ...Platform.select({
-      ios: {
-        shadowColor: colors.primary,
-        shadowOffset: { width: 0, height: 0 },
-        shadowOpacity: 0.4,
-        shadowRadius: 8,
-      },
-      default: {
-        elevation: 5,
-      },
-    }),
   },
   pillTab: {
     flexDirection: 'row',

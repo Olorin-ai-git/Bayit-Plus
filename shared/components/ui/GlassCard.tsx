@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+import React from 'react';
 import {
   TouchableOpacity,
   Animated,
@@ -11,8 +11,8 @@ import {
   StyleProp,
 } from 'react-native';
 import { GlassView } from './GlassView';
-import { colors, borderRadius, spacing, shadows } from '../theme';
-import { isTV } from '../utils/platform';
+import { colors, borderRadius, spacing } from '../theme';
+import { useTVFocus } from '../hooks/useTVFocus';
 
 interface GlassCardProps {
   title?: string;
@@ -48,30 +48,9 @@ export const GlassCard: React.FC<GlassCardProps> = ({
   hasTVPreferredFocus = false,
   autoSize = false,
 }) => {
-  const [isFocused, setIsFocused] = useState(false);
-  const scaleAnim = useRef(new Animated.Value(1)).current;
-
-  const handleFocus = () => {
-    setIsFocused(true);
-    if (isTV || Platform.OS !== 'web') {
-      Animated.spring(scaleAnim, {
-        toValue: 1.08,
-        friction: 5,
-        useNativeDriver: true,
-      }).start();
-    }
-  };
-
-  const handleBlur = () => {
-    setIsFocused(false);
-    if (isTV || Platform.OS !== 'web') {
-      Animated.spring(scaleAnim, {
-        toValue: 1,
-        friction: 5,
-        useNativeDriver: true,
-      }).start();
-    }
-  };
+  const { isFocused, handleFocus, handleBlur, scaleTransform, focusStyle } = useTVFocus({
+    styleType: 'card',
+  });
 
   // Only show image/placeholder area when being used as a full card (has title or imageUrl)
   const isFullCard = title || subtitle || imageUrl;
@@ -149,21 +128,15 @@ export const GlassCard: React.FC<GlassCardProps> = ({
       // @ts-ignore - TV-specific prop
       hasTVPreferredFocus={hasTVPreferredFocus}
     >
-      <Animated.View
-        style={[
-          { transform: [{ scale: scaleAnim }] },
-          isFocused && shadows.glow(colors.primary),
-        ]}
-      >
+      <Animated.View style={[scaleTransform]}>
         <GlassView
           style={[
             styles.card,
             !shouldBypassDimensions && { width, minHeight: height },
-            isFocused && styles.cardFocused,
+            focusStyle,
             style,
           ]}
           intensity="medium"
-          borderColor={isFocused ? colors.glassBorderFocus : undefined}
         >
           {cardContent}
         </GlassView>
@@ -179,10 +152,6 @@ const styles = StyleSheet.create({
   },
   card: {
     overflow: 'visible' as any,
-  },
-  cardFocused: {
-    borderColor: colors.primary,
-    borderWidth: 3,
   },
   image: {
     borderTopLeftRadius: borderRadius.lg,

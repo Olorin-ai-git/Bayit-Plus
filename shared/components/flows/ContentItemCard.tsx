@@ -10,6 +10,11 @@ import { useTranslation } from 'react-i18next';
 import { Ionicons } from '@expo/vector-icons';
 import { GlassCard, GlassBadge } from '../ui';
 import { colors, spacing, borderRadius } from '../theme';
+import { useTVFocus } from '../hooks/useTVFocus';
+
+// Check if this is a TV build (set by webpack)
+declare const __TV__: boolean;
+const IS_TV_BUILD = typeof __TV__ !== 'undefined' && __TV__;
 
 type ContentType = 'live' | 'radio' | 'vod' | 'podcast';
 
@@ -50,7 +55,10 @@ export const ContentItemCard: React.FC<ContentItemCardProps> = ({
 }) => {
   const { t } = useTranslation();
   const [isHovered, setIsHovered] = useState(false);
-  const [isFocused, setIsFocused] = useState(false);
+
+  const { isFocused, handleFocus, handleBlur, focusStyle } = useTVFocus({
+    styleType: 'card',
+  });
 
   const formatDuration = (seconds?: number): string => {
     if (!seconds) return '';
@@ -66,6 +74,9 @@ export const ContentItemCard: React.FC<ContentItemCardProps> = ({
     }
   };
 
+  // For TV mode: don't set preferred focus on already-added items
+  const effectiveHasTVPreferredFocus = IS_TV_BUILD ? (hasTVPreferredFocus && !isAlreadyAdded) : false;
+
   return (
     <View
       style={[
@@ -75,13 +86,22 @@ export const ContentItemCard: React.FC<ContentItemCardProps> = ({
       // @ts-ignore - Web hover events
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
+      // @ts-ignore - TV focus events
+      onFocus={handleFocus}
+      onBlur={handleBlur}
     >
       <GlassCard
         onPress={handlePress}
-        hasTVPreferredFocus={hasTVPreferredFocus}
+        hasTVPreferredFocus={effectiveHasTVPreferredFocus}
+        // @ts-ignore - TV prop to prevent focus on disabled items
+        focusable={!isAlreadyAdded}
         style={[
           styles.card,
+          // Selection state (visual checkbox filled)
           isSelected && styles.cardSelected,
+          // Focus state (unified TV focus system)
+          !isAlreadyAdded && focusStyle,
+          // Web hover state
           (isHovered || isFocused) && !isAlreadyAdded && styles.cardHovered,
         ]}
       >

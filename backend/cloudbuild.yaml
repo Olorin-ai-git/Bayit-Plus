@@ -1,0 +1,90 @@
+steps:
+  # Build container image
+  - name: 'gcr.io/cloud-builders/docker'
+    args:
+      - 'build'
+      - '-t'
+      - 'gcr.io/$PROJECT_ID/bayit-plus-backend:$SHORT_SHA'
+      - '-t'
+      - 'gcr.io/$PROJECT_ID/bayit-plus-backend:latest'
+      - '--cache-from'
+      - 'gcr.io/$PROJECT_ID/bayit-plus-backend:latest'
+      - '.'
+    id: 'build-image'
+
+  # Push to Container Registry (SHA tag)
+  - name: 'gcr.io/cloud-builders/docker'
+    args:
+      - 'push'
+      - 'gcr.io/$PROJECT_ID/bayit-plus-backend:$SHORT_SHA'
+    id: 'push-sha-image'
+
+  # Push to Container Registry (latest tag)
+  - name: 'gcr.io/cloud-builders/docker'
+    args:
+      - 'push'
+      - 'gcr.io/$PROJECT_ID/bayit-plus-backend:latest'
+    id: 'push-latest-image'
+
+  # Deploy to Cloud Run
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    entrypoint: gcloud
+    args:
+      - 'run'
+      - 'deploy'
+      - 'bayit-plus-backend'
+      - '--image'
+      - 'gcr.io/$PROJECT_ID/bayit-plus-backend:$SHORT_SHA'
+      - '--region'
+      - '${_REGION}'
+      - '--platform'
+      - 'managed'
+      - '--allow-unauthenticated'
+      - '--memory'
+      - '${_MEMORY}'
+      - '--cpu'
+      - '${_CPU}'
+      - '--timeout'
+      - '300'
+      - '--max-instances'
+      - '${_MAX_INSTANCES}'
+      - '--min-instances'
+      - '${_MIN_INSTANCES}'
+      - '--concurrency'
+      - '80'
+      - '--port'
+      - '8080'
+      - '--set-env-vars'
+      - 'API_V1_PREFIX=/api/v1,STORAGE_TYPE=gcs,DEBUG=false'
+      - '--set-secrets'
+      - |
+        SECRET_KEY=bayit-secret-key:latest,
+        MONGODB_URL=mongodb-url:latest,
+        MONGODB_DB_NAME=mongodb-db-name:latest,
+        STRIPE_SECRET_KEY=stripe-secret-key:latest,
+        STRIPE_WEBHOOK_SECRET=stripe-webhook-secret:latest,
+        STRIPE_PRICE_BASIC=stripe-price-basic:latest,
+        STRIPE_PRICE_PREMIUM=stripe-price-premium:latest,
+        STRIPE_PRICE_FAMILY=stripe-price-family:latest,
+        ANTHROPIC_API_KEY=anthropic-api-key:latest,
+        GOOGLE_CLIENT_ID=google-client-id:latest,
+        GOOGLE_CLIENT_SECRET=google-client-secret:latest,
+        GOOGLE_REDIRECT_URI=google-redirect-uri:latest,
+        ELEVENLABS_API_KEY=elevenlabs-api-key:latest,
+        GCS_BUCKET_NAME=gcs-bucket-name:latest,
+        BACKEND_CORS_ORIGINS=backend-cors-origins:latest
+    id: 'deploy-cloud-run'
+
+# Substitutions for flexibility (can be overridden in trigger)
+substitutions:
+  _REGION: 'us-central1'
+  _MEMORY: '2Gi'
+  _CPU: '2'
+  _MAX_INSTANCES: '10'
+  _MIN_INSTANCES: '1'
+
+options:
+  machineType: 'N1_HIGHCPU_8'
+  logging: CLOUD_LOGGING_ONLY
+
+timeout: '1200s'

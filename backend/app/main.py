@@ -6,7 +6,10 @@ from fastapi.staticfiles import StaticFiles
 from pathlib import Path
 from app.core.config import settings
 from app.core.database import connect_to_mongo, close_mongo_connection
+from app.core.logging_config import setup_logging
 
+# Initialize structured logging for Cloud Run
+setup_logging(debug=settings.DEBUG)
 logger = logging.getLogger(__name__)
 
 # Import routers
@@ -30,146 +33,152 @@ async def sync_podcast_rss_feeds():
 
 async def init_default_data():
     """Initialize default data on startup."""
-    from app.models.widget import Widget, WidgetType, WidgetContentType, WidgetContent, WidgetPosition
-    from app.models.content import LiveChannel
-    from datetime import datetime
+    try:
+        from app.models.widget import Widget, WidgetType, WidgetContentType, WidgetContent, WidgetPosition
+        from app.models.content import LiveChannel
+        from datetime import datetime
 
-    # Default widgets to create
-    default_widgets = [
-        {
-            "channel_num": "11",
-            "title": "Channel 11",
-            "description": "ערוץ 11 שידור חי",
-            "icon": "📺",
-            "order": 0,
-            "position": {"x": 20, "y": 100},
-        },
-        {
-            "channel_num": "12",
-            "title": "Channel 12 Live",
-            "description": "ערוץ 12 שידור חי",
-            "icon": "📺",
-            "order": 1,
-            "position": {"x": 360, "y": 100},
-        },
-        {
-            "podcast_id": "69618106c3cadc264da3effd",
-            "title": "סג\"ל וברקו - הפודקאסט",
-            "description": "פודקאסט מ-103FM",
-            "icon": "🎙️",
-            "order": 2,
-            "position": {"x": 700, "y": 100},
-        },
-    ]
+        # Default widgets to create
+        default_widgets = [
+            {
+                "channel_num": "11",
+                "title": "Channel 11",
+                "description": "ערוץ 11 שידור חי",
+                "icon": "📺",
+                "order": 0,
+                "position": {"x": 20, "y": 100},
+            },
+            {
+                "channel_num": "12",
+                "title": "Channel 12 Live",
+                "description": "ערוץ 12 שידור חי",
+                "icon": "📺",
+                "order": 1,
+                "position": {"x": 360, "y": 100},
+            },
+            {
+                "podcast_id": "69618106c3cadc264da3effd",
+                "title": "סג\"ל וברקו - הפודקאסט",
+                "description": "פודקאסט מ-103FM",
+                "icon": "🎙️",
+                "order": 2,
+                "position": {"x": 700, "y": 100},
+            },
+        ]
 
-    for widget_config in default_widgets:
-        # Check if it's a podcast or channel widget
-        is_podcast = "podcast_id" in widget_config
+        for widget_config in default_widgets:
+            # Check if it's a podcast or channel widget
+            is_podcast = "podcast_id" in widget_config
 
-        if is_podcast:
-            podcast_id = widget_config["podcast_id"]
+            if is_podcast:
+                podcast_id = widget_config["podcast_id"]
 
-            # Check if widget already exists
-            existing = await Widget.find_one({
-                "type": WidgetType.SYSTEM,
-                "title": widget_config["title"]
-            })
+                # Check if widget already exists
+                existing = await Widget.find_one({
+                    "type": WidgetType.SYSTEM,
+                    "title": widget_config["title"]
+                })
 
-            if existing:
-                logger.info(f"Default podcast widget '{widget_config['title']}' already exists: {existing.id}")
-                continue
+                if existing:
+                    logger.info(f"Default podcast widget '{widget_config['title']}' already exists: {existing.id}")
+                    continue
 
-            # Create podcast widget
-            widget = Widget(
-                type=WidgetType.SYSTEM,
-                title=widget_config["title"],
-                description=widget_config["description"],
-                icon=widget_config["icon"],
-                content=WidgetContent(
-                    content_type=WidgetContentType.PODCAST,
-                    podcast_id=podcast_id,
-                ),
-                position=WidgetPosition(
-                    x=widget_config["position"]["x"],
-                    y=widget_config["position"]["y"],
-                    width=350,
-                    height=197,
-                    z_index=100
-                ),
-                is_active=True,
-                is_muted=True,
-                is_visible=True,
-                is_closable=True,
-                is_draggable=True,
-                visible_to_roles=["user", "admin", "premium"],
-                visible_to_subscription_tiers=[],
-                target_pages=[],
-                order=widget_config["order"],
-                created_by="system",
-                created_at=datetime.utcnow(),
-                updated_at=datetime.utcnow(),
-            )
+                # Create podcast widget
+                widget = Widget(
+                    type=WidgetType.SYSTEM,
+                    title=widget_config["title"],
+                    description=widget_config["description"],
+                    icon=widget_config["icon"],
+                    content=WidgetContent(
+                        content_type=WidgetContentType.PODCAST,
+                        podcast_id=podcast_id,
+                    ),
+                    position=WidgetPosition(
+                        x=widget_config["position"]["x"],
+                        y=widget_config["position"]["y"],
+                        width=350,
+                        height=197,
+                        z_index=100
+                    ),
+                    is_active=True,
+                    is_muted=True,
+                    is_visible=True,
+                    is_closable=True,
+                    is_draggable=True,
+                    visible_to_roles=["user", "admin", "premium"],
+                    visible_to_subscription_tiers=[],
+                    target_pages=[],
+                    order=widget_config["order"],
+                    created_by="system",
+                    created_at=datetime.utcnow(),
+                    updated_at=datetime.utcnow(),
+                )
 
-            await widget.insert()
-            logger.info(f"Created default podcast widget '{widget_config['title']}': {widget.id}")
-        else:
-            # Channel widget logic
-            channel_num = widget_config["channel_num"]
+                await widget.insert()
+                logger.info(f"Created default podcast widget '{widget_config['title']}': {widget.id}")
+            else:
+                # Channel widget logic
+                channel_num = widget_config.get("channel_num")
+                if not channel_num:
+                    logger.warning(f"Widget config missing channel_num: {widget_config}")
+                    continue
 
-            # Check if widget already exists
-            existing = await Widget.find_one({
-                "type": WidgetType.SYSTEM,
-                "title": {"$regex": f"channel.*{channel_num}", "$options": "i"}
-            })
+                # Check if widget already exists
+                existing = await Widget.find_one({
+                    "type": WidgetType.SYSTEM,
+                    "title": {"$regex": f"channel.*{channel_num}", "$options": "i"}
+                })
 
-            if existing:
-                logger.info(f"Default Channel {channel_num} widget already exists: {existing.id}")
-                continue
+                if existing:
+                    logger.info(f"Default Channel {channel_num} widget already exists: {existing.id}")
+                    continue
 
-            # Try to find the channel in live channels
-            channel = await LiveChannel.find_one(
-                {"$or": [
-                    {"name": {"$regex": f"channel.*{channel_num}", "$options": "i"}},
-                    {"name": {"$regex": f"ערוץ.*{channel_num}", "$options": "i"}},
-                    {"name": {"$regex": f"{channel_num}.*channel", "$options": "i"}},
-                ]}
-            )
+                # Try to find the channel in live channels
+                channel = await LiveChannel.find_one(
+                    {"$or": [
+                        {"name": {"$regex": f"channel.*{channel_num}", "$options": "i"}},
+                        {"name": {"$regex": f"ערוץ.*{channel_num}", "$options": "i"}},
+                        {"name": {"$regex": f"{channel_num}.*channel", "$options": "i"}},
+                    ]}
+                )
 
-            # Create the widget
-            widget = Widget(
-                type=WidgetType.SYSTEM,
-                title=widget_config["title"],
-                description=widget_config["description"],
-                icon=widget_config["icon"],
-                content=WidgetContent(
-                    content_type=WidgetContentType.LIVE_CHANNEL,
-                    live_channel_id=str(channel.id) if channel else None,
-                ),
-                position=WidgetPosition(
-                    x=widget_config["position"]["x"],
-                    y=widget_config["position"]["y"],
-                    width=350,
-                    height=197,
-                    z_index=100
-                ),
-                is_active=True,
-                is_muted=True,
-                is_visible=True,
-                is_closable=True,
-                is_draggable=True,
-                visible_to_roles=["user", "admin", "premium"],
-                visible_to_subscription_tiers=[],
-                target_pages=[],
-                order=widget_config["order"],
-                created_by="system",
-                created_at=datetime.utcnow(),
-                updated_at=datetime.utcnow(),
-            )
+                # Create the widget
+                widget = Widget(
+                    type=WidgetType.SYSTEM,
+                    title=widget_config["title"],
+                    description=widget_config["description"],
+                    icon=widget_config["icon"],
+                    content=WidgetContent(
+                        content_type=WidgetContentType.LIVE_CHANNEL,
+                        live_channel_id=str(channel.id) if channel else None,
+                    ),
+                    position=WidgetPosition(
+                        x=widget_config["position"]["x"],
+                        y=widget_config["position"]["y"],
+                        width=350,
+                        height=197,
+                        z_index=100
+                    ),
+                    is_active=True,
+                    is_muted=True,
+                    is_visible=True,
+                    is_closable=True,
+                    is_draggable=True,
+                    visible_to_roles=["user", "admin", "premium"],
+                    visible_to_subscription_tiers=[],
+                    target_pages=[],
+                    order=widget_config["order"],
+                    created_by="system",
+                    created_at=datetime.utcnow(),
+                    updated_at=datetime.utcnow(),
+                )
 
-            await widget.insert()
-            logger.info(f"Created default Channel {channel_num} widget: {widget.id}")
-            if channel:
-                logger.info(f"Linked to live channel: {channel.name}")
+                await widget.insert()
+                logger.info(f"Created default Channel {channel_num} widget: {widget.id}")
+                if channel:
+                    logger.info(f"Linked to live channel: {channel.name}")
+    except Exception as e:
+        logger.error(f"Error initializing default widgets: {e}", exc_info=True)
 
 
 @asynccontextmanager
@@ -198,7 +207,7 @@ app = FastAPI(
 # CORS middleware
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=settings.BACKEND_CORS_ORIGINS,
+    allow_origins=settings.parsed_cors_origins,  # Use parsed property for Secret Manager compatibility
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],

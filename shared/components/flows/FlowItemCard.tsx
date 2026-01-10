@@ -209,8 +209,9 @@ const styles = StyleSheet.create({
   },
   containerFocused: {
     borderColor: colors.primary,
+    borderWidth: 3,
     // @ts-ignore - Web shadow
-    ...(Platform.OS === 'web' && { boxShadow: `0 0 0 2px ${colors.primary}40` }),
+    ...(Platform.OS === 'web' && { boxShadow: `0 0 20px ${colors.primary}80` }),
   },
   orderBadge: {
     width: 28,

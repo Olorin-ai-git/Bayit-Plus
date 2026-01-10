@@ -180,10 +180,10 @@ const styles = StyleSheet.create({
   },
   pillFocused: {
     borderColor: colors.primary,
-    borderWidth: 2,
+    borderWidth: 3,
     // @ts-ignore - Web-specific CSS
     ...(Platform.OS === 'web' && {
-      boxShadow: `0 0 0 3px ${colors.primary}30`,
+      boxShadow: `0 0 20px ${colors.primary}80`,
     }),
   },
   pillDisabled: {

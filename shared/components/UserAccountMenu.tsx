@@ -60,11 +60,20 @@ export const UserAccountMenu: React.FC = () => {
         onBlur={() => setIsFocused(false)}
         style={[styles.button, isFocused && styles.buttonFocused]}
       >
-        <View style={styles.avatarPlaceholder}>
-          <Text style={styles.avatarText}>
+        <View style={[
+          styles.avatarPlaceholder,
+          isAuthenticated && styles.avatarAuthenticated,
+        ]}>
+          <Text style={[
+            styles.avatarText,
+            isAuthenticated && styles.avatarTextAuthenticated,
+          ]}>
             {displayName.charAt(0).toUpperCase() || '👤'}
           </Text>
         </View>
+        {isAuthenticated && (
+          <View style={styles.authBadge} />
+        )}
       </TouchableOpacity>
 
       <Modal
@@ -206,14 +215,31 @@ const styles = StyleSheet.create({
     width: 40,
     height: 40,
     borderRadius: 20,
-    backgroundColor: colors.primary,
+    backgroundColor: 'rgba(255, 255, 255, 0.15)',
     justifyContent: 'center',
     alignItems: 'center',
+  },
+  avatarAuthenticated: {
+    backgroundColor: colors.primary,
   },
   avatarText: {
     fontSize: 18,
     fontWeight: 'bold',
+    color: colors.textSecondary,
+  },
+  avatarTextAuthenticated: {
     color: colors.background,
+  },
+  authBadge: {
+    position: 'absolute',
+    bottom: 2,
+    right: 2,
+    width: 12,
+    height: 12,
+    borderRadius: 6,
+    backgroundColor: '#22c55e',
+    borderWidth: 2,
+    borderColor: colors.background,
   },
   modalOverlay: {
     flex: 1,

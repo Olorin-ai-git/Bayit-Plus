@@ -9,6 +9,7 @@ import {
 } from 'react-native';
 import { colors, borderRadius, spacing } from '../theme';
 import { isTV } from '../utils/platform';
+import { useTVFocus } from '../hooks/useTVFocus';
 
 interface GlassCheckboxProps {
   label?: string;
@@ -27,30 +28,9 @@ export const GlassCheckbox: React.FC<GlassCheckboxProps> = ({
   disabled = false,
   hasTVPreferredFocus = false,
 }) => {
-  const [isFocused, setIsFocused] = useState(false);
-  const scaleAnim = useRef(new Animated.Value(1)).current;
-
-  const handleFocus = () => {
-    setIsFocused(true);
-    if (isTV || Platform.OS !== 'web') {
-      Animated.spring(scaleAnim, {
-        toValue: 1.1,
-        friction: 5,
-        useNativeDriver: true,
-      }).start();
-    }
-  };
-
-  const handleBlur = () => {
-    setIsFocused(false);
-    if (isTV || Platform.OS !== 'web') {
-      Animated.spring(scaleAnim, {
-        toValue: 1,
-        friction: 5,
-        useNativeDriver: true,
-      }).start();
-    }
-  };
+  const { isFocused, handleFocus, handleBlur, scaleTransform, focusStyle } = useTVFocus({
+    styleType: 'button',
+  });
 
   const handlePress = () => {
     if (!disabled) {
@@ -74,9 +54,9 @@ export const GlassCheckbox: React.FC<GlassCheckboxProps> = ({
           style={[
             styles.checkbox,
             checked && styles.checkboxChecked,
-            isFocused && styles.checkboxFocused,
+            focusStyle,
             disabled && styles.checkboxDisabled,
-            { transform: [{ scale: scaleAnim }] },
+            scaleTransform,
           ]}
         >
           {checked && <Text style={styles.checkmark}>✓</Text>}
@@ -116,20 +96,6 @@ const styles = StyleSheet.create({
   checkboxChecked: {
     backgroundColor: colors.primary,
     borderColor: colors.primary,
-  },
-  checkboxFocused: {
-    borderColor: colors.primary,
-    ...Platform.select({
-      ios: {
-        shadowColor: colors.primary,
-        shadowOffset: { width: 0, height: 0 },
-        shadowOpacity: 0.5,
-        shadowRadius: 8,
-      },
-      default: {
-        elevation: 5,
-      },
-    }),
   },
   checkboxDisabled: {
     opacity: 0.5,

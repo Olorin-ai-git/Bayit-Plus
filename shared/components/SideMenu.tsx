@@ -119,7 +119,7 @@ const styles = StyleSheet.create({
   },
   menuItemFocused: {
     backgroundColor: 'rgba(0, 217, 255, 0.2)',
-    borderWidth: 1,
+    borderWidth: 3,
     borderColor: colors.primary,
   },
   menuIcon: {

@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+import React from 'react';
 import {
   TouchableOpacity,
   Animated,
@@ -9,11 +9,10 @@ import {
   ViewStyle,
   TextStyle,
   StyleProp,
-  Platform,
 } from 'react-native';
 import { GlassView } from './GlassView';
-import { colors, borderRadius, spacing, shadows } from '../theme';
-import { isTV } from '../utils/platform';
+import { colors, borderRadius, spacing } from '../theme';
+import { useTVFocus } from '../hooks/useTVFocus';
 
 type ButtonVariant = 'primary' | 'secondary' | 'ghost' | 'danger' | 'outline';
 type ButtonSize = 'sm' | 'md' | 'lg';
@@ -47,30 +46,9 @@ export const GlassButton: React.FC<GlassButtonProps> = ({
   textStyle,
   hasTVPreferredFocus = false,
 }) => {
-  const [isFocused, setIsFocused] = useState(false);
-  const scaleAnim = useRef(new Animated.Value(1)).current;
-
-  const handleFocus = () => {
-    setIsFocused(true);
-    if (isTV || Platform.OS !== 'web') {
-      Animated.spring(scaleAnim, {
-        toValue: 1.05,
-        friction: 5,
-        useNativeDriver: true,
-      }).start();
-    }
-  };
-
-  const handleBlur = () => {
-    setIsFocused(false);
-    if (isTV || Platform.OS !== 'web') {
-      Animated.spring(scaleAnim, {
-        toValue: 1,
-        friction: 5,
-        useNativeDriver: true,
-      }).start();
-    }
-  };
+  const { isFocused, handleFocus, handleBlur, scaleTransform, focusStyle } = useTVFocus({
+    styleType: 'button',
+  });
 
   const sizeStyles = {
     sm: { paddingVertical: spacing.sm, paddingHorizontal: spacing.md, fontSize: 14 },
@@ -125,7 +103,7 @@ export const GlassButton: React.FC<GlassButtonProps> = ({
     },
     !isGlassVariant && { backgroundColor: currentVariant.bg },
     currentVariant.border && { borderWidth: 2, borderColor: currentVariant.border },
-    isFocused && styles.buttonFocused,
+    focusStyle,
     disabled && styles.buttonDisabled,
     fullWidth && styles.fullWidth,
     style,
@@ -142,17 +120,8 @@ export const GlassButton: React.FC<GlassButtonProps> = ({
         // @ts-ignore - TV-specific prop
         hasTVPreferredFocus={hasTVPreferredFocus}
       >
-        <Animated.View
-          style={[
-            { transform: [{ scale: scaleAnim }] },
-            isFocused && shadows.glow(colors.primary),
-          ]}
-        >
-          <GlassView
-            style={buttonStyle}
-            intensity="medium"
-            borderColor={isFocused ? colors.primary : currentVariant.border}
-          >
+        <Animated.View style={[scaleTransform]}>
+          <GlassView style={buttonStyle} intensity="medium">
             {buttonContent}
           </GlassView>
         </Animated.View>
@@ -170,13 +139,7 @@ export const GlassButton: React.FC<GlassButtonProps> = ({
       // @ts-ignore - TV-specific prop
       hasTVPreferredFocus={hasTVPreferredFocus}
     >
-      <Animated.View
-        style={[
-          buttonStyle,
-          { transform: [{ scale: scaleAnim }] },
-          isFocused && shadows.glow(currentVariant.bg),
-        ]}
-      >
+      <Animated.View style={[buttonStyle, scaleTransform]}>
         {buttonContent}
       </Animated.View>
     </TouchableOpacity>
@@ -189,10 +152,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     overflow: 'hidden',
-  },
-  buttonFocused: {
-    borderWidth: 2,
-    borderColor: colors.text,
   },
   buttonDisabled: {
     opacity: 0.5,

@@ -174,12 +174,12 @@ module.exports = (env, argv) => {
         __TIZEN__: isTizen,
         __TV__: isTV,
         'process.env.NODE_ENV': JSON.stringify(isProduction ? 'production' : 'development'),
-        // Single source of truth: .env file. TV builds override to demo mode.
-        'process.env.VITE_APP_MODE': JSON.stringify(isTV ? 'demo' : process.env.VITE_APP_MODE),
+        // Single source of truth: .env file. TV builds now use same mode as web.
+        'process.env.VITE_APP_MODE': JSON.stringify(process.env.VITE_APP_MODE),
         'process.env.TARGET': JSON.stringify(process.env.TARGET || 'web'),
         // Also support import.meta.env syntax
         'import.meta.env.VITE_APP_MODE': JSON.stringify(isTV ? 'demo' : process.env.VITE_APP_MODE),
-        'import.meta.env.VITE_API_URL': JSON.stringify(isTV ? '' : (process.env.VITE_API_URL || '/api/v1')),
+        'import.meta.env.VITE_API_URL': JSON.stringify(process.env.VITE_API_URL || '/api/v1'),
       }),
       new webpack.ProvidePlugin({
         process: 'process/browser',

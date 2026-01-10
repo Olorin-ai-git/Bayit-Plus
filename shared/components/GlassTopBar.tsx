@@ -18,6 +18,7 @@ import { isWeb, isTV } from '../utils/platform';
 import { useDirection } from '../hooks/useDirection';
 import { useConstantListening } from '../hooks/useConstantListening';
 import { useVoiceSettingsStore } from '../stores/voiceSettingsStore';
+import { useTVFocus } from './hooks/useTVFocus';
 
 const logo = require('../assets/logo.png');
 
@@ -36,9 +37,14 @@ export const GlassTopBar: React.FC<GlassTopBarProps> = ({
 }) => {
   const navigation = useNavigation<any>();
   const { i18n } = useTranslation();
-  const [isSearchFocused, setIsSearchFocused] = useState(false);
   const { isRTL } = useDirection();
   const isHebrew = i18n.language === 'he';
+
+  // TV focus for search button
+  const { handleFocus: handleSearchFocus, handleBlur: handleSearchBlur, focusStyle: searchFocusStyle } = useTVFocus({
+    styleType: 'button',
+    animated: false,
+  });
 
   // Voice settings
   const { preferences } = useVoiceSettingsStore();
@@ -121,9 +127,9 @@ export const GlassTopBar: React.FC<GlassTopBarProps> = ({
         {/* Search Button */}
         <TouchableOpacity
           onPress={handleSearchPress}
-          onFocus={() => setIsSearchFocused(true)}
-          onBlur={() => setIsSearchFocused(false)}
-          style={[styles.actionButton, isSearchFocused && styles.actionButtonFocused]}
+          onFocus={handleSearchFocus}
+          onBlur={handleSearchBlur}
+          style={[styles.actionButton, searchFocusStyle]}
         >
           <Text style={styles.actionIcon}>🔍</Text>
         </TouchableOpacity>
@@ -248,10 +254,6 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(255, 255, 255, 0.05)',
     borderWidth: 1,
     borderColor: 'transparent',
-  },
-  actionButtonFocused: {
-    borderColor: colors.primary,
-    backgroundColor: 'rgba(0, 217, 255, 0.1)',
   },
   actionIcon: {
     fontSize: 20,

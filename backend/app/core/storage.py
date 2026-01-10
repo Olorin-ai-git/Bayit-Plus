@@ -242,9 +242,144 @@ class S3StorageProvider(StorageProvider):
             raise ValueError(f"Failed to generate presigned URL: {e}")
 
 
+class GCSStorageProvider(StorageProvider):
+    """Google Cloud Storage provider"""
+
+    def __init__(self):
+        try:
+            from google.cloud import storage
+            from google.api_core import exceptions
+            import datetime
+
+            self.storage = storage
+            self.exceptions = exceptions
+            self.datetime = datetime
+
+            # Client auto-authenticates in Cloud Run via metadata server
+            self.client = storage.Client(project=settings.GCS_PROJECT_ID or None)
+            self.bucket_name = settings.GCS_BUCKET_NAME
+            self.bucket = self.client.bucket(self.bucket_name)
+            self.cdn_base = settings.CDN_BASE_URL
+
+        except ImportError:
+            raise ImportError(
+                "google-cloud-storage required for GCS. "
+                "Install with: pip install google-cloud-storage"
+            )
+        except Exception as e:
+            raise ValueError(f"Failed to initialize GCS client: {e}")
+
+    async def upload_image(self, file: UploadFile, image_type: str) -> str:
+        """Upload image to GCS with optimization"""
+        # Validate file type
+        allowed_types = {"image/jpeg", "image/png", "image/webp", "image/gif"}
+        if file.content_type not in allowed_types:
+            raise ValueError(f"Invalid image type: {file.content_type}")
+
+        # Read and validate size
+        content = await file.read()
+        if len(content) > 5 * 1024 * 1024:  # 5MB
+            raise ValueError("Image too large (max 5MB)")
+
+        # Optimize image
+        optimized = await self._optimize_image(content)
+
+        # Generate blob path
+        filename = f"{uuid4()}.jpg"
+        blob_name = f"images/{image_type}/{filename}"
+
+        try:
+            # Create blob and upload
+            blob = self.bucket.blob(blob_name)
+            blob.upload_from_string(
+                optimized,
+                content_type="image/jpeg",
+                timeout=60
+            )
+
+            # Set cache control and make public
+            blob.cache_control = "public, max-age=31536000"  # 1 year
+            blob.make_public()
+            blob.patch()
+
+            # Return URL
+            if self.cdn_base:
+                return f"{self.cdn_base}/{blob_name}"
+            else:
+                return blob.public_url
+
+        except self.exceptions.GoogleAPIError as e:
+            raise ValueError(f"GCS upload failed: {e}")
+
+    async def _optimize_image(self, image_bytes: bytes) -> bytes:
+        """Resize and compress image using Pillow"""
+        try:
+            img = Image.open(BytesIO(image_bytes))
+
+            # Resize if too large (max 1920px width)
+            max_width = 1920
+            if img.width > max_width:
+                ratio = max_width / img.width
+                new_height = int(img.height * ratio)
+                img = img.resize((max_width, new_height), Image.Resampling.LANCZOS)
+
+            # Convert RGBA to RGB if needed
+            if img.mode in ("RGBA", "LA", "P"):
+                background = Image.new("RGB", img.size, (255, 255, 255))
+                if img.mode == "P":
+                    img = img.convert("RGBA")
+                background.paste(img, mask=img.split()[-1] if img.mode in ("RGBA", "LA") else None)
+                img = background
+
+            # Save optimized
+            output = BytesIO()
+            img.save(output, format="JPEG", quality=85, optimize=True)
+            return output.getvalue()
+        except Exception as e:
+            print(f"Image optimization failed: {e}")
+            return image_bytes
+
+    async def validate_url(self, url: str) -> bool:
+        """Validate URL accessibility"""
+        import httpx
+        try:
+            async with httpx.AsyncClient() as client:
+                response = await client.head(url, timeout=5)
+                return response.status_code < 400
+        except Exception:
+            return False
+
+    def get_presigned_url(self, filename: str, content_type: str) -> dict:
+        """Generate signed URL for direct browser upload"""
+        blob_name = f"uploads/{uuid4()}/{filename}"
+        blob = self.bucket.blob(blob_name)
+
+        try:
+            # Generate signed upload URL (valid for 1 hour)
+            url = blob.generate_signed_url(
+                version="v4",
+                expiration=self.datetime.timedelta(hours=1),
+                method="PUT",
+                content_type=content_type,
+            )
+
+            return {
+                "url": url,
+                "method": "PUT",
+                "blob_name": blob_name,
+                "headers": {
+                    "Content-Type": content_type,
+                }
+            }
+        except Exception as e:
+            raise ValueError(f"Failed to generate signed URL: {e}")
+
+
 def get_storage_provider() -> StorageProvider:
     """Get configured storage provider"""
-    if settings.STORAGE_TYPE == "s3":
+    if settings.STORAGE_TYPE == "gcs":
+        return GCSStorageProvider()
+    elif settings.STORAGE_TYPE == "s3":
         return S3StorageProvider()
     else:
         return LocalStorageProvider(settings.UPLOAD_DIR)

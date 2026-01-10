@@ -619,6 +619,7 @@ const styles = StyleSheet.create({
   },
   recommendationCardFocused: {
     borderColor: colors.primary,
+    borderWidth: 3,
     transform: [{ scale: 1.02 }],
   },
   recommendationImage: {
@@ -716,7 +717,7 @@ const styles = StyleSheet.create({
     borderColor: 'transparent',
   },
   voiceButtonFocused: {
-    borderColor: colors.text,
+    borderColor: colors.primary,
     transform: [{ scale: 1.1 }],
   },
   voiceButtonRecording: {
@@ -746,7 +747,8 @@ const styles = StyleSheet.create({
     borderColor: 'transparent',
   },
   sendButtonFocused: {
-    borderColor: colors.text,
+    borderColor: colors.primary,
+    borderWidth: 3,
     transform: [{ scale: 1.1 }],
   },
   sendButtonDisabled: {

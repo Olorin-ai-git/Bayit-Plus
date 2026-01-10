@@ -235,7 +235,7 @@ const styles = StyleSheet.create({
   },
   fabFocused: {
     borderWidth: 3,
-    borderColor: '#ffffff',
+    borderColor: colors.primary,
     // @ts-ignore - Web shadow
     boxShadow: '0 0 30px rgba(0, 217, 255, 0.8)',
   },

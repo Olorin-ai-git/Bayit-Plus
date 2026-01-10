@@ -190,6 +190,7 @@ const styles = StyleSheet.create({
   },
   cardFocused: {
     borderColor: colors.primary,
+    borderWidth: 3,
   },
   focusedShadow: {
     // @ts-ignore - Web shadow

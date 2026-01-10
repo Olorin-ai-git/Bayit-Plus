@@ -16,6 +16,7 @@ import { useTranslation } from 'react-i18next';
 import { GlassView } from './GlassView';
 import { colors, borderRadius, spacing } from '../theme';
 import { isTV } from '../utils/platform';
+import { useTVFocus } from '../hooks/useTVFocus';
 
 interface GlassInputProps extends TextInputProps {
   label?: string;
@@ -41,40 +42,22 @@ export const GlassInput: React.FC<GlassInputProps> = ({
 }) => {
   const { i18n } = useTranslation();
   const isRTL = i18n.language === 'he' || i18n.language === 'ar';
-  const [isFocused, setIsFocused] = useState(false);
-  const scaleAnim = useRef(new Animated.Value(1)).current;
 
-  const handleFocus = () => {
-    setIsFocused(true);
-    if (isTV || Platform.OS !== 'web') {
-      Animated.spring(scaleAnim, {
-        toValue: 1.02,
-        friction: 5,
-        useNativeDriver: true,
-      }).start();
-    }
-  };
-
-  const handleBlur = () => {
-    setIsFocused(false);
-    if (isTV || Platform.OS !== 'web') {
-      Animated.spring(scaleAnim, {
-        toValue: 1,
-        friction: 5,
-        useNativeDriver: true,
-      }).start();
-    }
-  };
+  const { isFocused, handleFocus, handleBlur, scaleTransform, focusStyle } = useTVFocus({
+    styleType: 'input',
+    onFocus: () => props.onFocus?.(null as any),
+    onBlur: () => props.onBlur?.(null as any),
+  });
 
   return (
     <View style={[styles.container, containerStyle]}>
       {label && <Text style={[styles.label, isRTL && styles.labelRTL]}>{label}</Text>}
-      <Animated.View style={{ transform: [{ scale: scaleAnim }] }}>
+      <Animated.View style={scaleTransform}>
         <GlassView
           style={[
             styles.inputContainer,
             isRTL && styles.inputContainerRTL,
-            isFocused && styles.inputContainerFocused,
+            !error && focusStyle,
             error && styles.inputContainerError,
           ]}
           intensity="medium"
@@ -143,9 +126,6 @@ const styles = StyleSheet.create({
   },
   inputContainerRTL: {
     flexDirection: 'row-reverse',
-  },
-  inputContainerFocused: {
-    borderColor: colors.primary,
   },
   inputContainerError: {
     borderColor: colors.error,

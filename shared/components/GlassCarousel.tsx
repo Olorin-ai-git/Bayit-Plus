@@ -256,9 +256,9 @@ const styles = StyleSheet.create({
   },
   carouselFocused: {
     borderColor: colors.primary,
-    borderWidth: 2,
+    borderWidth: 3,
     // @ts-ignore - Web CSS property for glow effect
-    boxShadow: `0 0 20px ${colors.primary}`,
+    boxShadow: `0 0 20px ${colors.primary}80`,
   },
   touchable: {
     flex: 1,

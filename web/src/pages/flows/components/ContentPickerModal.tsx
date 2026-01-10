@@ -26,6 +26,12 @@ import type { ContentItem, FlowItem, ContentType } from '../types/flows.types';
 declare const __TV__: boolean;
 const IS_TV_BUILD = typeof __TV__ !== 'undefined' && __TV__;
 
+// Find the index of the first item that's not already added (for TV focus)
+const findFirstFocusableIndex = (content: any[], existingIds: Set<string>): number => {
+  const firstNotAddedIndex = content.findIndex(item => !existingIds.has(item.id));
+  return firstNotAddedIndex >= 0 ? firstNotAddedIndex : 0;
+};
+
 interface ContentPickerModalProps {
   visible: boolean;
   onClose: () => void;
@@ -84,6 +90,9 @@ export const ContentPickerModal: React.FC<ContentPickerModalProps> = ({
   ];
 
   const numColumns = isMobile ? 2 : width >= 1024 ? 4 : 3;
+
+  // For TV mode: find the first focusable item (not already added)
+  const firstFocusableIndex = IS_TV_BUILD ? findFirstFocusableIndex(content, existingIds) : 0;
 
   // Don't render if not visible
   if (!visible) return null;
@@ -168,7 +177,7 @@ export const ContentPickerModal: React.FC<ContentPickerModalProps> = ({
                       isAlreadyAdded={existingIds.has(item.id)}
                       onToggle={() => toggleSelection(item.id)}
                       isRTL={isRTL}
-                      hasTVPreferredFocus={index === 0}
+                      hasTVPreferredFocus={IS_TV_BUILD ? index === firstFocusableIndex : false}
                     />
                   </View>
                 ))}

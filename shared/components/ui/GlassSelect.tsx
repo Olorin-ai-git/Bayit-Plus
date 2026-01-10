@@ -12,6 +12,7 @@ import {
 import { GlassView } from './GlassView';
 import { colors, borderRadius, spacing } from '../theme';
 import { isTV } from '../utils/platform';
+import { useTVFocus } from '../hooks/useTVFocus';
 
 interface SelectOption {
   value: string;
@@ -41,32 +42,12 @@ export const GlassSelect: React.FC<GlassSelectProps> = ({
   hasTVPreferredFocus = false,
 }) => {
   const [isOpen, setIsOpen] = useState(false);
-  const [isFocused, setIsFocused] = useState(false);
-  const scaleAnim = useRef(new Animated.Value(1)).current;
+
+  const { isFocused, handleFocus, handleBlur, scaleTransform, focusStyle } = useTVFocus({
+    styleType: 'input',
+  });
 
   const selectedOption = options.find((opt) => opt.value === value);
-
-  const handleFocus = () => {
-    setIsFocused(true);
-    if (isTV || Platform.OS !== 'web') {
-      Animated.spring(scaleAnim, {
-        toValue: 1.02,
-        friction: 5,
-        useNativeDriver: true,
-      }).start();
-    }
-  };
-
-  const handleBlur = () => {
-    setIsFocused(false);
-    if (isTV || Platform.OS !== 'web') {
-      Animated.spring(scaleAnim, {
-        toValue: 1,
-        friction: 5,
-        useNativeDriver: true,
-      }).start();
-    }
-  };
 
   const handleSelect = (option: SelectOption) => {
     if (!option.disabled) {
@@ -88,11 +69,11 @@ export const GlassSelect: React.FC<GlassSelectProps> = ({
         // @ts-ignore - TV-specific prop
         hasTVPreferredFocus={hasTVPreferredFocus}
       >
-        <Animated.View style={{ transform: [{ scale: scaleAnim }] }}>
+        <Animated.View style={scaleTransform}>
           <GlassView
             style={[
               styles.select,
-              isFocused && styles.selectFocused,
+              !error && focusStyle,
               error && styles.selectError,
               disabled && styles.selectDisabled,
             ]}
@@ -187,9 +168,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: spacing.md,
     paddingVertical: spacing.md,
     minHeight: 48,
-  },
-  selectFocused: {
-    borderColor: colors.primary,
   },
   selectError: {
     borderColor: colors.error,

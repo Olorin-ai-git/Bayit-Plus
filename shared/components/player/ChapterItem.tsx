@@ -161,6 +161,7 @@ const styles = StyleSheet.create({
   },
   containerFocused: {
     borderColor: colors.primary,
+    borderWidth: 3,
     shadowColor: colors.primary,
     shadowOffset: { width: 0, height: 0 },
     shadowOpacity: 0.5,

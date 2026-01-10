@@ -92,8 +92,16 @@ export const GlassSidebar: React.FC<GlassSidebarProps> = ({ isExpanded, onToggle
   const { isRTL, textAlign } = useDirection();
   const navigate = useNavigate();
   const location = useLocation();
-  const { user } = useAuthStore();
+  const { user, isAuthenticated } = useAuthStore();
   const { isUIInteractionEnabled } = useModeEnforcement();
+
+  // User display info
+  const displayName = user?.name || t('account.guest', 'Guest');
+  const displayInitial = displayName.charAt(0).toUpperCase();
+  const subscriptionPlan = user?.subscription?.plan || 'basic';
+
+  // Debug auth state
+  console.log('[GlassSidebar] Auth state:', { isAuthenticated, user: user?.name, displayName });
   // Sidebar is always visible - collapsed shows icons only, expanded shows full menu
   const collapsedWidth = 80;
   const expandedWidth = 280;
@@ -213,6 +221,53 @@ export const GlassSidebar: React.FC<GlassSidebarProps> = ({ isExpanded, onToggle
             </View>
           </TouchableOpacity>
 
+          {/* User Profile Section */}
+          <TouchableOpacity
+            onPress={() => {
+              if (isAuthenticated) {
+                navigate('/profile');
+              } else {
+                navigate('/login');
+              }
+            }}
+            onFocus={() => setFocusedItem('profile-section')}
+            onBlur={() => setFocusedItem(null)}
+            style={[
+              styles.userProfileSection,
+              focusedItem === 'profile-section' && styles.userProfileSectionFocused,
+            ]}
+          >
+            <View style={[
+              styles.userAvatar,
+              isAuthenticated && styles.userAvatarAuthenticated,
+            ]}>
+              <Text style={styles.userAvatarText}>{displayInitial}</Text>
+              {isAuthenticated && (
+                <View style={styles.onlineBadge} />
+              )}
+            </View>
+            {isExpanded && (
+              <Animated.View style={[styles.userInfoContainer, { opacity: opacityAnim }]}>
+                <Text style={[styles.userName, { textAlign }]} numberOfLines={1}>
+                  {displayName}
+                </Text>
+                {isAuthenticated ? (
+                  <View style={styles.subscriptionBadge}>
+                    <Text style={styles.subscriptionText}>
+                      {subscriptionPlan === 'premium' ? t('account.premium', 'Premium') : t('account.basic', 'Basic')}
+                    </Text>
+                  </View>
+                ) : (
+                  <Text style={[styles.loginPrompt, { textAlign }]}>
+                    {t('account.tapToLogin', 'Tap to login')}
+                  </Text>
+                )}
+              </Animated.View>
+            )}
+          </TouchableOpacity>
+
+          <View style={styles.profileDivider} />
+
           <ScrollView
             style={styles.menuContainer}
             showsVerticalScrollIndicator={false}
@@ -242,7 +297,6 @@ export const GlassSidebar: React.FC<GlassSidebarProps> = ({ isExpanded, onToggle
                     onBlur={() => setFocusedItem(null)}
                     style={[
                       styles.menuItem,
-                      { flexDirection: isRTL ? 'row' : 'row-reverse' },
                       isActive(item) && styles.menuItemActive,
                       focusedItem === item.id && styles.menuItemFocused,
                       !isUIInteractionEnabled && {
@@ -263,7 +317,7 @@ export const GlassSidebar: React.FC<GlassSidebarProps> = ({ isExpanded, onToggle
                       <Animated.Text
                         style={[
                           styles.menuLabel,
-                          { textAlign, marginRight: isRTL ? 0 : spacing.sm, marginLeft: isRTL ? spacing.sm : 0 },
+                          { textAlign, marginStart: spacing.sm },
                           isActive(item) && styles.menuLabelActive,
                           { opacity: opacityAnim },
                         ]}
@@ -346,6 +400,84 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: colors.text,
   },
+  userProfileSection: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: spacing.md,
+    paddingVertical: spacing.sm,
+    marginHorizontal: spacing.sm,
+    borderRadius: borderRadius.md,
+    borderWidth: 1,
+    borderColor: 'transparent',
+  },
+  userProfileSectionFocused: {
+    backgroundColor: 'rgba(0, 217, 255, 0.15)',
+    borderColor: colors.primary,
+    borderWidth: 3,
+  },
+  userAvatar: {
+    width: 48,
+    height: 48,
+    borderRadius: 24,
+    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderWidth: 2,
+    borderColor: 'rgba(255, 255, 255, 0.2)',
+    position: 'relative',
+  },
+  userAvatarAuthenticated: {
+    backgroundColor: colors.primary,
+    borderColor: colors.primary,
+  },
+  userAvatarText: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    color: colors.text,
+  },
+  onlineBadge: {
+    position: 'absolute',
+    bottom: 2,
+    right: 2,
+    width: 12,
+    height: 12,
+    borderRadius: 6,
+    backgroundColor: '#22c55e',
+    borderWidth: 2,
+    borderColor: colors.background,
+  },
+  userInfoContainer: {
+    flex: 1,
+    marginLeft: spacing.md,
+  },
+  userName: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    color: colors.text,
+    marginBottom: 2,
+  },
+  subscriptionBadge: {
+    alignSelf: 'flex-start',
+    paddingHorizontal: spacing.sm,
+    paddingVertical: 2,
+    borderRadius: borderRadius.sm,
+    backgroundColor: 'rgba(0, 217, 255, 0.2)',
+  },
+  subscriptionText: {
+    fontSize: 11,
+    color: colors.primary,
+    fontWeight: 'bold',
+  },
+  loginPrompt: {
+    fontSize: 12,
+    color: colors.textSecondary,
+  },
+  profileDivider: {
+    height: 1,
+    backgroundColor: colors.glassBorder,
+    marginVertical: spacing.sm,
+    marginHorizontal: spacing.md,
+  },
   menuContainer: {
     flex: 1,
   },
@@ -366,6 +498,7 @@ const styles = StyleSheet.create({
     marginTop: spacing.sm,
   },
   menuItem: {
+    flexDirection: 'row',
     alignItems: 'center',
     paddingVertical: spacing.sm,
     paddingHorizontal: spacing.sm,

@@ -3,7 +3,7 @@
  * Manages content selection state for the content picker modal
  */
 
-import { useState, useEffect, useMemo, useCallback } from 'react';
+import { useState, useEffect, useMemo, useCallback, useRef } from 'react';
 import { liveService, radioService, contentService, podcastService } from '@/services/api';
 import type { ContentItem, FlowItem, ContentType } from '../types/flows.types';
 import logger from '@/utils/logger';
@@ -43,6 +43,9 @@ export const useContentPicker = ({
   const [error, setError] = useState<string | null>(null);
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(false);
+
+  // Prevent rapid successive toggles (debounce remote button presses)
+  const lastToggleTimeRef = useRef<Record<string, number>>({});
 
   // Get existing content IDs to grey out
   const existingIds = useMemo(
@@ -160,6 +163,8 @@ export const useContentPicker = ({
   useEffect(() => {
     setPage(1);
     setSelectedIds(new Set());
+    // Clear debounce tracking when changing tabs
+    lastToggleTimeRef.current = {};
     fetchContent(activeTab, 1);
   }, [activeTab, fetchContent]);
 
@@ -169,6 +174,18 @@ export const useContentPicker = ({
     if (existingIds.has(id)) {
       return;
     }
+
+    // Debounce: prevent rapid successive toggles on the same item
+    // (handles remote button long-press triggering multiple events)
+    const now = Date.now();
+    const lastTime = lastToggleTimeRef.current[id] ?? 0;
+    const DEBOUNCE_MS = 300;
+
+    if (now - lastTime < DEBOUNCE_MS) {
+      return;
+    }
+
+    lastToggleTimeRef.current[id] = now;
 
     setSelectedIds(prev => {
       const newSet = new Set(prev);
@@ -184,6 +201,8 @@ export const useContentPicker = ({
   // Clear selection
   const clearSelection = useCallback(() => {
     setSelectedIds(new Set());
+    // Also clear debounce tracking when selection is cleared
+    lastToggleTimeRef.current = {};
   }, []);
 
   // Select all visible (non-existing) items
