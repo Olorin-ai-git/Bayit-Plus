@@ -32,7 +32,7 @@ const navLinkKeys = [
 export default function Header() {
   const { i18n, t } = useTranslation();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const { user, isAuthenticated, isAdmin, logout } = useAuthStore();
+  const { user, isAuthenticated, isAdmin, logout, isHydrated } = useAuthStore();
   const { sendMessage, toggleOpen } = useChatbotStore();
   const { preferences } = useVoiceSettingsStore();
   const { isRemoteControlEnabled } = useModeEnforcement();
@@ -40,7 +40,36 @@ export default function Header() {
   const { width } = useWindowDimensions();
   const isMobile = width < 768 && !IS_TV_BUILD;
   const isRTL = i18n.language === 'he' || i18n.language === 'ar';
-  const showAdmin = isAuthenticated && isAdmin() && !IS_TV_BUILD; // Hide admin on TV
+
+  // Check localStorage directly as fallback for hydration
+  const [localAuthChecked, setLocalAuthChecked] = useState(false);
+  const [authReady, setAuthReady] = useState(isHydrated);
+
+  useEffect(() => {
+    // If store is hydrated, we're ready
+    if (isHydrated) {
+      setAuthReady(true);
+      return;
+    }
+
+    // Fallback: check localStorage directly
+    if (!localAuthChecked) {
+      try {
+        const stored = localStorage.getItem('bayit-auth');
+        if (stored) {
+          const data = JSON.parse(stored);
+          if (data.state?.isAuthenticated) {
+            setAuthReady(true);
+          }
+        }
+      } catch (e) {
+        console.warn('Failed to check localStorage auth:', e);
+      }
+      setLocalAuthChecked(true);
+    }
+  }, [isHydrated, localAuthChecked]);
+
+  const showAdmin = authReady && isAuthenticated && isAdmin() && !IS_TV_BUILD; // Hide admin on TV
   const [loginFocused, setLoginFocused] = useState(false);
 
   // Voice settings for TV - only enable if mic is available
@@ -151,7 +180,7 @@ export default function Header() {
           </View>
         </Link>
       )}
-      {isAuthenticated ? (
+      {authReady && isAuthenticated && user ? (
         <ProfileDropdown
           user={user}
           onNavigate={handleProfileNavigate}

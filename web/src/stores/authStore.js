@@ -10,6 +10,7 @@ export const useAuthStore = create(
       isAuthenticated: false,
       isLoading: false,
       error: null,
+      isHydrated: false,
 
       setUser: (user) => set({ user, isAuthenticated: !!user }),
 
@@ -113,6 +114,12 @@ export const useAuthStore = create(
         token: state.token,
         isAuthenticated: state.isAuthenticated,
       }),
+      onRehydrateStorage: () => (state) => {
+        // Mark as hydrated after rehydration from localStorage
+        if (state) {
+          state.isHydrated = true;
+        }
+      },
     }
   )
 )

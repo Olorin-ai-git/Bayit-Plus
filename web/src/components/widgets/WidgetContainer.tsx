@@ -24,6 +24,12 @@ interface WidgetContainerProps {
   streamUrl?: string;
 }
 
+// Check if this is a TV build
+declare const __TV__: boolean;
+const IS_TV_BUILD = typeof __TV__ !== 'undefined' && __TV__;
+
+const WIDGET_MOVE_STEP = 20; // pixels per arrow key press on TV
+
 export default function WidgetContainer({
   widget,
   isMuted,
@@ -37,9 +43,10 @@ export default function WidgetContainer({
 
   const [isDragging, setIsDragging] = useState(false);
   const [dragOffset, setDragOffset] = useState({ x: 0, y: 0 });
-  const [showControls, setShowControls] = useState(false);
+  const [showControls, setShowControls] = useState(IS_TV_BUILD); // Always visible on TV
   const [loading, setLoading] = useState(!streamUrl && widget.content.content_type !== 'iframe');
   const [error, setError] = useState<string | null>(null);
+  const [isFocused, setIsFocused] = useState(IS_TV_BUILD); // Start focused on TV
 
   // Update loading state when stream URL changes
   useEffect(() => {
@@ -99,6 +106,60 @@ export default function WidgetContainer({
       };
     }
   }, [isDragging, handleDrag, handleDragEnd]);
+
+  // TV Remote control handler
+  useEffect(() => {
+    if (!IS_TV_BUILD || !isFocused) return;
+
+    const handleRemoteKey = (e: KeyboardEvent) => {
+      // Arrow keys for moving widget
+      if (widget.is_draggable) {
+        switch (e.key) {
+          case 'ArrowLeft':
+            e.preventDefault();
+            onPositionChange({
+              x: Math.max(0, position.x - WIDGET_MOVE_STEP)
+            });
+            break;
+          case 'ArrowRight':
+            e.preventDefault();
+            onPositionChange({
+              x: Math.min(window.innerWidth - position.width, position.x + WIDGET_MOVE_STEP)
+            });
+            break;
+          case 'ArrowUp':
+            e.preventDefault();
+            onPositionChange({
+              y: Math.max(0, position.y - WIDGET_MOVE_STEP)
+            });
+            break;
+          case 'ArrowDown':
+            e.preventDefault();
+            onPositionChange({
+              y: Math.min(window.innerHeight - position.height, position.y + WIDGET_MOVE_STEP)
+            });
+            break;
+        }
+      }
+
+      // Enter/OK button to toggle mute
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        onToggleMute();
+      }
+
+      // 0/Red button to close (Samsung TV remote)
+      if (e.key === '0' || e.key === 'Escape') {
+        e.preventDefault();
+        if (widget.is_closable) {
+          onClose();
+        }
+      }
+    };
+
+    window.addEventListener('keydown', handleRemoteKey);
+    return () => window.removeEventListener('keydown', handleRemoteKey);
+  }, [IS_TV_BUILD, isFocused, widget.is_draggable, widget.is_closable, position, onToggleMute, onClose, onPositionChange]);
 
   // Render loading state
   const renderLoading = () => (
@@ -220,10 +281,18 @@ export default function WidgetContainer({
         width: position.width,
         height: position.height,
         zIndex: position.z_index,
-        cursor: isDragging ? 'grabbing' : 'default',
+        cursor: isDragging ? 'grabbing' : IS_TV_BUILD ? 'pointer' : 'default',
+        // TV: Always show focus indicator
+        outline: IS_TV_BUILD && isFocused ? '2px solid #00aaff' : 'none',
+        outlineOffset: '2px',
       }}
-      onMouseEnter={() => setShowControls(true)}
-      onMouseLeave={() => !isDragging && setShowControls(false)}
+      onMouseEnter={() => !IS_TV_BUILD && setShowControls(true)}
+      onMouseLeave={() => !IS_TV_BUILD && !isDragging && setShowControls(false)}
+      onFocus={() => IS_TV_BUILD && setIsFocused(true)}
+      onBlur={() => IS_TV_BUILD && setIsFocused(false)}
+      tabIndex={IS_TV_BUILD ? 0 : -1}
+      role="button"
+      aria-label={`Widget: ${widget.title}`}
     >
       <View style={styles.container}>
         {/* Content */}
@@ -231,16 +300,21 @@ export default function WidgetContainer({
           {renderContent()}
         </View>
 
-        {/* Control Bar - shown on hover */}
+        {/* Control Bar - shown on hover (web) or always (TV) */}
         {showControls && (
-          <View style={styles.controlBar}>
-            {/* Drag Handle */}
+          <View style={[styles.controlBar, IS_TV_BUILD && styles.controlBarTV]}>
+            {/* Drag Handle - TV remotes use arrows, desktop uses mouse */}
             {widget.is_draggable && (
               <Pressable
                 style={styles.dragHandle}
-                onMouseDown={handleDragStart as any}
+                onMouseDown={IS_TV_BUILD ? undefined : (handleDragStart as any)}
+                disabled={IS_TV_BUILD}
               >
-                <GripVertical size={16} color={colors.text} />
+                {IS_TV_BUILD ? (
+                  <Text style={styles.tvControlText}>⬅️ ⬆️ ⬇️ ➡️</Text>
+                ) : (
+                  <GripVertical size={16} color={colors.text} />
+                )}
               </Pressable>
             )}
 
@@ -395,5 +469,15 @@ const styles = StyleSheet.create({
   errorText: {
     fontSize: 12,
     color: colors.textSecondary,
+  },
+  controlBarTV: {
+    paddingVertical: spacing.md,
+    paddingHorizontal: spacing.md,
+    height: 'auto',
+  } as any,
+  tvControlText: {
+    fontSize: 16,
+    color: colors.text,
+    fontWeight: '600',
   },
 });

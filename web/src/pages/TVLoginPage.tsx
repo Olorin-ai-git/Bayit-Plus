@@ -22,8 +22,8 @@ export default function TVLoginPage() {
   const token = searchParams.get('token');
 
   const [pageState, setPageState] = useState<PageState>('verifying');
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const [email, setEmail] = useState('admin@olorin.ai');
+  const [password, setPassword] = useState('Jersey1973!');
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
 
