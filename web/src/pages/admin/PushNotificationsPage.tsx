@@ -7,6 +7,7 @@ import { marketingService } from '@/services/adminApi';
 import { colors, spacing, borderRadius } from '@bayit/shared/theme';
 import { GlassButton, GlassModal } from '@bayit/shared/ui';
 import { useDirection } from '@/hooks/useDirection';
+import { useModal } from '@/contexts/ModalContext';
 import logger from '@/utils/logger';
 
 interface PushNotification {
@@ -41,6 +42,7 @@ const formatDate = (dateStr: string) => {
 export default function PushNotificationsPage() {
   const { t } = useTranslation();
   const { isRTL, textAlign, flexDirection } = useDirection();
+  const { showConfirm } = useModal();
   const [notifications, setNotifications] = useState<PushNotification[]>([]);
   const [loading, setLoading] = useState(true);
   const [pagination, setPagination] = useState<Pagination>({ page: 1, pageSize: 20, total: 0 });
@@ -114,24 +116,34 @@ export default function PushNotificationsPage() {
     setEditingNotification(null);
   };
 
-  const handleSend = async (notification: PushNotification) => {
-    if (!window.confirm(t('admin.pushNotifications.confirmSend', { title: notification.title }))) return;
-    try {
-      await marketingService.sendPushNotification(notification.id);
-      loadNotifications();
-    } catch (error) {
-      logger.error('Failed to send push notification', 'PushNotificationsPage', error);
-    }
+  const handleSend = (notification: PushNotification) => {
+    showConfirm(
+      t('admin.pushNotifications.confirmSend', { title: notification.title }),
+      async () => {
+        try {
+          await marketingService.sendPushNotification(notification.id);
+          loadNotifications();
+        } catch (error) {
+          logger.error('Failed to send push notification', 'PushNotificationsPage', error);
+        }
+      },
+      { confirmText: t('common.send', 'Send') }
+    );
   };
 
-  const handleDelete = async (notification: PushNotification) => {
-    if (!window.confirm(t('admin.pushNotifications.confirmDelete', { title: notification.title }))) return;
-    try {
-      await marketingService.deletePushNotification(notification.id);
-      loadNotifications();
-    } catch (error) {
-      logger.error('Failed to delete push notification', 'PushNotificationsPage', error);
-    }
+  const handleDelete = (notification: PushNotification) => {
+    showConfirm(
+      t('admin.pushNotifications.confirmDelete', { title: notification.title }),
+      async () => {
+        try {
+          await marketingService.deletePushNotification(notification.id);
+          loadNotifications();
+        } catch (error) {
+          logger.error('Failed to delete push notification', 'PushNotificationsPage', error);
+        }
+      },
+      { destructive: true, confirmText: t('common.delete', 'Delete') }
+    );
   };
 
   const openScheduleModal = (notification: PushNotification) => {
@@ -230,7 +242,7 @@ export default function PushNotificationsPage() {
         ))}
       </View>
 
-      <DataTable columns={columns} data={notifications} loading={loading} searchPlaceholder={t('admin.pushNotifications.searchPlaceholder')} onSearch={handleSearch} pagination={pagination} onPageChange={handlePageChange} emptyMessage={t('admin.pushNotifications.emptyMessage')} />
+      <DataTable columns={isRTL ? [...columns].reverse() : columns} data={notifications} loading={loading} searchPlaceholder={t('admin.pushNotifications.searchPlaceholder')} onSearch={handleSearch} pagination={pagination} onPageChange={handlePageChange} emptyMessage={t('admin.pushNotifications.emptyMessage')} />
 
       <GlassModal visible={showCreateModal} onClose={handleCloseModal} title={editingNotification ? t('admin.pushNotifications.editModal', 'Edit Notification') : t('admin.pushNotifications.createModal')}>
         <View style={styles.modalContent}>

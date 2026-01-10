@@ -239,6 +239,11 @@ class ContentImporter:
             ]
 
             for item in items_to_import:
+                # Check if channel already exists by stream_url
+                existing = await LiveChannel.find_one(LiveChannel.stream_url == item["stream_url"])
+                if existing:
+                    continue  # Skip duplicate
+
                 channel = LiveChannel(
                     name=item["name"],
                     description=item.get("description", ""),
@@ -270,6 +275,16 @@ class ContentImporter:
             ]
 
             for item in items_to_import:
+                # Check if content already exists by stream_url or title+year
+                existing = await Content.find_one(Content.stream_url == item["stream_url"])
+                if not existing and item.get("year"):
+                    existing = await Content.find_one(
+                        Content.title == item["title"],
+                        Content.year == item.get("year")
+                    )
+                if existing:
+                    continue  # Skip duplicate
+
                 content = Content(
                     title=item["title"],
                     description=item.get("description", ""),
@@ -314,6 +329,11 @@ class ContentImporter:
             stations = [s for s in stations if s["id"] in filter_ids]
 
         for station in stations:
+            # Check if station already exists by stream_url
+            existing = await RadioStation.find_one(RadioStation.stream_url == station["stream_url"])
+            if existing:
+                continue  # Skip duplicate
+
             radio = RadioStation(
                 name=station["name"],
                 description=station.get("description", ""),
@@ -391,6 +411,15 @@ class ContentImporter:
         ]
 
         for podcast_info in items_to_import:
+            # Check if podcast already exists by rss_feed or title
+            existing = None
+            if podcast_info.get("rss_feed"):
+                existing = await Podcast.find_one(Podcast.rss_feed == podcast_info["rss_feed"])
+            if not existing:
+                existing = await Podcast.find_one(Podcast.title == podcast_info["title"])
+            if existing:
+                continue  # Skip duplicate
+
             podcast = Podcast(
                 title=podcast_info["title"],
                 author=podcast_info.get("author"),

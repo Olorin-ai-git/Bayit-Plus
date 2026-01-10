@@ -19,7 +19,7 @@ interface Channel {
   category?: string;
 }
 
-function ChannelCard({ channel, nextLabel }: { channel: Channel; nextLabel: string }) {
+function ChannelCard({ channel, nextLabel, liveLabel }: { channel: Channel; nextLabel: string; liveLabel: string }) {
   const [isHovered, setIsHovered] = useState(false);
 
   return (
@@ -49,7 +49,7 @@ function ChannelCard({ channel, nextLabel }: { channel: Channel; nextLabel: stri
             {/* Live Badge */}
             <View style={styles.liveBadge}>
               <View style={styles.liveDot} />
-              <Text style={styles.liveText}>LIVE</Text>
+              <Text style={styles.liveText}>{liveLabel}</Text>
             </View>
 
             {/* Channel Info */}
@@ -92,6 +92,7 @@ export default function LivePage() {
   const [loading, setLoading] = useState(true);
   const { width } = useWindowDimensions();
   const nextLabel = t('live.next');
+  const liveLabel = t('common.live');
 
   const numColumns = width >= 1280 ? 5 : width >= 1024 ? 4 : width >= 768 ? 3 : 2;
 
@@ -192,7 +193,7 @@ export default function LivePage() {
         columnWrapperStyle={numColumns > 1 ? styles.row : undefined}
         renderItem={({ item }) => (
           <View style={{ flex: 1, maxWidth: `${100 / numColumns}%` }}>
-            <ChannelCard channel={item} nextLabel={nextLabel} />
+            <ChannelCard channel={item} nextLabel={nextLabel} liveLabel={liveLabel} />
           </View>
         )}
         ListEmptyComponent={

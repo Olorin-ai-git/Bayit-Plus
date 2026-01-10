@@ -58,14 +58,15 @@ export const useChatbotStore = create<ChatbotStore>((set, get) => ({
     set({ contextLoading: true });
     try {
       const [flowsRes, liveRes, radioRes, podcastRes] = await Promise.all([
-        flowsService.getFlows().catch(() => ({ data: [] })),
-        liveService.getChannels().catch(() => ({ data: { channels: [] }, channels: [] })),
-        radioService.getStations().catch(() => ({ data: { stations: [] }, stations: [] })),
-        podcastService.getShows().catch(() => ({ data: { shows: [] }, shows: [] })),
+        flowsService.getFlows().catch(() => []),
+        liveService.getChannels().catch(() => ({ channels: [] })),
+        radioService.getStations().catch(() => ({ stations: [] })),
+        podcastService.getShows().catch(() => ({ shows: [] })),
       ]);
 
-      // Extract flows
-      const flows = (flowsRes.data || []).map((f: any) => ({
+      // Extract flows - handle both API (returns array) and demo (returns {data: []})
+      const flowsData = Array.isArray(flowsRes) ? flowsRes : (flowsRes.data || []);
+      const flows = flowsData.map((f: any) => ({
         id: f.id,
         name: f.name || f.name_en || 'Unnamed Flow',
         type: f.flow_type,

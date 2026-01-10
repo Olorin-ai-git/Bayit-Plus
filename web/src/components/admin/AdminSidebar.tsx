@@ -181,7 +181,7 @@ export default function AdminSidebar({
       <NavLink
         key={item.key}
         to={item.route!}
-        end={item.route === '/admin'}
+        end
         style={{ textDecoration: 'none' }}
         onClick={handleNavClick}
       >

@@ -128,7 +128,7 @@ export default function RefundsPage() {
     const style = statusColors[status] || statusColors.pending;
     return (
       <View style={[styles.badge, { backgroundColor: style.bg }]}>
-        <Text style={[styles.badgeText, { color: style.text }]}>{style.label}</Text>
+        <Text style={[styles.badgeText, { color: style.text }]}>{t(`admin.refunds.status.${status}`)}</Text>
       </View>
     );
   };
@@ -242,7 +242,7 @@ export default function RefundsPage() {
       </View>
 
       <DataTable
-        columns={columns}
+        columns={isRTL ? [...columns].reverse() : columns}
         data={refunds}
         loading={loading}
         pagination={pagination}

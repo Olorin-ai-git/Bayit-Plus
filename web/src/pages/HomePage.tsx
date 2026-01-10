@@ -5,11 +5,11 @@ import { Play, ChevronRight, Info, Volume2, VolumeX } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useDirection } from '@/hooks/useDirection';
 import ContentCarousel from '@/components/content/ContentCarousel';
-import { TrendingRow } from '@bayit/shared';
+import { TrendingRow, GlassCarousel } from '@bayit/shared';
 import MorningRitual from '@/components/ritual/MorningRitual';
 import { contentService, liveService, historyService, ritualService } from '@/services/api';
 import { colors, spacing, borderRadius } from '@bayit/shared/theme';
-import { getLocalizedName } from '@bayit/shared-utils/contentLocalization';
+import { getLocalizedName, getLocalizedDescription } from '@bayit/shared-utils/contentLocalization';
 import LinearGradient from 'react-native-linear-gradient';
 import logger from '@/utils/logger';
 
@@ -26,6 +26,15 @@ interface FeaturedContent {
   year?: string;
   duration?: string;
   rating?: string;
+}
+
+interface CarouselItem {
+  id: string;
+  title: string;
+  subtitle?: string;
+  description?: string;
+  image?: string;
+  badge?: string;
 }
 
 interface Channel {
@@ -48,6 +57,7 @@ export default function HomePage() {
   const videoRef = useRef<HTMLVideoElement>(null);
 
   const [featured, setFeatured] = useState<FeaturedContent[]>([]);
+  const [carouselItems, setCarouselItems] = useState<CarouselItem[]>([]);
   const [currentFeaturedIndex, setCurrentFeaturedIndex] = useState(0);
   const [categories, setCategories] = useState<Category[]>([]);
   const [liveChannels, setLiveChannels] = useState<Channel[]>([]);
@@ -102,6 +112,19 @@ export default function HomePage() {
       // Get featured items array (or wrap single item)
       const featuredItems = featuredData.items || (featuredData.hero ? [featuredData.hero] : []);
       setFeatured(featuredItems);
+
+      // Build carousel items from hero and spotlight data (like TV app)
+      const heroItems = featuredData.hero ? [featuredData.hero] : [];
+      const spotlightItems = featuredData.spotlight || [];
+      setCarouselItems([...heroItems, ...spotlightItems].map((item: any, index: number) => ({
+        id: item.id,
+        title: getLocalizedName(item, i18n.language),
+        subtitle: getLocalizedDescription(item, i18n.language),
+        description: getLocalizedDescription(item, i18n.language),
+        image: item.backdrop || item.thumbnail,
+        badge: index === 0 ? t('common.new') : undefined,
+      })));
+
       setCategories(categoriesData.categories || []);
       setLiveChannels(liveData.channels || []);
       setContinueWatching(continueData.items || []);
@@ -159,151 +182,35 @@ export default function HomePage() {
     );
   }
 
+  // Handle carousel item press
+  const handleCarouselPress = (item: CarouselItem) => {
+    navigate(`/vod/${item.id}`);
+  };
+
   return (
     <ScrollView style={styles.page} contentContainerStyle={styles.pageContent}>
-      {/* Hero Section with Autoplay */}
-      {currentFeatured && (
-        <View style={styles.hero}>
-          {/* Background Video/Image */}
-          <View style={styles.heroMedia}>
-            {currentFeatured.videoUrl ? (
-              <video
-                ref={videoRef}
-                src={currentFeatured.videoUrl}
-                autoPlay
-                loop
-                muted={isMuted}
-                playsInline
-                style={{
-                  width: '100%',
-                  height: '100%',
-                  objectFit: 'cover',
-                }}
-              />
-            ) : currentFeatured.thumbnail ? (
-              <Image
-                source={{ uri: currentFeatured.thumbnail }}
-                style={styles.heroImage}
-                resizeMode="cover"
-              />
-            ) : (
-              <View style={styles.heroPlaceholder} />
-            )}
-            {/* Gradient Overlay */}
-            <LinearGradient
-              colors={['transparent', 'rgba(10, 10, 20, 0.6)', 'rgba(10, 10, 20, 0.95)']}
-              locations={[0, 0.5, 1]}
-              style={styles.heroGradient}
-            />
-          </View>
-
-          {/* Dual Clock Display */}
-          <View style={[styles.clockContainer, isRTL && styles.clockContainerRTL]}>
-            <View style={styles.clockItem}>
-              <Text style={styles.flagIcon}>🇮🇱</Text>
-              <Text style={styles.clockTime}>{israelTime}</Text>
-            </View>
-            <View style={styles.clockDivider} />
-            <View style={styles.clockItem}>
-              <Text style={styles.flagIcon}>🇺🇸</Text>
-              <Text style={styles.clockTime}>{localTime}</Text>
-            </View>
-          </View>
-
-          {/* Hero Content */}
-          <View style={[styles.heroContent, isRTL && styles.heroContentRTL]}>
-            <View style={styles.heroInfo}>
-              {/* Badges */}
-              <View style={styles.heroBadges}>
-                {currentFeatured.type && (
-                  <View style={styles.typeBadge}>
-                    <Text style={styles.typeBadgeText}>{currentFeatured.type}</Text>
-                  </View>
-                )}
-                {currentFeatured.rating && (
-                  <View style={styles.ratingBadge}>
-                    <Text style={styles.ratingText}>{currentFeatured.rating}</Text>
-                  </View>
-                )}
-              </View>
-
-              {/* Title */}
-              <Text style={[styles.heroTitle, isRTL && styles.textRTL]}>
-                {currentFeatured.title}
-              </Text>
-
-              {/* Meta */}
-              {(currentFeatured.year || currentFeatured.duration) && (
-                <Text style={[styles.heroMeta, isRTL && styles.textRTL]}>
-                  {[currentFeatured.year, currentFeatured.duration].filter(Boolean).join(' • ')}
-                </Text>
-              )}
-
-              {/* Description */}
-              {currentFeatured.description && (
-                <Text style={[styles.heroDescription, isRTL && styles.textRTL]} numberOfLines={3}>
-                  {currentFeatured.description}
-                </Text>
-              )}
-
-              {/* Action Buttons */}
-              <View style={styles.heroActions}>
-                <Pressable
-                  onPress={handlePlayFeatured}
-                  onFocus={() => setFocusedItem('play')}
-                  onBlur={() => setFocusedItem(null)}
-                  style={[styles.playButton, focusedItem === 'play' && styles.buttonFocused]}
-                >
-                  <Play size={IS_TV_BUILD ? 28 : 22} color="#000" fill="#000" />
-                  <Text style={styles.playButtonText}>{t('common.play')}</Text>
-                </Pressable>
-
-                <Pressable
-                  onPress={handleMoreInfo}
-                  onFocus={() => setFocusedItem('info')}
-                  onBlur={() => setFocusedItem(null)}
-                  style={[styles.infoButton, focusedItem === 'info' && styles.infoButtonFocused]}
-                >
-                  <Info size={IS_TV_BUILD ? 24 : 20} color={colors.text} />
-                  <Text style={styles.infoButtonText}>{t('common.moreInfo')}</Text>
-                </Pressable>
-              </View>
-            </View>
-
-            {/* Mute Button */}
-            {currentFeatured.videoUrl && (
-              <Pressable
-                onPress={toggleMute}
-                onFocus={() => setFocusedItem('mute')}
-                onBlur={() => setFocusedItem(null)}
-                style={[styles.muteButton, focusedItem === 'mute' && styles.muteButtonFocused]}
-              >
-                {isMuted ? (
-                  <VolumeX size={IS_TV_BUILD ? 24 : 20} color={colors.text} />
-                ) : (
-                  <Volume2 size={IS_TV_BUILD ? 24 : 20} color={colors.text} />
-                )}
-              </Pressable>
-            )}
-          </View>
-
-          {/* Featured Indicators */}
-          {featured.length > 1 && (
-            <View style={styles.indicators}>
-              {featured.map((_, index) => (
-                <Pressable
-                  key={index}
-                  onPress={() => setCurrentFeaturedIndex(index)}
-                  style={[
-                    styles.indicator,
-                    index === currentFeaturedIndex && styles.indicatorActive,
-                  ]}
-                />
-              ))}
-            </View>
-          )}
+      {/* Dual Clock Display */}
+      <View style={[styles.clockContainer, isRTL && styles.clockContainerRTL]}>
+        <View style={styles.clockItem}>
+          <Text style={styles.flagIcon}>🇮🇱</Text>
+          <Text style={styles.clockTime}>{israelTime}</Text>
         </View>
-      )}
+        <View style={styles.clockDivider} />
+        <View style={styles.clockItem}>
+          <Text style={styles.flagIcon}>🇺🇸</Text>
+          <Text style={styles.clockTime}>{localTime}</Text>
+        </View>
+      </View>
+
+      {/* Hero Carousel Section */}
+      <View style={styles.carouselSection}>
+        <GlassCarousel
+          items={carouselItems}
+          onItemPress={handleCarouselPress}
+          height={IS_TV_BUILD ? 450 : 400}
+          autoPlayInterval={6000}
+        />
+      </View>
 
       {/* Continue Watching */}
       {continueWatching.length > 0 && (
@@ -317,21 +224,25 @@ export default function HomePage() {
       {/* Live TV */}
       {liveChannels.length > 0 && (
         <View style={styles.section}>
-          <View style={styles.sectionHeader}>
-            <View style={styles.sectionTitleRow}>
+          <View style={[styles.sectionHeader, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
+            <View style={[styles.sectionTitleRow, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
               <View style={styles.liveBadge}>
                 <View style={styles.liveDot} />
                 <Text style={styles.liveBadgeText}>{t('common.live')}</Text>
               </View>
-              <Text style={styles.sectionTitle}>{t('home.liveTV')}</Text>
+              <Text style={[styles.sectionTitle, { textAlign: isRTL ? 'right' : 'left' }]}>{t('home.liveTV')}</Text>
             </View>
             <Link to="/live" style={{ textDecoration: 'none' }}>
               <Text style={styles.seeAll}>{t('home.allChannels')}</Text>
             </Link>
           </View>
-          <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.liveRow}>
+          <ScrollView
+            horizontal
+            showsHorizontalScrollIndicator={false}
+            contentContainerStyle={[styles.liveRow, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}
+          >
             {liveChannels.slice(0, 8).map((channel) => (
-              <LiveCard key={channel.id} channel={channel} focusedItem={focusedItem} setFocusedItem={setFocusedItem} />
+              <LiveCard key={channel.id} channel={channel} focusedItem={focusedItem} setFocusedItem={setFocusedItem} isRTL={isRTL} />
             ))}
           </ScrollView>
         </View>
@@ -356,7 +267,7 @@ export default function HomePage() {
   );
 }
 
-function LiveCard({ channel, focusedItem, setFocusedItem }: { channel: Channel; focusedItem: string | null; setFocusedItem: (id: string | null) => void }) {
+function LiveCard({ channel, focusedItem, setFocusedItem, isRTL }: { channel: Channel; focusedItem: string | null; setFocusedItem: (id: string | null) => void; isRTL: boolean }) {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const isFocused = focusedItem === `live-${channel.id}`;
@@ -374,15 +285,15 @@ function LiveCard({ channel, focusedItem, setFocusedItem }: { channel: Channel; 
         ) : (
           <View style={styles.liveCardPlaceholder} />
         )}
-        <View style={styles.liveCardBadge}>
+        <View style={[styles.liveCardBadge, isRTL ? { left: 'auto', right: spacing.sm } : {}]}>
           <View style={styles.liveDotSmall} />
           <Text style={styles.liveCardBadgeText}>{t('common.live')}</Text>
         </View>
       </View>
       <View style={styles.liveCardInfo}>
-        <Text style={styles.liveCardName} numberOfLines={1}>{channel.name}</Text>
+        <Text style={[styles.liveCardName, { textAlign: isRTL ? 'right' : 'left' }]} numberOfLines={1}>{channel.name}</Text>
         {channel.currentShow && (
-          <Text style={styles.liveCardShow} numberOfLines={1}>{channel.currentShow}</Text>
+          <Text style={[styles.liveCardShow, { textAlign: isRTL ? 'right' : 'left' }]} numberOfLines={1}>{channel.currentShow}</Text>
         )}
       </View>
     </Pressable>
@@ -415,30 +326,16 @@ const styles = StyleSheet.create({
   pageContent: {
     paddingBottom: spacing.xl * 2,
   },
-  // Hero
-  hero: {
-    height: IS_TV_BUILD ? 600 : 500,
-    position: 'relative',
-  },
-  heroMedia: {
-    ...StyleSheet.absoluteFillObject,
-  },
-  heroImage: {
-    width: '100%',
-    height: '100%',
-  },
-  heroPlaceholder: {
-    flex: 1,
-    backgroundColor: colors.backgroundLighter,
-  },
-  heroGradient: {
-    ...StyleSheet.absoluteFillObject,
+  // Carousel Section
+  carouselSection: {
+    paddingHorizontal: IS_TV_BUILD ? spacing.xl : spacing.md,
+    paddingTop: IS_TV_BUILD ? spacing.md : spacing.sm,
   },
   // Dual Clock
   clockContainer: {
-    position: 'absolute',
-    top: IS_TV_BUILD ? spacing.xl : spacing.lg,
-    right: IS_TV_BUILD ? spacing.xl * 2 : spacing.lg,
+    alignSelf: 'flex-end',
+    marginTop: IS_TV_BUILD ? spacing.lg : spacing.md,
+    marginHorizontal: IS_TV_BUILD ? spacing.xl : spacing.md,
     flexDirection: 'row',
     alignItems: 'center',
     backgroundColor: 'rgba(10, 10, 20, 0.8)',
@@ -451,8 +348,7 @@ const styles = StyleSheet.create({
     zIndex: 20,
   },
   clockContainerRTL: {
-    right: 'auto' as any,
-    left: IS_TV_BUILD ? spacing.xl * 2 : spacing.lg,
+    alignSelf: 'flex-start',
     flexDirection: 'row-reverse',
   },
   clockItem: {

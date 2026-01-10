@@ -175,7 +175,7 @@ export default function SubscriptionsListPage() {
 
       {/* Table */}
       <DataTable
-        columns={columns}
+        columns={isRTL ? [...columns].reverse() : columns}
         data={subscriptions}
         loading={loading}
         searchPlaceholder={t('admin.subscriptions.searchPlaceholder')}

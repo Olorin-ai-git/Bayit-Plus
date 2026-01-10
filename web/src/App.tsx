@@ -3,6 +3,7 @@ import { Routes, Route } from 'react-router-dom'
 import { loadSavedLanguage } from '@bayit/shared-i18n'
 import { useDirection } from '@/hooks/useDirection'
 import { VoiceListeningProvider } from '@bayit/shared-contexts'
+import { ModalProvider } from '@/contexts/ModalContext'
 import Layout from './components/layout/Layout'
 import HomePage from './pages/HomePage'
 import LivePage from './pages/LivePage'
@@ -26,6 +27,9 @@ import DownloadsPage from './pages/DownloadsPage'
 import WatchlistPage from './pages/WatchlistPage'
 import MorningRitualPage from './pages/MorningRitualPage'
 import TVLoginPage from './pages/TVLoginPage'
+import SettingsPage from './pages/SettingsPage'
+import HelpPage from './pages/HelpPage'
+import UserWidgetsPage from './pages/UserWidgetsPage'
 
 // Admin Pages
 import AdminLayout from './components/admin/AdminLayout'
@@ -42,7 +46,7 @@ import MarketingDashboardPage from './pages/admin/MarketingDashboardPage'
 import EmailCampaignsPage from './pages/admin/EmailCampaignsPage'
 import PushNotificationsPage from './pages/admin/PushNotificationsPage'
 import AuditLogsPage from './pages/admin/AuditLogsPage'
-import SettingsPage from './pages/admin/SettingsPage'
+import AdminSettingsPage from './pages/admin/SettingsPage'
 import ContentLibraryPage from './pages/admin/ContentLibraryPage'
 import ContentEditorPage from './pages/admin/ContentEditorPage'
 import CategoriesPage from './pages/admin/CategoriesPage'
@@ -71,7 +75,7 @@ function App() {
       <Route path="/tv-login" element={<TVLoginPage />} />
 
       {/* Admin Routes */}
-      <Route path="/admin" element={<AdminLayout />}>
+      <Route path="/admin" element={<ModalProvider><AdminLayout /></ModalProvider>}>
         <Route index element={<AdminDashboardPage />} />
         <Route path="users" element={<UsersListPage />} />
         <Route path="users/:userId" element={<UserDetailPage />} />
@@ -85,7 +89,7 @@ function App() {
         <Route path="emails" element={<EmailCampaignsPage />} />
         <Route path="push" element={<PushNotificationsPage />} />
         <Route path="logs" element={<AuditLogsPage />} />
-        <Route path="settings" element={<SettingsPage />} />
+        <Route path="settings" element={<AdminSettingsPage />} />
         <Route path="content" element={<ContentLibraryPage />} />
         <Route path="content/new" element={<ContentEditorPage />} />
         <Route path="content/:contentId/edit" element={<ContentEditorPage />} />
@@ -119,6 +123,9 @@ function App() {
         <Route path="/downloads" element={<DownloadsPage />} />
         <Route path="/watchlist" element={<WatchlistPage />} />
         <Route path="/morning-ritual" element={<MorningRitualPage />} />
+        <Route path="/widgets" element={<UserWidgetsPage />} />
+        <Route path="/settings" element={<SettingsPage />} />
+        <Route path="/help" element={<HelpPage />} />
         <Route path="*" element={<NotFoundPage />} />
       </Route>
     </Routes>

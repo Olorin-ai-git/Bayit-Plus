@@ -26,6 +26,10 @@ class WidgetContentType(str, Enum):
     """Type of content displayed in widget"""
     LIVE_CHANNEL = "live_channel"  # Live TV stream
     IFRAME = "iframe"              # External embed URL
+    PODCAST = "podcast"            # Podcast episode
+    VOD = "vod"                    # Video on demand
+    RADIO = "radio"                # Radio station
+    LIVE = "live"                  # Generic live content
 
 
 class WidgetPosition(BaseModel):
@@ -43,6 +47,11 @@ class WidgetContent(BaseModel):
 
     # For LIVE_CHANNEL type
     live_channel_id: Optional[str] = None
+
+    # For PODCAST, VOD, RADIO, LIVE types
+    podcast_id: Optional[str] = None
+    content_id: Optional[str] = None  # Generic content ID for VOD
+    station_id: Optional[str] = None
 
     # For IFRAME type
     iframe_url: Optional[str] = None

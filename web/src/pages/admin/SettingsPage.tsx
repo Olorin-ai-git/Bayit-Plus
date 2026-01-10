@@ -6,6 +6,7 @@ import { settingsService } from '@/services/adminApi';
 import { colors, spacing, borderRadius } from '@bayit/shared/theme';
 import { GlassCard, GlassButton } from '@bayit/shared/ui';
 import { useDirection } from '@/hooks/useDirection';
+import { useModal } from '@/contexts/ModalContext';
 import logger from '@/utils/logger';
 
 interface SystemSettings {
@@ -27,6 +28,7 @@ const FEATURE_FLAG_KEYS = ['new_player', 'live_chat', 'downloads', 'watch_party'
 export default function SettingsPage() {
   const { t } = useTranslation();
   const { isRTL, textAlign, flexDirection } = useDirection();
+  const { showConfirm } = useModal();
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [settings, setSettings] = useState<SystemSettings | null>(null);
@@ -82,24 +84,34 @@ export default function SettingsPage() {
     }
   };
 
-  const handleClearCache = async () => {
-    if (!window.confirm(t('admin.settings.confirmClearCache'))) return;
-    try {
-      await settingsService.clearCache();
-      alert(t('admin.settings.cacheCleared'));
-    } catch (error) {
-      logger.error('Failed to clear cache', 'SettingsPage', error);
-    }
+  const handleClearCache = () => {
+    showConfirm(
+      t('admin.settings.confirmClearCache'),
+      async () => {
+        try {
+          await settingsService.clearCache();
+          alert(t('admin.settings.cacheCleared'));
+        } catch (error) {
+          logger.error('Failed to clear cache', 'SettingsPage', error);
+        }
+      },
+      { confirmText: t('common.confirm', 'Confirm') }
+    );
   };
 
-  const handleResetAnalytics = async () => {
-    if (!window.confirm(t('admin.settings.confirmResetAnalytics'))) return;
-    try {
-      await settingsService.resetAnalytics();
-      alert(t('admin.settings.analyticsReset'));
-    } catch (error) {
-      logger.error('Failed to reset analytics', 'SettingsPage', error);
-    }
+  const handleResetAnalytics = () => {
+    showConfirm(
+      t('admin.settings.confirmResetAnalytics'),
+      async () => {
+        try {
+          await settingsService.resetAnalytics();
+          alert(t('admin.settings.analyticsReset'));
+        } catch (error) {
+          logger.error('Failed to reset analytics', 'SettingsPage', error);
+        }
+      },
+      { destructive: true, confirmText: t('common.reset', 'Reset') }
+    );
   };
 
   if (loading || !settings) {

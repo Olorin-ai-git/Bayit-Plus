@@ -306,11 +306,11 @@ const styles = StyleSheet.create({
   },
   textSectionRight: {
     right: 80,
-    alignItems: 'flex-start',
+    alignItems: 'flex-end',
   },
   textSectionLeft: {
     left: 80,
-    alignItems: 'flex-end',
+    alignItems: 'flex-start',
   },
   title: {
     fontSize: 42,

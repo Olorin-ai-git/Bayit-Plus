@@ -101,7 +101,7 @@ export const TrendingRow: React.FC<TrendingRowProps> = ({ onTopicPress }) => {
     return (
       <GlassView style={styles.container} intensity="light">
         <View style={[styles.header, { flexDirection: isRTL ? 'row' : 'row-reverse' }]}>
-          <Text style={styles.headerEmoji}>📈</Text>
+          <Text style={[styles.headerEmoji, { marginLeft: isRTL ? spacing.sm : 0, marginRight: isRTL ? 0 : spacing.sm }]}>📈</Text>
           <Text style={styles.headerTitle}>{t('trending.title')}</Text>
         </View>
         <View style={styles.loadingContainer}>
@@ -115,7 +115,7 @@ export const TrendingRow: React.FC<TrendingRowProps> = ({ onTopicPress }) => {
     return (
       <GlassView style={styles.container} intensity="light">
         <View style={[styles.header, { flexDirection: isRTL ? 'row' : 'row-reverse' }]}>
-          <Text style={styles.headerEmoji}>📈</Text>
+          <Text style={[styles.headerEmoji, { marginLeft: isRTL ? spacing.sm : 0, marginRight: isRTL ? 0 : spacing.sm }]}>📈</Text>
           <Text style={styles.headerTitle}>{t('trending.title')}</Text>
         </View>
         <View style={styles.emptyContainer}>
@@ -147,7 +147,7 @@ export const TrendingRow: React.FC<TrendingRowProps> = ({ onTopicPress }) => {
     <View style={styles.container}>
       {/* Header */}
       <View style={[styles.header, { flexDirection: isRTL ? 'row' : 'row-reverse' }]}>
-        <Text style={styles.headerEmoji}>📈</Text>
+        <Text style={[styles.headerEmoji, { marginLeft: isRTL ? spacing.sm : 0, marginRight: isRTL ? 0 : spacing.sm }]}>📈</Text>
         <Text style={styles.headerTitle}>{t('trending.title')}</Text>
       </View>
 
@@ -162,7 +162,7 @@ export const TrendingRow: React.FC<TrendingRowProps> = ({ onTopicPress }) => {
       <ScrollView
         horizontal
         showsHorizontalScrollIndicator={false}
-        contentContainerStyle={styles.topicsContainer}
+        contentContainerStyle={[styles.topicsContainer, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}
       >
         {data.topics.map((topic, index) => (
           <TopicCard

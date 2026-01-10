@@ -267,7 +267,7 @@ export default function UsersListPage() {
 
       {/* Table */}
       <DataTable
-        columns={columns}
+        columns={isRTL ? [...columns].reverse() : columns}
         data={users}
         loading={loading}
         searchPlaceholder={t('search.placeholder')}

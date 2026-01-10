@@ -14,6 +14,7 @@
     "playNow": "Play Now",
     "play": "Play",
     "moreInfo": "More Info",
+    "seeAll": "See All",
     "new": "New",
     "live": "LIVE",
     "recommended": "Recommended",
@@ -34,7 +35,9 @@
     "send": "Send",
     "done": "Done",
     "all": "All",
-    "deleting": "Deleting..."
+    "deleting": "Deleting...",
+    "noResults": "No results found",
+    "tryDifferentSearch": "Try a different search term"
   },
   "demo": {
     "banner": "DEMO MODE",
@@ -201,6 +204,7 @@
     "favorites": "Favorites",
     "watchlist": "Watchlist",
     "downloads": "Downloads",
+    "widgets": "Widgets",
     "help": "Help & Support",
     "discover": "Discover",
     "account": "Account",
@@ -315,10 +319,15 @@
     "loadError": "Failed to load podcasts",
     "categories": {
       "all": "All",
+      "general": "General",
       "news": "News",
       "comedy": "Comedy",
       "society": "Society",
       "tech": "Technology",
+      "business": "Business",
+      "entertainment": "Entertainment",
+      "sports": "Sports",
+      "jewish": "Jewish",
       "history": "History"
     },
     "noPodcasts": "No podcasts available",
@@ -642,6 +651,7 @@
   "settings": {
     "title": "Settings",
     "language": "Language",
+    "appLanguage": "App Language",
     "selectLanguage": "Select Language",
     "languages": {
       "en": "English",
@@ -649,11 +659,35 @@
       "es": "Español"
     },
     "notifications": "Notifications",
-    "playback": "Playback Settings",
+    "pushNotifications": "Push Notifications",
+    "playback": "Playback",
     "quality": "Quality",
     "subtitles": "Subtitles",
     "autoplay": "Autoplay",
+    "appearance": "Appearance",
+    "darkMode": "Dark Mode",
+    "privacy": "Privacy",
+    "privacyPolicy": "Privacy Policy",
+    "termsOfService": "Terms of Service",
     "about": "About"
+  },
+  "help": {
+    "subtitle": "How can we help you?",
+    "email": "Email Support",
+    "phone": "Phone Support",
+    "chat": "Live Chat",
+    "chatAvailable": "Available 24/7",
+    "faq": {
+      "title": "Frequently Asked Questions",
+      "q1": "How do I change my subscription plan?",
+      "a1": "Go to Settings > Subscription to view and change your current plan. You can upgrade or downgrade at any time.",
+      "q2": "How do I download content for offline viewing?",
+      "a2": "Tap the download icon on any content to save it for offline viewing. Downloads are available on mobile devices only.",
+      "q3": "Why isn't my video playing?",
+      "a3": "Check your internet connection. If the problem persists, try clearing the app cache or restarting the app.",
+      "q4": "How do I cancel my subscription?",
+      "a4": "You can cancel your subscription anytime through Settings > Subscription > Cancel Plan. You'll continue to have access until the end of your billing period."
+    }
   },
   "voice": {
     "listening": "Listening...",
@@ -723,6 +757,39 @@
       "continue": "Continue Watching",
       "movies": "Movies",
       "series": "Series"
+    }
+  },
+  "widgets": {
+    "empty": "No widgets yet",
+    "emptyHint": "Your widgets will appear here",
+    "itemsTotal": "total widgets",
+    "systemWidgets": "System Widgets",
+    "personalWidgets": "My Widgets",
+    "form": {
+      "title": "Create Widget",
+      "basicInfo": "Basic Information",
+      "titlePlaceholder": "Widget Title",
+      "titleRequired": "Widget Title is required",
+      "descriptionPlaceholder": "Description (optional)",
+      "iconPlaceholder": "Icon emoji (e.g., 📺)",
+      "content": "Content",
+      "fromLibrary": "From Library",
+      "iframe": "iFrame",
+      "selectContent": "Select Content (Channels, Podcasts, Shows, etc.)",
+      "iframeUrl": "iFrame URL",
+      "iframeUrlRequired": "iFrame URL is required",
+      "iframeTitle": "iFrame Title",
+      "positionSize": "Position & Size",
+      "behavior": "Behavior",
+      "mutedByDefault": "Muted by Default",
+      "closable": "Closable",
+      "draggable": "Draggable",
+      "widgetOrder": "Widget Order",
+      "orderPlaceholder": "Order (0 = first)",
+      "saveWidget": "Save Widget",
+      "saving": "Saving...",
+      "cancel": "Cancel",
+      "change": "Change"
     }
   },
   "trending": {
@@ -1052,6 +1119,50 @@
       "sendEmail": "Send Email",
       "viewReports": "View Reports"
     },
+    "auditActions": {
+      "user_created": "User Created",
+      "user_updated": "User Updated",
+      "user_deleted": "User Deleted",
+      "user_role_changed": "User Role Changed",
+      "campaign_created": "Campaign Created",
+      "campaign_updated": "Campaign Updated",
+      "campaign_deleted": "Campaign Deleted",
+      "campaign_activated": "Campaign Activated",
+      "subscription_created": "Subscription Created",
+      "subscription_updated": "Subscription Updated",
+      "subscription_canceled": "Subscription Canceled",
+      "refund_processed": "Refund Processed",
+      "payment_received": "Payment Received",
+      "settings_updated": "Settings Updated",
+      "login": "Login",
+      "logout": "Logout",
+      "content_created": "Content Created",
+      "content_updated": "Content Updated",
+      "content_deleted": "Content Deleted",
+      "content_published": "Content Published",
+      "content_unpublished": "Content Unpublished",
+      "category_created": "Category Created",
+      "category_updated": "Category Updated",
+      "category_deleted": "Category Deleted",
+      "live_channel_created": "Live Channel Created",
+      "live_channel_updated": "Live Channel Updated",
+      "live_channel_deleted": "Live Channel Deleted",
+      "radio_station_created": "Radio Station Created",
+      "radio_station_updated": "Radio Station Updated",
+      "radio_station_deleted": "Radio Station Deleted",
+      "podcast_created": "Podcast Created",
+      "podcast_updated": "Podcast Updated",
+      "podcast_deleted": "Podcast Deleted",
+      "podcast_episode_created": "Podcast Episode Created",
+      "podcast_episode_updated": "Podcast Episode Updated",
+      "podcast_episode_deleted": "Podcast Episode Deleted",
+      "content_imported": "Content Imported",
+      "widget_created": "Widget Created",
+      "widget_updated": "Widget Updated",
+      "widget_deleted": "Widget Deleted",
+      "widget_published": "Widget Published",
+      "widget_unpublished": "Widget Unpublished"
+    },
     "placeholder": {
       "userId": "Enter user ID",
       "discount": "0"
@@ -1183,12 +1294,6 @@
       "titlePlaceholder": "Notification Title",
       "bodyPlaceholder": "Notification Message"
     },
-    "refunds": {
-      "title": "Refunds"
-    },
-    "emailCampaigns": {
-      "title": "Email Campaigns"
-    },
     "auditLogs": {
       "subtitle": "Track all system actions",
       "filter": "Filter",
@@ -1207,7 +1312,15 @@
         "date": "Date",
         "ip": "IP"
       },
-      "changed": "Changed"
+      "changed": "Changed",
+      "actionFilters": {
+        "user": "User",
+        "subscription": "Subscription",
+        "payment": "Payment",
+        "settings": "Settings",
+        "campaign": "Campaign",
+        "content": "Content"
+      }
     },
     "settings": {
       "subtitle": "Configure system parameters",
@@ -1248,6 +1361,30 @@
       "searchPlaceholder": "Search content...",
       "emptyMessage": "No content found",
       "confirmDelete": "Delete this content?",
+      "import": {
+        "pageTitle": "Import Free Content",
+        "subtitle": "Browse and import public content from free sources",
+        "selectCategory": "Select category for imported movies:",
+        "categoryPlaceholder": "Select a category...",
+        "loading": "Loading sources...",
+        "sourceTypes": {
+          "vod": "Movies & VOD",
+          "live_tv": "Live TV",
+          "radio": "Radio",
+          "podcasts": "Podcasts"
+        },
+        "items": "item",
+        "itemsPlural": "items",
+        "selectItems": "Please select at least one item to import",
+        "selectCategory_vod": "Please select a category for VOD imports",
+        "importing": "Importing {{count}}... {{percent}}%",
+        "importButton": "Import {{count}} {{item}}",
+        "noSources": "No Sources Available",
+        "noSourcesDescription": "No free content sources are currently available for {{type}}"
+      },
+      "filters": {
+        "allStatus": "All Status"
+      },
       "status": {
         "published": "Published",
         "draft": "Draft"
@@ -1579,7 +1716,8 @@
     "episodesList": "Episodes",
     "schedule": "Schedule",
     "now": "Now",
-    "related": "Related Content"
+    "related": "Related Content",
+    "confirmDeleteEpisode": "Delete this episode?"
   },
   "live": {
     "title": "Live TV",
@@ -1629,11 +1767,16 @@
     "episodes": "episodes",
     "categories": {
       "all": "All",
+      "general": "General",
       "news": "News",
+      "politics": "Politics",
       "tech": "Tech",
+      "business": "Business",
       "jewish": "Jewish",
       "entertainment": "Entertainment",
-      "sports": "Sports"
+      "sports": "Sports",
+      "history": "History",
+      "educational": "Educational"
     },
     "noPodcasts": "No podcasts available",
     "tryLater": "Try again later"
@@ -1682,5 +1825,18 @@
   "chat": {
     "title": "Bayit+ Assistant",
     "greeting": "Hello! I'm Bayit+ smart assistant. How can I help you today? Click the microphone and speak, or type a message."
+  },
+  "subtitles": {
+    "nikud": "Nikud",
+    "selection": "Selection",
+    "translation": "Translation",
+    "translating": "Translating...",
+    "close": "Close",
+    "unavailable": "Translation unavailable"
+  },
+  "video": {
+    "watchTrailer": "Watch Trailer",
+    "closeTrailer": "Close Trailer",
+    "deleteConfirm": "Delete this episode?"
   }
 }

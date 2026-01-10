@@ -31,7 +31,9 @@
     },
     "send": "Enviar",
     "done": "Hecho",
-    "all": "Todo"
+    "all": "Todo",
+    "noResults": "No se encontraron resultados",
+    "tryDifferentSearch": "Prueba con otro término de búsqueda"
   },
   "demo": {
     "banner": "MODO DEMOSTRACIÓN",
@@ -192,6 +194,7 @@
     "favorites": "Favoritos",
     "watchlist": "Mi Lista",
     "downloads": "Descargas",
+    "widgets": "Widgets",
     "help": "Ayuda y Soporte",
     "discover": "Descubrir",
     "account": "Cuenta",
@@ -306,10 +309,15 @@
     "loadError": "Error al cargar los podcasts",
     "categories": {
       "all": "Todo",
+      "general": "General",
       "news": "Noticias",
       "comedy": "Comedia",
       "society": "Sociedad",
       "tech": "Tecnología",
+      "business": "Negocios",
+      "entertainment": "Entretenimiento",
+      "sports": "Deportes",
+      "jewish": "Judío",
       "history": "Historia"
     },
     "noPodcasts": "Sin podcasts disponibles",
@@ -687,6 +695,39 @@
       "series": "Series"
     }
   },
+  "widgets": {
+    "empty": "Sin widgets",
+    "emptyHint": "Tus widgets aparecerán aquí",
+    "itemsTotal": "widgets totales",
+    "systemWidgets": "Widgets del Sistema",
+    "personalWidgets": "Mis Widgets",
+    "form": {
+      "title": "Crear Widget",
+      "basicInfo": "Información Básica",
+      "titlePlaceholder": "Título del Widget",
+      "titleRequired": "El título del widget es requerido",
+      "descriptionPlaceholder": "Descripción (opcional)",
+      "iconPlaceholder": "Emoji icono (ej. 📺)",
+      "content": "Contenido",
+      "fromLibrary": "De la Biblioteca",
+      "iframe": "iFrame",
+      "selectContent": "Seleccionar Contenido (Canales, Podcasts, Programas, etc.)",
+      "iframeUrl": "URL del iFrame",
+      "iframeUrlRequired": "La URL del iFrame es requerida",
+      "iframeTitle": "Título del iFrame",
+      "positionSize": "Posición y Tamaño",
+      "behavior": "Comportamiento",
+      "mutedByDefault": "Silenciado por Defecto",
+      "closable": "Puede Cerrarse",
+      "draggable": "Puede Arrastrarse",
+      "widgetOrder": "Orden del Widget",
+      "orderPlaceholder": "Orden (0 = primero)",
+      "saveWidget": "Guardar Widget",
+      "saving": "Guardando...",
+      "cancel": "Cancelar",
+      "change": "Cambiar"
+    }
+  },
   "trending": {
     "title": "Tendencias en Israel",
     "noTopics": "No hay temas de tendencia disponibles",
@@ -947,12 +988,6 @@
     "push": {
       "titlePlaceholder": "Título de Notificación",
       "bodyPlaceholder": "Mensaje de Notificación"
-    },
-    "refunds": {
-      "title": "Reembolsos"
-    },
-    "emailCampaigns": {
-      "title": "Campañas de Correo"
     },
     "auditLogs": {
       "subtitle": "Rastrear todas las acciones del sistema",
@@ -1266,11 +1301,16 @@
     "episodes": "episodios",
     "categories": {
       "all": "Todos",
+      "general": "General",
       "news": "Noticias",
+      "politics": "Política",
       "tech": "Tecnología",
+      "business": "Negocios",
       "jewish": "Judaísmo",
       "entertainment": "Entretenimiento",
-      "sports": "Deportes"
+      "sports": "Deportes",
+      "history": "Historia",
+      "educational": "Educativo"
     },
     "noPodcasts": "Sin podcasts disponibles",
     "tryLater": "Intenta de nuevo más tarde"

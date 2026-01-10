@@ -203,7 +203,7 @@ export default function TransactionsPage() {
       {filterButtons}
 
       <DataTable
-        columns={columns}
+        columns={isRTL ? [...columns].reverse() : columns}
         data={transactions}
         loading={loading}
         searchPlaceholder={t('admin.transactions.searchPlaceholder')}

@@ -341,7 +341,7 @@ const styles = StyleSheet.create({
     bottom: 0,
     borderRightWidth: 1,
     borderRightColor: 'rgba(255, 255, 255, 0.1)',
-    zIndex: 100,
+    zIndex: 101,
     // @ts-ignore
     transition: 'width 0.3s ease, opacity 0.3s ease',
     overflow: 'hidden',

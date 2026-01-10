@@ -2,12 +2,13 @@ import { useState, useEffect, useCallback } from 'react'
 import { View, Text, StyleSheet, Pressable, ScrollView } from 'react-native'
 import { Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
-import { Plus, Download, Search, Trash2, Eye, Star, X, AlertCircle } from 'lucide-react'
+import { Plus, Download, Search, Trash2, Eye, X, AlertCircle } from 'lucide-react'
 import DataTable from '@/components/admin/DataTable'
 import { contentService } from '@/services/adminApi'
 import { colors, spacing, borderRadius } from '@bayit/shared/theme'
-import { GlassButton } from '@bayit/shared/ui'
+import { GlassButton, GlassInput, GlassSelect } from '@bayit/shared/ui'
 import { useDirection } from '@/hooks/useDirection'
+import { useModal } from '@/contexts/ModalContext'
 import logger from '@/utils/logger'
 import { FreeContentImportWizard } from '@/components/admin/FreeContentImportWizard'
 import type { Content, PaginatedResponse } from '@/types/content'
@@ -26,6 +27,7 @@ const statusColors: Record<string, { bg: string; text: string; labelKey: string 
 export default function ContentLibraryPage() {
   const { t } = useTranslation()
   const { isRTL, textAlign, flexDirection } = useDirection()
+  const { showConfirm } = useModal()
   const [items, setItems] = useState<Content[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
@@ -69,19 +71,24 @@ export default function ContentLibraryPage() {
     setPagination((prev) => ({ ...prev, page: 1 }))
   }
 
-  const handleDeleteContent = async (id: string) => {
-    if (!window.confirm(t('admin.content.confirmDelete'))) return
-    try {
-      setDeleting(id)
-      await contentService.deleteContent(id)
-      setItems(items.filter((item) => item.id !== id))
-    } catch (err) {
-      const msg = err instanceof Error ? err.message : 'Failed to delete content'
-      logger.error(msg, 'ContentLibraryPage', err)
-      setError(msg)
-    } finally {
-      setDeleting(null)
-    }
+  const handleDeleteContent = (id: string) => {
+    showConfirm(
+      t('admin.content.confirmDelete'),
+      async () => {
+        try {
+          setDeleting(id)
+          await contentService.deleteContent(id)
+          setItems(items.filter((item) => item.id !== id))
+        } catch (err) {
+          const msg = err instanceof Error ? err.message : 'Failed to delete content'
+          logger.error(msg, 'ContentLibraryPage', err)
+          setError(msg)
+        } finally {
+          setDeleting(null)
+        }
+      },
+      { destructive: true, confirmText: t('common.delete', 'Delete') }
+    )
   }
 
   const handleTogglePublish = async (id: string) => {
@@ -113,7 +120,7 @@ export default function ContentLibraryPage() {
       label: t('admin.content.columns.title', { defaultValue: 'Title' }),
       render: (title: string, item: Content) => (
         <View>
-          <View style={styles.titleRow}>
+          <View style={[styles.titleRow, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
             {item.thumbnail && (
               <View
                 style={[
@@ -123,9 +130,9 @@ export default function ContentLibraryPage() {
               />
             )}
             <View>
-              <Text style={styles.itemTitle}>{title}</Text>
+              <Text style={[styles.itemTitle, { textAlign: isRTL ? 'right' : 'left' }]}>{title}</Text>
               {item.is_series && (
-                <Text style={styles.seriesInfo}>
+                <Text style={[styles.seriesInfo, { textAlign: isRTL ? 'right' : 'left' }]}>
                   S{item.season}:E{item.episode}
                 </Text>
               )}
@@ -184,7 +191,7 @@ export default function ContentLibraryPage() {
           </Pressable>
           <Link to={`/admin/content/${item.id}/edit`} style={{ textDecoration: 'none' }}>
             <Pressable style={[styles.actionButton, { backgroundColor: '#3b82f680' }]}>
-              <Text style={styles.editText}>Edit</Text>
+              <Text style={styles.editText}>{t('common.edit', { defaultValue: 'Edit' })}</Text>
             </Pressable>
           </Link>
           <Pressable
@@ -213,15 +220,12 @@ export default function ContentLibraryPage() {
           </Text>
         </View>
         <View style={[styles.actionButtons, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
-          <Pressable
+          <GlassButton
+            title={t('admin.content.importFree', { defaultValue: 'Import Free Content' })}
+            variant="secondary"
+            icon={<Download size={18} color={colors.text} />}
             onPress={() => setShowImportWizard(true)}
-            style={styles.importButton}
-          >
-            <Download size={18} color={colors.text} />
-            <Text style={styles.importButtonText}>
-              {t('admin.content.importFree', { defaultValue: 'Import Free Content' })}
-            </Text>
-          </Pressable>
+          />
           <Link to="/admin/content/new" style={{ textDecoration: 'none' }}>
             <GlassButton
               title={t('admin.actions.new', { defaultValue: 'Add Content' })}
@@ -235,30 +239,31 @@ export default function ContentLibraryPage() {
       {/* Search and Filters */}
       <View style={[styles.filtersContainer, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
         <View style={styles.searchWrapper}>
-          <Search size={16} color={colors.textMuted} style={styles.searchIcon} />
-          <input
-            type="text"
+          <GlassInput
             placeholder={t('admin.content.searchPlaceholder', { defaultValue: 'Search content...' })}
             value={searchQuery}
-            onChange={(e) => handleSearch(e.target.value)}
-            style={styles.searchInput}
+            onChangeText={handleSearch}
+            icon={<Search size={18} color={colors.textMuted} />}
+            containerStyle={styles.searchInputContainer}
           />
         </View>
-        <select
-          value={filters.is_published === undefined ? '' : filters.is_published ? 'published' : 'draft'}
-          onChange={(e) =>
-            setFilters({
-              ...filters,
-              is_published:
-                e.target.value === '' ? undefined : e.target.value === 'published',
-            })
-          }
-          style={styles.filterSelect}
-        >
-          <option value="">All Status</option>
-          <option value="published">Published</option>
-          <option value="draft">Draft</option>
-        </select>
+        <View style={styles.filterWrapper}>
+          <GlassSelect
+            placeholder={t('admin.content.filters.allStatus', { defaultValue: 'All Status' })}
+            value={filters.is_published === undefined ? '' : filters.is_published ? 'published' : 'draft'}
+            onChange={(value) =>
+              setFilters({
+                ...filters,
+                is_published: value === '' ? undefined : value === 'published',
+              })
+            }
+            options={[
+              { value: '', label: t('admin.content.filters.allStatus', { defaultValue: 'All Status' }) },
+              { value: 'published', label: t('admin.content.status.published', { defaultValue: 'Published' }) },
+              { value: 'draft', label: t('admin.content.status.draft', { defaultValue: 'Draft' }) },
+            ]}
+          />
+        </View>
       </View>
 
       {/* Error Message */}
@@ -274,10 +279,10 @@ export default function ContentLibraryPage() {
 
       {/* Table */}
       <DataTable
-        columns={columns}
+        columns={isRTL ? [...columns].reverse() : columns}
         data={items}
         loading={isLoading}
-        searchPlaceholder={t('admin.content.searchPlaceholder', { defaultValue: 'Search content...' })}
+        searchable={false}
         pagination={pagination}
         onPageChange={(page) => setPagination((prev) => ({ ...prev, page }))}
         emptyMessage={t('admin.content.emptyMessage', { defaultValue: 'No content found' })}
@@ -322,59 +327,22 @@ const styles = StyleSheet.create({
     gap: spacing.md,
     alignItems: 'center',
   },
-  importButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing.sm,
-    paddingHorizontal: spacing.md,
-    paddingVertical: spacing.sm,
-    borderRadius: borderRadius.md,
-    backgroundColor: '#059669',
-    marginRight: spacing.sm,
-  },
-  importButtonText: {
-    color: colors.text,
-    fontWeight: '500',
-    fontSize: 14,
-  },
   filtersContainer: {
     flexDirection: 'row',
     gap: spacing.md,
     marginBottom: spacing.lg,
+    alignItems: 'flex-start',
   },
   searchWrapper: {
     flex: 1,
-    position: 'relative',
+    maxWidth: 400,
   },
-  searchIcon: {
-    position: 'absolute',
-    left: spacing.md,
-    top: spacing.md,
-    zIndex: 1,
+  searchInputContainer: {
+    marginBottom: 0,
   },
-  searchInput: {
-    width: '100%',
-    paddingLeft: spacing.lg + spacing.md + 8,
-    paddingRight: spacing.md,
-    paddingVertical: spacing.md,
-    borderRadius: borderRadius.md,
-    borderWidth: 1,
-    borderColor: colors.border,
-    backgroundColor: colors.backgroundLighter,
-    color: colors.text,
-    fontSize: 14,
-  } as any,
-  filterSelect: {
-    paddingHorizontal: spacing.md,
-    paddingVertical: spacing.md,
-    borderRadius: borderRadius.md,
-    borderWidth: 1,
-    borderColor: colors.border,
-    backgroundColor: colors.backgroundLighter,
-    color: colors.text,
-    fontSize: 14,
-    minWidth: 150,
-  } as any,
+  filterWrapper: {
+    minWidth: 180,
+  },
   errorContainer: {
     flexDirection: 'row',
     alignItems: 'center',

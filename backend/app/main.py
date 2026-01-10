@@ -1,8 +1,13 @@
 from contextlib import asynccontextmanager
+import logging
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
+from pathlib import Path
 from app.core.config import settings
 from app.core.database import connect_to_mongo, close_mongo_connection
+
+logger = logging.getLogger(__name__)
 
 # Import routers
 from app.api.routes import (
@@ -14,10 +19,99 @@ from app.api.routes import (
 )
 
 
+async def init_default_data():
+    """Initialize default data on startup."""
+    from app.models.widget import Widget, WidgetType, WidgetContentType, WidgetContent, WidgetPosition
+    from app.models.content import LiveChannel
+    from datetime import datetime
+
+    # Default widgets to create
+    default_widgets = [
+        {
+            "channel_num": "11",
+            "title": "Channel 11",
+            "description": "ערוץ 11 שידור חי",
+            "icon": "📺",
+            "order": 0,
+            "position": {"x": 20, "y": 100},
+        },
+        {
+            "channel_num": "12",
+            "title": "Channel 12 Live",
+            "description": "ערוץ 12 שידור חי",
+            "icon": "📺",
+            "order": 1,
+            "position": {"x": 360, "y": 100},
+        },
+    ]
+
+    for widget_config in default_widgets:
+        channel_num = widget_config["channel_num"]
+
+        # Check if widget already exists
+        existing = await Widget.find_one({
+            "type": WidgetType.SYSTEM,
+            "title": {"$regex": f"channel.*{channel_num}", "$options": "i"}
+        })
+
+        if existing:
+            logger.info(f"Default Channel {channel_num} widget already exists: {existing.id}")
+            continue
+
+        # Try to find the channel in live channels
+        channel = await LiveChannel.find_one(
+            {"$or": [
+                {"name": {"$regex": f"channel.*{channel_num}", "$options": "i"}},
+                {"name": {"$regex": f"ערוץ.*{channel_num}", "$options": "i"}},
+                {"name": {"$regex": f"{channel_num}.*channel", "$options": "i"}},
+            ]}
+        )
+
+        # Create the widget
+        widget = Widget(
+            type=WidgetType.SYSTEM,
+            title=widget_config["title"],
+            description=widget_config["description"],
+            icon=widget_config["icon"],
+            content=WidgetContent(
+                content_type=WidgetContentType.LIVE_CHANNEL,
+                live_channel_id=str(channel.id) if channel else None,
+            ),
+            position=WidgetPosition(
+                x=widget_config["position"]["x"],
+                y=widget_config["position"]["y"],
+                width=320,
+                height=180,
+                z_index=100
+            ),
+            is_active=True,
+            is_muted=True,
+            is_visible=True,
+            is_closable=True,
+            is_draggable=True,
+            visible_to_roles=["user", "admin", "premium"],
+            visible_to_subscription_tiers=[],
+            target_pages=[],
+            order=widget_config["order"],
+            created_by="system",
+            created_at=datetime.utcnow(),
+            updated_at=datetime.utcnow(),
+        )
+
+        await widget.insert()
+        logger.info(f"Created default Channel {channel_num} widget: {widget.id}")
+        if channel:
+            logger.info(f"Linked to live channel: {channel.name}")
+
+
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     # Startup
     await connect_to_mongo()
+    try:
+        await init_default_data()
+    except Exception as e:
+        logger.warning(f"Failed to initialize default data: {e}")
     yield
     # Shutdown
     await close_mongo_connection()
@@ -80,6 +174,11 @@ app.include_router(judaism.router, prefix=f"{settings.API_V1_PREFIX}/judaism", t
 app.include_router(flows.router, prefix=f"{settings.API_V1_PREFIX}/flows", tags=["flows"])
 app.include_router(device_pairing.router, prefix=f"{settings.API_V1_PREFIX}/auth/device-pairing", tags=["device-pairing"])
 app.include_router(onboarding.router, prefix=f"{settings.API_V1_PREFIX}/onboarding/ai", tags=["ai-onboarding"])
+
+# Mount static files for uploads
+uploads_dir = Path(__file__).parent.parent / "uploads"
+if uploads_dir.exists():
+    app.mount("/uploads", StaticFiles(directory=uploads_dir), name="uploads")
 
 
 if __name__ == "__main__":

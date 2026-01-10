@@ -7,6 +7,7 @@ import { contentService } from '@/services/adminApi'
 import { colors, spacing, borderRadius } from '@bayit/shared/theme'
 import { GlassButton } from '@bayit/shared/ui'
 import { useDirection } from '@/hooks/useDirection'
+import { useModal } from '@/contexts/ModalContext'
 import logger from '@/utils/logger'
 import type { LiveChannel, PaginatedResponse } from '@/types/content'
 
@@ -23,6 +24,7 @@ interface EditingChannel extends Partial<LiveChannel> {
 export default function LiveChannelsPage() {
   const { t } = useTranslation()
   const { isRTL, textAlign, flexDirection } = useDirection()
+  const { showConfirm } = useModal()
   const [items, setItems] = useState<LiveChannel[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
@@ -80,19 +82,24 @@ export default function LiveChannelsPage() {
     }
   }
 
-  const handleDelete = async (id: string) => {
-    if (!window.confirm(t('admin.content.confirmDelete'))) return
-    try {
-      setDeleting(id)
-      await contentService.deleteLiveChannel(id)
-      setItems(items.filter((item) => item.id !== id))
-    } catch (err) {
-      const msg = err instanceof Error ? err.message : 'Failed to delete live channel'
-      logger.error(msg, 'LiveChannelsPage', err)
-      setError(msg)
-    } finally {
-      setDeleting(null)
-    }
+  const handleDelete = (id: string) => {
+    showConfirm(
+      t('admin.content.confirmDelete'),
+      async () => {
+        try {
+          setDeleting(id)
+          await contentService.deleteLiveChannel(id)
+          setItems(items.filter((item) => item.id !== id))
+        } catch (err) {
+          const msg = err instanceof Error ? err.message : 'Failed to delete live channel'
+          logger.error(msg, 'LiveChannelsPage', err)
+          setError(msg)
+        } finally {
+          setDeleting(null)
+        }
+      },
+      { destructive: true, confirmText: t('common.delete', 'Delete') }
+    )
   }
 
   const columns = [
@@ -251,7 +258,7 @@ export default function LiveChannelsPage() {
       )}
 
       <DataTable
-        columns={columns}
+        columns={isRTL ? [...columns].reverse() : columns}
         data={items}
         loading={isLoading}
         pagination={pagination}

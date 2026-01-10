@@ -41,12 +41,49 @@ const formatCurrency = (amount: number) => {
 };
 
 const getActivityIcon = (action: string) => {
-  if (action.includes('user')) return '👤';
-  if (action.includes('subscription')) return '📦';
-  if (action.includes('payment')) return '💰';
-  if (action.includes('campaign')) return '🎯';
-  if (action.includes('login')) return '🔑';
+  const lowerAction = action.toLowerCase();
+  if (lowerAction.includes('user')) return '👤';
+  if (lowerAction.includes('subscription')) return '📦';
+  if (lowerAction.includes('payment')) return '💰';
+  if (lowerAction.includes('campaign')) return '🎯';
+  if (lowerAction.includes('login')) return '🔑';
+  if (lowerAction.includes('widget')) return '📺';
+  if (lowerAction.includes('channel')) return '📡';
+  if (lowerAction.includes('content')) return '🎬';
   return '📋';
+};
+
+// Format activity details - handle nested objects
+const formatActivityDetails = (details: Record<string, any>): string => {
+  const extractValue = (value: any): string | null => {
+    if (value === null || value === undefined) return null;
+    if (Array.isArray(value)) {
+      // Handle arrays - extract meaningful values
+      return value.map(extractValue).filter(Boolean).join(', ') || null;
+    }
+    if (typeof value === 'object') {
+      // Extract meaningful fields from nested objects
+      if (value.title) return String(value.title);
+      if (value.name) return String(value.name);
+      if (value.email) return String(value.email);
+      if (value.label) return String(value.label);
+      // For objects with only id, skip them
+      if (Object.keys(value).length === 1 && value.id) return null;
+      // Try to get any string value from the object
+      const stringValue = Object.values(value).find(v => typeof v === 'string' && v.length < 100);
+      if (stringValue) return String(stringValue);
+      return null;
+    }
+    // Don't include very long strings or ObjectIds
+    const str = String(value);
+    if (str.length > 50 || /^[0-9a-f]{24}$/i.test(str)) return null;
+    return str;
+  };
+
+  return Object.entries(details)
+    .map(([key, value]) => extractValue(value))
+    .filter(Boolean)
+    .join(' - ');
 };
 
 export default function AdminDashboardPage() {
@@ -239,11 +276,11 @@ export default function AdminDashboardPage() {
                   </View>
                   <View style={styles.activityContent}>
                     <Text style={[styles.activityAction, { textAlign }]}>
-                      {activity.action.replace('.', ' ').replace(/_/g, ' ')}
+                      {t(`admin.auditActions.${activity.action}`, activity.action.replace(/_/g, ' '))}
                     </Text>
                     {activity.details && (
                       <Text style={[styles.activityDetails, { textAlign }]} numberOfLines={1}>
-                        {Object.values(activity.details).join(' - ')}
+                        {formatActivityDetails(activity.details)}
                       </Text>
                     )}
                   </View>

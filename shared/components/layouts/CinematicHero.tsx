@@ -10,6 +10,7 @@ import {
   ScrollView,
   ImageBackground,
 } from 'react-native';
+import { useTranslation } from 'react-i18next';
 import Video from 'react-native-video';
 import LinearGradient from 'react-native-linear-gradient';
 import { GlassView } from '../ui/GlassView';
@@ -51,6 +52,7 @@ export const CinematicHero: React.FC<CinematicHeroProps> = ({
   autoRotate = true,
   rotateInterval = 8000,
 }) => {
+  const { t } = useTranslation();
   const [currentIndex, setCurrentIndex] = useState(0);
   const [focusedButton, setFocusedButton] = useState<string>('play');
   const [showTrailer, setShowTrailer] = useState(false);
@@ -281,7 +283,7 @@ export const CinematicHero: React.FC<CinematicHeroProps> = ({
             >
               <Text style={styles.trailerIcon}>🎬</Text>
               <Text style={styles.secondaryButtonText}>
-                {showTrailer ? 'סגור טריילר' : 'צפה בטריילר'}
+                {showTrailer ? t('video.closeTrailer') : t('video.watchTrailer')}
               </Text>
             </TouchableOpacity>
           )}

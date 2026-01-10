@@ -218,7 +218,7 @@ class PodcastEpisode(Document):
     podcast_id: str
     title: str
     description: Optional[str] = None
-    audio_url: str
+    audio_url: Optional[str] = None
     duration: Optional[str] = None
     episode_number: Optional[int] = None
     season_number: Optional[int] = None

@@ -10,6 +10,7 @@ interface AudioPlayerProps {
   artist?: string
   cover?: string
   isLive?: boolean
+  onEnded?: () => void
 }
 
 export default function AudioPlayer({
@@ -18,6 +19,7 @@ export default function AudioPlayer({
   artist,
   cover,
   isLive = false,
+  onEnded,
 }: AudioPlayerProps) {
   const audioRef = useRef<HTMLAudioElement | null>(null)
   const [isPlaying, setIsPlaying] = useState(false)
@@ -43,12 +45,17 @@ export default function AudioPlayer({
     const handleTimeUpdate = () => setCurrentTime(audio.currentTime)
     const handlePlay = () => setIsPlaying(true)
     const handlePause = () => setIsPlaying(false)
+    const handleEnded = () => {
+      setIsPlaying(false)
+      if (onEnded) onEnded()
+    }
 
     audio.addEventListener('canplay', handleCanPlay)
     audio.addEventListener('loadedmetadata', handleLoadedMetadata)
     audio.addEventListener('timeupdate', handleTimeUpdate)
     audio.addEventListener('play', handlePlay)
     audio.addEventListener('pause', handlePause)
+    audio.addEventListener('ended', handleEnded)
 
     return () => {
       audio.removeEventListener('canplay', handleCanPlay)
@@ -56,8 +63,9 @@ export default function AudioPlayer({
       audio.removeEventListener('timeupdate', handleTimeUpdate)
       audio.removeEventListener('play', handlePlay)
       audio.removeEventListener('pause', handlePause)
+      audio.removeEventListener('ended', handleEnded)
     }
-  }, [src])
+  }, [src, onEnded])
 
   const togglePlay = () => {
     if (audioRef.current) {

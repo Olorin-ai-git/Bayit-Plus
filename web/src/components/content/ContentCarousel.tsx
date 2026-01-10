@@ -1,10 +1,12 @@
 import { useRef } from 'react';
 import { View, Text, StyleSheet, ScrollView, Pressable } from 'react-native';
 import { Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import ContentCard from './ContentCard';
 import { colors, spacing, borderRadius } from '@bayit/shared/theme';
 import { GlassView } from '@bayit/shared/ui';
+import { useDirection } from '@/hooks/useDirection';
 
 interface ContentItem {
   id: string;
@@ -29,15 +31,19 @@ export default function ContentCarousel({
   seeAllLink,
   style,
 }: ContentCarouselProps) {
+  const { t } = useTranslation();
+  const { isRTL, flexDirection, textAlign } = useDirection();
   const scrollRef = useRef<ScrollView>(null);
 
   const scroll = (direction: 'left' | 'right') => {
     // On web, we can use scrollTo with smooth behavior
     if (scrollRef.current) {
       const scrollAmount = 800;
+      // Flip scroll direction for RTL
+      const actualDirection = isRTL ? (direction === 'left' ? 'right' : 'left') : direction;
       // @ts-ignore - Web-specific scrollTo API
       scrollRef.current.scrollTo?.({
-        x: direction === 'right' ? scrollAmount : -scrollAmount,
+        x: actualDirection === 'right' ? scrollAmount : -scrollAmount,
         animated: true,
       });
     }
@@ -45,16 +51,19 @@ export default function ContentCarousel({
 
   if (!items.length) return null;
 
+  // Determine which chevron to show based on RTL
+  const SeeAllChevron = isRTL ? ChevronLeft : ChevronRight;
+
   return (
     <View style={[styles.container, style]}>
       {/* Header */}
-      <View style={styles.header}>
-        <Text style={styles.title}>{title}</Text>
+      <View style={[styles.header, { flexDirection }]}>
+        <Text style={[styles.title, { textAlign }]}>{title}</Text>
         {seeAllLink && (
           <Link to={seeAllLink} style={{ textDecoration: 'none' }}>
-            <View style={styles.seeAllButton}>
-              <Text style={styles.seeAllText}>הכל</Text>
-              <ChevronLeft size={16} color={colors.primary} />
+            <View style={[styles.seeAllButton, { flexDirection }]}>
+              <Text style={styles.seeAllText}>{t('common.seeAll', 'See All')}</Text>
+              <SeeAllChevron size={16} color={colors.primary} />
             </View>
           </Link>
         )}
@@ -65,18 +74,18 @@ export default function ContentCarousel({
         {/* Scroll Buttons */}
         <Pressable
           onPress={() => scroll('right')}
-          style={[styles.scrollButton, styles.scrollButtonRight]}
+          style={[styles.scrollButton, isRTL ? styles.scrollButtonLeft : styles.scrollButtonRight]}
         >
           <GlassView style={styles.scrollButtonInner}>
-            <ChevronRight size={28} color={colors.text} />
+            {isRTL ? <ChevronLeft size={28} color={colors.text} /> : <ChevronRight size={28} color={colors.text} />}
           </GlassView>
         </Pressable>
         <Pressable
           onPress={() => scroll('left')}
-          style={[styles.scrollButton, styles.scrollButtonLeft]}
+          style={[styles.scrollButton, isRTL ? styles.scrollButtonRight : styles.scrollButtonLeft]}
         >
           <GlassView style={styles.scrollButtonInner}>
-            <ChevronLeft size={28} color={colors.text} />
+            {isRTL ? <ChevronRight size={28} color={colors.text} /> : <ChevronLeft size={28} color={colors.text} />}
           </GlassView>
         </Pressable>
 
@@ -85,7 +94,7 @@ export default function ContentCarousel({
           ref={scrollRef}
           horizontal
           showsHorizontalScrollIndicator={false}
-          contentContainerStyle={styles.scrollContent}
+          contentContainerStyle={[styles.scrollContent, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}
         >
           {items.map((item) => (
             <ContentCard key={item.id} content={item} />

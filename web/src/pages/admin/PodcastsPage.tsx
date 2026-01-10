@@ -8,6 +8,7 @@ import { contentService } from '@/services/adminApi'
 import { colors, spacing, borderRadius } from '@bayit/shared/theme'
 import { GlassButton } from '@bayit/shared/ui'
 import { useDirection } from '@/hooks/useDirection'
+import { useModal } from '@/contexts/ModalContext'
 import logger from '@/utils/logger'
 import type { Podcast, PaginatedResponse } from '@/types/content'
 
@@ -24,6 +25,7 @@ interface EditingPodcast extends Partial<Podcast> {
 export default function PodcastsPage() {
   const { t } = useTranslation()
   const { isRTL, textAlign, flexDirection } = useDirection()
+  const { showConfirm } = useModal()
   const [items, setItems] = useState<Podcast[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
@@ -77,19 +79,24 @@ export default function PodcastsPage() {
     }
   }
 
-  const handleDelete = async (id: string) => {
-    if (!window.confirm(t('admin.content.confirmDelete'))) return
-    try {
-      setDeleting(id)
-      await contentService.deletePodcast(id)
-      setItems(items.filter((item) => item.id !== id))
-    } catch (err) {
-      const msg = err instanceof Error ? err.message : 'Failed to delete podcast'
-      logger.error(msg, 'PodcastsPage', err)
-      setError(msg)
-    } finally {
-      setDeleting(null)
-    }
+  const handleDelete = (id: string) => {
+    showConfirm(
+      t('admin.content.confirmDelete'),
+      async () => {
+        try {
+          setDeleting(id)
+          await contentService.deletePodcast(id)
+          setItems(items.filter((item) => item.id !== id))
+        } catch (err) {
+          const msg = err instanceof Error ? err.message : 'Failed to delete podcast'
+          logger.error(msg, 'PodcastsPage', err)
+          setError(msg)
+        } finally {
+          setDeleting(null)
+        }
+      },
+      { destructive: true, confirmText: t('common.delete', 'Delete') }
+    )
   }
 
   const columns = [
@@ -254,7 +261,7 @@ export default function PodcastsPage() {
       )}
 
       <DataTable
-        columns={columns}
+        columns={isRTL ? [...columns].reverse() : columns}
         data={items}
         loading={isLoading}
         pagination={pagination}

@@ -67,9 +67,11 @@ export default function FlowsPage() {
         flowsService.getFlows(),
         flowsService.getActiveFlow(),
       ]);
-      setFlows(flowsRes.data || []);
-      if (activeRes.data?.should_show && activeRes.data?.active_flow) {
-        setActiveFlow(activeRes.data.active_flow);
+      // Handle both demo service (returns {data: [...]}) and API (returns [...] directly)
+      setFlows(Array.isArray(flowsRes) ? flowsRes : (flowsRes.data || []));
+      const activeData = activeRes.data ?? activeRes;
+      if (activeData?.should_show && activeData?.active_flow) {
+        setActiveFlow(activeData.active_flow);
       }
     } catch (error) {
       logger.error('Failed to fetch flows', 'FlowsPage', error);
@@ -82,13 +84,30 @@ export default function FlowsPage() {
   const handleStartFlow = async (flow: Flow) => {
     try {
       const response = await flowsService.getFlowContent(flow.id);
-      if (response.data?.content && response.data.content.length > 0) {
-        navigate('/player', {
+      const data = response.data ?? response;
+      if (data?.content && data.content.length > 0) {
+        // Navigate to the first item in the flow based on content type
+        const firstItem = data.content[0];
+        const contentType = firstItem.content_type;
+        const contentId = firstItem.content_id;
+
+        // Map content type to route
+        const routeMap: Record<string, string> = {
+          'live': `/live/${contentId}`,
+          'vod': `/vod/${contentId}`,
+          'radio': `/radio/${contentId}`,
+          'podcast': `/podcasts/${contentId}`,
+          'judaism': `/vod/${contentId}`,
+          'kids': `/vod/${contentId}`,
+        };
+
+        const route = routeMap[contentType] || `/vod/${contentId}`;
+        navigate(route, {
           state: {
             flowId: flow.id,
             flowName: getLocalizedName(flow, i18n.language),
-            playlist: response.data.content,
-            aiBrief: response.data.ai_brief,
+            playlist: data.content,
+            currentIndex: 0,
           },
         });
       }

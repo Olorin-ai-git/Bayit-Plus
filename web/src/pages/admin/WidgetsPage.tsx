@@ -6,13 +6,15 @@
  */
 
 import { useState, useEffect, useCallback } from 'react';
-import { View, Text, StyleSheet, Pressable, ScrollView, TextInput } from 'react-native';
+import { View, Text, StyleSheet, Pressable, ScrollView } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { Plus, Edit, Trash2, X, AlertCircle, Eye, EyeOff, Tv, Globe } from 'lucide-react';
 import DataTable from '@/components/admin/DataTable';
-import { widgetsService, contentService } from '@/services/adminApi';
+import WidgetFormModal from '@/components/widgets/WidgetFormModal';
+import { widgetsService } from '@/services/adminApi';
 import { colors, spacing, borderRadius } from '@bayit/shared/theme';
 import { useDirection } from '@/hooks/useDirection';
+import { useModal } from '@/contexts/ModalContext';
 import logger from '@/utils/logger';
 import type { Widget, WidgetFormData, WidgetContentType, DEFAULT_WIDGET_FORM } from '@/types/widget';
 
@@ -30,24 +32,14 @@ interface LiveChannel {
 export default function WidgetsPage() {
   const { t } = useTranslation();
   const { isRTL, textAlign, flexDirection } = useDirection();
+  const { showConfirm } = useModal();
   const [items, setItems] = useState<Widget[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [pagination, setPagination] = useState<Pagination>({ page: 1, pageSize: 20, total: 0 });
-  const [editingId, setEditingId] = useState<string | null>(null);
-  const [editData, setEditData] = useState<Partial<WidgetFormData>>({});
+  const [showWidgetForm, setShowWidgetForm] = useState(false);
+  const [editingWidget, setEditingWidget] = useState<Widget | null>(null);
   const [deleting, setDeleting] = useState<string | null>(null);
-  const [liveChannels, setLiveChannels] = useState<LiveChannel[]>([]);
-
-  // Load live channels for the dropdown
-  const loadLiveChannels = useCallback(async () => {
-    try {
-      const response = await contentService.getLiveChannels({ page_size: 100 });
-      setLiveChannels(response.items || []);
-    } catch (err) {
-      logger.error('Failed to load live channels', 'WidgetsPage', err);
-    }
-  }, []);
 
   const loadWidgets = useCallback(async () => {
     setIsLoading(true);
@@ -70,127 +62,58 @@ export default function WidgetsPage() {
 
   useEffect(() => {
     loadWidgets();
-    loadLiveChannels();
-  }, [loadWidgets, loadLiveChannels]);
+  }, [loadWidgets]);
 
   const handleEdit = (item: Widget) => {
-    setEditingId(item.id);
-    setEditData({
-      title: item.title,
-      description: item.description || '',
-      icon: item.icon || '',
-      content_type: item.content.content_type,
-      live_channel_id: item.content.live_channel_id || '',
-      iframe_url: item.content.iframe_url || '',
-      iframe_title: item.content.iframe_title || '',
-      position_x: item.position.x,
-      position_y: item.position.y,
-      position_width: item.position.width,
-      position_height: item.position.height,
-      is_muted: item.is_muted,
-      is_closable: item.is_closable,
-      is_draggable: item.is_draggable,
-      visible_to_roles: item.visible_to_roles,
-      target_pages: item.target_pages,
-      order: item.order,
-    });
+    setEditingWidget(item);
+    setShowWidgetForm(true);
   };
 
   const handleCreate = () => {
-    setEditingId('new');
-    setEditData({
-      title: '',
-      description: '',
-      icon: '',
-      content_type: 'live_channel',
-      live_channel_id: '',
-      iframe_url: '',
-      iframe_title: '',
-      position_x: 20,
-      position_y: 100,
-      position_width: 320,
-      position_height: 180,
-      is_muted: true,
-      is_closable: true,
-      is_draggable: true,
-      visible_to_roles: ['user'],
-      target_pages: [],
-      order: items.length,
-    });
+    setEditingWidget(null);
+    setShowWidgetForm(true);
   };
 
-  const handleSaveEdit = async () => {
-    if (!editData.title) {
-      setError(t('admin.widgets.errors.titleRequired'));
-      return;
-    }
-
-    if (editData.content_type === 'live_channel' && !editData.live_channel_id) {
-      setError(t('admin.widgets.errors.selectChannel'));
-      return;
-    }
-
-    if (editData.content_type === 'iframe' && !editData.iframe_url) {
-      setError(t('admin.widgets.errors.iframeUrlRequired'));
-      return;
-    }
-
+  const handleSaveWidget = async (payload: any) => {
     try {
-      const payload = {
-        title: editData.title!,
-        description: editData.description || null,
-        icon: editData.icon || null,
-        content: {
-          content_type: editData.content_type as WidgetContentType,
-          live_channel_id: editData.content_type === 'live_channel' ? editData.live_channel_id : null,
-          iframe_url: editData.content_type === 'iframe' ? editData.iframe_url : null,
-          iframe_title: editData.content_type === 'iframe' ? editData.iframe_title : null,
-        },
-        position: {
-          x: editData.position_x || 20,
-          y: editData.position_y || 100,
-          width: editData.position_width || 320,
-          height: editData.position_height || 180,
-          z_index: 100,
-        },
-        is_muted: editData.is_muted ?? true,
-        is_closable: editData.is_closable ?? true,
-        is_draggable: editData.is_draggable ?? true,
-        visible_to_roles: editData.visible_to_roles || ['user'],
-        visible_to_subscription_tiers: [],
-        target_pages: editData.target_pages || [],
-        order: editData.order || 0,
-      };
-
-      if (editingId === 'new') {
-        await widgetsService.createWidget(payload);
+      if (editingWidget) {
+        // Update existing widget
+        await widgetsService.updateWidget(editingWidget.id, payload);
       } else {
-        await widgetsService.updateWidget(editingId!, payload);
+        // Create new widget
+        await widgetsService.createWidget(payload);
       }
 
-      setEditingId(null);
-      setEditData({});
+      setShowWidgetForm(false);
+      setEditingWidget(null);
+      setError(null);
       await loadWidgets();
     } catch (err) {
       const msg = err instanceof Error ? err.message : 'Failed to save widget';
       logger.error(msg, 'WidgetsPage', err);
       setError(msg);
+      throw err; // Re-throw so modal can handle the error
     }
   };
 
-  const handleDelete = async (id: string) => {
-    if (!window.confirm(t('admin.widgets.confirmDelete'))) return;
-    try {
-      setDeleting(id);
-      await widgetsService.deleteWidget(id);
-      setItems(items.filter((item) => item.id !== id));
-    } catch (err) {
-      const msg = err instanceof Error ? err.message : 'Failed to delete widget';
-      logger.error(msg, 'WidgetsPage', err);
-      setError(msg);
-    } finally {
-      setDeleting(null);
-    }
+  const handleDelete = (id: string) => {
+    showConfirm(
+      t('admin.widgets.confirmDelete'),
+      async () => {
+        try {
+          setDeleting(id);
+          await widgetsService.deleteWidget(id);
+          setItems(items.filter((item) => item.id !== id));
+        } catch (err) {
+          const msg = err instanceof Error ? err.message : 'Failed to delete widget';
+          logger.error(msg, 'WidgetsPage', err);
+          setError(msg);
+        } finally {
+          setDeleting(null);
+        }
+      },
+      { destructive: true, confirmText: t('common.delete', 'Delete') }
+    );
   };
 
   const handleToggleActive = async (widget: Widget) => {
@@ -273,6 +196,7 @@ export default function WidgetsPage() {
     {
       key: 'order',
       label: t('admin.widgets.columns.order'),
+      width: 70,
       render: (order: number) => <Text style={styles.cellText}>{order}</Text>,
     },
     {
@@ -302,10 +226,10 @@ export default function WidgetsPage() {
   return (
     <View style={styles.pageContainer}>
       <ScrollView style={styles.container} contentContainerStyle={styles.contentContainer}>
-        <View style={[styles.header, isRTL && styles.headerRTL]}>
+        <View style={[styles.header, { flexDirection }]}>
           <View>
-            <Text style={[styles.pageTitle, isRTL && styles.textRTL]}>{t('admin.widgets.title')}</Text>
-            <Text style={[styles.subtitle, isRTL && styles.textRTL]}>
+            <Text style={[styles.pageTitle, { textAlign }]}>{t('admin.widgets.title')}</Text>
+            <Text style={[styles.subtitle, { textAlign }]}>
               {t('admin.widgets.subtitle')}
             </Text>
           </View>
@@ -316,7 +240,7 @@ export default function WidgetsPage() {
         </View>
 
         {error && (
-          <View style={[styles.errorContainer, { marginBottom: spacing.lg }]}>
+          <View style={[styles.errorContainer, { marginBottom: spacing.lg, flexDirection }]}>
             <AlertCircle size={18} color="#ef4444" />
             <Text style={styles.errorText}>{error}</Text>
             <Pressable onPress={() => setError(null)}>
@@ -325,212 +249,20 @@ export default function WidgetsPage() {
           </View>
         )}
 
-        {editingId && (
-          <View style={styles.editForm}>
-            <Text style={styles.formTitle}>
-              {editingId === 'new' ? t('admin.widgets.newWidget') : t('admin.widgets.editWidget')}
-            </Text>
-
-          {/* Basic Info */}
-          <TextInput
-            style={styles.input}
-            placeholder={t('admin.widgets.form.title')}
-            placeholderTextColor={colors.textMuted}
-            value={editData.title || ''}
-            onChangeText={(value) => setEditData({ ...editData, title: value })}
-          />
-          <TextInput
-            style={styles.input}
-            placeholder={t('admin.widgets.form.description')}
-            placeholderTextColor={colors.textMuted}
-            value={editData.description || ''}
-            onChangeText={(value) => setEditData({ ...editData, description: value })}
-          />
-          <TextInput
-            style={styles.input}
-            placeholder={t('admin.widgets.form.icon')}
-            placeholderTextColor={colors.textMuted}
-            value={editData.icon || ''}
-            onChangeText={(value) => setEditData({ ...editData, icon: value })}
-          />
-
-          {/* Content Type Selection */}
-          <Text style={styles.sectionLabel}>{t('admin.widgets.form.contentType')}</Text>
-          <View style={styles.radioGroup}>
-            <Pressable
-              style={[
-                styles.radioOption,
-                editData.content_type === 'live_channel' && styles.radioOptionSelected,
-              ]}
-              onPress={() => setEditData({ ...editData, content_type: 'live_channel' })}
-            >
-              <Tv size={16} color={editData.content_type === 'live_channel' ? colors.primary : colors.textMuted} />
-              <Text style={[styles.radioLabel, editData.content_type === 'live_channel' && styles.radioLabelSelected]}>
-                {t('admin.widgets.contentTypes.liveChannel')}
-              </Text>
-            </Pressable>
-            <Pressable
-              style={[
-                styles.radioOption,
-                editData.content_type === 'iframe' && styles.radioOptionSelected,
-              ]}
-              onPress={() => setEditData({ ...editData, content_type: 'iframe' })}
-            >
-              <Globe size={16} color={editData.content_type === 'iframe' ? colors.primary : colors.textMuted} />
-              <Text style={[styles.radioLabel, editData.content_type === 'iframe' && styles.radioLabelSelected]}>
-                {t('admin.widgets.contentTypes.iframe')}
-              </Text>
-            </Pressable>
-          </View>
-
-          {/* Content Config */}
-          {editData.content_type === 'live_channel' && (
-            <View style={styles.selectContainer}>
-              <Text style={styles.inputLabel}>{t('admin.widgets.form.selectChannel')}</Text>
-              <select
-                value={editData.live_channel_id || ''}
-                onChange={(e) => setEditData({ ...editData, live_channel_id: e.target.value })}
-                style={styles.select as any}
-              >
-                <option value="">{t('admin.widgets.form.channelPlaceholder')}</option>
-                {liveChannels.map((ch) => (
-                  <option key={ch.id} value={ch.id}>{ch.name}</option>
-                ))}
-              </select>
-            </View>
-          )}
-
-          {editData.content_type === 'iframe' && (
-            <>
-              <TextInput
-                style={styles.input}
-                placeholder={t('admin.widgets.form.iframeUrl')}
-                placeholderTextColor={colors.textMuted}
-                value={editData.iframe_url || ''}
-                onChangeText={(value) => setEditData({ ...editData, iframe_url: value })}
-              />
-              <TextInput
-                style={styles.input}
-                placeholder={t('admin.widgets.form.iframeTitle')}
-                placeholderTextColor={colors.textMuted}
-                value={editData.iframe_title || ''}
-                onChangeText={(value) => setEditData({ ...editData, iframe_title: value })}
-              />
-            </>
-          )}
-
-          {/* Position */}
-          <Text style={styles.sectionLabel}>{t('admin.widgets.form.position')}</Text>
-          <View style={styles.positionRow}>
-            <View style={styles.positionField}>
-              <Text style={styles.inputLabel}>X</Text>
-              <TextInput
-                style={styles.smallInput}
-                value={String(editData.position_x || 20)}
-                onChangeText={(v) => setEditData({ ...editData, position_x: parseInt(v) || 0 })}
-                keyboardType="number-pad"
-              />
-            </View>
-            <View style={styles.positionField}>
-              <Text style={styles.inputLabel}>Y</Text>
-              <TextInput
-                style={styles.smallInput}
-                value={String(editData.position_y || 100)}
-                onChangeText={(v) => setEditData({ ...editData, position_y: parseInt(v) || 0 })}
-                keyboardType="number-pad"
-              />
-            </View>
-            <View style={styles.positionField}>
-              <Text style={styles.inputLabel}>Width</Text>
-              <TextInput
-                style={styles.smallInput}
-                value={String(editData.position_width || 320)}
-                onChangeText={(v) => setEditData({ ...editData, position_width: parseInt(v) || 320 })}
-                keyboardType="number-pad"
-              />
-            </View>
-            <View style={styles.positionField}>
-              <Text style={styles.inputLabel}>Height</Text>
-              <TextInput
-                style={styles.smallInput}
-                value={String(editData.position_height || 180)}
-                onChangeText={(v) => setEditData({ ...editData, position_height: parseInt(v) || 180 })}
-                keyboardType="number-pad"
-              />
-            </View>
-          </View>
-
-          {/* Behavior Options */}
-          <Text style={styles.sectionLabel}>{t('admin.widgets.form.behavior')}</Text>
-          <View style={styles.checkboxGroup}>
-            <View style={styles.checkboxRow}>
-              <input
-                type="checkbox"
-                id="is_muted"
-                checked={editData.is_muted ?? true}
-                onChange={(e) => setEditData({ ...editData, is_muted: e.target.checked })}
-                style={styles.checkbox}
-              />
-              <Text style={styles.checkboxLabel}>{t('admin.widgets.form.mutedByDefault')}</Text>
-            </View>
-            <View style={styles.checkboxRow}>
-              <input
-                type="checkbox"
-                id="is_closable"
-                checked={editData.is_closable ?? true}
-                onChange={(e) => setEditData({ ...editData, is_closable: e.target.checked })}
-                style={styles.checkbox}
-              />
-              <Text style={styles.checkboxLabel}>{t('admin.widgets.form.closable')}</Text>
-            </View>
-            <View style={styles.checkboxRow}>
-              <input
-                type="checkbox"
-                id="is_draggable"
-                checked={editData.is_draggable ?? true}
-                onChange={(e) => setEditData({ ...editData, is_draggable: e.target.checked })}
-                style={styles.checkbox}
-              />
-              <Text style={styles.checkboxLabel}>{t('admin.widgets.form.draggable')}</Text>
-            </View>
-          </View>
-
-          {/* Target Pages */}
-          <Text style={styles.sectionLabel}>{t('admin.widgets.form.targetPages')}</Text>
-          <TextInput
-            style={styles.input}
-            placeholder={t('admin.widgets.form.targetPagesPlaceholder')}
-            placeholderTextColor={colors.textMuted}
-            value={editData.target_pages?.join(', ') || ''}
-            onChangeText={(value) => setEditData({
-              ...editData,
-              target_pages: value ? value.split(',').map(s => s.trim()) : [],
-            })}
-          />
-
-          {/* Order */}
-          <TextInput
-            style={styles.input}
-            placeholder={t('admin.widgets.form.order')}
-            placeholderTextColor={colors.textMuted}
-            value={String(editData.order || 0)}
-            onChangeText={(value) => setEditData({ ...editData, order: parseInt(value) || 0 })}
-            keyboardType="number-pad"
-          />
-
-          <View style={styles.formActions}>
-            <Pressable onPress={() => setEditingId(null)} style={styles.cancelBtn}>
-              <Text style={styles.cancelBtnText}>{t('admin.widgets.actions.cancel')}</Text>
-            </Pressable>
-            <Pressable onPress={handleSaveEdit} style={styles.saveBtn}>
-              <Text style={styles.saveBtnText}>{t('admin.widgets.actions.save')}</Text>
-            </Pressable>
-          </View>
-        </View>
-      )}
+        {/* Widget Form Modal */}
+        <WidgetFormModal
+          visible={showWidgetForm}
+          onClose={() => {
+            setShowWidgetForm(false);
+            setEditingWidget(null);
+          }}
+          onSave={handleSaveWidget}
+          initialData={editingWidget}
+          isAdminWidget={true}
+        />
 
         <DataTable
-          columns={columns}
+          columns={isRTL ? [...columns].reverse() : columns}
           data={items}
           loading={isLoading}
           pagination={pagination}
@@ -561,12 +293,6 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'flex-start',
     marginBottom: spacing.lg,
-  },
-  headerRTL: {
-    flexDirection: 'row-reverse',
-  },
-  textRTL: {
-    textAlign: 'right',
   },
   pageTitle: { fontSize: 24, fontWeight: 'bold', color: colors.text },
   subtitle: { fontSize: 14, color: colors.textMuted, marginTop: spacing.xs },

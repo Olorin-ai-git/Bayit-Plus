@@ -1099,8 +1099,8 @@ const demoUploadsService = {
 // ============================================
 
 const apiImportService = {
-  getFreeSources: (sourceType) => adminApi.get(`/admin/content/import/free-sources/${sourceType}`),
-  importFreeContent: (data) => adminApi.post('/admin/content/import/free-sources', data),
+  getFreeSources: (sourceType) => adminApi.get(`/admin/content/import/sources/${sourceType}`),
+  importFreeContent: (data) => adminApi.post('/admin/content/import/free-content', data),
 }
 
 const demoImportService = {
@@ -1219,6 +1219,36 @@ const demoWidgetsService = {
 }
 
 // ============================================
+// Podcasts Service (extracted from Content Service)
+// ============================================
+
+const apiPodcastsService = {
+  getPodcasts: (filters) => apiContentService.getPodcasts(filters),
+  getPodcast: (id) => apiContentService.getPodcast(id),
+  createPodcast: (data) => apiContentService.createPodcast(data),
+  updatePodcast: (id, data) => apiContentService.updatePodcast(id, data),
+  deletePodcast: (id) => apiContentService.deletePodcast(id),
+  getEpisodes: (podcastId, filters) => apiContentService.getEpisodes(podcastId, filters),
+  getEpisode: (podcastId, episodeId) => apiContentService.getEpisode(podcastId, episodeId),
+  createEpisode: (podcastId, data) => apiContentService.createEpisode(podcastId, data),
+  updateEpisode: (podcastId, episodeId, data) => apiContentService.updateEpisode(podcastId, episodeId, data),
+  deleteEpisode: (podcastId, episodeId) => apiContentService.deleteEpisode(podcastId, episodeId),
+}
+
+const demoPodcastsService = {
+  getPodcasts: (filters) => demoContentService.getPodcasts(filters),
+  getPodcast: (id) => demoContentService.getPodcast(id),
+  createPodcast: (data) => demoContentService.createPodcast(data),
+  updatePodcast: (id, data) => demoContentService.updatePodcast(id, data),
+  deletePodcast: (id) => demoContentService.deletePodcast(id),
+  getEpisodes: (podcastId, filters) => demoContentService.getEpisodes(podcastId, filters),
+  getEpisode: (podcastId, episodeId) => demoContentService.getEpisode(podcastId, episodeId),
+  createEpisode: (podcastId, data) => demoContentService.createEpisode(podcastId, data),
+  updateEpisode: (podcastId, episodeId, data) => demoContentService.updateEpisode(podcastId, episodeId, data),
+  deleteEpisode: (podcastId, episodeId) => demoContentService.deleteEpisode(podcastId, episodeId),
+}
+
+// ============================================
 // Exports
 // ============================================
 
@@ -1235,6 +1265,7 @@ export const auditLogsService = isDemo ? demoAuditLogsService : apiAuditLogsServ
 
 // Content management services
 export const contentService = isDemo ? demoContentService : apiContentService
+export const podcastsService = isDemo ? demoPodcastsService : apiPodcastsService
 export const uploadsService = isDemo ? demoUploadsService : apiUploadsService
 export const importService = isDemo ? demoImportService : apiImportService
 export const widgetsService = isDemo ? demoWidgetsService : apiWidgetsService
@@ -1249,6 +1280,7 @@ export default {
   settings: settingsService,
   auditLogs: auditLogsService,
   content: contentService,
+  podcasts: podcastsService,
   uploads: uploadsService,
   import: importService,
   widgets: widgetsService,

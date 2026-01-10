@@ -30,6 +30,9 @@ def _widget_dict(w: Widget) -> dict:
         "content": {
             "content_type": w.content.content_type.value,
             "live_channel_id": w.content.live_channel_id,
+            "podcast_id": w.content.podcast_id,
+            "content_id": w.content.content_id,
+            "station_id": w.content.station_id,
             "iframe_url": w.content.iframe_url,
             "iframe_title": w.content.iframe_title,
         },

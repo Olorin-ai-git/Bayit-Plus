@@ -4,6 +4,7 @@ import { ChevronLeft, ChevronRight, Search } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { colors, spacing, borderRadius } from '@bayit/shared/theme';
 import { GlassCard, GlassView } from '@bayit/shared/ui';
+import { useDirection } from '@/hooks/useDirection';
 
 interface Column {
   key: string;
@@ -45,7 +46,11 @@ export default function DataTable({
   actions,
 }: DataTableProps) {
   const { t } = useTranslation();
+  const { isRTL, textAlign, flexDirection } = useDirection();
   const [searchTerm, setSearchTerm] = useState('');
+
+  // For RTL, reverse column order so actions appear on the right side
+  const displayColumns = isRTL ? [...columns].reverse() : columns;
 
   const handleSearch = (value: string) => {
     setSearchTerm(value);
@@ -60,20 +65,20 @@ export default function DataTable({
     <GlassCard style={styles.container} autoSize>
       {/* Header */}
       {(searchable || actions) && (
-        <View style={styles.header}>
+        <View style={[styles.header, { flexDirection }]}>
           {searchable && (
-            <GlassView style={styles.searchContainer}>
-              <Search size={18} color={colors.textMuted} style={styles.searchIcon} />
+            <GlassView style={[styles.searchContainer, { flexDirection }]}>
+              <Search size={18} color={colors.textMuted} style={isRTL ? { marginLeft: spacing.sm } : { marginRight: spacing.sm }} />
               <TextInput
                 value={searchTerm}
                 onChangeText={handleSearch}
-                placeholder={searchPlaceholder || t('common.search', 'חיפוש...')}
+                placeholder={searchPlaceholder || t('common.search', 'Search...')}
                 placeholderTextColor={colors.textMuted}
-                style={styles.searchInput}
+                style={[styles.searchInput, { textAlign }]}
               />
             </GlassView>
           )}
-          {actions && <View style={styles.actionsContainer}>{actions}</View>}
+          {actions && <View style={[styles.actionsContainer, { flexDirection }]}>{actions}</View>}
         </View>
       )}
 
@@ -82,9 +87,9 @@ export default function DataTable({
         <View style={styles.table}>
           {/* Table Header */}
           <View style={styles.tableHeader}>
-            {columns.map((col) => (
+            {displayColumns.map((col) => (
               <View key={col.key} style={[styles.headerCell, col.width ? { width: col.width as any } : { flex: 1 }]}>
-                <Text style={styles.headerText}>{col.label}</Text>
+                <Text style={[styles.headerText, { textAlign }]}>{col.label}</Text>
               </View>
             ))}
           </View>
@@ -93,11 +98,11 @@ export default function DataTable({
           {loading ? (
             <View style={styles.loadingContainer}>
               <ActivityIndicator size="small" color={colors.primary} />
-              <Text style={styles.loadingText}>{t('common.loading', 'טוען...')}</Text>
+              <Text style={styles.loadingText}>{t('common.loading', 'Loading...')}</Text>
             </View>
           ) : data.length === 0 ? (
             <View style={styles.emptyContainer}>
-              <Text style={styles.emptyText}>{emptyMessage || t('common.noData', 'אין נתונים')}</Text>
+              <Text style={styles.emptyText}>{emptyMessage || t('common.noData', 'No data')}</Text>
             </View>
           ) : (
             data.map((row, rowIndex) => (
@@ -105,10 +110,10 @@ export default function DataTable({
                 key={row.id || rowIndex}
                 style={[styles.tableRow, rowIndex < data.length - 1 && styles.tableRowBorder]}
               >
-                {columns.map((col) => (
+                {displayColumns.map((col) => (
                   <View key={col.key} style={[styles.cell, col.width ? { width: col.width as any } : { flex: 1 }]}>
                     {col.render ? col.render(row[col.key], row) : (
-                      <Text style={styles.cellText}>{row[col.key]}</Text>
+                      <Text style={[styles.cellText, { textAlign }]}>{row[col.key]}</Text>
                     )}
                   </View>
                 ))}
@@ -120,19 +125,23 @@ export default function DataTable({
 
       {/* Pagination */}
       {pagination && pagination.total > pagination.pageSize && (
-        <View style={styles.pagination}>
+        <View style={[styles.pagination, { flexDirection }]}>
           <Text style={styles.paginationText}>
-            {t('common.showing', 'מציג')} {(pagination.page - 1) * pagination.pageSize + 1}-
-            {Math.min(pagination.page * pagination.pageSize, pagination.total)} {t('common.of', 'מתוך')}{' '}
+            {t('common.showing', 'Showing')} {(pagination.page - 1) * pagination.pageSize + 1}-
+            {Math.min(pagination.page * pagination.pageSize, pagination.total)} {t('common.of', 'of')}{' '}
             {pagination.total}
           </Text>
-          <View style={styles.paginationButtons}>
+          <View style={[styles.paginationButtons, { flexDirection }]}>
             <Pressable
               onPress={() => onPageChange && onPageChange(pagination.page - 1)}
               disabled={pagination.page <= 1}
               style={[styles.pageButton, pagination.page <= 1 && styles.pageButtonDisabled]}
             >
-              <ChevronRight size={16} color={pagination.page <= 1 ? colors.textMuted : colors.text} />
+              {isRTL ? (
+                <ChevronRight size={16} color={pagination.page <= 1 ? colors.textMuted : colors.text} />
+              ) : (
+                <ChevronLeft size={16} color={pagination.page <= 1 ? colors.textMuted : colors.text} />
+              )}
             </Pressable>
             <Text style={styles.pageText}>
               {pagination.page} / {totalPages}
@@ -142,7 +151,11 @@ export default function DataTable({
               disabled={pagination.page >= totalPages}
               style={[styles.pageButton, pagination.page >= totalPages && styles.pageButtonDisabled]}
             >
-              <ChevronLeft size={16} color={pagination.page >= totalPages ? colors.textMuted : colors.text} />
+              {isRTL ? (
+                <ChevronLeft size={16} color={pagination.page >= totalPages ? colors.textMuted : colors.text} />
+              ) : (
+                <ChevronRight size={16} color={pagination.page >= totalPages ? colors.textMuted : colors.text} />
+              )}
             </Pressable>
           </View>
         </View>
@@ -175,7 +188,7 @@ const styles = StyleSheet.create({
     borderRadius: borderRadius.md,
   },
   searchIcon: {
-    marginRight: spacing.sm,
+    // margin handled inline based on RTL
   },
   searchInput: {
     flex: 1,
@@ -215,7 +228,7 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontWeight: '600',
     color: colors.textSecondary,
-    textAlign: 'right',
+    // textAlign handled inline based on RTL
   },
   tableRow: {
     display: 'flex' as any,

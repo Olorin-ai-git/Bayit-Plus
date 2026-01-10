@@ -92,10 +92,17 @@ const apiRadioService = {
 
 // Podcast Service (API)
 const apiPodcastService = {
-  getShows: (params) => api.get('/podcasts', { params }),
+  getShows: (params) => {
+    // Handle both old API (categoryId string) and new API (params object)
+    if (typeof params === 'string') {
+      return api.get('/podcasts', { params: { category: params } });
+    }
+    return api.get('/podcasts', { params });
+  },
   getShow: (showId) => api.get(`/podcasts/${showId}`),
   getEpisodes: (showId, params) => api.get(`/podcasts/${showId}/episodes`, { params }),
   getEpisode: (showId, episodeId) => api.get(`/podcasts/${showId}/episodes/${episodeId}`),
+  getCategories: () => api.get('/podcasts/categories'),
 }
 
 // Subscription Service (API)

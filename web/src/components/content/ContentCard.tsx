@@ -1,10 +1,12 @@
 import { useState } from 'react';
 import { View, Text, StyleSheet, Pressable, Image } from 'react-native';
 import { Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { Play } from 'lucide-react';
 import { colors, spacing, borderRadius } from '@bayit/shared/theme';
 import { GlassCard, GlassBadge } from '@bayit/shared/ui';
 import { useModeEnforcement } from '@bayit/shared-hooks';
+import { useDirection } from '@/hooks/useDirection';
 import LinearGradient from 'react-native-linear-gradient';
 
 interface Content {
@@ -24,6 +26,8 @@ interface ContentCardProps {
 }
 
 export default function ContentCard({ content, showProgress = false }: ContentCardProps) {
+  const { t } = useTranslation();
+  const { isRTL, textAlign, flexDirection } = useDirection();
   const [isHovered, setIsHovered] = useState(false);
   const { isUIInteractionEnabled } = useModeEnforcement();
 
@@ -75,16 +79,16 @@ export default function ContentCard({ content, showProgress = false }: ContentCa
 
             {/* Duration Badge */}
             {content.duration && (
-              <View style={styles.durationBadge}>
+              <View style={[styles.durationBadge, isRTL ? { left: 'auto', right: spacing.sm } : {}]}>
                 <Text style={styles.durationText}>{content.duration}</Text>
               </View>
             )}
 
             {/* Live Badge */}
             {content.type === 'live' && (
-              <View style={styles.liveBadge}>
+              <View style={[styles.liveBadge, isRTL ? { right: 'auto', left: spacing.sm } : {}]}>
                 <View style={styles.liveDot} />
-                <Text style={styles.liveText}>LIVE</Text>
+                <Text style={styles.liveText}>{t('common.live')}</Text>
               </View>
             )}
 
@@ -98,10 +102,10 @@ export default function ContentCard({ content, showProgress = false }: ContentCa
 
           {/* Info */}
           <View style={styles.info}>
-            <Text style={[styles.title, isHovered && styles.titleHovered]} numberOfLines={1}>
+            <Text style={[styles.title, isHovered && styles.titleHovered, { textAlign }]} numberOfLines={1}>
               {content.title}
             </Text>
-            <View style={styles.meta}>
+            <View style={[styles.meta, { flexDirection }]}>
               {content.year && <Text style={styles.metaText}>{content.year}</Text>}
               {content.year && content.category && (
                 <Text style={styles.metaDivider}>|</Text>

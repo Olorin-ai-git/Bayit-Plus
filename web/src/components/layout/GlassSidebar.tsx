@@ -68,6 +68,7 @@ const baseMenuSections: MenuSection[] = [
       { id: 'favorites', icon: '⭐', labelKey: 'nav.favorites', path: '/favorites' },
       { id: 'watchlist', icon: '📋', labelKey: 'nav.watchlist', path: '/watchlist' },
       { id: 'downloads', icon: '⬇️', labelKey: 'nav.downloads', path: '/downloads' },
+      { id: 'widgets', icon: '🎯', labelKey: 'nav.widgets', path: '/widgets' },
     ],
   },
   {
@@ -75,6 +76,13 @@ const baseMenuSections: MenuSection[] = [
     items: [
       { id: 'profile', icon: '👤', labelKey: 'nav.profile', path: '/profile' },
       { id: 'subscribe', icon: '💎', labelKey: 'nav.subscribe', path: '/subscribe' },
+    ],
+  },
+  {
+    titleKey: 'nav.settings',
+    items: [
+      { id: 'settings', icon: '⚙️', labelKey: 'nav.settings', path: '/settings' },
+      { id: 'help', icon: '❓', labelKey: 'nav.help', path: '/help' },
     ],
   },
 ];
@@ -110,17 +118,19 @@ export const GlassSidebar: React.FC<GlassSidebarProps> = ({ isExpanded, onToggle
     const isAdmin = user?.role === 'admin';
     if (!isAdmin) return baseMenuSections;
 
-    // Add Admin to account section
-    return [
-      ...baseMenuSections.slice(0, -1),
-      {
-        titleKey: 'nav.account',
-        items: [
-          { id: 'admin', icon: '👨‍💼', labelKey: 'nav.admin', path: '/admin' },
-          ...baseMenuSections[baseMenuSections.length - 1].items,
-        ],
-      },
-    ];
+    // Add Admin to settings section (like TV app)
+    return baseMenuSections.map(section => {
+      if (section.titleKey === 'nav.settings') {
+        return {
+          ...section,
+          items: [
+            { id: 'admin', icon: '👨‍💼', labelKey: 'nav.admin', path: '/admin' },
+            ...section.items,
+          ],
+        };
+      }
+      return section;
+    });
   }, [user?.role]);
 
   useEffect(() => {

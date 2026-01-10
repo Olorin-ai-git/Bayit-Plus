@@ -211,7 +211,7 @@ export default function CampaignsListPage() {
 
       {/* Table */}
       <DataTable
-        columns={columns}
+        columns={isRTL ? [...columns].reverse() : columns}
         data={campaigns}
         loading={loading}
         searchPlaceholder={t('admin.campaigns.searchPlaceholder', 'Search campaigns...')}

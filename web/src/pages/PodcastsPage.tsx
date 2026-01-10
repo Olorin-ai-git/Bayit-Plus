@@ -1,13 +1,12 @@
-import { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, FlatList, Pressable, Image, ScrollView, useWindowDimensions } from 'react-native';
+import { useState, useEffect, useMemo } from 'react';
+import { View, Text, StyleSheet, FlatList, Pressable, Image, ScrollView, useWindowDimensions, TextInput } from 'react-native';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useDirection } from '@/hooks/useDirection';
-import { Podcast, Headphones, Clock } from 'lucide-react';
+import { Podcast, Headphones, Clock, Search, X } from 'lucide-react';
 import { podcastService } from '@/services/api';
 import { colors, spacing, borderRadius } from '@bayit/shared/theme';
 import { GlassView, GlassCard, GlassCategoryPill } from '@bayit/shared/ui';
-import { getLocalizedName } from '@bayit/shared-utils/contentLocalization';
 import logger from '@/utils/logger';
 
 interface Category {
@@ -86,26 +85,87 @@ export default function PodcastsPage() {
   const [categories, setCategories] = useState<Category[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedCategory, setSelectedCategory] = useState('all');
+  const [searchQuery, setSearchQuery] = useState('');
   const { width } = useWindowDimensions();
   const episodesLabel = t('podcasts.episodes');
 
   const numColumns = width >= 1280 ? 5 : width >= 1024 ? 4 : width >= 768 ? 3 : 2;
 
+  // Filter shows by search query and category
+  const filteredShows = useMemo(() => {
+    let filtered = shows;
+
+    if (searchQuery.trim()) {
+      const query = searchQuery.toLowerCase();
+      filtered = filtered.filter(
+        (show) =>
+          show.title.toLowerCase().includes(query) ||
+          show.author?.toLowerCase().includes(query)
+      );
+    }
+
+    return filtered;
+  }, [shows, searchQuery]);
+
+  // Load categories on mount
+  useEffect(() => {
+    loadCategories();
+  }, []);
+
+  // Load shows when category changes
   useEffect(() => {
     loadShows();
   }, [selectedCategory]);
 
+  const loadCategories = async () => {
+    try {
+      const data = await podcastService.getCategories();
+      const cats = data.categories || [];
+
+      // Add "general" category for uncategorized podcasts
+      const allCategories = [
+        ...cats,
+        { id: 'general', name: 'General' }
+      ];
+
+      setCategories(allCategories);
+    } catch (error) {
+      logger.error('Failed to load podcast categories', 'PodcastsPage', error);
+      // Set default categories on error
+      setCategories([{ id: 'general', name: 'General' }]);
+    }
+  };
+
   const loadShows = async () => {
     try {
-      const data = await podcastService.getShows({
-        category: selectedCategory !== 'all' ? selectedCategory : undefined,
-      });
-      setShows(data.shows);
-      if (data.categories) {
-        setCategories(data.categories);
+      setLoading(true);
+
+      // Fetch podcasts with high limit
+      const params = {
+        limit: 100,
+        page: 1,
+      };
+
+      // Add category filter if not "all"
+      if (selectedCategory !== 'all' && selectedCategory !== 'general') {
+        params.category = selectedCategory;
+      } else if (selectedCategory === 'general') {
+        // For general/uncategorized, pass null or empty category
+        params.category = null;
       }
+
+      const data = await podcastService.getShows(params);
+      let showsList = data.shows || [];
+
+      // Filter for uncategorized podcasts if "general" is selected
+      if (selectedCategory === 'general') {
+        showsList = showsList.filter((show: Show) => !show.category || show.category === '' || show.category === 'general');
+      }
+
+      setShows(showsList);
     } catch (error) {
       logger.error('Failed to load podcasts', 'PodcastsPage', error);
+      setShows([]);
     } finally {
       setLoading(false);
     }
@@ -134,6 +194,23 @@ export default function PodcastsPage() {
         <Text style={[styles.title, { textAlign }]}>{t('podcasts.title')}</Text>
       </View>
 
+      {/* Search Input */}
+      <GlassCard style={[styles.searchContainer, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
+        <Search size={18} color={colors.textMuted} style={{ marginHorizontal: spacing.sm }} />
+        <TextInput
+          style={styles.searchInput}
+          placeholder={t('common.search')}
+          placeholderTextColor={colors.textMuted}
+          value={searchQuery}
+          onChangeText={setSearchQuery}
+        />
+        {searchQuery ? (
+          <Pressable onPress={() => setSearchQuery('')} style={{ padding: spacing.sm }}>
+            <X size={18} color={colors.textMuted} />
+          </Pressable>
+        ) : null}
+      </GlassCard>
+
       {/* Category Filter */}
       <ScrollView
         horizontal
@@ -147,49 +224,39 @@ export default function PodcastsPage() {
           isActive={selectedCategory === 'all'}
           onPress={() => setSelectedCategory('all')}
         />
-        <GlassCategoryPill
-          label={t('podcasts.categories.news')}
-          emoji="📰"
-          isActive={selectedCategory === 'news'}
-          onPress={() => setSelectedCategory('news')}
-        />
-        <GlassCategoryPill
-          label={t('podcasts.categories.tech')}
-          emoji="💻"
-          isActive={selectedCategory === 'tech'}
-          onPress={() => setSelectedCategory('tech')}
-        />
-        <GlassCategoryPill
-          label={t('podcasts.categories.jewish')}
-          emoji="✡️"
-          isActive={selectedCategory === 'jewish'}
-          onPress={() => setSelectedCategory('jewish')}
-        />
-        <GlassCategoryPill
-          label={t('podcasts.categories.entertainment')}
-          emoji="🎭"
-          isActive={selectedCategory === 'entertainment'}
-          onPress={() => setSelectedCategory('entertainment')}
-        />
-        <GlassCategoryPill
-          label={t('podcasts.categories.sports')}
-          emoji="⚽"
-          isActive={selectedCategory === 'sports'}
-          onPress={() => setSelectedCategory('sports')}
-        />
-        {categories.map((category) => (
-          <GlassCategoryPill
-            key={category.id}
-            label={getLocalizedName(category, i18n.language)}
-            isActive={selectedCategory === category.id}
-            onPress={() => setSelectedCategory(category.id)}
-          />
-        ))}
+        {categories.map((category) => {
+          // Map common categories to emojis
+          const emojiMap: Record<string, string> = {
+            'news': '📰',
+            'politics': '🏛️',
+            'tech': '💻',
+            'business': '💼',
+            'entertainment': '🎭',
+            'sports': '⚽',
+            'jewish': '✡️',
+            'history': '📚',
+            'educational': '🎓',
+            'general': '📌',
+          };
+
+          const emoji = emojiMap[category.id] || '🎙️';
+          const label = t(`podcasts.categories.${category.id}`, category.name);
+
+          return (
+            <GlassCategoryPill
+              key={category.id}
+              label={label}
+              emoji={emoji}
+              isActive={selectedCategory === category.id}
+              onPress={() => setSelectedCategory(category.id)}
+            />
+          );
+        })}
       </ScrollView>
 
       {/* Shows Grid */}
       <FlatList
-        data={shows}
+        data={filteredShows}
         keyExtractor={(item) => item.id}
         numColumns={numColumns}
         key={numColumns}
@@ -204,8 +271,17 @@ export default function PodcastsPage() {
           <View style={styles.emptyState}>
             <GlassCard style={styles.emptyCard}>
               <Podcast size={64} color={colors.textMuted} />
-              <Text style={styles.emptyTitle}>{t('podcasts.noPodcasts')}</Text>
-              <Text style={styles.emptyDescription}>{t('podcasts.tryLater')}</Text>
+              {searchQuery ? (
+                <>
+                  <Text style={styles.emptyTitle}>{t('common.noResults')}</Text>
+                  <Text style={styles.emptyDescription}>{t('common.tryDifferentSearch')}</Text>
+                </>
+              ) : (
+                <>
+                  <Text style={styles.emptyTitle}>{t('podcasts.noPodcasts')}</Text>
+                  <Text style={styles.emptyDescription}>{t('podcasts.tryLater')}</Text>
+                </>
+              )}
             </GlassCard>
           </View>
         }
@@ -228,6 +304,24 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: spacing.sm,
     marginBottom: spacing.lg,
+  },
+  searchContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: spacing.md,
+    paddingVertical: spacing.sm,
+    marginBottom: spacing.lg,
+    borderRadius: borderRadius.lg,
+    backgroundColor: 'rgba(255, 255, 255, 0.08)',
+  },
+  searchInput: {
+    flex: 1,
+    paddingVertical: spacing.md,
+    paddingHorizontal: spacing.sm,
+    fontSize: 14,
+    color: colors.text,
+    // @ts-ignore
+    outlineStyle: 'none',
   },
   headerIcon: {
     width: 48,

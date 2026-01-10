@@ -1,16 +1,27 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { View, Text, StyleSheet, ScrollView, Pressable, ActivityIndicator } from 'react-native';
-import { useParams, Link } from 'react-router-dom';
-import { ArrowRight, Plus, Share2, ThumbsUp } from 'lucide-react';
+import { useParams, Link, useLocation, useNavigate } from 'react-router-dom';
+import { ArrowRight, Plus, Share2, ThumbsUp, Trash2, Play, SkipForward, SkipBack, ListMusic, X } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useDirection } from '@/hooks/useDirection';
 import VideoPlayer from '@/components/player/VideoPlayer';
 import AudioPlayer from '@/components/player/AudioPlayer';
 import ContentCarousel from '@/components/content/ContentCarousel';
 import { contentService, liveService, radioService, podcastService, historyService, chaptersService } from '@/services/api';
+import { podcastsService } from '@/services/adminApi';
 import { colors, spacing, borderRadius } from '@bayit/shared/theme';
 import { GlassCard, GlassButton, GlassView } from '@bayit/shared/ui';
 import logger from '@/utils/logger';
+
+// Flow/Playlist item type
+interface PlaylistItem {
+  content_id: string;
+  content_type: string;
+  title: string;
+  thumbnail?: string;
+  duration_hint?: number;
+  order: number;
+}
 
 interface WatchPageProps {
   type?: 'vod' | 'live' | 'radio' | 'podcast';
@@ -45,6 +56,7 @@ interface Episode {
   id: string;
   title: string;
   duration: string;
+  audioUrl?: string;
 }
 
 interface ScheduleItem {
@@ -62,23 +74,55 @@ export default function WatchPage({ type = 'vod' }: WatchPageProps) {
   const { t } = useTranslation();
   const { isRTL, textAlign, flexDirection } = useDirection();
   const params = useParams();
-  const contentId = params.contentId || params.channelId || params.stationId || params.showId || '';
+  const location = useLocation();
+  const navigate = useNavigate();
+
+  // Get playlist data from navigation state (for flows)
+  const locationState = location.state as {
+    flowId?: string;
+    flowName?: string;
+    playlist?: PlaylistItem[];
+    currentIndex?: number;
+  } | null;
+
+  const [playlist, setPlaylist] = useState<PlaylistItem[]>(locationState?.playlist || []);
+  const [playlistIndex, setPlaylistIndex] = useState(locationState?.currentIndex || 0);
+  const [flowName, setFlowName] = useState(locationState?.flowName || '');
+  const [showPlaylistPanel, setShowPlaylistPanel] = useState(false);
+
+  // Determine current content - from playlist or URL params
+  const currentPlaylistItem = playlist.length > 0 ? playlist[playlistIndex] : null;
+  const contentId = currentPlaylistItem?.content_id || params.contentId || params.channelId || params.stationId || params.showId || '';
+  const effectiveType = currentPlaylistItem?.content_type as typeof type || type;
+
   const [content, setContent] = useState<ContentData | null>(null);
   const [streamUrl, setStreamUrl] = useState<string | null>(null);
   const [related, setRelated] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [chapters, setChapters] = useState<Chapter[]>([]);
   const [chaptersLoading, setChaptersLoading] = useState(false);
+  const [currentEpisodeId, setCurrentEpisodeId] = useState<string | null>(null);
+
+  // Update playlist when location state changes
+  useEffect(() => {
+    if (locationState?.playlist) {
+      setPlaylist(locationState.playlist);
+      setPlaylistIndex(locationState.currentIndex || 0);
+      setFlowName(locationState.flowName || '');
+    }
+  }, [locationState?.flowId]);
 
   useEffect(() => {
     loadContent();
-  }, [contentId, type]);
+  }, [contentId, effectiveType]);
 
   const loadContent = async () => {
     setLoading(true);
     try {
       let data: ContentData, stream: { url?: string } | undefined;
-      switch (type) {
+      // Use effectiveType which respects playlist item type
+      const contentType = effectiveType;
+      switch (contentType) {
         case 'live':
           [data, stream] = await Promise.all([
             liveService.getChannel(contentId),
@@ -98,6 +142,7 @@ export default function WatchPage({ type = 'vod' }: WatchPageProps) {
           }
           break;
         default:
+          // vod, judaism, kids all use content service
           [data, stream] = await Promise.all([
             contentService.getById(contentId),
             contentService.getStreamUrl(contentId),
@@ -110,7 +155,7 @@ export default function WatchPage({ type = 'vod' }: WatchPageProps) {
         setRelated(data.related);
       }
 
-      if (type !== 'live' && type !== 'radio' && type !== 'podcast') {
+      if (contentType !== 'live' && contentType !== 'radio' && contentType !== 'podcast') {
         loadChapters();
       }
     } catch (error) {
@@ -119,6 +164,41 @@ export default function WatchPage({ type = 'vod' }: WatchPageProps) {
       setLoading(false);
     }
   };
+
+  // Playlist navigation handlers
+  const hasNextItem = playlist.length > 0 && playlistIndex < playlist.length - 1;
+  const hasPrevItem = playlist.length > 0 && playlistIndex > 0;
+
+  const playNextItem = useCallback(() => {
+    if (hasNextItem) {
+      setPlaylistIndex(prev => prev + 1);
+    }
+  }, [hasNextItem]);
+
+  const playPrevItem = useCallback(() => {
+    if (hasPrevItem) {
+      setPlaylistIndex(prev => prev - 1);
+    }
+  }, [hasPrevItem]);
+
+  const playItemAtIndex = useCallback((index: number) => {
+    if (index >= 0 && index < playlist.length) {
+      setPlaylistIndex(index);
+    }
+  }, [playlist.length]);
+
+  const handleContentEnded = useCallback(() => {
+    logger.info('Content ended, checking for next item', 'WatchPage');
+    if (hasNextItem) {
+      playNextItem();
+    }
+  }, [hasNextItem, playNextItem]);
+
+  const exitFlow = useCallback(() => {
+    setPlaylist([]);
+    setFlowName('');
+    navigate('/flows');
+  }, [navigate]);
 
   const loadChapters = async () => {
     setChaptersLoading(true);
@@ -136,6 +216,27 @@ export default function WatchPage({ type = 'vod' }: WatchPageProps) {
   const handleProgress = async (position: number, duration: number) => {
     // Fire-and-forget: history update is non-critical and should not interrupt playback
     historyService.updateProgress(contentId, type, position, duration).catch(() => {});
+  };
+
+  const handlePlayEpisode = (episode: Episode) => {
+    if (episode.audioUrl) {
+      setStreamUrl(episode.audioUrl);
+      setCurrentEpisodeId(episode.id);
+    }
+  };
+
+  const handleDeleteEpisode = async (episodeId: string) => {
+    if (!window.confirm(t('watch.confirmDeleteEpisode') || 'Delete this episode?')) {
+      return;
+    }
+    try {
+      await podcastsService.deleteEpisode(contentId, episodeId);
+      // Reload content to refresh episodes list
+      await loadContent();
+      logger.info('Episode deleted successfully');
+    } catch (error) {
+      logger.error('Failed to delete episode', 'WatchPage', error);
+    }
   };
 
   if (loading) {
@@ -161,8 +262,9 @@ export default function WatchPage({ type = 'vod' }: WatchPageProps) {
     );
   }
 
-  const isAudio = type === 'radio' || type === 'podcast';
+  const isAudio = effectiveType === 'radio' || effectiveType === 'podcast';
   const title = content.title || content.name || '';
+  const isInFlow = playlist.length > 0;
 
   return (
     <ScrollView style={styles.container} contentContainerStyle={styles.contentContainer}>
@@ -174,6 +276,42 @@ export default function WatchPage({ type = 'vod' }: WatchPageProps) {
         </Pressable>
       </View>
 
+      {/* Flow Header - shown when playing a flow */}
+      {isInFlow && (
+        <View style={[styles.flowHeader, isRTL && styles.flowHeaderRTL]}>
+          <View style={[styles.flowHeaderLeft, isRTL && styles.flowHeaderLeftRTL]}>
+            <Pressable onPress={() => setShowPlaylistPanel(!showPlaylistPanel)} style={styles.flowIconButton}>
+              <ListMusic size={20} color={colors.primary} />
+            </Pressable>
+            <View>
+              <Text style={styles.flowName}>{flowName}</Text>
+              <Text style={styles.flowProgress}>
+                {playlistIndex + 1} / {playlist.length}
+              </Text>
+            </View>
+          </View>
+          <View style={[styles.flowControls, isRTL && styles.flowControlsRTL]}>
+            <Pressable
+              onPress={playPrevItem}
+              style={[styles.flowNavButton, !hasPrevItem && styles.flowNavButtonDisabled]}
+              disabled={!hasPrevItem}
+            >
+              <SkipBack size={20} color={hasPrevItem ? colors.text : colors.textMuted} />
+            </Pressable>
+            <Pressable
+              onPress={playNextItem}
+              style={[styles.flowNavButton, !hasNextItem && styles.flowNavButtonDisabled]}
+              disabled={!hasNextItem}
+            >
+              <SkipForward size={20} color={hasNextItem ? colors.text : colors.textMuted} />
+            </Pressable>
+            <Pressable onPress={exitFlow} style={styles.flowExitButton}>
+              <X size={18} color={colors.textMuted} />
+            </Pressable>
+          </View>
+        </View>
+      )}
+
       {/* Player */}
       <View style={styles.playerContainer}>
         {isAudio ? (
@@ -182,7 +320,8 @@ export default function WatchPage({ type = 'vod' }: WatchPageProps) {
             title={title}
             artist={content.artist || content.author}
             cover={content.cover || content.logo || content.thumbnail}
-            isLive={type === 'radio'}
+            isLive={effectiveType === 'radio'}
+            onEnded={handleContentEnded}
           />
         ) : (
           <VideoPlayer
@@ -190,22 +329,66 @@ export default function WatchPage({ type = 'vod' }: WatchPageProps) {
             poster={content.backdrop || content.thumbnail}
             title={title}
             contentId={contentId}
-            contentType={type}
+            contentType={effectiveType}
             onProgress={handleProgress}
-            isLive={type === 'live'}
+            isLive={effectiveType === 'live'}
             chapters={chapters}
             chaptersLoading={chaptersLoading}
+            onEnded={handleContentEnded}
           />
         )}
       </View>
+
+      {/* Playlist Panel */}
+      {showPlaylistPanel && isInFlow && (
+        <View style={[styles.playlistPanel, isRTL && styles.playlistPanelRTL]}>
+          <View style={styles.playlistPanelHeader}>
+            <Text style={styles.playlistPanelTitle}>{t('watch.playlist') || 'Playlist'}</Text>
+            <Pressable onPress={() => setShowPlaylistPanel(false)}>
+              <X size={20} color={colors.textMuted} />
+            </Pressable>
+          </View>
+          <ScrollView style={styles.playlistPanelScroll}>
+            {playlist.map((item, index) => (
+              <Pressable
+                key={`${item.content_id}-${index}`}
+                style={[
+                  styles.playlistItem,
+                  index === playlistIndex && styles.playlistItemActive,
+                ]}
+                onPress={() => playItemAtIndex(index)}
+              >
+                <Text style={styles.playlistItemNumber}>{index + 1}</Text>
+                <View style={styles.playlistItemInfo}>
+                  <Text
+                    style={[
+                      styles.playlistItemTitle,
+                      index === playlistIndex && styles.playlistItemTitleActive,
+                    ]}
+                    numberOfLines={1}
+                  >
+                    {item.title}
+                  </Text>
+                  <Text style={styles.playlistItemType}>{item.content_type}</Text>
+                </View>
+                {index === playlistIndex && (
+                  <View style={styles.playlistItemPlaying}>
+                    <Play size={14} color={colors.primary} fill={colors.primary} />
+                  </View>
+                )}
+              </Pressable>
+            ))}
+          </ScrollView>
+        </View>
+      )}
 
       {/* Content Info */}
       <View style={styles.infoContainer}>
         <View style={styles.mainInfo}>
           {/* Live Badge */}
-          {type === 'live' && (
+          {effectiveType === 'live' && (
             <View style={styles.liveBadge}>
-              <Text style={styles.liveBadgeText}>LIVE</Text>
+              <Text style={styles.liveBadgeText}>{t('common.live')}</Text>
             </View>
           )}
 
@@ -274,20 +457,49 @@ export default function WatchPage({ type = 'vod' }: WatchPageProps) {
             <View style={styles.episodesSection}>
               <Text style={styles.sectionTitle}>{t('watch.episodesList')}</Text>
               {content.episodes.map((episode, i) => (
-                <Pressable key={episode.id} style={styles.episodeItem}>
+                <View
+                  key={episode.id}
+                  style={[
+                    styles.episodeItem,
+                    currentEpisodeId === episode.id && styles.episodeItemActive
+                  ]}
+                  // @ts-ignore
+                  pointerEvents="box-none"
+                >
+                  <Pressable
+                    style={styles.playButton}
+                    onPress={() => handlePlayEpisode(episode)}
+                    // @ts-ignore
+                    pointerEvents="auto"
+                  >
+                    <Play size={18} color={colors.primary} fill={colors.primary} />
+                  </Pressable>
                   <Text style={styles.episodeNumber}>{i + 1}</Text>
-                  <View style={styles.episodeInfo}>
+                  <Pressable
+                    style={styles.episodeInfoPress}
+                    onPress={() => handlePlayEpisode(episode)}
+                    // @ts-ignore
+                    pointerEvents="auto"
+                  >
                     <Text style={styles.episodeTitle}>{episode.title}</Text>
                     <Text style={styles.episodeDuration}>{episode.duration}</Text>
-                  </View>
-                </Pressable>
+                  </Pressable>
+                  <Pressable
+                    style={styles.deleteButton}
+                    onPress={() => handleDeleteEpisode(episode.id)}
+                    // @ts-ignore
+                    pointerEvents="auto"
+                  >
+                    <Trash2 size={16} color={colors.error} />
+                  </Pressable>
+                </View>
               ))}
             </View>
           )}
         </View>
 
         {/* EPG / Schedule (for live) */}
-        {type === 'live' && content.schedule && content.schedule.length > 0 && (
+        {effectiveType === 'live' && content.schedule && content.schedule.length > 0 && (
           <View style={styles.scheduleSection}>
             <Text style={styles.sectionTitle}>{t('watch.schedule')}</Text>
             {content.schedule.map((show, i) => (
@@ -353,6 +565,10 @@ const styles = StyleSheet.create({
     maxWidth: 1400,
     marginHorizontal: 'auto',
     width: '100%',
+    aspectRatio: 16 / 9,
+    minHeight: 300,
+    borderRadius: borderRadius.lg,
+    overflow: 'hidden',
   },
   skeletonPlayer: {
     aspectRatio: 16 / 9,
@@ -493,17 +709,55 @@ const styles = StyleSheet.create({
   episodeItem: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: spacing.md,
+    gap: spacing.sm,
     padding: spacing.md,
     backgroundColor: colors.glass,
     borderRadius: borderRadius.md,
     marginBottom: spacing.sm,
   },
+  episodeItemActive: {
+    backgroundColor: 'rgba(16, 185, 129, 0.2)',
+    borderWidth: 1,
+    borderColor: colors.primary,
+  },
+  playButton: {
+    width: 40,
+    height: 40,
+    minWidth: 40,
+    minHeight: 40,
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderRadius: borderRadius.sm,
+    backgroundColor: 'rgba(16, 185, 129, 0.1)',
+    cursor: 'pointer',
+    // @ts-ignore
+    transition: 'all 0.2s ease',
+  },
+  deleteButton: {
+    width: 40,
+    height: 40,
+    minWidth: 40,
+    minHeight: 40,
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderRadius: borderRadius.sm,
+    backgroundColor: 'rgba(239, 68, 68, 0.1)',
+    cursor: 'pointer',
+    // @ts-ignore
+    transition: 'all 0.2s ease',
+  },
   episodeNumber: {
-    width: 32,
-    fontSize: 14,
+    width: 24,
+    fontSize: 12,
     color: colors.textMuted,
     textAlign: 'center',
+    flexShrink: 0,
+  },
+  episodeInfoPress: {
+    flex: 1,
+    cursor: 'pointer',
+    paddingVertical: spacing.xs,
+    paddingHorizontal: spacing.sm,
   },
   episodeInfo: {
     flex: 1,
@@ -554,5 +808,147 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontWeight: '500',
     color: colors.text,
+  },
+  // Flow/Playlist styles
+  flowHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingHorizontal: spacing.md,
+    paddingVertical: spacing.sm,
+    marginBottom: spacing.sm,
+    maxWidth: 1400,
+    marginHorizontal: 'auto',
+    width: '100%',
+    backgroundColor: colors.glass,
+    borderRadius: borderRadius.md,
+  },
+  flowHeaderRTL: {
+    flexDirection: 'row-reverse',
+  },
+  flowHeaderLeft: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.sm,
+  },
+  flowHeaderLeftRTL: {
+    flexDirection: 'row-reverse',
+  },
+  flowIconButton: {
+    width: 40,
+    height: 40,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'rgba(16, 185, 129, 0.1)',
+    borderRadius: borderRadius.md,
+  },
+  flowName: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: colors.text,
+  },
+  flowProgress: {
+    fontSize: 12,
+    color: colors.textMuted,
+  },
+  flowControls: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.xs,
+  },
+  flowControlsRTL: {
+    flexDirection: 'row-reverse',
+  },
+  flowNavButton: {
+    width: 36,
+    height: 36,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: colors.glass,
+    borderRadius: borderRadius.md,
+  },
+  flowNavButtonDisabled: {
+    opacity: 0.5,
+  },
+  flowExitButton: {
+    width: 36,
+    height: 36,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginLeft: spacing.sm,
+  },
+  playlistPanel: {
+    position: 'absolute' as any,
+    top: 120,
+    left: spacing.md,
+    width: 300,
+    maxHeight: 400,
+    backgroundColor: colors.cardBg,
+    borderRadius: borderRadius.lg,
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.1)',
+    zIndex: 100,
+    // @ts-ignore
+    boxShadow: '0 8px 32px rgba(0, 0, 0, 0.4)',
+  },
+  playlistPanelRTL: {
+    left: 'auto' as any,
+    right: spacing.md,
+  },
+  playlistPanelHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    padding: spacing.md,
+    borderBottomWidth: 1,
+    borderBottomColor: 'rgba(255, 255, 255, 0.1)',
+  },
+  playlistPanelTitle: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: colors.text,
+  },
+  playlistPanelScroll: {
+    maxHeight: 320,
+  },
+  playlistItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    padding: spacing.sm,
+    paddingHorizontal: spacing.md,
+    gap: spacing.sm,
+    borderBottomWidth: 1,
+    borderBottomColor: 'rgba(255, 255, 255, 0.05)',
+  },
+  playlistItemActive: {
+    backgroundColor: 'rgba(16, 185, 129, 0.15)',
+  },
+  playlistItemNumber: {
+    width: 24,
+    fontSize: 12,
+    color: colors.textMuted,
+    textAlign: 'center',
+  },
+  playlistItemInfo: {
+    flex: 1,
+  },
+  playlistItemTitle: {
+    fontSize: 14,
+    color: colors.text,
+  },
+  playlistItemTitleActive: {
+    color: colors.primary,
+    fontWeight: '600',
+  },
+  playlistItemType: {
+    fontSize: 11,
+    color: colors.textMuted,
+    textTransform: 'capitalize',
+  },
+  playlistItemPlaying: {
+    width: 24,
+    height: 24,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
 });

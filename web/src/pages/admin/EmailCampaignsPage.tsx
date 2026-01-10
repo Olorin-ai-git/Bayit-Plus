@@ -265,7 +265,7 @@ export default function EmailCampaignsPage() {
       </View>
 
       <DataTable
-        columns={columns}
+        columns={isRTL ? [...columns].reverse() : columns}
         data={campaigns}
         loading={loading}
         searchPlaceholder={t('admin.emailCampaigns.searchPlaceholder')}

@@ -7,6 +7,7 @@ import { usersService } from '@/services/adminApi';
 import { colors, spacing, borderRadius } from '@bayit/shared/theme';
 import { GlassCard, GlassButton } from '@bayit/shared/ui';
 import { useDirection } from '@/hooks/useDirection';
+import { useModal } from '@/contexts/ModalContext';
 import logger from '@/utils/logger';
 
 interface User {
@@ -55,6 +56,7 @@ const formatCurrency = (amount: number, currency = 'USD') => {
 export default function UserDetailPage() {
   const { t } = useTranslation();
   const { isRTL, textAlign, flexDirection } = useDirection();
+  const { showConfirm } = useModal();
   const { userId } = useParams<{ userId: string }>();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
@@ -87,14 +89,20 @@ export default function UserDetailPage() {
     loadUserData();
   }, [userId]);
 
-  const handleResetPassword = async () => {
-    if (!user || !window.confirm(t('admin.users.confirmResetPassword', { email: user.email }))) return;
-    try {
-      await usersService.resetPassword(user.id);
-      alert(t('admin.users.resetPasswordSent'));
-    } catch (error) {
-      logger.error('Failed to reset password', 'UserDetailPage', error);
-    }
+  const handleResetPassword = () => {
+    if (!user) return;
+    showConfirm(
+      t('admin.users.confirmResetPassword', { email: user.email }),
+      async () => {
+        try {
+          await usersService.resetPassword(user.id);
+          alert(t('admin.users.resetPasswordSent'));
+        } catch (error) {
+          logger.error('Failed to reset password', 'UserDetailPage', error);
+        }
+      },
+      { confirmText: t('common.send', 'Send') }
+    );
   };
 
   const handleBan = async () => {
@@ -109,14 +117,20 @@ export default function UserDetailPage() {
     }
   };
 
-  const handleUnban = async () => {
-    if (!user || !window.confirm(t('admin.users.confirmUnban', { defaultValue: 'Unban user?' }))) return;
-    try {
-      await usersService.unbanUser(user.id);
-      loadUserData();
-    } catch (error) {
-      logger.error('Failed to unban user', 'UserDetailPage', error);
-    }
+  const handleUnban = () => {
+    if (!user) return;
+    showConfirm(
+      t('admin.users.confirmUnban', { defaultValue: 'Unban user?' }),
+      async () => {
+        try {
+          await usersService.unbanUser(user.id);
+          loadUserData();
+        } catch (error) {
+          logger.error('Failed to unban user', 'UserDetailPage', error);
+        }
+      },
+      { confirmText: t('common.unban', 'Unban') }
+    );
   };
 
   if (loading) {

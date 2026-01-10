@@ -14,6 +14,7 @@
     "playNow": "נגן עכשיו",
     "play": "נגן",
     "moreInfo": "מידע נוסף",
+    "seeAll": "הכל",
     "new": "חדש",
     "live": "שידור חי",
     "recommended": "מומלץ",
@@ -34,7 +35,9 @@
     "send": "שלח",
     "done": "סיום",
     "all": "הכל",
-    "deleting": "מוחק..."
+    "deleting": "מוחק...",
+    "noResults": "לא נמצאו תוצאות",
+    "tryDifferentSearch": "נסה מונח חיפוש אחר"
   },
   "demo": {
     "banner": "מצב הדמו",
@@ -197,6 +200,7 @@
     "favorites": "מועדפים",
     "watchlist": "רשימת צפייה",
     "downloads": "הורדות",
+    "widgets": "וידג'טים",
     "help": "עזרה ותמיכה",
     "discover": "גילוי",
     "account": "חשבון",
@@ -642,6 +646,7 @@
   "settings": {
     "title": "הגדרות",
     "language": "שפה",
+    "appLanguage": "שפת האפליקציה",
     "selectLanguage": "בחר שפה",
     "languages": {
       "en": "English",
@@ -649,11 +654,35 @@
       "es": "Español"
     },
     "notifications": "התראות",
-    "playback": "הגדרות ניגון",
+    "pushNotifications": "התראות פוש",
+    "playback": "ניגון",
     "quality": "איכות",
     "subtitles": "כתוביות",
     "autoplay": "ניגון אוטומטי",
+    "appearance": "מראה",
+    "darkMode": "מצב כהה",
+    "privacy": "פרטיות",
+    "privacyPolicy": "מדיניות פרטיות",
+    "termsOfService": "תנאי שימוש",
     "about": "אודות"
+  },
+  "help": {
+    "subtitle": "איך נוכל לעזור לך?",
+    "email": "תמיכה באימייל",
+    "phone": "תמיכה טלפונית",
+    "chat": "צ'אט חי",
+    "chatAvailable": "זמין 24/7",
+    "faq": {
+      "title": "שאלות נפוצות",
+      "q1": "איך משנים תוכנית מנוי?",
+      "a1": "עברו להגדרות > מנוי כדי לצפות ולשנות את התוכנית הנוכחית. אפשר לשדרג או להוריד דרגה בכל עת.",
+      "q2": "איך מורידים תוכן לצפייה אופליין?",
+      "a2": "לחצו על אייקון ההורדה בכל תוכן כדי לשמור אותו לצפייה אופליין. ההורדות זמינות במכשירים ניידים בלבד.",
+      "q3": "למה הסרטון לא מתנגן?",
+      "a3": "בדקו את חיבור האינטרנט. אם הבעיה נמשכת, נסו לנקות את מטמון האפליקציה או להפעיל מחדש.",
+      "q4": "איך מבטלים מנוי?",
+      "a4": "אפשר לבטל את המנוי בכל עת דרך הגדרות > מנוי > ביטול תוכנית. הגישה תישמר עד סוף תקופת החיוב."
+    }
   },
   "voice": {
     "listening": "מקשיב...",
@@ -723,6 +752,39 @@
       "continue": "המשך צפייה",
       "movies": "סרטים",
       "series": "סדרות"
+    }
+  },
+  "widgets": {
+    "empty": "אין וידג'טים עדיין",
+    "emptyHint": "הוידג'טים שלך יופיעו כאן",
+    "itemsTotal": "וידג'טים בסך הכל",
+    "systemWidgets": "וידג'טים של מערכת",
+    "personalWidgets": "הוידג'טים שלי",
+    "form": {
+      "title": "יצירת וידג'ט",
+      "basicInfo": "מידע בסיסי",
+      "titlePlaceholder": "כותרת וידג'ט",
+      "titleRequired": "כותרת וידג'ט נדרשת",
+      "descriptionPlaceholder": "תיאור (אופציונלי)",
+      "iconPlaceholder": "אימוג'י של סמל (לדוגמה, 📺)",
+      "content": "תוכן",
+      "fromLibrary": "מהספרייה",
+      "iframe": "iFrame",
+      "selectContent": "בחר תוכן (ערוצים, פודקסטים, תוכניות וכו')",
+      "iframeUrl": "כתובת ה-URL של ה-iFrame",
+      "iframeUrlRequired": "כתובת ה-URL של ה-iFrame נדרשת",
+      "iframeTitle": "כותרת ה-iFrame",
+      "positionSize": "עמדה וגודל",
+      "behavior": "התנהגות",
+      "mutedByDefault": "שקט כברירת מחדל",
+      "closable": "ניתן לסגור",
+      "draggable": "ניתן לגרור",
+      "widgetOrder": "ترتیب וידג'ט",
+      "orderPlaceholder": "ترتیب (0 = ראשון)",
+      "saveWidget": "שמור וידג'ט",
+      "saving": "שומר...",
+      "cancel": "ביטול",
+      "change": "שנה"
     }
   },
   "trending": {
@@ -927,6 +989,50 @@
       "sendEmail": "שלח אימייל",
       "viewReports": "צפה בדוחות"
     },
+    "auditActions": {
+      "user_created": "משתמש נוצר",
+      "user_updated": "משתמש עודכן",
+      "user_deleted": "משתמש נמחק",
+      "user_role_changed": "תפקיד משתמש שונה",
+      "campaign_created": "קמפיין נוצר",
+      "campaign_updated": "קמפיין עודכן",
+      "campaign_deleted": "קמפיין נמחק",
+      "campaign_activated": "קמפיין הופעל",
+      "subscription_created": "מנוי נוצר",
+      "subscription_updated": "מנוי עודכן",
+      "subscription_canceled": "מנוי בוטל",
+      "refund_processed": "החזר עובד",
+      "payment_received": "תשלום התקבל",
+      "settings_updated": "הגדרות עודכנו",
+      "login": "התחברות",
+      "logout": "התנתקות",
+      "content_created": "תוכן נוצר",
+      "content_updated": "תוכן עודכן",
+      "content_deleted": "תוכן נמחק",
+      "content_published": "תוכן פורסם",
+      "content_unpublished": "תוכן בוטל פרסומו",
+      "category_created": "קטגוריה נוצרה",
+      "category_updated": "קטגוריה עודכנה",
+      "category_deleted": "קטגוריה נמחקה",
+      "live_channel_created": "ערוץ חי נוצר",
+      "live_channel_updated": "ערוץ חי עודכן",
+      "live_channel_deleted": "ערוץ חי נמחק",
+      "radio_station_created": "תחנת רדיו נוצרה",
+      "radio_station_updated": "תחנת רדיו עודכנה",
+      "radio_station_deleted": "תחנת רדיו נמחקה",
+      "podcast_created": "פודקאסט נוצר",
+      "podcast_updated": "פודקאסט עודכן",
+      "podcast_deleted": "פודקאסט נמחק",
+      "podcast_episode_created": "פרק פודקאסט נוצר",
+      "podcast_episode_updated": "פרק פודקאסט עודכן",
+      "podcast_episode_deleted": "פרק פודקאסט נמחק",
+      "content_imported": "תוכן יובא",
+      "widget_created": "ווידג'ט נוצר",
+      "widget_updated": "ווידג'ט עודכן",
+      "widget_deleted": "ווידג'ט נמחק",
+      "widget_published": "ווידג'ט פורסם",
+      "widget_unpublished": "ווידג'ט בוטל פרסומו"
+    },
     "placeholder": {
       "userId": "הזן מזהה משתמש",
       "discount": "0"
@@ -1059,10 +1165,95 @@
       "bodyPlaceholder": "תוכן ההודעה"
     },
     "refunds": {
-      "title": "החזרים"
+      "title": "החזרים",
+      "subtitle": "ניהול בקשות להחזר",
+      "approveModal": {
+        "title": "אישור החזר",
+        "message": "לאשר החזר של {{amount}}?"
+      },
+      "confirmApprove": "לאשר החזר של {{amount}}?",
+      "confirmDelete": "למחוק בקשת החזר?",
+      "rejectModal": {
+        "title": "דחיית בקשת החזר",
+        "message": "דחיית החזר של {{amount}}",
+        "reasonLabel": "סיבת הדחייה",
+        "reasonPlaceholder": "נא להזין סיבת דחייה...",
+        "submitButton": "דחה בקשה"
+      },
+      "status": {
+        "pending": "ממתין",
+        "approved": "אושר",
+        "rejected": "נדחה"
+      },
+      "columns": {
+        "id": "מזהה",
+        "user": "משתמש",
+        "amount": "סכום",
+        "reason": "סיבה",
+        "status": "סטטוס",
+        "requestDate": "תאריך בקשה"
+      },
+      "stats": {
+        "pendingTitle": "ממתינים לאישור",
+        "approvedTitle": "אושרו",
+        "rejectedTitle": "נדחו",
+        "totalRefunded": "סה״כ הוחזר"
+      },
+      "emptyMessage": "לא נמצאו בקשות להחזר",
+      "errors": {
+        "rejectReasonRequired": "נא להזין סיבת דחייה"
+      }
     },
     "emailCampaigns": {
-      "title": "קמפיינים בדוא״ל"
+      "title": "קמפיינים בדוא״ל",
+      "subtitle": "יצירה וניהול קמפייני דוא״ל",
+      "createButton": "קמפיין חדש",
+      "searchPlaceholder": "חפש קמפיין...",
+      "emptyMessage": "לא נמצאו קמפיינים",
+      "status": {
+        "draft": "טיוטה",
+        "active": "פעיל",
+        "scheduled": "מתוזמן",
+        "completed": "הושלם"
+      },
+      "columns": {
+        "name": "שם הקמפיין",
+        "status": "סטטוס",
+        "sent": "נשלחו",
+        "opened": "נפתחו",
+        "clicked": "לחיצות",
+        "created": "נוצר",
+        "actions": "פעולות"
+      },
+      "editModal": {
+        "title": "עריכת קמפיין"
+      },
+      "sendTestEmail": "שלח בדיקה",
+      "confirmSend": "לשלוח את הקמפיין \"{{name}}\"?",
+      "confirmDelete": "למחוק את הקמפיין \"{{name}}\"?",
+      "testEmailSent": "אימייל בדיקה נשלח!",
+      "createModal": {
+        "title": "קמפיין דוא״ל חדש"
+      },
+      "form": {
+        "name": "שם הקמפיין",
+        "namePlaceholder": "לדוגמה: מבצע סוף שנה",
+        "subject": "נושא האימייל",
+        "subjectPlaceholder": "נושא שיופיע לנמענים",
+        "body": "תוכן",
+        "bodyPlaceholder": "תוכן האימייל...",
+        "submitButton": "צור קמפיין",
+        "requiredFields": "שם ונושא נדרשים"
+      },
+      "testModal": {
+        "title": "שלח אימייל בדיקה",
+        "emailLabel": "כתובת אימייל",
+        "emailPlaceholder": "test@example.com",
+        "submitButton": "שלח בדיקה"
+      },
+      "errors": {
+        "requiredFields": "שם ונושא הם חובה"
+      }
     },
     "auditLogs": {
       "subtitle": "מעקב אחר כל הפעולות במערכת",
@@ -1082,7 +1273,15 @@
         "date": "תאריך",
         "ip": "IP"
       },
-      "changed": "שונה"
+      "changed": "שונה",
+      "actionFilters": {
+        "user": "משתמש",
+        "subscription": "מנוי",
+        "payment": "תשלום",
+        "settings": "הגדרות",
+        "campaign": "קמפיין",
+        "content": "תוכן"
+      }
     },
     "settings": {
       "subtitle": "הגדר את פרמטרי המערכת",
@@ -1123,6 +1322,30 @@
       "searchPlaceholder": "חפש תוכן...",
       "emptyMessage": "לא נמצא תוכן",
       "confirmDelete": "למחוק תוכן זה?",
+      "import": {
+        "pageTitle": "ייבא תוכן חינמי",
+        "subtitle": "עיין והיבא תוכן ציבורי ממקורות חינמיים",
+        "selectCategory": "בחר קטגוריה לסרטונים שייובאו:",
+        "categoryPlaceholder": "בחר קטגוריה...",
+        "loading": "טוען מקורות...",
+        "sourceTypes": {
+          "vod": "סרטונים וVOD",
+          "live_tv": "טלוויזיה חיה",
+          "radio": "רדיו",
+          "podcasts": "פודקאסטים"
+        },
+        "items": "פריט",
+        "itemsPlural": "פריטים",
+        "selectItems": "אנא בחר לפחות פריט אחד לייבוא",
+        "selectCategory_vod": "אנא בחר קטגוריה לייבוא VOD",
+        "importing": "מייבא {{count}}... {{percent}}%",
+        "importButton": "ייבא {{count}} {{item}}",
+        "noSources": "אין מקורות זמינים",
+        "noSourcesDescription": "אין מקורות תוכן חינמיים זמינים כרגע עבור {{type}}"
+      },
+      "filters": {
+        "allStatus": "כל הסטטוסים"
+      },
       "status": {
         "published": "פורסם",
         "draft": "טיוטה"
@@ -1579,7 +1802,8 @@
     "episodesList": "פרקים",
     "schedule": "לוח שידורים",
     "now": "עכשיו",
-    "related": "תוכן דומה"
+    "related": "תוכן דומה",
+    "confirmDeleteEpisode": "מחק פרק זה?"
   },
   "live": {
     "title": "שידור חי",
@@ -1629,11 +1853,16 @@
     "episodes": "פרקים",
     "categories": {
       "all": "הכל",
+      "general": "כללי",
       "news": "חדשות",
+      "politics": "פוליטיקה",
       "tech": "טכנולוגיה",
+      "business": "עסקים",
       "jewish": "יהדות",
       "entertainment": "בידור",
-      "sports": "ספורט"
+      "sports": "ספורט",
+      "history": "היסטוריה",
+      "educational": "חינוכי"
     },
     "noPodcasts": "אין פודקאסטים זמינים",
     "tryLater": "נסה שוב מאוחר יותר"
@@ -1682,5 +1911,18 @@
   "chat": {
     "title": "עוזר בית+",
     "greeting": "שלום! אני העוזר החכם של בית+. איך אוכל לעזור לך היום? לחץ על המיקרופון ודבר אליי, או הקלד הודעה."
+  },
+  "subtitles": {
+    "nikud": "ניקוד",
+    "selection": "בחירה",
+    "translation": "תרגום",
+    "translating": "מתרגם...",
+    "close": "סגור",
+    "unavailable": "תרגום לא זמין"
+  },
+  "video": {
+    "watchTrailer": "צפה בטריילר",
+    "closeTrailer": "סגור טריילר",
+    "deleteConfirm": "מחק פרק זה?"
   }
 }

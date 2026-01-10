@@ -22,8 +22,8 @@ declare const __TV__: boolean;
 const IS_TV_BUILD = typeof __TV__ !== 'undefined' && __TV__;
 
 export default function Layout() {
-  // Sidebar state for TV builds
-  const [isSidebarExpanded, setIsSidebarExpanded] = useState(false);
+  // Sidebar state: always expanded by default on both web and TV
+  const [isSidebarExpanded, setIsSidebarExpanded] = useState(true);
   const { isRTL } = useDirection();
 
   const toggleSidebar = useCallback(() => {
@@ -37,10 +37,10 @@ export default function Layout() {
     window.dispatchEvent(new CustomEvent('bayit:toggle-voice'));
   }, []);
 
-  // Register TV remote key handlers
+  // Register TV remote key handlers (same for both TV and web)
   useTizenRemoteKeys({
     onRedButton: handleRedButton,
-    onGreenButton: toggleSidebar, // Green button toggles sidebar
+    onGreenButton: toggleSidebar, // Green button toggles sidebar on both platforms
     enabled: IS_TV_BUILD,
   });
 
@@ -143,7 +143,7 @@ export default function Layout() {
 
   // Calculate content margin based on sidebar state
   // Sidebar is always visible: collapsed = 80px (icons), expanded = 280px (full)
-  const sidebarWidth = IS_TV_BUILD ? (isSidebarExpanded ? 280 : 80) : 0;
+  const sidebarWidth = isSidebarExpanded ? 280 : 80;
 
   return (
     <View style={styles.container}>
@@ -154,18 +154,16 @@ export default function Layout() {
         <View style={[styles.blurCircle, styles.blurCircleSuccess]} />
       </View>
 
-      {/* TV Sidebar */}
-      {IS_TV_BUILD && (
-        <GlassSidebar
-          isExpanded={isSidebarExpanded}
-          onToggle={toggleSidebar}
-        />
-      )}
+      {/* Sidebar - Always visible on web, toggleable on TV */}
+      <GlassSidebar
+        isExpanded={isSidebarExpanded}
+        onToggle={toggleSidebar}
+      />
 
       {/* Main content wrapper with sidebar offset */}
       <View style={[
         styles.contentWrapper,
-        IS_TV_BUILD && (isRTL ? { marginRight: sidebarWidth } : { marginLeft: sidebarWidth }),
+        isRTL ? { marginRight: sidebarWidth } : { marginLeft: sidebarWidth },
       ]}>
         <Header />
 

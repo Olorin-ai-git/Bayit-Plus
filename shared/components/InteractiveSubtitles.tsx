@@ -9,6 +9,7 @@ import {
   ActivityIndicator,
   ScrollView,
 } from 'react-native';
+import { useTranslation } from 'react-i18next';
 import { GlassView } from './ui/GlassView';
 import { colors, spacing, fontSize, borderRadius } from '../theme';
 import { subtitlesService } from '../services/api';
@@ -59,6 +60,7 @@ export const InteractiveSubtitles: React.FC<InteractiveSubtitlesProps> = ({
   language = 'he',
   onWordTranslate,
 }) => {
+  const { t } = useTranslation();
   const [cues, setCues] = useState<SubtitleCue[]>([]);
   const [currentCue, setCurrentCue] = useState<SubtitleCue | null>(null);
   const [showNikud, setShowNikud] = useState(false);
@@ -138,11 +140,11 @@ export const InteractiveSubtitles: React.FC<InteractiveSubtitlesProps> = ({
       onWordTranslate?.(result);
     } catch (err) {
       console.error('Translation failed:', err);
-      setTranslation({ word: word.word, translation: 'Translation unavailable' });
+      setTranslation({ word: word.word, translation: t('subtitles.unavailable') });
     } finally {
       setIsTranslating(false);
     }
-  }, [onWordTranslate]);
+  }, [onWordTranslate, t]);
 
   // Toggle nikud display
   const toggleNikud = useCallback(async () => {
@@ -217,7 +219,7 @@ export const InteractiveSubtitles: React.FC<InteractiveSubtitlesProps> = ({
             onPress={toggleNikud}
           >
             <Text style={styles.nikudIcon}>אָ</Text>
-            <Text style={styles.controlLabel}>ניקוד</Text>
+            <Text style={styles.controlLabel}>{t('subtitles.nikud')}</Text>
           </TouchableOpacity>
         </View>
       </View>
@@ -233,7 +235,7 @@ export const InteractiveSubtitles: React.FC<InteractiveSubtitlesProps> = ({
           onPress={toggleNikud}
         >
           <Text style={styles.nikudIcon}>אָ</Text>
-          <Text style={styles.controlLabel}>ניקוד</Text>
+          <Text style={styles.controlLabel}>{t('subtitles.nikud')}</Text>
         </TouchableOpacity>
 
         {isTV && (
@@ -243,7 +245,7 @@ export const InteractiveSubtitles: React.FC<InteractiveSubtitlesProps> = ({
           >
             <Text style={styles.controlIcon}>👆</Text>
             <Text style={styles.controlLabel}>
-              {subtitlesMode === 'select' ? 'בחירה' : 'תרגום'}
+              {subtitlesMode === 'select' ? t('subtitles.selection') : t('subtitles.translation')}
             </Text>
           </TouchableOpacity>
         )}
@@ -299,7 +301,7 @@ export const InteractiveSubtitles: React.FC<InteractiveSubtitlesProps> = ({
             {isTranslating ? (
               <View style={styles.translationLoading}>
                 <ActivityIndicator color={colors.primary} />
-                <Text style={styles.loadingText}>מתרגם...</Text>
+                <Text style={styles.loadingText}>{t('subtitles.translating')}</Text>
               </View>
             ) : translation ? (
               <ScrollView>
@@ -340,7 +342,7 @@ export const InteractiveSubtitles: React.FC<InteractiveSubtitlesProps> = ({
               style={styles.closeButton}
               onPress={() => setShowTranslation(false)}
             >
-              <Text style={styles.closeButtonText}>סגור</Text>
+              <Text style={styles.closeButtonText}>{t('subtitles.close')}</Text>
             </TouchableOpacity>
           </GlassView>
         </TouchableOpacity>

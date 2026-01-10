@@ -158,13 +158,13 @@ export default function AuditLogsPage() {
         {actionFilters.map((action) => (
           <Pressable key={action} onPress={() => setFilters((prev) => ({ ...prev, action }))} style={[styles.filterButton, filters.action === action && styles.filterButtonActive]}>
             <Text style={[styles.filterText, filters.action === action && styles.filterTextActive]}>
-              {action === '' ? t('admin.auditLogs.all') : action}
+              {action === '' ? t('admin.auditLogs.all') : t(`admin.auditLogs.actionFilters.${action}`)}
             </Text>
           </Pressable>
         ))}
       </View>
 
-      <DataTable columns={columns} data={logs} loading={loading} pagination={pagination} onPageChange={handlePageChange} emptyMessage={t('admin.auditLogs.noRecords')} searchable={false} />
+      <DataTable columns={isRTL ? [...columns].reverse() : columns} data={logs} loading={loading} pagination={pagination} onPageChange={handlePageChange} emptyMessage={t('admin.auditLogs.noRecords')} searchable={false} />
 
       <GlassModal visible={showFilterModal} onClose={() => setShowFilterModal(false)} title={t('admin.auditLogs.advancedFiltering')}>
         <View style={styles.modalContent}>
@@ -174,7 +174,7 @@ export default function AuditLogsPage() {
               {actionFilters.map((action) => (
                 <Pressable key={action} onPress={() => setFilters((prev) => ({ ...prev, action }))} style={[styles.filterOption, filters.action === action && styles.filterOptionActive]}>
                   <Text style={[styles.filterOptionText, filters.action === action && styles.filterOptionTextActive]}>
-                    {action === '' ? t('admin.auditLogs.all') : action}
+                    {action === '' ? t('admin.auditLogs.all') : t(`admin.auditLogs.actionFilters.${action}`)}
                   </Text>
                 </Pressable>
               ))}

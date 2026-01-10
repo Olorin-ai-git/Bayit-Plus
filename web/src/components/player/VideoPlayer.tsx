@@ -1,5 +1,6 @@
 import { useRef, useState, useEffect } from 'react'
 import { View, Text, StyleSheet, Pressable, ActivityIndicator } from 'react-native'
+import { useTranslation } from 'react-i18next'
 import Hls from 'hls.js'
 import {
   Play,
@@ -41,6 +42,7 @@ interface VideoPlayerProps {
   contentId?: string
   contentType?: string
   onProgress?: (currentTime: number, duration: number) => void
+  onEnded?: () => void
   isLive?: boolean
   autoPlay?: boolean
   chapters?: Chapter[]
@@ -54,11 +56,13 @@ export default function VideoPlayer({
   contentId,
   contentType = 'vod',
   onProgress,
+  onEnded,
   isLive = false,
   autoPlay = false,
   chapters = [],
   chaptersLoading = false,
 }: VideoPlayerProps) {
+  const { t } = useTranslation()
   const user = useAuthStore((s) => s.user)
   const {
     party,
@@ -152,17 +156,23 @@ export default function VideoPlayer({
 
     const handlePlay = () => setIsPlaying(true)
     const handlePause = () => setIsPlaying(false)
+    const handleEnded = () => {
+      setIsPlaying(false)
+      if (onEnded) onEnded()
+    }
 
     video.addEventListener('timeupdate', handleTimeUpdate)
     video.addEventListener('play', handlePlay)
     video.addEventListener('pause', handlePause)
+    video.addEventListener('ended', handleEnded)
 
     return () => {
       video.removeEventListener('timeupdate', handleTimeUpdate)
       video.removeEventListener('play', handlePlay)
       video.removeEventListener('pause', handlePause)
+      video.removeEventListener('ended', handleEnded)
     }
-  }, [])
+  }, [onEnded])
 
   useEffect(() => {
     if (onProgress && isPlaying && !isLive) {
@@ -377,7 +387,7 @@ export default function VideoPlayer({
         <View style={styles.topBar}>
           <Text style={styles.title} numberOfLines={1}>{title}</Text>
           {isLive && (
-            <GlassBadge variant="danger" size="sm">LIVE</GlassBadge>
+            <GlassBadge variant="danger" size="sm">{t('common.live')}</GlassBadge>
           )}
         </View>
 

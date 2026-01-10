@@ -60,6 +60,7 @@ async def import_free_content(
     """
     try:
         imported_count = 0
+        requested_count = len(data.items) if data.items else 0
 
         if data.source_type == "live_tv":
             channels = await ContentImporter.import_live_channels(
@@ -118,11 +119,19 @@ async def import_free_content(
             request
         )
 
+        skipped_count = requested_count - imported_count if requested_count > 0 else 0
+        message = f"Successfully imported {imported_count} {data.source_type} items"
+        if skipped_count > 0:
+            message += f" ({skipped_count} already existed)"
+        elif imported_count == 0 and requested_count > 0:
+            message = f"No new items imported - all {requested_count} items already exist"
+
         return {
-            "message": f"Successfully imported {imported_count} {data.source_type} items",
+            "message": message,
             "source_type": data.source_type,
             "source_name": data.source_name,
             "imported_count": imported_count,
+            "skipped_count": skipped_count,
         }
 
     except HTTPException:

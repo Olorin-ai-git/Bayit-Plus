@@ -156,15 +156,38 @@ export const demoRadioService = {
 // PODCAST SERVICE (Demo)
 // ===========================================
 export const demoPodcastService = {
+  getCategories: async () => {
+    await delay();
+    // Extract unique categories from demo podcasts
+    const categories = [...new Set(demoPodcasts.map(p => p.category).filter(Boolean))].sort();
+    return {
+      categories: categories.map(cat => ({ id: cat, name: cat })),
+      total: categories.length,
+    };
+  },
   getShows: async (params) => {
     await delay();
     // Map demo data fields to expected interface
-    const shows = demoPodcasts.map(p => ({
+    let shows = demoPodcasts.map(p => ({
       ...p,
       cover: p.thumbnail, // Map thumbnail to cover
       author: p.host, // Map host to author
       episodeCount: p.episode_count || p.episodes?.length || 0,
     }));
+
+    // Handle both old API (categoryId string) and new API (params object)
+    let category;
+    if (typeof params === 'string') {
+      category = params;
+    } else if (params?.category) {
+      category = params.category;
+    }
+
+    // Filter by category if provided
+    if (category) {
+      shows = shows.filter(show => show.category === category);
+    }
+
     return { shows };
   },
   getShow: async (showId) => {
