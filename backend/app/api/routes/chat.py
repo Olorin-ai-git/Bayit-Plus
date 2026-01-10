@@ -6,13 +6,14 @@ import hmac
 import hashlib
 import httpx
 import difflib
+import json
 from fastapi import APIRouter, HTTPException, Depends, UploadFile, File, Request, Header, BackgroundTasks, Form
 from fastapi.responses import StreamingResponse
 from pydantic import BaseModel
 import anthropic
 from app.models.user import User
 from app.models.watchlist import Conversation
-from app.models.content import Content, LiveChannel, Podcast
+from app.models.content import Content, LiveChannel, Podcast, PodcastEpisode
 from app.core.config import settings
 from app.core.security import get_current_active_user
 
@@ -24,6 +25,11 @@ pending_transcriptions: dict[str, dict] = {}
 # Initialize Anthropic client
 client = anthropic.Anthropic(api_key=settings.ANTHROPIC_API_KEY)
 
+# Media context cache (to avoid repeated database queries)
+_media_context_cache: Optional[dict] = None
+_media_context_cache_ts: float = 0
+MEDIA_CONTEXT_CACHE_TTL = 300  # 5 minutes
+
 # ElevenLabs API endpoints
 ELEVENLABS_STT_URL = "https://api.elevenlabs.io/v1/speech-to-text"
 ELEVENLABS_TTS_URL = "https://api.elevenlabs.io/v1/text-to-speech"
@@ -31,6 +37,115 @@ ELEVENLABS_TTS_URL = "https://api.elevenlabs.io/v1/text-to-speech"
 # Wake word fuzzy matching - currently disabled
 # WAKE_WORDS = ["buyit", "בויית"]
 # FUZZY_MATCH_THRESHOLD = 0.65
+
+
+async def build_media_context() -> dict:
+    """
+    Build a comprehensive media library context for the LLM.
+    Fetches and formats all available content from the database.
+    Results are cached to avoid excessive database queries.
+
+    Returns dict with:
+    - channels: Available live TV channels
+    - podcasts: Available podcasts with episode counts
+    - featured_content: Popular/featured VOD content
+    - categories: Content categories
+    - radio_stations: Available radio stations (if applicable)
+    """
+    global _media_context_cache, _media_context_cache_ts
+
+    import time
+    current_time = time.time()
+
+    # Return cached context if fresh
+    if _media_context_cache and (current_time - _media_context_cache_ts) < MEDIA_CONTEXT_CACHE_TTL:
+        print("[CHAT] Using cached media context")
+        return _media_context_cache
+
+    print("[CHAT] Building fresh media context from database...")
+
+    try:
+        # Fetch active live channels
+        channels = await LiveChannel.find(
+            LiveChannel.is_active == True
+        ).to_list()
+
+        # Fetch active podcasts with episode counts
+        podcasts = await Podcast.find(
+            Podcast.is_active == True
+        ).to_list()
+
+        # Fetch featured/popular published content (limit to 30 for context size)
+        featured_content = await Content.find(
+            Content.is_published == True,
+            Content.is_featured == True
+        ).limit(30).to_list()
+
+        # If not enough featured content, add popular published content
+        if len(featured_content) < 20:
+            all_published = await Content.find(
+                Content.is_published == True
+            ).limit(50).to_list()
+            featured_content = all_published[:50]
+
+        # Build formatted context
+        context = {
+            "channels": [
+                {
+                    "name": ch.name,
+                    "description": ch.description or "",
+                    "logo": ch.logo
+                }
+                for ch in channels
+            ],
+            "podcasts": [
+                {
+                    "title": p.title,
+                    "author": p.author or "Unknown",
+                    "description": p.description or "",
+                    "category": p.category or "General"
+                }
+                for p in podcasts
+            ],
+            "featured_content": [
+                {
+                    "title": c.title,
+                    "type": "series" if c.is_series else "movie",
+                    "genre": c.genre or "General",
+                    "year": c.year,
+                    "description": c.description[:100] + "..." if c.description and len(c.description) > 100 else c.description or ""
+                }
+                for c in featured_content
+            ],
+            "summary": {
+                "total_channels": len(channels),
+                "total_podcasts": len(podcasts),
+                "total_content_items": len(featured_content),
+                "categories": list(set([c.category_name or "General" for c in featured_content if c.category_name]))
+            }
+        }
+
+        # Cache the context
+        _media_context_cache = context
+        _media_context_cache_ts = current_time
+
+        print(f"[CHAT] Media context built: {context['summary']}")
+        return context
+
+    except Exception as e:
+        print(f"[CHAT] Error building media context: {e}")
+        # Return empty context on error so chat still works
+        return {
+            "channels": [],
+            "podcasts": [],
+            "featured_content": [],
+            "summary": {
+                "total_channels": 0,
+                "total_podcasts": 0,
+                "total_content_items": 0,
+                "categories": []
+            }
+        }
 
 
 async def process_hebronics_input(text: str) -> dict:
@@ -279,12 +394,39 @@ class ChatResponse(BaseModel):
     confidence: Optional[float] = None  # Command confidence score
 
 
-def get_system_prompt(language: Optional[str] = None) -> str:
-    """Get language-appropriate system prompt."""
+def get_system_prompt(language: Optional[str] = None, media_context: Optional[dict] = None) -> str:
+    """
+    Get language-appropriate system prompt with media context injected.
+
+    Args:
+        language: Language code (en, he, es)
+        media_context: Dict with channels, podcasts, featured_content, and summary
+    """
     lang = (language or "he").lower()
 
+    # Format media context for inclusion in prompt
+    context_str = ""
+    if media_context:
+        try:
+            context_str = f"""
+**קטלוג הערוצים שלנו ({media_context['summary']['total_channels']} ערוצים):**
+{json.dumps([ch['name'] for ch in media_context['channels'][:10]], ensure_ascii=False)}
+
+**הפודקאסטים הזמינים ({media_context['summary']['total_podcasts']} פודקאסטים):**
+{json.dumps([p['title'] for p in media_context['podcasts'][:10]], ensure_ascii=False)}
+
+**סדרות וסרטים פופולריים ({media_context['summary']['total_content_items']} פריטים):**
+{json.dumps([c['title'] for c in media_context['featured_content'][:15]], ensure_ascii=False)}
+
+**קטגוריות זמינות:**
+{json.dumps(media_context['summary']['categories'][:10], ensure_ascii=False)}
+"""
+        except Exception as e:
+            print(f"[CHAT] Error formatting media context: {e}")
+            context_str = ""
+
     if lang == "en":
-        return """You are an assistant for Bayit+ (pronounced "Buyit").
+        prompt = """You are an assistant for Bayit+ (pronounced "Buyit").
 
 **REQUIREMENT: You MUST respond in English only. All your responses must be in English.**
 
@@ -294,6 +436,7 @@ Follow these rules:
 - Include action keywords in your response
 - No excessive politeness or help offers
 - Do NOT translate to Hebrew
+- When recommending content, choose from the available catalog
 
 Example responses (English only):
 ✓ "Going to movies"
@@ -308,8 +451,13 @@ Actions:
 
 No extra help or suggestions. Only answer the specific request in English."""
 
+        if context_str:
+            prompt += f"\n\n**AVAILABLE CONTENT:**\n{context_str}"
+
+        return prompt
+
     elif lang == "es":
-        return """Eres un asistente de Bayit+ (pronunciado "Buyit").
+        prompt = """Eres un asistente de Bayit+ (pronunciado "Buyit").
 
 **REQUISITO: DEBES responder SOLO en español. Todas tus respuestas deben estar en español.**
 
@@ -319,6 +467,7 @@ Sigue estas reglas:
 - Incluye palabras de acción en tu respuesta
 - Sin cortesía excesiva u ofertas de ayuda
 - NO traduzcas al hebreo o inglés
+- Cuando recomiendes contenido, elige del catálogo disponible
 
 Ejemplos de respuestas (solo en español):
 ✓ "Yendo a películas"
@@ -333,8 +482,16 @@ Acciones:
 
 Sin ayuda adicional ni sugerencias. Solo responde la solicitud específica en español."""
 
+        if context_str:
+            prompt += f"\n\n**CONTENIDO DISPONIBLE:**\n{context_str}"
+
+        return prompt
+
     else:  # Hebrew or default
-        return SYSTEM_PROMPT
+        prompt = SYSTEM_PROMPT
+        if context_str:
+            prompt += f"\n\n**קטלוג הזמין:**{context_str}"
+        return prompt
 
 
 @router.post("", response_model=ChatResponse)
@@ -384,8 +541,13 @@ async def send_message(
     ]
 
     try:
-        # Get appropriate system prompt for language
-        system_prompt = get_system_prompt(user_language)
+        # Build media context for smarter LLM responses
+        media_context = await build_media_context()
+
+        # Get appropriate system prompt for language with media context
+        system_prompt = get_system_prompt(user_language, media_context)
+
+        print(f"[CHAT] System prompt includes {media_context['summary']['total_channels']} channels, {media_context['summary']['total_podcasts']} podcasts, {media_context['summary']['total_content_items']} content items")
 
         # Call Claude API
         response = client.messages.create(
@@ -419,7 +581,7 @@ async def send_message(
 
         # Try to extract content recommendations if mentioned
         recommendations = await get_recommendations_from_response(
-            assistant_message, request.message
+            assistant_message, request.message, media_context
         )
 
         # Extract action intent from response (navigate, play, search, etc.)
@@ -478,32 +640,88 @@ async def send_message(
 
 
 async def get_recommendations_from_response(
-    response: str, query: str
+    response: str, query: str, media_context: Optional[dict] = None
 ) -> Optional[list]:
-    """Try to find relevant content to recommend based on the conversation."""
-    # Simple keyword-based search for recommendations
-    keywords = ["סרט", "סדרה", "ערוץ", "פודקאסט", "תוכנית", "רדיו"]
+    """
+    Extract and recommend relevant content based on the conversation.
+    Uses media context for smarter recommendations aligned with available catalog.
+    """
+    # Keywords indicating user is interested in recommendations
+    keywords = ["סרט", "סדרה", "ערוץ", "פודקאסט", "תוכנית", "רדיו", "recommend", "suggest", "recommend", "תמליץ"]
 
     if not any(kw in query.lower() or kw in response.lower() for kw in keywords):
         return None
 
-    # Search for relevant content
-    content = await Content.find(
-        Content.is_published == True
-    ).limit(4).to_list()
+    recommendations = []
 
-    if content:
-        return [
-            {
-                "id": str(item.id),
-                "title": item.title,
-                "thumbnail": item.thumbnail,
-                "type": "vod",
-            }
-            for item in content
-        ]
+    # If we have media context, extract recommendations from available catalog
+    if media_context:
+        # Try to recommend relevant content based on query context
+        if any(w in query.lower() for w in ["סרט", "movie", "film"]):
+            # Recommend movies/series from featured content
+            for item in media_context.get("featured_content", [])[:4]:
+                if "type" in item:
+                    recommendations.append({
+                        "title": item["title"],
+                        "type": item.get("type", "vod"),
+                        "genre": item.get("genre", ""),
+                        "year": item.get("year", "")
+                    })
+        elif any(w in query.lower() for w in ["פודקאסט", "podcast"]):
+            # Recommend podcasts
+            for item in media_context.get("podcasts", [])[:4]:
+                recommendations.append({
+                    "title": item["title"],
+                    "type": "podcast",
+                    "author": item.get("author", ""),
+                    "category": item.get("category", "")
+                })
+        elif any(w in query.lower() for w in ["ערוץ", "channel", "tv"]):
+            # Recommend channels
+            for item in media_context.get("channels", [])[:4]:
+                recommendations.append({
+                    "title": item["name"],
+                    "type": "channel",
+                    "description": item.get("description", "")
+                })
+        else:
+            # Default: recommend mix of available content
+            for item in media_context.get("featured_content", [])[:2]:
+                recommendations.append({
+                    "title": item["title"],
+                    "type": item.get("type", "vod"),
+                    "genre": item.get("genre", "")
+                })
+            for item in media_context.get("podcasts", [])[:1]:
+                recommendations.append({
+                    "title": item["title"],
+                    "type": "podcast",
+                    "author": item.get("author", "")
+                })
+            for item in media_context.get("channels", [])[:1]:
+                recommendations.append({
+                    "title": item["name"],
+                    "type": "channel"
+                })
 
-    return None
+    if not recommendations:
+        # Fallback to database query if no context-based recommendations
+        content = await Content.find(
+            Content.is_published == True
+        ).limit(4).to_list()
+
+        if content:
+            recommendations = [
+                {
+                    "id": str(item.id),
+                    "title": item.title,
+                    "thumbnail": item.thumbnail,
+                    "type": "vod",
+                }
+                for item in content
+            ]
+
+    return recommendations if recommendations else None
 
 
 async def extract_action_from_response(
