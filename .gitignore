@@ -44,3 +44,14 @@ web/dist/
 .coverage
 htmlcov/
 .pytest_cache/
+
+# Large media files (video, audio)
+uploads/
+backend/uploads/
+*.mp4
+*.mkv
+*.mov
+*.avi
+*.webm
+*.m4a
+*.mp3
