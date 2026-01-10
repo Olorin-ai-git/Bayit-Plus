@@ -177,7 +177,7 @@ export default function VideoPlayer({
   useEffect(() => {
     if (onProgress && isPlaying && !isLive) {
       progressInterval.current = setInterval(() => {
-        if (videoRef.current) {
+        if (videoRef.current && videoRef.current.duration && isFinite(videoRef.current.duration)) {
           onProgress(videoRef.current.currentTime, videoRef.current.duration)
         }
       }, 10000)

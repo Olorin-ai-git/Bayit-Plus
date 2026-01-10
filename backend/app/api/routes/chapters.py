@@ -15,6 +15,7 @@ from app.services.chapter_generator import (
     generate_chapters_from_transcript,
     chapters_to_dict,
     CHAPTER_CATEGORIES,
+    parse_duration_to_seconds,
 )
 
 router = APIRouter()
@@ -40,7 +41,7 @@ async def get_chapters(
         raise HTTPException(status_code=404, detail="Content not found")
 
     # Generate chapters on-demand
-    is_news = any(cat in (content.categories or []) for cat in ["news", "חדשות"])
+    is_news = content.category_name and any(cat.lower() in (content.category_name or "").lower() for cat in ["news", "חדשות"])
 
     gen_chapters = await generate_chapters_from_title(
         content_id=content_id,
@@ -64,12 +65,15 @@ async def get_chapters(
         for c in gen_chapters.chapters
     ]
 
+    # Convert duration to seconds if it's a string
+    duration_seconds = parse_duration_to_seconds(content.duration or 3600)
+
     saved = await VideoChapters.create_or_update(
         content_id=content_id,
         content_type="vod",
         content_title=content.title,
         chapters=chapter_items,
-        total_duration=content.duration or 3600,
+        total_duration=duration_seconds,
         source=gen_chapters.source,
     )
 
@@ -103,7 +107,7 @@ async def generate_chapters(
             }
 
     # Generate chapters
-    is_news = any(cat in (content.categories or []) for cat in ["news", "חדשות"])
+    is_news = content.category_name and any(cat.lower() in (content.category_name or "").lower() for cat in ["news", "חדשות"])
 
     if transcript:
         gen_chapters = await generate_chapters_from_transcript(
@@ -135,12 +139,15 @@ async def generate_chapters(
         for c in gen_chapters.chapters
     ]
 
+    # Convert duration to seconds if it's a string
+    duration_seconds = parse_duration_to_seconds(content.duration or 3600)
+
     saved = await VideoChapters.create_or_update(
         content_id=content_id,
         content_type="vod",
         content_title=content.title,
         chapters=chapter_items,
-        total_duration=content.duration or 3600,
+        total_duration=duration_seconds,
         source=gen_chapters.source,
     )
 

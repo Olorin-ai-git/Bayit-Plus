@@ -3,11 +3,38 @@ AI Chapter Generator Service.
 Uses Claude AI to generate smart chapters for news broadcasts and long-form content.
 """
 from datetime import datetime
-from typing import List, Optional, Dict, Any
+from typing import List, Optional, Dict, Any, Union
 from dataclasses import dataclass, field
 import json
 import anthropic
 from app.core.config import settings
+
+
+def parse_duration_to_seconds(duration: Union[str, int, float]) -> float:
+    """
+    Convert duration to seconds.
+    Handles formats: "45:00", 2700, 2700.0
+    """
+    if isinstance(duration, (int, float)):
+        return float(duration)
+
+    if isinstance(duration, str):
+        # Handle "MM:SS" or "HH:MM:SS" format
+        parts = duration.split(":")
+        if len(parts) == 2:  # MM:SS
+            minutes, seconds = map(int, parts)
+            return minutes * 60 + seconds
+        elif len(parts) == 3:  # HH:MM:SS
+            hours, minutes, seconds = map(int, parts)
+            return hours * 3600 + minutes * 60 + seconds
+        else:
+            # Try to parse as plain seconds
+            try:
+                return float(duration)
+            except ValueError:
+                return 3600.0  # Default 1 hour
+
+    return 3600.0  # Default fallback
 
 
 @dataclass
@@ -51,7 +78,7 @@ CHAPTER_CATEGORIES = {
 async def generate_chapters_from_title(
     content_id: str,
     content_title: str,
-    duration: float,
+    duration: Union[str, int, float],
     description: Optional[str] = None,
     is_news: bool = True,
 ) -> GeneratedChapters:
@@ -59,10 +86,13 @@ async def generate_chapters_from_title(
     Generate AI chapters based on content title and description.
     This is a lightweight generation that estimates chapters based on typical news structure.
     """
+    # Ensure duration is in seconds
+    duration_seconds = parse_duration_to_seconds(duration)
+
     if is_news:
-        return await _generate_news_chapters(content_id, content_title, duration, description)
+        return await _generate_news_chapters(content_id, content_title, duration_seconds, description)
     else:
-        return await _generate_general_chapters(content_id, content_title, duration, description)
+        return await _generate_general_chapters(content_id, content_title, duration_seconds, description)
 
 
 async def _generate_news_chapters(
@@ -300,13 +330,16 @@ async def _generate_general_chapters(
 async def generate_chapters_from_transcript(
     content_id: str,
     content_title: str,
-    duration: float,
+    duration: Union[str, int, float],
     transcript: str,
 ) -> GeneratedChapters:
     """
     Generate chapters from a transcript.
     This provides more accurate chapters when transcript is available.
     """
+    # Ensure duration is in seconds
+    duration_seconds = parse_duration_to_seconds(duration)
+
     # Limit transcript length
     max_transcript = 8000
     if len(transcript) > max_transcript:
@@ -315,7 +348,7 @@ async def generate_chapters_from_transcript(
     prompt = f"""נתח את התמליל הבא וצור פרקים לווידאו.
 
 כותרת: {content_title}
-משך: {int(duration)} שניות
+משך: {int(duration_seconds)} שניות
 
 תמליל:
 {transcript}
@@ -367,7 +400,7 @@ async def generate_chapters_from_transcript(
         for c in data.get("chapters", []):
             chapters.append(ChapterItem(
                 start_time=float(c.get("start_time", 0)),
-                end_time=float(c.get("end_time", duration)),
+                end_time=float(c.get("end_time", duration_seconds)),
                 title=c.get("title", ""),
                 title_en=c.get("title_en"),
                 category=c.get("category", "general"),
@@ -379,13 +412,13 @@ async def generate_chapters_from_transcript(
             chapters=chapters,
             content_id=content_id,
             content_title=content_title,
-            total_duration=duration,
+            total_duration=duration_seconds,
         )
 
     except Exception as e:
         print(f"Error generating chapters from transcript: {e}")
         return await generate_chapters_from_title(
-            content_id, content_title, duration, None, True
+            content_id, content_title, duration_seconds, None, True
         )
 
 

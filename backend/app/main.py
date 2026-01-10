@@ -89,8 +89,8 @@ async def init_default_data():
             position=WidgetPosition(
                 x=widget_config["position"]["x"],
                 y=widget_config["position"]["y"],
-                width=320,
-                height=180,
+                width=350,
+                height=197,
                 z_index=100
             ),
             is_active=True,

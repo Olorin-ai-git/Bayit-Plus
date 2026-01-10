@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { View, Text, StyleSheet, ActivityIndicator } from 'react-native';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
@@ -15,7 +15,15 @@ export default function GoogleCallbackPage() {
   const { handleGoogleCallback } = useAuthStore();
   const [error, setError] = useState('');
 
+  // Prevent double execution in React StrictMode (OAuth codes are single-use)
+  const hasProcessedRef = useRef(false);
+
   useEffect(() => {
+    // Skip if already processed (StrictMode runs effects twice in dev)
+    if (hasProcessedRef.current) {
+      return;
+    }
+
     const code = searchParams.get('code');
     const errorParam = searchParams.get('error');
 
@@ -31,6 +39,9 @@ export default function GoogleCallbackPage() {
       return;
     }
 
+    // Mark as processed before making the API call
+    hasProcessedRef.current = true;
+
     handleGoogleCallback(code)
       .then(() => {
         navigate('/', { replace: true });
@@ -39,7 +50,7 @@ export default function GoogleCallbackPage() {
         setError(err.detail || err.message || t('googleLogin.loginError'));
         setTimeout(() => navigate('/login'), 3000);
       });
-  }, [searchParams, handleGoogleCallback, navigate]);
+  }, [searchParams, handleGoogleCallback, navigate, t]);
 
   return (
     <View style={styles.container}>

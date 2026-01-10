@@ -217,7 +217,7 @@ module.exports = (env, argv) => {
       open: true,
       proxy: [
         {
-          context: ['/api'],
+          context: ['/api', '/uploads'],
           target: 'http://localhost:8000',
           changeOrigin: true,
         },

@@ -147,7 +147,7 @@ const demoWidgets = [
       iframe_url: null,
       iframe_title: null,
     },
-    position: { x: 20, y: 100, width: 320, height: 180, z_index: 100 },
+    position: { x: 20, y: 100, width: 350, height: 197, z_index: 100 },
     is_active: true,
     is_muted: true,
     is_visible: true,

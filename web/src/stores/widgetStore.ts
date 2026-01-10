@@ -144,7 +144,7 @@ export const useWidgetStore = create<WidgetState>()(
               [widgetId]: {
                 ...widgetState,
                 position: {
-                  ...(widgetState.position || { x: 20, y: 100, width: 320, height: 180, z_index: 100 }),
+                  ...(widgetState.position || { x: 20, y: 100, width: 350, height: 197, z_index: 100 }),
                   ...position,
                 },
               },

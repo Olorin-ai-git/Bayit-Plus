@@ -62,8 +62,8 @@ const DEFAULT_FORM_STATE: FormState = {
   iframe_title: '',
   position_x: 20,
   position_y: 100,
-  position_width: 320,
-  position_height: 180,
+  position_width: 350,
+  position_height: 197,
   is_muted: true,
   is_closable: true,
   is_draggable: true,
@@ -107,8 +107,8 @@ export const WidgetFormModal: React.FC<WidgetFormModalProps> = ({
           iframe_title: initialData.content?.iframe_title || '',
           position_x: initialData.position?.x || 20,
           position_y: initialData.position?.y || 100,
-          position_width: initialData.position?.width || 320,
-          position_height: initialData.position?.height || 180,
+          position_width: initialData.position?.width || 350,
+          position_height: initialData.position?.height || 197,
           is_muted: initialData.is_muted ?? true,
           is_closable: initialData.is_closable ?? true,
           is_draggable: initialData.is_draggable ?? true,
@@ -389,7 +389,7 @@ export const WidgetFormModal: React.FC<WidgetFormModalProps> = ({
                   <TextInput
                     style={styles.positionInput}
                     value={String(formState.position_width)}
-                    onChangeText={(v) => handleUpdateField('position_width', parseInt(v) || 320)}
+                    onChangeText={(v) => handleUpdateField('position_width', parseInt(v) || 350)}
                     keyboardType="number-pad"
                   />
                 </View>
@@ -398,7 +398,7 @@ export const WidgetFormModal: React.FC<WidgetFormModalProps> = ({
                   <TextInput
                     style={styles.positionInput}
                     value={String(formState.position_height)}
-                    onChangeText={(v) => handleUpdateField('position_height', parseInt(v) || 180)}
+                    onChangeText={(v) => handleUpdateField('position_height', parseInt(v) || 197)}
                     keyboardType="number-pad"
                   />
                 </View>

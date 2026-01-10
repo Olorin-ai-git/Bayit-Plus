@@ -19,17 +19,25 @@ async def get_featured(current_user: Optional[User] = Depends(get_optional_user)
         Content.is_published == True,
     )
 
-    # Get spotlight items (episodes from featured series for carousel rotation)
+    # Get spotlight items (episodes from all featured series for carousel rotation)
     spotlight_items = []
-    if hero_content and hero_content.is_series:
-        # If hero is a series, get its episodes for spotlight/carousel
+
+    # Get all featured series
+    featured_series = await Content.find(
+        Content.is_featured == True,
+        Content.is_published == True,
+        Content.is_series == True,
+    ).to_list()
+
+    # Collect episodes from all featured series
+    for series in featured_series:
         episodes = await Content.find(
-            Content.series_id == str(hero_content.id),
+            Content.series_id == str(series.id),
             Content.is_published == True,
         ).sort("-episode").limit(10).to_list()
 
-        spotlight_items = [
-            {
+        for ep in episodes:
+            spotlight_items.append({
                 "id": str(ep.id),
                 "title": ep.title,
                 "description": ep.description,
@@ -39,9 +47,7 @@ async def get_featured(current_user: Optional[User] = Depends(get_optional_user)
                 "year": ep.year,
                 "duration": ep.duration,
                 "rating": ep.rating,
-            }
-            for ep in episodes
-        ]
+            })
 
     # Get categories with their content
     categories = await Category.find(Category.is_active == True).sort("order").to_list()
