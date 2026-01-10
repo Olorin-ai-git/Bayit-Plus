@@ -1,6 +1,7 @@
 from typing import Optional
 from fastapi import APIRouter, HTTPException, Query
 from app.models.content import Podcast, PodcastEpisode
+from app.services.podcast_sync import sync_all_podcasts
 import logging
 
 router = APIRouter()
@@ -26,6 +27,48 @@ async def get_podcast_categories():
             "categories": [],
             "total": 0,
         }
+
+
+@router.post("/sync")
+async def sync_podcasts():
+    """Trigger podcast RSS sync for all active podcasts."""
+    try:
+        logger.info("📻 Manual podcast sync triggered")
+        result = await sync_all_podcasts(max_episodes=20)
+        return {
+            "status": "synced",
+            "total_podcasts": result["total_podcasts"],
+            "podcasts_synced": result["podcasts_synced"],
+            "total_episodes_added": result["total_episodes_added"],
+        }
+    except Exception as e:
+        logger.error(f"Error syncing podcasts: {str(e)}", exc_info=True)
+        raise HTTPException(status_code=500, detail="Failed to sync podcasts")
+
+
+@router.post("/refresh")
+async def refresh_all_content():
+    """Refresh all content: podcasts, live channels, and trending data."""
+    try:
+        logger.info("📻 Full content refresh triggered")
+
+        # Sync podcasts
+        podcast_result = await sync_all_podcasts(max_episodes=20)
+
+        # Note: Trending is fetched on-demand from news APIs, so no sync needed
+        # Live channels are typically static or updated via admin, so no sync needed
+
+        return {
+            "status": "refreshed",
+            "podcasts": {
+                "total": podcast_result["total_podcasts"],
+                "synced": podcast_result["podcasts_synced"],
+                "episodes_added": podcast_result["total_episodes_added"],
+            },
+        }
+    except Exception as e:
+        logger.error(f"Error refreshing content: {str(e)}", exc_info=True)
+        raise HTTPException(status_code=500, detail="Failed to refresh content")
 
 
 @router.get("")

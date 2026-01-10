@@ -9,13 +9,13 @@ import React, { useEffect, useCallback, useMemo } from 'react';
 import { useLocation } from 'react-router-dom';
 import { useWidgetStore } from '@/stores/widgetStore';
 import { widgetsService } from '@/services/adminApi';
-import { liveService } from '@/services/api';
+import { liveService, contentService, radioService, podcastService } from '@/services/api';
 import { useAuthStore } from '@/stores/authStore';
 import WidgetContainer from './WidgetContainer';
 import type { Widget, WidgetPosition } from '@/types/widget';
 
-// Cache for live channel URLs to avoid repeated API calls
-const channelUrlCache: Record<string, string> = {};
+// Cache for stream URLs to avoid repeated API calls
+const streamUrlCache: Record<string, string> = {};
 
 export default function WidgetManager() {
   const location = useLocation();
@@ -53,21 +53,77 @@ export default function WidgetManager() {
     loadWidgets();
   }, [loadWidgets]);
 
-  // Get live channel URL for a widget (uses public API endpoint)
-  const getLiveChannelUrl = useCallback(async (channelId: string): Promise<string | undefined> => {
-    if (channelUrlCache[channelId]) {
-      return channelUrlCache[channelId];
+  // Get stream URL for any content type
+  const getContentStreamUrl = useCallback(async (widget: Widget): Promise<string | undefined> => {
+    const cacheKey = `${widget.content.content_type}-${widget.content.live_channel_id || widget.content.podcast_id || widget.content.content_id || widget.content.station_id}`;
+
+    if (streamUrlCache[cacheKey]) {
+      return streamUrlCache[cacheKey];
     }
 
     try {
-      // Use public live service endpoint (not admin endpoint)
-      const channel = await liveService.getChannel(channelId);
-      if (channel?.stream_url) {
-        channelUrlCache[channelId] = channel.stream_url;
-        return channel.stream_url;
+      let streamUrl: string | undefined;
+      let coverUrl: string | undefined;
+
+      switch (widget.content.content_type) {
+        case 'live_channel':
+        case 'live':
+          if (widget.content.live_channel_id) {
+            const channel = await liveService.getChannel(widget.content.live_channel_id);
+            streamUrl = channel?.stream_url;
+            coverUrl = channel?.thumbnail;
+          }
+          break;
+
+        case 'vod':
+          if (widget.content.content_id) {
+            const response = await contentService.getStreamUrl(widget.content.content_id);
+            streamUrl = response?.url || response?.stream_url;
+            const contentData = await contentService.getById(widget.content.content_id).catch(() => null);
+            coverUrl = contentData?.thumbnail || contentData?.backdrop;
+          }
+          break;
+
+        case 'podcast':
+          if (widget.content.podcast_id) {
+            const podcast = await podcastService.getShow(widget.content.podcast_id);
+            streamUrl = podcast?.latestEpisode?.audioUrl;
+            coverUrl = podcast?.cover;
+          }
+          break;
+
+        case 'radio':
+          if (widget.content.station_id) {
+            const response = await radioService.getStreamUrl(widget.content.station_id);
+            streamUrl = response?.url || response?.stream_url;
+            const stationData = await radioService.getStation(widget.content.station_id).catch(() => null);
+            coverUrl = stationData?.thumbnail || stationData?.cover;
+          }
+          break;
+
+        case 'iframe':
+          // No stream URL needed for iframe
+          return undefined;
+
+        default:
+          break;
+      }
+
+      // Update widget with cover URL if available
+      if (coverUrl && !widget.cover_url) {
+        // Create a copy and update locally (will be used in render)
+        const updated = { ...widget, cover_url: coverUrl };
+        // Update in store
+        const { updateWidget } = useWidgetStore.getState();
+        updateWidget(widget.id, { cover_url: coverUrl });
+      }
+
+      if (streamUrl) {
+        streamUrlCache[cacheKey] = streamUrl;
+        return streamUrl;
       }
     } catch (err) {
-      console.error('[WidgetManager] Failed to get channel URL:', err);
+      console.error(`[WidgetManager] Failed to get ${widget.content.content_type} stream URL:`, err);
     }
 
     return undefined;
@@ -133,7 +189,7 @@ export default function WidgetManager() {
             onToggleMute={() => toggleMute(widget.id)}
             onClose={() => handleClose(widget.id)}
             onPositionChange={(pos) => handlePositionChange(widget.id, pos)}
-            getLiveChannelUrl={getLiveChannelUrl}
+            getContentStreamUrl={getContentStreamUrl}
           />
         );
       })}
@@ -141,14 +197,14 @@ export default function WidgetManager() {
   );
 }
 
-// Separate component to handle async channel URL loading
+// Separate component to handle async stream URL loading
 interface WidgetItemProps {
   widget: Widget;
   state: { isMuted: boolean; isVisible: boolean; position: WidgetPosition };
   onToggleMute: () => void;
   onClose: () => void;
   onPositionChange: (position: Partial<WidgetPosition>) => void;
-  getLiveChannelUrl: (channelId: string) => Promise<string | undefined>;
+  getContentStreamUrl: (widget: Widget) => Promise<string | undefined>;
 }
 
 function WidgetItem({
@@ -157,16 +213,20 @@ function WidgetItem({
   onToggleMute,
   onClose,
   onPositionChange,
-  getLiveChannelUrl,
+  getContentStreamUrl,
 }: WidgetItemProps) {
   const [streamUrl, setStreamUrl] = React.useState<string | undefined>();
 
-  // Load stream URL for live channel widgets
+  // Load stream URL based on content type
   useEffect(() => {
-    if (widget.content.content_type === 'live_channel' && widget.content.live_channel_id) {
-      getLiveChannelUrl(widget.content.live_channel_id).then(setStreamUrl);
+    // Don't fetch URL for iframe content (no stream URL needed)
+    if (widget.content.content_type === 'iframe') {
+      return;
     }
-  }, [widget.content, getLiveChannelUrl]);
+
+    // Fetch stream URL for other content types
+    getContentStreamUrl(widget).then(setStreamUrl);
+  }, [widget, getContentStreamUrl]);
 
   return (
     <WidgetContainer
@@ -176,7 +236,7 @@ function WidgetItem({
       onToggleMute={onToggleMute}
       onClose={onClose}
       onPositionChange={onPositionChange}
-      liveChannelStreamUrl={streamUrl}
+      streamUrl={streamUrl}
     />
   );
 }

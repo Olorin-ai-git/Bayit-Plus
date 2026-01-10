@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { View, Text, StyleSheet, ScrollView, Pressable, Image } from 'react-native';
 import { Link, useNavigate } from 'react-router-dom';
-import { Play, ChevronRight, Info, Volume2, VolumeX } from 'lucide-react';
+import { Play, ChevronRight, Info, Volume2, VolumeX, RefreshCw } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useDirection } from '@/hooks/useDirection';
 import ContentCarousel from '@/components/content/ContentCarousel';
@@ -63,6 +63,7 @@ export default function HomePage() {
   const [liveChannels, setLiveChannels] = useState<Channel[]>([]);
   const [continueWatching, setContinueWatching] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [syncing, setSyncing] = useState(false);
   const [showMorningRitual, setShowMorningRitual] = useState(false);
   const [isMuted, setIsMuted] = useState(true);
   const [focusedItem, setFocusedItem] = useState<string | null>(null);
@@ -85,9 +86,10 @@ export default function HomePage() {
     return () => clearInterval(interval);
   }, [featured.length]);
 
-  // Load content
+  // Load content and sync on mount
   useEffect(() => {
     checkMorningRitual();
+    syncContent();
     loadHomeContent();
   }, []);
 
@@ -113,10 +115,11 @@ export default function HomePage() {
       const featuredItems = featuredData.items || (featuredData.hero ? [featuredData.hero] : []);
       setFeatured(featuredItems);
 
-      // Build carousel items from hero and spotlight data (like TV app)
-      const heroItems = featuredData.hero ? [featuredData.hero] : [];
+      // Build carousel items from spotlight data (episodes for rotation)
+      // Note: We use spotlight items (episodes) instead of hero for carousel rotation,
+      // because series items don't have stream URLs and can't be played directly
       const spotlightItems = featuredData.spotlight || [];
-      setCarouselItems([...heroItems, ...spotlightItems].map((item: any, index: number) => ({
+      setCarouselItems(spotlightItems.map((item: any, index: number) => ({
         id: item.id,
         title: getLocalizedName(item, i18n.language),
         subtitle: getLocalizedDescription(item, i18n.language),
@@ -132,6 +135,22 @@ export default function HomePage() {
       logger.error('Failed to load home content', 'HomePage', error);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const syncContent = async () => {
+    try {
+      setSyncing(true);
+      logger.info('Syncing home content...', 'HomePage');
+      const result = await contentService.syncContent();
+      logger.info(`Content synced`, 'HomePage', result);
+
+      // Reload content after syncing
+      await loadHomeContent();
+    } catch (error) {
+      logger.error('Failed to sync content', 'HomePage', error);
+    } finally {
+      setSyncing(false);
     }
   };
 
@@ -189,6 +208,17 @@ export default function HomePage() {
 
   return (
     <ScrollView style={styles.page} contentContainerStyle={styles.pageContent}>
+      {/* Refresh Button */}
+      <View style={styles.headerBar}>
+        <Pressable
+          onPress={syncContent}
+          disabled={syncing}
+          style={[styles.refreshButton, syncing && styles.refreshButtonDisabled]}
+        >
+          <RefreshCw size={20} color={colors.text} style={syncing ? styles.spinning : undefined} />
+        </Pressable>
+      </View>
+
       {/* Dual Clock Display */}
       <View style={[styles.clockContainer, isRTL && styles.clockContainerRTL]}>
         <View style={styles.clockItem}>
@@ -325,6 +355,31 @@ const styles = StyleSheet.create({
   },
   pageContent: {
     paddingBottom: spacing.xl * 2,
+  },
+  // Header Bar
+  headerBar: {
+    paddingHorizontal: spacing.md,
+    paddingTop: spacing.md,
+    paddingBottom: spacing.sm,
+    alignItems: 'flex-end',
+  },
+  refreshButton: {
+    width: 48,
+    height: 48,
+    borderRadius: 24,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'rgba(16, 185, 129, 0.2)',
+    cursor: 'pointer',
+    transition: 'all 0.3s ease',
+  },
+  refreshButtonDisabled: {
+    opacity: 0.7,
+    cursor: 'not-allowed',
+  },
+  spinning: {
+    // @ts-ignore
+    animation: 'spin 1s linear infinite',
   },
   // Carousel Section
   carouselSection: {

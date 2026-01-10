@@ -224,10 +224,12 @@ class PodcastEpisode(Document):
     season_number: Optional[int] = None
     published_at: datetime
     thumbnail: Optional[str] = None
+    guid: Optional[str] = None  # RSS feed unique identifier to prevent duplicates
 
     class Settings:
         name = "podcast_episodes"
         indexes = [
             "podcast_id",
             ("podcast_id", "published_at"),
+            "guid",  # Index GUID for fast duplicate detection
         ]

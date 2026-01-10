@@ -3,8 +3,11 @@ from fastapi import APIRouter, HTTPException, status, Depends, Query
 from app.models.content import Content, Category
 from app.models.user import User
 from app.core.security import get_optional_user, get_current_active_user
+from app.services.podcast_sync import sync_all_podcasts
+import logging
 
 router = APIRouter()
+logger = logging.getLogger(__name__)
 
 
 @router.get("/featured")
@@ -15,6 +18,30 @@ async def get_featured(current_user: Optional[User] = Depends(get_optional_user)
         Content.is_featured == True,
         Content.is_published == True,
     )
+
+    # Get spotlight items (episodes from featured series for carousel rotation)
+    spotlight_items = []
+    if hero_content and hero_content.is_series:
+        # If hero is a series, get its episodes for spotlight/carousel
+        episodes = await Content.find(
+            Content.series_id == str(hero_content.id),
+            Content.is_published == True,
+        ).sort("-episode").limit(10).to_list()
+
+        spotlight_items = [
+            {
+                "id": str(ep.id),
+                "title": ep.title,
+                "description": ep.description,
+                "backdrop": ep.backdrop or ep.thumbnail,
+                "thumbnail": ep.thumbnail,
+                "category": ep.category_name,
+                "year": ep.year,
+                "duration": ep.duration,
+                "rating": ep.rating,
+            }
+            for ep in episodes
+        ]
 
     # Get categories with their content
     categories = await Category.find(Category.is_active == True).sort("order").to_list()
@@ -55,6 +82,7 @@ async def get_featured(current_user: Optional[User] = Depends(get_optional_user)
             "duration": hero_content.duration if hero_content else None,
             "rating": hero_content.rating if hero_content else None,
         } if hero_content else None,
+        "spotlight": spotlight_items,
         "categories": category_data,
     }
 
@@ -74,6 +102,31 @@ async def get_categories():
             for cat in categories
         ]
     }
+
+
+@router.post("/sync")
+async def sync_all_content():
+    """Sync all content: podcasts, live channels, and trending data."""
+    try:
+        logger.info("📻 Full content sync triggered")
+
+        # Sync podcasts
+        podcast_result = await sync_all_podcasts(max_episodes=20)
+
+        # Note: Trending is fetched on-demand from news APIs, so no sync needed
+        # Live channels are typically static or updated via admin, so no sync needed
+
+        return {
+            "status": "synced",
+            "podcasts": {
+                "total": podcast_result["total_podcasts"],
+                "synced": podcast_result["podcasts_synced"],
+                "episodes_added": podcast_result["total_episodes_added"],
+            },
+        }
+    except Exception as e:
+        logger.error(f"Error syncing content: {str(e)}", exc_info=True)
+        raise HTTPException(status_code=500, detail="Failed to sync content")
 
 
 @router.get("/category/{category_id}")

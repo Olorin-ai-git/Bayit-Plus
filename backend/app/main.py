@@ -19,6 +19,15 @@ from app.api.routes import (
 )
 
 
+async def sync_podcast_rss_feeds():
+    """Sync podcast episodes from RSS feeds on startup."""
+    try:
+        from app.services.podcast_sync import sync_all_podcasts
+        await sync_all_podcasts(max_episodes=3)
+    except Exception as e:
+        logger.warning(f"Failed to sync podcast RSS feeds: {e}")
+
+
 async def init_default_data():
     """Initialize default data on startup."""
     from app.models.widget import Widget, WidgetType, WidgetContentType, WidgetContent, WidgetPosition
@@ -112,6 +121,10 @@ async def lifespan(app: FastAPI):
         await init_default_data()
     except Exception as e:
         logger.warning(f"Failed to initialize default data: {e}")
+    try:
+        await sync_podcast_rss_feeds()
+    except Exception as e:
+        logger.warning(f"Failed to sync podcast RSS feeds: {e}")
     yield
     # Shutdown
     await close_mongo_connection()

@@ -8,7 +8,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { View, Text, StyleSheet, Pressable, ScrollView } from 'react-native';
 import { useTranslation } from 'react-i18next';
-import { Plus, Edit, Trash2, X, AlertCircle, Eye, EyeOff, Tv, Globe } from 'lucide-react';
+import { Plus, Edit, Trash2, X, AlertCircle, Eye, EyeOff, Tv, Globe, Film, Podcast, Radio } from 'lucide-react';
 import DataTable from '@/components/admin/DataTable';
 import WidgetFormModal from '@/components/widgets/WidgetFormModal';
 import { widgetsService } from '@/services/adminApi';
@@ -145,21 +145,28 @@ export default function WidgetsPage() {
     {
       key: 'content',
       label: t('admin.widgets.columns.contentType'),
-      render: (_: any, item: Widget) => (
-        <View style={styles.contentTypeCell}>
-          {item.content.content_type === 'live_channel' ? (
-            <>
-              <Tv size={14} color={colors.primary} />
-              <Text style={[styles.cellText, { marginLeft: spacing.xs }]}>{t('admin.widgets.contentTypes.liveChannel')}</Text>
-            </>
-          ) : (
-            <>
-              <Globe size={14} color={colors.secondary} />
-              <Text style={[styles.cellText, { marginLeft: spacing.xs }]}>{t('admin.widgets.contentTypes.iframe')}</Text>
-            </>
-          )}
-        </View>
-      ),
+      render: (_: any, item: Widget) => {
+        const contentTypeConfig: Record<string, { icon: React.ReactNode; label: string }> = {
+          live_channel: { icon: <Tv size={14} color={colors.primary} />, label: t('admin.widgets.contentTypes.liveChannel') },
+          live: { icon: <Tv size={14} color={colors.primary} />, label: t('admin.widgets.contentTypes.live') },
+          vod: { icon: <Film size={14} color={colors.info} />, label: t('admin.widgets.contentTypes.vod') },
+          podcast: { icon: <Podcast size={14} color={colors.success} />, label: t('admin.widgets.contentTypes.podcast') },
+          radio: { icon: <Radio size={14} color={colors.warning} />, label: t('admin.widgets.contentTypes.radio') },
+          iframe: { icon: <Globe size={14} color={colors.secondary} />, label: t('admin.widgets.contentTypes.iframe') },
+        };
+
+        const config = contentTypeConfig[item.content.content_type] || {
+          icon: <Globe size={14} color={colors.secondary} />,
+          label: item.content.content_type,
+        };
+
+        return (
+          <View style={styles.contentTypeCell}>
+            {config.icon}
+            <Text style={[styles.cellText, { marginLeft: spacing.xs }]}>{config.label}</Text>
+          </View>
+        );
+      },
     },
     {
       key: 'visible_to_roles',

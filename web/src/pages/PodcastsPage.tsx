@@ -3,7 +3,7 @@ import { View, Text, StyleSheet, FlatList, Pressable, Image, ScrollView, useWind
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useDirection } from '@/hooks/useDirection';
-import { Podcast, Headphones, Clock, Search, X } from 'lucide-react';
+import { Podcast, Headphones, Clock, Search, X, RefreshCw } from 'lucide-react';
 import { podcastService } from '@/services/api';
 import { colors, spacing, borderRadius } from '@bayit/shared/theme';
 import { GlassView, GlassCard, GlassCategoryPill } from '@bayit/shared/ui';
@@ -84,6 +84,7 @@ export default function PodcastsPage() {
   const [shows, setShows] = useState<Show[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
   const [loading, setLoading] = useState(true);
+  const [syncing, setSyncing] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [searchQuery, setSearchQuery] = useState('');
   const { width } = useWindowDimensions();
@@ -107,9 +108,10 @@ export default function PodcastsPage() {
     return filtered;
   }, [shows, searchQuery]);
 
-  // Load categories on mount
+  // Load categories and sync podcasts on mount
   useEffect(() => {
     loadCategories();
+    syncPodcasts();
   }, []);
 
   // Load shows when category changes
@@ -171,6 +173,22 @@ export default function PodcastsPage() {
     }
   };
 
+  const syncPodcasts = async () => {
+    try {
+      setSyncing(true);
+      logger.info('Syncing content...', 'PodcastsPage');
+      const result = await podcastService.syncPodcasts();
+      logger.info(`Synced podcasts: ${result.podcasts_synced}/${result.total_podcasts}`, 'PodcastsPage');
+
+      // Reload shows after syncing
+      await loadShows();
+    } catch (error) {
+      logger.error('Failed to sync podcasts', 'PodcastsPage', error);
+    } finally {
+      setSyncing(false);
+    }
+  };
+
   if (loading) {
     return (
       <View style={styles.container}>
@@ -187,11 +205,20 @@ export default function PodcastsPage() {
   return (
     <View style={styles.container}>
       {/* Header */}
-      <View style={[styles.header, { flexDirection, justifyContent }]}>
-        <GlassView style={styles.headerIcon}>
-          <Podcast size={24} color={colors.success} />
-        </GlassView>
-        <Text style={[styles.title, { textAlign }]}>{t('podcasts.title')}</Text>
+      <View style={styles.header}>
+        <View style={[styles.headerLeft, { flexDirection }]}>
+          <GlassView style={styles.headerIcon}>
+            <Podcast size={24} color={colors.success} />
+          </GlassView>
+          <Text style={[styles.title, { textAlign }]}>{t('podcasts.title')}</Text>
+        </View>
+        <Pressable
+          onPress={syncPodcasts}
+          disabled={syncing}
+          style={[styles.refreshButton, syncing && styles.refreshButtonDisabled]}
+        >
+          <RefreshCw size={20} color={colors.text} style={syncing ? styles.spinning : undefined} />
+        </Pressable>
       </View>
 
       {/* Search Input */}
@@ -304,6 +331,12 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: spacing.sm,
     marginBottom: spacing.lg,
+    justifyContent: 'space-between',
+  },
+  headerLeft: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.sm,
   },
   searchContainer: {
     flexDirection: 'row',
@@ -448,5 +481,24 @@ const styles = StyleSheet.create({
     aspectRatio: 1,
     backgroundColor: colors.glass,
     borderRadius: borderRadius.lg,
+  },
+  // Refresh button styles
+  refreshButton: {
+    width: 48,
+    height: 48,
+    borderRadius: 24,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'rgba(16, 185, 129, 0.2)',
+    cursor: 'pointer',
+    transition: 'all 0.3s ease',
+  },
+  refreshButtonDisabled: {
+    opacity: 0.7,
+    cursor: 'not-allowed',
+  },
+  spinning: {
+    // @ts-ignore
+    animation: 'spin 1s linear infinite',
   },
 });

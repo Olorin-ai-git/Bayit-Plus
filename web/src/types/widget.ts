@@ -7,7 +7,7 @@
 
 export type WidgetType = 'system' | 'personal';
 
-export type WidgetContentType = 'live_channel' | 'iframe';
+export type WidgetContentType = 'live_channel' | 'iframe' | 'podcast' | 'vod' | 'radio' | 'live';
 
 export interface WidgetPosition {
   x: number;
@@ -20,6 +20,9 @@ export interface WidgetPosition {
 export interface WidgetContent {
   content_type: WidgetContentType;
   live_channel_id?: string | null;
+  podcast_id?: string | null;
+  content_id?: string | null;
+  station_id?: string | null;
   iframe_url?: string | null;
   iframe_title?: string | null;
 }
@@ -31,6 +34,7 @@ export interface Widget {
   title: string;
   description?: string | null;
   icon?: string | null;
+  cover_url?: string | null;
   content: WidgetContent;
   position: WidgetPosition;
   is_active: boolean;
@@ -117,7 +121,9 @@ export interface WidgetFormData {
   description: string;
   icon: string;
   content_type: WidgetContentType;
-  live_channel_id: string;
+  content_id: string;  // Unified content ID (maps to live_channel_id, podcast_id, content_id, or station_id)
+  podcast_id?: string;
+  station_id?: string;
   iframe_url: string;
   iframe_title: string;
   position_x: number;
@@ -141,7 +147,10 @@ export function formDataToCreateRequest(data: WidgetFormData): WidgetCreateReque
     icon: data.icon || undefined,
     content: {
       content_type: data.content_type,
-      live_channel_id: data.content_type === 'live_channel' ? data.live_channel_id : null,
+      live_channel_id: data.content_type === 'live_channel' || data.content_type === 'live' ? data.content_id : null,
+      podcast_id: data.content_type === 'podcast' ? data.content_id : null,
+      content_id: data.content_type === 'vod' ? data.content_id : null,
+      station_id: data.content_type === 'radio' ? data.content_id : null,
       iframe_url: data.content_type === 'iframe' ? data.iframe_url : null,
       iframe_title: data.content_type === 'iframe' ? data.iframe_title : null,
     },
@@ -165,8 +174,8 @@ export function formDataToCreateRequest(data: WidgetFormData): WidgetCreateReque
 export const DEFAULT_WIDGET_POSITION: WidgetPosition = {
   x: 20,
   y: 100,
-  width: 320,
-  height: 180,
+  width: 520,
+  height: 200,
   z_index: 100,
 };
 
@@ -176,7 +185,7 @@ export const DEFAULT_WIDGET_FORM: WidgetFormData = {
   description: '',
   icon: '',
   content_type: 'live_channel',
-  live_channel_id: '',
+  content_id: '',
   iframe_url: '',
   iframe_title: '',
   position_x: DEFAULT_WIDGET_POSITION.x,

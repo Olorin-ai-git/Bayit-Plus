@@ -73,6 +73,7 @@ const apiContentService = {
   getById: (contentId) => api.get(`/content/${contentId}`),
   getStreamUrl: (contentId) => api.get(`/content/${contentId}/stream`),
   search: (query, params) => api.post('/search', { query, ...params }),
+  syncContent: () => api.post('/podcasts/refresh'),
 }
 
 // Live TV Service (API)
@@ -103,6 +104,7 @@ const apiPodcastService = {
   getEpisodes: (showId, params) => api.get(`/podcasts/${showId}/episodes`, { params }),
   getEpisode: (showId, episodeId) => api.get(`/podcasts/${showId}/episodes/${episodeId}`),
   getCategories: () => api.get('/podcasts/categories'),
+  syncPodcasts: () => api.post('/podcasts/sync'),
 }
 
 // Subscription Service (API)

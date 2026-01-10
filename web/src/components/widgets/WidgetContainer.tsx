@@ -1,15 +1,17 @@
 /**
  * WidgetContainer - Draggable floating widget overlay
  *
- * Displays live streams or iframe content in a picture-in-picture style overlay.
+ * Displays video, audio, or iframe content in a picture-in-picture style overlay.
  * Supports drag-and-drop repositioning, mute/unmute, and close functionality.
+ * Supports multiple content types: live_channel, live, vod, podcast, radio, iframe.
  */
 
 import React, { useRef, useState, useEffect, useCallback } from 'react';
 import { View, Text, StyleSheet, Pressable } from 'react-native';
 import { X, Volume2, VolumeX, GripVertical } from 'lucide-react';
-import Hls from 'hls.js';
 import { colors, spacing, borderRadius } from '@bayit/shared/theme';
+import VideoPlayer from '@/components/player/VideoPlayer';
+import AudioPlayer from '@/components/player/AudioPlayer';
 import type { Widget, WidgetPosition } from '@/types/widget';
 
 interface WidgetContainerProps {
@@ -19,7 +21,7 @@ interface WidgetContainerProps {
   onToggleMute: () => void;
   onClose: () => void;
   onPositionChange: (position: Partial<WidgetPosition>) => void;
-  liveChannelStreamUrl?: string;
+  streamUrl?: string;
 }
 
 export default function WidgetContainer({
@@ -29,77 +31,30 @@ export default function WidgetContainer({
   onToggleMute,
   onClose,
   onPositionChange,
-  liveChannelStreamUrl,
+  streamUrl,
 }: WidgetContainerProps) {
   const containerRef = useRef<HTMLDivElement>(null);
-  const videoRef = useRef<HTMLVideoElement>(null);
-  const hlsRef = useRef<Hls | null>(null);
 
   const [isDragging, setIsDragging] = useState(false);
   const [dragOffset, setDragOffset] = useState({ x: 0, y: 0 });
   const [showControls, setShowControls] = useState(false);
-  const [videoError, setVideoError] = useState(false);
+  const [loading, setLoading] = useState(!streamUrl && widget.content.content_type !== 'iframe');
+  const [error, setError] = useState<string | null>(null);
 
-  // Initialize HLS for live channel content
+  // Update loading state when stream URL changes
   useEffect(() => {
-    if (widget.content.content_type !== 'live_channel') return;
-
-    const streamUrl = liveChannelStreamUrl;
-    if (!streamUrl || !videoRef.current) return;
-
-    const video = videoRef.current;
-
-    if (Hls.isSupported()) {
-      const hls = new Hls({
-        enableWorker: true,
-        lowLatencyMode: true,
-        backBufferLength: 90,
-      });
-
-      hls.loadSource(streamUrl);
-      hls.attachMedia(video);
-
-      hls.on(Hls.Events.MANIFEST_PARSED, () => {
-        if (!isMuted) {
-          video.play().catch(() => {});
-        }
-      });
-
-      hls.on(Hls.Events.ERROR, (event, data) => {
-        if (data.fatal) {
-          setVideoError(true);
-          console.error('[Widget] HLS fatal error:', data.type, data.details);
-        }
-      });
-
-      hlsRef.current = hls;
-    } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
-      // Safari native HLS
-      video.src = streamUrl;
-      video.addEventListener('loadedmetadata', () => {
-        if (!isMuted) {
-          video.play().catch(() => {});
-        }
-      });
+    if (widget.content.content_type === 'iframe') {
+      setLoading(false);
+      return;
     }
 
-    return () => {
-      if (hlsRef.current) {
-        hlsRef.current.destroy();
-        hlsRef.current = null;
-      }
-    };
-  }, [widget.content.content_type, liveChannelStreamUrl]);
-
-  // Handle mute state changes
-  useEffect(() => {
-    if (videoRef.current) {
-      videoRef.current.muted = isMuted;
-      if (!isMuted) {
-        videoRef.current.play().catch(() => {});
-      }
+    if (streamUrl) {
+      setLoading(false);
+      setError(null);
+    } else {
+      setLoading(true);
     }
-  }, [isMuted]);
+  }, [streamUrl, widget.content.content_type]);
 
   // Drag handlers
   const handleDragStart = useCallback((e: React.MouseEvent) => {
@@ -145,45 +100,114 @@ export default function WidgetContainer({
     }
   }, [isDragging, handleDrag, handleDragEnd]);
 
+  // Render loading state
+  const renderLoading = () => (
+    <View style={styles.loadingContainer}>
+      <View style={styles.spinner} />
+      <Text style={styles.loadingText}>Loading...</Text>
+    </View>
+  );
+
+  // Render error state
+  const renderError = (errorMessage: string) => (
+    <View style={styles.errorContainer}>
+      <Text style={styles.errorText}>{errorMessage}</Text>
+    </View>
+  );
+
   // Render content based on type
   const renderContent = () => {
-    if (widget.content.content_type === 'live_channel') {
-      if (videoError) {
-        return (
-          <View style={styles.errorContainer}>
-            <Text style={styles.errorText}>Stream unavailable</Text>
-          </View>
-        );
+    // Show loading state while fetching stream URL (unless it's iframe)
+    if (loading) {
+      return renderLoading();
+    }
+
+    const { content_type } = widget.content;
+
+    try {
+      switch (content_type) {
+        case 'live_channel':
+        case 'live':
+          if (!streamUrl) {
+            return renderError('Stream unavailable');
+          }
+          return (
+            <div style={styles.playerWrapper as any}>
+              <VideoPlayer
+                src={streamUrl}
+                title={widget.title}
+                isLive={true}
+                autoPlay={!isMuted}
+              />
+            </div>
+          );
+
+        case 'vod':
+          if (!streamUrl) {
+            return renderError('Content unavailable');
+          }
+          return (
+            <div style={styles.playerWrapper as any}>
+              <VideoPlayer
+                src={streamUrl}
+                title={widget.title}
+                isLive={false}
+                autoPlay={!isMuted}
+              />
+            </div>
+          );
+
+        case 'podcast':
+          if (!streamUrl) {
+            return renderError('Podcast unavailable');
+          }
+          return (
+            <div style={styles.playerWrapper as any}>
+              <AudioPlayer
+                src={streamUrl}
+                title={widget.title}
+                cover={widget.cover_url || widget.icon}
+                isLive={false}
+              />
+            </div>
+          );
+
+        case 'radio':
+          if (!streamUrl) {
+            return renderError('Station unavailable');
+          }
+          return (
+            <div style={styles.playerWrapper as any}>
+              <AudioPlayer
+                src={streamUrl}
+                title={widget.title}
+                cover={widget.cover_url || widget.icon}
+                isLive={true}
+              />
+            </div>
+          );
+
+        case 'iframe':
+          if (!widget.content.iframe_url) {
+            return renderError('iFrame URL not configured');
+          }
+          return (
+            <iframe
+              src={widget.content.iframe_url}
+              title={widget.content.iframe_title || widget.title}
+              style={styles.iframe as any}
+              sandbox="allow-scripts allow-same-origin"
+              allow="autoplay; encrypted-media"
+            />
+          );
+
+        default:
+          return renderError('No content configured');
       }
-
-      return (
-        <video
-          ref={videoRef}
-          style={styles.video as any}
-          muted={isMuted}
-          autoPlay
-          playsInline
-        />
-      );
+    } catch (err) {
+      console.error('[Widget] Error rendering content:', err);
+      return renderError('Error loading content');
     }
-
-    if (widget.content.content_type === 'iframe' && widget.content.iframe_url) {
-      return (
-        <iframe
-          src={widget.content.iframe_url}
-          title={widget.content.iframe_title || widget.title}
-          style={styles.iframe as any}
-          sandbox="allow-scripts allow-same-origin"
-          allow="autoplay; encrypted-media"
-        />
-      );
-    }
-
-    return (
-      <View style={styles.errorContainer}>
-        <Text style={styles.errorText}>No content configured</Text>
-      </View>
-    );
   };
 
   return (
@@ -275,15 +299,35 @@ const styles = StyleSheet.create({
     height: '100%',
     backgroundColor: '#000',
   },
-  video: {
+  playerWrapper: {
     width: '100%',
     height: '100%',
-    objectFit: 'cover',
   },
   iframe: {
     width: '100%',
     height: '100%',
     border: 'none',
+  },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'rgba(0, 0, 0, 0.8)',
+  },
+  spinner: {
+    width: 24,
+    height: 24,
+    borderRadius: 12,
+    borderWidth: 2,
+    borderColor: 'rgba(255, 255, 255, 0.3)',
+    borderTopColor: colors.text,
+    // @ts-ignore - Web CSS
+    animation: 'spin 1s linear infinite',
+  },
+  loadingText: {
+    marginTop: spacing.sm,
+    fontSize: 12,
+    color: colors.textSecondary,
   },
   controlBar: {
     position: 'absolute',
