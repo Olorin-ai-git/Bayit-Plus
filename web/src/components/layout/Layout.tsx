@@ -4,6 +4,7 @@ import { Outlet } from 'react-router-dom';
 import Header from './Header';
 import Footer from './Footer';
 import GlassSidebar from './GlassSidebar';
+import Breadcrumbs from './Breadcrumbs';
 import Chatbot from '../chat/Chatbot';
 import SoundwaveParticles from '../content/SoundwaveParticles';
 import RunningFlowBanner from '../flow/RunningFlowBanner';
@@ -168,6 +169,9 @@ export default function Layout() {
         isRTL ? { marginRight: sidebarWidth } : { marginLeft: sidebarWidth },
       ]}>
         <Header />
+
+        {/* Breadcrumbs Navigation */}
+        <Breadcrumbs />
 
         {/* Running Flow Banner - shows when a flow is active */}
         <RunningFlowBanner />

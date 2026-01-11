@@ -1,22 +1,14 @@
 #!/usr/bin/env python3
 """
-Script to add Palmach series videos to VOD collection
+Script to add all Palmach series videos to VOD collection
 """
 import asyncio
-import shutil
 from pathlib import Path
 from datetime import datetime
 from motor.motor_asyncio import AsyncIOMotorClient
 from beanie import init_beanie
 from app.models.content import Content, Category
 from app.core.config import settings
-
-# Video file paths
-VIDEO_FILES = [
-    "/Users/olorin/Downloads/פלמ_ח של סרטים וסדרות בדרייב/פלמח עונה 1 פרק 34.mp4",
-    "/Users/olorin/Downloads/פלמ_ח של סרטים וסדרות בדרייב/פלמח עונה 1 פרק 35.mp4",
-    "/Users/olorin/Downloads/פלמ_ח של סרטים וסדרות בדרייב/פלמח עונה 1 פרק 50.mp4",
-]
 
 UPLOADS_DIR = Path("/Users/olorin/Documents/Bayit-Plus/backend/uploads/vod")
 
@@ -31,11 +23,7 @@ async def add_palmach_series():
     )
 
     try:
-        print("🎬 Adding Palmach series to VOD collection...")
-
-        # Create uploads directory if it doesn't exist
-        UPLOADS_DIR.mkdir(parents=True, exist_ok=True)
-        print(f"✅ Uploads directory ready: {UPLOADS_DIR}")
+        print("Adding Palmach series to VOD collection...")
 
         # Find or create Palmach category
         palmach_category = await Category.find_one({"name": "פלמח"})
@@ -43,58 +31,75 @@ async def add_palmach_series():
             palmach_category = Category(
                 name="פלמח",
                 slug="palmach",
-                description="סדרת פלמח - הפלוגה ההנדסית",
+                description="סדרת פלמח - דרמה ישראלית",
                 is_active=True,
                 order=10,
             )
             await palmach_category.insert()
-            print(f"✅ Created category: פלמח (ID: {palmach_category.id})")
+            print(f"Created category: פלמח (ID: {palmach_category.id})")
         else:
-            print(f"✅ Using existing category: פלמח (ID: {palmach_category.id})")
+            print(f"Using existing category: פלמח (ID: {palmach_category.id})")
 
-        # Create a series document for Palmach
-        palmach_series = Content(
-            title="פלמח",
-            description="סדרה דרמטית על הפלוגה ההנדסית של הצבא הישראלי",
-            category_id=str(palmach_category.id),
-            category_name="פלמח",
-            is_series=True,
-            is_published=True,
-            is_featured=False,
-            requires_subscription="basic",
-            stream_url="",  # Series parent has no stream URL
-            created_at=datetime.utcnow(),
-            updated_at=datetime.utcnow(),
-        )
-        await palmach_series.insert()
+        # Find or create the series document
+        palmach_series = await Content.find_one({"title": "פלמח", "is_series": True, "series_id": None})
+        if not palmach_series:
+            palmach_series = Content(
+                title="פלמח",
+                description="סדרה דרמטית ישראלית",
+                category_id=str(palmach_category.id),
+                category_name="פלמח",
+                is_series=True,
+                is_published=True,
+                is_featured=False,
+                requires_subscription="basic",
+                stream_url="",
+                thumbnail="/uploads/vod/Palmach-cover.jpg",
+                created_at=datetime.utcnow(),
+                updated_at=datetime.utcnow(),
+            )
+            await palmach_series.insert()
+            print(f"Created Palmach series (ID: {palmach_series.id})")
+        else:
+            print(f"Using existing series (ID: {palmach_series.id})")
+
         palmach_series_id = str(palmach_series.id)
-        print(f"✅ Created Palmach series (ID: {palmach_series_id})")
 
-        # Episode data: extract episode numbers from filenames
-        episodes_data = [
-            {"file": VIDEO_FILES[0], "episode": 34},
-            {"file": VIDEO_FILES[1], "episode": 35},
-            {"file": VIDEO_FILES[2], "episode": 50},
-        ]
+        # Find all video files
+        video_files = sorted(UPLOADS_DIR.glob("Palmach_S01E*.mp4"))
+        print(f"\nFound {len(video_files)} video files")
 
-        # Add each episode
-        for ep_data in episodes_data:
-            video_path = ep_data["file"]
-            episode_num = ep_data["episode"]
+        added = 0
+        skipped = 0
+        for video_path in video_files:
+            filename = video_path.name
 
-            # Check if source file exists
-            if not Path(video_path).exists():
-                print(f"❌ Source file not found: {video_path}")
+            # Parse episode number
+            if "E01-02" in filename:
+                episode_nums = [1, 2]
+                episode_title = "פלמח - עונה 1 פרקים 1-2"
+                episode_num = 1
+            else:
+                import re
+                match = re.search(r'E(\d+)', filename)
+                if match:
+                    episode_num = int(match.group(1))
+                    episode_title = f"פלמח - עונה 1 פרק {episode_num}"
+                else:
+                    print(f"  Skipping (can't parse): {filename}")
+                    continue
+
+            # Check if episode already exists
+            existing = await Content.find_one({
+                "series_id": palmach_series_id,
+                "episode": episode_num,
+                "season": 1
+            })
+
+            if existing:
+                skipped += 1
                 continue
 
-            # Copy video to uploads folder
-            filename = f"Palmach_S01E{episode_num:02d}.mp4"
-            dest_path = UPLOADS_DIR / filename
-            shutil.copy2(video_path, dest_path)
-            print(f"📁 Copied: {filename}")
-
-            # Create content record for episode
-            episode_title = f"פלמח - עונה 1 פרק {episode_num}"
+            # Create episode
             episode = Content(
                 title=episode_title,
                 description=f"פלמח עונה 1 פרק {episode_num}",
@@ -105,24 +110,23 @@ async def add_palmach_series():
                 episode=episode_num,
                 series_id=palmach_series_id,
                 stream_url=f"/uploads/vod/{filename}",
-                stream_type="http",  # Direct HTTP stream from local file
+                stream_type="http",
+                thumbnail="/uploads/vod/Palmach-cover.jpg",
                 is_published=True,
                 is_featured=False,
                 requires_subscription="basic",
-                duration="45:00",  # Approximate
                 created_at=datetime.utcnow(),
                 updated_at=datetime.utcnow(),
             )
             await episode.insert()
-            print(f"✅ Added episode: {episode_title} (ID: {episode.id})")
+            added += 1
+            print(f"  Added: {episode_title}")
 
-        print("\n🎉 Successfully added Palmach series with 3 episodes!")
-        print(f"📍 Series ID: {palmach_series_id}")
-        print(f"📺 Category: פלמח")
-        print(f"📂 Videos stored in: {UPLOADS_DIR}")
+        print(f"\nDone! Added {added} episodes, skipped {skipped} existing")
+        print(f"Series ID: {palmach_series_id}")
 
     except Exception as e:
-        print(f"❌ Error: {str(e)}")
+        print(f"Error: {str(e)}")
         import traceback
         traceback.print_exc()
 

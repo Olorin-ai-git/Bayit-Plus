@@ -74,6 +74,17 @@ const apiContentService = {
   getStreamUrl: (contentId) => api.get(`/content/${contentId}/stream`),
   search: (query, params) => api.post('/search', { query, ...params }),
   syncContent: () => api.post('/podcasts/refresh'),
+
+  // Series endpoints
+  getSeriesDetails: (seriesId) => api.get(`/content/series/${seriesId}`),
+  getSeriesSeasons: (seriesId) => api.get(`/content/series/${seriesId}/seasons`),
+  getSeasonEpisodes: (seriesId, seasonNum) => api.get(`/content/series/${seriesId}/season/${seasonNum}/episodes`),
+
+  // Movie endpoints
+  getMovieDetails: (movieId) => api.get(`/content/movie/${movieId}`),
+
+  // Preview endpoint
+  getContentPreview: (contentId) => api.get(`/content/${contentId}/preview`),
 }
 
 // Live TV Service (API)

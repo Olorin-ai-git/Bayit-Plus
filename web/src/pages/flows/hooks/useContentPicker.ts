@@ -105,39 +105,40 @@ export const useContentPicker = ({
           break;
         }
         case 'podcast': {
-          // Fetch podcasts from all categories
-          let categories = [];
+          // Fetch ALL podcasts first (this is the authoritative list)
+          const allPodcastsResponse = await podcastService.getShows();
+          const allPodcasts = allPodcastsResponse.data?.shows || allPodcastsResponse.shows || allPodcastsResponse.data || [];
+
+          // Try to fetch categories for labeling
+          let categories: any[] = [];
           try {
             const categoriesResponse = await podcastService.getCategories();
             categories = categoriesResponse.data?.categories || categoriesResponse.categories || categoriesResponse.data || [];
           } catch (err) {
-            // If fetching categories fails, fall back to showing all podcasts without category filtering
-            logger.warn('Failed to fetch podcast categories, showing all podcasts', 'useContentPicker', err);
+            logger.warn('Failed to fetch podcast categories', 'useContentPicker', err);
           }
 
-          const allPodcasts: any[] = [];
-
-          // If we got categories, fetch from each one
+          // Create a category lookup map if we have categories
+          const categoryMap = new Map<string, string>();
           if (categories.length > 0) {
             for (const cat of categories) {
               try {
                 const podcastResponse = await podcastService.getShows(cat.id);
                 const shows = podcastResponse.data?.shows || podcastResponse.shows || podcastResponse.data || [];
-                allPodcasts.push(...shows.map((show: any) => ({ ...show, category: cat.name || cat.name_en })));
+                for (const show of shows) {
+                  categoryMap.set(show.id, cat.name || cat.name_en);
+                }
               } catch (err) {
-                // Skip category if fetch fails
                 logger.warn(`Failed to fetch podcasts for category ${cat.id}`, 'useContentPicker', err);
               }
             }
           }
 
-          // If no categories were fetched or all category fetches failed, show all podcasts
-          if (allPodcasts.length === 0) {
-            const fallbackResponse = await podcastService.getShows();
-            data = fallbackResponse.data?.shows || fallbackResponse.shows || fallbackResponse.data || [];
-          } else {
-            data = allPodcasts;
-          }
+          // Add category labels to podcasts
+          data = allPodcasts.map((show: any) => ({
+            ...show,
+            category: categoryMap.get(show.id) || show.category,
+          }));
           break;
         }
       }

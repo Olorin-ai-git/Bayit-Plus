@@ -15,10 +15,12 @@ interface Content {
   title: string;
   thumbnail?: string;
   type?: 'live' | 'radio' | 'podcast' | 'vod' | 'movie' | 'series';
+  is_series?: boolean;
   duration?: string;
   progress?: number;
   year?: string;
   category?: string;
+  total_episodes?: number;
 }
 
 interface ContentCardProps {
@@ -41,13 +43,16 @@ export default function ContentCard({ content, showProgress = false, showActions
   const [favoriteHovered, setFavoriteHovered] = useState(false);
   const [watchlistHovered, setWatchlistHovered] = useState(false);
 
+  // Determine link destination based on content type
   const linkTo = content.type === 'live'
     ? `/live/${content.id}`
     : content.type === 'radio'
     ? `/radio/${content.id}`
     : content.type === 'podcast'
     ? `/podcasts/${content.id}`
-    : `/vod/${content.id}`;
+    : content.type === 'series' || content.is_series
+    ? `/vod/series/${content.id}`
+    : `/vod/movie/${content.id}`;
 
   const handleFavoriteToggle = async (e: React.MouseEvent) => {
     e.preventDefault();
@@ -182,10 +187,19 @@ export default function ContentCard({ content, showProgress = false, showActions
               </View>
             )}
 
-            {/* Duration Badge */}
-            {content.duration && (
+            {/* Duration Badge - for movies */}
+            {content.duration && !content.is_series && (
               <View style={[styles.durationBadge, isRTL ? { left: 'auto', right: spacing.sm } : {}]}>
                 <Text style={styles.durationText}>{content.duration}</Text>
+              </View>
+            )}
+
+            {/* Episode Count Badge - for series */}
+            {(content.is_series || content.type === 'series') && content.total_episodes !== undefined && content.total_episodes > 0 && (
+              <View style={[styles.episodesBadge, isRTL ? { left: 'auto', right: spacing.sm } : {}]}>
+                <Text style={styles.episodesText}>
+                  {content.total_episodes} {t('content.episodes')}
+                </Text>
               </View>
             )}
 
@@ -318,6 +332,22 @@ const styles = StyleSheet.create({
     paddingHorizontal: spacing.xs,
     paddingVertical: 2,
     borderRadius: borderRadius.sm,
+  },
+  episodesBadge: {
+    position: 'absolute',
+    bottom: spacing.sm,
+    left: spacing.sm,
+    backgroundColor: 'rgba(0, 0, 0, 0.75)',
+    paddingHorizontal: spacing.sm,
+    paddingVertical: 4,
+    borderRadius: borderRadius.sm,
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  episodesText: {
+    fontSize: 11,
+    fontWeight: '600',
+    color: colors.text,
   },
   durationText: {
     fontSize: 11,

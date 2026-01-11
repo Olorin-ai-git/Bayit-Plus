@@ -97,7 +97,9 @@ export default function ContentCarousel({
           contentContainerStyle={[styles.scrollContent, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}
         >
           {items.map((item) => (
-            <ContentCard key={item.id} content={item} />
+            <View key={item.id} style={styles.cardWrapper}>
+              <ContentCard content={item} />
+            </View>
           ))}
         </ScrollView>
       </View>
@@ -163,5 +165,10 @@ const styles = StyleSheet.create({
   scrollContent: {
     gap: spacing.md,
     paddingBottom: spacing.md,
+    paddingHorizontal: spacing.md,
+  },
+  cardWrapper: {
+    width: 220,
+    flexShrink: 0,
   },
 });

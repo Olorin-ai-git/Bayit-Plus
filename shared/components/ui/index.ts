@@ -18,6 +18,7 @@ export { GlassModal } from './GlassModal';
 export { GlassBadge } from './GlassBadge';
 export { GlassTabs } from './GlassTabs';
 export { GlassCategoryPill } from './GlassCategoryPill';
+export { GlassBreadcrumbs } from './GlassBreadcrumbs';
 export { AnalogClock } from './AnalogClock';
 export { GlassAvatar } from './GlassAvatar';
 export { GlassStatCard } from './GlassStatCard';

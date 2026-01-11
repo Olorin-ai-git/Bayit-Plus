@@ -17,6 +17,8 @@ import LoginPage from './pages/LoginPage'
 import RegisterPage from './pages/RegisterPage'
 import GoogleCallbackPage from './pages/GoogleCallbackPage'
 import WatchPage from './pages/WatchPage'
+import SeriesDetailPage from './pages/SeriesDetailPage'
+import MovieDetailPage from './pages/MovieDetailPage'
 import NotFoundPage from './pages/NotFoundPage'
 import ProfileSelectionPage from './pages/ProfileSelectionPage'
 import JudaismPage from './pages/JudaismPage'
@@ -108,6 +110,8 @@ function App() {
         <Route path="/live" element={<LivePage />} />
         <Route path="/live/:channelId" element={<WatchPage type="live" />} />
         <Route path="/vod" element={<VODPage />} />
+        <Route path="/vod/series/:seriesId" element={<SeriesDetailPage />} />
+        <Route path="/vod/movie/:movieId" element={<MovieDetailPage />} />
         <Route path="/vod/:contentId" element={<WatchPage type="vod" />} />
         <Route path="/radio" element={<RadioPage />} />
         <Route path="/radio/:stationId" element={<WatchPage type="radio" />} />

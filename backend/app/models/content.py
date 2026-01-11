@@ -61,6 +61,18 @@ class Content(Document):
     season: Optional[int] = None
     episode: Optional[int] = None
     series_id: Optional[str] = None
+    total_seasons: Optional[int] = None
+    total_episodes: Optional[int] = None
+
+    # TMDB Integration
+    tmdb_id: Optional[int] = None
+    imdb_id: Optional[str] = None  # e.g., "tt1234567"
+    imdb_rating: Optional[float] = None
+    imdb_votes: Optional[int] = None
+
+    # Trailer/Preview
+    trailer_url: Optional[str] = None
+    preview_url: Optional[str] = None  # 5-second preview clip
 
     # Visibility
     is_published: bool = True
