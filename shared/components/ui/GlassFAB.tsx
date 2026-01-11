@@ -62,6 +62,7 @@ export const GlassFAB: React.FC<GlassFABProps> = ({
 }) => {
   const [isFocused, setIsFocused] = useState(false);
   const [isPressed, setIsPressed] = useState(false);
+  const [isHovered, setIsHovered] = useState(false);
   const scaleAnim = useRef(new Animated.Value(1)).current;
 
   const handleFocus = () => {
@@ -139,7 +140,7 @@ export const GlassFAB: React.FC<GlassFABProps> = ({
   const variantColors: Record<FABVariant, { bg: string; text: string }> = {
     primary: { bg: colors.primary, text: '#000000' },
     secondary: { bg: colors.secondary, text: '#ffffff' },
-    gradient: { bg: 'transparent', text: '#000000' },
+    gradient: { bg: 'transparent', text: colors.text },
   };
 
   const currentSize = sizeStyles[size];
@@ -177,19 +178,22 @@ export const GlassFAB: React.FC<GlassFABProps> = ({
   const renderButton = () => {
     if (variant === 'gradient') {
       return (
-        <LinearGradient
-          colors={['#00D9FF', '#0099CC']}
-          start={{ x: 0, y: 0 }}
-          end={{ x: 1, y: 1 }}
-          style={[styles.fab, fabStyle, isFocused && styles.fabFocused, disabled && styles.fabDisabled, style]}
-        >
-          {content}
-        </LinearGradient>
+        <View style={[styles.fab, fabStyle, styles.glassFab, (isFocused || isHovered) && styles.fabFocused, disabled && styles.fabDisabled, style]}>
+          <LinearGradient
+            colors={['rgba(0, 217, 255, 0.25)', 'rgba(0, 153, 204, 0.25)']}
+            start={{ x: 0, y: 0 }}
+            end={{ x: 1, y: 1 }}
+            style={styles.gradientOverlay}
+          />
+          <View style={styles.contentWrapper}>
+            {content}
+          </View>
+        </View>
       );
     }
 
     return (
-      <View style={[styles.fab, fabStyle, isFocused && styles.fabFocused, disabled && styles.fabDisabled, style]}>
+      <View style={[styles.fab, fabStyle, (isFocused || isHovered) && styles.fabFocused, disabled && styles.fabDisabled, style]}>
         {content}
       </View>
     );
@@ -206,13 +210,15 @@ export const GlassFAB: React.FC<GlassFABProps> = ({
       activeOpacity={1}
       // @ts-ignore - TV-specific prop
       hasTVPreferredFocus={hasTVPreferredFocus}
+      // @ts-ignore - Web hover events
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
     >
       <Animated.View
         style={[
           {
             transform: [{ scale: scaleAnim }],
           },
-          isFocused && shadows.glow(colors.primary),
           styles.shadowContainer,
         ]}
       >
@@ -223,21 +229,36 @@ export const GlassFAB: React.FC<GlassFABProps> = ({
 };
 
 const styles = StyleSheet.create({
-  shadowContainer: {
-    // @ts-ignore - Web shadow
-    boxShadow: '0 8px 24px rgba(0, 217, 255, 0.4)',
-  },
+  shadowContainer: {},
   fab: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
     overflow: 'hidden',
   },
+  glassFab: {
+    backgroundColor: 'rgba(15, 15, 25, 0.4)',
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.15)',
+    // @ts-ignore - Web backdrop filter
+    backdropFilter: 'blur(20px)',
+    // @ts-ignore - Web transition
+    transition: 'all 0.3s ease',
+  },
+  gradientOverlay: {
+    ...StyleSheet.absoluteFillObject,
+    opacity: 0.8,
+  },
+  contentWrapper: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    zIndex: 1,
+  },
   fabFocused: {
-    borderWidth: 3,
+    borderWidth: 2,
     borderColor: colors.primary,
-    // @ts-ignore - Web shadow
-    boxShadow: '0 0 30px rgba(0, 217, 255, 0.8)',
+    backgroundColor: 'rgba(15, 15, 25, 0.6)',
   },
   fabDisabled: {
     opacity: 0.5,

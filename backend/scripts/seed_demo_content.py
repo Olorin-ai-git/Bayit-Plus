@@ -206,7 +206,7 @@ DEMO_PODCASTS = [
 ]
 
 
-async def seed_database():
+async def seed_database(clear_existing=False):
     """Add demo content to the database."""
 
     # Connect to database
@@ -218,13 +218,14 @@ async def seed_database():
 
     print("🌱 Seeding Bayit+ demo content...")
 
-    # Clear existing demo content
-    await Content.delete_all()
-    await Category.delete_all()
-    await LiveChannel.delete_all()
-    await RadioStation.delete_all()
-    await Podcast.delete_all()
-    print("✓ Cleared existing content")
+    # Clear existing demo content only if explicitly requested
+    if clear_existing:
+        print("\n⚠️  WARNING: Clearing all existing data...")
+        print("This script is DISABLED by default for safety.")
+        print("✗ Deletion cancelled. Use upsert mode instead.")
+        return
+    else:
+        print("Using upsert mode - existing data will be preserved.")
 
     # Add categories
     for cat in DEMO_CATEGORIES:

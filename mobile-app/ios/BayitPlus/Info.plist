@@ -35,6 +35,10 @@
 	</dict>
 	<key>NSLocationWhenInUseUsageDescription</key>
 	<string></string>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>Bayit+ needs microphone access for voice commands and "Hey Bayit" wake word detection.</string>
+	<key>NSSpeechRecognitionUsageDescription</key>
+	<string>Bayit+ uses speech recognition to understand your voice commands for hands-free content control.</string>
 	<key>RCTNewArchEnabled</key>
 	<true/>
 	<key>UILaunchStoryboardName</key>

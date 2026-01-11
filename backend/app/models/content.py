@@ -55,6 +55,7 @@ class Content(Document):
     stream_type: str = "hls"  # hls, dash
     is_drm_protected: bool = False
     drm_key_id: Optional[str] = None
+    file_hash: Optional[str] = None  # SHA256 hash for duplicate detection
 
     # Series info
     is_series: bool = False
@@ -103,6 +104,7 @@ class Content(Document):
             "series_id",
             "created_at",
             "updated_at",
+            "file_hash",
             ("category_id", "is_published"),
             ("is_featured", "is_published"),
         ]

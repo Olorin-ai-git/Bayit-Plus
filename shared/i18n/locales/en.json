@@ -1290,6 +1290,10 @@
       },
       "contentTypes": {
         "liveChannel": "Live Channel",
+        "live": "Live",
+        "vod": "Video on Demand",
+        "podcast": "Podcast",
+        "radio": "Radio",
         "iframe": "Iframe"
       },
       "status": {

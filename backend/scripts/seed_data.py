@@ -7,6 +7,7 @@ import asyncio
 from datetime import datetime, timedelta
 from motor.motor_asyncio import AsyncIOMotorClient
 from beanie import init_beanie
+import argparse
 
 # Import models
 import sys
@@ -18,7 +19,7 @@ from app.core.config import settings
 from app.core.security import get_password_hash
 
 
-async def seed_database():
+async def seed_database(clear_existing=False):
     """Seed the database with sample content."""
 
     # Connect to MongoDB
@@ -33,16 +34,23 @@ async def seed_database():
 
     print("Connected to MongoDB. Starting seed...")
 
-    # Clear existing data (optional - comment out in production)
-    await Category.delete_all()
-    await Content.delete_all()
-    await LiveChannel.delete_all()
-    await EPGEntry.delete_all()
-    await RadioStation.delete_all()
-    await Podcast.delete_all()
-    await PodcastEpisode.delete_all()
-
-    print("Cleared existing data.")
+    # Clear existing data only if explicitly requested
+    if clear_existing:
+        print("\n⚠️  WARNING: Clearing all existing data...")
+        response = input("Are you ABSOLUTELY sure? Type 'DELETE ALL' to confirm: ")
+        if response == "DELETE ALL":
+            await Category.delete_all()
+            await Content.delete_all()
+            await LiveChannel.delete_all()
+            await EPGEntry.delete_all()
+            await RadioStation.delete_all()
+            await Podcast.delete_all()
+            await PodcastEpisode.delete_all()
+            print("✓ Cleared existing data.")
+        else:
+            print("✗ Deletion cancelled. Proceeding with upsert operations...")
+    else:
+        print("Using upsert mode - existing data will be preserved.")
 
     # =====================
     # CATEGORIES
@@ -59,10 +67,15 @@ async def seed_database():
 
     categories = {}
     for cat_data in categories_data:
-        cat = Category(**cat_data)
-        await cat.insert()
+        # Use upsert logic - find existing or create new
+        cat = await Category.find_one(Category.slug == cat_data["slug"])
+        if not cat:
+            cat = Category(**cat_data)
+            await cat.insert()
+            print(f"  ✓ Created category: {cat_data['name']}")
+        else:
+            print(f"  ⊙ Category exists: {cat_data['name']}")
         categories[cat_data["slug"]] = cat
-        print(f"  Created category: {cat_data['name']}")
 
     # =====================
     # VOD CONTENT
@@ -212,9 +225,14 @@ async def seed_database():
     ]
 
     for item in content_data:
-        content = Content(**item)
-        await content.insert()
-        print(f"  Created content: {item['title']}")
+        # Use upsert logic - find existing content by title or create new
+        existing = await Content.find_one(Content.title == item["title"])
+        if not existing:
+            content = Content(**item)
+            await content.insert()
+            print(f"  ✓ Created content: {item['title']}")
+        else:
+            print(f"  ⊙ Content exists: {item['title']}")
 
     # =====================
     # LIVE CHANNELS
@@ -469,4 +487,9 @@ async def seed_database():
 
 
 if __name__ == "__main__":
-    asyncio.run(seed_database())
+    parser = argparse.ArgumentParser(description='Seed the Bayit+ database with sample content')
+    parser.add_argument('--clear', action='store_true',
+                        help='Clear existing data before seeding (DANGEROUS - requires confirmation)')
+    args = parser.parse_args()
+
+    asyncio.run(seed_database(clear_existing=args.clear))

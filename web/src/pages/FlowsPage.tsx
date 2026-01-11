@@ -8,16 +8,15 @@ import { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, Pressable, ScrollView, ActivityIndicator, useWindowDimensions } from 'react-native';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { Menu, ChevronLeft, ChevronRight, Plus } from 'lucide-react';
+import { Plus, Sparkles, Sun, Moon, Coffee, Sunset, Star } from 'lucide-react';
 import { flowsService } from '@/services/api';
 import { colors, spacing, borderRadius } from '@bayit/shared/theme';
-import { GlassView, GlassCategoryPill, GlassCard } from '@bayit/shared/ui';
+import { GlassCategoryPill, GlassCard } from '@bayit/shared/ui';
 import { useDirection } from '@/hooks/useDirection';
 import logger from '@/utils/logger';
 import {
   FlowCard,
   ActiveFlowBanner,
-  FlowSidebar,
   FlowFormModal,
 } from './flows/components';
 import type { Flow } from './flows/types/flows.types';
@@ -27,7 +26,77 @@ import { getLocalizedName } from './flows/utils/flowHelpers';
 declare const __TV__: boolean;
 const IS_TV_BUILD = typeof __TV__ !== 'undefined' && __TV__;
 
-const SIDEBAR_DEFAULT_WIDTH = 340;
+// Example flow templates
+interface ExampleFlow {
+  id: string;
+  nameKey: string;
+  descKey: string;
+  icon: React.ReactNode;
+  template: Partial<Flow>;
+}
+
+const EXAMPLE_FLOWS: ExampleFlow[] = [
+  {
+    id: 'morning-routine',
+    nameKey: 'flows.examples.morningRoutine.name',
+    descKey: 'flows.examples.morningRoutine.desc',
+    icon: <Sun size={20} color={colors.warning} />,
+    template: {
+      name: { en: 'Morning Routine', he: 'שגרת בוקר' },
+      triggers: [{ type: 'time', time: '07:00', days: [0, 1, 2, 3, 4] }],
+      ai_enabled: true,
+      auto_play: true,
+    },
+  },
+  {
+    id: 'evening-wind-down',
+    nameKey: 'flows.examples.eveningWindDown.name',
+    descKey: 'flows.examples.eveningWindDown.desc',
+    icon: <Moon size={20} color={colors.primary} />,
+    template: {
+      name: { en: 'Evening Wind Down', he: 'רגיעה ערבית' },
+      triggers: [{ type: 'time', time: '21:00', days: [0, 1, 2, 3, 4, 5, 6] }],
+      ai_enabled: true,
+      auto_play: true,
+    },
+  },
+  {
+    id: 'shabbat-prep',
+    nameKey: 'flows.examples.shabbatPrep.name',
+    descKey: 'flows.examples.shabbatPrep.desc',
+    icon: <Star size={20} color={colors.success} />,
+    template: {
+      name: { en: 'Shabbat Preparation', he: 'הכנות לשבת' },
+      triggers: [{ type: 'shabbat', time: '14:00' }],
+      ai_enabled: false,
+      auto_play: true,
+    },
+  },
+  {
+    id: 'coffee-break',
+    nameKey: 'flows.examples.coffeeBreak.name',
+    descKey: 'flows.examples.coffeeBreak.desc',
+    icon: <Coffee size={20} color="#8B4513" />,
+    template: {
+      name: { en: 'Coffee Break', he: 'הפסקת קפה' },
+      triggers: [],
+      ai_enabled: true,
+      auto_play: false,
+    },
+  },
+  {
+    id: 'sunset-vibes',
+    nameKey: 'flows.examples.sunsetVibes.name',
+    descKey: 'flows.examples.sunsetVibes.desc',
+    icon: <Sunset size={20} color="#FF6B35" />,
+    template: {
+      name: { en: 'Sunset Vibes', he: 'אווירת שקיעה' },
+      triggers: [{ type: 'time', time: '18:30', days: [5, 6] }],
+      ai_enabled: true,
+      auto_play: true,
+    },
+  },
+];
 
 export default function FlowsPage() {
   const { t, i18n } = useTranslation();
@@ -43,22 +112,15 @@ export default function FlowsPage() {
   const [loading, setLoading] = useState(true);
   const [selectedFlow, setSelectedFlow] = useState<Flow | null>(null);
   const [selectedCategory, setSelectedCategory] = useState('all');
-  const [sidebarOpen, setSidebarOpen] = useState(!isMobile);
-  const [sidebarWidth, setSidebarWidth] = useState(SIDEBAR_DEFAULT_WIDTH);
-  const [isDraggingSidebar, setIsDraggingSidebar] = useState(false);
   const [showFormModal, setShowFormModal] = useState(false);
   const [editingFlow, setEditingFlow] = useState<Flow | null>(null);
   const [flowTemplate, setFlowTemplate] = useState<Partial<Flow> | null>(null);
+  const [hoveredExample, setHoveredExample] = useState<string | null>(null);
 
   // Fetch flows on mount
   useEffect(() => {
     fetchFlows();
   }, []);
-
-  // Close sidebar on mobile
-  useEffect(() => {
-    setSidebarOpen(!isMobile);
-  }, [isMobile]);
 
   const fetchFlows = async () => {
     try {
@@ -206,24 +268,82 @@ export default function FlowsPage() {
     <View style={styles.container}>
       {/* Main Content */}
       <ScrollView
-        style={[styles.main, sidebarOpen && !isMobile && (isRTL ? { marginRight: sidebarWidth } : { marginLeft: sidebarWidth })]}
+        style={styles.main}
         contentContainerStyle={styles.mainInner}
       >
         {/* Background Effects */}
         <View style={styles.bgGradient1} />
         <View style={styles.bgGradient2} />
 
-        {/* Mobile Menu Toggle */}
-        {isMobile && (
-          <Pressable style={[styles.menuBtn, isRTL && styles.menuBtnRTL]} onPress={() => setSidebarOpen(!sidebarOpen)}>
-            <Menu size={24} color={colors.text} />
-          </Pressable>
-        )}
-
         {/* Hero Header */}
         <View style={[styles.header, { alignItems, width: '100%' }]}>
           <Text style={[styles.title, { textAlign }]}>{t('flows.title')}</Text>
           <Text style={[styles.subtitle, { textAlign }]}>{t('flows.subtitle')}</Text>
+        </View>
+
+        {/* Create Flow Action - Prominent */}
+        <Pressable
+          style={[styles.createFlowCard, isRTL && styles.createFlowCardRTL]}
+          onPress={openCreateModal}
+        >
+          <GlassCard style={styles.createFlowCardInner}>
+            <View style={[styles.createFlowContent, isRTL && styles.createFlowContentRTL]}>
+              <View style={styles.createFlowIcon}>
+                <Plus size={28} color={colors.primary} />
+              </View>
+              <View style={styles.createFlowText}>
+                <Text style={[styles.createFlowTitle, isRTL && styles.textRTL]}>
+                  {t('flows.createFlow')}
+                </Text>
+                <Text style={[styles.createFlowDesc, isRTL && styles.textRTL]}>
+                  {t('flows.createFlowDesc')}
+                </Text>
+              </View>
+            </View>
+          </GlassCard>
+        </Pressable>
+
+        {/* Example Flows Section */}
+        <View style={styles.examplesSection}>
+          <View style={[styles.examplesSectionHeader, isRTL && styles.examplesSectionHeaderRTL]}>
+            <View style={[styles.examplesHeaderContent, isRTL && styles.examplesHeaderContentRTL]}>
+              <Sparkles size={20} color={colors.primary} />
+              <Text style={[styles.examplesSectionTitle, isRTL && styles.textRTL]}>
+                {t('flows.examples.title')}
+              </Text>
+            </View>
+            <Text style={[styles.examplesSectionSubtitle, isRTL && styles.textRTL]}>
+              {t('flows.examples.subtitle')}
+            </Text>
+          </View>
+
+          <View style={styles.examplesGrid}>
+            {EXAMPLE_FLOWS.map((example) => (
+              <Pressable
+                key={example.id}
+                style={[
+                  styles.exampleCard,
+                  hoveredExample === example.id && styles.exampleCardHovered,
+                ]}
+                onPress={() => handleUseTemplate(example.template)}
+                // @ts-ignore - Web hover events
+                onMouseEnter={() => setHoveredExample(example.id)}
+                onMouseLeave={() => setHoveredExample(null)}
+              >
+                <GlassCard style={styles.exampleCardInner}>
+                  <View style={styles.exampleIconWrapper}>
+                    {example.icon}
+                  </View>
+                  <Text style={[styles.exampleName, isRTL && styles.textRTL]} numberOfLines={1}>
+                    {t(example.nameKey)}
+                  </Text>
+                  <Text style={[styles.exampleDesc, isRTL && styles.textRTL]} numberOfLines={2}>
+                    {t(example.descKey)}
+                  </Text>
+                </GlassCard>
+              </Pressable>
+            ))}
+          </View>
         </View>
 
         {/* Category Filter */}
@@ -266,52 +386,7 @@ export default function FlowsPage() {
           ))}
         </View>
 
-        {/* Empty State */}
-        {customFlows.length === 0 && (
-          <GlassCard style={styles.emptyState}>
-            <Text style={[styles.emptyText, { textAlign }]}>{t('flows.createHint')}</Text>
-            <Pressable onPress={openCreateModal} style={[styles.emptyBtn, { flexDirection }]}>
-              <Plus size={16} color={colors.primary} />
-              <Text style={styles.emptyBtnText}>{t('flows.createCustom')}</Text>
-            </Pressable>
-          </GlassCard>
-        )}
       </ScrollView>
-
-      {/* Sidebar Toggle */}
-      <Pressable
-        style={[styles.sidebarToggle, isRTL && styles.sidebarToggleRTL,
-                sidebarOpen && (isRTL ? { right: sidebarWidth - 44 } : { left: sidebarWidth - 44 })]}
-        onPress={() => setSidebarOpen(!sidebarOpen)}
-      >
-        <GlassView style={styles.toggleInner} intensity="medium">
-          {isRTL ? (sidebarOpen ? <ChevronRight size={18} color={colors.text} /> : <ChevronLeft size={18} color={colors.text} />) :
-                   (sidebarOpen ? <ChevronLeft size={18} color={colors.text} /> : <ChevronRight size={18} color={colors.text} />)}
-        </GlassView>
-      </Pressable>
-
-      {/* Sidebar */}
-      <FlowSidebar
-        isOpen={sidebarOpen}
-        width={sidebarWidth}
-        isRTL={isRTL}
-        isMobile={isMobile}
-        isDragging={isDraggingSidebar}
-        selectedFlow={selectedFlow}
-        onCreateFlow={openCreateModal}
-        onStartFlow={() => selectedFlow && handleStartFlow(selectedFlow)}
-        onEditFlow={openEditModal}
-        onDeleteFlow={handleDeleteFlow}
-        onWidthChange={setSidebarWidth}
-        onDragStart={() => setIsDraggingSidebar(true)}
-        onDragEnd={() => setIsDraggingSidebar(false)}
-        onUseTemplate={handleUseTemplate}
-      />
-
-      {/* Mobile Overlay */}
-      {isMobile && sidebarOpen && (
-        <Pressable style={styles.overlay} onPress={() => setSidebarOpen(false)} />
-      )}
 
       {/* Form Modal */}
       <FlowFormModal
@@ -326,30 +401,229 @@ export default function FlowsPage() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, flexDirection: 'row', position: 'relative', overflow: 'visible' as any },
-  main: { flex: 1, transition: 'margin 0.3s ease' as any, overflow: 'visible' as any },
-  mainInner: { padding: IS_TV_BUILD ? spacing.xl * 2 : spacing.xl, paddingBottom: spacing.xl * 2, maxWidth: IS_TV_BUILD ? '100%' : 1200, marginHorizontal: 'auto', width: '100%', position: 'relative', overflow: 'visible' as any },
-  bgGradient1: { position: 'absolute', width: 600, height: 600, borderRadius: 300, backgroundColor: colors.primary, opacity: 0.05, top: -200, right: -200, filter: 'blur(120px)' as any },
-  bgGradient2: { position: 'absolute', width: 500, height: 500, borderRadius: 250, backgroundColor: '#8b5cf6', opacity: 0.04, bottom: 0, left: -150, filter: 'blur(100px)' as any },
-  menuBtn: { position: 'absolute', top: spacing.md, right: spacing.md, width: 44, height: 44, borderRadius: 12, backgroundColor: colors.glass, justifyContent: 'center', alignItems: 'center', zIndex: 10 },
-  menuBtnRTL: { right: 'auto' as any, left: spacing.md },
-  loadingContainer: { flex: 1, justifyContent: 'center', alignItems: 'center', minHeight: 400 },
-  loadingText: { marginTop: spacing.md, fontSize: IS_TV_BUILD ? 24 : 16, color: colors.textSecondary },
-  header: { marginBottom: spacing.xl, paddingTop: spacing.md },
-  headerRTL: { alignItems: 'flex-end' },
-  title: { fontSize: IS_TV_BUILD ? 56 : 40, fontWeight: '800', color: colors.text, marginBottom: spacing.xs, letterSpacing: -1 },
-  subtitle: { fontSize: IS_TV_BUILD ? 24 : 18, color: colors.textMuted, lineHeight: IS_TV_BUILD ? 36 : 26 },
-  categories: { marginBottom: spacing.xl, overflow: 'visible' as any },
-  grid: { flexDirection: 'row', flexWrap: 'wrap', gap: IS_TV_BUILD ? spacing.xl : spacing.lg, marginBottom: spacing.xl, overflow: 'visible' as any },
-  gridTablet: { gap: spacing.md },
-  emptyState: { padding: spacing.xl, alignItems: 'center', marginTop: spacing.lg },
-  emptyText: { fontSize: 16, color: colors.textMuted, marginBottom: spacing.md, textAlign: 'center' },
-  emptyBtn: { flexDirection: 'row', alignItems: 'center', gap: spacing.sm },
-  emptyBtnRTL: { flexDirection: 'row-reverse' },
-  emptyBtnText: { fontSize: 15, color: colors.primary, fontWeight: '600' },
-  sidebarToggle: { position: 'fixed' as any, top: 80, left: spacing.md, zIndex: 150, transition: 'left 0.3s ease, right 0.3s ease' as any },
-  sidebarToggleRTL: { left: 'auto' as any, right: spacing.md },
-  toggleInner: { width: 36, height: 36, borderRadius: 18, justifyContent: 'center', alignItems: 'center', borderWidth: 1, borderColor: 'rgba(255, 255, 255, 0.15)' },
-  overlay: { position: 'fixed' as any, top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(0, 0, 0, 0.6)', zIndex: 99 },
-  textRTL: { textAlign: 'right' },
+  container: {
+    flex: 1,
+    position: 'relative',
+    overflow: 'visible' as any
+  },
+  main: {
+    flex: 1,
+    overflow: 'visible' as any
+  },
+  mainInner: {
+    padding: IS_TV_BUILD ? spacing.xl * 2 : spacing.xl,
+    paddingBottom: spacing.xl * 3,
+    maxWidth: IS_TV_BUILD ? '100%' : 1400,
+    marginHorizontal: 'auto',
+    width: '100%',
+    position: 'relative',
+    overflow: 'visible' as any
+  },
+  bgGradient1: {
+    position: 'absolute',
+    width: 700,
+    height: 700,
+    borderRadius: 350,
+    backgroundColor: colors.primary,
+    opacity: 0.06,
+    top: -250,
+    right: -250,
+    filter: 'blur(140px)' as any
+  },
+  bgGradient2: {
+    position: 'absolute',
+    width: 600,
+    height: 600,
+    borderRadius: 300,
+    backgroundColor: '#8b5cf6',
+    opacity: 0.05,
+    bottom: -100,
+    left: -200,
+    filter: 'blur(120px)' as any
+  },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    minHeight: 400
+  },
+  loadingText: {
+    marginTop: spacing.md,
+    fontSize: IS_TV_BUILD ? 24 : 16,
+    color: colors.textSecondary
+  },
+  header: {
+    marginBottom: spacing.xl * 1.5,
+    paddingTop: spacing.md
+  },
+  title: {
+    fontSize: IS_TV_BUILD ? 64 : 48,
+    fontWeight: '800',
+    color: colors.text,
+    marginBottom: spacing.sm,
+    letterSpacing: -1.5
+  },
+  subtitle: {
+    fontSize: IS_TV_BUILD ? 26 : 20,
+    color: colors.textMuted,
+    lineHeight: IS_TV_BUILD ? 38 : 28
+  },
+  categories: {
+    marginBottom: spacing.xl * 1.5,
+    overflow: 'visible' as any
+  },
+  grid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: IS_TV_BUILD ? spacing.xl : spacing.lg,
+    marginBottom: spacing.xl,
+    overflow: 'visible' as any,
+    justifyContent: 'flex-start',
+  },
+  gridTablet: {
+    gap: spacing.md
+  },
+  emptyState: {
+    padding: spacing.xl * 1.5,
+    alignItems: 'center',
+    marginTop: spacing.lg
+  },
+  emptyText: {
+    fontSize: 16,
+    color: colors.textMuted,
+    marginBottom: spacing.md,
+    textAlign: 'center'
+  },
+  emptyBtn: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.sm
+  },
+  emptyBtnText: {
+    fontSize: 15,
+    color: colors.primary,
+    fontWeight: '600'
+  },
+  // Create Flow Card - Prominent
+  createFlowCard: {
+    marginBottom: spacing.xl * 1.5,
+    // @ts-ignore
+    transition: 'all 0.3s ease',
+  },
+  createFlowCardRTL: {},
+  createFlowCardInner: {
+    padding: spacing.xl,
+    backgroundColor: 'rgba(0, 217, 255, 0.03)',
+    borderWidth: 2,
+    borderColor: 'rgba(0, 217, 255, 0.15)',
+    // @ts-ignore
+    cursor: 'pointer',
+  },
+  createFlowContent: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.xl,
+  },
+  createFlowContentRTL: {
+    flexDirection: 'row-reverse',
+  },
+  createFlowIcon: {
+    width: 72,
+    height: 72,
+    borderRadius: borderRadius.xl,
+    backgroundColor: 'rgba(0, 217, 255, 0.15)',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  createFlowText: {
+    flex: 1,
+  },
+  createFlowTitle: {
+    fontSize: 24,
+    fontWeight: '800',
+    color: colors.text,
+    marginBottom: spacing.xs,
+    letterSpacing: -0.5,
+  },
+  createFlowDesc: {
+    fontSize: 16,
+    color: colors.textSecondary,
+    lineHeight: 22,
+  },
+  // Examples Section
+  examplesSection: {
+    marginBottom: spacing.xl * 1.5,
+  },
+  examplesSectionHeader: {
+    marginBottom: spacing.lg,
+  },
+  examplesSectionHeaderRTL: {},
+  examplesHeaderContent: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.sm,
+    marginBottom: spacing.xs,
+  },
+  examplesHeaderContentRTL: {
+    flexDirection: 'row-reverse',
+  },
+  examplesSectionTitle: {
+    fontSize: 20,
+    fontWeight: '700',
+    color: colors.text,
+  },
+  examplesSectionSubtitle: {
+    fontSize: 14,
+    color: colors.textMuted,
+    lineHeight: 20,
+  },
+  examplesGrid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: spacing.lg,
+    justifyContent: 'flex-start',
+  },
+  exampleCard: {
+    width: IS_TV_BUILD ? 'calc(33.33% - 16px)' : 'calc(33.33% - 16px)',
+    // @ts-ignore
+    transition: 'all 0.3s ease',
+  },
+  exampleCardHovered: {
+    // @ts-ignore
+    transform: [{ scale: 1.05 }],
+    // @ts-ignore
+    cursor: 'pointer',
+  },
+  exampleCardInner: {
+    padding: spacing.lg,
+    height: '100%',
+    justifyContent: 'flex-start',
+    alignItems: 'center',
+    textAlign: 'center',
+  },
+  exampleIconWrapper: {
+    width: 64,
+    height: 64,
+    borderRadius: borderRadius.lg,
+    backgroundColor: 'rgba(255, 255, 255, 0.05)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: spacing.md,
+  },
+  exampleName: {
+    fontSize: 16,
+    fontWeight: '700',
+    color: colors.text,
+    marginBottom: spacing.xs,
+    textAlign: 'center',
+  },
+  exampleDesc: {
+    fontSize: 13,
+    color: colors.textMuted,
+    lineHeight: 18,
+    textAlign: 'center',
+  },
+  textRTL: {
+    textAlign: 'right'
+  },
 });

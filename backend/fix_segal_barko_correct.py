@@ -41,10 +41,18 @@ async def fix_segal_barko():
         await close_mongo_connection()
         return
 
-    # Clear old episodes from this podcast
-    print("🧹 Clearing old episodes...")
+    # Clear old episodes from this specific podcast only
+    print(f"🧹 This will clear {db.podcast_episodes.count_documents({'podcast_id': str(podcast['_id'])})} episodes from '{PODCAST_NAME}'")
+    print("⚠️  Are you sure you want to continue? (yes/no): ", end="")
+    response = input().strip().lower()
+    if response != "yes":
+        print("✗ Operation cancelled")
+        client.close()
+        await close_mongo_connection()
+        return
+
     delete_result = db.podcast_episodes.delete_many({"podcast_id": str(podcast["_id"])})
-    print(f"   Deleted {delete_result.deleted_count} old episodes\n")
+    print(f"   ✓ Deleted {delete_result.deleted_count} old episodes\n")
 
     # Update podcast with correct RSS feed
     print("📝 Updating podcast with correct RSS feed...")

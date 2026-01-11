@@ -5,8 +5,8 @@
   "targets": {
     "bayit-plus": {
       "hosting": {
-        "web": ["bayit-plus-web"],
-        "tv": ["bayit-plus"]
+        "web": ["bayit-plus"],
+        "tv": ["bayit-plus-web"]
       }
     }
   }

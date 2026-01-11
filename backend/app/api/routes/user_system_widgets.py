@@ -17,7 +17,7 @@ from app.models.user_system_widget import (
     UserSystemWidgetPositionUpdate,
     UserSystemWidgetPreferencesUpdate,
 )
-from app.core.security import get_current_active_user
+from app.core.security import get_current_active_user, get_optional_user
 
 router = APIRouter()
 
@@ -32,13 +32,14 @@ def _widget_dict(w: Widget, is_added: bool = False, user_prefs: Optional[UserSys
         "description": w.description,
         "icon": w.icon,
         "content": {
-            "content_type": w.content.content_type.value,
-            "live_channel_id": w.content.live_channel_id,
-            "podcast_id": w.content.podcast_id,
-            "content_id": w.content.content_id,
-            "station_id": w.content.station_id,
-            "iframe_url": w.content.iframe_url,
-            "iframe_title": w.content.iframe_title,
+            "content_type": w.content.content_type.value if w.content else None,
+            "live_channel_id": str(w.content.live_channel_id) if w.content and w.content.live_channel_id else None,
+            "podcast_id": str(w.content.podcast_id) if w.content and w.content.podcast_id else None,
+            "content_id": str(w.content.content_id) if w.content and w.content.content_id else None,
+            "station_id": str(w.content.station_id) if w.content and w.content.station_id else None,
+            "iframe_url": w.content.iframe_url if w.content else None,
+            "iframe_title": w.content.iframe_title if w.content else None,
+            "component_name": w.content.component_name if w.content and hasattr(w.content, 'component_name') else None,
         },
         "position": {
             "x": w.position.x,
@@ -57,8 +58,8 @@ def _widget_dict(w: Widget, is_added: bool = False, user_prefs: Optional[UserSys
         "target_pages": w.target_pages,
         "order": w.order,
         "created_by": w.created_by,
-        "created_at": w.created_at.isoformat(),
-        "updated_at": w.updated_at.isoformat(),
+        "created_at": w.created_at.isoformat() if w.created_at else None,
+        "updated_at": w.updated_at.isoformat() if w.updated_at else None,
         # Subscription info
         "is_added": is_added,
     }
@@ -82,17 +83,19 @@ def _widget_dict(w: Widget, is_added: bool = False, user_prefs: Optional[UserSys
 
 @router.get("/available")
 async def get_available_system_widgets(
-    current_user: User = Depends(get_current_active_user)
+    current_user: Optional[User] = Depends(get_optional_user)
 ):
     """
     Get all available system widgets that user can add.
 
     Returns all active system widgets with an is_added flag indicating
     whether the user has added each widget to their collection.
+    Works for both authenticated and unauthenticated users.
     """
-    user_id = str(current_user.id)
-    user_role = current_user.role or "user"
-    user_subscription = getattr(current_user, 'subscription_tier', None)
+    # Default values for unauthenticated users
+    user_id = str(current_user.id) if current_user else None
+    user_role = current_user.role if current_user else "guest"
+    user_subscription = getattr(current_user, 'subscription_tier', None) if current_user else None
 
     # Get all active system widgets
     system_widgets = await Widget.find(
@@ -100,11 +103,14 @@ async def get_available_system_widgets(
         Widget.is_active == True
     ).sort(Widget.order).to_list()
 
-    # Get user's subscribed widget IDs
-    user_subscriptions = await UserSystemWidget.find(
-        UserSystemWidget.user_id == user_id
-    ).to_list()
-    subscribed_ids = {sub.widget_id for sub in user_subscriptions}
+    # Get user's subscribed widget IDs (empty for unauthenticated users)
+    if user_id:
+        user_subscriptions = await UserSystemWidget.find(
+            UserSystemWidget.user_id == user_id
+        ).to_list()
+        subscribed_ids = {sub.widget_id for sub in user_subscriptions}
+    else:
+        subscribed_ids = set()
 
     # Filter by role and subscription, add is_added flag
     result = []

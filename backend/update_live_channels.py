@@ -23,11 +23,9 @@ verified_channels = [
     }
 ]
 
-# Delete all
-db.live_channels.delete_many({})
-print("Cleared old channels\n")
+# Use upsert operations to update or create channels
+print("Upserting channels (update or create)...\n")
 
-# Insert verified channels
 for channel in verified_channels:
     doc = {
         "name": channel["name"],
@@ -40,11 +38,20 @@ for channel in verified_channels:
         "is_active": True,
         "order": channel["order"],
         "requires_subscription": "none",
-        "created_at": datetime.utcnow(),
         "updated_at": datetime.utcnow()
     }
-    result = db.live_channels.insert_one(doc)
-    print(f"✓ {channel['name']}")
+
+    # Upsert: update if exists, insert if not
+    result = db.live_channels.update_one(
+        {"name": channel["name"]},  # Match by name
+        {"$set": doc, "$setOnInsert": {"created_at": datetime.utcnow()}},
+        upsert=True
+    )
+
+    if result.upserted_id:
+        print(f"✓ Created: {channel['name']}")
+    else:
+        print(f"⟳ Updated: {channel['name']}")
     print(f"  {channel['stream_url'][:70]}...\n")
 
 print("="*80)

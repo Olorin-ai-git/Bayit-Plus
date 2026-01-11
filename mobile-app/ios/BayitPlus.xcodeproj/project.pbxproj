@@ -12,6 +12,8 @@
 		22BF94F178D04029EA50E433 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB81A68108700A75B9A /* PrivacyInfo.xcprivacy */; };
 		761780ED2CA45674006654EE /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 761780EC2CA45674006654EE /* AppDelegate.swift */; };
 		81AB9BB82411601600AC10FF /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */; };
+		22226C97B9F3474FB49E566A /* SpeechModule.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CFEE348EE864E639F34BF26 /* SpeechModule.swift */; };
+		710D8BA10C3F4E8287DF00F6 /* SpeechModule.m in Sources */ = {isa = PBXBuildFile; fileRef = CCC5298742D0449298AD731B /* SpeechModule.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -25,6 +27,9 @@
 		761780EC2CA45674006654EE /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = AppDelegate.swift; path = BayitPlus/AppDelegate.swift; sourceTree = "<group>"; };
 		81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; name = LaunchScreen.storyboard; path = BayitPlus/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		ED297162215061F000B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = System/Library/Frameworks/JavaScriptCore.framework; sourceTree = SDKROOT; };
+		0CFEE348EE864E639F34BF26 /* SpeechModule.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpeechModule.swift; sourceTree = "<group>"; };
+		CCC5298742D0449298AD731B /* SpeechModule.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SpeechModule.m; sourceTree = "<group>"; };
+		578F1CE273784DB3818D227B /* BayitPlus-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "BayitPlus-Bridging-Header.h"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -47,7 +52,10 @@
 				13B07FB61A68108700A75B9A /* Info.plist */,
 				81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */,
 				13B07FB81A68108700A75B9A /* PrivacyInfo.xcprivacy */,
-			);
+							0CFEE348EE864E639F34BF26 /* SpeechModule.swift */,
+				CCC5298742D0449298AD731B /* SpeechModule.m */,
+				578F1CE273784DB3818D227B /* BayitPlus-Bridging-Header.h */,
+				);
 			name = BayitPlus;
 			sourceTree = "<group>";
 		};
@@ -255,7 +263,9 @@
 			buildActionMask = 2147483647;
 			files = (
 				761780ED2CA45674006654EE /* AppDelegate.swift in Sources */,
-			);
+							22226C97B9F3474FB49E566A /* SpeechModule.swift in Sources */,
+				710D8BA10C3F4E8287DF00F6 /* SpeechModule.m in Sources */,
+				);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
@@ -287,7 +297,8 @@
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
 				VERSIONING_SYSTEM = "apple-generic";
-			};
+							SWIFT_OBJC_BRIDGING_HEADER = "BayitPlus/BayitPlus-Bridging-Header.h";
+};
 			name = Debug;
 		};
 		13B07F951A680F5B00A75B9A /* Release */ = {
@@ -314,7 +325,8 @@
 				PRODUCT_NAME = BayitPlus;
 				SWIFT_VERSION = 5.0;
 				VERSIONING_SYSTEM = "apple-generic";
-			};
+							SWIFT_OBJC_BRIDGING_HEADER = "BayitPlus/BayitPlus-Bridging-Header.h";
+};
 			name = Release;
 		};
 		83CBBA201A601CBA00E9B192 /* Debug */ = {

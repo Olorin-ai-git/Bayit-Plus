@@ -9,7 +9,7 @@
 // Set this based on environment or build flag
 // In React Native, we use __DEV__ for development detection
 // You can override with a custom env variable if needed
-export const APP_MODE: 'demo' | 'production' = __DEV__ ? 'demo' : 'production';
+export const APP_MODE: 'demo' | 'production' = 'production';
 
 export const isDemo = APP_MODE === 'demo';
 export const isProduction = APP_MODE === 'production';

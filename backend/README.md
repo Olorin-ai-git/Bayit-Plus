@@ -1,9 +1,21 @@
-# Bayit+ Backend
+# Bayit+ Backend API
 
-FastAPI backend for the Bayit+ application.
+FastAPI backend for Bayit+ Hebrew streaming platform.
 
-## Running the server
+## Features
 
-```bash
-poetry run uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
-```
+- VOD content management
+- Live TV channels
+- Radio stations
+- Podcast library
+- User authentication with Google OAuth
+- Stripe payment integration
+- AI-powered chatbot with Anthropic Claude
+- MongoDB Atlas database
+- Google Cloud Storage for media
+
+## Deployment
+
+Deployed on Google Cloud Run with automatic scaling.
+
+See DEPLOYMENT_GUIDE.md for full deployment instructions.

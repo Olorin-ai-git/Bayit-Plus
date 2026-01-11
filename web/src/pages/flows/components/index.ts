@@ -10,3 +10,4 @@ export { FlowCard } from './FlowCard';
 export { ActiveFlowBanner } from './ActiveFlowBanner';
 export { FlowSidebar } from './FlowSidebar';
 export { FlowFormModal } from './FlowFormModal';
+export { FlowActionsModal } from './FlowActionsModal';

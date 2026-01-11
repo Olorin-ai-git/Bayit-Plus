@@ -1,16 +1,16 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
-import { View, Text, StyleSheet, ScrollView, Pressable, Image } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, Pressable } from 'react-native';
 import { Link, useNavigate } from 'react-router-dom';
-import { Play, ChevronRight, Info, Volume2, VolumeX, RefreshCw } from 'lucide-react';
+import { RefreshCw } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useDirection } from '@/hooks/useDirection';
 import ContentCarousel from '@/components/content/ContentCarousel';
 import { TrendingRow, GlassCarousel } from '@bayit/shared';
+import { GlassLiveChannelCard } from '@bayit/shared/ui';
 import MorningRitual from '@/components/ritual/MorningRitual';
 import { contentService, liveService, historyService, ritualService } from '@/services/api';
-import { colors, spacing, borderRadius } from '@bayit/shared/theme';
+import { colors, spacing } from '@bayit/shared/theme';
 import { getLocalizedName, getLocalizedDescription } from '@bayit/shared-utils/contentLocalization';
-import LinearGradient from 'react-native-linear-gradient';
 import logger from '@/utils/logger';
 
 declare const __TV__: boolean;
@@ -42,6 +42,7 @@ interface Channel {
   id: string;
   name: string;
   thumbnail?: string;
+  logo?: string;
   currentShow?: string;
 }
 
@@ -66,8 +67,6 @@ export default function HomePage() {
   const [loading, setLoading] = useState(true);
   const [syncing, setSyncing] = useState(false);
   const [showMorningRitual, setShowMorningRitual] = useState(false);
-  const [isMuted, setIsMuted] = useState(true);
-  const [focusedItem, setFocusedItem] = useState<string | null>(null);
   const [currentTime, setCurrentTime] = useState(new Date());
 
   // Update clock every minute
@@ -277,7 +276,13 @@ export default function HomePage() {
             contentContainerStyle={[styles.liveRow, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}
           >
             {liveChannels.slice(0, 8).map((channel) => (
-              <LiveCard key={channel.id} channel={channel} focusedItem={focusedItem} setFocusedItem={setFocusedItem} isRTL={isRTL} />
+              <View key={channel.id} style={styles.liveCardWrapper}>
+                <GlassLiveChannelCard
+                  channel={channel}
+                  liveLabel={t('common.live')}
+                  onPress={() => navigate(`/live/${channel.id}`)}
+                />
+              </View>
             ))}
           </ScrollView>
         </View>
@@ -299,39 +304,6 @@ export default function HomePage() {
         />
       ))}
     </ScrollView>
-  );
-}
-
-function LiveCard({ channel, focusedItem, setFocusedItem, isRTL }: { channel: Channel; focusedItem: string | null; setFocusedItem: (id: string | null) => void; isRTL: boolean }) {
-  const { t } = useTranslation();
-  const navigate = useNavigate();
-  const isFocused = focusedItem === `live-${channel.id}`;
-
-  return (
-    <Pressable
-      onPress={() => navigate(`/live/${channel.id}`)}
-      onFocus={() => setFocusedItem(`live-${channel.id}`)}
-      onBlur={() => setFocusedItem(null)}
-      style={[styles.liveCard, isFocused && styles.liveCardFocused]}
-    >
-      <View style={styles.liveCardThumb}>
-        {channel.thumbnail ? (
-          <Image source={{ uri: channel.thumbnail }} style={styles.liveCardImage} resizeMode="contain" />
-        ) : (
-          <View style={styles.liveCardPlaceholder} />
-        )}
-        <View style={[styles.liveCardBadge, isRTL ? { left: 'auto', right: spacing.sm } : {}]}>
-          <View style={styles.liveDotSmall} />
-          <Text style={styles.liveCardBadgeText}>{t('common.live')}</Text>
-        </View>
-      </View>
-      <View style={styles.liveCardInfo}>
-        <Text style={[styles.liveCardName, { textAlign: isRTL ? 'right' : 'left' }]} numberOfLines={1}>{channel.name}</Text>
-        {channel.currentShow && (
-          <Text style={[styles.liveCardShow, { textAlign: isRTL ? 'right' : 'left' }]} numberOfLines={1}>{channel.currentShow}</Text>
-        )}
-      </View>
-    </Pressable>
   );
 }
 
@@ -619,66 +591,8 @@ const styles = StyleSheet.create({
     gap: IS_TV_BUILD ? spacing.md : spacing.sm,
     paddingRight: spacing.md,
   },
-  liveCard: {
-    width: IS_TV_BUILD ? 280 : 200,
-    backgroundColor: 'rgba(255, 255, 255, 0.03)',
-    borderRadius: IS_TV_BUILD ? 16 : 12,
-    overflow: 'hidden',
-    borderWidth: 2,
-    borderColor: 'transparent',
-  },
-  liveCardFocused: {
-    borderColor: colors.primary,
-    transform: [{ scale: 1.03 }],
-  },
-  liveCardThumb: {
-    aspectRatio: 16 / 9,
-    position: 'relative',
-  },
-  liveCardImage: {
-    width: '100%',
-    height: '100%',
-    backgroundColor: colors.cardBackground,
-  },
-  liveCardPlaceholder: {
-    flex: 1,
-    backgroundColor: 'rgba(255, 255, 255, 0.03)',
-  },
-  liveCardBadge: {
-    position: 'absolute',
-    top: spacing.sm,
-    left: spacing.sm,
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: colors.error,
-    paddingHorizontal: 6,
-    paddingVertical: 2,
-    borderRadius: 4,
-    gap: 4,
-  },
-  liveDotSmall: {
-    width: 4,
-    height: 4,
-    borderRadius: 2,
-    backgroundColor: colors.text,
-  },
-  liveCardBadgeText: {
-    fontSize: IS_TV_BUILD ? 10 : 8,
-    fontWeight: '700',
-    color: colors.text,
-  },
-  liveCardInfo: {
-    padding: IS_TV_BUILD ? spacing.md : spacing.sm,
-  },
-  liveCardName: {
-    fontSize: IS_TV_BUILD ? 16 : 14,
-    fontWeight: '600',
-    color: colors.text,
-  },
-  liveCardShow: {
-    fontSize: IS_TV_BUILD ? 14 : 12,
-    color: colors.textMuted,
-    marginTop: 2,
+  liveCardWrapper: {
+    width: IS_TV_BUILD ? 320 : 240,
   },
   // Skeleton
   skeletonHero: {

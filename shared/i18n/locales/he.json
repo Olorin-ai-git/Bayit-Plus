@@ -1160,6 +1160,10 @@
       },
       "contentTypes": {
         "liveChannel": "ערוץ חי",
+        "live": "שידור חי",
+        "vod": "וידאו לפי דרישה",
+        "podcast": "פודקאסט",
+        "radio": "רדיו",
         "iframe": "תוכן מוטמע"
       },
       "status": {

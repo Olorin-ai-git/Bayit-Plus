@@ -106,9 +106,8 @@ async def main():
 
     print("🎙️ Updating podcasts with REAL data\n")
 
-    # Clear existing podcasts
-    db.podcasts.delete_many({})
-    print("✓ Cleared old podcasts\n")
+    # Use upsert mode to preserve existing podcasts
+    print("✓ Using upsert mode - existing podcasts will be updated, not deleted\n")
 
     # Get real podcasts from RSS feeds
     real_podcasts = await scrape_all_podcasts()
@@ -145,22 +144,28 @@ async def main():
                 default=None,
             )
 
-        result = db.podcasts.insert_one(
+        result = db.podcasts.update_one(
+            {"title": name},  # Match by title
             {
-                "title": name,
-                "author": podcast_data.author or name,
-                "description": podcast_data.description,
-                "cover": podcast_data.cover,
-                "category": podcast_data.category,
-                "is_active": True,
-                "episode_count": len(episodes),
-                "latest_episode_date": latest_date or datetime.utcnow(),
-                "episodes": episodes,
-                "created_at": datetime.utcnow(),
-                "updated_at": datetime.utcnow(),
-            }
+                "$set": {
+                    "author": podcast_data.author or name,
+                    "description": podcast_data.description,
+                    "cover": podcast_data.cover,
+                    "category": podcast_data.category,
+                    "is_active": True,
+                    "episode_count": len(episodes),
+                    "latest_episode_date": latest_date or datetime.utcnow(),
+                    "episodes": episodes,
+                    "updated_at": datetime.utcnow(),
+                },
+                "$setOnInsert": {"created_at": datetime.utcnow()}
+            },
+            upsert=True
         )
-        print(f"   ✓ inserted\n")
+        if result.upserted_id:
+            print(f"   ✓ created\n")
+        else:
+            print(f"   ⟳ updated\n")
 
     # Insert Israeli podcasts with sample episodes
     print("\n📻 Israeli Podcasts from 103FM:\n")

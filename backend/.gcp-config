@@ -1,0 +1,93 @@
+# GCP Configuration for Bayit+ Backend
+# Reuses infrastructure from Israeli-Radio-Manager project
+
+# ================================================
+# EXISTING INFRASTRUCTURE (FROM ISRAELI-RADIO-MANAGER)
+# ================================================
+
+# GCP Project (SHARED)
+GCP_PROJECT_ID=israeli-radio-475c9
+GCP_PROJECT_NUMBER=534446777606
+
+# Region (existing deployments use us-east1)
+GCP_REGION=us-east1
+
+# MongoDB Atlas (SHARED - same cluster, different database)
+MONGODB_CLUSTER=cluster0.ydrvaft.mongodb.net
+MONGODB_USERNAME=admin_db_user
+# Note: Password is in Secret Manager
+
+# Service Account Files (REUSE)
+# Located in: /Users/olorin/Documents/Israeli-Radio-Manager/backend/
+# - service-account.json
+# - credentials.json (Google OAuth)
+
+# ================================================
+# NEW INFRASTRUCTURE (FOR BAYIT-PLUS)
+# ================================================
+
+# Cloud Run Service Name
+CLOUD_RUN_SERVICE=bayit-plus-backend
+
+# GCS Bucket Name
+GCS_BUCKET_NAME=bayit-plus-media
+
+# MongoDB Database (new database on existing cluster)
+MONGODB_DB_NAME=bayit_plus
+
+# ================================================
+# SHARED SECRETS (Already in Secret Manager)
+# ================================================
+# These secrets likely already exist and can be reused:
+# - ELEVENLABS_API_KEY (confirmed in apphosting.yaml)
+# - ANTHROPIC_API_KEY (if same account)
+# - GOOGLE_CLIENT_ID (if same OAuth app)
+# - GOOGLE_CLIENT_SECRET (if same OAuth app)
+
+# ================================================
+# NEW SECRETS (Need to create for Bayit+)
+# ================================================
+# - bayit-secret-key
+# - stripe-secret-key
+# - stripe-webhook-secret
+# - stripe-price-basic
+# - stripe-price-premium
+# - stripe-price-family
+# - bayit-mongodb-url (or reuse with different DB name)
+# - gcs-bucket-name (bayit-plus-media)
+# - backend-cors-origins (Bayit+ specific)
+
+# ================================================
+# DEPLOYMENT STRATEGY
+# ================================================
+# 1. Use same GCP project: israeli-radio-475c9
+# 2. Deploy to same region: us-east1 (proven working)
+# 3. Create new Cloud Run service: bayit-plus-backend
+# 4. Create new GCS bucket: bayit-plus-media
+# 5. Use new database on existing MongoDB cluster: bayit_plus
+# 6. Reuse existing service account and OAuth credentials
+# 7. Create Bayit+-specific secrets in Secret Manager
+# 8. Optional: Setup Firebase Hosting for frontend (same as Israeli-Radio)
+
+# ================================================
+# CORS ORIGINS (Bayit+ Specific)
+# ================================================
+# Add these to CORS configuration:
+# - https://bayit.tv
+# - https://www.bayit.tv
+# - https://bayit-plus.web.app (if using Firebase)
+# - http://localhost:3000 (dev)
+
+# ================================================
+# COST SHARING
+# ================================================
+# Shared resources reduce costs:
+# - GCP Project (no additional cost)
+# - MongoDB Atlas cluster (shared cluster, separate DB)
+# - Service account (no cost)
+# - Secret Manager (per-secret pricing)
+#
+# New costs:
+# - Cloud Run service (separate billing)
+# - GCS bucket (separate storage)
+# - Cloud Build (if using CI/CD)

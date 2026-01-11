@@ -16,7 +16,7 @@ logger = logging.getLogger(__name__)
 from app.api.routes import (
     auth, content, live, radio, podcasts, subscriptions, chat, watchlist, history, admin, admin_uploads,
     party, websocket, zman, trending, chapters, subtitles, ritual, profiles, children, judaism, flows,
-    device_pairing, onboarding, widgets, favorites, downloads, user_system_widgets, news,
+    device_pairing, onboarding, widgets, favorites, downloads, user_system_widgets, news, librarian,
     admin_content_vod_read, admin_content_vod_write, admin_categories, admin_live_channels,
     admin_radio_stations, admin_podcasts, admin_podcast_episodes, admin_content_importer, admin_widgets
 )
@@ -388,6 +388,7 @@ app.include_router(favorites.router, prefix=f"{settings.API_V1_PREFIX}/favorites
 app.include_router(downloads.router, prefix=f"{settings.API_V1_PREFIX}/downloads", tags=["downloads"])
 app.include_router(history.router, prefix=f"{settings.API_V1_PREFIX}/history", tags=["history"])
 app.include_router(admin.router, prefix=f"{settings.API_V1_PREFIX}/admin", tags=["admin"])
+app.include_router(librarian.router, prefix=f"{settings.API_V1_PREFIX}", tags=["librarian"])
 app.include_router(admin_content_vod_read.router, prefix=f"{settings.API_V1_PREFIX}/admin", tags=["admin-content"])
 app.include_router(admin_content_vod_write.router, prefix=f"{settings.API_V1_PREFIX}/admin", tags=["admin-content"])
 app.include_router(admin_categories.router, prefix=f"{settings.API_V1_PREFIX}/admin", tags=["admin-content"])

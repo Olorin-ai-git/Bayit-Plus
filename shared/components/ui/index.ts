@@ -5,6 +5,7 @@
 export { GlassView } from './GlassView';
 export { GlassCard } from './GlassCard';
 export { GlassButton } from './GlassButton';
+export { GlassFAB } from './GlassFAB';
 
 // Form components
 export { GlassInput } from './GlassInput';
@@ -23,6 +24,7 @@ export { AnalogClock } from './AnalogClock';
 export { GlassAvatar } from './GlassAvatar';
 export { GlassStatCard } from './GlassStatCard';
 export { GlassTable, GlassTableCell } from './GlassTable';
+export { GlassLiveChannelCard } from './GlassLiveChannelCard';
 
 // Voice-first conversational interface components (Phases 10)
 export { GlassParticleLayer } from './GlassParticleLayer';

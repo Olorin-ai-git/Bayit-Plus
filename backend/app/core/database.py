@@ -19,6 +19,7 @@ from app.models.admin import (
 )
 from app.models.widget import Widget
 from app.models.user_system_widget import UserSystemWidget
+from app.models.librarian import AuditReport, LibrarianAction, StreamValidationCache, ClassificationVerificationCache
 from app.api.routes.favorites import Favorite
 from app.api.routes.downloads import Download
 
@@ -76,6 +77,11 @@ async def connect_to_mongo():
             # Widget models
             Widget,
             UserSystemWidget,
+            # Librarian AI Agent models
+            AuditReport,
+            LibrarianAction,
+            StreamValidationCache,
+            ClassificationVerificationCache,
             # User content models
             Favorite,
             Download,

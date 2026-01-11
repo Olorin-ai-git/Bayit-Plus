@@ -78,6 +78,14 @@ class Settings(BaseSettings):
     # CDN (optional, works with both S3 CloudFront and GCS Cloud CDN)
     CDN_BASE_URL: str = ""
 
+    # Email Service (for Librarian AI Agent notifications)
+    SENDGRID_API_KEY: str = ""
+    SENDGRID_FROM_EMAIL: str = "noreply@bayitplus.com"
+    ADMIN_EMAIL_ADDRESSES: str = ""  # Comma-separated list of admin emails
+
+    # TMDB (The Movie Database) API
+    TMDB_API_KEY: str = ""
+
     class Config:
         env_file = ".env"
         case_sensitive = True

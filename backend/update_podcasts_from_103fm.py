@@ -83,9 +83,8 @@ async def main():
     client = MongoClient("mongodb://localhost:27017")
     db = client["bayit_plus"]
 
-    # Clear existing podcasts
-    db.podcasts.delete_many({})
-    print("✓ Cleared old podcasts\n")
+    # Use upsert mode to preserve existing podcasts
+    print("✓ Using upsert mode - existing podcasts will be updated, not deleted\n")
 
     # Insert 103FM podcasts
     print("📻 Adding 103FM podcasts to database:\n")
