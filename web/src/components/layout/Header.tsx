@@ -305,8 +305,10 @@ const styles = StyleSheet.create({
     position: 'sticky' as any,
     top: 0,
     zIndex: 100,
+    marginTop: 3,
     borderBottomWidth: 1,
     borderBottomColor: 'rgba(255, 255, 255, 0.05)',
+    overflow: 'hidden',
   },
   container: {
     width: '100%',
