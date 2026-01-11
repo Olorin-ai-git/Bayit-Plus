@@ -972,6 +972,39 @@ async def on_startup(app: FastAPI):
 
         logger.info("✅ Risk entities loading completed - server startup continuing")
 
+    # Start DPA Compliance Monitoring Service
+    logger.info("🔒 Starting DPA Compliance Monitoring Service...")
+    try:
+        from app.service.privacy.compliance_monitor_service import (
+            get_compliance_monitor_service,
+        )
+
+        compliance_monitor = get_compliance_monitor_service()
+        await compliance_monitor.start()
+
+        # Store in app state for shutdown
+        app.state.compliance_monitor = compliance_monitor
+
+        if compliance_monitor.is_running:
+            logger.info(
+                f"✅ DPA Compliance Monitoring Service started "
+                f"(checking every {compliance_monitor._check_interval}s)"
+            )
+        elif not compliance_monitor.is_enabled:
+            logger.info(
+                "ℹ️  DPA Compliance Monitoring disabled "
+                "(set ENABLE_COMPLIANCE_MONITORING=true to enable)"
+            )
+    except Exception as e:
+        # Non-fatal - continue startup without compliance monitoring
+        logger.warning(
+            f"⚠️ DPA Compliance Monitoring Service failed to start (non-critical): {e}"
+        )
+        logger.warning(
+            "   Application will continue but automatic compliance monitoring is disabled"
+        )
+        app.state.compliance_monitor = None
+
 
 # Module-level function for startup analysis flow (can be called from startup or API endpoint)
 async def run_startup_analysis_flow(
@@ -1660,6 +1693,21 @@ async def on_shutdown(app: FastAPI):
         logger.warning("⚠️ Performance system shutdown timed out")
     except Exception as e:
         logger.warning(f"⚠️ Performance system shutdown failed: {e}")
+
+    # Stop DPA Compliance Monitoring Service
+    try:
+        if hasattr(app.state, "compliance_monitor") and app.state.compliance_monitor:
+            logger.info("🔒 Stopping DPA Compliance Monitoring Service...")
+            await asyncio.wait_for(app.state.compliance_monitor.stop(), timeout=3.0)
+            logger.info("✅ DPA Compliance Monitoring Service stopped")
+    except asyncio.CancelledError:
+        logger.info(
+            "⚠️ Compliance monitor shutdown cancelled during shutdown - this is normal"
+        )
+    except asyncio.TimeoutError:
+        logger.warning("⚠️ Compliance monitor shutdown timed out")
+    except Exception as e:
+        logger.warning(f"⚠️ Compliance monitor shutdown failed: {e}")
 
     logger.info("Olorin application shutdown completed")
 

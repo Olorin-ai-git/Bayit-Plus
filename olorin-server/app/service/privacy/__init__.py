@@ -22,6 +22,10 @@ from app.service.privacy.compliance_agent import (
     get_compliance_agent,
 )
 from app.service.privacy.compliance_agent_tools import COMPLIANCE_TOOLS
+from app.service.privacy.compliance_monitor_service import (
+    ComplianceMonitorService,
+    get_compliance_monitor_service,
+)
 from app.service.privacy.data_retention import (
     DataRetentionManager,
     DeletionStatus,
@@ -70,4 +74,7 @@ __all__ = [
     "ComplianceDecision",
     "get_compliance_agent",
     "COMPLIANCE_TOOLS",
+    # Compliance Monitoring Service
+    "ComplianceMonitorService",
+    "get_compliance_monitor_service",
 ]
