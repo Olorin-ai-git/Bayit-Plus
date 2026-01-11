@@ -1,8 +1,8 @@
 """
 Privacy and Data Protection Module.
 
-Provides PII obfuscation, audit logging, and data retention controls
-for DPA compliance with nSure.ai data protection requirements.
+Provides PII obfuscation, audit logging, data retention controls,
+and autonomous compliance enforcement for DPA compliance.
 
 Per DPA Section 9.4: "To the extent practicable, Contractor shall anonymize
 or irreversibly de-identify Personal Data prior to processing."
@@ -16,6 +16,12 @@ from app.service.privacy.audit_logger import (
     PrivacyAuditLogger,
     get_privacy_audit_logger,
 )
+from app.service.privacy.compliance_agent import (
+    ComplianceAgent,
+    ComplianceDecision,
+    get_compliance_agent,
+)
+from app.service.privacy.compliance_agent_tools import COMPLIANCE_TOOLS
 from app.service.privacy.data_retention import (
     DataRetentionManager,
     DeletionStatus,
@@ -59,4 +65,9 @@ __all__ = [
     "DPAComplianceAuditor",
     "DPAComplianceReport",
     "get_dpa_compliance_auditor",
+    # Compliance AI Agent
+    "ComplianceAgent",
+    "ComplianceDecision",
+    "get_compliance_agent",
+    "COMPLIANCE_TOOLS",
 ]
