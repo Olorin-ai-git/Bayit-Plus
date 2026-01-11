@@ -26,6 +26,11 @@ from app.service.agent.verification import (
 )
 from app.service.config_loader import ConfigLoader
 from app.service.logging import get_bridge_logger
+from app.service.privacy.llm_privacy_wrapper import (
+    DPAComplianceError,
+    get_llm_privacy_wrapper,
+)
+from app.service.privacy.pii_obfuscator import ObfuscationContext
 
 logger = get_bridge_logger(__name__)
 
@@ -598,22 +603,30 @@ class LLMManager:
         return False
 
     async def invoke_with_verification(
-        self, messages: List[BaseMessage], verify: bool = True
+        self,
+        messages: List[BaseMessage],
+        verify: bool = True,
+        investigation_id: Optional[str] = None,
     ) -> Dict[str, Any]:
         """
         Invoke the selected model and optionally verify with verification model.
 
+        DPA Compliance: All messages are automatically obfuscated before transmission
+        per DPA Section 9.4 requirement to anonymize personal data.
+
         Args:
             messages: Messages to send to the model
             verify: Whether to verify the response
+            investigation_id: Optional investigation ID for audit correlation
 
         Returns:
-            Dictionary with response and verification results
+            Dictionary with response, verification results, and obfuscation context
         """
         result = {
             "response": None,
             "verification": None,
             "model_used": self.selected_model_id,
+            "obfuscation_context_id": None,
         }
 
         # Get response from selected model
@@ -621,8 +634,33 @@ class LLMManager:
             logger.error("No model available for invocation")
             return result
 
+        # Get model provider for DPA compliance validation
+        model_config = AVAILABLE_MODELS.get(self.selected_model_id)
+        provider = model_config.provider.value if model_config else "unknown"
+
+        # DPA Compliance: Validate provider and obfuscate PII
+        privacy_wrapper = get_llm_privacy_wrapper()
+        obfuscation_context: Optional[ObfuscationContext] = None
+
         try:
-            response = await self.selected_model.ainvoke(messages)
+            # Prepare messages with DPA compliance (validates provider, obfuscates PII)
+            obfuscated_messages, obfuscation_context = (
+                privacy_wrapper.prepare_messages_for_llm(
+                    messages=messages,
+                    provider=provider,
+                    model_name=self.selected_model_id,
+                    investigation_id=investigation_id,
+                )
+            )
+            result["obfuscation_context_id"] = obfuscation_context.context_id
+
+        except DPAComplianceError as e:
+            logger.error(f"[DPA_VIOLATION] Cannot invoke LLM: {e}")
+            result["error"] = f"DPA compliance violation: {str(e)}"
+            return result
+
+        try:
+            response = await self.selected_model.ainvoke(obfuscated_messages)
             result["response"] = response.content
 
             # Verify if requested and verification model available
