@@ -18,6 +18,8 @@ from app.models.admin import (
     EmailCampaign, PushNotification, SystemSettings, SubscriptionPlan,
 )
 from app.models.widget import Widget
+from app.api.routes.favorites import Favorite
+from app.api.routes.downloads import Download
 
 
 class Database:
@@ -72,6 +74,9 @@ async def connect_to_mongo():
             SubscriptionPlan,
             # Widget model
             Widget,
+            # User content models
+            Favorite,
+            Download,
         ],
     )
     print(f"Connected to MongoDB: {settings.MONGODB_DB_NAME}")

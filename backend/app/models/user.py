@@ -39,6 +39,7 @@ class UserResponse(BaseModel):
     id: str
     email: EmailStr
     name: str
+    avatar: Optional[str] = None
     is_active: bool
     role: str = "user"
     subscription: Optional[dict] = None
@@ -74,6 +75,9 @@ class User(Document):
     is_active: bool = True
     role: str = "user"  # super_admin, admin, content_manager, billing_admin, support, user
     custom_permissions: List[str] = Field(default_factory=list)  # Additional permissions beyond role
+
+    # Profile
+    avatar: Optional[str] = None  # URL to user's avatar image
 
     # OAuth
     google_id: Optional[str] = None
@@ -166,6 +170,7 @@ class User(Document):
             id=str(self.id),
             email=self.email,
             name=self.name,
+            avatar=self.avatar,
             is_active=self.is_active,
             role=self.role,
             subscription=subscription,

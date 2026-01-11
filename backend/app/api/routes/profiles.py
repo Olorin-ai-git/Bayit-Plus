@@ -1,11 +1,12 @@
 from datetime import datetime
 from typing import List, Optional
-from fastapi import APIRouter, HTTPException, status, Depends
+from fastapi import APIRouter, HTTPException, status, Depends, UploadFile, File
 from pydantic import BaseModel, Field
 from app.models.user import User
 from app.models.profile import Profile, ProfileCreate, ProfileUpdate, ProfileResponse
 from app.core.security import get_current_active_user, get_password_hash, verify_password
 from app.core.config import settings
+from app.core.storage import storage
 
 
 # Profile limits by subscription tier
@@ -434,3 +435,41 @@ async def update_voice_preferences(
     current_user.updated_at = datetime.utcnow()
     await current_user.save()
     return {"message": "Voice preferences updated", "preferences": current_user.preferences["voice_settings"]}
+
+
+@router.post("/avatar/upload")
+async def upload_avatar(
+    file: UploadFile = File(...),
+    current_user: User = Depends(get_current_active_user),
+):
+    """
+    Upload a profile avatar image for the current user.
+
+    Supported formats: JPEG, PNG, WebP, GIF
+    Max file size: 5MB
+    Returns the URL of the uploaded avatar.
+    """
+    try:
+        # Upload via storage provider (uses 'avatars' folder)
+        url = await storage.upload_image(file, "avatars")
+
+        # Update user's avatar URL
+        current_user.avatar = url
+        current_user.updated_at = datetime.utcnow()
+        await current_user.save()
+
+        return {
+            "url": url,
+            "message": "Avatar uploaded successfully"
+        }
+
+    except ValueError as e:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=str(e)
+        )
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Upload failed: {str(e)}"
+        )

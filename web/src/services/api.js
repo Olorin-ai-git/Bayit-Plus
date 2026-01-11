@@ -238,6 +238,14 @@ const apiProfilesService = {
   // Voice & accessibility preferences
   getVoicePreferences: () => api.get('/profiles/preferences/voice'),
   updateVoicePreferences: (prefs) => api.put('/profiles/preferences/voice', prefs),
+  // Avatar upload
+  uploadAvatar: (file) => {
+    const formData = new FormData()
+    formData.append('file', file)
+    return api.post('/profiles/avatar/upload', formData, {
+      headers: { 'Content-Type': 'multipart/form-data' },
+    })
+  },
 }
 
 // Children Service (API)

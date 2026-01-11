@@ -193,6 +193,11 @@ module.exports = (env, argv) => {
       new CopyWebpackPlugin({
         patterns: [
           {
+            // Copy logo for favicon
+            from: path.resolve(__dirname, 'public/logo.png'),
+            to: path.resolve(getOutputPath(), 'logo.png'),
+          },
+          {
             // Copy Vosk WebAssembly files from root node_modules
             from: path.resolve(__dirname, '../node_modules/vosk-browser/dist'),
             to: path.resolve(getOutputPath(), 'vosk'),

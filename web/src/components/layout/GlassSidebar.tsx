@@ -14,6 +14,7 @@ import {
   StyleSheet,
   Animated,
   ScrollView,
+  Image,
 } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { useNavigate, useLocation } from 'react-router-dom';
@@ -234,6 +235,10 @@ export const GlassSidebar: React.FC<GlassSidebarProps> = ({ isExpanded, onToggle
             onBlur={() => setFocusedItem(null)}
             style={[
               styles.userProfileSection,
+              {
+                justifyContent: isExpanded ? 'flex-start' : 'center',
+                paddingHorizontal: isExpanded ? spacing.sm : 0,
+              },
               focusedItem === 'profile-section' && styles.userProfileSectionFocused,
             ]}
           >
@@ -241,7 +246,14 @@ export const GlassSidebar: React.FC<GlassSidebarProps> = ({ isExpanded, onToggle
               styles.userAvatar,
               isAuthenticated && styles.userAvatarAuthenticated,
             ]}>
-              <Text style={styles.userAvatarText}>{displayInitial}</Text>
+              {user?.avatar ? (
+                <Image
+                  source={{ uri: user.avatar }}
+                  style={styles.userAvatarImage}
+                />
+              ) : (
+                <Text style={styles.userAvatarText}>{displayInitial}</Text>
+              )}
               {isAuthenticated && (
                 <View style={styles.onlineBadge} />
               )}
@@ -403,9 +415,8 @@ const styles = StyleSheet.create({
   userProfileSection: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingHorizontal: spacing.md,
     paddingVertical: spacing.sm,
-    marginHorizontal: spacing.sm,
+    marginHorizontal: spacing.xs,
     borderRadius: borderRadius.md,
     borderWidth: 1,
     borderColor: 'transparent',
@@ -435,6 +446,11 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     color: colors.text,
   },
+  userAvatarImage: {
+    width: 44,
+    height: 44,
+    borderRadius: 22,
+  },
   onlineBadge: {
     position: 'absolute',
     bottom: 2,
@@ -448,7 +464,8 @@ const styles = StyleSheet.create({
   },
   userInfoContainer: {
     flex: 1,
-    marginLeft: spacing.md,
+    marginStart: spacing.md,
+    paddingEnd: spacing.sm,
   },
   userName: {
     fontSize: 16,
