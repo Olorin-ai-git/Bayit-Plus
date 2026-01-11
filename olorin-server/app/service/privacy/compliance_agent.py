@@ -278,18 +278,52 @@ Be thorough and leave no compliance area unchecked."""
 
     def _parse_decision(self, response: str, start_time: datetime) -> ComplianceDecision:
         """Parse the agent response into a ComplianceDecision."""
-        # Determine if compliant based on response content
         response_lower = response.lower()
-        compliant = (
-            "non_compliant" not in response_lower
-            and "non-compliant" not in response_lower
-            and "violation" not in response_lower
+
+        # Look for positive compliance indicators
+        compliant_indicators = [
+            "fully compliant",
+            "status: compliant",
+            "status:**compliant",  # Matches markdown bold
+            "compliance status: compliant",
+            "overall compliance status: compliant",
+            "no violations found",
+            "violations found: none",
+            "violations found:**none",  # Matches markdown bold
+            "violations detected: none",
+            "zero violations",
+        ]
+
+        # Look for negative compliance indicators
+        non_compliant_indicators = [
+            "status: non_compliant",
+            "status: non-compliant",
+            "status:**non_compliant",
+            "status:**non-compliant",
+            "critical violation detected",
+            "violations found: yes",
+        ]
+
+        # Remove spaces and asterisks for better matching
+        response_normalized = response_lower.replace(" ", "").replace("*", "")
+
+        # Check for indicators in normalized text
+        has_compliant = any(
+            indicator.replace(" ", "").replace("*", "") in response_normalized
+            for indicator in compliant_indicators
+        )
+        has_non_compliant = any(
+            indicator.replace(" ", "").replace("*", "") in response_normalized
+            for indicator in non_compliant_indicators
         )
 
-        # Extract violations mentioned
+        # Compliant if we have positive indicators and no negative ones
+        compliant = has_compliant and not has_non_compliant
+
+        # Extract violations if mentioned
         violations = []
-        if "violation" in response_lower:
-            violations.append({"type": "DETECTED", "details": "See reasoning"})
+        if "violations detected:" in response_lower and "none" not in response_lower.split("violations detected:")[1][:20]:
+            violations.append({"type": "DETECTED", "details": "See reasoning for violation details"})
 
         return ComplianceDecision(
             timestamp=start_time.isoformat() + "Z",
