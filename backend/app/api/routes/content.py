@@ -496,6 +496,7 @@ async def get_season_episodes(series_id: str, season_num: int):
                 "episode_number": ep.episode,
                 "duration": ep.duration,
                 "preview_url": ep.preview_url,
+                "stream_url": ep.stream_url,  # For preview fallback
             }
             for ep in episodes
         ],
@@ -537,6 +538,7 @@ async def get_movie_details(
         "director": movie.director,
         "trailer_url": movie.trailer_url,
         "preview_url": movie.preview_url,
+        "stream_url": movie.stream_url,  # For preview fallback
         "tmdb_id": movie.tmdb_id,
         "imdb_id": movie.imdb_id,
         "imdb_rating": movie.imdb_rating,

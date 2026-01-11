@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
-import { View, Text, StyleSheet, ScrollView, Image, Animated, Dimensions } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, Image, Dimensions } from 'react-native';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { Play, Plus, Check, Share2, Star } from 'lucide-react';
@@ -28,6 +28,7 @@ interface MovieData {
   director?: string;
   trailer_url?: string;
   preview_url?: string;
+  stream_url?: string;
   tmdb_id?: number;
   imdb_id?: string;
   imdb_rating?: number;
@@ -52,7 +53,6 @@ export default function MovieDetailPage() {
   const videoRef = useRef<HTMLVideoElement>(null);
   const hlsRef = useRef<Hls | null>(null);
   const previewTimerRef = useRef<NodeJS.Timeout | null>(null);
-  const videoFadeAnim = useRef(new Animated.Value(0)).current;
 
   // Load movie details
   useEffect(() => {
@@ -64,15 +64,25 @@ export default function MovieDetailPage() {
     };
   }, [movieId]);
 
+  // Get preview URL with stream fallback
+  const getPreviewUrl = useCallback((): string | null => {
+    if (movie?.preview_url) return movie.preview_url;
+    if (movie?.trailer_url) return movie.trailer_url;
+    if (movie?.stream_url) return movie.stream_url;  // Fallback to first 5 sec of movie
+    return null;
+  }, [movie]);
+
   // Auto-start preview on load
   useEffect(() => {
-    if (movie && (movie.trailer_url || movie.preview_url)) {
+    const previewUrl = getPreviewUrl();
+    if (previewUrl && showPoster) {
       const timer = setTimeout(() => {
         startPreview();
-      }, 1000);
+      }, 800);
       return () => clearTimeout(timer);
     }
-  }, [movie?.id]);
+    return () => stopPreview();
+  }, [movie?.id, getPreviewUrl]);
 
   const cleanup = () => {
     if (hlsRef.current) {
@@ -98,26 +108,21 @@ export default function MovieDetailPage() {
 
   // Video preview functions
   const startPreview = useCallback(() => {
-    const previewUrl = movie?.preview_url || movie?.trailer_url;
-    if (!previewUrl) {
-      console.log('No preview URL available for movie');
-      return;
-    }
+    const previewUrl = getPreviewUrl();
+    if (!previewUrl) return;
 
     // Ensure video element exists
     if (!videoRef.current) {
-      console.log('Video ref not ready, retrying...');
       setTimeout(() => startPreview(), 100);
       return;
     }
 
-    console.log('Starting movie preview:', previewUrl);
     setIsPreviewPlaying(true);
     setShowPoster(false);
 
-    // Setup video
     const video = videoRef.current;
     video.muted = true;
+    video.playsInline = true;
 
     if (previewUrl.includes('.m3u8') && Hls.isSupported()) {
       if (hlsRef.current) {
@@ -131,35 +136,29 @@ export default function MovieDetailPage() {
       hls.loadSource(previewUrl);
       hls.attachMedia(video);
       hls.on(Hls.Events.MANIFEST_PARSED, () => {
-        video.play().catch((e) => console.error('Play failed:', e));
+        video.play().catch(() => stopPreview());
       });
       hls.on(Hls.Events.ERROR, (_, data) => {
-        console.error('HLS error:', data);
-        if (data.fatal) {
-          stopPreview();
-        }
+        if (data.fatal) stopPreview();
       });
+    } else if (previewUrl.includes('.m3u8') && video.canPlayType('application/vnd.apple.mpegurl')) {
+      video.src = previewUrl;
+      video.load();
+      video.play().catch(() => stopPreview());
     } else {
       video.src = previewUrl;
       video.load();
-      video.play().catch((e) => console.error('Play failed:', e));
+      video.play().catch(() => stopPreview());
     }
 
-    // Fade in video
-    Animated.timing(videoFadeAnim, {
-      toValue: 1,
-      duration: 500,
-      useNativeDriver: true,
-    }).start();
-
-    // Stop after 5 seconds
+    // Stop after 20 seconds
     if (previewTimerRef.current) {
       clearTimeout(previewTimerRef.current);
     }
     previewTimerRef.current = setTimeout(() => {
       stopPreview();
-    }, 5000);
-  }, [movie, videoFadeAnim]);
+    }, 20000);
+  }, [getPreviewUrl, isPreviewPlaying]);
 
   const stopPreview = useCallback(() => {
     if (previewTimerRef.current) {
@@ -171,16 +170,10 @@ export default function MovieDetailPage() {
       videoRef.current.pause();
     }
 
-    // Fade out video
-    Animated.timing(videoFadeAnim, {
-      toValue: 0,
-      duration: 500,
-      useNativeDriver: true,
-    }).start(() => {
-      setIsPreviewPlaying(false);
-      setShowPoster(true);
-    });
-  }, [videoFadeAnim]);
+    // CSS transition handles the fade
+    setIsPreviewPlaying(false);
+    setShowPoster(true);
+  }, []);
 
   const handlePlay = () => {
     if (movie) {
@@ -233,7 +226,14 @@ export default function MovieDetailPage() {
       {/* Hero Section */}
       <View style={styles.heroContainer}>
         {/* Background Poster */}
-        <View style={[styles.backdropContainer, { opacity: showPoster ? 1 : 0.3 }]}>
+        <View style={[
+          styles.backdropContainer,
+          {
+            opacity: isPreviewPlaying ? 0 : 1,
+            // @ts-ignore - Web CSS transition
+            transition: 'opacity 0.5s ease-in-out',
+          }
+        ]}>
           <Image
             source={{ uri: backdropUrl }}
             style={styles.backdrop}
@@ -242,20 +242,29 @@ export default function MovieDetailPage() {
         </View>
 
         {/* Video Preview - always render for ref availability */}
-        <Animated.View
+        <View
           style={[
             styles.videoContainer,
-            { opacity: videoFadeAnim as any }
+            {
+              opacity: isPreviewPlaying ? 1 : 0,
+              // @ts-ignore - Web CSS transition
+              transition: 'opacity 0.5s ease-in-out',
+              zIndex: isPreviewPlaying ? 5 : 1,
+            }
           ]}
-          pointerEvents={isPreviewPlaying ? 'auto' : 'none'}
         >
           <video
             ref={videoRef}
-            style={styles.video as any}
+            style={{
+              width: '100%',
+              height: '100%',
+              objectFit: 'cover',
+            }}
             muted
+            autoPlay
             playsInline
           />
-        </Animated.View>
+        </View>
 
         {/* Gradients */}
         <LinearGradient

@@ -97,7 +97,7 @@ export default function WidgetManager() {
             const response = await radioService.getStreamUrl(widget.content.station_id);
             streamUrl = response?.url || response?.stream_url;
             const stationData = await radioService.getStation(widget.content.station_id).catch(() => null);
-            coverUrl = stationData?.thumbnail || stationData?.cover;
+            coverUrl = stationData?.logo;
           }
           break;
 

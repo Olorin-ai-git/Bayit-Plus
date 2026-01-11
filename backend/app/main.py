@@ -345,10 +345,9 @@ async def lifespan(app: FastAPI):
         await init_default_data()
     except Exception as e:
         logger.warning(f"Failed to initialize default data: {e}")
-    try:
-        await sync_podcast_rss_feeds()
-    except Exception as e:
-        logger.warning(f"Failed to sync podcast RSS feeds: {e}")
+    # Run podcast sync in background (non-blocking)
+    import asyncio
+    asyncio.create_task(sync_podcast_rss_feeds())
     yield
     # Shutdown
     await close_mongo_connection()

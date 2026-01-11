@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
-import { View, Text, StyleSheet, ScrollView, Image, Animated, Dimensions } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, Image, Dimensions } from 'react-native';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { Play, Plus, Check, Share2 } from 'lucide-react';
@@ -28,6 +28,7 @@ interface Episode {
   episode_number: number;
   duration?: string;
   preview_url?: string;
+  stream_url?: string;
   progress?: number;
 }
 
@@ -72,7 +73,6 @@ export default function SeriesDetailPage() {
   const videoRef = useRef<HTMLVideoElement>(null);
   const hlsRef = useRef<Hls | null>(null);
   const previewTimerRef = useRef<NodeJS.Timeout | null>(null);
-  const videoFadeAnim = useRef(new Animated.Value(0)).current;
 
   // Load series details
   useEffect(() => {
@@ -91,18 +91,30 @@ export default function SeriesDetailPage() {
     }
   }, [seriesId, selectedSeason]);
 
+  // Get the preview URL - use stream_url as fallback for testing
+  const getPreviewUrl = useCallback((): string | null => {
+    // Priority: episode preview > series preview > series trailer > episode stream (fallback)
+    if (selectedEpisode?.preview_url) return selectedEpisode.preview_url;
+    if (series?.preview_url) return series.preview_url;
+    if (series?.trailer_url) return series.trailer_url;
+    // Fallback to first 5 seconds of actual content stream
+    if (selectedEpisode?.stream_url) return selectedEpisode.stream_url;
+    if (episodes.length > 0 && (episodes[0] as any).stream_url) return (episodes[0] as any).stream_url;
+    return null;
+  }, [selectedEpisode, series, episodes]);
+
   // Auto-start preview when episode is selected or on initial load
   useEffect(() => {
-    const previewUrl = selectedEpisode?.preview_url || series?.preview_url || series?.trailer_url;
+    const previewUrl = getPreviewUrl();
     if (previewUrl && showPoster) {
       // Small delay to ensure video element is ready
       const startTimer = setTimeout(() => {
         startPreview();
-      }, 500);
+      }, 800);
       return () => clearTimeout(startTimer);
     }
     return () => stopPreview();
-  }, [selectedEpisode?.id, series?.id]);
+  }, [selectedEpisode?.id, series?.id, getPreviewUrl]);
 
   const cleanup = () => {
     if (hlsRef.current) {
@@ -150,26 +162,21 @@ export default function SeriesDetailPage() {
 
   // Video preview functions
   const startPreview = useCallback(() => {
-    const previewUrl = selectedEpisode?.preview_url || series?.preview_url || series?.trailer_url;
-    if (!previewUrl) {
-      console.log('No preview URL available');
-      return;
-    }
+    const previewUrl = getPreviewUrl();
+    if (!previewUrl) return;
 
     // Ensure video element exists
     if (!videoRef.current) {
-      console.log('Video ref not ready, retrying...');
       setTimeout(() => startPreview(), 100);
       return;
     }
 
-    console.log('Starting preview:', previewUrl);
     setIsPreviewPlaying(true);
     setShowPoster(false);
 
-    // Setup video
     const video = videoRef.current;
     video.muted = true;
+    video.playsInline = true;
 
     if (previewUrl.includes('.m3u8') && Hls.isSupported()) {
       if (hlsRef.current) {
@@ -183,35 +190,29 @@ export default function SeriesDetailPage() {
       hls.loadSource(previewUrl);
       hls.attachMedia(video);
       hls.on(Hls.Events.MANIFEST_PARSED, () => {
-        video.play().catch((e) => console.error('Play failed:', e));
+        video.play().catch(() => stopPreview());
       });
       hls.on(Hls.Events.ERROR, (_, data) => {
-        console.error('HLS error:', data);
-        if (data.fatal) {
-          stopPreview();
-        }
+        if (data.fatal) stopPreview();
       });
+    } else if (previewUrl.includes('.m3u8') && video.canPlayType('application/vnd.apple.mpegurl')) {
+      video.src = previewUrl;
+      video.load();
+      video.play().catch(() => stopPreview());
     } else {
       video.src = previewUrl;
       video.load();
-      video.play().catch((e) => console.error('Play failed:', e));
+      video.play().catch(() => stopPreview());
     }
 
-    // Fade in video
-    Animated.timing(videoFadeAnim, {
-      toValue: 1,
-      duration: 500,
-      useNativeDriver: true,
-    }).start();
-
-    // Stop after 5 seconds
+    // Stop after 20 seconds
     if (previewTimerRef.current) {
       clearTimeout(previewTimerRef.current);
     }
     previewTimerRef.current = setTimeout(() => {
       stopPreview();
-    }, 5000);
-  }, [selectedEpisode, series, videoFadeAnim]);
+    }, 20000);
+  }, [getPreviewUrl, isPreviewPlaying]);
 
   const stopPreview = useCallback(() => {
     if (previewTimerRef.current) {
@@ -223,16 +224,10 @@ export default function SeriesDetailPage() {
       videoRef.current.pause();
     }
 
-    // Fade out video
-    Animated.timing(videoFadeAnim, {
-      toValue: 0,
-      duration: 500,
-      useNativeDriver: true,
-    }).start(() => {
-      setIsPreviewPlaying(false);
-      setShowPoster(true);
-    });
-  }, [videoFadeAnim]);
+    // CSS transition handles the fade
+    setIsPreviewPlaying(false);
+    setShowPoster(true);
+  }, []);
 
   const handlePlay = () => {
     if (selectedEpisode) {
@@ -283,7 +278,14 @@ export default function SeriesDetailPage() {
       {/* Hero Section */}
       <View style={styles.heroContainer}>
         {/* Background Poster */}
-        <View style={[styles.backdropContainer, { opacity: showPoster ? 1 : 0.3 }]}>
+        <View style={[
+          styles.backdropContainer,
+          {
+            opacity: isPreviewPlaying ? 0 : 1,
+            // @ts-ignore - Web CSS transition
+            transition: 'opacity 0.5s ease-in-out',
+          }
+        ]}>
           <Image
             source={{ uri: backdropUrl }}
             style={styles.backdrop}
@@ -292,20 +294,29 @@ export default function SeriesDetailPage() {
         </View>
 
         {/* Video Preview - always render for ref availability */}
-        <Animated.View
+        <View
           style={[
             styles.videoContainer,
-            { opacity: videoFadeAnim as any }
+            {
+              opacity: isPreviewPlaying ? 1 : 0,
+              // @ts-ignore - Web CSS transition
+              transition: 'opacity 0.5s ease-in-out',
+              zIndex: isPreviewPlaying ? 5 : 1,
+            }
           ]}
-          pointerEvents={isPreviewPlaying ? 'auto' : 'none'}
         >
           <video
             ref={videoRef}
-            style={styles.video as any}
+            style={{
+              width: '100%',
+              height: '100%',
+              objectFit: 'cover',
+            }}
             muted
+            autoPlay
             playsInline
           />
-        </Animated.View>
+        </View>
 
         {/* Gradients */}
         <LinearGradient
