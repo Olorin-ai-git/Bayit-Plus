@@ -142,8 +142,10 @@ export default function Layout() {
   }, []);
 
   // Calculate content margin based on sidebar state
-  // Sidebar is always visible: collapsed = 80px (icons), expanded = 280px (full)
-  const sidebarWidth = isSidebarExpanded ? 280 : 80;
+  // Sidebar widths must match GlassSidebar: TV uses 80/280, web uses 64/220
+  const collapsedWidth = IS_TV_BUILD ? 80 : 64;
+  const expandedWidth = IS_TV_BUILD ? 280 : 220;
+  const sidebarWidth = isSidebarExpanded ? expandedWidth : collapsedWidth;
 
   return (
     <View style={styles.container}>

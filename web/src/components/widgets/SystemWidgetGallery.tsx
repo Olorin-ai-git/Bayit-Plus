@@ -8,7 +8,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { View, Text, StyleSheet, Pressable, useWindowDimensions, ActivityIndicator } from 'react-native';
 import { useTranslation } from 'react-i18next';
-import { Plus, Check, Tv, Globe, Podcast, Radio, Film, RefreshCw, Eye, EyeOff } from 'lucide-react';
+import { Plus, Check, Tv, Globe, Podcast, Radio, Film, RefreshCw, Eye, EyeOff, RotateCcw, Trash2 } from 'lucide-react';
 import { GlassCard } from '@bayit/shared/ui';
 import { colors, spacing, borderRadius } from '@bayit/shared/theme';
 import { widgetsService } from '@/services/adminApi';
@@ -26,6 +26,7 @@ function SystemWidgetCard({
   onAdd,
   onRemove,
   onShow,
+  onResetPosition,
   isLoading,
   isHidden,
 }: {
@@ -33,6 +34,7 @@ function SystemWidgetCard({
   onAdd: (id: string) => Promise<void>;
   onRemove: (id: string) => Promise<void>;
   onShow: (id: string) => void;
+  onResetPosition: (id: string) => void;
   isLoading: boolean;
   isHidden: boolean;  // Widget is added but closed/hidden
 }) {
@@ -138,6 +140,16 @@ function SystemWidgetCard({
           </View>
         </View>
 
+        {/* Reset Position Button - only visible on hover for added widgets */}
+        {isHovered && widget.is_added && (
+          <Pressable
+            onPress={() => onResetPosition(widget.id)}
+            style={styles.resetButton}
+          >
+            <RotateCcw size={16} color={colors.text} />
+          </Pressable>
+        )}
+
         {/* Add/Remove/Show Button */}
         <Pressable
           onPress={handleAction}
@@ -180,7 +192,20 @@ export function SystemWidgetGallery({ onWidgetAdded }: SystemWidgetGalleryProps)
   const [error, setError] = useState<string | null>(null);
 
   // Get local state to check which widgets are hidden
-  const { localState, showWidget } = useWidgetStore();
+  const { localState, showWidget, updatePosition } = useWidgetStore();
+
+  // Reset widget position to defaults
+  const handleResetPosition = useCallback((widgetId: string) => {
+    const widget = widgets.find(w => w.id === widgetId);
+    if (widget?.position) {
+      updatePosition(widgetId, {
+        x: widget.position.x,
+        y: widget.position.y,
+        width: widget.position.width,
+        height: widget.position.height,
+      });
+    }
+  }, [widgets, updatePosition]);
 
   const numColumns = width >= 1280 ? 4 : width >= 1024 ? 3 : width >= 768 ? 2 : 1;
 
@@ -288,6 +313,7 @@ export function SystemWidgetGallery({ onWidgetAdded }: SystemWidgetGalleryProps)
               onAdd={handleAdd}
               onRemove={handleRemove}
               onShow={showWidget}
+              onResetPosition={handleResetPosition}
               isLoading={loading}
               isHidden={isWidgetHidden(widget.id, widget.is_added)}
             />
@@ -377,6 +403,15 @@ const styles = StyleSheet.create({
     fontSize: 11,
     color: colors.textMuted,
     textTransform: 'capitalize',
+  },
+  resetButton: {
+    width: 32,
+    height: 32,
+    borderRadius: 16,
+    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginRight: spacing.xs,
   },
   actionButton: {
     flexDirection: 'row',

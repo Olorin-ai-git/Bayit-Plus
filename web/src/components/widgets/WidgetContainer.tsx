@@ -8,7 +8,7 @@
 
 import React, { useRef, useState, useEffect, useCallback } from 'react';
 import { View, Text, StyleSheet, Pressable } from 'react-native';
-import { X, Volume2, VolumeX, GripHorizontal, Minimize2, Maximize2 } from 'lucide-react';
+import { X, Volume2, VolumeX, GripHorizontal, Minimize2, Maximize2, RefreshCw } from 'lucide-react';
 import { colors, spacing, borderRadius } from '@bayit/shared/theme';
 import VideoPlayer from '@/components/player/VideoPlayer';
 import AudioPlayer from '@/components/player/AudioPlayer';
@@ -51,6 +51,15 @@ export default function WidgetContainer({
   const [isFocused, setIsFocused] = useState(IS_TV_BUILD); // Start focused on TV
   const [isMinimized, setIsMinimized] = useState(false);
   const [savedPosition, setSavedPosition] = useState<{ x: number; y: number } | null>(null);
+  const [refreshKey, setRefreshKey] = useState(0);
+  const [isResizing, setIsResizing] = useState(false);
+  const [resizeDirection, setResizeDirection] = useState<string | null>(null);
+  const resizeStartRef = useRef<{ x: number; y: number; width: number; height: number } | null>(null);
+
+  // Handle manual refresh
+  const handleRefresh = useCallback(() => {
+    setRefreshKey(prev => prev + 1);
+  }, []);
 
   // Minimized widget dimensions
   const MINIMIZED_HEIGHT = 40;
@@ -119,6 +128,63 @@ export default function WidgetContainer({
     }
   }, [savedPosition, onPositionChange]);
 
+  // Resize handlers
+  const MIN_WIDTH = 200;
+  const MIN_HEIGHT = 150;
+
+  const handleResizeStart = useCallback((e: React.MouseEvent, direction: string) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsResizing(true);
+    setResizeDirection(direction);
+    resizeStartRef.current = {
+      x: e.clientX,
+      y: e.clientY,
+      width: position.width,
+      height: position.height,
+    };
+  }, [position.width, position.height]);
+
+  const handleResize = useCallback((e: MouseEvent) => {
+    if (!isResizing || !resizeStartRef.current || !resizeDirection) return;
+
+    const deltaX = e.clientX - resizeStartRef.current.x;
+    const deltaY = e.clientY - resizeStartRef.current.y;
+    const updates: Partial<WidgetPosition> = {};
+
+    // Handle horizontal resize
+    if (resizeDirection.includes('e')) {
+      updates.width = Math.max(MIN_WIDTH, resizeStartRef.current.width + deltaX);
+    } else if (resizeDirection.includes('w')) {
+      const newWidth = Math.max(MIN_WIDTH, resizeStartRef.current.width - deltaX);
+      if (newWidth !== resizeStartRef.current.width) {
+        updates.width = newWidth;
+        updates.x = position.x + (resizeStartRef.current.width - newWidth);
+      }
+    }
+
+    // Handle vertical resize
+    if (resizeDirection.includes('s')) {
+      updates.height = Math.max(MIN_HEIGHT, resizeStartRef.current.height + deltaY);
+    } else if (resizeDirection.includes('n')) {
+      const newHeight = Math.max(MIN_HEIGHT, resizeStartRef.current.height - deltaY);
+      if (newHeight !== resizeStartRef.current.height) {
+        updates.height = newHeight;
+        updates.y = position.y + (resizeStartRef.current.height - newHeight);
+      }
+    }
+
+    if (Object.keys(updates).length > 0) {
+      onPositionChange(updates);
+    }
+  }, [isResizing, resizeDirection, position.x, position.y, onPositionChange]);
+
+  const handleResizeEnd = useCallback(() => {
+    setIsResizing(false);
+    setResizeDirection(null);
+    resizeStartRef.current = null;
+  }, []);
+
   // Global mouse listeners for dragging
   useEffect(() => {
     if (isDragging) {
@@ -130,6 +196,18 @@ export default function WidgetContainer({
       };
     }
   }, [isDragging, handleDrag, handleDragEnd]);
+
+  // Global mouse listeners for resizing
+  useEffect(() => {
+    if (isResizing) {
+      window.addEventListener('mousemove', handleResize);
+      window.addEventListener('mouseup', handleResizeEnd);
+      return () => {
+        window.removeEventListener('mousemove', handleResize);
+        window.removeEventListener('mouseup', handleResizeEnd);
+      };
+    }
+  }, [isResizing, handleResize, handleResizeEnd]);
 
   // TV Remote control handler
   useEffect(() => {
@@ -295,7 +373,7 @@ export default function WidgetContainer({
             widget.title.includes('מבזקי');
 
           if (isYnetWidget) {
-            return <YnetMivzakimWidget />;
+            return <YnetMivzakimWidget key={refreshKey} />;
           }
           return renderError(`Unknown component: ${componentName}`);
 
@@ -323,11 +401,11 @@ export default function WidgetContainer({
         width: isMinimized ? MINIMIZED_WIDTH : position.width,
         height: isMinimized ? MINIMIZED_HEIGHT : position.height,
         zIndex: position.z_index,
-        cursor: isDragging ? 'grabbing' : IS_TV_BUILD ? 'pointer' : 'default',
+        cursor: isResizing ? (resizeDirection?.includes('e') || resizeDirection?.includes('w') ? 'ew-resize' : resizeDirection?.includes('n') || resizeDirection?.includes('s') ? 'ns-resize' : 'default') : isDragging ? 'grabbing' : IS_TV_BUILD ? 'pointer' : 'default',
         // TV: Always show focus indicator
         outline: IS_TV_BUILD && isFocused ? '2px solid #00aaff' : 'none',
         outlineOffset: '2px',
-        transition: isMinimized || savedPosition ? 'all 0.3s ease' : 'none',
+        transition: (isMinimized || savedPosition) && !isResizing ? 'all 0.3s ease' : 'none',
       }}
       onFocus={() => IS_TV_BUILD && setIsFocused(true)}
       onBlur={() => IS_TV_BUILD && setIsFocused(false)}
@@ -357,6 +435,11 @@ export default function WidgetContainer({
               ) : (
                 <Minimize2 size={14} color={colors.text} />
               )}
+            </Pressable>
+
+            {/* Refresh Button */}
+            <Pressable style={styles.controlButton} onPress={handleRefresh}>
+              <RefreshCw size={14} color={colors.text} />
             </Pressable>
 
             {/* Mute Button */}
@@ -403,6 +486,46 @@ export default function WidgetContainer({
           ]}>
             {renderContent()}
           </View>
+        )}
+
+        {/* Resize handles - only when not minimized and not on TV */}
+        {!isMinimized && !IS_TV_BUILD && (
+          <>
+            {/* Edge handles */}
+            <div
+              style={styles.resizeHandleN as any}
+              onMouseDown={(e) => handleResizeStart(e, 'n')}
+            />
+            <div
+              style={styles.resizeHandleS as any}
+              onMouseDown={(e) => handleResizeStart(e, 's')}
+            />
+            <div
+              style={styles.resizeHandleE as any}
+              onMouseDown={(e) => handleResizeStart(e, 'e')}
+            />
+            <div
+              style={styles.resizeHandleW as any}
+              onMouseDown={(e) => handleResizeStart(e, 'w')}
+            />
+            {/* Corner handles */}
+            <div
+              style={styles.resizeHandleNE as any}
+              onMouseDown={(e) => handleResizeStart(e, 'ne')}
+            />
+            <div
+              style={styles.resizeHandleNW as any}
+              onMouseDown={(e) => handleResizeStart(e, 'nw')}
+            />
+            <div
+              style={styles.resizeHandleSE as any}
+              onMouseDown={(e) => handleResizeStart(e, 'se')}
+            />
+            <div
+              style={styles.resizeHandleSW as any}
+              onMouseDown={(e) => handleResizeStart(e, 'sw')}
+            />
+          </>
         )}
       </View>
     </div>
@@ -529,4 +652,69 @@ const styles = StyleSheet.create({
     color: colors.text,
     fontWeight: '600',
   },
+  // Resize handle base styles
+  resizeHandleN: {
+    position: 'absolute',
+    top: 0,
+    left: 8,
+    right: 8,
+    height: 6,
+    cursor: 'n-resize',
+  } as any,
+  resizeHandleS: {
+    position: 'absolute',
+    bottom: 0,
+    left: 8,
+    right: 8,
+    height: 6,
+    cursor: 's-resize',
+  } as any,
+  resizeHandleE: {
+    position: 'absolute',
+    top: 8,
+    right: 0,
+    bottom: 8,
+    width: 6,
+    cursor: 'e-resize',
+  } as any,
+  resizeHandleW: {
+    position: 'absolute',
+    top: 8,
+    left: 0,
+    bottom: 8,
+    width: 6,
+    cursor: 'w-resize',
+  } as any,
+  resizeHandleNE: {
+    position: 'absolute',
+    top: 0,
+    right: 0,
+    width: 12,
+    height: 12,
+    cursor: 'ne-resize',
+  } as any,
+  resizeHandleNW: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    width: 12,
+    height: 12,
+    cursor: 'nw-resize',
+  } as any,
+  resizeHandleSE: {
+    position: 'absolute',
+    bottom: 0,
+    right: 0,
+    width: 12,
+    height: 12,
+    cursor: 'se-resize',
+  } as any,
+  resizeHandleSW: {
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    width: 12,
+    height: 12,
+    cursor: 'sw-resize',
+  } as any,
 });

@@ -1,12 +1,14 @@
 import { useState, useEffect, useCallback } from 'react';
 import { View, Text, StyleSheet, Pressable, useWindowDimensions, ScrollView } from 'react-native';
-import { Trash2, Plus, Grid3x3, X, AlertCircle } from 'lucide-react';
+import { Trash2, Plus, Grid3x3, X, AlertCircle, Eye, EyeOff, RotateCcw } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { useDirection } from '@/hooks/useDirection';
 import { widgetsService } from '@/services/adminApi';
 import { colors, spacing, borderRadius } from '@bayit/shared/theme';
 import { GlassCard } from '@bayit/shared/ui';
+import { useWidgetStore } from '@/stores/widgetStore';
+import { DEFAULT_WIDGET_POSITION } from '@/types/widget';
 import WidgetFormModal from '@/components/widgets/WidgetFormModal';
 import { SystemWidgetGallery } from '@/components/widgets/SystemWidgetGallery';
 import logger from '@/utils/logger';
@@ -39,7 +41,20 @@ interface Widget {
   updated_at: string;
 }
 
-function WidgetCard({ widget, onDelete }: { widget: Widget; onDelete: (id: string) => void }) {
+function WidgetCard({
+  widget,
+  onDelete,
+  isHidden,
+  onToggleVisibility,
+  onResetPosition,
+}: {
+  widget: Widget;
+  onDelete: (id: string) => void;
+  isHidden: boolean;
+  onToggleVisibility: (id: string) => void;
+  onResetPosition: (id: string) => void;
+}) {
+  const { t } = useTranslation();
   const [isHovered, setIsHovered] = useState(false);
 
   const getContentTypeLabel = (contentType?: string): string => {
@@ -55,9 +70,23 @@ function WidgetCard({ widget, onDelete }: { widget: Widget; onDelete: (id: strin
 
   const getIcon = (): string => {
     if (widget.icon) return widget.icon;
-    if (widget.content?.content_type === 'live_channel') return '📺';
-    if (widget.content?.content_type === 'iframe') return '🌐';
-    return '🎯';
+    switch (widget.content?.content_type) {
+      case 'live_channel':
+      case 'live':
+        return '📺';
+      case 'iframe':
+        return '🌐';
+      case 'podcast':
+        return '🎙️';
+      case 'radio':
+        return '📻';
+      case 'vod':
+        return '🎬';
+      case 'custom':
+        return '⚡';
+      default:
+        return '🎯';
+    }
   };
 
   return (
@@ -66,7 +95,7 @@ function WidgetCard({ widget, onDelete }: { widget: Widget; onDelete: (id: strin
       onMouseLeave={() => setIsHovered(false)}
       style={styles.cardWrapper}
     >
-      <GlassCard style={[styles.card, isHovered && styles.cardHovered]}>
+      <GlassCard style={[styles.card, isHovered && styles.cardHovered, isHidden && styles.cardHidden]}>
         <View style={styles.iconContainer}>
           <Text style={styles.icon}>{getIcon()}</Text>
         </View>
@@ -87,17 +116,45 @@ function WidgetCard({ widget, onDelete }: { widget: Widget; onDelete: (id: strin
             <Text style={[styles.status, widget.is_active ? styles.statusActive : styles.statusInactive]}>
               {widget.is_active ? '● Active' : '● Inactive'}
             </Text>
+            {isHidden && (
+              <Text style={styles.hiddenBadge}>
+                {t('widgets.hidden') || 'Hidden'}
+              </Text>
+            )}
           </View>
         </View>
 
-        {/* Delete Button */}
+        {/* Action Buttons - visible on hover */}
         {isHovered && (
-          <Pressable
-            onPress={() => onDelete(widget.id)}
-            style={styles.deleteButton}
-          >
-            <Trash2 size={18} color={colors.text} />
-          </Pressable>
+          <View style={styles.actionButtons}>
+            {/* Reset Position Button */}
+            <Pressable
+              onPress={() => onResetPosition(widget.id)}
+              style={styles.actionButton}
+            >
+              <RotateCcw size={16} color={colors.text} />
+            </Pressable>
+
+            {/* Visibility Toggle Button */}
+            <Pressable
+              onPress={() => onToggleVisibility(widget.id)}
+              style={[styles.actionButton, isHidden ? styles.showButton : styles.hideButton]}
+            >
+              {isHidden ? (
+                <Eye size={16} color={colors.text} />
+              ) : (
+                <EyeOff size={16} color={colors.text} />
+              )}
+            </Pressable>
+
+            {/* Delete Button */}
+            <Pressable
+              onPress={() => onDelete(widget.id)}
+              style={[styles.actionButton, styles.deleteButton]}
+            >
+              <Trash2 size={16} color={colors.text} />
+            </Pressable>
+          </View>
         )}
       </GlassCard>
     </View>
@@ -114,6 +171,36 @@ export default function UserWidgetsPage() {
   const [error, setError] = useState<string | null>(null);
   const [showWidgetForm, setShowWidgetForm] = useState(false);
   const { width } = useWindowDimensions();
+
+  // Get local state to check which widgets are hidden
+  const { localState, showWidget, closeWidget, updatePosition } = useWidgetStore();
+
+  // Check if a widget is hidden
+  const isWidgetHidden = useCallback((widgetId: string): boolean => {
+    const state = localState[widgetId];
+    return state?.isVisible === false;
+  }, [localState]);
+
+  // Toggle widget visibility
+  const handleToggleVisibility = useCallback((widgetId: string) => {
+    if (isWidgetHidden(widgetId)) {
+      showWidget(widgetId);
+    } else {
+      closeWidget(widgetId);
+    }
+  }, [isWidgetHidden, showWidget, closeWidget]);
+
+  // Reset widget position to defaults
+  const handleResetPosition = useCallback((widgetId: string) => {
+    const widget = widgets.find(w => w.id === widgetId);
+    const defaultPosition = widget?.position || DEFAULT_WIDGET_POSITION;
+    updatePosition(widgetId, {
+      x: defaultPosition.x,
+      y: defaultPosition.y,
+      width: defaultPosition.width,
+      height: defaultPosition.height,
+    });
+  }, [widgets, updatePosition]);
 
   const numColumns = width >= 1280 ? 4 : width >= 1024 ? 3 : width >= 768 ? 2 : 1;
 
@@ -248,7 +335,13 @@ export default function UserWidgetsPage() {
         <View style={styles.grid}>
           {widgets.map((widget) => (
             <View key={widget.id} style={{ width: `${100 / numColumns}%`, paddingHorizontal: spacing.xs }}>
-              <WidgetCard widget={widget} onDelete={handleDelete} />
+              <WidgetCard
+                widget={widget}
+                onDelete={handleDelete}
+                isHidden={isWidgetHidden(widget.id)}
+                onToggleVisibility={handleToggleVisibility}
+                onResetPosition={handleResetPosition}
+              />
             </View>
           ))}
         </View>
@@ -380,17 +473,39 @@ const styles = StyleSheet.create({
     color: '#f59e0b',
   },
   deleteButton: {
-    position: 'absolute',
-    right: spacing.md,
-    top: '50%',
-    marginTop: -18,
-    width: 36,
-    height: 36,
-    borderRadius: 18,
     backgroundColor: 'rgba(239, 68, 68, 0.9)',
+  },
+  actionButtons: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.xs,
+  },
+  actionButton: {
+    width: 32,
+    height: 32,
+    borderRadius: 16,
     justifyContent: 'center',
     alignItems: 'center',
-    zIndex: 10,
+    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+  },
+  showButton: {
+    backgroundColor: 'rgba(251, 191, 36, 0.3)',
+    borderWidth: 1,
+    borderColor: 'rgba(251, 191, 36, 0.5)',
+  },
+  hideButton: {
+    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+  },
+  cardHidden: {
+    opacity: 0.6,
+  },
+  hiddenBadge: {
+    fontSize: 11,
+    color: '#fbbf24',
+    backgroundColor: 'rgba(251, 191, 36, 0.2)',
+    paddingHorizontal: spacing.sm,
+    paddingVertical: 2,
+    borderRadius: borderRadius.sm,
   },
   errorCard: {
     padding: spacing.md,

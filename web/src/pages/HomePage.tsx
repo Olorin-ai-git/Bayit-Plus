@@ -208,8 +208,22 @@ export default function HomePage() {
 
   return (
     <ScrollView style={styles.page} contentContainerStyle={styles.pageContent}>
-      {/* Refresh Button */}
-      <View style={styles.headerBar}>
+      {/* Header Bar - Clocks and Refresh Button */}
+      <View style={[styles.headerBar, isRTL && styles.headerBarRTL]}>
+        {/* Dual Clock Display */}
+        <View style={[styles.clockContainer, isRTL && styles.clockContainerRTL]}>
+          <View style={styles.clockItem}>
+            <Text style={styles.flagIcon}>🇮🇱</Text>
+            <Text style={styles.clockTime}>{israelTime}</Text>
+          </View>
+          <View style={styles.clockDivider} />
+          <View style={styles.clockItem}>
+            <Text style={styles.flagIcon}>🇺🇸</Text>
+            <Text style={styles.clockTime}>{localTime}</Text>
+          </View>
+        </View>
+
+        {/* Refresh Button */}
         <Pressable
           onPress={syncContent}
           disabled={syncing}
@@ -217,19 +231,6 @@ export default function HomePage() {
         >
           <RefreshCw size={20} color={colors.text} style={syncing ? styles.spinning : undefined} />
         </Pressable>
-      </View>
-
-      {/* Dual Clock Display */}
-      <View style={[styles.clockContainer, isRTL && styles.clockContainerRTL]}>
-        <View style={styles.clockItem}>
-          <Text style={styles.flagIcon}>🇮🇱</Text>
-          <Text style={styles.clockTime}>{israelTime}</Text>
-        </View>
-        <View style={styles.clockDivider} />
-        <View style={styles.clockItem}>
-          <Text style={styles.flagIcon}>🇺🇸</Text>
-          <Text style={styles.clockTime}>{localTime}</Text>
-        </View>
       </View>
 
       {/* Hero Carousel Section */}
@@ -358,10 +359,15 @@ const styles = StyleSheet.create({
   },
   // Header Bar
   headerBar: {
-    paddingHorizontal: spacing.md,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingHorizontal: IS_TV_BUILD ? spacing.xl : spacing.md,
     paddingTop: spacing.md,
     paddingBottom: spacing.sm,
-    alignItems: 'flex-end',
+  },
+  headerBarRTL: {
+    flexDirection: 'row-reverse',
   },
   refreshButton: {
     width: 48,
@@ -388,9 +394,6 @@ const styles = StyleSheet.create({
   },
   // Dual Clock
   clockContainer: {
-    alignSelf: 'flex-end',
-    marginTop: IS_TV_BUILD ? spacing.lg : spacing.md,
-    marginHorizontal: IS_TV_BUILD ? spacing.xl : spacing.md,
     flexDirection: 'row',
     alignItems: 'center',
     backgroundColor: 'rgba(10, 10, 20, 0.8)',
@@ -400,10 +403,8 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: 'rgba(0, 217, 255, 0.2)',
     gap: IS_TV_BUILD ? spacing.md : spacing.sm,
-    zIndex: 20,
   },
   clockContainerRTL: {
-    alignSelf: 'flex-start',
     flexDirection: 'row-reverse',
   },
   clockItem: {
