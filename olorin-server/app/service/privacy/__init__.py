@@ -21,6 +21,11 @@ from app.service.privacy.data_retention import (
     DeletionStatus,
     get_data_retention_manager,
 )
+from app.service.privacy.dpa_compliance_audit import (
+    DPAComplianceAuditor,
+    DPAComplianceReport,
+    get_dpa_compliance_auditor,
+)
 from app.service.privacy.llm_privacy_wrapper import (
     DPAComplianceError,
     LLMPrivacyWrapper,
@@ -50,4 +55,8 @@ __all__ = [
     "DataRetentionManager",
     "get_data_retention_manager",
     "DeletionStatus",
+    # DPA Compliance Audit
+    "DPAComplianceAuditor",
+    "DPAComplianceReport",
+    "get_dpa_compliance_auditor",
 ]
