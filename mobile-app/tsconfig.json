@@ -1,0 +1,50 @@
+{
+  "extends": "@react-native/typescript-config/tsconfig.json",
+  "compilerOptions": {
+    "target": "ES2020",
+    "module": "ESNext",
+    "lib": ["ES2020"],
+    "jsx": "react-native",
+    "strict": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "resolveJsonModule": true,
+    "moduleResolution": "node",
+    "allowSyntheticDefaultImports": true,
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["./src/*"],
+      "@bayit/shared": ["../shared/components"],
+      "@bayit/shared/*": ["../shared/components/*"],
+      "@bayit/shared-screens": ["../shared/screens"],
+      "@bayit/shared-screens/*": ["../shared/screens/*"],
+      "@bayit/shared-services": ["../shared/services"],
+      "@bayit/shared-services/*": ["../shared/services/*"],
+      "@bayit/shared-stores": ["../shared/stores"],
+      "@bayit/shared-stores/*": ["../shared/stores/*"],
+      "@bayit/shared-hooks": ["../shared/hooks"],
+      "@bayit/shared-hooks/*": ["../shared/hooks/*"],
+      "@bayit/shared-contexts": ["../shared/contexts"],
+      "@bayit/shared-contexts/*": ["../shared/contexts/*"],
+      "@bayit/shared-i18n": ["../shared/i18n"],
+      "@bayit/shared-i18n/*": ["../shared/i18n/*"],
+      "@bayit/shared-config": ["../shared/config"],
+      "@bayit/shared-config/*": ["../shared/config/*"],
+      "@bayit/shared-types": ["../shared/types"],
+      "@bayit/shared-types/*": ["../shared/types/*"],
+      "@bayit/shared-utils": ["../shared/utils"],
+      "@bayit/shared-utils/*": ["../shared/utils/*"]
+    }
+  },
+  "include": [
+    "src/**/*",
+    "App.tsx",
+    "index.js",
+    "../shared/**/*"
+  ],
+  "exclude": [
+    "node_modules",
+    "ios",
+    "android"
+  ]
+}
