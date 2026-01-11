@@ -12,6 +12,7 @@ export * from './utils/platform';
 
 // Composite Components
 export { AnimatedLogo } from './AnimatedLogo';
+export { ContentActionButtons } from './ContentActionButtons';
 export { ContentRow } from './ContentRow';
 export { DemoBanner } from './DemoBanner';
 export { DualClock } from './DualClock';

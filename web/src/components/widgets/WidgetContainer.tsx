@@ -296,7 +296,11 @@ export default function WidgetContainer({
     >
       <View style={styles.container}>
         {/* Content */}
-        <View style={styles.contentWrapper}>
+        <View style={[
+          styles.contentWrapper,
+          // Use transparent background for audio content (podcast, radio) since AudioPlayer has its own glass styling
+          (widget.content.content_type === 'podcast' || widget.content.content_type === 'radio') && styles.contentWrapperTransparent,
+        ]}>
           {renderContent()}
         </View>
 
@@ -362,21 +366,32 @@ const styles = StyleSheet.create({
     height: '100%',
     borderRadius: borderRadius.md,
     overflow: 'hidden',
-    backgroundColor: colors.background,
+    backgroundColor: 'rgba(20, 20, 35, 0.85)',
     borderWidth: 1,
     borderColor: colors.glassBorder,
     // @ts-ignore - Web CSS
     boxShadow: '0 8px 32px rgba(0, 0, 0, 0.4)',
-  },
+    backdropFilter: 'blur(20px)',
+    WebkitBackdropFilter: 'blur(20px)',
+    display: 'flex',
+    flexDirection: 'column',
+  } as any,
   contentWrapper: {
     width: '100%',
     height: '100%',
     backgroundColor: '#000',
+    display: 'flex',
+    flex: 1,
+  } as any,
+  contentWrapperTransparent: {
+    backgroundColor: 'transparent',
   },
   playerWrapper: {
     width: '100%',
     height: '100%',
-  },
+    display: 'flex',
+    flex: 1,
+  } as any,
   iframe: {
     width: '100%',
     height: '100%',

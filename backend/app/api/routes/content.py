@@ -70,7 +70,7 @@ async def get_featured(current_user: Optional[User] = Depends(get_optional_user)
                     "duration": item.duration,
                     "year": item.year,
                     "category": cat.name,
-                    "type": "vod",
+                    "type": "series" if item.is_series else "movie",
                 }
                 for item in items
             ],
@@ -185,7 +185,7 @@ async def get_by_category(
                 "duration": item.duration,
                 "year": item.year,
                 "category": category.name,
-                "type": "vod",
+                "type": "series" if item.is_series else "movie",
             }
             for item in items
         ],
@@ -226,7 +226,7 @@ async def get_content(
         "cast": content.cast,
         "director": content.director,
         "is_series": content.is_series,
-        "type": "vod",
+        "type": "series" if content.is_series else "movie",
         "related": [
             {
                 "id": str(item.id),
@@ -234,7 +234,7 @@ async def get_content(
                 "thumbnail": item.thumbnail,
                 "duration": item.duration,
                 "year": item.year,
-                "type": "vod",
+                "type": "series" if item.is_series else "movie",
             }
             for item in related
         ],
@@ -303,7 +303,7 @@ async def search_content(
                 "duration": item.duration,
                 "year": item.year,
                 "category": item.category_name,
-                "type": "vod",
+                "type": "series" if item.is_series else "movie",
             })
 
     # Note: In production, also search live channels, radio, podcasts

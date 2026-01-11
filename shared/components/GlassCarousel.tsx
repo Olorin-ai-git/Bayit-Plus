@@ -1,17 +1,21 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState, useCallback } from 'react';
 import {
   View,
   Text,
   StyleSheet,
   Animated,
   TouchableOpacity,
+  Pressable,
   Image,
   Platform,
 } from 'react-native';
 import { useTranslation } from 'react-i18next';
+import { Ionicons } from '@expo/vector-icons';
 import { GlassView } from './ui';
-import { colors, borderRadius } from '../theme';
+import { colors, borderRadius, spacing } from '../theme';
 import { useDirection } from '../hooks/useDirection';
+
+type ContentType = 'vod' | 'live' | 'podcast' | 'radio' | 'movie' | 'series' | 'channel';
 
 interface CarouselItem {
   id: string;
@@ -20,6 +24,17 @@ interface CarouselItem {
   description?: string;
   image?: string;
   badge?: string;
+  contentType?: ContentType;
+}
+
+interface FavoritesService {
+  toggleFavorite: (contentId: string, contentType: string) => Promise<{ is_favorite: boolean }>;
+  isFavorite: (contentId: string) => Promise<{ is_favorite: boolean }>;
+}
+
+interface WatchlistService {
+  toggleWatchlist: (contentId: string, contentType: string) => Promise<{ in_watchlist: boolean }>;
+  isInWatchlist: (contentId: string) => Promise<{ in_watchlist: boolean }>;
 }
 
 interface GlassCarouselProps {
@@ -27,6 +42,9 @@ interface GlassCarouselProps {
   onItemPress?: (item: CarouselItem) => void;
   autoPlayInterval?: number;
   height?: number;
+  showActions?: boolean;
+  favoritesService?: FavoritesService;
+  watchlistService?: WatchlistService;
 }
 
 export const GlassCarousel: React.FC<GlassCarouselProps> = ({
@@ -34,6 +52,9 @@ export const GlassCarousel: React.FC<GlassCarouselProps> = ({
   onItemPress,
   autoPlayInterval = 5000,
   height = 320,
+  showActions = true,
+  favoritesService,
+  watchlistService,
 }) => {
   const { t } = useTranslation();
   const { isRTL } = useDirection();
@@ -41,6 +62,47 @@ export const GlassCarousel: React.FC<GlassCarouselProps> = ({
   const [isFocused, setIsFocused] = useState(false);
   const fadeAnim = useRef(new Animated.Value(1)).current;
   const autoPlayRef = useRef<ReturnType<typeof setInterval> | null>(null);
+
+  // Action button states - keyed by content ID
+  const [favoriteStates, setFavoriteStates] = useState<Record<string, boolean>>({});
+  const [watchlistStates, setWatchlistStates] = useState<Record<string, boolean>>({});
+  const [actionLoading, setActionLoading] = useState<Record<string, boolean>>({});
+
+  const handleFavoriteToggle = useCallback(async (item: CarouselItem, e?: any) => {
+    // Prevent event propagation on all platforms
+    e?.preventDefault?.();
+    e?.stopPropagation?.();
+
+    if (!favoritesService || !item.contentType || actionLoading[`fav-${item.id}`]) return;
+
+    setActionLoading(prev => ({ ...prev, [`fav-${item.id}`]: true }));
+    try {
+      const result = await favoritesService.toggleFavorite(item.id, item.contentType);
+      setFavoriteStates(prev => ({ ...prev, [item.id]: result.is_favorite }));
+    } catch (error) {
+      console.error('Failed to toggle favorite:', error);
+    } finally {
+      setActionLoading(prev => ({ ...prev, [`fav-${item.id}`]: false }));
+    }
+  }, [favoritesService, actionLoading]);
+
+  const handleWatchlistToggle = useCallback(async (item: CarouselItem, e?: any) => {
+    // Prevent event propagation on all platforms
+    e?.preventDefault?.();
+    e?.stopPropagation?.();
+
+    if (!watchlistService || !item.contentType || actionLoading[`wl-${item.id}`]) return;
+
+    setActionLoading(prev => ({ ...prev, [`wl-${item.id}`]: true }));
+    try {
+      const result = await watchlistService.toggleWatchlist(item.id, item.contentType);
+      setWatchlistStates(prev => ({ ...prev, [item.id]: result.in_watchlist }));
+    } catch (error) {
+      console.error('Failed to toggle watchlist:', error);
+    } finally {
+      setActionLoading(prev => ({ ...prev, [`wl-${item.id}`]: false }));
+    }
+  }, [watchlistService, actionLoading]);
 
   // Auto-play with fade transition
   useEffect(() => {
@@ -148,6 +210,48 @@ export const GlassCarousel: React.FC<GlassCarouselProps> = ({
                   <GlassView intensity="high" style={styles.badge}>
                     <Text style={styles.badgeText}>{currentItem.badge}</Text>
                   </GlassView>
+                </View>
+              )}
+
+              {/* Action Buttons - Top corner opposite to badge */}
+              {showActions && currentItem.contentType && (favoritesService || watchlistService) && (
+                <View
+                  style={[styles.actionButtons, isRTL ? styles.actionButtonsLeft : styles.actionButtonsRight]}
+                  // @ts-ignore - Web only onClick
+                  onClick={(e: any) => { e.stopPropagation(); e.preventDefault(); }}
+                >
+                  {favoritesService && (
+                    <Pressable
+                      onPress={(e) => handleFavoriteToggle(currentItem, e)}
+                      disabled={actionLoading[`fav-${currentItem.id}`]}
+                      style={[
+                        styles.actionButton,
+                        favoriteStates[currentItem.id] && styles.actionButtonActive,
+                      ]}
+                    >
+                      <Ionicons
+                        name={favoriteStates[currentItem.id] ? 'star' : 'star-outline'}
+                        size={20}
+                        color={favoriteStates[currentItem.id] ? colors.warning : colors.text}
+                      />
+                    </Pressable>
+                  )}
+                  {watchlistService && (
+                    <Pressable
+                      onPress={(e) => handleWatchlistToggle(currentItem, e)}
+                      disabled={actionLoading[`wl-${currentItem.id}`]}
+                      style={[
+                        styles.actionButton,
+                        watchlistStates[currentItem.id] && styles.actionButtonActive,
+                      ]}
+                    >
+                      <Ionicons
+                        name={watchlistStates[currentItem.id] ? 'bookmark' : 'bookmark-outline'}
+                        size={20}
+                        color={watchlistStates[currentItem.id] ? colors.primary : colors.text}
+                      />
+                    </Pressable>
+                  )}
                 </View>
               )}
 
@@ -408,6 +512,36 @@ const styles = StyleSheet.create({
   dotActive: {
     width: 24,
     backgroundColor: colors.primary,
+  },
+  actionButtons: {
+    position: 'absolute',
+    top: 32,
+    flexDirection: 'row',
+    gap: spacing.sm,
+    zIndex: 10,
+  },
+  actionButtonsRight: {
+    right: 32,
+  },
+  actionButtonsLeft: {
+    left: 32,
+  },
+  actionButton: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    // @ts-ignore - Web transition
+    ...(Platform.OS === 'web' && {
+      backdropFilter: 'blur(8px)',
+      transition: 'all 0.2s ease',
+      cursor: 'pointer',
+    }),
+  },
+  actionButtonActive: {
+    backgroundColor: 'rgba(255, 255, 255, 0.15)',
   },
 });
 

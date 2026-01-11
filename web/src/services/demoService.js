@@ -240,6 +240,15 @@ export const demoWatchlistService = {
     await delay();
     return { message: 'Removed from watchlist' };
   },
+  isInWatchlist: async (contentId) => {
+    await delay();
+    return { in_watchlist: Math.random() > 0.5 };
+  },
+  toggleWatchlist: async (contentId, contentType = 'vod') => {
+    await delay();
+    const inWatchlist = Math.random() > 0.5;
+    return { in_watchlist: inWatchlist, message: inWatchlist ? 'Added to watchlist' : 'Removed from watchlist' };
+  },
 };
 
 // ===========================================
@@ -907,6 +916,11 @@ export const demoFavoritesService = {
   isFavorite: async (contentId) => {
     await delay();
     return { is_favorite: Math.random() > 0.5 };
+  },
+  toggleFavorite: async (contentId, contentType = 'vod') => {
+    await delay();
+    const isFavorite = Math.random() > 0.5;
+    return { is_favorite: isFavorite, message: isFavorite ? 'Added to favorites' : 'Removed from favorites' };
   },
 };
 

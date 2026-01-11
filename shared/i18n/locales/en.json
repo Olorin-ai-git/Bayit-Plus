@@ -1786,7 +1786,11 @@
       "all": "All",
       "continue": "Continue Watching",
       "movies": "Movies",
-      "series": "Series"
+      "series": "Series",
+      "kids": "Kids",
+      "judaism": "Judaism",
+      "podcasts": "Podcasts",
+      "radio": "Radio"
     },
     "title": "Watchlist",
     "items": "items",

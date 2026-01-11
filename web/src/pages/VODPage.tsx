@@ -1,9 +1,9 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { View, Text, StyleSheet, FlatList, ScrollView, useWindowDimensions } from 'react-native';
 import { useSearchParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useDirection } from '@/hooks/useDirection';
-import { Film } from 'lucide-react';
+import { Film, Tv } from 'lucide-react';
 import ContentCard from '@/components/content/ContentCard';
 import { contentService } from '@/services/api';
 import { colors, spacing, borderRadius } from '@bayit/shared/theme';
@@ -26,6 +26,7 @@ interface ContentItem {
   duration?: string;
   year?: string;
   category?: string;
+  is_series?: boolean;
 }
 
 export default function VODPage() {
@@ -42,6 +43,22 @@ export default function VODPage() {
   const { width } = useWindowDimensions();
 
   const numColumns = width >= 1280 ? 6 : width >= 1024 ? 5 : width >= 768 ? 4 : width >= 640 ? 3 : 2;
+
+  // Separate movies and series
+  const { movies, series } = useMemo(() => {
+    const movies: ContentItem[] = [];
+    const series: ContentItem[] = [];
+
+    content.forEach(item => {
+      if (item.is_series || item.type === 'series') {
+        series.push({ ...item, type: 'series' });
+      } else {
+        movies.push({ ...item, type: 'movie' });
+      }
+    });
+
+    return { movies, series };
+  }, [content]);
 
   useEffect(() => {
     loadContent();
@@ -75,63 +92,102 @@ export default function VODPage() {
     setSearchParams(searchParams);
   };
 
-  return (
-    <View style={styles.container}>
-      {/* Header */}
-      <View style={[styles.header, { flexDirection, justifyContent }]}>
-        <Text style={[styles.title, { textAlign }]}>{t('vod.title')}</Text>
-        <GlassView style={styles.headerIcon}>
-          <Film size={24} color={colors.primary} />
-        </GlassView>
-      </View>
-
-      {/* Category Filter */}
-      <ScrollView
-        horizontal
-        showsHorizontalScrollIndicator={false}
-        style={styles.categoriesScroll}
-        contentContainerStyle={styles.categoriesContent}
-      >
-        <GlassCategoryPill
-          label={t('vod.allCategories')}
-          isActive={selectedCategory === 'all'}
-          onPress={() => handleCategoryChange('all')}
-        />
-        {categories.map((category) => (
-          <GlassCategoryPill
-            key={category.id}
-            label={getLocalizedName(category, i18n.language)}
-            isActive={selectedCategory === category.id}
-            onPress={() => handleCategoryChange(category.id)}
-          />
-        ))}
-      </ScrollView>
-
-      {/* Loading State */}
-      {loading ? (
-        <View style={styles.grid}>
-          {[...Array(12)].map((_, i) => (
-            <View key={i} style={[styles.skeletonCard, { width: `${100 / numColumns - 2}%` }]}>
-              <View style={styles.skeletonThumbnail} />
-            </View>
-          ))}
+  const renderContentGrid = (items: ContentItem[], emptyMessage: string) => {
+    if (items.length === 0) {
+      return (
+        <View style={styles.emptySection}>
+          <Text style={styles.emptySectionText}>{emptyMessage}</Text>
         </View>
-      ) : (
-        <>
-          {/* Content Grid */}
-          <FlatList
-            data={content}
-            keyExtractor={(item) => item.id}
-            numColumns={numColumns}
-            key={numColumns}
-            contentContainerStyle={styles.gridContent}
-            columnWrapperStyle={numColumns > 1 ? styles.row : undefined}
-            renderItem={({ item }) => (
-              <View style={{ flex: 1, maxWidth: `${100 / numColumns}%`, padding: spacing.xs }}>
-                <ContentCard content={item} />
+      );
+    }
+
+    return (
+      <View style={styles.grid}>
+        {items.map((item) => (
+          <View key={item.id} style={{ width: `${100 / numColumns}%`, padding: spacing.xs }}>
+            <ContentCard content={item} />
+          </View>
+        ))}
+      </View>
+    );
+  };
+
+  return (
+    <ScrollView style={styles.scrollView} contentContainerStyle={styles.scrollContent}>
+      <View style={styles.container}>
+        {/* Header */}
+        <View style={[styles.header, { flexDirection, justifyContent }]}>
+          <Text style={[styles.title, { textAlign }]}>{t('vod.title')}</Text>
+          <GlassView style={styles.headerIcon}>
+            <Film size={24} color={colors.primary} />
+          </GlassView>
+        </View>
+
+        {/* Category Filter */}
+        <ScrollView
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          style={styles.categoriesScroll}
+          contentContainerStyle={styles.categoriesContent}
+        >
+          <GlassCategoryPill
+            label={t('vod.allCategories')}
+            isActive={selectedCategory === 'all'}
+            onPress={() => handleCategoryChange('all')}
+          />
+          {categories.map((category) => (
+            <GlassCategoryPill
+              key={category.id}
+              label={getLocalizedName(category, i18n.language)}
+              isActive={selectedCategory === category.id}
+              onPress={() => handleCategoryChange(category.id)}
+            />
+          ))}
+        </ScrollView>
+
+        {/* Loading State */}
+        {loading ? (
+          <View style={styles.grid}>
+            {[...Array(12)].map((_, i) => (
+              <View key={i} style={{ width: `${100 / numColumns}%`, padding: spacing.xs }}>
+                <View style={styles.skeletonCard}>
+                  <View style={styles.skeletonThumbnail} />
+                </View>
               </View>
-            )}
-            ListEmptyComponent={
+            ))}
+          </View>
+        ) : (
+          <>
+            {/* Movies Section */}
+            <View style={styles.section}>
+              <View style={[styles.sectionHeader, { flexDirection }]}>
+                <Film size={24} color={colors.primary} />
+                <Text style={[styles.sectionTitle, { textAlign }]}>
+                  {t('vod.movies', 'Movies')}
+                </Text>
+                <View style={styles.countBadge}>
+                  <Text style={styles.countText}>{movies.length}</Text>
+                </View>
+              </View>
+              {renderContentGrid(movies, t('vod.noMovies', 'No movies found'))}
+            </View>
+
+            {/* Series Section */}
+            <View style={styles.section}>
+              <View style={[styles.sectionHeader, { flexDirection }]}>
+                <Tv size={24} color={colors.secondary} />
+                <Text style={[styles.sectionTitle, { textAlign }]}>
+                  {t('vod.series', 'Series')}
+                </Text>
+                <View style={styles.countBadge}>
+                  <Text style={styles.countText}>{series.length}</Text>
+                </View>
+              </View>
+              {renderContentGrid(series, t('vod.noSeries', 'No series found'))}
+            </View>
+
+            {/* Empty State - when both are empty */}
+            {movies.length === 0 && series.length === 0 && (
               <View style={styles.emptyState}>
                 <GlassCard style={styles.emptyCard}>
                   <Film size={64} color={colors.textMuted} />
@@ -139,15 +195,21 @@ export default function VODPage() {
                   <Text style={styles.emptyDescription}>{t('vod.emptyDescription')}</Text>
                 </GlassCard>
               </View>
-            }
-          />
-        </>
-      )}
-    </View>
+            )}
+          </>
+        )}
+      </View>
+    </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
+  scrollView: {
+    flex: 1,
+  },
+  scrollContent: {
+    flexGrow: 1,
+  },
   container: {
     flex: 1,
     paddingHorizontal: spacing.md,
@@ -181,16 +243,48 @@ const styles = StyleSheet.create({
     gap: spacing.sm,
     paddingBottom: spacing.sm,
   },
+  section: {
+    marginBottom: spacing.xl,
+  },
+  sectionHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.sm,
+    marginBottom: spacing.md,
+    paddingBottom: spacing.sm,
+    borderBottomWidth: 1,
+    borderBottomColor: colors.glassBorder,
+  },
+  sectionTitle: {
+    fontSize: 24,
+    fontWeight: '600',
+    color: colors.text,
+    flex: 1,
+  },
+  countBadge: {
+    backgroundColor: colors.glass,
+    paddingHorizontal: spacing.sm,
+    paddingVertical: spacing.xs,
+    borderRadius: borderRadius.full,
+    borderWidth: 1,
+    borderColor: colors.glassBorder,
+  },
+  countText: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: colors.textSecondary,
+  },
   grid: {
     flexDirection: 'row',
     flexWrap: 'wrap',
-    gap: spacing.md,
   },
-  gridContent: {
-    gap: spacing.sm,
+  emptySection: {
+    paddingVertical: spacing.xl,
+    alignItems: 'center',
   },
-  row: {
-    gap: spacing.sm,
+  emptySectionText: {
+    fontSize: 16,
+    color: colors.textMuted,
   },
   emptyState: {
     flex: 1,
@@ -214,8 +308,7 @@ const styles = StyleSheet.create({
     color: colors.textSecondary,
   },
   skeletonCard: {
-    margin: spacing.xs,
-    minWidth: 150,
+    width: '100%',
   },
   skeletonThumbnail: {
     aspectRatio: 16 / 9,

@@ -127,6 +127,9 @@ const apiWatchlistService = {
   addToWatchlist: (contentId: string, contentType: string) =>
     api.post('/watchlist', { content_id: contentId, content_type: contentType }),
   removeFromWatchlist: (contentId: string) => api.delete(`/watchlist/${contentId}`),
+  isInWatchlist: (contentId: string) => api.get(`/watchlist/check/${contentId}`),
+  toggleWatchlist: (contentId: string, contentType: string = 'vod') =>
+    api.post(`/watchlist/toggle/${contentId}?content_type=${contentType}`),
 };
 
 // History Service (API)
@@ -178,8 +181,13 @@ const apiFavoritesService = {
   getFavorites: () => api.get('/favorites'),
   addToFavorites: (contentId: string, contentType: string) =>
     api.post('/favorites', { content_id: contentId, content_type: contentType }),
+  addFavorite: (contentId: string, contentType: string) =>
+    api.post('/favorites', { content_id: contentId, content_type: contentType }),
   removeFromFavorites: (contentId: string) => api.delete(`/favorites/${contentId}`),
+  removeFavorite: (contentId: string) => api.delete(`/favorites/${contentId}`),
   isFavorite: (contentId: string) => api.get(`/favorites/check/${contentId}`),
+  toggleFavorite: (contentId: string, contentType: string = 'vod') =>
+    api.post(`/favorites/toggle/${contentId}?content_type=${contentType}`),
 };
 
 // Zman Yisrael Service (API)

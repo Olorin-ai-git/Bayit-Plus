@@ -2,18 +2,19 @@ import { useState } from 'react';
 import { View, Text, StyleSheet, Pressable, Image } from 'react-native';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { Play } from 'lucide-react';
+import { Play, Star, Bookmark } from 'lucide-react';
 import { colors, spacing, borderRadius } from '@bayit/shared/theme';
 import { GlassCard, GlassBadge } from '@bayit/shared/ui';
 import { useModeEnforcement } from '@bayit/shared-hooks';
 import { useDirection } from '@/hooks/useDirection';
+import { favoritesService, watchlistService } from '@/services/api';
 import LinearGradient from 'react-native-linear-gradient';
 
 interface Content {
   id: string;
   title: string;
   thumbnail?: string;
-  type?: 'live' | 'radio' | 'podcast' | 'vod';
+  type?: 'live' | 'radio' | 'podcast' | 'vod' | 'movie' | 'series';
   duration?: string;
   progress?: number;
   year?: string;
@@ -23,13 +24,22 @@ interface Content {
 interface ContentCardProps {
   content: Content;
   showProgress?: boolean;
+  showActions?: boolean;
 }
 
-export default function ContentCard({ content, showProgress = false }: ContentCardProps) {
+export default function ContentCard({ content, showProgress = false, showActions = true }: ContentCardProps) {
   const { t } = useTranslation();
   const { isRTL, textAlign, flexDirection } = useDirection();
   const [isHovered, setIsHovered] = useState(false);
   const { isUIInteractionEnabled } = useModeEnforcement();
+
+  // Action button states
+  const [isFavorite, setIsFavorite] = useState(false);
+  const [inWatchlist, setInWatchlist] = useState(false);
+  const [favoriteLoading, setFavoriteLoading] = useState(false);
+  const [watchlistLoading, setWatchlistLoading] = useState(false);
+  const [favoriteHovered, setFavoriteHovered] = useState(false);
+  const [watchlistHovered, setWatchlistHovered] = useState(false);
 
   const linkTo = content.type === 'live'
     ? `/live/${content.id}`
@@ -38,6 +48,40 @@ export default function ContentCard({ content, showProgress = false }: ContentCa
     : content.type === 'podcast'
     ? `/podcasts/${content.id}`
     : `/vod/${content.id}`;
+
+  const handleFavoriteToggle = async (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+
+    if (favoriteLoading) return;
+    setFavoriteLoading(true);
+
+    try {
+      const result = await favoritesService.toggleFavorite(content.id, content.type || 'vod');
+      setIsFavorite(result.is_favorite);
+    } catch (error) {
+      console.error('Failed to toggle favorite:', error);
+    } finally {
+      setFavoriteLoading(false);
+    }
+  };
+
+  const handleWatchlistToggle = async (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+
+    if (watchlistLoading) return;
+    setWatchlistLoading(true);
+
+    try {
+      const result = await watchlistService.toggleWatchlist(content.id, content.type || 'vod');
+      setInWatchlist(result.in_watchlist);
+    } catch (error) {
+      console.error('Failed to toggle watchlist:', error);
+    } finally {
+      setWatchlistLoading(false);
+    }
+  };
 
   // In Voice Only mode, wrap in non-interactive View instead of Link
   const CardContent = (
@@ -64,6 +108,67 @@ export default function ContentCard({ content, showProgress = false }: ContentCa
               <View style={styles.thumbnailPlaceholder} />
             )}
 
+            {/* Action Buttons - Show on hover */}
+            {showActions && isHovered && (
+              <div
+                style={{ position: 'absolute', top: spacing.sm, right: isRTL ? 'auto' : spacing.sm, left: isRTL ? spacing.sm : 'auto', display: 'flex', flexDirection: 'row', gap: spacing.xs, zIndex: 10 }}
+                onClick={(e) => e.stopPropagation()}
+              >
+                <button
+                  onClick={handleFavoriteToggle}
+                  onMouseEnter={() => setFavoriteHovered(true)}
+                  onMouseLeave={() => setFavoriteHovered(false)}
+                  disabled={favoriteLoading}
+                  style={{
+                    width: 32,
+                    height: 32,
+                    borderRadius: 16,
+                    backgroundColor: isFavorite ? 'rgba(255, 255, 255, 0.15)' : favoriteHovered ? 'rgba(255, 255, 255, 0.25)' : 'rgba(0, 0, 0, 0.6)',
+                    border: 'none',
+                    cursor: 'pointer',
+                    display: 'flex',
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                    backdropFilter: 'blur(8px)',
+                    transition: 'all 0.2s ease',
+                    transform: favoriteHovered ? 'scale(1.1)' : 'scale(1)',
+                  }}
+                >
+                  <Star
+                    size={16}
+                    color={isFavorite ? colors.warning : colors.text}
+                    fill={isFavorite ? colors.warning : 'transparent'}
+                  />
+                </button>
+                <button
+                  onClick={handleWatchlistToggle}
+                  onMouseEnter={() => setWatchlistHovered(true)}
+                  onMouseLeave={() => setWatchlistHovered(false)}
+                  disabled={watchlistLoading}
+                  style={{
+                    width: 32,
+                    height: 32,
+                    borderRadius: 16,
+                    backgroundColor: inWatchlist ? 'rgba(255, 255, 255, 0.15)' : watchlistHovered ? 'rgba(255, 255, 255, 0.25)' : 'rgba(0, 0, 0, 0.6)',
+                    border: 'none',
+                    cursor: 'pointer',
+                    display: 'flex',
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                    backdropFilter: 'blur(8px)',
+                    transition: 'all 0.2s ease',
+                    transform: watchlistHovered ? 'scale(1.1)' : 'scale(1)',
+                  }}
+                >
+                  <Bookmark
+                    size={16}
+                    color={inWatchlist ? colors.primary : colors.text}
+                    fill={inWatchlist ? colors.primary : 'transparent'}
+                  />
+                </button>
+              </div>
+            )}
+
             {/* Play Overlay */}
             {isHovered && (
               <View style={styles.playOverlay}>
@@ -84,9 +189,14 @@ export default function ContentCard({ content, showProgress = false }: ContentCa
               </View>
             )}
 
-            {/* Live Badge */}
+            {/* Live Badge - positioned to avoid action buttons */}
             {content.type === 'live' && (
-              <View style={[styles.liveBadge, isRTL ? { right: 'auto', left: spacing.sm } : {}]}>
+              <View style={[
+                styles.liveBadge,
+                isRTL ? { right: 'auto', left: spacing.sm } : {},
+                // Move down when action buttons are shown
+                showActions && { top: spacing.sm + 40 },
+              ]}>
                 <View style={styles.liveDot} />
                 <Text style={styles.liveText}>{t('common.live')}</Text>
               </View>
@@ -156,6 +266,32 @@ const styles = StyleSheet.create({
     width: '100%',
     height: '100%',
     backgroundColor: colors.glass,
+  },
+  actionButtons: {
+    position: 'absolute',
+    top: spacing.sm,
+    right: spacing.sm,
+    flexDirection: 'row',
+    gap: spacing.xs,
+    zIndex: 10,
+  },
+  actionButton: {
+    width: 32,
+    height: 32,
+    borderRadius: 16,
+    backgroundColor: 'rgba(0, 0, 0, 0.6)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    // @ts-ignore
+    backdropFilter: 'blur(8px)',
+    transition: 'all 0.2s ease',
+  },
+  actionButtonActive: {
+    backgroundColor: 'rgba(255, 255, 255, 0.15)',
+  },
+  actionButtonHovered: {
+    backgroundColor: 'rgba(255, 255, 255, 0.25)',
+    transform: [{ scale: 1.1 }],
   },
   playOverlay: {
     ...StyleSheet.absoluteFillObject,

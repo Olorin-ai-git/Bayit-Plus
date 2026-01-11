@@ -1320,7 +1320,11 @@
       "all": "Todos",
       "continue": "Continuar viendo",
       "movies": "Películas",
-      "series": "Series"
+      "series": "Series",
+      "kids": "Niños",
+      "judaism": "Judaísmo",
+      "podcasts": "Podcasts",
+      "radio": "Radio"
     },
     "title": "Mi lista",
     "items": "elementos",

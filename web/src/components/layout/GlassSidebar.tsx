@@ -101,16 +101,70 @@ export const GlassSidebar: React.FC<GlassSidebarProps> = ({ isExpanded, onToggle
   const displayInitial = displayName.charAt(0).toUpperCase();
   const subscriptionPlan = user?.subscription?.plan || 'basic';
 
-  // Debug auth state
-  console.log('[GlassSidebar] Auth state:', { isAuthenticated, user: user?.name, displayName });
   // Sidebar is always visible - collapsed shows icons only, expanded shows full menu
-  const collapsedWidth = 80;
-  const expandedWidth = 280;
-  const widthAnim = useRef(new Animated.Value(isExpanded ? expandedWidth : collapsedWidth)).current;
+  // Web uses narrower sidebar than TV
+  const collapsedWidth = IS_TV_BUILD ? 80 : 64;
+  const expandedWidth = IS_TV_BUILD ? 280 : 220;
+  const minWidth = collapsedWidth;
+  const maxWidth = IS_TV_BUILD ? 350 : 300;
+
+  const [customWidth, setCustomWidth] = useState<number | null>(null);
+  const [isDragging, setIsDragging] = useState(false);
+  const dragStartX = useRef(0);
+  const dragStartWidth = useRef(0);
+
+  const currentWidth = customWidth ?? (isExpanded ? expandedWidth : collapsedWidth);
+  const widthAnim = useRef(new Animated.Value(currentWidth)).current;
   const opacityAnim = useRef(new Animated.Value(isExpanded ? 1 : 0)).current;
   const [focusedItem, setFocusedItem] = useState<string | null>(null);
   // Debounce to prevent double-toggle from onPress + onClick firing together
   const lastToggleTime = useRef<number>(0);
+
+  // Handle drag to resize (web only)
+  const handleDragStart = useCallback((e: React.MouseEvent) => {
+    if (IS_TV_BUILD) return;
+    e.preventDefault();
+    setIsDragging(true);
+    dragStartX.current = e.clientX;
+    dragStartWidth.current = customWidth ?? (isExpanded ? expandedWidth : collapsedWidth);
+  }, [customWidth, isExpanded, expandedWidth, collapsedWidth]);
+
+  useEffect(() => {
+    if (!isDragging) return;
+
+    const handleMouseMove = (e: MouseEvent) => {
+      const delta = isRTL ? (dragStartX.current - e.clientX) : (e.clientX - dragStartX.current);
+      const newWidth = Math.min(maxWidth, Math.max(minWidth, dragStartWidth.current + delta));
+      setCustomWidth(newWidth);
+      widthAnim.setValue(newWidth);
+
+      // Update opacity based on width
+      const opacity = newWidth > collapsedWidth + 20 ? 1 : 0;
+      opacityAnim.setValue(opacity);
+    };
+
+    const handleMouseUp = () => {
+      setIsDragging(false);
+      // Snap to collapsed or expanded if close to those values
+      if (customWidth !== null) {
+        if (customWidth < collapsedWidth + 30) {
+          setCustomWidth(null);
+          if (isExpanded) onToggle();
+        } else if (customWidth > expandedWidth - 30 && customWidth < expandedWidth + 30) {
+          setCustomWidth(null);
+          if (!isExpanded) onToggle();
+        }
+      }
+    };
+
+    document.addEventListener('mousemove', handleMouseMove);
+    document.addEventListener('mouseup', handleMouseUp);
+
+    return () => {
+      document.removeEventListener('mousemove', handleMouseMove);
+      document.removeEventListener('mouseup', handleMouseUp);
+    };
+  }, [isDragging, isRTL, customWidth, isExpanded, onToggle, widthAnim, opacityAnim, collapsedWidth, expandedWidth, minWidth, maxWidth]);
 
   // Debounced toggle handler
   const handleToggle = useCallback(() => {
@@ -142,21 +196,25 @@ export const GlassSidebar: React.FC<GlassSidebarProps> = ({ isExpanded, onToggle
     });
   }, [user?.role]);
 
+  // Reset custom width when toggling
   useEffect(() => {
-    Animated.parallel([
-      Animated.spring(widthAnim, {
-        toValue: isExpanded ? expandedWidth : collapsedWidth,
-        friction: 8,
-        tension: 65,
-        useNativeDriver: false,
-      }),
-      Animated.timing(opacityAnim, {
-        toValue: isExpanded ? 1 : 0,
-        duration: 200,
-        useNativeDriver: true,
-      }),
-    ]).start();
-  }, [isExpanded, widthAnim, opacityAnim]);
+    if (!isDragging) {
+      setCustomWidth(null);
+      Animated.parallel([
+        Animated.spring(widthAnim, {
+          toValue: isExpanded ? expandedWidth : collapsedWidth,
+          friction: 8,
+          tension: 65,
+          useNativeDriver: false,
+        }),
+        Animated.timing(opacityAnim, {
+          toValue: isExpanded ? 1 : 0,
+          duration: 200,
+          useNativeDriver: true,
+        }),
+      ]).start();
+    }
+  }, [isExpanded]);
 
   const handleItemPress = (item: MenuItem) => {
     // Respect mode enforcement - only allow clicks in allowed modes
@@ -189,6 +247,9 @@ export const GlassSidebar: React.FC<GlassSidebarProps> = ({ isExpanded, onToggle
     }
   };
 
+  // Show labels when width is large enough
+  const showLabels = customWidth !== null ? customWidth > collapsedWidth + 40 : isExpanded;
+
   return (
     <Animated.View style={[
       styles.container,
@@ -202,6 +263,30 @@ export const GlassSidebar: React.FC<GlassSidebarProps> = ({ isExpanded, onToggle
             ? { borderLeftWidth: 1, borderLeftColor: colors.glassBorder }
             : { borderRightWidth: 1, borderRightColor: colors.glassBorder },
         ]}>
+
+          {/* Draggable Splitter (web only) */}
+          {!IS_TV_BUILD && (
+            <div
+              onMouseDown={handleDragStart as any}
+              style={{
+                position: 'absolute',
+                top: 0,
+                bottom: 0,
+                [isRTL ? 'left' : 'right']: 0,
+                width: 6,
+                cursor: isDragging ? 'grabbing' : 'col-resize',
+                zIndex: 200,
+                backgroundColor: isDragging ? 'rgba(0, 217, 255, 0.3)' : 'transparent',
+                transition: isDragging ? 'none' : 'background-color 0.2s',
+              }}
+              onMouseEnter={(e) => {
+                if (!isDragging) (e.target as HTMLDivElement).style.backgroundColor = 'rgba(0, 217, 255, 0.2)';
+              }}
+              onMouseLeave={(e) => {
+                if (!isDragging) (e.target as HTMLDivElement).style.backgroundColor = 'transparent';
+              }}
+            />
+          )}
           {/* Toggle Button */}
           <TouchableOpacity
             onPress={isUIInteractionEnabled ? handleToggle : undefined}
@@ -236,8 +321,8 @@ export const GlassSidebar: React.FC<GlassSidebarProps> = ({ isExpanded, onToggle
             style={[
               styles.userProfileSection,
               {
-                justifyContent: isExpanded ? 'flex-start' : 'center',
-                paddingHorizontal: isExpanded ? spacing.sm : 0,
+                justifyContent: showLabels ? 'flex-start' : 'center',
+                paddingHorizontal: showLabels ? spacing.sm : 0,
               },
               focusedItem === 'profile-section' && styles.userProfileSectionFocused,
             ]}
@@ -258,7 +343,7 @@ export const GlassSidebar: React.FC<GlassSidebarProps> = ({ isExpanded, onToggle
                 <View style={styles.onlineBadge} />
               )}
             </View>
-            {isExpanded && (
+            {showLabels && (
               <Animated.View style={[styles.userInfoContainer, { opacity: opacityAnim }]}>
                 <Text style={[styles.userName, { textAlign }]} numberOfLines={1}>
                   {displayName}
@@ -288,7 +373,7 @@ export const GlassSidebar: React.FC<GlassSidebarProps> = ({ isExpanded, onToggle
             {menuSections.map((section, sectionIndex) => (
               <View key={sectionIndex} style={styles.section}>
                 {/* Section Title (only when expanded and has title) */}
-                {section.titleKey && isExpanded && (
+                {section.titleKey && showLabels && (
                   <Animated.Text
                     style={[
                       styles.sectionTitle,
@@ -325,7 +410,7 @@ export const GlassSidebar: React.FC<GlassSidebarProps> = ({ isExpanded, onToggle
                         {item.icon}
                       </Text>
                     </View>
-                    {isExpanded && (
+                    {showLabels && (
                       <Animated.Text
                         style={[
                           styles.menuLabel,
@@ -356,7 +441,7 @@ export const GlassSidebar: React.FC<GlassSidebarProps> = ({ isExpanded, onToggle
           </ScrollView>
 
           {/* App Version (when expanded) */}
-          {isExpanded && (
+          {showLabels && (
             <Animated.View style={[styles.versionContainer, { opacity: opacityAnim }]}>
               <Text style={[styles.versionText, { textAlign }]}>{t('common.appVersion', 'Bayit+ v1.0.0')}</Text>
             </Animated.View>
@@ -427,9 +512,9 @@ const styles = StyleSheet.create({
     borderWidth: 3,
   },
   userAvatar: {
-    width: 48,
-    height: 48,
-    borderRadius: 24,
+    width: IS_TV_BUILD ? 48 : 40,
+    height: IS_TV_BUILD ? 48 : 40,
+    borderRadius: IS_TV_BUILD ? 24 : 20,
     backgroundColor: 'rgba(255, 255, 255, 0.1)',
     justifyContent: 'center',
     alignItems: 'center',
@@ -447,9 +532,9 @@ const styles = StyleSheet.create({
     color: colors.text,
   },
   userAvatarImage: {
-    width: 44,
-    height: 44,
-    borderRadius: 22,
+    width: IS_TV_BUILD ? 44 : 36,
+    height: IS_TV_BUILD ? 44 : 36,
+    borderRadius: IS_TV_BUILD ? 22 : 18,
   },
   onlineBadge: {
     position: 'absolute',
@@ -532,19 +617,19 @@ const styles = StyleSheet.create({
     borderColor: colors.primary,
   },
   iconContainer: {
-    width: 48,
-    height: 48,
+    width: IS_TV_BUILD ? 48 : 36,
+    height: IS_TV_BUILD ? 48 : 36,
     justifyContent: 'center',
     alignItems: 'center',
   },
   menuIcon: {
-    fontSize: 24,
+    fontSize: IS_TV_BUILD ? 24 : 18,
   },
   menuIconActive: {
     // Active state for icon
   },
   menuLabel: {
-    fontSize: 16,
+    fontSize: IS_TV_BUILD ? 16 : 14,
     color: colors.text,
     flex: 1,
   },

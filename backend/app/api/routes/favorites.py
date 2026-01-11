@@ -7,7 +7,7 @@ from datetime import datetime
 from typing import List, Optional
 from fastapi import APIRouter, HTTPException, status, Depends
 from pydantic import BaseModel
-from beanie import Document, PydanticObjectId
+from beanie import Document
 from app.models.user import User
 from app.models.content import Content, LiveChannel, Podcast
 from app.core.security import get_current_active_user
@@ -17,7 +17,7 @@ from app.core.security import get_current_active_user
 class Favorite(Document):
     user_id: str
     content_id: str
-    content_type: str  # vod, live, podcast
+    content_type: str  # vod, live, podcast, movie, series, channel, radio
     added_at: datetime = datetime.utcnow()
 
     class Settings:
@@ -30,22 +30,29 @@ class Favorite(Document):
 
 class FavoriteAdd(BaseModel):
     content_id: str
-    content_type: str  # vod, live, podcast
+    content_type: str  # vod, live, podcast, movie, series, channel, radio
 
 
-class FavoriteResponse(BaseModel):
+class FavoriteItem(BaseModel):
     id: str
-    content_id: str
-    content_type: str
-    title: Optional[str] = None
+    type: str  # Frontend expects 'type' not 'content_type'
+    title: str
+    title_en: Optional[str] = None
+    title_es: Optional[str] = None
+    subtitle: Optional[str] = None
+    subtitle_en: Optional[str] = None
+    subtitle_es: Optional[str] = None
     thumbnail: Optional[str] = None
-    added_at: str
+
+
+class FavoritesResponse(BaseModel):
+    items: List[FavoriteItem]
 
 
 router = APIRouter()
 
 
-@router.get("", response_model=List[FavoriteResponse])
+@router.get("", response_model=FavoritesResponse)
 async def get_favorites(
     current_user: User = Depends(get_current_active_user),
 ):
@@ -54,35 +61,47 @@ async def get_favorites(
         Favorite.user_id == str(current_user.id)
     ).sort("-added_at").to_list()
 
-    result = []
+    items = []
     for fav in favorites:
-        content_data = {
-            "id": str(fav.id),
-            "content_id": fav.content_id,
-            "content_type": fav.content_type,
-            "added_at": fav.added_at.isoformat(),
+        item_data = {
+            "id": fav.content_id,  # Use content_id as the id for routing
+            "type": fav.content_type,
         }
 
-        # Fetch content details
-        if fav.content_type == "vod":
+        # Fetch content details based on type
+        if fav.content_type in ("vod", "movie", "series"):
             content = await Content.get(fav.content_id)
             if content:
-                content_data["title"] = content.title
-                content_data["thumbnail"] = content.thumbnail
-        elif fav.content_type == "live":
+                item_data["title"] = content.title
+                item_data["title_en"] = getattr(content, 'title_en', None)
+                item_data["title_es"] = getattr(content, 'title_es', None)
+                item_data["subtitle"] = content.description[:100] if content.description else None
+                item_data["thumbnail"] = content.thumbnail
+                # Normalize type for frontend based on is_series field
+                item_data["type"] = "series" if content.is_series else "movie"
+        elif fav.content_type in ("live", "channel"):
             channel = await LiveChannel.get(fav.content_id)
             if channel:
-                content_data["title"] = channel.name
-                content_data["thumbnail"] = channel.thumbnail
+                item_data["title"] = channel.name
+                item_data["thumbnail"] = channel.thumbnail
+                item_data["type"] = "channel"
         elif fav.content_type == "podcast":
             podcast = await Podcast.get(fav.content_id)
             if podcast:
-                content_data["title"] = podcast.title
-                content_data["thumbnail"] = podcast.cover
+                item_data["title"] = podcast.title
+                item_data["subtitle"] = podcast.author
+                item_data["thumbnail"] = podcast.cover
+                item_data["type"] = "podcast"
+        elif fav.content_type == "radio":
+            # Radio stations might be stored differently
+            item_data["title"] = f"Radio Station"
+            item_data["type"] = "radio"
 
-        result.append(FavoriteResponse(**content_data))
+        # Only add if we have at least a title
+        if item_data.get("title"):
+            items.append(FavoriteItem(**item_data))
 
-    return result
+    return FavoritesResponse(items=items)
 
 
 @router.post("")
@@ -142,3 +161,28 @@ async def check_favorite(
         Favorite.content_id == content_id,
     )
     return {"is_favorite": favorite is not None}
+
+
+@router.post("/toggle/{content_id}")
+async def toggle_favorite(
+    content_id: str,
+    content_type: str = "vod",
+    current_user: User = Depends(get_current_active_user),
+):
+    """Toggle favorite status for content."""
+    existing = await Favorite.find_one(
+        Favorite.user_id == str(current_user.id),
+        Favorite.content_id == content_id,
+    )
+
+    if existing:
+        await existing.delete()
+        return {"is_favorite": False, "message": "Removed from favorites"}
+    else:
+        favorite = Favorite(
+            user_id=str(current_user.id),
+            content_id=content_id,
+            content_type=content_type,
+        )
+        await favorite.insert()
+        return {"is_favorite": True, "message": "Added to favorites"}

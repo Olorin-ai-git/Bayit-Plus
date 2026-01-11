@@ -121,6 +121,9 @@ const apiWatchlistService = {
   getWatchlist: () => api.get('/watchlist'),
   addToWatchlist: (contentId, contentType) => api.post('/watchlist', { content_id: contentId, content_type: contentType }),
   removeFromWatchlist: (contentId) => api.delete(`/watchlist/${contentId}`),
+  isInWatchlist: (contentId) => api.get(`/watchlist/check/${contentId}`),
+  toggleWatchlist: (contentId, contentType = 'vod') =>
+    api.post(`/watchlist/toggle/${contentId}?content_type=${contentType}`),
 }
 
 // Watch History Service (API)
@@ -290,7 +293,9 @@ const apiFavoritesService = {
   addFavorite: (contentId, contentType) =>
     api.post('/favorites', { content_id: contentId, content_type: contentType }),
   removeFavorite: (contentId) => api.delete(`/favorites/${contentId}`),
-  isFavorite: (contentId) => api.get(`/favorites/${contentId}/check`),
+  isFavorite: (contentId) => api.get(`/favorites/check/${contentId}`),
+  toggleFavorite: (contentId, contentType = 'vod') =>
+    api.post(`/favorites/toggle/${contentId}?content_type=${contentType}`),
 }
 
 // Downloads Service (API)

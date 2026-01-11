@@ -19,7 +19,9 @@ interface WatchlistItem {
   subtitle_en?: string;
   subtitle_es?: string;
   thumbnail?: string;
-  type: 'movie' | 'series';
+  type: 'movie' | 'series' | 'live' | 'podcast' | 'radio' | 'channel';
+  category?: string;
+  is_kids_content?: boolean;
   year?: string;
   duration?: string;
   addedAt?: string;
@@ -58,7 +60,13 @@ const WatchlistCard: React.FC<{
         )}
 
         <View style={[styles.typeBadge, isRTL ? { left: 8 } : { right: 8 }]}>
-          <Text style={styles.typeBadgeText}>{item.type === 'movie' ? '🎬' : '📺'}</Text>
+          <Text style={styles.typeBadgeText}>
+            {item.type === 'movie' ? '🎬' :
+             item.type === 'series' ? '📺' :
+             item.type === 'podcast' ? '🎙️' :
+             item.type === 'radio' ? '📻' :
+             item.type === 'live' || item.type === 'channel' ? '📡' : '🎬'}
+          </Text>
         </View>
 
         <View style={styles.cardContent}>
@@ -96,7 +104,7 @@ export default function WatchlistPage() {
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(true);
   const [watchlist, setWatchlist] = useState<WatchlistItem[]>([]);
-  const [filter, setFilter] = useState<'all' | 'movies' | 'series' | 'continue'>('all');
+  const [filter, setFilter] = useState<'all' | 'movies' | 'series' | 'continue' | 'kids' | 'judaism' | 'podcasts' | 'radio'>('all');
 
   const getLocalizedText = (item: any, field: string) => {
     if (field === 'title') return getLocalizedName(item, i18n.language);
@@ -112,8 +120,10 @@ export default function WatchlistPage() {
     try {
       setIsLoading(true);
       const data = await watchlistService.getWatchlist();
-      setWatchlist(data || []);
+      console.log('Watchlist API response:', data);
+      setWatchlist(data?.items || []);
     } catch (err) {
+      console.error('Watchlist load error:', err);
       logger.error('Failed to load watchlist', 'WatchlistPage', err);
     } finally {
       setIsLoading(false);
@@ -125,11 +135,28 @@ export default function WatchlistPage() {
     if (filter === 'movies') return item.type === 'movie';
     if (filter === 'series') return item.type === 'series';
     if (filter === 'continue') return item.progress !== undefined && item.progress > 0;
+    if (filter === 'kids') return item.is_kids_content === true;
+    if (filter === 'judaism') return item.category?.toLowerCase() === 'judaism' || item.category === 'יהדות';
+    if (filter === 'podcasts') return item.type === 'podcast';
+    if (filter === 'radio') return item.type === 'radio';
     return true;
   });
 
   const handleItemPress = (item: WatchlistItem) => {
-    navigate(`/vod/${item.id}`);
+    switch (item.type) {
+      case 'live':
+      case 'channel':
+        navigate(`/live/${item.id}`);
+        break;
+      case 'podcast':
+        navigate(`/podcasts/${item.id}`);
+        break;
+      case 'radio':
+        navigate(`/radio/${item.id}`);
+        break;
+      default:
+        navigate(`/vod/${item.id}`);
+    }
   };
 
   const handleRemoveFromWatchlist = async (id: string) => {
@@ -146,6 +173,10 @@ export default function WatchlistPage() {
     { id: 'continue', labelKey: 'watchlist.filters.continue' },
     { id: 'movies', labelKey: 'watchlist.filters.movies' },
     { id: 'series', labelKey: 'watchlist.filters.series' },
+    { id: 'kids', labelKey: 'watchlist.filters.kids' },
+    { id: 'judaism', labelKey: 'watchlist.filters.judaism' },
+    { id: 'podcasts', labelKey: 'watchlist.filters.podcasts' },
+    { id: 'radio', labelKey: 'watchlist.filters.radio' },
   ];
 
   if (isLoading) {
@@ -171,8 +202,8 @@ export default function WatchlistPage() {
         </View>
       </View>
 
-      <View style={[styles.filterContainer, { flexDirection }]}>
-        {(isRTL ? filterOptions : [...filterOptions].reverse()).map((option) => (
+      <View style={[styles.filterContainer, { flexDirection: 'row' }]}>
+        {(isRTL ? [...filterOptions].reverse() : filterOptions).map((option) => (
           <Pressable
             key={option.id}
             onPress={() => setFilter(option.id as any)}
@@ -223,8 +254,8 @@ const styles = StyleSheet.create({
   headerIconText: { fontSize: 28 },
   title: { fontSize: 36, fontWeight: 'bold', color: colors.text },
   subtitle: { fontSize: 16, color: colors.textSecondary, marginTop: 2 },
-  filterContainer: { paddingHorizontal: spacing.xl, marginBottom: spacing.lg, gap: spacing.sm },
-  filterButton: { paddingHorizontal: 24, paddingVertical: 12, borderRadius: 24, backgroundColor: colors.backgroundLight, borderWidth: 2, borderColor: 'transparent' },
+  filterContainer: { paddingHorizontal: spacing.xl, marginBottom: spacing.lg, gap: spacing.sm, flexWrap: 'wrap' },
+  filterButton: { paddingHorizontal: 16, paddingVertical: 8, borderRadius: 20, backgroundColor: colors.backgroundLight, borderWidth: 2, borderColor: 'transparent' },
   filterButtonActive: { backgroundColor: 'rgba(138, 43, 226, 0.2)', borderColor: colors.secondary },
   filterText: { fontSize: 14, color: colors.textMuted },
   filterTextActive: { color: colors.secondary, fontWeight: 'bold' },

@@ -243,7 +243,9 @@ export default function AudioPlayer({
 
 const styles = StyleSheet.create({
   container: {
+    flex: 1,
     padding: spacing.lg,
+    justifyContent: 'center',
   },
   content: {
     flexDirection: 'row',

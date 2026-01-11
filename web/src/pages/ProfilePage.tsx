@@ -82,13 +82,17 @@ export default function ProfilePage() {
     setStatsLoading(true);
     try {
       const [favoritesData, downloadsData] = await Promise.all([
-        favoritesService.getFavorites().catch(() => []),
+        favoritesService.getFavorites().catch(() => ({ items: [] })),
         downloadsService.getDownloads().catch(() => []),
       ]);
 
+      // Favorites returns { items: [...] }, downloads returns [...]
+      const favoritesCount = favoritesData?.items?.length ?? 0;
+      const downloadsCount = Array.isArray(downloadsData) ? downloadsData.length : 0;
+
       setStats({
-        favorites: Array.isArray(favoritesData) ? favoritesData.length : 0,
-        downloads: Array.isArray(downloadsData) ? downloadsData.length : 0,
+        favorites: favoritesCount,
+        downloads: downloadsCount,
       });
     } catch (error) {
       console.error('Failed to load user stats:', error);

@@ -16,6 +16,14 @@ import { useDirection } from '../hooks/useDirection';
 import { useAuthStore } from '../stores/authStore';
 import { useTVFocus } from './hooks/useTVFocus';
 
+// Check if this is a TV build (set by webpack)
+declare const __TV__: boolean;
+const IS_TV_BUILD = typeof __TV__ !== 'undefined' && __TV__;
+
+// TV sidebar is wider for 10-foot UI, web sidebar is narrower
+const EXPANDED_WIDTH = IS_TV_BUILD ? 280 : 220;
+const COLLAPSED_WIDTH = IS_TV_BUILD ? 80 : 64;
+
 interface GlassSidebarProps {
   isExpanded: boolean;
   onToggle: () => void;
@@ -82,7 +90,7 @@ export const GlassSidebar: React.FC<GlassSidebarProps> = ({ isExpanded, onToggle
   const { isRTL, textAlign } = useDirection();
   const navigation = useNavigation<any>();
   const { user, isAuthenticated, logout } = useAuthStore();
-  const widthAnim = useRef(new Animated.Value(isExpanded ? 280 : 80)).current;
+  const widthAnim = useRef(new Animated.Value(isExpanded ? EXPANDED_WIDTH : COLLAPSED_WIDTH)).current;
   const opacityAnim = useRef(new Animated.Value(isExpanded ? 1 : 0)).current;
   const [focusedItem, setFocusedItem] = useState<string | null>(null);
   const [currentRoute, setCurrentRoute] = useState<string>(activeRoute || 'Home');
@@ -139,7 +147,7 @@ export const GlassSidebar: React.FC<GlassSidebarProps> = ({ isExpanded, onToggle
   useEffect(() => {
     Animated.parallel([
       Animated.spring(widthAnim, {
-        toValue: isExpanded ? 280 : 80,
+        toValue: isExpanded ? EXPANDED_WIDTH : COLLAPSED_WIDTH,
         friction: 8,
         tension: 65,
         useNativeDriver: false,
@@ -417,9 +425,9 @@ const styles = StyleSheet.create({
     borderWidth: 3,
   },
   userAvatar: {
-    width: 48,
-    height: 48,
-    borderRadius: 24,
+    width: IS_TV_BUILD ? 48 : 40,
+    height: IS_TV_BUILD ? 48 : 40,
+    borderRadius: IS_TV_BUILD ? 24 : 20,
     backgroundColor: 'rgba(255, 255, 255, 0.1)',
     justifyContent: 'center',
     alignItems: 'center',
@@ -436,9 +444,9 @@ const styles = StyleSheet.create({
     color: colors.text,
   },
   userAvatarImage: {
-    width: 44,
-    height: 44,
-    borderRadius: 22,
+    width: IS_TV_BUILD ? 44 : 36,
+    height: IS_TV_BUILD ? 44 : 36,
+    borderRadius: IS_TV_BUILD ? 22 : 18,
   },
   onlineBadge: {
     position: 'absolute',
@@ -521,19 +529,19 @@ const styles = StyleSheet.create({
     borderColor: colors.primary,
   },
   iconContainer: {
-    width: 48,
-    height: 48,
+    width: IS_TV_BUILD ? 48 : 36,
+    height: IS_TV_BUILD ? 48 : 36,
     justifyContent: 'center',
     alignItems: 'center',
   },
   menuIcon: {
-    fontSize: 24,
+    fontSize: IS_TV_BUILD ? 24 : 18,
   },
   menuIconActive: {
     // Active state for icon
   },
   menuLabel: {
-    fontSize: 16,
+    fontSize: IS_TV_BUILD ? 16 : 14,
     color: colors.text,
     flex: 1,
   },

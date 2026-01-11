@@ -27,7 +27,7 @@ async def get_watchlist(
     for item in items:
         content_data = None
 
-        if item.content_type == "vod":
+        if item.content_type in ("vod", "movie", "series"):
             content = await Content.get(item.content_id)
             if content:
                 content_data = {
@@ -36,7 +36,9 @@ async def get_watchlist(
                     "thumbnail": content.thumbnail,
                     "duration": content.duration,
                     "year": content.year,
-                    "type": "vod",
+                    "type": "series" if content.is_series else "movie",
+                    "category": content.category_name,
+                    "is_kids_content": content.is_kids_content,
                 }
         elif item.content_type == "live":
             channel = await LiveChannel.get(item.content_id)
@@ -80,9 +82,9 @@ async def add_to_watchlist(
         return {"message": "Already in watchlist", "id": str(existing.id)}
 
     # Verify content exists
-    if data.content_type == "vod":
+    if data.content_type in ("vod", "movie", "series"):
         content = await Content.get(data.content_id)
-    elif data.content_type == "live":
+    elif data.content_type in ("live", "channel"):
         content = await LiveChannel.get(data.content_id)
     elif data.content_type == "podcast":
         content = await Podcast.get(data.content_id)
@@ -118,3 +120,41 @@ async def remove_from_watchlist(
 
     await item.delete()
     return {"message": "Removed from watchlist"}
+
+
+@router.get("/check/{content_id}")
+async def check_watchlist(
+    content_id: str,
+    current_user: User = Depends(get_current_active_user),
+):
+    """Check if content is in watchlist."""
+    item = await WatchlistItem.find_one(
+        WatchlistItem.user_id == str(current_user.id),
+        WatchlistItem.content_id == content_id,
+    )
+    return {"in_watchlist": item is not None}
+
+
+@router.post("/toggle/{content_id}")
+async def toggle_watchlist(
+    content_id: str,
+    content_type: str = "vod",
+    current_user: User = Depends(get_current_active_user),
+):
+    """Toggle watchlist status for content."""
+    existing = await WatchlistItem.find_one(
+        WatchlistItem.user_id == str(current_user.id),
+        WatchlistItem.content_id == content_id,
+    )
+
+    if existing:
+        await existing.delete()
+        return {"in_watchlist": False, "message": "Removed from watchlist"}
+    else:
+        item = WatchlistItem(
+            user_id=str(current_user.id),
+            content_id=content_id,
+            content_type=content_type,
+        )
+        await item.insert()
+        return {"in_watchlist": True, "message": "Added to watchlist"}
