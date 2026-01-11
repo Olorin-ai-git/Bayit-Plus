@@ -838,6 +838,8 @@ const demoAuditLogsService = {
 const apiContentService = {
   // VOD Content
   getContent: (filters) => adminApi.get('/admin/content', { params: filters }),
+  getContentHierarchical: (filters) => adminApi.get('/admin/content/hierarchical', { params: filters }),
+  getSeriesEpisodes: (seriesId) => adminApi.get(`/admin/content/${seriesId}/episodes`),
   getContentItem: (id) => adminApi.get(`/admin/content/${id}`),
   createContent: (data) => adminApi.post('/admin/content', data),
   updateContent: (id, data) => adminApi.patch(`/admin/content/${id}`, data),
@@ -929,6 +931,50 @@ const demoContentService = {
   featureContent: async (id) => {
     await delay()
     return { id, is_featured: true }
+  },
+  getContentHierarchical: async (filters = {}) => {
+    await delay()
+    // Filter to only show parent items (no series_id)
+    let filtered = demoContent.filter(c => !c.series_id)
+    if (filters.search) {
+      const search = filters.search.toLowerCase()
+      filtered = filtered.filter(c => c.title.toLowerCase().includes(search))
+    }
+    if (filters.is_published !== undefined) {
+      filtered = filtered.filter(c => c.is_published === filters.is_published)
+    }
+    // Add episode counts for series
+    const items = filtered.map(item => ({
+      ...item,
+      episode_count: item.is_series ? demoContent.filter(c => c.series_id === item.id).length : 0,
+    }))
+    const page = filters.page || 1
+    const pageSize = filters.page_size || 20
+    const start = (page - 1) * pageSize
+    return { items: items.slice(start, start + pageSize), total: items.length, page, page_size: pageSize }
+  },
+  getSeriesEpisodes: async (seriesId) => {
+    await delay()
+    const series = demoContent.find(c => c.id === seriesId)
+    const episodes = demoContent.filter(c => c.series_id === seriesId)
+    return {
+      series_id: seriesId,
+      series_title: series?.title || '',
+      total_episodes: episodes.length,
+      episodes: episodes.map(ep => ({
+        id: ep.id,
+        title: ep.title,
+        description: ep.description,
+        thumbnail: ep.thumbnail,
+        duration: ep.duration,
+        season: ep.season,
+        episode: ep.episode,
+        is_published: ep.is_published,
+        is_featured: ep.is_featured,
+        view_count: ep.view_count,
+        created_at: ep.created_at,
+      })),
+    }
   },
 
   // Categories

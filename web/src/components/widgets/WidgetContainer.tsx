@@ -125,6 +125,8 @@ export default function WidgetContainer({
     // Restore saved position if available
     if (savedPosition) {
       onPositionChange({ x: savedPosition.x, y: savedPosition.y });
+      // Clear saved position after animation completes
+      setTimeout(() => setSavedPosition(null), 350);
     }
   }, [savedPosition, onPositionChange]);
 
@@ -405,7 +407,7 @@ export default function WidgetContainer({
         // TV: Always show focus indicator
         outline: IS_TV_BUILD && isFocused ? '2px solid #00aaff' : 'none',
         outlineOffset: '2px',
-        transition: (isMinimized || savedPosition) && !isResizing ? 'all 0.3s ease' : 'none',
+        transition: (isMinimized || savedPosition) && !isResizing && !isDragging ? 'all 0.3s ease' : 'none',
       }}
       onFocus={() => IS_TV_BUILD && setIsFocused(true)}
       onBlur={() => IS_TV_BUILD && setIsFocused(false)}

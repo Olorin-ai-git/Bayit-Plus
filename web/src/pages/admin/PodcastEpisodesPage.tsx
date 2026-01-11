@@ -3,7 +3,7 @@ import { View, Text, StyleSheet, Pressable, ScrollView, TextInput } from 'react-
 import { useParams, useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { Plus, Edit, Trash2, X, AlertCircle, ChevronLeft } from 'lucide-react'
-import DataTable from '@/components/admin/DataTable'
+import { GlassTable, GlassTableCell } from '@bayit/shared/ui'
 import { contentService } from '@/services/adminApi'
 import { colors, spacing, borderRadius } from '@bayit/shared/theme'
 import { useDirection } from '@/hooks/useDirection'
@@ -283,13 +283,14 @@ export default function PodcastEpisodesPage() {
         </View>
       )}
 
-      <DataTable
-        columns={isRTL ? [...columns].reverse() : columns}
+      <GlassTable
+        columns={columns}
         data={items}
         loading={isLoading}
         pagination={pagination}
         onPageChange={(page) => setPagination((prev) => ({ ...prev, page }))}
         emptyMessage={t('admin.podcasts.noEpisodes', { defaultValue: 'No episodes found' })}
+        isRTL={isRTL}
       />
     </ScrollView>
   )

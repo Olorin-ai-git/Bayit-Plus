@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { View, Text, StyleSheet, Pressable, ScrollView } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { Download, Filter } from 'lucide-react';
-import DataTable from '@/components/admin/DataTable';
+import { GlassTable, GlassTableCell } from '@bayit/shared/ui';
 import { auditLogsService } from '@/services/adminApi';
 import { colors, spacing, borderRadius } from '@bayit/shared/theme';
 import { GlassButton, GlassModal, GlassSelect } from '@bayit/shared/ui';
@@ -164,7 +164,7 @@ export default function AuditLogsPage() {
         ))}
       </View>
 
-      <DataTable columns={isRTL ? [...columns].reverse() : columns} data={logs} loading={loading} pagination={pagination} onPageChange={handlePageChange} emptyMessage={t('admin.auditLogs.noRecords')} searchable={false} />
+      <GlassTable columns={columns} data={logs} loading={loading} pagination={pagination} onPageChange={handlePageChange} emptyMessage={t('admin.auditLogs.noRecords')} searchable={false} isRTL={isRTL} />
 
       <GlassModal visible={showFilterModal} onClose={() => setShowFilterModal(false)} title={t('admin.auditLogs.advancedFiltering')}>
         <View style={styles.modalContent}>

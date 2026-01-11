@@ -2,8 +2,8 @@ import { useState, useEffect, useCallback } from 'react'
 import { View, Text, StyleSheet, Pressable, ScrollView } from 'react-native'
 import { Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
-import { Plus, Download, Search, Trash2, Eye, X, AlertCircle } from 'lucide-react'
-import DataTable from '@/components/admin/DataTable'
+import { Plus, Download, Search, X, AlertCircle } from 'lucide-react'
+import HierarchicalContentTable from '@/components/admin/HierarchicalContentTable'
 import { contentService } from '@/services/adminApi'
 import { colors, spacing, borderRadius } from '@bayit/shared/theme'
 import { GlassButton, GlassInput, GlassSelect } from '@bayit/shared/ui'
@@ -11,7 +11,21 @@ import { useDirection } from '@/hooks/useDirection'
 import { useModal } from '@/contexts/ModalContext'
 import logger from '@/utils/logger'
 import { FreeContentImportWizard } from '@/components/admin/FreeContentImportWizard'
-import type { Content, PaginatedResponse } from '@/types/content'
+
+interface ContentItem {
+  id: string
+  title: string
+  description?: string
+  thumbnail?: string
+  category_name?: string
+  year?: number
+  is_series: boolean
+  is_published: boolean
+  is_featured: boolean
+  episode_count?: number
+  view_count?: number
+  avg_rating?: number
+}
 
 interface Pagination {
   page: number
@@ -19,22 +33,16 @@ interface Pagination {
   total: number
 }
 
-const statusColors: Record<string, { bg: string; text: string; labelKey: string }> = {
-  published: { bg: 'rgba(34, 197, 94, 0.2)', text: '#22C55E', labelKey: 'admin.content.status.published' },
-  draft: { bg: 'rgba(107, 114, 128, 0.2)', text: '#6B7280', labelKey: 'admin.content.status.draft' },
-}
-
 export default function ContentLibraryPage() {
   const { t } = useTranslation()
   const { isRTL, textAlign, flexDirection } = useDirection()
   const { showConfirm } = useModal()
-  const [items, setItems] = useState<Content[]>([])
+  const [items, setItems] = useState<ContentItem[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [pagination, setPagination] = useState<Pagination>({ page: 1, pageSize: 20, total: 0 })
   const [searchQuery, setSearchQuery] = useState('')
   const [showImportWizard, setShowImportWizard] = useState(false)
-  const [deleting, setDeleting] = useState<string | null>(null)
   const [filters, setFilters] = useState({
     search: '',
     is_published: undefined as boolean | undefined,
@@ -44,7 +52,8 @@ export default function ContentLibraryPage() {
     setIsLoading(true)
     setError(null)
     try {
-      const response: PaginatedResponse<Content> = await contentService.getContent({
+      // Use hierarchical endpoint - returns only parent items (series/movies) with episode counts
+      const response = await contentService.getContentHierarchical({
         page: pagination.page,
         page_size: pagination.pageSize,
         search: filters.search || undefined,
@@ -76,15 +85,13 @@ export default function ContentLibraryPage() {
       t('admin.content.confirmDelete'),
       async () => {
         try {
-          setDeleting(id)
           await contentService.deleteContent(id)
-          setItems(items.filter((item) => item.id !== id))
+          // Reload content to reflect the deletion
+          await loadContent()
         } catch (err) {
           const msg = err instanceof Error ? err.message : 'Failed to delete content'
           logger.error(msg, 'ContentLibraryPage', err)
           setError(msg)
-        } finally {
-          setDeleting(null)
         }
       },
       { destructive: true, confirmText: t('common.delete', 'Delete') }
@@ -102,112 +109,16 @@ export default function ContentLibraryPage() {
     }
   }
 
-  const getStatusBadge = (isPublished: boolean) => {
-    const status = isPublished ? 'published' : 'draft'
-    const style = statusColors[status]
-    return (
-      <View style={[styles.badge, { backgroundColor: style.bg }]}>
-        <Text style={[styles.badgeText, { color: style.text }]}>
-          {t(style.labelKey, { defaultValue: status })}
-        </Text>
-      </View>
-    )
+  const handleToggleFeatured = async (id: string) => {
+    try {
+      await contentService.featureContent(id)
+      await loadContent()
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : 'Failed to update content'
+      logger.error(msg, 'ContentLibraryPage', err)
+      setError(msg)
+    }
   }
-
-  const columns = [
-    {
-      key: 'title',
-      label: t('admin.content.columns.title', { defaultValue: 'Title' }),
-      render: (title: string, item: Content) => (
-        <View>
-          <View style={[styles.titleRow, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
-            {item.thumbnail && (
-              <View
-                style={[
-                  styles.thumbnail,
-                  { backgroundImage: `url(${item.thumbnail})` },
-                ]}
-              />
-            )}
-            <View>
-              <Text style={[styles.itemTitle, { textAlign: isRTL ? 'right' : 'left' }]}>{title}</Text>
-              {item.is_series && (
-                <Text style={[styles.seriesInfo, { textAlign: isRTL ? 'right' : 'left' }]}>
-                  S{item.season}:E{item.episode}
-                </Text>
-              )}
-            </View>
-          </View>
-        </View>
-      ),
-    },
-    {
-      key: 'category_name',
-      label: t('admin.content.columns.category', { defaultValue: 'Category' }),
-      render: (category: string | undefined) => (
-        <Text style={styles.cellText}>{category || '-'}</Text>
-      ),
-    },
-    {
-      key: 'year',
-      label: t('admin.content.columns.year', { defaultValue: 'Year' }),
-      render: (year: number | undefined) => (
-        <Text style={styles.cellText}>{year || '-'}</Text>
-      ),
-    },
-    {
-      key: 'is_published',
-      label: t('admin.content.columns.status', { defaultValue: 'Status' }),
-      render: (isPublished: boolean) => getStatusBadge(isPublished),
-    },
-    {
-      key: 'view_count',
-      label: t('admin.content.columns.views', { defaultValue: 'Views' }),
-      render: (views: number | undefined) => (
-        <Text style={styles.cellText}>{views || 0}</Text>
-      ),
-    },
-    {
-      key: 'avg_rating',
-      label: t('admin.content.columns.rating', { defaultValue: 'Rating' }),
-      render: (rating: number | undefined) => (
-        <Text style={styles.cellText}>{rating ? rating.toFixed(1) : '-'}</Text>
-      ),
-    },
-    {
-      key: 'actions',
-      label: '',
-      width: 150,
-      render: (_: any, item: Content) => (
-        <View style={[styles.actionsCell, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
-          <Pressable
-            onPress={() => handleTogglePublish(item.id)}
-            style={[
-              styles.actionButton,
-              { backgroundColor: item.is_published ? '#10b98180' : '#6b728080' },
-            ]}
-          >
-            <Eye size={14} color={item.is_published ? '#10b981' : '#6b7280'} />
-          </Pressable>
-          <Link to={`/admin/content/${item.id}/edit`} style={{ textDecoration: 'none' }}>
-            <Pressable style={[styles.actionButton, { backgroundColor: '#3b82f680' }]}>
-              <Text style={styles.editText}>{t('common.edit', { defaultValue: 'Edit' })}</Text>
-            </Pressable>
-          </Link>
-          <Pressable
-            onPress={() => handleDeleteContent(item.id)}
-            disabled={deleting === item.id}
-            style={[
-              styles.actionButton,
-              { backgroundColor: '#ef444480', opacity: deleting === item.id ? 0.5 : 1 },
-            ]}
-          >
-            <Trash2 size={14} color="#ef4444" />
-          </Pressable>
-        </View>
-      ),
-    },
-  ]
 
   return (
     <ScrollView style={styles.container} contentContainerStyle={styles.contentContainer}>
@@ -277,12 +188,13 @@ export default function ContentLibraryPage() {
         </View>
       )}
 
-      {/* Table */}
-      <DataTable
-        columns={isRTL ? [...columns].reverse() : columns}
-        data={items}
+      {/* Hierarchical Content Table */}
+      <HierarchicalContentTable
+        items={items}
         loading={isLoading}
-        searchable={false}
+        onTogglePublish={handleTogglePublish}
+        onToggleFeatured={handleToggleFeatured}
+        onDelete={handleDeleteContent}
         pagination={pagination}
         onPageChange={(page) => setPagination((prev) => ({ ...prev, page }))}
         emptyMessage={t('admin.content.emptyMessage', { defaultValue: 'No content found' })}
@@ -358,59 +270,5 @@ const styles = StyleSheet.create({
     flex: 1,
     color: '#ef4444',
     fontSize: 14,
-  },
-  titleRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing.md,
-  },
-  thumbnail: {
-    width: 40,
-    height: 60,
-    borderRadius: borderRadius.sm,
-    borderWidth: 1,
-    borderColor: colors.border,
-    backgroundSize: 'cover',
-    backgroundPosition: 'center',
-  },
-  itemTitle: {
-    fontSize: 14,
-    fontWeight: '500',
-    color: colors.text,
-  },
-  seriesInfo: {
-    fontSize: 12,
-    color: colors.textMuted,
-    marginTop: spacing.xs,
-  },
-  cellText: {
-    fontSize: 14,
-    color: colors.text,
-  },
-  badge: {
-    paddingHorizontal: spacing.sm,
-    paddingVertical: spacing.xs,
-    borderRadius: borderRadius.full,
-    alignSelf: 'flex-start',
-  },
-  badgeText: {
-    fontSize: 12,
-    fontWeight: '500',
-  },
-  actionsCell: {
-    flexDirection: 'row',
-    gap: spacing.sm,
-    alignItems: 'center',
-  },
-  actionButton: {
-    padding: spacing.sm,
-    borderRadius: borderRadius.md,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  editText: {
-    color: '#3b82f6',
-    fontSize: 12,
-    fontWeight: '500',
   },
 })

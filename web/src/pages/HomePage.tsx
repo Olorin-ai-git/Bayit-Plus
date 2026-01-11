@@ -35,6 +35,7 @@ interface CarouselItem {
   description?: string;
   image?: string;
   badge?: string;
+  is_series?: boolean;
 }
 
 interface Channel {
@@ -115,9 +116,7 @@ export default function HomePage() {
       const featuredItems = featuredData.items || (featuredData.hero ? [featuredData.hero] : []);
       setFeatured(featuredItems);
 
-      // Build carousel items from spotlight data (episodes for rotation)
-      // Note: We use spotlight items (episodes) instead of hero for carousel rotation,
-      // because series items don't have stream URLs and can't be played directly
+      // Build carousel items from spotlight data (series items for rotation)
       const spotlightItems = featuredData.spotlight || [];
       setCarouselItems(spotlightItems.map((item: any, index: number) => ({
         id: item.id,
@@ -126,6 +125,7 @@ export default function HomePage() {
         description: getLocalizedDescription(item, i18n.language),
         image: item.backdrop || item.thumbnail,
         badge: index === 0 ? t('common.new') : undefined,
+        is_series: item.is_series,
       })));
 
       setCategories(categoriesData.categories || []);
@@ -202,8 +202,12 @@ export default function HomePage() {
   }
 
   // Handle carousel item press
-  const handleCarouselPress = (item: CarouselItem) => {
-    navigate(`/vod/${item.id}`);
+  const handleCarouselPress = (item: CarouselItem & { is_series?: boolean }) => {
+    if (item.is_series) {
+      navigate(`/vod/series/${item.id}`);
+    } else {
+      navigate(`/vod/${item.id}`);
+    }
   };
 
   return (
@@ -312,7 +316,7 @@ function LiveCard({ channel, focusedItem, setFocusedItem, isRTL }: { channel: Ch
     >
       <View style={styles.liveCardThumb}>
         {channel.thumbnail ? (
-          <Image source={{ uri: channel.thumbnail }} style={styles.liveCardImage} resizeMode="cover" />
+          <Image source={{ uri: channel.thumbnail }} style={styles.liveCardImage} resizeMode="contain" />
         ) : (
           <View style={styles.liveCardPlaceholder} />
         )}
@@ -634,6 +638,7 @@ const styles = StyleSheet.create({
   liveCardImage: {
     width: '100%',
     height: '100%',
+    backgroundColor: colors.cardBackground,
   },
   liveCardPlaceholder: {
     flex: 1,

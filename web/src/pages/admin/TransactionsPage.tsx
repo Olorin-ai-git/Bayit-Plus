@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { View, Text, StyleSheet, Pressable, ScrollView } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { Download, Eye, FileText } from 'lucide-react';
-import DataTable from '@/components/admin/DataTable';
+import { GlassTable, GlassTableCell } from '@bayit/shared/ui';
 import { billingService } from '@/services/adminApi';
 import { colors, spacing, borderRadius } from '@bayit/shared/theme';
 import { GlassButton, GlassModal } from '@bayit/shared/ui';
@@ -202,8 +202,8 @@ export default function TransactionsPage() {
 
       {filterButtons}
 
-      <DataTable
-        columns={isRTL ? [...columns].reverse() : columns}
+      <GlassTable
+        columns={columns}
         data={transactions}
         loading={loading}
         searchPlaceholder={t('admin.transactions.searchPlaceholder')}
@@ -211,6 +211,7 @@ export default function TransactionsPage() {
         pagination={pagination}
         onPageChange={handlePageChange}
         emptyMessage={t('admin.transactions.emptyMessage')}
+        isRTL={isRTL}
       />
 
       <GlassModal

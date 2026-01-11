@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { View, Text, StyleSheet, Pressable, ScrollView, TextInput } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { Plus, Send, Clock, Edit2, Trash2, TestTube } from 'lucide-react';
-import DataTable from '@/components/admin/DataTable';
+import { GlassTable, GlassTableCell } from '@bayit/shared/ui';
 import { marketingService } from '@/services/adminApi';
 import { colors, spacing, borderRadius } from '@bayit/shared/theme';
 import { GlassButton, GlassModal, GlassInput, GlassTextarea } from '@bayit/shared/ui';
@@ -264,8 +264,8 @@ export default function EmailCampaignsPage() {
         ))}
       </View>
 
-      <DataTable
-        columns={isRTL ? [...columns].reverse() : columns}
+      <GlassTable
+        columns={columns}
         data={campaigns}
         loading={loading}
         searchPlaceholder={t('admin.emailCampaigns.searchPlaceholder')}
@@ -273,6 +273,7 @@ export default function EmailCampaignsPage() {
         pagination={pagination}
         onPageChange={handlePageChange}
         emptyMessage={t('admin.emailCampaigns.emptyMessage')}
+        isRTL={isRTL}
       />
 
       <GlassModal visible={showCreateModal} onClose={handleCloseCreateModal} title={editingCampaign ? t('admin.emailCampaigns.editModal.title', 'Edit Campaign') : t('admin.emailCampaigns.createModal.title')}>

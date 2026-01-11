@@ -2,10 +2,9 @@ import { useState, useEffect, useCallback } from 'react'
 import { View, Text, StyleSheet, Pressable, ScrollView, TextInput } from 'react-native'
 import { useTranslation } from 'react-i18next'
 import { Plus, Edit, Trash2, X, AlertCircle } from 'lucide-react'
-import DataTable from '@/components/admin/DataTable'
 import { contentService } from '@/services/adminApi'
 import { colors, spacing, borderRadius } from '@bayit/shared/theme'
-import { GlassButton } from '@bayit/shared/ui'
+import { GlassTable, GlassTableCell, GlassTableColumn } from '@bayit/shared/ui'
 import { useDirection } from '@/hooks/useDirection'
 import { useModal } from '@/contexts/ModalContext'
 import logger from '@/utils/logger'
@@ -98,58 +97,67 @@ export default function CategoriesPage() {
     )
   }
 
-  const columns = [
+  const columns: GlassTableColumn<Category>[] = [
     {
       key: 'name',
       label: t('admin.content.columns.name', { defaultValue: 'Name' }),
+      align: isRTL ? 'right' : 'left',
       render: (name: string, item: Category) => (
-        <View>
-          <Text style={styles.itemName}>{name}</Text>
-          {item.name_en && <Text style={styles.itemSubtext}>{item.name_en}</Text>}
-        </View>
+        <GlassTableCell.TwoLine
+          primary={name}
+          secondary={item.name_en}
+          align={isRTL ? 'right' : 'left'}
+        />
       ),
     },
     {
       key: 'slug',
       label: t('admin.content.columns.slug', { defaultValue: 'Slug' }),
-      render: (slug: string) => <Text style={styles.cellText}>{slug}</Text>,
+      width: 150,
+      align: isRTL ? 'right' : 'left',
+      render: (slug: string) => (
+        <Text style={[styles.cellText, { textAlign: isRTL ? 'right' : 'left' }]}>{slug}</Text>
+      ),
     },
     {
       key: 'order',
       label: t('admin.content.columns.order', { defaultValue: 'Order' }),
-      render: (order: number) => <Text style={styles.cellText}>{order}</Text>,
+      width: 80,
+      align: isRTL ? 'right' : 'left',
+      render: (order: number) => (
+        <Text style={[styles.cellText, { textAlign: isRTL ? 'right' : 'left' }]}>{order}</Text>
+      ),
     },
     {
       key: 'is_active',
       label: t('admin.content.columns.status', { defaultValue: 'Status' }),
+      width: 100,
+      align: isRTL ? 'right' : 'left',
       render: (isActive: boolean) => (
-        <View style={[styles.badge, { backgroundColor: isActive ? '#10b98120' : '#6b728020' }]}>
-          <Text style={[styles.badgeText, { color: isActive ? '#10b981' : '#6b7280' }]}>
-            {isActive ? 'Active' : 'Inactive'}
-          </Text>
-        </View>
+        <GlassTableCell.Badge variant={isActive ? 'success' : 'default'}>
+          {isActive ? t('admin.categories.status.active', { defaultValue: 'Active' }) : t('admin.categories.status.inactive', { defaultValue: 'Inactive' })}
+        </GlassTableCell.Badge>
       ),
     },
     {
       key: 'actions',
       label: '',
-      width: 100,
+      width: 90,
+      align: 'center',
       render: (_: any, item: Category) => (
-        <View style={[styles.actionsCell, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
-          <Pressable
+        <GlassTableCell.Actions isRTL={isRTL}>
+          <GlassTableCell.ActionButton
             onPress={() => handleEdit(item)}
-            style={[styles.actionButton, { backgroundColor: '#3b82f680' }]}
-          >
-            <Edit size={14} color="#3b82f6" />
-          </Pressable>
-          <Pressable
+            icon={<Edit size={16} color="#3b82f6" />}
+            variant="primary"
+          />
+          <GlassTableCell.ActionButton
             onPress={() => handleDelete(item.id)}
+            icon={<Trash2 size={16} color="#ef4444" />}
+            variant="danger"
             disabled={deleting === item.id}
-            style={[styles.actionButton, { backgroundColor: '#ef444480', opacity: deleting === item.id ? 0.5 : 1 }]}
-          >
-            <Trash2 size={14} color="#ef4444" />
-          </Pressable>
-        </View>
+          />
+        </GlassTableCell.Actions>
       ),
     },
   ]
@@ -222,13 +230,14 @@ export default function CategoriesPage() {
         </View>
       )}
 
-      <DataTable
-        columns={isRTL ? [...columns].reverse() : columns}
+      <GlassTable
+        columns={columns}
         data={items}
         loading={isLoading}
         pagination={pagination}
         onPageChange={(page) => setPagination((prev) => ({ ...prev, page }))}
-        emptyMessage={t('admin.content.emptyMessage', { defaultValue: 'No categories found' })}
+        emptyMessage={t('admin.categories.emptyMessage', { defaultValue: 'No categories found' })}
+        isRTL={isRTL}
       />
     </ScrollView>
   )
@@ -244,6 +253,7 @@ const styles = StyleSheet.create({
   addButtonText: { color: colors.text, fontWeight: '500', fontSize: 14 },
   errorContainer: { flexDirection: 'row', alignItems: 'center', gap: spacing.md, padding: spacing.md, backgroundColor: '#ef444420', borderColor: '#ef444440', borderWidth: 1, borderRadius: borderRadius.md },
   errorText: { flex: 1, color: '#ef4444', fontSize: 14 },
+  cellText: { fontSize: 14, color: colors.text },
   editForm: { backgroundColor: colors.backgroundLighter, padding: spacing.lg, borderRadius: borderRadius.lg, marginBottom: spacing.lg },
   formTitle: { fontSize: 16, fontWeight: '600', color: colors.text, marginBottom: spacing.md },
   input: { paddingHorizontal: spacing.md, paddingVertical: spacing.md, borderRadius: borderRadius.md, borderWidth: 1, borderColor: colors.border, backgroundColor: colors.background, color: colors.text, fontSize: 14, marginBottom: spacing.md },
@@ -252,11 +262,4 @@ const styles = StyleSheet.create({
   cancelBtnText: { color: colors.text, fontWeight: '600' },
   saveBtn: { flex: 1, paddingVertical: spacing.md, borderRadius: borderRadius.md, backgroundColor: colors.primary, justifyContent: 'center', alignItems: 'center' },
   saveBtnText: { color: colors.text, fontWeight: '600' },
-  itemName: { fontSize: 14, fontWeight: '500', color: colors.text },
-  itemSubtext: { fontSize: 12, color: colors.textMuted, marginTop: spacing.xs },
-  cellText: { fontSize: 14, color: colors.text },
-  badge: { paddingHorizontal: spacing.sm, paddingVertical: spacing.xs, borderRadius: borderRadius.full, alignSelf: 'flex-start' },
-  badgeText: { fontSize: 12, fontWeight: '500' },
-  actionsCell: { flexDirection: 'row', gap: spacing.sm, alignItems: 'center' },
-  actionButton: { padding: spacing.sm, borderRadius: borderRadius.md, justifyContent: 'center', alignItems: 'center' },
 })

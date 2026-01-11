@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback } from 'react'
 import { View, Text, StyleSheet, Pressable, ScrollView, TextInput } from 'react-native'
 import { useTranslation } from 'react-i18next'
 import { Plus, Edit, Trash2, X, AlertCircle } from 'lucide-react'
-import DataTable from '@/components/admin/DataTable'
+import { GlassTable, GlassTableCell } from '@bayit/shared/ui'
 import { contentService } from '@/services/adminApi'
 import { colors, spacing, borderRadius } from '@bayit/shared/theme'
 import { GlassButton } from '@bayit/shared/ui'
@@ -262,13 +262,14 @@ export default function RadioStationsPage() {
         </View>
       )}
 
-      <DataTable
-        columns={isRTL ? [...columns].reverse() : columns}
+      <GlassTable
+        columns={columns}
         data={items}
         loading={isLoading}
         pagination={pagination}
         onPageChange={(page) => setPagination((prev) => ({ ...prev, page }))}
         emptyMessage={t('admin.radioStations.emptyMessage', { defaultValue: 'No radio stations found' })}
+        isRTL={isRTL}
       />
     </ScrollView>
   )

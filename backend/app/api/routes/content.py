@@ -20,7 +20,7 @@ async def get_featured(current_user: Optional[User] = Depends(get_optional_user)
         Content.is_published == True,
     )
 
-    # Get spotlight items (episodes from all featured series for carousel rotation)
+    # Get spotlight items - one entry per featured series (not episodes)
     spotlight_items = []
 
     # Get all featured series
@@ -30,25 +30,27 @@ async def get_featured(current_user: Optional[User] = Depends(get_optional_user)
         Content.is_series == True,
     ).to_list()
 
-    # Collect episodes from all featured series
+    # Add each series as a single spotlight item
     for series in featured_series:
-        episodes = await Content.find(
+        # Get first episode for playback reference
+        first_episode = await Content.find_one(
             Content.series_id == str(series.id),
             Content.is_published == True,
-        ).sort("-episode").limit(10).to_list()
+        )
 
-        for ep in episodes:
-            spotlight_items.append({
-                "id": str(ep.id),
-                "title": ep.title,
-                "description": ep.description,
-                "backdrop": ep.backdrop or ep.thumbnail,
-                "thumbnail": ep.thumbnail,
-                "category": ep.category_name,
-                "year": ep.year,
-                "duration": ep.duration,
-                "rating": ep.rating,
-            })
+        spotlight_items.append({
+            "id": str(series.id),
+            "title": series.title,
+            "description": series.description,
+            "backdrop": series.backdrop or series.thumbnail,
+            "thumbnail": series.thumbnail,
+            "category": series.category_name,
+            "year": series.year,
+            "duration": series.duration,
+            "rating": series.rating,
+            "is_series": True,
+            "first_episode_id": str(first_episode.id) if first_episode else None,
+        })
 
     # Get categories with their content
     categories = await Category.find(Category.is_active == True).sort("order").to_list()

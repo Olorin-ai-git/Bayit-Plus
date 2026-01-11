@@ -223,7 +223,7 @@ async def seed_database():
         {
             "name": "כאן 11",
             "description": "תאגיד השידור הישראלי - חדשות, תרבות ובידור",
-            "thumbnail": "https://images.unsplash.com/photo-1560169897-fc0cdbdfa4d5?w=400",
+            "thumbnail": "https://www.kan.org.il/media/lpadeq2p/%D7%9C%D7%95%D7%92%D7%95-%D7%9B%D7%90%D7%9F-%D7%A2%D7%9D-%D7%A1%D7%A8%D7%98-%D7%A6%D7%94%D7%95%D7%91.svg?rmode=pad&rnd=133624915040200000",
             "logo": "https://upload.wikimedia.org/wikipedia/he/thumb/1/14/Kan_11_Logo.svg/200px-Kan_11_Logo.svg.png",
             "stream_url": "https://kan11.media.kan.org.il/hls/live/2024514/2024514/master.m3u8",
             "current_show": "מבט לחדשות",
@@ -233,7 +233,7 @@ async def seed_database():
         {
             "name": "קשת 12",
             "description": "הערוץ המרכזי של קשת - בידור, דרמה וריאליטי",
-            "thumbnail": "https://images.unsplash.com/photo-1593784991095-a205069470b6?w=400",
+            "thumbnail": "https://rcs.mako.co.il/images/headerV17/keshetLogoCut_150X72.jpg",
             "logo": "https://upload.wikimedia.org/wikipedia/he/thumb/6/67/Keshet_12_logo.svg/200px-Keshet_12_logo.svg.png",
             "stream_url": "https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8",
             "current_show": "חדשות 12",
@@ -243,7 +243,7 @@ async def seed_database():
         {
             "name": "רשת 13",
             "description": "חדשות, ספורט ובידור",
-            "thumbnail": "https://images.unsplash.com/photo-1522869635100-9f4c5e86aa37?w=400",
+            "thumbnail": "https://media.reshet.tv/image/upload/q_auto,f_auto,c_lpad,h_45,w_45/v1746345448/13_q8gehw.webp",
             "logo": "https://upload.wikimedia.org/wikipedia/he/thumb/4/45/Reshet_13_Logo.svg/200px-Reshet_13_Logo.svg.png",
             "stream_url": "https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8",
             "current_show": "חדשות 13",
@@ -253,7 +253,7 @@ async def seed_database():
         {
             "name": "ערוץ 14",
             "description": "חדשות ואקטואליה",
-            "thumbnail": "https://images.unsplash.com/photo-1495020689067-958852a7765e?w=400",
+            "thumbnail": "https://www.c14.co.il/_next/static/media/logo-c14.589a43b1.svg",
             "logo": "https://upload.wikimedia.org/wikipedia/he/thumb/4/4e/Channel_14_logo.svg/200px-Channel_14_logo.svg.png",
             "stream_url": "https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8",
             "current_show": "אולפן 14",
@@ -262,7 +262,7 @@ async def seed_database():
         {
             "name": "i24NEWS Hebrew",
             "description": "חדשות בינלאומיות בעברית",
-            "thumbnail": "https://images.unsplash.com/photo-1504711434969-e33886168f5c?w=400",
+            "thumbnail": "https://cdn.one.accedo.tv/files/5a9413bf1de1c4000cc9fe08?sessionKey=01FFY88HAKAVC2J4X2QKT0PR6A18FD65D8F9#asset",
             "logo": "https://upload.wikimedia.org/wikipedia/commons/thumb/4/4b/I24NEWS_logo.svg/200px-I24NEWS_logo.svg.png",
             "stream_url": "https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8",
             "current_show": "עדכון חדשות",
@@ -271,7 +271,7 @@ async def seed_database():
         {
             "name": "כאן חינוכית",
             "description": "תכנים לילדים ונוער",
-            "thumbnail": "https://images.unsplash.com/photo-1503676260728-1c00da094a0b?w=400",
+            "thumbnail": "https://www.kankids.org.il/media/0ymcnuw4/logo_hinuchit_main.svg",
             "stream_url": "https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8",
             "current_show": "שעת סיפור",
             "order": 6,

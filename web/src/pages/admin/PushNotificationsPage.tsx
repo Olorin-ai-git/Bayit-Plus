@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { View, Text, StyleSheet, Pressable, ScrollView, TextInput } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { Plus, Send, Clock, Trash2, Edit } from 'lucide-react';
-import DataTable from '@/components/admin/DataTable';
+import { GlassTable, GlassTableCell } from '@bayit/shared/ui';
 import { marketingService } from '@/services/adminApi';
 import { colors, spacing, borderRadius } from '@bayit/shared/theme';
 import { GlassButton, GlassModal } from '@bayit/shared/ui';
@@ -200,7 +200,7 @@ export default function PushNotificationsPage() {
       label: t('admin.pushNotifications.columns.actions', 'Actions'),
       width: 150,
       render: (_: any, notification: PushNotification) => (
-        <View style={styles.actionsRow}>
+        <View style={[styles.actionsRow, { direction: 'ltr' }]}>
           {notification.status === 'draft' && (
             <>
               <Pressable style={styles.actionButton} onPress={() => handleEdit(notification)} title={t('common.edit', 'Edit')}>
@@ -242,7 +242,7 @@ export default function PushNotificationsPage() {
         ))}
       </View>
 
-      <DataTable columns={isRTL ? [...columns].reverse() : columns} data={notifications} loading={loading} searchPlaceholder={t('admin.pushNotifications.searchPlaceholder')} onSearch={handleSearch} pagination={pagination} onPageChange={handlePageChange} emptyMessage={t('admin.pushNotifications.emptyMessage')} />
+      <GlassTable columns={columns} data={notifications} loading={loading} searchPlaceholder={t('admin.pushNotifications.searchPlaceholder')} onSearch={handleSearch} pagination={pagination} onPageChange={handlePageChange} emptyMessage={t('admin.pushNotifications.emptyMessage')} isRTL={isRTL} />
 
       <GlassModal visible={showCreateModal} onClose={handleCloseModal} title={editingNotification ? t('admin.pushNotifications.editModal', 'Edit Notification') : t('admin.pushNotifications.createModal')}>
         <View style={styles.modalContent}>

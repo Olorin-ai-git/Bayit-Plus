@@ -9,7 +9,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { View, Text, StyleSheet, Pressable, ScrollView } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { Plus, Edit, Trash2, X, AlertCircle, Eye, EyeOff, Tv, Globe, Film, Podcast, Radio } from 'lucide-react';
-import DataTable from '@/components/admin/DataTable';
+import { GlassTable, GlassTableCell } from '@bayit/shared/ui';
 import WidgetFormModal from '@/components/widgets/WidgetFormModal';
 import { widgetsService } from '@/services/adminApi';
 import { colors, spacing, borderRadius } from '@bayit/shared/theme';
@@ -268,13 +268,14 @@ export default function WidgetsPage() {
           isAdminWidget={true}
         />
 
-        <DataTable
-          columns={isRTL ? [...columns].reverse() : columns}
+        <GlassTable
+          columns={columns}
           data={items}
           loading={isLoading}
           pagination={pagination}
           onPageChange={(page) => setPagination((prev) => ({ ...prev, page }))}
           emptyMessage={t('admin.widgets.emptyMessage')}
+          isRTL={isRTL}
         />
       </ScrollView>
     </View>

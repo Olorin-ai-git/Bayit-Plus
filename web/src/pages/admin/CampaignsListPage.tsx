@@ -3,7 +3,7 @@ import { View, Text, StyleSheet, Pressable, ScrollView, Modal } from 'react-nati
 import { Link, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { Plus, Edit, Power, Trash2, Copy, X } from 'lucide-react';
-import DataTable from '@/components/admin/DataTable';
+import { GlassTable, GlassTableCell } from '@bayit/shared/ui';
 import { campaignsService } from '@/services/adminApi';
 import { colors, spacing, borderRadius } from '@bayit/shared/theme';
 import { GlassButton, GlassView } from '@bayit/shared/ui';
@@ -210,14 +210,15 @@ export default function CampaignsListPage() {
       </View>
 
       {/* Table */}
-      <DataTable
-        columns={isRTL ? [...columns].reverse() : columns}
+      <GlassTable
+        columns={columns}
         data={campaigns}
         loading={loading}
         searchPlaceholder={t('admin.campaigns.searchPlaceholder', 'Search campaigns...')}
         pagination={pagination}
         onPageChange={(page) => setPagination((prev) => ({ ...prev, page }))}
         emptyMessage={t('admin.campaigns.emptyMessage', 'No campaigns found')}
+        isRTL={isRTL}
       />
 
       {/* Delete Confirmation Modal */}

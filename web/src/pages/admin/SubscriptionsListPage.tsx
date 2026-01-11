@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { View, Text, StyleSheet, Pressable, ScrollView } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { MoreVertical, Pause, Play, XCircle, PlusCircle } from 'lucide-react';
-import DataTable from '@/components/admin/DataTable';
+import { GlassTable, GlassTableCell } from '@bayit/shared/ui';
 import StatCard from '@/components/admin/StatCard';
 import { subscriptionsService } from '@/services/adminApi';
 import { colors, spacing, borderRadius } from '@bayit/shared/theme';
@@ -174,14 +174,15 @@ export default function SubscriptionsListPage() {
       </View>
 
       {/* Table */}
-      <DataTable
-        columns={isRTL ? [...columns].reverse() : columns}
+      <GlassTable
+        columns={columns}
         data={subscriptions}
         loading={loading}
         searchPlaceholder={t('admin.subscriptions.searchPlaceholder')}
         pagination={pagination}
         onPageChange={(page) => setPagination((prev) => ({ ...prev, page }))}
         emptyMessage={t('admin.subscriptions.emptyMessage')}
+        isRTL={isRTL}
       />
     </ScrollView>
   );

@@ -1,12 +1,11 @@
-import { useState, useEffect, useCallback, ReactNode } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { View, Text, StyleSheet, Pressable, ScrollView, Modal, TextInput } from 'react-native';
 import { Link, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { UserPlus, Edit, Ban, Key, Trash2, X, CheckCircle } from 'lucide-react';
-import DataTable from '@/components/admin/DataTable';
+import { UserPlus, Edit, Ban, Key, Trash2, X } from 'lucide-react';
 import { usersService } from '@/services/adminApi';
 import { colors, spacing, borderRadius } from '@bayit/shared/theme';
-import { GlassCard, GlassButton, GlassView } from '@bayit/shared/ui';
+import { GlassButton, GlassView, GlassTable, GlassTableCell, GlassTableColumn } from '@bayit/shared/ui';
 import { useDirection } from '@/hooks/useDirection';
 import logger from '@/utils/logger';
 
@@ -150,85 +149,87 @@ export default function UsersListPage() {
     );
   };
 
-  const columns = [
+  const columns: GlassTableColumn<User>[] = [
     {
       key: 'name',
       label: t('admin.users.columns.name'),
       render: (_: any, user: User) => (
-        <View style={styles.userCell}>
+        <View style={[styles.userCell, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
           <View style={styles.avatar}>
             <Text style={styles.avatarText}>{user.name?.charAt(0) || '?'}</Text>
           </View>
-          <View>
-            <Text style={styles.userName}>{user.name}</Text>
-            <Text style={styles.userEmail}>{user.email}</Text>
-          </View>
+          <GlassTableCell.TwoLine
+            primary={user.name}
+            secondary={user.email}
+            align={isRTL ? 'right' : 'left'}
+          />
         </View>
       ),
     },
     {
       key: 'role',
       label: t('admin.users.columns.role'),
-      render: (role: string) => (
-        <Text style={styles.cellText}>{role || 'user'}</Text>
-      ),
+      width: 100,
     },
     {
       key: 'subscription',
       label: t('admin.users.columns.subscription'),
+      width: 120,
       render: (sub: User['subscription']) => (
-        <Text style={styles.cellText}>{sub?.plan || t('admin.users.columns.noSubscription')}</Text>
+        <GlassTableCell.Text muted={!sub?.plan}>
+          {sub?.plan || t('admin.users.columns.noSubscription')}
+        </GlassTableCell.Text>
       ),
     },
     {
       key: 'status',
       label: t('admin.users.columns.status'),
-      render: (status: string) => getStatusBadge(status),
+      width: 100,
+      render: (status: string) => {
+        const variant = status === 'active' ? 'success' : status === 'banned' ? 'error' : 'default';
+        const style = statusColors[status] || statusColors.inactive;
+        return (
+          <GlassTableCell.Badge variant={variant}>
+            {t(style.labelKey)}
+          </GlassTableCell.Badge>
+        );
+      },
     },
     {
       key: 'created_at',
       label: t('admin.users.columns.created'),
+      width: 100,
       render: (date: string) => (
-        <Text style={styles.dateText}>
+        <GlassTableCell.Text muted>
           {new Date(date).toLocaleDateString('he-IL')}
-        </Text>
+        </GlassTableCell.Text>
       ),
     },
     {
       key: 'actions',
-      label: t('admin.users.columns.actions', 'Actions'),
-      width: 160,
+      label: '',
+      width: 140,
       render: (_: any, user: User) => (
-        <View style={styles.actionsCell}>
-          <Pressable
-            style={styles.actionButton}
+        <GlassTableCell.Actions isRTL={isRTL}>
+          <GlassTableCell.ActionButton
             onPress={() => handleEdit(user)}
-            title={t('common.edit', 'Edit')}
-          >
-            <Edit size={16} color={colors.primary} />
-          </Pressable>
-          <Pressable
-            style={styles.actionButton}
+            icon={<Edit size={16} color="#3b82f6" />}
+            variant="primary"
+          />
+          <GlassTableCell.ActionButton
             onPress={() => handleResetPassword(user)}
-            title={t('admin.users.resetPassword')}
-          >
-            <Key size={16} color={colors.textMuted} />
-          </Pressable>
-          <Pressable
-            style={styles.actionButton}
+            icon={<Key size={16} color={colors.textMuted} />}
+          />
+          <GlassTableCell.ActionButton
             onPress={() => handleBanClick(user)}
-            title={user.status === 'banned' ? t('admin.users.unban') : t('admin.users.block')}
-          >
-            <Ban size={16} color={user.status === 'banned' ? '#22C55E' : '#F59E0B'} />
-          </Pressable>
-          <Pressable
-            style={styles.actionButton}
+            icon={<Ban size={16} color={user.status === 'banned' ? '#22C55E' : '#F59E0B'} />}
+          />
+          <GlassTableCell.ActionButton
             onPress={() => handleDeleteClick(user)}
-            title={t('common.delete', 'Delete')}
-          >
-            <Trash2 size={16} color={colors.error} />
-          </Pressable>
-        </View>
+            icon={<Trash2 size={16} color="#ef4444" />}
+            variant="danger"
+          />
+        </GlassTableCell.Actions>
       ),
     },
   ];
@@ -266,15 +267,14 @@ export default function UsersListPage() {
       </View>
 
       {/* Table */}
-      <DataTable
-        columns={isRTL ? [...columns].reverse() : columns}
+      <GlassTable
+        columns={columns}
         data={users}
         loading={loading}
-        searchPlaceholder={t('search.placeholder')}
-        onSearch={handleSearch}
         pagination={pagination}
         onPageChange={handlePageChange}
-        emptyMessage={t('admin.auditLogs.noRecords')}
+        emptyMessage={t('admin.users.emptyMessage', { defaultValue: 'No users found' })}
+        isRTL={isRTL}
       />
 
       {/* Delete Confirmation Modal */}

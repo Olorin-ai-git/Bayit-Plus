@@ -37,7 +37,11 @@
     "all": "הכל",
     "deleting": "מוחק...",
     "noResults": "לא נמצאו תוצאות",
-    "tryDifferentSearch": "נסה מונח חיפוש אחר"
+    "tryDifferentSearch": "נסה מונח חיפוש אחר",
+    "previous": "הקודם",
+    "actions": "פעולות",
+    "pageOf": "עמוד {{page}} מתוך {{total}}",
+    "noData": "אין נתונים זמינים"
   },
   "demo": {
     "banner": "מצב הדמו",
@@ -1426,18 +1430,31 @@
         "publishedDate": "פורסם",
         "episodes": "פרקים",
         "order": "סדר",
-        "name": "שם"
+        "name": "שם",
+        "slug": "מזהה"
       },
       "validation": {
         "titleRequired": "כותרת נדרשת",
         "nameRequired": "שם נדרש",
         "streamUrlRequired": "כתובת Stream נדרשת",
         "audioUrlRequired": "כתובת Audio נדרשת"
-      }
+      },
+      "episodes_one": "פרק",
+      "episodes_other": "פרקים",
+      "noEpisodes": "לא נמצאו פרקים",
+      "type": {
+        "series": "סדרה",
+        "movie": "סרט"
+      },
+      "toggleCarousel": "הוסף/הסר מהקרוסלה"
     },
     "categories": {
       "subtitle": "ניהול קטגוריות תוכן",
-      "emptyMessage": "לא נמצאו קטגוריות"
+      "emptyMessage": "לא נמצאו קטגוריות",
+      "status": {
+        "active": "פעיל",
+        "inactive": "לא פעיל"
+      }
     },
     "liveChannels": {
       "subtitle": "ניהול ערוצי טלוויזיה חיים",

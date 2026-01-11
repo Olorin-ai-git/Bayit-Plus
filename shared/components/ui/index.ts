@@ -22,6 +22,7 @@ export { GlassBreadcrumbs } from './GlassBreadcrumbs';
 export { AnalogClock } from './AnalogClock';
 export { GlassAvatar } from './GlassAvatar';
 export { GlassStatCard } from './GlassStatCard';
+export { GlassTable, GlassTableCell } from './GlassTable';
 
 // Voice-first conversational interface components (Phases 10)
 export { GlassParticleLayer } from './GlassParticleLayer';
@@ -32,3 +33,4 @@ export type { AnalogClockProps } from './AnalogClock';
 export type { GlassAvatarProps } from './GlassAvatar';
 export type { GlassToggleProps } from './GlassToggle';
 export type { GlassStatCardProps } from './GlassStatCard';
+export type { GlassTableColumn, GlassTablePagination, GlassTableProps } from './GlassTable';

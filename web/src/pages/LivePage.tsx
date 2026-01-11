@@ -34,7 +34,7 @@ function ChannelCard({ channel, nextLabel, liveLabel }: { channel: Channel; next
               <Image
                 source={{ uri: channel.thumbnail }}
                 style={styles.thumbnail}
-                resizeMode="cover"
+                resizeMode="contain"
               />
             ) : (
               <View style={styles.thumbnailPlaceholder}>
@@ -275,6 +275,7 @@ const styles = StyleSheet.create({
   thumbnail: {
     width: '100%',
     height: '100%',
+    backgroundColor: colors.cardBackground,
   },
   thumbnailPlaceholder: {
     width: '100%',

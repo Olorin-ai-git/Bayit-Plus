@@ -2,10 +2,9 @@ import { useState, useEffect, useCallback } from 'react'
 import { View, Text, StyleSheet, Pressable, ScrollView, TextInput } from 'react-native'
 import { useTranslation } from 'react-i18next'
 import { Plus, Edit, Trash2, X, AlertCircle } from 'lucide-react'
-import DataTable from '@/components/admin/DataTable'
 import { contentService } from '@/services/adminApi'
 import { colors, spacing, borderRadius } from '@bayit/shared/theme'
-import { GlassButton } from '@bayit/shared/ui'
+import { GlassButton, GlassTable, GlassTableCell } from '@bayit/shared/ui'
 import { useDirection } from '@/hooks/useDirection'
 import { useModal } from '@/contexts/ModalContext'
 import logger from '@/utils/logger'
@@ -257,13 +256,14 @@ export default function LiveChannelsPage() {
         </View>
       )}
 
-      <DataTable
-        columns={isRTL ? [...columns].reverse() : columns}
+      <GlassTable
+        columns={columns}
         data={items}
         loading={isLoading}
         pagination={pagination}
         onPageChange={(page) => setPagination((prev) => ({ ...prev, page }))}
         emptyMessage={t('admin.liveChannels.emptyMessage', { defaultValue: 'No live channels found' })}
+        isRTL={isRTL}
       />
     </ScrollView>
   )

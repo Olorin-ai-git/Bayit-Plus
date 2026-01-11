@@ -37,7 +37,11 @@
     "all": "All",
     "deleting": "Deleting...",
     "noResults": "No results found",
-    "tryDifferentSearch": "Try a different search term"
+    "tryDifferentSearch": "Try a different search term",
+    "previous": "Previous",
+    "actions": "Actions",
+    "pageOf": "Page {{page}} of {{total}}",
+    "noData": "No data available"
   },
   "demo": {
     "banner": "DEMO MODE",
@@ -1465,18 +1469,31 @@
         "publishedDate": "Published",
         "episodes": "Episodes",
         "order": "Order",
-        "name": "Name"
+        "name": "Name",
+        "slug": "Slug"
       },
       "validation": {
         "titleRequired": "Title is required",
         "nameRequired": "Name is required",
         "streamUrlRequired": "Stream URL is required",
         "audioUrlRequired": "Audio URL is required"
-      }
+      },
+      "episodes_one": "episode",
+      "episodes_other": "episodes",
+      "noEpisodes": "No episodes found",
+      "type": {
+        "series": "Series",
+        "movie": "Movie"
+      },
+      "toggleCarousel": "Toggle carousel"
     },
     "categories": {
       "subtitle": "Manage content categories",
-      "emptyMessage": "No categories found"
+      "emptyMessage": "No categories found",
+      "status": {
+        "active": "Active",
+        "inactive": "Inactive"
+      }
     },
     "liveChannels": {
       "subtitle": "Manage live TV channels",

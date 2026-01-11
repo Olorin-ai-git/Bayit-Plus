@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { View, Text, StyleSheet, Pressable, ScrollView, TextInput } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { Check, X } from 'lucide-react';
-import DataTable from '@/components/admin/DataTable';
+import { GlassTable, GlassTableCell } from '@bayit/shared/ui';
 import StatCard from '@/components/admin/StatCard';
 import { billingService } from '@/services/adminApi';
 import { colors, spacing, borderRadius } from '@bayit/shared/theme';
@@ -241,14 +241,15 @@ export default function RefundsPage() {
         })}
       </View>
 
-      <DataTable
-        columns={isRTL ? [...columns].reverse() : columns}
+      <GlassTable
+        columns={columns}
         data={refunds}
         loading={loading}
         pagination={pagination}
         onPageChange={handlePageChange}
         emptyMessage={t('admin.refunds.emptyMessage')}
         searchable={false}
+        isRTL={isRTL}
       />
 
       <GlassModal
