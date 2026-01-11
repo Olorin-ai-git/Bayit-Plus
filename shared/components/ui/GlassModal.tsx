@@ -13,6 +13,7 @@ import {
   TouchableWithoutFeedback,
   ActivityIndicator,
   Platform,
+  ScrollView,
 } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import { colors, spacing, borderRadius, fontSize } from '../theme';
@@ -29,7 +30,8 @@ export interface GlassModalProps {
   visible: boolean;
   type?: ModalType;
   title?: string;
-  message: string;
+  message?: string;
+  children?: React.ReactNode;
   buttons?: ModalButton[];
   onClose?: () => void;
   loading?: boolean;
@@ -63,6 +65,7 @@ export const GlassModal: React.FC<GlassModalProps> = ({
   type = 'info',
   title,
   message,
+  children,
   buttons = [{ text: 'OK', style: 'default' }],
   onClose,
   loading = false,
@@ -70,6 +73,7 @@ export const GlassModal: React.FC<GlassModalProps> = ({
 }) => {
   const modalColor = getColorForType(type);
   const icon = getIconForType(type);
+  const hasCustomContent = !!children;
 
   const handleBackdropPress = () => {
     if (dismissable && onClose) {
@@ -108,25 +112,42 @@ export const GlassModal: React.FC<GlassModalProps> = ({
     );
   };
 
-  const GlassContent = () => (
-    <View style={styles.contentWrapper}>
-      <View style={[styles.iconContainer, { backgroundColor: modalColor + '20' }]}>
-        <Text style={styles.icon}>{icon}</Text>
-      </View>
+  // Render content based on mode
+  const renderContent = () => {
+    if (hasCustomContent) {
+      return (
+        <ScrollView
+          style={styles.scrollView}
+          contentContainerStyle={styles.customContentWrapper}
+          showsVerticalScrollIndicator={false}
+          keyboardShouldPersistTaps="handled"
+        >
+          {title && <Text style={styles.dialogTitle}>{title}</Text>}
+          {children}
+        </ScrollView>
+      );
+    }
 
-      {title && <Text style={styles.title}>{title}</Text>}
-
-      <Text style={styles.message}>{message}</Text>
-
-      {loading ? (
-        <ActivityIndicator size="small" color={modalColor} style={styles.loader} />
-      ) : (
-        <View style={styles.buttonContainer}>
-          {buttons.map(renderButton)}
+    return (
+      <View style={styles.contentWrapper}>
+        <View style={[styles.iconContainer, { backgroundColor: modalColor + '20' }]}>
+          <Text style={styles.icon}>{icon}</Text>
         </View>
-      )}
-    </View>
-  );
+
+        {title && <Text style={styles.title}>{title}</Text>}
+
+        <Text style={styles.message}>{message}</Text>
+
+        {loading ? (
+          <ActivityIndicator size="small" color={modalColor} style={styles.loader} />
+        ) : (
+          <View style={styles.buttonContainer}>
+            {buttons.map(renderButton)}
+          </View>
+        )}
+      </View>
+    );
+  };
 
   // Platform-specific glass implementation
   const renderGlassContainer = () => {
@@ -135,17 +156,18 @@ export const GlassModal: React.FC<GlassModalProps> = ({
         <View
           style={[
             styles.container,
+            hasCustomContent && styles.containerWide,
             styles.glassBorder,
             {
               // @ts-ignore - Web-specific CSS properties
               backdropFilter: 'blur(20px)',
               WebkitBackdropFilter: 'blur(20px)',
-              backgroundColor: 'rgba(26, 26, 46, 0.9)',
+              backgroundColor: 'rgba(26, 26, 46, 0.95)',
             },
           ]}
         >
           <View style={[styles.accentBar, { backgroundColor: modalColor }]} />
-          <GlassContent />
+          {renderContent()}
         </View>
       );
     }
@@ -153,10 +175,10 @@ export const GlassModal: React.FC<GlassModalProps> = ({
     return (
       <LinearGradient
         colors={['rgba(30, 30, 50, 0.95)', 'rgba(20, 20, 40, 0.98)']}
-        style={[styles.container, styles.glassBorder]}
+        style={[styles.container, hasCustomContent && styles.containerWide, styles.glassBorder]}
       >
         <View style={[styles.accentBar, { backgroundColor: modalColor }]} />
-        <GlassContent />
+        {renderContent()}
       </LinearGradient>
     );
   };
@@ -193,6 +215,9 @@ const styles = StyleSheet.create({
     borderRadius: borderRadius.xl,
     overflow: 'hidden',
   },
+  containerWide: {
+    maxWidth: 600,
+  },
   glassBorder: {
     borderWidth: 1,
     borderColor: colors.glassBorder,
@@ -221,6 +246,13 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     color: colors.text,
     marginBottom: spacing.sm,
+    textAlign: 'center',
+  },
+  dialogTitle: {
+    fontSize: fontSize.xl,
+    fontWeight: 'bold',
+    color: colors.text,
+    marginBottom: spacing.lg,
     textAlign: 'center',
   },
   message: {
@@ -260,6 +292,14 @@ const styles = StyleSheet.create({
   },
   loader: {
     marginTop: spacing.md,
+  },
+  scrollView: {
+    maxHeight: '80vh',
+    width: '100%',
+  },
+  customContentWrapper: {
+    padding: spacing.xl,
+    width: '100%',
   },
 });
 

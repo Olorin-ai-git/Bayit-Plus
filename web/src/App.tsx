@@ -39,6 +39,7 @@ import AdminDashboardPage from './pages/admin/AdminDashboardPage'
 import UsersListPage from './pages/admin/UsersListPage'
 import UserDetailPage from './pages/admin/UserDetailPage'
 import CampaignsListPage from './pages/admin/CampaignsListPage'
+import CampaignEditPage from './pages/admin/CampaignEditPage'
 import SubscriptionsListPage from './pages/admin/SubscriptionsListPage'
 import BillingOverviewPage from './pages/admin/BillingOverviewPage'
 import TransactionsPage from './pages/admin/TransactionsPage'
@@ -82,6 +83,8 @@ function App() {
         <Route path="users" element={<UsersListPage />} />
         <Route path="users/:userId" element={<UserDetailPage />} />
         <Route path="campaigns" element={<CampaignsListPage />} />
+        <Route path="campaigns/new" element={<CampaignEditPage />} />
+        <Route path="campaigns/:campaignId" element={<CampaignEditPage />} />
         <Route path="subscriptions" element={<SubscriptionsListPage />} />
         <Route path="billing" element={<BillingOverviewPage />} />
         <Route path="transactions" element={<TransactionsPage />} />

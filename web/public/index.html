@@ -18,7 +18,15 @@
     <title>Bayit+ | בית+</title>
 
     <!-- Samsung TV WebAPIs (only loads on Samsung TVs) -->
-    <script type="text/javascript" src="$WEBAPIS/webapis/webapis.js" onerror="console.log('Samsung WebAPIs not available - not running on Samsung TV')"></script>
+    <script>
+      // Only load Samsung WebAPIs on actual Samsung TVs
+      if (typeof tizen !== 'undefined' || navigator.userAgent.indexOf('Tizen') > -1) {
+        var script = document.createElement('script');
+        script.src = '$WEBAPIS/webapis/webapis.js';
+        script.onerror = function() { console.log('Samsung WebAPIs not available'); };
+        document.head.appendChild(script);
+      }
+    </script>
 
     <style>
       /* Base styles for React Native Web */

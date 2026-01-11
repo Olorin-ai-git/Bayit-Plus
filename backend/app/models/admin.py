@@ -350,6 +350,7 @@ class SystemSettings(Document):
 
 class SubscriptionPlan(Document):
     name: str
+    name_he: Optional[str] = None  # Hebrew name
     slug: str  # basic, premium, family
     price: float
     currency: str = "USD"

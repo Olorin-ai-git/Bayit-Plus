@@ -1516,7 +1516,22 @@
       "searchPlaceholder": "חיפוש קמפיינים...",
       "emptyMessage": "לא נמצאו קמפיינים",
       "deactivate": "השבתה",
-      "activate": "הפעלה"
+      "activate": "הפעלה",
+      "createTitle": "קמפיין חדש",
+      "editTitle": "עריכת קמפיין",
+      "formSubtitle": "הגדר קוד קופון או הנחה",
+      "form": {
+        "name": "שם הקמפיין",
+        "namePlaceholder": "לדוגמה: מבצע קיץ 2024",
+        "code": "קוד קופון",
+        "generate": "צור קוד",
+        "discountType": "סוג הנחה",
+        "discountValue": "ערך ההנחה",
+        "maxUses": "מקסימום שימושים",
+        "unlimited": "ללא הגבלה",
+        "validUntil": "בתוקף עד",
+        "active": "קמפיין פעיל"
+      }
     },
     "subscriptions": {
       "subtitle": "צפה ונהל מנויי המערכת",

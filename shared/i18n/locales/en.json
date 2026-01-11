@@ -1555,7 +1555,22 @@
       "searchPlaceholder": "Search campaigns...",
       "emptyMessage": "No campaigns found",
       "deactivate": "Deactivate",
-      "activate": "Activate"
+      "activate": "Activate",
+      "createTitle": "New Campaign",
+      "editTitle": "Edit Campaign",
+      "formSubtitle": "Set up a coupon code or discount",
+      "form": {
+        "name": "Campaign Name",
+        "namePlaceholder": "e.g. Summer Sale 2024",
+        "code": "Coupon Code",
+        "generate": "Generate",
+        "discountType": "Discount Type",
+        "discountValue": "Discount Value",
+        "maxUses": "Maximum Uses",
+        "unlimited": "Unlimited",
+        "validUntil": "Valid Until",
+        "active": "Campaign Active"
+      }
     },
     "subscriptions": {
       "subtitle": "View and manage system subscribers",

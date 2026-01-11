@@ -44,6 +44,8 @@ export const GlassToggle: React.FC<GlassToggleProps> = ({
           width: dimensions.width,
           height: dimensions.height,
           borderRadius: dimensions.height / 2,
+          justifyContent: 'center',
+          alignItems: value ? 'flex-end' : 'flex-start',
         },
         value && styles.toggleActive,
         disabled && styles.toggleDisabled,
@@ -56,7 +58,6 @@ export const GlassToggle: React.FC<GlassToggleProps> = ({
             width: dimensions.knob,
             height: dimensions.knob,
             borderRadius: dimensions.knob / 2,
-            transform: [{ translateX: value ? dimensions.width - dimensions.knob - 2 : 0 }],
           },
           value && styles.knobActive,
         ]}

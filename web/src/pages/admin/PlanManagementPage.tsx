@@ -1,10 +1,10 @@
 import { useState, useEffect, useCallback } from 'react';
-import { View, Text, StyleSheet, Pressable, ScrollView, TextInput, Switch } from 'react-native';
+import { View, Text, StyleSheet, Pressable, ScrollView, TextInput } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { Plus, Edit2, Trash2, Check } from 'lucide-react';
 import { subscriptionsService } from '@/services/adminApi';
 import { colors, spacing, borderRadius } from '@bayit/shared/theme';
-import { GlassCard, GlassButton, GlassModal } from '@bayit/shared/ui';
+import { GlassCard, GlassButton, GlassModal, GlassToggle } from '@bayit/shared/ui';
 import { useDirection } from '@/hooks/useDirection';
 import logger from '@/utils/logger';
 
@@ -236,9 +236,12 @@ export default function PlanManagementPage() {
             <TextInput style={[styles.input, styles.textArea]} value={formData.features} onChangeText={(features) => setFormData((p) => ({ ...p, features }))} placeholderTextColor={colors.textMuted} multiline numberOfLines={4} />
           </View>
 
-          <View style={[styles.switchRow, { flexDirection }]}>
+          <View style={styles.toggleRow}>
             <Text style={[styles.formLabel, { textAlign }]}>{t('admin.plans.form.active')}</Text>
-            <Switch value={formData.is_active} onValueChange={(is_active) => setFormData((p) => ({ ...p, is_active }))} trackColor={{ false: colors.backgroundLighter, true: colors.primary }} />
+            <GlassToggle
+              value={formData.is_active}
+              onValueChange={(is_active) => setFormData((p) => ({ ...p, is_active }))}
+            />
           </View>
 
           <View style={styles.modalActions}>
@@ -308,8 +311,8 @@ const styles = StyleSheet.create({
   subscribersCount: { fontSize: 14, fontWeight: '600', color: colors.text },
   planActions: { flexDirection: 'row', justifyContent: 'flex-end', gap: spacing.sm },
   actionButton: { width: 36, height: 36, borderRadius: borderRadius.sm, backgroundColor: colors.glass, justifyContent: 'center', alignItems: 'center' },
-  modalContent: { gap: spacing.md },
-  formRow: { flexDirection: 'row', gap: spacing.md },
+  modalContent: { gap: spacing.md, width: '100%' },
+  formRow: { flexDirection: 'row', gap: spacing.md, width: '100%' },
   formGroup: { flex: 1, gap: spacing.xs },
   formLabel: { fontSize: 14, fontWeight: '600', color: colors.text },
   input: { backgroundColor: colors.backgroundLighter, borderRadius: borderRadius.md, borderWidth: 1, borderColor: colors.glassBorder, paddingHorizontal: spacing.md, paddingVertical: spacing.sm, color: colors.text, fontSize: 14 },
@@ -319,8 +322,8 @@ const styles = StyleSheet.create({
   intervalButtonActive: { backgroundColor: colors.primary },
   intervalButtonText: { fontSize: 14, color: colors.textMuted },
   intervalButtonTextActive: { color: colors.text, fontWeight: '500' },
-  switchRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
-  modalActions: { flexDirection: 'row', justifyContent: 'flex-end', gap: spacing.sm, marginTop: spacing.md },
+  toggleRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', width: '100%', paddingVertical: spacing.sm, marginTop: spacing.md },
+  modalActions: { flexDirection: 'row', justifyContent: 'flex-end', gap: spacing.sm, marginTop: spacing.md, width: '100%' },
   modalMessage: { fontSize: 14, color: colors.text, marginBottom: spacing.md },
   errorText: { fontSize: 14, color: colors.text, marginBottom: spacing.md },
 });
