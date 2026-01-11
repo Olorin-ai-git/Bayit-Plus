@@ -1,9 +1,13 @@
 """
 User Widget Routes - Personal widget management and system widget retrieval
+
+System widgets now use an opt-in subscription model. Users must explicitly
+add system widgets to their collection via /widgets/system/add.
 """
 
 from datetime import datetime
 from typing import Optional, List
+from bson import ObjectId
 from fastapi import APIRouter, HTTPException, Depends, Query
 
 from app.models.user import User
@@ -11,6 +15,7 @@ from app.models.widget import (
     Widget, WidgetType, WidgetContent, WidgetPosition,
     WidgetCreateRequest, WidgetUpdateRequest, WidgetPositionUpdate
 )
+from app.models.user_system_widget import UserSystemWidget
 from app.core.security import get_current_active_user, get_optional_user
 
 router = APIRouter()
@@ -65,57 +70,81 @@ async def get_my_widgets(
     Get all widgets applicable to current user.
 
     Returns:
-    - System widgets matching user's role and subscription
+    - System widgets the user has explicitly added to their collection
     - Personal widgets created by user (if authenticated)
 
+    System widgets use an opt-in model - users must add widgets via
+    /widgets/system/{id}/add before they appear here.
+
     Optionally filter by page path for targeted widgets.
-    Works without authentication (returns only public system widgets).
+    Works without authentication (returns empty for unauthenticated users).
     """
     user_id = str(current_user.id) if current_user else None
-    user_role = (current_user.role if current_user else None) or "user"
-    user_subscription = getattr(current_user, 'subscription_tier', None) if current_user else None
 
-    # Get personal widgets for this user (only if authenticated)
-    personal_widgets = []
-    if user_id:
-        personal_widgets = await Widget.find(
-            Widget.type == WidgetType.PERSONAL,
-            Widget.user_id == user_id,
-            Widget.is_active == True
-        ).sort(Widget.order).to_list()
+    if not user_id:
+        # Unauthenticated users don't see any widgets
+        return {"items": [], "total": 0}
 
-    # Get system widgets
-    system_widgets = await Widget.find(
-        Widget.type == WidgetType.SYSTEM,
+    # Get personal widgets for this user
+    personal_widgets = await Widget.find(
+        Widget.type == WidgetType.PERSONAL,
+        Widget.user_id == user_id,
         Widget.is_active == True
     ).sort(Widget.order).to_list()
 
-    # Filter system widgets by role and subscription
-    filtered_system = []
-    for widget in system_widgets:
-        # Check role targeting - if "user" is in visible_to_roles, show to everyone
-        if widget.visible_to_roles:
-            if "user" not in widget.visible_to_roles and user_role not in widget.visible_to_roles:
+    # Get user's subscribed system widgets
+    user_subscriptions = await UserSystemWidget.find(
+        UserSystemWidget.user_id == user_id,
+        UserSystemWidget.is_visible == True  # Only visible (not closed)
+    ).sort(UserSystemWidget.order).to_list()
+
+    # Build list of subscribed system widgets
+    subscribed_system_widgets = []
+    if user_subscriptions:
+        # Get the actual widget documents
+        widget_ids = [ObjectId(sub.widget_id) for sub in user_subscriptions]
+        system_widgets = await Widget.find(
+            {"_id": {"$in": widget_ids}},
+            Widget.is_active == True
+        ).to_list()
+
+        # Create lookup for widget documents and subscriptions
+        widget_lookup = {str(w.id): w for w in system_widgets}
+        sub_lookup = {sub.widget_id: sub for sub in user_subscriptions}
+
+        # Build result with user preferences applied
+        for sub in user_subscriptions:
+            widget = widget_lookup.get(sub.widget_id)
+            if not widget:
                 continue
 
-        # Check subscription tier targeting (if specified)
-        if widget.visible_to_subscription_tiers:
-            if not user_subscription or user_subscription not in widget.visible_to_subscription_tiers:
-                continue
+            # Check page targeting if specified
+            if page_path and widget.target_pages:
+                if not any(page_path.startswith(target) for target in widget.target_pages):
+                    continue
 
-        # Check page targeting (if specified and page_path provided)
-        if page_path and widget.target_pages:
-            # Match if page_path starts with any target page
-            if not any(page_path.startswith(target) for target in widget.target_pages):
-                continue
+            # Create widget dict with user's preferences applied
+            widget_data = _widget_dict(widget)
 
-        filtered_system.append(widget)
+            # Apply user's custom preferences
+            if sub.position:
+                widget_data["position"] = {
+                    "x": sub.position.x,
+                    "y": sub.position.y,
+                    "width": sub.position.width,
+                    "height": sub.position.height,
+                    "z_index": sub.position.z_index,
+                }
+            widget_data["is_muted"] = sub.is_muted
+            widget_data["is_visible"] = sub.is_visible
 
-    # Combine and return
-    all_widgets = filtered_system + personal_widgets
+            subscribed_system_widgets.append(widget_data)
+
+    # Combine and return - system widgets first, then personal
+    all_widgets = subscribed_system_widgets + [_widget_dict(w) for w in personal_widgets]
 
     return {
-        "items": [_widget_dict(w) for w in all_widgets],
+        "items": all_widgets,
         "total": len(all_widgets),
     }
 
@@ -263,9 +292,11 @@ async def update_widget_position(
     """
     Update widget position (lightweight endpoint for drag operations).
 
-    Works for both personal and system widgets - stores user's position preference.
-    For now, updates the widget directly. Future enhancement could store per-user preferences.
+    For personal widgets: updates the widget directly.
+    For system widgets: updates user's custom position in UserSystemWidget.
     """
+    user_id = str(current_user.id)
+
     try:
         widget = await Widget.get(widget_id)
     except Exception:
@@ -274,21 +305,43 @@ async def update_widget_position(
     if not widget:
         raise HTTPException(status_code=404, detail="Widget not found")
 
-    # For personal widgets, only owner can update
     if widget.type == WidgetType.PERSONAL:
-        if widget.user_id != str(current_user.id):
+        # For personal widgets, only owner can update
+        if widget.user_id != user_id:
             raise HTTPException(status_code=403, detail="Access denied")
 
-    # Update position
-    widget.position.x = data.x
-    widget.position.y = data.y
-    if data.width is not None:
-        widget.position.width = data.width
-    if data.height is not None:
-        widget.position.height = data.height
+        # Update position directly on widget
+        widget.position.x = data.x
+        widget.position.y = data.y
+        if data.width is not None:
+            widget.position.width = data.width
+        if data.height is not None:
+            widget.position.height = data.height
 
-    widget.updated_at = datetime.utcnow()
-    await widget.save()
+        widget.updated_at = datetime.utcnow()
+        await widget.save()
+    else:
+        # For system widgets, update user's subscription preference
+        subscription = await UserSystemWidget.find_one(
+            UserSystemWidget.user_id == user_id,
+            UserSystemWidget.widget_id == widget_id
+        )
+
+        if not subscription:
+            raise HTTPException(status_code=404, detail="Widget not in your collection")
+
+        # Initialize position if needed
+        if not subscription.position:
+            subscription.position = WidgetPosition()
+
+        subscription.position.x = data.x
+        subscription.position.y = data.y
+        if data.width is not None:
+            subscription.position.width = data.width
+        if data.height is not None:
+            subscription.position.height = data.height
+
+        await subscription.save()
 
     return {"message": "Position updated"}
 
@@ -301,9 +354,11 @@ async def close_widget(
     """
     Close/hide a widget for the current user.
 
-    For personal widgets: sets is_visible to false.
-    For system widgets: future enhancement could store per-user state.
+    For personal widgets: sets is_visible to false on the widget.
+    For system widgets: sets is_visible to false on user's subscription.
     """
+    user_id = str(current_user.id)
+
     try:
         widget = await Widget.get(widget_id)
     except Exception:
@@ -315,15 +370,24 @@ async def close_widget(
     if not widget.is_closable:
         raise HTTPException(status_code=400, detail="Widget cannot be closed")
 
-    # For personal widgets, update visibility
     if widget.type == WidgetType.PERSONAL:
-        if widget.user_id != str(current_user.id):
+        # For personal widgets, update visibility on the widget itself
+        if widget.user_id != user_id:
             raise HTTPException(status_code=403, detail="Access denied")
         widget.is_visible = False
         widget.updated_at = datetime.utcnow()
         await widget.save()
+    else:
+        # For system widgets, update user's subscription
+        subscription = await UserSystemWidget.find_one(
+            UserSystemWidget.user_id == user_id,
+            UserSystemWidget.widget_id == widget_id
+        )
 
-    # For system widgets, we could store per-user state in future
-    # For now, just return success (frontend handles local state)
+        if not subscription:
+            raise HTTPException(status_code=404, detail="Widget not in your collection")
+
+        subscription.is_visible = False
+        await subscription.save()
 
     return {"message": "Widget closed"}

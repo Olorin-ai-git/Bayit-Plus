@@ -217,10 +217,14 @@ function WidgetItem({
 }: WidgetItemProps) {
   const [streamUrl, setStreamUrl] = React.useState<string | undefined>();
 
+  // Subscribe to widget updates from store (for cover_url updates)
+  const storeWidget = useWidgetStore((s) => s.widgets.find((w) => w.id === widget.id));
+  const currentWidget = storeWidget || widget;
+
   // Load stream URL based on content type
   useEffect(() => {
-    // Don't fetch URL for iframe content (no stream URL needed)
-    if (widget.content.content_type === 'iframe') {
+    // Don't fetch URL for iframe or custom content (no stream URL needed)
+    if (widget.content.content_type === 'iframe' || widget.content.content_type === 'custom') {
       return;
     }
 
@@ -230,7 +234,7 @@ function WidgetItem({
 
   return (
     <WidgetContainer
-      widget={widget}
+      widget={currentWidget}
       isMuted={state.isMuted}
       position={state.position}
       onToggleMute={onToggleMute}

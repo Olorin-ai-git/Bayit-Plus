@@ -30,6 +30,7 @@ class WidgetContentType(str, Enum):
     VOD = "vod"                    # Video on demand
     RADIO = "radio"                # Radio station
     LIVE = "live"                  # Generic live content
+    CUSTOM = "custom"              # Custom React component
 
 
 class WidgetPosition(BaseModel):
@@ -56,6 +57,9 @@ class WidgetContent(BaseModel):
     # For IFRAME type
     iframe_url: Optional[str] = None
     iframe_title: Optional[str] = None
+
+    # For CUSTOM type (React components)
+    component_name: Optional[str] = None  # e.g., "ynet_mivzakim"
 
 
 class Widget(Document):

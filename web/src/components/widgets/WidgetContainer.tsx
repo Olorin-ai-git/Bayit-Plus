@@ -8,10 +8,12 @@
 
 import React, { useRef, useState, useEffect, useCallback } from 'react';
 import { View, Text, StyleSheet, Pressable } from 'react-native';
-import { X, Volume2, VolumeX, GripVertical } from 'lucide-react';
+import { X, Volume2, VolumeX, GripHorizontal, Minimize2, Maximize2 } from 'lucide-react';
 import { colors, spacing, borderRadius } from '@bayit/shared/theme';
 import VideoPlayer from '@/components/player/VideoPlayer';
 import AudioPlayer from '@/components/player/AudioPlayer';
+import { YnetMivzakimWidget } from './YnetMivzakimWidget';
+import { useDirection } from '@/hooks/useDirection';
 import type { Widget, WidgetPosition } from '@/types/widget';
 
 interface WidgetContainerProps {
@@ -40,17 +42,23 @@ export default function WidgetContainer({
   streamUrl,
 }: WidgetContainerProps) {
   const containerRef = useRef<HTMLDivElement>(null);
+  const { isRTL } = useDirection();
 
   const [isDragging, setIsDragging] = useState(false);
   const [dragOffset, setDragOffset] = useState({ x: 0, y: 0 });
-  const [showControls, setShowControls] = useState(IS_TV_BUILD); // Always visible on TV
-  const [loading, setLoading] = useState(!streamUrl && widget.content.content_type !== 'iframe');
+  const [loading, setLoading] = useState(!streamUrl && widget.content.content_type !== 'iframe' && widget.content.content_type !== 'custom');
   const [error, setError] = useState<string | null>(null);
   const [isFocused, setIsFocused] = useState(IS_TV_BUILD); // Start focused on TV
+  const [isMinimized, setIsMinimized] = useState(false);
+  const [savedPosition, setSavedPosition] = useState<{ x: number; y: number } | null>(null);
+
+  // Minimized widget dimensions
+  const MINIMIZED_HEIGHT = 40;
+  const MINIMIZED_WIDTH = 200;
 
   // Update loading state when stream URL changes
   useEffect(() => {
-    if (widget.content.content_type === 'iframe') {
+    if (widget.content.content_type === 'iframe' || widget.content.content_type === 'custom') {
       setLoading(false);
       return;
     }
@@ -94,6 +102,22 @@ export default function WidgetContainer({
   const handleDragEnd = useCallback(() => {
     setIsDragging(false);
   }, []);
+
+  // Minimize widget to bottom of screen
+  const handleMinimize = useCallback(() => {
+    // Save current position before minimizing
+    setSavedPosition({ x: position.x, y: position.y });
+    setIsMinimized(true);
+  }, [position.x, position.y]);
+
+  // Restore widget to original position
+  const handleRestore = useCallback(() => {
+    setIsMinimized(false);
+    // Restore saved position if available
+    if (savedPosition) {
+      onPositionChange({ x: savedPosition.x, y: savedPosition.y });
+    }
+  }, [savedPosition, onPositionChange]);
 
   // Global mouse listeners for dragging
   useEffect(() => {
@@ -262,6 +286,19 @@ export default function WidgetContainer({
             />
           );
 
+        case 'custom':
+          // Render custom React components based on component_name
+          const componentName = widget.content.component_name;
+          // Also check by title as fallback for widgets not yet migrated
+          const isYnetWidget = componentName === 'ynet_mivzakim' ||
+            widget.title.includes('Ynet') ||
+            widget.title.includes('מבזקי');
+
+          if (isYnetWidget) {
+            return <YnetMivzakimWidget />;
+          }
+          return renderError(`Unknown component: ${componentName}`);
+
         default:
           return renderError('No content configured');
       }
@@ -271,23 +308,27 @@ export default function WidgetContainer({
     }
   };
 
+  // Calculate position for minimized state
+  const minimizedIndex = 0; // Could be passed as prop for stacking multiple minimized widgets
+  const minimizedX = isRTL ? window.innerWidth - MINIMIZED_WIDTH - 20 - (minimizedIndex * (MINIMIZED_WIDTH + 10)) : 20 + (minimizedIndex * (MINIMIZED_WIDTH + 10));
+  const minimizedY = window.innerHeight - MINIMIZED_HEIGHT - 20;
+
   return (
     <div
       ref={containerRef}
       style={{
         position: 'fixed',
-        left: position.x,
-        top: position.y,
-        width: position.width,
-        height: position.height,
+        left: isMinimized ? minimizedX : position.x,
+        top: isMinimized ? minimizedY : position.y,
+        width: isMinimized ? MINIMIZED_WIDTH : position.width,
+        height: isMinimized ? MINIMIZED_HEIGHT : position.height,
         zIndex: position.z_index,
         cursor: isDragging ? 'grabbing' : IS_TV_BUILD ? 'pointer' : 'default',
         // TV: Always show focus indicator
         outline: IS_TV_BUILD && isFocused ? '2px solid #00aaff' : 'none',
         outlineOffset: '2px',
+        transition: isMinimized || savedPosition ? 'all 0.3s ease' : 'none',
       }}
-      onMouseEnter={() => !IS_TV_BUILD && setShowControls(true)}
-      onMouseLeave={() => !IS_TV_BUILD && !isDragging && setShowControls(false)}
       onFocus={() => IS_TV_BUILD && setIsFocused(true)}
       onBlur={() => IS_TV_BUILD && setIsFocused(false)}
       tabIndex={IS_TV_BUILD ? 0 : -1}
@@ -295,64 +336,72 @@ export default function WidgetContainer({
       aria-label={`Widget: ${widget.title}`}
     >
       <View style={styles.container}>
-        {/* Content */}
-        <View style={[
-          styles.contentWrapper,
-          // Use transparent background for audio content (podcast, radio) since AudioPlayer has its own glass styling
-          (widget.content.content_type === 'podcast' || widget.content.content_type === 'radio') && styles.contentWrapperTransparent,
-        ]}>
-          {renderContent()}
-        </View>
-
-        {/* Control Bar - shown on hover (web) or always (TV) */}
-        {showControls && (
-          <View style={[styles.controlBar, IS_TV_BUILD && styles.controlBarTV]}>
-            {/* Drag Handle - TV remotes use arrows, desktop uses mouse */}
-            {widget.is_draggable && (
-              <Pressable
-                style={styles.dragHandle}
-                onMouseDown={IS_TV_BUILD ? undefined : (handleDragStart as any)}
-                disabled={IS_TV_BUILD}
-              >
-                {IS_TV_BUILD ? (
-                  <Text style={styles.tvControlText}>⬅️ ⬆️ ⬇️ ➡️</Text>
-                ) : (
-                  <GripVertical size={16} color={colors.text} />
-                )}
-              </Pressable>
-            )}
-
-            {/* Title */}
-            <View style={styles.titleContainer}>
-              {widget.icon && <Text style={styles.icon}>{widget.icon}</Text>}
-              <Text style={styles.title} numberOfLines={1}>{widget.title}</Text>
-            </View>
-
-            {/* Spacer */}
-            <View style={styles.spacer} />
+        {/* Header Bar - Always visible, entire bar is draggable */}
+        <div
+          style={{
+            ...styles.headerBar as any,
+            flexDirection: 'row', // Controls on left, title on right
+            cursor: widget.is_draggable && !isMinimized ? (isDragging ? 'grabbing' : 'grab') : 'default',
+          }}
+          onMouseDown={widget.is_draggable && !isMinimized && !IS_TV_BUILD ? (handleDragStart as any) : undefined}
+        >
+          {/* Controls */}
+          <View style={styles.controlsContainer}>
+            {/* Minimize/Restore Button */}
+            <Pressable
+              style={styles.controlButton}
+              onPress={isMinimized ? handleRestore : handleMinimize}
+            >
+              {isMinimized ? (
+                <Maximize2 size={14} color={colors.text} />
+              ) : (
+                <Minimize2 size={14} color={colors.text} />
+              )}
+            </Pressable>
 
             {/* Mute Button */}
             <Pressable style={styles.controlButton} onPress={onToggleMute}>
               {isMuted ? (
-                <VolumeX size={16} color={colors.text} />
+                <VolumeX size={14} color={colors.text} />
               ) : (
-                <Volume2 size={16} color={colors.text} />
+                <Volume2 size={14} color={colors.text} />
               )}
             </Pressable>
 
             {/* Close Button */}
             {widget.is_closable && (
               <Pressable style={styles.controlButton} onPress={onClose}>
-                <X size={16} color={colors.text} />
+                <X size={14} color={colors.text} />
               </Pressable>
             )}
           </View>
-        )}
 
-        {/* Muted indicator when controls are hidden */}
-        {!showControls && isMuted && (
-          <View style={styles.mutedIndicator}>
-            <VolumeX size={14} color={colors.textSecondary} />
+          {/* Drag indicator in center - only when not minimized */}
+          {widget.is_draggable && !isMinimized && (
+            <View style={styles.dragIndicator}>
+              {IS_TV_BUILD ? (
+                <Text style={styles.tvControlText}>⬅️ ⬆️ ⬇️ ➡️</Text>
+              ) : (
+                <GripHorizontal size={16} color="rgba(255,255,255,0.4)" />
+              )}
+            </View>
+          )}
+
+          {/* Title */}
+          <View style={styles.titleContainer}>
+            {widget.icon && <Text style={styles.icon}>{widget.icon}</Text>}
+            <Text style={styles.title} numberOfLines={1}>{widget.title}</Text>
+          </View>
+        </div>
+
+        {/* Content - hidden when minimized */}
+        {!isMinimized && (
+          <View style={[
+            styles.contentWrapper,
+            // Use transparent background for audio content (podcast, radio) since AudioPlayer has its own glass styling
+            (widget.content.content_type === 'podcast' || widget.content.content_type === 'radio') && styles.contentWrapperTransparent,
+          ]}>
+            {renderContent()}
           </View>
         )}
       </View>
@@ -376,12 +425,25 @@ const styles = StyleSheet.create({
     display: 'flex',
     flexDirection: 'column',
   } as any,
+  headerBar: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingHorizontal: spacing.sm,
+    paddingVertical: spacing.xs,
+    backgroundColor: 'rgba(0, 0, 0, 0.7)',
+    backdropFilter: 'blur(8px)',
+    borderBottomWidth: 1,
+    borderBottomColor: 'rgba(255, 255, 255, 0.1)',
+    minHeight: 36,
+    display: 'flex',
+    userSelect: 'none',
+  } as any,
   contentWrapper: {
     width: '100%',
-    height: '100%',
+    flex: 1,
     backgroundColor: '#000',
     display: 'flex',
-    flex: 1,
   } as any,
   contentWrapperTransparent: {
     backgroundColor: 'transparent',
@@ -418,30 +480,23 @@ const styles = StyleSheet.create({
     fontSize: 12,
     color: colors.textSecondary,
   },
-  controlBar: {
+  dragIndicator: {
     position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingHorizontal: spacing.xs,
-    paddingVertical: spacing.xs,
-    backgroundColor: 'rgba(0, 0, 0, 0.7)',
-    // @ts-ignore - Web CSS
-    backdropFilter: 'blur(8px)',
-  },
-  dragHandle: {
-    padding: spacing.xs,
-    cursor: 'grab',
-    opacity: 0.7,
+    left: '50%',
+    transform: [{ translateX: -8 }],
+    opacity: 0.6,
   } as any,
   titleContainer: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: spacing.xs,
     flex: 1,
-    marginLeft: spacing.xs,
+    maxWidth: '40%',
+  },
+  controlsContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.xs,
   },
   icon: {
     fontSize: 14,
@@ -450,28 +505,12 @@ const styles = StyleSheet.create({
     fontSize: 12,
     fontWeight: '600',
     color: colors.text,
-    flex: 1,
-  },
-  spacer: {
-    flex: 1,
   },
   controlButton: {
-    width: 28,
-    height: 28,
-    borderRadius: 14,
+    width: 26,
+    height: 26,
+    borderRadius: 13,
     backgroundColor: 'rgba(255, 255, 255, 0.1)',
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginLeft: spacing.xs,
-  },
-  mutedIndicator: {
-    position: 'absolute',
-    bottom: spacing.xs,
-    right: spacing.xs,
-    width: 24,
-    height: 24,
-    borderRadius: 12,
-    backgroundColor: 'rgba(0, 0, 0, 0.6)',
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -485,13 +524,8 @@ const styles = StyleSheet.create({
     fontSize: 12,
     color: colors.textSecondary,
   },
-  controlBarTV: {
-    paddingVertical: spacing.md,
-    paddingHorizontal: spacing.md,
-    height: 'auto',
-  } as any,
   tvControlText: {
-    fontSize: 16,
+    fontSize: 14,
     color: colors.text,
     fontWeight: '600',
   },

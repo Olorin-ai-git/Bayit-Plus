@@ -63,12 +63,22 @@ export const useWidgetStore = create<WidgetState>()(
       error: null,
       localState: {},
 
-      setWidgets: (widgets) => {
+      setWidgets: (newWidgets) => {
         // Initialize local state for new widgets
         const currentState = get().localState;
+        const currentWidgets = get().widgets;
         const newLocalState = { ...currentState };
 
-        widgets.forEach((widget) => {
+        // Preserve cover_url from existing widgets (fetched client-side)
+        const widgetsWithPreservedData = newWidgets.map((widget) => {
+          const existing = currentWidgets.find((w) => w.id === widget.id);
+          if (existing?.cover_url && !widget.cover_url) {
+            return { ...widget, cover_url: existing.cover_url };
+          }
+          return widget;
+        });
+
+        widgetsWithPreservedData.forEach((widget) => {
           if (!newLocalState[widget.id]) {
             // Initialize with backend defaults
             newLocalState[widget.id] = {
@@ -79,7 +89,7 @@ export const useWidgetStore = create<WidgetState>()(
           }
         });
 
-        set({ widgets, localState: newLocalState, error: null });
+        set({ widgets: widgetsWithPreservedData, localState: newLocalState, error: null });
       },
 
       setLoading: (isLoading) => set({ isLoading }),

@@ -5,6 +5,12 @@ from app.models.content import (
 )
 from app.models.subscription import Subscription, Invoice, SUBSCRIPTION_PLANS, SubscriptionPlan
 from app.models.watchlist import WatchlistItem, WatchHistory, Conversation
+from app.models.user_system_widget import (
+    UserSystemWidget,
+    UserSystemWidgetResponse,
+    UserSystemWidgetPositionUpdate,
+    UserSystemWidgetPreferencesUpdate,
+)
 
 __all__ = [
     # User
@@ -34,4 +40,9 @@ __all__ = [
     "WatchlistItem",
     "WatchHistory",
     "Conversation",
+    # User System Widget
+    "UserSystemWidget",
+    "UserSystemWidgetResponse",
+    "UserSystemWidgetPositionUpdate",
+    "UserSystemWidgetPreferencesUpdate",
 ]

@@ -1143,6 +1143,16 @@ const apiWidgetsService = {
   deletePersonalWidget: (id) => adminApi.delete(`/widgets/${id}`),
   updateWidgetPosition: (id, position) => adminApi.post(`/widgets/${id}/position`, position),
   closeWidget: (id) => adminApi.post(`/widgets/${id}/close`),
+
+  // System widget subscription endpoints
+  getAvailableSystemWidgets: () => adminApi.get('/widgets/system/available'),
+  getMySystemWidgets: (pagePath) => adminApi.get('/widgets/system/my', { params: { page_path: pagePath } }),
+  addSystemWidget: (widgetId) => adminApi.post(`/widgets/system/${widgetId}/add`),
+  removeSystemWidget: (widgetId) => adminApi.delete(`/widgets/system/${widgetId}/remove`),
+  updateSystemWidgetPosition: (widgetId, position) => adminApi.patch(`/widgets/system/${widgetId}/position`, position),
+  updateSystemWidgetPreferences: (widgetId, prefs) => adminApi.patch(`/widgets/system/${widgetId}/preferences`, prefs),
+  closeSystemWidget: (widgetId) => adminApi.post(`/widgets/system/${widgetId}/close`),
+  showSystemWidget: (widgetId) => adminApi.post(`/widgets/system/${widgetId}/show`),
 }
 
 const demoWidgetsService = {
@@ -1215,6 +1225,40 @@ const demoWidgetsService = {
   closeWidget: async (id) => {
     await delay()
     return { message: 'Widget closed' }
+  },
+  // System widget subscription endpoints (demo)
+  getAvailableSystemWidgets: async () => {
+    await delay()
+    const systemWidgets = demoWidgets.filter(w => w.type === 'system' && w.is_active)
+    return { items: systemWidgets.map(w => ({ ...w, is_added: false })), total: systemWidgets.length }
+  },
+  getMySystemWidgets: async (pagePath) => {
+    await delay()
+    return { items: [], total: 0 }
+  },
+  addSystemWidget: async (widgetId) => {
+    await delay()
+    return { message: 'Widget added', id: Date.now().toString(), widget_id: widgetId }
+  },
+  removeSystemWidget: async (widgetId) => {
+    await delay()
+    return { message: 'Widget removed' }
+  },
+  updateSystemWidgetPosition: async (widgetId, position) => {
+    await delay()
+    return { message: 'Position updated' }
+  },
+  updateSystemWidgetPreferences: async (widgetId, prefs) => {
+    await delay()
+    return { message: 'Preferences updated' }
+  },
+  closeSystemWidget: async (widgetId) => {
+    await delay()
+    return { message: 'Widget closed' }
+  },
+  showSystemWidget: async (widgetId) => {
+    await delay()
+    return { message: 'Widget shown' }
   },
 }
 

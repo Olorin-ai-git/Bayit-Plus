@@ -7,7 +7,7 @@
 
 export type WidgetType = 'system' | 'personal';
 
-export type WidgetContentType = 'live_channel' | 'iframe' | 'podcast' | 'vod' | 'radio' | 'live';
+export type WidgetContentType = 'live_channel' | 'iframe' | 'podcast' | 'vod' | 'radio' | 'live' | 'custom';
 
 export interface WidgetPosition {
   x: number;
@@ -25,6 +25,7 @@ export interface WidgetContent {
   station_id?: string | null;
   iframe_url?: string | null;
   iframe_title?: string | null;
+  component_name?: string | null;  // For custom React components
 }
 
 export interface Widget {
@@ -178,6 +179,29 @@ export const DEFAULT_WIDGET_POSITION: WidgetPosition = {
   height: 200,
   z_index: 100,
 };
+
+// User System Widget - tracks user's subscription to a system widget
+export interface UserSystemWidget {
+  id: string;
+  user_id: string;
+  widget_id: string;
+  added_at: string;
+  position?: WidgetPosition;
+  is_muted: boolean;
+  is_visible: boolean;
+  order: number;
+}
+
+// Available system widget with subscription status
+export interface AvailableSystemWidget extends Widget {
+  is_added: boolean;
+}
+
+// Available system widgets response
+export interface AvailableSystemWidgetsResponse {
+  items: AvailableSystemWidget[];
+  total: number;
+}
 
 // Default form values
 export const DEFAULT_WIDGET_FORM: WidgetFormData = {

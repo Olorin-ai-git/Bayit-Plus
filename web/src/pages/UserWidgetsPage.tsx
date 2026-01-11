@@ -8,6 +8,7 @@ import { widgetsService } from '@/services/adminApi';
 import { colors, spacing, borderRadius } from '@bayit/shared/theme';
 import { GlassCard } from '@bayit/shared/ui';
 import WidgetFormModal from '@/components/widgets/WidgetFormModal';
+import { SystemWidgetGallery } from '@/components/widgets/SystemWidgetGallery';
 import logger from '@/utils/logger';
 
 interface Widget {
@@ -229,6 +230,19 @@ export default function UserWidgetsPage() {
         isUserWidget={true}
       />
 
+      {/* System Widgets Gallery */}
+      <SystemWidgetGallery onWidgetAdded={loadWidgets} />
+
+      {/* Personal Widgets Section */}
+      <View style={styles.sectionHeader}>
+        <Text style={[styles.sectionTitle, { textAlign }]}>
+          {t('widgets.myWidgets') || 'My Personal Widgets'}
+        </Text>
+        <Text style={[styles.sectionDescription, { textAlign }]}>
+          {t('widgets.myWidgetsHint') || 'Widgets you have created'}
+        </Text>
+      </View>
+
       {/* Widgets Grid */}
       {widgets.length > 0 && (
         <View style={styles.grid}>
@@ -245,9 +259,9 @@ export default function UserWidgetsPage() {
         <View style={styles.emptyState}>
           <GlassCard style={styles.emptyCard}>
             <Grid3x3 size={64} color="rgba(59, 130, 246, 0.5)" />
-            <Text style={styles.emptyTitle}>{t('widgets.empty') || 'No widgets yet'}</Text>
+            <Text style={styles.emptyTitle}>{t('widgets.emptyPersonal') || 'No personal widgets yet'}</Text>
             <Text style={styles.emptyDescription}>
-              {t('widgets.emptyHint') || 'Create your first widget to get started'}
+              {t('widgets.emptyPersonalHint') || 'Create your first personal widget or add system widgets above'}
             </Text>
           </GlassCard>
         </View>
@@ -421,5 +435,19 @@ const styles = StyleSheet.create({
     padding: spacing.md,
     alignItems: 'center',
     gap: spacing.sm,
+  },
+  sectionHeader: {
+    marginTop: spacing.lg,
+    marginBottom: spacing.md,
+  },
+  sectionTitle: {
+    fontSize: 20,
+    fontWeight: '600',
+    color: colors.text,
+    marginBottom: spacing.xs,
+  },
+  sectionDescription: {
+    fontSize: 14,
+    color: colors.textMuted,
   },
 });

@@ -18,14 +18,20 @@ interface DirectionResult {
 
 const RTL_LANGUAGES = ['he', 'ar'];
 
+// Check if language is RTL (handles both 'he' and 'he-IL' formats)
+const isRTLLanguage = (lng: string): boolean => {
+  const langCode = lng?.split('-')[0]?.toLowerCase() || '';
+  return RTL_LANGUAGES.includes(langCode);
+};
+
 export const useDirection = (): DirectionResult => {
   const [isRTL, setIsRTL] = useState(() => {
-    return RTL_LANGUAGES.includes(i18n.language);
+    return isRTLLanguage(i18n.language);
   });
 
   useEffect(() => {
     const handleLanguageChange = (lng: string) => {
-      const rtl = RTL_LANGUAGES.includes(lng);
+      const rtl = isRTLLanguage(lng);
       setIsRTL(rtl);
 
       // Update document direction for web

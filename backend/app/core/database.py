@@ -18,6 +18,7 @@ from app.models.admin import (
     EmailCampaign, PushNotification, SystemSettings, SubscriptionPlan,
 )
 from app.models.widget import Widget
+from app.models.user_system_widget import UserSystemWidget
 from app.api.routes.favorites import Favorite
 from app.api.routes.downloads import Download
 
@@ -72,8 +73,9 @@ async def connect_to_mongo():
             PushNotification,
             SystemSettings,
             SubscriptionPlan,
-            # Widget model
+            # Widget models
             Widget,
+            UserSystemWidget,
             # User content models
             Favorite,
             Download,
