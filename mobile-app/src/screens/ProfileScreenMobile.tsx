@@ -89,41 +89,41 @@ export const ProfileScreenMobile: React.FC = () => {
     {
       id: 'watchlist',
       title: t('profile.watchlist'),
-      icon: '📝',
+      icon: '☰',
       onPress: () => navigation.navigate('Watchlist'),
       badge: stats.watchlistCount,
     },
     {
       id: 'favorites',
       title: t('profile.favorites'),
-      icon: '⭐',
+      icon: '★',
       onPress: () => navigation.navigate('Favorites'),
       badge: stats.favoritesCount,
     },
     {
       id: 'downloads',
       title: t('profile.downloads'),
-      icon: '💾',
+      icon: '↓',
       onPress: () => navigation.navigate('Downloads'),
       badge: stats.downloadsCount,
     },
     {
       id: 'settings',
       title: t('profile.settings'),
-      icon: '🔧',
+      icon: '⚙',
       onPress: () => navigation.navigate('Settings'),
     },
     {
       id: 'language',
       title: t('profile.language'),
-      icon: '🗣️',
+      icon: '◉',
       subtitle: i18n.language === 'he' ? 'עברית' : i18n.language === 'en' ? 'English' : 'Español',
       onPress: () => navigation.navigate('Settings', { section: 'language' }),
     },
     {
       id: 'notifications',
       title: t('profile.notifications'),
-      icon: '🔔',
+      icon: '◎',
       onPress: () => navigation.navigate('Settings', { section: 'notifications' }),
     },
   ];
@@ -172,14 +172,14 @@ export const ProfileScreenMobile: React.FC = () => {
         <GlassStatCard
           label={t('profile.watchTime')}
           value={formatWatchTime(stats.watchTimeMinutes)}
-          icon={<Text style={styles.statIcon}>⏱️</Text>}
+          icon={<Text style={styles.statIcon}>⏲</Text>}
           style={styles.statCard}
           compact
         />
         <GlassStatCard
           label={t('profile.favorites')}
           value={stats.favoritesCount.toString()}
-          icon={<Text style={styles.statIcon}>⭐</Text>}
+          icon={<Text style={styles.statIcon}>★</Text>}
           style={styles.statCard}
           compact
         />
@@ -190,14 +190,14 @@ export const ProfileScreenMobile: React.FC = () => {
         <GlassStatCard
           label={t('profile.watchlist')}
           value={stats.watchlistCount.toString()}
-          icon={<Text style={styles.statIcon}>📋</Text>}
+          icon={<Text style={styles.statIcon}>☰</Text>}
           style={styles.statCard}
           compact
         />
         <GlassStatCard
           label={t('profile.downloads')}
           value={stats.downloadsCount.toString()}
-          icon={<Text style={styles.statIcon}>⬇️</Text>}
+          icon={<Text style={styles.statIcon}>↓</Text>}
           style={styles.statCard}
           compact
         />
