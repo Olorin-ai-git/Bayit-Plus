@@ -207,13 +207,13 @@ Subject: ⚠️ ביקורת ספרן AI - אזהרת אחסון
 
 ```bash
 # Get admin token
-TOKEN=$(curl -s -X POST https://bayit-plus-backend-534446777606.us-east1.run.app/api/v1/auth/login \
+TOKEN=$(curl -s -X POST https://bayit-plus-backend-624470113582.us-east1.run.app/api/v1/auth/login \
   -H 'Content-Type: application/json' \
   -d '{"email":"admin@olorin.ai","password":"Jersey1973!"}' | \
   jq -r '.access_token')
 
 # Trigger AI agent audit with storage monitoring
-curl -X POST https://bayit-plus-backend-534446777606.us-east1.run.app/api/v1/admin/librarian/run-audit \
+curl -X POST https://bayit-plus-backend-624470113582.us-east1.run.app/api/v1/admin/librarian/run-audit \
   -H "Authorization: Bearer $TOKEN" \
   -H 'Content-Type: application/json' \
   -d '{
@@ -225,7 +225,7 @@ curl -X POST https://bayit-plus-backend-534446777606.us-east1.run.app/api/v1/adm
 
 # Wait 30 seconds, then check report
 sleep 30
-curl "https://bayit-plus-backend-534446777606.us-east1.run.app/api/v1/admin/librarian/reports?limit=1" \
+curl "https://bayit-plus-backend-624470113582.us-east1.run.app/api/v1/admin/librarian/reports?limit=1" \
   -H "Authorization: Bearer $TOKEN" | jq .
 ```
 

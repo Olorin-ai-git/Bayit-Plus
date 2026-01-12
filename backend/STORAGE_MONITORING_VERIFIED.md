@@ -15,7 +15,7 @@ The storage monitoring features have been successfully deployed and tested in pr
 **Service:** bayit-plus-backend
 **Region:** us-east1
 **Revision:** bayit-plus-backend-00004-fz9
-**URL:** https://bayit-plus-backend-534446777606.us-east1.run.app
+**URL:** https://bayit-plus-backend-624470113582.us-east1.run.app
 
 ### Test Results
 

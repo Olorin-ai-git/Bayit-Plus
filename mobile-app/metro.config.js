@@ -10,17 +10,36 @@ const nodeModulesPath = path.resolve(projectRoot, 'node_modules');
 function getExtraNodeModules() {
   const modules = {};
 
-  // Add shared package aliases
-  modules['@bayit/shared'] = path.resolve(sharedRoot, 'components');
-  modules['@bayit/shared-screens'] = path.resolve(sharedRoot, 'screens');
-  modules['@bayit/shared-services'] = path.resolve(sharedRoot, 'services');
-  modules['@bayit/shared-stores'] = path.resolve(sharedRoot, 'stores');
-  modules['@bayit/shared-hooks'] = path.resolve(sharedRoot, 'hooks');
-  modules['@bayit/shared-contexts'] = path.resolve(sharedRoot, 'contexts');
-  modules['@bayit/shared-i18n'] = path.resolve(sharedRoot, 'i18n');
-  modules['@bayit/shared-config'] = path.resolve(sharedRoot, 'config');
-  modules['@bayit/shared-types'] = path.resolve(sharedRoot, 'types');
-  modules['@bayit/shared-utils'] = path.resolve(sharedRoot, 'utils');
+  // Check if shared directory exists, otherwise use stubs
+  const stubsRoot = path.resolve(projectRoot, 'src/stubs');
+  const useStubs = !fs.existsSync(sharedRoot);
+
+  if (useStubs) {
+    // Use stubs when shared directory doesn't exist
+    modules['@bayit/shared'] = path.resolve(stubsRoot, 'shared-components');
+    modules['@bayit/shared-screens'] = path.resolve(stubsRoot, 'shared-screens');
+    modules['@bayit/shared-services'] = path.resolve(stubsRoot, 'shared-services');
+    modules['@bayit/shared-stores'] = path.resolve(stubsRoot, 'shared-stores');
+    modules['@bayit/shared-hooks'] = path.resolve(stubsRoot, 'shared-hooks');
+    modules['@bayit/shared-contexts'] = path.resolve(stubsRoot, 'shared-contexts');
+    modules['@bayit/shared-i18n'] = path.resolve(stubsRoot, 'shared-i18n');
+    modules['@bayit/shared-config'] = path.resolve(stubsRoot, 'shared-config');
+    modules['@bayit/shared-types'] = path.resolve(stubsRoot, 'shared-types');
+    modules['@bayit/shared-utils'] = path.resolve(stubsRoot, 'shared-utils');
+    modules['@bayit/shared-components'] = path.resolve(stubsRoot, 'shared-components');
+  } else {
+    // Use real shared directory
+    modules['@bayit/shared'] = path.resolve(sharedRoot, 'components');
+    modules['@bayit/shared-screens'] = path.resolve(sharedRoot, 'screens');
+    modules['@bayit/shared-services'] = path.resolve(sharedRoot, 'services');
+    modules['@bayit/shared-stores'] = path.resolve(sharedRoot, 'stores');
+    modules['@bayit/shared-hooks'] = path.resolve(sharedRoot, 'hooks');
+    modules['@bayit/shared-contexts'] = path.resolve(sharedRoot, 'contexts');
+    modules['@bayit/shared-i18n'] = path.resolve(sharedRoot, 'i18n');
+    modules['@bayit/shared-config'] = path.resolve(sharedRoot, 'config');
+    modules['@bayit/shared-types'] = path.resolve(sharedRoot, 'types');
+    modules['@bayit/shared-utils'] = path.resolve(sharedRoot, 'utils');
+  }
 
   // Map all node_modules from mobile-app
   const nodeModulesList = fs.readdirSync(nodeModulesPath);

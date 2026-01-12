@@ -108,7 +108,7 @@ Visit: https://console.cloud.google.com/storage/browser/bayit-plus-media/movies?
 
 ### Check via API:
 ```bash
-curl https://bayit-plus-backend-534446777606.us-east1.run.app/api/v1/content/featured | jq '.categories[] | select(.name == "Movies")'
+curl https://bayit-plus-backend-624470113582.us-east1.run.app/api/v1/content/featured | jq '.categories[] | select(.name == "Movies")'
 ```
 
 ---

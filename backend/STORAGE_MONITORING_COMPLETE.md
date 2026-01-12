@@ -121,7 +121,7 @@ The AI Librarian can now autonomously monitor Google Cloud Storage, identify lar
 **Build Time:** ~3 minutes
 **Container:** Built from Dockerfile
 **Region:** us-east1
-**Service URL:** https://bayit-plus-backend-534446777606.us-east1.run.app
+**Service URL:** https://bayit-plus-backend-624470113582.us-east1.run.app
 **Revision:** bayit-plus-backend-00004-fz9
 **Traffic:** 100% to new revision
 

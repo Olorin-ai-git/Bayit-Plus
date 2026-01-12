@@ -176,8 +176,13 @@ export default function MovieDetailPage() {
   }, []);
 
   const handlePlay = () => {
+    console.log('handlePlay called', { movie: movie?.id, movie });
     if (movie) {
-      navigate(`/vod/${movie.id}`);
+      const path = `/vod/${movie.id}`;
+      console.log('Navigating to:', path);
+      navigate(path);
+    } else {
+      console.error('Movie object is null or undefined');
     }
   };
 
@@ -252,6 +257,7 @@ export default function MovieDetailPage() {
               zIndex: isPreviewPlaying ? 5 : 1,
             }
           ]}
+          pointerEvents="none"
         >
           <video
             ref={videoRef}
@@ -270,12 +276,14 @@ export default function MovieDetailPage() {
         <LinearGradient
           colors={['transparent', 'rgba(0,0,0,0.4)', 'rgba(0,0,0,0.95)']}
           style={styles.gradientBottom}
+          pointerEvents="none"
         />
         <LinearGradient
           colors={['rgba(0,0,0,0.6)', 'transparent']}
           start={{ x: 0, y: 0 }}
           end={{ x: 1, y: 0 }}
           style={styles.gradientLeft}
+          pointerEvents="none"
         />
 
         {/* Content */}

@@ -7,7 +7,7 @@
 
 # GCP Project (SHARED)
 GCP_PROJECT_ID=israeli-radio-475c9
-GCP_PROJECT_NUMBER=534446777606
+GCP_PROJECT_NUMBER=624470113582
 
 # Region (existing deployments use us-east1)
 GCP_REGION=us-east1

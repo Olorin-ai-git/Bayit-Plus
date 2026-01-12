@@ -2,7 +2,7 @@
 
 ## ✅ Deployment Successful
 
-**Service URL**: `https://bayit-plus-backend-534446777606.us-east1.run.app`
+**Service URL**: `https://bayit-plus-backend-624470113582.us-east1.run.app`
 
 **Deployment Date**: January 11, 2026
 
@@ -62,17 +62,17 @@
 
 ### ✅ Health Check
 ```bash
-curl https://bayit-plus-backend-534446777606.us-east1.run.app/health
+curl https://bayit-plus-backend-624470113582.us-east1.run.app/health
 # Response: {"status":"healthy","app":"Bayit+ API"}
 ```
 
 ### ✅ API Documentation
-- **Swagger UI**: https://bayit-plus-backend-534446777606.us-east1.run.app/docs
-- **OpenAPI JSON**: https://bayit-plus-backend-534446777606.us-east1.run.app/api/v1/openapi.json
+- **Swagger UI**: https://bayit-plus-backend-624470113582.us-east1.run.app/docs
+- **OpenAPI JSON**: https://bayit-plus-backend-624470113582.us-east1.run.app/api/v1/openapi.json
 
 ### ✅ Content API
 ```bash
-curl https://bayit-plus-backend-534446777606.us-east1.run.app/api/v1/content/featured
+curl https://bayit-plus-backend-624470113582.us-east1.run.app/api/v1/content/featured
 # Response: {"hero":null,"spotlight":[],"categories":[]}
 # (Empty because database is new - working correctly)
 ```
@@ -87,12 +87,12 @@ Update the API base URL in all frontend apps to point to the new Cloud Run servi
 
 **Web App** (`web/src/config/appConfig.js`):
 ```javascript
-export const API_BASE_URL = 'https://bayit-plus-backend-534446777606.us-east1.run.app/api/v1';
+export const API_BASE_URL = 'https://bayit-plus-backend-624470113582.us-east1.run.app/api/v1';
 ```
 
 **Tizen TV App**:
 ```javascript
-const API_BASE_URL = 'https://bayit-plus-backend-534446777606.us-east1.run.app/api/v1';
+const API_BASE_URL = 'https://bayit-plus-backend-624470113582.us-east1.run.app/api/v1';
 ```
 
 **Mobile Apps** (if applicable):
@@ -127,7 +127,7 @@ Access the admin panel through the web app to manually add content.
 #### Google OAuth Console
 Add the new redirect URI:
 ```
-https://bayit-plus-backend-534446777606.us-east1.run.app/api/v1/auth/google/callback
+https://bayit-plus-backend-624470113582.us-east1.run.app/api/v1/auth/google/callback
 ```
 
 **Steps**:
@@ -138,7 +138,7 @@ https://bayit-plus-backend-534446777606.us-east1.run.app/api/v1/auth/google/call
 #### Stripe Webhooks (When Ready)
 1. Go to https://dashboard.stripe.com/webhooks
 2. Create new webhook endpoint:
-   - URL: `https://bayit-plus-backend-534446777606.us-east1.run.app/api/v1/subscriptions/webhook`
+   - URL: `https://bayit-plus-backend-624470113582.us-east1.run.app/api/v1/subscriptions/webhook`
    - Events: `checkout.session.completed`, `customer.subscription.*`
 3. Update `stripe-webhook-secret` in Secret Manager with the signing secret
 4. Update `stripe-secret-key`, `stripe-price-basic`, `stripe-price-premium`, `stripe-price-family` secrets
@@ -178,7 +178,7 @@ Now every push to `main` will automatically build and deploy the backend.
 1. Go to https://console.cloud.google.com/monitoring/uptime?project=israeli-radio-475c9
 2. Create uptime check:
    - **Protocol**: HTTPS
-   - **URL**: `https://bayit-plus-backend-534446777606.us-east1.run.app/health`
+   - **URL**: `https://bayit-plus-backend-624470113582.us-east1.run.app/health`
    - **Frequency**: 1 minute
 
 #### Create Alert Policies
@@ -242,7 +242,7 @@ gcloud run services update-traffic bayit-plus-backend \
 - **Logs**: https://console.cloud.google.com/logs/query?project=israeli-radio-475c9
 - **Secrets**: https://console.cloud.google.com/security/secret-manager?project=israeli-radio-475c9
 - **GCS Bucket**: https://console.cloud.google.com/storage/browser/bayit-plus-media?project=israeli-radio-475c9
-- **API Docs**: https://bayit-plus-backend-534446777606.us-east1.run.app/docs
+- **API Docs**: https://bayit-plus-backend-624470113582.us-east1.run.app/docs
 
 ---
 

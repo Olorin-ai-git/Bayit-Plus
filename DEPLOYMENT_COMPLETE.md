@@ -48,7 +48,7 @@ The backend now allows requests from the Firebase hosting URLs:
 
 The web app is configured to use:
 ```
-https://bayit-plus-backend-534446777606.us-east1.run.app/api/v1
+https://bayit-plus-backend-624470113582.us-east1.run.app/api/v1
 ```
 
 ---
@@ -102,9 +102,9 @@ gcloud logging read "resource.type=cloud_run_revision AND resource.labels.servic
 ## 🌐 All Deployment URLs
 
 ### Backend (Cloud Run)
-- **API:** https://bayit-plus-backend-534446777606.us-east1.run.app/api/v1
-- **Health:** https://bayit-plus-backend-534446777606.us-east1.run.app/health
-- **API Docs:** https://bayit-plus-backend-534446777606.us-east1.run.app/docs
+- **API:** https://bayit-plus-backend-624470113582.us-east1.run.app/api/v1
+- **Health:** https://bayit-plus-backend-624470113582.us-east1.run.app/health
+- **API Docs:** https://bayit-plus-backend-624470113582.us-east1.run.app/docs
 
 ### Frontend (Firebase Hosting)
 - **Web App:** https://bayit-plus-web.web.app
@@ -236,7 +236,7 @@ Secrets (Secret Manager)
 
 ### App doesn't load
 - Check browser console for errors
-- Verify API is accessible: https://bayit-plus-backend-534446777606.us-east1.run.app/health
+- Verify API is accessible: https://bayit-plus-backend-624470113582.us-east1.run.app/health
 - Check CORS settings in Cloud Run
 
 ### Google login fails

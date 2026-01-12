@@ -39,19 +39,19 @@ All data from local MongoDB has been migrated to MongoDB Atlas!
 
 **Podcasts:**
 ```bash
-curl https://bayit-plus-backend-534446777606.us-east1.run.app/api/v1/podcasts
+curl https://bayit-plus-backend-624470113582.us-east1.run.app/api/v1/podcasts
 # Returns: 5 podcasts (filtered/active)
 ```
 
 **Radio Stations:**
 ```bash
-curl https://bayit-plus-backend-534446777606.us-east1.run.app/api/v1/radio
+curl https://bayit-plus-backend-624470113582.us-east1.run.app/api/v1/radio
 # Returns: 1 radio station (filtered/active)
 ```
 
 **Categories:**
 ```bash
-curl https://bayit-plus-backend-534446777606.us-east1.run.app/api/v1/content/featured
+curl https://bayit-plus-backend-624470113582.us-east1.run.app/api/v1/content/featured
 # Returns: 10 categories including:
 # - סרטים ישראליים (Israeli Movies)
 # - דרמה (Drama)
@@ -155,8 +155,8 @@ The exported MongoDB data is available at:
 **Web App:** https://bayit-plus-web.web.app
 
 **API Endpoints:**
-- Health: https://bayit-plus-backend-534446777606.us-east1.run.app/health
-- API Docs: https://bayit-plus-backend-534446777606.us-east1.run.app/docs
+- Health: https://bayit-plus-backend-624470113582.us-east1.run.app/health
+- API Docs: https://bayit-plus-backend-624470113582.us-east1.run.app/docs
 - Podcasts: `.../api/v1/podcasts`
 - Radio: `.../api/v1/radio`
 - Live TV: `.../api/v1/live`
@@ -345,7 +345,7 @@ Check:
 ### Issue: Podcasts don't show in API
 **Check:**
 ```bash
-curl https://bayit-plus-backend-534446777606.us-east1.run.app/api/v1/podcasts
+curl https://bayit-plus-backend-624470113582.us-east1.run.app/api/v1/podcasts
 ```
 **Solution:** Verify `is_active` field is `true` for podcasts
 
@@ -387,7 +387,7 @@ curl https://bayit-plus-backend-534446777606.us-east1.run.app/api/v1/podcasts
 - **Cloud Run Console:** https://console.cloud.google.com/run/detail/us-east1/bayit-plus-backend?project=israeli-radio-475c9
 - **GCS Bucket:** https://console.cloud.google.com/storage/browser/bayit-plus-media?project=israeli-radio-475c9
 - **Firebase Console:** https://console.firebase.google.com/project/bayit-plus
-- **API Docs:** https://bayit-plus-backend-534446777606.us-east1.run.app/docs
+- **API Docs:** https://bayit-plus-backend-624470113582.us-east1.run.app/docs
 
 ---
 

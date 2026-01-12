@@ -48,7 +48,7 @@
 ### Cloud Run Service
 - **URL:** https://bayit-plus-backend-znfki37vbq-ue.a.run.app
 - **Region:** us-east1
-- **Service Account:** 534446777606-compute@developer.gserviceaccount.com
+- **Service Account:** 624470113582-compute@developer.gserviceaccount.com
 
 ### API Endpoint
 ```

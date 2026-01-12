@@ -4,7 +4,7 @@
 
 All frontend applications have been updated to use the new Google Cloud Run backend API.
 
-**New API URL**: `https://bayit-plus-backend-534446777606.us-east1.run.app/api/v1`
+**New API URL**: `https://bayit-plus-backend-624470113582.us-east1.run.app/api/v1`
 
 ---
 
@@ -22,7 +22,7 @@ All frontend applications have been updated to use the new Google Cloud Run back
 VITE_API_URL=http://localhost:8000/api/v1
 
 # New
-VITE_API_URL=https://bayit-plus-backend-534446777606.us-east1.run.app/api/v1
+VITE_API_URL=https://bayit-plus-backend-624470113582.us-east1.run.app/api/v1
 ```
 
 **To Deploy:**
@@ -61,7 +61,7 @@ cd tizen
 API_BASE_URL=http://localhost:8000
 
 # New
-API_BASE_URL=https://bayit-plus-backend-534446777606.us-east1.run.app
+API_BASE_URL=https://bayit-plus-backend-624470113582.us-east1.run.app
 ```
 
 **To Deploy:**
@@ -83,7 +83,7 @@ npm run build
 API_BASE_URL=http://localhost:8000
 
 # New
-API_BASE_URL=https://bayit-plus-backend-534446777606.us-east1.run.app
+API_BASE_URL=https://bayit-plus-backend-624470113582.us-east1.run.app
 ```
 
 **To Deploy:**
@@ -101,7 +101,7 @@ The Google OAuth redirect URI has been updated in Secret Manager:
 
 **New Redirect URI:**
 ```
-https://bayit-plus-backend-534446777606.us-east1.run.app/api/v1/auth/google/callback
+https://bayit-plus-backend-624470113582.us-east1.run.app/api/v1/auth/google/callback
 ```
 
 ### Next Step: Update Google Cloud Console
@@ -111,7 +111,7 @@ You need to add this redirect URI to your Google OAuth Client:
 1. Go to: https://console.cloud.google.com/apis/credentials?project=israeli-radio-475c9
 2. Click on your OAuth 2.0 Client ID (the one used for Bayit+)
 3. Under "Authorized redirect URIs", click "ADD URI"
-4. Add: `https://bayit-plus-backend-534446777606.us-east1.run.app/api/v1/auth/google/callback`
+4. Add: `https://bayit-plus-backend-624470113582.us-east1.run.app/api/v1/auth/google/callback`
 5. Click "SAVE"
 
 ---
@@ -203,8 +203,8 @@ video_url = blob.public_url
 ## Testing Checklist
 
 ### Backend (Cloud Run)
-- ✅ Health check: `curl https://bayit-plus-backend-534446777606.us-east1.run.app/health`
-- ✅ API docs: https://bayit-plus-backend-534446777606.us-east1.run.app/docs
+- ✅ Health check: `curl https://bayit-plus-backend-624470113582.us-east1.run.app/health`
+- ✅ API docs: https://bayit-plus-backend-624470113582.us-east1.run.app/docs
 - ✅ MongoDB connection verified
 - ✅ Public access enabled
 
@@ -251,7 +251,7 @@ video_url = blob.public_url
 
 ## Support Links
 
-- **Backend API**: https://bayit-plus-backend-534446777606.us-east1.run.app/docs
+- **Backend API**: https://bayit-plus-backend-624470113582.us-east1.run.app/docs
 - **Cloud Run Console**: https://console.cloud.google.com/run/detail/us-east1/bayit-plus-backend?project=israeli-radio-475c9
 - **MongoDB Atlas**: https://cloud.mongodb.com/
 - **Google OAuth Console**: https://console.cloud.google.com/apis/credentials?project=israeli-radio-475c9

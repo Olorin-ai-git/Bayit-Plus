@@ -220,7 +220,7 @@ Every title cleanup is logged:
 
 **To rollback a cleanup:**
 ```bash
-curl -X POST https://bayit-plus-backend-534446777606.us-east1.run.app/api/v1/admin/librarian/actions/{action_id}/rollback \
+curl -X POST https://bayit-plus-backend-624470113582.us-east1.run.app/api/v1/admin/librarian/actions/{action_id}/rollback \
   -H "Authorization: Bearer $TOKEN"
 ```
 

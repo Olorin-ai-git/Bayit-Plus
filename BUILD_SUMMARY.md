@@ -4,7 +4,7 @@
 
 All apps have been configured to use the new Google Cloud Run backend:
 
-**Production API URL:** `https://bayit-plus-backend-534446777606.us-east1.run.app/api/v1`
+**Production API URL:** `https://bayit-plus-backend-624470113582.us-east1.run.app/api/v1`
 
 ---
 
@@ -162,7 +162,7 @@ npm run pod-install
 ```typescript
 const getApiBaseUrl = () => {
   if (!__DEV__) {
-    return 'https://bayit-plus-backend-534446777606.us-east1.run.app/api/v1';
+    return 'https://bayit-plus-backend-624470113582.us-east1.run.app/api/v1';
   }
   // In development:
   if (Platform.OS === 'web') {
@@ -185,12 +185,12 @@ const getApiBaseUrl = () => {
 
 ### Web & Tizen
 ```bash
-VITE_API_URL=https://bayit-plus-backend-534446777606.us-east1.run.app/api/v1
+VITE_API_URL=https://bayit-plus-backend-624470113582.us-east1.run.app/api/v1
 ```
 
 ### Android TV, Apple TV, iPhone
 ```bash
-API_BASE_URL=https://bayit-plus-backend-534446777606.us-east1.run.app
+API_BASE_URL=https://bayit-plus-backend-624470113582.us-east1.run.app
 ```
 
 Note: Native apps append `/api/v1` in code, web apps include it in env var.
@@ -385,6 +385,6 @@ cd mobile-app && npm run ios
 
 ## Support
 
-- **Backend API:** https://bayit-plus-backend-534446777606.us-east1.run.app/docs
+- **Backend API:** https://bayit-plus-backend-624470113582.us-east1.run.app/docs
 - **Cloud Run:** https://console.cloud.google.com/run/detail/us-east1/bayit-plus-backend?project=israeli-radio-475c9
 - **Build Issues:** Check logs in `/tmp/claude/...` or use `npm run build --verbose`

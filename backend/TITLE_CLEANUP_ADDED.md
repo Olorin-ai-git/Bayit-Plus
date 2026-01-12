@@ -214,13 +214,13 @@ Claude will send email alerts about title cleanup when:
 
 ```bash
 # Get admin token
-TOKEN=$(curl -X POST https://bayit-plus-backend-534446777606.us-east1.run.app/api/v1/auth/login \
+TOKEN=$(curl -X POST https://bayit-plus-backend-624470113582.us-east1.run.app/api/v1/auth/login \
   -H "Content-Type: application/json" \
   -d "{\"email\":\"admin@olorin.ai\",\"password\":\"Jersey1973!\"}" | \
   jq -r '.access_token')
 
 # Trigger AI agent audit (it will clean titles automatically)
-curl -X POST https://bayit-plus-backend-534446777606.us-east1.run.app/api/v1/admin/librarian/run-audit \
+curl -X POST https://bayit-plus-backend-624470113582.us-east1.run.app/api/v1/admin/librarian/run-audit \
   -H "Authorization: Bearer $TOKEN" \
   -H 'Content-Type: application/json' \
   -d '{
@@ -232,11 +232,11 @@ curl -X POST https://bayit-plus-backend-534446777606.us-east1.run.app/api/v1/adm
 
 # Wait for completion, then check report
 sleep 60
-curl "https://bayit-plus-backend-534446777606.us-east1.run.app/api/v1/admin/librarian/reports?limit=1" \
+curl "https://bayit-plus-backend-624470113582.us-east1.run.app/api/v1/admin/librarian/reports?limit=1" \
   -H "Authorization: Bearer $TOKEN" | jq '.[] | .summary.issues_fixed'
 
 # View cleanup actions
-curl "https://bayit-plus-backend-534446777606.us-east1.run.app/api/v1/admin/librarian/actions?action_type=clean_title&limit=20" \
+curl "https://bayit-plus-backend-624470113582.us-east1.run.app/api/v1/admin/librarian/actions?action_type=clean_title&limit=20" \
   -H "Authorization: Bearer $TOKEN" | jq '.'
 ```
 
