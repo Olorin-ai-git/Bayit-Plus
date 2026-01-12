@@ -82,7 +82,7 @@ main() {
 
     PROJECT_ID=$(prompt_with_default "Enter GCP Project ID" "$(gcloud config get-value project 2>/dev/null)")
     REGION=$(prompt_with_default "Enter GCP Region" "us-central1")
-    BUCKET_NAME=$(prompt_with_default "Enter GCS Bucket Name" "bayit-plus-media")
+    BUCKET_NAME=$(prompt_with_default "Enter GCS Bucket Name" "bayit-plus-media-new")
     SERVICE_NAME=$(prompt_with_default "Enter Cloud Run Service Name" "bayit-plus-backend")
 
     # Configure gcloud

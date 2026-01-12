@@ -40,7 +40,7 @@ for rename in "${renames[@]}"; do
     echo "      → $new"
 
     # Move using gsutil
-    gsutil -m mv "gs://bayit-plus-media-new/movies/$old" "gs://bayit-plus-media-new/movies/$new" 2>&1
+    gsutil -m mv "gs://bayit-plus-media-new-new/movies/$old" "gs://bayit-plus-media-new-new/movies/$new" 2>&1
 
     if [ $? -eq 0 ]; then
         echo "✅ Success"

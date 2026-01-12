@@ -39,7 +39,7 @@ print_info "Loading configuration from Israeli-Radio-Manager..."
 PROJECT_ID="israeli-radio-475c9"
 REGION="us-east1"
 SERVICE_NAME="bayit-plus-backend"
-BUCKET_NAME="bayit-plus-media"
+BUCKET_NAME="bayit-plus-media-new"
 MONGODB_DB="bayit_plus"
 
 # Paths to existing credentials

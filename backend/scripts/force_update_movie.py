@@ -24,7 +24,7 @@ async def force_update():
         {"_id": ObjectId(movie_id)},
         {
             "$set": {
-                "stream_url": "https://storage.googleapis.com/bayit-plus-media-new/movies/25th_Hour/25th.Hour.2002.HDTV.720p.AC3.5.1-BoK.mkv",
+                "stream_url": "https://storage.googleapis.com/bayit-plus-media-new-new/movies/25th_Hour/25th.Hour.2002.HDTV.720p.AC3.5.1-BoK.mkv",
                 "stream_type": "video"
             }
         }

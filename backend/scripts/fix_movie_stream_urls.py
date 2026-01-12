@@ -47,11 +47,11 @@ async def fix_stream_urls():
 
     for movie in movies:
         stream_url = movie.get('stream_url', '')
-        if not stream_url or 'bayit-plus-media-new/movies/' not in stream_url:
+        if not stream_url or 'bayit-plus-media-new-new/movies/' not in stream_url:
             continue
 
         # Extract folder name from URL
-        # URL format: https://storage.googleapis.com/bayit-plus-media-new/movies/FOLDER_NAME/file.mkv
+        # URL format: https://storage.googleapis.com/bayit-plus-media-new-new/movies/FOLDER_NAME/file.mkv
         match = re.search(r'movies/([^/]+)/', stream_url)
         if not match:
             continue

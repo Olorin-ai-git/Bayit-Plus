@@ -300,8 +300,8 @@ TOOLS = [
             "properties": {
                 "bucket_name": {
                     "type": "string",
-                    "description": "GCS bucket name to check (default: bayit-plus-media-new)",
-                    "default": "bayit-plus-media-new"
+                    "description": "GCS bucket name to check (default: bayit-plus-media-new-new)",
+                    "default": "bayit-plus-media-new-new"
                 }
             },
             "required": []
@@ -315,8 +315,8 @@ TOOLS = [
             "properties": {
                 "bucket_name": {
                     "type": "string",
-                    "description": "GCS bucket name to check (default: bayit-plus-media-new)",
-                    "default": "bayit-plus-media-new"
+                    "description": "GCS bucket name to check (default: bayit-plus-media-new-new)",
+                    "default": "bayit-plus-media-new-new"
                 },
                 "size_threshold_gb": {
                     "type": "number",
@@ -340,8 +340,8 @@ TOOLS = [
             "properties": {
                 "bucket_name": {
                     "type": "string",
-                    "description": "GCS bucket name to analyze (default: bayit-plus-media-new)",
-                    "default": "bayit-plus-media-new"
+                    "description": "GCS bucket name to analyze (default: bayit-plus-media-new-new)",
+                    "default": "bayit-plus-media-new-new"
                 },
                 "storage_class": {
                     "type": "string",
@@ -842,7 +842,7 @@ async def execute_clean_title(
 
 
 async def execute_check_storage_usage(
-    bucket_name: str = "bayit-plus-media-new"
+    bucket_name: str = "bayit-plus-media-new-new"
 ) -> Dict[str, Any]:
     """Check GCS bucket storage usage statistics."""
     try:
@@ -898,7 +898,7 @@ async def execute_check_storage_usage(
 
 
 async def execute_list_large_files(
-    bucket_name: str = "bayit-plus-media-new",
+    bucket_name: str = "bayit-plus-media-new-new",
     size_threshold_gb: float = 5.0,
     limit: int = 20
 ) -> Dict[str, Any]:
@@ -950,7 +950,7 @@ async def execute_list_large_files(
 
 
 async def execute_calculate_storage_costs(
-    bucket_name: str = "bayit-plus-media-new",
+    bucket_name: str = "bayit-plus-media-new-new",
     storage_class: str = "STANDARD"
 ) -> Dict[str, Any]:
     """Calculate estimated monthly storage costs."""

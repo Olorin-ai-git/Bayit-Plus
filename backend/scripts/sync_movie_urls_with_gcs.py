@@ -12,7 +12,7 @@ from difflib import SequenceMatcher
 
 # MongoDB connection
 MONGODB_URL = 'mongodb+srv://admin_db_user:Jersey1973!@cluster0.ydrvaft.mongodb.net/bayit_plus?retryWrites=true&w=majority'
-GCS_BUCKET = 'bayit-plus-media'
+GCS_BUCKET = 'bayit-plus-media-new'
 
 
 def get_gcs_movie_folders():

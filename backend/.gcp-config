@@ -30,7 +30,7 @@ MONGODB_USERNAME=admin_db_user
 CLOUD_RUN_SERVICE=bayit-plus-backend
 
 # GCS Bucket Name
-GCS_BUCKET_NAME=bayit-plus-media
+GCS_BUCKET_NAME=bayit-plus-media-new
 
 # MongoDB Database (new database on existing cluster)
 MONGODB_DB_NAME=bayit_plus
@@ -54,7 +54,7 @@ MONGODB_DB_NAME=bayit_plus
 # - stripe-price-premium
 # - stripe-price-family
 # - bayit-mongodb-url (or reuse with different DB name)
-# - gcs-bucket-name (bayit-plus-media)
+# - gcs-bucket-name (bayit-plus-media-new)
 # - backend-cors-origins (Bayit+ specific)
 
 # ================================================
@@ -63,7 +63,7 @@ MONGODB_DB_NAME=bayit_plus
 # 1. Use same GCP project: israeli-radio-475c9
 # 2. Deploy to same region: us-east1 (proven working)
 # 3. Create new Cloud Run service: bayit-plus-backend
-# 4. Create new GCS bucket: bayit-plus-media
+# 4. Create new GCS bucket: bayit-plus-media-new
 # 5. Use new database on existing MongoDB cluster: bayit_plus
 # 6. Reuse existing service account and OAuth credentials
 # 7. Create Bayit+-specific secrets in Secret Manager
