@@ -879,6 +879,7 @@ const apiContentService = {
 
   // Podcast Episodes
   getEpisodes: (podcastId, filters) => adminApi.get(`/admin/podcasts/${podcastId}/episodes`, { params: filters }),
+  getPodcastEpisodes: (podcastId, filters) => adminApi.get(`/admin/podcasts/${podcastId}/episodes`, { params: filters }),
   getEpisode: (podcastId, episodeId) => adminApi.get(`/admin/podcasts/${podcastId}/episodes/${episodeId}`),
   createEpisode: (podcastId, data) => adminApi.post(`/admin/podcasts/${podcastId}/episodes`, data),
   updateEpisode: (podcastId, episodeId, data) => adminApi.patch(`/admin/podcasts/${podcastId}/episodes/${episodeId}`, data),
@@ -1075,6 +1076,14 @@ const demoContentService = {
 
   // Podcast Episodes
   getEpisodes: async (podcastId, filters = {}) => {
+    await delay()
+    const episodes = demoEpisodes.filter(e => e.podcast_id === podcastId)
+    const page = filters.page || 1
+    const pageSize = filters.page_size || 20
+    const start = (page - 1) * pageSize
+    return { items: episodes.slice(start, start + pageSize), total: episodes.length, page, page_size: pageSize }
+  },
+  getPodcastEpisodes: async (podcastId, filters = {}) => {
     await delay()
     const episodes = demoEpisodes.filter(e => e.podcast_id === podcastId)
     const page = filters.page || 1
