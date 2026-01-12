@@ -9,7 +9,7 @@ import { useState, useCallback, useMemo } from 'react'
 import { View, Text, StyleSheet, Pressable, ActivityIndicator } from 'react-native'
 import { Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
-import { ChevronDown, ChevronRight, ChevronLeft, Star, Eye, Trash2, Film, Tv } from 'lucide-react'
+import { ChevronDown, ChevronRight, ChevronLeft, Star, Eye, Trash2, Film, Tv, Image } from 'lucide-react'
 import { colors, spacing, borderRadius } from '@bayit/shared/theme'
 import { GlassTable, GlassTableColumn, GlassTableCell } from '@bayit/shared/ui'
 import { useDirection } from '@/hooks/useDirection'
@@ -59,6 +59,7 @@ interface HierarchicalContentTableProps {
   loading: boolean
   onTogglePublish: (id: string) => void
   onToggleFeatured: (id: string) => void
+  onUploadPoster: (id: string) => void
   onDelete: (id: string) => void
   pagination: Pagination
   onPageChange: (page: number) => void
@@ -70,6 +71,7 @@ export default function HierarchicalContentTable({
   loading,
   onTogglePublish,
   onToggleFeatured,
+  onUploadPoster,
   onDelete,
   pagination,
   onPageChange,
@@ -319,6 +321,14 @@ export default function HierarchicalContentTable({
                   />
                 </Pressable>
               )}
+              {!isEpisode && (
+                <Pressable
+                  onPress={() => onUploadPoster(row.id)}
+                  style={[buttonStyle, { backgroundColor: '#8b5cf680' }]}
+                >
+                  <Image size={buttonSize} color="#8b5cf6" />
+                </Pressable>
+              )}
               <Pressable
                 onPress={() => onTogglePublish(row.id)}
                 style={[
@@ -346,7 +356,7 @@ export default function HierarchicalContentTable({
         },
       },
     ],
-    [t, textAlign, flexDirection, expandedSeries, toggleExpand, onToggleFeatured, onTogglePublish, onDelete]
+    [t, textAlign, flexDirection, expandedSeries, toggleExpand, onToggleFeatured, onUploadPoster, onTogglePublish, onDelete]
   )
 
   return (

@@ -1,10 +1,10 @@
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect, useCallback, useRef } from 'react'
 import { View, Text, StyleSheet, Pressable, ScrollView } from 'react-native'
 import { Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
-import { Plus, Download, Search, X, AlertCircle } from 'lucide-react'
+import { Plus, Download, Search, X, AlertCircle, Upload } from 'lucide-react'
 import HierarchicalContentTable from '@/components/admin/HierarchicalContentTable'
-import { contentService } from '@/services/adminApi'
+import { contentService, uploadsService } from '@/services/adminApi'
 import { colors, spacing, borderRadius } from '@bayit/shared/theme'
 import { GlassButton, GlassInput, GlassSelect } from '@bayit/shared/ui'
 import { useDirection } from '@/hooks/useDirection'
@@ -43,6 +43,8 @@ export default function ContentLibraryPage() {
   const [pagination, setPagination] = useState<Pagination>({ page: 1, pageSize: 20, total: 0 })
   const [searchQuery, setSearchQuery] = useState('')
   const [showImportWizard, setShowImportWizard] = useState(false)
+  const [uploadingPoster, setUploadingPoster] = useState<string | null>(null)
+  const fileInputRef = useRef<HTMLInputElement>(null)
   const [filters, setFilters] = useState({
     search: '',
     is_published: undefined as boolean | undefined,
@@ -73,6 +75,14 @@ export default function ContentLibraryPage() {
   useEffect(() => {
     loadContent()
   }, [loadContent])
+
+  useEffect(() => {
+    const input = fileInputRef.current
+    if (input) {
+      input.addEventListener('change', handleFileSelect as any)
+      return () => input.removeEventListener('change', handleFileSelect as any)
+    }
+  }, [uploadingPoster])
 
   const handleSearch = (query: string) => {
     setSearchQuery(query)
@@ -117,6 +127,41 @@ export default function ContentLibraryPage() {
       const msg = err instanceof Error ? err.message : 'Failed to update content'
       logger.error(msg, 'ContentLibraryPage', err)
       setError(msg)
+    }
+  }
+
+  const handleUploadPoster = (id: string) => {
+    setUploadingPoster(id)
+    fileInputRef.current?.click()
+  }
+
+  const handleFileSelect = async (event: Event) => {
+    const target = event.target as HTMLInputElement
+    const file = target.files?.[0]
+
+    if (!file || !uploadingPoster) return
+
+    try {
+      // Upload image using uploadsService
+      const response = await uploadsService.uploadImage(file, 'thumbnails')
+
+      // Update content with new poster URL
+      await contentService.updateContent(uploadingPoster, {
+        thumbnail: response.url,
+        poster_url: response.url,
+      })
+
+      // Reload content to show updated poster
+      await loadContent()
+
+      logger.info(`Poster uploaded for content ${uploadingPoster}`, 'ContentLibraryPage')
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : 'Failed to upload poster'
+      logger.error(msg, 'ContentLibraryPage', err)
+      setError(msg)
+    } finally {
+      setUploadingPoster(null)
+      if (target) target.value = ''
     }
   }
 
@@ -194,10 +239,19 @@ export default function ContentLibraryPage() {
         loading={isLoading}
         onTogglePublish={handleTogglePublish}
         onToggleFeatured={handleToggleFeatured}
+        onUploadPoster={handleUploadPoster}
         onDelete={handleDeleteContent}
         pagination={pagination}
         onPageChange={(page) => setPagination((prev) => ({ ...prev, page }))}
         emptyMessage={t('admin.content.emptyMessage', { defaultValue: 'No content found' })}
+      />
+
+      {/* Hidden file input for poster upload */}
+      <input
+        ref={fileInputRef}
+        type="file"
+        accept="image/*"
+        style={{ display: 'none' }}
       />
 
       {/* Import Wizard Modal */}
