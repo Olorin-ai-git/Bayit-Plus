@@ -104,7 +104,7 @@ asyncio.run(check())
 ```
 
 ### Check in GCS:
-Visit: https://console.cloud.google.com/storage/browser/bayit-plus-media/movies?project=israeli-radio-475c9
+Visit: https://console.cloud.google.com/storage/browser/bayit-plus-media-new/movies?project=israeli-radio-475c9
 
 ### Check via API:
 ```bash

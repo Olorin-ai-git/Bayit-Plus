@@ -12,7 +12,7 @@ import json
 def clean_folder_name(folder_name):
     """Clean a folder name by removing junk."""
     # Remove gs:// prefix and trailing slash
-    name = folder_name.replace('gs://bayit-plus-media/movies/', '').rstrip('/')
+    name = folder_name.replace('gs://bayit-plus-media-new/movies/', '').rstrip('/')
 
     # Replace underscores with spaces
     name = name.replace('_', ' ')
@@ -50,7 +50,7 @@ def clean_folder_name(folder_name):
 
     # If empty, return original
     if not name or len(name) < 2:
-        return folder_name.replace('gs://bayit-plus-media/movies/', '').rstrip('/')
+        return folder_name.replace('gs://bayit-plus-media-new/movies/', '').rstrip('/')
 
     return name
 
@@ -58,7 +58,7 @@ def clean_folder_name(folder_name):
 def get_all_movie_folders():
     """Get list of all movie folders in GCS."""
     result = subprocess.run(
-        ['gcloud', 'storage', 'ls', 'gs://bayit-plus-media/movies/'],
+        ['gcloud', 'storage', 'ls', 'gs://bayit-plus-media-new/movies/'],
         capture_output=True,
         text=True
     )
@@ -74,13 +74,13 @@ def get_all_movie_folders():
 def rename_folder(old_path, new_name):
     """Rename a folder in GCS by moving all its contents."""
     # Extract old folder name
-    old_name = old_path.replace('gs://bayit-plus-media/movies/', '').rstrip('/')
+    old_name = old_path.replace('gs://bayit-plus-media-new/movies/', '').rstrip('/')
 
     # Skip if names are the same
     if old_name == new_name:
         return True, "No change needed"
 
-    new_path = f"gs://bayit-plus-media/movies/{new_name}/"
+    new_path = f"gs://bayit-plus-media-new/movies/{new_name}/"
 
     print(f"  Renaming: {old_name}")
     print(f"        →: {new_name}")
@@ -114,7 +114,7 @@ def main():
     # Generate rename plan
     rename_plan = []
     for folder in folders:
-        original = folder.replace('gs://bayit-plus-media/movies/', '').rstrip('/')
+        original = folder.replace('gs://bayit-plus-media-new/movies/', '').rstrip('/')
         cleaned = clean_folder_name(folder)
 
         if original != cleaned:

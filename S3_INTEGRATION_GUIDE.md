@@ -68,7 +68,7 @@ Create a file `s3-policy.json`:
       ],
       "Resource": [
         "arn:aws:s3:::bayit-plus-media",
-        "arn:aws:s3:::bayit-plus-media/*"
+        "arn:aws:s3:::bayit-plus-media-new/*"
       ]
     }
   ]
@@ -565,7 +565,7 @@ Create `bucket-policy.json`:
         "AWS": "arn:aws:iam::cloudfront:user/CloudFront Origin Access Identity EAXAMPLEID"
       },
       "Action": "s3:GetObject",
-      "Resource": "arn:aws:s3:::bayit-plus-media/*"
+      "Resource": "arn:aws:s3:::bayit-plus-media-new/*"
     }
   ]
 }

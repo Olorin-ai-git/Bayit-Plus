@@ -18,13 +18,13 @@ async def update_all():
 
     # Find all with old bucket URL
     cursor = content_collection.find({
-        "stream_url": {"$regex": "storage.googleapis.com/bayit-plus-media/movies"}
+        "stream_url": {"$regex": "storage.googleapis.com/bayit-plus-media-new/movies"}
     })
 
     updated = 0
     async for doc in cursor:
         old_url = doc.get("stream_url", "")
-        new_url = old_url.replace("bayit-plus-media/movies", "bayit-plus-media-new/movies")
+        new_url = old_url.replace("bayit-plus-media-new/movies", "bayit-plus-media-new/movies")
 
         print(f"Updating: {doc.get('title')}")
         print(f"  ID: {doc['_id']}")
