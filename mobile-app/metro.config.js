@@ -30,6 +30,7 @@ function getExtraNodeModules() {
   } else {
     // Use real shared directory
     modules['@bayit/shared'] = path.resolve(sharedRoot, 'components');
+    modules['@bayit/shared-components'] = path.resolve(sharedRoot, 'components');
     modules['@bayit/shared-screens'] = path.resolve(sharedRoot, 'screens');
     modules['@bayit/shared-services'] = path.resolve(sharedRoot, 'services');
     modules['@bayit/shared-stores'] = path.resolve(sharedRoot, 'stores');
