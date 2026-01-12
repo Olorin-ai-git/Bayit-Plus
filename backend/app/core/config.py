@@ -43,6 +43,9 @@ class Settings(BaseSettings):
         "http://localhost:3000",
         "http://localhost:8000",
         "https://bayit.tv",
+        "https://www.bayit.tv",
+        "https://bayit-plus.web.app",
+        "https://api.bayit.tv",
     ]
 
     @property

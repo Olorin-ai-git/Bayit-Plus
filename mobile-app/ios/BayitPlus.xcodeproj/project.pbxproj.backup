@@ -9,32 +9,30 @@
 /* Begin PBXBuildFile section */
 		0C80B921A6F3F58F76C31292 /* libPods-BayitPlus.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 5DCACB8F33CDC322A6C60F78 /* libPods-BayitPlus.a */; };
 		13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB51A68108700A75B9A /* Images.xcassets */; };
-		22226C97B9F3474FB49E566A /* SpeechModule.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CFEE348EE864E639F34BF26 /* SpeechModule.swift */; };
 		22BF94F178D04029EA50E433 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB81A68108700A75B9A /* PrivacyInfo.xcprivacy */; };
-		2D36641039514D6B81875A4C /* TTSModule.m in Sources */ = {isa = PBXBuildFile; fileRef = EDB8FE62EB654CF88ADE331D /* TTSModule.m */; };
-		710D8BA10C3F4E8287DF00F6 /* SpeechModule.m in Sources */ = {isa = PBXBuildFile; fileRef = CCC5298742D0449298AD731B /* SpeechModule.m */; };
 		761780ED2CA45674006654EE /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 761780EC2CA45674006654EE /* AppDelegate.swift */; };
 		81AB9BB82411601600AC10FF /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */; };
+		22226C97B9F3474FB49E566A /* SpeechModule.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CFEE348EE864E639F34BF26 /* SpeechModule.swift */; };
+		710D8BA10C3F4E8287DF00F6 /* SpeechModule.m in Sources */ = {isa = PBXBuildFile; fileRef = CCC5298742D0449298AD731B /* SpeechModule.m */; };
 		90943745CBC2415BBBDE2D96 /* TTSModule.swift in Sources */ = {isa = PBXBuildFile; fileRef = 853C29BA78FF4FEB99AD9090 /* TTSModule.swift */; };
+		2D36641039514D6B81875A4C /* TTSModule.m in Sources */ = {isa = PBXBuildFile; fileRef = EDB8FE62EB654CF88ADE331D /* TTSModule.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		0CFEE348EE864E639F34BF26 /* SpeechModule.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BayitPlus/SpeechModule.swift; sourceTree = "<group>"; };
 		13B07F961A680F5B00A75B9A /* BayitPlus.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = BayitPlus.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		13B07FB51A68108700A75B9A /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; name = Images.xcassets; path = BayitPlus/Images.xcassets; sourceTree = "<group>"; };
 		13B07FB61A68108700A75B9A /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = Info.plist; path = BayitPlus/Info.plist; sourceTree = "<group>"; };
 		13B07FB81A68108700A75B9A /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = PrivacyInfo.xcprivacy; path = BayitPlus/PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
 		3B4392A12AC88292D35C810B /* Pods-BayitPlus.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-BayitPlus.debug.xcconfig"; path = "Target Support Files/Pods-BayitPlus/Pods-BayitPlus.debug.xcconfig"; sourceTree = "<group>"; };
 		5709B34CF0A7D63546082F79 /* Pods-BayitPlus.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-BayitPlus.release.xcconfig"; path = "Target Support Files/Pods-BayitPlus/Pods-BayitPlus.release.xcconfig"; sourceTree = "<group>"; };
-		578F1CE273784DB3818D227B /* BayitPlus-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "BayitPlus-Bridging-Header.h"; sourceTree = "<group>"; };
-		5CCB7789D3D04AEE96C2FE1E /* SiriModule.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BayitPlus/SiriModule.swift; sourceTree = "<group>"; };
 		5DCACB8F33CDC322A6C60F78 /* libPods-BayitPlus.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-BayitPlus.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		761780EC2CA45674006654EE /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = AppDelegate.swift; path = BayitPlus/AppDelegate.swift; sourceTree = "<group>"; };
-		7A3618CA8B1242A1B0252F5E /* SiriModule.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BayitPlus/SiriModule.m; sourceTree = "<group>"; };
 		81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; name = LaunchScreen.storyboard; path = BayitPlus/LaunchScreen.storyboard; sourceTree = "<group>"; };
-		853C29BA78FF4FEB99AD9090 /* TTSModule.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BayitPlus/TTSModule.swift; sourceTree = "<group>"; };
-		CCC5298742D0449298AD731B /* SpeechModule.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BayitPlus/SpeechModule.m; sourceTree = "<group>"; };
 		ED297162215061F000B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = System/Library/Frameworks/JavaScriptCore.framework; sourceTree = SDKROOT; };
+		0CFEE348EE864E639F34BF26 /* SpeechModule.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpeechModule.swift; sourceTree = "<group>"; };
+		CCC5298742D0449298AD731B /* SpeechModule.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SpeechModule.m; sourceTree = "<group>"; };
+		578F1CE273784DB3818D227B /* BayitPlus-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "BayitPlus-Bridging-Header.h"; sourceTree = "<group>"; };
+		853C29BA78FF4FEB99AD9090 /* TTSModule.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BayitPlus/TTSModule.swift; sourceTree = "<group>"; };
 		EDB8FE62EB654CF88ADE331D /* TTSModule.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BayitPlus/TTSModule.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -58,14 +56,12 @@
 				13B07FB61A68108700A75B9A /* Info.plist */,
 				81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */,
 				13B07FB81A68108700A75B9A /* PrivacyInfo.xcprivacy */,
-				0CFEE348EE864E639F34BF26 /* SpeechModule.swift */,
+							0CFEE348EE864E639F34BF26 /* SpeechModule.swift */,
 				CCC5298742D0449298AD731B /* SpeechModule.m */,
 				578F1CE273784DB3818D227B /* BayitPlus-Bridging-Header.h */,
 				853C29BA78FF4FEB99AD9090 /* TTSModule.swift */,
 				EDB8FE62EB654CF88ADE331D /* TTSModule.m */,
-				5CCB7789D3D04AEE96C2FE1E /* SiriModule.swift */,
-				7A3618CA8B1242A1B0252F5E /* SiriModule.m */,
-			);
+				);
 			name = BayitPlus;
 			sourceTree = "<group>";
 		};
@@ -209,9 +205,13 @@
 			inputFileListPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-BayitPlus/Pods-BayitPlus-frameworks-${CONFIGURATION}-input-files.xcfilelist",
 			);
+			inputPaths = (
+			);
 			name = "[CP] Embed Pods Frameworks";
 			outputFileListPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-BayitPlus/Pods-BayitPlus-frameworks-${CONFIGURATION}-output-files.xcfilelist",
+			);
+			outputPaths = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
@@ -248,9 +248,13 @@
 			inputFileListPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-BayitPlus/Pods-BayitPlus-resources-${CONFIGURATION}-input-files.xcfilelist",
 			);
+			inputPaths = (
+			);
 			name = "[CP] Copy Pods Resources";
 			outputFileListPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-BayitPlus/Pods-BayitPlus-resources-${CONFIGURATION}-output-files.xcfilelist",
+			);
+			outputPaths = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
@@ -265,11 +269,11 @@
 			buildActionMask = 2147483647;
 			files = (
 				761780ED2CA45674006654EE /* AppDelegate.swift in Sources */,
-				22226C97B9F3474FB49E566A /* SpeechModule.swift in Sources */,
+							22226C97B9F3474FB49E566A /* SpeechModule.swift in Sources */,
 				710D8BA10C3F4E8287DF00F6 /* SpeechModule.m in Sources */,
 				90943745CBC2415BBBDE2D96 /* TTSModule.swift in Sources */,
 				2D36641039514D6B81875A4C /* TTSModule.m in Sources */,
-			);
+				);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
@@ -298,11 +302,11 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = "org.reactjs.native.example.$(PRODUCT_NAME:rfc1034identifier)";
 				PRODUCT_NAME = BayitPlus;
-				SWIFT_OBJC_BRIDGING_HEADER = "BayitPlus/BayitPlus-Bridging-Header.h";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
 				VERSIONING_SYSTEM = "apple-generic";
-			};
+							SWIFT_OBJC_BRIDGING_HEADER = "BayitPlus/BayitPlus-Bridging-Header.h";
+};
 			name = Debug;
 		};
 		13B07F951A680F5B00A75B9A /* Release */ = {
@@ -327,10 +331,10 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = "org.reactjs.native.example.$(PRODUCT_NAME:rfc1034identifier)";
 				PRODUCT_NAME = BayitPlus;
-				SWIFT_OBJC_BRIDGING_HEADER = "BayitPlus/BayitPlus-Bridging-Header.h";
 				SWIFT_VERSION = 5.0;
 				VERSIONING_SYSTEM = "apple-generic";
-			};
+							SWIFT_OBJC_BRIDGING_HEADER = "BayitPlus/BayitPlus-Bridging-Header.h";
+};
 			name = Release;
 		};
 		83CBBA201A601CBA00E9B192 /* Debug */ = {

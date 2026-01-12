@@ -23,7 +23,11 @@ import {
   demoFlowsService,
 } from './demoService'
 
+// Use environment variable set by webpack at build time
+// In production, this will be the Cloud Run URL
 const API_BASE_URL = import.meta.env.VITE_API_URL || '/api/v1'
+
+console.log('[API] Base URL:', API_BASE_URL) // Debug log
 
 const api = axios.create({
   baseURL: API_BASE_URL,

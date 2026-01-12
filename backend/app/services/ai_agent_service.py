@@ -354,6 +354,36 @@ TOOLS = [
         }
     },
     {
+        "name": "clean_title",
+        "description": "Clean up a content item's title by removing file extensions, quality markers, release group names, and other junk. Use this when you detect titles with garbage text (e.g., '.mp4', '.mkv', '1080p', 'WEBRip', '[GroupName]', extra characters, 'p', 'BluRay', 'x264', '[YTS.MX]', 'BOKUT', 'BoK'). Clean both Hebrew (title) and English (title_en) if both exist. Keep the original language, just remove the junk.",
+        "input_schema": {
+            "type": "object",
+            "properties": {
+                "content_id": {
+                    "type": "string",
+                    "description": "The ID of the content item with messy title"
+                },
+                "audit_id": {
+                    "type": "string",
+                    "description": "The current audit ID for tracking"
+                },
+                "cleaned_title": {
+                    "type": "string",
+                    "description": "The cleaned version of the title - just the actual movie/show name without any file junk"
+                },
+                "cleaned_title_en": {
+                    "type": "string",
+                    "description": "The cleaned English title (optional, only if title_en exists and needs cleaning)"
+                },
+                "reason": {
+                    "type": "string",
+                    "description": "Brief explanation of what you cleaned (e.g., 'Removed 1080p, BluRay, and [YTS.MX] from both Hebrew and English titles')"
+                }
+            },
+            "required": ["content_id", "audit_id", "cleaned_title", "reason"]
+        }
+    },
+    {
         "name": "complete_audit",
         "description": "Call this when you've finished the audit and are ready to provide a final summary. This will end the audit session.",
         "input_schema": {
@@ -733,6 +763,84 @@ async def execute_flag_for_manual_review(
         return {"success": False, "error": str(e)}
 
 
+async def execute_clean_title(
+    content_id: str,
+    audit_id: str,
+    cleaned_title: str,
+    reason: str,
+    cleaned_title_en: str = None,
+    dry_run: bool = False
+) -> Dict[str, Any]:
+    """Clean up a content item's title by removing junk (file extensions, quality markers, release groups, etc.)."""
+    try:
+        if dry_run:
+            return {
+                "success": True,
+                "dry_run": True,
+                "message": f"[DRY RUN] Would clean title for content {content_id}. New title: '{cleaned_title}'. Reason: {reason}"
+            }
+
+        # Get content item
+        content = await Content.get(content_id)
+        if not content:
+            return {"success": False, "error": "Content not found"}
+
+        # Store original titles for rollback
+        original_title = content.title
+        original_title_en = content.title_en if hasattr(content, 'title_en') else None
+
+        # Create librarian action record for rollback capability
+        from app.models.librarian import LibrarianAction
+        action = LibrarianAction(
+            audit_id=audit_id,
+            action_type="clean_title",
+            content_id=str(content.id),
+            content_type="content",
+            issue_type="messy_title",
+            before_state={
+                "title": original_title,
+                "title_en": original_title_en
+            },
+            after_state={
+                "title": cleaned_title,
+                "title_en": cleaned_title_en if cleaned_title_en else original_title_en
+            },
+            auto_approved=True,
+            rollback_available=True
+        )
+        await action.insert()
+
+        # Update the content titles
+        content.title = cleaned_title
+        if cleaned_title_en:
+            content.title_en = cleaned_title_en
+        await content.save()
+
+        logger.info(
+            f"🧹 Cleaned title for content {content_id}",
+            extra={
+                "content_id": content_id,
+                "original_title": original_title,
+                "cleaned_title": cleaned_title,
+                "reason": reason,
+                "action_id": str(action.id)
+            }
+        )
+
+        return {
+            "success": True,
+            "cleaned": True,
+            "message": f"Title cleaned: '{original_title}' → '{cleaned_title}'",
+            "original_title": original_title,
+            "cleaned_title": cleaned_title,
+            "action_id": str(action.id)
+        }
+
+    except Exception as e:
+        logger.error(f"Error in clean_title: {str(e)}")
+        return {"success": False, "error": str(e)}
+
+
 async def execute_check_storage_usage(
     bucket_name: str = "bayit-plus-media"
 ) -> Dict[str, Any]:
@@ -1104,6 +1212,9 @@ async def execute_tool(
         elif tool_name == "flag_for_manual_review":
             return await execute_flag_for_manual_review(**tool_input)
 
+        elif tool_name == "clean_title":
+            return await execute_clean_title(**tool_input)
+
         elif tool_name == "check_storage_usage":
             return await execute_check_storage_usage(**tool_input)
 
@@ -1177,13 +1288,14 @@ async def run_ai_agent_audit(
 
 **מה עליך לעשות:**
 1. בחר אילו פריטי תוכן לבדוק (השתמש בשיקול דעת - לא צריך לבדוק הכל)
-2. בדוק כל פריט עבור בעיות: מטאדאטה חסרה, פוסטרים חסרים, קישורי סטרימינג שבורים, סיווג לא נכון
-3. **חדש:** בדוק שימוש באחסון - קבצים גדולים >5GB, שימוש כולל, עלויות
-4. תקן בעיות שאתה בטוח בהן (>90% ביטחון)
-5. סמן פריטים לבדיקה ידנית כשאתה לא בטוח
-6. **חשוב:** אם אתה מוצא בעיות חמורות או קריטיות - שלח התראת אימייל למנהלים באמצעות send_email_notification
-7. התאם את האסטרטגיה שלך בהתבסס על מה שאתה מוצא
-8. בסוף, קרא ל-complete_audit עם סיכום מקיף
+2. בדוק כל פריט עבור בעיות: מטאדאטה חסרה, פוסטרים חסרים, קישורי סטרימינג שבורים, סיווג לא נכון, **כותרות מלוכלכות**
+3. **חשוב:** נקה כותרות עם זבל - הסר .mp4, 1080p, WEBRip, [קבוצות], XviD, MDMA, BoK, וכל טקסט מיותר
+4. **חדש:** בדוק שימוש באחסון - קבצים גדולים >5GB, שימוש כולל, עלויות
+5. תקן בעיות שאתה בטוח בהן (>90% ביטחון)
+6. סמן פריטים לבדיקה ידנית כשאתה לא בטוח
+7. **חשוב:** אם אתה מוצא בעיות חמורות או קריטיות - שלח התראת אימייל למנהלים באמצעות send_email_notification
+8. התאם את האסטרטגיה שלך בהתבסס על מה שאתה מוצא
+9. בסוף, קרא ל-complete_audit עם סיכום מקיף
 
 **כלים זמינים - ניהול תוכן:**
 - list_content_items - קבל רשימת פריטים לביקורת
@@ -1194,6 +1306,7 @@ async def run_ai_agent_audit(
 - fix_missing_poster - הוסף פוסטר חסר
 - fix_missing_metadata - עדכן מטאדאטה
 - recategorize_content - העבר פריט לקטגוריה אחרת (רק אם בטוח >90%)
+- clean_title - 🧹 נקה כותרת מזבל (.mp4, 1080p, [MX], XviD, MDMA, BoK וכו')
 - flag_for_manual_review - סמן לבדיקה ידנית
 
 **כלים זמינים - ניטור אחסון (חדש!):**
@@ -1210,6 +1323,7 @@ async def run_ai_agent_audit(
 - 🚨 קישורי סטרימינג שבורים (>5 פריטים)
 - 🚨 סיווג לא נכון בקנה מידה רחב (>10 פריטים)
 - 🚨 מטאדאטה חסרה או שגויה בהיקף רחב (>20 פריטים)
+- 🚨 כותרות מלוכלכות בהיקף רחב (>15 פריטים שנוקו)
 - 🚨 קבצים גדולים מאוד (>5GB) או שימוש גבוה באחסון (>500GB)
 - 🚨 עלויות אחסון גבוהות (>$100/חודש)
 - 🚨 בעיות איכות קריטיות שמשפיעות על חוויית משתמש

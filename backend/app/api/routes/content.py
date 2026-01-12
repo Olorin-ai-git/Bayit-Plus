@@ -19,13 +19,23 @@ def generate_signed_url_if_needed(url: str) -> str:
         return url
 
     try:
+        from google.auth import compute_engine
+        from google.auth.transport import requests as auth_requests
+
         # Extract bucket and blob path from URL
         # Format: https://storage.googleapis.com/bucket-name/path/to/file
         parts = url.replace("https://storage.googleapis.com/", "").split("/", 1)
         if len(parts) == 2:
             bucket_name, blob_name = parts
 
-            # Generate signed URL (valid for 4 hours)
+            # Use IAM-based signing for Cloud Run
+            # Get the service account credentials
+            credentials = compute_engine.IDTokenCredentials(
+                auth_requests.Request(),
+                "",
+                service_account_email="624470113582-compute@developer.gserviceaccount.com"
+            )
+
             storage_client = storage.Client()
             bucket = storage_client.bucket(bucket_name)
             blob = bucket.blob(blob_name)
@@ -33,7 +43,8 @@ def generate_signed_url_if_needed(url: str) -> str:
             signed_url = blob.generate_signed_url(
                 version="v4",
                 expiration=timedelta(hours=4),
-                method="GET"
+                method="GET",
+                service_account_email="624470113582-compute@developer.gserviceaccount.com"
             )
             return signed_url
     except Exception as e:

@@ -16,13 +16,13 @@ class SiriService {
    * Donate "Play Content" intent to Siri
    * Call this when user plays content to teach Siri
    */
-  async donatePlayIntent(contentId: string, contentType: string, contentTitle: string): Promise<void> {
+  async donatePlayIntent(contentId: string, contentTitle: string, contentType: string): Promise<void> {
     if (!SiriModule || Platform.OS !== 'ios') {
       return;
     }
 
     try {
-      await SiriModule.donatePlayIntent(contentId, contentType, contentTitle);
+      await SiriModule.donatePlayIntent(contentId, contentTitle, contentType);
       console.log('[SiriService] Play intent donated:', contentTitle);
     } catch (error) {
       console.error('[SiriService] Failed to donate play intent:', error);
@@ -50,16 +50,16 @@ class SiriService {
    * Donate "Open Widget" intent to Siri
    * Call this when user opens a widget
    */
-  async donateOpenWidgetIntent(widgetId: string, widgetType: string, widgetTitle: string): Promise<void> {
+  async donateWidgetIntent(widgetType: string, channelId: string, channelName: string): Promise<void> {
     if (!SiriModule || Platform.OS !== 'ios') {
       return;
     }
 
     try {
-      await SiriModule.donateOpenWidgetIntent(widgetId, widgetType, widgetTitle);
-      console.log('[SiriService] Open widget intent donated:', widgetTitle);
+      await SiriModule.donateWidgetIntent(widgetType, channelId, channelName);
+      console.log('[SiriService] Widget intent donated:', channelName);
     } catch (error) {
-      console.error('[SiriService] Failed to donate open widget intent:', error);
+      console.error('[SiriService] Failed to donate widget intent:', error);
     }
   }
 
@@ -67,13 +67,13 @@ class SiriService {
    * Donate "Resume Watching" intent to Siri
    * Call this when user resumes watching
    */
-  async donateResumeWatchingIntent(): Promise<void> {
+  async donateResumeIntent(): Promise<void> {
     if (!SiriModule || Platform.OS !== 'ios') {
       return;
     }
 
     try {
-      await SiriModule.donateResumeWatchingIntent();
+      await SiriModule.donateResumeIntent();
       console.log('[SiriService] Resume watching intent donated');
     } catch (error) {
       console.error('[SiriService] Failed to donate resume watching intent:', error);
@@ -81,34 +81,37 @@ class SiriService {
   }
 
   /**
-   * Delete all donated intents
+   * Delete all Siri shortcuts
    */
-  async deleteAllIntents(): Promise<void> {
+  async deleteAllShortcuts(): Promise<number> {
     if (!SiriModule || Platform.OS !== 'ios') {
-      return;
+      return 0;
     }
 
     try {
-      await SiriModule.deleteAllIntents();
-      console.log('[SiriService] All intents deleted');
+      const result = await SiriModule.deleteAllShortcuts();
+      console.log(`[SiriService] Deleted ${result.deleted} shortcuts`);
+      return result.deleted;
     } catch (error) {
-      console.error('[SiriService] Failed to delete intents:', error);
+      console.error('[SiriService] Failed to delete shortcuts:', error);
+      return 0;
     }
   }
 
   /**
-   * Delete a specific intent by identifier
+   * Get all user's Siri shortcuts
    */
-  async deleteIntent(identifier: string): Promise<void> {
+  async getSuggestedShortcuts(): Promise<any[]> {
     if (!SiriModule || Platform.OS !== 'ios') {
-      return;
+      return [];
     }
 
     try {
-      await SiriModule.deleteIntent(identifier);
-      console.log('[SiriService] Intent deleted:', identifier);
+      const result = await SiriModule.getSuggestedShortcuts();
+      return result.shortcuts || [];
     } catch (error) {
-      console.error('[SiriService] Failed to delete intent:', error);
+      console.error('[SiriService] Failed to get shortcuts:', error);
+      return [];
     }
   }
 }

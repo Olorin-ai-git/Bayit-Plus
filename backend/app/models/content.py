@@ -36,9 +36,11 @@ class ContentResponse(ContentBase):
 
 class Content(Document):
     title: str
+    title_en: Optional[str] = None  # English title for bilingual support
     description: Optional[str] = None
     thumbnail: Optional[str] = None
     backdrop: Optional[str] = None
+    poster_url: Optional[str] = None  # TMDB poster URL
     category_id: str
     category_name: Optional[str] = None
 
@@ -49,6 +51,7 @@ class Content(Document):
     genre: Optional[str] = None
     cast: Optional[List[str]] = None
     director: Optional[str] = None
+    content_type: Optional[str] = None  # "movie", "series", "documentary", etc.
 
     # Streaming
     stream_url: str
@@ -116,6 +119,7 @@ class Category(Document):
     slug: str
     description: Optional[str] = None
     thumbnail: Optional[str] = None
+    icon: Optional[str] = None  # Icon name or URL
     order: int = 0
     is_active: bool = True
     created_at: datetime = Field(default_factory=datetime.utcnow)

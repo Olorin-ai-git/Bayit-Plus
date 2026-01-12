@@ -179,7 +179,12 @@ module.exports = (env, argv) => {
         'process.env.TARGET': JSON.stringify(process.env.TARGET || 'web'),
         // Also support import.meta.env syntax
         'import.meta.env.VITE_APP_MODE': JSON.stringify(isTV ? 'demo' : process.env.VITE_APP_MODE),
-        'import.meta.env.VITE_API_URL': JSON.stringify(process.env.VITE_API_URL || '/api/v1'),
+        // Workaround: Use Cloud Run URL directly in production until Firebase Hosting rewrites are fixed
+        'import.meta.env.VITE_API_URL': JSON.stringify(
+          isProduction && !isTV
+            ? 'https://bayit-plus-backend-534446777606.us-east1.run.app/api/v1'
+            : (process.env.VITE_API_URL || '/api/v1')
+        ),
       }),
       new webpack.ProvidePlugin({
         process: 'process/browser',

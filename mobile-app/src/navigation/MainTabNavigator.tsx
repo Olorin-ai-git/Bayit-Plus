@@ -1,6 +1,8 @@
 /**
  * Main Tab Navigator
  * Bottom tab navigation for main app screens
+ *
+ * Updated to use mobile-optimized screens with responsive design
  */
 
 import React from 'react';
@@ -8,15 +10,15 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import type { MainTabParamList } from './types';
 import TabBar from '../components/navigation/TabBar';
 
-// Import screens from shared
+// Import mobile-optimized screens
 import {
-  HomeScreen,
-  LiveTVScreen,
-  VODScreen,
-  RadioScreen,
-  PodcastsScreen,
-  ProfileScreen,
-} from '@bayit/shared-screens';
+  HomeScreenMobile,
+  LiveTVScreenMobile,
+  VODScreenMobile,
+  RadioScreenMobile,
+  PodcastsScreenMobile,
+  ProfileScreenMobile,
+} from '../screens';
 
 const Tab = createBottomTabNavigator<MainTabParamList>();
 
@@ -30,32 +32,32 @@ export const MainTabNavigator: React.FC = () => {
     >
       <Tab.Screen
         name="Home"
-        component={HomeScreen}
+        component={HomeScreenMobile}
         options={{ tabBarLabel: 'Home' }}
       />
       <Tab.Screen
         name="LiveTV"
-        component={LiveTVScreen}
+        component={LiveTVScreenMobile}
         options={{ tabBarLabel: 'Live TV' }}
       />
       <Tab.Screen
         name="VOD"
-        component={VODScreen}
+        component={VODScreenMobile}
         options={{ tabBarLabel: 'VOD' }}
       />
       <Tab.Screen
         name="Radio"
-        component={RadioScreen}
+        component={RadioScreenMobile}
         options={{ tabBarLabel: 'Radio' }}
       />
       <Tab.Screen
         name="Podcasts"
-        component={PodcastsScreen}
+        component={PodcastsScreenMobile}
         options={{ tabBarLabel: 'Podcasts' }}
       />
       <Tab.Screen
         name="Profile"
-        component={ProfileScreen}
+        component={ProfileScreenMobile}
         options={{ tabBarLabel: 'Profile' }}
       />
     </Tab.Navigator>

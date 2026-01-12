@@ -11,6 +11,7 @@
 import Foundation
 import Speech
 import AVFoundation
+import React
 
 @objc(SpeechModule)
 class SpeechModule: RCTEventEmitter {
