@@ -114,12 +114,12 @@ export const ProfileScreenMobile: React.FC = () => {
       id: 'language',
       title: t('profile.language'),
       subtitle: i18n.language === 'he' ? 'עברית' : i18n.language === 'en' ? 'English' : 'Español',
-      onPress: () => navigation.navigate('Settings', { section: 'language' }),
+      onPress: () => navigation.navigate('LanguageSettings'),
     },
     {
       id: 'notifications',
       title: t('profile.notifications'),
-      onPress: () => navigation.navigate('Settings', { section: 'notifications' }),
+      onPress: () => navigation.navigate('NotificationSettings'),
     },
   ];
 
@@ -160,7 +160,7 @@ export const ProfileScreenMobile: React.FC = () => {
         )}
       </GlassView>
 
-      {/* Stats Grid - 2x2 Text-Only Design */}
+      {/* Stats Grid - 1x2 Text-Only Design (removed bottom 2 cards to prevent overlap) */}
       <View style={styles.statsGrid}>
         <GlassView style={styles.statItem}>
           <Text style={styles.statValue}>{stats.watchlistCount}</Text>
@@ -170,16 +170,6 @@ export const ProfileScreenMobile: React.FC = () => {
         <GlassView style={styles.statItem}>
           <Text style={styles.statValue}>{stats.favoritesCount}</Text>
           <Text style={styles.statLabel}>{t('profile.favorites')}</Text>
-        </GlassView>
-
-        <GlassView style={styles.statItem}>
-          <Text style={styles.statValue}>{stats.downloadsCount}</Text>
-          <Text style={styles.statLabel}>{t('profile.downloads')}</Text>
-        </GlassView>
-
-        <GlassView style={styles.statItem}>
-          <Text style={styles.statValue}>{formatWatchTime(stats.watchTimeMinutes)}</Text>
-          <Text style={styles.statLabel}>{t('profile.watchTime')}</Text>
         </GlassView>
       </View>
 

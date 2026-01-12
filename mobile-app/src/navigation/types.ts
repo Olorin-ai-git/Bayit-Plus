@@ -20,7 +20,9 @@ export type RootStackParamList = {
   Watchlist: undefined;
   Favorites: undefined;
   Downloads: undefined;
-  Settings: undefined;
+  Settings: { section?: string };
+  LanguageSettings: undefined;
+  NotificationSettings: undefined;
   VoiceOnboarding: undefined;
   Admin: undefined;
 };

@@ -27,10 +27,12 @@ import {
 import {
   PlayerScreenMobile,
   SearchScreenMobile,
+  SettingsScreenMobile,
+  LanguageSettingsScreen,
+  NotificationSettingsScreen,
 } from '../screens';
 
 // Import mobile-specific screens (to be created)
-import SettingsScreen from '../screens/SettingsScreen';
 import VoiceOnboardingScreen from '../screens/VoiceOnboardingScreen';
 
 // Import admin navigator (if needed)
@@ -83,7 +85,9 @@ export const RootNavigator: React.FC = () => {
       <Stack.Screen name="Downloads" component={DownloadsScreen} />
 
       {/* Settings - Mobile-specific */}
-      <Stack.Screen name="Settings" component={SettingsScreen} />
+      <Stack.Screen name="Settings" component={SettingsScreenMobile} />
+      <Stack.Screen name="LanguageSettings" component={LanguageSettingsScreen} />
+      <Stack.Screen name="NotificationSettings" component={NotificationSettingsScreen} />
 
       {/* Voice Onboarding - Mobile-specific */}
       <Stack.Screen
