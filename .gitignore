@@ -55,3 +55,9 @@ backend/uploads/
 *.webm
 *.m4a
 *.mp3
+
+# Google Cloud Service Account Credentials
+backend/gcs-service-account-key.json
+**/gcs-service-account-key.json
+*.json.gcp
+*-service-account-key.json
