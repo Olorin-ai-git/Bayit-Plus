@@ -566,25 +566,36 @@ async def execute_search_tmdb(
 ) -> Dict[str, Any]:
     """Search TMDB for content metadata."""
     try:
-        # Import TMDB service
-        from app.services.tmdb_service import search_content, get_movie_details, get_tv_details
+        # Import and instantiate TMDB service
+        from app.services.tmdb_service import TMDBService
+        tmdb_service = TMDBService()
 
         # Search for the content
-        search_results = await search_content(title, content_type, year)
+        if content_type == "movie" or content_type == "film":
+            search_result = await tmdb_service.search_movie(title, year)
+        else:
+            search_result = await tmdb_service.search_tv_series(title, year)
 
-        if not search_results:
+        if not search_result:
             return {
                 "success": True,
                 "found": False,
                 "message": f"No results found for '{title}'"
             }
 
-        # Get details for the first result
-        tmdb_id = search_results[0].get("id")
-        if content_type == "movie":
-            details = await get_movie_details(tmdb_id)
+        # Get details
+        tmdb_id = search_result.get("id")
+        if content_type == "movie" or content_type == "film":
+            details = await tmdb_service.get_movie_details(tmdb_id)
         else:
-            details = await get_tv_details(tmdb_id)
+            details = await tmdb_service.get_tv_series_details(tmdb_id)
+
+        if not details:
+            return {
+                "success": True,
+                "found": False,
+                "message": f"Could not fetch details for TMDB ID {tmdb_id}"
+            }
 
         return {
             "success": True,

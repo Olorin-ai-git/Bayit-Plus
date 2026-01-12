@@ -1,5 +1,10 @@
 import React, { useState, useEffect } from 'react'
+import { View, Text, StyleSheet, Pressable } from 'react-native'
+import { useTranslation } from 'react-i18next'
 import { AlertCircle, CheckCircle, Copy } from 'lucide-react'
+import { GlassView, GlassInput, GlassButton } from '@bayit/shared/ui'
+import { colors, spacing, borderRadius } from '@bayit/shared/theme'
+import { useDirection } from '@/hooks/useDirection'
 
 interface StreamUrlInputProps {
   value?: string
@@ -20,10 +25,11 @@ export function StreamUrlInput({
   required = true,
   onError,
 }: StreamUrlInputProps) {
+  const { t } = useTranslation()
+  const { textAlign } = useDirection()
   const [url, setUrl] = useState(value)
   const [streamType, setStreamType] = useState<'hls' | 'dash' | 'audio'>('hls')
   const [error, setError] = useState<string | null>(null)
-  const [isValidating, setIsValidating] = useState(false)
   const [isValid, setIsValid] = useState(false)
   const [copied, setCopied] = useState(false)
 
@@ -46,7 +52,7 @@ export function StreamUrlInput({
 
     if (!urlString.trim()) {
       if (required) {
-        const msg = 'Stream URL is required'
+        const msg = t('admin.content.streamUrlInput.errors.required')
         setError(msg)
         onError?.(msg)
       }
@@ -56,7 +62,7 @@ export function StreamUrlInput({
     try {
       new URL(urlString)
     } catch {
-      const msg = 'Invalid URL format'
+      const msg = t('admin.content.streamUrlInput.errors.invalidFormat')
       setError(msg)
       onError?.(msg)
       return
@@ -69,8 +75,7 @@ export function StreamUrlInput({
     onError?.(null)
   }
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const newUrl = e.target.value
+  const handleChange = (newUrl: string) => {
     setUrl(newUrl)
     onChange(newUrl)
     validateUrl(newUrl)
@@ -82,9 +87,11 @@ export function StreamUrlInput({
   }
 
   const handleCopy = () => {
-    navigator.clipboard.writeText(url)
-    setCopied(true)
-    setTimeout(() => setCopied(false), 2000)
+    if (typeof navigator !== 'undefined' && navigator.clipboard) {
+      navigator.clipboard.writeText(url)
+      setCopied(true)
+      setTimeout(() => setCopied(false), 2000)
+    }
   }
 
   const getStreamTypeIcon = (type: string) => {
@@ -101,82 +108,195 @@ export function StreamUrlInput({
   }
 
   return (
-    <div className="w-full space-y-3">
-      {label && <label className="block text-sm font-medium text-white">{label}</label>}
+    <View style={styles.container}>
+      <GlassInput
+        label={label}
+        value={url}
+        onChangeText={handleChange}
+        placeholder={placeholder}
+        error={error}
+        rightIcon={url ? <Copy size={16} color={colors.textMuted} /> : undefined}
+        onRightIconPress={url ? handleCopy : undefined}
+      />
 
-      <div className="space-y-2">
-        <div className="relative">
-          <input
-            type="url"
-            value={url}
-            onChange={handleChange}
-            placeholder={placeholder}
-            className={`w-full px-4 py-3 rounded-lg border bg-white/5 text-white placeholder-gray-500 text-sm focus:outline-none transition-colors ${
-              error
-                ? 'border-red-500/50 focus:border-red-500'
-                : isValid
-                  ? 'border-green-500/50 focus:border-green-500'
-                  : 'border-white/20 focus:border-blue-500'
-            }`}
-          />
-          {url && (
-            <button
-              onClick={handleCopy}
-              className="absolute right-3 top-1/2 -translate-y-1/2 p-2 hover:bg-white/10 rounded transition-colors"
-              title="Copy URL"
-            >
-              <Copy className="w-4 h-4 text-gray-400 hover:text-gray-300" />
-            </button>
-          )}
-        </div>
-
-        {copied && <p className="text-xs text-green-400">URL copied to clipboard</p>}
-      </div>
+      {copied && (
+        <View style={styles.copiedMessage}>
+          <Text style={styles.copiedText}>{t('admin.content.streamUrlInput.copied')}</Text>
+        </View>
+      )}
 
       {url && (
-        <div className="space-y-2">
-          <div className="text-xs font-medium text-gray-300">Stream Type</div>
-          <div className="grid grid-cols-3 gap-2">
+        <View style={styles.streamTypeSection}>
+          <Text style={[styles.streamTypeLabel, { textAlign }]}>
+            {t('admin.content.streamUrlInput.streamType')}
+          </Text>
+          <View style={styles.typeButtons}>
             {(['hls', 'dash', 'audio'] as const).map((type) => (
-              <button
+              <Pressable
                 key={type}
-                onClick={() => handleTypeChange(type)}
-                className={`py-2 px-3 rounded-lg border text-xs font-medium transition-all flex items-center justify-center gap-2 ${
-                  streamType === type
-                    ? 'bg-blue-600/20 border-blue-500/50 text-blue-300'
-                    : 'border-white/20 text-gray-400 hover:border-white/40 hover:text-gray-300'
-                }`}
+                onPress={() => handleTypeChange(type)}
+                style={styles.typeButtonWrapper}
               >
-                <span>{getStreamTypeIcon(type)}</span>
-                {type.toUpperCase()}
-              </button>
+                <GlassView
+                  style={[
+                    styles.typeButton,
+                    streamType === type && styles.typeButtonActive,
+                  ]}
+                  intensity={streamType === type ? 'high' : 'low'}
+                  borderColor={streamType === type ? colors.primary : undefined}
+                >
+                  <Text style={styles.typeIcon}>{getStreamTypeIcon(type)}</Text>
+                  <Text
+                    style={[
+                      styles.typeButtonText,
+                      streamType === type && styles.typeButtonTextActive,
+                    ]}
+                  >
+                    {type.toUpperCase()}
+                  </Text>
+                </GlassView>
+              </Pressable>
             ))}
-          </div>
-        </div>
+          </View>
+        </View>
       )}
 
       {error && (
-        <div className="flex items-center gap-2 p-3 rounded-lg bg-red-500/10 border border-red-500/20">
-          <AlertCircle className="w-4 h-4 text-red-400" />
-          <p className="text-xs text-red-300">{error}</p>
-        </div>
+        <GlassView style={styles.errorMessage} intensity="low">
+          <AlertCircle size={16} color={colors.error} />
+          <Text style={styles.errorText}>{error}</Text>
+        </GlassView>
       )}
 
       {isValid && url && (
-        <div className="flex items-center gap-2 p-3 rounded-lg bg-green-500/10 border border-green-500/20">
-          <CheckCircle className="w-4 h-4 text-green-400" />
-          <p className="text-xs text-green-300">URL is valid - detected as {streamType.toUpperCase()}</p>
-        </div>
+        <GlassView style={styles.successMessage} intensity="low">
+          <CheckCircle size={16} color={colors.success} />
+          <Text style={styles.successText}>
+            {t('admin.content.streamUrlInput.validUrl', { type: streamType.toUpperCase() })}
+          </Text>
+        </GlassView>
       )}
 
-      <div className="text-xs text-gray-400 space-y-1">
-        <p>Supported formats:</p>
-        <ul className="list-disc list-inside space-y-1 text-gray-500">
-          <li>HLS: .m3u8 streams</li>
-          <li>DASH: .mpd streams</li>
-          <li>Audio: .mp3, .aac, or audio streams</li>
-        </ul>
-      </div>
-    </div>
+      <GlassView style={styles.helpSection} intensity="low">
+        <Text style={[styles.helpTitle, { textAlign }]}>
+          {t('admin.content.streamUrlInput.supportedFormats.title')}
+        </Text>
+        <View style={styles.helpList}>
+          <Text style={[styles.helpItem, { textAlign }]}>
+            • {t('admin.content.streamUrlInput.supportedFormats.hls')}
+          </Text>
+          <Text style={[styles.helpItem, { textAlign }]}>
+            • {t('admin.content.streamUrlInput.supportedFormats.dash')}
+          </Text>
+          <Text style={[styles.helpItem, { textAlign }]}>
+            • {t('admin.content.streamUrlInput.supportedFormats.audio')}
+          </Text>
+        </View>
+      </GlassView>
+    </View>
   )
 }
+
+const styles = StyleSheet.create({
+  container: {
+    width: '100%',
+    marginBottom: spacing.md,
+  },
+  copiedMessage: {
+    marginTop: spacing.xs,
+    paddingHorizontal: spacing.sm,
+  },
+  copiedText: {
+    fontSize: 12,
+    color: colors.success,
+  },
+  streamTypeSection: {
+    marginTop: spacing.md,
+  },
+  streamTypeLabel: {
+    fontSize: 12,
+    fontWeight: '500',
+    color: colors.text,
+    marginBottom: spacing.sm,
+  },
+  typeButtons: {
+    flexDirection: 'row',
+    gap: spacing.sm,
+  },
+  typeButtonWrapper: {
+    flex: 1,
+  },
+  typeButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: spacing.xs,
+    paddingVertical: spacing.sm,
+    paddingHorizontal: spacing.md,
+    borderRadius: borderRadius.md,
+  },
+  typeButtonActive: {
+    borderWidth: 2,
+  },
+  typeIcon: {
+    fontSize: 16,
+  },
+  typeButtonText: {
+    fontSize: 12,
+    fontWeight: '500',
+    color: colors.textMuted,
+  },
+  typeButtonTextActive: {
+    color: colors.primary,
+  },
+  errorMessage: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.sm,
+    padding: spacing.md,
+    marginTop: spacing.sm,
+    borderRadius: borderRadius.md,
+    backgroundColor: `${colors.error}10`,
+    borderWidth: 1,
+    borderColor: `${colors.error}40`,
+  },
+  errorText: {
+    flex: 1,
+    fontSize: 12,
+    color: colors.error,
+  },
+  successMessage: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.sm,
+    padding: spacing.md,
+    marginTop: spacing.sm,
+    borderRadius: borderRadius.md,
+    backgroundColor: `${colors.success}10`,
+    borderWidth: 1,
+    borderColor: `${colors.success}40`,
+  },
+  successText: {
+    flex: 1,
+    fontSize: 12,
+    color: colors.success,
+  },
+  helpSection: {
+    marginTop: spacing.md,
+    padding: spacing.md,
+    borderRadius: borderRadius.md,
+  },
+  helpTitle: {
+    fontSize: 12,
+    color: colors.textMuted,
+    marginBottom: spacing.xs,
+  },
+  helpList: {
+    gap: spacing.xs,
+  },
+  helpItem: {
+    fontSize: 12,
+    color: colors.textMuted,
+    lineHeight: 18,
+  },
+})

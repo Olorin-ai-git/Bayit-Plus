@@ -27,6 +27,7 @@ import { GlassCarousel } from '@bayit/shared-components';
 import { TrendingRow } from '@bayit/shared-components';
 import { contentService, liveService, historyService, ritualService } from '@bayit/shared-services';
 import { getLocalizedName, getLocalizedDescription } from '@bayit/shared-utils';
+import { useDirection } from '@bayit/shared-hooks';
 import { useResponsive } from '../hooks/useResponsive';
 import { getGridColumns } from '../utils/responsive';
 import { spacing, colors, typography } from '../theme';
@@ -51,6 +52,7 @@ interface CarouselItem {
 export const HomeScreenMobile: React.FC = () => {
   const { t, i18n } = useTranslation();
   const navigation = useNavigation<any>();
+  const { isRTL, direction } = useDirection();
   const { isPhone, isTablet } = useResponsive();
 
   const [isLoading, setIsLoading] = useState(true);
@@ -193,9 +195,9 @@ export const HomeScreenMobile: React.FC = () => {
         />
       }
     >
-      {/* Header with logo and clock */}
+      {/* Header with logo */}
       <View style={styles.header}>
-        <Text style={styles.headerTitle}>Bayit+</Text>
+        <Text style={styles.headerTitle}>{t('common.appName')}</Text>
       </View>
 
       {/* Hero carousel */}
@@ -224,7 +226,7 @@ export const HomeScreenMobile: React.FC = () => {
 
       {/* Trending */}
       <View style={styles.section}>
-        <Text style={styles.sectionTitle}>{t('home.trending')}</Text>
+        <Text style={styles.sectionTitle}>{t('trending.title')}</Text>
         <TrendingRow
           onItemPress={handleContentPress}
           columns={contentColumns}
@@ -289,6 +291,7 @@ const styles = StyleSheet.create({
     ...typography.h2,
     color: colors.text,
     fontWeight: '700',
+    writingDirection: 'auto', // Supports RTL/LTR automatically
   },
   section: {
     marginBottom: spacing.xl,

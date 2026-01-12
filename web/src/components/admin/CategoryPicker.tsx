@@ -1,5 +1,10 @@
 import React, { useState, useEffect } from 'react'
+import { View, Text, StyleSheet, Pressable, ScrollView } from 'react-native'
+import { useTranslation } from 'react-i18next'
 import { ChevronDown, Plus, Search, AlertCircle } from 'lucide-react'
+import { GlassView, GlassInput, GlassButton, GlassModal } from '@bayit/shared/ui'
+import { colors, spacing, borderRadius } from '@bayit/shared/theme'
+import { useDirection } from '@/hooks/useDirection'
 import type { Category } from '../../types/content'
 
 interface CategoryPickerProps {
@@ -16,11 +21,13 @@ export function CategoryPicker({
   value,
   onChange,
   label,
-  placeholder = 'Select category...',
+  placeholder,
   required = false,
   onError,
   allowCreate = true,
 }: CategoryPickerProps) {
+  const { t } = useTranslation()
+  const { isRTL, textAlign } = useDirection()
   const [categories, setCategories] = useState<Category[]>([])
   const [isOpen, setIsOpen] = useState(false)
   const [search, setSearch] = useState('')
@@ -42,7 +49,7 @@ export function CategoryPicker({
       const response = await contentService.getCategories({ page_size: 100 })
       setCategories(response.items || [])
     } catch (err) {
-      const msg = 'Failed to load categories'
+      const msg = t('admin.content.categoryPicker.errors.loadFailed')
       setError(msg)
       onError?.(msg)
     } finally {
@@ -73,7 +80,7 @@ export function CategoryPicker({
       setShowCreateModal(false)
       setError(null)
     } catch (err) {
-      const msg = 'Failed to create category'
+      const msg = t('admin.content.categoryPicker.errors.createFailed')
       setError(msg)
       onError?.(msg)
     } finally {
@@ -82,135 +89,280 @@ export function CategoryPicker({
   }
 
   return (
-    <div className="w-full space-y-3">
-      {label && <label className="block text-sm font-medium text-white">{label}</label>}
+    <View style={styles.container}>
+      {label && <Text style={[styles.label, { textAlign }]}>{label}</Text>}
 
-      <div className="relative">
-        <button
-          onClick={() => setIsOpen(!isOpen)}
-          className={`w-full px-4 py-3 rounded-lg border bg-white/5 text-white text-sm text-left flex items-center justify-between transition-all ${
-            error ? 'border-red-500/50' : 'border-white/20 hover:border-white/40'
-          }`}
+      <Pressable onPress={() => setIsOpen(!isOpen)} disabled={isLoading}>
+        <GlassView
+          style={[
+            styles.selectButton,
+            error && styles.selectButtonError,
+          ]}
+          intensity="medium"
+          borderColor={error ? colors.error : undefined}
         >
-          <span className={selectedCategory ? 'text-white' : 'text-gray-500'}>
-            {selectedCategory ? selectedCategory.name : placeholder}
-          </span>
-          <ChevronDown className={`w-4 h-4 transition-transform ${isOpen ? 'rotate-180' : ''}`} />
-        </button>
+          <Text style={[
+            selectedCategory ? styles.selectedText : styles.placeholderText,
+            { textAlign }
+          ]}>
+            {selectedCategory ? selectedCategory.name : (placeholder || t('admin.content.categoryPicker.selectPlaceholder'))}
+          </Text>
+          <ChevronDown
+            size={16}
+            color={colors.textMuted}
+            style={{ transform: [{ rotate: isOpen ? '180deg' : '0deg' }] }}
+          />
+        </GlassView>
+      </Pressable>
 
-        {isOpen && (
-          <div className="absolute top-full left-0 right-0 mt-2 z-50 bg-gray-900 border border-white/20 rounded-lg shadow-lg">
-            <div className="p-3 border-b border-white/10">
-              <div className="relative">
-                <input
-                  type="text"
-                  value={search}
-                  onChange={(e) => setSearch(e.target.value)}
-                  placeholder="Search categories..."
-                  className="w-full px-3 py-2 rounded bg-white/5 border border-white/10 text-white text-sm placeholder-gray-500 focus:outline-none focus:border-blue-500"
-                  autoFocus
-                />
-                <Search className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500" />
-              </div>
-            </div>
+      {isOpen && (
+        <GlassView style={styles.dropdown} intensity="high">
+          <View style={styles.searchContainer}>
+            <GlassInput
+              value={search}
+              onChangeText={setSearch}
+              placeholder={t('admin.content.categoryPicker.searchPlaceholder')}
+              icon={<Search size={16} color={colors.textMuted} />}
+              autoFocus
+            />
+          </View>
 
-            {isLoading ? (
-              <div className="p-4 text-center text-sm text-gray-400">Loading categories...</div>
-            ) : error ? (
-              <div className="p-4 flex items-center gap-2 text-red-400">
-                <AlertCircle className="w-4 h-4" />
-                <span className="text-sm">{error}</span>
-              </div>
-            ) : filteredCategories.length === 0 ? (
-              <div className="p-4 text-center text-sm text-gray-400">
-                {search ? 'No categories found' : 'No categories available'}
-              </div>
-            ) : (
-              <div className="max-h-60 overflow-y-auto">
-                {filteredCategories.map((category) => (
-                  <button
-                    key={category.id}
-                    onClick={() => {
-                      onChange(category.id)
-                      setIsOpen(false)
-                      setSearch('')
-                    }}
-                    className={`w-full px-4 py-3 text-left text-sm border-b border-white/5 hover:bg-white/10 transition-colors flex items-center justify-between ${
-                      value === category.id ? 'bg-blue-600/20 text-blue-300' : 'text-gray-300'
-                    }`}
+          {isLoading ? (
+            <View style={styles.message}>
+              <Text style={styles.messageText}>{t('admin.content.categoryPicker.loading')}</Text>
+            </View>
+          ) : error ? (
+            <View style={styles.errorMessage}>
+              <AlertCircle size={16} color={colors.error} />
+              <Text style={styles.errorText}>{error}</Text>
+            </View>
+          ) : filteredCategories.length === 0 ? (
+            <View style={styles.message}>
+              <Text style={styles.messageText}>
+                {search ? t('admin.content.categoryPicker.noResults') : t('admin.content.categoryPicker.noCategories')}
+              </Text>
+            </View>
+          ) : (
+            <ScrollView style={styles.categoryList}>
+              {filteredCategories.map((category) => (
+                <Pressable
+                  key={category.id}
+                  onPress={() => {
+                    onChange(category.id)
+                    setIsOpen(false)
+                    setSearch('')
+                  }}
+                  style={styles.categoryItem}
+                >
+                  <GlassView
+                    style={[
+                      styles.categoryButton,
+                      value === category.id && styles.categoryButtonSelected,
+                    ]}
+                    intensity={value === category.id ? 'high' : 'low'}
                   >
-                    <div>
-                      <div className="font-medium">{category.name}</div>
-                      {category.name_en && <div className="text-xs text-gray-500">{category.name_en}</div>}
-                    </div>
-                    {value === category.id && <div className="w-2 h-2 rounded-full bg-blue-400" />}
-                  </button>
-                ))}
-              </div>
-            )}
+                    <View>
+                      <Text style={[styles.categoryName, { textAlign }]}>{category.name}</Text>
+                      {category.name_en && (
+                        <Text style={[styles.categoryNameEn, { textAlign }]}>{category.name_en}</Text>
+                      )}
+                    </View>
+                    {value === category.id && (
+                      <View style={styles.selectedIndicator} />
+                    )}
+                  </GlassView>
+                </Pressable>
+              ))}
+            </ScrollView>
+          )}
 
-            {allowCreate && (
-              <button
-                onClick={() => {
-                  setShowCreateModal(true)
-                  setIsOpen(false)
-                  setSearch('')
-                }}
-                className="w-full px-4 py-3 text-left text-sm text-blue-400 hover:bg-blue-600/10 border-t border-white/10 flex items-center gap-2 transition-colors"
-              >
-                <Plus className="w-4 h-4" />
-                Create new category
-              </button>
-            )}
-          </div>
-        )}
-      </div>
+          {allowCreate && (
+            <Pressable
+              onPress={() => {
+                setShowCreateModal(true)
+                setIsOpen(false)
+                setSearch('')
+              }}
+              style={styles.createButton}
+            >
+              <GlassView style={styles.createButtonInner} intensity="medium">
+                <Plus size={16} color={colors.primary} />
+                <Text style={styles.createButtonText}>
+                  {t('admin.content.categoryPicker.createNew')}
+                </Text>
+              </GlassView>
+            </Pressable>
+          )}
+        </GlassView>
+      )}
 
       {error && (
-        <div className="flex items-center gap-2 p-3 rounded-lg bg-red-500/10 border border-red-500/20">
-          <AlertCircle className="w-4 h-4 text-red-400" />
-          <p className="text-xs text-red-300">{error}</p>
-        </div>
+        <View style={styles.errorContainer}>
+          <AlertCircle size={14} color={colors.error} />
+          <Text style={styles.errorTextSmall}>{error}</Text>
+        </View>
       )}
 
       {/* Create Category Modal */}
-      {showCreateModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
-          <div className="bg-gray-900 border border-white/20 rounded-lg p-6 max-w-sm w-full mx-4">
-            <h3 className="text-lg font-semibold text-white mb-4">Create New Category</h3>
-            <input
-              type="text"
-              value={newCategoryName}
-              onChange={(e) => setNewCategoryName(e.target.value)}
-              placeholder="Category name (e.g., Movies, Series)"
-              className="w-full px-4 py-2 rounded-lg border border-white/20 bg-white/5 text-white placeholder-gray-500 text-sm focus:outline-none focus:border-blue-500 mb-4"
-              autoFocus
-              onKeyDown={(e) => {
-                if (e.key === 'Enter') handleCreateCategory()
-              }}
-            />
-            <div className="flex gap-3">
-              <button
-                onClick={() => {
-                  setShowCreateModal(false)
-                  setNewCategoryName('')
-                }}
-                disabled={isCreating}
-                className="flex-1 px-4 py-2 rounded-lg border border-white/20 hover:bg-white/10 text-gray-300 text-sm font-medium transition-colors disabled:opacity-50"
-              >
-                Cancel
-              </button>
-              <button
-                onClick={handleCreateCategory}
-                disabled={isCreating || !newCategoryName.trim()}
-                className="flex-1 px-4 py-2 rounded-lg bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium transition-colors disabled:opacity-50"
-              >
-                {isCreating ? 'Creating...' : 'Create'}
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-    </div>
+      <GlassModal
+        visible={showCreateModal}
+        type="info"
+        title={t('admin.content.categoryPicker.modal.title')}
+        onClose={() => {
+          setShowCreateModal(false)
+          setNewCategoryName('')
+        }}
+        dismissable={!isCreating}
+        buttons={[
+          {
+            text: t('common.cancel'),
+            style: 'cancel',
+            onPress: () => {
+              setShowCreateModal(false)
+              setNewCategoryName('')
+            },
+          },
+          {
+            text: isCreating ? t('admin.content.categoryPicker.modal.creating') : t('admin.content.categoryPicker.modal.create'),
+            style: 'default',
+            onPress: handleCreateCategory,
+          },
+        ]}
+      >
+        <GlassInput
+          value={newCategoryName}
+          onChangeText={setNewCategoryName}
+          placeholder={t('admin.content.categoryPicker.modal.placeholder')}
+          autoFocus
+          editable={!isCreating}
+        />
+      </GlassModal>
+    </View>
   )
 }
+
+const styles = StyleSheet.create({
+  container: {
+    width: '100%',
+    marginBottom: spacing.md,
+  },
+  label: {
+    fontSize: 14,
+    fontWeight: '500',
+    color: colors.text,
+    marginBottom: spacing.sm,
+  },
+  selectButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingHorizontal: spacing.md,
+    paddingVertical: spacing.md,
+    borderRadius: borderRadius.md,
+    minHeight: 48,
+  },
+  selectButtonError: {
+    borderColor: colors.error,
+    borderWidth: 1,
+  },
+  selectedText: {
+    flex: 1,
+    fontSize: 14,
+    color: colors.text,
+  },
+  placeholderText: {
+    flex: 1,
+    fontSize: 14,
+    color: colors.textMuted,
+  },
+  dropdown: {
+    marginTop: spacing.sm,
+    borderRadius: borderRadius.md,
+    maxHeight: 400,
+    overflow: 'hidden',
+  },
+  searchContainer: {
+    padding: spacing.sm,
+    borderBottomWidth: 1,
+    borderBottomColor: colors.border,
+  },
+  message: {
+    padding: spacing.lg,
+    alignItems: 'center',
+  },
+  messageText: {
+    fontSize: 14,
+    color: colors.textMuted,
+  },
+  errorMessage: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.sm,
+    padding: spacing.md,
+  },
+  errorText: {
+    fontSize: 14,
+    color: colors.error,
+  },
+  categoryList: {
+    maxHeight: 240,
+  },
+  categoryItem: {
+    borderBottomWidth: 1,
+    borderBottomColor: colors.border,
+  },
+  categoryButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingHorizontal: spacing.md,
+    paddingVertical: spacing.md,
+  },
+  categoryButtonSelected: {
+    borderLeftWidth: 3,
+    borderLeftColor: colors.primary,
+  },
+  categoryName: {
+    fontSize: 14,
+    fontWeight: '500',
+    color: colors.text,
+  },
+  categoryNameEn: {
+    fontSize: 12,
+    color: colors.textMuted,
+    marginTop: spacing.xs,
+  },
+  selectedIndicator: {
+    width: 8,
+    height: 8,
+    borderRadius: 4,
+    backgroundColor: colors.primary,
+  },
+  createButton: {
+    borderTopWidth: 1,
+    borderTopColor: colors.border,
+  },
+  createButtonInner: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.sm,
+    paddingHorizontal: spacing.md,
+    paddingVertical: spacing.md,
+  },
+  createButtonText: {
+    fontSize: 14,
+    color: colors.primary,
+    fontWeight: '500',
+  },
+  errorContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.xs,
+    marginTop: spacing.xs,
+    paddingHorizontal: spacing.sm,
+  },
+  errorTextSmall: {
+    fontSize: 12,
+    color: colors.error,
+  },
+})

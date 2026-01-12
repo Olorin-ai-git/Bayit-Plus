@@ -24,6 +24,7 @@ import {
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
+import { useDirection } from '@bayit/shared-hooks';
 import { contentService } from '@bayit/shared-services';
 import { GlassCategoryPill, GlassView, GlassBadge } from '@bayit/shared';
 import { getLocalizedName, getLocalizedDescription } from '@bayit/shared-utils';
@@ -56,6 +57,7 @@ interface Category {
 export const RadioScreenMobile: React.FC = () => {
   const { t, i18n } = useTranslation();
   const navigation = useNavigation<any>();
+  const { isRTL, direction } = useDirection();
   const { orientation } = useResponsive();
 
   const [stations, setStations] = useState<RadioStation[]>([]);
@@ -392,5 +394,7 @@ const styles = StyleSheet.create({
   emptyText: {
     ...typography.body,
     color: colors.textSecondary,
+    textAlign: 'center',
+    writingDirection: 'auto',
   },
 });

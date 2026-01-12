@@ -25,6 +25,7 @@ import {
 } from 'react-native';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
+import { useDirection } from '@bayit/shared-hooks';
 import ReactNativeHapticFeedback from 'react-native-haptic-feedback';
 import { GlassView, GlassButton, GlassCategoryPill } from '@bayit/shared';
 import { contentService } from '@bayit/shared-services';
@@ -65,6 +66,7 @@ export const SearchScreenMobile: React.FC = () => {
   const { t, i18n } = useTranslation();
   const navigation = useNavigation<any>();
   const route = useRoute<SearchRoute>();
+  const { isRTL, direction } = useDirection();
   const { orientation } = useResponsive();
 
   const [query, setQuery] = useState(route.params?.query || '');

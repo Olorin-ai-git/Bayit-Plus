@@ -29,6 +29,8 @@ import Animated, {
 } from 'react-native-reanimated';
 import Video from 'react-native-video';
 import ReactNativeHapticFeedback from 'react-native-haptic-feedback';
+import { useTranslation } from 'react-i18next';
+import { useDirection } from '@bayit/shared-hooks';
 import { useResponsive } from '../hooks/useResponsive';
 import { BottomSheet } from '../components';
 import { GlassView, GlassButton } from '@bayit/shared';
@@ -45,6 +47,8 @@ interface PlayerRoute {
 export const PlayerScreenMobile: React.FC = () => {
   const route = useRoute<PlayerRoute>();
   const navigation = useNavigation();
+  const { t } = useTranslation();
+  const { isRTL, direction } = useDirection();
   const { isPhone, orientation } = useResponsive();
 
   const { id, title, type } = route.params;

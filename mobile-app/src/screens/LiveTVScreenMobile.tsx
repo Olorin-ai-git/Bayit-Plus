@@ -21,7 +21,8 @@ import {
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
-import { liveService } from '@bayit/shared-services';
+import { useDirection } from '@bayit/shared-hooks';
+import { liveService, contentService } from '@bayit/shared-services';
 import { GlassCategoryPill } from '@bayit/shared';
 import { getLocalizedName, getLocalizedCurrentProgram } from '@bayit/shared-utils';
 import { useResponsive } from '../hooks/useResponsive';
@@ -54,6 +55,7 @@ interface Category {
 export const LiveTVScreenMobile: React.FC = () => {
   const { t, i18n } = useTranslation();
   const navigation = useNavigation<any>();
+  const { isRTL, direction } = useDirection();
   const { orientation } = useResponsive();
 
   const [channels, setChannels] = useState<Channel[]>([]);
@@ -85,7 +87,7 @@ export const LiveTVScreenMobile: React.FC = () => {
 
       const [channelsRes, categoriesRes] = await Promise.all([
         liveService.getChannels(),
-        liveService.getCategories(),
+        contentService.getCategories(),
       ]) as [any, any];
 
       const channelsData = (channelsRes.channels || []).map((channel: any) => ({
@@ -244,5 +246,7 @@ const styles = StyleSheet.create({
   emptyText: {
     ...typography.body,
     color: colors.textSecondary,
+    textAlign: 'center',
+    writingDirection: 'auto',
   },
 });

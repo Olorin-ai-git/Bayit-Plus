@@ -1564,6 +1564,40 @@
             "invalidUrl": "כתובת URL לא תקינה"
           }
         }
+      },
+      "categoryPicker": {
+        "selectPlaceholder": "בחר קטגוריה...",
+        "searchPlaceholder": "חפש קטגוריות...",
+        "loading": "טוען קטגוריות...",
+        "noResults": "לא נמצאו קטגוריות",
+        "noCategories": "אין קטגוריות זמינות",
+        "createNew": "צור קטגוריה חדשה",
+        "errors": {
+          "loadFailed": "טעינת הקטגוריות נכשלה",
+          "createFailed": "יצירת הקטגוריה נכשלה"
+        },
+        "modal": {
+          "title": "צור קטגוריה חדשה",
+          "placeholder": "שם קטגוריה (לדוגמה: סרטים, סדרות)",
+          "creating": "יוצר...",
+          "create": "צור"
+        }
+      },
+      "streamUrlInput": {
+        "copyUrl": "העתק URL",
+        "copied": "URL הועתק ללוח",
+        "streamType": "סוג סטרים",
+        "validUrl": "URL תקין - זוהה כ-{{type}}",
+        "errors": {
+          "required": "נדרש URL של סטרים",
+          "invalidFormat": "פורמט URL לא תקין"
+        },
+        "supportedFormats": {
+          "title": "פורמטים נתמכים:",
+          "hls": "HLS: סטרימים .m3u8",
+          "dash": "DASH: סטרימים .mpd",
+          "audio": "אודיו: סטרימים .mp3, .aac או אודיו"
+        }
       }
     },
     "categories": {

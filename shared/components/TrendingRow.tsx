@@ -260,12 +260,12 @@ const TopicCard: React.FC<TopicCardProps> = ({
             </View>
           </View>
 
-          <Text style={[styles.topicTitle, { textAlign: isRTL ? 'right' : 'left' }]} numberOfLines={2}>
+          <Text style={[styles.topicTitle, { textAlign: isRTL ? 'right' : 'left' }]} numberOfLines={3}>
             {title}
           </Text>
 
           {summary && (
-            <Text style={[styles.topicSummary, { textAlign: isRTL ? 'right' : 'left' }]} numberOfLines={2}>
+            <Text style={[styles.topicSummary, { textAlign: isRTL ? 'right' : 'left' }]} numberOfLines={3}>
               {summary}
             </Text>
           )}
@@ -335,7 +335,7 @@ const styles = StyleSheet.create({
   },
   topicCard: {
     width: 220,
-    height: 180,
+    height: 200,
     padding: spacing.md,
     borderRadius: borderRadius.lg,
     borderWidth: 2,

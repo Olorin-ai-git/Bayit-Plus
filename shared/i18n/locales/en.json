@@ -1603,6 +1603,40 @@
             "invalidUrl": "Invalid URL"
           }
         }
+      },
+      "categoryPicker": {
+        "selectPlaceholder": "Select category...",
+        "searchPlaceholder": "Search categories...",
+        "loading": "Loading categories...",
+        "noResults": "No categories found",
+        "noCategories": "No categories available",
+        "createNew": "Create new category",
+        "errors": {
+          "loadFailed": "Failed to load categories",
+          "createFailed": "Failed to create category"
+        },
+        "modal": {
+          "title": "Create New Category",
+          "placeholder": "Category name (e.g., Movies, Series)",
+          "creating": "Creating...",
+          "create": "Create"
+        }
+      },
+      "streamUrlInput": {
+        "copyUrl": "Copy URL",
+        "copied": "URL copied to clipboard",
+        "streamType": "Stream Type",
+        "validUrl": "URL is valid - detected as {{type}}",
+        "errors": {
+          "required": "Stream URL is required",
+          "invalidFormat": "Invalid URL format"
+        },
+        "supportedFormats": {
+          "title": "Supported formats:",
+          "hls": "HLS: .m3u8 streams",
+          "dash": "DASH: .mpd streams",
+          "audio": "Audio: .mp3, .aac, or audio streams"
+        }
       }
     },
     "categories": {

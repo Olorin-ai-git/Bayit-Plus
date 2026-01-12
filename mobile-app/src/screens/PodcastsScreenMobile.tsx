@@ -24,6 +24,7 @@ import {
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
+import { useDirection } from '@bayit/shared-hooks';
 import { contentService } from '@bayit/shared-services';
 import { GlassCategoryPill, GlassView, GlassBadge, GlassButton } from '@bayit/shared';
 import { getLocalizedName, getLocalizedDescription } from '@bayit/shared-utils';
@@ -69,6 +70,7 @@ interface Category {
 export const PodcastsScreenMobile: React.FC = () => {
   const { t, i18n } = useTranslation();
   const navigation = useNavigation<any>();
+  const { isRTL, direction } = useDirection();
   const { orientation } = useResponsive();
 
   const [podcasts, setPodcasts] = useState<Podcast[]>([]);
@@ -438,6 +440,7 @@ const styles = StyleSheet.create({
     ...typography.body,
     color: colors.textSecondary,
     textAlign: 'center',
+    writingDirection: 'auto',
   },
   episodesSheet: {
     flex: 1,
