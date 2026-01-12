@@ -30,13 +30,13 @@ export const GlassStatCard: React.FC<GlassStatCardProps> = ({
 
   const content = (
     <GlassView style={[compact ? styles.containerCompact : styles.container, style]}>
-      <View style={[styles.iconContainer, { backgroundColor: bgColor }]}>
+      <View style={styles.iconWrapper}>
         {icon}
       </View>
       <View style={styles.content}>
-        <Text style={[compact ? styles.labelCompact : styles.label]} numberOfLines={1}>{label}</Text>
-        <Text style={[compact ? styles.valueCompact : styles.value]} numberOfLines={1}>{value}</Text>
-        {subtitle && <Text style={styles.subtitle} numberOfLines={1}>{subtitle}</Text>}
+        <Text style={[compact ? styles.labelCompact : styles.label]}>{label}</Text>
+        <Text style={[compact ? styles.valueCompact : styles.value]}>{value}</Text>
+        {subtitle && <Text style={styles.subtitle}>{subtitle}</Text>}
       </View>
     </GlassView>
   );
@@ -66,10 +66,7 @@ const styles = StyleSheet.create({
     gap: spacing.sm,
     minHeight: 80,
   },
-  iconContainer: {
-    width: 48,
-    height: 48,
-    borderRadius: borderRadius.md,
+  iconWrapper: {
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -86,6 +83,7 @@ const styles = StyleSheet.create({
     fontSize: 11,
     color: colors.textMuted,
     marginBottom: 2,
+    flexWrap: 'wrap',
   },
   value: {
     fontSize: 24,

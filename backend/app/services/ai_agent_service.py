@@ -654,7 +654,10 @@ async def execute_fix_missing_poster(
 ) -> Dict[str, Any]:
     """Fix missing poster for a content item."""
     try:
+        logger.info(f"   📥 Fetching content {content_id} to fix poster...")
+
         if dry_run:
+            logger.info(f"   🔒 DRY RUN mode - would fix poster for {content_id}")
             return {
                 "success": True,
                 "dry_run": True,
@@ -662,23 +665,27 @@ async def execute_fix_missing_poster(
             }
 
         # Use auto_fixer service (which uses TMDB internally)
-        result = await auto_fix_metadata(content_id, ["missing_poster"], audit_id)
+        # Note: auto_fixer expects "missing_thumbnail" not "missing_poster"
+        logger.info(f"   🔍 Calling auto_fixer to retrieve poster from TMDB...")
+        result = await auto_fix_metadata(content_id, ["missing_thumbnail"], audit_id)
 
         if result.success:
+            logger.info(f"   ✅ Poster fixed successfully! Fields updated: {result.fields_updated}")
             return {
                 "success": True,
                 "fixed": True,
-                "message": "Added poster from TMDB",
+                "message": f"Added poster from TMDB (updated: {', '.join(result.fields_updated or [])})",
                 "fields_updated": result.fields_updated or []
             }
         else:
+            logger.warning(f"   ⚠️ Failed to fix poster: {result.error_message}")
             return {
                 "success": False,
                 "error": result.error_message or "Could not find poster on TMDB"
             }
 
     except Exception as e:
-        logger.error(f"Error in fix_missing_poster: {str(e)}")
+        logger.error(f"   ❌ Exception in fix_missing_poster: {str(e)}")
         return {"success": False, "error": str(e)}
 
 
@@ -690,7 +697,10 @@ async def execute_fix_missing_metadata(
 ) -> Dict[str, Any]:
     """Fix missing metadata for a content item."""
     try:
+        logger.info(f"   📥 Fetching content {content_id} to fix metadata...")
+
         if dry_run:
+            logger.info(f"   🔒 DRY RUN mode - would fix metadata for {content_id}")
             return {
                 "success": True,
                 "dry_run": True,
@@ -698,23 +708,27 @@ async def execute_fix_missing_metadata(
             }
 
         # Use auto_fixer service
-        result = await auto_fix_metadata(content_id, ["missing_description", "missing_imdb", "missing_poster"], audit_id)
+        # Note: auto_fixer checks for these specific issue names
+        logger.info(f"   🔍 Calling auto_fixer to retrieve metadata from TMDB...")
+        result = await auto_fix_metadata(content_id, ["missing_tmdb_id", "missing_imdb_id", "missing_thumbnail", "missing_backdrop"], audit_id)
 
         if result.success:
+            logger.info(f"   ✅ Metadata fixed successfully! Fields updated: {result.fields_updated}")
             return {
                 "success": True,
                 "fixed": True,
-                "message": "Updated metadata from TMDB",
+                "message": f"Updated metadata from TMDB (updated: {', '.join(result.fields_updated or [])})",
                 "fields_updated": result.fields_updated or []
             }
         else:
+            logger.warning(f"   ⚠️ Failed to fix metadata: {result.error_message}")
             return {
                 "success": False,
                 "error": result.error_message or "Failed to update metadata"
             }
 
     except Exception as e:
-        logger.error(f"Error in fix_missing_metadata: {str(e)}")
+        logger.error(f"   ❌ Exception in fix_missing_metadata: {str(e)}")
         return {"success": False, "error": str(e)}
 
 
@@ -728,14 +742,18 @@ async def execute_recategorize_content(
 ) -> Dict[str, Any]:
     """Recategorize a content item."""
     try:
+        logger.info(f"   📋 Checking confidence level: {confidence}%")
+
         # Require high confidence
         if confidence < 90:
+            logger.warning(f"   ⚠️ Confidence too low: {confidence}% < 90%")
             return {
                 "success": False,
                 "error": f"Confidence too low ({confidence}%). Requires 90%+ for auto-recategorization. Use flag_for_manual_review instead."
             }
 
         if dry_run:
+            logger.info(f"   🔒 DRY RUN mode - would recategorize {content_id} to {new_category_id}")
             return {
                 "success": True,
                 "dry_run": True,
@@ -743,14 +761,20 @@ async def execute_recategorize_content(
             }
 
         # Get content and verify category exists
+        logger.info(f"   📥 Fetching content {content_id}...")
         try:
             content = await Content.get(PydanticObjectId(content_id))
+            logger.info(f"   ✓ Content found: '{content.title}'")
         except Exception as e:
+            logger.error(f"   ❌ Content not found: {str(e)}")
             return {"success": False, "error": f"Content not found: {str(e)}"}
 
+        logger.info(f"   📥 Fetching category {new_category_id}...")
         try:
             new_category = await Category.get(PydanticObjectId(new_category_id))
+            logger.info(f"   ✓ Category found: '{new_category.name}'")
         except Exception as e:
+            logger.error(f"   ❌ Category not found: {str(e)}")
             return {"success": False, "error": f"Category not found: {str(e)}"}
 
         if not content:
@@ -758,23 +782,58 @@ async def execute_recategorize_content(
         if not new_category:
             return {"success": False, "error": f"Category not found (ID: {new_category_id})"}
 
-        # Use auto_fixer service
+        # Store before state
+        logger.info(f"   📊 Getting old category info...")
         old_category_id = str(content.category_id) if content.category_id else None
-        result = await fix_misclassification(content_id, new_category_id, confidence / 100.0, audit_id)
+        old_category = await Category.get(PydanticObjectId(content.category_id)) if content.category_id else None
+        old_category_name = old_category.name if old_category else "None"
+        logger.info(f"   📍 Current category: '{old_category_name}' ({old_category_id})")
 
-        if result.success:
-            return {
-                "success": True,
-                "recategorized": True,
-                "message": f"Moved from category {old_category_id} to {new_category_id}",
-                "old_category": old_category_id,
-                "new_category": new_category_id
-            }
-        else:
-            return {
-                "success": False,
-                "error": result.error_message or "Failed to recategorize"
-            }
+        before_state = {
+            "category_id": old_category_id,
+            "category_name": old_category_name,
+        }
+
+        # Apply change
+        logger.info(f"   🔄 Recategorizing '{content.title}' from '{old_category_name}' → '{new_category.name}'...")
+        content.category_id = str(new_category.id)
+        content.category_name = new_category.name
+        content.updated_at = datetime.utcnow()
+        await content.save()
+        logger.info(f"   💾 Content saved to database")
+
+        after_state = {
+            "category_id": str(new_category.id),
+            "category_name": new_category.name,
+        }
+
+        # Log action
+        logger.info(f"   📝 Creating LibrarianAction record...")
+        action = LibrarianAction(
+            audit_id=audit_id,
+            action_type="recategorize",
+            content_id=content_id,
+            content_type="content",
+            issue_type="misclassification",
+            before_state=before_state,
+            after_state=after_state,
+            confidence_score=confidence / 100.0,
+            auto_approved=True,
+            rollback_available=True,
+            description=f"Reclassified from '{old_category_name}' to '{new_category.name}' (confidence: {confidence}%). Reason: {reason}",
+        )
+        await action.insert()
+        logger.info(f"   ✅ LibrarianAction saved (ID: {action.id})")
+
+        logger.info(f"   ✅ Successfully recategorized '{content.title}' to '{new_category.name}' ({confidence}%)")
+        return {
+            "success": True,
+            "recategorized": True,
+            "message": f"Moved from '{old_category_name}' to '{new_category.name}'",
+            "old_category": old_category_id,
+            "new_category": str(new_category.id),
+            "action_id": str(action.id)
+        }
     except Exception as e:
         logger.error(f"Error in recategorize_content: {str(e)}")
         return {"success": False, "error": str(e)}
@@ -1523,8 +1582,14 @@ Start the audit!"""
                     tool_name = block.name
                     tool_input = block.input
 
-                    # Log tool use to database
-                    await log_to_database(audit_report, "info", f"Using tool: {tool_name}", "AI Agent")
+                    # Log tool use START to database with full parameters
+                    params_str = json.dumps(tool_input, ensure_ascii=False, indent=2)
+                    await log_to_database(
+                        audit_report,
+                        "info",
+                        f"🔧 TOOL START: {tool_name}\nParameters: {params_str}",
+                        "AI Agent"
+                    )
 
                     logger.info(f"🔧 Claude wants to use: {tool_name}")
                     logger.info(f"   Input: {json.dumps(tool_input, ensure_ascii=False)[:200]}")
@@ -1533,7 +1598,7 @@ Start the audit!"""
                     if tool_name == "complete_audit":
                         audit_complete = True
                         completion_summary = tool_input
-                        await log_to_database(audit_report, "success", "Audit completed", "AI Agent")
+                        await log_to_database(audit_report, "success", "✅ TOOL COMPLETE: complete_audit - Audit finished successfully", "AI Agent")
                         tool_results.append({
                             "type": "tool_result",
                             "tool_use_id": block.id,
@@ -1544,26 +1609,37 @@ Start the audit!"""
                     # Execute tool
                     result = await execute_tool(tool_name, tool_input, audit_id, dry_run)
 
-                    # Log tool result to database
+                    # Log FULL tool result to database
+                    result_str = json.dumps(result, ensure_ascii=False, indent=2)
+
                     if result.get("success") is False:
                         error_msg = result.get("error", "Unknown error")
                         await log_to_database(
                             audit_report,
                             "error",
-                            f"Tool '{tool_name}' failed: {error_msg}",
+                            f"❌ TOOL FAILED: {tool_name}\nError: {error_msg}\nFull result: {result_str}",
                             "AI Agent"
                         )
                         logger.error(f"   ❌ Tool failed: {error_msg}")
                     elif result.get("success") is True:
-                        # Only log successful actions that made changes
-                        if tool_name in ["fix_missing_poster", "fix_missing_metadata", "recategorize_content", "clean_title"]:
-                            if result.get("fixed") or result.get("cleaned"):
-                                await log_to_database(
-                                    audit_report,
-                                    "success",
-                                    f"Tool '{tool_name}' succeeded: {result.get('message', 'Success')}",
-                                    "AI Agent"
-                                )
+                        # Log ALL successful tool executions with full details
+                        success_msg = result.get("message", "Success")
+                        await log_to_database(
+                            audit_report,
+                            "success",
+                            f"✅ TOOL SUCCESS: {tool_name}\nMessage: {success_msg}\nFull result: {result_str}",
+                            "AI Agent"
+                        )
+                        logger.info(f"   ✅ Tool succeeded: {success_msg}")
+                    else:
+                        # Tool returned data without explicit success/failure flag
+                        await log_to_database(
+                            audit_report,
+                            "info",
+                            f"📊 TOOL RESULT: {tool_name}\nFull result: {result_str}",
+                            "AI Agent"
+                        )
+                        logger.info(f"   📊 Tool returned data")
 
                     # Track tool use
                     tool_uses.append({

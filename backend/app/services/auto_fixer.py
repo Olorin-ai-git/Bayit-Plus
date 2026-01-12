@@ -21,6 +21,7 @@ class FixResult:
     success: bool
     action_id: Optional[str] = None
     error_message: Optional[str] = None
+    fields_updated: Optional[List[str]] = None
 
 
 async def fix_content_issues(
@@ -220,7 +221,7 @@ async def fix_missing_metadata(
             await action.insert()
 
             logger.info(f"   ✓ Fixed metadata for '{content.title}': {', '.join(changes_made)}")
-            return FixResult(success=True, action_id=str(action.id))
+            return FixResult(success=True, action_id=str(action.id), fields_updated=changes_made)
         else:
             # Provide more specific error message
             if not enriched or not enriched.get("tmdb_id"):
