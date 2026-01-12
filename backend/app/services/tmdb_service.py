@@ -172,14 +172,17 @@ class TMDBService:
         # Search for the movie
         search_result = await self.search_movie(title, year)
         if not search_result:
+            logger.warning(f"🔍 TMDB: No search results for movie '{title}' ({year})")
             return result
 
         tmdb_id = search_result.get("id")
         result["tmdb_id"] = tmdb_id
+        logger.info(f"🔍 TMDB: Found movie '{title}' with ID {tmdb_id}")
 
         # Get full details
         details = await self.get_movie_details(tmdb_id)
         if not details:
+            logger.error(f"❌ TMDB: Failed to get details for movie ID {tmdb_id}")
             return result
 
         # Extract IMDB ID
@@ -236,14 +239,17 @@ class TMDBService:
         # Search for the series
         search_result = await self.search_tv_series(title, year)
         if not search_result:
+            logger.warning(f"🔍 TMDB: No search results for series '{title}' ({year})")
             return result
 
         tmdb_id = search_result.get("id")
         result["tmdb_id"] = tmdb_id
+        logger.info(f"🔍 TMDB: Found series '{title}' with ID {tmdb_id}")
 
         # Get full details
         details = await self.get_tv_series_details(tmdb_id)
         if not details:
+            logger.error(f"❌ TMDB: Failed to get details for series ID {tmdb_id}")
             return result
 
         # Extract IMDB ID

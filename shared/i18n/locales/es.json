@@ -1514,6 +1514,8 @@
           "totalItems": "Total de Elementos",
           "healthyItems": "Elementos Saludables",
           "issuesFound": "Problemas Encontrados",
+          "totalIssues": "Total de Problemas Encontrados",
+          "seeInsightsBelow": "Ver Perspectivas de IA abajo para más detalles",
           "brokenStreams": "Transmisiones Rotas",
           "missingMetadata": "Metadatos Faltantes",
           "misclassifications": "Clasificaciones Erróneas",

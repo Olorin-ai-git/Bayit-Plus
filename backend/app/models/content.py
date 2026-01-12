@@ -1,5 +1,5 @@
 from datetime import datetime
-from typing import Optional, List
+from typing import Optional, List, Union
 from beanie import Document
 from pydantic import BaseModel, Field
 
@@ -15,7 +15,7 @@ class ContentCreate(ContentBase):
     category_id: str
     duration: Optional[str] = None
     year: Optional[int] = None
-    rating: Optional[str] = None
+    rating: Optional[Union[str, float]] = None
     genre: Optional[str] = None
     cast: Optional[List[str]] = None
     stream_url: str
@@ -27,7 +27,7 @@ class ContentResponse(ContentBase):
     category: Optional[str] = None
     duration: Optional[str] = None
     year: Optional[int] = None
-    rating: Optional[str] = None
+    rating: Optional[Union[str, float]] = None
     type: str = "vod"
 
     class Config:
@@ -49,7 +49,7 @@ class Content(Document):
     # Metadata
     duration: Optional[str] = None  # e.g., "1:45:00"
     year: Optional[int] = None
-    rating: Optional[str] = None  # e.g., "PG-13"
+    rating: Optional[Union[str, float]] = None  # e.g., "PG-13" or 7.839 (accepts both for compatibility)
     genre: Optional[str] = None  # Primary genre (legacy field, kept for backward compatibility)
     genres: Optional[List[str]] = None  # Multiple genres from TMDB
     cast: Optional[List[str]] = None

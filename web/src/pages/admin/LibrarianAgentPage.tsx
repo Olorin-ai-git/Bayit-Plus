@@ -49,10 +49,13 @@ const LibrarianAgentPage = () => {
   const [budgetLimit, setBudgetLimit] = useState(0);
   const [selectedReport, setSelectedReport] = useState<AuditReportDetail | null>(null);
   const [detailModalVisible, setDetailModalVisible] = useState(false);
+  const [detailModalLoading, setDetailModalLoading] = useState(false);
   const [logViewerModalVisible, setLogViewerModalVisible] = useState(false);
+  const [logModalLoading, setLogModalLoading] = useState(false);
   const [confirmModalVisible, setConfirmModalVisible] = useState(false);
   const [pendingAuditType, setPendingAuditType] = useState<'daily_incremental' | 'ai_agent' | null>(null);
   const [configError, setConfigError] = useState<string | null>(null);
+  const [loadingAuditId, setLoadingAuditId] = useState<string | null>(null);
 
   // Load all data
   const loadData = useCallback(async () => {
@@ -223,13 +226,27 @@ const LibrarianAgentPage = () => {
 
   // View report details
   const handleViewReport = async (auditId: string) => {
+    // Set loading state immediately for inline spinner
+    setLoadingAuditId(auditId);
+
+    // Small delay to ensure spinner renders before heavy modal operation
+    await new Promise(resolve => setTimeout(resolve, 50));
+
+    // Open modal with loading state
+    setDetailModalVisible(true);
+    setDetailModalLoading(true);
+    setSelectedReport(null);
+
     try {
       const details = await getAuditReportDetails(auditId);
       setSelectedReport(details);
-      setDetailModalVisible(true);
     } catch (error) {
       logger.error('Failed to load report details:', error);
       Alert.alert(t('common.error'), t('admin.librarian.errors.failedToLoadDetails'));
+      setDetailModalVisible(false);
+    } finally {
+      setDetailModalLoading(false);
+      setLoadingAuditId(null);
     }
   };
 
@@ -357,18 +374,32 @@ const LibrarianAgentPage = () => {
 
   // Handle view logs
   const handleViewLogs = async (auditId?: string) => {
-    // If auditId is provided, load that report first
-    if (auditId && (!selectedReport || selectedReport.audit_id !== auditId)) {
-      try {
+    // Set loading state immediately for inline spinner
+    if (auditId) {
+      setLoadingAuditId(auditId);
+    }
+
+    // Small delay to ensure spinner renders before heavy modal operation
+    await new Promise(resolve => setTimeout(resolve, 50));
+
+    // Open modal with loading state
+    setLogViewerModalVisible(true);
+    setLogModalLoading(true);
+
+    try {
+      // If auditId is provided, load that report first
+      if (auditId && (!selectedReport || selectedReport.audit_id !== auditId)) {
         const details = await getAuditReportDetails(auditId);
         setSelectedReport(details);
-      } catch (error) {
-        logger.error('Failed to load report details for logs:', error);
-        Alert.alert(t('common.error'), t('admin.librarian.errors.failedToLoadDetails'));
-        return;
       }
+    } catch (error) {
+      logger.error('Failed to load report details for logs:', error);
+      Alert.alert(t('common.error'), t('admin.librarian.errors.failedToLoadDetails'));
+      setLogViewerModalVisible(false);
+    } finally {
+      setLogModalLoading(false);
+      setLoadingAuditId(null);
     }
-    setLogViewerModalVisible(true);
   };
 
   // Handle schedule update
@@ -440,27 +471,37 @@ const LibrarianAgentPage = () => {
     {
       key: 'audit_id',
       label: t('admin.librarian.reports.columns.actions'),
-      render: (value, row) => (
-        <Pressable
-          style={styles.actionButtonsRow}
-          onPress={(e) => {
-            e?.stopPropagation?.();
-          }}
-        >
-          <GlassButton
-            variant="secondary"
-            size="sm"
-            icon={<Eye size={18} color={colors.text} />}
-            onPress={() => handleViewReport(row.audit_id)}
-          />
-          <GlassButton
-            variant="secondary"
-            size="sm"
-            icon={<ScrollText size={18} color={colors.text} />}
-            onPress={() => handleViewLogs(row.audit_id)}
-          />
-        </Pressable>
-      ),
+      render: (value, row) => {
+        const isLoading = loadingAuditId === row.audit_id;
+        return (
+          <View style={styles.actionButtonsRow}>
+            {isLoading ? (
+              <ActivityIndicator size="small" color={colors.primary} />
+            ) : (
+              <>
+                <GlassButton
+                  variant="secondary"
+                  size="sm"
+                  icon={<Eye size={18} color={colors.text} />}
+                  onPress={(e) => {
+                    e?.stopPropagation?.();
+                    handleViewReport(row.audit_id);
+                  }}
+                />
+                <GlassButton
+                  variant="secondary"
+                  size="sm"
+                  icon={<ScrollText size={18} color={colors.text} />}
+                  onPress={(e) => {
+                    e?.stopPropagation?.();
+                    handleViewLogs(row.audit_id);
+                  }}
+                />
+              </>
+            )}
+          </View>
+        );
+      },
     },
   ];
 
@@ -717,11 +758,16 @@ const LibrarianAgentPage = () => {
       <GlassModal
         visible={detailModalVisible}
         title={t('admin.librarian.reports.detailModal.title', {
-          id: selectedReport?.audit_id.substring(0, config.ui.id_truncate_length) || ''
+          id: selectedReport?.audit_id.substring(0, config.ui.id_truncate_length) || '...'
         })}
         onClose={() => setDetailModalVisible(false)}
       >
-        {selectedReport && (
+        {detailModalLoading ? (
+          <View style={styles.modalLoadingContainer}>
+            <ActivityIndicator size="large" color={colors.primary} />
+            <Text style={styles.loadingText}>{t('admin.librarian.loading')}</Text>
+          </View>
+        ) : selectedReport ? (
           <>
             <View style={styles.modalHeaderActions}>
               <GlassButton
@@ -733,48 +779,106 @@ const LibrarianAgentPage = () => {
               />
             </View>
             <ScrollView style={[styles.modalContent, { maxHeight: config.ui.modal_max_height }]}>
-              <DetailSection title={t('admin.librarian.reports.detailModal.summary')}>
-              <DetailRow
-                label={t('admin.librarian.reports.detailModal.status')}
-                value={t(`admin.librarian.status.${selectedReport.status}`, selectedReport.status)}
-              />
-              <DetailRow
-                label={t('admin.librarian.reports.detailModal.executionTime')}
-                value={`${selectedReport.execution_time_seconds.toFixed(1)}s`}
-              />
-              <DetailRow
-                label={t('admin.librarian.reports.detailModal.totalItems')}
-                value={selectedReport.summary.total_items?.toString() || 'N/A'}
-              />
-              <DetailRow
-                label={t('admin.librarian.reports.detailModal.healthyItems')}
-                value={selectedReport.summary.healthy_items?.toString() || 'N/A'}
-              />
-            </DetailSection>
+              {/* Summary Section */}
+              <GlassCard style={styles.modalSection}>
+                <Text style={styles.modalSectionTitle}>{t('admin.librarian.reports.detailModal.summary')}</Text>
+                <View style={styles.statsRow}>
+                  <View style={styles.statItem}>
+                    <Text style={styles.statLabel}>{t('admin.librarian.reports.detailModal.status')}</Text>
+                    <GlassBadge
+                      text={t(`admin.librarian.status.${selectedReport.status}`, selectedReport.status)}
+                      variant={
+                        selectedReport.status === 'completed' ? 'success' :
+                        selectedReport.status === 'failed' ? 'error' : 'warning'
+                      }
+                    />
+                  </View>
+                  <View style={styles.statItem}>
+                    <Text style={styles.statLabel}>{t('admin.librarian.reports.detailModal.executionTime')}</Text>
+                    <Text style={styles.statValue}>{selectedReport.execution_time_seconds.toFixed(1)}s</Text>
+                  </View>
+                </View>
+                <View style={styles.statsRow}>
+                  <View style={styles.statItem}>
+                    <Text style={styles.statLabel}>{t('admin.librarian.reports.detailModal.totalItems')}</Text>
+                    <Text style={styles.statValue}>{selectedReport.summary.total_items ?? 0}</Text>
+                  </View>
+                  <View style={styles.statItem}>
+                    <Text style={styles.statLabel}>{t('admin.librarian.reports.detailModal.healthyItems')}</Text>
+                    <Text style={styles.statValue}>{selectedReport.summary.healthy_items ?? 0}</Text>
+                  </View>
+                </View>
+              </GlassCard>
 
-            <DetailSection title={t('admin.librarian.reports.detailModal.issuesFound')}>
-              <DetailRow label={t('admin.librarian.reports.detailModal.brokenStreams')} value={selectedReport.broken_streams.length.toString()} />
-              <DetailRow label={t('admin.librarian.reports.detailModal.missingMetadata')} value={selectedReport.missing_metadata.length.toString()} />
-              <DetailRow label={t('admin.librarian.reports.detailModal.misclassifications')} value={selectedReport.misclassifications.length.toString()} />
-              <DetailRow label={t('admin.librarian.reports.detailModal.orphanedItems')} value={selectedReport.orphaned_items.length.toString()} />
-            </DetailSection>
+              {/* Issues Found Section */}
+              <GlassCard style={styles.modalSection}>
+                <Text style={styles.modalSectionTitle}>{t('admin.librarian.reports.detailModal.issuesFound')}</Text>
+                {selectedReport.audit_type === 'ai_agent' ? (
+                  // For AI agent audits, show total count from summary
+                  <View style={styles.fixesContainer}>
+                    <Text style={styles.issueCount}>{selectedReport.summary.issues_found ?? 0}</Text>
+                    <Text style={styles.issueLabel}>{t('admin.librarian.reports.detailModal.totalIssues')}</Text>
+                    {selectedReport.ai_insights && selectedReport.ai_insights.length > 0 && (
+                      <Text style={styles.aiAuditNote}>{t('admin.librarian.reports.detailModal.seeInsightsBelow')}</Text>
+                    )}
+                  </View>
+                ) : (
+                  // For rule-based audits, show breakdown
+                  <View style={styles.issuesGrid}>
+                    <View style={styles.issueItem}>
+                      <Text style={styles.issueCount}>{selectedReport.broken_streams?.length ?? 0}</Text>
+                      <Text style={styles.issueLabel}>{t('admin.librarian.reports.detailModal.brokenStreams')}</Text>
+                    </View>
+                    <View style={styles.issueItem}>
+                      <Text style={styles.issueCount}>{selectedReport.missing_metadata?.length ?? 0}</Text>
+                      <Text style={styles.issueLabel}>{t('admin.librarian.reports.detailModal.missingMetadata')}</Text>
+                    </View>
+                    <View style={styles.issueItem}>
+                      <Text style={styles.issueCount}>{selectedReport.misclassifications?.length ?? 0}</Text>
+                      <Text style={styles.issueLabel}>{t('admin.librarian.reports.detailModal.misclassifications')}</Text>
+                    </View>
+                    <View style={styles.issueItem}>
+                      <Text style={styles.issueCount}>{selectedReport.orphaned_items?.length ?? 0}</Text>
+                      <Text style={styles.issueLabel}>{t('admin.librarian.reports.detailModal.orphanedItems')}</Text>
+                    </View>
+                  </View>
+                )}
+              </GlassCard>
 
-            <DetailSection title={t('admin.librarian.reports.detailModal.fixesApplied')}>
-              <Text style={styles.detailText}>{t('admin.librarian.reports.detailModal.totalFixes', { count: selectedReport.fixes_applied.length })}</Text>
-            </DetailSection>
-
-            {selectedReport.ai_insights && selectedReport.ai_insights.length > 0 && (
-              <DetailSection title={t('admin.librarian.reports.detailModal.aiInsights')}>
-                {selectedReport.ai_insights.map((insight, index) => (
-                  <Text key={index} style={styles.detailText}>
-                    • {insight}
+              {/* Fixes Applied Section */}
+              <GlassCard style={styles.modalSection}>
+                <Text style={styles.modalSectionTitle}>{t('admin.librarian.reports.detailModal.fixesApplied')}</Text>
+                <View style={styles.fixesContainer}>
+                  <Text style={styles.fixesCount}>
+                    {selectedReport.audit_type === 'ai_agent'
+                      ? (selectedReport.summary.issues_fixed ?? 0)
+                      : (selectedReport.fixes_applied?.length ?? 0)}
                   </Text>
-                ))}
-              </DetailSection>
-            )}
+                  <Text style={styles.fixesLabel}>
+                    {t('admin.librarian.reports.detailModal.totalFixes', {
+                      count: selectedReport.audit_type === 'ai_agent'
+                        ? (selectedReport.summary.issues_fixed ?? 0)
+                        : (selectedReport.fixes_applied?.length ?? 0)
+                    })}
+                  </Text>
+                </View>
+              </GlassCard>
+
+              {/* AI Insights Section */}
+              {selectedReport.ai_insights && selectedReport.ai_insights.length > 0 && (
+                <GlassCard style={styles.modalSection}>
+                  <Text style={styles.modalSectionTitle}>{t('admin.librarian.reports.detailModal.aiInsights')}</Text>
+                  {selectedReport.ai_insights.map((insight, index) => (
+                    <View key={index} style={styles.insightItem}>
+                      <Text style={styles.insightBullet}>•</Text>
+                      <Text style={styles.insightText}>{insight}</Text>
+                    </View>
+                  ))}
+                </GlassCard>
+              )}
             </ScrollView>
           </>
-        )}
+        ) : null}
       </GlassModal>
 
       {/* Log Viewer Modal */}
@@ -783,7 +887,12 @@ const LibrarianAgentPage = () => {
         title={t('admin.librarian.logs.title')}
         onClose={() => setLogViewerModalVisible(false)}
       >
-        {selectedReport && (
+        {logModalLoading ? (
+          <View style={styles.modalLoadingContainer}>
+            <ActivityIndicator size="large" color={colors.primary} />
+            <Text style={styles.modalLoadingText}>{t('common.loading')}</Text>
+          </View>
+        ) : selectedReport ? (
           <View style={[styles.logViewerContainer, { maxHeight: config.ui.modal_max_height }]}>
             <GlassLog
               logs={[...selectedReport.execution_logs].reverse()}
@@ -805,28 +914,12 @@ const LibrarianAgentPage = () => {
               maxHeight={config.ui.modal_max_height - 100}
             />
           </View>
-        )}
+        ) : null}
       </GlassModal>
     </ScrollView>
   );
 };
 
-const DetailSection: React.FC<{ title: string; children: React.ReactNode }> = ({
-  title,
-  children,
-}) => (
-  <View style={styles.detailSection}>
-    <Text style={styles.detailSectionTitle}>{title}</Text>
-    {children}
-  </View>
-);
-
-const DetailRow: React.FC<{ label: string; value: string }> = ({ label, value }) => (
-  <View style={styles.detailRow}>
-    <Text style={styles.detailLabel}>{label}:</Text>
-    <Text style={styles.detailValue}>{value}</Text>
-  </View>
-);
 
 const styles = StyleSheet.create({
   container: {
@@ -977,6 +1070,12 @@ const styles = StyleSheet.create({
   modalContent: {
     // maxHeight is now applied inline from config
   },
+  modalLoadingContainer: {
+    padding: spacing.xl,
+    alignItems: 'center',
+    justifyContent: 'center',
+    minHeight: 200,
+  },
   modalHeaderActions: {
     padding: spacing.md,
     borderBottomWidth: 1,
@@ -988,6 +1087,97 @@ const styles = StyleSheet.create({
   },
   logViewerContainer: {
     padding: spacing.md,
+  },
+  modalSection: {
+    marginBottom: spacing.md,
+    padding: spacing.lg,
+  },
+  modalSectionTitle: {
+    fontSize: 18,
+    fontWeight: '600',
+    color: colors.text,
+    marginBottom: spacing.md,
+  },
+  statsRow: {
+    flexDirection: 'row',
+    gap: spacing.md,
+    marginBottom: spacing.sm,
+  },
+  statItem: {
+    flex: 1,
+  },
+  statLabel: {
+    fontSize: 13,
+    color: colors.textMuted,
+    marginBottom: spacing.xs,
+  },
+  statValue: {
+    fontSize: 20,
+    fontWeight: '600',
+    color: colors.text,
+  },
+  issuesGrid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: spacing.md,
+  },
+  issueItem: {
+    flex: 1,
+    minWidth: '45%',
+    alignItems: 'center',
+    padding: spacing.md,
+    backgroundColor: colors.glass,
+    borderRadius: borderRadius.md,
+    borderWidth: 1,
+    borderColor: colors.glassBorder,
+  },
+  issueCount: {
+    fontSize: 32,
+    fontWeight: '700',
+    color: colors.primary,
+    marginBottom: spacing.xs,
+  },
+  issueLabel: {
+    fontSize: 12,
+    color: colors.textMuted,
+    textAlign: 'center',
+  },
+  fixesContainer: {
+    alignItems: 'center',
+    padding: spacing.lg,
+  },
+  fixesCount: {
+    fontSize: 48,
+    fontWeight: '700',
+    color: colors.success,
+    marginBottom: spacing.xs,
+  },
+  fixesLabel: {
+    fontSize: 14,
+    color: colors.textMuted,
+  },
+  aiAuditNote: {
+    fontSize: 13,
+    color: colors.textMuted,
+    marginTop: spacing.sm,
+    fontStyle: 'italic',
+  },
+  insightItem: {
+    flexDirection: 'row',
+    marginBottom: spacing.sm,
+    paddingHorizontal: spacing.sm,
+  },
+  insightBullet: {
+    fontSize: 16,
+    color: colors.primary,
+    marginRight: spacing.sm,
+    marginTop: 2,
+  },
+  insightText: {
+    flex: 1,
+    fontSize: 14,
+    color: colors.text,
+    lineHeight: 20,
   },
   errorContainer: {
     flex: 1,
@@ -1014,34 +1204,16 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     lineHeight: 20,
   },
-  detailSection: {
-    marginBottom: spacing.lg,
+  modalLoadingContainer: {
+    padding: spacing.xl,
+    justifyContent: 'center',
+    alignItems: 'center',
+    minHeight: 200,
   },
-  detailSectionTitle: {
+  modalLoadingText: {
+    marginTop: spacing.md,
     fontSize: 16,
-    fontWeight: '600',
-    color: colors.text,
-    marginBottom: spacing.sm,
-  },
-  detailRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    paddingVertical: spacing.xs,
-  },
-  detailLabel: {
-    fontSize: 14,
     color: colors.textMuted,
-  },
-  detailValue: {
-    fontSize: 14,
-    color: colors.text,
-    fontWeight: '500',
-  },
-  detailText: {
-    fontSize: 14,
-    color: colors.text,
-    lineHeight: 20,
-    marginBottom: spacing.xs,
   },
 });
 

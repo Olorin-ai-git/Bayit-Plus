@@ -1382,6 +1382,8 @@
           "totalItems": "Total Items",
           "healthyItems": "Healthy Items",
           "issuesFound": "Issues Found",
+          "totalIssues": "Total Issues Found",
+          "seeInsightsBelow": "See AI Insights below for details",
           "brokenStreams": "Broken Streams",
           "missingMetadata": "Missing Metadata",
           "misclassifications": "Misclassifications",

@@ -18,6 +18,7 @@ import logging
 import uuid
 from datetime import datetime
 from typing import List, Dict, Any, Optional
+from beanie import PydanticObjectId
 from anthropic import Anthropic
 from anthropic.types import Message, ToolUseBlock, TextBlock
 
@@ -471,11 +472,8 @@ async def execute_list_content_items(
                 {"$match": query},
                 {"$sample": {"size": limit}}
             ]
-            # Aggregate returns a cursor, need to convert to list
-            cursor = Content.aggregate(pipeline)
-            items = []
-            async for item in cursor:
-                items.append(item)
+            # Beanie aggregation - must use to_list() on aggregation result
+            items = await Content.aggregate(pipeline, projection_model=Content).to_list()
         else:
             # Get newest items
             items = await Content.find(query).sort([("created_at", -1)]).limit(limit).to_list()
@@ -745,13 +743,20 @@ async def execute_recategorize_content(
             }
 
         # Get content and verify category exists
-        content = await Content.get(content_id)
-        new_category = await Category.get(new_category_id)
+        try:
+            content = await Content.get(PydanticObjectId(content_id))
+        except Exception as e:
+            return {"success": False, "error": f"Content not found: {str(e)}"}
+
+        try:
+            new_category = await Category.get(PydanticObjectId(new_category_id))
+        except Exception as e:
+            return {"success": False, "error": f"Category not found: {str(e)}"}
 
         if not content:
             return {"success": False, "error": "Content not found"}
         if not new_category:
-            return {"success": False, "error": "Category not found"}
+            return {"success": False, "error": f"Category not found (ID: {new_category_id})"}
 
         # Use auto_fixer service
         old_category_id = str(content.category_id) if content.category_id else None
@@ -1368,23 +1373,36 @@ async def run_ai_agent_audit(
 
 **Your Mission:** Conduct a comprehensive audit of the content library and fix issues autonomously.
 
+**🎯 TOP PRIORITY - Images & Metadata:**
+**MOST IMPORTANT:** Your #1 job is retrieving and saving poster images and metadata for content items. This is the most valuable fix you can make!
+
+**Workflow for Each Item:**
+1. **FIRST:** If title is dirty (has .mp4, 1080p, [MX], XviD, etc) → Use clean_title FIRST
+2. **SECOND:** Search TMDB to verify the cleaned title works → Use search_tmdb
+3. **THIRD:** Retrieve and save poster image → Use fix_missing_poster
+4. **FOURTH:** Retrieve and save full metadata → Use fix_missing_metadata
+5. **FIFTH:** Check for other issues (categorization, broken URLs)
+
 **What You Must Do:**
 1. Choose which content items to inspect (use judgment - no need to check everything)
-2. **MANDATORY - Check each item for:**
-   - ✅ Missing thumbnail (primary poster/cover image field)
+2. **MANDATORY - Check each item for (IN THIS ORDER):**
+   - 🔥 **HIGHEST PRIORITY:** Missing thumbnail/poster image
+   - 🔥 **HIGHEST PRIORITY:** Missing metadata (description, genre, imdb_id, tmdb_id, cast, director)
+   - ✅ Dirty titles (must clean BEFORE fixing poster/metadata!)
    - ✅ Missing backdrop (wide background image)
-   - ✅ Missing metadata (description, genre, imdb_id, tmdb_id)
-   - ✅ Broken streaming URLs
    - ✅ Incorrect categorization
-   - ✅ Dirty titles
-3. **IMPORTANT - Logging:** Always document what you're checking and what you found. Example: "Checking item X: thumbnail=null, backdrop=null → missing images!"
-4. **IMPORTANT:** Clean titles with junk - remove .mp4, 1080p, WEBRip, [Groups], XviD, MDMA, BoK, and any unnecessary text
-5. **NEW:** Check storage usage - large files >5GB, total usage, costs
-6. Fix issues you're confident about (>90% confidence)
-7. Flag items for manual review when uncertain
-8. **IMPORTANT:** If you find severe or critical issues - send email alert to admins using send_email_notification
-9. Adapt your strategy based on what you discover
-10. At the end, call complete_audit with a comprehensive summary
+   - ✅ Broken streaming URLs
+3. **IMPORTANT - Logging:** Always document what you're checking and what you found
+4. **CRITICAL:** Always clean titles BEFORE trying to fix posters/metadata (TMDB needs clean titles to search!)
+5. Fix issues you're confident about (>90% confidence for recategorization, 100% for poster/metadata)
+6. Flag items for manual review when uncertain
+7. **IMPORTANT:** If you find severe or critical issues - send email alert to admins
+8. Adapt your strategy based on what you discover
+9. At the end, call complete_audit with a comprehensive summary
+
+**⚠️ CRITICAL WORKFLOW:**
+- Dirty title "Avatar p - MX]" → clean_title FIRST → then search_tmdb → then fix_missing_poster
+- Never try to fix poster/metadata without cleaning the title first!
 
 **📋 CRITICAL DISTINCTION - 2 Types of Issues:**
 
@@ -1587,9 +1605,12 @@ Start the audit!"""
 
     # Extract summary from completion if available
     if completion_summary:
+        total_items = completion_summary.get("items_checked", 0)
+        issues_found = completion_summary.get("issues_found", 0)
         summary = {
-            "total_items": completion_summary.get("items_checked", 0),
-            "issues_found": completion_summary.get("issues_found", 0),
+            "total_items": total_items,
+            "healthy_items": max(0, total_items - issues_found),
+            "issues_found": issues_found,
             "issues_fixed": completion_summary.get("issues_fixed", 0),
             "manual_review_needed": completion_summary.get("flagged_for_review", 0),
             "agent_summary": completion_summary.get("summary", ""),
@@ -1598,6 +1619,7 @@ Start the audit!"""
     else:
         summary = {
             "total_items": 0,
+            "healthy_items": 0,
             "issues_found": 0,
             "issues_fixed": 0,
             "manual_review_needed": 0,

@@ -392,9 +392,18 @@ async def get_audit_reports(
                 execution_time_seconds=report.execution_time_seconds,
                 status=report.status,
                 summary=report.summary,
-                issues_count=len(report.broken_streams) + len(report.missing_metadata) +
-                            len(report.misclassifications) + len(report.orphaned_items),
-                fixes_count=len(report.fixes_applied)
+                # For AI agent audits, pull from summary. For rule-based, count arrays.
+                issues_count=(
+                    report.summary.get("issues_found", 0)
+                    if report.audit_type == "ai_agent"
+                    else len(report.broken_streams) + len(report.missing_metadata) +
+                         len(report.misclassifications) + len(report.orphaned_items)
+                ),
+                fixes_count=(
+                    report.summary.get("issues_fixed", 0)
+                    if report.audit_type == "ai_agent"
+                    else len(report.fixes_applied)
+                )
             )
             for report in reports
         ]

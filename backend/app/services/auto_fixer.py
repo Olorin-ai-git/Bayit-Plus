@@ -128,15 +128,23 @@ async def fix_missing_metadata(
 
         changes_made = []
         after_state = before_state.copy()
+        enriched = None
 
         # Enrich from TMDB if we have the title
         if "missing_tmdb_id" in issues or "missing_imdb_id" in issues or \
            "missing_thumbnail" in issues or "missing_backdrop" in issues:
 
+            logger.info(f"   🔍 Fetching TMDB data for '{content.title}' ({content.year})")
             if content.is_series:
                 enriched = await tmdb_service.enrich_series_content(content.title, content.year)
             else:
                 enriched = await tmdb_service.enrich_movie_content(content.title, content.year)
+
+            # Log what we got back from TMDB
+            if not enriched.get("tmdb_id"):
+                logger.warning(f"   ⚠️ TMDB search found no results for '{content.title}'")
+            else:
+                logger.info(f"   ✓ TMDB found ID {enriched.get('tmdb_id')}, has_poster={bool(enriched.get('poster'))}, has_backdrop={bool(enriched.get('backdrop'))}, has_metadata={bool(enriched.get('overview'))}")
 
             # Apply enriched data
             if enriched.get("tmdb_id") and not content.tmdb_id:
@@ -214,8 +222,16 @@ async def fix_missing_metadata(
             logger.info(f"   ✓ Fixed metadata for '{content.title}': {', '.join(changes_made)}")
             return FixResult(success=True, action_id=str(action.id))
         else:
-            logger.info(f"   - No TMDB data found for '{content.title}'")
-            return FixResult(success=False, error_message="No TMDB data available")
+            # Provide more specific error message
+            if not enriched or not enriched.get("tmdb_id"):
+                error_msg = f"No TMDB search results found for '{content.title}'"
+            elif not enriched.get("poster") and not enriched.get("backdrop"):
+                error_msg = f"TMDB found but no images available for '{content.title}'"
+            else:
+                error_msg = f"No applicable fixes for '{content.title}' (fields already populated)"
+
+            logger.info(f"   - {error_msg}")
+            return FixResult(success=False, error_message=error_msg)
 
     except Exception as e:
         logger.error(f"Failed to fix metadata: {e}")

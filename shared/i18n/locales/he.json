@@ -1252,6 +1252,8 @@
           "totalItems": "סה״כ פריטים",
           "healthyItems": "פריטים תקינים",
           "issuesFound": "בעיות שנמצאו",
+          "totalIssues": "סה״כ בעיות שנמצאו",
+          "seeInsightsBelow": "ראה תובנות AI למטה לפרטים נוספים",
           "brokenStreams": "סטרימים שבורים",
           "missingMetadata": "מטא-דאטה חסרה",
           "misclassifications": "סיווגים שגויים",
