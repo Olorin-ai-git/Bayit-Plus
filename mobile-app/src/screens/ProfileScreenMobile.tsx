@@ -40,7 +40,7 @@ export const ProfileScreenMobile: React.FC = () => {
   const { t, i18n } = useTranslation();
   const navigation = useNavigation<any>();
   const { user, logout } = useAuthStore();
-  const { hasPermission } = usePermissions();
+  const { can, isAdmin } = usePermissions();
   const { isRTL, direction } = useDirection();
   const { isTablet } = useResponsive();
 
@@ -129,7 +129,7 @@ export const ProfileScreenMobile: React.FC = () => {
   ];
 
   // Add admin option if user has admin permissions
-  if (hasPermission('admin')) {
+  if (isAdmin) {
     profileMenuItems.push({
       id: 'admin',
       title: t('profile.admin'),
