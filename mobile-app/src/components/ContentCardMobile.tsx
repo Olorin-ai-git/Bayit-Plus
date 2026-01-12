@@ -43,11 +43,11 @@ export const ContentCardMobile: React.FC<ContentCardMobileProps> = ({
   const cardWidth =
     width ||
     responsive({
-      phone: (Dimensions.get('window').width - spacing.md * 3) / 2,
+      phone: (Dimensions.get('window').width - spacing.sm * 3) / 2, // Larger cards with reduced spacing
       tablet: (Dimensions.get('window').width - spacing.md * 5) / 4,
     });
 
-  const cardHeight = cardWidth * 1.5; // 2:3 aspect ratio for posters
+  const cardHeight = cardWidth * 1.55; // Slightly taller for better poster visibility
 
   return (
     <Pressable
@@ -127,13 +127,15 @@ const styles = StyleSheet.create({
     opacity: 0.3,
   },
   info: {
-    padding: spacing.sm,
+    padding: spacing.md,
   },
   title: {
-    ...typography.bodySmall,
+    ...typography.body,
+    fontSize: 15,
     color: colors.text,
     fontWeight: '600',
-    marginBottom: spacing.xxs,
+    marginBottom: spacing.xs,
+    lineHeight: 20,
   },
   metadata: {
     flexDirection: 'row',
@@ -142,6 +144,7 @@ const styles = StyleSheet.create({
   },
   meta: {
     ...typography.caption,
+    fontSize: 12,
     color: colors.textSecondary,
   },
   metaDivider: {
@@ -156,15 +159,15 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(0, 0, 0, 0)',
   },
   playButton: {
-    width: 48,
-    height: 48,
-    borderRadius: 24,
+    width: 56,
+    height: 56,
+    borderRadius: 28,
     backgroundColor: 'rgba(0, 217, 255, 0.9)',
     justifyContent: 'center',
     alignItems: 'center',
   },
   playIcon: {
-    fontSize: 20,
+    fontSize: 24,
     color: colors.text,
     marginLeft: 2, // Optical alignment
   },

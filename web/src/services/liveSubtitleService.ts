@@ -3,7 +3,8 @@
  * Captures audio from video element and streams to WebSocket for real-time translation
  */
 
-import { API_BASE_URL } from './config'
+// API configuration
+const API_BASE_URL = import.meta.env.VITE_API_URL || '/api/v1'
 
 export interface LiveSubtitleCue {
   text: string

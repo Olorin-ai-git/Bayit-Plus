@@ -94,6 +94,8 @@ async def check_metadata_completeness(contents: List[Content]) -> List[Dict[str,
     - Missing TMDB/IMDB data
     - Missing description
     - Empty cast/director for movies
+    - Missing subtitles
+    - Insufficient subtitle languages (minimum 3 for movies)
     """
     missing_metadata = []
 
@@ -123,6 +125,14 @@ async def check_metadata_completeness(contents: List[Content]) -> List[Dict[str,
         # Check genre (None, empty string, or whitespace)
         if not content.genre or not content.genre.strip():
             issues.append("missing_genre")
+
+        # Check subtitle availability
+        if not content.has_subtitles:
+            issues.append("missing_subtitles")
+
+        # Check minimum subtitle language count for movies (3 languages required)
+        if not content.is_series and len(content.available_subtitle_languages) < 3:
+            issues.append("insufficient_subtitle_languages")
 
         if issues:
             missing_metadata.append({
