@@ -206,6 +206,14 @@ if confirm "Create Bayit+ specific secrets?"; then
     print_success "Created: bayit-mongodb-db-name"
 
     # Stripe secrets
+    # Read Stripe API key from .env
+    STRIPE_API=$(grep STRIPE_API_KEY backend/.env | cut -d'=' -f2-)
+    if [[ -n "$STRIPE_API" ]]; then
+        echo -n "$STRIPE_API" | gcloud secrets create bayit-stripe-api-key --data-file=- 2>/dev/null || \
+            echo -n "$STRIPE_API" | gcloud secrets versions add bayit-stripe-api-key --data-file=-
+        print_success "Created: bayit-stripe-api-key"
+    fi
+
     create_secret "bayit-stripe-secret-key" "Stripe secret key"
     create_secret "bayit-stripe-webhook-secret" "Stripe webhook secret"
     create_secret "bayit-stripe-price-basic" "Stripe basic price ID"
@@ -240,6 +248,16 @@ if confirm "Create Bayit+ specific secrets?"; then
     echo -n "$CORS" | gcloud secrets create bayit-cors-origins --data-file=- 2>/dev/null || \
         echo -n "$CORS" | gcloud secrets versions add bayit-cors-origins --data-file=-
 
+    # OpenAI API Key for Whisper (read from .env)
+    OPENAI_KEY=$(grep OPENAI_API_KEY backend/.env | cut -d'=' -f2-)
+    if [[ -n "$OPENAI_KEY" ]]; then
+        echo -n "$OPENAI_KEY" | gcloud secrets create bayit-openai-api-key --data-file=- 2>/dev/null || \
+            echo -n "$OPENAI_KEY" | gcloud secrets versions add bayit-openai-api-key --data-file=-
+        print_success "Created: bayit-openai-api-key (Whisper transcription)"
+    else
+        print_warning "OPENAI_API_KEY not found in backend/.env - skipping"
+    fi
+
     print_success "All Bayit+ secrets created"
 fi
 
@@ -248,10 +266,10 @@ print_header "Step 4: Granting Secret Access"
 
 if confirm "Grant secret access to service account?"; then
     for secret in bayit-secret-key bayit-mongodb-url bayit-mongodb-db-name \
-                  bayit-stripe-secret-key bayit-stripe-webhook-secret \
+                  bayit-stripe-api-key bayit-stripe-secret-key bayit-stripe-webhook-secret \
                   bayit-stripe-price-basic bayit-stripe-price-premium bayit-stripe-price-family \
                   bayit-google-client-id bayit-google-client-secret bayit-google-redirect-uri \
-                  bayit-gcs-bucket-name bayit-cors-origins \
+                  bayit-gcs-bucket-name bayit-cors-origins bayit-openai-api-key \
                   ELEVENLABS_API_KEY ANTHROPIC_API_KEY; do
         gcloud secrets add-iam-policy-binding "$secret" \
             --member="serviceAccount:$SERVICE_ACCOUNT_EMAIL" \
@@ -288,8 +306,8 @@ if confirm "Build and deploy to Cloud Run?"; then
         --min-instances 1 \
         --concurrency 80 \
         --port 8080 \
-        --set-env-vars "API_V1_PREFIX=/api/v1,STORAGE_TYPE=gcs,DEBUG=false" \
-        --set-secrets "SECRET_KEY=bayit-secret-key:latest,MONGODB_URL=bayit-mongodb-url:latest,MONGODB_DB_NAME=bayit-mongodb-db-name:latest,STRIPE_SECRET_KEY=bayit-stripe-secret-key:latest,STRIPE_WEBHOOK_SECRET=bayit-stripe-webhook-secret:latest,STRIPE_PRICE_BASIC=bayit-stripe-price-basic:latest,STRIPE_PRICE_PREMIUM=bayit-stripe-price-premium:latest,STRIPE_PRICE_FAMILY=bayit-stripe-price-family:latest,ANTHROPIC_API_KEY=ANTHROPIC_API_KEY:latest,GOOGLE_CLIENT_ID=bayit-google-client-id:latest,GOOGLE_CLIENT_SECRET=bayit-google-client-secret:latest,GOOGLE_REDIRECT_URI=bayit-google-redirect-uri:latest,ELEVENLABS_API_KEY=ELEVENLABS_API_KEY:latest,GCS_BUCKET_NAME=bayit-gcs-bucket-name:latest,BACKEND_CORS_ORIGINS=bayit-cors-origins:latest"
+        --set-env-vars "API_V1_PREFIX=/api/v1,STORAGE_TYPE=gcs,DEBUG=false,SPEECH_TO_TEXT_PROVIDER=whisper" \
+        --set-secrets "SECRET_KEY=bayit-secret-key:latest,MONGODB_URL=bayit-mongodb-url:latest,MONGODB_DB_NAME=bayit-mongodb-db-name:latest,STRIPE_API_KEY=bayit-stripe-api-key:latest,STRIPE_SECRET_KEY=bayit-stripe-secret-key:latest,STRIPE_WEBHOOK_SECRET=bayit-stripe-webhook-secret:latest,STRIPE_PRICE_BASIC=bayit-stripe-price-basic:latest,STRIPE_PRICE_PREMIUM=bayit-stripe-price-premium:latest,STRIPE_PRICE_FAMILY=bayit-stripe-price-family:latest,ANTHROPIC_API_KEY=ANTHROPIC_API_KEY:latest,GOOGLE_CLIENT_ID=bayit-google-client-id:latest,GOOGLE_CLIENT_SECRET=bayit-google-client-secret:latest,GOOGLE_REDIRECT_URI=bayit-google-redirect-uri:latest,ELEVENLABS_API_KEY=ELEVENLABS_API_KEY:latest,OPENAI_API_KEY=bayit-openai-api-key:latest,GCS_BUCKET_NAME=bayit-gcs-bucket-name:latest,BACKEND_CORS_ORIGINS=bayit-cors-origins:latest"
 
     SERVICE_URL=$(gcloud run services describe $SERVICE_NAME --region $REGION --format 'value(status.url)')
 

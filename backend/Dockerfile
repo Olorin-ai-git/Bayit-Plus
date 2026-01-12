@@ -28,6 +28,12 @@ USER appuser
 ENV PORT=8080
 EXPOSE 8080
 
+# Environment variables for live subtitle transcription
+# Set these in Cloud Run console or gcloud command:
+# - OPENAI_API_KEY: Required if SPEECH_TO_TEXT_PROVIDER=whisper
+# - SPEECH_TO_TEXT_PROVIDER: "google" (default) or "whisper"
+# - Google Cloud credentials are auto-configured on Cloud Run
+
 # Health check
 HEALTHCHECK --interval=30s --timeout=10s --start-period=40s --retries=3 \
     CMD python -c "import urllib.request; urllib.request.urlopen('http://localhost:8080/health')" || exit 1

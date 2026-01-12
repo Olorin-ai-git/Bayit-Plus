@@ -25,6 +25,9 @@ services:
       - MONGODB_URL=mongodb://mongodb:27017
       - MONGODB_DB_NAME=bayit_plus
       - DEBUG=true
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - SPEECH_TO_TEXT_PROVIDER=${SPEECH_TO_TEXT_PROVIDER:-whisper}
+      - STRIPE_API_KEY=${STRIPE_API_KEY}
     env_file:
       - ./backend/.env
     depends_on:

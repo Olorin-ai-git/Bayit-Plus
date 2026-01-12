@@ -240,8 +240,17 @@ async def upload_movies(source_dir: str, dry_run: bool = False, limit: Optional[
 
             logger.info(f"Processing: {title} ({year if year else 'unknown year'})")
 
-            # Calculate file hash for duplicate detection
             full_path = os.path.join(directory, filename)
+
+            # Check file size - skip files larger than 10GB
+            file_size = os.path.getsize(full_path)
+            file_size_gb = file_size / (1024 ** 3)
+            if file_size_gb > 10:
+                logger.info(f"  Skipped: File too large ({file_size_gb:.1f}GB, max 10GB)")
+                stats['skipped'] += 1
+                continue
+
+            # Calculate file hash for duplicate detection
             file_hash = calculate_file_hash(full_path)
             logger.info(f"  File hash: {file_hash[:16]}...")
 

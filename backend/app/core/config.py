@@ -19,6 +19,7 @@ class Settings(BaseSettings):
     MONGODB_DB_NAME: str = "bayit_plus"
 
     # Stripe
+    STRIPE_API_KEY: str = ""
     STRIPE_SECRET_KEY: str = ""
     STRIPE_WEBHOOK_SECRET: str = ""
     STRIPE_PRICE_BASIC: str = ""
@@ -37,6 +38,13 @@ class Settings(BaseSettings):
     ELEVENLABS_API_KEY: str = ""
     ELEVENLABS_WEBHOOK_SECRET: str = ""
     ELEVENLABS_DEFAULT_VOICE_ID: str = "EXAVITQu4vr4xnSDxMaL"  # Rachel - multilingual voice, excellent for Hebrew
+
+    # OpenAI (Whisper speech-to-text)
+    OPENAI_API_KEY: str = ""
+
+    # Speech-to-Text Provider Selection
+    # Options: "google" (Google Cloud Speech-to-Text) or "whisper" (OpenAI Whisper)
+    SPEECH_TO_TEXT_PROVIDER: str = "google"
 
     # CORS (supports JSON string from Secret Manager or list)
     BACKEND_CORS_ORIGINS: list[str] | str = [
