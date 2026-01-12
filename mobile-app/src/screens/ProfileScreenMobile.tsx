@@ -169,30 +169,34 @@ export const ProfileScreenMobile: React.FC = () => {
       {/* Stats Cards */}
       <View style={[styles.statsContainer, isTablet && styles.statsContainerTablet]}>
         <GlassStatCard
-          title={t('profile.watchTime')}
+          label={t('profile.watchTime')}
           value={formatWatchTime(stats.watchTimeMinutes)}
-          icon="⏱️"
+          icon={<Text style={styles.statIcon}>⏱️</Text>}
           style={styles.statCard}
+          compact
         />
         <GlassStatCard
-          title={t('profile.favorites')}
+          label={t('profile.favorites')}
           value={stats.favoritesCount.toString()}
-          icon="⭐"
+          icon={<Text style={styles.statIcon}>⭐</Text>}
           style={styles.statCard}
+          compact
         />
         {!isTablet && (
           <>
             <GlassStatCard
-              title={t('profile.watchlist')}
+              label={t('profile.watchlist')}
               value={stats.watchlistCount.toString()}
-              icon="📋"
+              icon={<Text style={styles.statIcon}>📋</Text>}
               style={styles.statCard}
+              compact
             />
             <GlassStatCard
-              title={t('profile.downloads')}
+              label={t('profile.downloads')}
               value={stats.downloadsCount.toString()}
-              icon="⬇️"
+              icon={<Text style={styles.statIcon}>⬇️</Text>}
               style={styles.statCard}
+              compact
             />
           </>
         )}
@@ -201,16 +205,18 @@ export const ProfileScreenMobile: React.FC = () => {
       {isTablet && (
         <View style={styles.statsContainer}>
           <GlassStatCard
-            title={t('profile.watchlist')}
+            label={t('profile.watchlist')}
             value={stats.watchlistCount.toString()}
-            icon="📋"
+            icon={<Text style={styles.statIcon}>📋</Text>}
             style={styles.statCard}
+            compact
           />
           <GlassStatCard
-            title={t('profile.downloads')}
+            label={t('profile.downloads')}
             value={stats.downloadsCount.toString()}
-            icon="⬇️"
+            icon={<Text style={styles.statIcon}>⬇️</Text>}
             style={styles.statCard}
+            compact
           />
         </View>
       )}
@@ -336,6 +342,9 @@ const styles = StyleSheet.create({
   },
   statCard: {
     flex: 1,
+  },
+  statIcon: {
+    fontSize: 24,
   },
   menuSection: {
     marginBottom: spacing.xl,
