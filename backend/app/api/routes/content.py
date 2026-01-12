@@ -90,37 +90,44 @@ async def get_featured(current_user: Optional[User] = Depends(get_optional_user)
         Content.is_published == True,
     )
 
-    # Get spotlight items - one entry per featured series (not episodes)
+    # Get spotlight items - featured series and movies
     spotlight_items = []
 
-    # Get all featured series
-    featured_series = await Content.find(
+    # Get all featured content (series and movies)
+    featured_content = await Content.find(
         Content.is_featured == True,
         Content.is_published == True,
-        Content.is_series == True,
+        {"$or": [
+            {"series_id": None},
+            {"series_id": {"$exists": False}},
+            {"series_id": ""},
+        ]},
     ).to_list()
 
-    # Add each series as a single spotlight item
-    for series in featured_series:
-        # Get first episode for playback reference
-        first_episode = await Content.find_one(
-            Content.series_id == str(series.id),
-            Content.is_published == True,
-        )
+    # Add each item to spotlight
+    for item in featured_content:
+        spotlight_data = {
+            "id": str(item.id),
+            "title": item.title,
+            "description": item.description,
+            "backdrop": item.backdrop or item.thumbnail,
+            "thumbnail": item.thumbnail,
+            "category": item.category_name,
+            "year": item.year,
+            "duration": item.duration,
+            "rating": item.rating,
+            "is_series": item.is_series,
+        }
 
-        spotlight_items.append({
-            "id": str(series.id),
-            "title": series.title,
-            "description": series.description,
-            "backdrop": series.backdrop or series.thumbnail,
-            "thumbnail": series.thumbnail,
-            "category": series.category_name,
-            "year": series.year,
-            "duration": series.duration,
-            "rating": series.rating,
-            "is_series": True,
-            "first_episode_id": str(first_episode.id) if first_episode else None,
-        })
+        # If it's a series, get first episode for playback reference
+        if item.is_series:
+            first_episode = await Content.find_one(
+                Content.series_id == str(item.id),
+                Content.is_published == True,
+            )
+            spotlight_data["first_episode_id"] = str(first_episode.id) if first_episode else None
+
+        spotlight_items.append(spotlight_data)
 
     # Get categories with their content
     categories = await Category.find(Category.is_active == True).sort("order").to_list()
