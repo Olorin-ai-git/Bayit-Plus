@@ -9,7 +9,7 @@ steps:
       - 'gcr.io/$PROJECT_ID/bayit-plus-backend:1'
       - '--cache-from'
       - 'gcr.io/$PROJECT_ID/bayit-plus-backend:1'
-      - '.'
+      - 'backend/'
     id: 'build-image'
 
   # Push to Container Registry (BUILD_ID tag)
