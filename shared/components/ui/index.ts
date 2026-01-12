@@ -25,6 +25,7 @@ export { GlassAvatar } from './GlassAvatar';
 export { GlassStatCard } from './GlassStatCard';
 export { GlassTable, GlassTableCell } from './GlassTable';
 export { GlassLiveChannelCard } from './GlassLiveChannelCard';
+export { GlassLog } from './GlassLog';
 
 // Voice-first conversational interface components (Phases 10)
 export { GlassParticleLayer } from './GlassParticleLayer';
@@ -36,3 +37,4 @@ export type { GlassAvatarProps } from './GlassAvatar';
 export type { GlassToggleProps } from './GlassToggle';
 export type { GlassStatCardProps } from './GlassStatCard';
 export type { GlassTableColumn, GlassTablePagination, GlassTableProps } from './GlassTable';
+export type { LogLevel, LogEntry } from './GlassLog';

@@ -78,7 +78,7 @@ export const ContentCardMobile: React.FC<ContentCardMobileProps> = ({
             {content.year && (
               <Text style={styles.meta}>{content.year}</Text>
             )}
-            {content.rating && (
+            {content.rating && typeof content.rating === 'number' && (
               <>
                 <Text style={styles.metaDivider}>•</Text>
                 <Text style={styles.meta}>⭐ {content.rating.toFixed(1)}</Text>
