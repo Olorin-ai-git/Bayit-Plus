@@ -28,7 +28,7 @@ import Animated, {
   runOnJS,
 } from 'react-native-reanimated';
 import Video from 'react-native-video';
-import * as Haptics from 'expo-haptics';
+import ReactNativeHapticFeedback from 'react-native-haptic-feedback';
 import { useResponsive } from '../hooks/useResponsive';
 import { BottomSheet } from '../components';
 import { GlassView, GlassButton } from '@bayit/shared';
@@ -87,7 +87,7 @@ export const PlayerScreenMobile: React.FC = () => {
 
   const handleClose = () => {
     if (Platform.OS === 'ios') {
-      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+      ReactNativeHapticFeedback.trigger('impactMedium');
     }
     navigation.goBack();
   };
@@ -95,7 +95,7 @@ export const PlayerScreenMobile: React.FC = () => {
   const handlePlayPause = () => {
     setIsPlaying(!isPlaying);
     if (Platform.OS === 'ios') {
-      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+      ReactNativeHapticFeedback.trigger('impactLight');
     }
   };
 

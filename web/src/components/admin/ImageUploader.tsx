@@ -40,14 +40,14 @@ export function ImageUploader({
 
   const validateFile = (file: File): boolean => {
     if (!file.type.startsWith('image/')) {
-      const msg = 'Please select an image file'
+      const msg = t('admin.content.editor.imageUpload.errors.imageOnly')
       setError(msg)
       onError?.(msg)
       return false
     }
 
     if (file.size > maxSizeMB * 1024 * 1024) {
-      const msg = `File size must be less than ${maxSizeMB}MB`
+      const msg = t('admin.content.editor.imageUpload.errors.tooLarge', { maxSize: maxSizeMB })
       setError(msg)
       onError?.(msg)
       return false
@@ -68,7 +68,7 @@ export function ImageUploader({
       onChange(response.url)
       setError(null)
     } catch (err) {
-      const msg = err instanceof Error ? err.message : 'Upload failed'
+      const msg = err instanceof Error ? err.message : t('admin.content.editor.imageUpload.errors.uploadFailed')
       setError(msg)
       onError?.(msg)
     } finally {
@@ -108,10 +108,10 @@ export function ImageUploader({
         setUrlInput('')
         setShowUrlInput(false)
       } else {
-        setError(response.message || 'Invalid URL')
+        setError(response.message || t('admin.content.editor.imageUpload.errors.invalidUrl'))
       }
     } catch (err) {
-      const msg = err instanceof Error ? err.message : 'URL validation failed'
+      const msg = err instanceof Error ? err.message : t('admin.content.editor.imageUpload.errors.invalidUrl')
       setError(msg)
       onError?.(msg)
     } finally {
@@ -153,7 +153,7 @@ export function ImageUploader({
           </button>
           <p className="mt-3 text-xs text-green-400 flex items-center gap-2">
             <CheckCircle className="w-4 h-4" />
-            Image uploaded successfully
+            {t('admin.content.editor.imageUpload.success')}
           </p>
         </div>
       ) : (
@@ -178,12 +178,12 @@ export function ImageUploader({
             />
             <div className="p-8 text-center">
               <Upload className="w-8 h-8 mx-auto mb-3 text-blue-400" />
-              <p className="text-sm font-medium text-white mb-1">Drop image here or click to upload</p>
-              <p className="text-xs text-gray-400">PNG, JPG, WebP up to {maxSizeMB}MB</p>
+              <p className="text-sm font-medium text-white mb-1">{t('admin.content.editor.imageUpload.dropHere')}</p>
+              <p className="text-xs text-gray-400">{t('admin.content.editor.imageUpload.formats', { maxSize: maxSizeMB })}</p>
               {isUploading && (
                 <div className="mt-3 flex items-center justify-center gap-2">
                   <div className="w-4 h-4 rounded-full border-2 border-blue-500 border-t-transparent animate-spin" />
-                  <span className="text-xs text-blue-400">Uploading...</span>
+                  <span className="text-xs text-blue-400">{t('admin.content.editor.imageUpload.uploading')}</span>
                 </div>
               )}
             </div>
@@ -197,7 +197,7 @@ export function ImageUploader({
                   disabled={isUploading}
                   className="w-full py-2 px-3 rounded-lg border border-white/20 bg-white/5 hover:bg-white/10 text-sm text-gray-300 hover:text-white transition-colors disabled:opacity-50"
                 >
-                  Or paste image URL
+                  {t('admin.content.editor.imageUpload.orPasteUrl')}
                 </button>
               ) : (
                 <div className="flex gap-2">
@@ -205,7 +205,7 @@ export function ImageUploader({
                     type="url"
                     value={urlInput}
                     onChange={(e) => setUrlInput(e.target.value)}
-                    placeholder="https://example.com/image.jpg"
+                    placeholder={t('admin.content.editor.imageUpload.urlPlaceholder')}
                     disabled={isUploading}
                     className="flex-1 px-3 py-2 rounded-lg border border-white/20 bg-white/5 text-white placeholder-gray-500 text-sm focus:outline-none focus:border-blue-500 disabled:opacity-50"
                   />
@@ -214,7 +214,7 @@ export function ImageUploader({
                     disabled={isUploading || !urlInput.trim()}
                     className="px-4 py-2 rounded-lg bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium transition-colors disabled:opacity-50"
                   >
-                    {isUploading ? 'Validating...' : 'Add'}
+                    {isUploading ? t('admin.content.editor.imageUpload.validating') : t('admin.content.editor.imageUpload.validateButton')}
                   </button>
                   <button
                     onClick={() => {

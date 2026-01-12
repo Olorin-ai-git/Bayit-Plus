@@ -22,7 +22,7 @@ import {
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
-import * as Haptics from 'expo-haptics';
+import ReactNativeHapticFeedback from 'react-native-haptic-feedback';
 import { GlassView, GlassButton, GlassStatCard } from '@bayit/shared';
 import { useAuth, usePermissions } from '@bayit/shared-hooks';
 import { spacing, colors, typography, touchTarget } from '../theme';
@@ -65,14 +65,14 @@ export const ProfileScreenMobile: React.FC = () => {
 
   const handlePress = (action: () => void) => {
     if (Platform.OS === 'ios') {
-      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+      ReactNativeHapticFeedback.trigger('impactLight');
     }
     action();
   };
 
   const handleLogout = async () => {
     if (Platform.OS === 'ios') {
-      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+      ReactNativeHapticFeedback.trigger('notificationSuccess');
     }
     await logout();
   };

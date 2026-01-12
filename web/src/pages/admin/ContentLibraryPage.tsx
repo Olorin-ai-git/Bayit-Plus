@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, useRef } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { View, Text, StyleSheet, Pressable, ScrollView } from 'react-native'
 import { Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
@@ -43,8 +43,6 @@ export default function ContentLibraryPage() {
   const [pagination, setPagination] = useState<Pagination>({ page: 1, pageSize: 20, total: 0 })
   const [searchQuery, setSearchQuery] = useState('')
   const [showImportWizard, setShowImportWizard] = useState(false)
-  const [uploadingPoster, setUploadingPoster] = useState<string | null>(null)
-  const fileInputRef = useRef<HTMLInputElement>(null)
   const [filters, setFilters] = useState({
     search: '',
     is_published: undefined as boolean | undefined,
@@ -122,40 +120,6 @@ export default function ContentLibraryPage() {
     }
   }
 
-  const handleUploadPoster = (id: string) => {
-    setUploadingPoster(id)
-    fileInputRef.current?.click()
-  }
-
-  const handleFileSelect = async (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0]
-
-    if (!file || !uploadingPoster) return
-
-    try {
-      // Upload image using uploadsService
-      const response = await uploadsService.uploadImage(file, 'thumbnails')
-
-      // Update content with new poster URL
-      await contentService.updateContent(uploadingPoster, {
-        thumbnail: response.url,
-        poster_url: response.url,
-      })
-
-      // Reload content to show updated poster
-      await loadContent()
-
-      logger.info(`Poster uploaded for content ${uploadingPoster}`, 'ContentLibraryPage')
-    } catch (err) {
-      const msg = err instanceof Error ? err.message : 'Failed to upload poster'
-      logger.error(msg, 'ContentLibraryPage', err)
-      setError(msg)
-    } finally {
-      setUploadingPoster(null)
-      event.target.value = ''
-    }
-  }
-
   return (
     <ScrollView style={styles.container} contentContainerStyle={styles.contentContainer}>
       {/* Header */}
@@ -230,20 +194,10 @@ export default function ContentLibraryPage() {
         loading={isLoading}
         onTogglePublish={handleTogglePublish}
         onToggleFeatured={handleToggleFeatured}
-        onUploadPoster={handleUploadPoster}
         onDelete={handleDeleteContent}
         pagination={pagination}
         onPageChange={(page) => setPagination((prev) => ({ ...prev, page }))}
         emptyMessage={t('admin.content.emptyMessage', { defaultValue: 'No content found' })}
-      />
-
-      {/* Hidden file input for poster upload */}
-      <input
-        ref={fileInputRef}
-        type="file"
-        accept="image/*"
-        onChange={handleFileSelect}
-        style={{ display: 'none' }}
       />
 
       {/* Import Wizard Modal */}

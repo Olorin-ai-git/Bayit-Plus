@@ -13,7 +13,7 @@ import React from 'react';
 import { View, StyleSheet, Platform } from 'react-native';
 import { Swipeable } from 'react-native-gesture-handler';
 import { GlassView, GlassButton } from '@bayit/shared';
-import * as Haptics from 'expo-haptics';
+import ReactNativeHapticFeedback from 'react-native-haptic-feedback';
 import { spacing, colors } from '../theme';
 
 export interface SwipeableCardProps {
@@ -39,7 +39,7 @@ export const SwipeableCard: React.FC<SwipeableCardProps> = ({
   const handleAction = (action: () => void) => {
     // Haptic feedback on iOS
     if (Platform.OS === 'ios') {
-      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+      ReactNativeHapticFeedback.trigger('impactMedium');
     }
     action();
   };

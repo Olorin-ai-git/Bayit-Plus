@@ -25,7 +25,7 @@ import {
 } from 'react-native';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
-import * as Haptics from 'expo-haptics';
+import ReactNativeHapticFeedback from 'react-native-haptic-feedback';
 import { GlassView, GlassButton, GlassCategoryPill } from '@bayit/shared';
 import { contentService } from '@bayit/shared-services';
 import { getLocalizedName } from '@bayit/shared-utils';
@@ -175,7 +175,7 @@ export const SearchScreenMobile: React.FC = () => {
 
   const handleResultPress = (item: SearchResult) => {
     if (Platform.OS === 'ios') {
-      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+      ReactNativeHapticFeedback.trigger('impactLight');
     }
 
     navigation.navigate('Player', {
@@ -206,7 +206,7 @@ export const SearchScreenMobile: React.FC = () => {
   const handleVoiceSearch = () => {
     // TODO: Integrate with voice search
     if (Platform.OS === 'ios') {
-      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+      ReactNativeHapticFeedback.trigger('notificationSuccess');
     }
     console.log('Voice search triggered');
   };

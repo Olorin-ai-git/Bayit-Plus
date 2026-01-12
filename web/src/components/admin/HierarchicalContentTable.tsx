@@ -59,7 +59,6 @@ interface HierarchicalContentTableProps {
   loading: boolean
   onTogglePublish: (id: string) => void
   onToggleFeatured: (id: string) => void
-  onUploadPoster: (id: string) => void
   onDelete: (id: string) => void
   pagination: Pagination
   onPageChange: (page: number) => void
@@ -71,7 +70,6 @@ export default function HierarchicalContentTable({
   loading,
   onTogglePublish,
   onToggleFeatured,
-  onUploadPoster,
   onDelete,
   pagination,
   onPageChange,
@@ -198,67 +196,21 @@ export default function HierarchicalContentTable({
           }
           const item = row as ContentItem & { rowType: 'content' }
           return (
-            <div
-              onClick={() => onUploadPoster(item.id)}
-              style={{
-                width: 60,
-                paddingLeft: 4,
-                paddingRight: 4,
-                cursor: 'pointer'
-              }}
-              className="thumbnailCell"
-            >
-              <div style={{
-                width: 45,
-                height: 65,
-                borderRadius: 4,
-                overflow: 'hidden',
-                position: 'relative'
-              }}>
+            <View style={styles.thumbnailCell}>
+              <View style={styles.thumbnailContainer}>
                 {item.thumbnail ? (
-                  <div style={{
-                    width: '100%',
-                    height: '100%',
-                    backgroundImage: `url(${item.thumbnail})`,
-                    backgroundSize: 'cover',
-                    backgroundPosition: 'center'
-                  }} />
+                  <View style={[styles.thumbnail, { backgroundImage: `url(${item.thumbnail})` }]} />
                 ) : (
-                  <div style={{
-                    width: '100%',
-                    height: '100%',
-                    backgroundColor: 'rgba(255, 255, 255, 0.05)',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center'
-                  }}>
+                  <View style={styles.thumbnailPlaceholder}>
                     {item.is_series ? (
                       <Tv size={20} color={colors.textMuted} />
                     ) : (
                       <Film size={20} color={colors.textMuted} />
                     )}
-                  </div>
+                  </View>
                 )}
-                <div
-                  className="thumbnailOverlay"
-                  style={{
-                    position: 'absolute',
-                    top: 0,
-                    left: 0,
-                    right: 0,
-                    bottom: 0,
-                    backgroundColor: 'rgba(0, 0, 0, 0.7)',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    opacity: 0,
-                    transition: 'opacity 0.2s ease'
-                  }}
-                >
-                  <span style={{ color: colors.text, fontSize: 10, fontWeight: 600 }}>📷 Upload</span>
-                </div>
-              </div>
-            </div>
+              </View>
+            </View>
           )
         },
       },
@@ -394,7 +346,7 @@ export default function HierarchicalContentTable({
         },
       },
     ],
-    [t, textAlign, flexDirection, expandedSeries, toggleExpand, onToggleFeatured, onUploadPoster, onTogglePublish, onDelete]
+    [t, textAlign, flexDirection, expandedSeries, toggleExpand, onToggleFeatured, onTogglePublish, onDelete]
   )
 
   return (

@@ -1,6 +1,7 @@
 import React, { useEffect } from 'react'
 import { useForm, Controller } from 'react-hook-form'
 import { AlertCircle, Save, X } from 'lucide-react'
+import { useTranslation } from 'react-i18next'
 import { ImageUploader } from './ImageUploader'
 import { StreamUrlInput } from './StreamUrlInput'
 import { CategoryPicker } from './CategoryPicker'
@@ -24,6 +25,7 @@ export function ContentEditorForm({
   onCancel,
   isLoading = false,
 }: ContentEditorFormProps) {
+  const { t } = useTranslation()
   const { control, register, handleSubmit, watch, setValue, formState: { errors } } = useForm<FormData>({
     defaultValues: initialData || {},
   })
@@ -62,7 +64,7 @@ export function ContentEditorForm({
       {errors[name as keyof FormData] && (
         <p className="text-xs text-red-400 flex items-center gap-1">
           <AlertCircle className="w-3 h-3" />
-          {(errors[name as keyof FormData]?.message || `${label} is required`)}
+          {(errors[name as keyof FormData]?.message as string || `${label} ${t('admin.content.editor.fields.titleRequired').split(' ')[1]}`)}
         </p>
       )}
     </div>
@@ -72,19 +74,19 @@ export function ContentEditorForm({
     <form onSubmit={handleSubmit(onSubmitForm)} className="space-y-6">
       {/* Basic Information */}
       <section className="space-y-4">
-        <h3 className="text-lg font-semibold text-white">Basic Information</h3>
+        <h3 className="text-lg font-semibold text-white">{t('admin.content.editor.sections.basicInfo')}</h3>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {renderField('title', 'Title', 'text', true, 'Content title')}
-          {type !== 'radio' && type !== 'podcast' && renderField('year', 'Year', 'number', false, '2024')}
+          {renderField('title', t('admin.content.editor.fields.title'), 'text', true, t('admin.content.editor.fields.titlePlaceholder'))}
+          {type !== 'radio' && type !== 'podcast' && renderField('year', t('admin.content.editor.fields.year'), 'number', false, t('admin.content.editor.fields.yearPlaceholder'))}
         </div>
         <div>
           <label htmlFor="description" className="block text-sm font-medium text-white mb-2">
-            Description
+            {t('admin.content.editor.fields.description')}
           </label>
           <textarea
             id="description"
             {...register('description')}
-            placeholder="Content description"
+            placeholder={t('admin.content.editor.fields.descriptionPlaceholder')}
             disabled={isLoading}
             rows={4}
             className="w-full px-4 py-2 rounded-lg border border-white/20 bg-white/5 text-white placeholder-gray-500 text-sm focus:outline-none focus:border-blue-500 disabled:opacity-50 transition-colors"
@@ -95,7 +97,7 @@ export function ContentEditorForm({
       {/* Images */}
       {type !== 'radio' && (
         <section className="space-y-4">
-          <h3 className="text-lg font-semibold text-white">Media</h3>
+          <h3 className="text-lg font-semibold text-white">{t('admin.content.editor.sections.media')}</h3>
           <Controller
             control={control}
             name="thumbnail"
@@ -103,7 +105,7 @@ export function ContentEditorForm({
               <ImageUploader
                 value={field.value}
                 onChange={field.onChange}
-                label={type === 'podcast' ? 'Podcast Cover' : 'Thumbnail (3:4 aspect ratio)'}
+                label={type === 'podcast' ? t('admin.content.editor.fields.posterCover') : t('admin.content.editor.fields.thumbnail')}
                 aspectRatio={type === 'podcast' ? 1 : 3 / 4}
                 allowUrl
               />
@@ -117,7 +119,7 @@ export function ContentEditorForm({
                 <ImageUploader
                   value={field.value}
                   onChange={field.onChange}
-                  label="Backdrop (16:9 aspect ratio)"
+                  label={t('admin.content.editor.fields.backdrop')}
                   aspectRatio={16 / 9}
                   allowUrl
                 />
@@ -132,7 +134,7 @@ export function ContentEditorForm({
                 <ImageUploader
                   value={field.value}
                   onChange={field.onChange}
-                  label="Channel Logo"
+                  label={t('admin.content.editor.fields.channelLogo')}
                   aspectRatio={2 / 1}
                   allowUrl
                 />
@@ -147,7 +149,7 @@ export function ContentEditorForm({
                 <ImageUploader
                   value={field.value}
                   onChange={field.onChange}
-                  label="Station Logo"
+                  label={t('admin.content.editor.fields.stationLogo')}
                   aspectRatio={1}
                   allowUrl
                 />
@@ -160,7 +162,7 @@ export function ContentEditorForm({
       {/* Stream/Audio Configuration */}
       {(type === 'vod' || type === 'live' || type === 'radio') && (
         <section className="space-y-4">
-          <h3 className="text-lg font-semibold text-white">Streaming</h3>
+          <h3 className="text-lg font-semibold text-white">{t('admin.content.editor.sections.streaming')}</h3>
           <Controller
             control={control}
             name="stream_url"
@@ -169,14 +171,14 @@ export function ContentEditorForm({
                 value={field.value}
                 onChange={field.onChange}
                 onStreamTypeChange={(st) => setValue('stream_type', st)}
-                label="Stream URL"
+                label={t('admin.content.editor.fields.streamUrl')}
                 required
               />
             )}
           />
           {(type === 'vod' || type === 'live') && (
             <div className="space-y-2">
-              <label className="block text-sm font-medium text-white">DRM Protected</label>
+              <label className="block text-sm font-medium text-white">{t('admin.content.editor.fields.drmProtected')}</label>
               <div className="flex items-center gap-3">
                 <input
                   type="checkbox"
@@ -186,7 +188,7 @@ export function ContentEditorForm({
                   className="w-4 h-4 rounded border-white/20 bg-white/5"
                 />
                 <label htmlFor="is_drm_protected" className="text-sm text-gray-300">
-                  This content requires DRM protection
+                  {t('admin.content.editor.fields.drmProtectedLabel')}
                 </label>
               </div>
             </div>
@@ -204,7 +206,7 @@ export function ContentEditorForm({
               <CategoryPicker
                 value={field.value}
                 onChange={field.onChange}
-                label="Category"
+                label={t('admin.content.editor.fields.category')}
                 required
                 allowCreate
               />
@@ -216,16 +218,16 @@ export function ContentEditorForm({
       {/* VOD Specific */}
       {type === 'vod' && (
         <section className="space-y-4">
-          <h3 className="text-lg font-semibold text-white">Content Details</h3>
+          <h3 className="text-lg font-semibold text-white">{t('admin.content.editor.sections.details')}</h3>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {renderField('duration', 'Duration', 'text', false, '1:30:00')}
-            {renderField('rating', 'Rating', 'text', false, 'PG-13')}
-            {renderField('genre', 'Genre', 'text', false, 'Drama')}
-            {renderField('director', 'Director', 'text', false, 'Director name')}
+            {renderField('duration', t('admin.content.editor.fields.duration'), 'text', false, t('admin.content.editor.fields.durationPlaceholder'))}
+            {renderField('rating', t('admin.content.editor.fields.rating'), 'text', false, t('admin.content.editor.fields.ratingPlaceholder'))}
+            {renderField('genre', t('admin.content.editor.fields.genre'), 'text', false, t('admin.content.editor.fields.genrePlaceholder'))}
+            {renderField('director', t('admin.content.editor.fields.director'), 'text', false, t('admin.content.editor.fields.directorPlaceholder'))}
           </div>
 
           <div className="space-y-2">
-            <label className="block text-sm font-medium text-white">Series</label>
+            <label className="block text-sm font-medium text-white">{t('admin.content.editor.fields.isSeries')}</label>
             <div className="flex items-center gap-3">
               <input
                 type="checkbox"
@@ -235,16 +237,16 @@ export function ContentEditorForm({
                 className="w-4 h-4 rounded border-white/20 bg-white/5"
               />
               <label htmlFor="is_series" className="text-sm text-gray-300">
-                This is a series/multi-part content
+                {t('admin.content.editor.fields.isSeriesLabel')}
               </label>
             </div>
           </div>
 
           {isSeries && (
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              {renderField('season', 'Season', 'number')}
-              {renderField('episode', 'Episode', 'number')}
-              {renderField('series_id', 'Series ID', 'text', false, 'series-identifier')}
+              {renderField('season', t('admin.content.editor.fields.season'), 'number')}
+              {renderField('episode', t('admin.content.editor.fields.episode'), 'number')}
+              {renderField('series_id', t('admin.content.editor.fields.seriesId'), 'text', false, t('admin.content.editor.fields.seriesIdPlaceholder'))}
             </div>
           )}
         </section>
@@ -253,7 +255,7 @@ export function ContentEditorForm({
       {/* Publishing Options */}
       {type !== 'episode' && type !== 'radio' && (
         <section className="space-y-4">
-          <h3 className="text-lg font-semibold text-white">Publishing</h3>
+          <h3 className="text-lg font-semibold text-white">{t('admin.content.editor.sections.publishing')}</h3>
           <div className="space-y-3">
             <div className="flex items-center gap-3">
               <input
@@ -264,7 +266,7 @@ export function ContentEditorForm({
                 className="w-4 h-4 rounded border-white/20 bg-white/5"
               />
               <label htmlFor="is_published" className="text-sm text-gray-300">
-                Publish this content immediately
+                {t('admin.content.editor.fields.isPublishedLabel')}
               </label>
             </div>
             {type === 'vod' && (
@@ -277,7 +279,7 @@ export function ContentEditorForm({
                   className="w-4 h-4 rounded border-white/20 bg-white/5"
                 />
                 <label htmlFor="is_featured" className="text-sm text-gray-300">
-                  Feature this content on homepage
+                  {t('admin.content.editor.fields.isFeaturedLabel')}
                 </label>
               </div>
             )}
@@ -288,11 +290,11 @@ export function ContentEditorForm({
       {/* Subscription & Kids */}
       {(type === 'vod' || type === 'live') && (
         <section className="space-y-4">
-          <h3 className="text-lg font-semibold text-white">Access Control</h3>
+          <h3 className="text-lg font-semibold text-white">{t('admin.content.editor.sections.accessControl')}</h3>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="space-y-2">
               <label htmlFor="requires_subscription" className="block text-sm font-medium text-white">
-                Required Subscription
+                {t('admin.content.editor.fields.requiredSubscription')}
               </label>
               <select
                 id="requires_subscription"
@@ -300,9 +302,9 @@ export function ContentEditorForm({
                 disabled={isLoading}
                 className="w-full px-4 py-2 rounded-lg border border-white/20 bg-white/5 text-white text-sm focus:outline-none focus:border-blue-500 disabled:opacity-50 transition-colors"
               >
-                <option value="basic">Basic</option>
-                <option value="premium">Premium</option>
-                <option value="family">Family</option>
+                <option value="basic">{t('admin.content.editor.subscriptionTiers.basic')}</option>
+                <option value="premium">{t('admin.content.editor.subscriptionTiers.premium')}</option>
+                <option value="family">{t('admin.content.editor.subscriptionTiers.family')}</option>
               </select>
             </div>
           </div>
@@ -316,7 +318,7 @@ export function ContentEditorForm({
                 className="w-4 h-4 rounded border-white/20 bg-white/5"
               />
               <label htmlFor="is_kids_content" className="text-sm text-gray-300">
-                This is kids-friendly content
+                {t('admin.content.editor.fields.isKidsContentLabel')}
               </label>
             </div>
           )}
@@ -326,12 +328,12 @@ export function ContentEditorForm({
       {/* Podcast Specific */}
       {type === 'podcast' && (
         <section className="space-y-4">
-          <h3 className="text-lg font-semibold text-white">Podcast Details</h3>
+          <h3 className="text-lg font-semibold text-white">{t('admin.content.editor.sections.podcastDetails')}</h3>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {renderField('author', 'Author', 'text', false, 'Podcast author')}
-            {renderField('category', 'Category', 'text', false, 'News, Science, etc.')}
-            {renderField('rss_feed', 'RSS Feed URL', 'url', false, 'https://example.com/feed.xml')}
-            {renderField('website', 'Website URL', 'url', false, 'https://example.com')}
+            {renderField('author', t('admin.content.editor.fields.author'), 'text', false, t('admin.content.editor.fields.authorPlaceholder'))}
+            {renderField('category', t('admin.content.editor.fields.podcastCategory'), 'text', false, t('admin.content.editor.fields.podcastCategoryPlaceholder'))}
+            {renderField('rss_feed', t('admin.content.editor.fields.rssFeed'), 'url', false, t('admin.content.editor.fields.rssFeedPlaceholder'))}
+            {renderField('website', t('admin.content.editor.fields.website'), 'url', false, t('admin.content.editor.fields.websitePlaceholder'))}
           </div>
         </section>
       )}
@@ -339,29 +341,29 @@ export function ContentEditorForm({
       {/* Episode Specific */}
       {type === 'episode' && (
         <section className="space-y-4">
-          <h3 className="text-lg font-semibold text-white">Episode Details</h3>
+          <h3 className="text-lg font-semibold text-white">{t('admin.content.editor.sections.episodeDetails')}</h3>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {renderField('episode_number', 'Episode #', 'number')}
-            {renderField('season_number', 'Season #', 'number')}
-            {renderField('duration', 'Duration', 'text', false, '45:30')}
+            {renderField('episode_number', t('admin.content.editor.fields.episodeNumber'), 'number')}
+            {renderField('season_number', t('admin.content.editor.fields.seasonNumber'), 'number')}
+            {renderField('duration', t('admin.content.editor.fields.duration'), 'text', false, t('admin.content.editor.fields.durationPlaceholder'))}
           </div>
           <div className="space-y-2">
             <label htmlFor="audio_url" className="block text-sm font-medium text-white">
-              Audio URL
+              {t('admin.content.editor.fields.audioUrl')}
               <span className="text-red-400">*</span>
             </label>
             <input
               id="audio_url"
-              {...register('audio_url', { required: 'Audio URL is required' })}
+              {...register('audio_url', { required: t('admin.content.editor.fields.audioUrlRequired') })}
               type="url"
-              placeholder="https://example.com/episode.mp3"
+              placeholder={t('admin.content.editor.fields.audioUrlPlaceholder')}
               disabled={isLoading}
               className="w-full px-4 py-2 rounded-lg border border-white/20 bg-white/5 text-white placeholder-gray-500 text-sm focus:outline-none focus:border-blue-500 disabled:opacity-50 transition-colors"
             />
           </div>
           <div className="space-y-2">
             <label htmlFor="published_at" className="block text-sm font-medium text-white">
-              Published Date
+              {t('admin.content.editor.fields.publishedDate')}
             </label>
             <input
               id="published_at"
@@ -377,11 +379,11 @@ export function ContentEditorForm({
       {/* Radio Specific */}
       {type === 'radio' && (
         <section className="space-y-4">
-          <h3 className="text-lg font-semibold text-white">Station Details</h3>
+          <h3 className="text-lg font-semibold text-white">{t('admin.content.editor.sections.stationDetails')}</h3>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {renderField('genre', 'Genre', 'text', false, 'Electronic, News, etc.')}
-            {renderField('current_show', 'Current Show', 'text', false, 'Show name')}
-            {renderField('current_song', 'Current Song', 'text', false, 'Song title')}
+            {renderField('genre', t('admin.content.editor.fields.genre'), 'text', false, t('admin.content.editor.fields.genrePlaceholder'))}
+            {renderField('current_show', t('admin.content.editor.fields.currentShow'), 'text', false, t('admin.content.editor.fields.currentShowPlaceholder'))}
+            {renderField('current_song', t('admin.content.editor.fields.currentSong'), 'text', false, t('admin.content.editor.fields.currentSongPlaceholder'))}
           </div>
         </section>
       )}
@@ -389,11 +391,11 @@ export function ContentEditorForm({
       {/* Live Channel Specific */}
       {type === 'live' && (
         <section className="space-y-4">
-          <h3 className="text-lg font-semibold text-white">Channel Details</h3>
+          <h3 className="text-lg font-semibold text-white">{t('admin.content.editor.sections.channelDetails')}</h3>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {renderField('epg_source', 'EPG Source URL', 'url', false, 'https://example.com/epg.xml')}
-            {renderField('current_show', 'Current Show', 'text', false, 'Show name')}
-            {renderField('next_show', 'Next Show', 'text', false, 'Show name')}
+            {renderField('epg_source', t('admin.content.editor.fields.epgSource'), 'url', false, t('admin.content.editor.fields.epgSourcePlaceholder'))}
+            {renderField('current_show', t('admin.content.editor.fields.currentShow'), 'text', false, t('admin.content.editor.fields.currentShowPlaceholder'))}
+            {renderField('next_show', t('admin.content.editor.fields.nextShow'), 'text', false, t('admin.content.editor.fields.nextShowPlaceholder'))}
           </div>
           <div className="flex items-center gap-3">
             <input
@@ -404,7 +406,7 @@ export function ContentEditorForm({
               className="w-4 h-4 rounded border-white/20 bg-white/5"
             />
             <label htmlFor="is_active" className="text-sm text-gray-300">
-              Channel is active
+              {t('admin.content.editor.fields.isActiveLabel')}
             </label>
           </div>
         </section>
@@ -419,7 +421,7 @@ export function ContentEditorForm({
           className="px-6 py-2 rounded-lg border border-white/20 hover:bg-white/10 text-gray-300 font-medium transition-colors disabled:opacity-50"
         >
           <X className="w-4 h-4 inline mr-2" />
-          Cancel
+          {t('admin.content.editor.actions.cancel')}
         </button>
         <button
           type="submit"
@@ -427,7 +429,7 @@ export function ContentEditorForm({
           className="px-6 py-2 rounded-lg bg-blue-600 hover:bg-blue-700 text-white font-medium transition-colors disabled:opacity-50 flex items-center gap-2"
         >
           <Save className="w-4 h-4" />
-          {isLoading ? 'Saving...' : 'Save'}
+          {isLoading ? t('admin.content.editor.actions.saving') : t('admin.content.editor.actions.save')}
         </button>
       </div>
     </form>
