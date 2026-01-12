@@ -294,20 +294,21 @@ const styles = StyleSheet.create({
     paddingVertical: spacing.sm,
   },
   stationCard: {
-    padding: spacing.md,
+    padding: spacing.lg,
     borderRadius: 12,
+    minHeight: 240,
   },
   logoContainer: {
     position: 'relative',
     alignItems: 'center',
     justifyContent: 'center',
-    marginBottom: spacing.md,
-    height: 100,
+    marginBottom: spacing.lg,
+    height: 120,
   },
   logo: {
-    width: 100,
-    height: 100,
-    borderRadius: 50,
+    width: 120,
+    height: 120,
+    borderRadius: 60,
   },
   logoPlaceholder: {
     backgroundColor: 'rgba(255, 255, 255, 0.1)',

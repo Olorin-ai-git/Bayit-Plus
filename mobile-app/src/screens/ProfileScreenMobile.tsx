@@ -24,7 +24,8 @@ import { useNavigation } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
 import ReactNativeHapticFeedback from 'react-native-haptic-feedback';
 import { GlassView, GlassButton, GlassStatCard } from '@bayit/shared';
-import { useAuth, usePermissions, useDirection } from '@bayit/shared-hooks';
+import { usePermissions, useDirection } from '@bayit/shared-hooks';
+import { useAuthStore } from '@bayit/shared-stores';
 import { spacing, colors, typography, touchTarget } from '../theme';
 import { useResponsive } from '../hooks/useResponsive';
 
@@ -38,7 +39,7 @@ interface ProfileStats {
 export const ProfileScreenMobile: React.FC = () => {
   const { t, i18n } = useTranslation();
   const navigation = useNavigation<any>();
-  const { user, logout } = useAuth();
+  const { user, logout } = useAuthStore();
   const { hasPermission } = usePermissions();
   const { isRTL, direction } = useDirection();
   const { isTablet } = useResponsive();
