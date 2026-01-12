@@ -89,7 +89,7 @@ export const ProfileScreenMobile: React.FC = () => {
     {
       id: 'watchlist',
       title: t('profile.watchlist'),
-      icon: '📋',
+      icon: '📝',
       onPress: () => navigation.navigate('Watchlist'),
       badge: stats.watchlistCount,
     },
@@ -103,20 +103,20 @@ export const ProfileScreenMobile: React.FC = () => {
     {
       id: 'downloads',
       title: t('profile.downloads'),
-      icon: '⬇️',
+      icon: '💾',
       onPress: () => navigation.navigate('Downloads'),
       badge: stats.downloadsCount,
     },
     {
       id: 'settings',
       title: t('profile.settings'),
-      icon: '⚙️',
+      icon: '🔧',
       onPress: () => navigation.navigate('Settings'),
     },
     {
       id: 'language',
       title: t('profile.language'),
-      icon: '🌐',
+      icon: '🗣️',
       subtitle: i18n.language === 'he' ? 'עברית' : i18n.language === 'en' ? 'English' : 'Español',
       onPress: () => navigation.navigate('Settings', { section: 'language' }),
     },
