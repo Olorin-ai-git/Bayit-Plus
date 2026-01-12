@@ -64,6 +64,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     padding: spacing.md,
     gap: spacing.sm,
+    minHeight: 80,
   },
   iconContainer: {
     width: 48,
@@ -74,6 +75,7 @@ const styles = StyleSheet.create({
   },
   content: {
     flex: 1,
+    minWidth: 0,
   },
   label: {
     fontSize: 13,
@@ -81,9 +83,10 @@ const styles = StyleSheet.create({
     marginBottom: 2,
   },
   labelCompact: {
-    fontSize: 12,
+    fontSize: 11,
     color: colors.textMuted,
     marginBottom: 2,
+    flexWrap: 'wrap',
   },
   value: {
     fontSize: 24,

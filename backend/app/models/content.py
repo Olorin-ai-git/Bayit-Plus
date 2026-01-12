@@ -50,7 +50,8 @@ class Content(Document):
     duration: Optional[str] = None  # e.g., "1:45:00"
     year: Optional[int] = None
     rating: Optional[str] = None  # e.g., "PG-13"
-    genre: Optional[str] = None
+    genre: Optional[str] = None  # Primary genre (legacy field, kept for backward compatibility)
+    genres: Optional[List[str]] = None  # Multiple genres from TMDB
     cast: Optional[List[str]] = None
     director: Optional[str] = None
     content_type: Optional[str] = None  # "movie", "series", "documentary", etc.

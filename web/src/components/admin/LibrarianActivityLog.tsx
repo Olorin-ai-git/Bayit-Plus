@@ -31,7 +31,7 @@ const LibrarianActivityLog: React.FC<LibrarianActivityLogProps> = ({
   config,
 }) => {
   const { t } = useTranslation();
-  const { isRTL, textAlign, flexDirection } = useDirection();
+  const { isRTL, textAlign } = useDirection();
   const [filter, setFilter] = useState<string>('all');
   const [page, setPage] = useState(1);
   const [rollbackModalVisible, setRollbackModalVisible] = useState(false);
@@ -102,18 +102,23 @@ const LibrarianActivityLog: React.FC<LibrarianActivityLogProps> = ({
     }
   };
 
-  // Build filter options from config
+  // Helper to convert snake_case to camelCase for translation keys
+  const toCamelCase = (str: string) => {
+    return str.replace(/_([a-z])/g, (_, letter) => letter.toUpperCase());
+  };
+
+  // Build filter options from config with translations
   const filterOptions = [
     { label: t('admin.librarian.activityLog.allActions'), value: 'all' },
     ...config.action_types.map((actionType) => ({
-      label: actionType.label,
+      label: t(`admin.librarian.activityLog.actionTypes.${toCamelCase(actionType.value)}`),
       value: actionType.value,
     })),
   ];
 
   return (
     <GlassCard style={styles.container}>
-      <View style={[styles.header, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
+      <View style={styles.header}>
         <Text style={[styles.title, { textAlign }]}>{t('admin.librarian.activityLog.title')}</Text>
         <View style={styles.filterContainer}>
           <GlassSelect
@@ -155,7 +160,7 @@ const LibrarianActivityLog: React.FC<LibrarianActivityLogProps> = ({
           </ScrollView>
 
           {totalPages > 1 && (
-            <View style={[styles.pagination, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
+            <View style={styles.pagination}>
               <Pressable
                 style={[styles.pageButton, page === 1 && styles.pageButtonDisabled]}
                 onPress={() => setPage(p => Math.max(1, p - 1))}
@@ -232,39 +237,150 @@ const ActivityItem: React.FC<ActivityItemProps> = ({
   onRollback,
 }) => {
   const { t } = useTranslation();
-  const formattedDate = format(new Date(action.timestamp), 'MMM d, yyyy HH:mm');
+  const [expanded, setExpanded] = useState(false);
+  const formattedDate = format(new Date(action.timestamp), 'MMM d, yyyy HH:mm:ss');
+
+  // Helper to convert snake_case to camelCase for translation keys
+  const toCamelCase = (str: string) => {
+    if (!str) return '';
+    return str.replace(/_([a-z])/g, (_, letter) => letter.toUpperCase());
+  };
+
+  // Get translated action type - with safe fallbacks
+  const actionType = action.action_type || 'unknown';
+  const actionTypeKey = `admin.librarian.activityLog.actionTypes.${toCamelCase(actionType)}`;
+  const actionTypeLabel = t(actionTypeKey, actionType.replace(/_/g, ' '));
+
+  // Generate detailed description from before/after states if none exists
+  const getDetailedDescription = () => {
+    if (action.description) return action.description;
+
+    // Generate description based on what changed
+    const changes: string[] = [];
+    const beforeKeys = Object.keys(action.before_state);
+    const afterKeys = Object.keys(action.after_state);
+    const allKeys = [...new Set([...beforeKeys, ...afterKeys])];
+
+    allKeys.forEach(key => {
+      const before = action.before_state[key];
+      const after = action.after_state[key];
+      if (before !== after) {
+        changes.push(key);
+      }
+    });
+
+    if (changes.length > 0) {
+      return `Updated ${changes.join(', ')}`;
+    }
+
+    return t('admin.librarian.activityLog.noDescription');
+  };
+
+  // Get state diff summary
+  const getStateDiff = () => {
+    const diffs: Array<{key: string; before: any; after: any}> = [];
+    const allKeys = [...new Set([
+      ...Object.keys(action.before_state),
+      ...Object.keys(action.after_state)
+    ])];
+
+    allKeys.forEach(key => {
+      const before = action.before_state[key];
+      const after = action.after_state[key];
+      if (JSON.stringify(before) !== JSON.stringify(after)) {
+        diffs.push({ key, before, after });
+      }
+    });
+
+    return diffs;
+  };
+
+  const stateDiff = getStateDiff();
 
   return (
-    <View style={[styles.activityItem, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
+    <Pressable onPress={() => setExpanded(!expanded)} style={styles.activityItem}>
       <View style={[styles.iconWrapper, { backgroundColor: color }]}>
         {icon}
       </View>
 
       <View style={[styles.activityContent, { alignItems: isRTL ? 'flex-end' : 'flex-start' }]}>
-        <View style={[styles.activityHeader, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
-          <GlassBadge text={action.action_type.replace('_', ' ')} variant="default" />
+        {/* Header with badges and timestamp */}
+        <View style={[styles.activityHeader, isRTL && styles.activityHeaderRTL]}>
+          <View style={[styles.badgeContainer, { backgroundColor: color + '20', borderColor: color }]}>
+            <Text style={[styles.badgeText, { color }]}>{actionTypeLabel}</Text>
+          </View>
           <Text style={styles.timestamp}>{formattedDate}</Text>
+          {action.rolled_back && (
+            <View style={[styles.badgeContainer, { backgroundColor: colors.error + '20', borderColor: colors.error }]}>
+              <Text style={[styles.badgeText, { color: colors.error }]}>
+                {t('admin.librarian.activityLog.rolledBack')}
+              </Text>
+            </View>
+          )}
         </View>
 
-        {action.description && (
-          <Text style={[styles.description, { textAlign }]}>{action.description}</Text>
+        {/* Content title (most prominent) */}
+        {action.content_title && (
+          <Text style={[styles.contentTitle, { textAlign }]}>{action.content_title}</Text>
         )}
 
-        <Text style={[styles.contentId, { textAlign }]}>
-          Content: {action.content_id.substring(0, idTruncateLength)}...
+        {/* Description */}
+        <Text style={[styles.description, { textAlign }]}>
+          {getDetailedDescription()}
         </Text>
 
-        {action.rolled_back && (
-          <GlassBadge text={t('admin.librarian.activityLog.rolledBack')} variant="error" />
+        {/* Metadata row */}
+        <View style={[styles.metadataRow, isRTL && styles.metadataRowRTL]}>
+          <Text style={[styles.metadataText, { textAlign }]}>
+            {t('admin.librarian.activityLog.issueType')}: {action.issue_type.replace(/_/g, ' ')}
+          </Text>
+          {action.confidence_score && (
+            <Text style={[styles.metadataText, { textAlign }]}>
+              {t('admin.librarian.activityLog.confidence')}: {(action.confidence_score * 100).toFixed(0)}%
+            </Text>
+          )}
+          {action.auto_approved && (
+            <Text style={[styles.metadataText, { textAlign, color: colors.success }]}>
+              {t('admin.librarian.activityLog.autoApproved')}
+            </Text>
+          )}
+        </View>
+
+        {/* State changes (when expanded) */}
+        {expanded && stateDiff.length > 0 && (
+          <View style={styles.stateChanges}>
+            <Text style={[styles.stateChangesTitle, { textAlign }]}>
+              {t('admin.librarian.activityLog.changes')}:
+            </Text>
+            {stateDiff.map((diff, idx) => (
+              <View key={idx} style={styles.stateChange}>
+                <Text style={styles.stateChangeKey}>{diff.key}:</Text>
+                <View style={styles.stateChangeValues}>
+                  <Text style={[styles.stateChangeBefore, { textAlign }]}>
+                    {typeof diff.before === 'object' ? JSON.stringify(diff.before) : String(diff.before || 'null')}
+                  </Text>
+                  <Text style={styles.stateChangeArrow}>→</Text>
+                  <Text style={[styles.stateChangeAfter, { textAlign }]}>
+                    {typeof diff.after === 'object' ? JSON.stringify(diff.after) : String(diff.after || 'null')}
+                  </Text>
+                </View>
+              </View>
+            ))}
+          </View>
         )}
+
+        {/* Content ID (less prominent) */}
+        <Text style={[styles.contentId, { textAlign }]}>
+          ID: {action.content_id.substring(0, idTruncateLength)}...
+        </Text>
       </View>
 
-      {onRollback && (
-        <Pressable style={styles.rollbackButton} onPress={onRollback}>
+      {onRollback && !action.rolled_back && (
+        <Pressable style={styles.rollbackButton} onPress={(e) => { e.stopPropagation(); onRollback(); }}>
           <RotateCcw size={16} color={colors.warning} />
         </Pressable>
       )}
-    </View>
+    </Pressable>
   );
 };
 
@@ -306,6 +422,7 @@ const styles = StyleSheet.create({
     maxHeight: 500,
   },
   activityItem: {
+    flexDirection: 'row',
     paddingVertical: spacing.md,
     paddingHorizontal: spacing.sm,
     borderBottomWidth: 1,
@@ -325,22 +442,105 @@ const styles = StyleSheet.create({
     gap: spacing.xs,
   },
   activityHeader: {
+    flexDirection: 'row',
     gap: spacing.sm,
     alignItems: 'center',
+    flexWrap: 'wrap',
+    marginBottom: spacing.xs,
+  },
+  activityHeaderRTL: {
+    flexDirection: 'row-reverse',
+  },
+  badgeContainer: {
+    paddingHorizontal: spacing.sm,
+    paddingVertical: 2,
+    borderRadius: borderRadius.sm,
+    borderWidth: 1,
+  },
+  badgeText: {
+    fontSize: 11,
+    fontWeight: '600',
   },
   timestamp: {
     fontSize: 12,
     color: colors.textMuted,
+    fontFamily: 'monospace',
+  },
+  contentTitle: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: colors.text,
+    lineHeight: 22,
+    marginBottom: spacing.xs,
   },
   description: {
     fontSize: 14,
-    color: colors.text,
+    color: colors.textSecondary,
     lineHeight: 20,
+    marginBottom: spacing.xs,
+  },
+  metadataRow: {
+    flexDirection: 'row',
+    gap: spacing.md,
+    flexWrap: 'wrap',
+    marginBottom: spacing.xs,
+  },
+  metadataRowRTL: {
+    flexDirection: 'row-reverse',
+  },
+  metadataText: {
+    fontSize: 12,
+    color: colors.textMuted,
+  },
+  stateChanges: {
+    marginTop: spacing.sm,
+    padding: spacing.sm,
+    backgroundColor: 'rgba(0, 0, 0, 0.3)',
+    borderRadius: borderRadius.sm,
+    borderLeftWidth: 2,
+    borderLeftColor: colors.primary,
+  },
+  stateChangesTitle: {
+    fontSize: 12,
+    fontWeight: '600',
+    color: colors.textSecondary,
+    marginBottom: spacing.xs,
+  },
+  stateChange: {
+    marginBottom: spacing.xs,
+  },
+  stateChangeKey: {
+    fontSize: 11,
+    fontWeight: '600',
+    color: colors.primary,
+    marginBottom: 2,
+  },
+  stateChangeValues: {
+    flexDirection: 'row',
+    gap: spacing.xs,
+    alignItems: 'center',
+    flexWrap: 'wrap',
+  },
+  stateChangeBefore: {
+    fontSize: 11,
+    color: colors.error,
+    fontFamily: 'monospace',
+    textDecorationLine: 'line-through',
+  },
+  stateChangeArrow: {
+    fontSize: 11,
+    color: colors.textMuted,
+  },
+  stateChangeAfter: {
+    fontSize: 11,
+    color: colors.success,
+    fontFamily: 'monospace',
   },
   contentId: {
-    fontSize: 12,
-    color: colors.textSecondary,
+    fontSize: 11,
+    color: colors.textMuted,
     fontFamily: 'monospace',
+    marginTop: spacing.xs,
   },
   rollbackButton: {
     padding: spacing.sm,

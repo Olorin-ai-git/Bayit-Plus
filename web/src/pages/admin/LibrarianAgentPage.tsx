@@ -9,11 +9,11 @@ import {
   Alert,
 } from 'react-native';
 import { useTranslation } from 'react-i18next';
-import { RefreshCw, Bot, Play, Zap } from 'lucide-react';
+import { RefreshCw, Bot, Play, Zap, FileText } from 'lucide-react';
 import StatCard from '@/components/admin/StatCard';
 import LibrarianScheduleCard from '@/components/admin/LibrarianScheduleCard';
 import LibrarianActivityLog from '@/components/admin/LibrarianActivityLog';
-import { GlassCard, GlassButton, GlassModal, GlassBadge, GlassTable, GlassTableColumn } from '@bayit/shared/ui';
+import { GlassCard, GlassButton, GlassModal, GlassBadge, GlassTable, GlassTableColumn, GlassLog, LogEntry } from '@bayit/shared/ui';
 import { colors, spacing, borderRadius } from '@bayit/shared/theme';
 import { useDirection } from '@/hooks/useDirection';
 import {
@@ -35,7 +35,7 @@ import { format } from 'date-fns';
 
 const LibrarianAgentPage = () => {
   const { t } = useTranslation();
-  const { isRTL, textAlign, flexDirection } = useDirection();
+  const { isRTL, textAlign } = useDirection();
 
   // State
   const [config, setConfig] = useState<LibrarianConfig | null>(null);
@@ -49,6 +49,7 @@ const LibrarianAgentPage = () => {
   const [budgetLimit, setBudgetLimit] = useState(0);
   const [selectedReport, setSelectedReport] = useState<AuditReportDetail | null>(null);
   const [detailModalVisible, setDetailModalVisible] = useState(false);
+  const [logViewerModalVisible, setLogViewerModalVisible] = useState(false);
   const [confirmModalVisible, setConfirmModalVisible] = useState(false);
   const [pendingAuditType, setPendingAuditType] = useState<'daily_incremental' | 'ai_agent' | null>(null);
   const [configError, setConfigError] = useState<string | null>(null);
@@ -97,6 +98,74 @@ const LibrarianAgentPage = () => {
   useEffect(() => {
     loadData();
   }, [loadData]);
+
+  // Poll for in-progress audits (real-time log streaming)
+  useEffect(() => {
+    // Check if there's an in-progress audit in the reports list
+    const inProgressAudit = reports.find(r => r.status === 'in_progress');
+
+    if (!inProgressAudit) {
+      return; // No polling needed
+    }
+
+    logger.info(`[Polling] Found in-progress audit: ${inProgressAudit.audit_id}`);
+
+    // Poll every 2 seconds
+    const pollInterval = setInterval(async () => {
+      try {
+        const details = await getAuditReportDetails(inProgressAudit.audit_id);
+
+        // If detail modal is open and showing this audit, update it
+        if (selectedReport && selectedReport.audit_id === inProgressAudit.audit_id) {
+          setSelectedReport(details);
+        }
+
+        // If audit completed, refresh the list and stop polling
+        if (details.status === 'completed' || details.status === 'failed' || details.status === 'partial') {
+          logger.info(`[Polling] Audit ${inProgressAudit.audit_id} completed with status: ${details.status}`);
+          clearInterval(pollInterval);
+          await loadData(); // Refresh the full list
+        }
+      } catch (error) {
+        logger.error('[Polling] Failed to fetch audit details:', error);
+      }
+    }, 2000); // Poll every 2 seconds
+
+    // Cleanup on unmount or when reports change
+    return () => {
+      clearInterval(pollInterval);
+    };
+  }, [reports, selectedReport]);
+
+  // Poll for activity log updates when audit is in progress (real-time rolling updates)
+  useEffect(() => {
+    // Only poll if there's an in-progress audit and config is loaded
+    const inProgressAudit = reports.find(r => r.status === 'in_progress');
+    if (!inProgressAudit || !config) {
+      return;
+    }
+
+    logger.info(`[Activity Polling] Polling for new actions from audit: ${inProgressAudit.audit_id}`);
+
+    // Poll every 3 seconds (slightly different from log polling to stagger requests)
+    const activityPollInterval = setInterval(async () => {
+      try {
+        const latestActions = await getLibrarianActions(
+          undefined,
+          undefined,
+          config.pagination.actions_limit
+        );
+        setActions(latestActions);
+        logger.debug(`[Activity Polling] Refreshed ${latestActions.length} actions`);
+      } catch (error) {
+        logger.error('[Activity Polling] Failed to fetch actions:', error);
+      }
+    }, 3000); // Poll every 3 seconds
+
+    return () => {
+      clearInterval(activityPollInterval);
+    };
+  }, [reports, config]);
 
   // Refresh handler
   const handleRefresh = async () => {
@@ -174,6 +243,137 @@ const LibrarianAgentPage = () => {
       logger.error('Failed to rollback action:', error);
       Alert.alert(t('common.error'), t('admin.librarian.errors.failedToRollback'));
     }
+  };
+
+  // Convert audit report to log entries
+  const generateLogEntriesFromReport = (report: AuditReportDetail): LogEntry[] => {
+    const logs: LogEntry[] = [];
+    const baseTime = new Date(report.audit_date);
+
+    // Start log
+    logs.push({
+      id: '1',
+      timestamp: baseTime,
+      level: 'info',
+      message: `${t('admin.librarian.logs.auditStarted')}: ${report.audit_type.replace('_', ' ')}`,
+      source: 'Librarian',
+    });
+
+    // Issues found
+    let logId = 2;
+    const issuesTime = new Date(baseTime.getTime() + 1000);
+
+    if (report.broken_streams.length > 0) {
+      logs.push({
+        id: String(logId++),
+        timestamp: issuesTime,
+        level: 'warn',
+        message: t('admin.librarian.logs.brokenStreamsFound', { count: report.broken_streams.length }),
+        source: 'Librarian',
+        metadata: { items: report.broken_streams.slice(0, 5) },
+      });
+    }
+
+    if (report.missing_metadata.length > 0) {
+      logs.push({
+        id: String(logId++),
+        timestamp: new Date(issuesTime.getTime() + 500),
+        level: 'warn',
+        message: t('admin.librarian.logs.missingMetadataFound', { count: report.missing_metadata.length }),
+        source: 'Librarian',
+        metadata: { items: report.missing_metadata.slice(0, 5) },
+      });
+    }
+
+    if (report.misclassifications.length > 0) {
+      logs.push({
+        id: String(logId++),
+        timestamp: new Date(issuesTime.getTime() + 1000),
+        level: 'warn',
+        message: t('admin.librarian.logs.misclassificationsFound', { count: report.misclassifications.length }),
+        source: 'Librarian',
+        metadata: { items: report.misclassifications.slice(0, 5) },
+      });
+    }
+
+    if (report.orphaned_items.length > 0) {
+      logs.push({
+        id: String(logId++),
+        timestamp: new Date(issuesTime.getTime() + 1500),
+        level: 'warn',
+        message: t('admin.librarian.logs.orphanedItemsFound', { count: report.orphaned_items.length }),
+        source: 'Librarian',
+        metadata: { items: report.orphaned_items.slice(0, 5) },
+      });
+    }
+
+    // Fixes applied
+    const fixesTime = new Date(baseTime.getTime() + 3000);
+    if (report.fixes_applied.length > 0) {
+      logs.push({
+        id: String(logId++),
+        timestamp: fixesTime,
+        level: 'success',
+        message: t('admin.librarian.logs.fixesApplied', { count: report.fixes_applied.length }),
+        source: 'Librarian',
+        metadata: { fixes: report.fixes_applied.slice(0, 10) },
+      });
+    }
+
+    // AI insights
+    if (report.ai_insights && report.ai_insights.length > 0) {
+      report.ai_insights.forEach((insight, index) => {
+        logs.push({
+          id: String(logId++),
+          timestamp: new Date(fixesTime.getTime() + 1000 + (index * 500)),
+          level: 'info',
+          message: `AI Insight: ${insight}`,
+          source: 'AI Agent',
+        });
+      });
+    }
+
+    // Completion
+    const completionTime = new Date(baseTime.getTime() + report.execution_time_seconds * 1000);
+    logs.push({
+      id: String(logId++),
+      timestamp: completionTime,
+      level: report.status === 'completed' ? 'success' : report.status === 'failed' ? 'error' : 'warn',
+      message: t('admin.librarian.logs.auditCompleted', {
+        status: report.status,
+        duration: report.execution_time_seconds.toFixed(1),
+      }),
+      source: 'Librarian',
+      metadata: {
+        total_items: report.summary.total_items,
+        healthy_items: report.summary.healthy_items,
+        issues_count: report.issues_count,
+        fixes_count: report.fixes_count,
+      },
+    });
+
+    return logs;
+  };
+
+  // Handle view logs
+  const handleViewLogs = () => {
+    setLogViewerModalVisible(true);
+  };
+
+  // Handle schedule update
+  const handleScheduleUpdate = async (newCron: string, newStatus: 'ENABLED' | 'DISABLED') => {
+    // Show informative message that Cloud Console is needed for schedule changes
+    Alert.alert(
+      t('admin.librarian.schedules.editNotAvailable'),
+      t('admin.librarian.schedules.editNotAvailableMessage'),
+      [
+        {
+          text: t('common.ok'),
+          style: 'default',
+        },
+      ]
+    );
+    throw new Error('Schedule editing requires Cloud Console');
   };
 
   // Report table columns
@@ -285,7 +485,7 @@ const LibrarianAgentPage = () => {
   return (
     <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
       {/* Header */}
-      <View style={[styles.header, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
+      <View style={styles.header}>
         <View style={[styles.titleContainer, { alignItems: isRTL ? 'flex-end' : 'flex-start' }]}>
           <Text style={[styles.title, { textAlign }]}>
             {t('admin.librarian.title')}
@@ -408,6 +608,7 @@ const LibrarianAgentPage = () => {
           status={config.daily_schedule.status}
           description={config.daily_schedule.description}
           gcpProjectId={config.gcp_project_id}
+          onUpdate={handleScheduleUpdate}
         />
         <LibrarianScheduleCard
           title={t('admin.librarian.schedules.weeklyTitle')}
@@ -418,6 +619,7 @@ const LibrarianAgentPage = () => {
           status={config.weekly_schedule.status}
           description={config.weekly_schedule.description}
           gcpProjectId={config.gcp_project_id}
+          onUpdate={handleScheduleUpdate}
         />
       </View>
 
@@ -485,8 +687,18 @@ const LibrarianAgentPage = () => {
         onClose={() => setDetailModalVisible(false)}
       >
         {selectedReport && (
-          <ScrollView style={[styles.modalContent, { maxHeight: config.ui.modal_max_height }]}>
-            <DetailSection title={t('admin.librarian.reports.detailModal.summary')}>
+          <>
+            <View style={styles.modalHeaderActions}>
+              <GlassButton
+                title={t('admin.librarian.reports.viewLogs')}
+                variant="secondary"
+                icon={<FileText size={16} color={colors.text} />}
+                onPress={handleViewLogs}
+                style={styles.viewLogsButton}
+              />
+            </View>
+            <ScrollView style={[styles.modalContent, { maxHeight: config.ui.modal_max_height }]}>
+              <DetailSection title={t('admin.librarian.reports.detailModal.summary')}>
               <DetailRow
                 label={t('admin.librarian.reports.detailModal.status')}
                 value={t(`admin.librarian.status.${selectedReport.status}`, selectedReport.status)}
@@ -525,7 +737,39 @@ const LibrarianAgentPage = () => {
                 ))}
               </DetailSection>
             )}
-          </ScrollView>
+            </ScrollView>
+          </>
+        )}
+      </GlassModal>
+
+      {/* Log Viewer Modal */}
+      <GlassModal
+        visible={logViewerModalVisible}
+        title={t('admin.librarian.logs.title')}
+        onClose={() => setLogViewerModalVisible(false)}
+      >
+        {selectedReport && (
+          <View style={[styles.logViewerContainer, { maxHeight: config.ui.modal_max_height }]}>
+            <GlassLog
+              logs={[...selectedReport.execution_logs].reverse()}
+              title={t('admin.librarian.logs.executionLog')}
+              searchPlaceholder={t('admin.librarian.logs.searchPlaceholder')}
+              emptyMessage={t('admin.librarian.logs.noLogs')}
+              levelLabels={{
+                debug: t('admin.librarian.logs.levels.debug'),
+                info: t('admin.librarian.logs.levels.info'),
+                warn: t('admin.librarian.logs.levels.warn'),
+                error: t('admin.librarian.logs.levels.error'),
+                success: t('admin.librarian.logs.levels.success'),
+                trace: t('admin.librarian.logs.levels.trace'),
+              }}
+              showSearch
+              showLevelFilter
+              showDownload
+              autoScroll
+              maxHeight={config.ui.modal_max_height - 100}
+            />
+          </View>
         )}
       </GlassModal>
     </ScrollView>
@@ -566,6 +810,7 @@ const styles = StyleSheet.create({
     color: colors.textMuted,
   },
   header: {
+    flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
     marginBottom: spacing.lg,
@@ -689,6 +934,18 @@ const styles = StyleSheet.create({
   },
   modalContent: {
     // maxHeight is now applied inline from config
+  },
+  modalHeaderActions: {
+    padding: spacing.md,
+    borderBottomWidth: 1,
+    borderBottomColor: colors.glassBorder,
+    alignItems: 'flex-end',
+  },
+  viewLogsButton: {
+    alignSelf: 'flex-end',
+  },
+  logViewerContainer: {
+    padding: spacing.md,
   },
   errorContainer: {
     flex: 1,

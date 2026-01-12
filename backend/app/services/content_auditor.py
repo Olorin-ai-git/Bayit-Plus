@@ -100,17 +100,28 @@ async def check_metadata_completeness(contents: List[Content]) -> List[Dict[str,
     for content in contents:
         issues = []
 
-        if not content.thumbnail:
+        # Check thumbnail (None, empty string, or whitespace)
+        if not content.thumbnail or not content.thumbnail.strip():
             issues.append("missing_thumbnail")
-        if not content.backdrop:
+
+        # Check backdrop (None, empty string, or whitespace)
+        if not content.backdrop or not content.backdrop.strip():
             issues.append("missing_backdrop")
+
+        # Check TMDB ID
         if not content.tmdb_id:
             issues.append("missing_tmdb_id")
-        if not content.imdb_id and not content.is_series:  # Movies should have IMDB
+
+        # Movies should have IMDB ID
+        if not content.is_series and (not content.imdb_id or not content.imdb_id.strip()):
             issues.append("missing_imdb_id")
-        if not content.description or len(content.description) < 20:
+
+        # Check description (None, empty, or too short)
+        if not content.description or not content.description.strip() or len(content.description.strip()) < 20:
             issues.append("incomplete_description")
-        if not content.genre:
+
+        # Check genre (None, empty string, or whitespace)
+        if not content.genre or not content.genre.strip():
             issues.append("missing_genre")
 
         if issues:
@@ -385,11 +396,15 @@ async def cache_verification(verification: ClassificationVerification, category_
         logger.warning(f"Failed to cache verification: {e}")
 
 
-async def generate_ai_insights(audit_report) -> List[str]:
+async def generate_ai_insights(audit_report, language: str = "en") -> List[str]:
     """
     Generate AI-powered insights and recommendations from audit results.
 
     Uses Claude to analyze patterns and provide actionable recommendations.
+
+    Args:
+        audit_report: The audit report to analyze
+        language: Language code (en, es, he) for insights
     """
     insights = []
 
@@ -412,7 +427,55 @@ async def generate_ai_insights(audit_report) -> List[str]:
             "misclassifications": audit_report.misclassifications[:3],
         }
 
-        prompt = f"""אתה ספרן AI למערכת Bayit+. נתח את תוצאות הביקורת הבאות וזהה דפוסים וה recommendations.
+        # Language-specific prompts
+        prompts = {
+            "en": f"""You are an AI librarian for the Bayit+ system. Analyze the following audit results and identify patterns and recommendations.
+
+**Audit Summary:**
+{json.dumps(summary_data, ensure_ascii=False, indent=2)}
+
+**Sample Issues:**
+{json.dumps(sample_issues, ensure_ascii=False, indent=2)}
+
+**Instructions:**
+1. Identify systemic patterns (e.g., all content from source X is broken)
+2. Suggest recommendations to prevent future issues
+3. Rank issues by severity
+4. Identify opportunities to improve metadata quality
+
+Return a list of insights and recommendations (3-5 items), each item one clear sentence.
+Return JSON:
+{{
+    "insights": [
+        "Insight 1...",
+        "Insight 2...",
+        "Recommendation 1..."
+    ]
+}}""",
+            "es": f"""Eres un bibliotecario AI para el sistema Bayit+. Analiza los siguientes resultados de auditoría e identifica patrones y recomendaciones.
+
+**Resumen de Auditoría:**
+{json.dumps(summary_data, ensure_ascii=False, indent=2)}
+
+**Ejemplos de Problemas:**
+{json.dumps(sample_issues, ensure_ascii=False, indent=2)}
+
+**Instrucciones:**
+1. Identifica patrones sistémicos (p. ej., todo el contenido de la fuente X está roto)
+2. Sugiere recomendaciones para prevenir problemas futuros
+3. Clasifica los problemas por gravedad
+4. Identifica oportunidades para mejorar la calidad de los metadatos
+
+Devuelve una lista de ideas y recomendaciones (3-5 elementos), cada elemento una oración clara.
+Devuelve JSON:
+{{
+    "insights": [
+        "Idea 1...",
+        "Idea 2...",
+        "Recomendación 1..."
+    ]
+}}""",
+            "he": f"""אתה ספרן AI למערכת Bayit+. נתח את תוצאות הביקורת הבאות וזהה דפוסים והמלצות.
 
 **סיכום ביקורת:**
 {json.dumps(summary_data, ensure_ascii=False, indent=2)}
@@ -435,6 +498,10 @@ async def generate_ai_insights(audit_report) -> List[str]:
         "המלצה 1..."
     ]
 }}"""
+        }
+
+        # Get prompt for requested language, fallback to English
+        prompt = prompts.get(language, prompts["en"])
 
         client = anthropic.Anthropic(api_key=settings.ANTHROPIC_API_KEY)
 

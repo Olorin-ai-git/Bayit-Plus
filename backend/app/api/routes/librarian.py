@@ -9,6 +9,7 @@ from pydantic import BaseModel
 
 from app.models.user import User
 from app.models.librarian import AuditReport, LibrarianAction
+from app.models.content import Content
 from app.api.routes.admin import require_admin
 from app.services.librarian_service import (
     run_daily_audit,
@@ -56,9 +57,14 @@ class ActionResponse(BaseModel):
     action_type: str
     content_id: str
     content_type: str
+    issue_type: str
     description: Optional[str]
+    before_state: dict
+    after_state: dict
+    confidence_score: Optional[float]
     auto_approved: bool
     rolled_back: bool
+    content_title: Optional[str]  # Fetched from Content model for display
 
 
 class LibrarianStatusResponse(BaseModel):
@@ -282,7 +288,8 @@ async def trigger_scheduled_audit(
 async def trigger_librarian_audit(
     request: TriggerAuditRequest,
     background_tasks: BackgroundTasks,
-    current_user: User = Depends(require_admin())
+    current_user: User = Depends(require_admin()),
+    accept_language: Optional[str] = Header(None, alias="Accept-Language")
 ):
     """
     Trigger a librarian audit.
@@ -303,6 +310,14 @@ async def trigger_librarian_audit(
     Note: Runs in background to avoid timeout
     """
     try:
+        # Extract language code from Accept-Language header (e.g., "en-US" -> "en")
+        language = "en"
+        if accept_language:
+            language = accept_language.split(",")[0].split("-")[0].lower()
+            # Ensure it's a supported language
+            if language not in ["en", "es", "he"]:
+                language = "en"
+
         # Determine which mode to use
         if request.use_ai_agent or request.audit_type == "ai_agent":
             # AI Agent mode - Claude makes autonomous decisions
@@ -311,7 +326,8 @@ async def trigger_librarian_audit(
                 audit_type="ai_agent",
                 dry_run=request.dry_run,
                 max_iterations=request.max_iterations,
-                budget_limit_usd=request.budget_limit_usd
+                budget_limit_usd=request.budget_limit_usd,
+                language=language
             )
 
             return TriggerAuditResponse(
@@ -331,7 +347,8 @@ async def trigger_librarian_audit(
             background_tasks.add_task(
                 run_daily_audit,
                 audit_type=request.audit_type,
-                dry_run=request.dry_run
+                dry_run=request.dry_run,
+                language=language
             )
 
             return TriggerAuditResponse(
@@ -424,6 +441,7 @@ async def get_audit_report_detail(
             "manual_review_needed": report.manual_review_needed,
             "database_health": report.database_health,
             "ai_insights": report.ai_insights,
+            "execution_logs": report.execution_logs,  # Real-time execution logs
             "created_at": report.created_at,
             "completed_at": report.completed_at,
         }
@@ -461,6 +479,11 @@ async def get_librarian_actions(
 
         actions = await LibrarianAction.find(query).sort([("timestamp", -1)]).limit(limit).to_list()
 
+        # Fetch content titles for all actions
+        content_ids = [action.content_id for action in actions]
+        contents = await Content.find({"_id": {"$in": content_ids}}).to_list()
+        content_title_map = {str(content.id): content.title for content in contents}
+
         return [
             ActionResponse(
                 action_id=action.action_id,
@@ -469,9 +492,14 @@ async def get_librarian_actions(
                 action_type=action.action_type,
                 content_id=action.content_id,
                 content_type=action.content_type,
+                issue_type=action.issue_type,
                 description=action.description,
+                before_state=action.before_state or {},
+                after_state=action.after_state or {},
+                confidence_score=action.confidence_score,
                 auto_approved=action.auto_approved,
-                rolled_back=action.rolled_back
+                rolled_back=action.rolled_back,
+                content_title=content_title_map.get(action.content_id)
             )
             for action in actions
         ]

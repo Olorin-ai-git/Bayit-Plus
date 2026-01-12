@@ -1,3 +1,5 @@
+import i18n from 'i18next';
+
 // API configuration
 const API_BASE_URL = import.meta.env.VITE_API_URL || '/api/v1';
 
@@ -5,6 +7,7 @@ const getAuthHeaders = (): HeadersInit => {
   const authData = JSON.parse(localStorage.getItem('bayit-auth') || '{}');
   const headers: HeadersInit = {
     'Content-Type': 'application/json',
+    'Accept-Language': i18n.language || 'en',
   };
 
   if (authData?.state?.token) {
@@ -94,6 +97,14 @@ export interface AuditReport {
   fixes_count: number;
 }
 
+export interface LogEntry {
+  id: string;
+  timestamp: string;
+  level: 'info' | 'warn' | 'error' | 'success' | 'debug' | 'trace';
+  message: string;
+  source: string;
+}
+
 export interface AuditReportDetail extends AuditReport {
   content_results: Record<string, any>;
   live_channel_results: Record<string, any>;
@@ -107,6 +118,7 @@ export interface AuditReportDetail extends AuditReport {
   manual_review_needed: any[];
   database_health: Record<string, any>;
   ai_insights: string[] | null;
+  execution_logs: LogEntry[];
   created_at: string;
   completed_at: string;
 }
@@ -118,9 +130,14 @@ export interface LibrarianAction {
   action_type: string;
   content_id: string;
   content_type: string;
+  issue_type: string;
   description: string | null;
+  before_state: Record<string, any>;
+  after_state: Record<string, any>;
+  confidence_score: number | null;
   auto_approved: boolean;
   rolled_back: boolean;
+  content_title: string | null;
 }
 
 export interface RollbackResponse {

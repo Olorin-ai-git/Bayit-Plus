@@ -7,6 +7,9 @@ from typing import Optional, Dict, Any, List
 import httpx
 import os
 from datetime import datetime
+import logging
+
+logger = logging.getLogger(__name__)
 
 
 class TMDBService:
@@ -17,11 +20,14 @@ class TMDBService:
 
     def __init__(self):
         self.api_key = os.getenv("TMDB_API_KEY", "")
+        if not self.api_key:
+            logger.warning("⚠️ TMDB_API_KEY is not configured. TMDB metadata fetching will not work.")
         self.client = httpx.AsyncClient(timeout=10.0)
 
     async def _make_request(self, endpoint: str, params: Optional[Dict] = None) -> Optional[Dict]:
         """Make a request to TMDB API"""
         if not self.api_key:
+            logger.error("❌ TMDB API key not configured - cannot make request to TMDB")
             return None
 
         url = f"{self.BASE_URL}{endpoint}"
@@ -33,9 +39,17 @@ class TMDBService:
             response = await self.client.get(url, params=request_params)
             if response.status_code == 200:
                 return response.json()
+            else:
+                logger.error(
+                    f"❌ TMDB API request failed: {endpoint} - "
+                    f"Status {response.status_code}: {response.text[:200]}"
+                )
+                return None
+        except httpx.TimeoutException:
+            logger.error(f"⏱️ TMDB API timeout: {endpoint}")
             return None
         except Exception as e:
-            print(f"TMDB API error: {e}")
+            logger.error(f"❌ TMDB API error: {endpoint} - {str(e)}")
             return None
 
     async def search_movie(self, title: str, year: Optional[int] = None) -> Optional[Dict]:
@@ -145,6 +159,7 @@ class TMDBService:
             "imdb_rating": None,
             "imdb_votes": None,
             "trailer_url": None,
+            "poster": None,
             "backdrop": None,
             "overview": None,
             "runtime": None,
@@ -175,7 +190,11 @@ class TMDBService:
         result["runtime"] = details.get("runtime")
         result["genres"] = [g.get("name") for g in details.get("genres", [])]
 
-        # Backdrop image
+        # Poster image (tall vertical - for thumbnail/cover)
+        if details.get("poster_path"):
+            result["poster"] = self.get_image_url(details["poster_path"], "w500")
+
+        # Backdrop image (wide horizontal - for background)
         if details.get("backdrop_path"):
             result["backdrop"] = self.get_image_url(details["backdrop_path"], "w1280")
 
@@ -204,6 +223,7 @@ class TMDBService:
             "tmdb_id": None,
             "imdb_id": None,
             "trailer_url": None,
+            "poster": None,
             "backdrop": None,
             "overview": None,
             "total_seasons": None,
@@ -235,7 +255,11 @@ class TMDBService:
         result["total_episodes"] = details.get("number_of_episodes")
         result["genres"] = [g.get("name") for g in details.get("genres", [])]
 
-        # Backdrop image
+        # Poster image (tall vertical - for thumbnail/cover)
+        if details.get("poster_path"):
+            result["poster"] = self.get_image_url(details["poster_path"], "w500")
+
+        # Backdrop image (wide horizontal - for background)
         if details.get("backdrop_path"):
             result["backdrop"] = self.get_image_url(details["backdrop_path"], "w1280")
 

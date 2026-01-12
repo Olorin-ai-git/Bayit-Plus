@@ -37,7 +37,8 @@ class AuditStats:
 
 async def run_daily_audit(
     audit_type: str = "daily_incremental",
-    dry_run: bool = False
+    dry_run: bool = False,
+    language: str = "en"
 ) -> AuditReport:
     """
     Main entry point for librarian audit.
@@ -45,6 +46,7 @@ async def run_daily_audit(
     Args:
         audit_type: "daily_incremental", "weekly_full", or "manual"
         dry_run: If true, only report issues without fixing
+        language: Language code for AI insights (en, es, he)
 
     Returns:
         Complete AuditReport object
@@ -155,7 +157,7 @@ async def run_daily_audit(
         logger.info("\n🧠 Step 4: Generating AI insights...")
         try:
             from app.services.content_auditor import generate_ai_insights
-            ai_insights = await generate_ai_insights(audit_report)
+            ai_insights = await generate_ai_insights(audit_report, language=language)
             audit_report.ai_insights = ai_insights
         except Exception as e:
             logger.warning(f"⚠️ Failed to generate AI insights: {e}")

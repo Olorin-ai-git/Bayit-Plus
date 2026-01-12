@@ -1416,6 +1416,10 @@
         "allActions": "All Actions",
         "content": "Content",
         "noDescription": "No description available",
+        "issueType": "Issue Type",
+        "confidence": "Confidence",
+        "autoApproved": "Auto-approved",
+        "changes": "Changes",
         "actionTypes": {
           "addPoster": "Add Poster",
           "updateMetadata": "Update Metadata",

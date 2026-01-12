@@ -15,6 +15,7 @@ Unlike the rule-based librarian_service.py, this agent:
 import json
 import asyncio
 import logging
+import uuid
 from datetime import datetime
 from typing import List, Dict, Any, Optional
 from anthropic import Anthropic
@@ -38,6 +39,44 @@ logger = logging.getLogger(__name__)
 
 # Initialize Anthropic client
 client = Anthropic(api_key=settings.ANTHROPIC_API_KEY)
+
+
+# ============================================================================
+# DATABASE LOGGER HELPER
+# ============================================================================
+
+async def log_to_database(audit_report: AuditReport, level: str, message: str, source: str = "AI Agent"):
+    """
+    Append a log entry to the audit report's execution_logs array.
+    This enables real-time log streaming to the UI.
+
+    Args:
+        audit_report: The AuditReport document to update
+        level: Log level ("info", "warn", "error", "success", "debug", "trace")
+        message: Log message
+        source: Source of the log (default "AI Agent")
+    """
+    try:
+        log_entry = {
+            "id": str(uuid.uuid4())[:8],  # Short ID for React keys
+            "timestamp": datetime.utcnow().isoformat(),
+            "level": level,
+            "message": message,
+            "source": source
+        }
+
+        # Append to execution_logs array
+        audit_report.execution_logs.append(log_entry)
+
+        # Save to database (using update to avoid race conditions)
+        await audit_report.save()
+
+        # Also log to console for debugging
+        logger.info(f"[{level.upper()}] {source}: {message}")
+
+    except Exception as e:
+        # Don't let logging failures break the audit
+        logger.error(f"Failed to write log to database: {e}")
 
 
 # ============================================================================
@@ -146,16 +185,12 @@ TOOLS = [
                     "type": "string",
                     "description": "The ID of the content item"
                 },
-                "audit_id": {
-                    "type": "string",
-                    "description": "The current audit ID for tracking"
-                },
                 "reason": {
                     "type": "string",
                     "description": "Brief explanation of why you're fixing this"
                 }
             },
-            "required": ["content_id", "audit_id", "reason"]
+            "required": ["content_id", "reason"]
         }
     },
     {
@@ -168,16 +203,12 @@ TOOLS = [
                     "type": "string",
                     "description": "The ID of the content item"
                 },
-                "audit_id": {
-                    "type": "string",
-                    "description": "The current audit ID for tracking"
-                },
                 "reason": {
                     "type": "string",
                     "description": "Brief explanation of what metadata is missing and why you're fixing it"
                 }
             },
-            "required": ["content_id", "audit_id", "reason"]
+            "required": ["content_id", "reason"]
         }
     },
     {
@@ -194,10 +225,6 @@ TOOLS = [
                     "type": "string",
                     "description": "The ID of the category to move it to"
                 },
-                "audit_id": {
-                    "type": "string",
-                    "description": "The current audit ID for tracking"
-                },
                 "reason": {
                     "type": "string",
                     "description": "Detailed explanation of why this recategorization is correct"
@@ -207,7 +234,7 @@ TOOLS = [
                     "description": "Your confidence level (0-100) that this is the correct category"
                 }
             },
-            "required": ["content_id", "new_category_id", "audit_id", "reason", "confidence"]
+            "required": ["content_id", "new_category_id", "reason", "confidence"]
         }
     },
     {
@@ -490,8 +517,9 @@ async def execute_get_content_details(content_id: str) -> Dict[str, Any]:
                 "description": content.description,
                 "category_id": str(content.category_id) if content.category_id else None,
                 "content_type": content.content_type,
-                "poster_url": content.poster_url,
-                "backdrop": content.backdrop,
+                "thumbnail": content.thumbnail,  # Primary poster/cover image
+                "poster_url": content.poster_url,  # TMDB poster URL (secondary)
+                "backdrop": content.backdrop,  # Wide background image
                 "stream_url": content.stream_url,
                 "trailer_url": content.trailer_url,
                 "imdb_id": content.imdb_id,
@@ -500,7 +528,7 @@ async def execute_get_content_details(content_id: str) -> Dict[str, Any]:
                 "release_year": content.year,
                 "duration": content.duration,
                 "genre": content.genre,
-                "genres": content.genres,
+                "genres": getattr(content, 'genres', None),  # May not exist in old documents
                 "director": content.director,
                 "cast": content.cast,
                 "is_published": content.is_published,
@@ -1258,7 +1286,8 @@ async def run_ai_agent_audit(
     audit_type: str = "ai_agent",
     dry_run: bool = True,
     max_iterations: int = 50,
-    budget_limit_usd: float = 1.0
+    budget_limit_usd: float = 1.0,
+    language: str = "en"
 ) -> AuditReport:
     """
     Run a fully autonomous AI agent audit using Claude's tool use.
@@ -1274,10 +1303,26 @@ async def run_ai_agent_audit(
     - max_iterations: Maximum tool uses (default 50)
     - budget_limit_usd: Maximum Claude API cost (default $1)
     - dry_run: If True, agent can't modify data
+    - language: Language code for insights (en, es, he)
     """
 
     start_time = datetime.utcnow()
     audit_id = f"ai-agent-{int(start_time.timestamp())}"
+
+    # Create audit report early so we can write logs to it
+    audit_report = AuditReport(
+        audit_id=audit_id,
+        audit_date=start_time,
+        audit_type=audit_type,
+        status="in_progress",
+        execution_logs=[]
+    )
+    await audit_report.insert()
+
+    # Log startup
+    await log_to_database(audit_report, "info", f"Audit started: {audit_type}", "Librarian")
+    await log_to_database(audit_report, "info", f"Mode: {'DRY RUN' if dry_run else 'LIVE'}", "Librarian")
+    await log_to_database(audit_report, "info", f"Max iterations: {max_iterations}, Budget: ${budget_limit_usd}", "Librarian")
 
     logger.info("=" * 80)
     logger.info("🤖 Starting AI Agent Audit")
@@ -1292,66 +1337,101 @@ async def run_ai_agent_audit(
     total_cost = 0.0
     conversation_history = []
 
-    # Initial prompt for Claude
-    initial_prompt = f"""אתה ספרן AI אוטונומי למערכת Bayit+, פלטפורמת סטרימינג ישראלית.
+    # Language mapping for Claude's responses
+    language_instruction = {
+        "en": "Communicate in English.",
+        "es": "Comunícate en español.",
+        "he": "תקשר בעברית."
+    }.get(language, "Communicate in English.")
 
-**המשימה שלך:** בצע ביקורת מקיפה של ספריית התוכן והתקן בעיות באופן אוטונומי.
+    # Initial prompt for Claude (in English as instructions, Claude responds in requested language)
+    initial_prompt = f"""You are an autonomous AI Librarian for Bayit+, an Israeli streaming platform.
 
-**מה עליך לעשות:**
-1. בחר אילו פריטי תוכן לבדוק (השתמש בשיקול דעת - לא צריך לבדוק הכל)
-2. בדוק כל פריט עבור בעיות: מטאדאטה חסרה, פוסטרים חסרים, קישורי סטרימינג שבורים, סיווג לא נכון, **כותרות מלוכלכות**
-3. **חשוב:** נקה כותרות עם זבל - הסר .mp4, 1080p, WEBRip, [קבוצות], XviD, MDMA, BoK, וכל טקסט מיותר
-4. **חדש:** בדוק שימוש באחסון - קבצים גדולים >5GB, שימוש כולל, עלויות
-5. תקן בעיות שאתה בטוח בהן (>90% ביטחון)
-6. סמן פריטים לבדיקה ידנית כשאתה לא בטוח
-7. **חשוב:** אם אתה מוצא בעיות חמורות או קריטיות - שלח התראת אימייל למנהלים באמצעות send_email_notification
-8. התאם את האסטרטגיה שלך בהתבסס על מה שאתה מוצא
-9. בסוף, קרא ל-complete_audit עם סיכום מקיף
+{language_instruction}
 
-**כלים זמינים - ניהול תוכן:**
-- list_content_items - קבל רשימת פריטים לביקורת
-- get_content_details - בדוק פרטים על פריט ספציפי
-- get_categories - ראה את כל הקטגוריות
-- check_stream_url - בדוק אם URL עובד
-- search_tmdb - חפש מטאדאטה ב-TMDB
-- fix_missing_poster - הוסף פוסטר חסר
-- fix_missing_metadata - עדכן מטאדאטה
-- recategorize_content - העבר פריט לקטגוריה אחרת (רק אם בטוח >90%)
-- clean_title - 🧹 נקה כותרת מזבל (.mp4, 1080p, [MX], XviD, MDMA, BoK וכו')
-- flag_for_manual_review - סמן לבדיקה ידנית
+**Your Mission:** Conduct a comprehensive audit of the content library and fix issues autonomously.
 
-**כלים זמינים - ניטור אחסון (חדש!):**
-- check_storage_usage - 📊 בדוק שימוש באחסון (גודל כולל, מספר קבצים, פילוח לפי סוג)
-- list_large_files - 🔍 מצא קבצים גדולים מ-5GB
-- calculate_storage_costs - 💰 חשב עלויות אחסון חודשיות
+**What You Must Do:**
+1. Choose which content items to inspect (use judgment - no need to check everything)
+2. **MANDATORY - Check each item for:**
+   - ✅ Missing thumbnail (primary poster/cover image field)
+   - ✅ Missing backdrop (wide background image)
+   - ✅ Missing metadata (description, genre, imdb_id, tmdb_id)
+   - ✅ Broken streaming URLs
+   - ✅ Incorrect categorization
+   - ✅ Dirty titles
+3. **IMPORTANT - Logging:** Always document what you're checking and what you found. Example: "Checking item X: thumbnail=null, backdrop=null → missing images!"
+4. **IMPORTANT:** Clean titles with junk - remove .mp4, 1080p, WEBRip, [Groups], XviD, MDMA, BoK, and any unnecessary text
+5. **NEW:** Check storage usage - large files >5GB, total usage, costs
+6. Fix issues you're confident about (>90% confidence)
+7. Flag items for manual review when uncertain
+8. **IMPORTANT:** If you find severe or critical issues - send email alert to admins using send_email_notification
+9. Adapt your strategy based on what you discover
+10. At the end, call complete_audit with a comprehensive summary
 
-**כלים זמינים - התראות:**
-- send_email_notification - 📧 שלח התראת אימייל למנהלים (רק לבעיות חמורות!)
-- complete_audit - סיים את הביקורת
+**📋 CRITICAL DISTINCTION - 2 Types of Issues:**
 
-**מתי לשלוח אימייל?**
-שלח התראת אימייל רק אם מצאת אחת מאלה:
-- 🚨 קישורי סטרימינג שבורים (>5 פריטים)
-- 🚨 סיווג לא נכון בקנה מידה רחב (>10 פריטים)
-- 🚨 מטאדאטה חסרה או שגויה בהיקף רחב (>20 פריטים)
-- 🚨 כותרות מלוכלכות בהיקף רחב (>15 פריטים שנוקו)
-- 🚨 קבצים גדולים מאוד (>5GB) או שימוש גבוה באחסון (>500GB)
-- 🚨 עלויות אחסון גבוהות (>$100/חודש)
-- 🚨 בעיות איכות קריטיות שמשפיעות על חוויית משתמש
-- 🚨 כל בעיה אחרת שדורשת תשומת לב מיידית
+**Type A - Content-Level Issues (YOU CAN FIX!):**
+- Missing thumbnail → Use fix_missing_poster
+- Missing backdrop → Use fix_missing_poster
+- Missing metadata → Use fix_missing_metadata
+- Dirty title → Use clean_title
+- Broken URL → Check and suggest solution
+- Wrong categorization → Use recategorize_content
+These will appear in summary as "fixes_applied" and have follow-up actions!
 
-אל תשלח אימייל עבור:
-- ✅ בעיות קטנות שתיקנת
-- ✅ ביקורות רוטיניות בלי בעיות משמעותיות
-- ✅ בעיות בודדות שסומנו לבדיקה ידנית
+**Type B - System-Level Recommendations (YOU CANNOT FIX!):**
+- Database schema changes
+- API connectivity issues (TMDB, GCS)
+- Email configuration
+- Cloud authentication settings
+- Backup procedures
+These will ONLY appear in AI Insights in complete_audit, NOT as fixes_applied!
 
-**מצב:** {'DRY RUN - אתה לא יכול לשנות נתונים באמת, רק לדווח מה היית עושה' if dry_run else 'LIVE - אתה יכול לבצע שינויים אמיתיים'}
+**Available Tools - Content Management:**
+- list_content_items - Get list of items to audit
+- get_content_details - Check details about specific item
+- get_categories - See all categories
+- check_stream_url - Check if URL works
+- search_tmdb - Search metadata on TMDB
+- fix_missing_poster - Add missing poster
+- fix_missing_metadata - Update metadata
+- recategorize_content - Move item to another category (only if >90% confident)
+- clean_title - 🧹 Clean title from junk (.mp4, 1080p, [MX], XviD, MDMA, BoK, etc.)
+- flag_for_manual_review - Flag for manual review
 
-**מגבלות:**
-- מקסימום {max_iterations} שימושי כלים
-- תקציב API: ${budget_limit_usd}
+**Available Tools - Storage Monitoring (NEW!):**
+- check_storage_usage - 📊 Check storage usage (total size, file count, breakdown by type)
+- list_large_files - 🔍 Find files larger than 5GB
+- calculate_storage_costs - 💰 Calculate monthly storage costs
 
-התחל את הביקורת!"""
+**Available Tools - Notifications:**
+- send_email_notification - 📧 Send email alert to admins (only for severe issues!)
+- complete_audit - Finish the audit
+
+**When to Send Email?**
+Send email alert ONLY if you found one of these:
+- 🚨 Broken streaming URLs (>5 items)
+- 🚨 Widespread incorrect categorization (>10 items)
+- 🚨 Missing or incorrect metadata at scale (>20 items)
+- 🚨 Dirty titles at scale (>15 items cleaned)
+- 🚨 Very large files (>5GB) or high storage usage (>500GB)
+- 🚨 High storage costs (>$100/month)
+- 🚨 Critical quality issues affecting user experience
+- 🚨 Any other issue requiring immediate attention
+
+DO NOT send email for:
+- ✅ Small issues you fixed
+- ✅ Routine audits without significant issues
+- ✅ Individual issues flagged for manual review
+
+**Mode:** {'DRY RUN - You cannot actually change data, only report what you would do' if dry_run else 'LIVE - You can make real changes'}
+
+**Limits:**
+- Maximum {max_iterations} tool uses
+- API Budget: ${budget_limit_usd}
+
+Start the audit!"""
 
     # Add initial message to conversation
     conversation_history.append({
@@ -1400,11 +1480,16 @@ async def run_ai_agent_audit(
 
             for block in response.content:
                 if isinstance(block, TextBlock):
+                    # Log Claude's thinking to database
+                    await log_to_database(audit_report, "info", block.text[:300], "AI Agent")
                     logger.info(f"💭 Claude: {block.text[:200]}...")
 
                 elif isinstance(block, ToolUseBlock):
                     tool_name = block.name
                     tool_input = block.input
+
+                    # Log tool use to database
+                    await log_to_database(audit_report, "info", f"Using tool: {tool_name}", "AI Agent")
 
                     logger.info(f"🔧 Claude wants to use: {tool_name}")
                     logger.info(f"   Input: {json.dumps(tool_input, ensure_ascii=False)[:200]}")
@@ -1413,6 +1498,7 @@ async def run_ai_agent_audit(
                     if tool_name == "complete_audit":
                         audit_complete = True
                         completion_summary = tool_input
+                        await log_to_database(audit_report, "success", "Audit completed", "AI Agent")
                         tool_results.append({
                             "type": "tool_result",
                             "tool_use_id": block.id,
@@ -1457,7 +1543,7 @@ async def run_ai_agent_audit(
             logger.error(f"❌ Error in agent loop iteration {iteration}: {str(e)}")
             break
 
-    # Create audit report
+    # Finalize audit report
     end_time = datetime.utcnow()
     execution_time = (end_time - start_time).total_seconds()
 
@@ -1480,35 +1566,23 @@ async def run_ai_agent_audit(
             "agent_summary": "Audit incomplete - reached iteration or budget limit"
         }
 
-    # Create report
-    report = AuditReport(
-        audit_id=audit_id,
-        audit_date=start_time,
-        audit_type=audit_type,
-        execution_time_seconds=execution_time,
-        status="completed" if audit_complete else "partial",
-        summary=summary,
-        content_results={
-            "agent_mode": True,
-            "iterations": iteration,
-            "tool_uses": len(tool_uses),
-            "total_cost_usd": round(total_cost, 4)
-        },
-        live_channel_results={},
-        podcast_results={},
-        radio_results={},
-        broken_streams=[],
-        missing_metadata=[],
-        misclassifications=[],
-        orphaned_items=[],
-        fixes_applied=[],
-        manual_review_needed=[],
-        database_health={},
-        ai_insights=completion_summary.get("recommendations", []) if completion_summary else [],
-        completed_at=end_time
-    )
+    # Update the existing audit report
+    audit_report.execution_time_seconds = execution_time
+    audit_report.status = "completed" if audit_complete else "partial"
+    audit_report.summary = summary
+    audit_report.content_results = {
+        "agent_mode": True,
+        "iterations": iteration,
+        "tool_uses": len(tool_uses),
+        "total_cost_usd": round(total_cost, 4)
+    }
+    audit_report.ai_insights = completion_summary.get("recommendations", []) if completion_summary else []
+    audit_report.completed_at = end_time
 
-    await report.insert()
+    await audit_report.save()
+
+    # Final log
+    await log_to_database(audit_report, "success", f"Audit completed in {execution_time:.1f}s", "Librarian")
 
     logger.info("=" * 80)
     logger.info("✅ AI Agent Audit Complete")
@@ -1516,7 +1590,7 @@ async def run_ai_agent_audit(
     logger.info(f"   Tool uses: {len(tool_uses)}")
     logger.info(f"   Total cost: ${total_cost:.4f}")
     logger.info(f"   Execution time: {execution_time:.2f}s")
-    logger.info(f"   Status: {report.status}")
+    logger.info(f"   Status: {audit_report.status}")
     logger.info("=" * 80)
 
-    return report
+    return audit_report

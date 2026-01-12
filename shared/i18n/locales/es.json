@@ -1222,11 +1222,30 @@
         "status": "Estado",
         "description": "Descripción",
         "viewInConsole": "Ver en Cloud Console",
-        "modifyNote": "Para modificar programaciones, usa Google Cloud Console"
+        "modifyNote": "Para modificar programaciones, usa Google Cloud Console",
+        "editTitle": "Editar Programación",
+        "editNotAvailable": "Edición de Programaciones No Disponible",
+        "editNotAvailableMessage": "Las modificaciones de programaciones requieren integración con la API de Cloud Scheduler. Por favor, use el botón 'Ver en Cloud Console' para modificar programaciones directamente en Google Cloud Console.",
+        "cronExpression": "Expresión Cron",
+        "cronHint": "Formato: minuto hora día mes díaSemana (ej., 0 2 * * * = diario a las 2:00 AM)",
+        "patterns": {
+          "daily": "Diario a las {{hour}}:{{minute}}",
+          "weekly": "Cada {{day}} a las {{hour}}:{{minute}}"
+        },
+        "days": {
+          "sunday": "domingo",
+          "monday": "lunes",
+          "tuesday": "martes",
+          "wednesday": "miércoles",
+          "thursday": "jueves",
+          "friday": "viernes",
+          "saturday": "sábado"
+        }
       },
       "reports": {
         "title": "Informes de Auditoría Recientes",
         "emptyMessage": "Aún no hay informes de auditoría",
+        "viewLogs": "Ver Registros",
         "columns": {
           "date": "Fecha",
           "type": "Tipo",
@@ -1252,10 +1271,37 @@
           "aiInsights": "Perspectivas de IA"
         }
       },
+      "logs": {
+        "title": "Registros de Ejecución",
+        "executionLog": "Registro de Ejecución de Auditoría",
+        "searchPlaceholder": "Buscar registros...",
+        "noLogs": "No hay registros para mostrar",
+        "levels": {
+          "debug": "DEBUG",
+          "info": "INFO",
+          "warn": "AVISO",
+          "error": "ERROR",
+          "success": "ÉXITO",
+          "trace": "TRACE"
+        },
+        "auditStarted": "Auditoría iniciada",
+        "brokenStreamsFound": "Se encontraron {{count}} transmisión(es) rota(s)",
+        "missingMetadataFound": "Se encontraron {{count}} elemento(s) con metadatos faltantes",
+        "misclassificationsFound": "Se encontraron {{count}} elemento(s) mal clasificado(s)",
+        "orphanedItemsFound": "Se encontraron {{count}} elemento(s) huérfano(s)",
+        "fixesApplied": "Se aplicaron {{count}} corrección(es)",
+        "auditCompleted": "Auditoría {{status}} en {{duration}}s"
+      },
       "activityLog": {
         "title": "Registro de Actividad",
         "filterByType": "Filtrar por tipo",
         "allActions": "Todas las Acciones",
+        "content": "Contenido",
+        "noDescription": "No hay descripción disponible",
+        "issueType": "Tipo de Problema",
+        "confidence": "Confianza",
+        "autoApproved": "Auto-aprobado",
+        "changes": "Cambios",
         "actionTypes": {
           "addPoster": "Agregar Póster",
           "updateMetadata": "Actualizar Metadatos",

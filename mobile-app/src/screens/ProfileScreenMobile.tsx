@@ -167,6 +167,7 @@ export const ProfileScreenMobile: React.FC = () => {
       </GlassView>
 
       {/* Stats Cards */}
+      {/* Row 1: Watch Time and Favorites */}
       <View style={[styles.statsContainer, isTablet && styles.statsContainerTablet]}>
         <GlassStatCard
           label={t('profile.watchTime')}
@@ -182,44 +183,25 @@ export const ProfileScreenMobile: React.FC = () => {
           style={styles.statCard}
           compact
         />
-        {!isTablet && (
-          <>
-            <GlassStatCard
-              label={t('profile.watchlist')}
-              value={stats.watchlistCount.toString()}
-              icon={<Text style={styles.statIcon}>📋</Text>}
-              style={styles.statCard}
-              compact
-            />
-            <GlassStatCard
-              label={t('profile.downloads')}
-              value={stats.downloadsCount.toString()}
-              icon={<Text style={styles.statIcon}>⬇️</Text>}
-              style={styles.statCard}
-              compact
-            />
-          </>
-        )}
       </View>
 
-      {isTablet && (
-        <View style={styles.statsContainer}>
-          <GlassStatCard
-            label={t('profile.watchlist')}
-            value={stats.watchlistCount.toString()}
-            icon={<Text style={styles.statIcon}>📋</Text>}
-            style={styles.statCard}
-            compact
-          />
-          <GlassStatCard
-            label={t('profile.downloads')}
-            value={stats.downloadsCount.toString()}
-            icon={<Text style={styles.statIcon}>⬇️</Text>}
-            style={styles.statCard}
-            compact
-          />
-        </View>
-      )}
+      {/* Row 2: Watchlist and Downloads */}
+      <View style={[styles.statsContainer, isTablet && styles.statsContainerTablet]}>
+        <GlassStatCard
+          label={t('profile.watchlist')}
+          value={stats.watchlistCount.toString()}
+          icon={<Text style={styles.statIcon}>📋</Text>}
+          style={styles.statCard}
+          compact
+        />
+        <GlassStatCard
+          label={t('profile.downloads')}
+          value={stats.downloadsCount.toString()}
+          icon={<Text style={styles.statIcon}>⬇️</Text>}
+          style={styles.statCard}
+          compact
+        />
+      </View>
 
       {/* Menu Items */}
       <View style={styles.menuSection}>
@@ -344,7 +326,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   statIcon: {
-    fontSize: 24,
+    fontSize: 20,
   },
   menuSection: {
     marginBottom: spacing.xl,

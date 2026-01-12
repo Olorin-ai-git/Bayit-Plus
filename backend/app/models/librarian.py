@@ -59,6 +59,10 @@ class AuditReport(Document):
     # AI insights
     ai_insights: List[str] = Field(default_factory=list)
 
+    # Execution logs (for real-time streaming to UI)
+    execution_logs: List[Dict[str, Any]] = Field(default_factory=list)
+    # Each log entry: {"timestamp": ISO string, "level": "info/warn/error/success", "message": str, "source": str}
+
     # Timestamps
     created_at: datetime = Field(default_factory=datetime.utcnow)
     completed_at: Optional[datetime] = None

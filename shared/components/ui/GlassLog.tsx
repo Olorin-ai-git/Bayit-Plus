@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect } from 'react';
-import { View, Text, StyleSheet, ScrollView, Pressable, TextInput } from 'react-native';
-import { Search, X, ChevronDown, ChevronUp, Download, Trash2 } from 'lucide-react';
+import { View, Text, StyleSheet, ScrollView, Pressable, TextInput, Alert } from 'react-native';
+import { Search, X, ChevronDown, ChevronUp, Download, Trash2, Copy } from 'lucide-react';
+import Clipboard from '@react-native-clipboard/clipboard';
 import { colors, spacing, borderRadius } from '../../theme';
 import { GlassView } from './GlassView';
 import { GlassButton } from './GlassButton';
@@ -29,6 +30,9 @@ interface GlassLogProps {
   onClear?: () => void;
   onDownload?: () => void;
   title?: string;
+  searchPlaceholder?: string;
+  emptyMessage?: string;
+  levelLabels?: Record<LogLevel, string>;
   isRTL?: boolean;
 }
 
@@ -41,7 +45,7 @@ const LOG_COLORS: Record<LogLevel, string> = {
   trace: '#A78BFA',    // Purple
 };
 
-const LOG_LABELS: Record<LogLevel, string> = {
+const DEFAULT_LEVEL_LABELS: Record<LogLevel, string> = {
   debug: 'DEBUG',
   info: 'INFO',
   warn: 'WARN',
@@ -63,6 +67,9 @@ export const GlassLog: React.FC<GlassLogProps> = ({
   onClear,
   onDownload,
   title = 'Logs',
+  searchPlaceholder = 'Search logs...',
+  emptyMessage = 'No logs to display',
+  levelLabels = DEFAULT_LEVEL_LABELS,
   isRTL = false,
 }) => {
   const [searchQuery, setSearchQuery] = useState('');
@@ -72,10 +79,10 @@ export const GlassLog: React.FC<GlassLogProps> = ({
   const [isExpanded, setIsExpanded] = useState(true);
   const scrollViewRef = useRef<ScrollView>(null);
 
-  // Auto-scroll to bottom when new logs arrive
+  // Auto-scroll to top when new logs arrive (newest logs are at the top)
   useEffect(() => {
     if (autoScroll && scrollViewRef.current) {
-      scrollViewRef.current.scrollToEnd({ animated: true });
+      scrollViewRef.current.scrollTo({ y: 0, animated: true });
     }
   }, [logs, autoScroll]);
 
@@ -127,7 +134,7 @@ export const GlassLog: React.FC<GlassLogProps> = ({
         .map((log) => {
           const ts = formatTimestamp(log.timestamp);
           const source = log.source ? `[${log.source}]` : '';
-          return `[${ts}] [${LOG_LABELS[log.level]}] ${source} ${log.message}`;
+          return `[${ts}] [${levelLabels[log.level]}] ${source} ${log.message}`;
         })
         .join('\n');
 
@@ -139,6 +146,39 @@ export const GlassLog: React.FC<GlassLogProps> = ({
       link.download = `logs-${Date.now()}.txt`;
       link.click();
       URL.revokeObjectURL(url);
+    }
+  };
+
+  const handleCopy = () => {
+    try {
+      // Format filtered logs as text
+      const logText = filteredLogs
+        .map((log) => {
+          const ts = formatTimestamp(log.timestamp);
+          const source = log.source ? `[${log.source}]` : '';
+          return `[${ts}] [${levelLabels[log.level]}] ${source} ${log.message}`;
+        })
+        .join('\n');
+
+      if (!logText || filteredLogs.length === 0) {
+        Alert.alert('No Logs', 'There are no logs to copy');
+        return;
+      }
+
+      // Copy to clipboard
+      Clipboard.setString(logText);
+
+      // Show success feedback with count
+      Alert.alert(
+        '✓ Copied Successfully',
+        `${filteredLogs.length} log ${filteredLogs.length === 1 ? 'entry' : 'entries'} copied to clipboard`
+      );
+    } catch (error) {
+      // Show error feedback
+      Alert.alert(
+        '✗ Copy Failed',
+        `Failed to copy logs: ${error instanceof Error ? error.message : 'Unknown error'}`
+      );
     }
   };
 
@@ -165,6 +205,9 @@ export const GlassLog: React.FC<GlassLogProps> = ({
 
         {isExpanded && (
           <View style={[styles.actions, isRTL && styles.actionsRTL]}>
+            <Pressable onPress={handleCopy} style={styles.actionButton}>
+              <Copy size={16} color={colors.textSecondary} />
+            </Pressable>
             {showDownload && (
               <Pressable onPress={handleDownload} style={styles.actionButton}>
                 <Download size={16} color={colors.textSecondary} />
@@ -189,7 +232,7 @@ export const GlassLog: React.FC<GlassLogProps> = ({
                 <Search size={16} color={colors.textMuted} />
                 <TextInput
                   style={[styles.searchInput, isRTL && styles.searchInputRTL]}
-                  placeholder="Search logs..."
+                  placeholder={searchPlaceholder}
                   placeholderTextColor={colors.textMuted}
                   value={searchQuery}
                   onChangeText={setSearchQuery}
@@ -225,7 +268,7 @@ export const GlassLog: React.FC<GlassLogProps> = ({
                           selectedLevels.has(level) && styles.levelButtonTextActive,
                         ]}
                       >
-                        {LOG_LABELS[level]}
+                        {levelLabels[level]}
                       </Text>
                     </Pressable>
                   )
@@ -242,7 +285,7 @@ export const GlassLog: React.FC<GlassLogProps> = ({
           >
             {filteredLogs.length === 0 ? (
               <View style={styles.emptyState}>
-                <Text style={styles.emptyText}>No logs to display</Text>
+                <Text style={styles.emptyText}>{emptyMessage}</Text>
               </View>
             ) : (
               filteredLogs.map((log) => (
@@ -252,6 +295,7 @@ export const GlassLog: React.FC<GlassLogProps> = ({
                   showTimestamp={showTimestamp}
                   showSource={showSource}
                   isRTL={isRTL}
+                  levelLabels={levelLabels}
                 />
               ))
             )}
@@ -267,6 +311,7 @@ interface LogEntryItemProps {
   showTimestamp: boolean;
   showSource: boolean;
   isRTL: boolean;
+  levelLabels: Record<LogLevel, string>;
 }
 
 const LogEntryItem: React.FC<LogEntryItemProps> = ({
@@ -274,6 +319,7 @@ const LogEntryItem: React.FC<LogEntryItemProps> = ({
   showTimestamp,
   showSource,
   isRTL,
+  levelLabels,
 }) => {
   const [isExpanded, setIsExpanded] = useState(false);
   const levelColor = LOG_COLORS[log.level];
@@ -307,7 +353,7 @@ const LogEntryItem: React.FC<LogEntryItemProps> = ({
 
           <View style={[styles.levelBadge, { backgroundColor: levelColor + '33' }]}>
             <Text style={[styles.levelText, { color: levelColor }]}>
-              {LOG_LABELS[log.level]}
+              {levelLabels[log.level]}
             </Text>
           </View>
 
@@ -365,6 +411,8 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: '600',
     color: colors.text,
+    flex: 1,
+    flexShrink: 1,
   },
   titleRTL: {
     textAlign: 'right',

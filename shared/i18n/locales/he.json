@@ -1286,6 +1286,10 @@
         "allActions": "כל הפעולות",
         "content": "תוכן",
         "noDescription": "אין תיאור זמין",
+        "issueType": "סוג בעיה",
+        "confidence": "רמת ביטחון",
+        "autoApproved": "אושר אוטומטית",
+        "changes": "שינויים",
         "actionTypes": {
           "addPoster": "הוסף פוסטר",
           "updateMetadata": "עדכן מטא-דאטה",

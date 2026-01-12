@@ -121,6 +121,7 @@ async def fix_missing_metadata(
             "imdb_votes": content.imdb_votes,
             "description": content.description,
             "genre": content.genre,
+            "genres": getattr(content, 'genres', None),  # May not exist in old documents
             "cast": content.cast,
             "director": content.director,
         }
@@ -148,29 +149,35 @@ async def fix_missing_metadata(
                 after_state["imdb_id"] = enriched["imdb_id"]
                 changes_made.append("added_imdb_id")
 
+            # Add poster (thumbnail/cover photo)
+            if enriched.get("poster") and not content.thumbnail:
+                content.thumbnail = enriched["poster"]
+                after_state["thumbnail"] = enriched["poster"]
+                changes_made.append("added_thumbnail")
+
+            # Add backdrop (wide background image)
             if enriched.get("backdrop") and not content.backdrop:
                 content.backdrop = enriched["backdrop"]
                 after_state["backdrop"] = enriched["backdrop"]
                 changes_made.append("added_backdrop")
-
-            # For thumbnail, check if we got one from TMDB search
-            if not content.thumbnail and enriched.get("tmdb_id"):
-                # The poster is in the backdrop URL pattern, just use w500 size
-                poster_path = enriched.get("backdrop", "").replace("w1280", "w500")
-                if poster_path:
-                    content.thumbnail = poster_path
-                    after_state["thumbnail"] = poster_path
-                    changes_made.append("added_thumbnail")
 
             if enriched.get("overview") and not content.description:
                 content.description = enriched["overview"]
                 after_state["description"] = enriched["overview"]
                 changes_made.append("added_description")
 
-            if enriched.get("genres") and not content.genre:
-                content.genre = ", ".join(enriched["genres"][:2])  # First 2 genres
-                after_state["genre"] = content.genre
-                changes_made.append("added_genre")
+            if enriched.get("genres"):
+                # Store full genres list
+                if not content.genres:
+                    content.genres = enriched["genres"]
+                    after_state["genres"] = content.genres
+                    changes_made.append("added_genres")
+
+                # Also update legacy genre field (for backward compatibility)
+                if not content.genre:
+                    content.genre = ", ".join(enriched["genres"][:2])  # First 2 genres
+                    after_state["genre"] = content.genre
+                    changes_made.append("added_genre")
 
             if enriched.get("cast") and not content.cast:
                 content.cast = enriched["cast"]
