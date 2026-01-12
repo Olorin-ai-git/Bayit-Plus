@@ -13,6 +13,37 @@ router = APIRouter()
 logger = logging.getLogger(__name__)
 
 
+def generate_signed_url_if_needed(url: str) -> str:
+    """Generate signed URL for GCS files, return original URL otherwise."""
+    if not url or "storage.googleapis.com" not in url:
+        return url
+
+    try:
+        # Extract bucket and blob path from URL
+        # Format: https://storage.googleapis.com/bucket-name/path/to/file
+        parts = url.replace("https://storage.googleapis.com/", "").split("/", 1)
+        if len(parts) == 2:
+            bucket_name, blob_name = parts
+
+            # Generate signed URL (valid for 4 hours)
+            storage_client = storage.Client()
+            bucket = storage_client.bucket(bucket_name)
+            blob = bucket.blob(blob_name)
+
+            signed_url = blob.generate_signed_url(
+                version="v4",
+                expiration=timedelta(hours=4),
+                method="GET"
+            )
+            return signed_url
+    except Exception as e:
+        logger.error(f"Failed to generate signed URL for {url}: {e}")
+        # Fall back to original URL if signing fails
+        pass
+
+    return url
+
+
 @router.get("/featured")
 async def get_featured(current_user: Optional[User] = Depends(get_optional_user)):
     """Get featured content for homepage."""
@@ -326,31 +357,9 @@ async def get_stream_url(
                 )
 
     # Generate signed URL for GCS files
-    stream_url = content.stream_url
-    if stream_url and "storage.googleapis.com" in stream_url:
-        try:
-            # Extract bucket and blob path from URL
-            # Format: https://storage.googleapis.com/bucket-name/path/to/file
-            parts = stream_url.replace("https://storage.googleapis.com/", "").split("/", 1)
-            if len(parts) == 2:
-                bucket_name, blob_name = parts
-
-                # Generate signed URL (valid for 4 hours)
-                storage_client = storage.Client()
-                bucket = storage_client.bucket(bucket_name)
-                blob = bucket.blob(blob_name)
-
-                signed_url = blob.generate_signed_url(
-                    version="v4",
-                    expiration=timedelta(hours=4),
-                    method="GET"
-                )
-                stream_url = signed_url
-                logger.info(f"Generated signed URL for content {content_id}")
-        except Exception as e:
-            logger.error(f"Failed to generate signed URL: {e}")
-            # Fall back to original URL if signing fails
-            pass
+    stream_url = generate_signed_url_if_needed(content.stream_url)
+    if stream_url != content.stream_url:
+        logger.info(f"Generated signed URL for content {content_id}")
 
     return {
         "url": stream_url,
@@ -567,9 +576,9 @@ async def get_movie_details(
         "genre": movie.genre,
         "cast": movie.cast,
         "director": movie.director,
-        "trailer_url": movie.trailer_url,
-        "preview_url": movie.preview_url,
-        "stream_url": movie.stream_url,  # For preview fallback
+        "trailer_url": generate_signed_url_if_needed(movie.trailer_url) if movie.trailer_url else None,
+        "preview_url": generate_signed_url_if_needed(movie.preview_url) if movie.preview_url else None,
+        "stream_url": generate_signed_url_if_needed(movie.stream_url) if movie.stream_url else None,
         "tmdb_id": movie.tmdb_id,
         "imdb_id": movie.imdb_id,
         "imdb_rating": movie.imdb_rating,
