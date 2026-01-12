@@ -9,7 +9,7 @@ import { useState, useCallback, useMemo } from 'react'
 import { View, Text, StyleSheet, Pressable, ActivityIndicator } from 'react-native'
 import { Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
-import { ChevronDown, ChevronRight, ChevronLeft, Star, Eye, Trash2, Film, Tv, Image } from 'lucide-react'
+import { ChevronDown, ChevronRight, ChevronLeft, Star, Eye, Trash2, Film, Tv } from 'lucide-react'
 import { colors, spacing, borderRadius } from '@bayit/shared/theme'
 import { GlassTable, GlassTableColumn, GlassTableCell } from '@bayit/shared/ui'
 import { useDirection } from '@/hooks/useDirection'
@@ -198,7 +198,7 @@ export default function HierarchicalContentTable({
           }
           const item = row as ContentItem & { rowType: 'content' }
           return (
-            <View style={styles.thumbnailCell}>
+            <Pressable onPress={() => onUploadPoster(item.id)} style={styles.thumbnailCell} className="thumbnailCell">
               <View style={styles.thumbnailWrapper}>
                 {item.thumbnail ? (
                   <View style={[styles.thumbnail, { backgroundImage: `url(${item.thumbnail})` }]} />
@@ -211,8 +211,11 @@ export default function HierarchicalContentTable({
                     )}
                   </View>
                 )}
+                <View style={styles.thumbnailOverlay} className="thumbnailOverlay">
+                  <Text style={styles.thumbnailOverlayText}>📷 Upload</Text>
+                </View>
               </View>
-            </View>
+            </Pressable>
           )
         },
       },
@@ -321,14 +324,6 @@ export default function HierarchicalContentTable({
                   />
                 </Pressable>
               )}
-              {!isEpisode && (
-                <Pressable
-                  onPress={() => onUploadPoster(row.id)}
-                  style={[buttonStyle, { backgroundColor: '#8b5cf680' }]}
-                >
-                  <Image size={buttonSize} color="#8b5cf6" />
-                </Pressable>
-              )}
               <Pressable
                 onPress={() => onTogglePublish(row.id)}
                 style={[
@@ -360,16 +355,23 @@ export default function HierarchicalContentTable({
   )
 
   return (
-    <GlassTable
-      columns={columns}
-      data={flattenedData}
-      loading={loading}
-      pagination={pagination}
-      onPageChange={onPageChange}
-      emptyMessage={emptyMessage}
-      isRTL={isRTL}
-      rowKey={(row) => `${row.rowType}-${row.id}`}
-    />
+    <>
+      <style>{`
+        .thumbnailCell:hover .thumbnailOverlay {
+          opacity: 1 !important;
+        }
+      `}</style>
+      <GlassTable
+        columns={columns}
+        data={flattenedData}
+        loading={loading}
+        pagination={pagination}
+        onPageChange={onPageChange}
+        emptyMessage={emptyMessage}
+        isRTL={isRTL}
+        rowKey={(row) => `${row.rowType}-${row.id}`}
+      />
+    </>
   )
 }
 
@@ -440,13 +442,15 @@ const styles = StyleSheet.create({
   thumbnailCell: {
     width: 60,
     paddingHorizontal: spacing.xs,
-  },
+    cursor: 'pointer',
+  } as any,
   thumbnailWrapper: {
     width: 45,
     height: 65,
     borderRadius: borderRadius.sm,
     overflow: 'hidden',
-  },
+    position: 'relative',
+  } as any,
   thumbnail: {
     width: '100%',
     height: '100%',
@@ -459,6 +463,23 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(255, 255, 255, 0.05)',
     alignItems: 'center',
     justifyContent: 'center',
+  },
+  thumbnailOverlay: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    backgroundColor: 'rgba(0, 0, 0, 0.7)',
+    alignItems: 'center',
+    justifyContent: 'center',
+    opacity: 0,
+    transition: 'opacity 0.2s ease',
+  } as any,
+  thumbnailOverlayText: {
+    color: colors.text,
+    fontSize: 10,
+    fontWeight: '600',
   },
   titleCell: {
     flex: 1,
