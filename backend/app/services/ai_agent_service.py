@@ -471,7 +471,11 @@ async def execute_list_content_items(
                 {"$match": query},
                 {"$sample": {"size": limit}}
             ]
-            items = await Content.aggregate(pipeline).to_list()
+            # Aggregate returns a cursor, need to convert to list
+            cursor = Content.aggregate(pipeline)
+            items = []
+            async for item in cursor:
+                items.append(item)
         else:
             # Get newest items
             items = await Content.find(query).sort([("created_at", -1)]).limit(limit).to_list()
@@ -556,8 +560,8 @@ async def execute_get_categories() -> Dict[str, Any]:
                     "name_en": cat.name_en,
                     "description": cat.description,
                     "icon": cat.icon,
-                    "content_type": cat.content_type,
-                    "order": cat.order
+                    "order": cat.order,
+                    "is_active": cat.is_active
                 }
                 for cat in categories
             ]
@@ -672,7 +676,7 @@ async def execute_fix_missing_poster(
         else:
             return {
                 "success": False,
-                "error": result.error or "Could not find poster on TMDB"
+                "error": result.error_message or "Could not find poster on TMDB"
             }
 
     except Exception as e:
@@ -708,7 +712,7 @@ async def execute_fix_missing_metadata(
         else:
             return {
                 "success": False,
-                "error": result.error or "Failed to update metadata"
+                "error": result.error_message or "Failed to update metadata"
             }
 
     except Exception as e:
@@ -764,7 +768,7 @@ async def execute_recategorize_content(
         else:
             return {
                 "success": False,
-                "error": result.error or "Failed to recategorize"
+                "error": result.error_message or "Failed to recategorize"
             }
     except Exception as e:
         logger.error(f"Error in recategorize_content: {str(e)}")
@@ -1324,6 +1328,19 @@ async def run_ai_agent_audit(
     await log_to_database(audit_report, "info", f"Mode: {'DRY RUN' if dry_run else 'LIVE'}", "Librarian")
     await log_to_database(audit_report, "info", f"Max iterations: {max_iterations}, Budget: ${budget_limit_usd}", "Librarian")
 
+    # Check TMDB configuration
+    from app.core.config import settings
+    if not settings.TMDB_API_KEY:
+        await log_to_database(
+            audit_report,
+            "warn",
+            "⚠️ TMDB API key not configured - metadata fixes will fail. Set TMDB_API_KEY environment variable.",
+            "System"
+        )
+        logger.warning("⚠️ TMDB API key not configured - metadata fixes will not work")
+    else:
+        await log_to_database(audit_report, "info", "✓ TMDB API configured", "System")
+
     logger.info("=" * 80)
     logger.info("🤖 Starting AI Agent Audit")
     logger.info(f"   Audit ID: {audit_id}")
@@ -1508,6 +1525,27 @@ Start the audit!"""
 
                     # Execute tool
                     result = await execute_tool(tool_name, tool_input, audit_id, dry_run)
+
+                    # Log tool result to database
+                    if result.get("success") is False:
+                        error_msg = result.get("error", "Unknown error")
+                        await log_to_database(
+                            audit_report,
+                            "error",
+                            f"Tool '{tool_name}' failed: {error_msg}",
+                            "AI Agent"
+                        )
+                        logger.error(f"   ❌ Tool failed: {error_msg}")
+                    elif result.get("success") is True:
+                        # Only log successful actions that made changes
+                        if tool_name in ["fix_missing_poster", "fix_missing_metadata", "recategorize_content", "clean_title"]:
+                            if result.get("fixed") or result.get("cleaned"):
+                                await log_to_database(
+                                    audit_report,
+                                    "success",
+                                    f"Tool '{tool_name}' succeeded: {result.get('message', 'Success')}",
+                                    "AI Agent"
+                                )
 
                     # Track tool use
                     tool_uses.append({

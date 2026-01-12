@@ -1364,13 +1364,15 @@
         "title": "Recent Audit Reports",
         "emptyMessage": "No audit reports yet",
         "viewLogs": "View Logs",
+        "viewDetails": "View Details",
         "columns": {
           "date": "Date",
           "type": "Type",
           "duration": "Duration",
           "status": "Status",
           "issues": "Issues",
-          "fixes": "Fixes"
+          "fixes": "Fixes",
+          "actions": "Actions"
         },
         "detailModal": {
           "title": "Audit Report: {{id}}",

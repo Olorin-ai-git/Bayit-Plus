@@ -186,7 +186,7 @@ export const ProfileScreenMobile: React.FC = () => {
       </View>
 
       {/* Row 2: Watchlist and Downloads */}
-      <View style={[styles.statsContainer, isTablet && styles.statsContainerTablet]}>
+      <View style={[styles.statsContainer, styles.statsContainerLast, isTablet && styles.statsContainerTablet]}>
         <GlassStatCard
           label={t('profile.watchlist')}
           value={stats.watchlistCount.toString()}
@@ -318,6 +318,9 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     gap: spacing.sm,
     marginBottom: spacing.md,
+  },
+  statsContainerLast: {
+    marginBottom: spacing.xl,
   },
   statsContainerTablet: {
     // On tablet, stats cards are larger

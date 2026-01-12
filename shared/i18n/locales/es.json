@@ -1496,13 +1496,15 @@
         "title": "Informes de Auditoría Recientes",
         "emptyMessage": "Aún no hay informes de auditoría",
         "viewLogs": "Ver Registros",
+        "viewDetails": "Ver Detalles",
         "columns": {
           "date": "Fecha",
           "type": "Tipo",
           "duration": "Duración",
           "status": "Estado",
           "issues": "Problemas",
-          "fixes": "Correcciones"
+          "fixes": "Correcciones",
+          "actions": "Acciones"
         },
         "detailModal": {
           "title": "Informe de Auditoría: {{id}}",

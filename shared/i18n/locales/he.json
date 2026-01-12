@@ -1234,13 +1234,15 @@
         "title": "דוחות ביקורת אחרונים",
         "emptyMessage": "עדיין אין דוחות ביקורת",
         "viewLogs": "הצג לוגים",
+        "viewDetails": "הצג פרטים",
         "columns": {
           "date": "תאריך",
           "type": "סוג",
           "duration": "משך",
           "status": "סטטוס",
           "issues": "בעיות",
-          "fixes": "תיקונים"
+          "fixes": "תיקונים",
+          "actions": "פעולות"
         },
         "detailModal": {
           "title": "דוח ביקורת: {{id}}",

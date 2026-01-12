@@ -1,10 +1,11 @@
 import { useState, useRef, useEffect } from 'react';
-import { View, Text, StyleSheet, ScrollView, Pressable, TextInput, Alert } from 'react-native';
-import { Search, X, ChevronDown, ChevronUp, Download, Trash2, Copy } from 'lucide-react';
+import { View, Text, StyleSheet, ScrollView, Pressable, TextInput, Animated } from 'react-native';
+import { Search, X, ChevronDown, ChevronUp, Download, Trash2, Copy, CheckCircle, XCircle } from 'lucide-react';
 import Clipboard from '@react-native-clipboard/clipboard';
 import { colors, spacing, borderRadius } from '../../theme';
 import { GlassView } from './GlassView';
 import { GlassButton } from './GlassButton';
+import { GlassBadge } from './GlassBadge';
 
 export type LogLevel = 'debug' | 'info' | 'warn' | 'error' | 'success' | 'trace';
 
@@ -79,6 +80,12 @@ export const GlassLog: React.FC<GlassLogProps> = ({
   const [isExpanded, setIsExpanded] = useState(true);
   const scrollViewRef = useRef<ScrollView>(null);
 
+  // Toast notification state
+  const [toastVisible, setToastVisible] = useState(false);
+  const [toastMessage, setToastMessage] = useState('');
+  const [toastType, setToastType] = useState<'success' | 'danger'>('success');
+  const toastOpacity = useRef(new Animated.Value(0)).current;
+
   // Auto-scroll to top when new logs arrive (newest logs are at the top)
   useEffect(() => {
     if (autoScroll && scrollViewRef.current) {
@@ -149,6 +156,30 @@ export const GlassLog: React.FC<GlassLogProps> = ({
     }
   };
 
+  const showToast = (message: string, type: 'success' | 'danger') => {
+    setToastMessage(message);
+    setToastType(type);
+    setToastVisible(true);
+
+    // Fade in
+    Animated.timing(toastOpacity, {
+      toValue: 1,
+      duration: 300,
+      useNativeDriver: true,
+    }).start();
+
+    // Auto-dismiss after 3 seconds
+    setTimeout(() => {
+      Animated.timing(toastOpacity, {
+        toValue: 0,
+        duration: 300,
+        useNativeDriver: true,
+      }).start(() => {
+        setToastVisible(false);
+      });
+    }, 3000);
+  };
+
   const handleCopy = () => {
     try {
       // Format filtered logs as text
@@ -161,7 +192,7 @@ export const GlassLog: React.FC<GlassLogProps> = ({
         .join('\n');
 
       if (!logText || filteredLogs.length === 0) {
-        Alert.alert('No Logs', 'There are no logs to copy');
+        showToast('No logs to copy', 'danger');
         return;
       }
 
@@ -169,21 +200,46 @@ export const GlassLog: React.FC<GlassLogProps> = ({
       Clipboard.setString(logText);
 
       // Show success feedback with count
-      Alert.alert(
-        '✓ Copied Successfully',
-        `${filteredLogs.length} log ${filteredLogs.length === 1 ? 'entry' : 'entries'} copied to clipboard`
+      const count = filteredLogs.length;
+      showToast(
+        `✓ Copied ${count} log ${count === 1 ? 'entry' : 'entries'}`,
+        'success'
       );
     } catch (error) {
       // Show error feedback
-      Alert.alert(
-        '✗ Copy Failed',
-        `Failed to copy logs: ${error instanceof Error ? error.message : 'Unknown error'}`
+      showToast(
+        `✗ Failed: ${error instanceof Error ? error.message : 'Unknown error'}`,
+        'danger'
       );
     }
   };
 
   return (
     <GlassView style={styles.container} intensity="medium">
+      {/* Toast Notification */}
+      {toastVisible && (
+        <Animated.View
+          style={[
+            styles.toast,
+            { opacity: toastOpacity },
+          ]}
+        >
+          <GlassBadge
+            variant={toastType}
+            size="lg"
+            icon={
+              toastType === 'success' ? (
+                <CheckCircle size={16} color={colors.success} />
+              ) : (
+                <XCircle size={16} color={colors.error} />
+              )
+            }
+          >
+            {toastMessage}
+          </GlassBadge>
+        </Animated.View>
+      )}
+
       {/* Header */}
       <View style={[styles.header, isRTL && styles.headerRTL]}>
         <View style={[styles.titleRow, isRTL && styles.titleRowRTL]}>
@@ -382,6 +438,19 @@ const styles = StyleSheet.create({
   container: {
     borderRadius: borderRadius.lg,
     overflow: 'hidden',
+    position: 'relative',
+  },
+  toast: {
+    position: 'absolute',
+    top: spacing.md,
+    left: '50%',
+    transform: [{ translateX: -100 }],
+    zIndex: 1000,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+    elevation: 10,
   },
   header: {
     flexDirection: 'row',

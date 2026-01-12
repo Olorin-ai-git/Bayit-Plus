@@ -9,7 +9,7 @@ import {
   Alert,
 } from 'react-native';
 import { useTranslation } from 'react-i18next';
-import { RefreshCw, Bot, Play, Zap, FileText } from 'lucide-react';
+import { RefreshCw, Bot, Play, Zap, FileText, Eye, ScrollText } from 'lucide-react';
 import StatCard from '@/components/admin/StatCard';
 import LibrarianScheduleCard from '@/components/admin/LibrarianScheduleCard';
 import LibrarianActivityLog from '@/components/admin/LibrarianActivityLog';
@@ -356,7 +356,18 @@ const LibrarianAgentPage = () => {
   };
 
   // Handle view logs
-  const handleViewLogs = () => {
+  const handleViewLogs = async (auditId?: string) => {
+    // If auditId is provided, load that report first
+    if (auditId && (!selectedReport || selectedReport.audit_id !== auditId)) {
+      try {
+        const details = await getAuditReportDetails(auditId);
+        setSelectedReport(details);
+      } catch (error) {
+        logger.error('Failed to load report details for logs:', error);
+        Alert.alert(t('common.error'), t('admin.librarian.errors.failedToLoadDetails'));
+        return;
+      }
+    }
     setLogViewerModalVisible(true);
   };
 
@@ -425,6 +436,31 @@ const LibrarianAgentPage = () => {
       key: 'fixes_count',
       label: t('admin.librarian.reports.columns.fixes'),
       render: (value) => <Text style={styles.tableText}>{value}</Text>,
+    },
+    {
+      key: 'audit_id',
+      label: t('admin.librarian.reports.columns.actions'),
+      render: (value, row) => (
+        <Pressable
+          style={styles.actionButtonsRow}
+          onPress={(e) => {
+            e?.stopPropagation?.();
+          }}
+        >
+          <GlassButton
+            variant="secondary"
+            size="sm"
+            icon={<Eye size={18} color={colors.text} />}
+            onPress={() => handleViewReport(row.audit_id)}
+          />
+          <GlassButton
+            variant="secondary"
+            size="sm"
+            icon={<ScrollText size={18} color={colors.text} />}
+            onPress={() => handleViewLogs(row.audit_id)}
+          />
+        </Pressable>
+      ),
     },
   ];
 
@@ -634,7 +670,6 @@ const LibrarianAgentPage = () => {
           <GlassTable
             columns={reportColumns}
             data={reports}
-            onRowPress={(report) => handleViewReport(report.audit_id)}
             isRTL={isRTL}
             rowKey="audit_id"
           />
@@ -931,6 +966,13 @@ const styles = StyleSheet.create({
   tableText: {
     fontSize: 14,
     color: colors.text,
+  },
+  actionButtonsRow: {
+    flexDirection: 'row',
+    gap: spacing.sm,
+    alignItems: 'center',
+    justifyContent: 'center',
+    flexWrap: 'nowrap',
   },
   modalContent: {
     // maxHeight is now applied inline from config

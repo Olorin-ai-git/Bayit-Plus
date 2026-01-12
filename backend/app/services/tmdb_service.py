@@ -5,7 +5,6 @@ Fetch movie/series metadata from The Movie Database (TMDB) API
 
 from typing import Optional, Dict, Any, List
 import httpx
-import os
 from datetime import datetime
 import logging
 
@@ -19,7 +18,9 @@ class TMDBService:
     IMAGE_BASE_URL = "https://image.tmdb.org/t/p"
 
     def __init__(self):
-        self.api_key = os.getenv("TMDB_API_KEY", "")
+        # Import here to avoid circular dependency
+        from app.core.config import settings
+        self.api_key = settings.TMDB_API_KEY
         if not self.api_key:
             logger.warning("⚠️ TMDB_API_KEY is not configured. TMDB metadata fetching will not work.")
         self.client = httpx.AsyncClient(timeout=10.0)
