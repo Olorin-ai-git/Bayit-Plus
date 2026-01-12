@@ -38,8 +38,10 @@ class Content(Document):
     title: str
     title_en: Optional[str] = None  # English title for bilingual support
     description: Optional[str] = None
-    thumbnail: Optional[str] = None
-    backdrop: Optional[str] = None
+    thumbnail: Optional[str] = None  # URL (kept for backward compatibility)
+    thumbnail_data: Optional[str] = None  # Base64-encoded image data URI
+    backdrop: Optional[str] = None  # URL (kept for backward compatibility)
+    backdrop_data: Optional[str] = None  # Base64-encoded image data URI
     poster_url: Optional[str] = None  # TMDB poster URL
     category_id: str
     category_name: Optional[str] = None

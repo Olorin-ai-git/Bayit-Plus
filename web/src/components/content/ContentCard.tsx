@@ -107,7 +107,7 @@ export default function ContentCard({ content, showProgress = false, showActions
               <Image
                 source={{ uri: content.thumbnail }}
                 style={styles.thumbnail}
-                resizeMode="cover"
+                resizeMode="contain"
               />
             ) : (
               <View style={styles.thumbnailPlaceholder} />
@@ -266,11 +266,12 @@ const styles = StyleSheet.create({
     boxShadow: `0 8px 32px rgba(0, 217, 255, 0.2)`,
   },
   thumbnailContainer: {
-    aspectRatio: 16 / 9,
+    aspectRatio: 2 / 3, // Portrait aspect ratio for movie posters
     position: 'relative',
     borderTopLeftRadius: borderRadius.lg,
     borderTopRightRadius: borderRadius.lg,
     overflow: 'hidden',
+    backgroundColor: colors.backgroundDark, // Background for letterboxing
   },
   thumbnail: {
     width: '100%',

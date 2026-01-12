@@ -5,14 +5,17 @@ Create, update, delete, and modify VOD content
 
 from datetime import datetime
 from fastapi import APIRouter, HTTPException, Depends, Request
+import logging
 
 from app.models.user import User
 from app.models.content import Content, Category
 from app.models.admin import Permission, AuditAction
 from .admin_content_utils import has_permission, log_audit
 from .admin_content_schemas import ContentCreateRequest, ContentUpdateRequest
+from app.services.image_storage import download_and_encode_image
 
 router = APIRouter()
+logger = logging.getLogger(__name__)
 
 
 @router.post("/content")
@@ -91,6 +94,30 @@ async def update_content(
     if data.director is not None:
         changes["director"] = {"old": content.director, "new": data.director}
         content.director = data.director
+    if data.thumbnail is not None:
+        changes["thumbnail"] = {"old": content.thumbnail, "new": data.thumbnail}
+        content.thumbnail = data.thumbnail
+        # Download and store image if it's a valid URL
+        if data.thumbnail and data.thumbnail.startswith(('http://', 'https://')):
+            logger.info(f"Downloading thumbnail from URL: {data.thumbnail}")
+            thumbnail_data = await download_and_encode_image(data.thumbnail, max_size=(800, 1200))
+            if thumbnail_data:
+                content.thumbnail_data = thumbnail_data
+                logger.info(f"Successfully stored thumbnail data for content {content_id}")
+            else:
+                logger.warning(f"Failed to download thumbnail from {data.thumbnail}")
+    if data.backdrop is not None:
+        changes["backdrop"] = {"old": content.backdrop, "new": data.backdrop}
+        content.backdrop = data.backdrop
+        # Download and store image if it's a valid URL
+        if data.backdrop and data.backdrop.startswith(('http://', 'https://')):
+            logger.info(f"Downloading backdrop from URL: {data.backdrop}")
+            backdrop_data = await download_and_encode_image(data.backdrop, max_size=(1920, 1080))
+            if backdrop_data:
+                content.backdrop_data = backdrop_data
+                logger.info(f"Successfully stored backdrop data for content {content_id}")
+            else:
+                logger.warning(f"Failed to download backdrop from {data.backdrop}")
     if data.stream_url is not None:
         changes["stream_url"] = {"changed": True}
         content.stream_url = data.stream_url

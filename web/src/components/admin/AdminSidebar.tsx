@@ -16,6 +16,7 @@ import {
   LogOut,
   Home,
   GripVertical,
+  Bot,
 } from 'lucide-react'
 import { useAuthStore } from '@/stores/authStore'
 import { colors, spacing, borderRadius } from '@bayit/shared/theme'
@@ -102,6 +103,12 @@ const NAV_ITEMS: NavItem[] = [
     labelKey: 'admin.nav.auditLogs',
     icon: FileText,
     route: '/admin/logs',
+  },
+  {
+    key: 'librarian',
+    labelKey: 'admin.nav.librarian',
+    icon: Bot,
+    route: '/admin/librarian',
   },
 ]
 

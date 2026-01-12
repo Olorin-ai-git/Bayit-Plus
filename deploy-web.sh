@@ -71,13 +71,6 @@ echo "Generated commit message:"
 echo "  $COMMIT_MSG"
 echo ""
 
-# Ask for confirmation or custom message
-read -p "Press Enter to use this message, or type a custom message: " CUSTOM_MSG
-
-if [[ -n "$CUSTOM_MSG" ]]; then
-    COMMIT_MSG="$CUSTOM_MSG"
-fi
-
 # Commit
 echo ""
 echo "💾 Committing changes..."

@@ -249,8 +249,8 @@ const TopicCard: React.FC<TopicCardProps> = ({
           ]}
           intensity="medium"
         >
-          <View style={styles.topicHeader}>
-            <Text style={styles.categoryEmoji}>
+          <View style={[styles.topicHeader, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
+            <Text style={[styles.categoryEmoji, { marginLeft: isRTL ? spacing.sm : 0, marginRight: isRTL ? 0 : spacing.sm }]}>
               {CATEGORY_EMOJIS[topic.category] || '📌'}
             </Text>
             <View style={styles.categoryBadge}>
@@ -260,18 +260,18 @@ const TopicCard: React.FC<TopicCardProps> = ({
             </View>
           </View>
 
-          <Text style={[styles.topicTitle, { textAlign: isRTL ? 'right' : 'left' }]} numberOfLines={3}>
+          <Text style={[styles.topicTitle, { textAlign: isRTL ? 'right' : 'left', writingDirection: 'auto' }]} numberOfLines={3}>
             {title}
           </Text>
 
           {summary && (
-            <Text style={[styles.topicSummary, { textAlign: isRTL ? 'right' : 'left' }]} numberOfLines={3}>
+            <Text style={[styles.topicSummary, { textAlign: isRTL ? 'right' : 'left', writingDirection: 'auto' }]} numberOfLines={3}>
               {summary}
             </Text>
           )}
 
           {/* Importance indicator */}
-          <View style={styles.importanceContainer}>
+          <View style={[styles.importanceContainer, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
             {[...Array(5)].map((_, i) => (
               <View
                 key={i}
@@ -350,9 +350,7 @@ const styles = StyleSheet.create({
     shadowRadius: 10,
   },
   topicHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'flex-start',
+    alignItems: 'center',
     marginBottom: spacing.sm,
   },
   categoryEmoji: {

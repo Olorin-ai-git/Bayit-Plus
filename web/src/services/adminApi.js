@@ -1122,7 +1122,7 @@ const apiUploadsService = {
       headers: { 'Content-Type': 'multipart/form-data' },
     })
   },
-  validateUrl: (url) => adminApi.post('/admin/uploads/validate-url', { url }),
+  validateUrl: (url) => adminApi.post(`/admin/uploads/validate-url?url=${encodeURIComponent(url)}`),
   getPresignedUrl: (filename, contentType) => adminApi.post('/admin/uploads/presigned-url', { filename, content_type: contentType }),
 }
 

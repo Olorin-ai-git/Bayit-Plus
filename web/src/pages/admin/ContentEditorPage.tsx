@@ -1,8 +1,9 @@
 import { useState, useEffect } from 'react'
-import { View, Text, StyleSheet, Pressable, ScrollView, TextInput } from 'react-native'
+import { View, Text, StyleSheet, ScrollView } from 'react-native'
 import { useNavigate, useParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
-import { ArrowLeft, AlertCircle, Save } from 'lucide-react'
+import { ArrowLeft, AlertCircle, Save, CheckCircle } from 'lucide-react'
+import { GlassView, GlassInput, GlassButton, GlassCheckbox, GlassTextarea } from '@bayit/shared/ui'
 import { contentService } from '@/services/adminApi'
 import { colors, spacing, borderRadius } from '@bayit/shared/theme'
 import { useDirection } from '@/hooks/useDirection'
@@ -24,6 +25,8 @@ export default function ContentEditorPage() {
   const [formData, setFormData] = useState<Partial<Content>>({
     title: '',
     description: '',
+    thumbnail: '',
+    backdrop: '',
     stream_url: '',
     stream_type: 'hls',
     is_drm_protected: false,
@@ -97,13 +100,12 @@ export default function ContentEditorPage() {
   if (isLoading && error) {
     return (
       <ScrollView style={styles.container} contentContainerStyle={styles.contentContainer}>
-        <Pressable
+        <GlassButton
+          title={t('admin.actions.back', { defaultValue: 'Back to Content' })}
           onPress={() => navigate('/admin/content')}
-          style={styles.backButton}
-        >
-          <ArrowLeft size={20} color={colors.primary} />
-          <Text style={styles.backText}>{t('admin.actions.back', { defaultValue: 'Back to Content' })}</Text>
-        </Pressable>
+          variant="ghost"
+          icon={<ArrowLeft size={20} color={colors.primary} />}
+        />
         <View style={[styles.errorContainer, styles.errorBox]}>
           <AlertCircle size={20} color="#ef4444" />
           <Text style={styles.errorText}>{error}</Text>
@@ -124,17 +126,18 @@ export default function ContentEditorPage() {
     <ScrollView style={styles.container} contentContainerStyle={styles.contentContainer}>
       {/* Header */}
       <View style={[styles.header, { flexDirection }]}>
-        <Pressable
+        <GlassButton
+          title=""
           onPress={() => navigate('/admin/content')}
+          variant="ghost"
+          icon={<ArrowLeft size={20} color={colors.primary} />}
           style={styles.backButton}
-        >
-          <ArrowLeft size={20} color={colors.primary} />
-        </Pressable>
+        />
         <View style={{ flex: 1 }}>
           <Text style={[styles.pageTitle, { textAlign }]}>
             {isEditing
-              ? t('admin.titles.editContent', { defaultValue: 'Edit Content' })
-              : t('admin.titles.newContent', { defaultValue: 'Add New Content' })}
+              ? t('admin.content.editor.pageTitle', { defaultValue: 'Edit Content' })
+              : t('admin.content.editor.pageTitleNew', { defaultValue: 'Add New Content' })}
           </Text>
           <Text style={[styles.subtitle, { textAlign }]}>
             {isEditing
@@ -154,31 +157,30 @@ export default function ContentEditorPage() {
 
       {/* Success Message */}
       {success && (
-        <View style={[styles.successContainer, styles.successBox]}>
+        <GlassView style={styles.successContainer} intensity="medium">
+          <CheckCircle size={20} color={colors.success} />
           <Text style={styles.successText}>
             {isEditing
               ? t('admin.content.updateSuccess', { defaultValue: 'Content updated successfully. Redirecting...' })
               : t('admin.content.createSuccess', { defaultValue: 'Content created successfully. Redirecting...' })}
           </Text>
-        </View>
+        </GlassView>
       )}
 
       {/* Form Container */}
       <View style={styles.formContainer}>
         {/* Basic Information Section */}
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>{t('admin.content.basicInfo', { defaultValue: 'Basic Information' })}</Text>
+        <GlassView style={styles.section} intensity="medium">
+          <Text style={styles.sectionTitle}>{t('admin.content.editor.sections.basicInfo', { defaultValue: 'Basic Information' })}</Text>
 
           {/* Title */}
           <View style={styles.formGroup}>
             <Text style={styles.label}>
-              {t('admin.content.fields.title', { defaultValue: 'Title' })}
+              {t('admin.content.editor.fields.title', { defaultValue: 'Title' })}
               <Text style={styles.required}>*</Text>
             </Text>
-            <TextInput
-              style={styles.input}
-              placeholder={t('admin.content.fields.titlePlaceholder', { defaultValue: 'Content title' })}
-              placeholderTextColor={colors.textMuted}
+            <GlassInput
+              placeholder={t('admin.content.editor.fields.titlePlaceholder', { defaultValue: 'Content title' })}
               value={formData.title || ''}
               onChangeText={(value) => handleInputChange('title', value)}
               editable={!isSubmitting}
@@ -187,11 +189,9 @@ export default function ContentEditorPage() {
 
           {/* Year */}
           <View style={styles.formGroup}>
-            <Text style={styles.label}>{t('admin.content.fields.year', { defaultValue: 'Year' })}</Text>
-            <TextInput
-              style={styles.input}
-              placeholder="2024"
-              placeholderTextColor={colors.textMuted}
+            <Text style={styles.label}>{t('admin.content.editor.fields.year', { defaultValue: 'Year' })}</Text>
+            <GlassInput
+              placeholder={t('admin.content.editor.fields.yearPlaceholder', { defaultValue: '2024' })}
               keyboardType="numeric"
               value={formData.year ? String(formData.year) : ''}
               onChangeText={(value) => handleInputChange('year', value ? parseInt(value) : undefined)}
@@ -201,22 +201,18 @@ export default function ContentEditorPage() {
 
           {/* Description */}
           <View style={styles.formGroup}>
-            <Text style={styles.label}>{t('admin.content.fields.description', { defaultValue: 'Description' })}</Text>
-            <TextInput
-              style={[styles.input, styles.textarea]}
-              placeholder={t('admin.content.fields.descriptionPlaceholder', { defaultValue: 'Content description' })}
-              placeholderTextColor={colors.textMuted}
+            <Text style={styles.label}>{t('admin.content.editor.fields.description', { defaultValue: 'Description' })}</Text>
+            <GlassTextarea
+              placeholder={t('admin.content.editor.fields.descriptionPlaceholder', { defaultValue: 'Content description' })}
               value={formData.description || ''}
               onChangeText={(value) => handleInputChange('description', value)}
-              multiline
-              numberOfLines={4}
               editable={!isSubmitting}
             />
           </View>
-        </View>
+        </GlassView>
 
         {/* Media Section */}
-        <View style={styles.section}>
+        <GlassView style={styles.section} intensity="medium">
           <Text style={styles.sectionTitle}>{t('admin.content.editor.sections.media', { defaultValue: 'Media' })}</Text>
 
           {/* Thumbnail */}
@@ -240,22 +236,20 @@ export default function ContentEditorPage() {
               allowUrl
             />
           </View>
-        </View>
+        </GlassView>
 
         {/* Streaming Section */}
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>{t('admin.content.streaming', { defaultValue: 'Streaming' })}</Text>
+        <GlassView style={styles.section} intensity="medium">
+          <Text style={styles.sectionTitle}>{t('admin.content.editor.sections.streaming', { defaultValue: 'Streaming' })}</Text>
 
           {/* Stream URL */}
           <View style={styles.formGroup}>
             <Text style={styles.label}>
-              {t('admin.content.fields.streamUrl', { defaultValue: 'Stream URL' })}
+              {t('admin.content.editor.fields.streamUrl', { defaultValue: 'Stream URL' })}
               <Text style={styles.required}>*</Text>
             </Text>
-            <TextInput
-              style={styles.input}
-              placeholder={t('admin.content.fields.streamUrlPlaceholder', { defaultValue: 'https://example.com/stream.m3u8' })}
-              placeholderTextColor={colors.textMuted}
+            <GlassInput
+              placeholder="https://example.com/stream.m3u8"
               value={formData.stream_url || ''}
               onChangeText={(value) => handleInputChange('stream_url', value)}
               editable={!isSubmitting}
@@ -264,57 +258,39 @@ export default function ContentEditorPage() {
 
           {/* Stream Type */}
           <View style={styles.formGroup}>
-            <Text style={styles.label}>{t('admin.content.fields.streamType', { defaultValue: 'Stream Type' })}</Text>
+            <Text style={styles.label}>{t('admin.content.editor.fields.streamType', { defaultValue: 'Stream Type' })}</Text>
             <View style={styles.typeButtons}>
               {(['hls', 'dash'] as const).map((type) => (
-                <Pressable
+                <GlassButton
                   key={type}
+                  title={type.toUpperCase()}
                   onPress={() => handleInputChange('stream_type', type)}
-                  style={[
-                    styles.typeButton,
-                    formData.stream_type === type && styles.typeButtonActive,
-                  ]}
+                  variant={formData.stream_type === type ? 'primary' : 'outline'}
                   disabled={isSubmitting}
-                >
-                  <Text
-                    style={[
-                      styles.typeButtonText,
-                      formData.stream_type === type && styles.typeButtonTextActive,
-                    ]}
-                  >
-                    {type.toUpperCase()}
-                  </Text>
-                </Pressable>
+                  style={styles.typeButton}
+                />
               ))}
             </View>
           </View>
 
           {/* DRM Protected */}
-          <Pressable
-            onPress={() => handleInputChange('is_drm_protected', !formData.is_drm_protected)}
+          <GlassCheckbox
+            checked={formData.is_drm_protected || false}
+            onChange={(checked) => handleInputChange('is_drm_protected', checked)}
+            label={t('admin.content.editor.fields.drmProtectedLabel', { defaultValue: 'This content requires DRM protection' })}
             disabled={isSubmitting}
-            style={styles.checkboxRow}
-          >
-            <View style={[styles.checkbox, formData.is_drm_protected && styles.checkboxChecked]}>
-              {formData.is_drm_protected && <Text style={styles.checkmark}>✓</Text>}
-            </View>
-            <Text style={styles.checkboxLabel}>
-              {t('admin.content.fields.drmProtected', { defaultValue: 'DRM Protected' })}
-            </Text>
-          </Pressable>
-        </View>
+          />
+        </GlassView>
 
         {/* Content Details Section */}
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>{t('admin.content.details', { defaultValue: 'Content Details' })}</Text>
+        <GlassView style={styles.section} intensity="medium">
+          <Text style={styles.sectionTitle}>{t('admin.content.editor.sections.details', { defaultValue: 'Content Details' })}</Text>
 
           {/* Duration */}
           <View style={styles.formGroup}>
-            <Text style={styles.label}>{t('admin.content.fields.duration', { defaultValue: 'Duration' })}</Text>
-            <TextInput
-              style={styles.input}
-              placeholder="1:30:00"
-              placeholderTextColor={colors.textMuted}
+            <Text style={styles.label}>{t('admin.content.editor.fields.duration', { defaultValue: 'Duration' })}</Text>
+            <GlassInput
+              placeholder={t('admin.content.editor.fields.durationPlaceholder', { defaultValue: '1:30:00' })}
               value={formData.duration || ''}
               onChangeText={(value) => handleInputChange('duration', value)}
               editable={!isSubmitting}
@@ -323,11 +299,9 @@ export default function ContentEditorPage() {
 
           {/* Rating */}
           <View style={styles.formGroup}>
-            <Text style={styles.label}>{t('admin.content.fields.rating', { defaultValue: 'Rating' })}</Text>
-            <TextInput
-              style={styles.input}
-              placeholder="PG-13"
-              placeholderTextColor={colors.textMuted}
+            <Text style={styles.label}>{t('admin.content.editor.fields.rating', { defaultValue: 'Rating' })}</Text>
+            <GlassInput
+              placeholder={t('admin.content.editor.fields.ratingPlaceholder', { defaultValue: 'PG-13' })}
               value={formData.rating || ''}
               onChangeText={(value) => handleInputChange('rating', value)}
               editable={!isSubmitting}
@@ -336,11 +310,9 @@ export default function ContentEditorPage() {
 
           {/* Genre */}
           <View style={styles.formGroup}>
-            <Text style={styles.label}>{t('admin.content.fields.genre', { defaultValue: 'Genre' })}</Text>
-            <TextInput
-              style={styles.input}
-              placeholder="Drama"
-              placeholderTextColor={colors.textMuted}
+            <Text style={styles.label}>{t('admin.content.editor.fields.genre', { defaultValue: 'Genre' })}</Text>
+            <GlassInput
+              placeholder={t('admin.content.editor.fields.genrePlaceholder', { defaultValue: 'Drama' })}
               value={formData.genre || ''}
               onChangeText={(value) => handleInputChange('genre', value)}
               editable={!isSubmitting}
@@ -349,11 +321,9 @@ export default function ContentEditorPage() {
 
           {/* Director */}
           <View style={styles.formGroup}>
-            <Text style={styles.label}>{t('admin.content.fields.director', { defaultValue: 'Director' })}</Text>
-            <TextInput
-              style={styles.input}
-              placeholder={t('admin.content.fields.directorPlaceholder', { defaultValue: 'Director name' })}
-              placeholderTextColor={colors.textMuted}
+            <Text style={styles.label}>{t('admin.content.editor.fields.director', { defaultValue: 'Director' })}</Text>
+            <GlassInput
+              placeholder={t('admin.content.editor.fields.directorPlaceholder', { defaultValue: 'Director name' })}
               value={formData.director || ''}
               onChangeText={(value) => handleInputChange('director', value)}
               editable={!isSubmitting}
@@ -361,28 +331,20 @@ export default function ContentEditorPage() {
           </View>
 
           {/* Is Series Checkbox */}
-          <Pressable
-            onPress={() => handleInputChange('is_series', !formData.is_series)}
+          <GlassCheckbox
+            checked={formData.is_series || false}
+            onChange={(checked) => handleInputChange('is_series', checked)}
+            label={t('admin.content.editor.fields.isSeriesLabel', { defaultValue: 'This is a series/multi-part content' })}
             disabled={isSubmitting}
-            style={styles.checkboxRow}
-          >
-            <View style={[styles.checkbox, formData.is_series && styles.checkboxChecked]}>
-              {formData.is_series && <Text style={styles.checkmark}>✓</Text>}
-            </View>
-            <Text style={styles.checkboxLabel}>
-              {t('admin.content.fields.isSeries', { defaultValue: 'This is a series/multi-part content' })}
-            </Text>
-          </Pressable>
+          />
 
           {/* Series Fields (conditional) */}
           {formData.is_series && (
             <>
               <View style={styles.formGroup}>
-                <Text style={styles.label}>{t('admin.content.fields.season', { defaultValue: 'Season' })}</Text>
-                <TextInput
-                  style={styles.input}
+                <Text style={styles.label}>{t('admin.content.editor.fields.season', { defaultValue: 'Season' })}</Text>
+                <GlassInput
                   placeholder="1"
-                  placeholderTextColor={colors.textMuted}
                   keyboardType="numeric"
                   value={formData.season ? String(formData.season) : ''}
                   onChangeText={(value) => handleInputChange('season', value ? parseInt(value) : undefined)}
@@ -391,11 +353,9 @@ export default function ContentEditorPage() {
               </View>
 
               <View style={styles.formGroup}>
-                <Text style={styles.label}>{t('admin.content.fields.episode', { defaultValue: 'Episode' })}</Text>
-                <TextInput
-                  style={styles.input}
+                <Text style={styles.label}>{t('admin.content.editor.fields.episode', { defaultValue: 'Episode' })}</Text>
+                <GlassInput
                   placeholder="1"
-                  placeholderTextColor={colors.textMuted}
                   keyboardType="numeric"
                   value={formData.episode ? String(formData.episode) : ''}
                   onChangeText={(value) => handleInputChange('episode', value ? parseInt(value) : undefined)}
@@ -404,109 +364,78 @@ export default function ContentEditorPage() {
               </View>
             </>
           )}
-        </View>
+        </GlassView>
 
         {/* Publishing Section */}
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>{t('admin.content.publishing', { defaultValue: 'Publishing' })}</Text>
+        <GlassView style={styles.section} intensity="medium">
+          <Text style={styles.sectionTitle}>{t('admin.content.editor.sections.publishing', { defaultValue: 'Publishing' })}</Text>
 
-          <Pressable
-            onPress={() => handleInputChange('is_published', !formData.is_published)}
+          <GlassCheckbox
+            checked={formData.is_published || false}
+            onChange={(checked) => handleInputChange('is_published', checked)}
+            label={t('admin.content.editor.fields.isPublishedLabel', { defaultValue: 'Publish this content immediately' })}
             disabled={isSubmitting}
-            style={styles.checkboxRow}
-          >
-            <View style={[styles.checkbox, formData.is_published && styles.checkboxChecked]}>
-              {formData.is_published && <Text style={styles.checkmark}>✓</Text>}
-            </View>
-            <Text style={styles.checkboxLabel}>
-              {t('admin.content.fields.isPublished', { defaultValue: 'Publish this content immediately' })}
-            </Text>
-          </Pressable>
+          />
 
-          <Pressable
-            onPress={() => handleInputChange('is_featured', !formData.is_featured)}
+          <GlassCheckbox
+            checked={formData.is_featured || false}
+            onChange={(checked) => handleInputChange('is_featured', checked)}
+            label={t('admin.content.editor.fields.isFeaturedLabel', { defaultValue: 'Feature this content on homepage' })}
             disabled={isSubmitting}
-            style={styles.checkboxRow}
-          >
-            <View style={[styles.checkbox, formData.is_featured && styles.checkboxChecked]}>
-              {formData.is_featured && <Text style={styles.checkmark}>✓</Text>}
-            </View>
-            <Text style={styles.checkboxLabel}>
-              {t('admin.content.fields.isFeatured', { defaultValue: 'Feature this content on homepage' })}
-            </Text>
-          </Pressable>
+          />
 
-          <Pressable
-            onPress={() => handleInputChange('is_kids_content', !formData.is_kids_content)}
+          <GlassCheckbox
+            checked={formData.is_kids_content || false}
+            onChange={(checked) => handleInputChange('is_kids_content', checked)}
+            label={t('admin.content.editor.fields.isKidsContentLabel', { defaultValue: 'This is kids-friendly content' })}
             disabled={isSubmitting}
-            style={styles.checkboxRow}
-          >
-            <View style={[styles.checkbox, formData.is_kids_content && styles.checkboxChecked]}>
-              {formData.is_kids_content && <Text style={styles.checkmark}>✓</Text>}
-            </View>
-            <Text style={styles.checkboxLabel}>
-              {t('admin.content.fields.isKidsContent', { defaultValue: 'This is kids-friendly content' })}
-            </Text>
-          </Pressable>
-        </View>
+          />
+        </GlassView>
 
         {/* Access Control Section */}
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>{t('admin.content.accessControl', { defaultValue: 'Access Control' })}</Text>
+        <GlassView style={styles.section} intensity="medium">
+          <Text style={styles.sectionTitle}>{t('admin.content.editor.sections.accessControl', { defaultValue: 'Access Control' })}</Text>
 
           <View style={styles.formGroup}>
             <Text style={styles.label}>
-              {t('admin.content.fields.subscription', { defaultValue: 'Required Subscription' })}
+              {t('admin.content.editor.fields.requiredSubscription', { defaultValue: 'Required Subscription' })}
             </Text>
             <View style={styles.typeButtons}>
               {(['basic', 'premium', 'family'] as const).map((sub) => (
-                <Pressable
+                <GlassButton
                   key={sub}
+                  title={t(`admin.content.editor.subscriptionTiers.${sub}`, { defaultValue: sub.charAt(0).toUpperCase() + sub.slice(1) })}
                   onPress={() => handleInputChange('requires_subscription', sub)}
-                  style={[
-                    styles.typeButton,
-                    formData.requires_subscription === sub && styles.typeButtonActive,
-                  ]}
+                  variant={formData.requires_subscription === sub ? 'primary' : 'outline'}
                   disabled={isSubmitting}
-                >
-                  <Text
-                    style={[
-                      styles.typeButtonText,
-                      formData.requires_subscription === sub && styles.typeButtonTextActive,
-                    ]}
-                  >
-                    {sub.charAt(0).toUpperCase() + sub.slice(1)}
-                  </Text>
-                </Pressable>
+                  style={styles.typeButton}
+                />
               ))}
             </View>
           </View>
-        </View>
+        </GlassView>
 
         {/* Form Actions */}
         <View style={[styles.formActions, { flexDirection: 'row-reverse' }]}>
-          <Pressable
+          <GlassButton
+            title={isSubmitting
+              ? t('admin.content.editor.actions.saving', { defaultValue: 'Saving...' })
+              : t('admin.content.editor.actions.save', { defaultValue: 'Save' })}
             onPress={handleSubmit}
+            variant="primary"
+            loading={isSubmitting}
             disabled={isSubmitting}
-            style={[styles.submitButton, isSubmitting && styles.submitButtonDisabled]}
-          >
-            <Save size={18} color={colors.text} />
-            <Text style={styles.submitButtonText}>
-              {isSubmitting
-                ? t('admin.actions.saving', { defaultValue: 'Saving...' })
-                : t('admin.actions.save', { defaultValue: 'Save' })}
-            </Text>
-          </Pressable>
+            icon={<Save size={18} color={colors.text} />}
+            style={{ flex: 1 }}
+          />
 
-          <Pressable
+          <GlassButton
+            title={t('admin.content.editor.actions.cancel', { defaultValue: 'Cancel' })}
             onPress={() => navigate('/admin/content')}
+            variant="ghost"
             disabled={isSubmitting}
-            style={styles.cancelButton}
-          >
-            <Text style={styles.cancelButtonText}>
-              {t('admin.actions.cancel', { defaultValue: 'Cancel' })}
-            </Text>
-          </Pressable>
+            style={{ flex: 1 }}
+          />
         </View>
       </View>
     </ScrollView>
@@ -527,13 +456,7 @@ const styles = StyleSheet.create({
     marginBottom: spacing.lg,
   },
   backButton: {
-    padding: spacing.sm,
     marginTop: spacing.xs,
-  },
-  backText: {
-    color: colors.primary,
-    fontSize: 14,
-    fontWeight: '500',
   },
   pageTitle: {
     fontSize: 24,
@@ -575,21 +498,17 @@ const styles = StyleSheet.create({
   },
   successContainer: {
     flexDirection: 'row',
+    alignItems: 'center',
     gap: spacing.md,
     marginBottom: spacing.lg,
-  },
-  successBox: {
-    padding: spacing.md,
-    borderRadius: borderRadius.md,
-    backgroundColor: '#10b98120',
-    borderWidth: 1,
-    borderColor: '#10b98140',
-    alignItems: 'center',
+    padding: spacing.lg,
+    borderRadius: borderRadius.lg,
   },
   successText: {
     flex: 1,
-    color: '#10b981',
+    color: colors.success,
     fontSize: 14,
+    fontWeight: '500',
   },
   formContainer: {
     backgroundColor: colors.backgroundLighter,
@@ -640,93 +559,11 @@ const styles = StyleSheet.create({
     gap: spacing.sm,
   },
   typeButton: {
-    paddingHorizontal: spacing.md,
-    paddingVertical: spacing.sm,
-    borderRadius: borderRadius.md,
-    borderWidth: 1,
-    borderColor: colors.border,
-    backgroundColor: colors.background,
-  },
-  typeButtonActive: {
-    backgroundColor: colors.primary,
-    borderColor: colors.primary,
-  },
-  typeButtonText: {
-    fontSize: 12,
-    fontWeight: '500',
-    color: colors.textMuted,
-  },
-  typeButtonTextActive: {
-    color: colors.text,
-  },
-  checkboxRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing.md,
-    paddingVertical: spacing.sm,
-  },
-  checkbox: {
-    width: 20,
-    height: 20,
-    borderRadius: borderRadius.sm,
-    borderWidth: 2,
-    borderColor: colors.border,
-    backgroundColor: colors.background,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  checkboxChecked: {
-    backgroundColor: colors.primary,
-    borderColor: colors.primary,
-  },
-  checkmark: {
-    color: colors.text,
-    fontSize: 14,
-    fontWeight: 'bold',
-  },
-  checkboxLabel: {
     flex: 1,
-    fontSize: 14,
-    color: colors.text,
   },
   formActions: {
     flexDirection: 'row',
     gap: spacing.md,
     marginTop: spacing.lg,
-  },
-  submitButton: {
-    flex: 1,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: spacing.sm,
-    paddingHorizontal: spacing.lg,
-    paddingVertical: spacing.md,
-    borderRadius: borderRadius.md,
-    backgroundColor: colors.primary,
-  },
-  submitButtonDisabled: {
-    opacity: 0.5,
-  },
-  submitButtonText: {
-    color: colors.text,
-    fontSize: 14,
-    fontWeight: '600',
-  },
-  cancelButton: {
-    flex: 1,
-    paddingHorizontal: spacing.lg,
-    paddingVertical: spacing.md,
-    borderRadius: borderRadius.md,
-    borderWidth: 1,
-    borderColor: colors.border,
-    backgroundColor: colors.background,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  cancelButtonText: {
-    color: colors.text,
-    fontSize: 14,
-    fontWeight: '600',
   },
 })

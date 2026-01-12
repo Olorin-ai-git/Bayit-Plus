@@ -25,7 +25,7 @@ import {
 import { useNavigation } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
 import { useDirection } from '@bayit/shared-hooks';
-import { contentService } from '@bayit/shared-services';
+import { podcastService, contentService } from '@bayit/shared-services';
 import { GlassCategoryPill, GlassView, GlassBadge, GlassButton } from '@bayit/shared';
 import { getLocalizedName, getLocalizedDescription } from '@bayit/shared-utils';
 import { useResponsive } from '../hooks/useResponsive';
@@ -107,11 +107,11 @@ export const PodcastsScreenMobile: React.FC = () => {
       setIsLoading(true);
 
       const [podcastsRes, categoriesRes] = await Promise.all([
-        contentService.getPodcasts(),
+        podcastService.getShows(),
         contentService.getCategories(),
       ]) as [any, any];
 
-      const podcastsData = (podcastsRes.podcasts || []).map((podcast: any) => ({
+      const podcastsData = (podcastsRes.shows || []).map((podcast: any) => ({
         ...podcast,
         coverUrl: podcast.cover || podcast.thumbnail,
       }));

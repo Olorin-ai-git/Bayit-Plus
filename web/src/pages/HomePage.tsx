@@ -104,9 +104,8 @@ export default function HomePage() {
 
   const loadHomeContent = async () => {
     try {
-      const [featuredData, categoriesData, liveData, continueData] = await Promise.all([
+      const [featuredData, liveData, continueData] = await Promise.all([
         contentService.getFeatured(),
-        contentService.getCategories(),
         liveService.getChannels(),
         historyService.getContinueWatching().catch(() => ({ items: [] })),
       ]);
@@ -127,7 +126,8 @@ export default function HomePage() {
         is_series: item.is_series,
       })));
 
-      setCategories(categoriesData.categories || []);
+      // Use categories from featured data - they include items with thumbnails
+      setCategories(featuredData.categories || []);
       setLiveChannels(liveData.channels || []);
       setContinueWatching(continueData.items || []);
     } catch (error) {

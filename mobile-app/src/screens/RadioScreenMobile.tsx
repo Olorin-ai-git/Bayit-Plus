@@ -25,7 +25,7 @@ import {
 import { useNavigation } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
 import { useDirection } from '@bayit/shared-hooks';
-import { contentService } from '@bayit/shared-services';
+import { radioService, contentService } from '@bayit/shared-services';
 import { GlassCategoryPill, GlassView, GlassBadge } from '@bayit/shared';
 import { getLocalizedName, getLocalizedDescription } from '@bayit/shared-utils';
 import { useResponsive } from '../hooks/useResponsive';
@@ -89,7 +89,7 @@ export const RadioScreenMobile: React.FC = () => {
       setIsLoading(true);
 
       const [stationsRes, categoriesRes] = await Promise.all([
-        contentService.getRadioStations(),
+        radioService.getStations(),
         contentService.getCategories(),
       ]) as [any, any];
 
@@ -175,7 +175,7 @@ export const RadioScreenMobile: React.FC = () => {
                 </View>
               ) : (
                 <View style={styles.liveBadge}>
-                  <GlassBadge variant="error">
+                  <GlassBadge variant="danger">
                     <View style={styles.liveContainer}>
                       <View style={styles.liveIndicator} />
                       <Text style={styles.liveText}>LIVE</Text>

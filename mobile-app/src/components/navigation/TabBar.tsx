@@ -52,7 +52,8 @@ const TabBar: React.FC<TabBarProps> = ({ state, descriptors, navigation }) => {
           });
 
           if (!isFocused && !event.defaultPrevented) {
-            navigation.navigate(route.name);
+            // Use navigate with screen name and params for tab navigation
+            navigation.navigate({ name: route.name, params: undefined } as never);
           }
         };
 

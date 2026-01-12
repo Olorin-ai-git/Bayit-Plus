@@ -1,13 +1,13 @@
 import { useState, useEffect, useMemo } from 'react';
-import { View, Text, StyleSheet, FlatList, ScrollView, useWindowDimensions } from 'react-native';
+import { View, Text, StyleSheet, FlatList, ScrollView, useWindowDimensions, Pressable } from 'react-native';
 import { useSearchParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useDirection } from '@/hooks/useDirection';
-import { Film, Tv } from 'lucide-react';
+import { Film, Tv, Search, ChevronLeft, ChevronRight } from 'lucide-react';
 import ContentCard from '@/components/content/ContentCard';
 import { contentService } from '@/services/api';
 import { colors, spacing, borderRadius } from '@bayit/shared/theme';
-import { GlassView, GlassCard, GlassCategoryPill } from '@bayit/shared/ui';
+import { GlassView, GlassCard, GlassCategoryPill, GlassInput, GlassButton } from '@bayit/shared/ui';
 import { getLocalizedName } from '@bayit/shared-utils/contentLocalization';
 import logger from '@/utils/logger';
 
@@ -40,16 +40,28 @@ export default function VODPage() {
   const [selectedCategory, setSelectedCategory] = useState(
     searchParams.get('category') || 'all'
   );
+  const [searchQuery, setSearchQuery] = useState('');
+  const [page, setPage] = useState(1);
+  const [totalItems, setTotalItems] = useState(0);
   const { width } = useWindowDimensions();
 
   const numColumns = width >= 1280 ? 6 : width >= 1024 ? 5 : width >= 768 ? 4 : width >= 640 ? 3 : 2;
+  const itemsPerPage = 100;
 
-  // Separate movies and series
-  const { movies, series } = useMemo(() => {
+  // Filter and separate movies and series
+  const { movies, series, filteredTotal } = useMemo(() => {
     const movies: ContentItem[] = [];
     const series: ContentItem[] = [];
 
-    content.forEach(item => {
+    // Filter by search query
+    const filtered = searchQuery.trim()
+      ? content.filter(item =>
+          item.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          item.category?.toLowerCase().includes(searchQuery.toLowerCase())
+        )
+      : content;
+
+    filtered.forEach(item => {
       if (item.is_series || item.type === 'series') {
         series.push({ ...item, type: 'series' });
       } else {
@@ -57,12 +69,17 @@ export default function VODPage() {
       }
     });
 
-    return { movies, series };
-  }, [content]);
+    return { movies, series, filteredTotal: filtered.length };
+  }, [content, searchQuery]);
+
+  useEffect(() => {
+    setPage(1);
+    loadContent();
+  }, [selectedCategory]);
 
   useEffect(() => {
     loadContent();
-  }, [selectedCategory]);
+  }, [page]);
 
   const loadContent = async () => {
     setLoading(true);
@@ -70,11 +87,31 @@ export default function VODPage() {
       const [categoriesData, contentData] = await Promise.all([
         contentService.getCategories(),
         selectedCategory === 'all'
-          ? contentService.getFeatured()
-          : contentService.getByCategory(selectedCategory),
+          ? contentService.getAll({ page, limit: itemsPerPage })
+          : contentService.getByCategory(selectedCategory, { page, limit: itemsPerPage }),
       ]);
       setCategories(categoriesData.categories);
-      setContent(contentData.items || contentData.categories?.flatMap((c: any) => c.items) || []);
+      const items = contentData.items || contentData.categories?.flatMap((c: any) => c.items) || [];
+
+      // Debug logging to check if thumbnails are present
+      logger.info(`VODPage: Loaded ${items.length} items. Total: ${contentData.total}`, 'VODPage');
+
+      // Find Avatar specifically
+      const avatar = items.find((item: any) => item.title?.toLowerCase().includes('avatar'));
+      if (avatar) {
+        logger.info('Found Avatar:', 'VODPage', avatar);
+        logger.info(`Avatar has thumbnail: ${!!avatar.thumbnail}, value: ${avatar.thumbnail}`, 'VODPage');
+      } else {
+        logger.warn('Avatar not found in loaded items', 'VODPage');
+        logger.info('All titles:', 'VODPage', items.map((i: any) => i.title).slice(0, 10));
+      }
+
+      // Count how many items have thumbnails
+      const itemsWithThumbnails = items.filter((item: any) => item.thumbnail).length;
+      logger.info(`Items with thumbnails: ${itemsWithThumbnails} / ${items.length}`, 'VODPage');
+
+      setContent(items);
+      setTotalItems(contentData.total || 0);
     } catch (error) {
       logger.error('Failed to load content', 'VODPage', error);
     } finally {
@@ -84,6 +121,7 @@ export default function VODPage() {
 
   const handleCategoryChange = (categoryId: string) => {
     setSelectedCategory(categoryId);
+    setSearchQuery(''); // Clear search when changing category
     if (categoryId === 'all') {
       searchParams.delete('category');
     } else {
@@ -91,6 +129,10 @@ export default function VODPage() {
     }
     setSearchParams(searchParams);
   };
+
+  const totalPages = Math.ceil(totalItems / itemsPerPage);
+  const showingFrom = (page - 1) * itemsPerPage + 1;
+  const showingTo = Math.min(page * itemsPerPage, totalItems);
 
   const renderContentGrid = (items: ContentItem[], emptyMessage: string) => {
     if (items.length === 0) {
@@ -121,6 +163,17 @@ export default function VODPage() {
           <GlassView style={styles.headerIcon}>
             <Film size={24} color={colors.primary} />
           </GlassView>
+        </View>
+
+        {/* Search Input */}
+        <View style={styles.searchContainer}>
+          <GlassInput
+            placeholder={t('vod.searchPlaceholder', 'Search movies and series...')}
+            value={searchQuery}
+            onChangeText={setSearchQuery}
+            icon={<Search size={20} color={colors.textMuted} />}
+            containerStyle={styles.searchInput}
+          />
         </View>
 
         {/* Category Filter */}
@@ -196,6 +249,44 @@ export default function VODPage() {
                 </GlassCard>
               </View>
             )}
+
+            {/* Pagination Controls */}
+            {!searchQuery && totalPages > 1 && (
+              <GlassView style={styles.paginationContainer} intensity="medium">
+                <Pressable
+                  onPress={() => setPage(p => Math.max(1, p - 1))}
+                  disabled={page === 1}
+                  style={[styles.pageButton, page === 1 && styles.pageButtonDisabled]}
+                >
+                  {isRTL ? (
+                    <ChevronRight size={20} color={page === 1 ? colors.textMuted : colors.text} />
+                  ) : (
+                    <ChevronLeft size={20} color={page === 1 ? colors.textMuted : colors.text} />
+                  )}
+                </Pressable>
+
+                <View style={styles.pageInfo}>
+                  <Text style={styles.pageText}>
+                    {t('vod.pagination.page', 'Page')} {page} {t('vod.pagination.of', 'of')} {totalPages}
+                  </Text>
+                  <Text style={styles.pageSubtext}>
+                    {t('vod.pagination.showing', 'Showing')} {showingFrom}-{showingTo} {t('vod.pagination.outOf', 'of')} {totalItems}
+                  </Text>
+                </View>
+
+                <Pressable
+                  onPress={() => setPage(p => Math.min(totalPages, p + 1))}
+                  disabled={page === totalPages}
+                  style={[styles.pageButton, page === totalPages && styles.pageButtonDisabled]}
+                >
+                  {isRTL ? (
+                    <ChevronLeft size={20} color={page === totalPages ? colors.textMuted : colors.text} />
+                  ) : (
+                    <ChevronRight size={20} color={page === totalPages ? colors.textMuted : colors.text} />
+                  )}
+                </Pressable>
+              </GlassView>
+            )}
           </>
         )}
       </View>
@@ -235,6 +326,12 @@ const styles = StyleSheet.create({
     fontSize: 32,
     fontWeight: 'bold',
     color: colors.text,
+  },
+  searchContainer: {
+    marginBottom: spacing.lg,
+  },
+  searchInput: {
+    marginBottom: 0,
   },
   categoriesScroll: {
     marginBottom: spacing.lg,
@@ -314,5 +411,35 @@ const styles = StyleSheet.create({
     aspectRatio: 16 / 9,
     backgroundColor: colors.glass,
     borderRadius: borderRadius.lg,
+  },
+  paginationContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: spacing.xl,
+    padding: spacing.lg,
+    marginTop: spacing.xl,
+    borderRadius: borderRadius.lg,
+  },
+  pageButton: {
+    padding: spacing.md,
+    borderRadius: borderRadius.lg,
+    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+  },
+  pageButtonDisabled: {
+    opacity: 0.3,
+  },
+  pageInfo: {
+    alignItems: 'center',
+    gap: spacing.xs,
+  },
+  pageText: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: colors.text,
+  },
+  pageSubtext: {
+    fontSize: 13,
+    color: colors.textMuted,
   },
 });

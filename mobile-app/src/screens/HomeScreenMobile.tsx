@@ -17,6 +17,7 @@ import {
   RefreshControl,
   StyleSheet,
   Text,
+  Image,
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
@@ -77,9 +78,11 @@ export const HomeScreenMobile: React.FC = () => {
   const checkMorningRitual = async () => {
     try {
       const result = await ritualService.shouldShow() as { show_ritual: boolean };
-      if (result.show_ritual) {
-        navigation.navigate('MorningRitual' as never);
-      }
+      // Note: Morning ritual navigation disabled for mobile
+      // Users can access via proactive suggestion banner or menu instead
+      // if (result.show_ritual) {
+      //   navigation.navigate('MorningRitual' as never);
+      // }
     } catch (err) {
       console.log('Morning ritual check:', err);
     }
@@ -197,7 +200,11 @@ export const HomeScreenMobile: React.FC = () => {
     >
       {/* Header with logo */}
       <View style={styles.header}>
-        <Text style={styles.headerTitle}>{t('common.appName')}</Text>
+        <Image
+          source={require('../../assets/logo.png')}
+          style={styles.logo}
+          resizeMode="contain"
+        />
       </View>
 
       {/* Hero carousel */}
@@ -285,7 +292,12 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     paddingHorizontal: spacing.lg,
-    paddingVertical: spacing.md,
+    paddingVertical: spacing.lg,
+    paddingTop: spacing.xl,
+  },
+  logo: {
+    width: 140,
+    height: 50,
   },
   headerTitle: {
     ...typography.h2,

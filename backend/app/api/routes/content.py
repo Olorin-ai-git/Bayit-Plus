@@ -110,8 +110,9 @@ async def get_featured(current_user: Optional[User] = Depends(get_optional_user)
             "id": str(item.id),
             "title": item.title,
             "description": item.description,
-            "backdrop": item.backdrop or item.thumbnail,
-            "thumbnail": item.thumbnail,
+            # Use stored image data if available, otherwise fall back to URLs
+            "backdrop": item.backdrop_data or item.backdrop or item.thumbnail_data or item.thumbnail or item.poster_url,
+            "thumbnail": item.thumbnail_data or item.thumbnail or item.poster_url,
             "category": item.category_name,
             "year": item.year,
             "duration": item.duration,
@@ -213,6 +214,61 @@ async def get_categories():
     }
 
 
+@router.get("/all")
+async def get_all_content(
+    page: int = Query(1, ge=1),
+    limit: int = Query(100, ge=1, le=200),
+):
+    """Get all published content (movies and series, excluding episodes)."""
+    skip = (page - 1) * limit
+
+    # Get all published content, excluding episodes
+    items = await Content.find(
+        Content.is_published == True,
+        {"$or": [
+            {"series_id": None},
+            {"series_id": {"$exists": False}},
+            {"series_id": ""},
+        ]},
+    ).skip(skip).limit(limit).to_list()
+
+    total = await Content.find(
+        Content.is_published == True,
+        {"$or": [
+            {"series_id": None},
+            {"series_id": {"$exists": False}},
+            {"series_id": ""},
+        ]},
+    ).count()
+
+    # Debug logging for Avatar
+    avatar = next((item for item in items if item.title == "Avatar"), None)
+    if avatar:
+        logger.info(f"Avatar found in /content/all: id={avatar.id}, thumbnail={avatar.thumbnail}, thumbnail_data={bool(avatar.thumbnail_data)}, poster_url={avatar.poster_url}")
+
+    return {
+        "items": [
+            {
+                "id": str(item.id),
+                "title": item.title,
+                "description": item.description,
+                # Use stored image data if available, otherwise fall back to URL or poster_url
+                "thumbnail": item.thumbnail_data or convert_to_proxy_url(item.thumbnail or item.poster_url) if (item.thumbnail_data or item.thumbnail or item.poster_url) else None,
+                "backdrop": item.backdrop_data or convert_to_proxy_url(item.backdrop) if (item.backdrop_data or item.backdrop) else None,
+                "category": item.category_name,
+                "year": item.year,
+                "duration": item.duration,
+                "is_series": item.is_series or False,
+                "type": "series" if item.is_series else "movie",
+            }
+            for item in items
+        ],
+        "total": total,
+        "page": page,
+        "limit": limit,
+    }
+
+
 @router.post("/sync")
 async def sync_all_content():
     """Sync all content: podcasts, live channels, and trending data."""
@@ -292,7 +348,8 @@ async def get_by_category(
         item_data = {
             "id": str(item.id),
             "title": item.title,
-            "thumbnail": item.thumbnail,
+            # Use stored image data if available, otherwise fall back to URLs
+            "thumbnail": item.thumbnail_data or item.thumbnail or item.poster_url,
             "duration": item.duration,
             "year": item.year,
             "category": category.name,

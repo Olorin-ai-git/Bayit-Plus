@@ -9,8 +9,8 @@
 // Set this based on environment or build flag
 // In React Native, we use __DEV__ for development detection
 // You can override with a custom env variable if needed
-// FORCED TO PRODUCTION: Always use real API data, not demo data
-export const APP_MODE: 'demo' | 'production' = 'production';
+// DEMO MODE: Use demo/mock data for development without backend
+export const APP_MODE: 'demo' | 'production' = 'demo';
 
 export const isDemo = APP_MODE === 'demo';
 export const isProduction = APP_MODE === 'production';

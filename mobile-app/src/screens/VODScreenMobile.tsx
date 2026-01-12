@@ -88,7 +88,7 @@ export const VODScreenMobile: React.FC = () => {
       setIsLoading(true);
 
       const [contentRes, categoriesRes] = await Promise.all([
-        contentService.getVOD(),
+        contentService.getFeatured(),
         contentService.getCategories(),
       ]) as [any, any];
 

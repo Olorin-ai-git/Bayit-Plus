@@ -1,6 +1,10 @@
 import React, { useState, useRef } from 'react'
+import { View, Text, StyleSheet, Pressable, Image, ActivityIndicator } from 'react-native'
 import { Upload, X, AlertCircle, CheckCircle } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
+import { GlassView, GlassInput, GlassButton } from '@bayit/shared/ui'
+import { colors, spacing, borderRadius } from '@bayit/shared/theme'
+import { useDirection } from '@/hooks/useDirection'
 
 interface ImageUploaderProps {
   value?: string
@@ -22,6 +26,7 @@ export function ImageUploader({
   onError,
 }: ImageUploaderProps) {
   const { t } = useTranslation()
+  const { textAlign } = useDirection()
   const [isDragging, setIsDragging] = useState(false)
   const [isUploading, setIsUploading] = useState(false)
   const [error, setError] = useState<string | null>(null)
@@ -108,7 +113,8 @@ export function ImageUploader({
         setUrlInput('')
         setShowUrlInput(false)
       } else {
-        setError(response.message || t('admin.content.editor.imageUpload.errors.invalidUrl'))
+        const errorMsg = response.message || t('admin.content.editor.imageUpload.errors.invalidUrl')
+        setError(errorMsg)
       }
     } catch (err) {
       const msg = err instanceof Error ? err.message : t('admin.content.editor.imageUpload.errors.invalidUrl')
@@ -129,116 +135,269 @@ export function ImageUploader({
   const previewHeight = Math.round(previewWidth / aspectRatio)
 
   return (
-    <div className="w-full space-y-3">
-      {label && <label className="block text-sm font-medium text-white">{label}</label>}
+    <View style={styles.container}>
+      {label && <Text style={[styles.label, { textAlign }]}>{label}</Text>}
 
       {value ? (
-        <div className="relative rounded-lg overflow-hidden border border-white/10 bg-white/5 p-4">
-          <div
-            style={{
-              width: previewWidth,
-              height: previewHeight,
-              backgroundImage: `url(${value})`,
-              backgroundSize: 'cover',
-              backgroundPosition: 'center',
-            }}
-            className="rounded-lg border border-white/10"
+        <GlassView style={styles.previewContainer} intensity="medium">
+          <Image
+            source={{ uri: value }}
+            style={[styles.preview, { width: previewWidth, height: previewHeight }]}
+            resizeMode="cover"
           />
-          <button
-            onClick={handleClear}
+          <Pressable
+            onPress={handleClear}
             disabled={isUploading}
-            className="absolute top-2 right-2 p-2 rounded-lg bg-red-500/80 hover:bg-red-600 disabled:opacity-50 transition-colors"
+            style={styles.clearButton}
           >
-            <X className="w-4 h-4 text-white" />
-          </button>
-          <p className="mt-3 text-xs text-green-400 flex items-center gap-2">
-            <CheckCircle className="w-4 h-4" />
-            {t('admin.content.editor.imageUpload.success')}
-          </p>
-        </div>
+            <GlassView style={styles.clearButtonInner} intensity="high">
+              <X size={16} color={colors.error} />
+            </GlassView>
+          </Pressable>
+          <View style={styles.successMessage}>
+            <CheckCircle size={16} color={colors.success} />
+            <Text style={styles.successText}>{t('admin.content.editor.imageUpload.success')}</Text>
+          </View>
+        </GlassView>
       ) : (
         <>
-          <div
+          {/* Hidden file input */}
+          <input
+            ref={fileInputRef}
+            type="file"
+            accept="image/*"
+            onChange={handleFileSelect}
+            disabled={isUploading}
+            style={{
+              position: 'absolute',
+              width: 0,
+              height: 0,
+              opacity: 0,
+              overflow: 'hidden',
+              pointerEvents: 'none',
+            }}
+          />
+
+          <Pressable
+            onPress={() => fileInputRef.current?.click()}
+            disabled={isUploading}
+            // @ts-ignore - web-specific drag handlers
             onDragOver={handleDragOver}
             onDragLeave={handleDragLeave}
             onDrop={handleDrop}
-            className={`relative rounded-lg border-2 border-dashed transition-all cursor-pointer ${
-              isDragging
-                ? 'border-blue-500 bg-blue-500/10'
-                : 'border-white/20 bg-white/5 hover:border-white/40 hover:bg-white/10'
-            } ${isUploading ? 'opacity-50 cursor-not-allowed' : ''}`}
           >
-            <input
-              ref={fileInputRef}
-              type="file"
-              accept="image/*"
-              onChange={handleFileSelect}
-              disabled={isUploading}
-              className="absolute inset-0 opacity-0 cursor-pointer"
-            />
-            <div className="p-8 text-center">
-              <Upload className="w-8 h-8 mx-auto mb-3 text-blue-400" />
-              <p className="text-sm font-medium text-white mb-1">{t('admin.content.editor.imageUpload.dropHere')}</p>
-              <p className="text-xs text-gray-400">{t('admin.content.editor.imageUpload.formats', { maxSize: maxSizeMB })}</p>
-              {isUploading && (
-                <div className="mt-3 flex items-center justify-center gap-2">
-                  <div className="w-4 h-4 rounded-full border-2 border-blue-500 border-t-transparent animate-spin" />
-                  <span className="text-xs text-blue-400">{t('admin.content.editor.imageUpload.uploading')}</span>
-                </div>
-              )}
-            </div>
-          </div>
+            <GlassView
+              style={[
+                styles.dropZone,
+                isDragging && styles.dropZoneDragging,
+                isUploading && styles.dropZoneDisabled,
+              ]}
+              intensity={isDragging ? 'high' : 'medium'}
+              borderColor={isDragging ? colors.primary : undefined}
+            >
+              <View style={styles.dropZoneContent}>
+                <Upload size={32} color={colors.primary} />
+                <Text style={[styles.dropZoneTitle, { textAlign }]}>
+                  {t('admin.content.editor.imageUpload.dropHere')}
+                </Text>
+                <Text style={[styles.dropZoneSubtitle, { textAlign }]}>
+                  {t('admin.content.editor.imageUpload.formats', { maxSize: maxSizeMB })}
+                </Text>
+                {isUploading && (
+                  <View style={styles.uploadingContainer}>
+                    <ActivityIndicator size="small" color={colors.primary} />
+                    <Text style={styles.uploadingText}>
+                      {t('admin.content.editor.imageUpload.uploading')}
+                    </Text>
+                  </View>
+                )}
+              </View>
+            </GlassView>
+          </Pressable>
 
           {allowUrl && (
-            <div className="space-y-2">
+            <View style={styles.urlSection}>
               {!showUrlInput ? (
-                <button
-                  onClick={() => setShowUrlInput(true)}
+                <GlassButton
+                  title={t('admin.content.editor.imageUpload.orPasteUrl')}
+                  onPress={() => setShowUrlInput(true)}
+                  variant="ghost"
                   disabled={isUploading}
-                  className="w-full py-2 px-3 rounded-lg border border-white/20 bg-white/5 hover:bg-white/10 text-sm text-gray-300 hover:text-white transition-colors disabled:opacity-50"
-                >
-                  {t('admin.content.editor.imageUpload.orPasteUrl')}
-                </button>
+                  fullWidth
+                />
               ) : (
-                <div className="flex gap-2">
-                  <input
-                    type="url"
-                    value={urlInput}
-                    onChange={(e) => setUrlInput(e.target.value)}
-                    placeholder={t('admin.content.editor.imageUpload.urlPlaceholder')}
-                    disabled={isUploading}
-                    className="flex-1 px-3 py-2 rounded-lg border border-white/20 bg-white/5 text-white placeholder-gray-500 text-sm focus:outline-none focus:border-blue-500 disabled:opacity-50"
-                  />
-                  <button
-                    onClick={handleUrlSubmit}
-                    disabled={isUploading || !urlInput.trim()}
-                    className="px-4 py-2 rounded-lg bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium transition-colors disabled:opacity-50"
-                  >
-                    {isUploading ? t('admin.content.editor.imageUpload.validating') : t('admin.content.editor.imageUpload.validateButton')}
-                  </button>
-                  <button
-                    onClick={() => {
-                      setShowUrlInput(false)
-                      setUrlInput('')
-                    }}
-                    disabled={isUploading}
-                    className="px-3 py-2 rounded-lg border border-white/20 hover:bg-white/10 transition-colors"
-                  >
-                    <X className="w-4 h-4" />
-                  </button>
-                </div>
+                <GlassView style={styles.urlInputCard} intensity="medium">
+                  <View style={styles.urlInputRow}>
+                    <GlassInput
+                      value={urlInput}
+                      onChangeText={setUrlInput}
+                      placeholder={t('admin.content.editor.imageUpload.urlPlaceholder')}
+                      editable={!isUploading}
+                      style={styles.urlInput}
+                    />
+                  </View>
+                  <View style={styles.urlButtonRow}>
+                    <GlassButton
+                      title={isUploading ? t('admin.content.editor.imageUpload.validating') : t('admin.content.editor.imageUpload.validateButton')}
+                      onPress={handleUrlSubmit}
+                      variant="primary"
+                      disabled={isUploading || !urlInput.trim()}
+                      loading={isUploading}
+                      fullWidth
+                    />
+                    <Pressable
+                      onPress={() => {
+                        setShowUrlInput(false)
+                        setUrlInput('')
+                        setError(null)
+                      }}
+                      disabled={isUploading}
+                      style={styles.cancelButtonWrapper}
+                    >
+                      <GlassView style={styles.cancelButton} intensity="high">
+                        <X size={20} color={colors.textMuted} />
+                      </GlassView>
+                    </Pressable>
+                  </View>
+                </GlassView>
               )}
-            </div>
+            </View>
           )}
         </>
       )}
 
       {error && (
-        <div className="flex items-center gap-2 p-3 rounded-lg bg-red-500/10 border border-red-500/20">
-          <AlertCircle className="w-4 h-4 text-red-400" />
-          <p className="text-xs text-red-300">{error}</p>
-        </div>
+        <GlassView style={styles.errorContainer} intensity="low">
+          <AlertCircle size={16} color={colors.error} />
+          <Text style={styles.errorText}>{error}</Text>
+        </GlassView>
       )}
-    </div>
+    </View>
   )
 }
+
+const styles = StyleSheet.create({
+  container: {
+    width: '100%',
+    marginBottom: spacing.md,
+  },
+  label: {
+    fontSize: 14,
+    fontWeight: '500',
+    color: colors.text,
+    marginBottom: spacing.sm,
+  },
+  previewContainer: {
+    borderRadius: borderRadius.lg,
+    padding: spacing.lg,
+    position: 'relative',
+  },
+  preview: {
+    borderRadius: borderRadius.lg,
+    borderWidth: 1,
+    borderColor: colors.border,
+    backgroundColor: colors.background,
+  },
+  clearButton: {
+    position: 'absolute',
+    top: spacing.sm,
+    right: spacing.sm,
+  },
+  clearButtonInner: {
+    padding: spacing.md,
+    borderRadius: borderRadius.lg,
+  },
+  successMessage: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.sm,
+    marginTop: spacing.md,
+  },
+  successText: {
+    fontSize: 12,
+    color: colors.success,
+  },
+  dropZone: {
+    borderRadius: borderRadius.lg,
+    borderWidth: 2,
+    borderStyle: 'dashed',
+    borderColor: colors.border,
+    minHeight: 180,
+    overflow: 'hidden',
+  },
+  dropZoneDragging: {
+    borderColor: colors.primary,
+  },
+  dropZoneDisabled: {
+    opacity: 0.5,
+  },
+  dropZoneContent: {
+    padding: spacing.xl,
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: spacing.md,
+  },
+  dropZoneTitle: {
+    fontSize: 14,
+    fontWeight: '500',
+    color: colors.text,
+  },
+  dropZoneSubtitle: {
+    fontSize: 12,
+    color: colors.textMuted,
+  },
+  uploadingContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.sm,
+    marginTop: spacing.sm,
+  },
+  uploadingText: {
+    fontSize: 12,
+    color: colors.primary,
+  },
+  urlSection: {
+    marginTop: spacing.md,
+  },
+  urlInputCard: {
+    borderRadius: borderRadius.lg,
+    padding: spacing.lg,
+    gap: spacing.md,
+  },
+  urlInputRow: {
+    width: '100%',
+  },
+  urlInput: {
+    width: '100%',
+  },
+  urlButtonRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.sm,
+  },
+  cancelButtonWrapper: {
+    marginLeft: spacing.sm,
+  },
+  cancelButton: {
+    padding: spacing.md,
+    borderRadius: borderRadius.lg,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  errorContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.sm,
+    padding: spacing.md,
+    marginTop: spacing.md,
+    borderRadius: borderRadius.lg,
+    backgroundColor: `${colors.error}10`,
+    borderWidth: 1,
+    borderColor: `${colors.error}40`,
+  },
+  errorText: {
+    flex: 1,
+    fontSize: 12,
+    color: colors.error,
+  },
+})

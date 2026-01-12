@@ -72,6 +72,7 @@ const apiAuthService = {
 // Content Service (API)
 const apiContentService = {
   getFeatured: () => api.get('/content/featured'),
+  getAll: (params) => api.get('/content/all', { params }),
   getCategories: () => api.get('/content/categories'),
   getByCategory: (categoryId, params) => api.get(`/content/category/${categoryId}`, { params }),
   getById: (contentId) => api.get(`/content/${contentId}`),

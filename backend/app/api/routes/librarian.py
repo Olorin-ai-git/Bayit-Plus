@@ -17,6 +17,7 @@ from app.services.librarian_service import (
 )
 from app.services.ai_agent_service import run_ai_agent_audit
 from app.services.auto_fixer import rollback_action
+from app.core.config import settings
 
 router = APIRouter()
 
@@ -69,7 +70,149 @@ class LibrarianStatusResponse(BaseModel):
     system_health: str
 
 
+class ScheduleConfig(BaseModel):
+    cron: str
+    time: str
+    mode: str
+    cost: str
+    status: str
+    description: str
+
+
+class AuditLimits(BaseModel):
+    max_iterations: int
+    default_budget_usd: float
+    min_budget_usd: float
+    max_budget_usd: float
+    budget_step_usd: float
+
+
+class PaginationConfig(BaseModel):
+    reports_limit: int
+    actions_limit: int
+    activity_page_size: int
+
+
+class UIConfig(BaseModel):
+    id_truncate_length: int
+    modal_max_height: int
+
+
+class ActionTypeConfig(BaseModel):
+    value: str
+    label: str
+    color: str
+    icon: str
+
+
+class LibrarianConfigResponse(BaseModel):
+    daily_schedule: ScheduleConfig
+    weekly_schedule: ScheduleConfig
+    audit_limits: AuditLimits
+    pagination: PaginationConfig
+    ui: UIConfig
+    action_types: List[ActionTypeConfig]
+    gcp_project_id: str
+
+
 # ============ API ENDPOINTS ============
+
+@router.get("/admin/librarian/config", response_model=LibrarianConfigResponse)
+async def get_librarian_config(
+    current_user: User = Depends(require_admin())
+):
+    """
+    Get Librarian configuration from environment variables.
+
+    This endpoint returns all configuration needed by the frontend to render
+    the Librarian UI without hardcoded values. If any required environment
+    variable is missing, this will fail fast with a clear error message.
+
+    Raises:
+        HTTPException: 500 if configuration is incomplete
+    """
+    try:
+        # Define action types with their UI properties
+        action_types = [
+            ActionTypeConfig(
+                value="add_poster",
+                label="Add Poster",
+                color="success",
+                icon="Image"
+            ),
+            ActionTypeConfig(
+                value="update_metadata",
+                label="Update Metadata",
+                color="primary",
+                icon="FileText"
+            ),
+            ActionTypeConfig(
+                value="recategorize",
+                label="Recategorize",
+                color="warning",
+                icon="Tag"
+            ),
+            ActionTypeConfig(
+                value="fix_url",
+                label="Fix URL",
+                color="secondary",
+                icon="Link"
+            ),
+            ActionTypeConfig(
+                value="clean_title",
+                label="Clean Title",
+                color="info",
+                icon="Type"
+            )
+        ]
+
+        return LibrarianConfigResponse(
+            daily_schedule=ScheduleConfig(
+                cron=settings.LIBRARIAN_DAILY_AUDIT_CRON,
+                time=settings.LIBRARIAN_DAILY_AUDIT_TIME,
+                mode=settings.LIBRARIAN_DAILY_AUDIT_MODE,
+                cost=settings.LIBRARIAN_DAILY_AUDIT_COST,
+                status=settings.LIBRARIAN_DAILY_AUDIT_STATUS,
+                description=settings.LIBRARIAN_DAILY_AUDIT_DESCRIPTION
+            ),
+            weekly_schedule=ScheduleConfig(
+                cron=settings.LIBRARIAN_WEEKLY_AUDIT_CRON,
+                time=settings.LIBRARIAN_WEEKLY_AUDIT_TIME,
+                mode=settings.LIBRARIAN_WEEKLY_AUDIT_MODE,
+                cost=settings.LIBRARIAN_WEEKLY_AUDIT_COST,
+                status=settings.LIBRARIAN_WEEKLY_AUDIT_STATUS,
+                description=settings.LIBRARIAN_WEEKLY_AUDIT_DESCRIPTION
+            ),
+            audit_limits=AuditLimits(
+                max_iterations=settings.LIBRARIAN_MAX_ITERATIONS,
+                default_budget_usd=settings.LIBRARIAN_DEFAULT_BUDGET_USD,
+                min_budget_usd=settings.LIBRARIAN_MIN_BUDGET_USD,
+                max_budget_usd=settings.LIBRARIAN_MAX_BUDGET_USD,
+                budget_step_usd=settings.LIBRARIAN_BUDGET_STEP_USD
+            ),
+            pagination=PaginationConfig(
+                reports_limit=settings.LIBRARIAN_REPORTS_LIMIT,
+                actions_limit=settings.LIBRARIAN_ACTIONS_LIMIT,
+                activity_page_size=settings.LIBRARIAN_ACTIVITY_PAGE_SIZE
+            ),
+            ui=UIConfig(
+                id_truncate_length=settings.LIBRARIAN_ID_TRUNCATE_LENGTH,
+                modal_max_height=settings.LIBRARIAN_MODAL_MAX_HEIGHT
+            ),
+            action_types=action_types,
+            gcp_project_id=settings.GCP_PROJECT_ID
+        )
+    except AttributeError as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Configuration error: Missing required environment variable - {str(e)}"
+        )
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Failed to load librarian configuration: {str(e)}"
+        )
+
 
 @router.post("/internal/librarian/scheduled-audit", response_model=TriggerAuditResponse)
 async def trigger_scheduled_audit(

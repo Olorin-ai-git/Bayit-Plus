@@ -88,6 +88,43 @@ class Settings(BaseSettings):
 
     # TMDB (The Movie Database) API
     TMDB_API_KEY: str = ""
+    TMDB_API_TOKEN: str = ""  # Bearer token for TMDB API v4
+
+    # Google Cloud Project
+    GCP_PROJECT_ID: str
+
+    # Librarian Agent Configuration
+    # Daily Audit Schedule
+    LIBRARIAN_DAILY_AUDIT_CRON: str
+    LIBRARIAN_DAILY_AUDIT_TIME: str
+    LIBRARIAN_DAILY_AUDIT_MODE: str
+    LIBRARIAN_DAILY_AUDIT_COST: str
+    LIBRARIAN_DAILY_AUDIT_STATUS: str
+    LIBRARIAN_DAILY_AUDIT_DESCRIPTION: str
+
+    # Weekly AI Audit Schedule
+    LIBRARIAN_WEEKLY_AUDIT_CRON: str
+    LIBRARIAN_WEEKLY_AUDIT_TIME: str
+    LIBRARIAN_WEEKLY_AUDIT_MODE: str
+    LIBRARIAN_WEEKLY_AUDIT_COST: str
+    LIBRARIAN_WEEKLY_AUDIT_STATUS: str
+    LIBRARIAN_WEEKLY_AUDIT_DESCRIPTION: str
+
+    # Librarian Audit Limits
+    LIBRARIAN_MAX_ITERATIONS: int
+    LIBRARIAN_DEFAULT_BUDGET_USD: float
+    LIBRARIAN_MIN_BUDGET_USD: float
+    LIBRARIAN_MAX_BUDGET_USD: float
+    LIBRARIAN_BUDGET_STEP_USD: float
+
+    # Librarian Pagination
+    LIBRARIAN_REPORTS_LIMIT: int
+    LIBRARIAN_ACTIONS_LIMIT: int
+    LIBRARIAN_ACTIVITY_PAGE_SIZE: int
+
+    # Librarian UI
+    LIBRARIAN_ID_TRUNCATE_LENGTH: int
+    LIBRARIAN_MODAL_MAX_HEIGHT: int
 
     class Config:
         env_file = ".env"

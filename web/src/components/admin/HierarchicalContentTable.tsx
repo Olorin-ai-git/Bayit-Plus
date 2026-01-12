@@ -197,7 +197,7 @@ export default function HierarchicalContentTable({
           const item = row as ContentItem & { rowType: 'content' }
           return (
             <View style={styles.thumbnailCell}>
-              <View style={styles.thumbnailContainer}>
+              <View style={styles.thumbnailWrapper}>
                 {item.thumbnail ? (
                   <View style={[styles.thumbnail, { backgroundImage: `url(${item.thumbnail})` }]} />
                 ) : (
