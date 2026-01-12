@@ -5,6 +5,8 @@ from app.models.user import User
 from app.core.security import get_optional_user, get_current_active_user
 from app.services.podcast_sync import sync_all_podcasts
 from app.services.tmdb_service import tmdb_service
+from google.cloud import storage
+from datetime import timedelta
 import logging
 
 router = APIRouter()
@@ -323,8 +325,35 @@ async def get_stream_url(
                     detail="Subscription upgrade required",
                 )
 
+    # Generate signed URL for GCS files
+    stream_url = content.stream_url
+    if stream_url and "storage.googleapis.com" in stream_url:
+        try:
+            # Extract bucket and blob path from URL
+            # Format: https://storage.googleapis.com/bucket-name/path/to/file
+            parts = stream_url.replace("https://storage.googleapis.com/", "").split("/", 1)
+            if len(parts) == 2:
+                bucket_name, blob_name = parts
+
+                # Generate signed URL (valid for 4 hours)
+                storage_client = storage.Client()
+                bucket = storage_client.bucket(bucket_name)
+                blob = bucket.blob(blob_name)
+
+                signed_url = blob.generate_signed_url(
+                    version="v4",
+                    expiration=timedelta(hours=4),
+                    method="GET"
+                )
+                stream_url = signed_url
+                logger.info(f"Generated signed URL for content {content_id}")
+        except Exception as e:
+            logger.error(f"Failed to generate signed URL: {e}")
+            # Fall back to original URL if signing fails
+            pass
+
     return {
-        "url": content.stream_url,
+        "url": stream_url,
         "type": content.stream_type,
         "is_drm_protected": content.is_drm_protected,
         "drm_key_id": content.drm_key_id if content.is_drm_protected else None,
