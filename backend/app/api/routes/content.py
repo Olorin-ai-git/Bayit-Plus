@@ -5,6 +5,7 @@ from app.models.user import User
 from app.core.security import get_optional_user, get_current_active_user
 from app.services.podcast_sync import sync_all_podcasts
 from app.services.tmdb_service import tmdb_service
+from app.core.config import settings
 from google.cloud import storage
 from datetime import timedelta
 import logging
@@ -14,45 +15,70 @@ logger = logging.getLogger(__name__)
 
 
 def generate_signed_url_if_needed(url: str) -> str:
-    """Generate signed URL for GCS files, return original URL otherwise."""
+    """Generate signed URL for GCS files, return other URLs as-is."""
+    if not url:
+        return url
+
+    # Check if this is a GCS URL
+    if "storage.googleapis.com" not in url and "gs://" not in url:
+        return url
+
+    try:
+        # Initialize GCS client
+        client = storage.Client(project=settings.GCS_PROJECT_ID or None)
+
+        # Extract bucket and blob path from URL
+        if url.startswith("gs://"):
+            # Format: gs://bucket-name/path/to/file
+            parts = url[5:].split("/", 1)
+            bucket_name = parts[0]
+            blob_name = parts[1] if len(parts) > 1 else ""
+        elif "storage.googleapis.com" in url:
+            # Format: https://storage.googleapis.com/bucket-name/path/to/file
+            parts = url.split("storage.googleapis.com/")[1].split("/", 1)
+            bucket_name = parts[0]
+            blob_name = parts[1] if len(parts) > 1 else ""
+        else:
+            return url
+
+        # Get bucket and blob
+        bucket = client.bucket(bucket_name)
+        blob = bucket.blob(blob_name)
+
+        # Check if blob exists
+        if not blob.exists():
+            logger.error(f"GCS blob does not exist: {blob_name}")
+            return url
+
+        # Generate signed URL (valid for 4 hours)
+        signed_url = blob.generate_signed_url(
+            version="v4",
+            expiration=timedelta(hours=4),
+            method="GET",
+        )
+
+        logger.info(f"Generated signed URL for {blob_name}")
+        return signed_url
+
+    except Exception as e:
+        logger.error(f"Failed to generate signed URL for {url}: {e}")
+        # Return original URL as fallback
+        return url
+
+
+def convert_to_proxy_url(url: str, base_url: str = "https://api.bayit.tv/api/v1/proxy/media") -> str:
+    """Convert GCS URL to proxied URL through our backend."""
     if not url or "storage.googleapis.com" not in url:
         return url
 
     try:
-        from google.auth import compute_engine
-        from google.auth.transport import requests as auth_requests
-
-        # Extract bucket and blob path from URL
-        # Format: https://storage.googleapis.com/bucket-name/path/to/file
-        parts = url.replace("https://storage.googleapis.com/", "").split("/", 1)
-        if len(parts) == 2:
-            bucket_name, blob_name = parts
-
-            # Use IAM-based signing for Cloud Run
-            # Get the service account credentials
-            credentials = compute_engine.IDTokenCredentials(
-                auth_requests.Request(),
-                "",
-                service_account_email="624470113582-compute@developer.gserviceaccount.com"
-            )
-
-            storage_client = storage.Client()
-            bucket = storage_client.bucket(bucket_name)
-            blob = bucket.blob(blob_name)
-
-            signed_url = blob.generate_signed_url(
-                version="v4",
-                expiration=timedelta(hours=4),
-                method="GET",
-                service_account_email="624470113582-compute@developer.gserviceaccount.com"
-            )
-            return signed_url
+        import base64
+        # Encode the full GCS URL in base64 for the proxy
+        encoded_url = base64.urlsafe_b64encode(url.encode()).decode()
+        return f"{base_url}/{encoded_url}"
     except Exception as e:
-        logger.error(f"Failed to generate signed URL for {url}: {e}")
-        # Fall back to original URL if signing fails
-        pass
-
-    return url
+        logger.error(f"Failed to convert URL to proxy: {e}")
+        return url
 
 
 @router.get("/featured")
@@ -310,7 +336,7 @@ async def get_content(
         Content.is_published == True,
     ).limit(6).to_list()
 
-    return {
+    response = {
         "id": str(content.id),
         "title": content.title,
         "description": content.description,
@@ -337,6 +363,15 @@ async def get_content(
             for item in related
         ],
     }
+
+    # Include stream URL if user is authenticated (bucket is public now)
+    if current_user:
+        response["stream_url"] = content.stream_url
+        response["stream_type"] = content.stream_type
+        response["preview_url"] = content.preview_url
+        response["trailer_url"] = content.trailer_url
+
+    return response
 
 
 @router.get("/{content_id}/stream")
@@ -367,13 +402,9 @@ async def get_stream_url(
                     detail="Subscription upgrade required",
                 )
 
-    # Generate signed URL for GCS files
-    stream_url = generate_signed_url_if_needed(content.stream_url)
-    if stream_url != content.stream_url:
-        logger.info(f"Generated signed URL for content {content_id}")
-
+    # Bucket is now public, no need for signed URLs
     return {
-        "url": stream_url,
+        "url": content.stream_url,
         "type": content.stream_type,
         "is_drm_protected": content.is_drm_protected,
         "drm_key_id": content.drm_key_id if content.is_drm_protected else None,
@@ -587,9 +618,9 @@ async def get_movie_details(
         "genre": movie.genre,
         "cast": movie.cast,
         "director": movie.director,
-        "trailer_url": generate_signed_url_if_needed(movie.trailer_url) if movie.trailer_url else None,
-        "preview_url": generate_signed_url_if_needed(movie.preview_url) if movie.preview_url else None,
-        "stream_url": generate_signed_url_if_needed(movie.stream_url) if movie.stream_url else None,
+        "trailer_url": movie.trailer_url,
+        "preview_url": movie.preview_url,
+        "stream_url": movie.stream_url,
         "tmdb_id": movie.tmdb_id,
         "imdb_id": movie.imdb_id,
         "imdb_rating": movie.imdb_rating,
