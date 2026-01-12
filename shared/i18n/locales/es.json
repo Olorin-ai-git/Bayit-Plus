@@ -33,7 +33,15 @@
     "done": "Hecho",
     "all": "Todo",
     "noResults": "No se encontraron resultados",
-    "tryDifferentSearch": "Prueba con otro término de búsqueda"
+    "tryDifferentSearch": "Prueba con otro término de búsqueda",
+    "play": "Reproducir",
+    "moreInfo": "Más Información",
+    "seeAll": "Ver Todo",
+    "deleting": "Eliminando...",
+    "previous": "Anterior",
+    "actions": "Acciones",
+    "pageOf": "Página {{page}} de {{total}}",
+    "noData": "No hay datos disponibles"
   },
   "demo": {
     "banner": "MODO DEMOSTRACIÓN",
@@ -60,6 +68,11 @@
     "premium_plan": "Premium",
     "assistant_response": "¡Te recomiendo Fauda - una excelente serie de suspenso!",
     "morning_greeting": "¡Buenos días! Hoy hace buen clima, hay algunas noticias importantes de Israel, y he seleccionado contenido especialmente para ti."
+  },
+  "hero": {
+    "watch": "Ver",
+    "moreInfo": "Más Información",
+    "addToList": "Agregar a Lista"
   },
   "login": {
     "title": "Bienvenido de Nuevo",
@@ -105,7 +118,8 @@
       "passwordRequired": "La contraseña es requerida",
       "fillAllFields": "Por favor, completa todos los campos",
       "loginFailed": "Error al iniciar sesión. Verifica tus credenciales.",
-      "googleFailed": "Error al iniciar sesión con Google. Intenta de nuevo."
+      "googleFailed": "Error al iniciar sesión con Google. Intenta de nuevo.",
+      "unexpectedError": "Ocurrió un error inesperado. Por favor, inténtalo de nuevo."
     }
   },
   "tvLogin": {
@@ -431,6 +445,8 @@
       "removeConfirmYes": "Sí, Eliminar",
       "removeConfirmNo": "Cancelar",
       "maxItems": "Máximo {{max}} elementos. Elimina uno para agregar más.",
+      "maxReached": "Se alcanzó el límite máximo de elementos",
+      "confirmRemove": "¿Eliminar este elemento del flujo?",
       "emptyAi": "La AI seleccionará contenido automáticamente según tus preferencias.",
       "more": "elementos más"
     },
@@ -466,6 +482,7 @@
       "time": "Basado en Tiempo",
       "shabbat": "Noche de Shabat",
       "holiday": "Día Festivo",
+      "locationBased": "Basado en Ubicación",
       "skipShabbat": "Saltar en Shabat",
       "skipShabbatDesc": "No ejecutar este flujo en viernes por la noche o sábado",
       "shabbatOffset": "Minutos antes del encendido de velas",
@@ -506,8 +523,12 @@
     "validation": {
       "nameRequired": "Se requiere el nombre del flujo",
       "startTimeRequired": "Se requiere hora de inicio para activación por tiempo",
+      "endTimeRequired": "Se requiere hora de fin",
+      "timeRange": "La hora de fin debe ser después de la hora de inicio",
       "noDaysSelected": "Selecciona al menos un día",
-      "invalidTime": "Formato de hora inválido"
+      "daysRequired": "Selecciona al menos un día",
+      "invalidTime": "Formato de hora inválido",
+      "contentRequired": "Se requiere al menos un elemento de contenido"
     },
     "tv": {
       "useCompanion": "Para personalización completa, usa la app Bayit+ en tu teléfono o visita bayit.plus en tu computadora."
@@ -605,7 +626,24 @@
       "textSize": "Tamaño de texto",
       "textSizeSmall": "Pequeño",
       "textSizeMedium": "Mediano",
-      "textSizeLarge": "Grande"
+      "textSizeLarge": "Grande",
+      "operationMode": "Modo de Operación",
+      "operationModeDesc": "Elige cómo interactuar con Bayit+",
+      "voiceOnlyInfo": "Solo Voz",
+      "voiceOnlyDetails": "Control completo por voz sin botones en pantalla",
+      "hybridInfo": "Híbrido",
+      "hybridDetails": "Combina control por voz y táctil",
+      "classicInfo": "Clásico",
+      "classicDetails": "Interfaz táctil tradicional con voz opcional",
+      "textToSpeech": "Texto a Voz",
+      "ttsEnabled": "Habilitar respuestas de voz",
+      "ttsEnabledDesc": "El asistente hablará las respuestas en voz alta",
+      "ttsVolume": "Volumen de TTS",
+      "ttsSpeed": "Velocidad de TTS",
+      "hybridFeedback": "Retroalimentación Híbrida",
+      "voiceFeedback": "Retroalimentación por Voz",
+      "voiceFeedbackDesc": "Escucha confirmaciones por voz para las acciones",
+      "feedbackExample": "Ejemplo: 'Canal cambiado a 13'"
     },
     "dropdown": {
       "myProfile": "Mi Perfil",
@@ -615,7 +653,18 @@
       "signOut": "Cerrar Sesión"
     },
     "guest": "Invitado",
-    "morningRitual": "Ritual Matutino"
+    "morningRitual": "Ritual Matutino",
+    "watchlist": "Mi Lista",
+    "favorites": "Favoritos",
+    "downloads": "Descargas",
+    "settings": "Configuración",
+    "language": "Idioma",
+    "notifications": "Notificaciones",
+    "admin": "Administración",
+    "watchTime": "Tiempo de Visualización",
+    "minutes": "minutos",
+    "hours": "horas",
+    "logout": "Cerrar Sesión"
   },
   "settings": {
     "title": "Configuración",
@@ -631,7 +680,12 @@
     "quality": "Calidad",
     "subtitles": "Subtítulos",
     "autoplay": "Reproducción Automática",
-    "about": "Acerca de"
+    "about": "Acerca de",
+    "appLanguage": "Idioma de la Aplicación",
+    "pushNotifications": "Notificaciones Push",
+    "appearance": "Apariencia",
+    "darkMode": "Modo Oscuro",
+    "privacy": "Privacidad"
   },
   "voice": {
     "listening": "Escuchando...",
@@ -984,6 +1038,202 @@
           "audio": "Audio: transmisiones .mp3, .aac o audio"
         }
       }
+    },
+    "categories": {
+      "subtitle": "Administrar categorías de contenido",
+      "emptyMessage": "No se encontraron categorías",
+      "status": {
+        "active": "Activo",
+        "inactive": "Inactivo"
+      }
+    },
+    "liveChannels": {
+      "subtitle": "Administrar canales de TV en vivo",
+      "emptyMessage": "No se encontraron canales en vivo"
+    },
+    "radioStations": {
+      "subtitle": "Administrar estaciones de radio",
+      "emptyMessage": "No se encontraron estaciones de radio"
+    },
+    "podcasts": {
+      "subtitle": "Administrar podcasts y episodios",
+      "episodesSubtitle": "Administrar episodios",
+      "emptyMessage": "No se encontraron podcasts",
+      "noEpisodes": "No se encontraron episodios"
+    },
+    "users": {
+      "subtitle": "Administrar usuarios y cuentas",
+      "addUser": "Agregar Usuario",
+      "status": {
+        "active": "Activo",
+        "inactive": "Inactivo",
+        "blocked": "Bloqueado"
+      },
+      "filters": {
+        "all": "Todos",
+        "active": "Activos",
+        "inactive": "Inactivos",
+        "blocked": "Bloqueados"
+      },
+      "columns": {
+        "name": "Nombre",
+        "role": "Rol",
+        "subscription": "Suscripción",
+        "noSubscription": "Sin Suscripción",
+        "status": "Estado",
+        "created": "Creado",
+        "actions": "Acciones"
+      },
+      "confirmDelete": "Eliminar Usuario",
+      "confirmDeleteMessage": "¿Estás seguro de que quieres eliminar a {{name}}? Esta acción no se puede deshacer.",
+      "resetPassword": "Restablecer Contraseña",
+      "block": "Bloquear",
+      "unban": "Desbloquear",
+      "confirmResetPassword": "¿Enviar correo de restablecimiento de contraseña a {{email}}?",
+      "resetPasswordSent": "Correo de restablecimiento enviado",
+      "recentActivity": "Actividad Reciente",
+      "noActivity": "Sin actividad",
+      "notFound": "Usuario no encontrado",
+      "backToList": "Volver a la lista",
+      "banReason": "Motivo del bloqueo",
+      "banReasonPrompt": "Motivo del bloqueo:",
+      "confirmUnban": "¿Desbloquear usuario?",
+      "userDetails": "Detalles del Usuario",
+      "id": "ID",
+      "registered": "Registrado",
+      "billingHistory": "Historial de Facturación",
+      "noPayments": "Sin pagos"
+    },
+    "campaigns": {
+      "subtitle": "Administrar códigos de cupón y descuentos",
+      "expired": "Expirado",
+      "status": {
+        "active": "Activo",
+        "inactive": "Inactivo"
+      },
+      "columns": {
+        "name": "Nombre",
+        "discount": "Descuento",
+        "usage": "Usos",
+        "validUntil": "Válido Hasta",
+        "status": "Estado",
+        "actions": "Acciones"
+      },
+      "confirmDelete": "Eliminar Campaña",
+      "confirmDeleteMessage": "¿Estás seguro de que quieres eliminar \"{{name}}\"? Esta acción no se puede deshacer.",
+      "searchPlaceholder": "Buscar campañas...",
+      "emptyMessage": "No se encontraron campañas",
+      "deactivate": "Desactivar",
+      "activate": "Activar",
+      "createTitle": "Nueva Campaña",
+      "editTitle": "Editar Campaña",
+      "formSubtitle": "Configurar un código de cupón o descuento",
+      "form": {
+        "name": "Nombre de Campaña",
+        "namePlaceholder": "ej. Venta de Verano 2024",
+        "code": "Código de Cupón",
+        "generate": "Generar",
+        "discountType": "Tipo de Descuento",
+        "discountValue": "Valor del Descuento",
+        "maxUses": "Usos Máximos",
+        "unlimited": "Ilimitado",
+        "validUntil": "Válido Hasta",
+        "active": "Campaña Activa"
+      }
+    },
+    "subscriptions": {
+      "subtitle": "Ver y administrar suscriptores del sistema",
+      "status": {
+        "active": "Activo",
+        "paused": "Pausado",
+        "cancelled": "Cancelado",
+        "expired": "Expirado"
+      },
+      "columns": {
+        "user": "Usuario",
+        "plan": "Plan",
+        "price": "Precio",
+        "nextBilling": "Próxima Facturación",
+        "status": "Estado"
+      },
+      "perMonth": "/mes",
+      "searchPlaceholder": "Buscar suscripción...",
+      "emptyMessage": "No se encontraron suscripciones"
+    },
+    "marketingDashboard": {
+      "subtitle": "Resumen de Marketing",
+      "refresh": "Actualizar",
+      "totalSubscribers": "Total de Suscriptores",
+      "emailOpenRate": "Tasa de Apertura de Correo",
+      "pushClickRate": "Tasa de Clic en Push",
+      "activeSegments": "Segmentos Activos",
+      "campaignStatus": {
+        "active": "Activo",
+        "completed": "Completado",
+        "scheduled": "Programado",
+        "draft": "Borrador"
+      }
+    },
+    "transactions": {
+      "subtitle": "Ver historial de pagos",
+      "exportCsv": "Exportar CSV",
+      "status": {
+        "completed": "Completado",
+        "pending": "Pendiente",
+        "failed": "Fallido",
+        "refunded": "Reembolsado"
+      },
+      "columns": {
+        "id": "ID",
+        "user": "Usuario",
+        "amount": "Monto",
+        "type": "Tipo",
+        "status": "Estado",
+        "date": "Fecha"
+      },
+      "filters": {
+        "all": "Todos"
+      },
+      "searchPlaceholder": "Buscar transacción...",
+      "emptyMessage": "No se encontraron transacciones",
+      "details": "Detalles de Transacción",
+      "email": "Correo"
+    },
+    "pushNotifications": {
+      "subtitle": "Crear y enviar notificaciones a usuarios",
+      "newNotification": "Nueva Notificación",
+      "status": {
+        "draft": "Borrador",
+        "sent": "Enviado",
+        "scheduled": "Programado"
+      },
+      "columns": {
+        "title": "Título",
+        "status": "Estado",
+        "sent": "Enviados",
+        "opened": "Abiertos",
+        "scheduledAt": "Programado Para",
+        "created": "Creado",
+        "actions": "Acciones"
+      },
+      "filters": {
+        "all": "Todos"
+      },
+      "searchPlaceholder": "Buscar notificación...",
+      "emptyMessage": "No se encontraron notificaciones",
+      "createModal": "Nueva Notificación Push",
+      "editModal": "Editar Notificación",
+      "scheduleModal": "Programar Notificación",
+      "titleLabel": "Título",
+      "bodyLabel": "Cuerpo",
+      "dateTimeLabel": "Fecha y Hora",
+      "cancel": "Cancelar",
+      "create": "Crear Notificación",
+      "schedule": "Programar",
+      "send": "Enviar Ahora",
+      "confirmSend": "¿Enviar notificación \"{{title}}\"?",
+      "confirmDelete": "¿Eliminar notificación \"{{title}}\"?",
+      "fillRequired": "Por favor completa título y cuerpo"
     },
     "refunds": {
       "subtitle": "Gestionar solicitudes de reembolso",
@@ -1633,7 +1883,8 @@
     "episodesList": "Episodios",
     "schedule": "Horario",
     "now": "Ahora",
-    "related": "Contenido relacionado"
+    "related": "Contenido relacionado",
+    "confirmDeleteEpisode": "¿Eliminar este episodio?"
   },
   "live": {
     "title": "Televisión en Vivo",
@@ -1745,5 +1996,24 @@
   "chat": {
     "title": "Asistente Bayit+",
     "greeting": "Hola! Soy el asistente inteligente de Bayit+. ¿Cómo puedo ayudarte hoy? Haz clic en el micrófono y habla, o escribe un mensaje."
+  },
+  "subtitles": {
+    "nikud": "Nikud",
+    "selection": "Selección",
+    "translation": "Traducción",
+    "translating": "Traduciendo...",
+    "close": "Cerrar",
+    "unavailable": "Traducción no disponible"
+  },
+  "video": {
+    "watchTrailer": "Ver Tráiler",
+    "closeTrailer": "Cerrar Tráiler",
+    "deleteConfirm": "¿Eliminar este episodio?"
+  },
+  "voiceMode": {
+    "title": "Modo de Voz",
+    "voiceOnly": "Solo Voz",
+    "hybrid": "Híbrido",
+    "classic": "Clásico"
   }
 }
