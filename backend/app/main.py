@@ -416,10 +416,13 @@ app.include_router(device_pairing.router, prefix=f"{settings.API_V1_PREFIX}/auth
 app.include_router(onboarding.router, prefix=f"{settings.API_V1_PREFIX}/onboarding/ai", tags=["ai-onboarding"])
 app.include_router(news.router, prefix=f"{settings.API_V1_PREFIX}/news", tags=["news"])
 
-# Mount static files for uploads
-uploads_dir = Path(__file__).parent.parent / "uploads"
-if uploads_dir.exists():
-    app.mount("/uploads", StaticFiles(directory=uploads_dir), name="uploads")
+# Proxy uploads from GCS
+@app.get("/uploads/{path:path}")
+async def proxy_uploads(path: str):
+    """Proxy upload requests to GCS bucket"""
+    from fastapi.responses import RedirectResponse
+    gcs_url = f"https://storage.googleapis.com/bayit-plus-media-new/uploads/{path}"
+    return RedirectResponse(url=gcs_url, status_code=307)
 
 
 if __name__ == "__main__":
