@@ -95,9 +95,10 @@ export function ContentEditorForm({
       </section>
 
       {/* Images */}
-      {type !== 'radio' && (
-        <section className="space-y-4">
-          <h3 className="text-lg font-semibold text-white">{t('admin.content.editor.sections.media')}</h3>
+      <section className="space-y-4">
+        <h3 className="text-lg font-semibold text-white">{t('admin.content.editor.sections.media')}</h3>
+        {type !== 'radio' && (
+          <>
           <Controller
             control={control}
             name="thumbnail"
@@ -141,23 +142,24 @@ export function ContentEditorForm({
               )}
             />
           )}
-          {type === 'radio' && (
-            <Controller
-              control={control}
-              name="logo"
-              render={({ field }) => (
-                <ImageUploader
-                  value={field.value}
-                  onChange={field.onChange}
-                  label={t('admin.content.editor.fields.stationLogo')}
-                  aspectRatio={1}
-                  allowUrl
-                />
-              )}
-            />
-          )}
-        </section>
-      )}
+          </>
+        )}
+        {type === 'radio' && (
+          <Controller
+            control={control}
+            name="logo"
+            render={({ field }) => (
+              <ImageUploader
+                value={field.value}
+                onChange={field.onChange}
+                label={t('admin.content.editor.fields.stationLogo')}
+                aspectRatio={1}
+                allowUrl
+              />
+            )}
+          />
+        )}
+      </section>
 
       {/* Stream/Audio Configuration */}
       {(type === 'vod' || type === 'live' || type === 'radio') && (

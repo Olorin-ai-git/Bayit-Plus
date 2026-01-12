@@ -20,10 +20,10 @@ import {
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
-import { AnimatedLogo } from '@bayit/shared-components';
+// import { AnimatedLogo } from '@bayit/shared-components';
 import { ContentRow } from '@bayit/shared-components';
 import { GlassCarousel } from '@bayit/shared-components';
-import { DualClock } from '@bayit/shared-components';
+// import { DualClock } from '@bayit/shared-components';
 import { TrendingRow } from '@bayit/shared-components';
 import { contentService, liveService, historyService, ritualService } from '@bayit/shared-services';
 import { getLocalizedName, getLocalizedDescription } from '@bayit/shared-utils';
@@ -195,8 +195,7 @@ export const HomeScreenMobile: React.FC = () => {
     >
       {/* Header with logo and clock */}
       <View style={styles.header}>
-        <AnimatedLogo size={isPhone ? 40 : 48} />
-        <DualClock compact={isPhone} />
+        <Text style={styles.headerTitle}>Bayit+</Text>
       </View>
 
       {/* Hero carousel */}
@@ -281,10 +280,15 @@ const styles = StyleSheet.create({
   },
   header: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
+    justifyContent: 'center',
     alignItems: 'center',
     paddingHorizontal: spacing.lg,
     paddingVertical: spacing.md,
+  },
+  headerTitle: {
+    ...typography.h2,
+    color: colors.text,
+    fontWeight: '700',
   },
   section: {
     marginBottom: spacing.xl,

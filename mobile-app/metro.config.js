@@ -119,6 +119,16 @@ const config = {
           filePath: path.resolve(projectRoot, 'src/stubs/lucide-react.ts'),
         };
       }
+      // Stub out web-specific voice services that use import.meta or browser APIs
+      if (moduleName.endsWith('/ttsService') || moduleName.endsWith('/ttsService.ts')) {
+        return {
+          type: 'sourceFile',
+          filePath: path.resolve(projectRoot, 'src/stubs/ttsService.ts'),
+        };
+      }
+      if (moduleName.endsWith('/gazeDetectionService') || moduleName.endsWith('/gazeDetectionService.ts')) {
+        return { type: 'empty' };
+      }
       return context.resolveRequest(context, moduleName, platform);
     },
   },
