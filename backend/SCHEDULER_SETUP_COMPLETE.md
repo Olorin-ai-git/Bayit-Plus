@@ -2,7 +2,7 @@
 
 **Date:** 2026-01-11
 **Status:** Active & Running
-**Project:** israeli-radio-475c9
+**Project:** bayit-plus
 **Region:** us-east1
 
 ---

@@ -4,7 +4,7 @@ Admin endpoints for managing the Librarian AI Agent
 """
 from datetime import datetime
 from typing import Optional, List
-from fastapi import APIRouter, HTTPException, status, Depends, BackgroundTasks
+from fastapi import APIRouter, HTTPException, status, Depends, BackgroundTasks, Request, Header
 from pydantic import BaseModel
 
 from app.models.user import User
@@ -70,6 +70,70 @@ class LibrarianStatusResponse(BaseModel):
 
 
 # ============ API ENDPOINTS ============
+
+@router.post("/internal/librarian/scheduled-audit", response_model=TriggerAuditResponse)
+async def trigger_scheduled_audit(
+    request: TriggerAuditRequest,
+    background_tasks: BackgroundTasks,
+    user_agent: Optional[str] = Header(None)
+):
+    """
+    Internal endpoint for Cloud Scheduler to trigger audits.
+    Does not require admin authentication - validates request is from Cloud Scheduler instead.
+
+    This endpoint should NOT be exposed publicly and should only be called by Cloud Scheduler.
+    """
+    # Verify request is from Google Cloud Scheduler
+    if not user_agent or "Google-Cloud-Scheduler" not in user_agent:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="This endpoint can only be called by Google Cloud Scheduler"
+        )
+
+    try:
+        # Determine which mode to use
+        if request.use_ai_agent or request.audit_type == "ai_agent":
+            # AI Agent mode - Claude makes autonomous decisions
+            background_tasks.add_task(
+                run_ai_agent_audit,
+                audit_type="ai_agent",
+                dry_run=request.dry_run,
+                max_iterations=request.max_iterations,
+                budget_limit_usd=request.budget_limit_usd
+            )
+
+            return TriggerAuditResponse(
+                audit_id="running",
+                status="started",
+                message=f"🤖 AI Agent audit started (autonomous mode, {'DRY RUN' if request.dry_run else 'LIVE'}). Claude will decide what to check and fix. Check back soon for results."
+            )
+        else:
+            # Rule-based mode - Pre-programmed workflow
+            valid_types = ["daily_incremental", "weekly_full", "manual"]
+            if request.audit_type not in valid_types:
+                raise HTTPException(
+                    status_code=status.HTTP_400_BAD_REQUEST,
+                    detail=f"Invalid audit_type. Must be one of: {', '.join(valid_types + ['ai_agent'])}"
+                )
+
+            background_tasks.add_task(
+                run_daily_audit,
+                audit_type=request.audit_type,
+                dry_run=request.dry_run
+            )
+
+            return TriggerAuditResponse(
+                audit_id="running",
+                status="started",
+                message=f"Librarian audit started ({request.audit_type}, rule-based mode). Check back soon for results."
+            )
+
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Failed to trigger audit: {str(e)}"
+        )
+
 
 @router.post("/admin/librarian/run-audit", response_model=TriggerAuditResponse)
 async def trigger_librarian_audit(
