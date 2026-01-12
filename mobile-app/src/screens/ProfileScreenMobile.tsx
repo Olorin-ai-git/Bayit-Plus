@@ -265,7 +265,7 @@ const styles = StyleSheet.create({
   content: {
     paddingHorizontal: spacing.lg,
     paddingTop: spacing.xl,
-    paddingBottom: spacing.xxxl,
+    paddingBottom: spacing.xxxxl + spacing.xl, // Extra padding for safe area
   },
   header: {
     alignItems: 'center',
@@ -332,7 +332,7 @@ const styles = StyleSheet.create({
     fontSize: 20,
   },
   menuSection: {
-    marginBottom: spacing.xl,
+    marginBottom: spacing.xxl, // Increased spacing before logout button
   },
   menuItem: {
     marginBottom: spacing.sm,
@@ -350,7 +350,7 @@ const styles = StyleSheet.create({
     paddingVertical: spacing.md,
     paddingHorizontal: spacing.lg,
     borderRadius: 12,
-    minHeight: touchTarget.minHeight,
+    minHeight: touchTarget.minHeight + spacing.sm, // Extra height to prevent clipping
   },
   menuItemLeft: {
     flexDirection: 'row',
@@ -409,6 +409,7 @@ const styles = StyleSheet.create({
     ...typography.caption,
     color: colors.textSecondary,
     textAlign: 'center',
-    marginTop: spacing.md,
+    marginTop: spacing.xl,
+    marginBottom: spacing.lg,
   },
 });
