@@ -642,7 +642,18 @@
       "signOut": "Sign Out"
     },
     "guest": "Guest",
-    "morningRitual": "Morning Ritual"
+    "morningRitual": "Morning Ritual",
+    "watchlist": "Watchlist",
+    "favorites": "Favorites",
+    "downloads": "Downloads",
+    "settings": "Settings",
+    "language": "Language",
+    "notifications": "Notifications",
+    "admin": "Admin",
+    "watchTime": "Watch Time",
+    "minutes": "minutes",
+    "hours": "hours",
+    "logout": "Log Out"
   },
   "voiceMode": {
     "voiceOnly": "Voice Only",
@@ -1329,11 +1340,30 @@
         "status": "Status",
         "description": "Description",
         "viewInConsole": "View in Cloud Console",
-        "modifyNote": "To modify schedules, use Google Cloud Console"
+        "modifyNote": "To modify schedules, use Google Cloud Console",
+        "editTitle": "Edit Schedule",
+        "editNotAvailable": "Schedule Editing Not Available",
+        "editNotAvailableMessage": "Schedule modifications require Cloud Scheduler API integration. Please use the 'View in Cloud Console' button to modify schedules directly in Google Cloud Console.",
+        "cronExpression": "Cron Expression",
+        "cronHint": "Format: minute hour day month weekday (e.g., 0 2 * * * = daily at 2:00 AM)",
+        "patterns": {
+          "daily": "Daily at {{hour}}:{{minute}}",
+          "weekly": "Every {{day}} at {{hour}}:{{minute}}"
+        },
+        "days": {
+          "sunday": "Sunday",
+          "monday": "Monday",
+          "tuesday": "Tuesday",
+          "wednesday": "Wednesday",
+          "thursday": "Thursday",
+          "friday": "Friday",
+          "saturday": "Saturday"
+        }
       },
       "reports": {
         "title": "Recent Audit Reports",
         "emptyMessage": "No audit reports yet",
+        "viewLogs": "View Logs",
         "columns": {
           "date": "Date",
           "type": "Type",
@@ -1359,10 +1389,33 @@
           "aiInsights": "AI Insights"
         }
       },
+      "logs": {
+        "title": "Execution Logs",
+        "executionLog": "Audit Execution Log",
+        "searchPlaceholder": "Search logs...",
+        "noLogs": "No logs to display",
+        "levels": {
+          "debug": "DEBUG",
+          "info": "INFO",
+          "warn": "WARN",
+          "error": "ERROR",
+          "success": "SUCCESS",
+          "trace": "TRACE"
+        },
+        "auditStarted": "Audit started",
+        "brokenStreamsFound": "Found {{count}} broken stream(s)",
+        "missingMetadataFound": "Found {{count}} item(s) with missing metadata",
+        "misclassificationsFound": "Found {{count}} misclassified item(s)",
+        "orphanedItemsFound": "Found {{count}} orphaned item(s)",
+        "fixesApplied": "Applied {{count}} fix(es)",
+        "auditCompleted": "Audit {{status}} in {{duration}}s"
+      },
       "activityLog": {
         "title": "Activity Log",
         "filterByType": "Filter by type",
         "allActions": "All Actions",
+        "content": "Content",
+        "noDescription": "No description available",
         "actionTypes": {
           "addPoster": "Add Poster",
           "updateMetadata": "Update Metadata",

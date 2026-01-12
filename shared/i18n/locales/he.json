@@ -637,7 +637,18 @@
       "signOut": "התנתק"
     },
     "guest": "אורח",
-    "morningRitual": "טקס הבוקר"
+    "morningRitual": "טקס הבוקר",
+    "watchlist": "רשימת צפייה",
+    "favorites": "מועדפים",
+    "downloads": "הורדות",
+    "settings": "הגדרות",
+    "language": "שפה",
+    "notifications": "התראות",
+    "admin": "ניהול",
+    "watchTime": "זמן צפייה",
+    "minutes": "דקות",
+    "hours": "שעות",
+    "logout": "התנתק"
   },
   "voiceMode": {
     "voiceOnly": "קולי בלבד",
@@ -1199,11 +1210,30 @@
         "status": "סטטוס",
         "description": "תיאור",
         "viewInConsole": "צפה ב-Cloud Console",
-        "modifyNote": "לשינוי לוחות זמנים, השתמש ב-Google Cloud Console"
+        "modifyNote": "לשינוי לוחות זמנים, השתמש ב-Google Cloud Console",
+        "editTitle": "ערוך לוח זמנים",
+        "editNotAvailable": "עריכת לוח זמנים לא זמינה",
+        "editNotAvailableMessage": "שינויים בלוח הזמנים דורשים אינטגרציה עם Cloud Scheduler API. אנא השתמש בכפתור 'צפה ב-Cloud Console' כדי לשנות לוחות זמנים ישירות ב-Google Cloud Console.",
+        "cronExpression": "ביטוי Cron",
+        "cronHint": "פורמט: דקה שעה יום חודש יום_בשבוע (לדוגמה: 0 2 * * * = יומי ב-2:00 בבוקר)",
+        "patterns": {
+          "daily": "יומי ב-{{hour}}:{{minute}}",
+          "weekly": "כל {{day}} ב-{{hour}}:{{minute}}"
+        },
+        "days": {
+          "sunday": "ראשון",
+          "monday": "שני",
+          "tuesday": "שלישי",
+          "wednesday": "רביעי",
+          "thursday": "חמישי",
+          "friday": "שישי",
+          "saturday": "שבת"
+        }
       },
       "reports": {
         "title": "דוחות ביקורת אחרונים",
         "emptyMessage": "עדיין אין דוחות ביקורת",
+        "viewLogs": "הצג לוגים",
         "columns": {
           "date": "תאריך",
           "type": "סוג",
@@ -1229,10 +1259,33 @@
           "aiInsights": "תובנות AI"
         }
       },
+      "logs": {
+        "title": "לוגים של ביצוע",
+        "executionLog": "לוג ביצוע ביקורת",
+        "searchPlaceholder": "חפש לוגים...",
+        "noLogs": "אין לוגים להצגה",
+        "levels": {
+          "debug": "DEBUG",
+          "info": "INFO",
+          "warn": "אזהרה",
+          "error": "שגיאה",
+          "success": "הצלחה",
+          "trace": "TRACE"
+        },
+        "auditStarted": "הביקורת החלה",
+        "brokenStreamsFound": "נמצאו {{count}} סטרימ(ים) שבור(ים)",
+        "missingMetadataFound": "נמצאו {{count}} פריט(ים) עם מטא-דאטה חסרה",
+        "misclassificationsFound": "נמצאו {{count}} פריט(ים) מסווג(ים) באופן שגוי",
+        "orphanedItemsFound": "נמצאו {{count}} פריט(ים) נטוש(ים)",
+        "fixesApplied": "בוצעו {{count}} תיקון(ים)",
+        "auditCompleted": "הביקורת {{status}} ב-{{duration}}s"
+      },
       "activityLog": {
         "title": "יומן פעילות",
         "filterByType": "סנן לפי סוג",
         "allActions": "כל הפעולות",
+        "content": "תוכן",
+        "noDescription": "אין תיאור זמין",
         "actionTypes": {
           "addPoster": "הוסף פוסטר",
           "updateMetadata": "עדכן מטא-דאטה",
