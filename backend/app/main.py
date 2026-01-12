@@ -417,7 +417,7 @@ app.include_router(onboarding.router, prefix=f"{settings.API_V1_PREFIX}/onboardi
 app.include_router(news.router, prefix=f"{settings.API_V1_PREFIX}/news", tags=["news"])
 
 # Proxy uploads from GCS
-@app.get("/uploads/{path:path}")
+@app.api_route("/uploads/{path:path}", methods=["GET", "HEAD"])
 async def proxy_uploads(path: str):
     """Proxy upload requests to GCS bucket"""
     from fastapi.responses import RedirectResponse
