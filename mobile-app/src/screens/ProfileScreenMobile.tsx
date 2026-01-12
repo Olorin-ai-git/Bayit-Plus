@@ -8,6 +8,7 @@
  * - Settings and preferences
  * - Account management
  * - Responsive layout for phone/tablet
+ * - Text-only design (no emoji icons)
  */
 
 import React, { useState, useEffect } from 'react';
@@ -23,7 +24,7 @@ import {
 import { useNavigation } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
 import ReactNativeHapticFeedback from 'react-native-haptic-feedback';
-import { GlassView, GlassButton, GlassStatCard } from '@bayit/shared';
+import { GlassView, GlassButton } from '@bayit/shared';
 import { usePermissions, useDirection } from '@bayit/shared-hooks';
 import { useAuthStore } from '@bayit/shared-stores';
 import { spacing, colors, typography, touchTarget } from '../theme';
@@ -89,41 +90,35 @@ export const ProfileScreenMobile: React.FC = () => {
     {
       id: 'watchlist',
       title: t('profile.watchlist'),
-      icon: '☰',
       onPress: () => navigation.navigate('Watchlist'),
       badge: stats.watchlistCount,
     },
     {
       id: 'favorites',
       title: t('profile.favorites'),
-      icon: '★',
       onPress: () => navigation.navigate('Favorites'),
       badge: stats.favoritesCount,
     },
     {
       id: 'downloads',
       title: t('profile.downloads'),
-      icon: '↓',
       onPress: () => navigation.navigate('Downloads'),
       badge: stats.downloadsCount,
     },
     {
       id: 'settings',
       title: t('profile.settings'),
-      icon: '⚙',
       onPress: () => navigation.navigate('Settings'),
     },
     {
       id: 'language',
       title: t('profile.language'),
-      icon: '◉',
       subtitle: i18n.language === 'he' ? 'עברית' : i18n.language === 'en' ? 'English' : 'Español',
       onPress: () => navigation.navigate('Settings', { section: 'language' }),
     },
     {
       id: 'notifications',
       title: t('profile.notifications'),
-      icon: '◎',
       onPress: () => navigation.navigate('Settings', { section: 'notifications' }),
     },
   ];
@@ -133,7 +128,6 @@ export const ProfileScreenMobile: React.FC = () => {
     profileMenuItems.push({
       id: 'admin',
       title: t('profile.admin'),
-      icon: '👤',
       onPress: () => navigation.navigate('Admin'),
     });
   }
@@ -166,72 +160,55 @@ export const ProfileScreenMobile: React.FC = () => {
         )}
       </GlassView>
 
-      {/* Stats Cards */}
-      {/* Row 1: Watch Time and Favorites */}
-      <View style={[styles.statsContainer, isTablet && styles.statsContainerTablet]}>
-        <GlassStatCard
-          label={t('profile.watchTime')}
-          value={formatWatchTime(stats.watchTimeMinutes)}
-          icon={<Text style={styles.statIcon}>⏲</Text>}
-          style={styles.statCard}
-          compact
-        />
-        <GlassStatCard
-          label={t('profile.favorites')}
-          value={stats.favoritesCount.toString()}
-          icon={<Text style={styles.statIcon}>★</Text>}
-          style={styles.statCard}
-          compact
-        />
+      {/* Stats Grid - 2x2 Text-Only Design */}
+      <View style={styles.statsGrid}>
+        <GlassView style={styles.statItem}>
+          <Text style={styles.statValue}>{stats.watchlistCount}</Text>
+          <Text style={styles.statLabel}>{t('profile.watchlist')}</Text>
+        </GlassView>
+
+        <GlassView style={styles.statItem}>
+          <Text style={styles.statValue}>{stats.favoritesCount}</Text>
+          <Text style={styles.statLabel}>{t('profile.favorites')}</Text>
+        </GlassView>
+
+        <GlassView style={styles.statItem}>
+          <Text style={styles.statValue}>{stats.downloadsCount}</Text>
+          <Text style={styles.statLabel}>{t('profile.downloads')}</Text>
+        </GlassView>
+
+        <GlassView style={styles.statItem}>
+          <Text style={styles.statValue}>{formatWatchTime(stats.watchTimeMinutes)}</Text>
+          <Text style={styles.statLabel}>{t('profile.watchTime')}</Text>
+        </GlassView>
       </View>
 
-      {/* Row 2: Watchlist and Downloads */}
-      <View style={[styles.statsContainer, styles.statsContainerLast, isTablet && styles.statsContainerTablet]}>
-        <GlassStatCard
-          label={t('profile.watchlist')}
-          value={stats.watchlistCount.toString()}
-          icon={<Text style={styles.statIcon}>☰</Text>}
-          style={styles.statCard}
-          compact
-        />
-        <GlassStatCard
-          label={t('profile.downloads')}
-          value={stats.downloadsCount.toString()}
-          icon={<Text style={styles.statIcon}>↓</Text>}
-          style={styles.statCard}
-          compact
-        />
-      </View>
-
-      {/* Menu Items */}
+      {/* Menu Items - Text-Only Design */}
       <View style={styles.menuSection}>
         {profileMenuItems.map((item, index) => (
           <Pressable
             key={item.id}
             onPress={() => handlePress(item.onPress)}
             style={({ pressed }) => [
-              styles.menuItem,
               pressed && styles.menuItemPressed,
-              index === profileMenuItems.length - 1 && styles.menuItemLast,
             ]}
           >
-            <GlassView style={styles.menuItemContent}>
-              <View style={styles.menuItemLeft}>
-                <Text style={styles.menuIcon}>{item.icon}</Text>
-                <View style={styles.menuTextContainer}>
+            <GlassView style={styles.menuItem}>
+              <View style={styles.menuContent}>
+                <View style={styles.menuLeft}>
                   <Text style={styles.menuTitle}>{item.title}</Text>
                   {item.subtitle && (
                     <Text style={styles.menuSubtitle}>{item.subtitle}</Text>
                   )}
                 </View>
-              </View>
-              <View style={styles.menuItemRight}>
-                {item.badge !== undefined && item.badge > 0 && (
-                  <View style={styles.badge}>
-                    <Text style={styles.badgeText}>{item.badge}</Text>
-                  </View>
-                )}
-                <Text style={styles.chevron}>›</Text>
+                <View style={styles.menuRight}>
+                  {item.badge !== undefined && item.badge > 0 && (
+                    <View style={styles.badge}>
+                      <Text style={styles.badgeText}>{item.badge}</Text>
+                    </View>
+                  )}
+                  <Text style={styles.chevron}>{isRTL ? '‹' : '›'}</Text>
+                </View>
               </View>
             </GlassView>
           </Pressable>
@@ -265,7 +242,7 @@ const styles = StyleSheet.create({
   content: {
     paddingHorizontal: spacing.lg,
     paddingTop: spacing.xl,
-    paddingBottom: spacing.xxxxl + spacing.xl, // Extra padding for safe area
+    paddingBottom: spacing.xxxl * 2, // Extra padding to prevent cutoff
   },
   header: {
     alignItems: 'center',
@@ -314,58 +291,60 @@ const styles = StyleSheet.create({
     color: colors.text,
     fontWeight: '700',
   },
-  statsContainer: {
+
+  // Stats Grid Styles
+  statsGrid: {
     flexDirection: 'row',
-    gap: spacing.sm,
-    marginBottom: spacing.md,
-  },
-  statsContainerLast: {
+    flexWrap: 'wrap',
+    gap: spacing.md,
     marginBottom: spacing.xl,
   },
-  statsContainerTablet: {
-    // On tablet, stats cards are larger
-  },
-  statCard: {
+  statItem: {
     flex: 1,
+    minWidth: '45%', // Ensures 2 columns on phone
+    padding: spacing.lg,
+    alignItems: 'center',
+    borderRadius: 16,
   },
-  statIcon: {
-    fontSize: 20,
+  statValue: {
+    ...typography.h1,
+    fontSize: 32,
+    color: colors.text,
+    fontWeight: '700',
+    marginBottom: spacing.xs,
   },
+  statLabel: {
+    ...typography.caption,
+    fontSize: 12,
+    color: colors.textSecondary,
+    textAlign: 'center',
+  },
+
+  // Menu Section Styles
   menuSection: {
-    marginBottom: spacing.xxl, // Increased spacing before logout button
+    marginBottom: spacing.xl,
+    gap: spacing.sm,
   },
   menuItem: {
-    marginBottom: spacing.sm,
+    borderRadius: 12,
   },
   menuItemPressed: {
     opacity: 0.7,
   },
-  menuItemLast: {
-    marginBottom: 0,
-  },
-  menuItemContent: {
+  menuContent: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
     paddingVertical: spacing.md,
     paddingHorizontal: spacing.lg,
-    borderRadius: 12,
-    minHeight: touchTarget.minHeight + spacing.sm, // Extra height to prevent clipping
+    minHeight: touchTarget.minHeight,
   },
-  menuItemLeft: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    flex: 1,
-  },
-  menuIcon: {
-    fontSize: 24,
-    marginRight: spacing.md,
-  },
-  menuTextContainer: {
+  menuLeft: {
     flex: 1,
   },
   menuTitle: {
     ...typography.body,
+    fontSize: 16,
     color: colors.text,
     fontWeight: '500',
   },
@@ -374,7 +353,7 @@ const styles = StyleSheet.create({
     color: colors.textSecondary,
     marginTop: 2,
   },
-  menuItemRight: {
+  menuRight: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: spacing.sm,
@@ -398,6 +377,8 @@ const styles = StyleSheet.create({
     fontSize: 24,
     color: colors.textSecondary,
   },
+
+  // Logout Button
   logoutContainer: {
     marginTop: spacing.xl,
     marginBottom: spacing.lg,
@@ -405,11 +386,13 @@ const styles = StyleSheet.create({
   logoutButton: {
     width: '100%',
   },
+
+  // App Version
   version: {
     ...typography.caption,
     color: colors.textSecondary,
     textAlign: 'center',
-    marginTop: spacing.xl,
-    marginBottom: spacing.lg,
+    marginTop: spacing.md,
+    marginBottom: spacing.xl,
   },
 });

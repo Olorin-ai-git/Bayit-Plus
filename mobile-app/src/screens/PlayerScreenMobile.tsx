@@ -10,7 +10,7 @@
  * - Tap to show/hide controls
  */
 
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import {
   View,
   StyleSheet,
@@ -27,7 +27,8 @@ import Animated, {
   withSpring,
   runOnJS,
 } from 'react-native-reanimated';
-import Video from 'react-native-video';
+import Video, { TextTrackType } from 'react-native-video';
+import { API_BASE_URL } from '../config/appConfig';
 import ReactNativeHapticFeedback from 'react-native-haptic-feedback';
 import { useTranslation } from 'react-i18next';
 import { useDirection } from '@bayit/shared-hooks';
@@ -64,8 +65,38 @@ export const PlayerScreenMobile: React.FC = () => {
   const [quality, setQuality] = useState('auto');
   const [subtitles, setSubtitles] = useState('off');
   const [playbackSpeed, setPlaybackSpeed] = useState(1.0);
+  const [availableSubtitles, setAvailableSubtitles] = useState<any[]>([]);
+  const [subtitleTracks, setSubtitleTracks] = useState<any[]>([]);
 
   const translateY = useSharedValue(0);
+
+  // Fetch available subtitles
+  useEffect(() => {
+    const fetchSubtitles = async () => {
+      try {
+        const response = await fetch(`${API_BASE_URL}/api/v1/subtitles/${id}/tracks`);
+        if (response.ok) {
+          const data = await response.json();
+          setAvailableSubtitles(data.tracks || []);
+
+          // Convert to react-native-video format
+          const tracks = (data.tracks || []).map((track: any) => ({
+            title: track.language_name,
+            language: track.language,
+            type: TextTrackType.VTT,
+            uri: `${API_BASE_URL}/api/v1/subtitles/${id}/${track.language}/vtt`,
+          }));
+          setSubtitleTracks(tracks);
+        }
+      } catch (error) {
+        console.error('Failed to fetch subtitles:', error);
+      }
+    };
+
+    if (id) {
+      fetchSubtitles();
+    }
+  }, [id]);
 
   // Swipe down to close gesture (phone only)
   const gestureHandler = useAnimatedGestureHandler({
@@ -109,6 +140,14 @@ export const PlayerScreenMobile: React.FC = () => {
     setCurrentTime(newTime);
   };
 
+  const handleRestart = () => {
+    videoRef.current?.seek(0);
+    setCurrentTime(0);
+    if (Platform.OS === 'ios') {
+      ReactNativeHapticFeedback.trigger('impactLight');
+    }
+  };
+
   const handleProgress = (data: any) => {
     setCurrentTime(data.currentTime);
   };
@@ -140,6 +179,12 @@ export const PlayerScreenMobile: React.FC = () => {
           playbackRate={playbackSpeed}
           onProgress={handleProgress}
           onLoad={handleLoad}
+          textTracks={subtitleTracks}
+          selectedTextTrack={
+            subtitles === 'off'
+              ? { type: 'disabled' }
+              : { type: 'language', value: subtitles }
+          }
         />
 
         {/* Touch overlay to toggle controls */}
@@ -189,6 +234,15 @@ export const PlayerScreenMobile: React.FC = () => {
                 >
                   <Text style={styles.controlIcon}>⏩</Text>
                 </Pressable>
+
+                {type !== 'live' && (
+                  <Pressable
+                    onPress={handleRestart}
+                    style={[styles.controlButton, styles.seekButton]}
+                  >
+                    <Text style={styles.controlIcon}>↻</Text>
+                  </Pressable>
+                )}
               </View>
 
               {/* Bottom bar - progress and settings */}
@@ -254,14 +308,22 @@ export const PlayerScreenMobile: React.FC = () => {
           <View style={styles.settingSection}>
             <Text style={styles.settingLabel}>Subtitles</Text>
             <View style={styles.settingOptions}>
-              {['off', 'en', 'he'].map((sub) => (
+              <GlassButton
+                key="off"
+                variant={subtitles === 'off' ? 'primary' : 'secondary'}
+                onPress={() => setSubtitles('off')}
+                style={styles.settingOption}
+              >
+                Off
+              </GlassButton>
+              {availableSubtitles.map((track) => (
                 <GlassButton
-                  key={sub}
-                  variant={subtitles === sub ? 'primary' : 'secondary'}
-                  onPress={() => setSubtitles(sub)}
+                  key={track.language}
+                  variant={subtitles === track.language ? 'primary' : 'secondary'}
+                  onPress={() => setSubtitles(track.language)}
                   style={styles.settingOption}
                 >
-                  {sub}
+                  {track.language_name}
                 </GlassButton>
               ))}
             </View>

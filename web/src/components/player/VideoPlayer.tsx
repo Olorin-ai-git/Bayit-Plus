@@ -12,6 +12,7 @@ import {
   Settings,
   SkipBack,
   SkipForward,
+  RotateCcw,
   List,
 } from 'lucide-react'
 import { useWatchPartyStore } from '@/stores/watchPartyStore'
@@ -28,6 +29,17 @@ import {
 } from '@/components/watchparty'
 import ChaptersPanel from './ChaptersPanel'
 import ChapterTimeline from './ChapterTimeline'
+import SubtitleOverlay from './SubtitleOverlay'
+import SubtitleControls from './SubtitleControls'
+import LiveSubtitleControls from './LiveSubtitleControls'
+import {
+  SubtitleTrack,
+  SubtitleCue,
+  SubtitleSettings,
+  SubtitlePreferences,
+} from '@/types/subtitle'
+import { subtitlesService } from '@/services/api'
+import { LiveSubtitleCue } from '@/services/liveSubtitleService'
 
 interface Chapter {
   start_time: number
@@ -101,6 +113,21 @@ export default function VideoPlayer({
   const [duration, setDuration] = useState(0)
   const [showControls, setShowControls] = useState(true)
   const [loading, setLoading] = useState(true)
+
+  // Subtitle state
+  const [subtitlesEnabled, setSubtitlesEnabled] = useState(false)
+  const [currentSubtitleLang, setCurrentSubtitleLang] = useState<string | null>(null)
+  const [availableSubtitles, setAvailableSubtitles] = useState<SubtitleTrack[]>([])
+  const [currentCues, setCurrentCues] = useState<SubtitleCue[]>([])
+  const [subtitleSettings, setSubtitleSettings] = useState<SubtitleSettings>({
+    fontSize: 'medium',
+    position: 'bottom',
+    backgroundColor: 'rgba(0, 0, 0, 0.8)',
+    textColor: '#ffffff',
+  })
+
+  // Live subtitle state (Premium feature)
+  const [liveSubtitleCues, setLiveSubtitleCues] = useState<LiveSubtitleCue[]>([])
 
   useEffect(() => {
     if (!src || !videoRef.current) return
@@ -217,6 +244,76 @@ export default function VideoPlayer({
     return () => window.removeEventListener('resize', handleResize)
   }, [])
 
+  // Load subtitle preferences from localStorage
+  useEffect(() => {
+    try {
+      const savedPrefs = localStorage.getItem('bayit-subtitle-preferences')
+      if (savedPrefs) {
+        const prefs: SubtitlePreferences = JSON.parse(savedPrefs)
+        setSubtitlesEnabled(prefs.enabled)
+        setCurrentSubtitleLang(prefs.language)
+        setSubtitleSettings(prefs.settings)
+      }
+    } catch (error) {
+      logger.error('Failed to load subtitle preferences', 'VideoPlayer', error)
+    }
+  }, [])
+
+  // Fetch available subtitles when contentId changes
+  useEffect(() => {
+    if (!contentId || isLive) return
+
+    const fetchSubtitles = async () => {
+      try {
+        const response = await subtitlesService.getTracks(contentId)
+        setAvailableSubtitles(response.tracks || [])
+
+        // Auto-select default language if enabled
+        if (subtitlesEnabled && !currentSubtitleLang && response.tracks?.length > 0) {
+          const defaultTrack = response.tracks.find(t => t.is_default) || response.tracks[0]
+          setCurrentSubtitleLang(defaultTrack.language)
+        }
+      } catch (error) {
+        logger.error('Failed to fetch subtitle tracks', 'VideoPlayer', error)
+      }
+    }
+
+    fetchSubtitles()
+  }, [contentId, isLive])
+
+  // Fetch subtitle cues when language changes
+  useEffect(() => {
+    if (!contentId || !currentSubtitleLang || !subtitlesEnabled) {
+      setCurrentCues([])
+      return
+    }
+
+    const fetchCues = async () => {
+      try {
+        const response = await subtitlesService.getCues(contentId, currentSubtitleLang)
+        setCurrentCues(response.cues || [])
+      } catch (error) {
+        logger.error('Failed to fetch subtitle cues', 'VideoPlayer', error)
+      }
+    }
+
+    fetchCues()
+  }, [contentId, currentSubtitleLang, subtitlesEnabled])
+
+  // Save subtitle preferences to localStorage
+  useEffect(() => {
+    try {
+      const prefs: SubtitlePreferences = {
+        enabled: subtitlesEnabled,
+        language: currentSubtitleLang,
+        settings: subtitleSettings,
+      }
+      localStorage.setItem('bayit-subtitle-preferences', JSON.stringify(prefs))
+    } catch (error) {
+      logger.error('Failed to save subtitle preferences', 'VideoPlayer', error)
+    }
+  }, [subtitlesEnabled, currentSubtitleLang, subtitleSettings])
+
   useEffect(() => {
     if (!party || isHost || !isConnected) return
     const video = videoRef.current
@@ -331,11 +428,43 @@ export default function VideoPlayer({
     }
   }
 
+  const handleRestart = async () => {
+    if (videoRef.current) {
+      videoRef.current.currentTime = 0
+      setCurrentTime(0)
+
+      if (contentId && onProgress) {
+        onProgress(0, duration)
+      }
+    }
+  }
+
   const formatTime = (time: number) => {
     if (!time || !isFinite(time)) return '0:00'
     const minutes = Math.floor(time / 60)
     const seconds = Math.floor(time % 60)
     return `${minutes}:${seconds.toString().padStart(2, '0')}`
+  }
+
+  // Subtitle handlers
+  const handleSubtitleToggle = (enabled: boolean) => {
+    setSubtitlesEnabled(enabled)
+  }
+
+  const handleSubtitleLanguageChange = (language: string | null) => {
+    setCurrentSubtitleLang(language)
+  }
+
+  const handleSubtitleSettingsChange = (settings: SubtitleSettings) => {
+    setSubtitleSettings(settings)
+  }
+
+  // Live subtitle handler (Premium feature)
+  const handleLiveSubtitleCue = (cue: LiveSubtitleCue) => {
+    setLiveSubtitleCues((prev) => [
+      ...prev.slice(-50), // Keep last 50 cues
+      { ...cue, displayUntil: Date.now() + 5000 }, // Show for 5 seconds
+    ])
   }
 
   const progress = duration > 0 ? (currentTime / duration) * 100 : 0
@@ -352,6 +481,31 @@ export default function VideoPlayer({
         style={webStyles.video}
         playsInline
       />
+
+      {/* Subtitle Overlay */}
+      {!isLive && contentId && (
+        <SubtitleOverlay
+          currentTime={currentTime}
+          subtitles={currentCues}
+          language={currentSubtitleLang || 'he'}
+          enabled={subtitlesEnabled}
+          settings={subtitleSettings}
+        />
+      )}
+
+      {/* Live Subtitle Overlay (Premium) */}
+      {isLive && liveSubtitleCues.length > 0 && (
+        <View style={styles.liveSubtitleOverlay}>
+          {liveSubtitleCues
+            .filter((cue) => (cue as any).displayUntil > Date.now())
+            .slice(-3)
+            .map((cue, idx) => (
+              <View key={`${cue.timestamp}-${idx}`} style={styles.liveSubtitleCue}>
+                <Text style={styles.liveSubtitleText}>{cue.text}</Text>
+              </View>
+            ))}
+        </View>
+      )}
 
       {/* Loading Spinner */}
       {loading && (
@@ -454,6 +608,12 @@ export default function VideoPlayer({
                   >
                     <SkipForward size={18} color={colors.text} />
                   </Pressable>
+                  <Pressable
+                    onPress={(e) => { e.stopPropagation?.(); handleRestart() }}
+                    style={({ hovered }) => [styles.controlButton, hovered && styles.controlButtonHovered]}
+                  >
+                    <RotateCcw size={18} color={colors.text} />
+                  </Pressable>
                 </>
               )}
 
@@ -503,6 +663,29 @@ export default function VideoPlayer({
                 >
                   <List size={18} color={showChaptersPanel ? colors.primary : colors.text} />
                 </Pressable>
+              )}
+              {/* Subtitle Controls */}
+              {!isLive && contentId && (
+                <SubtitleControls
+                  contentId={contentId}
+                  availableLanguages={availableSubtitles}
+                  currentLanguage={currentSubtitleLang}
+                  enabled={subtitlesEnabled}
+                  settings={subtitleSettings}
+                  onLanguageChange={handleSubtitleLanguageChange}
+                  onToggle={handleSubtitleToggle}
+                  onSettingsChange={handleSubtitleSettingsChange}
+                />
+              )}
+              {/* Live Subtitle Controls (Premium) */}
+              {isLive && contentId && (
+                <LiveSubtitleControls
+                  channelId={contentId}
+                  isLive={isLive}
+                  isPremium={user?.subscription_tier === 'premium' || user?.subscription_tier === 'family'}
+                  videoElement={videoRef.current}
+                  onSubtitleCue={handleLiveSubtitleCue}
+                />
               )}
               <Pressable
                 onPress={(e) => e.stopPropagation?.()}
@@ -726,5 +909,30 @@ const styles = StyleSheet.create({
     borderWidth: 2,
     borderColor: 'rgba(16, 185, 129, 0.5)',
     borderRadius: borderRadius.lg,
+  },
+  liveSubtitleOverlay: {
+    position: 'absolute',
+    bottom: spacing.xxl * 2,
+    left: spacing.lg,
+    right: spacing.lg,
+    alignItems: 'center',
+    zIndex: 100,
+  },
+  liveSubtitleCue: {
+    backgroundColor: 'rgba(0, 0, 0, 0.8)',
+    paddingHorizontal: spacing.md,
+    paddingVertical: spacing.xs,
+    borderRadius: 4,
+    marginVertical: spacing.xxs,
+    maxWidth: '90%',
+  },
+  liveSubtitleText: {
+    color: colors.textPrimary,
+    fontSize: 18,
+    fontWeight: '600',
+    textAlign: 'center',
+    textShadowColor: 'rgba(0, 0, 0, 0.95)',
+    textShadowOffset: { width: 1, height: 1 },
+    textShadowRadius: 3,
   },
 })

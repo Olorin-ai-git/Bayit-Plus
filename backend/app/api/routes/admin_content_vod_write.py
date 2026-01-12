@@ -4,7 +4,7 @@ Create, update, delete, and modify VOD content
 """
 
 from datetime import datetime
-from fastapi import APIRouter, HTTPException, Depends, Request
+from fastapi import APIRouter, HTTPException, Depends, Request, BackgroundTasks
 import logging
 
 from app.models.user import User
@@ -13,6 +13,7 @@ from app.models.admin import Permission, AuditAction
 from .admin_content_utils import has_permission, log_audit
 from .admin_content_schemas import ContentCreateRequest, ContentUpdateRequest
 from app.services.image_storage import download_and_encode_image
+from app.services.subtitle_extraction_service import analyze_and_extract_subtitles
 
 router = APIRouter()
 logger = logging.getLogger(__name__)
@@ -22,6 +23,7 @@ logger = logging.getLogger(__name__)
 async def create_content(
     data: ContentCreateRequest,
     request: Request,
+    background_tasks: BackgroundTasks,
     current_user: User = Depends(has_permission(Permission.CONTENT_CREATE))
 ):
     """Create new VOD content."""
@@ -44,6 +46,12 @@ async def create_content(
     await content.insert()
     await log_audit(str(current_user.id), AuditAction.CONTENT_CREATED, "content",
         str(content.id), {"title": content.title, "category": content.category_name}, request)
+
+    # Trigger subtitle extraction if stream URL provided
+    if data.stream_url:
+        background_tasks.add_task(analyze_and_extract_subtitles, str(content.id), data.stream_url)
+        logger.info(f"Queued subtitle extraction for content {content.id}")
+
     return {"id": str(content.id), "title": content.title, "category_name": content.category_name,
             "created_at": content.created_at.isoformat()}
 
@@ -53,6 +61,7 @@ async def update_content(
     content_id: str,
     data: ContentUpdateRequest,
     request: Request,
+    background_tasks: BackgroundTasks,
     current_user: User = Depends(has_permission(Permission.CONTENT_UPDATE))
 ):
     """Update VOD content fields."""
@@ -64,6 +73,7 @@ async def update_content(
         raise HTTPException(status_code=404, detail="Content not found")
 
     changes = {}
+    stream_url_changed = False
     if data.title is not None:
         changes["title"] = {"old": content.title, "new": data.title}
         content.title = data.title
@@ -121,6 +131,7 @@ async def update_content(
     if data.stream_url is not None:
         changes["stream_url"] = {"changed": True}
         content.stream_url = data.stream_url
+        stream_url_changed = True
     if data.stream_type is not None:
         changes["stream_type"] = {"old": content.stream_type, "new": data.stream_type}
         content.stream_type = data.stream_type
@@ -148,6 +159,12 @@ async def update_content(
     content.updated_at = datetime.utcnow()
     await content.save()
     await log_audit(str(current_user.id), AuditAction.CONTENT_UPDATED, "content", content_id, changes, request)
+
+    # Trigger subtitle extraction if stream URL was updated
+    if stream_url_changed and content.stream_url:
+        background_tasks.add_task(analyze_and_extract_subtitles, content_id, content.stream_url)
+        logger.info(f"Queued subtitle extraction for updated content {content_id}")
+
     return {"message": "Content updated", "id": content_id}
 
 
@@ -171,51 +188,3 @@ async def delete_content(
     return {"message": "Content deleted"}
 
 
-@router.post("/content/{content_id}/publish")
-async def toggle_content_publish(
-    content_id: str,
-    request: Request,
-    current_user: User = Depends(has_permission(Permission.CONTENT_UPDATE))
-):
-    """Toggle content publish status."""
-    try:
-        content = await Content.get(content_id)
-    except Exception:
-        raise HTTPException(status_code=404, detail="Content not found")
-    if not content:
-        raise HTTPException(status_code=404, detail="Content not found")
-
-    content.is_published = not content.is_published
-    if content.is_published and not content.published_at:
-        content.published_at = datetime.utcnow()
-    content.updated_at = datetime.utcnow()
-    await content.save()
-
-    action = AuditAction.CONTENT_PUBLISHED if content.is_published else AuditAction.CONTENT_UNPUBLISHED
-    await log_audit(str(current_user.id), action, "content", content_id,
-                    {"title": content.title, "is_published": content.is_published}, request)
-    return {"message": f"Content {'published' if content.is_published else 'unpublished'}",
-            "is_published": content.is_published}
-
-
-@router.post("/content/{content_id}/feature")
-async def toggle_content_feature(
-    content_id: str,
-    request: Request,
-    current_user: User = Depends(has_permission(Permission.CONTENT_UPDATE))
-):
-    """Toggle content featured status."""
-    try:
-        content = await Content.get(content_id)
-    except Exception:
-        raise HTTPException(status_code=404, detail="Content not found")
-    if not content:
-        raise HTTPException(status_code=404, detail="Content not found")
-
-    content.is_featured = not content.is_featured
-    content.updated_at = datetime.utcnow()
-    await content.save()
-    await log_audit(str(current_user.id), AuditAction.CONTENT_UPDATED, "content", content_id,
-                    {"title": content.title, "is_featured": content.is_featured}, request)
-    return {"message": f"Content {'featured' if content.is_featured else 'unfeatured'}",
-            "is_featured": content.is_featured}

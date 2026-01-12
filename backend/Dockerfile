@@ -7,6 +7,7 @@ WORKDIR /app
 RUN apt-get update && apt-get install -y --no-install-recommends \
     gcc \
     libpq5 \
+    ffmpeg \
     && rm -rf /var/lib/apt/lists/*
 
 # Copy dependency files

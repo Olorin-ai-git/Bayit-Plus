@@ -147,6 +147,7 @@ const apiHistoryService = {
   getHistory: (params) => api.get('/history', { params }),
   updateProgress: (contentId, contentType, position, duration) =>
     api.post('/history/progress', { content_id: contentId, content_type: contentType, position, duration }),
+  restartVideo: (contentId) => api.patch(`/history/${contentId}/restart`),
   getContinueWatching: () => api.get('/history/continue'),
 }
 

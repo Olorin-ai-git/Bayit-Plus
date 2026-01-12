@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect, useCallback, useMemo } from 'react'
 import { View, Text, StyleSheet, Pressable, ScrollView, TextInput } from 'react-native'
 import { Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
@@ -10,6 +10,7 @@ import { GlassButton } from '@bayit/shared/ui'
 import { useDirection } from '@/hooks/useDirection'
 import { useModal } from '@/contexts/ModalContext'
 import logger from '@/utils/logger'
+import { getLocalizedName } from '@bayit/shared-utils/contentLocalization'
 import type { Podcast, PaginatedResponse } from '@/types/content'
 
 interface Pagination {
@@ -23,7 +24,7 @@ interface EditingPodcast extends Partial<Podcast> {
 }
 
 export default function PodcastsPage() {
-  const { t } = useTranslation()
+  const { t, i18n } = useTranslation()
   const { isRTL, textAlign, flexDirection } = useDirection()
   const { showConfirm } = useModal()
   const [items, setItems] = useState<Podcast[]>([])
@@ -99,24 +100,37 @@ export default function PodcastsPage() {
     )
   }
 
-  const columns = [
+  const columns = useMemo(() => [
     {
       key: 'title',
       label: t('admin.content.columns.title', { defaultValue: 'Title' }),
-      render: (title: string, item: Podcast) => (
-        <View>
-          <Text style={styles.itemTitle}>{title}</Text>
-          {item.author && <Text style={styles.itemSubtext}>{item.author}</Text>}
-        </View>
-      ),
+      render: (title: string, item: Podcast) => {
+        const localizedTitle = getLocalizedName(item, i18n.language)
+        const localizedAuthor = i18n.language === 'en' && item.author_en ? item.author_en
+          : i18n.language === 'es' && item.author_es ? item.author_es
+          : item.author
+
+        return (
+          <View>
+            <Text style={styles.itemTitle}>{localizedTitle}</Text>
+            {localizedAuthor && <Text style={styles.itemSubtext}>{localizedAuthor}</Text>}
+          </View>
+        )
+      },
     },
     {
       key: 'category',
       label: t('admin.content.columns.category', { defaultValue: 'Category' }),
-      render: (category: string | undefined) => <Text style={styles.cellText}>{category || '-'}</Text>,
+      render: (category: string | undefined, item: Podcast) => {
+        const localizedCategory = i18n.language === 'en' && item.category_en ? item.category_en
+          : i18n.language === 'es' && item.category_es ? item.category_es
+          : item.category
+
+        return <Text style={styles.cellText}>{localizedCategory || '-'}</Text>
+      },
     },
     {
-      key: 'episodes_count',
+      key: 'episode_count',
       label: t('admin.content.columns.episodes', { defaultValue: 'Episodes' }),
       render: (count: number | undefined) => <Text style={styles.cellText}>{count || 0}</Text>,
     },
@@ -158,7 +172,7 @@ export default function PodcastsPage() {
         </View>
       ),
     },
-  ]
+  ], [t, i18n.language, isRTL, deleting, handleEdit, handleDelete])
 
   return (
     <ScrollView style={styles.container} contentContainerStyle={styles.contentContainer}>

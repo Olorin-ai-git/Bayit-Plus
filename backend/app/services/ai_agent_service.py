@@ -412,6 +412,63 @@ TOOLS = [
         }
     },
     {
+        "name": "scan_video_subtitles",
+        "description": "Analyze a video file (MKV/MP4) to detect embedded subtitle tracks. Returns list of available subtitle languages and metadata. Use this to verify subtitle availability before extracting.",
+        "input_schema": {
+            "type": "object",
+            "properties": {
+                "content_id": {
+                    "type": "string",
+                    "description": "The ID of the content item to scan"
+                }
+            },
+            "required": ["content_id"]
+        }
+    },
+    {
+        "name": "extract_video_subtitles",
+        "description": "Extract ALL embedded subtitle tracks from a video file and save them to the database. Creates SubtitleTrackDoc for each found language. Use this after scan_video_subtitles confirms subtitles exist.",
+        "input_schema": {
+            "type": "object",
+            "properties": {
+                "content_id": {
+                    "type": "string",
+                    "description": "The ID of the content item"
+                },
+                "audit_id": {
+                    "type": "string",
+                    "description": "Current audit ID for tracking"
+                },
+                "languages": {
+                    "type": "array",
+                    "items": {"type": "string"},
+                    "description": "Optional: Specific languages to extract (e.g., ['en', 'he']). If not provided, extracts all."
+                }
+            },
+            "required": ["content_id", "audit_id"]
+        }
+    },
+    {
+        "name": "verify_required_subtitles",
+        "description": "Verify that a content item has subtitles in the required languages (English, Hebrew, Spanish). Returns which languages are missing. Use this as the first step in subtitle verification workflow.",
+        "input_schema": {
+            "type": "object",
+            "properties": {
+                "content_id": {
+                    "type": "string",
+                    "description": "The ID of the content item to verify"
+                },
+                "required_languages": {
+                    "type": "array",
+                    "items": {"type": "string"},
+                    "description": "Required language codes (default: ['en', 'he', 'es'])",
+                    "default": ["en", "he", "es"]
+                }
+            },
+            "required": ["content_id"]
+        }
+    },
+    {
         "name": "complete_audit",
         "description": "Call this when you've finished the audit and are ready to provide a final summary. This will end the audit session.",
         "input_schema": {
@@ -1277,6 +1334,163 @@ async def execute_send_email_notification(
         return {"success": False, "error": str(e)}
 
 
+async def execute_scan_video_subtitles(content_id: str) -> Dict[str, Any]:
+    """Scan video file for embedded subtitles."""
+    from app.services.ffmpeg_service import ffmpeg_service
+
+    try:
+        content = await Content.get(PydanticObjectId(content_id))
+        if not content:
+            return {"success": False, "error": "Content not found"}
+
+        if not content.stream_url:
+            return {"success": False, "error": "No video URL available"}
+
+        # Analyze video with FFmpeg
+        metadata = await ffmpeg_service.analyze_video(content.stream_url)
+
+        # Update content with video metadata
+        content.video_metadata = metadata
+        content.embedded_subtitle_count = len(metadata['subtitle_tracks'])
+        content.subtitle_last_checked = datetime.utcnow()
+        await content.save()
+
+        return {
+            "success": True,
+            "subtitle_count": len(metadata['subtitle_tracks']),
+            "subtitles": metadata['subtitle_tracks'],
+            "video_duration": metadata['duration'],
+            "video_resolution": f"{metadata['width']}x{metadata['height']}"
+        }
+
+    except Exception as e:
+        logger.error(f"Error scanning video subtitles: {str(e)}")
+        return {"success": False, "error": str(e)}
+
+
+async def execute_extract_video_subtitles(
+    content_id: str,
+    audit_id: str,
+    languages: Optional[List[str]] = None
+) -> Dict[str, Any]:
+    """Extract subtitle tracks from video and save to database."""
+    from app.services.ffmpeg_service import ffmpeg_service
+    from app.services.subtitle_service import SubtitleService
+    from app.models.subtitles import SubtitleTrackDoc
+
+    try:
+        content = await Content.get(PydanticObjectId(content_id))
+        if not content:
+            return {"success": False, "error": "Content not found"}
+
+        # Extract subtitles
+        extracted_subs = await ffmpeg_service.extract_all_subtitles(content.stream_url)
+
+        # Filter by requested languages if specified
+        if languages:
+            extracted_subs = [s for s in extracted_subs if s['language'] in languages]
+
+        # Parse and save each subtitle track
+        subtitle_service = SubtitleService()
+        saved_count = 0
+        saved_languages = []
+
+        for sub in extracted_subs:
+            # Parse subtitle content
+            cues = await subtitle_service.parse_subtitle_content(
+                sub['content'],
+                sub['format']
+            )
+
+            # Create SubtitleTrackDoc
+            track = SubtitleTrackDoc(
+                content_id=content_id,
+                content_type="vod",
+                language=sub['language'],
+                language_name=get_language_name(sub['language']),
+                format="srt",
+                cues=cues,
+                is_auto_generated=False
+            )
+            await track.insert()
+            saved_count += 1
+            saved_languages.append(sub['language'])
+
+        # Update content
+        content.has_subtitles = saved_count > 0
+        content.available_subtitle_languages = saved_languages
+        content.subtitle_extraction_status = "completed"
+        await content.save()
+
+        # Create LibrarianAction
+        action = LibrarianAction(
+            audit_id=audit_id,
+            action_type="extract_subtitles",
+            content_id=content_id,
+            content_type="content",
+            issue_type="missing_subtitles",
+            description=f"Extracted {saved_count} subtitle tracks from video: {', '.join(saved_languages)}",
+            auto_approved=True
+        )
+        await action.insert()
+
+        return {
+            "success": True,
+            "extracted_count": saved_count,
+            "languages": saved_languages
+        }
+
+    except Exception as e:
+        logger.error(f"Error extracting video subtitles: {str(e)}")
+        return {"success": False, "error": str(e)}
+
+
+async def execute_verify_required_subtitles(
+    content_id: str,
+    required_languages: List[str] = ["en", "he", "es"]
+) -> Dict[str, Any]:
+    """Verify content has required subtitle languages."""
+    from app.models.subtitles import SubtitleTrackDoc
+
+    try:
+        content = await Content.get(PydanticObjectId(content_id))
+        if not content:
+            return {"success": False, "error": "Content not found"}
+
+        # Check existing subtitle tracks in database
+        existing_tracks = await SubtitleTrackDoc.find(
+            {"content_id": content_id}
+        ).to_list()
+
+        existing_languages = [track.language for track in existing_tracks]
+        missing_languages = [lang for lang in required_languages if lang not in existing_languages]
+
+        return {
+            "success": True,
+            "has_all_required": len(missing_languages) == 0,
+            "existing_languages": existing_languages,
+            "missing_languages": missing_languages,
+            "required_languages": required_languages
+        }
+
+    except Exception as e:
+        logger.error(f"Error verifying subtitles: {str(e)}")
+        return {"success": False, "error": str(e)}
+
+
+def get_language_name(code: str) -> str:
+    """Helper function to get language name from code."""
+    lang_names = {
+        "en": "English",
+        "he": "עברית",
+        "es": "Español",
+        "ar": "العربية",
+        "ru": "Русский",
+        "fr": "Français"
+    }
+    return lang_names.get(code, code.upper())
+
+
 # ============================================================================
 # TOOL DISPATCHER
 # ============================================================================
@@ -1333,6 +1547,15 @@ async def execute_tool(
 
         elif tool_name == "send_email_notification":
             return await execute_send_email_notification(**tool_input)
+
+        elif tool_name == "scan_video_subtitles":
+            return await execute_scan_video_subtitles(**tool_input)
+
+        elif tool_name == "extract_video_subtitles":
+            return await execute_extract_video_subtitles(**tool_input, audit_id=audit_id)
+
+        elif tool_name == "verify_required_subtitles":
+            return await execute_verify_required_subtitles(**tool_input)
 
         elif tool_name == "complete_audit":
             # This is handled specially in the agent loop
@@ -1440,15 +1663,20 @@ async def run_ai_agent_audit(
 2. **SECOND:** Search TMDB to verify the cleaned title works → Use search_tmdb
 3. **THIRD:** Retrieve and save poster image → Use fix_missing_poster
 4. **FOURTH:** Retrieve and save full metadata → Use fix_missing_metadata
-5. **FIFTH:** Check for other issues (categorization, broken URLs)
+5. **FIFTH:** Verify required subtitles (EN, HE, ES) → Use verify_required_subtitles
+6. **SIXTH:** If missing subtitles, scan video for embedded tracks → Use scan_video_subtitles
+7. **SEVENTH:** If embedded subtitles found, extract them → Use extract_video_subtitles
+8. **EIGHTH:** Check for other issues (categorization, broken URLs)
 
 **What You Must Do:**
 1. Choose which content items to inspect (use judgment - no need to check everything)
 2. **MANDATORY - Check each item for (IN THIS ORDER):**
    - 🔥 **HIGHEST PRIORITY:** Missing thumbnail/poster image
    - 🔥 **HIGHEST PRIORITY:** Missing metadata (description, genre, imdb_id, tmdb_id, cast, director)
+   - 🔥 **HIGHEST PRIORITY:** Missing required subtitles (English, Hebrew, Spanish)
    - ✅ Dirty titles (must clean BEFORE fixing poster/metadata!)
    - ✅ Missing backdrop (wide background image)
+   - ✅ Embedded subtitles not extracted from MKV files
    - ✅ Incorrect categorization
    - ✅ Broken streaming URLs
 3. **IMPORTANT - Logging:** Always document what you're checking and what you found
@@ -1492,6 +1720,9 @@ These will ONLY appear in AI Insights in complete_audit, NOT as fixes_applied!
 - fix_missing_metadata - Update metadata
 - recategorize_content - Move item to another category (only if >90% confident)
 - clean_title - 🧹 Clean title from junk (.mp4, 1080p, [MX], XviD, MDMA, BoK, etc.)
+- verify_required_subtitles - 📝 Check if content has EN/HE/ES subtitles
+- scan_video_subtitles - 🔍 Scan video file for embedded subtitle tracks
+- extract_video_subtitles - 📥 Extract embedded subtitles and save to database
 - flag_for_manual_review - Flag for manual review
 
 **Available Tools - Storage Monitoring (NEW!):**

@@ -16,10 +16,28 @@ router = APIRouter()
 
 def _podcast_dict(p):
     return {
-        "id": str(p.id), "title": p.title, "description": p.description, "author": p.author,
-        "cover": p.cover, "category": p.category, "rss_feed": p.rss_feed, "website": p.website,
-        "episode_count": p.episode_count, "latest_episode_date": p.latest_episode_date.isoformat() if p.latest_episode_date else None,
-        "is_active": p.is_active, "order": p.order, "created_at": p.created_at.isoformat(), "updated_at": p.updated_at.isoformat(),
+        "id": str(p.id),
+        "title": p.title,
+        "title_en": p.title_en,
+        "title_es": p.title_es,
+        "description": p.description,
+        "description_en": p.description_en,
+        "description_es": p.description_es,
+        "author": p.author,
+        "author_en": p.author_en,
+        "author_es": p.author_es,
+        "cover": p.cover,
+        "category": p.category,
+        "category_en": p.category_en,
+        "category_es": p.category_es,
+        "rss_feed": p.rss_feed,
+        "website": p.website,
+        "episode_count": p.episode_count,
+        "latest_episode_date": p.latest_episode_date.isoformat() if p.latest_episode_date else None,
+        "is_active": p.is_active,
+        "order": p.order,
+        "created_at": p.created_at.isoformat(),
+        "updated_at": p.updated_at.isoformat(),
     }
 
 @router.get("/podcasts")
@@ -62,10 +80,27 @@ async def get_podcast(podcast_id: str, current_user: User = Depends(has_permissi
 async def create_podcast(data: PodcastCreateRequest, request: Request,
                          current_user: User = Depends(has_permission(Permission.CONTENT_CREATE))):
     """Create new podcast."""
-    podcast = Podcast(title=data.title, description=data.description, author=data.author,
-        cover=data.cover, category=data.category, rss_feed=data.rss_feed, website=data.website,
-        episode_count=data.episode_count, latest_episode_date=data.latest_episode_date,
-        is_active=data.is_active, order=data.order)
+    podcast = Podcast(
+        title=data.title,
+        title_en=data.title_en,
+        title_es=data.title_es,
+        description=data.description,
+        description_en=data.description_en,
+        description_es=data.description_es,
+        author=data.author,
+        author_en=data.author_en,
+        author_es=data.author_es,
+        cover=data.cover,
+        category=data.category,
+        category_en=data.category_en,
+        category_es=data.category_es,
+        rss_feed=data.rss_feed,
+        website=data.website,
+        episode_count=data.episode_count,
+        latest_episode_date=data.latest_episode_date,
+        is_active=data.is_active,
+        order=data.order
+    )
     await podcast.insert()
     await log_audit(str(current_user.id), AuditAction.PODCAST_CREATED, "podcast",
                     str(podcast.id), {"title": podcast.title, "author": podcast.author}, request)
@@ -85,18 +120,34 @@ async def update_podcast(podcast_id: str, data: PodcastUpdateRequest, request: R
     if data.title is not None:
         changes["title"] = {"old": podcast.title, "new": data.title}
         podcast.title = data.title
+    if data.title_en is not None:
+        podcast.title_en = data.title_en
+    if data.title_es is not None:
+        podcast.title_es = data.title_es
     if data.description is not None:
         changes["description"] = {"old": podcast.description, "new": data.description}
         podcast.description = data.description
+    if data.description_en is not None:
+        podcast.description_en = data.description_en
+    if data.description_es is not None:
+        podcast.description_es = data.description_es
     if data.author is not None:
         changes["author"] = {"old": podcast.author, "new": data.author}
         podcast.author = data.author
+    if data.author_en is not None:
+        podcast.author_en = data.author_en
+    if data.author_es is not None:
+        podcast.author_es = data.author_es
     if data.cover is not None:
         changes["cover"] = {"changed": True}
         podcast.cover = data.cover
     if data.category is not None:
         changes["category"] = {"old": podcast.category, "new": data.category}
         podcast.category = data.category
+    if data.category_en is not None:
+        podcast.category_en = data.category_en
+    if data.category_es is not None:
+        podcast.category_es = data.category_es
     if data.rss_feed is not None:
         changes["rss_feed"] = {"changed": True}
         podcast.rss_feed = data.rss_feed

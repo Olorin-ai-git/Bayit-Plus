@@ -234,10 +234,18 @@ export interface RadioStationUpdateInput {
 export interface Podcast {
   id: string
   title: string
+  title_en?: string
+  title_es?: string
   description?: string
+  description_en?: string
+  description_es?: string
   author?: string
+  author_en?: string
+  author_es?: string
   cover?: string
   category?: string
+  category_en?: string
+  category_es?: string
   rss_feed?: string
   website?: string
   episode_count: number
@@ -250,10 +258,18 @@ export interface Podcast {
 
 export interface PodcastCreateInput {
   title: string
+  title_en?: string
+  title_es?: string
   description?: string
+  description_en?: string
+  description_es?: string
   author?: string
+  author_en?: string
+  author_es?: string
   cover?: string
   category?: string
+  category_en?: string
+  category_es?: string
   rss_feed?: string
   website?: string
   episode_count?: number
@@ -264,10 +280,18 @@ export interface PodcastCreateInput {
 
 export interface PodcastUpdateInput {
   title?: string
+  title_en?: string
+  title_es?: string
   description?: string
+  description_en?: string
+  description_es?: string
   author?: string
+  author_en?: string
+  author_es?: string
   cover?: string
   category?: string
+  category_en?: string
+  category_es?: string
   rss_feed?: string
   website?: string
   episode_count?: number

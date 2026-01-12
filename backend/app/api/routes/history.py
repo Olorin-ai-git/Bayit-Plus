@@ -127,6 +127,32 @@ async def update_progress(
     }
 
 
+@router.patch("/{content_id}/restart")
+async def restart_video(
+    content_id: str,
+    current_user: User = Depends(get_current_active_user),
+):
+    """Restart video from beginning - resets progress to 00:00."""
+    history = await WatchHistory.find_one(
+        WatchHistory.user_id == str(current_user.id),
+        WatchHistory.content_id == content_id,
+    )
+    if not history:
+        raise HTTPException(status_code=404, detail="Not in history")
+
+    history.position = 0
+    history.progress_percent = 0
+    history.completed = False
+    history.last_watched_at = datetime.utcnow()
+    await history.save()
+
+    return {
+        "message": "Video restarted",
+        "position": 0,
+        "progress": 0,
+    }
+
+
 @router.delete("/{content_id}")
 async def remove_from_history(
     content_id: str,

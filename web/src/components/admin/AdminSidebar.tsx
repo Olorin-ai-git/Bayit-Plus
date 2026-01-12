@@ -17,10 +17,18 @@ import {
   Home,
   GripVertical,
   Bot,
+  Languages,
+  Check,
 } from 'lucide-react'
 import { useAuthStore } from '@/stores/authStore'
 import { colors, spacing, borderRadius } from '@bayit/shared/theme'
 import { GlassView } from '@bayit/shared/ui'
+
+const LANGUAGE_OPTIONS = [
+  { code: 'en', flag: '🇺🇸', label: 'English' },
+  { code: 'he', flag: '🇮🇱', label: 'עברית' },
+  { code: 'es', flag: '🇪🇸', label: 'Español' },
+]
 
 interface NavItem {
   key: string
@@ -131,10 +139,11 @@ export default function AdminSidebar({
   onClose,
   onDragStart,
 }: AdminSidebarProps) {
-  const { t } = useTranslation()
+  const { t, i18n } = useTranslation()
   const navigate = useNavigate()
   const { user, logout } = useAuthStore()
   const [expandedItems, setExpandedItems] = useState(['billing', 'subscriptions', 'marketing', 'content'])
+  const [showLanguageMenu, setShowLanguageMenu] = useState(false)
 
   const toggleExpand = (key: string) => {
     setExpandedItems((prev) =>
@@ -152,6 +161,14 @@ export default function AdminSidebar({
       onClose()
     }
   }
+
+  const handleLanguageChange = (langCode: string) => {
+    i18n.changeLanguage(langCode)
+    localStorage.setItem('bayit-language', langCode)
+    setShowLanguageMenu(false)
+  }
+
+  const currentLanguage = LANGUAGE_OPTIONS.find(lang => lang.code === i18n.language) || LANGUAGE_OPTIONS[0]
 
   const renderNavItem = (item: NavItem, isChild = false) => {
     const hasChildren = item.children && item.children.length > 0
@@ -251,6 +268,52 @@ export default function AdminSidebar({
             </Text>
           </View>
         </View>
+      </View>
+
+      {/* Language Selector */}
+      <View style={styles.languageSection}>
+        <Pressable
+          onPress={() => setShowLanguageMenu(!showLanguageMenu)}
+          style={({ hovered }: any) => [
+            styles.languageButton,
+            isRTL && styles.languageButtonRTL,
+            hovered && styles.languageButtonHovered,
+          ]}
+        >
+          <Languages size={18} color={colors.textSecondary} />
+          <Text style={styles.languageFlag}>{currentLanguage.flag}</Text>
+          <Text style={[styles.languageText, isRTL && styles.textRTL]}>
+            {currentLanguage.label}
+          </Text>
+          <View style={[styles.chevron, showLanguageMenu && styles.chevronExpanded]}>
+            <ChevronDown size={16} color={colors.textSecondary} />
+          </View>
+        </Pressable>
+
+        {showLanguageMenu && (
+          <View style={[styles.languageMenu, isRTL && styles.languageMenuRTL]}>
+            {LANGUAGE_OPTIONS.map((lang) => (
+              <Pressable
+                key={lang.code}
+                onPress={() => handleLanguageChange(lang.code)}
+                style={({ hovered }: any) => [
+                  styles.languageOption,
+                  isRTL && styles.languageOptionRTL,
+                  lang.code === i18n.language && styles.languageOptionActive,
+                  hovered && styles.languageOptionHovered,
+                ]}
+              >
+                <Text style={styles.languageOptionFlag}>{lang.flag}</Text>
+                <Text style={[styles.languageOptionText, isRTL && styles.textRTL]}>
+                  {lang.label}
+                </Text>
+                {lang.code === i18n.language && (
+                  <Check size={16} color={colors.primary} />
+                )}
+              </Pressable>
+            ))}
+          </View>
+        )}
       </View>
 
       {/* User Info */}
@@ -385,6 +448,72 @@ const styles = StyleSheet.create({
   brandSubtitle: {
     fontSize: 12,
     color: colors.textMuted,
+  },
+  languageSection: {
+    padding: spacing.md,
+    borderBottomWidth: 1,
+    borderBottomColor: 'rgba(255, 255, 255, 0.05)',
+  },
+  languageButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.sm,
+    paddingHorizontal: spacing.md,
+    paddingVertical: spacing.sm + 2,
+    borderRadius: borderRadius.md,
+    backgroundColor: 'rgba(255, 255, 255, 0.03)',
+  },
+  languageButtonRTL: {
+    flexDirection: 'row-reverse',
+  },
+  languageButtonHovered: {
+    backgroundColor: 'rgba(255, 255, 255, 0.08)',
+  },
+  languageFlag: {
+    fontSize: 18,
+  },
+  languageText: {
+    flex: 1,
+    fontSize: 14,
+    color: colors.text,
+    fontWeight: '500',
+  },
+  languageMenu: {
+    marginTop: spacing.sm,
+    borderRadius: borderRadius.md,
+    backgroundColor: 'rgba(0, 0, 0, 0.3)',
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.1)',
+    overflow: 'hidden',
+  },
+  languageMenuRTL: {
+    // RTL specific styles if needed
+  },
+  languageOption: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.sm,
+    paddingHorizontal: spacing.md,
+    paddingVertical: spacing.sm + 2,
+    borderBottomWidth: 1,
+    borderBottomColor: 'rgba(255, 255, 255, 0.05)',
+  },
+  languageOptionRTL: {
+    flexDirection: 'row-reverse',
+  },
+  languageOptionHovered: {
+    backgroundColor: 'rgba(255, 255, 255, 0.05)',
+  },
+  languageOptionActive: {
+    backgroundColor: 'rgba(0, 217, 255, 0.1)',
+  },
+  languageOptionFlag: {
+    fontSize: 18,
+  },
+  languageOptionText: {
+    flex: 1,
+    fontSize: 14,
+    color: colors.text,
   },
   userSection: {
     padding: spacing.md,

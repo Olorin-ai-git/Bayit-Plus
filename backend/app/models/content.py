@@ -1,5 +1,5 @@
 from datetime import datetime
-from typing import Optional, List, Union
+from typing import Optional, List, Union, Dict, Any
 from beanie import Document
 from pydantic import BaseModel, Field
 
@@ -62,6 +62,24 @@ class Content(Document):
     is_drm_protected: bool = False
     drm_key_id: Optional[str] = None
     file_hash: Optional[str] = None  # SHA256 hash for duplicate detection
+
+    # Subtitle tracking
+    has_subtitles: bool = False
+    available_subtitle_languages: List[str] = Field(default_factory=list)  # ["en", "he", "es"]
+    embedded_subtitle_count: int = 0  # Number of subtitle tracks in MKV file
+    subtitle_extraction_status: Optional[str] = None  # "pending", "completed", "failed"
+    subtitle_last_checked: Optional[datetime] = None
+
+    # Video metadata (from FFmpeg analysis)
+    video_metadata: Optional[Dict[str, Any]] = None
+    # {
+    #   "duration": 7265.5,
+    #   "width": 1920,
+    #   "height": 1080,
+    #   "codec": "h264",
+    #   "bitrate": 2500000,
+    #   "fps": 23.976
+    # }
 
     # Series info
     is_series: bool = False
@@ -146,6 +164,11 @@ class LiveChannel(Document):
     epg_source: Optional[str] = None
     current_show: Optional[str] = None
     next_show: Optional[str] = None
+
+    # Real-time subtitle support (Premium feature)
+    supports_live_subtitles: bool = False
+    primary_language: str = "he"  # Source language for live translation
+    available_translation_languages: List[str] = Field(default_factory=lambda: ["en", "es", "ar"])
 
     # Visibility
     is_active: bool = True
