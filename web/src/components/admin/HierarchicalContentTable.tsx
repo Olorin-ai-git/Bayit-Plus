@@ -198,24 +198,67 @@ export default function HierarchicalContentTable({
           }
           const item = row as ContentItem & { rowType: 'content' }
           return (
-            <Pressable onPress={() => onUploadPoster(item.id)} style={styles.thumbnailCell} className="thumbnailCell">
-              <View style={styles.thumbnailWrapper}>
+            <div
+              onClick={() => onUploadPoster(item.id)}
+              style={{
+                width: 60,
+                paddingLeft: 4,
+                paddingRight: 4,
+                cursor: 'pointer'
+              }}
+              className="thumbnailCell"
+            >
+              <div style={{
+                width: 45,
+                height: 65,
+                borderRadius: 4,
+                overflow: 'hidden',
+                position: 'relative'
+              }}>
                 {item.thumbnail ? (
-                  <View style={[styles.thumbnail, { backgroundImage: `url(${item.thumbnail})` }]} />
+                  <div style={{
+                    width: '100%',
+                    height: '100%',
+                    backgroundImage: `url(${item.thumbnail})`,
+                    backgroundSize: 'cover',
+                    backgroundPosition: 'center'
+                  }} />
                 ) : (
-                  <View style={styles.thumbnailPlaceholder}>
+                  <div style={{
+                    width: '100%',
+                    height: '100%',
+                    backgroundColor: 'rgba(255, 255, 255, 0.05)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center'
+                  }}>
                     {item.is_series ? (
                       <Tv size={20} color={colors.textMuted} />
                     ) : (
                       <Film size={20} color={colors.textMuted} />
                     )}
-                  </View>
+                  </div>
                 )}
-                <View style={styles.thumbnailOverlay} className="thumbnailOverlay">
-                  <Text style={styles.thumbnailOverlayText}>📷 Upload</Text>
-                </View>
-              </View>
-            </Pressable>
+                <div
+                  className="thumbnailOverlay"
+                  style={{
+                    position: 'absolute',
+                    top: 0,
+                    left: 0,
+                    right: 0,
+                    bottom: 0,
+                    backgroundColor: 'rgba(0, 0, 0, 0.7)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    opacity: 0,
+                    transition: 'opacity 0.2s ease'
+                  }}
+                >
+                  <span style={{ color: colors.text, fontSize: 10, fontWeight: 600 }}>📷 Upload</span>
+                </div>
+              </div>
+            </div>
           )
         },
       },
