@@ -587,6 +587,27 @@ async def get_season_episodes(series_id: str, season_num: int):
 
 # ============ Movie Detail Endpoints ============
 
+@router.get("/movie/{movie_id}/debug")
+async def debug_movie(movie_id: str):
+    """Debug endpoint to check database vs Beanie."""
+    from motor.motor_asyncio import AsyncIOMotorClient
+    from bson import ObjectId
+
+    # Direct MongoDB query
+    client = AsyncIOMotorClient(settings.MONGODB_URL)
+    db = client[settings.MONGODB_DB_NAME]
+    direct_doc = await db["content"].find_one({"_id": ObjectId(movie_id)})
+
+    # Beanie query
+    movie = await Content.get(movie_id)
+
+    return {
+        "direct_db_url": direct_doc.get("stream_url") if direct_doc else None,
+        "beanie_url": movie.stream_url if movie else None,
+        "match": direct_doc.get("stream_url") == movie.stream_url if (direct_doc and movie) else False
+    }
+
+
 @router.get("/movie/{movie_id}")
 async def get_movie_details(
     movie_id: str,
