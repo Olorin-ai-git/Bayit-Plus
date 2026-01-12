@@ -1143,7 +1143,134 @@
       "podcasts": "פודקאסטים",
       "widgets": "ווידג'טים",
       "settings": "הגדרות",
-      "auditLogs": "יומן פעילות"
+      "auditLogs": "יומן פעילות",
+      "librarian": "סוכן הספרן"
+    },
+    "librarian": {
+      "title": "סוכן הספרן",
+      "subtitle": "ניהול אוטונומי של ספריית תוכן מבוסס בינה מלאכותית",
+      "loading": "טוען סוכן ספרן...",
+      "loadingConfig": "טוען תצורה...",
+      "refresh": "רענן",
+      "errors": {
+        "configError": "שגיאת תצורה",
+        "configNotLoaded": "התצורה לא נטענה",
+        "failedToLoad": "נכשל בטעינת נתוני הספרן",
+        "failedToLoadConfig": "נכשל בטעינת תצורת הספרן",
+        "failedToTrigger": "נכשל בהפעלת ביקורת. אנא נסה שוב.",
+        "failedToLoadDetails": "נכשל בטעינת פרטי הדוח.",
+        "failedToRollback": "נכשל בביטול הפעולה.",
+        "contactAdmin": "דף הספרן לא יכול להיטען ללא תצורה נכונה.\nאנא צור קשר עם המנהל שלך."
+      },
+      "stats": {
+        "systemHealth": "תקינות המערכת",
+        "totalAudits": "סה״כ ביקורות (30 יום)",
+        "last30Days": "30 הימים האחרונים",
+        "issuesFixed": "בעיות שתוקנו",
+        "lastAudit": "ביקורת אחרונה",
+        "never": "אף פעם",
+        "unknown": "לא ידוע"
+      },
+      "health": {
+        "excellent": "מצוין",
+        "good": "טוב",
+        "fair": "סביר",
+        "poor": "גרוע"
+      },
+      "quickActions": {
+        "title": "פעולות מהירות",
+        "dryRun": "ריצת ניסיון (דוח בלבד)",
+        "triggerDaily": "הפעל ביקורת יומית",
+        "triggerAI": "הפעל ביקורת סוכן AI",
+        "budgetLabel": "מגבלת תקציב לסוכן AI: ${{budget}}",
+        "aiAuditSuccess": "ביקורת סוכן AI הופעלה בהצלחה. {{dryRun}}",
+        "dailyAuditSuccess": "ביקורת יומית הופעלה בהצלחה. {{dryRun}}",
+        "dryRunMode": "(מצב ריצת ניסיון)",
+        "rollbackSuccess": "הפעולה בוטלה בהצלחה."
+      },
+      "schedules": {
+        "title": "ביקורות מתוזמנות",
+        "dailyTitle": "ביקורת יומית",
+        "weeklyTitle": "ביקורת AI שבועית",
+        "schedule": "לוח זמנים",
+        "time": "זמן",
+        "mode": "מצב",
+        "cost": "עלות משוערת",
+        "status": "סטטוס",
+        "description": "תיאור",
+        "viewInConsole": "צפה ב-Cloud Console",
+        "modifyNote": "לשינוי לוחות זמנים, השתמש ב-Google Cloud Console"
+      },
+      "reports": {
+        "title": "דוחות ביקורת אחרונים",
+        "emptyMessage": "עדיין אין דוחות ביקורת",
+        "columns": {
+          "date": "תאריך",
+          "type": "סוג",
+          "duration": "משך",
+          "status": "סטטוס",
+          "issues": "בעיות",
+          "fixes": "תיקונים"
+        },
+        "detailModal": {
+          "title": "דוח ביקורת: {{id}}",
+          "summary": "סיכום",
+          "status": "סטטוס",
+          "executionTime": "זמן ביצוע",
+          "totalItems": "סה״כ פריטים",
+          "healthyItems": "פריטים תקינים",
+          "issuesFound": "בעיות שנמצאו",
+          "brokenStreams": "סטרימים שבורים",
+          "missingMetadata": "מטא-דאטה חסרה",
+          "misclassifications": "סיווגים שגויים",
+          "orphanedItems": "פריטים נטושים",
+          "fixesApplied": "תיקונים שבוצעו",
+          "totalFixes": "{{count}} תיקונים בסך הכל",
+          "aiInsights": "תובנות AI"
+        }
+      },
+      "activityLog": {
+        "title": "יומן פעילות",
+        "filterByType": "סנן לפי סוג",
+        "allActions": "כל הפעולות",
+        "actionTypes": {
+          "addPoster": "הוסף פוסטר",
+          "updateMetadata": "עדכן מטא-דאטה",
+          "recategorize": "סווג מחדש",
+          "fixUrl": "תקן URL",
+          "cleanTitle": "נקה כותרת"
+        },
+        "rollback": "בטל",
+        "rolledBack": "בוטל",
+        "confirmRollback": {
+          "title": "אשר ביטול",
+          "message": "האם אתה בטוח שברצונך לבטל פעולה זו? פעולה זו תשחזר את המצב הקודם."
+        },
+        "emptyMessage": "לא נמצאו פעולות"
+      },
+      "modal": {
+        "confirmAI": {
+          "title": "להפעיל ביקורת סוכן AI?",
+          "message": "פעולה זו תפעיל ביקורת אוטונומית של סוכן AI עם מגבלת תקציב של ${{budget}}. הסוכן יקבל החלטות לגבי מה לבדוק ולתקן. {{dryRun}}",
+          "dryRunNote": "רץ במצב ניסיון (לא יתבצעו שינויים)."
+        },
+        "cancel": "בטל",
+        "confirm": "אשר",
+        "close": "סגור",
+        "retry": "נסה שוב"
+      },
+      "status": {
+        "enabled": "מופעל",
+        "disabled": "מושבת",
+        "completed": "הושלם",
+        "failed": "נכשל",
+        "in_progress": "בתהליך",
+        "pending": "ממתין"
+      },
+      "auditTypes": {
+        "daily_incremental": "יומי הדרגתי",
+        "ai_agent": "סוכן AI"
+      }
     },
     "widgets": {
       "title": "ווידג'טים",

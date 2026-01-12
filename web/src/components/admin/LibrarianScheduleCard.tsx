@@ -1,4 +1,5 @@
 import { View, Text, StyleSheet, Linking, Pressable } from 'react-native';
+import { useTranslation } from 'react-i18next';
 import { Calendar, Brain, ExternalLink } from 'lucide-react';
 import { GlassCard, GlassBadge } from '@bayit/shared/ui';
 import { colors, spacing, borderRadius } from '@bayit/shared/theme';
@@ -25,6 +26,7 @@ const LibrarianScheduleCard: React.FC<LibrarianScheduleCardProps> = ({
   description,
   gcpProjectId,
 }) => {
+  const { t } = useTranslation();
   const { isRTL, textAlign } = useDirection();
   const Icon = mode === 'AI Agent' ? Brain : Calendar;
 
@@ -39,7 +41,7 @@ const LibrarianScheduleCard: React.FC<LibrarianScheduleCardProps> = ({
           <Icon size={24} color={colors.background} />
         </View>
         <GlassBadge
-          text={status}
+          text={t(`admin.librarian.status.${status.toLowerCase()}`)}
           variant={status === 'ENABLED' ? 'success' : 'error'}
         />
       </View>
@@ -47,10 +49,10 @@ const LibrarianScheduleCard: React.FC<LibrarianScheduleCardProps> = ({
       <Text style={[styles.title, { textAlign }]}>{title}</Text>
 
       <View style={styles.detailsContainer}>
-        <DetailRow label="Schedule" value={cron} isRTL={isRTL} />
-        <DetailRow label="Time" value={time} isRTL={isRTL} />
-        <DetailRow label="Mode" value={mode} isRTL={isRTL} />
-        <DetailRow label="Est. Cost" value={cost} isRTL={isRTL} />
+        <DetailRow label={t('admin.librarian.schedules.schedule')} value={cron} isRTL={isRTL} />
+        <DetailRow label={t('admin.librarian.schedules.time')} value={time} isRTL={isRTL} />
+        <DetailRow label={t('admin.librarian.schedules.mode')} value={mode} isRTL={isRTL} />
+        <DetailRow label={t('admin.librarian.schedules.cost')} value={cost} isRTL={isRTL} />
       </View>
 
       {description && (
@@ -58,7 +60,7 @@ const LibrarianScheduleCard: React.FC<LibrarianScheduleCardProps> = ({
       )}
 
       <Pressable style={styles.linkButton} onPress={handleOpenCloudConsole}>
-        <Text style={styles.linkText}>Modify in Cloud Console</Text>
+        <Text style={styles.linkText}>{t('admin.librarian.schedules.viewInConsole')}</Text>
         <ExternalLink size={16} color={colors.primary} />
       </Pressable>
     </GlassCard>

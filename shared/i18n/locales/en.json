@@ -1273,7 +1273,134 @@
       "podcasts": "Podcasts",
       "widgets": "Widgets",
       "settings": "Settings",
-      "auditLogs": "Audit Logs"
+      "auditLogs": "Audit Logs",
+      "librarian": "Librarian Agent"
+    },
+    "librarian": {
+      "title": "Librarian Agent",
+      "subtitle": "Autonomous AI-powered content library management",
+      "loading": "Loading Librarian Agent...",
+      "loadingConfig": "Loading configuration...",
+      "refresh": "Refresh",
+      "errors": {
+        "configError": "Configuration Error",
+        "configNotLoaded": "Configuration not loaded",
+        "failedToLoad": "Failed to load librarian data",
+        "failedToLoadConfig": "Failed to load librarian configuration",
+        "failedToTrigger": "Failed to trigger audit. Please try again.",
+        "failedToLoadDetails": "Failed to load report details.",
+        "failedToRollback": "Failed to rollback action.",
+        "contactAdmin": "The Librarian page cannot load without proper configuration.\nPlease contact your administrator."
+      },
+      "stats": {
+        "systemHealth": "System Health",
+        "totalAudits": "Total Audits (30d)",
+        "last30Days": "Last 30 days",
+        "issuesFixed": "Issues Fixed",
+        "lastAudit": "Last Audit",
+        "never": "Never",
+        "unknown": "unknown"
+      },
+      "health": {
+        "excellent": "excellent",
+        "good": "good",
+        "fair": "fair",
+        "poor": "poor"
+      },
+      "quickActions": {
+        "title": "Quick Actions",
+        "dryRun": "Dry Run (Report Only)",
+        "triggerDaily": "Trigger Daily Audit",
+        "triggerAI": "Trigger AI Agent Audit",
+        "budgetLabel": "AI Agent Budget Limit: ${{budget}}",
+        "aiAuditSuccess": "AI Agent audit triggered successfully. {{dryRun}}",
+        "dailyAuditSuccess": "Daily audit triggered successfully. {{dryRun}}",
+        "dryRunMode": "(Dry run mode)",
+        "rollbackSuccess": "Action rolled back successfully."
+      },
+      "schedules": {
+        "title": "Scheduled Audits",
+        "dailyTitle": "Daily Audit",
+        "weeklyTitle": "Weekly AI Audit",
+        "schedule": "Schedule",
+        "time": "Time",
+        "mode": "Mode",
+        "cost": "Est. Cost",
+        "status": "Status",
+        "description": "Description",
+        "viewInConsole": "View in Cloud Console",
+        "modifyNote": "To modify schedules, use Google Cloud Console"
+      },
+      "reports": {
+        "title": "Recent Audit Reports",
+        "emptyMessage": "No audit reports yet",
+        "columns": {
+          "date": "Date",
+          "type": "Type",
+          "duration": "Duration",
+          "status": "Status",
+          "issues": "Issues",
+          "fixes": "Fixes"
+        },
+        "detailModal": {
+          "title": "Audit Report: {{id}}",
+          "summary": "Summary",
+          "status": "Status",
+          "executionTime": "Execution Time",
+          "totalItems": "Total Items",
+          "healthyItems": "Healthy Items",
+          "issuesFound": "Issues Found",
+          "brokenStreams": "Broken Streams",
+          "missingMetadata": "Missing Metadata",
+          "misclassifications": "Misclassifications",
+          "orphanedItems": "Orphaned Items",
+          "fixesApplied": "Fixes Applied",
+          "totalFixes": "{{count}} total fixes",
+          "aiInsights": "AI Insights"
+        }
+      },
+      "activityLog": {
+        "title": "Activity Log",
+        "filterByType": "Filter by type",
+        "allActions": "All Actions",
+        "actionTypes": {
+          "addPoster": "Add Poster",
+          "updateMetadata": "Update Metadata",
+          "recategorize": "Recategorize",
+          "fixUrl": "Fix URL",
+          "cleanTitle": "Clean Title"
+        },
+        "rollback": "Rollback",
+        "rolledBack": "Rolled Back",
+        "confirmRollback": {
+          "title": "Confirm Rollback",
+          "message": "Are you sure you want to rollback this action? This will restore the previous state."
+        },
+        "emptyMessage": "No actions found"
+      },
+      "modal": {
+        "confirmAI": {
+          "title": "Trigger AI Agent Audit?",
+          "message": "This will trigger an autonomous AI agent audit with a budget limit of ${{budget}}. The agent will make decisions about what to check and fix. {{dryRun}}",
+          "dryRunNote": "Running in DRY RUN mode (no changes will be made)."
+        },
+        "cancel": "Cancel",
+        "confirm": "Confirm",
+        "close": "Close",
+        "retry": "Retry"
+      },
+      "status": {
+        "enabled": "ENABLED",
+        "disabled": "DISABLED",
+        "completed": "completed",
+        "failed": "failed",
+        "in_progress": "in_progress",
+        "pending": "pending"
+      },
+      "auditTypes": {
+        "daily_incremental": "daily incremental",
+        "ai_agent": "AI Agent"
+      }
     },
     "widgets": {
       "title": "Widgets",

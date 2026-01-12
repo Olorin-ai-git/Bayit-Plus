@@ -48,8 +48,8 @@ export const GlassBadge: React.FC<GlassBadgeProps> = ({
     purple: colors.secondary,
   };
 
-  const currentVariant = variantStyles[variant];
-  const currentSize = sizeStyles[size];
+  const currentVariant = variantStyles[variant] || variantStyles.default;
+  const currentSize = sizeStyles[size] || sizeStyles.default;
   const computedDotColor = dotColor || variant;
 
   return (

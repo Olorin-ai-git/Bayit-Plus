@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { View, Text, StyleSheet, ScrollView, Pressable, ActivityIndicator } from 'react-native';
+import { useTranslation } from 'react-i18next';
 import {
   Image,
   FileText,
@@ -29,6 +30,7 @@ const LibrarianActivityLog: React.FC<LibrarianActivityLogProps> = ({
   onRollback,
   config,
 }) => {
+  const { t } = useTranslation();
   const { isRTL, textAlign, flexDirection } = useDirection();
   const [filter, setFilter] = useState<string>('all');
   const [page, setPage] = useState(1);
@@ -102,7 +104,7 @@ const LibrarianActivityLog: React.FC<LibrarianActivityLogProps> = ({
 
   // Build filter options from config
   const filterOptions = [
-    { label: 'All Actions', value: 'all' },
+    { label: t('admin.librarian.activityLog.allActions'), value: 'all' },
     ...config.action_types.map((actionType) => ({
       label: actionType.label,
       value: actionType.value,
@@ -112,13 +114,13 @@ const LibrarianActivityLog: React.FC<LibrarianActivityLogProps> = ({
   return (
     <GlassCard style={styles.container}>
       <View style={[styles.header, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
-        <Text style={[styles.title, { textAlign }]}>Recent Activity</Text>
+        <Text style={[styles.title, { textAlign }]}>{t('admin.librarian.activityLog.title')}</Text>
         <View style={styles.filterContainer}>
           <GlassSelect
             options={filterOptions}
             value={filter}
             onChange={setFilter}
-            placeholder="Filter by type"
+            placeholder={t('admin.librarian.activityLog.filterByType')}
           />
         </View>
       </View>
@@ -129,7 +131,7 @@ const LibrarianActivityLog: React.FC<LibrarianActivityLogProps> = ({
         </View>
       ) : paginatedActions.length === 0 ? (
         <View style={styles.emptyContainer}>
-          <Text style={[styles.emptyText, { textAlign }]}>No activity to display</Text>
+          <Text style={[styles.emptyText, { textAlign }]}>{t('admin.librarian.activityLog.emptyMessage')}</Text>
         </View>
       ) : (
         <>
@@ -189,16 +191,16 @@ const LibrarianActivityLog: React.FC<LibrarianActivityLogProps> = ({
       <GlassModal
         visible={rollbackModalVisible}
         type="confirm"
-        title="Confirm Rollback"
-        message="Are you sure you want to rollback this action? This will restore the previous state."
+        title={t('admin.librarian.activityLog.confirmRollback.title')}
+        message={t('admin.librarian.activityLog.confirmRollback.message')}
         buttons={[
           {
-            text: 'Cancel',
+            text: t('admin.librarian.modal.cancel'),
             onPress: () => setRollbackModalVisible(false),
             variant: 'secondary',
           },
           {
-            text: rollingBack ? 'Rolling back...' : 'Rollback',
+            text: t('admin.librarian.activityLog.rollback'),
             onPress: handleConfirmRollback,
             variant: 'danger',
             disabled: rollingBack,
@@ -229,6 +231,7 @@ const ActivityItem: React.FC<ActivityItemProps> = ({
   idTruncateLength,
   onRollback,
 }) => {
+  const { t } = useTranslation();
   const formattedDate = format(new Date(action.timestamp), 'MMM d, yyyy HH:mm');
 
   return (
@@ -252,7 +255,7 @@ const ActivityItem: React.FC<ActivityItemProps> = ({
         </Text>
 
         {action.rolled_back && (
-          <GlassBadge text="Rolled Back" variant="error" />
+          <GlassBadge text={t('admin.librarian.activityLog.rolledBack')} variant="error" />
         )}
       </View>
 

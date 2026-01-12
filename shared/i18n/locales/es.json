@@ -1166,7 +1166,134 @@
       "emailCampaigns": "Campañas de Correo",
       "pushNotifications": "Notificaciones Push",
       "settings": "Configuración",
-      "auditLogs": "Registro de Auditoría"
+      "auditLogs": "Registro de Auditoría",
+      "librarian": "Agente Bibliotecario"
+    },
+    "librarian": {
+      "title": "Agente Bibliotecario",
+      "subtitle": "Gestión autónoma de biblioteca de contenido con IA",
+      "loading": "Cargando Agente Bibliotecario...",
+      "loadingConfig": "Cargando configuración...",
+      "refresh": "Actualizar",
+      "errors": {
+        "configError": "Error de Configuración",
+        "configNotLoaded": "Configuración no cargada",
+        "failedToLoad": "Error al cargar datos del bibliotecario",
+        "failedToLoadConfig": "Error al cargar configuración del bibliotecario",
+        "failedToTrigger": "Error al activar auditoría. Por favor, inténtalo de nuevo.",
+        "failedToLoadDetails": "Error al cargar detalles del informe.",
+        "failedToRollback": "Error al revertir acción.",
+        "contactAdmin": "La página del Bibliotecario no puede cargarse sin la configuración adecuada.\nPor favor, contacta a tu administrador."
+      },
+      "stats": {
+        "systemHealth": "Estado del Sistema",
+        "totalAudits": "Total de Auditorías (30d)",
+        "last30Days": "Últimos 30 días",
+        "issuesFixed": "Problemas Resueltos",
+        "lastAudit": "Última Auditoría",
+        "never": "Nunca",
+        "unknown": "desconocido"
+      },
+      "health": {
+        "excellent": "excelente",
+        "good": "bueno",
+        "fair": "regular",
+        "poor": "pobre"
+      },
+      "quickActions": {
+        "title": "Acciones Rápidas",
+        "dryRun": "Ejecución Simulada (Solo Informe)",
+        "triggerDaily": "Activar Auditoría Diaria",
+        "triggerAI": "Activar Auditoría de Agente IA",
+        "budgetLabel": "Límite de Presupuesto del Agente IA: ${{budget}}",
+        "aiAuditSuccess": "Auditoría de Agente IA activada exitosamente. {{dryRun}}",
+        "dailyAuditSuccess": "Auditoría diaria activada exitosamente. {{dryRun}}",
+        "dryRunMode": "(Modo de ejecución simulada)",
+        "rollbackSuccess": "Acción revertida exitosamente."
+      },
+      "schedules": {
+        "title": "Auditorías Programadas",
+        "dailyTitle": "Auditoría Diaria",
+        "weeklyTitle": "Auditoría IA Semanal",
+        "schedule": "Programación",
+        "time": "Hora",
+        "mode": "Modo",
+        "cost": "Costo Est.",
+        "status": "Estado",
+        "description": "Descripción",
+        "viewInConsole": "Ver en Cloud Console",
+        "modifyNote": "Para modificar programaciones, usa Google Cloud Console"
+      },
+      "reports": {
+        "title": "Informes de Auditoría Recientes",
+        "emptyMessage": "Aún no hay informes de auditoría",
+        "columns": {
+          "date": "Fecha",
+          "type": "Tipo",
+          "duration": "Duración",
+          "status": "Estado",
+          "issues": "Problemas",
+          "fixes": "Correcciones"
+        },
+        "detailModal": {
+          "title": "Informe de Auditoría: {{id}}",
+          "summary": "Resumen",
+          "status": "Estado",
+          "executionTime": "Tiempo de Ejecución",
+          "totalItems": "Total de Elementos",
+          "healthyItems": "Elementos Saludables",
+          "issuesFound": "Problemas Encontrados",
+          "brokenStreams": "Transmisiones Rotas",
+          "missingMetadata": "Metadatos Faltantes",
+          "misclassifications": "Clasificaciones Erróneas",
+          "orphanedItems": "Elementos Huérfanos",
+          "fixesApplied": "Correcciones Aplicadas",
+          "totalFixes": "{{count}} correcciones totales",
+          "aiInsights": "Perspectivas de IA"
+        }
+      },
+      "activityLog": {
+        "title": "Registro de Actividad",
+        "filterByType": "Filtrar por tipo",
+        "allActions": "Todas las Acciones",
+        "actionTypes": {
+          "addPoster": "Agregar Póster",
+          "updateMetadata": "Actualizar Metadatos",
+          "recategorize": "Recategorizar",
+          "fixUrl": "Corregir URL",
+          "cleanTitle": "Limpiar Título"
+        },
+        "rollback": "Revertir",
+        "rolledBack": "Revertido",
+        "confirmRollback": {
+          "title": "Confirmar Reversión",
+          "message": "¿Estás seguro de que quieres revertir esta acción? Esto restaurará el estado anterior."
+        },
+        "emptyMessage": "No se encontraron acciones"
+      },
+      "modal": {
+        "confirmAI": {
+          "title": "¿Activar Auditoría de Agente IA?",
+          "message": "Esto activará una auditoría autónoma de agente IA con un límite de presupuesto de ${{budget}}. El agente tomará decisiones sobre qué verificar y corregir. {{dryRun}}",
+          "dryRunNote": "Ejecutando en modo SIMULADO (no se realizarán cambios)."
+        },
+        "cancel": "Cancelar",
+        "confirm": "Confirmar",
+        "close": "Cerrar",
+        "retry": "Reintentar"
+      },
+      "status": {
+        "enabled": "HABILITADO",
+        "disabled": "DESHABILITADO",
+        "completed": "completado",
+        "failed": "fallido",
+        "in_progress": "en_progreso",
+        "pending": "pendiente"
+      },
+      "auditTypes": {
+        "daily_incremental": "incremental diario",
+        "ai_agent": "Agente IA"
+      }
     },
     "billing": {
       "subtitle": "Rastrear ingresos y pagos",

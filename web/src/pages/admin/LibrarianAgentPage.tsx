@@ -80,13 +80,13 @@ const LibrarianAgentPage = () => {
         // Configuration error - fail fast, don't allow page to load
         setConfigError(errorMessage);
         Alert.alert(
-          'Configuration Error',
-          `${errorMessage}\n\nThe Librarian page cannot load without proper configuration. Please contact your administrator.`,
-          [{ text: 'OK' }]
+          t('admin.librarian.errors.configError'),
+          `${errorMessage}\n\n${t('admin.librarian.errors.contactAdmin')}`,
+          [{ text: t('common.ok') }]
         );
       } else {
         // Data loading error - still allow retry
-        Alert.alert('Error', 'Failed to load librarian data. Please try again.');
+        Alert.alert(t('common.error'), t('admin.librarian.errors.failedToLoad'));
       }
     } finally {
       setLoading(false);
@@ -116,7 +116,7 @@ const LibrarianAgentPage = () => {
 
   const executeAudit = async (auditType: 'daily_incremental' | 'ai_agent') => {
     if (!config) {
-      Alert.alert('Error', 'Configuration not loaded');
+      Alert.alert(t('common.error'), t('admin.librarian.errors.configNotLoaded'));
       return;
     }
 
@@ -132,11 +132,11 @@ const LibrarianAgentPage = () => {
         budget_limit_usd: budgetLimit,
       });
 
+      const successKey = auditType === 'ai_agent' ? 'aiAuditSuccess' : 'dailyAuditSuccess';
+      const dryRunText = dryRun ? t('admin.librarian.quickActions.dryRunMode') : '';
       Alert.alert(
-        'Success',
-        `${auditType === 'ai_agent' ? 'AI Agent audit' : 'Daily audit'} triggered successfully. ${
-          dryRun ? '(Dry run mode)' : ''
-        }`
+        t('common.success'),
+        t(`admin.librarian.quickActions.${successKey}`, { dryRun: dryRunText })
       );
 
       // Refresh data after 5 seconds
@@ -145,7 +145,7 @@ const LibrarianAgentPage = () => {
       }, 5000);
     } catch (error) {
       logger.error('Failed to trigger audit:', error);
-      Alert.alert('Error', 'Failed to trigger audit. Please try again.');
+      Alert.alert(t('common.error'), t('admin.librarian.errors.failedToTrigger'));
     } finally {
       setTriggering(false);
       setPendingAuditType(null);
@@ -160,7 +160,7 @@ const LibrarianAgentPage = () => {
       setDetailModalVisible(true);
     } catch (error) {
       logger.error('Failed to load report details:', error);
-      Alert.alert('Error', 'Failed to load report details.');
+      Alert.alert(t('common.error'), t('admin.librarian.errors.failedToLoadDetails'));
     }
   };
 
@@ -168,11 +168,11 @@ const LibrarianAgentPage = () => {
   const handleRollback = async (actionId: string) => {
     try {
       await rollbackActionAPI(actionId);
-      Alert.alert('Success', 'Action rolled back successfully.');
+      Alert.alert(t('common.success'), t('admin.librarian.quickActions.rollbackSuccess'));
       await loadData();
     } catch (error) {
       logger.error('Failed to rollback action:', error);
-      Alert.alert('Error', 'Failed to rollback action.');
+      Alert.alert(t('common.error'), t('admin.librarian.errors.failedToRollback'));
     }
   };
 
@@ -180,7 +180,7 @@ const LibrarianAgentPage = () => {
   const reportColumns: GlassTableColumn<AuditReport>[] = [
     {
       key: 'audit_date',
-      label: 'Date',
+      label: t('admin.librarian.reports.columns.date'),
       render: (value) => (
         <Text style={styles.tableText}>
           {format(new Date(value), 'MMM d, HH:mm')}
@@ -189,25 +189,25 @@ const LibrarianAgentPage = () => {
     },
     {
       key: 'audit_type',
-      label: 'Type',
+      label: t('admin.librarian.reports.columns.type'),
       render: (value) => (
         <GlassBadge
-          text={value.replace('_', ' ')}
+          text={t(`admin.librarian.auditTypes.${value}`, value.replace('_', ' '))}
           variant={value === 'ai_agent' ? 'primary' : 'default'}
         />
       ),
     },
     {
       key: 'execution_time_seconds',
-      label: 'Duration',
+      label: t('admin.librarian.reports.columns.duration'),
       render: (value) => <Text style={styles.tableText}>{value.toFixed(1)}s</Text>,
     },
     {
       key: 'status',
-      label: 'Status',
+      label: t('admin.librarian.reports.columns.status'),
       render: (value) => (
         <GlassBadge
-          text={value}
+          text={t(`admin.librarian.status.${value}`, value)}
           variant={
             value === 'completed' ? 'success' :
             value === 'failed' ? 'error' :
@@ -218,12 +218,12 @@ const LibrarianAgentPage = () => {
     },
     {
       key: 'issues_count',
-      label: 'Issues',
+      label: t('admin.librarian.reports.columns.issues'),
       render: (value) => <Text style={styles.tableText}>{value}</Text>,
     },
     {
       key: 'fixes_count',
-      label: 'Fixes',
+      label: t('admin.librarian.reports.columns.fixes'),
       render: (value) => <Text style={styles.tableText}>{value}</Text>,
     },
   ];
@@ -248,7 +248,7 @@ const LibrarianAgentPage = () => {
     return (
       <View style={styles.loadingContainer}>
         <ActivityIndicator size="large" color={colors.primary} />
-        <Text style={styles.loadingText}>Loading Librarian Agent...</Text>
+        <Text style={styles.loadingText}>{t('admin.librarian.loading')}</Text>
       </View>
     );
   }
@@ -257,14 +257,13 @@ const LibrarianAgentPage = () => {
   if (configError) {
     return (
       <View style={styles.errorContainer}>
-        <Text style={styles.errorTitle}>Configuration Error</Text>
+        <Text style={styles.errorTitle}>{t('admin.librarian.errors.configError')}</Text>
         <Text style={styles.errorText}>{configError}</Text>
         <Text style={styles.errorSubtext}>
-          The Librarian page cannot load without proper configuration.{'\n'}
-          Please contact your administrator.
+          {t('admin.librarian.errors.contactAdmin')}
         </Text>
         <GlassButton
-          title="Retry"
+          title={t('admin.librarian.modal.retry')}
           variant="primary"
           onPress={loadData}
           style={{ marginTop: spacing.lg }}
@@ -278,7 +277,7 @@ const LibrarianAgentPage = () => {
     return (
       <View style={styles.loadingContainer}>
         <ActivityIndicator size="large" color={colors.primary} />
-        <Text style={styles.loadingText}>Loading configuration...</Text>
+        <Text style={styles.loadingText}>{t('admin.librarian.loadingConfig')}</Text>
       </View>
     );
   }
@@ -289,14 +288,14 @@ const LibrarianAgentPage = () => {
       <View style={[styles.header, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
         <View style={[styles.titleContainer, { alignItems: isRTL ? 'flex-end' : 'flex-start' }]}>
           <Text style={[styles.title, { textAlign }]}>
-            {isRTL ? 'סוכן הספרן' : 'Librarian Agent'}
+            {t('admin.librarian.title')}
           </Text>
           <Text style={[styles.subtitle, { textAlign }]}>
-            Autonomous AI-powered content library management
+            {t('admin.librarian.subtitle')}
           </Text>
         </View>
         <GlassButton
-          title="Refresh"
+          title={t('admin.librarian.refresh')}
           variant="secondary"
           icon={<RefreshCw size={16} color={colors.text} />}
           onPress={handleRefresh}
@@ -307,31 +306,31 @@ const LibrarianAgentPage = () => {
       {/* Stats Section */}
       <View style={styles.statsGrid}>
         <StatCard
-          title="System Health"
-          value={status?.system_health || 'unknown'}
+          title={t('admin.librarian.stats.systemHealth')}
+          value={status?.system_health ? t(`admin.librarian.health.${status.system_health}`) : t('admin.librarian.stats.unknown')}
           icon={<Bot size={24} color={getHealthColor(status?.system_health || 'unknown')} />}
           color={status?.system_health === 'excellent' ? 'success' : status?.system_health === 'good' ? 'primary' : status?.system_health === 'fair' ? 'warning' : 'error'}
         />
         <StatCard
-          title="Total Audits (30d)"
+          title={t('admin.librarian.stats.totalAudits')}
           value={status?.total_audits_last_30_days.toString() || '0'}
-          subtitle="Last 30 days"
+          subtitle={t('admin.librarian.stats.last30Days')}
           icon={<RefreshCw size={24} color={colors.primary} />}
           color="primary"
         />
         <StatCard
-          title="Issues Fixed"
+          title={t('admin.librarian.stats.issuesFixed')}
           value={status?.total_issues_fixed.toString() || '0'}
-          subtitle="Last 30 days"
+          subtitle={t('admin.librarian.stats.last30Days')}
           icon={<Zap size={24} color={colors.success} />}
           color="success"
         />
         <StatCard
-          title="Last Audit"
+          title={t('admin.librarian.stats.lastAudit')}
           value={
             status?.last_audit_date
               ? format(new Date(status.last_audit_date), 'MMM d')
-              : 'Never'
+              : t('admin.librarian.stats.never')
           }
           subtitle={status?.last_audit_status || 'N/A'}
           color="secondary"
@@ -340,7 +339,7 @@ const LibrarianAgentPage = () => {
 
       {/* Quick Actions */}
       <GlassCard style={styles.actionsCard}>
-        <Text style={[styles.sectionTitle, { textAlign }]}>Quick Actions</Text>
+        <Text style={[styles.sectionTitle, { textAlign }]}>{t('admin.librarian.quickActions.title')}</Text>
 
         <View style={styles.actionsRow}>
           <View style={styles.checkboxRow}>
@@ -350,13 +349,13 @@ const LibrarianAgentPage = () => {
             >
               {dryRun && <View style={styles.checkboxInner} />}
             </Pressable>
-            <Text style={styles.checkboxLabel}>Dry Run (Report Only)</Text>
+            <Text style={styles.checkboxLabel}>{t('admin.librarian.quickActions.dryRun')}</Text>
           </View>
         </View>
 
         <View style={styles.buttonsRow}>
           <GlassButton
-            title="Trigger Daily Audit"
+            title={t('admin.librarian.quickActions.triggerDaily')}
             variant="primary"
             icon={<Play size={16} color={colors.background} />}
             onPress={() => handleTriggerAudit('daily_incremental')}
@@ -365,7 +364,7 @@ const LibrarianAgentPage = () => {
             style={styles.actionButton}
           />
           <GlassButton
-            title="Trigger AI Agent Audit"
+            title={t('admin.librarian.quickActions.triggerAI')}
             variant="secondary"
             icon={<Bot size={16} color={colors.text} />}
             onPress={() => handleTriggerAudit('ai_agent')}
@@ -376,7 +375,7 @@ const LibrarianAgentPage = () => {
         </View>
 
         <View style={styles.budgetRow}>
-          <Text style={styles.budgetLabel}>AI Agent Budget Limit: ${budgetLimit.toFixed(2)}</Text>
+          <Text style={styles.budgetLabel}>{t('admin.librarian.quickActions.budgetLabel', { budget: budgetLimit.toFixed(2) })}</Text>
           {/* Slider would go here - using simple buttons for now */}
           <View style={styles.budgetButtons}>
             <Pressable
@@ -397,11 +396,11 @@ const LibrarianAgentPage = () => {
 
       {/* Schedule Information */}
       <Text style={[styles.sectionTitle, { textAlign, marginTop: spacing.lg }]}>
-        Scheduled Audits
+        {t('admin.librarian.schedules.title')}
       </Text>
       <View style={styles.schedulesRow}>
         <LibrarianScheduleCard
-          title="Daily Audit"
+          title={t('admin.librarian.schedules.dailyTitle')}
           cron={config.daily_schedule.cron}
           time={config.daily_schedule.time}
           mode={config.daily_schedule.mode}
@@ -411,7 +410,7 @@ const LibrarianAgentPage = () => {
           gcpProjectId={config.gcp_project_id}
         />
         <LibrarianScheduleCard
-          title="Weekly AI Audit"
+          title={t('admin.librarian.schedules.weeklyTitle')}
           cron={config.weekly_schedule.cron}
           time={config.weekly_schedule.time}
           mode={config.weekly_schedule.mode}
@@ -424,11 +423,11 @@ const LibrarianAgentPage = () => {
 
       {/* Recent Reports */}
       <Text style={[styles.sectionTitle, { textAlign, marginTop: spacing.lg }]}>
-        Recent Audit Reports
+        {t('admin.librarian.reports.title')}
       </Text>
       <GlassCard style={styles.reportsCard}>
         {reports.length === 0 ? (
-          <Text style={[styles.emptyText, { textAlign }]}>No audit reports yet</Text>
+          <Text style={[styles.emptyText, { textAlign }]}>{t('admin.librarian.reports.emptyMessage')}</Text>
         ) : (
           <GlassTable
             columns={reportColumns}
@@ -442,7 +441,7 @@ const LibrarianAgentPage = () => {
 
       {/* Activity Log */}
       <Text style={[styles.sectionTitle, { textAlign, marginTop: spacing.lg }]}>
-        Activity Log
+        {t('admin.librarian.activityLog.title')}
       </Text>
       <LibrarianActivityLog
         actions={actions}
@@ -454,15 +453,14 @@ const LibrarianAgentPage = () => {
       <GlassModal
         visible={confirmModalVisible}
         type="warning"
-        title="Trigger AI Agent Audit?"
-        message={`This will trigger an autonomous AI agent audit with a budget limit of $${budgetLimit.toFixed(
-          2
-        )}. The agent will make decisions about what to check and fix. ${
-          dryRun ? 'Running in DRY RUN mode (no changes will be made).' : ''
-        }`}
+        title={t('admin.librarian.modal.confirmAI.title')}
+        message={t('admin.librarian.modal.confirmAI.message', {
+          budget: budgetLimit.toFixed(2),
+          dryRun: dryRun ? t('admin.librarian.modal.confirmAI.dryRunNote') : ''
+        })}
         buttons={[
           {
-            text: 'Cancel',
+            text: t('admin.librarian.modal.cancel'),
             onPress: () => {
               setConfirmModalVisible(false);
               setPendingAuditType(null);
@@ -470,7 +468,7 @@ const LibrarianAgentPage = () => {
             variant: 'secondary',
           },
           {
-            text: 'Confirm',
+            text: t('admin.librarian.modal.confirm'),
             onPress: () => pendingAuditType && executeAudit(pendingAuditType),
             variant: 'primary',
           },
@@ -481,40 +479,45 @@ const LibrarianAgentPage = () => {
       {/* Report Detail Modal */}
       <GlassModal
         visible={detailModalVisible}
-        title={`Audit Report: ${selectedReport?.audit_id.substring(0, config.ui.id_truncate_length)}...`}
+        title={t('admin.librarian.reports.detailModal.title', {
+          id: selectedReport?.audit_id.substring(0, config.ui.id_truncate_length) || ''
+        })}
         onClose={() => setDetailModalVisible(false)}
       >
         {selectedReport && (
           <ScrollView style={[styles.modalContent, { maxHeight: config.ui.modal_max_height }]}>
-            <DetailSection title="Summary">
-              <DetailRow label="Status" value={selectedReport.status} />
+            <DetailSection title={t('admin.librarian.reports.detailModal.summary')}>
               <DetailRow
-                label="Execution Time"
+                label={t('admin.librarian.reports.detailModal.status')}
+                value={t(`admin.librarian.status.${selectedReport.status}`, selectedReport.status)}
+              />
+              <DetailRow
+                label={t('admin.librarian.reports.detailModal.executionTime')}
                 value={`${selectedReport.execution_time_seconds.toFixed(1)}s`}
               />
               <DetailRow
-                label="Total Items"
+                label={t('admin.librarian.reports.detailModal.totalItems')}
                 value={selectedReport.summary.total_items?.toString() || 'N/A'}
               />
               <DetailRow
-                label="Healthy Items"
+                label={t('admin.librarian.reports.detailModal.healthyItems')}
                 value={selectedReport.summary.healthy_items?.toString() || 'N/A'}
               />
             </DetailSection>
 
-            <DetailSection title="Issues Found">
-              <DetailRow label="Broken Streams" value={selectedReport.broken_streams.length.toString()} />
-              <DetailRow label="Missing Metadata" value={selectedReport.missing_metadata.length.toString()} />
-              <DetailRow label="Misclassifications" value={selectedReport.misclassifications.length.toString()} />
-              <DetailRow label="Orphaned Items" value={selectedReport.orphaned_items.length.toString()} />
+            <DetailSection title={t('admin.librarian.reports.detailModal.issuesFound')}>
+              <DetailRow label={t('admin.librarian.reports.detailModal.brokenStreams')} value={selectedReport.broken_streams.length.toString()} />
+              <DetailRow label={t('admin.librarian.reports.detailModal.missingMetadata')} value={selectedReport.missing_metadata.length.toString()} />
+              <DetailRow label={t('admin.librarian.reports.detailModal.misclassifications')} value={selectedReport.misclassifications.length.toString()} />
+              <DetailRow label={t('admin.librarian.reports.detailModal.orphanedItems')} value={selectedReport.orphaned_items.length.toString()} />
             </DetailSection>
 
-            <DetailSection title="Fixes Applied">
-              <Text style={styles.detailText}>{selectedReport.fixes_applied.length} total fixes</Text>
+            <DetailSection title={t('admin.librarian.reports.detailModal.fixesApplied')}>
+              <Text style={styles.detailText}>{t('admin.librarian.reports.detailModal.totalFixes', { count: selectedReport.fixes_applied.length })}</Text>
             </DetailSection>
 
             {selectedReport.ai_insights && selectedReport.ai_insights.length > 0 && (
-              <DetailSection title="AI Insights">
+              <DetailSection title={t('admin.librarian.reports.detailModal.aiInsights')}>
                 {selectedReport.ai_insights.map((insight, index) => (
                   <Text key={index} style={styles.detailText}>
                     • {insight}
