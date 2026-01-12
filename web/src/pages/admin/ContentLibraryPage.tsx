@@ -76,14 +76,6 @@ export default function ContentLibraryPage() {
     loadContent()
   }, [loadContent])
 
-  useEffect(() => {
-    const input = fileInputRef.current
-    if (input) {
-      input.addEventListener('change', handleFileSelect as any)
-      return () => input.removeEventListener('change', handleFileSelect as any)
-    }
-  }, [uploadingPoster])
-
   const handleSearch = (query: string) => {
     setSearchQuery(query)
     setFilters({ ...filters, search: query })
@@ -135,9 +127,8 @@ export default function ContentLibraryPage() {
     fileInputRef.current?.click()
   }
 
-  const handleFileSelect = async (event: Event) => {
-    const target = event.target as HTMLInputElement
-    const file = target.files?.[0]
+  const handleFileSelect = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0]
 
     if (!file || !uploadingPoster) return
 
@@ -161,7 +152,7 @@ export default function ContentLibraryPage() {
       setError(msg)
     } finally {
       setUploadingPoster(null)
-      if (target) target.value = ''
+      event.target.value = ''
     }
   }
 
@@ -251,6 +242,7 @@ export default function ContentLibraryPage() {
         ref={fileInputRef}
         type="file"
         accept="image/*"
+        onChange={handleFileSelect}
         style={{ display: 'none' }}
       />
 
