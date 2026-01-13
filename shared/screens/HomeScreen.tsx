@@ -15,6 +15,7 @@ import { TrendingRow } from '../components/TrendingRow';
 import { contentService, liveService, historyService, ritualService } from '../services/api';
 import { colors, spacing } from '../theme';
 import { getLocalizedName, getLocalizedDescription } from '../utils/contentLocalization';
+import { formatContentMetadata } from '../utils/metadataFormatters';
 
 interface ContentItem {
   id: string;
@@ -102,7 +103,7 @@ export const HomeScreen: React.FC = () => {
       setCarouselItems([...heroItems, ...spotlightItems].map((item: any, index: number) => ({
         id: item.id,
         title: getLocalizedTitle(item),
-        subtitle: getLocalizedDescription(item),
+        subtitle: formatContentMetadata(item),
         description: getLocalizedDescription(item),
         image: item.backdrop || item.thumbnail,
         badge: index === 0 ? t('common.new') : undefined,

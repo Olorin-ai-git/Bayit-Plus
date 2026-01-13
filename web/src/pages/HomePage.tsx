@@ -11,6 +11,7 @@ import MorningRitual from '@/components/ritual/MorningRitual';
 import { contentService, liveService, historyService, ritualService } from '@/services/api';
 import { colors, spacing } from '@bayit/shared/theme';
 import { getLocalizedName, getLocalizedDescription } from '@bayit/shared-utils/contentLocalization';
+import { formatContentMetadata } from '@bayit/shared-utils/metadataFormatters';
 import logger from '@/utils/logger';
 
 declare const __TV__: boolean;
@@ -119,7 +120,7 @@ export default function HomePage() {
       setCarouselItems(spotlightItems.map((item: any, index: number) => ({
         id: item.id,
         title: getLocalizedName(item, i18n.language),
-        subtitle: getLocalizedDescription(item, i18n.language),
+        subtitle: formatContentMetadata(item),
         description: getLocalizedDescription(item, i18n.language),
         image: item.backdrop || item.thumbnail,
         badge: index === 0 ? t('common.new') : undefined,

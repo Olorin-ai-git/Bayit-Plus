@@ -17,6 +17,7 @@ import {
 } from '../components';
 import { contentService, liveService, historyService, ritualService } from '../services/api';
 import { colors, spacing } from '../theme';
+import { formatContentMetadata } from '@bayit/shared-utils/metadataFormatters';
 
 interface ContentItem {
   id: string;
@@ -118,7 +119,7 @@ export const HomeScreen: React.FC = () => {
       setCarouselItems([...heroItems, ...spotlightItems].map((item: any, index: number) => ({
         id: item.id,
         title: getLocalizedTitle(item),
-        subtitle: getLocalizedDescription(item),
+        subtitle: formatContentMetadata(item),
         description: getLocalizedDescription(item),
         image: item.backdrop || item.thumbnail,
         badge: index === 0 ? t('common.new') : undefined,

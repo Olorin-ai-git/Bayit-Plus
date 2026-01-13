@@ -23,6 +23,7 @@ from app.models.admin import (
     Campaign, Transaction, Refund, AuditLog,
     EmailCampaign, PushNotification, SystemSettings, SubscriptionPlan,
 )
+from app.models.security_audit import SecurityAuditLog
 from app.models.widget import Widget
 from app.models.user_system_widget import UserSystemWidget
 from app.models.librarian import AuditReport, LibrarianAction, StreamValidationCache, ClassificationVerificationCache
@@ -84,6 +85,8 @@ async def connect_to_mongo():
             PushNotification,
             SystemSettings,
             SubscriptionPlan,
+            # Security audit log
+            SecurityAuditLog,
             # Widget models
             Widget,
             UserSystemWidget,

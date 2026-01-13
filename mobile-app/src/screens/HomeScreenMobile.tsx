@@ -29,6 +29,7 @@ import { GlassCarousel } from '@bayit/shared-components';
 import { TrendingRow } from '@bayit/shared-components';
 import { contentService, liveService, historyService, ritualService } from '@bayit/shared-services';
 import { getLocalizedName, getLocalizedDescription } from '@bayit/shared-utils';
+import { formatContentMetadata } from '@bayit/shared-utils/metadataFormatters';
 import { useDirection } from '@bayit/shared-hooks';
 import { useResponsive } from '../hooks/useResponsive';
 import { getGridColumns } from '../utils/responsive';
@@ -107,7 +108,7 @@ export const HomeScreenMobile: React.FC = () => {
       const carouselData = [...heroItems, ...featuredItems].map((item: any) => ({
         id: item.id,
         title: getLocalizedName(item, currentLang),
-        subtitle: item.subtitle,
+        subtitle: formatContentMetadata(item),
         description: getLocalizedDescription(item, currentLang),
         image: item.thumbnail || item.image,
         badge: item.badge,

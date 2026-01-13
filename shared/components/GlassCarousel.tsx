@@ -261,12 +261,12 @@ export const GlassCarousel: React.FC<GlassCarouselProps> = ({
                   {currentItem.title}
                 </Text>
                 {currentItem.subtitle && (
-                  <Text style={[styles.subtitle, { textAlign: isRTL ? 'right' : 'left' }]} numberOfLines={1}>
+                  <Text style={[styles.subtitle, { textAlign: isRTL ? 'right' : 'left' }]} numberOfLines={2}>
                     {currentItem.subtitle}
                   </Text>
                 )}
                 {currentItem.description && (
-                  <Text style={[styles.description, { textAlign: isRTL ? 'right' : 'left' }]} numberOfLines={2}>
+                  <Text style={[styles.description, { textAlign: isRTL ? 'right' : 'left' }]} numberOfLines={4}>
                     {currentItem.description}
                   </Text>
                 )}
@@ -432,9 +432,11 @@ const styles = StyleSheet.create({
     }),
   },
   subtitle: {
-    fontSize: 22,
-    color: colors.primary,
-    marginBottom: 8,
+    fontSize: 18,
+    color: colors.textSecondary,
+    marginBottom: 12,
+    fontWeight: '600',
+    letterSpacing: 0.5,
   },
   description: {
     fontSize: 16,

@@ -32,7 +32,8 @@ except ImportError:
 # Language code mapping for Google Speech-to-Text
 LANGUAGE_CODES = {
     "he": "he-IL", "en": "en-US", "ar": "ar-IL",
-    "es": "es-ES", "ru": "ru-RU", "fr": "fr-FR"
+    "es": "es-ES", "ru": "ru-RU", "fr": "fr-FR",
+    "de": "de-DE", "it": "it-IT", "pt": "pt-PT", "yi": "yi"
 }
 
 
@@ -248,7 +249,11 @@ class LiveTranslationService:
                     "ar": "Arabic",
                     "es": "Spanish",
                     "ru": "Russian",
-                    "fr": "French"
+                    "fr": "French",
+                    "de": "German",
+                    "it": "Italian",
+                    "pt": "Portuguese",
+                    "yi": "Yiddish"
                 }
 
                 source_name = language_names.get(source_lang, source_lang)

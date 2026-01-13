@@ -28,6 +28,10 @@ const SUPPORTED_LANGUAGES = [
   { value: 'es', label: '🇪🇸 Spanish (Español)' },
   { value: 'ru', label: '🇷🇺 Russian (Русский)' },
   { value: 'fr', label: '🇫🇷 French (Français)' },
+  { value: 'de', label: '🇩🇪 German (Deutsch)' },
+  { value: 'it', label: '🇮🇹 Italian (Italiano)' },
+  { value: 'pt', label: '🇵🇹 Portuguese (Português)' },
+  { value: 'yi', label: '🕍 Yiddish (ייִדיש)' },
 ]
 
 export default function LiveChannelsPage() {

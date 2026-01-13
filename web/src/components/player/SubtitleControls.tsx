@@ -4,6 +4,7 @@
  */
 
 import { useState } from 'react'
+import { createPortal } from 'react-dom'
 import { View, Text, StyleSheet, Pressable, ScrollView } from 'react-native'
 import { useTranslation } from 'react-i18next'
 import { Subtitles, Settings as SettingsIcon, X } from 'lucide-react'
@@ -41,20 +42,10 @@ export default function SubtitleControls({
   const [showLanguageMenu, setShowLanguageMenu] = useState(false)
   const [showSettingsPanel, setShowSettingsPanel] = useState(false)
 
-  // Handle subtitle toggle
-  const handleToggle = () => {
-    if (enabled) {
-      // Turning off subtitles
-      onToggle(false)
-      setShowLanguageMenu(false)
-      setShowSettingsPanel(false)
-    } else {
-      // Turning on subtitles - show language menu if not already selected
-      onToggle(true)
-      if (!currentLanguage && availableLanguages.length > 0) {
-        setShowLanguageMenu(true)
-      }
-    }
+  // Handle subtitle button click - always opens language selector
+  const handleSubtitleButtonClick = () => {
+    // Always toggle the language menu, regardless of available languages
+    setShowLanguageMenu(!showLanguageMenu)
   }
 
   // Handle language selection
@@ -69,62 +60,61 @@ export default function SubtitleControls({
   // Get current language info
   const currentLangInfo = currentLanguage ? getLanguageInfo(currentLanguage) : null
 
-  return (
-    <>
-      {/* Subtitle Button */}
-      <Pressable
-        onPress={handleToggle}
-        style={({ pressed }) => [
-          styles.button,
-          pressed && styles.buttonPressed,
-          enabled && styles.buttonActive,
-        ]}
-      >
-        <Subtitles size={24} color={enabled ? colors.primary : colors.textSecondary} />
-        {currentLangInfo && enabled && (
-          <View style={styles.badge}>
-            <Text style={styles.badgeText}>{currentLangInfo.code.toUpperCase()}</Text>
-          </View>
-        )}
-      </Pressable>
+  // Render menu in a portal at document.body level to avoid z-index issues
+  const renderMenu = () => {
+    if (!showLanguageMenu) return null
 
-      {/* Language Selector Button */}
-      {enabled && availableLanguages.length > 0 && (
-        <Pressable
-          onPress={() => setShowLanguageMenu(!showLanguageMenu)}
-          style={({ pressed }) => [styles.button, pressed && styles.buttonPressed]}
+    return (
+      <>
+        {/* Full-screen backdrop to catch all clicks */}
+        <View 
+          style={styles.backdrop}
+          onClick={(e: any) => {
+            e.stopPropagation()
+            e.preventDefault()
+          }}
+          onMouseDown={(e: any) => e.stopPropagation()}
+          onMouseUp={(e: any) => e.stopPropagation()}
+        />
+        <GlassView 
+          style={styles.menu}
+          onClick={(e: any) => {
+            // Stop event propagation to prevent clicks from reaching video controls
+            e.stopPropagation()
+            e.preventDefault()
+          }}
+          onMouseDown={(e: any) => {
+            e.stopPropagation()
+          }}
+          onMouseUp={(e: any) => {
+            e.stopPropagation()
+          }}
         >
-          <Text style={styles.langText}>{currentLangInfo?.flag || '🌐'}</Text>
-        </Pressable>
-      )}
-
-      {/* Settings Button */}
-      {enabled && (
-        <Pressable
-          onPress={() => setShowSettingsPanel(!showSettingsPanel)}
-          style={({ pressed }) => [styles.button, pressed && styles.buttonPressed]}
-        >
-          <SettingsIcon size={20} color={colors.textSecondary} />
-        </Pressable>
-      )}
-
-      {/* Language Selection Menu */}
-      {showLanguageMenu && (
-        <GlassView style={styles.menu}>
           <View style={styles.menuHeader}>
             <Text style={styles.menuTitle}>{t('subtitles.selectLanguage')}</Text>
-            <Pressable onPress={() => setShowLanguageMenu(false)} style={styles.closeButton}>
-              <X size={20} color={colors.textSecondary} />
+            <Pressable 
+              onPress={(e) => {
+                e?.stopPropagation?.()
+                setShowLanguageMenu(false)
+              }}
+              onClick={(e: any) => e.stopPropagation()}
+              onMouseDown={(e: any) => e.stopPropagation()}
+              style={styles.closeButton}
+            >
+              <X size={20} color={colors.text} />
             </Pressable>
           </View>
 
           <ScrollView style={styles.menuContent}>
             {/* Off option */}
             <Pressable
-              onPress={() => {
+              onPress={(e) => {
+                e?.stopPropagation?.()
                 onToggle(false)
                 setShowLanguageMenu(false)
               }}
+              onClick={(e: any) => e.stopPropagation()}
+              onMouseDown={(e: any) => e.stopPropagation()}
               style={({ pressed }) => [
                 styles.menuItem,
                 pressed && styles.menuItemPressed,
@@ -135,170 +125,90 @@ export default function SubtitleControls({
             </Pressable>
 
             {/* Available languages */}
-            {availableLanguages.map((track) => {
-              const langInfo = getLanguageInfo(track.language)
-              const isActive = track.language === currentLanguage
+            {availableLanguages.length > 0 ? (
+              availableLanguages.map((track) => {
+                const langInfo = getLanguageInfo(track.language)
+                const isActive = track.language === currentLanguage
 
-              return (
-                <Pressable
-                  key={track.id}
-                  onPress={() => handleLanguageSelect(track.language)}
-                  style={({ pressed }) => [
-                    styles.menuItem,
-                    pressed && styles.menuItemPressed,
-                    isActive && styles.menuItemActive,
-                  ]}
-                >
-                  <Text style={styles.menuItemIcon}>{langInfo?.flag || '🌐'}</Text>
-                  <View style={styles.menuItemContent}>
-                    <Text style={styles.menuItemText}>{track.language_name}</Text>
-                    {track.is_auto_generated && (
-                      <Text style={styles.menuItemSubtext}>{t('subtitles.autoGenerated')}</Text>
-                    )}
-                  </View>
-                  {isActive && <View style={styles.activeIndicator} />}
-                </Pressable>
-              )
-            })}
+                return (
+                  <Pressable
+                    key={track.id}
+                    onPress={(e) => {
+                      e?.stopPropagation?.()
+                      handleLanguageSelect(track.language)
+                    }}
+                    onClick={(e: any) => e.stopPropagation()}
+                    onMouseDown={(e: any) => e.stopPropagation()}
+                    style={({ pressed }) => [
+                      styles.menuItem,
+                      pressed && styles.menuItemPressed,
+                      isActive && styles.menuItemActive,
+                    ]}
+                  >
+                    <Text style={styles.menuItemIcon}>{langInfo?.flag || '🌐'}</Text>
+                    <View style={styles.menuItemContent}>
+                      <Text style={styles.menuItemText}>{track.language_name}</Text>
+                      {track.is_auto_generated && (
+                        <Text style={styles.menuItemSubtext}>{t('subtitles.autoGenerated')}</Text>
+                      )}
+                    </View>
+                    {isActive && <View style={styles.activeIndicator} />}
+                  </Pressable>
+                )
+              })
+            ) : (
+              /* No subtitles available */
+              <View
+                onClick={(e: any) => {
+                  e.stopPropagation()
+                  e.preventDefault()
+                  return false
+                }}
+                onMouseDown={(e: any) => {
+                  e.stopPropagation()
+                  e.preventDefault()
+                }}
+                onMouseUp={(e: any) => {
+                  e.stopPropagation()
+                  e.preventDefault()
+                }}
+                style={[styles.menuItem, styles.menuItemActive, { cursor: 'default' }]}
+              >
+                <Text style={[styles.menuItemIcon, { cursor: 'default', userSelect: 'none' } as any]}>🚫</Text>
+                <Text style={[styles.menuItemText, styles.menuItemDisabled, { cursor: 'default', userSelect: 'none' } as any]}>
+                  {t('subtitles.none', 'None')}
+                </Text>
+              </View>
+            )}
           </ScrollView>
         </GlassView>
-      )}
+      </>
+    )
+  }
 
-      {/* Settings Panel */}
-      {showSettingsPanel && (
-        <GlassView style={styles.settingsPanel}>
-          <View style={styles.menuHeader}>
-            <Text style={styles.menuTitle}>{t('subtitles.settings')}</Text>
-            <Pressable onPress={() => setShowSettingsPanel(false)} style={styles.closeButton}>
-              <X size={20} color={colors.textSecondary} />
-            </Pressable>
+  return (
+    <>
+      {/* Subtitle Button */}
+      <Pressable
+        onPress={handleSubtitleButtonClick}
+        style={({ pressed }) => [
+          styles.button,
+          pressed && styles.buttonPressed,
+          (enabled || showLanguageMenu) && styles.buttonActive,
+        ]}
+      >
+        <Subtitles size={24} color={enabled ? colors.primary : colors.textSecondary} />
+        {currentLangInfo && enabled && (
+          <View style={styles.badge}>
+            <Text style={styles.badgeText}>{currentLangInfo.code.toUpperCase()}</Text>
           </View>
+        )}
+      </Pressable>
 
-          <ScrollView style={styles.settingsPanelContent}>
-            {/* Font Size */}
-            <View style={styles.settingSection}>
-              <Text style={styles.settingLabel}>{t('subtitles.fontSize')}</Text>
-              <View style={styles.settingOptions}>
-                {['small', 'medium', 'large'].map((size) => (
-                  <Pressable
-                    key={size}
-                    onPress={() => onSettingsChange({ ...settings, fontSize: size as any })}
-                    style={({ pressed }) => [
-                      styles.settingOption,
-                      pressed && styles.settingOptionPressed,
-                      settings.fontSize === size && styles.settingOptionActive,
-                    ]}
-                  >
-                    <Text
-                      style={[
-                        styles.settingOptionText,
-                        settings.fontSize === size && styles.settingOptionTextActive,
-                      ]}
-                    >
-                      {t(`subtitles.${size}`)}
-                    </Text>
-                  </Pressable>
-                ))}
-              </View>
-            </View>
+      {/* Note: Language selector and settings are now accessed through the main settings button */}
 
-            {/* Position */}
-            <View style={styles.settingSection}>
-              <Text style={styles.settingLabel}>{t('subtitles.position')}</Text>
-              <View style={styles.settingOptions}>
-                {['bottom', 'top'].map((position) => (
-                  <Pressable
-                    key={position}
-                    onPress={() => onSettingsChange({ ...settings, position: position as any })}
-                    style={({ pressed }) => [
-                      styles.settingOption,
-                      pressed && styles.settingOptionPressed,
-                      settings.position === position && styles.settingOptionActive,
-                    ]}
-                  >
-                    <Text
-                      style={[
-                        styles.settingOptionText,
-                        settings.position === position && styles.settingOptionTextActive,
-                      ]}
-                    >
-                      {t(`subtitles.${position}`)}
-                    </Text>
-                  </Pressable>
-                ))}
-              </View>
-            </View>
-
-            {/* Background Color */}
-            <View style={styles.settingSection}>
-              <Text style={styles.settingLabel}>{t('subtitles.backgroundColor')}</Text>
-              <View style={styles.settingOptions}>
-                {[
-                  { label: t('subtitles.black'), value: 'rgba(0, 0, 0, 0.8)' },
-                  { label: t('subtitles.white'), value: 'rgba(255, 255, 255, 0.9)' },
-                  { label: t('subtitles.transparent'), value: 'rgba(0, 0, 0, 0.3)' },
-                ].map((color) => (
-                  <Pressable
-                    key={color.value}
-                    onPress={() => onSettingsChange({ ...settings, backgroundColor: color.value })}
-                    style={({ pressed }) => [
-                      styles.settingOption,
-                      pressed && styles.settingOptionPressed,
-                      settings.backgroundColor === color.value && styles.settingOptionActive,
-                    ]}
-                  >
-                    <View
-                      style={[styles.colorPreview, { backgroundColor: color.value }]}
-                    />
-                    <Text
-                      style={[
-                        styles.settingOptionText,
-                        settings.backgroundColor === color.value && styles.settingOptionTextActive,
-                      ]}
-                    >
-                      {color.label}
-                    </Text>
-                  </Pressable>
-                ))}
-              </View>
-            </View>
-
-            {/* Text Color */}
-            <View style={styles.settingSection}>
-              <Text style={styles.settingLabel}>{t('subtitles.textColor')}</Text>
-              <View style={styles.settingOptions}>
-                {[
-                  { label: t('subtitles.white'), value: '#FFFFFF' },
-                  { label: t('subtitles.yellow'), value: '#FFFF00' },
-                  { label: t('subtitles.black'), value: '#000000' },
-                ].map((color) => (
-                  <Pressable
-                    key={color.value}
-                    onPress={() => onSettingsChange({ ...settings, textColor: color.value })}
-                    style={({ pressed }) => [
-                      styles.settingOption,
-                      pressed && styles.settingOptionPressed,
-                      settings.textColor === color.value && styles.settingOptionActive,
-                    ]}
-                  >
-                    <View
-                      style={[styles.colorPreview, { backgroundColor: color.value }]}
-                    />
-                    <Text
-                      style={[
-                        styles.settingOptionText,
-                        settings.textColor === color.value && styles.settingOptionTextActive,
-                      ]}
-                    >
-                      {color.label}
-                    </Text>
-                  </Pressable>
-                ))}
-              </View>
-            </View>
-          </ScrollView>
-        </GlassView>
-      )}
+      {/* Language Selection Menu - Rendered via Portal */}
+      {typeof document !== 'undefined' && createPortal(renderMenu(), document.body)}
     </>
   )
 }
@@ -337,14 +247,27 @@ const styles = StyleSheet.create({
   langText: {
     fontSize: 20,
   },
+  backdrop: {
+    position: 'fixed' as any,
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    backgroundColor: 'transparent',
+    zIndex: 9998,
+    // @ts-ignore - Web-specific CSS
+    pointerEvents: 'auto',
+    cursor: 'default',
+  },
   menu: {
-    position: 'absolute',
-    bottom: 60,
-    right: spacing.md,
-    width: 280,
-    maxHeight: 400,
+    position: 'fixed' as any,
+    bottom: 80,
+    right: spacing.lg,
+    width: 320,
+    maxHeight: 450,
     borderRadius: borderRadius.lg,
     overflow: 'hidden',
+    zIndex: 9999,
   },
   menuHeader: {
     flexDirection: 'row',
@@ -355,7 +278,7 @@ const styles = StyleSheet.create({
     borderBottomColor: 'rgba(255, 255, 255, 0.1)',
   },
   menuTitle: {
-    color: colors.textPrimary,
+    color: colors.text,
     fontSize: 16,
     fontWeight: '600',
   },
@@ -386,7 +309,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   menuItemText: {
-    color: colors.textPrimary,
+    color: colors.text,
     fontSize: 15,
     fontWeight: '500',
   },
@@ -394,6 +317,9 @@ const styles = StyleSheet.create({
     color: colors.textSecondary,
     fontSize: 12,
     marginTop: 2,
+  },
+  menuItemDisabled: {
+    opacity: 0.5,
   },
   activeIndicator: {
     width: 8,

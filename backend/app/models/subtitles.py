@@ -296,4 +296,8 @@ SUBTITLE_LANGUAGES = [
     {"code": "ru", "name": "Русский", "name_en": "Russian", "rtl": False},
     {"code": "fr", "name": "Français", "name_en": "French", "rtl": False},
     {"code": "es", "name": "Español", "name_en": "Spanish", "rtl": False},
+    {"code": "de", "name": "Deutsch", "name_en": "German", "rtl": False},
+    {"code": "it", "name": "Italiano", "name_en": "Italian", "rtl": False},
+    {"code": "pt", "name": "Português", "name_en": "Portuguese", "rtl": False},
+    {"code": "yi", "name": "ייִדיש", "name_en": "Yiddish", "rtl": True},
 ]

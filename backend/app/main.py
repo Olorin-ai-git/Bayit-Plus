@@ -19,7 +19,7 @@ from app.api.routes import (
     device_pairing, onboarding, widgets, favorites, downloads, user_system_widgets, news, librarian,
     admin_content_vod_read, admin_content_vod_write, admin_content_vod_toggles, admin_categories, admin_live_channels,
     admin_radio_stations, admin_podcasts, admin_podcast_episodes, admin_content_importer, admin_widgets, verification,
-    recordings, epg
+    recordings, epg, password_reset
 )
 from app.api.routes.admin.recordings import router as admin_recordings_router
 
@@ -401,6 +401,11 @@ app = FastAPI(
     lifespan=lifespan,
 )
 
+# Security middleware
+from app.middleware.input_sanitization import InputSanitizationMiddleware
+app.add_middleware(InputSanitizationMiddleware, enable_logging=True)
+logger.info("🔒 Input sanitization middleware enabled")
+
 # CORS middleware
 cors_origins = settings.parsed_cors_origins
 logger.info(f"🌐 CORS Origins configured: {cors_origins}")
@@ -421,6 +426,7 @@ async def health_check():
 
 # API routes
 app.include_router(auth.router, prefix=f"{settings.API_V1_PREFIX}/auth", tags=["auth"])
+app.include_router(password_reset.router, prefix=f"{settings.API_V1_PREFIX}/auth/password-reset", tags=["password-reset"])
 app.include_router(verification.router, prefix=f"{settings.API_V1_PREFIX}", tags=["verification"])
 app.include_router(content.router, prefix=f"{settings.API_V1_PREFIX}/content", tags=["content"])
 app.include_router(live.router, prefix=f"{settings.API_V1_PREFIX}/live", tags=["live"])

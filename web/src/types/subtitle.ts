@@ -92,6 +92,10 @@ export const SUBTITLE_LANGUAGES: SubtitleLanguage[] = [
   { code: 'ar', name: 'Arabic', nativeName: 'العربية', flag: '🇸🇦', rtl: true },
   { code: 'ru', name: 'Russian', nativeName: 'Русский', flag: '🇷🇺', rtl: false },
   { code: 'fr', name: 'French', nativeName: 'Français', flag: '🇫🇷', rtl: false },
+  { code: 'de', name: 'German', nativeName: 'Deutsch', flag: '🇩🇪', rtl: false },
+  { code: 'it', name: 'Italian', nativeName: 'Italiano', flag: '🇮🇹', rtl: false },
+  { code: 'pt', name: 'Portuguese', nativeName: 'Português', flag: '🇵🇹', rtl: false },
+  { code: 'yi', name: 'Yiddish', nativeName: 'ייִדיש', flag: '🕍', rtl: true },
 ]
 
 // Get language info by code

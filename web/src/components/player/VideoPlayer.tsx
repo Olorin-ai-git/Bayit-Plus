@@ -678,6 +678,10 @@ export default function VideoPlayer({
                       'es': { flag: '🇪🇸', label: 'Español' },
                       'ru': { flag: '🇷🇺', label: 'Русский' },
                       'fr': { flag: '🇫🇷', label: 'Français' },
+                      'de': { flag: '🇩🇪', label: 'Deutsch' },
+                      'it': { flag: '🇮🇹', label: 'Italiano' },
+                      'pt': { flag: '🇵🇹', label: 'Português' },
+                      'yi': { flag: '🕍', label: 'ייִדיש' },
                     }
                     const lang = langMap[langCode] || { flag: '🌐', label: langCode.toUpperCase() }
                     const isActive = liveSubtitleLang === langCode
@@ -931,7 +935,10 @@ export default function VideoPlayer({
                 />
               )}
               <Pressable
-                onPress={(e) => { e.stopPropagation?.(); setShowSettings(!showSettings) }}
+                onPress={(e) => { 
+                  e.stopPropagation?.(); 
+                  setShowSettings(!showSettings) 
+                }}
                 style={({ hovered }) => [
                   styles.controlButton,
                   hovered && styles.controlButtonHovered,

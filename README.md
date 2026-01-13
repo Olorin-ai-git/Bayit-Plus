@@ -69,13 +69,23 @@ This starts:
 
 ### 4. Or Run Manually
 
-**Backend:**
+**Backend (Quick Start):**
+```bash
+# Using convenience script (recommended)
+./run-backend.sh
+
+# Or from backend directory
+cd backend
+./run-local.sh
+```
+
+**Backend (Manual setup):**
 ```bash
 cd backend
 python -m venv venv
 source venv/bin/activate  # or `venv\Scripts\activate` on Windows
 pip install -r requirements.txt
-uvicorn app.main:app --reload
+uvicorn app.main:app --reload --port 8000
 ```
 
 **Frontend:**

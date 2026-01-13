@@ -1,7 +1,8 @@
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Optional, List
+import re
 from beanie import Document
-from pydantic import BaseModel, EmailStr, Field
+from pydantic import BaseModel, EmailStr, Field, validator
 from app.models.recording import RecordingQuota
 
 
@@ -16,6 +17,25 @@ class UserCreate(BaseModel):
     email: EmailStr
     name: str
     password: str
+
+    @validator('password')
+    def validate_password(cls, v):
+        """Enforce strong password requirements"""
+        if len(v) < 8:
+            raise ValueError('Password must be at least 8 characters long')
+        if not re.search(r'[A-Z]', v):
+            raise ValueError('Password must contain at least one uppercase letter')
+        if not re.search(r'[a-z]', v):
+            raise ValueError('Password must contain at least one lowercase letter')
+        if not re.search(r'[0-9]', v):
+            raise ValueError('Password must contain at least one digit')
+        if not re.search(r'[!@#$%^&*(),.?":{}|<>_\-+=\[\]\\|`~]', v):
+            raise ValueError('Password must contain at least one special character')
+        # Check for common weak passwords
+        common_passwords = ['password', '12345678', 'qwerty', 'abc123', 'password123']
+        if v.lower() in common_passwords:
+            raise ValueError('This password is too common. Please choose a stronger password')
+        return v
 
 
 class UserLogin(BaseModel):
@@ -104,6 +124,15 @@ class User(Document):
     verification_attempts: int = 0
     last_verification_attempt: Optional[datetime] = None
 
+    # Account lockout (brute force protection)
+    failed_login_attempts: int = 0
+    last_failed_login: Optional[datetime] = None
+    account_locked_until: Optional[datetime] = None
+
+    # Password reset
+    password_reset_token: Optional[str] = None
+    password_reset_expires: Optional[datetime] = None
+
     # Subscription info
     subscription_id: Optional[str] = None
     subscription_tier: Optional[str] = None  # basic, premium, family
@@ -168,8 +197,8 @@ class User(Document):
     banned_at: Optional[datetime] = None
 
     # Timestamps
-    created_at: datetime = Field(default_factory=datetime.utcnow)
-    updated_at: datetime = Field(default_factory=datetime.utcnow)
+    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+    updated_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
     last_login: Optional[datetime] = None
 
     class Settings:

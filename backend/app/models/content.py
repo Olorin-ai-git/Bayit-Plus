@@ -180,7 +180,7 @@ class LiveChannel(Document):
     # Real-time subtitle support (Premium feature)
     supports_live_subtitles: bool = False
     primary_language: str = "he"  # Source language for live translation
-    available_translation_languages: List[str] = Field(default_factory=lambda: ["en", "es", "ar"])
+    available_translation_languages: List[str] = Field(default_factory=lambda: ["en", "es", "ar", "ru", "fr", "de", "it", "pt", "yi", "he"])
 
     # Visibility
     is_active: bool = True
