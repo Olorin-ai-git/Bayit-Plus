@@ -146,6 +146,11 @@ async def google_callback(auth_data: GoogleAuthCode):
     # Use provided redirect_uri or fall back to configured default
     final_redirect_uri = auth_data.redirect_uri or settings.GOOGLE_REDIRECT_URI
 
+    # Log the OAuth parameters for debugging
+    import logging
+    logger = logging.getLogger(__name__)
+    logger.info(f"Google OAuth callback - code: {auth_data.code[:20]}..., redirect_uri: {final_redirect_uri}")
+
     # Exchange code for tokens
     async with httpx.AsyncClient() as client:
         token_response = await client.post(
@@ -160,9 +165,15 @@ async def google_callback(auth_data: GoogleAuthCode):
         )
 
         if token_response.status_code != 200:
+            # Log the actual error from Google
+            error_detail = token_response.json() if token_response.text else {}
+            logger.error(f"Google token exchange failed: status={token_response.status_code}, response={error_detail}")
+
+            # Return Google's error message to help debugging
+            google_error = error_detail.get("error_description", error_detail.get("error", "Failed to exchange code for token"))
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
-                detail="Failed to exchange code for token",
+                detail=f"Google OAuth error: {google_error}",
             )
 
         tokens = token_response.json()
