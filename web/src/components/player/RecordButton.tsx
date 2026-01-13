@@ -5,7 +5,7 @@
 
 import React, { useState, useEffect, useRef } from 'react'
 import { View, Text, Pressable, StyleSheet } from 'react-native'
-import { Circle, Square } from 'lucide-react-native'
+import { Circle, Square } from 'lucide-react'
 import { recordingApi, RecordingSession } from '../../services/recordingApi'
 import { useAuthStore } from '../../store/authStore'
 
@@ -14,13 +14,15 @@ interface RecordButtonProps {
   isLive: boolean
   isPremium: boolean
   onShowUpgrade: () => void
+  onRecordingStateChange?: (isRecording: boolean, duration: number) => void
 }
 
 export const RecordButton: React.FC<RecordButtonProps> = ({
   channelId,
   isLive,
   isPremium,
-  onShowUpgrade
+  onShowUpgrade,
+  onRecordingStateChange
 }) => {
   const [isRecording, setIsRecording] = useState(false)
   const [session, setSession] = useState<RecordingSession | null>(null)
@@ -39,6 +41,11 @@ export const RecordButton: React.FC<RecordButtonProps> = ({
       }
     }
   }, [channelId, isLive, isPremium])
+
+  // Notify parent of recording state changes
+  useEffect(() => {
+    onRecordingStateChange?.(isRecording, duration)
+  }, [isRecording, duration, onRecordingStateChange])
 
   const checkActiveSession = async () => {
     try {

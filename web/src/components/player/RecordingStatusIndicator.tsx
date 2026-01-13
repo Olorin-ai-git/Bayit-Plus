@@ -5,7 +5,7 @@
 
 import React from 'react'
 import { View, Text, StyleSheet } from 'react-native'
-import { Circle } from 'lucide-react-native'
+import { Circle } from 'lucide-react'
 
 interface RecordingStatusIndicatorProps {
   isRecording: boolean

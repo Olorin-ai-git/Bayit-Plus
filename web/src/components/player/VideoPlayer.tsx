@@ -495,6 +495,12 @@ export default function VideoPlayer({
         playsInline
       />
 
+      {/* Recording Status Indicator */}
+      <RecordingStatusIndicator
+        isRecording={isRecording}
+        duration={recordingDuration}
+      />
+
       {/* Subtitle Overlay */}
       {!isLive && contentId && (
         <SubtitleOverlay
@@ -835,6 +841,19 @@ export default function VideoPlayer({
                   videoElement={videoRef.current}
                   onSubtitleCue={handleLiveSubtitleCue}
                   onShowUpgrade={onShowUpgrade}
+                />
+              )}
+              {/* Record Button (Premium) */}
+              {isLive && contentId && (
+                <RecordButton
+                  channelId={contentId}
+                  isLive={isLive}
+                  isPremium={user?.subscription?.plan === 'premium' || user?.subscription?.plan === 'family'}
+                  onShowUpgrade={onShowUpgrade}
+                  onRecordingStateChange={(recording, duration) => {
+                    setIsRecording(recording)
+                    setRecordingDuration(duration)
+                  }}
                 />
               )}
               <Pressable
