@@ -2,7 +2,7 @@
 # Flatten nested GCS movie folders
 # Moves files from movies/cleaned_folder/old_folder/file.mp4 to movies/cleaned_folder/file.mp4
 
-BUCKET="gs://bayit-plus-media-new-new/movies/"
+BUCKET="gs://bayit-plus-media-new/movies/"
 
 echo "Finding nested folders..."
 

@@ -120,7 +120,8 @@
       "loginFailed": "Error al iniciar sesión. Verifica tus credenciales.",
       "googleFailed": "Error al iniciar sesión con Google. Intenta de nuevo.",
       "unexpectedError": "Ocurrió un error inesperado. Por favor, inténtalo de nuevo."
-    }
+    },
+    "unexpectedError": "Ocurrió un error inesperado"
   },
   "tvLogin": {
     "invalidQR": "Código QR inválido. Escanea de nuevo desde tu TV.",
@@ -305,34 +306,31 @@
   },
   "radio": {
     "title": "Radio",
-    "stations": "Estaciones",
-    "nowPlaying": "Reproduciendo",
-    "loadError": "Error al cargar las estaciones",
-    "genres": {
-      "all": "Todo",
-      "news": "Noticias",
+    "categories": {
+      "all": "Todos",
       "music": "Música",
-      "talk": "Talk",
-      "army": "Militar"
-    }
+      "news": "Noticias",
+      "talk": "Conversación",
+      "jewish": "Judío"
+    },
+    "noStations": "Sin estaciones de radio disponibles",
+    "tryLater": "Intenta de nuevo más tarde"
   },
   "podcasts": {
     "title": "Podcasts",
-    "shows": "Programas",
-    "episodes": "Episodios",
-    "loadError": "Error al cargar los podcasts",
+    "episodes": "episodios",
     "categories": {
-      "all": "Todo",
+      "all": "Todos",
       "general": "General",
       "news": "Noticias",
-      "comedy": "Comedia",
-      "society": "Sociedad",
+      "politics": "Política",
       "tech": "Tecnología",
       "business": "Negocios",
+      "jewish": "Judaísmo",
       "entertainment": "Entretenimiento",
       "sports": "Deportes",
-      "jewish": "Judío",
-      "history": "Historia"
+      "history": "Historia",
+      "educational": "Educativo"
     },
     "noPodcasts": "Sin podcasts disponibles",
     "tryLater": "Intenta de nuevo más tarde"
@@ -573,16 +571,7 @@
       "noActivePlan": "Sin suscripción activa",
       "selectPlan": "Seleccionar Plan"
     },
-    "notifications": {
-      "newContent": "Contenido Nuevo",
-      "newContentDesc": "Recibe notificaciones sobre contenido nuevo",
-      "liveEvents": "Eventos en Vivo",
-      "liveEventsDesc": "Recibe notificaciones sobre transmisiones especiales en vivo",
-      "recommendations": "Recomendaciones",
-      "recommendationsDesc": "Recibe recomendaciones personalizadas",
-      "updates": "Actualizaciones del Sistema",
-      "updatesDesc": "Recibe notificaciones sobre cambios del sistema"
-    },
+    "notifications": "Notificaciones",
     "ai": {
       "title": "IA y Personalización",
       "description": "Configura las funciones impulsadas por IA",
@@ -659,7 +648,6 @@
     "downloads": "Descargas",
     "settings": "Configuración",
     "language": "Idioma",
-    "notifications": "Notificaciones",
     "admin": "Administración",
     "watchTime": "Tiempo de Visualización",
     "minutes": "minutos",
@@ -685,7 +673,9 @@
     "pushNotifications": "Notificaciones Push",
     "appearance": "Apariencia",
     "darkMode": "Modo Oscuro",
-    "privacy": "Privacidad"
+    "privacy": "Privacidad",
+    "privacyPolicy": "Política de Privacidad",
+    "termsOfService": "Términos de Servicio"
   },
   "voice": {
     "listening": "Escuchando...",
@@ -697,7 +687,9 @@
     "transcriptionNotAvailable": "Transcripción no disponible",
     "transcriptionFailed": "La transcripción falló",
     "micPermissionDenied": "Permiso de micrófono denegado",
-    "error": "No te escuché, intenta de nuevo"
+    "error": "No te escuché, intenta de nuevo",
+    "ready": "Listo",
+    "speaking": "Hablando"
   },
   "errors": {
     "networkError": "Error de Red",
@@ -748,7 +740,13 @@
     "back": "← Volver",
     "liveBadge": "EN VIVO",
     "noStream": "Transmisión no disponible",
-    "loadError": "Error al cargar la transmisión"
+    "loadError": "Error al cargar la transmisión",
+    "subscription": {
+      "requiredMessage": "requiere una suscripción paga",
+      "requiredTitle": "Suscripción Requerida",
+      "upgrade": "Actualizar Ahora",
+      "upgradeInfo": "Mejora tu suscripción para acceder al contenido premium"
+    }
   },
   "empty": {
     "noContent": "No hay contenido disponible",
@@ -801,8 +799,8 @@
   "favorites": {
     "title": "Favoritos",
     "items": "elementos",
-    "empty": "Sin favoritos",
-    "emptyHint": "Agrega contenido a favoritos para verlo facilmente"
+    "empty": "Sin favoritos aún",
+    "emptyHint": "Añade elementos a tus favoritos"
   },
   "downloads": {
     "title": "Descargas",
@@ -813,16 +811,20 @@
     "paused": "Pausado"
   },
   "watchlist": {
-    "title": "Mi Lista",
-    "items": "elementos",
-    "empty": "Tu lista esta vacia",
-    "emptyHint": "Agrega peliculas y series a tu lista",
     "filters": {
-      "all": "Todo",
-      "continue": "Continuar Viendo",
-      "movies": "Peliculas",
-      "series": "Series"
-    }
+      "all": "Todos",
+      "continue": "Continuar viendo",
+      "movies": "Películas",
+      "series": "Series",
+      "kids": "Niños",
+      "judaism": "Judaísmo",
+      "podcasts": "Podcasts",
+      "radio": "Radio"
+    },
+    "title": "Mi lista",
+    "items": "elementos",
+    "empty": "Tu lista está vacía",
+    "emptyHint": "Comienza a ver y los elementos aparecerán aquí"
   },
   "widgets": {
     "empty": "Sin widgets",
@@ -1011,7 +1013,9 @@
           "currentSong": "Canción Actual",
           "currentSongPlaceholder": "Título de la canción",
           "isActive": "Activo",
-          "isActiveLabel": "El canal está activo"
+          "isActiveLabel": "El canal está activo",
+          "publishedAt": "Fecha de Publicación",
+          "requiresSubscription": "Suscripción Requerida"
         },
         "subscriptionTiers": {
           "basic": "Básico",
@@ -1074,6 +1078,71 @@
           "dash": "DASH: transmisiones .mpd",
           "audio": "Audio: transmisiones .mp3, .aac o audio"
         }
+      },
+      "columns": {
+        "category": "Categoría",
+        "description": "Descripción",
+        "duration": "Duración",
+        "epgSource": "Fuente EPG",
+        "episodeNumber": "Episodio #",
+        "episodes": "Episodios",
+        "genre": "Género",
+        "name": "Nombre",
+        "order": "Pedido",
+        "publishedDate": "Publicado",
+        "rating": "Calificación",
+        "slug": "Babosa",
+        "status": "Estado",
+        "streamUrl": "URL de transmisión",
+        "title": "Título",
+        "views": "Vistas",
+        "year": "Año"
+      },
+      "confirmDelete": "¿Eliminar este contenido?",
+      "emptyMessage": "No se encontró contenido",
+      "episodes_one": "episodio",
+      "episodes_other": "episodios",
+      "filters": {
+        "allStatus": "Todos los Estados"
+      },
+      "import": {
+        "categoryPlaceholder": "Selecciona una categoría...",
+        "importButton": "Importar {{count}} {{item}}",
+        "importing": "Importando {{count}}... {{percent}}%",
+        "items": "artículo",
+        "itemsPlural": "artículos",
+        "loading": "Cargando fuentes...",
+        "noSources": "No hay fuentes disponibles",
+        "noSourcesDescription": "No hay fuentes de contenido gratuito disponibles actualmente para {{type}}",
+        "pageTitle": "Importar Contenido Gratuito",
+        "selectCategory": "Selecciona categoría para películas importadas:",
+        "selectCategory_vod": "Por favor selecciona una categoría para las importaciones de VOD",
+        "selectItems": "Por favor selecciona al menos un elemento para importar",
+        "sourceTypes": {
+          "live_tv": "TV en vivo",
+          "podcasts": "Pódcasts",
+          "vod": "Películas y VOD"
+        },
+        "subtitle": "Explorar e importar contenido público de fuentes gratuitas"
+      },
+      "importFree": "Importar Contenido Gratuito",
+      "noEpisodes": "No se encontraron episodios",
+      "searchPlaceholder": "Buscar contenido...",
+      "status": {
+        "draft": "Borrador",
+        "published": "Publicado"
+      },
+      "subtitle": "Gestionar películas, series y contenido de video",
+      "title": "Biblioteca de Contenido",
+      "toggleCarousel": "Alternar carrusel",
+      "type": {
+        "movie": "Película"
+      },
+      "validation": {
+        "audioUrlRequired": "La URL de audio es obligatoria",
+        "nameRequired": "El nombre es obligatorio",
+        "streamUrlRequired": "La URL del stream es obligatoria",
+        "titleRequired": "El título es obligatorio"
       }
     },
     "categories": {
@@ -1357,7 +1426,8 @@
         "sent": "Enviados",
         "opened": "Abiertos",
         "clicked": "Clickeados",
-        "created": "Creado"
+        "created": "Creado",
+        "actions": "Acciones"
       },
       "confirmSend": "¿Enviar la campaña \"{{name}}\"?",
       "confirmDelete": "¿Eliminar la campaña \"{{name}}\"?",
@@ -1383,7 +1453,11 @@
       },
       "errors": {
         "requiredFields": "El nombre y el asunto son obligatorios"
-      }
+      },
+      "editModal": {
+        "title": "Editar Campaña"
+      },
+      "sendTestEmail": "Enviar Prueba"
     },
     "dashboard": {
       "subtitle": "Descripción General del Sistema",
@@ -1418,7 +1492,8 @@
       "addUser": "Agregar Usuario",
       "newCampaign": "Nueva Campaña",
       "sendEmail": "Enviar Correo",
-      "viewReports": "Ver Reportes"
+      "viewReports": "Ver Reportes",
+      "new": "Nuevo"
     },
     "placeholder": {
       "userId": "Ingresa ID de usuario",
@@ -1435,7 +1510,11 @@
       "pushNotifications": "Notificaciones Push",
       "billing": "Facturación",
       "marketing": "Marketing",
-      "settings": "Configuración"
+      "settings": "Configuración",
+      "categories": "Categorías",
+      "content": "Biblioteca de Contenido",
+      "liveChannels": "Canales en Vivo",
+      "radioStations": "Estaciones de Radio"
     },
     "nav": {
       "dashboard": "Panel de Control",
@@ -1454,7 +1533,13 @@
       "pushNotifications": "Notificaciones Push",
       "settings": "Configuración",
       "auditLogs": "Registro de Auditoría",
-      "librarian": "Agente Bibliotecario"
+      "librarian": "Agente Bibliotecario",
+      "categories": "Categorías",
+      "content": "Contenido",
+      "contentImport": "Importar Contenido",
+      "contentLibrary": "Biblioteca de Contenido",
+      "liveChannels": "Canales en Vivo",
+      "radioStations": "Estaciones de Radio"
     },
     "librarian": {
       "title": "Agente Bibliotecario",
@@ -1671,7 +1756,152 @@
       "actionType": "Tipo de Acción",
       "clear": "Limpiar",
       "apply": "Aplicar",
-      "noRecords": "No se encontraron registros"
+      "noRecords": "No se encontraron registros",
+      "actionFilters": {
+        "campaign": "Campaña",
+        "content": "Contenido",
+        "payment": "Pago",
+        "settings": "Configuración",
+        "subscription": "Suscripción",
+        "user": "Usuario"
+      },
+      "changed": "Cambiado",
+      "columns": {
+        "action": "Acción",
+        "date": "Fecha",
+        "details": "Detalles",
+        "resource": "Recurso",
+        "user": "Usuario"
+      }
+    },
+    "auditActions": {
+      "campaign_activated": "Campaña Activada",
+      "campaign_created": "Campaña Creada",
+      "campaign_deleted": "Campaña Eliminada",
+      "campaign_updated": "Campaña Actualizada",
+      "category_created": "Categoría Creada",
+      "category_deleted": "Categoría Eliminada",
+      "category_updated": "Categoría Actualizada",
+      "content_created": "Contenido Creado",
+      "content_deleted": "Contenido Eliminado",
+      "content_imported": "Contenido Importado",
+      "content_published": "Contenido Publicado",
+      "content_unpublished": "Contenido Despublicado",
+      "content_updated": "Contenido Actualizado",
+      "live_channel_created": "Canal en Vivo Creado",
+      "live_channel_deleted": "Canal en Vivo Eliminado",
+      "live_channel_updated": "Canal en Vivo Actualizado",
+      "login": "Iniciar sesión",
+      "logout": "Cerrar sesión",
+      "payment_received": "Pago Recibido",
+      "podcast_created": "Podcast Creado",
+      "podcast_deleted": "Podcast Eliminado",
+      "podcast_episode_created": "Episodio de Podcast Creado",
+      "podcast_episode_deleted": "Episodio de Podcast Eliminado",
+      "podcast_episode_updated": "Episodio de Podcast Actualizado",
+      "podcast_updated": "Podcast Actualizado",
+      "radio_station_created": "Estación de Radio Creada",
+      "radio_station_deleted": "Estación de Radio Eliminada",
+      "radio_station_updated": "Estación de Radio Actualizada",
+      "refund_processed": "Reembolso Procesado",
+      "settings_updated": "Configuración Actualizada",
+      "subscription_canceled": "Suscripción Cancelada",
+      "subscription_created": "Suscripción Creada",
+      "subscription_updated": "Suscripción Actualizada",
+      "user_created": "Usuario Creado",
+      "user_deleted": "Usuario eliminado",
+      "user_role_changed": "Rol de Usuario Cambiado",
+      "user_updated": "Usuario Actualizado",
+      "widget_created": "Widget Creado",
+      "widget_deleted": "Widget Eliminado",
+      "widget_published": "Widget Publicado",
+      "widget_unpublished": "Widget No Publicado",
+      "widget_updated": "Widget Actualizado"
+    },
+    "settings": {
+      "actionsWarning": "Estas acciones pueden afectar el rendimiento del sistema. Úselas con precaución.",
+      "analyticsReset": "Los datos de analíticas han sido restablecidos",
+      "cacheCleared": "Caché eliminado correctamente",
+      "clearCache": "Borrar Caché",
+      "confirmClearCache": "¿Limpiar caché? Esto puede afectar temporalmente el rendimiento.",
+      "confirmResetAnalytics": "¿Restablecer datos analíticos? ¡Esta acción no se puede deshacer!",
+      "defaultPlan": "Plan Predeterminado",
+      "featureFlagLabels": {
+        "ai_recommendations": "Recomendaciones de IA",
+        "downloads": "Descargas",
+        "live_chat": "Chat en Vivo",
+        "new_player": "Jugador Nuevo",
+        "voice_search": "Búsqueda por voz",
+        "watch_party": "Fiesta de visualización"
+      },
+      "featureFlags": "Banderas de Funcionalidad",
+      "generalSettings": "Configuración General",
+      "maintenanceMode": "Modo de Mantenimiento",
+      "maintenanceModeDesc": "Cuando esté habilitado, el sistema será inaccesible para los usuarios",
+      "maxDevices": "Máximo de Dispositivos por Cuenta",
+      "privacyUrl": "URL de Política de Privacidad",
+      "resetAnalytics": "Restablecer Analytics",
+      "saveChanges": "Guardar Cambios",
+      "savingSuccess": "Configuración guardada exitosamente",
+      "subtitle": "Configurar parámetros del sistema",
+      "supportEmail": "Email de Soporte",
+      "systemActions": "Acciones del Sistema",
+      "termsUrl": "URL de Términos del Servicio",
+      "trialDays": "Días del Período de Prueba",
+      "userSettings": "Configuración de Usuario"
+    },
+    "widgets": {
+      "actions": {
+        "cancel": "Cancelar",
+        "save": "Guardar"
+      },
+      "allPages": "Todas las páginas",
+      "allRoles": "Todo",
+      "columns": {
+        "contentType": "Tipo de Contenido",
+        "order": "Orden",
+        "status": "Estado",
+        "targetPages": "Páginas de Destino",
+        "targetRoles": "Roles Objetivo",
+        "title": "Título"
+      },
+      "confirmDelete": "¿Estás seguro de que quieres eliminar este widget?",
+      "contentTypes": {
+        "live": "En vivo",
+        "liveChannel": "Canal en Vivo",
+        "vod": "Video bajo Demanda"
+      },
+      "editWidget": "Editar Widget",
+      "emptyMessage": "No se encontraron widgets. Crea uno para comenzar.",
+      "errors": {
+        "iframeUrlRequired": "Se requiere la URL del iframe",
+        "selectChannel": "Por favor selecciona un canal en vivo",
+        "titleRequired": "El título es obligatorio"
+      },
+      "form": {
+        "behavior": "Comportamiento",
+        "channelPlaceholder": "-- Seleccionar Canal --",
+        "closable": "Cerrable",
+        "contentType": "Tipo de Contenido",
+        "description": "Descripción (opcional)",
+        "draggable": "Arrastrable",
+        "icon": "Emoji de ícono (opcional)",
+        "iframeTitle": "Título del iframe (para accesibilidad)",
+        "iframeUrl": "URL del iframe",
+        "mutedByDefault": "Silenciado por defecto",
+        "order": "Pedido",
+        "position": "Posición Predeterminada",
+        "selectChannel": "Seleccionar Canal en Vivo",
+        "targetPages": "Páginas Objetivo (separadas por comas, vacío = todas)",
+        "targetPagesPlaceholder": "/, /en vivo, /vídeo bajo demanda",
+        "title": "Título del widget"
+      },
+      "newWidget": "Nuevo Widget",
+      "status": {
+        "active": "Activo",
+        "inactive": "Inactivo"
+      },
+      "subtitle": "Gestiona widgets de superposición flotante para transmisiones en vivo e incrustaciones"
     }
   },
   "watchParty": {
@@ -1958,59 +2188,6 @@
     "noContent": "Sin contenido disponible",
     "tryAnotherCategory": "Intenta seleccionar otra categoría"
   },
-  "radio": {
-    "title": "Radio",
-    "categories": {
-      "all": "Todos",
-      "music": "Música",
-      "news": "Noticias",
-      "talk": "Conversación",
-      "jewish": "Judío"
-    },
-    "noStations": "Sin estaciones de radio disponibles",
-    "tryLater": "Intenta de nuevo más tarde"
-  },
-  "podcasts": {
-    "title": "Podcasts",
-    "episodes": "episodios",
-    "categories": {
-      "all": "Todos",
-      "general": "General",
-      "news": "Noticias",
-      "politics": "Política",
-      "tech": "Tecnología",
-      "business": "Negocios",
-      "jewish": "Judaísmo",
-      "entertainment": "Entretenimiento",
-      "sports": "Deportes",
-      "history": "Historia",
-      "educational": "Educativo"
-    },
-    "noPodcasts": "Sin podcasts disponibles",
-    "tryLater": "Intenta de nuevo más tarde"
-  },
-  "watchlist": {
-    "filters": {
-      "all": "Todos",
-      "continue": "Continuar viendo",
-      "movies": "Películas",
-      "series": "Series",
-      "kids": "Niños",
-      "judaism": "Judaísmo",
-      "podcasts": "Podcasts",
-      "radio": "Radio"
-    },
-    "title": "Mi lista",
-    "items": "elementos",
-    "empty": "Tu lista está vacía",
-    "emptyHint": "Comienza a ver y los elementos aparecerán aquí"
-  },
-  "favorites": {
-    "title": "Favoritos",
-    "items": "elementos",
-    "empty": "Sin favoritos aún",
-    "emptyHint": "Añade elementos a tus favoritos"
-  },
   "chatbot": {
     "title": "Asistente Bayit+",
     "greeting": "Hola! Soy el asistente inteligente de Bayit+. ¿Cómo puedo ayudarte hoy? Haz clic en el micrófono y habla, o escribe un mensaje.",
@@ -2055,6 +2232,27 @@
     "title": "Modo de Voz",
     "voiceOnly": "Solo Voz",
     "hybrid": "Híbrido",
-    "classic": "Clásico"
+    "classic": "Clásico",
+    "classicDesc": "Sin voz - solo control remoto",
+    "hybridDesc": "Voz + Remoto - retroalimentación de voz en acciones",
+    "voiceOnlyDesc": "Sin control remoto - navegación completa por voz"
+  },
+  "help": {
+    "chat": "Chat en Vivo",
+    "chatAvailable": "Disponible 24/7",
+    "email": "Soporte por Correo Electrónico",
+    "faq": {
+      "a1": "Ve a Configuración > Suscripción para ver y cambiar tu plan actual. Puedes actualizar o degradar en cualquier momento.",
+      "a2": "Toca el ícono de descarga en cualquier contenido para guardarlo para visualización sin conexión. Las descargas están disponibles solo en dispositivos móviles.",
+      "a3": "Verifica tu conexión a internet. Si el problema persiste, intenta limpiar la caché de la aplicación o reiniciar la aplicación.",
+      "a4": "Puedes cancelar tu suscripción en cualquier momento a través de Configuración > Suscripción > Cancelar Plan. Continuarás teniendo acceso hasta el final de tu período de facturación.",
+      "q1": "¿Cómo cambio mi plan de suscripción?",
+      "q2": "¿Cómo descargo contenido para verlo sin conexión?",
+      "q3": "¿Por qué no se reproduce mi video?",
+      "q4": "¿Cómo cancelo mi suscripción?",
+      "title": "Preguntas Frecuentes"
+    },
+    "phone": "Soporte Telefónico",
+    "subtitle": "¿Cómo podemos ayudarte?"
   }
 }

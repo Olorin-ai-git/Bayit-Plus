@@ -328,8 +328,8 @@ TOOLS = [
             "properties": {
                 "bucket_name": {
                     "type": "string",
-                    "description": "GCS bucket name to check (default: bayit-plus-media-new-new)",
-                    "default": "bayit-plus-media-new-new"
+                    "description": "GCS bucket name to check (default: bayit-plus-media-new)",
+                    "default": "bayit-plus-media-new"
                 }
             },
             "required": []
@@ -343,8 +343,8 @@ TOOLS = [
             "properties": {
                 "bucket_name": {
                     "type": "string",
-                    "description": "GCS bucket name to check (default: bayit-plus-media-new-new)",
-                    "default": "bayit-plus-media-new-new"
+                    "description": "GCS bucket name to check (default: bayit-plus-media-new)",
+                    "default": "bayit-plus-media-new"
                 },
                 "size_threshold_gb": {
                     "type": "number",
@@ -368,8 +368,8 @@ TOOLS = [
             "properties": {
                 "bucket_name": {
                     "type": "string",
-                    "description": "GCS bucket name to analyze (default: bayit-plus-media-new-new)",
-                    "default": "bayit-plus-media-new-new"
+                    "description": "GCS bucket name to analyze (default: bayit-plus-media-new)",
+                    "default": "bayit-plus-media-new"
                 },
                 "storage_class": {
                     "type": "string",
@@ -530,7 +530,7 @@ async def execute_list_content_items(
                 {"$sample": {"size": limit}}
             ]
             # Beanie aggregation - must use to_list() on aggregation result
-            items = await Content.aggregate(pipeline, projection_model=Content).to_list()
+            items = await Content.aggregate(pipeline).to_list()
         else:
             # Get newest items
             items = await Content.find(query).sort([("created_at", -1)]).limit(limit).to_list()
@@ -655,6 +655,15 @@ async def execute_search_tmdb(
     try:
         # Import and instantiate TMDB service
         from app.services.tmdb_service import TMDBService
+        from app.core.config import settings
+
+        # Check if API key is configured
+        if not settings.TMDB_API_KEY:
+            return {
+                "success": False,
+                "error": "TMDB API key not configured. Set TMDB_API_KEY environment variable."
+            }
+
         tmdb_service = TMDBService()
 
         # Search for the content
@@ -1006,11 +1015,17 @@ async def execute_clean_title(
 
 
 async def execute_check_storage_usage(
-    bucket_name: str = "bayit-plus-media-new-new"
+    bucket_name: Optional[str] = None
 ) -> Dict[str, Any]:
     """Check GCS bucket storage usage statistics."""
     try:
         from google.cloud import storage
+        from app.core.config import settings
+
+        # Use provided bucket name or fall back to config
+        bucket_name = bucket_name or settings.GCS_BUCKET_NAME
+        if not bucket_name:
+            return {"success": False, "error": "GCS bucket name not configured. Set GCS_BUCKET_NAME environment variable or provide bucket_name parameter."}
 
         client = storage.Client()
         bucket = client.bucket(bucket_name)
@@ -1062,7 +1077,7 @@ async def execute_check_storage_usage(
 
 
 async def execute_list_large_files(
-    bucket_name: str = "bayit-plus-media-new-new",
+    bucket_name: str = "bayit-plus-media-new",
     size_threshold_gb: float = 5.0,
     limit: int = 20
 ) -> Dict[str, Any]:
@@ -1114,7 +1129,7 @@ async def execute_list_large_files(
 
 
 async def execute_calculate_storage_costs(
-    bucket_name: str = "bayit-plus-media-new-new",
+    bucket_name: str = "bayit-plus-media-new",
     storage_class: str = "STANDARD"
 ) -> Dict[str, Any]:
     """Calculate estimated monthly storage costs."""
@@ -1552,7 +1567,7 @@ async def execute_tool(
             return await execute_scan_video_subtitles(**tool_input)
 
         elif tool_name == "extract_video_subtitles":
-            return await execute_extract_video_subtitles(**tool_input, audit_id=audit_id)
+            return await execute_extract_video_subtitles(**tool_input)
 
         elif tool_name == "verify_required_subtitles":
             return await execute_verify_required_subtitles(**tool_input)

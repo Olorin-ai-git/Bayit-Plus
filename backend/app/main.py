@@ -31,6 +31,37 @@ async def sync_podcast_rss_feeds():
         logger.warning(f"Failed to sync podcast RSS feeds: {e}")
 
 
+def validate_configuration():
+    """Validate critical configuration on startup."""
+    warnings = []
+
+    # Check TMDB API key
+    if not settings.TMDB_API_KEY:
+        warnings.append("⚠️  TMDB_API_KEY not configured - metadata fetching will not work")
+
+    # Check GCS bucket configuration
+    if not settings.GCS_BUCKET_NAME:
+        warnings.append("⚠️  GCS_BUCKET_NAME not configured - storage operations may fail")
+
+    # Check Google OAuth if needed
+    if not settings.GOOGLE_CLIENT_ID or not settings.GOOGLE_CLIENT_SECRET:
+        warnings.append("⚠️  Google OAuth not fully configured (GOOGLE_CLIENT_ID/GOOGLE_CLIENT_SECRET)")
+
+    # Check SendGrid if email is needed
+    if hasattr(settings, 'SENDGRID_API_KEY') and not settings.SENDGRID_API_KEY:
+        warnings.append("⚠️  SENDGRID_API_KEY not configured - email notifications will not work")
+
+    # Log all warnings
+    if warnings:
+        logger.warning("\n" + "="*60)
+        logger.warning("CONFIGURATION WARNINGS:")
+        for warning in warnings:
+            logger.warning(f"  {warning}")
+        logger.warning("="*60 + "\n")
+    else:
+        logger.info("✅ All critical configuration validated")
+
+
 async def init_default_data():
     """Initialize default data on startup."""
     try:
@@ -340,6 +371,7 @@ async def init_default_data():
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     # Startup
+    validate_configuration()
     await connect_to_mongo()
     try:
         await init_default_data()

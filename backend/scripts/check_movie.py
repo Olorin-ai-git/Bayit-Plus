@@ -23,7 +23,7 @@ async def check_movie():
 
     # Check if it has the old bucket URL
     all_with_old_bucket = await content_collection.count_documents({
-        "stream_url": {"$regex": "storage.googleapis.com/bayit-plus-media-new-new/movies"}
+        "stream_url": {"$regex": "storage.googleapis.com/bayit-plus-media-new/movies"}
     })
 
     print(f"Total movies still with old bucket URL: {all_with_old_bucket}")

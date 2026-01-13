@@ -20,22 +20,22 @@ MOVIES = [
     {
         "title": "Winnie the Pooh",
         "year": 2011,
-        "stream_url": "https://storage.googleapis.com/bayit-plus-media-new-new/movies/1-3-3-8_com_Winnie_the_Pooh_-AMIABLE/1-3-3-8.com_Winnie.the.Pooh.2011.720p.BluRay.X264-AMIABLE.mkv"
+        "stream_url": "https://storage.googleapis.com/bayit-plus-media-new/movies/1-3-3-8_com_Winnie_the_Pooh_-AMIABLE/1-3-3-8.com_Winnie.the.Pooh.2011.720p.BluRay.X264-AMIABLE.mkv"
     },
     {
         "title": "25th Hour",
         "year": 2002,
-        "stream_url": "https://storage.googleapis.com/bayit-plus-media-new-new/movies/25th_Hour_TV_-BoK/25th.Hour.2002.HDTV.720p.AC3.5.1-BoK.mkv"
+        "stream_url": "https://storage.googleapis.com/bayit-plus-media-new/movies/25th_Hour_TV_-BoK/25th.Hour.2002.HDTV.720p.AC3.5.1-BoK.mkv"
     },
     {
         "title": "300",
         "year": 2006,
-        "stream_url": "https://storage.googleapis.com/bayit-plus-media-new-new/movies/300_p_-hV/300.2006.1080p.BluRay.x264-hV.mkv"
+        "stream_url": "https://storage.googleapis.com/bayit-plus-media-new/movies/300_p_-hV/300.2006.1080p.BluRay.x264-hV.mkv"
     },
     {
         "title": "65",
         "year": 2023,
-        "stream_url": "https://storage.googleapis.com/bayit-plus-media-new-new/movies/65_-_MX/65.2023.720p.WEBRip.x264.AAC-[YTS.MX].mp4"
+        "stream_url": "https://storage.googleapis.com/bayit-plus-media-new/movies/65_-_MX/65.2023.720p.WEBRip.x264.AAC-[YTS.MX].mp4"
     }
 ]
 
