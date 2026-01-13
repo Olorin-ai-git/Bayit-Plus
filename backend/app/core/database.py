@@ -4,6 +4,7 @@ from app.core.config import settings
 
 # Models
 from app.models.user import User
+from app.models.verification import VerificationToken
 from app.models.content import Content, Category, LiveChannel, EPGEntry, RadioStation, Podcast, PodcastEpisode
 from app.models.subscription import Subscription, Invoice
 from app.models.watchlist import WatchlistItem, WatchHistory, Conversation
@@ -40,6 +41,7 @@ async def connect_to_mongo():
         database=db.client[settings.MONGODB_DB_NAME],
         document_models=[
             User,
+            VerificationToken,
             Content,
             Category,
             LiveChannel,

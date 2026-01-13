@@ -84,6 +84,17 @@ const apiAuthService = {
     api.post('/auth/google/callback', { code, redirect_uri: redirectUri }),
 };
 
+// Verification Service (API)
+const apiVerificationService = {
+  sendEmailVerification: () => api.post('/verification/email/send'),
+  verifyEmail: (token: string) => api.post('/verification/email/verify', { token }),
+  sendPhoneVerification: (phoneNumber: string) =>
+    api.post('/verification/phone/send', { phone_number: phoneNumber }),
+  verifyPhone: (code: string) =>
+    api.post('/verification/phone/verify', { code }),
+  getVerificationStatus: () => api.get('/verification/status'),
+};
+
 // Content Service (API)
 const apiContentService = {
   getFeatured: () => api.get('/content/featured'),
@@ -501,6 +512,7 @@ const apiPartyService = {
 // ===========================================
 
 export const authService = apiAuthService; // Always use real auth - no demo mode
+export const verificationService = apiVerificationService; // Always use real verification - no demo mode
 export const contentService = isDemo ? demoContentService : apiContentService;
 export const liveService = isDemo ? demoLiveService : apiLiveService;
 export const radioService = isDemo ? demoRadioService : apiRadioService;

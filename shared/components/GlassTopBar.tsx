@@ -13,6 +13,7 @@ import { LanguageSelector } from './LanguageSelector';
 import { UserAccountMenu } from './UserAccountMenu';
 import { VoiceSearchButton } from './VoiceSearchButton';
 import { SoundwaveVisualizer } from './SoundwaveVisualizer';
+import { UpgradeButton } from './UpgradeButton';
 import { colors, spacing, borderRadius } from '../theme';
 import { isWeb, isTV } from '../utils/platform';
 import { useDirection } from '../hooks/useDirection';
@@ -133,6 +134,9 @@ export const GlassTopBar: React.FC<GlassTopBarProps> = ({
         >
           <Text style={styles.actionIcon}>🔍</Text>
         </TouchableOpacity>
+
+        {/* Upgrade Button - for non-admin, non-premium users */}
+        <UpgradeButton compact size="sm" />
 
         {/* Language Selector */}
         <LanguageSelector />

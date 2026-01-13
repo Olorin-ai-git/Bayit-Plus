@@ -25,6 +25,8 @@ import { useNavigation } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
 import ReactNativeHapticFeedback from 'react-native-haptic-feedback';
 import { GlassView, GlassButton } from '@bayit/shared';
+import { VerificationModal } from '@bayit/shared/components/VerificationModal';
+import { UpgradeButton } from '@bayit/shared/components/UpgradeButton';
 import { usePermissions, useDirection } from '@bayit/shared-hooks';
 import { useAuthStore } from '@bayit/shared-stores';
 import { spacing, colors, typography, touchTarget } from '../theme';
@@ -40,10 +42,11 @@ interface ProfileStats {
 export const ProfileScreenMobile: React.FC = () => {
   const { t, i18n } = useTranslation();
   const navigation = useNavigation<any>();
-  const { user, logout } = useAuthStore();
+  const { user, logout, isAdminRole, isVerified, needsVerification } = useAuthStore();
   const { can, isAdmin } = usePermissions();
   const { isRTL, direction } = useDirection();
   const { isTablet } = useResponsive();
+  const [showVerificationModal, setShowVerificationModal] = useState(false);
 
   const [stats, setStats] = useState<ProfileStats>({
     watchlistCount: 0,
@@ -151,14 +154,65 @@ export const ProfileScreenMobile: React.FC = () => {
         <Text style={styles.name}>{user?.name || t('profile.guest')}</Text>
         {user?.email && <Text style={styles.email}>{user.email}</Text>}
 
-        {user?.subscription && (
+        {/* Subscription/Verification Status */}
+        {isAdminRole() ? (
           <View style={styles.subscriptionBadge}>
             <Text style={styles.subscriptionText}>
-              {user.subscription.toUpperCase()}
+              ✨ COMPLIMENTARY PREMIUM ACCESS
             </Text>
+          </View>
+        ) : user?.subscription_tier ? (
+          <View style={styles.subscriptionBadge}>
+            <Text style={styles.subscriptionText}>
+              {user.subscription_tier.toUpperCase()}
+            </Text>
+          </View>
+        ) : null}
+
+        {/* Verification Status - only for non-admins */}
+        {!isAdminRole() && user && (
+          <View style={styles.verificationContainer}>
+            <View style={styles.verificationRow}>
+              <View style={[
+                styles.verificationBadge,
+                (user as any).email_verified ? styles.verifiedBadge : styles.unverifiedBadge
+              ]}>
+                <Text style={styles.verificationBadgeText}>
+                  {(user as any).email_verified ? '✓ Email Verified' : '✗ Email Unverified'}
+                </Text>
+              </View>
+              <View style={[
+                styles.verificationBadge,
+                (user as any).phone_verified ? styles.verifiedBadge : styles.unverifiedBadge
+              ]}>
+                <Text style={styles.verificationBadgeText}>
+                  {(user as any).phone_verified ? '✓ Phone Verified' : '✗ Phone Unverified'}
+                </Text>
+              </View>
+            </View>
+            {needsVerification() && (
+              <GlassButton
+                title="Complete Verification"
+                onPress={() => setShowVerificationModal(true)}
+                variant="primary"
+                size="sm"
+                style={styles.verifyButton}
+              />
+            )}
           </View>
         )}
       </GlassView>
+
+      {/* Upgrade Section - for verified users without subscription */}
+      {!isAdminRole() && isVerified() && !user?.subscription_tier && (
+        <GlassView style={styles.upgradeSection}>
+          <Text style={styles.upgradeSectionTitle}>Unlock Premium Features</Text>
+          <Text style={styles.upgradeSectionSubtitle}>
+            Watch VOD content, create widgets, and access all premium features
+          </Text>
+          <UpgradeButton fullWidth />
+        </GlassView>
+      )}
 
       {/* Stats Grid - 1x2 Text-Only Design (removed bottom 2 cards to prevent overlap) */}
       <View style={styles.statsGrid}>
@@ -220,6 +274,17 @@ export const ProfileScreenMobile: React.FC = () => {
 
       {/* App Version */}
       <Text style={styles.version}>Bayit+ v1.0.0</Text>
+
+      {/* Verification Modal */}
+      <VerificationModal
+        visible={showVerificationModal}
+        onClose={() => setShowVerificationModal(false)}
+        onSuccess={() => {
+          setShowVerificationModal(false);
+          // Reload profile to show updated verification status
+          loadProfileStats();
+        }}
+      />
     </ScrollView>
   );
 };
@@ -280,6 +345,63 @@ const styles = StyleSheet.create({
     ...typography.caption,
     color: colors.text,
     fontWeight: '700',
+  },
+
+  // Verification Status Styles
+  verificationContainer: {
+    marginTop: spacing.md,
+    gap: spacing.sm,
+    width: '100%',
+  },
+  verificationRow: {
+    flexDirection: 'row',
+    gap: spacing.sm,
+    flexWrap: 'wrap',
+    justifyContent: 'center',
+  },
+  verificationBadge: {
+    paddingHorizontal: spacing.sm,
+    paddingVertical: spacing.xs,
+    borderRadius: 8,
+    minWidth: 120,
+    alignItems: 'center',
+  },
+  verifiedBadge: {
+    backgroundColor: '#10b981', // Green
+  },
+  unverifiedBadge: {
+    backgroundColor: '#ef4444', // Red
+  },
+  verificationBadgeText: {
+    ...typography.caption,
+    fontSize: 11,
+    color: colors.text,
+    fontWeight: '600',
+  },
+  verifyButton: {
+    marginTop: spacing.xs,
+    alignSelf: 'center',
+  },
+
+  // Upgrade Section Styles
+  upgradeSection: {
+    padding: spacing.lg,
+    borderRadius: 16,
+    marginBottom: spacing.lg,
+    alignItems: 'center',
+    gap: spacing.sm,
+  },
+  upgradeSectionTitle: {
+    ...typography.h3,
+    color: colors.text,
+    fontWeight: '700',
+    textAlign: 'center',
+  },
+  upgradeSectionSubtitle: {
+    ...typography.body,
+    color: colors.textSecondary,
+    textAlign: 'center',
+    marginBottom: spacing.sm,
   },
 
   // Stats Grid Styles

@@ -10,7 +10,8 @@ export type Role =
   | 'content_manager' // Content operations
   | 'billing_admin'  // Financial operations
   | 'support'        // Customer support
-  | 'user';          // Regular subscriber
+  | 'viewer'         // Unverified user (browse only)
+  | 'user';          // Regular subscriber (verified)
 
 // Granular permissions
 export type Permission =
@@ -88,7 +89,8 @@ export const ROLE_PERMISSIONS: Record<Role, Permission[]> = {
     'subscriptions:read',
     'analytics:read',
   ],
-  user: [],
+  viewer: [],  // Unverified users - browse only
+  user: [],    // Verified users with subscription
 };
 
 // Subscription interface

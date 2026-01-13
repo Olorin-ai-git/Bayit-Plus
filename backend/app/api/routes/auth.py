@@ -31,13 +31,26 @@ async def register(user_data: UserCreate):
             detail="Email already registered",
         )
 
-    # Create user
+    # Create user as "viewer" (unverified)
     user = User(
         email=user_data.email,
         name=user_data.name,
         hashed_password=get_password_hash(user_data.password),
+        role="viewer",
+        email_verified=False,
+        phone_verified=False,
+        is_verified=False,
     )
     await user.insert()
+
+    # Auto-send email verification
+    try:
+        from app.services.verification_service import verification_service
+        await verification_service.initiate_email_verification(user)
+    except Exception as e:
+        import logging
+        logger = logging.getLogger(__name__)
+        logger.warning(f"Failed to send verification email during registration: {e}")
 
     # Create token
     access_token = create_access_token(data={"sub": str(user.id)})
@@ -208,14 +221,22 @@ async def google_callback(auth_data: GoogleAuthCode):
             # Link Google account to existing user
             user.google_id = google_id
             user.auth_provider = "google"
+            user.email_verified = True  # Google pre-verified email
+            user.email_verified_at = datetime.utcnow()
+            user.update_verification_status()
             await user.save()
         else:
-            # Create new user
+            # Create new user as "viewer" with email verified
             user = User(
                 email=email,
                 name=name,
                 google_id=google_id,
                 auth_provider="google",
+                role="viewer",
+                email_verified=True,  # Google pre-verified
+                email_verified_at=datetime.utcnow(),
+                phone_verified=False,
+                is_verified=False,  # Still need phone verification
             )
             await user.insert()
 

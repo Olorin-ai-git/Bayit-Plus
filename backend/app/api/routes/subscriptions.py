@@ -72,7 +72,26 @@ async def create_checkout(
     request: CheckoutRequest,
     current_user: User = Depends(get_current_active_user),
 ):
-    """Create a Stripe checkout session."""
+    """Create a Stripe checkout session - requires verification."""
+    # Admins cannot checkout (they have free premium)
+    if current_user.is_admin_role():
+        raise HTTPException(
+            status_code=400,
+            detail="Admin users have complimentary premium access"
+        )
+
+    # Regular users need verification
+    if not current_user.is_verified:
+        raise HTTPException(
+            status_code=403,
+            detail={
+                "error": "verification_required",
+                "message": "Please verify your email and phone before subscribing",
+                "email_verified": current_user.email_verified,
+                "phone_verified": current_user.phone_verified,
+            }
+        )
+
     if request.plan_id not in SUBSCRIPTION_PLANS:
         raise HTTPException(status_code=400, detail="Invalid plan")
 
@@ -197,8 +216,10 @@ async def handle_checkout_completed(session: dict):
     )
     await subscription.insert()
 
-    # Update user
+    # Update user - upgrade from "viewer" to "user"
     plan = SUBSCRIPTION_PLANS.get(plan_id)
+    if user.role == "viewer":
+        user.role = "user"
     user.subscription_id = str(subscription.id)
     user.subscription_tier = plan_id
     user.subscription_status = stripe_sub.status

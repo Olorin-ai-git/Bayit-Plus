@@ -18,7 +18,7 @@ from app.api.routes import (
     party, websocket, websocket_live_subtitles, zman, trending, chapters, subtitles, ritual, profiles, children, judaism, flows,
     device_pairing, onboarding, widgets, favorites, downloads, user_system_widgets, news, librarian,
     admin_content_vod_read, admin_content_vod_write, admin_content_vod_toggles, admin_categories, admin_live_channels,
-    admin_radio_stations, admin_podcasts, admin_podcast_episodes, admin_content_importer, admin_widgets
+    admin_radio_stations, admin_podcasts, admin_podcast_episodes, admin_content_importer, admin_widgets, verification
 )
 
 
@@ -411,6 +411,7 @@ async def health_check():
 
 # API routes
 app.include_router(auth.router, prefix=f"{settings.API_V1_PREFIX}/auth", tags=["auth"])
+app.include_router(verification.router, prefix=f"{settings.API_V1_PREFIX}", tags=["verification"])
 app.include_router(content.router, prefix=f"{settings.API_V1_PREFIX}/content", tags=["content"])
 app.include_router(live.router, prefix=f"{settings.API_V1_PREFIX}/live", tags=["live"])
 app.include_router(radio.router, prefix=f"{settings.API_V1_PREFIX}/radio", tags=["radio"])

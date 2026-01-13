@@ -155,6 +155,21 @@ yarl = ">=1.17.0,<2.0"
 speedups = ["Brotli (>=1.2) ; platform_python_implementation == \"CPython\"", "aiodns (>=3.3.0)", "backports.zstd ; platform_python_implementation == \"CPython\" and python_version < \"3.14\"", "brotlicffi (>=1.2) ; platform_python_implementation != \"CPython\""]
 
 [[package]]
+name = "aiohttp-retry"
+version = "2.9.1"
+description = "Simple retry client for aiohttp"
+optional = false
+python-versions = ">=3.7"
+groups = ["main"]
+files = [
+    {file = "aiohttp_retry-2.9.1-py3-none-any.whl", hash = "sha256:66d2759d1921838256a05a3f80ad7e724936f083e35be5abb5e16eed6be6dc54"},
+    {file = "aiohttp_retry-2.9.1.tar.gz", hash = "sha256:8eb75e904ed4ee5c2ec242fefe85bf04240f685391c4879d8f541d6028ff01f1"},
+]
+
+[package.dependencies]
+aiohttp = "*"
+
+[[package]]
 name = "aiosignal"
 version = "1.4.0"
 description = "aiosignal: a list of registered asynchronous callbacks"
@@ -1907,6 +1922,18 @@ build-docs = ["cloud-sptheme (>=1.10.1)", "sphinx (>=1.6)", "sphinxcontrib-fullt
 totp = ["cryptography"]
 
 [[package]]
+name = "phonenumbers"
+version = "9.0.21"
+description = "Python version of Google's common library for parsing, formatting, storing and validating international phone numbers."
+optional = false
+python-versions = ">=2.5"
+groups = ["main"]
+files = [
+    {file = "phonenumbers-9.0.21-py2.py3-none-any.whl", hash = "sha256:3a0f717fddf901a5a424f47c43fb72722cb45bd25ee87331987b00eafe6855bf"},
+    {file = "phonenumbers-9.0.21.tar.gz", hash = "sha256:df4145cba0a8b3ee9c425d5d9b5dbe1b4fceccc68b030ac549ea13c95592b602"},
+]
+
+[[package]]
 name = "pillow"
 version = "12.1.0"
 description = "Python Imaging Library (fork)"
@@ -2923,6 +2950,24 @@ slack = ["slack-sdk"]
 telegram = ["requests"]
 
 [[package]]
+name = "twilio"
+version = "9.9.1"
+description = "Twilio API client and TwiML generator"
+optional = false
+python-versions = ">=3.7.0"
+groups = ["main"]
+files = [
+    {file = "twilio-9.9.1-py2.py3-none-any.whl", hash = "sha256:b4a8b0ef241d7f87f5ea0915b76e50bf2d2ff73a3c67604664bfac09cb1047a7"},
+    {file = "twilio-9.9.1.tar.gz", hash = "sha256:0ddf56092d2f613a3da56355eb4a0b39fc7c8ef10f1e073f558fab3e4b6c957b"},
+]
+
+[package.dependencies]
+aiohttp = ">=3.8.4"
+aiohttp-retry = ">=2.8.3"
+PyJWT = ">=2.0.0,<3.0.0"
+requests = ">=2.0.0"
+
+[[package]]
 name = "types-protobuf"
 version = "4.25.0.20240417"
 description = "Typing stubs for protobuf"
@@ -3465,4 +3510,4 @@ propcache = ">=0.2.1"
 [metadata]
 lock-version = "2.1"
 python-versions = ">=3.11,<3.14"
-content-hash = "d138ff890d97ea3201b3f4680f520e8fbc40d1cc26b9a556f8469bfd0f240aa6"
+content-hash = "af35e4f62435314bc51dbb574eae5d0477cebc197a16927e137edbba833d7cdc"

@@ -47,6 +47,12 @@ interface AuthState {
   hasAllPermissions: (permissions: Permission[]) => boolean;
   isAdmin: () => boolean;
   getPermissions: () => Permission[];
+  // Verification helpers
+  isAdminRole: () => boolean;
+  isVerified: () => boolean;
+  needsVerification: () => boolean;
+  canWatchVOD: () => boolean;
+  canCreateWidgets: () => boolean;
 }
 
 export const useAuthStore = create<AuthState>()(
@@ -185,6 +191,51 @@ export const useAuthStore = create<AuthState>()(
         if (!user) return false;
         const adminRoles: Role[] = ['super_admin', 'admin', 'content_manager', 'billing_admin', 'support'];
         return adminRoles.includes(user.role);
+      },
+
+      // Verification helpers
+      isAdminRole: () => {
+        const { user } = get();
+        if (!user) return false;
+        const adminRoles: Role[] = ['super_admin', 'admin', 'content_manager', 'billing_admin', 'support'];
+        return adminRoles.includes(user.role);
+      },
+
+      isVerified: () => {
+        const { user } = get();
+        if (!user) return false;
+        // Admins are always verified
+        if (get().isAdminRole()) return true;
+        // Check if user has is_verified field (new field)
+        return (user as any).is_verified === true;
+      },
+
+      needsVerification: () => {
+        const { user } = get();
+        if (!user) return false;
+        // Admins don't need verification
+        if (get().isAdminRole()) return false;
+        // Regular users need verification
+        return !get().isVerified();
+      },
+
+      canWatchVOD: () => {
+        const { user } = get();
+        if (!user) return false;
+        // Admins always can
+        if (get().isAdminRole()) return true;
+        // Regular users need verification AND subscription
+        return get().isVerified() && !!user.subscription?.plan;
+      },
+
+      canCreateWidgets: () => {
+        const { user } = get();
+        if (!user) return false;
+        // Admins always can
+        if (get().isAdminRole()) return true;
+        // Regular users need verification AND premium/family subscription
+        const premiumPlans = ['premium', 'family'];
+        return get().isVerified() && premiumPlans.includes(user.subscription?.plan || '');
       },
     }),
     {

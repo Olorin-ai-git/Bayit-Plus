@@ -101,6 +101,20 @@ class Settings(BaseSettings):
     TMDB_API_KEY: str = ""
     TMDB_API_TOKEN: str = ""  # Bearer token for TMDB API v4
 
+    # Twilio SMS Verification
+    TWILIO_ACCOUNT_SID: str = ""
+    TWILIO_AUTH_TOKEN: str = ""
+    TWILIO_PHONE_NUMBER: str = ""
+
+    # Verification Settings
+    EMAIL_VERIFICATION_TOKEN_EXPIRE_HOURS: int = 24
+    PHONE_VERIFICATION_CODE_EXPIRE_MINUTES: int = 10
+    MAX_VERIFICATION_ATTEMPTS_PER_HOUR: int = 3
+
+    # Frontend URLs (for verification links)
+    FRONTEND_WEB_URL: str = "https://bayit.tv"
+    FRONTEND_MOBILE_URL: str = "bayitplus://"
+
     # Google Cloud Project
     GCP_PROJECT_ID: str
 

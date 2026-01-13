@@ -39,7 +39,9 @@ dependencies = [
     "google-cloud-translate (==3.12.0)",
     "ffmpeg-python (==0.2.0)",
     "setuptools (>=80.9.0,<81.0.0)",
-    "openai (>=2.15.0,<3.0.0)"
+    "openai (>=2.15.0,<3.0.0)",
+    "twilio (>=9.9.1,<10.0.0)",
+    "phonenumbers (>=9.0.21,<10.0.0)"
 ]
 
 

@@ -73,7 +73,7 @@ class User(Document):
     name: str
     hashed_password: Optional[str] = None  # Optional for OAuth users
     is_active: bool = True
-    role: str = "user"  # super_admin, admin, content_manager, billing_admin, support, user
+    role: str = "user"  # super_admin, admin, content_manager, billing_admin, support, viewer, user
     custom_permissions: List[str] = Field(default_factory=list)  # Additional permissions beyond role
 
     # Profile
@@ -82,6 +82,26 @@ class User(Document):
     # OAuth
     google_id: Optional[str] = None
     auth_provider: str = "local"  # local, google
+
+    # Email verification
+    email_verified: bool = False
+    email_verification_token: Optional[str] = None
+    email_verification_sent_at: Optional[datetime] = None
+    email_verified_at: Optional[datetime] = None
+
+    # Phone verification
+    phone_number: Optional[str] = None  # E.164 format
+    phone_verified: bool = False
+    phone_verification_code: Optional[str] = None
+    phone_verification_sent_at: Optional[datetime] = None
+    phone_verified_at: Optional[datetime] = None
+
+    # Composite verification status
+    is_verified: bool = False  # True only when BOTH email AND phone verified (or admin)
+
+    # Rate limiting
+    verification_attempts: int = 0
+    last_verification_attempt: Optional[datetime] = None
 
     # Subscription info
     subscription_id: Optional[str] = None
@@ -154,6 +174,9 @@ class User(Document):
             "email",
             "stripe_customer_id",
             "role",
+            "email_verification_token",
+            "phone_number",
+            "is_verified",
         ]
 
     def to_response(self) -> UserResponse:
@@ -205,6 +228,29 @@ class User(Document):
 
     def is_admin_user(self) -> bool:
         return self.role in ["super_admin", "admin", "content_manager", "billing_admin", "support"]
+
+    def is_admin_role(self) -> bool:
+        """Check if user has admin role (bypasses verification)."""
+        return self.is_admin_user()
+
+    def needs_verification(self) -> bool:
+        """Check if user needs verification."""
+        return not self.is_admin_role() and not self.is_verified
+
+    def can_access_premium_features(self) -> bool:
+        """Check if user can access premium features."""
+        if self.is_admin_role():
+            return True
+        return self.subscription_tier in ["premium", "family"]
+
+    def update_verification_status(self) -> None:
+        """Update is_verified based on email_verified AND phone_verified."""
+        if self.is_admin_role():
+            self.is_verified = True
+            self.email_verified = True
+            self.phone_verified = True
+        else:
+            self.is_verified = self.email_verified and self.phone_verified
 
 
 class TokenResponse(BaseModel):
