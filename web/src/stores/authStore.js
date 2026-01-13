@@ -51,7 +51,9 @@ export const useAuthStore = create(
       loginWithGoogle: async () => {
         set({ isLoading: true, error: null })
         try {
-          const response = await authService.getGoogleAuthUrl()
+          // Build redirect URI dynamically based on current origin
+          const redirectUri = `${window.location.origin}/auth/google/callback`
+          const response = await authService.getGoogleAuthUrl(redirectUri)
           window.location.href = response.url
         } catch (error) {
           set({ error: error.message, isLoading: false })
@@ -62,7 +64,9 @@ export const useAuthStore = create(
       handleGoogleCallback: async (code) => {
         set({ isLoading: true, error: null })
         try {
-          const response = await authService.googleCallback(code)
+          // Build redirect URI dynamically based on current origin
+          const redirectUri = `${window.location.origin}/auth/google/callback`
+          const response = await authService.googleCallback(code, redirectUri)
           set({
             user: response.user,
             token: response.access_token,

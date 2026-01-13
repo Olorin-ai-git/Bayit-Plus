@@ -65,8 +65,8 @@ const apiAuthService = {
   me: () => api.get('/auth/me'),
   updateProfile: (updates) => api.patch('/auth/profile', updates),
   resetPassword: (email) => api.post('/auth/reset-password', { email }),
-  getGoogleAuthUrl: () => api.get('/auth/google/url'),
-  googleCallback: (code) => api.post('/auth/google/callback', { code }),
+  getGoogleAuthUrl: (redirectUri) => api.get('/auth/google/url', { params: { redirect_uri: redirectUri } }),
+  googleCallback: (code, redirectUri) => api.post('/auth/google/callback', { code, redirect_uri: redirectUri }),
 }
 
 // Content Service (API)

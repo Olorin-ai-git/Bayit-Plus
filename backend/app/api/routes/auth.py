@@ -15,6 +15,7 @@ from app.core.config import settings
 
 class GoogleAuthCode(BaseModel):
     code: str
+    redirect_uri: str | None = None
 
 router = APIRouter()
 
@@ -122,11 +123,14 @@ async def logout(current_user: User = Depends(get_current_active_user)):
 
 
 @router.get("/google/url")
-async def get_google_auth_url():
+async def get_google_auth_url(redirect_uri: str | None = None):
     """Get Google OAuth authorization URL."""
+    # Use provided redirect_uri or fall back to configured default
+    final_redirect_uri = redirect_uri or settings.GOOGLE_REDIRECT_URI
+
     params = {
         "client_id": settings.GOOGLE_CLIENT_ID,
-        "redirect_uri": settings.GOOGLE_REDIRECT_URI,
+        "redirect_uri": final_redirect_uri,
         "response_type": "code",
         "scope": "openid email profile",
         "access_type": "offline",
@@ -139,6 +143,9 @@ async def get_google_auth_url():
 @router.post("/google/callback", response_model=TokenResponse)
 async def google_callback(auth_data: GoogleAuthCode):
     """Handle Google OAuth callback."""
+    # Use provided redirect_uri or fall back to configured default
+    final_redirect_uri = auth_data.redirect_uri or settings.GOOGLE_REDIRECT_URI
+
     # Exchange code for tokens
     async with httpx.AsyncClient() as client:
         token_response = await client.post(
@@ -147,7 +154,7 @@ async def google_callback(auth_data: GoogleAuthCode):
                 "code": auth_data.code,
                 "client_id": settings.GOOGLE_CLIENT_ID,
                 "client_secret": settings.GOOGLE_CLIENT_SECRET,
-                "redirect_uri": settings.GOOGLE_REDIRECT_URI,
+                "redirect_uri": final_redirect_uri,
                 "grant_type": "authorization_code",
             },
         )
