@@ -16,8 +16,8 @@ export const Config = {
 
   // Backend API URLs
   API_URLS: {
-    // Production API (Google Cloud Run)
-    production: 'https://bayit-plus-backend-624470113582.us-east1.run.app/api/v1',
+    // Production API (Firebase Hosting -> Cloud Run)
+    production: 'https://api.bayit.tv/api/v1',
 
     // Development - Local backend
     // Make sure your backend is running on http://localhost:8000

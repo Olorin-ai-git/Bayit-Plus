@@ -2,7 +2,6 @@ const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
 const webpack = require('webpack');
-require('dotenv').config({ path: path.resolve(__dirname, '.env') });
 
 // Paths - use absolute paths to avoid resolution issues
 const sharedPath = path.resolve(__dirname, '../shared');
@@ -10,6 +9,11 @@ const srcPath = path.resolve(__dirname, 'src');
 
 module.exports = (env, argv) => {
   const isProduction = argv.mode === 'production';
+
+  // Load environment variables based on mode
+  require('dotenv').config({
+    path: path.resolve(__dirname, isProduction ? '.env.production' : '.env')
+  });
   // Demo mode is controlled by VITE_APP_MODE env var, not webpack mode
   const isDemoMode = process.env.VITE_APP_MODE === 'demo';
   // TV platform targets
@@ -179,12 +183,8 @@ module.exports = (env, argv) => {
         'process.env.TARGET': JSON.stringify(process.env.TARGET || 'web'),
         // Also support import.meta.env syntax
         'import.meta.env.VITE_APP_MODE': JSON.stringify(isTV ? 'demo' : process.env.VITE_APP_MODE),
-        // Workaround: Use Cloud Run URL directly in production until Firebase Hosting rewrites are fixed
-        'import.meta.env.VITE_API_URL': JSON.stringify(
-          isProduction && !isTV
-            ? 'https://bayit-plus-backend-624470113582.us-east1.run.app/api/v1'
-            : (process.env.VITE_API_URL || '/api/v1')
-        ),
+        // Use environment variable for API URL (Firebase Hosting rewrites handle routing)
+        'import.meta.env.VITE_API_URL': JSON.stringify(process.env.VITE_API_URL || '/api/v1'),
       }),
       new webpack.ProvidePlugin({
         process: 'process/browser',

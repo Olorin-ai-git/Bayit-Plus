@@ -28,6 +28,9 @@ class Settings(BaseSettings):
 
     # Anthropic (Claude)
     ANTHROPIC_API_KEY: str = ""
+    CLAUDE_MODEL: str = "claude-sonnet-4-20250514"
+    CLAUDE_MAX_TOKENS_SHORT: int = 200
+    CLAUDE_MAX_TOKENS_LONG: int = 500
 
     # Google OAuth
     GOOGLE_CLIENT_ID: str = ""

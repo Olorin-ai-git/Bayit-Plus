@@ -64,7 +64,7 @@ main() {
     print_header "Configuration"
 
     PROJECT_ID="${GCP_PROJECT_ID:-bayit-plus}"
-    REGION="${GCP_REGION:-us-central1}"
+    REGION="${GCP_REGION:-us-east1}"
     BUCKET_NAME="${GCS_BUCKET_NAME:-bayit-plus-media-new}"
     SERVICE_NAME="${CLOUD_RUN_SERVICE_NAME:-bayit-plus-backend}"
     SERVICE_ACCOUNT="${SERVICE_ACCOUNT_EMAIL:-bayit-plus@appspot.gserviceaccount.com}"
@@ -251,6 +251,34 @@ EOF
     echo -n "$CORS_ORIGINS" | gcloud secrets create bayit-cors-origins --data-file=- 2>/dev/null || \
         echo -n "$CORS_ORIGINS" | gcloud secrets versions add bayit-cors-origins --data-file=-
 
+    # GCP Project ID
+    echo -n "$PROJECT_ID" | gcloud secrets create bayit-gcp-project-id --data-file=- 2>/dev/null || \
+        echo -n "$PROJECT_ID" | gcloud secrets versions add bayit-gcp-project-id --data-file=-
+
+    # Librarian Agent Configuration
+    create_or_update_secret "bayit-librarian-daily-audit-cron" "LIBRARIAN_DAILY_AUDIT_CRON"
+    create_or_update_secret "bayit-librarian-daily-audit-time" "LIBRARIAN_DAILY_AUDIT_TIME"
+    create_or_update_secret "bayit-librarian-daily-audit-mode" "LIBRARIAN_DAILY_AUDIT_MODE"
+    create_or_update_secret "bayit-librarian-daily-audit-cost" "LIBRARIAN_DAILY_AUDIT_COST"
+    create_or_update_secret "bayit-librarian-daily-audit-status" "LIBRARIAN_DAILY_AUDIT_STATUS"
+    create_or_update_secret "bayit-librarian-daily-audit-description" "LIBRARIAN_DAILY_AUDIT_DESCRIPTION"
+    create_or_update_secret "bayit-librarian-weekly-audit-cron" "LIBRARIAN_WEEKLY_AUDIT_CRON"
+    create_or_update_secret "bayit-librarian-weekly-audit-time" "LIBRARIAN_WEEKLY_AUDIT_TIME"
+    create_or_update_secret "bayit-librarian-weekly-audit-mode" "LIBRARIAN_WEEKLY_AUDIT_MODE"
+    create_or_update_secret "bayit-librarian-weekly-audit-cost" "LIBRARIAN_WEEKLY_AUDIT_COST"
+    create_or_update_secret "bayit-librarian-weekly-audit-status" "LIBRARIAN_WEEKLY_AUDIT_STATUS"
+    create_or_update_secret "bayit-librarian-weekly-audit-description" "LIBRARIAN_WEEKLY_AUDIT_DESCRIPTION"
+    create_or_update_secret "bayit-librarian-max-iterations" "LIBRARIAN_MAX_ITERATIONS"
+    create_or_update_secret "bayit-librarian-default-budget-usd" "LIBRARIAN_DEFAULT_BUDGET_USD"
+    create_or_update_secret "bayit-librarian-min-budget-usd" "LIBRARIAN_MIN_BUDGET_USD"
+    create_or_update_secret "bayit-librarian-max-budget-usd" "LIBRARIAN_MAX_BUDGET_USD"
+    create_or_update_secret "bayit-librarian-budget-step-usd" "LIBRARIAN_BUDGET_STEP_USD"
+    create_or_update_secret "bayit-librarian-reports-limit" "LIBRARIAN_REPORTS_LIMIT"
+    create_or_update_secret "bayit-librarian-actions-limit" "LIBRARIAN_ACTIONS_LIMIT"
+    create_or_update_secret "bayit-librarian-activity-page-size" "LIBRARIAN_ACTIVITY_PAGE_SIZE"
+    create_or_update_secret "bayit-librarian-id-truncate-length" "LIBRARIAN_ID_TRUNCATE_LENGTH"
+    create_or_update_secret "bayit-librarian-modal-max-height" "LIBRARIAN_MODAL_MAX_HEIGHT"
+
     print_success "Secrets created/updated from .env"
 
     # Step 5: Grant Secret Access
@@ -262,7 +290,15 @@ EOF
                   bayit-stripe-price-basic bayit-stripe-price-premium bayit-stripe-price-family \
                   bayit-openai-api-key bayit-anthropic-api-key \
                   bayit-google-client-id bayit-google-client-secret bayit-google-redirect-uri \
-                  bayit-elevenlabs-api-key bayit-gcs-bucket-name bayit-cors-origins; do
+                  bayit-elevenlabs-api-key bayit-gcs-bucket-name bayit-cors-origins bayit-gcp-project-id \
+                  bayit-librarian-daily-audit-cron bayit-librarian-daily-audit-time bayit-librarian-daily-audit-mode \
+                  bayit-librarian-daily-audit-cost bayit-librarian-daily-audit-status bayit-librarian-daily-audit-description \
+                  bayit-librarian-weekly-audit-cron bayit-librarian-weekly-audit-time bayit-librarian-weekly-audit-mode \
+                  bayit-librarian-weekly-audit-cost bayit-librarian-weekly-audit-status bayit-librarian-weekly-audit-description \
+                  bayit-librarian-max-iterations bayit-librarian-default-budget-usd bayit-librarian-min-budget-usd \
+                  bayit-librarian-max-budget-usd bayit-librarian-budget-step-usd bayit-librarian-reports-limit \
+                  bayit-librarian-actions-limit bayit-librarian-activity-page-size bayit-librarian-id-truncate-length \
+                  bayit-librarian-modal-max-height; do
         gcloud secrets add-iam-policy-binding "$secret" \
             --member="serviceAccount:$SERVICE_ACCOUNT" \
             --role="roles/secretmanager.secretAccessor" \
@@ -321,7 +357,7 @@ EOF
         --concurrency 80 \
         --port 8080 \
         --set-env-vars "API_V1_PREFIX=/api/v1,STORAGE_TYPE=gcs,DEBUG=false,SPEECH_TO_TEXT_PROVIDER=whisper" \
-        --set-secrets "SECRET_KEY=bayit-secret-key:latest,MONGODB_URL=bayit-mongodb-url:latest,MONGODB_DB_NAME=bayit-mongodb-db-name:latest,STRIPE_API_KEY=bayit-stripe-api-key:latest,STRIPE_SECRET_KEY=bayit-stripe-secret-key:latest,STRIPE_WEBHOOK_SECRET=bayit-stripe-webhook-secret:latest,STRIPE_PRICE_BASIC=bayit-stripe-price-basic:latest,STRIPE_PRICE_PREMIUM=bayit-stripe-price-premium:latest,STRIPE_PRICE_FAMILY=bayit-stripe-price-family:latest,OPENAI_API_KEY=bayit-openai-api-key:latest,ANTHROPIC_API_KEY=bayit-anthropic-api-key:latest,GOOGLE_CLIENT_ID=bayit-google-client-id:latest,GOOGLE_CLIENT_SECRET=bayit-google-client-secret:latest,GOOGLE_REDIRECT_URI=bayit-google-redirect-uri:latest,ELEVENLABS_API_KEY=bayit-elevenlabs-api-key:latest,GCS_BUCKET_NAME=bayit-gcs-bucket-name:latest,BACKEND_CORS_ORIGINS=bayit-cors-origins:latest"
+        --set-secrets "SECRET_KEY=bayit-secret-key:latest,MONGODB_URL=bayit-mongodb-url:latest,MONGODB_DB_NAME=bayit-mongodb-db-name:latest,STRIPE_API_KEY=bayit-stripe-api-key:latest,STRIPE_SECRET_KEY=bayit-stripe-secret-key:latest,STRIPE_WEBHOOK_SECRET=bayit-stripe-webhook-secret:latest,STRIPE_PRICE_BASIC=bayit-stripe-price-basic:latest,STRIPE_PRICE_PREMIUM=bayit-stripe-price-premium:latest,STRIPE_PRICE_FAMILY=bayit-stripe-price-family:latest,OPENAI_API_KEY=bayit-openai-api-key:latest,ANTHROPIC_API_KEY=bayit-anthropic-api-key:latest,GOOGLE_CLIENT_ID=bayit-google-client-id:latest,GOOGLE_CLIENT_SECRET=bayit-google-client-secret:latest,GOOGLE_REDIRECT_URI=bayit-google-redirect-uri:latest,ELEVENLABS_API_KEY=bayit-elevenlabs-api-key:latest,GCS_BUCKET_NAME=bayit-gcs-bucket-name:latest,BACKEND_CORS_ORIGINS=bayit-cors-origins:latest,GCP_PROJECT_ID=bayit-gcp-project-id:latest,LIBRARIAN_DAILY_AUDIT_CRON=bayit-librarian-daily-audit-cron:latest,LIBRARIAN_DAILY_AUDIT_TIME=bayit-librarian-daily-audit-time:latest,LIBRARIAN_DAILY_AUDIT_MODE=bayit-librarian-daily-audit-mode:latest,LIBRARIAN_DAILY_AUDIT_COST=bayit-librarian-daily-audit-cost:latest,LIBRARIAN_DAILY_AUDIT_STATUS=bayit-librarian-daily-audit-status:latest,LIBRARIAN_DAILY_AUDIT_DESCRIPTION=bayit-librarian-daily-audit-description:latest,LIBRARIAN_WEEKLY_AUDIT_CRON=bayit-librarian-weekly-audit-cron:latest,LIBRARIAN_WEEKLY_AUDIT_TIME=bayit-librarian-weekly-audit-time:latest,LIBRARIAN_WEEKLY_AUDIT_MODE=bayit-librarian-weekly-audit-mode:latest,LIBRARIAN_WEEKLY_AUDIT_COST=bayit-librarian-weekly-audit-cost:latest,LIBRARIAN_WEEKLY_AUDIT_STATUS=bayit-librarian-weekly-audit-status:latest,LIBRARIAN_WEEKLY_AUDIT_DESCRIPTION=bayit-librarian-weekly-audit-description:latest,LIBRARIAN_MAX_ITERATIONS=bayit-librarian-max-iterations:latest,LIBRARIAN_DEFAULT_BUDGET_USD=bayit-librarian-default-budget-usd:latest,LIBRARIAN_MIN_BUDGET_USD=bayit-librarian-min-budget-usd:latest,LIBRARIAN_MAX_BUDGET_USD=bayit-librarian-max-budget-usd:latest,LIBRARIAN_BUDGET_STEP_USD=bayit-librarian-budget-step-usd:latest,LIBRARIAN_REPORTS_LIMIT=bayit-librarian-reports-limit:latest,LIBRARIAN_ACTIONS_LIMIT=bayit-librarian-actions-limit:latest,LIBRARIAN_ACTIVITY_PAGE_SIZE=bayit-librarian-activity-page-size:latest,LIBRARIAN_ID_TRUNCATE_LENGTH=bayit-librarian-id-truncate-length:latest,LIBRARIAN_MODAL_MAX_HEIGHT=bayit-librarian-modal-max-height:latest"
 
     # Get service URL
     SERVICE_URL=$(gcloud run services describe "$SERVICE_NAME" --region "$REGION" --format 'value(status.url)')

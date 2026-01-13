@@ -37,7 +37,10 @@ class ContentResponse(ContentBase):
 class Content(Document):
     title: str
     title_en: Optional[str] = None  # English title for bilingual support
+    title_es: Optional[str] = None  # Spanish title for trilingual support
     description: Optional[str] = None
+    description_en: Optional[str] = None  # English description
+    description_es: Optional[str] = None  # Spanish description
     thumbnail: Optional[str] = None  # URL (kept for backward compatibility)
     thumbnail_data: Optional[str] = None  # Base64-encoded image data URI
     backdrop: Optional[str] = None  # URL (kept for backward compatibility)
@@ -51,6 +54,8 @@ class Content(Document):
     year: Optional[int] = None
     rating: Optional[Union[str, float]] = None  # e.g., "PG-13" or 7.839 (accepts both for compatibility)
     genre: Optional[str] = None  # Primary genre (legacy field, kept for backward compatibility)
+    genre_en: Optional[str] = None  # English genre translation
+    genre_es: Optional[str] = None  # Spanish genre translation
     genres: Optional[List[str]] = None  # Multiple genres from TMDB
     cast: Optional[List[str]] = None
     director: Optional[str] = None
@@ -137,8 +142,11 @@ class Content(Document):
 class Category(Document):
     name: str
     name_en: Optional[str] = None
+    name_es: Optional[str] = None
     slug: str
     description: Optional[str] = None
+    description_en: Optional[str] = None
+    description_es: Optional[str] = None
     thumbnail: Optional[str] = None
     icon: Optional[str] = None  # Icon name or URL
     order: int = 0
@@ -151,7 +159,11 @@ class Category(Document):
 
 class LiveChannel(Document):
     name: str
+    name_en: Optional[str] = None
+    name_es: Optional[str] = None
     description: Optional[str] = None
+    description_en: Optional[str] = None
+    description_es: Optional[str] = None
     thumbnail: Optional[str] = None
     logo: Optional[str] = None
 
@@ -206,9 +218,15 @@ class EPGEntry(Document):
 
 class RadioStation(Document):
     name: str
+    name_en: Optional[str] = None
+    name_es: Optional[str] = None
     description: Optional[str] = None
+    description_en: Optional[str] = None
+    description_es: Optional[str] = None
     logo: Optional[str] = None
     genre: Optional[str] = None
+    genre_en: Optional[str] = None
+    genre_es: Optional[str] = None
 
     stream_url: str
     stream_type: str = "audio"  # audio, hls
@@ -232,10 +250,18 @@ class RadioStation(Document):
 
 class Podcast(Document):
     title: str
+    title_en: Optional[str] = None
+    title_es: Optional[str] = None
     description: Optional[str] = None
+    description_en: Optional[str] = None
+    description_es: Optional[str] = None
     author: Optional[str] = None
+    author_en: Optional[str] = None
+    author_es: Optional[str] = None
     cover: Optional[str] = None
     category: Optional[str] = None
+    category_en: Optional[str] = None
+    category_es: Optional[str] = None
 
     rss_feed: Optional[str] = None
     website: Optional[str] = None
@@ -261,7 +287,11 @@ class Podcast(Document):
 class PodcastEpisode(Document):
     podcast_id: str
     title: str
+    title_en: Optional[str] = None
+    title_es: Optional[str] = None
     description: Optional[str] = None
+    description_en: Optional[str] = None
+    description_es: Optional[str] = None
     audio_url: Optional[str] = None
     duration: Optional[str] = None
     episode_number: Optional[int] = None

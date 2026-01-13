@@ -10,7 +10,11 @@
 // In React Native, we use __DEV__ for development detection
 // You can override with a custom env variable if needed
 // DEMO MODE: Use demo/mock data for development without backend
-export const APP_MODE: 'demo' | 'production' = 'demo';
+export type AppMode = 'demo' | 'production';
+
+// Important: keep this typed as AppMode (not the narrowed literal 'production'),
+// otherwise TS can flag comparisons like `APP_MODE === 'demo'` as impossible.
+export const APP_MODE = 'production' as AppMode;
 
 export const isDemo = APP_MODE === 'demo';
 export const isProduction = APP_MODE === 'production';
