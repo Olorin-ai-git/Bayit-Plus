@@ -500,6 +500,9 @@ const demoBillingService = {
 const apiSubscriptionsService = {
   getSubscriptions: (filters) => adminApi.get('/admin/subscriptions', { params: filters }),
   getSubscription: (subscriptionId) => adminApi.get(`/admin/subscriptions/${subscriptionId}`),
+  createSubscription: (userId, planId, durationDays = 30) => adminApi.post('/admin/subscriptions/create', null, { params: { user_id: userId, plan_id: planId, duration_days: durationDays } }),
+  updateSubscriptionPlan: (userId, planId) => adminApi.put(`/admin/subscriptions/${userId}/plan`, null, { params: { plan_id: planId } }),
+  deleteSubscription: (userId) => adminApi.delete(`/admin/subscriptions/${userId}`),
   cancelSubscription: (subscriptionId, reason) => adminApi.post(`/admin/subscriptions/${subscriptionId}/cancel`, { reason }),
   extendSubscription: (subscriptionId, days) => adminApi.post(`/admin/subscriptions/${subscriptionId}/extend`, { days }),
   pauseSubscription: (subscriptionId) => adminApi.post(`/admin/subscriptions/${subscriptionId}/pause`),
@@ -521,6 +524,27 @@ const demoSubscriptionsService = {
   getSubscription: async (subscriptionId) => {
     await delay()
     return demoSubscriptions.find(s => s.id === subscriptionId) || null
+  },
+  createSubscription: async (userId, planId, durationDays = 30) => {
+    await delay()
+    return {
+      message: 'Subscription created successfully',
+      subscription: {
+        user_id: userId,
+        plan: planId,
+        status: 'active',
+        start_date: new Date().toISOString(),
+        end_date: new Date(Date.now() + durationDays * 24 * 60 * 60 * 1000).toISOString()
+      }
+    }
+  },
+  updateSubscriptionPlan: async (userId, planId) => {
+    await delay()
+    return { message: `Subscription plan updated to ${planId}` }
+  },
+  deleteSubscription: async (userId) => {
+    await delay()
+    return { message: 'Subscription deleted successfully' }
   },
   cancelSubscription: async (subscriptionId, reason) => {
     await delay()

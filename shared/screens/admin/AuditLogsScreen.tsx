@@ -168,22 +168,22 @@ export const AuditLogsScreen: React.FC = () => {
           <View style={styles.activeFilters}>
             {filters.action && (
               <TouchableOpacity style={styles.filterChip} onPress={() => setFilters(prev => ({ ...prev, action: '' }))}>
-                <Text style={styles.filterChipText}>Action: {filters.action} ✕</Text>
+                <Text style={styles.filterChipText}>{t('admin.common.filterAction')}: {filters.action} ✕</Text>
               </TouchableOpacity>
             )}
             {filters.resource_type && (
               <TouchableOpacity style={styles.filterChip} onPress={() => setFilters(prev => ({ ...prev, resource_type: '' }))}>
-                <Text style={styles.filterChipText}>Resource: {filters.resource_type} ✕</Text>
+                <Text style={styles.filterChipText}>{t('admin.common.filterResource')}: {filters.resource_type} ✕</Text>
               </TouchableOpacity>
             )}
             {filters.user_id && (
               <TouchableOpacity style={styles.filterChip} onPress={() => setFilters(prev => ({ ...prev, user_id: '' }))}>
-                <Text style={styles.filterChipText}>User: {filters.user_id.slice(0, 8)}... ✕</Text>
+                <Text style={styles.filterChipText}>{t('admin.common.filterUser')}: {filters.user_id.slice(0, 8)}... ✕</Text>
               </TouchableOpacity>
             )}
             {filters.date_from && (
               <TouchableOpacity style={styles.filterChip} onPress={() => setFilters(prev => ({ ...prev, date_from: '', date_to: '' }))}>
-                <Text style={styles.filterChipText}>Date range ✕</Text>
+                <Text style={styles.filterChipText}>{t('admin.common.filterDateRange')} ✕</Text>
               </TouchableOpacity>
             )}
           </View>

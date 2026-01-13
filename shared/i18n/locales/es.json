@@ -17,6 +17,8 @@
     "recommended": "Recomendado",
     "edit": "Editar",
     "delete": "Eliminar",
+    "add": "Agregar",
+    "invalidDate": "Fecha inválida",
     "appName": "🏠 Bayit+",
     "appVersion": "🏠 Bayit+ v1.0.0",
     "ok": "Aceptar",
@@ -1136,7 +1138,8 @@
       "title": "Biblioteca de Contenido",
       "toggleCarousel": "Alternar carrusel",
       "type": {
-        "movie": "Película"
+        "movie": "Película",
+        "series": "Serie"
       },
       "validation": {
         "audioUrlRequired": "La URL de audio es obligatoria",
@@ -1264,7 +1267,27 @@
       },
       "perMonth": "/mes",
       "searchPlaceholder": "Buscar suscripción...",
-      "emptyMessage": "No se encontraron suscripciones"
+      "emptyMessage": "No se encontraron suscripciones",
+      "editPlan": {
+        "title": "Cambiar Plan de Suscripción",
+        "user": "Usuario",
+        "currentPlan": "Plan Actual",
+        "newPlan": "Seleccionar Nuevo Plan"
+      },
+      "addSubscription": {
+        "title": "Agregar Suscripción",
+        "userEmail": "Correo del Usuario",
+        "emailPlaceholder": "Ingrese correo del usuario",
+        "duration": "Duración (días)",
+        "selectPlan": "Seleccionar Plan"
+      },
+      "fillAllFields": "Por favor complete todos los campos",
+      "userNotFound": "Usuario no encontrado",
+      "selectOneToEdit": "Por favor seleccione exactamente una suscripción para editar",
+      "selectToDelete": "Por favor seleccione suscripciones para eliminar",
+      "confirmDeleteMultiple": "¿Eliminar {{count}} suscripción(es)?",
+      "selected": "seleccionados",
+      "confirmDelete": "¿Está seguro de que desea eliminar la suscripción de {{user}}? Esta acción no se puede deshacer."
     },
     "marketingDashboard": {
       "subtitle": "Resumen de Marketing",
@@ -1378,7 +1401,8 @@
       "emptyMessage": "No se encontraron solicitudes de reembolso",
       "errors": {
         "rejectReasonRequired": "Por favor ingresa un motivo de rechazo"
-      }
+      },
+      "title": "Reembolsos"
     },
     "plans": {
       "title": "Gestión de Planes",
@@ -1474,7 +1498,15 @@
       "quickActions": "Acciones Rápidas"
     },
     "common": {
-      "all": "Todos"
+      "all": "Todos",
+      "cancel": "Cancelar",
+      "save": "Guardar",
+      "active": "Activo",
+      "back": "Volver",
+      "filterAction": "Acción",
+      "filterResource": "Recurso",
+      "filterUser": "Usuario",
+      "filterDateRange": "Rango de fechas"
     },
     "stats": {
       "totalUsers": "Total de Usuarios",
@@ -1514,7 +1546,8 @@
       "categories": "Categorías",
       "content": "Biblioteca de Contenido",
       "liveChannels": "Canales en Vivo",
-      "radioStations": "Estaciones de Radio"
+      "radioStations": "Estaciones de Radio",
+      "podcasts": "Pódcasts"
     },
     "nav": {
       "dashboard": "Panel de Control",
@@ -1869,7 +1902,8 @@
       "contentTypes": {
         "live": "En vivo",
         "liveChannel": "Canal en Vivo",
-        "vod": "Video bajo Demanda"
+        "vod": "Video bajo Demanda",
+        "podcast": "Pódcast"
       },
       "editWidget": "Editar Widget",
       "emptyMessage": "No se encontraron widgets. Crea uno para comenzar.",

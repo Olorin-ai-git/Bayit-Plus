@@ -249,14 +249,14 @@ export default function RadioStationsPage() {
               onChange={(e) => setEditData({ ...editData, is_active: e.target.checked })}
               style={styles.checkbox}
             />
-            <Text style={styles.checkboxLabel}>Active</Text>
+            <Text style={styles.checkboxLabel}>{t('admin.common.active')}</Text>
           </View>
           <View style={styles.formActions}>
             <Pressable onPress={() => setEditingId(null)} style={styles.cancelBtn}>
-              <Text style={styles.cancelBtnText}>Cancel</Text>
+              <Text style={styles.cancelBtnText}>{t('admin.common.cancel')}</Text>
             </Pressable>
             <Pressable onPress={handleSaveEdit} style={styles.saveBtn}>
-              <Text style={styles.saveBtnText}>Save</Text>
+              <Text style={styles.saveBtnText}>{t('admin.common.save')}</Text>
             </Pressable>
           </View>
         </View>

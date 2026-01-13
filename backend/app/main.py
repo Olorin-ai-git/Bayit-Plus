@@ -392,9 +392,11 @@ app = FastAPI(
 )
 
 # CORS middleware
+cors_origins = settings.parsed_cors_origins
+logger.info(f"🌐 CORS Origins configured: {cors_origins}")
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=settings.parsed_cors_origins,  # Use parsed property for Secret Manager compatibility
+    allow_origins=cors_origins,  # Use parsed property for Secret Manager compatibility
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],

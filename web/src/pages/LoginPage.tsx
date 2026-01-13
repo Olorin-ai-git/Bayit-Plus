@@ -66,7 +66,9 @@ export default function LoginPage() {
     setError('');
     try {
       await loginWithGoogle();
-      navigate(from, { replace: true });
+      // Don't navigate here - for web, loginWithGoogle() redirects to Google
+      // For native apps, the redirect happens via deep linking
+      // Navigation happens after Google callback completes
     } catch (err: any) {
       setError(err.message || t('login.errors.googleFailed'));
     }

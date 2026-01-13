@@ -73,8 +73,15 @@ const apiAuthService = {
   register: (userData: { email: string; name: string; password: string }) =>
     api.post('/auth/register', userData),
   me: () => api.get('/auth/me'),
-  getGoogleAuthUrl: () => api.get('/auth/google/url'),
-  googleCallback: (code: string) => api.post('/auth/google/callback', { code }),
+  getGoogleAuthUrl: () => {
+    // Build redirect URI from current origin (supports localhost, bayit.tv, bayit-plus.web.app)
+    const redirectUri = Platform.OS === 'web' && typeof window !== 'undefined'
+      ? `${window.location.origin}/auth/google/callback`
+      : undefined;
+    return api.get('/auth/google/url', { params: { redirect_uri: redirectUri } });
+  },
+  googleCallback: (code: string, redirectUri?: string) =>
+    api.post('/auth/google/callback', { code, redirect_uri: redirectUri }),
 };
 
 // Content Service (API)

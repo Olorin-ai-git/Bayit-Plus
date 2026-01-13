@@ -8,6 +8,7 @@ import { colors, spacing, borderRadius } from '@bayit/shared/theme';
 import { GlassButton, GlassView, GlassTable, GlassTableCell, GlassTableColumn } from '@bayit/shared/ui';
 import { useDirection } from '@/hooks/useDirection';
 import logger from '@/utils/logger';
+import { adminButtonStyles } from '@/styles/adminButtonStyles';
 
 interface User {
   id: string;
@@ -245,8 +246,10 @@ export default function UsersListPage() {
         <Link to="/admin/users/new" style={{ textDecoration: 'none' }}>
           <GlassButton
             title={t('admin.users.addUser')}
-            variant="primary"
+            variant="secondary"
             icon={<UserPlus size={18} color={colors.text} />}
+            style={adminButtonStyles.primaryButton}
+            textStyle={adminButtonStyles.buttonText}
           />
         </Link>
       </View>
@@ -300,13 +303,16 @@ export default function UsersListPage() {
                 title={t('common.cancel', 'Cancel')}
                 variant="secondary"
                 onPress={() => setDeleteModal({ open: false, user: null })}
+                style={adminButtonStyles.cancelButton}
+                textStyle={adminButtonStyles.buttonText}
               />
               <GlassButton
                 title={actionLoading ? t('common.deleting', 'Deleting...') : t('common.delete', 'Delete')}
-                variant="primary"
+                variant="secondary"
                 onPress={handleDeleteConfirm}
                 disabled={actionLoading}
-                style={{ backgroundColor: colors.error }}
+                style={adminButtonStyles.dangerButton}
+                textStyle={adminButtonStyles.buttonText}
               />
             </View>
           </GlassView>
@@ -355,6 +361,8 @@ export default function UsersListPage() {
                 title={t('common.cancel', 'Cancel')}
                 variant="secondary"
                 onPress={() => setBanModal({ open: false, user: null })}
+                style={adminButtonStyles.cancelButton}
+                textStyle={adminButtonStyles.buttonText}
               />
               <GlassButton
                 title={actionLoading
@@ -362,10 +370,11 @@ export default function UsersListPage() {
                   : banModal.user?.status === 'banned'
                     ? t('admin.users.unban')
                     : t('admin.users.block')}
-                variant="primary"
+                variant="secondary"
                 onPress={handleBanConfirm}
                 disabled={actionLoading}
-                style={{ backgroundColor: banModal.user?.status === 'banned' ? '#22C55E' : '#F59E0B' }}
+                style={banModal.user?.status === 'banned' ? adminButtonStyles.successButton : adminButtonStyles.warningButton}
+                textStyle={adminButtonStyles.buttonText}
               />
             </View>
           </GlassView>

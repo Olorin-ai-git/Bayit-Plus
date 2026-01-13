@@ -20,6 +20,8 @@
     "recommended": "Recommended",
     "edit": "Edit",
     "delete": "Delete",
+    "add": "Add",
+    "invalidDate": "Invalid Date",
     "appName": "🏠 Bayit+",
     "appVersion": "🏠 Bayit+ v1.0.0",
     "ok": "OK",
@@ -305,34 +307,31 @@
   },
   "radio": {
     "title": "Radio",
-    "stations": "Stations",
-    "nowPlaying": "Now Playing",
-    "loadError": "Failed to load stations",
-    "genres": {
+    "categories": {
       "all": "All",
-      "news": "News",
       "music": "Music",
+      "news": "News",
       "talk": "Talk",
-      "army": "Army"
-    }
+      "jewish": "Jewish"
+    },
+    "noStations": "No radio stations available",
+    "tryLater": "Try again later"
   },
   "podcasts": {
     "title": "Podcasts",
-    "shows": "Shows",
-    "episodes": "Episodes",
-    "loadError": "Failed to load podcasts",
+    "episodes": "episodes",
     "categories": {
       "all": "All",
       "general": "General",
       "news": "News",
-      "comedy": "Comedy",
-      "society": "Society",
-      "tech": "Technology",
+      "politics": "Politics",
+      "tech": "Tech",
       "business": "Business",
+      "jewish": "Jewish",
       "entertainment": "Entertainment",
       "sports": "Sports",
-      "jewish": "Jewish",
-      "history": "History"
+      "history": "History",
+      "educational": "Educational"
     },
     "noPodcasts": "No podcasts available",
     "tryLater": "Try again later"
@@ -562,16 +561,7 @@
       "noActivePlan": "No active subscription",
       "selectPlan": "Select a Plan"
     },
-    "notifications": {
-      "newContent": "New Content",
-      "newContentDesc": "Get notified about new content",
-      "liveEvents": "Live Events",
-      "liveEventsDesc": "Get notified about special live broadcasts",
-      "recommendations": "Recommendations",
-      "recommendationsDesc": "Get personalized recommendations",
-      "updates": "System Updates",
-      "updatesDesc": "Get notified about system changes"
-    },
+    "notifications": "Notifications",
     "ai": {
       "title": "AI & Personalization",
       "description": "Configure AI-powered features",
@@ -648,7 +638,6 @@
     "downloads": "Downloads",
     "settings": "Settings",
     "language": "Language",
-    "notifications": "Notifications",
     "admin": "Admin",
     "watchTime": "Watch Time",
     "minutes": "minutes",
@@ -827,7 +816,7 @@
     "title": "Favorites",
     "items": "items",
     "empty": "No favorites yet",
-    "emptyHint": "Add content to favorites to watch it easily"
+    "emptyHint": "Add items to your favorites"
   },
   "downloads": {
     "title": "Downloads",
@@ -838,16 +827,20 @@
     "paused": "Paused"
   },
   "watchlist": {
-    "title": "My List",
-    "items": "items",
-    "empty": "Your list is empty",
-    "emptyHint": "Add movies and series to your list",
     "filters": {
       "all": "All",
       "continue": "Continue Watching",
       "movies": "Movies",
-      "series": "Series"
-    }
+      "series": "Series",
+      "kids": "Kids",
+      "judaism": "Judaism",
+      "podcasts": "Podcasts",
+      "radio": "Radio"
+    },
+    "title": "Watchlist",
+    "items": "items",
+    "empty": "Your watchlist is empty",
+    "emptyHint": "Start watching and items will appear here"
   },
   "widgets": {
     "empty": "No widgets yet",
@@ -1114,7 +1107,8 @@
       "emptyMessage": "No refund requests found",
       "errors": {
         "rejectReasonRequired": "Please enter rejection reason"
-      }
+      },
+      "title": "Refunds"
     },
     "plans": {
       "title": "Plan Management",
@@ -1210,7 +1204,15 @@
       "quickActions": "Quick Actions"
     },
     "common": {
-      "all": "All"
+      "all": "All",
+      "cancel": "Cancel",
+      "save": "Save",
+      "active": "Active",
+      "back": "Back",
+      "filterAction": "Action",
+      "filterResource": "Resource",
+      "filterUser": "User",
+      "filterDateRange": "Date range"
     },
     "stats": {
       "totalUsers": "Total Users",
@@ -1243,6 +1245,7 @@
       "subscription_created": "Subscription Created",
       "subscription_updated": "Subscription Updated",
       "subscription_canceled": "Subscription Canceled",
+      "subscription_deleted": "Subscription Deleted",
       "refund_processed": "Refund Processed",
       "payment_received": "Payment Received",
       "settings_updated": "Settings Updated",
@@ -1984,7 +1987,34 @@
       },
       "perMonth": "/month",
       "searchPlaceholder": "Search subscription...",
-      "emptyMessage": "No subscriptions found"
+      "emptyMessage": "No subscriptions found",
+      "actions": {
+        "changePlan": "Change Plan",
+        "pause": "Pause",
+        "resume": "Resume",
+        "cancel": "Cancel",
+        "delete": "Delete"
+      },
+      "editPlan": {
+        "title": "Change Subscription Plan",
+        "user": "User",
+        "currentPlan": "Current Plan",
+        "newPlan": "Select New Plan"
+      },
+      "addSubscription": {
+        "title": "Add Subscription",
+        "userEmail": "User Email",
+        "emailPlaceholder": "Enter user email",
+        "duration": "Duration (days)",
+        "selectPlan": "Select Plan"
+      },
+      "fillAllFields": "Please fill all fields",
+      "userNotFound": "User not found",
+      "selectOneToEdit": "Please select exactly one subscription to edit",
+      "selectToDelete": "Please select subscriptions to delete",
+      "confirmDeleteMultiple": "Delete {{count}} subscription(s)?",
+      "selected": "selected",
+      "confirmDelete": "Are you sure you want to delete the subscription for {{user}}? This action cannot be undone."
     },
     "marketingDashboard": {
       "subtitle": "Marketing Overview",
@@ -2219,59 +2249,6 @@
     "wrongCode": "Incorrect code",
     "noContent": "No content available",
     "tryAnotherCategory": "Try selecting another category"
-  },
-  "radio": {
-    "title": "Radio",
-    "categories": {
-      "all": "All",
-      "music": "Music",
-      "news": "News",
-      "talk": "Talk",
-      "jewish": "Jewish"
-    },
-    "noStations": "No radio stations available",
-    "tryLater": "Try again later"
-  },
-  "podcasts": {
-    "title": "Podcasts",
-    "episodes": "episodes",
-    "categories": {
-      "all": "All",
-      "general": "General",
-      "news": "News",
-      "politics": "Politics",
-      "tech": "Tech",
-      "business": "Business",
-      "jewish": "Jewish",
-      "entertainment": "Entertainment",
-      "sports": "Sports",
-      "history": "History",
-      "educational": "Educational"
-    },
-    "noPodcasts": "No podcasts available",
-    "tryLater": "Try again later"
-  },
-  "watchlist": {
-    "filters": {
-      "all": "All",
-      "continue": "Continue Watching",
-      "movies": "Movies",
-      "series": "Series",
-      "kids": "Kids",
-      "judaism": "Judaism",
-      "podcasts": "Podcasts",
-      "radio": "Radio"
-    },
-    "title": "Watchlist",
-    "items": "items",
-    "empty": "Your watchlist is empty",
-    "emptyHint": "Start watching and items will appear here"
-  },
-  "favorites": {
-    "title": "Favorites",
-    "items": "items",
-    "empty": "No favorites yet",
-    "emptyHint": "Add items to your favorites"
   },
   "chatbot": {
     "title": "Bayit+ Assistant",

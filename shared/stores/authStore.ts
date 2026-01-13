@@ -119,7 +119,11 @@ export const useAuthStore = create<AuthState>()(
       handleGoogleCallback: async (code: string) => {
         set({ isLoading: true, error: null });
         try {
-          const response: any = await authService.googleCallback(code);
+          // Pass redirect_uri to match what was sent to Google
+          const redirectUri = Platform.OS === 'web' && typeof window !== 'undefined'
+            ? `${window.location.origin}/auth/google/callback`
+            : undefined;
+          const response: any = await authService.googleCallback(code, redirectUri);
           set({
             user: response.user,
             token: response.access_token,

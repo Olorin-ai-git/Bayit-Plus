@@ -9,6 +9,7 @@ import { colors, spacing, borderRadius } from '@bayit/shared/theme';
 import { GlassButton, GlassView } from '@bayit/shared/ui';
 import { useDirection } from '@/hooks/useDirection';
 import logger from '@/utils/logger';
+import { adminButtonStyles } from '@/styles/adminButtonStyles';
 
 interface Campaign {
   id: string;
@@ -203,8 +204,10 @@ export default function CampaignsListPage() {
         <Link to="/admin/campaigns/new" style={{ textDecoration: 'none' }}>
           <GlassButton
             title={t('admin.actions.newCampaign')}
-            variant="primary"
+            variant="secondary"
             icon={<Plus size={18} color={colors.text} />}
+            style={adminButtonStyles.primaryButton}
+            textStyle={adminButtonStyles.buttonText}
           />
         </Link>
       </View>
@@ -244,13 +247,16 @@ export default function CampaignsListPage() {
                 title={t('common.cancel', 'Cancel')}
                 variant="secondary"
                 onPress={() => setDeleteModal({ open: false, campaign: null })}
+                style={adminButtonStyles.cancelButton}
+                textStyle={adminButtonStyles.buttonText}
               />
               <GlassButton
                 title={actionLoading ? t('common.deleting', 'Deleting...') : t('common.delete', 'Delete')}
-                variant="primary"
+                variant="secondary"
                 onPress={handleDeleteConfirm}
                 disabled={actionLoading}
-                style={{ backgroundColor: colors.error }}
+                style={adminButtonStyles.dangerButton}
+                textStyle={adminButtonStyles.buttonText}
               />
             </View>
           </GlassView>

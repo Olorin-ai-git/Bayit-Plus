@@ -38,8 +38,10 @@ class Permission(str, Enum):
     BILLING_REFUND = "billing:refund"
     BILLING_EXPORT = "billing:export"
     SUBSCRIPTIONS_READ = "subscriptions:read"
+    SUBSCRIPTIONS_CREATE = "subscriptions:create"
     SUBSCRIPTIONS_UPDATE = "subscriptions:update"
     SUBSCRIPTIONS_CANCEL = "subscriptions:cancel"
+    SUBSCRIPTIONS_DELETE = "subscriptions:delete"
     MARKETING_READ = "marketing:read"
     MARKETING_CREATE = "marketing:create"
     MARKETING_SEND = "marketing:send"
@@ -56,7 +58,7 @@ ROLE_PERMISSIONS: Dict[Role, List[Permission]] = {
         Permission.CONTENT_READ, Permission.CONTENT_CREATE, Permission.CONTENT_UPDATE, Permission.CONTENT_DELETE,
         Permission.CAMPAIGNS_READ, Permission.CAMPAIGNS_CREATE, Permission.CAMPAIGNS_UPDATE, Permission.CAMPAIGNS_DELETE,
         Permission.BILLING_READ, Permission.BILLING_REFUND, Permission.BILLING_EXPORT,
-        Permission.SUBSCRIPTIONS_READ, Permission.SUBSCRIPTIONS_UPDATE, Permission.SUBSCRIPTIONS_CANCEL,
+        Permission.SUBSCRIPTIONS_READ, Permission.SUBSCRIPTIONS_CREATE, Permission.SUBSCRIPTIONS_UPDATE, Permission.SUBSCRIPTIONS_CANCEL, Permission.SUBSCRIPTIONS_DELETE,
         Permission.MARKETING_READ, Permission.MARKETING_CREATE, Permission.MARKETING_SEND,
         Permission.ANALYTICS_READ, Permission.ANALYTICS_EXPORT,
         Permission.SYSTEM_LOGS,
@@ -69,7 +71,7 @@ ROLE_PERMISSIONS: Dict[Role, List[Permission]] = {
     Role.BILLING_ADMIN: [
         Permission.USERS_READ,
         Permission.BILLING_READ, Permission.BILLING_REFUND, Permission.BILLING_EXPORT,
-        Permission.SUBSCRIPTIONS_READ, Permission.SUBSCRIPTIONS_UPDATE, Permission.SUBSCRIPTIONS_CANCEL,
+        Permission.SUBSCRIPTIONS_READ, Permission.SUBSCRIPTIONS_CREATE, Permission.SUBSCRIPTIONS_UPDATE, Permission.SUBSCRIPTIONS_CANCEL, Permission.SUBSCRIPTIONS_DELETE,
         Permission.ANALYTICS_READ, Permission.ANALYTICS_EXPORT,
     ],
     Role.SUPPORT: [
@@ -208,6 +210,7 @@ class AuditAction(str, Enum):
     SUBSCRIPTION_CREATED = "subscription_created"
     SUBSCRIPTION_UPDATED = "subscription_updated"
     SUBSCRIPTION_CANCELED = "subscription_canceled"
+    SUBSCRIPTION_DELETED = "subscription_deleted"
     REFUND_PROCESSED = "refund_processed"
     PAYMENT_RECEIVED = "payment_received"
     SETTINGS_UPDATED = "settings_updated"

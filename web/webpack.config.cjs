@@ -37,6 +37,8 @@ module.exports = (env, argv) => {
       publicPath: isTV ? './' : '/',
       clean: true,
     },
+    // Enable source maps for debugging
+    devtool: 'source-map',
     // Set the context to web folder
     context: __dirname,
     resolve: {

@@ -891,6 +891,10 @@ async def get_subscriptions(
     skip = (page - 1) * page_size
     users = await query.skip(skip).limit(page_size).to_list()
 
+    # Fetch all plans to get pricing info
+    plans = await SubscriptionPlan.find().to_list()
+    plan_prices = {p.slug: p.price for p in plans}
+
     return {
         "items": [
             {
@@ -898,8 +902,10 @@ async def get_subscriptions(
                 "user_id": str(u.id),
                 "plan": u.subscription_tier,
                 "status": u.subscription_status,
+                "amount": plan_prices.get(u.subscription_tier, 0) if u.subscription_tier else 0,
                 "start_date": u.subscription_start_date.isoformat() if u.subscription_start_date else None,
                 "end_date": u.subscription_end_date.isoformat() if u.subscription_end_date else None,
+                "next_billing": u.subscription_end_date.isoformat() if u.subscription_end_date else None,
                 "user": {
                     "id": str(u.id),
                     "name": u.name,
@@ -996,6 +1002,111 @@ async def resume_subscription(
     await user.save()
 
     return {"message": "Subscription resumed"}
+
+
+@router.post("/subscriptions/create")
+async def create_subscription(
+    user_id: str,
+    plan_id: str,
+    duration_days: int = 30,
+    request: Request = None,
+    current_user: User = Depends(has_permission(Permission.SUBSCRIPTIONS_CREATE))
+):
+    """Create a new subscription for a user."""
+    user = await User.get(user_id)
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+
+    # Verify plan exists
+    plan = await SubscriptionPlan.find_one(SubscriptionPlan.slug == plan_id)
+    if not plan:
+        raise HTTPException(status_code=404, detail="Plan not found")
+
+    # Set subscription details
+    now = datetime.utcnow()
+    user.subscription_tier = plan_id
+    user.subscription_status = "active"
+    user.subscription_start_date = now
+    user.subscription_end_date = now + timedelta(days=duration_days)
+    user.updated_at = now
+    await user.save()
+
+    await log_audit(str(current_user.id), AuditAction.SUBSCRIPTION_CREATED, "subscription", user_id, {
+        "plan": plan_id,
+        "duration_days": duration_days
+    }, request)
+
+    return {
+        "message": "Subscription created successfully",
+        "subscription": {
+            "user_id": str(user.id),
+            "plan": plan_id,
+            "status": "active",
+            "start_date": user.subscription_start_date.isoformat(),
+            "end_date": user.subscription_end_date.isoformat()
+        }
+    }
+
+
+@router.put("/subscriptions/{user_id}/plan")
+async def update_subscription_plan(
+    user_id: str,
+    plan_id: str,
+    request: Request = None,
+    current_user: User = Depends(has_permission(Permission.SUBSCRIPTIONS_UPDATE))
+):
+    """Update a user's subscription plan."""
+    user = await User.get(user_id)
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+
+    if not user.subscription_tier:
+        raise HTTPException(status_code=400, detail="User has no subscription")
+
+    # Verify plan exists
+    plan = await SubscriptionPlan.find_one(SubscriptionPlan.slug == plan_id)
+    if not plan:
+        raise HTTPException(status_code=404, detail="Plan not found")
+
+    old_plan = user.subscription_tier
+    user.subscription_tier = plan_id
+    user.updated_at = datetime.utcnow()
+    await user.save()
+
+    await log_audit(str(current_user.id), AuditAction.SUBSCRIPTION_UPDATED, "subscription", user_id, {
+        "old_plan": old_plan,
+        "new_plan": plan_id
+    }, request)
+
+    return {"message": f"Subscription plan updated to {plan_id}"}
+
+
+@router.delete("/subscriptions/{user_id}")
+async def delete_subscription(
+    user_id: str,
+    request: Request = None,
+    current_user: User = Depends(has_permission(Permission.SUBSCRIPTIONS_DELETE))
+):
+    """Delete/remove a user's subscription entirely."""
+    user = await User.get(user_id)
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+
+    if not user.subscription_tier:
+        raise HTTPException(status_code=400, detail="User has no subscription")
+
+    # Remove subscription
+    user.subscription_tier = None
+    user.subscription_status = None
+    user.subscription_start_date = None
+    user.subscription_end_date = None
+    user.subscription_id = None
+    user.updated_at = datetime.utcnow()
+    await user.save()
+
+    await log_audit(str(current_user.id), AuditAction.SUBSCRIPTION_DELETED, "subscription", user_id, {}, request)
+
+    return {"message": "Subscription deleted successfully"}
 
 
 @router.get("/subscriptions/analytics/churn")

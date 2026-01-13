@@ -20,6 +20,8 @@
     "recommended": "מומלץ",
     "edit": "ערוך",
     "delete": "מחק",
+    "add": "הוסף",
+    "invalidDate": "תאריך לא תקין",
     "appName": "🏠 בית+",
     "appVersion": "🏠 בית+ v1.0.0",
     "ok": "אישור",
@@ -300,30 +302,32 @@
     }
   },
   "radio": {
-    "title": "רדיו",
-    "stations": "תחנות",
-    "nowPlaying": "עכשיו משמיע",
-    "loadError": "שגיאה בטעינת התחנות",
-    "genres": {
+    "title": "תחנות רדיו",
+    "categories": {
       "all": "הכל",
-      "news": "חדשות",
       "music": "מוזיקה",
-      "talk": "טוק",
-      "army": "צבאי"
-    }
+      "news": "חדשות",
+      "talk": "שיחה",
+      "jewish": "יהודי"
+    },
+    "noStations": "אין תחנות רדיו זמינות",
+    "tryLater": "נסה שוב מאוחר יותר"
   },
   "podcasts": {
     "title": "פודקאסטים",
-    "shows": "תוכניות",
     "episodes": "פרקים",
-    "loadError": "שגיאה בטעינת הפודקאסטים",
     "categories": {
       "all": "הכל",
+      "general": "כללי",
       "news": "חדשות",
-      "comedy": "קומדיה",
-      "society": "חברה",
+      "politics": "פוליטיקה",
       "tech": "טכנולוגיה",
-      "history": "היסטוריה"
+      "business": "עסקים",
+      "jewish": "יהדות",
+      "entertainment": "בידור",
+      "sports": "ספורט",
+      "history": "היסטוריה",
+      "educational": "חינוכי"
     },
     "noPodcasts": "אין פודקאסטים זמינים",
     "tryLater": "נסה שוב מאוחר יותר"
@@ -557,16 +561,7 @@
       "noActivePlan": "אין מנוי פעיל",
       "selectPlan": "בחר תוכנית"
     },
-    "notifications": {
-      "newContent": "תוכן חדש",
-      "newContentDesc": "קבל התראות על תוכן חדש",
-      "liveEvents": "אירועים בשידור חי",
-      "liveEventsDesc": "התראות על שידורים חיים מיוחדים",
-      "recommendations": "המלצות",
-      "recommendationsDesc": "קבל המלצות מותאמות אישית",
-      "updates": "עדכוני מערכת",
-      "updatesDesc": "קבל עדכונים על שינויים במערכת"
-    },
+    "notifications": "התראות",
     "ai": {
       "title": "בינה מלאכותית והתאמה אישית",
       "description": "הגדר תכונות מונעות בינה מלאכותית",
@@ -643,7 +638,6 @@
     "downloads": "הורדות",
     "settings": "הגדרות",
     "language": "שפה",
-    "notifications": "התראות",
     "admin": "ניהול",
     "watchTime": "זמן צפייה",
     "minutes": "דקות",
@@ -821,8 +815,8 @@
   "favorites": {
     "title": "מועדפים",
     "items": "פריטים",
-    "empty": "אין מועדפים",
-    "emptyHint": "הוסף תוכן למועדפים כדי לצפות בו בקלות"
+    "empty": "אין מועדפים עדיין",
+    "emptyHint": "הוסף פריטים למועדפים שלך"
   },
   "downloads": {
     "title": "הורדות",
@@ -833,16 +827,20 @@
     "paused": "מושהה"
   },
   "watchlist": {
-    "title": "רשימת צפייה",
-    "items": "פריטים",
-    "empty": "הרשימה ריקה",
-    "emptyHint": "הוסף סרטים וסדרות לרשימה שלך",
     "filters": {
       "all": "הכל",
       "continue": "המשך צפייה",
       "movies": "סרטים",
-      "series": "סדרות"
-    }
+      "series": "סדרות",
+      "kids": "ילדים",
+      "judaism": "יהדות",
+      "podcasts": "פודקאסטים",
+      "radio": "רדיו"
+    },
+    "title": "רשימת הצפייה",
+    "items": "פריטים",
+    "empty": "רשימת הצפייה שלך ריקה",
+    "emptyHint": "התחל לצפות והפריטים יופיעו כאן"
   },
   "widgets": {
     "empty": "אין וידג'טים עדיין",
@@ -948,18 +946,19 @@
     },
     "backToApp": "חזרה לאפליקציה",
     "refunds": {
-      "subtitle": "ניהול בקשות להחזר כספי",
+      "title": "החזרים",
+      "subtitle": "ניהול בקשות להחזר",
       "approveModal": {
-        "title": "אישור אישור",
-        "message": "אשר החזר של {{amount}}?"
+        "title": "אישור החזר",
+        "message": "לאשר החזר של {{amount}}?"
       },
-      "confirmApprove": "אשר החזר של {{amount}}?",
-      "confirmDelete": "מחק בקשת החזר?",
+      "confirmApprove": "לאשר החזר של {{amount}}?",
+      "confirmDelete": "למחוק בקשת החזר?",
       "rejectModal": {
         "title": "דחיית בקשת החזר",
-        "message": "דחיית החזר בסך {{amount}}",
+        "message": "דחיית החזר של {{amount}}",
         "reasonLabel": "סיבת הדחייה",
-        "reasonPlaceholder": "נא להזין את סיבת הדחייה...",
+        "reasonPlaceholder": "נא להזין סיבת דחייה...",
         "submitButton": "דחה בקשה"
       },
       "status": {
@@ -1016,7 +1015,8 @@
       "confirmDelete": "מחק את התוכנית \"{{name}}\"?"
     },
     "emailCampaigns": {
-      "subtitle": "צור ונהל קמפייני דיוור",
+      "title": "קמפיינים בדוא״ל",
+      "subtitle": "יצירה וניהול קמפייני דוא״ל",
       "createButton": "קמפיין חדש",
       "searchPlaceholder": "חפש קמפיין...",
       "emptyMessage": "לא נמצאו קמפיינים",
@@ -1031,7 +1031,7 @@
         "status": "סטטוס",
         "sent": "נשלחו",
         "opened": "נפתחו",
-        "clicked": "הקליקו",
+        "clicked": "לחיצות",
         "created": "נוצר",
         "actions": "פעולות"
       },
@@ -1039,11 +1039,11 @@
         "title": "עריכת קמפיין"
       },
       "sendTestEmail": "שלח בדיקה",
-      "confirmSend": "שלח את הקמפיין \"{{name}}\"?",
-      "confirmDelete": "מחק את הקמפיין \"{{name}}\"?",
+      "confirmSend": "לשלוח את הקמפיין \"{{name}}\"?",
+      "confirmDelete": "למחוק את הקמפיין \"{{name}}\"?",
       "testEmailSent": "אימייל בדיקה נשלח!",
       "createModal": {
-        "title": "קמפיין אימייל חדש"
+        "title": "קמפיין דוא״ל חדש"
       },
       "form": {
         "name": "שם הקמפיין",
@@ -1080,7 +1080,15 @@
       "quickActions": "פעולות מהירות"
     },
     "common": {
-      "all": "הכל"
+      "all": "הכל",
+      "cancel": "ביטול",
+      "save": "שמור",
+      "active": "פעיל",
+      "back": "חזרה",
+      "filterAction": "פעולה",
+      "filterResource": "משאב",
+      "filterUser": "משתמש",
+      "filterDateRange": "טווח תאריכים"
     },
     "stats": {
       "totalUsers": "סה״כ משתמשים",
@@ -1456,97 +1464,6 @@
     "push": {
       "titlePlaceholder": "כותרת הודעה",
       "bodyPlaceholder": "תוכן ההודעה"
-    },
-    "refunds": {
-      "title": "החזרים",
-      "subtitle": "ניהול בקשות להחזר",
-      "approveModal": {
-        "title": "אישור החזר",
-        "message": "לאשר החזר של {{amount}}?"
-      },
-      "confirmApprove": "לאשר החזר של {{amount}}?",
-      "confirmDelete": "למחוק בקשת החזר?",
-      "rejectModal": {
-        "title": "דחיית בקשת החזר",
-        "message": "דחיית החזר של {{amount}}",
-        "reasonLabel": "סיבת הדחייה",
-        "reasonPlaceholder": "נא להזין סיבת דחייה...",
-        "submitButton": "דחה בקשה"
-      },
-      "status": {
-        "pending": "ממתין",
-        "approved": "אושר",
-        "rejected": "נדחה"
-      },
-      "columns": {
-        "id": "מזהה",
-        "user": "משתמש",
-        "amount": "סכום",
-        "reason": "סיבה",
-        "status": "סטטוס",
-        "requestDate": "תאריך בקשה"
-      },
-      "stats": {
-        "pendingTitle": "ממתינים לאישור",
-        "approvedTitle": "אושרו",
-        "rejectedTitle": "נדחו",
-        "totalRefunded": "סה״כ הוחזר"
-      },
-      "emptyMessage": "לא נמצאו בקשות להחזר",
-      "errors": {
-        "rejectReasonRequired": "נא להזין סיבת דחייה"
-      }
-    },
-    "emailCampaigns": {
-      "title": "קמפיינים בדוא״ל",
-      "subtitle": "יצירה וניהול קמפייני דוא״ל",
-      "createButton": "קמפיין חדש",
-      "searchPlaceholder": "חפש קמפיין...",
-      "emptyMessage": "לא נמצאו קמפיינים",
-      "status": {
-        "draft": "טיוטה",
-        "active": "פעיל",
-        "scheduled": "מתוזמן",
-        "completed": "הושלם"
-      },
-      "columns": {
-        "name": "שם הקמפיין",
-        "status": "סטטוס",
-        "sent": "נשלחו",
-        "opened": "נפתחו",
-        "clicked": "לחיצות",
-        "created": "נוצר",
-        "actions": "פעולות"
-      },
-      "editModal": {
-        "title": "עריכת קמפיין"
-      },
-      "sendTestEmail": "שלח בדיקה",
-      "confirmSend": "לשלוח את הקמפיין \"{{name}}\"?",
-      "confirmDelete": "למחוק את הקמפיין \"{{name}}\"?",
-      "testEmailSent": "אימייל בדיקה נשלח!",
-      "createModal": {
-        "title": "קמפיין דוא״ל חדש"
-      },
-      "form": {
-        "name": "שם הקמפיין",
-        "namePlaceholder": "לדוגמה: מבצע סוף שנה",
-        "subject": "נושא האימייל",
-        "subjectPlaceholder": "נושא שיופיע לנמענים",
-        "body": "תוכן",
-        "bodyPlaceholder": "תוכן האימייל...",
-        "submitButton": "צור קמפיין",
-        "requiredFields": "שם ונושא נדרשים"
-      },
-      "testModal": {
-        "title": "שלח אימייל בדיקה",
-        "emailLabel": "כתובת אימייל",
-        "emailPlaceholder": "test@example.com",
-        "submitButton": "שלח בדיקה"
-      },
-      "errors": {
-        "requiredFields": "שם ונושא הם חובה"
-      }
     },
     "auditLogs": {
       "subtitle": "מעקב אחר כל הפעולות במערכת",
@@ -1945,7 +1862,27 @@
       },
       "perMonth": "/חודש",
       "searchPlaceholder": "חפש מנוי...",
-      "emptyMessage": "לא נמצאו מנויים"
+      "emptyMessage": "לא נמצאו מנויים",
+      "editPlan": {
+        "title": "שינוי תוכנית מנוי",
+        "user": "משתמש",
+        "currentPlan": "תוכנית נוכחית",
+        "newPlan": "בחר תוכנית חדשה"
+      },
+      "addSubscription": {
+        "title": "הוסף מנוי",
+        "userEmail": "אימייל משתמש",
+        "emailPlaceholder": "הזן אימייל משתמש",
+        "duration": "משך (ימים)",
+        "selectPlan": "בחר תוכנית"
+      },
+      "fillAllFields": "אנא מלא את כל השדות",
+      "userNotFound": "משתמש לא נמצא",
+      "selectOneToEdit": "אנא בחר מנוי אחד לעריכה",
+      "selectToDelete": "אנא בחר מנויים למחיקה",
+      "confirmDeleteMultiple": "למחוק {{count}} מנויים?",
+      "selected": "נבחרו",
+      "confirmDelete": "האם אתה בטוח שברצונך למחוק את המנוי עבור {{user}}? פעולה זו אינה ניתנת לביטול."
     },
     "marketingDashboard": {
       "subtitle": "סקירת שיווק",
@@ -2305,59 +2242,6 @@
     "wrongCode": "קוד PIN שגוי",
     "noContent": "אין תוכן זמין",
     "tryAnotherCategory": "נסה לבחור קטגוריה אחרת"
-  },
-  "radio": {
-    "title": "תחנות רדיו",
-    "categories": {
-      "all": "הכל",
-      "music": "מוזיקה",
-      "news": "חדשות",
-      "talk": "שיחה",
-      "jewish": "יהודי"
-    },
-    "noStations": "אין תחנות רדיו זמינות",
-    "tryLater": "נסה שוב מאוחר יותר"
-  },
-  "podcasts": {
-    "title": "פודקאסטים",
-    "episodes": "פרקים",
-    "categories": {
-      "all": "הכל",
-      "general": "כללי",
-      "news": "חדשות",
-      "politics": "פוליטיקה",
-      "tech": "טכנולוגיה",
-      "business": "עסקים",
-      "jewish": "יהדות",
-      "entertainment": "בידור",
-      "sports": "ספורט",
-      "history": "היסטוריה",
-      "educational": "חינוכי"
-    },
-    "noPodcasts": "אין פודקאסטים זמינים",
-    "tryLater": "נסה שוב מאוחר יותר"
-  },
-  "watchlist": {
-    "filters": {
-      "all": "הכל",
-      "continue": "המשך צפייה",
-      "movies": "סרטים",
-      "series": "סדרות",
-      "kids": "ילדים",
-      "judaism": "יהדות",
-      "podcasts": "פודקאסטים",
-      "radio": "רדיו"
-    },
-    "title": "רשימת הצפייה",
-    "items": "פריטים",
-    "empty": "רשימת הצפייה שלך ריקה",
-    "emptyHint": "התחל לצפות והפריטים יופיעו כאן"
-  },
-  "favorites": {
-    "title": "מועדפים",
-    "items": "פריטים",
-    "empty": "אין מועדפים עדיין",
-    "emptyHint": "הוסף פריטים למועדפים שלך"
   },
   "chatbot": {
     "title": "עוזר בית+",

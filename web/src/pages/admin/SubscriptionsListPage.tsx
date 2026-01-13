@@ -1,21 +1,24 @@
 import { useState, useEffect, useCallback } from 'react';
-import { View, Text, StyleSheet, Pressable, ScrollView } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, TextInput } from 'react-native';
 import { useTranslation } from 'react-i18next';
-import { MoreVertical, Pause, Play, XCircle, PlusCircle } from 'lucide-react';
-import { GlassTable, GlassTableCell } from '@bayit/shared/ui';
+import { Plus, Edit, Trash2, Users } from 'lucide-react';
+import { GlassTable, GlassButton, GlassModal, GlassCheckbox } from '@bayit/shared/ui';
 import StatCard from '@/components/admin/StatCard';
 import { subscriptionsService } from '@/services/adminApi';
 import { colors, spacing, borderRadius } from '@bayit/shared/theme';
 import { useDirection } from '@/hooks/useDirection';
 import logger from '@/utils/logger';
+import { adminButtonStyles } from '@/styles/adminButtonStyles';
 
 interface User {
   name: string;
   email: string;
+  id: string;
 }
 
 interface Subscription {
   id: string;
+  user_id: string;
   user: User;
   plan: string;
   amount: number;
@@ -27,6 +30,7 @@ interface Plan {
   id: string;
   name: string;
   name_he?: string;
+  slug: string;
   price: number;
   subscribers: number;
 }
@@ -46,17 +50,27 @@ const statusColors: Record<string, { bg: string; text: string; labelKey: string 
 
 const planColors: Record<string, { bg: string; text: string }> = {
   Basic: { bg: 'rgba(59, 130, 246, 0.2)', text: '#3B82F6' },
+  basic: { bg: 'rgba(59, 130, 246, 0.2)', text: '#3B82F6' },
   Premium: { bg: 'rgba(139, 92, 246, 0.2)', text: '#8B5CF6' },
+  premium: { bg: 'rgba(139, 92, 246, 0.2)', text: '#8B5CF6' },
   Family: { bg: 'rgba(245, 158, 11, 0.2)', text: '#F59E0B' },
+  family: { bg: 'rgba(245, 158, 11, 0.2)', text: '#F59E0B' },
 };
 
 export default function SubscriptionsListPage() {
-  const { t } = useTranslation();
-  const { isRTL, textAlign, flexDirection } = useDirection();
+  const { t, i18n } = useTranslation();
+  const { isRTL } = useDirection();
   const [subscriptions, setSubscriptions] = useState<Subscription[]>([]);
   const [plans, setPlans] = useState<Plan[]>([]);
   const [loading, setLoading] = useState(true);
   const [pagination, setPagination] = useState<Pagination>({ page: 1, pageSize: 20, total: 0 });
+  const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
+  const [editModalOpen, setEditModalOpen] = useState(false);
+  const [addModalOpen, setAddModalOpen] = useState(false);
+  const [selectedSubscription, setSelectedSubscription] = useState<Subscription | null>(null);
+  const [selectedPlan, setSelectedPlan] = useState('');
+  const [newUserEmail, setNewUserEmail] = useState('');
+  const [durationDays, setDurationDays] = useState(30);
 
   const loadData = useCallback(async () => {
     setLoading(true);
@@ -68,7 +82,15 @@ export default function SubscriptionsListPage() {
         }),
         subscriptionsService.getPlans(),
       ]);
-      setSubscriptions(subsData.items || []);
+
+      // Transform data to match expected structure
+      const transformedSubs = (subsData.items || []).map(item => ({
+        ...item,
+        amount: item.amount || 0,
+        next_billing: item.end_date || item.next_billing || new Date().toISOString(),
+      }));
+
+      setSubscriptions(transformedSubs);
       setPlans(plansData || []);
       setPagination((prev) => ({ ...prev, total: subsData.total || 0 }));
     } catch (error) {
@@ -81,6 +103,104 @@ export default function SubscriptionsListPage() {
   useEffect(() => {
     loadData();
   }, [loadData]);
+
+  const handleSelectAll = (checked: boolean) => {
+    if (checked) {
+      setSelectedIds(new Set(subscriptions.map(s => s.id)));
+    } else {
+      setSelectedIds(new Set());
+    }
+  };
+
+  const handleSelectOne = (id: string, checked: boolean) => {
+    const newSelected = new Set(selectedIds);
+    if (checked) {
+      newSelected.add(id);
+    } else {
+      newSelected.delete(id);
+    }
+    setSelectedIds(newSelected);
+  };
+
+  const handleEdit = () => {
+    if (selectedIds.size !== 1) {
+      alert(t('admin.subscriptions.selectOneToEdit'));
+      return;
+    }
+    const sub = subscriptions.find(s => selectedIds.has(s.id));
+    if (sub) {
+      setSelectedSubscription(sub);
+      setSelectedPlan(sub.plan);
+      setEditModalOpen(true);
+    }
+  };
+
+  const handleAdd = () => {
+    setNewUserEmail('');
+    setSelectedPlan('');
+    setDurationDays(30);
+    setAddModalOpen(true);
+  };
+
+  const handleSaveAdd = async () => {
+    if (!newUserEmail || !selectedPlan) {
+      alert(t('admin.subscriptions.fillAllFields'));
+      return;
+    }
+
+    try {
+      const user = subscriptions.find(s => s.user.email === newUserEmail);
+      if (!user) {
+        alert(t('admin.subscriptions.userNotFound'));
+        return;
+      }
+
+      await subscriptionsService.createSubscription(user.user_id, selectedPlan, durationDays);
+      setAddModalOpen(false);
+      setNewUserEmail('');
+      setSelectedPlan('');
+      setDurationDays(30);
+      loadData();
+    } catch (error) {
+      logger.error('Failed to create subscription', 'SubscriptionsListPage', error);
+    }
+  };
+
+  const handleSaveEdit = async () => {
+    if (!selectedSubscription || !selectedPlan) return;
+
+    try {
+      await subscriptionsService.updateSubscriptionPlan(selectedSubscription.user_id, selectedPlan);
+      setEditModalOpen(false);
+      setSelectedIds(new Set());
+      loadData();
+    } catch (error) {
+      logger.error('Failed to update subscription', 'SubscriptionsListPage', error);
+    }
+  };
+
+  const handleDelete = async () => {
+    if (selectedIds.size === 0) {
+      alert(t('admin.subscriptions.selectToDelete'));
+      return;
+    }
+
+    const count = selectedIds.size;
+    if (!confirm(t('admin.subscriptions.confirmDeleteMultiple', { count }))) return;
+
+    try {
+      const deletePromises = Array.from(selectedIds).map(id => {
+        const sub = subscriptions.find(s => s.id === id);
+        return sub ? subscriptionsService.deleteSubscription(sub.user_id) : null;
+      });
+
+      await Promise.all(deletePromises.filter(p => p !== null));
+      setSelectedIds(new Set());
+      loadData();
+    } catch (error) {
+      logger.error('Failed to delete subscriptions', 'SubscriptionsListPage', error);
+    }
+  };
 
   const getStatusBadge = (status: string) => {
     const style = statusColors[status] || statusColors.active;
@@ -100,7 +220,26 @@ export default function SubscriptionsListPage() {
     );
   };
 
+  const allSelected = subscriptions.length > 0 && selectedIds.size === subscriptions.length;
+  const someSelected = selectedIds.size > 0;
+
   const columns = [
+    {
+      key: 'select',
+      label: (
+        <GlassCheckbox
+          checked={allSelected}
+          onChange={handleSelectAll}
+        />
+      ),
+      width: 50,
+      render: (_: any, sub: Subscription) => (
+        <GlassCheckbox
+          checked={selectedIds.has(sub.id)}
+          onChange={(checked) => handleSelectOne(sub.id, checked)}
+        />
+      ),
+    },
     {
       key: 'user',
       label: t('admin.subscriptions.columns.user'),
@@ -126,28 +265,28 @@ export default function SubscriptionsListPage() {
     {
       key: 'next_billing',
       label: t('admin.subscriptions.columns.nextBilling'),
-      render: (date: string) => (
-        <Text style={styles.dateText}>
-          {new Date(date).toLocaleDateString('he-IL')}
-        </Text>
-      ),
+      render: (date: string) => {
+        try {
+          const locale = i18n.language || 'en';
+          const localeMap: Record<string, string> = {
+            'en': 'en-US',
+            'he': 'he-IL',
+            'es': 'es-ES'
+          };
+          return (
+            <Text style={styles.dateText}>
+              {new Date(date).toLocaleDateString(localeMap[locale] || 'en-US')}
+            </Text>
+          );
+        } catch {
+          return <Text style={styles.dateText}>{t('common.invalidDate')}</Text>;
+        }
+      },
     },
     {
       key: 'status',
       label: t('admin.subscriptions.columns.status'),
       render: (status: string) => getStatusBadge(status),
-    },
-    {
-      key: 'actions',
-      label: '',
-      width: 50,
-      render: (_: any, sub: Subscription) => (
-        <View style={styles.actionsCell}>
-          <Pressable style={styles.actionButton}>
-            <MoreVertical size={16} color={colors.textMuted} />
-          </Pressable>
-        </View>
-      ),
     },
   ];
 
@@ -155,8 +294,51 @@ export default function SubscriptionsListPage() {
     <ScrollView style={styles.container} contentContainerStyle={styles.contentContainer}>
       {/* Header */}
       <View style={styles.header}>
-        <Text style={styles.pageTitle}>{t('admin.titles.subscriptions')}</Text>
-        <Text style={styles.subtitle}>{t('admin.subscriptions.subtitle')}</Text>
+        <View>
+          <Text style={styles.pageTitle}>{t('admin.titles.subscriptions')}</Text>
+          <Text style={styles.subtitle}>{t('admin.subscriptions.subtitle')}</Text>
+        </View>
+        <View style={styles.actions}>
+          <GlassButton
+            title={t('common.add')}
+            onPress={handleAdd}
+            variant="secondary"
+            icon={<Plus size={18} color={colors.text} />}
+            style={styles.addButton}
+            textStyle={styles.buttonText}
+          />
+          <GlassButton
+            title={t('common.edit')}
+            onPress={handleEdit}
+            variant="secondary"
+            icon={<Edit size={18} color={colors.text} />}
+            disabled={selectedIds.size !== 1}
+            style={styles.actionButton}
+            textStyle={styles.buttonText}
+          />
+          <GlassButton
+            title={t('common.delete')}
+            onPress={handleDelete}
+            variant="secondary"
+            icon={<Trash2 size={18} color={colors.error} />}
+            disabled={selectedIds.size === 0}
+            style={styles.deleteButton}
+            textStyle={styles.buttonText}
+          />
+        </View>
+      </View>
+
+      <View style={[styles.selectionBar, !someSelected && styles.selectionBarHidden]}>
+        {someSelected ? (
+          <>
+            <Users size={16} color={colors.primary} />
+            <Text style={styles.selectionText}>
+              {selectedIds.size} {t('admin.subscriptions.selected')}
+            </Text>
+          </>
+        ) : (
+          <Text style={styles.selectionPlaceholder}> </Text>
+        )}
       </View>
 
       {/* Plan Stats */}
@@ -168,7 +350,7 @@ export default function SubscriptionsListPage() {
             value={plan.subscribers || 0}
             subtitle={`$${plan.price}${t('admin.subscriptions.perMonth')}`}
             icon="📦"
-            color={plan.name === 'Premium' ? 'secondary' : plan.name === 'Family' ? 'warning' : 'primary'}
+            color={plan.name === 'Premium' || plan.name === 'premium' ? 'secondary' : plan.name === 'Family' || plan.name === 'family' ? 'warning' : 'primary'}
           />
         ))}
       </View>
@@ -184,6 +366,122 @@ export default function SubscriptionsListPage() {
         emptyMessage={t('admin.subscriptions.emptyMessage')}
         isRTL={isRTL}
       />
+
+      {/* Edit Plan Modal */}
+      <GlassModal
+        visible={editModalOpen}
+        title={t('admin.subscriptions.editPlan.title')}
+        onClose={() => setEditModalOpen(false)}
+        dismissable={true}
+      >
+        <Text style={styles.modalLabel}>
+          {t('admin.subscriptions.editPlan.user')}: {selectedSubscription?.user.name}
+        </Text>
+        <Text style={styles.modalLabel}>
+          {t('admin.subscriptions.editPlan.currentPlan')}: {selectedSubscription?.plan}
+        </Text>
+
+        <Text style={styles.modalLabel}>{t('admin.subscriptions.editPlan.newPlan')}:</Text>
+        <View style={styles.planSelector}>
+          {plans.map((plan) => (
+            <GlassButton
+              key={plan.id}
+              title={`${plan.name_he || plan.name} - $${plan.price}/mo`}
+              onPress={() => setSelectedPlan(plan.slug)}
+              variant="secondary"
+              style={[
+                styles.planOption,
+                selectedPlan === plan.slug ? styles.planOptionSelected : styles.planOptionUnselected
+              ]}
+              textStyle={styles.buttonText}
+            />
+          ))}
+        </View>
+
+        <View style={styles.modalActions}>
+          <GlassButton
+            title={t('common.cancel')}
+            onPress={() => setEditModalOpen(false)}
+            variant="secondary"
+            style={[styles.modalButton, styles.cancelButton]}
+            textStyle={styles.buttonText}
+          />
+          <GlassButton
+            title={t('common.save')}
+            onPress={handleSaveEdit}
+            variant="secondary"
+            style={[styles.modalButton, styles.saveButton]}
+            textStyle={styles.buttonText}
+          />
+        </View>
+      </GlassModal>
+
+      {/* Add Subscription Modal */}
+      <GlassModal
+        visible={addModalOpen}
+        title={t('admin.subscriptions.addSubscription.title')}
+        onClose={() => setAddModalOpen(false)}
+        dismissable={true}
+      >
+        <Text style={styles.modalLabel}>
+          {t('admin.subscriptions.addSubscription.userEmail')}:
+        </Text>
+        <TextInput
+          style={styles.input}
+          value={newUserEmail}
+          onChangeText={setNewUserEmail}
+          placeholder={t('admin.subscriptions.addSubscription.emailPlaceholder')}
+          placeholderTextColor={colors.textMuted}
+          autoCapitalize="none"
+          keyboardType="email-address"
+        />
+
+        <Text style={styles.modalLabel}>
+          {t('admin.subscriptions.addSubscription.duration')}:
+        </Text>
+        <TextInput
+          style={styles.input}
+          value={String(durationDays)}
+          onChangeText={(text) => setDurationDays(Number(text) || 30)}
+          placeholder="30"
+          placeholderTextColor={colors.textMuted}
+          keyboardType="numeric"
+        />
+
+        <Text style={styles.modalLabel}>{t('admin.subscriptions.addSubscription.selectPlan')}:</Text>
+        <View style={styles.planSelector}>
+          {plans.map((plan) => (
+            <GlassButton
+              key={plan.id}
+              title={`${plan.name_he || plan.name} - $${plan.price}/mo`}
+              onPress={() => setSelectedPlan(plan.slug)}
+              variant="secondary"
+              style={[
+                styles.planOption,
+                selectedPlan === plan.slug ? styles.planOptionSelected : styles.planOptionUnselected
+              ]}
+              textStyle={styles.buttonText}
+            />
+          ))}
+        </View>
+
+        <View style={styles.modalActions}>
+          <GlassButton
+            title={t('common.cancel')}
+            onPress={() => setAddModalOpen(false)}
+            variant="secondary"
+            style={[styles.modalButton, styles.cancelButton]}
+            textStyle={styles.buttonText}
+          />
+          <GlassButton
+            title={t('common.save')}
+            onPress={handleSaveAdd}
+            variant="secondary"
+            style={[styles.modalButton, styles.saveButton]}
+            textStyle={styles.buttonText}
+          />
+        </View>
+      </GlassModal>
     </ScrollView>
   );
 }
@@ -197,6 +495,9 @@ const styles = StyleSheet.create({
   },
   header: {
     marginBottom: spacing.lg,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'flex-start',
   },
   pageTitle: {
     fontSize: 24,
@@ -207,6 +508,36 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: colors.textMuted,
     marginTop: spacing.xs,
+  },
+  actions: {
+    flexDirection: 'row',
+    gap: spacing.sm,
+  },
+  addButton: adminButtonStyles.primaryButton,
+  actionButton: adminButtonStyles.secondaryButton,
+  deleteButton: adminButtonStyles.dangerButton,
+  selectionBar: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.sm,
+    padding: spacing.md,
+    backgroundColor: 'rgba(59, 130, 246, 0.1)',
+    borderRadius: borderRadius.md,
+    marginBottom: spacing.md,
+    minHeight: 48,
+  },
+  selectionBarHidden: {
+    backgroundColor: 'transparent',
+    opacity: 0,
+  },
+  selectionText: {
+    color: colors.primary,
+    fontSize: 14,
+    fontWeight: '500',
+  },
+  selectionPlaceholder: {
+    fontSize: 14,
+    opacity: 0,
   },
   statsGrid: {
     flexDirection: 'row',
@@ -241,10 +572,40 @@ const styles = StyleSheet.create({
     fontSize: 12,
     fontWeight: '500',
   },
-  actionsCell: {
-    position: 'relative',
+  modalLabel: {
+    fontSize: 14,
+    color: colors.text,
+    marginTop: spacing.md,
+    marginBottom: spacing.xs,
   },
-  actionButton: {
-    padding: spacing.xs,
+  planSelector: {
+    gap: spacing.sm,
+    marginTop: spacing.sm,
   },
+  planOption: {
+    width: '100%',
+  },
+  planOptionSelected: adminButtonStyles.selectedButton,
+  planOptionUnselected: adminButtonStyles.unselectedButton,
+  modalActions: {
+    flexDirection: 'row',
+    gap: spacing.md,
+    marginTop: spacing.lg,
+  },
+  modalButton: {
+    flex: 1,
+  },
+  cancelButton: adminButtonStyles.cancelButton,
+  saveButton: adminButtonStyles.successButton,
+  input: {
+    backgroundColor: 'rgba(255, 255, 255, 0.05)',
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.15)',
+    borderRadius: borderRadius.md,
+    padding: spacing.md,
+    color: colors.text,
+    fontSize: 14,
+    marginTop: spacing.xs,
+  },
+  buttonText: adminButtonStyles.buttonText,
 });

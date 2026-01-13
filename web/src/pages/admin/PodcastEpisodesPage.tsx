@@ -183,7 +183,7 @@ export default function PodcastEpisodesPage() {
         style={[styles.breadcrumb, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}
       >
         <ChevronLeft size={16} color={colors.primary} />
-        <Text style={styles.breadcrumbText}>Back to Podcasts</Text>
+        <Text style={styles.breadcrumbText}>{t('admin.common.back')} {t('admin.titles.podcasts')}</Text>
       </Pressable>
 
       <View style={[styles.header, { flexDirection }]}>
@@ -274,10 +274,10 @@ export default function PodcastEpisodesPage() {
           />
           <View style={styles.formActions}>
             <Pressable onPress={() => setEditingId(null)} style={styles.cancelBtn}>
-              <Text style={styles.cancelBtnText}>Cancel</Text>
+              <Text style={styles.cancelBtnText}>{t('admin.common.cancel')}</Text>
             </Pressable>
             <Pressable onPress={handleSaveEdit} style={styles.saveBtn}>
-              <Text style={styles.saveBtnText}>Save</Text>
+              <Text style={styles.saveBtnText}>{t('admin.common.save')}</Text>
             </Pressable>
           </View>
         </View>
