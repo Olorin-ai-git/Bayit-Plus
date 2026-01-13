@@ -19,18 +19,23 @@ from app.api.routes import (
     device_pairing, onboarding, widgets, favorites, downloads, user_system_widgets, news, librarian,
     admin_content_vod_read, admin_content_vod_write, admin_content_vod_toggles, admin_categories, admin_live_channels,
     admin_radio_stations, admin_podcasts, admin_podcast_episodes, admin_content_importer, admin_widgets, verification,
-    recordings
+    recordings, epg
 )
 from app.api.routes.admin.recordings import router as admin_recordings_router
 
 
 async def sync_podcast_rss_feeds():
     """Sync podcast episodes from RSS feeds on startup."""
+    import asyncio
     try:
+        # Delay startup by 5 seconds to let server initialize
+        await asyncio.sleep(5)
+        logger.info("🔄 Starting background podcast sync...")
         from app.services.podcast_sync import sync_all_podcasts
         await sync_all_podcasts(max_episodes=3)
+        logger.info("✅ Background podcast sync completed")
     except Exception as e:
-        logger.warning(f"Failed to sync podcast RSS feeds: {e}")
+        logger.warning(f"⚠️ Background podcast sync failed: {e}")
 
 
 def validate_configuration():
@@ -373,6 +378,7 @@ async def init_default_data():
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     # Startup
+    logger.info("🚀 Starting Bayit+ Backend Server...")
     validate_configuration()
     await connect_to_mongo()
     try:
@@ -382,8 +388,10 @@ async def lifespan(app: FastAPI):
     # Run podcast sync in background (non-blocking)
     import asyncio
     asyncio.create_task(sync_podcast_rss_feeds())
+    logger.info("✅ Server startup complete - Ready to accept connections")
     yield
     # Shutdown
+    logger.info("👋 Shutting down server...")
     await close_mongo_connection()
 
 
@@ -425,6 +433,7 @@ app.include_router(favorites.router, prefix=f"{settings.API_V1_PREFIX}/favorites
 app.include_router(downloads.router, prefix=f"{settings.API_V1_PREFIX}/downloads", tags=["downloads"])
 app.include_router(history.router, prefix=f"{settings.API_V1_PREFIX}/history", tags=["history"])
 app.include_router(recordings.router, prefix=f"{settings.API_V1_PREFIX}/recordings", tags=["recordings"])
+app.include_router(epg.router, prefix=f"{settings.API_V1_PREFIX}/epg", tags=["epg"])
 app.include_router(admin.router, prefix=f"{settings.API_V1_PREFIX}/admin", tags=["admin"])
 app.include_router(librarian.router, prefix=f"{settings.API_V1_PREFIX}", tags=["librarian"])
 app.include_router(admin_content_vod_read.router, prefix=f"{settings.API_V1_PREFIX}/admin", tags=["admin-content"])

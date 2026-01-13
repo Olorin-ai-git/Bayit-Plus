@@ -33,6 +33,7 @@ import TVLoginPage from './pages/TVLoginPage'
 import SettingsPage from './pages/SettingsPage'
 import HelpPage from './pages/HelpPage'
 import UserWidgetsPage from './pages/UserWidgetsPage'
+import EPGPage from './pages/EPGPage'
 
 // Admin Pages
 import AdminLayout from './components/admin/AdminLayout'
@@ -117,6 +118,7 @@ function App() {
         <Route path="/" element={<HomePage />} />
         <Route path="/live" element={<LivePage />} />
         <Route path="/live/:channelId" element={<WatchPage type="live" />} />
+        <Route path="/epg" element={<EPGPage />} />
         <Route path="/vod" element={<VODPage />} />
         <Route path="/vod/series/:seriesId" element={<SeriesDetailPage />} />
         <Route path="/vod/movie/:movieId" element={<MovieDetailPage />} />

@@ -41,6 +41,7 @@
     "i18next": "^25.7.3",
     "livekit-client": "^2.7.0",
     "lucide-react": "^0.303.0",
+    "luxon": "^3.4.4",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-hook-form": "^7.71.0",

@@ -1,4 +1,4 @@
-import { useRef, useState, useEffect } from 'react'
+import { useRef, useState, useEffect, useMemo } from 'react'
 import { View, Text, StyleSheet, Pressable, ActivityIndicator } from 'react-native'
 import { useTranslation } from 'react-i18next'
 import Hls from 'hls.js'
@@ -136,6 +136,41 @@ export default function VideoPlayer({
 
   // Live subtitle state (Premium feature)
   const [liveSubtitleCues, setLiveSubtitleCues] = useState<LiveSubtitleCue[]>([])
+  const [liveSubtitleLang, setLiveSubtitleLang] = useState('en')
+
+  // Trigger subtitle expiration checks
+  const [subtitleTick, setSubtitleTick] = useState(0)
+
+  // Memoize visible live subtitles to avoid filtering on every render
+  const visibleLiveSubtitles = useMemo(() => {
+    const now = Date.now()
+    return liveSubtitleCues
+      .filter((cue) => (cue as any).displayUntil > now)
+      .slice(-3)
+  }, [liveSubtitleCues, subtitleTick])
+
+  // Update display when subtitles expire
+  useEffect(() => {
+    if (liveSubtitleCues.length === 0) return
+
+    const now = Date.now()
+    const activeCues = liveSubtitleCues.filter((cue) => (cue as any).displayUntil > now)
+
+    if (activeCues.length === 0) return
+
+    // Find when the next subtitle expires
+    const nextExpiry = Math.min(...activeCues.map((cue) => (cue as any).displayUntil))
+    const timeUntilExpiry = nextExpiry - now
+
+    // Schedule update slightly after expiry
+    if (timeUntilExpiry > 0 && timeUntilExpiry < 60000) {
+      const timer = setTimeout(() => {
+        setSubtitleTick((t) => t + 1)
+      }, timeUntilExpiry + 100)
+
+      return () => clearTimeout(timer)
+    }
+  }, [liveSubtitleCues, subtitleTick])
 
   // Recording state (Premium feature)
   const [isRecording, setIsRecording] = useState(false)
@@ -515,22 +550,13 @@ export default function VideoPlayer({
       )}
 
       {/* Live Subtitle Overlay (Premium) */}
-      {isLive && liveSubtitleCues.length > 0 && (
+      {isLive && visibleLiveSubtitles.length > 0 && (
         <View style={styles.liveSubtitleOverlay}>
-          {liveSubtitleCues
-            .filter((cue) => {
-              const shouldShow = (cue as any).displayUntil > Date.now()
-              if (shouldShow) {
-                console.log('📺 [VideoPlayer] Displaying subtitle:', cue.text.substring(0, 50))
-              }
-              return shouldShow
-            })
-            .slice(-3)
-            .map((cue, idx) => (
-              <View key={`${cue.timestamp}-${idx}`} style={styles.liveSubtitleCue}>
-                <Text style={styles.liveSubtitleText}>{cue.text}</Text>
-              </View>
-            ))}
+          {visibleLiveSubtitles.map((cue, idx) => (
+            <View key={`${cue.timestamp}-${idx}`} style={styles.liveSubtitleCue}>
+              <Text style={styles.liveSubtitleText}>{cue.text}</Text>
+            </View>
+          ))}
         </View>
       )}
 
@@ -630,6 +656,50 @@ export default function VideoPlayer({
                               </Text>
                             )}
                           </View>
+                        </View>
+                        {isActive && <View style={styles.activeIndicator} />}
+                      </Pressable>
+                    )
+                  })}
+                </View>
+              </View>
+            )}
+
+            {/* Live Translation Language Selection (Premium) */}
+            {isLive && availableSubtitleLanguages.length > 0 && (
+              <View style={styles.settingSection}>
+                <Text style={styles.settingLabel}>{t('subtitles.translateTo', 'Translate To')}</Text>
+                <View style={styles.settingOptionsList}>
+                  {availableSubtitleLanguages.map((langCode) => {
+                    const langMap: Record<string, { flag: string; label: string }> = {
+                      'he': { flag: '🇮🇱', label: 'עברית' },
+                      'en': { flag: '🇺🇸', label: 'English' },
+                      'ar': { flag: '🇸🇦', label: 'العربية' },
+                      'es': { flag: '🇪🇸', label: 'Español' },
+                      'ru': { flag: '🇷🇺', label: 'Русский' },
+                      'fr': { flag: '🇫🇷', label: 'Français' },
+                    }
+                    const lang = langMap[langCode] || { flag: '🌐', label: langCode.toUpperCase() }
+                    const isActive = liveSubtitleLang === langCode
+                    return (
+                      <Pressable
+                        key={langCode}
+                        style={[
+                          styles.settingOptionFull,
+                          isActive && styles.settingOptionActive,
+                        ]}
+                        onPress={() => setLiveSubtitleLang(langCode)}
+                      >
+                        <View style={styles.subtitleOptionContent}>
+                          <Text style={styles.settingOptionIcon}>{lang.flag}</Text>
+                          <Text
+                            style={[
+                              styles.settingOptionText,
+                              isActive && styles.settingOptionTextActive,
+                            ]}
+                          >
+                            {lang.label}
+                          </Text>
                         </View>
                         {isActive && <View style={styles.activeIndicator} />}
                       </Pressable>
@@ -843,7 +913,8 @@ export default function VideoPlayer({
                   videoElement={videoRef.current}
                   onSubtitleCue={handleLiveSubtitleCue}
                   onShowUpgrade={onShowUpgrade}
-                  availableLanguages={availableSubtitleLanguages}
+                  targetLang={liveSubtitleLang}
+                  onLanguageChange={setLiveSubtitleLang}
                 />
               )}
               {/* Record Button (Premium) */}

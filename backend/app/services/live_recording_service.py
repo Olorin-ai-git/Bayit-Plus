@@ -9,6 +9,11 @@ from datetime import datetime
 from typing import Optional
 from pathlib import Path
 
+try:
+    import psutil
+except ImportError:
+    psutil = None
+
 from app.models.recording import RecordingSession, Recording
 from app.models.content import LiveChannel
 from app.models.user import User
@@ -177,14 +182,18 @@ class LiveRecordingService:
             # Stop FFmpeg process
             if session.ffmpeg_pid:
                 try:
+                    if psutil is None:
+                        logger.error("psutil not available - cannot stop FFmpeg process gracefully")
+                        raise Exception("psutil library not installed")
+
                     # Get process handle
-                    import psutil
                     process = psutil.Process(session.ffmpeg_pid)
                     await ffmpeg_service.stop_recording(process)
-                except psutil.NoSuchProcess:
-                    logger.warning(f"FFmpeg process {session.ffmpeg_pid} not found")
                 except Exception as e:
-                    logger.error(f"Error stopping FFmpeg: {str(e)}")
+                    if psutil and isinstance(e, psutil.NoSuchProcess):
+                        logger.warning(f"FFmpeg process {session.ffmpeg_pid} not found")
+                    else:
+                        logger.error(f"Error stopping FFmpeg: {str(e)}")
 
             # TODO: If subtitles enabled, stop capture and generate WebVTT
             # if session.subtitle_enabled:

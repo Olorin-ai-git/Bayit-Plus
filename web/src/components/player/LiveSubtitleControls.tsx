@@ -3,7 +3,7 @@
  * Premium feature for real-time subtitle translation of live streams
  */
 
-import { useState } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { View, Text, Pressable, ActivityIndicator } from 'react-native'
 import { useTranslation } from 'react-i18next'
 import { Globe } from 'lucide-react'
@@ -19,7 +19,8 @@ interface LiveSubtitleControlsProps {
   videoElement: HTMLVideoElement | null
   onSubtitleCue: (cue: LiveSubtitleCue) => void
   onShowUpgrade?: () => void
-  availableLanguages?: string[]
+  targetLang: string
+  onLanguageChange: (lang: string) => void
 }
 
 type ConnectionStatus = 'disconnected' | 'connecting' | 'connected' | 'error'
@@ -31,22 +32,51 @@ export default function LiveSubtitleControls({
   videoElement,
   onSubtitleCue,
   onShowUpgrade,
-  availableLanguages = [],
+  targetLang,
+  onLanguageChange,
 }: LiveSubtitleControlsProps) {
   const { t } = useTranslation()
   const [enabled, setEnabled] = useState(false)
   const [status, setStatus] = useState<ConnectionStatus>('disconnected')
-  const [targetLang, setTargetLang] = useState('en')
-  const [showLangSelector, setShowLangSelector] = useState(false)
   const [error, setError] = useState<string | null>(null)
-
-  // Filter available languages based on channel configuration
-  const filteredLanguages = availableLanguages.length > 0
-    ? AVAILABLE_LANGUAGES.filter(lang => availableLanguages.includes(lang.code))
-    : AVAILABLE_LANGUAGES
+  const prevLangRef = useRef<string>(targetLang)
 
   // Don't render if not a live stream
   if (!isLive) return null
+
+  // Reconnect when language changes while connected
+  useEffect(() => {
+    // Only reconnect if language actually changed and we're connected
+    if (enabled && videoElement && prevLangRef.current !== targetLang) {
+      console.log('🔄 [LiveSubtitleControls] Language changed, reconnecting:', prevLangRef.current, '->', targetLang)
+      prevLangRef.current = targetLang
+
+      liveSubtitleService.disconnect()
+      setStatus('connecting')
+
+      liveSubtitleService.connect(
+        channelId,
+        targetLang,
+        videoElement,
+        onSubtitleCue,
+        (err) => {
+          setError(err)
+          setStatus('error')
+          setEnabled(false)
+        }
+      ).then(() => {
+        setStatus('connected')
+        setEnabled(true)
+      }).catch((err) => {
+        console.error('❌ [LiveSubtitleControls] Reconnection failed:', err)
+        setError(err instanceof Error ? err.message : 'Reconnection failed')
+        setStatus('error')
+      })
+    } else {
+      // Update ref even if not reconnecting
+      prevLangRef.current = targetLang
+    }
+  }, [targetLang, enabled, videoElement, channelId])
 
   const handleToggle = async () => {
     // Check premium access
@@ -86,6 +116,7 @@ export default function LiveSubtitleControls({
           }
         )
 
+        prevLangRef.current = targetLang
         setStatus('connected')
         setEnabled(true)
       } catch (err) {
@@ -95,33 +126,6 @@ export default function LiveSubtitleControls({
     }
   }
 
-  const handleLanguageChange = (langCode: string) => {
-    setTargetLang(langCode)
-    setShowLangSelector(false)
-
-    // If already connected, reconnect with new language
-    if (enabled && videoElement) {
-      liveSubtitleService.disconnect()
-      setStatus('connecting')
-
-      liveSubtitleService.connect(
-        channelId,
-        langCode,
-        videoElement,
-        onSubtitleCue,
-        (err) => {
-          setError(err)
-          setStatus('error')
-          setEnabled(false)
-        }
-      ).then(() => {
-        setStatus('connected')
-        setEnabled(true)
-      })
-    }
-  }
-
-  const currentLang = filteredLanguages.find(l => l.code === targetLang)
 
   return (
     <View style={styles.container}>
@@ -143,46 +147,6 @@ export default function LiveSubtitleControls({
         {status === 'connecting' && <ActivityIndicator size="small" color={colors.primary} />}
         {enabled && status === 'connected' && <View style={styles.connectedDot} />}
       </Pressable>
-
-      {/* Language Selector Button */}
-      {enabled && isPremium && (
-        <Pressable
-          onPress={() => setShowLangSelector(!showLangSelector)}
-          style={({ pressed, hovered }) => [
-            styles.langButton,
-            showLangSelector && styles.langButtonActive,
-            !showLangSelector && hovered && styles.buttonHovered,
-            !showLangSelector && pressed && styles.buttonPressed,
-          ]}
-        >
-          <Text style={styles.langFlag}>{currentLang?.flag || '🌐'}</Text>
-        </Pressable>
-      )}
-
-      {/* Language Selector Menu */}
-      {showLangSelector && (
-        <GlassView style={styles.langMenu}>
-          <View style={styles.menuHeader}>
-            <Text style={styles.menuTitle}>{t('subtitles.translateTo')}</Text>
-          </View>
-
-          {filteredLanguages.map((lang) => (
-            <Pressable
-              key={lang.code}
-              onPress={() => handleLanguageChange(lang.code)}
-              style={({ pressed }) => [
-                styles.langItem,
-                pressed && styles.langItemPressed,
-                targetLang === lang.code && styles.langItemActive,
-              ]}
-            >
-              <Text style={styles.langItemFlag}>{lang.flag}</Text>
-              <Text style={styles.langItemText}>{lang.label}</Text>
-              {targetLang === lang.code && <View style={styles.activeDot} />}
-            </Pressable>
-          ))}
-        </GlassView>
-      )}
 
       {/* Error Message */}
       {error && (

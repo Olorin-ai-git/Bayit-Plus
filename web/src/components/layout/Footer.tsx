@@ -409,11 +409,22 @@ export default function Footer() {
           {/* Bottom Bar */}
           <View style={styles.bottomBar}>
             <View style={styles.bottomBarContent}>
-              <Text style={styles.copyrightText}>
-                {t('footer.copyright', '© {{year}} Bayit+. All rights reserved.', {
-                  year: new Date().getFullYear(),
-                })}
-              </Text>
+              <View style={styles.bottomLeftSection}>
+                <Text style={styles.copyrightText}>
+                  {t('footer.copyright', '© {{year}} Bayit+. All rights reserved.', {
+                    year: new Date().getFullYear(),
+                  })}
+                </Text>
+                <View style={styles.poweredBy}>
+                  <Text style={styles.poweredByText}>Powered by </Text>
+                  <Pressable
+                    onPress={() => window.open('https://marketing.radio.olorin.ai', '_blank')}
+                    style={({ hovered }) => hovered && { opacity: 0.8 }}
+                  >
+                    <Text style={styles.poweredByLink}>Olorin.ai LLC</Text>
+                  </Pressable>
+                </View>
+              </View>
               <View style={styles.bottomLinks}>
                 <Link to="/sitemap" style={{ textDecoration: 'none' }}>
                   <Text style={styles.bottomLink}>{t('footer.sitemap', 'Sitemap')}</Text>
@@ -736,9 +747,29 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     gap: spacing.md,
   },
+  bottomLeftSection: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.sm,
+  },
   copyrightText: {
     fontSize: 10,
     color: colors.textMuted,
+  },
+  poweredBy: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  poweredByText: {
+    fontSize: 10,
+    color: colors.textMuted,
+  },
+  poweredByLink: {
+    fontSize: 10,
+    color: '#A855F7',
+    fontWeight: '500',
+    // @ts-ignore
+    transition: 'color 0.2s ease',
   },
   bottomLinks: {
     flexDirection: 'row',

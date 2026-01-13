@@ -62,6 +62,9 @@ async def get_channel(
         "stream_type": channel.stream_type,
         "currentShow": channel.current_show,
         "nextShow": channel.next_show,
+        "supports_live_subtitles": channel.supports_live_subtitles,
+        "primary_language": channel.primary_language,
+        "available_translation_languages": channel.available_translation_languages,
         "schedule": [
             {
                 "title": entry.title,

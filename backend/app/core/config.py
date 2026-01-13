@@ -151,6 +151,21 @@ class Settings(BaseSettings):
     LIBRARIAN_ID_TRUNCATE_LENGTH: int
     LIBRARIAN_MODAL_MAX_HEIGHT: int
 
+    # EPG Configuration
+    EPG_DEFAULT_TIME_WINDOW_HOURS: int = 6
+    EPG_PAST_HOURS: int = 2
+    EPG_FUTURE_HOURS: int = 4
+    EPG_CACHE_TTL_SECONDS: int = 300
+    EPG_INGESTION_INTERVAL_HOURS: int = 6
+
+    # Catch-Up TV
+    CATCHUP_RETENTION_DAYS: int = 7
+    CATCHUP_MAX_DURATION_HOURS: int = 4
+
+    # LLM Search
+    LLM_SEARCH_MAX_RESULTS: int = 50
+    LLM_SEARCH_TIMEOUT_SECONDS: int = 30
+
     class Config:
         env_file = ".env"
         case_sensitive = True

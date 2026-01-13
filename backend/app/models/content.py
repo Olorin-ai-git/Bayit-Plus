@@ -208,11 +208,21 @@ class EPGEntry(Document):
     category: Optional[str] = None
     thumbnail: Optional[str] = None
 
+    # Additional metadata for search
+    cast: Optional[List[str]] = None
+    genres: Optional[List[str]] = None
+    rating: Optional[str] = None
+    director: Optional[str] = None
+
+    # Recording link (for catch-up TV)
+    recording_id: Optional[str] = None
+
     class Settings:
         name = "epg_entries"
         indexes = [
             "channel_id",
             ("channel_id", "start_time"),
+            ("start_time", "end_time"),
         ]
 
 

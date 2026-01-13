@@ -131,7 +131,10 @@ export default function WatchPage({ type = 'vod' }: WatchPageProps) {
           ]);
           // Extract available subtitle languages from channel config
           if ((data as any).available_translation_languages) {
+            console.log('🌐 [WatchPage] Channel available_translation_languages:', (data as any).available_translation_languages);
             setAvailableSubtitleLanguages((data as any).available_translation_languages);
+          } else {
+            console.log('⚠️ [WatchPage] No available_translation_languages in channel data');
           }
           break;
         case 'radio':

@@ -74,6 +74,8 @@ export const styles = StyleSheet.create({
     width: 220,
     borderRadius: borderRadius.lg,
     overflow: 'hidden',
+    zIndex: 9999,
+    elevation: 10,
   },
   menuHeader: {
     padding: spacing.md,

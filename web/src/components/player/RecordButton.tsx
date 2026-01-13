@@ -33,17 +33,14 @@ export const RecordButton: React.FC<RecordButtonProps> = ({
   const [duration, setDuration] = useState(0)
   const durationInterval = useRef<NodeJS.Timeout | null>(null)
 
-  // Check for existing active session on mount
+  // Cleanup timer on unmount
   useEffect(() => {
-    if (isLive && isPremium && channelId) {
-      checkActiveSession()
-    }
     return () => {
       if (durationInterval.current) {
         clearInterval(durationInterval.current)
       }
     }
-  }, [channelId, isLive, isPremium])
+  }, [])
 
   // Notify parent of recording state changes
   useEffect(() => {

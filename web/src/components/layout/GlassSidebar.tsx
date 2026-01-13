@@ -50,6 +50,7 @@ const baseMenuSections: MenuSection[] = [
     items: [
       { id: 'home', icon: '🏠', labelKey: 'nav.home', path: '/' },
       { id: 'liveTV', icon: '📺', labelKey: 'nav.liveTV', path: '/live' },
+      { id: 'epg', icon: '📅', labelKey: 'nav.epg', path: '/epg' },
       { id: 'vod', icon: '🎬', labelKey: 'nav.vod', path: '/vod' },
       { id: 'radio', icon: '📻', labelKey: 'nav.radio', path: '/radio' },
       { id: 'podcasts', icon: '🎙️', labelKey: 'nav.podcasts', path: '/podcasts' },
