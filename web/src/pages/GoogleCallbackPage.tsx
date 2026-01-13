@@ -19,21 +19,30 @@ export default function GoogleCallbackPage() {
   const hasProcessedRef = useRef(false);
 
   useEffect(() => {
+    console.log('[GoogleCallback] Page loaded, processing callback...');
+    console.log('[GoogleCallback] Search params:', window.location.search);
+
     // Skip if already processed (StrictMode runs effects twice in dev)
     if (hasProcessedRef.current) {
+      console.log('[GoogleCallback] Already processed, skipping...');
       return;
     }
 
     const code = searchParams.get('code');
     const errorParam = searchParams.get('error');
 
+    console.log('[GoogleCallback] Code:', code ? code.substring(0, 20) + '...' : 'NONE');
+    console.log('[GoogleCallback] Error:', errorParam);
+
     if (errorParam) {
+      console.error('[GoogleCallback] User cancelled or error:', errorParam);
       setError(t('googleLogin.cancelledError'));
       setTimeout(() => navigate('/login'), 3000);
       return;
     }
 
     if (!code) {
+      console.error('[GoogleCallback] No authorization code received');
       setError(t('googleLogin.missingCode'));
       setTimeout(() => navigate('/login'), 3000);
       return;
@@ -41,13 +50,23 @@ export default function GoogleCallbackPage() {
 
     // Mark as processed before making the API call
     hasProcessedRef.current = true;
+    console.log('[GoogleCallback] Calling handleGoogleCallback...');
 
     handleGoogleCallback(code)
       .then(() => {
-        navigate('/', { replace: true });
+        console.log('[GoogleCallback] Success - waiting for persist before navigating');
+        // Wait a bit for zustand persist middleware to write to localStorage
+        // This prevents race condition where HomePage API calls happen before token is saved
+        setTimeout(() => {
+          console.log('[GoogleCallback] Navigating to home');
+          navigate('/', { replace: true });
+        }, 100);
       })
       .catch((err: any) => {
-        setError(err.detail || err.message || t('googleLogin.loginError'));
+        console.error('[GoogleCallback] Error:', err);
+        const errorMessage = err.detail || err.message || t('googleLogin.loginError');
+        console.error('[GoogleCallback] Error message:', errorMessage);
+        setError(errorMessage);
         setTimeout(() => navigate('/login'), 3000);
       });
   }, [searchParams, handleGoogleCallback, navigate, t]);

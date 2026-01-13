@@ -18,12 +18,29 @@ export const useAuthStore = create(
         set({ isLoading: true, error: null })
         try {
           const response = await authService.login(email, password)
+
+          // Update state
           set({
             user: response.user,
             token: response.token,
             isAuthenticated: true,
             isLoading: false,
           })
+
+          // CRITICAL: Manually write to localStorage immediately to prevent race condition
+          // This ensures the token is available before any API calls
+          // Match zustand persist structure exactly
+          const authData = {
+            state: {
+              user: response.user,
+              token: response.token,
+              isAuthenticated: true,
+            },
+            version: 0,
+          }
+          localStorage.setItem('bayit-auth', JSON.stringify(authData))
+          console.log('[Auth] Login - Token saved to localStorage:', response.token?.substring(0, 20) + '...')
+
           return response
         } catch (error) {
           set({ error: error.message, isLoading: false })
@@ -35,12 +52,29 @@ export const useAuthStore = create(
         set({ isLoading: true, error: null })
         try {
           const response = await authService.register(userData)
+
+          // Update state
           set({
             user: response.user,
             token: response.token,
             isAuthenticated: true,
             isLoading: false,
           })
+
+          // CRITICAL: Manually write to localStorage immediately to prevent race condition
+          // This ensures the token is available before any API calls
+          // Match zustand persist structure exactly
+          const authData = {
+            state: {
+              user: response.user,
+              token: response.token,
+              isAuthenticated: true,
+            },
+            version: 0,
+          }
+          localStorage.setItem('bayit-auth', JSON.stringify(authData))
+          console.log('[Auth] Register - Token saved to localStorage:', response.token?.substring(0, 20) + '...')
+
           return response
         } catch (error) {
           set({ error: error.message, isLoading: false })
@@ -67,12 +101,29 @@ export const useAuthStore = create(
           // Build redirect URI dynamically based on current origin
           const redirectUri = `${window.location.origin}/auth/google/callback`
           const response = await authService.googleCallback(code, redirectUri)
+
+          // Update state
           set({
             user: response.user,
             token: response.access_token,
             isAuthenticated: true,
             isLoading: false,
           })
+
+          // CRITICAL: Manually write to localStorage immediately to prevent race condition
+          // This ensures the token is available before navigation happens
+          // Match zustand persist structure exactly
+          const authData = {
+            state: {
+              user: response.user,
+              token: response.access_token,
+              isAuthenticated: true,
+            },
+            version: 0,
+          }
+          localStorage.setItem('bayit-auth', JSON.stringify(authData))
+          console.log('[Auth] Token saved to localStorage:', response.access_token?.substring(0, 20) + '...')
+
           return response
         } catch (error) {
           set({ error: error.message, isLoading: false })
