@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next'
 import { Plus, Edit, Trash2, X, AlertCircle, Globe, ChevronDown, ChevronUp } from 'lucide-react'
 import { contentService } from '@/services/adminApi'
 import { colors, spacing, borderRadius } from '@bayit/shared/theme'
-import { GlassButton, GlassTable, GlassTableCell, GlassInput, GlassView } from '@bayit/shared/ui'
+import { GlassButton, GlassTable, GlassTableCell, GlassInput, GlassView, GlassToggle, GlassSelect } from '@bayit/shared/ui'
 import { useDirection } from '@/hooks/useDirection'
 import { useModal } from '@/contexts/ModalContext'
 import logger from '@/utils/logger'
@@ -19,6 +19,16 @@ interface Pagination {
 interface EditingChannel extends Partial<LiveChannel> {
   id?: string
 }
+
+// Supported languages for live translation
+const SUPPORTED_LANGUAGES = [
+  { value: 'he', label: '🇮🇱 Hebrew (עברית)' },
+  { value: 'en', label: '🇺🇸 English' },
+  { value: 'ar', label: '🇸🇦 Arabic (العربية)' },
+  { value: 'es', label: '🇪🇸 Spanish (Español)' },
+  { value: 'ru', label: '🇷🇺 Russian (Русский)' },
+  { value: 'fr', label: '🇫🇷 French (Français)' },
+]
 
 export default function LiveChannelsPage() {
   const { t } = useTranslation()
@@ -255,16 +265,12 @@ export default function LiveChannelsPage() {
             onChangeText={(value) => setEditData({ ...editData, order: parseInt(value) || 0 })}
             keyboardType="number-pad"
           />
-          <View style={styles.checkboxRow}>
-            <input
-              type="checkbox"
-              id="is_active"
-              checked={editData.is_active || false}
-              onChange={(e) => setEditData({ ...editData, is_active: e.target.checked })}
-              style={styles.checkbox}
-            />
-            <Text style={styles.checkboxLabel}>{t('admin.common.active')}</Text>
-          </View>
+          <GlassToggle
+            value={editData.is_active || false}
+            onValueChange={(value) => setEditData({ ...editData, is_active: value })}
+            label={t('admin.common.active')}
+            isRTL={isRTL}
+          />
 
           {/* Live Subtitle Settings Section */}
           <GlassView style={styles.subtitleSection}>
@@ -287,61 +293,37 @@ export default function LiveChannelsPage() {
 
             {showSubtitleSettings && (
               <View style={styles.subtitleContent}>
-                <View style={styles.checkboxRow}>
-                  <input
-                    type="checkbox"
-                    id="supports_live_subtitles"
-                    checked={editData.supports_live_subtitles || false}
-                    onChange={(e) => setEditData({ ...editData, supports_live_subtitles: e.target.checked })}
-                    style={styles.checkbox}
-                  />
-                  <Text style={styles.checkboxLabel}>
-                    {t('admin.liveChannels.form.supportsSubtitles', 'Enable Live Subtitles')}
-                  </Text>
-                </View>
+                <GlassToggle
+                  value={editData.supports_live_subtitles || false}
+                  onValueChange={(value) => setEditData({ ...editData, supports_live_subtitles: value })}
+                  label={t('admin.liveChannels.form.supportsSubtitles', 'Enable Live Subtitles')}
+                  isRTL={isRTL}
+                />
 
                 {editData.supports_live_subtitles && (
                   <>
-                    <View style={styles.selectGroup}>
-                      <Text style={styles.selectLabel}>
-                        {t('admin.liveChannels.form.primaryLanguage', 'Primary Language (Source)')}
-                      </Text>
-                      <select
-                        value={editData.primary_language || 'he'}
-                        onChange={(e) => setEditData({ ...editData, primary_language: e.target.value })}
-                        style={styles.select as any}
-                      >
-                        <option value="he">🇮🇱 Hebrew (עברית)</option>
-                        <option value="en">🇺🇸 English</option>
-                        <option value="ar">🇸🇦 Arabic (العربية)</option>
-                        <option value="es">🇪🇸 Spanish (Español)</option>
-                        <option value="ru">🇷🇺 Russian (Русский)</option>
-                        <option value="fr">🇫🇷 French (Français)</option>
-                      </select>
-                    </View>
+                    <GlassSelect
+                      label={t('admin.liveChannels.form.primaryLanguage', 'Primary Language (Source)')}
+                      value={editData.primary_language || 'he'}
+                      onChange={(value) => setEditData({ ...editData, primary_language: value })}
+                      options={SUPPORTED_LANGUAGES}
+                    />
 
                     <View style={styles.selectGroup}>
                       <Text style={styles.selectLabel}>
                         {t('admin.liveChannels.form.targetLanguages', 'Available Translation Languages')}
                       </Text>
                       <View style={styles.languageChips}>
-                        {['en', 'es', 'ar', 'ru', 'fr'].map((lang) => {
-                          const langLabels: Record<string, string> = {
-                            en: '🇺🇸 English',
-                            es: '🇪🇸 Spanish',
-                            ar: '🇸🇦 Arabic',
-                            ru: '🇷🇺 Russian',
-                            fr: '🇫🇷 French'
-                          }
-                          const isSelected = editData.available_translation_languages?.includes(lang)
+                        {SUPPORTED_LANGUAGES.map((lang) => {
+                          const isSelected = editData.available_translation_languages?.includes(lang.value)
                           return (
                             <Pressable
-                              key={lang}
+                              key={lang.value}
                               onPress={() => {
                                 const current = editData.available_translation_languages || []
                                 const updated = isSelected
-                                  ? current.filter((l) => l !== lang)
-                                  : [...current, lang]
+                                  ? current.filter((l) => l !== lang.value)
+                                  : [...current, lang.value]
                                 setEditData({ ...editData, available_translation_languages: updated })
                               }}
                               style={[
@@ -355,7 +337,7 @@ export default function LiveChannelsPage() {
                                   isSelected && styles.languageChipTextSelected
                                 ]}
                               >
-                                {langLabels[lang]}
+                                {lang.label}
                               </Text>
                             </Pressable>
                           )
@@ -408,9 +390,6 @@ const styles = StyleSheet.create({
   editForm: { backgroundColor: colors.backgroundLighter, padding: spacing.lg, borderRadius: borderRadius.lg, marginBottom: spacing.lg },
   formTitle: { fontSize: 16, fontWeight: '600', color: colors.text, marginBottom: spacing.md },
   input: { paddingHorizontal: spacing.md, paddingVertical: spacing.md, borderRadius: borderRadius.md, borderWidth: 1, borderColor: colors.border, backgroundColor: colors.background, color: colors.text, fontSize: 14, marginBottom: spacing.md },
-  checkboxRow: { flexDirection: 'row', alignItems: 'center', gap: spacing.sm, marginBottom: spacing.md },
-  checkbox: { width: 18, height: 18 },
-  checkboxLabel: { color: colors.text, fontSize: 14 },
   formActions: { flexDirection: 'row', gap: spacing.md },
   cancelBtn: { flex: 1, paddingVertical: spacing.md, borderRadius: borderRadius.md, borderWidth: 1, borderColor: colors.border, justifyContent: 'center', alignItems: 'center' },
   cancelBtnText: { color: colors.text, fontWeight: '600' },

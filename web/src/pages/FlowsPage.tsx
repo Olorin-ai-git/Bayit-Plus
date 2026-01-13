@@ -13,6 +13,8 @@ import { flowsService } from '@/services/api';
 import { colors, spacing, borderRadius } from '@bayit/shared/theme';
 import { GlassCategoryPill, GlassCard } from '@bayit/shared/ui';
 import { useDirection } from '@/hooks/useDirection';
+import { useAuthStore } from '@/stores/authStore';
+import { useModal } from '@/contexts/ModalContext';
 import logger from '@/utils/logger';
 import {
   FlowCard,
@@ -105,6 +107,11 @@ export default function FlowsPage() {
   const { width } = useWindowDimensions();
   const isMobile = width < 768;
   const isTablet = width < 1024;
+  const user = useAuthStore((s) => s.user);
+  const { showConfirm, showError } = useModal();
+
+  // Check if user has premium access
+  const isPremium = user?.subscription?.plan === 'premium' || user?.subscription?.plan === 'family';
 
   // State
   const [flows, setFlows] = useState<Flow[]>([]);
@@ -144,6 +151,20 @@ export default function FlowsPage() {
 
   // Flow actions
   const handleStartFlow = async (flow: Flow) => {
+    // Check premium access
+    if (!isPremium) {
+      showConfirm(
+        t('flows.premiumRequired', 'Flows is a premium feature. Upgrade to start playing flows.'),
+        () => navigate('/subscribe'),
+        {
+          title: t('flows.premiumFeature', 'Premium Feature'),
+          confirmText: t('common.upgrade', 'Upgrade'),
+          cancelText: t('common.cancel', 'Cancel'),
+        }
+      );
+      return;
+    }
+
     try {
       const response = await flowsService.getFlowContent(flow.id);
       const data = response.data ?? response;
@@ -208,12 +229,40 @@ export default function FlowsPage() {
   };
 
   const openCreateModal = () => {
+    // Check premium access
+    if (!isPremium) {
+      showConfirm(
+        t('flows.premiumRequired', 'Flows is a premium feature. Upgrade to create custom flows.'),
+        () => navigate('/subscribe'),
+        {
+          title: t('flows.premiumFeature', 'Premium Feature'),
+          confirmText: t('common.upgrade', 'Upgrade'),
+          cancelText: t('common.cancel', 'Cancel'),
+        }
+      );
+      return;
+    }
+
     setEditingFlow(null);
     setFlowTemplate(null);
     setShowFormModal(true);
   };
 
   const openEditModal = () => {
+    // Check premium access
+    if (!isPremium) {
+      showConfirm(
+        t('flows.premiumRequired', 'Flows is a premium feature. Upgrade to edit flows.'),
+        () => navigate('/subscribe'),
+        {
+          title: t('flows.premiumFeature', 'Premium Feature'),
+          confirmText: t('common.upgrade', 'Upgrade'),
+          cancelText: t('common.cancel', 'Cancel'),
+        }
+      );
+      return;
+    }
+
     if (selectedFlow) {
       setEditingFlow(selectedFlow);
       setFlowTemplate(null);
@@ -222,6 +271,20 @@ export default function FlowsPage() {
   };
 
   const handleUseTemplate = (template: Partial<Flow>) => {
+    // Check premium access
+    if (!isPremium) {
+      showConfirm(
+        t('flows.premiumRequired', 'Flows is a premium feature. Upgrade to use flow templates.'),
+        () => navigate('/subscribe'),
+        {
+          title: t('flows.premiumFeature', 'Premium Feature'),
+          confirmText: t('common.upgrade', 'Upgrade'),
+          cancelText: t('common.cancel', 'Cancel'),
+        }
+      );
+      return;
+    }
+
     setEditingFlow(null);
     setFlowTemplate(template);
     setShowFormModal(true);
@@ -379,6 +442,7 @@ export default function FlowsPage() {
               isSelected={selectedFlow?.id === flow.id}
               isTablet={isTablet}
               isRTL={isRTL}
+              isPremium={isPremium}
               onSelect={() => setSelectedFlow(selectedFlow?.id === flow.id ? null : flow)}
               onStart={() => handleStartFlow(flow)}
               onEdit={flow.flow_type === 'custom' ? openEditModal : undefined}

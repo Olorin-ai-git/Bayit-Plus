@@ -132,8 +132,10 @@ export const styles = StyleSheet.create({
 })
 
 export const AVAILABLE_LANGUAGES = [
-  { code: 'en', label: 'English', flag: '🇺🇸' },
   { code: 'he', label: 'עברית', flag: '🇮🇱' },
-  { code: 'es', label: 'Español', flag: '🇪🇸' },
+  { code: 'en', label: 'English', flag: '🇺🇸' },
   { code: 'ar', label: 'العربية', flag: '🇸🇦' },
+  { code: 'es', label: 'Español', flag: '🇪🇸' },
+  { code: 'ru', label: 'Русский', flag: '🇷🇺' },
+  { code: 'fr', label: 'Français', flag: '🇫🇷' },
 ]

@@ -176,14 +176,31 @@ export const GlassSidebar: React.FC<GlassSidebarProps> = ({ isExpanded, onToggle
     onToggle();
   }, [onToggle]);
 
-  // Dynamically add Admin menu item if user is admin
+  // Dynamically add menu items based on user role and subscription
   const menuSections = useMemo(() => {
     const isAdmin = user?.role === 'admin';
-    if (!isAdmin) return baseMenuSections;
+    const isPremium = user?.subscription?.plan === 'premium' || user?.subscription?.plan === 'family';
 
-    // Add Admin to settings section (like TV app)
-    return baseMenuSections.map(section => {
-      if (section.titleKey === 'nav.settings') {
+    let sections = baseMenuSections.map(section => {
+      // Add My Recordings to favorites section (premium only)
+      if (section.titleKey === 'nav.favorites' && isPremium) {
+        // Add recordings after downloads
+        const downloadIndex = section.items.findIndex(item => item.id === 'downloads');
+        const newItems = [...section.items];
+        newItems.splice(downloadIndex + 1, 0, {
+          id: 'recordings',
+          icon: '⏺️',
+          labelKey: 'nav.recordings',
+          path: '/recordings'
+        });
+        return {
+          ...section,
+          items: newItems,
+        };
+      }
+
+      // Add Admin to settings section (admin only)
+      if (section.titleKey === 'nav.settings' && isAdmin) {
         return {
           ...section,
           items: [
@@ -192,9 +209,12 @@ export const GlassSidebar: React.FC<GlassSidebarProps> = ({ isExpanded, onToggle
           ],
         };
       }
+
       return section;
     });
-  }, [user?.role]);
+
+    return sections;
+  }, [user?.role, user?.subscription?.plan]);
 
   // Reset custom width when toggling
   useEffect(() => {

@@ -79,17 +79,23 @@ class LiveRecordingService:
             if not user.recording_quota.has_storage_available():
                 raise Exception("Storage quota exceeded. Delete old recordings to free up space.")
 
+            # Generate recording ID first
+            import uuid
+            recording_id = str(uuid.uuid4())
+            output_path = str(self.temp_dir / f"{recording_id}.mp4")
+
             # Create recording session
             session = RecordingSession(
                 user_id=user_id,
                 channel_id=channel_id,
                 channel_name=channel.name,
+                recording_id=recording_id,
                 stream_url=stream_url,
                 subtitle_enabled=subtitle_enabled,
                 subtitle_target_language=subtitle_target_language,
                 trigger_type=trigger_type,
                 schedule_id=schedule_id,
-                output_path=str(self.temp_dir / f"{session.recording_id}.mp4")
+                output_path=output_path
             )
 
             # Start FFmpeg recording

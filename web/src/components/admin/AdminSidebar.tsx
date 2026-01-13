@@ -19,6 +19,7 @@ import {
   Bot,
   Languages,
   Check,
+  Video,
 } from 'lucide-react'
 import { useAuthStore } from '@/stores/authStore'
 import { colors, spacing, borderRadius } from '@bayit/shared/theme'
@@ -99,6 +100,12 @@ const NAV_ITEMS: NavItem[] = [
       { key: 'podcasts', labelKey: 'admin.nav.podcasts', route: '/admin/podcasts' },
       { key: 'widgets', labelKey: 'admin.nav.widgets', route: '/admin/widgets' },
     ],
+  },
+  {
+    key: 'recordings',
+    labelKey: 'admin.nav.recordings',
+    icon: Video,
+    route: '/admin/recordings',
   },
   {
     key: 'settings',

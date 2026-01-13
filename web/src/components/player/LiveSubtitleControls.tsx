@@ -19,6 +19,7 @@ interface LiveSubtitleControlsProps {
   videoElement: HTMLVideoElement | null
   onSubtitleCue: (cue: LiveSubtitleCue) => void
   onShowUpgrade?: () => void
+  availableLanguages?: string[]
 }
 
 type ConnectionStatus = 'disconnected' | 'connecting' | 'connected' | 'error'
@@ -30,6 +31,7 @@ export default function LiveSubtitleControls({
   videoElement,
   onSubtitleCue,
   onShowUpgrade,
+  availableLanguages = [],
 }: LiveSubtitleControlsProps) {
   const { t } = useTranslation()
   const [enabled, setEnabled] = useState(false)
@@ -37,6 +39,11 @@ export default function LiveSubtitleControls({
   const [targetLang, setTargetLang] = useState('en')
   const [showLangSelector, setShowLangSelector] = useState(false)
   const [error, setError] = useState<string | null>(null)
+
+  // Filter available languages based on channel configuration
+  const filteredLanguages = availableLanguages.length > 0
+    ? AVAILABLE_LANGUAGES.filter(lang => availableLanguages.includes(lang.code))
+    : AVAILABLE_LANGUAGES
 
   // Don't render if not a live stream
   if (!isLive) return null
@@ -114,7 +121,7 @@ export default function LiveSubtitleControls({
     }
   }
 
-  const currentLang = AVAILABLE_LANGUAGES.find(l => l.code === targetLang)
+  const currentLang = filteredLanguages.find(l => l.code === targetLang)
 
   return (
     <View style={styles.container}>
@@ -159,7 +166,7 @@ export default function LiveSubtitleControls({
             <Text style={styles.menuTitle}>{t('subtitles.translateTo')}</Text>
           </View>
 
-          {AVAILABLE_LANGUAGES.map((lang) => (
+          {filteredLanguages.map((lang) => (
             <Pressable
               key={lang.code}
               onPress={() => handleLanguageChange(lang.code)}

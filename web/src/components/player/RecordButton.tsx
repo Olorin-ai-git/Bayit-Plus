@@ -6,8 +6,10 @@
 import React, { useState, useEffect, useRef } from 'react'
 import { View, Text, Pressable, StyleSheet } from 'react-native'
 import { Circle, Square } from 'lucide-react'
+import { useTranslation } from 'react-i18next'
 import { recordingApi, RecordingSession } from '../../services/recordingApi'
 import { useAuthStore } from '../../store/authStore'
+import { useModal } from '../../contexts/ModalContext'
 
 interface RecordButtonProps {
   channelId: string
@@ -24,10 +26,11 @@ export const RecordButton: React.FC<RecordButtonProps> = ({
   onShowUpgrade,
   onRecordingStateChange
 }) => {
+  const { t } = useTranslation()
+  const { showError, showSuccess, showConfirm } = useModal()
   const [isRecording, setIsRecording] = useState(false)
   const [session, setSession] = useState<RecordingSession | null>(null)
   const [duration, setDuration] = useState(0)
-  const [error, setError] = useState<string | null>(null)
   const durationInterval = useRef<NodeJS.Timeout | null>(null)
 
   // Check for existing active session on mount
@@ -95,8 +98,6 @@ export const RecordButton: React.FC<RecordButtonProps> = ({
 
   const startRecording = async () => {
     try {
-      setError(null)
-
       const newSession = await recordingApi.startRecording({
         channel_id: channelId,
         subtitle_enabled: true,
@@ -111,10 +112,8 @@ export const RecordButton: React.FC<RecordButtonProps> = ({
       console.log('✅ Recording started:', newSession.recording_id)
     } catch (err: any) {
       console.error('Failed to start recording:', err)
-      setError(err?.detail || 'Failed to start recording')
-
-      // Show error notification (could integrate with toast/notification system)
-      alert(err?.detail || 'Failed to start recording. Please try again.')
+      const errorMessage = err?.detail || err?.message || t('recordings.startFailed')
+      showError(errorMessage, t('recordings.error'))
     }
   }
 
@@ -122,8 +121,6 @@ export const RecordButton: React.FC<RecordButtonProps> = ({
     if (!session) return
 
     try {
-      setError(null)
-
       const recording = await recordingApi.stopRecording(session.id)
 
       if (durationInterval.current) {
@@ -138,12 +135,16 @@ export const RecordButton: React.FC<RecordButtonProps> = ({
       console.log('✅ Recording stopped:', recording.id)
 
       // Show success notification
-      alert(`Recording saved! View in My Recordings\n\nDuration: ${formatDuration(recording.duration_seconds)}`)
+      showSuccess(
+        t('recordings.savedSuccess', {
+          duration: formatDuration(recording.duration_seconds)
+        }),
+        t('recordings.recordingSaved')
+      )
     } catch (err: any) {
       console.error('Failed to stop recording:', err)
-      setError(err?.detail || 'Failed to stop recording')
-
-      alert(err?.detail || 'Failed to stop recording. Please try again.')
+      const errorMessage = err?.detail || err?.message || t('recordings.stopFailed')
+      showError(errorMessage, t('recordings.error'))
     }
   }
 
@@ -179,7 +180,7 @@ export const RecordButton: React.FC<RecordButtonProps> = ({
       ) : (
         <>
           <Circle size={16} color="white" />
-          <Text style={styles.buttonText}>Record</Text>
+          <Text style={styles.buttonText}>{t('recordings.record')}</Text>
         </>
       )}
     </Pressable>

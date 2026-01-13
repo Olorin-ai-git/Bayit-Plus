@@ -40,6 +40,7 @@ interface FlowCardProps {
   isSelected: boolean;
   isTablet?: boolean;
   isRTL?: boolean;
+  isPremium?: boolean;
   onSelect: () => void;
   onStart: () => void;
   onEdit?: () => void;
@@ -66,6 +67,7 @@ export function FlowCard({
   isSelected,
   isTablet = false,
   isRTL = false,
+  isPremium = true,
   onSelect,
   onStart,
   onEdit,
@@ -94,6 +96,11 @@ export function FlowCard({
         {flow.flow_type === 'system' && (
           <GlassView style={styles.systemBadge} intensity="low">
             <Text style={styles.systemBadgeText}>{t('flows.system')}</Text>
+          </GlassView>
+        )}
+        {!isPremium && (
+          <GlassView style={[styles.systemBadge, styles.premiumBadge]} intensity="low">
+            <Text style={styles.premiumBadgeText}>⭐ {t('common.premium', 'Premium')}</Text>
           </GlassView>
         )}
       </View>
@@ -204,6 +211,14 @@ const styles = StyleSheet.create({
     color: colors.primary,
     fontWeight: '600',
     textTransform: 'uppercase',
+  },
+  premiumBadge: {
+    backgroundColor: 'rgba(255, 204, 0, 0.2)',
+  },
+  premiumBadgeText: {
+    fontSize: 10,
+    color: colors.warning,
+    fontWeight: '600',
   },
   flowName: {
     fontSize: IS_TV_BUILD ? 28 : 22,

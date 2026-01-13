@@ -102,6 +102,7 @@ export default function WatchPage({ type = 'vod' }: WatchPageProps) {
   const [chapters, setChapters] = useState<Chapter[]>([]);
   const [chaptersLoading, setChaptersLoading] = useState(false);
   const [currentEpisodeId, setCurrentEpisodeId] = useState<string | null>(null);
+  const [availableSubtitleLanguages, setAvailableSubtitleLanguages] = useState<string[]>([]);
 
   // Update playlist when location state changes
   useEffect(() => {
@@ -128,6 +129,10 @@ export default function WatchPage({ type = 'vod' }: WatchPageProps) {
             liveService.getChannel(contentId),
             liveService.getStreamUrl(contentId),
           ]);
+          // Extract available subtitle languages from channel config
+          if ((data as any).available_translation_languages) {
+            setAvailableSubtitleLanguages((data as any).available_translation_languages);
+          }
           break;
         case 'radio':
           [data, stream] = await Promise.all([
@@ -332,6 +337,7 @@ export default function WatchPage({ type = 'vod' }: WatchPageProps) {
             contentType={effectiveType}
             onProgress={handleProgress}
             isLive={effectiveType === 'live'}
+            availableSubtitleLanguages={availableSubtitleLanguages}
             chapters={chapters}
             chaptersLoading={chaptersLoading}
             onEnded={handleContentEnded}

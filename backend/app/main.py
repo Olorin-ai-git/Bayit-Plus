@@ -21,6 +21,7 @@ from app.api.routes import (
     admin_radio_stations, admin_podcasts, admin_podcast_episodes, admin_content_importer, admin_widgets, verification,
     recordings
 )
+from app.api.routes.admin.recordings import router as admin_recordings_router
 
 
 async def sync_podcast_rss_feeds():
@@ -437,6 +438,7 @@ app.include_router(admin_podcast_episodes.router, prefix=f"{settings.API_V1_PREF
 app.include_router(admin_content_importer.router, prefix=f"{settings.API_V1_PREFIX}/admin", tags=["admin-content"])
 app.include_router(admin_widgets.router, prefix=f"{settings.API_V1_PREFIX}/admin", tags=["admin-widgets"])
 app.include_router(admin_uploads.router, prefix=f"{settings.API_V1_PREFIX}/admin", tags=["admin-uploads"])
+app.include_router(admin_recordings_router, prefix=f"{settings.API_V1_PREFIX}/admin", tags=["admin-recordings"])
 app.include_router(widgets.router, prefix=f"{settings.API_V1_PREFIX}/widgets", tags=["widgets"])
 app.include_router(user_system_widgets.router, prefix=f"{settings.API_V1_PREFIX}/widgets/system", tags=["user-system-widgets"])
 app.include_router(party.router, prefix=f"{settings.API_V1_PREFIX}/party", tags=["party"])

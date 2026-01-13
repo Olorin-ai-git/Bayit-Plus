@@ -59,6 +59,7 @@ interface VideoPlayerProps {
   onProgress?: (currentTime: number, duration: number) => void
   onEnded?: () => void
   isLive?: boolean
+  availableSubtitleLanguages?: string[]
   autoPlay?: boolean
   chapters?: Chapter[]
   chaptersLoading?: boolean
@@ -74,6 +75,7 @@ export default function VideoPlayer({
   onProgress,
   onEnded,
   isLive = false,
+  availableSubtitleLanguages = [],
   autoPlay = false,
   chapters = [],
   chaptersLoading = false,
@@ -841,6 +843,7 @@ export default function VideoPlayer({
                   videoElement={videoRef.current}
                   onSubtitleCue={handleLiveSubtitleCue}
                   onShowUpgrade={onShowUpgrade}
+                  availableLanguages={availableSubtitleLanguages}
                 />
               )}
               {/* Record Button (Premium) */}

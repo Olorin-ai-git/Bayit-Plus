@@ -27,6 +27,7 @@ import FlowsPage from './pages/FlowsPage'
 import FavoritesPage from './pages/FavoritesPage'
 import DownloadsPage from './pages/DownloadsPage'
 import WatchlistPage from './pages/WatchlistPage'
+import MyRecordingsPage from './pages/MyRecordingsPage'
 import MorningRitualPage from './pages/MorningRitualPage'
 import TVLoginPage from './pages/TVLoginPage'
 import SettingsPage from './pages/SettingsPage'
@@ -60,6 +61,7 @@ import PodcastEpisodesPage from './pages/admin/PodcastEpisodesPage'
 import FreeContentImportPage from './pages/admin/FreeContentImportPage'
 import WidgetsPage from './pages/admin/WidgetsPage'
 import LibrarianAgentPage from './pages/admin/LibrarianAgentPage'
+import RecordingsManagementPage from './pages/admin/RecordingsManagementPage'
 
 function App() {
   // Set document direction based on language (RTL for Hebrew/Arabic, LTR for others)
@@ -107,10 +109,11 @@ function App() {
         <Route path="podcasts" element={<AdminPodcastsPage />} />
         <Route path="podcasts/:podcastId/episodes" element={<PodcastEpisodesPage />} />
         <Route path="widgets" element={<WidgetsPage />} />
+        <Route path="recordings" element={<RecordingsManagementPage />} />
       </Route>
 
       {/* Main Routes with Layout */}
-      <Route element={<VoiceListeningProvider><Layout /></VoiceListeningProvider>}>
+      <Route element={<VoiceListeningProvider><ModalProvider><Layout /></ModalProvider></VoiceListeningProvider>}>
         <Route path="/" element={<HomePage />} />
         <Route path="/live" element={<LivePage />} />
         <Route path="/live/:channelId" element={<WatchPage type="live" />} />
@@ -131,6 +134,7 @@ function App() {
         <Route path="/favorites" element={<FavoritesPage />} />
         <Route path="/downloads" element={<DownloadsPage />} />
         <Route path="/watchlist" element={<WatchlistPage />} />
+        <Route path="/recordings" element={<MyRecordingsPage />} />
         <Route path="/morning-ritual" element={<MorningRitualPage />} />
         <Route path="/widgets" element={<UserWidgetsPage />} />
         <Route path="/settings" element={<SettingsPage />} />

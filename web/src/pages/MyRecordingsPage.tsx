@@ -51,16 +51,13 @@ export default function MyRecordingsPage() {
   }
 
   const handleDelete = async (recordingId: string) => {
-    const confirmed = confirm(t('recordings.confirmDelete'))
-    if (!confirmed) return
-
     try {
       await recordingApi.deleteRecording(recordingId)
       await loadRecordings()
       await loadQuota()
     } catch (error) {
       console.error('Failed to delete recording:', error)
-      alert(t('recordings.deleteFailed'))
+      // Error handling is in RecordingCard via useModal
     }
   }
 
