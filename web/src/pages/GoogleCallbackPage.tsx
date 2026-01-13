@@ -8,6 +8,9 @@ import { colors, spacing, borderRadius } from '@bayit/shared/theme';
 import { GlassCard } from '@bayit/shared/ui';
 
 export default function GoogleCallbackPage() {
+  console.log('[GoogleCallbackPage] *** COMPONENT LOADED ***');
+  console.log('[GoogleCallbackPage] Current URL:', window.location.href);
+
   const { t } = useTranslation();
   const { isRTL, textAlign, flexDirection } = useDirection();
   const navigate = useNavigate();

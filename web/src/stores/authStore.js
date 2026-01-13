@@ -87,9 +87,13 @@ export const useAuthStore = create(
         try {
           // Build redirect URI dynamically based on current origin
           const redirectUri = `${window.location.origin}/auth/google/callback`
+          console.log('[Auth] Starting Google login with redirect URI:', redirectUri)
           const response = await authService.getGoogleAuthUrl(redirectUri)
+          console.log('[Auth] Got Google auth URL:', response.url)
+          console.log('[Auth] Redirecting to Google...')
           window.location.href = response.url
         } catch (error) {
+          console.error('[Auth] Error getting Google auth URL:', error)
           set({ error: error.message, isLoading: false })
           throw error
         }

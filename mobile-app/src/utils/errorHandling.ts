@@ -65,13 +65,13 @@ class ErrorHandler {
     console.log('[ErrorHandler] Device went offline');
 
     Alert.alert(
-      'No Internet Connection',
-      'You are currently offline. Some features may not be available.',
-      [{ text: 'OK' }]
+      i18n.t('errors.offline.title'),
+      i18n.t('errors.offline.message'),
+      [{ text: i18n.t('errors.buttons.ok') }]
     );
 
     // Announce to screen reader
-    ttsService.speak('No internet connection. You are now in offline mode.').catch(() => {});
+    ttsService.speak(i18n.t('errors.offline.ttsMessage')).catch(() => {});
   }
 
   /**
@@ -80,10 +80,14 @@ class ErrorHandler {
   private handleOnline(): void {
     console.log('[ErrorHandler] Device is back online');
 
-    Alert.alert('Connection Restored', 'You are back online.', [{ text: 'OK' }]);
+    Alert.alert(
+      i18n.t('errors.online.title'),
+      i18n.t('errors.online.message'),
+      [{ text: i18n.t('errors.buttons.ok') }]
+    );
 
     // Announce to screen reader
-    ttsService.speak('Internet connection restored.').catch(() => {});
+    ttsService.speak(i18n.t('errors.online.ttsMessage')).catch(() => {});
   }
 
   /**
@@ -132,7 +136,7 @@ class ErrorHandler {
             code: 'BAD_REQUEST',
             message: data?.message || 'Invalid request',
             severity: 'warning',
-            userMessage: 'Something went wrong. Please try again.',
+            userMessage: i18n.t('errors.api.badRequest'),
             canRetry: false,
             timestamp: Date.now(),
           };
@@ -143,7 +147,7 @@ class ErrorHandler {
             code: 'UNAUTHORIZED',
             message: 'Authentication required',
             severity: 'error',
-            userMessage: 'Please log in to continue.',
+            userMessage: i18n.t('errors.api.unauthorized'),
             canRetry: false,
             timestamp: Date.now(),
           };
@@ -154,7 +158,7 @@ class ErrorHandler {
             code: 'FORBIDDEN',
             message: 'Access denied',
             severity: 'error',
-            userMessage: 'You do not have permission to access this content.',
+            userMessage: i18n.t('errors.api.forbidden'),
             canRetry: false,
             timestamp: Date.now(),
           };
@@ -165,7 +169,7 @@ class ErrorHandler {
             code: 'NOT_FOUND',
             message: 'Resource not found',
             severity: 'warning',
-            userMessage: 'The content you are looking for is not available.',
+            userMessage: i18n.t('errors.api.notFound'),
             canRetry: false,
             timestamp: Date.now(),
           };
@@ -176,7 +180,7 @@ class ErrorHandler {
             code: 'RATE_LIMIT',
             message: 'Too many requests',
             severity: 'warning',
-            userMessage: 'You are making too many requests. Please wait a moment.',
+            userMessage: i18n.t('errors.api.rateLimit'),
             canRetry: true,
             timestamp: Date.now(),
           };
@@ -190,7 +194,7 @@ class ErrorHandler {
             code: 'SERVER_ERROR',
             message: 'Server error',
             severity: 'error',
-            userMessage: 'Our servers are having issues. Please try again later.',
+            userMessage: i18n.t('errors.api.serverError'),
             canRetry: true,
             timestamp: Date.now(),
           };
@@ -201,7 +205,7 @@ class ErrorHandler {
             code: 'UNKNOWN_ERROR',
             message: data?.message || 'Unknown error occurred',
             severity: 'error',
-            userMessage: 'Something went wrong. Please try again.',
+            userMessage: i18n.t('errors.api.unknown'),
             canRetry: true,
             timestamp: Date.now(),
           };
@@ -213,8 +217,8 @@ class ErrorHandler {
         message: 'No response from server',
         severity: 'error',
         userMessage: this.isOnline
-          ? 'Unable to connect to our servers. Please check your connection.'
-          : 'You are offline. Please check your internet connection.',
+          ? i18n.t('errors.api.networkTimeout')
+          : i18n.t('errors.api.offlineMessage'),
         canRetry: true,
         timestamp: Date.now(),
       };
@@ -224,7 +228,7 @@ class ErrorHandler {
         code: 'REQUEST_ERROR',
         message: error.message || 'Request failed',
         severity: 'error',
-        userMessage: 'Something went wrong. Please try again.',
+        userMessage: i18n.t('errors.api.requestFailed'),
         canRetry: true,
         timestamp: Date.now(),
       };
@@ -245,8 +249,7 @@ class ErrorHandler {
         code: 'VOICE_PERMISSION_DENIED',
         message: 'Microphone permission denied',
         severity: 'error',
-        userMessage:
-          'Microphone access is required for voice commands. Please enable it in Settings.',
+        userMessage: i18n.t('errors.voice.permissionDenied'),
         canRetry: false,
         timestamp: Date.now(),
       };
@@ -255,7 +258,7 @@ class ErrorHandler {
         code: 'VOICE_RECOGNITION_FAILED',
         message: 'Speech recognition failed',
         severity: 'warning',
-        userMessage: "I didn't understand that. Please try again.",
+        userMessage: i18n.t('errors.voice.recognitionFailed'),
         canRetry: true,
         timestamp: Date.now(),
       };
@@ -264,7 +267,7 @@ class ErrorHandler {
         code: 'VOICE_ERROR',
         message: error.message || 'Voice command failed',
         severity: 'warning',
-        userMessage: 'Voice command failed. Please try again.',
+        userMessage: i18n.t('errors.voice.commandFailed'),
         canRetry: true,
         timestamp: Date.now(),
       };
@@ -282,7 +285,7 @@ class ErrorHandler {
       code: 'WIDGET_ERROR',
       message: error.message || 'Widget operation failed',
       severity: 'warning',
-      userMessage: 'Unable to load widget. Please try again.',
+      userMessage: i18n.t('errors.widget.loadFailed'),
       canRetry: true,
       timestamp: Date.now(),
     };
@@ -295,13 +298,13 @@ class ErrorHandler {
    * Show error alert to user
    */
   showErrorAlert(errorDetails: ErrorDetails, onRetry?: () => void): void {
-    const buttons: any[] = [{ text: 'OK' }];
+    const buttons: any[] = [{ text: i18n.t('errors.buttons.ok') }];
 
     if (errorDetails.canRetry && onRetry) {
-      buttons.unshift({ text: 'Retry', onPress: onRetry });
+      buttons.unshift({ text: i18n.t('errors.buttons.retry'), onPress: onRetry });
     }
 
-    Alert.alert('Error', errorDetails.userMessage, buttons);
+    Alert.alert(i18n.t('errors.title'), errorDetails.userMessage, buttons);
 
     // Announce error to screen reader
     ttsService.speak(errorDetails.userMessage).catch(() => {});
@@ -376,7 +379,7 @@ export async function withErrorHandling<T>(
  */
 export async function requireNetwork<T>(operation: () => Promise<T>): Promise<T> {
   if (!errorHandler.isNetworkAvailable()) {
-    throw new Error('Network unavailable');
+    throw new Error(i18n.t('errors.networkUnavailable'));
   }
 
   return await operation();
