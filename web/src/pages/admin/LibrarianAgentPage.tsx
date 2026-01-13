@@ -8,7 +8,7 @@ import {
   Pressable,
 } from 'react-native';
 import { useTranslation } from 'react-i18next';
-import { RefreshCw, Bot, Play, Zap, FileText, Eye, ScrollText } from 'lucide-react';
+import { RefreshCw, Bot, Play, Zap, FileText, Eye, ScrollText, Trash2 } from 'lucide-react';
 import StatCard from '@/components/admin/StatCard';
 import LibrarianScheduleCard from '@/components/admin/LibrarianScheduleCard';
 import LibrarianActivityLog from '@/components/admin/LibrarianActivityLog';
@@ -23,6 +23,7 @@ import {
   getAuditReportDetails,
   triggerAudit,
   rollbackAction as rollbackActionAPI,
+  clearAuditReports,
   LibrarianConfig,
   LibrarianStatus,
   AuditReport,
@@ -44,6 +45,7 @@ const LibrarianAgentPage = () => {
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [triggering, setTriggering] = useState(false);
+  const [clearingReports, setClearingReports] = useState(false);
   const [dryRun, setDryRun] = useState(false);
   const [budgetLimit, setBudgetLimit] = useState(0);
   const [selectedReport, setSelectedReport] = useState<AuditReportDetail | null>(null);
@@ -415,6 +417,28 @@ const LibrarianAgentPage = () => {
     throw new Error('Schedule editing requires Cloud Console');
   };
 
+  // Handle clear all audit reports
+  const handleClearReports = async () => {
+    if (!window.confirm(t('admin.librarian.reports.confirmClearAll'))) {
+      return;
+    }
+
+    setClearingReports(true);
+    try {
+      await clearAuditReports();
+      setReports([]);
+      setSuccessMessage(t('admin.librarian.reports.clearedSuccessfully'));
+      setSuccessModalOpen(true);
+      logger.info('Cleared all audit reports');
+    } catch (error) {
+      logger.error('Failed to clear audit reports:', error);
+      setErrorMessage(t('admin.librarian.errors.failedToClearReports'));
+      setErrorModalOpen(true);
+    } finally {
+      setClearingReports(false);
+    }
+  };
+
   // Report table columns
   const reportColumns: GlassTableColumn<AuditReport>[] = [
     {
@@ -698,9 +722,22 @@ const LibrarianAgentPage = () => {
       </View>
 
       {/* Recent Reports */}
-      <Text style={[styles.sectionTitle, { textAlign, marginTop: spacing.lg }]}>
-        {t('admin.librarian.reports.title')}
-      </Text>
+      <View style={styles.sectionHeader}>
+        <Text style={[styles.sectionTitle, { textAlign }]}>
+          {t('admin.librarian.reports.title')}
+        </Text>
+        {reports.length > 0 && (
+          <GlassButton
+            title={t('admin.librarian.reports.clearAll')}
+            variant="destructive"
+            icon={<Trash2 size={16} color={colors.error} />}
+            onPress={handleClearReports}
+            loading={clearingReports}
+            disabled={clearingReports}
+            style={styles.clearButton}
+          />
+        )}
+      </View>
       <GlassCard style={styles.reportsCard}>
         {reports.length === 0 ? (
           <Text style={[styles.emptyText, { textAlign }]}>{t('admin.librarian.reports.emptyMessage')}</Text>
@@ -1005,6 +1042,16 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     color: colors.text,
     marginBottom: spacing.md,
+  },
+  sectionHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginTop: spacing.lg,
+    marginBottom: 0,
+  },
+  clearButton: {
+    minWidth: 120,
   },
   actionsRow: {
     marginBottom: spacing.md,

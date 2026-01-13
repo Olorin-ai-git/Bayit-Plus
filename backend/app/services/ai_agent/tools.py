@@ -335,13 +335,17 @@ TOOLS = [
     },
     {
         "name": "scan_video_subtitles",
-        "description": "Analyze a video file (MKV/MP4) to detect embedded subtitle tracks. Returns list of available subtitle languages and metadata. Use this to verify subtitle availability before extracting.",
+        "description": "Analyze a video file (MKV/MP4) to detect embedded subtitle tracks and AUTOMATICALLY extract and save them to the database. Returns list of available subtitle languages and extraction results. This is a one-step process - no need to call extract_video_subtitles separately.",
         "input_schema": {
             "type": "object",
             "properties": {
                 "content_id": {
                     "type": "string",
-                    "description": "The ID of the content item to scan"
+                    "description": "The ID of the content item to scan and extract subtitles from"
+                },
+                "auto_extract": {
+                    "type": "boolean",
+                    "description": "Whether to automatically extract and save found subtitles (default: true)"
                 }
             },
             "required": ["content_id"]

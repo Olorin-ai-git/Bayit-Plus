@@ -139,11 +139,56 @@ class FFmpegService:
             logger.error(f"Unexpected error analyzing video {video_url}: {str(e)}")
             raise
 
+    def _is_text_based_subtitle(self, codec: str) -> bool:
+        """
+        Check if subtitle codec is text-based (can be converted to SRT).
+        
+        Bitmap-based subtitles (dvd_subtitle, hdmv_pgs_subtitle) cannot be 
+        converted to text formats like SRT.
+        
+        Args:
+            codec: Subtitle codec name from ffprobe
+            
+        Returns:
+            True if codec is text-based, False if bitmap-based
+        """
+        # Text-based subtitle codecs that can be converted to SRT
+        text_codecs = {
+            'subrip', 'srt',           # SubRip
+            'ass', 'ssa',              # Advanced SubStation Alpha
+            'webvtt', 'vtt',           # WebVTT
+            'mov_text',                 # MP4/MOV subtitles
+            'text',                     # Generic text
+            'sami',                     # SAMI
+            'microdvd',                 # MicroDVD
+            'subviewer',                # SubViewer
+        }
+        
+        # Bitmap-based subtitle codecs that CANNOT be converted to text
+        bitmap_codecs = {
+            'dvd_subtitle', 'dvdsub',   # DVD bitmap subtitles
+            'hdmv_pgs_subtitle', 'pgs', # Blu-ray PGS
+            'xsub',                      # DivX subtitles
+            'dvb_subtitle',              # DVB subtitles
+        }
+        
+        codec_lower = codec.lower()
+        
+        if codec_lower in bitmap_codecs:
+            return False
+        if codec_lower in text_codecs:
+            return True
+            
+        # Unknown codec - assume text-based (will fail gracefully if wrong)
+        logger.warning(f"Unknown subtitle codec '{codec}', assuming text-based")
+        return True
+
     async def extract_subtitle_track(
         self,
         video_url: str,
         track_index: int,
-        output_format: str = 'srt'
+        output_format: str = 'srt',
+        timeout: int = 20  # Reduced from 60 to 20 seconds
     ) -> str:
         """
         Extract a specific subtitle track from video file.
@@ -152,6 +197,7 @@ class FFmpegService:
             video_url: URL or path to the video file
             track_index: Stream index of the subtitle track (from analyze_video)
             output_format: Output format ('srt' or 'vtt')
+            timeout: Maximum time in seconds to wait for extraction (default 20)
 
         Returns:
             Subtitle content as string (SRT or VTT format)
@@ -173,7 +219,7 @@ class FFmpegService:
 
             logger.info(
                 f"Extracting subtitle track {track_index} from {video_url} "
-                f"to format {output_format}"
+                f"to format {output_format} (timeout: {timeout}s)"
             )
 
             # Extract subtitle track using ffmpeg
@@ -191,7 +237,7 @@ class FFmpegService:
                 capture_output=True,
                 text=True,
                 check=True,
-                timeout=60  # 60 second timeout for extraction
+                timeout=timeout  # Configurable timeout
             )
 
             # Read extracted subtitle content
@@ -209,8 +255,8 @@ class FFmpegService:
             return subtitle_content
 
         except subprocess.TimeoutExpired:
-            logger.error(f"Subtitle extraction timed out for track {track_index}")
-            raise Exception("Subtitle extraction timed out after 60 seconds")
+            logger.error(f"Subtitle extraction timed out for track {track_index} after {timeout}s")
+            raise Exception(f"Subtitle extraction timed out after {timeout} seconds")
         except subprocess.CalledProcessError as e:
             logger.error(f"ffmpeg extraction failed for track {track_index}: {e.stderr}")
             raise Exception(f"Failed to extract subtitle track: {e.stderr}")
@@ -228,17 +274,27 @@ class FFmpegService:
                 except Exception as e:
                     logger.warning(f"Failed to delete temp file {output_path}: {str(e)}")
 
-    async def extract_all_subtitles(self, video_url: str) -> List[Dict[str, str]]:
+    async def extract_all_subtitles(
+        self, 
+        video_url: str, 
+        languages: Optional[List[str]] = None,
+        max_parallel: int = 3
+    ) -> List[Dict[str, str]]:
         """
-        Extract all subtitle tracks from video file.
+        Extract subtitle tracks from video file with filtering and parallel processing.
 
-        This is a convenience method that:
+        This method:
         1. Analyzes the video to find all subtitle tracks
-        2. Extracts each track to SRT format
-        3. Returns the parsed subtitle content
+        2. Filters by requested languages (if specified)
+        3. Skips incompatible formats (bitmap subtitles)
+        4. Extracts tracks in parallel for better performance
+        5. Returns the parsed subtitle content
 
         Args:
             video_url: URL or path to the video file
+            languages: Optional list of language codes to extract (e.g., ['en', 'es', 'he'])
+                      If None, extracts all compatible tracks
+            max_parallel: Maximum number of parallel extractions (default 3)
 
         Returns:
             List of dictionaries containing:
@@ -247,18 +303,14 @@ class FFmpegService:
                     "language": "eng",
                     "format": "srt",
                     "content": "1\n00:00:01,000 --> 00:00:03,000\nHello world\n\n",
-                    "title": "English"
+                    "title": "English",
+                    "codec": "subrip"
                 },
-                {
-                    "language": "spa",
-                    "format": "srt",
-                    "content": "1\n00:00:01,000 --> 00:00:03,000\nHola mundo\n\n",
-                    "title": "Spanish"
-                }
+                ...
             ]
 
         Raises:
-            Exception: If video analysis or extraction fails
+            Exception: If video analysis fails
         """
         try:
             # Step 1: Analyze video to find subtitle tracks
@@ -269,41 +321,92 @@ class FFmpegService:
                 logger.info(f"No subtitle tracks found in {video_url}")
                 return []
 
-            logger.info(f"Found {len(subtitle_tracks)} subtitle tracks, extracting all...")
+            logger.info(f"Found {len(subtitle_tracks)} subtitle tracks in video")
 
-            # Step 2: Extract each subtitle track
-            extracted_subtitles = []
+            # Step 2: Filter tracks before extraction
+            tracks_to_extract = []
+            skipped_bitmap = []
+            skipped_language = []
+            
             for track in subtitle_tracks:
-                try:
-                    content = await self.extract_subtitle_track(
-                        video_url,
-                        track['index'],
-                        output_format='srt'
-                    )
-
-                    extracted_subtitles.append({
-                        "language": track['language'],
-                        "format": "srt",
-                        "content": content,
-                        "title": track.get('title', ''),
-                        "codec": track.get('codec', 'unknown')
-                    })
-
+                codec = track.get('codec', 'unknown')
+                language = track.get('language', 'und')
+                
+                # Skip bitmap-based subtitles (can't convert to text)
+                if not self._is_text_based_subtitle(codec):
+                    skipped_bitmap.append(f"{language} ({codec})")
                     logger.info(
-                        f"✓ Extracted {track['language']} subtitle "
-                        f"(track {track['index']})"
+                        f"⊘ Skipping track {track['index']} ({language}): "
+                        f"bitmap codec '{codec}' cannot convert to SRT"
                     )
-
-                except Exception as e:
-                    logger.error(
-                        f"✗ Failed to extract subtitle track {track['index']} "
-                        f"({track['language']}): {str(e)}"
-                    )
-                    # Continue with other tracks even if one fails
                     continue
+                
+                # Filter by language if specified
+                if languages and language not in languages:
+                    skipped_language.append(f"{language} (not in {languages})")
+                    continue
+                
+                tracks_to_extract.append(track)
+            
+            if skipped_bitmap:
+                logger.info(f"Skipped {len(skipped_bitmap)} bitmap subtitle tracks: {', '.join(skipped_bitmap)}")
+            if skipped_language:
+                logger.info(f"Skipped {len(skipped_language)} tracks by language filter: {', '.join(skipped_language)}")
+
+            if not tracks_to_extract:
+                logger.info(f"No compatible subtitle tracks to extract after filtering")
+                return []
 
             logger.info(
-                f"Extraction complete: {len(extracted_subtitles)}/{len(subtitle_tracks)} "
+                f"Extracting {len(tracks_to_extract)} compatible subtitle tracks "
+                f"(max {max_parallel} parallel)..."
+            )
+
+            # Step 3: Extract tracks in parallel with semaphore to limit concurrency
+            semaphore = asyncio.Semaphore(max_parallel)
+            
+            async def extract_with_semaphore(track):
+                async with semaphore:
+                    try:
+                        content = await self.extract_subtitle_track(
+                            video_url,
+                            track['index'],
+                            output_format='srt',
+                            timeout=20  # 20 second timeout per track
+                        )
+
+                        logger.info(
+                            f"✓ Extracted {track['language']} subtitle "
+                            f"(track {track['index']}, codec: {track.get('codec', 'unknown')})"
+                        )
+
+                        return {
+                            "language": track['language'],
+                            "format": "srt",
+                            "content": content,
+                            "title": track.get('title', ''),
+                            "codec": track.get('codec', 'unknown'),
+                            "index": track['index']
+                        }
+
+                    except Exception as e:
+                        logger.error(
+                            f"✗ Failed to extract subtitle track {track['index']} "
+                            f"({track['language']}, {track.get('codec', 'unknown')}): {str(e)}"
+                        )
+                        return None  # Return None for failed extractions
+
+            # Run all extractions in parallel
+            results = await asyncio.gather(
+                *[extract_with_semaphore(track) for track in tracks_to_extract],
+                return_exceptions=False  # Let individual exceptions be caught in extract_with_semaphore
+            )
+
+            # Filter out None results (failed extractions)
+            extracted_subtitles = [r for r in results if r is not None]
+
+            logger.info(
+                f"✅ Extraction complete: {len(extracted_subtitles)}/{len(tracks_to_extract)} "
                 f"tracks successfully extracted"
             )
 

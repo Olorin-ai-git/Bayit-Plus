@@ -1419,6 +1419,7 @@
         "failedToTrigger": "Failed to trigger audit. Please try again.",
         "failedToLoadDetails": "Failed to load report details.",
         "failedToRollback": "Failed to rollback action.",
+        "failedToClearReports": "Failed to clear audit reports. Please try again.",
         "contactAdmin": "The Librarian page cannot load without proper configuration.\nPlease contact your administrator."
       },
       "stats": {
@@ -1481,6 +1482,9 @@
       "reports": {
         "title": "Recent Audit Reports",
         "emptyMessage": "No audit reports yet",
+        "clearAll": "Clear All",
+        "confirmClearAll": "Are you sure you want to clear all audit reports? This action cannot be undone.",
+        "clearedSuccessfully": "All audit reports cleared successfully",
         "viewLogs": "View Logs",
         "viewDetails": "View Details",
         "columns": {

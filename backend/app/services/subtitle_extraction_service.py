@@ -53,11 +53,16 @@ async def analyze_and_extract_subtitles(content_id: str, stream_url: str):
         content.embedded_subtitle_count = len(metadata.get('subtitle_tracks', []))
         content.subtitle_last_checked = datetime.utcnow()
 
-        # Step 2: Extract subtitles if found
+        # Step 2: Extract subtitles if found (only required languages: en, he, es)
         subtitle_tracks = metadata.get('subtitle_tracks', [])
         if subtitle_tracks:
             logger.info(f"Found {len(subtitle_tracks)} subtitle tracks in {content_id}")
-            extracted = await ffmpeg_service.extract_all_subtitles(stream_url)
+            # Only extract required languages to avoid performance issues
+            extracted = await ffmpeg_service.extract_all_subtitles(
+                stream_url,
+                languages=['en', 'he', 'es'],  # Only extract required languages
+                max_parallel=3
+            )
 
             saved_languages = []
             for sub in extracted:

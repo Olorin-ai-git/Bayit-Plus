@@ -1445,8 +1445,107 @@ async def execute_send_email_notification(
         return {"success": False, "error": str(e)}
 
 
-async def execute_scan_video_subtitles(content_id: str) -> Dict[str, Any]:
-    """Scan video file for embedded subtitles."""
+async def _extract_subtitles_background(content_id: str, stream_url: str):
+    """
+    Background task to extract and save subtitle tracks.
+    This runs independently and doesn't block the calling function.
+    """
+    from app.services.ffmpeg_service import ffmpeg_service
+    from app.services.subtitle_service import parse_subtitles
+    from app.models.subtitles import SubtitleTrackDoc, SubtitleCueModel
+    
+    try:
+        logger.info(f"🔄 [Background] Starting subtitle extraction for content {content_id}")
+        
+        content = await Content.get(PydanticObjectId(content_id))
+        if not content:
+            logger.error(f"❌ [Background] Content {content_id} not found")
+            return
+        
+        # Update status to extracting
+        content.subtitle_extraction_status = "extracting"
+        await content.save()
+        
+        # Extract subtitles (only required languages)
+        extracted_subs = await ffmpeg_service.extract_all_subtitles(
+            stream_url,
+            languages=['en', 'he', 'es'],
+            max_parallel=3
+        )
+        
+        saved_count = 0
+        saved_languages = []
+        
+        for sub in extracted_subs:
+            try:
+                # Check if subtitle already exists
+                existing = await SubtitleTrackDoc.find_one({
+                    "content_id": content_id,
+                    "language": sub['language']
+                })
+                
+                if existing:
+                    logger.info(f"⏭️  [Background] Skipping {sub['language']} - already exists")
+                    continue
+                
+                # Parse subtitle content
+                track = parse_subtitles(sub['content'], sub['format'])
+                
+                # Convert to database model
+                cues = [
+                    SubtitleCueModel(
+                        index=cue.index,
+                        start_time=cue.start_time,
+                        end_time=cue.end_time,
+                        text=cue.text,
+                        text_nikud=cue.text_nikud
+                    )
+                    for cue in track.cues
+                ]
+                
+                # Create SubtitleTrackDoc
+                subtitle_doc = SubtitleTrackDoc(
+                    content_id=content_id,
+                    content_type="vod",
+                    language=sub['language'],
+                    language_name=get_language_name(sub['language']),
+                    format="srt",
+                    source="embedded",
+                    cues=cues,
+                    is_auto_generated=False
+                )
+                await subtitle_doc.insert()
+                saved_count += 1
+                saved_languages.append(sub['language'])
+                logger.info(f"✅ [Background] Saved {sub['language']} subtitles ({len(cues)} cues)")
+                
+            except Exception as e:
+                logger.error(f"❌ [Background] Failed to save {sub['language']} subtitles: {str(e)}")
+        
+        # Update content with results
+        content.has_subtitles = saved_count > 0
+        content.available_subtitle_languages = saved_languages
+        content.subtitle_extraction_status = "completed" if saved_count > 0 else "failed"
+        await content.save()
+        
+        logger.info(f"✅ [Background] Extraction complete for {content_id}: {saved_count} tracks saved ({', '.join(saved_languages)})")
+        
+    except Exception as e:
+        logger.error(f"❌ [Background] Subtitle extraction failed for {content_id}: {str(e)}")
+        try:
+            content = await Content.get(PydanticObjectId(content_id))
+            if content:
+                content.subtitle_extraction_status = "failed"
+                await content.save()
+        except:
+            pass
+
+
+async def execute_scan_video_subtitles(content_id: str, auto_extract: bool = True) -> Dict[str, Any]:
+    """
+    Scan video file for embedded subtitles.
+    If auto_extract=True (default), starts extraction in background and returns immediately.
+    """
     from app.services.ffmpeg_service import ffmpeg_service
 
     try:
@@ -1466,7 +1565,7 @@ async def execute_scan_video_subtitles(content_id: str) -> Dict[str, Any]:
         content.subtitle_last_checked = datetime.utcnow()
         await content.save()
 
-        return {
+        result = {
             "success": True,
             "subtitle_count": len(metadata['subtitle_tracks']),
             "subtitles": metadata['subtitle_tracks'],
@@ -1474,32 +1573,45 @@ async def execute_scan_video_subtitles(content_id: str) -> Dict[str, Any]:
             "video_resolution": f"{metadata['width']}x{metadata['height']}"
         }
 
+        # Auto-extract subtitles if found and auto_extract is enabled
+        if auto_extract and len(metadata['subtitle_tracks']) > 0:
+            logger.info(f"🚀 Starting background subtitle extraction (filtering for required languages: en, he, es)...")
+            
+            # Start extraction in background - returns immediately
+            asyncio.create_task(_extract_subtitles_background(content_id, content.stream_url))
+            
+            result["extraction_started"] = True
+            result["extraction_status"] = "background_processing"
+            result["message"] = f"Found {len(metadata['subtitle_tracks'])} subtitle tracks. Extraction started in background."
+            logger.info(f"✅ Subtitle extraction started in background for content {content_id}")
+
+        return result
+
     except Exception as e:
         logger.error(f"Error scanning video subtitles: {str(e)}")
         return {"success": False, "error": str(e)}
 
 
-async def execute_extract_video_subtitles(
-    content_id: str,
-    audit_id: str,
-    languages: Optional[List[str]] = None
-) -> Dict[str, Any]:
-    """Extract subtitle tracks from video and save to database."""
+async def _extract_with_audit(content_id: str, stream_url: str, audit_id: str, languages: Optional[List[str]] = None):
+    """Background task to extract subtitles and create audit action."""
     from app.services.ffmpeg_service import ffmpeg_service
     from app.services.subtitle_service import parse_subtitles
     from app.models.subtitles import SubtitleTrackDoc, SubtitleCueModel
-
+    
     try:
+        logger.info(f"🔄 [Background] Starting subtitle extraction for audit {audit_id}")
+        
         content = await Content.get(PydanticObjectId(content_id))
         if not content:
-            return {"success": False, "error": "Content not found"}
-
-        # Extract subtitles
-        extracted_subs = await ffmpeg_service.extract_all_subtitles(content.stream_url)
-
-        # Filter by requested languages if specified
-        if languages:
-            extracted_subs = [s for s in extracted_subs if s['language'] in languages]
+            logger.error(f"❌ [Background] Content {content_id} not found")
+            return
+        
+        # Extract subtitles with language filtering at extraction time (more efficient)
+        extracted_subs = await ffmpeg_service.extract_all_subtitles(
+            stream_url,
+            languages=languages if languages else None,
+            max_parallel=3
+        )
 
         # Parse and save each subtitle track
         saved_count = 0
@@ -1529,14 +1641,16 @@ async def execute_extract_video_subtitles(
                     language=sub['language'],
                     language_name=get_language_name(sub['language']),
                     format="srt",
+                    source="embedded",
                     cues=cues,
                     is_auto_generated=False
                 )
                 await subtitle_doc.insert()
                 saved_count += 1
                 saved_languages.append(sub['language'])
+                logger.info(f"✅ [Background] Saved {sub['language']} subtitles")
             except Exception as e:
-                logger.error(f"Failed to parse {sub['language']} subtitles: {str(e)}")
+                logger.error(f"❌ [Background] Failed to parse {sub['language']} subtitles: {str(e)}")
 
         # Update content
         content.has_subtitles = saved_count > 0
@@ -1555,15 +1669,43 @@ async def execute_extract_video_subtitles(
             auto_approved=True
         )
         await action.insert()
+        
+        logger.info(f"✅ [Background] Extraction complete for audit {audit_id}: {saved_count} tracks saved")
 
+    except Exception as e:
+        logger.error(f"❌ [Background] Error extracting video subtitles: {str(e)}")
+
+
+async def execute_extract_video_subtitles(
+    content_id: str,
+    audit_id: str,
+    languages: Optional[List[str]] = None
+) -> Dict[str, Any]:
+    """
+    Extract subtitle tracks from video and save to database.
+    Starts extraction in background and returns immediately.
+    """
+    try:
+        content = await Content.get(PydanticObjectId(content_id))
+        if not content:
+            return {"success": False, "error": "Content not found"}
+        
+        if not content.stream_url:
+            return {"success": False, "error": "No stream URL available"}
+        
+        # Start extraction in background
+        asyncio.create_task(_extract_with_audit(content_id, content.stream_url, audit_id, languages))
+        
+        logger.info(f"🚀 Started background subtitle extraction for content {content_id}")
+        
         return {
             "success": True,
-            "extracted_count": saved_count,
-            "languages": saved_languages
+            "status": "extraction_started_in_background",
+            "message": f"Subtitle extraction started in background for languages: {languages or 'all'}"
         }
 
     except Exception as e:
-        logger.error(f"Error extracting video subtitles: {str(e)}")
+        logger.error(f"Error starting subtitle extraction: {str(e)}")
         return {"success": False, "error": str(e)}
 
 

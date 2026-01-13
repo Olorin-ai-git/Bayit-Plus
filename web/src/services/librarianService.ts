@@ -231,6 +231,22 @@ export const getAuditReportDetails = async (
   return response.json();
 };
 
+export const clearAuditReports = async (): Promise<{ deleted_count: number; message: string }> => {
+  const response = await fetch(
+    `${API_BASE_URL}/admin/librarian/reports`,
+    {
+      method: 'DELETE',
+      headers: getAuthHeaders(),
+    }
+  );
+
+  if (!response.ok) {
+    throw new Error('Failed to clear audit reports');
+  }
+
+  return response.json();
+};
+
 export const getLibrarianActions = async (
   auditId?: string,
   actionType?: string,

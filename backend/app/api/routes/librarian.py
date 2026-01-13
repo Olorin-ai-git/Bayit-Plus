@@ -464,6 +464,29 @@ async def get_audit_report_detail(
         )
 
 
+@router.delete("/admin/librarian/reports")
+async def clear_audit_reports(
+    current_user: User = Depends(require_admin())
+):
+    """Clear all audit reports from the database"""
+    try:
+        # Delete all audit reports
+        result = await AuditReport.find_all().delete()
+        
+        deleted_count = result.deleted_count if hasattr(result, 'deleted_count') else 0
+
+        return {
+            "deleted_count": deleted_count,
+            "message": f"Successfully cleared {deleted_count} audit report(s)"
+        }
+
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Failed to clear audit reports: {str(e)}"
+        )
+
+
 @router.get("/admin/librarian/actions", response_model=List[ActionResponse])
 async def get_librarian_actions(
     audit_id: Optional[str] = None,
