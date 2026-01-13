@@ -29,6 +29,7 @@ interface ContentItem {
   episode_count?: number
   view_count?: number
   avg_rating?: number
+  available_subtitles?: string[]
 }
 
 interface Episode {
@@ -63,6 +64,44 @@ interface HierarchicalContentTableProps {
   pagination: Pagination
   onPageChange: (page: number) => void
   emptyMessage?: string
+}
+
+// Language flag mapping
+const getLanguageFlag = (lang: string): string => {
+  const flags: Record<string, string> = {
+    'he': '🇮🇱',
+    'en': '🇺🇸',
+    'ar': '🇸🇦',
+    'ru': '🇷🇺',
+    'es': '🇪🇸',
+    'fr': '🇫🇷',
+    'de': '🇩🇪',
+    'it': '🇮🇹',
+    'pt': '🇵🇹',
+    'zh': '🇨🇳',
+    'ja': '🇯🇵',
+    'ko': '🇰🇷',
+  }
+  return flags[lang] || '🌐'
+}
+
+// Language name mapping
+const getLanguageName = (lang: string): string => {
+  const names: Record<string, string> = {
+    'he': 'Hebrew',
+    'en': 'English',
+    'ar': 'Arabic',
+    'ru': 'Russian',
+    'es': 'Spanish',
+    'fr': 'French',
+    'de': 'German',
+    'it': 'Italian',
+    'pt': 'Portuguese',
+    'zh': 'Chinese',
+    'ja': 'Japanese',
+    'ko': 'Korean',
+  }
+  return names[lang] || lang
 }
 
 export default function HierarchicalContentTable({
@@ -278,6 +317,32 @@ export default function HierarchicalContentTable({
           }
           const item = row as ContentItem & { rowType: 'content' }
           return <Text style={[styles.cellText, { textAlign }]}>{item.year || '-'}</Text>
+        },
+      },
+      {
+        key: 'subtitles',
+        label: t('admin.content.columns.subtitles', 'Subtitles'),
+        width: 120,
+        render: (_, row) => {
+          if (row.rowType === 'episode') {
+            return <Text style={[styles.cellText, { textAlign }]}>-</Text>
+          }
+          const item = row as ContentItem & { rowType: 'content' }
+          const subtitles = item.available_subtitles || []
+          
+          if (subtitles.length === 0) {
+            return <Text style={[styles.cellText, styles.noSubtitles, { textAlign }]}>-</Text>
+          }
+          
+          return (
+            <View style={styles.subtitleFlags}>
+              {subtitles.map((lang) => (
+                <Text key={lang} style={styles.languageFlag} title={getLanguageName(lang)}>
+                  {getLanguageFlag(lang)}
+                </Text>
+              ))}
+            </View>
+          )
         },
       },
       {
@@ -529,6 +594,20 @@ const styles = StyleSheet.create({
   cellText: {
     fontSize: 14,
     color: colors.text,
+  },
+  noSubtitles: {
+    color: colors.textMuted,
+    opacity: 0.5,
+  },
+  subtitleFlags: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.xs,
+    flexWrap: 'wrap',
+  },
+  languageFlag: {
+    fontSize: 18,
+    cursor: 'pointer',
   },
 
   // Status Badge

@@ -92,6 +92,11 @@ class Settings(BaseSettings):
     # CDN (optional, works with both S3 CloudFront and GCS Cloud CDN)
     CDN_BASE_URL: str = ""
 
+    # Upload Monitoring Configuration
+    UPLOAD_MONITOR_ENABLED: bool = True
+    UPLOAD_MONITOR_INTERVAL: int = 3600  # Seconds between scans (default: 1 hour)
+    UPLOAD_DEFAULT_FOLDERS: str = ""  # Comma-separated paths to monitor on startup
+
     # Email Service (for Librarian AI Agent notifications)
     SENDGRID_API_KEY: str = ""
     SENDGRID_FROM_EMAIL: str = "noreply@bayitplus.com"

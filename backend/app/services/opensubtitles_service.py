@@ -190,8 +190,9 @@ class OpenSubtitlesService:
         results = []
         for item in data["data"]:
             file_info = item.get("attributes", {}).get("files", [{}])[0]
+            file_id = file_info.get("file_id")
             results.append({
-                "file_id": file_info.get("file_id"),
+                "file_id": str(file_id) if file_id is not None else None,
                 "download_url": item.get("attributes", {}).get("url"),
                 "language": language,
                 "rating": item.get("attributes", {}).get("ratings", 0),

@@ -26,6 +26,7 @@ interface ContentItem {
   episode_count?: number
   view_count?: number
   avg_rating?: number
+  available_subtitles?: string[]
 }
 
 interface Pagination {

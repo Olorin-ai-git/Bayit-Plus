@@ -116,15 +116,31 @@ export const GlassModal: React.FC<GlassModalProps> = ({
   const renderContent = () => {
     if (hasCustomContent) {
       return (
-        <ScrollView
-          style={styles.scrollView}
-          contentContainerStyle={styles.customContentWrapper}
-          showsVerticalScrollIndicator={false}
-          keyboardShouldPersistTaps="handled"
-        >
-          {title && <Text style={styles.dialogTitle}>{title}</Text>}
-          {children}
-        </ScrollView>
+        <>
+          {/* Header with close button for custom content */}
+          {title && (
+            <View style={styles.customHeader}>
+              <Text style={[styles.dialogTitle, { marginBottom: 0, flex: 1 }]}>{title}</Text>
+              {onClose && (
+                <TouchableOpacity
+                  style={styles.closeButton}
+                  onPress={onClose}
+                  hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+                >
+                  <Text style={styles.closeButtonText}>✕</Text>
+                </TouchableOpacity>
+              )}
+            </View>
+          )}
+          <ScrollView
+            style={styles.scrollView}
+            contentContainerStyle={styles.customContentWrapper}
+            showsVerticalScrollIndicator={false}
+            keyboardShouldPersistTaps="handled"
+          >
+            {children}
+          </ScrollView>
+        </>
       );
     }
 
@@ -300,6 +316,30 @@ const styles = StyleSheet.create({
   customContentWrapper: {
     padding: spacing.xl,
     width: '100%',
+  },
+  customHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingHorizontal: spacing.xl,
+    paddingTop: spacing.lg,
+    paddingBottom: spacing.md,
+  },
+  closeButton: {
+    width: 32,
+    height: 32,
+    borderRadius: 16,
+    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderWidth: 1,
+    borderColor: colors.glassBorder,
+  },
+  closeButtonText: {
+    fontSize: fontSize.xl,
+    color: colors.textSecondary,
+    fontWeight: '300',
+    lineHeight: 24,
   },
 });
 

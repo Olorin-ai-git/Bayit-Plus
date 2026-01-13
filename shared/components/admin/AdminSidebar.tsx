@@ -123,6 +123,13 @@ const NAV_ITEMS: NavItem[] = [
     ],
   },
   {
+    key: 'uploads',
+    labelKey: 'admin.nav.uploads',
+    icon: '📤',
+    route: 'Uploads',
+    permission: 'content:create',
+  },
+  {
     key: 'settings',
     labelKey: 'admin.nav.settings',
     icon: '⚙️',

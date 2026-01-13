@@ -222,6 +222,7 @@ async def fix_missing_metadata(
             "genres": getattr(content, 'genres', None),  # May not exist in old documents
             "cast": content.cast,
             "director": content.director,
+            "year": content.year,
         }
 
         changes_made = []
@@ -266,10 +267,16 @@ async def fix_missing_metadata(
                 changes_made.append("added_imdb_id")
 
             # Add poster (thumbnail/cover photo)
-            if enriched.get("poster") and not content.thumbnail:
-                content.thumbnail = enriched["poster"]
-                after_state["thumbnail"] = enriched["poster"]
-                changes_made.append("added_thumbnail")
+            if enriched.get("poster"):
+                if not content.thumbnail:
+                    content.thumbnail = enriched["poster"]
+                    after_state["thumbnail"] = enriched["poster"]
+                    changes_made.append("added_thumbnail")
+                
+                if not content.poster_url:
+                    content.poster_url = enriched["poster"]
+                    after_state["poster_url"] = enriched["poster"]
+                    changes_made.append("added_poster_url")
 
             # Add backdrop (wide background image)
             if enriched.get("backdrop") and not content.backdrop:
@@ -304,6 +311,29 @@ async def fix_missing_metadata(
                 content.director = enriched["director"]
                 after_state["director"] = enriched["director"]
                 changes_made.append("added_director")
+            
+            # Update IMDB rating and votes
+            if enriched.get("imdb_rating") is not None and content.imdb_rating is None:
+                content.imdb_rating = enriched["imdb_rating"]
+                after_state["imdb_rating"] = enriched["imdb_rating"]
+                changes_made.append("added_imdb_rating")
+            
+            if enriched.get("imdb_votes") is not None and content.imdb_votes is None:
+                content.imdb_votes = enriched["imdb_votes"]
+                after_state["imdb_votes"] = enriched["imdb_votes"]
+                changes_made.append("added_imdb_votes")
+            
+            # Update release year
+            if enriched.get("release_year") and not content.year:
+                content.year = enriched["release_year"]
+                after_state["year"] = enriched["release_year"]
+                changes_made.append("added_year")
+        
+        # Set content type if missing
+        if not content.content_type:
+            content.content_type = "series" if content.is_series else "movie"
+            after_state["content_type"] = content.content_type
+            changes_made.append("added_content_type")
 
         # Update timestamp
         content.updated_at = datetime.utcnow()

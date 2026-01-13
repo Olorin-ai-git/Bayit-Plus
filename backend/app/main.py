@@ -38,6 +38,38 @@ async def sync_podcast_rss_feeds():
         logger.warning(f"⚠️ Background podcast sync failed: {e}")
 
 
+async def scan_monitored_folders_task():
+    """Periodically scan monitored folders for new content."""
+    import asyncio
+    from app.services.folder_monitor_service import folder_monitor_service
+    
+    # Wait for server to initialize
+    await asyncio.sleep(10)
+    
+    # Initialize default folders from config
+    try:
+        await folder_monitor_service.initialize_from_config()
+        logger.info("✅ Monitored folders initialized from config")
+    except Exception as e:
+        logger.warning(f"⚠️ Failed to initialize monitored folders: {e}")
+    
+    # Run periodic scans
+    while True:
+        try:
+            if settings.UPLOAD_MONITOR_ENABLED:
+                logger.info("🔍 Scanning monitored folders for new content...")
+                stats = await folder_monitor_service.scan_and_enqueue()
+                logger.info(f"✅ Folder scan complete: {stats}")
+            
+            # Wait for next scan interval
+            await asyncio.sleep(settings.UPLOAD_MONITOR_INTERVAL)
+            
+        except Exception as e:
+            logger.error(f"❌ Folder monitoring task error: {e}", exc_info=True)
+            # Wait before retrying on error
+            await asyncio.sleep(60)
+
+
 def validate_configuration():
     """Validate critical configuration on startup."""
     warnings = []
@@ -388,6 +420,10 @@ async def lifespan(app: FastAPI):
     # Run podcast sync in background (non-blocking)
     import asyncio
     asyncio.create_task(sync_podcast_rss_feeds())
+    # Run folder monitoring in background (non-blocking)
+    if settings.UPLOAD_MONITOR_ENABLED:
+        asyncio.create_task(scan_monitored_folders_task())
+        logger.info("📂 Started folder monitoring background task")
     logger.info("✅ Server startup complete - Ready to accept connections")
     yield
     # Shutdown

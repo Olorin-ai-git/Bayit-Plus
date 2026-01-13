@@ -8,6 +8,7 @@ from fastapi import APIRouter, HTTPException, Depends, Query
 
 from app.models.user import User
 from app.models.content import Content
+from app.models.subtitles import SubtitleTrackDoc
 from app.models.admin import Permission
 from .admin_content_utils import has_permission
 
@@ -118,9 +119,13 @@ async def get_content_hierarchical(
     skip = (page - 1) * page_size
     items = await query.sort(-Content.created_at).skip(skip).limit(page_size).to_list()
 
-    # Build response with episode counts for series
+    # Build response with episode counts for series and subtitle availability
     result_items = []
     for item in items:
+        # Get available subtitle languages for this content
+        subtitle_tracks = await SubtitleTrackDoc.get_for_content(str(item.id))
+        available_subtitles = list(set([track.language for track in subtitle_tracks]))
+        
         item_data = {
             "id": str(item.id),
             "title": item.title,
@@ -141,6 +146,7 @@ async def get_content_hierarchical(
             "is_kids_content": item.is_kids_content,
             "view_count": item.view_count,
             "avg_rating": item.avg_rating,
+            "available_subtitles": available_subtitles,
             "created_at": item.created_at.isoformat(),
             "updated_at": item.updated_at.isoformat(),
             "episode_count": 0,

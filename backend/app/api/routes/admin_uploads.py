@@ -1,18 +1,34 @@
 """
 Admin Upload Routes
 Handle file uploads for content management (images, videos, etc.)
+Includes queue management, monitored folders, and real-time WebSocket updates.
 """
 
-from typing import Optional
-from fastapi import APIRouter, UploadFile, File, Query, HTTPException, status, Depends, Request
+from typing import Optional, List
+from fastapi import APIRouter, UploadFile, File, Query, HTTPException, status, Depends, Request, WebSocket, WebSocketDisconnect
 from pydantic import BaseModel
+import json
+import asyncio
+import logging
 
 from app.models.user import User
 from app.models.admin import Permission, AuditAction
-from app.core.security import get_current_active_user
+from app.models.upload import (
+    ContentType,
+    UploadJobCreate,
+    UploadJobResponse,
+    UploadQueueResponse,
+    MonitoredFolderCreate,
+    MonitoredFolderUpdate,
+    MonitoredFolderResponse,
+)
+from app.core.security import get_current_active_user, decode_token
 from app.core.storage import storage
+from app.services.upload_service import upload_service
+from app.services.folder_monitor_service import folder_monitor_service
 
 router = APIRouter()
+logger = logging.getLogger(__name__)
 
 
 # ============ RBAC DEPENDENCIES ============
@@ -170,3 +186,458 @@ async def uploads_health(
         "storage_type": "s3" if hasattr(storage, "s3_client") else "local",
         "message": "Upload service is ready"
     }
+
+
+# ============ UPLOAD QUEUE MANAGEMENT ============
+
+@router.post("/uploads/enqueue")
+async def enqueue_upload(
+    source_path: str,
+    content_type: ContentType,
+    current_user: User = Depends(has_permission(Permission.CONTENT_CREATE))
+):
+    """
+    Enqueue a file for upload to GCS and content database.
+    
+    Args:
+        source_path: Absolute path to the file on the server
+        content_type: Type of content (movie, podcast, etc.)
+    """
+    try:
+        job = await upload_service.enqueue_upload(
+            source_path=source_path,
+            content_type=content_type,
+            user_id=str(current_user.id)
+        )
+        
+        return UploadJobResponse.from_orm(job)
+        
+    except FileNotFoundError as e:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=str(e)
+        )
+    except Exception as e:
+        logger.error(f"Failed to enqueue upload: {e}", exc_info=True)
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Failed to enqueue upload: {str(e)}"
+        )
+
+
+@router.post("/uploads/enqueue-multiple")
+async def enqueue_multiple_uploads(
+    file_paths: List[str],
+    content_type: ContentType,
+    current_user: User = Depends(has_permission(Permission.CONTENT_CREATE))
+):
+    """
+    Enqueue multiple files for upload.
+    
+    Args:
+        file_paths: List of absolute paths to files on the server
+        content_type: Type of content for all files
+    """
+    try:
+        jobs = await upload_service.enqueue_multiple(
+            file_paths=file_paths,
+            content_type=content_type,
+            user_id=str(current_user.id)
+        )
+        
+        return {
+            "enqueued": len(jobs),
+            "jobs": [UploadJobResponse.from_orm(j) for j in jobs]
+        }
+        
+    except Exception as e:
+        logger.error(f"Failed to enqueue multiple uploads: {e}", exc_info=True)
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Failed to enqueue uploads: {str(e)}"
+        )
+
+
+@router.get("/uploads/queue")
+async def get_upload_queue(
+    current_user: User = Depends(has_permission(Permission.CONTENT_CREATE))
+) -> UploadQueueResponse:
+    """
+    Get current upload queue status including:
+    - Queue statistics
+    - Active job
+    - Queued jobs
+    - Recently completed jobs
+    """
+    try:
+        stats = await upload_service.get_queue_stats()
+        active_job = await upload_service.get_active_job()
+        queue = await upload_service.get_queue()
+        recent = await upload_service.get_recent_completed(10)
+        
+        return UploadQueueResponse(
+            stats=stats,
+            active_job=UploadJobResponse.from_orm(active_job) if active_job else None,
+            queue=[UploadJobResponse.from_orm(j) for j in queue],
+            recent_completed=[UploadJobResponse.from_orm(j) for j in recent],
+        )
+        
+    except Exception as e:
+        logger.error(f"Failed to get queue: {e}", exc_info=True)
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Failed to get queue: {str(e)}"
+        )
+
+
+@router.get("/uploads/history")
+async def get_upload_history(
+    limit: int = Query(default=50, le=200),
+    offset: int = Query(default=0, ge=0),
+    current_user: User = Depends(has_permission(Permission.CONTENT_CREATE))
+):
+    """Get upload history with pagination"""
+    try:
+        from app.models.upload import UploadJob, UploadStatus
+        
+        jobs = await UploadJob.find(
+            UploadJob.status.in_([
+                UploadStatus.COMPLETED,
+                UploadStatus.FAILED,
+                UploadStatus.CANCELLED
+            ])
+        ).sort("-completed_at").skip(offset).limit(limit).to_list()
+        
+        total = await UploadJob.find(
+            UploadJob.status.in_([
+                UploadStatus.COMPLETED,
+                UploadStatus.FAILED,
+                UploadStatus.CANCELLED
+            ])
+        ).count()
+        
+        return {
+            "total": total,
+            "limit": limit,
+            "offset": offset,
+            "jobs": [UploadJobResponse.from_orm(j) for j in jobs]
+        }
+        
+    except Exception as e:
+        logger.error(f"Failed to get history: {e}", exc_info=True)
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Failed to get history: {str(e)}"
+        )
+
+
+@router.get("/uploads/job/{job_id}")
+async def get_upload_job(
+    job_id: str,
+    current_user: User = Depends(has_permission(Permission.CONTENT_CREATE))
+):
+    """Get details of a specific upload job"""
+    try:
+        job = await upload_service.get_job(job_id)
+        
+        if not job:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail=f"Job not found: {job_id}"
+            )
+        
+        return UploadJobResponse.from_orm(job)
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Failed to get job: {e}", exc_info=True)
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Failed to get job: {str(e)}"
+        )
+
+
+@router.delete("/uploads/job/{job_id}")
+async def cancel_upload_job(
+    job_id: str,
+    current_user: User = Depends(has_permission(Permission.CONTENT_CREATE))
+):
+    """Cancel an upload job"""
+    try:
+        success = await upload_service.cancel_job(job_id)
+        
+        if not success:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail=f"Job not found or already completed: {job_id}"
+            )
+        
+        return {"status": "cancelled", "job_id": job_id}
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Failed to cancel job: {e}", exc_info=True)
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Failed to cancel job: {str(e)}"
+        )
+
+
+# ============ MONITORED FOLDERS ============
+
+@router.get("/uploads/monitored-folders")
+async def get_monitored_folders(
+    current_user: User = Depends(has_permission(Permission.CONTENT_CREATE))
+) -> List[MonitoredFolderResponse]:
+    """Get all monitored folders"""
+    try:
+        folders = await folder_monitor_service.get_all_monitored_folders()
+        return [MonitoredFolderResponse.from_orm(f) for f in folders]
+        
+    except Exception as e:
+        logger.error(f"Failed to get monitored folders: {e}", exc_info=True)
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Failed to get monitored folders: {str(e)}"
+        )
+
+
+@router.post("/uploads/monitored-folders")
+async def add_monitored_folder(
+    folder: MonitoredFolderCreate,
+    current_user: User = Depends(has_permission(Permission.CONTENT_CREATE))
+):
+    """Add a new monitored folder"""
+    try:
+        created = await folder_monitor_service.add_monitored_folder(
+            path=folder.path,
+            content_type=folder.content_type,
+            name=folder.name,
+            auto_upload=folder.auto_upload,
+            recursive=folder.recursive,
+            file_patterns=folder.file_patterns,
+            exclude_patterns=folder.exclude_patterns,
+            scan_interval=folder.scan_interval,
+            user_id=str(current_user.id)
+        )
+        
+        return MonitoredFolderResponse.from_orm(created)
+        
+    except FileNotFoundError as e:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=str(e)
+        )
+    except ValueError as e:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=str(e)
+        )
+    except Exception as e:
+        logger.error(f"Failed to add monitored folder: {e}", exc_info=True)
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Failed to add monitored folder: {str(e)}"
+        )
+
+
+@router.put("/uploads/monitored-folders/{folder_id}")
+async def update_monitored_folder(
+    folder_id: str,
+    updates: MonitoredFolderUpdate,
+    current_user: User = Depends(has_permission(Permission.CONTENT_CREATE))
+):
+    """Update a monitored folder"""
+    try:
+        updated = await folder_monitor_service.update_monitored_folder(
+            folder_id=folder_id,
+            **updates.dict(exclude_unset=True)
+        )
+        
+        return MonitoredFolderResponse.from_orm(updated)
+        
+    except ValueError as e:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=str(e)
+        )
+    except Exception as e:
+        logger.error(f"Failed to update monitored folder: {e}", exc_info=True)
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Failed to update monitored folder: {str(e)}"
+        )
+
+
+@router.delete("/uploads/monitored-folders/{folder_id}")
+async def remove_monitored_folder(
+    folder_id: str,
+    current_user: User = Depends(has_permission(Permission.CONTENT_CREATE))
+):
+    """Remove a monitored folder"""
+    try:
+        success = await folder_monitor_service.remove_monitored_folder(folder_id)
+        
+        if not success:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail=f"Folder not found: {folder_id}"
+            )
+        
+        return {"status": "removed", "folder_id": folder_id}
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Failed to remove monitored folder: {e}", exc_info=True)
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Failed to remove monitored folder: {str(e)}"
+        )
+
+
+@router.post("/uploads/scan-now")
+async def scan_monitored_folders_now(
+    folder_id: Optional[str] = None,
+    current_user: User = Depends(has_permission(Permission.CONTENT_CREATE))
+):
+    """Trigger an immediate scan of monitored folders"""
+    try:
+        if folder_id:
+            # Scan specific folder
+            result = await folder_monitor_service.scan_folder_immediately(folder_id)
+        else:
+            # Scan all folders
+            result = await folder_monitor_service.scan_and_enqueue()
+        
+        return result
+        
+    except ValueError as e:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=str(e)
+        )
+    except Exception as e:
+        logger.error(f"Failed to scan folders: {e}", exc_info=True)
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Failed to scan folders: {str(e)}"
+        )
+
+
+# ============ WEBSOCKET ============
+
+# WebSocket connections manager
+class UploadWebSocketManager:
+    def __init__(self):
+        self.active_connections: List[WebSocket] = []
+    
+    async def connect(self, websocket: WebSocket):
+        await websocket.accept()
+        self.active_connections.append(websocket)
+        logger.info(f"WebSocket connected. Total connections: {len(self.active_connections)}")
+    
+    def disconnect(self, websocket: WebSocket):
+        if websocket in self.active_connections:
+            self.active_connections.remove(websocket)
+        logger.info(f"WebSocket disconnected. Total connections: {len(self.active_connections)}")
+    
+    async def broadcast(self, message: dict):
+        """Broadcast message to all connected clients"""
+        disconnected = []
+        for connection in self.active_connections:
+            try:
+                await connection.send_json(message)
+            except Exception as e:
+                logger.error(f"Failed to send message: {e}")
+                disconnected.append(connection)
+        
+        # Remove disconnected clients
+        for conn in disconnected:
+            self.disconnect(conn)
+
+
+ws_manager = UploadWebSocketManager()
+
+# Set the callback for upload service
+upload_service.set_websocket_callback(ws_manager.broadcast)
+
+
+@router.websocket("/uploads/ws")
+async def upload_websocket(websocket: WebSocket, token: str = Query(...)):
+    """
+    WebSocket endpoint for real-time upload progress updates.
+    
+    Clients receive messages:
+    - {"type": "queue_update", "stats": {...}, "active_job": {...}, "queue": [...], "recent_completed": [...]}
+    - {"type": "connected", "message": "..."}
+    - {"type": "error", "message": "..."}
+    
+    Clients can send:
+    - {"type": "ping"}
+    """
+    # Authenticate user
+    try:
+        payload = decode_token(token)
+        if not payload:
+            await websocket.close(code=4001, reason="Invalid token")
+            return
+        user_id = payload.get("sub")
+        if not user_id:
+            await websocket.close(code=4001, reason="Invalid token")
+            return
+    except Exception:
+        await websocket.close(code=4001, reason="Invalid token")
+        return
+    
+    # Connect
+    await ws_manager.connect(websocket)
+    
+    try:
+        # Send initial connection message
+        await websocket.send_json({
+            "type": "connected",
+            "message": "Connected to upload service"
+        })
+        
+        # Send initial queue state
+        stats = await upload_service.get_queue_stats()
+        active_job = await upload_service.get_active_job()
+        queue = await upload_service.get_queue()
+        recent = await upload_service.get_recent_completed(5)
+        
+        await websocket.send_json({
+            "type": "queue_update",
+            "stats": stats.dict(),
+            "active_job": UploadJobResponse.from_orm(active_job).dict() if active_job else None,
+            "queue": [UploadJobResponse.from_orm(j).dict() for j in queue],
+            "recent_completed": [UploadJobResponse.from_orm(j).dict() for j in recent],
+        })
+        
+        # Message loop
+        while True:
+            data = await websocket.receive_text()
+            
+            try:
+                message = json.loads(data)
+                msg_type = message.get("type")
+                
+                if msg_type == "ping":
+                    await websocket.send_json({
+                        "type": "pong",
+                        "timestamp": asyncio.get_event_loop().time()
+                    })
+                
+            except json.JSONDecodeError:
+                await websocket.send_json({
+                    "type": "error",
+                    "message": "Invalid JSON"
+                })
+                
+    except WebSocketDisconnect:
+        ws_manager.disconnect(websocket)
+    except Exception as e:
+        logger.error(f"WebSocket error: {e}", exc_info=True)
+        ws_manager.disconnect(websocket)

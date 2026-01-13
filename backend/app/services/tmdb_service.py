@@ -167,6 +167,12 @@ class TMDBService:
             "genres": [],
             "cast": [],
             "director": None,
+            "release_year": None,
+            "original_title": None,
+            "original_language": None,
+            "tagline": None,
+            "status": None,
+            "popularity": None,
         }
 
         # Search for the movie
@@ -193,6 +199,25 @@ class TMDBService:
         result["overview"] = details.get("overview")
         result["runtime"] = details.get("runtime")
         result["genres"] = [g.get("name") for g in details.get("genres", [])]
+        
+        # Extract ratings (TMDB provides vote_average, not IMDB rating directly)
+        result["imdb_rating"] = details.get("vote_average")  # TMDB's rating (0-10 scale)
+        result["imdb_votes"] = details.get("vote_count")
+        
+        # Extract release date and year
+        release_date = details.get("release_date")  # Format: "YYYY-MM-DD"
+        if release_date:
+            try:
+                result["release_year"] = int(release_date.split("-")[0])
+            except (ValueError, IndexError):
+                pass
+        
+        # Extract additional metadata
+        result["original_title"] = details.get("original_title")
+        result["original_language"] = details.get("original_language")
+        result["tagline"] = details.get("tagline")
+        result["status"] = details.get("status")  # "Released", "Post Production", etc.
+        result["popularity"] = details.get("popularity")
 
         # Poster image (tall vertical - for thumbnail/cover)
         if details.get("poster_path"):
@@ -226,6 +251,8 @@ class TMDBService:
         result = {
             "tmdb_id": None,
             "imdb_id": None,
+            "imdb_rating": None,
+            "imdb_votes": None,
             "trailer_url": None,
             "poster": None,
             "backdrop": None,
@@ -234,6 +261,12 @@ class TMDBService:
             "total_episodes": None,
             "genres": [],
             "cast": [],
+            "release_year": None,
+            "original_title": None,
+            "original_language": None,
+            "tagline": None,
+            "status": None,
+            "popularity": None,
         }
 
         # Search for the series
@@ -261,6 +294,25 @@ class TMDBService:
         result["total_seasons"] = details.get("number_of_seasons")
         result["total_episodes"] = details.get("number_of_episodes")
         result["genres"] = [g.get("name") for g in details.get("genres", [])]
+        
+        # Extract ratings (TMDB provides vote_average)
+        result["imdb_rating"] = details.get("vote_average")
+        result["imdb_votes"] = details.get("vote_count")
+        
+        # Extract first air date and year
+        first_air_date = details.get("first_air_date")  # Format: "YYYY-MM-DD"
+        if first_air_date:
+            try:
+                result["release_year"] = int(first_air_date.split("-")[0])
+            except (ValueError, IndexError):
+                pass
+        
+        # Extract additional metadata
+        result["original_title"] = details.get("original_name")
+        result["original_language"] = details.get("original_language")
+        result["tagline"] = details.get("tagline")
+        result["status"] = details.get("status")
+        result["popularity"] = details.get("popularity")
 
         # Poster image (tall vertical - for thumbnail/cover)
         if details.get("poster_path"):

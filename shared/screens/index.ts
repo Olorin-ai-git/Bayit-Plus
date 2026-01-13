@@ -32,5 +32,6 @@ export { CampaignDetailScreen } from './admin/CampaignDetailScreen';
 export { EmailCampaignsScreen } from './admin/EmailCampaignsScreen';
 export { PushNotificationsScreen } from './admin/PushNotificationsScreen';
 export { MarketingDashboardScreen } from './admin/MarketingDashboardScreen';
+export { UploadsScreen } from './admin/UploadsScreen';
 export { AuditLogsScreen } from './admin/AuditLogsScreen';
 export { SettingsScreen } from './admin/SettingsScreen';

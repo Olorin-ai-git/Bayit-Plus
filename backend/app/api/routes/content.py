@@ -746,8 +746,14 @@ async def enrich_movie_with_tmdb(
         update_fields["tmdb_id"] = tmdb_data["tmdb_id"]
     if tmdb_data.get("imdb_id"):
         update_fields["imdb_id"] = tmdb_data["imdb_id"]
-    if tmdb_data.get("imdb_rating"):
+    if tmdb_data.get("imdb_rating") is not None:
         update_fields["imdb_rating"] = tmdb_data["imdb_rating"]
+    if tmdb_data.get("imdb_votes") is not None:
+        update_fields["imdb_votes"] = tmdb_data["imdb_votes"]
+    if tmdb_data.get("release_year") and not movie.year:
+        update_fields["year"] = tmdb_data["release_year"]
+    if tmdb_data.get("poster") and not movie.poster_url:
+        update_fields["poster_url"] = tmdb_data["poster"]
     if tmdb_data.get("trailer_url"):
         update_fields["trailer_url"] = tmdb_data["trailer_url"]
     if tmdb_data.get("backdrop") and not movie.backdrop:

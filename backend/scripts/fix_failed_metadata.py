@@ -190,6 +190,18 @@ async def enrich_with_cleaned_title(content: Content, dry_run: bool = False) -> 
         if metadata.get("director") and not content.director:
             content.director = metadata["director"]
             updated_fields.append("director")
+        
+        if metadata.get("imdb_rating") is not None and content.imdb_rating is None:
+            content.imdb_rating = metadata["imdb_rating"]
+            updated_fields.append("imdb_rating")
+        
+        if metadata.get("imdb_votes") is not None and content.imdb_votes is None:
+            content.imdb_votes = metadata["imdb_votes"]
+            updated_fields.append("imdb_votes")
+        
+        if metadata.get("release_year") and not content.year:
+            content.year = metadata["release_year"]
+            updated_fields.append("year")
 
         if metadata.get("trailer_url") and not content.trailer_url:
             content.trailer_url = metadata["trailer_url"]
