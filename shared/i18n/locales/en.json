@@ -721,7 +721,44 @@
   "errors": {
     "networkError": "Network Error",
     "loadingFailed": "Loading Failed",
-    "tryAgain": "Try Again"
+    "tryAgain": "Try Again",
+    "offline": {
+      "title": "No Internet Connection",
+      "message": "You are currently offline. Some features may not be available.",
+      "ttsMessage": "No internet connection. You are now in offline mode."
+    },
+    "online": {
+      "title": "Connection Restored",
+      "message": "You are back online.",
+      "ttsMessage": "Internet connection restored."
+    },
+    "api": {
+      "badRequest": "Something went wrong. Please try again.",
+      "unauthorized": "Please log in to continue.",
+      "forbidden": "You do not have permission to access this content.",
+      "notFound": "The content you are looking for is not available.",
+      "rateLimit": "You are making too many requests. Please wait a moment.",
+      "serverError": "Our servers are having issues. Please try again later.",
+      "unknown": "Something went wrong. Please try again.",
+      "networkTimeout": "Unable to connect to our servers. Please check your connection.",
+      "offlineMessage": "You are offline. Please check your internet connection.",
+      "requestFailed": "Something went wrong. Please try again."
+    },
+    "voice": {
+      "permissionDenied": "Microphone access is required for voice commands. Please enable it in Settings.",
+      "recognitionFailed": "I didn't understand that. Please try again.",
+      "commandFailed": "Voice command failed. Please try again."
+    },
+    "widget": {
+      "loadFailed": "Unable to load widget. Please try again."
+    },
+    "buttons": {
+      "ok": "OK",
+      "retry": "Retry",
+      "cancel": "Cancel"
+    },
+    "title": "Error",
+    "networkUnavailable": "Network unavailable"
   },
   "player": {
     "loading": "Loading...",

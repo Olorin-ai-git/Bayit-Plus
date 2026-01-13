@@ -702,7 +702,44 @@
   "errors": {
     "networkError": "Error de Red",
     "loadingFailed": "Carga Fallida",
-    "tryAgain": "Intentar de Nuevo"
+    "tryAgain": "Intentar de Nuevo",
+    "offline": {
+      "title": "Sin Conexión a Internet",
+      "message": "Estás sin conexión actualmente. Algunas funciones pueden no estar disponibles.",
+      "ttsMessage": "Sin conexión a internet. Ahora estás en modo sin conexión."
+    },
+    "online": {
+      "title": "Conexión Restaurada",
+      "message": "Estás de nuevo en línea.",
+      "ttsMessage": "Conexión a internet restaurada."
+    },
+    "api": {
+      "badRequest": "Algo salió mal. Por favor, inténtalo de nuevo.",
+      "unauthorized": "Por favor, inicia sesión para continuar.",
+      "forbidden": "No tienes permiso para acceder a este contenido.",
+      "notFound": "El contenido que buscas no está disponible.",
+      "rateLimit": "Estás haciendo demasiadas solicitudes. Por favor, espera un momento.",
+      "serverError": "Nuestros servidores tienen problemas. Por favor, inténtalo más tarde.",
+      "unknown": "Algo salió mal. Por favor, inténtalo de nuevo.",
+      "networkTimeout": "No se puede conectar a nuestros servidores. Por favor, verifica tu conexión.",
+      "offlineMessage": "Estás sin conexión. Por favor, verifica tu conexión a internet.",
+      "requestFailed": "Algo salió mal. Por favor, inténtalo de nuevo."
+    },
+    "voice": {
+      "permissionDenied": "Se requiere acceso al micrófono para comandos de voz. Por favor, habilítalo en Configuración.",
+      "recognitionFailed": "No entendí eso. Por favor, inténtalo de nuevo.",
+      "commandFailed": "Comando de voz falló. Por favor, inténtalo de nuevo."
+    },
+    "widget": {
+      "loadFailed": "No se puede cargar el widget. Por favor, inténtalo de nuevo."
+    },
+    "buttons": {
+      "ok": "OK",
+      "retry": "Reintentar",
+      "cancel": "Cancelar"
+    },
+    "title": "Error",
+    "networkUnavailable": "Red no disponible"
   },
   "player": {
     "loading": "Cargando...",

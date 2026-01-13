@@ -12,6 +12,7 @@
 import { Alert } from 'react-native';
 import NetInfo from '@react-native-community/netinfo';
 import { ttsService } from '@bayit/shared-services';
+import i18n from '@bayit/shared-i18n';
 
 export type ErrorSeverity = 'info' | 'warning' | 'error' | 'critical';
 
