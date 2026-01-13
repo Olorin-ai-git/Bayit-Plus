@@ -597,8 +597,6 @@ const styles = StyleSheet.create({
     borderWidth: 2,
     borderColor: 'rgba(255, 255, 255, 0.3)',
     borderTopColor: colors.text,
-    // @ts-ignore - Web CSS
-    animation: 'spin 1s linear infinite',
   },
   loadingText: {
     marginTop: spacing.sm,

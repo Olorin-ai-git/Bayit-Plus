@@ -150,6 +150,9 @@ export interface LiveChannel {
   is_active: boolean
   order: number
   requires_subscription: string
+  supports_live_subtitles: boolean
+  primary_language: string
+  available_translation_languages: string[]
   created_at: string
   updated_at: string
 }
@@ -168,6 +171,9 @@ export interface LiveChannelCreateInput {
   is_active?: boolean
   order?: number
   requires_subscription?: string
+  supports_live_subtitles?: boolean
+  primary_language?: string
+  available_translation_languages?: string[]
 }
 
 export interface LiveChannelUpdateInput {
@@ -184,6 +190,9 @@ export interface LiveChannelUpdateInput {
   is_active?: boolean
   order?: number
   requires_subscription?: string
+  supports_live_subtitles?: boolean
+  primary_language?: string
+  available_translation_languages?: string[]
 }
 
 // ============ RADIO STATIONS ============

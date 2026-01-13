@@ -18,7 +18,8 @@ from app.api.routes import (
     party, websocket, websocket_live_subtitles, zman, trending, chapters, subtitles, ritual, profiles, children, judaism, flows,
     device_pairing, onboarding, widgets, favorites, downloads, user_system_widgets, news, librarian,
     admin_content_vod_read, admin_content_vod_write, admin_content_vod_toggles, admin_categories, admin_live_channels,
-    admin_radio_stations, admin_podcasts, admin_podcast_episodes, admin_content_importer, admin_widgets, verification
+    admin_radio_stations, admin_podcasts, admin_podcast_episodes, admin_content_importer, admin_widgets, verification,
+    recordings
 )
 
 
@@ -422,6 +423,7 @@ app.include_router(watchlist.router, prefix=f"{settings.API_V1_PREFIX}/watchlist
 app.include_router(favorites.router, prefix=f"{settings.API_V1_PREFIX}/favorites", tags=["favorites"])
 app.include_router(downloads.router, prefix=f"{settings.API_V1_PREFIX}/downloads", tags=["downloads"])
 app.include_router(history.router, prefix=f"{settings.API_V1_PREFIX}/history", tags=["history"])
+app.include_router(recordings.router, prefix=f"{settings.API_V1_PREFIX}/recordings", tags=["recordings"])
 app.include_router(admin.router, prefix=f"{settings.API_V1_PREFIX}/admin", tags=["admin"])
 app.include_router(librarian.router, prefix=f"{settings.API_V1_PREFIX}", tags=["librarian"])
 app.include_router(admin_content_vod_read.router, prefix=f"{settings.API_V1_PREFIX}/admin", tags=["admin-content"])

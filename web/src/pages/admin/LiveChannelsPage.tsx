@@ -1,10 +1,10 @@
 import { useState, useEffect, useCallback } from 'react'
 import { View, Text, StyleSheet, Pressable, ScrollView } from 'react-native'
 import { useTranslation } from 'react-i18next'
-import { Plus, Edit, Trash2, X, AlertCircle } from 'lucide-react'
+import { Plus, Edit, Trash2, X, AlertCircle, Globe, ChevronDown, ChevronUp } from 'lucide-react'
 import { contentService } from '@/services/adminApi'
 import { colors, spacing, borderRadius } from '@bayit/shared/theme'
-import { GlassButton, GlassTable, GlassTableCell, GlassInput } from '@bayit/shared/ui'
+import { GlassButton, GlassTable, GlassTableCell, GlassInput, GlassView } from '@bayit/shared/ui'
 import { useDirection } from '@/hooks/useDirection'
 import { useModal } from '@/contexts/ModalContext'
 import logger from '@/utils/logger'
@@ -31,6 +31,7 @@ export default function LiveChannelsPage() {
   const [editingId, setEditingId] = useState<string | null>(null)
   const [editData, setEditData] = useState<EditingChannel>({})
   const [deleting, setDeleting] = useState<string | null>(null)
+  const [showSubtitleSettings, setShowSubtitleSettings] = useState(false)
 
   const loadChannels = useCallback(async () => {
     setIsLoading(true)
@@ -58,6 +59,7 @@ export default function LiveChannelsPage() {
   const handleEdit = (item: LiveChannel) => {
     setEditingId(item.id)
     setEditData(item)
+    setShowSubtitleSettings(item.supports_live_subtitles || false)
   }
 
   const handleSaveEdit = async () => {
@@ -140,6 +142,17 @@ export default function LiveChannelsPage() {
       render: (order: number) => <Text style={styles.cellText}>{order}</Text>,
     },
     {
+      key: 'supports_live_subtitles',
+      label: t('admin.content.columns.subtitles', { defaultValue: 'Subtitles' }),
+      render: (supported: boolean, item: LiveChannel) => (
+        <View style={[styles.badge, { backgroundColor: supported ? '#8b5cf620' : '#6b728020' }]}>
+          <Text style={[styles.badgeText, { color: supported ? '#8b5cf6' : '#6b7280' }]}>
+            {supported ? `✓ ${item.primary_language?.toUpperCase()}` : '—'}
+          </Text>
+        </View>
+      ),
+    },
+    {
       key: 'actions',
       label: '',
       width: 100,
@@ -175,7 +188,14 @@ export default function LiveChannelsPage() {
         <Pressable
           onPress={() => {
             setEditingId('new')
-            setEditData({ is_active: true, order: items.length + 1 })
+            setEditData({
+              is_active: true,
+              order: items.length + 1,
+              supports_live_subtitles: false,
+              primary_language: 'he',
+              available_translation_languages: ['en', 'es', 'ar']
+            })
+            setShowSubtitleSettings(false)
           }}
           style={styles.addButton}
         >
@@ -245,6 +265,112 @@ export default function LiveChannelsPage() {
             />
             <Text style={styles.checkboxLabel}>{t('admin.common.active')}</Text>
           </View>
+
+          {/* Live Subtitle Settings Section */}
+          <GlassView style={styles.subtitleSection}>
+            <Pressable
+              onPress={() => setShowSubtitleSettings(!showSubtitleSettings)}
+              style={styles.subtitleHeader}
+            >
+              <View style={styles.subtitleHeaderLeft}>
+                <Globe size={18} color={colors.primary} />
+                <Text style={styles.subtitleHeaderText}>
+                  {t('admin.liveChannels.subtitleSettings', 'Live Subtitle Settings')}
+                </Text>
+              </View>
+              {showSubtitleSettings ? (
+                <ChevronUp size={18} color={colors.textMuted} />
+              ) : (
+                <ChevronDown size={18} color={colors.textMuted} />
+              )}
+            </Pressable>
+
+            {showSubtitleSettings && (
+              <View style={styles.subtitleContent}>
+                <View style={styles.checkboxRow}>
+                  <input
+                    type="checkbox"
+                    id="supports_live_subtitles"
+                    checked={editData.supports_live_subtitles || false}
+                    onChange={(e) => setEditData({ ...editData, supports_live_subtitles: e.target.checked })}
+                    style={styles.checkbox}
+                  />
+                  <Text style={styles.checkboxLabel}>
+                    {t('admin.liveChannels.form.supportsSubtitles', 'Enable Live Subtitles')}
+                  </Text>
+                </View>
+
+                {editData.supports_live_subtitles && (
+                  <>
+                    <View style={styles.selectGroup}>
+                      <Text style={styles.selectLabel}>
+                        {t('admin.liveChannels.form.primaryLanguage', 'Primary Language (Source)')}
+                      </Text>
+                      <select
+                        value={editData.primary_language || 'he'}
+                        onChange={(e) => setEditData({ ...editData, primary_language: e.target.value })}
+                        style={styles.select as any}
+                      >
+                        <option value="he">🇮🇱 Hebrew (עברית)</option>
+                        <option value="en">🇺🇸 English</option>
+                        <option value="ar">🇸🇦 Arabic (العربية)</option>
+                        <option value="es">🇪🇸 Spanish (Español)</option>
+                        <option value="ru">🇷🇺 Russian (Русский)</option>
+                        <option value="fr">🇫🇷 French (Français)</option>
+                      </select>
+                    </View>
+
+                    <View style={styles.selectGroup}>
+                      <Text style={styles.selectLabel}>
+                        {t('admin.liveChannels.form.targetLanguages', 'Available Translation Languages')}
+                      </Text>
+                      <View style={styles.languageChips}>
+                        {['en', 'es', 'ar', 'ru', 'fr'].map((lang) => {
+                          const langLabels: Record<string, string> = {
+                            en: '🇺🇸 English',
+                            es: '🇪🇸 Spanish',
+                            ar: '🇸🇦 Arabic',
+                            ru: '🇷🇺 Russian',
+                            fr: '🇫🇷 French'
+                          }
+                          const isSelected = editData.available_translation_languages?.includes(lang)
+                          return (
+                            <Pressable
+                              key={lang}
+                              onPress={() => {
+                                const current = editData.available_translation_languages || []
+                                const updated = isSelected
+                                  ? current.filter((l) => l !== lang)
+                                  : [...current, lang]
+                                setEditData({ ...editData, available_translation_languages: updated })
+                              }}
+                              style={[
+                                styles.languageChip,
+                                isSelected && styles.languageChipSelected
+                              ]}
+                            >
+                              <Text
+                                style={[
+                                  styles.languageChipText,
+                                  isSelected && styles.languageChipTextSelected
+                                ]}
+                              >
+                                {langLabels[lang]}
+                              </Text>
+                            </Pressable>
+                          )
+                        })}
+                      </View>
+                      <Text style={styles.helperText}>
+                        {t('admin.liveChannels.form.targetLanguagesHelp', 'Select which languages users can translate to in real-time')}
+                      </Text>
+                    </View>
+                  </>
+                )}
+              </View>
+            )}
+          </GlassView>
+
           <View style={styles.formActions}>
             <Pressable onPress={() => setEditingId(null)} style={styles.cancelBtn}>
               <Text style={styles.cancelBtnText}>{t('admin.common.cancel')}</Text>
@@ -296,4 +422,86 @@ const styles = StyleSheet.create({
   badgeText: { fontSize: 12, fontWeight: '500' },
   actionsCell: { flexDirection: 'row', gap: spacing.sm, alignItems: 'center' },
   actionButton: { padding: spacing.sm, borderRadius: borderRadius.md, justifyContent: 'center', alignItems: 'center' },
+  // Subtitle Settings
+  subtitleSection: {
+    marginTop: spacing.lg,
+    marginBottom: spacing.lg,
+    borderRadius: borderRadius.lg,
+    overflow: 'hidden',
+  },
+  subtitleHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    padding: spacing.md,
+    backgroundColor: 'rgba(0, 217, 255, 0.05)',
+    borderBottomWidth: 1,
+    borderBottomColor: 'rgba(0, 217, 255, 0.1)',
+  },
+  subtitleHeaderLeft: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.sm,
+  },
+  subtitleHeaderText: {
+    fontSize: 15,
+    fontWeight: '600',
+    color: colors.text,
+  },
+  subtitleContent: {
+    padding: spacing.md,
+    gap: spacing.md,
+  },
+  selectGroup: {
+    marginTop: spacing.sm,
+  },
+  selectLabel: {
+    fontSize: 14,
+    fontWeight: '500',
+    color: colors.text,
+    marginBottom: spacing.sm,
+  },
+  select: {
+    width: '100%',
+    padding: spacing.md,
+    borderRadius: borderRadius.md,
+    borderWidth: 1,
+    borderColor: colors.border,
+    backgroundColor: colors.background,
+    color: colors.text,
+    fontSize: 14,
+  },
+  languageChips: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: spacing.sm,
+    marginTop: spacing.sm,
+  },
+  languageChip: {
+    paddingHorizontal: spacing.md,
+    paddingVertical: spacing.sm,
+    borderRadius: borderRadius.full,
+    borderWidth: 1,
+    borderColor: colors.border,
+    backgroundColor: colors.background,
+  },
+  languageChipSelected: {
+    backgroundColor: 'rgba(0, 217, 255, 0.15)',
+    borderColor: colors.primary,
+  },
+  languageChipText: {
+    fontSize: 13,
+    color: colors.textSecondary,
+    fontWeight: '500',
+  },
+  languageChipTextSelected: {
+    color: colors.primary,
+    fontWeight: '600',
+  },
+  helperText: {
+    fontSize: 12,
+    color: colors.textMuted,
+    marginTop: spacing.sm,
+    fontStyle: 'italic',
+  },
 })

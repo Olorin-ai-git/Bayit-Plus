@@ -33,6 +33,8 @@ import ChapterTimeline from './ChapterTimeline'
 import SubtitleOverlay from './SubtitleOverlay'
 import SubtitleControls from './SubtitleControls'
 import LiveSubtitleControls from './LiveSubtitleControls'
+import { RecordButton } from './RecordButton'
+import { RecordingStatusIndicator } from './RecordingStatusIndicator'
 import {
   SubtitleTrack,
   SubtitleCue,
@@ -132,6 +134,10 @@ export default function VideoPlayer({
 
   // Live subtitle state (Premium feature)
   const [liveSubtitleCues, setLiveSubtitleCues] = useState<LiveSubtitleCue[]>([])
+
+  // Recording state (Premium feature)
+  const [isRecording, setIsRecording] = useState(false)
+  const [recordingDuration, setRecordingDuration] = useState(0)
 
   useEffect(() => {
     if (!src || !videoRef.current) return
@@ -465,10 +471,13 @@ export default function VideoPlayer({
 
   // Live subtitle handler (Premium feature)
   const handleLiveSubtitleCue = (cue: LiveSubtitleCue) => {
-    setLiveSubtitleCues((prev) => [
-      ...prev.slice(-50), // Keep last 50 cues
-      { ...cue, displayUntil: Date.now() + 5000 }, // Show for 5 seconds
-    ])
+    console.log('🎬 [VideoPlayer] Received live subtitle cue:', cue.text)
+    const newCue = { ...cue, displayUntil: Date.now() + 5000 }
+    setLiveSubtitleCues((prev) => {
+      const updated = [...prev.slice(-50), newCue]
+      console.log('🎬 [VideoPlayer] Updated liveSubtitleCues, count:', updated.length, 'isLive:', isLive)
+      return updated
+    })
   }
 
   const progress = duration > 0 ? (currentTime / duration) * 100 : 0
@@ -501,7 +510,13 @@ export default function VideoPlayer({
       {isLive && liveSubtitleCues.length > 0 && (
         <View style={styles.liveSubtitleOverlay}>
           {liveSubtitleCues
-            .filter((cue) => (cue as any).displayUntil > Date.now())
+            .filter((cue) => {
+              const shouldShow = (cue as any).displayUntil > Date.now()
+              if (shouldShow) {
+                console.log('📺 [VideoPlayer] Displaying subtitle:', cue.text.substring(0, 50))
+              }
+              return shouldShow
+            })
             .slice(-3)
             .map((cue, idx) => (
               <View key={`${cue.timestamp}-${idx}`} style={styles.liveSubtitleCue}>
@@ -1058,21 +1073,24 @@ const styles = StyleSheet.create({
     zIndex: 100,
   },
   liveSubtitleCue: {
-    backgroundColor: 'rgba(0, 0, 0, 0.8)',
-    paddingHorizontal: spacing.md,
-    paddingVertical: spacing.xs,
-    borderRadius: 4,
-    marginVertical: spacing.xxs,
+    backgroundColor: 'rgba(0, 0, 0, 0.85)',
+    paddingHorizontal: spacing.lg,
+    paddingVertical: spacing.sm,
+    borderRadius: 8,
+    marginVertical: spacing.xs,
     maxWidth: '90%',
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.1)',
   },
   liveSubtitleText: {
-    color: colors.textPrimary,
-    fontSize: 18,
-    fontWeight: '600',
+    color: '#FFFFFF',
+    fontSize: 24,
+    fontWeight: '700',
     textAlign: 'center',
-    textShadowColor: 'rgba(0, 0, 0, 0.95)',
-    textShadowOffset: { width: 1, height: 1 },
-    textShadowRadius: 3,
+    textShadowColor: 'rgba(0, 0, 0, 1)',
+    textShadowOffset: { width: 2, height: 2 },
+    textShadowRadius: 4,
+    lineHeight: 32,
   },
   // Settings Panel
   settingsPanel: {

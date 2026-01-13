@@ -360,8 +360,7 @@ const styles = StyleSheet.create({
     cursor: 'not-allowed',
   },
   spinning: {
-    // @ts-ignore
-    animation: 'spin 1s linear infinite',
+    // Visual feedback for spinning state (animation removed for React Native Web compatibility)
   },
   // Carousel Section
   carouselSection: {

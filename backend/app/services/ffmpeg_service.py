@@ -12,13 +12,19 @@ import json
 import tempfile
 import os
 import logging
+import asyncio
 from typing import Dict, List, Optional, Any
+from pathlib import Path
 
 logger = logging.getLogger(__name__)
 
 
 class FFmpegService:
-    """Service for video analysis and subtitle extraction using FFmpeg."""
+    """Service for video analysis, subtitle extraction, and live stream recording using FFmpeg."""
+
+    def __init__(self):
+        self.temp_dir = Path("/tmp/recordings")
+        self.temp_dir.mkdir(exist_ok=True, parents=True)
 
     async def analyze_video(self, video_url: str) -> Dict[str, Any]:
         """
@@ -305,6 +311,250 @@ class FFmpegService:
 
         except Exception as e:
             logger.error(f"Failed to extract subtitles from {video_url}: {str(e)}")
+            raise
+
+    async def start_recording_stream(
+        self,
+        stream_url: str,
+        output_path: str,
+        recording_id: str,
+        max_duration_seconds: int = 14400
+    ) -> subprocess.Popen:
+        """
+        Start recording HLS stream with FFmpeg.
+
+        Args:
+            stream_url: HLS stream URL to record
+            output_path: Path where to save the recording
+            recording_id: Unique recording identifier for progress monitoring
+            max_duration_seconds: Maximum recording duration (default 4 hours)
+
+        Returns:
+            FFmpeg process handle
+        """
+        try:
+            logger.info(f"Starting recording of stream {stream_url} to {output_path}")
+
+            # FFmpeg command for HLS recording with re-encoding
+            cmd = [
+                'ffmpeg',
+                '-i', stream_url,
+                '-c:v', 'libx264',  # Re-encode to H.264
+                '-preset', 'faster',  # Balance speed/quality
+                '-crf', '23',  # Quality
+                '-c:a', 'aac',  # Audio codec
+                '-b:a', '128k',  # Audio bitrate
+                '-movflags', '+faststart',  # Web optimization
+                '-t', str(max_duration_seconds),  # Max duration
+                '-progress', 'pipe:1',  # Progress output
+                '-loglevel', 'error',
+                '-y',  # Overwrite output file
+                output_path
+            ]
+
+            process = subprocess.Popen(
+                cmd,
+                stdout=subprocess.PIPE,
+                stderr=subprocess.PIPE,
+                text=True
+            )
+
+            logger.info(f"FFmpeg recording started with PID {process.pid}")
+
+            # Monitor progress in background
+            asyncio.create_task(self._monitor_ffmpeg_progress(process, recording_id))
+
+            return process
+
+        except Exception as e:
+            logger.error(f"Failed to start recording: {str(e)}")
+            raise Exception(f"Failed to start recording: {str(e)}")
+
+    async def _monitor_ffmpeg_progress(
+        self,
+        process: subprocess.Popen,
+        recording_id: str
+    ):
+        """
+        Monitor FFmpeg progress and update session.
+
+        Parses FFmpeg progress output and can be used to update
+        RecordingSession with duration and file size information.
+
+        Args:
+            process: FFmpeg process to monitor
+            recording_id: Recording identifier for updates
+        """
+        try:
+            logger.info(f"Starting progress monitor for recording {recording_id}")
+
+            while process.poll() is None:
+                line = process.stdout.readline()
+                if not line:
+                    await asyncio.sleep(0.1)
+                    continue
+
+                # Parse FFmpeg progress output
+                # Format: key=value pairs like "out_time_ms=5000000"
+                if '=' in line:
+                    key, value = line.strip().split('=', 1)
+
+                    if key == 'out_time_ms':
+                        # Convert microseconds to seconds
+                        try:
+                            duration_seconds = int(value) // 1000000
+                            logger.debug(f"Recording {recording_id}: {duration_seconds}s")
+                        except ValueError:
+                            pass
+
+                    # Could update RecordingSession here with progress
+                    # await update_recording_session(recording_id, duration, file_size)
+
+            # Process completed
+            return_code = process.returncode
+            logger.info(f"Recording {recording_id} completed with code {return_code}")
+
+        except Exception as e:
+            logger.error(f"Error monitoring FFmpeg progress: {str(e)}")
+
+    async def stop_recording(self, process: subprocess.Popen):
+        """
+        Gracefully stop FFmpeg recording.
+
+        Sends SIGTERM for graceful stop, waits up to 10 seconds,
+        then kills the process if it doesn't stop.
+
+        Args:
+            process: FFmpeg process to stop
+        """
+        try:
+            logger.info(f"Stopping recording process PID {process.pid}")
+
+            # Send SIGTERM for graceful stop
+            process.terminate()
+
+            try:
+                await asyncio.wait_for(
+                    asyncio.get_event_loop().run_in_executor(None, process.wait),
+                    timeout=10
+                )
+                logger.info(f"Recording stopped gracefully")
+            except asyncio.TimeoutError:
+                logger.warning(f"Recording didn't stop gracefully, killing process")
+                process.kill()
+                await asyncio.get_event_loop().run_in_executor(None, process.wait)
+
+        except Exception as e:
+            logger.error(f"Error stopping recording: {str(e)}")
+            raise
+
+    async def extract_thumbnail_from_video(
+        self,
+        video_path: str,
+        output_path: str,
+        timestamp_seconds: int = 30
+    ):
+        """
+        Extract thumbnail from video at specific timestamp.
+
+        Args:
+            video_path: Path to video file
+            output_path: Path where to save thumbnail
+            timestamp_seconds: Timestamp to extract frame from (default 30s)
+        """
+        try:
+            logger.info(f"Extracting thumbnail from {video_path} at {timestamp_seconds}s")
+
+            cmd = [
+                'ffmpeg',
+                '-ss', str(timestamp_seconds),
+                '-i', video_path,
+                '-vframes', '1',
+                '-vf', 'scale=1280:-1',
+                '-q:v', '2',
+                '-y',
+                output_path
+            ]
+
+            process = await asyncio.create_subprocess_exec(
+                *cmd,
+                stdout=asyncio.subprocess.PIPE,
+                stderr=asyncio.subprocess.PIPE
+            )
+
+            await process.wait()
+
+            if process.returncode != 0:
+                raise Exception(f"FFmpeg thumbnail extraction failed with code {process.returncode}")
+
+            logger.info(f"Thumbnail extracted successfully to {output_path}")
+
+        except Exception as e:
+            logger.error(f"Failed to extract thumbnail: {str(e)}")
+            raise
+
+    async def get_video_info(self, video_path: str) -> dict:
+        """
+        Get video metadata using ffprobe.
+
+        Args:
+            video_path: Path to video file
+
+        Returns:
+            Dictionary with video metadata including codec, resolution, duration, etc.
+        """
+        try:
+            logger.info(f"Getting video info for {video_path}")
+
+            cmd = [
+                'ffprobe',
+                '-v', 'quiet',
+                '-print_format', 'json',
+                '-show_format',
+                '-show_streams',
+                video_path
+            ]
+
+            process = await asyncio.create_subprocess_exec(
+                *cmd,
+                stdout=asyncio.subprocess.PIPE,
+                stderr=asyncio.subprocess.PIPE
+            )
+
+            stdout, stderr = await process.communicate()
+
+            if process.returncode != 0:
+                raise Exception(f"ffprobe failed: {stderr.decode()}")
+
+            data = json.loads(stdout.decode())
+
+            # Extract video and audio stream info
+            video_stream = next(
+                (s for s in data.get('streams', []) if s.get('codec_type') == 'video'),
+                {}
+            )
+            audio_stream = next(
+                (s for s in data.get('streams', []) if s.get('codec_type') == 'audio'),
+                {}
+            )
+
+            info = {
+                'duration': float(data.get('format', {}).get('duration', 0)),
+                'size': int(data.get('format', {}).get('size', 0)),
+                'bitrate': int(data.get('format', {}).get('bit_rate', 0)),
+                'video_codec': video_stream.get('codec_name', 'unknown'),
+                'audio_codec': audio_stream.get('codec_name', 'unknown'),
+                'width': video_stream.get('width', 0),
+                'height': video_stream.get('height', 0),
+                'resolution': f"{video_stream.get('height', 0)}p" if video_stream.get('height') else 'unknown'
+            }
+
+            logger.info(f"Video info retrieved: {info['resolution']}, {info['duration']}s, {info['size']} bytes")
+
+            return info
+
+        except Exception as e:
+            logger.error(f"Failed to get video info: {str(e)}")
             raise
 
     async def verify_ffmpeg_installation(self) -> Dict[str, Any]:

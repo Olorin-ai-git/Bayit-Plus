@@ -4,6 +4,8 @@ Real-time speech-to-text using OpenAI Whisper API
 """
 import logging
 import io
+import wave
+import struct
 from typing import AsyncIterator, Optional
 from openai import AsyncOpenAI
 from app.core.config import settings
@@ -33,6 +35,28 @@ class WhisperTranscriptionService:
         self.client = AsyncOpenAI(api_key=settings.OPENAI_API_KEY)
         logger.info("✅ WhisperTranscriptionService initialized")
 
+    def _pcm_to_wav(self, pcm_data: bytes, sample_rate: int = 16000, channels: int = 1) -> bytes:
+        """
+        Convert raw PCM audio data to WAV format.
+
+        Args:
+            pcm_data: Raw PCM audio bytes (16-bit signed integers)
+            sample_rate: Sample rate in Hz (default: 16000)
+            channels: Number of audio channels (default: 1 for mono)
+
+        Returns:
+            WAV-formatted audio bytes
+        """
+        wav_buffer = io.BytesIO()
+
+        with wave.open(wav_buffer, 'wb') as wav_file:
+            wav_file.setnchannels(channels)
+            wav_file.setsampwidth(2)  # 2 bytes = 16 bits
+            wav_file.setframerate(sample_rate)
+            wav_file.writeframes(pcm_data)
+
+        return wav_buffer.getvalue()
+
     async def transcribe_audio_chunk(
         self,
         audio_data: bytes,
@@ -54,9 +78,12 @@ class WhisperTranscriptionService:
             # Convert language code to Whisper format
             lang_code = WHISPER_LANGUAGE_CODES.get(source_lang, source_lang)
 
-            # Create file-like object from audio bytes
-            audio_file = io.BytesIO(audio_data)
-            audio_file.name = f"audio.{format}"
+            # Convert raw PCM to WAV format with proper headers
+            wav_data = self._pcm_to_wav(audio_data, sample_rate=16000, channels=1)
+
+            # Create file-like object from WAV data
+            audio_file = io.BytesIO(wav_data)
+            audio_file.name = "audio.wav"
 
             # Call Whisper API
             transcript = await self.client.audio.transcriptions.create(
@@ -67,7 +94,7 @@ class WhisperTranscriptionService:
             )
 
             if transcript and transcript.strip():
-                logger.debug(f"Whisper transcribed: {transcript}")
+                logger.info(f"📝 Whisper transcribed: {transcript}")
                 return transcript.strip()
 
             return None

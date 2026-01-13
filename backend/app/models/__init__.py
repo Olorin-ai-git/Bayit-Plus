@@ -11,6 +11,13 @@ from app.models.user_system_widget import (
     UserSystemWidgetPositionUpdate,
     UserSystemWidgetPreferencesUpdate,
 )
+from app.models.recording import (
+    RecordingSession,
+    Recording,
+    RecordingSchedule,
+    RecordingSubtitleCue,
+    RecordingQuota,
+)
 
 __all__ = [
     # User
@@ -45,4 +52,10 @@ __all__ = [
     "UserSystemWidgetResponse",
     "UserSystemWidgetPositionUpdate",
     "UserSystemWidgetPreferencesUpdate",
+    # Recording
+    "RecordingSession",
+    "Recording",
+    "RecordingSchedule",
+    "RecordingSubtitleCue",
+    "RecordingQuota",
 ]

@@ -42,12 +42,12 @@ class LiveSubtitleService {
 
       const wsProtocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:'
       const wsHost = API_BASE_URL.replace(/^https?:\/\//, '')
-      const wsUrl = `${wsProtocol}//${wsHost}/api/v1/ws/live/${channelId}/subtitles?token=${token}&target_lang=${targetLang}`
+      const wsUrl = `${wsProtocol}//${wsHost}/ws/live/${channelId}/subtitles?token=${token}&target_lang=${targetLang}`
 
       this.ws = new WebSocket(wsUrl)
 
       this.ws.onopen = async () => {
-        console.log('Live subtitle connected')
+        console.log('✅ [LiveSubtitle] WebSocket connected')
         this.isConnected = true
         await this.startAudioCapture(videoElement)
       }
@@ -55,14 +55,23 @@ class LiveSubtitleService {
       this.ws.onmessage = (event) => {
         try {
           const msg = JSON.parse(event.data)
-          if (msg.type === 'subtitle') onSubtitle(msg.data)
-          else if (msg.type === 'error') onError(msg.message)
+          console.log('📨 [LiveSubtitle] Message received:', msg.type)
+          if (msg.type === 'connected') {
+            console.log(`🌍 [LiveSubtitle] Connected - Source: ${msg.source_lang}, Target: ${msg.target_lang}`)
+          } else if (msg.type === 'subtitle') {
+            console.log('📝 [LiveSubtitle] Subtitle received:', msg.data.text)
+            onSubtitle(msg.data)
+          } else if (msg.type === 'error') {
+            console.error('❌ [LiveSubtitle] Server error:', msg.message)
+            onError(msg.message)
+          }
         } catch (error) {
-          console.error('WebSocket parse error:', error)
+          console.error('❌ [LiveSubtitle] WebSocket parse error:', error)
         }
       }
 
-      this.ws.onerror = () => {
+      this.ws.onerror = (error) => {
+        console.error('❌ [LiveSubtitle] WebSocket error:', error)
         onError('Connection error')
         this.isConnected = false
       }
@@ -82,15 +91,26 @@ class LiveSubtitleService {
   private async startAudioCapture(videoElement: HTMLVideoElement): Promise<void> {
     try {
       this.audioContext = new AudioContext({ sampleRate: 16000 })
+      console.log('🎤 [LiveSubtitle] AudioContext created with sampleRate: 16000Hz')
 
       const stream = (videoElement as any).captureStream?.() || (videoElement as any).mozCaptureStream?.()
-      if (!stream) throw new Error('Audio capture not supported')
+      if (!stream) {
+        throw new Error('Audio capture not supported by this browser')
+      }
+      console.log('📹 [LiveSubtitle] Video stream captured')
 
       this.mediaStreamSource = this.audioContext.createMediaStreamSource(stream)
       this.processor = this.audioContext.createScriptProcessor(4096, 1, 1)
+      console.log('🔧 [LiveSubtitle] Audio processor created (buffer size: 4096)')
 
+      let chunkCount = 0
       this.processor.onaudioprocess = (e) => {
-        if (!this.ws || this.ws.readyState !== WebSocket.OPEN) return
+        if (!this.ws || this.ws.readyState !== WebSocket.OPEN) {
+          if (chunkCount % 100 === 0) {
+            console.warn('⚠️ [LiveSubtitle] WebSocket not ready, skipping audio chunk')
+          }
+          return
+        }
 
         const inputData = e.inputBuffer.getChannelData(0)
         const int16Data = new Int16Array(inputData.length)
@@ -101,13 +121,19 @@ class LiveSubtitleService {
         }
 
         this.ws.send(int16Data.buffer)
+        chunkCount++
+
+        // Log every 100 chunks to avoid console spam
+        if (chunkCount % 100 === 0) {
+          console.log(`📦 [LiveSubtitle] Sent ${chunkCount} audio chunks (${int16Data.length} samples/chunk, ${int16Data.length * 2} bytes/chunk)`)
+        }
       }
 
       this.mediaStreamSource.connect(this.processor)
       this.processor.connect(this.audioContext.destination)
-      console.log('Audio capture started')
+      console.log('✅ [LiveSubtitle] Audio capture started successfully')
     } catch (error) {
-      console.error('Audio capture error:', error)
+      console.error('❌ [LiveSubtitle] Audio capture error:', error)
       throw error
     }
   }
@@ -166,7 +192,7 @@ class LiveSubtitleService {
       const authData = JSON.parse(localStorage.getItem('bayit-auth') || '{}')
       const token = authData?.state?.token
       const response = await fetch(
-        `${API_BASE_URL}/api/v1/live/${channelId}/subtitles/status`,
+        `${API_BASE_URL}/live/${channelId}/subtitles/status`,
         {
           headers: {
             'Authorization': `Bearer ${token}`

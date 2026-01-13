@@ -144,10 +144,7 @@ const styles = StyleSheet.create({
   },
   knob: {
     backgroundColor: 'rgba(255, 255, 255, 0.9)',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.2,
-    shadowRadius: 2,
+    boxShadow: '0px 1px 2px rgba(0, 0, 0, 0.2)',
     elevation: 2,
   },
   knobActive: {

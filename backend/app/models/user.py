@@ -2,6 +2,7 @@ from datetime import datetime
 from typing import Optional, List
 from beanie import Document
 from pydantic import BaseModel, EmailStr, Field
+from app.models.recording import RecordingQuota
 
 
 class UserBase(BaseModel):
@@ -153,6 +154,9 @@ class User(Document):
     # Device management
     devices: List[dict] = Field(default_factory=list)
     max_concurrent_streams: int = 1
+
+    # Recording quota (for premium users)
+    recording_quota: RecordingQuota = Field(default_factory=RecordingQuota)
 
     # Profile management
     active_profile_id: Optional[str] = None

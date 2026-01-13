@@ -103,6 +103,9 @@ class LiveChannelCreateRequest(BaseModel):
     is_active: bool = True
     order: int = 0
     requires_subscription: str = "premium"
+    supports_live_subtitles: bool = False
+    primary_language: str = "he"
+    available_translation_languages: List[str] = Field(default_factory=lambda: ["en", "es", "ar"])
 
 
 class LiveChannelUpdateRequest(BaseModel):
@@ -119,6 +122,9 @@ class LiveChannelUpdateRequest(BaseModel):
     is_active: Optional[bool] = None
     order: Optional[int] = None
     requires_subscription: Optional[str] = None
+    supports_live_subtitles: Optional[bool] = None
+    primary_language: Optional[str] = None
+    available_translation_languages: Optional[List[str]] = None
 
 
 # Radio Station Models

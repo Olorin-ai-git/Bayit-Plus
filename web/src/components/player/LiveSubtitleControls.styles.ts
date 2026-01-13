@@ -23,6 +23,9 @@ export const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: 'rgba(255, 255, 255, 0.1)',
   },
+  buttonHovered: {
+    backgroundColor: 'rgba(255, 255, 255, 0.05)',
+  },
   buttonPressed: {
     opacity: 0.7,
   },
@@ -54,6 +57,12 @@ export const styles = StyleSheet.create({
     justifyContent: 'center',
     borderRadius: borderRadius.md,
     backgroundColor: 'rgba(0, 0, 0, 0.3)',
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.1)',
+  },
+  langButtonActive: {
+    backgroundColor: 'rgba(255, 255, 255, 0.15)',
+    borderColor: colors.primary,
   },
   langFlag: {
     fontSize: 24,

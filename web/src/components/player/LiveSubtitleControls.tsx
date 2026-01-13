@@ -121,10 +121,11 @@ export default function LiveSubtitleControls({
       {/* Main Toggle Button */}
       <Pressable
         onPress={handleToggle}
-        style={({ pressed }) => [
+        style={({ pressed, hovered }) => [
           styles.button,
-          pressed && styles.buttonPressed,
-          enabled && styles.buttonActive,
+          enabled && styles.buttonActive, // Active state takes priority
+          !enabled && hovered && styles.buttonHovered, // Only show hover when not enabled
+          !enabled && pressed && styles.buttonPressed, // Only show pressed when not enabled
           !isPremium && styles.buttonPremium,
         ]}
       >
@@ -140,7 +141,12 @@ export default function LiveSubtitleControls({
       {enabled && isPremium && (
         <Pressable
           onPress={() => setShowLangSelector(!showLangSelector)}
-          style={({ pressed }) => [styles.langButton, pressed && styles.buttonPressed]}
+          style={({ pressed, hovered }) => [
+            styles.langButton,
+            showLangSelector && styles.langButtonActive,
+            !showLangSelector && hovered && styles.buttonHovered,
+            !showLangSelector && pressed && styles.buttonPressed,
+          ]}
         >
           <Text style={styles.langFlag}>{currentLang?.flag || '🌐'}</Text>
         </Pressable>

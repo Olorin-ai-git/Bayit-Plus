@@ -217,9 +217,7 @@ const styles = StyleSheet.create({
     color: colors.text,
     textAlign: 'center',
     letterSpacing: 0.5,
-    textShadowColor: 'rgba(0, 0, 0, 0.5)',
-    textShadowOffset: { width: 0, height: 2 },
-    textShadowRadius: 4,
+    textShadow: '0px 2px 4px rgba(0, 0, 0, 0.5)',
   },
   currentShow: {
     fontSize: 12,
@@ -250,8 +248,6 @@ const styles = StyleSheet.create({
     height: 8,
     borderRadius: 4,
     backgroundColor: '#fff',
-    // @ts-ignore
-    animation: 'pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite',
     boxShadow: '0 0 0 0 rgba(255, 255, 255, 0.7)',
   },
   liveText: {
@@ -278,7 +274,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     // @ts-ignore
     boxShadow: '0 8px 32px rgba(0, 217, 255, 0.6)',
-    animation: 'scaleIn 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
   },
   playButtonGradient: {
     ...StyleSheet.absoluteFillObject,

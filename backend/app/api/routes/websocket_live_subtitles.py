@@ -80,28 +80,54 @@ async def websocket_live_subtitles(
 
     # Step 5: Initialize translation service
     try:
+        logger.info(f"🔧 Initializing translation service for channel {channel_id}")
         translation_service = LiveTranslationService()
         source_lang = channel.primary_language or "he"
+
+        # Verify service is actually available
+        service_status = translation_service.verify_service_availability()
+        logger.info(f"📊 Service availability: {service_status}")
+
+        if not service_status.get("speech_to_text"):
+            error_msg = f"Speech-to-text service ({translation_service.provider}) is not available"
+            logger.error(f"❌ {error_msg}")
+            await websocket.send_json({
+                "type": "error",
+                "message": error_msg
+            })
+            await websocket.close(code=4000, reason="Speech service unavailable")
+            return
 
         # Send connection confirmation
         await websocket.send_json({
             "type": "connected",
             "source_lang": source_lang,
             "target_lang": target_lang,
-            "channel_id": channel_id
+            "channel_id": channel_id,
+            "provider": translation_service.provider
         })
+        logger.info(f"✅ Translation service initialized successfully with provider: {translation_service.provider}")
 
         # Step 6: Create audio stream from WebSocket
         async def audio_stream_generator():
             """Generator that yields audio chunks from WebSocket."""
+            chunk_count = 0
+            total_bytes = 0
             try:
                 while True:
                     audio_chunk = await websocket.receive_bytes()
+                    chunk_count += 1
+                    total_bytes += len(audio_chunk)
+
+                    # Log every 50 chunks to avoid spam
+                    if chunk_count % 50 == 0:
+                        logger.info(f"📦 Received {chunk_count} audio chunks ({total_bytes} bytes total)")
+
                     yield audio_chunk
             except WebSocketDisconnect:
-                logger.info(f"WebSocket disconnected: user={user.id}")
+                logger.info(f"✅ WebSocket disconnected: user={user.id}, received {chunk_count} chunks, {total_bytes} bytes total")
             except Exception as e:
-                logger.error(f"Error receiving audio: {str(e)}")
+                logger.error(f"❌ Error receiving audio: {str(e)}, chunks received: {chunk_count}")
 
         # Step 7: Process audio and stream subtitles
         try:

@@ -20,8 +20,9 @@ def _channel_dict(ch):
         "logo": ch.logo, "stream_url": ch.stream_url, "stream_type": ch.stream_type,
         "is_drm_protected": ch.is_drm_protected, "epg_source": ch.epg_source, "current_show": ch.current_show,
         "next_show": ch.next_show, "is_active": ch.is_active, "order": ch.order,
-        "requires_subscription": ch.requires_subscription, "created_at": ch.created_at.isoformat(),
-        "updated_at": ch.updated_at.isoformat(),
+        "requires_subscription": ch.requires_subscription, "supports_live_subtitles": ch.supports_live_subtitles,
+        "primary_language": ch.primary_language, "available_translation_languages": ch.available_translation_languages,
+        "created_at": ch.created_at.isoformat(), "updated_at": ch.updated_at.isoformat(),
     }
 
 @router.get("/live-channels")
@@ -59,7 +60,8 @@ async def create_live_channel(data: LiveChannelCreateRequest, request: Request,
         logo=data.logo, stream_url=data.stream_url, stream_type=data.stream_type,
         is_drm_protected=data.is_drm_protected, epg_source=data.epg_source, current_show=data.current_show,
         next_show=data.next_show, is_active=data.is_active, order=data.order,
-        requires_subscription=data.requires_subscription)
+        requires_subscription=data.requires_subscription, supports_live_subtitles=data.supports_live_subtitles,
+        primary_language=data.primary_language, available_translation_languages=data.available_translation_languages)
     await channel.insert()
     await log_audit(str(current_user.id), AuditAction.LIVE_CHANNEL_CREATED, "live_channel",
                     str(channel.id), {"name": channel.name}, request)
@@ -115,6 +117,15 @@ async def update_live_channel(channel_id: str, data: LiveChannelUpdateRequest, r
     if data.requires_subscription is not None:
         changes["requires_subscription"] = {"old": channel.requires_subscription, "new": data.requires_subscription}
         channel.requires_subscription = data.requires_subscription
+    if data.supports_live_subtitles is not None:
+        changes["supports_live_subtitles"] = {"old": channel.supports_live_subtitles, "new": data.supports_live_subtitles}
+        channel.supports_live_subtitles = data.supports_live_subtitles
+    if data.primary_language is not None:
+        changes["primary_language"] = {"old": channel.primary_language, "new": data.primary_language}
+        channel.primary_language = data.primary_language
+    if data.available_translation_languages is not None:
+        changes["available_translation_languages"] = {"old": channel.available_translation_languages, "new": data.available_translation_languages}
+        channel.available_translation_languages = data.available_translation_languages
     channel.updated_at = datetime.utcnow()
     await channel.save()
     await log_audit(str(current_user.id), AuditAction.LIVE_CHANNEL_UPDATED, "live_channel", channel_id, changes, request)

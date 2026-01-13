@@ -1708,7 +1708,8 @@
         "episodes": "Episodes",
         "order": "Order",
         "name": "Name",
-        "slug": "Slug"
+        "slug": "Slug",
+        "subtitles": "Subtitles"
       },
       "validation": {
         "titleRequired": "Title is required",
@@ -1890,12 +1891,17 @@
     "liveChannels": {
       "subtitle": "Manage live TV channels",
       "emptyMessage": "No live channels found",
+      "subtitleSettings": "Live Subtitle Settings",
       "form": {
         "name": "Channel name",
         "streamUrl": "Stream URL",
         "epgSource": "EPG Source URL (optional)",
         "currentShow": "Current Show",
-        "order": "Order"
+        "order": "Order",
+        "supportsSubtitles": "Enable Live Subtitles",
+        "primaryLanguage": "Primary Language (Source)",
+        "targetLanguages": "Available Translation Languages",
+        "targetLanguagesHelp": "Select which languages users can translate to in real-time"
       }
     },
     "radioStations": {
