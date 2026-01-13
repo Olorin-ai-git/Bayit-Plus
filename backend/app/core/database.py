@@ -13,7 +13,12 @@ from app.models.flow import Flow
 from app.models.realtime import WatchParty, ChatMessage
 from app.models.trending import TrendingSnapshot, ContentTrendMatch
 from app.models.chapters import VideoChapters
-from app.models.subtitles import SubtitleTrackDoc, TranslationCacheDoc
+from app.models.subtitles import (
+    SubtitleTrackDoc,
+    TranslationCacheDoc,
+    SubtitleSearchCacheDoc,
+    SubtitleQuotaTrackerDoc,
+)
 from app.models.admin import (
     Campaign, Transaction, Refund, AuditLog,
     EmailCampaign, PushNotification, SystemSettings, SubscriptionPlan,
@@ -68,6 +73,8 @@ async def connect_to_mongo():
             # Subtitle models
             SubtitleTrackDoc,
             TranslationCacheDoc,
+            SubtitleSearchCacheDoc,
+            SubtitleQuotaTrackerDoc,
             # Admin models
             Campaign,
             Transaction,

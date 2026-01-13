@@ -3,6 +3,7 @@ Auto-Fixer Service
 Safe automated issue resolution with rollback capability
 """
 import logging
+import re
 from datetime import datetime
 from typing import List, Dict, Any, Optional
 from dataclasses import dataclass
@@ -13,6 +14,102 @@ from app.models.librarian import LibrarianAction
 from app.services.tmdb_service import tmdb_service
 
 logger = logging.getLogger(__name__)
+
+
+def clean_title(title: str) -> str:
+    """
+    Clean movie/TV title by removing release group tags, quality indicators, etc.
+
+    Examples:
+        "Coco p Rip -EVO" -> "Coco"
+        "Django Unchained Upscaled Soup" -> "Django Unchained"
+        "Ice Age p multisub-HighCode" -> "Ice Age"
+        "Inception.2010.720p.BRRip.x264.AAC-ETRG" -> "Inception"
+    """
+    original = title
+
+    # Remove file extensions
+    title = re.sub(r'\.(mkv|mp4|avi|mov)$', '', title, flags=re.IGNORECASE)
+
+    # Remove year if followed by quality indicators (e.g., ".2010.720p" -> remove everything after title)
+    # This handles "Movie.2010.1080p.BluRay" -> "Movie"
+    title = re.sub(r'\.\d{4}\.(1080|720|480|360|2160)p.*$', '', title, flags=re.IGNORECASE)
+    title = re.sub(r'\.\d{4}\.(BluRay|BRRip|WEBRip|HDRip).*$', '', title, flags=re.IGNORECASE)
+
+    # Replace dots with spaces (common in file names)
+    title = title.replace('.', ' ')
+
+    # Remove resolution/quality indicators
+    quality_patterns = [
+        r'\b(2160|1080|720|480|360)p?\b',
+        r'\b(4K|UHD|HD|SD)\b',
+        r'\b(BluRay|BRRip|BDRip|WEBRip|WEB-DL|HDRip|DVDRip)\b',
+        r'\b(PROPER|REPACK|INTERNAL|LIMITED)\b',
+    ]
+    for pattern in quality_patterns:
+        title = re.sub(pattern, '', title, flags=re.IGNORECASE)
+
+    # Remove codec info
+    codec_patterns = [
+        r'\b(x264|x265|H\.?264|H\.?265|HEVC|XviD|DivX)\b',
+        r'\b(AAC|AC3|DTS|MP3|FLAC)\b',
+        r'\b(5\.1|7\.1|2\.0)\b',
+    ]
+    for pattern in codec_patterns:
+        title = re.sub(pattern, '', title, flags=re.IGNORECASE)
+
+    # Remove release group tags (usually at the end)
+    title = re.sub(r'-[A-Z0-9]+\]?$', '', title, flags=re.IGNORECASE)
+    title = re.sub(r'\[[A-Z0-9]+\]?$', '', title, flags=re.IGNORECASE)
+
+    # Remove common release keywords and mysterious suffixes
+    release_keywords = [
+        r'\bRip\b',
+        r'\bUpscaled\b',
+        r'\bmultisub\b',
+        r'\bExtended\b',
+        r'\bUnrated\b',
+        r'\bDirector\'?s? Cut\b',
+        r'\bTheatrical\b',
+        r'\bRemastered\b',
+        r'\bUltra\b',
+        r'\bEdition\b',
+        r'\bRemix\b',
+        r'\bSoup\b',
+        r'\banoXmous\b',
+        r'\bHighCode\b',
+        r'\bN O K\b',
+        r'\bChina\b',
+        r'\bCyber\b',  # Mysterious suffix like "Children Of A Lesser God Cyber"
+        r'\bMX\b',     # Release group
+        r'\bEVO\b',    # Release group
+        r'\bETRG\b',   # Release group
+        r'\bSPARKS\b', # Release group
+    ]
+    for keyword in release_keywords:
+        title = re.sub(keyword, '', title, flags=re.IGNORECASE)
+
+    # Remove standalone 'p' (usually part of "1080p" but sometimes separated)
+    title = re.sub(r'\s+p\s+', ' ', title, flags=re.IGNORECASE)
+    title = re.sub(r'\s+p$', '', title, flags=re.IGNORECASE)
+
+    # Remove years at the end if preceded by space (e.g., "Movie 2010" when year is already in metadata)
+    # But be careful not to remove years that are part of the title (e.g., "2012" the movie)
+    title = re.sub(r'\s+\d{4}$', '', title)
+
+    # Remove extra spaces, dashes, brackets
+    title = re.sub(r'\s+', ' ', title)
+    title = re.sub(r'\s*-\s*$', '', title)
+    title = re.sub(r'^\s*-\s*', '', title)
+    title = title.strip()
+
+    # Remove trailing/leading special characters
+    title = title.strip(' -[]()_.')
+
+    if title != original:
+        logger.debug(f"Cleaned title: '{original}' -> '{title}'")
+
+    return title
 
 
 @dataclass
@@ -141,6 +238,16 @@ async def fix_missing_metadata(
             else:
                 enriched = await tmdb_service.enrich_movie_content(content.title, content.year)
 
+            # If initial search failed, retry with cleaned title
+            if not enriched.get("tmdb_id"):
+                cleaned_title = clean_title(content.title)
+                if cleaned_title != content.title:
+                    logger.info(f"   🧹 Retrying with cleaned title: '{cleaned_title}'")
+                    if content.is_series:
+                        enriched = await tmdb_service.enrich_series_content(cleaned_title, content.year)
+                    else:
+                        enriched = await tmdb_service.enrich_movie_content(cleaned_title, content.year)
+
             # Log what we got back from TMDB
             if not enriched.get("tmdb_id"):
                 logger.warning(f"   ⚠️ TMDB search found no results for '{content.title}'")
@@ -223,19 +330,27 @@ async def fix_missing_metadata(
             logger.info(f"   ✓ Fixed metadata for '{content.title}': {', '.join(changes_made)}")
             return FixResult(success=True, action_id=str(action.id), fields_updated=changes_made)
         else:
-            # Provide more specific error message
+            # No changes needed - check if it's an error or just no-op
             if not enriched or not enriched.get("tmdb_id"):
+                # Actual error - couldn't find TMDB data
                 error_msg = f"No TMDB search results found for '{content.title}'"
+                logger.warning(f"   ⚠️ {error_msg}")
+                return FixResult(success=False, error_message=error_msg)
             elif not enriched.get("poster") and not enriched.get("backdrop"):
+                # TMDB found but no useful images
                 error_msg = f"TMDB found but no images available for '{content.title}'"
+                logger.warning(f"   ⚠️ {error_msg}")
+                return FixResult(success=False, error_message=error_msg)
             else:
-                error_msg = f"No applicable fixes for '{content.title}' (fields already populated)"
-
-            logger.info(f"   - {error_msg}")
-            return FixResult(success=False, error_message=error_msg)
+                # All fields already populated - this is success, not an error
+                info_msg = f"Metadata already complete for '{content.title}' - no updates needed"
+                logger.info(f"   ✅ {info_msg}")
+                return FixResult(success=True, fields_updated=[], action_id=None)
 
     except Exception as e:
         logger.error(f"Failed to fix metadata: {e}")
+        import traceback
+        traceback.print_exc()
         return FixResult(success=False, error_message=str(e))
 
 

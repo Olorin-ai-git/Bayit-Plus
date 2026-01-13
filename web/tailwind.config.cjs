@@ -3,39 +3,113 @@
  * Uses shared design tokens for consistency with TV app
  */
 
-// Import shared design tokens
-import {
-  primary,
-  secondary,
-  dark,
-  success,
-  warning,
-  error,
-} from '../shared/design-tokens/colors.js'
-import { fontFamily } from '../shared/design-tokens/typography.js'
-import { boxShadow } from '../shared/design-tokens/shadows.js'
-import { keyframes, animation } from '../shared/design-tokens/animations.js'
+const path = require('path');
+
+// We can't import ES modules in CJS, so we'll define colors inline
+// These match the colors from ../shared/design-tokens/colors.js
+const colors = {
+  primary: {
+    DEFAULT: '#00d9ff',
+    50: '#e6f9ff',
+    100: '#b3eeff',
+    200: '#80e4ff',
+    300: '#4dd9ff',
+    400: '#1aceff',
+    500: '#00d9ff',
+    600: '#00b3d9',
+    700: '#008cb3',
+    800: '#00668c',
+    900: '#004066',
+  },
+  secondary: {
+    DEFAULT: '#a855f7',
+    50: '#f5e6ff',
+    100: '#e6b3ff',
+    200: '#d680ff',
+    300: '#c74dff',
+    400: '#b81aff',
+    500: '#a855f7',
+    600: '#8c00d9',
+    700: '#7000b3',
+    800: '#54008c',
+    900: '#380066',
+  },
+  dark: {
+    DEFAULT: '#0f172a',
+    50: '#1e293b',
+    100: '#334155',
+    200: '#475569',
+    300: '#64748b',
+    400: '#94a3b8',
+    500: '#cbd5e1',
+    600: '#e2e8f0',
+    700: '#f1f5f9',
+    800: '#f8fafc',
+    900: '#ffffff',
+  },
+  success: {
+    DEFAULT: '#10b981',
+    50: '#d1fae5',
+    100: '#a7f3d0',
+    200: '#6ee7b7',
+    300: '#34d399',
+    400: '#10b981',
+    500: '#059669',
+    600: '#047857',
+    700: '#065f46',
+    800: '#064e3b',
+    900: '#022c22',
+  },
+  warning: {
+    DEFAULT: '#f59e0b',
+    50: '#fffbeb',
+    100: '#fef3c7',
+    200: '#fde68a',
+    300: '#fcd34d',
+    400: '#fbbf24',
+    500: '#f59e0b',
+    600: '#d97706',
+    700: '#b45309',
+    800: '#92400e',
+    900: '#78350f',
+  },
+  error: {
+    DEFAULT: '#ef4444',
+    50: '#fef2f2',
+    100: '#fee2e2',
+    200: '#fecaca',
+    300: '#fca5a5',
+    400: '#f87171',
+    500: '#ef4444',
+    600: '#dc2626',
+    700: '#b91c1c',
+    800: '#991b1b',
+    900: '#7f1d1d',
+  },
+};
 
 /** @type {import('tailwindcss').Config} */
-export default {
+module.exports = {
   content: [
     "./index.html",
+    "./index.web.js",
     "./src/**/*.{js,ts,jsx,tsx}",
+    "../shared/**/*.{js,ts,jsx,tsx,css}",
   ],
   theme: {
     extend: {
       colors: {
-        // Brand colors from shared tokens
-        primary,
-        secondary,
-        dark,
-        success,
-        warning,
-        error,
+        // Brand colors
+        primary: colors.primary,
+        secondary: colors.secondary,
+        dark: colors.dark,
+        success: colors.success,
+        warning: colors.warning,
+        error: colors.error,
         // Aliases
-        purple: secondary,
-        green: success,
-        red: error,
+        purple: colors.secondary,
+        green: colors.success,
+        red: colors.error,
         // Amber for warnings
         amber: {
           400: '#fbbf24',

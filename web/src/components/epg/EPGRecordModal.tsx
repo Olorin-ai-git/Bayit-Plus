@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next'
 import { DateTime } from 'luxon'
 import { EPGProgram } from '@/services/epgApi'
 import { recordingApi } from '@/services/recordingApi'
-import { useAuthStore } from '@/store/authStore'
+import { useAuthStore } from '@/stores/authStore'
 
 interface EPGRecordModalProps {
   program: EPGProgram

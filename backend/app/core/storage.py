@@ -30,6 +30,10 @@ class StorageProvider:
         """Get presigned URL for direct upload (S3 only)"""
         raise NotImplementedError
 
+    async def delete_file(self, url: str) -> bool:
+        """Delete file from storage. Returns True if successful"""
+        raise NotImplementedError
+
 
 class LocalStorageProvider(StorageProvider):
     """Local file system storage"""
@@ -113,6 +117,24 @@ class LocalStorageProvider(StorageProvider):
     def get_presigned_url(self, filename: str, content_type: str) -> dict:
         """Not applicable for local storage"""
         raise NotImplementedError("Presigned URLs not supported for local storage")
+
+    async def delete_file(self, url: str) -> bool:
+        """Delete file from local storage"""
+        try:
+            if url.startswith("/uploads/"):
+                file_path = self.upload_dir / url.replace("/uploads/", "")
+            elif url.startswith("http"):
+                file_path = self.upload_dir / url.split("/uploads/")[-1]
+            else:
+                file_path = self.upload_dir / url
+
+            if file_path.exists() and file_path.is_file():
+                file_path.unlink()
+                return True
+            return False
+        except Exception as e:
+            print(f"Failed to delete local file {url}: {e}")
+            return False
 
 
 class S3StorageProvider(StorageProvider):
@@ -240,6 +262,24 @@ class S3StorageProvider(StorageProvider):
             }
         except self.ClientError as e:
             raise ValueError(f"Failed to generate presigned URL: {e}")
+
+    async def delete_file(self, url: str) -> bool:
+        """Delete file from S3"""
+        try:
+            if settings.CDN_BASE_URL and url.startswith(settings.CDN_BASE_URL):
+                key = url.replace(settings.CDN_BASE_URL + "/", "")
+            elif url.startswith(f"https://s3.{settings.AWS_S3_REGION}.amazonaws.com/{self.bucket}/"):
+                key = url.split(f"/{self.bucket}/")[1]
+            elif url.startswith("https://") or url.startswith("http://"):
+                key = url.split("/")[-2] + "/" + url.split("/")[-1]
+            else:
+                key = url
+
+            self.s3_client.delete_object(Bucket=self.bucket, Key=key)
+            return True
+        except self.ClientError as e:
+            print(f"Failed to delete S3 file {url}: {e}")
+            return False
 
 
 class GCSStorageProvider(StorageProvider):
@@ -373,6 +413,28 @@ class GCSStorageProvider(StorageProvider):
             }
         except Exception as e:
             raise ValueError(f"Failed to generate signed URL: {e}")
+
+    async def delete_file(self, url: str) -> bool:
+        """Delete file from GCS"""
+        try:
+            if settings.CDN_BASE_URL and url.startswith(settings.CDN_BASE_URL):
+                blob_name = url.replace(settings.CDN_BASE_URL + "/", "")
+            elif url.startswith(f"https://storage.googleapis.com/{self.bucket.name}/"):
+                blob_name = url.split(f"/{self.bucket.name}/")[1]
+            elif url.startswith("https://") or url.startswith("http://"):
+                blob_name = "/".join(url.split("/")[3:])
+            else:
+                blob_name = url
+
+            blob = self.bucket.blob(blob_name)
+            blob.delete()
+            return True
+        except self.exceptions.NotFound:
+            print(f"GCS file not found: {url}")
+            return False
+        except Exception as e:
+            print(f"Failed to delete GCS file {url}: {e}")
+            return False
 
 
 def get_storage_provider() -> StorageProvider:

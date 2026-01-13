@@ -65,6 +65,38 @@ export interface CurrentProgramResponse {
   message?: string
 }
 
+export interface CatchUpStream {
+  success: boolean
+  program_id: string
+  program_title: string
+  program_start: string
+  program_end: string
+  recording_id: string
+  stream_url: string
+  seek_seconds: number
+  duration_seconds: number
+  subtitle_url?: string
+  thumbnail?: string
+  channel_name: string
+  available_until: string
+}
+
+export interface CatchUpAvailability {
+  available: boolean
+  reason?: string
+  program_id?: string
+  program_title?: string
+  available_until?: string
+  starts_at?: string
+  expired_at?: string
+  message?: string
+}
+
+export interface AvailableCatchUpResponse {
+  programs: EPGProgram[]
+  total: number
+}
+
 export const epgApi = {
   /**
    * Get EPG data for specified channels and time range
@@ -90,8 +122,7 @@ export const epgApi = {
       queryParams.append('timezone', params.timezone)
     }
 
-    const response = await api.get(`/epg?${queryParams.toString()}`)
-    return response.data
+    return await api.get(`/epg?${queryParams.toString()}`)
   },
 
   /**
@@ -120,8 +151,7 @@ export const epgApi = {
       queryParams.append('category', params.category)
     }
 
-    const response = await api.post(`/epg/search?${queryParams.toString()}`)
-    return response.data
+    return await api.post(`/epg/search?${queryParams.toString()}`)
   },
 
   /**
@@ -133,24 +163,53 @@ export const epgApi = {
       queryParams.append('date', date)
     }
 
-    const response = await api.get(`/epg/${channelId}/schedule?${queryParams.toString()}`)
-    return response.data
+    return await api.get(`/epg/${channelId}/schedule?${queryParams.toString()}`)
   },
 
   /**
    * Get currently airing program for a channel
    */
   getCurrentProgram: async (channelId: string): Promise<CurrentProgramResponse> => {
-    const response = await api.get(`/epg/${channelId}/current`)
-    return response.data
+    return await api.get(`/epg/${channelId}/current`)
   },
 
   /**
    * Get next program for a channel
    */
   getNextProgram: async (channelId: string): Promise<CurrentProgramResponse> => {
-    const response = await api.get(`/epg/${channelId}/next`)
-    return response.data
+    return await api.get(`/epg/${channelId}/next`)
+  },
+
+  /**
+   * Get catch-up TV stream for a past program (Premium feature)
+   */
+  getCatchUpStream: async (programId: string): Promise<CatchUpStream> => {
+    return await api.get(`/epg/catchup/${programId}/stream`)
+  },
+
+  /**
+   * Check if catch-up is available for a program
+   */
+  checkCatchUpAvailability: async (programId: string): Promise<CatchUpAvailability> => {
+    return await api.get(`/epg/catchup/${programId}/availability`)
+  },
+
+  /**
+   * Get list of programs available for catch-up
+   */
+  getAvailableCatchUpPrograms: async (params?: {
+    channelId?: string
+    limit?: number
+  }): Promise<AvailableCatchUpResponse> => {
+    const queryParams = new URLSearchParams()
+    if (params?.channelId) {
+      queryParams.append('channel_id', params.channelId)
+    }
+    if (params?.limit) {
+      queryParams.append('limit', params.limit.toString())
+    }
+
+    return await api.get(`/epg/catchup/available?${queryParams.toString()}`)
   }
 }
 

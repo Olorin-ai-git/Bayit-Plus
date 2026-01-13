@@ -44,7 +44,10 @@
     "previous": "Previous",
     "actions": "Actions",
     "pageOf": "Page {{page}} of {{total}}",
-    "noData": "No data available"
+    "noData": "No data available",
+    "filters": "Filters",
+    "clear": "Clear",
+    "upgrade": "Upgrade to Premium"
   },
   "demo": {
     "banner": "DEMO MODE",
@@ -246,7 +249,24 @@
     "lowStorage": "Low Storage Warning",
     "lowStorageMessage": "You're running low on storage space. Consider deleting old recordings.",
     "scheduleRecording": "Schedule Recording",
-    "recordingFailed": "Failed to start/schedule recording"
+    "scheduledRecordingNotSupported": "Scheduled recordings are not yet supported. Only immediate recordings are available.",
+    "recordingFailed": "Failed to start/schedule recording",
+    "smartSearch": "Smart Search",
+    "smartSearchSubtitle": "Ask questions in natural language",
+    "smartSearchPlaceholder": "e.g., Show me all shows with actress Tali Sharon tonight",
+    "searchPlaceholder": "Search programs, channels, actors...",
+    "premiumRequired": "Premium Feature",
+    "premiumRequiredMessage": "Smart Search uses AI to understand your questions. Upgrade to Premium to access this feature.",
+    "searchWithAI": "Search with AI",
+    "searching": "Searching...",
+    "tryThese": "Try these examples",
+    "exampleQuery1": "Show me all shows with actress Tali Sharon tonight",
+    "exampleQuery2": "What comedy shows are airing this week?",
+    "exampleQuery3": "Find documentaries about history on Channel 11",
+    "exampleQuery4": "Show me all news programs tomorrow morning",
+    "aiDisclaimer": "Powered by Claude AI. Results may vary based on program data availability.",
+    "interpretationTitle": "What I understood",
+    "noResultsFound": "No programs found matching your query"
   },
   "home": {
     "continueWatching": "Continue Watching",
@@ -371,6 +391,9 @@
     "title": "Movies & Series",
     "movies": "Movies",
     "series": "Series",
+    "searchPlaceholder": "Search movies and series...",
+    "noMovies": "No movies found",
+    "noSeries": "No series found",
     "loadError": "Failed to load content",
     "categories": {
       "all": "All",

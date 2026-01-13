@@ -2,7 +2,7 @@
 Librarian API Routes
 Admin endpoints for managing the Librarian AI Agent
 """
-from datetime import datetime
+from datetime import datetime, timedelta
 from typing import Optional, List
 from fastapi import APIRouter, HTTPException, status, Depends, BackgroundTasks, Request, Header
 from pydantic import BaseModel
@@ -384,6 +384,15 @@ async def get_audit_reports(
 
         reports = await AuditReport.find(query).sort([("audit_date", -1)]).limit(limit).to_list()
 
+        # Count actual actions per audit (since summaries may be incomplete for partial audits)
+        audit_ids = [r.audit_id for r in reports]
+        action_counts = {}
+
+        # Get action counts for all audits in one query
+        for audit_id in audit_ids:
+            count = await LibrarianAction.find({"audit_id": audit_id}).count()
+            action_counts[audit_id] = count
+
         return [
             AuditReportResponse(
                 audit_id=report.audit_id,
@@ -392,18 +401,9 @@ async def get_audit_reports(
                 execution_time_seconds=report.execution_time_seconds,
                 status=report.status,
                 summary=report.summary,
-                # For AI agent audits, pull from summary. For rule-based, count arrays.
-                issues_count=(
-                    report.summary.get("issues_found", 0)
-                    if report.audit_type == "ai_agent"
-                    else len(report.broken_streams) + len(report.missing_metadata) +
-                         len(report.misclassifications) + len(report.orphaned_items)
-                ),
-                fixes_count=(
-                    report.summary.get("issues_fixed", 0)
-                    if report.audit_type == "ai_agent"
-                    else len(report.fixes_applied)
-                )
+                # Use actual action count instead of incomplete summary
+                issues_count=action_counts.get(report.audit_id, 0),
+                fixes_count=action_counts.get(report.audit_id, 0)
             )
             for report in reports
         ]
@@ -568,18 +568,41 @@ async def get_librarian_status(
         # Get statistics
         stats = await get_audit_statistics(days=30)
 
-        # Determine system health
-        if latest_report:
-            summary = latest_report.summary
-            total_items = summary.get("total_items", 0)
-            healthy_items = summary.get("healthy_items", 0)
-            health_percentage = (healthy_items / total_items * 100) if total_items > 0 else 100
+        # Determine system health based on real data, not incomplete summaries
+        # Calculate health from recent audit activity and fix rate
+        if stats["total_audits"] > 0:
+            # Use fix success rate as primary health indicator
+            fix_rate = stats["fix_success_rate"]
 
-            if health_percentage >= 90:
+            # Also consider if audits are completing successfully
+            completed_audits = await AuditReport.find({
+                "audit_date": {"$gte": datetime.utcnow() - timedelta(days=7)},
+                "status": "completed"
+            }).count()
+            partial_audits = await AuditReport.find({
+                "audit_date": {"$gte": datetime.utcnow() - timedelta(days=7)},
+                "status": "partial"
+            }).count()
+
+            # Health scoring:
+            # - High fix rate (>80%) = excellent potential
+            # - Completing audits successfully = better health
+            # - Having partial audits is okay if we're still fixing issues
+
+            total_recent = completed_audits + partial_audits
+            completion_rate = (completed_audits / total_recent * 100) if total_recent > 0 else 0
+
+            # Combined health score weighted toward actual fixes
+            health_score = (fix_rate * 0.7) + (completion_rate * 0.3)
+
+            if health_score >= 80:
                 system_health = "excellent"
-            elif health_percentage >= 70:
+            elif health_score >= 60:
                 system_health = "good"
-            elif health_percentage >= 50:
+            elif health_score >= 40:
+                system_health = "fair"
+            elif stats["total_issues_fixed"] > 0:
+                # If we're fixing issues, we're at least "fair"
                 system_health = "fair"
             else:
                 system_health = "poor"

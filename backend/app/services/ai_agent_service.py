@@ -469,6 +469,91 @@ TOOLS = [
         }
     },
     {
+        "name": "search_external_subtitles",
+        "description": "Search for subtitles on external sources (OpenSubtitles, TMDB) for a content item without downloading them. This checks if subtitles are available and from which sources. Use this to discover available subtitles before downloading.",
+        "input_schema": {
+            "type": "object",
+            "properties": {
+                "content_id": {
+                    "type": "string",
+                    "description": "Content item ID"
+                },
+                "language": {
+                    "type": "string",
+                    "description": "Language code (he, en, es, ar, ru, fr)"
+                },
+                "sources": {
+                    "type": "array",
+                    "items": {"type": "string"},
+                    "description": "Sources to search (opensubtitles, tmdb)",
+                    "default": ["opensubtitles", "tmdb"]
+                }
+            },
+            "required": ["content_id", "language"]
+        }
+    },
+    {
+        "name": "download_external_subtitle",
+        "description": "Download and save a subtitle from external sources (OpenSubtitles or TMDB). Use this after searching to actually fetch and store the subtitle. Respects daily download quotas. Automatically parses and saves to database.",
+        "input_schema": {
+            "type": "object",
+            "properties": {
+                "content_id": {
+                    "type": "string",
+                    "description": "Content item ID"
+                },
+                "language": {
+                    "type": "string",
+                    "description": "Language code (he, en, es, ar, ru, fr)"
+                },
+                "audit_id": {
+                    "type": "string",
+                    "description": "Audit report ID for tracking"
+                }
+            },
+            "required": ["content_id", "language", "audit_id"]
+        }
+    },
+    {
+        "name": "batch_download_subtitles",
+        "description": "Download subtitles for multiple content items in one batch operation. Automatically manages daily quotas (20 downloads/day) and prioritizes content by recency and missing languages. Use this for large-scale subtitle acquisition.",
+        "input_schema": {
+            "type": "object",
+            "properties": {
+                "content_ids": {
+                    "type": "array",
+                    "items": {"type": "string"},
+                    "description": "List of content IDs to process"
+                },
+                "languages": {
+                    "type": "array",
+                    "items": {"type": "string"},
+                    "description": "Languages to fetch (default: ['he', 'en', 'es'])",
+                    "default": ["he", "en", "es"]
+                },
+                "max_downloads": {
+                    "type": "integer",
+                    "description": "Maximum downloads to perform (respects daily quota)",
+                    "default": 20
+                },
+                "audit_id": {
+                    "type": "string",
+                    "description": "Audit report ID for tracking"
+                }
+            },
+            "required": ["content_ids", "audit_id"]
+        }
+    },
+    {
+        "name": "check_subtitle_quota",
+        "description": "Check remaining OpenSubtitles download quota for today. Use this before batch operations to know how many subtitles you can download. Free tier limit is 20 downloads per day.",
+        "input_schema": {
+            "type": "object",
+            "properties": {},
+            "required": []
+        }
+    },
+    {
         "name": "complete_audit",
         "description": "Call this when you've finished the audit and are ready to provide a final summary. This will end the audit session.",
         "input_schema": {
@@ -524,13 +609,14 @@ async def execute_list_content_items(
             query["category_id"] = category_id
 
         if random_sample:
-            # MongoDB aggregation for random sample
-            pipeline = [
-                {"$match": query},
-                {"$sample": {"size": limit}}
-            ]
-            # Beanie aggregation - must use to_list() on aggregation result
-            items = await Content.aggregate(pipeline).to_list()
+            # Use simple approach: get all items then sample in Python
+            # This avoids the AsyncIOMotorLatentCommandCursor issue with MongoDB aggregation
+            all_items = await Content.find(query).to_list()
+            if len(all_items) > limit:
+                import random
+                items = random.sample(all_items, limit)
+            else:
+                items = all_items
         else:
             # Get newest items
             items = await Content.find(query).sort([("created_at", -1)]).limit(limit).to_list()
@@ -1020,6 +1106,7 @@ async def execute_check_storage_usage(
     """Check GCS bucket storage usage statistics."""
     try:
         from google.cloud import storage
+        from google.auth.exceptions import DefaultCredentialsError
         from app.core.config import settings
 
         # Use provided bucket name or fall back to config
@@ -1027,7 +1114,16 @@ async def execute_check_storage_usage(
         if not bucket_name:
             return {"success": False, "error": "GCS bucket name not configured. Set GCS_BUCKET_NAME environment variable or provide bucket_name parameter."}
 
-        client = storage.Client()
+        try:
+            client = storage.Client()
+        except DefaultCredentialsError:
+            logger.warning("⚠️  GCS credentials not configured. Skipping storage check (normal when running locally)")
+            return {
+                "success": False, 
+                "error": "GCS credentials not available. This tool only works in Cloud Run environment or with Application Default Credentials configured.",
+                "skippable": True  # Indicates this is a non-critical error
+            }
+        
         bucket = client.bucket(bucket_name)
 
         if not bucket.exists():
@@ -1390,8 +1486,8 @@ async def execute_extract_video_subtitles(
 ) -> Dict[str, Any]:
     """Extract subtitle tracks from video and save to database."""
     from app.services.ffmpeg_service import ffmpeg_service
-    from app.services.subtitle_service import SubtitleService
-    from app.models.subtitles import SubtitleTrackDoc
+    from app.services.subtitle_service import parse_subtitles
+    from app.models.subtitles import SubtitleTrackDoc, SubtitleCueModel
 
     try:
         content = await Content.get(PydanticObjectId(content_id))
@@ -1406,30 +1502,41 @@ async def execute_extract_video_subtitles(
             extracted_subs = [s for s in extracted_subs if s['language'] in languages]
 
         # Parse and save each subtitle track
-        subtitle_service = SubtitleService()
         saved_count = 0
         saved_languages = []
 
         for sub in extracted_subs:
-            # Parse subtitle content
-            cues = await subtitle_service.parse_subtitle_content(
-                sub['content'],
-                sub['format']
-            )
+            try:
+                # Parse subtitle content using the parse_subtitles function
+                track = parse_subtitles(sub['content'], sub['format'])
 
-            # Create SubtitleTrackDoc
-            track = SubtitleTrackDoc(
-                content_id=content_id,
-                content_type="vod",
-                language=sub['language'],
-                language_name=get_language_name(sub['language']),
-                format="srt",
-                cues=cues,
-                is_auto_generated=False
-            )
-            await track.insert()
-            saved_count += 1
-            saved_languages.append(sub['language'])
+                # Convert to database model
+                cues = [
+                    SubtitleCueModel(
+                        index=cue.index,
+                        start_time=cue.start_time,
+                        end_time=cue.end_time,
+                        text=cue.text,
+                        text_nikud=cue.text_nikud
+                    )
+                    for cue in track.cues
+                ]
+
+                # Create SubtitleTrackDoc
+                subtitle_doc = SubtitleTrackDoc(
+                    content_id=content_id,
+                    content_type="vod",
+                    language=sub['language'],
+                    language_name=get_language_name(sub['language']),
+                    format="srt",
+                    cues=cues,
+                    is_auto_generated=False
+                )
+                await subtitle_doc.insert()
+                saved_count += 1
+                saved_languages.append(sub['language'])
+            except Exception as e:
+                logger.error(f"Failed to parse {sub['language']} subtitles: {str(e)}")
 
         # Update content
         content.has_subtitles = saved_count > 0
@@ -1490,6 +1597,146 @@ async def execute_verify_required_subtitles(
 
     except Exception as e:
         logger.error(f"Error verifying subtitles: {str(e)}")
+        return {"success": False, "error": str(e)}
+
+
+async def execute_search_external_subtitles(
+    content_id: str,
+    language: str,
+    sources: List[str] = ["opensubtitles", "tmdb"]
+) -> Dict[str, Any]:
+    """Search for subtitles on external sources without downloading."""
+    from app.services.external_subtitle_service import ExternalSubtitleService
+
+    try:
+        service = ExternalSubtitleService()
+        results = await service.search_subtitle_sources(
+            content_id=content_id,
+            language=language,
+            sources=sources
+        )
+        return {
+            "success": True,
+            "found": results["found"],
+            "source": results["source"],
+            "available_sources": results["sources"],
+            "cached": results["cached"]
+        }
+    except Exception as e:
+        logger.error(f"Error searching external subtitles: {str(e)}")
+        return {"success": False, "error": str(e)}
+
+
+async def execute_download_external_subtitle(
+    content_id: str,
+    language: str,
+    audit_id: str
+) -> Dict[str, Any]:
+    """Download and save subtitle from external source."""
+    from app.services.external_subtitle_service import ExternalSubtitleService
+    from app.models.librarian import LibrarianAction
+
+    try:
+        service = ExternalSubtitleService()
+        track = await service.fetch_subtitle_for_content(
+            content_id=content_id,
+            language=language
+        )
+
+        if track:
+            # Create LibrarianAction
+            action = LibrarianAction(
+                audit_id=audit_id,
+                action_type="download_external_subtitle",
+                content_id=content_id,
+                content_type="content",
+                issue_type="missing_subtitles",
+                description=f"Downloaded {language} subtitle from {track.source} ({len(track.cues)} cues)",
+                auto_approved=True
+            )
+            await action.insert()
+
+            return {
+                "success": True,
+                "language": language,
+                "source": track.source,
+                "cue_count": len(track.cues),
+                "external_id": track.external_id
+            }
+        else:
+            return {
+                "success": False,
+                "error": "No subtitles found from any source"
+            }
+
+    except Exception as e:
+        logger.error(f"Error downloading external subtitle: {str(e)}")
+        return {"success": False, "error": str(e)}
+
+
+async def execute_batch_download_subtitles(
+    content_ids: List[str],
+    languages: List[str] = ["he", "en", "es"],
+    max_downloads: int = 20,
+    audit_id: str = None
+) -> Dict[str, Any]:
+    """Batch download subtitles for multiple content items."""
+    from app.services.external_subtitle_service import ExternalSubtitleService
+    from app.models.librarian import LibrarianAction
+
+    try:
+        service = ExternalSubtitleService()
+        results = await service.batch_fetch_subtitles(
+            content_ids=content_ids,
+            languages=languages,
+            max_downloads=max_downloads
+        )
+
+        # Create summary action
+        if audit_id:
+            action = LibrarianAction(
+                audit_id=audit_id,
+                action_type="batch_subtitle_download",
+                content_id="batch_operation",  # Use a placeholder for batch operations
+                content_type="batch",
+                issue_type="missing_subtitles",
+                description=f"Batch downloaded subtitles: {results['success']}/{results['processed']} successful, {results['quota_remaining']} quota remaining",
+                auto_approved=True
+            )
+            await action.insert()
+
+        return {
+            "success": True,
+            "processed": results["processed"],
+            "success_count": results["success"],
+            "failed_count": results["failed"],
+            "quota_remaining": results["quota_remaining"],
+            "quota_used": results["quota_used"],
+            "details": results["details"]
+        }
+
+    except Exception as e:
+        logger.error(f"Error in batch subtitle download: {str(e)}")
+        return {"success": False, "error": str(e)}
+
+
+async def execute_check_subtitle_quota() -> Dict[str, Any]:
+    """Check remaining subtitle download quota."""
+    from app.services.opensubtitles_service import get_opensubtitles_service
+
+    try:
+        service = get_opensubtitles_service()
+        quota = await service.check_quota_available()
+        return {
+            "success": True,
+            "quota_available": quota["available"],
+            "remaining": quota["remaining"],
+            "used": quota["used"],
+            "daily_limit": quota["daily_limit"],
+            "resets_at": quota["resets_at"].isoformat()
+        }
+    except Exception as e:
+        logger.error(f"Error checking subtitle quota: {str(e)}")
         return {"success": False, "error": str(e)}
 
 
@@ -1571,6 +1818,18 @@ async def execute_tool(
 
         elif tool_name == "verify_required_subtitles":
             return await execute_verify_required_subtitles(**tool_input)
+
+        elif tool_name == "search_external_subtitles":
+            return await execute_search_external_subtitles(**tool_input)
+
+        elif tool_name == "download_external_subtitle":
+            return await execute_download_external_subtitle(**tool_input)
+
+        elif tool_name == "batch_download_subtitles":
+            return await execute_batch_download_subtitles(**tool_input)
+
+        elif tool_name == "check_subtitle_quota":
+            return await execute_check_subtitle_quota()
 
         elif tool_name == "complete_audit":
             # This is handled specially in the agent loop
@@ -1663,10 +1922,62 @@ async def run_ai_agent_audit(
         "he": "תקשר בעברית."
     }.get(language, "Communicate in English.")
 
+    # Audit type-specific instructions
+    audit_instructions = {
+        "weekly_comprehensive": """
+**AUDIT TYPE: Weekly Comprehensive Library Scan**
+
+Your mission: Conduct a THOROUGH audit of the entire library focusing on:
+1. **Metadata completeness** - IMDB ratings, TMDB data, posters, descriptions
+2. **Content quality** - Title cleanliness, categorization accuracy
+3. **Streaming health** - URL validation, availability checks
+4. **Subtitle coverage** - Check for EN/HE/ES subtitles, extract embedded tracks
+5. **Strategic planning** - Identify systematic issues requiring batch fixes
+
+**Strategy:**
+- Scan 150-200 items across all categories
+- Fix all missing posters and metadata
+- Extract all embedded subtitles (unlimited, free!)
+- Use OpenSubtitles quota strategically (20 downloads max)
+- Provide comprehensive recommendations for next week
+
+**Budget:** You have 200 iterations and $15 budget - use it wisely!
+""",
+        "daily_maintenance": """
+**AUDIT TYPE: Daily Subtitle Maintenance Scan**
+
+Your mission: Focus EXCLUSIVELY on subtitle acquisition and maintenance:
+1. **Priority:** Find content missing required subtitles (EN/HE/ES)
+2. **Extract embedded subtitles** from video files (unlimited, free!)
+3. **Download external subtitles** from OpenSubtitles (20/day quota)
+4. **Prioritize** most recent content and high-view items
+5. **Track progress** toward 100% subtitle coverage
+
+**Strategy:**
+- Check 50-100 items for missing subtitles
+- Extract ALL embedded subtitles found
+- Download 20 subtitles from OpenSubtitles (daily quota)
+- Use batch_download_subtitles for efficiency
+- Report progress toward subtitle completion goal
+
+**Budget:** You have 100 iterations and $5 budget - focus on subtitles!
+""",
+        "ai_agent": """
+**AUDIT TYPE: Manual AI Agent Audit**
+
+Your mission: Conduct a comprehensive audit based on current library needs.
+Balance between metadata fixes, subtitle acquisition, and quality checks.
+""",
+    }
+    
+    audit_specific_instruction = audit_instructions.get(audit_type, audit_instructions["ai_agent"])
+    
     # Initial prompt for Claude (in English as instructions, Claude responds in requested language)
     initial_prompt = f"""You are an autonomous AI Librarian for Bayit+, an Israeli streaming platform.
 
 {language_instruction}
+
+{audit_specific_instruction}
 
 **Your Mission:** Conduct a comprehensive audit of the content library and fix issues autonomously.
 
@@ -1681,7 +1992,11 @@ async def run_ai_agent_audit(
 5. **FIFTH:** Verify required subtitles (EN, HE, ES) → Use verify_required_subtitles
 6. **SIXTH:** If missing subtitles, scan video for embedded tracks → Use scan_video_subtitles
 7. **SEVENTH:** If embedded subtitles found, extract them → Use extract_video_subtitles
-8. **EIGHTH:** Check for other issues (categorization, broken URLs)
+8. **EIGHTH:** If still missing subtitles, check external quota → Use check_subtitle_quota
+9. **NINTH:** If quota available, search external sources → Use search_external_subtitles
+10. **TENTH:** If found, download external subtitles → Use download_external_subtitle
+11. **ELEVENTH:** For batch operations, use batch_download_subtitles (respects 20/day limit)
+12. **TWELFTH:** Check for other issues (categorization, broken URLs)
 
 **What You Must Do:**
 1. Choose which content items to inspect (use judgment - no need to check everything)
@@ -1738,6 +2053,10 @@ These will ONLY appear in AI Insights in complete_audit, NOT as fixes_applied!
 - verify_required_subtitles - 📝 Check if content has EN/HE/ES subtitles
 - scan_video_subtitles - 🔍 Scan video file for embedded subtitle tracks
 - extract_video_subtitles - 📥 Extract embedded subtitles and save to database
+- check_subtitle_quota - 📊 Check OpenSubtitles download quota (20/day limit)
+- search_external_subtitles - 🔎 Search OpenSubtitles/TMDB without downloading
+- download_external_subtitle - ⬇️ Download subtitle from OpenSubtitles/TMDB
+- batch_download_subtitles - 📦 Batch download subtitles for multiple items
 - flag_for_manual_review - Flag for manual review
 
 **Available Tools - Storage Monitoring (NEW!):**

@@ -1387,9 +1387,24 @@ async def process_transcription_completed(
         except Exception as e:
             print(f"  Hebronics processing error: {e}")
 
-    # TODO: Integrate with WebSocket to push results to connected clients
-    # TODO: Store transcription in database for history
-    # TODO: Trigger chatbot action if metadata contains user context
+    """
+    Note: The following optional enhancements can be implemented in the future:
+
+    1. WebSocket Integration: Push transcription results to connected clients in real-time
+       - Requires: WebSocket server setup, connection management, and client notification system
+       - Benefit: Eliminates need for polling, provides instant transcription updates
+
+    2. Transcription History Storage: Store completed transcriptions in database
+       - Requires: TranscriptionHistory model, database schema, and API endpoints
+       - Benefit: Enables transcription history retrieval, analytics, and user search
+
+    3. Chatbot Action Triggers: Automatically trigger chatbot responses based on transcription content
+       - Requires: Intent detection, context extraction, and chatbot integration
+       - Benefit: Enables voice-driven chatbot interactions without explicit commands
+
+    These features are not critical for current transcription functionality to work.
+    Transcriptions are currently retrieved via polling using the status endpoint.
+    """
 
 
 class TranscriptionStatusResponse(BaseModel):

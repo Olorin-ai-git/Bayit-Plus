@@ -40,6 +40,12 @@ class SubtitleTrackDoc(Document):
     is_default: bool = False
     is_auto_generated: bool = False
 
+    # External Source Tracking
+    source: str = "embedded"  # "embedded", "opensubtitles", "tmdb", "manual"
+    external_id: Optional[str] = None  # OpenSubtitles file_id or TMDB track_id
+    external_url: Optional[str] = None  # Original download URL
+    download_date: Optional[datetime] = None  # When external subtitle was downloaded
+
     # Timestamps
     created_at: datetime = Field(default_factory=datetime.utcnow)
     updated_at: datetime = Field(default_factory=datetime.utcnow)
@@ -161,6 +167,81 @@ class TranslationCacheDoc(Document):
         )
         await doc.insert()
         return doc
+
+
+class SubtitleSearchCacheDoc(Document):
+    """
+    Cache for subtitle search results to minimize API calls.
+    Stores search results from OpenSubtitles and TMDB.
+    """
+    content_id: str
+    imdb_id: Optional[str] = None
+    tmdb_id: Optional[int] = None
+    language: str
+
+    # Search results
+    found: bool  # True if subtitles were found
+    source: Optional[str] = None  # "opensubtitles" or "tmdb"
+    external_id: Optional[str] = None  # File ID for download
+    external_url: Optional[str] = None
+
+    # Cache metadata
+    search_date: datetime = Field(default_factory=datetime.utcnow)
+    expires_at: datetime  # TTL for cache invalidation
+    hit_count: int = 0
+
+    class Settings:
+        name = "subtitle_search_cache"
+        indexes = [
+            [("content_id", 1), ("language", 1)],
+            [("imdb_id", 1), ("language", 1)],
+            "expires_at"  # For TTL cleanup
+        ]
+
+    @classmethod
+    async def get_cached_search(
+        cls,
+        content_id: str,
+        language: str
+    ) -> Optional["SubtitleSearchCacheDoc"]:
+        """Get cached search result if not expired"""
+        cache = await cls.find_one({
+            "content_id": content_id,
+            "language": language,
+            "expires_at": {"$gt": datetime.utcnow()}
+        })
+        if cache:
+            cache.hit_count += 1
+            await cache.save()
+        return cache
+
+
+class SubtitleQuotaTrackerDoc(Document):
+    """
+    Track OpenSubtitles API usage to respect daily limits.
+    One document per day.
+    """
+    date: str  # Format: "YYYY-MM-DD" for daily tracking
+    downloads_used: int = 0
+    searches_performed: int = 0
+    last_download_at: Optional[datetime] = None
+
+    # Rate limiting (40 requests per 10 seconds)
+    recent_requests: List[datetime] = Field(default_factory=list)  # Keep last 40
+
+    class Settings:
+        name = "subtitle_quota_tracker"
+        indexes = ["date"]
+
+    @classmethod
+    async def get_today(cls) -> "SubtitleQuotaTrackerDoc":
+        """Get or create today's quota tracker"""
+        today = datetime.utcnow().strftime("%Y-%m-%d")
+        tracker = await cls.find_one({"date": today})
+        if not tracker:
+            tracker = cls(date=today)
+            await tracker.insert()
+        return tracker
 
 
 # API Response Models

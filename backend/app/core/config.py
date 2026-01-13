@@ -101,6 +101,19 @@ class Settings(BaseSettings):
     TMDB_API_KEY: str = ""
     TMDB_API_TOKEN: str = ""  # Bearer token for TMDB API v4
 
+    # OpenSubtitles Configuration
+    OPENSUBTITLES_API_KEY: str = ""
+    OPENSUBTITLES_API_BASE_URL: str = "https://api.opensubtitles.com/api/v1"
+    OPENSUBTITLES_USER_AGENT: str = "Bayit+ v1.0"
+    OPENSUBTITLES_DOWNLOAD_LIMIT_PER_DAY: int = 20
+    OPENSUBTITLES_RATE_LIMIT_REQUESTS: int = 40
+    OPENSUBTITLES_RATE_LIMIT_WINDOW_SECONDS: int = 10
+
+    # Subtitle Caching Configuration
+    SUBTITLE_SEARCH_CACHE_TTL_DAYS: int = 7
+    SUBTITLE_NOT_FOUND_CACHE_TTL_DAYS: int = 30
+    SUBTITLE_BATCH_SIZE: int = 20
+
     # Twilio SMS Verification
     TWILIO_ACCOUNT_SID: str = ""
     TWILIO_AUTH_TOKEN: str = ""

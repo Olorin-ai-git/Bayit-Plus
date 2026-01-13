@@ -148,7 +148,9 @@ const EPGPage: React.FC = () => {
 
   // Program click handler
   const handleProgramClick = useCallback((program: EPGProgram) => {
-    // TODO: Open program detail modal
+    // Program detail modal not yet implemented
+    // Would show: full description, cast, genres, trailer, related programs
+    // For now, users can see program info in the EPG cell tooltip
     console.log('Program clicked:', program)
   }, [])
 
@@ -187,12 +189,11 @@ const EPGPage: React.FC = () => {
 
         console.log('Started recording:', program.title)
       } else if (program.is_future) {
-        // Schedule future recording (requires backend support)
-        // For now, just add to scheduled list (in real implementation, call API)
-        setScheduledRecordings(prev => new Set([...prev, program.id]))
-
-        console.log('Scheduled recording:', program.title)
-        // TODO: Call backend API to schedule recording when available
+        // Future recording scheduling is not yet implemented on backend
+        // Implementation requires: Backend endpoint to store scheduled recordings
+        // and cron job to start recordings at scheduled time
+        // For now, only immediate recordings are supported
+        throw new Error(t('epg.scheduledRecordingNotSupported'))
       }
 
       // Close modal

@@ -1,11 +1,33 @@
-from fastapi import APIRouter, Depends, HTTPException, Query
-from typing import Optional, List
+from fastapi import APIRouter, Depends, HTTPException, Query, Body, status
+from typing import Optional, List, Dict, Any
 from datetime import datetime
+from pydantic import BaseModel
 from app.models.user import User
 from app.core.security import get_current_active_user, get_optional_user
 from app.services.epg_service import EPGService
+from app.services.llm_search_service import llm_search_service
+from app.services.catchup_service import catchup_service
 
 router = APIRouter()
+
+
+# Pydantic models
+class LLMSearchRequest(BaseModel):
+    query: str
+    timezone: str = "UTC"
+    include_user_context: bool = True
+
+
+def get_current_premium_user(
+    current_user: User = Depends(get_current_active_user)
+) -> User:
+    """Dependency to ensure user has premium access"""
+    if not current_user.can_access_premium_features():
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Premium subscription required for LLM search feature"
+        )
+    return current_user
 
 
 @router.get("")
@@ -124,6 +146,58 @@ async def search_epg(
         )
 
 
+@router.post("/llm-search")
+async def llm_search_epg(
+    request: LLMSearchRequest,
+    current_user: User = Depends(get_current_premium_user)
+):
+    """
+    LLM-powered natural language search in EPG data (Premium Feature)
+
+    Uses Claude AI to interpret natural language queries and intelligently
+    search through EPG programming data.
+
+    Request Body:
+    - query: Natural language search query (e.g., "Show me all shows with actress Tali Sharon")
+    - timezone: User's timezone (default: UTC)
+    - include_user_context: Whether to include user preferences in search (default: true)
+
+    Returns:
+    - success: Whether search succeeded
+    - query: Original query
+    - interpretation: Claude's interpretation of the query
+    - results: List of matching programs with relevance scores
+    - total_results: Total number of results
+    - execution_time_ms: Total execution time
+
+    Requires: Premium subscription
+    """
+    try:
+        # Build user context if requested
+        user_context = None
+        if request.include_user_context:
+            user_context = {
+                "subscription_tier": current_user.subscription_tier,
+                "preferred_language": current_user.preferred_language,
+                "preferences": current_user.preferences
+            }
+
+        # Execute LLM search
+        result = await llm_search_service.search(
+            query=request.query,
+            timezone=request.timezone,
+            user_context=user_context
+        )
+
+        return result
+
+    except Exception as e:
+        raise HTTPException(
+            status_code=500,
+            detail=f"LLM search failed: {str(e)}"
+        )
+
+
 @router.get("/{channel_id}/schedule")
 async def get_channel_schedule(
     channel_id: str,
@@ -227,4 +301,116 @@ async def get_next_program(channel_id: str):
         raise HTTPException(
             status_code=500,
             detail=f"Failed to fetch next program: {str(e)}"
+        )
+
+
+@router.get("/catchup/{program_id}/stream")
+async def get_catchup_stream(
+    program_id: str,
+    current_user: User = Depends(get_current_premium_user)
+):
+    """
+    Get catch-up TV stream for a past program (Premium Feature)
+
+    Enables time-shifted playback of programs that have already aired,
+    using DVR-style recordings.
+
+    Path Parameters:
+    - program_id: EPG program ID
+
+    Returns:
+    - stream_url: Video stream URL
+    - seek_seconds: Seek position in recording (seconds from start)
+    - duration_seconds: Program duration
+    - subtitle_url: Subtitle file URL (if available)
+    - metadata: Program information
+
+    Requires: Premium subscription
+
+    Availability:
+    - Programs within 7-day retention period
+    - Only if recording exists for that time slot
+    """
+    try:
+        result = await catchup_service.get_catchup_stream(
+            program_id=program_id,
+            user_id=str(current_user.id)
+        )
+
+        if not result:
+            raise HTTPException(
+                status_code=404,
+                detail="Catch-up not available for this program. It may not have been recorded or is outside the retention period."
+            )
+
+        return result
+
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(
+            status_code=500,
+            detail=f"Failed to get catch-up stream: {str(e)}"
+        )
+
+
+@router.get("/catchup/{program_id}/availability")
+async def check_catchup_availability(
+    program_id: str,
+    current_user: Optional[User] = Depends(get_optional_user)
+):
+    """
+    Check if catch-up is available for a program
+
+    Path Parameters:
+    - program_id: EPG program ID
+
+    Returns:
+    - available: Boolean indicating availability
+    - reason: Reason if not available
+    - metadata: Additional information
+    """
+    try:
+        result = await catchup_service.check_availability(program_id)
+        return result
+
+    except Exception as e:
+        raise HTTPException(
+            status_code=500,
+            detail=f"Failed to check catch-up availability: {str(e)}"
+        )
+
+
+@router.get("/catchup/available")
+async def get_available_catchup_programs(
+    channel_id: Optional[str] = Query(None),
+    limit: int = Query(50, ge=1, le=100),
+    current_user: Optional[User] = Depends(get_optional_user)
+):
+    """
+    Get list of programs available for catch-up
+
+    Query Parameters:
+    - channel_id: Optional filter by channel ID
+    - limit: Maximum number of programs to return (default: 50, max: 100)
+
+    Returns:
+    - programs: List of available catch-up programs
+    - total: Total number of programs
+    """
+    try:
+        programs = await catchup_service.get_available_catchup_programs(
+            channel_id=channel_id,
+            limit=limit
+        )
+
+        return {
+            "programs": programs,
+            "total": len(programs)
+        }
+
+    except Exception as e:
+        raise HTTPException(
+            status_code=500,
+            detail=f"Failed to get available catch-up programs: {str(e)}"
         )

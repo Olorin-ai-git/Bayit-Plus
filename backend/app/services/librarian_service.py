@@ -280,11 +280,16 @@ async def get_audit_statistics(days: int = 30) -> Dict[str, Any]:
     - Total issues found
     - Total issues fixed
     - Fix success rate
+
+    Note: Counts both "completed" and "partial" audits since partial audits
+    still perform valuable work. Counts actual LibrarianAction records for
+    accurate fix counts instead of relying on incomplete summaries.
     """
     cutoff_date = datetime.utcnow() - timedelta(days=days)
 
+    # Count all audits (completed and partial) - they all did work
     reports = await AuditReport.find(
-        {"audit_date": {"$gte": cutoff_date}, "status": "completed"}
+        {"audit_date": {"$gte": cutoff_date}}
     ).to_list(length=None)
 
     if not reports:
@@ -297,16 +302,37 @@ async def get_audit_statistics(days: int = 30) -> Dict[str, Any]:
             "fix_success_rate": 0,
         }
 
-    total_execution_time = sum(r.execution_time_seconds for r in reports)
-    total_issues = sum(r.summary.get("issues_found", 0) for r in reports)
-    total_fixed = sum(r.summary.get("issues_fixed", 0) for r in reports)
+    # Get audit IDs for action counting
+    audit_ids = [r.audit_id for r in reports]
+
+    # Count actual LibrarianAction records instead of relying on summaries
+    # This gives us the real count of fixes, even for partial audits
+    total_actions = await LibrarianAction.find(
+        {"audit_id": {"$in": audit_ids}}
+    ).count()
+
+    total_execution_time = sum(r.execution_time_seconds for r in reports if r.execution_time_seconds)
+
+    # For issues found, we'll try to get from summary, but count actions as minimum
+    # Handle case where summary might be None
+    total_issues_from_summary = sum(
+        (r.summary or {}).get("issues_found", 0) for r in reports
+    )
+    # If summaries show 0 but we have actions, use action count as estimate
+    total_issues = max(total_issues_from_summary, total_actions)
+
+    # Calculate average execution time (handle case where no reports have execution time)
+    reports_with_time = [r for r in reports if r.execution_time_seconds]
+    avg_execution_time = (
+        total_execution_time / len(reports_with_time) if reports_with_time else 0
+    )
 
     return {
         "period_days": days,
         "total_audits": len(reports),
-        "avg_execution_time": total_execution_time / len(reports),
+        "avg_execution_time": avg_execution_time,
         "total_issues_found": total_issues,
-        "total_issues_fixed": total_fixed,
-        "fix_success_rate": (total_fixed / total_issues * 100) if total_issues > 0 else 0,
+        "total_issues_fixed": total_actions,  # Use real action count
+        "fix_success_rate": (total_actions / total_issues * 100) if total_issues > 0 else 0,
         "last_audit_date": reports[0].audit_date if reports else None,
     }

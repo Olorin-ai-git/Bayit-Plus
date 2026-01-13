@@ -122,11 +122,12 @@ class LiveRecordingService:
                     f"Recording ID: {session.recording_id}"
                 )
 
-                # TODO: If subtitle_enabled, start SubtitleCaptureService
-                # if subtitle_enabled:
-                #     await subtitle_capture_service.start_capture(
-                #         session.recording_id, channel_id, subtitle_target_language
-                #     )
+                # Subtitle capture during recording is not yet implemented
+                # Implementation requires: SubtitleCaptureService for real-time subtitle extraction
+                if subtitle_enabled:
+                    logger.warning(
+                        f"Subtitle capture requested for recording {session.recording_id} but not yet implemented"
+                    )
 
                 return session
 
@@ -195,12 +196,8 @@ class LiveRecordingService:
                     else:
                         logger.error(f"Error stopping FFmpeg: {str(e)}")
 
-            # TODO: If subtitles enabled, stop capture and generate WebVTT
-            # if session.subtitle_enabled:
-            #     await subtitle_capture_service.stop_capture(session.recording_id)
-            #     subtitle_url = await subtitle_capture_service.generate_subtitle_file(
-            #         session.recording_id
-            #     )
+            # Subtitle capture during recording is not yet implemented
+            # (warning logged at recording start if subtitles were requested)
 
             # Get video info
             if os.path.exists(session.output_path):
@@ -211,16 +208,32 @@ class LiveRecordingService:
             else:
                 raise Exception("Recording file not found")
 
-            # TODO: Upload to GCS and extract thumbnail
-            # video_url = await gcs_service.upload_recording(session)
-            # thumbnail_url = await self.extract_and_upload_thumbnail(session)
-            video_url = f"file://{session.output_path}"  # Temporary local path
-            thumbnail_url = None
+            # Upload recording to configured storage and extract thumbnail
+            from app.core.config import settings
+
+            if settings.STORAGE_TYPE == "local":
+                video_url = f"/uploads/recordings/{os.path.basename(session.output_path)}"
+                thumbnail_url = None
+            elif settings.STORAGE_TYPE in ("s3", "gcs"):
+                raise NotImplementedError(
+                    f"Recording upload for {settings.STORAGE_TYPE} storage is not yet implemented. "
+                    f"Please configure STORAGE_TYPE=local in your environment or implement the upload logic."
+                )
+            else:
+                raise ValueError(f"Invalid STORAGE_TYPE: {settings.STORAGE_TYPE}")
 
             # Create Recording document
             recording = Recording.from_session(session, video_url, session.file_size_bytes)
-            # TODO: Set subtitle_url if available
             recording.thumbnail = thumbnail_url
+
+            # Subtitle capture is not yet implemented
+            # Implementation requires: SubtitleCaptureService for real-time subtitle extraction
+            # from live streams and WebVTT file generation
+            if session.subtitle_enabled:
+                logger.warning(
+                    f"Subtitle capture requested for recording {session.recording_id} but not yet implemented"
+                )
+
             await recording.insert()
 
             # Update user quota

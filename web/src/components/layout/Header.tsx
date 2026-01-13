@@ -21,6 +21,7 @@ const IS_TV_BUILD = typeof __TV__ !== 'undefined' && __TV__;
 const navLinkKeys = [
   { to: '/', key: 'nav.home' },
   { to: '/live', key: 'nav.liveTV' },
+  { to: '/epg', key: 'nav.epg' },
   { to: '/vod', key: 'nav.vod' },
   { to: '/radio', key: 'nav.radio' },
   { to: '/podcasts', key: 'nav.podcasts' },

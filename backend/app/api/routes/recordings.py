@@ -378,8 +378,14 @@ async def delete_recording(
             recording.file_size_bytes
         )
 
-        # TODO: Delete files from GCS
-        # await gcs_service.delete_recording_files(recording)
+        # Delete files from storage (local/S3/GCS)
+        from app.core.storage import get_storage_provider
+        storage = get_storage_provider()
+
+        if recording.video_url:
+            await storage.delete_file(recording.video_url)
+        if recording.subtitle_url:
+            await storage.delete_file(recording.subtitle_url)
 
         # Delete recording document
         await recording.delete()

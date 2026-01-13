@@ -103,15 +103,25 @@ class RecordingQuotaService:
         """
         Reserve quota for recording (pessimistic reservation).
 
-        This is a placeholder for future implementation where we might
-        want to reserve quota before starting recording.
+        Note: Pessimistic quota reservation is not currently implemented.
+        Current implementation uses optimistic concurrency control where quota
+        is checked at recording start and updated at recording completion.
+
+        Pessimistic reservation would be useful if:
+        - Multiple concurrent users are competing for quota
+        - Recording size estimates are accurate enough to justify upfront reservation
+        - We want to prevent quota over-subscription
+
+        Implementation would require:
+        - Reservation tracking in database (reserved_quota field in RecordingQuota)
+        - Timeout mechanism to release stale reservations
+        - Transaction support to ensure atomic reserve/release operations
 
         Args:
             user_id: User ID
             estimated_size_bytes: Estimated recording size
         """
-        # TODO: Implement pessimistic quota reservation if needed
-        # This could temporarily reduce available quota before recording starts
+        # Not implemented - using optimistic quota control instead
         pass
 
     async def update_used_quota(

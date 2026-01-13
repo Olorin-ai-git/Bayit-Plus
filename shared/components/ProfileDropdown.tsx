@@ -6,6 +6,7 @@ import {
   StyleSheet,
   Animated,
   Platform,
+  Image,
 } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { useDirection } from '../hooks/useDirection';
@@ -123,7 +124,11 @@ export const ProfileDropdown: React.FC<ProfileDropdownProps> = ({
         onBlur={() => setIsFocused(false)}
         style={[styles.button, isFocused && styles.buttonFocused]}
       >
-        <Ionicons name="person" size={20} color={colors.text} />
+        {user?.avatar ? (
+          <Image source={{ uri: user.avatar }} style={styles.buttonAvatar} />
+        ) : (
+          <Ionicons name="person" size={20} color={colors.text} />
+        )}
       </TouchableOpacity>
 
       {isOpen && Platform.OS === 'web' && typeof document !== 'undefined' && createPortal(
@@ -149,9 +154,13 @@ export const ProfileDropdown: React.FC<ProfileDropdownProps> = ({
             <GlassView intensity="high" style={styles.dropdown}>
               {/* User Info Section */}
               <View style={styles.userSection}>
-                <View style={[styles.avatar, { backgroundColor: getBadgeColor() }]}>
-                  <Text style={styles.avatarText}>{getInitials()}</Text>
-                </View>
+                {user?.avatar ? (
+                  <Image source={{ uri: user.avatar }} style={styles.dropdownAvatar} />
+                ) : (
+                  <View style={[styles.avatar, { backgroundColor: getBadgeColor() }]}>
+                    <Text style={styles.avatarText}>{getInitials()}</Text>
+                  </View>
+                )}
                 <View style={styles.userInfo}>
                   <Text style={styles.userName} numberOfLines={1}>
                     {user?.name || t('profile.guest', 'Guest')}
@@ -242,10 +251,16 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(255, 255, 255, 0.05)',
     borderWidth: 1,
     borderColor: 'transparent',
+    overflow: 'hidden',
   },
   buttonFocused: {
     borderColor: colors.primary,
     backgroundColor: 'rgba(0, 217, 255, 0.1)',
+  },
+  buttonAvatar: {
+    width: 36,
+    height: 36,
+    borderRadius: borderRadius.sm,
   },
   backdrop: {
     position: 'fixed' as any,
@@ -277,6 +292,11 @@ const styles = StyleSheet.create({
     borderRadius: 24,
     justifyContent: 'center',
     alignItems: 'center',
+  },
+  dropdownAvatar: {
+    width: 48,
+    height: 48,
+    borderRadius: 24,
   },
   avatarText: {
     fontSize: 18,

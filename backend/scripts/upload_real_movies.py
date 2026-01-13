@@ -156,7 +156,7 @@ async def upload_to_gcs(file_path: str, destination_blob_name: str) -> str:
         return None
 
 
-async def upload_movies(source_dir: str, dry_run: bool = False, limit: Optional[int] = None):
+async def upload_movies(source_dir: str, dry_run: bool = False, limit: Optional[int] = None, start_from: Optional[str] = None):
     """Upload movies from directory to GCS and MongoDB Atlas."""
     source_path = Path(source_dir)
 
@@ -222,10 +222,28 @@ async def upload_movies(source_dir: str, dry_run: bool = False, limit: Optional[
             movie_files.append((source_dir, item))
 
     total_files = len(movie_files)
+
+    # Filter by starting letter if specified
+    if start_from:
+        start_letter = start_from.upper()
+        logger.info(f"Filtering movies starting from letter '{start_letter}'")
+        filtered_files = []
+        for directory, filename in movie_files:
+            # Extract title from filename or directory name
+            folder_name = os.path.basename(directory) if os.path.isdir(directory) else filename
+            first_char = folder_name[0].upper()
+
+            # Include if first character is >= start_letter (alphabetically)
+            if first_char >= start_letter or not first_char.isalpha():
+                filtered_files.append((directory, filename))
+
+        movie_files = filtered_files
+        logger.info(f"Found {total_files} total movies, {len(movie_files)} starting from '{start_letter}'")
+
     if limit:
         movie_files = movie_files[:limit]
-        logger.info(f"Found {total_files} movies, processing first {limit}")
-    else:
+        logger.info(f"Processing first {limit} movies")
+    elif not start_from:
         logger.info(f"Found {total_files} movie files")
 
     # Process each movie
@@ -347,13 +365,19 @@ def main():
         type=int,
         help='Limit number of movies to process (for testing)'
     )
+    parser.add_argument(
+        '--start-from',
+        type=str,
+        help='Start processing from movies beginning with this letter (e.g., "T")'
+    )
 
     args = parser.parse_args()
 
     asyncio.run(upload_movies(
         source_dir=args.source,
         dry_run=args.dry_run,
-        limit=args.limit
+        limit=args.limit,
+        start_from=args.start_from
     ))
 
 
