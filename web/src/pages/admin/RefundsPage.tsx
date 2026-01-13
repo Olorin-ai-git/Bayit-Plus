@@ -1,8 +1,8 @@
 import { useState, useEffect, useCallback } from 'react';
-import { View, Text, StyleSheet, Pressable, ScrollView, TextInput } from 'react-native';
+import { View, Text, StyleSheet, Pressable, ScrollView } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { Check, X } from 'lucide-react';
-import { GlassTable, GlassTableCell } from '@bayit/shared/ui';
+import { GlassTable, GlassTableCell, GlassInput } from '@bayit/shared/ui';
 import StatCard from '@/components/admin/StatCard';
 import { billingService } from '@/services/adminApi';
 import { colors, spacing, borderRadius } from '@bayit/shared/theme';
@@ -296,13 +296,12 @@ export default function RefundsPage() {
             </Text>
           )}
           <View style={styles.formGroup}>
-            <Text style={styles.formLabel}>{t('admin.refunds.rejectModal.reasonLabel')}</Text>
-            <TextInput
-              style={styles.textArea}
+            <GlassInput
+              label={t('admin.refunds.rejectModal.reasonLabel')}
+              containerStyle={styles.textArea}
               value={rejectReason}
               onChangeText={setRejectReason}
               placeholder={t('admin.refunds.rejectModal.reasonPlaceholder')}
-              placeholderTextColor={colors.textMuted}
               multiline
               numberOfLines={3}
             />

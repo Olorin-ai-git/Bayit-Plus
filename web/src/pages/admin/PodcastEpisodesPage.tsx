@@ -1,9 +1,9 @@
 import { useState, useEffect, useCallback } from 'react'
-import { View, Text, StyleSheet, Pressable, ScrollView, TextInput } from 'react-native'
+import { View, Text, StyleSheet, Pressable, ScrollView } from 'react-native'
 import { useParams, useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { Plus, Edit, Trash2, X, AlertCircle, ChevronLeft } from 'lucide-react'
-import { GlassTable, GlassTableCell } from '@bayit/shared/ui'
+import { GlassTable, GlassTableCell, GlassInput } from '@bayit/shared/ui'
 import { contentService } from '@/services/adminApi'
 import { colors, spacing, borderRadius } from '@bayit/shared/theme'
 import { useDirection } from '@/hooks/useDirection'
@@ -220,55 +220,55 @@ export default function PodcastEpisodesPage() {
           <Text style={styles.formTitle}>
             {editingId === 'new' ? 'New Episode' : 'Edit Episode'}
           </Text>
-          <TextInput
-            style={styles.input}
+          <GlassInput
+            label={t('admin.podcasts.episodes.form.title', 'Episode title')}
+            containerStyle={styles.input}
             placeholder="Episode title"
-            placeholderTextColor={colors.textMuted}
             value={editData.title || ''}
             onChangeText={(value) => setEditData({ ...editData, title: value })}
           />
-          <TextInput
-            style={styles.input}
+          <GlassInput
+            label={t('admin.podcasts.episodes.form.description', 'Description')}
+            containerStyle={styles.input}
             placeholder="Description"
-            placeholderTextColor={colors.textMuted}
             value={editData.description || ''}
             onChangeText={(value) => setEditData({ ...editData, description: value })}
             multiline
           />
-          <TextInput
-            style={styles.input}
+          <GlassInput
+            label={t('admin.podcasts.episodes.form.episodeNumber', 'Episode number')}
+            containerStyle={styles.input}
             placeholder="Episode number"
-            placeholderTextColor={colors.textMuted}
             value={String(editData.episode_number || '')}
             onChangeText={(value) => setEditData({ ...editData, episode_number: parseInt(value) || 0 })}
             keyboardType="number-pad"
           />
-          <TextInput
-            style={styles.input}
+          <GlassInput
+            label={t('admin.podcasts.episodes.form.seasonNumber', 'Season number (optional)')}
+            containerStyle={styles.input}
             placeholder="Season number (optional)"
-            placeholderTextColor={colors.textMuted}
             value={String(editData.season_number || '')}
             onChangeText={(value) => setEditData({ ...editData, season_number: parseInt(value) || undefined })}
             keyboardType="number-pad"
           />
-          <TextInput
-            style={styles.input}
+          <GlassInput
+            label={t('admin.podcasts.episodes.form.duration', 'Duration')}
+            containerStyle={styles.input}
             placeholder="Duration (e.g., 45:30)"
-            placeholderTextColor={colors.textMuted}
             value={editData.duration || ''}
             onChangeText={(value) => setEditData({ ...editData, duration: value })}
           />
-          <TextInput
-            style={styles.input}
+          <GlassInput
+            label={t('admin.podcasts.episodes.form.audioUrl', 'Audio URL (required)')}
+            containerStyle={styles.input}
             placeholder="Audio URL (required)"
-            placeholderTextColor={colors.textMuted}
             value={editData.audio_url || ''}
             onChangeText={(value) => setEditData({ ...editData, audio_url: value })}
           />
-          <TextInput
-            style={styles.input}
+          <GlassInput
+            label={t('admin.podcasts.episodes.form.publishedDate', 'Published Date (YYYY-MM-DD)')}
+            containerStyle={styles.input}
             placeholder="Published Date (YYYY-MM-DD)"
-            placeholderTextColor={colors.textMuted}
             value={editData.published_at ? editData.published_at.split('T')[0] : ''}
             onChangeText={(value) => setEditData({ ...editData, published_at: value ? `${value}T00:00:00Z` : undefined })}
           />

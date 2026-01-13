@@ -1,10 +1,10 @@
 import { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, ScrollView, TextInput, Switch, ActivityIndicator, Pressable } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, Switch, ActivityIndicator, Pressable } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { Save, RefreshCw, Trash2, AlertTriangle } from 'lucide-react';
 import { settingsService } from '@/services/adminApi';
 import { colors, spacing, borderRadius } from '@bayit/shared/theme';
-import { GlassCard, GlassButton, GlassModal } from '@bayit/shared/ui';
+import { GlassCard, GlassButton, GlassModal, GlassInput } from '@bayit/shared/ui';
 import { useDirection } from '@/hooks/useDirection';
 import { useModal } from '@/contexts/ModalContext';
 import logger from '@/utils/logger';
@@ -144,23 +144,19 @@ export default function SettingsPage() {
           <Text style={[styles.sectionTitle, { textAlign }]}>{t('admin.settings.generalSettings')}</Text>
 
           <View style={styles.formGroup}>
-            <Text style={styles.formLabel}>{t('admin.settings.supportEmail')}</Text>
-            <TextInput style={styles.input} value={settings.support_email || ''} onChangeText={(v) => handleSettingChange('support_email', v)} keyboardType="email-address" />
+            <GlassInput label={t('admin.settings.supportEmail')} containerStyle={styles.input} value={settings.support_email || ''} onChangeText={(v) => handleSettingChange('support_email', v)} keyboardType="email-address" />
           </View>
 
           <View style={styles.formGroup}>
-            <Text style={styles.formLabel}>{t('admin.settings.defaultPlan')}</Text>
-            <TextInput style={styles.input} value={settings.default_plan || ''} onChangeText={(v) => handleSettingChange('default_plan', v)} />
+            <GlassInput label={t('admin.settings.defaultPlan')} containerStyle={styles.input} value={settings.default_plan || ''} onChangeText={(v) => handleSettingChange('default_plan', v)} />
           </View>
 
           <View style={styles.formGroup}>
-            <Text style={styles.formLabel}>{t('admin.settings.termsUrl')}</Text>
-            <TextInput style={styles.input} value={settings.terms_url || ''} onChangeText={(v) => handleSettingChange('terms_url', v)} />
+            <GlassInput label={t('admin.settings.termsUrl')} containerStyle={styles.input} value={settings.terms_url || ''} onChangeText={(v) => handleSettingChange('terms_url', v)} />
           </View>
 
           <View style={styles.formGroup}>
-            <Text style={styles.formLabel}>{t('admin.settings.privacyUrl')}</Text>
-            <TextInput style={styles.input} value={settings.privacy_url || ''} onChangeText={(v) => handleSettingChange('privacy_url', v)} />
+            <GlassInput label={t('admin.settings.privacyUrl')} containerStyle={styles.input} value={settings.privacy_url || ''} onChangeText={(v) => handleSettingChange('privacy_url', v)} />
           </View>
         </GlassCard>
 
@@ -168,13 +164,11 @@ export default function SettingsPage() {
           <Text style={styles.sectionTitle}>{t('admin.settings.userSettings')}</Text>
 
           <View style={styles.formGroup}>
-            <Text style={styles.formLabel}>{t('admin.settings.maxDevices')}</Text>
-            <TextInput style={styles.input} value={(settings.max_devices || 1).toString()} onChangeText={(v) => handleSettingChange('max_devices', parseInt(v) || 1)} keyboardType="number-pad" />
+            <GlassInput label={t('admin.settings.maxDevices')} containerStyle={styles.input} value={(settings.max_devices || 1).toString()} onChangeText={(v) => handleSettingChange('max_devices', parseInt(v) || 1)} keyboardType="number-pad" />
           </View>
 
           <View style={styles.formGroup}>
-            <Text style={styles.formLabel}>{t('admin.settings.trialDays')}</Text>
-            <TextInput style={styles.input} value={(settings.trial_days || 0).toString()} onChangeText={(v) => handleSettingChange('trial_days', parseInt(v) || 0)} keyboardType="number-pad" />
+            <GlassInput label={t('admin.settings.trialDays')} containerStyle={styles.input} value={(settings.trial_days || 0).toString()} onChangeText={(v) => handleSettingChange('trial_days', parseInt(v) || 0)} keyboardType="number-pad" />
           </View>
         </GlassCard>
 

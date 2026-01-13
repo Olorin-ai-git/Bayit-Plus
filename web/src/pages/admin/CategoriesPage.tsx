@@ -1,10 +1,10 @@
 import { useState, useEffect, useCallback } from 'react'
-import { View, Text, StyleSheet, Pressable, ScrollView, TextInput } from 'react-native'
+import { View, Text, StyleSheet, Pressable, ScrollView } from 'react-native'
 import { useTranslation } from 'react-i18next'
 import { Plus, Edit, Trash2, X, AlertCircle } from 'lucide-react'
 import { contentService } from '@/services/adminApi'
 import { colors, spacing, borderRadius } from '@bayit/shared/theme'
-import { GlassTable, GlassTableCell, GlassTableColumn } from '@bayit/shared/ui'
+import { GlassTable, GlassTableCell, GlassTableColumn, GlassInput } from '@bayit/shared/ui'
 import { useDirection } from '@/hooks/useDirection'
 import { useModal } from '@/contexts/ModalContext'
 import logger from '@/utils/logger'
@@ -198,24 +198,24 @@ export default function CategoriesPage() {
           <Text style={styles.formTitle}>
             {editingId === 'new' ? 'New Category' : 'Edit Category'}
           </Text>
-          <TextInput
-            style={styles.input}
+          <GlassInput
+            label={t('admin.categories.form.nameHebrew', 'Category name (Hebrew)')}
+            containerStyle={styles.input}
             placeholder="Category name (Hebrew)"
-            placeholderTextColor={colors.textMuted}
             value={editData.name || ''}
             onChangeText={(value) => setEditData({ ...editData, name: value })}
           />
-          <TextInput
-            style={styles.input}
+          <GlassInput
+            label={t('admin.categories.form.nameEnglish', 'Category name (English)')}
+            containerStyle={styles.input}
             placeholder="Category name (English)"
-            placeholderTextColor={colors.textMuted}
             value={editData.name_en || ''}
             onChangeText={(value) => setEditData({ ...editData, name_en: value })}
           />
-          <TextInput
-            style={styles.input}
+          <GlassInput
+            label={t('admin.categories.form.slug', 'Slug')}
+            containerStyle={styles.input}
             placeholder="Slug (e.g., movies)"
-            placeholderTextColor={colors.textMuted}
             value={editData.slug || ''}
             onChangeText={(value) => setEditData({ ...editData, slug: value })}
           />

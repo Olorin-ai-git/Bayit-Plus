@@ -1,10 +1,10 @@
 import { useState, useEffect, useCallback } from 'react';
-import { View, Text, StyleSheet, Pressable, ScrollView, TextInput } from 'react-native';
+import { View, Text, StyleSheet, Pressable, ScrollView } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { Plus, Edit2, Trash2, Check } from 'lucide-react';
 import { subscriptionsService } from '@/services/adminApi';
 import { colors, spacing, borderRadius } from '@bayit/shared/theme';
-import { GlassCard, GlassButton, GlassModal, GlassToggle } from '@bayit/shared/ui';
+import { GlassCard, GlassButton, GlassModal, GlassToggle, GlassInput } from '@bayit/shared/ui';
 import { useDirection } from '@/hooks/useDirection';
 import logger from '@/utils/logger';
 import { adminButtonStyles } from '@/styles/adminButtonStyles';
@@ -200,19 +200,16 @@ export default function PlanManagementPage() {
         <View style={styles.modalContent}>
           <View style={[styles.formRow, { flexDirection }]}>
             <View style={styles.formGroup}>
-              <Text style={[styles.formLabel, { textAlign }]}>{t('admin.plans.form.nameEn')}</Text>
-              <TextInput style={styles.input} value={formData.name} onChangeText={(name) => setFormData((p) => ({ ...p, name }))} placeholderTextColor={colors.textMuted} />
+              <GlassInput label={t('admin.plans.form.nameEn')} value={formData.name} onChangeText={(name) => setFormData((p) => ({ ...p, name }))} containerStyle={styles.inputContainer} />
             </View>
             <View style={styles.formGroup}>
-              <Text style={[styles.formLabel, { textAlign }]}>{t('admin.plans.form.nameHe')}</Text>
-              <TextInput style={styles.input} value={formData.name_he} onChangeText={(name_he) => setFormData((p) => ({ ...p, name_he }))} placeholderTextColor={colors.textMuted} />
+              <GlassInput label={t('admin.plans.form.nameHe')} value={formData.name_he} onChangeText={(name_he) => setFormData((p) => ({ ...p, name_he }))} containerStyle={styles.inputContainer} />
             </View>
           </View>
 
           <View style={[styles.formRow, { flexDirection }]}>
             <View style={styles.formGroup}>
-              <Text style={[styles.formLabel, { textAlign }]}>{t('admin.plans.form.price')}</Text>
-              <TextInput style={styles.input} value={formData.price} onChangeText={(price) => setFormData((p) => ({ ...p, price }))} placeholderTextColor={colors.textMuted} keyboardType="decimal-pad" />
+              <GlassInput label={t('admin.plans.form.price')} value={formData.price} onChangeText={(price) => setFormData((p) => ({ ...p, price }))} keyboardType="decimal-pad" containerStyle={styles.inputContainer} />
             </View>
             <View style={styles.formGroup}>
               <Text style={[styles.formLabel, { textAlign }]}>{t('admin.plans.form.interval')}</Text>
@@ -228,13 +225,11 @@ export default function PlanManagementPage() {
           </View>
 
           <View style={styles.formGroup}>
-            <Text style={[styles.formLabel, { textAlign }]}>{t('admin.plans.form.trialDays')}</Text>
-            <TextInput style={styles.input} value={formData.trial_days} onChangeText={(trial_days) => setFormData((p) => ({ ...p, trial_days }))} placeholderTextColor={colors.textMuted} keyboardType="number-pad" />
+            <GlassInput label={t('admin.plans.form.trialDays')} value={formData.trial_days} onChangeText={(trial_days) => setFormData((p) => ({ ...p, trial_days }))} keyboardType="number-pad" containerStyle={styles.inputContainer} />
           </View>
 
           <View style={styles.formGroup}>
-            <Text style={[styles.formLabel, { textAlign }]}>{t('admin.plans.form.features')}</Text>
-            <TextInput style={[styles.input, styles.textArea]} value={formData.features} onChangeText={(features) => setFormData((p) => ({ ...p, features }))} placeholderTextColor={colors.textMuted} multiline numberOfLines={4} />
+            <GlassInput label={t('admin.plans.form.features')} value={formData.features} onChangeText={(features) => setFormData((p) => ({ ...p, features }))} multiline numberOfLines={4} containerStyle={styles.inputContainer} />
           </View>
 
           <View style={styles.toggleRow}>
@@ -316,8 +311,7 @@ const styles = StyleSheet.create({
   formRow: { flexDirection: 'row', gap: spacing.md, width: '100%' },
   formGroup: { flex: 1, gap: spacing.xs },
   formLabel: { fontSize: 14, fontWeight: '600', color: colors.text },
-  input: { backgroundColor: colors.backgroundLighter, borderRadius: borderRadius.md, borderWidth: 1, borderColor: colors.glassBorder, paddingHorizontal: spacing.md, paddingVertical: spacing.sm, color: colors.text, fontSize: 14 },
-  textArea: { minHeight: 100, textAlignVertical: 'top' },
+  inputContainer: { width: '100%' },
   intervalButtons: { flexDirection: 'row', gap: spacing.sm },
   intervalButton: { flex: 1, paddingVertical: spacing.sm, borderRadius: borderRadius.md, backgroundColor: colors.backgroundLighter, alignItems: 'center' },
   intervalButtonActive: { backgroundColor: colors.primary },

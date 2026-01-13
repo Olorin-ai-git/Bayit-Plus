@@ -1,8 +1,8 @@
 import { useState, useEffect, useCallback } from 'react'
-import { View, Text, StyleSheet, Pressable, ScrollView, TextInput } from 'react-native'
+import { View, Text, StyleSheet, Pressable, ScrollView } from 'react-native'
 import { useTranslation } from 'react-i18next'
 import { Plus, Edit, Trash2, X, AlertCircle } from 'lucide-react'
-import { GlassTable, GlassTableCell } from '@bayit/shared/ui'
+import { GlassTable, GlassTableCell, GlassInput } from '@bayit/shared/ui'
 import { contentService } from '@/services/adminApi'
 import { colors, spacing, borderRadius } from '@bayit/shared/theme'
 import { GlassButton } from '@bayit/shared/ui'
@@ -198,45 +198,45 @@ export default function RadioStationsPage() {
           <Text style={styles.formTitle}>
             {editingId === 'new' ? 'New Radio Station' : 'Edit Radio Station'}
           </Text>
-          <TextInput
-            style={styles.input}
+          <GlassInput
+            label={t('admin.radioStations.form.name', 'Station name')}
+            containerStyle={styles.input}
             placeholder="Station name"
-            placeholderTextColor={colors.textMuted}
             value={editData.name || ''}
             onChangeText={(value) => setEditData({ ...editData, name: value })}
           />
-          <TextInput
-            style={styles.input}
+          <GlassInput
+            label={t('admin.radioStations.form.genre', 'Genre')}
+            containerStyle={styles.input}
             placeholder="Genre (e.g., Electronic, News)"
-            placeholderTextColor={colors.textMuted}
             value={editData.genre || ''}
             onChangeText={(value) => setEditData({ ...editData, genre: value })}
           />
-          <TextInput
-            style={styles.input}
+          <GlassInput
+            label={t('admin.radioStations.form.streamUrl', 'Stream URL')}
+            containerStyle={styles.input}
             placeholder="Stream URL (HLS/Audio)"
-            placeholderTextColor={colors.textMuted}
             value={editData.stream_url || ''}
             onChangeText={(value) => setEditData({ ...editData, stream_url: value })}
           />
-          <TextInput
-            style={styles.input}
+          <GlassInput
+            label={t('admin.radioStations.form.currentShow', 'Current Show (optional)')}
+            containerStyle={styles.input}
             placeholder="Current Show (optional)"
-            placeholderTextColor={colors.textMuted}
             value={editData.current_show || ''}
             onChangeText={(value) => setEditData({ ...editData, current_show: value })}
           />
-          <TextInput
-            style={styles.input}
+          <GlassInput
+            label={t('admin.radioStations.form.currentSong', 'Current Song (optional)')}
+            containerStyle={styles.input}
             placeholder="Current Song (optional)"
-            placeholderTextColor={colors.textMuted}
             value={editData.current_song || ''}
             onChangeText={(value) => setEditData({ ...editData, current_song: value })}
           />
-          <TextInput
-            style={styles.input}
+          <GlassInput
+            label={t('admin.radioStations.form.order', 'Order')}
+            containerStyle={styles.input}
             placeholder="Order"
-            placeholderTextColor={colors.textMuted}
             value={String(editData.order || '')}
             onChangeText={(value) => setEditData({ ...editData, order: parseInt(value) || 0 })}
             keyboardType="number-pad"

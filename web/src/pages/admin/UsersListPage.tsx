@@ -1,11 +1,11 @@
 import { useState, useEffect, useCallback } from 'react';
-import { View, Text, StyleSheet, Pressable, ScrollView, Modal, TextInput } from 'react-native';
+import { View, Text, StyleSheet, Pressable, ScrollView, Modal } from 'react-native';
 import { Link, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { UserPlus, Edit, Ban, Key, Trash2, X } from 'lucide-react';
 import { usersService } from '@/services/adminApi';
 import { colors, spacing, borderRadius } from '@bayit/shared/theme';
-import { GlassButton, GlassView, GlassTable, GlassTableCell, GlassTableColumn, GlassModal } from '@bayit/shared/ui';
+import { GlassButton, GlassView, GlassTable, GlassTableCell, GlassTableColumn, GlassModal, GlassInput } from '@bayit/shared/ui';
 import { useDirection } from '@/hooks/useDirection';
 import logger from '@/utils/logger';
 import { adminButtonStyles } from '@/styles/adminButtonStyles';
@@ -349,13 +349,12 @@ export default function UsersListPage() {
             </View>
             {banModal.user?.status !== 'banned' && (
               <>
-                <Text style={styles.modalLabel}>{t('admin.users.banReasonPrompt')}</Text>
-                <TextInput
+                <GlassInput
+                  label={t('admin.users.banReasonPrompt')}
                   value={banReason}
                   onChangeText={setBanReason}
                   placeholder={t('admin.users.banReason')}
-                  placeholderTextColor={colors.textMuted}
-                  style={styles.modalInput}
+                  containerStyle={styles.modalInput}
                   multiline
                 />
               </>

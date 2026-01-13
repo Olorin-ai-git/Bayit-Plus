@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
-import { View, Text, StyleSheet, Pressable, ScrollView, TextInput } from 'react-native';
+import { View, Text, StyleSheet, Pressable, ScrollView } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { Plus, Send, Clock, Edit2, Trash2, TestTube } from 'lucide-react';
 import { GlassTable, GlassTableCell } from '@bayit/shared/ui';
@@ -280,16 +280,13 @@ export default function EmailCampaignsPage() {
       <GlassModal visible={showCreateModal} onClose={handleCloseCreateModal} title={editingCampaign ? t('admin.emailCampaigns.editModal.title', 'Edit Campaign') : t('admin.emailCampaigns.createModal.title')}>
         <View style={styles.modalContent}>
           <View style={styles.formGroup}>
-            <Text style={[styles.formLabel, { textAlign }]}>{t('admin.emailCampaigns.form.name')}</Text>
-            <TextInput style={styles.input} value={newCampaign.name} onChangeText={(name) => setNewCampaign((p) => ({ ...p, name }))} placeholderTextColor={colors.textMuted} />
+            <GlassInput label={t('admin.emailCampaigns.form.name')} containerStyle={styles.input} value={newCampaign.name} onChangeText={(name) => setNewCampaign((p) => ({ ...p, name }))} />
           </View>
           <View style={styles.formGroup}>
-            <Text style={[styles.formLabel, { textAlign }]}>{t('admin.emailCampaigns.form.subject')}</Text>
-            <TextInput style={styles.input} value={newCampaign.subject} onChangeText={(subject) => setNewCampaign((p) => ({ ...p, subject }))} placeholderTextColor={colors.textMuted} />
+            <GlassInput label={t('admin.emailCampaigns.form.subject')} containerStyle={styles.input} value={newCampaign.subject} onChangeText={(subject) => setNewCampaign((p) => ({ ...p, subject }))} />
           </View>
           <View style={styles.formGroup}>
-            <Text style={[styles.formLabel, { textAlign }]}>{t('admin.emailCampaigns.form.body')}</Text>
-            <TextInput style={[styles.input, styles.textArea]} value={newCampaign.body} onChangeText={(body) => setNewCampaign((p) => ({ ...p, body }))} placeholderTextColor={colors.textMuted} multiline numberOfLines={5} />
+            <GlassInput label={t('admin.emailCampaigns.form.body')} containerStyle={[styles.input, styles.textArea]} value={newCampaign.body} onChangeText={(body) => setNewCampaign((p) => ({ ...p, body }))} multiline numberOfLines={5} />
           </View>
           <View style={styles.modalActions}>
             <GlassButton title={t('common.cancel')} variant="secondary" onPress={handleCloseCreateModal} style={adminButtonStyles.cancelButton} textStyle={adminButtonStyles.buttonText} />
@@ -301,8 +298,7 @@ export default function EmailCampaignsPage() {
       <GlassModal visible={showTestModal} onClose={() => setShowTestModal(false)} title={t('admin.emailCampaigns.testModal.title')}>
         <View style={styles.modalContent}>
           <View style={styles.formGroup}>
-            <Text style={[styles.formLabel, { textAlign }]}>{t('admin.emailCampaigns.testModal.emailLabel')}</Text>
-            <TextInput style={styles.input} value={testEmail} onChangeText={setTestEmail} placeholderTextColor={colors.textMuted} keyboardType="email-address" />
+            <GlassInput label={t('admin.emailCampaigns.testModal.emailLabel')} containerStyle={styles.input} value={testEmail} onChangeText={setTestEmail} keyboardType="email-address" />
           </View>
           <View style={styles.modalActions}>
             <GlassButton title={t('common.cancel')} variant="secondary" onPress={() => setShowTestModal(false)} style={adminButtonStyles.cancelButton} textStyle={adminButtonStyles.buttonText} />

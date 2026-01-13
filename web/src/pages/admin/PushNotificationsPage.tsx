@@ -1,11 +1,11 @@
 import { useState, useEffect, useCallback } from 'react';
-import { View, Text, StyleSheet, Pressable, ScrollView, TextInput } from 'react-native';
+import { View, Text, StyleSheet, Pressable, ScrollView } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { Plus, Send, Clock, Trash2, Edit } from 'lucide-react';
 import { GlassTable, GlassTableCell } from '@bayit/shared/ui';
 import { marketingService } from '@/services/adminApi';
 import { colors, spacing, borderRadius } from '@bayit/shared/theme';
-import { GlassButton, GlassModal } from '@bayit/shared/ui';
+import { GlassButton, GlassModal, GlassInput } from '@bayit/shared/ui';
 import { useDirection } from '@/hooks/useDirection';
 import { useModal } from '@/contexts/ModalContext';
 import logger from '@/utils/logger';
@@ -251,12 +251,10 @@ export default function PushNotificationsPage() {
       <GlassModal visible={showCreateModal} onClose={handleCloseModal} title={editingNotification ? t('admin.pushNotifications.editModal', 'Edit Notification') : t('admin.pushNotifications.createModal')}>
         <View style={styles.modalContent}>
           <View style={styles.formGroup}>
-            <Text style={[styles.formLabel, { textAlign }]}>{t('admin.pushNotifications.titleLabel')}</Text>
-            <TextInput style={styles.input} value={newNotification.title} onChangeText={(title) => setNewNotification((p) => ({ ...p, title }))} placeholder={t('admin.push.titlePlaceholder')} placeholderTextColor={colors.textMuted} />
+            <GlassInput label={t('admin.pushNotifications.titleLabel')} containerStyle={styles.input} value={newNotification.title} onChangeText={(title) => setNewNotification((p) => ({ ...p, title }))} placeholder={t('admin.push.titlePlaceholder')} />
           </View>
           <View style={styles.formGroup}>
-            <Text style={[styles.formLabel, { textAlign }]}>{t('admin.pushNotifications.bodyLabel')}</Text>
-            <TextInput style={[styles.input, styles.textArea]} value={newNotification.body} onChangeText={(body) => setNewNotification((p) => ({ ...p, body }))} placeholder={t('admin.push.bodyPlaceholder')} placeholderTextColor={colors.textMuted} multiline numberOfLines={3} />
+            <GlassInput label={t('admin.pushNotifications.bodyLabel')} containerStyle={[styles.input, styles.textArea]} value={newNotification.body} onChangeText={(body) => setNewNotification((p) => ({ ...p, body }))} placeholder={t('admin.push.bodyPlaceholder')} multiline numberOfLines={3} />
           </View>
           <View style={styles.modalActions}>
             <GlassButton title={t('common.cancel', 'Cancel')} variant="secondary" onPress={handleCloseModal} style={adminButtonStyles.cancelButton} textStyle={adminButtonStyles.buttonText} />
@@ -268,8 +266,7 @@ export default function PushNotificationsPage() {
       <GlassModal visible={showScheduleModal} onClose={() => setShowScheduleModal(false)} title={t('admin.pushNotifications.scheduleModal')}>
         <View style={styles.modalContent}>
           <View style={styles.formGroup}>
-            <Text style={[styles.formLabel, { textAlign }]}>{t('admin.pushNotifications.dateTimeLabel')}</Text>
-            <TextInput style={styles.input} value={scheduleDate} onChangeText={setScheduleDate} placeholder={t('placeholder.datetime')} placeholderTextColor={colors.textMuted} />
+            <GlassInput label={t('admin.pushNotifications.dateTimeLabel')} containerStyle={styles.input} value={scheduleDate} onChangeText={setScheduleDate} placeholder={t('placeholder.datetime')} />
           </View>
           <View style={styles.modalActions}>
             <GlassButton title={t('admin.pushNotifications.cancel')} variant="secondary" onPress={() => setShowScheduleModal(false)} style={adminButtonStyles.cancelButton} textStyle={adminButtonStyles.buttonText} />

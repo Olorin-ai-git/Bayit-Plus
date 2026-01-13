@@ -1,10 +1,10 @@
 import { useState, useEffect, useCallback } from 'react'
-import { View, Text, StyleSheet, Pressable, ScrollView, TextInput } from 'react-native'
+import { View, Text, StyleSheet, Pressable, ScrollView } from 'react-native'
 import { useTranslation } from 'react-i18next'
 import { Plus, Edit, Trash2, X, AlertCircle } from 'lucide-react'
 import { contentService } from '@/services/adminApi'
 import { colors, spacing, borderRadius } from '@bayit/shared/theme'
-import { GlassButton, GlassTable, GlassTableCell } from '@bayit/shared/ui'
+import { GlassButton, GlassTable, GlassTableCell, GlassInput } from '@bayit/shared/ui'
 import { useDirection } from '@/hooks/useDirection'
 import { useModal } from '@/contexts/ModalContext'
 import logger from '@/utils/logger'
@@ -199,38 +199,38 @@ export default function LiveChannelsPage() {
           <Text style={styles.formTitle}>
             {editingId === 'new' ? 'New Live Channel' : 'Edit Live Channel'}
           </Text>
-          <TextInput
-            style={styles.input}
+          <GlassInput
+            label={t('admin.liveChannels.form.name', 'Channel name')}
+            containerStyle={styles.input}
             placeholder="Channel name"
-            placeholderTextColor={colors.textMuted}
             value={editData.name || ''}
             onChangeText={(value) => setEditData({ ...editData, name: value })}
           />
-          <TextInput
-            style={styles.input}
+          <GlassInput
+            label={t('admin.liveChannels.form.streamUrl', 'Stream URL')}
+            containerStyle={styles.input}
             placeholder="Stream URL (HLS/DASH)"
-            placeholderTextColor={colors.textMuted}
             value={editData.stream_url || ''}
             onChangeText={(value) => setEditData({ ...editData, stream_url: value })}
           />
-          <TextInput
-            style={styles.input}
+          <GlassInput
+            label={t('admin.liveChannels.form.epgSource', 'EPG Source URL (optional)')}
+            containerStyle={styles.input}
             placeholder="EPG Source URL (optional)"
-            placeholderTextColor={colors.textMuted}
             value={editData.epg_source || ''}
             onChangeText={(value) => setEditData({ ...editData, epg_source: value })}
           />
-          <TextInput
-            style={styles.input}
+          <GlassInput
+            label={t('admin.liveChannels.form.currentShow', 'Current Show')}
+            containerStyle={styles.input}
             placeholder="Current Show (optional)"
-            placeholderTextColor={colors.textMuted}
             value={editData.current_show || ''}
             onChangeText={(value) => setEditData({ ...editData, current_show: value })}
           />
-          <TextInput
-            style={styles.input}
+          <GlassInput
+            label={t('admin.liveChannels.form.order', 'Order')}
+            containerStyle={styles.input}
             placeholder="Order"
-            placeholderTextColor={colors.textMuted}
             value={String(editData.order || '')}
             onChangeText={(value) => setEditData({ ...editData, order: parseInt(value) || 0 })}
             keyboardType="number-pad"

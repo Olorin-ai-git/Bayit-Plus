@@ -36,7 +36,8 @@ class LiveSubtitleService {
     onError: ErrorCallback
   ): Promise<void> {
     try {
-      const token = localStorage.getItem('auth_token')
+      const authData = JSON.parse(localStorage.getItem('bayit-auth') || '{}')
+      const token = authData?.state?.token
       if (!token) throw new Error('Not authenticated')
 
       const wsProtocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:'
@@ -162,11 +163,13 @@ class LiveSubtitleService {
     error?: string
   }> {
     try {
+      const authData = JSON.parse(localStorage.getItem('bayit-auth') || '{}')
+      const token = authData?.state?.token
       const response = await fetch(
         `${API_BASE_URL}/api/v1/live/${channelId}/subtitles/status`,
         {
           headers: {
-            'Authorization': `Bearer ${localStorage.getItem('auth_token')}`
+            'Authorization': `Bearer ${token}`
           }
         }
       )

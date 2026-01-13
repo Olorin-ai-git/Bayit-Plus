@@ -1,9 +1,9 @@
 import { useState, useEffect, useCallback, useMemo } from 'react'
-import { View, Text, StyleSheet, Pressable, ScrollView, TextInput } from 'react-native'
+import { View, Text, StyleSheet, Pressable, ScrollView } from 'react-native'
 import { Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { Plus, Edit, Trash2, X, AlertCircle, Music } from 'lucide-react'
-import { GlassTable, GlassTableCell } from '@bayit/shared/ui'
+import { GlassTable, GlassTableCell, GlassInput } from '@bayit/shared/ui'
 import { contentService } from '@/services/adminApi'
 import { colors, spacing, borderRadius } from '@bayit/shared/theme'
 import { GlassButton } from '@bayit/shared/ui'
@@ -210,46 +210,46 @@ export default function PodcastsPage() {
           <Text style={styles.formTitle}>
             {editingId === 'new' ? 'New Podcast' : 'Edit Podcast'}
           </Text>
-          <TextInput
-            style={styles.input}
+          <GlassInput
+            label={t('admin.podcasts.form.title', 'Podcast title')}
+            containerStyle={styles.input}
             placeholder="Podcast title"
-            placeholderTextColor={colors.textMuted}
             value={editData.title || ''}
             onChangeText={(value) => setEditData({ ...editData, title: value })}
           />
-          <TextInput
-            style={styles.input}
+          <GlassInput
+            label={t('admin.podcasts.form.author', 'Author')}
+            containerStyle={styles.input}
             placeholder="Author"
-            placeholderTextColor={colors.textMuted}
             value={editData.author || ''}
             onChangeText={(value) => setEditData({ ...editData, author: value })}
           />
-          <TextInput
-            style={styles.input}
+          <GlassInput
+            label={t('admin.podcasts.form.description', 'Description')}
+            containerStyle={styles.input}
             placeholder="Description"
-            placeholderTextColor={colors.textMuted}
             value={editData.description || ''}
             onChangeText={(value) => setEditData({ ...editData, description: value })}
             multiline
           />
-          <TextInput
-            style={styles.input}
+          <GlassInput
+            label={t('admin.podcasts.form.category', 'Category')}
+            containerStyle={styles.input}
             placeholder="Category"
-            placeholderTextColor={colors.textMuted}
             value={editData.category || ''}
             onChangeText={(value) => setEditData({ ...editData, category: value })}
           />
-          <TextInput
-            style={styles.input}
+          <GlassInput
+            label={t('admin.podcasts.form.rssFeed', 'RSS Feed URL')}
+            containerStyle={styles.input}
             placeholder="RSS Feed URL"
-            placeholderTextColor={colors.textMuted}
             value={editData.rss_feed || ''}
             onChangeText={(value) => setEditData({ ...editData, rss_feed: value })}
           />
-          <TextInput
-            style={styles.input}
+          <GlassInput
+            label={t('admin.podcasts.form.website', 'Website URL (optional)')}
+            containerStyle={styles.input}
             placeholder="Website URL (optional)"
-            placeholderTextColor={colors.textMuted}
             value={editData.website || ''}
             onChangeText={(value) => setEditData({ ...editData, website: value })}
           />

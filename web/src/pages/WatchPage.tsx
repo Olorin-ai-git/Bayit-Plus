@@ -335,6 +335,7 @@ export default function WatchPage({ type = 'vod' }: WatchPageProps) {
             chapters={chapters}
             chaptersLoading={chaptersLoading}
             onEnded={handleContentEnded}
+            onShowUpgrade={() => navigate('/subscribe')}
           />
         )}
       </View>

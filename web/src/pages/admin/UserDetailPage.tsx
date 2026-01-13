@@ -5,7 +5,7 @@ import { useTranslation } from 'react-i18next';
 import { ArrowRight, Mail, Key, Ban, UserCheck, Edit2 } from 'lucide-react';
 import { usersService } from '@/services/adminApi';
 import { colors, spacing, borderRadius } from '@bayit/shared/theme';
-import { GlassCard, GlassButton, GlassModal } from '@bayit/shared/ui';
+import { GlassCard, GlassButton, GlassModal, GlassInput } from '@bayit/shared/ui';
 import { useDirection } from '@/hooks/useDirection';
 import { useModal } from '@/contexts/ModalContext';
 import logger from '@/utils/logger';
@@ -273,13 +273,12 @@ export default function UserDetailPage() {
         onClose={() => setPromptModalOpen(false)}
         dismissable={true}
       >
-        <Text style={styles.modalLabel}>{t('admin.users.banReason')}</Text>
-        <TextInput
+        <GlassInput
+          label={t('admin.users.banReason')}
           value={promptInput}
           onChangeText={setPromptInput}
           placeholder={t('admin.users.banReason')}
-          placeholderTextColor={colors.textMuted}
-          style={styles.modalInput}
+          containerStyle={styles.modalInput}
           multiline
         />
         <View style={styles.modalActions}>

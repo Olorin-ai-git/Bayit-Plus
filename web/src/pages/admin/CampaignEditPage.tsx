@@ -1,10 +1,10 @@
 import { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, TextInput, ScrollView } from 'react-native';
+import { View, Text, StyleSheet, ScrollView } from 'react-native';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { campaignsService } from '@/services/adminApi';
 import { colors, spacing, borderRadius } from '@bayit/shared/theme';
-import { GlassCard, GlassButton, GlassToggle } from '@bayit/shared/ui';
+import { GlassCard, GlassButton, GlassToggle, GlassInput } from '@bayit/shared/ui';
 import { useDirection } from '@/hooks/useDirection';
 import logger from '@/utils/logger';
 import { adminButtonStyles } from '@/styles/adminButtonStyles';
@@ -127,25 +127,23 @@ export default function CampaignEditPage() {
 
       <GlassCard style={styles.formCard}>
         <View style={styles.formGroup}>
-          <Text style={[styles.formLabel, { textAlign }]}>{t('admin.campaigns.form.name')}</Text>
-          <TextInput
-            style={styles.input}
+          <GlassInput
+            label={t('admin.campaigns.form.name')}
             value={formData.name}
             onChangeText={(name) => setFormData((p) => ({ ...p, name }))}
             placeholder={t('admin.campaigns.form.namePlaceholder')}
-            placeholderTextColor={colors.textMuted}
+            containerStyle={styles.input}
           />
         </View>
 
         <View style={styles.formGroup}>
           <Text style={[styles.formLabel, { textAlign }]}>{t('admin.campaigns.form.code')}</Text>
           <View style={[styles.codeRow, { flexDirection }]}>
-            <TextInput
-              style={[styles.input, styles.codeInput]}
+            <GlassInput
+              containerStyle={[styles.input, styles.codeInput]}
               value={formData.code}
               onChangeText={(code) => setFormData((p) => ({ ...p, code: code.toUpperCase() }))}
               placeholder="SUMMER2024"
-              placeholderTextColor={colors.textMuted}
               autoCapitalize="characters"
             />
             <GlassButton
@@ -180,38 +178,35 @@ export default function CampaignEditPage() {
           </View>
 
           <View style={styles.formGroup}>
-            <Text style={[styles.formLabel, { textAlign }]}>{t('admin.campaigns.form.discountValue')}</Text>
-            <TextInput
-              style={styles.input}
+            <GlassInput
+              label={t('admin.campaigns.form.discountValue')}
+              containerStyle={styles.input}
               value={String(formData.discount_value)}
               onChangeText={(v) => setFormData((p) => ({ ...p, discount_value: Number(v) || 0 }))}
               keyboardType="numeric"
-              placeholderTextColor={colors.textMuted}
             />
           </View>
         </View>
 
         <View style={[styles.formRow, { flexDirection }]}>
           <View style={styles.formGroup}>
-            <Text style={[styles.formLabel, { textAlign }]}>{t('admin.campaigns.form.maxUses')}</Text>
-            <TextInput
-              style={styles.input}
+            <GlassInput
+              label={t('admin.campaigns.form.maxUses')}
+              containerStyle={styles.input}
               value={formData.max_uses ? String(formData.max_uses) : ''}
               onChangeText={(v) => setFormData((p) => ({ ...p, max_uses: v ? Number(v) : null }))}
               placeholder={t('admin.campaigns.form.unlimited')}
               keyboardType="numeric"
-              placeholderTextColor={colors.textMuted}
             />
           </View>
 
           <View style={styles.formGroup}>
-            <Text style={[styles.formLabel, { textAlign }]}>{t('admin.campaigns.form.validUntil')}</Text>
-            <TextInput
-              style={styles.input}
+            <GlassInput
+              label={t('admin.campaigns.form.validUntil')}
+              containerStyle={styles.input}
               value={formData.valid_until}
               onChangeText={(v) => setFormData((p) => ({ ...p, valid_until: v }))}
               placeholder="YYYY-MM-DD"
-              placeholderTextColor={colors.textMuted}
             />
           </View>
         </View>
