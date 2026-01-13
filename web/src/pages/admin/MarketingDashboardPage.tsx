@@ -9,6 +9,7 @@ import { colors, spacing, borderRadius } from '@bayit/shared/theme';
 import { GlassCard, GlassButton } from '@bayit/shared/ui';
 import { useDirection } from '@/hooks/useDirection';
 import logger from '@/utils/logger';
+import { adminButtonStyles } from '@/styles/adminButtonStyles';
 
 interface MarketingMetrics {
   emailsSent: number;
@@ -81,7 +82,7 @@ export default function MarketingDashboardPage() {
       <View style={styles.errorContainer}>
         <Text style={styles.errorIcon}>⚠️</Text>
         <Text style={styles.errorText}>{error}</Text>
-        <GlassButton title={t('common.retry')} onPress={loadData} variant="primary" />
+        <GlassButton title={t('common.retry')} onPress={loadData} variant="secondary" style={adminButtonStyles.primaryButton} textStyle={adminButtonStyles.buttonText} />
       </View>
     );
   }
@@ -111,7 +112,7 @@ export default function MarketingDashboardPage() {
           <Text style={[styles.pageTitle, { textAlign }]}>{t('admin.titles.marketing')}</Text>
           <Text style={[styles.subtitle, { textAlign }]}>{t('admin.marketingDashboard.subtitle')}</Text>
         </View>
-        <GlassButton title={t('admin.marketingDashboard.refresh')} variant="secondary" icon={<RefreshCw size={16} color={colors.text} />} onPress={handleRefresh} disabled={refreshing} />
+        <GlassButton title={t('admin.marketingDashboard.refresh')} variant="secondary" icon={<RefreshCw size={16} color={colors.text} />} onPress={handleRefresh} disabled={refreshing} style={adminButtonStyles.secondaryButton} textStyle={adminButtonStyles.buttonText} />
       </View>
 
       <View style={styles.section}>

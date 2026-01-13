@@ -5,7 +5,7 @@ import { useTranslation } from 'react-i18next';
 import { UserPlus, Edit, Ban, Key, Trash2, X } from 'lucide-react';
 import { usersService } from '@/services/adminApi';
 import { colors, spacing, borderRadius } from '@bayit/shared/theme';
-import { GlassButton, GlassView, GlassTable, GlassTableCell, GlassTableColumn } from '@bayit/shared/ui';
+import { GlassButton, GlassView, GlassTable, GlassTableCell, GlassTableColumn, GlassModal } from '@bayit/shared/ui';
 import { useDirection } from '@/hooks/useDirection';
 import logger from '@/utils/logger';
 import { adminButtonStyles } from '@/styles/adminButtonStyles';
@@ -55,6 +55,11 @@ export default function UsersListPage() {
   const [banModal, setBanModal] = useState<{ open: boolean; user: User | null }>({ open: false, user: null });
   const [banReason, setBanReason] = useState('');
   const [actionLoading, setActionLoading] = useState(false);
+  const [confirmModalOpen, setConfirmModalOpen] = useState(false);
+  const [confirmAction, setConfirmAction] = useState<(() => void) | null>(null);
+  const [confirmMessage, setConfirmMessage] = useState('');
+  const [successModalOpen, setSuccessModalOpen] = useState(false);
+  const [successMessage, setSuccessMessage] = useState('');
 
   const loadUsers = useCallback(async () => {
     setLoading(true);
@@ -132,13 +137,17 @@ export default function UsersListPage() {
   };
 
   const handleResetPassword = async (user: User) => {
-    if (!confirm(t('admin.users.confirmResetPassword', { email: user.email }))) return;
-    try {
-      await usersService.resetPassword(user.id);
-      alert(t('admin.users.resetPasswordSent'));
-    } catch (error) {
-      logger.error('Failed to reset password', 'UsersListPage', error);
-    }
+    setConfirmMessage(t('admin.users.confirmResetPassword', { email: user.email }));
+    setConfirmAction(() => async () => {
+      try {
+        await usersService.resetPassword(user.id);
+        setSuccessMessage(t('admin.users.resetPasswordSent'));
+        setSuccessModalOpen(true);
+      } catch (error) {
+        logger.error('Failed to reset password', 'UsersListPage', error);
+      }
+    });
+    setConfirmModalOpen(true);
   };
 
   const getStatusBadge = (status: string) => {
@@ -380,6 +389,56 @@ export default function UsersListPage() {
           </GlassView>
         </View>
       </Modal>
+
+      {/* Confirm Modal */}
+      <GlassModal
+        visible={confirmModalOpen}
+        title={t('common.confirm')}
+        onClose={() => setConfirmModalOpen(false)}
+        dismissable={true}
+      >
+        <Text style={styles.modalText}>{confirmMessage}</Text>
+        <View style={styles.modalActions}>
+          <GlassButton
+            title={t('common.cancel')}
+            onPress={() => setConfirmModalOpen(false)}
+            variant="secondary"
+            style={adminButtonStyles.cancelButton}
+            textStyle={adminButtonStyles.buttonText}
+          />
+          <GlassButton
+            title={t('common.confirm')}
+            onPress={() => {
+              if (confirmAction) {
+                confirmAction();
+                setConfirmModalOpen(false);
+              }
+            }}
+            variant="secondary"
+            style={adminButtonStyles.successButton}
+            textStyle={adminButtonStyles.buttonText}
+          />
+        </View>
+      </GlassModal>
+
+      {/* Success Modal */}
+      <GlassModal
+        visible={successModalOpen}
+        title={t('common.success')}
+        onClose={() => setSuccessModalOpen(false)}
+        dismissable={true}
+      >
+        <Text style={styles.modalText}>{successMessage}</Text>
+        <View style={styles.modalActions}>
+          <GlassButton
+            title={t('common.ok')}
+            onPress={() => setSuccessModalOpen(false)}
+            variant="secondary"
+            style={adminButtonStyles.successButton}
+            textStyle={adminButtonStyles.buttonText}
+          />
+        </View>
+      </GlassModal>
     </ScrollView>
   );
 }

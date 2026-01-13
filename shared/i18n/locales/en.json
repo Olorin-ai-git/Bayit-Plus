@@ -37,6 +37,7 @@
     "send": "Send",
     "done": "Done",
     "all": "All",
+    "reset": "Reset",
     "deleting": "Deleting...",
     "noResults": "No results found",
     "tryDifferentSearch": "Try a different search term",

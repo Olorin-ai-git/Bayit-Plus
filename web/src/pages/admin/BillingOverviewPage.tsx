@@ -9,6 +9,7 @@ import { colors, spacing, borderRadius } from '@bayit/shared/theme';
 import { GlassCard, GlassButton } from '@bayit/shared/ui';
 import { useDirection } from '@/hooks/useDirection';
 import logger from '@/utils/logger';
+import { adminButtonStyles } from '@/styles/adminButtonStyles';
 
 interface BillingOverview {
   today: number;
@@ -74,7 +75,13 @@ export default function BillingOverviewPage() {
       <View style={styles.errorContainer}>
         <Text style={styles.errorIcon}>⚠️</Text>
         <Text style={styles.errorText}>{error}</Text>
-        <GlassButton title={t('common.retry')} onPress={loadData} variant="primary" />
+        <GlassButton
+          title={t('common.retry')}
+          onPress={loadData}
+          variant="secondary"
+          style={adminButtonStyles.primaryButton}
+          textStyle={adminButtonStyles.buttonText}
+        />
       </View>
     );
   }
@@ -100,6 +107,8 @@ export default function BillingOverviewPage() {
             title={t('admin.dashboard.refresh')}
             variant="secondary"
             icon={<RefreshCw size={16} color={colors.text} />}
+            style={adminButtonStyles.secondaryButton}
+            textStyle={adminButtonStyles.buttonText}
             onPress={handleRefresh}
             disabled={refreshing}
           />

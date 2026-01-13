@@ -9,6 +9,7 @@ import { GlassButton, GlassModal } from '@bayit/shared/ui';
 import { useDirection } from '@/hooks/useDirection';
 import { useModal } from '@/contexts/ModalContext';
 import logger from '@/utils/logger';
+import { adminButtonStyles } from '@/styles/adminButtonStyles';
 
 interface PushNotification {
   id: string;
@@ -53,6 +54,8 @@ export default function PushNotificationsPage() {
   const [scheduleDate, setScheduleDate] = useState('');
   const [newNotification, setNewNotification] = useState({ title: '', body: '' });
   const [editingNotification, setEditingNotification] = useState<PushNotification | null>(null);
+  const [errorModalOpen, setErrorModalOpen] = useState(false);
+  const [errorMessage, setErrorMessage] = useState('');
 
   const loadNotifications = useCallback(async () => {
     setLoading(true);
@@ -86,7 +89,8 @@ export default function PushNotificationsPage() {
 
   const handleCreate = async () => {
     if (!newNotification.title || !newNotification.body) {
-      alert(t('admin.pushNotifications.fillRequired'));
+      setErrorMessage(t('admin.pushNotifications.fillRequired'));
+      setErrorModalOpen(true);
       return;
     }
     try {
@@ -229,7 +233,7 @@ export default function PushNotificationsPage() {
           <Text style={[styles.pageTitle, { textAlign }]}>{t('admin.titles.pushNotifications')}</Text>
           <Text style={[styles.subtitle, { textAlign }]}>{t('admin.pushNotifications.subtitle')}</Text>
         </View>
-        <GlassButton title={t('admin.pushNotifications.newNotification')} variant="primary" icon={<Plus size={16} color={colors.text} />} onPress={() => setShowCreateModal(true)} />
+        <GlassButton title={t('admin.pushNotifications.newNotification')} variant="secondary" icon={<Plus size={16} color={colors.text} />} onPress={() => setShowCreateModal(true)} style={adminButtonStyles.primaryButton} textStyle={adminButtonStyles.buttonText} />
       </View>
 
       <View style={[styles.filtersRow, { flexDirection }]}>
@@ -255,8 +259,8 @@ export default function PushNotificationsPage() {
             <TextInput style={[styles.input, styles.textArea]} value={newNotification.body} onChangeText={(body) => setNewNotification((p) => ({ ...p, body }))} placeholder={t('admin.push.bodyPlaceholder')} placeholderTextColor={colors.textMuted} multiline numberOfLines={3} />
           </View>
           <View style={styles.modalActions}>
-            <GlassButton title={t('common.cancel', 'Cancel')} variant="secondary" onPress={handleCloseModal} />
-            <GlassButton title={editingNotification ? t('common.save', 'Save') : t('admin.pushNotifications.create')} variant="primary" onPress={handleCreate} />
+            <GlassButton title={t('common.cancel', 'Cancel')} variant="secondary" onPress={handleCloseModal} style={adminButtonStyles.cancelButton} textStyle={adminButtonStyles.buttonText} />
+            <GlassButton title={editingNotification ? t('common.save', 'Save') : t('admin.pushNotifications.create')} variant="secondary" onPress={handleCreate} style={adminButtonStyles.successButton} textStyle={adminButtonStyles.buttonText} />
           </View>
         </View>
       </GlassModal>
@@ -268,9 +272,28 @@ export default function PushNotificationsPage() {
             <TextInput style={styles.input} value={scheduleDate} onChangeText={setScheduleDate} placeholder={t('placeholder.datetime')} placeholderTextColor={colors.textMuted} />
           </View>
           <View style={styles.modalActions}>
-            <GlassButton title={t('admin.pushNotifications.cancel')} variant="secondary" onPress={() => setShowScheduleModal(false)} />
-            <GlassButton title={t('admin.pushNotifications.schedule')} variant="primary" onPress={handleSchedule} />
+            <GlassButton title={t('admin.pushNotifications.cancel')} variant="secondary" onPress={() => setShowScheduleModal(false)} style={adminButtonStyles.cancelButton} textStyle={adminButtonStyles.buttonText} />
+            <GlassButton title={t('admin.pushNotifications.schedule')} variant="secondary" onPress={handleSchedule} style={adminButtonStyles.successButton} textStyle={adminButtonStyles.buttonText} />
           </View>
+        </View>
+      </GlassModal>
+
+      {/* Error Modal */}
+      <GlassModal
+        visible={errorModalOpen}
+        title={t('common.error')}
+        onClose={() => setErrorModalOpen(false)}
+        dismissable={true}
+      >
+        <Text style={styles.modalText}>{errorMessage}</Text>
+        <View style={styles.modalActions}>
+          <GlassButton
+            title={t('common.ok')}
+            onPress={() => setErrorModalOpen(false)}
+            variant="secondary"
+            style={adminButtonStyles.successButton}
+            textStyle={adminButtonStyles.buttonText}
+          />
         </View>
       </GlassModal>
     </ScrollView>
@@ -302,4 +325,10 @@ const styles = StyleSheet.create({
   input: { backgroundColor: colors.backgroundLighter, borderRadius: borderRadius.md, borderWidth: 1, borderColor: colors.glassBorder, paddingHorizontal: spacing.md, paddingVertical: spacing.sm, color: colors.text, fontSize: 14 },
   textArea: { minHeight: 80, textAlignVertical: 'top' },
   modalActions: { flexDirection: 'row', justifyContent: 'flex-end', gap: spacing.sm, marginTop: spacing.md },
+  modalText: {
+    fontSize: 14,
+    color: colors.text,
+    marginBottom: spacing.lg,
+    lineHeight: 20,
+  },
 });

@@ -7,6 +7,7 @@ import { colors, spacing, borderRadius } from '@bayit/shared/theme';
 import { GlassCard, GlassButton, GlassToggle } from '@bayit/shared/ui';
 import { useDirection } from '@/hooks/useDirection';
 import logger from '@/utils/logger';
+import { adminButtonStyles } from '@/styles/adminButtonStyles';
 
 interface CampaignFormData {
   name: string;
@@ -151,6 +152,8 @@ export default function CampaignEditPage() {
               title={t('admin.campaigns.form.generate')}
               variant="secondary"
               onPress={generateCode}
+              style={adminButtonStyles.secondaryButton}
+              textStyle={adminButtonStyles.buttonText}
             />
           </View>
         </View>
@@ -161,15 +164,17 @@ export default function CampaignEditPage() {
             <View style={[styles.typeButtons, { flexDirection }]}>
               <GlassButton
                 title="%"
-                variant={formData.discount_type === 'percentage' ? 'primary' : 'secondary'}
+                variant="secondary"
                 onPress={() => setFormData((p) => ({ ...p, discount_type: 'percentage' }))}
-                style={styles.typeButton}
+                style={[styles.typeButton, formData.discount_type === 'percentage' ? adminButtonStyles.selectedButton : adminButtonStyles.unselectedButton]}
+                textStyle={adminButtonStyles.buttonText}
               />
               <GlassButton
                 title="$"
-                variant={formData.discount_type === 'fixed' ? 'primary' : 'secondary'}
+                variant="secondary"
                 onPress={() => setFormData((p) => ({ ...p, discount_type: 'fixed' }))}
-                style={styles.typeButton}
+                style={[styles.typeButton, formData.discount_type === 'fixed' ? adminButtonStyles.selectedButton : adminButtonStyles.unselectedButton]}
+                textStyle={adminButtonStyles.buttonText}
               />
             </View>
           </View>
@@ -223,12 +228,16 @@ export default function CampaignEditPage() {
             title={t('common.cancel')}
             variant="secondary"
             onPress={() => navigate('/admin/campaigns')}
+            style={adminButtonStyles.cancelButton}
+            textStyle={adminButtonStyles.buttonText}
           />
           <GlassButton
             title={saving ? t('common.saving') : t('common.save')}
-            variant="primary"
+            variant="secondary"
             onPress={handleSave}
             disabled={saving}
+            style={adminButtonStyles.successButton}
+            textStyle={adminButtonStyles.buttonText}
           />
         </View>
       </GlassCard>

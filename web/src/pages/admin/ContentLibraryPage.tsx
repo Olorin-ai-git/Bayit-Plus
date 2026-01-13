@@ -11,6 +11,7 @@ import { useDirection } from '@/hooks/useDirection'
 import { useModal } from '@/contexts/ModalContext'
 import logger from '@/utils/logger'
 import { FreeContentImportWizard } from '@/components/admin/FreeContentImportWizard'
+import { adminButtonStyles } from '@/styles/adminButtonStyles'
 
 interface ContentItem {
   id: string
@@ -136,12 +137,16 @@ export default function ContentLibraryPage() {
             variant="secondary"
             icon={<Download size={18} color={colors.text} />}
             onPress={() => setShowImportWizard(true)}
+            style={adminButtonStyles.secondaryButton}
+            textStyle={adminButtonStyles.buttonText}
           />
           <Link to="/admin/content/new" style={{ textDecoration: 'none' }}>
             <GlassButton
               title={t('admin.actions.new', { defaultValue: 'Add Content' })}
-              variant="primary"
+              variant="secondary"
               icon={<Plus size={18} color={colors.text} />}
+              style={adminButtonStyles.primaryButton}
+              textStyle={adminButtonStyles.buttonText}
             />
           </Link>
         </View>

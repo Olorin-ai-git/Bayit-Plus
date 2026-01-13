@@ -7,6 +7,7 @@ import { colors, spacing, borderRadius } from '@bayit/shared/theme';
 import { GlassCard, GlassButton, GlassModal, GlassToggle } from '@bayit/shared/ui';
 import { useDirection } from '@/hooks/useDirection';
 import logger from '@/utils/logger';
+import { adminButtonStyles } from '@/styles/adminButtonStyles';
 
 interface Plan {
   id: string;
@@ -138,7 +139,7 @@ export default function PlanManagementPage() {
           <Text style={[styles.pageTitle, { textAlign }]}>{t('admin.plans.title')}</Text>
           <Text style={[styles.subtitle, { textAlign }]}>{t('admin.plans.subtitle')}</Text>
         </View>
-        <GlassButton title={t('admin.plans.createButton')} variant="primary" icon={<Plus size={16} color={colors.text} />} onPress={openCreateModal} />
+        <GlassButton title={t('admin.plans.createButton')} variant="secondary" icon={<Plus size={16} color={colors.text} />} onPress={openCreateModal} style={adminButtonStyles.primaryButton} textStyle={adminButtonStyles.buttonText} />
       </View>
 
       <View style={styles.plansGrid}>
@@ -245,8 +246,8 @@ export default function PlanManagementPage() {
           </View>
 
           <View style={styles.modalActions}>
-            <GlassButton title={t('common.cancel')} variant="secondary" onPress={() => setShowEditModal(false)} />
-            <GlassButton title={t('common.save')} variant="primary" onPress={handleSave} />
+            <GlassButton title={t('common.cancel')} variant="secondary" onPress={() => setShowEditModal(false)} style={adminButtonStyles.cancelButton} textStyle={adminButtonStyles.buttonText} />
+            <GlassButton title={t('common.save')} variant="secondary" onPress={handleSave} style={adminButtonStyles.successButton} textStyle={adminButtonStyles.buttonText} />
           </View>
         </View>
       </GlassModal>
@@ -263,8 +264,8 @@ export default function PlanManagementPage() {
             </Text>
           )}
           <View style={styles.modalActions}>
-            <GlassButton title={t('common.cancel')} variant="secondary" onPress={() => setShowDeleteConfirm(false)} />
-            <GlassButton title={t('common.delete')} variant="primary" onPress={handleDeleteConfirm} />
+            <GlassButton title={t('common.cancel')} variant="secondary" onPress={() => setShowDeleteConfirm(false)} style={adminButtonStyles.cancelButton} textStyle={adminButtonStyles.buttonText} />
+            <GlassButton title={t('common.delete')} variant="secondary" onPress={handleDeleteConfirm} style={adminButtonStyles.dangerButton} textStyle={adminButtonStyles.buttonText} />
           </View>
         </View>
       </GlassModal>
@@ -277,7 +278,7 @@ export default function PlanManagementPage() {
         <View style={styles.modalContent}>
           <Text style={styles.errorText}>{errorMessage}</Text>
           <View style={styles.modalActions}>
-            <GlassButton title={t('common.ok')} variant="primary" onPress={() => setShowErrorModal(false)} />
+            <GlassButton title={t('common.ok')} variant="secondary" onPress={() => setShowErrorModal(false)} style={adminButtonStyles.successButton} textStyle={adminButtonStyles.buttonText} />
           </View>
         </View>
       </GlassModal>

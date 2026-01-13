@@ -5,7 +5,7 @@ import { useTranslation } from 'react-i18next';
 import { ArrowRight, Mail, Key, Ban, UserCheck, Edit2 } from 'lucide-react';
 import { usersService } from '@/services/adminApi';
 import { colors, spacing, borderRadius } from '@bayit/shared/theme';
-import { GlassCard, GlassButton } from '@bayit/shared/ui';
+import { GlassCard, GlassButton, GlassModal } from '@bayit/shared/ui';
 import { useDirection } from '@/hooks/useDirection';
 import { useModal } from '@/contexts/ModalContext';
 import logger from '@/utils/logger';
@@ -64,6 +64,11 @@ export default function UserDetailPage() {
   const [activity, setActivity] = useState<Activity[]>([]);
   const [billingHistory, setBillingHistory] = useState<Transaction[]>([]);
   const [error, setError] = useState<string | null>(null);
+  const [successModalOpen, setSuccessModalOpen] = useState(false);
+  const [successMessage, setSuccessMessage] = useState('');
+  const [promptModalOpen, setPromptModalOpen] = useState(false);
+  const [promptInput, setPromptInput] = useState('');
+  const [promptCallback, setPromptCallback] = useState<((value: string) => void) | null>(null);
 
   const loadUserData = async () => {
     if (!userId) return;
@@ -96,7 +101,8 @@ export default function UserDetailPage() {
       async () => {
         try {
           await usersService.resetPassword(user.id);
-          alert(t('admin.users.resetPasswordSent'));
+          setSuccessMessage(t('admin.users.resetPasswordSent'));
+          setSuccessModalOpen(true);
         } catch (error) {
           logger.error('Failed to reset password', 'UserDetailPage', error);
         }
@@ -107,14 +113,17 @@ export default function UserDetailPage() {
 
   const handleBan = async () => {
     if (!user) return;
-    const reason = window.prompt(t('admin.users.banReasonPrompt', { defaultValue: 'Ban reason:' }));
-    if (!reason) return;
-    try {
-      await usersService.banUser(user.id, reason);
-      loadUserData();
-    } catch (error) {
-      logger.error('Failed to ban user', 'UserDetailPage', error);
-    }
+    setPromptInput('');
+    setPromptCallback(() => async (reason: string) => {
+      if (!reason) return;
+      try {
+        await usersService.banUser(user.id, reason);
+        loadUserData();
+      } catch (error) {
+        logger.error('Failed to ban user', 'UserDetailPage', error);
+      }
+    });
+    setPromptModalOpen(true);
   };
 
   const handleUnban = () => {
@@ -239,6 +248,58 @@ export default function UserDetailPage() {
           </GlassCard>
         </View>
       </View>
+
+      {/* Success Modal */}
+      <GlassModal
+        visible={successModalOpen}
+        title={t('common.success')}
+        onClose={() => setSuccessModalOpen(false)}
+        dismissable={true}
+      >
+        <Text style={styles.modalText}>{successMessage}</Text>
+        <View style={styles.modalActions}>
+          <GlassButton
+            title={t('common.ok')}
+            onPress={() => setSuccessModalOpen(false)}
+            variant="secondary"
+          />
+        </View>
+      </GlassModal>
+
+      {/* Prompt Modal for Ban Reason */}
+      <GlassModal
+        visible={promptModalOpen}
+        title={t('admin.users.banReasonPrompt')}
+        onClose={() => setPromptModalOpen(false)}
+        dismissable={true}
+      >
+        <Text style={styles.modalLabel}>{t('admin.users.banReason')}</Text>
+        <TextInput
+          value={promptInput}
+          onChangeText={setPromptInput}
+          placeholder={t('admin.users.banReason')}
+          placeholderTextColor={colors.textMuted}
+          style={styles.modalInput}
+          multiline
+        />
+        <View style={styles.modalActions}>
+          <GlassButton
+            title={t('common.cancel')}
+            onPress={() => setPromptModalOpen(false)}
+            variant="secondary"
+          />
+          <GlassButton
+            title={t('common.confirm')}
+            onPress={() => {
+              if (promptCallback) {
+                promptCallback(promptInput);
+                setPromptModalOpen(false);
+              }
+            }}
+            variant="primary"
+          />
+        </View>
+      </GlassModal>
     </ScrollView>
   );
 }
@@ -280,4 +341,30 @@ const styles = StyleSheet.create({
   billingDate: { fontSize: 12, color: colors.textMuted },
   billingAmount: { fontSize: 14, fontWeight: '600', color: colors.success },
   emptyText: { fontSize: 14, color: colors.textMuted, textAlign: 'center', paddingVertical: spacing.md },
+  modalText: {
+    fontSize: 14,
+    color: colors.text,
+    marginBottom: spacing.lg,
+    lineHeight: 20,
+  },
+  modalLabel: {
+    fontSize: 14,
+    color: colors.text,
+    marginBottom: spacing.sm,
+  },
+  modalInput: {
+    backgroundColor: 'rgba(255, 255, 255, 0.05)',
+    borderRadius: borderRadius.md,
+    padding: spacing.md,
+    fontSize: 14,
+    color: colors.text,
+    marginBottom: spacing.lg,
+    minHeight: 80,
+    textAlignVertical: 'top',
+  },
+  modalActions: {
+    flexDirection: 'row',
+    justifyContent: 'flex-end',
+    gap: spacing.sm,
+  },
 });

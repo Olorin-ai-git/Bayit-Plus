@@ -1,8 +1,8 @@
 import { useState, useEffect, useCallback } from 'react';
-import { View, Text, StyleSheet, ScrollView, TextInput } from 'react-native';
+import { View, Text, StyleSheet, ScrollView } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { Plus, Edit, Trash2, Users } from 'lucide-react';
-import { GlassTable, GlassButton, GlassModal, GlassCheckbox } from '@bayit/shared/ui';
+import { GlassTable, GlassButton, GlassModal, GlassCheckbox, GlassInput } from '@bayit/shared/ui';
 import StatCard from '@/components/admin/StatCard';
 import { subscriptionsService } from '@/services/adminApi';
 import { colors, spacing, borderRadius } from '@bayit/shared/theme';
@@ -67,6 +67,9 @@ export default function SubscriptionsListPage() {
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
   const [editModalOpen, setEditModalOpen] = useState(false);
   const [addModalOpen, setAddModalOpen] = useState(false);
+  const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
+  const [errorModalOpen, setErrorModalOpen] = useState(false);
+  const [errorMessage, setErrorMessage] = useState('');
   const [selectedSubscription, setSelectedSubscription] = useState<Subscription | null>(null);
   const [selectedPlan, setSelectedPlan] = useState('');
   const [newUserEmail, setNewUserEmail] = useState('');
@@ -124,7 +127,8 @@ export default function SubscriptionsListPage() {
 
   const handleEdit = () => {
     if (selectedIds.size !== 1) {
-      alert(t('admin.subscriptions.selectOneToEdit'));
+      setErrorMessage(t('admin.subscriptions.selectOneToEdit'));
+      setErrorModalOpen(true);
       return;
     }
     const sub = subscriptions.find(s => selectedIds.has(s.id));
@@ -144,14 +148,16 @@ export default function SubscriptionsListPage() {
 
   const handleSaveAdd = async () => {
     if (!newUserEmail || !selectedPlan) {
-      alert(t('admin.subscriptions.fillAllFields'));
+      setErrorMessage(t('admin.subscriptions.fillAllFields'));
+      setErrorModalOpen(true);
       return;
     }
 
     try {
       const user = subscriptions.find(s => s.user.email === newUserEmail);
       if (!user) {
-        alert(t('admin.subscriptions.userNotFound'));
+        setErrorMessage(t('admin.subscriptions.userNotFound'));
+        setErrorModalOpen(true);
         return;
       }
 
@@ -163,6 +169,8 @@ export default function SubscriptionsListPage() {
       loadData();
     } catch (error) {
       logger.error('Failed to create subscription', 'SubscriptionsListPage', error);
+      setErrorMessage(t('common.error'));
+      setErrorModalOpen(true);
     }
   };
 
@@ -179,15 +187,16 @@ export default function SubscriptionsListPage() {
     }
   };
 
-  const handleDelete = async () => {
+  const handleDelete = () => {
     if (selectedIds.size === 0) {
-      alert(t('admin.subscriptions.selectToDelete'));
+      setErrorMessage(t('admin.subscriptions.selectToDelete'));
+      setErrorModalOpen(true);
       return;
     }
+    setDeleteConfirmOpen(true);
+  };
 
-    const count = selectedIds.size;
-    if (!confirm(t('admin.subscriptions.confirmDeleteMultiple', { count }))) return;
-
+  const handleDeleteConfirm = async () => {
     try {
       const deletePromises = Array.from(selectedIds).map(id => {
         const sub = subscriptions.find(s => s.id === id);
@@ -195,10 +204,14 @@ export default function SubscriptionsListPage() {
       });
 
       await Promise.all(deletePromises.filter(p => p !== null));
+      setDeleteConfirmOpen(false);
       setSelectedIds(new Set());
       loadData();
     } catch (error) {
       logger.error('Failed to delete subscriptions', 'SubscriptionsListPage', error);
+      setDeleteConfirmOpen(false);
+      setErrorMessage(t('common.error'));
+      setErrorModalOpen(true);
     }
   };
 
@@ -423,29 +436,23 @@ export default function SubscriptionsListPage() {
         onClose={() => setAddModalOpen(false)}
         dismissable={true}
       >
-        <Text style={styles.modalLabel}>
-          {t('admin.subscriptions.addSubscription.userEmail')}:
-        </Text>
-        <TextInput
-          style={styles.input}
+        <GlassInput
+          label={t('admin.subscriptions.addSubscription.userEmail')}
           value={newUserEmail}
           onChangeText={setNewUserEmail}
           placeholder={t('admin.subscriptions.addSubscription.emailPlaceholder')}
-          placeholderTextColor={colors.textMuted}
           autoCapitalize="none"
           keyboardType="email-address"
+          containerStyle={styles.inputContainer}
         />
 
-        <Text style={styles.modalLabel}>
-          {t('admin.subscriptions.addSubscription.duration')}:
-        </Text>
-        <TextInput
-          style={styles.input}
+        <GlassInput
+          label={t('admin.subscriptions.addSubscription.duration')}
           value={String(durationDays)}
           onChangeText={(text) => setDurationDays(Number(text) || 30)}
           placeholder="30"
-          placeholderTextColor={colors.textMuted}
           keyboardType="numeric"
+          containerStyle={styles.inputContainer}
         />
 
         <Text style={styles.modalLabel}>{t('admin.subscriptions.addSubscription.selectPlan')}:</Text>
@@ -478,6 +485,53 @@ export default function SubscriptionsListPage() {
             onPress={handleSaveAdd}
             variant="secondary"
             style={[styles.modalButton, styles.saveButton]}
+            textStyle={styles.buttonText}
+          />
+        </View>
+      </GlassModal>
+
+      {/* Error Modal */}
+      <GlassModal
+        visible={errorModalOpen}
+        title={t('common.error')}
+        onClose={() => setErrorModalOpen(false)}
+        dismissable={true}
+      >
+        <Text style={styles.modalLabel}>{errorMessage}</Text>
+        <View style={styles.modalActions}>
+          <GlassButton
+            title={t('common.ok')}
+            onPress={() => setErrorModalOpen(false)}
+            variant="secondary"
+            style={[styles.modalButton, styles.saveButton]}
+            textStyle={styles.buttonText}
+          />
+        </View>
+      </GlassModal>
+
+      {/* Delete Confirmation Modal */}
+      <GlassModal
+        visible={deleteConfirmOpen}
+        title={t('common.confirm')}
+        onClose={() => setDeleteConfirmOpen(false)}
+        dismissable={true}
+      >
+        <Text style={styles.modalLabel}>
+          {t('admin.subscriptions.confirmDeleteMultiple', { count: selectedIds.size })}
+        </Text>
+        <View style={styles.modalActions}>
+          <GlassButton
+            title={t('common.cancel')}
+            onPress={() => setDeleteConfirmOpen(false)}
+            variant="secondary"
+            style={[styles.modalButton, styles.cancelButton]}
+            textStyle={styles.buttonText}
+          />
+          <GlassButton
+            title={t('common.delete')}
+            onPress={handleDeleteConfirm}
+            variant="secondary"
+            style={[styles.modalButton, styles.deleteButton]}
             textStyle={styles.buttonText}
           />
         </View>
@@ -597,15 +651,8 @@ const styles = StyleSheet.create({
   },
   cancelButton: adminButtonStyles.cancelButton,
   saveButton: adminButtonStyles.successButton,
-  input: {
-    backgroundColor: 'rgba(255, 255, 255, 0.05)',
-    borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.15)',
-    borderRadius: borderRadius.md,
-    padding: spacing.md,
-    color: colors.text,
-    fontSize: 14,
-    marginTop: spacing.xs,
+  inputContainer: {
+    marginBottom: spacing.md,
   },
   buttonText: adminButtonStyles.buttonText,
 });

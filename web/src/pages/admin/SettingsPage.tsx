@@ -4,10 +4,11 @@ import { useTranslation } from 'react-i18next';
 import { Save, RefreshCw, Trash2, AlertTriangle } from 'lucide-react';
 import { settingsService } from '@/services/adminApi';
 import { colors, spacing, borderRadius } from '@bayit/shared/theme';
-import { GlassCard, GlassButton } from '@bayit/shared/ui';
+import { GlassCard, GlassButton, GlassModal } from '@bayit/shared/ui';
 import { useDirection } from '@/hooks/useDirection';
 import { useModal } from '@/contexts/ModalContext';
 import logger from '@/utils/logger';
+import { adminButtonStyles } from '@/styles/adminButtonStyles';
 
 interface SystemSettings {
   default_plan: string;
@@ -34,6 +35,8 @@ export default function SettingsPage() {
   const [settings, setSettings] = useState<SystemSettings | null>(null);
   const [featureFlags, setFeatureFlags] = useState<FeatureFlags>({});
   const [hasChanges, setHasChanges] = useState(false);
+  const [successModalOpen, setSuccessModalOpen] = useState(false);
+  const [successMessage, setSuccessMessage] = useState('');
 
   const loadSettings = async () => {
     setLoading(true);
@@ -76,7 +79,8 @@ export default function SettingsPage() {
     try {
       await settingsService.updateSettings(settings);
       setHasChanges(false);
-      alert(t('admin.settings.savingSuccess'));
+      setSuccessMessage(t('admin.settings.savingSuccess'));
+      setSuccessModalOpen(true);
     } catch (error) {
       logger.error('Failed to save settings', 'SettingsPage', error);
     } finally {
@@ -90,7 +94,8 @@ export default function SettingsPage() {
       async () => {
         try {
           await settingsService.clearCache();
-          alert(t('admin.settings.cacheCleared'));
+          setSuccessMessage(t('admin.settings.cacheCleared'));
+          setSuccessModalOpen(true);
         } catch (error) {
           logger.error('Failed to clear cache', 'SettingsPage', error);
         }
@@ -105,7 +110,8 @@ export default function SettingsPage() {
       async () => {
         try {
           await settingsService.resetAnalytics();
-          alert(t('admin.settings.analyticsReset'));
+          setSuccessMessage(t('admin.settings.analyticsReset'));
+          setSuccessModalOpen(true);
         } catch (error) {
           logger.error('Failed to reset analytics', 'SettingsPage', error);
         }
@@ -130,7 +136,7 @@ export default function SettingsPage() {
           <Text style={[styles.pageTitle, { textAlign }]}>{t('admin.titles.settings')}</Text>
           <Text style={[styles.subtitle, { textAlign }]}>{t('admin.settings.subtitle')}</Text>
         </View>
-        <GlassButton title={t('admin.settings.saveChanges')} variant="primary" icon={<Save size={16} color={colors.text} />} onPress={handleSave} disabled={!hasChanges || saving} />
+        <GlassButton title={t('admin.settings.saveChanges')} variant="secondary" icon={<Save size={16} color={colors.text} />} onPress={handleSave} disabled={!hasChanges || saving} style={adminButtonStyles.successButton} textStyle={adminButtonStyles.buttonText} />
       </View>
 
       <View style={styles.sectionsContainer}>
@@ -199,8 +205,8 @@ export default function SettingsPage() {
           <Text style={styles.sectionTitle}>{t('admin.settings.systemActions')}</Text>
 
           <View style={styles.dangerActions}>
-            <GlassButton title={t('admin.settings.clearCache')} variant="secondary" icon={<RefreshCw size={16} color={colors.warning} />} onPress={handleClearCache} />
-            <GlassButton title={t('admin.settings.resetAnalytics')} variant="secondary" icon={<Trash2 size={16} color={colors.error} />} onPress={handleResetAnalytics} />
+            <GlassButton title={t('admin.settings.clearCache')} variant="secondary" icon={<RefreshCw size={16} color={colors.warning} />} onPress={handleClearCache} style={adminButtonStyles.warningButton} textStyle={adminButtonStyles.buttonText} />
+            <GlassButton title={t('admin.settings.resetAnalytics')} variant="secondary" icon={<Trash2 size={16} color={colors.error} />} onPress={handleResetAnalytics} style={adminButtonStyles.dangerButton} textStyle={adminButtonStyles.buttonText} />
           </View>
 
           <View style={styles.warningBox}>
@@ -209,6 +215,25 @@ export default function SettingsPage() {
           </View>
         </GlassCard>
       </View>
+
+      {/* Success Modal */}
+      <GlassModal
+        visible={successModalOpen}
+        title={t('common.success')}
+        onClose={() => setSuccessModalOpen(false)}
+        dismissable={true}
+      >
+        <Text style={styles.modalText}>{successMessage}</Text>
+        <View style={styles.modalActions}>
+          <GlassButton
+            title={t('common.ok')}
+            onPress={() => setSuccessModalOpen(false)}
+            variant="secondary"
+            style={adminButtonStyles.successButton}
+            textStyle={adminButtonStyles.buttonText}
+          />
+        </View>
+      </GlassModal>
     </ScrollView>
   );
 }
@@ -234,4 +259,15 @@ const styles = StyleSheet.create({
   dangerActions: { flexDirection: 'row', gap: spacing.md, marginBottom: spacing.md },
   warningBox: { flexDirection: 'row', alignItems: 'center', gap: spacing.sm, padding: spacing.md, backgroundColor: 'rgba(245, 158, 11, 0.1)', borderRadius: borderRadius.md },
   warningText: { flex: 1, fontSize: 12, color: colors.warning },
+  modalText: {
+    fontSize: 14,
+    color: colors.text,
+    marginBottom: spacing.lg,
+    lineHeight: 20,
+  },
+  modalActions: {
+    flexDirection: 'row',
+    justifyContent: 'flex-end',
+    gap: spacing.sm,
+  },
 });

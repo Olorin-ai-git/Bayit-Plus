@@ -8,6 +8,7 @@ import { colors, spacing, borderRadius } from '@bayit/shared/theme';
 import { GlassButton, GlassModal } from '@bayit/shared/ui';
 import { useDirection } from '@/hooks/useDirection';
 import logger from '@/utils/logger';
+import { adminButtonStyles } from '@/styles/adminButtonStyles';
 
 interface Transaction {
   id: string;
@@ -197,6 +198,8 @@ export default function TransactionsPage() {
           variant="secondary"
           icon={<Download size={16} color={colors.text} />}
           onPress={handleExport}
+          style={adminButtonStyles.secondaryButton}
+          textStyle={adminButtonStyles.buttonText}
         />
       </View>
 

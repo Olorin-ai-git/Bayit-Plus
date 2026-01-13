@@ -6,7 +6,6 @@ import {
   ScrollView,
   ActivityIndicator,
   Pressable,
-  Alert,
 } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { RefreshCw, Bot, Play, Zap, FileText, Eye, ScrollText } from 'lucide-react';
@@ -56,6 +55,10 @@ const LibrarianAgentPage = () => {
   const [pendingAuditType, setPendingAuditType] = useState<'daily_incremental' | 'ai_agent' | null>(null);
   const [configError, setConfigError] = useState<string | null>(null);
   const [loadingAuditId, setLoadingAuditId] = useState<string | null>(null);
+  const [errorModalOpen, setErrorModalOpen] = useState(false);
+  const [errorMessage, setErrorMessage] = useState('');
+  const [successModalOpen, setSuccessModalOpen] = useState(false);
+  const [successMessage, setSuccessMessage] = useState('');
 
   // Load all data
   const loadData = useCallback(async () => {
@@ -83,14 +86,12 @@ const LibrarianAgentPage = () => {
       if (errorMessage.includes('configuration')) {
         // Configuration error - fail fast, don't allow page to load
         setConfigError(errorMessage);
-        Alert.alert(
-          t('admin.librarian.errors.configError'),
-          `${errorMessage}\n\n${t('admin.librarian.errors.contactAdmin')}`,
-          [{ text: t('common.ok') }]
-        );
+        setErrorMessage(`${errorMessage}\n\n${t('admin.librarian.errors.contactAdmin')}`);
+        setErrorModalOpen(true);
       } else {
         // Data loading error - still allow retry
-        Alert.alert(t('common.error'), t('admin.librarian.errors.failedToLoad'));
+        setErrorMessage(t('admin.librarian.errors.failedToLoad'));
+        setErrorModalOpen(true);
       }
     } finally {
       setLoading(false);
@@ -188,7 +189,8 @@ const LibrarianAgentPage = () => {
 
   const executeAudit = async (auditType: 'daily_incremental' | 'ai_agent') => {
     if (!config) {
-      Alert.alert(t('common.error'), t('admin.librarian.errors.configNotLoaded'));
+      setErrorMessage(t('admin.librarian.errors.configNotLoaded'));
+      setErrorModalOpen(true);
       return;
     }
 
@@ -206,10 +208,8 @@ const LibrarianAgentPage = () => {
 
       const successKey = auditType === 'ai_agent' ? 'aiAuditSuccess' : 'dailyAuditSuccess';
       const dryRunText = dryRun ? t('admin.librarian.quickActions.dryRunMode') : '';
-      Alert.alert(
-        t('common.success'),
-        t(`admin.librarian.quickActions.${successKey}`, { dryRun: dryRunText })
-      );
+      setSuccessMessage(t(`admin.librarian.quickActions.${successKey}`, { dryRun: dryRunText }));
+      setSuccessModalOpen(true);
 
       // Refresh data after 5 seconds
       setTimeout(() => {
@@ -217,7 +217,8 @@ const LibrarianAgentPage = () => {
       }, 5000);
     } catch (error) {
       logger.error('Failed to trigger audit:', error);
-      Alert.alert(t('common.error'), t('admin.librarian.errors.failedToTrigger'));
+      setErrorMessage(t('admin.librarian.errors.failedToTrigger'));
+      setErrorModalOpen(true);
     } finally {
       setTriggering(false);
       setPendingAuditType(null);
@@ -242,7 +243,8 @@ const LibrarianAgentPage = () => {
       setSelectedReport(details);
     } catch (error) {
       logger.error('Failed to load report details:', error);
-      Alert.alert(t('common.error'), t('admin.librarian.errors.failedToLoadDetails'));
+      setErrorMessage(t('admin.librarian.errors.failedToLoadDetails'));
+      setErrorModalOpen(true);
       setDetailModalVisible(false);
     } finally {
       setDetailModalLoading(false);
@@ -254,11 +256,13 @@ const LibrarianAgentPage = () => {
   const handleRollback = async (actionId: string) => {
     try {
       await rollbackActionAPI(actionId);
-      Alert.alert(t('common.success'), t('admin.librarian.quickActions.rollbackSuccess'));
+      setSuccessMessage(t('admin.librarian.quickActions.rollbackSuccess'));
+      setSuccessModalOpen(true);
       await loadData();
     } catch (error) {
       logger.error('Failed to rollback action:', error);
-      Alert.alert(t('common.error'), t('admin.librarian.errors.failedToRollback'));
+      setErrorMessage(t('admin.librarian.errors.failedToRollback'));
+      setErrorModalOpen(true);
     }
   };
 
@@ -394,7 +398,8 @@ const LibrarianAgentPage = () => {
       }
     } catch (error) {
       logger.error('Failed to load report details for logs:', error);
-      Alert.alert(t('common.error'), t('admin.librarian.errors.failedToLoadDetails'));
+      setErrorMessage(t('admin.librarian.errors.failedToLoadDetails'));
+      setErrorModalOpen(true);
       setLogViewerModalVisible(false);
     } finally {
       setLogModalLoading(false);
@@ -405,16 +410,8 @@ const LibrarianAgentPage = () => {
   // Handle schedule update
   const handleScheduleUpdate = async (newCron: string, newStatus: 'ENABLED' | 'DISABLED') => {
     // Show informative message that Cloud Console is needed for schedule changes
-    Alert.alert(
-      t('admin.librarian.schedules.editNotAvailable'),
-      t('admin.librarian.schedules.editNotAvailableMessage'),
-      [
-        {
-          text: t('common.ok'),
-          style: 'default',
-        },
-      ]
-    );
+    setErrorMessage(t('admin.librarian.schedules.editNotAvailableMessage'));
+    setErrorModalOpen(true);
     throw new Error('Schedule editing requires Cloud Console');
   };
 
@@ -916,6 +913,42 @@ const LibrarianAgentPage = () => {
           </View>
         ) : null}
       </GlassModal>
+
+      {/* Error Modal */}
+      <GlassModal
+        visible={errorModalOpen}
+        title={t('common.error')}
+        onClose={() => setErrorModalOpen(false)}
+        dismissable={true}
+      >
+        <Text style={styles.modalText}>{errorMessage}</Text>
+        <View style={styles.modalActions}>
+          <GlassButton
+            title={t('common.ok')}
+            onPress={() => setErrorModalOpen(false)}
+            variant="secondary"
+            style={styles.modalButton}
+          />
+        </View>
+      </GlassModal>
+
+      {/* Success Modal */}
+      <GlassModal
+        visible={successModalOpen}
+        title={t('common.success')}
+        onClose={() => setSuccessModalOpen(false)}
+        dismissable={true}
+      >
+        <Text style={styles.modalText}>{successMessage}</Text>
+        <View style={styles.modalActions}>
+          <GlassButton
+            title={t('common.ok')}
+            onPress={() => setSuccessModalOpen(false)}
+            variant="secondary"
+            style={styles.modalButton}
+          />
+        </View>
+      </GlassModal>
     </ScrollView>
   );
 };
@@ -1214,6 +1247,20 @@ const styles = StyleSheet.create({
     marginTop: spacing.md,
     fontSize: 16,
     color: colors.textMuted,
+  },
+  modalText: {
+    fontSize: 14,
+    color: colors.text,
+    marginBottom: spacing.lg,
+    lineHeight: 20,
+  },
+  modalActions: {
+    flexDirection: 'row',
+    justifyContent: 'flex-end',
+    gap: spacing.sm,
+  },
+  modalButton: {
+    minWidth: 100,
   },
 });
 
