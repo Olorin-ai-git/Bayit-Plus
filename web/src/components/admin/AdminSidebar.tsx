@@ -156,7 +156,7 @@ export default function AdminSidebar({
   const { t, i18n } = useTranslation()
   const navigate = useNavigate()
   const { user, logout } = useAuthStore()
-  const [expandedItems, setExpandedItems] = useState(['billing', 'subscriptions', 'marketing', 'content'])
+  const [expandedItems, setExpandedItems] = useState<string[]>([]) // Collapsed by default
   const [showLanguageMenu, setShowLanguageMenu] = useState(false)
 
   const toggleExpand = (key: string) => {
