@@ -113,35 +113,39 @@
         height: 45px;
         margin-bottom: -8px;
         opacity: 0;
-        animation: logoFadeIn 1.2s ease-out forwards;
-        animation-delay: 0.8s;
+        animation: logoFadeIn 1s ease-out 0.7s forwards;
       }
 
-      /* Text container */
+      /* Text container - use row-reverse to flip final order */
       #splash-screen .text-container {
         display: flex;
-        flex-direction: row;
+        flex-direction: row-reverse;
         align-items: center;
         justify-content: center;
+        gap: 0;
       }
 
-      /* Animated text - slides in from sides */
+      /* Plus sign - slides in from LEFT edge, ends on RIGHT */
+      #splash-screen .plus-text {
+        font-size: 42px;
+        font-weight: bold;
+        color: #00d9ff;
+        margin: 0 0 0 2px;
+        opacity: 0;
+        transform: translateX(-200px);
+        animation: slideInPlus 0.7s ease-in-out forwards;
+      }
+
+      /* Bayit text - slides in from RIGHT edge, ends on LEFT */
       #splash-screen .bayit-text {
         font-size: 48px;
         font-weight: bold;
         color: #ffffff;
         font-family: 'Heebo', sans-serif;
+        margin: 0;
         opacity: 0;
-        animation: slideInFromLeft 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
-      }
-
-      #splash-screen .plus-text {
-        font-size: 42px;
-        font-weight: bold;
-        color: #00d9ff;
-        margin-left: 4px;
-        opacity: 0;
-        animation: slideInFromRight 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+        transform: translateX(200px);
+        animation: slideInBayit 0.7s ease-in-out forwards;
       }
 
       /* Dual Clock - positioned below TV screen */
@@ -189,43 +193,43 @@
         min-width: 3.5rem;
       }
 
-      /* Animation Keyframes */
-      @keyframes slideInFromLeft {
-        from {
+      /* Animation Keyframes - elements slide to center, flex-direction handles final order */
+      @keyframes slideInPlus {
+        0% {
           opacity: 0;
-          transform: translateX(-150px);
+          transform: translateX(-200px);
         }
-        to {
+        100% {
           opacity: 1;
           transform: translateX(0);
         }
       }
 
-      @keyframes slideInFromRight {
-        from {
+      @keyframes slideInBayit {
+        0% {
           opacity: 0;
-          transform: translateX(150px);
+          transform: translateX(200px);
         }
-        to {
+        100% {
           opacity: 1;
           transform: translateX(0);
         }
       }
 
       @keyframes logoFadeIn {
-        from {
+        0% {
           opacity: 0;
         }
-        to {
+        100% {
           opacity: 1;
         }
       }
 
       @keyframes fadeIn {
-        from {
+        0% {
           opacity: 0;
         }
-        to {
+        100% {
           opacity: 1;
         }
       }
@@ -271,8 +275,8 @@
       <div class="animated-logo-container">
         <img src="/logo.png" alt="Bayit+ Logo" class="logo" />
         <div class="text-container">
-          <span class="bayit-text">בית</span>
           <span class="plus-text">+</span>
+          <span class="bayit-text">בית</span>
         </div>
       </div>
       
@@ -327,6 +331,84 @@
       // Update clocks immediately and every second
       updateClocks();
       var clockInterval = setInterval(updateClocks, 1000);
+      
+      // #region agent log
+      // Debug: Track NEW animation from scratch
+      function captureLogoState(label, time) {
+        var bayitEl = document.querySelector('.bayit-text');
+        var plusEl = document.querySelector('.plus-text');
+        
+        if (!bayitEl || !plusEl) return null;
+        
+        var bayitRect = bayitEl.getBoundingClientRect();
+        var plusRect = plusEl.getBoundingClientRect();
+        var bayitStyle = window.getComputedStyle(bayitEl);
+        var plusStyle = window.getComputedStyle(plusEl);
+        
+        return {
+          time: label,
+          ms: time,
+          plus: {
+            left: Math.round(plusRect.left * 100) / 100,
+            right: Math.round(plusRect.right * 100) / 100,
+            transform: plusStyle.transform,
+            animationName: plusStyle.animationName
+          },
+          bayit: {
+            left: Math.round(bayitRect.left * 100) / 100,
+            right: Math.round(bayitRect.right * 100) / 100,
+            transform: bayitStyle.transform,
+            animationName: bayitStyle.animationName
+          }
+        };
+      }
+      
+      window.addEventListener('load', function() {
+        var states = [];
+        
+        // Track at key moments: start, mid, end, and after
+        setTimeout(function() { states.push(captureLogoState('T0-start', Date.now())); }, 50);
+        setTimeout(function() { states.push(captureLogoState('T350-mid', Date.now())); }, 350);
+        setTimeout(function() { states.push(captureLogoState('T700-end', Date.now())); }, 700);
+        setTimeout(function() { states.push(captureLogoState('T1200-after', Date.now())); }, 1200);
+        setTimeout(function() { states.push(captureLogoState('T2000-final', Date.now())); }, 2000);
+        
+        setTimeout(function() {
+          // Calculate movements
+          var movements = [];
+          for (var i = 1; i < states.length; i++) {
+            if (states[i] && states[i-1]) {
+              movements.push({
+                period: states[i-1].time + ' → ' + states[i].time,
+                plusDelta: (states[i].plus.left - states[i-1].plus.left).toFixed(2),
+                bayitDelta: (states[i].bayit.left - states[i-1].bayit.left).toFixed(2)
+              });
+            }
+          }
+          
+          var finalState = states[states.length - 1];
+          
+          fetch('http://127.0.0.1:7244/ingest/5953914e-34ce-41fe-8a24-b30691c4a1e7', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              location: 'index.html:new-animation',
+              message: 'NEW ANIMATION: Position tracking',
+              data: {
+                allStates: states,
+                movements: movements,
+                finalPositions: finalState,
+                expectation: 'After T700-end, no movement should occur (deltas = 0)'
+              },
+              timestamp: Date.now(),
+              sessionId: 'debug-session',
+              runId: 'new-animation',
+              hypothesisId: 'stable-final-state'
+            })
+          }).catch(function() {});
+        }, 2500);
+      });
+      // #endregion
       
       // Function to hide splash screen
       function hideSplashScreen() {
