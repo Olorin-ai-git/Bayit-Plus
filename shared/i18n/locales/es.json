@@ -1809,6 +1809,7 @@
       "reports": {
         "title": "Informes de Auditoría Recientes",
         "emptyMessage": "Aún no hay informes de auditoría",
+        "clearAll": "Limpiar Todo",
         "viewLogs": "Ver Registros",
         "viewDetails": "Ver Detalles",
         "columns": {
@@ -1841,9 +1842,13 @@
       },
       "logs": {
         "title": "Registros de Ejecución",
+        "liveAuditLog": "Registro de Auditoría en Vivo",
         "executionLog": "Registro de Ejecución de Auditoría",
         "searchPlaceholder": "Buscar registros...",
         "noLogs": "No hay registros para mostrar",
+        "auditType": "Tipo de Auditoría",
+        "started": "Iniciado",
+        "completed": "Completado",
         "levels": {
           "debug": "DEBUG",
           "info": "INFO",

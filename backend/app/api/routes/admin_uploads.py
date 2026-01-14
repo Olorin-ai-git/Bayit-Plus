@@ -268,6 +268,7 @@ async def get_upload_queue(
     - Active job
     - Queued jobs
     - Recently completed jobs
+    - Queue pause status
     """
     try:
         stats = await upload_service.get_queue_stats()
@@ -275,18 +276,55 @@ async def get_upload_queue(
         queue = await upload_service.get_queue()
         recent = await upload_service.get_recent_completed(10)
         
-        return UploadQueueResponse(
+        response = UploadQueueResponse(
             stats=stats,
             active_job=UploadJobResponse.from_orm(active_job) if active_job else None,
             queue=[UploadJobResponse.from_orm(j) for j in queue],
             recent_completed=[UploadJobResponse.from_orm(j) for j in recent],
         )
         
+        # Add queue pause info
+        response_dict = response.dict()
+        response_dict["queue_paused"] = upload_service._queue_paused
+        response_dict["pause_reason"] = upload_service._pause_reason
+        
+        return response_dict
+        
     except Exception as e:
         logger.error(f"Failed to get queue: {e}", exc_info=True)
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"Failed to get queue: {str(e)}"
+        )
+
+
+@router.post("/uploads/queue/resume")
+async def resume_upload_queue(
+    current_user: User = Depends(has_permission(Permission.CONTENT_CREATE))
+):
+    """
+    Resume a paused upload queue.
+    Call this after fixing credential issues.
+    """
+    try:
+        if not upload_service._queue_paused:
+            return {
+                "success": True,
+                "message": "Queue is not paused"
+            }
+        
+        await upload_service.resume_queue()
+        
+        return {
+            "success": True,
+            "message": "Upload queue resumed successfully"
+        }
+        
+    except Exception as e:
+        logger.error(f"Failed to resume queue: {e}", exc_info=True)
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Failed to resume queue: {str(e)}"
         )
 
 
@@ -504,16 +542,27 @@ async def scan_monitored_folders_now(
     folder_id: Optional[str] = None,
     current_user: User = Depends(has_permission(Permission.CONTENT_CREATE))
 ):
-    """Trigger an immediate scan of monitored folders"""
+    """Trigger an immediate scan of monitored folders (background process)"""
     try:
+        # Start scan in background to avoid blocking the API
         if folder_id:
-            # Scan specific folder
-            result = await folder_monitor_service.scan_folder_immediately(folder_id)
+            # Scan specific folder in background
+            asyncio.create_task(folder_monitor_service.scan_folder_immediately(folder_id))
+            logger.info(f"Started background scan for folder: {folder_id}")
+            return {
+                "success": True,
+                "message": "Folder scan started in background",
+                "folder_id": folder_id
+            }
         else:
-            # Scan all folders
-            result = await folder_monitor_service.scan_and_enqueue()
-        
-        return result
+            # Scan all folders in background
+            asyncio.create_task(folder_monitor_service.scan_and_enqueue())
+            logger.info("Started background scan for all monitored folders")
+            return {
+                "success": True,
+                "message": "Scan started in background for all monitored folders",
+                "files_found": 0  # Will be counted in background
+            }
         
     except ValueError as e:
         raise HTTPException(
@@ -521,10 +570,10 @@ async def scan_monitored_folders_now(
             detail=str(e)
         )
     except Exception as e:
-        logger.error(f"Failed to scan folders: {e}", exc_info=True)
+        logger.error(f"Failed to start folder scan: {e}", exc_info=True)
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Failed to scan folders: {str(e)}"
+            detail=f"Failed to start folder scan: {str(e)}"
         )
 
 

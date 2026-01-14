@@ -50,27 +50,53 @@ export interface MonitoredFolder {
 }
 
 export interface UploadJob {
-  id: string;
+  job_id: string;
   filename: string;
   type: string;
-  status: 'queued' | 'processing' | 'uploading' | 'completed' | 'failed';
+  status: 'queued' | 'processing' | 'uploading' | 'completed' | 'failed' | 'cancelled';
   progress: number;
-  eta_seconds?: number;
-  error_message?: string;
+  file_size: number;
+  bytes_uploaded: number;
+  upload_speed?: number | null;
+  eta_seconds?: number | null;
+  error_message?: string | null;
   created_at: string;
+  started_at?: string | null;
+  completed_at?: string | null;
 }
 
-export interface UploadQueue {
-  active: UploadJob[];
-  queued: UploadJob[];
-  completed: UploadJob[];
+export interface QueueStats {
+  total_jobs: number;
+  queued: number;
+  processing: number;
+  completed: number;
+  failed: number;
+  cancelled: number;
+  total_size_bytes: number;
+  uploaded_bytes: number;
+}
+
+export interface UploadQueueResponse {
+  stats: QueueStats;
+  active_job: UploadJob | null;
+  queue: UploadJob[];
+  recent_completed: UploadJob[];
+  queue_paused?: boolean;
+  pause_reason?: string | null;
 }
 
 /**
  * Get upload queue status
  */
-export const getUploadQueue = async (): Promise<UploadQueue> => {
+export const getUploadQueue = async (): Promise<UploadQueueResponse> => {
   return uploadsApi.get('/admin/uploads/queue');
+};
+
+/**
+ * Resume a paused upload queue
+ */
+export const resumeUploadQueue = async (): Promise<{ success: boolean; message: string }> => {
+  return uploadsApi.post('/admin/uploads/queue/resume');
 };
 
 /**

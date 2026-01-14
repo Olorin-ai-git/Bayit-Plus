@@ -102,10 +102,18 @@ class FolderMonitorService:
         folder_path = Path(folder.path)
 
         if not folder_path.exists():
-            raise FileNotFoundError(f"Folder not found: {folder.path}")
+            logger.warning(f"⚠️  Skipping folder (not found): {folder.path}")
+            folder.last_error = "Folder not found"
+            folder.error_count += 1
+            await folder.save()
+            return stats
 
         if not folder_path.is_dir():
-            raise ValueError(f"Path is not a directory: {folder.path}")
+            logger.warning(f"⚠️  Skipping path (not a directory): {folder.path}")
+            folder.last_error = "Path is not a directory"
+            folder.error_count += 1
+            await folder.save()
+            return stats
 
         logger.info(f"Scanning folder: {folder.path}")
 
@@ -117,28 +125,23 @@ class FolderMonitorService:
         # Get file patterns for this content type
         patterns = folder.file_patterns if folder.file_patterns else self._get_default_patterns(folder.content_type)
 
-        # Scan directory
-        found_files = []
-        
-        if folder.recursive:
-            # Recursive scan
-            for root, dirs, files in os.walk(folder_path):
-                for filename in files:
-                    file_path = Path(root) / filename
-                    if self._should_process_file(file_path, patterns, folder.exclude_patterns):
-                        found_files.append(str(file_path.absolute()))
-        else:
-            # Non-recursive scan
-            for item in folder_path.iterdir():
-                if item.is_file():
-                    if self._should_process_file(item, patterns, folder.exclude_patterns):
-                        found_files.append(str(item.absolute()))
+        # Scan directory (run in executor to avoid blocking event loop on slow filesystems)
+        loop = asyncio.get_event_loop()
+        found_files = await loop.run_in_executor(
+            None,
+            self._scan_directory_sync,
+            folder_path,
+            patterns,
+            folder.exclude_patterns,
+            folder.recursive
+        )
 
         stats["files_found"] = len(found_files)
         logger.info(f"Found {len(found_files)} files in {folder.path}")
 
-        # Enqueue new files
+        # Enqueue new files (with periodic yields to keep event loop responsive)
         if folder.auto_upload:
+            enqueue_count = 0
             for file_path in found_files:
                 # Check if file is new
                 if file_path not in self._known_files[folder_id]:
@@ -147,10 +150,16 @@ class FolderMonitorService:
                             source_path=file_path,
                             content_type=folder.content_type,
                             metadata={"source_folder": folder.path},
+                            skip_duplicate_check=True,  # Skip hash calculation during scan for performance
                         )
                         self._known_files[folder_id].add(file_path)
                         stats["files_enqueued"] += 1
+                        enqueue_count += 1
                         logger.info(f"Enqueued new file: {file_path}")
+                        
+                        # Yield control every 5 files to keep API responsive
+                        if enqueue_count % 5 == 0:
+                            await asyncio.sleep(0)
                     except Exception as e:
                         logger.error(f"Failed to enqueue {file_path}: {e}")
 
@@ -158,6 +167,37 @@ class FolderMonitorService:
         self._known_files[folder_id].update(found_files)
 
         return stats
+
+    def _scan_directory_sync(
+        self,
+        folder_path: Path,
+        include_patterns: List[str],
+        exclude_patterns: List[str],
+        recursive: bool
+    ) -> List[str]:
+        """
+        Synchronous directory scanning (runs in executor to avoid blocking event loop).
+        
+        Returns:
+            List of file paths that match the patterns
+        """
+        found_files = []
+        
+        if recursive:
+            # Recursive scan
+            for root, dirs, files in os.walk(folder_path):
+                for filename in files:
+                    file_path = Path(root) / filename
+                    if self._should_process_file(file_path, include_patterns, exclude_patterns):
+                        found_files.append(str(file_path.absolute()))
+        else:
+            # Non-recursive scan
+            for item in folder_path.iterdir():
+                if item.is_file():
+                    if self._should_process_file(item, include_patterns, exclude_patterns):
+                        found_files.append(str(item.absolute()))
+        
+        return found_files
 
     def _should_process_file(
         self,
@@ -194,9 +234,9 @@ class FolderMonitorService:
         """Get default file patterns for a content type"""
         patterns = {
             ContentType.MOVIE: ["*.mp4", "*.mkv", "*.avi", "*.mov", "*.webm", "*.m4v"],
+            ContentType.SERIES: ["*.mp4", "*.mkv", "*.avi", "*.mov", "*.webm", "*.m4v"],
+            ContentType.AUDIOBOOK: ["*.mp3", "*.m4a", "*.m4b", "*.wav", "*.ogg", "*.flac"],
             ContentType.PODCAST: ["*.mp3", "*.m4a", "*.wav", "*.ogg"],
-            ContentType.PODCAST_EPISODE: ["*.mp3", "*.m4a", "*.wav", "*.ogg"],
-            ContentType.IMAGE: ["*.jpg", "*.jpeg", "*.png", "*.webp", "*.gif"],
             ContentType.AUDIO: ["*.mp3", "*.m4a", "*.wav", "*.ogg", "*.flac"],
             ContentType.SUBTITLE: ["*.srt", "*.vtt", "*.sub"],
         }
@@ -334,10 +374,23 @@ class FolderMonitorService:
         if not folder_path.is_dir():
             raise ValueError(f"Path is not a directory: {path}")
 
-        # Check if already exists
+        # Check if path already exists (normalize paths for comparison)
+        normalized_path = str(folder_path.resolve())
         existing = await MonitoredFolder.find_one(MonitoredFolder.path == path)
+        
+        # Also check normalized path in case of symlinks or relative paths
+        if not existing:
+            all_folders = await MonitoredFolder.find_all().to_list()
+            for folder in all_folders:
+                try:
+                    if Path(folder.path).resolve() == Path(normalized_path):
+                        existing = folder
+                        break
+                except Exception:
+                    continue
+        
         if existing:
-            raise ValueError(f"Folder already monitored: {path}")
+            raise ValueError(f"This folder path is already being monitored: {path}")
 
         # Create folder
         folder = MonitoredFolder(
@@ -364,20 +417,31 @@ class FolderMonitorService:
         **updates
     ) -> MonitoredFolder:
         """Update a monitored folder"""
-        folder = await MonitoredFolder.get(folder_id)
+        from bson import ObjectId
+        
+        # Convert string ID to ObjectId
+        try:
+            obj_id = ObjectId(folder_id)
+        except Exception as e:
+            raise ValueError(f"Invalid folder ID format: {folder_id}")
+        
+        folder = await MonitoredFolder.get(obj_id)
         
         if not folder:
             raise ValueError(f"Folder not found: {folder_id}")
 
-        # Update fields
+        logger.info(f"Updating monitored folder {folder_id} with: {updates}")
+
+        # Update fields (handle both None and False values correctly)
         for key, value in updates.items():
-            if value is not None and hasattr(folder, key):
+            if hasattr(folder, key):
                 setattr(folder, key, value)
+                logger.debug(f"  Set {key} = {value}")
 
         folder.updated_at = datetime.utcnow()
         await folder.save()
         
-        logger.info(f"Updated monitored folder: {folder.path}")
+        logger.info(f"✅ Updated monitored folder: {folder.path} (enabled={folder.enabled}, type={folder.content_type})")
         
         return folder
 

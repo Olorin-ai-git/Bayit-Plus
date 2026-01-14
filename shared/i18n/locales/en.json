@@ -1561,9 +1561,13 @@
       },
       "logs": {
         "title": "Execution Logs",
+        "liveAuditLog": "Live Audit Log",
         "executionLog": "Audit Execution Log",
         "searchPlaceholder": "Search logs...",
         "noLogs": "No logs to display",
+        "auditType": "Audit Type",
+        "started": "Started",
+        "completed": "Completed",
         "levels": {
           "debug": "DEBUG",
           "info": "INFO",

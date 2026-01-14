@@ -16,8 +16,6 @@ class ContentType(str, Enum):
     SERIES = "series"
     AUDIOBOOK = "audiobook"
     PODCAST = "podcast"
-    PODCAST_EPISODE = "podcast_episode"
-    IMAGE = "image"
     AUDIO = "audio"
     SUBTITLE = "subtitle"
     OTHER = "other"
@@ -46,6 +44,7 @@ class UploadJob(Document):
     source_path: str  # Original file path
     filename: str  # Original filename
     file_size: Optional[int] = None  # Size in bytes
+    file_hash: Optional[str] = None  # SHA256 hash for duplicate detection
     
     # Upload status
     status: UploadStatus = UploadStatus.QUEUED
@@ -212,6 +211,7 @@ class MonitoredFolderCreate(BaseModel):
 class MonitoredFolderUpdate(BaseModel):
     """Request model for updating a monitored folder"""
     name: Optional[str] = None
+    content_type: Optional[ContentType] = None
     enabled: Optional[bool] = None
     auto_upload: Optional[bool] = None
     recursive: Optional[bool] = None

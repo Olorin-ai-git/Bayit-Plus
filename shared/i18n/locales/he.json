@@ -1396,6 +1396,7 @@
       "reports": {
         "title": "דוחות ביקורת אחרונים",
         "emptyMessage": "עדיין אין דוחות ביקורת",
+        "clearAll": "נקה הכל",
         "viewLogs": "הצג לוגים",
         "viewDetails": "הצג פרטים",
         "columns": {
@@ -1428,9 +1429,13 @@
       },
       "logs": {
         "title": "לוגים של ביצוע",
+        "liveAuditLog": "לוג ביקורת חי",
         "executionLog": "לוג ביצוע ביקורת",
         "searchPlaceholder": "חפש לוגים...",
         "noLogs": "אין לוגים להצגה",
+        "auditType": "סוג ביקורת",
+        "started": "התחיל",
+        "completed": "הושלם",
         "levels": {
           "debug": "DEBUG",
           "info": "INFO",

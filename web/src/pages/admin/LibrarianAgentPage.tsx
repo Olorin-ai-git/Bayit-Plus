@@ -8,7 +8,7 @@ import {
   Pressable,
 } from 'react-native';
 import { useTranslation } from 'react-i18next';
-import { RefreshCw, Bot, Play, Zap, FileText, Eye, ScrollText, Trash2 } from 'lucide-react';
+import { RefreshCw, Bot, Play, Zap, FileText, Eye, ScrollText, Trash2, ChevronDown, ChevronUp } from 'lucide-react';
 import StatCard from '@/components/admin/StatCard';
 import LibrarianScheduleCard from '@/components/admin/LibrarianScheduleCard';
 import LibrarianActivityLog from '@/components/admin/LibrarianActivityLog';
@@ -51,9 +51,9 @@ const LibrarianAgentPage = () => {
   const [selectedReport, setSelectedReport] = useState<AuditReportDetail | null>(null);
   const [detailModalVisible, setDetailModalVisible] = useState(false);
   const [detailModalLoading, setDetailModalLoading] = useState(false);
-  const [logViewerModalVisible, setLogViewerModalVisible] = useState(false);
-  const [logModalLoading, setLogModalLoading] = useState(false);
   const [confirmModalVisible, setConfirmModalVisible] = useState(false);
+  const [livePanelExpanded, setLivePanelExpanded] = useState(false);
+  const [livePanelReport, setLivePanelReport] = useState<AuditReportDetail | null>(null);
   const [pendingAuditType, setPendingAuditType] = useState<'daily_incremental' | 'ai_agent' | null>(null);
   const [configError, setConfigError] = useState<string | null>(null);
   const [loadingAuditId, setLoadingAuditId] = useState<string | null>(null);
@@ -121,6 +121,11 @@ const LibrarianAgentPage = () => {
       try {
         const details = await getAuditReportDetails(inProgressAudit.audit_id);
 
+        // Update live panel if it's for this audit
+        if (livePanelReport && livePanelReport.audit_id === inProgressAudit.audit_id) {
+          setLivePanelReport(details);
+        }
+
         // If detail modal is open and showing this audit, update it
         if (selectedReport && selectedReport.audit_id === inProgressAudit.audit_id) {
           setSelectedReport(details);
@@ -141,7 +146,7 @@ const LibrarianAgentPage = () => {
     return () => {
       clearInterval(pollInterval);
     };
-  }, [reports, selectedReport]);
+  }, [reports, selectedReport, livePanelReport]);
 
   // Poll for activity log updates when audit is in progress (real-time rolling updates)
   useEffect(() => {
@@ -213,10 +218,26 @@ const LibrarianAgentPage = () => {
       setSuccessMessage(t(`admin.librarian.quickActions.${successKey}`, { dryRun: dryRunText }));
       setSuccessModalOpen(true);
 
-      // Refresh data after 5 seconds
-      setTimeout(() => {
-        handleRefresh();
-      }, 5000);
+      // Expand live panel and load audit details
+      setLivePanelExpanded(true);
+      
+      // Refresh data after 2 seconds to get the new audit
+      setTimeout(async () => {
+        await handleRefresh();
+        
+        // Find the newly created in-progress audit and load it into the live panel
+        const updatedReports = await getAuditReports(config.pagination.reports_limit);
+        const inProgressAudit = updatedReports.find(r => r.status === 'in_progress');
+        
+        if (inProgressAudit) {
+          try {
+            const details = await getAuditReportDetails(inProgressAudit.audit_id);
+            setLivePanelReport(details);
+          } catch (error) {
+            logger.error('Failed to load audit details for live panel:', error);
+          }
+        }
+      }, 2000);
     } catch (error) {
       logger.error('Failed to trigger audit:', error);
       setErrorMessage(t('admin.librarian.errors.failedToTrigger'));
@@ -378,33 +399,19 @@ const LibrarianAgentPage = () => {
     return logs;
   };
 
-  // Handle view logs
-  const handleViewLogs = async (auditId?: string) => {
-    // Set loading state immediately for inline spinner
-    if (auditId) {
-      setLoadingAuditId(auditId);
-    }
-
-    // Small delay to ensure spinner renders before heavy modal operation
-    await new Promise(resolve => setTimeout(resolve, 50));
-
-    // Open modal with loading state
-    setLogViewerModalVisible(true);
-    setLogModalLoading(true);
+  // Handle view logs in live panel
+  const handleViewLogsInPanel = async (auditId: string) => {
+    setLoadingAuditId(auditId);
 
     try {
-      // If auditId is provided, load that report first
-      if (auditId && (!selectedReport || selectedReport.audit_id !== auditId)) {
-        const details = await getAuditReportDetails(auditId);
-        setSelectedReport(details);
-      }
+      const details = await getAuditReportDetails(auditId);
+      setLivePanelReport(details);
+      setLivePanelExpanded(true);
     } catch (error) {
-      logger.error('Failed to load report details for logs:', error);
+      logger.error('Failed to load report details for live panel:', error);
       setErrorMessage(t('admin.librarian.errors.failedToLoadDetails'));
       setErrorModalOpen(true);
-      setLogViewerModalVisible(false);
     } finally {
-      setLogModalLoading(false);
       setLoadingAuditId(null);
     }
   };
@@ -515,7 +522,7 @@ const LibrarianAgentPage = () => {
                   icon={<ScrollText size={18} color={colors.text} />}
                   onPress={(e) => {
                     e?.stopPropagation?.();
-                    handleViewLogs(row.audit_id);
+                    handleViewLogsInPanel(row.audit_id);
                   }}
                 />
               </>
@@ -692,6 +699,78 @@ const LibrarianAgentPage = () => {
         </View>
       </GlassCard>
 
+      {/* Live Audit Log Panel */}
+      {livePanelReport && (
+        <GlassCard style={styles.liveLogPanel}>
+          <Pressable
+            style={styles.livePanelHeader}
+            onPress={() => setLivePanelExpanded(!livePanelExpanded)}
+          >
+            <View style={styles.livePanelTitleRow}>
+              <ScrollText size={20} color={colors.primary} />
+              <Text style={styles.livePanelTitle}>
+                {t('admin.librarian.logs.liveAuditLog')}
+              </Text>
+              {livePanelReport.status === 'in_progress' && (
+                <ActivityIndicator size="small" color={colors.primary} style={styles.livePanelSpinner} />
+              )}
+              <GlassBadge
+                text={t(`admin.librarian.reports.status.${livePanelReport.status}`)}
+                variant={
+                  livePanelReport.status === 'completed' ? 'success' :
+                  livePanelReport.status === 'in_progress' ? 'warning' :
+                  livePanelReport.status === 'failed' ? 'error' : 'info'
+                }
+                style={styles.livePanelBadge}
+              />
+            </View>
+            {livePanelExpanded ? (
+              <ChevronUp size={20} color={colors.text} />
+            ) : (
+              <ChevronDown size={20} color={colors.text} />
+            )}
+          </Pressable>
+
+          {livePanelExpanded && (
+            <View style={styles.livePanelContent}>
+              <View style={styles.livePanelInfo}>
+                <Text style={styles.livePanelInfoText}>
+                  {t('admin.librarian.logs.auditType')}: {livePanelReport.audit_type.replace('_', ' ')}
+                </Text>
+                <Text style={styles.livePanelInfoText}>
+                  {t('admin.librarian.logs.started')}: {format(new Date(livePanelReport.audit_date), 'HH:mm:ss')}
+                </Text>
+                {livePanelReport.completed_at && (
+                  <Text style={styles.livePanelInfoText}>
+                    {t('admin.librarian.logs.completed')}: {format(new Date(livePanelReport.completed_at), 'HH:mm:ss')}
+                  </Text>
+                )}
+              </View>
+
+              <GlassLog
+                logs={[...livePanelReport.execution_logs].reverse()}
+                title={t('admin.librarian.logs.executionLog')}
+                searchPlaceholder={t('admin.librarian.logs.searchPlaceholder')}
+                emptyMessage={t('admin.librarian.logs.noLogs')}
+                levelLabels={{
+                  debug: t('admin.librarian.logs.levels.debug'),
+                  info: t('admin.librarian.logs.levels.info'),
+                  warn: t('admin.librarian.logs.levels.warn'),
+                  error: t('admin.librarian.logs.levels.error'),
+                  success: t('admin.librarian.logs.levels.success'),
+                  trace: t('admin.librarian.logs.levels.trace'),
+                }}
+                showSearch
+                showLevelFilter
+                showDownload
+                autoScroll
+                maxHeight={500}
+              />
+            </View>
+          )}
+        </GlassCard>
+      )}
+
       {/* Schedule Information */}
       <Text style={[styles.sectionTitle, { textAlign, marginTop: spacing.lg }]}>
         {t('admin.librarian.schedules.title')}
@@ -808,7 +887,10 @@ const LibrarianAgentPage = () => {
                 title={t('admin.librarian.reports.viewLogs')}
                 variant="secondary"
                 icon={<FileText size={16} color={colors.text} />}
-                onPress={handleViewLogs}
+                onPress={() => {
+                  setDetailModalVisible(false);
+                  handleViewLogsInPanel(selectedReport.audit_id);
+                }}
                 style={styles.viewLogsButton}
               />
             </View>
@@ -915,41 +997,6 @@ const LibrarianAgentPage = () => {
         ) : null}
       </GlassModal>
 
-      {/* Log Viewer Modal */}
-      <GlassModal
-        visible={logViewerModalVisible}
-        title={t('admin.librarian.logs.title')}
-        onClose={() => setLogViewerModalVisible(false)}
-      >
-        {logModalLoading ? (
-          <View style={styles.modalLoadingContainer}>
-            <ActivityIndicator size="large" color={colors.primary} />
-            <Text style={styles.modalLoadingText}>{t('common.loading')}</Text>
-          </View>
-        ) : selectedReport ? (
-          <View style={[styles.logViewerContainer, { maxHeight: config.ui.modal_max_height }]}>
-            <GlassLog
-              logs={[...selectedReport.execution_logs].reverse()}
-              title={t('admin.librarian.logs.executionLog')}
-              searchPlaceholder={t('admin.librarian.logs.searchPlaceholder')}
-              emptyMessage={t('admin.librarian.logs.noLogs')}
-              levelLabels={{
-                debug: t('admin.librarian.logs.levels.debug'),
-                info: t('admin.librarian.logs.levels.info'),
-                warn: t('admin.librarian.logs.levels.warn'),
-                error: t('admin.librarian.logs.levels.error'),
-                success: t('admin.librarian.logs.levels.success'),
-                trace: t('admin.librarian.logs.levels.trace'),
-              }}
-              showSearch
-              showLevelFilter
-              showDownload
-              autoScroll
-              maxHeight={config.ui.modal_max_height - 100}
-            />
-          </View>
-        ) : null}
-      </GlassModal>
 
       {/* Error Modal */}
       <GlassModal
@@ -1308,6 +1355,52 @@ const styles = StyleSheet.create({
   },
   modalButton: {
     minWidth: 100,
+  },
+  liveLogPanel: {
+    marginTop: spacing.md,
+    padding: 0,
+    overflow: 'hidden',
+  },
+  livePanelHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    padding: spacing.md,
+    cursor: 'pointer',
+  },
+  livePanelTitleRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.sm,
+    flex: 1,
+  },
+  livePanelTitle: {
+    fontSize: 18,
+    fontWeight: '600',
+    color: colors.text,
+  },
+  livePanelSpinner: {
+    marginLeft: spacing.sm,
+  },
+  livePanelBadge: {
+    marginLeft: spacing.sm,
+  },
+  livePanelContent: {
+    padding: spacing.md,
+    paddingTop: 0,
+  },
+  livePanelInfo: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: spacing.md,
+    marginBottom: spacing.md,
+    paddingBottom: spacing.md,
+    borderBottomWidth: 1,
+    borderBottomColor: `${colors.text}15`,
+  },
+  livePanelInfoText: {
+    fontSize: 13,
+    color: colors.textMuted,
   },
 });
 

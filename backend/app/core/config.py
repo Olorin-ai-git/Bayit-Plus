@@ -93,7 +93,7 @@ class Settings(BaseSettings):
     CDN_BASE_URL: str = ""
 
     # Upload Monitoring Configuration
-    UPLOAD_MONITOR_ENABLED: bool = True
+    UPLOAD_MONITOR_ENABLED: bool = False  # Disabled auto-scan to prevent server overload
     UPLOAD_MONITOR_INTERVAL: int = 3600  # Seconds between scans (default: 1 hour)
     UPLOAD_DEFAULT_FOLDERS: str = ""  # Comma-separated paths to monitor on startup
 
@@ -110,7 +110,7 @@ class Settings(BaseSettings):
     OPENSUBTITLES_API_KEY: str = ""
     OPENSUBTITLES_API_BASE_URL: str = "https://api.opensubtitles.com/api/v1"
     OPENSUBTITLES_USER_AGENT: str = "Bayit+ v1.0"
-    OPENSUBTITLES_DOWNLOAD_LIMIT_PER_DAY: int = 20
+    OPENSUBTITLES_DOWNLOAD_LIMIT_PER_DAY: int = 1500
     OPENSUBTITLES_RATE_LIMIT_REQUESTS: int = 40
     OPENSUBTITLES_RATE_LIMIT_WINDOW_SECONDS: int = 10
 

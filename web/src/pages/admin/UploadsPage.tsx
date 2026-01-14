@@ -13,7 +13,10 @@ import { useDirection } from '@/hooks/useDirection';
 import { useModal } from '@/contexts/ModalContext';
 import { adminButtonStyles } from '@/styles/adminButtonStyles';
 import * as uploadsService from '@/services/uploadsService';
+import GlassQueue from '@/components/admin/GlassQueue';
+import type { QueueJob, QueueStats } from '@/components/admin/GlassQueue';
 import logger from '@/utils/logger';
+import config from '@/config';
 
 // Import types from service
 type UploadJob = uploadsService.UploadJob;
@@ -25,10 +28,28 @@ const UploadsPage: React.FC = () => {
   const { showConfirm } = useModal();
   
   const [loading, setLoading] = useState(true);
-  const [activeJobs, setActiveJobs] = useState<UploadJob[]>([]);
-  const [queuedJobs, setQueuedJobs] = useState<UploadJob[]>([]);
+  const [triggeringUpload, setTriggeringUpload] = useState(false);
+  const [queueStats, setQueueStats] = useState<QueueStats>({
+    total_jobs: 0,
+    queued: 0,
+    processing: 0,
+    completed: 0,
+    failed: 0,
+    cancelled: 0,
+    total_size_bytes: 0,
+    uploaded_bytes: 0,
+  });
+  const [activeJob, setActiveJob] = useState<QueueJob | null>(null);
+  const [queuedJobs, setQueuedJobs] = useState<QueueJob[]>([]);
+  const [recentCompleted, setRecentCompleted] = useState<QueueJob[]>([]);
+  const [queuePaused, setQueuePaused] = useState(false);
+  const [pauseReason, setPauseReason] = useState<string | null>(null);
   const [monitoredFolders, setMonitoredFolders] = useState<MonitoredFolder[]>([]);
   const [error, setError] = useState<string | null>(null);
+  
+  // WebSocket ref for real-time updates
+  const wsRef = useRef<WebSocket | null>(null);
+  const reconnectTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   
   // Modal state
   const [showFolderModal, setShowFolderModal] = useState(false);
@@ -61,13 +82,15 @@ const UploadsPage: React.FC = () => {
       // Fetch upload queue
       try {
         const queueData = await uploadsService.getUploadQueue();
-        setActiveJobs(queueData.active || []);
-        setQueuedJobs(queueData.queued || []);
+        setQueueStats(queueData.stats || queueStats);
+        setActiveJob(queueData.active_job || null);
+        setQueuedJobs(queueData.queue || []);
+        setRecentCompleted(queueData.recent_completed || []);
+        setQueuePaused(queueData.queue_paused || false);
+        setPauseReason(queueData.pause_reason || null);
       } catch (err) {
         logger.error('Failed to fetch upload queue', 'UploadsPage', err);
         // Don't fail the entire page if queue fetch fails
-        setActiveJobs([]);
-        setQueuedJobs([]);
       }
       
       // Fetch monitored folders
@@ -85,15 +108,104 @@ const UploadsPage: React.FC = () => {
     } finally {
       setLoading(false);
     }
+  }, [queueStats]);
+
+  // WebSocket connection for real-time updates
+  const connectWebSocket = useCallback(() => {
+    try {
+      const token = localStorage.getItem('token');
+      if (!token) {
+        logger.warn('No auth token found, skipping WebSocket connection', 'UploadsPage');
+        return;
+      }
+
+      // Close existing connection
+      if (wsRef.current) {
+        wsRef.current.close();
+      }
+
+      const wsProtocol = config.apiUrl.startsWith('https') ? 'wss' : 'ws';
+      const wsHost = config.apiUrl.replace(/^https?:\/\//, '').replace(/\/api\/v1$/, '');
+      const wsUrl = `${wsProtocol}://${wsHost}/api/v1/admin/uploads/ws?token=${token}`;
+
+      logger.info('Connecting to uploads WebSocket', 'UploadsPage', { url: wsUrl.replace(token, '***') });
+
+      const ws = new WebSocket(wsUrl);
+
+      ws.onopen = () => {
+        logger.info('✅ Uploads WebSocket connected', 'UploadsPage');
+      };
+
+      ws.onmessage = (event) => {
+        try {
+          const data = JSON.parse(event.data);
+          logger.debug('[WebSocket] Received queue update', 'UploadsPage', data);
+
+          if (data.type === 'queue_update') {
+            // Update state with real-time data
+            if (data.stats) setQueueStats(data.stats);
+            if (data.active_job !== undefined) setActiveJob(data.active_job);
+            if (data.queue) setQueuedJobs(data.queue);
+            if (data.recent_completed) setRecentCompleted(data.recent_completed);
+            if (data.queue_paused !== undefined) setQueuePaused(data.queue_paused);
+            if (data.pause_reason !== undefined) setPauseReason(data.pause_reason);
+          }
+        } catch (err) {
+          logger.error('[WebSocket] Failed to parse message', 'UploadsPage', err);
+        }
+      };
+
+      ws.onerror = (error) => {
+        logger.error('[WebSocket] Connection error', 'UploadsPage', error);
+      };
+
+      ws.onclose = () => {
+        logger.warn('[WebSocket] Connection closed, reconnecting in 5s', 'UploadsPage');
+        wsRef.current = null;
+        
+        // Reconnect after 5 seconds
+        reconnectTimeoutRef.current = setTimeout(() => {
+          connectWebSocket();
+        }, 5000);
+      };
+
+      wsRef.current = ws;
+    } catch (err) {
+      logger.error('[WebSocket] Failed to connect', 'UploadsPage', err);
+    }
   }, []);
 
+  // Handle resume queue
+  const handleResumeQueue = async () => {
+    try {
+      await uploadsService.resumeUploadQueue();
+      logger.info('✅ Upload queue resumed', 'UploadsPage');
+      
+      // Refresh data
+      await fetchData();
+    } catch (err) {
+      logger.error('Failed to resume queue', 'UploadsPage', err);
+      setError(err instanceof Error ? err.message : 'Failed to resume queue');
+    }
+  };
+
   useEffect(() => {
+    // Initial data fetch
     fetchData();
     
-    // Poll for updates every 5 seconds (only for jobs, not folders)
-    const interval = setInterval(fetchData, 5000);
-    return () => clearInterval(interval);
-  }, [fetchData]);
+    // Connect to WebSocket for real-time updates
+    connectWebSocket();
+    
+    // Cleanup
+    return () => {
+      if (wsRef.current) {
+        wsRef.current.close();
+      }
+      if (reconnectTimeoutRef.current) {
+        clearTimeout(reconnectTimeoutRef.current);
+      }
+    };
+  }, [fetchData, connectWebSocket]);
 
   const handleAddFolder = () => {
     setEditingFolder(null);
@@ -129,8 +241,15 @@ const UploadsPage: React.FC = () => {
       
       if (editingFolder) {
         // Update existing folder via API
-        await uploadsService.updateMonitoredFolder(editingFolder.id, folderForm);
-        logger.info('Updated monitored folder', 'UploadsPage', { id: editingFolder.id });
+        logger.info('Updating folder', 'UploadsPage', { 
+          id: editingFolder.id, 
+          updates: folderForm 
+        });
+        const updated = await uploadsService.updateMonitoredFolder(editingFolder.id, folderForm);
+        logger.info('✅ Folder updated successfully', 'UploadsPage', { 
+          id: editingFolder.id,
+          result: updated 
+        });
       } else {
         // Add new folder via API
         await uploadsService.addMonitoredFolder(folderForm);
@@ -141,13 +260,15 @@ const UploadsPage: React.FC = () => {
       setShowFolderModal(false);
       setEditingFolder(null);
       
-      // Clear error and refresh data
+      // Clear error and refresh data immediately
       setError(null);
       await fetchData();
       
-    } catch (err) {
+    } catch (err: any) {
       logger.error('Error saving folder', 'UploadsPage', err);
-      setError(err instanceof Error ? err.message : 'Failed to save folder');
+      // Extract error message from API response
+      const errorMessage = err?.detail || err?.message || 'Failed to save folder';
+      setError(errorMessage);
     }
   };
 
@@ -175,23 +296,28 @@ const UploadsPage: React.FC = () => {
 
   const handleTriggerUpload = async () => {
     try {
+      setTriggeringUpload(true);
       setError(null);
+      
       const result = await uploadsService.triggerUploadScan();
       logger.info('Triggered upload scan', 'UploadsPage', result);
       
-      // Show success feedback
+      // Show success message
       if (result.files_found > 0) {
-        setError(null);
+        logger.info(t('admin.uploads.triggerUploadSuccess', { files_found: result.files_found }), 'UploadsPage');
+      } else {
+        logger.info('No new files found to upload', 'UploadsPage');
       }
       
-      // Refresh data after a short delay
-      setTimeout(() => {
-        fetchData();
-      }, 2000);
+      // Refresh data immediately to show new jobs
+      await fetchData();
       
-    } catch (err) {
+    } catch (err: any) {
       logger.error('Error triggering upload', 'UploadsPage', err);
-      setError(t('admin.uploads.triggerUploadFailed'));
+      const errorMessage = err?.detail || err?.message || t('admin.uploads.triggerUploadFailed');
+      setError(errorMessage);
+    } finally {
+      setTriggeringUpload(false);
     }
   };
 
@@ -218,13 +344,18 @@ const UploadsPage: React.FC = () => {
         </View>
         <View style={[styles.actionButtons, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
           <GlassButton
-            title={t('admin.uploads.triggerUpload')}
+            title={triggeringUpload ? t('common.loading') : t('admin.uploads.triggerUpload')}
             variant="secondary"
-            icon={<Upload size={18} color={colors.primary} />}
+            icon={triggeringUpload ? null : <Upload size={18} color={colors.primary} />}
             onPress={handleTriggerUpload}
-            style={adminButtonStyles.secondaryButton}
+            disabled={triggeringUpload}
+            style={[adminButtonStyles.secondaryButton, triggeringUpload && { opacity: 0.7 }]}
             textStyle={adminButtonStyles.buttonText}
-          />
+          >
+            {triggeringUpload && (
+              <ActivityIndicator size="small" color={colors.primary} style={{ marginRight: spacing.sm }} />
+            )}
+          </GlassButton>
           <GlassButton
             title={t('admin.uploads.addFolder')}
             variant="secondary"
@@ -247,58 +378,17 @@ const UploadsPage: React.FC = () => {
         </View>
       )}
 
-      {/* Active Uploads */}
-      <GlassCard style={styles.section}>
-        <Text style={[styles.sectionTitle, { textAlign }]}>
-          {t('admin.uploads.activeUploads')}
-        </Text>
-        {activeJobs.length === 0 ? (
-          <Text style={[styles.emptyText, { textAlign }]}>
-            {t('admin.uploads.noActiveUploads')}
-          </Text>
-        ) : (
-          activeJobs.map((job) => (
-            <View key={job.id} style={styles.uploadItem}>
-              <Text style={[styles.uploadFilename, { textAlign }]}>{job.filename}</Text>
-              <View style={styles.progressContainer}>
-                <View style={[styles.progressBar, { width: `${job.progress}%` }]} />
-              </View>
-              <View style={[styles.uploadMeta, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
-                <Text style={styles.uploadStatus}>
-                  {job.status} - {job.progress.toFixed(1)}%
-                </Text>
-                {job.eta_seconds && (
-                  <Text style={styles.uploadEta}>
-                    ETA: {formatETA(job.eta_seconds)}
-                  </Text>
-                )}
-              </View>
-            </View>
-          ))
-        )}
-      </GlassCard>
-
-      {/* Queued Uploads */}
-      {queuedJobs.length > 0 && (
-        <GlassCard style={styles.section}>
-          <Text style={[styles.sectionTitle, { textAlign }]}>
-            {t('admin.uploads.queuedUploads')} ({queuedJobs.length})
-          </Text>
-          {queuedJobs.slice(0, 5).map((job) => (
-            <View key={job.id} style={styles.queuedItem}>
-              <Text style={[styles.uploadFilename, { textAlign }]}>{job.filename}</Text>
-              <Text style={[styles.queuedTime, { textAlign }]}>
-                {t('admin.uploads.queued')} - {formatDate(job.created_at)}
-              </Text>
-            </View>
-          ))}
-          {queuedJobs.length > 5 && (
-            <Text style={[styles.moreText, { textAlign }]}>
-              {t('admin.uploads.andMore', { count: queuedJobs.length - 5 })}
-            </Text>
-          )}
-        </GlassCard>
-      )}
+      {/* Real-time Upload Queue */}
+      <GlassQueue
+        stats={queueStats}
+        activeJob={activeJob}
+        queue={queuedJobs}
+        recentCompleted={recentCompleted}
+        queuePaused={queuePaused}
+        pauseReason={pauseReason}
+        loading={false}
+        onResumeQueue={handleResumeQueue}
+      />
 
       {/* Monitored Folders */}
       <GlassCard style={styles.section}>
@@ -390,9 +480,12 @@ const UploadsPage: React.FC = () => {
               onChangeText={(path) => setFolderForm((prev) => ({ ...prev, path }))}
               placeholder="/path/to/folder"
               containerStyle={styles.inputContainer}
+              editable={!editingFolder} // Path is read-only when editing
             />
             <Text style={styles.helpText}>
-              {t('admin.uploads.form.pathHelp')}
+              {editingFolder 
+                ? t('admin.uploads.form.pathReadOnly', 'Path cannot be changed after creation') 
+                : t('admin.uploads.form.pathHelp')}
             </Text>
           </View>
 
@@ -429,11 +522,20 @@ const UploadsPage: React.FC = () => {
             </View>
           </View>
 
+          {error && (
+            <View style={styles.modalError}>
+              <Text style={styles.modalErrorText}>{error}</Text>
+            </View>
+          )}
+
           <View style={[styles.modalActions, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
             <GlassButton
               title={t('common.cancel')}
               variant="secondary"
-              onPress={() => setShowFolderModal(false)}
+              onPress={() => {
+                setShowFolderModal(false);
+                setError(null); // Clear error when closing
+              }}
               style={adminButtonStyles.cancelButton}
               textStyle={adminButtonStyles.buttonText}
             />
@@ -692,6 +794,19 @@ const styles = StyleSheet.create({
     paddingTop: spacing.lg,
     borderTopWidth: 1,
     borderTopColor: colors.glassBorder,
+  },
+  modalError: {
+    padding: spacing.md,
+    backgroundColor: colors.error + '20',
+    borderRadius: borderRadius.sm,
+    borderWidth: 1,
+    borderColor: colors.error + '40',
+    marginTop: spacing.md,
+  },
+  modalErrorText: {
+    color: colors.error,
+    fontSize: fontSize.sm,
+    textAlign: 'center',
   },
 });
 

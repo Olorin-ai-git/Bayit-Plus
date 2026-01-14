@@ -43,6 +43,9 @@ class UploadService:
         self._lock = asyncio.Lock()
         self._gcs_client: Optional[gcs_storage.Client] = None
         self._websocket_callback = None  # Will be set by connection manager
+        self._consecutive_credential_failures = 0  # Track credential failures
+        self._queue_paused = False  # Queue pause state
+        self._pause_reason: Optional[str] = None  # Reason for pause
 
     def set_websocket_callback(self, callback):
         """Set callback function for WebSocket broadcasts"""
@@ -54,12 +57,32 @@ class UploadService:
             self._gcs_client = gcs_storage.Client()
         return self._gcs_client
 
+    def _calculate_file_hash_sync(self, file_path: str) -> str:
+        """
+        Calculate SHA256 hash of a file for duplicate detection (synchronous).
+        Reads file in chunks to handle large files efficiently.
+        """
+        sha256_hash = hashlib.sha256()
+        with open(file_path, "rb") as f:
+            # Read file in 4KB chunks
+            for byte_block in iter(lambda: f.read(4096), b""):
+                sha256_hash.update(byte_block)
+        return sha256_hash.hexdigest()
+    
+    async def _calculate_file_hash(self, file_path: str) -> str:
+        """
+        Calculate SHA256 hash asynchronously in executor to avoid blocking event loop.
+        """
+        loop = asyncio.get_event_loop()
+        return await loop.run_in_executor(None, self._calculate_file_hash_sync, file_path)
+
     async def enqueue_upload(
         self,
         source_path: str,
         content_type: ContentType,
         metadata: Optional[Dict[str, Any]] = None,
         user_id: Optional[str] = None,
+        skip_duplicate_check: bool = False,
     ) -> UploadJob:
         """
         Add a new file to the upload queue.
@@ -69,6 +92,7 @@ class UploadService:
             content_type: Type of content (movie, podcast, etc.)
             metadata: Additional metadata
             user_id: ID of user creating the upload
+            skip_duplicate_check: If True, skip hash calculation during enqueue (will check during processing)
             
         Returns:
             Created UploadJob
@@ -81,6 +105,39 @@ class UploadService:
         # Get file size
         file_size = path.stat().st_size
         
+        # Skip files larger than 10GB to prevent overwhelming the system
+        file_size_gb = file_size / (1024 ** 3)
+        if file_size_gb > 10:
+            raise ValueError(f"File too large ({file_size_gb:.1f}GB, max 10GB): {path.name}")
+        
+        # Calculate SHA256 hash for duplicate detection (only if not skipping)
+        file_hash = None
+        if not skip_duplicate_check:
+            logger.info(f"Calculating hash for {path.name}...")
+            file_hash = await self._calculate_file_hash(str(path.absolute()))
+            logger.info(f"File hash: {file_hash[:16]}...")
+        
+        # Check for duplicates (only if hash was calculated)
+        if file_hash is not None:
+            from motor.motor_asyncio import AsyncIOMotorClient
+            client = AsyncIOMotorClient(settings.MONGODB_URL)
+            db = client[settings.MONGODB_DB_NAME]
+            
+            existing_content = await db.content.find_one({'file_hash': file_hash})
+            if existing_content:
+                logger.warning(f"Duplicate file detected: {path.name} (hash: {file_hash[:16]}...)")
+                raise ValueError(f"File already exists in library: {existing_content.get('title', path.name)}")
+            
+            # Check if there's already a pending/processing job with the same hash
+            from beanie.operators import In
+            existing_job = await UploadJob.find_one(
+                UploadJob.file_hash == file_hash,
+                In(UploadJob.status, [UploadStatus.QUEUED, UploadStatus.PROCESSING, UploadStatus.UPLOADING])
+            )
+            if existing_job:
+                logger.warning(f"File already queued for upload: {path.name} (job: {existing_job.job_id})")
+                raise ValueError(f"File already in upload queue: {existing_job.filename}")
+        
         # Create job
         job = UploadJob(
             job_id=str(uuid4()),
@@ -88,13 +145,14 @@ class UploadService:
             source_path=str(path.absolute()),
             filename=path.name,
             file_size=file_size,
+            file_hash=file_hash,
             status=UploadStatus.QUEUED,
             metadata=metadata or {},
             created_by=user_id,
         )
         
         await job.insert()
-        logger.info(f"Enqueued upload job {job.job_id}: {path.name}")
+        logger.info(f"✅ Enqueued upload job {job.job_id}: {path.name}")
         
         # Broadcast update
         await self._broadcast_queue_update()
@@ -128,10 +186,21 @@ class UploadService:
         async with self._lock:
             if self.processing:
                 return  # Already processing
+            
+            # Check if queue is paused
+            if self._queue_paused:
+                logger.warning(f"⏸️  Queue is paused: {self._pause_reason}")
+                return
+            
             self.processing = True
 
         try:
             while True:
+                # Check if queue was paused during processing
+                if self._queue_paused:
+                    logger.warning(f"⏸️  Queue paused during processing: {self._pause_reason}")
+                    break
+                
                 # Get next queued job (use find() for sorting support)
                 jobs = await UploadJob.find(
                     UploadJob.status == UploadStatus.QUEUED
@@ -161,13 +230,35 @@ class UploadService:
             await job.save()
             await self._broadcast_queue_update()
             
+            # Stage 0: Calculate hash and check for duplicates (if not already done)
+            if job.file_hash is None:
+                logger.info(f"Calculating hash for {job.filename}...")
+                job.file_hash = await self._calculate_file_hash(job.source_path)
+                logger.info(f"File hash: {job.file_hash[:16]}...")
+                
+                # Check if file with this hash already exists in Content collection
+                from motor.motor_asyncio import AsyncIOMotorClient
+                client = AsyncIOMotorClient(settings.MONGODB_URL)
+                db = client[settings.MONGODB_DB_NAME]
+                
+                existing_content = await db.content.find_one({'file_hash': job.file_hash})
+                if existing_content:
+                    logger.warning(f"Duplicate file detected: {job.filename} (hash: {job.file_hash[:16]}...)")
+                    job.status = UploadStatus.FAILED
+                    job.error_message = f"File already exists in library: {existing_content.get('title', job.filename)}"
+                    await job.save()
+                    await self._broadcast_queue_update()
+                    return
+                
+                await job.save()
+            
             # Stage 1: Extract metadata
             job.stages["metadata_extraction"] = "in_progress"
             await job.save()
             
             if job.type == ContentType.MOVIE:
                 metadata = await self._extract_movie_metadata(job)
-            elif job.type == ContentType.PODCAST_EPISODE:
+            elif job.type == ContentType.PODCAST:
                 metadata = await self._extract_podcast_metadata(job)
             else:
                 metadata = {}
@@ -178,32 +269,11 @@ class UploadService:
             
             # Stage 1.5: Extract subtitles from local file (for video content)
             if job.type == ContentType.MOVIE and os.path.exists(job.source_path):
-                job.stages["subtitle_extraction"] = "in_progress"
+                # Schedule subtitle extraction as background task (don't block upload)
+                job.stages["subtitle_extraction"] = "scheduled"
+                job.metadata["local_source_path"] = job.source_path
                 await job.save()
-                
-                try:
-                    logger.info(f"Extracting subtitles from local file: {job.source_path}")
-                    from app.services.ffmpeg_service import FFmpegService
-                    ffmpeg = FFmpegService()
-                    
-                    # Extract subtitles (only required languages: en, he, es)
-                    extracted_subs = await ffmpeg.extract_all_subtitles(
-                        job.source_path,  # Use local file path for fast extraction
-                        languages=['en', 'he', 'es'],
-                        max_parallel=3
-                    )
-                    
-                    # Store extracted subtitles in job metadata for later saving
-                    job.metadata["extracted_subtitles"] = extracted_subs
-                    job.stages["subtitle_extraction"] = "completed"
-                    logger.info(f"Extracted {len(extracted_subs)} subtitle tracks from local file")
-                    
-                except Exception as e:
-                    logger.warning(f"Subtitle extraction failed (non-critical): {str(e)}")
-                    job.stages["subtitle_extraction"] = "failed"
-                    # Don't fail the entire job if subtitle extraction fails
-                
-                await job.save()
+                logger.info(f"Subtitle extraction scheduled for background: {job.source_path}")
             
             # Stage 2: Upload to GCS
             job.status = UploadStatus.UPLOADING
@@ -236,6 +306,14 @@ class UploadService:
             
             logger.info(f"Job {job.job_id} completed successfully")
             
+            # Trigger background subtitle extraction if scheduled
+            if job.stages.get("subtitle_extraction") == "scheduled" and job.metadata.get("local_source_path"):
+                asyncio.create_task(self._extract_subtitles_background(
+                    job.metadata.get("content_id"),
+                    job.metadata.get("local_source_path"),
+                    job.job_id
+                ))
+            
         except Exception as e:
             logger.error(f"Job {job.job_id} failed: {e}", exc_info=True)
             
@@ -243,6 +321,26 @@ class UploadService:
             job.error_message = str(e)
             job.retry_count += 1
             await job.save()
+            
+            # Check if this is a credential error
+            is_credential_error = self._is_credential_error(e)
+            
+            if is_credential_error:
+                self._consecutive_credential_failures += 1
+                logger.warning(f"Credential failure detected ({self._consecutive_credential_failures}/3)")
+                
+                # Pause queue after 3 consecutive credential failures
+                if self._consecutive_credential_failures >= 3:
+                    self._queue_paused = True
+                    self._pause_reason = "GCS credentials not configured or invalid. Please check GOOGLE_APPLICATION_CREDENTIALS environment variable."
+                    logger.error(f"🚨 QUEUE PAUSED: {self._pause_reason}")
+                    
+                    # Mark all queued jobs with a warning
+                    await self._notify_queue_paused()
+                    return  # Stop processing
+            else:
+                # Reset counter if it's not a credential error
+                self._consecutive_credential_failures = 0
             
             # Retry if not exceeded max retries
             if job.retry_count < job.max_retries:
@@ -316,9 +414,18 @@ class UploadService:
             
             # Generate destination path
             content_type_path = job.type.value + "s"  # movies, podcasts, etc.
-            file_hash = hashlib.md5(job.source_path.encode()).hexdigest()[:8]
             filename = Path(job.filename).name
-            destination_blob_name = f"{content_type_path}/{file_hash}_{filename}"
+            
+            # Create a safe folder name from the title (if available)
+            import re
+            if job.metadata.get('title'):
+                # Remove special characters and replace spaces with underscores
+                safe_title = re.sub(r'[^\w\s-]', '', job.metadata['title']).replace(' ', '_')
+                destination_blob_name = f"{content_type_path}/{safe_title}/{filename}"
+            else:
+                # Fallback: use first 8 chars of file hash for uniqueness
+                file_hash = job.file_hash[:8] if job.file_hash else hashlib.md5(job.source_path.encode()).hexdigest()[:8]
+                destination_blob_name = f"{content_type_path}/{file_hash}_{filename}"
             
             job.gcs_path = destination_blob_name
             await job.save()
@@ -398,7 +505,7 @@ class UploadService:
         try:
             if job.type == ContentType.MOVIE:
                 await self._create_movie_entry(job)
-            elif job.type == ContentType.PODCAST_EPISODE:
+            elif job.type == ContentType.PODCAST:
                 await self._create_podcast_episode_entry(job)
             # Add other content types as needed
             
@@ -455,10 +562,15 @@ class UploadService:
             director=metadata.get('director'),
             is_featured=False,
             view_count=0,
+            file_hash=job.file_hash,  # Store SHA256 hash for duplicate detection
         )
         
         await content.insert()
         logger.info(f"Created movie content: {content.title}")
+        
+        # Store content ID in job metadata for reference
+        job.metadata['content_id'] = str(content.id)
+        await job.save()
         
         # Save extracted subtitles if any
         extracted_subs = metadata.get('extracted_subtitles', [])
@@ -561,6 +673,51 @@ class UploadService:
         
         return stats
 
+    def _is_credential_error(self, error: Exception) -> bool:
+        """Check if error is related to GCS credentials"""
+        error_str = str(error).lower()
+        error_type = type(error).__name__
+        
+        # Check for common credential error patterns
+        credential_indicators = [
+            "defaultcredentialserror",
+            "credentials were not found",
+            "could not automatically determine credentials",
+            "application default credentials",
+            "google.auth.exceptions",
+            "authentication failed",
+            "invalid credentials",
+            "permission denied",
+        ]
+        
+        return any(indicator in error_str for indicator in credential_indicators) or \
+               "DefaultCredentialsError" in error_type
+    
+    async def _notify_queue_paused(self):
+        """Notify about queue pause and update stats"""
+        try:
+            # Log the pause
+            logger.error(f"🚨 Upload queue paused after 3 consecutive credential failures")
+            logger.error(f"📋 Reason: {self._pause_reason}")
+            logger.error(f"💡 Solution: Configure GOOGLE_APPLICATION_CREDENTIALS environment variable")
+            
+            # Broadcast update via WebSocket
+            await self._broadcast_queue_update()
+            
+        except Exception as e:
+            logger.error(f"Error notifying queue pause: {e}")
+    
+    async def resume_queue(self):
+        """Resume the paused queue (call this after fixing credentials)"""
+        if self._queue_paused:
+            self._queue_paused = False
+            self._pause_reason = None
+            self._consecutive_credential_failures = 0
+            logger.info("✅ Upload queue resumed")
+            
+            # Restart processing
+            await self.process_queue()
+    
     async def _broadcast_queue_update(self):
         """Broadcast queue update via WebSocket"""
         if self._websocket_callback:
@@ -570,15 +727,91 @@ class UploadService:
                 queue = await self.get_queue()
                 recent = await self.get_recent_completed(5)
                 
-                await self._websocket_callback({
+                # Add queue pause info to the broadcast
+                message = {
                     "type": "queue_update",
                     "stats": stats.dict(),
                     "active_job": UploadJobResponse.from_orm(active_job).dict() if active_job else None,
                     "queue": [UploadJobResponse.from_orm(j).dict() for j in queue],
                     "recent_completed": [UploadJobResponse.from_orm(j).dict() for j in recent],
-                })
+                    "queue_paused": self._queue_paused,
+                    "pause_reason": self._pause_reason,
+                }
+                
+                await self._websocket_callback(message)
             except Exception as e:
                 logger.error(f"Failed to broadcast queue update: {e}")
+
+    async def _extract_subtitles_background(self, content_id: str, local_path: str, job_id: str):
+        """
+        Extract subtitles in background without blocking the upload queue.
+        Runs as a separate async task after upload completes.
+        """
+        try:
+            logger.info(f"[Background] Starting subtitle extraction for job {job_id}")
+            
+            # Check if file still exists
+            if not os.path.exists(local_path):
+                logger.warning(f"[Background] Local file no longer exists: {local_path}")
+                return
+            
+            from app.services.ffmpeg_service import FFmpegService
+            from app.models.content import Content, SubtitleTrackDoc, SubtitleCueModel
+            from app.services.subtitle_service import parse_srt
+            from beanie import PydanticObjectId
+            
+            ffmpeg = FFmpegService()
+            
+            # Extract subtitles (this is the slow part, but now it's in background)
+            extracted_subs = await ffmpeg.extract_all_subtitles(
+                local_path,
+                languages=['en', 'he', 'es'],
+                max_parallel=3
+            )
+            
+            if not extracted_subs:
+                logger.info(f"[Background] No subtitles found for job {job_id}")
+                return
+            
+            # Save to database
+            content = await Content.get(PydanticObjectId(content_id))
+            if not content:
+                logger.error(f"[Background] Content not found: {content_id}")
+                return
+            
+            saved_count = 0
+            for sub_data in extracted_subs:
+                try:
+                    # Parse and save subtitle
+                    subtitle_track = SubtitleTrackDoc(
+                        content_id=content_id,
+                        language=sub_data.get("language", "und"),
+                        format=sub_data.get("format", "srt"),
+                        is_embedded=True,
+                        source="embedded",
+                        cues=[SubtitleCueModel(
+                            start=cue["start"],
+                            end=cue["end"],
+                            text=cue["text"]
+                        ) for cue in parse_srt(sub_data["content"]).cues]
+                    )
+                    await subtitle_track.insert()
+                    saved_count += 1
+                except Exception as e:
+                    logger.error(f"[Background] Failed to save subtitle: {e}")
+            
+            # Update content
+            if saved_count > 0:
+                content.subtitle_extraction_status = "completed"
+                content.subtitle_last_checked = datetime.utcnow()
+                existing_languages = set(t.language for t in await SubtitleTrackDoc.get_for_content(content_id))
+                content.available_subtitles = sorted(list(existing_languages))
+                await content.save()
+                
+            logger.info(f"[Background] Saved {saved_count} subtitle tracks for job {job_id}")
+            
+        except Exception as e:
+            logger.error(f"[Background] Subtitle extraction failed for job {job_id}: {e}", exc_info=True)
 
 
 # Global upload service instance
