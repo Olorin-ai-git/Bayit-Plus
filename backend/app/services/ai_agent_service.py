@@ -2322,7 +2322,7 @@ Balance between metadata fixes, subtitle acquisition, and quality checks.
         if last_24_hours_only:
             filter_instructions += "- ⏰ **Last 24 Hours Only**: Focus ONLY on content added/modified in the last 24 hours\n"
         if cyb_titles_only:
-            filter_instructions += "- 📺 **CYB Titles Only**: Focus ONLY on titles containing 'CYB' (for extraction)\n"
+            filter_instructions += "- 🧹 **Dirty Titles Extraction Mode**: Focus ONLY on titles that need cleaning (titles with .mp4, .mkv, .avi, 1080p, 720p, [MX], XviD, MDMA, BoK, [Hebrew], or other junk text/file extensions). Use clean_title tool to extract clean titles from messy filenames. This is NOT about finding titles containing 'CYB' - it's about finding and cleaning dirty/messy titles with technical artifacts.\n"
         if tmdb_posters_only:
             filter_instructions += "- 🖼️ **TMDB Posters/Metadata Only**: Focus ONLY on adding/updating TMDB posters and metadata. Skip subtitle checks.\n"
         if opensubtitles_enabled:

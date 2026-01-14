@@ -1764,6 +1764,7 @@
         "failedToTrigger": "Error al activar auditoría. Por favor, inténtalo de nuevo.",
         "failedToLoadDetails": "Error al cargar detalles del informe.",
         "failedToRollback": "Error al revertir acción.",
+        "budgetExceeded": "Límite de presupuesto mensual excedido. No se puede ejecutar auditoría.",
         "contactAdmin": "La página del Bibliotecario no puede cargarse sin la configuración adecuada.\nPor favor, contacta a tu administrador."
       },
       "stats": {
@@ -1784,14 +1785,18 @@
       },
       "quickActions": {
         "title": "Acciones Rápidas",
+        "subtitle": "Configurar y activar auditorías",
         "dryRun": "Ejecución Simulada (Solo Informe)",
         "last24Hours": "Solo Últimas 24 Horas",
-        "cybTitlesOnly": "Solo Títulos CYB (Extraer)",
+        "cybTitlesOnly": "Solo Títulos Sucios (Extraer y Limpiar)",
         "tmdbPostersOnly": "Solo Pósters y Metadatos de TMDB",
         "openSubtitlesEnabled": "Habilitar Recuperación de OpenSubtitles",
         "triggerDaily": "Activar Auditoría Diaria",
         "triggerAI": "Activar Auditoría de Agente IA",
         "budgetLabel": "Límite de Presupuesto del Agente IA: ${{budget}}",
+        "budgetPerAudit": "Presupuesto por Auditoría",
+        "monthlyBudgetUsed": "Presupuesto Mensual (Últimos 30 días)",
+        "budgetWarning": "Ejecutar esta auditoría excedería el límite de presupuesto mensual",
         "aiAuditSuccess": "Auditoría de Agente IA activada exitosamente. {{dryRun}}",
         "dailyAuditSuccess": "Auditoría diaria activada exitosamente. {{dryRun}}",
         "dryRunMode": "(Modo de ejecución simulada)",
@@ -1916,7 +1921,21 @@
         "orphanedItemsFound": "Se encontraron {{count}} elemento(s) huérfano(s)",
         "fixesApplied": "Se aplicaron {{count}} corrección(es)",
         "auditCompleted": "Auditoría {{status}} en {{duration}}s",
-        "connecting": "Conectando al registro de auditoría en vivo..."
+        "connecting": "Conectando al registro de auditoría en vivo...",
+        "auditInitializing": "🚀 Inicializando auditoría {{auditType}}...",
+        "dryRunMode": "⚠️ Ejecutando en modo PRUEBA - no se realizarán cambios",
+        "liveMode": "✅ Ejecutando en modo EN VIVO - se aplicarán cambios",
+        "budgetSet": "💰 Límite de presupuesto: ${{budget}}",
+        "connectingToAgent": "🔗 Conectando al Agente Claude AI..."
+      },
+      "audit": {
+        "types": {
+          "aiAgent": "Agente AI",
+          "dailyIncremental": "Incremental Diario"
+        },
+        "pause": "Pausar",
+        "resume": "Reanudar",
+        "cancel": "Cancelar"
       },
       "progress": {
         "batch": "Lote {{current}} de {{total}}",

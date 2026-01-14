@@ -2,7 +2,7 @@ import React, { useState, useCallback, useRef, useEffect } from 'react';
 import { View, Text, StyleSheet, Pressable, Animated } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { Mic, MicOff, Volume2, VolumeX } from 'lucide-react';
-import { GlassCard, GlassButton } from '@bayit/shared/ui';
+import { GlassDraggableExpander, GlassButton } from '@bayit/shared/ui';
 import { colors, spacing, borderRadius } from '@bayit/shared/theme';
 import logger from '@/utils/logger';
 
@@ -149,13 +149,17 @@ export const VoiceLibrarianControl: React.FC<VoiceLibrarianControlProps> = ({
   };
 
   return (
-    <GlassCard style={styles.container}>
-      <View style={styles.header}>
-        <View style={styles.titleRow}>
-          <Mic size={20} color={colors.primary} />
-          <Text style={styles.title}>{t('admin.librarian.voice.title')}</Text>
-        </View>
-        {onToggleMute && (
+    <GlassDraggableExpander
+      title={t('admin.librarian.voice.title')}
+      subtitle={t('admin.librarian.voice.description')}
+      icon={<Mic size={20} color={colors.primary} />}
+      defaultExpanded={false}
+      draggable={true}
+      minHeight={200}
+      maxHeight={600}
+      style={styles.container}
+      rightElement={
+        onToggleMute ? (
           <Pressable onPress={onToggleMute} style={styles.muteButton}>
             {isMuted ? (
               <VolumeX size={20} color={colors.textMuted} />
@@ -163,12 +167,9 @@ export const VoiceLibrarianControl: React.FC<VoiceLibrarianControlProps> = ({
               <Volume2 size={20} color={colors.primary} />
             )}
           </Pressable>
-        )}
-      </View>
-
-      <Text style={styles.description}>
-        {t('admin.librarian.voice.description')}
-      </Text>
+        ) : undefined
+      }
+    >
 
       <View style={styles.controlsRow}>
         <Animated.View style={{ transform: [{ scale: pulseAnim }] }}>
@@ -216,38 +217,16 @@ export const VoiceLibrarianControl: React.FC<VoiceLibrarianControlProps> = ({
         <Text style={styles.exampleText}>• "{t('admin.librarian.voice.example3')}"</Text>
         <Text style={styles.exampleText}>• "{t('admin.librarian.voice.example4')}"</Text>
       </View>
-    </GlassCard>
+    </GlassDraggableExpander>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
-    padding: spacing.lg,
     marginBottom: spacing.lg,
-  },
-  header: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: spacing.sm,
-  },
-  titleRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing.sm,
-  },
-  title: {
-    fontSize: 18,
-    fontWeight: '600',
-    color: colors.text,
   },
   muteButton: {
     padding: spacing.xs,
-  },
-  description: {
-    fontSize: 14,
-    color: colors.textMuted,
-    marginBottom: spacing.md,
   },
   controlsRow: {
     flexDirection: 'row',

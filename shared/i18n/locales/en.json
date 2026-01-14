@@ -1481,6 +1481,7 @@
         "failedToLoadDetails": "Failed to load report details.",
         "failedToRollback": "Failed to rollback action.",
         "failedToClearReports": "Failed to clear audit reports. Please try again.",
+        "budgetExceeded": "Monthly budget limit exceeded. Cannot run audit.",
         "contactAdmin": "The Librarian page cannot load without proper configuration.\nPlease contact your administrator."
       },
       "stats": {
@@ -1501,14 +1502,18 @@
       },
       "quickActions": {
         "title": "Quick Actions",
+        "subtitle": "Configure and trigger audits",
         "dryRun": "Dry Run (Report Only)",
         "last24Hours": "Last 24 Hours Only",
-        "cybTitlesOnly": "CYB Titles Only (Extract)",
+        "cybTitlesOnly": "Dirty Titles Only (Extract & Clean)",
         "tmdbPostersOnly": "TMDB Posters & Metadata Only",
         "openSubtitlesEnabled": "Enable OpenSubtitles Retrieval",
         "triggerDaily": "Trigger Daily Audit",
         "triggerAI": "Trigger AI Agent Audit",
         "budgetLabel": "AI Agent Budget Limit: ${{budget}}",
+        "budgetPerAudit": "Budget per Audit",
+        "monthlyBudgetUsed": "Monthly Budget (Last 30 days)",
+        "budgetWarning": "Running this audit would exceed monthly budget limit",
         "aiAuditSuccess": "AI Agent audit triggered successfully. {{dryRun}}",
         "dailyAuditSuccess": "Daily audit triggered successfully. {{dryRun}}",
         "dryRunMode": "(Dry run mode)",
@@ -1635,7 +1640,21 @@
         "orphanedItemsFound": "Found {{count}} orphaned item(s)",
         "fixesApplied": "Applied {{count}} fix(es)",
         "auditCompleted": "Audit {{status}} in {{duration}}s",
-        "connecting": "Connecting to live audit log..."
+        "connecting": "Connecting to live audit log...",
+        "auditInitializing": "🚀 Initializing {{auditType}} audit...",
+        "dryRunMode": "⚠️ Running in DRY RUN mode - no changes will be made",
+        "liveMode": "✅ Running in LIVE mode - changes will be applied",
+        "budgetSet": "💰 Budget limit: ${{budget}}",
+        "connectingToAgent": "🔗 Connecting to Claude AI Agent..."
+      },
+      "audit": {
+        "types": {
+          "aiAgent": "AI Agent",
+          "dailyIncremental": "Daily Incremental"
+        },
+        "pause": "Pause",
+        "resume": "Resume",
+        "cancel": "Cancel"
       },
       "progress": {
         "batch": "Batch {{current}} of {{total}}",

@@ -97,6 +97,7 @@ export interface AuditReport {
   execution_time_seconds: number;
   status: string;
   summary: Record<string, any>;
+  content_results?: Record<string, any>;
   issues_count: number;
   fixes_count: number;
 }

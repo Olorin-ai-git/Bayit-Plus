@@ -75,7 +75,7 @@ export const GlassLog: React.FC<GlassLogProps> = ({
   levelLabels = DEFAULT_LEVEL_LABELS,
   isRTL = false,
   animateEntries = false,
-  typewriterSpeed = 30,
+  typewriterSpeed = 50,
 }) => {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedLevels, setSelectedLevels] = useState<Set<LogLevel>>(
@@ -84,6 +84,7 @@ export const GlassLog: React.FC<GlassLogProps> = ({
   const [isExpanded, setIsExpanded] = useState(true);
   const scrollViewRef = useRef<ScrollView>(null);
   const [displayedText, setDisplayedText] = useState<Record<string, string>>({});
+  const [logOpacities, setLogOpacities] = useState<Record<string, Animated.Value>>({});
 
   // Toast notification state
   const [toastVisible, setToastVisible] = useState(false);
@@ -91,30 +92,67 @@ export const GlassLog: React.FC<GlassLogProps> = ({
   const [toastType, setToastType] = useState<'success' | 'danger'>('success');
   const toastOpacity = useRef(new Animated.Value(0)).current;
 
-  // Typewriter animation effect
+  // Typewriter animation effect - sequential line by line
   useEffect(() => {
     if (!animateEntries) {
       // If animation is disabled, show full text immediately
       const fullText: Record<string, string> = {};
+      const fullOpacities: Record<string, Animated.Value> = {};
       logs.forEach(log => {
         fullText[log.id] = log.message;
+        fullOpacities[log.id] = new Animated.Value(1);
       });
       setDisplayedText(fullText);
+      setLogOpacities(fullOpacities);
       return;
     }
 
-    // Animate each log entry with typewriter effect
+    // Animate each log entry SEQUENTIALLY with typewriter effect
     const timers: NodeJS.Timeout[] = [];
+    let cumulativeDelay = 0;
     
     logs.forEach((log, index) => {
-      // Don't re-animate if already fully displayed
-      if (displayedText[log.id] === log.message) return;
-      
-      let currentIndex = 0;
       const message = log.message;
-      const delay = index * 100; // Stagger each entry slightly
+      const charCount = message.length;
+      const animationDuration = charCount * 50;
+      const fadeInDuration = 300;
       
-      const typeTimer = setTimeout(() => {
+      // Don't re-animate if already fully displayed
+      if (displayedText[log.id] === log.message) {
+        // Keep existing opacity
+        if (!logOpacities[log.id]) {
+          setLogOpacities(prev => ({
+            ...prev,
+            [log.id]: new Animated.Value(1),
+          }));
+        }
+        // Still add to cumulative delay so subsequent logs wait
+        cumulativeDelay += animationDuration + fadeInDuration;
+        return;
+      }
+      
+      // Initialize opacity for this log (only if not already initialized)
+      if (!logOpacities[log.id]) {
+        const opacity = new Animated.Value(0);
+        setLogOpacities(prev => ({
+          ...prev,
+          [log.id]: opacity,
+        }));
+      }
+      
+      // Start animation after previous log completes
+      const startTimer = setTimeout(() => {
+        const opacity = logOpacities[log.id] || new Animated.Value(0);
+        
+        // Fade in the log entry first
+        Animated.timing(opacity, {
+          toValue: 1,
+          duration: fadeInDuration,
+          useNativeDriver: true,
+        }).start();
+        
+        // Then start typewriter effect
+        let currentIndex = 0;
         const interval = setInterval(() => {
           if (currentIndex <= message.length) {
             setDisplayedText(prev => ({
@@ -125,18 +163,21 @@ export const GlassLog: React.FC<GlassLogProps> = ({
           } else {
             clearInterval(interval);
           }
-        }, typewriterSpeed);
+        }, 50); // 50ms per character
         
         timers.push(interval);
-      }, delay);
+      }, cumulativeDelay);
       
-      timers.push(typeTimer);
+      timers.push(startTimer);
+      
+      // Add this log's animation time + fade in time to cumulative delay
+      cumulativeDelay += animationDuration + fadeInDuration;
     });
 
     return () => {
       timers.forEach(timer => clearTimeout(timer as any));
     };
-  }, [logs, animateEntries, typewriterSpeed]);
+  }, [logs, animateEntries, logOpacities]);
 
   // Auto-scroll to top when new logs arrive (newest logs are at the top)
   useEffect(() => {
@@ -389,6 +430,7 @@ export const GlassLog: React.FC<GlassLogProps> = ({
           <ScrollView
             ref={scrollViewRef}
             style={[styles.logContainer, { maxHeight }]}
+            contentContainerStyle={styles.logContentContainer}
             showsVerticalScrollIndicator={true}
           >
             {filteredLogs.length === 0 ? (
@@ -406,6 +448,7 @@ export const GlassLog: React.FC<GlassLogProps> = ({
                   levelLabels={levelLabels}
                   animateEntries={animateEntries}
                   displayedText={displayedText[log.id] || ''}
+                  opacity={logOpacities[log.id]}
                 />
               ))
             )}
@@ -424,6 +467,7 @@ interface LogEntryItemProps {
   levelLabels: Record<LogLevel, string>;
   animateEntries: boolean;
   displayedText: string;
+  opacity?: Animated.Value;
 }
 
 const LogEntryItem: React.FC<LogEntryItemProps> = ({
@@ -434,6 +478,7 @@ const LogEntryItem: React.FC<LogEntryItemProps> = ({
   levelLabels,
   animateEntries,
   displayedText,
+  opacity,
 }) => {
   const [isExpanded, setIsExpanded] = useState(false);
   const levelColor = LOG_COLORS[log.level];
@@ -448,11 +493,38 @@ const LogEntryItem: React.FC<LogEntryItemProps> = ({
     });
   };
 
+  // Format JSON content in log messages
+  const formatLogMessage = (message: string) => {
+    try {
+      // Try to detect and parse JSON objects or arrays in the message
+      const jsonRegex = /(\{[\s\S]*\}|\[[\s\S]*\])/g;
+      const matches = message.match(jsonRegex);
+      
+      if (matches && matches.length > 0) {
+        let formattedMessage = message;
+        matches.forEach((match) => {
+          try {
+            const parsed = JSON.parse(match);
+            const formatted = JSON.stringify(parsed, null, 2);
+            formattedMessage = formattedMessage.replace(match, `\n${formatted}\n`);
+          } catch {
+            // If parsing fails, leave it as is
+          }
+        });
+        return formattedMessage;
+      }
+      return message;
+    } catch {
+      return message;
+    }
+  };
+
   return (
-    <Pressable
-      onPress={() => log.metadata && setIsExpanded(!isExpanded)}
-      style={[styles.logEntry, isRTL && styles.logEntryRTL]}
-    >
+    <Animated.View style={{ opacity: opacity || 1 }}>
+      <Pressable
+        onPress={() => log.metadata && setIsExpanded(!isExpanded)}
+        style={[styles.logEntry, isRTL && styles.logEntryRTL]}
+      >
       {/* Level Indicator */}
       <View style={[styles.levelIndicator, { backgroundColor: levelColor }]} />
 
@@ -478,7 +550,7 @@ const LogEntryItem: React.FC<LogEntryItemProps> = ({
 
         {/* Message */}
         <Text style={[styles.message, isRTL && styles.messageRTL]}>
-          {animateEntries ? displayedText : log.message}
+          {animateEntries ? formatLogMessage(displayedText) : formatLogMessage(log.message)}
           {animateEntries && displayedText && displayedText !== log.message && (
             <Text style={styles.cursor}>▊</Text>
           )}
@@ -494,11 +566,13 @@ const LogEntryItem: React.FC<LogEntryItemProps> = ({
         )}
       </View>
     </Pressable>
+    </Animated.View>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
+    flex: 1,
     borderRadius: borderRadius.lg,
     overflow: 'hidden',
     position: 'relative',
@@ -630,6 +704,9 @@ const styles = StyleSheet.create({
   logContainer: {
     flex: 1,
   },
+  logContentContainer: {
+    flexGrow: 1,
+  },
   emptyState: {
     padding: spacing.xl,
     alignItems: 'center',
@@ -692,10 +769,11 @@ const styles = StyleSheet.create({
     textAlign: 'right',
   },
   message: {
-    fontSize: 13,
+    fontSize: 14,
     color: colors.text,
-    lineHeight: 18,
+    lineHeight: 22,
     fontFamily: 'monospace',
+    whiteSpace: 'pre-wrap',
   },
   messageRTL: {
     textAlign: 'right',
@@ -704,6 +782,11 @@ const styles = StyleSheet.create({
     color: colors.primary,
     fontWeight: 'bold',
     marginLeft: 2,
+    // @ts-ignore - web-only animation property
+    animationName: 'blink',
+    animationDuration: '1s',
+    animationIterationCount: 'infinite',
+    animationTimingFunction: 'step-end',
   },
   metadata: {
     marginTop: spacing.sm,

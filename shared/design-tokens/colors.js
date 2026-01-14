@@ -4,23 +4,23 @@
  * Shared across all platforms: web, mobile, TV, tvOS
  */
 
-// Primary - Purple (brand color for glassmorphic UI)
+// Primary - Dark Purple (brand color for glassmorphic UI)
 export const primary = {
   50: '#faf5ff',
   100: '#f3e8ff',
   200: '#e9d5ff',
   300: '#d8b4fe',
   400: '#c084fc',
-  500: '#a855f7',  // Main purple
+  500: '#a855f7',
   600: '#9333ea',
   700: '#7e22ce',
-  800: '#6b21a8',
-  900: '#581c87',
-  950: '#3b0764',
-  DEFAULT: '#a855f7',
+  800: '#6b21a8',  // Dark purple
+  900: '#581c87',  // Darker purple
+  950: '#3b0764',  // Darkest purple
+  DEFAULT: '#7e22ce',  // Changed to dark purple (700)
 }
 
-// Secondary - Deep Purple (for accents and highlights)
+// Secondary - Deep Dark Purple (for accents and highlights)
 export const secondary = {
   50: '#fdf4ff',
   100: '#fae8ff',
@@ -30,10 +30,10 @@ export const secondary = {
   500: '#d946ef',
   600: '#c026d3',
   700: '#a21caf',
-  800: '#86198f',
-  900: '#701a75',
-  950: '#4a044e',
-  DEFAULT: '#c026d3',
+  800: '#86198f',  // Dark magenta-purple
+  900: '#701a75',  // Darker magenta-purple
+  950: '#4a044e',  // Darkest magenta-purple
+  DEFAULT: '#86198f',  // Changed to dark purple (800)
 }
 
 // Dark/Neutral - Pure blacks and grays for glassmorphic backgrounds
@@ -78,34 +78,34 @@ export const error = {
 export const live = '#ff4444'
 export const gold = '#ffd700'
 
-// Glass effect colors (for glassmorphic backgrounds with purple tints)
+// Glass effect colors (for glassmorphic backgrounds with dark purple tints)
 export const glass = {
-  bg: 'rgba(10, 10, 10, 0.7)',  // Purple-tinted black
+  bg: 'rgba(10, 10, 10, 0.7)',  // Dark purple-tinted black
   bgLight: 'rgba(10, 10, 10, 0.5)',
   bgStrong: 'rgba(10, 10, 10, 0.85)',
-  border: 'rgba(168, 85, 247, 0.2)',  // Purple border
-  borderLight: 'rgba(168, 85, 247, 0.1)',
-  borderFocus: 'rgba(168, 85, 247, 0.6)',  // Stronger purple for focus
-  purpleLight: 'rgba(107, 33, 168, 0.3)',  // For purple-tinted glass backgrounds
-  purpleStrong: 'rgba(107, 33, 168, 0.5)',
-  purpleGlow: 'rgba(168, 85, 247, 0.4)',  // Purple glow effect
+  border: 'rgba(126, 34, 206, 0.25)',  // Dark purple border (primary 700)
+  borderLight: 'rgba(126, 34, 206, 0.15)',
+  borderFocus: 'rgba(126, 34, 206, 0.7)',  // Stronger dark purple for focus
+  purpleLight: 'rgba(88, 28, 135, 0.35)',  // For dark purple-tinted glass backgrounds
+  purpleStrong: 'rgba(88, 28, 135, 0.55)',
+  purpleGlow: 'rgba(126, 34, 206, 0.35)',  // Dark purple glow effect
 }
 
 // Gradients
 export const gradients = {
-  primary: 'linear-gradient(135deg, #a855f7 0%, #c026d3 100%)',  // Purple gradient
+  primary: 'linear-gradient(135deg, #7e22ce 0%, #86198f 100%)',  // Dark purple gradient
   dark: 'linear-gradient(135deg, #0f172a 0%, #000000 100%)',
   glass: 'linear-gradient(135deg, rgba(10, 10, 10, 0.8) 0%, rgba(0, 0, 0, 0.8) 100%)',
 }
 
-// Shadows with purple glow
+// Shadows with dark purple glow
 export const shadows = {
   sm: '0 1px 2px rgba(0, 0, 0, 0.05)',
   md: '0 4px 6px rgba(0, 0, 0, 0.1)',
   lg: '0 10px 15px rgba(0, 0, 0, 0.2)',
   xl: '0 20px 25px rgba(0, 0, 0, 0.25)',
-  glow: '0 0 20px rgba(168, 85, 247, 0.3)',  // Purple glow
-  'glow-lg': '0 0 40px rgba(168, 85, 247, 0.4)',
-  'glow-primary': '0 0 20px rgba(168, 85, 247, 0.3)',
-  'glow-secondary': '0 0 20px rgba(192, 38, 211, 0.3)',
+  glow: '0 0 20px rgba(126, 34, 206, 0.35)',  // Dark purple glow
+  'glow-lg': '0 0 40px rgba(126, 34, 206, 0.5)',
+  'glow-primary': '0 0 20px rgba(126, 34, 206, 0.35)',
+  'glow-secondary': '0 0 20px rgba(134, 25, 143, 0.35)',
 }

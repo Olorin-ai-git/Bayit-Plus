@@ -10,13 +10,13 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Purple/Black Glassmorphic Theme Variables */
+/* Dark Purple/Black Glassmorphic Theme Variables */
 :root {
-  /* Primary Colors - Purple */
-  --primary: #a855f7;
-  --primary-light: #c084fc;
-  --primary-dark: #7e22ce;
-  --secondary: #c026d3;
+  /* Primary Colors - Dark Purple */
+  --primary: #7e22ce;
+  --primary-light: #9333ea;
+  --primary-dark: #6b21a8;
+  --secondary: #86198f;
   
   /* Backgrounds - Pure Black */
   --background: #000000;
@@ -24,25 +24,25 @@
   --background-lighter: #171717;
   --background-elevated: #262626;
   
-  /* Glass Backgrounds - Purple-tinted Black */
+  /* Glass Backgrounds - Dark Purple-tinted Black */
   --glass-bg: rgba(10, 10, 10, 0.7);
   --glass-bg-light: rgba(10, 10, 10, 0.5);
   --glass-bg-medium: rgba(10, 10, 10, 0.6);
   --glass-bg-strong: rgba(10, 10, 10, 0.85);
-  --glass-bg-purple: rgba(59, 7, 100, 0.4);
-  --glass-bg-purple-light: rgba(107, 33, 168, 0.3);
+  --glass-bg-purple: rgba(59, 7, 100, 0.5);
+  --glass-bg-purple-light: rgba(88, 28, 135, 0.35);
   
-  /* Glass Borders - Purple */
-  --glass-border: rgba(168, 85, 247, 0.2);
-  --glass-border-light: rgba(168, 85, 247, 0.1);
-  --glass-border-strong: rgba(168, 85, 247, 0.4);
-  --glass-border-focus: rgba(168, 85, 247, 0.6);
+  /* Glass Borders - Dark Purple */
+  --glass-border: rgba(126, 34, 206, 0.25);
+  --glass-border-light: rgba(126, 34, 206, 0.15);
+  --glass-border-strong: rgba(126, 34, 206, 0.45);
+  --glass-border-focus: rgba(126, 34, 206, 0.7);
   --glass-border-white: rgba(255, 255, 255, 0.1);
   
-  /* Glass Effects */
-  --glass-glow: rgba(168, 85, 247, 0.3);
-  --glass-glow-strong: rgba(168, 85, 247, 0.5);
-  --glass-highlight: rgba(216, 180, 254, 0.15);
+  /* Glass Effects - Dark Purple */
+  --glass-glow: rgba(126, 34, 206, 0.35);
+  --glass-glow-strong: rgba(126, 34, 206, 0.6);
+  --glass-highlight: rgba(107, 33, 168, 0.2);
   
   /* Text Colors */
   --text: #ffffff;
@@ -154,6 +154,16 @@ body {
   }
   50% {
     opacity: 0.5;
+  }
+}
+
+/* Blinking Cursor Animation */
+@keyframes blink {
+  0%, 49% {
+    opacity: 1;
+  }
+  50%, 100% {
+    opacity: 0;
   }
 }
 

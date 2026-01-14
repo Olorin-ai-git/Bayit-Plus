@@ -53,6 +53,7 @@ const LibrarianAgentPage = () => {
   const [clearingReports, setClearingReports] = useState(false);
   const [dryRun, setDryRun] = useState(false);
   const [budgetLimit, setBudgetLimit] = useState(0);
+  const [budgetUsed, setBudgetUsed] = useState(0);
   const [last24HoursOnly, setLast24HoursOnly] = useState(false);
   const [cybTitlesOnly, setCybTitlesOnly] = useState(false);
   const [tmdbPostersOnly, setTmdbPostersOnly] = useState(false);
@@ -163,6 +164,20 @@ const LibrarianAgentPage = () => {
       setStatus(statusData);
       setReports(reportsData);
       setActions(actionsData);
+
+      // Calculate budget used from recent audits (last 30 days)
+      const thirtyDaysAgo = new Date();
+      thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+      
+      const totalBudgetUsed = reportsData.reduce((sum, report) => {
+        const reportDate = new Date(report.audit_date);
+        if (reportDate >= thirtyDaysAgo && report.content_results?.total_cost_usd) {
+          return sum + report.content_results.total_cost_usd;
+        }
+        return sum;
+      }, 0);
+      
+      setBudgetUsed(totalBudgetUsed);
     } catch (error) {
       logger.error('Failed to load librarian data:', error);
       const errorMessage = error instanceof Error ? error.message : 'Failed to load librarian data';
@@ -186,6 +201,35 @@ const LibrarianAgentPage = () => {
   useEffect(() => {
     loadData();
   }, [loadData]);
+
+  // Auto-load running audit into live panel on page load
+  useEffect(() => {
+    // Only run once when reports are first loaded
+    if (reports.length === 0 || livePanelReport) {
+      return;
+    }
+
+    const inProgressAudit = reports.find(r => r.status === 'in_progress');
+    if (inProgressAudit) {
+      logger.info(`[Auto-load] Loading running audit into live panel: ${inProgressAudit.audit_id}`);
+      
+      // Load audit details directly
+      const loadRunningAudit = async () => {
+        try {
+          setConnectingToLiveLog(true);
+          const details = await getAuditReportDetails(inProgressAudit.audit_id);
+          setLivePanelReport(details);
+          setLivePanelExpanded(true);
+        } catch (error) {
+          logger.error('Failed to auto-load running audit:', error);
+        } finally {
+          setTimeout(() => setConnectingToLiveLog(false), 300);
+        }
+      };
+      
+      loadRunningAudit();
+    }
+  }, [reports]);
 
   // Poll for in-progress audits (real-time log streaming)
   useEffect(() => {
@@ -283,6 +327,20 @@ const LibrarianAgentPage = () => {
       return;
     }
 
+    // Check if budget would be exceeded
+    const potentialTotalBudget = budgetUsed + budgetLimit;
+    const monthlyBudgetLimit = config.audit_limits.max_budget_usd * 30; // Approximate monthly limit
+    
+    if (budgetUsed + budgetLimit > monthlyBudgetLimit) {
+      setErrorMessage(
+        t('admin.librarian.errors.budgetExceeded', 
+          `Monthly budget limit exceeded. Used: $${budgetUsed.toFixed(2)}, Requested: $${budgetLimit.toFixed(2)}, Monthly Limit: $${monthlyBudgetLimit.toFixed(2)}`
+        )
+      );
+      setErrorModalOpen(true);
+      return;
+    }
+
     setTriggering(true);
     setConfirmModalVisible(false);
 
@@ -299,13 +357,56 @@ const LibrarianAgentPage = () => {
         opensubtitles_enabled: openSubtitlesEnabled,
       });
 
-      const successKey = auditType === 'ai_agent' ? 'aiAuditSuccess' : 'dailyAuditSuccess';
-      const dryRunText = dryRun ? t('admin.librarian.quickActions.dryRunMode') : '';
-      setSuccessMessage(t(`admin.librarian.quickActions.${successKey}`, { dryRun: dryRunText }));
-      setSuccessModalOpen(true);
-
-      // Expand live panel and load audit details
+      // Expand live panel and show initialization
       setLivePanelExpanded(true);
+      
+      // Create initialization log entries
+      const auditTypeLabel = auditType === 'ai_agent' 
+        ? t('admin.librarian.audit.types.aiAgent', 'AI Agent')
+        : t('admin.librarian.audit.types.dailyIncremental', 'Daily Incremental');
+      
+      const initLog: AuditReportDetail = {
+        audit_id: 'initializing',
+        audit_type: auditType,
+        audit_date: new Date().toISOString(),
+        status: 'in_progress',
+        execution_logs: [
+          {
+            id: '1',
+            timestamp: new Date().toISOString(),
+            level: 'info',
+            message: t('admin.librarian.logs.auditInitializing', { auditType: auditTypeLabel }),
+          },
+          {
+            id: '2',
+            timestamp: new Date().toISOString(),
+            level: dryRun ? 'warn' : 'info',
+            message: dryRun 
+              ? t('admin.librarian.logs.dryRunMode')
+              : t('admin.librarian.logs.liveMode'),
+          },
+          {
+            id: '3',
+            timestamp: new Date().toISOString(),
+            level: 'info',
+            message: t('admin.librarian.logs.budgetSet', { budget: budgetLimit.toFixed(2) }),
+          },
+          {
+            id: '4',
+            timestamp: new Date().toISOString(),
+            level: 'info',
+            message: t('admin.librarian.logs.connectingToAgent'),
+          },
+        ],
+        summary: null,
+        ai_insights: null,
+        fixes_applied: [],
+        items_checked: 0,
+        issues_found: 0,
+        completed_at: null,
+      };
+      
+      setLivePanelReport(initLog);
       
       // Refresh data after 2 seconds to get the new audit
       setTimeout(async () => {
@@ -866,9 +967,16 @@ const LibrarianAgentPage = () => {
       </View>
 
       {/* Quick Actions */}
-      <GlassCard style={styles.actionsCard}>
-        <Text style={[styles.sectionTitle, { textAlign }]}>{t('admin.librarian.quickActions.title')}</Text>
-
+      <GlassDraggableExpander
+        title={t('admin.librarian.quickActions.title')}
+        subtitle={t('admin.librarian.quickActions.subtitle', 'Configure and trigger audits')}
+        icon={<Zap size={20} color={colors.primary} />}
+        defaultExpanded={false}
+        draggable={true}
+        minHeight={450}
+        maxHeight={700}
+        style={styles.actionsCard}
+      >
         <View style={styles.actionsRow}>
           <View style={styles.checkboxRow}>
             <Pressable
@@ -942,25 +1050,48 @@ const LibrarianAgentPage = () => {
           />
         </View>
 
-        <View style={styles.budgetRow}>
-          <Text style={styles.budgetLabel}>{t('admin.librarian.quickActions.budgetLabel', { budget: budgetLimit.toFixed(2) })}</Text>
-          {/* Slider would go here - using simple buttons for now */}
-          <View style={styles.budgetButtons}>
-            <Pressable
-              style={styles.budgetButton}
-              onPress={() => setBudgetLimit(Math.max(config.audit_limits.min_budget_usd, budgetLimit - config.audit_limits.budget_step_usd))}
-            >
-              <Text style={styles.budgetButtonText}>-</Text>
-            </Pressable>
-            <Pressable
-              style={styles.budgetButton}
-              onPress={() => setBudgetLimit(Math.min(config.audit_limits.max_budget_usd, budgetLimit + config.audit_limits.budget_step_usd))}
-            >
-              <Text style={styles.budgetButtonText}>+</Text>
-            </Pressable>
+        <View style={styles.budgetSection}>
+          <View style={styles.budgetRow}>
+            <Text style={styles.budgetLabel}>
+              {t('admin.librarian.quickActions.budgetPerAudit', 'Budget per Audit:')} ${budgetLimit.toFixed(2)}
+            </Text>
+            <View style={styles.budgetButtons}>
+              <Pressable
+                style={styles.budgetButton}
+                onPress={() => setBudgetLimit(Math.max(config.audit_limits.min_budget_usd, budgetLimit - config.audit_limits.budget_step_usd))}
+              >
+                <Text style={styles.budgetButtonText}>-</Text>
+              </Pressable>
+              <Pressable
+                style={styles.budgetButton}
+                onPress={() => setBudgetLimit(Math.min(config.audit_limits.max_budget_usd, budgetLimit + config.audit_limits.budget_step_usd))}
+              >
+                <Text style={styles.budgetButtonText}>+</Text>
+              </Pressable>
+            </View>
           </View>
+          
+          <View style={styles.budgetUsageRow}>
+            <Text style={styles.budgetUsageLabel}>
+              {t('admin.librarian.quickActions.monthlyBudgetUsed', 'Monthly Budget (Last 30 days):')}
+            </Text>
+            <Text style={[
+              styles.budgetUsageAmount,
+              budgetUsed > (config.audit_limits.max_budget_usd * 20) && styles.budgetUsageWarning
+            ]}>
+              ${budgetUsed.toFixed(2)} / ${(config.audit_limits.max_budget_usd * 30).toFixed(2)}
+            </Text>
+          </View>
+          
+          {budgetUsed + budgetLimit > (config.audit_limits.max_budget_usd * 30) && (
+            <View style={styles.budgetWarningBox}>
+              <Text style={styles.budgetWarningText}>
+                ⚠️ {t('admin.librarian.quickActions.budgetWarning', 'Running this audit would exceed monthly budget limit')}
+              </Text>
+            </View>
+          )}
         </View>
-      </GlassCard>
+      </GlassDraggableExpander>
 
       {/* Voice Control */}
       <VoiceLibrarianControl
@@ -997,8 +1128,8 @@ const LibrarianAgentPage = () => {
         defaultExpanded={true}
         onExpandChange={setLivePanelExpanded}
         draggable={true}
-        minHeight={500}
-        maxHeight={1000}
+        minHeight={700}
+        maxHeight={1400}
         style={styles.liveLogPanel}
       >
         {connectingToLiveLog ? (
@@ -1009,7 +1140,7 @@ const LibrarianAgentPage = () => {
             </Text>
           </View>
         ) : livePanelReport ? (
-          <View>
+          <View style={{ flex: 1 }}>
             <View style={styles.livePanelInfo}>
               <View>
                 <Text style={styles.livePanelInfoText}>
@@ -1103,9 +1234,9 @@ const LibrarianAgentPage = () => {
               showLevelFilter
               showDownload
               autoScroll
-              maxHeight={900}
+              maxHeight={1200}
               animateEntries
-              typewriterSpeed={30}
+              typewriterSpeed={50}
             />
           </View>
         ) : (
@@ -1548,13 +1679,16 @@ const styles = StyleSheet.create({
   actionButton: {
     flex: 1,
   },
+  budgetSection: {
+    paddingTop: spacing.md,
+    borderTopWidth: 1,
+    borderTopColor: colors.glassBorder,
+    gap: spacing.sm,
+  },
   budgetRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    paddingTop: spacing.md,
-    borderTopWidth: 1,
-    borderTopColor: colors.glassBorder,
   },
   budgetLabel: {
     fontSize: 14,
@@ -1563,6 +1697,37 @@ const styles = StyleSheet.create({
   budgetButtons: {
     flexDirection: 'row',
     gap: spacing.sm,
+  },
+  budgetUsageRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginTop: spacing.xs,
+  },
+  budgetUsageLabel: {
+    fontSize: 13,
+    color: colors.textMuted,
+  },
+  budgetUsageAmount: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: colors.primary,
+  },
+  budgetUsageWarning: {
+    color: colors.warning,
+  },
+  budgetWarningBox: {
+    marginTop: spacing.sm,
+    padding: spacing.sm,
+    backgroundColor: 'rgba(245, 158, 11, 0.1)',
+    borderRadius: borderRadius.sm,
+    borderWidth: 1,
+    borderColor: colors.warning,
+  },
+  budgetWarningText: {
+    fontSize: 12,
+    color: colors.warning,
+    textAlign: 'center',
   },
   budgetButton: {
     width: 32,

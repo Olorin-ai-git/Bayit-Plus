@@ -1351,6 +1351,7 @@
         "failedToTrigger": "נכשל בהפעלת ביקורת. אנא נסה שוב.",
         "failedToLoadDetails": "נכשל בטעינת פרטי הדוח.",
         "failedToRollback": "נכשל בביטול הפעולה.",
+        "budgetExceeded": "חרגת ממגבלת התקציב החודשית. לא ניתן להריץ ביקורת.",
         "contactAdmin": "דף הספרן לא יכול להיטען ללא תצורה נכונה.\nאנא צור קשר עם המנהל שלך."
       },
       "stats": {
@@ -1371,14 +1372,18 @@
       },
       "quickActions": {
         "title": "פעולות מהירות",
+        "subtitle": "הגדר והפעל ביקורות",
         "dryRun": "ריצת ניסיון (דוח בלבד)",
         "last24Hours": "24 שעות אחרונות בלבד",
-        "cybTitlesOnly": "כותרות CYB בלבד (חילוץ)",
+        "cybTitlesOnly": "כותרות מלוכלכות בלבד (חילוץ וניקוי)",
         "tmdbPostersOnly": "פוסטרים ומטא-דאטה של TMDB בלבד",
         "openSubtitlesEnabled": "אפשר אחזור כתוביות מ-OpenSubtitles",
         "triggerDaily": "הפעל ביקורת יומית",
         "triggerAI": "הפעל ביקורת סוכן AI",
         "budgetLabel": "מגבלת תקציב לסוכן AI: ${{budget}}",
+        "budgetPerAudit": "תקציב לביקורת",
+        "monthlyBudgetUsed": "תקציב חודשי (30 יום אחרונים)",
+        "budgetWarning": "הרצת ביקורת זו תחרוג ממגבלת התקציב החודשית",
         "aiAuditSuccess": "ביקורת סוכן AI הופעלה בהצלחה. {{dryRun}}",
         "dailyAuditSuccess": "ביקורת יומית הופעלה בהצלחה. {{dryRun}}",
         "dryRunMode": "(מצב ריצת ניסיון)",
@@ -1503,7 +1508,21 @@
         "orphanedItemsFound": "נמצאו {{count}} פריט(ים) נטוש(ים)",
         "fixesApplied": "בוצעו {{count}} תיקון(ים)",
         "auditCompleted": "הביקורת {{status}} ב-{{duration}}s",
-        "connecting": "מתחבר ללוג ביקורת חי..."
+        "connecting": "מתחבר ללוג ביקורת חי...",
+        "auditInitializing": "🚀 מאתחל ביקורת {{auditType}}...",
+        "dryRunMode": "⚠️ רץ במצב ניסיון - לא ייעשו שינויים",
+        "liveMode": "✅ רץ במצב חי - שינויים יבוצעו",
+        "budgetSet": "💰 מגבלת תקציב: ${{budget}}",
+        "connectingToAgent": "🔗 מתחבר לסוכן Claude AI..."
+      },
+      "audit": {
+        "types": {
+          "aiAgent": "סוכן AI",
+          "dailyIncremental": "יומי מצטבר"
+        },
+        "pause": "השהה",
+        "resume": "המשך",
+        "cancel": "בטל"
       },
       "progress": {
         "batch": "אצווה {{current}} מתוך {{total}}",
