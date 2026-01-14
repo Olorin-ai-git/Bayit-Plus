@@ -54,6 +54,12 @@ const NAV_ITEMS: NavItem[] = [
     route: '/admin/users',
   },
   {
+    key: 'librarian',
+    labelKey: 'admin.nav.librarian',
+    icon: Bot,
+    route: '/admin/librarian',
+  },
+  {
     key: 'campaigns',
     labelKey: 'admin.nav.campaigns',
     icon: Tag,
@@ -125,12 +131,6 @@ const NAV_ITEMS: NavItem[] = [
     labelKey: 'admin.nav.auditLogs',
     icon: FileText,
     route: '/admin/logs',
-  },
-  {
-    key: 'librarian',
-    labelKey: 'admin.nav.librarian',
-    icon: Bot,
-    route: '/admin/librarian',
   },
 ]
 
