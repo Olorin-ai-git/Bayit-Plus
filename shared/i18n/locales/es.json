@@ -1874,6 +1874,11 @@
         "auditType": "Tipo de Auditoría",
         "started": "Iniciado",
         "completed": "Completado",
+        "aiInsightPrefix": "Perspectiva de IA",
+        "source": {
+          "librarian": "Bibliotecario",
+          "aiAgent": "Agente de IA"
+        },
         "levels": {
           "debug": "DEBUG",
           "info": "INFO",

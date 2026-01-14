@@ -309,7 +309,7 @@ const LibrarianAgentPage = () => {
       timestamp: baseTime,
       level: 'info',
       message: `${t('admin.librarian.logs.auditStarted')}: ${report.audit_type.replace('_', ' ')}`,
-      source: 'Librarian',
+      source: t('admin.librarian.logs.source.librarian'),
     });
 
     // Issues found
@@ -322,7 +322,7 @@ const LibrarianAgentPage = () => {
         timestamp: issuesTime,
         level: 'warn',
         message: t('admin.librarian.logs.brokenStreamsFound', { count: report.broken_streams.length }),
-        source: 'Librarian',
+        source: t('admin.librarian.logs.source.librarian'),
         metadata: { items: report.broken_streams.slice(0, 5) },
       });
     }
@@ -333,7 +333,7 @@ const LibrarianAgentPage = () => {
         timestamp: new Date(issuesTime.getTime() + 500),
         level: 'warn',
         message: t('admin.librarian.logs.missingMetadataFound', { count: report.missing_metadata.length }),
-        source: 'Librarian',
+        source: t('admin.librarian.logs.source.librarian'),
         metadata: { items: report.missing_metadata.slice(0, 5) },
       });
     }
@@ -344,7 +344,7 @@ const LibrarianAgentPage = () => {
         timestamp: new Date(issuesTime.getTime() + 1000),
         level: 'warn',
         message: t('admin.librarian.logs.misclassificationsFound', { count: report.misclassifications.length }),
-        source: 'Librarian',
+        source: t('admin.librarian.logs.source.librarian'),
         metadata: { items: report.misclassifications.slice(0, 5) },
       });
     }
@@ -355,7 +355,7 @@ const LibrarianAgentPage = () => {
         timestamp: new Date(issuesTime.getTime() + 1500),
         level: 'warn',
         message: t('admin.librarian.logs.orphanedItemsFound', { count: report.orphaned_items.length }),
-        source: 'Librarian',
+        source: t('admin.librarian.logs.source.librarian'),
         metadata: { items: report.orphaned_items.slice(0, 5) },
       });
     }
@@ -368,7 +368,7 @@ const LibrarianAgentPage = () => {
         timestamp: fixesTime,
         level: 'success',
         message: t('admin.librarian.logs.fixesApplied', { count: report.fixes_applied.length }),
-        source: 'Librarian',
+        source: t('admin.librarian.logs.source.librarian'),
         metadata: { fixes: report.fixes_applied.slice(0, 10) },
       });
     }
@@ -380,8 +380,8 @@ const LibrarianAgentPage = () => {
           id: String(logId++),
           timestamp: new Date(fixesTime.getTime() + 1000 + (index * 500)),
           level: 'info',
-          message: `AI Insight: ${insight}`,
-          source: 'AI Agent',
+          message: `${t('admin.librarian.logs.aiInsightPrefix')}: ${insight}`,
+          source: t('admin.librarian.logs.source.aiAgent'),
         });
       });
     }
@@ -396,7 +396,7 @@ const LibrarianAgentPage = () => {
         status: report.status,
         duration: report.execution_time_seconds.toFixed(1),
       }),
-      source: 'Librarian',
+      source: t('admin.librarian.logs.source.librarian'),
       metadata: {
         total_items: report.summary.total_items,
         healthy_items: report.summary.healthy_items,

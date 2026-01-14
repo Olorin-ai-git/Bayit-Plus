@@ -1593,6 +1593,11 @@
         "auditType": "Audit Type",
         "started": "Started",
         "completed": "Completed",
+        "aiInsightPrefix": "AI Insight",
+        "source": {
+          "librarian": "Librarian",
+          "aiAgent": "AI Agent"
+        },
         "levels": {
           "debug": "DEBUG",
           "info": "INFO",
