@@ -519,6 +519,9 @@
             // Remove from DOM after fade animation
             setTimeout(function() {
               splash.remove();
+              // Signal that splash is removed - now safe to change direction
+              window.splashScreenRemoved = true;
+              window.dispatchEvent(new Event('splashRemoved'));
             }, 500);
           }
         }, remainingTime);
@@ -549,6 +552,9 @@
             splash.classList.add('fade-out');
             setTimeout(function() {
               splash.remove();
+              // Signal that splash is removed - now safe to change direction
+              window.splashScreenRemoved = true;
+              window.dispatchEvent(new Event('splashRemoved'));
             }, 500);
           }
         }

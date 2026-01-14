@@ -1,4 +1,5 @@
 from contextlib import asynccontextmanager
+import asyncio
 import logging
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
@@ -424,6 +425,12 @@ async def lifespan(app: FastAPI):
     if settings.UPLOAD_MONITOR_ENABLED:
         asyncio.create_task(scan_monitored_folders_task())
         logger.info("📂 Started folder monitoring background task")
+    
+    # Start processing upload queue if there are queued jobs
+    from app.services.upload_service import upload_service
+    asyncio.create_task(upload_service.process_queue())
+    logger.info("📤 Upload queue processor started")
+    
     logger.info("✅ Server startup complete - Ready to accept connections")
     yield
     # Shutdown

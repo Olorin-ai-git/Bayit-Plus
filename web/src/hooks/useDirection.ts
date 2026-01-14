@@ -34,9 +34,26 @@ export const useDirection = (): DirectionResult => {
       const rtl = isRTLLanguage(lng);
       setIsRTL(rtl);
 
-      // NOTE: Document direction is fixed to RTL in index.html and should not change
-      // Only update the language attribute, not the direction
+      // Only update the language attribute initially
       document.documentElement.lang = lng;
+
+      // Wait for splash screen to be removed before changing direction
+      // This keeps the splash screen RTL while allowing the app to switch based on language
+      const updateDirection = () => {
+        document.documentElement.dir = rtl ? 'rtl' : 'ltr';
+      };
+
+      if ((window as any).splashScreenRemoved) {
+        // Splash already removed, safe to change direction immediately
+        updateDirection();
+      } else {
+        // Wait for splash removal event
+        const handleSplashRemoved = () => {
+          updateDirection();
+          window.removeEventListener('splashRemoved', handleSplashRemoved);
+        };
+        window.addEventListener('splashRemoved', handleSplashRemoved);
+      }
     };
 
     // Set initial direction
