@@ -6,26 +6,26 @@ steps:
       - '-f'
       - 'backend/Dockerfile'
       - '-t'
-      - 'gcr.io/$PROJECT_ID/bayit-plus-backend:$BUILD_ID'
+      - 'us-east1-docker.pkg.dev/$PROJECT_ID/bayit-plus/backend:$BUILD_ID'
       - '-t'
-      - 'gcr.io/$PROJECT_ID/bayit-plus-backend:1'
+      - 'us-east1-docker.pkg.dev/$PROJECT_ID/bayit-plus/backend:latest'
       - '--cache-from'
-      - 'gcr.io/$PROJECT_ID/bayit-plus-backend:1'
+      - 'us-east1-docker.pkg.dev/$PROJECT_ID/bayit-plus/backend:latest'
       - 'backend/'
     id: 'build-image'
 
-  # Push to Container Registry (BUILD_ID tag)
+  # Push to Artifact Registry (BUILD_ID tag)
   - name: 'gcr.io/cloud-builders/docker'
     args:
       - 'push'
-      - 'gcr.io/$PROJECT_ID/bayit-plus-backend:$BUILD_ID'
+      - 'us-east1-docker.pkg.dev/$PROJECT_ID/bayit-plus/backend:$BUILD_ID'
     id: 'push-build-id-image'
 
-  # Push to Container Registry (latest tag)
+  # Push to Artifact Registry (latest tag)
   - name: 'gcr.io/cloud-builders/docker'
     args:
       - 'push'
-      - 'gcr.io/$PROJECT_ID/bayit-plus-backend:1'
+      - 'us-east1-docker.pkg.dev/$PROJECT_ID/bayit-plus/backend:latest'
     id: 'push-latest-image'
 
   # Deploy to Cloud Run
@@ -36,7 +36,7 @@ steps:
       - 'deploy'
       - 'bayit-plus-backend'
       - '--image'
-      - 'gcr.io/$PROJECT_ID/bayit-plus-backend:$BUILD_ID'
+      - 'us-east1-docker.pkg.dev/$PROJECT_ID/bayit-plus/backend:$BUILD_ID'
       - '--region'
       - '${_REGION}'
       - '--platform'
