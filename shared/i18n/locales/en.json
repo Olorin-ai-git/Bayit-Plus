@@ -1634,7 +1634,12 @@
         "misclassificationsFound": "Found {{count}} misclassified item(s)",
         "orphanedItemsFound": "Found {{count}} orphaned item(s)",
         "fixesApplied": "Applied {{count}} fix(es)",
-        "auditCompleted": "Audit {{status}} in {{duration}}s"
+        "auditCompleted": "Audit {{status}} in {{duration}}s",
+        "connecting": "Connecting to live audit log..."
+      },
+      "progress": {
+        "batch": "Batch {{current}} of {{total}}",
+        "items": "{{processed}} of {{total}} items"
       },
       "activityLog": {
         "title": "Activity Log",

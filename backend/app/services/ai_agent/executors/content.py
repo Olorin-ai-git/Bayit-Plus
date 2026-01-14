@@ -15,16 +15,20 @@ logger = logging.getLogger(__name__)
 
 async def execute_list_content_items(
     category_id: Optional[str] = None,
-    limit: int = 20,
-    random_sample: bool = False
+    limit: int = 100,
+    random_sample: bool = False,
+    skip: int = 0
 ) -> Dict[str, Any]:
     """Get a list of content items to audit."""
     try:
-        limit = min(limit, 100)  # Cap at 100
+        limit = min(limit, 1000)  # Cap at 1000
 
         query = {"is_published": True}
         if category_id:
             query["category_id"] = category_id
+
+        # Get total count for pagination
+        total_count = await Content.find(query).count()
 
         if random_sample:
             # Use simple approach: get all items then sample in Python
@@ -35,13 +39,18 @@ async def execute_list_content_items(
             else:
                 items = all_items
         else:
-            # Get newest items
-            items = await Content.find(query).sort([("created_at", -1)]).limit(limit).to_list()
+            # Get items with skip/limit for pagination
+            items = await Content.find(query).sort([("created_at", -1)]).skip(skip).limit(limit).to_list()
+
+        has_more = (skip + len(items)) < total_count
 
         # Return simplified data for Claude
         return {
             "success": True,
             "count": len(items),
+            "total": total_count,
+            "skip": skip,
+            "has_more": has_more,
             "items": [
                 {
                     "id": str(item.id),

@@ -35,6 +35,8 @@ interface GlassLogProps {
   emptyMessage?: string;
   levelLabels?: Record<LogLevel, string>;
   isRTL?: boolean;
+  animateEntries?: boolean;
+  typewriterSpeed?: number;
 }
 
 const LOG_COLORS: Record<LogLevel, string> = {
@@ -72,6 +74,8 @@ export const GlassLog: React.FC<GlassLogProps> = ({
   emptyMessage = 'No logs to display',
   levelLabels = DEFAULT_LEVEL_LABELS,
   isRTL = false,
+  animateEntries = false,
+  typewriterSpeed = 30,
 }) => {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedLevels, setSelectedLevels] = useState<Set<LogLevel>>(
@@ -79,12 +83,60 @@ export const GlassLog: React.FC<GlassLogProps> = ({
   );
   const [isExpanded, setIsExpanded] = useState(true);
   const scrollViewRef = useRef<ScrollView>(null);
+  const [displayedText, setDisplayedText] = useState<Record<string, string>>({});
 
   // Toast notification state
   const [toastVisible, setToastVisible] = useState(false);
   const [toastMessage, setToastMessage] = useState('');
   const [toastType, setToastType] = useState<'success' | 'danger'>('success');
   const toastOpacity = useRef(new Animated.Value(0)).current;
+
+  // Typewriter animation effect
+  useEffect(() => {
+    if (!animateEntries) {
+      // If animation is disabled, show full text immediately
+      const fullText: Record<string, string> = {};
+      logs.forEach(log => {
+        fullText[log.id] = log.message;
+      });
+      setDisplayedText(fullText);
+      return;
+    }
+
+    // Animate each log entry with typewriter effect
+    const timers: NodeJS.Timeout[] = [];
+    
+    logs.forEach((log, index) => {
+      // Don't re-animate if already fully displayed
+      if (displayedText[log.id] === log.message) return;
+      
+      let currentIndex = 0;
+      const message = log.message;
+      const delay = index * 100; // Stagger each entry slightly
+      
+      const typeTimer = setTimeout(() => {
+        const interval = setInterval(() => {
+          if (currentIndex <= message.length) {
+            setDisplayedText(prev => ({
+              ...prev,
+              [log.id]: message.substring(0, currentIndex),
+            }));
+            currentIndex++;
+          } else {
+            clearInterval(interval);
+          }
+        }, typewriterSpeed);
+        
+        timers.push(interval);
+      }, delay);
+      
+      timers.push(typeTimer);
+    });
+
+    return () => {
+      timers.forEach(timer => clearTimeout(timer as any));
+    };
+  }, [logs, animateEntries, typewriterSpeed]);
 
   // Auto-scroll to top when new logs arrive (newest logs are at the top)
   useEffect(() => {
@@ -352,6 +404,8 @@ export const GlassLog: React.FC<GlassLogProps> = ({
                   showSource={showSource}
                   isRTL={isRTL}
                   levelLabels={levelLabels}
+                  animateEntries={animateEntries}
+                  displayedText={displayedText[log.id] || ''}
                 />
               ))
             )}
@@ -368,6 +422,8 @@ interface LogEntryItemProps {
   showSource: boolean;
   isRTL: boolean;
   levelLabels: Record<LogLevel, string>;
+  animateEntries: boolean;
+  displayedText: string;
 }
 
 const LogEntryItem: React.FC<LogEntryItemProps> = ({
@@ -376,6 +432,8 @@ const LogEntryItem: React.FC<LogEntryItemProps> = ({
   showSource,
   isRTL,
   levelLabels,
+  animateEntries,
+  displayedText,
 }) => {
   const [isExpanded, setIsExpanded] = useState(false);
   const levelColor = LOG_COLORS[log.level];
@@ -419,7 +477,12 @@ const LogEntryItem: React.FC<LogEntryItemProps> = ({
         </View>
 
         {/* Message */}
-        <Text style={[styles.message, isRTL && styles.messageRTL]}>{log.message}</Text>
+        <Text style={[styles.message, isRTL && styles.messageRTL]}>
+          {animateEntries ? displayedText : log.message}
+          {animateEntries && displayedText && displayedText !== log.message && (
+            <Text style={styles.cursor}>▊</Text>
+          )}
+        </Text>
 
         {/* Metadata (if expanded) */}
         {isExpanded && log.metadata && (
@@ -636,6 +699,11 @@ const styles = StyleSheet.create({
   },
   messageRTL: {
     textAlign: 'right',
+  },
+  cursor: {
+    color: colors.primary,
+    fontWeight: 'bold',
+    marginLeft: 2,
   },
   metadata: {
     marginTop: spacing.sm,

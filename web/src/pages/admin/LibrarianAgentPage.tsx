@@ -8,7 +8,7 @@ import {
   Pressable,
 } from 'react-native';
 import { useTranslation } from 'react-i18next';
-import { RefreshCw, Bot, Play, Zap, FileText, Eye, ScrollText, Trash2, Calendar } from 'lucide-react';
+import { RefreshCw, Bot, Play, Zap, FileText, Eye, ScrollText, Trash2, Calendar, Pause, PlayCircle, XCircle } from 'lucide-react';
 import StatCard from '@/components/admin/StatCard';
 import LibrarianScheduleCard from '@/components/admin/LibrarianScheduleCard';
 import LibrarianActivityLog from '@/components/admin/LibrarianActivityLog';
@@ -25,6 +25,9 @@ import {
   triggerAudit,
   rollbackAction as rollbackActionAPI,
   clearAuditReports,
+  pauseAudit,
+  resumeAudit,
+  cancelAudit,
   executeVoiceCommand,
   LibrarianConfig,
   LibrarianStatus,
@@ -71,6 +74,75 @@ const LibrarianAgentPage = () => {
   const [voiceProcessing, setVoiceProcessing] = useState(false);
   const [isSpeaking, setIsSpeaking] = useState(false);
   const [isVoiceMuted, setIsVoiceMuted] = useState(false);
+  const [pausingAudit, setPausingAudit] = useState(false);
+  const [resumingAudit, setResumingAudit] = useState(false);
+  const [cancellingAudit, setCancellingAudit] = useState(false);
+  const [auditPaused, setAuditPaused] = useState(false);
+  const [connectingToLiveLog, setConnectingToLiveLog] = useState(false);
+  const [batchProgress, setBatchProgress] = useState<{
+    currentBatch: number;
+    totalBatches: number;
+    itemsProcessed: number;
+    totalItems: number;
+    percentage: number;
+  } | null>(null);
+
+  // Parse batch progress from logs
+  useEffect(() => {
+    if (!livePanelReport?.execution_logs) {
+      setBatchProgress(null);
+      return;
+    }
+
+    const logs = livePanelReport.execution_logs;
+    let totalItems = 0;
+    let itemsProcessed = 0;
+    let currentSkip = 0;
+    const batchSize = 100; // Default batch size
+
+    // Parse logs to extract batch information
+    logs.forEach(log => {
+      const msg = log.message.toLowerCase();
+      
+      // Look for total count mentions
+      const totalMatch = msg.match(/total[:\s]+(\d+)/i) || msg.match(/"total"[:\s]+(\d+)/i);
+      if (totalMatch && parseInt(totalMatch[1]) > totalItems) {
+        totalItems = parseInt(totalMatch[1]);
+      }
+
+      // Look for skip/batch mentions
+      const skipMatch = msg.match(/skip[:\s]+(\d+)/i) || msg.match(/"skip"[:\s]+(\d+)/i);
+      if (skipMatch) {
+        const skip = parseInt(skipMatch[1]);
+        if (skip > currentSkip) {
+          currentSkip = skip;
+        }
+      }
+
+      // Look for count mentions (items in current batch)
+      const countMatch = msg.match(/"count"[:\s]+(\d+)/i);
+      if (countMatch) {
+        // This helps us know items were processed
+        itemsProcessed = currentSkip + parseInt(countMatch[1]);
+      }
+    });
+
+    if (totalItems > 0) {
+      const currentBatch = Math.floor(currentSkip / batchSize) + 1;
+      const totalBatches = Math.ceil(totalItems / batchSize);
+      const percentage = Math.min(100, Math.round((itemsProcessed / totalItems) * 100));
+
+      setBatchProgress({
+        currentBatch,
+        totalBatches,
+        itemsProcessed: itemsProcessed || currentSkip,
+        totalItems,
+        percentage,
+      });
+    } else {
+      setBatchProgress(null);
+    }
+  }, [livePanelReport?.execution_logs]);
 
   // Load all data
   const loadData = useCallback(async () => {
@@ -416,6 +488,7 @@ const LibrarianAgentPage = () => {
   // Handle view logs in live panel
   const handleViewLogsInPanel = async (auditId: string) => {
     setLoadingAuditId(auditId);
+    setConnectingToLiveLog(true);
 
     try {
       const details = await getAuditReportDetails(auditId);
@@ -427,6 +500,8 @@ const LibrarianAgentPage = () => {
       setErrorModalOpen(true);
     } finally {
       setLoadingAuditId(null);
+      // Delay removing spinner to allow log animation to start
+      setTimeout(() => setConnectingToLiveLog(false), 300);
     }
   };
 
@@ -459,6 +534,65 @@ const LibrarianAgentPage = () => {
       setErrorModalOpen(true);
     } finally {
       setClearingReports(false);
+    }
+  };
+
+  // Handle pause audit
+  const handlePauseAudit = async () => {
+    if (!livePanelReport?.audit_id) return;
+    
+    setPausingAudit(true);
+    try {
+      await pauseAudit(livePanelReport.audit_id);
+      setAuditPaused(true);
+      setSuccessMessage(t('admin.librarian.audit.pauseSuccess', 'Audit paused successfully'));
+      setSuccessModalOpen(true);
+    } catch (error) {
+      logger.error('Failed to pause audit:', error);
+      setErrorMessage(t('admin.librarian.errors.failedToPause', 'Failed to pause audit'));
+      setErrorModalOpen(true);
+    } finally {
+      setPausingAudit(false);
+    }
+  };
+
+  // Handle resume audit
+  const handleResumeAudit = async () => {
+    if (!livePanelReport?.audit_id) return;
+    
+    setResumingAudit(true);
+    try {
+      await resumeAudit(livePanelReport.audit_id);
+      setAuditPaused(false);
+      setSuccessMessage(t('admin.librarian.audit.resumeSuccess', 'Audit resumed successfully'));
+      setSuccessModalOpen(true);
+    } catch (error) {
+      logger.error('Failed to resume audit:', error);
+      setErrorMessage(t('admin.librarian.errors.failedToResume', 'Failed to resume audit'));
+      setErrorModalOpen(true);
+    } finally {
+      setResumingAudit(false);
+    }
+  };
+
+  // Handle cancel audit
+  const handleCancelAudit = async () => {
+    if (!livePanelReport?.audit_id) return;
+    
+    setCancellingAudit(true);
+    try {
+      await cancelAudit(livePanelReport.audit_id);
+      setLivePanelReport(null);
+      setAuditPaused(false);
+      setSuccessMessage(t('admin.librarian.audit.cancelSuccess', 'Audit cancelled successfully'));
+      setSuccessModalOpen(true);
+      await loadData();
+    } catch (error) {
+      logger.error('Failed to cancel audit:', error);
+      setErrorMessage(t('admin.librarian.errors.failedToCancel', 'Failed to cancel audit'));
+      setErrorModalOpen(true);
+    } finally {
+      setCancellingAudit(false);
     }
   };
 
@@ -867,18 +1001,90 @@ const LibrarianAgentPage = () => {
         maxHeight={1000}
         style={styles.liveLogPanel}
       >
-        {livePanelReport ? (
+        {connectingToLiveLog ? (
+          <View style={styles.connectingState}>
+            <ActivityIndicator size="large" color={colors.primary} />
+            <Text style={styles.connectingText}>
+              {t('admin.librarian.logs.connecting', 'Connecting to live audit log...')}
+            </Text>
+          </View>
+        ) : livePanelReport ? (
           <View>
             <View style={styles.livePanelInfo}>
-              <Text style={styles.livePanelInfoText}>
-                {t('admin.librarian.logs.started')}: {format(new Date(livePanelReport.audit_date), 'HH:mm:ss')}
-              </Text>
-              {livePanelReport.completed_at && (
+              <View>
                 <Text style={styles.livePanelInfoText}>
-                  {t('admin.librarian.logs.completed')}: {format(new Date(livePanelReport.completed_at), 'HH:mm:ss')}
+                  {t('admin.librarian.logs.started')}: {format(new Date(livePanelReport.audit_date), 'HH:mm:ss')}
                 </Text>
+                {livePanelReport.completed_at && (
+                  <Text style={styles.livePanelInfoText}>
+                    {t('admin.librarian.logs.completed')}: {format(new Date(livePanelReport.completed_at), 'HH:mm:ss')}
+                  </Text>
+                )}
+              </View>
+              
+              {/* Audit Control Buttons */}
+              {livePanelReport.status === 'in_progress' && (
+                <View style={[styles.auditControlButtons, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
+                  {!auditPaused ? (
+                    <GlassButton
+                      title={t('admin.librarian.audit.pause', 'Pause')}
+                      variant="secondary"
+                      size="sm"
+                      icon={<Pause size={14} color={colors.text} />}
+                      onPress={handlePauseAudit}
+                      loading={pausingAudit}
+                      disabled={pausingAudit || cancellingAudit}
+                    />
+                  ) : (
+                    <GlassButton
+                      title={t('admin.librarian.audit.resume', 'Resume')}
+                      variant="primary"
+                      size="sm"
+                      icon={<PlayCircle size={14} color={colors.text} />}
+                      onPress={handleResumeAudit}
+                      loading={resumingAudit}
+                      disabled={resumingAudit || cancellingAudit}
+                    />
+                  )}
+                  <GlassButton
+                    title={t('admin.librarian.audit.cancel', 'Cancel')}
+                    variant="ghost"
+                    size="sm"
+                    icon={<XCircle size={14} color={colors.error} />}
+                    onPress={handleCancelAudit}
+                    loading={cancellingAudit}
+                    disabled={pausingAudit || resumingAudit || cancellingAudit}
+                    textStyle={{ color: colors.error }}
+                  />
+                </View>
               )}
             </View>
+
+            {/* Batch Progress Bar */}
+            {batchProgress && livePanelReport.status === 'in_progress' && (
+              <View style={styles.progressContainer}>
+                <View style={[styles.progressHeader, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
+                  <Text style={styles.progressLabel}>
+                    {t('admin.librarian.progress.batch', 'Batch {{current}} of {{total}}', {
+                      current: batchProgress.currentBatch,
+                      total: batchProgress.totalBatches
+                    })}
+                  </Text>
+                  <Text style={styles.progressPercentage}>
+                    {batchProgress.percentage}%
+                  </Text>
+                </View>
+                <Text style={styles.progressSubtext}>
+                  {t('admin.librarian.progress.items', '{{processed}} of {{total}} items', {
+                    processed: batchProgress.itemsProcessed,
+                    total: batchProgress.totalItems
+                  })}
+                </Text>
+                <View style={styles.progressBarContainer}>
+                  <View style={[styles.progressBarFill, { width: `${batchProgress.percentage}%` }]} />
+                </View>
+              </View>
+            )}
 
             <GlassLog
               logs={[...livePanelReport.execution_logs].reverse()}
@@ -898,6 +1104,8 @@ const LibrarianAgentPage = () => {
               showDownload
               autoScroll
               maxHeight={900}
+              animateEntries
+              typewriterSpeed={30}
             />
           </View>
         ) : (
@@ -959,12 +1167,14 @@ const LibrarianAgentPage = () => {
           reports.length > 0 ? (
             <GlassButton
               title={t('admin.librarian.reports.clearAll')}
-              variant="destructive"
-              icon={<Trash2 size={14} color={colors.error} />}
+              variant="ghost"
+              size="sm"
+              icon={<Trash2 size={14} color={colors.textMuted} />}
               onPress={handleClearReportsClick}
               loading={clearingReports}
               disabled={clearingReports}
               style={styles.clearButtonCompact}
+              textStyle={{ fontSize: 12, color: colors.textMuted }}
             />
           ) : undefined
         }
@@ -1597,10 +1807,73 @@ const styles = StyleSheet.create({
     paddingBottom: spacing.md,
     borderBottomWidth: 1,
     borderBottomColor: `${colors.text}15`,
+    alignItems: 'center',
+    justifyContent: 'space-between',
   },
   livePanelInfoText: {
     fontSize: 13,
     color: colors.textMuted,
+  },
+  auditControlButtons: {
+    flexDirection: 'row',
+    gap: spacing.sm,
+    alignItems: 'center',
+  },
+  connectingState: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: spacing.xl * 2,
+    minHeight: 300,
+    gap: spacing.md,
+  },
+  connectingText: {
+    fontSize: 16,
+    color: colors.textMuted,
+    textAlign: 'center',
+    marginTop: spacing.sm,
+  },
+  progressContainer: {
+    padding: spacing.md,
+    marginBottom: spacing.md,
+    backgroundColor: colors.glassPurpleLight,
+    borderRadius: borderRadius.md,
+    borderWidth: 1,
+    borderColor: colors.glassBorder,
+  },
+  progressHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: spacing.xs,
+  },
+  progressLabel: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: colors.text,
+  },
+  progressPercentage: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    color: colors.primary,
+  },
+  progressSubtext: {
+    fontSize: 12,
+    color: colors.textMuted,
+    marginBottom: spacing.sm,
+  },
+  progressBarContainer: {
+    height: 8,
+    backgroundColor: colors.glassStrong,
+    borderRadius: borderRadius.sm,
+    overflow: 'hidden',
+    borderWidth: 1,
+    borderColor: colors.glassBorder,
+  },
+  progressBarFill: {
+    height: '100%',
+    backgroundColor: colors.primary,
+    borderRadius: borderRadius.sm,
+    transition: 'width 0.3s ease',
   },
   emptyState: {
     alignItems: 'center',

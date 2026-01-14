@@ -1502,7 +1502,12 @@
         "misclassificationsFound": "נמצאו {{count}} פריט(ים) מסווג(ים) באופן שגוי",
         "orphanedItemsFound": "נמצאו {{count}} פריט(ים) נטוש(ים)",
         "fixesApplied": "בוצעו {{count}} תיקון(ים)",
-        "auditCompleted": "הביקורת {{status}} ב-{{duration}}s"
+        "auditCompleted": "הביקורת {{status}} ב-{{duration}}s",
+        "connecting": "מתחבר ללוג ביקורת חי..."
+      },
+      "progress": {
+        "batch": "אצווה {{current}} מתוך {{total}}",
+        "items": "{{processed}} מתוך {{total}} פריטים"
       },
       "activityLog": {
         "title": "יומן פעילות",

@@ -1915,7 +1915,12 @@
         "misclassificationsFound": "Se encontraron {{count}} elemento(s) mal clasificado(s)",
         "orphanedItemsFound": "Se encontraron {{count}} elemento(s) huérfano(s)",
         "fixesApplied": "Se aplicaron {{count}} corrección(es)",
-        "auditCompleted": "Auditoría {{status}} en {{duration}}s"
+        "auditCompleted": "Auditoría {{status}} en {{duration}}s",
+        "connecting": "Conectando al registro de auditoría en vivo..."
+      },
+      "progress": {
+        "batch": "Lote {{current}} de {{total}}",
+        "items": "{{processed}} de {{total}} elementos"
       },
       "activityLog": {
         "title": "Registro de Actividad",

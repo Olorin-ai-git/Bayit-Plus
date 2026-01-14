@@ -87,7 +87,7 @@ async def log_to_database(audit_report: AuditReport, level: str, message: str, s
 TOOLS = [
     {
         "name": "list_content_items",
-        "description": "Get a list of content items to audit. You can filter by category, limit results, or get a random sample. Use this to decide what to inspect.",
+        "description": "Get a list of content items to audit. Returns items in batches with pagination support. Response includes 'total', 'has_more' to help you process all items in batches of 100. Use skip parameter to get next batch.",
         "input_schema": {
             "type": "object",
             "properties": {
@@ -97,13 +97,18 @@ TOOLS = [
                 },
                 "limit": {
                     "type": "integer",
-                    "description": "Maximum number of items to return (default 20, max 100)",
-                    "default": 20
+                    "description": "Maximum number of items to return (default 100, max 1000)",
+                    "default": 100
                 },
                 "random_sample": {
                     "type": "boolean",
                     "description": "If true, return random sample instead of newest items",
                     "default": False
+                },
+                "skip": {
+                    "type": "integer",
+                    "description": "Number of items to skip for pagination (default 0). Increment by limit to get next batch.",
+                    "default": 0
                 }
             },
             "required": []
@@ -597,16 +602,20 @@ TOOLS = [
 
 async def execute_list_content_items(
     category_id: Optional[str] = None,
-    limit: int = 20,
-    random_sample: bool = False
+    limit: int = 100,
+    random_sample: bool = False,
+    skip: int = 0
 ) -> Dict[str, Any]:
     """Get a list of content items to audit."""
     try:
-        limit = min(limit, 100)  # Cap at 100
+        limit = min(limit, 1000)  # Cap at 1000
 
         query = {"is_published": True}
         if category_id:
             query["category_id"] = category_id
+
+        # Get total count for pagination
+        total_count = await Content.find(query).count()
 
         if random_sample:
             # Use simple approach: get all items then sample in Python
@@ -618,13 +627,18 @@ async def execute_list_content_items(
             else:
                 items = all_items
         else:
-            # Get newest items
-            items = await Content.find(query).sort([("created_at", -1)]).limit(limit).to_list()
+            # Get items with skip/limit for pagination
+            items = await Content.find(query).sort([("created_at", -1)]).skip(skip).limit(limit).to_list()
+
+        has_more = (skip + len(items)) < total_count
 
         # Return simplified data for Claude
         return {
             "success": True,
             "count": len(items),
+            "total": total_count,
+            "skip": skip,
+            "has_more": has_more,
             "items": [
                 {
                     "id": str(item.id),
@@ -2343,7 +2357,12 @@ Balance between metadata fixes, subtitle acquisition, and quality checks.
 13. **THIRTEENTH:** Check for other issues (categorization, broken URLs)
 
 **What You Must Do:**
-1. Choose which content items to inspect (use judgment - no need to check everything)
+1. **BATCH PROCESSING STRATEGY:** Process ALL items in the library in batches of 100
+   - Call list_content_items with limit=100, skip=0
+   - Process those 100 items
+   - If response has "has_more": true, call list_content_items with skip=100
+   - Continue incrementing skip by 100 until has_more is false
+   - This ensures comprehensive coverage of the entire library
 2. **MANDATORY - Check each item for (IN THIS ORDER):**
    - 🔥 **HIGHEST PRIORITY:** Missing thumbnail/poster image
    - 🔥 **HIGHEST PRIORITY:** Missing metadata (description, genre, imdb_id, tmdb_id, cast, director)
@@ -2386,7 +2405,7 @@ These will appear in summary as "fixes_applied" and have follow-up actions!
 These will ONLY appear in AI Insights in complete_audit, NOT as fixes_applied!
 
 **Available Tools - Content Management:**
-- list_content_items - Get list of items to audit
+- list_content_items - Get list of items in batches (default 100, max 1000). Returns total, has_more, skip for pagination. Process all items by incrementing skip.
 - get_content_details - Check details about specific item
 - get_categories - See all categories
 - check_stream_url - Check if URL works
@@ -2431,6 +2450,30 @@ DO NOT send email for:
 - ✅ Small issues you fixed
 - ✅ Routine audits without significant issues
 - ✅ Individual issues flagged for manual review
+
+**Batch Processing Example:**
+```
+Step 1: list_content_items(limit=100, skip=0)
+        → Returns: {{"count": 100, "total": 450, "has_more": true}}
+        → Process these 100 items
+        
+Step 2: list_content_items(limit=100, skip=100)
+        → Returns: {{"count": 100, "total": 450, "has_more": true}}
+        → Process these 100 items
+        
+Step 3: list_content_items(limit=100, skip=200)
+        → Returns: {{"count": 100, "total": 450, "has_more": true}}
+        → Process these 100 items
+        
+Step 4: list_content_items(limit=100, skip=300)
+        → Returns: {{"count": 100, "total": 450, "has_more": true}}
+        → Process these 100 items
+        
+Step 5: list_content_items(limit=100, skip=400)
+        → Returns: {{"count": 50, "total": 450, "has_more": false}}
+        → Process final 50 items
+        → All 450 items covered!
+```
 
 **Mode:** {'DRY RUN - You cannot actually change data, only report what you would do' if dry_run else 'LIVE - You can make real changes'}
 

@@ -88,10 +88,17 @@ The Librarian AI Agent is a fully autonomous AI agent that audits, maintains, an
 The agent uses these reasoning patterns:
 
 ### Content Selection Strategy
-1. **Prioritize Recent Changes** - Focus on content modified in last 7 days
-2. **Sample Older Content** - Random 10% sample to catch historical issues
-3. **Category Balancing** - Ensure all categories get coverage
-4. **Issue-Driven Focus** - If finding many issues in a category, inspect more from that category
+1. **Batch Processing** - Process ALL items in batches of 100 (default), up to 1000 per batch
+2. **Comprehensive Coverage** - Use pagination with skip parameter to cover entire library
+3. **Sequential Processing** - Start with skip=0, increment by 100 until has_more=false
+4. **Category Balancing** - Can filter by category_id for targeted audits
+5. **Issue-Driven Focus** - If finding many issues in a category, inspect more from that category
+
+**Pagination Example:**
+- Batch 1: list_content_items(limit=100, skip=0)
+- Batch 2: list_content_items(limit=100, skip=100)
+- Batch 3: list_content_items(limit=100, skip=200)
+- Continue until has_more=false
 
 ### Classification Verification
 ```

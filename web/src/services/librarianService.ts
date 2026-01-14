@@ -251,6 +251,54 @@ export const clearAuditReports = async (): Promise<{ deleted_count: number; mess
   return response.json();
 };
 
+export const pauseAudit = async (auditId: string): Promise<{ status: string; message: string }> => {
+  const response = await fetch(
+    `${API_BASE_URL}/admin/librarian/audits/${auditId}/pause`,
+    {
+      method: 'POST',
+      headers: getAuthHeaders(),
+    }
+  );
+
+  if (!response.ok) {
+    throw new Error('Failed to pause audit');
+  }
+
+  return response.json();
+};
+
+export const resumeAudit = async (auditId: string): Promise<{ status: string; message: string }> => {
+  const response = await fetch(
+    `${API_BASE_URL}/admin/librarian/audits/${auditId}/resume`,
+    {
+      method: 'POST',
+      headers: getAuthHeaders(),
+    }
+  );
+
+  if (!response.ok) {
+    throw new Error('Failed to resume audit');
+  }
+
+  return response.json();
+};
+
+export const cancelAudit = async (auditId: string): Promise<{ status: string; message: string }> => {
+  const response = await fetch(
+    `${API_BASE_URL}/admin/librarian/audits/${auditId}/cancel`,
+    {
+      method: 'POST',
+      headers: getAuthHeaders(),
+    }
+  );
+
+  if (!response.ok) {
+    throw new Error('Failed to cancel audit');
+  }
+
+  return response.json();
+};
+
 export const getLibrarianActions = async (
   auditId?: string,
   actionType?: string,
