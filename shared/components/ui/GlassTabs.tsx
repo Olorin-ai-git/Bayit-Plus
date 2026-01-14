@@ -203,7 +203,7 @@ const styles = StyleSheet.create({
     borderRadius: borderRadius.md,
   },
   tabActive: {
-    backgroundColor: 'rgba(0, 217, 255, 0.15)',
+    backgroundColor: 'rgba(107, 33, 168, 0.3)',
   },
   pillTab: {
     flexDirection: 'row',
@@ -255,7 +255,7 @@ const styles = StyleSheet.create({
     marginLeft: spacing.sm,
   },
   badge: {
-    backgroundColor: 'rgba(0, 217, 255, 0.2)',
+    backgroundColor: 'rgba(107, 33, 168, 0.3)',
     paddingHorizontal: spacing.sm,
     paddingVertical: 2,
     borderRadius: borderRadius.full,

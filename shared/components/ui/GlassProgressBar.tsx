@@ -110,8 +110,8 @@ export const GlassProgressBar: React.FC<GlassProgressBarProps> = ({
 
   // Variant colors
   const variantColors: Record<ProgressVariant, { start: string; end: string }> = {
-    default: { start: colors.primary, end: '#0099CC' },
-    gradient: { start: '#00D9FF', end: '#00FF88' },
+    default: { start: colors.primary, end: '#7c3aed' },
+    gradient: { start: '#a855f7', end: '#a855f7' },
     success: { start: colors.success, end: '#00CC66' },
     warning: { start: colors.warning, end: '#FF6B00' },
   };
@@ -227,7 +227,7 @@ const styles = StyleSheet.create({
     left: 0,
     top: 0,
     // @ts-ignore - Web gradient
-    background: 'linear-gradient(90deg, #00D9FF, #00FF88)',
+    background: 'linear-gradient(90deg, #a855f7, #a855f7)',
   },
   fillRTL: {
     left: 'auto' as any,
@@ -256,7 +256,7 @@ const styles = StyleSheet.create({
   },
   segmentActive: {
     // @ts-ignore - Web shadow
-    boxShadow: '0 0 8px rgba(0, 217, 255, 0.5)',
+    boxShadow: '0 0 8px rgba(168, 85, 247, 0.5)',
   },
 });
 

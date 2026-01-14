@@ -33,7 +33,7 @@ const FLOW_CONFIGS: Record<string, { colors: string[]; bgColor: string }> = {
   'Hora de los Niños': { colors: ['#ff2d55', '#ff6b9d'], bgColor: 'rgba(255, 45, 85, 0.15)' },
 };
 
-const DEFAULT_FLOW_CONFIG = { colors: ['#00d9ff', '#0099cc'], bgColor: 'rgba(0, 217, 255, 0.15)' };
+const DEFAULT_FLOW_CONFIG = { colors: ['#a855f7', '#0099cc'], bgColor: 'rgba(107, 33, 168, 0.3)' };
 
 interface FlowCardProps {
   flow: Flow;

@@ -374,7 +374,7 @@ const styles = StyleSheet.create({
     width: 60,
     height: 60,
     borderRadius: 30,
-    backgroundColor: 'rgba(0, 217, 255, 0.2)',
+    backgroundColor: 'rgba(107, 33, 168, 0.3)',
     justifyContent: 'center',
     alignItems: 'center',
     marginLeft: spacing.lg,
@@ -481,7 +481,7 @@ const styles = StyleSheet.create({
   sizeBadge: {
     position: 'absolute',
     top: 8,
-    backgroundColor: 'rgba(0, 217, 255, 0.8)',
+    backgroundColor: 'rgba(168, 85, 247, 0.8)',
     borderRadius: 8,
     paddingHorizontal: 6,
     paddingVertical: 2,

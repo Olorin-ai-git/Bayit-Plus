@@ -180,7 +180,7 @@ export const GlassFAB: React.FC<GlassFABProps> = ({
       return (
         <View style={[styles.fab, fabStyle, styles.glassFab, (isFocused || isHovered) && styles.fabFocused, disabled && styles.fabDisabled, style]}>
           <LinearGradient
-            colors={['rgba(0, 217, 255, 0.25)', 'rgba(0, 153, 204, 0.25)']}
+            colors={['rgba(107, 33, 168, 0.3)', 'rgba(0, 153, 204, 0.25)']}
             start={{ x: 0, y: 0 }}
             end={{ x: 1, y: 1 }}
             style={styles.gradientOverlay}

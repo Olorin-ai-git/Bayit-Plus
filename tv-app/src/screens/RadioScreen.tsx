@@ -195,7 +195,7 @@ export const RadioScreen: React.FC = () => {
   if (isLoading) {
     return (
       <View style={styles.loadingContainer}>
-        <ActivityIndicator size="large" color="#00d9ff" />
+        <ActivityIndicator size="large" color="#a855f7" />
         <Text style={styles.loadingText}>{t('common.loading')}</Text>
       </View>
     );

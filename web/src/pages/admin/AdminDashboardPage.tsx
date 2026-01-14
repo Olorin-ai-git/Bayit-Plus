@@ -175,10 +175,15 @@ export default function AdminDashboardPage() {
           <Text style={[styles.pageTitle, { textAlign }]}>{t('admin.dashboard.title')}</Text>
           <Text style={[styles.subtitle, { textAlign }]}>{t('admin.dashboard.subtitle')}</Text>
         </View>
-        <Pressable onPress={handleRefresh} disabled={refreshing} style={styles.refreshButton}>
-          <RefreshCw size={18} color={colors.text} />
-          <Text style={styles.refreshText}>{t('admin.dashboard.refresh')}</Text>
-        </Pressable>
+        <GlassButton
+          title={t('admin.dashboard.refresh')}
+          onPress={handleRefresh}
+          disabled={refreshing}
+          variant="secondary"
+          icon={<RefreshCw size={18} color={colors.text} />}
+          style={adminButtonStyles.secondaryButton}
+          textStyle={adminButtonStyles.buttonText}
+        />
       </View>
 
       {/* Users Section */}
@@ -308,7 +313,7 @@ export default function AdminDashboardPage() {
           <GlassCard style={styles.quickActionsCard}>
             <Link to="/admin/users/new" style={{ textDecoration: 'none' }}>
               <Pressable style={[styles.quickAction, { flexDirection }]}>
-                <View style={[styles.quickActionIcon, { backgroundColor: 'rgba(0, 217, 255, 0.2)' }]}>
+                <View style={[styles.quickActionIcon, { backgroundColor: colors.glassPurpleLight }]}>
                   <UserPlus size={20} color={colors.primary} />
                 </View>
                 <Text style={[styles.quickActionText, { textAlign }]}>{t('admin.actions.addUser')}</Text>
@@ -392,18 +397,6 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: colors.textMuted,
     marginTop: spacing.xs,
-  },
-  refreshButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing.sm,
-    padding: spacing.sm,
-    backgroundColor: colors.glass,
-    borderRadius: borderRadius.md,
-  },
-  refreshText: {
-    fontSize: 14,
-    color: colors.text,
   },
   section: {
     marginBottom: spacing.lg,

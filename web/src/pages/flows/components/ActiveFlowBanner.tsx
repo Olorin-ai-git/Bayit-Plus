@@ -29,7 +29,7 @@ const FLOW_ICONS: Record<string, { icon: React.ReactNode; colors: string[] }> = 
   'Hora de los Niños': { icon: <Baby size={36} color="#fff" />, colors: ['#ff2d55', '#ff6b9d'] },
 };
 
-const DEFAULT_ICON = { icon: <Play size={36} color="#fff" />, colors: ['#00d9ff', '#0099cc'] };
+const DEFAULT_ICON = { icon: <Play size={36} color="#fff" />, colors: ['#a855f7', '#0099cc'] };
 
 interface ActiveFlowBannerProps {
   flow: Flow;

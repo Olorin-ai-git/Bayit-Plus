@@ -391,7 +391,7 @@ const styles = StyleSheet.create({
   },
   exampleCardHovered: {
     backgroundColor: 'rgba(255, 255, 255, 0.08)',
-    borderColor: 'rgba(0, 217, 255, 0.3)',
+    borderColor: 'rgba(168, 85, 247, 0.6)',
     // @ts-ignore - Web cursor
     cursor: 'pointer',
     // @ts-ignore - Web transform

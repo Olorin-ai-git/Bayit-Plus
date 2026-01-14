@@ -377,7 +377,7 @@ const styles = StyleSheet.create({
     paddingVertical: IS_TV_BUILD ? spacing.sm : spacing.xs,
     borderRadius: IS_TV_BUILD ? 16 : 12,
     borderWidth: 1,
-    borderColor: 'rgba(0, 217, 255, 0.2)',
+    borderColor: 'rgba(107, 33, 168, 0.3)',
     gap: IS_TV_BUILD ? spacing.md : spacing.sm,
   },
   clockContainerRTL: {
@@ -496,7 +496,7 @@ const styles = StyleSheet.create({
   },
   infoButtonFocused: {
     borderColor: colors.primary,
-    backgroundColor: 'rgba(0, 217, 255, 0.2)',
+    backgroundColor: 'rgba(107, 33, 168, 0.3)',
   },
   infoButtonText: {
     fontSize: IS_TV_BUILD ? 20 : 16,

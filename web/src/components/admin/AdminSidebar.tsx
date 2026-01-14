@@ -519,7 +519,7 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(255, 255, 255, 0.05)',
   },
   languageOptionActive: {
-    backgroundColor: 'rgba(0, 217, 255, 0.1)',
+    backgroundColor: colors.glassPurpleLight,  // Purple-tinted glass for active state
   },
   languageOptionFlag: {
     fontSize: 18,
@@ -601,7 +601,7 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(255, 255, 255, 0.05)',
   },
   navButtonActive: {
-    backgroundColor: 'rgba(0, 217, 255, 0.2)',
+    backgroundColor: colors.glassPurple,  // Purple-tinted glass for active nav
   },
   navButtonChild: {
     paddingRight: spacing.xl,

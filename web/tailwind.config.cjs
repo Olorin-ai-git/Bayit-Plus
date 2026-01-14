@@ -9,13 +9,13 @@ const path = require('path');
 // These match the colors from ../shared/design-tokens/colors.js
 const colors = {
   primary: {
-    DEFAULT: '#00d9ff',
+    DEFAULT: '#a855f7',
     50: '#e6f9ff',
     100: '#b3eeff',
     200: '#80e4ff',
     300: '#4dd9ff',
     400: '#1aceff',
-    500: '#00d9ff',
+    500: '#a855f7',
     600: '#00b3d9',
     700: '#008cb3',
     800: '#00668c',

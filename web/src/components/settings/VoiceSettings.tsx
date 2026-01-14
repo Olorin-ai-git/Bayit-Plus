@@ -660,9 +660,9 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(255, 255, 255, 0.05)',
   },
   textSizeOptionSelected: {
-    backgroundColor: 'rgba(0, 217, 255, 0.15)',
+    backgroundColor: 'rgba(107, 33, 168, 0.3)',
     borderWidth: 1,
-    borderColor: 'rgba(0, 217, 255, 0.4)',
+    borderColor: 'rgba(168, 85, 247, 0.4)',
   },
   textSizeOptionHovered: {
     backgroundColor: 'rgba(255, 255, 255, 0.08)',
@@ -718,9 +718,9 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(255, 255, 255, 0.05)',
   },
   sensitivityOptionSelected: {
-    backgroundColor: 'rgba(0, 217, 255, 0.15)',
+    backgroundColor: 'rgba(107, 33, 168, 0.3)',
     borderWidth: 1,
-    borderColor: 'rgba(0, 217, 255, 0.4)',
+    borderColor: 'rgba(168, 85, 247, 0.4)',
   },
   sensitivityOptionHovered: {
     backgroundColor: 'rgba(255, 255, 255, 0.08)',
@@ -762,9 +762,9 @@ const styles = StyleSheet.create({
     marginTop: spacing.md,
   },
   testButtonActive: {
-    backgroundColor: 'rgba(0, 217, 255, 0.15)',
+    backgroundColor: 'rgba(107, 33, 168, 0.3)',
     borderWidth: 1,
-    borderColor: 'rgba(0, 217, 255, 0.4)',
+    borderColor: 'rgba(168, 85, 247, 0.4)',
   },
   testButtonText: {
     fontSize: 14,
@@ -794,8 +794,8 @@ const styles = StyleSheet.create({
     flexDirection: 'row-reverse',
   },
   modeCardSelected: {
-    backgroundColor: 'rgba(0, 217, 255, 0.15)',
-    borderColor: 'rgba(0, 217, 255, 0.4)',
+    backgroundColor: 'rgba(107, 33, 168, 0.3)',
+    borderColor: 'rgba(168, 85, 247, 0.4)',
   },
   modeCardHovered: {
     backgroundColor: 'rgba(255, 255, 255, 0.08)',
@@ -918,9 +918,9 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(255, 255, 255, 0.05)',
   },
   speedOptionSelected: {
-    backgroundColor: 'rgba(0, 217, 255, 0.15)',
+    backgroundColor: 'rgba(107, 33, 168, 0.3)',
     borderWidth: 1,
-    borderColor: 'rgba(0, 217, 255, 0.4)',
+    borderColor: 'rgba(168, 85, 247, 0.4)',
   },
   speedText: {
     fontSize: 12,

@@ -71,7 +71,7 @@ module.exports = {
         ...boxShadow,
         // TV-specific shadows (larger for big screens)
         'tv-card': '0 8px 32px rgba(0, 0, 0, 0.4)',
-        'tv-focus': '0 0 0 4px rgba(0, 217, 255, 0.5)',
+        'tv-focus': '0 0 0 4px rgba(168, 85, 247, 0.5)',
       },
       spacing: {
         // TV-friendly spacing (10-foot UI)

@@ -579,7 +579,7 @@ const styles = StyleSheet.create({
     marginBottom: spacing.xs,
   },
   tabButtonActive: {
-    backgroundColor: 'rgba(0, 217, 255, 0.2)',
+    backgroundColor: 'rgba(107, 33, 168, 0.3)',
   },
   tabIcon: {
     fontSize: 20,
@@ -763,7 +763,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: spacing.md,
     paddingVertical: spacing.sm,
     borderRadius: borderRadius.md,
-    backgroundColor: 'rgba(0, 217, 255, 0.1)',
+    backgroundColor: 'rgba(107, 33, 168, 0.3)',
   },
   addButtonText: {
     color: colors.primary,
@@ -808,7 +808,7 @@ const styles = StyleSheet.create({
     gap: spacing.sm,
   },
   defaultBadge: {
-    backgroundColor: 'rgba(0, 217, 255, 0.2)',
+    backgroundColor: 'rgba(107, 33, 168, 0.3)',
     paddingHorizontal: spacing.sm,
     paddingVertical: 4,
     borderRadius: borderRadius.sm,
@@ -970,7 +970,7 @@ const styles = StyleSheet.create({
   },
   planCardRecommended: {
     borderColor: colors.primary,
-    backgroundColor: 'rgba(0, 217, 255, 0.05)',
+    backgroundColor: 'rgba(107, 33, 168, 0.1)',
   },
   planCardCurrent: {
     borderColor: colors.success,

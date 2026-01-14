@@ -28,7 +28,7 @@ const FLOW_GRADIENTS: Record<string, string[]> = {
   'Kids Time': ['#FF2D55', '#FF6B9D'],
 };
 
-const DEFAULT_GRADIENT = ['#00D9FF', '#0099CC'];
+const DEFAULT_GRADIENT = ['#a855f7', '#7c3aed'];
 
 interface FlowHeroProgress {
   currentIndex: number;

@@ -29,7 +29,7 @@ interface ChapterItemProps {
 
 // Category colors matching web app
 const categoryColors: Record<string, string> = {
-  intro: '#3b82f6',     // blue
+  intro: '#a855f7',     // blue
   news: '#ef4444',      // red
   security: '#f97316',  // orange
   politics: '#a855f7',  // purple
@@ -156,8 +156,8 @@ const styles = StyleSheet.create({
     borderColor: 'transparent',
   },
   containerActive: {
-    backgroundColor: 'rgba(0, 217, 255, 0.1)',
-    borderColor: 'rgba(0, 217, 255, 0.3)',
+    backgroundColor: 'rgba(107, 33, 168, 0.3)',
+    borderColor: 'rgba(168, 85, 247, 0.6)',
   },
   containerFocused: {
     borderColor: colors.primary,

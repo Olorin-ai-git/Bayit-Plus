@@ -243,7 +243,7 @@ export default function DownloadsPage() {
       ) : (
         <View style={styles.emptyState}>
           <GlassCard style={styles.emptyCard}>
-            <Download size={64} color="rgba(0, 217, 255, 0.5)" />
+            <Download size={64} color="rgba(168, 85, 247, 0.5)" />
             <Text style={styles.emptyTitle}>{t('downloads.empty')}</Text>
             <Text style={styles.emptyDescription}>{t('downloads.emptyHint')}</Text>
           </GlassCard>
@@ -272,7 +272,7 @@ const styles = StyleSheet.create({
     width: 56,
     height: 56,
     borderRadius: 28,
-    backgroundColor: 'rgba(0, 217, 255, 0.2)',
+    backgroundColor: 'rgba(107, 33, 168, 0.3)',
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -387,7 +387,7 @@ const styles = StyleSheet.create({
     position: 'absolute',
     top: spacing.sm,
     left: spacing.sm,
-    backgroundColor: 'rgba(0, 217, 255, 0.9)',
+    backgroundColor: 'rgba(168, 85, 247, 0.9)',
     paddingHorizontal: spacing.sm,
     paddingVertical: spacing.xs,
     borderRadius: borderRadius.md,

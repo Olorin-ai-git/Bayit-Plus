@@ -287,7 +287,7 @@ const styles = StyleSheet.create({
     width: 320,
     height: 320,
     borderRadius: 160,
-    backgroundColor: 'rgba(0, 217, 255, 0.15)',
+    backgroundColor: 'rgba(107, 33, 168, 0.3)',
     top: -160,
     right: -160,
   },

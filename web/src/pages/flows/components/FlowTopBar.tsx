@@ -358,7 +358,7 @@ const styles = StyleSheet.create({
   },
   templateItemHovered: {
     backgroundColor: 'rgba(255, 255, 255, 0.08)',
-    borderColor: 'rgba(0, 217, 255, 0.3)',
+    borderColor: 'rgba(168, 85, 247, 0.6)',
     // @ts-ignore - Web cursor
     cursor: 'pointer',
   },
@@ -392,7 +392,7 @@ const styles = StyleSheet.create({
     padding: spacing.md,
     borderRadius: borderRadius.md,
     borderWidth: 1,
-    borderColor: 'rgba(0, 217, 255, 0.3)',
+    borderColor: 'rgba(168, 85, 247, 0.6)',
     borderStyle: 'dashed',
     // @ts-ignore - Web transition
     transition: 'all 0.2s ease',

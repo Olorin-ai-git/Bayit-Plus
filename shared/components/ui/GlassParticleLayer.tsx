@@ -5,7 +5,7 @@
  * Design:
  * - Extends existing GlassView (maintains glassmorphic consistency)
  * - ~300-500 particles in flowing wave patterns
- * - Blue/cyan gradient (rgba(0, 217, 255, ...)) matching SoundwaveVisualizer
+ * - Purple gradient (rgba(168, 85, 247, ...)) matching SoundwaveVisualizer
  * - Audio-reactive: particles respond to TTS audio levels
  * - Particle connections for mesh effect
  * - 60fps performance on TV hardware
@@ -230,14 +230,14 @@ function drawParticles(
 
     // Draw particle glow
     const gradient = ctx.createRadialGradient(x, y, 0, x, y, particle.size * 3);
-    gradient.addColorStop(0, `rgba(0, 217, 255, ${particle.opacity * 0.8})`);
-    gradient.addColorStop(1, `rgba(0, 217, 255, 0)`);
+    gradient.addColorStop(0, `rgba(168, 85, 247, ${particle.opacity * 0.8})`);
+    gradient.addColorStop(1, `rgba(168, 85, 247, 0)`);
 
     ctx.fillStyle = gradient;
     ctx.fillRect(x - particle.size * 3, y - particle.size * 3, particle.size * 6, particle.size * 6);
 
     // Draw particle core
-    ctx.fillStyle = `rgba(0, 217, 255, ${particle.opacity})`;
+    ctx.fillStyle = `rgba(168, 85, 247, ${particle.opacity})`;
     ctx.beginPath();
     ctx.arc(x, y, particle.size, 0, Math.PI * 2);
     ctx.fill();
@@ -258,7 +258,7 @@ function drawConnections(ctx: CanvasRenderingContext2D, particles: Particle[]): 
       const distance = Math.sqrt(dx * dx + dy * dy);
       const opacity = Math.max(0, 1 - distance * 5) * particle.opacity * 0.5;
 
-      ctx.strokeStyle = `rgba(0, 217, 255, ${opacity})`;
+      ctx.strokeStyle = `rgba(168, 85, 247, ${opacity})`;
       ctx.lineWidth = 0.5;
       ctx.beginPath();
       ctx.moveTo(particle.x * ctx.canvas.width, particle.y * ctx.canvas.height);

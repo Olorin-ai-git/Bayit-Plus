@@ -19,7 +19,7 @@ interface StatCardProps {
 }
 
 const colorMap = {
-  primary: { bg: 'rgba(0, 217, 255, 0.2)', text: colors.primary },
+  primary: { bg: 'rgba(107, 33, 168, 0.3)', text: colors.primary },
   secondary: { bg: 'rgba(139, 92, 246, 0.2)', text: '#8B5CF6' },
   success: { bg: 'rgba(34, 197, 94, 0.2)', text: '#22C55E' },
   warning: { bg: 'rgba(245, 158, 11, 0.2)', text: '#F59E0B' },

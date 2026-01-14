@@ -178,7 +178,7 @@ const FlowsScreen = () => {
   };
 
   const getFlowIcon = (flow: Flow) => {
-    const config = FLOW_ICONS[flow.name] || { icon: 'play-circle', colors: ['#00d9ff', '#0099cc'] };
+    const config = FLOW_ICONS[flow.name] || { icon: 'play-circle', colors: ['#a855f7', '#0099cc'] };
     return config;
   };
 
@@ -217,13 +217,13 @@ const FlowsScreen = () => {
     const iconConfig = getFlowIcon(activeFlow);
     const glowColor = glowAnim.interpolate({
       inputRange: [0, 1],
-      outputRange: ['rgba(0,217,255,0.2)', 'rgba(0,217,255,0.6)'],
+      outputRange: ['rgba(107, 33, 168, 0.3)', 'rgba(168, 85, 247, 0.6)'],
     });
 
     return (
-      <Animated.View style={[styles.activeBanner, { shadowColor: '#00d9ff', shadowOpacity: glowAnim }]}>
+      <Animated.View style={[styles.activeBanner, { shadowColor: '#a855f7', shadowOpacity: glowAnim }]}>
         <LinearGradient
-          colors={['rgba(0,217,255,0.15)', 'rgba(0,217,255,0.05)']}
+          colors={['rgba(107, 33, 168, 0.3)', 'rgba(107, 33, 168, 0.15)']}
           style={styles.activeBannerGradient}
         >
           <Animated.View style={{ transform: [{ scale: pulseAnim }] }}>
@@ -246,7 +246,7 @@ const FlowsScreen = () => {
               onPress={() => handleStartFlow(activeFlow)}
             >
               <LinearGradient
-                colors={['#00d9ff', '#0099cc']}
+                colors={['#a855f7', '#0099cc']}
                 style={styles.startButtonGradient}
               >
                 <Ionicons name="play" size={24} color="#fff" />
@@ -314,19 +314,19 @@ const FlowsScreen = () => {
             <View style={styles.flowFeatures}>
               {flow.ai_enabled && (
                 <View style={styles.featureBadge}>
-                  <Ionicons name="sparkles" size={12} color="#00d9ff" />
+                  <Ionicons name="sparkles" size={12} color="#a855f7" />
                   <Text style={styles.featureText}>AI</Text>
                 </View>
               )}
               {flow.auto_play && (
                 <View style={styles.featureBadge}>
-                  <Ionicons name="play-circle" size={12} color="#00d9ff" />
+                  <Ionicons name="play-circle" size={12} color="#a855f7" />
                   <Text style={styles.featureText}>{t('flows.autoPlay', 'Auto')}</Text>
                 </View>
               )}
               {flow.items.length > 0 && (
                 <View style={styles.featureBadge}>
-                  <Ionicons name="list" size={12} color="#00d9ff" />
+                  <Ionicons name="list" size={12} color="#a855f7" />
                   <Text style={styles.featureText}>
                     {flow.items.length} {t('flows.items', 'items')}
                   </Text>
@@ -353,7 +353,7 @@ const FlowsScreen = () => {
       <View style={styles.modalOverlay}>
         <View style={styles.createModalContent}>
           <LinearGradient
-            colors={['#00d9ff', '#0099cc']}
+            colors={['#a855f7', '#0099cc']}
             style={styles.createModalIcon}
           >
             <Ionicons name="add-circle" size={48} color="#fff" />
@@ -367,7 +367,7 @@ const FlowsScreen = () => {
           </Text>
 
           <View style={styles.createModalInfo}>
-            <Ionicons name="phone-portrait-outline" size={24} color="#00d9ff" />
+            <Ionicons name="phone-portrait-outline" size={24} color="#a855f7" />
             <Text style={styles.createModalInfoText}>
               {t('flows.tv.useCompanion', `For full customization, use the ${t('common.appName', 'Bayit+')} app on your phone or visit bayit.plus on your computer.`)}
             </Text>
@@ -445,7 +445,7 @@ const FlowsScreen = () => {
               <View style={styles.modalFeatures}>
                 {selectedFlow.ai_enabled && (
                   <View style={[styles.modalFeatureBadge, styles.aiBadge]}>
-                    <Ionicons name="sparkles" size={14} color="#00d9ff" />
+                    <Ionicons name="sparkles" size={14} color="#a855f7" />
                     <Text style={styles.modalFeatureText}>{t('flows.aiEnabled')}</Text>
                   </View>
                 )}
@@ -459,7 +459,7 @@ const FlowsScreen = () => {
                 )}
                 {selectedFlow.auto_play && (
                   <View style={styles.modalFeatureBadge}>
-                    <Ionicons name="play-circle" size={14} color="#00d9ff" />
+                    <Ionicons name="play-circle" size={14} color="#a855f7" />
                     <Text style={styles.modalFeatureText}>{t('flows.autoPlay')}</Text>
                   </View>
                 )}
@@ -510,7 +510,7 @@ const FlowsScreen = () => {
                   }}
                 >
                   <LinearGradient
-                    colors={['#00d9ff', '#0099cc']}
+                    colors={['#a855f7', '#0099cc']}
                     style={styles.modalStartGradient}
                   >
                     <Ionicons name="play" size={20} color="#fff" />
@@ -534,7 +534,7 @@ const FlowsScreen = () => {
   if (loading) {
     return (
       <View style={styles.loadingContainer}>
-        <ActivityIndicator size="large" color="#00d9ff" />
+        <ActivityIndicator size="large" color="#a855f7" />
       </View>
     );
   }
@@ -595,10 +595,10 @@ const FlowsScreen = () => {
           onPress={() => setShowCreateModal(true)}
         >
           <LinearGradient
-            colors={['rgba(0,217,255,0.1)', 'rgba(0,217,255,0.05)']}
+            colors={['rgba(107, 33, 168, 0.3)', 'rgba(107, 33, 168, 0.15)']}
             style={styles.createButtonGradient}
           >
-            <Ionicons name="add-circle-outline" size={24} color="#00d9ff" />
+            <Ionicons name="add-circle-outline" size={24} color="#a855f7" />
             <Text style={styles.createButtonText}>
               {t('flows.createCustom')}
             </Text>
@@ -657,7 +657,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     padding: 24,
     borderWidth: 1,
-    borderColor: 'rgba(0,217,255,0.3)',
+    borderColor: 'rgba(168, 85, 247, 0.6)',
     borderRadius: 16,
   },
   activeFlowIcon: {
@@ -673,7 +673,7 @@ const styles = StyleSheet.create({
   },
   activeFlowLabel: {
     fontSize: 12,
-    color: '#00d9ff',
+    color: '#a855f7',
     fontWeight: '600',
     textTransform: 'uppercase',
     letterSpacing: 1,
@@ -736,7 +736,7 @@ const styles = StyleSheet.create({
     borderColor: 'rgba(255,255,255,0.1)',
   },
   flowCardFocused: {
-    borderColor: '#00d9ff',
+    borderColor: '#a855f7',
     transform: [{ scale: 1.02 }],
   },
   flowCardGradient: {
@@ -767,14 +767,14 @@ const styles = StyleSheet.create({
     color: '#fff',
   },
   systemBadge: {
-    backgroundColor: 'rgba(0,217,255,0.2)',
+    backgroundColor: 'rgba(107, 33, 168, 0.3)',
     paddingHorizontal: 8,
     paddingVertical: 2,
     borderRadius: 4,
   },
   systemBadgeText: {
     fontSize: 10,
-    color: '#00d9ff',
+    color: '#a855f7',
     fontWeight: '600',
     textTransform: 'uppercase',
   },
@@ -801,14 +801,14 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: 4,
-    backgroundColor: 'rgba(0,217,255,0.1)',
+    backgroundColor: 'rgba(107, 33, 168, 0.3)',
     paddingHorizontal: 8,
     paddingVertical: 4,
     borderRadius: 4,
   },
   featureText: {
     fontSize: 11,
-    color: '#00d9ff',
+    color: '#a855f7',
   },
   playIconContainer: {
     padding: 8,
@@ -818,7 +818,7 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     overflow: 'hidden',
     borderWidth: 1,
-    borderColor: 'rgba(0,217,255,0.3)',
+    borderColor: 'rgba(168, 85, 247, 0.6)',
     borderStyle: 'dashed',
   },
   createButtonGradient: {
@@ -830,7 +830,7 @@ const styles = StyleSheet.create({
   },
   createButtonText: {
     fontSize: 16,
-    color: '#00d9ff',
+    color: '#a855f7',
     fontWeight: '600',
   },
   modalOverlay: {
@@ -914,20 +914,20 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: 6,
-    backgroundColor: 'rgba(0,217,255,0.1)',
+    backgroundColor: 'rgba(107, 33, 168, 0.3)',
     paddingHorizontal: 12,
     paddingVertical: 6,
     borderRadius: 8,
   },
   aiBadge: {
-    backgroundColor: 'rgba(0,217,255,0.1)',
+    backgroundColor: 'rgba(107, 33, 168, 0.3)',
   },
   briefBadge: {
     backgroundColor: 'rgba(139,92,246,0.1)',
   },
   modalFeatureText: {
     fontSize: 13,
-    color: '#00d9ff',
+    color: '#a855f7',
     fontWeight: '500',
   },
   modalItemsSection: {
@@ -950,7 +950,7 @@ const styles = StyleSheet.create({
   },
   moreItemsText: {
     fontSize: 13,
-    color: '#00d9ff',
+    color: '#a855f7',
     textAlign: 'center',
     marginTop: 8,
     fontWeight: '500',
@@ -1020,7 +1020,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: 16,
-    backgroundColor: 'rgba(0,217,255,0.1)',
+    backgroundColor: 'rgba(107, 33, 168, 0.3)',
     padding: 20,
     borderRadius: 12,
     marginBottom: 24,
@@ -1028,7 +1028,7 @@ const styles = StyleSheet.create({
   createModalInfoText: {
     flex: 1,
     fontSize: 14,
-    color: '#00d9ff',
+    color: '#a855f7',
     lineHeight: 20,
   },
   createModalActions: {

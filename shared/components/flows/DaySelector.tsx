@@ -234,7 +234,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: spacing.sm,
   },
   dayItemSelected: {
-    backgroundColor: 'rgba(0, 217, 255, 0.15)',
+    backgroundColor: 'rgba(107, 33, 168, 0.3)',
     borderColor: colors.primary,
   },
   dayItemDisabled: {

@@ -119,7 +119,7 @@ const styles = StyleSheet.create({
     height: 250,
     top: '40%' as any,
     left: '30%' as any,
-    backgroundColor: '#00d9ff',
+    backgroundColor: '#a855f7',
     opacity: 0.08,
   },
   errorCode: {
@@ -141,7 +141,7 @@ const styles = StyleSheet.create({
     width: 80,
     height: 80,
     borderRadius: 40,
-    backgroundColor: 'rgba(0, 217, 255, 0.15)',
+    backgroundColor: 'rgba(107, 33, 168, 0.3)',
     justifyContent: 'center',
     alignItems: 'center',
     marginBottom: spacing.lg,

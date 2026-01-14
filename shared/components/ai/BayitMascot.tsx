@@ -212,7 +212,7 @@ export const BayitMascot: React.FC<BayitMascotProps> = ({
           <Defs>
             {/* Roof gradient */}
             <LinearGradient id="roofGradient" x1="0%" y1="0%" x2="0%" y2="100%">
-              <Stop offset="0%" stopColor="#00d9ff" />
+              <Stop offset="0%" stopColor="#a855f7" />
               <Stop offset="100%" stopColor="#0099cc" />
             </LinearGradient>
 
@@ -224,8 +224,8 @@ export const BayitMascot: React.FC<BayitMascotProps> = ({
 
             {/* Glow gradient for listening */}
             <RadialGradient id="glowGradient" cx="50%" cy="50%" r="50%">
-              <Stop offset="0%" stopColor="#00d9ff" stopOpacity="0.5" />
-              <Stop offset="100%" stopColor="#00d9ff" stopOpacity="0" />
+              <Stop offset="0%" stopColor="#a855f7" stopOpacity="0.5" />
+              <Stop offset="100%" stopColor="#a855f7" stopOpacity="0" />
             </RadialGradient>
 
             {/* Window gradient */}
@@ -420,28 +420,28 @@ export const BayitMascot: React.FC<BayitMascotProps> = ({
               <Path
                 d="M 170 90 Q 185 100 170 110"
                 fill="none"
-                stroke="#00d9ff"
+                stroke="#a855f7"
                 strokeWidth="3"
                 strokeLinecap="round"
               />
               <Path
                 d="M 180 85 Q 200 100 180 115"
                 fill="none"
-                stroke="#00d9ff"
+                stroke="#a855f7"
                 strokeWidth="2"
                 strokeLinecap="round"
               />
               <Path
                 d="M 30 90 Q 15 100 30 110"
                 fill="none"
-                stroke="#00d9ff"
+                stroke="#a855f7"
                 strokeWidth="3"
                 strokeLinecap="round"
               />
               <Path
                 d="M 20 85 Q 0 100 20 115"
                 fill="none"
-                stroke="#00d9ff"
+                stroke="#a855f7"
                 strokeWidth="2"
                 strokeLinecap="round"
               />

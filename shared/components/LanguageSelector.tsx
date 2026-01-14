@@ -262,7 +262,7 @@ const styles = StyleSheet.create({
   },
   buttonFocused: {
     borderColor: colors.primary,
-    backgroundColor: 'rgba(0, 217, 255, 0.1)',
+    backgroundColor: 'rgba(107, 33, 168, 0.3)',
   },
   flag: {
     fontSize: IS_TV_BUILD ? 32 : 24,
@@ -300,10 +300,10 @@ const styles = StyleSheet.create({
     marginBottom: spacing.xs,
   },
   languageOptionActive: {
-    backgroundColor: 'rgba(0, 217, 255, 0.1)',
+    backgroundColor: 'rgba(107, 33, 168, 0.3)',
   },
   languageOptionFocused: {
-    backgroundColor: 'rgba(0, 217, 255, 0.2)',
+    backgroundColor: 'rgba(107, 33, 168, 0.3)',
     borderWidth: 2,
     borderColor: colors.primary,
   },

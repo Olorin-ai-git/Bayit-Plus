@@ -223,7 +223,7 @@ export default function UsersListPage() {
         <GlassTableCell.Actions isRTL={isRTL}>
           <GlassTableCell.ActionButton
             onPress={() => handleEdit(user)}
-            icon={<Edit size={16} color="#3b82f6" />}
+            icon={<Edit size={16} color="#a855f7" />}
             variant="primary"
           />
           <GlassTableCell.ActionButton
@@ -495,7 +495,7 @@ const styles = StyleSheet.create({
     width: 32,
     height: 32,
     borderRadius: 16,
-    backgroundColor: 'rgba(0, 217, 255, 0.2)',
+    backgroundColor: 'rgba(107, 33, 168, 0.3)',
     justifyContent: 'center',
     alignItems: 'center',
   },

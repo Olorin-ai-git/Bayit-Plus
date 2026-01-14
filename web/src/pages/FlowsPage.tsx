@@ -577,9 +577,9 @@ const styles = StyleSheet.create({
   createFlowCardRTL: {},
   createFlowCardInner: {
     padding: spacing.xl,
-    backgroundColor: 'rgba(0, 217, 255, 0.03)',
+    backgroundColor: 'rgba(107, 33, 168, 0.1)',
     borderWidth: 2,
-    borderColor: 'rgba(0, 217, 255, 0.15)',
+    borderColor: 'rgba(107, 33, 168, 0.3)',
     // @ts-ignore
     cursor: 'pointer',
   },
@@ -595,7 +595,7 @@ const styles = StyleSheet.create({
     width: 72,
     height: 72,
     borderRadius: borderRadius.xl,
-    backgroundColor: 'rgba(0, 217, 255, 0.15)',
+    backgroundColor: 'rgba(107, 33, 168, 0.3)',
     justifyContent: 'center',
     alignItems: 'center',
   },

@@ -394,7 +394,7 @@ export default function HierarchicalContentTable({
                 <Eye size={buttonSize} color={row.is_published ? '#10b981' : '#6b7280'} />
               </Pressable>
               <Link to={`/admin/content/${row.id}/edit`} style={{ textDecoration: 'none' }}>
-                <Pressable style={[buttonStyle, { backgroundColor: '#3b82f680' }]}>
+                <Pressable style={[buttonStyle, { backgroundColor: '#a855f780' }]}>
                   <Text style={isEpisode ? styles.editTextSmall : styles.editText}>
                     {t('common.edit')}
                   </Text>
@@ -562,14 +562,14 @@ const styles = StyleSheet.create({
     marginTop: 2,
   },
   episodeBadge: {
-    backgroundColor: 'rgba(59, 130, 246, 0.2)',
+    backgroundColor: 'rgba(107, 33, 168, 0.3)',
     paddingHorizontal: spacing.sm,
     paddingVertical: 2,
     borderRadius: borderRadius.full,
   },
   episodeBadgeText: {
     fontSize: 11,
-    color: '#3b82f6',
+    color: '#a855f7',
     fontWeight: '500',
   },
   categoryCell: {
@@ -646,12 +646,12 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   editText: {
-    color: '#3b82f6',
+    color: '#a855f7',
     fontSize: 12,
     fontWeight: '500',
   },
   editTextSmall: {
-    color: '#3b82f6',
+    color: '#a855f7',
     fontSize: 10,
     fontWeight: '500',
   },

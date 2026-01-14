@@ -682,9 +682,9 @@ const styles = StyleSheet.create({
   confirmBox: {
     padding: spacing.lg,
     borderRadius: borderRadius.lg,
-    backgroundColor: 'rgba(59, 130, 246, 0.1)',
+    backgroundColor: 'rgba(107, 33, 168, 0.2)',
     borderWidth: 1,
-    borderColor: 'rgba(59, 130, 246, 0.2)',
+    borderColor: 'rgba(107, 33, 168, 0.3)',
   },
   confirmText: {
     fontSize: 14,

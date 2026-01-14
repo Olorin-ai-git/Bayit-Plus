@@ -95,8 +95,8 @@ const styles = StyleSheet.create({
     color: '#34D399',
   },
   blue: {
-    backgroundColor: 'rgba(59, 130, 246, 0.1)',
-    borderColor: 'rgba(59, 130, 246, 0.2)',
+    backgroundColor: 'rgba(107, 33, 168, 0.2)',
+    borderColor: 'rgba(107, 33, 168, 0.3)',
     color: '#60A5FA',
   },
 })

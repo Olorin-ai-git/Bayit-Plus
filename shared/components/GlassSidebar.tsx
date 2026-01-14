@@ -404,7 +404,7 @@ const styles = StyleSheet.create({
   toggleIconContainerFocused: {
     borderColor: colors.primary,
     borderWidth: 3,
-    backgroundColor: 'rgba(0, 217, 255, 0.1)',
+    backgroundColor: 'rgba(107, 33, 168, 0.3)',
   },
   toggleIcon: {
     fontSize: 16,
@@ -420,7 +420,7 @@ const styles = StyleSheet.create({
     borderColor: 'transparent',
   },
   userProfileSectionFocused: {
-    backgroundColor: 'rgba(0, 217, 255, 0.15)',
+    backgroundColor: 'rgba(107, 33, 168, 0.3)',
     borderColor: colors.primary,
     borderWidth: 3,
   },
@@ -475,7 +475,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: spacing.sm,
     paddingVertical: 2,
     borderRadius: borderRadius.sm,
-    backgroundColor: 'rgba(0, 217, 255, 0.2)',
+    backgroundColor: 'rgba(107, 33, 168, 0.3)',
   },
   subscriptionText: {
     fontSize: 11,
@@ -521,10 +521,10 @@ const styles = StyleSheet.create({
     position: 'relative',
   },
   menuItemActive: {
-    backgroundColor: 'rgba(0, 217, 255, 0.1)',
+    backgroundColor: 'rgba(107, 33, 168, 0.3)',
   },
   menuItemFocused: {
-    backgroundColor: 'rgba(0, 217, 255, 0.15)',
+    backgroundColor: 'rgba(107, 33, 168, 0.3)',
     borderWidth: 3,
     borderColor: colors.primary,
   },

@@ -288,7 +288,7 @@ const styles = StyleSheet.create({
     color: colors.error,
   },
   processingContainer: {
-    backgroundColor: 'rgba(59, 130, 246, 0.1)',
+    backgroundColor: 'rgba(107, 33, 168, 0.2)',
     borderRadius: borderRadius.md,
     padding: spacing.sm,
     marginBottom: spacing.md,

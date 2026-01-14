@@ -297,11 +297,11 @@ export const GlassSidebar: React.FC<GlassSidebarProps> = ({ isExpanded, onToggle
                 width: 6,
                 cursor: isDragging ? 'grabbing' : 'col-resize',
                 zIndex: 200,
-                backgroundColor: isDragging ? 'rgba(0, 217, 255, 0.3)' : 'transparent',
+                backgroundColor: isDragging ? 'rgba(168, 85, 247, 0.6)' : 'transparent',
                 transition: isDragging ? 'none' : 'background-color 0.2s',
               }}
               onMouseEnter={(e) => {
-                if (!isDragging) (e.target as HTMLDivElement).style.backgroundColor = 'rgba(0, 217, 255, 0.2)';
+                if (!isDragging) (e.target as HTMLDivElement).style.backgroundColor = 'rgba(107, 33, 168, 0.3)';
               }}
               onMouseLeave={(e) => {
                 if (!isDragging) (e.target as HTMLDivElement).style.backgroundColor = 'transparent';
@@ -512,7 +512,7 @@ const styles = StyleSheet.create({
   },
   toggleIconContainerFocused: {
     borderColor: colors.primary,
-    backgroundColor: 'rgba(0, 217, 255, 0.1)',
+    backgroundColor: 'rgba(107, 33, 168, 0.3)',
   },
   toggleIcon: {
     fontSize: 16,
@@ -528,7 +528,7 @@ const styles = StyleSheet.create({
     borderColor: 'transparent',
   },
   userProfileSectionFocused: {
-    backgroundColor: 'rgba(0, 217, 255, 0.15)',
+    backgroundColor: 'rgba(107, 33, 168, 0.3)',
     borderColor: colors.primary,
     borderWidth: 3,
   },
@@ -584,7 +584,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: spacing.sm,
     paddingVertical: 2,
     borderRadius: borderRadius.sm,
-    backgroundColor: 'rgba(0, 217, 255, 0.2)',
+    backgroundColor: 'rgba(107, 33, 168, 0.3)',
   },
   subscriptionText: {
     fontSize: 11,
@@ -630,10 +630,10 @@ const styles = StyleSheet.create({
     position: 'relative',
   },
   menuItemActive: {
-    backgroundColor: 'rgba(0, 217, 255, 0.1)',
+    backgroundColor: 'rgba(107, 33, 168, 0.3)',
   },
   menuItemFocused: {
-    backgroundColor: 'rgba(0, 217, 255, 0.15)',
+    backgroundColor: 'rgba(107, 33, 168, 0.3)',
     borderWidth: 1,
     borderColor: colors.primary,
   },

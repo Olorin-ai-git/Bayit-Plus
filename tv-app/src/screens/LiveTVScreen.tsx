@@ -164,7 +164,7 @@ export const LiveTVScreen: React.FC = () => {
   if (isLoading) {
     return (
       <View style={styles.loadingContainer}>
-        <ActivityIndicator size="large" color="#00d9ff" />
+        <ActivityIndicator size="large" color="#a855f7" />
         <Text style={styles.loadingText}>{t('common.loading')}</Text>
       </View>
     );
@@ -244,7 +244,7 @@ const styles = StyleSheet.create({
     width: 60,
     height: 60,
     borderRadius: 30,
-    backgroundColor: 'rgba(0, 217, 255, 0.2)',
+    backgroundColor: 'rgba(107, 33, 168, 0.3)',
     justifyContent: 'center',
     alignItems: 'center',
     marginLeft: 20,

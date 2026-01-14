@@ -345,12 +345,12 @@ const styles = StyleSheet.create({
     width: 44,
     height: 44,
     borderRadius: 22,
-    backgroundColor: 'rgba(255, 255, 255, 0.05)',
+    backgroundColor: colors.glassLight,  // Purple-tinted glass
     alignItems: 'center',
     justifyContent: 'center',
   },
   controlButtonHovered: {
-    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+    backgroundColor: colors.glassMedium,  // Slightly darker glass on hover
   },
   playButton: {
     width: 56,

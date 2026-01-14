@@ -49,8 +49,8 @@ const statusColors: Record<string, { bg: string; text: string; labelKey: string 
 };
 
 const planColors: Record<string, { bg: string; text: string }> = {
-  Basic: { bg: 'rgba(59, 130, 246, 0.2)', text: '#3B82F6' },
-  basic: { bg: 'rgba(59, 130, 246, 0.2)', text: '#3B82F6' },
+  Basic: { bg: 'rgba(107, 33, 168, 0.3)', text: '#3B82F6' },
+  basic: { bg: 'rgba(107, 33, 168, 0.3)', text: '#3B82F6' },
   Premium: { bg: 'rgba(139, 92, 246, 0.2)', text: '#8B5CF6' },
   premium: { bg: 'rgba(139, 92, 246, 0.2)', text: '#8B5CF6' },
   Family: { bg: 'rgba(245, 158, 11, 0.2)', text: '#F59E0B' },
@@ -575,7 +575,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: spacing.sm,
     padding: spacing.md,
-    backgroundColor: 'rgba(59, 130, 246, 0.1)',
+    backgroundColor: 'rgba(107, 33, 168, 0.2)',
     borderRadius: borderRadius.md,
     marginBottom: spacing.md,
     minHeight: 48,

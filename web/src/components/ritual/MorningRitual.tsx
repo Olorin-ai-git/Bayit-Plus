@@ -608,7 +608,7 @@ const styles = StyleSheet.create({
   },
   playlistItemActive: {
     borderColor: colors.primary,
-    backgroundColor: 'rgba(0, 217, 255, 0.1)',
+    backgroundColor: 'rgba(107, 33, 168, 0.3)',
   },
   playlistItemHovered: {
     backgroundColor: 'rgba(255, 255, 255, 0.1)',

@@ -66,7 +66,7 @@ const TabBar: React.FC<TabBarProps> = ({ state, descriptors, navigation }) => {
           >
             <Icon
               size={24}
-              color={isFocused ? '#00d9ff' : '#888888'}
+              color={isFocused ? '#a855f7' : '#888888'}
               strokeWidth={isFocused ? 2.5 : 2}
             />
             <Text style={[styles.label, isFocused && styles.labelFocused]}>
@@ -100,7 +100,7 @@ const styles = StyleSheet.create({
     borderRadius: 12,
   },
   tabFocused: {
-    backgroundColor: 'rgba(0, 217, 255, 0.1)',
+    backgroundColor: 'rgba(107, 33, 168, 0.3)',
   },
   label: {
     fontSize: 11,
@@ -109,7 +109,7 @@ const styles = StyleSheet.create({
     fontWeight: '500',
   },
   labelFocused: {
-    color: '#00d9ff',
+    color: '#a855f7',
     fontWeight: '600',
   },
 });

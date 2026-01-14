@@ -191,7 +191,7 @@ const styles = StyleSheet.create({
   },
   plusText: {
     fontWeight: 'bold',
-    color: '#00d9ff',
+    color: '#a855f7',
     marginLeft: 4,
   },
 });

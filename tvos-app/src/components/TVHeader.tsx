@@ -292,7 +292,7 @@ const styles = StyleSheet.create({
   },
   logoFocused: {
     borderColor: colors.primary,
-    backgroundColor: 'rgba(0, 217, 255, 0.1)',
+    backgroundColor: 'rgba(107, 33, 168, 0.3)',
   },
   nav: {
     flexDirection: 'row',
@@ -310,7 +310,7 @@ const styles = StyleSheet.create({
   },
   navLinkFocused: {
     borderColor: colors.primary,
-    backgroundColor: 'rgba(0, 217, 255, 0.2)',
+    backgroundColor: 'rgba(107, 33, 168, 0.3)',
   },
   navLinkText: {
     fontSize: 20,
@@ -337,14 +337,14 @@ const styles = StyleSheet.create({
   },
   iconButtonFocused: {
     borderColor: colors.primary,
-    backgroundColor: 'rgba(0, 217, 255, 0.2)',
+    backgroundColor: 'rgba(107, 33, 168, 0.3)',
   },
   iconText: {
     fontSize: 32,
   },
   voiceButton: {
-    backgroundColor: 'rgba(0, 217, 255, 0.1)',
-    borderColor: 'rgba(0, 217, 255, 0.3)',
+    backgroundColor: 'rgba(107, 33, 168, 0.3)',
+    borderColor: 'rgba(168, 85, 247, 0.6)',
   },
   loginButton: {
     paddingHorizontal: spacing.lg,
@@ -391,10 +391,10 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     paddingHorizontal: spacing.sm,
-    backgroundColor: 'rgba(0, 217, 255, 0.1)',
+    backgroundColor: 'rgba(107, 33, 168, 0.3)',
     borderRadius: 8,
     borderWidth: 1,
-    borderColor: 'rgba(0, 217, 255, 0.3)',
+    borderColor: 'rgba(168, 85, 247, 0.6)',
   },
 });
 

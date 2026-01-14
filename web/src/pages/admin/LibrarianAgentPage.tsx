@@ -8,7 +8,7 @@ import {
   Pressable,
 } from 'react-native';
 import { useTranslation } from 'react-i18next';
-import { RefreshCw, Bot, Play, Zap, FileText, Eye, ScrollText, Trash2 } from 'lucide-react';
+import { RefreshCw, Bot, Play, Zap, FileText, Eye, ScrollText, Trash2, Calendar } from 'lucide-react';
 import StatCard from '@/components/admin/StatCard';
 import LibrarianScheduleCard from '@/components/admin/LibrarianScheduleCard';
 import LibrarianActivityLog from '@/components/admin/LibrarianActivityLog';
@@ -863,8 +863,8 @@ const LibrarianAgentPage = () => {
         defaultExpanded={true}
         onExpandChange={setLivePanelExpanded}
         draggable={true}
-        minHeight={300}
-        maxHeight={800}
+        minHeight={500}
+        maxHeight={1000}
         style={styles.liveLogPanel}
       >
         {livePanelReport ? (
@@ -897,7 +897,7 @@ const LibrarianAgentPage = () => {
               showLevelFilter
               showDownload
               autoScroll
-              maxHeight={500}
+              maxHeight={900}
             />
           </View>
         ) : (
@@ -914,33 +914,41 @@ const LibrarianAgentPage = () => {
       </GlassDraggableExpander>
 
       {/* Schedule Information */}
-      <Text style={[styles.sectionTitle, { textAlign, marginTop: spacing.lg }]}>
-        {t('admin.librarian.schedules.title')}
-      </Text>
-      <View style={styles.schedulesRow}>
-        <LibrarianScheduleCard
-          title={t('admin.librarian.schedules.dailyTitle')}
-          cron={config.daily_schedule.cron}
-          time={config.daily_schedule.time}
-          mode={config.daily_schedule.mode}
-          cost={config.daily_schedule.cost}
-          status={config.daily_schedule.status}
-          description={config.daily_schedule.description}
-          gcpProjectId={config.gcp_project_id}
-          onUpdate={handleScheduleUpdate}
-        />
-        <LibrarianScheduleCard
-          title={t('admin.librarian.schedules.weeklyTitle')}
-          cron={config.weekly_schedule.cron}
-          time={config.weekly_schedule.time}
-          mode={config.weekly_schedule.mode}
-          cost={config.weekly_schedule.cost}
-          status={config.weekly_schedule.status}
-          description={config.weekly_schedule.description}
-          gcpProjectId={config.gcp_project_id}
-          onUpdate={handleScheduleUpdate}
-        />
-      </View>
+      <GlassDraggableExpander
+        title={t('admin.librarian.schedules.title')}
+        subtitle={t('admin.librarian.schedules.subtitle', 'Configure daily and weekly audit schedules')}
+        icon={<Calendar size={20} color={colors.primary} />}
+        defaultExpanded={false}
+        draggable={true}
+        minHeight={200}
+        maxHeight={500}
+        style={{ marginTop: spacing.lg }}
+      >
+        <View style={styles.schedulesRow}>
+          <LibrarianScheduleCard
+            title={t('admin.librarian.schedules.dailyTitle')}
+            cron={config.daily_schedule.cron}
+            time={config.daily_schedule.time}
+            mode={config.daily_schedule.mode}
+            cost={config.daily_schedule.cost}
+            status={config.daily_schedule.status}
+            description={config.daily_schedule.description}
+            gcpProjectId={config.gcp_project_id}
+            onUpdate={handleScheduleUpdate}
+          />
+          <LibrarianScheduleCard
+            title={t('admin.librarian.schedules.weeklyTitle')}
+            cron={config.weekly_schedule.cron}
+            time={config.weekly_schedule.time}
+            mode={config.weekly_schedule.mode}
+            cost={config.weekly_schedule.cost}
+            status={config.weekly_schedule.status}
+            description={config.weekly_schedule.description}
+            gcpProjectId={config.gcp_project_id}
+            onUpdate={handleScheduleUpdate}
+          />
+        </View>
+      </GlassDraggableExpander>
 
       {/* Recent Reports */}
       <GlassDraggableExpander
@@ -984,14 +992,22 @@ const LibrarianAgentPage = () => {
       </GlassDraggableExpander>
 
       {/* Activity Log */}
-      <Text style={[styles.sectionTitle, { textAlign, marginTop: spacing.lg }]}>
-        {t('admin.librarian.activityLog.title')}
-      </Text>
-      <LibrarianActivityLog
-        actions={actions}
-        onRollback={handleRollback}
-        config={config}
-      />
+      <GlassDraggableExpander
+        title={t('admin.librarian.activityLog.title')}
+        subtitle={actions.length > 0 ? t('admin.librarian.activityLog.subtitle', `${actions.length} actions recorded`) : undefined}
+        icon={<ScrollText size={20} color={colors.primary} />}
+        defaultExpanded={false}
+        draggable={true}
+        minHeight={200}
+        maxHeight={600}
+        style={{ marginTop: spacing.lg }}
+      >
+        <LibrarianActivityLog
+          actions={actions}
+          onRollback={handleRollback}
+          config={config}
+        />
+      </GlassDraggableExpander>
 
       {/* Confirmation Modal for AI Agent */}
       <GlassModal

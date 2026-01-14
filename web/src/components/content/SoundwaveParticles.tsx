@@ -54,7 +54,7 @@ const SoundwaveParticles: React.FC<SoundwaveParticlesProps> = ({
     if (state === 'error') return '#ef4444'; // Red for error
     if (state === 'responding') return '#10b981'; // Green for response
     if (state === 'processing') return '#fbbf24'; // Yellow for processing
-    if (state === 'listening') return '#3b82f6'; // Blue for listening
+    if (state === 'listening') return '#a855f7'; // Blue for listening
     return '#6366f1'; // Indigo default
   };
 
@@ -256,7 +256,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#fbbf24', // Yellow
   },
   statusDotListening: {
-    backgroundColor: '#3b82f6', // Blue
+    backgroundColor: '#a855f7', // Blue
   },
   statusDotError: {
     backgroundColor: '#ef4444', // Red

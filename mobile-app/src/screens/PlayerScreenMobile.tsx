@@ -410,7 +410,7 @@ const styles = StyleSheet.create({
     width: 80,
     height: 80,
     borderRadius: 40,
-    backgroundColor: 'rgba(0, 217, 255, 0.9)',
+    backgroundColor: 'rgba(168, 85, 247, 0.9)',
   },
   seekButton: {
     backgroundColor: 'rgba(0, 0, 0, 0.5)',

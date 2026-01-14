@@ -1,22 +1,23 @@
 /**
  * Shared glassmorphic button styles for admin pages
- * Ensures consistent styling across all admin interfaces
+ * Purple/Black theme with consistent glassmorphic styling
  */
 
 import { StyleSheet } from 'react-native';
+import { colors } from '@bayit/shared/theme';
 
 export const adminButtonStyles = StyleSheet.create({
-  // Primary action button (Create, Add, etc.)
+  // Primary action button (Create, Add, etc.) - Purple
   primaryButton: {
-    backgroundColor: 'rgba(34, 197, 94, 0.15)',
-    borderColor: 'rgba(34, 197, 94, 0.3)',
+    backgroundColor: colors.glassPurpleLight,  // rgba(107, 33, 168, 0.3)
+    borderColor: colors.glassBorderStrong,     // rgba(168, 85, 247, 0.4)
     borderWidth: 1,
   },
 
-  // Secondary action button (Edit, View, etc.)
+  // Secondary action button (Edit, View, etc.) - Glass
   secondaryButton: {
-    backgroundColor: 'rgba(255, 255, 255, 0.05)',
-    borderColor: 'rgba(255, 255, 255, 0.15)',
+    backgroundColor: colors.glassLight,         // rgba(10, 10, 10, 0.5)
+    borderColor: colors.glassBorder,           // rgba(168, 85, 247, 0.2)
     borderWidth: 1,
   },
 
@@ -27,10 +28,10 @@ export const adminButtonStyles = StyleSheet.create({
     borderWidth: 1,
   },
 
-  // Info/View button
+  // Info/View button - Purple tint
   infoButton: {
-    backgroundColor: 'rgba(59, 130, 246, 0.1)',
-    borderColor: 'rgba(59, 130, 246, 0.3)',
+    backgroundColor: colors.glassPurple,        // rgba(59, 7, 100, 0.4)
+    borderColor: colors.glassBorder,           // rgba(168, 85, 247, 0.2)
     borderWidth: 1,
   },
 
@@ -50,28 +51,29 @@ export const adminButtonStyles = StyleSheet.create({
 
   // Cancel/Dismiss button
   cancelButton: {
-    backgroundColor: 'rgba(255, 255, 255, 0.05)',
-    borderColor: 'rgba(255, 255, 255, 0.1)',
+    backgroundColor: colors.glassLight,         // rgba(10, 10, 10, 0.5)
+    borderColor: colors.glassBorderLight,      // rgba(168, 85, 247, 0.1)
     borderWidth: 1,
   },
 
-  // Selected state for buttons (radio/toggle style)
+  // Selected state for buttons (radio/toggle style) - Purple
   selectedButton: {
-    backgroundColor: 'rgba(59, 130, 246, 0.15)',
-    borderColor: 'rgba(59, 130, 246, 0.4)',
+    backgroundColor: colors.glassPurpleLight,   // rgba(107, 33, 168, 0.3)
+    borderColor: colors.glassBorderFocus,      // rgba(168, 85, 247, 0.6)
     borderWidth: 1,
   },
 
   // Unselected state for buttons (radio/toggle style)
   unselectedButton: {
-    backgroundColor: 'rgba(255, 255, 255, 0.05)',
-    borderColor: 'rgba(255, 255, 255, 0.1)',
+    backgroundColor: colors.glassLight,         // rgba(10, 10, 10, 0.5)
+    borderColor: colors.glassBorderLight,      // rgba(168, 85, 247, 0.1)
     borderWidth: 1,
   },
 
   // Button text color
   buttonText: {
     color: '#FFFFFF',
+    textAlign: 'center',
   },
 
   // Disabled button text

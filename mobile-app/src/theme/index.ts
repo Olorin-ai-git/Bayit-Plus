@@ -17,9 +17,9 @@ export * from './spacing';
  */
 export const colors = {
   // Primary
-  primary: '#00d9ff',
-  primaryDark: '#00a8cc',
-  primaryLight: '#33e2ff',
+  primary: '#a855f7',
+  primaryDark: '#7c3aed',
+  primaryLight: '#c4b5fd',
 
   // Background
   background: '#0d0d1a',
@@ -36,7 +36,7 @@ export const colors = {
   success: '#00e676',
   error: '#ff3b30',
   warning: '#ffcc00',
-  info: '#00d9ff',
+  info: '#a855f7',
 
   // Glass effects
   glassLight: 'rgba(255, 255, 255, 0.1)',

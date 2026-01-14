@@ -51,7 +51,7 @@ export function GlassLiveChannelCard({
           <View style={styles.glowContainer}>
             <LinearGradient
               colors={[
-                'rgba(0, 217, 255, 0.4)',
+                'rgba(168, 85, 247, 0.4)',
                 'rgba(147, 51, 234, 0.3)',
                 'rgba(236, 72, 153, 0.3)',
               ]}
@@ -115,7 +115,7 @@ export function GlassLiveChannelCard({
             <View style={styles.playButtonContainer}>
               <View style={styles.playButton}>
                 <LinearGradient
-                  colors={['rgba(0, 217, 255, 1)', 'rgba(147, 51, 234, 1)']}
+                  colors={['rgba(168, 85, 247, 1)', 'rgba(147, 51, 234, 1)']}
                   start={{ x: 0, y: 0 }}
                   end={{ x: 1, y: 1 }}
                   style={styles.playButtonGradient}
@@ -148,7 +148,7 @@ const styles = StyleSheet.create({
   cardHovered: {
     // @ts-ignore
     transform: [{ scale: 1.05 }],
-    boxShadow: '0 20px 60px rgba(0, 217, 255, 0.3), 0 0 40px rgba(147, 51, 234, 0.2)',
+    boxShadow: '0 20px 60px rgba(168, 85, 247, 0.6), 0 0 40px rgba(147, 51, 234, 0.2)',
   },
   background: {
     ...StyleSheet.absoluteFillObject,
@@ -187,7 +187,7 @@ const styles = StyleSheet.create({
     width: 80,
     height: 80,
     borderRadius: 40,
-    backgroundColor: 'rgba(0, 217, 255, 0.1)',
+    backgroundColor: 'rgba(107, 33, 168, 0.3)',
     justifyContent: 'center',
     alignItems: 'center',
     // @ts-ignore
@@ -203,7 +203,7 @@ const styles = StyleSheet.create({
     width: 60,
     height: 60,
     borderTopRightRadius: borderRadius.xl,
-    backgroundColor: 'rgba(0, 217, 255, 0.05)',
+    backgroundColor: 'rgba(107, 33, 168, 0.1)',
     // @ts-ignore
     transform: [{ rotate: '45deg' }],
   },
@@ -273,7 +273,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     // @ts-ignore
-    boxShadow: '0 8px 32px rgba(0, 217, 255, 0.6)',
+    boxShadow: '0 8px 32px rgba(168, 85, 247, 0.6)',
   },
   playButtonGradient: {
     ...StyleSheet.absoluteFillObject,

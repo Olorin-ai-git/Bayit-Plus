@@ -16,10 +16,10 @@ const boxShadow = {
   'glass-lg': '0 16px 48px 0 rgba(0, 0, 0, 0.45)',
 
   // Glow effects
-  glow: '0 0 20px rgba(0, 217, 255, 0.3)',
-  'glow-lg': '0 0 40px rgba(0, 217, 255, 0.4)',
-  'glow-primary': '0 0 20px rgba(0, 217, 255, 0.3)',
-  'glow-secondary': '0 0 20px rgba(138, 43, 226, 0.3)',
+  glow: '0 0 20px rgba(168, 85, 247, 0.3)',
+  'glow-lg': '0 0 40px rgba(168, 85, 247, 0.4)',
+  'glow-primary': '0 0 20px rgba(168, 85, 247, 0.3)',
+  'glow-secondary': '0 0 20px rgba(192, 38, 211, 0.3)',
   'glow-success': '0 0 20px rgba(16, 185, 129, 0.3)',
   'glow-error': '0 0 20px rgba(239, 68, 68, 0.3)',
   'glow-warning': '0 0 20px rgba(245, 158, 11, 0.3)',

@@ -28,12 +28,12 @@ interface Pagination {
 }
 
 const actionColors: Record<string, { bg: string; text: string }> = {
-  user: { bg: 'rgba(0, 217, 255, 0.2)', text: '#00D9FF' },
+  user: { bg: 'rgba(107, 33, 168, 0.3)', text: '#a855f7' },
   subscription: { bg: 'rgba(139, 92, 246, 0.2)', text: '#8B5CF6' },
   payment: { bg: 'rgba(34, 197, 94, 0.2)', text: '#22C55E' },
   settings: { bg: 'rgba(245, 158, 11, 0.2)', text: '#F59E0B' },
   campaign: { bg: 'rgba(236, 72, 153, 0.2)', text: '#EC4899' },
-  content: { bg: 'rgba(59, 130, 246, 0.2)', text: '#3B82F6' },
+  content: { bg: 'rgba(107, 33, 168, 0.3)', text: '#3B82F6' },
 };
 
 const formatDate = (dateStr: string) => {

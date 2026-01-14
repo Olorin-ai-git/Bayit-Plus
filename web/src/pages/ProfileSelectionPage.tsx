@@ -9,7 +9,7 @@ import { colors, spacing, borderRadius } from '@bayit/shared/theme';
 import { GlassCard, GlassButton } from '@bayit/shared/ui';
 
 const AVATAR_COLORS = [
-  '#00d9ff', // Cyan
+  '#a855f7', // Cyan
   '#ff6b6b', // Red
   '#4ecdc4', // Teal
   '#ffd93d', // Yellow

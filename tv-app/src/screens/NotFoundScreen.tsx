@@ -143,7 +143,7 @@ const styles = StyleSheet.create({
     width: 100,
     height: 100,
     borderRadius: 50,
-    backgroundColor: 'rgba(0, 217, 255, 0.1)',
+    backgroundColor: 'rgba(107, 33, 168, 0.3)',
     justifyContent: 'center',
     alignItems: 'center',
     marginBottom: spacing.lg,
@@ -244,7 +244,7 @@ const styles = StyleSheet.create({
   },
   suggestionLinkFocused: {
     borderColor: colors.primary,
-    backgroundColor: 'rgba(0, 217, 255, 0.1)',
+    backgroundColor: 'rgba(107, 33, 168, 0.3)',
   },
   suggestionText: {
     fontSize: 14,

@@ -225,7 +225,7 @@ export const GlassTableCell = {
     disabled?: boolean;
   }) => {
     const variantStyles = {
-      primary: '#3b82f6',
+      primary: '#a855f7',
       danger: '#ef4444',
       default: colors.textMuted,
     };

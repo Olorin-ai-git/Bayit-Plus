@@ -403,7 +403,7 @@ const styles = StyleSheet.create({
     color: colors.primary,
     paddingHorizontal: spacing.sm,
     paddingVertical: spacing.xs,
-    backgroundColor: 'rgba(0, 217, 255, 0.1)',
+    backgroundColor: 'rgba(107, 33, 168, 0.3)',
     borderRadius: borderRadius.sm,
   },
   feedDuration: {

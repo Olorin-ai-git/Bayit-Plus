@@ -351,7 +351,7 @@ export default function UserWidgetsPage() {
       {widgets.length === 0 && (
         <View style={styles.emptyState}>
           <GlassCard style={styles.emptyCard}>
-            <Grid3x3 size={64} color="rgba(59, 130, 246, 0.5)" />
+            <Grid3x3 size={64} color="rgba(168, 85, 247, 0.5)" />
             <Text style={styles.emptyTitle}>{t('widgets.emptyPersonal') || 'No personal widgets yet'}</Text>
             <Text style={styles.emptyDescription}>
               {t('widgets.emptyPersonalHint') || 'Create your first personal widget or add system widgets above'}
@@ -382,7 +382,7 @@ const styles = StyleSheet.create({
     width: 56,
     height: 56,
     borderRadius: 28,
-    backgroundColor: 'rgba(59, 130, 246, 0.2)',
+    backgroundColor: 'rgba(107, 33, 168, 0.3)',
     justifyContent: 'center',
     alignItems: 'center',
   },

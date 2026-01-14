@@ -27,7 +27,7 @@ const PROFILE_SIZE = Platform.OS === 'web' ? 140 : 100;
 
 // Profile avatar colors
 const AVATAR_COLORS = [
-  '#00d9ff', // Cyan
+  '#a855f7', // Cyan
   '#ff6b6b', // Red
   '#4ecdc4', // Teal
   '#ffd93d', // Yellow
@@ -333,7 +333,7 @@ const styles = StyleSheet.create({
   },
   backgroundGradient: {
     ...StyleSheet.absoluteFillObject,
-    backgroundColor: 'rgba(0, 217, 255, 0.03)',
+    backgroundColor: 'rgba(107, 33, 168, 0.1)',
   },
   loadingContainer: {
     flex: 1,

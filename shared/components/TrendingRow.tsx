@@ -344,10 +344,10 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(30, 30, 50, 0.6)',
   },
   topicCardFocused: {
-    borderColor: '#00d9ff',
+    borderColor: '#a855f7',
     borderWidth: 2,
-    backgroundColor: 'rgba(0, 217, 255, 0.1)',
-    shadowColor: '#00d9ff',
+    backgroundColor: 'rgba(107, 33, 168, 0.3)',
+    shadowColor: '#a855f7',
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.4,
     shadowRadius: 12,
@@ -361,16 +361,16 @@ const styles = StyleSheet.create({
     fontSize: 28,
   },
   categoryBadge: {
-    backgroundColor: 'rgba(0, 217, 255, 0.15)',
+    backgroundColor: 'rgba(107, 33, 168, 0.3)',
     paddingHorizontal: spacing.md,
     paddingVertical: 4,
     borderRadius: borderRadius.full,
     borderWidth: 1,
-    borderColor: 'rgba(0, 217, 255, 0.3)',
+    borderColor: 'rgba(168, 85, 247, 0.6)',
   },
   categoryText: {
     fontSize: fontSize.xs,
-    color: 'rgba(0, 217, 255, 0.9)',
+    color: 'rgba(168, 85, 247, 0.9)',
     fontWeight: '600',
   },
   topicTitle: {
@@ -398,7 +398,7 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(255, 255, 255, 0.2)',
   },
   importanceDotActive: {
-    backgroundColor: '#00d9ff',
+    backgroundColor: '#a855f7',
   },
   topStoryContainer: {
     marginHorizontal: spacing.md,

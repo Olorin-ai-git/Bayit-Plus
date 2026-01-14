@@ -577,7 +577,7 @@ const styles = StyleSheet.create({
     borderRadius: borderRadius.lg,
   },
   userBubble: {
-    backgroundColor: 'rgba(0, 217, 255, 0.2)',
+    backgroundColor: 'rgba(107, 33, 168, 0.3)',
     borderTopLeftRadius: 4,
   },
   assistantBubble: {

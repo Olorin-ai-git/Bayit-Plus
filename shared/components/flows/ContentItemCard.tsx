@@ -212,7 +212,7 @@ const styles = StyleSheet.create({
     ...(Platform.OS === 'web' && { boxShadow: `0 0 12px ${colors.primary}40` }),
   },
   cardHovered: {
-    borderColor: 'rgba(0, 217, 255, 0.5)',
+    borderColor: 'rgba(168, 85, 247, 0.5)',
   },
   thumbnailContainer: {
     aspectRatio: 16 / 9,

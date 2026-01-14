@@ -48,7 +48,7 @@ const VoiceCommandButton: React.FC<VoiceCommandButtonProps> = ({
   }, [isListening, pulseAnim]);
 
   const Icon = isDisabled ? MicOff : Mic;
-  const buttonColor = isListening ? '#00d9ff' : isDisabled ? '#666666' : '#8a2be2';
+  const buttonColor = isListening ? '#a855f7' : isDisabled ? '#666666' : '#8a2be2';
 
   return (
     <>

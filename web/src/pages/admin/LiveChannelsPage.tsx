@@ -174,9 +174,9 @@ export default function LiveChannelsPage() {
         <View style={[styles.actionsCell, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
           <Pressable
             onPress={() => handleEdit(item)}
-            style={[styles.actionButton, { backgroundColor: '#3b82f680' }]}
+            style={[styles.actionButton, { backgroundColor: '#a855f780' }]}
           >
-            <Edit size={14} color="#3b82f6" />
+            <Edit size={14} color="#a855f7" />
           </Pressable>
           <Pressable
             onPress={() => handleDelete(item.id)}
@@ -417,9 +417,9 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
     padding: spacing.md,
-    backgroundColor: 'rgba(0, 217, 255, 0.05)',
+    backgroundColor: 'rgba(107, 33, 168, 0.1)',
     borderBottomWidth: 1,
-    borderBottomColor: 'rgba(0, 217, 255, 0.1)',
+    borderBottomColor: 'rgba(107, 33, 168, 0.3)',
   },
   subtitleHeaderLeft: {
     flexDirection: 'row',
@@ -469,7 +469,7 @@ const styles = StyleSheet.create({
     backgroundColor: colors.background,
   },
   languageChipSelected: {
-    backgroundColor: 'rgba(0, 217, 255, 0.15)',
+    backgroundColor: 'rgba(107, 33, 168, 0.3)',
     borderColor: colors.primary,
   },
   languageChipText: {

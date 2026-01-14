@@ -135,7 +135,7 @@ const styles = StyleSheet.create({
     borderRadius: borderRadius.lg,
   },
   ownBubble: {
-    backgroundColor: 'rgba(0, 217, 255, 0.15)',
+    backgroundColor: 'rgba(107, 33, 168, 0.3)',
   },
   emojiBubble: {
     backgroundColor: 'transparent',

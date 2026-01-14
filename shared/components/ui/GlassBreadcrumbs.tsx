@@ -133,9 +133,9 @@ const styles = StyleSheet.create({
     maxWidth: 180,
   },
   breadcrumbActive: {
-    backgroundColor: 'rgba(0, 217, 255, 0.15)',
+    backgroundColor: 'rgba(107, 33, 168, 0.3)',
     borderWidth: 1,
-    borderColor: 'rgba(0, 217, 255, 0.3)',
+    borderColor: 'rgba(168, 85, 247, 0.6)',
   },
   breadcrumbPressed: {
     backgroundColor: 'rgba(255, 255, 255, 0.1)',

@@ -61,7 +61,7 @@ export function VoiceStatusOverlay({
           position: absolute;
           width: 100%;
           height: 100%;
-          border: 2px solid rgba(0, 217, 255, 0.6);
+          border: 2px solid rgba(168, 85, 247, 0.6);
           border-radius: 50%;
           animation: pulse-ring 1.5s ease-in-out infinite;
         }

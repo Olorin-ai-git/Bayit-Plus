@@ -377,7 +377,7 @@ const styles = StyleSheet.create({
     borderColor: 'rgba(255, 255, 255, 0.25)',
   },
   controlButtonActive: {
-    backgroundColor: 'rgba(59, 130, 246, 0.5)',
+    backgroundColor: 'rgba(168, 85, 247, 0.5)',
     borderColor: 'rgba(59, 130, 246, 0.7)',
   },
   nikudIcon: {

@@ -148,7 +148,7 @@ export default function CategoriesPage() {
         <GlassTableCell.Actions isRTL={isRTL}>
           <GlassTableCell.ActionButton
             onPress={() => handleEdit(item)}
-            icon={<Edit size={16} color="#3b82f6" />}
+            icon={<Edit size={16} color="#a855f7" />}
             variant="primary"
           />
           <GlassTableCell.ActionButton

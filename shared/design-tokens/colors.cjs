@@ -1,54 +1,55 @@
 /**
  * Bayit+ Design System - Colors (CommonJS)
- * Shared between web and TV apps
+ * Unified Purple/Black Glassmorphic Theme
+ * Shared across all platforms: web, mobile, TV, tvOS
  */
 
-// Primary - Cyan/Teal (brand color)
+// Primary - Purple (brand color for glassmorphic UI)
 const primary = {
-  50: '#ecfeff',
-  100: '#cffafe',
-  200: '#a5f3fc',
-  300: '#67e8f9',
-  400: '#22d3ee',
-  500: '#00d9ff',
-  600: '#00a8c6',
-  700: '#0e7490',
-  800: '#155e75',
-  900: '#164e63',
-  950: '#083344',
-  DEFAULT: '#00d9ff',
+  50: '#faf5ff',
+  100: '#f3e8ff',
+  200: '#e9d5ff',
+  300: '#d8b4fe',
+  400: '#c084fc',
+  500: '#a855f7',  // Main purple
+  600: '#9333ea',
+  700: '#7e22ce',
+  800: '#6b21a8',
+  900: '#581c87',
+  950: '#3b0764',
+  DEFAULT: '#a855f7',
 }
 
-// Secondary - Blue (accent for less prominent actions)
+// Secondary - Deep Purple (for accents and highlights)
 const secondary = {
-  50: '#eff6ff',
-  100: '#dbeafe',
-  200: '#bfdbfe',
-  300: '#93c5fd',
-  400: '#60a5fa',
-  500: '#3b82f6',
-  600: '#2563eb',
-  700: '#1d4ed8',
-  800: '#1e40af',
-  900: '#1e3a8a',
-  950: '#172554',
-  DEFAULT: '#3b82f6',
+  50: '#fdf4ff',
+  100: '#fae8ff',
+  200: '#f5d0fe',
+  300: '#f0abfc',
+  400: '#e879f9',
+  500: '#d946ef',
+  600: '#c026d3',
+  700: '#a21caf',
+  800: '#86198f',
+  900: '#701a75',
+  950: '#4a044e',
+  DEFAULT: '#c026d3',
 }
 
-// Dark/Neutral
+// Dark/Neutral - Pure blacks and grays for glassmorphic backgrounds
 const dark = {
-  50: '#f8fafc',
-  100: '#f1f5f9',
-  200: '#e2e8f0',
-  300: '#cbd5e1',
-  400: '#94a3b8',
-  500: '#64748b',
-  600: '#475569',
-  700: '#334155',
-  800: '#1e293b',
-  900: '#0f172a',
-  950: '#0a0f1a',
-  DEFAULT: '#0f172a',
+  50: '#fafafa',
+  100: '#f5f5f5',
+  200: '#e5e5e5',
+  300: '#d4d4d4',
+  400: '#a3a3a3',
+  500: '#737373',
+  600: '#525252',
+  700: '#404040',
+  800: '#262626',
+  900: '#171717',
+  950: '#0a0a0a',
+  DEFAULT: '#000000',
 }
 
 // Semantic colors
@@ -73,16 +74,36 @@ const error = {
   DEFAULT: '#ef4444',
 }
 
-const live = '#ff4444'
-const gold = '#ffd700'
+// Special colors
+const live = '#ef4444'  // Red for live indicators
+const gold = '#fbbf24'  // Gold for premium features
 
+// Glassmorphic effects - purple-tinted black glass
 const glass = {
-  bg: 'rgba(26, 26, 46, 0.7)',
-  bgLight: 'rgba(26, 26, 46, 0.5)',
-  bgStrong: 'rgba(26, 26, 46, 0.85)',
-  border: 'rgba(255, 255, 255, 0.1)',
-  borderLight: 'rgba(255, 255, 255, 0.05)',
-  borderFocus: 'rgba(0, 217, 255, 0.5)',
+  // Backgrounds - purple-tinted black with transparency
+  bg: 'rgba(10, 10, 10, 0.7)',           // Default glass background
+  bgLight: 'rgba(10, 10, 10, 0.5)',      // Lighter glass
+  bgMedium: 'rgba(10, 10, 10, 0.6)',     // Medium glass
+  bgStrong: 'rgba(10, 10, 10, 0.85)',    // Strong glass
+  bgPurple: 'rgba(59, 7, 100, 0.4)',     // Purple-tinted glass
+  bgPurpleLight: 'rgba(107, 33, 168, 0.3)', // Light purple glass
+  
+  // Borders - purple-tinted with glow
+  border: 'rgba(168, 85, 247, 0.2)',     // Purple border
+  borderLight: 'rgba(168, 85, 247, 0.1)', // Subtle purple border
+  borderStrong: 'rgba(168, 85, 247, 0.4)', // Strong purple border
+  borderFocus: 'rgba(168, 85, 247, 0.6)', // Focused state
+  borderWhite: 'rgba(255, 255, 255, 0.1)', // White border for contrast
+  
+  // Overlays
+  overlay: 'rgba(0, 0, 0, 0.5)',
+  overlayStrong: 'rgba(0, 0, 0, 0.8)',
+  overlayPurple: 'rgba(59, 7, 100, 0.6)',
+  
+  // Highlights and glows
+  glow: 'rgba(168, 85, 247, 0.3)',       // Purple glow
+  glowStrong: 'rgba(168, 85, 247, 0.5)', // Strong purple glow
+  highlight: 'rgba(216, 180, 254, 0.15)', // Subtle highlight
 }
 
 module.exports = {

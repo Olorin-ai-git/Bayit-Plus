@@ -9,7 +9,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { View, Text, StyleSheet, Pressable, ScrollView } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { Plus, Edit, Trash2, X, AlertCircle, Eye, EyeOff, Tv, Globe, Film, Podcast, Radio } from 'lucide-react';
-import { GlassTable, GlassTableCell } from '@bayit/shared/ui';
+import { GlassTable, GlassTableCell, GlassButton, GlassCard } from '@bayit/shared/ui';
 import WidgetFormModal from '@/components/widgets/WidgetFormModal';
 import { widgetsService } from '@/services/adminApi';
 import { colors, spacing, borderRadius } from '@bayit/shared/theme';
@@ -214,9 +214,9 @@ export default function WidgetsPage() {
         <View style={[styles.actionsCell, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
           <Pressable
             onPress={() => handleEdit(item)}
-            style={[styles.actionButton, { backgroundColor: '#3b82f680' }]}
+            style={[styles.actionButton, { backgroundColor: '#a855f780' }]}
           >
-            <Edit size={14} color="#3b82f6" />
+            <Edit size={14} color="#a855f7" />
           </Pressable>
           <Pressable
             onPress={() => handleDelete(item.id)}
@@ -240,20 +240,24 @@ export default function WidgetsPage() {
               {t('admin.widgets.subtitle')}
             </Text>
           </View>
-          <Pressable onPress={handleCreate} style={styles.addButton}>
-            <Plus size={18} color={colors.text} />
-            <Text style={styles.addButtonText}>{t('admin.widgets.newWidget')}</Text>
-          </Pressable>
+          <GlassButton
+            title={t('admin.widgets.newWidget')}
+            onPress={handleCreate}
+            variant="primary"
+            icon={<Plus size={18} color={colors.text} />}
+          />
         </View>
 
         {error && (
-          <View style={[styles.errorContainer, { marginBottom: spacing.lg, flexDirection }]}>
-            <AlertCircle size={18} color="#ef4444" />
-            <Text style={styles.errorText}>{error}</Text>
-            <Pressable onPress={() => setError(null)}>
-              <X size={18} color="#ef4444" />
-            </Pressable>
-          </View>
+          <GlassCard style={[styles.errorContainer, { marginBottom: spacing.lg }]}>
+            <View style={[{ flexDirection: isRTL ? 'row-reverse' : 'row', alignItems: 'center', gap: spacing.md }]}>
+              <AlertCircle size={18} color={colors.error} />
+              <Text style={styles.errorText}>{error}</Text>
+              <Pressable onPress={() => setError(null)}>
+                <X size={18} color={colors.error} />
+              </Pressable>
+            </View>
+          </GlassCard>
         )}
 
         {/* Widget Form Modal */}
@@ -304,10 +308,8 @@ const styles = StyleSheet.create({
   },
   pageTitle: { fontSize: 24, fontWeight: 'bold', color: colors.text },
   subtitle: { fontSize: 14, color: colors.textMuted, marginTop: spacing.xs },
-  addButton: { flexDirection: 'row', alignItems: 'center', gap: spacing.sm, paddingHorizontal: spacing.md, paddingVertical: spacing.sm, backgroundColor: colors.primary, borderRadius: borderRadius.md },
-  addButtonText: { color: colors.text, fontWeight: '500', fontSize: 14 },
-  errorContainer: { flexDirection: 'row', alignItems: 'center', gap: spacing.md, padding: spacing.md, backgroundColor: '#ef444420', borderColor: '#ef444440', borderWidth: 1, borderRadius: borderRadius.md },
-  errorText: { flex: 1, color: '#ef4444', fontSize: 14 },
+  errorContainer: { padding: spacing.md },
+  errorText: { flex: 1, color: colors.error, fontSize: 14 },
   editForm: { backgroundColor: colors.backgroundLighter, padding: spacing.lg, borderRadius: borderRadius.lg, marginBottom: spacing.lg },
   formTitle: { fontSize: 16, fontWeight: '600', color: colors.text, marginBottom: spacing.md },
   sectionLabel: { fontSize: 14, fontWeight: '600', color: colors.text, marginTop: spacing.md, marginBottom: spacing.sm },

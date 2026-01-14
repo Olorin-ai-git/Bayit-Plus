@@ -526,7 +526,7 @@ export default function ProfilePage() {
             {/* Voice Settings - Connected to voiceSettingsStore */}
             <GlassView style={styles.section}>
               <View style={[styles.sectionHeader, isRTL && styles.sectionHeaderRTL]}>
-                <View style={[styles.sectionIconContainer, { backgroundColor: 'rgba(0, 217, 255, 0.15)' }]}>
+                <View style={[styles.sectionIconContainer, { backgroundColor: 'rgba(107, 33, 168, 0.3)' }]}>
                   <Mic size={24} color={colors.primary} />
                 </View>
                 <View style={styles.sectionHeaderText}>
@@ -692,7 +692,7 @@ const styles = StyleSheet.create({
     width: 100,
     height: 100,
     borderRadius: 50,
-    backgroundColor: 'rgba(0, 217, 255, 0.2)',
+    backgroundColor: 'rgba(107, 33, 168, 0.3)',
     justifyContent: 'center',
     alignItems: 'center',
     borderWidth: 3,

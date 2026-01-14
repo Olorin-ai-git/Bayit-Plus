@@ -1089,7 +1089,7 @@ const styles = StyleSheet.create({
     paddingVertical: spacing.sm + 4,
     borderBottomWidth: 1,
     borderBottomColor: 'rgba(255, 255, 255, 0.1)',
-    backgroundImage: 'linear-gradient(to left, rgba(0, 217, 255, 0.2), rgba(138, 43, 226, 0.2))' as any,
+    backgroundImage: 'linear-gradient(to left, rgba(107, 33, 168, 0.3), rgba(138, 43, 226, 0.2))' as any,
   },
   headerRTL: {
     flexDirection: 'row-reverse',

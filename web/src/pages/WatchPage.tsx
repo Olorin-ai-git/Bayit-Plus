@@ -678,7 +678,7 @@ const styles = StyleSheet.create({
     borderRadius: borderRadius.sm,
   },
   badgePrimary: {
-    backgroundColor: 'rgba(0, 217, 255, 0.2)',
+    backgroundColor: 'rgba(107, 33, 168, 0.3)',
   },
   badgeText: {
     fontSize: 14,

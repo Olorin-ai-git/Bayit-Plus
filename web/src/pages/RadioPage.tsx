@@ -269,7 +269,7 @@ const styles = StyleSheet.create({
   stationCardHovered: {
     transform: [{ translateY: -4 }],
     // @ts-ignore
-    boxShadow: `0 8px 32px rgba(0, 217, 255, 0.2)`,
+    boxShadow: `0 8px 32px rgba(107, 33, 168, 0.3)`,
   },
   imageContainer: {
     aspectRatio: 1,

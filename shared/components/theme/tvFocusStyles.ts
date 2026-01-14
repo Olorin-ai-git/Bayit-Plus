@@ -12,7 +12,7 @@ import { colors } from '../theme';
 export const TV_FOCUS = {
   SCALE_FACTOR: 1.08,           // Subtle scale increase on focus
   BORDER_WIDTH: 3,               // Strong border on focus
-  BORDER_COLOR: colors.primary,  // Cyan #00d9ff
+  BORDER_COLOR: colors.primary,  // Cyan #a855f7
   GLOW_RADIUS: 20,               // px for box-shadow
   OUTLINE_WIDTH: 2,              // Extra outline for prominence (web only)
   OUTLINE_OFFSET: 2,             // px outward from border

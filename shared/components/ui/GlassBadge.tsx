@@ -26,7 +26,7 @@ export const GlassBadge: React.FC<GlassBadgeProps> = ({
 }) => {
   const variantStyles: Record<BadgeVariant, { bg: string; text: string }> = {
     default: { bg: colors.glass, text: colors.text },
-    primary: { bg: 'rgba(0, 217, 255, 0.2)', text: colors.primary },
+    primary: { bg: 'rgba(107, 33, 168, 0.3)', text: colors.primary },
     success: { bg: 'rgba(16, 185, 129, 0.2)', text: colors.success },
     danger: { bg: 'rgba(239, 68, 68, 0.2)', text: colors.error },
     warning: { bg: 'rgba(245, 158, 11, 0.2)', text: colors.warning },

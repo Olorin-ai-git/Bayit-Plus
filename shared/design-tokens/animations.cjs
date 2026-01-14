@@ -60,8 +60,8 @@ const keyframes = {
     '50%': { opacity: '0.5' },
   },
   glowPulse: {
-    '0%, 100%': { boxShadow: '0 0 20px rgba(0, 217, 255, 0.3)' },
-    '50%': { boxShadow: '0 0 40px rgba(0, 217, 255, 0.5)' },
+    '0%, 100%': { boxShadow: '0 0 20px rgba(168, 85, 247, 0.3)' },
+    '50%': { boxShadow: '0 0 40px rgba(168, 85, 247, 0.5)' },
   },
   float: {
     '0%, 100%': { transform: 'translateY(0)' },

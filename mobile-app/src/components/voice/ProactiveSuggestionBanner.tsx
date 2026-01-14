@@ -129,11 +129,11 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(20, 20, 40, 0.98)',
     borderRadius: 20,
     borderWidth: 1.5,
-    borderColor: 'rgba(0, 217, 255, 0.3)',
+    borderColor: 'rgba(168, 85, 247, 0.6)',
     borderLeftWidth: 5,
     paddingVertical: 16,
     paddingHorizontal: 16,
-    shadowColor: '#00d9ff',
+    shadowColor: '#a855f7',
     shadowOffset: { width: 0, height: 8 },
     shadowOpacity: 0.4,
     shadowRadius: 16,
@@ -163,7 +163,7 @@ const styles = StyleSheet.create({
   typeLabel: {
     fontSize: 12,
     fontWeight: '500',
-    color: 'rgba(0, 217, 255, 0.9)',
+    color: 'rgba(168, 85, 247, 0.9)',
     textTransform: 'uppercase',
     letterSpacing: 0.5,
   },
@@ -182,8 +182,8 @@ const styles = StyleSheet.create({
     borderColor: 'rgba(255, 255, 255, 0.2)',
   },
   executeButton: {
-    backgroundColor: '#00d9ff',
-    borderColor: '#00d9ff',
+    backgroundColor: '#a855f7',
+    borderColor: '#a855f7',
   },
   dismissButton: {
     backgroundColor: 'rgba(255, 255, 255, 0.15)',

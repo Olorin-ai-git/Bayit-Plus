@@ -251,7 +251,7 @@ const styles = StyleSheet.create({
     width: 64,
     height: 64,
     borderRadius: 32,
-    backgroundColor: 'rgba(59, 130, 246, 0.2)',
+    backgroundColor: 'rgba(107, 33, 168, 0.3)',
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -305,7 +305,7 @@ const styles = StyleSheet.create({
   thumbnailPlaceholder: {
     width: '100%',
     height: '100%',
-    backgroundColor: 'rgba(59, 130, 246, 0.1)',
+    backgroundColor: 'rgba(107, 33, 168, 0.2)',
     justifyContent: 'center',
     alignItems: 'center',
   },

@@ -551,14 +551,14 @@ const styles = StyleSheet.create({
   },
   buttonFocused: {
     borderColor: colors.primary,
-    backgroundColor: 'rgba(0, 217, 255, 0.1)',
+    backgroundColor: 'rgba(107, 33, 168, 0.3)',
   },
   buttonDebugFlash: {
     backgroundColor: '#22c55e',
     borderColor: '#22c55e',
   },
   buttonToggleActive: {
-    backgroundColor: 'rgba(0, 217, 255, 0.15)',
+    backgroundColor: 'rgba(107, 33, 168, 0.3)',
     borderColor: colors.primary,
   },
   buttonRecording: {
@@ -566,7 +566,7 @@ const styles = StyleSheet.create({
     borderColor: colors.error,
   },
   buttonWakeWord: {
-    backgroundColor: 'rgba(0, 217, 255, 0.3)',
+    backgroundColor: 'rgba(168, 85, 247, 0.6)',
     borderColor: colors.primary,
   },
   buttonProcessing: {
@@ -653,7 +653,7 @@ const styles = StyleSheet.create({
     width: 100,
     height: 100,
     borderRadius: 50,
-    backgroundColor: 'rgba(0, 217, 255, 0.2)',
+    backgroundColor: 'rgba(107, 33, 168, 0.3)',
     justifyContent: 'center',
     alignItems: 'center',
     borderWidth: 3,
@@ -664,7 +664,7 @@ const styles = StyleSheet.create({
     borderColor: colors.error,
   },
   micCircleTranscribing: {
-    backgroundColor: 'rgba(0, 217, 255, 0.2)',
+    backgroundColor: 'rgba(107, 33, 168, 0.3)',
     borderColor: colors.primary,
   },
   micIcon: {

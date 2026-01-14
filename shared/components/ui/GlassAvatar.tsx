@@ -128,11 +128,11 @@ const styles = StyleSheet.create({
     position: 'relative',
   },
   avatar: {
-    backgroundColor: 'rgba(0, 217, 255, 0.2)',
+    backgroundColor: 'rgba(107, 33, 168, 0.3)',
     justifyContent: 'center',
     alignItems: 'center',
     borderWidth: 2,
-    borderColor: 'rgba(0, 217, 255, 0.4)',
+    borderColor: 'rgba(168, 85, 247, 0.4)',
     overflow: 'hidden',
   },
   avatarWithImage: {

@@ -247,7 +247,7 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(255, 255, 255, 0.03)',
     borderRadius: borderRadius.md,
     borderWidth: 1,
-    borderColor: 'rgba(0, 217, 255, 0.2)',
+    borderColor: 'rgba(107, 33, 168, 0.3)',
   },
   actionButton: {
     width: 44,

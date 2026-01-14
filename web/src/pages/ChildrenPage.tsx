@@ -475,7 +475,7 @@ const styles = StyleSheet.create({
     marginTop: spacing.sm,
   },
   eduTag: {
-    backgroundColor: 'rgba(59, 130, 246, 0.3)',
+    backgroundColor: 'rgba(168, 85, 247, 0.4)',
     paddingHorizontal: spacing.sm,
     paddingVertical: 2,
     borderRadius: borderRadius.full,

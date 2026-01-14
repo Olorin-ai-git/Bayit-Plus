@@ -1,5 +1,5 @@
-import React, { useState, useRef } from 'react';
-import { View, Text, Pressable, StyleSheet, Animated, PanResponder } from 'react-native';
+import React, { useState, useRef, useEffect } from 'react';
+import { View, Text, Pressable, StyleSheet, Animated, PanResponder, Easing } from 'react-native';
 import { ChevronDown, ChevronUp, GripVertical } from 'lucide-react';
 import { colors, spacing, borderRadius } from '../theme';
 
@@ -32,18 +32,50 @@ export const GlassDraggableExpander: React.FC<GlassDraggableExpanderProps> = ({
 }) => {
   const [isExpanded, setIsExpanded] = useState(defaultExpanded);
   const [contentHeight, setContentHeight] = useState(minHeight);
+  
+  // Animation values
   const heightAnim = useRef(new Animated.Value(defaultExpanded ? minHeight : 0)).current;
+  const opacityAnim = useRef(new Animated.Value(defaultExpanded ? 1 : 0)).current;
+  const rotateAnim = useRef(new Animated.Value(defaultExpanded ? 1 : 0)).current;
+
+  useEffect(() => {
+    // Initialize with default state
+    if (defaultExpanded) {
+      heightAnim.setValue(minHeight);
+      opacityAnim.setValue(1);
+      rotateAnim.setValue(1);
+    }
+  }, []);
 
   const toggleExpanded = () => {
     const newExpanded = !isExpanded;
     setIsExpanded(newExpanded);
     onExpandChange?.(newExpanded);
 
-    Animated.spring(heightAnim, {
-      toValue: newExpanded ? contentHeight : 0,
-      useNativeDriver: false,
-      friction: 8,
-    }).start();
+    // Parallel animations for smooth expansion/collapse
+    Animated.parallel([
+      // Height animation with spring physics
+      Animated.spring(heightAnim, {
+        toValue: newExpanded ? contentHeight : 0,
+        useNativeDriver: false,
+        tension: 40,
+        friction: 8,
+      }),
+      // Opacity fade in/out
+      Animated.timing(opacityAnim, {
+        toValue: newExpanded ? 1 : 0,
+        duration: 200,
+        easing: Easing.ease,
+        useNativeDriver: true,
+      }),
+      // Chevron rotation
+      Animated.timing(rotateAnim, {
+        toValue: newExpanded ? 1 : 0,
+        duration: 200,
+        easing: Easing.ease,
+        useNativeDriver: true,
+      }),
+    ]).start();
   };
 
   const panResponder = useRef(
@@ -67,17 +99,27 @@ export const GlassDraggableExpander: React.FC<GlassDraggableExpanderProps> = ({
           Animated.spring(heightAnim, {
             toValue: minHeight,
             useNativeDriver: false,
+            tension: 40,
+            friction: 8,
           }).start();
         } else if (contentHeight > maxHeight - 50) {
           setContentHeight(maxHeight);
           Animated.spring(heightAnim, {
             toValue: maxHeight,
             useNativeDriver: false,
+            tension: 40,
+            friction: 8,
           }).start();
         }
       },
     })
   ).current;
+
+  // Interpolate rotation for chevron
+  const chevronRotate = rotateAnim.interpolate({
+    inputRange: [0, 1],
+    outputRange: ['0deg', '180deg'],
+  });
 
   return (
     <View style={[styles.container, style]}>
@@ -91,41 +133,48 @@ export const GlassDraggableExpander: React.FC<GlassDraggableExpanderProps> = ({
           </View>
           {badge && <View style={styles.badgeContainer}>{badge}</View>}
         </View>
-        <View style={styles.headerRight}>
-          {isExpanded ? (
-            <ChevronUp size={20} color={colors.text} />
-          ) : (
-            <ChevronDown size={20} color={colors.text} />
-          )}
-        </View>
+        <Animated.View 
+          style={[
+            styles.headerRight, 
+            { transform: [{ rotate: chevronRotate }] }
+          ]}
+        >
+          <ChevronDown size={20} color={colors.primary} />
+        </Animated.View>
       </Pressable>
 
-      {/* Expandable Content */}
-      {isExpanded && (
-        <Animated.View style={[styles.content, { height: heightAnim }]}>
-          <View style={styles.scrollContent}>{children}</View>
+      {/* Expandable Content - Always rendered but animated */}
+      <Animated.View 
+        style={[
+          styles.content, 
+          { 
+            height: heightAnim,
+            opacity: opacityAnim,
+          }
+        ]}
+      >
+        <View style={styles.scrollContent}>{children}</View>
 
-          {/* Draggable Handle */}
-          {draggable && (
-            <View
-              style={styles.dragHandle}
-              {...panResponder.panHandlers}
-            >
-              <GripVertical size={20} color={colors.textMuted} />
-            </View>
-          )}
-        </Animated.View>
-      )}
+        {/* Draggable Handle */}
+        {draggable && isExpanded && (
+          <View
+            style={styles.dragHandle}
+            {...panResponder.panHandlers}
+          >
+            <GripVertical size={20} color={colors.textMuted} />
+          </View>
+        )}
+      </Animated.View>
     </View>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: 'rgba(255, 255, 255, 0.05)',
+    backgroundColor: colors.glass,  // Purple-tinted glass
     borderRadius: borderRadius.lg,
     borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.1)',
+    borderColor: colors.glassBorder,  // Purple border
     overflow: 'hidden',
     backdropFilter: 'blur(20px)',
   },
@@ -135,7 +184,9 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     padding: spacing.md,
     borderBottomWidth: 1,
-    borderBottomColor: 'rgba(255, 255, 255, 0.05)',
+    borderBottomColor: colors.glassBorderLight,  // Purple border
+    cursor: 'pointer',
+    transition: 'background-color 0.2s ease',
   },
   headerLeft: {
     flexDirection: 'row',
@@ -181,9 +232,11 @@ const styles = StyleSheet.create({
     height: 32,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: 'rgba(255, 255, 255, 0.02)',
+    backgroundColor: colors.glassLight,  // Purple-tinted glass
     borderTopWidth: 1,
-    borderTopColor: 'rgba(255, 255, 255, 0.05)',
+    borderTopColor: colors.glassBorderLight,  // Purple border
     cursor: 'ns-resize',
   },
 });
+
+export default GlassDraggableExpander;

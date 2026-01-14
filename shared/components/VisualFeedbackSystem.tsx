@@ -220,7 +220,7 @@ export const VisualFeedbackSystem: React.FC<VisualFeedbackSystemProps> = ({
         )}
 
         {state === 'navigation' && (
-          <View style={[styles.feedbackLayer, { backgroundColor: 'rgba(59, 130, 246, 0.1)' }]} />
+          <View style={[styles.feedbackLayer, { backgroundColor: 'rgba(107, 33, 168, 0.2)' }]} />
         )}
 
         {/* Audio-Visual Indicator */}
@@ -307,7 +307,7 @@ const styles = StyleSheet.create({
     width: 16,
     height: 16,
     borderRadius: 8,
-    boxShadow: '0 0 12px rgba(0, 217, 255, 0.5)',
+    boxShadow: '0 0 12px rgba(168, 85, 247, 0.5)',
   },
   pulse: {
     position: 'absolute',

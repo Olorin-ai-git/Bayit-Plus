@@ -1036,7 +1036,7 @@ const webStyles: Record<string, React.CSSProperties> = {
 const styles = StyleSheet.create({
   loadingOverlay: {
     ...StyleSheet.absoluteFillObject,
-    backgroundColor: 'rgba(26, 26, 46, 0.7)',
+    backgroundColor: colors.glass,  // Purple-tinted glass
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -1078,11 +1078,11 @@ const styles = StyleSheet.create({
     width: 80,
     height: 80,
     borderRadius: 40,
-    backgroundColor: 'rgba(26, 26, 46, 0.7)',
+    backgroundColor: colors.glass,  // Purple-tinted glass
     alignItems: 'center',
     justifyContent: 'center',
     borderWidth: 1,
-    borderColor: colors.glassBorder,
+    borderColor: colors.glassBorder,  // Purple border
   },
   centerPlayButtonHovered: {
     shadowColor: colors.primary,
@@ -1146,7 +1146,7 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(255, 255, 255, 0.1)',
   },
   controlButtonActive: {
-    backgroundColor: 'rgba(0, 217, 255, 0.2)',
+    backgroundColor: colors.glassPurpleLight,  // Purple-tinted glass for active controls
   },
   volumeControls: {
     flexDirection: 'row',
@@ -1256,8 +1256,8 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(0, 0, 0, 0.2)',
   },
   settingOptionActive: {
-    borderColor: colors.primary,
-    backgroundColor: 'rgba(0, 217, 255, 0.1)',
+    borderColor: colors.glassBorderFocus,      // Purple border for active setting
+    backgroundColor: colors.glassPurpleLight,  // Purple-tinted glass
   },
   settingOptionText: {
     fontSize: 14,

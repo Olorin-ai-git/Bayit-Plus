@@ -37,9 +37,9 @@ export const WatchPartySyncIndicator: React.FC<WatchPartySyncIndicatorProps> = (
     }
     return {
       text: t('watchParty.syncing'),
-      bgColor: 'rgba(0, 217, 255, 0.1)',
+      bgColor: 'rgba(107, 33, 168, 0.3)',
       textColor: colors.primary,
-      borderColor: 'rgba(0, 217, 255, 0.2)',
+      borderColor: 'rgba(107, 33, 168, 0.3)',
     };
   };
 

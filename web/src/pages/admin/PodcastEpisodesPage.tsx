@@ -160,9 +160,9 @@ export default function PodcastEpisodesPage() {
         <View style={[styles.actionsCell, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
           <Pressable
             onPress={() => handleEdit(item)}
-            style={[styles.actionButton, { backgroundColor: '#3b82f680' }]}
+            style={[styles.actionButton, { backgroundColor: '#a855f780' }]}
           >
-            <Edit size={14} color="#3b82f6" />
+            <Edit size={14} color="#a855f7" />
           </Pressable>
           <Pressable
             onPress={() => handleDelete(item.id)}

@@ -465,7 +465,7 @@ const styles = StyleSheet.create({
     cursor: 'ns-resize',
   },
   splitterHandleActive: {
-    backgroundColor: 'rgba(0, 217, 255, 0.05)',
+    backgroundColor: 'rgba(107, 33, 168, 0.1)',
   },
   splitterGrip: {
     position: 'absolute',
@@ -693,7 +693,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: spacing.sm,
   },
   languageOptionActive: {
-    backgroundColor: 'rgba(0, 217, 255, 0.1)',
+    backgroundColor: 'rgba(107, 33, 168, 0.3)',
   },
   languageOptionFlag: {
     fontSize: 14,

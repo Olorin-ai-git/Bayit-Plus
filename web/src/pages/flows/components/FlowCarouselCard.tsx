@@ -27,7 +27,7 @@ const FLOW_GRADIENTS: Record<string, { colors: string[]; bg: string }> = {
   'Kids Time': { colors: ['#FF2D55', '#FF6B9D'], bg: 'rgba(255, 45, 85, 0.15)' },
 };
 
-const DEFAULT_GRADIENT = { colors: ['#00D9FF', '#0099CC'], bg: 'rgba(0, 217, 255, 0.15)' };
+const DEFAULT_GRADIENT = { colors: ['#a855f7', '#7c3aed'], bg: 'rgba(107, 33, 168, 0.3)' };
 
 interface FlowCarouselCardProps {
   flow: Flow;
@@ -194,7 +194,7 @@ const styles = StyleSheet.create({
   },
   focusedShadow: {
     // @ts-ignore - Web shadow
-    boxShadow: '0 12px 32px rgba(0, 217, 255, 0.4)',
+    boxShadow: '0 12px 32px rgba(168, 85, 247, 0.4)',
   },
   iconContainer: {
     justifyContent: 'center',

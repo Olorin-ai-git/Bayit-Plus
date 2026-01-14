@@ -27,10 +27,11 @@ export const GlassView: React.FC<GlassViewProps> = ({
 }) => {
   const normalizedIntensity = normalizeIntensity(intensity);
 
+  // Purple-tinted black glass backgrounds
   const intensityStyles = {
-    low: { backgroundColor: 'rgba(26, 26, 46, 0.4)' },
-    medium: { backgroundColor: 'rgba(26, 26, 46, 0.7)' },
-    high: { backgroundColor: 'rgba(26, 26, 46, 0.85)' },
+    low: { backgroundColor: colors.glassLight },      // rgba(10, 10, 10, 0.5)
+    medium: { backgroundColor: colors.glass },        // rgba(10, 10, 10, 0.7)
+    high: { backgroundColor: colors.glassStrong },    // rgba(10, 10, 10, 0.85)
   };
 
   const blurAmount = {
@@ -68,13 +69,16 @@ export const GlassView: React.FC<GlassViewProps> = ({
   // iOS/tvOS: Native BlurView would go here
   // For now, using gradient fallback that works on all platforms
 
-  // Android/Android TV & iOS fallback: Gradient with inner glow
+  // Android/Android TV & iOS fallback: Purple-tinted gradient
+  const gradientColors = normalizedIntensity === 'high'
+    ? ['rgba(10, 10, 10, 0.9)', 'rgba(15, 10, 20, 0.95)']  // Stronger with purple tint
+    : normalizedIntensity === 'low'
+    ? ['rgba(10, 10, 10, 0.4)', 'rgba(15, 10, 20, 0.5)']   // Lighter with purple tint
+    : ['rgba(10, 10, 10, 0.7)', 'rgba(15, 10, 20, 0.8)'];  // Medium with purple tint
+  
   return (
     <LinearGradient
-      colors={[
-        normalizedIntensity === 'high' ? 'rgba(30, 30, 50, 0.9)' : 'rgba(30, 30, 50, 0.7)',
-        normalizedIntensity === 'high' ? 'rgba(20, 20, 40, 0.95)' : 'rgba(20, 20, 40, 0.8)',
-      ]}
+      colors={gradientColors}
       style={[
         styles.glass,
         !noBorder && styles.border,
@@ -100,7 +104,7 @@ const styles = StyleSheet.create({
     flex: 1,
     borderRadius: borderRadius.lg - 1,
     borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.03)',
+    borderColor: colors.glassBorderLight,  // Subtle purple inner glow
   },
 });
 

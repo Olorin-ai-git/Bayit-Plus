@@ -22,45 +22,64 @@ const {
 const { fontSizeTV } = require('../design-tokens/typography.cjs');
 const { boxShadow, shadowRN } = require('../design-tokens/shadows.cjs');
 
-// Colors - mapped from shared tokens
+// Colors - Unified Purple/Black Glassmorphic Theme
 export const colors = {
-  // Primary
-  primary: primary.DEFAULT,
-  primaryDark: primary[700],
-  primaryLight: primary[300],
-
-  // Secondary (purple for radio/accents)
-  secondary: secondary.DEFAULT,
-  secondaryDark: secondary[700],
-  secondaryLight: secondary[400],
-
-  // Backgrounds
-  background: dark[950],
-  backgroundLight: dark[900],
-  backgroundLighter: dark[800],
-
-  // Glass
-  glass: glass.bg,
-  glassLight: glass.bgLight,
-  glassStrong: glass.bgStrong,
-  glassBorder: glass.border,
-  glassBorderLight: glass.borderLight,
-  glassBorderFocus: glass.borderFocus,
-
-  // Text
+  // Primary - Purple (main brand color)
+  primary: primary.DEFAULT,           // #a855f7
+  primaryDark: primary[700],          // #7e22ce
+  primaryLight: primary[400],         // #c084fc
+  primaryLighter: primary[300],       // #d8b4fe
+  
+  // Secondary - Deep Purple (accents)
+  secondary: secondary.DEFAULT,       // #c026d3
+  secondaryDark: secondary[700],      // #a21caf
+  secondaryLight: secondary[400],     // #e879f9
+  
+  // Backgrounds - Pure black with subtle variations
+  background: dark.DEFAULT,           // #000000
+  backgroundLight: dark[950],         // #0a0a0a
+  backgroundLighter: dark[900],       // #171717
+  backgroundElevated: dark[800],      // #262626
+  
+  // Glass - Purple-tinted glassmorphic effects
+  glass: glass.bg,                    // rgba(10, 10, 10, 0.7)
+  glassLight: glass.bgLight,          // rgba(10, 10, 10, 0.5)
+  glassMedium: glass.bgMedium,        // rgba(10, 10, 10, 0.6)
+  glassStrong: glass.bgStrong,        // rgba(10, 10, 10, 0.85)
+  glassPurple: glass.bgPurple,        // rgba(59, 7, 100, 0.4)
+  glassPurpleLight: glass.bgPurpleLight, // rgba(107, 33, 168, 0.3)
+  
+  // Glass Borders
+  glassBorder: glass.border,          // rgba(168, 85, 247, 0.2)
+  glassBorderLight: glass.borderLight, // rgba(168, 85, 247, 0.1)
+  glassBorderStrong: glass.borderStrong, // rgba(168, 85, 247, 0.4)
+  glassBorderFocus: glass.borderFocus, // rgba(168, 85, 247, 0.6)
+  glassBorderWhite: glass.borderWhite, // rgba(255, 255, 255, 0.1)
+  
+  // Glass Effects
+  glassOverlay: glass.overlay,        // rgba(0, 0, 0, 0.5)
+  glassOverlayStrong: glass.overlayStrong, // rgba(0, 0, 0, 0.8)
+  glassOverlayPurple: glass.overlayPurple, // rgba(59, 7, 100, 0.6)
+  glassGlow: glass.glow,              // rgba(168, 85, 247, 0.3)
+  glassGlowStrong: glass.glowStrong,  // rgba(168, 85, 247, 0.5)
+  glassHighlight: glass.highlight,    // rgba(216, 180, 254, 0.15)
+  
+  // Text - White with varying opacity
   text: '#ffffff',
-  textSecondary: dark[400],
-  textMuted: dark[500],
-
-  // Status
-  success: success.DEFAULT,
-  warning: warning.DEFAULT,
-  error: error.DEFAULT,
-  live: live,
-
-  // Overlay
-  overlay: 'rgba(0, 0, 0, 0.5)',
-  overlayDark: 'rgba(0, 0, 0, 0.8)',
+  textSecondary: dark[400],           // #a3a3a3
+  textMuted: dark[500],               // #737373
+  textDimmed: dark[600],              // #525252
+  
+  // Status colors
+  success: success.DEFAULT,           // #10b981
+  warning: warning.DEFAULT,           // #f59e0b
+  error: error.DEFAULT,               // #ef4444
+  live: live,                         // #ef4444
+  gold: gold,                         // #fbbf24
+  
+  // Legacy aliases (for backward compatibility)
+  overlay: glass.overlay,
+  overlayDark: glass.overlayStrong,
 };
 
 // Spacing - from shared tokens

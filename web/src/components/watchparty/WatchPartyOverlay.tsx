@@ -206,7 +206,7 @@ const styles = StyleSheet.create({
   tabActive: {
     borderBottomWidth: 2,
     borderBottomColor: colors.primary,
-    backgroundColor: 'rgba(0, 217, 255, 0.1)',
+    backgroundColor: 'rgba(107, 33, 168, 0.3)',
   },
   tabText: {
     fontSize: 14,

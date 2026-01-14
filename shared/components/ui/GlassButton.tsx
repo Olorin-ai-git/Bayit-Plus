@@ -57,12 +57,12 @@ export const GlassButton: React.FC<GlassButtonProps> = ({
   };
 
   const variantStyles: Record<ButtonVariant, { bg: string; text: string; border?: string }> = {
-    primary: { bg: colors.primary, text: colors.background },
-    secondary: { bg: colors.secondary, text: colors.text },
-    ghost: { bg: 'transparent', text: colors.text },
-    danger: { bg: colors.error, text: colors.text },
-    destructive: { bg: colors.error, text: colors.text },
-    outline: { bg: 'transparent', text: colors.primary, border: colors.primary },
+    primary: { bg: colors.primary, text: '#ffffff' },  // Purple with white text
+    secondary: { bg: colors.secondary, text: '#ffffff' },  // Deep purple with white text
+    ghost: { bg: 'transparent', text: colors.text },  // Transparent with white text
+    danger: { bg: colors.error, text: '#ffffff' },  // Red with white text
+    destructive: { bg: colors.error, text: '#ffffff' },  // Red with white text
+    outline: { bg: 'transparent', text: colors.primary, border: colors.glassBorder },  // Purple border
   };
 
   const currentVariant = variantStyles[variant];
@@ -170,6 +170,7 @@ const styles = StyleSheet.create({
   },
   text: {
     fontWeight: '600',
+    textAlign: 'center',
   },
   textDisabled: {
     opacity: 0.7,

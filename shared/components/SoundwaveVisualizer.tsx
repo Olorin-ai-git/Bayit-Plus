@@ -47,9 +47,9 @@ const ACTIVE_ANIMATION_DURATION = 100;
 const PROCESSING_PULSE_DURATION = 600;
 
 // Colors
-const IDLE_COLOR = 'rgba(0, 217, 255, 0.35)';
-const ACTIVE_COLOR = 'rgba(0, 217, 255, 0.85)';
-const PROCESSING_COLOR = 'rgba(0, 217, 255, 0.6)';
+const IDLE_COLOR = 'rgba(168, 85, 247, 0.35)';
+const ACTIVE_COLOR = 'rgba(168, 85, 247, 0.85)';
+const PROCESSING_COLOR = 'rgba(168, 85, 247, 0.6)';
 const SENDING_INDICATOR_COLOR = '#ff4444';
 
 /**

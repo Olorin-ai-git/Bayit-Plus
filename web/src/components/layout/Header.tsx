@@ -428,9 +428,9 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     paddingHorizontal: spacing.sm,
-    backgroundColor: 'rgba(0, 217, 255, 0.1)',
+    backgroundColor: colors.glassPurpleLight,  // Purple-tinted glass
     borderRadius: 8,
     borderWidth: 1,
-    borderColor: 'rgba(0, 217, 255, 0.3)',
+    borderColor: colors.glassBorderStrong,     // Purple border
   },
 });

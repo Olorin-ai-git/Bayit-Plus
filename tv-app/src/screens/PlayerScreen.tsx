@@ -302,7 +302,7 @@ export const PlayerScreen: React.FC = () => {
   if (isLoading) {
     return (
       <View style={styles.loadingContainer}>
-        <ActivityIndicator size="large" color="#00d9ff" />
+        <ActivityIndicator size="large" color="#a855f7" />
         <Text style={styles.loadingText}>{t('player.loading')}</Text>
       </View>
     );
@@ -538,7 +538,7 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   retryButton: {
-    backgroundColor: '#00d9ff',
+    backgroundColor: '#a855f7',
     paddingHorizontal: 32,
     paddingVertical: 16,
     borderRadius: 8,
@@ -578,7 +578,7 @@ const styles = StyleSheet.create({
     width: 100,
     height: 100,
     borderRadius: 50,
-    backgroundColor: 'rgba(0, 217, 255, 0.8)',
+    backgroundColor: 'rgba(168, 85, 247, 0.8)',
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -607,7 +607,7 @@ const styles = StyleSheet.create({
   },
   progressFill: {
     height: '100%',
-    backgroundColor: '#00d9ff',
+    backgroundColor: '#a855f7',
     borderRadius: 3,
   },
   liveIndicator: {

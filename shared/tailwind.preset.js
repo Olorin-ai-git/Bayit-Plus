@@ -30,24 +30,42 @@ export default {
   theme: {
     extend: {
       colors: {
+        // Primary - Purple (main brand color)
         primary,
+        // Secondary - Deep Purple
         secondary,
+        // Backgrounds - Pure Black
         dark,
+        // Status colors
         success,
         warning,
         error,
-        // Amber for warnings/highlights
+        // Glass effects
+        glass: {
+          bg: glass.bg,
+          bgLight: glass.bgLight,
+          bgMedium: glass.bgMedium,
+          bgStrong: glass.bgStrong,
+          bgPurple: glass.bgPurple,
+          bgPurpleLight: glass.bgPurpleLight,
+          border: glass.border,
+          borderLight: glass.borderLight,
+          borderStrong: glass.borderStrong,
+          borderFocus: glass.borderFocus,
+          borderWhite: glass.borderWhite,
+          glow: glass.glow,
+          glowStrong: glass.glowStrong,
+          highlight: glass.highlight,
+        },
+        // Aliases for convenience
+        purple: primary,  // Purple is now primary
+        green: success,
+        red: error,
         amber: {
           400: '#fbbf24',
           500: '#f59e0b',
           600: '#d97706',
         },
-        // Purple alias
-        purple: secondary,
-        // Green alias
-        green: success,
-        // Red alias
-        red: error,
       },
       fontFamily,
       borderRadius: {

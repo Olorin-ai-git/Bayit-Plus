@@ -171,7 +171,7 @@ const styles = StyleSheet.create({
   container: {
     backgroundColor: 'rgba(10, 10, 20, 0.95)',
     borderBottomWidth: 1,
-    borderBottomColor: 'rgba(0, 217, 255, 0.3)',
+    borderBottomColor: 'rgba(168, 85, 247, 0.6)',
   },
   progressBar: {
     height: 3,
@@ -263,7 +263,7 @@ const styles = StyleSheet.create({
   },
   controlBtnFocused: {
     borderColor: colors.primary,
-    backgroundColor: 'rgba(0, 217, 255, 0.2)',
+    backgroundColor: 'rgba(107, 33, 168, 0.3)',
   },
   stopBtn: {
     backgroundColor: 'rgba(239, 68, 68, 0.2)',
@@ -286,7 +286,7 @@ const styles = StyleSheet.create({
     gap: spacing.sm,
   },
   playlistItemActive: {
-    backgroundColor: 'rgba(0, 217, 255, 0.1)',
+    backgroundColor: 'rgba(107, 33, 168, 0.3)',
   },
   playlistItemRTL: {
     flexDirection: 'row-reverse',

@@ -114,11 +114,11 @@ const styles = StyleSheet.create({
     borderColor: 'transparent',
   },
   menuItemActive: {
-    backgroundColor: 'rgba(0, 217, 255, 0.1)',
+    backgroundColor: 'rgba(107, 33, 168, 0.3)',
     borderColor: colors.glassBorder,
   },
   menuItemFocused: {
-    backgroundColor: 'rgba(0, 217, 255, 0.2)',
+    backgroundColor: 'rgba(107, 33, 168, 0.3)',
     borderWidth: 3,
     borderColor: colors.primary,
   },

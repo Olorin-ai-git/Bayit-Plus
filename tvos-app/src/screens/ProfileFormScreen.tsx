@@ -23,7 +23,7 @@ import { colors, spacing, borderRadius } from '@bayit/shared/theme';
 
 // Avatar options
 const AVATAR_COLORS = [
-  '#00d9ff', '#ff6b6b', '#4ecdc4', '#ffd93d',
+  '#a855f7', '#ff6b6b', '#4ecdc4', '#ffd93d',
   '#6c5ce7', '#a8e6cf', '#ff8b94', '#ffaaa5',
 ];
 
@@ -413,7 +413,7 @@ const styles = StyleSheet.create({
   },
   inputFocused: {
     borderColor: colors.primary,
-    backgroundColor: 'rgba(0, 217, 255, 0.1)',
+    backgroundColor: 'rgba(107, 33, 168, 0.3)',
   },
   avatarGrid: {
     flexWrap: 'wrap',
@@ -431,7 +431,7 @@ const styles = StyleSheet.create({
   },
   avatarOptionSelected: {
     borderColor: colors.primary,
-    backgroundColor: 'rgba(0, 217, 255, 0.2)',
+    backgroundColor: 'rgba(107, 33, 168, 0.3)',
   },
   avatarOptionFocused: {
     borderColor: colors.text,

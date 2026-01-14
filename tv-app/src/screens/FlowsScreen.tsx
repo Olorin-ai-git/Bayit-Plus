@@ -176,7 +176,7 @@ const FlowsScreen = () => {
   };
 
   const getFlowIcon = (flow: Flow) => {
-    const config = FLOW_ICONS[flow.name] || { icon: 'play-circle', colors: ['#00d9ff', '#0099cc'] };
+    const config = FLOW_ICONS[flow.name] || { icon: 'play-circle', colors: ['#a855f7', '#0099cc'] };
     return config;
   };
 
@@ -196,13 +196,13 @@ const FlowsScreen = () => {
     const iconConfig = getFlowIcon(activeFlow);
     const glowColor = glowAnim.interpolate({
       inputRange: [0, 1],
-      outputRange: ['rgba(0,217,255,0.2)', 'rgba(0,217,255,0.6)'],
+      outputRange: ['rgba(107, 33, 168, 0.3)', 'rgba(168, 85, 247, 0.6)'],
     });
 
     return (
-      <Animated.View style={[styles.activeBanner, { shadowColor: '#00d9ff', shadowOpacity: glowAnim }]}>
+      <Animated.View style={[styles.activeBanner, { shadowColor: '#a855f7', shadowOpacity: glowAnim }]}>
         <LinearGradient
-          colors={['rgba(0,217,255,0.15)', 'rgba(0,217,255,0.05)']}
+          colors={['rgba(107, 33, 168, 0.3)', 'rgba(107, 33, 168, 0.15)']}
           style={styles.activeBannerGradient}
         >
           <Animated.View style={{ transform: [{ scale: pulseAnim }] }}>
@@ -225,7 +225,7 @@ const FlowsScreen = () => {
               onPress={() => handleStartFlow(activeFlow)}
             >
               <LinearGradient
-                colors={['#00d9ff', '#0099cc']}
+                colors={['#a855f7', '#0099cc']}
                 style={styles.startButtonGradient}
               >
                 <Ionicons name="play" size={24} color="#fff" />
@@ -293,19 +293,19 @@ const FlowsScreen = () => {
             <View style={styles.flowFeatures}>
               {flow.ai_enabled && (
                 <View style={styles.featureBadge}>
-                  <Ionicons name="sparkles" size={12} color="#00d9ff" />
+                  <Ionicons name="sparkles" size={12} color="#a855f7" />
                   <Text style={styles.featureText}>AI</Text>
                 </View>
               )}
               {flow.auto_play && (
                 <View style={styles.featureBadge}>
-                  <Ionicons name="play-circle" size={12} color="#00d9ff" />
+                  <Ionicons name="play-circle" size={12} color="#a855f7" />
                   <Text style={styles.featureText}>{t('flows.autoPlay', 'Auto')}</Text>
                 </View>
               )}
               {flow.items.length > 0 && (
                 <View style={styles.featureBadge}>
-                  <Ionicons name="list" size={12} color="#00d9ff" />
+                  <Ionicons name="list" size={12} color="#a855f7" />
                   <Text style={styles.featureText}>
                     {flow.items.length} {t('flows.items', 'items')}
                   </Text>
@@ -394,7 +394,7 @@ const FlowsScreen = () => {
   if (loading) {
     return (
       <View style={styles.loadingContainer}>
-        <ActivityIndicator size="large" color="#00d9ff" />
+        <ActivityIndicator size="large" color="#a855f7" />
       </View>
     );
   }
@@ -452,10 +452,10 @@ const FlowsScreen = () => {
         {/* Create Flow Button */}
         <TouchableOpacity style={styles.createButton}>
           <LinearGradient
-            colors={['rgba(0,217,255,0.1)', 'rgba(0,217,255,0.05)']}
+            colors={['rgba(107, 33, 168, 0.3)', 'rgba(107, 33, 168, 0.15)']}
             style={styles.createButtonGradient}
           >
-            <Ionicons name="add-circle-outline" size={24} color="#00d9ff" />
+            <Ionicons name="add-circle-outline" size={24} color="#a855f7" />
             <Text style={styles.createButtonText}>
               {t('flows.createCustom', 'Create Custom Flow')}
             </Text>
@@ -513,7 +513,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     padding: 24,
     borderWidth: 1,
-    borderColor: 'rgba(0,217,255,0.3)',
+    borderColor: 'rgba(168, 85, 247, 0.6)',
     borderRadius: 16,
   },
   activeFlowIcon: {
@@ -529,7 +529,7 @@ const styles = StyleSheet.create({
   },
   activeFlowLabel: {
     fontSize: 12,
-    color: '#00d9ff',
+    color: '#a855f7',
     fontWeight: '600',
     textTransform: 'uppercase',
     letterSpacing: 1,
@@ -592,7 +592,7 @@ const styles = StyleSheet.create({
     borderColor: 'rgba(255,255,255,0.1)',
   },
   flowCardFocused: {
-    borderColor: '#00d9ff',
+    borderColor: '#a855f7',
     transform: [{ scale: 1.02 }],
   },
   flowCardGradient: {
@@ -623,14 +623,14 @@ const styles = StyleSheet.create({
     color: '#fff',
   },
   systemBadge: {
-    backgroundColor: 'rgba(0,217,255,0.2)',
+    backgroundColor: 'rgba(107, 33, 168, 0.3)',
     paddingHorizontal: 8,
     paddingVertical: 2,
     borderRadius: 4,
   },
   systemBadgeText: {
     fontSize: 10,
-    color: '#00d9ff',
+    color: '#a855f7',
     fontWeight: '600',
     textTransform: 'uppercase',
   },
@@ -657,14 +657,14 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: 4,
-    backgroundColor: 'rgba(0,217,255,0.1)',
+    backgroundColor: 'rgba(107, 33, 168, 0.3)',
     paddingHorizontal: 8,
     paddingVertical: 4,
     borderRadius: 4,
   },
   featureText: {
     fontSize: 11,
-    color: '#00d9ff',
+    color: '#a855f7',
   },
   playIconContainer: {
     padding: 8,
@@ -674,7 +674,7 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     overflow: 'hidden',
     borderWidth: 1,
-    borderColor: 'rgba(0,217,255,0.3)',
+    borderColor: 'rgba(168, 85, 247, 0.6)',
     borderStyle: 'dashed',
   },
   createButtonGradient: {
@@ -686,7 +686,7 @@ const styles = StyleSheet.create({
   },
   createButtonText: {
     fontSize: 16,
-    color: '#00d9ff',
+    color: '#a855f7',
     fontWeight: '600',
   },
   modalOverlay: {

@@ -352,7 +352,7 @@ const styles = StyleSheet.create({
   },
   searchInputFocused: {
     borderColor: colors.primary,
-    backgroundColor: 'rgba(0, 217, 255, 0.05)',
+    backgroundColor: 'rgba(107, 33, 168, 0.1)',
   },
   clearBtn: {
     padding: spacing.sm,
@@ -428,10 +428,10 @@ const styles = StyleSheet.create({
   },
   cardFocused: {
     borderColor: colors.primary,
-    backgroundColor: 'rgba(0, 217, 255, 0.08)',
+    backgroundColor: 'rgba(107, 33, 168, 0.15)',
     transform: [{ scale: 1.03 }],
     // @ts-ignore
-    boxShadow: '0 0 20px rgba(0, 217, 255, 0.3)',
+    boxShadow: '0 0 20px rgba(168, 85, 247, 0.6)',
   },
   cardThumb: {
     aspectRatio: 16 / 9,
@@ -539,7 +539,7 @@ const styles = StyleSheet.create({
   },
   chipFocused: {
     borderColor: colors.primary,
-    backgroundColor: 'rgba(0, 217, 255, 0.1)',
+    backgroundColor: 'rgba(107, 33, 168, 0.3)',
   },
   chipText: {
     fontSize: IS_TV_BUILD ? 18 : 14,

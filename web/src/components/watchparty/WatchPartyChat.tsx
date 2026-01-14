@@ -157,7 +157,7 @@ const styles = StyleSheet.create({
     paddingVertical: 0,
   },
   ownBubble: {
-    backgroundColor: 'rgba(0, 217, 255, 0.2)',
+    backgroundColor: 'rgba(107, 33, 168, 0.3)',
   },
   otherBubble: {
     backgroundColor: 'rgba(255, 255, 255, 0.1)',
@@ -182,7 +182,7 @@ const styles = StyleSheet.create({
     opacity: 0,
   },
   timestampOwn: {
-    color: 'rgba(0, 217, 255, 0.6)',
+    color: 'rgba(168, 85, 247, 0.6)',
   },
   systemMessage: {
     alignItems: 'center',

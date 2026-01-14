@@ -211,7 +211,7 @@ const tabStyles = StyleSheet.create({
     borderRadius: 12,
   },
   tabFocused: {
-    backgroundColor: 'rgba(0, 217, 255, 0.1)',
+    backgroundColor: 'rgba(107, 33, 168, 0.3)',
   },
   icon: {
     fontSize: 28,
@@ -222,7 +222,7 @@ const tabStyles = StyleSheet.create({
     color: '#666666',
   },
   labelFocused: {
-    color: '#00d9ff',
+    color: '#a855f7',
     fontWeight: 'bold',
   },
 });

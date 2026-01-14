@@ -255,7 +255,7 @@ const styles = StyleSheet.create({
   },
   buttonFocused: {
     borderColor: colors.primary,
-    backgroundColor: 'rgba(0, 217, 255, 0.1)',
+    backgroundColor: 'rgba(107, 33, 168, 0.3)',
   },
   buttonAvatar: {
     width: 36,

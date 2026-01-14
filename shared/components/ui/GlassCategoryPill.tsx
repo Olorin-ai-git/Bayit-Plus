@@ -175,8 +175,8 @@ const styles = StyleSheet.create({
     }),
   },
   pillHovered: {
-    backgroundColor: 'rgba(0, 217, 255, 0.15)',
-    borderColor: 'rgba(0, 217, 255, 0.5)',
+    backgroundColor: 'rgba(107, 33, 168, 0.3)',
+    borderColor: 'rgba(168, 85, 247, 0.5)',
   },
   pillFocused: {
     borderColor: colors.primary,

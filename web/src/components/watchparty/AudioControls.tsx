@@ -144,7 +144,7 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(255, 255, 255, 0.05)',
   },
   buttonActive: {
-    backgroundColor: 'rgba(0, 217, 255, 0.2)',
+    backgroundColor: 'rgba(107, 33, 168, 0.3)',
   },
   buttonSpeaking: {
     backgroundColor: 'rgba(34, 197, 94, 0.2)',

@@ -428,7 +428,7 @@ const styles = StyleSheet.create({
     width: 600,
     height: 600,
     borderRadius: 300,
-    backgroundColor: 'rgba(0, 217, 255, 0.1)',
+    backgroundColor: 'rgba(107, 33, 168, 0.3)',
   },
   content: {
     flex: 1,
@@ -471,7 +471,7 @@ const styles = StyleSheet.create({
     gap: 8,
   },
   tabActive: {
-    backgroundColor: 'rgba(0, 217, 255, 0.15)',
+    backgroundColor: 'rgba(107, 33, 168, 0.3)',
   },
   tabText: {
     fontSize: 14,
@@ -629,7 +629,7 @@ const styles = StyleSheet.create({
     color: colors.background,
   },
   collectedDataContainer: {
-    backgroundColor: 'rgba(0, 217, 255, 0.1)',
+    backgroundColor: 'rgba(107, 33, 168, 0.3)',
     borderRadius: borderRadius.md,
     padding: 12,
     marginTop: 16,
