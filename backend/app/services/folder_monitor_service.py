@@ -5,6 +5,8 @@ Monitors local folders for new content and automatically enqueues uploads.
 
 import os
 import asyncio
+import json
+import hashlib
 from pathlib import Path
 from typing import List, Set, Dict, Optional
 from datetime import datetime
@@ -27,6 +29,75 @@ class FolderMonitorService:
     def __init__(self):
         self._scanning = False
         self._known_files: Dict[str, Set[str]] = {}  # folder_id -> set of file paths
+        self._hash_cache: Dict[str, Dict[str, any]] = {}  # file_path -> {hash, mtime, size}
+        # Store hash cache in /tmp or current directory
+        cache_base = Path("/tmp") if Path("/tmp").exists() else Path.cwd()
+        self._cache_dir = cache_base / ".bayit_hash_cache"
+        self._cache_dir.mkdir(exist_ok=True)
+    
+    def _get_cache_file(self, folder_id: str) -> Path:
+        """Get cache file path for a monitored folder"""
+        return self._cache_dir / f"{folder_id}.json"
+    
+    def _load_hash_cache(self, folder_id: str):
+        """Load hash cache for a folder"""
+        cache_file = self._get_cache_file(folder_id)
+        if cache_file.exists():
+            try:
+                with open(cache_file, 'r') as f:
+                    return json.load(f)
+            except Exception as e:
+                logger.warning(f"Failed to load hash cache for {folder_id}: {e}")
+        return {}
+    
+    def _save_hash_cache(self, folder_id: str, cache: Dict):
+        """Save hash cache for a folder"""
+        cache_file = self._get_cache_file(folder_id)
+        try:
+            with open(cache_file, 'w') as f:
+                json.dump(cache, f)
+        except Exception as e:
+            logger.error(f"Failed to save hash cache for {folder_id}: {e}")
+    
+    async def _get_or_calculate_hash(self, file_path: str, file_stat) -> Optional[str]:
+        """
+        Get hash from cache or calculate if needed.
+        Only recalculates if file size or mtime changed.
+        """
+        file_path_str = str(file_path)
+        file_size = file_stat.st_size
+        file_mtime = file_stat.st_mtime
+        
+        # Check cache
+        if file_path_str in self._hash_cache:
+            cached = self._hash_cache[file_path_str]
+            # If size and mtime unchanged, use cached hash
+            if cached.get('size') == file_size and cached.get('mtime') == file_mtime:
+                logger.debug(f"Using cached hash for: {Path(file_path).name}")
+                return cached.get('hash')
+        
+        # Calculate hash (file changed or not in cache)
+        logger.info(f"Calculating hash for: {Path(file_path).name} ({file_size} bytes)")
+        try:
+            hash_value = await asyncio.to_thread(self._calculate_hash_sync, file_path)
+            # Cache the result
+            self._hash_cache[file_path_str] = {
+                'hash': hash_value,
+                'size': file_size,
+                'mtime': file_mtime,
+            }
+            return hash_value
+        except Exception as e:
+            logger.error(f"Failed to calculate hash for {file_path}: {e}")
+            return None
+    
+    def _calculate_hash_sync(self, file_path: str) -> str:
+        """Synchronously calculate SHA256 hash"""
+        sha256_hash = hashlib.sha256()
+        with open(file_path, "rb") as f:
+            for byte_block in iter(lambda: f.read(4096), b""):
+                sha256_hash.update(byte_block)
+        return sha256_hash.hexdigest()
 
     async def scan_and_enqueue(self) -> Dict[str, any]:
         """
@@ -141,15 +212,19 @@ class FolderMonitorService:
 
         # Enqueue new files (with periodic yields to keep event loop responsive)
         if folder.auto_upload:
-            # Get database connection for quick duplicate checks
+            # Load hash cache for this folder
+            self._hash_cache = self._load_hash_cache(folder_id)
+            
+            # Get database connection for duplicate checks
             from motor.motor_asyncio import AsyncIOMotorClient
             client = AsyncIOMotorClient(settings.MONGODB_URL)
             db = client[settings.MONGODB_DB_NAME]
             
             enqueue_count = 0
-            skipped_duplicates = 0
             skipped_by_hash = 0
             skipped_by_queue = 0
+            hash_cache_hits = 0
+            hash_calculations = 0
             
             for file_path in found_files:
                 # Check if file is new to this scan
@@ -157,53 +232,82 @@ class FolderMonitorService:
                     try:
                         file_path_obj = Path(file_path)
                         filename = file_path_obj.name
-                        file_size = file_path_obj.stat().st_size
+                        file_stat = file_path_obj.stat()
+                        file_size = file_stat.st_size
+                        file_mtime = file_stat.st_mtime
                         
-                        # TIER 1: Quick filename + size check in content library
-                        # First check if exact filename exists in library
+                        # TIER 1: Quick DB check by filename (instant, catches already-uploaded files)
                         existing_content = await db.content.find_one({
-                            'stream_url': {'$regex': f'/{filename}$'}
+                            '$or': [
+                                {'filename': filename},
+                                {'stream_url': {'$regex': f'/{filename}$'}}
+                            ]
                         })
                         
                         if existing_content:
-                            # If file has a stored hash, we can compare directly
-                            if existing_content.get('file_hash'):
-                                logger.debug(f"✓ Found existing content with hash for: {filename}")
-                                skipped_by_hash += 1
-                                self._known_files[folder_id].add(file_path)
-                                continue
-                            else:
-                                # Content exists but no hash stored - might be a duplicate
-                                # Let it process so we can store the hash
-                                logger.debug(f"⚠️  Content exists without hash, will process to store hash: {filename}")
-                        
-                        # TIER 2: Check if already queued or processing
-                        from beanie.operators import In
-                        existing_job = await UploadJob.find_one(
-                            UploadJob.filename == filename,
-                            In(UploadJob.status, [UploadStatus.QUEUED, UploadStatus.PROCESSING, UploadStatus.UPLOADING])
-                        )
-                        
-                        if existing_job:
-                            logger.debug(f"Skipping file (already queued): {filename}")
-                            skipped_by_queue += 1
+                            logger.debug(f"⏭️  Skipping (already in library): {filename}")
+                            skipped_by_hash += 1
                             self._known_files[folder_id].add(file_path)
                             continue
                         
-                        # TIER 3: For files not in library, enqueue for processing (hash will be calculated once)
+                        # TIER 2: Check local cache (instant, non-blocking)
+                        file_hash = None
+                        file_path_str = str(file_path)
+                        
+                        if file_path_str in self._hash_cache:
+                            cached = self._hash_cache[file_path_str]
+                            # If size and mtime unchanged, use cached hash
+                            if cached.get('size') == file_size and cached.get('mtime') == file_mtime:
+                                file_hash = cached.get('hash')
+                                hash_cache_hits += 1
+                                logger.debug(f"✓ Cache hit: {filename}")
+                        
+                        # TIER 3: If cached hash exists, check for duplicates by hash
+                        if file_hash:
+                            # Check if content with this hash exists (handles renamed files)
+                            existing_by_hash = await db.content.find_one({'file_hash': file_hash})
+                            
+                            if existing_by_hash:
+                                logger.info(f"⏭️  Skipping duplicate (cached hash match): {filename} → '{existing_by_hash.get('title', 'Unknown')}'")
+                                skipped_by_hash += 1
+                                self._known_files[folder_id].add(file_path)
+                                continue
+                            
+                            # Check if already queued with this hash
+                            from beanie.operators import In
+                            existing_job = await UploadJob.find_one(
+                                UploadJob.file_hash == file_hash,
+                                In(UploadJob.status, [UploadStatus.QUEUED, UploadStatus.PROCESSING, UploadStatus.UPLOADING])
+                            )
+                            
+                            if existing_job:
+                                logger.debug(f"⏭️  Skipping (already queued with cached hash): {filename}")
+                                skipped_by_queue += 1
+                                self._known_files[folder_id].add(file_path)
+                                continue
+                        
+                        # TIER 3: Enqueue file (hash will be calculated in background during processing)
+                        # Pass cached hash if available, otherwise will calculate during upload
                         await upload_service.enqueue_upload(
                             source_path=file_path,
                             content_type=folder.content_type,
                             metadata={
                                 "source_folder": folder.path,
-                                "file_size": file_size,  # Store for future quick lookups
+                                "file_size": file_size,
+                                "file_mtime": file_mtime,
+                                "pre_calculated_hash": file_hash,  # May be None (will calculate during processing)
                             },
-                            skip_duplicate_check=True,  # Hash will be calculated during processing
+                            skip_duplicate_check=True,  # We checked with cached hash, or will check during processing
                         )
                         self._known_files[folder_id].add(file_path)
                         stats["files_enqueued"] += 1
                         enqueue_count += 1
-                        logger.info(f"✅ Enqueued new file: {filename} ({file_size} bytes)")
+                        
+                        if file_hash:
+                            logger.info(f"✅ Enqueued with cached hash: {filename}")
+                        else:
+                            logger.info(f"✅ Enqueued (will calculate hash in background): {filename}")
+                            hash_calculations += 1
                         
                         # Yield control every 5 files to keep API responsive
                         if enqueue_count % 5 == 0:
@@ -211,9 +315,12 @@ class FolderMonitorService:
                     except Exception as e:
                         logger.error(f"Failed to enqueue {file_path}: {e}")
             
+            # Save updated hash cache
+            self._save_hash_cache(folder_id, self._hash_cache)
+            
             skipped_duplicates = skipped_by_hash + skipped_by_queue
-            if skipped_duplicates > 0:
-                logger.info(f"⏭️  Skipped {skipped_duplicates} files ({skipped_by_hash} with stored hash, {skipped_by_queue} already queued)")
+            if skipped_duplicates > 0 or hash_cache_hits > 0:
+                logger.info(f"📊 Scan stats: {hash_cache_hits} cached hashes, {hash_calculations} calculated, {skipped_duplicates} duplicates ({skipped_by_hash} in library, {skipped_by_queue} queued)")
 
         # Update known files list
         self._known_files[folder_id].update(found_files)

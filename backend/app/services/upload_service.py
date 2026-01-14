@@ -232,19 +232,31 @@ class UploadService:
             
             # Stage 0: Calculate hash and check for duplicates (if not already done)
             if job.file_hash is None:
-                job.stages["hash_calculation"] = "in_progress"
-                job.progress = 5.0  # Show some progress during hash calculation
-                await job.save()
-                await self._broadcast_queue_update()
+                # Check if hash was pre-calculated during folder scan (from cache)
+                pre_calculated_hash = job.metadata.get('pre_calculated_hash')
                 
-                logger.info(f"Calculating hash for {job.filename}...")
-                job.file_hash = await self._calculate_file_hash(job.source_path)
-                logger.info(f"File hash: {job.file_hash[:16]}...")
-                
-                job.stages["hash_calculation"] = "completed"
-                job.progress = 10.0
-                await job.save()
-                await self._broadcast_queue_update()
+                if pre_calculated_hash:
+                    logger.info(f"Using cached hash for {job.filename}: {pre_calculated_hash[:16]}...")
+                    job.file_hash = pre_calculated_hash
+                    job.stages["hash_calculation"] = "completed"
+                    job.progress = 10.0
+                    await job.save()
+                    await self._broadcast_queue_update()
+                else:
+                    # Calculate hash in background
+                    job.stages["hash_calculation"] = "in_progress"
+                    job.progress = 5.0  # Show some progress during hash calculation
+                    await job.save()
+                    await self._broadcast_queue_update()
+                    
+                    logger.info(f"📊 Calculating hash in background for {job.filename}...")
+                    job.file_hash = await self._calculate_file_hash(job.source_path)
+                    logger.info(f"✓ Hash calculated: {job.file_hash[:16]}... (will be stored in DB)")
+                    
+                    job.stages["hash_calculation"] = "completed"
+                    job.progress = 10.0
+                    await job.save()
+                    await self._broadcast_queue_update()
                 
                 # Check if file with this hash already exists in Content collection
                 from motor.motor_asyncio import AsyncIOMotorClient
