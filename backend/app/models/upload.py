@@ -77,6 +77,43 @@ class UploadJob(Document):
     # Processing stages
     stages: Dict[str, Any] = Field(default_factory=dict)  # Track individual processing stages
     
+    def get_current_stage(self) -> Optional[str]:
+        """Get human-readable current processing stage"""
+        if self.status == UploadStatus.QUEUED:
+            return "Queued"
+        elif self.status == UploadStatus.CANCELLED:
+            return "Cancelled"
+        elif self.status == UploadStatus.FAILED:
+            return "Failed"
+        elif self.status == UploadStatus.COMPLETED:
+            return "Completed"
+        
+        # For processing/uploading status, check which stage is in progress
+        if self.stages.get("hash_calculation") == "in_progress":
+            return "Calculating hash..."
+        elif self.stages.get("hash_calculation") == "completed" and self.stages.get("metadata_extraction") != "completed":
+            if self.stages.get("metadata_extraction") == "in_progress":
+                return "Extracting metadata..."
+            return "Verifying duplicate..."
+        elif self.stages.get("metadata_extraction") == "completed" and self.stages.get("gcs_upload") != "completed":
+            if self.stages.get("gcs_upload") == "in_progress":
+                return "Uploading to cloud..."
+            return "Preparing upload..."
+        elif self.stages.get("gcs_upload") == "completed" and self.stages.get("database_insert") != "completed":
+            if self.stages.get("database_insert") == "in_progress":
+                return "Saving to database..."
+            return "Finalizing..."
+        elif self.stages.get("database_insert") == "completed":
+            return "Completed"
+        
+        # Default based on status
+        if self.status == UploadStatus.UPLOADING:
+            return "Uploading..."
+        elif self.status == UploadStatus.PROCESSING:
+            return "Processing..."
+        
+        return None
+    
     class Settings:
         name = "upload_jobs"
         indexes = [
@@ -191,6 +228,7 @@ class UploadJobResponse(BaseModel):
     created_at: datetime
     started_at: Optional[datetime] = None
     completed_at: Optional[datetime] = None
+    current_stage: Optional[str] = None  # Human-readable current processing stage
     
     class Config:
         from_attributes = True

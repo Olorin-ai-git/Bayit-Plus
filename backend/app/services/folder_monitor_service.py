@@ -148,30 +148,36 @@ class FolderMonitorService:
             
             enqueue_count = 0
             skipped_duplicates = 0
+            skipped_by_hash = 0
+            skipped_by_queue = 0
             
             for file_path in found_files:
                 # Check if file is new to this scan
                 if file_path not in self._known_files[folder_id]:
                     try:
-                        # Quick duplicate check: Check if file with same name and size exists
                         file_path_obj = Path(file_path)
                         filename = file_path_obj.name
                         file_size = file_path_obj.stat().st_size
                         
-                        # Check content collection for filename and size match
+                        # TIER 1: Quick filename + size check in content library
+                        # First check if exact filename exists in library
                         existing_content = await db.content.find_one({
-                            'stream_url': {'$regex': f'/{filename}$'},
-                            # Note: We don't have file_size in content collection currently
-                            # So we'll just check filename for now
+                            'stream_url': {'$regex': f'/{filename}$'}
                         })
                         
                         if existing_content:
-                            logger.info(f"Skipping duplicate file (already in library): {filename}")
-                            skipped_duplicates += 1
-                            self._known_files[folder_id].add(file_path)
-                            continue
+                            # If file has a stored hash, we can compare directly
+                            if existing_content.get('file_hash'):
+                                logger.debug(f"✓ Found existing content with hash for: {filename}")
+                                skipped_by_hash += 1
+                                self._known_files[folder_id].add(file_path)
+                                continue
+                            else:
+                                # Content exists but no hash stored - might be a duplicate
+                                # Let it process so we can store the hash
+                                logger.debug(f"⚠️  Content exists without hash, will process to store hash: {filename}")
                         
-                        # Check if already queued
+                        # TIER 2: Check if already queued or processing
                         from beanie.operators import In
                         existing_job = await UploadJob.find_one(
                             UploadJob.filename == filename,
@@ -179,22 +185,25 @@ class FolderMonitorService:
                         )
                         
                         if existing_job:
-                            logger.info(f"Skipping file (already queued): {filename}")
-                            skipped_duplicates += 1
+                            logger.debug(f"Skipping file (already queued): {filename}")
+                            skipped_by_queue += 1
                             self._known_files[folder_id].add(file_path)
                             continue
                         
-                        # Enqueue the file
+                        # TIER 3: For files not in library, enqueue for processing (hash will be calculated once)
                         await upload_service.enqueue_upload(
                             source_path=file_path,
                             content_type=folder.content_type,
-                            metadata={"source_folder": folder.path},
-                            skip_duplicate_check=True,  # Skip hash calculation during scan for performance
+                            metadata={
+                                "source_folder": folder.path,
+                                "file_size": file_size,  # Store for future quick lookups
+                            },
+                            skip_duplicate_check=True,  # Hash will be calculated during processing
                         )
                         self._known_files[folder_id].add(file_path)
                         stats["files_enqueued"] += 1
                         enqueue_count += 1
-                        logger.info(f"✅ Enqueued new file: {filename}")
+                        logger.info(f"✅ Enqueued new file: {filename} ({file_size} bytes)")
                         
                         # Yield control every 5 files to keep API responsive
                         if enqueue_count % 5 == 0:
@@ -202,8 +211,9 @@ class FolderMonitorService:
                     except Exception as e:
                         logger.error(f"Failed to enqueue {file_path}: {e}")
             
+            skipped_duplicates = skipped_by_hash + skipped_by_queue
             if skipped_duplicates > 0:
-                logger.info(f"⏭️  Skipped {skipped_duplicates} duplicate files during scan")
+                logger.info(f"⏭️  Skipped {skipped_duplicates} files ({skipped_by_hash} with stored hash, {skipped_by_queue} already queued)")
 
         # Update known files list
         self._known_files[folder_id].update(found_files)

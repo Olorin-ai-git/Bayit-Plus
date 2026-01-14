@@ -643,10 +643,11 @@ class UploadService:
             is_featured=False,
             view_count=0,
             file_hash=job.file_hash,  # Store SHA256 hash for duplicate detection
+            file_size=job.file_size,  # Store file size for quick duplicate checks
         )
         
         await content.insert()
-        logger.info(f"Created movie content: {content.title}")
+        logger.info(f"Created movie content: {content.title} (hash: {job.file_hash[:16] if job.file_hash else 'none'}...)")
         
         # Store content ID in job metadata for reference
         job.metadata['content_id'] = str(content.id)

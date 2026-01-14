@@ -15,6 +15,7 @@ from app.models.user import User
 from app.models.admin import Permission, AuditAction
 from app.models.upload import (
     ContentType,
+    UploadJob,
     UploadJobCreate,
     UploadJobResponse,
     UploadQueueResponse,
@@ -29,6 +30,15 @@ from app.services.folder_monitor_service import folder_monitor_service
 
 router = APIRouter()
 logger = logging.getLogger(__name__)
+
+
+# ============ HELPER FUNCTIONS ============
+
+def job_to_response(job: UploadJob) -> UploadJobResponse:
+    """Convert UploadJob to UploadJobResponse with current_stage"""
+    response = UploadJobResponse.from_orm(job)
+    response.current_stage = job.get_current_stage()
+    return response
 
 
 # ============ RBAC DEPENDENCIES ============
@@ -247,7 +257,7 @@ async def enqueue_multiple_uploads(
         
         return {
             "enqueued": len(jobs),
-            "jobs": [UploadJobResponse.from_orm(j) for j in jobs]
+            "jobs": [job_to_response(j) for j in jobs]
         }
         
     except Exception as e:
@@ -278,9 +288,9 @@ async def get_upload_queue(
         
         response = UploadQueueResponse(
             stats=stats,
-            active_job=UploadJobResponse.from_orm(active_job) if active_job else None,
-            queue=[UploadJobResponse.from_orm(j) for j in queue],
-            recent_completed=[UploadJobResponse.from_orm(j) for j in recent],
+            active_job=job_to_response(active_job) if active_job else None,
+            queue=[job_to_response(j) for j in queue],
+            recent_completed=[job_to_response(j) for j in recent],
         )
         
         # Add queue pause info
@@ -682,9 +692,9 @@ async def upload_websocket(websocket: WebSocket, token: str = Query(...)):
         await websocket.send_json({
             "type": "queue_update",
             "stats": stats.dict(),
-            "active_job": UploadJobResponse.from_orm(active_job).dict() if active_job else None,
-            "queue": [UploadJobResponse.from_orm(j).dict() for j in queue],
-            "recent_completed": [UploadJobResponse.from_orm(j).dict() for j in recent],
+            "active_job": job_to_response(active_job).dict() if active_job else None,
+            "queue": [job_to_response(j).dict() for j in queue],
+            "recent_completed": [job_to_response(j).dict() for j in recent],
         })
         
         # Message loop

@@ -36,6 +36,7 @@ export interface QueueJob {
   created_at: string;
   started_at?: string | null;
   completed_at?: string | null;
+  current_stage?: string | null;
 }
 
 export interface QueueStats {
@@ -222,6 +223,13 @@ const GlassQueue: React.FC<GlassQueueProps> = ({
                 variant="info"
               />
             </View>
+            
+            {/* Current Stage */}
+            {activeJob.current_stage && (
+              <Text style={[styles.currentStage, { textAlign }]}>
+                {activeJob.current_stage}
+              </Text>
+            )}
             
             {/* Progress Bar */}
             <View style={styles.progressContainer}>
@@ -477,6 +485,13 @@ const styles = StyleSheet.create({
   jobSize: {
     fontSize: fontSize.sm,
     color: colors.textMuted,
+  },
+  currentStage: {
+    fontSize: fontSize.sm,
+    color: colors.primary,
+    fontStyle: 'italic',
+    marginTop: spacing.xs,
+    marginBottom: spacing.xs,
   },
   progressContainer: {
     height: 8,

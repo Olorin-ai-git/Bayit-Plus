@@ -67,6 +67,7 @@ class Content(Document):
     is_drm_protected: bool = False
     drm_key_id: Optional[str] = None
     file_hash: Optional[str] = None  # SHA256 hash for duplicate detection
+    file_size: Optional[int] = None  # File size in bytes for quick duplicate checks
 
     # Subtitle tracking
     has_subtitles: bool = False

@@ -71,7 +71,7 @@ export function GlassTable<T extends Record<string, any>>({
         <View style={[
           styles.headerRow,
           stickyHeader && styles.stickyHeader,
-          { flexDirection: 'row' },
+          { flexDirection: isRTL ? 'row-reverse' : 'row' },
         ]}>
           {columns.map((column) => (
             <View
@@ -114,7 +114,7 @@ export function GlassTable<T extends Record<string, any>>({
                 rowIndex < data.length - 1 && styles.dataRowBorder,
               ]}
             >
-              <View style={{ flexDirection: 'row', flex: 1 }}>
+              <View style={{ flexDirection: isRTL ? 'row-reverse' : 'row', flex: 1 }}>
                 {columns.map((column) => (
                   <View
                     key={column.key}
@@ -146,12 +146,12 @@ export function GlassTable<T extends Record<string, any>>({
 
       {/* Pagination */}
       {pagination && totalPages > 1 && (
-        <View style={[styles.pagination, { flexDirection: 'row' }]}>
+        <View style={[styles.pagination, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
           <Text style={styles.paginationInfo}>
             {(pagination.page - 1) * pagination.pageSize + 1}-
             {Math.min(pagination.page * pagination.pageSize, pagination.total)} / {pagination.total}
           </Text>
-          <View style={[styles.paginationButtons, { flexDirection: 'row' }]}>
+          <View style={[styles.paginationButtons, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
             <Pressable
               onPress={() => onPageChange?.(pagination.page - 1)}
               disabled={pagination.page <= 1}
