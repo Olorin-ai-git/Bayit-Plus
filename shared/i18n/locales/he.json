@@ -1418,6 +1418,7 @@
       "reports": {
         "title": "דוחות ביקורת אחרונים",
         "emptyMessage": "עדיין אין דוחות ביקורת",
+        "totalReports": "{{count}} דוח(ות)",
         "clearAll": "נקה הכל",
         "viewLogs": "הצג לוגים",
         "viewDetails": "הצג פרטים",

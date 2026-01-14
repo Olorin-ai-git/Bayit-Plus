@@ -1831,6 +1831,7 @@
       "reports": {
         "title": "Informes de Auditoría Recientes",
         "emptyMessage": "Aún no hay informes de auditoría",
+        "totalReports": "{{count}} informe(s)",
         "clearAll": "Limpiar Todo",
         "viewLogs": "Ver Registros",
         "viewDetails": "Ver Detalles",

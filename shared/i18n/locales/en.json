@@ -1548,6 +1548,7 @@
       "reports": {
         "title": "Recent Audit Reports",
         "emptyMessage": "No audit reports yet",
+        "totalReports": "{{count}} report(s)",
         "clearAll": "Clear All",
         "confirmClearAll": "Are you sure you want to clear all audit reports? This action cannot be undone.",
         "clearedSuccessfully": "All audit reports cleared successfully",

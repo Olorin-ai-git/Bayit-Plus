@@ -856,25 +856,36 @@ const LibrarianAgentPage = () => {
       </View>
 
       {/* Recent Reports */}
-      <View style={styles.sectionHeader}>
-        <Text style={[styles.sectionTitle, { textAlign }]}>
-          {t('admin.librarian.reports.title')}
-        </Text>
-        {reports.length > 0 && (
-          <GlassButton
-            title={t('admin.librarian.reports.clearAll')}
-            variant="destructive"
-            icon={<Trash2 size={16} color={colors.error} />}
-            onPress={handleClearReportsClick}
-            loading={clearingReports}
-            disabled={clearingReports}
-            style={styles.clearButton}
-          />
-        )}
-      </View>
-      <GlassCard style={styles.reportsCard}>
+      <GlassDraggableExpander
+        title={t('admin.librarian.reports.title')}
+        subtitle={reports.length > 0 ? t('admin.librarian.reports.totalReports', { count: reports.length }) : undefined}
+        icon={<FileText size={20} color={colors.primary} />}
+        badge={
+          reports.length > 0 ? (
+            <GlassButton
+              title={t('admin.librarian.reports.clearAll')}
+              variant="destructive"
+              icon={<Trash2 size={14} color={colors.error} />}
+              onPress={handleClearReportsClick}
+              loading={clearingReports}
+              disabled={clearingReports}
+              style={styles.clearButtonCompact}
+            />
+          ) : undefined
+        }
+        defaultExpanded={false}
+        draggable={true}
+        minHeight={200}
+        maxHeight={600}
+        style={styles.reportsExpanderContainer}
+      >
         {reports.length === 0 ? (
-          <Text style={[styles.emptyText, { textAlign }]}>{t('admin.librarian.reports.emptyMessage')}</Text>
+          <View style={styles.emptyState}>
+            <FileText size={48} color={colors.textMuted} />
+            <Text style={styles.emptyStateText}>
+              {t('admin.librarian.reports.emptyMessage')}
+            </Text>
+          </View>
         ) : (
           <GlassTable
             columns={reportColumns}
@@ -883,7 +894,7 @@ const LibrarianAgentPage = () => {
             rowKey="audit_id"
           />
         )}
-      </GlassCard>
+      </GlassDraggableExpander>
 
       {/* Activity Log */}
       <Text style={[styles.sectionTitle, { textAlign, marginTop: spacing.lg }]}>
@@ -1175,6 +1186,15 @@ const styles = StyleSheet.create({
   },
   clearButton: {
     minWidth: 120,
+  },
+  clearButtonCompact: {
+    minWidth: 90,
+    paddingVertical: spacing.xs,
+    paddingHorizontal: spacing.sm,
+  },
+  reportsExpanderContainer: {
+    marginTop: spacing.md,
+    marginBottom: spacing.lg,
   },
   actionsRow: {
     marginBottom: spacing.md,
