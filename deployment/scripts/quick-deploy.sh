@@ -2,39 +2,36 @@
 set -e
 
 # Bayit+ Backend Quick Redeploy Script
-# Rebuilds and redeploys the backend to Cloud Run without prompts
+# Rebuilds and redeploys the backend to Cloud Run using cloudbuild.yaml
 
 echo "🚀 Bayit+ Backend Quick Redeploy"
 echo "================================"
 echo ""
 
-# Configuration (hardcoded for speed)
+# Configuration
 PROJECT_ID="bayit-plus"
 REGION="us-east1"
 SERVICE_NAME="bayit-plus-backend"
+REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
 
 echo "📝 Configuration:"
 echo "  Project: $PROJECT_ID"
 echo "  Region: $REGION"
 echo "  Service: $SERVICE_NAME"
+echo "  Repo Root: $REPO_ROOT"
 echo ""
 
 # Set gcloud project
 echo "⚙️  Setting gcloud project..."
 gcloud config set project $PROJECT_ID
 
-# Build container image
+# Build and deploy using cloudbuild.yaml
 echo ""
-echo "🔨 Building container image..."
-gcloud builds submit --tag "gcr.io/$PROJECT_ID/$SERVICE_NAME:latest"
-
-# Deploy to Cloud Run
-echo ""
-echo "🚢 Deploying to Cloud Run..."
-gcloud run deploy $SERVICE_NAME \
-    --image "gcr.io/$PROJECT_ID/$SERVICE_NAME:latest" \
-    --region $REGION \
-    --quiet
+echo "🔨 Building and deploying with Cloud Build..."
+cd "$REPO_ROOT"
+gcloud builds submit \
+    --config=cloudbuild.yaml \
+    --substitutions=_REGION=$REGION,_MEMORY=2Gi,_CPU=2,_MAX_INSTANCES=10,_MIN_INSTANCES=1
 
 # Get service URL
 SERVICE_URL=$(gcloud run services describe $SERVICE_NAME --region $REGION --format 'value(status.url)')

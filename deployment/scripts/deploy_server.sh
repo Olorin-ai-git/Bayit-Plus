@@ -345,28 +345,17 @@ EOF
     # Step 7: Build and Deploy
     print_header "Step 7: Building and Deploying to Cloud Run"
 
-    print_info "Building container image..."
-    gcloud builds submit --tag "gcr.io/$PROJECT_ID/$SERVICE_NAME:latest"
-    print_success "Container image built"
-
-    print_info "Deploying to Cloud Run..."
-
-    # Deploy to Cloud Run
-    gcloud run deploy "$SERVICE_NAME" \
-        --image "gcr.io/$PROJECT_ID/$SERVICE_NAME:latest" \
-        --region "$REGION" \
-        --platform managed \
-        --allow-unauthenticated \
-        --service-account "$SERVICE_ACCOUNT" \
-        --memory 2Gi \
-        --cpu 2 \
-        --timeout 300 \
-        --max-instances 10 \
-        --min-instances 1 \
-        --concurrency 80 \
-        --port 8080 \
-        --set-env-vars "API_V1_PREFIX=/api/v1,STORAGE_TYPE=gcs,DEBUG=false,SPEECH_TO_TEXT_PROVIDER=whisper" \
-        --set-secrets "SECRET_KEY=bayit-secret-key:latest,MONGODB_URL=bayit-mongodb-url:latest,MONGODB_DB_NAME=bayit-mongodb-db-name:latest,STRIPE_API_KEY=bayit-stripe-api-key:latest,STRIPE_SECRET_KEY=bayit-stripe-secret-key:latest,STRIPE_WEBHOOK_SECRET=bayit-stripe-webhook-secret:latest,STRIPE_PRICE_BASIC=bayit-stripe-price-basic:latest,STRIPE_PRICE_PREMIUM=bayit-stripe-price-premium:latest,STRIPE_PRICE_FAMILY=bayit-stripe-price-family:latest,OPENAI_API_KEY=bayit-openai-api-key:latest,ANTHROPIC_API_KEY=bayit-anthropic-api-key:latest,TMDB_API_KEY=tmdb-api-key:latest,TMDB_API_TOKEN=tmdb-api-token:latest,GOOGLE_CLIENT_ID=bayit-google-client-id:latest,GOOGLE_CLIENT_SECRET=bayit-google-client-secret:latest,GOOGLE_REDIRECT_URI=bayit-google-redirect-uri:latest,ELEVENLABS_API_KEY=bayit-elevenlabs-api-key:latest,TWILIO_ACCOUNT_SID=bayit-twilio-account-sid:latest,TWILIO_AUTH_TOKEN=bayit-twilio-auth-token:latest,TWILIO_PHONE_NUMBER=bayit-twilio-phone-number:latest,OPENSUBTITLES_API_KEY=opensubtitles-api-key:latest,GCS_BUCKET_NAME=bayit-gcs-bucket-name:latest,BACKEND_CORS_ORIGINS=bayit-cors-origins:latest,GCP_PROJECT_ID=bayit-gcp-project-id:latest,LIBRARIAN_DAILY_AUDIT_CRON=bayit-librarian-daily-audit-cron:latest,LIBRARIAN_DAILY_AUDIT_TIME=bayit-librarian-daily-audit-time:latest,LIBRARIAN_DAILY_AUDIT_MODE=bayit-librarian-daily-audit-mode:latest,LIBRARIAN_DAILY_AUDIT_COST=bayit-librarian-daily-audit-cost:latest,LIBRARIAN_DAILY_AUDIT_STATUS=bayit-librarian-daily-audit-status:latest,LIBRARIAN_DAILY_AUDIT_DESCRIPTION=bayit-librarian-daily-audit-description:latest,LIBRARIAN_WEEKLY_AUDIT_CRON=bayit-librarian-weekly-audit-cron:latest,LIBRARIAN_WEEKLY_AUDIT_TIME=bayit-librarian-weekly-audit-time:latest,LIBRARIAN_WEEKLY_AUDIT_MODE=bayit-librarian-weekly-audit-mode:latest,LIBRARIAN_WEEKLY_AUDIT_COST=bayit-librarian-weekly-audit-cost:latest,LIBRARIAN_WEEKLY_AUDIT_STATUS=bayit-librarian-weekly-audit-status:latest,LIBRARIAN_WEEKLY_AUDIT_DESCRIPTION=bayit-librarian-weekly-audit-description:latest,LIBRARIAN_MAX_ITERATIONS=bayit-librarian-max-iterations:latest,LIBRARIAN_DEFAULT_BUDGET_USD=bayit-librarian-default-budget-usd:latest,LIBRARIAN_MIN_BUDGET_USD=bayit-librarian-min-budget-usd:latest,LIBRARIAN_MAX_BUDGET_USD=bayit-librarian-max-budget-usd:latest,LIBRARIAN_BUDGET_STEP_USD=bayit-librarian-budget-step-usd:latest,LIBRARIAN_REPORTS_LIMIT=bayit-librarian-reports-limit:latest,LIBRARIAN_ACTIONS_LIMIT=bayit-librarian-actions-limit:latest,LIBRARIAN_ACTIVITY_PAGE_SIZE=bayit-librarian-activity-page-size:latest,LIBRARIAN_ID_TRUNCATE_LENGTH=bayit-librarian-id-truncate-length:latest,LIBRARIAN_MODAL_MAX_HEIGHT=bayit-librarian-modal-max-height:latest"
+    print_info "Building and deploying using Cloud Build (cloudbuild.yaml)..."
+    
+    # Get repository root
+    SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+    REPO_ROOT="$(cd "$SCRIPT_DIR/../.." && pwd)"
+    
+    # Build and deploy using cloudbuild.yaml (includes all configuration)
+    cd "$REPO_ROOT"
+    gcloud builds submit \
+        --config=cloudbuild.yaml \
+        --substitutions=_REGION=$REGION,_MEMORY=2Gi,_CPU=2,_MAX_INSTANCES=10,_MIN_INSTANCES=1
 
     # Get service URL
     SERVICE_URL=$(gcloud run services describe "$SERVICE_NAME" --region "$REGION" --format 'value(status.url)')
