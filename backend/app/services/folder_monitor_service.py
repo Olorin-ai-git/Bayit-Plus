@@ -11,7 +11,7 @@ from datetime import datetime
 import logging
 import fnmatch
 
-from app.models.upload import MonitoredFolder, ContentType
+from app.models.upload import MonitoredFolder, ContentType, UploadJob, UploadStatus
 from app.services.upload_service import upload_service
 from app.core.config import settings
 
@@ -141,11 +141,50 @@ class FolderMonitorService:
 
         # Enqueue new files (with periodic yields to keep event loop responsive)
         if folder.auto_upload:
+            # Get database connection for quick duplicate checks
+            from motor.motor_asyncio import AsyncIOMotorClient
+            client = AsyncIOMotorClient(settings.MONGODB_URL)
+            db = client[settings.MONGODB_DB_NAME]
+            
             enqueue_count = 0
+            skipped_duplicates = 0
+            
             for file_path in found_files:
-                # Check if file is new
+                # Check if file is new to this scan
                 if file_path not in self._known_files[folder_id]:
                     try:
+                        # Quick duplicate check: Check if file with same name and size exists
+                        file_path_obj = Path(file_path)
+                        filename = file_path_obj.name
+                        file_size = file_path_obj.stat().st_size
+                        
+                        # Check content collection for filename and size match
+                        existing_content = await db.content.find_one({
+                            'stream_url': {'$regex': f'/{filename}$'},
+                            # Note: We don't have file_size in content collection currently
+                            # So we'll just check filename for now
+                        })
+                        
+                        if existing_content:
+                            logger.info(f"Skipping duplicate file (already in library): {filename}")
+                            skipped_duplicates += 1
+                            self._known_files[folder_id].add(file_path)
+                            continue
+                        
+                        # Check if already queued
+                        from beanie.operators import In
+                        existing_job = await UploadJob.find_one(
+                            UploadJob.filename == filename,
+                            In(UploadJob.status, [UploadStatus.QUEUED, UploadStatus.PROCESSING, UploadStatus.UPLOADING])
+                        )
+                        
+                        if existing_job:
+                            logger.info(f"Skipping file (already queued): {filename}")
+                            skipped_duplicates += 1
+                            self._known_files[folder_id].add(file_path)
+                            continue
+                        
+                        # Enqueue the file
                         await upload_service.enqueue_upload(
                             source_path=file_path,
                             content_type=folder.content_type,
@@ -155,13 +194,16 @@ class FolderMonitorService:
                         self._known_files[folder_id].add(file_path)
                         stats["files_enqueued"] += 1
                         enqueue_count += 1
-                        logger.info(f"Enqueued new file: {file_path}")
+                        logger.info(f"✅ Enqueued new file: {filename}")
                         
                         # Yield control every 5 files to keep API responsive
                         if enqueue_count % 5 == 0:
                             await asyncio.sleep(0)
                     except Exception as e:
                         logger.error(f"Failed to enqueue {file_path}: {e}")
+            
+            if skipped_duplicates > 0:
+                logger.info(f"⏭️  Skipped {skipped_duplicates} duplicate files during scan")
 
         # Update known files list
         self._known_files[folder_id].update(found_files)

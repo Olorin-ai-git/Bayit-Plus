@@ -34,8 +34,8 @@ export const useDirection = (): DirectionResult => {
       const rtl = isRTLLanguage(lng);
       setIsRTL(rtl);
 
-      // Update document direction for web
-      document.documentElement.dir = rtl ? 'rtl' : 'ltr';
+      // NOTE: Document direction is fixed to RTL in index.html and should not change
+      // Only update the language attribute, not the direction
       document.documentElement.lang = lng;
     };
 

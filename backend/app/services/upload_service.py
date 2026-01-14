@@ -232,9 +232,19 @@ class UploadService:
             
             # Stage 0: Calculate hash and check for duplicates (if not already done)
             if job.file_hash is None:
+                job.stages["hash_calculation"] = "in_progress"
+                job.progress = 5.0  # Show some progress during hash calculation
+                await job.save()
+                await self._broadcast_queue_update()
+                
                 logger.info(f"Calculating hash for {job.filename}...")
                 job.file_hash = await self._calculate_file_hash(job.source_path)
                 logger.info(f"File hash: {job.file_hash[:16]}...")
+                
+                job.stages["hash_calculation"] = "completed"
+                job.progress = 10.0
+                await job.save()
+                await self._broadcast_queue_update()
                 
                 # Check if file with this hash already exists in Content collection
                 from motor.motor_asyncio import AsyncIOMotorClient
@@ -245,16 +255,20 @@ class UploadService:
                 if existing_content:
                     logger.warning(f"Duplicate file detected: {job.filename} (hash: {job.file_hash[:16]}...)")
                     job.status = UploadStatus.FAILED
-                    job.error_message = f"File already exists in library: {existing_content.get('title', job.filename)}"
+                    job.error_message = f"Duplicate: Already in library as '{existing_content.get('title', job.filename)}'"
+                    job.completed_at = datetime.utcnow()
                     await job.save()
                     await self._broadcast_queue_update()
                     return
                 
                 await job.save()
+                await self._broadcast_queue_update()
             
             # Stage 1: Extract metadata
             job.stages["metadata_extraction"] = "in_progress"
+            job.progress = 15.0
             await job.save()
+            await self._broadcast_queue_update()
             
             if job.type == ContentType.MOVIE:
                 metadata = await self._extract_movie_metadata(job)
@@ -265,7 +279,9 @@ class UploadService:
             
             job.metadata.update(metadata)
             job.stages["metadata_extraction"] = "completed"
+            job.progress = 20.0
             await job.save()
+            await self._broadcast_queue_update()
             
             # Stage 1.5: Extract subtitles from local file (for video content)
             if job.type == ContentType.MOVIE and os.path.exists(job.source_path):
@@ -292,17 +308,23 @@ class UploadService:
             
             # Stage 3: Create content entry in database
             job.stages["database_insert"] = "in_progress"
+            job.progress = 96.0
             await job.save()
+            await self._broadcast_queue_update()
             
             await self._create_content_entry(job)
             
             job.stages["database_insert"] = "completed"
+            job.progress = 98.0
+            await job.save()
+            await self._broadcast_queue_update()
             
             # Mark as completed
             job.status = UploadStatus.COMPLETED
             job.progress = 100.0
             job.completed_at = datetime.utcnow()
             await job.save()
+            await self._broadcast_queue_update()
             
             logger.info(f"Job {job.job_id} completed successfully")
             
@@ -446,24 +468,82 @@ class UploadService:
             
             # Upload with progress tracking
             start_time = datetime.utcnow()
-            chunk_size = 5 * 1024 * 1024  # 5MB chunks
+            file_size = job.file_size or Path(job.source_path).stat().st_size
             
+            # Show upload starting progress
+            job.progress = 25.0
+            job.bytes_uploaded = 0
+            await job.save()
+            await self._broadcast_queue_update()
+            
+            # Create a progress tracking wrapper
+            class ProgressFileWrapper:
+                def __init__(self, file_obj, job_ref, service_ref, file_size):
+                    self.file = file_obj
+                    self.job = job_ref
+                    self.service = service_ref
+                    self.file_size = file_size
+                    self.bytes_read = 0
+                    self.last_update = datetime.utcnow()
+                    self.start_time = start_time
+                    
+                def read(self, size=-1):
+                    chunk = self.file.read(size)
+                    if chunk:
+                        self.bytes_read += len(chunk)
+                        
+                        # Update progress every 2MB or every 2 seconds
+                        now = datetime.utcnow()
+                        time_since_update = (now - self.last_update).total_seconds()
+                        
+                        if self.bytes_read % (2 * 1024 * 1024) < len(chunk) or time_since_update >= 2:
+                            # Calculate progress (25% to 95% range for upload)
+                            upload_progress = (self.bytes_read / self.file_size) * 70.0
+                            self.job.progress = 25.0 + upload_progress
+                            self.job.bytes_uploaded = self.bytes_read
+                            
+                            # Calculate speed and ETA
+                            elapsed = (now - self.start_time).total_seconds()
+                            if elapsed > 0:
+                                self.job.upload_speed = self.bytes_read / elapsed
+                                remaining_bytes = self.file_size - self.bytes_read
+                                self.job.eta_seconds = int(remaining_bytes / self.job.upload_speed) if self.job.upload_speed > 0 else None
+                            
+                            # Schedule async update
+                            asyncio.create_task(self._async_update())
+                            self.last_update = now
+                    
+                    return chunk
+                
+                async def _async_update(self):
+                    await self.job.save()
+                    await self.service._broadcast_queue_update()
+                
+                def seek(self, pos, whence=0):
+                    return self.file.seek(pos, whence)
+                
+                def tell(self):
+                    return self.file.tell()
+            
+            # Upload with progress wrapper
             with open(job.source_path, 'rb') as file_obj:
+                progress_wrapper = ProgressFileWrapper(file_obj, job, self, file_size)
                 blob.upload_from_file(
-                    file_obj,
+                    progress_wrapper,
                     content_type=content_type,
-                    size=job.file_size,
+                    size=file_size,
                 )
             
-            # Update progress (simplified - real implementation would track during upload)
-            job.progress = 100.0
-            job.bytes_uploaded = job.file_size or 0
+            # Final progress update after successful upload
+            job.progress = 95.0
+            job.bytes_uploaded = file_size
             
-            # Calculate upload speed
+            # Calculate final upload speed
             elapsed = (datetime.utcnow() - start_time).total_seconds()
             if elapsed > 0:
-                job.upload_speed = (job.file_size or 0) / elapsed
+                job.upload_speed = file_size / elapsed
             
+            job.eta_seconds = None
             await job.save()
             await self._broadcast_queue_update()
             
