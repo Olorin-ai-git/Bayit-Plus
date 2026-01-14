@@ -655,6 +655,36 @@ class UploadService:
         
         return True
 
+    async def clear_queue(self) -> dict:
+        """
+        Clear the upload queue by cancelling all queued and processing jobs.
+        
+        Returns:
+            dict with counts of cancelled jobs
+        """
+        from beanie.operators import In
+        
+        # Find all jobs that are queued or processing
+        active_jobs = await UploadJob.find(
+            In(UploadJob.status, [UploadStatus.QUEUED, UploadStatus.PROCESSING, UploadStatus.UPLOADING])
+        ).to_list()
+        
+        cancelled_count = 0
+        for job in active_jobs:
+            job.status = UploadStatus.CANCELLED
+            job.error_message = "Cancelled by queue clear"
+            await job.save()
+            cancelled_count += 1
+        
+        logger.info(f"Cleared upload queue: {cancelled_count} jobs cancelled")
+        await self._broadcast_queue_update()
+        
+        return {
+            "success": True,
+            "cancelled_count": cancelled_count,
+            "message": f"Cleared {cancelled_count} job(s) from queue"
+        }
+
     async def get_queue_stats(self) -> QueueStats:
         """Get statistics about the queue"""
         # Count by status

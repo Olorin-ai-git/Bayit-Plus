@@ -8,7 +8,7 @@ import { View, Text, StyleSheet, ActivityIndicator, ScrollView, Pressable } from
 import { useTranslation } from 'react-i18next';
 import { colors, spacing, borderRadius, fontSize } from '@bayit/shared/theme';
 import { GlassCard, GlassButton, GlassInput, GlassModal, GlassSelect, GlassToggle } from '@bayit/shared/ui';
-import { Plus, Edit2, Trash2, FolderOpen, AlertCircle, X, Folder, Upload } from 'lucide-react';
+import { Plus, Edit2, Trash2, FolderOpen, AlertCircle, X, Folder, Upload, XCircle } from 'lucide-react';
 import { useDirection } from '@/hooks/useDirection';
 import { useModal } from '@/contexts/ModalContext';
 import { adminButtonStyles } from '@/styles/adminButtonStyles';
@@ -16,7 +16,9 @@ import * as uploadsService from '@/services/uploadsService';
 import GlassQueue from '@/components/admin/GlassQueue';
 import type { QueueJob, QueueStats } from '@/components/admin/GlassQueue';
 import logger from '@/utils/logger';
-import config from '@/config';
+
+// Get API base URL for WebSocket connection
+const API_BASE_URL = import.meta.env.VITE_API_URL || '/api/v1';
 
 // Import types from service
 type UploadJob = uploadsService.UploadJob;
@@ -29,6 +31,7 @@ const UploadsPage: React.FC = () => {
   
   const [loading, setLoading] = useState(true);
   const [triggeringUpload, setTriggeringUpload] = useState(false);
+  const [clearingQueue, setClearingQueue] = useState(false);
   const [queueStats, setQueueStats] = useState<QueueStats>({
     total_jobs: 0,
     queued: 0,
@@ -124,8 +127,9 @@ const UploadsPage: React.FC = () => {
         wsRef.current.close();
       }
 
-      const wsProtocol = config.apiUrl.startsWith('https') ? 'wss' : 'ws';
-      const wsHost = config.apiUrl.replace(/^https?:\/\//, '').replace(/\/api\/v1$/, '');
+      // Determine WebSocket protocol based on API URL
+      const wsProtocol = API_BASE_URL.startsWith('https') || window.location.protocol === 'https:' ? 'wss' : 'ws';
+      const wsHost = window.location.host; // Use current host for WebSocket
       const wsUrl = `${wsProtocol}://${wsHost}/api/v1/admin/uploads/ws?token=${token}`;
 
       logger.info('Connecting to uploads WebSocket', 'UploadsPage', { url: wsUrl.replace(token, '***') });
@@ -186,6 +190,44 @@ const UploadsPage: React.FC = () => {
     } catch (err) {
       logger.error('Failed to resume queue', 'UploadsPage', err);
       setError(err instanceof Error ? err.message : 'Failed to resume queue');
+    }
+  };
+
+  // Handle clear queue
+  const handleClearQueue = async () => {
+    const hasActiveJobs = queueStats.queued > 0 || queueStats.processing > 0;
+    
+    if (!hasActiveJobs) {
+      logger.info('No active jobs to clear', 'UploadsPage');
+      return;
+    }
+
+    const confirmed = await showConfirm({
+      title: t('admin.uploads.clearQueueConfirmTitle'),
+      message: t('admin.uploads.clearQueueConfirmMessage', { 
+        count: queueStats.queued + queueStats.processing 
+      }),
+      confirmText: t('admin.uploads.clearQueue'),
+      cancelText: t('common.cancel'),
+    });
+
+    if (!confirmed) return;
+
+    try {
+      setClearingQueue(true);
+      setError(null);
+      
+      const result = await uploadsService.clearUploadQueue();
+      logger.info('✅ Upload queue cleared', 'UploadsPage', result);
+      
+      // Refresh data
+      await fetchData();
+    } catch (err: any) {
+      logger.error('Failed to clear queue', 'UploadsPage', err);
+      const errorMessage = err?.detail || err?.message || t('admin.uploads.clearQueueFailed');
+      setError(errorMessage);
+    } finally {
+      setClearingQueue(false);
     }
   };
 
@@ -354,6 +396,19 @@ const UploadsPage: React.FC = () => {
           >
             {triggeringUpload && (
               <ActivityIndicator size="small" color={colors.primary} style={{ marginRight: spacing.sm }} />
+            )}
+          </GlassButton>
+          <GlassButton
+            title={clearingQueue ? t('common.loading') : t('admin.uploads.clearQueue')}
+            variant="destructive"
+            icon={clearingQueue ? null : <XCircle size={18} color={colors.error} />}
+            onPress={handleClearQueue}
+            disabled={clearingQueue || (queueStats.queued === 0 && queueStats.processing === 0)}
+            style={[adminButtonStyles.secondaryButton, clearingQueue && { opacity: 0.7 }]}
+            textStyle={adminButtonStyles.buttonText}
+          >
+            {clearingQueue && (
+              <ActivityIndicator size="small" color={colors.error} style={{ marginRight: spacing.sm }} />
             )}
           </GlassButton>
           <GlassButton

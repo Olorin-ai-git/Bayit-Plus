@@ -100,6 +100,13 @@ export const resumeUploadQueue = async (): Promise<{ success: boolean; message: 
 };
 
 /**
+ * Clear the upload queue (cancel all queued and processing jobs)
+ */
+export const clearUploadQueue = async (): Promise<{ success: boolean; cancelled_count: number; message: string }> => {
+  return uploadsApi.post('/admin/uploads/queue/clear');
+};
+
+/**
  * Get monitored folders
  */
 export const getMonitoredFolders = async (): Promise<MonitoredFolder[]> => {

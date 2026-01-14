@@ -5,8 +5,8 @@
 # EXISTING INFRASTRUCTURE (FROM ISRAELI-RADIO-MANAGER)
 # ================================================
 
-# GCP Project (SHARED)
-GCP_PROJECT_ID=israeli-radio-475c9
+# GCP Project (BAYIT PLUS - SEPARATE PROJECT)
+GCP_PROJECT_ID=bayit-plus
 GCP_PROJECT_NUMBER=624470113582
 
 # Region (existing deployments use us-east1)

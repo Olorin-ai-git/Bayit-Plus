@@ -328,6 +328,27 @@ async def resume_upload_queue(
         )
 
 
+@router.post("/uploads/queue/clear")
+async def clear_upload_queue(
+    current_user: User = Depends(has_permission(Permission.CONTENT_CREATE))
+):
+    """
+    Clear the upload queue by cancelling all queued and processing jobs.
+    Completed, failed, and already cancelled jobs are not affected.
+    """
+    try:
+        result = await upload_service.clear_queue()
+        
+        return result
+        
+    except Exception as e:
+        logger.error(f"Failed to clear queue: {e}", exc_info=True)
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Failed to clear queue: {str(e)}"
+        )
+
+
 @router.get("/uploads/history")
 async def get_upload_history(
     limit: int = Query(default=50, le=200),
