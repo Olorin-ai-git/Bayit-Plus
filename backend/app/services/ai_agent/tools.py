@@ -442,7 +442,7 @@ TOOLS = [
     },
     {
         "name": "batch_download_subtitles",
-        "description": "Download subtitles for multiple content items in one batch operation. Automatically manages daily quotas (20 downloads/day) and prioritizes content by recency and missing languages. Use this for large-scale subtitle acquisition.",
+        "description": "Download subtitles for multiple content items in one batch operation. Automatically manages daily quotas (1500 downloads/day) and prioritizes content by recency and missing languages. IMPORTANT: OpenSubtitles is limited to 3 languages maximum per request, prioritized: Hebrew (he), English (en), Spanish (es). Use this for large-scale subtitle acquisition.",
         "input_schema": {
             "type": "object",
             "properties": {
@@ -454,7 +454,7 @@ TOOLS = [
                 "languages": {
                     "type": "array",
                     "items": {"type": "string"},
-                    "description": "Languages to fetch (default: ['he', 'en', 'es'])",
+                    "description": "Languages to fetch. Maximum 3 languages allowed. Priority: Hebrew (he), English (en), Spanish (es). Default: ['he', 'en', 'es']",
                     "default": ["he", "en", "es"]
                 },
                 "max_downloads": {

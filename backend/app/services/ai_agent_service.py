@@ -1826,15 +1826,43 @@ async def execute_batch_download_subtitles(
     max_downloads: int = 20,
     audit_id: str = None
 ) -> Dict[str, Any]:
-    """Batch download subtitles for multiple content items."""
+    """
+    Batch download subtitles for multiple content items.
+    
+    OpenSubtitles limit: Maximum 3 languages per request.
+    Priority order: Hebrew (he), English (en), Spanish (es)
+    """
     from app.services.external_subtitle_service import ExternalSubtitleService
     from app.models.librarian import LibrarianAction
 
     try:
+        # Limit to 3 languages for OpenSubtitles, prioritize he, en, es
+        priority_order = ['he', 'en', 'es']
+        prioritized_languages = []
+        
+        # Add priority languages first
+        for lang in priority_order:
+            if lang in languages:
+                prioritized_languages.append(lang)
+        
+        # Add other languages
+        for lang in languages:
+            if lang not in prioritized_languages:
+                prioritized_languages.append(lang)
+        
+        # Limit to 3 languages max
+        limited_languages = prioritized_languages[:3]
+        
+        if len(languages) > 3:
+            logger.info(
+                f"⚠️ OpenSubtitles limited to 3 languages: {limited_languages} "
+                f"(skipped: {prioritized_languages[3:]})"
+            )
+        
         service = ExternalSubtitleService()
         results = await service.batch_fetch_subtitles(
             content_ids=content_ids,
-            languages=languages,
+            languages=limited_languages,
             max_downloads=max_downloads
         )
 

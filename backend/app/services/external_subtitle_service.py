@@ -216,6 +216,10 @@ class ExternalSubtitleService:
         """
         Batch process multiple content items.
         Respects daily quota limits.
+        
+        IMPORTANT: OpenSubtitles is limited to 3 languages maximum.
+        Priority: Hebrew (he), English (en), Spanish (es)
+        Languages should be pre-filtered before calling this method.
 
         Returns:
         {
@@ -226,6 +230,13 @@ class ExternalSubtitleService:
             "details": [...]
         }
         """
+        # Enforce 3-language limit for OpenSubtitles
+        if len(languages) > 3:
+            logger.warning(
+                f"⚠️ OpenSubtitles limited to 3 languages. Received {len(languages)}: {languages}. "
+                f"Using first 3: {languages[:3]}"
+            )
+            languages = languages[:3]
         # Check quota
         quota = await self.opensubtitles.check_quota_available()
         if max_downloads is None:
