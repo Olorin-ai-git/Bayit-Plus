@@ -32,7 +32,17 @@ Updated `backend/app/main.py` to disable the podcast sync from Israeli Radio Man
 
 **Result**: Startup time reduced from ~3 minutes to ~10-20 seconds ⚡
 
-### 2. Increased Startup Probe Timeout (Safety Net)
+### 2. Configured Service Account for GCS Uploads
+
+Updated `cloudbuild.yaml` to use the service account for GCS access:
+
+```yaml
+- '--service-account=israeli-radio-auth@israeli-radio-475c9.iam.gserviceaccount.com'
+```
+
+**Result**: Cloud Run now runs as this service account, which has permissions to write to the GCS bucket `bayit-plus-media-new`
+
+### 3. Increased Startup Probe Timeout (Safety Net)
 
 Updated `cloudbuild.yaml` to configure Cloud Run startup probes with more generous timeouts:
 
@@ -140,8 +150,17 @@ With `min-instances=1`, the container stays warm, so this only affects:
 ## Related Files
 
 - ✅ `backend/app/main.py` - **Disabled podcast sync** (primary fix)
-- ✅ `backend/cloudbuild.yaml` - Updated with new startup probe settings (safety net)
+- ✅ `backend/cloudbuild.yaml` - **Added service account** + increased startup timeout
 - 📝 `backend/app/services/podcast_sync.py` - Can be removed in future cleanup
+
+## Service Account Configuration
+
+Cloud Run now runs as: `israeli-radio-auth@israeli-radio-475c9.iam.gserviceaccount.com`
+
+This service account has:
+- ✅ Read/Write access to GCS bucket `bayit-plus-media-new`
+- ✅ Access to all configured secrets in Secret Manager
+- ✅ Proper permissions for all GCP services (Storage, MongoDB Atlas, etc.)
 
 ## Performance Impact
 
