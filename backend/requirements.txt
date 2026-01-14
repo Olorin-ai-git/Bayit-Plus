@@ -29,3 +29,4 @@ ffmpeg-python==0.2.0
 google-cloud-speech==2.21.0
 google-cloud-translate==3.12.0
 phonenumbers==8.13.26
+twilio==8.10.0
