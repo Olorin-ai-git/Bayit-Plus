@@ -61,6 +61,7 @@ const LibrarianAgentPage = () => {
   const [errorMessage, setErrorMessage] = useState('');
   const [successModalOpen, setSuccessModalOpen] = useState(false);
   const [successMessage, setSuccessMessage] = useState('');
+  const [clearReportsModalOpen, setClearReportsModalOpen] = useState(false);
 
   // Load all data
   const loadData = useCallback(async () => {
@@ -425,12 +426,14 @@ const LibrarianAgentPage = () => {
   };
 
   // Handle clear all audit reports
-  const handleClearReports = async () => {
-    if (!window.confirm(t('admin.librarian.reports.confirmClearAll'))) {
-      return;
-    }
+  const handleClearReportsClick = () => {
+    setClearReportsModalOpen(true);
+  };
 
+  const handleClearReportsConfirm = async () => {
+    setClearReportsModalOpen(false);
     setClearingReports(true);
+    
     try {
       await clearAuditReports();
       setReports([]);
@@ -810,7 +813,7 @@ const LibrarianAgentPage = () => {
             title={t('admin.librarian.reports.clearAll')}
             variant="destructive"
             icon={<Trash2 size={16} color={colors.error} />}
-            onPress={handleClearReports}
+            onPress={handleClearReportsClick}
             loading={clearingReports}
             disabled={clearingReports}
             style={styles.clearButton}
@@ -862,6 +865,27 @@ const LibrarianAgentPage = () => {
             text: t('admin.librarian.modal.confirm'),
             onPress: () => pendingAuditType && executeAudit(pendingAuditType),
             variant: 'primary',
+          },
+        ]}
+        dismissable
+      />
+
+      {/* Confirmation Modal for Clear Reports */}
+      <GlassModal
+        visible={clearReportsModalOpen}
+        type="warning"
+        title={t('admin.librarian.reports.clearAll')}
+        message={t('admin.librarian.reports.confirmClearAll')}
+        buttons={[
+          {
+            text: t('common.cancel'),
+            onPress: () => setClearReportsModalOpen(false),
+            variant: 'secondary',
+          },
+          {
+            text: t('admin.librarian.reports.clearAll'),
+            onPress: handleClearReportsConfirm,
+            variant: 'destructive',
           },
         ]}
         dismissable

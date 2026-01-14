@@ -11,10 +11,12 @@ import EPGRecordModal, { RecordingSettings } from '@/components/epg/EPGRecordMod
 import { RecordingStatus } from '@/components/epg/EPGRecordingIndicator'
 import { useAuthStore } from '@/stores/authStore'
 import { recordingApi } from '@/services/recordingApi'
+import { useModal } from '@/contexts/ModalContext'
 
 const EPGPage: React.FC = () => {
   const { t } = useTranslation()
   const { user } = useAuthStore()
+  const { showError } = useModal()
 
   // View state
   const [viewMode, setViewMode] = useState<EPGViewMode>('grid')
@@ -204,7 +206,10 @@ const EPGPage: React.FC = () => {
       })
     } catch (err: any) {
       console.error('Failed to start/schedule recording:', err)
-      alert(err.message || t('epg.recordingFailed'))
+      showAlert({
+        title: t('common.error'),
+        message: err.message || t('epg.recordingFailed'),
+      })
     }
   }, [recordModal, t])
 

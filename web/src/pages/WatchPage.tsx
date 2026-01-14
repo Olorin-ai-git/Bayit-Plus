@@ -12,6 +12,7 @@ import { podcastsService } from '@/services/adminApi';
 import { colors, spacing, borderRadius } from '@bayit/shared/theme';
 import { GlassCard, GlassButton, GlassView } from '@bayit/shared/ui';
 import logger from '@/utils/logger';
+import { useModal } from '@/contexts/ModalContext';
 
 // Flow/Playlist item type
 interface PlaylistItem {
@@ -73,6 +74,7 @@ interface Chapter {
 export default function WatchPage({ type = 'vod' }: WatchPageProps) {
   const { t } = useTranslation();
   const { isRTL, textAlign, flexDirection } = useDirection();
+  const { showConfirm } = useModal();
   const params = useParams();
   const location = useLocation();
   const navigate = useNavigate();
@@ -234,17 +236,25 @@ export default function WatchPage({ type = 'vod' }: WatchPageProps) {
   };
 
   const handleDeleteEpisode = async (episodeId: string) => {
-    if (!window.confirm(t('watch.confirmDeleteEpisode') || 'Delete this episode?')) {
-      return;
-    }
-    try {
-      await podcastsService.deleteEpisode(contentId, episodeId);
-      // Reload content to refresh episodes list
-      await loadContent();
-      logger.info('Episode deleted successfully');
-    } catch (error) {
-      logger.error('Failed to delete episode', 'WatchPage', error);
-    }
+    showConfirm(
+      t('watch.confirmDeleteEpisode'),
+      async () => {
+        try {
+          await podcastsService.deleteEpisode(contentId, episodeId);
+          // Reload content to refresh episodes list
+          await loadContent();
+          logger.info('Episode deleted successfully');
+        } catch (error) {
+          logger.error('Failed to delete episode', 'WatchPage', error);
+        }
+      },
+      {
+        title: t('watch.deleteEpisode'),
+        confirmText: t('common.delete'),
+        cancelText: t('common.cancel'),
+        destructive: true,
+      }
+    );
   };
 
   if (loading) {

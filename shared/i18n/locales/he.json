@@ -1354,7 +1354,8 @@
         "excellent": "מצוין",
         "good": "טוב",
         "fair": "סביר",
-        "poor": "גרוע"
+        "poor": "גרוע",
+        "unknown": "לא ידוע"
       },
       "quickActions": {
         "title": "פעולות מהירות",
@@ -2378,6 +2379,7 @@
     "schedule": "לוח שידורים",
     "now": "עכשיו",
     "related": "תוכן דומה",
+    "deleteEpisode": "מחק פרק",
     "confirmDeleteEpisode": "מחק פרק זה?"
   },
   "live": {

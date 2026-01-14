@@ -5,7 +5,7 @@ import { Sunrise, Check } from 'lucide-react'
 import { ritualService } from '@/services/api'
 import logger from '@/utils/logger'
 import { colors, spacing, borderRadius } from '@bayit/shared/theme'
-import { GlassView } from '@bayit/shared/ui'
+import { GlassView, GlassSelect } from '@bayit/shared/ui'
 
 interface Preferences {
   morning_ritual_enabled: boolean
@@ -127,36 +127,30 @@ export default function RitualSettings() {
         <View style={styles.timeRow}>
           {/* Start Time */}
           <View style={styles.timeField}>
-            <Text style={styles.timeLabel}>{t('settings.ritual.startTime')}</Text>
-            <View style={styles.selectWrapper}>
-              <select
-                value={preferences.morning_ritual_start}
-                onChange={(e) => handleChange('morning_ritual_start', parseInt(e.target.value))}
-                style={selectStyles}
-                disabled={!preferences.morning_ritual_enabled}
-              >
-                {[5, 6, 7, 8, 9, 10, 11, 12].map((hour) => (
-                  <option key={hour} value={hour}>{hour}:00</option>
-                ))}
-              </select>
-            </View>
+            <GlassSelect
+              label={t('settings.ritual.startTime')}
+              value={preferences.morning_ritual_start}
+              onChange={(value) => handleChange('morning_ritual_start', parseInt(value))}
+              options={[5, 6, 7, 8, 9, 10, 11, 12].map((hour) => ({
+                value: hour.toString(),
+                label: `${hour}:00`,
+              }))}
+              disabled={!preferences.morning_ritual_enabled}
+            />
           </View>
 
           {/* End Time */}
           <View style={styles.timeField}>
-            <Text style={styles.timeLabel}>{t('settings.ritual.endTime')}</Text>
-            <View style={styles.selectWrapper}>
-              <select
-                value={preferences.morning_ritual_end}
-                onChange={(e) => handleChange('morning_ritual_end', parseInt(e.target.value))}
-                style={selectStyles}
-                disabled={!preferences.morning_ritual_enabled}
-              >
-                {[6, 7, 8, 9, 10, 11, 12, 13, 14].map((hour) => (
-                  <option key={hour} value={hour}>{hour}:00</option>
-                ))}
-              </select>
-            </View>
+            <GlassSelect
+              label={t('settings.ritual.endTime')}
+              value={preferences.morning_ritual_end}
+              onChange={(value) => handleChange('morning_ritual_end', parseInt(value))}
+              options={[6, 7, 8, 9, 10, 11, 12, 13, 14].map((hour) => ({
+                value: hour.toString(),
+                label: `${hour}:00`,
+              }))}
+              disabled={!preferences.morning_ritual_enabled}
+            />
           </View>
         </View>
       </GlassView>
@@ -243,18 +237,6 @@ export default function RitualSettings() {
       </Pressable>
     </View>
   )
-}
-
-const selectStyles: React.CSSProperties = {
-  width: '100%',
-  padding: '8px 12px',
-  backgroundColor: 'rgba(255, 255, 255, 0.05)',
-  border: `1px solid ${colors.glassBorder}`,
-  borderRadius: borderRadius.md,
-  color: colors.text,
-  fontSize: 14,
-  appearance: 'none',
-  cursor: 'pointer',
 }
 
 const styles = StyleSheet.create({
@@ -344,9 +326,6 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: colors.textMuted,
     marginBottom: spacing.sm,
-  },
-  selectWrapper: {
-    position: 'relative',
   },
   contentList: {
     gap: spacing.sm,

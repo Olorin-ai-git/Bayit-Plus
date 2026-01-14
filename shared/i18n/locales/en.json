@@ -1484,7 +1484,8 @@
         "excellent": "excellent",
         "good": "good",
         "fair": "fair",
-        "poor": "poor"
+        "poor": "poor",
+        "unknown": "unknown"
       },
       "quickActions": {
         "title": "Quick Actions",
@@ -2397,6 +2398,7 @@
     "schedule": "Schedule",
     "now": "Now",
     "related": "Related Content",
+    "deleteEpisode": "Delete Episode",
     "confirmDeleteEpisode": "Delete this episode?"
   },
   "live": {

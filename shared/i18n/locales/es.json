@@ -1767,7 +1767,8 @@
         "excellent": "excelente",
         "good": "bueno",
         "fair": "regular",
-        "poor": "pobre"
+        "poor": "pobre",
+        "unknown": "desconocido"
       },
       "quickActions": {
         "title": "Acciones Rápidas",
@@ -2359,6 +2360,7 @@
     "schedule": "Horario",
     "now": "Ahora",
     "related": "Contenido relacionado",
+    "deleteEpisode": "Eliminar Episodio",
     "confirmDeleteEpisode": "¿Eliminar este episodio?"
   },
   "live": {
