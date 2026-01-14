@@ -1868,6 +1868,8 @@
         "executionLog": "Registro de Ejecución de Auditoría",
         "searchPlaceholder": "Buscar registros...",
         "noLogs": "No hay registros para mostrar",
+        "noActiveAudit": "No hay Auditoría Activa",
+        "triggerAuditToSee": "Activa una auditoría para ver los registros de ejecución en vivo aquí",
         "auditType": "Tipo de Auditoría",
         "started": "Iniciado",
         "completed": "Completado",

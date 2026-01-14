@@ -26,6 +26,7 @@ export { GlassStatCard } from './GlassStatCard';
 export { GlassTable, GlassTableCell } from './GlassTable';
 export { GlassLiveChannelCard } from './GlassLiveChannelCard';
 export { GlassLog } from './GlassLog';
+export { GlassDraggableExpander } from './GlassDraggableExpander';
 
 // Voice-first conversational interface components (Phases 10)
 export { GlassParticleLayer } from './GlassParticleLayer';

@@ -1455,6 +1455,8 @@
         "executionLog": "לוג ביצוע ביקורת",
         "searchPlaceholder": "חפש לוגים...",
         "noLogs": "אין לוגים להצגה",
+        "noActiveAudit": "אין ביקורת פעילה",
+        "triggerAuditToSee": "הפעל ביקורת כדי לראות לוגי ביצוע חיים כאן",
         "auditType": "סוג ביקורת",
         "started": "התחיל",
         "completed": "הושלם",

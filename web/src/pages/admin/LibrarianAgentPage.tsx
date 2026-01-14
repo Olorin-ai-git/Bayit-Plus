@@ -8,11 +8,11 @@ import {
   Pressable,
 } from 'react-native';
 import { useTranslation } from 'react-i18next';
-import { RefreshCw, Bot, Play, Zap, FileText, Eye, ScrollText, Trash2, ChevronDown, ChevronUp } from 'lucide-react';
+import { RefreshCw, Bot, Play, Zap, FileText, Eye, ScrollText, Trash2 } from 'lucide-react';
 import StatCard from '@/components/admin/StatCard';
 import LibrarianScheduleCard from '@/components/admin/LibrarianScheduleCard';
 import LibrarianActivityLog from '@/components/admin/LibrarianActivityLog';
-import { GlassCard, GlassButton, GlassModal, GlassBadge, GlassTable, GlassTableColumn, GlassLog, LogEntry } from '@bayit/shared/ui';
+import { GlassCard, GlassButton, GlassModal, GlassBadge, GlassTable, GlassTableColumn, GlassLog, LogEntry, GlassDraggableExpander } from '@bayit/shared/ui';
 import { colors, spacing, borderRadius } from '@bayit/shared/theme';
 import { useDirection } from '@/hooks/useDirection';
 import {
@@ -56,7 +56,7 @@ const LibrarianAgentPage = () => {
   const [detailModalVisible, setDetailModalVisible] = useState(false);
   const [detailModalLoading, setDetailModalLoading] = useState(false);
   const [confirmModalVisible, setConfirmModalVisible] = useState(false);
-  const [livePanelExpanded, setLivePanelExpanded] = useState(false);
+  const [livePanelExpanded, setLivePanelExpanded] = useState(true); // Expanded by default
   const [livePanelReport, setLivePanelReport] = useState<AuditReportDetail | null>(null);
   const [pendingAuditType, setPendingAuditType] = useState<'daily_incremental' | 'ai_agent' | null>(null);
   const [configError, setConfigError] = useState<string | null>(null);
@@ -751,76 +751,80 @@ const LibrarianAgentPage = () => {
       </GlassCard>
 
       {/* Live Audit Log Panel */}
-      {livePanelReport && (
-        <GlassCard style={styles.liveLogPanel}>
-          <Pressable
-            style={styles.livePanelHeader}
-            onPress={() => setLivePanelExpanded(!livePanelExpanded)}
-          >
-            <View style={styles.livePanelTitleRow}>
-              <ScrollText size={20} color={colors.primary} />
-              <Text style={styles.livePanelTitle}>
-                {t('admin.librarian.logs.liveAuditLog')}
+      <GlassDraggableExpander
+        title={t('admin.librarian.logs.liveAuditLog')}
+        subtitle={livePanelReport ? `${t('admin.librarian.logs.auditType')}: ${livePanelReport.audit_type.replace('_', ' ')}` : undefined}
+        icon={
+          livePanelReport?.status === 'in_progress' ? (
+            <ActivityIndicator size="small" color={colors.primary} />
+          ) : (
+            <ScrollText size={20} color={colors.primary} />
+          )
+        }
+        badge={
+          livePanelReport ? (
+            <GlassBadge
+              text={t(`admin.librarian.reports.status.${livePanelReport.status}`)}
+              variant={
+                livePanelReport.status === 'completed' ? 'success' :
+                livePanelReport.status === 'in_progress' ? 'warning' :
+                livePanelReport.status === 'failed' ? 'error' : 'info'
+              }
+            />
+          ) : undefined
+        }
+        defaultExpanded={true}
+        onExpandChange={setLivePanelExpanded}
+        draggable={true}
+        minHeight={300}
+        maxHeight={800}
+        style={styles.liveLogPanel}
+      >
+        {livePanelReport ? (
+          <View>
+            <View style={styles.livePanelInfo}>
+              <Text style={styles.livePanelInfoText}>
+                {t('admin.librarian.logs.started')}: {format(new Date(livePanelReport.audit_date), 'HH:mm:ss')}
               </Text>
-              {livePanelReport.status === 'in_progress' && (
-                <ActivityIndicator size="small" color={colors.primary} style={styles.livePanelSpinner} />
+              {livePanelReport.completed_at && (
+                <Text style={styles.livePanelInfoText}>
+                  {t('admin.librarian.logs.completed')}: {format(new Date(livePanelReport.completed_at), 'HH:mm:ss')}
+                </Text>
               )}
-              <GlassBadge
-                text={t(`admin.librarian.reports.status.${livePanelReport.status}`)}
-                variant={
-                  livePanelReport.status === 'completed' ? 'success' :
-                  livePanelReport.status === 'in_progress' ? 'warning' :
-                  livePanelReport.status === 'failed' ? 'error' : 'info'
-                }
-                style={styles.livePanelBadge}
-              />
             </View>
-            {livePanelExpanded ? (
-              <ChevronUp size={20} color={colors.text} />
-            ) : (
-              <ChevronDown size={20} color={colors.text} />
-            )}
-          </Pressable>
 
-          {livePanelExpanded && (
-            <View style={styles.livePanelContent}>
-              <View style={styles.livePanelInfo}>
-                <Text style={styles.livePanelInfoText}>
-                  {t('admin.librarian.logs.auditType')}: {livePanelReport.audit_type.replace('_', ' ')}
-                </Text>
-                <Text style={styles.livePanelInfoText}>
-                  {t('admin.librarian.logs.started')}: {format(new Date(livePanelReport.audit_date), 'HH:mm:ss')}
-                </Text>
-                {livePanelReport.completed_at && (
-                  <Text style={styles.livePanelInfoText}>
-                    {t('admin.librarian.logs.completed')}: {format(new Date(livePanelReport.completed_at), 'HH:mm:ss')}
-                  </Text>
-                )}
-              </View>
-
-              <GlassLog
-                logs={[...livePanelReport.execution_logs].reverse()}
-                title={t('admin.librarian.logs.executionLog')}
-                searchPlaceholder={t('admin.librarian.logs.searchPlaceholder')}
-                emptyMessage={t('admin.librarian.logs.noLogs')}
-                levelLabels={{
-                  debug: t('admin.librarian.logs.levels.debug'),
-                  info: t('admin.librarian.logs.levels.info'),
-                  warn: t('admin.librarian.logs.levels.warn'),
-                  error: t('admin.librarian.logs.levels.error'),
-                  success: t('admin.librarian.logs.levels.success'),
-                  trace: t('admin.librarian.logs.levels.trace'),
-                }}
-                showSearch
-                showLevelFilter
-                showDownload
-                autoScroll
-                maxHeight={500}
-              />
-            </View>
-          )}
-        </GlassCard>
-      )}
+            <GlassLog
+              logs={[...livePanelReport.execution_logs].reverse()}
+              title={t('admin.librarian.logs.executionLog')}
+              searchPlaceholder={t('admin.librarian.logs.searchPlaceholder')}
+              emptyMessage={t('admin.librarian.logs.noLogs')}
+              levelLabels={{
+                debug: t('admin.librarian.logs.levels.debug'),
+                info: t('admin.librarian.logs.levels.info'),
+                warn: t('admin.librarian.logs.levels.warn'),
+                error: t('admin.librarian.logs.levels.error'),
+                success: t('admin.librarian.logs.levels.success'),
+                trace: t('admin.librarian.logs.levels.trace'),
+              }}
+              showSearch
+              showLevelFilter
+              showDownload
+              autoScroll
+              maxHeight={500}
+            />
+          </View>
+        ) : (
+          <View style={styles.emptyState}>
+            <ScrollText size={48} color={colors.textMuted} />
+            <Text style={styles.emptyStateText}>
+              {t('admin.librarian.logs.noActiveAudit')}
+            </Text>
+            <Text style={styles.emptyStateSubtext}>
+              {t('admin.librarian.logs.triggerAuditToSee')}
+            </Text>
+          </View>
+        )}
+      </GlassDraggableExpander>
 
       {/* Schedule Information */}
       <Text style={[styles.sectionTitle, { textAlign, marginTop: spacing.lg }]}>
@@ -1474,6 +1478,25 @@ const styles = StyleSheet.create({
   livePanelInfoText: {
     fontSize: 13,
     color: colors.textMuted,
+  },
+  emptyState: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: spacing.xl * 2,
+    minHeight: 250,
+  },
+  emptyStateText: {
+    fontSize: 18,
+    fontWeight: '600',
+    color: colors.textMuted,
+    marginTop: spacing.md,
+    textAlign: 'center',
+  },
+  emptyStateSubtext: {
+    fontSize: 14,
+    color: colors.textMuted,
+    marginTop: spacing.xs,
+    textAlign: 'center',
   },
 });
 

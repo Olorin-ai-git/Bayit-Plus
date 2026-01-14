@@ -1587,6 +1587,8 @@
         "executionLog": "Audit Execution Log",
         "searchPlaceholder": "Search logs...",
         "noLogs": "No logs to display",
+        "noActiveAudit": "No Active Audit",
+        "triggerAuditToSee": "Trigger an audit to see live execution logs here",
         "auditType": "Audit Type",
         "started": "Started",
         "completed": "Completed",
