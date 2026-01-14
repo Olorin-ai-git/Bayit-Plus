@@ -1997,7 +1997,8 @@ async def run_ai_agent_audit(
     language: str = "en",
     last_24_hours_only: bool = False,
     cyb_titles_only: bool = False,
-    tmdb_posters_only: bool = False
+    tmdb_posters_only: bool = False,
+    opensubtitles_enabled: bool = False
 ) -> AuditReport:
     """
     Run a fully autonomous AI agent audit using Claude's tool use.
@@ -2119,7 +2120,7 @@ Balance between metadata fixes, subtitle acquisition, and quality checks.
     
     # Build filter instructions
     filter_instructions = ""
-    if last_24_hours_only or cyb_titles_only or tmdb_posters_only:
+    if last_24_hours_only or cyb_titles_only or tmdb_posters_only or opensubtitles_enabled:
         filter_instructions = "\n**🎯 SPECIAL FILTERS ACTIVE:**\n"
         if last_24_hours_only:
             filter_instructions += "- ⏰ **Last 24 Hours Only**: Focus ONLY on content added/modified in the last 24 hours\n"
@@ -2127,6 +2128,8 @@ Balance between metadata fixes, subtitle acquisition, and quality checks.
             filter_instructions += "- 📺 **CYB Titles Only**: Focus ONLY on titles containing 'CYB' (for extraction)\n"
         if tmdb_posters_only:
             filter_instructions += "- 🖼️ **TMDB Posters/Metadata Only**: Focus ONLY on adding/updating TMDB posters and metadata. Skip subtitle checks.\n"
+        if opensubtitles_enabled:
+            filter_instructions += "- 🎬 **OpenSubtitles Enabled**: OpenSubtitles API is available for subtitle retrieval. Use search_external_subtitles and download_external_subtitle tools. Daily quota: 1500 downloads.\n"
         filter_instructions += "\n"
     
     # Initial prompt for Claude (in English as instructions, Claude responds in requested language)

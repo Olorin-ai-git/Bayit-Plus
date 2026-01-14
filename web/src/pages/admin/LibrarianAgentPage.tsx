@@ -51,6 +51,7 @@ const LibrarianAgentPage = () => {
   const [last24HoursOnly, setLast24HoursOnly] = useState(false);
   const [cybTitlesOnly, setCybTitlesOnly] = useState(false);
   const [tmdbPostersOnly, setTmdbPostersOnly] = useState(false);
+  const [openSubtitlesEnabled, setOpenSubtitlesEnabled] = useState(false);
   const [selectedReport, setSelectedReport] = useState<AuditReportDetail | null>(null);
   const [detailModalVisible, setDetailModalVisible] = useState(false);
   const [detailModalLoading, setDetailModalLoading] = useState(false);
@@ -218,6 +219,7 @@ const LibrarianAgentPage = () => {
         last_24_hours_only: last24HoursOnly,
         cyb_titles_only: cybTitlesOnly,
         tmdb_posters_only: tmdbPostersOnly,
+        opensubtitles_enabled: openSubtitlesEnabled,
       });
 
       const successKey = auditType === 'ai_agent' ? 'aiAuditSuccess' : 'dailyAuditSuccess';
@@ -695,6 +697,16 @@ const LibrarianAgentPage = () => {
             </Pressable>
             <Text style={styles.checkboxLabel}>{t('admin.librarian.quickActions.tmdbPostersOnly')}</Text>
           </View>
+
+          <View style={styles.checkboxRow}>
+            <Pressable
+              style={[styles.checkbox, openSubtitlesEnabled && styles.checkboxChecked]}
+              onPress={() => setOpenSubtitlesEnabled(!openSubtitlesEnabled)}
+            >
+              {openSubtitlesEnabled && <View style={styles.checkboxInner} />}
+            </Pressable>
+            <Text style={styles.checkboxLabel}>{t('admin.librarian.quickActions.openSubtitlesEnabled')}</Text>
+          </View>
         </View>
 
         <View style={styles.buttonsRow}>
@@ -1167,6 +1179,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: spacing.sm,
+    marginBottom: spacing.md,
   },
   checkbox: {
     width: 20,

@@ -81,6 +81,7 @@ export interface TriggerAuditRequest {
   last_24_hours_only?: boolean;
   cyb_titles_only?: boolean;
   tmdb_posters_only?: boolean;
+  opensubtitles_enabled?: boolean;
 }
 
 export interface TriggerAuditResponse {

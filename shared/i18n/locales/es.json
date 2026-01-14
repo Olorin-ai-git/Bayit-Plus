@@ -1788,6 +1788,7 @@
         "last24Hours": "Solo Últimas 24 Horas",
         "cybTitlesOnly": "Solo Títulos CYB (Extraer)",
         "tmdbPostersOnly": "Solo Pósters y Metadatos de TMDB",
+        "openSubtitlesEnabled": "Habilitar Recuperación de OpenSubtitles",
         "triggerDaily": "Activar Auditoría Diaria",
         "triggerAI": "Activar Auditoría de Agente IA",
         "budgetLabel": "Límite de Presupuesto del Agente IA: ${{budget}}",

@@ -41,7 +41,8 @@ async def run_daily_audit(
     language: str = "en",
     last_24_hours_only: bool = False,
     cyb_titles_only: bool = False,
-    tmdb_posters_only: bool = False
+    tmdb_posters_only: bool = False,
+    opensubtitles_enabled: bool = False
 ) -> AuditReport:
     """
     Main entry point for librarian audit.

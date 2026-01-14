@@ -34,6 +34,7 @@ class TriggerAuditRequest(BaseModel):
     last_24_hours_only: bool = False  # Only scan content added/modified in last 24 hours
     cyb_titles_only: bool = False  # Only scan and extract CYB titles
     tmdb_posters_only: bool = False  # Only add/update TMDB posters and metadata
+    opensubtitles_enabled: bool = False  # Enable OpenSubtitles API for subtitle retrieval
 
 
 class TriggerAuditResponse(BaseModel):
@@ -333,7 +334,8 @@ async def trigger_librarian_audit(
                 language=language,
                 last_24_hours_only=request.last_24_hours_only,
                 cyb_titles_only=request.cyb_titles_only,
-                tmdb_posters_only=request.tmdb_posters_only
+                tmdb_posters_only=request.tmdb_posters_only,
+                opensubtitles_enabled=request.opensubtitles_enabled
             )
 
             return TriggerAuditResponse(
@@ -357,7 +359,8 @@ async def trigger_librarian_audit(
                 language=language,
                 last_24_hours_only=request.last_24_hours_only,
                 cyb_titles_only=request.cyb_titles_only,
-                tmdb_posters_only=request.tmdb_posters_only
+                tmdb_posters_only=request.tmdb_posters_only,
+                opensubtitles_enabled=request.opensubtitles_enabled
             )
 
             return TriggerAuditResponse(
