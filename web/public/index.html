@@ -242,6 +242,42 @@
         }
       }
 
+      /* Powered By Section - positioned at bottom */
+      #splash-screen .powered-by-container {
+        position: fixed;
+        bottom: 2%;
+        left: 50%;
+        transform: translateX(-50%);
+        z-index: 3;
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        gap: 0.25rem;
+        opacity: 0;
+        animation: fadeIn 0.8s ease-out forwards;
+        animation-delay: 1.5s;
+      }
+
+      #splash-screen .powered-by-text {
+        font-size: 12px;
+        color: rgba(255, 255, 255, 0.6);
+        font-family: 'Heebo', sans-serif;
+      }
+
+      #splash-screen .powered-by-link {
+        font-size: 12px;
+        color: #A855F7;
+        font-weight: 500;
+        font-family: 'Heebo', sans-serif;
+        text-decoration: none;
+        transition: color 0.2s ease;
+        cursor: pointer;
+      }
+
+      #splash-screen .powered-by-link:hover {
+        color: #C084FC;
+      }
+
       /* Responsive adjustments */
       @media (max-width: 640px) {
         #splash-screen .animated-logo-container {
@@ -269,6 +305,13 @@
         }
         #splash-screen .clock-time {
           font-size: 16px;
+        }
+        #splash-screen .powered-by-container {
+          bottom: 3%;
+        }
+        #splash-screen .powered-by-text,
+        #splash-screen .powered-by-link {
+          font-size: 10px;
         }
       }
     </style>
@@ -299,11 +342,43 @@
           <span class="clock-time" id="local-time">--:--</span>
         </div>
       </div>
+      
+      <!-- Powered By Section at bottom -->
+      <div class="powered-by-container">
+        <span class="powered-by-text" id="powered-by-text">Powered by</span>
+        <a href="https://marketing.radio.olorin.ai" target="_blank" class="powered-by-link">Olorin.ai LLC</a>
+      </div>
     </div>
 
     <div id="root"></div>
 
     <script>
+      // Localized translations
+      var translations = {
+        en: { poweredBy: 'Powered by' },
+        he: { poweredBy: 'מופעל על ידי' },
+        es: { poweredBy: 'Desarrollado por' }
+      };
+      
+      // Get saved language from localStorage
+      function getSavedLanguage() {
+        try {
+          var saved = localStorage.getItem('i18nextLng');
+          if (saved) {
+            var lang = saved.split('-')[0]; // Handle locales like 'en-US'
+            if (translations[lang]) return lang;
+          }
+        } catch (e) {}
+        return 'en'; // Default to English
+      }
+      
+      // Set localized text immediately
+      var currentLang = getSavedLanguage();
+      var poweredByElement = document.getElementById('powered-by-text');
+      if (poweredByElement && translations[currentLang]) {
+        poweredByElement.textContent = translations[currentLang].poweredBy;
+      }
+      
       // Track splash screen timing
       var splashStartTime = Date.now();
       var MIN_SPLASH_DURATION = 3000; // 3 seconds minimum

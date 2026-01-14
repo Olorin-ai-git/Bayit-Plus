@@ -21,6 +21,8 @@
     "edit": "ערוך",
     "delete": "מחק",
     "add": "הוסף",
+    "enabled": "מופעל",
+    "disabled": "כבוי",
     "invalidDate": "תאריך לא תקין",
     "appName": "🏠 בית+",
     "appVersion": "🏠 בית+ v1.0.0",
@@ -1278,6 +1280,8 @@
       "noRecordingsHint": "אין עדיין הקלטות משתמשים במערכת."
     },
     "uploads": {
+      "title": "ניהול העלאות",
+      "subtitle": "נהל העלאות תוכן וניטור תיקיות אוטומטי",
       "activeUploads": "העלאות פעילות",
       "noActiveUploads": "אין העלאות פעילות",
       "queuedUploads": "העלאות בתור",
@@ -1290,6 +1294,9 @@
       "editFolder": "ערוך תיקייה",
       "deleteFolder": "מחק תיקייה",
       "confirmDelete": "למחוק תיקייה זו?",
+      "triggerUpload": "הפעל העלאה",
+      "triggerUploadSuccess": "סריקת העלאה הופעלה בהצלחה",
+      "triggerUploadFailed": "הפעלת סריקת העלאה נכשלה",
       "type": "סוג",
       "lastScan": "סריקה אחרונה",
       "systemInfo": "מידע על מערכת ההעלאות",
@@ -1299,14 +1306,18 @@
         "name": "שם תיקייה",
         "namePlaceholder": "תיקיית הסרטים שלי",
         "path": "נתיב תיקייה",
+        "pathHelp": "הזן את נתיב השרת לתיקייה (למשל, /Volumes/USB Drive/Movies)",
         "contentType": "סוג תוכן",
         "enabled": "מופעל",
         "autoUpload": "העלאה אוטומטית"
       },
       "contentTypes": {
         "movie": "סרטים",
-        "podcast": "פודקאסטים",
-        "image": "תמונות"
+        "series": "סדרות",
+        "audiobook": "ספרי אודיו"
+      },
+      "errors": {
+        "pathRequired": "נתיב תיקייה נדרש"
       }
     },
     "librarian": {
@@ -2200,6 +2211,7 @@
       "youtube": "YouTube"
     },
     "copyright": "© {{year}} בית+. כל הזכויות שמורות.",
+    "poweredBy": "מופעל על ידי",
     "sitemap": "מפת אתר",
     "accessibility": "נגישות",
     "navigation": "ניווט",

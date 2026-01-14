@@ -13,6 +13,8 @@ from pydantic import BaseModel, Field
 class ContentType(str, Enum):
     """Type of content being uploaded"""
     MOVIE = "movie"
+    SERIES = "series"
+    AUDIOBOOK = "audiobook"
     PODCAST = "podcast"
     PODCAST_EPISODE = "podcast_episode"
     IMAGE = "image"
@@ -236,6 +238,29 @@ class MonitoredFolderResponse(BaseModel):
     last_error: Optional[str] = None
     created_at: datetime
     updated_at: datetime
+    
+    @classmethod
+    def from_orm(cls, obj):
+        """Custom from_orm to handle ObjectId conversion"""
+        data = {
+            "id": str(obj.id),
+            "path": obj.path,
+            "name": obj.name,
+            "enabled": obj.enabled,
+            "content_type": obj.content_type,
+            "auto_upload": obj.auto_upload,
+            "recursive": obj.recursive,
+            "file_patterns": obj.file_patterns,
+            "exclude_patterns": obj.exclude_patterns,
+            "scan_interval": obj.scan_interval,
+            "last_scanned": obj.last_scanned,
+            "files_found": obj.files_found,
+            "files_uploaded": obj.files_uploaded,
+            "last_error": obj.last_error,
+            "created_at": obj.created_at,
+            "updated_at": obj.updated_at,
+        }
+        return cls(**data)
     
     class Config:
         from_attributes = True

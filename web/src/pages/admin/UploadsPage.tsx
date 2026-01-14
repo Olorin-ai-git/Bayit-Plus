@@ -3,37 +3,21 @@
  * Manages file uploads and monitored folders
  */
 
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { View, Text, StyleSheet, ActivityIndicator, ScrollView, Pressable } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { colors, spacing, borderRadius, fontSize } from '@bayit/shared/theme';
 import { GlassCard, GlassButton, GlassInput, GlassModal, GlassSelect, GlassToggle } from '@bayit/shared/ui';
-import { Plus, Edit2, Trash2, FolderOpen, AlertCircle, X } from 'lucide-react';
+import { Plus, Edit2, Trash2, FolderOpen, AlertCircle, X, Folder, Upload } from 'lucide-react';
 import { useDirection } from '@/hooks/useDirection';
 import { useModal } from '@/contexts/ModalContext';
 import { adminButtonStyles } from '@/styles/adminButtonStyles';
+import * as uploadsService from '@/services/uploadsService';
+import logger from '@/utils/logger';
 
-// Types
-interface UploadJob {
-  id: string;
-  filename: string;
-  type: string;
-  status: 'queued' | 'processing' | 'uploading' | 'completed' | 'failed';
-  progress: number;
-  eta_seconds?: number;
-  error_message?: string;
-  created_at: string;
-}
-
-interface MonitoredFolder {
-  id: string;
-  name?: string;
-  path: string;
-  enabled: boolean;
-  content_type: string;
-  auto_upload: boolean;
-  last_scanned?: string;
-}
+// Import types from service
+type UploadJob = uploadsService.UploadJob;
+type MonitoredFolder = uploadsService.MonitoredFolder;
 
 const UploadsPage: React.FC = () => {
   const { t } = useTranslation();
@@ -74,19 +58,29 @@ const UploadsPage: React.FC = () => {
     try {
       setError(null);
       
-      // Note: These endpoints need authentication
-      // For now, we'll show placeholder data
+      // Fetch upload queue
+      try {
+        const queueData = await uploadsService.getUploadQueue();
+        setActiveJobs(queueData.active || []);
+        setQueuedJobs(queueData.queued || []);
+      } catch (err) {
+        logger.error('Failed to fetch upload queue', 'UploadsPage', err);
+        // Don't fail the entire page if queue fetch fails
+        setActiveJobs([]);
+        setQueuedJobs([]);
+      }
       
-      // TODO: Implement actual API calls once authentication is working
-      // const response = await fetch('/api/v1/admin/uploads/queue');
-      // const data = await response.json();
-      
-      setActiveJobs([]);
-      setQueuedJobs([]);
-      setMonitoredFolders([]);
+      // Fetch monitored folders
+      try {
+        const folders = await uploadsService.getMonitoredFolders();
+        setMonitoredFolders(folders || []);
+      } catch (err) {
+        logger.error('Failed to fetch monitored folders', 'UploadsPage', err);
+        // Don't fail the entire page if folders fetch fails
+      }
       
     } catch (err) {
-      console.error('Error fetching upload data:', err);
+      logger.error('Error fetching upload data', 'UploadsPage', err);
       setError(err instanceof Error ? err.message : 'Failed to load upload data');
     } finally {
       setLoading(false);
@@ -96,7 +90,7 @@ const UploadsPage: React.FC = () => {
   useEffect(() => {
     fetchData();
     
-    // Poll for updates every 5 seconds
+    // Poll for updates every 5 seconds (only for jobs, not folders)
     const interval = setInterval(fetchData, 5000);
     return () => clearInterval(interval);
   }, [fetchData]);
@@ -127,17 +121,32 @@ const UploadsPage: React.FC = () => {
 
   const handleSaveFolder = async () => {
     try {
-      // TODO: Implement API call
-      console.log('Saving folder:', folderForm);
+      // Validate required fields
+      if (!folderForm.path.trim()) {
+        setError(t('admin.uploads.errors.pathRequired'));
+        return;
+      }
+      
+      if (editingFolder) {
+        // Update existing folder via API
+        await uploadsService.updateMonitoredFolder(editingFolder.id, folderForm);
+        logger.info('Updated monitored folder', 'UploadsPage', { id: editingFolder.id });
+      } else {
+        // Add new folder via API
+        await uploadsService.addMonitoredFolder(folderForm);
+        logger.info('Added monitored folder', 'UploadsPage', { path: folderForm.path });
+      }
       
       // Close modal
       setShowFolderModal(false);
       setEditingFolder(null);
       
-      // Refresh data
+      // Clear error and refresh data
+      setError(null);
       await fetchData();
+      
     } catch (err) {
-      console.error('Error saving folder:', err);
+      logger.error('Error saving folder', 'UploadsPage', err);
       setError(err instanceof Error ? err.message : 'Failed to save folder');
     }
   };
@@ -147,18 +156,43 @@ const UploadsPage: React.FC = () => {
       t('admin.uploads.confirmDelete', `Delete folder "${folder.name || folder.path}"?`),
       async () => {
         try {
-          // TODO: Implement API call
-          console.log('Deleting folder:', folder);
+          // Delete via API
+          await uploadsService.deleteMonitoredFolder(folder.id);
+          logger.info('Deleted monitored folder', 'UploadsPage', { id: folder.id });
           
-          // Refresh data
+          // Clear error and refresh data
+          setError(null);
           await fetchData();
+          
         } catch (err) {
-          console.error('Error deleting folder:', err);
+          logger.error('Error deleting folder', 'UploadsPage', err);
           setError(err instanceof Error ? err.message : 'Failed to delete folder');
         }
       },
       { destructive: true, confirmText: t('common.delete') }
     );
+  };
+
+  const handleTriggerUpload = async () => {
+    try {
+      setError(null);
+      const result = await uploadsService.triggerUploadScan();
+      logger.info('Triggered upload scan', 'UploadsPage', result);
+      
+      // Show success feedback
+      if (result.files_found > 0) {
+        setError(null);
+      }
+      
+      // Refresh data after a short delay
+      setTimeout(() => {
+        fetchData();
+      }, 2000);
+      
+    } catch (err) {
+      logger.error('Error triggering upload', 'UploadsPage', err);
+      setError(t('admin.uploads.triggerUploadFailed'));
+    }
   };
 
   if (loading) {
@@ -183,6 +217,14 @@ const UploadsPage: React.FC = () => {
           </Text>
         </View>
         <View style={[styles.actionButtons, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
+          <GlassButton
+            title={t('admin.uploads.triggerUpload')}
+            variant="secondary"
+            icon={<Upload size={18} color={colors.primary} />}
+            onPress={handleTriggerUpload}
+            style={adminButtonStyles.secondaryButton}
+            textStyle={adminButtonStyles.buttonText}
+          />
           <GlassButton
             title={t('admin.uploads.addFolder')}
             variant="secondary"
@@ -311,7 +353,7 @@ const UploadsPage: React.FC = () => {
               </View>
               <View style={[styles.folderMeta, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
                 <Text style={styles.folderMetaText}>
-                  {t('admin.uploads.type')}: {folder.content_type}
+                  {t('admin.uploads.type')}: {t(`admin.uploads.contentTypes.${folder.content_type}`, folder.content_type)}
                 </Text>
                 {folder.last_scanned && (
                   <Text style={styles.folderMetaText}>
@@ -349,6 +391,9 @@ const UploadsPage: React.FC = () => {
               placeholder="/path/to/folder"
               containerStyle={styles.inputContainer}
             />
+            <Text style={styles.helpText}>
+              {t('admin.uploads.form.pathHelp')}
+            </Text>
           </View>
 
           <View style={styles.formGroup}>
@@ -358,8 +403,8 @@ const UploadsPage: React.FC = () => {
               onChange={(content_type) => setFolderForm((prev) => ({ ...prev, content_type }))}
               options={[
                 { value: 'movie', label: t('admin.uploads.contentTypes.movie') },
-                { value: 'podcast', label: t('admin.uploads.contentTypes.podcast') },
-                { value: 'image', label: t('admin.uploads.contentTypes.image') },
+                { value: 'series', label: t('admin.uploads.contentTypes.series') },
+                { value: 'audiobook', label: t('admin.uploads.contentTypes.audiobook') },
               ]}
             />
           </View>
@@ -618,6 +663,12 @@ const styles = StyleSheet.create({
   },
   inputContainer: {
     marginBottom: 0,
+  },
+  helpText: {
+    fontSize: fontSize.xs,
+    color: colors.textMuted,
+    marginTop: spacing.xs,
+    lineHeight: 16,
   },
   toggleGroup: {
     marginBottom: spacing.md,

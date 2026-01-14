@@ -132,10 +132,12 @@ class UploadService:
 
         try:
             while True:
-                # Get next queued job
-                job = await UploadJob.find_one(
+                # Get next queued job (use find() for sorting support)
+                jobs = await UploadJob.find(
                     UploadJob.status == UploadStatus.QUEUED
-                ).sort("+created_at").first_or_none()
+                ).sort("+created_at").limit(1).to_list()
+                
+                job = jobs[0] if jobs else None
                 
                 if not job:
                     break  # No more jobs
@@ -506,14 +508,16 @@ class UploadService:
 
     async def get_active_job(self) -> Optional[UploadJob]:
         """Get currently processing job"""
+        from beanie.operators import In
         return await UploadJob.find_one(
-            UploadJob.status.in_([UploadStatus.PROCESSING, UploadStatus.UPLOADING])
+            In(UploadJob.status, [UploadStatus.PROCESSING, UploadStatus.UPLOADING])
         )
 
     async def get_recent_completed(self, limit: int = 10) -> List[UploadJob]:
         """Get recently completed jobs"""
+        from beanie.operators import In
         return await UploadJob.find(
-            UploadJob.status.in_([UploadStatus.COMPLETED, UploadStatus.FAILED, UploadStatus.CANCELLED])
+            In(UploadJob.status, [UploadStatus.COMPLETED, UploadStatus.FAILED, UploadStatus.CANCELLED])
         ).sort("-completed_at").limit(limit).to_list()
 
     async def get_job(self, job_id: str) -> Optional[UploadJob]:

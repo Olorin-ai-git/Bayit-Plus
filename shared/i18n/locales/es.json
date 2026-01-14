@@ -18,6 +18,8 @@
     "edit": "Editar",
     "delete": "Eliminar",
     "add": "Agregar",
+    "enabled": "Habilitado",
+    "disabled": "Deshabilitado",
     "invalidDate": "Fecha inválida",
     "appName": "🏠 Bayit+",
     "appVersion": "🏠 Bayit+ v1.0.0",
@@ -1691,6 +1693,8 @@
       "noRecordingsHint": "No hay grabaciones de usuarios en el sistema aún."
     },
     "uploads": {
+      "title": "Gestión de Cargas",
+      "subtitle": "Administrar cargas de contenido y monitoreo automático de carpetas",
       "activeUploads": "Cargas Activas",
       "noActiveUploads": "No hay cargas activas",
       "queuedUploads": "Cargas en Cola",
@@ -1703,6 +1707,9 @@
       "editFolder": "Editar Carpeta",
       "deleteFolder": "Eliminar Carpeta",
       "confirmDelete": "¿Eliminar esta carpeta?",
+      "triggerUpload": "Activar Carga",
+      "triggerUploadSuccess": "Escaneo de carga activado exitosamente",
+      "triggerUploadFailed": "Error al activar escaneo de carga",
       "type": "Tipo",
       "lastScan": "Último escaneo",
       "systemInfo": "Información del Sistema de Carga",
@@ -1712,14 +1719,18 @@
         "name": "Nombre de Carpeta",
         "namePlaceholder": "Mi Carpeta de Películas",
         "path": "Ruta de Carpeta",
+        "pathHelp": "Ingrese la ruta del servidor a la carpeta (ej., /Volumes/USB Drive/Movies)",
         "contentType": "Tipo de Contenido",
         "enabled": "Habilitado",
         "autoUpload": "Carga Automática"
       },
       "contentTypes": {
         "movie": "Películas",
-        "podcast": "Podcasts",
-        "image": "Imágenes"
+        "series": "Series",
+        "audiobook": "Audiolibros"
+      },
+      "errors": {
+        "pathRequired": "La ruta de la carpeta es obligatoria"
       }
     },
     "librarian": {
@@ -2180,6 +2191,7 @@
       "youtube": "YouTube"
     },
     "copyright": "© {{year}} Bayit+. Todos los derechos reservados.",
+    "poweredBy": "Desarrollado por",
     "sitemap": "Mapa del Sitio",
     "accessibility": "Accesibilidad",
     "navigation": "Navegación",

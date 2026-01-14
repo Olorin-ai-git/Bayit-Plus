@@ -299,9 +299,10 @@ async def get_upload_history(
     """Get upload history with pagination"""
     try:
         from app.models.upload import UploadJob, UploadStatus
+        from beanie.operators import In
         
         jobs = await UploadJob.find(
-            UploadJob.status.in_([
+            In(UploadJob.status, [
                 UploadStatus.COMPLETED,
                 UploadStatus.FAILED,
                 UploadStatus.CANCELLED
@@ -309,7 +310,7 @@ async def get_upload_history(
         ).sort("-completed_at").skip(offset).limit(limit).to_list()
         
         total = await UploadJob.find(
-            UploadJob.status.in_([
+            In(UploadJob.status, [
                 UploadStatus.COMPLETED,
                 UploadStatus.FAILED,
                 UploadStatus.CANCELLED

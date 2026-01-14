@@ -21,6 +21,8 @@
     "edit": "Edit",
     "delete": "Delete",
     "add": "Add",
+    "enabled": "Enabled",
+    "disabled": "Disabled",
     "invalidDate": "Invalid Date",
     "appName": "🏠 Bayit+",
     "appVersion": "🏠 Bayit+ v1.0.0",
@@ -1092,6 +1094,7 @@
       "youtube": "YouTube"
     },
     "copyright": "© {{year}} Bayit+. All rights reserved.",
+    "poweredBy": "Powered by",
     "sitemap": "Sitemap",
     "accessibility": "Accessibility",
     "navigation": "Navigation",
@@ -1406,6 +1409,8 @@
       "noRecordingsHint": "No user recordings in the system yet."
     },
     "uploads": {
+      "title": "Uploads Management",
+      "subtitle": "Manage content uploads and automated folder monitoring",
       "activeUploads": "Active Uploads",
       "noActiveUploads": "No active uploads",
       "queuedUploads": "Queued Uploads",
@@ -1418,6 +1423,9 @@
       "editFolder": "Edit Folder",
       "deleteFolder": "Delete Folder",
       "confirmDelete": "Delete this folder?",
+      "triggerUpload": "Trigger Upload",
+      "triggerUploadSuccess": "Upload scan triggered successfully",
+      "triggerUploadFailed": "Failed to trigger upload scan",
       "type": "Type",
       "lastScan": "Last scan",
       "systemInfo": "Upload System Information",
@@ -1427,14 +1435,18 @@
         "name": "Folder Name",
         "namePlaceholder": "My Movies Folder",
         "path": "Folder Path",
+        "pathHelp": "Enter the server path to the folder (e.g., /Volumes/USB Drive/Movies)",
         "contentType": "Content Type",
         "enabled": "Enabled",
         "autoUpload": "Auto Upload"
       },
       "contentTypes": {
         "movie": "Movies",
-        "podcast": "Podcasts",
-        "image": "Images"
+        "series": "Series",
+        "audiobook": "Audiobooks"
+      },
+      "errors": {
+        "pathRequired": "Folder path is required"
       }
     },
     "librarian": {
