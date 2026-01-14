@@ -1502,6 +1502,9 @@
       "quickActions": {
         "title": "Quick Actions",
         "dryRun": "Dry Run (Report Only)",
+        "last24Hours": "Last 24 Hours Only",
+        "cybTitlesOnly": "CYB Titles Only (Extract)",
+        "tmdbPostersOnly": "TMDB Posters & Metadata Only",
         "triggerDaily": "Trigger Daily Audit",
         "triggerAI": "Trigger AI Agent Audit",
         "budgetLabel": "AI Agent Budget Limit: ${{budget}}",

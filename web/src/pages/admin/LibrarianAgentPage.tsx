@@ -48,6 +48,9 @@ const LibrarianAgentPage = () => {
   const [clearingReports, setClearingReports] = useState(false);
   const [dryRun, setDryRun] = useState(false);
   const [budgetLimit, setBudgetLimit] = useState(0);
+  const [last24HoursOnly, setLast24HoursOnly] = useState(false);
+  const [cybTitlesOnly, setCybTitlesOnly] = useState(false);
+  const [tmdbPostersOnly, setTmdbPostersOnly] = useState(false);
   const [selectedReport, setSelectedReport] = useState<AuditReportDetail | null>(null);
   const [detailModalVisible, setDetailModalVisible] = useState(false);
   const [detailModalLoading, setDetailModalLoading] = useState(false);
@@ -212,6 +215,9 @@ const LibrarianAgentPage = () => {
         use_ai_agent: auditType === 'ai_agent',
         max_iterations: config.audit_limits.max_iterations,
         budget_limit_usd: budgetLimit,
+        last_24_hours_only: last24HoursOnly,
+        cyb_titles_only: cybTitlesOnly,
+        tmdb_posters_only: tmdbPostersOnly,
       });
 
       const successKey = auditType === 'ai_agent' ? 'aiAuditSuccess' : 'dailyAuditSuccess';
@@ -658,6 +664,36 @@ const LibrarianAgentPage = () => {
               {dryRun && <View style={styles.checkboxInner} />}
             </Pressable>
             <Text style={styles.checkboxLabel}>{t('admin.librarian.quickActions.dryRun')}</Text>
+          </View>
+          
+          <View style={styles.checkboxRow}>
+            <Pressable
+              style={[styles.checkbox, last24HoursOnly && styles.checkboxChecked]}
+              onPress={() => setLast24HoursOnly(!last24HoursOnly)}
+            >
+              {last24HoursOnly && <View style={styles.checkboxInner} />}
+            </Pressable>
+            <Text style={styles.checkboxLabel}>{t('admin.librarian.quickActions.last24Hours')}</Text>
+          </View>
+
+          <View style={styles.checkboxRow}>
+            <Pressable
+              style={[styles.checkbox, cybTitlesOnly && styles.checkboxChecked]}
+              onPress={() => setCybTitlesOnly(!cybTitlesOnly)}
+            >
+              {cybTitlesOnly && <View style={styles.checkboxInner} />}
+            </Pressable>
+            <Text style={styles.checkboxLabel}>{t('admin.librarian.quickActions.cybTitlesOnly')}</Text>
+          </View>
+
+          <View style={styles.checkboxRow}>
+            <Pressable
+              style={[styles.checkbox, tmdbPostersOnly && styles.checkboxChecked]}
+              onPress={() => setTmdbPostersOnly(!tmdbPostersOnly)}
+            >
+              {tmdbPostersOnly && <View style={styles.checkboxInner} />}
+            </Pressable>
+            <Text style={styles.checkboxLabel}>{t('admin.librarian.quickActions.tmdbPostersOnly')}</Text>
           </View>
         </View>
 

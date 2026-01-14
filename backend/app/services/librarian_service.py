@@ -38,7 +38,10 @@ class AuditStats:
 async def run_daily_audit(
     audit_type: str = "daily_incremental",
     dry_run: bool = False,
-    language: str = "en"
+    language: str = "en",
+    last_24_hours_only: bool = False,
+    cyb_titles_only: bool = False,
+    tmdb_posters_only: bool = False
 ) -> AuditReport:
     """
     Main entry point for librarian audit.
@@ -75,7 +78,13 @@ async def run_daily_audit(
     try:
         # Step 1: Determine audit scope
         logger.info("\n📋 Step 1: Determining audit scope...")
-        scope = await determine_audit_scope(audit_type)
+        logger.info(f"   Filters: last_24_hours={last_24_hours_only}, cyb_titles={cyb_titles_only}, tmdb_only={tmdb_posters_only}")
+        scope = await determine_audit_scope(
+            audit_type,
+            last_24_hours_only=last_24_hours_only,
+            cyb_titles_only=cyb_titles_only,
+            tmdb_posters_only=tmdb_posters_only
+        )
         logger.info(f"   Content items: {len(scope.content_ids)}")
         logger.info(f"   Live channels: {len(scope.live_channel_ids)}")
         logger.info(f"   Podcast episodes: {len(scope.podcast_episode_ids)}")
@@ -198,65 +207,102 @@ async def run_daily_audit(
         raise
 
 
-async def determine_audit_scope(audit_type: str) -> AuditScope:
+async def determine_audit_scope(
+    audit_type: str,
+    last_24_hours_only: bool = False,
+    cyb_titles_only: bool = False,
+    tmdb_posters_only: bool = False
+) -> AuditScope:
     """
-    Determine which items to audit based on audit type.
+    Determine which items to audit based on audit type and filters.
 
     Strategies:
     - daily_incremental: Items modified in last 7 days + random 10% sample
     - weekly_full: All items
     - manual: All items (customizable in future)
+    
+    Filters:
+    - last_24_hours_only: Only items added/modified in last 24 hours
+    - cyb_titles_only: Only titles containing "CYB" (for extraction)
+    - tmdb_posters_only: Only items needing TMDB poster/metadata updates
     """
     scope = AuditScope(audit_type=audit_type)
     now = datetime.utcnow()
 
+    # Build base query filters
+    base_query = {"is_published": True}
+    
+    # Apply CYB titles filter
+    if cyb_titles_only:
+        base_query["title"] = {"$regex": "CYB", "$options": "i"}
+    
+    # Apply TMDB posters filter (items without poster or missing metadata)
+    if tmdb_posters_only:
+        base_query["$or"] = [
+            {"poster_url": None},
+            {"poster_url": ""},
+            {"description": None},
+            {"description": ""}
+        ]
+
     if audit_type == "daily_incremental":
-        # Get items modified in last 7 days
-        seven_days_ago = now - timedelta(days=7)
+        # Determine time range based on filters
+        if last_24_hours_only:
+            time_threshold = now - timedelta(hours=24)
+        else:
+            time_threshold = now - timedelta(days=7)  # Default: last 7 days
+        
+        # Add time filter to base query
+        base_query["updated_at"] = {"$gte": time_threshold}
 
         # Content (VOD, movies, series)
-        recent_content = await Content.find(
-            {"updated_at": {"$gte": seven_days_ago}, "is_published": True}
-        ).to_list(length=None)
+        recent_content = await Content.find(base_query).to_list(length=None)
         scope.content_ids = [str(c.id) for c in recent_content]
 
-        # Add random 10% sample of older items
-        older_content = await Content.find(
-            {"updated_at": {"$lt": seven_days_ago}, "is_published": True}
-        ).to_list(length=None)
+        # Add random 10% sample of older items (only if not using specific filters)
+        if not (last_24_hours_only or cyb_titles_only or tmdb_posters_only):
+            older_query = {"is_published": True, "updated_at": {"$lt": time_threshold}}
+            older_content = await Content.find(older_query).to_list(length=None)
 
-        if older_content:
-            sample_size = max(1, len(older_content) // 10)  # 10%
-            sampled = random.sample(older_content, min(sample_size, len(older_content)))
-            scope.content_ids.extend([str(c.id) for c in sampled])
+            if older_content:
+                sample_size = max(1, len(older_content) // 10)  # 10%
+                sampled = random.sample(older_content, min(sample_size, len(older_content)))
+                scope.content_ids.extend([str(c.id) for c in sampled])
 
-        # Live channels (check all, they're few)
-        live_channels = await LiveChannel.find({"is_active": True}).to_list(length=None)
-        scope.live_channel_ids = [str(lc.id) for lc in live_channels]
+        # Live channels (check all, they're few) - skip if focusing on specific filters
+        if not (cyb_titles_only or tmdb_posters_only):
+            live_channels = await LiveChannel.find({"is_active": True}).to_list(length=None)
+            scope.live_channel_ids = [str(lc.id) for lc in live_channels]
 
-        # Podcast episodes (recent + sample)
-        recent_episodes = await PodcastEpisode.find(
-            {"published_at": {"$gte": seven_days_ago}}
-        ).to_list(length=None)
-        scope.podcast_episode_ids = [str(ep.id) for ep in recent_episodes]
+            # Podcast episodes (recent + sample)
+            recent_episodes = await PodcastEpisode.find(
+                {"published_at": {"$gte": time_threshold}}
+            ).to_list(length=None)
+            scope.podcast_episode_ids = [str(ep.id) for ep in recent_episodes]
 
-        # Radio stations (check all, they're few)
-        radio_stations = await RadioStation.find({"is_active": True}).to_list(length=None)
-        scope.radio_station_ids = [str(rs.id) for rs in radio_stations]
+            # Radio stations (check all, they're few)
+            radio_stations = await RadioStation.find({"is_active": True}).to_list(length=None)
+            scope.radio_station_ids = [str(rs.id) for rs in radio_stations]
 
     elif audit_type in ["weekly_full", "manual"]:
-        # Full audit - get all items
-        all_content = await Content.find({"is_published": True}).to_list(length=None)
+        # Full audit - get all items (with filters applied)
+        if last_24_hours_only:
+            time_threshold = now - timedelta(hours=24)
+            base_query["updated_at"] = {"$gte": time_threshold}
+            
+        all_content = await Content.find(base_query).to_list(length=None)
         scope.content_ids = [str(c.id) for c in all_content]
 
-        all_channels = await LiveChannel.find({"is_active": True}).to_list(length=None)
-        scope.live_channel_ids = [str(lc.id) for lc in all_channels]
+        # Skip other content types if using specific content filters
+        if not (cyb_titles_only or tmdb_posters_only):
+            all_channels = await LiveChannel.find({"is_active": True}).to_list(length=None)
+            scope.live_channel_ids = [str(lc.id) for lc in all_channels]
 
-        all_episodes = await PodcastEpisode.find({}).to_list(length=None)
-        scope.podcast_episode_ids = [str(ep.id) for ep in all_episodes]
+            all_episodes = await PodcastEpisode.find({}).to_list(length=None)
+            scope.podcast_episode_ids = [str(ep.id) for ep in all_episodes]
 
-        all_radio = await RadioStation.find({"is_active": True}).to_list(length=None)
-        scope.radio_station_ids = [str(rs.id) for rs in all_radio]
+            all_radio = await RadioStation.find({"is_active": True}).to_list(length=None)
+            scope.radio_station_ids = [str(rs.id) for rs in all_radio]
 
     return scope
 

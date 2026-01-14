@@ -1372,6 +1372,9 @@
       "quickActions": {
         "title": "פעולות מהירות",
         "dryRun": "ריצת ניסיון (דוח בלבד)",
+        "last24Hours": "24 שעות אחרונות בלבד",
+        "cybTitlesOnly": "כותרות CYB בלבד (חילוץ)",
+        "tmdbPostersOnly": "פוסטרים ומטא-דאטה של TMDB בלבד",
         "triggerDaily": "הפעל ביקורת יומית",
         "triggerAI": "הפעל ביקורת סוכן AI",
         "budgetLabel": "מגבלת תקציב לסוכן AI: ${{budget}}",

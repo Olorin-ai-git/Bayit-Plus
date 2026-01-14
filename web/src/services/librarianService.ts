@@ -78,6 +78,9 @@ export interface TriggerAuditRequest {
   use_ai_agent?: boolean;
   max_iterations?: number;
   budget_limit_usd?: number;
+  last_24_hours_only?: boolean;
+  cyb_titles_only?: boolean;
+  tmdb_posters_only?: boolean;
 }
 
 export interface TriggerAuditResponse {

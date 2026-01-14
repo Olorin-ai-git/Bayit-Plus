@@ -1994,7 +1994,10 @@ async def run_ai_agent_audit(
     dry_run: bool = True,
     max_iterations: int = 50,
     budget_limit_usd: float = 1.0,
-    language: str = "en"
+    language: str = "en",
+    last_24_hours_only: bool = False,
+    cyb_titles_only: bool = False,
+    tmdb_posters_only: bool = False
 ) -> AuditReport:
     """
     Run a fully autonomous AI agent audit using Claude's tool use.
@@ -2114,13 +2117,25 @@ Balance between metadata fixes, subtitle acquisition, and quality checks.
     
     audit_specific_instruction = audit_instructions.get(audit_type, audit_instructions["ai_agent"])
     
+    # Build filter instructions
+    filter_instructions = ""
+    if last_24_hours_only or cyb_titles_only or tmdb_posters_only:
+        filter_instructions = "\n**🎯 SPECIAL FILTERS ACTIVE:**\n"
+        if last_24_hours_only:
+            filter_instructions += "- ⏰ **Last 24 Hours Only**: Focus ONLY on content added/modified in the last 24 hours\n"
+        if cyb_titles_only:
+            filter_instructions += "- 📺 **CYB Titles Only**: Focus ONLY on titles containing 'CYB' (for extraction)\n"
+        if tmdb_posters_only:
+            filter_instructions += "- 🖼️ **TMDB Posters/Metadata Only**: Focus ONLY on adding/updating TMDB posters and metadata. Skip subtitle checks.\n"
+        filter_instructions += "\n"
+    
     # Initial prompt for Claude (in English as instructions, Claude responds in requested language)
     initial_prompt = f"""You are an autonomous AI Librarian for Bayit+, an Israeli streaming platform.
 
 {language_instruction}
 
 {audit_specific_instruction}
-
+{filter_instructions}
 **Your Mission:** Conduct a comprehensive audit of the content library and fix issues autonomously.
 
 **🎯 TOP PRIORITY - Images & Metadata:**

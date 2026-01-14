@@ -31,6 +31,9 @@ class TriggerAuditRequest(BaseModel):
     use_ai_agent: bool = False  # Use autonomous AI agent instead of rule-based workflow
     max_iterations: int = 50  # Max tool uses for AI agent (only used if use_ai_agent=True)
     budget_limit_usd: float = 1.0  # Max Claude API cost for AI agent (only used if use_ai_agent=True)
+    last_24_hours_only: bool = False  # Only scan content added/modified in last 24 hours
+    cyb_titles_only: bool = False  # Only scan and extract CYB titles
+    tmdb_posters_only: bool = False  # Only add/update TMDB posters and metadata
 
 
 class TriggerAuditResponse(BaseModel):
@@ -327,7 +330,10 @@ async def trigger_librarian_audit(
                 dry_run=request.dry_run,
                 max_iterations=request.max_iterations,
                 budget_limit_usd=request.budget_limit_usd,
-                language=language
+                language=language,
+                last_24_hours_only=request.last_24_hours_only,
+                cyb_titles_only=request.cyb_titles_only,
+                tmdb_posters_only=request.tmdb_posters_only
             )
 
             return TriggerAuditResponse(
@@ -348,7 +354,10 @@ async def trigger_librarian_audit(
                 run_daily_audit,
                 audit_type=request.audit_type,
                 dry_run=request.dry_run,
-                language=language
+                language=language,
+                last_24_hours_only=request.last_24_hours_only,
+                cyb_titles_only=request.cyb_titles_only,
+                tmdb_posters_only=request.tmdb_posters_only
             )
 
             return TriggerAuditResponse(
