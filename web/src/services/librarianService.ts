@@ -296,3 +296,40 @@ export const rollbackAction = async (
 
   return response.json();
 };
+
+// Voice Command Interface
+export interface VoiceCommandRequest {
+  command: string;
+  language?: string;
+}
+
+export interface VoiceCommandResponse {
+  message: string;
+  spoken_response: string;
+  audit_id?: string;
+  status: string;
+  action_taken?: string;
+}
+
+export const executeVoiceCommand = async (
+  command: string,
+  language?: string
+): Promise<VoiceCommandResponse> => {
+  const response = await fetch(
+    `${API_BASE_URL}/admin/librarian/voice-command`,
+    {
+      method: 'POST',
+      headers: getAuthHeaders(),
+      body: JSON.stringify({
+        command,
+        language: language || i18n.language || 'en'
+      }),
+    }
+  );
+
+  if (!response.ok) {
+    throw new Error('Failed to execute voice command');
+  }
+
+  return response.json();
+};

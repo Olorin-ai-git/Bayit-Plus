@@ -1514,6 +1514,28 @@
         "dryRunMode": "(Dry run mode)",
         "rollbackSuccess": "Action rolled back successfully."
       },
+      "voice": {
+        "title": "Voice Control",
+        "description": "Use your voice to give commands to the librarian. Just press the button and speak naturally.",
+        "pressToSpeak": "Press to Speak",
+        "listening": "Listening...",
+        "transcript": "Transcript",
+        "processing": "Processing your command...",
+        "speaking": "Librarian is responding...",
+        "examples": "Example Commands",
+        "example1": "Check for missing posters in the last 24 hours",
+        "example2": "Fix metadata for CYB titles",
+        "example3": "Scan for broken streaming URLs",
+        "example4": "Extract subtitles from movies",
+        "notSupported": "Voice recognition is not supported in your browser. Please use Chrome, Edge, or Safari.",
+        "notAvailable": "Voice control is not available",
+        "noSpeech": "No speech detected. Please try again.",
+        "noMicrophone": "No microphone detected. Please check your device.",
+        "microphoneBlocked": "Microphone access was blocked. Please enable it in your browser settings.",
+        "error": "Speech recognition error: {{error}}",
+        "startFailed": "Failed to start voice recognition. Please try again.",
+        "commandFailed": "Failed to execute command. Please try again."
+      },
       "schedules": {
         "title": "Scheduled Audits",
         "dailyTitle": "Daily Audit",

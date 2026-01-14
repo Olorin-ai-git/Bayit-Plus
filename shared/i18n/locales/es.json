@@ -1797,6 +1797,28 @@
         "dryRunMode": "(Modo de ejecución simulada)",
         "rollbackSuccess": "Acción revertida exitosamente."
       },
+      "voice": {
+        "title": "Control por Voz",
+        "description": "Usa tu voz para dar comandos al bibliotecario. Solo presiona el botón y habla naturalmente.",
+        "pressToSpeak": "Presiona para Hablar",
+        "listening": "Escuchando...",
+        "transcript": "Transcripción",
+        "processing": "Procesando tu comando...",
+        "speaking": "El bibliotecario está respondiendo...",
+        "examples": "Comandos de Ejemplo",
+        "example1": "Verifica pósters faltantes en las últimas 24 horas",
+        "example2": "Corrige metadatos para títulos CYB",
+        "example3": "Escanea URLs de transmisión rotas",
+        "example4": "Extrae subtítulos de películas",
+        "notSupported": "El reconocimiento de voz no es compatible con tu navegador. Por favor usa Chrome, Edge o Safari.",
+        "notAvailable": "El control por voz no está disponible",
+        "noSpeech": "No se detectó habla. Por favor intenta de nuevo.",
+        "noMicrophone": "No se detectó micrófono. Por favor verifica tu dispositivo.",
+        "microphoneBlocked": "El acceso al micrófono fue bloqueado. Por favor habilítalo en la configuración de tu navegador.",
+        "error": "Error de reconocimiento de voz: {{error}}",
+        "startFailed": "Falló al iniciar el reconocimiento de voz. Por favor intenta de nuevo.",
+        "commandFailed": "Falló al ejecutar el comando. Por favor intenta de nuevo."
+      },
       "schedules": {
         "title": "Auditorías Programadas",
         "dailyTitle": "Auditoría Diaria",

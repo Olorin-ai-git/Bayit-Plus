@@ -12,6 +12,7 @@ import { RefreshCw, Bot, Play, Zap, FileText, Eye, ScrollText, Trash2 } from 'lu
 import StatCard from '@/components/admin/StatCard';
 import LibrarianScheduleCard from '@/components/admin/LibrarianScheduleCard';
 import LibrarianActivityLog from '@/components/admin/LibrarianActivityLog';
+import { VoiceLibrarianControl } from '@/components/admin/VoiceLibrarianControl';
 import { GlassCard, GlassButton, GlassModal, GlassBadge, GlassTable, GlassTableColumn, GlassLog, LogEntry, GlassDraggableExpander } from '@bayit/shared/ui';
 import { colors, spacing, borderRadius } from '@bayit/shared/theme';
 import { useDirection } from '@/hooks/useDirection';
@@ -24,6 +25,7 @@ import {
   triggerAudit,
   rollbackAction as rollbackActionAPI,
   clearAuditReports,
+  executeVoiceCommand,
   LibrarianConfig,
   LibrarianStatus,
   AuditReport,
@@ -66,6 +68,9 @@ const LibrarianAgentPage = () => {
   const [successModalOpen, setSuccessModalOpen] = useState(false);
   const [successMessage, setSuccessMessage] = useState('');
   const [clearReportsModalOpen, setClearReportsModalOpen] = useState(false);
+  const [voiceProcessing, setVoiceProcessing] = useState(false);
+  const [isSpeaking, setIsSpeaking] = useState(false);
+  const [isVoiceMuted, setIsVoiceMuted] = useState(false);
 
   // Load all data
   const loadData = useCallback(async () => {
@@ -457,6 +462,79 @@ const LibrarianAgentPage = () => {
     }
   };
 
+  // Voice command handler
+  const handleVoiceCommand = useCallback(async (command: string) => {
+    logger.info('[VoiceLibrarian] Executing command:', command);
+    setVoiceProcessing(true);
+    
+    try {
+      const response = await executeVoiceCommand(command);
+      logger.info('[VoiceLibrarian] Command executed successfully:', response);
+      
+      // Speak the response if not muted
+      if (!isVoiceMuted && response.spoken_response) {
+        speak(response.spoken_response);
+      }
+      
+      // Show success message
+      setSuccessMessage(response.message);
+      setSuccessModalOpen(true);
+      
+      // If an audit was started, refresh the data
+      if (response.audit_id) {
+        await loadData();
+      }
+    } catch (error) {
+      logger.error('[VoiceLibrarian] Command failed:', error);
+      setErrorMessage(t('admin.librarian.voice.commandFailed'));
+      setErrorModalOpen(true);
+    } finally {
+      setVoiceProcessing(false);
+    }
+  }, [isVoiceMuted, loadData, t]);
+
+  // Text-to-speech function
+  const speak = useCallback((text: string) => {
+    if (typeof window === 'undefined' || !('speechSynthesis' in window)) {
+      return;
+    }
+
+    // Cancel any ongoing speech
+    window.speechSynthesis.cancel();
+
+    const utterance = new SpeechSynthesisUtterance(text);
+    
+    // Set language based on i18n
+    const langMap: Record<string, string> = {
+      he: 'he-IL',
+      en: 'en-US',
+      es: 'es-ES',
+    };
+    utterance.lang = langMap[t('common.language') as string] || 'en-US';
+    
+    utterance.onstart = () => {
+      setIsSpeaking(true);
+    };
+    
+    utterance.onend = () => {
+      setIsSpeaking(false);
+    };
+    
+    utterance.onerror = () => {
+      setIsSpeaking(false);
+    };
+
+    window.speechSynthesis.speak(utterance);
+  }, [t]);
+
+  const toggleVoiceMute = useCallback(() => {
+    setIsVoiceMuted(prev => !prev);
+    if (isSpeaking) {
+      window.speechSynthesis.cancel();
+      setIsSpeaking(false);
+    }
+  }, [isSpeaking]);
+
   // Report table columns
   const reportColumns: GlassTableColumn<AuditReport>[] = [
     {
@@ -749,6 +827,15 @@ const LibrarianAgentPage = () => {
           </View>
         </View>
       </GlassCard>
+
+      {/* Voice Control */}
+      <VoiceLibrarianControl
+        onCommand={handleVoiceCommand}
+        isProcessing={voiceProcessing}
+        isSpeaking={isSpeaking}
+        onToggleMute={toggleVoiceMute}
+        isMuted={isVoiceMuted}
+      />
 
       {/* Live Audit Log Panel */}
       <GlassDraggableExpander
