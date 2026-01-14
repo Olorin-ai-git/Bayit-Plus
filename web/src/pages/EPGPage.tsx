@@ -206,10 +206,7 @@ const EPGPage: React.FC = () => {
       })
     } catch (err: any) {
       console.error('Failed to start/schedule recording:', err)
-      showAlert({
-        title: t('common.error'),
-        message: err.message || t('epg.recordingFailed'),
-      })
+      showError(err.message || t('epg.recordingFailed'), t('common.error'))
     }
   }, [recordModal, t])
 
