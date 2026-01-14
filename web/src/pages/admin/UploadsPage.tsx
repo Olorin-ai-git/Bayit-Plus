@@ -194,7 +194,7 @@ const UploadsPage: React.FC = () => {
   };
 
   // Handle clear queue
-  const handleClearQueue = async () => {
+  const handleClearQueue = () => {
     const hasActiveJobs = queueStats.queued > 0 || queueStats.processing > 0;
     
     if (!hasActiveJobs) {
@@ -202,33 +202,35 @@ const UploadsPage: React.FC = () => {
       return;
     }
 
-    const confirmed = await showConfirm({
-      title: t('admin.uploads.clearQueueConfirmTitle'),
-      message: t('admin.uploads.clearQueueConfirmMessage', { 
+    showConfirm(
+      t('admin.uploads.clearQueueConfirmMessage', { 
         count: queueStats.queued + queueStats.processing 
       }),
-      confirmText: t('admin.uploads.clearQueue'),
-      cancelText: t('common.cancel'),
-    });
-
-    if (!confirmed) return;
-
-    try {
-      setClearingQueue(true);
-      setError(null);
-      
-      const result = await uploadsService.clearUploadQueue();
-      logger.info('✅ Upload queue cleared', 'UploadsPage', result);
-      
-      // Refresh data
-      await fetchData();
-    } catch (err: any) {
-      logger.error('Failed to clear queue', 'UploadsPage', err);
-      const errorMessage = err?.detail || err?.message || t('admin.uploads.clearQueueFailed');
-      setError(errorMessage);
-    } finally {
-      setClearingQueue(false);
-    }
+      async () => {
+        try {
+          setClearingQueue(true);
+          setError(null);
+          
+          const result = await uploadsService.clearUploadQueue();
+          logger.info('✅ Upload queue cleared', 'UploadsPage', result);
+          
+          // Refresh data
+          await fetchData();
+        } catch (err: any) {
+          logger.error('Failed to clear queue', 'UploadsPage', err);
+          const errorMessage = err?.detail || err?.message || t('admin.uploads.clearQueueFailed');
+          setError(errorMessage);
+        } finally {
+          setClearingQueue(false);
+        }
+      },
+      {
+        title: t('admin.uploads.clearQueueConfirmTitle'),
+        confirmText: t('admin.uploads.clearQueue'),
+        cancelText: t('common.cancel'),
+        destructive: true,
+      }
+    );
   };
 
   useEffect(() => {
