@@ -58,10 +58,12 @@ async def analyze_and_extract_subtitles(content_id: str, stream_url: str):
         if subtitle_tracks:
             logger.info(f"Found {len(subtitle_tracks)} subtitle tracks in {content_id}")
             # Only extract required languages to avoid performance issues
+            # Limit to 10 subtitles max, prioritizing he, en, es
             extracted = await ffmpeg_service.extract_all_subtitles(
                 stream_url,
                 languages=['en', 'he', 'es'],  # Only extract required languages
-                max_parallel=3
+                max_parallel=3,
+                max_subtitles=10  # Max 10 subtitles per movie
             )
 
             saved_languages = []

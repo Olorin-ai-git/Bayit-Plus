@@ -886,10 +886,12 @@ class UploadService:
             ffmpeg = FFmpegService()
             
             # Extract subtitles (this is the slow part, but now it's in background)
+            # Limit to 10 subtitles max, prioritizing he, en, es
             extracted_subs = await ffmpeg.extract_all_subtitles(
                 local_path,
                 languages=['en', 'he', 'es'],
-                max_parallel=3
+                max_parallel=3,
+                max_subtitles=10  # Max 10 subtitles per movie
             )
             
             if not extracted_subs:

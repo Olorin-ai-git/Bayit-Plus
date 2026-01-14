@@ -345,11 +345,69 @@ class FFmpegService:
                 except Exception as e:
                     logger.warning(f"Failed to delete temp file {output_path}: {str(e)}")
 
+    def _prioritize_and_limit_subtitle_tracks(
+        self,
+        tracks: List[Dict],
+        max_tracks: int = 10
+    ) -> List[Dict]:
+        """
+        Prioritize subtitle tracks and limit to max_tracks.
+        
+        Priority order: Hebrew (he), English (en), Spanish (es), then others alphabetically.
+        
+        Args:
+            tracks: List of subtitle tracks to prioritize
+            max_tracks: Maximum number of tracks to return (default 10)
+            
+        Returns:
+            Prioritized and limited list of subtitle tracks
+        """
+        if len(tracks) <= max_tracks:
+            return tracks
+        
+        # Define priority order
+        priority_languages = ['he', 'en', 'es']
+        
+        # Separate tracks by priority
+        priority_tracks = []
+        other_tracks = []
+        
+        for track in tracks:
+            lang = track.get('language', 'und')
+            if lang in priority_languages:
+                priority_tracks.append(track)
+            else:
+                other_tracks.append(track)
+        
+        # Sort priority tracks by priority order
+        priority_tracks.sort(
+            key=lambda t: priority_languages.index(t['language']) 
+            if t.get('language') in priority_languages else 999
+        )
+        
+        # Sort other tracks alphabetically by language
+        other_tracks.sort(key=lambda t: t.get('language', 'zzz'))
+        
+        # Combine and limit
+        all_tracks = priority_tracks + other_tracks
+        limited_tracks = all_tracks[:max_tracks]
+        
+        if len(tracks) > max_tracks:
+            skipped_count = len(tracks) - max_tracks
+            skipped_languages = [t.get('language', 'und') for t in tracks[max_tracks:]]
+            logger.info(
+                f"⚠️ Limited to {max_tracks} subtitle tracks (skipped {skipped_count}: "
+                f"{', '.join(skipped_languages[:5])}{'...' if skipped_count > 5 else ''})"
+            )
+        
+        return limited_tracks
+
     async def extract_all_subtitles(
         self, 
         video_url: str, 
         languages: Optional[List[str]] = None,
-        max_parallel: int = 3
+        max_parallel: int = 3,
+        max_subtitles: int = 10
     ) -> List[Dict[str, str]]:
         """
         Extract subtitle tracks from video file with filtering and parallel processing.
@@ -358,14 +416,17 @@ class FFmpegService:
         1. Analyzes the video to find all subtitle tracks
         2. Filters by requested languages (if specified)
         3. Skips incompatible formats (bitmap subtitles)
-        4. Extracts tracks in parallel for better performance
-        5. Returns the parsed subtitle content
+        4. Prioritizes Hebrew, English, Spanish subtitles
+        5. Limits to max_subtitles (default 10) per movie
+        6. Extracts tracks in parallel for better performance
+        7. Returns the parsed subtitle content
 
         Args:
             video_url: URL or path to the video file
             languages: Optional list of language codes to extract (e.g., ['en', 'es', 'he'])
                       If None, extracts all compatible tracks
             max_parallel: Maximum number of parallel extractions (default 3)
+            max_subtitles: Maximum number of subtitles to extract per movie (default 10)
 
         Returns:
             List of dictionaries containing:
@@ -432,12 +493,18 @@ class FFmpegService:
                 logger.info(f"No compatible subtitle tracks to extract after filtering")
                 return []
 
-            logger.info(
-                f"Extracting {len(tracks_to_extract)} compatible subtitle tracks "
-                f"(max {max_parallel} parallel)..."
+            # Step 3: Prioritize and limit subtitle tracks
+            tracks_to_extract = self._prioritize_and_limit_subtitle_tracks(
+                tracks_to_extract,
+                max_tracks=max_subtitles
             )
 
-            # Step 3: Extract tracks in parallel with semaphore to limit concurrency
+            logger.info(
+                f"Extracting {len(tracks_to_extract)} subtitle tracks "
+                f"(prioritized: he, en, es; limited to {max_subtitles}; max {max_parallel} parallel)..."
+            )
+
+            # Step 4: Extract tracks in parallel with semaphore to limit concurrency
             semaphore = asyncio.Semaphore(max_parallel)
             
             async def extract_with_semaphore(track):

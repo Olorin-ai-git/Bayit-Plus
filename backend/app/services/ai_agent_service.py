@@ -1467,10 +1467,12 @@ async def _extract_subtitles_background(content_id: str, stream_url: str):
         await content.save()
         
         # Extract subtitles (only required languages)
+        # Limit to 10 subtitles max, prioritizing he, en, es
         extracted_subs = await ffmpeg_service.extract_all_subtitles(
             stream_url,
             languages=['en', 'he', 'es'],
-            max_parallel=3
+            max_parallel=3,
+            max_subtitles=10  # Max 10 subtitles per movie
         )
         
         saved_count = 0
@@ -1607,10 +1609,12 @@ async def _extract_with_audit(content_id: str, stream_url: str, audit_id: str, l
             return
         
         # Extract subtitles with language filtering at extraction time (more efficient)
+        # Limit to 10 subtitles max, prioritizing he, en, es
         extracted_subs = await ffmpeg_service.extract_all_subtitles(
             stream_url,
             languages=languages if languages else None,
-            max_parallel=3
+            max_parallel=3,
+            max_subtitles=10  # Max 10 subtitles per movie
         )
 
         # Parse and save each subtitle track
