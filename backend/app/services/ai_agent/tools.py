@@ -480,6 +480,29 @@ TOOLS = [
         }
     },
     {
+        "name": "manage_podcast_episodes",
+        "description": "Manage podcast episodes: sync latest episodes from RSS feeds and ensure only the 3 most recent episodes are kept per podcast. This tool will fetch the latest episode from RSS, delete old episodes if there are more than 3, and verify we have the latest. Use this regularly to maintain podcast freshness and prevent database bloat.",
+        "input_schema": {
+            "type": "object",
+            "properties": {
+                "podcast_id": {
+                    "type": "string",
+                    "description": "Optional: Specific podcast ID to manage. If not provided, manages all podcasts."
+                },
+                "max_episodes_to_keep": {
+                    "type": "integer",
+                    "description": "Maximum number of episodes to keep per podcast (default: 3)",
+                    "default": 3
+                },
+                "audit_id": {
+                    "type": "string",
+                    "description": "Current audit ID for tracking"
+                }
+            },
+            "required": ["audit_id"]
+        }
+    },
+    {
         "name": "complete_audit",
         "description": "Call this when you've finished the audit and are ready to provide a final summary. This will end the audit session.",
         "input_schema": {

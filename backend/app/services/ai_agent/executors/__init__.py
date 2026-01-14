@@ -43,6 +43,10 @@ from .notifications import (
     execute_send_email_notification,
 )
 
+from .podcasts import (
+    execute_manage_podcast_episodes,
+)
+
 __all__ = [
     # Content
     "execute_list_content_items",
@@ -71,4 +75,6 @@ __all__ = [
     "execute_check_subtitle_quota",
     # Notifications
     "execute_send_email_notification",
+    # Podcasts
+    "execute_manage_podcast_episodes",
 ]
