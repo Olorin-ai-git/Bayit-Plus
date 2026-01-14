@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo } from 'react';
-import { View, Text, StyleSheet, FlatList, ScrollView, useWindowDimensions, Pressable } from 'react-native';
+import { View, Text, StyleSheet, FlatList, ScrollView, useWindowDimensions, Pressable, ActivityIndicator } from 'react-native';
 import { useSearchParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useDirection } from '@/hooks/useDirection';
@@ -154,6 +154,29 @@ export default function VODPage() {
     );
   };
 
+  // Show full page loader on initial load
+  if (loading && content.length === 0) {
+    return (
+      <View style={styles.container}>
+        {/* Header */}
+        <View style={[styles.header, { flexDirection, justifyContent }]}>
+          <Text style={[styles.title, { textAlign }]}>{t('vod.title')}</Text>
+          <GlassView style={styles.headerIcon}>
+            <Film size={24} color={colors.primary} />
+          </GlassView>
+        </View>
+
+        {/* Loading Spinner */}
+        <View style={styles.loadingContainer}>
+          <GlassCard style={styles.loadingCard}>
+            <ActivityIndicator size="large" color={colors.primary} />
+            <Text style={styles.loadingText}>{t('common.loading')}</Text>
+          </GlassCard>
+        </View>
+      </View>
+    );
+  }
+
   return (
     <ScrollView style={styles.scrollView} contentContainerStyle={styles.scrollContent}>
       <View style={styles.container}>
@@ -168,7 +191,7 @@ export default function VODPage() {
         {/* Search Input */}
         <View style={styles.searchContainer}>
           <GlassInput
-            placeholder={t('vod.searchPlaceholder', 'Search movies and series...')}
+            placeholder={t('vod.searchPlaceholder')}
             value={searchQuery}
             onChangeText={setSearchQuery}
             icon={<Search size={20} color={colors.textMuted} />}
@@ -198,8 +221,8 @@ export default function VODPage() {
           ))}
         </ScrollView>
 
-        {/* Loading State */}
-        {loading ? (
+        {/* Loading State for Pagination */}
+        {loading && content.length > 0 ? (
           <View style={styles.grid}>
             {[...Array(12)].map((_, i) => (
               <View key={i} style={{ width: `${100 / numColumns}%`, padding: spacing.xs }}>
@@ -213,30 +236,30 @@ export default function VODPage() {
           <>
             {/* Movies Section */}
             <View style={styles.section}>
-              <View style={[styles.sectionHeader, { flexDirection }]}>
-                <Film size={24} color={colors.primary} />
-                <Text style={[styles.sectionTitle, { textAlign }]}>
-                  {t('vod.movies', 'Movies')}
-                </Text>
-                <View style={styles.countBadge}>
-                  <Text style={styles.countText}>{movies.length}</Text>
-                </View>
+            <View style={[styles.sectionHeader, { flexDirection }]}>
+              <Film size={24} color={colors.primary} />
+              <Text style={[styles.sectionTitle, { textAlign }]}>
+                {t('vod.movies')}
+              </Text>
+              <View style={styles.countBadge}>
+                <Text style={styles.countText}>{movies.length}</Text>
               </View>
-              {renderContentGrid(movies, t('vod.noMovies', 'No movies found'))}
+            </View>
+            {renderContentGrid(movies, t('vod.noMovies'))}
             </View>
 
             {/* Series Section */}
             <View style={styles.section}>
-              <View style={[styles.sectionHeader, { flexDirection }]}>
-                <Tv size={24} color={colors.secondary} />
-                <Text style={[styles.sectionTitle, { textAlign }]}>
-                  {t('vod.series', 'Series')}
-                </Text>
-                <View style={styles.countBadge}>
-                  <Text style={styles.countText}>{series.length}</Text>
-                </View>
+            <View style={[styles.sectionHeader, { flexDirection }]}>
+              <Tv size={24} color={colors.secondary} />
+              <Text style={[styles.sectionTitle, { textAlign }]}>
+                {t('vod.series')}
+              </Text>
+              <View style={styles.countBadge}>
+                <Text style={styles.countText}>{series.length}</Text>
               </View>
-              {renderContentGrid(series, t('vod.noSeries', 'No series found'))}
+            </View>
+            {renderContentGrid(series, t('vod.noSeries'))}
             </View>
 
             {/* Empty State - when both are empty */}
@@ -308,6 +331,22 @@ const styles = StyleSheet.create({
     maxWidth: 1400,
     marginHorizontal: 'auto',
     width: '100%',
+  },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    minHeight: 400,
+  },
+  loadingCard: {
+    padding: spacing.xl * 2,
+    alignItems: 'center',
+    gap: spacing.lg,
+  },
+  loadingText: {
+    fontSize: 16,
+    color: colors.text,
+    marginTop: spacing.md,
   },
   header: {
     flexDirection: 'row',

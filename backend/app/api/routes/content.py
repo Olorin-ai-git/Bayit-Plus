@@ -199,13 +199,15 @@ async def get_featured(current_user: Optional[User] = Depends(get_optional_user)
 
 @router.get("/categories")
 async def get_categories():
-    """Get all content categories."""
+    """Get all content categories with localized names."""
     categories = await Category.find(Category.is_active == True).sort("order").to_list()
     return {
         "categories": [
             {
                 "id": str(cat.id),
                 "name": cat.name,
+                "name_en": cat.name_en,
+                "name_es": cat.name_es,
                 "slug": cat.slug,
                 "thumbnail": cat.thumbnail,
             }

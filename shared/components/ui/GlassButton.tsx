@@ -14,7 +14,7 @@ import { GlassView } from './GlassView';
 import { colors, borderRadius, spacing } from '../theme';
 import { useTVFocus } from '../hooks/useTVFocus';
 
-type ButtonVariant = 'primary' | 'secondary' | 'ghost' | 'danger' | 'outline';
+type ButtonVariant = 'primary' | 'secondary' | 'ghost' | 'danger' | 'destructive' | 'outline';
 type ButtonSize = 'sm' | 'md' | 'lg';
 
 interface GlassButtonProps {
@@ -61,6 +61,7 @@ export const GlassButton: React.FC<GlassButtonProps> = ({
     secondary: { bg: colors.secondary, text: colors.text },
     ghost: { bg: 'transparent', text: colors.text },
     danger: { bg: colors.error, text: colors.text },
+    destructive: { bg: colors.error, text: colors.text },
     outline: { bg: 'transparent', text: colors.primary, border: colors.primary },
   };
 

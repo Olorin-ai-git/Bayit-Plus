@@ -12,3 +12,11 @@ ReactDOM.createRoot(document.getElementById('root')).render(
     </BrowserRouter>
   </React.StrictMode>,
 )
+
+// Signal that React is ready and can hide splash screen
+// The splash screen will respect minimum display time (3 seconds)
+setTimeout(() => {
+  if (typeof window.hideSplashWhenReady === 'function') {
+    window.hideSplashWhenReady()
+  }
+}, 100)

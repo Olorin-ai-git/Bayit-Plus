@@ -51,9 +51,333 @@
       ::-webkit-scrollbar-thumb:hover {
         background: rgba(255, 255, 255, 0.3);
       }
+
+      /* Splash Screen Styles */
+      #splash-screen {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        z-index: 9999;
+        opacity: 1;
+        transition: opacity 0.5s ease-out;
+        overflow: hidden;
+      }
+
+      #splash-screen.fade-out {
+        opacity: 0;
+        pointer-events: none;
+      }
+
+      /* Fullscreen background image */
+      #splash-screen .splash-bg {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 100%;
+        height: auto;
+        min-height: 100%;
+        object-fit: cover;
+        object-position: center center;
+        z-index: 1;
+      }
+
+      /* Overlay for better text visibility */
+      #splash-screen .overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(13, 13, 26, 0.4);
+        z-index: 2;
+      }
+
+      /* Animated Logo Container - positioned at top */
+      #splash-screen .animated-logo-container {
+        position: fixed;
+        top: 60px;
+        left: 50%;
+        transform: translateX(-50%);
+        z-index: 3;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+      }
+
+      /* Logo image - fades in after text */
+      #splash-screen .logo {
+        width: 90px;
+        height: 45px;
+        margin-bottom: -8px;
+        opacity: 0;
+        animation: logoFadeIn 1.2s ease-out forwards;
+        animation-delay: 0.8s;
+      }
+
+      /* Text container */
+      #splash-screen .text-container {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        justify-content: center;
+      }
+
+      /* Animated text - slides in from sides */
+      #splash-screen .bayit-text {
+        font-size: 48px;
+        font-weight: bold;
+        color: #ffffff;
+        font-family: 'Heebo', sans-serif;
+        opacity: 0;
+        animation: slideInFromLeft 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+      }
+
+      #splash-screen .plus-text {
+        font-size: 42px;
+        font-weight: bold;
+        color: #00d9ff;
+        margin-left: 4px;
+        opacity: 0;
+        animation: slideInFromRight 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+      }
+
+      /* Dual Clock - centered on screen, spaced to show image splitter */
+      #splash-screen .clock-container {
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        z-index: 3;
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        background-color: transparent;
+        padding: 0;
+        gap: 4rem;
+        opacity: 0;
+        animation: fadeIn 0.8s ease-out forwards;
+        animation-delay: 1.2s;
+      }
+
+      #splash-screen .clock-item {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        gap: 0.5rem;
+        background: rgba(255, 255, 255, 0.1);
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
+        padding: 0.75rem 1.5rem;
+        border-radius: 12px;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+      }
+
+      #splash-screen .flag-icon {
+        font-size: 24px;
+      }
+
+      #splash-screen .clock-time {
+        font-size: 20px;
+        font-weight: 700;
+        color: #ffffff;
+        font-family: 'Heebo', sans-serif;
+        font-variant-numeric: tabular-nums;
+        min-width: 3.5rem;
+      }
+
+      /* Animation Keyframes */
+      @keyframes slideInFromLeft {
+        from {
+          opacity: 0;
+          transform: translateX(-150px);
+        }
+        to {
+          opacity: 1;
+          transform: translateX(0);
+        }
+      }
+
+      @keyframes slideInFromRight {
+        from {
+          opacity: 0;
+          transform: translateX(150px);
+        }
+        to {
+          opacity: 1;
+          transform: translateX(0);
+        }
+      }
+
+      @keyframes logoFadeIn {
+        from {
+          opacity: 0;
+        }
+        to {
+          opacity: 1;
+        }
+      }
+
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+        }
+        to {
+          opacity: 1;
+        }
+      }
+
+      /* Responsive adjustments */
+      @media (max-width: 640px) {
+        #splash-screen .animated-logo-container {
+          top: 40px;
+        }
+        #splash-screen .logo {
+          width: 60px;
+          height: 30px;
+        }
+        #splash-screen .bayit-text {
+          font-size: 32px;
+        }
+        #splash-screen .plus-text {
+          font-size: 28px;
+        }
+        #splash-screen .clock-container {
+          gap: 2rem;
+        }
+        #splash-screen .clock-item {
+          padding: 0.5rem 1rem;
+        }
+        #splash-screen .flag-icon {
+          font-size: 20px;
+        }
+        #splash-screen .clock-time {
+          font-size: 16px;
+        }
+      }
     </style>
   </head>
   <body>
+    <!-- Splash Screen -->
+    <div id="splash-screen">
+      <!-- Fullscreen background image -->
+      <img src="/Bayit-Splash.png" alt="Bayit+ Background" class="splash-bg" />
+      
+      <!-- Overlay for better visibility -->
+      <div class="overlay"></div>
+      
+      <!-- Animated Logo at top (matches home page animation) -->
+      <div class="animated-logo-container">
+        <img src="/logo.png" alt="Bayit+ Logo" class="logo" />
+        <div class="text-container">
+          <span class="bayit-text">בית</span>
+          <span class="plus-text">+</span>
+        </div>
+      </div>
+      
+      <!-- Dual Clock at center - positioned to show image splitter -->
+      <div class="clock-container">
+        <div class="clock-item">
+          <span class="flag-icon">🇮🇱</span>
+          <span class="clock-time" id="israel-time">--:--</span>
+        </div>
+        <div class="clock-item">
+          <span class="flag-icon">🇺🇸</span>
+          <span class="clock-time" id="local-time">--:--</span>
+        </div>
+      </div>
+    </div>
+
     <div id="root"></div>
+
+    <script>
+      // Track splash screen timing
+      var splashStartTime = Date.now();
+      var MIN_SPLASH_DURATION = 3000; // 3 seconds minimum
+      var appReady = false;
+      var windowLoaded = false;
+      
+      // Update clocks
+      function updateClocks() {
+        var now = new Date();
+        
+        // Israel time (Jerusalem timezone)
+        var israelTime = now.toLocaleTimeString('en-US', {
+          hour: '2-digit',
+          minute: '2-digit',
+          hour12: false,
+          timeZone: 'Asia/Jerusalem'
+        });
+        
+        // Local time
+        var localTime = now.toLocaleTimeString('en-US', {
+          hour: '2-digit',
+          minute: '2-digit',
+          hour12: false
+        });
+        
+        var israelElement = document.getElementById('israel-time');
+        var localElement = document.getElementById('local-time');
+        
+        if (israelElement) israelElement.textContent = israelTime;
+        if (localElement) localElement.textContent = localTime;
+      }
+      
+      // Update clocks immediately and every second
+      updateClocks();
+      var clockInterval = setInterval(updateClocks, 1000);
+      
+      // Function to hide splash screen
+      function hideSplashScreen() {
+        var elapsedTime = Date.now() - splashStartTime;
+        var remainingTime = Math.max(0, MIN_SPLASH_DURATION - elapsedTime);
+        
+        setTimeout(function() {
+          clearInterval(clockInterval); // Stop clock updates
+          var splash = document.getElementById('splash-screen');
+          if (splash) {
+            splash.classList.add('fade-out');
+            // Remove from DOM after fade animation
+            setTimeout(function() {
+              splash.remove();
+            }, 500);
+          }
+        }, remainingTime);
+      }
+      
+      // Mark window as loaded
+      window.addEventListener('load', function() {
+        windowLoaded = true;
+        if (appReady) {
+          hideSplashScreen();
+        }
+      });
+      
+      // Function for React to call when ready
+      window.hideSplashWhenReady = function() {
+        appReady = true;
+        if (windowLoaded) {
+          hideSplashScreen();
+        }
+      };
+      
+      // Fallback: Hide after max time even if React doesn't signal ready
+      setTimeout(function() {
+        if (document.getElementById('splash-screen')) {
+          clearInterval(clockInterval);
+          var splash = document.getElementById('splash-screen');
+          if (splash) {
+            splash.classList.add('fade-out');
+            setTimeout(function() {
+              splash.remove();
+            }, 500);
+          }
+        }
+      }, 10000); // 10 second failsafe
+    </script>
   </body>
 </html>

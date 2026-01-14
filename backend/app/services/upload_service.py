@@ -174,6 +174,35 @@ class UploadService:
             job.stages["metadata_extraction"] = "completed"
             await job.save()
             
+            # Stage 1.5: Extract subtitles from local file (for video content)
+            if job.type == ContentType.MOVIE and os.path.exists(job.source_path):
+                job.stages["subtitle_extraction"] = "in_progress"
+                await job.save()
+                
+                try:
+                    logger.info(f"Extracting subtitles from local file: {job.source_path}")
+                    from app.services.ffmpeg_service import FFmpegService
+                    ffmpeg = FFmpegService()
+                    
+                    # Extract subtitles (only required languages: en, he, es)
+                    extracted_subs = await ffmpeg.extract_all_subtitles(
+                        job.source_path,  # Use local file path for fast extraction
+                        languages=['en', 'he', 'es'],
+                        max_parallel=3
+                    )
+                    
+                    # Store extracted subtitles in job metadata for later saving
+                    job.metadata["extracted_subtitles"] = extracted_subs
+                    job.stages["subtitle_extraction"] = "completed"
+                    logger.info(f"Extracted {len(extracted_subs)} subtitle tracks from local file")
+                    
+                except Exception as e:
+                    logger.warning(f"Subtitle extraction failed (non-critical): {str(e)}")
+                    job.stages["subtitle_extraction"] = "failed"
+                    # Don't fail the entire job if subtitle extraction fails
+                
+                await job.save()
+            
             # Stage 2: Upload to GCS
             job.status = UploadStatus.UPLOADING
             job.stages["gcs_upload"] = "in_progress"
@@ -428,6 +457,41 @@ class UploadService:
         
         await content.insert()
         logger.info(f"Created movie content: {content.title}")
+        
+        # Save extracted subtitles if any
+        extracted_subs = metadata.get('extracted_subtitles', [])
+        if extracted_subs:
+            logger.info(f"Saving {len(extracted_subs)} extracted subtitles to database")
+            from app.models.subtitles import SubtitleTrackDoc, SubtitleCueModel
+            from app.services.subtitle_service import parse_srt
+            
+            for sub_data in extracted_subs:
+                try:
+                    # Parse subtitle content
+                    cues = parse_srt(sub_data['content'])
+                    
+                    # Create subtitle track document
+                    subtitle_track = SubtitleTrackDoc(
+                        content_id=str(content.id),
+                        language=sub_data['language'],
+                        source='embedded',
+                        format=sub_data.get('format', 'srt'),
+                        codec=sub_data.get('codec', 'unknown'),
+                        cues=[SubtitleCueModel(**cue) for cue in cues],
+                        is_default=sub_data['language'] == 'en',  # English as default
+                    )
+                    
+                    await subtitle_track.insert()
+                    logger.info(f"✅ Saved {sub_data['language']} subtitles ({len(cues)} cues)")
+                    
+                except Exception as e:
+                    logger.error(f"Failed to save {sub_data['language']} subtitles: {str(e)}")
+            
+            # Update content with subtitle info
+            content.embedded_subtitle_count = len(extracted_subs)
+            content.available_subtitle_languages = [s['language'] for s in extracted_subs]
+            content.subtitle_extraction_status = 'completed'
+            await content.save()
 
     async def _create_podcast_episode_entry(self, job: UploadJob):
         """Create a podcast episode content entry"""

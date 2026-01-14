@@ -22,9 +22,76 @@ logger = logging.getLogger(__name__)
 class FFmpegService:
     """Service for video analysis, subtitle extraction, and live stream recording using FFmpeg."""
 
+    # Language code mapping (ISO 639-2 to ISO 639-1)
+    LANGUAGE_CODE_MAP = {
+        # Common 3-letter codes to 2-letter codes
+        'eng': 'en',
+        'spa': 'es',
+        'heb': 'he',
+        'fra': 'fr',
+        'fre': 'fr',
+        'ger': 'de',
+        'deu': 'de',
+        'ita': 'it',
+        'por': 'pt',
+        'rus': 'ru',
+        'ara': 'ar',
+        'chi': 'zh',
+        'zho': 'zh',
+        'jpn': 'ja',
+        'kor': 'ko',
+        'dut': 'nl',
+        'nld': 'nl',
+        'pol': 'pl',
+        'swe': 'sv',
+        'dan': 'da',
+        'fin': 'fi',
+        'nor': 'no',
+        'nno': 'no',
+        'cze': 'cs',
+        'ces': 'cs',
+        'tur': 'tr',
+        'gre': 'el',
+        'ell': 'el',
+        'hun': 'hu',
+        'rum': 'ro',
+        'ron': 'ro',
+        'tha': 'th',
+        'vie': 'vi',
+        'ind': 'id',
+        'may': 'ms',
+        'msa': 'ms',
+        'ukr': 'uk',
+        'bul': 'bg',
+        'hrv': 'hr',
+        'slv': 'sl',
+        'lit': 'lt',
+        'lav': 'lv',
+        'est': 'et',
+        'slk': 'sk',
+    }
+
     def __init__(self):
         self.temp_dir = Path("/tmp/recordings")
         self.temp_dir.mkdir(exist_ok=True, parents=True)
+    
+    def normalize_language_code(self, code: str) -> str:
+        """
+        Normalize language code to 2-letter ISO 639-1 format.
+        Accepts both 2-letter and 3-letter codes.
+        """
+        code_lower = code.lower().strip()
+        
+        # If it's already 2 letters, return as-is
+        if len(code_lower) == 2:
+            return code_lower
+        
+        # If it's 3 letters, try to map it
+        if len(code_lower) == 3:
+            return self.LANGUAGE_CODE_MAP.get(code_lower, code_lower)
+        
+        # Otherwise return as-is
+        return code_lower
 
     async def analyze_video(self, video_url: str) -> Dict[str, Any]:
         """
@@ -188,7 +255,7 @@ class FFmpegService:
         video_url: str,
         track_index: int,
         output_format: str = 'srt',
-        timeout: int = 20  # Reduced from 60 to 20 seconds
+        timeout: int = 120  # Increased to 120 seconds for large remote files
     ) -> str:
         """
         Extract a specific subtitle track from video file.
@@ -223,12 +290,16 @@ class FFmpegService:
             )
 
             # Extract subtitle track using ffmpeg
+            # Note: We don't use -codec copy because we need to convert to SRT format
+            # For remote files, ffmpeg will only download subtitle data, not the entire video
             cmd = [
                 'ffmpeg',
+                '-analyzeduration', '10M',     # Analyze up to 10MB to find streams
+                '-probesize', '10M',           # Probe up to 10MB
                 '-i', video_url,
-                '-map', f'0:{track_index}',  # Select specific subtitle stream
-                '-f', output_format,          # Output format
-                '-y',                          # Overwrite output file
+                '-map', f'0:{track_index}',    # Select specific subtitle stream
+                '-f', output_format,            # Output format (converts to SRT)
+                '-y',                           # Overwrite output file
                 output_path
             ]
 
@@ -330,22 +401,26 @@ class FFmpegService:
             
             for track in subtitle_tracks:
                 codec = track.get('codec', 'unknown')
-                language = track.get('language', 'und')
+                language_raw = track.get('language', 'und')
+                language = self.normalize_language_code(language_raw)  # Normalize to 2-letter code
                 
                 # Skip bitmap-based subtitles (can't convert to text)
                 if not self._is_text_based_subtitle(codec):
                     skipped_bitmap.append(f"{language} ({codec})")
                     logger.info(
-                        f"⊘ Skipping track {track['index']} ({language}): "
+                        f"⊘ Skipping track {track['index']} ({language_raw}→{language}): "
                         f"bitmap codec '{codec}' cannot convert to SRT"
                     )
                     continue
                 
-                # Filter by language if specified
+                # Filter by language if specified (compare normalized codes)
                 if languages and language not in languages:
-                    skipped_language.append(f"{language} (not in {languages})")
+                    skipped_language.append(f"{language_raw}→{language} (not in {languages})")
                     continue
                 
+                # Store normalized language code in track
+                track['language'] = language
+                track['language_raw'] = language_raw
                 tracks_to_extract.append(track)
             
             if skipped_bitmap:
@@ -372,7 +447,7 @@ class FFmpegService:
                             video_url,
                             track['index'],
                             output_format='srt',
-                            timeout=20  # 20 second timeout per track
+                            timeout=120  # 120 second timeout per track for large remote files
                         )
 
                         logger.info(
