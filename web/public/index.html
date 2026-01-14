@@ -77,9 +77,8 @@
         left: 50%;
         transform: translate(-50%, -50%);
         width: 100%;
-        height: auto;
-        min-height: 100%;
-        object-fit: cover;
+        height: 100%;
+        object-fit: fill;
         object-position: center center;
         z-index: 1;
       }
@@ -95,10 +94,10 @@
         z-index: 2;
       }
 
-      /* Animated Logo Container - positioned at top */
+      /* Animated Logo Container - positioned above TV screen */
       #splash-screen .animated-logo-container {
         position: fixed;
-        top: 60px;
+        top: 2%;
         left: 50%;
         transform: translateX(-50%);
         z-index: 3;
@@ -145,12 +144,12 @@
         animation: slideInFromRight 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
       }
 
-      /* Dual Clock - centered on screen, spaced to show image splitter */
+      /* Dual Clock - positioned below TV screen */
       #splash-screen .clock-container {
         position: fixed;
-        top: 50%;
+        bottom: 43%;
         left: 50%;
-        transform: translate(-50%, -50%);
+        transform: translateX(-50%);
         z-index: 3;
         display: flex;
         flex-direction: row;
@@ -234,7 +233,7 @@
       /* Responsive adjustments */
       @media (max-width: 640px) {
         #splash-screen .animated-logo-container {
-          top: 40px;
+          top: 3%;
         }
         #splash-screen .logo {
           width: 60px;
@@ -247,6 +246,7 @@
           font-size: 28px;
         }
         #splash-screen .clock-container {
+          bottom: 10%;
           gap: 2rem;
         }
         #splash-screen .clock-item {
@@ -266,9 +266,6 @@
     <div id="splash-screen">
       <!-- Fullscreen background image -->
       <img src="/Bayit-Splash.png" alt="Bayit+ Background" class="splash-bg" />
-      
-      <!-- Overlay for better visibility -->
-      <div class="overlay"></div>
       
       <!-- Animated Logo at top (matches home page animation) -->
       <div class="animated-logo-container">
