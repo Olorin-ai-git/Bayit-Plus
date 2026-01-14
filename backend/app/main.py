@@ -417,9 +417,9 @@ async def lifespan(app: FastAPI):
         await init_default_data()
     except Exception as e:
         logger.warning(f"Failed to initialize default data: {e}")
-    # Run podcast sync in background (non-blocking)
-    import asyncio
-    asyncio.create_task(sync_podcast_rss_feeds())
+    # Run podcast sync in background (non-blocking) - DISABLED: No podcasts in Bayit+
+    # import asyncio
+    # asyncio.create_task(sync_podcast_rss_feeds())
     # Run folder monitoring in background (non-blocking)
     if settings.UPLOAD_MONITOR_ENABLED:
         asyncio.create_task(scan_monitored_folders_task())
