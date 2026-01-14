@@ -94,7 +94,7 @@
         z-index: 2;
       }
 
-      /* Animated Logo Container - positioned above TV screen */
+      /* Animated Logo Container - positioned above TV screen with fixed dimensions */
       #splash-screen .animated-logo-container {
         position: fixed;
         top: 2%;
@@ -105,6 +105,8 @@
         flex-direction: column;
         align-items: center;
         justify-content: center;
+        width: 300px;
+        height: 100px;
       }
 
       /* Logo image - fades in after text */
@@ -116,36 +118,42 @@
         animation: logoFadeIn 1s ease-out 0.7s forwards;
       }
 
-      /* Text container - use row-reverse to flip final order */
+      /* Text container - fixed dimensions to prevent layout shift */
       #splash-screen .text-container {
+        position: relative;
+        width: 200px;
+        height: 60px;
         display: flex;
-        flex-direction: row-reverse;
+        flex-direction: row;
         align-items: center;
         justify-content: center;
-        gap: 0;
       }
 
-      /* Plus sign - slides in from LEFT edge, ends on RIGHT */
-      #splash-screen .plus-text {
-        font-size: 42px;
-        font-weight: bold;
-        color: #00d9ff;
-        margin: 0 0 0 2px;
-        opacity: 0;
-        transform: translateX(-200px);
-        animation: slideInPlus 0.7s ease-in-out forwards;
-      }
-
-      /* Bayit text - slides in from RIGHT edge, ends on LEFT */
+      /* Bayit text - HTML order: first, slides in from RIGHT, stays on LEFT */
       #splash-screen .bayit-text {
+        position: relative;
         font-size: 48px;
         font-weight: bold;
         color: #ffffff;
         font-family: 'Heebo', sans-serif;
+        line-height: 1;
         margin: 0;
         opacity: 0;
         transform: translateX(200px);
         animation: slideInBayit 0.7s ease-in-out forwards;
+      }
+
+      /* Plus sign - HTML order: second, slides in from LEFT, stays on RIGHT */
+      #splash-screen .plus-text {
+        position: relative;
+        font-size: 42px;
+        font-weight: bold;
+        color: #00d9ff;
+        line-height: 1;
+        margin: 0 0 0 4px;
+        opacity: 0;
+        transform: translateX(-200px);
+        animation: slideInPlus 0.7s ease-in-out forwards;
       }
 
       /* Dual Clock - positioned below TV screen */
@@ -275,8 +283,8 @@
       <div class="animated-logo-container">
         <img src="/logo.png" alt="Bayit+ Logo" class="logo" />
         <div class="text-container">
-          <span class="plus-text">+</span>
           <span class="bayit-text">בית</span>
+          <span class="plus-text">+</span>
         </div>
       </div>
       
@@ -333,80 +341,92 @@
       var clockInterval = setInterval(updateClocks, 1000);
       
       // #region agent log
-      // Debug: Track NEW animation from scratch
-      function captureLogoState(label, time) {
+      // Debug: Track width changes during animation
+      var widthTracking = [];
+      
+      function captureWidths(label, time) {
+        var container = document.querySelector('.animated-logo-container');
+        var textContainer = document.querySelector('.text-container');
         var bayitEl = document.querySelector('.bayit-text');
         var plusEl = document.querySelector('.plus-text');
         
-        if (!bayitEl || !plusEl) return null;
+        if (!container || !textContainer || !bayitEl || !plusEl) return null;
         
+        var containerRect = container.getBoundingClientRect();
+        var textContainerRect = textContainer.getBoundingClientRect();
         var bayitRect = bayitEl.getBoundingClientRect();
         var plusRect = plusEl.getBoundingClientRect();
-        var bayitStyle = window.getComputedStyle(bayitEl);
-        var plusStyle = window.getComputedStyle(plusEl);
+        
+        var containerStyle = window.getComputedStyle(container);
+        var textContainerStyle = window.getComputedStyle(textContainer);
         
         return {
-          time: label,
-          ms: time,
-          plus: {
-            left: Math.round(plusRect.left * 100) / 100,
-            right: Math.round(plusRect.right * 100) / 100,
-            transform: plusStyle.transform,
-            animationName: plusStyle.animationName
+          label: label,
+          time: time,
+          container: {
+            width: Math.round(containerRect.width * 100) / 100,
+            height: Math.round(containerRect.height * 100) / 100,
+            computedWidth: containerStyle.width,
+            left: Math.round(containerRect.left * 100) / 100
+          },
+          textContainer: {
+            width: Math.round(textContainerRect.width * 100) / 100,
+            height: Math.round(textContainerRect.height * 100) / 100,
+            computedWidth: textContainerStyle.width,
+            left: Math.round(textContainerRect.left * 100) / 100
           },
           bayit: {
-            left: Math.round(bayitRect.left * 100) / 100,
-            right: Math.round(bayitRect.right * 100) / 100,
-            transform: bayitStyle.transform,
-            animationName: bayitStyle.animationName
+            width: Math.round(bayitRect.width * 100) / 100,
+            left: Math.round(bayitRect.left * 100) / 100
+          },
+          plus: {
+            width: Math.round(plusRect.width * 100) / 100,
+            left: Math.round(plusRect.left * 100) / 100
           }
         };
       }
       
       window.addEventListener('load', function() {
-        var states = [];
-        
-        // Track at key moments: start, mid, end, and after
-        setTimeout(function() { states.push(captureLogoState('T0-start', Date.now())); }, 50);
-        setTimeout(function() { states.push(captureLogoState('T350-mid', Date.now())); }, 350);
-        setTimeout(function() { states.push(captureLogoState('T700-end', Date.now())); }, 700);
-        setTimeout(function() { states.push(captureLogoState('T1200-after', Date.now())); }, 1200);
-        setTimeout(function() { states.push(captureLogoState('T2000-final', Date.now())); }, 2000);
+        // Capture widths at multiple points during animation
+        setTimeout(function() { widthTracking.push(captureWidths('T0_start', Date.now())); }, 10);
+        setTimeout(function() { widthTracking.push(captureWidths('T100', Date.now())); }, 100);
+        setTimeout(function() { widthTracking.push(captureWidths('T300', Date.now())); }, 300);
+        setTimeout(function() { widthTracking.push(captureWidths('T700_end', Date.now())); }, 700);
+        setTimeout(function() { widthTracking.push(captureWidths('T1000', Date.now())); }, 1000);
+        setTimeout(function() { widthTracking.push(captureWidths('T1500_stable', Date.now())); }, 1500);
         
         setTimeout(function() {
-          // Calculate movements
-          var movements = [];
-          for (var i = 1; i < states.length; i++) {
-            if (states[i] && states[i-1]) {
-              movements.push({
-                period: states[i-1].time + ' → ' + states[i].time,
-                plusDelta: (states[i].plus.left - states[i-1].plus.left).toFixed(2),
-                bayitDelta: (states[i].bayit.left - states[i-1].bayit.left).toFixed(2)
+          // Calculate width changes
+          var widthChanges = [];
+          for (var i = 1; i < widthTracking.length; i++) {
+            if (widthTracking[i] && widthTracking[i-1]) {
+              widthChanges.push({
+                period: widthTracking[i-1].label + ' → ' + widthTracking[i].label,
+                containerWidthDelta: (widthTracking[i].container.width - widthTracking[i-1].container.width).toFixed(2),
+                textContainerWidthDelta: (widthTracking[i].textContainer.width - widthTracking[i-1].textContainer.width).toFixed(2),
+                containerLeftDelta: (widthTracking[i].container.left - widthTracking[i-1].container.left).toFixed(2),
+                textContainerLeftDelta: (widthTracking[i].textContainer.left - widthTracking[i-1].textContainer.left).toFixed(2)
               });
             }
           }
-          
-          var finalState = states[states.length - 1];
           
           fetch('http://127.0.0.1:7244/ingest/5953914e-34ce-41fe-8a24-b30691c4a1e7', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
-              location: 'index.html:new-animation',
-              message: 'NEW ANIMATION: Position tracking',
+              location: 'index.html:width-tracking',
+              message: 'Width changes causing jump',
               data: {
-                allStates: states,
-                movements: movements,
-                finalPositions: finalState,
-                expectation: 'After T700-end, no movement should occur (deltas = 0)'
+                allWidths: widthTracking,
+                widthChanges: widthChanges,
+                issue: 'Non-zero width deltas indicate container size changes causing layout shifts'
               },
               timestamp: Date.now(),
               sessionId: 'debug-session',
-              runId: 'new-animation',
-              hypothesisId: 'stable-final-state'
+              hypothesisId: 'width-jump'
             })
           }).catch(function() {});
-        }, 2500);
+        }, 2000);
       });
       // #endregion
       

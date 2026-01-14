@@ -1670,7 +1670,8 @@
       "radioStations": "Estaciones de Radio",
       "podcasts": "Pódcasts",
       "widgets": "Widgets",
-      "recordings": "Grabaciones"
+      "recordings": "Grabaciones",
+      "uploads": "Cargas"
     },
     "recordings": {
       "title": "Gestión de Grabaciones",
@@ -1688,6 +1689,38 @@
       "loadFailed": "Error al cargar grabaciones",
       "noRecordings": "No Se Encontraron Grabaciones",
       "noRecordingsHint": "No hay grabaciones de usuarios en el sistema aún."
+    },
+    "uploads": {
+      "activeUploads": "Cargas Activas",
+      "noActiveUploads": "No hay cargas activas",
+      "queuedUploads": "Cargas en Cola",
+      "queued": "En Cola",
+      "andMore": "Y {{count}} más",
+      "monitoredFolders": "Carpetas Monitoreadas",
+      "noMonitoredFolders": "No hay carpetas monitoreadas configuradas",
+      "configureFoldersHelp": "Haga clic en 'Agregar Carpeta' para configurar carpetas monitoreadas para cargas automáticas",
+      "addFolder": "Agregar Carpeta",
+      "editFolder": "Editar Carpeta",
+      "deleteFolder": "Eliminar Carpeta",
+      "confirmDelete": "¿Eliminar esta carpeta?",
+      "type": "Tipo",
+      "lastScan": "Último escaneo",
+      "systemInfo": "Información del Sistema de Carga",
+      "systemInfoText": "Extrae automáticamente subtítulos de archivos de video locales durante la carga para un procesamiento más rápido",
+      "languagesInfo": "Idiomas de subtítulos compatibles: Inglés (en), Hebreo (he), Español (es)",
+      "form": {
+        "name": "Nombre de Carpeta",
+        "namePlaceholder": "Mi Carpeta de Películas",
+        "path": "Ruta de Carpeta",
+        "contentType": "Tipo de Contenido",
+        "enabled": "Habilitado",
+        "autoUpload": "Carga Automática"
+      },
+      "contentTypes": {
+        "movie": "Películas",
+        "podcast": "Podcasts",
+        "image": "Imágenes"
+      }
     },
     "librarian": {
       "title": "Agente Bibliotecario",

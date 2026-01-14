@@ -1405,6 +1405,38 @@
       "noRecordings": "No Recordings Found",
       "noRecordingsHint": "No user recordings in the system yet."
     },
+    "uploads": {
+      "activeUploads": "Active Uploads",
+      "noActiveUploads": "No active uploads",
+      "queuedUploads": "Queued Uploads",
+      "queued": "Queued",
+      "andMore": "And {{count}} more",
+      "monitoredFolders": "Monitored Folders",
+      "noMonitoredFolders": "No monitored folders configured",
+      "configureFoldersHelp": "Click 'Add Folder' to configure monitored folders for automatic uploads",
+      "addFolder": "Add Folder",
+      "editFolder": "Edit Folder",
+      "deleteFolder": "Delete Folder",
+      "confirmDelete": "Delete this folder?",
+      "type": "Type",
+      "lastScan": "Last scan",
+      "systemInfo": "Upload System Information",
+      "systemInfoText": "Automatically extracts subtitles from local video files during upload for faster processing",
+      "languagesInfo": "Supported subtitle languages: English (en), Hebrew (he), Spanish (es)",
+      "form": {
+        "name": "Folder Name",
+        "namePlaceholder": "My Movies Folder",
+        "path": "Folder Path",
+        "contentType": "Content Type",
+        "enabled": "Enabled",
+        "autoUpload": "Auto Upload"
+      },
+      "contentTypes": {
+        "movie": "Movies",
+        "podcast": "Podcasts",
+        "image": "Images"
+      }
+    },
     "librarian": {
       "title": "Librarian Agent",
       "subtitle": "Autonomous AI-powered content library management",

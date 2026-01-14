@@ -63,6 +63,7 @@ import FreeContentImportPage from './pages/admin/FreeContentImportPage'
 import WidgetsPage from './pages/admin/WidgetsPage'
 import LibrarianAgentPage from './pages/admin/LibrarianAgentPage'
 import RecordingsManagementPage from './pages/admin/RecordingsManagementPage'
+import UploadsPage from './pages/admin/UploadsPage'
 
 function App() {
   // Set document direction based on language (RTL for Hebrew/Arabic, LTR for others)
@@ -99,6 +100,7 @@ function App() {
         <Route path="push" element={<PushNotificationsPage />} />
         <Route path="logs" element={<AuditLogsPage />} />
         <Route path="librarian" element={<LibrarianAgentPage />} />
+        <Route path="uploads" element={<UploadsPage />} />
         <Route path="settings" element={<AdminSettingsPage />} />
         <Route path="content" element={<ContentLibraryPage />} />
         <Route path="content/new" element={<ContentEditorPage />} />

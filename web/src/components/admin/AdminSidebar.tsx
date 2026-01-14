@@ -20,6 +20,7 @@ import {
   Languages,
   Check,
   Video,
+  Upload,
 } from 'lucide-react'
 import { useAuthStore } from '@/stores/authStore'
 import { colors, spacing, borderRadius } from '@bayit/shared/theme'
@@ -106,6 +107,12 @@ const NAV_ITEMS: NavItem[] = [
     labelKey: 'admin.nav.recordings',
     icon: Video,
     route: '/admin/recordings',
+  },
+  {
+    key: 'uploads',
+    labelKey: 'admin.nav.uploads',
+    icon: Upload,
+    route: '/admin/uploads',
   },
   {
     key: 'settings',

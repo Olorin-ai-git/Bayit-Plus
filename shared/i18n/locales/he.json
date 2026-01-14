@@ -1255,6 +1255,7 @@
       "podcasts": "פודקאסטים",
       "widgets": "ווידג'טים",
       "recordings": "הקלטות",
+      "uploads": "העלאות",
       "settings": "הגדרות",
       "auditLogs": "יומן פעילות",
       "librarian": "סוכן הספרן"
@@ -1275,6 +1276,38 @@
       "loadFailed": "טעינת ההקלטות נכשלה",
       "noRecordings": "לא נמצאו הקלטות",
       "noRecordingsHint": "אין עדיין הקלטות משתמשים במערכת."
+    },
+    "uploads": {
+      "activeUploads": "העלאות פעילות",
+      "noActiveUploads": "אין העלאות פעילות",
+      "queuedUploads": "העלאות בתור",
+      "queued": "בתור",
+      "andMore": "ועוד {{count}} נוספים",
+      "monitoredFolders": "תיקיות מנוטרות",
+      "noMonitoredFolders": "לא הוגדרו תיקיות מנוטרות",
+      "configureFoldersHelp": "לחץ על 'הוסף תיקייה' להגדרת תיקיות מנוטרות להעלאות אוטומטיות",
+      "addFolder": "הוסף תיקייה",
+      "editFolder": "ערוך תיקייה",
+      "deleteFolder": "מחק תיקייה",
+      "confirmDelete": "למחוק תיקייה זו?",
+      "type": "סוג",
+      "lastScan": "סריקה אחרונה",
+      "systemInfo": "מידע על מערכת ההעלאות",
+      "systemInfoText": "מחלצת כתוביות אוטומטית מקבצי וידאו מקומיים במהלך ההעלאה לעיבוד מהיר יותר",
+      "languagesInfo": "שפות כתוביות נתמכות: אנגלית (en), עברית (he), ספרדית (es)",
+      "form": {
+        "name": "שם תיקייה",
+        "namePlaceholder": "תיקיית הסרטים שלי",
+        "path": "נתיב תיקייה",
+        "contentType": "סוג תוכן",
+        "enabled": "מופעל",
+        "autoUpload": "העלאה אוטומטית"
+      },
+      "contentTypes": {
+        "movie": "סרטים",
+        "podcast": "פודקאסטים",
+        "image": "תמונות"
+      }
     },
     "librarian": {
       "title": "סוכן הספרן",
