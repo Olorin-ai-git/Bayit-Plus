@@ -64,8 +64,7 @@ def get_display_entity_value(
                         return token
 
         # Obfuscate (will create or reuse token)
-        # obfuscate_text returns tuple: (obfuscated_text, context)
-        obfuscated_value, _ = obfuscator.obfuscate_text(entity_value)
+        obfuscated_value = obfuscator.obfuscate_text(entity_value)
 
         logger.debug(
             f"[PRIVACY_DISPLAY] Obfuscated entity for report: "
