@@ -768,18 +768,18 @@ class UploadService:
 
     async def get_queue_stats(self) -> QueueStats:
         """Get statistics about the queue"""
-        # Count by status
-        all_jobs = await UploadJob.find_all().to_list()
+        # Efficiently count by status using database queries (not fetching all records)
+        from beanie.operators import In
         
         stats = QueueStats(
-            total_jobs=len(all_jobs),
-            queued=sum(1 for j in all_jobs if j.status == UploadStatus.QUEUED),
-            processing=sum(1 for j in all_jobs if j.status in [UploadStatus.PROCESSING, UploadStatus.UPLOADING]),
-            completed=sum(1 for j in all_jobs if j.status == UploadStatus.COMPLETED),
-            failed=sum(1 for j in all_jobs if j.status == UploadStatus.FAILED),
-            cancelled=sum(1 for j in all_jobs if j.status == UploadStatus.CANCELLED),
-            total_size_bytes=sum(j.file_size or 0 for j in all_jobs),
-            uploaded_bytes=sum(j.bytes_uploaded for j in all_jobs),
+            total_jobs=await UploadJob.count(),
+            queued=await UploadJob.find(UploadJob.status == UploadStatus.QUEUED).count(),
+            processing=await UploadJob.find(In(UploadJob.status, [UploadStatus.PROCESSING, UploadStatus.UPLOADING])).count(),
+            completed=await UploadJob.find(UploadJob.status == UploadStatus.COMPLETED).count(),
+            failed=await UploadJob.find(UploadJob.status == UploadStatus.FAILED).count(),
+            cancelled=await UploadJob.find(UploadJob.status == UploadStatus.CANCELLED).count(),
+            total_size_bytes=0,  # Not displayed in UI, skipping expensive calculation
+            uploaded_bytes=0,    # Not displayed in UI, skipping expensive calculation
         )
         
         return stats
