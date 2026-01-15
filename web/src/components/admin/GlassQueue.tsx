@@ -17,6 +17,7 @@ import {
   ChevronUp,
   Pause,
   Play,
+  Info,
 } from 'lucide-react';
 import { GlassView, GlassCard, GlassBadge, GlassButton } from '@bayit/shared/ui';
 import { colors, spacing, borderRadius, fontSize } from '@bayit/shared/theme';
@@ -46,6 +47,7 @@ export interface QueueStats {
   completed: number;
   failed: number;
   cancelled: number;
+  skipped?: number; // Duplicates and informational skips
   total_size_bytes: number;
   uploaded_bytes: number;
 }
@@ -76,6 +78,11 @@ const GlassQueue: React.FC<GlassQueueProps> = ({
   const [showQueue, setShowQueue] = useState(true);
   const [showCompleted, setShowCompleted] = useState(false);
 
+  // Calculate skipped count (duplicates) from recent completed
+  const skippedCount = stats.skipped ?? recentCompleted.filter(job => isDuplicate(job)).length;
+  // Actual failures (not duplicates)
+  const actualFailures = stats.failed - skippedCount;
+
   // Format file size
   const formatFileSize = (bytes: number): string => {
     if (bytes < 1024) return `${bytes}B`;
@@ -98,8 +105,22 @@ const GlassQueue: React.FC<GlassQueueProps> = ({
     return `${hours}h ${mins}m`;
   };
 
+  // Check if a job is a duplicate (informational, not an error)
+  const isDuplicate = (job: QueueJob): boolean => {
+    if (!job.error_message) return false;
+    const lowerMsg = job.error_message.toLowerCase();
+    return lowerMsg.includes('duplicate') || 
+           lowerMsg.includes('already in library') ||
+           lowerMsg.includes('already exists');
+  };
+
   // Get status color
-  const getStatusColor = (status: string): string => {
+  const getStatusColor = (status: string, job?: QueueJob): string => {
+    // If it's a failed/cancelled job but actually a duplicate, show as info
+    if (job && (status === 'failed' || status === 'cancelled') && isDuplicate(job)) {
+      return colors.info || colors.primary;
+    }
+    
     switch (status) {
       case 'completed':
         return colors.success;
@@ -117,9 +138,14 @@ const GlassQueue: React.FC<GlassQueueProps> = ({
   };
 
   // Get status icon
-  const getStatusIcon = (status: string) => {
+  const getStatusIcon = (status: string, job?: QueueJob) => {
     const iconSize = 16;
-    const iconColor = getStatusColor(status);
+    const iconColor = getStatusColor(status, job);
+    
+    // If it's a duplicate, show info icon instead of error
+    if (job && (status === 'failed' || status === 'cancelled') && isDuplicate(job)) {
+      return <Info size={iconSize} color={iconColor} />;
+    }
     
     switch (status) {
       case 'completed':
@@ -174,10 +200,18 @@ const GlassQueue: React.FC<GlassQueueProps> = ({
               <Text style={[styles.statValue, { color: colors.success }]}>{stats.completed}</Text>
               <Text style={styles.statLabel}>{t('admin.uploads.completed', 'Done')}</Text>
             </View>
-            <View style={styles.statItem}>
-              <Text style={[styles.statValue, { color: colors.error }]}>{stats.failed}</Text>
-              <Text style={styles.statLabel}>{t('admin.uploads.failed', 'Failed')}</Text>
-            </View>
+            {skippedCount > 0 && (
+              <View style={styles.statItem}>
+                <Text style={[styles.statValue, { color: colors.info }]}>{skippedCount}</Text>
+                <Text style={styles.statLabel}>{t('admin.uploads.skipped', 'Skipped')}</Text>
+              </View>
+            )}
+            {actualFailures > 0 && (
+              <View style={styles.statItem}>
+                <Text style={[styles.statValue, { color: colors.error }]}>{actualFailures}</Text>
+                <Text style={styles.statLabel}>{t('admin.uploads.failed', 'Failed')}</Text>
+              </View>
+            )}
           </View>
         </View>
       </View>
@@ -214,7 +248,7 @@ const GlassQueue: React.FC<GlassQueueProps> = ({
           </Text>
           <View style={styles.jobCard}>
             <View style={[styles.jobHeader, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
-              {getStatusIcon(activeJob.status)}
+              {getStatusIcon(activeJob.status, activeJob)}
               <Text style={[styles.jobFilename, { textAlign, flex: 1 }]} numberOfLines={1}>
                 {activeJob.filename}
               </Text>
@@ -286,7 +320,7 @@ const GlassQueue: React.FC<GlassQueueProps> = ({
               queue.map((job) => (
                 <View key={job.job_id} style={styles.queuedJobCard}>
                   <View style={[styles.jobHeader, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
-                    {getStatusIcon(job.status)}
+                    {getStatusIcon(job.status, job)}
                     <Text style={[styles.jobFilename, { flex: 1, textAlign }]} numberOfLines={1}>
                       {job.filename}
                     </Text>
@@ -325,30 +359,44 @@ const GlassQueue: React.FC<GlassQueueProps> = ({
               nestedScrollEnabled 
               showsVerticalScrollIndicator={false}
             >
-              {recentCompleted.map((job) => (
-                <View key={job.job_id} style={styles.completedJobCard}>
-                  <View style={[styles.jobHeader, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
-                    {getStatusIcon(job.status)}
-                    <Text style={[styles.jobFilename, { flex: 1, textAlign }]} numberOfLines={1}>
-                      {job.filename}
-                    </Text>
-                    <GlassBadge
-                      label={job.status}
-                      variant={job.status === 'completed' ? 'success' : 'error'}
-                    />
+              {recentCompleted.map((job) => {
+                const isJobDuplicate = isDuplicate(job);
+                const badgeVariant = job.status === 'completed' 
+                  ? 'success' 
+                  : isJobDuplicate 
+                    ? 'primary' 
+                    : 'danger';
+                
+                return (
+                  <View key={job.job_id} style={styles.completedJobCard}>
+                    <View style={[styles.jobHeader, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
+                      {getStatusIcon(job.status, job)}
+                      <Text style={[styles.jobFilename, { flex: 1, textAlign }]} numberOfLines={1}>
+                        {job.filename}
+                      </Text>
+                      <GlassBadge
+                        label={isJobDuplicate ? 'Duplicate' : job.status}
+                        variant={badgeVariant}
+                      />
+                    </View>
+                    {job.error_message && (
+                      <Text 
+                        style={[
+                          isJobDuplicate ? styles.infoText : styles.errorText
+                        ]} 
+                        numberOfLines={2}
+                      >
+                        {job.error_message}
+                      </Text>
+                    )}
+                    {job.completed_at && (
+                      <Text style={[styles.jobTime, { textAlign }]}>
+                        {format(new Date(job.completed_at), 'MMM d, HH:mm:ss')}
+                      </Text>
+                    )}
                   </View>
-                  {job.error_message && (
-                    <Text style={styles.errorText} numberOfLines={2}>
-                      {job.error_message}
-                    </Text>
-                  )}
-                  {job.completed_at && (
-                    <Text style={[styles.jobTime, { textAlign }]}>
-                      {format(new Date(job.completed_at), 'MMM d, HH:mm:ss')}
-                    </Text>
-                  )}
-                </View>
-              ))}
+                );
+              })}
             </ScrollView>
           )}
         </View>
@@ -522,6 +570,12 @@ const styles = StyleSheet.create({
   errorText: {
     fontSize: fontSize.sm,
     color: colors.error,
+    marginTop: spacing.xs,
+    marginBottom: spacing.xs,
+  },
+  infoText: {
+    fontSize: fontSize.sm,
+    color: colors.info || colors.primary,
     marginTop: spacing.xs,
     marginBottom: spacing.xs,
   },

@@ -608,6 +608,48 @@ async def scan_monitored_folders_now(
         )
 
 
+@router.post("/uploads/reset-cache")
+async def reset_folder_cache(
+    folder_id: Optional[str] = None,
+    current_user: User = Depends(has_permission(Permission.CONTENT_CREATE))
+):
+    """
+    Reset the 'known files' cache for monitored folders.
+    This is useful when files were previously scanned but need to be rescanned 
+    (e.g., after a drive was disconnected and reconnected).
+    
+    Args:
+        folder_id: Optional - clear cache for specific folder. If omitted, clears all.
+    """
+    try:
+        # Get count before clearing
+        count_before = folder_monitor_service.get_known_files_count(folder_id)
+        
+        # Clear the cache
+        folder_monitor_service.clear_known_files_cache(folder_id)
+        
+        if folder_id:
+            return {
+                "success": True,
+                "message": f"Cache cleared for folder {folder_id}",
+                "files_cleared": count_before,
+                "folder_id": folder_id
+            }
+        else:
+            return {
+                "success": True,
+                "message": "Cache cleared for all monitored folders",
+                "files_cleared": count_before
+            }
+        
+    except Exception as e:
+        logger.error(f"Failed to clear folder cache: {e}", exc_info=True)
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Failed to clear cache: {str(e)}"
+        )
+
+
 # ============ WEBSOCKET ============
 
 # WebSocket connections manager

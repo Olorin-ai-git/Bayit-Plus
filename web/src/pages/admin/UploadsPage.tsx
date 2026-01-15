@@ -32,6 +32,7 @@ const UploadsPage: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [triggeringUpload, setTriggeringUpload] = useState(false);
   const [clearingQueue, setClearingQueue] = useState(false);
+  const [resettingCache, setResettingCache] = useState(false);
   const [queueStats, setQueueStats] = useState<QueueStats>({
     total_jobs: 0,
     queued: 0,
@@ -281,6 +282,33 @@ const UploadsPage: React.FC = () => {
     );
   };
 
+  // Handle reset cache
+  const handleResetCache = async () => {
+    try {
+      setResettingCache(true);
+      setError(null);
+      
+      const result = await uploadsService.resetFolderCache();
+      logger.info(`✅ Cache reset: ${result.files_cleared} files cleared`, 'UploadsPage', result);
+      
+      // Show success message
+      const message = t('admin.uploads.cacheResetSuccess', { 
+        count: result.files_cleared,
+        defaultValue: `Cache cleared: ${result.files_cleared} files will be rescanned`
+      });
+      setLastTriggerResult({
+        filesFound: 0,
+        message: message
+      });
+    } catch (err: any) {
+      logger.error('Failed to reset cache', 'UploadsPage', err);
+      const errorMessage = err?.detail || err?.message || t('admin.uploads.cacheResetFailed', 'Failed to reset cache');
+      setError(errorMessage);
+    } finally {
+      setResettingCache(false);
+    }
+  };
+
   useEffect(() => {
     // Initial data fetch
     fetchData();
@@ -467,48 +495,71 @@ const UploadsPage: React.FC = () => {
   return (
     <ScrollView style={styles.container} contentContainerStyle={styles.contentContainer}>
       {/* Header */}
-      <View style={[styles.header, { flexDirection }]}>
-        <View>
+      <View style={styles.headerContainer}>
+        <View style={styles.headerText}>
           <Text style={[styles.pageTitle, { textAlign }]}>{t('admin.nav.uploads')}</Text>
           <Text style={[styles.subtitle, { textAlign }]}>
             {t('admin.uploads.systemInfoText')}
           </Text>
         </View>
-        <View style={[styles.actionButtons, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
-          <GlassButton
-            title={triggeringUpload ? t('common.loading') : t('admin.uploads.triggerUpload')}
-            variant="secondary"
-            icon={triggeringUpload ? null : <Upload size={18} color={colors.primary} />}
-            onPress={handleTriggerUpload}
-            disabled={triggeringUpload || queueStats.processing > 0 || queueStats.queued > 0}
-            style={[adminButtonStyles.secondaryButton, triggeringUpload && { opacity: 0.7 }]}
-            textStyle={adminButtonStyles.buttonText}
-          >
-            {triggeringUpload && (
-              <ActivityIndicator size="small" color={colors.primary} style={{ marginRight: spacing.sm }} />
-            )}
-          </GlassButton>
-          <GlassButton
-            title={clearingQueue ? t('common.loading') : t('admin.uploads.clearQueue')}
-            variant="destructive"
-            icon={clearingQueue ? null : <XCircle size={18} color={colors.error} />}
-            onPress={handleClearQueue}
-            disabled={clearingQueue || (queueStats.queued === 0 && queueStats.processing === 0)}
-            style={[adminButtonStyles.secondaryButton, clearingQueue && { opacity: 0.7 }]}
-            textStyle={adminButtonStyles.buttonText}
-          >
-            {clearingQueue && (
-              <ActivityIndicator size="small" color={colors.error} style={{ marginRight: spacing.sm }} />
-            )}
-          </GlassButton>
-          <GlassButton
-            title={t('admin.uploads.addFolder')}
-            variant="secondary"
-            icon={<Plus size={18} color={colors.text} />}
-            onPress={handleAddFolder}
-            style={adminButtonStyles.primaryButton}
-            textStyle={adminButtonStyles.buttonText}
-          />
+        
+        <View style={[styles.actionButtonsContainer, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
+          {/* Primary Actions */}
+          <View style={[styles.buttonGroup, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
+            <GlassButton
+              title={triggeringUpload ? t('common.loading') : t('admin.uploads.triggerUpload')}
+              variant="secondary"
+              icon={triggeringUpload ? null : <Upload size={18} color={colors.primary} />}
+              onPress={handleTriggerUpload}
+              disabled={triggeringUpload || queueStats.processing > 0 || queueStats.queued > 0}
+              style={[adminButtonStyles.secondaryButton, triggeringUpload && { opacity: 0.7 }]}
+              textStyle={adminButtonStyles.buttonText}
+            >
+              {triggeringUpload && (
+                <ActivityIndicator size="small" color={colors.primary} style={{ marginRight: spacing.sm }} />
+              )}
+            </GlassButton>
+            
+            <GlassButton
+              title={t('admin.uploads.addFolder')}
+              variant="secondary"
+              icon={<Plus size={18} color={colors.text} />}
+              onPress={handleAddFolder}
+              style={adminButtonStyles.primaryButton}
+              textStyle={adminButtonStyles.buttonText}
+            />
+          </View>
+          
+          {/* Management Actions */}
+          <View style={[styles.buttonGroup, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
+            <GlassButton
+              title={resettingCache ? t('common.loading') : t('admin.uploads.resetCache', 'Reset Cache')}
+              variant="secondary"
+              icon={resettingCache ? null : <FolderOpen size={18} color={colors.warning} />}
+              onPress={handleResetCache}
+              disabled={resettingCache}
+              style={[adminButtonStyles.secondaryButton, resettingCache && { opacity: 0.7 }]}
+              textStyle={adminButtonStyles.buttonText}
+            >
+              {resettingCache && (
+                <ActivityIndicator size="small" color={colors.warning} style={{ marginRight: spacing.sm }} />
+              )}
+            </GlassButton>
+            
+            <GlassButton
+              title={clearingQueue ? t('common.loading') : t('admin.uploads.clearQueue')}
+              variant="destructive"
+              icon={clearingQueue ? null : <XCircle size={18} color={colors.error} />}
+              onPress={handleClearQueue}
+              disabled={clearingQueue || (queueStats.queued === 0 && queueStats.processing === 0)}
+              style={[adminButtonStyles.secondaryButton, clearingQueue && { opacity: 0.7 }]}
+              textStyle={adminButtonStyles.buttonText}
+            >
+              {clearingQueue && (
+                <ActivityIndicator size="small" color={colors.error} style={{ marginRight: spacing.sm }} />
+              )}
+            </GlassButton>
+          </View>
         </View>
       </View>
 
@@ -769,12 +820,12 @@ const styles = StyleSheet.create({
     fontSize: fontSize.md,
     color: colors.textSecondary,
   },
-  header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
+  headerContainer: {
     marginBottom: spacing.lg,
     gap: spacing.lg,
+  },
+  headerText: {
+    marginBottom: spacing.md,
   },
   pageTitle: {
     fontSize: 24,
@@ -787,9 +838,15 @@ const styles = StyleSheet.create({
     marginTop: spacing.xs,
     maxWidth: 600,
   },
-  actionButtons: {
+  actionButtonsContainer: {
     flexDirection: 'row',
-    gap: spacing.md,
+    flexWrap: 'wrap',
+    gap: spacing.lg,
+    alignItems: 'center',
+  },
+  buttonGroup: {
+    flexDirection: 'row',
+    gap: spacing.sm,
     alignItems: 'center',
   },
   errorContainer: {

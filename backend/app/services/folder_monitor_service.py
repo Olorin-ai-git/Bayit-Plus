@@ -35,6 +35,32 @@ class FolderMonitorService:
         self._cache_dir = cache_base / ".bayit_hash_cache"
         self._cache_dir.mkdir(exist_ok=True)
     
+    def clear_known_files_cache(self, folder_id: Optional[str] = None):
+        """
+        Clear the in-memory known files cache.
+        Useful when you want to rescan files that were previously detected.
+        
+        Args:
+            folder_id: Optional folder ID to clear. If None, clears all.
+        """
+        if folder_id:
+            if folder_id in self._known_files:
+                count = len(self._known_files[folder_id])
+                self._known_files[folder_id].clear()
+                logger.info(f"✅ Cleared known files cache for folder {folder_id} ({count} files)")
+            else:
+                logger.warning(f"No known files cache found for folder {folder_id}")
+        else:
+            total_count = sum(len(files) for files in self._known_files.values())
+            self._known_files.clear()
+            logger.info(f"✅ Cleared all known files caches ({total_count} files)")
+    
+    def get_known_files_count(self, folder_id: Optional[str] = None) -> int:
+        """Get count of known files for a folder or all folders"""
+        if folder_id:
+            return len(self._known_files.get(folder_id, set()))
+        return sum(len(files) for files in self._known_files.values())
+    
     def _get_cache_file(self, folder_id: str) -> Path:
         """Get cache file path for a monitored folder"""
         return self._cache_dir / f"{folder_id}.json"

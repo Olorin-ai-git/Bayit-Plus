@@ -72,6 +72,7 @@ export interface QueueStats {
   completed: number;
   failed: number;
   cancelled: number;
+  skipped?: number; // Duplicates and informational skips
   total_size_bytes: number;
   uploaded_bytes: number;
 }
@@ -143,4 +144,13 @@ export const deleteMonitoredFolder = async (folderId: string): Promise<void> => 
 export const triggerUploadScan = async (folderId?: string): Promise<{ message: string; files_found: number }> => {
   const params = folderId ? { folder_id: folderId } : {};
   return uploadsApi.post('/admin/uploads/scan-now', null, { params });
+};
+
+/**
+ * Reset the 'known files' cache for monitored folders
+ * This forces a rescan of files that were previously detected
+ */
+export const resetFolderCache = async (folderId?: string): Promise<{ success: boolean; message: string; files_cleared: number }> => {
+  const params = folderId ? { folder_id: folderId } : {};
+  return uploadsApi.post('/admin/uploads/reset-cache', null, { params });
 };

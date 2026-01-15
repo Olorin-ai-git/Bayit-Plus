@@ -74,6 +74,7 @@ export const colors = {
   success: success.DEFAULT,           // #10b981
   warning: warning.DEFAULT,           // #f59e0b
   error: error.DEFAULT,               // #ef4444
+  info: primary.DEFAULT,              // #a855f7 (using primary purple for info)
   live: live,                         // #ef4444
   gold: gold,                         // #fbbf24
   

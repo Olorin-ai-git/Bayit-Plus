@@ -771,13 +771,36 @@ class UploadService:
         # Efficiently count by status using database queries (not fetching all records)
         from beanie.operators import In
         
+        # Get all failed/cancelled jobs to categorize them as actual failures vs duplicates
+        failed_and_cancelled = await UploadJob.find(
+            In(UploadJob.status, [UploadStatus.FAILED, UploadStatus.CANCELLED])
+        ).to_list()
+        
+        # Separate duplicates (informational skips) from actual failures
+        skipped_count = 0
+        actual_failed_count = 0
+        
+        for job in failed_and_cancelled:
+            if job.error_message:
+                error_lower = job.error_message.lower()
+                # Check if it's a duplicate (informational skip)
+                if ('duplicate' in error_lower or 
+                    'already in library' in error_lower or 
+                    'already exists' in error_lower):
+                    skipped_count += 1
+                else:
+                    actual_failed_count += 1
+            else:
+                actual_failed_count += 1
+        
         stats = QueueStats(
             total_jobs=await UploadJob.count(),
             queued=await UploadJob.find(UploadJob.status == UploadStatus.QUEUED).count(),
             processing=await UploadJob.find(In(UploadJob.status, [UploadStatus.PROCESSING, UploadStatus.UPLOADING])).count(),
             completed=await UploadJob.find(UploadJob.status == UploadStatus.COMPLETED).count(),
-            failed=await UploadJob.find(UploadJob.status == UploadStatus.FAILED).count(),
-            cancelled=await UploadJob.find(UploadJob.status == UploadStatus.CANCELLED).count(),
+            failed=actual_failed_count,  # Only actual failures
+            cancelled=0,  # Included in failed or skipped already
+            skipped=skipped_count,  # Duplicates and informational skips
             total_size_bytes=0,  # Not displayed in UI, skipping expensive calculation
             uploaded_bytes=0,    # Not displayed in UI, skipping expensive calculation
         )

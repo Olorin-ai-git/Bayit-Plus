@@ -312,6 +312,7 @@ class QueueStats(BaseModel):
     completed: int = 0
     failed: int = 0
     cancelled: int = 0
+    skipped: int = 0  # Duplicates and informational skips
     total_size_bytes: int = 0
     uploaded_bytes: int = 0
 

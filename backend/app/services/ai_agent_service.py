@@ -2367,14 +2367,23 @@ Your mission: Focus EXCLUSIVELY on subtitle acquisition and maintenance:
 4. **Prioritize** most recent content and high-view items
 5. **Track progress** toward 100% subtitle coverage
 
-**Strategy:**
-- Check 50-100 items for missing subtitles
-- Extract ALL embedded subtitles found
-- Download 20 subtitles from OpenSubtitles (daily quota)
-- Use batch_download_subtitles for efficiency
-- Report progress toward subtitle completion goal
+**Strategy - SYSTEMATIC SUBTITLE ACQUISITION:**
+1. **Get ALL Content IDs:** Use list_content_items to get complete list of all items
+2. **Process in Batches:** Process 20-30 movies per batch_download_subtitles call
+3. **Loop Until Done:** Continue calling batch_download_subtitles with next batch until ALL items processed
+4. **Embedded First:** batch_download_subtitles automatically tries embedded subtitles before OpenSubtitles
+5. **Track Progress:** After each batch, report how many items left to process
 
-**Budget:** You have 100 iterations and $5 budget - focus on subtitles!
+**Example Workflow:**
+- Call list_content_items(limit=109) → Get all content IDs
+- Split into batches of 20-30 IDs
+- batch_download_subtitles(content_ids=batch1[20 IDs], languages=["he","en","es"])
+- batch_download_subtitles(content_ids=batch2[20 IDs], languages=["he","en","es"])
+- batch_download_subtitles(content_ids=batch3[20 IDs], languages=["he","en","es"])
+- Continue until ALL items processed
+
+**Daily Quota:** OpenSubtitles allows 1500 downloads/day. You can process ~150-200 movies (3 languages each).
+**Budget:** You have 100 iterations and $5 budget - focus ONLY on subtitles! No other tasks.
 """,
         "ai_agent": """
 **AUDIT TYPE: Manual AI Agent Audit**
@@ -2384,24 +2393,103 @@ Balance between metadata fixes, subtitle acquisition, and quality checks.
 """,
     }
     
-    audit_specific_instruction = audit_instructions.get(audit_type, audit_instructions["ai_agent"])
+    # TASK-SPECIFIC PROMPTS: Override based on user selections
+    # Priority: Specific task filters override audit_type
     
-    # Build filter instructions
-    filter_instructions = ""
-    if last_24_hours_only or cyb_titles_only or tmdb_posters_only or opensubtitles_enabled:
-        filter_instructions = "\n**🎯 SPECIAL FILTERS ACTIVE:**\n"
-        if last_24_hours_only:
-            filter_instructions += "- ⏰ **Last 24 Hours Only**: Focus ONLY on content added/modified in the last 24 hours\n"
-        if cyb_titles_only:
-            filter_instructions += "- 🧹 **Dirty Titles Extraction Mode**: Focus ONLY on titles that need cleaning (titles with .mp4, .mkv, .avi, 1080p, 720p, [MX], XviD, MDMA, BoK, [Hebrew], or other junk text/file extensions). Use clean_title tool to extract clean titles from messy filenames. This is NOT about finding titles containing 'CYB' - it's about finding and cleaning dirty/messy titles with technical artifacts.\n"
-        if tmdb_posters_only:
-            filter_instructions += "- 🖼️ **TMDB Posters/Metadata Only**: Focus ONLY on adding/updating TMDB posters and metadata. Skip subtitle checks.\n"
+    if tmdb_posters_only:
+        # TMDB POSTERS/METADATA ONLY MODE
+        audit_specific_instruction = """**TASK: TMDB Posters & Metadata ONLY**
+
+**Your ONLY mission:** Add/update TMDB posters and metadata for content items.
+
+**What to do:**
+1. Get ALL content items: `list_content_items(limit=100)`
+2. For EACH item:
+   - If title is dirty (.mp4, 1080p, [MX], etc) → `clean_title` FIRST
+   - Search TMDB: `search_tmdb(title, year, content_type)`
+   - Get poster: `fix_missing_poster(content_id, tmdb_id)`
+   - Get metadata: `fix_missing_metadata(content_id, tmdb_id)`
+3. Process ALL items systematically
+
+**What NOT to do:**
+- ❌ Skip subtitle checks entirely
+- ❌ Skip category checks
+- ❌ Skip stream URL validation
+- ❌ Skip storage calculations
+
+**Focus:** ONLY posters and metadata. Nothing else."""
+        filter_instructions = ""
+        
+    elif cyb_titles_only:
+        # TITLE CLEANING ONLY MODE
+        audit_specific_instruction = """**TASK: Title Cleaning ONLY**
+
+**Your ONLY mission:** Find and clean dirty titles (file artifacts, resolutions, codec names).
+
+**What to do:**
+1. Get ALL content items: `list_content_items(limit=100)`
+2. Find items with dirty titles containing:
+   - File extensions: .mp4, .mkv, .avi
+   - Resolutions: 1080p, 720p, 4K, HD
+   - Codec/Release: [MX], XviD, MDMA, BoK, [Hebrew]
+   - Other junk: WEB-DL, BluRay, etc.
+3. For each dirty title:
+   - Clean it: `clean_title(content_id, current_title)`
+   - Verify with TMDB: `search_tmdb(cleaned_title)`
+4. Process ALL dirty titles
+
+**What NOT to do:**
+- ❌ Skip items with clean titles
+- ❌ Don't check posters/metadata
+- ❌ Don't check subtitles
+
+**Focus:** ONLY title cleaning. Nothing else."""
+        filter_instructions = ""
+        
+    elif audit_type == "daily_maintenance" or opensubtitles_enabled:
+        # SUBTITLES ONLY MODE (keep existing subtitle-focused prompt)
+        audit_specific_instruction = audit_instructions.get("daily_maintenance")
+        filter_instructions = ""
         if opensubtitles_enabled:
-            filter_instructions += "- 🎬 **OpenSubtitles Enabled**: OpenSubtitles API is available for subtitle retrieval. Use search_external_subtitles and download_external_subtitle tools. Daily quota: 1500 downloads.\n"
-        filter_instructions += "\n"
+            audit_specific_instruction += "\n\n**🎬 OpenSubtitles API ENABLED:** You have access to 1500 downloads/day. Use batch_download_subtitles aggressively!\n"
+            
+    else:
+        # COMPREHENSIVE MODE (default)
+        audit_specific_instruction = audit_instructions.get(audit_type, audit_instructions["ai_agent"])
+        filter_instructions = ""
+        if last_24_hours_only:
+            filter_instructions += "\n**⏰ TIME FILTER:** Focus ONLY on content added/modified in the last 24 hours\n"
+    
+    # Determine if this is a task-specific audit or comprehensive audit
+    is_task_specific = tmdb_posters_only or cyb_titles_only or (audit_type == "daily_maintenance")
     
     # Initial prompt for Claude (in English as instructions, Claude responds in requested language)
-    initial_prompt = f"""You are an autonomous AI Librarian for Bayit+, an Israeli streaming platform.
+    if is_task_specific:
+        # TASK-SPECIFIC MODE: Minimal, focused instructions
+        initial_prompt = f"""You are an autonomous AI Librarian for Bayit+, an Israeli streaming platform.
+
+{language_instruction}
+
+{audit_specific_instruction}
+
+**Processing Strategy:**
+1. Get ALL content items: `list_content_items(limit=100, skip=0)`
+2. If `has_more: true`, continue with skip=100, skip=200, etc.
+3. Process EVERY item systematically
+4. Report progress regularly
+5. Complete ALL items before finishing
+
+**Available Tools:** Use ONLY the tools needed for this specific task. Ignore irrelevant tools.
+
+**Rules:**
+- Stay focused on the assigned task
+- Don't check or fix things outside your task scope
+- Process systematically through ALL items
+- Report final summary when done
+"""
+    else:
+        # COMPREHENSIVE MODE: Full workflow instructions
+        initial_prompt = f"""You are an autonomous AI Librarian for Bayit+, an Israeli streaming platform.
 
 {language_instruction}
 
@@ -2423,18 +2511,26 @@ Balance between metadata fixes, subtitle acquisition, and quality checks.
 8. **EIGHTH:** If still missing subtitles, check external quota → Use check_subtitle_quota
 9. **NINTH:** If quota available, search external sources → Use search_external_subtitles
 10. **TENTH:** If found, download external subtitles → Use download_external_subtitle
-11. **ELEVENTH:** For batch operations, use batch_download_subtitles (respects 20/day limit)
+11. **ELEVENTH:** For batch operations, use batch_download_subtitles with 20-30 content IDs at a time
 12. **TWELFTH:** Manage podcasts - sync latest episodes and keep only 3 most recent → Use manage_podcast_episodes
 13. **THIRTEENTH:** Check for other issues (categorization, broken URLs)
 
 **What You Must Do:**
-1. **BATCH PROCESSING STRATEGY:** Process ALL items in the library in batches of 100
-   - Call list_content_items with limit=100, skip=0
+1. **BATCH PROCESSING STRATEGY:** Process ALL items in the library systematically
+   - Call list_content_items with limit=100, skip=0 to get first batch
    - Process those 100 items
    - If response has "has_more": true, call list_content_items with skip=100
    - Continue incrementing skip by 100 until has_more is false
    - This ensures comprehensive coverage of the entire library
-2. **MANDATORY - Check each item for (IN THIS ORDER):**
+
+2. **SUBTITLE BATCH PROCESSING:** When using batch_download_subtitles:
+   - Get ALL content IDs upfront (use list_content_items)
+   - Process 20-30 movies per batch (not 2-5!)
+   - Loop until ALL items are processed or quota exhausted
+   - Don't stop after first batch - continue systematically
+   - OpenSubtitles quota: 1500 downloads/day = ~150-200 movies (3 languages each)
+
+3. **MANDATORY - Check each item for (IN THIS ORDER):**
    - 🔥 **HIGHEST PRIORITY:** Missing thumbnail/poster image
    - 🔥 **HIGHEST PRIORITY:** Missing metadata (description, genre, imdb_id, tmdb_id, cast, director)
    - 🔥 **HIGHEST PRIORITY:** Missing required subtitles (English, Hebrew, Spanish)
@@ -2444,9 +2540,9 @@ Balance between metadata fixes, subtitle acquisition, and quality checks.
    - ✅ Embedded subtitles not extracted from MKV files
    - ✅ Incorrect categorization
    - ✅ Broken streaming URLs
-3. **IMPORTANT - Logging:** Always document what you're checking and what you found
-4. **CRITICAL:** Always clean titles BEFORE trying to fix posters/metadata (TMDB needs clean titles to search!)
-5. Fix issues you're confident about (>90% confidence for recategorization, 100% for poster/metadata)
+4. **IMPORTANT - Logging:** Always document what you're checking and what you found
+5. **CRITICAL:** Always clean titles BEFORE trying to fix posters/metadata (TMDB needs clean titles to search!)
+6. Fix issues you're confident about (>90% confidence for recategorization, 100% for poster/metadata)
 6. Flag items for manual review when uncertain
 7. **IMPORTANT:** If you find severe or critical issues - send email alert to admins
 8. Adapt your strategy based on what you discover

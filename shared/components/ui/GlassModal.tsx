@@ -176,9 +176,9 @@ export const GlassModal: React.FC<GlassModalProps> = ({
             styles.glassBorder,
             {
               // @ts-ignore - Web-specific CSS properties
-              backdropFilter: 'blur(20px)',
-              WebkitBackdropFilter: 'blur(20px)',
-              backgroundColor: 'rgba(26, 26, 46, 0.95)',
+              backdropFilter: 'blur(24px) saturate(180%)',
+              WebkitBackdropFilter: 'blur(24px) saturate(180%)',
+              backgroundColor: 'rgba(20, 20, 35, 0.92)',
             },
           ]}
         >
@@ -220,49 +220,60 @@ export const GlassModal: React.FC<GlassModalProps> = ({
 const styles = StyleSheet.create({
   overlay: {
     flex: 1,
-    backgroundColor: 'rgba(0, 0, 0, 0.6)',
+    backgroundColor: 'rgba(0, 0, 0, 0.75)',
     justifyContent: 'center',
     alignItems: 'center',
     padding: spacing.lg,
   },
   container: {
     width: '100%',
-    maxWidth: 400,
-    borderRadius: borderRadius.xl,
+    maxWidth: 440,
+    borderRadius: borderRadius.xl + 4,
     overflow: 'hidden',
+    // @ts-ignore - Web-specific CSS
+    boxShadow: Platform.OS === 'web' ? '0 20px 60px rgba(0, 0, 0, 0.5), 0 0 1px rgba(255, 255, 255, 0.1) inset' : undefined,
+    elevation: 24,
   },
   containerWide: {
     maxWidth: 600,
   },
   glassBorder: {
     borderWidth: 1,
-    borderColor: colors.glassBorder,
+    borderColor: 'rgba(255, 255, 255, 0.08)',
   },
   accentBar: {
-    height: 4,
+    height: 3,
     width: '100%',
+    // @ts-ignore - Web-specific CSS
+    boxShadow: Platform.OS === 'web' ? '0 2px 8px currentColor' : undefined,
   },
   contentWrapper: {
-    padding: spacing.xl,
+    padding: spacing.xl * 1.5,
+    paddingTop: spacing.xl * 2,
+    paddingBottom: spacing.xl,
     alignItems: 'center',
   },
   iconContainer: {
-    width: 64,
-    height: 64,
-    borderRadius: 32,
+    width: 80,
+    height: 80,
+    borderRadius: 40,
     justifyContent: 'center',
     alignItems: 'center',
-    marginBottom: spacing.md,
+    marginBottom: spacing.lg,
+    // @ts-ignore - Web-specific CSS
+    boxShadow: Platform.OS === 'web' ? '0 8px 32px rgba(0, 0, 0, 0.3)' : undefined,
+    elevation: 8,
   },
   icon: {
-    fontSize: 32,
+    fontSize: 40,
   },
   title: {
-    fontSize: fontSize.lg,
-    fontWeight: 'bold',
+    fontSize: 28,
+    fontWeight: '700',
     color: colors.text,
-    marginBottom: spacing.sm,
+    marginBottom: spacing.md,
     textAlign: 'center',
+    letterSpacing: -0.5,
   },
   dialogTitle: {
     fontSize: fontSize.xl,
@@ -272,36 +283,46 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   message: {
-    fontSize: fontSize.md,
+    fontSize: 16,
     color: colors.textSecondary,
     textAlign: 'center',
-    marginBottom: spacing.lg,
-    lineHeight: 22,
+    marginBottom: spacing.xl,
+    lineHeight: 24,
+    maxWidth: 340,
+    opacity: 0.9,
   },
   buttonContainer: {
     flexDirection: 'row',
-    gap: spacing.sm,
+    gap: spacing.md,
     width: '100%',
+    marginTop: spacing.sm,
   },
   button: {
     flex: 1,
-    paddingVertical: spacing.md,
+    paddingVertical: spacing.md + 4,
     paddingHorizontal: spacing.lg,
-    borderRadius: borderRadius.md,
+    borderRadius: borderRadius.lg,
     alignItems: 'center',
+    // @ts-ignore - Web-specific CSS
+    boxShadow: Platform.OS === 'web' ? '0 4px 12px rgba(0, 0, 0, 0.15)' : undefined,
+    elevation: 3,
   },
   buttonDestructive: {
     backgroundColor: colors.error,
   },
   buttonCancel: {
-    backgroundColor: 'transparent',
+    backgroundColor: 'rgba(255, 255, 255, 0.05)',
     borderWidth: 1,
     borderColor: colors.glassBorder,
+    // @ts-ignore
+    boxShadow: Platform.OS === 'web' ? 'none' : undefined,
+    elevation: 0,
   },
   buttonText: {
-    fontSize: fontSize.md,
+    fontSize: 16,
     fontWeight: '600',
     color: colors.text,
+    letterSpacing: 0.3,
   },
   buttonTextCancel: {
     color: colors.textSecondary,
@@ -326,19 +347,20 @@ const styles = StyleSheet.create({
     paddingBottom: spacing.md,
   },
   closeButton: {
-    width: 32,
-    height: 32,
-    borderRadius: 16,
-    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+    width: 36,
+    height: 36,
+    borderRadius: 18,
+    backgroundColor: 'rgba(255, 255, 255, 0.05)',
     justifyContent: 'center',
     alignItems: 'center',
     borderWidth: 1,
-    borderColor: colors.glassBorder,
+    borderColor: 'rgba(255, 255, 255, 0.1)',
+    marginLeft: spacing.md,
   },
   closeButtonText: {
-    fontSize: fontSize.xl,
+    fontSize: 20,
     color: colors.textSecondary,
-    fontWeight: '300',
+    fontWeight: '400',
     lineHeight: 24,
   },
 });
