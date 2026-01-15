@@ -22,8 +22,8 @@ export default function TVLoginPage() {
   const token = searchParams.get('token');
 
   const [pageState, setPageState] = useState<PageState>('verifying');
-  const [email, setEmail] = useState('admin@olorin.ai');
-  const [password, setPassword] = useState('Jersey1973!');
+  const [email, setEmail] = useState(import.meta.env.VITE_DEV_DEFAULT_EMAIL || '');
+  const [password, setPassword] = useState(import.meta.env.VITE_DEV_DEFAULT_PASSWORD || '');
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
 

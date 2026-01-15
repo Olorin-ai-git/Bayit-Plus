@@ -25,8 +25,8 @@ export default function LoginPage() {
   const location = useLocation();
   const { login, loginWithGoogle, isLoading } = useAuthStore();
 
-  const [email, setEmail] = useState('admin@olorin.ai');
-  const [password, setPassword] = useState('Jersey1973!');
+  const [email, setEmail] = useState(import.meta.env.VITE_DEV_DEFAULT_EMAIL || '');
+  const [password, setPassword] = useState(import.meta.env.VITE_DEV_DEFAULT_PASSWORD || '');
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
   const [showLanguageMenu, setShowLanguageMenu] = useState(false);
