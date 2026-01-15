@@ -1,46 +1,19 @@
 steps:
-  # Configure Docker authentication for Artifact Registry
-  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
-    entrypoint: 'bash'
+  # Build and push using Kaniko (handles auth automatically)
+  - name: 'gcr.io/kaniko-project/executor:latest'
     args:
-      - '-c'
-      - |
-        gcloud auth configure-docker us-east1-docker.pkg.dev --quiet
-    id: 'docker-auth'
-
-  # Build container image
-  - name: 'gcr.io/cloud-builders/docker'
-    args:
-      - 'build'
-      - '-f'
-      - 'backend/Dockerfile'
-      - '-t'
-      - 'us-east1-docker.pkg.dev/$PROJECT_ID/bayit-plus/backend:$BUILD_ID'
-      - '-t'
-      - 'us-east1-docker.pkg.dev/$PROJECT_ID/bayit-plus/backend:latest'
-      - '--cache-from'
-      - 'us-east1-docker.pkg.dev/$PROJECT_ID/bayit-plus/backend:latest'
-      - 'backend/'
-    id: 'build-image'
-    waitFor: ['docker-auth']
-
-  # Push to Artifact Registry (BUILD_ID tag)
-  - name: 'gcr.io/cloud-builders/docker'
-    args:
-      - 'push'
-      - 'us-east1-docker.pkg.dev/$PROJECT_ID/bayit-plus/backend:$BUILD_ID'
-    id: 'push-build-id-image'
-
-  # Push to Artifact Registry (latest tag)
-  - name: 'gcr.io/cloud-builders/docker'
-    args:
-      - 'push'
-      - 'us-east1-docker.pkg.dev/$PROJECT_ID/bayit-plus/backend:latest'
-    id: 'push-latest-image'
+      - '--dockerfile=backend/Dockerfile'
+      - '--context=dir://backend'
+      - '--destination=us-east1-docker.pkg.dev/$PROJECT_ID/bayit-plus/backend:$BUILD_ID'
+      - '--destination=us-east1-docker.pkg.dev/$PROJECT_ID/bayit-plus/backend:latest'
+      - '--cache=true'
+      - '--cache-ttl=24h'
+    id: 'build-and-push'
 
   # Deploy to Cloud Run
   - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
     entrypoint: gcloud
+    waitFor: ['build-and-push']
     args:
       - 'run'
       - 'deploy'
