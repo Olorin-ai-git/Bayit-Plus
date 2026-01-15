@@ -19,17 +19,23 @@ async def log_to_database(
     audit_report: "AuditReport",
     level: str,
     message: str,
-    source: str = "AI Agent"
+    source: str = "AI Agent",
+    item_name: str = None,
+    content_id: str = None,
+    metadata: dict = None
 ):
     """
-    Append a log entry to the audit report's execution_logs array.
-    This enables real-time log streaming to the UI.
+    Append a structured log entry to the audit report's execution_logs array.
+    This enables real-time log streaming to the UI with structured data.
 
     Args:
         audit_report: The AuditReport document to update
         level: Log level ("info", "warn", "error", "success", "debug", "trace")
-        message: Log message
+        message: Log message (keep concise, put details in metadata)
         source: Source of the log (default "AI Agent")
+        item_name: Name of the content item being processed (movie/show title)
+        content_id: ID of the content item being processed
+        metadata: Additional structured data (tool results, parameters, etc.)
     """
     try:
         log_entry = {
@@ -39,6 +45,14 @@ async def log_to_database(
             "message": message,
             "source": source
         }
+        
+        # Add optional structured fields
+        if item_name:
+            log_entry["itemName"] = item_name
+        if content_id:
+            log_entry["contentId"] = content_id
+        if metadata:
+            log_entry["metadata"] = metadata
 
         # Append to execution_logs array
         audit_report.execution_logs.append(log_entry)
@@ -47,7 +61,8 @@ async def log_to_database(
         await audit_report.save()
 
         # Also log to console for debugging
-        logger.info(f"[{level.upper()}] {source}: {message}")
+        item_info = f" [{item_name}]" if item_name else ""
+        logger.info(f"[{level.upper()}] {source}{item_info}: {message}")
 
     except Exception as e:
         # Don't let logging failures break the audit

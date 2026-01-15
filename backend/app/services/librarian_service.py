@@ -8,6 +8,7 @@ import random
 from datetime import datetime, timedelta
 from typing import List, Dict, Any, Optional
 from dataclasses import dataclass, field
+from beanie import PydanticObjectId
 
 from app.models.content import Content, LiveChannel, Podcast, PodcastEpisode, RadioStation, Category
 from app.models.librarian import AuditReport, LibrarianAction
@@ -72,7 +73,16 @@ async def run_daily_audit(
 
     # Get or create audit report
     if audit_id:
-        audit_report = await AuditReport.get(audit_id)
+        try:
+            # Try to find by _id first (MongoDB ObjectId)
+            try:
+                object_id = PydanticObjectId(audit_id)
+                audit_report = await AuditReport.get(object_id)
+            except:
+                # If not a valid ObjectId, search by audit_id field
+                audit_report = await AuditReport.find_one({"audit_id": audit_id})
+        except Exception as e:
+            raise ValueError(f"Invalid audit_id format or not found: {e}")
         if not audit_report:
             raise ValueError(f"Audit report with id {audit_id} not found")
         logger.info(f"Using existing audit report: {audit_id}")

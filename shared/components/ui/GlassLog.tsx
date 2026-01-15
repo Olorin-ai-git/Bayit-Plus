@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
 import { View, Text, StyleSheet, ScrollView, Pressable, TextInput, Animated } from 'react-native';
-import { Search, X, ChevronDown, ChevronUp, Download, Trash2, Copy, CheckCircle, XCircle } from 'lucide-react';
+import { Search, X, ChevronDown, ChevronUp, Download, Trash2, Copy, CheckCircle, XCircle, Film } from 'lucide-react';
 import Clipboard from '@react-native-clipboard/clipboard';
 import { colors, spacing, borderRadius } from '../../theme';
 import { GlassView } from './GlassView';
@@ -16,6 +16,8 @@ export interface LogEntry {
   message: string;
   source?: string;
   metadata?: Record<string, any>;
+  itemName?: string; // Content item name (movie/show title)
+  contentId?: string; // Content item ID
 }
 
 interface GlassLogProps {
@@ -84,7 +86,15 @@ export const GlassLog: React.FC<GlassLogProps> = ({
   const [isExpanded, setIsExpanded] = useState(true);
   const scrollViewRef = useRef<ScrollView>(null);
   const [displayedText, setDisplayedText] = useState<Record<string, string>>({});
-  const [logOpacities, setLogOpacities] = useState<Record<string, Animated.Value>>({});
+  const [logAnimations, setLogAnimations] = useState<Record<string, {
+    translateY: Animated.Value;
+    opacity: Animated.Value;
+  }>>({});
+  const [autoScrollEnabled, setAutoScrollEnabled] = useState(autoScroll);
+  const [isNearTop, setIsNearTop] = useState(true);
+  const isUserScrollingRef = useRef(false);
+  const previousLogIdsRef = useRef<Set<string>>(new Set());
+  const [newLogIds, setNewLogIds] = useState<Set<string>>(new Set());
 
   // Toast notification state
   const [toastVisible, setToastVisible] = useState(false);
@@ -92,99 +102,105 @@ export const GlassLog: React.FC<GlassLogProps> = ({
   const [toastType, setToastType] = useState<'success' | 'danger'>('success');
   const toastOpacity = useRef(new Animated.Value(0)).current;
 
-  // Typewriter animation effect - sequential line by line
+  // Slide-down and fade-in animation when new log entries are added
   useEffect(() => {
-    if (!animateEntries) {
-      // If animation is disabled, show full text immediately
-      const fullText: Record<string, string> = {};
-      const fullOpacities: Record<string, Animated.Value> = {};
-      logs.forEach(log => {
-        fullText[log.id] = log.message;
-        fullOpacities[log.id] = new Animated.Value(1);
-      });
-      setDisplayedText(fullText);
-      setLogOpacities(fullOpacities);
-      return;
-    }
-
-    // Animate each log entry SEQUENTIALLY with typewriter effect
-    const timers: NodeJS.Timeout[] = [];
-    let cumulativeDelay = 0;
+    const fullText: Record<string, string> = {};
+    const newAnimations: Record<string, { translateY: Animated.Value; opacity: Animated.Value }> = { ...logAnimations };
+    const currentLogIds = new Set(logs.map(log => log.id));
+    const previousLogIds = previousLogIdsRef.current;
     
-    logs.forEach((log, index) => {
-      const message = log.message;
-      const charCount = message.length;
-      const animationDuration = charCount * 50;
-      const fadeInDuration = 300;
+    // Find new log entries (ones that weren't in the previous set)
+    const newLogIdsArray = logs.filter(log => !previousLogIds.has(log.id)).map(log => log.id);
+    const hasNewLogs = newLogIdsArray.length > 0;
+    
+    setNewLogIds(new Set(newLogIdsArray));
+    
+    logs.forEach((log) => {
+      fullText[log.id] = log.message;
       
-      // Don't re-animate if already fully displayed
-      if (displayedText[log.id] === log.message) {
-        // Keep existing opacity
-        if (!logOpacities[log.id]) {
-          setLogOpacities(prev => ({
-            ...prev,
-            [log.id]: new Animated.Value(1),
-          }));
+      const isNewLog = newLogIdsArray.includes(log.id);
+      
+      // Initialize animation values if they don't exist
+      if (!newAnimations[log.id]) {
+        if (isNewLog) {
+          // New log: fade in from transparent
+          newAnimations[log.id] = {
+            translateY: new Animated.Value(0),
+            opacity: new Animated.Value(0),
+          };
+          
+          // Fade in the new log
+          Animated.timing(newAnimations[log.id].opacity, {
+            toValue: 1,
+            duration: 400,
+            useNativeDriver: true,
+          }).start();
+        } else if (hasNewLogs) {
+          // Existing log when new logs are added: start pushed down, then slide to normal position
+          newAnimations[log.id] = {
+            translateY: new Animated.Value(80), // Start 80px down
+            opacity: new Animated.Value(1),
+          };
+          
+          // Slide up to normal position
+          Animated.spring(newAnimations[log.id].translateY, {
+            toValue: 0,
+            friction: 8,
+            tension: 40,
+            useNativeDriver: true,
+          }).start();
+        } else {
+          // Initial load or no new logs: no animation
+          newAnimations[log.id] = {
+            translateY: new Animated.Value(0),
+            opacity: new Animated.Value(1),
+          };
         }
-        // Still add to cumulative delay so subsequent logs wait
-        cumulativeDelay += animationDuration + fadeInDuration;
-        return;
       }
-      
-      // Initialize opacity for this log (only if not already initialized)
-      if (!logOpacities[log.id]) {
-        const opacity = new Animated.Value(0);
-        setLogOpacities(prev => ({
-          ...prev,
-          [log.id]: opacity,
-        }));
-      }
-      
-      // Start animation after previous log completes
-      const startTimer = setTimeout(() => {
-        const opacity = logOpacities[log.id] || new Animated.Value(0);
-        
-        // Fade in the log entry first
-        Animated.timing(opacity, {
-          toValue: 1,
-          duration: fadeInDuration,
-          useNativeDriver: true,
-        }).start();
-        
-        // Then start typewriter effect
-        let currentIndex = 0;
-        const interval = setInterval(() => {
-          if (currentIndex <= message.length) {
-            setDisplayedText(prev => ({
-              ...prev,
-              [log.id]: message.substring(0, currentIndex),
-            }));
-            currentIndex++;
-          } else {
-            clearInterval(interval);
-          }
-        }, 50); // 50ms per character
-        
-        timers.push(interval);
-      }, cumulativeDelay);
-      
-      timers.push(startTimer);
-      
-      // Add this log's animation time + fade in time to cumulative delay
-      cumulativeDelay += animationDuration + fadeInDuration;
     });
-
-    return () => {
-      timers.forEach(timer => clearTimeout(timer as any));
-    };
-  }, [logs, animateEntries, logOpacities]);
+    
+    setDisplayedText(fullText);
+    setLogAnimations(newAnimations);
+    
+    // Update previous log IDs for next comparison
+    previousLogIdsRef.current = currentLogIds;
+    
+    // Clear new log IDs after animation
+    setTimeout(() => setNewLogIds(new Set()), 400);
+  }, [logs]);
 
   // Auto-scroll to top when new logs arrive (newest logs are at the top)
   useEffect(() => {
-    if (autoScroll && scrollViewRef.current) {
+    if (autoScrollEnabled && scrollViewRef.current && !isUserScrollingRef.current) {
       scrollViewRef.current.scrollTo({ y: 0, animated: true });
     }
-  }, [logs, autoScroll]);
+  }, [logs, autoScrollEnabled]);
+
+  // Handle scroll event to detect user scrolling
+  const handleScroll = (event: any) => {
+    const scrollY = event.nativeEvent.contentOffset.y;
+    const isAtTop = scrollY <= 50; // Within 50px of top
+    
+    setIsNearTop(isAtTop);
+    
+    // If user scrolled away from top, disable auto-scroll
+    if (!isAtTop && autoScrollEnabled) {
+      isUserScrollingRef.current = true;
+      setAutoScrollEnabled(false);
+    }
+    
+    // If user scrolled back to top, re-enable auto-scroll
+    if (isAtTop && !autoScrollEnabled) {
+      isUserScrollingRef.current = false;
+      setAutoScrollEnabled(true);
+    }
+  };
+
+  const handleScrollToTop = () => {
+    isUserScrollingRef.current = false;
+    setAutoScrollEnabled(true);
+    scrollViewRef.current?.scrollTo({ y: 0, animated: true });
+  };
 
   const toggleLevel = (level: LogLevel) => {
     const newLevels = new Set(selectedLevels);
@@ -427,12 +443,15 @@ export const GlassLog: React.FC<GlassLogProps> = ({
           </View>
 
           {/* Log Entries */}
-          <ScrollView
-            ref={scrollViewRef}
-            style={[styles.logContainer, { maxHeight }]}
-            contentContainerStyle={styles.logContentContainer}
-            showsVerticalScrollIndicator={true}
-          >
+          <View style={{ position: 'relative', flex: 1 }}>
+            <ScrollView
+              ref={scrollViewRef}
+              style={[styles.logContainer, { maxHeight }]}
+              contentContainerStyle={styles.logContentContainer}
+              showsVerticalScrollIndicator={true}
+              onScroll={handleScroll}
+              scrollEventThrottle={100}
+            >
             {filteredLogs.length === 0 ? (
               <View style={styles.emptyState}>
                 <Text style={styles.emptyText}>{emptyMessage}</Text>
@@ -448,11 +467,24 @@ export const GlassLog: React.FC<GlassLogProps> = ({
                   levelLabels={levelLabels}
                   animateEntries={animateEntries}
                   displayedText={displayedText[log.id] || ''}
-                  opacity={logOpacities[log.id]}
+                  animations={logAnimations[log.id]}
+                  isNew={newLogIds.has(log.id)}
                 />
               ))
             )}
-          </ScrollView>
+            </ScrollView>
+
+            {/* Scroll to Top Button */}
+            {!autoScrollEnabled && (
+              <Pressable
+                onPress={handleScrollToTop}
+                style={styles.scrollToTopButton}
+              >
+                <ChevronUp size={20} color={colors.text} />
+                <Text style={styles.scrollToTopText}>New logs</Text>
+              </Pressable>
+            )}
+          </View>
         </>
       )}
     </GlassView>
@@ -467,7 +499,11 @@ interface LogEntryItemProps {
   levelLabels: Record<LogLevel, string>;
   animateEntries: boolean;
   displayedText: string;
-  opacity?: Animated.Value;
+  animations?: {
+    translateY: Animated.Value;
+    opacity: Animated.Value;
+  };
+  isNew?: boolean;
 }
 
 const LogEntryItem: React.FC<LogEntryItemProps> = ({
@@ -478,10 +514,14 @@ const LogEntryItem: React.FC<LogEntryItemProps> = ({
   levelLabels,
   animateEntries,
   displayedText,
-  opacity,
+  animations,
+  isNew,
 }) => {
   const [isExpanded, setIsExpanded] = useState(false);
   const levelColor = LOG_COLORS[log.level];
+
+  // Use item name from structured log entry
+  const itemName = log.itemName;
 
   const formatTimestamp = (timestamp: Date | string) => {
     const date = typeof timestamp === 'string' ? new Date(timestamp) : timestamp;
@@ -493,34 +533,21 @@ const LogEntryItem: React.FC<LogEntryItemProps> = ({
     });
   };
 
-  // Format JSON content in log messages
+  // Format message - keep it simple since backend now provides structured data
   const formatLogMessage = (message: string) => {
-    try {
-      // Try to detect and parse JSON objects or arrays in the message
-      const jsonRegex = /(\{[\s\S]*\}|\[[\s\S]*\])/g;
-      const matches = message.match(jsonRegex);
-      
-      if (matches && matches.length > 0) {
-        let formattedMessage = message;
-        matches.forEach((match) => {
-          try {
-            const parsed = JSON.parse(match);
-            const formatted = JSON.stringify(parsed, null, 2);
-            formattedMessage = formattedMessage.replace(match, `\n${formatted}\n`);
-          } catch {
-            // If parsing fails, leave it as is
-          }
-        });
-        return formattedMessage;
-      }
-      return message;
-    } catch {
-      return message;
-    }
+    // Message is already clean from backend, just return as-is
+    return message;
   };
 
   return (
-    <Animated.View style={{ opacity: opacity || 1 }}>
+    <Animated.View
+      style={{
+        opacity: animations?.opacity || 1,
+        transform: animations?.translateY
+          ? [{ translateY: animations.translateY }]
+          : [],
+      }}
+    >
       <Pressable
         onPress={() => log.metadata && setIsExpanded(!isExpanded)}
         style={[styles.logEntry, isRTL && styles.logEntryRTL]}
@@ -546,21 +573,30 @@ const LogEntryItem: React.FC<LogEntryItemProps> = ({
           {showSource && log.source && (
             <Text style={[styles.source, isRTL && styles.sourceRTL]}>[{log.source}]</Text>
           )}
+
+          {itemName && (
+            <View style={styles.itemBadge}>
+              <Film size={12} color={colors.primary} />
+              <Text style={styles.itemName}>{itemName}</Text>
+            </View>
+          )}
         </View>
 
         {/* Message */}
         <Text style={[styles.message, isRTL && styles.messageRTL]}>
-          {animateEntries ? formatLogMessage(displayedText) : formatLogMessage(log.message)}
-          {animateEntries && displayedText && displayedText !== log.message && (
-            <Text style={styles.cursor}>▊</Text>
-          )}
+          {formatLogMessage(displayedText || log.message)}
         </Text>
 
         {/* Metadata (if expanded) */}
-        {isExpanded && log.metadata && (
+        {isExpanded && log.metadata && Object.keys(log.metadata).length > 0 && (
           <View style={styles.metadata}>
+            <Text style={styles.metadataLabel}>
+              {log.metadata.tool_result ? 'Tool Result:' : 
+               log.metadata.tool_input ? 'Tool Input:' : 
+               'Metadata:'}
+            </Text>
             <Text style={styles.metadataText}>
-              {JSON.stringify(log.metadata, null, 2)}
+              {JSON.stringify(log.metadata.tool_result || log.metadata.tool_input || log.metadata, null, 2)}
             </Text>
           </View>
         )}
@@ -721,6 +757,7 @@ const styles = StyleSheet.create({
     padding: spacing.sm,
     borderBottomWidth: 1,
     borderBottomColor: 'rgba(255, 255, 255, 0.05)',
+    minWidth: 0,
   },
   logEntryRTL: {
     flexDirection: 'row-reverse',
@@ -732,6 +769,7 @@ const styles = StyleSheet.create({
   },
   logContent: {
     flex: 1,
+    minWidth: 0,
   },
   logHeader: {
     flexDirection: 'row',
@@ -768,37 +806,82 @@ const styles = StyleSheet.create({
   sourceRTL: {
     textAlign: 'right',
   },
+  itemBadge: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.xs,
+    backgroundColor: colors.primary + '20',
+    paddingHorizontal: spacing.sm,
+    paddingVertical: 3,
+    borderRadius: borderRadius.sm,
+    borderWidth: 1,
+    borderColor: colors.primary + '40',
+  } as any,
+  itemName: {
+    fontSize: 11,
+    fontWeight: '600',
+    color: colors.primary,
+    fontFamily: 'monospace',
+    maxWidth: 200,
+  } as any,
   message: {
-    fontSize: 14,
+    fontSize: 13,
     color: colors.text,
-    lineHeight: 22,
+    lineHeight: 20,
     fontFamily: 'monospace',
     whiteSpace: 'pre-wrap',
-  },
+    wordBreak: 'break-word',
+    overflowWrap: 'break-word',
+  } as any,
   messageRTL: {
     textAlign: 'right',
   },
-  cursor: {
-    color: colors.primary,
-    fontWeight: 'bold',
-    marginLeft: 2,
-    // @ts-ignore - web-only animation property
-    animationName: 'blink',
-    animationDuration: '1s',
-    animationIterationCount: 'infinite',
-    animationTimingFunction: 'step-end',
-  },
   metadata: {
     marginTop: spacing.sm,
-    padding: spacing.sm,
-    backgroundColor: 'rgba(0, 0, 0, 0.3)',
-    borderRadius: borderRadius.sm,
-    borderLeftWidth: 2,
+    padding: spacing.md,
+    backgroundColor: 'rgba(0, 0, 0, 0.4)',
+    borderRadius: borderRadius.md,
+    borderLeftWidth: 3,
     borderLeftColor: colors.primary,
   },
+  metadataLabel: {
+    fontSize: 12,
+    fontWeight: '600',
+    color: colors.primary,
+    marginBottom: spacing.xs,
+    fontFamily: 'monospace',
+  },
   metadataText: {
-    fontSize: 11,
+    fontSize: 12,
     color: colors.textSecondary,
     fontFamily: 'monospace',
+    whiteSpace: 'pre-wrap',
+    wordBreak: 'break-word',
+    overflowWrap: 'break-word',
+    lineHeight: 18,
+  } as any,
+  scrollToTopButton: {
+    position: 'absolute',
+    top: spacing.md,
+    left: '50%',
+    transform: [{ translateX: -60 }],
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.xs,
+    backgroundColor: colors.primary,
+    paddingHorizontal: spacing.md,
+    paddingVertical: spacing.sm,
+    borderRadius: borderRadius.full,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+    elevation: 10,
+    zIndex: 100,
+  } as any,
+  scrollToTopText: {
+    fontSize: 13,
+    fontWeight: '600',
+    color: colors.background,
   },
 });

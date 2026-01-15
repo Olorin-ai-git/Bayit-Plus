@@ -50,6 +50,12 @@ const UploadsPage: React.FC = () => {
   const [monitoredFolders, setMonitoredFolders] = useState<MonitoredFolder[]>([]);
   const [error, setError] = useState<string | null>(null);
   
+  // Connection status tracking
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [wsConnected, setWsConnected] = useState(false);
+  const [wsReconnecting, setWsReconnecting] = useState(false);
+  const [lastTriggerResult, setLastTriggerResult] = useState<{filesFound: number; message: string} | null>(null);
+  
   // WebSocket ref for real-time updates
   const wsRef = useRef<WebSocket | null>(null);
   const reconnectTimeoutRef = useRef<NodeJS.Timeout | null>(null);
@@ -119,8 +125,13 @@ const UploadsPage: React.FC = () => {
       const token = localStorage.getItem('token');
       if (!token) {
         logger.warn('No auth token found, skipping WebSocket connection', 'UploadsPage');
+        setIsAuthenticated(false);
+        setWsConnected(false);
         return;
       }
+
+      setIsAuthenticated(true);
+      setWsReconnecting(true);
 
       // Close existing connection
       if (wsRef.current) {
@@ -138,6 +149,8 @@ const UploadsPage: React.FC = () => {
 
       ws.onopen = () => {
         logger.info('✅ Uploads WebSocket connected', 'UploadsPage');
+        setWsConnected(true);
+        setWsReconnecting(false);
       };
 
       ws.onmessage = (event) => {
@@ -161,11 +174,14 @@ const UploadsPage: React.FC = () => {
 
       ws.onerror = (error) => {
         logger.error('[WebSocket] Connection error', 'UploadsPage', error);
+        setWsConnected(false);
       };
 
       ws.onclose = () => {
         logger.warn('[WebSocket] Connection closed, reconnecting in 5s', 'UploadsPage');
         wsRef.current = null;
+        setWsConnected(false);
+        setWsReconnecting(true);
         
         // Reconnect after 5 seconds
         reconnectTimeoutRef.current = setTimeout(() => {
@@ -176,6 +192,8 @@ const UploadsPage: React.FC = () => {
       wsRef.current = ws;
     } catch (err) {
       logger.error('[WebSocket] Failed to connect', 'UploadsPage', err);
+      setWsConnected(false);
+      setWsReconnecting(false);
     }
   }, []);
 
@@ -342,15 +360,43 @@ const UploadsPage: React.FC = () => {
     try {
       setTriggeringUpload(true);
       setError(null);
+      setLastTriggerResult(null);
+      
+      // Check authentication first
+      if (!isAuthenticated) {
+        setError(t('admin.uploads.notAuthenticated', 'Not authenticated. Please log in and try again.'));
+        return;
+      }
+      
+      // Check if there's already an active upload
+      const hasActiveUploads = queueStats.processing > 0 || queueStats.queued > 0;
+      if (hasActiveUploads) {
+        setError(
+          t('admin.uploads.uploadAlreadyRunning', 
+            'Upload scan already in progress. Please wait for current uploads to complete.'
+          )
+        );
+        return;
+      }
       
       const result = await uploadsService.triggerUploadScan();
       logger.info('Triggered upload scan', 'UploadsPage', result);
       
-      // Show success message
+      // Show clear success/info message
       if (result.files_found > 0) {
-        logger.info(t('admin.uploads.triggerUploadSuccess', { files_found: result.files_found }), 'UploadsPage');
+        const message = t('admin.uploads.triggerUploadSuccess', { files_found: result.files_found });
+        setLastTriggerResult({
+          filesFound: result.files_found,
+          message: message
+        });
+        logger.info(message, 'UploadsPage');
       } else {
-        logger.info('No new files found to upload', 'UploadsPage');
+        const message = t('admin.uploads.noFilesFound', 'No new files found in monitored folders');
+        setLastTriggerResult({
+          filesFound: 0,
+          message: message
+        });
+        logger.info(message, 'UploadsPage');
       }
       
       // Refresh data immediately to show new jobs
@@ -358,7 +404,17 @@ const UploadsPage: React.FC = () => {
       
     } catch (err: any) {
       logger.error('Error triggering upload', 'UploadsPage', err);
-      const errorMessage = err?.detail || err?.message || t('admin.uploads.triggerUploadFailed');
+      let errorMessage = err?.detail || err?.message || t('admin.uploads.triggerUploadFailed');
+      
+      // Add helpful context to error
+      if (errorMessage.includes('401') || errorMessage.includes('unauthorized')) {
+        errorMessage = t('admin.uploads.unauthorized', 'Unauthorized. Please log in again.');
+      } else if (errorMessage.includes('404')) {
+        errorMessage = t('admin.uploads.endpointNotFound', 'Upload service not available. Check server configuration.');
+      } else if (errorMessage.includes('timeout')) {
+        errorMessage = t('admin.uploads.timeout', 'Upload scan timed out. Try again or check monitored folders.');
+      }
+      
       setError(errorMessage);
     } finally {
       setTriggeringUpload(false);
@@ -392,7 +448,7 @@ const UploadsPage: React.FC = () => {
             variant="secondary"
             icon={triggeringUpload ? null : <Upload size={18} color={colors.primary} />}
             onPress={handleTriggerUpload}
-            disabled={triggeringUpload}
+            disabled={triggeringUpload || queueStats.processing > 0 || queueStats.queued > 0}
             style={[adminButtonStyles.secondaryButton, triggeringUpload && { opacity: 0.7 }]}
             textStyle={adminButtonStyles.buttonText}
           >
@@ -425,6 +481,72 @@ const UploadsPage: React.FC = () => {
       </View>
 
       {/* Error Message */}
+      {/* Connection Status Banner */}
+      {!isAuthenticated && (
+        <View style={[styles.statusBanner, styles.statusBannerError, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
+          <AlertCircle size={20} color={colors.error} />
+          <View style={{ flex: 1, marginLeft: spacing.sm }}>
+            <Text style={[styles.statusBannerTitle, { color: colors.error }]}>
+              {t('admin.uploads.notAuthenticated', 'Not Authenticated')}
+            </Text>
+            <Text style={[styles.statusBannerText, { color: colors.error }]}>
+              {t('admin.uploads.notAuthenticatedHelp', 'Please log in to upload files. Real-time updates are disabled.')}
+            </Text>
+          </View>
+        </View>
+      )}
+
+      {isAuthenticated && !wsConnected && !wsReconnecting && (
+        <View style={[styles.statusBanner, styles.statusBannerWarning, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
+          <AlertCircle size={20} color={colors.warning} />
+          <View style={{ flex: 1, marginLeft: spacing.sm }}>
+            <Text style={[styles.statusBannerTitle, { color: colors.warning }]}>
+              {t('admin.uploads.wsDisconnected', 'Real-time Updates Disabled')}
+            </Text>
+            <Text style={[styles.statusBannerText, { color: colors.warning }]}>
+              {t('admin.uploads.wsDisconnectedHelp', 'WebSocket connection failed. Queue status may be outdated. Page will auto-retry.')}
+            </Text>
+          </View>
+        </View>
+      )}
+
+      {isAuthenticated && wsReconnecting && (
+        <View style={[styles.statusBanner, styles.statusBannerInfo, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
+          <ActivityIndicator size="small" color={colors.primary} />
+          <Text style={[styles.statusBannerText, { marginLeft: spacing.sm }]}>
+            {t('admin.uploads.wsReconnecting', 'Reconnecting to real-time updates...')}
+          </Text>
+        </View>
+      )}
+
+      {lastTriggerResult && (
+        <View style={[styles.statusBanner, lastTriggerResult.filesFound > 0 ? styles.statusBannerSuccess : styles.statusBannerInfo, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
+          <View style={{ flex: 1 }}>
+            <Text style={[styles.statusBannerText, { color: lastTriggerResult.filesFound > 0 ? colors.success : colors.textMuted }]}>
+              {lastTriggerResult.message}
+            </Text>
+          </View>
+          <Pressable onPress={() => setLastTriggerResult(null)}>
+            <X size={18} color={lastTriggerResult.filesFound > 0 ? colors.success : colors.textMuted} />
+          </Pressable>
+        </View>
+      )}
+
+      {/* Show notice if uploads are active */}
+      {(queueStats.processing > 0 || queueStats.queued > 0) && !triggeringUpload && (
+        <View style={[styles.statusBanner, styles.statusBannerInfo, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
+          <ActivityIndicator size="small" color={colors.primary} />
+          <View style={{ flex: 1, marginLeft: spacing.sm }}>
+            <Text style={styles.statusBannerText}>
+              {t('admin.uploads.uploadsActiveNotice', 
+                'Uploads in progress ({{processing}} active, {{queued}} queued). New scan disabled until current batch completes.',
+                { processing: queueStats.processing, queued: queueStats.queued }
+              )}
+            </Text>
+          </View>
+        </View>
+      )}
+
       {error && (
         <View style={[styles.errorContainer, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
           <AlertCircle size={18} color={colors.error} />
@@ -666,6 +788,41 @@ const styles = StyleSheet.create({
     flex: 1,
     color: colors.error,
     fontSize: 14,
+  },
+  statusBanner: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.md,
+    padding: spacing.md,
+    borderRadius: borderRadius.md,
+    borderWidth: 1,
+    marginBottom: spacing.lg,
+  },
+  statusBannerError: {
+    backgroundColor: colors.error + '20',
+    borderColor: colors.error + '40',
+  },
+  statusBannerWarning: {
+    backgroundColor: colors.warning + '20',
+    borderColor: colors.warning + '40',
+  },
+  statusBannerSuccess: {
+    backgroundColor: colors.success + '20',
+    borderColor: colors.success + '40',
+  },
+  statusBannerInfo: {
+    backgroundColor: colors.primary + '20',
+    borderColor: colors.primary + '40',
+  },
+  statusBannerTitle: {
+    fontSize: 14,
+    fontWeight: '600',
+    marginBottom: 2,
+  },
+  statusBannerText: {
+    fontSize: 13,
+    color: colors.textMuted,
+    lineHeight: 18,
   },
   section: {
     marginBottom: spacing.lg,

@@ -6,6 +6,7 @@ Orchestrates fetching subtitles from external sources with priority fallback
 from typing import Optional, Dict, Any, List
 import logging
 from datetime import datetime
+from beanie import PydanticObjectId
 
 from app.models.content import Content
 from app.models.subtitles import SubtitleTrackDoc, SubtitleCueModel, SubtitleSearchCacheDoc
@@ -326,7 +327,13 @@ class ExternalSubtitleService:
 
         # Filter by provided IDs if specified
         if content_ids:
-            query = query.find({"_id": {"$in": content_ids}})
+            # Convert string IDs to PydanticObjectIds for MongoDB query
+            try:
+                object_ids = [PydanticObjectId(cid) for cid in content_ids]
+                query = query.find({"_id": {"$in": object_ids}})
+            except Exception as e:
+                logger.error(f"Failed to convert content IDs to ObjectIds: {e}")
+                return []
 
         # Find content with IMDB IDs (required for OpenSubtitles)
         query = query.find(Content.imdb_id != None)

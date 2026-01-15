@@ -35,50 +35,13 @@ from app.models.librarian import AuditReport, LibrarianAction
 from app.services.stream_validator import validate_stream_url
 from app.services.auto_fixer import fix_missing_metadata as auto_fix_metadata, fix_misclassification
 from app.services.audit_task_manager import audit_task_manager
+from app.services.ai_agent.logger import log_to_database
 
 # Initialize logger
 logger = logging.getLogger(__name__)
 
 # Initialize Anthropic client
 client = Anthropic(api_key=settings.ANTHROPIC_API_KEY)
-
-
-# ============================================================================
-# DATABASE LOGGER HELPER
-# ============================================================================
-
-async def log_to_database(audit_report: AuditReport, level: str, message: str, source: str = "AI Agent"):
-    """
-    Append a log entry to the audit report's execution_logs array.
-    This enables real-time log streaming to the UI.
-
-    Args:
-        audit_report: The AuditReport document to update
-        level: Log level ("info", "warn", "error", "success", "debug", "trace")
-        message: Log message
-        source: Source of the log (default "AI Agent")
-    """
-    try:
-        log_entry = {
-            "id": str(uuid.uuid4())[:8],  # Short ID for React keys
-            "timestamp": datetime.utcnow().isoformat(),
-            "level": level,
-            "message": message,
-            "source": source
-        }
-
-        # Append to execution_logs array
-        audit_report.execution_logs.append(log_entry)
-
-        # Save to database (using update to avoid race conditions)
-        await audit_report.save()
-
-        # Also log to console for debugging
-        logger.info(f"[{level.upper()}] {source}: {message}")
-
-    except Exception as e:
-        # Don't let logging failures break the audit
-        logger.error(f"Failed to write log to database: {e}")
 
 
 # ============================================================================
@@ -1582,8 +1545,14 @@ async def execute_scan_video_subtitles(content_id: str, auto_extract: bool = Tru
         content.subtitle_last_checked = datetime.utcnow()
         await content.save()
 
+        # Create readable language list
+        languages_found = [f"{track.get('language', 'unknown').upper()}" for track in metadata['subtitle_tracks']]
+        languages_str = ", ".join(languages_found) if languages_found else "none"
+
         result = {
             "success": True,
+            "title": content.title,
+            "content_id": content_id,
             "subtitle_count": len(metadata['subtitle_tracks']),
             "subtitles": metadata['subtitle_tracks'],
             "video_duration": metadata['duration'],
@@ -1599,8 +1568,10 @@ async def execute_scan_video_subtitles(content_id: str, auto_extract: bool = Tru
             
             result["extraction_started"] = True
             result["extraction_status"] = "background_processing"
-            result["message"] = f"Found {len(metadata['subtitle_tracks'])} subtitle tracks. Extraction started in background."
+            result["message"] = f"Found {len(metadata['subtitle_tracks'])} embedded subtitle tracks ({languages_str}). Extraction started in background."
             logger.info(f"✅ Subtitle extraction started in background for content {content_id}")
+        else:
+            result["message"] = f"Scanned video: {len(metadata['subtitle_tracks'])} embedded subtitle tracks found ({languages_str})"
 
         return result
 
@@ -1614,6 +1585,8 @@ async def _extract_with_audit(content_id: str, stream_url: str, audit_id: str, l
     from app.services.ffmpeg_service import ffmpeg_service
     from app.services.subtitle_service import parse_subtitles
     from app.models.subtitles import SubtitleTrackDoc, SubtitleCueModel
+    from app.models.librarian import AuditReport
+    from app.services.ai_agent.logger import log_to_database
     
     try:
         logger.info(f"🔄 [Background] Starting subtitle extraction for audit {audit_id}")
@@ -1622,6 +1595,9 @@ async def _extract_with_audit(content_id: str, stream_url: str, audit_id: str, l
         if not content:
             logger.error(f"❌ [Background] Content {content_id} not found")
             return
+        
+        # Get audit report for logging
+        audit_report = await AuditReport.find_one(AuditReport.audit_id == audit_id)
         
         # Extract subtitles with language filtering at extraction time (more efficient)
         # Limit to 10 subtitles max, prioritizing he, en, es
@@ -1668,6 +1644,26 @@ async def _extract_with_audit(content_id: str, stream_url: str, audit_id: str, l
                 saved_count += 1
                 saved_languages.append(sub['language'])
                 logger.info(f"✅ [Background] Saved {sub['language']} subtitles")
+                
+                # Log individual extraction to audit
+                if audit_report:
+                    lang_display = {"he": "Hebrew", "en": "English", "es": "Spanish", "ar": "Arabic", "ru": "Russian", "fr": "French"}.get(sub['language'], sub['language'].upper())
+                    await log_to_database(
+                        audit_report,
+                        "success",
+                        f"📥 Extracted {lang_display} subtitle from embedded video track",
+                        "AI Agent",
+                        item_name=content.title,
+                        content_id=content_id,
+                        metadata={
+                            "action": "extract_embedded_subtitle",
+                            "language": sub['language'],
+                            "source": "embedded",
+                            "cue_count": len(cues),
+                            "format": sub['format']
+                        }
+                    )
+                
             except Exception as e:
                 logger.error(f"❌ [Background] Failed to parse {sub['language']} subtitles: {str(e)}")
 
@@ -1798,6 +1794,11 @@ async def execute_download_external_subtitle(
     from app.models.librarian import LibrarianAction
 
     try:
+        # Get content info
+        content = await Content.get(PydanticObjectId(content_id))
+        if not content:
+            return {"success": False, "error": "Content not found"}
+        
         service = ExternalSubtitleService()
         track = await service.fetch_subtitle_for_content(
             content_id=content_id,
@@ -1817,16 +1818,23 @@ async def execute_download_external_subtitle(
             )
             await action.insert()
 
+            lang_display = {"he": "Hebrew", "en": "English", "es": "Spanish", "ar": "Arabic", "ru": "Russian", "fr": "French"}.get(language, language.upper())
+
             return {
                 "success": True,
+                "title": content.title,
+                "content_id": content_id,
                 "language": language,
                 "source": track.source,
                 "cue_count": len(track.cues),
-                "external_id": track.external_id
+                "external_id": track.external_id,
+                "message": f"Downloaded {lang_display} subtitle from {track.source.upper()}"
             }
         else:
             return {
                 "success": False,
+                "title": content.title,
+                "content_id": content_id,
                 "error": "No subtitles found from any source"
             }
 
@@ -1848,7 +1856,8 @@ async def execute_batch_download_subtitles(
     Priority order: Hebrew (he), English (en), Spanish (es)
     """
     from app.services.external_subtitle_service import ExternalSubtitleService
-    from app.models.librarian import LibrarianAction
+    from app.models.librarian import LibrarianAction, AuditReport
+    from app.services.ai_agent.logger import log_to_database
 
     try:
         # Limit to 3 languages for OpenSubtitles, prioritize he, en, es
@@ -1881,6 +1890,32 @@ async def execute_batch_download_subtitles(
             max_downloads=max_downloads
         )
 
+        # Get audit report for detailed logging
+        audit_report = None
+        if audit_id:
+            audit_report = await AuditReport.find_one(AuditReport.audit_id == audit_id)
+
+        # Create individual log entries for each successful download
+        if audit_report:
+            for detail in results["details"]:
+                if detail["status"] == "success":
+                    lang_display = {"he": "Hebrew", "en": "English", "es": "Spanish", "ar": "Arabic", "ru": "Russian", "fr": "French"}.get(detail["language"], detail["language"].upper())
+                    
+                    await log_to_database(
+                        audit_report,
+                        "success",
+                        f"⬇️ Downloaded {lang_display} subtitle from {detail['source'].upper()}",
+                        "AI Agent",
+                        item_name=detail["title"],
+                        content_id=detail["content_id"],
+                        metadata={
+                            "action": "download_external_subtitle",
+                            "language": detail["language"],
+                            "source": detail["source"],
+                            "method": "batch_download"
+                        }
+                    )
+
         # Create summary action
         if audit_id:
             action = LibrarianAction(
@@ -1894,8 +1929,22 @@ async def execute_batch_download_subtitles(
             )
             await action.insert()
 
+        # Create a detailed summary message
+        success_items = [d for d in results["details"] if d["status"] == "success"]
+        summary_parts = []
+        if success_items:
+            summary_parts.append(f"✅ {len(success_items)} subtitles downloaded:")
+            for item in success_items[:5]:  # Show first 5
+                lang_short = item["language"].upper()
+                summary_parts.append(f"  • {item['title']} ({lang_short} from {item['source']})")
+            if len(success_items) > 5:
+                summary_parts.append(f"  • ...and {len(success_items) - 5} more")
+        
+        summary_message = "\n".join(summary_parts) if summary_parts else "No subtitles downloaded"
+
         return {
             "success": True,
+            "message": summary_message,
             "processed": results["processed"],
             "success_count": results["success"],
             "failed_count": results["failed"],
@@ -2220,7 +2269,16 @@ async def run_ai_agent_audit(
     
     # Get or create audit report
     if audit_id:
-        audit_report = await AuditReport.get(audit_id)
+        try:
+            # Try to find by _id first (MongoDB ObjectId)
+            try:
+                object_id = PydanticObjectId(audit_id)
+                audit_report = await AuditReport.get(object_id)
+            except:
+                # If not a valid ObjectId, search by audit_id field
+                audit_report = await AuditReport.find_one({"audit_id": audit_id})
+        except Exception as e:
+            raise ValueError(f"Invalid audit_id format or not found: {e}")
         if not audit_report:
             raise ValueError(f"Audit report with id {audit_id} not found")
         logger.info(f"Using existing audit report: {audit_id}")
@@ -2555,13 +2613,34 @@ Start the audit!"""
                     tool_name = block.name
                     tool_input = block.input
 
-                    # Log tool use START to database with full parameters
-                    params_str = json.dumps(tool_input, ensure_ascii=False, indent=2)
+                    # Extract item name from tool input if available
+                    item_name = None
+                    content_id = None
+                    
+                    # Try to extract from common parameter names
+                    if isinstance(tool_input, dict):
+                        # Look for title in various formats
+                        item_name = (
+                            tool_input.get("title") or 
+                            tool_input.get("content_title") or
+                            tool_input.get("name") or
+                            tool_input.get("item_title")
+                        )
+                        content_id = (
+                            tool_input.get("content_id") or
+                            tool_input.get("id") or
+                            tool_input.get("item_id")
+                        )
+
+                    # Log tool use START to database with structured data
                     await log_to_database(
                         audit_report,
                         "info",
-                        f"🔧 TOOL START: {tool_name}\nParameters: {params_str}",
-                        "AI Agent"
+                        f"🔧 TOOL START: {tool_name}",
+                        "AI Agent",
+                        item_name=item_name,
+                        content_id=content_id,
+                        metadata={"tool_input": tool_input}
                     )
 
                     logger.info(f"🔧 Claude wants to use: {tool_name}")
@@ -2582,26 +2661,45 @@ Start the audit!"""
                     # Execute tool
                     result = await execute_tool(tool_name, tool_input, audit_id, dry_run)
 
-                    # Log FULL tool result to database
-                    result_str = json.dumps(result, ensure_ascii=False, indent=2)
+                    # Extract item info from result if not already set
+                    if not item_name and isinstance(result, dict):
+                        item_name = (
+                            result.get("title") or 
+                            result.get("content_title") or
+                            result.get("name") or
+                            result.get("item_title")
+                        )
+                    if not content_id and isinstance(result, dict):
+                        content_id = (
+                            result.get("content_id") or
+                            result.get("id") or
+                            result.get("item_id")
+                        )
 
+                    # Log tool result to database with structured data
                     if result.get("success") is False:
                         error_msg = result.get("error", "Unknown error")
                         await log_to_database(
                             audit_report,
                             "error",
-                            f"❌ TOOL FAILED: {tool_name}\nError: {error_msg}\nFull result: {result_str}",
-                            "AI Agent"
+                            f"❌ TOOL FAILED: {tool_name} - {error_msg}",
+                            "AI Agent",
+                            item_name=item_name,
+                            content_id=content_id,
+                            metadata={"tool_result": result}
                         )
                         logger.error(f"   ❌ Tool failed: {error_msg}")
                     elif result.get("success") is True:
-                        # Log ALL successful tool executions with full details
+                        # Log successful tool executions with structured data
                         success_msg = result.get("message", "Success")
                         await log_to_database(
                             audit_report,
                             "success",
-                            f"✅ TOOL SUCCESS: {tool_name}\nMessage: {success_msg}\nFull result: {result_str}",
-                            "AI Agent"
+                            f"✅ TOOL SUCCESS: {tool_name} - {success_msg}",
+                            "AI Agent",
+                            item_name=item_name,
+                            content_id=content_id,
+                            metadata={"tool_result": result}
                         )
                         logger.info(f"   ✅ Tool succeeded: {success_msg}")
                     else:
@@ -2609,8 +2707,11 @@ Start the audit!"""
                         await log_to_database(
                             audit_report,
                             "info",
-                            f"📊 TOOL RESULT: {tool_name}\nFull result: {result_str}",
-                            "AI Agent"
+                            f"📊 TOOL RESULT: {tool_name}",
+                            "AI Agent",
+                            item_name=item_name,
+                            content_id=content_id,
+                            metadata={"tool_result": result}
                         )
                         logger.info(f"   📊 Tool returned data")
 

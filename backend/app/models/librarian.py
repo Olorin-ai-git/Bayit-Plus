@@ -61,7 +61,16 @@ class AuditReport(Document):
 
     # Execution logs (for real-time streaming to UI)
     execution_logs: List[Dict[str, Any]] = Field(default_factory=list)
-    # Each log entry: {"timestamp": ISO string, "level": "info/warn/error/success", "message": str, "source": str}
+    # Each log entry: {
+    #   "id": str,
+    #   "timestamp": ISO string,
+    #   "level": "info/warn/error/success/debug/trace",
+    #   "message": str (concise message),
+    #   "source": str,
+    #   "itemName": str (optional - content title being processed),
+    #   "contentId": str (optional - content ID),
+    #   "metadata": dict (optional - structured data like tool_result, tool_input)
+    # }
 
     # Timestamps
     created_at: datetime = Field(default_factory=datetime.utcnow)

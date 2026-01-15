@@ -108,6 +108,9 @@ export interface LogEntry {
   level: 'info' | 'warn' | 'error' | 'success' | 'debug' | 'trace';
   message: string;
   source: string;
+  itemName?: string; // Content item name (movie/show title)
+  contentId?: string; // Content item ID
+  metadata?: Record<string, any>; // Structured data (tool_result, tool_input, etc.)
 }
 
 export interface AuditReportDetail extends AuditReport {

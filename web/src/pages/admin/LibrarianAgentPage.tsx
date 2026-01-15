@@ -75,6 +75,7 @@ const LibrarianAgentPage = () => {
   const [cancellingAudit, setCancellingAudit] = useState(false);
   const [auditPaused, setAuditPaused] = useState(false);
   const [connectingToLiveLog, setConnectingToLiveLog] = useState(false);
+  const [lastPolledAt, setLastPolledAt] = useState<Date | null>(null);
   const [batchProgress, setBatchProgress] = useState<{
     currentBatch: number;
     totalBatches: number;
@@ -126,7 +127,14 @@ const LibrarianAgentPage = () => {
     if (totalItems > 0) {
       const currentBatch = Math.floor(currentSkip / batchSize) + 1;
       const totalBatches = Math.ceil(totalItems / batchSize);
-      const percentage = Math.min(100, Math.round((itemsProcessed / totalItems) * 100));
+      let percentage = Math.round((itemsProcessed / totalItems) * 100);
+      
+      // Cap at 99% while audit is still in progress (100% only when actually complete)
+      if (livePanelReport.status === 'in_progress' && percentage >= 100) {
+        percentage = 99;
+      } else {
+        percentage = Math.min(100, percentage);
+      }
 
       setBatchProgress({
         currentBatch,
@@ -239,10 +247,15 @@ const LibrarianAgentPage = () => {
     const pollInterval = setInterval(async () => {
       try {
         const details = await getAuditReportDetails(inProgressAudit.audit_id);
+        const logCount = details.execution_logs?.length || 0;
+        
+        logger.info(`[Polling] Fetched audit ${inProgressAudit.audit_id} - Status: ${details.status}, Logs: ${logCount}`);
 
         // Update live panel if it's for this audit
         if (livePanelReport && livePanelReport.audit_id === inProgressAudit.audit_id) {
           setLivePanelReport(details);
+          setLastPolledAt(new Date());
+          logger.info(`[Polling] Updated live panel - ${logCount} logs`);
         }
 
         // If detail modal is open and showing this audit, update it
@@ -287,6 +300,18 @@ const LibrarianAgentPage = () => {
   const executeAudit = async (auditType: 'daily_incremental' | 'ai_agent') => {
     if (!config) {
       setErrorMessage(t('admin.librarian.errors.configNotLoaded'));
+      setErrorModalOpen(true);
+      return;
+    }
+
+    // Check if there's already an audit in progress
+    const inProgressAudit = reports.find(r => r.status === 'in_progress');
+    if (inProgressAudit) {
+      setErrorMessage(
+        t('admin.librarian.errors.auditAlreadyRunning', 
+          'An audit is already running. Please wait for it to complete or cancel it before starting a new one.'
+        )
+      );
       setErrorModalOpen(true);
       return;
     }
@@ -928,7 +953,11 @@ const LibrarianAgentPage = () => {
         maxHeight={700}
         style={styles.actionsCard}
       >
-        <View style={styles.actionsRow}>
+        {/* Audit Mode Section */}
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>{t('admin.librarian.quickActions.auditMode', 'Audit Mode')}</Text>
+          <Text style={styles.sectionSubtitle}>{t('admin.librarian.quickActions.auditModeHelp', 'Choose what to check')}</Text>
+          
           <View style={styles.checkboxRow}>
             <Pressable
               style={[styles.checkbox, dryRun && styles.checkboxChecked]}
@@ -936,8 +965,17 @@ const LibrarianAgentPage = () => {
             >
               {dryRun && <View style={styles.checkboxInner} />}
             </Pressable>
-            <Text style={styles.checkboxLabel}>{t('admin.librarian.quickActions.dryRun')}</Text>
+            <View style={styles.checkboxLabelContainer}>
+              <Text style={styles.checkboxLabel}>{t('admin.librarian.quickActions.dryRun')}</Text>
+              <Text style={styles.checkboxHelper}>{t('admin.librarian.quickActions.dryRunHelp', 'Report issues without making changes')}</Text>
+            </View>
           </View>
+        </View>
+
+        {/* Scope Filters Section */}
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>{t('admin.librarian.quickActions.scopeFilters', 'Scope Filters')}</Text>
+          <Text style={styles.sectionSubtitle}>{t('admin.librarian.quickActions.scopeFiltersHelp', 'Optional - Leave all unchecked to audit everything')}</Text>
           
           <View style={styles.checkboxRow}>
             <Pressable
@@ -946,7 +984,10 @@ const LibrarianAgentPage = () => {
             >
               {last24HoursOnly && <View style={styles.checkboxInner} />}
             </Pressable>
-            <Text style={styles.checkboxLabel}>{t('admin.librarian.quickActions.last24Hours')}</Text>
+            <View style={styles.checkboxLabelContainer}>
+              <Text style={styles.checkboxLabel}>{t('admin.librarian.quickActions.last24Hours')}</Text>
+              <Text style={styles.checkboxHelper}>{t('admin.librarian.quickActions.last24HoursHelp', 'Only recently added content')}</Text>
+            </View>
           </View>
 
           <View style={styles.checkboxRow}>
@@ -956,7 +997,10 @@ const LibrarianAgentPage = () => {
             >
               {cybTitlesOnly && <View style={styles.checkboxInner} />}
             </Pressable>
-            <Text style={styles.checkboxLabel}>{t('admin.librarian.quickActions.cybTitlesOnly')}</Text>
+            <View style={styles.checkboxLabelContainer}>
+              <Text style={styles.checkboxLabel}>{t('admin.librarian.quickActions.cybTitlesOnly')}</Text>
+              <Text style={styles.checkboxHelper}>{t('admin.librarian.quickActions.cybTitlesOnlyHelp', 'Focus on title cleanup')}</Text>
+            </View>
           </View>
 
           <View style={styles.checkboxRow}>
@@ -966,7 +1010,10 @@ const LibrarianAgentPage = () => {
             >
               {tmdbPostersOnly && <View style={styles.checkboxInner} />}
             </Pressable>
-            <Text style={styles.checkboxLabel}>{t('admin.librarian.quickActions.tmdbPostersOnly')}</Text>
+            <View style={styles.checkboxLabelContainer}>
+              <Text style={styles.checkboxLabel}>{t('admin.librarian.quickActions.tmdbPostersOnly')}</Text>
+              <Text style={styles.checkboxHelper}>{t('admin.librarian.quickActions.tmdbPostersOnlyHelp', 'Focus on posters & metadata')}</Text>
+            </View>
           </View>
 
           <View style={styles.checkboxRow}>
@@ -976,30 +1023,74 @@ const LibrarianAgentPage = () => {
             >
               {openSubtitlesEnabled && <View style={styles.checkboxInner} />}
             </Pressable>
-            <Text style={styles.checkboxLabel}>{t('admin.librarian.quickActions.openSubtitlesEnabled')}</Text>
+            <View style={styles.checkboxLabelContainer}>
+              <Text style={styles.checkboxLabel}>{t('admin.librarian.quickActions.openSubtitlesEnabled', 'Subtitles Only (OpenSubtitles)')}</Text>
+              <Text style={styles.checkboxHelper}>{t('admin.librarian.quickActions.openSubtitlesEnabledHelp', 'Download subtitles from OpenSubtitles only')}</Text>
+            </View>
           </View>
         </View>
 
-        <View style={styles.buttonsRow}>
-          <GlassButton
-            title={t('admin.librarian.quickActions.triggerDaily')}
-            variant="primary"
-            icon={<Play size={16} color={colors.background} />}
-            onPress={() => handleTriggerAudit('daily_incremental')}
-            loading={triggering && pendingAuditType === 'daily_incremental'}
-            disabled={triggering}
-            style={styles.actionButton}
-          />
-          <GlassButton
-            title={t('admin.librarian.quickActions.triggerAI')}
-            variant="secondary"
-            icon={<Bot size={16} color={colors.text} />}
-            onPress={() => handleTriggerAudit('ai_agent')}
-            loading={triggering && pendingAuditType === 'ai_agent'}
-            disabled={triggering}
-            style={styles.actionButton}
-          />
+        {/* Audit Type Selection */}
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>{t('admin.librarian.quickActions.auditType', 'Audit Type')}</Text>
+          <Text style={styles.sectionSubtitle}>{t('admin.librarian.quickActions.auditTypeHelp', 'Choose between rule-based or AI-powered audit')}</Text>
+          
+          {/* Daily Audit Card */}
+          <View style={styles.auditTypeCard}>
+            <View style={styles.auditTypeHeader}>
+              <Play size={20} color={colors.primary} />
+              <View style={{ flex: 1, marginLeft: spacing.sm }}>
+                <Text style={styles.auditTypeTitle}>{t('admin.librarian.quickActions.dailyAudit', 'Daily Audit')}</Text>
+                <Text style={styles.auditTypeBadge}>{t('admin.librarian.quickActions.dailyBadge', 'Rule-Based • Fast • Free')}</Text>
+              </View>
+            </View>
+            <Text style={styles.auditTypeDescription}>
+              {t('admin.librarian.quickActions.dailyDescription', 'Runs predefined checks on content modified in the last 7 days. Fast and predictable, no AI costs.')}
+            </Text>
+            <GlassButton
+              title={t('admin.librarian.quickActions.triggerDaily')}
+              variant="primary"
+              icon={<Play size={16} color={colors.background} />}
+              onPress={() => handleTriggerAudit('daily_incremental')}
+              loading={triggering && pendingAuditType === 'daily_incremental'}
+              disabled={triggering || reports.some(r => r.status === 'in_progress')}
+              style={{ marginTop: spacing.sm }}
+            />
+          </View>
+
+          {/* AI Agent Card */}
+          <View style={styles.auditTypeCard}>
+            <View style={styles.auditTypeHeader}>
+              <Bot size={20} color={colors.secondary} />
+              <View style={{ flex: 1, marginLeft: spacing.sm }}>
+                <Text style={styles.auditTypeTitle}>{t('admin.librarian.quickActions.aiAgentAudit', 'AI Agent Audit')}</Text>
+                <Text style={[styles.auditTypeBadge, { color: colors.secondary }]}>{t('admin.librarian.quickActions.aiAgentBadge', 'AI-Powered • Intelligent • Uses Budget')}</Text>
+              </View>
+            </View>
+            <Text style={styles.auditTypeDescription}>
+              {t('admin.librarian.quickActions.aiAgentDescription', 'Autonomous AI agent (Claude) makes intelligent decisions about what to check and fix. More comprehensive but uses API budget.')}
+            </Text>
+            <GlassButton
+              title={t('admin.librarian.quickActions.triggerAI')}
+              variant="secondary"
+              icon={<Bot size={16} color={colors.text} />}
+              onPress={() => handleTriggerAudit('ai_agent')}
+              loading={triggering && pendingAuditType === 'ai_agent'}
+              disabled={triggering || reports.some(r => r.status === 'in_progress')}
+              style={{ marginTop: spacing.sm }}
+            />
+          </View>
         </View>
+        
+        {/* Show message if audit is already running */}
+        {reports.some(r => r.status === 'in_progress') && !triggering && (
+          <View style={styles.auditRunningNotice}>
+            <ActivityIndicator size="small" color={colors.warning} />
+            <Text style={styles.auditRunningText}>
+              {t('admin.librarian.quickActions.auditRunningNotice', 'An audit is currently running. Buttons will be enabled when it completes.')}
+            </Text>
+          </View>
+        )}
 
         <View style={styles.budgetSection}>
           <View style={styles.budgetRow}>
@@ -1093,20 +1184,68 @@ const LibrarianAgentPage = () => {
         ) : livePanelReport ? (
           <View style={{ flex: 1, minHeight: 0 }}>
             <View style={styles.livePanelInfo}>
-              <View>
-                <Text style={styles.livePanelInfoText}>
-                  {t('admin.librarian.logs.started')}: {format(new Date(livePanelReport.audit_date), 'HH:mm:ss')}
-                </Text>
-                {livePanelReport.completed_at && (
+              <View style={{ flex: 1 }}>
+                <View style={[styles.statusRow, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
                   <Text style={styles.livePanelInfoText}>
+                    {t('admin.librarian.logs.started')}: {format(new Date(livePanelReport.audit_date), 'HH:mm:ss')}
+                  </Text>
+                  {livePanelReport.status === 'in_progress' && (
+                    <Text style={[styles.livePanelInfoText, { color: colors.warning, marginLeft: spacing.md }]}>
+                      ● {t('admin.librarian.status.running', 'Running')}
+                    </Text>
+                  )}
+                </View>
+                {livePanelReport.completed_at && (
+                  <Text style={[styles.livePanelInfoText, { color: colors.success }]}>
                     {t('admin.librarian.logs.completed')}: {format(new Date(livePanelReport.completed_at), 'HH:mm:ss')}
                   </Text>
                 )}
+                {livePanelReport.execution_logs && livePanelReport.execution_logs.length > 0 && (() => {
+                  const lastLogTime = new Date(livePanelReport.execution_logs[livePanelReport.execution_logs.length - 1].timestamp);
+                  const timeSinceLastLog = Math.floor((Date.now() - lastLogTime.getTime()) / 1000); // seconds
+                  const isStale = livePanelReport.status === 'in_progress' && timeSinceLastLog > 30;
+                  
+                  return (
+                    <View>
+                      <Text style={[
+                        styles.livePanelInfoText, 
+                        { 
+                          fontSize: 12, 
+                          color: isStale ? colors.warning : colors.textMuted, 
+                          marginTop: spacing.xs 
+                        }
+                      ]}>
+                        {t('admin.librarian.logs.lastLog', 'Last log')}: {format(lastLogTime, 'HH:mm:ss')}
+                        {timeSinceLastLog > 5 && ` (${timeSinceLastLog}s ago)`}
+                      </Text>
+                      {isStale && (
+                        <Text style={[styles.livePanelInfoText, { fontSize: 11, color: colors.warning, marginTop: spacing.xs, fontStyle: 'italic' }]}>
+                          ⚠ {t('admin.librarian.logs.staleWarning', 'No new logs for {{seconds}}s - job may be processing or stuck', { seconds: timeSinceLastLog })}
+                        </Text>
+                      )}
+                      {lastPolledAt && livePanelReport.status === 'in_progress' && (
+                        <Text style={[styles.livePanelInfoText, { fontSize: 10, color: colors.textMuted, marginTop: spacing.xs, opacity: 0.7 }]}>
+                          {t('admin.librarian.logs.pollingStatus', 'Polling active • Last checked')}: {format(lastPolledAt, 'HH:mm:ss')}
+                        </Text>
+                      )}
+                    </View>
+                  );
+                })()}
               </View>
               
               {/* Audit Control Buttons */}
               {livePanelReport.status === 'in_progress' && (
                 <View style={[styles.auditControlButtons, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
+                  <GlassButton
+                    title={t('common.refresh', 'Refresh')}
+                    variant="secondary"
+                    size="md"
+                    icon={<RefreshCw size={16} color={colors.text} />}
+                    onPress={handleRefresh}
+                    loading={refreshing}
+                    disabled={refreshing}
+                    style={styles.auditControlButton}
+                  />
                   {!auditPaused ? (
                     <GlassButton
                       title={t('admin.librarian.audit.pause', 'Pause')}
@@ -1145,15 +1284,19 @@ const LibrarianAgentPage = () => {
               )}
             </View>
 
-            {/* Batch Progress Bar */}
-            {batchProgress && livePanelReport.status === 'in_progress' && (
+            {/* Batch Progress Bar - Only show for in-progress audits */}
+            {livePanelReport.status === 'in_progress' && batchProgress && (
               <View style={styles.progressContainer}>
                 <View style={[styles.progressHeader, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
                   <Text style={styles.progressLabel}>
-                    {t('admin.librarian.progress.batch', 'Batch {{current}} of {{total}}', {
-                      current: batchProgress.currentBatch,
-                      total: batchProgress.totalBatches
-                    })}
+                    {batchProgress.percentage >= 99 ? (
+                      t('admin.librarian.progress.finishing', 'Finishing up...')
+                    ) : (
+                      t('admin.librarian.progress.batch', 'Batch {{current}} of {{total}}', {
+                        current: batchProgress.currentBatch,
+                        total: batchProgress.totalBatches
+                      })
+                    )}
                   </Text>
                   <Text style={styles.progressPercentage}>
                     {batchProgress.percentage}%
@@ -1164,10 +1307,45 @@ const LibrarianAgentPage = () => {
                     processed: batchProgress.itemsProcessed,
                     total: batchProgress.totalItems
                   })}
+                  {batchProgress.percentage >= 99 && (
+                    <Text style={{ color: colors.textMuted, fontStyle: 'italic' }}>
+                      {' • '}{t('admin.librarian.progress.finalizing', 'Generating report and applying fixes')}
+                    </Text>
+                  )}
                 </Text>
                 <View style={styles.progressBarContainer}>
                   <View style={[styles.progressBarFill, { width: `${batchProgress.percentage}%` }]} />
                 </View>
+              </View>
+            )}
+            
+            {/* Completion Summary - Show when audit is complete */}
+            {(livePanelReport.status === 'completed' || livePanelReport.status === 'failed' || livePanelReport.status === 'partial') && (
+              <View style={[
+                styles.completionBanner,
+                { 
+                  backgroundColor: livePanelReport.status === 'completed' ? colors.success + '20' : 
+                                   livePanelReport.status === 'failed' ? colors.error + '20' : 
+                                   colors.warning + '20',
+                  borderColor: livePanelReport.status === 'completed' ? colors.success : 
+                               livePanelReport.status === 'failed' ? colors.error : 
+                               colors.warning,
+                }
+              ]}>
+                <Text style={[
+                  styles.completionText,
+                  { 
+                    color: livePanelReport.status === 'completed' ? colors.success : 
+                           livePanelReport.status === 'failed' ? colors.error : 
+                           colors.warning,
+                  }
+                ]}>
+                  {livePanelReport.status === 'completed' ? '✓ ' : 
+                   livePanelReport.status === 'failed' ? '✗ ' : '⚠ '}
+                  {t(`admin.librarian.status.${livePanelReport.status}`)}
+                  {livePanelReport.execution_time_seconds && ` • ${livePanelReport.execution_time_seconds.toFixed(1)}s`}
+                  {livePanelReport.summary && ` • ${livePanelReport.summary.total_items || 0} items checked`}
+                </Text>
               </View>
             )}
 
@@ -1190,8 +1368,7 @@ const LibrarianAgentPage = () => {
                 showDownload
                 autoScroll
                 maxHeight={1200}
-                animateEntries
-                typewriterSpeed={50}
+                animateEntries={false}
               />
             </View>
           </View>
@@ -1582,9 +1759,27 @@ const styles = StyleSheet.create({
   actionsRow: {
     marginBottom: spacing.md,
   },
+  section: {
+    marginBottom: spacing.lg,
+    paddingBottom: spacing.md,
+    borderBottomWidth: 1,
+    borderBottomColor: colors.glassBorder,
+  },
+  sectionTitle: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: colors.text,
+    marginBottom: spacing.xs,
+  },
+  sectionSubtitle: {
+    fontSize: 12,
+    color: colors.textMuted,
+    marginBottom: spacing.md,
+    fontStyle: 'italic',
+  },
   checkboxRow: {
     flexDirection: 'row',
-    alignItems: 'center',
+    alignItems: 'flex-start',
     gap: spacing.sm,
     marginBottom: spacing.md,
   },
@@ -1596,6 +1791,7 @@ const styles = StyleSheet.create({
     borderColor: colors.primary,
     justifyContent: 'center',
     alignItems: 'center',
+    marginTop: 2,
   },
   checkboxChecked: {
     backgroundColor: colors.primary,
@@ -1606,9 +1802,18 @@ const styles = StyleSheet.create({
     backgroundColor: colors.background,
     borderRadius: 2,
   },
+  checkboxLabelContainer: {
+    flex: 1,
+  },
   checkboxLabel: {
     fontSize: 14,
     color: colors.text,
+    marginBottom: 2,
+  },
+  checkboxHelper: {
+    fontSize: 11,
+    color: colors.textMuted,
+    lineHeight: 14,
   },
   buttonsRow: {
     flexDirection: 'row',
@@ -1617,6 +1822,53 @@ const styles = StyleSheet.create({
   },
   actionButton: {
     flex: 1,
+  },
+  auditRunningNotice: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.sm,
+    padding: spacing.md,
+    backgroundColor: colors.warning + '20',
+    borderRadius: borderRadius.md,
+    borderWidth: 1,
+    borderColor: colors.warning + '40',
+    marginBottom: spacing.md,
+  },
+  auditRunningText: {
+    flex: 1,
+    fontSize: 13,
+    color: colors.warning,
+    lineHeight: 18,
+  },
+  auditTypeCard: {
+    padding: spacing.md,
+    backgroundColor: colors.glassBackground,
+    borderRadius: borderRadius.md,
+    borderWidth: 1,
+    borderColor: colors.glassBorder,
+    marginBottom: spacing.md,
+  },
+  auditTypeHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: spacing.sm,
+  },
+  auditTypeTitle: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: colors.text,
+  },
+  auditTypeBadge: {
+    fontSize: 11,
+    color: colors.primary,
+    marginTop: 2,
+    fontWeight: '500',
+  },
+  auditTypeDescription: {
+    fontSize: 13,
+    color: colors.textMuted,
+    lineHeight: 18,
+    marginBottom: spacing.sm,
   },
   budgetSection: {
     paddingTop: spacing.md,
@@ -1918,6 +2170,12 @@ const styles = StyleSheet.create({
     fontSize: 13,
     color: colors.textMuted,
   },
+  statusRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.sm,
+    marginBottom: spacing.xs,
+  },
   auditControlButtons: {
     flexDirection: 'row',
     gap: spacing.md,
@@ -1941,6 +2199,18 @@ const styles = StyleSheet.create({
     color: colors.textMuted,
     textAlign: 'center',
     marginTop: spacing.sm,
+  },
+  completionBanner: {
+    padding: spacing.md,
+    marginBottom: spacing.md,
+    borderRadius: borderRadius.md,
+    borderWidth: 2,
+    alignItems: 'center',
+  },
+  completionText: {
+    fontSize: 15,
+    fontWeight: '600',
+    textAlign: 'center',
   },
   progressContainer: {
     padding: spacing.md,

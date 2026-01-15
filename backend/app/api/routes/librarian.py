@@ -8,6 +8,7 @@ from datetime import datetime, timedelta
 from typing import Optional, List
 from fastapi import APIRouter, HTTPException, status, Depends, BackgroundTasks, Request, Header
 from pydantic import BaseModel
+from beanie import PydanticObjectId
 
 from app.models.user import User
 from app.models.librarian import AuditReport, LibrarianAction
@@ -46,7 +47,12 @@ async def run_audit_with_tracking(
         logger.info(f"Audit {audit_id} was cancelled")
         # Update the audit status to cancelled
         try:
-            audit = await AuditReport.get(audit_id)
+            try:
+                object_id = PydanticObjectId(audit_id)
+                audit = await AuditReport.get(object_id)
+            except:
+                audit = await AuditReport.find_one({"audit_id": audit_id})
+            
             if audit:
                 audit.status = "cancelled"
                 await audit.save()
@@ -376,7 +382,8 @@ async def trigger_librarian_audit(
             }
         )
         await audit.save()
-        audit_id = str(audit.id)
+        # Use the audit_id field (UUID), not the MongoDB _id
+        audit_id = audit.audit_id
 
         # Determine which mode to use
         if request.use_ai_agent or request.audit_type == "ai_agent":
@@ -655,7 +662,14 @@ async def pause_audit(
 ):
     """Pause a running audit"""
     try:
-        audit = await AuditReport.get(audit_id)
+        # Try to find by _id first (MongoDB ObjectId)
+        try:
+            object_id = PydanticObjectId(audit_id)
+            audit = await AuditReport.get(object_id)
+        except:
+            # If not a valid ObjectId, search by audit_id field
+            audit = await AuditReport.find_one({"audit_id": audit_id})
+        
         if not audit:
             raise HTTPException(
                 status_code=status.HTTP_404_NOT_FOUND,
@@ -698,7 +712,14 @@ async def resume_audit(
 ):
     """Resume a paused audit"""
     try:
-        audit = await AuditReport.get(audit_id)
+        # Try to find by _id first (MongoDB ObjectId)
+        try:
+            object_id = PydanticObjectId(audit_id)
+            audit = await AuditReport.get(object_id)
+        except:
+            # If not a valid ObjectId, search by audit_id field
+            audit = await AuditReport.find_one({"audit_id": audit_id})
+        
         if not audit:
             raise HTTPException(
                 status_code=status.HTTP_404_NOT_FOUND,
@@ -741,7 +762,14 @@ async def cancel_audit(
 ):
     """Cancel a running or paused audit"""
     try:
-        audit = await AuditReport.get(audit_id)
+        # Try to find by _id first (MongoDB ObjectId)
+        try:
+            object_id = PydanticObjectId(audit_id)
+            audit = await AuditReport.get(object_id)
+        except:
+            # If not a valid ObjectId, search by audit_id field
+            audit = await AuditReport.find_one({"audit_id": audit_id})
+        
         if not audit:
             raise HTTPException(
                 status_code=status.HTTP_404_NOT_FOUND,
