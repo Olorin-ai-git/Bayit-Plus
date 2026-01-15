@@ -111,9 +111,7 @@
 
       /* Logo image - fades in after text */
       #splash-screen .logo {
-        width: 140px;
-        height: 70px;
-        margin-bottom: -12px;
+        margin-bottom: -8px;
         opacity: 0;
         animation: logoFadeIn 1s ease-out 0.7s forwards;
       }
@@ -284,8 +282,8 @@
           top: 3%;
         }
         #splash-screen .logo {
-          width: 100px;
-          height: 50px;
+          width: 60px;
+          height: 30px;
         }
         #splash-screen .bayit-text {
           font-size: 32px;
@@ -319,16 +317,25 @@
   <body>
     <!-- Splash Screen -->
     <div id="splash-screen">
-      <!-- Fullscreen background video -->
-      <video 
-        class="splash-bg" 
-        autoplay 
-        muted 
-        playsinline
-        preload="auto"
-      >
-        <source src="/Bayit_Intro.mp4" type="video/mp4" />
-      </video>
+      <!-- Fullscreen background image -->
+      <img src="/Bayit-Splash.png" alt="Bayit+ Background" class="splash-bg" />
+      
+      <!-- Animated Logo at top (matches home page animation) -->
+      <div class="animated-logo-container">
+        <img src="/logo.png" alt="Bayit+ Logo" class="logo" />
+      </div>
+      
+      <!-- Dual Clock at center - positioned to show image splitter -->
+      <div class="clock-container">
+        <div class="clock-item">
+          <span class="flag-icon">🇮🇱</span>
+          <span class="clock-time" id="israel-time">--:--</span>
+        </div>
+        <div class="clock-item">
+          <span class="flag-icon">🇺🇸</span>
+          <span class="clock-time" id="local-time">--:--</span>
+        </div>
+      </div>
       
       <!-- Powered By Section at bottom -->
       <div class="powered-by-container">
