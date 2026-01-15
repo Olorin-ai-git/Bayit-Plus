@@ -221,6 +221,16 @@ module.exports = (env, argv) => {
             to: path.resolve(getOutputPath(), 'Bayit-Plus-Logo-Transparent.png'),
           },
           {
+            // Copy favicon files
+            from: path.resolve(__dirname, 'public/favicon*.{png,ico}'),
+            to: path.resolve(getOutputPath(), '[name][ext]'),
+          },
+          {
+            // Copy Apple touch icon
+            from: path.resolve(__dirname, 'public/apple-touch-icon.png'),
+            to: path.resolve(getOutputPath(), 'apple-touch-icon.png'),
+          },
+          {
             // Copy splash screen videos
             from: path.resolve(__dirname, 'public/Bayit_Intro_*.mp4'),
             to: path.resolve(getOutputPath(), '[name][ext]'),
