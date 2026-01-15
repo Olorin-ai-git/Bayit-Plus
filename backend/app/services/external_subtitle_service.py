@@ -216,7 +216,7 @@ class ExternalSubtitleService:
         """
         Batch process multiple content items.
         Respects daily quota limits.
-        
+
         IMPORTANT: OpenSubtitles is limited to 3 languages maximum.
         Priority: Hebrew (he), English (en), Spanish (es)
         Languages should be pre-filtered before calling this method.

@@ -250,7 +250,7 @@ class UploadService:
                     await self._broadcast_queue_update()
                     
                     logger.info(f"📊 Calculating hash in background for {job.filename}...")
-                    job.file_hash = await self._calculate_file_hash(job.source_path)
+                job.file_hash = await self._calculate_file_hash(job.source_path)
                     logger.info(f"✓ Hash calculated: {job.file_hash[:16]}... (will be stored in DB)")
                     
                     job.stages["hash_calculation"] = "completed"
@@ -840,7 +840,7 @@ class UploadService:
             
             # Restart processing
             await self.process_queue()
-    
+
     async def _broadcast_queue_update(self):
         """Broadcast queue update via WebSocket"""
         if self._websocket_callback:

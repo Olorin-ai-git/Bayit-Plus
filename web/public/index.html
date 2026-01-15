@@ -111,8 +111,6 @@
 
       /* Logo image - fades in after text */
       #splash-screen .logo {
-        width: 90px;
-        height: 45px;
         margin-bottom: -8px;
         opacity: 0;
         animation: logoFadeIn 1s ease-out 0.7s forwards;
@@ -325,10 +323,6 @@
       <!-- Animated Logo at top (matches home page animation) -->
       <div class="animated-logo-container">
         <img src="/logo.png" alt="Bayit+ Logo" class="logo" />
-        <div class="text-container">
-          <span class="bayit-text">בית</span>
-          <span class="plus-text">+</span>
-        </div>
       </div>
       
       <!-- Dual Clock at center - positioned to show image splitter -->
@@ -530,35 +524,38 @@
       // Mark window as loaded
       window.addEventListener('load', function() {
         windowLoaded = true;
-        if (appReady) {
-          hideSplashScreen();
-        }
+        // TEMPORARILY DISABLED - Testing new logo
+        // if (appReady) {
+        //   hideSplashScreen();
+        // }
       });
       
       // Function for React to call when ready
       window.hideSplashWhenReady = function() {
         appReady = true;
-        if (windowLoaded) {
-          hideSplashScreen();
-        }
+        // TEMPORARILY DISABLED - Testing new logo
+        // if (windowLoaded) {
+        //   hideSplashScreen();
+        // }
       };
       
+      // TEMPORARILY DISABLED - Testing new logo
       // Fallback: Hide after max time even if React doesn't signal ready
-      setTimeout(function() {
-        if (document.getElementById('splash-screen')) {
-          clearInterval(clockInterval);
-          var splash = document.getElementById('splash-screen');
-          if (splash) {
-            splash.classList.add('fade-out');
-            setTimeout(function() {
-              splash.remove();
-              // Signal that splash is removed - now safe to change direction
-              window.splashScreenRemoved = true;
-              window.dispatchEvent(new Event('splashRemoved'));
-            }, 500);
-          }
-        }
-      }, 10000); // 10 second failsafe
+      // setTimeout(function() {
+      //   if (document.getElementById('splash-screen')) {
+      //     clearInterval(clockInterval);
+      //     var splash = document.getElementById('splash-screen');
+      //     if (splash) {
+      //       splash.classList.add('fade-out');
+      //       setTimeout(function() {
+      //         splash.remove();
+      //         // Signal that splash is removed - now safe to change direction
+      //         window.splashScreenRemoved = true;
+      //         window.dispatchEvent(new Event('splashRemoved'));
+      //       }, 500);
+      //     }
+      //   }
+      // }, 10000); // 10 second failsafe
     </script>
   </body>
 </html>

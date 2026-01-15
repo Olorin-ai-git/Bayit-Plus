@@ -265,25 +265,25 @@ async def determine_audit_scope(
             older_query = {"is_published": True, "updated_at": {"$lt": time_threshold}}
             older_content = await Content.find(older_query).to_list(length=None)
 
-            if older_content:
-                sample_size = max(1, len(older_content) // 10)  # 10%
-                sampled = random.sample(older_content, min(sample_size, len(older_content)))
-                scope.content_ids.extend([str(c.id) for c in sampled])
+        if older_content:
+            sample_size = max(1, len(older_content) // 10)  # 10%
+            sampled = random.sample(older_content, min(sample_size, len(older_content)))
+            scope.content_ids.extend([str(c.id) for c in sampled])
 
         # Live channels (check all, they're few) - skip if focusing on specific filters
         if not (cyb_titles_only or tmdb_posters_only):
-            live_channels = await LiveChannel.find({"is_active": True}).to_list(length=None)
-            scope.live_channel_ids = [str(lc.id) for lc in live_channels]
+        live_channels = await LiveChannel.find({"is_active": True}).to_list(length=None)
+        scope.live_channel_ids = [str(lc.id) for lc in live_channels]
 
-            # Podcast episodes (recent + sample)
-            recent_episodes = await PodcastEpisode.find(
+        # Podcast episodes (recent + sample)
+        recent_episodes = await PodcastEpisode.find(
                 {"published_at": {"$gte": time_threshold}}
-            ).to_list(length=None)
-            scope.podcast_episode_ids = [str(ep.id) for ep in recent_episodes]
+        ).to_list(length=None)
+        scope.podcast_episode_ids = [str(ep.id) for ep in recent_episodes]
 
-            # Radio stations (check all, they're few)
-            radio_stations = await RadioStation.find({"is_active": True}).to_list(length=None)
-            scope.radio_station_ids = [str(rs.id) for rs in radio_stations]
+        # Radio stations (check all, they're few)
+        radio_stations = await RadioStation.find({"is_active": True}).to_list(length=None)
+        scope.radio_station_ids = [str(rs.id) for rs in radio_stations]
 
     elif audit_type in ["weekly_full", "manual"]:
         # Full audit - get all items (with filters applied)
@@ -296,14 +296,14 @@ async def determine_audit_scope(
 
         # Skip other content types if using specific content filters
         if not (cyb_titles_only or tmdb_posters_only):
-            all_channels = await LiveChannel.find({"is_active": True}).to_list(length=None)
-            scope.live_channel_ids = [str(lc.id) for lc in all_channels]
+        all_channels = await LiveChannel.find({"is_active": True}).to_list(length=None)
+        scope.live_channel_ids = [str(lc.id) for lc in all_channels]
 
-            all_episodes = await PodcastEpisode.find({}).to_list(length=None)
-            scope.podcast_episode_ids = [str(ep.id) for ep in all_episodes]
+        all_episodes = await PodcastEpisode.find({}).to_list(length=None)
+        scope.podcast_episode_ids = [str(ep.id) for ep in all_episodes]
 
-            all_radio = await RadioStation.find({"is_active": True}).to_list(length=None)
-            scope.radio_station_ids = [str(rs.id) for rs in all_radio]
+        all_radio = await RadioStation.find({"is_active": True}).to_list(length=None)
+        scope.radio_station_ids = [str(rs.id) for rs in all_radio]
 
     return scope
 
