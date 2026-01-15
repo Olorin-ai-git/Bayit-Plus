@@ -1,4 +1,13 @@
 steps:
+  # Configure Docker authentication for Artifact Registry
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    entrypoint: 'bash'
+    args:
+      - '-c'
+      - |
+        gcloud auth configure-docker us-east1-docker.pkg.dev --quiet
+    id: 'docker-auth'
+
   # Build container image
   - name: 'gcr.io/cloud-builders/docker'
     args:
@@ -13,6 +22,7 @@ steps:
       - 'us-east1-docker.pkg.dev/$PROJECT_ID/bayit-plus/backend:latest'
       - 'backend/'
     id: 'build-image'
+    waitFor: ['docker-auth']
 
   # Push to Artifact Registry (BUILD_ID tag)
   - name: 'gcr.io/cloud-builders/docker'
