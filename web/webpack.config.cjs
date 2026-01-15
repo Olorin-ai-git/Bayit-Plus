@@ -216,6 +216,11 @@ module.exports = (env, argv) => {
             to: path.resolve(getOutputPath(), 'logo.png'),
           },
           {
+            // Copy main sidebar logo
+            from: path.resolve(__dirname, 'public/Bayit-Plus-Logo-Transparent.png'),
+            to: path.resolve(getOutputPath(), 'Bayit-Plus-Logo-Transparent.png'),
+          },
+          {
             // Copy splash screen videos
             from: path.resolve(__dirname, 'public/Bayit_Intro_*.mp4'),
             to: path.resolve(getOutputPath(), '[name][ext]'),
