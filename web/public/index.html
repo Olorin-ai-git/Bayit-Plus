@@ -524,38 +524,35 @@
       // Mark window as loaded
       window.addEventListener('load', function() {
         windowLoaded = true;
-        // TEMPORARILY DISABLED - Testing new logo
-        // if (appReady) {
-        //   hideSplashScreen();
-        // }
+        if (appReady) {
+          hideSplashScreen();
+        }
       });
       
       // Function for React to call when ready
       window.hideSplashWhenReady = function() {
         appReady = true;
-        // TEMPORARILY DISABLED - Testing new logo
-        // if (windowLoaded) {
-        //   hideSplashScreen();
-        // }
+        if (windowLoaded) {
+          hideSplashScreen();
+        }
       };
       
-      // TEMPORARILY DISABLED - Testing new logo
       // Fallback: Hide after max time even if React doesn't signal ready
-      // setTimeout(function() {
-      //   if (document.getElementById('splash-screen')) {
-      //     clearInterval(clockInterval);
-      //     var splash = document.getElementById('splash-screen');
-      //     if (splash) {
-      //       splash.classList.add('fade-out');
-      //       setTimeout(function() {
-      //         splash.remove();
-      //         // Signal that splash is removed - now safe to change direction
-      //         window.splashScreenRemoved = true;
-      //         window.dispatchEvent(new Event('splashRemoved'));
-      //       }, 500);
-      //     }
-      //   }
-      // }, 10000); // 10 second failsafe
+      setTimeout(function() {
+        if (document.getElementById('splash-screen')) {
+          clearInterval(clockInterval);
+          var splash = document.getElementById('splash-screen');
+          if (splash) {
+            splash.classList.add('fade-out');
+            setTimeout(function() {
+              splash.remove();
+              // Signal that splash is removed - now safe to change direction
+              window.splashScreenRemoved = true;
+              window.dispatchEvent(new Event('splashRemoved'));
+            }, 500);
+          }
+        }
+      }, 10000); // 10 second failsafe
     </script>
   </body>
 </html>
