@@ -216,6 +216,12 @@ module.exports = (env, argv) => {
             to: path.resolve(getOutputPath(), 'logo.png'),
           },
           {
+            // Copy splash screen videos
+            from: path.resolve(__dirname, 'public/Bayit_Intro_*.mp4'),
+            to: path.resolve(getOutputPath(), '[name][ext]'),
+            noErrorOnMissing: true,
+          },
+          {
             // Copy Vosk WebAssembly files from root node_modules
             from: path.resolve(__dirname, '../node_modules/vosk-browser/dist'),
             to: path.resolve(getOutputPath(), 'vosk'),
