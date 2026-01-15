@@ -571,8 +571,8 @@ async def generate_confusion_table(
             get_investigation_by_id,
             map_investigation_to_transactions,
         )
-        from app.service.reporting.startup_report_generator import (
-            _generate_confusion_table_section,
+        from app.service.reporting.components.confusion_matrix_section import (
+            generate_confusion_matrix_section,
         )
 
         # Get investigation details (window dates)
@@ -987,10 +987,33 @@ async def generate_confusion_table(
         # Generate confusion table HTML
         logger.info("📄 Generating confusion table HTML with financial data...")
         try:
-            # Create data structure matching what startup_report_generator expects
-            data = {"confusion_matrix": {"aggregated": aggregated_matrix}}
+            # Extract confusion matrix values
+            tp = aggregated_matrix.total_TP
+            fp = aggregated_matrix.total_FP
+            tn = aggregated_matrix.total_TN
+            fn = aggregated_matrix.total_FN
+            excluded = getattr(aggregated_matrix, 'excluded_count', 0)
+            precision = aggregated_matrix.aggregated_precision
+            recall = aggregated_matrix.aggregated_recall
+            f1_score = aggregated_matrix.aggregated_f1_score
+            accuracy = aggregated_matrix.aggregated_accuracy
 
-            confusion_table_html = _generate_confusion_table_section(data)
+            confusion_table_html = generate_confusion_matrix_section(
+                tp=tp,
+                fp=fp,
+                tn=tn,
+                fn=fn,
+                excluded=excluded,
+                precision=precision,
+                recall=recall,
+                f1_score=f1_score,
+                accuracy=accuracy,
+                risk_threshold=risk_threshold,
+                entity_count=1,
+                show_visual_grid=True,
+                show_metrics_cards=True,
+                show_entity_breakdown=False,
+            )
 
             # Generate financial reasoning HTML
             financial_html = _generate_financial_reasoning_html(revenue_data, merchant_name)
