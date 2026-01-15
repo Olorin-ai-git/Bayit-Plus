@@ -37,7 +37,6 @@ sys.path.insert(0, str(Path(__file__).parent.parent))
 from app.persistence.database import get_db
 from app.service.investigation_state_service import InvestigationStateService
 from app.service.logging import get_bridge_logger
-from app.service.reporting.privacy_safe_display import get_display_entity_value
 
 logger = get_bridge_logger(__name__)
 
@@ -279,13 +278,11 @@ def _build_saved_fraud_reasoning_from_txs(
 ) -> str:
     """Build reasoning for Saved Fraud GMV from investigation transactions."""
     from decimal import Decimal
-    # Obfuscate entity value for DPA compliance
-    obfuscated_entity = get_display_entity_value(entity_value, entity_type)
     merchant_text = f" (Merchant: {merchant_name})" if merchant_name else ""
-
+    
     if count == 0:
         return (
-            f"SAVED FRAUD GMV ANALYSIS for {entity_type}='{obfuscated_entity}'{merchant_text}\n"
+            f"SAVED FRAUD GMV ANALYSIS for {entity_type}='{entity_value}'{merchant_text}\n"
             f"═══════════════════════════════════════════════════════════════\n\n"
             f"RESULT: $0.00 - No approved fraud transactions found.\n\n"
             f"DATA SOURCE: Investigation's {total_txs} transactions\n"
@@ -305,7 +302,7 @@ def _build_saved_fraud_reasoning_from_txs(
             sample_text += f"  • TX {str(tx['tx_id'])[:20]}...: ${tx['gmv']:,.2f} (Decision: {tx['decision']}, Fraud: {tx['is_fraud']})\n"
     
     return (
-        f"SAVED FRAUD GMV ANALYSIS for {entity_type}='{obfuscated_entity}'{merchant_text}\n"
+        f"SAVED FRAUD GMV ANALYSIS for {entity_type}='{entity_value}'{merchant_text}\n"
         f"═══════════════════════════════════════════════════════════════\n\n"
         f"RESULT: ${saved_gmv:,.2f} SAVED from fraud detection\n\n"
         f"DATA SOURCE: Investigation's {total_txs} transactions\n"
@@ -333,13 +330,11 @@ def _build_lost_revenues_reasoning_from_txs(
 ) -> str:
     """Build reasoning for Lost Revenues from investigation transactions."""
     from decimal import Decimal
-    # Obfuscate entity value for DPA compliance
-    obfuscated_entity = get_display_entity_value(entity_value, entity_type)
     merchant_text = f" (Merchant: {merchant_name})" if merchant_name else ""
-
+    
     if count == 0:
         return (
-            f"LOST REVENUES ANALYSIS for {entity_type}='{obfuscated_entity}'{merchant_text}\n"
+            f"LOST REVENUES ANALYSIS for {entity_type}='{entity_value}'{merchant_text}\n"
             f"═══════════════════════════════════════════════════════════════\n\n"
             f"RESULT: $0.00 - No false positives found.\n\n"
             f"DATA SOURCE: Investigation's {total_txs} transactions\n"
@@ -361,7 +356,7 @@ def _build_lost_revenues_reasoning_from_txs(
             sample_text += f"  • TX {str(tx['tx_id'])[:20]}...: ${tx['gmv']:,.2f} (Currently: {tx['decision']}, Would Block: Yes)\n"
     
     return (
-        f"LOST REVENUES ANALYSIS for {entity_type}='{obfuscated_entity}'{merchant_text}\n"
+        f"LOST REVENUES ANALYSIS for {entity_type}='{entity_value}'{merchant_text}\n"
         f"═══════════════════════════════════════════════════════════════\n\n"
         f"RESULT: ${lost_revenues:,.2f} LOST in potential revenues\n\n"
         f"DATA SOURCE: Investigation's {total_txs} transactions\n"
@@ -392,10 +387,8 @@ def _build_net_value_reasoning(
 ) -> str:
     """Build reasoning for Net Value."""
     from decimal import Decimal
-    # Obfuscate entity value for DPA compliance
-    obfuscated_entity = get_display_entity_value(entity_value, entity_type)
     merchant_text = f" for {merchant_name}" if merchant_name else ""
-
+    
     if net_value > 0:
         return (
             f"NET VALUE ANALYSIS{merchant_text}\n"
@@ -407,7 +400,7 @@ def _build_net_value_reasoning(
             f"  ────────────────────────────────────────\n"
             f"  = NET VALUE:       ${net_value:>12,.2f}\n\n"
             f"INTERPRETATION:\n"
-            f"Olorin's fraud detection for {entity_type}='{obfuscated_entity}' is PROFITABLE.\n"
+            f"Olorin's fraud detection for {entity_type}='{entity_value}' is PROFITABLE.\n"
             f"The value saved from catching fraud exceeds the cost of false positives.\n"
         )
     elif net_value < 0:
@@ -791,7 +784,7 @@ async def generate_confusion_table(
                     "gmv_window_end": gmv_window_end.isoformat(),
                     "skip_reason": f"Olorin predicted LEGITIMATE: entity risk_score={risk_score} < threshold={risk_threshold} AND no transactions >= threshold. No blocking recommendation was made.",
                     "saved_fraud_breakdown": {
-                        "reasoning": f"Olorin did not recommend blocking {entity_type} '{get_display_entity_value(entity_value, entity_type)}'. Risk score {risk_score} is below threshold {risk_threshold}.",
+                        "reasoning": f"Olorin did not recommend blocking {entity_type} '{entity_value}'. Risk score {risk_score} is below threshold {risk_threshold}.",
                         "methodology": "GMV calculation skipped - Olorin predicted LEGITIMATE",
                         "sample_transactions": [],
                     },
@@ -1236,7 +1229,7 @@ async def generate_confusion_table(
         <h1>📊 Transaction Analysis Report</h1>
         <div class="metadata">
             <p><strong>Investigation ID:</strong> <code>{investigation_id}</code></p>
-            <p><strong>Entity (Obfuscated):</strong> <code>{entity_type}:{get_display_entity_value(entity_value, entity_type)}</code></p>
+            <p><strong>Entity:</strong> <code>{entity_type}:{entity_value}</code></p>
             <p><strong>Merchant:</strong> <span style="color: var(--accent-secondary); font-weight: bold;">{merchant_name}</span></p>
             <p><strong>Risk Score:</strong> {f'{risk_score:.1%}' if risk_score is not None else 'N/A'}</p>
             <p><strong>Risk Threshold:</strong> {risk_threshold:.0%}</p>
