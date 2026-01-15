@@ -8,7 +8,7 @@ import { useChatbotStore } from '@/stores/chatbotStore';
 import { useVoiceSettingsStore } from '@/stores/voiceSettingsStore';
 import { useModeEnforcement } from '@bayit/shared-hooks';
 import { chatService } from '@/services/api';
-import { VoiceSearchButton, LanguageSelector, AnimatedLogo, SoundwaveVisualizer } from '@bayit/shared';
+import { VoiceSearchButton, LanguageSelector, SoundwaveVisualizer } from '@bayit/shared';
 import { useConstantListening } from '@bayit/shared-hooks';
 import { ProfileDropdown } from '@bayit/shared/ProfileDropdown';
 import { colors, spacing } from '@bayit/shared/theme';
@@ -135,15 +135,6 @@ export default function Header() {
     navigate('/');
   };
 
-  // Logo component - use medium size for TV for better visibility
-  const LogoSection = (
-    <View style={styles.logoSection}>
-      <Link to="/" style={{ textDecoration: 'none', display: 'flex', alignItems: 'center' }}>
-        <AnimatedLogo size={IS_TV_BUILD ? 'medium' : 'small'} />
-      </Link>
-    </View>
-  );
-
   // Navigation component - document.dir handles visual direction
   // Disabled in Voice Only mode
   const NavSection = !isMobile && isRemoteControlEnabled && (
@@ -254,7 +245,6 @@ export default function Header() {
       <View style={styles.container}>
         <View style={styles.headerContent}>
           {/* document.dir handles visual direction - keep natural order */}
-          {LogoSection}
           {NavSection}
           {ActionsSection}
         </View>
@@ -416,11 +406,6 @@ const styles = StyleSheet.create({
   },
   adminLinkText: {
     color: '#ef4444',
-  },
-  logoSection: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing.md,
   },
   soundwaveContainer: {
     height: IS_TV_BUILD ? 60 : 44,

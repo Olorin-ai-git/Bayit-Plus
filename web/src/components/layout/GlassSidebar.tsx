@@ -17,8 +17,10 @@ import {
   Image,
 } from 'react-native';
 import { useTranslation } from 'react-i18next';
-import { useNavigate, useLocation } from 'react-router-dom';
+import { useNavigate, useLocation, Link } from 'react-router-dom';
 import { useModeEnforcement } from '@bayit/shared-hooks';
+import { AnimatedLogo } from '@bayit/shared';
+import { GlassButton } from '@bayit/shared/ui';
 import { colors, spacing, borderRadius } from '@bayit/shared/theme';
 import { useDirection } from '@/hooks/useDirection';
 import { useAuthStore } from '@bayit/shared-stores/authStore';
@@ -308,25 +310,28 @@ export const GlassSidebar: React.FC<GlassSidebarProps> = ({ isExpanded, onToggle
               }}
             />
           )}
-          {/* Toggle Button */}
-          <TouchableOpacity
-            onPress={isUIInteractionEnabled ? handleToggle : undefined}
-            disabled={!isUIInteractionEnabled}
-            style={[
-              styles.toggleButton,
-              !isUIInteractionEnabled && { pointerEvents: 'none' },
-            ]}
-            onFocus={() => setFocusedItem('toggle')}
-            onBlur={() => setFocusedItem(null)}
-          >
-            <View style={[
-              styles.toggleIconContainer,
-              focusedItem === 'toggle' && styles.toggleIconContainerFocused,
-              !isUIInteractionEnabled && { opacity: 0.5 },
-            ]}>
-              <Text style={styles.toggleIcon}>{getToggleIcon()}</Text>
-            </View>
-          </TouchableOpacity>
+
+          {/* Toggle Button - Glass Button at top left, half overflowing */}
+          <View style={[
+            styles.toggleButtonContainer,
+            isRTL ? { right: -20 } : { left: -20 },
+          ]}>
+            <GlassButton
+              title={getToggleIcon()}
+              onPress={isUIInteractionEnabled ? handleToggle : undefined}
+              variant="secondary"
+              size="sm"
+              style={styles.toggleGlassButton}
+              disabled={!isUIInteractionEnabled}
+            />
+          </View>
+
+          {/* Logo Section */}
+          <View style={styles.logoSection}>
+            <Link to="/" style={{ textDecoration: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <AnimatedLogo size="large" />
+            </Link>
+          </View>
 
           {/* User Profile Section */}
           <TouchableOpacity
@@ -492,31 +497,23 @@ const styles = StyleSheet.create({
     backdropFilter: 'blur(20px)',
     WebkitBackdropFilter: 'blur(20px)',
   } as any,
-  toggleButton: {
+  toggleButtonContainer: {
+    position: 'absolute',
+    top: spacing.lg,
+    zIndex: 300,
+  },
+  toggleGlassButton: {
+    width: 44,
+    height: 44,
+    minWidth: 44,
+    paddingHorizontal: 0,
+  },
+  logoSection: {
     alignItems: 'center',
     justifyContent: 'center',
-    paddingVertical: spacing.sm,
+    paddingVertical: spacing.lg,
+    paddingTop: spacing.xl * 2,
     marginBottom: spacing.md,
-    width: 80,
-    alignSelf: 'center',
-  },
-  toggleIconContainer: {
-    width: 48,
-    height: 48,
-    borderRadius: 24,
-    backgroundColor: 'transparent',
-    justifyContent: 'center',
-    alignItems: 'center',
-    borderWidth: 1,
-    borderColor: 'transparent',
-  },
-  toggleIconContainerFocused: {
-    borderColor: colors.primary,
-    backgroundColor: 'rgba(107, 33, 168, 0.3)',
-  },
-  toggleIcon: {
-    fontSize: 16,
-    color: colors.text,
   },
   userProfileSection: {
     flexDirection: 'row',

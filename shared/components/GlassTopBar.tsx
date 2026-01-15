@@ -4,7 +4,6 @@ import {
   Text,
   TouchableOpacity,
   StyleSheet,
-  Image,
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
@@ -20,8 +19,6 @@ import { useDirection } from '../hooks/useDirection';
 import { useConstantListening } from '../hooks/useConstantListening';
 import { useVoiceSettingsStore } from '../stores/voiceSettingsStore';
 import { useTVFocus } from './hooks/useTVFocus';
-
-const logo = require('../assets/logo.png');
 
 interface GlassTopBarProps {
   onMenuPress?: () => void;
@@ -145,24 +142,6 @@ export const GlassTopBar: React.FC<GlassTopBarProps> = ({
         <UserAccountMenu />
       </View>
 
-      {/* Logo - Always opposite side of menu icons */}
-      <View style={[styles.logoContainer, isRTL ? styles.logoRight : styles.logoLeft]}>
-        <Image source={logo} style={styles.logo} resizeMode="contain" />
-        <View style={styles.logoTextContainer}>
-          {isHebrew ? (
-            <>
-              <Text style={styles.logoText}>בית</Text>
-              <Text style={styles.logoPlus}>+</Text>
-            </>
-          ) : (
-            <>
-              <Text style={styles.logoPlus}>+</Text>
-              <Text style={styles.logoText}>Bayit</Text>
-            </>
-          )}
-        </View>
-      </View>
-
       {/* Right side (RTL) - Menu button (hidden on web) */}
       {!isWeb && (
         <TouchableOpacity
@@ -200,37 +179,6 @@ const styles = StyleSheet.create({
   menuIcon: {
     fontSize: 24,
     color: colors.text,
-  },
-  logoContainer: {
-    flexDirection: 'column',
-    alignItems: 'center',
-    position: 'absolute',
-  },
-  logoLeft: {
-    left: spacing.lg,
-  },
-  logoRight: {
-    right: spacing.lg,
-  },
-  logo: {
-    width: 32,
-    height: 24,
-    marginBottom: -5,
-  },
-  logoTextContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  logoText: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    color: colors.text,
-  },
-  logoPlus: {
-    fontSize: 16,
-    fontWeight: 'bold',
-    color: colors.primary,
-    marginLeft: 2,
   },
   actionsContainer: {
     flexDirection: 'row-reverse',
