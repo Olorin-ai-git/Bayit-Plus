@@ -1,5 +1,11 @@
-"""Comparison Metrics Helper Functions for HTML generation."""
+"""
+Comparison Metrics Helper Functions for HTML generation.
+
+DPA COMPLIANCE: Entity values obfuscated per Section 9.4.
+"""
 from typing import Any, Dict, Optional, Tuple
+
+from app.service.reporting.privacy_safe_display import get_display_entity_value
 
 
 def extract_window_data(
@@ -148,14 +154,24 @@ def build_comparison_table_html(
     zero_metrics_html: str,
     comparison_summary_html: str,
 ) -> str:
-    """Build HTML for a single comparison table."""
+    """
+    Build HTML for a single comparison table.
+
+    DPA COMPLIANCE: Entity value is obfuscated per Section 9.4.
+    """
+    # Obfuscate entity value for DPA compliance
+    obfuscated_entity = get_display_entity_value(
+        entity_value=entity_value,
+        entity_type="email"
+    )
+
     inv_id_display = investigation_id[:30] + "..." if len(investigation_id) > 30 else investigation_id
 
     rows = _build_metric_rows(window_a, window_b, delta)
 
     return f"""
     <div style="margin-bottom: 32px; padding: 20px; background: var(--panel-glass); border-radius: 12px; border: 1px solid var(--border);">
-      <h3 style="margin: 0 0 16px 0; color: var(--accent);">Comparison {index}: {entity_value}</h3>
+      <h3 style="margin: 0 0 16px 0; color: var(--accent);">Comparison {index}: {obfuscated_entity}</h3>
       <p style="color: var(--muted); margin-bottom: 16px; font-size: 13px;">
         Investigation ID: <code style="background: var(--chip); padding: 2px 6px; border-radius: 4px;">{inv_id_display}</code>
       </p>
