@@ -57,7 +57,7 @@ def fetch_olorin_transaction_scores(
             query_parts[0] = """
                 SELECT ts.transaction_id, ts.risk_score
                 FROM transaction_scores ts
-                JOIN investigation_states inv ON ts.investigation_id = inv.id
+                JOIN investigation_states inv ON ts.investigation_id = inv.investigation_id
             """
             if start_date:
                 where_clauses.append("inv.created_at >= :start_date")
@@ -112,7 +112,7 @@ def fetch_olorin_scores_with_metadata(
         query = """
             SELECT ts.transaction_id, ts.risk_score, ts.investigation_id
             FROM transaction_scores ts
-            JOIN investigation_states inv ON ts.investigation_id = inv.id
+            JOIN investigation_states inv ON ts.investigation_id = inv.investigation_id
             WHERE inv.status = 'COMPLETED'
         """
         params = {}
@@ -172,7 +172,7 @@ def get_scored_transaction_ids(
         query = """
             SELECT DISTINCT ts.transaction_id
             FROM transaction_scores ts
-            JOIN investigation_states inv ON ts.investigation_id = inv.id
+            JOIN investigation_states inv ON ts.investigation_id = inv.investigation_id
             WHERE inv.status = 'COMPLETED'
         """
         params = {}
