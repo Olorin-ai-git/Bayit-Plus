@@ -100,7 +100,6 @@ const NAV_ITEMS: NavItem[] = [
     icon: Film,
     children: [
       { key: 'content-library', labelKey: 'admin.nav.contentLibrary', route: '/admin/content' },
-      { key: 'content-import', labelKey: 'admin.nav.contentImport', route: '/admin/content/import' },
       { key: 'categories', labelKey: 'admin.nav.categories', route: '/admin/categories' },
       { key: 'live-channels', labelKey: 'admin.nav.liveChannels', route: '/admin/live-channels' },
       { key: 'radio-stations', labelKey: 'admin.nav.radioStations', route: '/admin/radio-stations' },

@@ -59,7 +59,6 @@ import LiveChannelsPage from './pages/admin/LiveChannelsPage'
 import RadioStationsPage from './pages/admin/RadioStationsPage'
 import AdminPodcastsPage from './pages/admin/PodcastsPage'
 import PodcastEpisodesPage from './pages/admin/PodcastEpisodesPage'
-import FreeContentImportPage from './pages/admin/FreeContentImportPage'
 import WidgetsPage from './pages/admin/WidgetsPage'
 import LibrarianAgentPage from './pages/admin/LibrarianAgentPage'
 import RecordingsManagementPage from './pages/admin/RecordingsManagementPage'
@@ -105,7 +104,6 @@ function App() {
         <Route path="content" element={<ContentLibraryPage />} />
         <Route path="content/new" element={<ContentEditorPage />} />
         <Route path="content/:contentId/edit" element={<ContentEditorPage />} />
-        <Route path="content/import" element={<FreeContentImportPage />} />
         <Route path="categories" element={<CategoriesPage />} />
         <Route path="live-channels" element={<LiveChannelsPage />} />
         <Route path="radio-stations" element={<RadioStationsPage />} />
