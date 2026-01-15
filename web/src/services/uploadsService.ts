@@ -141,8 +141,18 @@ export const deleteMonitoredFolder = async (folderId: string): Promise<void> => 
 /**
  * Trigger immediate scan of monitored folders
  */
-export const triggerUploadScan = async (folderId?: string): Promise<{ message: string; files_found: number }> => {
-  const params = folderId ? { folder_id: folderId } : {};
+export const triggerUploadScan = async (
+  folderId?: string,
+  options?: { moviesOnly?: boolean; seriesOnly?: boolean; audiobooksOnly?: boolean }
+): Promise<{ message: string; files_found: number }> => {
+  const params: any = folderId ? { folder_id: folderId } : {};
+  
+  if (options) {
+    if (options.moviesOnly) params.movies_only = true;
+    if (options.seriesOnly) params.series_only = true;
+    if (options.audiobooksOnly) params.audiobooks_only = true;
+  }
+  
   return uploadsApi.post('/admin/uploads/scan-now', null, { params });
 };
 

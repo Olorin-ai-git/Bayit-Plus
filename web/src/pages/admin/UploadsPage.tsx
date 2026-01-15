@@ -7,7 +7,7 @@ import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { View, Text, StyleSheet, ActivityIndicator, ScrollView, Pressable } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { colors, spacing, borderRadius, fontSize } from '@bayit/shared/theme';
-import { GlassCard, GlassButton, GlassInput, GlassModal, GlassSelect, GlassToggle, GlassDraggableExpander } from '@bayit/shared/ui';
+import { GlassCard, GlassButton, GlassInput, GlassModal, GlassSelect, GlassToggle, GlassDraggableExpander, GlassCheckbox } from '@bayit/shared/ui';
 import { Plus, Edit2, Trash2, FolderOpen, AlertCircle, X, Folder, Upload, XCircle } from 'lucide-react';
 import { useDirection } from '@/hooks/useDirection';
 import { useModal } from '@/contexts/ModalContext';
@@ -33,6 +33,9 @@ const UploadsPage: React.FC = () => {
   const [triggeringUpload, setTriggeringUpload] = useState(false);
   const [clearingQueue, setClearingQueue] = useState(false);
   const [resettingCache, setResettingCache] = useState(false);
+  const [moviesOnly, setMoviesOnly] = useState(false);
+  const [seriesOnly, setSeriesOnly] = useState(false);
+  const [audiobooksOnly, setAudiobooksOnly] = useState(false);
   const [queueStats, setQueueStats] = useState<QueueStats>({
     total_jobs: 0,
     queued: 0,
@@ -439,8 +442,15 @@ const UploadsPage: React.FC = () => {
         return;
       }
       
-      const result = await uploadsService.triggerUploadScan();
-      logger.info('Triggered upload scan', 'UploadsPage', result);
+      // Build content type options
+      const contentTypeOptions = {
+        moviesOnly,
+        seriesOnly,
+        audiobooksOnly,
+      };
+      
+      const result = await uploadsService.triggerUploadScan(undefined, contentTypeOptions);
+      logger.info('Triggered upload scan', 'UploadsPage', { ...result, filters: contentTypeOptions });
       
       // Show clear success/info message
       if (result.files_found > 0) {
@@ -501,6 +511,42 @@ const UploadsPage: React.FC = () => {
           <Text style={[styles.subtitle, { textAlign }]}>
             {t('admin.uploads.systemInfoText')}
           </Text>
+        </View>
+        
+        {/* Content Type Filters */}
+        <View style={styles.contentFilterSection}>
+          <Text style={[styles.filterTitle, { textAlign }]}>
+            {t('admin.uploads.contentTypeFilters', 'Content Type Filters')}
+          </Text>
+          <Text style={[styles.filterSubtitle, { textAlign }]}>
+            {t('admin.uploads.contentTypeFiltersHelp', 'Optional - Leave all unchecked to process all content types')}
+          </Text>
+          
+          <View style={[styles.checkboxContainer, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
+            <View style={[styles.checkboxRow, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
+              <GlassCheckbox
+                label={t('admin.uploads.moviesOnly', 'Movies Only')}
+                checked={moviesOnly}
+                onChange={setMoviesOnly}
+              />
+            </View>
+            
+            <View style={[styles.checkboxRow, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
+              <GlassCheckbox
+                label={t('admin.uploads.seriesOnly', 'Series Only')}
+                checked={seriesOnly}
+                onChange={setSeriesOnly}
+              />
+            </View>
+            
+            <View style={[styles.checkboxRow, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
+              <GlassCheckbox
+                label={t('admin.uploads.audiobooksOnly', 'Audiobooks Only')}
+                checked={audiobooksOnly}
+                onChange={setAudiobooksOnly}
+              />
+            </View>
+          </View>
         </View>
         
         <View style={[styles.actionButtonsContainer, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
@@ -848,6 +894,36 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     gap: spacing.sm,
     alignItems: 'center',
+  },
+  contentFilterSection: {
+    marginTop: spacing.md,
+    marginBottom: spacing.md,
+    padding: spacing.md,
+    backgroundColor: 'rgba(255, 255, 255, 0.03)',
+    borderRadius: borderRadius.md,
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.08)',
+  },
+  filterTitle: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: colors.text,
+    marginBottom: spacing.xs,
+  },
+  filterSubtitle: {
+    fontSize: 13,
+    color: colors.textSecondary,
+    marginBottom: spacing.md,
+  },
+  checkboxContainer: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: spacing.lg,
+  },
+  checkboxRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginRight: spacing.md,
   },
   errorContainer: {
     flexDirection: 'row',
