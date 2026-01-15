@@ -174,7 +174,7 @@ const LibrarianActivityLog: React.FC<LibrarianActivityLogProps> = ({
               </Pressable>
 
               <Text style={styles.pageText}>
-                Page {page} of {totalPages}
+                {t('admin.librarian.activityLog.pagination', 'Page {{page}} of {{totalPages}}', { page, totalPages })}
               </Text>
 
               <Pressable
@@ -270,7 +270,7 @@ const ActivityItem: React.FC<ActivityItemProps> = ({
     });
 
     if (changes.length > 0) {
-      return `Updated ${changes.join(', ')}`;
+      return t('admin.librarian.activityLog.updatedFields', 'Updated {{fields}}', { fields: changes.join(', ') });
     }
 
     return t('admin.librarian.activityLog.noDescription');

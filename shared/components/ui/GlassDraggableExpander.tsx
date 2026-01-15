@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { View, Text, Pressable, StyleSheet, Animated, PanResponder, Easing } from 'react-native';
+import { View, Text, Pressable, StyleSheet, Animated, PanResponder, Easing, ScrollView } from 'react-native';
 import { ChevronDown, ChevronUp, GripVertical } from 'lucide-react';
 import { colors, spacing, borderRadius } from '../theme';
 
@@ -8,6 +8,7 @@ interface GlassDraggableExpanderProps {
   subtitle?: string;
   badge?: React.ReactNode;
   icon?: React.ReactNode;
+  rightElement?: React.ReactNode;
   children: React.ReactNode;
   defaultExpanded?: boolean;
   onExpandChange?: (expanded: boolean) => void;
@@ -22,6 +23,7 @@ export const GlassDraggableExpander: React.FC<GlassDraggableExpanderProps> = ({
   subtitle,
   badge,
   icon,
+  rightElement,
   children,
   defaultExpanded = false,
   onExpandChange,
@@ -54,25 +56,26 @@ export const GlassDraggableExpander: React.FC<GlassDraggableExpanderProps> = ({
 
     // Parallel animations for smooth expansion/collapse
     Animated.parallel([
-      // Height animation with spring physics
+      // Height animation with spring physics for natural motion
       Animated.spring(heightAnim, {
         toValue: newExpanded ? contentHeight : 0,
         useNativeDriver: false,
-        tension: 40,
-        friction: 8,
+        tension: 50,        // Slightly increased for snappier response
+        friction: 10,       // Increased for smoother deceleration
+        overshootClamping: false, // Allow slight overshoot for natural feel
       }),
-      // Opacity fade in/out
+      // Opacity fade in/out with smooth easing
       Animated.timing(opacityAnim, {
         toValue: newExpanded ? 1 : 0,
-        duration: 200,
-        easing: Easing.ease,
+        duration: 250,      // Slightly longer for smoother transition
+        easing: Easing.inOut(Easing.ease), // Smoother acceleration/deceleration
         useNativeDriver: true,
       }),
-      // Chevron rotation
+      // Chevron rotation with smooth easing
       Animated.timing(rotateAnim, {
         toValue: newExpanded ? 1 : 0,
-        duration: 200,
-        easing: Easing.ease,
+        duration: 250,      // Match opacity duration
+        easing: Easing.inOut(Easing.ease), // Smoother acceleration/deceleration
         useNativeDriver: true,
       }),
     ]).start();
@@ -123,24 +126,38 @@ export const GlassDraggableExpander: React.FC<GlassDraggableExpanderProps> = ({
 
   return (
     <View style={[styles.container, style]}>
-      {/* Header */}
+      {/* Header - Entire header is clickable to toggle */}
       <Pressable style={styles.header} onPress={toggleExpanded}>
-        <View style={styles.headerLeft}>
-          {icon && <View style={styles.icon}>{icon}</View>}
-          <View style={styles.titleContainer}>
+        <View style={styles.headerLeft} pointerEvents="box-none">
+          {icon && <View style={styles.icon} pointerEvents="none">{icon}</View>}
+          <View style={styles.titleContainer} pointerEvents="none">
             <Text style={styles.title}>{title}</Text>
             {subtitle && <Text style={styles.subtitle}>{subtitle}</Text>}
           </View>
-          {badge && <View style={styles.badgeContainer}>{badge}</View>}
+          {badge && <View style={styles.badgeContainer} pointerEvents="none">{badge}</View>}
         </View>
-        <Animated.View 
-          style={[
-            styles.headerRight, 
-            { transform: [{ rotate: chevronRotate }] }
-          ]}
-        >
-          <ChevronDown size={20} color={colors.primary} />
-        </Animated.View>
+        <View style={styles.headerRight}>
+          {/* Right Element (e.g., mute button) - stops propagation */}
+          {rightElement && (
+            <Pressable 
+              onPress={(e) => {
+                e.stopPropagation();
+              }}
+              style={styles.rightElementContainer}
+            >
+              {rightElement}
+            </Pressable>
+          )}
+          {/* Chevron - rotates on expand/collapse */}
+          <Animated.View 
+            style={[
+              styles.chevronContainer, 
+              { transform: [{ rotate: chevronRotate }] }
+            ]}
+          >
+            <ChevronDown size={20} color={colors.primary} />
+          </Animated.View>
+        </View>
       </Pressable>
 
       {/* Expandable Content - Always rendered but animated */}
@@ -152,8 +169,15 @@ export const GlassDraggableExpander: React.FC<GlassDraggableExpanderProps> = ({
             opacity: opacityAnim,
           }
         ]}
+        pointerEvents={isExpanded ? 'auto' : 'none'}
       >
-        <View style={styles.scrollContent}>{children}</View>
+        <ScrollView 
+          style={styles.scrollContainer}
+          contentContainerStyle={styles.scrollContent}
+          showsVerticalScrollIndicator={false}
+        >
+          {children}
+        </ScrollView>
 
         {/* Draggable Handle */}
         {draggable && isExpanded && (
@@ -214,15 +238,27 @@ const styles = StyleSheet.create({
     marginLeft: spacing.sm,
   },
   headerRight: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.sm,
     marginLeft: spacing.sm,
+  },
+  rightElementContainer: {
+    // Stops propagation - clicking this won't toggle
+  },
+  chevronContainer: {
+    // Chevron rotates on expand/collapse
   },
   content: {
     overflow: 'hidden',
     position: 'relative',
   },
-  scrollContent: {
+  scrollContainer: {
     flex: 1,
+  },
+  scrollContent: {
     padding: spacing.md,
+    flexGrow: 1,
   },
   dragHandle: {
     position: 'absolute',

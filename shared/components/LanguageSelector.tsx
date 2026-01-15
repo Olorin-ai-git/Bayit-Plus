@@ -251,12 +251,12 @@ const styles = StyleSheet.create({
     zIndex: 9999,
   },
   button: {
-    width: IS_TV_BUILD ? 60 : 44,
-    height: IS_TV_BUILD ? 60 : 44,
+    width: 44,
+    height: 44,
     justifyContent: 'center',
     alignItems: 'center',
-    borderRadius: borderRadius.md,
-    backgroundColor: 'transparent',
+    borderRadius: borderRadius.lg,
+    backgroundColor: 'rgba(255, 255, 255, 0.05)',
     borderWidth: 1,
     borderColor: 'transparent',
   },
@@ -265,7 +265,7 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(107, 33, 168, 0.3)',
   },
   flag: {
-    fontSize: IS_TV_BUILD ? 32 : 24,
+    fontSize: 20,
   },
   backdrop: {
     position: 'fixed' as any,

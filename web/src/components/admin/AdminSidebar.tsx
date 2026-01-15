@@ -12,7 +12,7 @@ import {
   Film,
   Settings,
   FileText,
-  ChevronDown,
+  ChevronRight,
   LogOut,
   Home,
   GripVertical,
@@ -202,8 +202,16 @@ export default function AdminSidebar({
           >
             {Icon && <Icon size={18} color={colors.textSecondary} />}
             <Text style={[styles.navText, isRTL && styles.navTextRTL]}>{t(item.labelKey, item.key)}</Text>
-            <View style={[styles.chevron, isExpanded && styles.chevronExpanded]}>
-              <ChevronDown size={16} color={colors.textSecondary} />
+            <View 
+              style={[
+                styles.chevron, 
+                isRTL && styles.chevronRTL,
+                isExpanded && styles.chevronExpanded,
+                // @ts-ignore - Web CSS
+                { transition: 'transform 0.3s ease' }
+              ]}
+            >
+              <ChevronRight size={16} color={colors.textSecondary} />
             </View>
           </Pressable>
           {isExpanded && (
@@ -267,23 +275,6 @@ export default function AdminSidebar({
         </View>
       )}
 
-      {/* Brand */}
-      <View style={styles.brandSection}>
-        <View style={[styles.brandContent, isRTL && styles.brandContentRTL]}>
-          <View style={styles.brandIcon}>
-            <Text style={styles.brandEmoji}>🏠</Text>
-          </View>
-          <View>
-            <Text style={[styles.brandTitle, isRTL && styles.textRTL]}>
-              {t('admin.brand.title', 'Bayit+ Admin')}
-            </Text>
-            <Text style={[styles.brandSubtitle, isRTL && styles.textRTL]}>
-              {t('admin.brand.subtitle', 'System Management')}
-            </Text>
-          </View>
-        </View>
-      </View>
-
       {/* Language Selector */}
       <View style={styles.languageSection}>
         <Pressable
@@ -299,8 +290,16 @@ export default function AdminSidebar({
           <Text style={[styles.languageText, isRTL && styles.textRTL]}>
             {currentLanguage.label}
           </Text>
-          <View style={[styles.chevron, showLanguageMenu && styles.chevronExpanded]}>
-            <ChevronDown size={16} color={colors.textSecondary} />
+          <View 
+            style={[
+              styles.chevron, 
+              isRTL && styles.chevronRTL,
+              showLanguageMenu && styles.chevronExpanded,
+              // @ts-ignore - Web CSS
+              { transition: 'transform 0.3s ease' }
+            ]}
+          >
+            <ChevronRight size={16} color={colors.textSecondary} />
           </View>
         </Pressable>
 
@@ -328,25 +327,6 @@ export default function AdminSidebar({
             ))}
           </View>
         )}
-      </View>
-
-      {/* User Info */}
-      <View style={styles.userSection}>
-        <View style={[styles.userContent, isRTL && styles.userContentRTL]}>
-          <View style={styles.userAvatar}>
-            <Text style={styles.userInitial}>
-              {user?.name?.charAt(0).toUpperCase() || 'A'}
-            </Text>
-          </View>
-          <View style={styles.userInfo}>
-            <Text style={[styles.userName, isRTL && styles.textRTL]} numberOfLines={1}>
-              {user?.name || 'Admin'}
-            </Text>
-            <View style={[styles.roleBadge, isRTL && styles.roleBadgeRTL]}>
-              <Text style={styles.roleText}>{user?.role || 'Admin'}</Text>
-            </View>
-          </View>
-        </View>
       </View>
 
       {/* Navigation */}
@@ -430,39 +410,6 @@ const styles = StyleSheet.create({
     right: 'auto' as any,
     left: 0,
   },
-  brandSection: {
-    padding: spacing.md,
-    borderBottomWidth: 1,
-    borderBottomColor: 'rgba(255, 255, 255, 0.05)',
-  },
-  brandContent: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing.sm,
-  },
-  brandContentRTL: {
-    flexDirection: 'row-reverse',
-  },
-  brandIcon: {
-    width: 40,
-    height: 40,
-    borderRadius: borderRadius.md,
-    backgroundColor: colors.primary,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  brandEmoji: {
-    fontSize: 18,
-  },
-  brandTitle: {
-    fontSize: 16,
-    fontWeight: 'bold',
-    color: colors.primary,
-  },
-  brandSubtitle: {
-    fontSize: 12,
-    color: colors.textMuted,
-  },
   languageSection: {
     padding: spacing.md,
     borderBottomWidth: 1,
@@ -529,56 +476,6 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: colors.text,
   },
-  userSection: {
-    padding: spacing.md,
-    borderBottomWidth: 1,
-    borderBottomColor: 'rgba(255, 255, 255, 0.05)',
-  },
-  userContent: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing.sm,
-  },
-  userContentRTL: {
-    flexDirection: 'row-reverse',
-  },
-  userAvatar: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    backgroundColor: colors.secondary,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  userInitial: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: colors.text,
-  },
-  userInfo: {
-    flex: 1,
-    minWidth: 0,
-  },
-  userName: {
-    fontSize: 14,
-    fontWeight: '500',
-    color: colors.text,
-  },
-  roleBadge: {
-    alignSelf: 'flex-start',
-    marginTop: spacing.xs,
-    paddingHorizontal: spacing.sm,
-    paddingVertical: 2,
-    borderRadius: borderRadius.full,
-    backgroundColor: 'rgba(138, 43, 226, 0.2)',
-  },
-  roleBadgeRTL: {
-    alignSelf: 'flex-end',
-  },
-  roleText: {
-    fontSize: 11,
-    color: colors.secondary,
-  },
   nav: {
     flex: 1,
   },
@@ -620,8 +517,11 @@ const styles = StyleSheet.create({
   chevron: {
     transform: [{ rotate: '0deg' }],
   },
-  chevronExpanded: {
+  chevronRTL: {
     transform: [{ rotate: '180deg' }],
+  },
+  chevronExpanded: {
+    transform: [{ rotate: '90deg' }],
   },
   childrenContainer: {
     marginLeft: spacing.lg,

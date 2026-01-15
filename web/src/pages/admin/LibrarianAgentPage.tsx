@@ -11,7 +11,6 @@ import { useTranslation } from 'react-i18next';
 import { RefreshCw, Bot, Play, Zap, FileText, Eye, ScrollText, Trash2, Calendar, Pause, PlayCircle, XCircle } from 'lucide-react';
 import StatCard from '@/components/admin/StatCard';
 import LibrarianScheduleCard from '@/components/admin/LibrarianScheduleCard';
-import LibrarianActivityLog from '@/components/admin/LibrarianActivityLog';
 import { VoiceLibrarianControl } from '@/components/admin/VoiceLibrarianControl';
 import { GlassCard, GlassButton, GlassModal, GlassBadge, GlassTable, GlassTableColumn, GlassLog, LogEntry, GlassDraggableExpander } from '@bayit/shared/ui';
 import { colors, spacing, borderRadius } from '@bayit/shared/theme';
@@ -20,10 +19,8 @@ import {
   getLibrarianConfig,
   getLibrarianStatus,
   getAuditReports,
-  getLibrarianActions,
   getAuditReportDetails,
   triggerAudit,
-  rollbackAction as rollbackActionAPI,
   clearAuditReports,
   pauseAudit,
   resumeAudit,
@@ -32,7 +29,6 @@ import {
   LibrarianConfig,
   LibrarianStatus,
   AuditReport,
-  LibrarianAction,
   AuditReportDetail,
 } from '@/services/librarianService';
 import logger from '@/utils/logger';
@@ -46,7 +42,6 @@ const LibrarianAgentPage = () => {
   const [config, setConfig] = useState<LibrarianConfig | null>(null);
   const [status, setStatus] = useState<LibrarianStatus | null>(null);
   const [reports, setReports] = useState<AuditReport[]>([]);
-  const [actions, setActions] = useState<LibrarianAction[]>([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [triggering, setTriggering] = useState(false);
@@ -155,15 +150,13 @@ const LibrarianAgentPage = () => {
       setConfigError(null);
 
       // Now load data using config limits
-      const [statusData, reportsData, actionsData] = await Promise.all([
+      const [statusData, reportsData] = await Promise.all([
         getLibrarianStatus(),
         getAuditReports(configData.pagination.reports_limit),
-        getLibrarianActions(undefined, undefined, configData.pagination.actions_limit),
       ]);
 
       setStatus(statusData);
       setReports(reportsData);
-      setActions(actionsData);
 
       // Calculate budget used from recent audits (last 30 days)
       const thirtyDaysAgo = new Date();
@@ -274,35 +267,6 @@ const LibrarianAgentPage = () => {
     };
   }, [reports, selectedReport, livePanelReport]);
 
-  // Poll for activity log updates when audit is in progress (real-time rolling updates)
-  useEffect(() => {
-    // Only poll if there's an in-progress audit and config is loaded
-    const inProgressAudit = reports.find(r => r.status === 'in_progress');
-    if (!inProgressAudit || !config) {
-      return;
-    }
-
-    logger.info(`[Activity Polling] Polling for new actions from audit: ${inProgressAudit.audit_id}`);
-
-    // Poll every 3 seconds (slightly different from log polling to stagger requests)
-    const activityPollInterval = setInterval(async () => {
-      try {
-        const latestActions = await getLibrarianActions(
-          undefined,
-          undefined,
-          config.pagination.actions_limit
-        );
-        setActions(latestActions);
-        logger.debug(`[Activity Polling] Refreshed ${latestActions.length} actions`);
-      } catch (error) {
-        logger.error('[Activity Polling] Failed to fetch actions:', error);
-      }
-    }, 3000); // Poll every 3 seconds
-
-    return () => {
-      clearInterval(activityPollInterval);
-    };
-  }, [reports, config]);
 
   // Refresh handler
   const handleRefresh = async () => {
@@ -462,19 +426,6 @@ const LibrarianAgentPage = () => {
     }
   };
 
-  // Rollback action
-  const handleRollback = async (actionId: string) => {
-    try {
-      await rollbackActionAPI(actionId);
-      setSuccessMessage(t('admin.librarian.quickActions.rollbackSuccess'));
-      setSuccessModalOpen(true);
-      await loadData();
-    } catch (error) {
-      logger.error('Failed to rollback action:', error);
-      setErrorMessage(t('admin.librarian.errors.failedToRollback'));
-      setErrorModalOpen(true);
-    }
-  };
 
   // Convert audit report to log entries
   const generateLogEntriesFromReport = (report: AuditReportDetail): LogEntry[] => {
@@ -486,7 +437,7 @@ const LibrarianAgentPage = () => {
       id: '1',
       timestamp: baseTime,
       level: 'info',
-      message: `${t('admin.librarian.logs.auditStarted')}: ${report.audit_type.replace('_', ' ')}`,
+      message: `${t('admin.librarian.logs.auditStarted')}: ${t(`admin.librarian.auditTypes.${report.audit_type}`, report.audit_type.replace('_', ' '))}`,
       source: t('admin.librarian.logs.source.librarian'),
     });
 
@@ -1105,7 +1056,7 @@ const LibrarianAgentPage = () => {
       {/* Live Audit Log Panel */}
       <GlassDraggableExpander
         title={t('admin.librarian.logs.liveAuditLog')}
-        subtitle={livePanelReport ? `${t('admin.librarian.logs.auditType')}: ${livePanelReport.audit_type.replace('_', ' ')}` : undefined}
+        subtitle={livePanelReport ? `${t('admin.librarian.logs.auditType')}: ${t(`admin.librarian.auditTypes.${livePanelReport.audit_type}`, livePanelReport.audit_type.replace('_', ' '))}` : undefined}
         icon={
           livePanelReport?.status === 'in_progress' ? (
             <ActivityIndicator size="small" color={colors.primary} />
@@ -1140,7 +1091,7 @@ const LibrarianAgentPage = () => {
             </Text>
           </View>
         ) : livePanelReport ? (
-          <View style={{ flex: 1 }}>
+          <View style={{ flex: 1, minHeight: 0 }}>
             <View style={styles.livePanelInfo}>
               <View>
                 <Text style={styles.livePanelInfoText}>
@@ -1160,31 +1111,34 @@ const LibrarianAgentPage = () => {
                     <GlassButton
                       title={t('admin.librarian.audit.pause', 'Pause')}
                       variant="secondary"
-                      size="sm"
-                      icon={<Pause size={14} color={colors.text} />}
+                      size="md"
+                      icon={<Pause size={16} color={colors.text} />}
                       onPress={handlePauseAudit}
                       loading={pausingAudit}
                       disabled={pausingAudit || cancellingAudit}
+                      style={styles.auditControlButton}
                     />
                   ) : (
                     <GlassButton
                       title={t('admin.librarian.audit.resume', 'Resume')}
-                      variant="primary"
-                      size="sm"
-                      icon={<PlayCircle size={14} color={colors.text} />}
+                      variant="secondary"
+                      size="md"
+                      icon={<PlayCircle size={16} color={colors.text} />}
                       onPress={handleResumeAudit}
                       loading={resumingAudit}
                       disabled={resumingAudit || cancellingAudit}
+                      style={styles.auditControlButton}
                     />
                   )}
                   <GlassButton
                     title={t('admin.librarian.audit.cancel', 'Cancel')}
-                    variant="ghost"
-                    size="sm"
-                    icon={<XCircle size={14} color={colors.error} />}
+                    variant="secondary"
+                    size="md"
+                    icon={<XCircle size={16} color={colors.error} />}
                     onPress={handleCancelAudit}
                     loading={cancellingAudit}
                     disabled={pausingAudit || resumingAudit || cancellingAudit}
+                    style={styles.auditControlButton}
                     textStyle={{ color: colors.error }}
                   />
                 </View>
@@ -1217,27 +1171,29 @@ const LibrarianAgentPage = () => {
               </View>
             )}
 
-            <GlassLog
-              logs={[...livePanelReport.execution_logs].reverse()}
-              title={t('admin.librarian.logs.executionLog')}
-              searchPlaceholder={t('admin.librarian.logs.searchPlaceholder')}
-              emptyMessage={t('admin.librarian.logs.noLogs')}
-              levelLabels={{
-                debug: t('admin.librarian.logs.levels.debug'),
-                info: t('admin.librarian.logs.levels.info'),
-                warn: t('admin.librarian.logs.levels.warn'),
-                error: t('admin.librarian.logs.levels.error'),
-                success: t('admin.librarian.logs.levels.success'),
-                trace: t('admin.librarian.logs.levels.trace'),
-              }}
-              showSearch
-              showLevelFilter
-              showDownload
-              autoScroll
-              maxHeight={1200}
-              animateEntries
-              typewriterSpeed={50}
-            />
+            <View style={{ flex: 1, minHeight: 0 }}>
+              <GlassLog
+                logs={[...livePanelReport.execution_logs].reverse()}
+                title={t('admin.librarian.logs.executionLog')}
+                searchPlaceholder={t('admin.librarian.logs.searchPlaceholder')}
+                emptyMessage={t('admin.librarian.logs.noLogs')}
+                levelLabels={{
+                  debug: t('admin.librarian.logs.levels.debug'),
+                  info: t('admin.librarian.logs.levels.info'),
+                  warn: t('admin.librarian.logs.levels.warn'),
+                  error: t('admin.librarian.logs.levels.error'),
+                  success: t('admin.librarian.logs.levels.success'),
+                  trace: t('admin.librarian.logs.levels.trace'),
+                }}
+                showSearch
+                showLevelFilter
+                showDownload
+                autoScroll
+                maxHeight={1200}
+                animateEntries
+                typewriterSpeed={50}
+              />
+            </View>
           </View>
         ) : (
           <View style={styles.emptyState}>
@@ -1332,23 +1288,6 @@ const LibrarianAgentPage = () => {
         )}
       </GlassDraggableExpander>
 
-      {/* Activity Log */}
-      <GlassDraggableExpander
-        title={t('admin.librarian.activityLog.title')}
-        subtitle={actions.length > 0 ? t('admin.librarian.activityLog.subtitle', `${actions.length} actions recorded`) : undefined}
-        icon={<ScrollText size={20} color={colors.primary} />}
-        defaultExpanded={false}
-        draggable={true}
-        minHeight={200}
-        maxHeight={600}
-        style={{ marginTop: spacing.lg }}
-      >
-        <LibrarianActivityLog
-          actions={actions}
-          onRollback={handleRollback}
-          config={config}
-        />
-      </GlassDraggableExpander>
 
       {/* Confirmation Modal for AI Agent */}
       <GlassModal
@@ -1981,8 +1920,14 @@ const styles = StyleSheet.create({
   },
   auditControlButtons: {
     flexDirection: 'row',
-    gap: spacing.sm,
+    gap: spacing.md,
     alignItems: 'center',
+  },
+  auditControlButton: {
+    minWidth: 120,
+    backgroundColor: 'rgba(255, 255, 255, 0.05)',
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.1)',
   },
   connectingState: {
     alignItems: 'center',

@@ -19,7 +19,6 @@ import {
 import { useTranslation } from 'react-i18next';
 import { useNavigate, useLocation, Link } from 'react-router-dom';
 import { useModeEnforcement } from '@bayit/shared-hooks';
-import { AnimatedLogo } from '@bayit/shared';
 import { GlassButton } from '@bayit/shared/ui';
 import { colors, spacing, borderRadius } from '@bayit/shared/theme';
 import { useDirection } from '@/hooks/useDirection';
@@ -264,9 +263,9 @@ export const GlassSidebar: React.FC<GlassSidebarProps> = ({ isExpanded, onToggle
   // Toggle icon based on direction and expanded state
   const getToggleIcon = () => {
     if (isRTL) {
-      return isExpanded ? '▶' : '◀';
-    } else {
       return isExpanded ? '◀' : '▶';
+    } else {
+      return isExpanded ? '▶' : '◀';
     }
   };
 
@@ -311,10 +310,10 @@ export const GlassSidebar: React.FC<GlassSidebarProps> = ({ isExpanded, onToggle
             />
           )}
 
-          {/* Toggle Button - Glass Button at top left, half overflowing */}
+          {/* Toggle Button - Glass Button at edge, half overflowing */}
           <View style={[
             styles.toggleButtonContainer,
-            isRTL ? { right: -20 } : { left: -20 },
+            isRTL ? { left: -20 } : { right: -20 },
           ]}>
             <GlassButton
               title={getToggleIcon()}
@@ -326,11 +325,22 @@ export const GlassSidebar: React.FC<GlassSidebarProps> = ({ isExpanded, onToggle
             />
           </View>
 
-          {/* Logo Section */}
+          {/* Logo Section - placeholder maintained when collapsed */}
           <View style={styles.logoSection}>
-            <Link to="/" style={{ textDecoration: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-              <AnimatedLogo size="large" />
-            </Link>
+            {showLabels ? (
+              <Link to="/" style={{ textDecoration: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <Image 
+                  source={{ uri: '/Bayit-Plus-Logo-Transparent.png' }} 
+                  style={[
+                    styles.houseLogo,
+                    styles.houseLogoExpanded,
+                  ]}
+                  resizeMode="contain"
+                />
+              </Link>
+            ) : (
+              <View style={styles.logoPlaceholder} />
+            )}
           </View>
 
           {/* User Profile Section */}
@@ -484,7 +494,7 @@ const styles = StyleSheet.create({
     top: 0,
     bottom: 0,
     zIndex: 100,
-    overflow: 'hidden',
+    overflow: 'visible',
   },
   sidebar: {
     flex: 1,
@@ -499,21 +509,36 @@ const styles = StyleSheet.create({
   } as any,
   toggleButtonContainer: {
     position: 'absolute',
-    top: spacing.lg,
-    zIndex: 300,
+    top: spacing.xl * 2,
+    zIndex: 9999,
   },
   toggleGlassButton: {
     width: 44,
     height: 44,
     minWidth: 44,
     paddingHorizontal: 0,
+    opacity: 0.5,
+    backgroundColor: 'transparent',
+    borderWidth: 2,
+    borderColor: colors.primary,
   },
   logoSection: {
     alignItems: 'center',
     justifyContent: 'center',
-    paddingVertical: spacing.lg,
-    paddingTop: spacing.xl * 2,
-    marginBottom: spacing.md,
+    paddingVertical: spacing.xs,
+    paddingTop: spacing.xl + spacing.sm,
+    marginBottom: spacing.xs,
+  },
+  houseLogo: {
+    transition: 'width 0.3s, height 0.3s',
+  } as any,
+  houseLogoExpanded: {
+    width: 180,
+    height: 180,
+  },
+  logoPlaceholder: {
+    width: 48,
+    height: 180, // Same height as expanded logo to maintain spacing
   },
   userProfileSection: {
     flexDirection: 'row',

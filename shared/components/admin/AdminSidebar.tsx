@@ -10,7 +10,6 @@ import {
   StyleSheet,
   TouchableOpacity,
   ScrollView,
-  Image,
 } from 'react-native';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
@@ -150,8 +149,8 @@ export const AdminSidebar: React.FC = () => {
   const navigation = useNavigation<any>();
   const route = useRoute();
   const { isRTL, flexDirection, textAlign } = useDirection();
-  const { can, isAdmin, isSuperAdmin, role } = usePermissions();
-  const { user, logout } = useAuthStore();
+  const { can } = usePermissions();
+  const { logout } = useAuthStore();
   const [expandedItems, setExpandedItems] = useState<string[]>(['billing', 'subscriptions', 'marketing']);
 
   const toggleExpand = (key: string) => {
@@ -202,7 +201,7 @@ export const AdminSidebar: React.FC = () => {
           </Text>
           {hasChildren && (
             <Text style={styles.expandIcon}>
-              {isExpanded ? '▼' : '▶'}
+              {isExpanded ? (isRTL ? '◀' : '▶') : (isRTL ? '▶' : '◀')}
             </Text>
           )}
         </TouchableOpacity>
@@ -216,53 +215,18 @@ export const AdminSidebar: React.FC = () => {
     );
   };
 
-  const getRoleBadgeColor = () => {
-    switch (role) {
-      case 'super_admin':
-        return colors.error;
-      case 'admin':
-        return colors.secondary;
-      case 'content_manager':
-        return colors.primary;
-      case 'billing_admin':
-        return colors.success;
-      case 'support':
-        return colors.warning;
-      default:
-        return colors.textMuted;
-    }
-  };
-
   return (
     <View style={styles.container}>
-      {/* Logo / Brand */}
-      <View style={[styles.brandContainer, { flexDirection }]}>
-        <View style={[styles.brandLogo, rtlSpacing(isRTL, spacing.sm)]}>
-          <Text style={styles.brandIcon}>🏠</Text>
-        </View>
-        <Text style={[styles.brandText, { textAlign }]}>{t('admin.brand.title', 'Bayit+ Admin')}</Text>
-      </View>
-
-      {/* User Info */}
-      <View style={[styles.userContainer, { flexDirection }]}>
-        <View style={[styles.userAvatar, rtlSpacing(isRTL, spacing.sm)]}>
-          {user?.avatar ? (
-            <Image source={{ uri: user.avatar }} style={styles.avatarImage} />
-          ) : (
-            <Text style={styles.avatarInitial}>
-              {user?.name?.charAt(0).toUpperCase() || 'A'}
-            </Text>
-          )}
-        </View>
-        <View style={styles.userInfo}>
-          <Text style={[styles.userName, { textAlign }]} numberOfLines={1}>
-            {user?.name || 'Admin'}
+      {/* Header - Brand & User Info Combined */}
+      <View style={styles.headerContainer}>
+        {/* Brand Title */}
+        <View style={styles.brandTitleContainer}>
+          <Text style={[styles.brandTitle, { textAlign }]}>
+            {t('admin.brand.title', 'Bayit+ Admin')}
           </Text>
-          <View style={[styles.roleBadge, { backgroundColor: getRoleBadgeColor() }]}>
-            <Text style={[styles.roleText, { textAlign }]}>
-              {t(`admin.roles.${role || 'user'}`, (role || 'user').replace('_', ' '))}
-            </Text>
-          </View>
+          <Text style={[styles.brandSubtitle, { textAlign }]}>
+            {t('admin.brand.subtitle', 'System Management')}
+          </Text>
         </View>
       </View>
 
@@ -301,76 +265,27 @@ const styles = StyleSheet.create({
     borderRightColor: colors.glassBorder,
     height: '100%',
   },
-  brandContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
+  headerContainer: {
     padding: spacing.lg,
+    paddingBottom: spacing.md,
     borderBottomWidth: 1,
     borderBottomColor: colors.glassBorder,
+    gap: spacing.md,
   },
-  brandLogo: {
-    width: 40,
-    height: 40,
-    borderRadius: borderRadius.md,
-    backgroundColor: colors.secondary,
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginRight: spacing.sm,
-  },
-  brandIcon: {
-    fontSize: 20,
-  },
-  brandText: {
-    fontSize: fontSize.lg,
-    fontWeight: 'bold',
-    color: colors.text,
-  },
-  userContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    padding: spacing.md,
+  brandTitleContainer: {
+    paddingBottom: spacing.sm,
     borderBottomWidth: 1,
-    borderBottomColor: colors.glassBorder,
+    borderBottomColor: colors.glassBorderLight,
   },
-  userAvatar: {
-    width: 44,
-    height: 44,
-    borderRadius: 22,
-    backgroundColor: colors.secondary,
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginRight: spacing.sm,
-  },
-  avatarImage: {
-    width: 44,
-    height: 44,
-    borderRadius: 22,
-  },
-  avatarInitial: {
-    fontSize: fontSize.lg,
+  brandTitle: {
+    fontSize: fontSize.xl,
     fontWeight: 'bold',
-    color: colors.text,
-  },
-  userInfo: {
-    flex: 1,
-  },
-  userName: {
-    fontSize: fontSize.md,
-    fontWeight: '600',
-    color: colors.text,
+    color: colors.primary,
     marginBottom: spacing.xs,
   },
-  roleBadge: {
-    paddingHorizontal: spacing.sm,
-    paddingVertical: 2,
-    borderRadius: borderRadius.sm,
-    alignSelf: 'flex-start',
-  },
-  roleText: {
-    fontSize: fontSize.xs,
-    fontWeight: '600',
-    color: colors.text,
-    textTransform: 'capitalize',
+  brandSubtitle: {
+    fontSize: fontSize.sm,
+    color: colors.textMuted,
   },
   navContainer: {
     flex: 1,

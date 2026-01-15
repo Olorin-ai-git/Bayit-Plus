@@ -6,7 +6,6 @@ import {
   StyleSheet,
   Animated,
   ScrollView,
-  Image,
 } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { useNavigation } from '@react-navigation/native';
@@ -89,16 +88,11 @@ export const GlassSidebar: React.FC<GlassSidebarProps> = ({ isExpanded, onToggle
   const { t } = useTranslation();
   const { isRTL, textAlign } = useDirection();
   const navigation = useNavigation<any>();
-  const { user, isAuthenticated, logout } = useAuthStore();
+  const { user, logout } = useAuthStore();
   const widthAnim = useRef(new Animated.Value(isExpanded ? EXPANDED_WIDTH : COLLAPSED_WIDTH)).current;
   const opacityAnim = useRef(new Animated.Value(isExpanded ? 1 : 0)).current;
   const [focusedItem, setFocusedItem] = useState<string | null>(null);
   const [currentRoute, setCurrentRoute] = useState<string>(activeRoute || 'Home');
-
-  // User display info
-  const displayName = user?.name || t('account.guest', 'Guest');
-  const displayInitial = displayName.charAt(0).toUpperCase();
-  const subscriptionPlan = user?.subscription?.plan || 'basic';
 
   // Dynamically add Admin menu item if user is admin
   const menuSections = useMemo(() => {
@@ -224,64 +218,6 @@ export const GlassSidebar: React.FC<GlassSidebarProps> = ({ isExpanded, onToggle
           </View>
         </TouchableOpacity>
 
-        {/* User Profile Section */}
-        <TouchableOpacity
-          onPress={() => {
-            if (isAuthenticated) {
-              navigation.navigate('Main', { screen: 'Profile' });
-            } else {
-              navigation.navigate('Login');
-            }
-          }}
-          onFocus={() => setFocusedItem('profile-section')}
-          onBlur={() => setFocusedItem(null)}
-          style={[
-            styles.userProfileSection,
-            {
-              justifyContent: isExpanded ? 'flex-start' : 'center',
-              paddingHorizontal: isExpanded ? spacing.sm : 0,
-            },
-            focusedItem === 'profile-section' && styles.userProfileSectionFocused,
-          ]}
-        >
-          <View style={[
-            styles.userAvatar,
-            isAuthenticated && styles.userAvatarAuthenticated,
-          ]}>
-            {user?.avatar ? (
-              <Image
-                source={{ uri: user.avatar }}
-                style={styles.userAvatarImage}
-              />
-            ) : (
-              <Text style={styles.userAvatarText}>{displayInitial}</Text>
-            )}
-            {isAuthenticated && (
-              <View style={styles.onlineBadge} />
-            )}
-          </View>
-          {isExpanded && (
-            <Animated.View style={[styles.userInfoContainer, { opacity: opacityAnim }]}>
-              <Text style={[styles.userName, { textAlign }]} numberOfLines={1}>
-                {displayName}
-              </Text>
-              {isAuthenticated ? (
-                <View style={styles.subscriptionBadge}>
-                  <Text style={styles.subscriptionText}>
-                    {subscriptionPlan === 'premium' ? t('account.premium', 'Premium') : t('account.basic', 'Basic')}
-                  </Text>
-                </View>
-              ) : (
-                <Text style={[styles.loginPrompt, { textAlign }]}>
-                  {t('account.tapToLogin', 'Tap to login')}
-                </Text>
-              )}
-            </Animated.View>
-          )}
-        </TouchableOpacity>
-
-        <View style={styles.profileDivider} />
-
         <ScrollView
           style={styles.menuContainer}
           showsVerticalScrollIndicator={false}
@@ -290,7 +226,7 @@ export const GlassSidebar: React.FC<GlassSidebarProps> = ({ isExpanded, onToggle
           {menuSections.map((section, sectionIndex) => (
             <View key={sectionIndex} style={styles.section}>
               {/* Section Title (only when expanded and has title) */}
-              {section.titleKey && isExpanded && (
+              {isExpanded && section.titleKey && (
                 <Animated.Text
                   style={[
                     styles.sectionTitle,
@@ -344,8 +280,8 @@ export const GlassSidebar: React.FC<GlassSidebarProps> = ({ isExpanded, onToggle
                 </TouchableOpacity>
               ))}
 
-              {/* Section Divider */}
-              {sectionIndex < menuSections.length - 1 && (
+              {/* Section Divider (only when expanded) */}
+              {isExpanded && sectionIndex < menuSections.length - 1 && (
                 <View style={styles.divider} />
               )}
             </View>
@@ -409,88 +345,6 @@ const styles = StyleSheet.create({
   toggleIcon: {
     fontSize: 16,
     color: colors.text,
-  },
-  userProfileSection: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingVertical: spacing.sm,
-    marginHorizontal: spacing.xs,
-    borderRadius: borderRadius.md,
-    borderWidth: 1,
-    borderColor: 'transparent',
-  },
-  userProfileSectionFocused: {
-    backgroundColor: 'rgba(107, 33, 168, 0.3)',
-    borderColor: colors.primary,
-    borderWidth: 3,
-  },
-  userAvatar: {
-    width: IS_TV_BUILD ? 48 : 40,
-    height: IS_TV_BUILD ? 48 : 40,
-    borderRadius: IS_TV_BUILD ? 24 : 20,
-    backgroundColor: 'rgba(255, 255, 255, 0.1)',
-    justifyContent: 'center',
-    alignItems: 'center',
-    borderWidth: 2,
-    borderColor: 'rgba(255, 255, 255, 0.2)',
-  },
-  userAvatarAuthenticated: {
-    backgroundColor: colors.primary,
-    borderColor: colors.primary,
-  },
-  userAvatarText: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    color: colors.text,
-  },
-  userAvatarImage: {
-    width: IS_TV_BUILD ? 44 : 36,
-    height: IS_TV_BUILD ? 44 : 36,
-    borderRadius: IS_TV_BUILD ? 22 : 18,
-  },
-  onlineBadge: {
-    position: 'absolute',
-    bottom: 2,
-    right: 2,
-    width: 12,
-    height: 12,
-    borderRadius: 6,
-    backgroundColor: '#22c55e',
-    borderWidth: 2,
-    borderColor: colors.background,
-  },
-  userInfoContainer: {
-    flex: 1,
-    marginStart: spacing.md,
-    paddingEnd: spacing.sm,
-  },
-  userName: {
-    fontSize: 16,
-    fontWeight: 'bold',
-    color: colors.text,
-    marginBottom: 2,
-  },
-  subscriptionBadge: {
-    alignSelf: 'flex-start',
-    paddingHorizontal: spacing.sm,
-    paddingVertical: 2,
-    borderRadius: borderRadius.sm,
-    backgroundColor: 'rgba(107, 33, 168, 0.3)',
-  },
-  subscriptionText: {
-    fontSize: 11,
-    color: colors.primary,
-    fontWeight: 'bold',
-  },
-  loginPrompt: {
-    fontSize: 12,
-    color: colors.textSecondary,
-  },
-  profileDivider: {
-    height: 1,
-    backgroundColor: colors.glassBorder,
-    marginVertical: spacing.sm,
-    marginHorizontal: spacing.md,
   },
   menuContainer: {
     flex: 1,

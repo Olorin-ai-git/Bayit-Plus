@@ -164,7 +164,7 @@ export default function Footer() {
           {!isExpanded && (
             <>
               <View style={styles.collapsedBrand}>
-                <AnimatedLogo size="small" />
+                <AnimatedLogo size="small" hideHouse={true} />
               </View>
               <Text style={styles.collapsedCopyright}>
                 {t('footer.copyright', '© {{year}} Bayit+. All rights reserved.', {
@@ -194,7 +194,7 @@ export default function Footer() {
             <View style={[styles.brandSection, isMobile && styles.brandSectionMobile]}>
               <Link to="/" style={{ textDecoration: 'none' }}>
                 <View style={styles.logoContainer}>
-                  <AnimatedLogo size="medium" />
+                  <AnimatedLogo size="medium" hideHouse={true} />
                 </View>
               </Link>
               <Text style={[styles.brandDescription, isRTL && styles.textRTL]}>

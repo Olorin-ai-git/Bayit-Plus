@@ -1351,6 +1351,10 @@
         "failedToTrigger": "נכשל בהפעלת ביקורת. אנא נסה שוב.",
         "failedToLoadDetails": "נכשל בטעינת פרטי הדוח.",
         "failedToRollback": "נכשל בביטול הפעולה.",
+        "failedToClearReports": "נכשל בניקוי דוחות הביקורת. אנא נסה שוב.",
+        "failedToPause": "נכשל בהשהיית הביקורת",
+        "failedToResume": "נכשל בחידוש הביקורת",
+        "failedToCancel": "נכשל בביטול הביקורת",
         "budgetExceeded": "חרגת ממגבלת התקציב החודשית. לא ניתן להריץ ביקורת.",
         "contactAdmin": "דף הספרן לא יכול להיטען ללא תצורה נכונה.\nאנא צור קשר עם המנהל שלך."
       },
@@ -1413,6 +1417,7 @@
       },
       "schedules": {
         "title": "ביקורות מתוזמנות",
+        "subtitle": "הגדר לוחות זמנים יומיים ושבועיים לביקורות",
         "dailyTitle": "ביקורת יומית",
         "weeklyTitle": "ביקורת AI שבועית",
         "schedule": "לוח זמנים",
@@ -1447,6 +1452,8 @@
         "emptyMessage": "עדיין אין דוחות ביקורת",
         "totalReports": "{{count}} דוח(ות)",
         "clearAll": "נקה הכל",
+        "confirmClearAll": "האם אתה בטוח שברצונך לנקות את כל דוחות הביקורת? פעולה זו לא ניתנת לביטול.",
+        "clearedSuccessfully": "כל דוחות הביקורת נוקו בהצלחה",
         "viewLogs": "הצג לוגים",
         "viewDetails": "הצג פרטים",
         "columns": {
@@ -1522,7 +1529,10 @@
         },
         "pause": "השהה",
         "resume": "המשך",
-        "cancel": "בטל"
+        "cancel": "בטל",
+        "pauseSuccess": "הביקורת הושהתה בהצלחה",
+        "resumeSuccess": "הביקורת חודשה בהצלחה",
+        "cancelSuccess": "הביקורת בוטלה בהצלחה"
       },
       "progress": {
         "batch": "אצווה {{current}} מתוך {{total}}",
@@ -1530,10 +1540,13 @@
       },
       "activityLog": {
         "title": "יומן פעילות",
+        "subtitle": "{{count}} פעולות תועדו",
         "filterByType": "סנן לפי סוג",
         "allActions": "כל הפעולות",
         "content": "תוכן",
         "noDescription": "אין תיאור זמין",
+        "updatedFields": "עודכן: {{fields}}",
+        "pagination": "עמוד {{page}} מתוך {{totalPages}}",
         "issueType": "סוג בעיה",
         "confidence": "רמת ביטחון",
         "autoApproved": "אושר אוטומטית",

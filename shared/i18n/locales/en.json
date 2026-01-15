@@ -1481,6 +1481,9 @@
         "failedToLoadDetails": "Failed to load report details.",
         "failedToRollback": "Failed to rollback action.",
         "failedToClearReports": "Failed to clear audit reports. Please try again.",
+        "failedToPause": "Failed to pause audit",
+        "failedToResume": "Failed to resume audit",
+        "failedToCancel": "Failed to cancel audit",
         "budgetExceeded": "Monthly budget limit exceeded. Cannot run audit.",
         "contactAdmin": "The Librarian page cannot load without proper configuration.\nPlease contact your administrator."
       },
@@ -1543,6 +1546,7 @@
       },
       "schedules": {
         "title": "Scheduled Audits",
+        "subtitle": "Configure daily and weekly audit schedules",
         "dailyTitle": "Daily Audit",
         "weeklyTitle": "Weekly AI Audit",
         "schedule": "Schedule",
@@ -1654,7 +1658,10 @@
         },
         "pause": "Pause",
         "resume": "Resume",
-        "cancel": "Cancel"
+        "cancel": "Cancel",
+        "pauseSuccess": "Audit paused successfully",
+        "resumeSuccess": "Audit resumed successfully",
+        "cancelSuccess": "Audit cancelled successfully"
       },
       "progress": {
         "batch": "Batch {{current}} of {{total}}",
@@ -1662,10 +1669,13 @@
       },
       "activityLog": {
         "title": "Activity Log",
+        "subtitle": "{{count}} actions recorded",
         "filterByType": "Filter by type",
         "allActions": "All Actions",
         "content": "Content",
         "noDescription": "No description available",
+        "updatedFields": "Updated {{fields}}",
+        "pagination": "Page {{page}} of {{totalPages}}",
         "issueType": "Issue Type",
         "confidence": "Confidence",
         "autoApproved": "Auto-approved",

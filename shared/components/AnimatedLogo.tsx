@@ -8,11 +8,15 @@ const logo = require('../assets/logo.png');
 interface AnimatedLogoProps {
   onAnimationComplete?: () => void;
   size?: 'small' | 'medium' | 'large';
+  logoScale?: number; // Custom scale multiplier for logo only
+  hideHouse?: boolean; // Hide the house image, show only text
 }
 
 export const AnimatedLogo: React.FC<AnimatedLogoProps> = ({
   onAnimationComplete,
   size = 'large',
+  logoScale = 1,
+  hideHouse = false,
 }) => {
   const { i18n } = useTranslation();
   const { isRTL } = useDirection();
@@ -82,21 +86,23 @@ export const AnimatedLogo: React.FC<AnimatedLogoProps> = ({
   return (
     <View style={[styles.container, isSmall && styles.containerSmall]}>
       {/* Animated Logo Image - appears after text */}
-      <Animated.View
-        style={[
-          styles.logoContainer,
-          isSmall && styles.logoContainerSmall,
-          {
-            opacity: logoOpacity,
-          },
-        ]}
-      >
-        <Image
-          source={logo}
-          style={[styles.logo, { width: currentSize.logo, height: currentSize.logoHeight }]}
-          resizeMode="contain"
-        />
-      </Animated.View>
+      {!hideHouse && (
+        <Animated.View
+          style={[
+            styles.logoContainer,
+            isSmall && styles.logoContainerSmall,
+            {
+              opacity: logoOpacity,
+            },
+          ]}
+        >
+          <Image
+            source={logo}
+            style={[styles.logo, { width: currentSize.logo * logoScale, height: currentSize.logoHeight * logoScale }]}
+            resizeMode="contain"
+          />
+        </Animated.View>
+      )}
 
       {/* Animated Text - order changes based on language */}
       <View style={styles.textContainer}>

@@ -538,12 +538,12 @@ export const VoiceSearchButton: React.FC<VoiceSearchButtonProps> = ({
 
 const styles = StyleSheet.create({
   button: {
-    width: IS_TV_BUILD ? 60 : 44,
-    height: IS_TV_BUILD ? 60 : 44,
+    width: 44,
+    height: 44,
     justifyContent: 'center',
     alignItems: 'center',
-    borderRadius: borderRadius.md,
-    backgroundColor: 'transparent',
+    borderRadius: borderRadius.lg,
+    backgroundColor: 'rgba(255, 255, 255, 0.05)',
     borderWidth: 1,
     borderColor: 'transparent',
     position: 'relative',
