@@ -2,6 +2,8 @@
 Librarian API Routes
 Admin endpoints for managing the Librarian AI Agent
 """
+import asyncio
+import logging
 from datetime import datetime, timedelta
 from typing import Optional, List
 from fastapi import APIRouter, HTTPException, status, Depends, BackgroundTasks, Request, Header
@@ -18,9 +20,44 @@ from app.services.librarian_service import (
 )
 from app.services.ai_agent_service import run_ai_agent_audit
 from app.services.auto_fixer import rollback_action
+from app.services.audit_task_manager import audit_task_manager
 from app.core.config import settings
 
+logger = logging.getLogger(__name__)
 router = APIRouter()
+
+
+# ============ AUDIT TASK WRAPPER ============
+
+async def run_audit_with_tracking(
+    audit_id: str,
+    audit_func,
+    **kwargs
+):
+    """
+    Wrapper to run an audit function and track it with the task manager.
+    Handles cancellation and cleanup properly.
+    """
+    try:
+        logger.info(f"Starting tracked audit {audit_id}")
+        await audit_func(**kwargs, audit_id=audit_id)
+        logger.info(f"Completed tracked audit {audit_id}")
+    except asyncio.CancelledError:
+        logger.info(f"Audit {audit_id} was cancelled")
+        # Update the audit status to cancelled
+        try:
+            audit = await AuditReport.get(audit_id)
+            if audit:
+                audit.status = "cancelled"
+                await audit.save()
+        except Exception as e:
+            logger.error(f"Failed to update cancelled audit status: {e}")
+        raise
+    except Exception as e:
+        logger.error(f"Error in tracked audit {audit_id}: {e}", exc_info=True)
+        raise
+    finally:
+        audit_task_manager.unregister_task(audit_id)
 
 
 # ============ REQUEST/RESPONSE MODELS ============
@@ -322,24 +359,47 @@ async def trigger_librarian_audit(
             if language not in ["en", "es", "he"]:
                 language = "en"
 
+        # Create audit report immediately to get an ID
+        audit = AuditReport(
+            audit_date=datetime.utcnow(),
+            audit_type=request.audit_type if not request.use_ai_agent else "ai_agent",
+            status="in_progress",
+            execution_time_seconds=0,
+            metadata={
+                "dry_run": request.dry_run,
+                "use_ai_agent": request.use_ai_agent or request.audit_type == "ai_agent",
+                "language": language,
+                "last_24_hours_only": request.last_24_hours_only,
+                "cyb_titles_only": request.cyb_titles_only,
+                "tmdb_posters_only": request.tmdb_posters_only,
+                "opensubtitles_enabled": request.opensubtitles_enabled
+            }
+        )
+        await audit.save()
+        audit_id = str(audit.id)
+
         # Determine which mode to use
         if request.use_ai_agent or request.audit_type == "ai_agent":
             # AI Agent mode - Claude makes autonomous decisions
-            background_tasks.add_task(
-                run_ai_agent_audit,
-                audit_type="ai_agent",
-                dry_run=request.dry_run,
-                max_iterations=request.max_iterations,
-                budget_limit_usd=request.budget_limit_usd,
-                language=language,
-                last_24_hours_only=request.last_24_hours_only,
-                cyb_titles_only=request.cyb_titles_only,
-                tmdb_posters_only=request.tmdb_posters_only,
-                opensubtitles_enabled=request.opensubtitles_enabled
+            task = asyncio.create_task(
+                run_audit_with_tracking(
+                    audit_id=audit_id,
+                    audit_func=run_ai_agent_audit,
+                    audit_type="ai_agent",
+                    dry_run=request.dry_run,
+                    max_iterations=request.max_iterations,
+                    budget_limit_usd=request.budget_limit_usd,
+                    language=language,
+                    last_24_hours_only=request.last_24_hours_only,
+                    cyb_titles_only=request.cyb_titles_only,
+                    tmdb_posters_only=request.tmdb_posters_only,
+                    opensubtitles_enabled=request.opensubtitles_enabled
+                )
             )
+            audit_task_manager.register_task(audit_id, task)
 
             return TriggerAuditResponse(
-                audit_id="running",
+                audit_id=audit_id,
                 status="started",
                 message=f"🤖 AI Agent audit started (autonomous mode, {'DRY RUN' if request.dry_run else 'LIVE'}). Claude will decide what to check and fix. Check back soon for results."
             )
@@ -352,19 +412,23 @@ async def trigger_librarian_audit(
                     detail=f"Invalid audit_type. Must be one of: {', '.join(valid_types + ['ai_agent'])}"
                 )
 
-            background_tasks.add_task(
-                run_daily_audit,
-                audit_type=request.audit_type,
-                dry_run=request.dry_run,
-                language=language,
-                last_24_hours_only=request.last_24_hours_only,
-                cyb_titles_only=request.cyb_titles_only,
-                tmdb_posters_only=request.tmdb_posters_only,
-                opensubtitles_enabled=request.opensubtitles_enabled
+            task = asyncio.create_task(
+                run_audit_with_tracking(
+                    audit_id=audit_id,
+                    audit_func=run_daily_audit,
+                    audit_type=request.audit_type,
+                    dry_run=request.dry_run,
+                    language=language,
+                    last_24_hours_only=request.last_24_hours_only,
+                    cyb_titles_only=request.cyb_titles_only,
+                    tmdb_posters_only=request.tmdb_posters_only,
+                    opensubtitles_enabled=request.opensubtitles_enabled
+                )
             )
+            audit_task_manager.register_task(audit_id, task)
 
             return TriggerAuditResponse(
-                audit_id="running",
+                audit_id=audit_id,
                 status="started",
                 message=f"Librarian audit started ({request.audit_type}, rule-based mode). Check back soon for results."
             )
@@ -581,6 +645,133 @@ async def rollback_librarian_action(
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"Failed to rollback action: {str(e)}"
+        )
+
+
+@router.post("/admin/librarian/audits/{audit_id}/pause")
+async def pause_audit(
+    audit_id: str,
+    current_user: User = Depends(require_admin())
+):
+    """Pause a running audit"""
+    try:
+        audit = await AuditReport.get(audit_id)
+        if not audit:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="Audit not found"
+            )
+        
+        if audit.status not in ["in_progress", "running"]:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail=f"Cannot pause audit with status: {audit.status}"
+            )
+        
+        # Pause the running task
+        success = await audit_task_manager.pause_task(audit_id)
+        if not success:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="Running audit task not found"
+            )
+        
+        # Update database status
+        audit.status = "paused"
+        await audit.save()
+        
+        return {"status": "paused", "message": "Audit paused successfully"}
+    
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Failed to pause audit: {str(e)}"
+        )
+
+
+@router.post("/admin/librarian/audits/{audit_id}/resume")
+async def resume_audit(
+    audit_id: str,
+    current_user: User = Depends(require_admin())
+):
+    """Resume a paused audit"""
+    try:
+        audit = await AuditReport.get(audit_id)
+        if not audit:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="Audit not found"
+            )
+        
+        if audit.status != "paused":
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail=f"Cannot resume audit with status: {audit.status}"
+            )
+        
+        # Resume the running task
+        success = await audit_task_manager.resume_task(audit_id)
+        if not success:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="Paused audit task not found"
+            )
+        
+        # Update database status
+        audit.status = "in_progress"
+        await audit.save()
+        
+        return {"status": "resumed", "message": "Audit resumed successfully"}
+    
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Failed to resume audit: {str(e)}"
+        )
+
+
+@router.post("/admin/librarian/audits/{audit_id}/cancel")
+async def cancel_audit(
+    audit_id: str,
+    current_user: User = Depends(require_admin())
+):
+    """Cancel a running or paused audit"""
+    try:
+        audit = await AuditReport.get(audit_id)
+        if not audit:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="Audit not found"
+            )
+        
+        if audit.status in ["completed", "failed", "cancelled"]:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail=f"Cannot cancel audit with status: {audit.status}"
+            )
+        
+        # Cancel the running task
+        success = await audit_task_manager.cancel_task(audit_id)
+        if not success:
+            # Task not found in manager, just update database
+            pass
+        
+        # Update database status
+        audit.status = "cancelled"
+        await audit.save()
+        
+        return {"status": "cancelled", "message": "Audit cancelled successfully"}
+    
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Failed to cancel audit: {str(e)}"
         )
 
 

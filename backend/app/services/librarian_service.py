@@ -11,6 +11,7 @@ from dataclasses import dataclass, field
 
 from app.models.content import Content, LiveChannel, Podcast, PodcastEpisode, RadioStation, Category
 from app.models.librarian import AuditReport, LibrarianAction
+from app.services.audit_task_manager import audit_task_manager
 
 logger = logging.getLogger(__name__)
 
@@ -42,7 +43,8 @@ async def run_daily_audit(
     last_24_hours_only: bool = False,
     cyb_titles_only: bool = False,
     tmdb_posters_only: bool = False,
-    opensubtitles_enabled: bool = False
+    opensubtitles_enabled: bool = False,
+    audit_id: Optional[str] = None
 ) -> AuditReport:
     """
     Main entry point for librarian audit.
@@ -68,13 +70,21 @@ async def run_daily_audit(
     logger.info(f"   Dry run: {dry_run}")
     logger.info("=" * 80)
 
-    # Create audit report
-    audit_report = AuditReport(
-        audit_type=audit_type,
-        status="in_progress",
-        audit_date=start_time,
-    )
-    await audit_report.insert()
+    # Get or create audit report
+    if audit_id:
+        audit_report = await AuditReport.get(audit_id)
+        if not audit_report:
+            raise ValueError(f"Audit report with id {audit_id} not found")
+        logger.info(f"Using existing audit report: {audit_id}")
+    else:
+        audit_report = AuditReport(
+            audit_type=audit_type,
+            status="in_progress",
+            audit_date=start_time,
+        )
+        await audit_report.insert()
+        audit_id = str(audit_report.id)
+        logger.info(f"Created new audit report: {audit_id}")
 
     try:
         # Step 1: Determine audit scope
@@ -90,6 +100,10 @@ async def run_daily_audit(
         logger.info(f"   Live channels: {len(scope.live_channel_ids)}")
         logger.info(f"   Podcast episodes: {len(scope.podcast_episode_ids)}")
         logger.info(f"   Radio stations: {len(scope.radio_station_ids)}")
+
+        # Check for cancellation/pause
+        if audit_id:
+            await audit_task_manager.check_should_continue(audit_id)
 
         # Step 2: Audit all content types in parallel
         logger.info("\n🔍 Step 2: Auditing all content types...")
@@ -119,6 +133,10 @@ async def run_daily_audit(
         if isinstance(db_health, Exception):
             logger.error(f"❌ Database maintenance failed: {db_health}")
             db_health = {"status": "failed", "error": str(db_health)}
+
+        # Check for cancellation/pause
+        if audit_id:
+            await audit_task_manager.check_should_continue(audit_id)
 
         # Step 3: Compile results
         logger.info("\n📊 Step 3: Compiling audit results...")
@@ -162,6 +180,10 @@ async def run_daily_audit(
             "manual_review_needed": len(audit_report.manual_review_needed),
             "healthy_items": (len(scope.content_ids) - total_issues),
         }
+
+        # Check for cancellation/pause
+        if audit_id:
+            await audit_task_manager.check_should_continue(audit_id)
 
         # Step 4: Generate AI insights
         logger.info("\n🧠 Step 4: Generating AI insights...")

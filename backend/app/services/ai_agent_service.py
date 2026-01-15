@@ -34,6 +34,7 @@ from app.models.content import (
 from app.models.librarian import AuditReport, LibrarianAction
 from app.services.stream_validator import validate_stream_url
 from app.services.auto_fixer import fix_missing_metadata as auto_fix_metadata, fix_misclassification
+from app.services.audit_task_manager import audit_task_manager
 
 # Initialize logger
 logger = logging.getLogger(__name__)
@@ -2195,7 +2196,8 @@ async def run_ai_agent_audit(
     last_24_hours_only: bool = False,
     cyb_titles_only: bool = False,
     tmdb_posters_only: bool = False,
-    opensubtitles_enabled: bool = False
+    opensubtitles_enabled: bool = False,
+    audit_id: Optional[str] = None
 ) -> AuditReport:
     """
     Run a fully autonomous AI agent audit using Claude's tool use.
@@ -2215,17 +2217,28 @@ async def run_ai_agent_audit(
     """
 
     start_time = datetime.utcnow()
-    audit_id = f"ai-agent-{int(start_time.timestamp())}"
-
-    # Create audit report early so we can write logs to it
-    audit_report = AuditReport(
-        audit_id=audit_id,
-        audit_date=start_time,
-        audit_type=audit_type,
-        status="in_progress",
-        execution_logs=[]
-    )
-    await audit_report.insert()
+    
+    # Get or create audit report
+    if audit_id:
+        audit_report = await AuditReport.get(audit_id)
+        if not audit_report:
+            raise ValueError(f"Audit report with id {audit_id} not found")
+        logger.info(f"Using existing audit report: {audit_id}")
+        # Ensure it has execution_logs field
+        if not hasattr(audit_report, 'execution_logs') or audit_report.execution_logs is None:
+            audit_report.execution_logs = []
+    else:
+        # Create new audit with legacy string ID format
+        legacy_audit_id = f"ai-agent-{int(start_time.timestamp())}"
+        audit_report = AuditReport(
+            audit_id=legacy_audit_id,
+            audit_date=start_time,
+            audit_type=audit_type,
+            status="in_progress",
+            execution_logs=[]
+        )
+        await audit_report.insert()
+        audit_id = str(audit_report.id)
 
     # Log startup
     await log_to_database(audit_report, "info", f"Audit started: {audit_type}", "Librarian")
@@ -2496,6 +2509,10 @@ Start the audit!"""
 
     while iteration < max_iterations and not audit_complete:
         iteration += 1
+
+        # Check for cancellation/pause at each iteration
+        if audit_id:
+            await audit_task_manager.check_should_continue(audit_id)
 
         logger.info(f"\n🔄 Iteration {iteration}/{max_iterations}")
 

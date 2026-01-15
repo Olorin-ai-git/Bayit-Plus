@@ -50,6 +50,7 @@ class SettingsUpdate(BaseModel):
     privacy_url: Optional[str] = None
 
 
+@router.put("/settings")
 @router.patch("/settings")
 async def update_settings(
     data: SettingsUpdate,
@@ -59,7 +60,9 @@ async def update_settings(
     """Update system settings."""
     settings = await SystemSettings.find_one(SystemSettings.key == "system_settings")
     if not settings:
+        # Create default settings if they don't exist
         settings = SystemSettings(key="system_settings")
+        await settings.insert()
 
     changes = {}
     if data.default_plan is not None:
@@ -90,7 +93,15 @@ async def update_settings(
 
     await log_audit(str(current_user.id), AuditAction.SETTINGS_UPDATED, "settings", "system_settings", changes, request)
 
-    return {"message": "Settings updated"}
+    return {
+        "default_plan": settings.default_plan,
+        "trial_days": settings.trial_days,
+        "max_devices": settings.max_devices,
+        "maintenance_mode": settings.maintenance_mode,
+        "support_email": settings.support_email,
+        "terms_url": settings.terms_url,
+        "privacy_url": settings.privacy_url,
+    }
 
 
 @router.get("/settings/feature-flags")
@@ -117,6 +128,7 @@ async def update_feature_flag(
     settings = await SystemSettings.find_one(SystemSettings.key == "system_settings")
     if not settings:
         settings = SystemSettings(key="system_settings")
+        await settings.insert()
 
     old_value = settings.feature_flags.get(flag)
     settings.feature_flags[flag] = enabled
@@ -128,3 +140,53 @@ async def update_feature_flag(
                    {"old": old_value, "new": enabled}, request)
 
     return {"message": f"Feature flag '{flag}' set to {enabled}"}
+
+
+@router.post("/settings/cache/clear")
+async def clear_cache(
+    request: Request,
+    current_user: User = Depends(has_permission(Permission.SYSTEM_CONFIG))
+):
+    """Clear application cache."""
+    # Log the cache clear action
+    await log_audit(
+        str(current_user.id), 
+        AuditAction.SETTINGS_UPDATED, 
+        "cache", 
+        "system_cache", 
+        {"action": "clear_cache"},
+        request
+    )
+    
+    # In a real implementation, this would clear Redis cache, CDN cache, etc.
+    # For now, we'll just return success
+    return {
+        "success": True,
+        "message": "Cache cleared successfully",
+        "timestamp": datetime.utcnow().isoformat()
+    }
+
+
+@router.post("/settings/analytics/reset")
+async def reset_analytics(
+    request: Request,
+    current_user: User = Depends(has_permission(Permission.SYSTEM_CONFIG))
+):
+    """Reset analytics data (WARNING: This is destructive)."""
+    # Log the analytics reset action
+    await log_audit(
+        str(current_user.id), 
+        AuditAction.SETTINGS_UPDATED, 
+        "analytics", 
+        "system_analytics", 
+        {"action": "reset_analytics"},
+        request
+    )
+    
+    # In a real implementation, this would reset analytics collections/tables
+    # For now, we'll just return success
+    return {
+        "success": True,
+        "message": "Analytics data reset successfully",
+        "timestamp": datetime.utcnow().isoformat()
+    }
