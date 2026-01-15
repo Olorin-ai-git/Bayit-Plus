@@ -294,7 +294,7 @@ async def get_upload_queue(
         )
         
         # Add queue pause info
-        response_dict = response.dict()
+        response_dict = response.model_dump(mode='json')
         response_dict["queue_paused"] = upload_service._queue_paused
         response_dict["pause_reason"] = upload_service._pause_reason
         
@@ -691,10 +691,10 @@ async def upload_websocket(websocket: WebSocket, token: str = Query(...)):
         
         await websocket.send_json({
             "type": "queue_update",
-            "stats": stats.dict(),
-            "active_job": job_to_response(active_job).dict() if active_job else None,
-            "queue": [job_to_response(j).dict() for j in queue],
-            "recent_completed": [job_to_response(j).dict() for j in recent],
+            "stats": stats.model_dump(mode='json'),
+            "active_job": job_to_response(active_job).model_dump(mode='json') if active_job else None,
+            "queue": [job_to_response(j).model_dump(mode='json') for j in queue],
+            "recent_completed": [job_to_response(j).model_dump(mode='json') for j in recent],
         })
         
         # Message loop

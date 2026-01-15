@@ -20,17 +20,27 @@ class OpenSubtitlesService:
         # Import here to avoid circular dependency
         from app.core.config import settings
         self.api_key = settings.OPENSUBTITLES_API_KEY
+        self.username = settings.OPENSUBTITLES_USERNAME
+        self.password = settings.OPENSUBTITLES_PASSWORD
         self.base_url = settings.OPENSUBTITLES_API_BASE_URL
         self.user_agent = settings.OPENSUBTITLES_USER_AGENT
         self.daily_limit = settings.OPENSUBTITLES_DOWNLOAD_LIMIT_PER_DAY
         self.rate_limit_requests = settings.OPENSUBTITLES_RATE_LIMIT_REQUESTS
         self.rate_limit_window = settings.OPENSUBTITLES_RATE_LIMIT_WINDOW_SECONDS
+        
+        # JWT token cache (in-memory for now)
+        self.jwt_token: Optional[str] = None
+        self.jwt_expires_at: Optional[datetime] = None
 
         if not self.api_key:
             logger.warning("⚠️ OPENSUBTITLES_API_KEY is not configured. External subtitle fetching will not work.")
+        
+        # Note: Username/password are optional - API key alone is sufficient for downloads
+        # JWT auth is only needed for advanced features (user-specific operations)
 
         self.client = httpx.AsyncClient(
             timeout=15.0,
+            follow_redirects=True,  # Important: follow 301/302 redirects
             headers={
                 "Api-Key": self.api_key,
                 "User-Agent": self.user_agent,
@@ -38,7 +48,44 @@ class OpenSubtitlesService:
             }
         )
 
-    async def _make_request(self, endpoint: str, params: Optional[Dict] = None) -> Optional[Dict]:
+    async def _ensure_logged_in(self) -> bool:
+        """Ensure we have a valid JWT token, login if needed"""
+        if not self.username or not self.password:
+            return False  # Can't login without credentials
+        
+        # Check if token is still valid
+        if self.jwt_token and self.jwt_expires_at:
+            if datetime.utcnow() < self.jwt_expires_at - timedelta(minutes=5):
+                return True  # Token still valid
+        
+        # Login to get JWT token
+        try:
+            login_endpoint = f"{self.base_url}/login"
+            response = await self.client.post(
+                login_endpoint,
+                json={
+                    "username": self.username,
+                    "password": self.password
+                }
+            )
+            
+            if response.status_code == 200:
+                data = response.json()
+                self.jwt_token = data.get("token")
+                
+                # Token typically expires in 24 hours
+                self.jwt_expires_at = datetime.utcnow() + timedelta(hours=23, minutes=50)
+                
+                logger.info(f"✅ Logged into OpenSubtitles as {self.username}")
+                return True
+            else:
+                logger.error(f"❌ OpenSubtitles login failed: {response.status_code}")
+                return False
+        except Exception as e:
+            logger.error(f"❌ OpenSubtitles login error: {e}")
+            return False
+    
+    async def _make_request(self, endpoint: str, params: Optional[Dict] = None, method: str = "GET", json_body: Optional[Dict] = None, use_auth: bool = False) -> Optional[Dict]:
         """Make a request to OpenSubtitles API with rate limiting"""
         if not self.api_key:
             logger.error("❌ OpenSubtitles API key not configured - cannot make request")
@@ -48,11 +95,36 @@ class OpenSubtitlesService:
         if not await self.rate_limit_check():
             logger.warning("⚠️ OpenSubtitles rate limit reached - waiting before retry")
             return None
+        
+        # Ensure logged in if auth required
+        if use_auth:
+            if not await self._ensure_logged_in():
+                logger.error("❌ Cannot make authenticated request - login failed")
+                return None
 
         url = f"{self.base_url}{endpoint}"
 
         try:
-            response = await self.client.get(url, params=params)
+            # Prepare extra headers for authenticated requests
+            extra_headers = {}
+            if use_auth and self.jwt_token:
+                extra_headers["Authorization"] = f"Bearer {self.jwt_token}"
+            
+            # Make request based on method
+            # Note: Don't pass headers param to avoid overriding client defaults
+            # Instead, update client headers temporarily if needed
+            if extra_headers:
+                old_headers = dict(self.client.headers)
+                self.client.headers.update(extra_headers)
+            
+            if method == "POST":
+                response = await self.client.post(url, json=json_body)
+            else:
+                response = await self.client.get(url, params=params)
+            
+            # Restore headers if changed
+            if extra_headers:
+                self.client.headers = old_headers
 
             # Track request for rate limiting
             await self.increment_quota(operation="search")
@@ -234,9 +306,14 @@ class OpenSubtitlesService:
             )
             return None
 
-        # Download endpoint
+        # Download endpoint - POST with JSON body
         endpoint = f"/download"
-        data = await self._make_request(endpoint, params={"file_id": file_id})
+        data = await self._make_request(
+            endpoint, 
+            method="POST",
+            json_body={"file_id": int(file_id)},
+            use_auth=False  # Try with API key only first
+        )
 
         if not data or not data.get("link"):
             logger.error(f"❌ Failed to get download link for file_id: {file_id}")

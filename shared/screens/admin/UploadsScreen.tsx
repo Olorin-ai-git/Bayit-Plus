@@ -22,6 +22,7 @@ import { GlassCard } from '../../components/ui/GlassCard';
 import { GlassTable } from '../../components/ui/GlassTable';
 import { GlassButton } from '../../components/ui/GlassButton';
 import { GlassBadge } from '../../components/ui/GlassBadge';
+import { GlassDraggableExpander } from '../../components/ui/GlassDraggableExpander';
 import { colors, spacing, fontSize } from '../../theme';
 import { useUploadProgress } from '../../hooks/useUploadProgress';
 import uploadService, {
@@ -266,9 +267,12 @@ export const UploadsScreen: React.FC = () => {
         )}
 
         {/* Monitored Folders */}
-        <View style={styles.section}>
-          <View style={styles.sectionHeader}>
-            <Text style={styles.sectionTitle}>Monitored Folders</Text>
+        <GlassDraggableExpander
+          title="Monitored Folders"
+          defaultExpanded={false}
+          emptyMessage="No monitored folders configured"
+          isEmpty={monitoredFolders.length === 0}
+          headerActions={
             <View style={styles.headerButtons}>
               <GlassButton
                 title="Scan Now"
@@ -284,19 +288,9 @@ export const UploadsScreen: React.FC = () => {
                 style={styles.headerButton}
               />
             </View>
-          </View>
-
-          {monitoredFolders.length === 0 ? (
-            <GlassCard autoSize style={styles.emptyState}>
-              <Text style={styles.emptyText}>
-                No monitored folders configured
-              </Text>
-              <Text style={styles.emptyHint}>
-                Add folders to automatically scan and upload new content
-              </Text>
-            </GlassCard>
-          ) : (
-            monitoredFolders.map((folder) => (
+          }
+        >
+          {monitoredFolders.map((folder) => (
               <GlassCard key={folder.id} autoSize style={styles.folderCard}>
                 <View style={styles.folderHeader}>
                   <View style={styles.folderInfo}>
@@ -368,9 +362,8 @@ export const UploadsScreen: React.FC = () => {
                   />
                 </View>
               </GlassCard>
-            ))
-          )}
-        </View>
+            ))}
+        </GlassDraggableExpander>
       </ScrollView>
 
       {/* Folder Modal */}

@@ -181,9 +181,8 @@ const styles = StyleSheet.create({
     color: colors.text,
   },
   actionsContainer: {
-    flexDirection: 'row-reverse',
     alignItems: 'center',
-    justifyContent: 'center',
+    justifyContent: 'flex-end',
     gap: spacing.md,
     height: '100%',
   },

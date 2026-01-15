@@ -7,7 +7,7 @@ import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { View, Text, StyleSheet, ActivityIndicator, ScrollView, Pressable } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { colors, spacing, borderRadius, fontSize } from '@bayit/shared/theme';
-import { GlassCard, GlassButton, GlassInput, GlassModal, GlassSelect, GlassToggle } from '@bayit/shared/ui';
+import { GlassCard, GlassButton, GlassInput, GlassModal, GlassSelect, GlassToggle, GlassDraggableExpander } from '@bayit/shared/ui';
 import { Plus, Edit2, Trash2, FolderOpen, AlertCircle, X, Folder, Upload, XCircle } from 'lucide-react';
 import { useDirection } from '@/hooks/useDirection';
 import { useModal } from '@/contexts/ModalContext';
@@ -122,9 +122,12 @@ const UploadsPage: React.FC = () => {
   // WebSocket connection for real-time updates
   const connectWebSocket = useCallback(() => {
     try {
-      const token = localStorage.getItem('token');
+      // Get auth token from bayit-auth store (where it's actually stored)
+      const authData = JSON.parse(localStorage.getItem('bayit-auth') || '{}');
+      const token = authData?.state?.token;
+      
       if (!token) {
-        logger.warn('No auth token found, skipping WebSocket connection', 'UploadsPage');
+        logger.warn('Session expired or invalid', 'UploadsPage');
         setIsAuthenticated(false);
         setWsConnected(false);
         return;
@@ -138,12 +141,26 @@ const UploadsPage: React.FC = () => {
         wsRef.current.close();
       }
 
-      // Determine WebSocket protocol based on API URL
-      const wsProtocol = API_BASE_URL.startsWith('https') || window.location.protocol === 'https:' ? 'wss' : 'ws';
-      const wsHost = window.location.host; // Use current host for WebSocket
+      // Determine WebSocket URL from API base URL
+      const wsProtocol = window.location.protocol === 'https:' ? 'wss' : 'ws';
+      // Extract host from API_BASE_URL or use default backend port
+      let wsHost = 'localhost:8000'; // Default for local development
+      
+      if (API_BASE_URL.startsWith('http')) {
+        // Extract host from full URL
+        const apiUrl = new URL(API_BASE_URL);
+        wsHost = apiUrl.host;
+      } else if (window.location.hostname !== 'localhost') {
+        // Production: use same host as frontend
+        wsHost = window.location.host;
+      }
+      
       const wsUrl = `${wsProtocol}://${wsHost}/api/v1/admin/uploads/ws?token=${token}`;
 
-      logger.info('Connecting to uploads WebSocket', 'UploadsPage', { url: wsUrl.replace(token, '***') });
+      logger.info('Connecting to uploads WebSocket', 'UploadsPage', { 
+        host: wsHost,
+        url: wsUrl.replace(token, '***') 
+      });
 
       const ws = new WebSocket(wsUrl);
 
@@ -173,20 +190,30 @@ const UploadsPage: React.FC = () => {
       };
 
       ws.onerror = (error) => {
-        logger.error('[WebSocket] Connection error', 'UploadsPage', error);
+        // Only log on first error, not every retry
+        if (!wsRef.current || wsRef.current.readyState === WebSocket.CONNECTING) {
+          logger.warn('[WebSocket] Unable to connect to backend. Real-time updates disabled.', 'UploadsPage');
+        }
         setWsConnected(false);
       };
 
-      ws.onclose = () => {
-        logger.warn('[WebSocket] Connection closed, reconnecting in 5s', 'UploadsPage');
+      ws.onclose = (event) => {
         wsRef.current = null;
         setWsConnected(false);
-        setWsReconnecting(true);
         
-        // Reconnect after 5 seconds
-        reconnectTimeoutRef.current = setTimeout(() => {
-          connectWebSocket();
-        }, 5000);
+        // Only reconnect if it wasn't a clean close and we have a token
+        // Don't spam reconnection attempts if backend is down
+        if (event.code !== 1000 && token) {
+          logger.debug('[WebSocket] Connection closed, will retry in 10s', 'UploadsPage');
+          setWsReconnecting(true);
+          
+          // Reconnect after 10 seconds (increased from 5s to reduce spam)
+          reconnectTimeoutRef.current = setTimeout(() => {
+            connectWebSocket();
+          }, 10000);
+        } else {
+          setWsReconnecting(false);
+        }
       };
 
       wsRef.current = ws;
@@ -364,7 +391,7 @@ const UploadsPage: React.FC = () => {
       
       // Check authentication first
       if (!isAuthenticated) {
-        setError(t('admin.uploads.notAuthenticated', 'Not authenticated. Please log in and try again.'));
+        setError(t('admin.uploads.sessionExpired', 'Session expired. Please refresh the page or log in again.'));
         return;
       }
       
@@ -487,10 +514,10 @@ const UploadsPage: React.FC = () => {
           <AlertCircle size={20} color={colors.error} />
           <View style={{ flex: 1, marginLeft: spacing.sm }}>
             <Text style={[styles.statusBannerTitle, { color: colors.error }]}>
-              {t('admin.uploads.notAuthenticated', 'Not Authenticated')}
+              {t('admin.uploads.sessionIssue', 'Session Issue')}
             </Text>
             <Text style={[styles.statusBannerText, { color: colors.error }]}>
-              {t('admin.uploads.notAuthenticatedHelp', 'Please log in to upload files. Real-time updates are disabled.')}
+              {t('admin.uploads.sessionIssueHelp', 'Your session may have expired. Please refresh the page to restore connection.')}
             </Text>
           </View>
         </View>
@@ -570,25 +597,13 @@ const UploadsPage: React.FC = () => {
       />
 
       {/* Monitored Folders */}
-      <GlassCard style={styles.section}>
-        <View style={[styles.sectionHeader, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
-          <Text style={[styles.sectionTitle, { textAlign, flex: 1 }]}>
-            {t('admin.uploads.monitoredFolders')}
-          </Text>
-        </View>
-        
-        {monitoredFolders.length === 0 ? (
-          <View style={styles.emptyState}>
-            <FolderOpen size={48} color={colors.textMuted} style={styles.emptyIcon} />
-            <Text style={[styles.emptyText, { textAlign }]}>
-              {t('admin.uploads.noMonitoredFolders')}
-            </Text>
-            <Text style={[styles.helpText, { textAlign }]}>
-              {t('admin.uploads.configureFoldersHelp')}
-            </Text>
-          </View>
-        ) : (
-          monitoredFolders.map((folder) => (
+      <GlassDraggableExpander
+        title={t('admin.uploads.monitoredFolders')}
+        defaultExpanded={false}
+        emptyMessage={t('admin.uploads.noMonitoredFolders')}
+        isEmpty={monitoredFolders.length === 0}
+      >
+        {monitoredFolders.map((folder) => (
             <View key={folder.id} style={styles.folderItem}>
               <View style={[styles.folderHeader, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
                 <View style={{ flex: 1 }}>
@@ -631,9 +646,8 @@ const UploadsPage: React.FC = () => {
                 )}
               </View>
             </View>
-          ))
-        )}
-      </GlassCard>
+          ))}
+      </GlassDraggableExpander>
 
       {/* Add/Edit Folder Modal */}
       <GlassModal

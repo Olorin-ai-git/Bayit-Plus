@@ -82,17 +82,18 @@ class UploadService:
         content_type: ContentType,
         metadata: Optional[Dict[str, Any]] = None,
         user_id: Optional[str] = None,
-        skip_duplicate_check: bool = False,
+        skip_duplicate_check: bool = True,  # Always skip during enqueue - check in background
     ) -> UploadJob:
         """
         Add a new file to the upload queue.
+        Hash calculation and duplicate checking happen in background processing to avoid blocking.
         
         Args:
             source_path: Absolute path to the file
             content_type: Type of content (movie, podcast, etc.)
             metadata: Additional metadata
             user_id: ID of user creating the upload
-            skip_duplicate_check: If True, skip hash calculation during enqueue (will check during processing)
+            skip_duplicate_check: Deprecated - hash is always calculated in background
             
         Returns:
             Created UploadJob
@@ -110,54 +111,36 @@ class UploadService:
         if file_size_gb > 10:
             raise ValueError(f"File too large ({file_size_gb:.1f}GB, max 10GB): {path.name}")
         
-        # Calculate SHA256 hash for duplicate detection (only if not skipping)
-        file_hash = None
-        if not skip_duplicate_check:
-            logger.info(f"Calculating hash for {path.name}...")
-            file_hash = await self._calculate_file_hash(str(path.absolute()))
-            logger.info(f"File hash: {file_hash[:16]}...")
+        # Basic duplicate check by filename (fast, non-blocking)
+        from beanie.operators import In
+        existing_job = await UploadJob.find_one(
+            UploadJob.filename == path.name,
+            In(UploadJob.status, [UploadStatus.QUEUED, UploadStatus.PROCESSING, UploadStatus.UPLOADING])
+        )
+        if existing_job:
+            logger.warning(f"File with same name already queued: {path.name} (job: {existing_job.job_id})")
+            raise ValueError(f"File already in upload queue: {existing_job.filename}")
         
-        # Check for duplicates (only if hash was calculated)
-        if file_hash is not None:
-            from motor.motor_asyncio import AsyncIOMotorClient
-            client = AsyncIOMotorClient(settings.MONGODB_URL)
-            db = client[settings.MONGODB_DB_NAME]
-            
-            existing_content = await db.content.find_one({'file_hash': file_hash})
-            if existing_content:
-                logger.warning(f"Duplicate file detected: {path.name} (hash: {file_hash[:16]}...)")
-                raise ValueError(f"File already exists in library: {existing_content.get('title', path.name)}")
-            
-            # Check if there's already a pending/processing job with the same hash
-            from beanie.operators import In
-            existing_job = await UploadJob.find_one(
-                UploadJob.file_hash == file_hash,
-                In(UploadJob.status, [UploadStatus.QUEUED, UploadStatus.PROCESSING, UploadStatus.UPLOADING])
-            )
-            if existing_job:
-                logger.warning(f"File already queued for upload: {path.name} (job: {existing_job.job_id})")
-                raise ValueError(f"File already in upload queue: {existing_job.filename}")
-        
-        # Create job
+        # Create job WITHOUT hash (will be calculated in background)
         job = UploadJob(
             job_id=str(uuid4()),
             type=content_type,
             source_path=str(path.absolute()),
             filename=path.name,
             file_size=file_size,
-            file_hash=file_hash,
+            file_hash=None,  # Will be calculated during background processing
             status=UploadStatus.QUEUED,
             metadata=metadata or {},
             created_by=user_id,
         )
         
         await job.insert()
-        logger.info(f"✅ Enqueued upload job {job.job_id}: {path.name}")
+        logger.info(f"✅ Enqueued upload job {job.job_id}: {path.name} (hash will be calculated in background)")
         
         # Broadcast update
         await self._broadcast_queue_update()
         
-        # Start processing if not already running
+        # Start processing if not already running (non-blocking background task)
         asyncio.create_task(self.process_queue())
         
         return job
@@ -168,7 +151,10 @@ class UploadService:
         content_type: ContentType,
         user_id: Optional[str] = None,
     ) -> List[UploadJob]:
-        """Enqueue multiple files at once"""
+        """
+        Enqueue multiple files at once.
+        All files are enqueued quickly without blocking hash calculation.
+        """
         jobs = []
         for path in file_paths:
             try:
@@ -176,6 +162,8 @@ class UploadService:
                 jobs.append(job)
             except Exception as e:
                 logger.error(f"Failed to enqueue {path}: {e}")
+        
+        logger.info(f"✅ Enqueued {len(jobs)} files in batch (hashing will happen in background)")
         return jobs
 
     async def process_queue(self):
@@ -851,12 +839,13 @@ class UploadService:
                 recent = await self.get_recent_completed(5)
                 
                 # Add queue pause info to the broadcast
+                # Use model_dump(mode='json') to properly serialize datetime objects
                 message = {
                     "type": "queue_update",
-                    "stats": stats.dict(),
-                    "active_job": UploadJobResponse.from_orm(active_job).dict() if active_job else None,
-                    "queue": [UploadJobResponse.from_orm(j).dict() for j in queue],
-                    "recent_completed": [UploadJobResponse.from_orm(j).dict() for j in recent],
+                    "stats": stats.model_dump(mode='json'),
+                    "active_job": UploadJobResponse.from_orm(active_job).model_dump(mode='json') if active_job else None,
+                    "queue": [UploadJobResponse.from_orm(j).model_dump(mode='json') for j in queue],
+                    "recent_completed": [UploadJobResponse.from_orm(j).model_dump(mode='json') for j in recent],
                     "queue_paused": self._queue_paused,
                     "pause_reason": self._pause_reason,
                 }

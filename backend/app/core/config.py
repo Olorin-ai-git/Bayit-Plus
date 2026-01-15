@@ -108,6 +108,8 @@ class Settings(BaseSettings):
 
     # OpenSubtitles Configuration
     OPENSUBTITLES_API_KEY: str = ""
+    OPENSUBTITLES_USERNAME: str = ""  # Required for downloads
+    OPENSUBTITLES_PASSWORD: str = ""  # Required for downloads
     OPENSUBTITLES_API_BASE_URL: str = "https://api.opensubtitles.com/api/v1"
     OPENSUBTITLES_USER_AGENT: str = "Bayit+ v1.0"
     OPENSUBTITLES_DOWNLOAD_LIMIT_PER_DAY: int = 1500

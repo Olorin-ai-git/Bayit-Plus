@@ -9,12 +9,15 @@ interface GlassDraggableExpanderProps {
   badge?: React.ReactNode;
   icon?: React.ReactNode;
   rightElement?: React.ReactNode;
+  headerActions?: React.ReactNode;
   children: React.ReactNode;
   defaultExpanded?: boolean;
   onExpandChange?: (expanded: boolean) => void;
   draggable?: boolean;
   minHeight?: number;
   maxHeight?: number;
+  isEmpty?: boolean;
+  emptyMessage?: string;
   style?: any;
 }
 
@@ -24,12 +27,15 @@ export const GlassDraggableExpander: React.FC<GlassDraggableExpanderProps> = ({
   badge,
   icon,
   rightElement,
+  headerActions,
   children,
   defaultExpanded = false,
   onExpandChange,
   draggable = true,
   minHeight = 200,
   maxHeight = 800,
+  isEmpty = false,
+  emptyMessage,
   style,
 }) => {
   const [isExpanded, setIsExpanded] = useState(defaultExpanded);
@@ -137,6 +143,17 @@ export const GlassDraggableExpander: React.FC<GlassDraggableExpanderProps> = ({
           {badge && <View style={styles.badgeContainer} pointerEvents="none">{badge}</View>}
         </View>
         <View style={styles.headerRight}>
+          {/* Header Actions (e.g., buttons) - stops propagation */}
+          {headerActions && (
+            <Pressable 
+              onPress={(e) => {
+                e.stopPropagation();
+              }}
+              style={styles.headerActionsContainer}
+            >
+              {headerActions}
+            </Pressable>
+          )}
           {/* Right Element (e.g., mute button) - stops propagation */}
           {rightElement && (
             <Pressable 
@@ -176,7 +193,13 @@ export const GlassDraggableExpander: React.FC<GlassDraggableExpanderProps> = ({
           contentContainerStyle={styles.scrollContent}
           showsVerticalScrollIndicator={false}
         >
-          {children}
+          {isEmpty && emptyMessage ? (
+            <View style={styles.emptyContainer}>
+              <Text style={styles.emptyMessage}>{emptyMessage}</Text>
+            </View>
+          ) : (
+            children
+          )}
         </ScrollView>
 
         {/* Draggable Handle */}
@@ -243,6 +266,9 @@ const styles = StyleSheet.create({
     gap: spacing.sm,
     marginLeft: spacing.sm,
   },
+  headerActionsContainer: {
+    // Stops propagation - clicking this won't toggle
+  },
   rightElementContainer: {
     // Stops propagation - clicking this won't toggle
   },
@@ -272,6 +298,16 @@ const styles = StyleSheet.create({
     borderTopWidth: 1,
     borderTopColor: colors.glassBorderLight,  // Purple border
     cursor: 'ns-resize',
+  },
+  emptyContainer: {
+    paddingVertical: spacing.xl,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  emptyMessage: {
+    fontSize: 14,
+    color: colors.textMuted,
+    textAlign: 'center',
   },
 });
 
