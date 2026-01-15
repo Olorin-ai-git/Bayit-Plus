@@ -4,18 +4,10 @@ Entity Section Component for Investigation Reports.
 Generates HTML for entity details including email, merchant,
 risk scores, and entity metadata.
 
-DPA COMPLIANCE: All entity values are obfuscated per Section 9.4
-to prevent raw PII display in reports.
-
 Feature: unified-report-hierarchy
 """
 
 from typing import Any, Dict, Optional
-
-from app.service.reporting.privacy_safe_display import (
-    get_display_entity_value,
-    get_privacy_notice_html,
-)
 
 
 def generate_entity_section(
@@ -25,9 +17,6 @@ def generate_entity_section(
     """
     Generate HTML for entity details section.
 
-    DPA Compliance: Entity values are automatically obfuscated
-    to show tokens like [EMAIL_1] instead of raw PII.
-
     Args:
         investigation_data: Investigation data with entity information
         include_risk_breakdown: Whether to include risk score breakdown
@@ -35,19 +24,9 @@ def generate_entity_section(
     Returns:
         HTML string for entity section
     """
-    raw_entity_value = investigation_data.get("entity_value") or investigation_data.get(
+    entity_value = investigation_data.get("entity_value") or investigation_data.get(
         "email", "Unknown"
     )
-    entity_type = investigation_data.get("entity_type", "email")
-    obfuscation_context_id = investigation_data.get("obfuscation_context_id")
-
-    # Obfuscate entity value for DPA compliance
-    entity_value = get_display_entity_value(
-        entity_value=raw_entity_value,
-        entity_type=entity_type,
-        obfuscation_context_id=obfuscation_context_id,
-    )
-
     merchant = investigation_data.get("merchant_name", "Unknown Merchant")
     investigation_id = investigation_data.get("investigation_id", "N/A")
 
@@ -64,21 +43,17 @@ def generate_entity_section(
     if include_risk_breakdown:
         risk_breakdown_html = _generate_risk_breakdown(investigation_data)
 
-    # Add privacy notice
-    privacy_notice = get_privacy_notice_html()
-
     return f"""
     <div class="entity-section">
         <h2 style="color: var(--accent); margin-bottom: 20px;">
             👤 Entity Details
         </h2>
-        {privacy_notice}
         <div class="entity-card" style="background: var(--card); border: 1px solid var(--border);
                                         border-radius: 12px; padding: 20px;">
             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
                 <div>
                     <div style="margin-bottom: 15px;">
-                        <span style="color: var(--muted); font-size: 0.85rem;">Entity (Obfuscated)</span>
+                        <span style="color: var(--muted); font-size: 0.85rem;">Entity</span>
                         <div style="font-size: 1.1rem; font-weight: 600; word-break: break-all;">
                             {entity_value}
                         </div>

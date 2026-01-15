@@ -4,8 +4,6 @@ Investigation Report Generator
 Modular investigation report generator that composes section components
 into a complete HTML report with drill-up navigation.
 
-DPA COMPLIANCE: All entity values obfuscated per Section 9.4.
-
 Feature: unified-report-hierarchy
 """
 
@@ -23,7 +21,6 @@ from app.service.reporting.components.investigation import (
 from app.service.reporting.components.navigation import ReportContext
 from app.service.reporting.components.report_base import ReportBase
 from app.service.reporting.components.unified_styles import get_unified_styles
-from app.service.reporting.privacy_safe_display import get_display_entity_value
 
 logger = get_bridge_logger(__name__)
 
@@ -59,18 +56,9 @@ async def generate_investigation_report(
 
 
 def _generate_html(data: Dict[str, Any]) -> str:
-    """Generate complete HTML for investigation report with DPA compliance."""
+    """Generate complete HTML for investigation report."""
     investigation_id = data.get("investigation_id", "unknown")
-    raw_entity_value = data.get("entity_value") or data.get("email", "Unknown")
-    entity_type = data.get("entity_type", "email")
-    obfuscation_context_id = data.get("obfuscation_context_id")
-
-    # Obfuscate entity value for DPA compliance
-    entity_value = get_display_entity_value(
-        entity_value=raw_entity_value,
-        entity_type=entity_type,
-        obfuscation_context_id=obfuscation_context_id,
-    )
+    entity_value = data.get("entity_value") or data.get("email", "Unknown")
 
     report_base = ReportBase(
         report_type="investigation",

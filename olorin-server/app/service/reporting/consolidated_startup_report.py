@@ -201,20 +201,14 @@ def _calculate_global_metrics(
 
 
 def _generate_selector_section(selector_metadata: Optional[Dict[str, Any]]) -> str:
-    """
-    Generate selector section showing time window and discovered entities.
-
-    DPA COMPLIANCE: Entity values (emails) are obfuscated per Section 9.4.
-    """
+    """Generate selector section showing time window and discovered entities."""
     if not selector_metadata:
         return ""
-
-    from app.service.reporting.privacy_safe_display import get_display_entity_value
-
+    
     start_time = selector_metadata.get("start_time", "Unknown")
     end_time = selector_metadata.get("end_time", "Unknown")
     entities = selector_metadata.get("entities", [])
-
+    
     # Format datetimes - handle both datetime objects and ISO strings
     if isinstance(start_time, datetime):
         start_str = start_time.strftime("%Y-%m-%d %H:%M:%S UTC")
@@ -226,7 +220,7 @@ def _generate_selector_section(selector_metadata: Optional[Dict[str, Any]]) -> s
             start_str = str(start_time)
     else:
         start_str = str(start_time)
-
+    
     if isinstance(end_time, datetime):
         end_str = end_time.strftime("%Y-%m-%d %H:%M:%S UTC")
     elif isinstance(end_time, str):
@@ -237,20 +231,15 @@ def _generate_selector_section(selector_metadata: Optional[Dict[str, Any]]) -> s
             end_str = str(end_time)
     else:
         end_str = str(end_time)
-
-    # Generate entity rows with obfuscated emails
+    
+    # Generate entity rows
     entity_rows = ""
     for entity in entities[:20]:  # Show top 20
-        raw_email = entity.get("email", "Unknown")
-        # Obfuscate email for DPA compliance
-        email = get_display_entity_value(
-            entity_value=raw_email,
-            entity_type="email"
-        )
+        email = entity.get("email", "Unknown")
         merchant = entity.get("merchant", "Unknown")
         fraud_count = entity.get("fraud_count", 0)
         total_count = entity.get("total_count", 0)
-
+        
         entity_rows += f"""
             <tr>
                 <td style="padding: 8px; border-bottom: 1px solid var(--border);">{email}</td>

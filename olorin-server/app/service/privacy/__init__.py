@@ -46,10 +46,6 @@ from app.service.privacy.pii_obfuscator import (
     PIIObfuscator,
     get_pii_obfuscator,
 )
-from app.service.privacy.privacy_aware_llm_wrapper import (
-    PrivacyAwareLLMWrapper,
-    wrap_llm_with_privacy,
-)
 
 __all__ = [
     # PII Obfuscation
@@ -65,9 +61,6 @@ __all__ = [
     "LLMPrivacyWrapper",
     "get_llm_privacy_wrapper",
     "DPAComplianceError",
-    # Privacy-Aware LLM Wrapper (Auto-obfuscation)
-    "PrivacyAwareLLMWrapper",
-    "wrap_llm_with_privacy",
     # Data Retention
     "DataRetentionManager",
     "get_data_retention_manager",

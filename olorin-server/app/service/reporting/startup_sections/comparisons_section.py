@@ -3,14 +3,11 @@ Auto Comparisons Section for Startup Reports.
 
 Handles auto-comparisons results table, zero metrics explanations,
 and comparison summary details.
-
-DPA COMPLIANCE: Entity values obfuscated per Section 9.4.
 """
 
 from typing import Any, Dict, Optional
 
 from app.config.threshold_config import get_risk_threshold
-from app.service.reporting.privacy_safe_display import get_display_entity_value
 
 
 def generate_auto_comparisons_section(data: Dict[str, Any]) -> str:
@@ -35,21 +32,10 @@ def generate_auto_comparisons_section(data: Dict[str, Any]) -> str:
 
 
 def _build_results_table(results: list) -> str:
-    """
-    Build HTML table for comparison results.
-
-    DPA COMPLIANCE: Entity values are obfuscated per Section 9.4.
-    """
+    """Build HTML table for comparison results."""
     rows = []
     for i, result in enumerate(results[:10], 1):
-        raw_entity_value = result.get("entity_value", result.get("entity", "N/A"))
-
-        # Obfuscate entity value for DPA compliance
-        entity_value = get_display_entity_value(
-            entity_value=raw_entity_value,
-            entity_type=result.get("entity_type", "email")
-        )
-
+        entity_value = result.get("entity_value", result.get("entity", "N/A"))
         investigation_id = result.get("investigation_id", "N/A")
         status = result.get("status", "unknown")
         success = result.get("success", False) if isinstance(result.get("success"), bool) else (status == "success")

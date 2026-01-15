@@ -4,8 +4,6 @@ Transaction Analysis Report Component.
 Generates improved HTML for individual investigation transaction analysis reports
 with breadcrumb navigation, visual matrix, ROI metrics, and verdict badges.
 
-DPA COMPLIANCE: All entity values obfuscated per Section 9.4.
-
 Replaces the legacy "Confusion Table" terminology.
 
 Feature: unified-report-hierarchy
@@ -23,7 +21,6 @@ from app.service.reporting.components.financial_analysis_section import (
 )
 from app.service.reporting.components.report_base import ReportBase
 from app.service.reporting.components.unified_styles import get_unified_styles
-from app.service.reporting.privacy_safe_display import get_display_entity_value
 
 
 def generate_transaction_analysis_report(
@@ -152,15 +149,9 @@ def _generate_header(
     merchant_name: str, risk_score: Optional[float], risk_threshold: float,
     window_start: datetime, window_end: datetime, transaction_count: int
 ) -> str:
-    """Generate report header with metadata. DPA compliant - obfuscates entity value."""
+    """Generate report header with metadata."""
     risk_display = f"{risk_score:.1%}" if risk_score is not None else "N/A"
     threshold_display = f"{risk_threshold:.0%}"
-
-    # Obfuscate entity value for DPA compliance
-    obfuscated_entity = get_display_entity_value(
-        entity_value=entity_value,
-        entity_type=entity_type
-    )
 
     return f"""
     <div class="header">
@@ -168,8 +159,8 @@ def _generate_header(
         <p class="subtitle">Investigation: <code>{investigation_id}</code></p>
         <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; margin-top: 16px;">
             <div>
-                <span style="color: var(--muted);">Entity (Obfuscated):</span>
-                <span style="font-weight: 600;">{entity_type}:{obfuscated_entity}</span>
+                <span style="color: var(--muted);">Entity:</span>
+                <span style="font-weight: 600;">{entity_type}:{entity_value}</span>
             </div>
             <div>
                 <span style="color: var(--muted);">Merchant:</span>
