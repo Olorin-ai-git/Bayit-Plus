@@ -616,7 +616,7 @@ class UploadWebSocketManager:
         self.active_connections: List[WebSocket] = []
     
     async def connect(self, websocket: WebSocket):
-        await websocket.accept()
+        # Note: websocket should already be accepted before calling this
         self.active_connections.append(websocket)
         logger.info(f"WebSocket connected. Total connections: {len(self.active_connections)}")
     
@@ -659,21 +659,24 @@ async def upload_websocket(websocket: WebSocket, token: str = Query(...)):
     Clients can send:
     - {"type": "ping"}
     """
-    # Authenticate user
+    # Authenticate user BEFORE accepting connection
     try:
         payload = decode_token(token)
-        if not payload:
-            await websocket.close(code=4001, reason="Invalid token")
-            return
-        user_id = payload.get("sub")
-        if not user_id:
+        if not payload or not payload.get("sub"):
+            # Must accept before closing
+            await websocket.accept()
             await websocket.close(code=4001, reason="Invalid token")
             return
     except Exception:
+        # Must accept before closing
+        await websocket.accept()
         await websocket.close(code=4001, reason="Invalid token")
         return
     
-    # Connect
+    # Accept the WebSocket connection
+    await websocket.accept()
+    
+    # Connect to manager
     await ws_manager.connect(websocket)
     
     try:

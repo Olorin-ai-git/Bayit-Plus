@@ -91,7 +91,10 @@ const UploadsPage: React.FC = () => {
       // Fetch upload queue
       try {
         const queueData = await uploadsService.getUploadQueue();
-        setQueueStats(queueData.stats || queueStats);
+        // Use functional update to avoid dependency on queueStats
+        if (queueData.stats) {
+          setQueueStats(queueData.stats);
+        }
         setActiveJob(queueData.active_job || null);
         setQueuedJobs(queueData.queue || []);
         setRecentCompleted(queueData.recent_completed || []);
@@ -117,7 +120,7 @@ const UploadsPage: React.FC = () => {
     } finally {
       setLoading(false);
     }
-  }, [queueStats]);
+  }, []);  // Empty array - fetchData doesn't need external dependencies
 
   // WebSocket connection for real-time updates
   const connectWebSocket = useCallback(() => {
@@ -294,7 +297,9 @@ const UploadsPage: React.FC = () => {
         clearTimeout(reconnectTimeoutRef.current);
       }
     };
-  }, [fetchData, connectWebSocket]);
+    // Run only once on mount since fetchData and connectWebSocket are stable
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const handleAddFolder = () => {
     setEditingFolder(null);
