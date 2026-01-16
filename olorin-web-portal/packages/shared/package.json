@@ -3,11 +3,19 @@
   "version": "1.0.0",
   "description": "Shared components, styles, and utilities for Olorin portals",
   "private": true,
-  "main": "src/index.ts",
-  "types": "src/index.ts",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist",
+    "src"
+  ],
   "scripts": {
-    "build": "echo 'Shared package - no build required'",
-    "typecheck": "tsc --noEmit"
+    "build": "npm run build:tsc && npm run build:copy-css",
+    "build:tsc": "tsc --project tsconfig.build.json",
+    "build:copy-css": "mkdir -p dist/styles && cp -r src/styles/* dist/styles/",
+    "typecheck": "tsc --noEmit",
+    "clean": "rm -rf dist",
+    "prebuild": "npm run clean"
   },
   "peerDependencies": {
     "react": "^18.2.0",
