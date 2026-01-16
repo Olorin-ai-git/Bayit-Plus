@@ -64,6 +64,7 @@ const baseMenuSections: MenuSection[] = [
       { id: 'judaism', icon: '✡️', labelKey: 'nav.judaism', path: '/judaism' },
       { id: 'children', icon: '👶', labelKey: 'nav.children', path: '/children' },
       { id: 'games', icon: '🎮', labelKey: 'nav.games', path: '/games' },
+      { id: 'friends', icon: '👥', labelKey: 'nav.friends', path: '/friends' },
     ],
   },
   {

@@ -25,6 +25,8 @@ import { useModeEnforcement, useVoiceResponseCoordinator, useConversationContext
 import logger from '@/utils/logger'
 import { colors, spacing, borderRadius } from '@bayit/shared/theme'
 import { GlassView, GlassCard, GlassButton, GlassBadge, GlassInput } from '@bayit/shared/ui'
+import { useWidgetStore, type VoiceContentItem } from '@/stores/widgetStore'
+import { useChessGame } from '@/hooks/useChessGame'
 
 interface Message {
   role: 'user' | 'assistant'
@@ -392,11 +394,29 @@ export default function Chatbot() {
           payload: {},
         }
 
+      // Multi-content display
+      case 'show_multiple':
+        return {
+          type: 'show_multiple',
+          payload: { items: payload?.items || [] },
+        }
+
+      // Chess game invite
+      case 'chess_invite':
+        return {
+          type: 'chess_invite',
+          payload: { friendName: payload?.friend_name || payload?.friendName },
+        }
+
       default:
         console.warn(`[Chatbot] Unknown action type: ${type}`)
         return null
     }
   }
+
+  // Get widget store functions for voice widgets
+  const createVoiceWidgets = useWidgetStore((state) => state.createVoiceWidgets)
+  const clearVoiceWidgets = useWidgetStore((state) => state.clearVoiceWidgets)
 
   // Register action handlers for chatbot actions
   useEffect(() => {
@@ -409,6 +429,8 @@ export default function Chatbot() {
         radio: '/radio',
         podcasts: '/podcasts',
         home: '/',
+        chess: '/games/chess',
+        games: '/games',
       }
       navigate(navigationMap[payload.target] || '/')
       setOpen(false)
@@ -493,7 +515,94 @@ export default function Chatbot() {
       navigate('/flows', { state: { startFlowId: payload.flowId } })
       setOpen(false)
     })
-  }, [registerActionHandler, navigate, setOpen])
+
+    // Show Multiple - display multiple content items in widgets side by side
+    registerActionHandler('show_multiple', async (payload) => {
+      console.log('[Chatbot] show_multiple action with items:', payload.items)
+      
+      if (!payload.items || payload.items.length === 0) {
+        console.warn('[Chatbot] show_multiple called with no items')
+        return
+      }
+
+      try {
+        // Call the resolve-content API to get stream URLs
+        const resolveResponse = await chatService.resolveContent(
+          payload.items.map((item: any) => ({
+            name: item.name,
+            type: item.type || 'any'
+          })),
+          i18n.language
+        )
+
+        if (resolveResponse.items && resolveResponse.items.length > 0) {
+          // Convert to VoiceContentItem format
+          const voiceItems: VoiceContentItem[] = resolveResponse.items.map((item: any) => ({
+            id: item.id,
+            name: item.name,
+            type: item.type as VoiceContentItem['type'],
+            thumbnail: item.thumbnail,
+            streamUrl: item.stream_url,
+            matchedName: item.matched_name,
+            confidence: item.confidence,
+          }))
+
+          // Create widgets
+          createVoiceWidgets(voiceItems)
+
+          // Add success message
+          setMessages((prev) => [
+            ...prev,
+            {
+              role: 'assistant',
+              content: t('chatbot.showMultipleSuccess', {
+                count: voiceItems.length,
+                defaultValue: `Showing ${voiceItems.length} content items`,
+              }),
+            },
+          ])
+        } else {
+          // No items resolved
+          setMessages((prev) => [
+            ...prev,
+            {
+              role: 'assistant',
+              content: t('chatbot.showMultipleNotFound', {
+                defaultValue: 'Could not find the requested content. Please try different names.',
+              }),
+              isError: true,
+            },
+          ])
+        }
+      } catch (error) {
+        console.error('[Chatbot] Error resolving content:', error)
+        setMessages((prev) => [
+          ...prev,
+          {
+            role: 'assistant',
+            content: t('chatbot.errors.general'),
+            isError: true,
+          },
+        ])
+      }
+
+      setOpen(false)
+    })
+
+    // Chess Invite - start a chess game and invite a friend
+    registerActionHandler('chess_invite', async (payload) => {
+      console.log('[Chatbot] chess_invite action for friend:', payload.friendName)
+      
+      // Navigate to chess page with invite state
+      navigate('/games/chess', { 
+        state: { 
+          startGame: true, 
+          inviteFriend: payload.friendName 
+        } 
+      })
+      setOpen(false)
+    })
+  }, [registerActionHandler, navigate, setOpen, createVoiceWidgets, i18n.language, t])
 
   // Handle pending messages from voice input or external triggers
   useEffect(() => {

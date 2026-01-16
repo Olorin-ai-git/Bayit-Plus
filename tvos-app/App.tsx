@@ -1,10 +1,10 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { StatusBar, LogBox, View, StyleSheet, Pressable, Text } from 'react-native';
+import { StatusBar, LogBox, View, StyleSheet, Pressable, Text, Alert } from 'react-native';
 import { NavigationContainer, useNavigation } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
-import { I18nextProvider } from 'react-i18next';
+import { I18nextProvider, useTranslation } from 'react-i18next';
 import i18n, { loadSavedLanguage } from '@bayit/shared-i18n';
 import {
   HomeScreen,
@@ -338,12 +338,37 @@ const AppContentWithHandlers: React.FC = () => {
   const navigation = useNavigation<any>();
   const { registerActionHandler, unregisterActionHandler } = useChatbotStore();
   const { user } = useAuthStore();
+  const { t, i18n } = useTranslation();
 
   // Register chatbot action handlers
   useEffect(() => {
     // Navigate to a specific screen
-    registerActionHandler('navigate', (payload: { screen: string; params?: any }) => {
-      navigation.navigate(payload.screen, payload.params);
+    registerActionHandler('navigate', (payload: { screen: string; target?: string; params?: any }) => {
+      // Handle 'target' property from voice commands
+      if (payload.target) {
+        const screenMap: Record<string, string> = {
+          movies: 'VOD',
+          series: 'VOD',
+          channels: 'LiveTV',
+          radio: 'Radio',
+          podcasts: 'Podcasts',
+          home: 'Home',
+          chess: 'Games',
+          games: 'Games',
+          flows: 'Flows',
+          judaism: 'Judaism',
+          children: 'Children',
+        };
+        const screen = screenMap[payload.target] || 'Home';
+        const mainTabScreens = ['Home', 'LiveTV', 'VOD', 'Radio', 'Podcasts'];
+        if (mainTabScreens.includes(screen)) {
+          navigation.navigate('Main', { screen });
+        } else {
+          navigation.navigate(screen);
+        }
+      } else {
+        navigation.navigate(payload.screen, payload.params);
+      }
     });
 
     // Search for content
@@ -352,8 +377,9 @@ const AppContentWithHandlers: React.FC = () => {
     });
 
     // Play content
-    registerActionHandler('play', (payload: { id: string; title: string; type: 'vod' | 'live' | 'radio' | 'podcast' }) => {
-      navigation.navigate('Player', payload);
+    registerActionHandler('play', (payload: { id: string; content_id?: string; title: string; type: 'vod' | 'live' | 'radio' | 'podcast' }) => {
+      const contentId = payload.content_id || payload.id;
+      navigation.navigate('Player', { ...payload, id: contentId });
     });
 
     // Start a flow
@@ -385,6 +411,73 @@ const AppContentWithHandlers: React.FC = () => {
       }
     });
 
+    // Show Multiple - display multiple content items
+    // On tvOS, we don't have multi-widget support, so we play the first item
+    registerActionHandler('show_multiple', async (payload: { items: Array<{ name: string; type: string }> }) => {
+      console.log('[tvOS Chatbot] show_multiple action with items:', payload.items);
+
+      if (!payload.items || payload.items.length === 0) {
+        console.warn('[tvOS Chatbot] show_multiple called with no items');
+        return;
+      }
+
+      try {
+        // Call the resolve-content API
+        const resolveResponse = await chatService.resolveContent(
+          payload.items.map((item) => ({
+            name: item.name,
+            type: item.type || 'any'
+          })),
+          i18n.language
+        );
+
+        if (resolveResponse.items && resolveResponse.items.length > 0) {
+          const firstItem = resolveResponse.items[0];
+
+          Alert.alert(
+            t('chatbot.showMultipleSuccess', { count: resolveResponse.items.length }),
+            t('tvos.playingFirstItem', { name: firstItem.name, defaultValue: `Playing: ${firstItem.name}` }),
+            [
+              {
+                text: t('common.ok'),
+                onPress: () => {
+                  if (firstItem.type === 'channel') {
+                    navigation.navigate('Player', { id: firstItem.id, type: 'live', title: firstItem.name });
+                  } else {
+                    navigation.navigate('Player', { id: firstItem.id, type: 'vod', title: firstItem.name });
+                  }
+                }
+              }
+            ]
+          );
+        } else {
+          Alert.alert(
+            t('common.error'),
+            t('chatbot.showMultipleNotFound')
+          );
+        }
+      } catch (error) {
+        console.error('[tvOS Chatbot] Error resolving content:', error);
+        Alert.alert(
+          t('common.error'),
+          t('chatbot.errors.general')
+        );
+      }
+    });
+
+    // Chess Invite - navigate to games/chess with invite params
+    registerActionHandler('chess_invite', async (payload: { friendName: string }) => {
+      console.log('[tvOS Chatbot] chess_invite action for friend:', payload.friendName);
+
+      // On tvOS, navigate to a Games screen (if exists) with chess invite params
+      // For now, show an alert since Chess screen may not exist
+      Alert.alert(
+        t('chess.title'),
+        t('chess.sendingInvite', { name: payload.friendName }),
+        [{ text: t('common.ok') }]
+      );
+    });
+
     // Cleanup handlers on unmount
     return () => {
       unregisterActionHandler('navigate');
@@ -395,8 +488,10 @@ const AppContentWithHandlers: React.FC = () => {
       unregisterActionHandler('subscribe');
       unregisterActionHandler('manage_profiles');
       unregisterActionHandler('open_admin');
+      unregisterActionHandler('show_multiple');
+      unregisterActionHandler('chess_invite');
     };
-  }, [navigation, registerActionHandler, unregisterActionHandler, user?.role]);
+  }, [navigation, registerActionHandler, unregisterActionHandler, user?.role, t, i18n.language]);
 
   return <AppContent />;
 };

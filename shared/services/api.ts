@@ -497,6 +497,24 @@ const apiFlowsService = {
   getFlowContent: (flowId: string) => api.get(`/flows/${flowId}/content`),
 };
 
+// Resolved content item from resolve-content API
+export interface ResolvedContentItem {
+  id: string;
+  name: string;
+  type: string;
+  thumbnail?: string;
+  stream_url?: string;
+  matched_name: string;
+  confidence: number;
+}
+
+export interface ResolveContentResponse {
+  items: ResolvedContentItem[];
+  unresolved: Array<{ name: string; type: string }>;
+  total_requested: number;
+  total_resolved: number;
+}
+
 // Chat Service (API)
 const apiChatService = {
   sendMessage: (message: string, conversationId?: string, context?: any, language?: string) =>
@@ -513,6 +531,12 @@ const apiChatService = {
       headers: { 'Content-Type': 'multipart/form-data' },
     });
   },
+  // Resolve content by name for voice commands (show_multiple action)
+  resolveContent: (items: Array<{ name: string; type: string }>, language: string = 'he'): Promise<ResolveContentResponse> =>
+    api.post('/chat/resolve-content', { items, language }),
+  // Search users by name for game invites
+  searchUsers: (name: string): Promise<{ users: Array<{ id: string; name: string; avatar?: string }> }> =>
+    api.get('/users/search', { params: { name } }),
 };
 
 // Demo Chat Service
@@ -533,6 +557,31 @@ const demoChatService = {
   transcribeAudio: async (_audioBlob: Blob, _language: string = 'he') => {
     await new Promise(resolve => setTimeout(resolve, 500));
     return { text: 'Demo transcription', language: _language };
+  },
+  // Demo resolve content for voice widgets
+  resolveContent: async (items: Array<{ name: string; type: string }>, _language: string = 'he'): Promise<ResolveContentResponse> => {
+    await new Promise(resolve => setTimeout(resolve, 300));
+    return {
+      items: items.map((item, index) => ({
+        id: `demo-${item.type}-${index}`,
+        name: item.name,
+        type: item.type || 'channel',
+        thumbnail: 'https://via.placeholder.com/300x200',
+        stream_url: 'https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8',
+        matched_name: item.name,
+        confidence: 0.9,
+      })),
+      unresolved: [],
+      total_requested: items.length,
+      total_resolved: items.length,
+    };
+  },
+  // Demo search users for game invites
+  searchUsers: async (name: string): Promise<{ users: Array<{ id: string; name: string; avatar?: string }> }> => {
+    await new Promise(resolve => setTimeout(resolve, 200));
+    return {
+      users: [{ id: 'demo-user-1', name: name }],
+    };
   },
 };
 

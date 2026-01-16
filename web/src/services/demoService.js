@@ -413,6 +413,33 @@ export const demoChatService = {
     await delay(1000);
     return { text: 'אני רוצה לראות סרט פעולה', language: 'he' };
   },
+  // Demo resolve content for voice widgets
+  resolveContent: async (items, language = 'he') => {
+    await delay(300);
+    return {
+      items: items.map((item, index) => ({
+        id: `demo-${item.type}-${index}`,
+        name: item.name,
+        type: item.type || 'channel',
+        thumbnail: 'https://via.placeholder.com/300x200',
+        stream_url: 'https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8',
+        matched_name: item.name,
+        confidence: 0.9,
+      })),
+      unresolved: [],
+      total_requested: items.length,
+      total_resolved: items.length,
+    };
+  },
+  // Demo search users for game invites
+  searchUsers: async (name) => {
+    await delay(200);
+    return {
+      users: [
+        { id: 'demo-user-1', name: name, avatar: null },
+      ],
+    };
+  },
 };
 
 // ===========================================

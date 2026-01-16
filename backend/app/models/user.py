@@ -1,5 +1,5 @@
 from datetime import datetime, timezone
-from typing import Optional, List
+from typing import Optional, List, Literal
 import re
 from beanie import Document
 from pydantic import BaseModel, EmailStr, Field, validator
@@ -99,6 +99,14 @@ class User(Document):
 
     # Profile
     avatar: Optional[str] = None  # URL to user's avatar image
+
+    # Social stats (denormalized for quick access)
+    friend_count: int = 0
+    games_played: int = 0
+
+    # Privacy settings
+    profile_visibility: Literal["public", "friends_only", "private"] = "public"
+    allow_friend_requests: bool = True
 
     # OAuth
     google_id: Optional[str] = None

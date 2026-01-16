@@ -13,7 +13,7 @@ from pydantic import BaseModel
 import anthropic
 from app.models.user import User
 from app.models.watchlist import Conversation
-from app.models.content import Content, LiveChannel, Podcast, PodcastEpisode
+from app.models.content import Content, LiveChannel, Podcast, PodcastEpisode, RadioStation
 from app.core.config import settings
 from app.core.security import get_current_active_user
 
@@ -734,6 +734,8 @@ async def extract_action_from_response(
     Special handling:
     - If user asks to play specific content, validate it exists in DB
     - If content doesn't exist but user asked to play, convert to search
+    - If user asks to show multiple content items, parse the items list
+    - If user asks to start a chess game with invite, parse the friend name
     """
     # Use Claude to determine if an action is needed
     try:
@@ -744,16 +746,28 @@ Should the app take an action? Return ONLY a JSON response (no other text).
 If NO action needed, return: {{"action": null}}
 
 If action IS needed, return ONE of these formats:
-- Navigation: {{"action": "navigate", "target": "movies|series|channels|radio|podcasts|flows|judaism|children|home"}}
+- Navigation: {{"action": "navigate", "target": "movies|series|channels|radio|podcasts|flows|judaism|children|home|chess|games"}}
 - Play: {{"action": "play"}}
-- Search: {{"action": "search", "query": "{query}"}}
+- Search: {{"action": "search", "query": "search terms"}}
 - Pause/Resume/Skip: {{"action": "pause"|"resume"|"skip"}}
+- Show Multiple: {{"action": "show_multiple", "items": [{{"name": "content name", "type": "channel|movie|podcast|radio"}}]}}
+- Chess Invite: {{"action": "chess_invite", "friend_name": "name of friend to invite"}}
 
 Rules:
 - "תמליץ לי על סרט" (recommend a movie) = NO action
 - "עבור לסרטים" (go to movies) = navigate to movies
 - "תנגן את X" (play X) = play action (we'll check if X exists)
 - "חפש סרטי אקשן" (search action movies) = search action
+- "תראה לי ערוצים כאן 11 וכאן 12" (show me channels Kan11 and Kan12) = show_multiple with items
+- "Show me Kan11, Kan12" = show_multiple action with channel items
+- "הפעל את כאן 11 וכאן 12 ביחד" (play Kan11 and Kan12 together) = show_multiple
+- "התחל משחק שחמט עם דוד" (start chess game with David) = chess_invite with friend_name
+- "Start a chess game and invite David" = chess_invite with friend_name
+
+For show_multiple:
+- Extract ALL content names mentioned
+- Detect type from context (channels if TV names, movies if film titles, etc.)
+- Default to "channel" for Israeli channel names like Kan11, Keshet, Reshet
 
 Return ONLY valid JSON, nothing else."""
 
@@ -772,6 +786,39 @@ Return ONLY valid JSON, nothing else."""
             action_data = json.loads(action_text)
             if action_data.get("action"):
                 action_type = action_data["action"]
+
+                # Handle show_multiple action
+                if action_type == "show_multiple":
+                    items = action_data.get("items", [])
+                    if items:
+                        print(f"[CHAT] show_multiple action with {len(items)} items: {items}")
+                        return {
+                            "type": "show_multiple",
+                            "payload": {"items": items},
+                            "confidence": 0.9,
+                        }
+                    else:
+                        print(f"[CHAT] show_multiple action but no items found")
+                        return None
+
+                # Handle chess_invite action
+                if action_type == "chess_invite":
+                    friend_name = action_data.get("friend_name")
+                    if friend_name:
+                        print(f"[CHAT] chess_invite action for friend: {friend_name}")
+                        return {
+                            "type": "chess_invite",
+                            "payload": {"friend_name": friend_name},
+                            "confidence": 0.9,
+                        }
+                    else:
+                        # No friend name - just navigate to chess
+                        print(f"[CHAT] chess_invite without friend name, converting to navigate")
+                        return {
+                            "type": "navigate",
+                            "payload": {"target": "chess"},
+                            "confidence": 0.8,
+                        }
 
                 # If it's a play action, validate the content exists in our library
                 if action_type == "play":
@@ -817,9 +864,20 @@ Return ONLY valid JSON, nothing else."""
                         # If there's an error checking, don't convert - let play action through
                         pass
 
+                # Build payload based on action type
+                payload = action_data.get("payload") or {}
+                if action_data.get("target"):
+                    payload["target"] = action_data.get("target")
+                if action_data.get("query"):
+                    payload["query"] = action_data.get("query")
+                if action_data.get("items"):
+                    payload["items"] = action_data.get("items")
+                if action_data.get("friend_name"):
+                    payload["friend_name"] = action_data.get("friend_name")
+
                 return {
                     "type": action_type,
-                    "payload": action_data.get("payload") or {"target": action_data.get("target")} if action_data.get("target") else {"query": action_data.get("query")} if action_data.get("query") else {},
+                    "payload": payload,
                     "confidence": 0.9,
                 }
         except json.JSONDecodeError:
@@ -1092,6 +1150,217 @@ async def process_hebronics(
     """
     result = await process_hebronics_input(request.text)
     return HebronicsResponse(**result)
+
+
+# ============================================================================
+# Multi-Content Resolution API (for voice commands like "Show me Kan11, Kan12")
+# ============================================================================
+
+class ContentItemRequest(BaseModel):
+    """Single content item to resolve."""
+    name: str
+    type: str = "any"  # channel, movie, series, podcast, radio, any
+
+
+class ResolveContentRequest(BaseModel):
+    """Request to resolve multiple content items by name."""
+    items: list[ContentItemRequest]
+    language: str = "he"
+
+
+class ResolvedContentItem(BaseModel):
+    """Resolved content item with stream info."""
+    id: str
+    name: str
+    type: str  # channel, movie, series, podcast, radio
+    thumbnail: Optional[str] = None
+    stream_url: Optional[str] = None
+    matched_name: str  # Original name matched
+    confidence: float = 1.0  # Match confidence
+
+
+class ResolveContentResponse(BaseModel):
+    """Response with resolved content items."""
+    items: list[ResolvedContentItem]
+    unresolved: list[str] = []  # Names that couldn't be matched
+    total_requested: int
+    total_resolved: int
+
+
+def fuzzy_match_score(query: str, target: str) -> float:
+    """Calculate fuzzy match score between query and target strings."""
+    query_lower = query.lower().strip()
+    target_lower = target.lower().strip()
+    
+    # Exact match
+    if query_lower == target_lower:
+        return 1.0
+    
+    # Contains match
+    if query_lower in target_lower or target_lower in query_lower:
+        return 0.9
+    
+    # Use difflib for fuzzy matching
+    return difflib.SequenceMatcher(None, query_lower, target_lower).ratio()
+
+
+async def resolve_single_content(
+    name: str,
+    content_type: str,
+    language: str = "he"
+) -> Optional[ResolvedContentItem]:
+    """
+    Resolve a single content item by name using fuzzy matching.
+    Searches across channels, VOD, podcasts, and radio based on type.
+    """
+    best_match: Optional[ResolvedContentItem] = None
+    best_score = 0.0
+    min_score = 0.5  # Minimum match threshold
+    
+    # Search in live channels
+    if content_type in ["any", "channel"]:
+        channels = await LiveChannel.find(LiveChannel.is_active == True).to_list()
+        for ch in channels:
+            # Try matching against name in different languages
+            names_to_check = [ch.name]
+            if ch.name_en:
+                names_to_check.append(ch.name_en)
+            if ch.name_es:
+                names_to_check.append(ch.name_es)
+            
+            for check_name in names_to_check:
+                score = fuzzy_match_score(name, check_name)
+                if score > best_score and score >= min_score:
+                    best_score = score
+                    best_match = ResolvedContentItem(
+                        id=str(ch.id),
+                        name=ch.name,
+                        type="channel",
+                        thumbnail=ch.logo or ch.thumbnail,
+                        stream_url=ch.stream_url,
+                        matched_name=name,
+                        confidence=score
+                    )
+    
+    # Search in VOD content (movies/series)
+    if content_type in ["any", "movie", "series", "vod"]:
+        # Limit to reasonable number for fuzzy search
+        content_items = await Content.find(Content.is_published == True).limit(500).to_list()
+        for item in content_items:
+            names_to_check = [item.title]
+            if item.title_en:
+                names_to_check.append(item.title_en)
+            if item.title_es:
+                names_to_check.append(item.title_es)
+            
+            for check_name in names_to_check:
+                score = fuzzy_match_score(name, check_name)
+                if score > best_score and score >= min_score:
+                    best_score = score
+                    item_type = "series" if item.is_series else "movie"
+                    best_match = ResolvedContentItem(
+                        id=str(item.id),
+                        name=item.title,
+                        type=item_type,
+                        thumbnail=item.thumbnail or item.poster_url,
+                        stream_url=item.stream_url,
+                        matched_name=name,
+                        confidence=score
+                    )
+    
+    # Search in podcasts
+    if content_type in ["any", "podcast"]:
+        podcasts = await Podcast.find(Podcast.is_active == True).to_list()
+        for pod in podcasts:
+            names_to_check = [pod.title]
+            if pod.title_en:
+                names_to_check.append(pod.title_en)
+            if pod.title_es:
+                names_to_check.append(pod.title_es)
+            
+            for check_name in names_to_check:
+                score = fuzzy_match_score(name, check_name)
+                if score > best_score and score >= min_score:
+                    best_score = score
+                    # Get latest episode for stream URL
+                    latest_ep = await PodcastEpisode.find_one(
+                        PodcastEpisode.podcast_id == str(pod.id),
+                        sort=[("published_at", -1)]
+                    )
+                    stream_url = latest_ep.audio_url if latest_ep else None
+                    best_match = ResolvedContentItem(
+                        id=str(pod.id),
+                        name=pod.title,
+                        type="podcast",
+                        thumbnail=pod.cover,
+                        stream_url=stream_url,
+                        matched_name=name,
+                        confidence=score
+                    )
+    
+    # Search in radio stations
+    if content_type in ["any", "radio"]:
+        stations = await RadioStation.find(RadioStation.is_active == True).to_list()
+        for station in stations:
+            names_to_check = [station.name]
+            if station.name_en:
+                names_to_check.append(station.name_en)
+            if station.name_es:
+                names_to_check.append(station.name_es)
+            
+            for check_name in names_to_check:
+                score = fuzzy_match_score(name, check_name)
+                if score > best_score and score >= min_score:
+                    best_score = score
+                    best_match = ResolvedContentItem(
+                        id=str(station.id),
+                        name=station.name,
+                        type="radio",
+                        thumbnail=station.logo,
+                        stream_url=station.stream_url,
+                        matched_name=name,
+                        confidence=score
+                    )
+    
+    return best_match
+
+
+@router.post("/resolve-content", response_model=ResolveContentResponse)
+async def resolve_content(
+    request: ResolveContentRequest,
+    current_user: User = Depends(get_current_active_user),
+):
+    """
+    Resolve multiple content items by name for voice commands.
+    
+    Used by chatbot for commands like "Show me channels Kan11, Kan12"
+    to look up content by name and return stream URLs for widget display.
+    
+    Supports fuzzy matching to handle voice recognition variations.
+    """
+    resolved_items: list[ResolvedContentItem] = []
+    unresolved: list[str] = []
+    
+    for item in request.items:
+        result = await resolve_single_content(
+            name=item.name,
+            content_type=item.type,
+            language=request.language
+        )
+        
+        if result:
+            resolved_items.append(result)
+            print(f"[CHAT] Resolved '{item.name}' -> '{result.name}' (type={result.type}, confidence={result.confidence:.2f})")
+        else:
+            unresolved.append(item.name)
+            print(f"[CHAT] Could not resolve: '{item.name}'")
+    
+    return ResolveContentResponse(
+        items=resolved_items,
+        unresolved=unresolved,
+        total_requested=len(request.items),
+        total_resolved=len(resolved_items)
+    )
 
 
 class VoiceSearchRequest(BaseModel):

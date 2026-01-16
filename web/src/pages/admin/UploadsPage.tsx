@@ -8,8 +8,8 @@ import { View, Text, StyleSheet, ActivityIndicator, ScrollView, Pressable } from
 import { useTranslation } from 'react-i18next';
 import { useDropzone } from 'react-dropzone';
 import { colors, spacing, borderRadius, fontSize } from '@bayit/shared/theme';
-import { GlassCard, GlassButton, GlassInput, GlassModal, GlassSelect, GlassToggle, GlassDraggableExpander, GlassCheckbox } from '@bayit/shared/ui';
-import { Plus, Edit2, Trash2, FolderOpen, AlertCircle, X, Folder, Upload, XCircle, File, CheckCircle } from 'lucide-react';
+import { GlassCard, GlassButton, GlassInput, GlassModal, GlassSelect, GlassToggle, GlassDraggableExpander, GlassCheckbox, GlassResizablePanel } from '@bayit/shared/ui';
+import { Plus, Edit2, Trash2, FolderOpen, AlertCircle, X, Folder, Upload, XCircle, File, CheckCircle, List } from 'lucide-react';
 import { useDirection } from '@/hooks/useDirection';
 import { useModal } from '@/contexts/ModalContext';
 import * as uploadsService from '@/services/uploadsService';
@@ -636,105 +636,15 @@ const UploadsPage: React.FC = () => {
 
   return (
     <ScrollView style={styles.container} contentContainerStyle={styles.contentContainer}>
-      {/* Header */}
-      <View style={styles.headerContainer}>
-        <View style={styles.headerText}>
-          <Text style={[styles.pageTitle, { textAlign }]}>{t('admin.nav.uploads')}</Text>
-          <Text style={[styles.subtitle, { textAlign }]}>
-            {t('admin.uploads.systemInfoText')}
-          </Text>
-        </View>
-        
-        {/* Content Type Filters */}
-        <View style={styles.contentFilterSection}>
-          <Text style={[styles.filterTitle, { textAlign }]}>
-            {t('admin.uploads.contentTypeFilters', 'Content Type Filters')}
-          </Text>
-          <Text style={[styles.filterSubtitle, { textAlign }]}>
-            {t('admin.uploads.contentTypeFiltersHelp', 'Optional - Leave all unchecked to process all content types')}
-          </Text>
-          
-          <View style={[styles.checkboxContainer, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
-            <View style={[styles.checkboxRow, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
-              <GlassCheckbox
-                label={t('admin.uploads.moviesOnly', 'Movies Only')}
-                checked={moviesOnly}
-                onChange={setMoviesOnly}
-              />
-            </View>
-            
-            <View style={[styles.checkboxRow, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
-              <GlassCheckbox
-                label={t('admin.uploads.seriesOnly', 'Series Only')}
-                checked={seriesOnly}
-                onChange={setSeriesOnly}
-              />
-            </View>
-            
-            <View style={[styles.checkboxRow, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
-              <GlassCheckbox
-                label={t('admin.uploads.audiobooksOnly', 'Audiobooks Only')}
-                checked={audiobooksOnly}
-                onChange={setAudiobooksOnly}
-              />
-            </View>
-          </View>
-        </View>
-        
-        <View style={[styles.actionButtonsContainer, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
-          {/* Primary Actions */}
-          <View style={[styles.buttonGroup, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
-            <GlassButton
-              title={triggeringUpload ? t('common.loading') : t('admin.uploads.triggerUpload')}
-              variant="ghost"
-              icon={triggeringUpload ? null : <Upload size={18} color="white" />}
-              onPress={handleTriggerUpload}
-              disabled={triggeringUpload || queueStats.processing > 0 || queueStats.queued > 0}
-            >
-              {triggeringUpload && (
-                <ActivityIndicator size="small" color={colors.primary} style={{ marginRight: spacing.sm }} />
-              )}
-            </GlassButton>
-
-            <GlassButton
-              title={t('admin.uploads.addFolder')}
-              variant="primary"
-              icon={<Plus size={18} color="white" />}
-              onPress={handleAddFolder}
-            />
-          </View>
-          
-          {/* Management Actions */}
-          <View style={[styles.buttonGroup, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
-            <GlassButton
-              title={resettingCache ? t('common.loading') : t('admin.uploads.resetCache', 'Reset Cache')}
-              variant="ghost"
-              icon={resettingCache ? null : <FolderOpen size={18} color="white" />}
-              onPress={handleResetCache}
-              disabled={resettingCache}
-            >
-              {resettingCache && (
-                <ActivityIndicator size="small" color={colors.warning} style={{ marginRight: spacing.sm }} />
-              )}
-            </GlassButton>
-
-            <GlassButton
-              title={clearingQueue ? t('common.loading') : t('admin.uploads.clearQueue')}
-              variant="danger"
-              icon={clearingQueue ? null : <XCircle size={18} color="white" />}
-              onPress={handleClearQueue}
-              disabled={clearingQueue || (queueStats.queued === 0 && queueStats.processing === 0)}
-            >
-              {clearingQueue && (
-                <ActivityIndicator size="small" color={colors.error} style={{ marginRight: spacing.sm }} />
-              )}
-            </GlassButton>
-          </View>
-        </View>
+      {/* Page Header */}
+      <View style={styles.pageHeader}>
+        <Text style={[styles.pageTitle, { textAlign }]}>{t('admin.nav.uploads')}</Text>
+        <Text style={[styles.subtitle, { textAlign }]}>
+          {t('admin.uploads.systemInfoText')}
+        </Text>
       </View>
 
-      {/* Error Message */}
-      {/* Connection Status Banner */}
+      {/* Status Banners */}
       {!isAuthenticated && (
         <View style={[styles.statusBanner, styles.statusBannerError, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
           <AlertCircle size={20} color={colors.error} />
@@ -749,54 +659,12 @@ const UploadsPage: React.FC = () => {
         </View>
       )}
 
-      {isAuthenticated && !wsConnected && !wsReconnecting && (
-        <View style={[styles.statusBanner, styles.statusBannerWarning, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
-          <AlertCircle size={20} color={colors.warning} />
-          <View style={{ flex: 1, marginLeft: spacing.sm }}>
-            <Text style={[styles.statusBannerTitle, { color: colors.warning }]}>
-              {t('admin.uploads.wsDisconnected', 'Real-time Updates Disabled')}
-            </Text>
-            <Text style={[styles.statusBannerText, { color: colors.warning }]}>
-              {t('admin.uploads.wsDisconnectedHelp', 'WebSocket connection failed. Queue status may be outdated. Page will auto-retry.')}
-            </Text>
-          </View>
-        </View>
-      )}
-
       {isAuthenticated && wsReconnecting && (
         <View style={[styles.statusBanner, styles.statusBannerInfo, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
           <ActivityIndicator size="small" color={colors.primary} />
           <Text style={[styles.statusBannerText, { marginLeft: spacing.sm }]}>
             {t('admin.uploads.wsReconnecting', 'Reconnecting to real-time updates...')}
           </Text>
-        </View>
-      )}
-
-      {lastTriggerResult && (
-        <View style={[styles.statusBanner, lastTriggerResult.filesFound > 0 ? styles.statusBannerSuccess : styles.statusBannerInfo, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
-          <View style={{ flex: 1 }}>
-            <Text style={[styles.statusBannerText, { color: lastTriggerResult.filesFound > 0 ? colors.success : colors.textMuted }]}>
-              {lastTriggerResult.message}
-            </Text>
-          </View>
-          <Pressable onPress={() => setLastTriggerResult(null)}>
-            <X size={18} color={lastTriggerResult.filesFound > 0 ? colors.success : colors.textMuted} />
-          </Pressable>
-        </View>
-      )}
-
-      {/* Show notice if uploads are active */}
-      {(queueStats.processing > 0 || queueStats.queued > 0) && !triggeringUpload && (
-        <View style={[styles.statusBanner, styles.statusBannerInfo, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
-          <ActivityIndicator size="small" color={colors.primary} />
-          <View style={{ flex: 1, marginLeft: spacing.sm }}>
-            <Text style={styles.statusBannerText}>
-              {t('admin.uploads.uploadsActiveNotice', 
-                'Uploads in progress ({{processing}} active, {{queued}} queued). New scan disabled until current batch completes.',
-                { processing: queueStats.processing, queued: queueStats.queued }
-              )}
-            </Text>
-          </View>
         </View>
       )}
 
@@ -810,232 +678,346 @@ const UploadsPage: React.FC = () => {
         </View>
       )}
 
-      {/* Real-time Upload Queue */}
-      <GlassQueue
-        stats={queueStats}
-        activeJob={activeJob}
-        queue={queuedJobs}
-        recentCompleted={recentCompleted}
-        queuePaused={queuePaused}
-        pauseReason={pauseReason}
-        loading={false}
-        onResumeQueue={handleResumeQueue}
-      />
-
-      {/* Monitored Folders */}
-      <GlassDraggableExpander
-        title={t('admin.uploads.monitoredFolders')}
-        defaultExpanded={false}
-        emptyMessage={t('admin.uploads.noMonitoredFolders')}
-        isEmpty={monitoredFolders.length === 0}
-      >
-        {monitoredFolders.map((folder) => (
-            <View key={folder.id} style={styles.folderItem}>
-              <View style={[styles.folderHeader, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
-                <View style={{ flex: 1 }}>
-                  <Text style={[styles.folderName, { textAlign }]}>
-                    {folder.name || folder.path}
-                  </Text>
-                  <Text style={[styles.folderPath, { textAlign }]}>{folder.path}</Text>
-                </View>
-                <View style={[styles.folderActions, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
-                  <Text style={[
-                    styles.folderStatus,
-                    { backgroundColor: folder.enabled ? colors.success + '30' : colors.textMuted + '30' }
-                  ]}>
-                    {folder.enabled ? t('common.enabled') : t('common.disabled')}
-                  </Text>
-                  <GlassButton
-                    title=""
-                    variant="ghost"
-                    icon={<Edit2 size={16} color={colors.textSecondary} />}
-                    onPress={() => handleEditFolder(folder)}
-                    style={styles.iconButton}
-                  />
-                  <GlassButton
-                    title=""
-                    variant="ghost"
-                    icon={<Trash2 size={16} color={colors.error} />}
-                    onPress={() => handleDeleteFolder(folder)}
-                    style={styles.iconButton}
-                  />
-                </View>
+      {/* Two-Column Layout */}
+      <View style={[styles.twoColumnLayout, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
+        {/* LEFT COLUMN - Main Upload Area */}
+        <View style={styles.mainColumn}>
+          {/* Manual Upload - Primary Action */}
+          <GlassCard style={styles.manualUploadCard}>
+            <View style={[styles.sectionHeader, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
+              <View style={styles.sectionIconContainer}>
+                <Upload size={24} color={colors.primary} />
               </View>
-              <View style={[styles.folderMeta, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
-                <Text style={styles.folderMetaText}>
-                  {t('admin.uploads.type')}: {t(`admin.uploads.contentTypes.${folder.content_type}`, folder.content_type)}
+              <View style={{ flex: 1 }}>
+                <Text style={[styles.sectionTitle, { textAlign }]}>
+                  {t('admin.uploads.manualUpload.title')}
                 </Text>
-                {folder.last_scanned && (
-                  <Text style={styles.folderMetaText}>
-                    {t('admin.uploads.lastScan')}: {formatDate(folder.last_scanned)}
-                  </Text>
-                )}
+                <Text style={[styles.sectionSubtitle, { textAlign }]}>
+                  {t('admin.uploads.manualUpload.subtitle')}
+                </Text>
               </View>
             </View>
-          ))}
-      </GlassDraggableExpander>
 
-      {/* Manual Upload Section */}
-      <GlassDraggableExpander
-        title={t('admin.uploads.manualUpload.title')}
-        subtitle={t('admin.uploads.manualUpload.subtitle')}
-        defaultExpanded={false}
-        icon={<Upload size={20} color={colors.primary} />}
-        style={{ marginTop: spacing.lg }}
-      >
-        <View style={styles.manualUploadContainer}>
-          {/* Drop Zone */}
-          <View
-            {...getRootProps()}
-            style={[
-              styles.dropZone,
-              isDragActive && styles.dropZoneActive,
-              isUploading && styles.dropZoneDisabled,
-            ]}
-          >
-            <input {...getInputProps()} />
-            <View style={styles.dropZoneContent}>
-              <View style={[styles.dropZoneIconContainer, isDragActive && styles.dropZoneIconActive]}>
-                <FolderOpen size={28} color={isDragActive ? colors.primary : colors.textSecondary} />
-              </View>
-              <Text style={[styles.dropZoneText, { textAlign: 'center' }]}>
-                {isDragActive
-                  ? t('admin.uploads.manualUpload.dropHereActive')
-                  : t('admin.uploads.manualUpload.dropHere')}
-              </Text>
-              <Text style={[styles.dropZoneSubtext, { textAlign: 'center' }]}>
-                {t('admin.uploads.manualUpload.supportedFormats')}
-              </Text>
-            </View>
-          </View>
-
-          {/* Selected Files List */}
-          {pendingFiles.length > 0 && (
-            <View style={styles.fileListContainer}>
-              <View style={[styles.fileListHeader, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
-                <Text style={[styles.fileListTitle, { textAlign }]}>
-                  {t('admin.uploads.manualUpload.selectedFiles')} ({pendingFiles.length})
+            {/* Large Drop Zone */}
+            <View
+              {...getRootProps()}
+              style={[
+                styles.largeDropZone,
+                isDragActive && styles.dropZoneActive,
+                isUploading && styles.dropZoneDisabled,
+              ]}
+            >
+              <input {...getInputProps()} />
+              <View style={styles.dropZoneContent}>
+                <View style={[styles.dropZoneIconLarge, isDragActive && styles.dropZoneIconActive]}>
+                  <FolderOpen size={48} color={isDragActive ? colors.primary : colors.textSecondary} />
+                </View>
+                <Text style={styles.dropZoneTextLarge}>
+                  {isDragActive
+                    ? t('admin.uploads.manualUpload.dropHereActive')
+                    : t('admin.uploads.manualUpload.dropHere')}
                 </Text>
-                <GlassButton
-                  title={t('admin.uploads.manualUpload.clearAll')}
-                  variant="ghost"
-                  onPress={handleClearFiles}
-                  disabled={isUploading}
-                  icon={<X size={14} color={colors.textMuted} />}
-                />
+                <Text style={styles.dropZoneSubtext}>
+                  {t('admin.uploads.manualUpload.supportedFormats')}
+                </Text>
               </View>
+            </View>
 
-              <ScrollView style={styles.fileList} nestedScrollEnabled>
-                {pendingFiles.map((file, index) => (
-                  <View
-                    key={`${file.name}-${index}`}
-                    style={[styles.fileItem, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}
-                  >
-                    <View style={[styles.fileIcon, { marginEnd: spacing.sm }]}>
-                      <File size={20} color={colors.primary} />
-                    </View>
-                    <View style={styles.fileInfo}>
-                      <Text style={[styles.fileName, { textAlign }]} numberOfLines={1}>
-                        {file.name}
-                      </Text>
-                      <Text style={[styles.fileSizeText, { textAlign }]}>
-                        {formatFileSize(file.size)}
-                      </Text>
-                    </View>
-                    {uploadProgress[index] !== undefined && (
-                      <View style={styles.fileProgress}>
-                        <View
-                          style={[
-                            styles.fileProgressBar,
-                            { width: `${uploadProgress[index]}%` },
-                          ]}
-                        />
-                        <Text style={styles.fileProgressText}>
-                          {uploadProgress[index]}%
+            {/* Selected Files */}
+            {pendingFiles.length > 0 && (
+              <View style={styles.selectedFilesContainer}>
+                <View style={[styles.fileListHeader, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
+                  <Text style={[styles.fileListTitle, { textAlign }]}>
+                    {t('admin.uploads.manualUpload.selectedFiles')} ({pendingFiles.length})
+                  </Text>
+                  <GlassButton
+                    title={t('admin.uploads.manualUpload.clearAll')}
+                    variant="ghost"
+                    onPress={handleClearFiles}
+                    disabled={isUploading}
+                    icon={<X size={14} color={colors.textMuted} />}
+                  />
+                </View>
+
+                <ScrollView style={styles.fileList} nestedScrollEnabled>
+                  {pendingFiles.map((file, index) => (
+                    <View
+                      key={`${file.name}-${index}`}
+                      style={[styles.fileItem, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}
+                    >
+                      <View style={[styles.fileIcon, { marginEnd: spacing.sm }]}>
+                        <File size={20} color={colors.primary} />
+                      </View>
+                      <View style={styles.fileInfo}>
+                        <Text style={[styles.fileName, { textAlign }]} numberOfLines={1}>
+                          {file.name}
+                        </Text>
+                        <Text style={[styles.fileSizeText, { textAlign }]}>
+                          {formatFileSize(file.size)}
                         </Text>
                       </View>
-                    )}
-                    {!isUploading && (
-                      <Pressable
-                        onPress={() => handleRemoveFile(index)}
-                        style={styles.removeFileButton}
-                      >
-                        <X size={16} color={colors.error} />
-                      </Pressable>
-                    )}
+                      {uploadProgress[index] !== undefined && (
+                        <View style={styles.fileProgress}>
+                          <View
+                            style={[
+                              styles.fileProgressBar,
+                              { width: `${uploadProgress[index]}%` },
+                            ]}
+                          />
+                          <Text style={styles.fileProgressText}>
+                            {uploadProgress[index]}%
+                          </Text>
+                        </View>
+                      )}
+                      {!isUploading && (
+                        <Pressable
+                          onPress={() => handleRemoveFile(index)}
+                          style={styles.removeFileButton}
+                        >
+                          <X size={16} color={colors.error} />
+                        </Pressable>
+                      )}
+                    </View>
+                  ))}
+                </ScrollView>
+
+                {/* Content Type + Upload */}
+                <View style={[styles.uploadActions, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
+                  <View style={styles.contentTypeSelect}>
+                    <GlassSelect
+                      value={manualContentType}
+                      onChange={setManualContentType}
+                      options={[
+                        { value: 'movie', label: t('admin.uploads.contentTypes.movie') },
+                        { value: 'series', label: t('admin.uploads.contentTypes.series') },
+                        { value: 'audiobook', label: t('admin.uploads.contentTypes.audiobook') },
+                      ]}
+                      disabled={isUploading}
+                      placeholder={t('admin.uploads.manualUpload.selectContentType')}
+                    />
                   </View>
-                ))}
-              </ScrollView>
+                  <GlassButton
+                    title={
+                      isUploading
+                        ? t('admin.uploads.manualUpload.uploadingFiles', { count: pendingFiles.length })
+                        : t('admin.uploads.manualUpload.uploadSelected')
+                    }
+                    variant="primary"
+                    onPress={handleUploadFiles}
+                    disabled={isUploading || pendingFiles.length === 0}
+                    icon={isUploading ? null : <Upload size={18} color="white" />}
+                    style={styles.uploadButton}
+                  >
+                    {isUploading && (
+                      <ActivityIndicator size="small" color="white" style={{ marginRight: spacing.sm }} />
+                    )}
+                  </GlassButton>
+                </View>
 
-              {/* Content Type Selection */}
-              <View style={styles.contentTypeSection}>
-                <Text style={[styles.contentTypeLabel, { textAlign }]}>
-                  {t('admin.uploads.manualUpload.selectContentType')}
-                </Text>
-                <GlassSelect
-                  value={manualContentType}
-                  onChange={setManualContentType}
-                  options={[
-                    { value: 'movie', label: t('admin.uploads.contentTypes.movie') },
-                    { value: 'series', label: t('admin.uploads.contentTypes.series') },
-                    { value: 'audiobook', label: t('admin.uploads.contentTypes.audiobook') },
-                  ]}
-                  disabled={isUploading}
-                />
-              </View>
-
-              {/* Upload Button */}
-              <View style={styles.uploadButtonContainer}>
-                <GlassButton
-                  title={
-                    isUploading
-                      ? t('admin.uploads.manualUpload.uploadingFiles', { count: pendingFiles.length })
-                      : t('admin.uploads.manualUpload.uploadSelected')
-                  }
-                  variant="primary"
-                  onPress={handleUploadFiles}
-                  disabled={isUploading || pendingFiles.length === 0}
-                  icon={isUploading ? null : <Upload size={18} color="white" />}
-                >
-                  {isUploading && (
-                    <ActivityIndicator size="small" color="white" style={{ marginRight: spacing.sm }} />
-                  )}
-                </GlassButton>
-              </View>
-
-              {/* Upload Result */}
-              {uploadResult && (
-                <View
-                  style={[
-                    styles.uploadResult,
-                    uploadResult.failed > 0 ? styles.uploadResultWarning : styles.uploadResultSuccess,
-                  ]}
-                >
-                  <CheckCircle size={18} color={uploadResult.failed > 0 ? colors.warning : colors.success} />
-                  <Text
+                {/* Upload Result */}
+                {uploadResult && (
+                  <View
                     style={[
-                      styles.uploadResultText,
-                      { color: uploadResult.failed > 0 ? colors.warning : colors.success },
+                      styles.uploadResult,
+                      uploadResult.failed > 0 ? styles.uploadResultWarning : styles.uploadResultSuccess,
                     ]}
                   >
-                    {t('admin.uploads.manualUpload.uploadSuccess', { count: uploadResult.successful })}
-                    {uploadResult.failed > 0 && ` (${uploadResult.failed} failed)`}
-                  </Text>
+                    <CheckCircle size={18} color={uploadResult.failed > 0 ? colors.warning : colors.success} />
+                    <Text
+                      style={[
+                        styles.uploadResultText,
+                        { color: uploadResult.failed > 0 ? colors.warning : colors.success },
+                      ]}
+                    >
+                      {t('admin.uploads.manualUpload.uploadSuccess', { count: uploadResult.successful })}
+                      {uploadResult.failed > 0 && ` (${uploadResult.failed} failed)`}
+                    </Text>
+                  </View>
+                )}
+              </View>
+            )}
+          </GlassCard>
+
+        </View>
+
+        {/* RIGHT COLUMN - Queue & Folders Sidebar */}
+        <GlassResizablePanel 
+          defaultWidth={400} 
+          minWidth={320} 
+          maxWidth={550}
+          position="right"
+          style={styles.sidebarColumn}
+        >
+          {/* Queue Stats Card */}
+          <GlassCard style={styles.queueCard}>
+            <View style={[styles.queueHeader, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
+              <Text style={[styles.queueTitle, { textAlign }]}>
+                {t('admin.uploads.queueStatus', 'Upload Queue')}
+              </Text>
+              {(queueStats.processing > 0 || queueStats.queued > 0) && (
+                <View style={styles.queueActiveBadge}>
+                  <ActivityIndicator size="small" color={colors.primary} />
                 </View>
               )}
             </View>
-          )}
 
-          {/* Empty state */}
-          {pendingFiles.length === 0 && (
-            <View style={styles.emptyFileState}>
-              <Text style={[styles.emptyFileText, { textAlign }]}>
-                {t('admin.uploads.manualUpload.noFilesSelected')}
-              </Text>
+            {/* Stats Grid */}
+            <View style={styles.statsGrid}>
+              <View style={styles.statBox}>
+                <Text style={styles.statBoxValue}>{queueStats.total_jobs}</Text>
+                <Text style={styles.statBoxLabel}>{t('admin.uploads.totalJobs', 'Total')}</Text>
+              </View>
+              <View style={styles.statBox}>
+                <Text style={[styles.statBoxValue, { color: colors.warning }]}>{queueStats.queued}</Text>
+                <Text style={styles.statBoxLabel}>{t('admin.uploads.queued', 'Queued')}</Text>
+              </View>
+              <View style={styles.statBox}>
+                <Text style={[styles.statBoxValue, { color: colors.primary }]}>{queueStats.processing}</Text>
+                <Text style={styles.statBoxLabel}>{t('admin.uploads.processing', 'Active')}</Text>
+              </View>
+              <View style={styles.statBox}>
+                <Text style={[styles.statBoxValue, { color: colors.success }]}>{queueStats.completed}</Text>
+                <Text style={styles.statBoxLabel}>{t('admin.uploads.completed', 'Done')}</Text>
+              </View>
+              {queueStats.failed > 0 && (
+                <View style={styles.statBox}>
+                  <Text style={[styles.statBoxValue, { color: colors.error }]}>{queueStats.failed}</Text>
+                  <Text style={styles.statBoxLabel}>{t('admin.uploads.failed', 'Failed')}</Text>
+                </View>
+              )}
             </View>
-          )}
-        </View>
-      </GlassDraggableExpander>
+
+            {/* Queue Actions */}
+            <View style={styles.queueActions}>
+              <GlassButton
+                title={triggeringUpload ? t('common.loading') : t('admin.uploads.scanFolders', 'Scan Folders')}
+                variant="ghost"
+                icon={triggeringUpload ? null : <FolderOpen size={16} color="white" />}
+                onPress={handleTriggerUpload}
+                disabled={triggeringUpload || queueStats.processing > 0 || queueStats.queued > 0}
+                style={styles.queueActionButton}
+              >
+                {triggeringUpload && <ActivityIndicator size="small" color={colors.primary} />}
+              </GlassButton>
+              
+              <GlassButton
+                title={resettingCache ? '' : t('admin.uploads.resetCache', 'Reset')}
+                variant="ghost"
+                icon={resettingCache ? <ActivityIndicator size="small" color={colors.warning} /> : <XCircle size={16} color={colors.textMuted} />}
+                onPress={handleResetCache}
+                disabled={resettingCache}
+                style={styles.queueActionButtonSmall}
+              />
+
+              <GlassButton
+                title={clearingQueue ? '' : t('admin.uploads.clearQueue', 'Clear')}
+                variant="danger"
+                icon={clearingQueue ? <ActivityIndicator size="small" color={colors.error} /> : <Trash2 size={16} color="white" />}
+                onPress={handleClearQueue}
+                disabled={clearingQueue || (queueStats.queued === 0 && queueStats.processing === 0)}
+                style={styles.queueActionButtonSmall}
+              />
+            </View>
+
+            {lastTriggerResult && (
+              <View style={[styles.triggerResult, lastTriggerResult.filesFound > 0 ? styles.triggerResultSuccess : styles.triggerResultInfo]}>
+                <Text style={styles.triggerResultText}>{lastTriggerResult.message}</Text>
+                <Pressable onPress={() => setLastTriggerResult(null)}>
+                  <X size={14} color={colors.textMuted} />
+                </Pressable>
+              </View>
+            )}
+          </GlassCard>
+
+          {/* Active & Queued Jobs */}
+          <GlassCard style={styles.jobsCard}>
+            <GlassQueue
+              stats={queueStats}
+              activeJob={activeJob}
+              queue={queuedJobs}
+              recentCompleted={recentCompleted}
+              queuePaused={queuePaused}
+              pauseReason={pauseReason}
+              loading={false}
+              onResumeQueue={handleResumeQueue}
+              noCard
+              hideHeader
+            />
+          </GlassCard>
+
+          {/* Monitored Folders - In Sidebar */}
+          <GlassDraggableExpander
+            title={t('admin.uploads.monitoredFolders')}
+            defaultExpanded={false}
+            icon={<Folder size={18} color={colors.primary} />}
+            subtitle={`${monitoredFolders.length} ${t('admin.uploads.foldersConfigured', 'folders configured')}`}
+          >
+            <View style={styles.sidebarSection}>
+              <GlassButton
+                title={t('admin.uploads.addFolder')}
+                variant="primary"
+                icon={<Plus size={14} color="white" />}
+                onPress={handleAddFolder}
+                style={styles.addFolderButton}
+              />
+
+              {monitoredFolders.length === 0 ? (
+                <View style={styles.emptyFoldersCompact}>
+                  <FolderOpen size={28} color={colors.textMuted} />
+                  <Text style={styles.emptyFoldersText}>
+                    {t('admin.uploads.noMonitoredFolders')}
+                  </Text>
+                </View>
+              ) : (
+                <ScrollView style={styles.folderListSidebar} nestedScrollEnabled>
+                  {monitoredFolders.map((folder) => (
+                    <View key={folder.id} style={styles.folderItemCompact}>
+                      <View style={[styles.folderItemHeader, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
+                        <View style={{ flex: 1 }}>
+                          <Text style={[styles.folderNameCompact, { textAlign }]} numberOfLines={1}>
+                            {folder.name || folder.path}
+                          </Text>
+                          <Text style={[styles.folderPathCompact, { textAlign }]} numberOfLines={1}>
+                            {folder.path}
+                          </Text>
+                        </View>
+                        <View style={[styles.folderActionsCompact, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
+                          <Pressable
+                            onPress={() => handleEditFolder(folder)}
+                            style={styles.folderActionBtn}
+                          >
+                            <Edit2 size={14} color={colors.textSecondary} />
+                          </Pressable>
+                          <Pressable
+                            onPress={() => handleDeleteFolder(folder)}
+                            style={styles.folderActionBtn}
+                          >
+                            <Trash2 size={14} color={colors.error} />
+                          </Pressable>
+                        </View>
+                      </View>
+                      <View style={[styles.folderMetaCompact, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
+                        <Text style={[
+                          styles.folderTypeBadge,
+                          { backgroundColor: colors.primary + '20' }
+                        ]}>
+                          {t(`admin.uploads.contentTypes.${folder.content_type}`, folder.content_type)}
+                        </Text>
+                        <Text style={[
+                          styles.folderStatusBadge,
+                          { backgroundColor: folder.enabled ? colors.success + '20' : colors.textMuted + '20' }
+                        ]}>
+                          {folder.enabled ? '●' : '○'}
+                        </Text>
+                      </View>
+                    </View>
+                  ))}
+                </ScrollView>
+              )}
+            </View>
+          </GlassDraggableExpander>
+        </GlassResizablePanel>
+      </View>
 
       {/* Add/Edit Folder Modal */}
       <GlassModal
@@ -1630,6 +1612,261 @@ const styles = StyleSheet.create({
   emptyFileText: {
     fontSize: fontSize.sm,
     color: colors.textMuted,
+  },
+  // Page Header
+  pageHeader: {
+    marginBottom: spacing.lg,
+  },
+  // Two-Column Layout
+  twoColumnLayout: {
+    flexDirection: 'row',
+    gap: spacing.lg,
+    alignItems: 'flex-start',
+  },
+  mainColumn: {
+    flex: 1,
+    minWidth: 0,
+    gap: spacing.lg,
+  },
+  sidebarColumn: {
+    gap: spacing.md,
+    paddingLeft: spacing.md,
+  },
+  // Manual Upload Card
+  manualUploadCard: {
+    padding: spacing.lg,
+  },
+  sectionIconContainer: {
+    width: 44,
+    height: 44,
+    borderRadius: borderRadius.md,
+    backgroundColor: colors.primary + '15',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginEnd: spacing.md,
+  },
+  sectionSubtitle: {
+    fontSize: fontSize.sm,
+    color: colors.textMuted,
+    marginTop: spacing.xs,
+  },
+  largeDropZone: {
+    borderWidth: 2,
+    borderStyle: 'dashed',
+    borderColor: colors.glassBorder,
+    borderRadius: borderRadius.lg,
+    padding: spacing.xl,
+    backgroundColor: colors.glassLight,
+    minHeight: 280,
+    cursor: 'pointer',
+    transition: 'all 0.2s ease',
+    marginTop: spacing.md,
+  },
+  dropZoneTextLarge: {
+    fontSize: fontSize.lg,
+    fontWeight: '600',
+    color: colors.text,
+    marginTop: spacing.md,
+    textAlign: 'center',
+  },
+  dropZoneIconLarge: {
+    width: 80,
+    height: 80,
+    borderRadius: borderRadius.xl,
+    backgroundColor: colors.glass,
+    borderWidth: 1,
+    borderColor: colors.glassBorder,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  selectedFilesContainer: {
+    marginTop: spacing.lg,
+    backgroundColor: colors.glass,
+    borderRadius: borderRadius.md,
+    padding: spacing.md,
+    borderWidth: 1,
+    borderColor: colors.glassBorder,
+  },
+  uploadActions: {
+    flexDirection: 'row',
+    gap: spacing.md,
+    marginTop: spacing.md,
+    alignItems: 'flex-end',
+  },
+  contentTypeSelect: {
+    flex: 1,
+    minWidth: 200,
+  },
+  uploadButton: {
+    minWidth: 160,
+  },
+  // Monitored Folders Card
+  monitoredFoldersCard: {
+    padding: spacing.lg,
+  },
+  foldersList: {
+    marginTop: spacing.md,
+  },
+  emptyFolders: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: spacing.xl,
+    gap: spacing.md,
+  },
+  emptyFoldersText: {
+    fontSize: fontSize.md,
+    color: colors.textMuted,
+    textAlign: 'center',
+  },
+  // Queue Card
+  queueCard: {
+    padding: spacing.md,
+  },
+  queueHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: spacing.md,
+  },
+  queueTitle: {
+    fontSize: fontSize.lg,
+    fontWeight: '600',
+    color: colors.text,
+  },
+  queueActiveBadge: {
+    padding: spacing.xs,
+    borderRadius: borderRadius.full,
+    backgroundColor: colors.primary + '20',
+  },
+  statsGrid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: spacing.sm,
+    marginBottom: spacing.md,
+  },
+  statBox: {
+    flex: 1,
+    minWidth: 70,
+    padding: spacing.sm,
+    backgroundColor: colors.glassLight,
+    borderRadius: borderRadius.sm,
+    alignItems: 'center',
+  },
+  statBoxValue: {
+    fontSize: 20,
+    fontWeight: '700',
+    color: colors.text,
+  },
+  statBoxLabel: {
+    fontSize: fontSize.xs,
+    color: colors.textMuted,
+    marginTop: 2,
+  },
+  queueActions: {
+    flexDirection: 'row',
+    gap: spacing.sm,
+    marginBottom: spacing.sm,
+  },
+  queueActionButton: {
+    flex: 1,
+  },
+  queueActionButtonSmall: {
+    minWidth: 70,
+  },
+  triggerResult: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    padding: spacing.sm,
+    borderRadius: borderRadius.sm,
+    gap: spacing.sm,
+  },
+  triggerResultSuccess: {
+    backgroundColor: colors.success + '20',
+  },
+  triggerResultInfo: {
+    backgroundColor: colors.primary + '10',
+  },
+  triggerResultText: {
+    fontSize: fontSize.xs,
+    color: colors.textMuted,
+    flex: 1,
+  },
+  jobsCard: {
+    padding: spacing.sm,
+    maxHeight: 400,
+    overflow: 'hidden',
+  },
+  // Sidebar folder styles
+  sidebarSection: {
+    gap: spacing.sm,
+  },
+  addFolderButton: {
+    marginBottom: spacing.sm,
+  },
+  emptyFoldersCompact: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: spacing.lg,
+    gap: spacing.sm,
+  },
+  folderListSidebar: {
+    maxHeight: 300,
+  },
+  folderItemCompact: {
+    padding: spacing.sm,
+    backgroundColor: colors.glassLight,
+    borderRadius: borderRadius.sm,
+    marginBottom: spacing.xs,
+    borderWidth: 1,
+    borderColor: colors.glassBorder,
+  },
+  folderItemHeader: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    gap: spacing.xs,
+  },
+  folderNameCompact: {
+    fontSize: fontSize.sm,
+    fontWeight: '600',
+    color: colors.text,
+  },
+  folderPathCompact: {
+    fontSize: fontSize.xs,
+    color: colors.textMuted,
+    fontFamily: 'monospace',
+    marginTop: 2,
+  },
+  folderActionsCompact: {
+    flexDirection: 'row',
+    gap: spacing.xs,
+  },
+  folderActionBtn: {
+    width: 28,
+    height: 28,
+    borderRadius: borderRadius.sm,
+    backgroundColor: colors.glass,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  folderMetaCompact: {
+    flexDirection: 'row',
+    gap: spacing.xs,
+    marginTop: spacing.xs,
+  },
+  folderTypeBadge: {
+    fontSize: fontSize.xs,
+    color: colors.primary,
+    paddingHorizontal: spacing.xs,
+    paddingVertical: 2,
+    borderRadius: borderRadius.xs,
+  },
+  folderStatusBadge: {
+    fontSize: fontSize.xs,
+    color: colors.text,
+    paddingHorizontal: spacing.xs,
+    paddingVertical: 2,
+    borderRadius: borderRadius.xs,
   },
 });
 

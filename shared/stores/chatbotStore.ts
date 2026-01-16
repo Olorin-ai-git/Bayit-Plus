@@ -13,9 +13,45 @@ export interface ChatbotContext {
   podcastShows: Array<{ id: string; name: string }>;
 }
 
+// Content item for show_multiple action
+export interface ShowMultipleItem {
+  name: string;
+  type: 'channel' | 'movie' | 'series' | 'podcast' | 'radio' | 'any';
+}
+
+// Resolved content item with stream URL
+export interface ResolvedContentItem {
+  id: string;
+  name: string;
+  type: string;
+  thumbnail?: string;
+  streamUrl?: string;
+  matchedName: string;
+  confidence: number;
+}
+
 export interface ChatbotAction {
-  type: 'create_flow' | 'edit_flow' | 'start_flow' | 'search' | 'navigate' | 'download' | 'add_to_watchlist' | 'play';
+  type: 
+    | 'create_flow' 
+    | 'edit_flow' 
+    | 'start_flow' 
+    | 'search' 
+    | 'navigate' 
+    | 'download' 
+    | 'add_to_watchlist' 
+    | 'play'
+    | 'show_multiple'  // Display multiple content items in widgets
+    | 'chess_invite';  // Start chess game and invite friend
   payload: Record<string, any>;
+}
+
+// Typed payloads for specific actions
+export interface ShowMultiplePayload {
+  items: ShowMultipleItem[];
+}
+
+export interface ChessInvitePayload {
+  friendName: string;
 }
 
 interface ChatbotStore {

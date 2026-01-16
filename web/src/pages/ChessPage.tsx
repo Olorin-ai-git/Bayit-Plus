@@ -4,10 +4,12 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, useWindowDimensions, ScrollView, Image, Animated } from 'react-native';
 import { useTranslation } from 'react-i18next';
+import { useLocation } from 'react-router-dom';
 import { useDirection } from '../hooks/useDirection';
 import { useAuthStore } from '../stores/authStore';
 import { colors, spacing } from '@bayit/shared/theme';
 import { Gamepad2 } from 'lucide-react';
+import axios from 'axios';
 
 // Chess components
 import ChessBoard from '../components/chess/ChessBoard';
@@ -19,16 +21,27 @@ import CreateGameModal from '../components/chess/CreateGameModal';
 import JoinGameModal from '../components/chess/JoinGameModal';
 import useChessGame from '../hooks/useChessGame';
 
+// Navigation state interface for voice command invites
+interface ChessPageState {
+  startGame?: boolean;
+  inviteFriend?: string;
+}
+
 export default function ChessPage() {
   const { t } = useTranslation();
   const { isRTL, textAlign, flexDirection } = useDirection();
   const { width } = useWindowDimensions();
   const user = useAuthStore((state) => state.user);
+  const token = useAuthStore((state) => state.token);
+  const location = useLocation();
+  const navigationState = location.state as ChessPageState | undefined;
 
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [showJoinModal, setShowJoinModal] = useState(false);
   const [showSplash, setShowSplash] = useState(true);
   const [fadeAnim] = useState(new Animated.Value(1));
+  const [inviteStatus, setInviteStatus] = useState<string | null>(null);
+  const [inviteProcessed, setInviteProcessed] = useState(false);
 
   const {
     game,
@@ -46,6 +59,46 @@ export default function ChessPage() {
 
   const isMobile = width < 768;
   const isTablet = width >= 768 && width < 1024;
+
+  // Handle voice command game invite
+  useEffect(() => {
+    const handleVoiceInvite = async () => {
+      if (navigationState?.startGame && navigationState?.inviteFriend && !inviteProcessed && token) {
+        setInviteProcessed(true);
+        setInviteStatus(t('chess.sendingInvite', { name: navigationState.inviteFriend }));
+        
+        try {
+          const response = await axios.post('/api/v1/chess/invite', {
+            friend_name: navigationState.inviteFriend,
+            color: 'white',
+          }, {
+            headers: { Authorization: `Bearer ${token}` }
+          });
+          
+          if (response.data.success) {
+            setInviteStatus(t('chess.inviteSent', { 
+              name: response.data.friend.name,
+              code: response.data.game_code 
+            }));
+            
+            // Connect to the game
+            await joinGame(response.data.game_code);
+          } else {
+            setInviteStatus(t('chess.inviteFailed'));
+          }
+        } catch (err: any) {
+          const errorMessage = err.response?.data?.detail || t('chess.inviteFailed');
+          setInviteStatus(errorMessage);
+          console.error('[Chess] Failed to send invite:', err);
+        }
+        
+        // Clear status after 5 seconds
+        setTimeout(() => setInviteStatus(null), 5000);
+      }
+    };
+    
+    handleVoiceInvite();
+  }, [navigationState, inviteProcessed, token, t, joinGame]);
 
   // Show splash screen for at least 3 seconds on mount
   useEffect(() => {
@@ -123,6 +176,13 @@ export default function ChessPage() {
             {t('chess.title')}
           </Text>
         </View>
+
+        {/* Voice Invite Status */}
+        {inviteStatus && (
+          <View style={styles.inviteStatus}>
+            <Text style={styles.inviteStatusText}>{inviteStatus}</Text>
+          </View>
+        )}
 
         {/* Lobby */}
         <View style={styles.lobby}>
@@ -405,5 +465,18 @@ const styles = StyleSheet.create({
   splashImage: {
     width: '100%',
     height: '100%',
+  },
+  inviteStatus: {
+    backgroundColor: 'rgba(168, 85, 247, 0.3)',
+    paddingVertical: spacing.sm,
+    paddingHorizontal: spacing.md,
+    borderRadius: 8,
+    marginHorizontal: spacing.lg,
+    marginBottom: spacing.md,
+  },
+  inviteStatusText: {
+    fontSize: 14,
+    color: colors.text,
+    textAlign: 'center',
   },
 });

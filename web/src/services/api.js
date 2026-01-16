@@ -206,6 +206,17 @@ const apiChatService = {
       headers: { 'Content-Type': 'multipart/form-data' },
     })
   },
+  // Resolve multiple content items by name for voice commands
+  // Used by show_multiple action to get stream URLs for widgets
+  resolveContent: async (items, language = 'he') => {
+    const response = await api.post('/chat/resolve-content', { items, language })
+    return response.data
+  },
+  // Search for users by name for game invites
+  searchUsers: async (name) => {
+    const response = await api.get('/users/search', { params: { name } })
+    return response.data
+  },
 }
 
 // Zman Yisrael Service (API)

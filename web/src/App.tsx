@@ -35,6 +35,8 @@ import HelpPage from './pages/HelpPage'
 import UserWidgetsPage from './pages/UserWidgetsPage'
 import EPGPage from './pages/EPGPage'
 import ChessPage from './pages/ChessPage'
+import FriendsPage from './pages/FriendsPage'
+import PlayerProfilePage from './pages/PlayerProfilePage'
 
 // Admin Pages
 import AdminLayout from './components/admin/AdminLayout'
@@ -135,6 +137,8 @@ function App() {
         <Route path="/children" element={<ChildrenPage />} />
         <Route path="/flows" element={<FlowsPage />} />
         <Route path="/games" element={<ChessPage />} />
+        <Route path="/friends" element={<FriendsPage />} />
+        <Route path="/player/:userId" element={<PlayerProfilePage />} />
         <Route path="/favorites" element={<FavoritesPage />} />
         <Route path="/downloads" element={<DownloadsPage />} />
         <Route path="/watchlist" element={<WatchlistPage />} />

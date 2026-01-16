@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useMemo, memo } from 'react';
 import {
   View,
   Text,
@@ -12,7 +12,7 @@ import { RefreshCw, Bot, Play, Zap, FileText, Eye, ScrollText, Trash2, Calendar,
 import StatCard from '@/components/admin/StatCard';
 import LibrarianScheduleCard from '@/components/admin/LibrarianScheduleCard';
 import { VoiceLibrarianControl } from '@/components/admin/VoiceLibrarianControl';
-import { GlassCard, GlassButton, GlassModal, GlassBadge, GlassTable, GlassTableColumn, GlassLog, LogEntry, GlassDraggableExpander } from '@bayit/shared/ui';
+import { GlassCard, GlassButton, GlassModal, GlassBadge, GlassTable, GlassTableColumn, GlassLog, LogEntry, GlassDraggableExpander, GlassResizablePanel } from '@bayit/shared/ui';
 import { colors, spacing, borderRadius } from '@bayit/shared/theme';
 import { useDirection } from '@/hooks/useDirection';
 import {
@@ -77,19 +77,10 @@ const LibrarianAgentPage = () => {
   const [auditPaused, setAuditPaused] = useState(false);
   const [connectingToLiveLog, setConnectingToLiveLog] = useState(false);
   const [lastPolledAt, setLastPolledAt] = useState<Date | null>(null);
-  const [batchProgress, setBatchProgress] = useState<{
-    currentBatch: number;
-    totalBatches: number;
-    itemsProcessed: number;
-    totalItems: number;
-    percentage: number;
-  } | null>(null);
-
-  // Parse batch progress from logs
-  useEffect(() => {
+  // Parse batch progress from logs - OPTIMIZED with useMemo
+  const batchProgress = useMemo(() => {
     if (!livePanelReport?.execution_logs) {
-      setBatchProgress(null);
-      return;
+      return null;
     }
 
     const logs = livePanelReport.execution_logs;
@@ -101,7 +92,7 @@ const LibrarianAgentPage = () => {
     // Parse logs to extract batch information
     logs.forEach(log => {
       const msg = log.message.toLowerCase();
-      
+
       // Look for total count mentions
       const totalMatch = msg.match(/total[:\s]+(\d+)/i) || msg.match(/"total"[:\s]+(\d+)/i);
       if (totalMatch && parseInt(totalMatch[1]) > totalItems) {
@@ -129,7 +120,7 @@ const LibrarianAgentPage = () => {
       const currentBatch = Math.floor(currentSkip / batchSize) + 1;
       const totalBatches = Math.ceil(totalItems / batchSize);
       let percentage = Math.round((itemsProcessed / totalItems) * 100);
-      
+
       // Cap at 99% while audit is still in progress (100% only when actually complete)
       if (livePanelReport.status === 'in_progress' && percentage >= 100) {
         percentage = 99;
@@ -137,17 +128,17 @@ const LibrarianAgentPage = () => {
         percentage = Math.min(100, percentage);
       }
 
-      setBatchProgress({
+      return {
         currentBatch,
         totalBatches,
         itemsProcessed: itemsProcessed || currentSkip,
         totalItems,
         percentage,
-      });
-    } else {
-      setBatchProgress(null);
+      };
     }
-  }, [livePanelReport?.execution_logs]);
+
+    return null;
+  }, [livePanelReport?.execution_logs, livePanelReport?.status]);
 
   // Load all data
   const loadData = useCallback(async () => {
@@ -233,7 +224,7 @@ const LibrarianAgentPage = () => {
     }
   }, [reports]);
 
-  // Poll for in-progress audits (real-time log streaming)
+  // Poll for in-progress audits (real-time log streaming) - OPTIMIZED
   useEffect(() => {
     // Check if there's an in-progress audit in the reports list
     const inProgressAudit = reports.find(r => r.status === 'in_progress');
@@ -242,14 +233,22 @@ const LibrarianAgentPage = () => {
       return; // No polling needed
     }
 
+    // Only poll if the live panel or detail modal is actually viewing this audit
+    const shouldPoll = (livePanelReport && livePanelReport.audit_id === inProgressAudit.audit_id) ||
+                       (selectedReport && selectedReport.audit_id === inProgressAudit.audit_id);
+
+    if (!shouldPoll) {
+      return; // Don't poll if not actively viewing
+    }
+
     logger.info(`[Polling] Found in-progress audit: ${inProgressAudit.audit_id}`);
 
-    // Poll every 2 seconds
+    // Poll every 5 seconds (reduced from 2s for better performance)
     const pollInterval = setInterval(async () => {
       try {
         const details = await getAuditReportDetails(inProgressAudit.audit_id);
         const logCount = details.execution_logs?.length || 0;
-        
+
         logger.info(`[Polling] Fetched audit ${inProgressAudit.audit_id} - Status: ${details.status}, Logs: ${logCount}`);
 
         // Update live panel if it's for this audit
@@ -273,13 +272,13 @@ const LibrarianAgentPage = () => {
       } catch (error) {
         logger.error('[Polling] Failed to fetch audit details:', error);
       }
-    }, 2000); // Poll every 2 seconds
+    }, 5000); // Poll every 5 seconds (optimized from 2s)
 
     // Cleanup on unmount or when reports change
     return () => {
       clearInterval(pollInterval);
     };
-  }, [reports, selectedReport, livePanelReport]);
+  }, [reports, selectedReport, livePanelReport, loadData]);
 
 
   // Refresh handler
@@ -454,8 +453,8 @@ const LibrarianAgentPage = () => {
   };
 
 
-  // Convert audit report to log entries
-  const generateLogEntriesFromReport = (report: AuditReportDetail): LogEntry[] => {
+  // Convert audit report to log entries - OPTIMIZED with useCallback
+  const generateLogEntriesFromReport = useCallback((report: AuditReportDetail): LogEntry[] => {
     const logs: LogEntry[] = [];
     const baseTime = new Date(report.audit_date);
 
@@ -562,7 +561,7 @@ const LibrarianAgentPage = () => {
     });
 
     return logs;
-  };
+  }, [t]);
 
   // Handle view logs in live panel
   const handleViewLogsInPanel = async (auditId: string) => {
@@ -748,8 +747,8 @@ const LibrarianAgentPage = () => {
     }
   }, [isSpeaking]);
 
-  // Report table columns
-  const reportColumns: GlassTableColumn<AuditReport>[] = [
+  // Report table columns - OPTIMIZED with useMemo
+  const reportColumns: GlassTableColumn<AuditReport>[] = useMemo(() => [
     {
       key: 'audit_date',
       label: t('admin.librarian.reports.columns.date'),
@@ -833,10 +832,10 @@ const LibrarianAgentPage = () => {
         );
       },
     },
-  ];
+  ], [t, loadingAuditId]);
 
-  // Health color
-  const getHealthColor = (health: string) => {
+  // Health color - OPTIMIZED with useCallback
+  const getHealthColor = useCallback((health: string) => {
     switch (health) {
       case 'excellent':
         return colors.success;
@@ -849,7 +848,7 @@ const LibrarianAgentPage = () => {
       default:
         return colors.textMuted;
     }
-  };
+  }, []);
 
   if (loading) {
     return (
@@ -910,41 +909,11 @@ const LibrarianAgentPage = () => {
         />
       </View>
 
-      {/* Stats Section */}
-      <View style={styles.statsGrid}>
-        <StatCard
-          title={t('admin.librarian.stats.systemHealth')}
-          value={status?.system_health ? t(`admin.librarian.health.${status.system_health}`) : t('admin.librarian.stats.unknown')}
-          icon={<Bot size={24} color={getHealthColor(status?.system_health || 'unknown')} />}
-          color={status?.system_health === 'excellent' ? 'success' : status?.system_health === 'good' ? 'primary' : status?.system_health === 'fair' ? 'warning' : 'error'}
-        />
-        <StatCard
-          title={t('admin.librarian.stats.totalAudits')}
-          value={status?.total_audits_last_30_days.toString() || '0'}
-          subtitle={t('admin.librarian.stats.last30Days')}
-          icon={<RefreshCw size={24} color={colors.primary} />}
-          color="primary"
-        />
-        <StatCard
-          title={t('admin.librarian.stats.issuesFixed')}
-          value={status?.total_issues_fixed.toString() || '0'}
-          subtitle={t('admin.librarian.stats.last30Days')}
-          icon={<Zap size={24} color={colors.success} />}
-          color="success"
-        />
-        <StatCard
-          title={t('admin.librarian.stats.lastAudit')}
-          value={
-            status?.last_audit_date
-              ? format(new Date(status.last_audit_date), 'MMM d')
-              : t('admin.librarian.stats.never')
-          }
-          subtitle={status?.last_audit_status || 'N/A'}
-          color="secondary"
-        />
-      </View>
-
-      {/* Quick Actions */}
+      {/* Two-Column Layout */}
+      <View style={[styles.twoColumnLayout, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
+        {/* LEFT COLUMN - Main Content */}
+        <View style={styles.mainColumn}>
+          {/* Quick Actions */}
       <GlassDraggableExpander
         title={t('admin.librarian.quickActions.title')}
         subtitle={t('admin.librarian.quickActions.subtitle', 'Configure and trigger audits')}
@@ -1150,16 +1119,7 @@ const LibrarianAgentPage = () => {
         </View>
       </GlassDraggableExpander>
 
-      {/* Voice Control */}
-      <VoiceLibrarianControl
-        onCommand={handleVoiceCommand}
-        isProcessing={voiceProcessing}
-        isSpeaking={isSpeaking}
-        onToggleMute={toggleVoiceMute}
-        isMuted={isVoiceMuted}
-      />
-
-      {/* Live Audit Log Panel */}
+          {/* Live Audit Log Panel */}
       <GlassDraggableExpander
         title={t('admin.librarian.logs.liveAuditLog')}
         subtitle={livePanelReport ? `${t('admin.librarian.logs.auditType')}: ${t(`admin.librarian.auditTypes.${livePanelReport.audit_type}`, livePanelReport.audit_type.replace('_', ' '))}` : undefined}
@@ -1364,28 +1324,30 @@ const LibrarianAgentPage = () => {
               </View>
             )}
 
-            <View style={{ flex: 1, minHeight: 0 }}>
-              <GlassLog
-                logs={[...livePanelReport.execution_logs].reverse()}
-                title={t('admin.librarian.logs.executionLog')}
-                searchPlaceholder={t('admin.librarian.logs.searchPlaceholder')}
-                emptyMessage={t('admin.librarian.logs.noLogs')}
-                levelLabels={{
-                  debug: t('admin.librarian.logs.levels.debug'),
-                  info: t('admin.librarian.logs.levels.info'),
-                  warn: t('admin.librarian.logs.levels.warn'),
-                  error: t('admin.librarian.logs.levels.error'),
-                  success: t('admin.librarian.logs.levels.success'),
-                  trace: t('admin.librarian.logs.levels.trace'),
-                }}
-                showSearch
-                showLevelFilter
-                showDownload
-                autoScroll
-                maxHeight={1200}
-                animateEntries={false}
-              />
-            </View>
+            {livePanelExpanded && (
+              <View style={{ flex: 1, minHeight: 0 }}>
+                <GlassLog
+                  logs={[...livePanelReport.execution_logs].reverse()}
+                  title={t('admin.librarian.logs.executionLog')}
+                  searchPlaceholder={t('admin.librarian.logs.searchPlaceholder')}
+                  emptyMessage={t('admin.librarian.logs.noLogs')}
+                  levelLabels={{
+                    debug: t('admin.librarian.logs.levels.debug'),
+                    info: t('admin.librarian.logs.levels.info'),
+                    warn: t('admin.librarian.logs.levels.warn'),
+                    error: t('admin.librarian.logs.levels.error'),
+                    success: t('admin.librarian.logs.levels.success'),
+                    trace: t('admin.librarian.logs.levels.trace'),
+                  }}
+                  showSearch
+                  showLevelFilter
+                  showDownload
+                  autoScroll
+                  maxHeight={1200}
+                  animateEntries={false}
+                />
+              </View>
+            )}
           </View>
         ) : (
           <View style={styles.emptyState}>
@@ -1398,88 +1360,172 @@ const LibrarianAgentPage = () => {
             </Text>
           </View>
         )}
-      </GlassDraggableExpander>
-
-      {/* Schedule Information */}
-      <GlassDraggableExpander
-        title={t('admin.librarian.schedules.title')}
-        subtitle={t('admin.librarian.schedules.subtitle', 'Configure daily and weekly audit schedules')}
-        icon={<Calendar size={20} color={colors.primary} />}
-        defaultExpanded={false}
-        draggable={true}
-        minHeight={200}
-        maxHeight={500}
-        style={{ marginTop: spacing.lg }}
-      >
-        <View style={styles.schedulesRow}>
-          <LibrarianScheduleCard
-            title={t('admin.librarian.schedules.dailyTitle')}
-            cron={config.daily_schedule.cron}
-            time={config.daily_schedule.time}
-            mode={config.daily_schedule.mode}
-            cost={config.daily_schedule.cost}
-            status={config.daily_schedule.status}
-            description={config.daily_schedule.description}
-            gcpProjectId={config.gcp_project_id}
-            onUpdate={handleScheduleUpdate}
-          />
-          <LibrarianScheduleCard
-            title={t('admin.librarian.schedules.weeklyTitle')}
-            cron={config.weekly_schedule.cron}
-            time={config.weekly_schedule.time}
-            mode={config.weekly_schedule.mode}
-            cost={config.weekly_schedule.cost}
-            status={config.weekly_schedule.status}
-            description={config.weekly_schedule.description}
-            gcpProjectId={config.gcp_project_id}
-            onUpdate={handleScheduleUpdate}
-          />
+          </GlassDraggableExpander>
         </View>
-      </GlassDraggableExpander>
 
-      {/* Recent Reports */}
-      <GlassDraggableExpander
-        title={t('admin.librarian.reports.title')}
-        subtitle={reports.length > 0 ? t('admin.librarian.reports.totalReports', { count: reports.length }) : undefined}
-        icon={<FileText size={20} color={colors.primary} />}
-        badge={
-          reports.length > 0 ? (
-            <GlassButton
-              title={t('admin.librarian.reports.clearAll')}
-              variant="ghost"
-              size="sm"
-              icon={<Trash2 size={14} color={colors.textMuted} />}
-              onPress={handleClearReportsClick}
-              loading={clearingReports}
-              disabled={clearingReports}
-              style={styles.clearButtonCompact}
-              textStyle={{ fontSize: 12, color: colors.textMuted }}
-            />
-          ) : undefined
-        }
-        defaultExpanded={false}
-        draggable={true}
-        minHeight={200}
-        maxHeight={600}
-        style={styles.reportsExpanderContainer}
-      >
-        {reports.length === 0 ? (
-          <View style={styles.emptyState}>
-            <FileText size={48} color={colors.textMuted} />
-            <Text style={styles.emptyStateText}>
-              {t('admin.librarian.reports.emptyMessage')}
+        {/* RIGHT COLUMN - Sidebar */}
+        <GlassResizablePanel 
+          defaultWidth={420} 
+          minWidth={340} 
+          maxWidth={600}
+          position="right"
+          style={styles.sidebarColumn}
+        >
+          {/* Stats Section */}
+          <GlassCard style={styles.statsCard}>
+            <Text style={[styles.sidebarSectionTitle, { textAlign }]}>
+              {t('admin.librarian.stats.title', 'System Status')}
             </Text>
-          </View>
-        ) : (
-          <GlassTable
-            columns={reportColumns}
-            data={reports}
-            isRTL={isRTL}
-            rowKey="audit_id"
-          />
-        )}
-      </GlassDraggableExpander>
+            <View style={styles.statsGridCompact}>
+              <View style={styles.statBoxCompact}>
+                <Bot size={20} color={getHealthColor(status?.system_health || 'unknown')} />
+                <Text style={[styles.statBoxValue, { color: getHealthColor(status?.system_health || 'unknown') }]}>
+                  {status?.system_health ? t(`admin.librarian.health.${status.system_health}`) : '?'}
+                </Text>
+                <Text style={styles.statBoxLabel}>{t('admin.librarian.stats.systemHealth')}</Text>
+              </View>
+              <View style={styles.statBoxCompact}>
+                <RefreshCw size={20} color={colors.primary} />
+                <Text style={[styles.statBoxValue, { color: colors.primary }]}>
+                  {status?.total_audits_last_30_days || 0}
+                </Text>
+                <Text style={styles.statBoxLabel}>{t('admin.librarian.stats.totalAudits')}</Text>
+              </View>
+              <View style={styles.statBoxCompact}>
+                <Zap size={20} color={colors.success} />
+                <Text style={[styles.statBoxValue, { color: colors.success }]}>
+                  {status?.total_issues_fixed || 0}
+                </Text>
+                <Text style={styles.statBoxLabel}>{t('admin.librarian.stats.issuesFixed')}</Text>
+              </View>
+              <View style={styles.statBoxCompact}>
+                <Calendar size={20} color={colors.textMuted} />
+                <Text style={styles.statBoxValue}>
+                  {status?.last_audit_date ? format(new Date(status.last_audit_date), 'MMM d') : '-'}
+                </Text>
+                <Text style={styles.statBoxLabel}>{t('admin.librarian.stats.lastAudit')}</Text>
+              </View>
+            </View>
+          </GlassCard>
 
+          {/* Voice Control */}
+          <VoiceLibrarianControl
+            onCommand={handleVoiceCommand}
+            isProcessing={voiceProcessing}
+            isSpeaking={isSpeaking}
+            onToggleMute={toggleVoiceMute}
+            isMuted={isVoiceMuted}
+          />
+
+          {/* Schedule Information */}
+          <GlassDraggableExpander
+            title={t('admin.librarian.schedules.title')}
+            subtitle={t('admin.librarian.schedules.subtitle', 'Automated audit schedules')}
+            icon={<Calendar size={18} color={colors.primary} />}
+            defaultExpanded={false}
+          >
+            <View style={styles.schedulesColumn}>
+              <LibrarianScheduleCard
+                title={t('admin.librarian.schedules.dailyTitle')}
+                cron={config.daily_schedule.cron}
+                time={config.daily_schedule.time}
+                mode={config.daily_schedule.mode}
+                cost={config.daily_schedule.cost}
+                status={config.daily_schedule.status}
+                description={config.daily_schedule.description}
+                gcpProjectId={config.gcp_project_id}
+                onUpdate={handleScheduleUpdate}
+              />
+              <LibrarianScheduleCard
+                title={t('admin.librarian.schedules.weeklyTitle')}
+                cron={config.weekly_schedule.cron}
+                time={config.weekly_schedule.time}
+                mode={config.weekly_schedule.mode}
+                cost={config.weekly_schedule.cost}
+                status={config.weekly_schedule.status}
+                description={config.weekly_schedule.description}
+                gcpProjectId={config.gcp_project_id}
+                onUpdate={handleScheduleUpdate}
+              />
+            </View>
+          </GlassDraggableExpander>
+
+          {/* Recent Reports */}
+          <GlassDraggableExpander
+            title={t('admin.librarian.reports.title')}
+            subtitle={`${reports.length} ${t('admin.librarian.reports.reports', 'reports')}`}
+            icon={<FileText size={18} color={colors.primary} />}
+            defaultExpanded={false}
+          >
+            <View style={styles.sidebarSection}>
+              {reports.length > 0 && (
+                <GlassButton
+                  title={t('admin.librarian.reports.clearAll')}
+                  variant="ghost"
+                  size="sm"
+                  icon={<Trash2 size={14} color={colors.textMuted} />}
+                  onPress={handleClearReportsClick}
+                  loading={clearingReports}
+                  disabled={clearingReports}
+                  style={styles.clearButtonSidebar}
+                />
+              )}
+              {reports.length === 0 ? (
+                <View style={styles.emptyStateSidebar}>
+                  <FileText size={32} color={colors.textMuted} />
+                  <Text style={styles.emptyStateTextSidebar}>
+                    {t('admin.librarian.reports.emptyMessage')}
+                  </Text>
+                </View>
+              ) : (
+                <ScrollView style={styles.reportsList} nestedScrollEnabled>
+                  {reports.slice(0, 10).map((report) => (
+                    <Pressable
+                      key={report.audit_id}
+                      style={styles.reportItemCompact}
+                      onPress={() => handleViewReport(report.audit_id)}
+                    >
+                      <View style={[styles.reportItemHeader, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
+                        <View style={{ flex: 1 }}>
+                          <Text style={styles.reportItemDate}>
+                            {format(new Date(report.audit_date), 'MMM d, HH:mm')}
+                          </Text>
+                          <Text style={styles.reportItemType}>
+                            {t(`admin.librarian.auditTypes.${report.audit_type}`, report.audit_type.replace('_', ' '))}
+                          </Text>
+                        </View>
+                        <GlassBadge
+                          text={t(`admin.librarian.status.${report.status}`, report.status)}
+                          variant={
+                            report.status === 'completed' ? 'success' :
+                            report.status === 'failed' ? 'error' : 'warning'
+                          }
+                        />
+                      </View>
+                      <View style={[styles.reportItemMeta, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
+                        <Text style={styles.reportItemMetaText}>
+                          {report.issues_count} {t('admin.librarian.reports.issues', 'issues')}
+                        </Text>
+                        <Text style={styles.reportItemMetaText}>
+                          {report.fixes_count} {t('admin.librarian.reports.fixes', 'fixes')}
+                        </Text>
+                        <Text style={styles.reportItemMetaText}>
+                          {report.execution_time_seconds.toFixed(1)}s
+                        </Text>
+                      </View>
+                    </Pressable>
+                  ))}
+                  {reports.length > 10 && (
+                    <Text style={styles.moreReportsText}>
+                      +{reports.length - 10} {t('admin.librarian.reports.more', 'more')}
+                    </Text>
+                  )}
+                </ScrollView>
+              )}
+            </View>
+          </GlassDraggableExpander>
+        </GlassResizablePanel>
+      </View>
 
       {/* Confirmation Modal for AI Agent */}
       <GlassModal
@@ -2288,6 +2334,123 @@ const styles = StyleSheet.create({
     color: colors.textMuted,
     marginTop: spacing.xs,
     textAlign: 'center',
+  },
+  // Two-Column Layout
+  twoColumnLayout: {
+    flexDirection: 'row',
+    gap: spacing.lg,
+    alignItems: 'flex-start',
+  },
+  mainColumn: {
+    flex: 1,
+    minWidth: 0,
+    gap: spacing.md,
+  },
+  sidebarColumn: {
+    gap: spacing.md,
+    paddingLeft: spacing.md,
+  },
+  // Stats Card (Sidebar)
+  statsCard: {
+    padding: spacing.md,
+  },
+  sidebarSectionTitle: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: colors.text,
+    marginBottom: spacing.md,
+  },
+  statsGridCompact: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: spacing.sm,
+  },
+  statBoxCompact: {
+    flex: 1,
+    minWidth: '45%',
+    padding: spacing.sm,
+    backgroundColor: colors.glassLight,
+    borderRadius: borderRadius.sm,
+    alignItems: 'center',
+    gap: spacing.xs,
+  },
+  statBoxValue: {
+    fontSize: 18,
+    fontWeight: '700',
+    color: colors.text,
+  },
+  statBoxLabel: {
+    fontSize: 10,
+    color: colors.textMuted,
+    textAlign: 'center',
+  },
+  // Schedules in sidebar
+  schedulesColumn: {
+    gap: spacing.md,
+  },
+  // Sidebar section
+  sidebarSection: {
+    gap: spacing.sm,
+  },
+  clearButtonSidebar: {
+    alignSelf: 'flex-end',
+    marginBottom: spacing.sm,
+  },
+  emptyStateSidebar: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: spacing.lg,
+    gap: spacing.sm,
+  },
+  emptyStateTextSidebar: {
+    fontSize: 13,
+    color: colors.textMuted,
+    textAlign: 'center',
+  },
+  reportsList: {
+    maxHeight: 400,
+  },
+  reportItemCompact: {
+    padding: spacing.sm,
+    backgroundColor: colors.glassLight,
+    borderRadius: borderRadius.sm,
+    marginBottom: spacing.xs,
+    borderWidth: 1,
+    borderColor: colors.glassBorder,
+  },
+  reportItemHeader: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    gap: spacing.xs,
+    marginBottom: spacing.xs,
+  },
+  reportItemDate: {
+    fontSize: 13,
+    fontWeight: '600',
+    color: colors.text,
+  },
+  reportItemType: {
+    fontSize: 11,
+    color: colors.textMuted,
+    marginTop: 2,
+  },
+  reportItemMeta: {
+    flexDirection: 'row',
+    gap: spacing.md,
+    paddingTop: spacing.xs,
+    borderTopWidth: 1,
+    borderTopColor: colors.glassBorder,
+  },
+  reportItemMetaText: {
+    fontSize: 11,
+    color: colors.textMuted,
+  },
+  moreReportsText: {
+    fontSize: 12,
+    color: colors.textMuted,
+    textAlign: 'center',
+    paddingVertical: spacing.sm,
+    fontStyle: 'italic',
   },
 });
 

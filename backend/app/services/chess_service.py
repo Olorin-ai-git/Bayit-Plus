@@ -190,6 +190,11 @@ class ChessService:
         game.updated_at = datetime.utcnow()
         await game.save()
 
+        # Record game result if game ended
+        if game.status in [GameStatus.CHECKMATE, GameStatus.DRAW, GameStatus.STALEMATE]:
+            from app.services.stats_service import StatsService
+            await StatsService.record_game_result(game)
+
         return game, move_record
 
     @staticmethod
@@ -210,6 +215,11 @@ class ChessService:
         game.status = GameStatus.RESIGNED
         game.updated_at = datetime.utcnow()
         await game.save()
+
+        # Record game result
+        from app.services.stats_service import StatsService
+        await StatsService.record_game_result(game)
+
         return game
 
     @staticmethod

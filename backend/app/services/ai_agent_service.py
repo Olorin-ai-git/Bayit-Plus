@@ -208,6 +208,42 @@ TOOLS = [
         }
     },
     {
+        "name": "reclassify_as_series",
+        "description": "Reclassify a content item as a TV SERIES (sets is_series=true and content_type='series'). Use when you find content with S01E01, S02E03 patterns, or that TMDB identifies as a TV show. Moves item to Series category automatically.",
+        "input_schema": {
+            "type": "object",
+            "properties": {
+                "content_id": {
+                    "type": "string",
+                    "description": "The ID of the content item to reclassify"
+                },
+                "reason": {
+                    "type": "string",
+                    "description": "Explanation of why this should be classified as a series (e.g., 'Title contains S01E01 pattern', 'TMDB identifies this as TV series')"
+                }
+            },
+            "required": ["content_id", "reason"]
+        }
+    },
+    {
+        "name": "reclassify_as_movie",
+        "description": "Reclassify a content item as a MOVIE (sets is_series=false and content_type='movie'). Use when you find series marked as movies incorrectly, or when TMDB identifies it as a movie. Moves item to Movies category automatically.",
+        "input_schema": {
+            "type": "object",
+            "properties": {
+                "content_id": {
+                    "type": "string",
+                    "description": "The ID of the content item to reclassify"
+                },
+                "reason": {
+                    "type": "string",
+                    "description": "Explanation of why this should be classified as a movie (e.g., 'TMDB identifies this as a movie', 'No season/episode pattern found')"
+                }
+            },
+            "required": ["content_id", "reason"]
+        }
+    },
+    {
         "name": "flag_for_manual_review",
         "description": "Flag a content item for manual human review. Use this when you find an issue but aren't confident about the fix, or when the issue requires human judgment.",
         "input_schema": {
@@ -966,6 +1002,204 @@ async def execute_recategorize_content(
         }
     except Exception as e:
         logger.error(f"Error in recategorize_content: {str(e)}")
+        return {"success": False, "error": str(e)}
+
+
+async def execute_reclassify_as_series(
+    content_id: str,
+    audit_id: str,
+    reason: str = "",
+    dry_run: bool = False
+) -> Dict[str, Any]:
+    """
+    Reclassify a content item as a series (is_series=True).
+    Also moves it to the Series category if it exists.
+    """
+    try:
+        logger.info(f"   📺 Reclassifying content {content_id} as SERIES...")
+
+        if dry_run:
+            logger.info(f"   🔒 DRY RUN mode - would reclassify {content_id} as series")
+            return {
+                "success": True,
+                "dry_run": True,
+                "message": f"[DRY RUN] Would reclassify content {content_id} as series. Reason: {reason}"
+            }
+
+        # Get content
+        try:
+            content = await Content.get(PydanticObjectId(content_id))
+            if not content:
+                return {"success": False, "error": "Content not found"}
+            logger.info(f"   ✓ Content found: '{content.title}'")
+        except Exception as e:
+            logger.error(f"   ❌ Content not found: {str(e)}")
+            return {"success": False, "error": f"Content not found: {str(e)}"}
+
+        # Store before state
+        before_state = {
+            "is_series": content.is_series,
+            "content_type": content.content_type,
+            "category_id": content.category_id,
+            "category_name": content.category_name,
+        }
+
+        # Get or create Series category
+        series_category = await Category.find_one(Category.name == "Series")
+        if not series_category:
+            series_category = Category(
+                name="Series",
+                name_he="סדרות",
+                name_en="Series",
+                name_es="Series",
+                slug="series",
+                icon="tv",
+                is_active=True,
+                order=2,
+            )
+            await series_category.insert()
+            logger.info(f"   📁 Created new 'Series' category")
+
+        # Apply changes
+        content.is_series = True
+        content.content_type = "series"
+        content.category_id = str(series_category.id)
+        content.category_name = series_category.name
+        content.updated_at = datetime.utcnow()
+        await content.save()
+
+        after_state = {
+            "is_series": True,
+            "content_type": "series",
+            "category_id": str(series_category.id),
+            "category_name": series_category.name,
+        }
+
+        # Log action
+        action = LibrarianAction(
+            audit_id=audit_id,
+            action_type="reclassify_series",
+            content_id=content_id,
+            content_type="content",
+            issue_type="content_type_misclassification",
+            before_state=before_state,
+            after_state=after_state,
+            confidence_score=1.0,
+            auto_approved=True,
+            rollback_available=True,
+            description=f"Reclassified '{content.title}' as SERIES. {reason}",
+        )
+        await action.insert()
+
+        logger.info(f"   ✅ Successfully reclassified '{content.title}' as SERIES")
+        return {
+            "success": True,
+            "reclassified": True,
+            "new_type": "series",
+            "message": f"Reclassified '{content.title}' as series",
+            "action_id": str(action.id)
+        }
+    except Exception as e:
+        logger.error(f"Error in reclassify_as_series: {str(e)}")
+        return {"success": False, "error": str(e)}
+
+
+async def execute_reclassify_as_movie(
+    content_id: str,
+    audit_id: str,
+    reason: str = "",
+    dry_run: bool = False
+) -> Dict[str, Any]:
+    """
+    Reclassify a content item as a movie (is_series=False).
+    Also moves it to the Movies category if it exists.
+    """
+    try:
+        logger.info(f"   🎬 Reclassifying content {content_id} as MOVIE...")
+
+        if dry_run:
+            logger.info(f"   🔒 DRY RUN mode - would reclassify {content_id} as movie")
+            return {
+                "success": True,
+                "dry_run": True,
+                "message": f"[DRY RUN] Would reclassify content {content_id} as movie. Reason: {reason}"
+            }
+
+        # Get content
+        try:
+            content = await Content.get(PydanticObjectId(content_id))
+            if not content:
+                return {"success": False, "error": "Content not found"}
+            logger.info(f"   ✓ Content found: '{content.title}'")
+        except Exception as e:
+            logger.error(f"   ❌ Content not found: {str(e)}")
+            return {"success": False, "error": f"Content not found: {str(e)}"}
+
+        # Store before state
+        before_state = {
+            "is_series": content.is_series,
+            "content_type": content.content_type,
+            "category_id": content.category_id,
+            "category_name": content.category_name,
+        }
+
+        # Get or create Movies category
+        movies_category = await Category.find_one(Category.name == "Movies")
+        if not movies_category:
+            movies_category = Category(
+                name="Movies",
+                name_he="סרטים",
+                name_en="Movies",
+                name_es="Películas",
+                slug="movies",
+                icon="film",
+                is_active=True,
+                order=1,
+            )
+            await movies_category.insert()
+            logger.info(f"   📁 Created new 'Movies' category")
+
+        # Apply changes
+        content.is_series = False
+        content.content_type = "movie"
+        content.category_id = str(movies_category.id)
+        content.category_name = movies_category.name
+        content.updated_at = datetime.utcnow()
+        await content.save()
+
+        after_state = {
+            "is_series": False,
+            "content_type": "movie",
+            "category_id": str(movies_category.id),
+            "category_name": movies_category.name,
+        }
+
+        # Log action
+        action = LibrarianAction(
+            audit_id=audit_id,
+            action_type="reclassify_movie",
+            content_id=content_id,
+            content_type="content",
+            issue_type="content_type_misclassification",
+            before_state=before_state,
+            after_state=after_state,
+            confidence_score=1.0,
+            auto_approved=True,
+            rollback_available=True,
+            description=f"Reclassified '{content.title}' as MOVIE. {reason}",
+        )
+        await action.insert()
+
+        logger.info(f"   ✅ Successfully reclassified '{content.title}' as MOVIE")
+        return {
+            "success": True,
+            "reclassified": True,
+            "new_type": "movie",
+            "message": f"Reclassified '{content.title}' as movie",
+            "action_id": str(action.id)
+        }
+    except Exception as e:
+        logger.error(f"Error in reclassify_as_movie: {str(e)}")
         return {"success": False, "error": str(e)}
 
 
@@ -2178,6 +2412,12 @@ async def execute_tool(
         elif tool_name == "recategorize_content":
             return await execute_recategorize_content(**tool_input, audit_id=audit_id, dry_run=dry_run)
 
+        elif tool_name == "reclassify_as_series":
+            return await execute_reclassify_as_series(**tool_input, audit_id=audit_id, dry_run=dry_run)
+
+        elif tool_name == "reclassify_as_movie":
+            return await execute_reclassify_as_movie(**tool_input, audit_id=audit_id, dry_run=dry_run)
+
         elif tool_name == "flag_for_manual_review":
             return await execute_flag_for_manual_review(**tool_input)
 
@@ -2230,6 +2470,243 @@ async def execute_tool(
     except Exception as e:
         logger.error(f"Error executing tool {tool_name}: {str(e)}")
         return {"success": False, "error": str(e)}
+
+
+# ============================================================================
+# COMPREHENSIVE SUMMARY LOGGING
+# ============================================================================
+
+async def _log_comprehensive_summary(
+    audit_report: "AuditReport",
+    completion_summary: Dict[str, Any],
+    execution_time: float,
+    iteration: int,
+    total_cost: float
+):
+    """
+    Log a comprehensive, well-formatted audit summary to execution logs.
+    This creates the detailed summary report that appears in the UI.
+    """
+
+    # Build formatted summary sections
+    summary_lines = []
+
+    # Header
+    summary_lines.append("🎉 **COMPREHENSIVE SUBTITLE MAINTENANCE SCAN COMPLETED!**")
+    summary_lines.append("")
+    summary_lines.append("## 📊 **FINAL AUDIT SUMMARY**")
+    summary_lines.append("")
+
+    # Overall Statistics
+    total_items = completion_summary.get("items_checked", 0)
+    issues_found = completion_summary.get("issues_found", 0)
+    issues_fixed = completion_summary.get("issues_fixed", 0)
+    flagged = completion_summary.get("flagged_for_review", 0)
+    health_score = completion_summary.get("health_score", 0)
+
+    summary_lines.append(f"**TOTAL COVERAGE:** All **{total_items} content items** systematically processed!")
+    summary_lines.append("")
+    summary_lines.append("**📊 RESULTS BREAKDOWN:**")
+    summary_lines.append(f"- **Items Processed:** {total_items} (100% coverage)")
+    summary_lines.append(f"- **Issues Discovered:** {issues_found}")
+    summary_lines.append(f"- **Issues Auto-Fixed:** {issues_fixed}")
+    summary_lines.append(f"- **Flagged for Manual Review:** {flagged}")
+    if health_score > 0:
+        health_emoji = "🟢" if health_score >= 90 else "🟡" if health_score >= 70 else "🟠" if health_score >= 50 else "🔴"
+        summary_lines.append(f"- **Library Health Score:** {health_emoji} {health_score}/100")
+    summary_lines.append("")
+
+    # Subtitle Statistics (if provided)
+    subtitle_stats = completion_summary.get("subtitle_stats", {})
+    if subtitle_stats:
+        summary_lines.append("### 🎬 **SUBTITLE ANALYSIS:**")
+        items_with_all = subtitle_stats.get("items_with_all_required", 0)
+        items_missing = subtitle_stats.get("items_missing_subtitles", 0)
+        extracted = subtitle_stats.get("subtitles_extracted_from_video", 0)
+        downloaded = subtitle_stats.get("subtitles_downloaded_external", 0)
+
+        summary_lines.append(f"- ✅ Items with all required subtitles (he, en, es): **{items_with_all}**")
+        summary_lines.append(f"- ⚠️ Items missing subtitles: **{items_missing}**")
+        summary_lines.append(f"- 📼 Subtitles extracted from video files: **{extracted}**")
+        summary_lines.append(f"- 🌐 Subtitles downloaded from external sources: **{downloaded}**")
+
+        # Language breakdown
+        by_language = subtitle_stats.get("by_language", {})
+        if by_language:
+            summary_lines.append("  - **By Language:**")
+            lang_names = {"he": "Hebrew", "en": "English", "es": "Spanish", "ar": "Arabic", "ru": "Russian", "fr": "French"}
+            for lang_code, count in sorted(by_language.items()):
+                lang_name = lang_names.get(lang_code, lang_code.upper())
+                summary_lines.append(f"    - {lang_name}: **{count}** tracks")
+
+        # Quota info
+        quota_used = subtitle_stats.get("opensubtitles_quota_used", 0)
+        quota_remaining = subtitle_stats.get("opensubtitles_quota_remaining", 0)
+        if quota_used > 0 or quota_remaining > 0:
+            summary_lines.append(f"- 🎫 OpenSubtitles quota used: **{quota_used}** (remaining: **{quota_remaining}**)")
+        summary_lines.append("")
+
+    # Metadata Statistics (if provided)
+    metadata_stats = completion_summary.get("metadata_stats", {})
+    if metadata_stats:
+        summary_lines.append("### 🎨 **METADATA & QUALITY FIXES:**")
+        posters_fixed = metadata_stats.get("posters_fixed", 0)
+        metadata_updated = metadata_stats.get("metadata_updated", 0)
+        titles_cleaned = metadata_stats.get("titles_cleaned", 0)
+        tmdb_searches = metadata_stats.get("tmdb_searches_performed", 0)
+
+        if posters_fixed > 0:
+            summary_lines.append(f"- 🖼️ Missing posters added: **{posters_fixed}**")
+        if metadata_updated > 0:
+            summary_lines.append(f"- 📝 Metadata updated (description, genres, year, IMDB): **{metadata_updated}**")
+        if titles_cleaned > 0:
+            summary_lines.append(f"- ✨ Titles cleaned (removed junk, extensions, quality markers): **{titles_cleaned}**")
+        if tmdb_searches > 0:
+            summary_lines.append(f"- 🔍 TMDB API searches performed: **{tmdb_searches}**")
+        summary_lines.append("")
+
+    # Categorization Statistics (if provided)
+    categorization_stats = completion_summary.get("categorization_stats", {})
+    if categorization_stats:
+        items_recategorized = categorization_stats.get("items_recategorized", 0)
+        if items_recategorized > 0:
+            summary_lines.append("### 📁 **CATEGORIZATION IMPROVEMENTS:**")
+            avg_confidence = categorization_stats.get("avg_confidence", 0)
+            high_conf = categorization_stats.get("high_confidence_moves", 0)
+            medium_conf = categorization_stats.get("medium_confidence_moves", 0)
+
+            summary_lines.append(f"- Items recategorized: **{items_recategorized}**")
+            summary_lines.append(f"- Average confidence score: **{avg_confidence:.1f}%**")
+            summary_lines.append(f"  - High confidence (>95%): **{high_conf}**")
+            summary_lines.append(f"  - Medium confidence (90-95%): **{medium_conf}**")
+            summary_lines.append("")
+
+    # Stream Validation Statistics (if provided)
+    stream_stats = completion_summary.get("stream_validation_stats", {})
+    if stream_stats:
+        streams_checked = stream_stats.get("streams_checked", 0)
+        if streams_checked > 0:
+            summary_lines.append("### 📡 **STREAM VALIDATION:**")
+            streams_healthy = stream_stats.get("streams_healthy", 0)
+            streams_broken = stream_stats.get("streams_broken", 0)
+            avg_response = stream_stats.get("avg_response_time_ms", 0)
+
+            health_pct = (streams_healthy / streams_checked * 100) if streams_checked > 0 else 0
+            summary_lines.append(f"- Streams checked: **{streams_checked}**")
+            summary_lines.append(f"- ✅ Healthy streams: **{streams_healthy}** ({health_pct:.1f}%)")
+            summary_lines.append(f"- ❌ Broken/inaccessible: **{streams_broken}**")
+            if avg_response > 0:
+                summary_lines.append(f"- Average response time: **{avg_response:.0f}ms**")
+            summary_lines.append("")
+
+    # Storage Statistics (if provided)
+    storage_stats = completion_summary.get("storage_stats", {})
+    if storage_stats:
+        total_size = storage_stats.get("total_size_gb", 0)
+        if total_size > 0:
+            summary_lines.append("### 💾 **STORAGE ANALYSIS:**")
+            file_count = storage_stats.get("file_count", 0)
+            monthly_cost = storage_stats.get("estimated_monthly_cost_usd", 0)
+            large_files = storage_stats.get("large_files_found", 0)
+
+            summary_lines.append(f"- Total storage used: **{total_size:.2f} GB**")
+            summary_lines.append(f"- Total files: **{file_count:,}**")
+            if monthly_cost > 0:
+                summary_lines.append(f"- Estimated monthly cost: **${monthly_cost:.2f}**")
+            if large_files > 0:
+                summary_lines.append(f"- ⚠️ Large files found (>5GB): **{large_files}**")
+            summary_lines.append("")
+
+    # Podcast Statistics (if provided)
+    podcast_stats = completion_summary.get("podcast_stats", {})
+    if podcast_stats:
+        podcasts_synced = podcast_stats.get("podcasts_synced", 0)
+        if podcasts_synced > 0:
+            summary_lines.append("### 🎙️ **PODCAST MANAGEMENT:**")
+            episodes_added = podcast_stats.get("episodes_added", 0)
+            episodes_removed = podcast_stats.get("episodes_removed", 0)
+
+            summary_lines.append(f"- Podcasts synced from RSS: **{podcasts_synced}**")
+            summary_lines.append(f"- New episodes added: **{episodes_added}**")
+            summary_lines.append(f"- Old episodes cleaned up: **{episodes_removed}**")
+            summary_lines.append("")
+
+    # Issue Breakdown (if provided)
+    issue_breakdown = completion_summary.get("issue_breakdown", {})
+    if issue_breakdown and any(v > 0 for v in issue_breakdown.values()):
+        summary_lines.append("### 🔍 **ISSUES BY TYPE:**")
+        issue_labels = {
+            "missing_subtitles": "Missing Subtitles",
+            "missing_metadata": "Missing Metadata",
+            "missing_posters": "Missing Posters",
+            "dirty_titles": "Dirty Titles",
+            "broken_streams": "Broken Streams",
+            "misclassifications": "Misclassifications",
+            "quality_issues": "Quality Issues",
+            "other": "Other"
+        }
+        for issue_type, count in sorted(issue_breakdown.items(), key=lambda x: x[1], reverse=True):
+            if count > 0:
+                label = issue_labels.get(issue_type, issue_type.replace("_", " ").title())
+                summary_lines.append(f"- {label}: **{count}**")
+        summary_lines.append("")
+
+    # Action Breakdown (if provided)
+    action_breakdown = completion_summary.get("action_breakdown", {})
+    if action_breakdown and any(v > 0 for v in action_breakdown.values()):
+        summary_lines.append("### ⚡ **ACTIONS TAKEN:**")
+        action_labels = {
+            "subtitle_extractions": "Subtitle Extractions",
+            "subtitle_downloads": "Subtitle Downloads",
+            "metadata_updates": "Metadata Updates",
+            "poster_fixes": "Poster Fixes",
+            "title_cleanups": "Title Cleanups",
+            "recategorizations": "Recategorizations",
+            "stream_validations": "Stream Validations",
+            "manual_reviews_flagged": "Manual Reviews Flagged"
+        }
+        for action_type, count in sorted(action_breakdown.items(), key=lambda x: x[1], reverse=True):
+            if count > 0:
+                label = action_labels.get(action_type, action_type.replace("_", " ").title())
+                summary_lines.append(f"- {label}: **{count}**")
+        summary_lines.append("")
+
+    # Performance Metrics
+    summary_lines.append("### ⚙️ **PERFORMANCE METRICS:**")
+    summary_lines.append(f"- Execution time: **{execution_time:.1f}s** ({execution_time/60:.1f} minutes)")
+    summary_lines.append(f"- Agent iterations: **{iteration}**")
+    summary_lines.append(f"- API cost: **${total_cost:.4f}**")
+    items_per_minute = (total_items / (execution_time / 60)) if execution_time > 0 else 0
+    summary_lines.append(f"- Processing speed: **{items_per_minute:.1f} items/minute**")
+    summary_lines.append("")
+
+    # Recommendations (if provided)
+    recommendations = completion_summary.get("recommendations", [])
+    if recommendations:
+        summary_lines.append("### 💡 **STRATEGIC RECOMMENDATIONS:**")
+        for i, rec in enumerate(recommendations, 1):
+            summary_lines.append(f"{i}. {rec}")
+        summary_lines.append("")
+
+    # Agent Summary (narrative)
+    agent_summary = completion_summary.get("summary", "")
+    if agent_summary:
+        summary_lines.append("### 📋 **AUDIT NARRATIVE:**")
+        summary_lines.append(agent_summary)
+        summary_lines.append("")
+
+    # Completion Message
+    summary_lines.append("---")
+    summary_lines.append("✅ **Audit completed successfully!** All findings and actions have been logged.")
+
+    # Join all lines and log to database
+    full_summary = "\n".join(summary_lines)
+    await log_to_database(
+        audit_report,
+        "info",
+        full_summary,
+        "AI Agent"
+    )
 
 
 # ============================================================================
@@ -2541,7 +3018,9 @@ Report how many items:
 - Stay focused on the assigned task
 - Don't check or fix things outside your task scope
 - Process systematically through ALL items
-- Report final summary when done
+- Track comprehensive statistics as you work
+- When calling complete_audit, provide detailed breakdown statistics (subtitle_stats, metadata_stats, issue_breakdown, action_breakdown, health_score, etc.)
+- Report final comprehensive summary when done
 """
     else:
         # COMPREHENSIVE MODE: Full workflow instructions
@@ -2703,6 +3182,122 @@ Step 5: list_content_items(limit=100, skip=400)
 **Limits:**
 - Maximum {max_iterations} tool uses
 - API Budget: ${budget_limit_usd}
+
+**📊 COMPREHENSIVE SUMMARY REQUIREMENTS:**
+
+When you call `complete_audit`, you MUST provide a comprehensive breakdown of ALL your work:
+
+**Required Statistics to Track Throughout Audit:**
+
+1. **Subtitle Statistics:**
+   - Count items with all required subtitles (he, en, es)
+   - Count items still missing subtitles
+   - Count subtitles extracted from video files
+   - Count subtitles downloaded from external sources
+   - Breakdown by language (he: X, en: Y, es: Z)
+   - OpenSubtitles quota used and remaining
+
+2. **Metadata Statistics:**
+   - Count posters fixed
+   - Count metadata updated (description, genres, year, IMDB)
+   - Count titles cleaned
+   - Count TMDB API searches performed
+
+3. **Categorization Statistics:**
+   - Count items recategorized
+   - Average confidence score
+   - High confidence moves (>95%)
+   - Medium confidence moves (90-95%)
+
+4. **Stream Validation Statistics:**
+   - Count streams checked
+   - Count healthy streams
+   - Count broken streams
+   - Average response time in ms
+
+5. **Storage Statistics (if you checked):**
+   - Total size in GB
+   - File count
+   - Estimated monthly cost
+   - Large files found (>5GB)
+
+6. **Podcast Statistics (if applicable):**
+   - Podcasts synced
+   - Episodes added
+   - Episodes removed
+
+7. **Issue Breakdown by Type:**
+   - Missing subtitles: X
+   - Missing metadata: Y
+   - Missing posters: Z
+   - Dirty titles: A
+   - Broken streams: B
+   - Misclassifications: C
+   - Quality issues: D
+   - Other: E
+
+8. **Action Breakdown:**
+   - Subtitle extractions: X
+   - Subtitle downloads: Y
+   - Metadata updates: Z
+   - Poster fixes: A
+   - Title cleanups: B
+   - Recategorizations: C
+   - Stream validations: D
+   - Manual reviews flagged: E
+
+9. **Health Score (0-100):**
+   Calculate overall library health based on completeness and quality
+
+**Example complete_audit Call:**
+```
+complete_audit(
+  summary="Comprehensive 3-paragraph narrative of what you did",
+  items_checked=109,
+  issues_found=45,
+  issues_fixed=38,
+  flagged_for_review=7,
+  recommendations=["Recommendation 1", "Recommendation 2", "Recommendation 3"],
+  subtitle_stats={{
+    "items_with_all_required": 85,
+    "items_missing_subtitles": 24,
+    "subtitles_extracted_from_video": 127,
+    "subtitles_downloaded_external": 45,
+    "by_language": {{"he": 95, "en": 102, "es": 89}},
+    "opensubtitles_quota_used": 15,
+    "opensubtitles_quota_remaining": 5
+  }},
+  metadata_stats={{
+    "posters_fixed": 12,
+    "metadata_updated": 18,
+    "titles_cleaned": 8,
+    "tmdb_searches_performed": 30
+  }},
+  issue_breakdown={{
+    "missing_subtitles": 24,
+    "missing_metadata": 18,
+    "missing_posters": 12,
+    "dirty_titles": 8,
+    "broken_streams": 3,
+    "misclassifications": 2,
+    "quality_issues": 1,
+    "other": 0
+  }},
+  action_breakdown={{
+    "subtitle_extractions": 127,
+    "subtitle_downloads": 45,
+    "metadata_updates": 18,
+    "poster_fixes": 12,
+    "title_cleanups": 8,
+    "recategorizations": 2,
+    "stream_validations": 15,
+    "manual_reviews_flagged": 7
+  }},
+  health_score=85
+)
+```
+
+**Track these metrics as you work!** Keep running counts and provide accurate statistics in your final summary.
 
 Start the audit!"""
 
@@ -2916,7 +3511,17 @@ Start the audit!"""
             "issues_fixed": completion_summary.get("issues_fixed", 0),
             "manual_review_needed": completion_summary.get("flagged_for_review", 0),
             "agent_summary": completion_summary.get("summary", ""),
-            "recommendations": completion_summary.get("recommendations", [])
+            "recommendations": completion_summary.get("recommendations", []),
+            # Enhanced comprehensive statistics
+            "subtitle_stats": completion_summary.get("subtitle_stats", {}),
+            "metadata_stats": completion_summary.get("metadata_stats", {}),
+            "categorization_stats": completion_summary.get("categorization_stats", {}),
+            "stream_validation_stats": completion_summary.get("stream_validation_stats", {}),
+            "storage_stats": completion_summary.get("storage_stats", {}),
+            "podcast_stats": completion_summary.get("podcast_stats", {}),
+            "issue_breakdown": completion_summary.get("issue_breakdown", {}),
+            "action_breakdown": completion_summary.get("action_breakdown", {}),
+            "health_score": completion_summary.get("health_score", 0)
         }
     else:
         summary = {
@@ -2943,8 +3548,12 @@ Start the audit!"""
 
     await audit_report.save()
 
-    # Final log
-    await log_to_database(audit_report, "success", f"Audit completed in {execution_time:.1f}s", "Librarian")
+    # Log comprehensive summary to execution logs for UI
+    if completion_summary:
+        await _log_comprehensive_summary(audit_report, completion_summary, execution_time, iteration, total_cost)
+    else:
+        # Final log for incomplete audits
+        await log_to_database(audit_report, "success", f"Audit completed in {execution_time:.1f}s", "Librarian")
 
     logger.info("=" * 80)
     logger.info("✅ AI Agent Audit Complete")

@@ -504,13 +504,13 @@ TOOLS = [
     },
     {
         "name": "complete_audit",
-        "description": "Call this when you've finished the audit and are ready to provide a final summary. This will end the audit session.",
+        "description": "Call this when you've finished the audit and are ready to provide a final summary. This will end the audit session. Provide comprehensive breakdown statistics for all aspects of the audit.",
         "input_schema": {
             "type": "object",
             "properties": {
                 "summary": {
                     "type": "string",
-                    "description": "Overall summary of the audit: what you checked, what you found, what you fixed"
+                    "description": "Overall summary of the audit: what you checked, what you found, what you fixed (2-3 paragraphs)"
                 },
                 "items_checked": {
                     "type": "integer",
@@ -532,6 +532,104 @@ TOOLS = [
                     "type": "array",
                     "items": {"type": "string"},
                     "description": "3-5 strategic recommendations for improving the library"
+                },
+                "subtitle_stats": {
+                    "type": "object",
+                    "description": "Comprehensive subtitle statistics",
+                    "properties": {
+                        "items_with_all_required": {"type": "integer", "description": "Items with all required subtitles (he, en, es)"},
+                        "items_missing_subtitles": {"type": "integer", "description": "Items still missing one or more required subtitles"},
+                        "subtitles_extracted_from_video": {"type": "integer", "description": "Subtitle tracks extracted from embedded video"},
+                        "subtitles_downloaded_external": {"type": "integer", "description": "Subtitle tracks downloaded from OpenSubtitles/TMDB"},
+                        "by_language": {
+                            "type": "object",
+                            "description": "Breakdown by language (he, en, es, etc.)",
+                            "additionalProperties": {"type": "integer"}
+                        },
+                        "opensubtitles_quota_used": {"type": "integer", "description": "Number of OpenSubtitles downloads used"},
+                        "opensubtitles_quota_remaining": {"type": "integer", "description": "Remaining OpenSubtitles quota"}
+                    }
+                },
+                "metadata_stats": {
+                    "type": "object",
+                    "description": "Metadata fix statistics",
+                    "properties": {
+                        "posters_fixed": {"type": "integer", "description": "Missing posters added"},
+                        "metadata_updated": {"type": "integer", "description": "Items with missing metadata filled (description, genres, year, IMDB)"},
+                        "titles_cleaned": {"type": "integer", "description": "Titles cleaned (removed file extensions, quality markers, junk)"},
+                        "tmdb_searches_performed": {"type": "integer", "description": "Number of TMDB API searches"}
+                    }
+                },
+                "categorization_stats": {
+                    "type": "object",
+                    "description": "Categorization statistics",
+                    "properties": {
+                        "items_recategorized": {"type": "integer", "description": "Items moved to different categories"},
+                        "avg_confidence": {"type": "number", "description": "Average confidence score for recategorizations"},
+                        "high_confidence_moves": {"type": "integer", "description": "Recategorizations with >95% confidence"},
+                        "medium_confidence_moves": {"type": "integer", "description": "Recategorizations with 90-95% confidence"}
+                    }
+                },
+                "stream_validation_stats": {
+                    "type": "object",
+                    "description": "Stream URL validation statistics",
+                    "properties": {
+                        "streams_checked": {"type": "integer", "description": "Total stream URLs validated"},
+                        "streams_healthy": {"type": "integer", "description": "Working stream URLs"},
+                        "streams_broken": {"type": "integer", "description": "Broken or inaccessible streams"},
+                        "avg_response_time_ms": {"type": "number", "description": "Average stream response time"}
+                    }
+                },
+                "storage_stats": {
+                    "type": "object",
+                    "description": "Storage statistics (if checked)",
+                    "properties": {
+                        "total_size_gb": {"type": "number", "description": "Total storage used in GB"},
+                        "file_count": {"type": "integer", "description": "Total number of files"},
+                        "estimated_monthly_cost_usd": {"type": "number", "description": "Estimated monthly GCS cost"},
+                        "large_files_found": {"type": "integer", "description": "Number of unusually large files (>5GB)"}
+                    }
+                },
+                "podcast_stats": {
+                    "type": "object",
+                    "description": "Podcast management statistics (if applicable)",
+                    "properties": {
+                        "podcasts_synced": {"type": "integer", "description": "Podcasts synced from RSS"},
+                        "episodes_added": {"type": "integer", "description": "New episodes added"},
+                        "episodes_removed": {"type": "integer", "description": "Old episodes cleaned up"}
+                    }
+                },
+                "issue_breakdown": {
+                    "type": "object",
+                    "description": "Breakdown of issues by type",
+                    "properties": {
+                        "missing_subtitles": {"type": "integer"},
+                        "missing_metadata": {"type": "integer"},
+                        "missing_posters": {"type": "integer"},
+                        "dirty_titles": {"type": "integer"},
+                        "broken_streams": {"type": "integer"},
+                        "misclassifications": {"type": "integer"},
+                        "quality_issues": {"type": "integer"},
+                        "other": {"type": "integer"}
+                    }
+                },
+                "action_breakdown": {
+                    "type": "object",
+                    "description": "Breakdown of actions taken",
+                    "properties": {
+                        "subtitle_extractions": {"type": "integer"},
+                        "subtitle_downloads": {"type": "integer"},
+                        "metadata_updates": {"type": "integer"},
+                        "poster_fixes": {"type": "integer"},
+                        "title_cleanups": {"type": "integer"},
+                        "recategorizations": {"type": "integer"},
+                        "stream_validations": {"type": "integer"},
+                        "manual_reviews_flagged": {"type": "integer"}
+                    }
+                },
+                "health_score": {
+                    "type": "number",
+                    "description": "Overall library health score (0-100) based on completeness and quality"
                 }
             },
             "required": ["summary", "items_checked", "issues_found", "issues_fixed"]

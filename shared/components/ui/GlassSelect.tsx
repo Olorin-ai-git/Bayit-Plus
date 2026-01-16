@@ -8,6 +8,7 @@ import {
   StyleSheet,
   Animated,
   Platform,
+  I18nManager,
 } from 'react-native';
 import { GlassView } from './GlassView';
 import { colors, borderRadius, spacing } from '../theme';
@@ -29,6 +30,8 @@ interface GlassSelectProps {
   error?: string;
   disabled?: boolean;
   hasTVPreferredFocus?: boolean;
+  /** Override RTL detection */
+  isRTL?: boolean;
 }
 
 export const GlassSelect: React.FC<GlassSelectProps> = ({
@@ -40,8 +43,16 @@ export const GlassSelect: React.FC<GlassSelectProps> = ({
   error,
   disabled = false,
   hasTVPreferredFocus = false,
+  isRTL: isRTLProp,
 }) => {
   const [isOpen, setIsOpen] = useState(false);
+
+  // Detect RTL from prop, I18nManager, or document direction
+  const isRTL = isRTLProp ?? (
+    Platform.OS === 'web'
+      ? typeof document !== 'undefined' && document.documentElement?.dir === 'rtl'
+      : I18nManager.isRTL
+  );
 
   const { isFocused, handleFocus, handleBlur, scaleTransform, focusStyle } = useTVFocus({
     styleType: 'input',
@@ -56,9 +67,13 @@ export const GlassSelect: React.FC<GlassSelectProps> = ({
     }
   };
 
+  // Dynamic text alignment based on direction
+  const textAlign = isRTL ? 'right' : 'left';
+  const flexDirection = isRTL ? 'row-reverse' : 'row';
+
   return (
     <View style={styles.container}>
-      {label && <Text style={styles.label}>{label}</Text>}
+      {label && <Text style={[styles.label, { textAlign }]}>{label}</Text>}
 
       <TouchableOpacity
         onPress={() => !disabled && setIsOpen(true)}
@@ -73,6 +88,7 @@ export const GlassSelect: React.FC<GlassSelectProps> = ({
           <GlassView
             style={[
               styles.select,
+              { flexDirection },
               !error && focusStyle,
               error && styles.selectError,
               disabled && styles.selectDisabled,
@@ -89,17 +105,18 @@ export const GlassSelect: React.FC<GlassSelectProps> = ({
             <Text
               style={[
                 styles.selectText,
+                { textAlign },
                 !selectedOption && styles.placeholder,
               ]}
             >
               {selectedOption?.label || placeholder}
             </Text>
-            <Text style={styles.chevron}>▼</Text>
+            <Text style={[styles.chevron, isRTL ? { marginRight: spacing.sm, marginLeft: 0 } : { marginLeft: spacing.sm }]}>▼</Text>
           </GlassView>
         </Animated.View>
       </TouchableOpacity>
 
-      {error && <Text style={styles.error}>{error}</Text>}
+      {error && <Text style={[styles.error, { textAlign }]}>{error}</Text>}
 
       <Modal
         visible={isOpen}
@@ -122,6 +139,7 @@ export const GlassSelect: React.FC<GlassSelectProps> = ({
                   disabled={item.disabled}
                   style={[
                     styles.option,
+                    { flexDirection },
                     item.value === value && styles.optionSelected,
                     item.disabled && styles.optionDisabled,
                   ]}
@@ -131,6 +149,7 @@ export const GlassSelect: React.FC<GlassSelectProps> = ({
                   <Text
                     style={[
                       styles.optionText,
+                      { textAlign },
                       item.value === value && styles.optionTextSelected,
                       item.disabled && styles.optionTextDisabled,
                     ]}
@@ -138,7 +157,7 @@ export const GlassSelect: React.FC<GlassSelectProps> = ({
                     {item.label}
                   </Text>
                   {item.value === value && (
-                    <Text style={styles.checkmark}>✓</Text>
+                    <Text style={[styles.checkmark, isRTL ? { marginRight: spacing.sm, marginLeft: 0 } : { marginLeft: spacing.sm }]}>✓</Text>
                   )}
                 </TouchableOpacity>
               )}
@@ -159,7 +178,6 @@ const styles = StyleSheet.create({
     fontWeight: '500',
     color: colors.textSecondary,
     marginBottom: spacing.sm,
-    textAlign: 'right',
   },
   select: {
     flexDirection: 'row',
@@ -179,7 +197,6 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: colors.text,
     flex: 1,
-    textAlign: 'right',
   },
   placeholder: {
     color: colors.textMuted,
@@ -187,13 +204,11 @@ const styles = StyleSheet.create({
   chevron: {
     fontSize: 12,
     color: colors.textSecondary,
-    marginLeft: spacing.sm,
   },
   error: {
     fontSize: 12,
     color: colors.error,
     marginTop: spacing.xs,
-    textAlign: 'right',
   },
   overlay: {
     flex: 1,
@@ -225,7 +240,6 @@ const styles = StyleSheet.create({
   optionText: {
     fontSize: 16,
     color: colors.text,
-    textAlign: 'right',
     flex: 1,
   },
   optionTextSelected: {
@@ -238,7 +252,6 @@ const styles = StyleSheet.create({
   checkmark: {
     fontSize: 16,
     color: colors.primary,
-    marginLeft: spacing.sm,
   },
 });
 

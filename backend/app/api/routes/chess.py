@@ -23,6 +23,23 @@ class JoinGameRequest(BaseModel):
     game_code: str
 
 
+class InvitePlayerRequest(BaseModel):
+    """Request model for creating a game and inviting a player."""
+    friend_name: str
+    color: PlayerColor = PlayerColor.WHITE
+    time_control: Optional[int] = None
+
+
+class GameInviteNotification(BaseModel):
+    """Notification model for game invites."""
+    id: str
+    game_code: str
+    inviter_id: str
+    inviter_name: str
+    invitee_id: str
+    created_at: str
+
+
 @router.post("/create")
 async def create_game(
     request: CreateGameRequest,
@@ -159,4 +176,95 @@ async def offer_draw(
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail=str(e)
+        )
+
+
+@router.post("/invite")
+async def invite_player(
+    request: InvitePlayerRequest,
+    current_user: User = Depends(get_current_active_user)
+):
+    """
+    Create a chess game and invite a friend by name.
+    
+    This endpoint:
+    1. Searches for the user by name
+    2. Creates a new chess game with the current user as host
+    3. Creates an invite notification for the friend
+    4. Returns the game code for immediate connection
+    
+    The invited player will see a notification and can join using the game code.
+    """
+    from datetime import datetime
+    
+    # Search for the friend by name
+    friend = await User.find_one({
+        "is_active": True,
+        "name": {"$regex": request.friend_name, "$options": "i"},
+    })
+    
+    if not friend:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"User '{request.friend_name}' not found"
+        )
+    
+    if str(friend.id) == str(current_user.id):
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="You cannot invite yourself to a game"
+        )
+    
+    try:
+        # Create the game
+        game = await chess_service.create_game(
+            host_user_id=str(current_user.id),
+            host_user_name=current_user.name,
+            color=request.color,
+            time_control=request.time_control
+        )
+        
+        # Create invite notification (stored in a simple format)
+        # In a production app, this would be stored in a Notification model
+        # and delivered via WebSocket/push notification
+        invite = GameInviteNotification(
+            id=f"invite-{game.game_code}",
+            game_code=game.game_code,
+            inviter_id=str(current_user.id),
+            inviter_name=current_user.name,
+            invitee_id=str(friend.id),
+            created_at=datetime.utcnow().isoformat(),
+        )
+        
+        # Log the invite (in production, send via WebSocket to the invitee)
+        print(f"[CHESS] Game invite created: {current_user.name} invited {friend.name} to game {game.game_code}")
+        
+        # Try to send real-time notification via WebSocket if user is connected
+        from app.services.connection_manager import connection_manager
+        notification_sent = await connection_manager.send_to_user(
+            {
+                "type": "chess_invite",
+                "game_code": game.game_code,
+                "inviter_name": current_user.name,
+                "inviter_id": str(current_user.id),
+            },
+            str(friend.id)
+        )
+        
+        return {
+            "success": True,
+            "game_code": game.game_code,
+            "game": game.dict(),
+            "invite": invite.dict(),
+            "friend": {
+                "id": str(friend.id),
+                "name": friend.name,
+            },
+            "notification_sent": notification_sent,
+        }
+        
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Failed to create game invite: {str(e)}"
         )

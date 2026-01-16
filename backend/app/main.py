@@ -20,7 +20,7 @@ from app.api.routes import (
     device_pairing, onboarding, widgets, favorites, downloads, user_system_widgets, news, librarian,
     admin_content_vod_read, admin_content_vod_write, admin_content_vod_toggles, admin_categories, admin_live_channels,
     admin_radio_stations, admin_podcasts, admin_podcast_episodes, admin_content_importer, admin_widgets, verification,
-    recordings, epg, password_reset, chess
+    recordings, epg, password_reset, chess, users, friends, stats
 )
 from app.api.routes.admin.recordings import router as admin_recordings_router
 
@@ -527,6 +527,9 @@ app.include_router(onboarding.router, prefix=f"{settings.API_V1_PREFIX}/onboardi
 app.include_router(news.router, prefix=f"{settings.API_V1_PREFIX}/news", tags=["news"])
 app.include_router(chess.router, prefix=f"{settings.API_V1_PREFIX}", tags=["chess"])
 app.include_router(websocket_chess.router, prefix=f"{settings.API_V1_PREFIX}", tags=["websocket", "chess"])
+app.include_router(friends.router, prefix=f"{settings.API_V1_PREFIX}", tags=["friends"])
+app.include_router(stats.router, prefix=f"{settings.API_V1_PREFIX}", tags=["stats"])
+app.include_router(users.router, prefix=f"{settings.API_V1_PREFIX}/users", tags=["users"])
 
 # Proxy uploads from GCS
 @app.api_route("/uploads/{path:path}", methods=["GET", "HEAD"])
