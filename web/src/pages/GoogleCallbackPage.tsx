@@ -32,9 +32,11 @@ export default function GoogleCallbackPage() {
     }
 
     const code = searchParams.get('code');
+    const state = searchParams.get('state');
     const errorParam = searchParams.get('error');
 
     console.log('[GoogleCallback] Code:', code ? code.substring(0, 20) + '...' : 'NONE');
+    console.log('[GoogleCallback] State:', state ? state.substring(0, 10) + '...' : 'NONE');
     console.log('[GoogleCallback] Error:', errorParam);
 
     if (errorParam) {
@@ -53,9 +55,9 @@ export default function GoogleCallbackPage() {
 
     // Mark as processed before making the API call
     hasProcessedRef.current = true;
-    console.log('[GoogleCallback] Calling handleGoogleCallback...');
+    console.log('[GoogleCallback] Calling handleGoogleCallback with state...');
 
-    handleGoogleCallback(code)
+    handleGoogleCallback(code, state || undefined)
       .then(() => {
         console.log('[GoogleCallback] Success - waiting for persist before navigating');
         // Wait a bit for zustand persist middleware to write to localStorage

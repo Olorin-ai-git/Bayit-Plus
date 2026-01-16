@@ -65,8 +65,26 @@ const apiAuthService = {
   me: () => api.get('/auth/me'),
   updateProfile: (updates) => api.patch('/auth/profile', updates),
   resetPassword: (email) => api.post('/auth/reset-password', { email }),
-  getGoogleAuthUrl: (redirectUri) => api.get('/auth/google/url', { params: { redirect_uri: redirectUri } }),
-  googleCallback: (code, redirectUri) => api.post('/auth/google/callback', { code, redirect_uri: redirectUri }),
+  getGoogleAuthUrl: async (redirectUri) => {
+    const response = await api.get('/auth/google/url', { params: { redirect_uri: redirectUri } });
+    // Store state in sessionStorage for CSRF validation
+    if (response.state) {
+      sessionStorage.setItem('oauth_state', response.state);
+    }
+    return response;
+  },
+  googleCallback: (code, redirectUri, state) => {
+    // Retrieve state from sessionStorage if not provided
+    let finalState = state;
+    if (!finalState) {
+      finalState = sessionStorage.getItem('oauth_state') || undefined;
+      // Clean up after use
+      if (finalState) {
+        sessionStorage.removeItem('oauth_state');
+      }
+    }
+    return api.post('/auth/google/callback', { code, redirect_uri: redirectUri, state: finalState });
+  },
 }
 
 // Content Service (API)

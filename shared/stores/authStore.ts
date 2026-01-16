@@ -37,7 +37,7 @@ interface AuthState {
   login: (email: string, password: string) => Promise<void>;
   register: (data: RegisterData) => Promise<void>;
   loginWithGoogle: () => Promise<string | void>;
-  handleGoogleCallback: (code: string) => Promise<any>;
+  handleGoogleCallback: (code: string, state?: string) => Promise<any>;
   logout: () => void;
   setUser: (user: User | null) => void;
   clearError: () => void;
@@ -122,14 +122,14 @@ export const useAuthStore = create<AuthState>()(
         }
       },
 
-      handleGoogleCallback: async (code: string) => {
+      handleGoogleCallback: async (code: string, state?: string) => {
         set({ isLoading: true, error: null });
         try {
           // Pass redirect_uri to match what was sent to Google
           const redirectUri = Platform.OS === 'web' && typeof window !== 'undefined'
             ? `${window.location.origin}/auth/google/callback`
             : undefined;
-          const response: any = await authService.googleCallback(code, redirectUri);
+          const response: any = await authService.googleCallback(code, redirectUri, state);
           set({
             user: response.user,
             token: response.access_token,

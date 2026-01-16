@@ -61,3 +61,8 @@ backend/gcs-service-account-key.json
 **/gcs-service-account-key.json
 *.json.gcp
 *-service-account-key.json
+
+# Google OAuth Client Secrets
+client_secret_*.json
+**/google-oauth-client-secret.json
+backend/google-oauth-client-secret.json

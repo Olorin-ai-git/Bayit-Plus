@@ -73,15 +73,37 @@ const apiAuthService = {
   register: (userData: { email: string; name: string; password: string }) =>
     api.post('/auth/register', userData),
   me: () => api.get('/auth/me'),
-  getGoogleAuthUrl: () => {
+  getGoogleAuthUrl: async () => {
     // Build redirect URI from current origin (supports localhost, bayit.tv, bayit-plus.web.app)
     const redirectUri = Platform.OS === 'web' && typeof window !== 'undefined'
       ? `${window.location.origin}/auth/google/callback`
       : undefined;
-    return api.get('/auth/google/url', { params: { redirect_uri: redirectUri } });
+    const response: any = await api.get('/auth/google/url', { params: { redirect_uri: redirectUri } });
+
+    // Store state in sessionStorage for CSRF validation
+    if (Platform.OS === 'web' && typeof window !== 'undefined' && response.state) {
+      sessionStorage.setItem('oauth_state', response.state);
+    }
+
+    return response;
   },
-  googleCallback: (code: string, redirectUri?: string) =>
-    api.post('/auth/google/callback', { code, redirect_uri: redirectUri }),
+  googleCallback: (code: string, redirectUri?: string, state?: string) => {
+    // Retrieve state from sessionStorage if not provided
+    let finalState = state;
+    if (!finalState && Platform.OS === 'web' && typeof window !== 'undefined') {
+      finalState = sessionStorage.getItem('oauth_state') || undefined;
+      // Clean up after use
+      if (finalState) {
+        sessionStorage.removeItem('oauth_state');
+      }
+    }
+
+    return api.post('/auth/google/callback', {
+      code,
+      redirect_uri: redirectUri,
+      state: finalState,
+    });
+  },
 };
 
 // Verification Service (API)

@@ -99,12 +99,12 @@ export const useAuthStore = create(
         }
       },
 
-      handleGoogleCallback: async (code) => {
+      handleGoogleCallback: async (code, state) => {
         set({ isLoading: true, error: null })
         try {
           // Build redirect URI dynamically based on current origin
           const redirectUri = `${window.location.origin}/auth/google/callback`
-          const response = await authService.googleCallback(code, redirectUri)
+          const response = await authService.googleCallback(code, redirectUri, state)
 
           // Update state
           set({
