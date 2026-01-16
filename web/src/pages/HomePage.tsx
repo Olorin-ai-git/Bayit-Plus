@@ -27,6 +27,8 @@ interface FeaturedContent {
   year?: string;
   duration?: string;
   rating?: string;
+  available_subtitle_languages?: string[];
+  has_subtitles?: boolean;
 }
 
 interface CarouselItem {
@@ -37,6 +39,8 @@ interface CarouselItem {
   image?: string;
   badge?: string;
   is_series?: boolean;
+  available_subtitle_languages?: string[];
+  has_subtitles?: boolean;
 }
 
 interface Channel {
@@ -145,6 +149,8 @@ export default function HomePage() {
         image: item.backdrop || item.thumbnail,
         badge: index === 0 ? t('common.new') : undefined,
         is_series: item.is_series,
+        available_subtitle_languages: item.available_subtitle_languages,
+        has_subtitles: item.has_subtitles,
       })));
 
       // Use categories from featured data - they include items with thumbnails

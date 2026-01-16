@@ -27,6 +27,8 @@ interface ContentItem {
   year?: string;
   category?: string;
   is_series?: boolean;
+  available_subtitle_languages?: string[];
+  has_subtitles?: boolean;
 }
 
 export default function VODPage() {

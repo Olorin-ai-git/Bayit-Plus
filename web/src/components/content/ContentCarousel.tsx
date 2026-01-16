@@ -16,6 +16,8 @@ interface ContentItem {
   duration?: string;
   year?: string;
   category?: string;
+  available_subtitle_languages?: string[];
+  has_subtitles?: boolean;
 }
 
 interface ContentCarouselProps {
