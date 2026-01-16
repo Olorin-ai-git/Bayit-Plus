@@ -158,6 +158,40 @@
         animation: slideInPlus 0.7s ease-in-out forwards;
       }
 
+      /* Slogan - positioned below logo with glassmorphism */
+      #splash-screen .slogan-container {
+        position: fixed;
+        top: 13%;
+        left: 50%;
+        transform: translateX(-50%);
+        z-index: 3;
+        opacity: 0;
+        animation: fadeIn 0.8s ease-out forwards;
+        animation-delay: 1.7s;
+        background: rgba(168, 85, 247, 0.15);
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
+        border: 2px solid rgba(147, 51, 234, 0.4);
+        border-radius: 16px;
+        padding: 12px 32px;
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3),
+                    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+      }
+
+      #splash-screen .slogan-text {
+        font-size: 18px;
+        font-weight: 600;
+        color: rgba(255, 255, 255, 0.95);
+        font-family: 'Heebo', sans-serif;
+        text-align: center;
+        letter-spacing: 1px;
+        text-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
+        background: linear-gradient(135deg, rgba(255, 255, 255, 0.9) 0%, rgba(192, 132, 252, 0.9) 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+      }
+
       /* Dual Clock - positioned below TV screen */
       #splash-screen .clock-container {
         position: fixed;
@@ -347,6 +381,15 @@
         #splash-screen .plus-text {
           font-size: 28px;
         }
+        #splash-screen .slogan-container {
+          top: 15%;
+          padding: 10px 24px;
+          border-radius: 12px;
+        }
+        #splash-screen .slogan-text {
+          font-size: 14px;
+          letter-spacing: 0.5px;
+        }
         #splash-screen .clock-container {
           bottom: 10%;
           gap: 2rem;
@@ -389,12 +432,17 @@
         <span class="icon">🔊</span>
         <span id="audio-prompt-text">Click to enable audio</span>
       </div>
-      
+
+      <!-- Slogan -->
+      <div class="slogan-container">
+        <p class="slogan-text" id="slogan-text">Your Home. Everywhere.</p>
+      </div>
+
       <!-- Powered By Section at bottom -->
       <div class="powered-by-container">
         <a href="https://marketing.radio.olorin.ai" target="_blank" class="powered-by-link">Olorin.ai LLC</a>
         <span class="powered-by-text" id="powered-by-text">Powered by</span>
-        
+
       </div>
     </div>
 
@@ -522,9 +570,18 @@
     <script>
       // Localized translations
       var translations = {
-        en: { poweredBy: 'Powered by' },
-        he: { poweredBy: 'מופעל על ידי' },
-        es: { poweredBy: 'Desarrollado por' }
+        en: {
+          poweredBy: 'Powered by',
+          slogan: 'Your Home. Everywhere.'
+        },
+        he: {
+          poweredBy: 'מופעל על ידי',
+          slogan: 'הבית שלך. בכל מקום.'
+        },
+        es: {
+          poweredBy: 'Desarrollado por',
+          slogan: 'Tu Casa. En Todas Partes.'
+        }
       };
       
       // Get saved language from localStorage
@@ -542,8 +599,12 @@
       // Set localized text immediately
       var currentLang = getSavedLanguage();
       var poweredByElement = document.getElementById('powered-by-text');
+      var sloganElement = document.getElementById('slogan-text');
       if (poweredByElement && translations[currentLang]) {
         poweredByElement.textContent = translations[currentLang].poweredBy;
+      }
+      if (sloganElement && translations[currentLang]) {
+        sloganElement.textContent = translations[currentLang].slogan;
       }
       
       // Track splash screen timing

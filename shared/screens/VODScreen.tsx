@@ -7,17 +7,18 @@ import {
   TouchableOpacity,
   Animated,
   ActivityIndicator,
-  Image,
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
 import { GlassView, GlassCategoryPill } from '../components/ui';
 import { SubtitleFlags } from '../components/SubtitleFlags';
+import { OptimizedImage } from '../components/OptimizedImage';
 import { contentService } from '../services/api';
 import { colors, spacing, borderRadius } from '../theme';
 import { isTV } from '../utils/platform';
 import { useDirection } from '../hooks/useDirection';
 import { getLocalizedName, getLocalizedDescription } from '../utils/contentLocalization';
+import { getOptimizedGridProps, createGridItemLayout } from '../utils/listOptimization';
 
 interface ContentItem {
   id: string;
@@ -81,10 +82,12 @@ const ContentCard: React.FC<{
       >
         <View style={{ position: 'relative' }}>
           {item.thumbnail ? (
-            <Image
+            <OptimizedImage
               source={{ uri: item.thumbnail }}
               style={styles.cardImage}
               resizeMode="cover"
+              lazy={true}
+              lazyThreshold={300}
             />
           ) : (
             <View style={styles.cardImagePlaceholder}>
@@ -232,7 +235,7 @@ export const VODScreen: React.FC = () => {
       {/* Content Grid */}
       <FlatList
         data={content}
-        keyExtractor={(item) => item.id}
+        keyExtractor={(item) => `vod-${item.id}`}
         numColumns={isTV ? 6 : 4}
         key={isTV ? 'tv' : 'mobile'}
         contentContainerStyle={styles.grid}
@@ -243,6 +246,8 @@ export const VODScreen: React.FC = () => {
             index={index}
           />
         )}
+        {...getOptimizedGridProps(isTV ? 6 : 4)}
+        getItemLayout={createGridItemLayout(220, isTV ? 6 : 4, spacing.sm)}
         ListEmptyComponent={
           <View style={styles.emptyState}>
             <GlassView style={styles.emptyCard}>

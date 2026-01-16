@@ -139,7 +139,7 @@ export const GlassProgressBar: React.FC<GlassProgressBarProps> = ({
                   marginHorizontal: currentSize.segmentGap / 2,
                   backgroundColor: index < (current || 0)
                     ? currentVariant.start
-                    : 'rgba(255, 255, 255, 0.2)',
+                    : colors.glassBorderWhite,
                 },
                 index < (current || 0) && styles.segmentActive,
               ]}
@@ -219,7 +219,7 @@ const styles = StyleSheet.create({
   },
   track: {
     width: '100%',
-    backgroundColor: 'rgba(255, 255, 255, 0.15)',
+    backgroundColor: colors.glassBorderWhite,
     overflow: 'hidden',
   },
   fill: {
@@ -234,7 +234,7 @@ const styles = StyleSheet.create({
     right: 0,
   },
   label: {
-    color: 'rgba(255, 255, 255, 0.7)',
+    color: colors.textSecondary,
     fontWeight: '500',
     textAlign: 'center',
   },
@@ -256,7 +256,7 @@ const styles = StyleSheet.create({
   },
   segmentActive: {
     // @ts-ignore - Web shadow
-    boxShadow: '0 0 8px rgba(168, 85, 247, 0.5)',
+    boxShadow: `0 0 8px ${colors.glassGlowStrong}`,
   },
 });
 

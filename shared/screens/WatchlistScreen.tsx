@@ -12,6 +12,7 @@ import {
 import { useNavigation } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
 import { GlassView } from '../components/ui';
+import { watchlistService } from '../services';
 import { colors, spacing, borderRadius } from '../theme';
 import { isTV } from '../utils/platform';
 import { useDirection } from '../hooks/useDirection';
@@ -245,11 +246,11 @@ export const WatchlistScreen: React.FC = () => {
   const loadWatchlist = async () => {
     try {
       setIsLoading(true);
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 500));
-      setWatchlist(demoWatchlist);
+      const data = await watchlistService.getWatchlist();
+      setWatchlist(data.items || []);
     } catch (err) {
       console.error('Failed to load watchlist:', err);
+      setWatchlist([]);
     } finally {
       setIsLoading(false);
     }

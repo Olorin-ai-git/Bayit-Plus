@@ -2,16 +2,14 @@ import React from 'react';
 import {
   TouchableOpacity,
   Animated,
-  StyleSheet,
   Text,
   View,
   ActivityIndicator,
-  ViewStyle,
-  TextStyle,
-  StyleProp,
+  type ViewStyle,
+  type TextStyle,
+  type StyleProp,
 } from 'react-native';
 import { GlassView } from './GlassView';
-import { colors, borderRadius, spacing } from '../theme';
 import { useTVFocus } from '../hooks/useTVFocus';
 
 type ButtonVariant = 'primary' | 'secondary' | 'ghost' | 'danger' | 'destructive' | 'outline';
@@ -29,7 +27,12 @@ interface GlassButtonProps {
   fullWidth?: boolean;
   style?: StyleProp<ViewStyle>;
   textStyle?: StyleProp<TextStyle>;
+  className?: string;
   hasTVPreferredFocus?: boolean;
+  /** Accessibility label (defaults to title if not provided) */
+  accessibilityLabel?: string;
+  /** Accessibility hint (e.g., "Saves your changes") */
+  accessibilityHint?: string;
 }
 
 export const GlassButton: React.FC<GlassButtonProps> = ({
@@ -44,48 +47,114 @@ export const GlassButton: React.FC<GlassButtonProps> = ({
   fullWidth = false,
   style,
   textStyle,
+  className,
   hasTVPreferredFocus = false,
+  accessibilityLabel,
+  accessibilityHint,
 }) => {
   const { isFocused, handleFocus, handleBlur, scaleTransform, focusStyle } = useTVFocus({
     styleType: 'button',
   });
 
   const sizeStyles = {
-    sm: { paddingVertical: spacing.sm, paddingHorizontal: spacing.md, fontSize: 14 },
-    md: { paddingVertical: spacing.md, paddingHorizontal: spacing.lg, fontSize: 16 },
-    lg: { paddingVertical: spacing.lg, paddingHorizontal: spacing.xl, fontSize: 18 },
+    sm: { paddingVertical: 8, paddingHorizontal: 16, fontSize: 14 },
+    md: { paddingVertical: 12, paddingHorizontal: 24, fontSize: 16 },
+    lg: { paddingVertical: 16, paddingHorizontal: 32, fontSize: 18 },
   };
 
-  const variantStyles: Record<ButtonVariant, { bg: string; text: string; border?: string }> = {
-    primary: { bg: colors.primary, text: '#ffffff' },  // Purple with white text
-    secondary: { bg: colors.secondary, text: '#ffffff' },  // Deep purple with white text
-    ghost: { bg: 'transparent', text: colors.text },  // Transparent with white text
-    danger: { bg: colors.error, text: '#ffffff' },  // Red with white text
-    destructive: { bg: colors.error, text: '#ffffff' },  // Red with white text
-    outline: { bg: 'transparent', text: colors.primary, border: colors.glassBorder },  // Purple border
+  const variantStyles: Record<ButtonVariant, ViewStyle> = {
+    primary: {
+      backgroundColor: 'rgba(147, 51, 234, 0.8)', // purple-600/80
+      borderWidth: 2,
+      borderColor: 'rgba(126, 34, 206, 0.6)', // purple-700/60
+      // @ts-ignore - Web CSS
+      backdropFilter: 'blur(24px)',
+      WebkitBackdropFilter: 'blur(24px)',
+    },
+    secondary: {
+      backgroundColor: 'rgba(88, 28, 135, 0.6)', // purple-900/60
+      borderWidth: 2,
+      borderColor: 'rgba(107, 33, 168, 0.7)', // purple-800/70
+      // @ts-ignore - Web CSS
+      backdropFilter: 'blur(24px)',
+      WebkitBackdropFilter: 'blur(24px)',
+    },
+    ghost: {
+      backgroundColor: 'rgba(255, 255, 255, 0.1)', // white/10
+      borderWidth: 2,
+      borderColor: 'rgba(126, 34, 206, 0.4)', // purple-700/40
+      // @ts-ignore - Web CSS
+      backdropFilter: 'blur(24px)',
+      WebkitBackdropFilter: 'blur(24px)',
+    },
+    danger: {
+      backgroundColor: 'rgba(220, 38, 38, 0.8)', // red-600/80
+      borderWidth: 2,
+      borderColor: 'rgba(185, 28, 28, 0.6)', // red-700/60
+      // @ts-ignore - Web CSS
+      backdropFilter: 'blur(24px)',
+      WebkitBackdropFilter: 'blur(24px)',
+    },
+    destructive: {
+      backgroundColor: 'rgba(220, 38, 38, 0.8)', // red-600/80
+      borderWidth: 2,
+      borderColor: 'rgba(185, 28, 28, 0.6)', // red-700/60
+      // @ts-ignore - Web CSS
+      backdropFilter: 'blur(24px)',
+      WebkitBackdropFilter: 'blur(24px)',
+    },
+    outline: {
+      backgroundColor: 'transparent',
+      borderWidth: 2,
+      borderColor: 'rgba(126, 34, 206, 0.6)', // purple-700/60
+      // @ts-ignore - Web CSS
+      backdropFilter: 'blur(24px)',
+      WebkitBackdropFilter: 'blur(24px)',
+    },
   };
 
-  const currentVariant = variantStyles[variant];
+  const textColorStyles: Record<ButtonVariant, { color: string }> = {
+    primary: { color: '#ffffff' },
+    secondary: { color: '#ffffff' },
+    ghost: { color: '#ffffff' },
+    danger: { color: '#ffffff' },
+    destructive: { color: '#ffffff' },
+    outline: { color: '#c084fc' }, // purple-400
+  };
+
   const currentSize = sizeStyles[size];
+  const currentVariant = variantStyles[variant];
+  const currentTextColor = textColorStyles[variant];
 
   const isGlassVariant = variant === 'ghost' || variant === 'outline';
 
   const buttonContent = (
-    <View style={[styles.content, iconPosition === 'right' && styles.contentReverse]}>
+    <View
+      style={{
+        flexDirection: iconPosition === 'right' ? 'row-reverse' : 'row',
+        alignItems: 'center',
+        justifyContent: 'center',
+        gap: 4,
+      }}
+    >
       {loading ? (
         <ActivityIndicator
           size="small"
-          color={currentVariant.text}
-          style={styles.loader}
+          color="white"
+          style={{ marginHorizontal: 8 }}
         />
       ) : (
         <>
-          {icon && <View style={styles.icon}>{icon}</View>}
+          {icon && <View style={{ marginHorizontal: 4 }}>{icon}</View>}
           <Text
             style={[
-              styles.text,
-              { color: currentVariant.text, fontSize: currentSize.fontSize },
-              disabled && styles.textDisabled,
+              {
+                fontSize: currentSize.fontSize,
+                color: currentTextColor.color,
+                fontWeight: '600',
+                textAlign: 'center',
+                opacity: disabled ? 0.7 : 1,
+              },
               textStyle,
             ]}
           >
@@ -96,19 +165,27 @@ export const GlassButton: React.FC<GlassButtonProps> = ({
     </View>
   );
 
-  const buttonStyle = [
-    styles.button,
-    {
-      paddingVertical: currentSize.paddingVertical,
-      paddingHorizontal: currentSize.paddingHorizontal,
+  const buttonStyle: ViewStyle = {
+    paddingVertical: currentSize.paddingVertical,
+    paddingHorizontal: currentSize.paddingHorizontal,
+    borderRadius: 12,
+    alignItems: 'center',
+    justifyContent: 'center',
+    overflow: 'hidden',
+    opacity: disabled ? 0.5 : 1,
+    ...(fullWidth && { width: '100%' }),
+    ...currentVariant,
+  };
+
+  const a11yProps = {
+    accessibilityRole: 'button' as const,
+    accessibilityLabel: accessibilityLabel || title,
+    accessibilityHint: accessibilityHint || (loading ? 'Loading' : undefined),
+    accessibilityState: {
+      disabled: disabled || loading,
     },
-    !isGlassVariant && { backgroundColor: currentVariant.bg },
-    currentVariant.border && { borderWidth: 2, borderColor: currentVariant.border },
-    focusStyle,
-    disabled && styles.buttonDisabled,
-    fullWidth && styles.fullWidth,
-    style,
-  ];
+    accessible: true,
+  };
 
   if (isGlassVariant) {
     return (
@@ -118,11 +195,12 @@ export const GlassButton: React.FC<GlassButtonProps> = ({
         onBlur={handleBlur}
         disabled={disabled || loading}
         activeOpacity={0.8}
+        {...a11yProps}
         // @ts-ignore - TV-specific prop
         hasTVPreferredFocus={hasTVPreferredFocus}
       >
-        <Animated.View style={[scaleTransform]}>
-          <GlassView style={buttonStyle} intensity="medium">
+        <Animated.View style={[scaleTransform, focusStyle]}>
+          <GlassView intensity="medium" style={[buttonStyle, style]}>
             {buttonContent}
           </GlassView>
         </Animated.View>
@@ -137,50 +215,15 @@ export const GlassButton: React.FC<GlassButtonProps> = ({
       onBlur={handleBlur}
       disabled={disabled || loading}
       activeOpacity={0.8}
+      {...a11yProps}
       // @ts-ignore - TV-specific prop
       hasTVPreferredFocus={hasTVPreferredFocus}
     >
-      <Animated.View style={[buttonStyle, scaleTransform]}>
+      <Animated.View style={[buttonStyle, scaleTransform, focusStyle, style]}>
         {buttonContent}
       </Animated.View>
     </TouchableOpacity>
   );
 };
-
-const styles = StyleSheet.create({
-  button: {
-    borderRadius: borderRadius.md,
-    alignItems: 'center',
-    justifyContent: 'center',
-    overflow: 'hidden',
-  },
-  buttonDisabled: {
-    opacity: 0.5,
-  },
-  fullWidth: {
-    width: '100%',
-  },
-  content: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  contentReverse: {
-    flexDirection: 'row-reverse',
-  },
-  text: {
-    fontWeight: '600',
-    textAlign: 'center',
-  },
-  textDisabled: {
-    opacity: 0.7,
-  },
-  icon: {
-    marginHorizontal: spacing.xs,
-  },
-  loader: {
-    marginHorizontal: spacing.sm,
-  },
-});
 
 export default GlassButton;

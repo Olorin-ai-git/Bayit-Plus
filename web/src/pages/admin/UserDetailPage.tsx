@@ -2,10 +2,10 @@ import { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, ScrollView, ActivityIndicator, Pressable } from 'react-native';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { ArrowRight, Mail, Key, Ban, UserCheck, Edit2 } from 'lucide-react';
+import { ArrowRight, Mail, Key, Ban, UserCheck, Edit2, Trash2 } from 'lucide-react';
 import { usersService } from '@/services/adminApi';
 import { colors, spacing, borderRadius } from '@bayit/shared/theme';
-import { GlassCard, GlassButton, GlassModal, GlassInput } from '@bayit/shared/ui';
+import { GlassCard, GlassButton, GlassModal, GlassInput, GlassToggle, GlassView } from '@bayit/shared/ui';
 import { useDirection } from '@/hooks/useDirection';
 import { useModal } from '@/contexts/ModalContext';
 import logger from '@/utils/logger';
@@ -69,6 +69,13 @@ export default function UserDetailPage() {
   const [promptModalOpen, setPromptModalOpen] = useState(false);
   const [promptInput, setPromptInput] = useState('');
   const [promptCallback, setPromptCallback] = useState<((value: string) => void) | null>(null);
+  const [editModalOpen, setEditModalOpen] = useState(false);
+  const [editForm, setEditForm] = useState({
+    name: '',
+    email: '',
+    role: 'viewer',
+    is_active: true,
+  });
 
   const loadUserData = async () => {
     if (!userId) return;
@@ -142,22 +149,68 @@ export default function UserDetailPage() {
     );
   };
 
+  const handleEdit = () => {
+    if (!user) return;
+    setEditForm({
+      name: user.name,
+      email: user.email,
+      role: user.role,
+      is_active: user.status === 'active',
+    });
+    setEditModalOpen(true);
+  };
+
+  const handleSaveEdit = async () => {
+    if (!user) return;
+    try {
+      logger.info('Updating user with data:', 'UserDetailPage', editForm);
+      await usersService.updateUser(user.id, editForm);
+      setSuccessMessage(t('admin.users.userUpdated', { defaultValue: 'User updated successfully' }));
+      setSuccessModalOpen(true);
+      setEditModalOpen(false);
+      loadUserData();
+    } catch (error: any) {
+      logger.error('Failed to update user', 'UserDetailPage', error);
+      const errorMessage = error?.response?.data?.detail || error?.message || 'Failed to update user';
+      alert(errorMessage);
+    }
+  };
+
+  const handleDelete = () => {
+    if (!user) return;
+    showConfirm(
+      t('admin.users.confirmDelete', { defaultValue: `Are you sure you want to delete ${user.name}? This action cannot be undone.` }),
+      async () => {
+        try {
+          await usersService.deleteUser(user.id);
+          setSuccessMessage(t('admin.users.userDeleted', { defaultValue: 'User deleted successfully' }));
+          setSuccessModalOpen(true);
+          setTimeout(() => navigate('/admin/users'), 1500);
+        } catch (error: any) {
+          logger.error('Failed to delete user', 'UserDetailPage', error);
+          alert(error?.message || 'Failed to delete user');
+        }
+      },
+      { confirmText: t('common.delete', 'Delete'), variant: 'danger' }
+    );
+  };
+
   if (loading) {
     return (
-      <View style={styles.loadingContainer}>
+      <GlassView style={styles.loadingContainer}>
         <ActivityIndicator size="large" color={colors.primary} />
         <Text style={styles.loadingText}>{t('common.loading')}</Text>
-      </View>
+      </GlassView>
     );
   }
 
   if (error || !user) {
     return (
-      <View style={styles.errorContainer}>
+      <GlassView style={styles.errorContainer}>
         <Text style={styles.errorIcon}>⚠️</Text>
         <Text style={styles.errorText}>{error || t('admin.users.notFound', { defaultValue: 'User not found' })}</Text>
         <GlassButton title={t('common.back')} onPress={() => navigate('/admin/users')} variant="primary" />
-      </View>
+      </GlassView>
     );
   }
 
@@ -165,55 +218,95 @@ export default function UserDetailPage() {
 
   return (
     <ScrollView style={styles.container} contentContainerStyle={styles.contentContainer}>
-      <View style={styles.header}>
-        <Pressable onPress={() => navigate('/admin/users')} style={[styles.backButton, { flexDirection }]}>
-          <ArrowRight size={20} color={colors.text} />
-          <Text style={[styles.backText, { textAlign }]}>{t('admin.users.backToList', { defaultValue: 'Back to list' })}</Text>
-        </Pressable>
-      </View>
+      <GlassView style={styles.header}>
+        <GlassButton
+          title={t('admin.users.backToList', { defaultValue: 'Back to list' })}
+          icon={<ArrowRight size={20} color={colors.text} />}
+          onPress={() => navigate('/admin/users')}
+          variant="secondary"
+          style={styles.backButton}
+          textStyle={styles.backText}
+        />
+      </GlassView>
 
-      <View style={[styles.mainContent, { flexDirection }]}>
+      <GlassView style={styles.mainContent}>
         <GlassCard style={styles.profileCard}>
-          <View style={styles.avatar}>
-            <Text style={styles.avatarText}>{user.name?.charAt(0).toUpperCase() || '?'}</Text>
-          </View>
-          <Text style={styles.userName}>{user.name}</Text>
-          <Text style={styles.userEmail}>{user.email}</Text>
-          <View style={[styles.statusBadge, { backgroundColor: statusStyle.bg }]}>
-            <Text style={[styles.statusText, { color: statusStyle.text }]}>{t(statusStyle.labelKey)}</Text>
-          </View>
+          <GlassView style={styles.profileHeader}>
+            <GlassView style={styles.avatar}>
+              <Text style={styles.avatarText}>{user.name?.charAt(0).toUpperCase() || '?'}</Text>
+            </GlassView>
+            <GlassView style={styles.profileInfo}>
+              <Text style={styles.userName}>{user.name}</Text>
+              <Text style={styles.userEmail}>{user.email}</Text>
+              <GlassView style={[styles.statusBadge, { backgroundColor: statusStyle.bg }]}>
+                <Text style={[styles.statusText, { color: statusStyle.text }]}>{t(statusStyle.labelKey)}</Text>
+              </GlassView>
+            </GlassView>
+          </GlassView>
           {user.ban_reason && (
             <Text style={styles.banReason}>{t('admin.users.banReason', { defaultValue: 'Ban reason' })}: {user.ban_reason}</Text>
           )}
-          <View style={styles.actionButtons}>
-            <GlassButton title={t('admin.users.resetPassword')} variant="secondary" icon={<Key size={16} color={colors.text} />} onPress={handleResetPassword} />
+          <GlassView style={styles.actionButtons}>
+            <GlassButton 
+              title={t('common.edit', { defaultValue: 'Edit' })} 
+              variant="primary" 
+              icon={<Edit2 size={16} color={colors.text} />} 
+              onPress={handleEdit}
+              style={styles.actionButton}
+            />
+            <GlassButton 
+              title={t('admin.users.resetPassword')} 
+              variant="secondary" 
+              icon={<Key size={16} color={colors.text} />} 
+              onPress={handleResetPassword}
+              style={styles.actionButton}
+            />
             {user.status === 'banned' ? (
-              <GlassButton title={t('admin.users.unban', { defaultValue: 'Unban' })} variant="primary" icon={<UserCheck size={16} color={colors.text} />} onPress={handleUnban} />
+              <GlassButton 
+                title={t('admin.users.unban', { defaultValue: 'Unban' })} 
+                variant="primary" 
+                icon={<UserCheck size={16} color={colors.text} />} 
+                onPress={handleUnban}
+                style={styles.actionButton}
+              />
             ) : (
-              <GlassButton title={t('admin.users.block')} variant="secondary" icon={<Ban size={16} color={colors.error} />} onPress={handleBan} />
+              <GlassButton 
+                title={t('admin.users.block')} 
+                variant="secondary" 
+                icon={<Ban size={16} color={colors.error} />} 
+                onPress={handleBan}
+                style={styles.actionButton}
+              />
             )}
-          </View>
+            <GlassButton 
+              title={t('common.delete', { defaultValue: 'Delete' })} 
+              variant="secondary" 
+              icon={<Trash2 size={16} color={colors.error} />} 
+              onPress={handleDelete}
+              style={styles.actionButton}
+            />
+          </GlassView>
         </GlassCard>
 
-        <View style={styles.detailsSection}>
+        <GlassView style={styles.detailsSection}>
           <GlassCard style={styles.infoCard}>
             <Text style={[styles.sectionTitle, { textAlign }]}>{t('admin.users.userDetails', { defaultValue: 'User Details' })}</Text>
-            <View style={[styles.infoRow, { flexDirection }]}>
+            <GlassView style={[styles.infoRow, { flexDirection }]}>
               <Text style={styles.infoLabel}>{t('admin.users.id', { defaultValue: 'ID' })}:</Text>
               <Text style={styles.infoValue}>{user.id}</Text>
-            </View>
-            <View style={[styles.infoRow, { flexDirection }]}>
+            </GlassView>
+            <GlassView style={[styles.infoRow, { flexDirection }]}>
               <Text style={styles.infoLabel}>{t('admin.users.columns.role')}:</Text>
               <Text style={styles.infoValue}>{user.role}</Text>
-            </View>
-            <View style={[styles.infoRow, { flexDirection }]}>
+            </GlassView>
+            <GlassView style={[styles.infoRow, { flexDirection }]}>
               <Text style={styles.infoLabel}>{t('admin.users.columns.subscription')}:</Text>
               <Text style={styles.infoValue}>{user.subscription?.plan || t('admin.users.columns.noSubscription')}</Text>
-            </View>
-            <View style={[styles.infoRow, { flexDirection }]}>
+            </GlassView>
+            <GlassView style={[styles.infoRow, { flexDirection }]}>
               <Text style={styles.infoLabel}>{t('admin.users.registered', { defaultValue: 'Registered' })}:</Text>
               <Text style={styles.infoValue}>{formatDate(user.created_at)}</Text>
-            </View>
+            </GlassView>
           </GlassCard>
 
           <GlassCard style={styles.activityCard}>
@@ -222,10 +315,10 @@ export default function UserDetailPage() {
               <Text style={styles.emptyText}>{t('admin.users.noActivity')}</Text>
             ) : (
               activity.map((item) => (
-                <View key={item.id} style={[styles.activityItem, { flexDirection }]}>
+                <GlassView key={item.id} style={[styles.activityItem, { flexDirection }]}>
                   <Text style={[styles.activityAction, { textAlign }]}>{item.action.replace('.', ' ').replace(/_/g, ' ')}</Text>
                   <Text style={styles.activityDate}>{formatDate(item.created_at)}</Text>
-                </View>
+                </GlassView>
               ))
             )}
           </GlassCard>
@@ -236,18 +329,18 @@ export default function UserDetailPage() {
               <Text style={styles.emptyText}>{t('admin.users.noPayments', { defaultValue: 'No payments' })}</Text>
             ) : (
               billingHistory.map((tx) => (
-                <View key={tx.id} style={[styles.billingItem, { flexDirection }]}>
-                  <View>
+                <GlassView key={tx.id} style={[styles.billingItem, { flexDirection }]}>
+                  <GlassView>
                     <Text style={[styles.billingType, { textAlign }]}>{tx.type}</Text>
                     <Text style={styles.billingDate}>{formatDate(tx.created_at)}</Text>
-                  </View>
+                  </GlassView>
                   <Text style={styles.billingAmount}>{formatCurrency(tx.amount, tx.currency)}</Text>
-                </View>
+                </GlassView>
               ))
             )}
           </GlassCard>
-        </View>
-      </View>
+        </GlassView>
+      </GlassView>
 
       {/* Success Modal */}
       <GlassModal
@@ -257,13 +350,14 @@ export default function UserDetailPage() {
         dismissable={true}
       >
         <Text style={styles.modalText}>{successMessage}</Text>
-        <View style={styles.modalActions}>
+        <GlassView style={styles.modalActions}>
           <GlassButton
             title={t('common.ok')}
             onPress={() => setSuccessModalOpen(false)}
-            variant="secondary"
+            variant="primary"
+            style={styles.okButton}
           />
-        </View>
+        </GlassView>
       </GlassModal>
 
       {/* Prompt Modal for Ban Reason */}
@@ -281,7 +375,7 @@ export default function UserDetailPage() {
           containerStyle={styles.modalInput}
           multiline
         />
-        <View style={styles.modalActions}>
+        <GlassView style={styles.modalActions}>
           <GlassButton
             title={t('common.cancel')}
             onPress={() => setPromptModalOpen(false)}
@@ -297,7 +391,64 @@ export default function UserDetailPage() {
             }}
             variant="primary"
           />
-        </View>
+        </GlassView>
+      </GlassModal>
+
+      {/* Edit User Modal */}
+      <GlassModal
+        visible={editModalOpen}
+        title={t('admin.users.editUser', { defaultValue: 'Edit User' })}
+        onClose={() => setEditModalOpen(false)}
+        dismissable={true}
+      >
+        <GlassView style={styles.editModalContent}>
+          <GlassInput
+            label={t('admin.users.name', { defaultValue: 'Name' })}
+            value={editForm.name}
+            onChangeText={(text) => setEditForm({ ...editForm, name: text })}
+            placeholder={t('admin.users.name', { defaultValue: 'Name' })}
+          />
+          <GlassInput
+            label={t('admin.users.email', { defaultValue: 'Email' })}
+            value={editForm.email}
+            onChangeText={(text) => setEditForm({ ...editForm, email: text })}
+            placeholder={t('admin.users.email', { defaultValue: 'Email' })}
+          />
+          <GlassView style={styles.formRow}>
+            <Text style={styles.formLabel}>{t('admin.users.columns.role', { defaultValue: 'Role' })}</Text>
+            <GlassView style={styles.roleButtons}>
+              {['viewer', 'subscriber', 'editor', 'admin', 'super_admin'].map((role) => (
+                <GlassButton
+                  key={role}
+                  title={role.replace('_', ' ')}
+                  onPress={() => setEditForm({ ...editForm, role })}
+                  variant={editForm.role === role ? 'primary' : 'secondary'}
+                  style={styles.roleButton}
+                  textStyle={styles.roleButtonText}
+                />
+              ))}
+            </GlassView>
+          </GlassView>
+          <GlassToggle
+            value={editForm.is_active}
+            onValueChange={(value) => setEditForm({ ...editForm, is_active: value })}
+            label={t('admin.users.active', { defaultValue: 'Active' })}
+            description={t('admin.users.activeDesc', { defaultValue: 'User can log in and access the platform' })}
+            isRTL={isRTL}
+          />
+        </GlassView>
+        <GlassView style={styles.modalActions}>
+          <GlassButton
+            title={t('common.cancel')}
+            onPress={() => setEditModalOpen(false)}
+            variant="secondary"
+          />
+          <GlassButton
+            title={t('common.save', { defaultValue: 'Save' })}
+            onPress={handleSaveEdit}
+            variant="primary"
+          />
+        </GlassView>
       </GlassModal>
     </ScrollView>
   );
@@ -314,16 +465,64 @@ const styles = StyleSheet.create({
   header: { marginBottom: spacing.lg },
   backButton: { flexDirection: 'row', alignItems: 'center', gap: spacing.sm },
   backText: { fontSize: 14, color: colors.text },
-  mainContent: { flexDirection: 'row', gap: spacing.lg },
-  profileCard: { width: 280, padding: spacing.lg, alignItems: 'center' },
-  avatar: { width: 80, height: 80, borderRadius: 40, backgroundColor: colors.primary, justifyContent: 'center', alignItems: 'center', marginBottom: spacing.md },
+  mainContent: { 
+    gap: spacing.lg,
+    // @ts-ignore - web-only responsive styles
+    '@media (min-width: 1024px)': {
+      flexDirection: 'row',
+    },
+  },
+  profileCard: { 
+    padding: spacing.lg,
+    // @ts-ignore - web-only responsive styles
+    '@media (min-width: 1024px)': {
+      maxWidth: 350,
+    },
+  },
+  profileHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.md,
+    marginBottom: spacing.lg,
+    width: '100%',
+  },
+  profileInfo: {
+    flex: 1,
+  },
+  avatar: { 
+    width: 80, 
+    height: 80, 
+    borderRadius: 40, 
+    backgroundColor: colors.primary, 
+    justifyContent: 'center', 
+    alignItems: 'center',
+  },
   avatarText: { fontSize: 32, fontWeight: 'bold', color: colors.text },
   userName: { fontSize: 20, fontWeight: 'bold', color: colors.text, marginBottom: spacing.xs },
-  userEmail: { fontSize: 14, color: colors.textMuted, marginBottom: spacing.md },
-  statusBadge: { paddingHorizontal: spacing.md, paddingVertical: spacing.xs, borderRadius: borderRadius.full, marginBottom: spacing.md },
+  userEmail: { fontSize: 14, color: colors.textMuted, marginBottom: spacing.sm },
+  statusBadge: { 
+    paddingHorizontal: spacing.md, 
+    paddingVertical: spacing.xs, 
+    borderRadius: borderRadius.full,
+    alignSelf: 'flex-start',
+  },
   statusText: { fontSize: 12, fontWeight: '600' },
-  banReason: { fontSize: 12, color: colors.error, textAlign: 'center', marginBottom: spacing.md },
-  actionButtons: { gap: spacing.sm, width: '100%' },
+  banReason: { 
+    fontSize: 12, 
+    color: colors.error, 
+    marginBottom: spacing.md,
+    paddingHorizontal: spacing.md,
+  },
+  actionButtons: { 
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: spacing.sm, 
+    width: '100%',
+  },
+  actionButton: {
+    flex: 1,
+    minWidth: 140,
+  },
   detailsSection: { flex: 1, gap: spacing.md },
   infoCard: { padding: spacing.md },
   sectionTitle: { fontSize: 16, fontWeight: '600', color: colors.text, marginBottom: spacing.md },
@@ -341,10 +540,11 @@ const styles = StyleSheet.create({
   billingAmount: { fontSize: 14, fontWeight: '600', color: colors.success },
   emptyText: { fontSize: 14, color: colors.textMuted, textAlign: 'center', paddingVertical: spacing.md },
   modalText: {
-    fontSize: 14,
+    fontSize: 16,
     color: colors.text,
-    marginBottom: spacing.lg,
-    lineHeight: 20,
+    marginBottom: spacing.xl,
+    lineHeight: 24,
+    textAlign: 'center',
   },
   modalLabel: {
     fontSize: 14,
@@ -363,7 +563,36 @@ const styles = StyleSheet.create({
   },
   modalActions: {
     flexDirection: 'row',
-    justifyContent: 'flex-end',
+    justifyContent: 'center',
+    gap: spacing.md,
+    marginTop: spacing.sm,
+  },
+  okButton: {
+    minWidth: 120,
+  },
+  editModalContent: {
+    gap: spacing.md,
+    marginBottom: spacing.lg,
+  },
+  formRow: {
     gap: spacing.sm,
+  },
+  formLabel: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: colors.text,
+    marginBottom: spacing.xs,
+  },
+  roleButtons: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: spacing.xs,
+  },
+  roleButton: {
+    minWidth: 100,
+  },
+  roleButtonText: {
+    fontSize: 12,
+    textTransform: 'capitalize',
   },
 });

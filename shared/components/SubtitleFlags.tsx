@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { View, Text, Pressable, StyleSheet, Platform } from 'react-native';
-import { getLanguageInfo } from '../../web/src/types/subtitle';
+import { getLanguageInfo } from '../types/subtitle';
 import { colors, spacing, borderRadius } from '../theme';
 import { GlassCard } from './ui';
 

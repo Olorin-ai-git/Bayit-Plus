@@ -104,6 +104,17 @@ export default function SettingsScreen() {
   const [pinInput, setPinInput] = useState('');
   const [pinModalMode, setPinModalMode] = useState<'setup' | 'verify' | 'change'>('setup');
 
+  // Download preferences
+  const [downloadQuality, setDownloadQuality] = useState<'high' | 'medium' | 'low'>('high');
+  const [wifiOnlyDownloads, setWifiOnlyDownloads] = useState(true);
+  const [autoDownloadNextEpisode, setAutoDownloadNextEpisode] = useState(false);
+
+  // Accessibility preferences
+  const [largeText, setLargeText] = useState(false);
+  const [highContrast, setHighContrast] = useState(false);
+  const [screenReaderEnhanced, setScreenReaderEnhanced] = useState(false);
+  const [reducedMotion, setReducedMotion] = useState(false);
+
   const currentLanguage = (() => {
     switch (i18n.language) {
       case 'he':
@@ -179,6 +190,234 @@ export default function SettingsScreen() {
   const getQualityLabel = (quality: QualityLevel): string => {
     if (quality === 'auto') return t('settings.qualityAuto', 'Auto');
     return quality;
+  };
+
+  // Load parental controls preferences
+  useEffect(() => {
+    const loadParentalControls = async () => {
+      try {
+        const savedEnabled = await AsyncStorage.getItem('bayit_parental_controls_enabled');
+        const savedPIN = await AsyncStorage.getItem('bayit_parental_control_pin');
+        const savedRating = await AsyncStorage.getItem('bayit_content_rating_restriction');
+
+        if (savedEnabled !== null) {
+          setParentalControlsEnabled(savedEnabled === 'true');
+        }
+        if (savedPIN) {
+          setParentalControlPIN(savedPIN);
+        }
+        if (savedRating) {
+          setContentRating(savedRating);
+        }
+      } catch (error) {
+        console.error('Failed to load parental controls:', error);
+      }
+    };
+
+    loadParentalControls();
+  }, []);
+
+  const handleParentalControlsToggle = async (value: boolean) => {
+    if (value && !parentalControlPIN) {
+      // Need to set up PIN first
+      setPinModalMode('setup');
+      setShowPINModal(true);
+    } else if (value && parentalControlPIN) {
+      // PIN already exists, enable
+      setParentalControlsEnabled(true);
+      await AsyncStorage.setItem('bayit_parental_controls_enabled', 'true');
+    } else {
+      // Disabling - require PIN verification
+      if (parentalControlPIN) {
+        setPinModalMode('verify');
+        setShowPINModal(true);
+      } else {
+        setParentalControlsEnabled(false);
+        await AsyncStorage.setItem('bayit_parental_controls_enabled', 'false');
+      }
+    }
+  };
+
+  const handlePINSubmit = async () => {
+    if (pinInput.length !== 4) {
+      Alert.alert(
+        t('settings.invalidPIN', 'Invalid PIN'),
+        t('settings.pinMustBe4Digits', 'PIN must be 4 digits')
+      );
+      return;
+    }
+
+    if (pinModalMode === 'setup') {
+      // Save new PIN
+      setParentalControlPIN(pinInput);
+      setParentalControlsEnabled(true);
+      await AsyncStorage.setItem('bayit_parental_control_pin', pinInput);
+      await AsyncStorage.setItem('bayit_parental_controls_enabled', 'true');
+
+      Alert.alert(
+        t('settings.pinSet', 'PIN Set'),
+        t('settings.parentalControlsEnabled', 'Parental controls have been enabled')
+      );
+    } else if (pinModalMode === 'verify') {
+      // Verify PIN to disable
+      if (pinInput === parentalControlPIN) {
+        setParentalControlsEnabled(false);
+        await AsyncStorage.setItem('bayit_parental_controls_enabled', 'false');
+
+        Alert.alert(
+          t('settings.success', 'Success'),
+          t('settings.parentalControlsDisabled', 'Parental controls have been disabled')
+        );
+      } else {
+        Alert.alert(
+          t('settings.incorrectPIN', 'Incorrect PIN'),
+          t('settings.tryAgain', 'Please try again')
+        );
+        setPinInput('');
+        return;
+      }
+    } else if (pinModalMode === 'change') {
+      // Save new PIN
+      setParentalControlPIN(pinInput);
+      await AsyncStorage.setItem('bayit_parental_control_pin', pinInput);
+
+      Alert.alert(
+        t('settings.pinChanged', 'PIN Changed'),
+        t('settings.pinChangedSuccess', 'Your PIN has been updated')
+      );
+    }
+
+    setPinInput('');
+    setShowPINModal(false);
+  };
+
+  const handleChangePIN = () => {
+    setPinModalMode('change');
+    setShowPINModal(true);
+  };
+
+  const handleContentRatingChange = async () => {
+    const ratings = ['G', 'PG', 'PG-13', 'R', 'NC-17'];
+    const currentIndex = ratings.indexOf(contentRating);
+    const nextIndex = (currentIndex + 1) % ratings.length;
+    const newRating = ratings[nextIndex];
+
+    setContentRating(newRating);
+    await AsyncStorage.setItem('bayit_content_rating_restriction', newRating);
+  };
+
+  const getRatingDescription = (rating: string): string => {
+    const descriptions: Record<string, string> = {
+      'G': t('settings.ratingG', 'General Audiences'),
+      'PG': t('settings.ratingPG', 'Parental Guidance'),
+      'PG-13': t('settings.ratingPG13', 'Parents Strongly Cautioned'),
+      'R': t('settings.ratingR', 'Restricted'),
+      'NC-17': t('settings.ratingNC17', 'Adults Only'),
+    };
+    return descriptions[rating] || rating;
+  };
+
+  // Load download preferences
+  useEffect(() => {
+    const loadDownloadPreferences = async () => {
+      try {
+        const savedQuality = await AsyncStorage.getItem('bayit_download_quality');
+        const savedWifiOnly = await AsyncStorage.getItem('bayit_wifi_only_downloads');
+        const savedAutoDownload = await AsyncStorage.getItem('bayit_auto_download_next_episode');
+
+        if (savedQuality) {
+          setDownloadQuality(savedQuality as 'high' | 'medium' | 'low');
+        }
+        if (savedWifiOnly !== null) {
+          setWifiOnlyDownloads(savedWifiOnly === 'true');
+        }
+        if (savedAutoDownload !== null) {
+          setAutoDownloadNextEpisode(savedAutoDownload === 'true');
+        }
+      } catch (error) {
+        console.error('Failed to load download preferences:', error);
+      }
+    };
+
+    loadDownloadPreferences();
+  }, []);
+
+  const handleDownloadQualityChange = async () => {
+    const qualities: Array<'high' | 'medium' | 'low'> = ['high', 'medium', 'low'];
+    const currentIndex = qualities.indexOf(downloadQuality);
+    const nextIndex = (currentIndex + 1) % qualities.length;
+    const newQuality = qualities[nextIndex];
+
+    setDownloadQuality(newQuality);
+    await AsyncStorage.setItem('bayit_download_quality', newQuality);
+  };
+
+  const handleWifiOnlyToggle = async (value: boolean) => {
+    setWifiOnlyDownloads(value);
+    await AsyncStorage.setItem('bayit_wifi_only_downloads', value.toString());
+  };
+
+  const handleAutoDownloadToggle = async (value: boolean) => {
+    setAutoDownloadNextEpisode(value);
+    await AsyncStorage.setItem('bayit_auto_download_next_episode', value.toString());
+  };
+
+  const getDownloadQualityLabel = (quality: 'high' | 'medium' | 'low'): string => {
+    const labels = {
+      high: t('settings.qualityHigh', 'High (1080p)'),
+      medium: t('settings.qualityMedium', 'Medium (720p)'),
+      low: t('settings.qualityLow', 'Low (480p)'),
+    };
+    return labels[quality];
+  };
+
+  // Load accessibility preferences
+  useEffect(() => {
+    const loadAccessibilityPreferences = async () => {
+      try {
+        const savedLargeText = await AsyncStorage.getItem('bayit_large_text');
+        const savedHighContrast = await AsyncStorage.getItem('bayit_high_contrast');
+        const savedScreenReader = await AsyncStorage.getItem('bayit_screen_reader_enhanced');
+        const savedReducedMotion = await AsyncStorage.getItem('bayit_reduced_motion');
+
+        if (savedLargeText !== null) {
+          setLargeText(savedLargeText === 'true');
+        }
+        if (savedHighContrast !== null) {
+          setHighContrast(savedHighContrast === 'true');
+        }
+        if (savedScreenReader !== null) {
+          setScreenReaderEnhanced(savedScreenReader === 'true');
+        }
+        if (savedReducedMotion !== null) {
+          setReducedMotion(savedReducedMotion === 'true');
+        }
+      } catch (error) {
+        console.error('Failed to load accessibility preferences:', error);
+      }
+    };
+
+    loadAccessibilityPreferences();
+  }, []);
+
+  const handleLargeTextToggle = async (value: boolean) => {
+    setLargeText(value);
+    await AsyncStorage.setItem('bayit_large_text', value.toString());
+  };
+
+  const handleHighContrastToggle = async (value: boolean) => {
+    setHighContrast(value);
+    await AsyncStorage.setItem('bayit_high_contrast', value.toString());
+  };
+
+  const handleScreenReaderToggle = async (value: boolean) => {
+    setScreenReaderEnhanced(value);
+    await AsyncStorage.setItem('bayit_screen_reader_enhanced', value.toString());
+  };
+
+  const handleReducedMotionToggle = async (value: boolean) => {
+    setReducedMotion(value);
+    await AsyncStorage.setItem('bayit_reduced_motion', value.toString());
   };
 
   const handleLogout = async () => {
@@ -295,6 +534,125 @@ export default function SettingsScreen() {
         </SettingRow>
       </GlassView>
 
+      {/* Parental Controls */}
+      <GlassView style={styles.section}>
+        <Text style={[styles.sectionTitle, { textAlign }]}>
+          {t('settings.parentalControls', 'Parental Controls')}
+        </Text>
+        <SettingRow
+          icon="🔐"
+          label={t('settings.enableParentalControls', 'Enable Parental Controls')}
+        >
+          <Switch
+            value={parentalControlsEnabled}
+            onValueChange={handleParentalControlsToggle}
+            trackColor={{ false: colors.backgroundLighter, true: colors.primary }}
+            thumbColor={colors.text}
+          />
+        </SettingRow>
+        {parentalControlsEnabled && (
+          <>
+            <SettingRow
+              icon="🔢"
+              label={t('settings.changePIN', 'Change PIN')}
+              onPress={handleChangePIN}
+            />
+            <SettingRow
+              icon="🎭"
+              label={t('settings.contentRating', 'Content Rating Restriction')}
+              value={`${contentRating} - ${getRatingDescription(contentRating)}`}
+              onPress={handleContentRatingChange}
+            />
+          </>
+        )}
+      </GlassView>
+
+      {/* Download Settings */}
+      <GlassView style={styles.section}>
+        <Text style={[styles.sectionTitle, { textAlign }]}>
+          {t('settings.downloads', 'Downloads')}
+        </Text>
+        <SettingRow
+          icon="📥"
+          label={t('settings.downloadQuality', 'Download Quality')}
+          value={getDownloadQualityLabel(downloadQuality)}
+          onPress={handleDownloadQualityChange}
+        />
+        <SettingRow
+          icon="📶"
+          label={t('settings.wifiOnly', 'WiFi Only Downloads')}
+        >
+          <Switch
+            value={wifiOnlyDownloads}
+            onValueChange={handleWifiOnlyToggle}
+            trackColor={{ false: colors.backgroundLighter, true: colors.primary }}
+            thumbColor={colors.text}
+          />
+        </SettingRow>
+        <SettingRow
+          icon="⏭️"
+          label={t('settings.autoDownloadNext', 'Auto-Download Next Episode')}
+        >
+          <Switch
+            value={autoDownloadNextEpisode}
+            onValueChange={handleAutoDownloadToggle}
+            trackColor={{ false: colors.backgroundLighter, true: colors.primary }}
+            thumbColor={colors.text}
+          />
+        </SettingRow>
+      </GlassView>
+
+      {/* Accessibility Settings */}
+      <GlassView style={styles.section}>
+        <Text style={[styles.sectionTitle, { textAlign }]}>
+          {t('settings.accessibility', 'Accessibility')}
+        </Text>
+        <SettingRow
+          icon="🔤"
+          label={t('settings.largeText', 'Large Text')}
+        >
+          <Switch
+            value={largeText}
+            onValueChange={handleLargeTextToggle}
+            trackColor={{ false: colors.backgroundLighter, true: colors.primary }}
+            thumbColor={colors.text}
+          />
+        </SettingRow>
+        <SettingRow
+          icon="🌓"
+          label={t('settings.highContrast', 'High Contrast Mode')}
+        >
+          <Switch
+            value={highContrast}
+            onValueChange={handleHighContrastToggle}
+            trackColor={{ false: colors.backgroundLighter, true: colors.primary }}
+            thumbColor={colors.text}
+          />
+        </SettingRow>
+        <SettingRow
+          icon="👁️"
+          label={t('settings.screenReader', 'Enhanced Screen Reader Support')}
+        >
+          <Switch
+            value={screenReaderEnhanced}
+            onValueChange={handleScreenReaderToggle}
+            trackColor={{ false: colors.backgroundLighter, true: colors.primary }}
+            thumbColor={colors.text}
+          />
+        </SettingRow>
+        <SettingRow
+          icon="🎬"
+          label={t('settings.reducedMotion', 'Reduced Motion')}
+        >
+          <Switch
+            value={reducedMotion}
+            onValueChange={handleReducedMotionToggle}
+            trackColor={{ false: colors.backgroundLighter, true: colors.primary }}
+            thumbColor={colors.text}
+          />
+        </SettingRow>
+      </GlassView>
+
       {/* Notification Settings */}
       <GlassView style={styles.section}>
         <Text style={[styles.sectionTitle, { textAlign }]}>
@@ -375,6 +733,73 @@ export default function SettingsScreen() {
         <Text style={styles.appVersion}>{t('common.appVersion', 'Bayit+ v1.0.0')}</Text>
         <Text style={styles.copyright}>© 2026 Bayit+</Text>
       </View>
+
+      {/* PIN Entry Modal */}
+      <Modal
+        visible={showPINModal}
+        transparent
+        animationType="fade"
+        onRequestClose={() => {
+          setPinInput('');
+          setShowPINModal(false);
+        }}
+      >
+        <View style={styles.modalOverlay}>
+          <GlassView style={styles.pinModal}>
+            <Text style={[styles.pinModalTitle, { textAlign: 'center' }]}>
+              {pinModalMode === 'setup'
+                ? t('settings.setupPIN', 'Set Up Parental Control PIN')
+                : pinModalMode === 'change'
+                ? t('settings.enterNewPIN', 'Enter New PIN')
+                : t('settings.enterPIN', 'Enter PIN')}
+            </Text>
+            <Text style={[styles.pinModalDescription, { textAlign: 'center' }]}>
+              {pinModalMode === 'setup' || pinModalMode === 'change'
+                ? t('settings.pinDescription', 'Enter a 4-digit PIN to protect parental controls')
+                : t('settings.verifyPIN', 'Enter your PIN to continue')}
+            </Text>
+
+            <TextInput
+              style={styles.pinInput}
+              value={pinInput}
+              onChangeText={(text) => setPinInput(text.replace(/[^0-9]/g, '').slice(0, 4))}
+              keyboardType="number-pad"
+              maxLength={4}
+              secureTextEntry
+              placeholder="••••"
+              placeholderTextColor={colors.textMuted}
+              autoFocus
+            />
+
+            <View style={styles.pinModalButtons}>
+              <TouchableOpacity
+                style={[styles.pinModalButton, styles.pinModalButtonCancel]}
+                onPress={() => {
+                  setPinInput('');
+                  setShowPINModal(false);
+                }}
+              >
+                <Text style={styles.pinModalButtonText}>
+                  {t('common.cancel', 'Cancel')}
+                </Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={[
+                  styles.pinModalButton,
+                  styles.pinModalButtonConfirm,
+                  pinInput.length !== 4 && styles.pinModalButtonDisabled,
+                ]}
+                onPress={handlePINSubmit}
+                disabled={pinInput.length !== 4}
+              >
+                <Text style={styles.pinModalButtonText}>
+                  {t('common.confirm', 'Confirm')}
+                </Text>
+              </TouchableOpacity>
+            </View>
+          </GlassView>
+        </View>
+      </Modal>
     </ScrollView>
   );
 }
@@ -483,5 +908,73 @@ const styles = StyleSheet.create({
     fontSize: isTV ? 12 : 10,
     color: colors.textMuted,
     marginTop: spacing.xs,
+  },
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0, 0, 0, 0.8)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: spacing.xl,
+  },
+  pinModal: {
+    width: isTV ? 500 : '100%',
+    maxWidth: 400,
+    padding: spacing.xl,
+    borderRadius: borderRadius.xl,
+    borderWidth: 2,
+    borderColor: 'rgba(168, 85, 247, 0.3)',
+  },
+  pinModalTitle: {
+    fontSize: isTV ? 24 : 20,
+    fontWeight: 'bold',
+    color: colors.text,
+    marginBottom: spacing.sm,
+  },
+  pinModalDescription: {
+    fontSize: isTV ? 16 : 14,
+    color: colors.textSecondary,
+    marginBottom: spacing.xl,
+  },
+  pinInput: {
+    backgroundColor: 'rgba(255, 255, 255, 0.05)',
+    borderWidth: 2,
+    borderColor: 'rgba(168, 85, 247, 0.3)',
+    borderRadius: borderRadius.lg,
+    paddingHorizontal: spacing.lg,
+    paddingVertical: spacing.md,
+    fontSize: isTV ? 32 : 24,
+    color: colors.text,
+    textAlign: 'center',
+    letterSpacing: isTV ? 20 : 16,
+    fontWeight: 'bold',
+    marginBottom: spacing.xl,
+  },
+  pinModalButtons: {
+    flexDirection: 'row',
+    gap: spacing.md,
+  },
+  pinModalButton: {
+    flex: 1,
+    paddingVertical: spacing.md,
+    borderRadius: borderRadius.lg,
+    alignItems: 'center',
+    borderWidth: 2,
+  },
+  pinModalButtonCancel: {
+    backgroundColor: 'rgba(255, 255, 255, 0.05)',
+    borderColor: 'rgba(255, 255, 255, 0.2)',
+  },
+  pinModalButtonConfirm: {
+    backgroundColor: 'rgba(168, 85, 247, 0.2)',
+    borderColor: colors.primary,
+  },
+  pinModalButtonDisabled: {
+    opacity: 0.5,
+    borderColor: 'rgba(168, 85, 247, 0.2)',
+  },
+  pinModalButtonText: {
+    fontSize: isTV ? 18 : 16,
+    fontWeight: '600',
+    color: colors.text,
   },
 });

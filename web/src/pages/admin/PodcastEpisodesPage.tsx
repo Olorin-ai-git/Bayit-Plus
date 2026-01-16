@@ -4,7 +4,7 @@ import { useParams, useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { Plus, Edit, Trash2, X, AlertCircle, ChevronLeft } from 'lucide-react'
 import { GlassTable, GlassTableCell, GlassInput } from '@bayit/shared/ui'
-import { contentService } from '@/services/adminApi'
+import { adminContentService } from '@/services/adminApi'
 import { colors, spacing, borderRadius } from '@bayit/shared/theme'
 import { useDirection } from '@/hooks/useDirection'
 import { useModal } from '@/contexts/ModalContext'
@@ -41,7 +41,7 @@ export default function PodcastEpisodesPage() {
     setIsLoading(true)
     setError(null)
     try {
-      const response: PaginatedResponse<PodcastEpisode> = await contentService.getPodcastEpisodes(
+      const response: PaginatedResponse<PodcastEpisode> = await adminContentService.getPodcastEpisodes(
         podcastId,
         {
           page: pagination.page,
@@ -64,7 +64,7 @@ export default function PodcastEpisodesPage() {
     const loadPodcast = async () => {
       if (!podcastId) return
       try {
-        const podcast = await contentService.getPodcastItem(podcastId)
+        const podcast = await adminContentService.getPodcastItem(podcastId)
         setPodcastTitle(podcast.title)
       } catch (err) {
         logger.error('Failed to load podcast', 'PodcastEpisodesPage', err)
@@ -89,7 +89,7 @@ export default function PodcastEpisodesPage() {
       return
     }
     try {
-      await contentService.updatePodcastEpisode(podcastId!, editingId!, editData)
+      await adminContentService.updatePodcastEpisode(podcastId!, editingId!, editData)
       setEditingId(null)
       setEditData({})
       await loadEpisodes()
@@ -106,7 +106,7 @@ export default function PodcastEpisodesPage() {
       async () => {
         try {
           setDeleting(id)
-          await contentService.deletePodcastEpisode(podcastId!, id)
+          await adminContentService.deletePodcastEpisode(podcastId!, id)
           setItems(items.filter((item) => item.id !== id))
         } catch (err) {
           const msg = err instanceof Error ? err.message : 'Failed to delete episode'

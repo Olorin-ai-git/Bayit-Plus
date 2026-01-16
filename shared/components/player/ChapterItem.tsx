@@ -29,25 +29,29 @@ interface ChapterItemProps {
   hasTVPreferredFocus?: boolean;
 }
 
-// Category colors matching web app
-const categoryColors: Record<string, string> = {
-  intro: '#a855f7',     // blue
-  news: '#ef4444',      // red
-  security: '#f97316',  // orange
-  politics: '#a855f7',  // purple
-  economy: '#22c55e',   // green
-  sports: '#eab308',    // yellow
-  weather: '#06b6d4',   // cyan
-  culture: '#ec4899',   // pink
-  conclusion: '#6b7280', // gray
-  flashback: '#6366f1', // indigo
-  journey: '#14b8a6',   // teal
-  climax: '#f43f5e',    // rose
-  setup: '#f59e0b',     // amber
-  action: '#dc2626',    // red-600
-  conflict: '#ea580c',  // orange-600
-  cliffhanger: '#8b5cf6', // violet
-  main: '#2563eb',      // blue-600
+// Category colors using theme tokens for consistency
+const getCategoryColor = (category: string): string => {
+  const categoryColorMap: Record<string, string> = {
+    intro: colors.primary,          // purple
+    news: colors.error,             // red
+    security: colors.warning,       // orange
+    politics: colors.primary,       // purple
+    economy: colors.success,        // green
+    sports: colors.gold,            // yellow/gold
+    weather: colors.primary,        // purple (cyan alternative)
+    culture: colors.secondary,      // deep purple (pink alternative)
+    conclusion: colors.textMuted,   // gray
+    flashback: colors.primaryDark,  // dark purple (indigo alternative)
+    journey: colors.success,        // green (teal alternative)
+    climax: colors.error,           // red (rose alternative)
+    setup: colors.warning,          // orange/amber
+    action: colors.error,           // red
+    conflict: colors.warning,       // orange
+    cliffhanger: colors.secondary,  // deep purple (violet alternative)
+    main: colors.primary,           // purple (blue alternative)
+  };
+
+  return categoryColorMap[category] || colors.primary;
 };
 
 const formatTime = (seconds: number): string => {
@@ -66,7 +70,7 @@ export const ChapterItem: React.FC<ChapterItemProps> = ({
   const [isFocused, setIsFocused] = useState(false);
   const scaleAnim = useRef(new Animated.Value(1)).current;
 
-  const categoryColor = categoryColors[chapter.category] || colors.primary;
+  const categoryColor = getCategoryColor(chapter.category);
 
   const handleFocus = () => {
     setIsFocused(true);
@@ -177,7 +181,7 @@ const styles = StyleSheet.create({
   container: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: 'rgba(255, 255, 255, 0.05)',
+    backgroundColor: colors.glassBorderWhite,
     borderRadius: borderRadius.lg,
     padding: spacing.md,
     marginBottom: spacing.sm,
@@ -186,8 +190,8 @@ const styles = StyleSheet.create({
     minHeight: 80,
   },
   containerActive: {
-    backgroundColor: 'rgba(107, 33, 168, 0.3)',
-    borderColor: 'rgba(168, 85, 247, 0.6)',
+    backgroundColor: colors.glassPurpleLight,
+    borderColor: colors.glassBorderFocus,
   },
   containerFocused: {
     borderColor: colors.primary,
@@ -221,7 +225,7 @@ const styles = StyleSheet.create({
     bottom: 0,
     left: 0,
     right: 0,
-    backgroundColor: 'rgba(0, 0, 0, 0.6)',
+    backgroundColor: colors.glassOverlay,
     paddingHorizontal: spacing.xs,
     paddingVertical: 2,
   },
@@ -296,7 +300,7 @@ const styles = StyleSheet.create({
     width: 36,
     height: 36,
     borderRadius: 18,
-    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+    backgroundColor: colors.glassBorderWhite,
     justifyContent: 'center',
     alignItems: 'center',
   },

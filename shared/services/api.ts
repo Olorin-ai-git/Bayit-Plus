@@ -19,6 +19,7 @@ import {
   demoSubtitlesService,
   demoChaptersService,
   demoPartyService,
+  demoRecordingService,
 } from './demoService';
 
 // Get correct API URL based on platform
@@ -535,6 +536,21 @@ const demoChatService = {
   },
 };
 
+// Recording Service (API)
+const apiRecordingService = {
+  getRecordings: () => api.get('/recordings'),
+  getRecording: (recordingId: string) => api.get(`/recordings/${recordingId}`),
+  deleteRecording: (recordingId: string) => api.delete(`/recordings/${recordingId}`),
+  scheduleRecording: (data: {
+    channel_id: string;
+    start_time: string;
+    end_time: string;
+    title?: string;
+  }) => api.post('/recordings/schedule', data),
+  cancelScheduledRecording: (recordingId: string) =>
+    api.delete(`/recordings/${recordingId}/schedule`),
+};
+
 // Watch Party Service (API)
 const apiPartyService = {
   create: (data: {
@@ -585,6 +601,7 @@ export const subtitlePreferencesService = apiSubtitlePreferencesService; // No d
 export const chaptersService = isDemo ? demoChaptersService : apiChaptersService;
 export const partyService = isDemo ? demoPartyService : apiPartyService;
 export const chatService = isDemo ? demoChatService : apiChatService;
+export const recordingService = isDemo ? demoRecordingService : apiRecordingService;
 export const profilesService = apiProfilesService; // No demo mode for profiles - requires real auth
 export const childrenService = apiChildrenService; // No demo mode for children
 export const judaismService = apiJudaismService; // No demo mode for judaism

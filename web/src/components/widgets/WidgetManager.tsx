@@ -8,8 +8,9 @@
 import React, { useEffect, useCallback, useMemo } from 'react';
 import { useLocation } from 'react-router-dom';
 import { useWidgetStore } from '@/stores/widgetStore';
-import { widgetsService } from '@/services/adminApi';
-import { liveService, contentService, radioService, podcastService } from '@/services/api';
+import { adminWidgetsService } from '@/services/adminApi';
+import { liveService, radioService, podcastService } from '@/services/api';
+import { adminContentService } from '@/services/adminApi';
 import { useAuthStore } from '@/stores/authStore';
 import WidgetContainer from './WidgetContainer';
 import type { Widget, WidgetPosition } from '@/types/widget';
@@ -38,7 +39,7 @@ export default function WidgetManager() {
   const loadWidgets = useCallback(async () => {
     try {
       setLoading(true);
-      const response = await widgetsService.getMyWidgets(location.pathname);
+      const response = await adminWidgetsService.getMyWidgets(location.pathname);
       setWidgets(response.items || []);
     } catch (err) {
       console.error('[WidgetManager] Failed to load widgets:', err);
@@ -77,9 +78,9 @@ export default function WidgetManager() {
 
         case 'vod':
           if (widget.content.content_id) {
-            const response = await contentService.getStreamUrl(widget.content.content_id);
+            const response = await adminContentService.getStreamUrl(widget.content.content_id);
             streamUrl = response?.url || response?.stream_url;
-            const contentData = await contentService.getById(widget.content.content_id).catch(() => null);
+            const contentData = await adminContentService.getById(widget.content.content_id).catch(() => null);
             coverUrl = contentData?.thumbnail || contentData?.backdrop;
           }
           break;
@@ -132,7 +133,7 @@ export default function WidgetManager() {
   // Debounced position save
   const savePosition = useCallback(async (widgetId: string, position: Partial<WidgetPosition>) => {
     try {
-      await widgetsService.updateWidgetPosition(widgetId, {
+      await adminWidgetsService.updateWidgetPosition(widgetId, {
         x: position.x!,
         y: position.y!,
         width: position.width,
@@ -161,7 +162,7 @@ export default function WidgetManager() {
   const handleClose = useCallback(async (widgetId: string) => {
     closeWidget(widgetId);
     try {
-      await widgetsService.closeWidget(widgetId);
+      await adminWidgetsService.closeWidget(widgetId);
     } catch (err) {
       console.error('[WidgetManager] Failed to close widget:', err);
     }

@@ -55,7 +55,7 @@ export const AnalogClock: React.FC<AnalogClockProps> = ({
           {
             width: isMainHour ? 3 : 2,
             height: markerLength,
-            backgroundColor: isMainHour ? colors.text : 'rgba(255, 255, 255, 0.3)',
+            backgroundColor: isMainHour ? colors.text : colors.glassBorderWhite,
             position: 'absolute',
             left: clockRadius + Math.cos(angle) * (outerRadius - markerLength / 2) - (isMainHour ? 1.5 : 1),
             top: clockRadius + Math.sin(angle) * (outerRadius - markerLength / 2) - markerLength / 2,
@@ -159,7 +159,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   clockFace: {
-    backgroundColor: 'rgba(0, 0, 0, 0.3)',
+    backgroundColor: colors.glassOverlay,
     borderWidth: 3,
     position: 'relative',
     justifyContent: 'center',
@@ -219,7 +219,7 @@ const styles = StyleSheet.create({
   },
   clockSublabel: {
     fontSize: 11,
-    color: 'rgba(255, 255, 255, 0.5)',
+    color: colors.textSecondary,
     marginTop: 2,
   },
 });

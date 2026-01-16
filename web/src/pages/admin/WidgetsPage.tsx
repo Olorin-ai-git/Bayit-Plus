@@ -11,7 +11,7 @@ import { useTranslation } from 'react-i18next';
 import { Plus, Edit, Trash2, X, AlertCircle, Eye, EyeOff, Tv, Globe, Film, Podcast, Radio } from 'lucide-react';
 import { GlassTable, GlassTableCell, GlassButton, GlassCard } from '@bayit/shared/ui';
 import WidgetFormModal from '@/components/widgets/WidgetFormModal';
-import { widgetsService } from '@/services/adminApi';
+import { adminWidgetsService } from '@/services/adminApi';
 import { colors, spacing, borderRadius } from '@bayit/shared/theme';
 import { useDirection } from '@/hooks/useDirection';
 import { useModal } from '@/contexts/ModalContext';
@@ -45,7 +45,7 @@ export default function WidgetsPage() {
     setIsLoading(true);
     setError(null);
     try {
-      const response = await widgetsService.getWidgets({
+      const response = await adminWidgetsService.getWidgets({
         page: pagination.page,
         page_size: pagination.pageSize,
       });
@@ -78,10 +78,10 @@ export default function WidgetsPage() {
     try {
       if (editingWidget) {
         // Update existing widget
-        await widgetsService.updateWidget(editingWidget.id, payload);
+        await adminWidgetsService.updateWidget(editingWidget.id, payload);
       } else {
         // Create new widget
-        await widgetsService.createWidget(payload);
+        await adminWidgetsService.createWidget(payload);
       }
 
       setShowWidgetForm(false);
@@ -102,7 +102,7 @@ export default function WidgetsPage() {
       async () => {
         try {
           setDeleting(id);
-          await widgetsService.deleteWidget(id);
+          await adminWidgetsService.deleteWidget(id);
           setItems(items.filter((item) => item.id !== id));
         } catch (err) {
           const msg = err instanceof Error ? err.message : 'Failed to delete widget';
@@ -119,9 +119,9 @@ export default function WidgetsPage() {
   const handleToggleActive = async (widget: Widget) => {
     try {
       if (widget.is_active) {
-        await widgetsService.unpublishWidget(widget.id);
+        await adminWidgetsService.unpublishWidget(widget.id);
       } else {
-        await widgetsService.publishWidget(widget.id);
+        await adminWidgetsService.publishWidget(widget.id);
       }
       await loadWidgets();
     } catch (err) {

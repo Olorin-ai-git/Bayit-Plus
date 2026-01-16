@@ -11,7 +11,7 @@ import { useTranslation } from 'react-i18next';
 import { Plus, Check, Tv, Globe, Podcast, Radio, Film, RefreshCw, Eye, EyeOff, RotateCcw, Trash2 } from 'lucide-react';
 import { GlassCard } from '@bayit/shared/ui';
 import { colors, spacing, borderRadius } from '@bayit/shared/theme';
-import { widgetsService } from '@/services/adminApi';
+import { adminWidgetsService } from '@/services/adminApi';
 import { useWidgetStore } from '@/stores/widgetStore';
 import { useDirection } from '@/hooks/useDirection';
 import logger from '@/utils/logger';
@@ -220,7 +220,7 @@ export function SystemWidgetGallery({ onWidgetAdded }: SystemWidgetGalleryProps)
     setLoading(true);
     setError(null);
     try {
-      const response = await widgetsService.getAvailableSystemWidgets();
+      const response = await adminWidgetsService.getAvailableSystemWidgets();
       const data = response?.data || response;
       setWidgets(data?.items || []);
     } catch (err) {
@@ -237,7 +237,7 @@ export function SystemWidgetGallery({ onWidgetAdded }: SystemWidgetGalleryProps)
 
   const handleAdd = async (widgetId: string) => {
     try {
-      await widgetsService.addSystemWidget(widgetId);
+      await adminWidgetsService.addSystemWidget(widgetId);
       // Update local state
       setWidgets((prev) =>
         prev.map((w) => (w.id === widgetId ? { ...w, is_added: true } : w))
@@ -251,7 +251,7 @@ export function SystemWidgetGallery({ onWidgetAdded }: SystemWidgetGalleryProps)
 
   const handleRemove = async (widgetId: string) => {
     try {
-      await widgetsService.removeSystemWidget(widgetId);
+      await adminWidgetsService.removeSystemWidget(widgetId);
       // Update local state
       setWidgets((prev) =>
         prev.map((w) => (w.id === widgetId ? { ...w, is_added: false } : w))

@@ -1,17 +1,15 @@
 import { useState, useEffect, useCallback } from 'react'
-import { View, Text, StyleSheet, Pressable, ScrollView } from 'react-native'
+import { View, Text, Pressable, ScrollView } from 'react-native'
 import { Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
-import { Plus, Download, Search, X, AlertCircle, Upload } from 'lucide-react'
+import { Plus, Download, Search, X, AlertCircle } from 'lucide-react'
 import HierarchicalContentTable from '@/components/admin/HierarchicalContentTable'
-import { contentService, uploadsService } from '@/services/adminApi'
-import { colors, spacing, borderRadius } from '@bayit/shared/theme'
-import { GlassButton, GlassInput, GlassSelect } from '@bayit/shared/ui'
+import { adminContentService } from '@/services/adminApi'
+import { GlassButton, GlassInput, GlassSelect, GlassCard } from '@bayit/shared/ui'
 import { useDirection } from '@/hooks/useDirection'
 import { useModal } from '@/contexts/ModalContext'
 import logger from '@/utils/logger'
 import { FreeContentImportWizard } from '@/components/admin/FreeContentImportWizard'
-import { adminButtonStyles } from '@/styles/adminButtonStyles'
 
 interface ContentItem {
   id: string
@@ -55,7 +53,7 @@ export default function ContentLibraryPage() {
     setError(null)
     try {
       // Use hierarchical endpoint - returns only parent items (series/movies) with episode counts
-      const response = await contentService.getContentHierarchical({
+      const response = await adminContentService.getContentHierarchical({
         page: pagination.page,
         page_size: pagination.pageSize,
         search: filters.search || undefined,
@@ -87,7 +85,7 @@ export default function ContentLibraryPage() {
       t('admin.content.confirmDelete'),
       async () => {
         try {
-          await contentService.deleteContent(id)
+          await adminContentService.deleteContent(id)
           // Reload content to reflect the deletion
           await loadContent()
         } catch (err) {
@@ -102,7 +100,7 @@ export default function ContentLibraryPage() {
 
   const handleTogglePublish = async (id: string) => {
     try {
-      await contentService.publishContent(id)
+      await adminContentService.publishContent(id)
       await loadContent()
     } catch (err) {
       const msg = err instanceof Error ? err.message : 'Failed to update content'
@@ -113,7 +111,7 @@ export default function ContentLibraryPage() {
 
   const handleToggleFeatured = async (id: string) => {
     try {
-      await contentService.featureContent(id)
+      await adminContentService.featureContent(id)
       await loadContent()
     } catch (err) {
       const msg = err instanceof Error ? err.message : 'Failed to update content'
@@ -123,158 +121,98 @@ export default function ContentLibraryPage() {
   }
 
   return (
-    <ScrollView style={styles.container} contentContainerStyle={styles.contentContainer}>
-      {/* Header */}
-      <View style={[styles.header, { flexDirection }]}>
-        <View>
-          <Text style={[styles.pageTitle, { textAlign }]}>{t('admin.titles.content', { defaultValue: 'Content Library' })}</Text>
-          <Text style={[styles.subtitle, { textAlign }]}>
-            {t('admin.content.subtitle', { defaultValue: 'Manage movies, series, and other video content' })}
-          </Text>
-        </View>
-        <View style={[styles.actionButtons, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
-          <GlassButton
-            title={t('admin.content.importFree', { defaultValue: 'Import Free Content' })}
-            variant="secondary"
-            icon={<Download size={18} color={colors.text} />}
-            onPress={() => setShowImportWizard(true)}
-            style={adminButtonStyles.secondaryButton}
-            textStyle={adminButtonStyles.buttonText}
-          />
-          <Link to="/admin/content/new" style={{ textDecoration: 'none' }}>
+    <ScrollView className="flex-1">
+      <View className="p-6">
+        {/* Header */}
+        <View className={`flex ${isRTL ? 'flex-row-reverse' : 'flex-row'} items-center justify-between mb-6 gap-6`}>
+          <View>
+            <Text className={`text-2xl font-bold text-white ${isRTL ? 'text-right' : 'text-left'}`}>
+              {t('admin.titles.content', { defaultValue: 'Content Library' })}
+            </Text>
+            <Text className={`text-sm text-white/60 mt-1 ${isRTL ? 'text-right' : 'text-left'}`}>
+              {t('admin.content.subtitle', { defaultValue: 'Manage movies, series, and video content' })}
+            </Text>
+          </View>
+          <View className={`flex ${isRTL ? 'flex-row-reverse' : 'flex-row'} gap-3 items-center`}>
             <GlassButton
-              title={t('admin.actions.new', { defaultValue: 'Add Content' })}
+              title={t('admin.content.importFree', { defaultValue: 'Import Free Content' })}
               variant="secondary"
-              icon={<Plus size={18} color={colors.text} />}
-              style={adminButtonStyles.primaryButton}
-              textStyle={adminButtonStyles.buttonText}
+              icon={<Download size={18} color="white" />}
+              onPress={() => setShowImportWizard(true)}
+              className="bg-white/10 backdrop-blur-xl hover:bg-white/20"
             />
-          </Link>
+            <Link to="/admin/content/new" style={{ textDecoration: 'none' }}>
+              <GlassButton
+                title={t('admin.actions.new', { defaultValue: 'New' })}
+                variant="primary"
+                icon={<Plus size={18} color="white" />}
+                className="bg-purple-600/80 backdrop-blur-xl hover:bg-purple-600/90"
+              />
+            </Link>
+          </View>
         </View>
+
+        {/* Search and Filters */}
+        <View className={`flex ${isRTL ? 'flex-row-reverse' : 'flex-row'} gap-4 mb-6`}>
+          <View className="flex-1 max-w-md">
+            <GlassInput
+              placeholder={t('admin.content.searchPlaceholder', { defaultValue: 'Search content...' })}
+              value={searchQuery}
+              onChangeText={handleSearch}
+              icon={<Search size={18} color="rgba(255,255,255,0.6)" />}
+              className="bg-black/20 backdrop-blur-xl border border-white/10 rounded-xl"
+            />
+          </View>
+          <View className="min-w-[180px]">
+            <GlassSelect
+              placeholder={t('admin.content.filters.allStatus', { defaultValue: 'All Status' })}
+              value={filters.is_published === undefined ? '' : filters.is_published ? 'published' : 'draft'}
+              onChange={(value) =>
+                setFilters({
+                  ...filters,
+                  is_published: value === '' ? undefined : value === 'published',
+                })
+              }
+              options={[
+                { value: '', label: t('admin.content.filters.allStatus', { defaultValue: 'All Status' }) },
+                { value: 'published', label: t('admin.content.status.published', { defaultValue: 'Published' }) },
+                { value: 'draft', label: t('admin.content.status.draft', { defaultValue: 'Draft' }) },
+              ]}
+              className="bg-black/20 backdrop-blur-xl border border-white/10 rounded-xl"
+            />
+          </View>
+        </View>
+
+        {/* Error Message */}
+        {error && (
+          <View className="flex flex-row items-center gap-4 p-4 mb-6 bg-red-500/20 backdrop-blur-xl border border-red-500/40 rounded-2xl">
+            <AlertCircle size={18} color="#ef4444" />
+            <Text className="flex-1 text-red-500 text-sm">{error}</Text>
+            <Pressable onPress={() => setError(null)}>
+              <X size={18} color="#ef4444" />
+            </Pressable>
+          </View>
+        )}
+
+        {/* Hierarchical Content Table */}
+        <HierarchicalContentTable
+          items={items}
+          loading={isLoading}
+          onTogglePublish={handleTogglePublish}
+          onToggleFeatured={handleToggleFeatured}
+          onDelete={handleDeleteContent}
+          pagination={pagination}
+          onPageChange={(page) => setPagination((prev) => ({ ...prev, page }))}
+          emptyMessage={t('admin.content.emptyMessage', { defaultValue: 'No content found' })}
+        />
+
+        {/* Import Wizard Modal */}
+        <FreeContentImportWizard
+          isOpen={showImportWizard}
+          onClose={() => setShowImportWizard(false)}
+          onSuccess={() => loadContent()}
+        />
       </View>
-
-      {/* Search and Filters */}
-      <View style={[styles.filtersContainer, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
-        <View style={styles.searchWrapper}>
-          <GlassInput
-            placeholder={t('admin.content.searchPlaceholder', { defaultValue: 'Search content...' })}
-            value={searchQuery}
-            onChangeText={handleSearch}
-            icon={<Search size={18} color={colors.textMuted} />}
-            containerStyle={styles.searchInputContainer}
-          />
-        </View>
-        <View style={styles.filterWrapper}>
-          <GlassSelect
-            placeholder={t('admin.content.filters.allStatus', { defaultValue: 'All Status' })}
-            value={filters.is_published === undefined ? '' : filters.is_published ? 'published' : 'draft'}
-            onChange={(value) =>
-              setFilters({
-                ...filters,
-                is_published: value === '' ? undefined : value === 'published',
-              })
-            }
-            options={[
-              { value: '', label: t('admin.content.filters.allStatus', { defaultValue: 'All Status' }) },
-              { value: 'published', label: t('admin.content.status.published', { defaultValue: 'Published' }) },
-              { value: 'draft', label: t('admin.content.status.draft', { defaultValue: 'Draft' }) },
-            ]}
-          />
-        </View>
-      </View>
-
-      {/* Error Message */}
-      {error && (
-        <View style={styles.errorContainer}>
-          <AlertCircle size={18} color="#ef4444" />
-          <Text style={styles.errorText}>{error}</Text>
-          <Pressable onPress={() => setError(null)}>
-            <X size={18} color="#ef4444" />
-          </Pressable>
-        </View>
-      )}
-
-      {/* Hierarchical Content Table */}
-      <HierarchicalContentTable
-        items={items}
-        loading={isLoading}
-        onTogglePublish={handleTogglePublish}
-        onToggleFeatured={handleToggleFeatured}
-        onDelete={handleDeleteContent}
-        pagination={pagination}
-        onPageChange={(page) => setPagination((prev) => ({ ...prev, page }))}
-        emptyMessage={t('admin.content.emptyMessage', { defaultValue: 'No content found' })}
-      />
-
-      {/* Import Wizard Modal */}
-      <FreeContentImportWizard
-        isOpen={showImportWizard}
-        onClose={() => setShowImportWizard(false)}
-        onSuccess={() => loadContent()}
-      />
     </ScrollView>
   )
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-  contentContainer: {
-    padding: spacing.lg,
-  },
-  header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    marginBottom: spacing.lg,
-    gap: spacing.lg,
-  },
-  pageTitle: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    color: colors.text,
-  },
-  subtitle: {
-    fontSize: 14,
-    color: colors.textMuted,
-    marginTop: spacing.xs,
-  },
-  actionButtons: {
-    flexDirection: 'row',
-    gap: spacing.md,
-    alignItems: 'center',
-  },
-  filtersContainer: {
-    flexDirection: 'row',
-    gap: spacing.md,
-    marginBottom: spacing.lg,
-    alignItems: 'flex-start',
-  },
-  searchWrapper: {
-    flex: 1,
-    maxWidth: 400,
-  },
-  searchInputContainer: {
-    marginBottom: 0,
-  },
-  filterWrapper: {
-    minWidth: 180,
-  },
-  errorContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing.md,
-    padding: spacing.md,
-    borderRadius: borderRadius.md,
-    backgroundColor: '#ef444420',
-    borderWidth: 1,
-    borderColor: '#ef444440',
-    marginBottom: spacing.lg,
-  },
-  errorText: {
-    flex: 1,
-    color: '#ef4444',
-    fontSize: 14,
-  },
-})

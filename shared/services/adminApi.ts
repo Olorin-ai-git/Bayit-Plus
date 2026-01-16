@@ -109,7 +109,7 @@ export const usersService = {
     adminApi.post('/admin/users', data),
 
   updateUser: (userId: string, data: Partial<User>): Promise<User> =>
-    adminApi.put(`/admin/users/${userId}`, data),
+    adminApi.patch(`/admin/users/${userId}`, data),
 
   deleteUser: (userId: string): Promise<void> =>
     adminApi.delete(`/admin/users/${userId}`),
@@ -474,6 +474,201 @@ export const auditLogsService = {
     }),
 };
 
+// ============================================
+// Content Service
+// ============================================
+
+export interface ContentFilter {
+  search?: string;
+  category_id?: string;
+  is_featured?: boolean;
+  is_published?: boolean;
+  is_kids_content?: boolean;
+  page?: number;
+  page_size?: number;
+}
+
+export interface Content {
+  id: string;
+  title: string;
+  description?: string;
+  thumbnail?: string;
+  backdrop?: string;
+  category_id?: string;
+  category_name?: string;
+  duration?: number;
+  year?: number;
+  rating?: string;
+  genre?: string[];
+  cast?: string[];
+  director?: string;
+  stream_url?: string;
+  stream_type?: string;
+  is_published?: boolean;
+  is_featured?: boolean;
+  requires_subscription?: boolean;
+  is_kids_content?: boolean;
+  age_rating?: string;
+  view_count?: number;
+  avg_rating?: number;
+  created_at: string;
+  updated_at: string;
+}
+
+export const adminContentService = {
+  getContent: (filters?: ContentFilter): Promise<PaginatedResponse<Content>> =>
+    adminApi.get('/admin/content', { params: filters }),
+
+  getContentHierarchical: (filters?: ContentFilter): Promise<PaginatedResponse<Content>> =>
+    adminApi.get('/admin/content/hierarchical', { params: filters }),
+
+  getContentById: (contentId: string): Promise<Content> =>
+    adminApi.get(`/admin/content/${contentId}`),
+
+  createContent: (data: Partial<Content>): Promise<Content> =>
+    adminApi.post('/admin/content', data),
+
+  updateContent: (contentId: string, data: Partial<Content>): Promise<Content> =>
+    adminApi.patch(`/admin/content/${contentId}`, data),
+
+  deleteContent: (contentId: string): Promise<void> =>
+    adminApi.delete(`/admin/content/${contentId}`),
+
+  publishContent: (contentId: string): Promise<Content> =>
+    adminApi.post(`/admin/content/${contentId}/publish`),
+
+  featureContent: (contentId: string): Promise<Content> =>
+    adminApi.post(`/admin/content/${contentId}/feature`),
+};
+
+// ============================================
+// Widgets Service
+// ============================================
+
+export interface WidgetFilter {
+  widget_type?: string;
+  is_active?: boolean;
+  page?: number;
+  page_size?: number;
+}
+
+export interface Widget {
+  id: string;
+  type: string;
+  user_id?: string;
+  title: string;
+  description?: string;
+  icon?: string;
+  content: {
+    content_type: string;
+    live_channel_id?: string;
+    podcast_id?: string;
+    content_id?: string;
+    station_id?: string;
+    iframe_url?: string;
+    iframe_title?: string;
+  };
+  position: {
+    x: number;
+    y: number;
+    width?: number;
+    height?: number;
+    z_index?: number;
+  };
+  is_active: boolean;
+  is_muted?: boolean;
+  is_visible?: boolean;
+  is_closable?: boolean;
+  is_draggable?: boolean;
+  visible_to_roles?: string[];
+  visible_to_subscription_tiers?: string[];
+  target_pages?: string[];
+  order?: number;
+  created_by?: string;
+  created_at: string;
+  updated_at: string;
+}
+
+export const adminWidgetsService = {
+  getWidgets: (filters?: WidgetFilter): Promise<PaginatedResponse<Widget>> =>
+    adminApi.get('/admin/widgets', { params: filters }),
+
+  getWidget: (widgetId: string): Promise<Widget> =>
+    adminApi.get(`/admin/widgets/${widgetId}`),
+
+  createWidget: (data: Partial<Widget>): Promise<Widget> =>
+    adminApi.post('/admin/widgets', data),
+
+  updateWidget: (widgetId: string, data: Partial<Widget>): Promise<Widget> =>
+    adminApi.patch(`/admin/widgets/${widgetId}`, data),
+
+  deleteWidget: (widgetId: string): Promise<void> =>
+    adminApi.delete(`/admin/widgets/${widgetId}`),
+
+  reorderWidgets: (widgets: { id: string; order: number }[]): Promise<void> =>
+    adminApi.post('/admin/widgets/reorder', { widgets }),
+
+  publishWidget: (widgetId: string): Promise<Widget> =>
+    adminApi.post(`/admin/widgets/${widgetId}/publish`),
+
+  unpublishWidget: (widgetId: string): Promise<Widget> =>
+    adminApi.post(`/admin/widgets/${widgetId}/unpublish`),
+};
+
+// ============================================
+// Podcasts Service
+// ============================================
+
+export interface PodcastFilter {
+  search?: string;
+  category?: string;
+  is_active?: boolean;
+  page?: number;
+  page_size?: number;
+}
+
+export interface Podcast {
+  id: string;
+  title: string;
+  title_en?: string;
+  title_es?: string;
+  description?: string;
+  description_en?: string;
+  description_es?: string;
+  author?: string;
+  author_en?: string;
+  author_es?: string;
+  cover?: string;
+  category?: string;
+  category_en?: string;
+  category_es?: string;
+  rss_feed?: string;
+  website?: string;
+  episode_count?: number;
+  latest_episode_date?: string;
+  is_active: boolean;
+  order?: number;
+  created_at: string;
+  updated_at: string;
+}
+
+export const adminPodcastsService = {
+  getPodcasts: (filters?: PodcastFilter): Promise<PaginatedResponse<Podcast>> =>
+    adminApi.get('/admin/podcasts', { params: filters }),
+
+  getPodcast: (podcastId: string): Promise<Podcast> =>
+    adminApi.get(`/admin/podcasts/${podcastId}`),
+
+  createPodcast: (data: Partial<Podcast>): Promise<Podcast> =>
+    adminApi.post('/admin/podcasts', data),
+
+  updatePodcast: (podcastId: string, data: Partial<Podcast>): Promise<Podcast> =>
+    adminApi.patch(`/admin/podcasts/${podcastId}`, data),
+
+  deletePodcast: (podcastId: string): Promise<void> =>
+    adminApi.delete(`/admin/podcasts/${podcastId}`),
+};
+
 // Export all services
 export default {
   dashboard: dashboardService,
@@ -484,4 +679,7 @@ export default {
   marketing: marketingService,
   settings: settingsService,
   auditLogs: auditLogsService,
+  content: adminContentService,
+  widgets: adminWidgetsService,
+  podcasts: adminPodcastsService,
 };

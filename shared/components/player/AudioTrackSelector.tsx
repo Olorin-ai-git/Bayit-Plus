@@ -202,7 +202,7 @@ export const AudioTrackSelector: React.FC<AudioTrackSelectorProps> = ({
 const styles = StyleSheet.create({
   overlay: {
     flex: 1,
-    backgroundColor: 'rgba(0, 0, 0, 0.8)',
+    backgroundColor: colors.glassOverlayStrong,
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -210,10 +210,10 @@ const styles = StyleSheet.create({
     width: isTV ? '50%' : '90%',
     maxWidth: 600,
     maxHeight: isTV ? '70%' : '80%',
-    backgroundColor: 'rgba(20, 20, 20, 0.95)',
+    backgroundColor: colors.glassStrong,
     borderRadius: borderRadius.xl,
     borderWidth: 2,
-    borderColor: 'rgba(168, 85, 247, 0.3)',
+    borderColor: colors.glassBorderStrong,
     padding: isTV ? spacing.xl : spacing.lg,
     // @ts-ignore - Web CSS property
     backdropFilter: 'blur(20px)',
@@ -239,21 +239,21 @@ const styles = StyleSheet.create({
     marginBottom: spacing.sm,
   },
   track: {
-    backgroundColor: 'rgba(255, 255, 255, 0.05)',
+    backgroundColor: colors.glassBorderWhite,
     borderRadius: borderRadius.lg,
     padding: isTV ? spacing.lg : spacing.md,
     borderWidth: 2,
     borderColor: 'transparent',
   },
   trackSelected: {
-    backgroundColor: 'rgba(168, 85, 247, 0.2)',
+    backgroundColor: colors.glassBorder,
     borderColor: colors.primary,
   },
   trackFocused: {
     borderColor: colors.primary,
-    backgroundColor: 'rgba(168, 85, 247, 0.3)',
+    backgroundColor: colors.glassBorderStrong,
     // @ts-ignore - Web CSS property
-    boxShadow: '0 0 20px rgba(168, 85, 247, 0.6)',
+    boxShadow: `0 0 20px ${colors.glassGlowStrong}`,
   },
   trackContent: {
     flexDirection: 'column',
@@ -274,7 +274,7 @@ const styles = StyleSheet.create({
     fontSize: isTV ? 14 : 12,
     fontWeight: '600',
     color: colors.textSecondary,
-    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+    backgroundColor: colors.glassBorderWhite,
     paddingHorizontal: spacing.sm,
     paddingVertical: 4,
     borderRadius: borderRadius.sm,
@@ -288,7 +288,7 @@ const styles = StyleSheet.create({
   trackDetail: {
     fontSize: isTV ? 14 : 12,
     color: colors.textSecondary,
-    backgroundColor: 'rgba(255, 255, 255, 0.05)',
+    backgroundColor: colors.glassBorderWhite,
     paddingHorizontal: spacing.sm,
     paddingVertical: 2,
     borderRadius: borderRadius.sm,
@@ -309,7 +309,7 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   closeButton: {
-    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+    backgroundColor: colors.glassBorderWhite,
     borderRadius: borderRadius.lg,
     padding: isTV ? spacing.md : spacing.sm,
     alignItems: 'center',

@@ -23,6 +23,7 @@ import {
   demoCategories,
   demoFeatured,
   demoWatchParties,
+  demoRecordings,
   demoSearchResults,
 } from '../data/demoData';
 
@@ -791,6 +792,43 @@ export const demoPartyService = {
   },
 };
 
+// ===========================================
+// RECORDING SERVICE (Demo)
+// ===========================================
+export const demoRecordingService = {
+  getRecordings: async () => {
+    await delay();
+    return { recordings: demoRecordings };
+  },
+  getRecording: async (recordingId: string) => {
+    await delay();
+    const recording = demoRecordings.find(r => r.id === recordingId);
+    return recording || null;
+  },
+  deleteRecording: async (recordingId: string) => {
+    await delay();
+    return { message: `Recording ${recordingId} deleted successfully` };
+  },
+  scheduleRecording: async (data: {
+    channel_id: string;
+    start_time: string;
+    end_time: string;
+    title?: string;
+  }) => {
+    await delay();
+    return {
+      id: 'rec-' + Date.now(),
+      ...data,
+      status: 'scheduled',
+      message: 'Recording scheduled successfully',
+    };
+  },
+  cancelScheduledRecording: async (recordingId: string) => {
+    await delay();
+    return { message: `Scheduled recording ${recordingId} cancelled successfully` };
+  },
+};
+
 // Export all demo services
 export default {
   auth: demoAuthService,
@@ -808,4 +846,5 @@ export default {
   subtitles: demoSubtitlesService,
   chapters: demoChaptersService,
   party: demoPartyService,
+  recording: demoRecordingService,
 };

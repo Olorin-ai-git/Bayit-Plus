@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { Plus, Edit, Trash2, X, AlertCircle, Music } from 'lucide-react'
 import { GlassTable, GlassTableCell, GlassInput } from '@bayit/shared/ui'
-import { contentService } from '@/services/adminApi'
+import { adminContentService } from '@/services/adminApi'
 import { colors, spacing, borderRadius } from '@bayit/shared/theme'
 import { GlassButton } from '@bayit/shared/ui'
 import { useDirection } from '@/hooks/useDirection'
@@ -39,7 +39,7 @@ export default function PodcastsPage() {
     setIsLoading(true)
     setError(null)
     try {
-      const response: PaginatedResponse<Podcast> = await contentService.getPodcasts({
+      const response: PaginatedResponse<Podcast> = await adminContentService.getPodcasts({
         page: pagination.page,
         page_size: pagination.pageSize,
       })
@@ -69,7 +69,7 @@ export default function PodcastsPage() {
       return
     }
     try {
-      await contentService.updatePodcast(editingId!, editData)
+      await adminContentService.updatePodcast(editingId!, editData)
       setEditingId(null)
       setEditData({})
       await loadPodcasts()
@@ -86,7 +86,7 @@ export default function PodcastsPage() {
       async () => {
         try {
           setDeleting(id)
-          await contentService.deletePodcast(id)
+          await adminContentService.deletePodcast(id)
           setItems(items.filter((item) => item.id !== id))
         } catch (err) {
           const msg = err instanceof Error ? err.message : 'Failed to delete podcast'

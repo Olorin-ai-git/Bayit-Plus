@@ -4,7 +4,7 @@ import { useNavigate, useParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { ArrowLeft, AlertCircle, Save, CheckCircle } from 'lucide-react'
 import { GlassView, GlassInput, GlassButton, GlassCheckbox, GlassTextarea } from '@bayit/shared/ui'
-import { contentService } from '@/services/adminApi'
+import { adminContentService } from '@/services/adminApi'
 import { colors, spacing, borderRadius } from '@bayit/shared/theme'
 import { useDirection } from '@/hooks/useDirection'
 import logger from '@/utils/logger'
@@ -47,7 +47,7 @@ export default function ContentEditorPage() {
     try {
       setIsLoading(true)
       setError(null)
-      const data = await contentService.getContentItem(contentId!)
+      const data = await adminContentService.getContentItem(contentId!)
       setFormData(data)
     } catch (err) {
       const msg = err instanceof Error ? err.message : 'Failed to load content'
@@ -70,9 +70,9 @@ export default function ContentEditorPage() {
       setSuccess(false)
 
       if (contentId) {
-        await contentService.updateContent(contentId, formData)
+        await adminContentService.updateContent(contentId, formData)
       } else {
-        await contentService.createContent(formData as Content)
+        await adminContentService.createContent(formData as Content)
       }
 
       setSuccess(true)

@@ -4,7 +4,7 @@ import { Trash2, Plus, Grid3x3, X, AlertCircle, Eye, EyeOff, RotateCcw } from 'l
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { useDirection } from '@/hooks/useDirection';
-import { widgetsService } from '@/services/adminApi';
+import { adminWidgetsService } from '@/services/adminApi';
 import { colors, spacing, borderRadius } from '@bayit/shared/theme';
 import { GlassCard } from '@bayit/shared/ui';
 import { useWidgetStore } from '@/stores/widgetStore';
@@ -213,7 +213,7 @@ export default function UserWidgetsPage() {
     try {
       // formData from WidgetFormModal already has the correct structure
       // Just pass it directly without restructuring
-      await widgetsService.createPersonalWidget(formData);
+      await adminWidgetsService.createPersonalWidget(formData);
       setShowWidgetForm(false);
       setError(null);
       await loadWidgets();
@@ -232,7 +232,7 @@ export default function UserWidgetsPage() {
     setLoading(true);
     setError(null);
     try {
-      const data = await widgetsService.getMyWidgets('/');
+      const data = await adminWidgetsService.getMyWidgets('/');
       const response = Array.isArray(data) ? data : data?.items || [];
 
       // Only show personal widgets (user's own widgets)
@@ -249,7 +249,7 @@ export default function UserWidgetsPage() {
 
   const handleDelete = async (id: string) => {
     try {
-      await widgetsService.deletePersonalWidget(id);
+      await adminWidgetsService.deletePersonalWidget(id);
       setWidgets((prev) => prev.filter((w) => w.id !== id));
     } catch (err) {
       logger.error('Failed to delete widget', 'UserWidgetsPage', err);

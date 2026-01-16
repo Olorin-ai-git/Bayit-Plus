@@ -11,3 +11,5 @@ export { proactiveAgentService, default as proactiveAgentServiceDefault } from '
 export { emotionalIntelligenceService, default as emotionalIntelligenceServiceDefault } from './emotionalIntelligenceService';
 export { presenceDetectionService, default as presenceDetectionServiceDefault } from './presenceDetectionService';
 export { gazeDetectionService, default as gazeDetectionServiceDefault } from './gazeDetectionService';
+
+// Recording service is exported from api.ts (recordingService)

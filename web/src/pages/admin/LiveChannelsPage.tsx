@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback } from 'react'
 import { View, Text, StyleSheet, Pressable, ScrollView } from 'react-native'
 import { useTranslation } from 'react-i18next'
 import { Plus, Edit, Trash2, X, AlertCircle, Globe, ChevronDown, ChevronUp } from 'lucide-react'
-import { contentService } from '@/services/adminApi'
+import { adminContentService } from '@/services/adminApi'
 import { colors, spacing, borderRadius } from '@bayit/shared/theme'
 import { GlassButton, GlassTable, GlassTableCell, GlassInput, GlassView, GlassToggle, GlassSelect } from '@bayit/shared/ui'
 import { useDirection } from '@/hooks/useDirection'
@@ -51,7 +51,7 @@ export default function LiveChannelsPage() {
     setIsLoading(true)
     setError(null)
     try {
-      const response: PaginatedResponse<LiveChannel> = await contentService.getLiveChannels({
+      const response: PaginatedResponse<LiveChannel> = await adminContentService.getLiveChannels({
         page: pagination.page,
         page_size: pagination.pageSize,
       })
@@ -86,7 +86,7 @@ export default function LiveChannelsPage() {
       return
     }
     try {
-      await contentService.updateLiveChannel(editingId!, editData)
+      await adminContentService.updateLiveChannel(editingId!, editData)
       setEditingId(null)
       setEditData({})
       await loadChannels()
@@ -103,7 +103,7 @@ export default function LiveChannelsPage() {
       async () => {
         try {
           setDeleting(id)
-          await contentService.deleteLiveChannel(id)
+          await adminContentService.deleteLiveChannel(id)
           setItems(items.filter((item) => item.id !== id))
         } catch (err) {
           const msg = err instanceof Error ? err.message : 'Failed to delete live channel'

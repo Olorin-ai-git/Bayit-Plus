@@ -197,7 +197,7 @@ const styles = StyleSheet.create({
   },
   playOverlay: {
     ...StyleSheet.absoluteFillObject,
-    backgroundColor: 'rgba(0, 0, 0, 0.3)',
+    backgroundColor: colors.glassOverlay,
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -220,7 +220,7 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     height: 3,
-    backgroundColor: 'rgba(255, 255, 255, 0.2)',
+    backgroundColor: colors.glassBorderWhite,
   },
   progressBar: {
     height: '100%',

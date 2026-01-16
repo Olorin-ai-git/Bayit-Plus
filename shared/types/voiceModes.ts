@@ -30,11 +30,13 @@ export const MODE_CONFIGS: Record<VoiceMode, ModeConfig> = {
   [VoiceMode.VOICE_ONLY]: {
     mode: VoiceMode.VOICE_ONLY,
     wakeWordEnabled: true,
-    remoteControlEnabled: true,  // TODO: Set to false when voice-only mode is mature
+    // Remote control remains enabled for accessibility and fallback navigation
+    remoteControlEnabled: true,
     voiceFeedbackEnabled: true,
     ttsEnabled: true,
-    uiInteractionEnabled: true,  // TODO: Set to false when voice-only mode is mature
-    scrollingEnabled: true,       // TODO: Set to false when voice-only mode is mature
+    // UI interaction and scrolling enabled for hybrid accessibility
+    uiInteractionEnabled: true,
+    scrollingEnabled: true,
   },
   [VoiceMode.HYBRID]: {
     mode: VoiceMode.HYBRID,

@@ -1140,6 +1140,84 @@ export const demoSearchResults = (query: string) => {
   };
 };
 
+// =====================================
+// RECORDINGS DATA
+// =====================================
+export interface DemoRecording {
+  id: string;
+  title: string;
+  channel_name: string;
+  channel_id: string;
+  thumbnail?: string;
+  start_time: string;
+  end_time: string;
+  duration_seconds: number;
+  status: 'recording' | 'completed' | 'scheduled' | 'failed';
+  file_size_mb?: number;
+  stream_url?: string;
+}
+
+export const demoRecordings: DemoRecording[] = [
+  {
+    id: '1',
+    title: 'מהדורת חדשות ערוץ 12',
+    channel_name: 'ערוץ 12',
+    channel_id: 'kan-11',
+    thumbnail: 'https://picsum.photos/seed/news1/400/225',
+    start_time: new Date(Date.now() - 7200000).toISOString(),
+    end_time: new Date(Date.now() - 3600000).toISOString(),
+    duration_seconds: 3600,
+    status: 'completed',
+    file_size_mb: 512,
+    stream_url: 'https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8',
+  },
+  {
+    id: '2',
+    title: 'ספורט הלילה - סיכום המחזור',
+    channel_name: 'ספורט 5',
+    channel_id: 'sport-5',
+    thumbnail: 'https://picsum.photos/seed/sports1/400/225',
+    start_time: new Date(Date.now() + 3600000).toISOString(),
+    end_time: new Date(Date.now() + 7200000).toISOString(),
+    duration_seconds: 3600,
+    status: 'scheduled',
+  },
+  {
+    id: '3',
+    title: 'פאודה - עונה 4 פרק 5',
+    channel_name: 'כאן 11',
+    channel_id: 'kan-11',
+    thumbnail: 'https://picsum.photos/seed/fauda1/400/225',
+    start_time: new Date(Date.now() - 86400000).toISOString(),
+    end_time: new Date(Date.now() - 82800000).toISOString(),
+    duration_seconds: 3600,
+    status: 'completed',
+    file_size_mb: 720,
+    stream_url: 'https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8',
+  },
+  {
+    id: '4',
+    title: 'חדשות הבוקר',
+    channel_name: 'ערוץ 13',
+    channel_id: 'reshet-13',
+    thumbnail: 'https://picsum.photos/seed/morning1/400/225',
+    start_time: new Date().toISOString(),
+    end_time: new Date(Date.now() + 1800000).toISOString(),
+    duration_seconds: 1800,
+    status: 'recording',
+  },
+  {
+    id: '5',
+    title: 'מכבי תל אביב נגד הפועל באר שבע',
+    channel_name: 'ספורט 1',
+    channel_id: 'sport-1',
+    start_time: new Date(Date.now() + 172800000).toISOString(),
+    end_time: new Date(Date.now() + 180000000).toISOString(),
+    duration_seconds: 7200,
+    status: 'scheduled',
+  },
+];
+
 // Export all data
 export default {
   user: demoUser,
@@ -1159,5 +1237,6 @@ export default {
   categories: demoCategories,
   featured: demoFeatured,
   watchParties: demoWatchParties,
+  recordings: demoRecordings,
   searchResults: demoSearchResults,
 };

@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback } from 'react'
 import { View, Text, StyleSheet, Pressable, ScrollView } from 'react-native'
 import { useTranslation } from 'react-i18next'
 import { Plus, Edit, Trash2, X, AlertCircle } from 'lucide-react'
-import { contentService } from '@/services/adminApi'
+import { adminContentService } from '@/services/adminApi'
 import { colors, spacing, borderRadius } from '@bayit/shared/theme'
 import { GlassTable, GlassTableCell, GlassTableColumn, GlassInput } from '@bayit/shared/ui'
 import { useDirection } from '@/hooks/useDirection'
@@ -36,7 +36,7 @@ export default function CategoriesPage() {
     setIsLoading(true)
     setError(null)
     try {
-      const response: PaginatedResponse<Category> = await contentService.getCategories({
+      const response: PaginatedResponse<Category> = await adminContentService.getCategories({
         page: pagination.page,
         page_size: pagination.pageSize,
       })
@@ -66,7 +66,7 @@ export default function CategoriesPage() {
       return
     }
     try {
-      await contentService.updateCategory(editingId!, editData)
+      await adminContentService.updateCategory(editingId!, editData)
       setEditingId(null)
       setEditData({})
       await loadCategories()
@@ -83,7 +83,7 @@ export default function CategoriesPage() {
       async () => {
         try {
           setDeleting(id)
-          await contentService.deleteCategory(id)
+          await adminContentService.deleteCategory(id)
           setItems(items.filter((item) => item.id !== id))
         } catch (err) {
           const msg = err instanceof Error ? err.message : 'Failed to delete category'

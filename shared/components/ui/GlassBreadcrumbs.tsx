@@ -93,7 +93,7 @@ export const GlassBreadcrumbs: React.FC<GlassBreadcrumbsProps> = ({
   // Native: Use gradient fallback
   return (
     <LinearGradient
-      colors={['rgba(30, 30, 50, 0.8)', 'rgba(20, 20, 40, 0.9)']}
+      colors={[colors.glass, colors.glassStrong]}
       start={{ x: 0, y: 0 }}
       end={{ x: 1, y: 0 }}
       style={styles.container}
@@ -113,7 +113,7 @@ const styles = StyleSheet.create({
     backdropFilter: 'blur(12px)',
     // @ts-ignore - Web CSS
     WebkitBackdropFilter: 'blur(12px)',
-    backgroundColor: 'rgba(26, 26, 46, 0.6)',
+    backgroundColor: colors.glassMedium,
   },
   scrollContent: {
     alignItems: 'center',
@@ -133,12 +133,12 @@ const styles = StyleSheet.create({
     maxWidth: 180,
   },
   breadcrumbActive: {
-    backgroundColor: 'rgba(107, 33, 168, 0.3)',
+    backgroundColor: colors.glassPurpleLight,
     borderWidth: 1,
-    borderColor: 'rgba(168, 85, 247, 0.6)',
+    borderColor: colors.glassBorderFocus,
   },
   breadcrumbPressed: {
-    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+    backgroundColor: colors.glassBorderWhite,
   },
   homeIcon: {
     fontSize: 12,

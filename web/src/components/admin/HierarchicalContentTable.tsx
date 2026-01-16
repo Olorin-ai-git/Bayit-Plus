@@ -6,14 +6,13 @@
  */
 
 import { useState, useCallback, useMemo } from 'react'
-import { View, Text, StyleSheet, Pressable, ActivityIndicator } from 'react-native'
+import { View, Text, Pressable, ActivityIndicator } from 'react-native'
 import { Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { ChevronDown, ChevronRight, ChevronLeft, Star, Eye, Trash2, Film, Tv } from 'lucide-react'
-import { colors, spacing, borderRadius } from '@bayit/shared/theme'
 import { GlassTable, GlassTableColumn, GlassTableCell } from '@bayit/shared/ui'
 import { useDirection } from '@/hooks/useDirection'
-import { contentService } from '@/services/adminApi'
+import { adminContentService } from '@/services/adminApi'
 import logger from '@/utils/logger'
 
 interface ContentItem {
@@ -140,7 +139,7 @@ export default function HierarchicalContentTable({
         if (!episodeCache[seriesId]) {
           try {
             setLoadingEpisodes((prev) => new Set(prev).add(seriesId))
-            const response = await contentService.getSeriesEpisodes(seriesId)
+            const response = await adminContentService.getSeriesEpisodes(seriesId)
             setEpisodeCache((prev) => ({
               ...prev,
               [seriesId]: response.episodes || [],
@@ -195,20 +194,20 @@ export default function HierarchicalContentTable({
         align: 'center',
         render: (_, row) => {
           if (row.rowType === 'episode') {
-            return <View style={styles.episodeIndent} />
+            return <View className="w-10 h-full" />
           }
           const item = row as ContentItem & { rowType: 'content' }
           if (!item.is_series) {
-            return <View style={styles.expandPlaceholder} />
+            return <View className="w-5" />
           }
           return (
-            <Pressable onPress={() => toggleExpand(item.id)} style={styles.expandButton}>
+            <Pressable onPress={() => toggleExpand(item.id)} className="p-2 bg-blue-500/15 backdrop-blur-md rounded-lg">
               {expandedSeries.has(item.id) ? (
-                <ChevronDown size={20} color={colors.primary} />
+                <ChevronDown size={20} color="#3b82f6" />
               ) : isRTL ? (
-                <ChevronLeft size={20} color={colors.primary} />
+                <ChevronLeft size={20} color="#3b82f6" />
               ) : (
-                <ChevronRight size={20} color={colors.primary} />
+                <ChevronRight size={20} color="#3b82f6" />
               )}
             </Pressable>
           )
@@ -222,12 +221,12 @@ export default function HierarchicalContentTable({
           if (row.rowType === 'episode') {
             const episode = row as Episode & { rowType: 'episode' }
             return (
-              <View style={styles.episodeThumbnailCell}>
+              <View className="w-[60px] px-1">
                 {episode.thumbnail ? (
-                  <View style={[styles.episodeThumbnail, { backgroundImage: `url(${episode.thumbnail})` }]} />
+                  <View className="w-[50px] h-[30px] rounded bg-cover bg-center" style={{ backgroundImage: `url(${episode.thumbnail})` }} />
                 ) : (
-                  <View style={styles.episodeThumbnailPlaceholder}>
-                    <Film size={14} color={colors.textMuted} />
+                  <View className="w-[50px] h-[30px] bg-white/5 rounded flex items-center justify-center">
+                    <Film size={14} color="rgba(255,255,255,0.4)" />
                   </View>
                 )}
               </View>
@@ -235,16 +234,16 @@ export default function HierarchicalContentTable({
           }
           const item = row as ContentItem & { rowType: 'content' }
           return (
-            <View style={styles.thumbnailCell}>
-              <View style={styles.thumbnailWrapper}>
+            <View className="w-[60px] px-1 cursor-pointer">
+              <View className="w-[45px] h-[65px] rounded overflow-hidden relative">
                 {item.thumbnail ? (
-                  <View style={[styles.thumbnail, { backgroundImage: `url(${item.thumbnail})` }]} />
+                  <View className="w-full h-full bg-cover bg-center" style={{ backgroundImage: `url(${item.thumbnail})` }} />
                 ) : (
-                  <View style={styles.thumbnailPlaceholder}>
+                  <View className="w-full h-full bg-white/5 flex items-center justify-center">
                     {item.is_series ? (
-                      <Tv size={20} color={colors.textMuted} />
+                      <Tv size={20} color="rgba(255,255,255,0.4)" />
                     ) : (
-                      <Film size={20} color={colors.textMuted} />
+                      <Film size={20} color="rgba(255,255,255,0.4)" />
                     )}
                   </View>
                 )}
@@ -260,35 +259,35 @@ export default function HierarchicalContentTable({
           if (row.rowType === 'episode') {
             const episode = row as Episode & { rowType: 'episode'; parentId: string }
             return (
-              <View style={styles.episodeTitleCell}>
-                <Text style={[styles.episodeNumber, { textAlign }]}>
+              <View className="flex-1 px-4 flex flex-row items-center gap-2">
+                <Text className={`text-xs font-semibold text-blue-500 min-w-[70px] ${isRTL ? 'text-right' : 'text-left'}`}>
                   S{String(episode.season || 1).padStart(2, '0')}E{String(episode.episode || 1).padStart(2, '0')}
                 </Text>
-                <Text style={[styles.episodeTitle, { textAlign }]} numberOfLines={1}>
+                <Text className={`text-sm text-white flex-1 ${isRTL ? 'text-right' : 'text-left'}`} numberOfLines={1}>
                   {episode.title}
                 </Text>
                 {episode.duration && (
-                  <Text style={styles.episodeDuration}>{episode.duration}</Text>
+                  <Text className="text-xs text-white/60">{episode.duration}</Text>
                 )}
               </View>
             )
           }
           const item = row as ContentItem & { rowType: 'content' }
           return (
-            <View style={styles.titleCell}>
-              <View style={[styles.titleRow, { flexDirection }]}>
-                <Text style={[styles.titleText, { textAlign }]} numberOfLines={1}>
+            <View className="flex-1 px-4 min-w-[200px]">
+              <View className={`flex ${isRTL ? 'flex-row-reverse' : 'flex-row'} items-center gap-2`}>
+                <Text className={`text-sm font-medium text-gray-100 ${isRTL ? 'text-right' : 'text-left'}`} numberOfLines={1}>
                   {item.title}
                 </Text>
                 {item.is_series && (
-                  <View style={styles.episodeBadge}>
-                    <Text style={styles.episodeBadgeText}>
+                  <View className="bg-purple-700/30 backdrop-blur-md px-2 py-0.5 rounded-full">
+                    <Text className="text-[11px] text-purple-300 font-medium">
                       {item.episode_count || 0} {t('admin.content.episodes', { count: item.episode_count || 0 })}
                     </Text>
                   </View>
                 )}
               </View>
-              <Text style={[styles.typeText, { textAlign }]}>
+              <Text className={`text-xs text-gray-400 mt-0.5 ${isRTL ? 'text-right' : 'text-left'}`}>
                 {item.is_series ? t('admin.content.type.series') : t('admin.content.type.movie')}
               </Text>
             </View>
@@ -301,10 +300,10 @@ export default function HierarchicalContentTable({
         width: 140,
         render: (_, row) => {
           if (row.rowType === 'episode') {
-            return <Text style={[styles.cellText, { textAlign }]}>-</Text>
+            return <Text className={`text-sm text-white ${isRTL ? 'text-right' : 'text-left'}`}>-</Text>
           }
           const item = row as ContentItem & { rowType: 'content' }
-          return <Text style={[styles.cellText, { textAlign }]}>{item.category_name || '-'}</Text>
+          return <Text className={`text-sm text-white ${isRTL ? 'text-right' : 'text-left'}`}>{item.category_name || '-'}</Text>
         },
       },
       {
@@ -313,10 +312,10 @@ export default function HierarchicalContentTable({
         width: 80,
         render: (_, row) => {
           if (row.rowType === 'episode') {
-            return <Text style={[styles.cellText, { textAlign }]}>-</Text>
+            return <Text className={`text-sm text-white ${isRTL ? 'text-right' : 'text-left'}`}>-</Text>
           }
           const item = row as ContentItem & { rowType: 'content' }
-          return <Text style={[styles.cellText, { textAlign }]}>{item.year || '-'}</Text>
+          return <Text className={`text-sm text-white ${isRTL ? 'text-right' : 'text-left'}`}>{item.year || '-'}</Text>
         },
       },
       {
@@ -325,19 +324,19 @@ export default function HierarchicalContentTable({
         width: 120,
         render: (_, row) => {
           if (row.rowType === 'episode') {
-            return <Text style={[styles.cellText, { textAlign }]}>-</Text>
+            return <Text className={`text-sm text-white ${isRTL ? 'text-right' : 'text-left'}`}>-</Text>
           }
           const item = row as ContentItem & { rowType: 'content' }
           const subtitles = item.available_subtitles || []
-          
+
           if (subtitles.length === 0) {
-            return <Text style={[styles.cellText, styles.noSubtitles, { textAlign }]}>-</Text>
+            return <Text className={`text-sm text-white/40 opacity-50 ${isRTL ? 'text-right' : 'text-left'}`}>-</Text>
           }
-          
+
           return (
-            <View style={styles.subtitleFlags}>
+            <View className="flex flex-row items-center gap-1 flex-wrap">
               {subtitles.map((lang) => (
-                <Text key={lang} style={styles.languageFlag} title={getLanguageName(lang)}>
+                <Text key={lang} className="text-lg cursor-pointer" title={getLanguageName(lang)}>
                   {getLanguageFlag(lang)}
                 </Text>
               ))}
@@ -365,17 +364,16 @@ export default function HierarchicalContentTable({
         render: (_, row) => {
           const isEpisode = row.rowType === 'episode'
           const buttonSize = isEpisode ? 12 : 14
-          const buttonStyle = isEpisode ? styles.actionButtonSmall : styles.actionButton
+          const buttonClass = isEpisode
+            ? "p-1 rounded justify-center items-center backdrop-blur-md"
+            : "p-2 rounded-lg justify-center items-center backdrop-blur-md"
 
           return (
             <GlassTableCell.Actions>
               {!isEpisode && (
                 <Pressable
                   onPress={() => onToggleFeatured(row.id)}
-                  style={[
-                    buttonStyle,
-                    { backgroundColor: row.is_featured ? '#f59e0b80' : '#6b728040' },
-                  ]}
+                  className={`${buttonClass} ${row.is_featured ? 'bg-amber-500/50' : 'bg-gray-500/25'}`}
                 >
                   <Star
                     size={buttonSize}
@@ -386,23 +384,20 @@ export default function HierarchicalContentTable({
               )}
               <Pressable
                 onPress={() => onTogglePublish(row.id)}
-                style={[
-                  buttonStyle,
-                  { backgroundColor: row.is_published ? '#10b98180' : '#6b728080' },
-                ]}
+                className={`${buttonClass} ${row.is_published ? 'bg-green-500/50' : 'bg-gray-500/50'}`}
               >
                 <Eye size={buttonSize} color={row.is_published ? '#10b981' : '#6b7280'} />
               </Pressable>
               <Link to={`/admin/content/${row.id}/edit`} style={{ textDecoration: 'none' }}>
-                <Pressable style={[buttonStyle, { backgroundColor: '#a855f780' }]}>
-                  <Text style={isEpisode ? styles.editTextSmall : styles.editText}>
+                <Pressable className={`${buttonClass} bg-purple-600/50`}>
+                  <Text className={`${isEpisode ? 'text-[10px]' : 'text-xs'} text-purple-400 font-medium`}>
                     {t('common.edit')}
                   </Text>
                 </Pressable>
               </Link>
               <Pressable
                 onPress={() => onDelete(row.id)}
-                style={[buttonStyle, { backgroundColor: '#ef444480' }]}
+                className={`${buttonClass} bg-red-500/50`}
               >
                 <Trash2 size={buttonSize} color="#ef4444" />
               </Pressable>
@@ -415,372 +410,16 @@ export default function HierarchicalContentTable({
   )
 
   return (
-    <>
-      <style>{`
-        .thumbnailCell:hover .thumbnailOverlay {
-          opacity: 1 !important;
-        }
-      `}</style>
-      <GlassTable
-        columns={columns}
-        data={flattenedData}
-        loading={loading}
-        pagination={pagination}
-        onPageChange={onPageChange}
-        emptyMessage={emptyMessage}
-        isRTL={isRTL}
-        rowKey={(row) => `${row.rowType}-${row.id}`}
-      />
-    </>
+    <GlassTable
+      columns={columns}
+      data={flattenedData}
+      loading={loading}
+      pagination={pagination}
+      onPageChange={onPageChange}
+      emptyMessage={emptyMessage}
+      isRTL={isRTL}
+      rowKey={(row) => `${row.rowType}-${row.id}`}
+      className="bg-white/5 backdrop-blur-xl rounded-2xl border border-white/10 overflow-hidden"
+    />
   )
 }
-
-const styles = StyleSheet.create({
-  container: {
-    backgroundColor: 'rgba(255, 255, 255, 0.03)',
-    borderRadius: borderRadius.lg,
-    borderWidth: 1,
-    borderColor: colors.glassBorder,
-    overflow: 'hidden',
-  },
-  loadingContainer: {
-    padding: spacing.xl * 2,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  emptyContainer: {
-    padding: spacing.xl * 2,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  emptyText: {
-    color: colors.textMuted,
-    fontSize: 14,
-  },
-
-  // Header
-  headerRow: {
-    flexDirection: 'row',
-    backgroundColor: 'rgba(0, 0, 0, 0.3)',
-    borderBottomWidth: 1,
-    borderBottomColor: colors.glassBorder,
-  },
-  headerCell: {
-    paddingHorizontal: spacing.md,
-    paddingVertical: spacing.sm,
-  },
-  headerText: {
-    fontSize: 12,
-    fontWeight: '600',
-    color: colors.textSecondary,
-    textTransform: 'uppercase',
-  },
-
-  // Row
-  row: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    borderBottomWidth: 1,
-    borderBottomColor: 'rgba(255, 255, 255, 0.05)',
-    minHeight: 70,
-  },
-
-  // Cells
-  expandCell: {
-    width: 50,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  expandButton: {
-    padding: spacing.sm,
-    backgroundColor: 'rgba(59, 130, 246, 0.15)',
-    borderRadius: borderRadius.md,
-  },
-  expandPlaceholder: {
-    width: 20,
-  },
-  thumbnailCell: {
-    width: 60,
-    paddingHorizontal: spacing.xs,
-    cursor: 'pointer',
-  } as any,
-  thumbnailWrapper: {
-    width: 45,
-    height: 65,
-    borderRadius: borderRadius.sm,
-    overflow: 'hidden',
-    position: 'relative',
-  } as any,
-  thumbnail: {
-    width: '100%',
-    height: '100%',
-    backgroundSize: 'cover',
-    backgroundPosition: 'center',
-  } as any,
-  thumbnailPlaceholder: {
-    width: '100%',
-    height: '100%',
-    backgroundColor: 'rgba(255, 255, 255, 0.05)',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  thumbnailOverlay: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-    backgroundColor: 'rgba(0, 0, 0, 0.7)',
-    alignItems: 'center',
-    justifyContent: 'center',
-    opacity: 0,
-    transition: 'opacity 0.2s ease',
-  } as any,
-  thumbnailOverlayText: {
-    color: colors.text,
-    fontSize: 10,
-    fontWeight: '600',
-  },
-  titleCell: {
-    flex: 1,
-    paddingHorizontal: spacing.md,
-    minWidth: 200,
-  },
-  titleRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing.sm,
-  },
-  titleText: {
-    fontSize: 14,
-    fontWeight: '500',
-    color: colors.text,
-  },
-  typeText: {
-    fontSize: 12,
-    color: colors.textMuted,
-    marginTop: 2,
-  },
-  episodeBadge: {
-    backgroundColor: 'rgba(107, 33, 168, 0.3)',
-    paddingHorizontal: spacing.sm,
-    paddingVertical: 2,
-    borderRadius: borderRadius.full,
-  },
-  episodeBadgeText: {
-    fontSize: 11,
-    color: '#a855f7',
-    fontWeight: '500',
-  },
-  categoryCell: {
-    width: 140,
-    paddingHorizontal: spacing.md,
-  },
-  yearCell: {
-    width: 80,
-    paddingHorizontal: spacing.md,
-  },
-  statusCell: {
-    width: 100,
-    paddingHorizontal: spacing.md,
-  },
-  actionsCell: {
-    width: 180,
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing.xs,
-    paddingHorizontal: spacing.md,
-  },
-  cellText: {
-    fontSize: 14,
-    color: colors.text,
-  },
-  noSubtitles: {
-    color: colors.textMuted,
-    opacity: 0.5,
-  },
-  subtitleFlags: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing.xs,
-    flexWrap: 'wrap',
-  },
-  languageFlag: {
-    fontSize: 18,
-    cursor: 'pointer',
-  },
-
-  // Status Badge
-  statusBadge: {
-    paddingHorizontal: spacing.sm,
-    paddingVertical: spacing.xs,
-    borderRadius: borderRadius.full,
-    alignSelf: 'flex-start',
-  },
-  statusBadgeText: {
-    fontSize: 12,
-    fontWeight: '500',
-  },
-  statusBadgeSmall: {
-    paddingHorizontal: spacing.xs,
-    paddingVertical: 2,
-    borderRadius: borderRadius.full,
-    alignSelf: 'flex-start',
-  },
-  statusBadgeTextSmall: {
-    fontSize: 10,
-    fontWeight: '500',
-  },
-
-  // Action Buttons
-  actionButton: {
-    padding: spacing.sm,
-    borderRadius: borderRadius.md,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  actionButtonSmall: {
-    padding: spacing.xs,
-    borderRadius: borderRadius.sm,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  editText: {
-    color: '#a855f7',
-    fontSize: 12,
-    fontWeight: '500',
-  },
-  editTextSmall: {
-    color: '#a855f7',
-    fontSize: 10,
-    fontWeight: '500',
-  },
-
-  // Episode Rows
-  episodesContainer: {
-    backgroundColor: 'rgba(0, 0, 0, 0.2)',
-  },
-  episodeRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    borderBottomWidth: 1,
-    borderBottomColor: 'rgba(255, 255, 255, 0.03)',
-    minHeight: 50,
-    paddingVertical: spacing.xs,
-  },
-  episodeLoadingRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: spacing.md,
-    padding: spacing.lg,
-  },
-  loadingText: {
-    color: colors.textMuted,
-    fontSize: 12,
-  },
-  episodeEmptyRow: {
-    padding: spacing.lg,
-    alignItems: 'center',
-  },
-  emptyEpisodeText: {
-    color: colors.textMuted,
-    fontSize: 12,
-  },
-  episodeIndent: {
-    width: 40,
-    height: '100%',
-    alignItems: 'center',
-  },
-  indentLine: {
-    width: 1,
-    height: '100%',
-    backgroundColor: 'rgba(255, 255, 255, 0.1)',
-    marginLeft: -10,
-  },
-  episodeThumbnailCell: {
-    width: 60,
-    paddingHorizontal: spacing.xs,
-  },
-  episodeThumbnail: {
-    width: 50,
-    height: 30,
-    borderRadius: borderRadius.xs,
-    backgroundSize: 'cover',
-    backgroundPosition: 'center',
-  } as any,
-  episodeThumbnailPlaceholder: {
-    width: 50,
-    height: 30,
-    backgroundColor: 'rgba(255, 255, 255, 0.05)',
-    borderRadius: borderRadius.xs,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  episodeTitleCell: {
-    flex: 1,
-    paddingHorizontal: spacing.md,
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing.sm,
-  },
-  episodeNumber: {
-    fontSize: 12,
-    fontWeight: '600',
-    color: colors.primary,
-    minWidth: 70,
-  },
-  episodeTitle: {
-    fontSize: 13,
-    color: colors.text,
-    flex: 1,
-  },
-  episodeDurationCell: {
-    width: 80,
-    paddingHorizontal: spacing.md,
-  },
-  episodeDuration: {
-    fontSize: 12,
-    color: colors.textMuted,
-  },
-  episodeStatusCell: {
-    width: 100,
-    paddingHorizontal: spacing.md,
-  },
-  episodeActionsCell: {
-    width: 140,
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing.xs,
-    paddingHorizontal: spacing.md,
-  },
-
-  // Pagination
-  pagination: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: spacing.md,
-    padding: spacing.lg,
-    borderTopWidth: 1,
-    borderTopColor: colors.glassBorder,
-  },
-  pageButton: {
-    paddingHorizontal: spacing.md,
-    paddingVertical: spacing.sm,
-    backgroundColor: 'rgba(255, 255, 255, 0.1)',
-    borderRadius: borderRadius.md,
-  },
-  pageButtonDisabled: {
-    opacity: 0.5,
-  },
-  pageButtonText: {
-    color: colors.text,
-    fontSize: 13,
-    fontWeight: '500',
-  },
-  pageInfo: {
-    color: colors.textMuted,
-    fontSize: 13,
-  },
-})

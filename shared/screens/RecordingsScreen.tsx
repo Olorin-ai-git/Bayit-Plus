@@ -15,6 +15,7 @@ import { useNavigation } from '@react-navigation/native';
 import { GlassView } from '../components/ui';
 import { useDirection } from '../hooks/useDirection';
 import { useAuthStore } from '../stores/authStore';
+import { recordingService } from '../services';
 import { colors, spacing, borderRadius } from '../theme';
 import { isTV } from '../utils/platform';
 
@@ -178,33 +179,11 @@ export default function RecordingsScreen() {
 
   const loadRecordings = useCallback(async () => {
     try {
-      // TODO: Replace with actual API call
-      // const data = await recordingApi.getRecordings();
-      // For now, use demo data
-      const demoRecordings: Recording[] = [
-        {
-          id: '1',
-          title: 'Evening News',
-          channel_name: 'Channel 12',
-          start_time: new Date().toISOString(),
-          end_time: new Date(Date.now() + 3600000).toISOString(),
-          duration_seconds: 3600,
-          status: 'completed',
-          file_size_mb: 512,
-        },
-        {
-          id: '2',
-          title: 'Sports Tonight',
-          channel_name: 'Sport 5',
-          start_time: new Date(Date.now() + 7200000).toISOString(),
-          end_time: new Date(Date.now() + 10800000).toISOString(),
-          duration_seconds: 3600,
-          status: 'scheduled',
-        },
-      ];
-      setRecordings(demoRecordings);
+      const data = await recordingService.getRecordings();
+      setRecordings(data.recordings || []);
     } catch (error) {
       console.error('Failed to load recordings:', error);
+      setRecordings([]);
     } finally {
       setLoading(false);
       setRefreshing(false);
@@ -231,8 +210,12 @@ export default function RecordingsScreen() {
   };
 
   const handleDeleteRecording = async (id: string) => {
-    // TODO: Implement delete
-    setRecordings((prev) => prev.filter((r) => r.id !== id));
+    try {
+      await recordingService.deleteRecording(id);
+      setRecordings((prev) => prev.filter((r) => r.id !== id));
+    } catch (error) {
+      console.error('Failed to delete recording:', error);
+    }
   };
 
   const filteredRecordings = recordings.filter((r) => {

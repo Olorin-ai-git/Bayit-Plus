@@ -7,8 +7,8 @@ import { useDirection } from '@/hooks/useDirection';
 import VideoPlayer from '@/components/player/VideoPlayer';
 import AudioPlayer from '@/components/player/AudioPlayer';
 import ContentCarousel from '@/components/content/ContentCarousel';
-import { contentService, liveService, radioService, podcastService, historyService, chaptersService } from '@/services/api';
-import { podcastsService } from '@/services/adminApi';
+import { liveService, radioService, podcastService, historyService, chaptersService } from '@/services/api';
+import { adminContentService, adminPodcastsService } from '@/services/adminApi';
 import { colors, spacing, borderRadius } from '@bayit/shared/theme';
 import { GlassCard, GlassButton, GlassView } from '@bayit/shared/ui';
 import logger from '@/utils/logger';
@@ -154,8 +154,8 @@ export default function WatchPage({ type = 'vod' }: WatchPageProps) {
         default:
           // vod, judaism, kids all use content service
           [data, stream] = await Promise.all([
-            contentService.getById(contentId),
-            contentService.getStreamUrl(contentId),
+            adminContentService.getById(contentId),
+            adminContentService.getStreamUrl(contentId),
           ]);
       }
       setContent(data);
@@ -240,7 +240,7 @@ export default function WatchPage({ type = 'vod' }: WatchPageProps) {
       t('watch.confirmDeleteEpisode'),
       async () => {
         try {
-          await podcastsService.deleteEpisode(contentId, episodeId);
+          await adminPodcastsService.deleteEpisode(contentId, episodeId);
           // Reload content to refresh episodes list
           await loadContent();
           logger.info('Episode deleted successfully');
