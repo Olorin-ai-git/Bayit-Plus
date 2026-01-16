@@ -1,0 +1,88 @@
+/**
+ * Olorin Shared Styles
+ * Main stylesheet entry point for all Olorin portals
+ */
+
+/* Tailwind CSS directives */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Wizard Theme - Enhanced Glassmorphic Design System */
+@import './wizard-theme.css';
+
+/* Base styles */
+@layer base {
+  * {
+    @apply box-border;
+  }
+
+  html {
+    @apply antialiased;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  body {
+    @apply bg-wizard-bg-deep text-wizard-text-secondary font-sans;
+    @apply min-h-screen;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    @apply text-wizard-text-primary font-bold;
+  }
+
+  a {
+    @apply text-wizard-accent-purple hover:text-wizard-accent-pink transition-colors;
+  }
+
+  /* Scrollbar styling for wizard theme */
+  ::-webkit-scrollbar {
+    width: 12px;
+    height: 12px;
+  }
+
+  ::-webkit-scrollbar-track {
+    @apply bg-wizard-bg-secondary;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    @apply bg-wizard-accent-purple/50 rounded-full;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    @apply bg-wizard-accent-purple;
+  }
+
+  /* Firefox scrollbar */
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: rgba(168, 85, 247, 0.5) rgb(45, 27, 78);
+  }
+}
+
+/* Component layer utilities */
+@layer components {
+  /* Container with max-width */
+  .wizard-container {
+    @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8;
+  }
+
+  /* Section padding */
+  .wizard-section {
+    @apply py-16 md:py-24;
+  }
+
+  /* Grid layouts */
+  .wizard-grid-2 {
+    @apply grid grid-cols-1 md:grid-cols-2 gap-8;
+  }
+
+  .wizard-grid-3 {
+    @apply grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8;
+  }
+
+  .wizard-grid-4 {
+    @apply grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8;
+  }
+}

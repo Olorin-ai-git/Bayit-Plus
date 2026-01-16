@@ -1,0 +1,8 @@
+/**
+ * Portal Fraud Styles
+ * Imports shared wizard theme styles
+ */
+
+@import '../../shared/src/styles/index.css';
+
+/* Fraud-specific overrides can go here */

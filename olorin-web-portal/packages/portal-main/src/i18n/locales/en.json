@@ -1,0 +1,119 @@
+{
+  "nav": {
+    "home": "Home",
+    "about": "About",
+    "solutions": "Solutions",
+    "knowledgeHub": "Knowledge Hub",
+    "contact": "Contact",
+    "getStarted": "Get Started"
+  },
+  "hero": {
+    "title": "OLORIN.AI:",
+    "titleHighlight": "The Future of Generative Solutions",
+    "subtitle": "Agentic AI-Based Solutions Across Industries",
+    "description": "Empowering businesses with intelligent AI agents for fraud detection, media streaming, and radio management",
+    "ctaExplore": "Explore Our Solutions",
+    "ctaGetStarted": "Get Started"
+  },
+  "solutions": {
+    "sectionTitle": "Our Solutions",
+    "sectionSubtitle": "Discover how our AI-powered solutions transform your business",
+    "fraud": {
+      "title": "AI-Powered Fraud Prevention",
+      "description": "Detect and prevent fraud in real-time with 6 specialized AI agents",
+      "cta": "Learn More"
+    },
+    "streaming": {
+      "title": "AI-Driven Media Streaming",
+      "description": "Optimize content delivery with intelligent streaming solutions",
+      "cta": "Learn More"
+    },
+    "radio": {
+      "title": "Intelligent Radio Management",
+      "description": "Automate and enhance radio operations with AI",
+      "cta": "Learn More"
+    },
+    "generative": {
+      "title": "Custom AI Solutions",
+      "description": "Build tailored agentic AI for your business needs",
+      "cta": "Contact Us"
+    }
+  },
+  "about": {
+    "title": "About Olorin.AI",
+    "mission": {
+      "title": "Our Mission",
+      "content": "To revolutionize industries with cutting-edge agentic AI solutions that empower businesses to achieve unprecedented efficiency and intelligence"
+    },
+    "vision": {
+      "title": "Our Vision",
+      "content": "A future where AI agents seamlessly collaborate with humans to solve complex challenges across fraud detection, media distribution, and broadcast management"
+    },
+    "team": {
+      "title": "Our Team",
+      "subtitle": "Meet the experts behind Olorin.AI"
+    },
+    "technology": {
+      "title": "Our Technology",
+      "subtitle": "Cutting-edge AI powered by advanced machine learning"
+    }
+  },
+  "knowledgeHub": {
+    "title": "Knowledge Hub",
+    "subtitle": "Resources to help you understand and leverage AI solutions",
+    "whitePapers": {
+      "title": "White Papers",
+      "description": "In-depth research and insights on AI technologies"
+    },
+    "caseStudies": {
+      "title": "Case Studies",
+      "description": "Real-world success stories from our clients"
+    },
+    "webinars": {
+      "title": "Webinars",
+      "description": "Expert-led sessions on AI implementation"
+    },
+    "ebooks": {
+      "title": "E-Books",
+      "description": "Comprehensive guides on fraud prevention and AI"
+    }
+  },
+  "contact": {
+    "title": "Get In Touch",
+    "subtitle": "Ready to transform your business with AI?",
+    "form": {
+      "name": "Name",
+      "email": "Email",
+      "company": "Company",
+      "message": "Message",
+      "submit": "Send Message",
+      "sending": "Sending...",
+      "success": "Message sent successfully! We'll get back to you soon.",
+      "error": "Failed to send message. Please try again."
+    },
+    "info": {
+      "title": "Contact Information",
+      "email": "contact@olorin.ai",
+      "phone": "+1 (201) 397-9142",
+      "address": "185 Madison Ave.\nCresskill 07626 USA",
+      "hours": "Mon - Fri: 9:00 AM - 6:00 PM EST"
+    }
+  },
+  "trustIndicators": {
+    "title": "Trusted By Industry Leaders",
+    "certifications": "SOC 2, GDPR, CCPA, ISO 27001 Compliant"
+  },
+  "cta": {
+    "title": "Ready to Transform Your Business?",
+    "subtitle": "Join hundreds of companies using Olorin.AI to detect fraud, optimize streaming, and manage radio operations",
+    "button": "Schedule a Demo"
+  },
+  "footer": {
+    "description": "Leading the future of enterprise AI with Generative AI agentic solutions across fraud detection, media streaming, and radio management.",
+    "quickLinks": "Quick Links",
+    "contactInfo": "Contact Info",
+    "copyright": "© 2026 Olorin.ai. All rights reserved.",
+    "privacy": "Privacy Policy",
+    "terms": "Terms of Service"
+  }
+}

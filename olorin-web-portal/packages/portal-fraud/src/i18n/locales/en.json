@@ -1,0 +1,125 @@
+{
+  "nav": {
+    "home": "Home",
+    "agents": "AI Agents",
+    "features": "Features",
+    "useCases": "Use Cases",
+    "demo": "Live Demo",
+    "roi": "ROI Calculator",
+    "compare": "Compare",
+    "pricing": "Pricing",
+    "contact": "Contact",
+    "getStarted": "Get Started"
+  },
+  "hero": {
+    "title": "AI-POWERED",
+    "titleHighlight": "FRAUD PREVENTION",
+    "subtitle": "Secure Your Business with Independent AI Agents",
+    "description": "Detect and prevent fraud in real-time with 6 specialized AI agents",
+    "ctaExplore": "Explore Solutions",
+    "ctaDemo": "Schedule Demo"
+  },
+  "agents": {
+    "sectionTitle": "How Our Agents Explore",
+    "sectionSubtitle": "Six specialized AI agents working together to detect fraud",
+    "location": {
+      "title": "Location Agents",
+      "description": "Analyze geographic patterns and detect location anomalies in real-time"
+    },
+    "network": {
+      "title": "Network Agents",
+      "description": "Monitor network behavior and identify suspicious connections"
+    },
+    "authentication": {
+      "title": "Authentication Agents",
+      "description": "Verify identity and detect authentication fraud with advanced biometrics"
+    },
+    "behavioral": {
+      "title": "Behavioral Biometrics Agents",
+      "description": "Analyze user behavior patterns and detect anomalies"
+    },
+    "device": {
+      "title": "Device Agents",
+      "description": "Monitor device fingerprints and detect compromised devices"
+    },
+    "velocity": {
+      "title": "Velocity Agents",
+      "description": "Track transaction velocity and identify unusual patterns"
+    }
+  },
+  "workflow": {
+    "sectionTitle": "Intelligent Agent Workflow",
+    "sectionSubtitle": "How our AI agents collaborate to prevent fraud",
+    "step1": {
+      "title": "Data Ingestion",
+      "description": "Collect data from multiple sources in real-time"
+    },
+    "step2": {
+      "title": "Cross-Domain Analysis",
+      "description": "AI agents collaborate to analyze patterns across domains"
+    },
+    "step3": {
+      "title": "Anomaly Detection",
+      "description": "Identify suspicious activities with machine learning"
+    },
+    "step4": {
+      "title": "Real-Time Scoring",
+      "description": "Generate fraud risk scores and actionable recommendations"
+    }
+  },
+  "features": {
+    "sectionTitle": "Advanced Fraud Detection Features",
+    "realTime": {
+      "title": "Real-Time Threat Analysis",
+      "description": "Detect and respond to fraud attempts in under 1 second"
+    },
+    "instantAlert": {
+      "title": "Instant Alert AI",
+      "description": "Automated alerts with intelligent prioritization"
+    },
+    "predictive": {
+      "title": "Predictive Protection",
+      "description": "Prevent fraud before it happens with predictive models"
+    }
+  },
+  "successStory": {
+    "title": "Success Story: Reducing Fraud by 80%",
+    "subtitle": "How a major financial institution transformed fraud prevention",
+    "metric1": "80% Fraud Reduction",
+    "metric2": "95% Detection Accuracy",
+    "metric3": "<1s Response Time",
+    "metric4": "60% Cost Savings",
+    "description": "This institution saved millions while improving customer experience and detection accuracy through our AI-powered fraud prevention platform.",
+    "cta": "Schedule a Demo"
+  },
+  "useCases": {
+    "title": "Industry-Specific Solutions",
+    "financial": {
+      "title": "Financial Services",
+      "description": "Payment fraud, account takeover, money laundering detection"
+    },
+    "ecommerce": {
+      "title": "E-Commerce",
+      "description": "Transaction fraud, account abuse, chargeback reduction"
+    },
+    "insurance": {
+      "title": "Insurance",
+      "description": "Claims fraud, application fraud, premium fraud detection"
+    },
+    "healthcare": {
+      "title": "Healthcare",
+      "description": "Medical billing fraud, identity verification, prescription fraud"
+    }
+  },
+  "stats": {
+    "accuracy": "95% Accuracy",
+    "reduction": "80% Reduction",
+    "response": "<1s Response",
+    "monitoring": "24/7 Monitoring"
+  },
+  "cta": {
+    "title": "Ready to Stop Fraud?",
+    "subtitle": "Join hundreds of companies protecting their business with Olorin.AI",
+    "button": "Schedule a Demo"
+  }
+}

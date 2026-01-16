@@ -90,7 +90,7 @@ const Footer: React.FC = () => {
         {/* Bottom Bar */}
         <div className="border-t border-corporate-borderPrimary/20 mt-8 pt-8 flex flex-col sm:flex-row justify-between items-center">
           <p className="text-corporate-textMuted text-sm">
-            © 2025 Olorin.ai. All rights reserved.
+            © 2026 Olorin.ai. All rights reserved.
           </p>
           <div className="flex space-x-4 mt-4 sm:mt-0">
             <Link to="/privacy" className="text-corporate-textMuted hover:text-corporate-accentPrimary text-sm transition-colors">

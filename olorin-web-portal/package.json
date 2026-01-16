@@ -1,8 +1,11 @@
 {
-  "name": "olorin-web-portal",
+  "name": "olorin-web-portals",
   "version": "1.0.0",
-  "description": "Web portal for Olorin.ai - Generative AI agentic solutions for enterprise fraud prevention",
+  "description": "Web portals for Olorin.ai - Multi-subdomain agentic AI solutions",
   "private": true,
+  "workspaces": [
+    "packages/*"
+  ],
   "dependencies": {
     "@emailjs/browser": "^4.4.1",
     "@types/node": "^20.0.0",
@@ -25,10 +28,17 @@
     "web-vitals": "^3.0.0"
   },
   "scripts": {
-    "start": "react-scripts start",
-    "build": "react-scripts build",
-    "test": "react-scripts test",
-    "eject": "react-scripts eject",
+    "build:all": "npm run build --workspaces",
+    "build:shared": "npm run build -w packages/shared",
+    "build:main": "npm run build -w packages/portal-main",
+    "build:fraud": "npm run build -w packages/portal-fraud",
+    "build:streaming": "npm run build -w packages/portal-streaming",
+    "build:radio": "npm run build -w packages/portal-radio",
+    "dev:main": "npm run start -w packages/portal-main",
+    "dev:fraud": "npm run start -w packages/portal-fraud",
+    "dev:streaming": "npm run start -w packages/portal-streaming",
+    "dev:radio": "npm run start -w packages/portal-radio",
+    "test:all": "npm run test --workspaces",
     "release": "./scripts/release.sh",
     "release:win": "bash ./scripts/release.sh"
   },

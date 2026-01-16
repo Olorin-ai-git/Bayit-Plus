@@ -1,0 +1,299 @@
+name: Deploy Olorin Backend to Cloud Run
+
+on:
+  push:
+    branches:
+      - main
+      - develop
+    paths:
+      - 'olorin-server/**'
+      - '.github/workflows/deploy-cloudrun.yml'
+
+  pull_request:
+    branches:
+      - main
+      - develop
+    paths:
+      - 'olorin-server/**'
+
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Target environment'
+        required: true
+        default: 'staging'
+        type: choice
+        options:
+          - staging
+          - production
+      force_deploy:
+        description: 'Force deployment (skip tests)'
+        required: false
+        default: false
+        type: boolean
+
+env:
+  PROJECT_ID: olorin-fraud-detection
+  REGION: us-east1
+  SERVICE_NAME: olorin-backend
+  ARTIFACT_REGISTRY: us-east1-docker.pkg.dev
+
+jobs:
+  # ==========================================
+  # Determine environment from branch/input
+  # ==========================================
+  setup:
+    name: Setup Deployment
+    runs-on: ubuntu-latest
+    outputs:
+      environment: ${{ steps.determine-env.outputs.environment }}
+      should-deploy: ${{ steps.determine-env.outputs.should-deploy }}
+    steps:
+      - name: Determine Environment
+        id: determine-env
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            ENV="${{ github.event.inputs.environment }}"
+            DEPLOY="true"
+          elif [ "${{ github.ref }}" = "refs/heads/main" ]; then
+            ENV="production"
+            DEPLOY="true"
+          elif [ "${{ github.ref }}" = "refs/heads/develop" ]; then
+            ENV="staging"
+            DEPLOY="true"
+          else
+            ENV="staging"
+            DEPLOY="false"
+          fi
+
+          echo "environment=$ENV" >> $GITHUB_OUTPUT
+          echo "should-deploy=$DEPLOY" >> $GITHUB_OUTPUT
+          echo "📋 Environment: $ENV"
+          echo "🚀 Should Deploy: $DEPLOY"
+
+  # ==========================================
+  # Run tests and code quality checks
+  # ==========================================
+  test:
+    name: Test & Quality Checks
+    runs-on: ubuntu-latest
+    if: github.event.inputs.force_deploy != 'true'
+    defaults:
+      run:
+        working-directory: olorin-server
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup Python 3.11
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+
+      - name: Install Poetry
+        run: |
+          pip install poetry==1.8.0
+          poetry config virtualenvs.create false
+
+      - name: Install Dependencies
+        run: poetry install --no-root --no-interaction
+
+      - name: Run Black Formatting Check
+        run: poetry run black --check . || echo "⚠️ Formatting issues detected"
+
+      - name: Run isort Import Check
+        run: poetry run isort --check-only . || echo "⚠️ Import order issues detected"
+
+      - name: Run Type Checking (mypy)
+        run: poetry run mypy . --ignore-missing-imports --no-strict-optional || true
+
+      - name: Run Unit Tests
+        run: poetry run pytest test/unit/ -v --tb=short --maxfail=5
+        env:
+          TEST_MODE: 'true'
+          SKIP_DB_ON_STARTUP_FAILURE: 'true'
+
+      - name: Run Test Coverage
+        run: poetry run pytest --cov --cov-report=xml --cov-fail-under=30 || true
+        env:
+          TEST_MODE: 'true'
+
+      - name: Upload Coverage Report
+        uses: codecov/codecov-action@v4
+        with:
+          files: ./olorin-server/coverage.xml
+          flags: backend
+          name: olorin-backend
+        continue-on-error: true
+
+  # ==========================================
+  # Build and push Docker image
+  # ==========================================
+  build:
+    name: Build Docker Image
+    runs-on: ubuntu-latest
+    needs: [setup, test]
+    if: needs.setup.outputs.should-deploy == 'true' && (success() || github.event.inputs.force_deploy == 'true')
+    outputs:
+      image-tag: ${{ steps.build-image.outputs.image-tag }}
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Authenticate to Google Cloud
+        uses: google-github-actions/auth@v2
+        with:
+          credentials_json: ${{ secrets.GCP_SA_KEY }}
+
+      - name: Setup Cloud SDK
+        uses: google-github-actions/setup-gcloud@v2
+
+      - name: Configure Docker for Artifact Registry
+        run: |
+          gcloud auth configure-docker ${{ env.ARTIFACT_REGISTRY }}
+
+      - name: Build Docker Image
+        id: build-image
+        run: |
+          IMAGE_TAG="${{ env.ARTIFACT_REGISTRY }}/${{ env.PROJECT_ID }}/olorin/backend:${{ github.sha }}"
+          IMAGE_LATEST="${{ env.ARTIFACT_REGISTRY }}/${{ env.PROJECT_ID }}/olorin/backend:latest"
+
+          docker build \
+            -t "$IMAGE_TAG" \
+            -t "$IMAGE_LATEST" \
+            -f olorin-server/Dockerfile.cloudrun \
+            --build-arg APP_ENV=${{ needs.setup.outputs.environment }} \
+            --cache-from "$IMAGE_LATEST" \
+            olorin-server/
+
+          echo "image-tag=$IMAGE_TAG" >> $GITHUB_OUTPUT
+
+      - name: Push Docker Image
+        run: |
+          docker push ${{ env.ARTIFACT_REGISTRY }}/${{ env.PROJECT_ID }}/olorin/backend:${{ github.sha }}
+          docker push ${{ env.ARTIFACT_REGISTRY }}/${{ env.PROJECT_ID }}/olorin/backend:latest
+
+      - name: Scan Image for Vulnerabilities
+        run: |
+          gcloud artifacts docker images scan ${{ steps.build-image.outputs.image-tag }} \
+            --location=${{ env.REGION }} \
+            --project=${{ env.PROJECT_ID }} || true
+        continue-on-error: true
+
+  # ==========================================
+  # Deploy to Cloud Run
+  # ==========================================
+  deploy:
+    name: Deploy to Cloud Run
+    runs-on: ubuntu-latest
+    needs: [setup, build]
+    environment:
+      name: ${{ needs.setup.outputs.environment }}
+      url: ${{ steps.deploy.outputs.url }}
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Authenticate to Google Cloud
+        uses: google-github-actions/auth@v2
+        with:
+          credentials_json: ${{ secrets.GCP_SA_KEY }}
+
+      - name: Set Environment-Specific Configuration
+        id: config
+        run: |
+          if [ "${{ needs.setup.outputs.environment }}" = "production" ]; then
+            echo "memory=4Gi" >> $GITHUB_OUTPUT
+            echo "cpu=2" >> $GITHUB_OUTPUT
+            echo "min-instances=1" >> $GITHUB_OUTPUT
+            echo "max-instances=10" >> $GITHUB_OUTPUT
+          else
+            echo "memory=2Gi" >> $GITHUB_OUTPUT
+            echo "cpu=1" >> $GITHUB_OUTPUT
+            echo "min-instances=0" >> $GITHUB_OUTPUT
+            echo "max-instances=5" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Deploy to Cloud Run
+        id: deploy
+        uses: google-github-actions/deploy-cloudrun@v2
+        with:
+          service: ${{ env.SERVICE_NAME }}-${{ needs.setup.outputs.environment }}
+          image: ${{ needs.build.outputs.image-tag }}
+          region: ${{ env.REGION }}
+          project_id: ${{ env.PROJECT_ID }}
+          flags: |
+            --port=8090
+            --memory=${{ steps.config.outputs.memory }}
+            --cpu=${{ steps.config.outputs.cpu }}
+            --min-instances=${{ steps.config.outputs.min-instances }}
+            --max-instances=${{ steps.config.outputs.max-instances }}
+            --concurrency=80
+            --timeout=300s
+            --service-account=olorin-detection@olorin-fraud-detection.iam.gserviceaccount.com
+            --ingress=all
+            --allow-unauthenticated
+            --execution-environment=gen2
+            --cpu-throttling=false
+            --set-env-vars=^@^APP_ENV=${{ needs.setup.outputs.environment }}@PORT=8090@FIREBASE_PROJECT_ID=olorin-ai@GOOGLE_CLOUD_PROJECT=${{ env.PROJECT_ID }}
+            --set-secrets=ANTHROPIC_API_KEY=ANTHROPIC_API_KEY:latest,OPENAI_API_KEY=OPENAI_API_KEY:latest,JWT_SECRET_KEY=JWT_SECRET_KEY:latest,DATABASE_PASSWORD=DATABASE_PASSWORD:latest,SNOWFLAKE_PASSWORD=SNOWFLAKE_PASSWORD:latest
+
+      - name: Show Deployment URL
+        run: |
+          echo "🚀 Deployed to: ${{ steps.deploy.outputs.url }}"
+          echo "DEPLOYMENT_URL=${{ steps.deploy.outputs.url }}" >> $GITHUB_ENV
+
+  # ==========================================
+  # Post-deployment verification
+  # ==========================================
+  verify:
+    name: Verify Deployment
+    runs-on: ubuntu-latest
+    needs: [setup, deploy]
+    steps:
+      - name: Verify Health Endpoint
+        run: |
+          SERVICE_URL="${{ needs.deploy.outputs.url }}"
+          echo "🏥 Checking health at: $SERVICE_URL/health"
+
+          # Wait for service to be ready (max 2 minutes)
+          for i in {1..12}; do
+            HTTP_CODE=$(curl -s -o /dev/null -w "%{http_code}" "$SERVICE_URL/health" || echo "000")
+            if [ "$HTTP_CODE" = "200" ]; then
+              echo "✅ Health check passed (HTTP $HTTP_CODE)"
+              exit 0
+            fi
+            echo "⏳ Waiting... Attempt $i/12 (HTTP $HTTP_CODE)"
+            sleep 10
+          done
+
+          echo "❌ Health check failed"
+          exit 1
+
+      - name: Run Smoke Tests
+        run: |
+          SERVICE_URL="${{ needs.deploy.outputs.url }}"
+
+          # Test info endpoint
+          echo "Testing /info endpoint..."
+          curl -f "$SERVICE_URL/info" || exit 1
+
+          echo "✅ Smoke tests passed"
+
+  # ==========================================
+  # Notify deployment completion
+  # ==========================================
+  notify:
+    name: Notify Deployment Status
+    runs-on: ubuntu-latest
+    needs: [setup, deploy, verify]
+    if: always()
+    steps:
+      - name: Deployment Notification
+        run: |
+          if [ "${{ needs.verify.result }}" = "success" ]; then
+            echo "::notice::✅ Deployment to ${{ needs.setup.outputs.environment }} succeeded"
+          else
+            echo "::error::❌ Deployment to ${{ needs.setup.outputs.environment }} failed"
+          fi

@@ -28,6 +28,17 @@
 - [API Integration Guide](api/API_INTEGRATION_GUIDE.md)
 - [Polling API Examples](api/POLLING_API_EXAMPLES.md)
 
+### 🗄️ Database Migration (PostgreSQL → MongoDB Atlas)
+- [MongoDB Migration README](MONGODB_README.md) - Documentation index and quick reference
+- [MongoDB Migration Complete Guide](MONGODB_MIGRATION_COMPLETE.md) - Master guide for entire migration
+- [MongoDB Configuration Guide](MONGODB_CONFIGURATION.md) - Comprehensive Atlas setup and tuning
+- [MongoDB Startup Integration](MONGODB_STARTUP_INTEGRATION.md) - Application integration guide
+- [MongoDB Service Migration Guide](MONGODB_SERVICE_MIGRATION_GUIDE.md) - Service layer conversion patterns
+- [MongoDB API Migration Guide](MONGODB_API_MIGRATION_GUIDE.md) - API endpoint conversion patterns
+- [MongoDB Reference Implementation](MONGODB_REFERENCE_IMPLEMENTATION.md) - Complete router migration example
+
+**Status**: ✅ Ready for production deployment (all infrastructure complete)
+
 ### 🎨 Frontend Development
 - [Frontend Guides](frontend/) - Component development, UI patterns
 - [Frontend Polling Specification](frontend/FRONTEND_POLLING_SPECIFICATION.md)

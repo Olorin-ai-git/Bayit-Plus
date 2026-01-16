@@ -28,9 +28,9 @@ from fastapi import (
     Response,
     status,
 )
-from sqlalchemy.orm import Session
+from motor.motor_asyncio import AsyncIOMotorDatabase
 
-from app.persistence.database import get_db
+from app.persistence.mongodb import get_mongodb
 from app.schemas.investigation_state import (
     InvestigationStateCreate,
     InvestigationStateResponse,
@@ -39,7 +39,7 @@ from app.schemas.investigation_state import (
     InvestigationStatus,
 )
 from app.security.auth import User, require_read_or_dev, require_write_or_dev
-from app.service.investigation_state_service import InvestigationStateService
+from app.service.mongodb.investigation_state_service import InvestigationStateService
 from app.service.progress_calculator_service import ProgressCalculatorService
 
 router = APIRouter(
@@ -47,6 +47,13 @@ router = APIRouter(
     tags=["Investigation State"],
     responses={404: {"description": "Not found"}, 409: {"description": "Conflict"}},
 )
+
+
+def get_tenant_id(current_user: User) -> str:
+    """Extract tenant_id from user context."""
+    # Default to "default" tenant for now
+    # Can be enhanced to extract from user attributes or JWT claims
+    return getattr(current_user, "tenant_id", "default")
 
 
 def _generate_etag(state: InvestigationStateResponse) -> str:
@@ -87,19 +94,47 @@ async def list_investigation_states(
     page_size: int = Query(20, ge=1, le=100),
     status: Optional[InvestigationStatus] = None,
     search: Optional[str] = None,
-    db: Session = Depends(get_db),
+    db: AsyncIOMotorDatabase = Depends(get_mongodb),
     current_user: User = Depends(require_read_or_dev),
+    tenant_id: str = Depends(get_tenant_id),
 ) -> PaginatedInvestigations:
     """Get paginated investigation states."""
-    service = InvestigationStateService(db)
-    
+    service = InvestigationStateService(db, tenant_id)
+
     # Return all investigations (no user_id filter) to allow viewing system investigations
-    return service.get_states(
-        user_id=None,
-        status=status,
-        search=search,
+    # MongoDB service needs get_states method - will use repository directly for now
+    from app.persistence.repositories.investigation_repository import InvestigationRepository
+
+    repository = InvestigationRepository(db)
+
+    # Build query
+    query = {"tenant_id": tenant_id}
+    if status:
+        query["status"] = status
+    if search:
+        query["investigation_id"] = {"$regex": search, "$options": "i"}
+
+    # Get total count
+    total_count = await repository.collection.count_documents(query)
+
+    # Get paginated items
+    skip = (page - 1) * page_size
+    cursor = repository.collection.find(query).sort("updated_at", -1).skip(skip).limit(page_size)
+    items = await cursor.to_list(length=page_size)
+
+    # Convert to response models
+    investigations = [
+        InvestigationStateResponse.model_validate(item, from_attributes=False)
+        for item in items
+    ]
+
+    return PaginatedInvestigations(
+        investigations=investigations,
+        total_count=total_count,
         page=page,
         page_size=page_size,
+        has_next_page=skip + len(items) < total_count,
+        has_previous_page=page > 1,
     )
 
 
@@ -114,11 +149,12 @@ async def create_investigation_state(
     data: InvestigationStateCreate,
     response: Response,
     background_tasks: BackgroundTasks,
-    db: Session = Depends(get_db),
+    db: AsyncIOMotorDatabase = Depends(get_mongodb),
     current_user: User = Depends(require_write_or_dev),
+    tenant_id: str = Depends(get_tenant_id),
 ) -> InvestigationStateResponse:
     """Create investigation state with automatic execution trigger. Auto-populates top 10% risk entities if placeholder detected. Raises 409 if already exists."""
-    service = InvestigationStateService(db)
+    service = InvestigationStateService(db, tenant_id)
     state = await service.create_state(
         user_id=current_user.username, data=data, background_tasks=background_tasks
     )
@@ -141,8 +177,9 @@ async def get_investigation_state(
     investigation_id: str,
     request: Request,
     response: Response,
-    db: Session = Depends(get_db),
+    db: AsyncIOMotorDatabase = Depends(get_mongodb),
     current_user: User = Depends(require_read_or_dev),
+    tenant_id: str = Depends(get_tenant_id),
 ) -> InvestigationStateResponse:
     """Get investigation state with conditional GET support (304 Not Modified) and enhanced progress."""
     import json
@@ -175,10 +212,10 @@ async def get_investigation_state(
             detail=f"Investigation state not found: {investigation_id}",
         )
 
-    service = InvestigationStateService(db)
+    service = InvestigationStateService(db, tenant_id)
 
     # Get state with authorization check
-    state = service.get_state_with_auth(
+    state = await service.get_state(
         investigation_id=investigation_id, user_id=current_user.username
     )
 
@@ -299,34 +336,29 @@ async def get_investigation_state(
             f"   ℹ️  Progress object is None (investigation may not be initialized)"
         )
 
-    # Log raw database JSON fields for debugging
-    from app.models.investigation_state import (
-        InvestigationState as InvestigationStateModel,
-    )
+    # Log raw database fields for debugging (MongoDB)
+    from app.persistence.repositories.investigation_repository import InvestigationRepository
 
-    db_state = (
-        db.query(InvestigationStateModel)
-        .filter(InvestigationStateModel.investigation_id == investigation_id)
-        .first()
-    )
+    repository = InvestigationRepository(db)
+    db_state = await repository.find_by_id(investigation_id, tenant_id)
 
-    if db_state:
+    if db_state and db_state.progress:
         logger.info(f"   🗄️  Raw database fields:")
-        logger.info(f"      - progress_json exists: {bool(db_state.progress_json)}")
+        logger.info(f"      - progress exists: {bool(db_state.progress)}")
 
-        if db_state.progress_json:
+        if db_state.progress:
             try:
-                progress_data = json.loads(db_state.progress_json)
+                progress_data = db_state.progress.model_dump(mode="json")
                 domain_findings_in_db = progress_data.get("domain_findings", {})
                 logger.info(
-                    f"      - domain_findings in progress_json: {len(domain_findings_in_db)} domains"
+                    f"      - domain_findings in progress: {len(domain_findings_in_db)} domains"
                 )
                 if domain_findings_in_db:
                     logger.info(
                         f"         Domains: {list(domain_findings_in_db.keys())}"
                     )
             except Exception as e:
-                logger.warning(f"      - Failed to parse progress_json: {str(e)}")
+                logger.warning(f"      - Failed to parse progress: {str(e)}")
 
     # Set response headers
     response.headers["ETag"] = state.etag
@@ -345,12 +377,13 @@ async def update_investigation_state(
     investigation_id: str,
     data: InvestigationStateUpdate,
     response: Response,
-    db: Session = Depends(get_db),
+    db: AsyncIOMotorDatabase = Depends(get_mongodb),
     current_user: User = Depends(require_write_or_dev),
+    tenant_id: str = Depends(get_tenant_id),
 ) -> InvestigationStateResponse:
     """Update state with optimistic locking. Raises 409 on version conflict."""
-    service = InvestigationStateService(db)
-    state = service.update_state(
+    service = InvestigationStateService(db, tenant_id)
+    state = await service.update_state(
         investigation_id=investigation_id, user_id=current_user.username, data=data
     )
 
@@ -367,12 +400,13 @@ async def update_investigation_state(
 )
 async def delete_investigation_state(
     investigation_id: str,
-    db: Session = Depends(get_db),
+    db: AsyncIOMotorDatabase = Depends(get_mongodb),
     current_user: User = Depends(require_write_or_dev),
+    tenant_id: str = Depends(get_tenant_id),
 ) -> None:
     """Delete investigation state. Raises 404 if not found."""
-    service = InvestigationStateService(db)
-    service.delete_state(
+    service = InvestigationStateService(db, tenant_id)
+    await service.delete_state(
         investigation_id=investigation_id, user_id=current_user.username
     )
 
@@ -387,12 +421,13 @@ async def get_investigation_history(
     investigation_id: str,
     limit: int = 20,
     offset: int = 0,
-    db: Session = Depends(get_db),
+    db: AsyncIOMotorDatabase = Depends(get_mongodb),
     current_user: User = Depends(require_read_or_dev),
+    tenant_id: str = Depends(get_tenant_id),
 ) -> List[Dict[str, Any]]:
     """Get paginated investigation history. Raises 404 if investigation not found."""
-    service = InvestigationStateService(db)
-    return service.get_history(
+    service = InvestigationStateService(db, tenant_id)
+    return await service.get_history(
         investigation_id=investigation_id,
         user_id=current_user.username,
         limit=limit,

@@ -1,0 +1,26 @@
+{
+  "short_name": "Olorin.AI",
+  "name": "Olorin.AI - Agentic AI Solutions",
+  "description": "Agentic AI-based solutions for fraud detection, media streaming, and radio management",
+  "icons": [
+    {
+      "src": "favicon.ico",
+      "sizes": "64x64 32x32 24x24 16x16",
+      "type": "image/x-icon"
+    },
+    {
+      "src": "logo192.png",
+      "type": "image/png",
+      "sizes": "192x192"
+    },
+    {
+      "src": "logo512.png",
+      "type": "image/png",
+      "sizes": "512x512"
+    }
+  ],
+  "start_url": ".",
+  "display": "standalone",
+  "theme_color": "#1a0033",
+  "background_color": "#0f0027"
+}
