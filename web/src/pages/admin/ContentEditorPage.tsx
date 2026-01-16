@@ -157,7 +157,7 @@ export default function ContentEditorPage() {
 
       {/* Success Message */}
       {success && (
-        <GlassView style={styles.successContainer} intensity="medium">
+        <GlassView style={styles.successContainer} intensity="high">
           <CheckCircle size={20} color={colors.success} />
           <Text style={styles.successText}>
             {isEditing
@@ -170,7 +170,7 @@ export default function ContentEditorPage() {
       {/* Form Container */}
       <View style={styles.formContainer}>
         {/* Basic Information Section */}
-        <GlassView style={styles.section} intensity="medium">
+        <GlassView style={styles.section} intensity="high">
           <Text style={styles.sectionTitle}>{t('admin.content.editor.sections.basicInfo', { defaultValue: 'Basic Information' })}</Text>
 
           {/* Title */}
@@ -212,7 +212,7 @@ export default function ContentEditorPage() {
         </GlassView>
 
         {/* Media Section */}
-        <GlassView style={styles.section} intensity="medium">
+        <GlassView style={styles.section} intensity="high">
           <Text style={styles.sectionTitle}>{t('admin.content.editor.sections.media', { defaultValue: 'Media' })}</Text>
 
           {/* Thumbnail */}
@@ -239,7 +239,7 @@ export default function ContentEditorPage() {
         </GlassView>
 
         {/* Streaming Section */}
-        <GlassView style={styles.section} intensity="medium">
+        <GlassView style={styles.section} intensity="high">
           <Text style={styles.sectionTitle}>{t('admin.content.editor.sections.streaming', { defaultValue: 'Streaming' })}</Text>
 
           {/* Stream URL */}
@@ -283,7 +283,7 @@ export default function ContentEditorPage() {
         </GlassView>
 
         {/* Content Details Section */}
-        <GlassView style={styles.section} intensity="medium">
+        <GlassView style={styles.section} intensity="high">
           <Text style={styles.sectionTitle}>{t('admin.content.editor.sections.details', { defaultValue: 'Content Details' })}</Text>
 
           {/* Duration */}
@@ -367,7 +367,7 @@ export default function ContentEditorPage() {
         </GlassView>
 
         {/* Publishing Section */}
-        <GlassView style={styles.section} intensity="medium">
+        <GlassView style={styles.section} intensity="high">
           <Text style={styles.sectionTitle}>{t('admin.content.editor.sections.publishing', { defaultValue: 'Publishing' })}</Text>
 
           <GlassCheckbox
@@ -393,7 +393,7 @@ export default function ContentEditorPage() {
         </GlassView>
 
         {/* Access Control Section */}
-        <GlassView style={styles.section} intensity="medium">
+        <GlassView style={styles.section} intensity="high">
           <Text style={styles.sectionTitle}>{t('admin.content.editor.sections.accessControl', { defaultValue: 'Access Control' })}</Text>
 
           <View style={styles.formGroup}>
@@ -503,6 +503,8 @@ const styles = StyleSheet.create({
     marginBottom: spacing.lg,
     padding: spacing.lg,
     borderRadius: borderRadius.lg,
+    borderWidth: 1,
+    borderColor: 'rgba(34, 197, 94, 0.3)',
   },
   successText: {
     flex: 1,
@@ -511,15 +513,11 @@ const styles = StyleSheet.create({
     fontWeight: '500',
   },
   formContainer: {
-    backgroundColor: colors.backgroundLighter,
-    borderRadius: borderRadius.lg,
-    padding: spacing.lg,
+    gap: spacing.lg,
   },
   section: {
-    marginBottom: spacing.lg,
-    paddingBottom: spacing.lg,
-    borderBottomWidth: 1,
-    borderBottomColor: colors.border,
+    padding: spacing.lg,
+    borderRadius: borderRadius.lg,
   },
   sectionTitle: {
     fontSize: 16,
