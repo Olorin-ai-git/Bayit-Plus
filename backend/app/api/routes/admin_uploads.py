@@ -200,76 +200,247 @@ async def uploads_health(
 
 # ============ UPLOAD QUEUE MANAGEMENT ============
 
-@router.post("/uploads/enqueue-browser-file")
-async def enqueue_browser_file(
-    file: UploadFile = File(...),
+@router.post("/uploads/browser-upload/init")
+async def init_browser_upload(
+    filename: str = Query(...),
+    file_size: int = Query(...),
     content_type: ContentType = Query(...),
     current_user: User = Depends(has_permission(Permission.CONTENT_CREATE))
 ):
     """
-    Upload a file from the browser and enqueue it for processing.
-    
-    This endpoint receives a file from the browser, saves it to a temporary
-    upload directory, and enqueues it for processing.
-    
-    Args:
-        file: The uploaded file
-        content_type: Type of content (movie, series, audiobook)
+    Initialize a browser upload session.
+    Returns an upload_id to use for chunked uploads.
     """
-    import tempfile
-    import os
     from pathlib import Path
+    from uuid import uuid4
     
     try:
         # Validate file type
         allowed_extensions = {'.mp4', '.mkv', '.avi', '.mov', '.webm', '.m4v', '.wmv'}
-        file_ext = Path(file.filename or "").suffix.lower()
+        file_ext = Path(filename).suffix.lower()
         if file_ext not in allowed_extensions:
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
                 detail=f"Invalid file type: {file_ext}. Allowed: {', '.join(allowed_extensions)}"
             )
         
-        # Create uploads temp directory if it doesn't exist
-        upload_dir = Path("/tmp/bayit-uploads")
+        # Check file size (max 10GB)
+        if file_size > 10 * 1024 * 1024 * 1024:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail=f"File too large. Maximum size is 10GB."
+            )
+        
+        # Create upload session
+        upload_id = str(uuid4())
+        upload_dir = Path("/tmp/bayit-uploads") / upload_id
         upload_dir.mkdir(parents=True, exist_ok=True)
         
-        # Save file to temp location
-        temp_path = upload_dir / f"{current_user.id}_{file.filename}"
+        # Store upload metadata
+        metadata = {
+            "upload_id": upload_id,
+            "filename": filename,
+            "file_size": file_size,
+            "content_type": content_type.value,
+            "user_id": str(current_user.id),
+            "chunks_received": 0,
+            "bytes_received": 0,
+            "status": "initialized"
+        }
         
-        # Write file in chunks to handle large files
-        with open(temp_path, "wb") as buffer:
-            while chunk := await file.read(1024 * 1024):  # 1MB chunks
-                buffer.write(chunk)
+        import json
+        with open(upload_dir / "metadata.json", "w") as f:
+            json.dump(metadata, f)
         
-        logger.info(f"Browser file saved to: {temp_path} ({temp_path.stat().st_size} bytes)")
+        logger.info(f"Browser upload initialized: {upload_id} for {filename} ({file_size} bytes)")
         
-        # Enqueue the file for processing
-        job = await upload_service.enqueue_upload(
-            source_path=str(temp_path),
-            content_type=content_type,
-            user_id=str(current_user.id)
+        return {
+            "upload_id": upload_id,
+            "filename": filename,
+            "file_size": file_size,
+            "chunk_size": 5 * 1024 * 1024,  # 5MB chunks recommended
+            "status": "initialized"
+        }
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Failed to init browser upload: {e}", exc_info=True)
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Failed to initialize upload: {str(e)}"
         )
+
+
+@router.post("/uploads/browser-upload/{upload_id}/chunk")
+async def upload_chunk(
+    upload_id: str,
+    chunk_index: int = Query(...),
+    chunk: UploadFile = File(...),
+    current_user: User = Depends(has_permission(Permission.CONTENT_CREATE))
+):
+    """
+    Upload a single chunk of a file.
+    """
+    from pathlib import Path
+    import json
+    
+    try:
+        upload_dir = Path("/tmp/bayit-uploads") / upload_id
+        metadata_path = upload_dir / "metadata.json"
+        
+        if not metadata_path.exists():
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail=f"Upload session not found: {upload_id}"
+            )
+        
+        # Read metadata
+        with open(metadata_path, "r") as f:
+            metadata = json.load(f)
+        
+        # Save chunk
+        chunk_path = upload_dir / f"chunk_{chunk_index:06d}"
+        chunk_data = await chunk.read()
+        
+        with open(chunk_path, "wb") as f:
+            f.write(chunk_data)
+        
+        # Update metadata
+        metadata["chunks_received"] += 1
+        metadata["bytes_received"] += len(chunk_data)
+        metadata["status"] = "uploading"
+        
+        with open(metadata_path, "w") as f:
+            json.dump(metadata, f)
+        
+        progress = (metadata["bytes_received"] / metadata["file_size"]) * 100
+        
+        return {
+            "upload_id": upload_id,
+            "chunk_index": chunk_index,
+            "bytes_received": metadata["bytes_received"],
+            "total_size": metadata["file_size"],
+            "progress": round(progress, 1),
+            "status": "uploading"
+        }
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Failed to upload chunk: {e}", exc_info=True)
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Failed to upload chunk: {str(e)}"
+        )
+
+
+@router.post("/uploads/browser-upload/{upload_id}/complete")
+async def complete_browser_upload(
+    upload_id: str,
+    current_user: User = Depends(has_permission(Permission.CONTENT_CREATE))
+):
+    """
+    Complete the upload by assembling chunks and enqueueing for processing.
+    """
+    from pathlib import Path
+    import json
+    
+    try:
+        upload_dir = Path("/tmp/bayit-uploads") / upload_id
+        metadata_path = upload_dir / "metadata.json"
+        
+        if not metadata_path.exists():
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail=f"Upload session not found: {upload_id}"
+            )
+        
+        # Read metadata
+        with open(metadata_path, "r") as f:
+            metadata = json.load(f)
+        
+        # Assemble chunks into final file
+        final_path = upload_dir / metadata["filename"]
+        chunk_files = sorted(upload_dir.glob("chunk_*"))
+        
+        with open(final_path, "wb") as outfile:
+            for chunk_path in chunk_files:
+                with open(chunk_path, "rb") as chunk_file:
+                    outfile.write(chunk_file.read())
+                # Clean up chunk file
+                chunk_path.unlink()
+        
+        logger.info(f"Browser upload assembled: {final_path} ({final_path.stat().st_size} bytes)")
+        
+        # Enqueue for processing
+        job = await upload_service.enqueue_upload(
+            source_path=str(final_path),
+            content_type=ContentType(metadata["content_type"]),
+            user_id=metadata["user_id"]
+        )
+        
+        # Update metadata
+        metadata["status"] = "completed"
+        metadata["job_id"] = job.job_id
+        with open(metadata_path, "w") as f:
+            json.dump(metadata, f)
         
         return UploadJobResponse.from_orm(job)
         
     except HTTPException:
         raise
-    except FileNotFoundError as e:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail=str(e)
-        )
-    except ValueError as e:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail=str(e)
-        )
     except Exception as e:
-        logger.error(f"Failed to enqueue browser file: {e}", exc_info=True)
+        logger.error(f"Failed to complete browser upload: {e}", exc_info=True)
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Failed to enqueue file: {str(e)}"
+            detail=f"Failed to complete upload: {str(e)}"
+        )
+
+
+@router.get("/uploads/browser-upload/{upload_id}/status")
+async def get_browser_upload_status(
+    upload_id: str,
+    current_user: User = Depends(has_permission(Permission.CONTENT_CREATE))
+):
+    """
+    Get the status of an upload session.
+    """
+    from pathlib import Path
+    import json
+    
+    try:
+        upload_dir = Path("/tmp/bayit-uploads") / upload_id
+        metadata_path = upload_dir / "metadata.json"
+        
+        if not metadata_path.exists():
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail=f"Upload session not found: {upload_id}"
+            )
+        
+        with open(metadata_path, "r") as f:
+            metadata = json.load(f)
+        
+        progress = (metadata["bytes_received"] / metadata["file_size"]) * 100 if metadata["file_size"] > 0 else 0
+        
+        return {
+            "upload_id": upload_id,
+            "filename": metadata["filename"],
+            "bytes_received": metadata["bytes_received"],
+            "total_size": metadata["file_size"],
+            "progress": round(progress, 1),
+            "status": metadata["status"],
+            "job_id": metadata.get("job_id")
+        }
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Failed to get upload status: {e}", exc_info=True)
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Failed to get upload status: {str(e)}"
         )
 
 

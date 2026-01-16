@@ -165,33 +165,102 @@ export const resetFolderCache = async (folderId?: string): Promise<{ success: bo
   return uploadsApi.post('/admin/uploads/reset-cache', null, { params });
 };
 
+const CHUNK_SIZE = 5 * 1024 * 1024; // 5MB chunks
+
+interface UploadSession {
+  upload_id: string;
+  filename: string;
+  file_size: number;
+  chunk_size: number;
+  status: string;
+}
+
+interface ChunkResponse {
+  upload_id: string;
+  chunk_index: number;
+  bytes_received: number;
+  total_size: number;
+  progress: number;
+  status: string;
+}
+
 /**
- * Upload a file from the browser and add it to the upload queue
+ * Initialize a chunked upload session
+ */
+const initUploadSession = async (
+  filename: string,
+  fileSize: number,
+  contentType: string
+): Promise<UploadSession> => {
+  return uploadsApi.post('/admin/uploads/browser-upload/init', null, {
+    params: { filename, file_size: fileSize, content_type: contentType },
+  });
+};
+
+/**
+ * Upload a single chunk
+ */
+const uploadChunk = async (
+  uploadId: string,
+  chunkIndex: number,
+  chunkData: Blob
+): Promise<ChunkResponse> => {
+  const formData = new FormData();
+  formData.append('chunk', chunkData);
+
+  return uploadsApi.post(`/admin/uploads/browser-upload/${uploadId}/chunk`, formData, {
+    params: { chunk_index: chunkIndex },
+    headers: { 'Content-Type': 'multipart/form-data' },
+    timeout: 60000, // 60s timeout per chunk
+  });
+};
+
+/**
+ * Complete the upload and enqueue for processing
+ */
+const completeUpload = async (uploadId: string): Promise<UploadJob> => {
+  return uploadsApi.post(`/admin/uploads/browser-upload/${uploadId}/complete`);
+};
+
+/**
+ * Upload a file from the browser using chunked upload
  * @param file - The file to upload
  * @param contentType - The type of content (movie, series, audiobook)
- * @param onProgress - Optional progress callback
+ * @param onProgress - Optional progress callback (0-100)
  */
 export const uploadBrowserFile = async (
   file: File,
   contentType: string,
   onProgress?: (progress: number) => void
 ): Promise<UploadJob> => {
-  const formData = new FormData();
-  formData.append('file', file);
-
-  return uploadsApi.post('/admin/uploads/enqueue-browser-file', formData, {
-    params: { content_type: contentType },
-    headers: {
-      'Content-Type': 'multipart/form-data',
-    },
-    timeout: 0, // No timeout for large file uploads
-    onUploadProgress: (progressEvent) => {
-      if (onProgress && progressEvent.total) {
-        const percentCompleted = Math.round((progressEvent.loaded * 100) / progressEvent.total);
-        onProgress(percentCompleted);
-      }
-    },
-  });
+  // Initialize upload session
+  const session = await initUploadSession(file.name, file.size, contentType);
+  
+  // Calculate number of chunks
+  const totalChunks = Math.ceil(file.size / CHUNK_SIZE);
+  
+  // Upload chunks sequentially
+  for (let i = 0; i < totalChunks; i++) {
+    const start = i * CHUNK_SIZE;
+    const end = Math.min(start + CHUNK_SIZE, file.size);
+    const chunk = file.slice(start, end);
+    
+    const response = await uploadChunk(session.upload_id, i, chunk);
+    
+    // Report progress
+    if (onProgress) {
+      onProgress(response.progress);
+    }
+  }
+  
+  // Complete upload and get the job
+  const job = await completeUpload(session.upload_id);
+  
+  if (onProgress) {
+    onProgress(100);
+  }
+  
+  return job;
 };
 
 /**

@@ -8,8 +8,7 @@
 import React from 'react';
 import { View, ViewStyle } from 'react-native';
 
-// Import animation styles
-import '@/styles/animations.css';
+// Animation styles are in shared/styles/globals.css
 
 interface AnimatedCardProps {
   index: number;

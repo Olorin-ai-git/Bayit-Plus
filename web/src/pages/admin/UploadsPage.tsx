@@ -123,6 +123,7 @@ const UploadsPage: React.FC = () => {
     noClick: false,
     noKeyboard: false,
     multiple: true,
+    preventDropOnDocument: true,  // Prevent files from opening in browser
     accept: {
       'video/*': ALLOWED_EXTENSIONS,
     },
@@ -893,15 +894,19 @@ const UploadsPage: React.FC = () => {
             ]}
           >
             <input {...getInputProps()} />
-            <Upload size={40} color={isDragActive ? colors.primary : colors.textMuted} />
-            <Text style={[styles.dropZoneText, { textAlign }]}>
-              {isDragActive
-                ? t('admin.uploads.manualUpload.dropHereActive')
-                : t('admin.uploads.manualUpload.dropHere')}
-            </Text>
-            <Text style={[styles.dropZoneSubtext, { textAlign }]}>
-              {t('admin.uploads.manualUpload.supportedFormats')}
-            </Text>
+            <View style={styles.dropZoneContent}>
+              <View style={[styles.dropZoneIconContainer, isDragActive && styles.dropZoneIconActive]}>
+                <FolderOpen size={28} color={isDragActive ? colors.primary : colors.textSecondary} />
+              </View>
+              <Text style={[styles.dropZoneText, { textAlign: 'center' }]}>
+                {isDragActive
+                  ? t('admin.uploads.manualUpload.dropHereActive')
+                  : t('admin.uploads.manualUpload.dropHere')}
+              </Text>
+              <Text style={[styles.dropZoneSubtext, { textAlign: 'center' }]}>
+                {t('admin.uploads.manualUpload.supportedFormats')}
+              </Text>
+            </View>
           </View>
 
           {/* Selected Files List */}
@@ -1461,10 +1466,8 @@ const styles = StyleSheet.create({
     borderColor: colors.glassBorder,
     borderRadius: borderRadius.lg,
     padding: spacing.xl,
-    alignItems: 'center',
-    justifyContent: 'center',
     backgroundColor: colors.glassLight,
-    minHeight: 160,
+    minHeight: 140,
     cursor: 'pointer',
     transition: 'all 0.2s ease',
   },
@@ -1476,16 +1479,34 @@ const styles = StyleSheet.create({
     opacity: 0.5,
     cursor: 'not-allowed',
   },
+  dropZoneContent: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: spacing.sm,
+  },
+  dropZoneIconContainer: {
+    width: 56,
+    height: 56,
+    borderRadius: borderRadius.lg,
+    backgroundColor: colors.glass,
+    borderWidth: 1,
+    borderColor: colors.glassBorder,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: spacing.xs,
+  },
+  dropZoneIconActive: {
+    backgroundColor: colors.primary + '20',
+    borderColor: colors.primary,
+  },
   dropZoneText: {
     fontSize: fontSize.md,
     fontWeight: '500',
     color: colors.text,
-    marginTop: spacing.md,
   },
   dropZoneSubtext: {
     fontSize: fontSize.sm,
     color: colors.textMuted,
-    marginTop: spacing.xs,
   },
   fileListContainer: {
     backgroundColor: colors.glass,

@@ -32,6 +32,7 @@ from app.models.recording import RecordingSession, Recording, RecordingSchedule,
 from app.models.upload import UploadJob, MonitoredFolder, UploadStats
 from app.api.routes.favorites import Favorite
 from app.api.routes.downloads import Download
+from app.models.chess import ChessGame, ChessChatMessage
 
 
 class Database:
@@ -110,6 +111,9 @@ async def connect_to_mongo():
             UploadJob,
             MonitoredFolder,
             UploadStats,
+            # Chess models
+            ChessGame,
+            ChessChatMessage,
         ],
     )
     print(f"Connected to MongoDB: {settings.MONGODB_DB_NAME}")

@@ -483,31 +483,6 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     marginTop: spacing.md,
   },
-  modalOverlay: {
-    flex: 1,
-    backgroundColor: 'rgba(0, 0, 0, 0.8)',
-    justifyContent: 'center',
-    alignItems: 'center',
-    padding: spacing.md,
-  },
-  modalCard: {
-    width: '100%',
-    maxWidth: 400,
-    padding: spacing.lg,
-    position: 'relative',
-  },
-  modalCloseButton: {
-    position: 'absolute',
-    top: spacing.md,
-    left: spacing.md,
-  },
-  modalTitle: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    color: colors.text,
-    textAlign: 'center',
-    marginBottom: spacing.lg,
-  },
   pinInput: {
     backgroundColor: colors.glass,
     borderRadius: borderRadius.md,

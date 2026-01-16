@@ -16,11 +16,11 @@ logger = logging.getLogger(__name__)
 # Import routers
 from app.api.routes import (
     auth, content, live, radio, podcasts, subscriptions, chat, watchlist, history, admin, admin_uploads,
-    party, websocket, websocket_live_subtitles, zman, trending, chapters, subtitles, subtitle_preferences, ritual, profiles, children, judaism, flows,
+    party, websocket, websocket_live_subtitles, websocket_chess, zman, trending, chapters, subtitles, subtitle_preferences, ritual, profiles, children, judaism, flows,
     device_pairing, onboarding, widgets, favorites, downloads, user_system_widgets, news, librarian,
     admin_content_vod_read, admin_content_vod_write, admin_content_vod_toggles, admin_categories, admin_live_channels,
     admin_radio_stations, admin_podcasts, admin_podcast_episodes, admin_content_importer, admin_widgets, verification,
-    recordings, epg, password_reset
+    recordings, epg, password_reset, chess
 )
 from app.api.routes.admin.recordings import router as admin_recordings_router
 
@@ -525,6 +525,8 @@ app.include_router(flows.router, prefix=f"{settings.API_V1_PREFIX}/flows", tags=
 app.include_router(device_pairing.router, prefix=f"{settings.API_V1_PREFIX}/auth/device-pairing", tags=["device-pairing"])
 app.include_router(onboarding.router, prefix=f"{settings.API_V1_PREFIX}/onboarding/ai", tags=["ai-onboarding"])
 app.include_router(news.router, prefix=f"{settings.API_V1_PREFIX}/news", tags=["news"])
+app.include_router(chess.router, prefix=f"{settings.API_V1_PREFIX}", tags=["chess"])
+app.include_router(websocket_chess.router, prefix=f"{settings.API_V1_PREFIX}", tags=["websocket", "chess"])
 
 # Proxy uploads from GCS
 @app.api_route("/uploads/{path:path}", methods=["GET", "HEAD"])

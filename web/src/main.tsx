@@ -3,7 +3,6 @@ import ReactDOM from 'react-dom/client'
 import { BrowserRouter } from 'react-router-dom'
 import App from './App'
 import '../../shared/styles/globals.css'
-import './styles/animations.css'
 import '@bayit/shared-i18n'
 
 ReactDOM.createRoot(document.getElementById('root')).render(

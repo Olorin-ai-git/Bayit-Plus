@@ -1,9 +1,9 @@
 import { useState } from 'react'
-import { View, Text, TextInput, StyleSheet, Pressable, ActivityIndicator, Modal } from 'react-native'
+import { View, Text, TextInput, StyleSheet, Pressable, ActivityIndicator } from 'react-native'
 import { useTranslation } from 'react-i18next'
-import { UserPlus, X } from 'lucide-react'
+import { UserPlus } from 'lucide-react'
 import { colors, spacing, borderRadius } from '@bayit/shared/theme'
-import { GlassView } from '@bayit/shared/ui'
+import { GlassModal } from '@bayit/shared/ui'
 
 interface WatchPartyJoinModalProps {
   isOpen: boolean
@@ -53,130 +53,71 @@ export default function WatchPartyJoinModal({ isOpen, onClose, onJoin }: WatchPa
   if (!isOpen) return null
 
   return (
-    <Modal
-      transparent
+    <GlassModal
       visible={isOpen}
-      animationType="fade"
-      onRequestClose={handleClose}
+      title={t('watchParty.joinTitle')}
+      onClose={handleClose}
+      dismissable={true}
     >
-      <Pressable style={styles.overlay} onPress={handleClose}>
-        <Pressable onPress={(e) => e.stopPropagation()}>
-          <GlassView style={styles.modal} intensity="high">
-            <View style={styles.header}>
-              <Text style={styles.title}>{t('watchParty.joinTitle')}</Text>
-              <Pressable
-                onPress={handleClose}
-                style={({ hovered }) => [
-                  styles.closeButton,
-                  hovered && styles.closeButtonHovered,
-                ]}
-              >
-                <X size={20} color={colors.textSecondary} />
-              </Pressable>
-            </View>
+      <View style={styles.iconContainer}>
+        <View style={styles.icon}>
+          <UserPlus size={32} color={colors.primary} />
+        </View>
+      </View>
 
-            <View style={styles.content}>
-              <View style={styles.iconContainer}>
-                <View style={styles.icon}>
-                  <UserPlus size={32} color={colors.primary} />
-                </View>
-              </View>
+      <Text style={styles.description}>
+        {t('watchParty.enterCode')}
+      </Text>
 
-              <Text style={styles.description}>
-                {t('watchParty.enterCode')}
-              </Text>
+      <View style={styles.inputContainer}>
+        <TextInput
+          value={roomCode}
+          onChangeText={handleCodeChange}
+          placeholder={t('placeholder.roomCode', 'ABCD1234')}
+          placeholderTextColor={colors.textMuted}
+          style={[styles.input, error && styles.inputError]}
+          autoFocus
+          autoCapitalize="characters"
+          maxLength={8}
+        />
+        {error ? (
+          <Text style={styles.errorText}>{error}</Text>
+        ) : null}
+      </View>
 
-              <View style={styles.inputContainer}>
-                <TextInput
-                  value={roomCode}
-                  onChangeText={handleCodeChange}
-                  placeholder={t('placeholder.roomCode', 'ABCD1234')}
-                  placeholderTextColor={colors.textMuted}
-                  style={[styles.input, error && styles.inputError]}
-                  autoFocus
-                  autoCapitalize="characters"
-                  maxLength={8}
-                />
-                {error ? (
-                  <Text style={styles.errorText}>{error}</Text>
-                ) : null}
-              </View>
-
-              <View style={styles.actions}>
-                <Pressable
-                  onPress={handleClose}
-                  style={({ hovered }) => [
-                    styles.button,
-                    styles.ghostButton,
-                    hovered && styles.ghostButtonHovered,
-                  ]}
-                >
-                  <Text style={styles.ghostButtonText}>{t('common.cancel')}</Text>
-                </Pressable>
-                <Pressable
-                  onPress={handleSubmit}
-                  disabled={loading || roomCode.length < 4}
-                  style={({ hovered }) => [
-                    styles.button,
-                    styles.primaryButton,
-                    hovered && !loading && roomCode.length >= 4 && styles.primaryButtonHovered,
-                    (loading || roomCode.length < 4) && styles.buttonDisabled,
-                  ]}
-                >
-                  {loading ? (
-                    <ActivityIndicator size="small" color={colors.background} />
-                  ) : (
-                    <Text style={styles.primaryButtonText}>{t('watchParty.join')}</Text>
-                  )}
-                </Pressable>
-              </View>
-            </View>
-          </GlassView>
+      <View style={styles.actions}>
+        <Pressable
+          onPress={handleClose}
+          style={({ hovered }) => [
+            styles.button,
+            styles.ghostButton,
+            hovered && styles.ghostButtonHovered,
+          ]}
+        >
+          <Text style={styles.ghostButtonText}>{t('common.cancel')}</Text>
         </Pressable>
-      </Pressable>
-    </Modal>
+        <Pressable
+          onPress={handleSubmit}
+          disabled={loading || roomCode.length < 4}
+          style={({ hovered }) => [
+            styles.button,
+            styles.primaryButton,
+            hovered && !loading && roomCode.length >= 4 && styles.primaryButtonHovered,
+            (loading || roomCode.length < 4) && styles.buttonDisabled,
+          ]}
+        >
+          {loading ? (
+            <ActivityIndicator size="small" color={colors.background} />
+          ) : (
+            <Text style={styles.primaryButtonText}>{t('watchParty.join')}</Text>
+          )}
+        </Pressable>
+      </View>
+    </GlassModal>
   )
 }
 
 const styles = StyleSheet.create({
-  overlay: {
-    flex: 1,
-    backgroundColor: 'rgba(0, 0, 0, 0.6)',
-    alignItems: 'center',
-    justifyContent: 'center',
-    padding: spacing.lg,
-  },
-  modal: {
-    width: 360,
-    maxWidth: '100%',
-  },
-  header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    padding: spacing.md,
-    borderBottomWidth: 1,
-    borderBottomColor: 'rgba(255, 255, 255, 0.1)',
-  },
-  title: {
-    fontSize: 18,
-    fontWeight: '600',
-    color: colors.text,
-  },
-  closeButton: {
-    width: 32,
-    height: 32,
-    alignItems: 'center',
-    justifyContent: 'center',
-    borderRadius: borderRadius.md,
-  },
-  closeButtonHovered: {
-    backgroundColor: 'rgba(255, 255, 255, 0.1)',
-  },
-  content: {
-    padding: spacing.lg,
-    gap: spacing.lg,
-  },
   iconContainer: {
     alignItems: 'center',
   },
