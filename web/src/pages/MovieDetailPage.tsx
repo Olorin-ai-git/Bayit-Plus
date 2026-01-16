@@ -7,6 +7,7 @@ import Hls from 'hls.js';
 import LinearGradient from 'react-native-linear-gradient';
 import { useDirection } from '@/hooks/useDirection';
 import ContentCarousel from '@/components/content/ContentCarousel';
+import { ClickableSubtitleFlags } from '@/components/content/ClickableSubtitleFlags';
 import { contentService, watchlistService, favoritesService } from '@/services/api';
 import { colors, spacing, fontSize, borderRadius } from '@bayit/shared/theme';
 import { GlassCard, GlassButton, GlassView, GlassBadge } from '@bayit/shared/ui';
@@ -34,6 +35,8 @@ interface MovieData {
   imdb_rating?: number;
   imdb_votes?: number;
   related: any[];
+  available_subtitle_languages?: string[];
+  has_subtitles?: boolean;
 }
 
 export default function MovieDetailPage() {
@@ -46,6 +49,7 @@ export default function MovieDetailPage() {
   const [loading, setLoading] = useState(true);
   const [inWatchlist, setInWatchlist] = useState(false);
   const [isFavorite, setIsFavorite] = useState(false);
+  const [selectedSubtitleLanguage, setSelectedSubtitleLanguage] = useState<string | undefined>();
 
   // Video preview state
   const [isPreviewPlaying, setIsPreviewPlaying] = useState(false);
@@ -373,6 +377,18 @@ export default function MovieDetailPage() {
           )}
         </View>
       </View>
+
+      {/* Subtitle Language Selection */}
+      {movie.available_subtitle_languages && movie.available_subtitle_languages.length > 0 && (
+        <View style={styles.factsSection}>
+          <ClickableSubtitleFlags
+            languages={movie.available_subtitle_languages}
+            selectedLanguage={selectedSubtitleLanguage}
+            onLanguageSelect={setSelectedSubtitleLanguage}
+            size="large"
+          />
+        </View>
+      )}
 
       {/* Movie Facts Section */}
       <View style={styles.factsSection}>

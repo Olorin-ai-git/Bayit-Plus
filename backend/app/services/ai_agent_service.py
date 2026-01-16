@@ -2246,6 +2246,7 @@ async def run_ai_agent_audit(
     cyb_titles_only: bool = False,
     tmdb_posters_only: bool = False,
     opensubtitles_enabled: bool = False,
+    classify_only: bool = False,
     audit_id: Optional[str] = None
 ) -> AuditReport:
     """
@@ -2446,6 +2447,61 @@ Balance between metadata fixes, subtitle acquisition, and quality checks.
 **Focus:** ONLY title cleaning. Nothing else."""
         filter_instructions = ""
         
+    elif classify_only:
+        # CONTENT CLASSIFICATION/RECLASSIFICATION MODE
+        audit_specific_instruction = """**TASK: Content Classification & Reclassification**
+
+**Your ONLY mission:** Verify and fix content type classification (movies vs series).
+
+**CRITICAL CLASSIFICATION RULES:**
+
+**How to identify SERIES content:**
+1. **Filename patterns indicating SERIES:**
+   - Contains S01E01, S02E03, etc. (Season/Episode format)
+   - Contains "1x01", "2x05" format
+   - Contains ".S01.", ".S02." season indicators
+   - Title ends with "Season 1", "Season 2", etc.
+   - Part of known TV series (check TMDB type)
+
+2. **TMDB Verification:**
+   - Search TMDB with search_tmdb(title, year, content_type="tv")
+   - If TMDB returns a TV show match → it's a SERIES
+   - If TMDB returns a movie match → it's a MOVIE
+
+**What to do:**
+1. Get ALL content items: `list_content_items(limit=100, skip=0)`
+2. For EACH item, check:
+   a. Current `is_series` value
+   b. Current `content_type` value ("movie" or "series")
+   c. Title for S01E01, S02E03, etc. patterns
+   d. TMDB to verify correct type
+3. If classification is WRONG:
+   - Use `reclassify_as_series(content_id)` for items that should be series
+   - Use `reclassify_as_movie(content_id)` for items that should be movies
+4. Continue with skip=100, skip=200, etc. until all items processed
+
+**Classification Fixes to Make:**
+- Movies incorrectly marked as `is_series=true` → Fix to movie
+- Series incorrectly marked as `is_series=false` → Fix to series
+- Items in wrong category (Movies vs Series) → Recategorize
+- Missing `content_type` field → Set based on `is_series` value
+
+**What NOT to do:**
+- ❌ Don't check/fix posters or metadata
+- ❌ Don't check/fix subtitles
+- ❌ Don't clean titles (unless needed to verify classification)
+- ❌ Don't check streaming URLs
+
+**Expected Output:**
+Report how many items:
+- Were correctly classified
+- Were reclassified from movie to series
+- Were reclassified from series to movie
+- Need manual review (uncertain classification)
+
+**Focus:** ONLY content type classification. Nothing else."""
+        filter_instructions = ""
+        
     elif audit_type == "daily_maintenance" or opensubtitles_enabled:
         # SUBTITLES ONLY MODE (keep existing subtitle-focused prompt)
         audit_specific_instruction = audit_instructions.get("daily_maintenance")
@@ -2461,7 +2517,7 @@ Balance between metadata fixes, subtitle acquisition, and quality checks.
             filter_instructions += "\n**⏰ TIME FILTER:** Focus ONLY on content added/modified in the last 24 hours\n"
     
     # Determine if this is a task-specific audit or comprehensive audit
-    is_task_specific = tmdb_posters_only or cyb_titles_only or (audit_type == "daily_maintenance")
+    is_task_specific = tmdb_posters_only or cyb_titles_only or classify_only or (audit_type == "daily_maintenance")
     
     # Initial prompt for Claude (in English as instructions, Claude responds in requested language)
     if is_task_specific:

@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next'
 import { Search, X, AlertCircle, RefreshCw } from 'lucide-react'
 import HierarchicalContentTable from '@/components/admin/HierarchicalContentTable'
 import { adminContentService } from '@/services/adminApi'
-import { GlassInput, GlassSelect, GlassButton } from '@bayit/shared/ui'
+import { GlassInput, GlassSelect, GlassButton, GlassCheckbox } from '@bayit/shared/ui'
 import { useDirection } from '@/hooks/useDirection'
 import { useModal } from '@/contexts/ModalContext'
 import logger from '@/utils/logger'
@@ -41,6 +41,7 @@ export default function ContentLibraryPage() {
   const [error, setError] = useState<string | null>(null)
   const [pagination, setPagination] = useState<Pagination>({ page: 1, pageSize: 20, total: 0 })
   const [searchQuery, setSearchQuery] = useState('')
+  const [showOnlyWithSubtitles, setShowOnlyWithSubtitles] = useState(false)
   const [filters, setFilters] = useState({
     search: '',
     is_published: undefined as boolean | undefined,
@@ -177,6 +178,13 @@ export default function ContentLibraryPage() {
               ]}
             />
           </View>
+          <View style={styles.checkboxWrapper}>
+            <GlassCheckbox
+              label={t('admin.content.showOnlyWithSubtitles', 'Show only with subtitles')}
+              checked={showOnlyWithSubtitles}
+              onChange={setShowOnlyWithSubtitles}
+            />
+          </View>
         </View>
 
         {/* Error Message */}
@@ -192,7 +200,10 @@ export default function ContentLibraryPage() {
 
         {/* Hierarchical Content Table */}
         <HierarchicalContentTable
-          items={items}
+          items={showOnlyWithSubtitles 
+            ? items.filter(item => item.available_subtitles && item.available_subtitles.length > 0)
+            : items
+          }
           loading={isLoading}
           onTogglePublish={handleTogglePublish}
           onToggleFeatured={handleToggleFeatured}
@@ -245,6 +256,9 @@ const styles = StyleSheet.create({
   },
   filterWrapper: {
     minWidth: 180,
+  },
+  checkboxWrapper: {
+    alignSelf: 'center',
   },
   errorContainer: {
     flexDirection: 'row',

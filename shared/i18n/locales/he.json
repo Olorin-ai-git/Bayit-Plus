@@ -271,6 +271,7 @@
     "liveTV": "שידור חי",
     "allChannels": "לכל הערוצים",
     "liveChannels": "ערוצים בשידור חי",
+    "showOnlyWithSubtitles": "הצג רק עם כתוביות",
     "israeliMovies": "סרטים ישראליים",
     "israeli-movies": "סרטים ישראליים",
     "israeli-series": "סדרות ישראליות",
@@ -392,6 +393,7 @@
     "noMovies": "לא נמצאו סרטים",
     "noSeries": "לא נמצאו סדרות",
     "loadError": "שגיאה בטעינת התוכן",
+    "showOnlyWithSubtitles": "הצג רק עם כתוביות",
     "categories": {
       "all": "הכל",
       "drama": "דרמה",
@@ -860,7 +862,9 @@
     "watchTrailer": "צפה בטריילר",
     "youMayAlsoLike": "אולי יעניין אותך גם",
     "relatedContent": "תוכן קשור",
-    "notFound": "התוכן לא נמצא"
+    "notFound": "התוכן לא נמצא",
+    "availableSubtitles": "כתוביות זמינות",
+    "subtitleSelected": "נבחר: {{language}}"
   },
   "breadcrumbs": {
     "series": "סדרה",
@@ -1840,6 +1844,7 @@
       "filters": {
         "allStatus": "כל הסטטוסים"
       },
+      "showOnlyWithSubtitles": "הצג רק עם כתוביות",
       "status": {
         "published": "פורסם",
         "draft": "טיוטה"

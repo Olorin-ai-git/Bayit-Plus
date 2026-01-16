@@ -2,7 +2,7 @@
  * Chess game page - Multiplayer chess with AI assistance and voice chat.
  */
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, useWindowDimensions, ScrollView } from 'react-native';
+import { View, Text, StyleSheet, useWindowDimensions, ScrollView, Image, Animated } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { useDirection } from '../hooks/useDirection';
 import { useAuthStore } from '../stores/authStore';
@@ -27,6 +27,8 @@ export default function ChessPage() {
 
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [showJoinModal, setShowJoinModal] = useState(false);
+  const [showSplash, setShowSplash] = useState(true);
+  const [fadeAnim] = useState(new Animated.Value(1));
 
   const {
     game,
@@ -44,6 +46,22 @@ export default function ChessPage() {
 
   const isMobile = width < 768;
   const isTablet = width >= 768 && width < 1024;
+
+  // Show splash screen for at least 3 seconds on mount
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      // Fade out animation
+      Animated.timing(fadeAnim, {
+        toValue: 0,
+        duration: 500,
+        useNativeDriver: true,
+      }).start(() => {
+        setShowSplash(false);
+      });
+    }, 3000);
+
+    return () => clearTimeout(timer);
+  }, [fadeAnim]);
 
   // Determine if it's the current user's turn
   const isPlayerTurn = () => {
@@ -78,6 +96,19 @@ export default function ChessPage() {
     leaveGame();
     setShowCreateModal(true);
   };
+
+  // Show splash screen on initial load
+  if (showSplash) {
+    return (
+      <Animated.View style={[styles.splashContainer, { opacity: fadeAnim }]}>
+        <Image
+          source={{ uri: '/chess/Games-splash.png' }}
+          style={styles.splashImage}
+          resizeMode="cover"
+        />
+      </Animated.View>
+    );
+  }
 
   // No active game - show lobby
   if (!game) {
@@ -357,5 +388,22 @@ const styles = StyleSheet.create({
     color: colors.error,
     textAlign: 'center',
     marginTop: spacing.sm,
+  },
+  splashContainer: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    width: '100%',
+    height: '100%',
+    backgroundColor: colors.background,
+    justifyContent: 'center',
+    alignItems: 'center',
+    zIndex: 9999,
+  },
+  splashImage: {
+    width: '100%',
+    height: '100%',
   },
 });

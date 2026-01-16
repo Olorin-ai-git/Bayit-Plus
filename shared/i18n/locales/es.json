@@ -276,6 +276,7 @@
     "liveTV": "TV en Vivo",
     "allChannels": "Todos los Canales",
     "liveChannels": "Canales en Vivo",
+    "showOnlyWithSubtitles": "Mostrar solo con subtítulos",
     "israeliMovies": "Películas Israelíes",
     "israeli-movies": "Películas Israelíes",
     "israeli-series": "Series Israelíes",
@@ -397,6 +398,7 @@
     "noMovies": "No se encontraron películas",
     "noSeries": "No se encontraron series",
     "loadError": "Error al cargar el contenido",
+    "showOnlyWithSubtitles": "Mostrar solo con subtítulos",
     "categories": {
       "all": "Todo",
       "drama": "Drama",
@@ -846,7 +848,9 @@
     "watchTrailer": "Ver Tráiler",
     "youMayAlsoLike": "También te puede gustar",
     "relatedContent": "Contenido Relacionado",
-    "notFound": "Contenido no encontrado"
+    "notFound": "Contenido no encontrado",
+    "availableSubtitles": "Subtítulos Disponibles",
+    "subtitleSelected": "Seleccionado: {{language}}"
   },
   "breadcrumbs": {
     "series": "Serie",
@@ -1167,6 +1171,7 @@
       "filters": {
         "allStatus": "Todos los Estados"
       },
+      "showOnlyWithSubtitles": "Mostrar solo con subtítulos",
       "import": {
         "categoryPlaceholder": "Selecciona una categoría...",
         "importButton": "Importar {{count}} {{item}}",

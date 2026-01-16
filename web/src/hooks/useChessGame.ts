@@ -181,10 +181,19 @@ export default function useChessGame() {
   }, [token, game, getWebSocketUrl]);
 
   const createGame = async (color: 'white' | 'black', timeControl?: number) => {
+    if (!token) {
+      setError('Not authenticated');
+      throw new Error('Not authenticated');
+    }
+
     try {
       const response = await axios.post('/api/v1/chess/create', {
         color,
         time_control: timeControl
+      }, {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
       });
 
       const newGame = response.data.game;
@@ -200,9 +209,18 @@ export default function useChessGame() {
   };
 
   const joinGame = async (gameCode: string) => {
+    if (!token) {
+      setError('Not authenticated');
+      throw new Error('Not authenticated');
+    }
+
     try {
       const response = await axios.post('/api/v1/chess/join', {
         game_code: gameCode
+      }, {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
       });
 
       const joinedGame = response.data.game;

@@ -272,6 +272,8 @@ class UploadService:
             
             if job.type == ContentType.MOVIE:
                 metadata = await self._extract_movie_metadata(job)
+            elif job.type == ContentType.SERIES:
+                metadata = await self._extract_series_metadata(job)
             elif job.type == ContentType.PODCAST:
                 metadata = await self._extract_podcast_metadata(job)
             else:
@@ -410,6 +412,64 @@ class UploadService:
                     metadata.update(tmdb_data)
             except Exception as e:
                 logger.warning(f"TMDB lookup failed for '{title}': {e}")
+        
+        return metadata
+
+    async def _extract_series_metadata(self, job: UploadJob) -> Dict[str, Any]:
+        """Extract metadata for a series file"""
+        # Parse filename
+        filename = Path(job.filename).stem
+        
+        import re
+        
+        # Remove quality indicators
+        title = re.sub(r'\[?(720p|1080p|2160p|4K|UHD|HD)\]?', '', filename, flags=re.IGNORECASE)
+        title = re.sub(r'\[?(WEBRip|BluRay|BRRip|HDRip|WEB-DL|DVDRip)\]?', '', title, flags=re.IGNORECASE)
+        title = re.sub(r'\[?(x264|x265|H\.264|H\.265|HEVC)\]?', '', title, flags=re.IGNORECASE)
+        
+        # Try to extract season/episode info (S01E01, 1x01, etc.)
+        season_ep_match = re.search(r'[Ss](\d{1,2})[Ee](\d{1,2})', title)
+        season = int(season_ep_match.group(1)) if season_ep_match else None
+        episode = int(season_ep_match.group(2)) if season_ep_match else None
+        
+        # Remove season/episode from title
+        if season_ep_match:
+            title = title[:season_ep_match.start()]
+        
+        # Alternative format: 1x01
+        if not season:
+            alt_match = re.search(r'(\d{1,2})x(\d{1,2})', title)
+            if alt_match:
+                season = int(alt_match.group(1))
+                episode = int(alt_match.group(2))
+                title = title[:alt_match.start()]
+        
+        # Extract year
+        year_match = re.search(r'[\(\[]?(\d{4})[\)\]]?', title)
+        year = int(year_match.group(1)) if year_match else None
+        
+        if year:
+            title = re.sub(r'[\(\[]?\d{4}[\)\]]?', '', title)
+        
+        # Clean up title
+        title = re.sub(r'[._]', ' ', title)
+        title = re.sub(r'\s+', ' ', title).strip()
+        
+        metadata = {
+            'title': title,
+            'year': year,
+            'season': season,
+            'episode': episode,
+        }
+        
+        # Fetch from TMDB if available
+        if title:
+            try:
+                tmdb_data = await self.tmdb_service.enrich_series_content(title, year)
+                if tmdb_data:
+                    metadata.update(tmdb_data)
+            except Exception as e:
+                logger.warning(f"TMDB lookup failed for series '{title}': {e}")
         
         return metadata
 
@@ -585,9 +645,12 @@ class UploadService:
         try:
             if job.type == ContentType.MOVIE:
                 await self._create_movie_entry(job)
+            elif job.type == ContentType.SERIES:
+                await self._create_series_entry(job)
             elif job.type == ContentType.PODCAST:
                 await self._create_podcast_episode_entry(job)
-            # Add other content types as needed
+            else:
+                logger.warning(f"No handler for content type: {job.type}")
             
         except Exception as e:
             logger.error(f"Failed to create content entry: {e}", exc_info=True)
@@ -683,6 +746,98 @@ class UploadService:
                     logger.error(f"Failed to save {sub_data['language']} subtitles: {str(e)}")
             
             # Update content with subtitle info
+            content.embedded_subtitle_count = len(extracted_subs)
+            content.available_subtitle_languages = [s['language'] for s in extracted_subs]
+            content.subtitle_extraction_status = 'completed'
+            await content.save()
+
+    async def _create_series_entry(self, job: UploadJob):
+        """Create a series content entry"""
+        # Get or create Series category
+        category = await Category.find_one(Category.name == "Series")
+        if not category:
+            category = Category(
+                name="Series",
+                name_he="סדרות",
+                name_en="Series",
+                name_es="Series",
+                slug="series",
+                icon="tv",
+                is_active=True,
+                order=2,
+            )
+            await category.insert()
+        
+        # Check if content already exists
+        existing = await Content.find_one(
+            Content.stream_url == job.destination_url
+        )
+        
+        if existing:
+            logger.info(f"Content already exists: {existing.title}")
+            return
+        
+        # Create content with is_series=True
+        metadata = job.metadata
+        
+        content = Content(
+            title=metadata.get('title', job.filename),
+            title_en=metadata.get('title_en', metadata.get('title')),
+            description=metadata.get('description'),
+            description_en=metadata.get('description_en', metadata.get('description')),
+            thumbnail=metadata.get('thumbnail'),
+            backdrop=metadata.get('backdrop'),
+            poster_url=metadata.get('poster_url'),
+            category_id=str(category.id),
+            category_name="Series",
+            content_type="series",
+            stream_url=job.destination_url,
+            year=metadata.get('year'),
+            rating=metadata.get('rating'),
+            imdb_rating=metadata.get('imdb_rating'),
+            tmdb_id=metadata.get('tmdb_id'),
+            imdb_id=metadata.get('imdb_id'),
+            genre=metadata.get('genre'),
+            cast=metadata.get('cast', []),
+            director=metadata.get('director'),
+            is_series=True,  # Mark as series
+            is_featured=False,
+            view_count=0,
+            file_hash=job.file_hash,
+            file_size=job.file_size,
+        )
+        
+        await content.insert()
+        logger.info(f"Created series content: {content.title} (is_series=True, hash: {job.file_hash[:16] if job.file_hash else 'none'}...)")
+        
+        # Store content ID in job metadata for reference
+        job.metadata['content_id'] = str(content.id)
+        await job.save()
+        
+        # Save extracted subtitles if any
+        extracted_subs = metadata.get('extracted_subtitles', [])
+        if extracted_subs:
+            logger.info(f"Saving {len(extracted_subs)} extracted subtitles to database")
+            from app.models.subtitles import SubtitleTrackDoc, SubtitleCueModel
+            from app.services.subtitle_service import parse_srt
+            
+            for sub_data in extracted_subs:
+                try:
+                    cues = parse_srt(sub_data['content'])
+                    subtitle_track = SubtitleTrackDoc(
+                        content_id=str(content.id),
+                        language=sub_data['language'],
+                        source='embedded',
+                        format=sub_data.get('format', 'srt'),
+                        codec=sub_data.get('codec', 'unknown'),
+                        cues=[SubtitleCueModel(**cue) for cue in cues],
+                        is_default=sub_data['language'] == 'en',
+                    )
+                    await subtitle_track.insert()
+                    logger.info(f"✅ Saved {sub_data['language']} subtitles ({len(cues)} cues)")
+                except Exception as e:
+                    logger.error(f"Failed to save {sub_data['language']} subtitles: {str(e)}")
+            
             content.embedded_subtitle_count = len(extracted_subs)
             content.available_subtitle_languages = [s['language'] for s in extracted_subs]
             content.subtitle_extraction_status = 'completed'

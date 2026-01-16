@@ -7,7 +7,7 @@ import { useDirection } from '@/hooks/useDirection';
 import ContentCarousel from '@/components/content/ContentCarousel';
 import AnimatedCard from '@/components/common/AnimatedCard';
 import { TrendingRow, GlassCarousel } from '@bayit/shared';
-import { GlassLiveChannelCard } from '@bayit/shared/ui';
+import { GlassLiveChannelCard, GlassCheckbox } from '@bayit/shared/ui';
 import MorningRitual from '@/components/ritual/MorningRitual';
 import { contentService, liveService, historyService, ritualService } from '@/services/api';
 import { colors, spacing } from '@bayit/shared/theme';
@@ -98,6 +98,7 @@ export default function HomePage() {
   const [showMorningRitual, setShowMorningRitual] = useState(false);
   const [currentTime, setCurrentTime] = useState(new Date());
   const [isMuted, setIsMuted] = useState(true);
+  const [showOnlyWithSubtitles, setShowOnlyWithSubtitles] = useState(false);
 
   // Update clock every minute
   useEffect(() => {
@@ -308,14 +309,32 @@ export default function HomePage() {
         />
       </View>
 
-      {/* Continue Watching */}
-      {continueWatching.length > 0 && (
-        <ContentCarousel
-          title={t('home.continueWatching')}
-          items={continueWatching}
-          style={styles.section}
+      {/* Content Filters */}
+      <View style={styles.filterSection}>
+        <GlassCheckbox
+          label={t('home.showOnlyWithSubtitles', 'Show only with subtitles')}
+          checked={showOnlyWithSubtitles}
+          onChange={setShowOnlyWithSubtitles}
         />
-      )}
+      </View>
+
+      {/* Continue Watching */}
+      {continueWatching.length > 0 && (() => {
+        const filteredContinueWatching = showOnlyWithSubtitles
+          ? continueWatching.filter(item =>
+              item.available_subtitle_languages &&
+              item.available_subtitle_languages.length > 0
+            )
+          : continueWatching;
+
+        return filteredContinueWatching.length > 0 ? (
+          <ContentCarousel
+            title={t('home.continueWatching')}
+            items={filteredContinueWatching}
+            style={styles.section}
+          />
+        ) : null;
+      })()}
 
       {/* Live TV */}
       {liveChannels.length > 0 && (
@@ -362,15 +381,28 @@ export default function HomePage() {
       </View>
 
       {/* Categories */}
-      {categories.map((category) => (
-        <ContentCarousel
-          key={category.id}
-          title={getLocalizedName(category, i18n.language)}
-          items={category.items}
-          seeAllLink={`/vod?category=${category.id}`}
-          style={styles.section}
-        />
-      ))}
+      {categories.map((category) => {
+        // Filter items by subtitle availability if enabled
+        const filteredItems = showOnlyWithSubtitles
+          ? category.items.filter(item =>
+              item.available_subtitle_languages &&
+              item.available_subtitle_languages.length > 0
+            )
+          : category.items;
+
+        // Don't render empty categories
+        if (filteredItems.length === 0) return null;
+
+        return (
+          <ContentCarousel
+            key={category.id}
+            title={getLocalizedName(category, i18n.language)}
+            items={filteredItems}
+            seeAllLink={`/vod?category=${category.id}`}
+            style={styles.section}
+          />
+        );
+      })}
     </ScrollView>
   );
 }
@@ -434,6 +466,12 @@ const styles = StyleSheet.create({
   carouselSection: {
     paddingHorizontal: IS_TV_BUILD ? spacing.xl : spacing.md,
     paddingTop: IS_TV_BUILD ? spacing.md : spacing.sm,
+  },
+  // Filter Section
+  filterSection: {
+    paddingHorizontal: IS_TV_BUILD ? spacing.xl : spacing.md,
+    marginVertical: spacing.md,
+    alignItems: 'flex-start',
   },
   // Dual Clock
   clockContainer: {

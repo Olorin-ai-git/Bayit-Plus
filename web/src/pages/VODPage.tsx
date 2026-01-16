@@ -8,7 +8,7 @@ import ContentCard from '@/components/content/ContentCard';
 import AnimatedCard from '@/components/common/AnimatedCard';
 import { contentService } from '@/services/api';
 import { colors, spacing, borderRadius } from '@bayit/shared/theme';
-import { GlassView, GlassCard, GlassCategoryPill, GlassInput, GlassButton } from '@bayit/shared/ui';
+import { GlassView, GlassCard, GlassCategoryPill, GlassInput, GlassButton, GlassCheckbox } from '@bayit/shared/ui';
 import { getLocalizedName } from '@bayit/shared-utils/contentLocalization';
 import logger from '@/utils/logger';
 
@@ -46,6 +46,7 @@ export default function VODPage() {
   const [searchQuery, setSearchQuery] = useState('');
   const [page, setPage] = useState(1);
   const [totalItems, setTotalItems] = useState(0);
+  const [showOnlyWithSubtitles, setShowOnlyWithSubtitles] = useState(false);
   const { width } = useWindowDimensions();
 
   // Track previous category to detect changes and prevent duplicate API calls
@@ -60,12 +61,20 @@ export default function VODPage() {
     const series: ContentItem[] = [];
 
     // Filter by search query
-    const filtered = searchQuery.trim()
+    let filtered = searchQuery.trim()
       ? content.filter(item =>
           item.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
           item.category?.toLowerCase().includes(searchQuery.toLowerCase())
         )
       : content;
+
+    // Filter by subtitles if enabled
+    if (showOnlyWithSubtitles) {
+      filtered = filtered.filter(item =>
+        item.available_subtitle_languages &&
+        item.available_subtitle_languages.length > 0
+      );
+    }
 
     filtered.forEach(item => {
       if (item.is_series || item.type === 'series') {
@@ -76,7 +85,7 @@ export default function VODPage() {
     });
 
     return { movies, series, filteredTotal: filtered.length };
-  }, [content, searchQuery]);
+  }, [content, searchQuery, showOnlyWithSubtitles]);
 
   // Combined useEffect to prevent duplicate API calls
   useEffect(() => {
@@ -211,7 +220,7 @@ export default function VODPage() {
           </GlassView>
         </View>
 
-        {/* Search Input */}
+        {/* Search Input and Filters */}
         <View style={styles.searchContainer}>
           <GlassInput
             placeholder={t('vod.searchPlaceholder')}
@@ -220,6 +229,13 @@ export default function VODPage() {
             icon={<Search size={20} color={colors.textMuted} />}
             containerStyle={styles.searchInput}
           />
+          <View style={styles.filterRow}>
+            <GlassCheckbox
+              label={t('vod.showOnlyWithSubtitles', 'Show only with subtitles')}
+              checked={showOnlyWithSubtitles}
+              onChange={setShowOnlyWithSubtitles}
+            />
+          </View>
         </View>
 
         {/* Category Filter */}
@@ -394,6 +410,11 @@ const styles = StyleSheet.create({
   },
   searchInput: {
     marginBottom: 0,
+  },
+  filterRow: {
+    marginTop: spacing.md,
+    flexDirection: 'row',
+    alignItems: 'center',
   },
   categoriesScroll: {
     marginBottom: spacing.lg,

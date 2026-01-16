@@ -26,7 +26,7 @@
     "invalidDate": "Invalid Date",
     "appName": "🏠 Bayit+",
     "appVersion": "🏠 Bayit+ v1.0.0",
-    "slogan": "Your Home. Everywhere.",
+    "slogan": "Your Home. Anywhere.",
     "ok": "OK",
     "success": "Success",
     "warning": "Warning",
@@ -278,6 +278,7 @@
     "liveTV": "Live TV",
     "allChannels": "All Channels",
     "liveChannels": "Live Channels",
+    "showOnlyWithSubtitles": "Show only with subtitles",
     "israeliMovies": "Israeli Movies",
     "israeli-movies": "Israeli Movies",
     "israeli-series": "Israeli Series",
@@ -399,6 +400,7 @@
     "noMovies": "No movies found",
     "noSeries": "No series found",
     "loadError": "Failed to load content",
+    "showOnlyWithSubtitles": "Show only with subtitles",
     "categories": {
       "all": "All",
       "drama": "Drama",
@@ -863,7 +865,9 @@
     "watchTrailer": "Watch Trailer",
     "youMayAlsoLike": "You May Also Like",
     "relatedContent": "Related Content",
-    "notFound": "Content not found"
+    "notFound": "Content not found",
+    "availableSubtitles": "Available Subtitles",
+    "subtitleSelected": "Selected: {{language}}"
   },
   "breadcrumbs": {
     "series": "Series",
@@ -1711,7 +1715,6 @@
         "orphanedItemsFound": "Found {{count}} orphaned item(s)",
         "fixesApplied": "Applied {{count}} fix(es)",
         "auditCompleted": "Audit {{status}} in {{duration}}s",
-        "connecting": "Connecting to live audit log...",
         "auditInitializing": "🚀 Initializing {{auditType}} audit...",
         "dryRunMode": "⚠️ Running in DRY RUN mode - no changes will be made",
         "liveMode": "✅ Running in LIVE mode - changes will be applied",
@@ -1969,6 +1972,7 @@
       "filters": {
         "allStatus": "All Status"
       },
+      "showOnlyWithSubtitles": "Show only with subtitles",
       "status": {
         "published": "Published",
         "draft": "Draft"

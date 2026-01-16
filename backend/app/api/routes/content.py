@@ -84,17 +84,14 @@ def convert_to_proxy_url(url: str, base_url: str = "https://api.bayit.tv/api/v1/
 
 @router.get("/featured")
 async def get_featured(current_user: Optional[User] = Depends(get_optional_user)):
-    """Get featured content for homepage."""
+    """Get featured content for homepage - OPTIMIZED for performance."""
     # Get featured content for hero
     hero_content = await Content.find_one(
         Content.is_featured == True,
         Content.is_published == True,
     )
 
-    # Get spotlight items - featured series and movies
-    spotlight_items = []
-
-    # Get all featured content (series and movies)
+    # Get spotlight items - featured series and movies (limit to 10 for performance)
     featured_content = await Content.find(
         Content.is_featured == True,
         Content.is_published == True,
@@ -103,11 +100,11 @@ async def get_featured(current_user: Optional[User] = Depends(get_optional_user)
             {"series_id": {"$exists": False}},
             {"series_id": ""},
         ]},
-    ).to_list()
+    ).limit(10).to_list()
 
-    # Add each item to spotlight
-    for item in featured_content:
-        spotlight_data = {
+    # Build spotlight items (NO extra queries - use existing data)
+    spotlight_items = [
+        {
             "id": str(item.id),
             "title": item.title,
             "description": item.description,
@@ -119,21 +116,17 @@ async def get_featured(current_user: Optional[User] = Depends(get_optional_user)
             "duration": item.duration,
             "rating": item.rating,
             "is_series": item.is_series,
+            # Use pre-calculated total_episodes, don't query for first episode
+            "total_episodes": item.total_episodes if item.is_series else None,
         }
+        for item in featured_content
+    ]
 
-        # If it's a series, get first episode for playback reference
-        if item.is_series:
-            first_episode = await Content.find_one(
-                Content.series_id == str(item.id),
-                Content.is_published == True,
-            )
-            spotlight_data["first_episode_id"] = str(first_episode.id) if first_episode else None
+    # Get only top 6 categories for homepage (performance optimization)
+    categories = await Category.find(Category.is_active == True).sort("order").limit(6).to_list()
 
-        spotlight_items.append(spotlight_data)
-
-    # Get categories with their content
-    categories = await Category.find(Category.is_active == True).sort("order").to_list()
-    category_data = []
+    # Build category items
+    category_items_map = {}
 
     for cat in categories:
         # Exclude episodes (items with series_id set) - only show movies and parent series
@@ -147,7 +140,7 @@ async def get_featured(current_user: Optional[User] = Depends(get_optional_user)
             ]},
         ).limit(10).to_list()
 
-        # Build items with episode counts for series
+        # Build items list
         category_items = []
         for item in items:
             item_data = {
@@ -161,28 +154,25 @@ async def get_featured(current_user: Optional[User] = Depends(get_optional_user)
                 "is_series": item.is_series,
             }
 
-            # Calculate episode count for series if not already set
+            # Use pre-calculated episode count (no extra queries)
             if item.is_series:
-                if item.total_episodes:
-                    item_data["total_episodes"] = item.total_episodes
-                else:
-                    # Count episodes dynamically
-                    episode_count = await Content.find(
-                        Content.series_id == str(item.id),
-                        Content.is_published == True,
-                    ).count()
-                    item_data["total_episodes"] = episode_count
+                item_data["total_episodes"] = item.total_episodes or 0
 
             category_items.append(item_data)
 
-        # Enrich category items with subtitle languages
+        # Enrich with subtitle languages (batched operation)
         category_items = await enrich_content_items_with_subtitles(category_items)
+        category_items_map[str(cat.id)] = category_items
 
-        category_data.append({
+    # Build final category data
+    category_data = [
+        {
             "id": str(cat.id),
             "name": cat.name,
-            "items": category_items,
-        })
+            "items": category_items_map.get(str(cat.id), []),
+        }
+        for cat in categories
+    ]
 
     return {
         "hero": {
