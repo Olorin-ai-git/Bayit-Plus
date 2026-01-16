@@ -79,10 +79,7 @@ api.interceptors.response.use(
       ].some(msg => errorDetail.toLowerCase().includes(msg.toLowerCase()));
 
       if (isCriticalAuthEndpoint || isTokenError) {
-        console.log('[API] Critical auth failure, logging out:', errorDetail, 'URL:', requestUrl);
         useAuthStore.getState().logout();
-      } else {
-        console.log('[API] 401 from non-critical endpoint, not logging out:', requestUrl, errorDetail);
       }
     }
     return Promise.reject(error.response?.data || error);
@@ -280,14 +277,15 @@ const apiZmanService = {
 };
 
 // Trending Service (API)
+// Trending endpoints use longer timeout because they call Claude AI for analysis
 const apiTrendingService = {
-  getTopics: () => api.get('/trending/topics'),
+  getTopics: () => api.get('/trending/topics', { timeout: 20000 }),
   getHeadlines: (source?: string, limit: number = 20) =>
-    api.get('/trending/headlines', { params: { source, limit } }),
+    api.get('/trending/headlines', { params: { source, limit }, timeout: 20000 }),
   getRecommendations: (limit: number = 10) =>
-    api.get('/trending/recommendations', { params: { limit } }),
-  getSummary: () => api.get('/trending/summary'),
-  getByCategory: (category: string) => api.get(`/trending/category/${category}`),
+    api.get('/trending/recommendations', { params: { limit }, timeout: 20000 }),
+  getSummary: () => api.get('/trending/summary', { timeout: 20000 }),
+  getByCategory: (category: string) => api.get(`/trending/category/${category}`, { timeout: 20000 }),
 };
 
 // Morning Ritual Service (API)

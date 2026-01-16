@@ -126,7 +126,6 @@ export const useAuthStore = create(
             version: 0,
           }
           localStorage.setItem('bayit-auth', JSON.stringify(authData))
-          console.log('[Auth] Token saved to localStorage:', response.access_token?.substring(0, 20) + '...')
 
           return response
         } catch (error) {

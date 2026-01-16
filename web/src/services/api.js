@@ -41,9 +41,6 @@ api.interceptors.request.use((config) => {
   const authData = JSON.parse(localStorage.getItem('bayit-auth') || '{}')
   if (authData?.state?.token) {
     config.headers.Authorization = `Bearer ${authData.state.token}`
-    console.log('[API] Adding token to request:', config.url, 'Token:', authData.state.token?.substring(0, 20) + '...')
-  } else {
-    console.log('[API] No token found in localStorage for request:', config.url)
   }
   return config
 })
@@ -72,11 +69,8 @@ api.interceptors.response.use(
       ].some(msg => errorDetail.toLowerCase().includes(msg.toLowerCase()))
 
       if (isCriticalAuthEndpoint || isTokenError) {
-        console.log('[API] Critical auth failure, logging out:', errorDetail, 'URL:', requestUrl)
         localStorage.removeItem('bayit-auth')
         window.location.href = '/login'
-      } else {
-        console.log('[API] 401 from non-critical endpoint, not logging out:', requestUrl, errorDetail)
       }
     }
     return Promise.reject(error.response?.data || error)
@@ -225,14 +219,15 @@ const apiZmanService = {
 }
 
 // Trending Service (API)
+// Trending endpoints use longer timeout because they call Claude AI for analysis
 const apiTrendingService = {
-  getTopics: () => api.get('/trending/topics'),
+  getTopics: () => api.get('/trending/topics', { timeout: 20000 }),
   getHeadlines: (source, limit = 20) =>
-    api.get('/trending/headlines', { params: { source, limit } }),
+    api.get('/trending/headlines', { params: { source, limit }, timeout: 20000 }),
   getRecommendations: (limit = 10) =>
-    api.get('/trending/recommendations', { params: { limit } }),
-  getSummary: () => api.get('/trending/summary'),
-  getByCategory: (category) => api.get(`/trending/category/${category}`),
+    api.get('/trending/recommendations', { params: { limit }, timeout: 20000 }),
+  getSummary: () => api.get('/trending/summary', { timeout: 20000 }),
+  getByCategory: (category) => api.get(`/trending/category/${category}`, { timeout: 20000 }),
 }
 
 // Chapters Service (API)
