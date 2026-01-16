@@ -49,9 +49,34 @@ api.interceptors.request.use((config) => {
 api.interceptors.response.use(
   (response) => response.data,
   (error) => {
+    // Only logout on authentication failures, not all 401 errors
+    // Some 401s are for unauthorized access to specific resources (history, etc)
     if (error.response?.status === 401) {
-      localStorage.removeItem('bayit-auth')
-      window.location.href = '/login'
+      const errorDetail = error.response?.data?.detail || ''
+      const authFailureMessages = [
+        'Could not validate credentials',
+        'Invalid authentication credentials',
+        'Token has expired',
+        'Invalid token',
+        'Not authenticated',
+        'Authentication required'
+      ]
+
+      // Only logout if it's an actual authentication failure
+      const isAuthFailure = authFailureMessages.some(msg =>
+        errorDetail.toLowerCase().includes(msg.toLowerCase())
+      )
+
+      // Also logout if it's from the /auth/me endpoint (token validation failed)
+      const isAuthEndpoint = error.config?.url?.includes('/auth/me')
+
+      if (isAuthFailure || isAuthEndpoint) {
+        console.log('[API] Authentication failure detected, logging out:', errorDetail)
+        localStorage.removeItem('bayit-auth')
+        window.location.href = '/login'
+      } else {
+        console.log('[API] 401 error but not auth failure, allowing error to propagate:', errorDetail)
+      }
     }
     return Promise.reject(error.response?.data || error)
   }
