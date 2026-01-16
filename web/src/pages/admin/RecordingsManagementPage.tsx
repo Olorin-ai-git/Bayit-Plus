@@ -4,13 +4,13 @@
  */
 
 import { useState, useEffect } from 'react'
-import { View, Text, StyleSheet, FlatList, ActivityIndicator, Pressable, TextInput } from 'react-native'
+import { View, Text, StyleSheet, FlatList, ActivityIndicator, Pressable } from 'react-native'
 import { useTranslation } from 'react-i18next'
 import { Search, Trash2, Play, HardDrive, Users, Video } from 'lucide-react'
 import { useDirection } from '@/hooks/useDirection'
 import { useModal } from '@/contexts/ModalContext'
 import { colors, spacing, borderRadius } from '@bayit/shared/theme'
-import { GlassView } from '@bayit/shared/ui'
+import { GlassView, GlassInput } from '@bayit/shared/ui'
 import axios from 'axios'
 
 const API_BASE_URL = import.meta.env.VITE_API_URL || '/api/v1'
@@ -191,16 +191,13 @@ export default function RecordingsManagementPage() {
       )}
 
       {/* Search Bar */}
-      <GlassView style={styles.searchContainer}>
-        <Search size={20} color={colors.textSecondary} />
-        <TextInput
-          style={[styles.searchInput, { textAlign: isRTL ? 'right' : 'left' }]}
-          placeholder={t('admin.recordings.searchPlaceholder')}
-          placeholderTextColor={colors.textSecondary}
-          value={searchQuery}
-          onChangeText={setSearchQuery}
-        />
-      </GlassView>
+      <GlassInput
+        leftIcon={<Search size={20} color={colors.textSecondary} />}
+        placeholder={t('admin.recordings.searchPlaceholder')}
+        value={searchQuery}
+        onChangeText={setSearchQuery}
+        containerStyle={styles.searchContainer}
+      />
     </View>
   )
 
@@ -333,17 +330,7 @@ const styles = StyleSheet.create({
     color: colors.textSecondary,
   },
   searchContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing.sm,
-    padding: spacing.md,
-    borderRadius: borderRadius.lg,
-  },
-  searchInput: {
-    flex: 1,
-    fontSize: 14,
-    color: colors.text,
-    padding: 0,
+    marginBottom: 0,
   },
   loadingContainer: {
     flex: 1,

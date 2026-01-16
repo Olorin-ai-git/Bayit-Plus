@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, useRef } from 'react';
 import { View, Text, StyleSheet, FlatList, ScrollView, useWindowDimensions, Pressable, ActivityIndicator } from 'react-native';
 import { useSearchParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
@@ -48,8 +48,11 @@ export default function VODPage() {
   const [totalItems, setTotalItems] = useState(0);
   const { width } = useWindowDimensions();
 
+  // Track previous category to detect changes and prevent duplicate API calls
+  const prevCategoryRef = useRef(selectedCategory);
+
   const numColumns = width >= 1280 ? 6 : width >= 1024 ? 5 : width >= 768 ? 4 : width >= 640 ? 3 : 2;
-  const itemsPerPage = 100;
+  const itemsPerPage = 24; // Reduced from 100 for better UX and smaller batches
 
   // Filter and separate movies and series
   const { movies, series, filteredTotal } = useMemo(() => {
@@ -75,14 +78,26 @@ export default function VODPage() {
     return { movies, series, filteredTotal: filtered.length };
   }, [content, searchQuery]);
 
+  // Combined useEffect to prevent duplicate API calls
   useEffect(() => {
-    setPage(1);
-    loadContent();
-  }, [selectedCategory]);
+    const categoryChanged = prevCategoryRef.current !== selectedCategory;
 
-  useEffect(() => {
+    if (categoryChanged) {
+      prevCategoryRef.current = selectedCategory;
+
+      // If category changed and we're not on page 1, reset to page 1
+      // This will trigger the effect again, which will then load content
+      if (page !== 1) {
+        setPage(1);
+        return;
+      }
+    }
+
+    // Load content in these cases:
+    // 1. Category changed and page is already 1
+    // 2. Page changed (pagination navigation)
     loadContent();
-  }, [page]);
+  }, [selectedCategory, page]);
 
   const loadContent = async () => {
     setLoading(true);

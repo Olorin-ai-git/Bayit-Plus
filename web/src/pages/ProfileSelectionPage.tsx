@@ -1,12 +1,12 @@
 import { useState, useEffect, useRef } from 'react';
-import { View, Text, StyleSheet, Pressable, Image, ActivityIndicator, TextInput } from 'react-native';
+import { View, Text, StyleSheet, Pressable, Image, ActivityIndicator } from 'react-native';
 import { useNavigate } from 'react-router-dom';
 import { Plus, Edit2, Lock } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useProfileStore } from '@/stores/profileStore';
 import { useAuthStore } from '@/stores/authStore';
 import { colors, spacing, borderRadius } from '@bayit/shared/theme';
-import { GlassButton, GlassModal } from '@bayit/shared/ui';
+import { GlassButton, GlassModal, GlassInput } from '@bayit/shared/ui';
 
 const AVATAR_COLORS = [
   '#a855f7', // Cyan
@@ -117,12 +117,10 @@ function PinModal({ isOpen, onClose, onSubmit, error, isLoading }: {
 }) {
   const { t } = useTranslation();
   const [pin, setPin] = useState('');
-  const inputRef = useRef<TextInput>(null);
 
   useEffect(() => {
     if (isOpen) {
       setPin('');
-      setTimeout(() => inputRef.current?.focus(), 100);
     }
   }, [isOpen]);
 
@@ -139,21 +137,17 @@ function PinModal({ isOpen, onClose, onSubmit, error, isLoading }: {
       onClose={onClose}
       dismissable={true}
     >
-      <TextInput
-        ref={inputRef}
+      <GlassInput
         secureTextEntry
         keyboardType="numeric"
         maxLength={6}
         value={pin}
         onChangeText={(text) => setPin(text.replace(/\D/g, ''))}
-        style={styles.pinInput}
+        inputStyle={styles.pinInput}
         placeholder={t('placeholder.pin')}
-        placeholderTextColor={colors.textMuted}
+        error={error}
+        autoFocus
       />
-
-      {error ? (
-        <Text style={styles.errorText}>{error}</Text>
-      ) : null}
 
       <View style={styles.modalButtons}>
         <GlassButton
@@ -484,14 +478,9 @@ const styles = StyleSheet.create({
     marginTop: spacing.md,
   },
   pinInput: {
-    backgroundColor: colors.glass,
-    borderRadius: borderRadius.md,
-    padding: spacing.md,
     fontSize: 24,
-    color: colors.text,
     textAlign: 'center',
     letterSpacing: 8,
-    marginBottom: spacing.md,
   },
   modalButtons: {
     flexDirection: 'row',

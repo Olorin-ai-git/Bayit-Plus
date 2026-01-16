@@ -1,12 +1,12 @@
 import { useState, useEffect, useMemo } from 'react';
-import { View, Text, StyleSheet, FlatList, Pressable, Image, ScrollView, useWindowDimensions, TextInput } from 'react-native';
+import { View, Text, StyleSheet, FlatList, Pressable, Image, ScrollView, useWindowDimensions } from 'react-native';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useDirection } from '@/hooks/useDirection';
 import { Podcast, Headphones, Clock, Search, X, RefreshCw } from 'lucide-react';
 import { podcastService } from '@/services/api';
 import { colors, spacing, borderRadius } from '@bayit/shared/theme';
-import { GlassView, GlassCard, GlassCategoryPill } from '@bayit/shared/ui';
+import { GlassView, GlassCard, GlassCategoryPill, GlassInput } from '@bayit/shared/ui';
 import logger from '@/utils/logger';
 
 interface Category {
@@ -222,21 +222,20 @@ export default function PodcastsPage() {
       </View>
 
       {/* Search Input */}
-      <GlassCard style={[styles.searchContainer, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
-        <Search size={18} color={colors.textMuted} style={{ marginHorizontal: spacing.sm }} />
-        <TextInput
-          style={styles.searchInput}
-          placeholder={t('common.search')}
-          placeholderTextColor={colors.textMuted}
-          value={searchQuery}
-          onChangeText={setSearchQuery}
-        />
-        {searchQuery ? (
-          <Pressable onPress={() => setSearchQuery('')} style={{ padding: spacing.sm }}>
-            <X size={18} color={colors.textMuted} />
-          </Pressable>
-        ) : null}
-      </GlassCard>
+      <GlassInput
+        leftIcon={<Search size={18} color={colors.textMuted} />}
+        rightIcon={
+          searchQuery ? (
+            <Pressable onPress={() => setSearchQuery('')}>
+              <X size={18} color={colors.textMuted} />
+            </Pressable>
+          ) : undefined
+        }
+        placeholder={t('common.search')}
+        value={searchQuery}
+        onChangeText={setSearchQuery}
+        containerStyle={styles.searchContainer}
+      />
 
       {/* Category Filter */}
       <ScrollView
@@ -339,22 +338,7 @@ const styles = StyleSheet.create({
     gap: spacing.sm,
   },
   searchContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingHorizontal: spacing.md,
-    paddingVertical: spacing.sm,
     marginBottom: spacing.lg,
-    borderRadius: borderRadius.lg,
-    backgroundColor: 'rgba(255, 255, 255, 0.08)',
-  },
-  searchInput: {
-    flex: 1,
-    paddingVertical: spacing.md,
-    paddingHorizontal: spacing.sm,
-    fontSize: 14,
-    color: colors.text,
-    // @ts-ignore
-    outlineStyle: 'none',
   },
   headerIcon: {
     width: 48,

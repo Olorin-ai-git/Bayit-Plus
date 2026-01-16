@@ -63,6 +63,7 @@ const baseMenuSections: MenuSection[] = [
       { id: 'flows', icon: '✨', labelKey: 'nav.flows', path: '/flows' },
       { id: 'judaism', icon: '✡️', labelKey: 'nav.judaism', path: '/judaism' },
       { id: 'children', icon: '👶', labelKey: 'nav.children', path: '/children' },
+      { id: 'games', icon: '🎮', labelKey: 'nav.games', path: '/games' },
     ],
   },
   {
@@ -369,7 +370,7 @@ export const GlassSidebar: React.FC<GlassSidebarProps> = ({ isExpanded, onToggle
                   ]}
                 >
                   <Text style={styles.sloganText}>
-                    {t('common.slogan', 'Your Home. Everywhere.')}
+                    {t('common.slogan', 'Your Home. Anywhere.')}
                   </Text>
                 </Animated.View>
               </>
@@ -596,7 +597,6 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     letterSpacing: 0.8,
     // @ts-ignore - Web CSS
-    direction: 'ltr',
     backgroundImage: 'linear-gradient(135deg, rgba(255, 255, 255, 0.9) 0%, rgba(192, 132, 252, 0.9) 100%)',
     WebkitBackgroundClip: 'text',
     WebkitTextFillColor: 'transparent',

@@ -4,7 +4,6 @@ import {
   Text,
   StyleSheet,
   Pressable,
-  TextInput,
   ScrollView,
   Image,
   Animated,
@@ -25,7 +24,7 @@ import { useVoiceSettingsStore, VoiceMode } from '@bayit/shared-stores/voiceSett
 import { useModeEnforcement, useVoiceResponseCoordinator, useConversationContext, useWakeWordListening } from '@bayit/shared-hooks'
 import logger from '@/utils/logger'
 import { colors, spacing, borderRadius } from '@bayit/shared/theme'
-import { GlassView, GlassCard, GlassButton, GlassBadge } from '@bayit/shared/ui'
+import { GlassView, GlassCard, GlassButton, GlassBadge, GlassInput } from '@bayit/shared/ui'
 
 interface Message {
   role: 'user' | 'assistant'
@@ -274,7 +273,7 @@ export default function Chatbot() {
   const [voiceStatusVisible, setVoiceStatusVisible] = useState(false)
   const [currentLanguage, setCurrentLanguage] = useState<string | null>(null)
   const messagesEndRef = useRef<ScrollView>(null)
-  const inputRef = useRef<TextInput>(null)
+  const inputRef = useRef<any>(null)
   const mediaRecorderRef = useRef<MediaRecorder | null>(null)
   const audioChunksRef = useRef<Blob[]>([])
   const slideAnim = useRef(new Animated.Value(100)).current
@@ -1004,18 +1003,16 @@ export default function Chatbot() {
                   </Pressable>
 
                   {/* Text Input */}
-                  <View style={styles.textInputContainer}>
-                    <TextInput
-                      ref={inputRef}
-                      style={[styles.textInput, isRTL && styles.textInputRTL]}
-                      value={input}
-                      onChangeText={setInput}
-                      placeholder={t('chatbot.placeholder')}
-                      placeholderTextColor={colors.textMuted}
-                      editable={!isLoading && !isRecording && !isTranscribing}
-                      onSubmitEditing={handleSubmit}
-                    />
-                  </View>
+                  <GlassInput
+                    ref={inputRef}
+                    value={input}
+                    onChangeText={setInput}
+                    placeholder={t('chatbot.placeholder')}
+                    editable={!isLoading && !isRecording && !isTranscribing}
+                    onSubmitEditing={handleSubmit}
+                    containerStyle={styles.textInputContainer}
+                    inputStyle={[styles.textInput, isRTL && styles.textInputRTL]}
+                  />
 
                   {/* Send Button */}
                   <Pressable

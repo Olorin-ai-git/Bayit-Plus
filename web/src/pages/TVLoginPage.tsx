@@ -1,10 +1,10 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { View, Text, StyleSheet, TextInput, Pressable, ActivityIndicator } from 'react-native';
+import { View, Text, StyleSheet, Pressable, ActivityIndicator } from 'react-native';
 import { useSearchParams, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useDirection } from '@/hooks/useDirection';
 import { CheckCircle, XCircle, Smartphone, Tv, Lock } from 'lucide-react';
-import { GlassView, GlassButton } from '@bayit/shared/ui';
+import { GlassView, GlassButton, GlassInput } from '@bayit/shared/ui';
 import { colors, spacing, borderRadius } from '@bayit/shared/theme';
 import { devicePairingService } from '@bayit/shared-services';
 import { useAuthStore } from '@bayit/shared-stores';
@@ -29,8 +29,8 @@ export default function TVLoginPage() {
 
   const { isAuthenticated, user, token: authToken, login } = useAuthStore();
 
-  const emailRef = useRef<TextInput>(null);
-  const passwordRef = useRef<TextInput>(null);
+  const emailRef = useRef<any>(null);
+  const passwordRef = useRef<any>(null);
 
   // Verify session on load
   useEffect(() => {
@@ -146,13 +146,12 @@ export default function TVLoginPage() {
 
       <View style={styles.inputContainer}>
         <Text style={styles.label}>{t('login.email')}</Text>
-        <TextInput
+        <GlassInput
           ref={emailRef}
-          style={styles.input}
+          inputStyle={styles.input}
           value={email}
           onChangeText={setEmail}
           placeholder={t('placeholder.email')}
-          placeholderTextColor={colors.textMuted}
           keyboardType="email-address"
           autoCapitalize="none"
           autoComplete="email"
@@ -163,13 +162,12 @@ export default function TVLoginPage() {
 
       <View style={styles.inputContainer}>
         <Text style={styles.label}>{t('login.password')}</Text>
-        <TextInput
+        <GlassInput
           ref={passwordRef}
-          style={styles.input}
+          inputStyle={styles.input}
           value={password}
           onChangeText={setPassword}
           placeholder={t('placeholder.password')}
-          placeholderTextColor={colors.textMuted}
           secureTextEntry
           autoComplete="password"
           onSubmitEditing={handleLogin}
@@ -362,13 +360,7 @@ const styles = StyleSheet.create({
     marginBottom: spacing.xs,
   },
   input: {
-    backgroundColor: 'rgba(255, 255, 255, 0.1)',
-    borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.2)',
-    borderRadius: borderRadius.md,
-    padding: spacing.md,
     fontSize: 16,
-    color: colors.text,
   },
   errorContainer: {
     backgroundColor: 'rgba(255, 68, 68, 0.1)',

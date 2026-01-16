@@ -2,8 +2,8 @@
  * GlassTable - A consistent, glassmorphic table component for admin interfaces
  */
 
-import React, { ReactNode } from 'react';
-import { View, Text, StyleSheet, Pressable, ActivityIndicator } from 'react-native';
+import React, { ReactNode, CSSProperties } from 'react';
+import { View, Text, StyleSheet, Pressable, ActivityIndicator, Platform } from 'react-native';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { GlassView } from './GlassView';
 import { colors, borderRadius, spacing } from '../theme';
@@ -56,11 +56,15 @@ export function GlassTable<T extends Record<string, any>>({
 }: GlassTableProps<T>) {
   const totalPages = pagination ? Math.ceil(pagination.total / pagination.pageSize) : 0;
   
-  // Generate row animation class
-  const getRowAnimationClass = (index: number): string => {
-    if (!animateRows) return '';
+  // Generate row animation styles (web only)
+  const getRowAnimationStyle = (index: number): CSSProperties => {
+    if (!animateRows || Platform.OS !== 'web') return {};
     const delayIndex = Math.min(index, 19);
-    return `animated-row${isRTL ? '-rtl' : ''} animated-row-delay-${delayIndex}`;
+    const delayMs = delayIndex * 30; // 30ms increment per row
+    const animationName = isRTL ? 'rowFadeSlideInRTL' : 'rowFadeSlideIn';
+    return {
+      animation: `${animationName} 0.35s cubic-bezier(0.25, 0.46, 0.45, 0.94) ${delayMs}ms both`,
+    };
   };
 
   const getRowKey = (row: T, index: number): string => {
@@ -117,44 +121,55 @@ export function GlassTable<T extends Record<string, any>>({
             <Text style={styles.emptyText}>{emptyMessage}</Text>
           </View>
         ) : (
-          data.map((row, rowIndex) => (
-            <Pressable
-              key={getRowKey(row, rowIndex)}
-              onPress={onRowPress ? () => onRowPress(row, rowIndex) : undefined}
-              style={[
-                styles.dataRow,
-                rowIndex < data.length - 1 && styles.dataRowBorder,
-              ]}
-              // @ts-ignore - Web-specific className prop for animations
-              className={getRowAnimationClass(rowIndex)}
-            >
-              <View style={{ flexDirection: isRTL ? 'row-reverse' : 'row', flex: 1 }}>
-                {columns.map((column) => (
-                  <View
-                    key={column.key}
-                    style={[
-                      styles.dataCell,
-                      column.width ? { width: column.width as any, flex: undefined } : { flex: 1 },
-                    ]}
-                  >
-                    {column.render ? (
-                      column.render(row[column.key], row, rowIndex)
-                    ) : (
-                      <Text
-                        style={[
-                          styles.cellText,
-                          { textAlign: getTextAlign(column) },
-                        ]}
-                        numberOfLines={1}
-                      >
-                        {row[column.key]?.toString() || '-'}
-                      </Text>
-                    )}
-                  </View>
-                ))}
-              </View>
-            </Pressable>
-          ))
+          data.map((row, rowIndex) => {
+            const rowKey = getRowKey(row, rowIndex);
+            const rowContent = (
+              <Pressable
+                onPress={onRowPress ? () => onRowPress(row, rowIndex) : undefined}
+                style={[
+                  styles.dataRow,
+                  rowIndex < data.length - 1 && styles.dataRowBorder,
+                ]}
+              >
+                <View style={{ flexDirection: isRTL ? 'row-reverse' : 'row', flex: 1 }}>
+                  {columns.map((column) => (
+                    <View
+                      key={column.key}
+                      style={[
+                        styles.dataCell,
+                        column.width ? { width: column.width as any, flex: undefined } : { flex: 1 },
+                      ]}
+                    >
+                      {column.render ? (
+                        column.render(row[column.key], row, rowIndex)
+                      ) : (
+                        <Text
+                          style={[
+                            styles.cellText,
+                            { textAlign: getTextAlign(column) },
+                          ]}
+                          numberOfLines={1}
+                        >
+                          {row[column.key]?.toString() || '-'}
+                        </Text>
+                      )}
+                    </View>
+                  ))}
+                </View>
+              </Pressable>
+            );
+
+            // Wrap in animated div on web
+            if (Platform.OS === 'web' && animateRows) {
+              return (
+                <div key={rowKey} style={getRowAnimationStyle(rowIndex)}>
+                  {rowContent}
+                </div>
+              );
+            }
+
+            return <React.Fragment key={rowKey}>{rowContent}</React.Fragment>;
+          })
         )}
       </View>
 

@@ -1,9 +1,9 @@
 import { useState } from 'react'
-import { View, Text, TextInput, StyleSheet, Pressable, ActivityIndicator } from 'react-native'
+import { View, Text, StyleSheet, Pressable, ActivityIndicator } from 'react-native'
 import { useTranslation } from 'react-i18next'
 import { UserPlus } from 'lucide-react'
 import { colors, spacing, borderRadius } from '@bayit/shared/theme'
-import { GlassModal } from '@bayit/shared/ui'
+import { GlassModal, GlassInput } from '@bayit/shared/ui'
 
 interface WatchPartyJoinModalProps {
   isOpen: boolean
@@ -70,19 +70,16 @@ export default function WatchPartyJoinModal({ isOpen, onClose, onJoin }: WatchPa
       </Text>
 
       <View style={styles.inputContainer}>
-        <TextInput
+        <GlassInput
           value={roomCode}
           onChangeText={handleCodeChange}
           placeholder={t('placeholder.roomCode', 'ABCD1234')}
-          placeholderTextColor={colors.textMuted}
-          style={[styles.input, error && styles.inputError]}
+          inputStyle={[styles.input, error && styles.inputError]}
           autoFocus
           autoCapitalize="characters"
           maxLength={8}
+          error={error}
         />
-        {error ? (
-          <Text style={styles.errorText}>{error}</Text>
-        ) : null}
       </View>
 
       <View style={styles.actions}>
@@ -153,11 +150,6 @@ const styles = StyleSheet.create({
   } as any,
   inputError: {
     borderColor: colors.error,
-  },
-  errorText: {
-    fontSize: 12,
-    color: colors.error,
-    textAlign: 'center',
   },
   actions: {
     flexDirection: 'row',

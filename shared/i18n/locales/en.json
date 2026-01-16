@@ -224,7 +224,8 @@
     "discover": "Discover",
     "account": "Account",
     "subscribe": "Subscribe",
-    "admin": "Admin"
+    "admin": "Admin",
+    "games": "Games"
   },
   "epg": {
     "title": "TV Guide",
@@ -2650,5 +2651,41 @@
     "startFailed": "Failed to start recording. Please try again.",
     "stopFailed": "Failed to stop recording. Please try again.",
     "page": "Page"
+  },
+  "chess": {
+    "title": "Chess",
+    "welcome": "Welcome to Chess",
+    "subtitle": "Play chess with friends and family around the world",
+    "createGame": "Create New Game",
+    "joinGame": "Join Game",
+    "gameCode": "Game Code",
+    "enterGameCode": "Enter Game Code",
+    "invalidGameCode": "Invalid game code. Must be 6 characters.",
+    "joinFailed": "Failed to join game",
+    "join": "Join",
+    "create": "Create",
+    "chooseColor": "Choose Your Color",
+    "white": "White",
+    "black": "Black",
+    "chatPlaceholder": "Type a message... (@bot for advice)",
+    "botHint": "Tag @bot in your message to get chess advice from our AI assistant",
+    "bot": "Chess Assistant",
+    "mute": "Mute",
+    "unmute": "Unmute",
+    "speaking": "participants",
+    "resign": "Resign",
+    "offerDraw": "Offer Draw",
+    "newGame": "New Game",
+    "checkmate": "Checkmate!",
+    "stalemate": "Stalemate",
+    "draw": "Draw",
+    "resigned": "Game Resigned",
+    "reconnecting": "Reconnecting...",
+    "moveHistory": "Move History",
+    "noMoves": "No moves yet",
+    "yourTurn": "Your Turn",
+    "opponentTurn": "Opponent's Turn",
+    "waitingForOpponent": "Waiting for opponent...",
+    "gameOver": "Game Over"
   }
 }

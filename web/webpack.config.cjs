@@ -248,6 +248,12 @@ module.exports = (env, argv) => {
             to: path.resolve(getOutputPath(), 'vosk/model'),
             noErrorOnMissing: true,
           },
+          {
+            // Copy chess assets (images, pieces, etc.)
+            from: path.resolve(__dirname, 'public/chess'),
+            to: path.resolve(getOutputPath(), 'chess'),
+            noErrorOnMissing: true,
+          },
         ],
       }),
     ],

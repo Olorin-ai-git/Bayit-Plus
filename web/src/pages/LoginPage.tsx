@@ -1,11 +1,12 @@
 import { useState } from 'react';
-import { View, Text, StyleSheet, Pressable, TextInput, ActivityIndicator } from 'react-native';
+import { View, Text, StyleSheet, Pressable, ActivityIndicator } from 'react-native';
 import { Link, useNavigate, useLocation, useSearchParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { Eye, EyeOff, Mail, Lock, ChevronDown, Globe } from 'lucide-react';
 import { useAuthStore } from '@bayit/shared-stores';
 import { colors, spacing, borderRadius } from '@bayit/shared/theme';
 import { AnimatedLogo } from '@bayit/shared';
+import { GlassInput } from '@bayit/shared/ui';
 import { useDirection } from '@/hooks/useDirection';
 
 // Check if this is a TV build (set by webpack)
@@ -146,22 +147,16 @@ export default function LoginPage() {
 
           {/* Email Input */}
           <View style={styles.inputGroup}>
-            <Text style={[styles.label, isRTL && styles.labelRTL]}>{t('login.email')}</Text>
-            <View style={styles.inputWrapper}>
-              <View style={[styles.inputIcon, isRTL && styles.inputIconRTL]}>
-                <Mail size={20} color={colors.textMuted} />
-              </View>
-              <TextInput
-                style={[styles.input, isRTL && styles.inputRTL]}
-                value={email}
-                onChangeText={setEmail}
-                placeholder={t('login.emailPlaceholder')}
-                placeholderTextColor={colors.textMuted}
-                keyboardType="email-address"
-                autoCapitalize="none"
-                autoComplete="email"
-              />
-            </View>
+            <GlassInput
+              label={t('login.email')}
+              value={email}
+              onChangeText={setEmail}
+              placeholder={t('login.emailPlaceholder')}
+              leftIcon={<Mail size={20} color={colors.textMuted} />}
+              keyboardType="email-address"
+              autoCapitalize="none"
+              autoComplete="email"
+            />
           </View>
 
           {/* Password Input */}
@@ -172,30 +167,23 @@ export default function LoginPage() {
                 <Text style={styles.forgotLink}>{t('login.forgotPassword')}</Text>
               </Link>
             </View>
-            <View style={styles.inputWrapper}>
-              <View style={[styles.inputIcon, isRTL && styles.inputIconRTL]}>
-                <Lock size={20} color={colors.textMuted} />
-              </View>
-              <TextInput
-                style={[styles.input, styles.inputWithRightIcon, isRTL && styles.inputRTL]}
-                value={password}
-                onChangeText={setPassword}
-                placeholder={t('login.passwordPlaceholder')}
-                placeholderTextColor={colors.textMuted}
-                secureTextEntry={!showPassword}
-                autoComplete="password"
-              />
-              <Pressable
-                style={[styles.passwordToggle, isRTL && styles.passwordToggleRTL]}
-                onPress={() => setShowPassword(!showPassword)}
-              >
-                {showPassword ? (
-                  <EyeOff size={IS_TV_BUILD ? 28 : 20} color={colors.textMuted} />
-                ) : (
-                  <Eye size={IS_TV_BUILD ? 28 : 20} color={colors.textMuted} />
-                )}
-              </Pressable>
-            </View>
+            <GlassInput
+              value={password}
+              onChangeText={setPassword}
+              placeholder={t('login.passwordPlaceholder')}
+              leftIcon={<Lock size={20} color={colors.textMuted} />}
+              rightIcon={
+                <Pressable onPress={() => setShowPassword(!showPassword)}>
+                  {showPassword ? (
+                    <EyeOff size={IS_TV_BUILD ? 28 : 20} color={colors.textMuted} />
+                  ) : (
+                    <Eye size={IS_TV_BUILD ? 28 : 20} color={colors.textMuted} />
+                  )}
+                </Pressable>
+              }
+              secureTextEntry={!showPassword}
+              autoComplete="password"
+            />
           </View>
 
           {/* Login Button */}
@@ -442,9 +430,6 @@ const styles = StyleSheet.create({
     color: colors.textSecondary,
     marginBottom: IS_TV_BUILD ? spacing.sm : spacing.xs,
   },
-  labelRTL: {
-    textAlign: 'right',
-  },
   labelRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
@@ -458,56 +443,6 @@ const styles = StyleSheet.create({
     fontSize: 13,
     color: colors.primary,
     fontWeight: '500',
-  },
-  inputWrapper: {
-    position: 'relative',
-  },
-  inputIcon: {
-    position: 'absolute',
-    left: spacing.md,
-    top: '50%',
-    // @ts-ignore - web only
-    transform: 'translateY(-50%)',
-    zIndex: 1,
-  },
-  inputIconRTL: {
-    left: 'auto',
-    right: spacing.md,
-  },
-  input: {
-    backgroundColor: 'rgba(255, 255, 255, 0.05)',
-    borderWidth: IS_TV_BUILD ? 2 : 1,
-    borderColor: 'rgba(255, 255, 255, 0.1)',
-    borderRadius: borderRadius.lg,
-    paddingVertical: IS_TV_BUILD ? spacing.lg : spacing.md,
-    paddingLeft: IS_TV_BUILD ? 56 : 48,
-    paddingRight: IS_TV_BUILD ? spacing.lg : spacing.md,
-    fontSize: IS_TV_BUILD ? 22 : 16,
-    minHeight: IS_TV_BUILD ? 60 : 48,
-    color: colors.text,
-    // @ts-ignore - web only
-    outlineStyle: 'none',
-  },
-  inputRTL: {
-    paddingLeft: IS_TV_BUILD ? spacing.lg : spacing.md,
-    paddingRight: IS_TV_BUILD ? 56 : 48,
-    textAlign: 'right',
-  },
-  inputWithRightIcon: {
-    paddingRight: IS_TV_BUILD ? 56 : 44,
-  },
-  passwordToggle: {
-    position: 'absolute',
-    right: IS_TV_BUILD ? 12 : spacing.sm,
-    top: '50%',
-    // @ts-ignore - web only
-    transform: 'translateY(-50%)',
-    padding: IS_TV_BUILD ? spacing.xs : spacing.xs,
-    zIndex: 10,
-  },
-  passwordToggleRTL: {
-    right: 'auto',
-    left: IS_TV_BUILD ? 12 : spacing.sm,
   },
   loginButton: {
     backgroundColor: colors.primary,

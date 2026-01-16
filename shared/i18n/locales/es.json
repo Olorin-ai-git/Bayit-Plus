@@ -222,7 +222,8 @@
     "discover": "Descubrir",
     "account": "Cuenta",
     "subscribe": "Suscribir",
-    "admin": "Administración"
+    "admin": "Administración",
+    "games": "Juegos"
   },
   "epg": {
     "title": "Guía de TV",
@@ -2585,5 +2586,41 @@
     },
     "phone": "Soporte Telefónico",
     "subtitle": "¿Cómo podemos ayudarte?"
+  },
+  "chess": {
+    "title": "Ajedrez",
+    "welcome": "Bienvenido al Ajedrez",
+    "subtitle": "Juega ajedrez con amigos y familiares alrededor del mundo",
+    "createGame": "Crear Nuevo Juego",
+    "joinGame": "Unirse al Juego",
+    "gameCode": "Código del Juego",
+    "enterGameCode": "Ingresa el Código del Juego",
+    "invalidGameCode": "Código de juego inválido. Debe tener 6 caracteres.",
+    "joinFailed": "Error al unirse al juego",
+    "join": "Unirse",
+    "create": "Crear",
+    "chooseColor": "Elige Tu Color",
+    "white": "Blanco",
+    "black": "Negro",
+    "chatPlaceholder": "Escribe un mensaje... (@bot para consejos)",
+    "botHint": "Etiqueta @bot en tu mensaje para obtener consejos de ajedrez de nuestro asistente AI",
+    "bot": "Asistente de Ajedrez",
+    "mute": "Silenciar",
+    "unmute": "Activar Sonido",
+    "speaking": "participantes",
+    "resign": "Rendirse",
+    "offerDraw": "Ofrecer Empate",
+    "newGame": "Nuevo Juego",
+    "checkmate": "¡Jaque Mate!",
+    "stalemate": "Tablas por Ahogado",
+    "draw": "Empate",
+    "resigned": "Juego Abandonado",
+    "reconnecting": "Reconectando...",
+    "moveHistory": "Historial de Movimientos",
+    "noMoves": "No hay movimientos aún",
+    "yourTurn": "Tu Turno",
+    "opponentTurn": "Turno del Oponente",
+    "waitingForOpponent": "Esperando al oponente...",
+    "gameOver": "Juego Terminado"
   }
 }

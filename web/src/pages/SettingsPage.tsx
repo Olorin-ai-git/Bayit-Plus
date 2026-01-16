@@ -1,9 +1,9 @@
 import { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, ScrollView, Pressable, Switch } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, Pressable } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { useDirection } from '@/hooks/useDirection';
 import { colors, spacing, borderRadius } from '@bayit/shared/theme';
-import { GlassView } from '@bayit/shared/ui';
+import { GlassView, GlassToggle } from '@bayit/shared/ui';
 import { useAuthStore } from '@bayit/shared-stores/authStore';
 import { Globe, Bell, Moon, Volume2, Shield, ChevronRight } from 'lucide-react';
 
@@ -51,11 +51,9 @@ export default function SettingsPage() {
             <Bell size={20} color={colors.primary} />
             <Text style={[styles.settingLabel, { textAlign }]}>{t('settings.pushNotifications', 'Push Notifications')}</Text>
           </View>
-          <Switch
+          <GlassToggle
             value={notifications}
             onValueChange={setNotifications}
-            trackColor={{ false: colors.backgroundLighter, true: colors.primary }}
-            thumbColor={colors.text}
           />
         </View>
       </GlassView>
@@ -68,11 +66,9 @@ export default function SettingsPage() {
             <Volume2 size={20} color={colors.primary} />
             <Text style={[styles.settingLabel, { textAlign }]}>{t('settings.autoplay', 'Autoplay')}</Text>
           </View>
-          <Switch
+          <GlassToggle
             value={autoplay}
             onValueChange={setAutoplay}
-            trackColor={{ false: colors.backgroundLighter, true: colors.primary }}
-            thumbColor={colors.text}
           />
         </View>
       </GlassView>
@@ -85,11 +81,9 @@ export default function SettingsPage() {
             <Moon size={20} color={colors.primary} />
             <Text style={[styles.settingLabel, { textAlign }]}>{t('settings.darkMode', 'Dark Mode')}</Text>
           </View>
-          <Switch
+          <GlassToggle
             value={darkMode}
             onValueChange={setDarkMode}
-            trackColor={{ false: colors.backgroundLighter, true: colors.primary }}
-            thumbColor={colors.text}
           />
         </View>
       </GlassView>

@@ -1,9 +1,9 @@
 import { useState, useRef } from 'react'
-import { View, Text, TextInput, StyleSheet, Pressable } from 'react-native'
+import { View, Text, StyleSheet, Pressable } from 'react-native'
 import { useTranslation } from 'react-i18next'
 import { Send, Smile } from 'lucide-react'
 import { colors, spacing, borderRadius } from '@bayit/shared/theme'
-import { GlassView } from '@bayit/shared/ui'
+import { GlassView, GlassInput } from '@bayit/shared/ui'
 
 const QUICK_EMOJIS = ['👍', '❤️', '😂', '😮', '👏', '🔥']
 
@@ -16,7 +16,7 @@ export default function WatchPartyChatInput({ onSend, disabled }: WatchPartyChat
   const { t } = useTranslation()
   const [message, setMessage] = useState('')
   const [showEmojis, setShowEmojis] = useState(false)
-  const inputRef = useRef<TextInput>(null)
+  const inputRef = useRef<any>(null)
 
   const handleSubmit = () => {
     const trimmed = message.trim()
@@ -69,19 +69,17 @@ export default function WatchPartyChatInput({ onSend, disabled }: WatchPartyChat
           <Smile size={18} color={colors.textSecondary} />
         </Pressable>
 
-        <View style={styles.inputWrapper}>
-          <TextInput
-            ref={inputRef}
-            value={message}
-            onChangeText={setMessage}
-            onKeyPress={handleKeyPress}
-            placeholder={t('watchParty.typeMessage')}
-            placeholderTextColor={colors.textMuted}
-            editable={!disabled}
-            style={styles.input}
-            maxLength={500}
-          />
-        </View>
+        <GlassInput
+          ref={inputRef}
+          value={message}
+          onChangeText={setMessage}
+          onKeyPress={handleKeyPress}
+          placeholder={t('watchParty.typeMessage')}
+          editable={!disabled}
+          containerStyle={styles.inputWrapper}
+          inputStyle={styles.input}
+          maxLength={500}
+        />
 
         <Pressable
           onPress={handleSubmit}

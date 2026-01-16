@@ -217,9 +217,12 @@ const uploadChunk = async (
 
 /**
  * Complete the upload and enqueue for processing
+ * Uses extended timeout since the server needs to assemble all chunks
  */
 const completeUpload = async (uploadId: string): Promise<UploadJob> => {
-  return uploadsApi.post(`/admin/uploads/browser-upload/${uploadId}/complete`);
+  return uploadsApi.post(`/admin/uploads/browser-upload/${uploadId}/complete`, null, {
+    timeout: 300000, // 5 minutes - assembling large files can take a while
+  });
 };
 
 /**

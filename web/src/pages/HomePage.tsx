@@ -52,10 +52,30 @@ interface Channel {
   currentShow?: string;
 }
 
+interface ContentItem {
+  id: string;
+  title: string;
+  thumbnail?: string;
+  type?: string;
+  duration?: string;
+  year?: string;
+  category?: string;
+  is_series?: boolean;
+  available_subtitle_languages?: string[];
+  has_subtitles?: boolean;
+  backdrop?: string;
+  description?: string;
+  total_episodes?: number;
+  progress?: number;
+}
+
 interface Category {
   id: string;
   name: string;
-  items: any[];
+  name_he?: string;
+  name_en?: string;
+  name_es?: string;
+  items: ContentItem[];
 }
 
 export default function HomePage() {
@@ -64,16 +84,20 @@ export default function HomePage() {
   const navigate = useNavigate();
   const videoRef = useRef<HTMLVideoElement>(null);
 
+  // Guard against React StrictMode double-invocation
+  const hasInitialized = useRef(false);
+
   const [featured, setFeatured] = useState<FeaturedContent[]>([]);
   const [carouselItems, setCarouselItems] = useState<CarouselItem[]>([]);
   const [currentFeaturedIndex, setCurrentFeaturedIndex] = useState(0);
   const [categories, setCategories] = useState<Category[]>([]);
   const [liveChannels, setLiveChannels] = useState<Channel[]>([]);
-  const [continueWatching, setContinueWatching] = useState<any[]>([]);
+  const [continueWatching, setContinueWatching] = useState<ContentItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [syncing, setSyncing] = useState(false);
   const [showMorningRitual, setShowMorningRitual] = useState(false);
   const [currentTime, setCurrentTime] = useState(new Date());
+  const [isMuted, setIsMuted] = useState(true);
 
   // Update clock every minute
   useEffect(() => {
@@ -90,21 +114,23 @@ export default function HomePage() {
       setCurrentFeaturedIndex((prev) => (prev + 1) % featured.length);
     }, 10000); // 10 seconds per item
     return () => clearInterval(interval);
-  }, [featured.length]);
+  }, [featured]); // Fixed: depend on featured array, not just length
 
   // Load content and sync on mount
   useEffect(() => {
+    // Guard against React StrictMode double-invocation
+    if (hasInitialized.current) {
+      return;
+    }
+    hasInitialized.current = true;
+
     const initializeHome = async () => {
       checkMorningRitual();
-      
-      // Load featured content first (shows spinner while loading)
+
+      // Load all content in parallel (no waterfall, no unnecessary sync)
       await loadHomeContent();
-      
-      // Then trigger background sync/refresh after featured is loaded
-      // Don't reload again on initial sync - content is already fresh
-      syncContentInBackground();
     };
-    
+
     initializeHome();
   }, []);
 
@@ -133,10 +159,14 @@ export default function HomePage() {
 
   const loadHomeContent = async () => {
     try {
-      // Load featured content first (priority)
-      const featuredData = await contentService.getFeatured();
+      // Load ALL content in parallel for maximum performance
+      const [featuredData, liveData, continueData] = await Promise.all([
+        contentService.getFeatured(),
+        liveService.getChannels().catch(() => ({ channels: [] })),
+        historyService.getContinueWatching().catch(() => ({ items: [] })),
+      ]);
 
-      // Get featured items array (or wrap single item)
+      // Process featured content
       const featuredItems = featuredData.items || (featuredData.hero ? [featuredData.hero] : []);
       setFeatured(featuredItems);
 
@@ -157,17 +187,12 @@ export default function HomePage() {
       // Use categories from featured data - they include items with thumbnails
       setCategories(featuredData.categories || []);
 
-      // Hide spinner after featured content is loaded
-      setLoading(false);
-
-      // Load other content in parallel (non-blocking)
-      const [liveData, continueData] = await Promise.all([
-        liveService.getChannels(),
-        historyService.getContinueWatching().catch(() => ({ items: [] })),
-      ]);
-
+      // Set secondary content
       setLiveChannels(liveData.channels || []);
       setContinueWatching(continueData.items || []);
+
+      // Hide spinner after all content is loaded
+      setLoading(false);
     } catch (error) {
       logger.error('Failed to load home content', 'HomePage', error);
       setLoading(false);

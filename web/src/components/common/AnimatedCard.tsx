@@ -1,24 +1,36 @@
 /**
  * AnimatedCard - Wrapper component for staggered fade-in/slide-in animations
  * 
- * Uses CSS animations for smooth performance. Automatically calculates
- * animation delay based on the item's index for staggering effect.
+ * Uses CSS animations with native div elements for web.
+ * Automatically calculates animation delay based on the item's index.
  */
 
-import React from 'react';
-import { View, ViewStyle } from 'react-native';
-
-// Animation styles are in shared/styles/globals.css
+import React, { CSSProperties } from 'react';
+import { View, ViewStyle, Platform, StyleSheet } from 'react-native';
 
 interface AnimatedCardProps {
   index: number;
   children: React.ReactNode;
-  style?: ViewStyle | ViewStyle[];
+  style?: ViewStyle | ViewStyle[] | any;
   variant?: 'grid' | 'carousel' | 'row';
   isRTL?: boolean;
   /** Maximum index for delay calculation (prevents very long delays for large lists) */
   maxDelayIndex?: number;
 }
+
+// Delay increments in milliseconds for each variant
+const DELAY_INCREMENT = {
+  grid: 40,
+  carousel: 50,
+  row: 30,
+};
+
+// Maximum delays for each variant
+const MAX_DELAY_INDEX = {
+  grid: 50,
+  carousel: 15,
+  row: 20,
+};
 
 /**
  * Wraps children with staggered animation based on index
@@ -32,53 +44,82 @@ export default function AnimatedCard({
   maxDelayIndex = 50,
 }: AnimatedCardProps) {
   // Cap the delay index to prevent extremely long delays
-  const delayIndex = Math.min(index, maxDelayIndex - 1);
-  
-  // Build CSS class names based on variant and index
-  let className = '';
-  
-  switch (variant) {
-    case 'carousel':
-      className = `animated-carousel-card${isRTL ? '-rtl' : ''} animated-carousel-delay-${Math.min(delayIndex, 15)}`;
-      break;
-    case 'row':
-      className = `animated-row${isRTL ? '-rtl' : ''} animated-row-delay-${Math.min(delayIndex, 19)}`;
-      break;
-    case 'grid':
-    default:
-      className = `animated-card animated-card-delay-${delayIndex}`;
-      break;
+  const maxIndex = Math.min(maxDelayIndex, MAX_DELAY_INDEX[variant]);
+  const delayIndex = Math.min(index, maxIndex - 1);
+  const delayMs = delayIndex * DELAY_INCREMENT[variant];
+
+  // Get the appropriate animation name
+  const getAnimationName = (): string => {
+    switch (variant) {
+      case 'carousel':
+        return isRTL ? 'carouselCardSlideInRTL' : 'carouselCardSlideIn';
+      case 'row':
+        return isRTL ? 'rowFadeSlideInRTL' : 'rowFadeSlideIn';
+      case 'grid':
+      default:
+        return 'cardFadeSlideIn';
+    }
+  };
+
+  // Only apply animations on web platform
+  if (Platform.OS !== 'web') {
+    return <View style={style}>{children}</View>;
   }
 
+  const animationName = getAnimationName();
+  const duration = variant === 'row' ? '0.35s' : '0.4s';
+  const easing = 'cubic-bezier(0.25, 0.46, 0.45, 0.94)';
+
+  // Flatten styles for web
+  const flattenedStyle = StyleSheet.flatten(style) || {};
+
+  // Create web-compatible CSS styles
+  const webStyle: CSSProperties = {
+    ...flattenedStyle,
+    animation: `${animationName} ${duration} ${easing} ${delayMs}ms both`,
+  };
+
   return (
-    <View 
-      style={style}
-      // @ts-ignore - Web-specific className prop
-      className={className}
-    >
+    <div style={webStyle}>
       {children}
-    </View>
+    </div>
   );
 }
 
 /**
- * Hook to get animation class names directly (for components that can't use AnimatedCard wrapper)
+ * Hook to get animation styles directly (for components that can't use AnimatedCard wrapper)
  */
-export function useStaggerAnimation(
+export function useStaggerAnimationStyle(
   index: number,
   variant: 'grid' | 'carousel' | 'row' = 'grid',
   isRTL = false,
   maxDelayIndex = 50
-): string {
-  const delayIndex = Math.min(index, maxDelayIndex - 1);
-  
-  switch (variant) {
-    case 'carousel':
-      return `animated-carousel-card${isRTL ? '-rtl' : ''} animated-carousel-delay-${Math.min(delayIndex, 15)}`;
-    case 'row':
-      return `animated-row${isRTL ? '-rtl' : ''} animated-row-delay-${Math.min(delayIndex, 19)}`;
-    case 'grid':
-    default:
-      return `animated-card animated-card-delay-${delayIndex}`;
+): CSSProperties {
+  if (Platform.OS !== 'web') {
+    return {};
   }
+
+  const maxIndex = Math.min(maxDelayIndex, MAX_DELAY_INDEX[variant]);
+  const delayIndex = Math.min(index, maxIndex - 1);
+  const delayMs = delayIndex * DELAY_INCREMENT[variant];
+
+  const getAnimationName = () => {
+    switch (variant) {
+      case 'carousel':
+        return isRTL ? 'carouselCardSlideInRTL' : 'carouselCardSlideIn';
+      case 'row':
+        return isRTL ? 'rowFadeSlideInRTL' : 'rowFadeSlideIn';
+      case 'grid':
+      default:
+        return 'cardFadeSlideIn';
+    }
+  };
+
+  const animationName = getAnimationName();
+  const duration = variant === 'row' ? '0.35s' : '0.4s';
+  const easing = 'cubic-bezier(0.25, 0.46, 0.45, 0.94)';
+
+  return {
+    animation: `${animationName} ${duration} ${easing} ${delayMs}ms both`,
+  };
 }

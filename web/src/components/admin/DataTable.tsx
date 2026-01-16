@@ -1,9 +1,9 @@
 import { useState, ReactNode } from 'react';
-import { View, Text, StyleSheet, TextInput, Pressable, ActivityIndicator, ScrollView } from 'react-native';
+import { View, Text, StyleSheet, Pressable, ActivityIndicator, ScrollView } from 'react-native';
 import { ChevronLeft, ChevronRight, Search } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { colors, spacing, borderRadius } from '@bayit/shared/theme';
-import { GlassCard, GlassView } from '@bayit/shared/ui';
+import { GlassCard, GlassView, GlassInput } from '@bayit/shared/ui';
 import { useDirection } from '@/hooks/useDirection';
 
 interface Column {
@@ -67,16 +67,14 @@ export default function DataTable({
       {(searchable || actions) && (
         <View style={[styles.header, { flexDirection }]}>
           {searchable && (
-            <GlassView style={[styles.searchContainer, { flexDirection }]}>
-              <Search size={18} color={colors.textMuted} style={isRTL ? { marginLeft: spacing.sm } : { marginRight: spacing.sm }} />
-              <TextInput
-                value={searchTerm}
-                onChangeText={handleSearch}
-                placeholder={searchPlaceholder || t('common.search', 'Search...')}
-                placeholderTextColor={colors.textMuted}
-                style={[styles.searchInput, { textAlign }]}
-              />
-            </GlassView>
+            <GlassInput
+              value={searchTerm}
+              onChangeText={handleSearch}
+              placeholder={searchPlaceholder || t('common.search', 'Search...')}
+              containerStyle={[styles.searchContainer, { flexDirection }]}
+              inputStyle={[styles.searchInput, { textAlign }]}
+              leftIcon={<Search size={18} color={colors.textMuted} />}
+            />
           )}
           {actions && <View style={[styles.actionsContainer, { flexDirection }]}>{actions}</View>}
         </View>

@@ -6,11 +6,11 @@ import {
   Modal,
   TouchableOpacity,
   TouchableWithoutFeedback,
-  Switch,
 } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { GlassView } from '../ui/GlassView';
 import { GlassButton } from '../ui/GlassButton';
+import { GlassToggle } from '../ui/GlassToggle';
 import { colors, spacing, borderRadius, fontSize } from '../../theme';
 
 interface WatchPartyCreateModalProps {
@@ -76,11 +76,9 @@ export const WatchPartyCreateModal: React.FC<WatchPartyCreateModalProps> = ({
                       {t('watchParty.options.chatEnabled')}
                     </Text>
                   </View>
-                  <Switch
+                  <GlassToggle
                     value={chatEnabled}
                     onValueChange={setChatEnabled}
-                    trackColor={{ false: colors.glassBorder, true: colors.primary }}
-                    thumbColor={colors.text}
                   />
                 </TouchableOpacity>
 
@@ -94,11 +92,9 @@ export const WatchPartyCreateModal: React.FC<WatchPartyCreateModalProps> = ({
                       {t('watchParty.options.syncPlayback')}
                     </Text>
                   </View>
-                  <Switch
+                  <GlassToggle
                     value={syncPlayback}
                     onValueChange={setSyncPlayback}
-                    trackColor={{ false: colors.glassBorder, true: colors.primary }}
-                    thumbColor={colors.text}
                   />
                 </TouchableOpacity>
               </View>

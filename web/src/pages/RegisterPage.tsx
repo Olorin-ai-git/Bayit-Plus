@@ -1,11 +1,12 @@
 import { useState } from 'react';
-import { View, Text, StyleSheet, Pressable, TextInput, ActivityIndicator, ScrollView } from 'react-native';
+import { View, Text, StyleSheet, Pressable, ActivityIndicator, ScrollView } from 'react-native';
 import { Link, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { Eye, EyeOff, Mail, Lock, User, ChevronDown, Globe, Check } from 'lucide-react';
 import { useAuthStore } from '@bayit/shared-stores';
 import { colors, spacing, borderRadius } from '@bayit/shared/theme';
 import { AnimatedLogo } from '@bayit/shared';
+import { GlassInput } from '@bayit/shared/ui';
 import { useDirection } from '@/hooks/useDirection';
 
 // Check if this is a TV build (set by webpack)
@@ -163,99 +164,73 @@ export default function RegisterPage() {
 
             {/* Name Input */}
             <View style={styles.inputGroup}>
-              <Text style={[styles.label, isRTL && styles.labelRTL]}>{t('register.name')}</Text>
-              <View style={styles.inputWrapper}>
-                <View style={[styles.inputIcon, isRTL && styles.inputIconRTL]}>
-                  <User size={IS_TV_BUILD ? 28 : 20} color={colors.textMuted} />
-                </View>
-                <TextInput
-                  style={[styles.input, isRTL && styles.inputRTL]}
-                  value={name}
-                  onChangeText={setName}
-                  placeholder={t('register.namePlaceholder')}
-                  placeholderTextColor={colors.textMuted}
-                  autoCapitalize="words"
-                  autoComplete="name"
-                />
-              </View>
+              <GlassInput
+                label={t('register.name')}
+                value={name}
+                onChangeText={setName}
+                placeholder={t('register.namePlaceholder')}
+                leftIcon={<User size={IS_TV_BUILD ? 28 : 20} color={colors.textMuted} />}
+                autoCapitalize="words"
+                autoComplete="name"
+              />
             </View>
 
             {/* Email Input */}
             <View style={styles.inputGroup}>
-              <Text style={[styles.label, isRTL && styles.labelRTL]}>{t('register.email')}</Text>
-              <View style={styles.inputWrapper}>
-                <View style={[styles.inputIcon, isRTL && styles.inputIconRTL]}>
-                  <Mail size={IS_TV_BUILD ? 28 : 20} color={colors.textMuted} />
-                </View>
-                <TextInput
-                  style={[styles.input, isRTL && styles.inputRTL]}
-                  value={email}
-                  onChangeText={setEmail}
-                  placeholder={t('register.emailPlaceholder')}
-                  placeholderTextColor={colors.textMuted}
-                  keyboardType="email-address"
-                  autoCapitalize="none"
-                  autoComplete="email"
-                />
-              </View>
+              <GlassInput
+                label={t('register.email')}
+                value={email}
+                onChangeText={setEmail}
+                placeholder={t('register.emailPlaceholder')}
+                leftIcon={<Mail size={IS_TV_BUILD ? 28 : 20} color={colors.textMuted} />}
+                keyboardType="email-address"
+                autoCapitalize="none"
+                autoComplete="email"
+              />
             </View>
 
             {/* Password Input */}
             <View style={styles.inputGroup}>
-              <Text style={[styles.label, isRTL && styles.labelRTL]}>{t('register.password')}</Text>
-              <View style={styles.inputWrapper}>
-                <View style={[styles.inputIcon, isRTL && styles.inputIconRTL]}>
-                  <Lock size={IS_TV_BUILD ? 28 : 20} color={colors.textMuted} />
-                </View>
-                <TextInput
-                  style={[styles.input, styles.inputWithRightIcon, isRTL && styles.inputRTL]}
-                  value={password}
-                  onChangeText={setPassword}
-                  placeholder={t('register.passwordPlaceholder')}
-                  placeholderTextColor={colors.textMuted}
-                  secureTextEntry={!showPassword}
-                  autoComplete="new-password"
-                />
-                <Pressable
-                  style={[styles.passwordToggle, isRTL && styles.passwordToggleRTL]}
-                  onPress={() => setShowPassword(!showPassword)}
-                >
-                  {showPassword ? (
-                    <EyeOff size={IS_TV_BUILD ? 28 : 20} color={colors.textMuted} />
-                  ) : (
-                    <Eye size={IS_TV_BUILD ? 28 : 20} color={colors.textMuted} />
-                  )}
-                </Pressable>
-              </View>
+              <GlassInput
+                label={t('register.password')}
+                value={password}
+                onChangeText={setPassword}
+                placeholder={t('register.passwordPlaceholder')}
+                leftIcon={<Lock size={IS_TV_BUILD ? 28 : 20} color={colors.textMuted} />}
+                rightIcon={
+                  <Pressable onPress={() => setShowPassword(!showPassword)}>
+                    {showPassword ? (
+                      <EyeOff size={IS_TV_BUILD ? 28 : 20} color={colors.textMuted} />
+                    ) : (
+                      <Eye size={IS_TV_BUILD ? 28 : 20} color={colors.textMuted} />
+                    )}
+                  </Pressable>
+                }
+                secureTextEntry={!showPassword}
+                autoComplete="new-password"
+              />
             </View>
 
             {/* Confirm Password Input */}
             <View style={styles.inputGroup}>
-              <Text style={[styles.label, isRTL && styles.labelRTL]}>{t('register.confirmPassword')}</Text>
-              <View style={styles.inputWrapper}>
-                <View style={[styles.inputIcon, isRTL && styles.inputIconRTL]}>
-                  <Lock size={IS_TV_BUILD ? 28 : 20} color={colors.textMuted} />
-                </View>
-                <TextInput
-                  style={[styles.input, styles.inputWithRightIcon, isRTL && styles.inputRTL]}
-                  value={confirmPassword}
-                  onChangeText={setConfirmPassword}
-                  placeholder={t('register.confirmPasswordPlaceholder')}
-                  placeholderTextColor={colors.textMuted}
-                  secureTextEntry={!showConfirmPassword}
-                  autoComplete="new-password"
-                />
-                <Pressable
-                  style={[styles.passwordToggle, isRTL && styles.passwordToggleRTL]}
-                  onPress={() => setShowConfirmPassword(!showConfirmPassword)}
-                >
-                  {showConfirmPassword ? (
-                    <EyeOff size={IS_TV_BUILD ? 28 : 20} color={colors.textMuted} />
-                  ) : (
-                    <Eye size={IS_TV_BUILD ? 28 : 20} color={colors.textMuted} />
-                  )}
-                </Pressable>
-              </View>
+              <GlassInput
+                label={t('register.confirmPassword')}
+                value={confirmPassword}
+                onChangeText={setConfirmPassword}
+                placeholder={t('register.confirmPasswordPlaceholder')}
+                leftIcon={<Lock size={IS_TV_BUILD ? 28 : 20} color={colors.textMuted} />}
+                rightIcon={
+                  <Pressable onPress={() => setShowConfirmPassword(!showConfirmPassword)}>
+                    {showConfirmPassword ? (
+                      <EyeOff size={IS_TV_BUILD ? 28 : 20} color={colors.textMuted} />
+                    ) : (
+                      <Eye size={IS_TV_BUILD ? 28 : 20} color={colors.textMuted} />
+                    )}
+                  </Pressable>
+                }
+                secureTextEntry={!showConfirmPassword}
+                autoComplete="new-password"
+              />
             </View>
 
             {/* Terms Checkbox */}
@@ -515,64 +490,6 @@ const styles = StyleSheet.create({
   },
   inputGroup: {
     marginBottom: IS_TV_BUILD ? spacing.xl : spacing.md,
-  },
-  label: {
-    fontSize: IS_TV_BUILD ? 20 : 14,
-    fontWeight: '500',
-    color: colors.textSecondary,
-    marginBottom: IS_TV_BUILD ? spacing.sm : spacing.xs,
-  },
-  labelRTL: {
-    textAlign: 'right',
-  },
-  inputWrapper: {
-    position: 'relative',
-  },
-  inputIcon: {
-    position: 'absolute',
-    left: IS_TV_BUILD ? spacing.lg : spacing.md,
-    top: '50%',
-    // @ts-ignore - web only
-    transform: 'translateY(-50%)',
-    zIndex: 1,
-  },
-  inputIconRTL: {
-    left: 'auto',
-    right: IS_TV_BUILD ? spacing.lg : spacing.md,
-  },
-  input: {
-    backgroundColor: 'rgba(255, 255, 255, 0.05)',
-    borderWidth: IS_TV_BUILD ? 2 : 1,
-    borderColor: 'rgba(255, 255, 255, 0.1)',
-    borderRadius: borderRadius.lg,
-    paddingVertical: IS_TV_BUILD ? spacing.lg : spacing.md,
-    paddingLeft: IS_TV_BUILD ? 56 : 48,
-    paddingRight: IS_TV_BUILD ? spacing.lg : spacing.md,
-    fontSize: IS_TV_BUILD ? 22 : 16,
-    minHeight: IS_TV_BUILD ? 60 : 48,
-    color: colors.text,
-    // @ts-ignore - web only
-    outlineStyle: 'none',
-  },
-  inputRTL: {
-    paddingLeft: IS_TV_BUILD ? spacing.lg : spacing.md,
-    paddingRight: IS_TV_BUILD ? 56 : 48,
-    textAlign: 'right',
-  },
-  inputWithRightIcon: {
-    paddingRight: IS_TV_BUILD ? 64 : 48,
-  },
-  passwordToggle: {
-    position: 'absolute',
-    right: IS_TV_BUILD ? spacing.lg : spacing.md,
-    top: '50%',
-    // @ts-ignore - web only
-    transform: 'translateY(-50%)',
-    padding: IS_TV_BUILD ? spacing.sm : spacing.xs,
-  },
-  passwordToggleRTL: {
-    right: 'auto',
-    left: IS_TV_BUILD ? spacing.lg : spacing.md,
   },
   termsRow: {
     flexDirection: 'row',

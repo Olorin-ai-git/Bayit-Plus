@@ -217,7 +217,8 @@
     "discover": "גילוי",
     "account": "חשבון",
     "subscribe": "הרשמה למנוי",
-    "admin": "ניהול"
+    "admin": "ניהול",
+    "games": "משחקים"
   },
   "epg": {
     "title": "מדריך תוכניות",
@@ -2634,5 +2635,41 @@
     "startFailed": "התחלת ההקלטה נכשלה. אנא נסה שוב.",
     "stopFailed": "עצירת ההקלטה נכשלה. אנא נסה שוב.",
     "page": "עמוד"
+  },
+  "chess": {
+    "title": "שחמט",
+    "welcome": "ברוך הבא למשחק השחמט",
+    "subtitle": "שחק שחמט עם חברים ומשפחה ברחבי העולם",
+    "createGame": "צור משחק חדש",
+    "joinGame": "הצטרף למשחק",
+    "gameCode": "קוד משחק",
+    "enterGameCode": "הכנס קוד משחק",
+    "invalidGameCode": "קוד משחק לא תקין. חייב להיות 6 תווים.",
+    "joinFailed": "ההצטרפות למשחק נכשלה",
+    "join": "הצטרף",
+    "create": "צור",
+    "chooseColor": "בחר את הצבע שלך",
+    "white": "לבן",
+    "black": "שחור",
+    "chatPlaceholder": "הקלד הודעה... (@bot לייעוץ)",
+    "botHint": "תייג @bot בהודעה שלך כדי לקבל ייעוץ שחמט מעוזר ה-AI שלנו",
+    "bot": "עוזר השחמט",
+    "mute": "השתק",
+    "unmute": "בטל השתקה",
+    "speaking": "משתתפים",
+    "resign": "הפסד",
+    "offerDraw": "הצע תיקו",
+    "newGame": "משחק חדש",
+    "checkmate": "מט!",
+    "stalemate": "פט",
+    "draw": "תיקו",
+    "resigned": "המשחק הסתיים בהפסד",
+    "reconnecting": "מתחבר מחדש...",
+    "moveHistory": "היסטוריית מהלכים",
+    "noMoves": "אין מהלכים עדיין",
+    "yourTurn": "התור שלך",
+    "opponentTurn": "התור של היריב",
+    "waitingForOpponent": "ממתין ליריב...",
+    "gameOver": "המשחק נגמר"
   }
 }

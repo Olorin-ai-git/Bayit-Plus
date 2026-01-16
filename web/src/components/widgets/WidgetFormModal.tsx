@@ -10,7 +10,6 @@ import {
   StyleSheet,
   Pressable,
   ScrollView,
-  TextInput,
   useWindowDimensions,
 } from 'react-native';
 import { useTranslation } from 'react-i18next';
@@ -262,26 +261,23 @@ export const WidgetFormModal: React.FC<WidgetFormModalProps> = ({
             {/* Basic Info */}
             <View style={styles.section}>
               <Text style={styles.sectionTitle}>{t('widgets.form.basicInfo')}</Text>
-              <TextInput
-                style={styles.input}
+              <GlassInput
+                inputStyle={styles.input}
                 placeholder={t('widgets.form.titlePlaceholder')}
-                placeholderTextColor={colors.textMuted}
                 value={formState.title}
                 onChangeText={(v) => handleUpdateField('title', v)}
               />
-              <TextInput
-                style={styles.input}
+              <GlassInput
+                inputStyle={styles.input}
                 placeholder={t('widgets.form.descriptionPlaceholder')}
-                placeholderTextColor={colors.textMuted}
                 value={formState.description}
                 onChangeText={(v) => handleUpdateField('description', v)}
                 multiline
                 numberOfLines={2}
               />
-              <TextInput
-                style={styles.input}
+              <GlassInput
+                inputStyle={styles.input}
                 placeholder={t('widgets.form.iconPlaceholder')}
-                placeholderTextColor={colors.textMuted}
                 value={formState.icon}
                 onChangeText={(v) => handleUpdateField('icon', v)}
                 maxLength={2}
@@ -344,17 +340,15 @@ export const WidgetFormModal: React.FC<WidgetFormModalProps> = ({
               {/* iFrame Mode */}
               {iframeModeActive && (
                 <View>
-                  <TextInput
-                    style={styles.input}
+                  <GlassInput
+                    inputStyle={styles.input}
                     placeholder={t('widgets.form.iframeUrl')}
-                    placeholderTextColor={colors.textMuted}
                     value={formState.iframe_url}
                     onChangeText={(v) => handleUpdateField('iframe_url', v)}
                   />
-                  <TextInput
-                    style={styles.input}
+                  <GlassInput
+                    inputStyle={styles.input}
                     placeholder={t('widgets.form.iframeTitle')}
-                    placeholderTextColor={colors.textMuted}
                     value={formState.iframe_title}
                     onChangeText={(v) => handleUpdateField('iframe_title', v)}
                   />
@@ -368,8 +362,8 @@ export const WidgetFormModal: React.FC<WidgetFormModalProps> = ({
               <View style={[styles.positionRow, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
                 <View style={styles.positionField}>
                   <Text style={styles.positionLabel}>X</Text>
-                  <TextInput
-                    style={styles.positionInput}
+                  <GlassInput
+                    inputStyle={styles.positionInput}
                     value={String(formState.position_x)}
                     onChangeText={(v) => handleUpdateField('position_x', parseInt(v) || 0)}
                     keyboardType="number-pad"
@@ -377,8 +371,8 @@ export const WidgetFormModal: React.FC<WidgetFormModalProps> = ({
                 </View>
                 <View style={styles.positionField}>
                   <Text style={styles.positionLabel}>Y</Text>
-                  <TextInput
-                    style={styles.positionInput}
+                  <GlassInput
+                    inputStyle={styles.positionInput}
                     value={String(formState.position_y)}
                     onChangeText={(v) => handleUpdateField('position_y', parseInt(v) || 0)}
                     keyboardType="number-pad"
@@ -386,8 +380,8 @@ export const WidgetFormModal: React.FC<WidgetFormModalProps> = ({
                 </View>
                 <View style={styles.positionField}>
                   <Text style={styles.positionLabel}>Width</Text>
-                  <TextInput
-                    style={styles.positionInput}
+                  <GlassInput
+                    inputStyle={styles.positionInput}
                     value={String(formState.position_width)}
                     onChangeText={(v) => handleUpdateField('position_width', parseInt(v) || 350)}
                     keyboardType="number-pad"
@@ -395,8 +389,8 @@ export const WidgetFormModal: React.FC<WidgetFormModalProps> = ({
                 </View>
                 <View style={styles.positionField}>
                   <Text style={styles.positionLabel}>Height</Text>
-                  <TextInput
-                    style={styles.positionInput}
+                  <GlassInput
+                    inputStyle={styles.positionInput}
                     value={String(formState.position_height)}
                     onChangeText={(v) => handleUpdateField('position_height', parseInt(v) || 197)}
                     keyboardType="number-pad"
@@ -446,10 +440,9 @@ export const WidgetFormModal: React.FC<WidgetFormModalProps> = ({
 
                 <View style={styles.section}>
                   <Text style={styles.sectionTitle}>{t('widgets.form.widgetOrder')}</Text>
-                  <TextInput
-                    style={styles.input}
+                  <GlassInput
+                    inputStyle={styles.input}
                     placeholder={t('widgets.form.orderPlaceholder')}
-                    placeholderTextColor={colors.textMuted}
                     value={String(formState.order || 0)}
                     onChangeText={(v) => handleUpdateField('order', parseInt(v) || 0)}
                     keyboardType="number-pad"
