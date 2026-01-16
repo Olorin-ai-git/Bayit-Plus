@@ -19,6 +19,7 @@ from app.models.subtitles import (
     SubtitleSearchCacheDoc,
     SubtitleQuotaTrackerDoc,
 )
+from app.models.subtitle_preferences import SubtitlePreference
 from app.models.admin import (
     Campaign, Transaction, Refund, AuditLog,
     EmailCampaign, PushNotification, SystemSettings, SubscriptionPlan,
@@ -77,6 +78,7 @@ async def connect_to_mongo():
             TranslationCacheDoc,
             SubtitleSearchCacheDoc,
             SubtitleQuotaTrackerDoc,
+            SubtitlePreference,
             # Admin models
             Campaign,
             Transaction,

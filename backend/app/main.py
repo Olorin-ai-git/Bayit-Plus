@@ -16,7 +16,7 @@ logger = logging.getLogger(__name__)
 # Import routers
 from app.api.routes import (
     auth, content, live, radio, podcasts, subscriptions, chat, watchlist, history, admin, admin_uploads,
-    party, websocket, websocket_live_subtitles, zman, trending, chapters, subtitles, ritual, profiles, children, judaism, flows,
+    party, websocket, websocket_live_subtitles, zman, trending, chapters, subtitles, subtitle_preferences, ritual, profiles, children, judaism, flows,
     device_pairing, onboarding, widgets, favorites, downloads, user_system_widgets, news, librarian,
     admin_content_vod_read, admin_content_vod_write, admin_content_vod_toggles, admin_categories, admin_live_channels,
     admin_radio_stations, admin_podcasts, admin_podcast_episodes, admin_content_importer, admin_widgets, verification,
@@ -506,6 +506,7 @@ app.include_router(zman.router, prefix=f"{settings.API_V1_PREFIX}/zman", tags=["
 app.include_router(trending.router, prefix=f"{settings.API_V1_PREFIX}/trending", tags=["trending"])
 app.include_router(chapters.router, prefix=f"{settings.API_V1_PREFIX}/chapters", tags=["chapters"])
 app.include_router(subtitles.router, prefix=f"{settings.API_V1_PREFIX}", tags=["subtitles"])
+app.include_router(subtitle_preferences.router, prefix=f"{settings.API_V1_PREFIX}/subtitles", tags=["subtitle-preferences"])
 app.include_router(ritual.router, prefix=f"{settings.API_V1_PREFIX}", tags=["ritual"])
 app.include_router(profiles.router, prefix=f"{settings.API_V1_PREFIX}/profiles", tags=["profiles"])
 app.include_router(children.router, prefix=f"{settings.API_V1_PREFIX}/children", tags=["children"])

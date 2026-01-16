@@ -12,6 +12,7 @@ import {
 import { useNavigation } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
 import { GlassView, GlassCategoryPill } from '../components';
+import { SubtitleFlags } from '@bayit/shared/components/SubtitleFlags';
 import { contentService } from '../services/api';
 import { colors, spacing, borderRadius } from '../theme';
 import { isTV } from '../utils/platform';
@@ -25,6 +26,8 @@ interface ContentItem {
   year?: string;
   duration?: string;
   category?: string;
+  has_subtitles?: boolean;
+  available_subtitle_languages?: string[];
 }
 
 interface Category {
@@ -75,17 +78,29 @@ const ContentCard: React.FC<{
           isFocused && styles.cardFocused,
         ]}
       >
-        {item.thumbnail ? (
-          <Image
-            source={{ uri: item.thumbnail }}
-            style={styles.cardImage}
-            resizeMode="cover"
-          />
-        ) : (
-          <View style={styles.cardImagePlaceholder}>
-            <Text style={styles.placeholderIcon}>🎬</Text>
-          </View>
-        )}
+        <View style={{ position: 'relative' }}>
+          {item.thumbnail ? (
+            <Image
+              source={{ uri: item.thumbnail }}
+              style={styles.cardImage}
+              resizeMode="cover"
+            />
+          ) : (
+            <View style={styles.cardImagePlaceholder}>
+              <Text style={styles.placeholderIcon}>🎬</Text>
+            </View>
+          )}
+
+          {/* Subtitle Flags */}
+          {item.available_subtitle_languages && item.available_subtitle_languages.length > 0 && (
+            <SubtitleFlags
+              languages={item.available_subtitle_languages}
+              position="bottom-right"
+              size="medium"
+              showTooltip={false}
+            />
+          )}
+        </View>
         <View style={styles.cardContent}>
           <Text style={styles.cardTitle} numberOfLines={1}>
             {item.title}

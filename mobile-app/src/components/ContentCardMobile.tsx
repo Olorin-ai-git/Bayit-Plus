@@ -13,6 +13,7 @@
 import React from 'react';
 import { View, Image, Text, Pressable, StyleSheet, Dimensions } from 'react-native';
 import { GlassView } from '@bayit/shared';
+import { SubtitleFlags } from '@bayit/shared/components/SubtitleFlags';
 import { responsive } from '../utils/responsive';
 import { typography, spacing, borderRadius, colors } from '../theme';
 
@@ -25,6 +26,8 @@ export interface ContentCardMobileProps {
     year?: number;
     rating?: number;
     duration?: number;
+    has_subtitles?: boolean;
+    available_subtitle_languages?: string[];
   };
 
   /** Callback when card is pressed */
@@ -57,17 +60,29 @@ export const ContentCardMobile: React.FC<ContentCardMobileProps> = ({
     >
       <GlassView style={styles.card}>
         {/* Poster image */}
-        {content.posterUrl ? (
-          <Image
-            source={{ uri: content.posterUrl }}
-            style={[styles.poster, { height: cardHeight }]}
-            resizeMode="cover"
-          />
-        ) : (
-          <View style={[styles.placeholder, { height: cardHeight }]}>
-            <Text style={styles.placeholderIcon}>🎬</Text>
-          </View>
-        )}
+        <View style={{ position: 'relative' }}>
+          {content.posterUrl ? (
+            <Image
+              source={{ uri: content.posterUrl }}
+              style={[styles.poster, { height: cardHeight }]}
+              resizeMode="cover"
+            />
+          ) : (
+            <View style={[styles.placeholder, { height: cardHeight }]}>
+              <Text style={styles.placeholderIcon}>🎬</Text>
+            </View>
+          )}
+
+          {/* Subtitle Flags */}
+          {content.available_subtitle_languages && content.available_subtitle_languages.length > 0 && (
+            <SubtitleFlags
+              languages={content.available_subtitle_languages}
+              position="bottom-right"
+              size="small"
+              showTooltip={true}
+            />
+          )}
+        </View>
 
         {/* Content info */}
         <View style={styles.info}>

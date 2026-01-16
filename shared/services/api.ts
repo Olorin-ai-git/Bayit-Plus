@@ -323,6 +323,18 @@ const apiSubtitlesService = {
     api.post('/subtitles/nikud/text', null, { params: { text } }),
 };
 
+// Subtitle Preferences Service (API)
+const apiSubtitlePreferencesService = {
+  getPreference: (contentId: string) =>
+    api.get(`/subtitles/preferences/${contentId}`),
+  setPreference: (contentId: string, language: string) =>
+    api.post(`/subtitles/preferences/${contentId}`, null, { params: { language } }),
+  deletePreference: (contentId: string) =>
+    api.delete(`/subtitles/preferences/${contentId}`),
+  getAllPreferences: () =>
+    api.get('/subtitles/preferences'),
+};
+
 // Chapters Service (API)
 const apiChaptersService = {
   getChapters: (contentId: string) => api.get(`/chapters/${contentId}`),
@@ -569,6 +581,7 @@ export const zmanService = isDemo ? demoZmanService : apiZmanService;
 export const trendingService = isDemo ? demoTrendingService : apiTrendingService;
 export const ritualService = isDemo ? demoRitualService : apiRitualService;
 export const subtitlesService = isDemo ? demoSubtitlesService : apiSubtitlesService;
+export const subtitlePreferencesService = apiSubtitlePreferencesService; // No demo mode - requires auth
 export const chaptersService = isDemo ? demoChaptersService : apiChaptersService;
 export const partyService = isDemo ? demoPartyService : apiPartyService;
 export const chatService = isDemo ? demoChatService : apiChatService;

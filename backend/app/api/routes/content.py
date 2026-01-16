@@ -5,6 +5,7 @@ from app.models.user import User
 from app.core.security import get_optional_user, get_current_active_user
 from app.services.podcast_sync import sync_all_podcasts
 from app.services.tmdb_service import tmdb_service
+from app.services.subtitle_enrichment import enrich_content_items_with_subtitles
 from app.core.config import settings
 from google.cloud import storage
 from datetime import timedelta
@@ -174,6 +175,9 @@ async def get_featured(current_user: Optional[User] = Depends(get_optional_user)
 
             category_items.append(item_data)
 
+        # Enrich category items with subtitle languages
+        category_items = await enrich_content_items_with_subtitles(category_items)
+
         category_data.append({
             "id": str(cat.id),
             "name": cat.name,
@@ -248,23 +252,29 @@ async def get_all_content(
     if avatar:
         logger.info(f"Avatar found in /content/all: id={avatar.id}, thumbnail={avatar.thumbnail}, thumbnail_data={bool(avatar.thumbnail_data)}, poster_url={avatar.poster_url}")
 
+    # Build content items
+    content_items = [
+        {
+            "id": str(item.id),
+            "title": item.title,
+            "description": item.description,
+            # Use stored image data if available, otherwise fall back to URL or poster_url
+            "thumbnail": item.thumbnail_data or convert_to_proxy_url(item.thumbnail or item.poster_url) if (item.thumbnail_data or item.thumbnail or item.poster_url) else None,
+            "backdrop": item.backdrop_data or convert_to_proxy_url(item.backdrop) if (item.backdrop_data or item.backdrop) else None,
+            "category": item.category_name,
+            "year": item.year,
+            "duration": item.duration,
+            "is_series": item.is_series or False,
+            "type": "series" if item.is_series else "movie",
+        }
+        for item in items
+    ]
+
+    # Enrich with subtitle languages
+    content_items = await enrich_content_items_with_subtitles(content_items)
+
     return {
-        "items": [
-            {
-                "id": str(item.id),
-                "title": item.title,
-                "description": item.description,
-                # Use stored image data if available, otherwise fall back to URL or poster_url
-                "thumbnail": item.thumbnail_data or convert_to_proxy_url(item.thumbnail or item.poster_url) if (item.thumbnail_data or item.thumbnail or item.poster_url) else None,
-                "backdrop": item.backdrop_data or convert_to_proxy_url(item.backdrop) if (item.backdrop_data or item.backdrop) else None,
-                "category": item.category_name,
-                "year": item.year,
-                "duration": item.duration,
-                "is_series": item.is_series or False,
-                "type": "series" if item.is_series else "movie",
-            }
-            for item in items
-        ],
+        "items": content_items,
         "total": total,
         "page": page,
         "limit": limit,
@@ -372,6 +382,9 @@ async def get_by_category(
                 item_data["total_episodes"] = episode_count
 
         result_items.append(item_data)
+
+    # Enrich with subtitle languages
+    result_items = await enrich_content_items_with_subtitles(result_items)
 
     return {
         "category": {

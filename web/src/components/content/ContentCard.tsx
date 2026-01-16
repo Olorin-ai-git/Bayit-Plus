@@ -5,6 +5,7 @@ import { useTranslation } from 'react-i18next';
 import { Play, Star, Bookmark } from 'lucide-react';
 import { colors, spacing, borderRadius } from '@bayit/shared/theme';
 import { GlassCard, GlassBadge } from '@bayit/shared/ui';
+import { SubtitleFlags } from '@bayit/shared/components/SubtitleFlags';
 import { useModeEnforcement } from '@bayit/shared-hooks';
 import { useDirection } from '@/hooks/useDirection';
 import { favoritesService, watchlistService } from '@/services/api';
@@ -21,6 +22,8 @@ interface Content {
   year?: string;
   category?: string;
   total_episodes?: number;
+  has_subtitles?: boolean;
+  available_subtitle_languages?: string[];
 }
 
 interface ContentCardProps {
@@ -201,6 +204,16 @@ export default function ContentCard({ content, showProgress = false, showActions
                   {content.total_episodes} {t('content.episodes')}
                 </Text>
               </View>
+            )}
+
+            {/* Subtitle Flags */}
+            {content.available_subtitle_languages && content.available_subtitle_languages.length > 0 && (
+              <SubtitleFlags
+                languages={content.available_subtitle_languages}
+                position={isRTL ? 'bottom-left' : 'bottom-right'}
+                isRTL={isRTL}
+                size="small"
+              />
             )}
 
             {/* Live Badge - positioned to avoid action buttons */}

@@ -41,7 +41,7 @@ import {
   SubtitleSettings,
   SubtitlePreferences,
 } from '@/types/subtitle'
-import { subtitlesService } from '@/services/api'
+import { subtitlesService, subtitlePreferencesService } from '@/services/api'
 import { LiveSubtitleCue } from '@/services/liveSubtitleService'
 
 interface Chapter {
@@ -315,10 +315,37 @@ export default function VideoPlayer({
         const response = await subtitlesService.getTracks(contentId)
         setAvailableSubtitles(response.tracks || [])
 
-        // Auto-select default language if enabled
+        // Auto-select subtitle language if enabled and not already set
         if (subtitlesEnabled && !currentSubtitleLang && response.tracks?.length > 0) {
-          const defaultTrack = response.tracks.find(t => t.is_default) || response.tracks[0]
-          setCurrentSubtitleLang(defaultTrack.language)
+          const availableLanguages = response.tracks.map(t => t.language)
+
+          // Priority: 1. User preference, 2. Hebrew, 3. English, 4. Default, 5. First available
+          let selectedLanguage: string | null = null
+
+          // Try to get user's saved preference for this content
+          try {
+            const prefResponse = await subtitlePreferencesService.getPreference(contentId)
+            if (prefResponse.preferred_language && availableLanguages.includes(prefResponse.preferred_language)) {
+              selectedLanguage = prefResponse.preferred_language
+            }
+          } catch (error) {
+            // Preference not found or error - continue with fallback
+          }
+
+          // Fallback to Hebrew > English if no preference
+          if (!selectedLanguage) {
+            if (availableLanguages.includes('he')) {
+              selectedLanguage = 'he'
+            } else if (availableLanguages.includes('en')) {
+              selectedLanguage = 'en'
+            } else {
+              // Fallback to default or first available
+              const defaultTrack = response.tracks.find(t => t.is_default) || response.tracks[0]
+              selectedLanguage = defaultTrack.language
+            }
+          }
+
+          setCurrentSubtitleLang(selectedLanguage)
         }
       } catch (error) {
         logger.error('Failed to fetch subtitle tracks', 'VideoPlayer', error)
@@ -498,8 +525,18 @@ export default function VideoPlayer({
     setSubtitlesEnabled(enabled)
   }
 
-  const handleSubtitleLanguageChange = (language: string | null) => {
+  const handleSubtitleLanguageChange = async (language: string | null) => {
     setCurrentSubtitleLang(language)
+
+    // Save user preference for this content
+    if (contentId && language) {
+      try {
+        await subtitlePreferencesService.setPreference(contentId, language)
+      } catch (error) {
+        logger.error('Failed to save subtitle preference', 'VideoPlayer', error)
+        // Continue even if preference save fails
+      }
+    }
   }
 
   const handleSubtitleSettingsChange = (settings: SubtitleSettings) => {
