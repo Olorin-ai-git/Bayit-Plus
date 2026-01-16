@@ -83,15 +83,31 @@ class ModelBlindspotAnalyzer:
             )
 
             # Fetch actual Olorin scores from PostgreSQL - REQUIRED
-            logger.info("Fetching actual Olorin scores from PostgreSQL...")
-            olorin_scores = fetch_olorin_transaction_scores(actual_start, actual_end)
-            logger.info(f"Found {len(olorin_scores)} actual Olorin transaction scores")
+            # NOTE: Fetch ALL scores regardless of when investigation ran, because
+            # transaction_scores table only has created_at (score computation time),
+            # not transaction date. Snowflake query will filter by actual TX_DATETIME.
+            logger.info("Fetching actual Olorin scores from PostgreSQL (all investigations)...")
+            all_olorin_scores = fetch_olorin_transaction_scores()
+            logger.info(f"Found {len(all_olorin_scores)} actual Olorin transaction scores")
 
-            if not olorin_scores:
+            if not all_olorin_scores:
                 return self._empty_result(
                     "No Olorin transaction scores found. "
                     "Run investigations first to generate scores in transaction_scores table."
                 )
+
+            # Snowflake VALUES clause has limits - sample if too many scores
+            max_inline_scores = 5000
+            if len(all_olorin_scores) > max_inline_scores:
+                import random
+                sampled_tx_ids = random.sample(list(all_olorin_scores.keys()), max_inline_scores)
+                olorin_scores = {tx_id: all_olorin_scores[tx_id] for tx_id in sampled_tx_ids}
+                logger.warning(
+                    f"Sampled {len(olorin_scores)} scores from {len(all_olorin_scores)} total "
+                    f"due to Snowflake VALUES clause limit"
+                )
+            else:
+                olorin_scores = all_olorin_scores
 
             self.client.connect()
 
@@ -214,15 +230,31 @@ class ModelBlindspotAnalyzer:
             )
 
             # Fetch actual Olorin scores - REQUIRED
-            logger.info("Fetching actual Olorin scores for investigated entities...")
-            olorin_scores = fetch_olorin_transaction_scores(actual_start, actual_end)
-            logger.info(f"Found {len(olorin_scores)} actual Olorin transaction scores")
+            # NOTE: Fetch ALL scores regardless of when investigation ran, because
+            # transaction_scores table only has created_at (score computation time),
+            # not transaction date. Snowflake query will filter by actual TX_DATETIME.
+            logger.info("Fetching actual Olorin scores for investigated entities (all investigations)...")
+            all_olorin_scores = fetch_olorin_transaction_scores()
+            logger.info(f"Found {len(all_olorin_scores)} actual Olorin transaction scores")
 
-            if not olorin_scores:
+            if not all_olorin_scores:
                 return self._empty_result(
                     "No Olorin transaction scores found for investigated entities. "
                     "Run investigations first to generate scores."
                 )
+
+            # Snowflake VALUES clause has limits - sample if too many scores
+            max_inline_scores = 5000
+            if len(all_olorin_scores) > max_inline_scores:
+                import random
+                sampled_tx_ids = random.sample(list(all_olorin_scores.keys()), max_inline_scores)
+                olorin_scores = {tx_id: all_olorin_scores[tx_id] for tx_id in sampled_tx_ids}
+                logger.warning(
+                    f"Sampled {len(olorin_scores)} scores from {len(all_olorin_scores)} total "
+                    f"due to Snowflake VALUES clause limit"
+                )
+            else:
+                olorin_scores = all_olorin_scores
 
             self.client.connect()
 

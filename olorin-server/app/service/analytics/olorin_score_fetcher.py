@@ -38,6 +38,8 @@ def fetch_olorin_transaction_scores(
 
     try:
         # Build query with optional filters
+        # NOTE: Only fetch Snowflake-format transaction IDs (starting with XZZ)
+        # because UUIDs don't exist in Snowflake and won't match
         query_parts = [
             """
             SELECT ts.transaction_id, ts.risk_score
@@ -45,7 +47,7 @@ def fetch_olorin_transaction_scores(
             """
         ]
 
-        where_clauses = []
+        where_clauses = ["ts.transaction_id LIKE 'XZZ%'"]
         params = {}
 
         if investigation_ids:
@@ -114,6 +116,7 @@ def fetch_olorin_scores_with_metadata(
             FROM transaction_scores ts
             JOIN investigation_states inv ON ts.investigation_id = inv.investigation_id
             WHERE inv.status = 'COMPLETED'
+              AND ts.transaction_id LIKE 'XZZ%'
         """
         params = {}
 
@@ -174,6 +177,7 @@ def get_scored_transaction_ids(
             FROM transaction_scores ts
             JOIN investigation_states inv ON ts.investigation_id = inv.investigation_id
             WHERE inv.status = 'COMPLETED'
+              AND ts.transaction_id LIKE 'XZZ%'
         """
         params = {}
 
