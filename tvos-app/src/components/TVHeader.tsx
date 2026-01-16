@@ -23,10 +23,11 @@ import LinearGradient from 'react-native-linear-gradient';
 import { chatService } from '@bayit/shared-services';
 import { useConstantListening } from '@bayit/shared-hooks';
 
-// Navigation links - EXACTLY matching web/src/components/layout/Header.tsx
+// Navigation links - matching web app navigation with TV-specific additions
 const navLinkKeys = [
   { route: 'Home', key: 'nav.home' },
   { route: 'LiveTV', key: 'nav.liveTV' },
+  { route: 'EPG', key: 'nav.epg' },
   { route: 'VOD', key: 'nav.vod' },
   { route: 'Radio', key: 'nav.radio' },
   { route: 'Podcasts', key: 'nav.podcasts' },
@@ -172,6 +173,32 @@ export const TVHeader: React.FC<TVHeaderProps> = ({
   // Actions component
   const ActionsSection = (
     <View style={styles.actions}>
+      {/* Recordings Button */}
+      <Pressable
+        onPress={() => onNavigate('Recordings')}
+        onFocus={() => setFocusedAction('recordings')}
+        onBlur={() => setFocusedAction(null)}
+        style={({ focused }) => [
+          styles.iconButton,
+          focused && styles.iconButtonFocused,
+        ]}
+      >
+        <Text style={styles.iconText}>📹</Text>
+      </Pressable>
+
+      {/* Settings Button */}
+      <Pressable
+        onPress={() => onNavigate('Settings')}
+        onFocus={() => setFocusedAction('settings')}
+        onBlur={() => setFocusedAction(null)}
+        style={({ focused }) => [
+          styles.iconButton,
+          focused && styles.iconButtonFocused,
+        ]}
+      >
+        <Text style={styles.iconText}>⚙️</Text>
+      </Pressable>
+
       {/* Admin Button */}
       {isAdmin && (
         <Pressable

@@ -61,8 +61,14 @@ class TTSService extends EventEmitter {
   };
 
   private getDefaultVoiceId(): string {
-    // Use env variable from Vite config, otherwise fallback to Rachel (multilingual, excellent for Hebrew)
-    return (import.meta.env.VITE_ELEVENLABS_DEFAULT_VOICE_ID as string) || 'EXAVITQu4vr4xnSDxMaL'; // Default: Rachel - multilingual voice
+    // Use env variable from config, otherwise fallback to Rachel (multilingual, excellent for Hebrew)
+    // Note: Using process.env for React Native compatibility (Vite's import.meta.env not supported by Hermes)
+    try {
+      const envVoiceId = typeof process !== 'undefined' && process.env?.VITE_ELEVENLABS_DEFAULT_VOICE_ID;
+      return envVoiceId || 'EXAVITQu4vr4xnSDxMaL'; // Default: Rachel - multilingual voice
+    } catch {
+      return 'EXAVITQu4vr4xnSDxMaL'; // Default: Rachel - multilingual voice
+    }
   }
 
   constructor() {

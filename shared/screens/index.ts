@@ -17,6 +17,12 @@ export { ChildrenScreen } from './ChildrenScreen';
 export { JudaismScreen } from './JudaismScreen';
 export { default as FlowsScreen } from './FlowsScreen';
 export { default as MorningRitualScreen } from './MorningRitualScreen';
+export { EPGScreen } from './EPGScreen';
+export { default as MovieDetailScreen } from './MovieDetailScreen';
+export { default as SeriesDetailScreen } from './SeriesDetailScreen';
+export { default as SettingsScreen } from './SettingsScreen';
+export { default as RecordingsScreen } from './RecordingsScreen';
+export { default as HelpScreen } from './HelpScreen';
 
 // Admin screens
 export { AdminDashboardScreen } from './admin/AdminDashboardScreen';
@@ -34,4 +40,4 @@ export { PushNotificationsScreen } from './admin/PushNotificationsScreen';
 export { MarketingDashboardScreen } from './admin/MarketingDashboardScreen';
 export { UploadsScreen } from './admin/UploadsScreen';
 export { AuditLogsScreen } from './admin/AuditLogsScreen';
-export { SettingsScreen } from './admin/SettingsScreen';
+export { SettingsScreen as AdminSettingsScreen } from './admin/SettingsScreen';

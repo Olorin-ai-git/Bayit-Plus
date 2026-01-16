@@ -366,30 +366,101 @@ const styles = StyleSheet.create({
 
 ## 🌐 Platform-Specific Guidelines
 
+### Cross-Platform Consistency Rules
+
+**CRITICAL:** All platforms MUST maintain visual consistency:
+
+1. **Same color palette** - Use `@bayit/shared/theme` colors everywhere
+2. **Same component patterns** - GlassCard, GlassButton, etc.
+3. **Same visual hierarchy** - Purple accents, black backgrounds
+4. **Same layout structure** - Header, carousel, content rows
+5. **Same glassmorphic effects** - Backdrop blur, purple borders
+
 ### Web
 
 - Use CSS `backdrop-filter: blur(20px)` for glassmorphic effects
 - Support both light and dark mode (though dark is primary)
 - Ensure WCAG AA contrast ratios (4.5:1 for text)
+- Hebrew font: Heebo (loaded via Google Fonts)
 
 ### Mobile (React Native)
 
 - Use `BlurView` component for glassmorphic backgrounds
 - Optimize for touch targets (minimum 44x44 points)
 - Consider performance on older devices
+- Use `react-native-linear-gradient` for gradients
 
-### TV (React Native TV)
+### TV / tvOS (React Native tvOS)
 
-- Increase font sizes by 1.5x for 10-foot UI
-- Use larger spacing (multiply by 1.5x)
-- Ensure focus states are highly visible
-- Support D-pad navigation
+**10-Foot UI Guidelines:**
 
-### tvOS
+| Element | Mobile Size | TV Size | Multiplier |
+|---------|-------------|---------|------------|
+| Body text | 16px | 24px | 1.5x |
+| Headings | 20px | 32px | 1.6x |
+| Section titles | 24px | 36px | 1.5x |
+| Touch targets | 44px | 80px | 1.8x |
+| Card width | 160px | 280px | 1.75x |
+| Spacing | 16px | 24px | 1.5x |
 
-- Follow Apple TV design guidelines
-- Use parallax effects for depth
-- Support Siri Remote gestures
+**Focus States (CRITICAL):**
+
+```typescript
+// TV Focus Ring Style
+const focusStyle = {
+  borderWidth: 4,
+  borderColor: colors.primary,           // #a855f7
+  shadowColor: colors.primary,
+  shadowOffset: { width: 0, height: 0 },
+  shadowOpacity: 0.6,
+  shadowRadius: 12,
+  transform: [{ scale: 1.05 }],
+};
+```
+
+**D-Pad Navigation:**
+
+- All focusable elements must be in logical spatial order
+- Horizontal rows should wrap focus at edges
+- Use `hasTVPreferredFocus` for initial focus
+- Ensure 8px minimum gap between focusable elements
+
+**Apple TV Specifics:**
+
+- Support Siri Remote gestures (swipe, click, menu)
+- Use `Pressable` with `onFocus`/`onBlur` handlers
+- Test with both Siri Remote and game controller
+- Follow Apple Human Interface Guidelines for tvOS
+
+### Shared HomeScreen Layout (All Platforms)
+
+The HomeScreen MUST have these sections in this order:
+
+```
+1. Header Bar
+   ├── Digital clocks (🇮🇱 Israel time | 🇺🇸 Local time)
+   └── Optional: Refresh button (web only)
+
+2. Hero Carousel (GlassCarousel)
+   └── Featured content with auto-rotation
+
+3. Continue Watching (if logged in)
+   └── ContentRow with progress indicators
+
+4. Live TV Section
+   ├── LIVE badge + Section title
+   ├── "See All" button → LiveTV screen
+   └── GlassLiveChannelCard components
+
+5. Trending Section (TrendingRow)
+   └── Current topics from Israel
+
+6. Featured Content (ContentRow)
+   └── Curated picks
+
+7. Category Rows (ContentRow for each)
+   └── Dynamic categories from API
+```
 
 ---
 
@@ -419,15 +490,55 @@ const styles = StyleSheet.create({
 
 All glassmorphic components are available in `shared/components/ui/`:
 
-- `GlassCard` - Cards with glassmorphic background
-- `GlassButton` - Buttons with variants
-- `GlassInput` - Input fields
-- `GlassSelect` - Dropdown selects
-- `GlassModal` - Modals and dialogs
-- `GlassTable` - Data tables
-- `GlassView` - Generic glass container
-- `GlassBadge` - Status badges
-- `GlassToggle` - Toggle switches
+### Core Glass Components
+
+| Component | Location | Description |
+|-----------|----------|-------------|
+| `GlassCard` | `shared/components/ui/` | Cards with glassmorphic background |
+| `GlassButton` | `shared/components/ui/` | Buttons with primary/secondary/ghost variants |
+| `GlassInput` | `shared/components/ui/` | Input fields with focus glow |
+| `GlassSelect` | `shared/components/ui/` | Dropdown selects |
+| `GlassModal` | `shared/components/ui/` | Modals and dialogs |
+| `GlassTable` | `shared/components/ui/` | Data tables with pagination |
+| `GlassView` | `shared/components/ui/` | Generic glass container |
+| `GlassBadge` | `shared/components/ui/` | Status badges |
+| `GlassToggle` | `shared/components/ui/` | Toggle switches |
+| `GlassFAB` | `shared/components/ui/` | Floating action button |
+| `GlassLiveChannelCard` | `shared/components/ui/` | Live TV channel card with LIVE badge |
+
+### Content Components
+
+| Component | Location | Description |
+|-----------|----------|-------------|
+| `GlassCarousel` | `shared/components/` | Hero carousel with autoplay |
+| `ContentRow` | `shared/components/` | Horizontal scroll of content cards |
+| `FocusableCard` | `shared/components/` | TV-optimized focusable card |
+| `TrendingRow` | `shared/components/` | Trending topics display |
+| `AnimatedLogo` | `shared/components/` | Animated Bayit+ logo |
+
+### Screen Components
+
+| Screen | Location | Description |
+|--------|----------|-------------|
+| `HomeScreen` | `shared/screens/` | Main home screen with all sections |
+| `PlayerScreen` | `shared/screens/` | Video player with controls |
+| `LiveTVScreen` | `shared/screens/` | Live channel grid |
+| `VODScreen` | `shared/screens/` | Video on demand catalog |
+| `SearchScreen` | `shared/screens/` | Search with results |
+| `EPGScreen` | `shared/screens/` | Electronic program guide |
+| `SettingsScreen` | `shared/screens/` | User settings |
+
+### Importing Components
+
+```typescript
+// Import from shared components
+import { GlassCard, GlassButton, GlassLiveChannelCard } from '@bayit/shared/ui';
+import { GlassCarousel, ContentRow, TrendingRow } from '@bayit/shared';
+import { HomeScreen, PlayerScreen, VODScreen } from '@bayit/shared-screens';
+
+// Import theme
+import { colors, spacing, borderRadius, fontSize } from '@bayit/shared/theme';
+```
 
 ---
 
@@ -561,6 +672,6 @@ For questions or suggestions about the design system:
 
 ---
 
-**Last Updated:** January 14, 2026  
-**Version:** 2.0  
+**Last Updated:** January 15, 2026  
+**Version:** 2.1 (TV Parity Update)  
 **Maintained by:** Bayit+ Design Team

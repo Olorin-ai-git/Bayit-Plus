@@ -60,6 +60,9 @@ function getExtraNodeModules() {
   // Shim Expo packages to React Native alternatives
   modules['expo-linear-gradient'] = path.resolve(shimsRoot, 'expo-linear-gradient.ts');
   modules['@expo/vector-icons'] = path.resolve(shimsRoot, 'expo-vector-icons.ts');
+  
+  // Shim web-specific linear gradient package
+  modules['react-native-web-linear-gradient'] = path.resolve(shimsRoot, 'react-native-web-linear-gradient.ts');
 
   return modules;
 }
@@ -118,6 +121,14 @@ const config = {
       if (moduleName === '../stores/watchPartyStore' || moduleName.includes('watchPartyStore')) {
         return {
           filePath: path.resolve(shimsRoot, 'watchPartyStore.ts'),
+          type: 'sourceFile',
+        };
+      }
+
+      // Shim TTS Service (web audio APIs not supported on tvOS)
+      if (moduleName === './ttsService' || moduleName.includes('ttsService')) {
+        return {
+          filePath: path.resolve(shimsRoot, 'ttsService.ts'),
           type: 'sourceFile',
         };
       }

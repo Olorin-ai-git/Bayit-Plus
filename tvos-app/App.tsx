@@ -25,6 +25,12 @@ import {
   ChildrenScreen,
   FlowsScreen,
   JudaismScreen,
+  EPGScreen,
+  MovieDetailScreen,
+  SeriesDetailScreen,
+  SettingsScreen,
+  RecordingsScreen,
+  HelpScreen,
 } from '@bayit/shared-screens';
 import { AdminNavigator } from './src/navigation/AdminNavigator';
 import ProfileFormScreen from './src/screens/ProfileFormScreen';
@@ -37,6 +43,7 @@ import { useChatbotStore, useAuthStore, useVoiceSettingsStore } from '@bayit/sha
 import { chatService } from '@bayit/shared-services';
 import { TVHeader } from './src/components/TVHeader';
 import { useTVConstantListening } from './src/hooks/useTVConstantListening';
+import { SplashScreen } from './src/components/SplashScreen';
 
 // Ignore specific warnings for TV
 LogBox.ignoreLogs([
@@ -135,7 +142,7 @@ export type RootStackParamList = {
   Player: {
     id: string;
     title: string;
-    type: 'vod' | 'live' | 'radio' | 'podcast';
+    type: 'vod' | 'live' | 'radio' | 'podcast' | 'catchup' | 'recording';
   };
   Search: { query?: string };
   Subscribe: undefined;
@@ -143,6 +150,12 @@ export type RootStackParamList = {
   Favorites: undefined;
   Downloads: undefined;
   Watchlist: undefined;
+  EPG: undefined;
+  MovieDetail: { movieId: string };
+  SeriesDetail: { seriesId: string };
+  Settings: undefined;
+  Recordings: undefined;
+  Help: undefined;
 };
 
 export type MainTabParamList = {
@@ -289,6 +302,12 @@ const AppContent: React.FC = () => {
           <Stack.Screen name="Favorites" component={FavoritesScreen} />
           <Stack.Screen name="Downloads" component={DownloadsScreen} />
           <Stack.Screen name="Watchlist" component={WatchlistScreen} />
+          <Stack.Screen name="EPG" component={EPGScreen} />
+          <Stack.Screen name="MovieDetail" component={MovieDetailScreen} />
+          <Stack.Screen name="SeriesDetail" component={SeriesDetailScreen} />
+          <Stack.Screen name="Settings" component={SettingsScreen} />
+          <Stack.Screen name="Recordings" component={RecordingsScreen} />
+          <Stack.Screen name="Help" component={HelpScreen} />
         </Stack.Navigator>
       </View>
 
@@ -383,21 +402,32 @@ const AppContentWithHandlers: React.FC = () => {
 };
 
 function App(): React.JSX.Element {
+  const [showSplash, setShowSplash] = useState(true);
+
   useEffect(() => {
     loadSavedLanguage();
     console.log('🎬 Bayit+ tvOS App starting...');
   }, []);
 
+  const handleSplashComplete = useCallback(() => {
+    console.log('🎬 Splash complete, showing main app');
+    setShowSplash(false);
+  }, []);
+
   return (
     <I18nextProvider i18n={i18n}>
       <SafeAreaProvider>
-        <ModalProvider>
-          <ProfileProvider>
-            <NavigationContainer>
-              <AppContentWithHandlers />
-            </NavigationContainer>
-          </ProfileProvider>
-        </ModalProvider>
+        {showSplash ? (
+          <SplashScreen onComplete={handleSplashComplete} minimumDuration={3000} />
+        ) : (
+          <ModalProvider>
+            <ProfileProvider>
+              <NavigationContainer>
+                <AppContentWithHandlers />
+              </NavigationContainer>
+            </ProfileProvider>
+          </ModalProvider>
+        )}
       </SafeAreaProvider>
     </I18nextProvider>
   );
