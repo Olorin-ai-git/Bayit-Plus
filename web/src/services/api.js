@@ -41,6 +41,9 @@ api.interceptors.request.use((config) => {
   const authData = JSON.parse(localStorage.getItem('bayit-auth') || '{}')
   if (authData?.state?.token) {
     config.headers.Authorization = `Bearer ${authData.state.token}`
+    console.log('[API] Adding token to request:', config.url, 'Token:', authData.state.token?.substring(0, 20) + '...')
+  } else {
+    console.log('[API] No token found in localStorage for request:', config.url)
   }
   return config
 })

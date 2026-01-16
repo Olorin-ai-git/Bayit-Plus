@@ -58,14 +58,18 @@ export default function GoogleCallbackPage() {
     console.log('[GoogleCallback] Calling handleGoogleCallback with state...');
 
     handleGoogleCallback(code, state || undefined)
-      .then(() => {
-        console.log('[GoogleCallback] Success - waiting for persist before navigating');
-        // Wait a bit for zustand persist middleware to write to localStorage
+      .then((response) => {
+        console.log('[GoogleCallback] Success - token received:', response.access_token?.substring(0, 20) + '...');
+        console.log('[GoogleCallback] Waiting for persist before navigating');
+
+        // Wait longer to ensure localStorage write completes
         // This prevents race condition where HomePage API calls happen before token is saved
         setTimeout(() => {
+          const authData = localStorage.getItem('bayit-auth');
+          console.log('[GoogleCallback] LocalStorage check:', authData ? 'Token saved' : 'NO TOKEN IN STORAGE!');
           console.log('[GoogleCallback] Navigating to home');
           navigate('/', { replace: true });
-        }, 100);
+        }, 500);
       })
       .catch((err: any) => {
         console.error('[GoogleCallback] Error:', err);
