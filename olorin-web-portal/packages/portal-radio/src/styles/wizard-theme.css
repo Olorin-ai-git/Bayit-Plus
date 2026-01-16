@@ -298,10 +298,8 @@
 
 /**
  * Floating animation
+ * NOTE: Use animate-float class directly (defined in tailwind.config.js)
  */
-.animate-float {
-  @apply animate-float;
-}
 
 /**
  * Shimmer loading effect

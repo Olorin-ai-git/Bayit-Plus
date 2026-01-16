@@ -56,7 +56,7 @@ function App() {
           navigation={navigation}
           dropdowns={dropdowns}
           showDemo={false}
-          ctaText={t('nav.getStarted')}
+          ctaText={String(t('nav.getStarted'))}
           ctaHref="/contact"
           LanguageSelectorComponent={LanguageSelector}
         />
