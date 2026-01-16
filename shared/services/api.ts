@@ -60,31 +60,29 @@ api.interceptors.response.use(
   (response) => response.data,
   (error) => {
     // Only logout on authentication failures, not all 401 errors
-    // Some 401s are for unauthorized access to specific resources (history, etc)
     if (error.response?.status === 401) {
       const errorDetail = error.response?.data?.detail || '';
-      const authFailureMessages = [
+      const requestUrl = error.config?.url || '';
+
+      // Only logout if it's from critical auth endpoints
+      const isCriticalAuthEndpoint = ['/auth/me', '/auth/login', '/auth/refresh'].some(path =>
+        requestUrl.includes(path)
+      );
+
+      // Or if it's a token validation error (not just "not authenticated")
+      const isTokenError = [
         'Could not validate credentials',
         'Invalid authentication credentials',
         'Token has expired',
         'Invalid token',
-        'Not authenticated',
-        'Authentication required'
-      ];
+        'Signature has expired'
+      ].some(msg => errorDetail.toLowerCase().includes(msg.toLowerCase()));
 
-      // Only logout if it's an actual authentication failure
-      const isAuthFailure = authFailureMessages.some(msg =>
-        errorDetail.toLowerCase().includes(msg.toLowerCase())
-      );
-
-      // Also logout if it's from the /auth/me endpoint (token validation failed)
-      const isAuthEndpoint = error.config?.url?.includes('/auth/me');
-
-      if (isAuthFailure || isAuthEndpoint) {
-        console.log('[API] Authentication failure detected, logging out:', errorDetail);
+      if (isCriticalAuthEndpoint || isTokenError) {
+        console.log('[API] Critical auth failure, logging out:', errorDetail, 'URL:', requestUrl);
         useAuthStore.getState().logout();
       } else {
-        console.log('[API] 401 error but not auth failure, allowing error to propagate:', errorDetail);
+        console.log('[API] 401 from non-critical endpoint, not logging out:', requestUrl, errorDetail);
       }
     }
     return Promise.reject(error.response?.data || error);
