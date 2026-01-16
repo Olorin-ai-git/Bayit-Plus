@@ -89,10 +89,33 @@ export default function HomePage() {
 
   // Load content and sync on mount
   useEffect(() => {
-    checkMorningRitual();
-    syncContent();
-    loadHomeContent();
+    const initializeHome = async () => {
+      checkMorningRitual();
+      
+      // Load featured content first (shows spinner while loading)
+      await loadHomeContent();
+      
+      // Then trigger background sync/refresh after featured is loaded
+      // Don't reload again on initial sync - content is already fresh
+      syncContentInBackground();
+    };
+    
+    initializeHome();
   }, []);
+
+  // Background sync without reloading (for initial load)
+  const syncContentInBackground = async () => {
+    try {
+      setSyncing(true);
+      logger.info('Background sync: Refreshing podcasts...', 'HomePage');
+      await contentService.syncContent();
+      logger.info('Background sync complete', 'HomePage');
+    } catch (error) {
+      logger.error('Background sync failed', 'HomePage', error);
+    } finally {
+      setSyncing(false);
+    }
+  };
 
   const checkMorningRitual = async () => {
     try {
@@ -105,11 +128,8 @@ export default function HomePage() {
 
   const loadHomeContent = async () => {
     try {
-      const [featuredData, liveData, continueData] = await Promise.all([
-        contentService.getFeatured(),
-        liveService.getChannels(),
-        historyService.getContinueWatching().catch(() => ({ items: [] })),
-      ]);
+      // Load featured content first (priority)
+      const featuredData = await contentService.getFeatured();
 
       // Get featured items array (or wrap single item)
       const featuredItems = featuredData.items || (featuredData.hero ? [featuredData.hero] : []);
@@ -129,11 +149,20 @@ export default function HomePage() {
 
       // Use categories from featured data - they include items with thumbnails
       setCategories(featuredData.categories || []);
+
+      // Hide spinner after featured content is loaded
+      setLoading(false);
+
+      // Load other content in parallel (non-blocking)
+      const [liveData, continueData] = await Promise.all([
+        liveService.getChannels(),
+        historyService.getContinueWatching().catch(() => ({ items: [] })),
+      ]);
+
       setLiveChannels(liveData.channels || []);
       setContinueWatching(continueData.items || []);
     } catch (error) {
       logger.error('Failed to load home content', 'HomePage', error);
-    } finally {
       setLoading(false);
     }
   };
@@ -145,7 +174,7 @@ export default function HomePage() {
       const result = await contentService.syncContent();
       logger.info(`Content synced`, 'HomePage', result);
 
-      // Reload content after syncing
+      // Reload content after syncing to show any new items
       await loadHomeContent();
     } catch (error) {
       logger.error('Failed to sync content', 'HomePage', error);

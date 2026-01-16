@@ -66,7 +66,6 @@ async def refresh_all_content():
             "episodes_added": 0,
         },
     }
-        raise HTTPException(status_code=500, detail="Failed to refresh content")
 
 
 @router.get("")

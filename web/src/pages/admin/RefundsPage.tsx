@@ -9,7 +9,6 @@ import { colors, spacing, borderRadius } from '@bayit/shared/theme';
 import { GlassModal, GlassButton } from '@bayit/shared/ui';
 import { useDirection } from '@/hooks/useDirection';
 import logger from '@/utils/logger';
-import { adminButtonStyles } from '@/styles/adminButtonStyles';
 
 interface Refund {
   id: string;
@@ -265,8 +264,8 @@ export default function RefundsPage() {
             </Text>
           )}
           <View style={styles.modalActions}>
-            <GlassButton title={t('common.cancel')} variant="secondary" onPress={() => setShowApproveConfirm(false)} style={adminButtonStyles.cancelButton} textStyle={adminButtonStyles.buttonText} />
-            <GlassButton title={t('common.confirm')} variant="secondary" onPress={handleConfirmApprove} style={adminButtonStyles.successButton} textStyle={adminButtonStyles.buttonText} />
+            <GlassButton title={t('common.cancel')} variant="cancel" onPress={() => setShowApproveConfirm(false)} />
+            <GlassButton title={t('common.confirm')} variant="success" onPress={handleConfirmApprove} />
           </View>
         </View>
       </GlassModal>
@@ -279,7 +278,7 @@ export default function RefundsPage() {
         <View style={styles.modalContent}>
           <Text style={styles.errorText}>{errorMessage}</Text>
           <View style={styles.modalActions}>
-            <GlassButton title={t('common.ok')} variant="secondary" onPress={() => setShowErrorModal(false)} style={adminButtonStyles.successButton} textStyle={adminButtonStyles.buttonText} />
+            <GlassButton title={t('common.ok')} variant="success" onPress={() => setShowErrorModal(false)} />
           </View>
         </View>
       </GlassModal>
@@ -307,8 +306,8 @@ export default function RefundsPage() {
             />
           </View>
           <View style={styles.modalActions}>
-            <GlassButton title={t('common.cancel')} variant="secondary" onPress={() => setShowRejectModal(false)} style={adminButtonStyles.cancelButton} textStyle={adminButtonStyles.buttonText} />
-            <GlassButton title={t('admin.refunds.rejectModal.submitButton')} variant="secondary" onPress={handleConfirmReject} style={adminButtonStyles.dangerButton} textStyle={adminButtonStyles.buttonText} />
+            <GlassButton title={t('common.cancel')} variant="cancel" onPress={() => setShowRejectModal(false)} />
+            <GlassButton title={t('admin.refunds.rejectModal.submitButton')} variant="danger" onPress={handleConfirmReject} />
           </View>
         </View>
       </GlassModal>

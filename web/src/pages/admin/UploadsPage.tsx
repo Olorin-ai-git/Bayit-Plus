@@ -11,7 +11,6 @@ import { GlassCard, GlassButton, GlassInput, GlassModal, GlassSelect, GlassToggl
 import { Plus, Edit2, Trash2, FolderOpen, AlertCircle, X, Folder, Upload, XCircle } from 'lucide-react';
 import { useDirection } from '@/hooks/useDirection';
 import { useModal } from '@/contexts/ModalContext';
-import { adminButtonStyles } from '@/styles/adminButtonStyles';
 import * as uploadsService from '@/services/uploadsService';
 import GlassQueue from '@/components/admin/GlassQueue';
 import type { QueueJob, QueueStats } from '@/components/admin/GlassQueue';
@@ -554,25 +553,21 @@ const UploadsPage: React.FC = () => {
           <View style={[styles.buttonGroup, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
             <GlassButton
               title={triggeringUpload ? t('common.loading') : t('admin.uploads.triggerUpload')}
-              variant="secondary"
-              icon={triggeringUpload ? null : <Upload size={18} color={colors.primary} />}
+              variant="ghost"
+              icon={triggeringUpload ? null : <Upload size={18} color="white" />}
               onPress={handleTriggerUpload}
               disabled={triggeringUpload || queueStats.processing > 0 || queueStats.queued > 0}
-              style={[adminButtonStyles.secondaryButton, triggeringUpload && { opacity: 0.7 }]}
-              textStyle={adminButtonStyles.buttonText}
             >
               {triggeringUpload && (
                 <ActivityIndicator size="small" color={colors.primary} style={{ marginRight: spacing.sm }} />
               )}
             </GlassButton>
-            
+
             <GlassButton
               title={t('admin.uploads.addFolder')}
-              variant="secondary"
-              icon={<Plus size={18} color={colors.text} />}
+              variant="primary"
+              icon={<Plus size={18} color="white" />}
               onPress={handleAddFolder}
-              style={adminButtonStyles.primaryButton}
-              textStyle={adminButtonStyles.buttonText}
             />
           </View>
           
@@ -580,26 +575,22 @@ const UploadsPage: React.FC = () => {
           <View style={[styles.buttonGroup, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
             <GlassButton
               title={resettingCache ? t('common.loading') : t('admin.uploads.resetCache', 'Reset Cache')}
-              variant="secondary"
-              icon={resettingCache ? null : <FolderOpen size={18} color={colors.warning} />}
+              variant="ghost"
+              icon={resettingCache ? null : <FolderOpen size={18} color="white" />}
               onPress={handleResetCache}
               disabled={resettingCache}
-              style={[adminButtonStyles.secondaryButton, resettingCache && { opacity: 0.7 }]}
-              textStyle={adminButtonStyles.buttonText}
             >
               {resettingCache && (
                 <ActivityIndicator size="small" color={colors.warning} style={{ marginRight: spacing.sm }} />
               )}
             </GlassButton>
-            
+
             <GlassButton
               title={clearingQueue ? t('common.loading') : t('admin.uploads.clearQueue')}
-              variant="destructive"
-              icon={clearingQueue ? null : <XCircle size={18} color={colors.error} />}
+              variant="danger"
+              icon={clearingQueue ? null : <XCircle size={18} color="white" />}
               onPress={handleClearQueue}
               disabled={clearingQueue || (queueStats.queued === 0 && queueStats.processing === 0)}
-              style={[adminButtonStyles.secondaryButton, clearingQueue && { opacity: 0.7 }]}
-              textStyle={adminButtonStyles.buttonText}
             >
               {clearingQueue && (
                 <ActivityIndicator size="small" color={colors.error} style={{ marginRight: spacing.sm }} />
@@ -826,20 +817,16 @@ const UploadsPage: React.FC = () => {
           <View style={[styles.modalActions, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
             <GlassButton
               title={t('common.cancel')}
-              variant="secondary"
+              variant="cancel"
               onPress={() => {
                 setShowFolderModal(false);
                 setError(null); // Clear error when closing
               }}
-              style={adminButtonStyles.cancelButton}
-              textStyle={adminButtonStyles.buttonText}
             />
             <GlassButton
               title={t('common.save')}
-              variant="secondary"
+              variant="success"
               onPress={handleSaveFolder}
-              style={adminButtonStyles.successButton}
-              textStyle={adminButtonStyles.buttonText}
             />
           </View>
         </View>

@@ -314,28 +314,22 @@ export default function SubscriptionsListPage() {
           <GlassButton
             title={t('common.add')}
             onPress={handleAdd}
-            variant="secondary"
-            icon={<Plus size={18} color={colors.text} />}
-            style={styles.addButton}
-            textStyle={styles.buttonText}
+            variant="primary"
+            icon={<Plus size={18} color="white" />}
           />
           <GlassButton
             title={t('common.edit')}
             onPress={handleEdit}
-            variant="secondary"
-            icon={<Edit size={18} color={colors.text} />}
+            variant="ghost"
+            icon={<Edit size={18} color="white" />}
             disabled={selectedIds.size !== 1}
-            style={styles.actionButton}
-            textStyle={styles.buttonText}
           />
           <GlassButton
             title={t('common.delete')}
             onPress={handleDelete}
-            variant="secondary"
-            icon={<Trash2 size={18} color={colors.error} />}
+            variant="danger"
+            icon={<Trash2 size={18} color="white" />}
             disabled={selectedIds.size === 0}
-            style={styles.deleteButton}
-            textStyle={styles.buttonText}
           />
         </View>
       </View>
@@ -400,12 +394,8 @@ export default function SubscriptionsListPage() {
               key={plan.id}
               title={`${plan.name_he || plan.name} - $${plan.price}/mo`}
               onPress={() => setSelectedPlan(plan.slug)}
-              variant="secondary"
-              style={[
-                styles.planOption,
-                selectedPlan === plan.slug ? styles.planOptionSelected : styles.planOptionUnselected
-              ]}
-              textStyle={styles.buttonText}
+              variant={selectedPlan === plan.slug ? 'primary' : 'ghost'}
+              style={styles.planOption}
             />
           ))}
         </View>
@@ -414,16 +404,14 @@ export default function SubscriptionsListPage() {
           <GlassButton
             title={t('common.cancel')}
             onPress={() => setEditModalOpen(false)}
-            variant="secondary"
-            style={[styles.modalButton, styles.cancelButton]}
-            textStyle={styles.buttonText}
+            variant="cancel"
+            style={styles.modalButton}
           />
           <GlassButton
             title={t('common.save')}
             onPress={handleSaveEdit}
-            variant="secondary"
-            style={[styles.modalButton, styles.saveButton]}
-            textStyle={styles.buttonText}
+            variant="success"
+            style={styles.modalButton}
           />
         </View>
       </GlassModal>
@@ -461,12 +449,8 @@ export default function SubscriptionsListPage() {
               key={plan.id}
               title={`${plan.name_he || plan.name} - $${plan.price}/mo`}
               onPress={() => setSelectedPlan(plan.slug)}
-              variant="secondary"
-              style={[
-                styles.planOption,
-                selectedPlan === plan.slug ? styles.planOptionSelected : styles.planOptionUnselected
-              ]}
-              textStyle={styles.buttonText}
+              variant={selectedPlan === plan.slug ? 'primary' : 'ghost'}
+              style={styles.planOption}
             />
           ))}
         </View>
@@ -475,16 +459,14 @@ export default function SubscriptionsListPage() {
           <GlassButton
             title={t('common.cancel')}
             onPress={() => setAddModalOpen(false)}
-            variant="secondary"
-            style={[styles.modalButton, styles.cancelButton]}
-            textStyle={styles.buttonText}
+            variant="cancel"
+            style={styles.modalButton}
           />
           <GlassButton
             title={t('common.save')}
             onPress={handleSaveAdd}
-            variant="secondary"
-            style={[styles.modalButton, styles.saveButton]}
-            textStyle={styles.buttonText}
+            variant="success"
+            style={styles.modalButton}
           />
         </View>
       </GlassModal>
@@ -501,9 +483,8 @@ export default function SubscriptionsListPage() {
           <GlassButton
             title={t('common.ok')}
             onPress={() => setErrorModalOpen(false)}
-            variant="secondary"
-            style={[styles.modalButton, styles.saveButton]}
-            textStyle={styles.buttonText}
+            variant="success"
+            style={styles.modalButton}
           />
         </View>
       </GlassModal>
@@ -522,16 +503,14 @@ export default function SubscriptionsListPage() {
           <GlassButton
             title={t('common.cancel')}
             onPress={() => setDeleteConfirmOpen(false)}
-            variant="secondary"
-            style={[styles.modalButton, styles.cancelButton]}
-            textStyle={styles.buttonText}
+            variant="cancel"
+            style={styles.modalButton}
           />
           <GlassButton
             title={t('common.delete')}
             onPress={handleDeleteConfirm}
-            variant="secondary"
-            style={[styles.modalButton, styles.deleteButton]}
-            textStyle={styles.buttonText}
+            variant="danger"
+            style={styles.modalButton}
           />
         </View>
       </GlassModal>

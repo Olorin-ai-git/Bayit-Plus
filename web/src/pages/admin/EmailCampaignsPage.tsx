@@ -8,7 +8,6 @@ import { colors, spacing, borderRadius } from '@bayit/shared/theme';
 import { GlassButton, GlassModal, GlassInput, GlassTextarea } from '@bayit/shared/ui';
 import { useDirection } from '@/hooks/useDirection';
 import logger from '@/utils/logger';
-import { adminButtonStyles } from '@/styles/adminButtonStyles';
 
 interface EmailCampaign {
   id: string;
@@ -252,7 +251,7 @@ export default function EmailCampaignsPage() {
           <Text style={[styles.pageTitle, { textAlign }]}>{t('admin.emailCampaigns.title')}</Text>
           <Text style={[styles.subtitle, { textAlign }]}>{t('admin.emailCampaigns.subtitle')}</Text>
         </View>
-        <GlassButton title={t('admin.emailCampaigns.createButton')} variant="secondary" icon={<Plus size={16} color={colors.text} />} onPress={() => setShowCreateModal(true)} style={adminButtonStyles.primaryButton} textStyle={adminButtonStyles.buttonText} />
+        <GlassButton title={t('admin.emailCampaigns.createButton')} variant="primary" icon={<Plus size={16} color="white" />} onPress={() => setShowCreateModal(true)} />
       </View>
 
       <View style={[styles.filtersRow, { flexDirection }]}>
@@ -289,8 +288,8 @@ export default function EmailCampaignsPage() {
             <GlassInput label={t('admin.emailCampaigns.form.body')} containerStyle={[styles.input, styles.textArea]} value={newCampaign.body} onChangeText={(body) => setNewCampaign((p) => ({ ...p, body }))} multiline numberOfLines={5} />
           </View>
           <View style={styles.modalActions}>
-            <GlassButton title={t('common.cancel')} variant="secondary" onPress={handleCloseCreateModal} style={adminButtonStyles.cancelButton} textStyle={adminButtonStyles.buttonText} />
-            <GlassButton title={editingCampaign ? t('common.save', 'Save') : t('admin.emailCampaigns.createButton')} variant="secondary" onPress={handleCreate} style={adminButtonStyles.successButton} textStyle={adminButtonStyles.buttonText} />
+            <GlassButton title={t('common.cancel')} variant="cancel" onPress={handleCloseCreateModal} />
+            <GlassButton title={editingCampaign ? t('common.save', 'Save') : t('admin.emailCampaigns.createButton')} variant="success" onPress={handleCreate} />
           </View>
         </View>
       </GlassModal>
@@ -301,8 +300,8 @@ export default function EmailCampaignsPage() {
             <GlassInput label={t('admin.emailCampaigns.testModal.emailLabel')} containerStyle={styles.input} value={testEmail} onChangeText={setTestEmail} keyboardType="email-address" />
           </View>
           <View style={styles.modalActions}>
-            <GlassButton title={t('common.cancel')} variant="secondary" onPress={() => setShowTestModal(false)} style={adminButtonStyles.cancelButton} textStyle={adminButtonStyles.buttonText} />
-            <GlassButton title={t('admin.emailCampaigns.testModal.submitButton')} variant="secondary" onPress={handleSendTest} style={adminButtonStyles.successButton} textStyle={adminButtonStyles.buttonText} />
+            <GlassButton title={t('common.cancel')} variant="cancel" onPress={() => setShowTestModal(false)} />
+            <GlassButton title={t('admin.emailCampaigns.testModal.submitButton')} variant="success" onPress={handleSendTest} />
           </View>
         </View>
       </GlassModal>
@@ -319,8 +318,8 @@ export default function EmailCampaignsPage() {
             </Text>
           )}
           <View style={styles.modalActions}>
-            <GlassButton title={t('common.cancel')} variant="secondary" onPress={() => setShowSendConfirm(false)} style={adminButtonStyles.cancelButton} textStyle={adminButtonStyles.buttonText} />
-            <GlassButton title={t('common.send')} variant="secondary" onPress={handleSendConfirm} style={adminButtonStyles.successButton} textStyle={adminButtonStyles.buttonText} />
+            <GlassButton title={t('common.cancel')} variant="cancel" onPress={() => setShowSendConfirm(false)} />
+            <GlassButton title={t('common.send')} variant="success" onPress={handleSendConfirm} />
           </View>
         </View>
       </GlassModal>
@@ -337,8 +336,8 @@ export default function EmailCampaignsPage() {
             </Text>
           )}
           <View style={styles.modalActions}>
-            <GlassButton title={t('common.cancel')} variant="secondary" onPress={() => setShowDeleteConfirm(false)} style={adminButtonStyles.cancelButton} textStyle={adminButtonStyles.buttonText} />
-            <GlassButton title={t('common.delete')} variant="secondary" onPress={handleDeleteConfirm} style={adminButtonStyles.dangerButton} textStyle={adminButtonStyles.buttonText} />
+            <GlassButton title={t('common.cancel')} variant="cancel" onPress={() => setShowDeleteConfirm(false)} />
+            <GlassButton title={t('common.delete')} variant="danger" onPress={handleDeleteConfirm} />
           </View>
         </View>
       </GlassModal>
@@ -351,7 +350,7 @@ export default function EmailCampaignsPage() {
         <View style={styles.modalContent}>
           <Text style={styles.successText}>{t('admin.emailCampaigns.testEmailSent')}</Text>
           <View style={styles.modalActions}>
-            <GlassButton title={t('common.ok')} variant="secondary" onPress={() => setShowSuccessModal(false)} style={adminButtonStyles.successButton} textStyle={adminButtonStyles.buttonText} />
+            <GlassButton title={t('common.ok')} variant="success" onPress={() => setShowSuccessModal(false)} />
           </View>
         </View>
       </GlassModal>
@@ -364,7 +363,7 @@ export default function EmailCampaignsPage() {
         <View style={styles.modalContent}>
           <Text style={styles.errorText}>{errorMessage}</Text>
           <View style={styles.modalActions}>
-            <GlassButton title={t('common.ok')} variant="secondary" onPress={() => setShowErrorModal(false)} style={adminButtonStyles.successButton} textStyle={adminButtonStyles.buttonText} />
+            <GlassButton title={t('common.ok')} variant="success" onPress={() => setShowErrorModal(false)} />
           </View>
         </View>
       </GlassModal>
