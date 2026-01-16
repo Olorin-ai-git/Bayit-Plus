@@ -1,8 +1,12 @@
 /**
  * Portal Main Styles
- * Imports shared wizard theme styles
+ * Imports Tailwind and wizard theme styles
  */
 
-@import '../../shared/src/styles/index.css';
+@import 'tailwindcss/base';
+@import 'tailwindcss/components';
+@import 'tailwindcss/utilities';
+
+@import './styles/wizard-theme.css';
 
 /* Portal-specific overrides can go here */

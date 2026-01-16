@@ -1,0 +1,86 @@
+{
+  "nav": {
+    "home": "Home",
+    "features": "Features",
+    "solutions": "Solutions",
+    "pricing": "Pricing",
+    "demo": "Live Demo",
+    "contact": "Contact",
+    "getStarted": "Get Started"
+  },
+  "hero": {
+    "title": "INTELLIGENT",
+    "titleHighlight": "RADIO MANAGEMENT",
+    "subtitle": "Automate and enhance radio operations with AI",
+    "description": "Transform your radio station with intelligent scheduling, analytics, and automation",
+    "ctaExplore": "Discover Features",
+    "ctaDemo": "Request Demo"
+  },
+  "features": {
+    "sectionTitle": "Smart Radio Features",
+    "automation": {
+      "title": "Automation & Scheduling",
+      "description": "Automate playlist scheduling and content rotation with intelligent AI algorithms"
+    },
+    "analytics": {
+      "title": "Listener Analytics AI",
+      "description": "Analyze listener behavior and optimize programming for maximum engagement"
+    },
+    "adInsertion": {
+      "title": "Smart Ad Insertion",
+      "description": "Dynamically insert ads based on audience insights and listening patterns"
+    }
+  },
+  "workflow": {
+    "sectionTitle": "Intelligent Workflow",
+    "sectionSubtitle": "AI-powered radio management in 4 steps",
+    "step1": {
+      "title": "Content Ingestion",
+      "description": "Import music, ads, and shows into your library"
+    },
+    "step2": {
+      "title": "AI Scheduling",
+      "description": "Let AI create optimal playlists and programming schedules"
+    },
+    "step3": {
+      "title": "Broadcasting",
+      "description": "Automated on-air content delivery with seamless transitions"
+    },
+    "step4": {
+      "title": "Analytics",
+      "description": "Track performance and continuously improve programming"
+    }
+  },
+  "metrics": {
+    "title": "Success Metrics",
+    "subtitle": "How radio stations transform with Olorin.AI",
+    "retention": "50% Increase in Listener Retention",
+    "scheduling": "40% Reduction in Manual Scheduling",
+    "revenue": "30% Improvement in Ad Revenue",
+    "engagement": "25% Higher Listener Engagement"
+  },
+  "solutions": {
+    "title": "Station Management Solutions",
+    "commercial": {
+      "title": "Commercial Radio",
+      "description": "Optimize programming and maximize ad revenue"
+    },
+    "music": {
+      "title": "Music Stations",
+      "description": "AI-curated playlists that keep listeners engaged"
+    },
+    "talk": {
+      "title": "Talk Radio",
+      "description": "Schedule shows and manage content seamlessly"
+    },
+    "community": {
+      "title": "Community Stations",
+      "description": "Affordable automation for local broadcasters"
+    }
+  },
+  "cta": {
+    "title": "Transform Your Radio Station",
+    "subtitle": "Join broadcasters worldwide using AI to enhance their radio operations",
+    "button": "Request a Demo"
+  }
+}

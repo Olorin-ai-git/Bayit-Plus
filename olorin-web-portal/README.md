@@ -1,27 +1,39 @@
-# Olorin.ai - AI-Powered Fraud Prevention Platform
+# Olorin.AI - Agentic AI Solutions Platform
 
-A modern, responsive web portal for Olorin.ai, showcasing cutting-edge Generative AI agentic solutions for enterprise fraud prevention and investigation.
+A modern, multi-subdomain web portal showcasing Olorin.AI's cutting-edge Generative AI agentic solutions across multiple industries: Fraud Detection, Media Streaming, and Radio Management.
 
-## 🚀 About Olorin.ai
+## 🚀 About Olorin.AI
 
-Olorin.ai provides next-generation fraud prevention solutions powered by Structured AI Agents. Our platform leverages advanced Generative AI technology to detect, investigate, and prevent fraud with unprecedented accuracy and speed.
+Olorin.AI provides next-generation AI-powered solutions with specialized intelligent agents. Our platform leverages advanced Generative AI technology to deliver industry-specific solutions with unprecedented accuracy and automation.
 
-### Key Features
+### Solutions
 
-- **Structured AI Agents**: Self-learning fraud detection with human-level reasoning
-- **Real-time Investigation**: Sub-second response times with comprehensive reporting
-- **Predictive Threat Detection**: Stay ahead of fraudsters with AI-powered predictions
-- **Multi-source Intelligence**: Comprehensive data integration and analysis
-- **Enterprise Security**: Bank-grade security with full compliance certifications
+- **Fraud Detection**: AI-powered fraud prevention with 6 specialized agents
+- **Media Streaming**: Intelligent content delivery and optimization
+- **Radio Management**: Automated programming and listener analytics
+- **Custom AI**: Tailored agentic AI solutions for your business
+
+## 🏗 Architecture
+
+This project uses a **monorepo architecture with npm workspaces** managing four independent portals:
+
+- **olorin.ai** (portal-main) - Parent marketing site
+- **fraud.olorin.ai** (portal-fraud) - Fraud detection subdomain
+- **streaming.olorin.ai** (portal-streaming) - Media streaming subdomain
+- **radio.olorin.ai** (portal-radio) - Radio management subdomain
+
+Each portal shares a common wizard-themed component library while maintaining independent deployment capabilities.
 
 ## 🛠 Technology Stack
 
 - **Frontend**: React 18 with TypeScript
-- **Styling**: Tailwind CSS with custom design system
+- **Styling**: Tailwind CSS with glassmorphic wizard theme
 - **Icons**: Lucide React
-- **Routing**: React Router DOM
+- **Routing**: React Router DOM v6
+- **i18n**: react-i18next (5 languages supported)
 - **Build Tool**: Create React App
-- **Package Manager**: npm
+- **Package Manager**: npm workspaces
+- **Hosting**: Firebase Hosting (multi-site)
 
 ## 📦 Installation
 
@@ -35,65 +47,116 @@ Olorin.ai provides next-generation fraud prevention solutions powered by Structu
    ```bash
    npm install
    ```
+   This installs dependencies for all workspaces (shared + 4 portals)
 
-3. **Start the development server**
+3. **Configure environment variables**
    ```bash
-   npm start
+   # Copy example files for each portal
+   cp packages/portal-main/.env.example packages/portal-main/.env
+   cp packages/portal-fraud/.env.example packages/portal-fraud/.env
+   cp packages/portal-streaming/.env.example packages/portal-streaming/.env
+   cp packages/portal-radio/.env.example packages/portal-radio/.env
    ```
+   Edit each `.env` file with your configuration values.
 
-4. **Open your browser**
-   Navigate to [http://localhost:3000](http://localhost:3000)
+4. **Start a development server**
+   ```bash
+   # Main portal (port 3000)
+   npm run dev:main
+
+   # Or run specific portal
+   npm run dev:fraud      # port 3001
+   npm run dev:streaming  # port 3002
+   npm run dev:radio      # port 3003
+   ```
 
 ## 🚀 Available Scripts
 
-- `npm start` - Runs the app in development mode
-- `npm build` - Builds the app for production
-- `npm test` - Launches the test runner
-- `npm eject` - Ejects from Create React App (⚠️ irreversible)
+### Development
+- `npm run dev:main` - Main portal (port 3000)
+- `npm run dev:fraud` - Fraud portal (port 3001)
+- `npm run dev:streaming` - Streaming portal (port 3002)
+- `npm run dev:radio` - Radio portal (port 3003)
 
-## 📱 Pages & Features
+### Build
+- `npm run build:all` - Build all portals
+- `npm run build:main` - Build main portal only
+- `npm run build:fraud` - Build fraud portal only
+- `npm run build:streaming` - Build streaming portal only
+- `npm run build:radio` - Build radio portal only
 
-### Home Page
-- Hero section with compelling messaging
-- Key statistics and benefits
-- Feature showcase with AI capabilities
-- Call-to-action sections
+### Testing
+- `npm test` - Run tests for all portals
 
-### About Page
-- Company mission and values
-- Technology overview
-- Team information
-- Industry recognition
+## 📱 Portals & Features
 
-### Services Page
-- Comprehensive service listings
-- Industry-specific solutions
-- AI agent workflow explanation
-- Benefits and use cases
+### Main Portal (olorin.ai)
+- Hero section with wizard mascot branding
+- Solutions grid showcasing all 4 services
+- About section with mission and vision
+- Knowledge Hub with resources
+- Contact page with EmailJS integration
 
-### Contact Page
-- Interactive contact form
-- Company contact information
-- Business hours and location
-- Quick response guarantee
+### Fraud Portal (fraud.olorin.ai)
+- AI-powered fraud prevention showcase
+- 4 specialized agent cards (Location, Network, Authentication, Behavioral)
+- 4-step intelligent workflow explanation
+- Success story with metrics (80% fraud reduction)
+- Industry solutions for financial, e-commerce, insurance, healthcare
 
-## 🎨 Design System
+### Streaming Portal (streaming.olorin.ai)
+- AI-driven media streaming features
+- Content optimization and viewer engagement
+- 4-step workflow (Collection → Analysis → Optimization → Delivery)
+- Performance metrics (50% buffer reduction, 30% engagement increase)
+- Use cases for live events, on-demand, education, enterprise
 
-### Colors
-- **Primary**: Blue (#0ea5e9) - Trust, technology, reliability
-- **Secondary**: Gray shades - Professional, modern
-- **Accent**: Green (#10b981) - Success, security
+### Radio Portal (radio.olorin.ai)
+- Intelligent radio management features
+- Automation, analytics, and smart ad insertion
+- 4-step workflow (Ingestion → Scheduling → Broadcasting → Analytics)
+- Success metrics (50% listener retention increase)
+- Solutions for commercial, music, talk, and community stations
 
-### Typography
-- **Font**: Inter - Modern, readable, professional
-- **Hierarchy**: Consistent heading scales
-- **Spacing**: Systematic margin and padding
+## 🎨 Wizard Theme Design System
 
-### Components
+### Glassmorphic Dark Purple/Black Theme
+
+**Core Colors:**
+```css
+--wizard-bg-deep: #0f0027           /* Near-black purple base */
+--wizard-bg-primary: #1a0033        /* Deep purple primary */
+--wizard-bg-secondary: #2d1b4e      /* Dark purple secondary */
+--wizard-bg-card: rgba(45, 27, 78, 0.6)  /* Semi-transparent card */
+```
+
+**Neon Accents:**
+```css
+--wizard-accent-purple: #a855f7     /* Neon purple primary */
+--wizard-accent-pink: #d946ef       /* Neon pink */
+--wizard-accent-cyan: #22d3ee       /* Cyan highlight */
+```
+
+### Shared Components Library
+
+All portals use components from `@olorin/shared`:
+
+**UI Components:**
+- `GlassCard` - Glassmorphic card with blur effect
+- `GlassButton` - Wizard-themed button with glow
+- `GlowingIcon` - Icon wrapper with neon glow effect
+- `HeroSection` - Customizable hero template
+
+**Branding:**
+- `WizardLogo` - Domain-specific wizard logo (variants: main, fraud, streaming, radio)
+- Domain-aware Header and Footer components
+
+**Key Features:**
+- Backdrop blur effects
+- Neon glow animations
+- Circuit/tech line patterns
 - Responsive design (mobile-first)
-- Consistent button styles
-- Card-based layouts
-- Modern animations and transitions
+- Dark mode optimized
 
 ## 🔧 Configuration
 
@@ -123,19 +186,46 @@ For production deployment, ensure:
 - No sensitive data exposure
 - HTTPS-ready configuration
 
+## 🌍 Internationalization
+
+All portals support 5 languages:
+- English (en) - Primary
+- French (fr)
+- Spanish (es)
+- Italian (it)
+- Chinese (zh)
+
+Translations are managed via `react-i18next` with separate locale files for each portal.
+
 ## 🚀 Deployment
 
-### Build for Production
+### Quick Start
+
 ```bash
-npm run build
+# Build all portals
+npm run build:all
+
+# Deploy to Firebase (requires Firebase CLI)
+firebase deploy --only hosting
 ```
 
-### Deploy to Static Hosting
-The build folder can be deployed to any static hosting service:
-- Netlify
-- Vercel
-- AWS S3 + CloudFront
-- GitHub Pages
+### Detailed Instructions
+
+For complete deployment documentation including:
+- Firebase Hosting multi-site setup
+- DNS configuration
+- CI/CD automation with GitHub Actions
+- Environment variable configuration
+- Production checklist
+
+**See [DEPLOYMENT.md](./DEPLOYMENT.md) for full guide.**
+
+### Firebase Hosting Sites
+
+- `olorin-main` → olorin.ai
+- `olorin-fraud` → fraud.olorin.ai
+- `olorin-streaming` → streaming.olorin.ai
+- `olorin-radio` → radio.olorin.ai
 
 ## 🤝 Contributing
 

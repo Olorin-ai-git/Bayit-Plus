@@ -1,0 +1,76 @@
+name: Deploy Olorin Portals
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        portal: [portal-main, portal-fraud, portal-streaming, portal-radio]
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+          cache: 'npm'
+
+      - name: Install root dependencies
+        run: npm ci
+
+      - name: Install portal dependencies
+        run: npm ci -w packages/${{ matrix.portal }}
+
+      - name: Build portal
+        run: npm run build -w packages/${{ matrix.portal }}
+        env:
+          CI: false
+
+      - name: Deploy to Firebase - Main Portal
+        if: matrix.portal == 'portal-main'
+        uses: FirebaseExtended/action-hosting-deploy@v0
+        with:
+          repoToken: '${{ secrets.GITHUB_TOKEN }}'
+          firebaseServiceAccount: '${{ secrets.FIREBASE_SERVICE_ACCOUNT }}'
+          channelId: live
+          projectId: olorin-main
+          target: olorin-main
+
+      - name: Deploy to Firebase - Fraud Portal
+        if: matrix.portal == 'portal-fraud'
+        uses: FirebaseExtended/action-hosting-deploy@v0
+        with:
+          repoToken: '${{ secrets.GITHUB_TOKEN }}'
+          firebaseServiceAccount: '${{ secrets.FIREBASE_SERVICE_ACCOUNT }}'
+          channelId: live
+          projectId: olorin-fraud
+          target: olorin-fraud
+
+      - name: Deploy to Firebase - Streaming Portal
+        if: matrix.portal == 'portal-streaming'
+        uses: FirebaseExtended/action-hosting-deploy@v0
+        with:
+          repoToken: '${{ secrets.GITHUB_TOKEN }}'
+          firebaseServiceAccount: '${{ secrets.FIREBASE_SERVICE_ACCOUNT }}'
+          channelId: live
+          projectId: olorin-streaming
+          target: olorin-streaming
+
+      - name: Deploy to Firebase - Radio Portal
+        if: matrix.portal == 'portal-radio'
+        uses: FirebaseExtended/action-hosting-deploy@v0
+        with:
+          repoToken: '${{ secrets.GITHUB_TOKEN }}'
+          firebaseServiceAccount: '${{ secrets.FIREBASE_SERVICE_ACCOUNT }}'
+          channelId: live
+          projectId: olorin-radio
+          target: olorin-radio

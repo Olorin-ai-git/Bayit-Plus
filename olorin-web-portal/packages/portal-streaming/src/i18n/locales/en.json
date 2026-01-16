@@ -1,0 +1,84 @@
+{
+  "nav": {
+    "home": "Home",
+    "features": "Features",
+    "useCases": "Use Cases",
+    "pricing": "Pricing",
+    "demo": "Live Demo",
+    "contact": "Contact",
+    "getStarted": "Get Started"
+  },
+  "hero": {
+    "title": "AI-DRIVEN",
+    "titleHighlight": "MEDIA STREAMING",
+    "subtitle": "Optimize content delivery with intelligent streaming",
+    "description": "Deliver exceptional viewing experiences with AI-powered streaming optimization",
+    "ctaExplore": "Learn More",
+    "ctaDemo": "Request Demo"
+  },
+  "features": {
+    "sectionTitle": "Intelligent Streaming Features",
+    "optimization": {
+      "title": "Content Optimization AI",
+      "description": "Automatically optimize video quality and bitrate for each viewer's connection"
+    },
+    "engagement": {
+      "title": "Viewer Engagement AI",
+      "description": "Analyze viewer behavior and improve engagement with intelligent insights"
+    },
+    "playlists": {
+      "title": "Personalized Playlists",
+      "description": "Generate personalized content recommendations based on viewing patterns"
+    }
+  },
+  "workflow": {
+    "sectionTitle": "How It Works",
+    "sectionSubtitle": "AI-powered streaming optimization in 4 steps",
+    "step1": {
+      "title": "Data Collection",
+      "description": "Gather viewer data and streaming metrics in real-time"
+    },
+    "step2": {
+      "title": "AI Analysis",
+      "description": "Analyze patterns and predict optimal streaming parameters"
+    },
+    "step3": {
+      "title": "Optimization",
+      "description": "Dynamically adjust quality and delivery for each viewer"
+    },
+    "step4": {
+      "title": "Delivery",
+      "description": "Stream optimized content with minimal buffering"
+    }
+  },
+  "useCases": {
+    "title": "Industry Solutions",
+    "liveStreaming": {
+      "title": "Live Streaming Events",
+      "description": "Concerts, sports, conferences with real-time optimization"
+    },
+    "onDemand": {
+      "title": "On-Demand Content",
+      "description": "Movies, TV shows, educational content delivery"
+    },
+    "education": {
+      "title": "Educational Platforms",
+      "description": "E-learning platforms with adaptive streaming"
+    },
+    "enterprise": {
+      "title": "Enterprise Video",
+      "description": "Corporate training and communications"
+    }
+  },
+  "stats": {
+    "reduction": "50% Buffer Time Reduction",
+    "quality": "4K Quality at Lower Bandwidth",
+    "engagement": "30% Engagement Increase",
+    "cost": "40% CDN Cost Savings"
+  },
+  "cta": {
+    "title": "Ready to Optimize Your Streaming?",
+    "subtitle": "Join leading media companies delivering exceptional viewing experiences with Olorin.AI",
+    "button": "Request a Demo"
+  }
+}

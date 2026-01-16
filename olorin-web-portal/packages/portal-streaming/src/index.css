@@ -1,5 +1,5 @@
 /**
- * Portal Fraud Styles
+ * Portal Streaming Styles
  * Imports Tailwind and wizard theme styles
  */
 
@@ -9,4 +9,4 @@
 
 @import './styles/wizard-theme.css';
 
-/* Fraud-specific overrides can go here */
+/* Streaming-specific overrides can go here */
