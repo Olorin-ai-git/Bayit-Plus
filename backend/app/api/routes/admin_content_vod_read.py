@@ -119,13 +119,37 @@ async def get_content_hierarchical(
     skip = (page - 1) * page_size
     items = await query.sort(-Content.created_at).skip(skip).limit(page_size).to_list()
 
+    # Batch fetch all subtitle tracks for all content IDs (eliminates N+1 query problem)
+    content_ids = [str(item.id) for item in items]
+    all_subtitle_tracks = await SubtitleTrackDoc.find(
+        {"content_id": {"$in": content_ids}}
+    ).to_list()
+
+    # Build subtitle map: content_id -> list of unique language codes
+    subtitle_map = {}
+    for track in all_subtitle_tracks:
+        if track.content_id not in subtitle_map:
+            subtitle_map[track.content_id] = set()
+        subtitle_map[track.content_id].add(track.language)
+
+    # Batch fetch episode counts for all series (eliminates N+1 query problem)
+    series_ids = [str(item.id) for item in items if item.is_series]
+    episode_counts = {}
+    if series_ids:
+        # Use aggregation to count episodes grouped by series_id
+        pipeline = [
+            {"$match": {"series_id": {"$in": series_ids}}},
+            {"$group": {"_id": "$series_id", "count": {"$sum": 1}}}
+        ]
+        episode_results = await Content.aggregate(pipeline).to_list()
+        episode_counts = {result["_id"]: result["count"] for result in episode_results}
+
     # Build response with episode counts for series and subtitle availability
     result_items = []
     for item in items:
-        # Get available subtitle languages for this content
-        subtitle_tracks = await SubtitleTrackDoc.get_for_content(str(item.id))
-        available_subtitles = list(set([track.language for track in subtitle_tracks]))
-        
+        # Get available subtitle languages from batch-fetched data
+        available_subtitles = list(subtitle_map.get(str(item.id), set()))
+
         item_data = {
             "id": str(item.id),
             "title": item.title,
@@ -149,15 +173,8 @@ async def get_content_hierarchical(
             "available_subtitles": available_subtitles,
             "created_at": item.created_at.isoformat(),
             "updated_at": item.updated_at.isoformat(),
-            "episode_count": 0,
+            "episode_count": episode_counts.get(str(item.id), 0) if item.is_series else 0,
         }
-
-        # Count episodes for series
-        if item.is_series:
-            episode_count = await Content.find(
-                Content.series_id == str(item.id)
-            ).count()
-            item_data["episode_count"] = episode_count
 
         result_items.append(item_data)
 

@@ -8,7 +8,6 @@ import { colors, spacing, borderRadius } from '@bayit/shared/theme';
 import { GlassButton, GlassView, GlassTable, GlassTableCell, GlassTableColumn, GlassModal, GlassInput } from '@bayit/shared/ui';
 import { useDirection } from '@/hooks/useDirection';
 import logger from '@/utils/logger';
-import { adminButtonStyles } from '@/styles/adminButtonStyles';
 
 interface User {
   id: string;
@@ -255,10 +254,8 @@ export default function UsersListPage() {
         <Link to="/admin/users/new" style={{ textDecoration: 'none' }}>
           <GlassButton
             title={t('admin.users.addUser')}
-            variant="secondary"
-            icon={<UserPlus size={18} color={colors.text} />}
-            style={adminButtonStyles.primaryButton}
-            textStyle={adminButtonStyles.buttonText}
+            variant="primary"
+            icon={<UserPlus size={18} color="white" />}
           />
         </Link>
       </View>
@@ -310,18 +307,14 @@ export default function UsersListPage() {
             <View style={styles.modalActions}>
               <GlassButton
                 title={t('common.cancel', 'Cancel')}
-                variant="secondary"
+                variant="cancel"
                 onPress={() => setDeleteModal({ open: false, user: null })}
-                style={adminButtonStyles.cancelButton}
-                textStyle={adminButtonStyles.buttonText}
               />
               <GlassButton
                 title={actionLoading ? t('common.deleting', 'Deleting...') : t('common.delete', 'Delete')}
-                variant="secondary"
+                variant="danger"
                 onPress={handleDeleteConfirm}
                 disabled={actionLoading}
-                style={adminButtonStyles.dangerButton}
-                textStyle={adminButtonStyles.buttonText}
               />
             </View>
           </GlassView>
@@ -367,10 +360,8 @@ export default function UsersListPage() {
             <View style={styles.modalActions}>
               <GlassButton
                 title={t('common.cancel', 'Cancel')}
-                variant="secondary"
+                variant="cancel"
                 onPress={() => setBanModal({ open: false, user: null })}
-                style={adminButtonStyles.cancelButton}
-                textStyle={adminButtonStyles.buttonText}
               />
               <GlassButton
                 title={actionLoading
@@ -378,11 +369,9 @@ export default function UsersListPage() {
                   : banModal.user?.status === 'banned'
                     ? t('admin.users.unban')
                     : t('admin.users.block')}
-                variant="secondary"
+                variant={banModal.user?.status === 'banned' ? 'success' : 'warning'}
                 onPress={handleBanConfirm}
                 disabled={actionLoading}
-                style={banModal.user?.status === 'banned' ? adminButtonStyles.successButton : adminButtonStyles.warningButton}
-                textStyle={adminButtonStyles.buttonText}
               />
             </View>
           </GlassView>
@@ -401,9 +390,7 @@ export default function UsersListPage() {
           <GlassButton
             title={t('common.cancel')}
             onPress={() => setConfirmModalOpen(false)}
-            variant="secondary"
-            style={adminButtonStyles.cancelButton}
-            textStyle={adminButtonStyles.buttonText}
+            variant="cancel"
           />
           <GlassButton
             title={t('common.confirm')}
@@ -413,9 +400,7 @@ export default function UsersListPage() {
                 setConfirmModalOpen(false);
               }
             }}
-            variant="secondary"
-            style={adminButtonStyles.successButton}
-            textStyle={adminButtonStyles.buttonText}
+            variant="success"
           />
         </View>
       </GlassModal>
@@ -432,9 +417,7 @@ export default function UsersListPage() {
           <GlassButton
             title={t('common.ok')}
             onPress={() => setSuccessModalOpen(false)}
-            variant="secondary"
-            style={adminButtonStyles.successButton}
-            textStyle={adminButtonStyles.buttonText}
+            variant="success"
           />
         </View>
       </GlassModal>

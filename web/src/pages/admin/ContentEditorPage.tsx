@@ -47,7 +47,7 @@ export default function ContentEditorPage() {
     try {
       setIsLoading(true)
       setError(null)
-      const data = await adminContentService.getContentItem(contentId!)
+      const data = await adminContentService.getContentById(contentId!)
       setFormData(data)
     } catch (err) {
       const msg = err instanceof Error ? err.message : 'Failed to load content'

@@ -12,7 +12,7 @@ import {
 import { GlassView } from './GlassView';
 import { useTVFocus } from '../hooks/useTVFocus';
 
-type ButtonVariant = 'primary' | 'secondary' | 'ghost' | 'danger' | 'destructive' | 'outline';
+type ButtonVariant = 'primary' | 'secondary' | 'ghost' | 'danger' | 'destructive' | 'outline' | 'success' | 'warning' | 'cancel' | 'info';
 type ButtonSize = 'sm' | 'md' | 'lg';
 
 interface GlassButtonProps {
@@ -111,6 +111,38 @@ export const GlassButton: React.FC<GlassButtonProps> = ({
       backdropFilter: 'blur(24px)',
       WebkitBackdropFilter: 'blur(24px)',
     },
+    success: {
+      backgroundColor: 'rgba(34, 197, 94, 0.7)', // green-600/70
+      borderWidth: 2,
+      borderColor: 'rgba(22, 163, 74, 0.6)', // green-700/60
+      // @ts-ignore - Web CSS
+      backdropFilter: 'blur(24px)',
+      WebkitBackdropFilter: 'blur(24px)',
+    },
+    warning: {
+      backgroundColor: 'rgba(245, 158, 11, 0.7)', // amber-500/70
+      borderWidth: 2,
+      borderColor: 'rgba(217, 119, 6, 0.6)', // amber-600/60
+      // @ts-ignore - Web CSS
+      backdropFilter: 'blur(24px)',
+      WebkitBackdropFilter: 'blur(24px)',
+    },
+    cancel: {
+      backgroundColor: 'rgba(75, 85, 99, 0.6)', // gray-600/60
+      borderWidth: 2,
+      borderColor: 'rgba(55, 65, 81, 0.7)', // gray-700/70
+      // @ts-ignore - Web CSS
+      backdropFilter: 'blur(24px)',
+      WebkitBackdropFilter: 'blur(24px)',
+    },
+    info: {
+      backgroundColor: 'rgba(59, 130, 246, 0.7)', // blue-500/70
+      borderWidth: 2,
+      borderColor: 'rgba(37, 99, 235, 0.6)', // blue-600/60
+      // @ts-ignore - Web CSS
+      backdropFilter: 'blur(24px)',
+      WebkitBackdropFilter: 'blur(24px)',
+    },
   };
 
   const textColorStyles: Record<ButtonVariant, { color: string }> = {
@@ -120,6 +152,10 @@ export const GlassButton: React.FC<GlassButtonProps> = ({
     danger: { color: '#ffffff' },
     destructive: { color: '#ffffff' },
     outline: { color: '#c084fc' }, // purple-400
+    success: { color: '#ffffff' },
+    warning: { color: '#ffffff' },
+    cancel: { color: '#ffffff' },
+    info: { color: '#ffffff' },
   };
 
   const currentSize = sizeStyles[size];

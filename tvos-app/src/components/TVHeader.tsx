@@ -149,13 +149,17 @@ export const TVHeader: React.FC<TVHeaderProps> = ({
     <View style={styles.nav}>
       {navLinkKeys.map((link) => {
         const isActive = isNavActive(link.route);
+        const isFocused = focusedNav === link.route;
         return (
           <Pressable
             key={link.route}
             onPress={() => onNavigate(link.route)}
+            onFocus={() => setFocusedNav(link.route)}
+            onBlur={() => setFocusedNav(null)}
             style={[
               styles.navLink,
               isActive && styles.navLinkActive,
+              isFocused && styles.navLinkFocused,
             ]}
           >
             <Text style={[
@@ -284,7 +288,7 @@ export const TVHeader: React.FC<TVHeaderProps> = ({
   return (
     <View style={styles.headerWrapper}>
       <LinearGradient
-        colors={['rgba(30, 30, 50, 0.95)', 'rgba(20, 20, 40, 0.98)']}
+        colors={['rgba(0, 0, 0, 0.95)', 'rgba(0, 0, 0, 0.98)']}
         style={styles.headerGradient}
       >
         {LogoSection}
@@ -301,7 +305,8 @@ const styles = StyleSheet.create({
     height: 100,
     width: '100%',
     borderBottomWidth: 1,
-    borderBottomColor: 'rgba(255, 255, 255, 0.1)',
+    borderBottomColor: colors.glassBorder,
+    backgroundColor: 'rgba(0, 0, 0, 0.8)',
   },
   headerGradient: {
     flex: 1,
@@ -319,7 +324,8 @@ const styles = StyleSheet.create({
   },
   logoFocused: {
     borderColor: colors.primary,
-    backgroundColor: 'rgba(107, 33, 168, 0.3)',
+    backgroundColor: 'rgba(168, 85, 247, 0.3)',
+    transform: [{ scale: 1.05 }],
   },
   nav: {
     flexDirection: 'row',
@@ -331,21 +337,25 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
     borderRadius: 8,
     backgroundColor: 'rgba(255, 255, 255, 0.05)',
+    borderWidth: 2,
+    borderColor: 'transparent',
   },
   navLinkActive: {
     backgroundColor: colors.primary,
   },
   navLinkFocused: {
     borderColor: colors.primary,
-    backgroundColor: 'rgba(107, 33, 168, 0.3)',
+    backgroundColor: 'rgba(168, 85, 247, 0.3)',
+    transform: [{ scale: 1.05 }],
   },
   navLinkText: {
     fontSize: 20,
     fontWeight: '500',
-    color: '#cbd5e1',
+    color: colors.textMuted,
   },
   navLinkTextActive: {
     color: colors.text,
+    fontWeight: '600',
   },
   actions: {
     flexDirection: 'row',
@@ -364,14 +374,16 @@ const styles = StyleSheet.create({
   },
   iconButtonFocused: {
     borderColor: colors.primary,
-    backgroundColor: 'rgba(107, 33, 168, 0.3)',
+    backgroundColor: 'rgba(168, 85, 247, 0.3)',
+    transform: [{ scale: 1.05 }],
   },
   iconText: {
     fontSize: 32,
   },
   voiceButton: {
-    backgroundColor: 'rgba(107, 33, 168, 0.3)',
-    borderColor: 'rgba(168, 85, 247, 0.6)',
+    backgroundColor: 'rgba(168, 85, 247, 0.3)',
+    borderColor: colors.primary,
+    borderWidth: 2,
   },
   loginButton: {
     paddingHorizontal: spacing.lg,
@@ -418,10 +430,10 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     paddingHorizontal: spacing.sm,
-    backgroundColor: 'rgba(107, 33, 168, 0.3)',
+    backgroundColor: 'rgba(168, 85, 247, 0.3)',
     borderRadius: 8,
-    borderWidth: 1,
-    borderColor: 'rgba(168, 85, 247, 0.6)',
+    borderWidth: 2,
+    borderColor: colors.primary,
   },
 });
 

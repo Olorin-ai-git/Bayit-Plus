@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { View, Text, StyleSheet, Pressable, TextInput, ActivityIndicator } from 'react-native';
-import { Link, useNavigate, useLocation } from 'react-router-dom';
+import { Link, useNavigate, useLocation, useSearchParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { Eye, EyeOff, Mail, Lock, ChevronDown, Globe } from 'lucide-react';
 import { useAuthStore } from '@bayit/shared-stores';
@@ -23,6 +23,7 @@ export default function LoginPage() {
   const { isRTL } = useDirection();
   const navigate = useNavigate();
   const location = useLocation();
+  const [searchParams] = useSearchParams();
   const { login, loginWithGoogle, isLoading } = useAuthStore();
 
   const [email, setEmail] = useState(import.meta.env.VITE_DEV_DEFAULT_EMAIL || '');
@@ -31,7 +32,9 @@ export default function LoginPage() {
   const [error, setError] = useState('');
   const [showLanguageMenu, setShowLanguageMenu] = useState(false);
 
-  const from = (location.state as any)?.from?.pathname || '/';
+  // Get redirect path from query params or location state
+  const redirectParam = searchParams.get('redirect');
+  const from = redirectParam || (location.state as any)?.from?.pathname || '/';
 
   const currentLanguage = LANGUAGE_CODES.find(lang => lang.code === i18n.language) || LANGUAGE_CODES[0];
   const currentLanguageLabel = t(`settings.languages.${i18n.language}`);

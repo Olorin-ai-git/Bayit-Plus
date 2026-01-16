@@ -573,7 +573,7 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     letterSpacing: 0.8,
     // @ts-ignore - Web CSS
-    background: 'linear-gradient(135deg, rgba(255, 255, 255, 0.9) 0%, rgba(192, 132, 252, 0.9) 100%)',
+    backgroundImage: 'linear-gradient(135deg, rgba(255, 255, 255, 0.9) 0%, rgba(192, 132, 252, 0.9) 100%)',
     WebkitBackgroundClip: 'text',
     WebkitTextFillColor: 'transparent',
     backgroundClip: 'text',

@@ -1,15 +1,14 @@
 import { useState, useEffect, useCallback } from 'react'
-import { View, Text, Pressable, ScrollView } from 'react-native'
-import { Link } from 'react-router-dom'
+import { View, Text, Pressable, ScrollView, StyleSheet } from 'react-native'
 import { useTranslation } from 'react-i18next'
-import { Plus, Download, Search, X, AlertCircle } from 'lucide-react'
+import { Search, X, AlertCircle } from 'lucide-react'
 import HierarchicalContentTable from '@/components/admin/HierarchicalContentTable'
 import { adminContentService } from '@/services/adminApi'
-import { GlassButton, GlassInput, GlassSelect, GlassCard } from '@bayit/shared/ui'
+import { GlassInput, GlassSelect } from '@bayit/shared/ui'
 import { useDirection } from '@/hooks/useDirection'
 import { useModal } from '@/contexts/ModalContext'
 import logger from '@/utils/logger'
-import { FreeContentImportWizard } from '@/components/admin/FreeContentImportWizard'
+import { spacing } from '@bayit/shared/theme'
 
 interface ContentItem {
   id: string
@@ -42,7 +41,6 @@ export default function ContentLibraryPage() {
   const [error, setError] = useState<string | null>(null)
   const [pagination, setPagination] = useState<Pagination>({ page: 1, pageSize: 20, total: 0 })
   const [searchQuery, setSearchQuery] = useState('')
-  const [showImportWizard, setShowImportWizard] = useState(false)
   const [filters, setFilters] = useState({
     search: '',
     is_published: undefined as boolean | undefined,
@@ -61,8 +59,17 @@ export default function ContentLibraryPage() {
       })
       setItems(response.items || [])
       setPagination((prev) => ({ ...prev, total: response.total || 0 }))
-    } catch (err) {
-      const msg = err instanceof Error ? err.message : 'Failed to load content'
+    } catch (err: any) {
+      // Extract meaningful error message
+      let msg = 'Failed to load content'
+      if (err?.detail) {
+        msg = err.detail // API error response
+      } else if (err?.message) {
+        msg = err.message // Error object
+      } else if (typeof err === 'string') {
+        msg = err
+      }
+
       logger.error(msg, 'ContentLibraryPage', err)
       setError(msg)
     } finally {
@@ -121,49 +128,31 @@ export default function ContentLibraryPage() {
   }
 
   return (
-    <ScrollView className="flex-1">
-      <View className="p-6">
+    <ScrollView style={styles.container}>
+      <View style={styles.content}>
         {/* Header */}
-        <View className={`flex ${isRTL ? 'flex-row-reverse' : 'flex-row'} items-center justify-between mb-6 gap-6`}>
+        <View style={[styles.header, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
           <View>
-            <Text className={`text-2xl font-bold text-white ${isRTL ? 'text-right' : 'text-left'}`}>
+            <Text style={[styles.pageTitle, { textAlign: isRTL ? 'right' : 'left' }]}>
               {t('admin.titles.content', { defaultValue: 'Content Library' })}
             </Text>
-            <Text className={`text-sm text-white/60 mt-1 ${isRTL ? 'text-right' : 'text-left'}`}>
+            <Text style={[styles.subtitle, { textAlign: isRTL ? 'right' : 'left' }]}>
               {t('admin.content.subtitle', { defaultValue: 'Manage movies, series, and video content' })}
             </Text>
-          </View>
-          <View className={`flex ${isRTL ? 'flex-row-reverse' : 'flex-row'} gap-3 items-center`}>
-            <GlassButton
-              title={t('admin.content.importFree', { defaultValue: 'Import Free Content' })}
-              variant="secondary"
-              icon={<Download size={18} color="white" />}
-              onPress={() => setShowImportWizard(true)}
-              className="bg-white/10 backdrop-blur-xl hover:bg-white/20"
-            />
-            <Link to="/admin/content/new" style={{ textDecoration: 'none' }}>
-              <GlassButton
-                title={t('admin.actions.new', { defaultValue: 'New' })}
-                variant="primary"
-                icon={<Plus size={18} color="white" />}
-                className="bg-purple-600/80 backdrop-blur-xl hover:bg-purple-600/90"
-              />
-            </Link>
           </View>
         </View>
 
         {/* Search and Filters */}
-        <View className={`flex ${isRTL ? 'flex-row-reverse' : 'flex-row'} gap-4 mb-6`}>
-          <View className="flex-1 max-w-md">
+        <View style={[styles.filtersContainer, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
+          <View style={styles.searchWrapper}>
             <GlassInput
               placeholder={t('admin.content.searchPlaceholder', { defaultValue: 'Search content...' })}
               value={searchQuery}
               onChangeText={handleSearch}
               icon={<Search size={18} color="rgba(255,255,255,0.6)" />}
-              className="bg-black/20 backdrop-blur-xl border border-white/10 rounded-xl"
             />
           </View>
-          <View className="min-w-[180px]">
+          <View style={styles.filterWrapper}>
             <GlassSelect
               placeholder={t('admin.content.filters.allStatus', { defaultValue: 'All Status' })}
               value={filters.is_published === undefined ? '' : filters.is_published ? 'published' : 'draft'}
@@ -178,16 +167,15 @@ export default function ContentLibraryPage() {
                 { value: 'published', label: t('admin.content.status.published', { defaultValue: 'Published' }) },
                 { value: 'draft', label: t('admin.content.status.draft', { defaultValue: 'Draft' }) },
               ]}
-              className="bg-black/20 backdrop-blur-xl border border-white/10 rounded-xl"
             />
           </View>
         </View>
 
         {/* Error Message */}
         {error && (
-          <View className="flex flex-row items-center gap-4 p-4 mb-6 bg-red-500/20 backdrop-blur-xl border border-red-500/40 rounded-2xl">
+          <View style={styles.errorContainer}>
             <AlertCircle size={18} color="#ef4444" />
-            <Text className="flex-1 text-red-500 text-sm">{error}</Text>
+            <Text style={styles.errorText}>{error}</Text>
             <Pressable onPress={() => setError(null)}>
               <X size={18} color="#ef4444" />
             </Pressable>
@@ -205,14 +193,64 @@ export default function ContentLibraryPage() {
           onPageChange={(page) => setPagination((prev) => ({ ...prev, page }))}
           emptyMessage={t('admin.content.emptyMessage', { defaultValue: 'No content found' })}
         />
-
-        {/* Import Wizard Modal */}
-        <FreeContentImportWizard
-          isOpen={showImportWizard}
-          onClose={() => setShowImportWizard(false)}
-          onSuccess={() => loadContent()}
-        />
       </View>
     </ScrollView>
   )
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+  },
+  content: {
+    padding: spacing.lg,
+  },
+  header: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginBottom: spacing.lg,
+    gap: spacing.lg,
+  },
+  pageTitle: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    color: '#ffffff',
+  },
+  subtitle: {
+    fontSize: 14,
+    color: 'rgba(255, 255, 255, 0.6)',
+    marginTop: 4,
+  },
+  filtersContainer: {
+    flexDirection: 'row',
+    gap: spacing.md,
+    marginBottom: spacing.lg,
+  },
+  searchWrapper: {
+    flex: 1,
+    maxWidth: 400,
+  },
+  filterWrapper: {
+    minWidth: 180,
+  },
+  errorContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.md,
+    padding: spacing.md,
+    marginBottom: spacing.lg,
+    backgroundColor: 'rgba(239, 68, 68, 0.2)',
+    borderWidth: 1,
+    borderColor: 'rgba(239, 68, 68, 0.4)',
+    borderRadius: 16,
+    // @ts-ignore - Web CSS
+    backdropFilter: 'blur(24px)',
+    WebkitBackdropFilter: 'blur(24px)',
+  } as any,
+  errorText: {
+    flex: 1,
+    color: '#ef4444',
+    fontSize: 14,
+  },
+})

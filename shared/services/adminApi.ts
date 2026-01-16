@@ -39,7 +39,7 @@ const getBaseUrl = () => {
 // Create admin API instance
 const adminApi = axios.create({
   baseURL: getBaseUrl(),
-  timeout: 15000,
+  timeout: 10000, // Reduced from 15s to 10s
   headers: {
     'Content-Type': 'application/json',
   },
@@ -58,10 +58,30 @@ adminApi.interceptors.request.use((config) => {
 adminApi.interceptors.response.use(
   (response) => response.data,
   (error) => {
+    // Handle 401 Unauthorized - redirect to login
     if (error.response?.status === 401) {
-      useAuthStore.getState().logout();
+      const authStore = useAuthStore.getState();
+
+      // Logout to clear state
+      authStore.logout();
+
+      // Redirect to login page (web-specific)
+      if (Platform.OS === 'web' && typeof window !== 'undefined') {
+        // Store the current URL to redirect back after login
+        const currentPath = window.location.pathname;
+        if (!currentPath.includes('/login')) {
+          window.location.href = `/login?redirect=${encodeURIComponent(currentPath)}`;
+        }
+      }
     }
-    return Promise.reject(error.response?.data || error);
+
+    // Reject with a proper error object
+    const errorResponse = error.response?.data || {
+      message: error.message || 'Request failed',
+      status: error.response?.status
+    };
+
+    return Promise.reject(errorResponse);
   }
 );
 
@@ -592,6 +612,9 @@ export interface Widget {
 export const adminWidgetsService = {
   getWidgets: (filters?: WidgetFilter): Promise<PaginatedResponse<Widget>> =>
     adminApi.get('/admin/widgets', { params: filters }),
+
+  getMyWidgets: (targetPage?: string): Promise<PaginatedResponse<Widget>> =>
+    adminApi.get('/widgets', { params: { page_path: targetPage } }),
 
   getWidget: (widgetId: string): Promise<Widget> =>
     adminApi.get(`/admin/widgets/${widgetId}`),
