@@ -1752,6 +1752,26 @@
       },
       "errors": {
         "pathRequired": "La ruta de la carpeta es obligatoria"
+      },
+      "manualUpload": {
+        "title": "Carga Manual",
+        "subtitle": "Arrastra y suelta archivos o selecciona una carpeta",
+        "dropHere": "Suelta archivos aquí o haz clic para explorar",
+        "dropHereActive": "Suelta los archivos para agregarlos",
+        "selectFolder": "Seleccionar Carpeta",
+        "supportedFormats": "Soporta archivos de video (mp4, mkv, avi, mov, webm)",
+        "selectedFiles": "Archivos Seleccionados",
+        "noFilesSelected": "No hay archivos seleccionados",
+        "clearAll": "Limpiar Todo",
+        "uploadSelected": "Subir Seleccionados",
+        "selectContentType": "Selecciona el tipo de contenido para cargar",
+        "uploadingFiles": "Agregando {{count}} archivo(s) a la cola...",
+        "uploadSuccess": "Se agregaron {{count}} archivo(s) a la cola exitosamente",
+        "uploadFailed": "Error al agregar archivos a la cola",
+        "fileSize": "Tamaño",
+        "removeFile": "Eliminar",
+        "invalidFileType": "Tipo de archivo no válido. Solo se admiten archivos de video.",
+        "filesCount": "{{count}} archivo(s) seleccionado(s)"
       }
     },
     "librarian": {

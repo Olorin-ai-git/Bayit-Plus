@@ -34,6 +34,9 @@ export interface GlassTableProps<T = any> {
   rowKey?: string | ((row: T, index: number) => string);
   onRowPress?: (row: T, index: number) => void;
   stickyHeader?: boolean;
+  /** Enable staggered row animations */
+  animateRows?: boolean;
+  style?: any;
 }
 
 export function GlassTable<T extends Record<string, any>>({
@@ -48,8 +51,17 @@ export function GlassTable<T extends Record<string, any>>({
   rowKey = 'id',
   onRowPress,
   stickyHeader = false,
+  animateRows = true,
+  style,
 }: GlassTableProps<T>) {
   const totalPages = pagination ? Math.ceil(pagination.total / pagination.pageSize) : 0;
+  
+  // Generate row animation class
+  const getRowAnimationClass = (index: number): string => {
+    if (!animateRows) return '';
+    const delayIndex = Math.min(index, 19);
+    return `animated-row${isRTL ? '-rtl' : ''} animated-row-delay-${delayIndex}`;
+  };
 
   const getRowKey = (row: T, index: number): string => {
     if (typeof rowKey === 'function') {
@@ -64,7 +76,7 @@ export function GlassTable<T extends Record<string, any>>({
   };
 
   return (
-    <GlassView style={styles.container} intensity="medium">
+    <GlassView style={[styles.container, style]} intensity="medium">
       {/* Table */}
       <View style={styles.tableWrapper}>
         {/* Header */}
@@ -113,6 +125,8 @@ export function GlassTable<T extends Record<string, any>>({
                 styles.dataRow,
                 rowIndex < data.length - 1 && styles.dataRowBorder,
               ]}
+              // @ts-ignore - Web-specific className prop for animations
+              className={getRowAnimationClass(rowIndex)}
             >
               <View style={{ flexDirection: isRTL ? 'row-reverse' : 'row', flex: 1 }}>
                 {columns.map((column) => (

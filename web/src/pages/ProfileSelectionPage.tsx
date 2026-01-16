@@ -1,12 +1,12 @@
 import { useState, useEffect, useRef } from 'react';
-import { View, Text, StyleSheet, Pressable, Image, ActivityIndicator, TextInput, Modal } from 'react-native';
+import { View, Text, StyleSheet, Pressable, Image, ActivityIndicator, TextInput } from 'react-native';
 import { useNavigate } from 'react-router-dom';
-import { Plus, Edit2, Lock, X } from 'lucide-react';
+import { Plus, Edit2, Lock } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useProfileStore } from '@/stores/profileStore';
 import { useAuthStore } from '@/stores/authStore';
 import { colors, spacing, borderRadius } from '@bayit/shared/theme';
-import { GlassCard, GlassButton } from '@bayit/shared/ui';
+import { GlassButton, GlassModal } from '@bayit/shared/ui';
 
 const AVATAR_COLORS = [
   '#a855f7', // Cyan
@@ -133,48 +133,43 @@ function PinModal({ isOpen, onClose, onSubmit, error, isLoading }: {
   };
 
   return (
-    <Modal visible={isOpen} transparent animationType="fade">
-      <View style={styles.modalOverlay}>
-        <GlassCard style={styles.modalCard}>
-          <Pressable onPress={onClose} style={styles.modalCloseButton}>
-            <X size={24} color={colors.textMuted} />
-          </Pressable>
+    <GlassModal
+      visible={isOpen}
+      title={t('profiles.enterPin')}
+      onClose={onClose}
+      dismissable={true}
+    >
+      <TextInput
+        ref={inputRef}
+        secureTextEntry
+        keyboardType="numeric"
+        maxLength={6}
+        value={pin}
+        onChangeText={(text) => setPin(text.replace(/\D/g, ''))}
+        style={styles.pinInput}
+        placeholder={t('placeholder.pin')}
+        placeholderTextColor={colors.textMuted}
+      />
 
-          <Text style={styles.modalTitle}>{t('profiles.enterPin')}</Text>
+      {error ? (
+        <Text style={styles.errorText}>{error}</Text>
+      ) : null}
 
-          <TextInput
-            ref={inputRef}
-            secureTextEntry
-            keyboardType="numeric"
-            maxLength={6}
-            value={pin}
-            onChangeText={(text) => setPin(text.replace(/\D/g, ''))}
-            style={styles.pinInput}
-            placeholder={t('placeholder.pin')}
-            placeholderTextColor={colors.textMuted}
-          />
-
-          {error ? (
-            <Text style={styles.errorText}>{error}</Text>
-          ) : null}
-
-          <View style={styles.modalButtons}>
-            <GlassButton
-              title={t('common.cancel')}
-              onPress={onClose}
-              style={styles.modalButton}
-            />
-            <GlassButton
-              title={isLoading ? '' : t('common.confirm')}
-              onPress={handleSubmit}
-              disabled={pin.length < 4 || isLoading}
-              variant="primary"
-              style={styles.modalButton}
-            />
-          </View>
-        </GlassCard>
+      <View style={styles.modalButtons}>
+        <GlassButton
+          title={t('common.cancel')}
+          onPress={onClose}
+          style={styles.modalButton}
+        />
+        <GlassButton
+          title={isLoading ? '' : t('common.confirm')}
+          onPress={handleSubmit}
+          disabled={pin.length < 4 || isLoading}
+          variant="primary"
+          style={styles.modalButton}
+        />
       </View>
-    </Modal>
+    </GlassModal>
   );
 }
 

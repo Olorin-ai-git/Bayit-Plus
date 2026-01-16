@@ -1356,6 +1356,26 @@
       },
       "errors": {
         "pathRequired": "נתיב תיקייה נדרש"
+      },
+      "manualUpload": {
+        "title": "העלאה ידנית",
+        "subtitle": "גרור ושחרר קבצים או בחר תיקייה",
+        "dropHere": "גרור קבצים לכאן או לחץ לעיון",
+        "dropHereActive": "שחרר קבצים להוספה",
+        "selectFolder": "בחר תיקייה",
+        "supportedFormats": "תומך בקבצי וידאו (mp4, mkv, avi, mov, webm)",
+        "selectedFiles": "קבצים נבחרים",
+        "noFilesSelected": "לא נבחרו קבצים",
+        "clearAll": "נקה הכל",
+        "uploadSelected": "העלה נבחרים",
+        "selectContentType": "בחר סוג תוכן להעלאה",
+        "uploadingFiles": "מוסיף {{count}} קבצים לתור...",
+        "uploadSuccess": "נוספו {{count}} קבצים לתור בהצלחה",
+        "uploadFailed": "הוספת קבצים לתור נכשלה",
+        "fileSize": "גודל",
+        "removeFile": "הסר",
+        "invalidFileType": "סוג קובץ לא חוקי. רק קבצי וידאו נתמכים.",
+        "filesCount": "{{count}} קבצים נבחרו"
       }
     },
     "librarian": {

@@ -1,12 +1,12 @@
 import { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, FlatList, Pressable, Image, TextInput, ActivityIndicator, Modal, useWindowDimensions } from 'react-native';
+import { View, Text, StyleSheet, FlatList, Pressable, Image, TextInput, ActivityIndicator, useWindowDimensions } from 'react-native';
 import { Link, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { Play, Clock, Baby, Lock, X } from 'lucide-react';
+import { Play, Clock, Baby, Lock } from 'lucide-react';
 import { useProfileStore } from '@/stores/profileStore';
 import { childrenService } from '../services/api';
 import { colors, spacing, borderRadius } from '@bayit/shared/theme';
-import { GlassCard, GlassView, GlassButton, GlassCategoryPill } from '@bayit/shared/ui';
+import { GlassCard, GlassButton, GlassCategoryPill, GlassModal } from '@bayit/shared/ui';
 import { getLocalizedName } from '@bayit/shared-utils/contentLocalization';
 import { useDirection } from '@/hooks/useDirection';
 import LinearGradient from 'react-native-linear-gradient';
@@ -123,41 +123,38 @@ function ExitKidsModeModal({ isOpen, onClose, onVerify }: { isOpen: boolean; onC
   };
 
   return (
-    <Modal visible={isOpen} transparent animationType="fade">
-      <View style={styles.modalOverlay}>
-        <GlassCard style={styles.modalCard}>
-          <Pressable onPress={onClose} style={styles.modalClose}>
-            <X size={24} color={colors.textMuted} />
-          </Pressable>
-          <View style={styles.modalIcon}>
-            <Lock size={32} color="#facc15" />
-          </View>
-          <Text style={styles.modalTitle}>{t('children.exitKidsMode')}</Text>
-          <Text style={styles.modalSubtitle}>{t('children.exitDescription')}</Text>
-          <TextInput
-            value={pin}
-            onChangeText={(text) => setPin(text.replace(/\D/g, ''))}
-            maxLength={6}
-            keyboardType="numeric"
-            secureTextEntry
-            style={styles.pinInput}
-            autoFocus
-          />
-          {error && <Text style={styles.errorText}>{error}</Text>}
-          <Pressable
-            onPress={handleSubmit}
-            disabled={pin.length < 4 || isLoading}
-            style={[styles.confirmButton, (pin.length < 4 || isLoading) && styles.buttonDisabled]}
-          >
-            {isLoading ? (
-              <ActivityIndicator color="#854d0e" />
-            ) : (
-              <Text style={styles.confirmButtonText}>{t('children.confirm')}</Text>
-            )}
-          </Pressable>
-        </GlassCard>
+    <GlassModal
+      visible={isOpen}
+      title={t('children.exitKidsMode')}
+      onClose={onClose}
+      dismissable={true}
+    >
+      <View style={styles.modalIcon}>
+        <Lock size={32} color="#facc15" />
       </View>
-    </Modal>
+      <Text style={styles.modalSubtitle}>{t('children.exitDescription')}</Text>
+      <TextInput
+        value={pin}
+        onChangeText={(text) => setPin(text.replace(/\D/g, ''))}
+        maxLength={6}
+        keyboardType="numeric"
+        secureTextEntry
+        style={styles.pinInput}
+        autoFocus
+      />
+      {error && <Text style={styles.errorText}>{error}</Text>}
+      <Pressable
+        onPress={handleSubmit}
+        disabled={pin.length < 4 || isLoading}
+        style={[styles.confirmButton, (pin.length < 4 || isLoading) && styles.buttonDisabled]}
+      >
+        {isLoading ? (
+          <ActivityIndicator color="#854d0e" />
+        ) : (
+          <Text style={styles.confirmButtonText}>{t('children.confirm')}</Text>
+        )}
+      </Pressable>
+    </GlassModal>
   );
 }
 
@@ -510,24 +507,6 @@ const styles = StyleSheet.create({
     color: colors.textMuted,
   },
   // Modal styles
-  modalOverlay: {
-    flex: 1,
-    backgroundColor: 'rgba(0, 0, 0, 0.8)',
-    justifyContent: 'center',
-    alignItems: 'center',
-    padding: spacing.md,
-  },
-  modalCard: {
-    width: '100%',
-    maxWidth: 384,
-    padding: spacing.lg,
-    position: 'relative',
-  },
-  modalClose: {
-    position: 'absolute',
-    top: spacing.md,
-    left: spacing.md,
-  },
   modalIcon: {
     width: 64,
     height: 64,
@@ -537,13 +516,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     alignSelf: 'center',
     marginBottom: spacing.md,
-  },
-  modalTitle: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    color: colors.text,
-    textAlign: 'center',
-    marginBottom: spacing.sm,
   },
   modalSubtitle: {
     fontSize: 14,

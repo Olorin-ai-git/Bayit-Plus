@@ -1,11 +1,11 @@
 import { useState, useEffect, useCallback } from 'react';
-import { View, Text, StyleSheet, Pressable, ScrollView, Modal } from 'react-native';
+import { View, Text, StyleSheet, Pressable, ScrollView } from 'react-native';
 import { Link, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { UserPlus, Edit, Ban, Key, Trash2, X } from 'lucide-react';
 import { usersService } from '@/services/adminApi';
 import { colors, spacing, borderRadius } from '@bayit/shared/theme';
-import { GlassButton, GlassView, GlassTable, GlassTableCell, GlassTableColumn, GlassModal, GlassInput } from '@bayit/shared/ui';
+import { GlassButton, GlassTable, GlassTableCell, GlassTableColumn, GlassModal, GlassInput } from '@bayit/shared/ui';
 import { useDirection } from '@/hooks/useDirection';
 import logger from '@/utils/logger';
 
@@ -287,96 +287,70 @@ export default function UsersListPage() {
       />
 
       {/* Delete Confirmation Modal */}
-      <Modal
+      <GlassModal
         visible={deleteModal.open}
-        transparent
-        animationType="fade"
-        onRequestClose={() => setDeleteModal({ open: false, user: null })}
+        title={t('admin.users.confirmDelete', 'Delete User')}
+        onClose={() => setDeleteModal({ open: false, user: null })}
+        dismissable={true}
       >
-        <View style={styles.modalOverlay}>
-          <GlassView style={styles.modalContent}>
-            <View style={styles.modalHeader}>
-              <Text style={styles.modalTitle}>{t('admin.users.confirmDelete', 'Delete User')}</Text>
-              <Pressable onPress={() => setDeleteModal({ open: false, user: null })}>
-                <X size={20} color={colors.textMuted} />
-              </Pressable>
-            </View>
-            <Text style={styles.modalText}>
-              {t('admin.users.confirmDeleteMessage', 'Are you sure you want to delete {{name}}? This action cannot be undone.', { name: deleteModal.user?.name })}
-            </Text>
-            <View style={styles.modalActions}>
-              <GlassButton
-                title={t('common.cancel', 'Cancel')}
-                variant="cancel"
-                onPress={() => setDeleteModal({ open: false, user: null })}
-              />
-              <GlassButton
-                title={actionLoading ? t('common.deleting', 'Deleting...') : t('common.delete', 'Delete')}
-                variant="danger"
-                onPress={handleDeleteConfirm}
-                disabled={actionLoading}
-              />
-            </View>
-          </GlassView>
+        <Text style={styles.modalText}>
+          {t('admin.users.confirmDeleteMessage', 'Are you sure you want to delete {{name}}? This action cannot be undone.', { name: deleteModal.user?.name })}
+        </Text>
+        <View style={styles.modalActions}>
+          <GlassButton
+            title={t('common.cancel', 'Cancel')}
+            variant="cancel"
+            onPress={() => setDeleteModal({ open: false, user: null })}
+          />
+          <GlassButton
+            title={actionLoading ? t('common.deleting', 'Deleting...') : t('common.delete', 'Delete')}
+            variant="danger"
+            onPress={handleDeleteConfirm}
+            disabled={actionLoading}
+          />
         </View>
-      </Modal>
+      </GlassModal>
 
       {/* Ban/Unban Modal */}
-      <Modal
+      <GlassModal
         visible={banModal.open}
-        transparent
-        animationType="fade"
-        onRequestClose={() => setBanModal({ open: false, user: null })}
+        title={banModal.user?.status === 'banned' ? t('admin.users.unban') : t('admin.users.block')}
+        onClose={() => setBanModal({ open: false, user: null })}
+        dismissable={true}
       >
-        <View style={styles.modalOverlay}>
-          <GlassView style={styles.modalContent}>
-            <View style={styles.modalHeader}>
-              <Text style={styles.modalTitle}>
-                {banModal.user?.status === 'banned'
-                  ? t('admin.users.unban')
-                  : t('admin.users.block')}
-              </Text>
-              <Pressable onPress={() => setBanModal({ open: false, user: null })}>
-                <X size={20} color={colors.textMuted} />
-              </Pressable>
-            </View>
-            {banModal.user?.status !== 'banned' && (
-              <>
-                <GlassInput
-                  label={t('admin.users.banReasonPrompt')}
-                  value={banReason}
-                  onChangeText={setBanReason}
-                  placeholder={t('admin.users.banReason')}
-                  containerStyle={styles.modalInput}
-                  multiline
-                />
-              </>
-            )}
-            {banModal.user?.status === 'banned' && (
-              <Text style={styles.modalText}>
-                {t('admin.users.confirmUnban')}
-              </Text>
-            )}
-            <View style={styles.modalActions}>
-              <GlassButton
-                title={t('common.cancel', 'Cancel')}
-                variant="cancel"
-                onPress={() => setBanModal({ open: false, user: null })}
-              />
-              <GlassButton
-                title={actionLoading
-                  ? t('common.saving', 'Saving...')
-                  : banModal.user?.status === 'banned'
-                    ? t('admin.users.unban')
-                    : t('admin.users.block')}
-                variant={banModal.user?.status === 'banned' ? 'success' : 'warning'}
-                onPress={handleBanConfirm}
-                disabled={actionLoading}
-              />
-            </View>
-          </GlassView>
+        {banModal.user?.status !== 'banned' && (
+          <GlassInput
+            label={t('admin.users.banReasonPrompt')}
+            value={banReason}
+            onChangeText={setBanReason}
+            placeholder={t('admin.users.banReason')}
+            containerStyle={styles.modalInput}
+            multiline
+          />
+        )}
+        {banModal.user?.status === 'banned' && (
+          <Text style={styles.modalText}>
+            {t('admin.users.confirmUnban')}
+          </Text>
+        )}
+        <View style={styles.modalActions}>
+          <GlassButton
+            title={t('common.cancel', 'Cancel')}
+            variant="cancel"
+            onPress={() => setBanModal({ open: false, user: null })}
+          />
+          <GlassButton
+            title={actionLoading
+              ? t('common.saving', 'Saving...')
+              : banModal.user?.status === 'banned'
+                ? t('admin.users.unban')
+                : t('admin.users.block')}
+            variant={banModal.user?.status === 'banned' ? 'success' : 'warning'}
+            onPress={handleBanConfirm}
+            disabled={actionLoading}
+          />
         </View>
-      </Modal>
+      </GlassModal>
 
       {/* Confirm Modal */}
       <GlassModal
@@ -522,30 +496,6 @@ const styles = StyleSheet.create({
   actionButton: {
     padding: spacing.xs,
     borderRadius: borderRadius.sm,
-  },
-  modalOverlay: {
-    flex: 1,
-    backgroundColor: 'rgba(0, 0, 0, 0.7)',
-    justifyContent: 'center',
-    alignItems: 'center',
-    padding: spacing.lg,
-  },
-  modalContent: {
-    width: '100%',
-    maxWidth: 400,
-    padding: spacing.lg,
-    borderRadius: borderRadius.lg,
-  },
-  modalHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: spacing.md,
-  },
-  modalTitle: {
-    fontSize: 18,
-    fontWeight: '600',
-    color: colors.text,
   },
   modalText: {
     fontSize: 14,

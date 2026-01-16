@@ -164,3 +164,67 @@ export const resetFolderCache = async (folderId?: string): Promise<{ success: bo
   const params = folderId ? { folder_id: folderId } : {};
   return uploadsApi.post('/admin/uploads/reset-cache', null, { params });
 };
+
+/**
+ * Upload a file from the browser and add it to the upload queue
+ * @param file - The file to upload
+ * @param contentType - The type of content (movie, series, audiobook)
+ * @param onProgress - Optional progress callback
+ */
+export const uploadBrowserFile = async (
+  file: File,
+  contentType: string,
+  onProgress?: (progress: number) => void
+): Promise<UploadJob> => {
+  const formData = new FormData();
+  formData.append('file', file);
+
+  return uploadsApi.post('/admin/uploads/enqueue-browser-file', formData, {
+    params: { content_type: contentType },
+    headers: {
+      'Content-Type': 'multipart/form-data',
+    },
+    timeout: 0, // No timeout for large file uploads
+    onUploadProgress: (progressEvent) => {
+      if (onProgress && progressEvent.total) {
+        const percentCompleted = Math.round((progressEvent.loaded * 100) / progressEvent.total);
+        onProgress(percentCompleted);
+      }
+    },
+  });
+};
+
+/**
+ * Upload multiple files from browser in sequence
+ * @param files - Array of files to upload
+ * @param contentType - The type of content for all files
+ * @param onFileProgress - Callback for individual file progress
+ * @param onFileComplete - Callback when a file completes
+ */
+export const uploadBrowserFiles = async (
+  files: File[],
+  contentType: string,
+  onFileProgress?: (fileIndex: number, progress: number) => void,
+  onFileComplete?: (fileIndex: number, job: UploadJob) => void
+): Promise<{ successful: UploadJob[]; failed: { file: File; error: string }[] }> => {
+  const successful: UploadJob[] = [];
+  const failed: { file: File; error: string }[] = [];
+
+  for (let i = 0; i < files.length; i++) {
+    const file = files[i];
+    try {
+      const job = await uploadBrowserFile(
+        file,
+        contentType,
+        (progress) => onFileProgress?.(i, progress)
+      );
+      successful.push(job);
+      onFileComplete?.(i, job);
+    } catch (error: any) {
+      const errorMessage = error?.detail || error?.message || 'Upload failed';
+      failed.push({ file, error: errorMessage });
+    }
+  }
+
+  return { successful, failed };
+};

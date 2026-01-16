@@ -1,12 +1,12 @@
 import { useState, useEffect, useCallback } from 'react';
-import { View, Text, StyleSheet, Pressable, ScrollView, Modal } from 'react-native';
+import { View, Text, StyleSheet, Pressable, ScrollView } from 'react-native';
 import { Link, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { Plus, Edit, Power, Trash2, Copy, X } from 'lucide-react';
-import { GlassTable, GlassTableCell } from '@bayit/shared/ui';
+import { Plus, Edit, Power, Trash2, Copy } from 'lucide-react';
+import { GlassTable, GlassTableCell, GlassModal } from '@bayit/shared/ui';
 import { campaignsService } from '@/services/adminApi';
 import { colors, spacing, borderRadius } from '@bayit/shared/theme';
-import { GlassButton, GlassView } from '@bayit/shared/ui';
+import { GlassButton } from '@bayit/shared/ui';
 import { useDirection } from '@/hooks/useDirection';
 import logger from '@/utils/logger';
 
@@ -222,39 +222,29 @@ export default function CampaignsListPage() {
       />
 
       {/* Delete Confirmation Modal */}
-      <Modal
+      <GlassModal
         visible={deleteModal.open}
-        transparent
-        animationType="fade"
-        onRequestClose={() => setDeleteModal({ open: false, campaign: null })}
+        title={t('admin.campaigns.confirmDelete', 'Delete Campaign')}
+        onClose={() => setDeleteModal({ open: false, campaign: null })}
+        dismissable={true}
       >
-        <View style={styles.modalOverlay}>
-          <GlassView style={styles.modalContent}>
-            <View style={styles.modalHeader}>
-              <Text style={styles.modalTitle}>{t('admin.campaigns.confirmDelete', 'Delete Campaign')}</Text>
-              <Pressable onPress={() => setDeleteModal({ open: false, campaign: null })}>
-                <X size={20} color={colors.textMuted} />
-              </Pressable>
-            </View>
-            <Text style={styles.modalText}>
-              {t('admin.campaigns.confirmDeleteMessage', 'Are you sure you want to delete "{{name}}"? This action cannot be undone.', { name: deleteModal.campaign?.name })}
-            </Text>
-            <View style={styles.modalActions}>
-              <GlassButton
-                title={t('common.cancel', 'Cancel')}
-                variant="cancel"
-                onPress={() => setDeleteModal({ open: false, campaign: null })}
-              />
-              <GlassButton
-                title={actionLoading ? t('common.deleting', 'Deleting...') : t('common.delete', 'Delete')}
-                variant="danger"
-                onPress={handleDeleteConfirm}
-                disabled={actionLoading}
-              />
-            </View>
-          </GlassView>
+        <Text style={styles.modalText}>
+          {t('admin.campaigns.confirmDeleteMessage', 'Are you sure you want to delete "{{name}}"? This action cannot be undone.', { name: deleteModal.campaign?.name })}
+        </Text>
+        <View style={styles.modalActions}>
+          <GlassButton
+            title={t('common.cancel', 'Cancel')}
+            variant="cancel"
+            onPress={() => setDeleteModal({ open: false, campaign: null })}
+          />
+          <GlassButton
+            title={actionLoading ? t('common.deleting', 'Deleting...') : t('common.delete', 'Delete')}
+            variant="danger"
+            onPress={handleDeleteConfirm}
+            disabled={actionLoading}
+          />
         </View>
-      </Modal>
+      </GlassModal>
     </ScrollView>
   );
 }
@@ -341,30 +331,6 @@ const styles = StyleSheet.create({
   actionButton: {
     padding: spacing.xs,
     borderRadius: borderRadius.sm,
-  },
-  modalOverlay: {
-    flex: 1,
-    backgroundColor: 'rgba(0, 0, 0, 0.7)',
-    justifyContent: 'center',
-    alignItems: 'center',
-    padding: spacing.lg,
-  },
-  modalContent: {
-    width: '100%',
-    maxWidth: 400,
-    padding: spacing.lg,
-    borderRadius: borderRadius.lg,
-  },
-  modalHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: spacing.md,
-  },
-  modalTitle: {
-    fontSize: 18,
-    fontWeight: '600',
-    color: colors.text,
   },
   modalText: {
     fontSize: 14,

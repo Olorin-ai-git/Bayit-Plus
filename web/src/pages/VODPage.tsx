@@ -5,6 +5,7 @@ import { useTranslation } from 'react-i18next';
 import { useDirection } from '@/hooks/useDirection';
 import { Film, Tv, Search, ChevronLeft, ChevronRight } from 'lucide-react';
 import ContentCard from '@/components/content/ContentCard';
+import AnimatedCard from '@/components/common/AnimatedCard';
 import { contentService } from '@/services/api';
 import { colors, spacing, borderRadius } from '@bayit/shared/theme';
 import { GlassView, GlassCard, GlassCategoryPill, GlassInput, GlassButton } from '@bayit/shared/ui';
@@ -147,10 +148,15 @@ export default function VODPage() {
 
     return (
       <View style={styles.grid}>
-        {items.map((item) => (
-          <View key={item.id} style={{ width: `${100 / numColumns}%`, padding: spacing.xs }}>
+        {items.map((item, index) => (
+          <AnimatedCard
+            key={item.id}
+            index={index}
+            variant="grid"
+            style={{ width: `${100 / numColumns}%`, padding: spacing.xs } as any}
+          >
             <ContentCard content={item} />
-          </View>
+          </AnimatedCard>
         ))}
       </View>
     );

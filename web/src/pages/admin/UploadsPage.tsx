@@ -6,9 +6,10 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { View, Text, StyleSheet, ActivityIndicator, ScrollView, Pressable } from 'react-native';
 import { useTranslation } from 'react-i18next';
+import { useDropzone } from 'react-dropzone';
 import { colors, spacing, borderRadius, fontSize } from '@bayit/shared/theme';
 import { GlassCard, GlassButton, GlassInput, GlassModal, GlassSelect, GlassToggle, GlassDraggableExpander, GlassCheckbox } from '@bayit/shared/ui';
-import { Plus, Edit2, Trash2, FolderOpen, AlertCircle, X, Folder, Upload, XCircle } from 'lucide-react';
+import { Plus, Edit2, Trash2, FolderOpen, AlertCircle, X, Folder, Upload, XCircle, File, CheckCircle } from 'lucide-react';
 import { useDirection } from '@/hooks/useDirection';
 import { useModal } from '@/contexts/ModalContext';
 import * as uploadsService from '@/services/uploadsService';
@@ -74,6 +75,126 @@ const UploadsPage: React.FC = () => {
     auto_upload: true,
   });
 
+  // Manual upload state
+  const [pendingFiles, setPendingFiles] = useState<File[]>([]);
+  const [manualContentType, setManualContentType] = useState<string>('movie');
+  const [isUploading, setIsUploading] = useState(false);
+  const [uploadProgress, setUploadProgress] = useState<{ [key: number]: number }>({});
+  const [uploadResult, setUploadResult] = useState<{ successful: number; failed: number } | null>(null);
+
+  // File validation for manual upload
+  const ALLOWED_EXTENSIONS = ['.mp4', '.mkv', '.avi', '.mov', '.webm', '.m4v', '.wmv'];
+  
+  const validateFile = (file: File): boolean => {
+    const ext = '.' + file.name.split('.').pop()?.toLowerCase();
+    return ALLOWED_EXTENSIONS.includes(ext);
+  };
+
+  // Format file size for display
+  const formatFileSize = (bytes: number): string => {
+    if (bytes < 1024) return `${bytes} B`;
+    if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
+    if (bytes < 1024 * 1024 * 1024) return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
+    return `${(bytes / (1024 * 1024 * 1024)).toFixed(2)} GB`;
+  };
+
+  // React Dropzone setup
+  const onDrop = useCallback((acceptedFiles: File[]) => {
+    const validFiles = acceptedFiles.filter(validateFile);
+    const invalidCount = acceptedFiles.length - validFiles.length;
+    
+    if (invalidCount > 0) {
+      logger.warn(`${invalidCount} files rejected - invalid file type`, 'UploadsPage');
+    }
+    
+    setPendingFiles((prev) => {
+      // Avoid duplicates by filename
+      const existingNames = new Set(prev.map(f => f.name));
+      const newFiles = validFiles.filter(f => !existingNames.has(f.name));
+      return [...prev, ...newFiles];
+    });
+    
+    // Clear any previous upload result when new files are added
+    setUploadResult(null);
+  }, []);
+
+  const { getRootProps, getInputProps, isDragActive, open } = useDropzone({
+    onDrop,
+    noClick: false,
+    noKeyboard: false,
+    multiple: true,
+    accept: {
+      'video/*': ALLOWED_EXTENSIONS,
+    },
+  });
+
+  // Remove file from pending list
+  const handleRemoveFile = (index: number) => {
+    setPendingFiles((prev) => prev.filter((_, i) => i !== index));
+    setUploadProgress((prev) => {
+      const updated = { ...prev };
+      delete updated[index];
+      return updated;
+    });
+  };
+
+  // Clear all pending files
+  const handleClearFiles = () => {
+    setPendingFiles([]);
+    setUploadProgress({});
+    setUploadResult(null);
+  };
+
+  // Upload all pending files
+  const handleUploadFiles = async () => {
+    if (pendingFiles.length === 0) return;
+    
+    setIsUploading(true);
+    setUploadProgress({});
+    setUploadResult(null);
+    setError(null);
+    
+    try {
+      const result = await uploadsService.uploadBrowserFiles(
+        pendingFiles,
+        manualContentType,
+        (fileIndex, progress) => {
+          setUploadProgress((prev) => ({
+            ...prev,
+            [fileIndex]: progress,
+          }));
+        },
+        (fileIndex, job) => {
+          logger.info(`File ${fileIndex + 1} uploaded successfully`, 'UploadsPage', { job_id: job.job_id });
+        }
+      );
+      
+      setUploadResult({
+        successful: result.successful.length,
+        failed: result.failed.length,
+      });
+      
+      if (result.failed.length > 0) {
+        const failedNames = result.failed.map(f => f.file.name).join(', ');
+        logger.error(`Failed to upload: ${failedNames}`, 'UploadsPage');
+      }
+      
+      // Clear successfully uploaded files
+      if (result.successful.length > 0) {
+        setPendingFiles(result.failed.map(f => f.file));
+        
+        // Refresh queue data
+        await fetchData();
+      }
+      
+    } catch (err: any) {
+      logger.error('Failed to upload files', 'UploadsPage', err);
+      setError(err?.detail || err?.message || t('admin.uploads.manualUpload.uploadFailed'));
+    } finally {
+      setIsUploading(false);
+    }
+  };
+
   // Format ETA
   const formatETA = (seconds: number): string => {
     if (seconds < 60) return `${Math.round(seconds)}s`;
@@ -86,44 +207,45 @@ const UploadsPage: React.FC = () => {
     return new Date(dateString).toLocaleString();
   };
 
-  // Fetch upload data
+  // Fetch queue data via REST API (fallback when WebSocket unavailable)
+  const fetchQueueData = useCallback(async () => {
+    try {
+      const queueData = await uploadsService.getUploadQueue();
+      if (queueData.stats) {
+        setQueueStats(queueData.stats);
+      }
+      setActiveJob(queueData.active_job || null);
+      setQueuedJobs(queueData.queue || []);
+      setRecentCompleted(queueData.recent_completed || []);
+      setQueuePaused(queueData.queue_paused || false);
+      setPauseReason(queueData.pause_reason || null);
+    } catch (err) {
+      logger.error('Failed to fetch upload queue', 'UploadsPage', err);
+    }
+  }, []);
+
+  // Fetch monitored folders (always via REST)
+  const fetchMonitoredFolders = useCallback(async () => {
+    try {
+      const folders = await uploadsService.getMonitoredFolders();
+      setMonitoredFolders(folders || []);
+    } catch (err) {
+      logger.error('Failed to fetch monitored folders', 'UploadsPage', err);
+    }
+  }, []);
+
+  // Fetch all data (used for refresh after actions)
   const fetchData = useCallback(async () => {
     try {
       setError(null);
-      
-      // Fetch upload queue
-      try {
-        const queueData = await uploadsService.getUploadQueue();
-        // Use functional update to avoid dependency on queueStats
-        if (queueData.stats) {
-          setQueueStats(queueData.stats);
-        }
-        setActiveJob(queueData.active_job || null);
-        setQueuedJobs(queueData.queue || []);
-        setRecentCompleted(queueData.recent_completed || []);
-        setQueuePaused(queueData.queue_paused || false);
-        setPauseReason(queueData.pause_reason || null);
-      } catch (err) {
-        logger.error('Failed to fetch upload queue', 'UploadsPage', err);
-        // Don't fail the entire page if queue fetch fails
-      }
-      
-      // Fetch monitored folders
-      try {
-        const folders = await uploadsService.getMonitoredFolders();
-        setMonitoredFolders(folders || []);
-      } catch (err) {
-        logger.error('Failed to fetch monitored folders', 'UploadsPage', err);
-        // Don't fail the entire page if folders fetch fails
-      }
-      
+      await Promise.all([fetchQueueData(), fetchMonitoredFolders()]);
     } catch (err) {
       logger.error('Error fetching upload data', 'UploadsPage', err);
       setError(err instanceof Error ? err.message : 'Failed to load upload data');
     } finally {
       setLoading(false);
     }
-  }, []);  // Empty array - fetchData doesn't need external dependencies
+  }, [fetchQueueData, fetchMonitoredFolders]);
 
   // WebSocket connection for real-time updates
   const connectWebSocket = useCallback(() => {
@@ -312,14 +434,24 @@ const UploadsPage: React.FC = () => {
   };
 
   useEffect(() => {
-    // Initial data fetch
-    fetchData();
+    // Always fetch monitored folders (not provided via WebSocket)
+    fetchMonitoredFolders().finally(() => setLoading(false));
     
-    // Connect to WebSocket for real-time updates
+    // Connect to WebSocket for real-time queue updates
+    // WebSocket sends initial queue state on connect
     connectWebSocket();
+    
+    // Fallback: If WebSocket doesn't connect within 3 seconds, fetch queue via REST
+    const fallbackTimeout = setTimeout(() => {
+      if (!wsRef.current || wsRef.current.readyState !== WebSocket.OPEN) {
+        logger.info('WebSocket not connected, fetching queue data via REST API', 'UploadsPage');
+        fetchQueueData();
+      }
+    }, 3000);
     
     // Cleanup
     return () => {
+      clearTimeout(fallbackTimeout);
       if (wsRef.current) {
         wsRef.current.close();
       }
@@ -327,7 +459,7 @@ const UploadsPage: React.FC = () => {
         clearTimeout(reconnectTimeoutRef.current);
       }
     };
-    // Run only once on mount since fetchData and connectWebSocket are stable
+    // Run only once on mount
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -740,6 +872,164 @@ const UploadsPage: React.FC = () => {
               </View>
             </View>
           ))}
+      </GlassDraggableExpander>
+
+      {/* Manual Upload Section */}
+      <GlassDraggableExpander
+        title={t('admin.uploads.manualUpload.title')}
+        subtitle={t('admin.uploads.manualUpload.subtitle')}
+        defaultExpanded={false}
+        icon={<Upload size={20} color={colors.primary} />}
+        style={{ marginTop: spacing.lg }}
+      >
+        <View style={styles.manualUploadContainer}>
+          {/* Drop Zone */}
+          <View
+            {...getRootProps()}
+            style={[
+              styles.dropZone,
+              isDragActive && styles.dropZoneActive,
+              isUploading && styles.dropZoneDisabled,
+            ]}
+          >
+            <input {...getInputProps()} />
+            <Upload size={40} color={isDragActive ? colors.primary : colors.textMuted} />
+            <Text style={[styles.dropZoneText, { textAlign }]}>
+              {isDragActive
+                ? t('admin.uploads.manualUpload.dropHereActive')
+                : t('admin.uploads.manualUpload.dropHere')}
+            </Text>
+            <Text style={[styles.dropZoneSubtext, { textAlign }]}>
+              {t('admin.uploads.manualUpload.supportedFormats')}
+            </Text>
+          </View>
+
+          {/* Selected Files List */}
+          {pendingFiles.length > 0 && (
+            <View style={styles.fileListContainer}>
+              <View style={[styles.fileListHeader, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
+                <Text style={[styles.fileListTitle, { textAlign }]}>
+                  {t('admin.uploads.manualUpload.selectedFiles')} ({pendingFiles.length})
+                </Text>
+                <GlassButton
+                  title={t('admin.uploads.manualUpload.clearAll')}
+                  variant="ghost"
+                  onPress={handleClearFiles}
+                  disabled={isUploading}
+                  icon={<X size={14} color={colors.textMuted} />}
+                />
+              </View>
+
+              <ScrollView style={styles.fileList} nestedScrollEnabled>
+                {pendingFiles.map((file, index) => (
+                  <View
+                    key={`${file.name}-${index}`}
+                    style={[styles.fileItem, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}
+                  >
+                    <View style={[styles.fileIcon, { marginEnd: spacing.sm }]}>
+                      <File size={20} color={colors.primary} />
+                    </View>
+                    <View style={styles.fileInfo}>
+                      <Text style={[styles.fileName, { textAlign }]} numberOfLines={1}>
+                        {file.name}
+                      </Text>
+                      <Text style={[styles.fileSizeText, { textAlign }]}>
+                        {formatFileSize(file.size)}
+                      </Text>
+                    </View>
+                    {uploadProgress[index] !== undefined && (
+                      <View style={styles.fileProgress}>
+                        <View
+                          style={[
+                            styles.fileProgressBar,
+                            { width: `${uploadProgress[index]}%` },
+                          ]}
+                        />
+                        <Text style={styles.fileProgressText}>
+                          {uploadProgress[index]}%
+                        </Text>
+                      </View>
+                    )}
+                    {!isUploading && (
+                      <Pressable
+                        onPress={() => handleRemoveFile(index)}
+                        style={styles.removeFileButton}
+                      >
+                        <X size={16} color={colors.error} />
+                      </Pressable>
+                    )}
+                  </View>
+                ))}
+              </ScrollView>
+
+              {/* Content Type Selection */}
+              <View style={styles.contentTypeSection}>
+                <Text style={[styles.contentTypeLabel, { textAlign }]}>
+                  {t('admin.uploads.manualUpload.selectContentType')}
+                </Text>
+                <GlassSelect
+                  value={manualContentType}
+                  onChange={setManualContentType}
+                  options={[
+                    { value: 'movie', label: t('admin.uploads.contentTypes.movie') },
+                    { value: 'series', label: t('admin.uploads.contentTypes.series') },
+                    { value: 'audiobook', label: t('admin.uploads.contentTypes.audiobook') },
+                  ]}
+                  disabled={isUploading}
+                />
+              </View>
+
+              {/* Upload Button */}
+              <View style={styles.uploadButtonContainer}>
+                <GlassButton
+                  title={
+                    isUploading
+                      ? t('admin.uploads.manualUpload.uploadingFiles', { count: pendingFiles.length })
+                      : t('admin.uploads.manualUpload.uploadSelected')
+                  }
+                  variant="primary"
+                  onPress={handleUploadFiles}
+                  disabled={isUploading || pendingFiles.length === 0}
+                  icon={isUploading ? null : <Upload size={18} color="white" />}
+                >
+                  {isUploading && (
+                    <ActivityIndicator size="small" color="white" style={{ marginRight: spacing.sm }} />
+                  )}
+                </GlassButton>
+              </View>
+
+              {/* Upload Result */}
+              {uploadResult && (
+                <View
+                  style={[
+                    styles.uploadResult,
+                    uploadResult.failed > 0 ? styles.uploadResultWarning : styles.uploadResultSuccess,
+                  ]}
+                >
+                  <CheckCircle size={18} color={uploadResult.failed > 0 ? colors.warning : colors.success} />
+                  <Text
+                    style={[
+                      styles.uploadResultText,
+                      { color: uploadResult.failed > 0 ? colors.warning : colors.success },
+                    ]}
+                  >
+                    {t('admin.uploads.manualUpload.uploadSuccess', { count: uploadResult.successful })}
+                    {uploadResult.failed > 0 && ` (${uploadResult.failed} failed)`}
+                  </Text>
+                </View>
+              )}
+            </View>
+          )}
+
+          {/* Empty state */}
+          {pendingFiles.length === 0 && (
+            <View style={styles.emptyFileState}>
+              <Text style={[styles.emptyFileText, { textAlign }]}>
+                {t('admin.uploads.manualUpload.noFilesSelected')}
+              </Text>
+            </View>
+          )}
+        </View>
       </GlassDraggableExpander>
 
       {/* Add/Edit Folder Modal */}
@@ -1160,6 +1450,165 @@ const styles = StyleSheet.create({
     color: colors.error,
     fontSize: fontSize.sm,
     textAlign: 'center',
+  },
+  // Manual Upload Styles
+  manualUploadContainer: {
+    gap: spacing.md,
+  },
+  dropZone: {
+    borderWidth: 2,
+    borderStyle: 'dashed',
+    borderColor: colors.glassBorder,
+    borderRadius: borderRadius.lg,
+    padding: spacing.xl,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: colors.glassLight,
+    minHeight: 160,
+    cursor: 'pointer',
+    transition: 'all 0.2s ease',
+  },
+  dropZoneActive: {
+    borderColor: colors.primary,
+    backgroundColor: colors.primary + '10',
+  },
+  dropZoneDisabled: {
+    opacity: 0.5,
+    cursor: 'not-allowed',
+  },
+  dropZoneText: {
+    fontSize: fontSize.md,
+    fontWeight: '500',
+    color: colors.text,
+    marginTop: spacing.md,
+  },
+  dropZoneSubtext: {
+    fontSize: fontSize.sm,
+    color: colors.textMuted,
+    marginTop: spacing.xs,
+  },
+  fileListContainer: {
+    backgroundColor: colors.glass,
+    borderRadius: borderRadius.md,
+    padding: spacing.md,
+    borderWidth: 1,
+    borderColor: colors.glassBorder,
+  },
+  fileListHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: spacing.md,
+  },
+  fileListTitle: {
+    fontSize: fontSize.md,
+    fontWeight: '600',
+    color: colors.text,
+  },
+  fileList: {
+    maxHeight: 250,
+  },
+  fileItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    padding: spacing.sm,
+    backgroundColor: colors.backgroundLight,
+    borderRadius: borderRadius.sm,
+    marginBottom: spacing.sm,
+    gap: spacing.sm,
+  },
+  fileIcon: {
+    width: 36,
+    height: 36,
+    borderRadius: borderRadius.sm,
+    backgroundColor: colors.primary + '20',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  fileInfo: {
+    flex: 1,
+  },
+  fileName: {
+    fontSize: fontSize.sm,
+    fontWeight: '500',
+    color: colors.text,
+  },
+  fileSizeText: {
+    fontSize: fontSize.xs,
+    color: colors.textMuted,
+  },
+  fileProgress: {
+    width: 80,
+    height: 20,
+    backgroundColor: colors.glassBorder,
+    borderRadius: borderRadius.sm,
+    overflow: 'hidden',
+    position: 'relative',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  fileProgressBar: {
+    position: 'absolute',
+    left: 0,
+    top: 0,
+    bottom: 0,
+    backgroundColor: colors.primary,
+    borderRadius: borderRadius.sm,
+  },
+  fileProgressText: {
+    fontSize: fontSize.xs,
+    color: colors.text,
+    fontWeight: '600',
+    zIndex: 1,
+  },
+  removeFileButton: {
+    width: 28,
+    height: 28,
+    borderRadius: borderRadius.sm,
+    backgroundColor: colors.error + '20',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  contentTypeSection: {
+    marginTop: spacing.md,
+    paddingTop: spacing.md,
+    borderTopWidth: 1,
+    borderTopColor: colors.glassBorder,
+  },
+  contentTypeLabel: {
+    fontSize: fontSize.sm,
+    color: colors.textSecondary,
+    marginBottom: spacing.sm,
+  },
+  uploadButtonContainer: {
+    marginTop: spacing.md,
+    alignItems: 'flex-start',
+  },
+  uploadResult: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.sm,
+    padding: spacing.md,
+    borderRadius: borderRadius.sm,
+    marginTop: spacing.md,
+  },
+  uploadResultSuccess: {
+    backgroundColor: colors.success + '20',
+  },
+  uploadResultWarning: {
+    backgroundColor: colors.warning + '20',
+  },
+  uploadResultText: {
+    fontSize: fontSize.sm,
+    fontWeight: '500',
+  },
+  emptyFileState: {
+    padding: spacing.lg,
+    alignItems: 'center',
+  },
+  emptyFileText: {
+    fontSize: fontSize.sm,
+    color: colors.textMuted,
   },
 });
 

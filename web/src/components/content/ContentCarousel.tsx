@@ -4,6 +4,7 @@ import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import ContentCard from './ContentCard';
+import AnimatedCard from '@/components/common/AnimatedCard';
 import { colors, spacing, borderRadius } from '@bayit/shared/theme';
 import { GlassView } from '@bayit/shared/ui';
 import { useDirection } from '@/hooks/useDirection';
@@ -98,10 +99,16 @@ export default function ContentCarousel({
           showsHorizontalScrollIndicator={false}
           contentContainerStyle={[styles.scrollContent, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}
         >
-          {items.map((item) => (
-            <View key={item.id} style={styles.cardWrapper}>
+          {items.map((item, index) => (
+            <AnimatedCard
+              key={item.id}
+              index={index}
+              variant="carousel"
+              isRTL={isRTL}
+              style={styles.cardWrapper}
+            >
               <ContentCard content={item} />
-            </View>
+            </AnimatedCard>
           ))}
         </ScrollView>
       </View>

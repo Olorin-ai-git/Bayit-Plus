@@ -200,6 +200,79 @@ async def uploads_health(
 
 # ============ UPLOAD QUEUE MANAGEMENT ============
 
+@router.post("/uploads/enqueue-browser-file")
+async def enqueue_browser_file(
+    file: UploadFile = File(...),
+    content_type: ContentType = Query(...),
+    current_user: User = Depends(has_permission(Permission.CONTENT_CREATE))
+):
+    """
+    Upload a file from the browser and enqueue it for processing.
+    
+    This endpoint receives a file from the browser, saves it to a temporary
+    upload directory, and enqueues it for processing.
+    
+    Args:
+        file: The uploaded file
+        content_type: Type of content (movie, series, audiobook)
+    """
+    import tempfile
+    import os
+    from pathlib import Path
+    
+    try:
+        # Validate file type
+        allowed_extensions = {'.mp4', '.mkv', '.avi', '.mov', '.webm', '.m4v', '.wmv'}
+        file_ext = Path(file.filename or "").suffix.lower()
+        if file_ext not in allowed_extensions:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail=f"Invalid file type: {file_ext}. Allowed: {', '.join(allowed_extensions)}"
+            )
+        
+        # Create uploads temp directory if it doesn't exist
+        upload_dir = Path("/tmp/bayit-uploads")
+        upload_dir.mkdir(parents=True, exist_ok=True)
+        
+        # Save file to temp location
+        temp_path = upload_dir / f"{current_user.id}_{file.filename}"
+        
+        # Write file in chunks to handle large files
+        with open(temp_path, "wb") as buffer:
+            while chunk := await file.read(1024 * 1024):  # 1MB chunks
+                buffer.write(chunk)
+        
+        logger.info(f"Browser file saved to: {temp_path} ({temp_path.stat().st_size} bytes)")
+        
+        # Enqueue the file for processing
+        job = await upload_service.enqueue_upload(
+            source_path=str(temp_path),
+            content_type=content_type,
+            user_id=str(current_user.id)
+        )
+        
+        return UploadJobResponse.from_orm(job)
+        
+    except HTTPException:
+        raise
+    except FileNotFoundError as e:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=str(e)
+        )
+    except ValueError as e:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=str(e)
+        )
+    except Exception as e:
+        logger.error(f"Failed to enqueue browser file: {e}", exc_info=True)
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Failed to enqueue file: {str(e)}"
+        )
+
+
 @router.post("/uploads/enqueue")
 async def enqueue_upload(
     source_path: str,

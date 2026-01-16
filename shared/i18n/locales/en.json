@@ -1485,6 +1485,26 @@
       },
       "errors": {
         "pathRequired": "Folder path is required"
+      },
+      "manualUpload": {
+        "title": "Manual Upload",
+        "subtitle": "Drag and drop files or select a folder",
+        "dropHere": "Drop files here or click to browse",
+        "dropHereActive": "Drop files to add them",
+        "selectFolder": "Select Folder",
+        "supportedFormats": "Supports video files (mp4, mkv, avi, mov, webm)",
+        "selectedFiles": "Selected Files",
+        "noFilesSelected": "No files selected",
+        "clearAll": "Clear All",
+        "uploadSelected": "Upload Selected",
+        "selectContentType": "Select content type for upload",
+        "uploadingFiles": "Adding {{count}} file(s) to queue...",
+        "uploadSuccess": "Successfully added {{count}} file(s) to queue",
+        "uploadFailed": "Failed to add files to queue",
+        "fileSize": "Size",
+        "removeFile": "Remove",
+        "invalidFileType": "Invalid file type. Only video files are supported.",
+        "filesCount": "{{count}} file(s) selected"
       }
     },
     "librarian": {

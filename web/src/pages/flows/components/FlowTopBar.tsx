@@ -5,11 +5,11 @@
  */
 
 import React, { useState, useRef } from 'react';
-import { View, Text, StyleSheet, Pressable, Modal, Animated } from 'react-native';
+import { View, Text, StyleSheet, Pressable, Animated } from 'react-native';
 import { useTranslation } from 'react-i18next';
-import { Plus, ChevronDown, Sun, Moon, Star, Coffee, Sunset, X, Sparkles } from 'lucide-react';
+import { Plus, ChevronDown, Sun, Moon, Star, Coffee, Sunset, Sparkles } from 'lucide-react';
 import { colors, spacing, borderRadius } from '@bayit/shared/theme';
-import { GlassView, GlassFAB, GlassButton } from '@bayit/shared/ui';
+import { GlassFAB, GlassModal } from '@bayit/shared/ui';
 import { isTV } from '@bayit/shared/utils/platform';
 import { useDirection } from '@/hooks/useDirection';
 import type { Flow } from '../types/flows.types';
@@ -171,79 +171,60 @@ export function FlowTopBar({
       </View>
 
       {/* Templates Modal */}
-      <Modal
+      <GlassModal
         visible={showTemplates}
-        transparent
-        animationType="none"
-        onRequestClose={handleCloseTemplates}
+        title={t('flows.topBar.templates')}
+        onClose={handleCloseTemplates}
+        dismissable={true}
       >
-        <Pressable style={styles.modalBackdrop} onPress={handleCloseTemplates}>
-          <Animated.View style={[styles.modalContent, { opacity: fadeAnim }]}>
-            <GlassView style={styles.templatesPanel} intensity="high">
-              {/* Header */}
-              <View style={[styles.templatesPanelHeader, { flexDirection }]}>
-                <View style={[styles.templatesTitleContainer, { flexDirection }]}>
-                  <Sparkles size={20} color={colors.primary} />
-                  <Text style={[styles.templatesPanelTitle, isRTL && styles.textRTL]}>
-                    {t('flows.topBar.templates')}
-                  </Text>
-                </View>
-                <Pressable onPress={handleCloseTemplates} style={styles.closeBtn}>
-                  <X size={20} color={colors.textMuted} />
-                </Pressable>
+        <Text style={[styles.templatesSubtitle, isRTL && styles.textRTL]}>
+          {t('flows.templates.subtitle')}
+        </Text>
+
+        {/* Templates List */}
+        <View style={styles.templatesList}>
+          {FLOW_TEMPLATES.map((template) => (
+            <Pressable
+              key={template.id}
+              style={[
+                styles.templateItem,
+                { flexDirection },
+                hoveredTemplate === template.id && styles.templateItemHovered,
+              ]}
+              onPress={() => handleSelectTemplate(template)}
+              // @ts-ignore - Web hover
+              onMouseEnter={() => setHoveredTemplate(template.id)}
+              onMouseLeave={() => setHoveredTemplate(null)}
+            >
+              <View style={styles.templateIcon}>
+                {template.icon}
               </View>
-
-              <Text style={[styles.templatesSubtitle, isRTL && styles.textRTL]}>
-                {t('flows.templates.subtitle')}
-              </Text>
-
-              {/* Templates List */}
-              <View style={styles.templatesList}>
-                {FLOW_TEMPLATES.map((template) => (
-                  <Pressable
-                    key={template.id}
-                    style={[
-                      styles.templateItem,
-                      { flexDirection },
-                      hoveredTemplate === template.id && styles.templateItemHovered,
-                    ]}
-                    onPress={() => handleSelectTemplate(template)}
-                    // @ts-ignore - Web hover
-                    onMouseEnter={() => setHoveredTemplate(template.id)}
-                    onMouseLeave={() => setHoveredTemplate(null)}
-                  >
-                    <View style={styles.templateIcon}>
-                      {template.icon}
-                    </View>
-                    <View style={styles.templateContent}>
-                      <Text style={[styles.templateName, isRTL && styles.textRTL]}>
-                        {t(template.nameKey)}
-                      </Text>
-                      <Text style={[styles.templateDesc, isRTL && styles.textRTL]} numberOfLines={2}>
-                        {t(template.descKey)}
-                      </Text>
-                    </View>
-                  </Pressable>
-                ))}
-              </View>
-
-              {/* Create Custom */}
-              <Pressable
-                style={[styles.createCustomBtn, { flexDirection }]}
-                onPress={() => {
-                  handleCloseTemplates();
-                  onCreateFlow();
-                }}
-              >
-                <Plus size={18} color={colors.primary} />
-                <Text style={styles.createCustomText}>
-                  {t('flows.topBar.createCustom')}
+              <View style={styles.templateContent}>
+                <Text style={[styles.templateName, isRTL && styles.textRTL]}>
+                  {t(template.nameKey)}
                 </Text>
-              </Pressable>
-            </GlassView>
-          </Animated.View>
+                <Text style={[styles.templateDesc, isRTL && styles.textRTL]} numberOfLines={2}>
+                  {t(template.descKey)}
+                </Text>
+              </View>
+            </Pressable>
+          ))}
+        </View>
+
+        {/* Create Custom */}
+        <Pressable
+          style={[styles.createCustomBtn, { flexDirection }]}
+          onPress={() => {
+            handleCloseTemplates();
+            onCreateFlow();
+          }}
+        >
+          <Plus size={18} color={colors.primary} />
+          <Text style={styles.createCustomText}>
+            {t('flows.topBar.createCustom')}
+          </Text>
         </Pressable>
-      </Modal>
+      </GlassModal>
     </View>
   );
 }
@@ -299,41 +280,6 @@ const styles = StyleSheet.create({
     fontSize: isTV ? 18 : 14,
     fontWeight: '600',
     color: colors.text,
-  },
-  modalBackdrop: {
-    flex: 1,
-    backgroundColor: 'rgba(0, 0, 0, 0.7)',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  modalContent: {
-    width: '90%',
-    maxWidth: 500,
-  },
-  templatesPanel: {
-    padding: spacing.xl,
-    borderRadius: borderRadius.xl,
-  },
-  templatesPanelHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: spacing.xs,
-  },
-  templatesTitleContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing.sm,
-  },
-  templatesPanelTitle: {
-    fontSize: 20,
-    fontWeight: '700',
-    color: colors.text,
-  },
-  closeBtn: {
-    padding: spacing.sm,
-    borderRadius: borderRadius.md,
-    backgroundColor: 'rgba(255, 255, 255, 0.1)',
   },
   templatesSubtitle: {
     fontSize: 14,

@@ -5,6 +5,7 @@ import { RefreshCw } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useDirection } from '@/hooks/useDirection';
 import ContentCarousel from '@/components/content/ContentCarousel';
+import AnimatedCard from '@/components/common/AnimatedCard';
 import { TrendingRow, GlassCarousel } from '@bayit/shared';
 import { GlassLiveChannelCard } from '@bayit/shared/ui';
 import MorningRitual from '@/components/ritual/MorningRitual';
@@ -311,14 +312,20 @@ export default function HomePage() {
             showsHorizontalScrollIndicator={false}
             contentContainerStyle={[styles.liveRow, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}
           >
-            {liveChannels.slice(0, 8).map((channel) => (
-              <View key={channel.id} style={styles.liveCardWrapper}>
+            {liveChannels.slice(0, 8).map((channel, index) => (
+              <AnimatedCard
+                key={channel.id}
+                index={index}
+                variant="carousel"
+                isRTL={isRTL}
+                style={styles.liveCardWrapper}
+              >
                 <GlassLiveChannelCard
                   channel={channel}
                   liveLabel={t('common.live')}
                   onPress={() => navigate(`/live/${channel.id}`)}
                 />
-              </View>
+              </AnimatedCard>
             ))}
           </ScrollView>
         </View>
