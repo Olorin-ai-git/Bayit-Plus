@@ -3,7 +3,7 @@ import { GlassButton } from './GlassButton';
 
 export interface HeroSectionProps {
   title: string;
-  titleHighlight?: string;
+  titleHighlight?: string | null;
   subtitle: string;
   primaryCTA?: {
     text: string;

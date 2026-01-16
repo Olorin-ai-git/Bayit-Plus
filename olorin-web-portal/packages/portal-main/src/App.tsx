@@ -71,12 +71,12 @@ function App() {
         </main>
         <Footer
           domain="main"
-          companyDescription={t('footer.description')}
+          companyDescription={String(t('footer.description'))}
           quickLinks={[
-            { name: t('nav.home'), href: '/' },
-            { name: t('nav.about'), href: '/about' },
-            { name: t('nav.knowledgeHub'), href: '/knowledge-hub' },
-            { name: t('nav.contact'), href: '/contact' },
+            { name: String(t('nav.home')), href: '/' },
+            { name: String(t('nav.about')), href: '/about' },
+            { name: String(t('nav.knowledgeHub')), href: '/knowledge-hub' },
+            { name: String(t('nav.contact')), href: '/contact' },
           ]}
         />
       </div>

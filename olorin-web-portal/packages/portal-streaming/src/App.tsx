@@ -35,7 +35,7 @@ function App() {
           navigation={navigation}
           dropdowns={dropdowns}
           showDemo={true}
-          ctaText={t('nav.getStarted')}
+          ctaText={String(t('nav.getStarted'))}
           ctaHref="/contact"
           LanguageSelectorComponent={LanguageSelector}
         />
@@ -50,10 +50,10 @@ function App() {
           domain="streaming"
           companyDescription="AI-powered media streaming optimization delivering exceptional viewing experiences with intelligent content delivery."
           quickLinks={[
-            { name: t('nav.home'), href: '/' },
-            { name: t('nav.features'), href: '/features' },
-            { name: t('nav.useCases'), href: '/use-cases' },
-            { name: t('nav.contact'), href: '/contact' },
+            { name: String(t('nav.home')), href: '/' },
+            { name: String(t('nav.features')), href: '/features' },
+            { name: String(t('nav.useCases')), href: '/use-cases' },
+            { name: String(t('nav.contact')), href: '/contact' },
           ]}
         />
       </div>

@@ -43,7 +43,7 @@ function App() {
           navigation={navigation}
           dropdowns={dropdowns}
           showDemo={true}
-          ctaText={t('nav.getStarted')}
+          ctaText={String(t('nav.getStarted'))}
           ctaHref="/contact"
           LanguageSelectorComponent={LanguageSelector}
         />
@@ -58,10 +58,10 @@ function App() {
           domain="fraud"
           companyDescription="AI-powered fraud detection and prevention with 6 specialized agents working 24/7 to protect your business."
           quickLinks={[
-            { name: t('nav.home'), href: '/' },
-            { name: t('nav.agents'), href: '/agents' },
-            { name: t('nav.features'), href: '/features' },
-            { name: t('nav.contact'), href: '/contact' },
+            { name: String(t('nav.home')), href: '/' },
+            { name: String(t('nav.agents')), href: '/agents' },
+            { name: String(t('nav.features')), href: '/features' },
+            { name: String(t('nav.contact')), href: '/contact' },
           ]}
         />
       </div>

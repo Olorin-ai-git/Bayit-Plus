@@ -35,7 +35,7 @@ function App() {
           navigation={navigation}
           dropdowns={dropdowns}
           showDemo={true}
-          ctaText={t('nav.getStarted')}
+          ctaText={String(t('nav.getStarted'))}
           ctaHref="/contact"
           LanguageSelectorComponent={LanguageSelector}
         />
@@ -50,10 +50,10 @@ function App() {
           domain="radio"
           companyDescription="AI-powered radio management automating scheduling, analytics, and programming for broadcasters worldwide."
           quickLinks={[
-            { name: t('nav.home'), href: '/' },
-            { name: t('nav.features'), href: '/features' },
-            { name: t('nav.solutions'), href: '/solutions' },
-            { name: t('nav.contact'), href: '/contact' },
+            { name: String(t('nav.home')), href: '/' },
+            { name: String(t('nav.features')), href: '/features' },
+            { name: String(t('nav.solutions')), href: '/solutions' },
+            { name: String(t('nav.contact')), href: '/contact' },
           ]}
         />
       </div>
