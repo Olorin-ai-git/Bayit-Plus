@@ -283,27 +283,25 @@ async def get_all_content(
 
 @router.post("/sync")
 async def sync_all_content():
-    """Sync all content: podcasts, live channels, and trending data."""
-    try:
-        logger.info("📻 Full content sync triggered")
+    """
+    Sync all content: podcasts, live channels, and trending data.
+    Podcast syncing is now background-only (scheduled task).
+    """
+    logger.info("📻 Full content sync requested (podcasts sync in background)")
 
-        # Sync podcasts
-        podcast_result = await sync_all_podcasts(max_episodes=20)
+    # Podcast syncing disabled - runs as background task only
+    # Trending is fetched on-demand from news APIs, so no sync needed
+    # Live channels are typically static or updated via admin, so no sync needed
 
-        # Note: Trending is fetched on-demand from news APIs, so no sync needed
-        # Live channels are typically static or updated via admin, so no sync needed
-
-        return {
-            "status": "synced",
-            "podcasts": {
-                "total": podcast_result["total_podcasts"],
-                "synced": podcast_result["podcasts_synced"],
-                "episodes_added": podcast_result["total_episodes_added"],
-            },
-        }
-    except Exception as e:
-        logger.error(f"Error syncing content: {str(e)}", exc_info=True)
-        raise HTTPException(status_code=500, detail="Failed to sync content")
+    return {
+        "status": "background_only",
+        "message": "Podcast syncing runs as a scheduled background task only. Changes will appear automatically.",
+        "podcasts": {
+            "total": 0,
+            "synced": 0,
+            "episodes_added": 0,
+        },
+    }
 
 
 @router.get("/category/{category_id}")

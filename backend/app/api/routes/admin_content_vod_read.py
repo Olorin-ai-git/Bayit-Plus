@@ -136,13 +136,15 @@ async def get_content_hierarchical(
     series_ids = [str(item.id) for item in items if item.is_series]
     episode_counts = {}
     if series_ids:
-        # Use aggregation to count episodes grouped by series_id
-        pipeline = [
-            {"$match": {"series_id": {"$in": series_ids}}},
-            {"$group": {"_id": "$series_id", "count": {"$sum": 1}}}
-        ]
-        episode_results = await Content.aggregate(pipeline).to_list()
-        episode_counts = {result["_id"]: result["count"] for result in episode_results}
+        # Fetch all episodes for these series IDs
+        all_episodes = await Content.find(
+            {"series_id": {"$in": series_ids}}
+        ).to_list()
+
+        # Count episodes per series
+        for episode in all_episodes:
+            series_id = episode.series_id
+            episode_counts[series_id] = episode_counts.get(series_id, 0) + 1
 
     # Build response with episode counts for series and subtitle availability
     result_items = []

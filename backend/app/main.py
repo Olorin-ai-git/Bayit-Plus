@@ -26,17 +26,26 @@ from app.api.routes.admin.recordings import router as admin_recordings_router
 
 
 async def sync_podcast_rss_feeds():
-    """Sync podcast episodes from RSS feeds on startup."""
+    """
+    Periodic background task to sync podcast episodes from RSS feeds.
+    Runs every 6 hours to keep podcast episodes up-to-date.
+    """
     import asyncio
-    try:
-        # Delay startup by 5 seconds to let server initialize
-        await asyncio.sleep(5)
-        logger.info("🔄 Starting background podcast sync...")
-        from app.services.podcast_sync import sync_all_podcasts
-        await sync_all_podcasts(max_episodes=3)
-        logger.info("✅ Background podcast sync completed")
-    except Exception as e:
-        logger.warning(f"⚠️ Background podcast sync failed: {e}")
+    from app.services.podcast_sync import sync_all_podcasts
+
+    # Wait for server to initialize
+    await asyncio.sleep(30)
+
+    while True:
+        try:
+            logger.info("🔄 Starting scheduled podcast sync (background task)...")
+            await sync_all_podcasts(max_episodes=20)
+            logger.info("✅ Scheduled podcast sync completed")
+        except Exception as e:
+            logger.error(f"⚠️ Scheduled podcast sync failed: {e}", exc_info=True)
+
+        # Wait 6 hours before next sync
+        await asyncio.sleep(6 * 60 * 60)
 
 
 async def scan_monitored_folders_task():
@@ -418,18 +427,19 @@ async def lifespan(app: FastAPI):
         await init_default_data()
     except Exception as e:
         logger.warning(f"Failed to initialize default data: {e}")
-    # Run podcast sync in background (non-blocking) - DISABLED: No podcasts in Bayit+
-    # import asyncio
-    # asyncio.create_task(sync_podcast_rss_feeds())
+    # Run podcast sync in background (scheduled every 6 hours)
+    asyncio.create_task(sync_podcast_rss_feeds())
+    logger.info("📻 Started podcast RSS background sync task (every 6 hours)")
     # Run folder monitoring in background (non-blocking)
     if settings.UPLOAD_MONITOR_ENABLED:
         asyncio.create_task(scan_monitored_folders_task())
         logger.info("📂 Started folder monitoring background task")
     
-    # Start processing upload queue if there are queued jobs
+    # Upload queue processor is now manual-only (triggered from UI)
+    # Automatic processing disabled to prevent server overload
     from app.services.upload_service import upload_service
-    asyncio.create_task(upload_service.process_queue())
-    logger.info("📤 Upload queue processor started")
+    # asyncio.create_task(upload_service.process_queue())
+    logger.info("📤 Upload queue processor ready (manual trigger only)")
     
     logger.info("✅ Server startup complete - Ready to accept connections")
     yield

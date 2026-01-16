@@ -7,7 +7,7 @@ import { useDirection } from '@/hooks/useDirection';
 import VideoPlayer from '@/components/player/VideoPlayer';
 import AudioPlayer from '@/components/player/AudioPlayer';
 import ContentCarousel from '@/components/content/ContentCarousel';
-import { liveService, radioService, podcastService, historyService, chaptersService } from '@/services/api';
+import { liveService, radioService, podcastService, historyService, chaptersService, contentService } from '@/services/api';
 import { adminContentService, adminPodcastsService } from '@/services/adminApi';
 import { colors, spacing, borderRadius } from '@bayit/shared/theme';
 import { GlassCard, GlassButton, GlassView } from '@bayit/shared/ui';
@@ -152,10 +152,10 @@ export default function WatchPage({ type = 'vod' }: WatchPageProps) {
           }
           break;
         default:
-          // vod, judaism, kids all use content service
+          // vod, judaism, kids all use content service (use public API, not admin API)
           [data, stream] = await Promise.all([
-            adminContentService.getById(contentId),
-            adminContentService.getStreamUrl(contentId),
+            contentService.getById(contentId),
+            contentService.getStreamUrl(contentId),
           ]);
       }
       setContent(data);

@@ -1,10 +1,10 @@
 import { useState, useEffect, useCallback } from 'react'
 import { View, Text, Pressable, ScrollView, StyleSheet } from 'react-native'
 import { useTranslation } from 'react-i18next'
-import { Search, X, AlertCircle } from 'lucide-react'
+import { Search, X, AlertCircle, RefreshCw } from 'lucide-react'
 import HierarchicalContentTable from '@/components/admin/HierarchicalContentTable'
 import { adminContentService } from '@/services/adminApi'
-import { GlassInput, GlassSelect } from '@bayit/shared/ui'
+import { GlassInput, GlassSelect, GlassButton } from '@bayit/shared/ui'
 import { useDirection } from '@/hooks/useDirection'
 import { useModal } from '@/contexts/ModalContext'
 import logger from '@/utils/logger'
@@ -132,7 +132,7 @@ export default function ContentLibraryPage() {
       <View style={styles.content}>
         {/* Header */}
         <View style={[styles.header, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
-          <View>
+          <View style={{ flex: 1 }}>
             <Text style={[styles.pageTitle, { textAlign: isRTL ? 'right' : 'left' }]}>
               {t('admin.titles.content', { defaultValue: 'Content Library' })}
             </Text>
@@ -140,6 +140,14 @@ export default function ContentLibraryPage() {
               {t('admin.content.subtitle', { defaultValue: 'Manage movies, series, and video content' })}
             </Text>
           </View>
+          <GlassButton
+            title=""
+            onPress={loadContent}
+            variant="ghost"
+            icon={<RefreshCw size={20} color="rgba(255,255,255,0.8)" />}
+            disabled={isLoading}
+            style={styles.refreshButton}
+          />
         </View>
 
         {/* Search and Filters */}
@@ -221,6 +229,10 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: 'rgba(255, 255, 255, 0.6)',
     marginTop: 4,
+  },
+  refreshButton: {
+    minWidth: 44,
+    alignSelf: 'flex-start',
   },
   filtersContainer: {
     flexDirection: 'row',

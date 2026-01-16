@@ -479,23 +479,9 @@
               });
             }
           }
-          
-          fetch('http://127.0.0.1:7244/ingest/5953914e-34ce-41fe-8a24-b30691c4a1e7', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              location: 'index.html:width-tracking',
-              message: 'Width changes causing jump',
-              data: {
-                allWidths: widthTracking,
-                widthChanges: widthChanges,
-                issue: 'Non-zero width deltas indicate container size changes causing layout shifts'
-              },
-              timestamp: Date.now(),
-              sessionId: 'debug-session',
-              hypothesisId: 'width-jump'
-            })
-          }).catch(function() {});
+
+          // Debug telemetry removed - was sending to non-existent endpoint
+          // If needed for debugging, implement proper telemetry service
         }, 2000);
       });
       // #endregion

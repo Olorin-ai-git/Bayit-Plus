@@ -313,28 +313,33 @@ async def resume_upload_queue(
     current_user: User = Depends(has_permission(Permission.CONTENT_CREATE))
 ):
     """
-    Resume a paused upload queue.
-    Call this after fixing credential issues.
+    Manually start/resume the upload queue processor.
+    Can be used to:
+    - Resume a paused queue after fixing credential issues
+    - Manually trigger queue processing (since auto-processing is disabled)
     """
     try:
-        if not upload_service._queue_paused:
-            return {
-                "success": True,
-                "message": "Queue is not paused"
-            }
-        
-        await upload_service.resume_queue()
-        
+        import asyncio
+
+        if upload_service._queue_paused:
+            # If paused, use the resume method which resets pause flags
+            await upload_service.resume_queue()
+            message = "Upload queue resumed successfully"
+        else:
+            # If not paused, manually trigger queue processing
+            asyncio.create_task(upload_service.process_queue())
+            message = "Upload queue processing started manually"
+
         return {
             "success": True,
-            "message": "Upload queue resumed successfully"
+            "message": message
         }
-        
+
     except Exception as e:
-        logger.error(f"Failed to resume queue: {e}", exc_info=True)
+        logger.error(f"Failed to start/resume queue: {e}", exc_info=True)
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Failed to resume queue: {str(e)}"
+            detail=f"Failed to start/resume queue: {str(e)}"
         )
 
 

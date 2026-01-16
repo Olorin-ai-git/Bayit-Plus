@@ -25,36 +25,22 @@ async def get_subtitle_languages_for_contents(content_ids: List[str]) -> Dict[st
         return {}
 
     try:
-        # Use aggregation pipeline to efficiently get unique languages per content
-        pipeline = [
-            # Match subtitle tracks for our content IDs
-            {"$match": {"content_id": {"$in": content_ids}}},
+        # Batch fetch all subtitle tracks for the requested content IDs
+        all_subtitle_tracks = await SubtitleTrackDoc.find(
+            {"content_id": {"$in": content_ids}}
+        ).to_list()
 
-            # Group by content_id and collect unique languages
-            {
-                "$group": {
-                    "_id": "$content_id",
-                    "languages": {"$addToSet": "$language"}
-                }
-            },
+        # Build subtitle map: content_id -> list of unique language codes
+        subtitle_map = {}
+        for track in all_subtitle_tracks:
+            if track.content_id not in subtitle_map:
+                subtitle_map[track.content_id] = set()
+            subtitle_map[track.content_id].add(track.language)
 
-            # Project to our desired format
-            {
-                "$project": {
-                    "_id": 0,
-                    "content_id": "$_id",
-                    "languages": 1
-                }
-            }
-        ]
-
-        # Execute aggregation
-        results = await SubtitleTrackDoc.aggregate(pipeline).to_list()
-
-        # Convert to dictionary for fast lookup
+        # Convert sets to lists for JSON serialization
         subtitle_map = {
-            result["content_id"]: result["languages"]
-            for result in results
+            content_id: list(languages)
+            for content_id, languages in subtitle_map.items()
         }
 
         logger.debug(f"Fetched subtitle languages for {len(subtitle_map)} content items out of {len(content_ids)} requested")
