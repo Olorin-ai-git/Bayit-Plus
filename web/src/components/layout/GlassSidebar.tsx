@@ -118,7 +118,9 @@ export const GlassSidebar: React.FC<GlassSidebarProps> = ({ isExpanded, onToggle
   const currentWidth = customWidth ?? (isExpanded ? expandedWidth : collapsedWidth);
   const widthAnim = useRef(new Animated.Value(currentWidth)).current;
   const opacityAnim = useRef(new Animated.Value(isExpanded ? 1 : 0)).current;
+  const sloganOpacityAnim = useRef(new Animated.Value(0)).current;
   const [focusedItem, setFocusedItem] = useState<string | null>(null);
+  const [pageLoaded, setPageLoaded] = useState(false);
   // Debounce to prevent double-toggle from onPress + onClick firing together
   const lastToggleTime = useRef<number>(0);
 
@@ -217,6 +219,27 @@ export const GlassSidebar: React.FC<GlassSidebarProps> = ({ isExpanded, onToggle
 
     return sections;
   }, [user?.role, user?.subscription?.plan]);
+
+  // Show slogan after page loads
+  useEffect(() => {
+    const handleLoad = () => {
+      setTimeout(() => {
+        setPageLoaded(true);
+        Animated.timing(sloganOpacityAnim, {
+          toValue: 1,
+          duration: 800,
+          useNativeDriver: true,
+        }).start();
+      }, 500); // Show slogan 500ms after page load
+    };
+
+    if (document.readyState === 'complete') {
+      handleLoad();
+    } else {
+      window.addEventListener('load', handleLoad);
+      return () => window.removeEventListener('load', handleLoad);
+    }
+  }, [sloganOpacityAnim]);
 
   // Reset custom width when toggling
   useEffect(() => {
@@ -342,7 +365,7 @@ export const GlassSidebar: React.FC<GlassSidebarProps> = ({ isExpanded, onToggle
                 <Animated.View
                   style={[
                     styles.sloganContainer,
-                    { opacity: opacityAnim },
+                    { opacity: sloganOpacityAnim },
                   ]}
                 >
                   <Text style={styles.sloganText}>

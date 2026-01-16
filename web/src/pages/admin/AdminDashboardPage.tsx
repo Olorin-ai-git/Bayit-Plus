@@ -9,7 +9,6 @@ import { colors, spacing, borderRadius } from '@bayit/shared/theme';
 import { GlassCard, GlassButton } from '@bayit/shared/ui';
 import { useDirection } from '@/hooks/useDirection';
 import logger from '@/utils/logger';
-import { adminButtonStyles } from '@/styles/adminButtonStyles';
 
 interface DashboardStats {
   total_users: number;
@@ -150,9 +149,7 @@ export default function AdminDashboardPage() {
         <GlassButton
           title={t('common.retry')}
           onPress={loadDashboardData}
-          variant="secondary"
-          style={adminButtonStyles.primaryButton}
-          textStyle={adminButtonStyles.buttonText}
+          variant="primary"
         />
       </View>
     );
@@ -179,10 +176,8 @@ export default function AdminDashboardPage() {
           title={t('admin.dashboard.refresh')}
           onPress={handleRefresh}
           disabled={refreshing}
-          variant="secondary"
-          icon={<RefreshCw size={18} color={colors.text} />}
-          style={adminButtonStyles.secondaryButton}
-          textStyle={adminButtonStyles.buttonText}
+          variant="ghost"
+          icon={<RefreshCw size={18} color="white" />}
         />
       </View>
 

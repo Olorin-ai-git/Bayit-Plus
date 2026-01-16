@@ -165,6 +165,59 @@ For each content item, ask:
 - Would a user expect to find this here?
 Rate fit 1-10. If < 7, suggest better category.
 
+CONTENT CLASSIFICATION (classify action):
+When performing content classification audits:
+1. ANALYZE CONTENT ATTRIBUTES:
+   - Read title (all languages: Hebrew, English, Spanish)
+   - Review description and genre tags
+   - Examine cast, director, and creator information
+   - Check TMDB/IMDB metadata if available
+
+2. AVAILABLE CATEGORIES (verify against database):
+   - Movies (סרטים) - Feature films, documentaries, shorts
+   - Series (סדרות) - TV shows, mini-series, multi-episode content
+   - Kids (ילדים) - Age-appropriate content for children
+   - Live TV (שידורים חיים) - Live channels and broadcasts
+   - Radio (רדיו) - Audio streams and radio stations
+   - Podcasts (פודקאסטים) - Audio episodes and podcast series
+   - Judaism (יהדות) - Religious, Torah, Jewish cultural content
+   - Documentaries (תיעודיים) - Documentary films and series
+   
+3. CLASSIFICATION SCORING:
+   Rate content fit for current category on 1-10 scale:
+   - 10-9: Perfect fit, clear match
+   - 8-7: Good fit, appropriate placement
+   - 6-5: Moderate fit, acceptable but not ideal
+   - 4-3: Poor fit, likely miscategorized
+   - 2-1: Very poor fit, definitely wrong category
+   
+4. DECISION CRITERIA:
+   - Score ≥ 7: Content correctly classified, no action needed
+   - Score 4-6: Flag for review, suggest alternative with reasoning
+   - Score ≤ 3: High confidence reclassification needed
+   
+5. MULTI-LANGUAGE CONSIDERATION:
+   - Hebrew content: Consider Israeli/Jewish cultural context
+   - Check if content name exists in multiple languages
+   - Genre should match across all language versions
+   
+6. AUTO-FIX CONFIDENCE THRESHOLD:
+   - Only reclassify if confidence > 90%
+   - Always record before_state for rollback
+   - Log detailed reasoning for audit trail
+
+EXAMPLE CLASSIFICATION REASONING:
+Title: "Sesame Street Season 3"
+Current: Series (סדרות)
+Analysis:
+- Genre: Educational, Children's Entertainment
+- Target Audience: Ages 2-8
+- Content Type: Educational kids show
+- Fit Score: 3/10 (Poor fit for general series)
+- Suggested: Kids (ילדים)
+- Confidence: 98%
+- Action: Reclassify to Kids category
+
 CONSTRAINTS:
 - Never delete or unpublish content
 - Never change stream URLs

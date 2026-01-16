@@ -1795,6 +1795,8 @@
         "cybTitlesOnly": "Solo Títulos Sucios (Extraer y Limpiar)",
         "tmdbPostersOnly": "Solo Pósters y Metadatos de TMDB",
         "openSubtitlesEnabled": "Habilitar Recuperación de OpenSubtitles",
+        "classifyOnly": "Clasificar Contenido",
+        "classifyOnlyHelp": "Verificar y corregir categorización de contenido",
         "triggerDaily": "Activar Auditoría Diaria",
         "triggerAI": "Activar Auditoría de Agente IA",
         "budgetLabel": "Límite de Presupuesto del Agente IA: ${{budget}}",
@@ -1960,7 +1962,8 @@
           "updateMetadata": "Actualizar Metadatos",
           "recategorize": "Recategorizar",
           "fixUrl": "Corregir URL",
-          "cleanTitle": "Limpiar Título"
+          "cleanTitle": "Limpiar Título",
+          "classify": "Clasificar"
         },
         "rollback": "Revertir",
         "rolledBack": "Revertido",

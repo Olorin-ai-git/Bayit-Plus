@@ -8,7 +8,6 @@ import { GlassCard, GlassButton, GlassModal, GlassInput, GlassToggle, GlassView 
 import { useDirection } from '@/hooks/useDirection';
 import { useModal } from '@/contexts/ModalContext';
 import logger from '@/utils/logger';
-import { adminButtonStyles } from '@/styles/adminButtonStyles';
 
 interface SystemSettings {
   default_plan: string;
@@ -136,7 +135,7 @@ export default function SettingsPage() {
           <Text style={[styles.pageTitle, { textAlign }]}>{t('admin.titles.settings')}</Text>
           <Text style={[styles.subtitle, { textAlign }]}>{t('admin.settings.subtitle')}</Text>
         </View>
-        <GlassButton title={t('admin.settings.saveChanges')} variant="secondary" icon={<Save size={16} color={colors.text} />} onPress={handleSave} disabled={!hasChanges || saving} style={adminButtonStyles.successButton} textStyle={adminButtonStyles.buttonText} />
+        <GlassButton title={t('admin.settings.saveChanges')} variant="success" icon={<Save size={16} color="white" />} onPress={handleSave} disabled={!hasChanges || saving} />
       </View>
 
       <View style={styles.sectionsContainer}>
@@ -188,8 +187,8 @@ export default function SettingsPage() {
           <Text style={[styles.sectionTitle, { textAlign }]}>{t('admin.settings.systemActions')}</Text>
 
           <View style={[styles.dangerActions, { flexDirection }]}>
-            <GlassButton title={t('admin.settings.clearCache')} variant="secondary" icon={<RefreshCw size={16} color={colors.warning} />} onPress={handleClearCache} style={[adminButtonStyles.warningButton, { flex: 1 }]} textStyle={adminButtonStyles.buttonText} />
-            <GlassButton title={t('admin.settings.resetAnalytics')} variant="secondary" icon={<Trash2 size={16} color={colors.error} />} onPress={handleResetAnalytics} style={[adminButtonStyles.dangerButton, { flex: 1 }]} textStyle={adminButtonStyles.buttonText} />
+            <GlassButton title={t('admin.settings.clearCache')} variant="warning" icon={<RefreshCw size={16} color="white" />} onPress={handleClearCache} style={{ flex: 1 }} />
+            <GlassButton title={t('admin.settings.resetAnalytics')} variant="danger" icon={<Trash2 size={16} color="white" />} onPress={handleResetAnalytics} style={{ flex: 1 }} />
           </View>
 
           <GlassView style={[styles.warningBox, { flexDirection }]} intensity="light">
@@ -211,9 +210,7 @@ export default function SettingsPage() {
           <GlassButton
             title={t('common.ok')}
             onPress={() => setSuccessModalOpen(false)}
-            variant="secondary"
-            style={adminButtonStyles.successButton}
-            textStyle={adminButtonStyles.buttonText}
+            variant="success"
           />
         </View>
       </GlassModal>
@@ -230,9 +227,7 @@ export default function SettingsPage() {
           <GlassButton
             title={t('common.ok')}
             onPress={() => setErrorModalOpen(false)}
-            variant="secondary"
-            style={adminButtonStyles.dangerButton}
-            textStyle={adminButtonStyles.buttonText}
+            variant="primary"
           />
         </View>
       </GlassModal>

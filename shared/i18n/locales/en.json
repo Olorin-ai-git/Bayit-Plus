@@ -1542,6 +1542,8 @@
         "tmdbPostersOnlyHelp": "Focus on posters & metadata",
         "openSubtitlesEnabled": "Subtitles Only (OpenSubtitles)",
         "openSubtitlesEnabledHelp": "Download subtitles from OpenSubtitles only",
+        "classifyOnly": "Classify Content",
+        "classifyOnlyHelp": "Verify and fix content categorization",
         "auditType": "Audit Type",
         "auditTypeHelp": "Choose between rule-based or AI-powered audit",
         "dailyAudit": "Daily Audit",
@@ -1731,7 +1733,8 @@
           "updateMetadata": "Update Metadata",
           "recategorize": "Recategorize",
           "fixUrl": "Fix URL",
-          "cleanTitle": "Clean Title"
+          "cleanTitle": "Clean Title",
+          "classify": "Classify"
         },
         "rollback": "Rollback",
         "rolledBack": "Rolled Back",

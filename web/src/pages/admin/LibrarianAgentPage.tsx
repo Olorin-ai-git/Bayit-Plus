@@ -53,6 +53,7 @@ const LibrarianAgentPage = () => {
   const [cybTitlesOnly, setCybTitlesOnly] = useState(false);
   const [tmdbPostersOnly, setTmdbPostersOnly] = useState(false);
   const [openSubtitlesEnabled, setOpenSubtitlesEnabled] = useState(false);
+  const [classifyOnly, setClassifyOnly] = useState(false);
   const [selectedReport, setSelectedReport] = useState<AuditReportDetail | null>(null);
   const [detailModalVisible, setDetailModalVisible] = useState(false);
   const [detailModalLoading, setDetailModalLoading] = useState(false);
@@ -344,6 +345,7 @@ const LibrarianAgentPage = () => {
         cyb_titles_only: cybTitlesOnly,
         tmdb_posters_only: tmdbPostersOnly,
         opensubtitles_enabled: openSubtitlesEnabled,
+        classify_only: classifyOnly,
       });
 
       // Expand live panel and show initialization
@@ -1026,6 +1028,19 @@ const LibrarianAgentPage = () => {
             <View style={styles.checkboxLabelContainer}>
               <Text style={styles.checkboxLabel}>{t('admin.librarian.quickActions.openSubtitlesEnabled', 'Subtitles Only (OpenSubtitles)')}</Text>
               <Text style={styles.checkboxHelper}>{t('admin.librarian.quickActions.openSubtitlesEnabledHelp', 'Download subtitles from OpenSubtitles only')}</Text>
+            </View>
+          </View>
+
+          <View style={styles.checkboxRow}>
+            <Pressable
+              style={[styles.checkbox, classifyOnly && styles.checkboxChecked]}
+              onPress={() => setClassifyOnly(!classifyOnly)}
+            >
+              {classifyOnly && <View style={styles.checkboxInner} />}
+            </Pressable>
+            <View style={styles.checkboxLabelContainer}>
+              <Text style={styles.checkboxLabel}>{t('admin.librarian.quickActions.classifyOnly', 'Classify Content')}</Text>
+              <Text style={styles.checkboxHelper}>{t('admin.librarian.quickActions.classifyOnlyHelp', 'Verify and fix content categorization')}</Text>
             </View>
           </View>
         </View>

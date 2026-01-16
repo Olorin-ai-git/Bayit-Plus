@@ -8,7 +8,6 @@ import { subscriptionsService } from '@/services/adminApi';
 import { colors, spacing, borderRadius } from '@bayit/shared/theme';
 import { useDirection } from '@/hooks/useDirection';
 import logger from '@/utils/logger';
-import { adminButtonStyles } from '@/styles/adminButtonStyles';
 
 interface User {
   name: string;
@@ -567,9 +566,6 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     gap: spacing.sm,
   },
-  addButton: adminButtonStyles.primaryButton,
-  actionButton: adminButtonStyles.secondaryButton,
-  deleteButton: adminButtonStyles.dangerButton,
   selectionBar: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -639,8 +635,6 @@ const styles = StyleSheet.create({
   planOption: {
     width: '100%',
   },
-  planOptionSelected: adminButtonStyles.selectedButton,
-  planOptionUnselected: adminButtonStyles.unselectedButton,
   modalActions: {
     flexDirection: 'row',
     gap: spacing.md,
@@ -649,10 +643,7 @@ const styles = StyleSheet.create({
   modalButton: {
     flex: 1,
   },
-  cancelButton: adminButtonStyles.cancelButton,
-  saveButton: adminButtonStyles.successButton,
   inputContainer: {
     marginBottom: spacing.md,
   },
-  buttonText: adminButtonStyles.buttonText,
 });

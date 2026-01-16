@@ -78,6 +78,7 @@ class TriggerAuditRequest(BaseModel):
     cyb_titles_only: bool = False  # Only scan and extract CYB titles
     tmdb_posters_only: bool = False  # Only add/update TMDB posters and metadata
     opensubtitles_enabled: bool = False  # Enable OpenSubtitles API for subtitle retrieval
+    classify_only: bool = False  # Focus on content classification verification
 
 
 class TriggerAuditResponse(BaseModel):
@@ -216,6 +217,12 @@ async def get_librarian_config(
                 label="Clean Title",
                 color="info",
                 icon="Type"
+            ),
+            ActionTypeConfig(
+                value="classify",
+                label="Classify",
+                color="primary",
+                icon="FolderTree"
             )
         ]
 
@@ -400,7 +407,8 @@ async def trigger_librarian_audit(
                     last_24_hours_only=request.last_24_hours_only,
                     cyb_titles_only=request.cyb_titles_only,
                     tmdb_posters_only=request.tmdb_posters_only,
-                    opensubtitles_enabled=request.opensubtitles_enabled
+                    opensubtitles_enabled=request.opensubtitles_enabled,
+                    classify_only=request.classify_only
                 )
             )
             audit_task_manager.register_task(audit_id, task)
@@ -429,7 +437,8 @@ async def trigger_librarian_audit(
                     last_24_hours_only=request.last_24_hours_only,
                     cyb_titles_only=request.cyb_titles_only,
                     tmdb_posters_only=request.tmdb_posters_only,
-                    opensubtitles_enabled=request.opensubtitles_enabled
+                    opensubtitles_enabled=request.opensubtitles_enabled,
+                    classify_only=request.classify_only
                 )
             )
             audit_task_manager.register_task(audit_id, task)

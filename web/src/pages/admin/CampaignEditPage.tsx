@@ -7,7 +7,6 @@ import { colors, spacing, borderRadius } from '@bayit/shared/theme';
 import { GlassCard, GlassButton, GlassToggle, GlassInput } from '@bayit/shared/ui';
 import { useDirection } from '@/hooks/useDirection';
 import logger from '@/utils/logger';
-import { adminButtonStyles } from '@/styles/adminButtonStyles';
 
 interface CampaignFormData {
   name: string;
@@ -148,10 +147,8 @@ export default function CampaignEditPage() {
             />
             <GlassButton
               title={t('admin.campaigns.form.generate')}
-              variant="secondary"
+              variant="ghost"
               onPress={generateCode}
-              style={adminButtonStyles.secondaryButton}
-              textStyle={adminButtonStyles.buttonText}
             />
           </View>
         </View>
@@ -162,17 +159,15 @@ export default function CampaignEditPage() {
             <View style={[styles.typeButtons, { flexDirection }]}>
               <GlassButton
                 title="%"
-                variant="secondary"
+                variant={formData.discount_type === 'percentage' ? 'primary' : 'ghost'}
                 onPress={() => setFormData((p) => ({ ...p, discount_type: 'percentage' }))}
-                style={[styles.typeButton, formData.discount_type === 'percentage' ? adminButtonStyles.selectedButton : adminButtonStyles.unselectedButton]}
-                textStyle={adminButtonStyles.buttonText}
+                style={styles.typeButton}
               />
               <GlassButton
                 title="$"
-                variant="secondary"
+                variant={formData.discount_type === 'fixed' ? 'primary' : 'ghost'}
                 onPress={() => setFormData((p) => ({ ...p, discount_type: 'fixed' }))}
-                style={[styles.typeButton, formData.discount_type === 'fixed' ? adminButtonStyles.selectedButton : adminButtonStyles.unselectedButton]}
-                textStyle={adminButtonStyles.buttonText}
+                style={styles.typeButton}
               />
             </View>
           </View>
@@ -221,18 +216,14 @@ export default function CampaignEditPage() {
         <View style={[styles.actions, { flexDirection }]}>
           <GlassButton
             title={t('common.cancel')}
-            variant="secondary"
+            variant="cancel"
             onPress={() => navigate('/admin/campaigns')}
-            style={adminButtonStyles.cancelButton}
-            textStyle={adminButtonStyles.buttonText}
           />
           <GlassButton
             title={saving ? t('common.saving') : t('common.save')}
-            variant="secondary"
+            variant="success"
             onPress={handleSave}
             disabled={saving}
-            style={adminButtonStyles.successButton}
-            textStyle={adminButtonStyles.buttonText}
           />
         </View>
       </GlassCard>

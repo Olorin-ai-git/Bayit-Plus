@@ -82,6 +82,7 @@ export interface TriggerAuditRequest {
   cyb_titles_only?: boolean;
   tmdb_posters_only?: boolean;
   opensubtitles_enabled?: boolean;
+  classify_only?: boolean;
 }
 
 export interface TriggerAuditResponse {
