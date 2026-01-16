@@ -267,6 +267,18 @@ const apiSubtitlesService = {
   getCacheStats: () => api.get('/subtitles/cache/stats'),
 }
 
+// Subtitle Preferences Service (API)
+const apiSubtitlePreferencesService = {
+  getPreference: (contentId) =>
+    api.get(`/subtitles/preferences/${contentId}`),
+  setPreference: (contentId, language) =>
+    api.post(`/subtitles/preferences/${contentId}`, null, { params: { language } }),
+  deletePreference: (contentId) =>
+    api.delete(`/subtitles/preferences/${contentId}`),
+  getAllPreferences: () =>
+    api.get('/subtitles/preferences'),
+}
+
 // Morning Ritual Service (API)
 const apiRitualService = {
   check: () => api.get('/ritual/check'),
@@ -405,6 +417,7 @@ export const zmanService = isDemo ? demoZmanService : apiZmanService
 export const trendingService = isDemo ? demoTrendingService : apiTrendingService
 export const chaptersService = isDemo ? demoChaptersService : apiChaptersService
 export const subtitlesService = isDemo ? demoSubtitlesService : apiSubtitlesService
+export const subtitlePreferencesService = apiSubtitlePreferencesService // No demo mode - requires auth
 export const ritualService = isDemo ? demoRitualService : apiRitualService
 export const partyService = isDemo ? demoPartyService : apiPartyService
 export const favoritesService = isDemo ? demoFavoritesService : apiFavoritesService

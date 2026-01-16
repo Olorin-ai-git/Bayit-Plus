@@ -18,6 +18,12 @@ import { contentService, searchService } from '../services/api';
 import { colors, spacing, borderRadius } from '../theme';
 import { isTV, isWeb } from '../utils/platform';
 import { useDirection } from '../hooks/useDirection';
+import {
+  RecentSearches,
+  TrendingSearches,
+  SearchSuggestions,
+  useRecentSearches,
+} from '../components/search';
 
 interface SearchResult {
   id: string;
@@ -140,8 +146,12 @@ export const SearchScreen: React.FC = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [selectedFilter, setSelectedFilter] = useState<string>('all');
   const [hasSearched, setHasSearched] = useState(false);
+  const [showSuggestions, setShowSuggestions] = useState(false);
   const searchInputRef = useRef<TextInput>(null);
   const isHebrew = i18n.language === 'he';
+
+  // Recent searches hook
+  const { recentSearches, addSearch, clearSearches } = useRecentSearches();
 
   // Helper to get localized title
   const getLocalizedTitle = (item: any) => {
@@ -164,6 +174,11 @@ export const SearchScreen: React.FC = () => {
 
     setIsLoading(true);
     setHasSearched(true);
+    setShowSuggestions(false);
+
+    // Save to recent searches
+    await addSearch(searchQuery);
+
     try {
       const params = selectedFilter !== 'all' ? { type: selectedFilter } : undefined;
       const data = await (searchService as any).search(searchQuery, params) as any;
@@ -184,6 +199,27 @@ export const SearchScreen: React.FC = () => {
 
   const handleSearch = () => {
     performSearch(query);
+  };
+
+  const handleQueryChange = (text: string) => {
+    setQuery(text);
+    setShowSuggestions(text.length >= 2);
+  };
+
+  const handleSuggestionSelect = (suggestion: string) => {
+    setQuery(suggestion);
+    setShowSuggestions(false);
+    performSearch(suggestion);
+  };
+
+  const handleRecentSearchSelect = (search: string) => {
+    setQuery(search);
+    performSearch(search);
+  };
+
+  const handleTrendingSelect = (trending: string) => {
+    setQuery(trending);
+    performSearch(trending);
   };
 
   const handleFilterChange = (filterId: string) => {
@@ -229,58 +265,86 @@ export const SearchScreen: React.FC = () => {
 
       {/* Search Input */}
       <View style={styles.searchContainer}>
-        <GlassView style={[styles.searchBox, { flexDirection: isRTL ? 'row' : 'row-reverse' }]}>
-          <TextInput
-            ref={searchInputRef}
-            style={[styles.searchInput, { textAlign }]}
-            value={query}
-            onChangeText={setQuery}
-            onSubmitEditing={handleSearch}
-            placeholder={t('search.placeholder')}
-            placeholderTextColor={colors.textMuted}
-            returnKeyType="search"
-            autoFocus={!isTV}
-          />
-          {query ? (
-            <TouchableOpacity onPress={clearSearch} style={styles.clearButton}>
-              <Text style={styles.clearIcon}>✕</Text>
+        <View style={styles.searchWrapper}>
+          <GlassView style={[styles.searchBox, { flexDirection: isRTL ? 'row' : 'row-reverse' }]}>
+            <TextInput
+              ref={searchInputRef}
+              style={[styles.searchInput, { textAlign }]}
+              value={query}
+              onChangeText={handleQueryChange}
+              onSubmitEditing={handleSearch}
+              onFocus={() => setShowSuggestions(query.length >= 2)}
+              onBlur={() => setTimeout(() => setShowSuggestions(false), 200)}
+              placeholder={t('search.placeholder')}
+              placeholderTextColor={colors.textMuted}
+              returnKeyType="search"
+              autoFocus={!isTV}
+            />
+            {query ? (
+              <TouchableOpacity onPress={clearSearch} style={styles.clearButton}>
+                <Text style={styles.clearIcon}>✕</Text>
+              </TouchableOpacity>
+            ) : null}
+            <TouchableOpacity onPress={handleSearch} style={styles.searchButton}>
+              <Text style={styles.searchButtonIcon}>🔍</Text>
             </TouchableOpacity>
-          ) : null}
-          <TouchableOpacity onPress={handleSearch} style={styles.searchButton}>
-            <Text style={styles.searchButtonIcon}>🔍</Text>
-          </TouchableOpacity>
-        </GlassView>
+          </GlassView>
+
+          {/* Search Suggestions */}
+          <SearchSuggestions
+            query={query}
+            visible={showSuggestions && !hasSearched}
+            onSuggestionSelect={handleSuggestionSelect}
+            maxSuggestions={5}
+          />
+        </View>
       </View>
 
-      {/* Filter Tabs - reversed for LTR languages so visual order matches reading direction */}
-      <ScrollView
-        horizontal
-        showsHorizontalScrollIndicator={false}
-        contentContainerStyle={styles.filtersContainer}
-        style={styles.filtersScroll}
-      >
-        {(isRTL ? FILTER_OPTIONS : [...FILTER_OPTIONS].reverse()).map((filter, index) => (
-          <TouchableOpacity
-            key={filter.id}
-            onPress={() => handleFilterChange(filter.id)}
-            style={[
-              styles.filterButton,
-              selectedFilter === filter.id && styles.filterButtonActive,
-            ]}
-            // @ts-ignore
-            hasTVPreferredFocus={index === 0 && isTV}
-          >
-            <Text
+      {/* Recent Searches - show when no query */}
+      {!query && !hasSearched && recentSearches.length > 0 && (
+        <RecentSearches
+          onSearchSelect={handleRecentSearchSelect}
+          onClear={clearSearches}
+          maxItems={5}
+        />
+      )}
+
+      {/* Trending Searches - show when no query */}
+      {!query && !hasSearched && (
+        <TrendingSearches onSearchSelect={handleTrendingSelect} maxItems={10} />
+      )}
+
+      {/* Filter Tabs - show when searching or has results */}
+      {(query || hasSearched) && (
+        <ScrollView
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          contentContainerStyle={styles.filtersContainer}
+          style={styles.filtersScroll}
+        >
+          {(isRTL ? FILTER_OPTIONS : [...FILTER_OPTIONS].reverse()).map((filter, index) => (
+            <TouchableOpacity
+              key={filter.id}
+              onPress={() => handleFilterChange(filter.id)}
               style={[
-                styles.filterText,
-                selectedFilter === filter.id && styles.filterTextActive,
+                styles.filterButton,
+                selectedFilter === filter.id && styles.filterButtonActive,
               ]}
+              // @ts-ignore
+              hasTVPreferredFocus={index === 0 && isTV}
             >
-              {t(filter.labelKey)}
-            </Text>
-          </TouchableOpacity>
-        ))}
-      </ScrollView>
+              <Text
+                style={[
+                  styles.filterText,
+                  selectedFilter === filter.id && styles.filterTextActive,
+                ]}
+              >
+                {t(filter.labelKey)}
+              </Text>
+            </TouchableOpacity>
+          ))}
+        </ScrollView>
+      )}
 
       {/* Results */}
       {isLoading ? (
@@ -370,6 +434,9 @@ const styles = StyleSheet.create({
   searchContainer: {
     paddingHorizontal: spacing.xxl,
     paddingBottom: spacing.lg,
+  },
+  searchWrapper: {
+    position: 'relative',
   },
   searchBox: {
     flexDirection: 'row',

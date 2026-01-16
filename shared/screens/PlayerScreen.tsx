@@ -38,7 +38,22 @@ import {
   WatchPartyJoinModal,
   WatchPartyOverlay,
 } from '../components/watchparty';
-import { ChaptersOverlay, Chapter } from '../components/player';
+import {
+  ChaptersOverlay,
+  Chapter,
+  QualitySelector,
+  QualityLevel,
+  SubtitleSettings,
+  SubtitlePreferences,
+  AudioTrackSelector,
+  AudioTrack,
+  PlaybackSpeedControl,
+  PlaybackSpeed,
+  useQualityPreference,
+  useSubtitlePreferences,
+  usePlaybackSpeedPreference,
+  isPlaybackSpeedSupported,
+} from '../components/player';
 
 export const PlayerScreen: React.FC = () => {
   const { t } = useTranslation();
@@ -84,6 +99,25 @@ export const PlayerScreen: React.FC = () => {
   const [chapters, setChapters] = useState<Chapter[]>([]);
   const [chaptersLoading, setChaptersLoading] = useState(false);
   const [showChaptersOverlay, setShowChaptersOverlay] = useState(false);
+
+  // Player controls state
+  const [showQualitySelector, setShowQualitySelector] = useState(false);
+  const [showSubtitleSettings, setShowSubtitleSettings] = useState(false);
+  const [showAudioTrackSelector, setShowAudioTrackSelector] = useState(false);
+  const [showPlaybackSpeedControl, setShowPlaybackSpeedControl] = useState(false);
+  const [showSettingsMenu, setShowSettingsMenu] = useState(false);
+
+  // Load saved preferences
+  const savedQuality = useQualityPreference();
+  const savedSubtitlePrefs = useSubtitlePreferences();
+  const savedPlaybackSpeed = usePlaybackSpeedPreference();
+
+  // Player state
+  const [currentQuality, setCurrentQuality] = useState<QualityLevel>(savedQuality);
+  const [subtitlePreferences, setSubtitlePreferences] = useState<SubtitlePreferences>(savedSubtitlePrefs);
+  const [playbackSpeed, setPlaybackSpeed] = useState<PlaybackSpeed>(savedPlaybackSpeed);
+  const [audioTracks] = useState<AudioTrack[]>([]);
+  const [selectedAudioTrack, setSelectedAudioTrack] = useState<string>('default');
 
   useEffect(() => {
     loadStream();
@@ -271,6 +305,38 @@ export const PlayerScreen: React.FC = () => {
     showControlsTemporarily();
   };
 
+  const handleQualityChange = (quality: QualityLevel) => {
+    setCurrentQuality(quality);
+    // For web, quality switching would be handled by HLS.js
+    // For React Native, would use selectedVideoTrack prop
+    showControlsTemporarily();
+  };
+
+  const handleSubtitlePreferencesChange = (prefs: SubtitlePreferences) => {
+    setSubtitlePreferences(prefs);
+    // Apply subtitle styling to video element
+    showControlsTemporarily();
+  };
+
+  const handleAudioTrackChange = (trackId: string) => {
+    setSelectedAudioTrack(trackId);
+    // For web, switch audio track via HTMLMediaElement
+    // For React Native, use selectedAudioTrack prop
+    showControlsTemporarily();
+  };
+
+  const handlePlaybackSpeedChange = (speed: PlaybackSpeed) => {
+    setPlaybackSpeed(speed);
+    if (Platform.OS === 'web') {
+      const video = videoRef.current as HTMLVideoElement | null;
+      if (video) {
+        video.playbackRate = speed;
+      }
+    }
+    // React Native Video may not support playback speed
+    showControlsTemporarily();
+  };
+
   const progressPercentage = progress.duration > 0
     ? (progress.currentTime / progress.duration) * 100
     : 0;
@@ -367,6 +433,13 @@ export const PlayerScreen: React.FC = () => {
             </TouchableOpacity>
             <Text style={styles.title}>{title}</Text>
             <View style={styles.topBarActions}>
+              {/* Settings Button */}
+              <TouchableOpacity
+                style={styles.settingsButton}
+                onPress={() => setShowSettingsMenu(!showSettingsMenu)}
+              >
+                <Text style={styles.settingsButtonIcon}>⚙️</Text>
+              </TouchableOpacity>
               {/* Chapters Button */}
               {chapters.length > 0 && (
                 <TouchableOpacity
@@ -449,6 +522,89 @@ export const PlayerScreen: React.FC = () => {
         visible={showChaptersOverlay}
         onClose={() => setShowChaptersOverlay(false)}
         onSeek={handleChapterSeek}
+      />
+
+      {/* Settings Menu */}
+      {showSettingsMenu && (
+        <View style={styles.settingsMenu}>
+          <TouchableOpacity
+            style={styles.settingsMenuItem}
+            onPress={() => {
+              setShowQualitySelector(true);
+              setShowSettingsMenu(false);
+            }}
+          >
+            <Text style={styles.settingsMenuIcon}>🎬</Text>
+            <Text style={styles.settingsMenuText}>{t('player.quality', 'Video Quality')}</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            style={styles.settingsMenuItem}
+            onPress={() => {
+              setShowSubtitleSettings(true);
+              setShowSettingsMenu(false);
+            }}
+          >
+            <Text style={styles.settingsMenuIcon}>💬</Text>
+            <Text style={styles.settingsMenuText}>{t('player.subtitles', 'Subtitles')}</Text>
+          </TouchableOpacity>
+
+          {audioTracks.length > 0 && (
+            <TouchableOpacity
+              style={styles.settingsMenuItem}
+              onPress={() => {
+                setShowAudioTrackSelector(true);
+                setShowSettingsMenu(false);
+              }}
+            >
+              <Text style={styles.settingsMenuIcon}>🔊</Text>
+              <Text style={styles.settingsMenuText}>{t('player.audio', 'Audio Track')}</Text>
+            </TouchableOpacity>
+          )}
+
+          {isPlaybackSpeedSupported() && (
+            <TouchableOpacity
+              style={styles.settingsMenuItem}
+              onPress={() => {
+                setShowPlaybackSpeedControl(true);
+                setShowSettingsMenu(false);
+              }}
+            >
+              <Text style={styles.settingsMenuIcon}>⏩</Text>
+              <Text style={styles.settingsMenuText}>{t('player.speed', 'Playback Speed')}</Text>
+            </TouchableOpacity>
+          )}
+        </View>
+      )}
+
+      {/* Player Control Modals */}
+      <QualitySelector
+        visible={showQualitySelector}
+        onClose={() => setShowQualitySelector(false)}
+        currentQuality={currentQuality}
+        onQualityChange={handleQualityChange}
+      />
+
+      <SubtitleSettings
+        visible={showSubtitleSettings}
+        onClose={() => setShowSubtitleSettings(false)}
+        currentPreferences={subtitlePreferences}
+        onPreferencesChange={handleSubtitlePreferencesChange}
+      />
+
+      <AudioTrackSelector
+        visible={showAudioTrackSelector}
+        onClose={() => setShowAudioTrackSelector(false)}
+        audioTracks={audioTracks}
+        selectedTrackId={selectedAudioTrack}
+        onTrackChange={handleAudioTrackChange}
+      />
+
+      <PlaybackSpeedControl
+        visible={showPlaybackSpeedControl}
+        onClose={() => setShowPlaybackSpeedControl(false)}
+        currentSpeed={playbackSpeed}
+        onSpeedChange={handlePlaybackSpeedChange}
       />
 
       {/* Modals */}
@@ -603,6 +759,45 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginLeft: 'auto',
     gap: 12,
+  },
+  settingsButton: {
+    width: 44,
+    height: 44,
+    borderRadius: 22,
+    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  settingsButtonIcon: {
+    fontSize: 22,
+  },
+  settingsMenu: {
+    position: 'absolute',
+    top: 80,
+    right: 24,
+    backgroundColor: 'rgba(20, 20, 20, 0.95)',
+    borderRadius: 12,
+    borderWidth: 2,
+    borderColor: 'rgba(168, 85, 247, 0.3)',
+    paddingVertical: 8,
+    minWidth: 200,
+    // @ts-ignore - Web CSS property
+    backdropFilter: 'blur(20px)',
+  },
+  settingsMenuItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+    gap: 12,
+  },
+  settingsMenuIcon: {
+    fontSize: 20,
+  },
+  settingsMenuText: {
+    color: '#ffffff',
+    fontSize: 16,
+    fontWeight: '500',
   },
   chaptersButton: {
     flexDirection: 'row',

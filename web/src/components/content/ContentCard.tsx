@@ -5,7 +5,7 @@ import { useTranslation } from 'react-i18next';
 import { Play, Star, Bookmark } from 'lucide-react';
 import { colors, spacing, borderRadius } from '@bayit/shared/theme';
 import { GlassCard, GlassBadge } from '@bayit/shared/ui';
-import { SubtitleFlags } from '@bayit/shared/components/SubtitleFlags';
+import { SubtitleFlags } from '@bayit/shared';
 import { useModeEnforcement } from '@bayit/shared-hooks';
 import { useDirection } from '@/hooks/useDirection';
 import { favoritesService, watchlistService } from '@/services/api';

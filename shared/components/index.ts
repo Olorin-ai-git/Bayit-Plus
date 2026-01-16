@@ -25,6 +25,7 @@ export { LanguageSelector } from './LanguageSelector';
 // ProfileDropdown is web-only (uses lucide-react and react-dom portal)
 // Import directly from './ProfileDropdown' in web app
 export { SideMenu } from './SideMenu';
+export { SubtitleFlags } from './SubtitleFlags';
 export { TrendingRow } from './TrendingRow';
 export { UserAccountMenu } from './UserAccountMenu';
 export { VoiceSearchButton } from './VoiceSearchButton';

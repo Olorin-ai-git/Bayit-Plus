@@ -6,6 +6,7 @@ import {
   StyleSheet,
   Animated,
   Platform,
+  Image,
 } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { colors, borderRadius, spacing } from '../../theme';
@@ -18,6 +19,7 @@ export interface Chapter {
   end_time: number;
   category: string;
   summary?: string;
+  thumbnail?: string;
 }
 
 interface ChapterItemProps {
@@ -108,17 +110,44 @@ export const ChapterItem: React.FC<ChapterItemProps> = ({
         {/* Category indicator bar */}
         <View style={[styles.categoryBar, { backgroundColor: categoryColor }]} />
 
+        {/* Thumbnail */}
+        {chapter.thumbnail && (
+          <View style={styles.thumbnailContainer}>
+            <Image
+              source={{ uri: chapter.thumbnail }}
+              style={styles.thumbnail}
+              resizeMode="cover"
+            />
+            <View style={styles.thumbnailOverlay}>
+              <View style={[styles.thumbnailBadge, { backgroundColor: categoryColor }]}>
+                <Text style={styles.thumbnailBadgeText}>
+                  {formatTime(chapter.start_time)}
+                </Text>
+              </View>
+            </View>
+          </View>
+        )}
+
         <View style={styles.content}>
           {/* Title and time row */}
           <View style={styles.titleRow}>
             <Text
               style={[styles.title, isActive && styles.titleActive]}
-              numberOfLines={1}
+              numberOfLines={2}
             >
               {chapter.title}
             </Text>
-            <Text style={styles.time}>{formatTime(chapter.start_time)}</Text>
+            {!chapter.thumbnail && (
+              <Text style={styles.time}>{formatTime(chapter.start_time)}</Text>
+            )}
           </View>
+
+          {/* Summary (if available) */}
+          {chapter.summary && (
+            <Text style={styles.summary} numberOfLines={2}>
+              {chapter.summary}
+            </Text>
+          )}
 
           {/* Category badge row */}
           <View style={styles.badgeRow}>
@@ -154,6 +183,7 @@ const styles = StyleSheet.create({
     marginBottom: spacing.sm,
     borderWidth: 1,
     borderColor: 'transparent',
+    minHeight: 80,
   },
   containerActive: {
     backgroundColor: 'rgba(107, 33, 168, 0.3)',
@@ -170,18 +200,53 @@ const styles = StyleSheet.create({
   },
   categoryBar: {
     width: 4,
-    height: 48,
+    alignSelf: 'stretch',
     borderRadius: 2,
     marginLeft: spacing.sm,
+  },
+  thumbnailContainer: {
+    position: 'relative',
+    width: 80,
+    height: 60,
+    borderRadius: borderRadius.md,
+    overflow: 'hidden',
+    marginHorizontal: spacing.sm,
+  },
+  thumbnail: {
+    width: '100%',
+    height: '100%',
+  },
+  thumbnailOverlay: {
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    right: 0,
+    backgroundColor: 'rgba(0, 0, 0, 0.6)',
+    paddingHorizontal: spacing.xs,
+    paddingVertical: 2,
+  },
+  thumbnailBadge: {
+    paddingHorizontal: spacing.xs,
+    paddingVertical: 2,
+    borderRadius: borderRadius.sm,
+    alignSelf: 'flex-start',
+  },
+  thumbnailBadgeText: {
+    fontSize: 10,
+    fontWeight: '600',
+    color: colors.text,
+    fontVariant: ['tabular-nums'],
   },
   content: {
     flex: 1,
     marginHorizontal: spacing.md,
+    justifyContent: 'center',
   },
   titleRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    alignItems: 'center',
+    alignItems: 'flex-start',
+    marginBottom: spacing.xs,
   },
   title: {
     fontSize: 16,
@@ -189,6 +254,7 @@ const styles = StyleSheet.create({
     color: colors.text,
     flex: 1,
     textAlign: 'right',
+    lineHeight: 20,
   },
   titleActive: {
     color: colors.primary,
@@ -198,6 +264,13 @@ const styles = StyleSheet.create({
     color: colors.textMuted,
     marginRight: spacing.sm,
     fontVariant: ['tabular-nums'],
+  },
+  summary: {
+    fontSize: 13,
+    color: colors.textSecondary,
+    lineHeight: 18,
+    marginBottom: spacing.xs,
+    textAlign: 'right',
   },
   badgeRow: {
     flexDirection: 'row',

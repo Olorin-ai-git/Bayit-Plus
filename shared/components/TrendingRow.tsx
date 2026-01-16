@@ -100,9 +100,9 @@ export const TrendingRow: React.FC<TrendingRowProps> = ({ onTopicPress }) => {
   if (loading) {
     return (
       <GlassView style={styles.container} intensity="light">
-        <View style={[styles.header, { flexDirection: isRTL ? 'row' : 'row-reverse' }]}>
-          <Text style={[styles.headerEmoji, { marginLeft: isRTL ? spacing.sm : 0, marginRight: isRTL ? 0 : spacing.sm }]}>📈</Text>
+        <View style={[styles.header, isRTL ? { flexDirection: 'row-reverse' } : { flexDirection: 'row', direction: 'ltr' }]}>
           <Text style={styles.headerTitle}>{t('trending.title')}</Text>
+          <Text style={[styles.headerEmoji, { marginLeft: isRTL ? 0 : spacing.sm, marginRight: isRTL ? spacing.sm : 0 }]}>📈</Text>
         </View>
         <View style={styles.loadingContainer}>
           <ActivityIndicator color={colors.primary} size="large" />
@@ -114,9 +114,9 @@ export const TrendingRow: React.FC<TrendingRowProps> = ({ onTopicPress }) => {
   if (!data?.topics?.length) {
     return (
       <GlassView style={styles.container} intensity="light">
-        <View style={[styles.header, { flexDirection: isRTL ? 'row' : 'row-reverse' }]}>
-          <Text style={[styles.headerEmoji, { marginLeft: isRTL ? spacing.sm : 0, marginRight: isRTL ? 0 : spacing.sm }]}>📈</Text>
+        <View style={[styles.header, isRTL ? { flexDirection: 'row-reverse' } : { flexDirection: 'row', direction: 'ltr' }]}>
           <Text style={styles.headerTitle}>{t('trending.title')}</Text>
+          <Text style={[styles.headerEmoji, { marginLeft: isRTL ? 0 : spacing.sm, marginRight: isRTL ? spacing.sm : 0 }]}>📈</Text>
         </View>
         <View style={styles.emptyContainer}>
           <Text style={styles.emptyText}>{t('trending.noTopics')}</Text>
@@ -146,9 +146,9 @@ export const TrendingRow: React.FC<TrendingRowProps> = ({ onTopicPress }) => {
   return (
     <View style={styles.container}>
       {/* Header */}
-      <View style={[styles.header, { flexDirection: isRTL ? 'row' : 'row-reverse' }]}>
-        <Text style={[styles.headerEmoji, { marginLeft: isRTL ? spacing.sm : 0, marginRight: isRTL ? 0 : spacing.sm }]}>📈</Text>
+      <View style={[styles.header, isRTL ? { flexDirection: 'row-reverse' } : { flexDirection: 'row', direction: 'ltr' }]}>
         <Text style={styles.headerTitle}>{t('trending.title')}</Text>
+        <Text style={[styles.headerEmoji, { marginLeft: isRTL ? 0 : spacing.sm, marginRight: isRTL ? spacing.sm : 0 }]}>📈</Text>
       </View>
 
       {/* Overall Mood */}

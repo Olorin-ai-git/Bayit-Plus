@@ -8,8 +8,12 @@ import {
 } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { useNavigation, useRoute, RouteProp } from '@react-navigation/native';
-import { PreviewHero } from '../components/content/PreviewHero';
-import { IMDBFactsCard } from '../components/content/IMDBFactsCard';
+import {
+  PreviewHero,
+  IMDBFactsCard,
+  CastCarousel,
+  RecommendationsCarousel,
+} from '../components/content';
 import { contentService } from '../services/api';
 import { colors, spacing, fontSize } from '../theme';
 import { isTV } from '../utils/platform';
@@ -39,6 +43,16 @@ interface MovieData {
   imdb_votes?: number;
 }
 
+/**
+ * Format IMDb votes for display (e.g., 1200000 → "1.2M", 150000 → "150K")
+ */
+const formatVotes = (votes?: number): string => {
+  if (!votes) return '';
+  if (votes >= 1000000) return `${(votes / 1000000).toFixed(1)}M`;
+  if (votes >= 1000) return `${(votes / 1000).toFixed(0)}K`;
+  return votes.toString();
+};
+
 export default function MovieDetailScreen() {
   const { t } = useTranslation();
   const navigation = useNavigation();
@@ -47,6 +61,8 @@ export default function MovieDetailScreen() {
 
   const [movie, setMovie] = useState<MovieData | null>(null);
   const [loading, setLoading] = useState(true);
+  const [recommendations, setRecommendations] = useState<any[]>([]);
+  const [castMembers, setCastMembers] = useState<any[]>([]);
 
   useEffect(() => {
     loadMovieDetails();
@@ -57,6 +73,28 @@ export default function MovieDetailScreen() {
     try {
       const data = await contentService.getMovieDetails(movieId);
       setMovie(data);
+
+      // Format cast data if available
+      if (data.cast && Array.isArray(data.cast)) {
+        const formattedCast = data.cast.map((name: string, index: number) => ({
+          id: `cast-${index}`,
+          name,
+          character: '',
+          photo: undefined,
+        }));
+        setCastMembers(formattedCast);
+      }
+
+      // Load recommendations in parallel
+      try {
+        const recs = await contentService.getRecommendations?.(movieId);
+        if (recs && Array.isArray(recs)) {
+          setRecommendations(recs);
+        }
+      } catch (error) {
+        console.error('Failed to load recommendations:', error);
+        // Non-blocking error - continue without recommendations
+      }
     } catch (error) {
       console.error('Failed to load movie:', error);
     } finally {
@@ -71,6 +109,18 @@ export default function MovieDetailScreen() {
         type: 'vod',
       } as never);
     }
+  };
+
+  const handleCastPress = (castMember: any) => {
+    // Navigate to cast member details (future enhancement)
+    console.log('Cast member pressed:', castMember.name);
+  };
+
+  const handleRecommendationPress = (item: any) => {
+    // Navigate to recommended content detail
+    navigation.navigate('MovieDetail' as never, {
+      movieId: item.id,
+    } as never);
   };
 
   if (loading) {
@@ -115,6 +165,7 @@ export default function MovieDetailScreen() {
           <IMDBFactsCard
             imdbRating={movie.imdb_rating}
             imdbVotes={movie.imdb_votes}
+            imdbVotesFormatted={formatVotes(movie.imdb_votes)}
             runtime={movie.duration}
             releaseDate={movie.year?.toString()}
             genres={movie.genre ? [movie.genre] : undefined}
@@ -131,12 +182,28 @@ export default function MovieDetailScreen() {
           </View>
         )}
 
-        {/* Cast Section */}
-        {movie.cast && movie.cast.length > 0 && (
-          <View style={styles.castSection}>
-            <Text style={styles.sectionTitle}>{t('content.cast')}</Text>
-            <Text style={styles.castText}>{movie.cast.join(', ')}</Text>
+        {/* Cast Carousel */}
+        {castMembers.length > 0 && (
+          <CastCarousel cast={castMembers} onCastPress={handleCastPress} />
+        )}
+
+        {/* Crew Section */}
+        {movie.director && (
+          <View style={styles.crewSection}>
+            <Text style={styles.sectionTitle}>{t('content.crew', 'Crew')}</Text>
+            <View style={styles.crewItem}>
+              <Text style={styles.crewRole}>{t('content.director', 'Director')}</Text>
+              <Text style={styles.crewName}>{movie.director}</Text>
+            </View>
           </View>
+        )}
+
+        {/* Recommendations Carousel */}
+        {recommendations.length > 0 && (
+          <RecommendationsCarousel
+            recommendations={recommendations}
+            onItemPress={handleRecommendationPress}
+          />
         )}
       </View>
     </ScrollView>
@@ -181,12 +248,23 @@ const styles = StyleSheet.create({
     color: colors.textSecondary,
     lineHeight: isTV ? 28 : 22,
   },
-  castSection: {
+  crewSection: {
     marginTop: spacing.lg,
+    paddingHorizontal: isTV ? spacing.xl : spacing.lg,
   },
-  castText: {
+  crewItem: {
+    marginBottom: spacing.sm,
+  },
+  crewRole: {
+    fontSize: isTV ? fontSize.sm : fontSize.xs,
+    color: colors.textMuted,
+    textTransform: 'uppercase',
+    fontWeight: '600',
+    marginBottom: 4,
+  },
+  crewName: {
     fontSize: isTV ? fontSize.md : fontSize.sm,
-    color: colors.textSecondary,
-    lineHeight: isTV ? 28 : 22,
+    color: colors.text,
+    fontWeight: '500',
   },
 });

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
@@ -6,6 +6,9 @@ import {
   ScrollView,
   TouchableOpacity,
   Switch,
+  Modal,
+  TextInput,
+  Alert,
 } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { useNavigation } from '@react-navigation/native';
@@ -16,6 +19,7 @@ import { useAuthStore } from '../stores/authStore';
 import { useVoiceSettingsStore } from '../stores/voiceSettingsStore';
 import { colors, spacing, borderRadius } from '../theme';
 import { isTV } from '../utils/platform';
+import type { QualityLevel } from '../components/player/QualitySelector';
 
 interface SettingRowProps {
   icon: string;
@@ -87,6 +91,19 @@ export default function SettingsScreen() {
   const [subtitles, setSubtitles] = useState(true);
   const [wakeWord, setWakeWord] = useState(preferences?.wake_word_enabled ?? true);
 
+  // Video quality preferences
+  const [defaultQuality, setDefaultQuality] = useState<QualityLevel>('auto');
+  const [autoAdjustQuality, setAutoAdjustQuality] = useState(true);
+  const [dataSaver, setDataSaver] = useState(false);
+
+  // Parental controls
+  const [parentalControlsEnabled, setParentalControlsEnabled] = useState(false);
+  const [parentalControlPIN, setParentalControlPIN] = useState<string>('');
+  const [contentRating, setContentRating] = useState<string>('PG-13');
+  const [showPINModal, setShowPINModal] = useState(false);
+  const [pinInput, setPinInput] = useState('');
+  const [pinModalMode, setPinModalMode] = useState<'setup' | 'verify' | 'change'>('setup');
+
   const currentLanguage = (() => {
     switch (i18n.language) {
       case 'he':
@@ -112,6 +129,56 @@ export default function SettingsScreen() {
     if (preferences) {
       await updatePreferences({ ...preferences, wake_word_enabled: value });
     }
+  };
+
+  // Load video quality preferences
+  useEffect(() => {
+    const loadVideoPreferences = async () => {
+      try {
+        const savedQuality = await AsyncStorage.getItem('bayit_video_quality_preference');
+        const savedAutoAdjust = await AsyncStorage.getItem('bayit_auto_adjust_quality');
+        const savedDataSaver = await AsyncStorage.getItem('bayit_data_saver_mode');
+
+        if (savedQuality) {
+          setDefaultQuality(savedQuality as QualityLevel);
+        }
+        if (savedAutoAdjust !== null) {
+          setAutoAdjustQuality(savedAutoAdjust === 'true');
+        }
+        if (savedDataSaver !== null) {
+          setDataSaver(savedDataSaver === 'true');
+        }
+      } catch (error) {
+        console.error('Failed to load video preferences:', error);
+      }
+    };
+
+    loadVideoPreferences();
+  }, []);
+
+  const handleQualityChange = async () => {
+    const qualities: QualityLevel[] = ['auto', '1080p', '720p', '480p', '360p'];
+    const currentIndex = qualities.indexOf(defaultQuality);
+    const nextIndex = (currentIndex + 1) % qualities.length;
+    const newQuality = qualities[nextIndex];
+
+    setDefaultQuality(newQuality);
+    await AsyncStorage.setItem('bayit_video_quality_preference', newQuality);
+  };
+
+  const handleAutoAdjustToggle = async (value: boolean) => {
+    setAutoAdjustQuality(value);
+    await AsyncStorage.setItem('bayit_auto_adjust_quality', value.toString());
+  };
+
+  const handleDataSaverToggle = async (value: boolean) => {
+    setDataSaver(value);
+    await AsyncStorage.setItem('bayit_data_saver_mode', value.toString());
+  };
+
+  const getQualityLabel = (quality: QualityLevel): string => {
+    if (quality === 'auto') return t('settings.qualityAuto', 'Auto');
+    return quality;
   };
 
   const handleLogout = async () => {
@@ -187,6 +254,41 @@ export default function SettingsScreen() {
           <Switch
             value={subtitles}
             onValueChange={setSubtitles}
+            trackColor={{ false: colors.backgroundLighter, true: colors.primary }}
+            thumbColor={colors.text}
+          />
+        </SettingRow>
+      </GlassView>
+
+      {/* Video & Audio Settings */}
+      <GlassView style={styles.section}>
+        <Text style={[styles.sectionTitle, { textAlign }]}>
+          {t('settings.videoAudio', 'Video & Audio')}
+        </Text>
+        <SettingRow
+          icon="🎬"
+          label={t('settings.defaultQuality', 'Default Video Quality')}
+          value={getQualityLabel(defaultQuality)}
+          onPress={handleQualityChange}
+        />
+        <SettingRow
+          icon="📶"
+          label={t('settings.autoAdjustQuality', 'Auto-Adjust Quality')}
+        >
+          <Switch
+            value={autoAdjustQuality}
+            onValueChange={handleAutoAdjustToggle}
+            trackColor={{ false: colors.backgroundLighter, true: colors.primary }}
+            thumbColor={colors.text}
+          />
+        </SettingRow>
+        <SettingRow
+          icon="📉"
+          label={t('settings.dataSaver', 'Data Saver Mode')}
+        >
+          <Switch
+            value={dataSaver}
+            onValueChange={handleDataSaverToggle}
             trackColor={{ false: colors.backgroundLighter, true: colors.primary }}
             thumbColor={colors.text}
           />

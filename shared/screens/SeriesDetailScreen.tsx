@@ -8,9 +8,14 @@ import {
 } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { useNavigation, useRoute, RouteProp } from '@react-navigation/native';
-import { PreviewHero } from '../components/content/PreviewHero';
-import { SeasonSelector } from '../components/content/SeasonSelector';
-import { EpisodeList } from '../components/content/EpisodeList';
+import {
+  PreviewHero,
+  SeasonSelector,
+  EpisodeList,
+  IMDBFactsCard,
+  CastCarousel,
+  RecommendationsCarousel,
+} from '../components/content';
 import { contentService } from '../services/api';
 import { colors, spacing, fontSize } from '../theme';
 import { isTV } from '../utils/platform';
@@ -66,6 +71,8 @@ export default function SeriesDetailScreen() {
   const [selectedEpisode, setSelectedEpisode] = useState<Episode | null>(null);
   const [loading, setLoading] = useState(true);
   const [episodesLoading, setEpisodesLoading] = useState(false);
+  const [recommendations, setRecommendations] = useState<any[]>([]);
+  const [castMembers, setCastMembers] = useState<any[]>([]);
 
   useEffect(() => {
     loadSeriesDetails();
@@ -84,6 +91,28 @@ export default function SeriesDetailScreen() {
       setSeries(data);
       if (data.seasons && data.seasons.length > 0) {
         setSelectedSeason(data.seasons[0].season_number);
+      }
+
+      // Format cast data if available
+      if (data.cast && Array.isArray(data.cast)) {
+        const formattedCast = data.cast.map((name: string, index: number) => ({
+          id: `cast-${index}`,
+          name,
+          character: '',
+          photo: undefined,
+        }));
+        setCastMembers(formattedCast);
+      }
+
+      // Load recommendations in parallel
+      try {
+        const recs = await contentService.getRecommendations?.(seriesId);
+        if (recs && Array.isArray(recs)) {
+          setRecommendations(recs);
+        }
+      } catch (error) {
+        console.error('Failed to load recommendations:', error);
+        // Non-blocking error - continue without recommendations
       }
     } catch (error) {
       console.error('Failed to load series:', error);
@@ -130,6 +159,18 @@ export default function SeriesDetailScreen() {
   const handleSeasonChange = (seasonNumber: number) => {
     setSelectedSeason(seasonNumber);
     setSelectedEpisode(null);
+  };
+
+  const handleCastPress = (castMember: any) => {
+    // Navigate to cast member details (future enhancement)
+    console.log('Cast member pressed:', castMember.name);
+  };
+
+  const handleRecommendationPress = (item: any) => {
+    // Navigate to recommended content detail
+    navigation.navigate('SeriesDetail' as never, {
+      seriesId: item.id,
+    } as never);
   };
 
   if (loading) {
@@ -189,6 +230,15 @@ export default function SeriesDetailScreen() {
       </PreviewHero>
 
       <View style={styles.content}>
+        {/* Synopsis */}
+        {series.description && (
+          <View style={styles.synopsisSection}>
+            <Text style={styles.sectionTitle}>{t('content.synopsis')}</Text>
+            <Text style={styles.synopsisText}>{series.description}</Text>
+          </View>
+        )}
+
+        {/* Episodes List */}
         {episodesLoading ? (
           <ActivityIndicator size="small" color={colors.primary} />
         ) : (
@@ -198,6 +248,20 @@ export default function SeriesDetailScreen() {
             onEpisodeSelect={handleEpisodeSelect}
             onEpisodePlay={handleEpisodePlay}
             seasonNumber={selectedSeason}
+          />
+        )}
+
+        {/* Cast Carousel */}
+        {castMembers.length > 0 && (
+          <CastCarousel cast={castMembers} onCastPress={handleCastPress} />
+        )}
+
+        {/* Recommendations Carousel */}
+        {recommendations.length > 0 && (
+          <RecommendationsCarousel
+            recommendations={recommendations}
+            onItemPress={handleRecommendationPress}
+            title={t('content.moreLikeThis', 'More Like This')}
           />
         )}
       </View>
@@ -228,5 +292,19 @@ const styles = StyleSheet.create({
   },
   content: {
     padding: isTV ? spacing.xl : spacing.lg,
+  },
+  synopsisSection: {
+    marginBottom: isTV ? spacing.xl : spacing.lg,
+  },
+  sectionTitle: {
+    fontSize: isTV ? 28 : 20,
+    fontWeight: '600',
+    color: colors.text,
+    marginBottom: isTV ? spacing.md : spacing.sm,
+  },
+  synopsisText: {
+    fontSize: isTV ? fontSize.md : fontSize.sm,
+    color: colors.textSecondary,
+    lineHeight: isTV ? 28 : 22,
   },
 });
