@@ -85,17 +85,18 @@ export default function useChessGame() {
 
     try {
       const wsUrl = getWebSocketUrl(gameCode);
+      console.log('[Chess] Connecting to WebSocket:', wsUrl.replace(token, 'TOKEN_HIDDEN'));
       ws.current = new WebSocket(wsUrl);
 
       ws.current.onopen = () => {
-        console.log('[Chess] WebSocket connected');
+        console.log('[Chess] WebSocket connected successfully');
         setIsConnected(true);
         setError(null);
         reconnectAttempts.current = 0;
       };
 
-      ws.current.onclose = () => {
-        console.log('[Chess] WebSocket disconnected');
+      ws.current.onclose = (event) => {
+        console.log('[Chess] WebSocket disconnected. Code:', event.code, 'Reason:', event.reason);
         setIsConnected(false);
 
         // Attempt reconnection if not intentional disconnect
@@ -113,7 +114,9 @@ export default function useChessGame() {
 
       ws.current.onerror = (event) => {
         console.error('[Chess] WebSocket error:', event);
-        setError('Connection error');
+        console.error('[Chess] WebSocket readyState:', ws.current?.readyState);
+        console.error('[Chess] Game code:', gameCode);
+        setError('Connection error - check console for details');
       };
 
       ws.current.onmessage = (event) => {

@@ -150,6 +150,15 @@ class ChessService:
 
         # Execute move on board
         board = chess.Board(game.board_fen)
+
+        # IMPORTANT: Calculate SAN BEFORE pushing the move
+        # SAN notation depends on the current board state, not the state after the move
+        san_notation = board.san(chess_move)
+        is_castling_move = board.is_castling(chess_move)
+        is_en_passant_move = board.is_en_passant(chess_move)
+        is_capture_move = board.is_capture(chess_move)
+
+        # Now push the move to update the board
         board.push(chess_move)
 
         # Get piece that moved
@@ -158,7 +167,7 @@ class ChessService:
 
         # Check if capture occurred
         captured_piece = None
-        if board.is_capture(chess_move):
+        if is_capture_move:
             captured_piece = "p"  # Default to pawn, python-chess doesn't track captured piece type easily
 
         # Create move record
@@ -168,9 +177,9 @@ class ChessService:
             piece=piece_symbol,
             captured=captured_piece,
             promotion=promotion,
-            is_castling=board.is_castling(chess_move),
-            is_en_passant=board.is_en_passant(chess_move),
-            san=board.san(chess_move),
+            is_castling=is_castling_move,
+            is_en_passant=is_en_passant_move,
+            san=san_notation,
             player=game.current_turn
         )
 

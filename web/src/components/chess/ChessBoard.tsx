@@ -16,6 +16,7 @@ interface ChessBoardProps {
   onMove: (from: string, to: string, promotion?: string) => void;
   isFlipped?: boolean;
   isPlayerTurn?: boolean;
+  showHints?: boolean;
 }
 
 interface AnimatingPiece {
@@ -46,7 +47,8 @@ export default function ChessBoard({
   game,
   onMove,
   isFlipped = false,
-  isPlayerTurn = true
+  isPlayerTurn = true,
+  showHints = false
 }: ChessBoardProps) {
   const { t } = useTranslation();
   const { width } = useWindowDimensions();
@@ -219,8 +221,8 @@ export default function ChessBoard({
           );
         })()}
 
-        {/* Legal move indicator */}
-        {isLegalMove && (
+        {/* Legal move indicator - only show if hints enabled */}
+        {showHints && isLegalMove && (
           <View style={[
             styles.legalMoveIndicator,
             { width: squareSize * 0.3, height: squareSize * 0.3, borderRadius: squareSize * 0.15 },

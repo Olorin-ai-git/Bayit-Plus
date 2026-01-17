@@ -2711,6 +2711,7 @@
     "reconnecting": "Reconnecting...",
     "moveHistory": "Move History",
     "noMoves": "No moves yet",
+    "showHints": "Show Guide Hints",
     "yourTurn": "Your Turn",
     "opponentTurn": "Opponent's Turn",
     "waitingForOpponent": "Waiting for opponent...",

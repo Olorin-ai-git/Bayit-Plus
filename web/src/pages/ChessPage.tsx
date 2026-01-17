@@ -43,6 +43,7 @@ export default function ChessPage() {
   const [fadeAnim] = useState(new Animated.Value(1));
   const [inviteStatus, setInviteStatus] = useState<string | null>(null);
   const [inviteProcessed, setInviteProcessed] = useState(false);
+  const [showHints, setShowHints] = useState(false);
 
   const {
     game,
@@ -267,6 +268,7 @@ export default function ChessPage() {
             onMove={makeMove}
             isFlipped={isBoardFlipped()}
             isPlayerTurn={isPlayerTurn()}
+            showHints={showHints}
           />
 
           {/* Player Card */}
@@ -282,6 +284,8 @@ export default function ChessPage() {
             onResign={resign}
             onOfferDraw={offerDraw}
             onNewGame={handleNewGame}
+            showHints={showHints}
+            onToggleHints={setShowHints}
           />
 
           {/* Game status */}

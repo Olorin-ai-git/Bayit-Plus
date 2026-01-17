@@ -620,11 +620,25 @@
         sloganElement.textContent = translations[currentLang].slogan;
       }
       
+      // Check if splash has already been shown this session
+      var splashShown = sessionStorage.getItem('splashShown') === 'true';
+      var isHomePage = window.location.pathname === '/' || window.location.pathname === '';
+      
       // Track splash screen timing
       var splashStartTime = Date.now();
       var MIN_SPLASH_DURATION = 3000; // 3 seconds minimum
       var appReady = false;
       var windowLoaded = false;
+      
+      // Hide splash immediately if already shown or not on home page
+      if (splashShown || !isHomePage) {
+        var splash = document.getElementById('splash-screen');
+        if (splash) {
+          splash.style.display = 'none';
+          splash.remove();
+        }
+        window.splashScreenRemoved = true;
+      }
       
       // Update clocks
       function updateClocks() {
@@ -742,6 +756,8 @@
           var splash = document.getElementById('splash-screen');
           if (splash) {
             splash.classList.add('fade-out');
+            // Mark splash as shown for this session
+            sessionStorage.setItem('splashShown', 'true');
             // Remove from DOM after fade animation
             setTimeout(function() {
               splash.remove();
@@ -756,7 +772,7 @@
       // Mark window as loaded
       window.addEventListener('load', function() {
         windowLoaded = true;
-        if (appReady) {
+        if (appReady && !splashShown && isHomePage) {
           hideSplashScreen();
         }
       });
@@ -764,15 +780,17 @@
       // Function for React to call when ready
       window.hideSplashWhenReady = function() {
         appReady = true;
-        if (windowLoaded) {
+        // Only show splash on home page and first load
+        if (windowLoaded && !splashShown && isHomePage) {
           hideSplashScreen();
         }
       };
       
       // Fallback: Hide after max time even if React doesn't signal ready
       setTimeout(function() {
-        if (document.getElementById('splash-screen')) {
+        if (document.getElementById('splash-screen') && !splashShown && isHomePage) {
           clearInterval(clockInterval);
+          sessionStorage.setItem('splashShown', 'true');
           var splash = document.getElementById('splash-screen');
           if (splash) {
             splash.classList.add('fade-out');
