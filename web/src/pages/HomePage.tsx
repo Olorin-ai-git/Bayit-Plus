@@ -10,6 +10,7 @@ import { TrendingRow, GlassCarousel } from '@bayit/shared';
 import { GlassLiveChannelCard, GlassCheckbox } from '@bayit/shared/ui';
 import MorningRitual from '@/components/ritual/MorningRitual';
 import { contentService, liveService, historyService, ritualService } from '@/services/api';
+import { ShabbatModeBanner } from '@/components/judaism';
 import { colors, spacing } from '@bayit/shared/theme';
 import { getLocalizedName, getLocalizedDescription } from '@bayit/shared-utils/contentLocalization';
 import { formatContentMetadata } from '@bayit/shared-utils/metadataFormatters';
@@ -295,6 +296,9 @@ export default function HomePage() {
           <RefreshCw size={20} color={colors.text} style={syncing ? styles.spinning : undefined} />
         </Pressable>
       </View>
+
+      {/* Shabbat Mode Banner - appears during Shabbat */}
+      <ShabbatModeBanner />
 
       {/* Hero Carousel Section */}
       <View style={styles.carouselSection}>

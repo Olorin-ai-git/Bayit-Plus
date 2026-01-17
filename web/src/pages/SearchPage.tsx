@@ -27,7 +27,7 @@ import {
   SearchResults,
   LLMSearchButton,
   LLMSearchModal,
-} from '@bayit/shared/components/search';
+} from '@bayit/shared/search';
 
 // Check if this is a TV build (set by webpack)
 declare const __TV__: boolean;

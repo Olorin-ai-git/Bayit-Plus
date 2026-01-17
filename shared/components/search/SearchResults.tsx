@@ -117,6 +117,25 @@ export function SearchResults({
     );
   };
 
+  const renderHeader = () => {
+    if (!enableTTS || results.length === 0) return null;
+
+    return (
+      <View className="mb-4">
+        <TouchableOpacity
+          onPress={handleReadAll}
+          className="flex-row items-center gap-2 px-4 py-3 bg-purple-500/20 border border-purple-400/50 rounded-xl"
+          activeOpacity={0.7}
+        >
+          <Text className="text-2xl">{isSpeaking ? '⏸️' : '🔊'}</Text>
+          <Text className="text-white font-medium">
+            {isSpeaking ? 'Stop Reading' : 'Read All Results'}
+          </Text>
+        </TouchableOpacity>
+      </View>
+    );
+  };
+
   return (
     <FlatList
       data={results}
@@ -126,6 +145,7 @@ export function SearchResults({
       key={`grid-${numColumns}`}
       columnWrapperStyle={numColumns > 1 ? { gap: 12 } : undefined}
       contentContainerStyle={{ padding: 16, gap: 12 }}
+      ListHeaderComponent={renderHeader}
       ListEmptyComponent={renderEmpty}
       ListFooterComponent={renderFooter}
       onEndReached={hasMore && !loading ? onLoadMore : undefined}
@@ -134,7 +154,19 @@ export function SearchResults({
   );
 }
 
-function ContentCard({ result, onPress }: { result: SearchResult; onPress: () => void }) {
+function ContentCard({
+  result,
+  index,
+  onPress,
+  onReadAloud,
+  enableTTS = true,
+}: {
+  result: SearchResult;
+  index: number;
+  onPress: () => void;
+  onReadAloud?: () => void;
+  enableTTS?: boolean;
+}) {
   return (
     <TouchableOpacity
       onPress={onPress}
@@ -207,6 +239,21 @@ function ContentCard({ result, onPress }: { result: SearchResult; onPress: () =>
             </View>
           )}
         </View>
+
+        {/* Read Aloud Button */}
+        {enableTTS && onReadAloud && (
+          <TouchableOpacity
+            onPress={(e) => {
+              e.stopPropagation();
+              onReadAloud();
+            }}
+            className="mt-3 flex-row items-center gap-2 px-3 py-2 bg-purple-500/20 border border-purple-400/50 rounded-lg"
+            activeOpacity={0.7}
+          >
+            <Text className="text-lg">🔊</Text>
+            <Text className="text-purple-200 text-xs font-medium">Read Aloud</Text>
+          </TouchableOpacity>
+        )}
       </View>
     </TouchableOpacity>
   );

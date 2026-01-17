@@ -81,7 +81,7 @@ module.exports = (env, argv) => {
         '@bayit/shared-config': path.resolve(sharedPath, 'config'),
         '@bayit/shared-types': path.resolve(sharedPath, 'types'),
         '@bayit/shared-utils': path.resolve(sharedPath, 'utils'),
-        '@bayit/shared/components/search': path.resolve(sharedPath, 'components/search'),
+        '@bayit/shared/search': path.resolve(sharedPath, 'components/search'),
         '@bayit/shared/components/ai': path.resolve(sharedPath, 'components/ai'),
         '@bayit/shared/components/flows': path.resolve(sharedPath, 'components/flows'),
         '@bayit/shared/components/watchparty': path.resolve(sharedPath, 'components/watchparty'),
