@@ -23,19 +23,19 @@ const HomePage: React.FC = () => {
   const features = [
     {
       icon: <Calendar className="w-12 h-12" />,
-      color: 'purple' as const,
+      color: 'radio' as const,
       title: t('features.automation.title'),
       description: t('features.automation.description'),
     },
     {
       icon: <BarChart3 className="w-12 h-12" />,
-      color: 'pink' as const,
+      color: 'radio' as const,
       title: t('features.analytics.title'),
       description: t('features.analytics.description'),
     },
     {
       icon: <Target className="w-12 h-12" />,
-      color: 'cyan' as const,
+      color: 'radio' as const,
       title: t('features.adInsertion.title'),
       description: t('features.adInsertion.description'),
     },
@@ -44,25 +44,25 @@ const HomePage: React.FC = () => {
   const workflowSteps = [
     {
       icon: <Database className="w-10 h-10" />,
-      color: 'purple' as const,
+      color: 'radio' as const,
       title: t('workflow.step1.title'),
       description: t('workflow.step1.description'),
     },
     {
       icon: <RefreshCw className="w-10 h-10" />,
-      color: 'pink' as const,
+      color: 'radio' as const,
       title: t('workflow.step2.title'),
       description: t('workflow.step2.description'),
     },
     {
       icon: <Radio className="w-10 h-10" />,
-      color: 'cyan' as const,
+      color: 'radio' as const,
       title: t('workflow.step3.title'),
       description: t('workflow.step3.description'),
     },
     {
       icon: <BarChart3 className="w-10 h-10" />,
-      color: 'purple' as const,
+      color: 'radio' as const,
       title: t('workflow.step4.title'),
       description: t('workflow.step4.description'),
     },
@@ -174,7 +174,7 @@ const HomePage: React.FC = () => {
                 className={`p-6 animate-fade-in-up animate-delay-${index + 1}00`}
               >
                 <div className="flex items-center space-x-4 mb-4">
-                  <div className="w-12 h-12 rounded-full bg-wizard-accent-purple/20 border-2 border-wizard-accent-purple flex items-center justify-center font-bold text-wizard-accent-purple text-xl">
+                  <div className="w-12 h-12 rounded-full bg-wizard-accent-radio/20 border-2 border-wizard-accent-radio flex items-center justify-center font-bold text-wizard-accent-radio text-xl">
                     {index + 1}
                   </div>
                   <GlowingIcon
@@ -204,7 +204,7 @@ const HomePage: React.FC = () => {
                 <div className="mb-6 flex justify-center">
                   <GlowingIcon
                     icon={<Radio className="w-16 h-16" />}
-                    color="purple"
+                    color="radio"
                     size="xl"
                     animate
                   />
@@ -262,7 +262,7 @@ const HomePage: React.FC = () => {
                 <div className="mb-4 flex justify-center">
                   <GlowingIcon
                     icon={solution.icon}
-                    color="purple"
+                    color="radio"
                     size="lg"
                   />
                 </div>

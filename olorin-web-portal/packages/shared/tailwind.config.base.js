@@ -37,15 +37,21 @@ module.exports = {
           'bg-secondary': '#2d1b4e',   // Dark purple secondary surfaces
           'bg-card': 'rgba(45, 27, 78, 0.6)',  // Semi-transparent card overlay
 
-          // Neon Accent Colors - Purple/Pink gradient theme
-          'accent-purple': '#a855f7',  // Neon purple primary
-          'accent-pink': '#d946ef',    // Neon pink secondary
-          'accent-cyan': '#22d3ee',    // Cyan highlight
+          // Portal-Specific Purple Accents - Glassmorphic Dark Purple Theme
+          'accent-purple': '#a855f7',       // Legacy alias for accent-main (backward compatibility)
+          'accent-main': '#a855f7',         // Main portal - bright purple (168, 85, 247)
+          'accent-fraud': '#7c3aed',        // Fraud portal - darker, serious purple (124, 58, 237)
+          'accent-streaming': '#8b5cf6',    // Streaming portal - medium purple (139, 92, 246)
+          'accent-radio': '#9333ea',        // Radio portal - lighter, energetic purple (147, 51, 234)
+          'accent-omen': '#6d28d9',         // Omen portal - darkest, mystical purple (109, 40, 217)
 
-          // Glow Colors (for box-shadow effects)
-          'glow-purple': 'rgba(168, 85, 247, 0.5)',
-          'glow-pink': 'rgba(217, 70, 239, 0.5)',
-          'glow-cyan': 'rgba(34, 211, 238, 0.3)',
+          // Glow Colors (for box-shadow effects) - Portal-specific purple glows
+          'glow-purple': 'rgba(168, 85, 247, 0.5)',    // Legacy alias for glow-main
+          'glow-main': 'rgba(168, 85, 247, 0.5)',      // Main portal glow
+          'glow-fraud': 'rgba(124, 58, 237, 0.5)',     // Fraud portal glow
+          'glow-streaming': 'rgba(139, 92, 246, 0.5)', // Streaming portal glow
+          'glow-radio': 'rgba(147, 51, 234, 0.5)',     // Radio portal glow
+          'glow-omen': 'rgba(109, 40, 217, 0.5)',      // Omen portal glow
 
           // Text Colors - High contrast for accessibility
           'text-primary': '#ffffff',    // Pure white for headings
@@ -98,13 +104,23 @@ module.exports = {
         xl: '24px',
         '2xl': '32px',
       },
-      // Custom box shadows for glow effects
+      // Custom box shadows for glow effects - Portal-specific purple glows
       boxShadow: {
-        'glow-purple': '0 0 20px rgba(168, 85, 247, 0.5)',
-        'glow-pink': '0 0 20px rgba(217, 70, 239, 0.5)',
-        'glow-cyan': '0 0 15px rgba(34, 211, 238, 0.3)',
-        'glow-purple-lg': '0 0 40px rgba(168, 85, 247, 0.6)',
-        'glow-pink-lg': '0 0 40px rgba(217, 70, 239, 0.6)',
+        // Portal-specific glow effects
+        'glow-purple': '0 0 20px rgba(168, 85, 247, 0.5)',      // Legacy alias for glow-main
+        'glow-main': '0 0 20px rgba(168, 85, 247, 0.5)',        // Main portal glow
+        'glow-fraud': '0 0 20px rgba(124, 58, 237, 0.5)',       // Fraud portal glow
+        'glow-streaming': '0 0 20px rgba(139, 92, 246, 0.5)',   // Streaming portal glow
+        'glow-radio': '0 0 20px rgba(147, 51, 234, 0.5)',       // Radio portal glow
+        'glow-omen': '0 0 20px rgba(109, 40, 217, 0.5)',        // Omen portal glow
+        // Large glow variants
+        'glow-purple-lg': '0 0 40px rgba(168, 85, 247, 0.6)',   // Legacy alias
+        'glow-main-lg': '0 0 40px rgba(168, 85, 247, 0.6)',
+        'glow-fraud-lg': '0 0 40px rgba(124, 58, 237, 0.6)',
+        'glow-streaming-lg': '0 0 40px rgba(139, 92, 246, 0.6)',
+        'glow-radio-lg': '0 0 40px rgba(147, 51, 234, 0.6)',
+        'glow-omen-lg': '0 0 40px rgba(109, 40, 217, 0.6)',
+        // Glassmorphic shadows
         'glass': '0 8px 32px rgba(0, 0, 0, 0.4), 0 0 20px rgba(168, 85, 247, 0.1)',
         'glass-lg': '0 12px 48px rgba(0, 0, 0, 0.5), 0 0 30px rgba(168, 85, 247, 0.15)',
       },

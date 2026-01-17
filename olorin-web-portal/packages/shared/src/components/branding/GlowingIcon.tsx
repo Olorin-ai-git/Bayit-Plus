@@ -3,7 +3,7 @@ import React from 'react';
 export interface GlowingIconProps {
   icon: React.ReactNode;
   className?: string;
-  color?: 'purple' | 'pink' | 'cyan';
+  color?: 'main' | 'fraud' | 'streaming' | 'radio' | 'omen' | 'purple';
   size?: 'sm' | 'md' | 'lg' | 'xl';
   animate?: boolean;
 }
@@ -22,14 +22,17 @@ export interface GlowingIconProps {
 export const GlowingIcon: React.FC<GlowingIconProps> = ({
   icon,
   className = '',
-  color = 'purple',
+  color = 'main',
   size = 'md',
   animate = false,
 }) => {
   const colorClasses = {
-    purple: 'text-wizard-accent-purple glow-purple',
-    pink: 'text-wizard-accent-pink glow-pink',
-    cyan: 'text-wizard-accent-cyan glow-cyan',
+    main: 'text-wizard-accent-main glow-main',
+    fraud: 'text-wizard-accent-fraud glow-fraud',
+    streaming: 'text-wizard-accent-streaming glow-streaming',
+    radio: 'text-wizard-accent-radio glow-radio',
+    omen: 'text-wizard-accent-omen glow-omen',
+    purple: 'text-wizard-accent-purple glow-purple', // Backward compatibility
   };
 
   const sizeClasses = {

@@ -4,7 +4,7 @@ import { NotFoundPage as SharedNotFoundPage } from '@olorin/shared';
 const NotFoundPage: React.FC = () => {
   return (
     <SharedNotFoundPage
-      accentColor="purple"
+      accentColor="fraud"
       popularLinks={[
         { label: 'Home', path: '/' },
         { label: 'AI Agents', path: '/agents' },

@@ -23,19 +23,19 @@ const HomePage: React.FC = () => {
   const features = [
     {
       icon: <Brain className="w-12 h-12" />,
-      color: 'pink' as const,
+      color: 'omen' as const,
       title: t('features.aiPredictions.title'),
       description: t('features.aiPredictions.description'),
     },
     {
       icon: <TrendingUp className="w-12 h-12" />,
-      color: 'purple' as const,
+      color: 'omen' as const,
       title: t('features.forecasting.title'),
       description: t('features.forecasting.description'),
     },
     {
       icon: <Target className="w-12 h-12" />,
-      color: 'cyan' as const,
+      color: 'omen' as const,
       title: t('features.insights.title'),
       description: t('features.insights.description'),
     },
@@ -44,25 +44,25 @@ const HomePage: React.FC = () => {
   const workflowSteps = [
     {
       icon: <Database className="w-10 h-10" />,
-      color: 'pink' as const,
+      color: 'omen' as const,
       title: t('workflow.step1.title'),
       description: t('workflow.step1.description'),
     },
     {
       icon: <Brain className="w-10 h-10" />,
-      color: 'purple' as const,
+      color: 'omen' as const,
       title: t('workflow.step2.title'),
       description: t('workflow.step2.description'),
     },
     {
       icon: <Zap className="w-10 h-10" />,
-      color: 'cyan' as const,
+      color: 'omen' as const,
       title: t('workflow.step3.title'),
       description: t('workflow.step3.description'),
     },
     {
       icon: <BarChart className="w-10 h-10" />,
-      color: 'pink' as const,
+      color: 'omen' as const,
       title: t('workflow.step4.title'),
       description: t('workflow.step4.description'),
     },
@@ -174,7 +174,7 @@ const HomePage: React.FC = () => {
                 className={`p-6 animate-fade-in-up animate-delay-${index + 1}00`}
               >
                 <div className="flex items-center space-x-4 mb-4">
-                  <div className="w-12 h-12 rounded-full bg-wizard-accent-pink/20 border-2 border-wizard-accent-pink flex items-center justify-center font-bold text-wizard-accent-pink text-xl">
+                  <div className="w-12 h-12 rounded-full bg-wizard-accent-omen/20 border-2 border-wizard-accent-omen flex items-center justify-center font-bold text-wizard-accent-omen text-xl">
                     {index + 1}
                   </div>
                   <GlowingIcon
@@ -236,7 +236,7 @@ const HomePage: React.FC = () => {
                 <div className="mb-4 flex justify-center">
                   <GlowingIcon
                     icon={capability.icon}
-                    color="pink"
+                    color="omen"
                     size="lg"
                   />
                 </div>

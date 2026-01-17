@@ -11,7 +11,7 @@ const HomePage: React.FC = () => {
   const solutions = [
     {
       icon: <Shield className="w-16 h-16" />,
-      color: 'purple' as const,
+      color: 'fraud' as const,
       title: t('solutions.fraud.title'),
       description: t('solutions.fraud.description'),
       href: process.env.REACT_APP_FRAUD_URL || 'https://fraud.olorin.ai',
@@ -19,7 +19,7 @@ const HomePage: React.FC = () => {
     },
     {
       icon: <Play className="w-16 h-16" />,
-      color: 'pink' as const,
+      color: 'streaming' as const,
       title: t('solutions.streaming.title'),
       description: t('solutions.streaming.description'),
       href: process.env.REACT_APP_STREAMING_URL || 'https://streaming.olorin.ai',
@@ -27,7 +27,7 @@ const HomePage: React.FC = () => {
     },
     {
       icon: <Radio className="w-16 h-16" />,
-      color: 'cyan' as const,
+      color: 'radio' as const,
       title: t('solutions.radio.title'),
       description: t('solutions.radio.description'),
       href: process.env.REACT_APP_RADIO_URL || 'https://radio.olorin.ai',
@@ -35,7 +35,7 @@ const HomePage: React.FC = () => {
     },
     {
       icon: <Sparkles className="w-16 h-16" />,
-      color: 'purple' as const,
+      color: 'main' as const,
       title: t('solutions.generative.title'),
       description: t('solutions.generative.description'),
       href: '/contact',

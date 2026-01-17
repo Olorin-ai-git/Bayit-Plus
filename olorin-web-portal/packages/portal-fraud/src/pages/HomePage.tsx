@@ -26,25 +26,25 @@ const HomePage: React.FC = () => {
   const agents = [
     {
       icon: <MapPin className="w-12 h-12" />,
-      color: 'purple' as const,
+      color: 'fraud' as const,
       title: t('agents.location.title'),
       description: t('agents.location.description'),
     },
     {
       icon: <Network className="w-12 h-12" />,
-      color: 'cyan' as const,
+      color: 'fraud' as const,
       title: t('agents.network.title'),
       description: t('agents.network.description'),
     },
     {
       icon: <Fingerprint className="w-12 h-12" />,
-      color: 'pink' as const,
+      color: 'fraud' as const,
       title: t('agents.authentication.title'),
       description: t('agents.authentication.description'),
     },
     {
       icon: <User className="w-12 h-12" />,
-      color: 'purple' as const,
+      color: 'fraud' as const,
       title: t('agents.behavioral.title'),
       description: t('agents.behavioral.description'),
     },
@@ -53,25 +53,25 @@ const HomePage: React.FC = () => {
   const workflowSteps = [
     {
       icon: <Database className="w-10 h-10" />,
-      color: 'purple' as const,
+      color: 'fraud' as const,
       title: t('workflow.step1.title'),
       description: t('workflow.step1.description'),
     },
     {
       icon: <RefreshCw className="w-10 h-10" />,
-      color: 'cyan' as const,
+      color: 'fraud' as const,
       title: t('workflow.step2.title'),
       description: t('workflow.step2.description'),
     },
     {
       icon: <AlertTriangle className="w-10 h-10" />,
-      color: 'pink' as const,
+      color: 'fraud' as const,
       title: t('workflow.step3.title'),
       description: t('workflow.step3.description'),
     },
     {
       icon: <Gauge className="w-10 h-10" />,
-      color: 'purple' as const,
+      color: 'fraud' as const,
       title: t('workflow.step4.title'),
       description: t('workflow.step4.description'),
     },
@@ -211,7 +211,7 @@ const HomePage: React.FC = () => {
                 <div className="mb-6 flex justify-center">
                   <GlowingIcon
                     icon={<TrendingDown className="w-16 h-16" />}
-                    color="purple"
+                    color="fraud"
                     size="xl"
                     animate
                   />
@@ -295,7 +295,7 @@ const HomePage: React.FC = () => {
                 <div className="mb-6 flex justify-center">
                   <GlowingIcon
                     icon={feature.icon}
-                    color="purple"
+                    color="fraud"
                     size="lg"
                   />
                 </div>

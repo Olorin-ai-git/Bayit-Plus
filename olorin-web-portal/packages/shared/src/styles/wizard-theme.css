@@ -54,32 +54,59 @@
  * ============================================================================ */
 
 /**
- * Purple neon glow effect
+ * Portal-specific neon glow effects
+ * Each portal has its own distinct purple shade for brand identity
+ */
+.glow-main {
+  @apply shadow-glow-main;
+}
+
+.glow-main:hover {
+  @apply shadow-glow-main-lg;
+}
+
+.glow-fraud {
+  @apply shadow-glow-fraud;
+}
+
+.glow-fraud:hover {
+  @apply shadow-glow-fraud-lg;
+}
+
+.glow-streaming {
+  @apply shadow-glow-streaming;
+}
+
+.glow-streaming:hover {
+  @apply shadow-glow-streaming-lg;
+}
+
+.glow-radio {
+  @apply shadow-glow-radio;
+}
+
+.glow-radio:hover {
+  @apply shadow-glow-radio-lg;
+}
+
+.glow-omen {
+  @apply shadow-glow-omen;
+}
+
+.glow-omen:hover {
+  @apply shadow-glow-omen-lg;
+}
+
+/**
+ * Legacy purple glow effect (backward compatibility)
+ * Alias for .glow-main
  */
 .glow-purple {
-  @apply shadow-glow-purple;
+  @apply shadow-glow-main;
 }
 
 .glow-purple:hover {
-  @apply shadow-glow-purple-lg;
-}
-
-/**
- * Pink neon glow effect
- */
-.glow-pink {
-  @apply shadow-glow-pink;
-}
-
-.glow-pink:hover {
-  @apply shadow-glow-pink-lg;
-}
-
-/**
- * Cyan highlight glow effect
- */
-.glow-cyan {
-  @apply shadow-glow-cyan;
+  @apply shadow-glow-main-lg;
 }
 
 /**

@@ -11,9 +11,9 @@ export interface NotFoundPageLink {
 export interface NotFoundPageProps {
   /**
    * Accent color for the icon and buttons
-   * @default 'purple'
+   * @default 'main'
    */
-  accentColor?: 'purple' | 'pink' | 'cyan';
+  accentColor?: 'main' | 'fraud' | 'streaming' | 'radio' | 'omen';
 
   /**
    * Popular page links to display
@@ -27,7 +27,7 @@ export interface NotFoundPageProps {
  * Used across all Olorin portals
  */
 export const NotFoundPage: React.FC<NotFoundPageProps> = ({
-  accentColor = 'purple',
+  accentColor = 'main',
   popularLinks = [
     { label: 'Home', path: '/' },
     { label: 'Features', path: '/features' },
@@ -38,20 +38,30 @@ export const NotFoundPage: React.FC<NotFoundPageProps> = ({
 
   // Map accent colors to Tailwind classes
   const colorClasses = {
-    purple: {
-      text: 'text-wizard-accent-purple',
-      border: 'border-wizard-accent-purple',
-      hover: 'hover:bg-wizard-accent-purple/20 hover:shadow-glow-purple',
+    main: {
+      text: 'text-wizard-accent-main',
+      border: 'border-wizard-accent-main',
+      hover: 'hover:bg-wizard-accent-main/20 hover:shadow-glow-main',
     },
-    pink: {
-      text: 'text-wizard-accent-pink',
-      border: 'border-wizard-accent-pink',
-      hover: 'hover:bg-wizard-accent-pink/20 hover:shadow-glow-pink',
+    fraud: {
+      text: 'text-wizard-accent-fraud',
+      border: 'border-wizard-accent-fraud',
+      hover: 'hover:bg-wizard-accent-fraud/20 hover:shadow-glow-fraud',
     },
-    cyan: {
-      text: 'text-wizard-accent-cyan',
-      border: 'border-wizard-accent-cyan',
-      hover: 'hover:bg-wizard-accent-cyan/20 hover:shadow-glow-cyan',
+    streaming: {
+      text: 'text-wizard-accent-streaming',
+      border: 'border-wizard-accent-streaming',
+      hover: 'hover:bg-wizard-accent-streaming/20 hover:shadow-glow-streaming',
+    },
+    radio: {
+      text: 'text-wizard-accent-radio',
+      border: 'border-wizard-accent-radio',
+      hover: 'hover:bg-wizard-accent-radio/20 hover:shadow-glow-radio',
+    },
+    omen: {
+      text: 'text-wizard-accent-omen',
+      border: 'border-wizard-accent-omen',
+      hover: 'hover:bg-wizard-accent-omen/20 hover:shadow-glow-omen',
     },
   };
 

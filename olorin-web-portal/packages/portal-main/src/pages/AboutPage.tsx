@@ -56,7 +56,7 @@ const AboutPage: React.FC = () => {
               <div className="mb-6 flex justify-center">
                 <GlowingIcon
                   icon={<Eye className="w-12 h-12" />}
-                  color="pink"
+                  color="main"
                   size="lg"
                 />
               </div>
@@ -112,7 +112,7 @@ const AboutPage: React.FC = () => {
             <div className="mb-8 flex justify-center">
               <GlowingIcon
                 icon={<Cpu className="w-16 h-16" />}
-                color="cyan"
+                color="main"
                 size="xl"
                 animate
               />

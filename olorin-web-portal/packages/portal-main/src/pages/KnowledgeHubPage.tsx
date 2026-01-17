@@ -151,7 +151,7 @@ const KnowledgeHubPage: React.FC = () => {
           <div className="mb-12 flex items-center space-x-4">
             <GlowingIcon
               icon={<TrendingUp className="w-12 h-12" />}
-              color="pink"
+              color="main"
               size="lg"
             />
             <div>
@@ -197,7 +197,7 @@ const KnowledgeHubPage: React.FC = () => {
           <div className="mb-12 flex items-center space-x-4">
             <GlowingIcon
               icon={<Video className="w-12 h-12" />}
-              color="cyan"
+              color="main"
               size="lg"
             />
             <div>
