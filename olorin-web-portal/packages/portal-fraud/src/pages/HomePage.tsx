@@ -8,8 +8,6 @@ import {
   Network,
   Fingerprint,
   User,
-  Smartphone,
-  Zap,
   Database,
   RefreshCw,
   AlertTriangle,
