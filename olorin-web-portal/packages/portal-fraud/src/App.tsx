@@ -1,10 +1,9 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import { Header, Footer } from '@olorin/shared';
+import { Header, Footer, LanguageSelector } from '@olorin/shared';
 import { useTranslation } from 'react-i18next';
 import HomePage from './pages/HomePage';
 import NotFoundPage from './pages/NotFoundPage';
-import LanguageSelector from './components/LanguageSelector';
 
 function App() {
   const { t } = useTranslation();

@@ -3,9 +3,24 @@
   "name": "Olorin.ai - AI Fraud Prevention Solutions",
   "icons": [
     {
-      "src": "assets/images/favicon.ico",
-      "sizes": "64x64 32x32 24x24 16x16",
-      "type": "image/x-icon"
+      "src": "assets/images/favicon-16x16.png",
+      "type": "image/png",
+      "sizes": "16x16"
+    },
+    {
+      "src": "assets/images/favicon-32x32.png",
+      "type": "image/png",
+      "sizes": "32x32"
+    },
+    {
+      "src": "assets/images/favicon-64x64.png",
+      "type": "image/png",
+      "sizes": "64x64"
+    },
+    {
+      "src": "assets/images/favicon-96x96.png",
+      "type": "image/png",
+      "sizes": "96x96"
     },
     {
       "src": "assets/images/web-app-manifest-192x192.png",

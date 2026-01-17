@@ -14,7 +14,7 @@ SYSTEM MANDATE Compliance:
 import json
 from typing import Dict, List, Optional
 
-from app.models.mongodb.investigation import Investigation
+from app.models.investigation_mongodb import Investigation
 from app.service.logging import get_bridge_logger
 
 logger = get_bridge_logger(__name__)

@@ -10,3 +10,5 @@ export { GlassCard } from './GlassCard';
 export { GlassButton } from './GlassButton';
 export { GlassPanel } from './GlassPanel';
 export { HeroSection } from './HeroSection';
+export { LanguageSelector } from './LanguageSelector';
+export { NotFoundPage } from './NotFoundPage';

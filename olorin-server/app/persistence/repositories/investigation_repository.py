@@ -49,7 +49,7 @@ class InvestigationRepository:
         Args:
             db: MongoDB database instance (optional, uses global if not provided)
         """
-        self.db = db or get_mongodb()
+        self.db = db if db is not None else get_mongodb()
         self.collection = self.db.investigations
 
     async def create(self, investigation: Investigation) -> Investigation:

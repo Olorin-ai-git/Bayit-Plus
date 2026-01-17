@@ -24,7 +24,7 @@ class AuditLogRepository:
 
     def __init__(self, db: Optional[AsyncIOMotorDatabase] = None):
         """Initialize repository with database connection."""
-        self.db = db or get_mongodb()
+        self.db = db if db is not None else get_mongodb()
         self.collection = self.db.audit_log
 
     async def create(self, audit_entry: AuditLog) -> AuditLog:

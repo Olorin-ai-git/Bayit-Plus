@@ -47,8 +47,8 @@ export const WizardLogo: React.FC<WizardLogoProps> = ({
     radio: 'OLORIN.AI RADIO',
   };
 
-  // For now, using SVG placeholder - will be replaced with actual wizard logos from assets
-  const logoSrc = `/assets/logos/olorin-${variant}-wizard-logo.svg`;
+  // Wizard logo from organized logos directory (transparent purple wizard)
+  const logoSrc = `/logos/wizard/${variant}.png`;
 
   return (
     <div className={`flex items-center gap-3 ${className}`}>

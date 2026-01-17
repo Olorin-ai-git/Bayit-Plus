@@ -14,7 +14,7 @@ from typing import Optional
 
 from motor.motor_asyncio import AsyncIOMotorDatabase
 
-from app.models.mongodb.audit_log import AuditLog, AuditAction
+from app.models.audit_log_mongodb import AuditLog, AuditActionType
 from app.persistence.repositories.audit_log_repository import AuditLogRepository
 
 
@@ -46,10 +46,10 @@ async def create_audit_entry(
 
     # Parse action type to enum
     try:
-        action = AuditAction(action_type)
+        action = AuditActionType(action_type)
     except ValueError:
         # If not a valid enum, default to UPDATED
-        action = AuditAction.UPDATED
+        action = AuditActionType.UPDATED
 
     entry = AuditLog(
         entry_id=str(uuid.uuid4()),

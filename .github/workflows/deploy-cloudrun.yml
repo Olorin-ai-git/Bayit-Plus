@@ -237,7 +237,7 @@ jobs:
             --execution-environment=gen2
             --cpu-throttling=false
             --set-env-vars=^@^APP_ENV=${{ needs.setup.outputs.environment }}@PORT=8090@FIREBASE_PROJECT_ID=olorin-ai@GOOGLE_CLOUD_PROJECT=${{ env.PROJECT_ID }}
-            --set-secrets=ANTHROPIC_API_KEY=ANTHROPIC_API_KEY:latest,OPENAI_API_KEY=OPENAI_API_KEY:latest,JWT_SECRET_KEY=JWT_SECRET_KEY:latest,DATABASE_PASSWORD=DATABASE_PASSWORD:latest,SNOWFLAKE_PASSWORD=SNOWFLAKE_PASSWORD:latest
+            --set-secrets=ANTHROPIC_API_KEY=ANTHROPIC_API_KEY:latest,OPENAI_API_KEY=OPENAI_API_KEY:latest,JWT_SECRET_KEY=JWT_SECRET_KEY:latest,DATABASE_PASSWORD=DATABASE_PASSWORD:latest,SNOWFLAKE_PASSWORD=SNOWFLAKE_PASSWORD:latest,MONGODB_URI=olorin-mongodb-uri:latest,MONGODB_DATABASE=olorin-mongodb-database:latest
 
       - name: Show Deployment URL
         run: |

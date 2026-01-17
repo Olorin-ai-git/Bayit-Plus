@@ -36,8 +36,8 @@ const AboutPage: React.FC = () => {
       <section className="wizard-section bg-wizard-bg-primary">
         <div className="wizard-container">
           <div className="wizard-grid-2 gap-12">
-            <GlassCard className="p-10">
-              <div className="mb-6">
+            <GlassCard className="p-10 text-center">
+              <div className="mb-6 flex justify-center">
                 <GlowingIcon
                   icon={<Target className="w-12 h-12" />}
                   color="purple"
@@ -52,8 +52,8 @@ const AboutPage: React.FC = () => {
               </p>
             </GlassCard>
 
-            <GlassCard className="p-10">
-              <div className="mb-6">
+            <GlassCard className="p-10 text-center">
+              <div className="mb-6 flex justify-center">
                 <GlowingIcon
                   icon={<Eye className="w-12 h-12" />}
                   color="pink"
@@ -109,7 +109,7 @@ const AboutPage: React.FC = () => {
       <section className="wizard-section bg-wizard-bg-primary">
         <div className="wizard-container">
           <div className="max-w-4xl mx-auto text-center">
-            <div className="mb-8">
+            <div className="mb-8 flex justify-center">
               <GlowingIcon
                 icon={<Cpu className="w-16 h-16" />}
                 color="cyan"

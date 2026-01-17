@@ -14,7 +14,7 @@ from typing import Optional
 from fastapi import HTTPException
 from motor.motor_asyncio import AsyncIOMotorDatabase
 
-from app.models.mongodb.investigation import Investigation
+from app.models.investigation_mongodb import Investigation
 from app.persistence.repositories.investigation_repository import InvestigationRepository
 
 

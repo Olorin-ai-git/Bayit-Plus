@@ -13,6 +13,7 @@ This script migrates all data from PostgreSQL to MongoDB Atlas with:
 - Rollback capability
 """
 
+import argparse
 import asyncio
 import os
 import sys
@@ -27,16 +28,17 @@ from sqlalchemy.orm import Session
 from app.config.mongodb_settings import get_mongodb_settings
 from app.models.investigation_state import InvestigationState
 from app.models.investigation_audit_log import InvestigationAuditLog
-from app.models.mongodb.investigation import (
+from app.models.investigation_mongodb import (
     Investigation,
-    InvestigationLifecycleStage,
+    LifecycleStage,
     InvestigationProgress,
     InvestigationResults,
     InvestigationSettings,
     InvestigationStatus,
 )
-from app.models.mongodb.audit_log import AuditLog, AuditAction
-from app.persistence.repositories import InvestigationRepository, AuditLogRepository
+from app.models.audit_log_mongodb import AuditLog, AuditActionType, AuditLogMetadata, AuditSource, AuditChanges
+from app.persistence.repositories.investigation_repository import InvestigationRepository
+from app.persistence.repositories.audit_log_repository import AuditLogRepository
 from app.service.logging import get_bridge_logger
 
 logger = get_bridge_logger(__name__)
@@ -196,10 +198,10 @@ class DataMigrator:
             MongoDB investigation document
         """
         # Parse lifecycle stage
-        lifecycle_stage = InvestigationLifecycleStage.CREATED
+        lifecycle_stage = LifecycleStage.CREATED
         if hasattr(pg_inv, "lifecycle_stage") and pg_inv.lifecycle_stage:
             try:
-                lifecycle_stage = InvestigationLifecycleStage(
+                lifecycle_stage = LifecycleStage(
                     pg_inv.lifecycle_stage
                 )
             except ValueError:
@@ -209,14 +211,19 @@ class DataMigrator:
                 )
 
         # Parse status
-        status = InvestigationStatus.PENDING
+        status = InvestigationStatus.CREATED
         if hasattr(pg_inv, "status") and pg_inv.status:
-            try:
-                status = InvestigationStatus(pg_inv.status)
-            except ValueError:
-                logger.warning(
-                    f"Unknown status: {pg_inv.status}, defaulting to PENDING"
-                )
+            # Map PostgreSQL PENDING to MongoDB CREATED
+            pg_status = pg_inv.status.upper() if isinstance(pg_inv.status, str) else pg_inv.status
+            if pg_status == "PENDING":
+                status = InvestigationStatus.CREATED
+            else:
+                try:
+                    status = InvestigationStatus(pg_status)
+                except ValueError:
+                    logger.warning(
+                        f"Unknown status: {pg_inv.status}, defaulting to CREATED"
+                    )
 
         # Parse settings (from JSON field)
         settings = None
@@ -395,14 +402,31 @@ class DataMigrator:
         Returns:
             MongoDB audit log document
         """
-        # Parse action type
+        # Parse action type with mapping for PostgreSQL -> MongoDB action types
+        pg_action = pg_audit.action_type.upper() if isinstance(pg_audit.action_type, str) else pg_audit.action_type
+
+        # Map PostgreSQL action types to MongoDB action types
+        action_mapping = {
+            "CREATED": "CREATE",
+            "UPDATED": "UPDATE",
+            "DELETED": "DELETE",
+            "EXECUTED": "EXECUTE",
+            "PROGRESS": "UPDATE",
+            "PHASE_CHANGE": "STATE_CHANGE",
+            "COMPLETED": "STATE_CHANGE",
+            "DOMAIN_FINDINGS": "UPDATE",
+            "TOOL_EXECUTION": "EXECUTE",
+        }
+
+        mapped_action = action_mapping.get(pg_action, pg_action)
+
         try:
-            action = AuditAction(pg_audit.action_type)
+            action = AuditActionType(mapped_action)
         except ValueError:
             logger.warning(
-                f"Unknown action type: {pg_audit.action_type}, defaulting to UPDATED"
+                f"Unknown action type: {pg_audit.action_type}, defaulting to UPDATE"
             )
-            action = AuditAction.UPDATED
+            action = AuditActionType.UPDATE
 
         # Get tenant_id (default to "default" if not present)
         tenant_id = getattr(pg_audit, "tenant_id", "default")
@@ -410,34 +434,53 @@ class DataMigrator:
             tenant_id = "default"
 
         # Parse changes JSON
-        changes = {}
+        changes_dict = {}
         if pg_audit.changes_json:
             try:
                 import json
-                changes = json.loads(pg_audit.changes_json)
+                changes_dict = json.loads(pg_audit.changes_json)
             except json.JSONDecodeError:
-                changes = {"raw": pg_audit.changes_json}
+                changes_dict = {"raw": pg_audit.changes_json}
 
-        # Parse state snapshot JSON
-        state_snapshot = None
+        # Create AuditChanges object
+        changes = AuditChanges(
+            fields_modified=changes_dict.get("fields_modified", []),
+            before=changes_dict.get("before", {}),
+            after=changes_dict.get("after", {})
+        )
+
+        # Parse state snapshot JSON (default to empty dict, not None)
+        state_snapshot = {}
         if hasattr(pg_audit, "state_snapshot_json") and pg_audit.state_snapshot_json:
             try:
                 import json
                 state_snapshot = json.loads(pg_audit.state_snapshot_json)
             except json.JSONDecodeError:
-                pass
+                state_snapshot = {}
 
-        # Create MongoDB document
-        return AuditLog(
-            entry_id=pg_audit.entry_id,
+        # Parse source
+        pg_source = getattr(pg_audit, "source", "API")
+        try:
+            source = AuditSource(pg_source)
+        except ValueError:
+            source = AuditSource.API
+
+        # Create metadata object
+        metadata = AuditLogMetadata(
             investigation_id=pg_audit.investigation_id,
             user_id=pg_audit.user_id,
             tenant_id=tenant_id,
             action_type=action,
+            source=source
+        )
+
+        # Create MongoDB document
+        return AuditLog(
+            entry_id=pg_audit.entry_id,
+            metadata=metadata,
             timestamp=pg_audit.timestamp or datetime.utcnow(),
             changes=changes,
             state_snapshot=state_snapshot,
-            source=getattr(pg_audit, "source", "API"),
             from_version=pg_audit.from_version,
             to_version=pg_audit.to_version,
         )
@@ -501,6 +544,11 @@ class DataMigrator:
 
 async def main():
     """Run data migration."""
+    # Parse command line arguments
+    parser = argparse.ArgumentParser(description="Migrate data from PostgreSQL to MongoDB")
+    parser.add_argument("--yes", "-y", action="store_true", help="Skip confirmation prompt")
+    args = parser.parse_args()
+
     # Get PostgreSQL URL from environment
     postgres_url = os.getenv("DATABASE_URL")
     if not postgres_url:
@@ -517,13 +565,14 @@ async def main():
     )
     logger.info("")
 
-    # Confirm before proceeding
-    confirmation = input(
-        "⚠️  This will migrate data from PostgreSQL to MongoDB. Continue? (yes/no): "
-    )
-    if confirmation.lower() != "yes":
-        logger.info("Migration cancelled by user")
-        sys.exit(0)
+    # Confirm before proceeding (unless --yes flag provided)
+    if not args.yes:
+        confirmation = input(
+            "⚠️  This will migrate data from PostgreSQL to MongoDB. Continue? (yes/no): "
+        )
+        if confirmation.lower() != "yes":
+            logger.info("Migration cancelled by user")
+            sys.exit(0)
 
     migrator = DataMigrator(postgres_url)
 

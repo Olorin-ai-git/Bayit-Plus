@@ -56,7 +56,6 @@ export const Header: React.FC<HeaderProps> = ({
   LanguageSelectorComponent,
 }) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [openDropdown, setOpenDropdown] = useState<string | null>(null);
   const location = useLocation();
   const { t } = useTranslation();
 
@@ -93,9 +92,7 @@ export const Header: React.FC<HeaderProps> = ({
             {dropdowns.map((dropdown) => (
               <div
                 key={dropdown.label}
-                className="relative"
-                onMouseEnter={() => setOpenDropdown(dropdown.label)}
-                onMouseLeave={() => setOpenDropdown(null)}
+                className="relative group"
               >
                 <button
                   className="px-3 py-2 rounded-lg text-sm font-medium text-wizard-text-secondary hover:text-wizard-accent-purple hover:bg-white/5 transition-all duration-200"
@@ -111,9 +108,9 @@ export const Header: React.FC<HeaderProps> = ({
                   </svg>
                 </button>
 
-                {/* Dropdown Menu */}
-                {openDropdown === dropdown.label && (
-                  <div className="absolute top-full left-0 mt-2 w-64 glass-card-wizard p-2 shadow-glass-lg z-50 animate-fade-in-up">
+                {/* Dropdown Menu - shows on group hover */}
+                <div className="absolute top-full left-0 pt-2 w-64 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
+                  <div className="glass-card-wizard p-2 shadow-glass-lg animate-fade-in-up">
                     {dropdown.items.map((item) => (
                       <Link
                         key={item.name}
@@ -127,7 +124,7 @@ export const Header: React.FC<HeaderProps> = ({
                       </Link>
                     ))}
                   </div>
-                )}
+                </div>
               </div>
             ))}
 

@@ -17,7 +17,7 @@ from typing import Any, Dict, List, Optional
 from fastapi import BackgroundTasks
 from motor.motor_asyncio import AsyncIOMotorDatabase
 
-from app.models.mongodb.investigation import Investigation, InvestigationStatus, InvestigationLifecycleStage
+from app.models.investigation_mongodb import Investigation, InvestigationStatus, LifecycleStage
 from app.persistence.repositories.investigation_repository import InvestigationRepository
 from app.persistence.repositories.audit_log_repository import AuditLogRepository
 from app.schemas.investigation_state import (

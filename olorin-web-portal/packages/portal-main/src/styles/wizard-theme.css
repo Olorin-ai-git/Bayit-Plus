@@ -123,14 +123,22 @@
 }
 
 /**
- * Wizard brand button
+ * Wizard brand button - Semi-transparent glassmorphic with dark purple border
  */
 .wizard-button {
-  @apply bg-wizard-gradient text-white font-semibold;
+  background: rgba(45, 27, 78, 0.4);
+  backdrop-filter: blur(12px);
+  @apply text-white font-semibold;
   @apply px-6 py-3 rounded-lg;
+  border: 2px solid rgba(168, 85, 247, 0.6);
   @apply shadow-glow-purple hover:shadow-glow-purple-lg;
   @apply transform transition-all duration-300;
-  @apply hover:scale-105 hover:brightness-110;
+  @apply hover:scale-105;
+}
+
+.wizard-button:hover {
+  background: rgba(45, 27, 78, 0.6);
+  border-color: rgba(168, 85, 247, 0.9);
 }
 
 .wizard-button:active {
@@ -501,4 +509,86 @@
 .gpu-accelerated {
   transform: translateZ(0);
   will-change: transform, opacity;
+}
+
+/* ============================================================================
+ * SPLASH SCREEN ANIMATIONS
+ * ============================================================================ */
+
+/**
+ * Animated background particles for splash screen
+ */
+.wizard-particles {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+
+.wizard-particles::before,
+.wizard-particles::after {
+  content: '';
+  position: absolute;
+  width: 300px;
+  height: 300px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(168, 85, 247, 0.3) 0%, transparent 70%);
+  animation: particleFloat 8s ease-in-out infinite;
+}
+
+.wizard-particles::before {
+  top: 10%;
+  left: 10%;
+  animation-delay: 0s;
+}
+
+.wizard-particles::after {
+  bottom: 10%;
+  right: 10%;
+  animation-delay: 4s;
+}
+
+/**
+ * Fade in up animation for splash content
+ */
+.animate-fade-in-up {
+  animation: fadeInUp 1s ease-out;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/**
+ * Smooth fade transitions
+ */
+.transition-opacity {
+  transition-property: opacity;
+}
+
+.duration-800 {
+  transition-duration: 800ms;
+}
+
+/**
+ * Bounce animation for loading dots
+ */
+@keyframes bounce {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+.animate-bounce {
+  animation: bounce 0.6s ease-in-out infinite;
 }

@@ -1,0 +1,127 @@
+import React from 'react';
+import { useNavigate } from 'react-router-dom';
+import { GlowingIcon } from '../branding/GlowingIcon';
+import { AlertCircle, Home, ArrowLeft } from 'lucide-react';
+
+export interface NotFoundPageLink {
+  label: string;
+  path: string;
+}
+
+export interface NotFoundPageProps {
+  /**
+   * Accent color for the icon and buttons
+   * @default 'purple'
+   */
+  accentColor?: 'purple' | 'pink' | 'cyan';
+
+  /**
+   * Popular page links to display
+   */
+  popularLinks?: NotFoundPageLink[];
+}
+
+/**
+ * NotFoundPage Component
+ * 404 error page with configurable accent color and popular links
+ * Used across all Olorin portals
+ */
+export const NotFoundPage: React.FC<NotFoundPageProps> = ({
+  accentColor = 'purple',
+  popularLinks = [
+    { label: 'Home', path: '/' },
+    { label: 'Features', path: '/features' },
+    { label: 'Contact', path: '/contact' },
+  ]
+}) => {
+  const navigate = useNavigate();
+
+  // Map accent colors to Tailwind classes
+  const colorClasses = {
+    purple: {
+      text: 'text-wizard-accent-purple',
+      border: 'border-wizard-accent-purple',
+      hover: 'hover:bg-wizard-accent-purple/20 hover:shadow-glow-purple',
+    },
+    pink: {
+      text: 'text-wizard-accent-pink',
+      border: 'border-wizard-accent-pink',
+      hover: 'hover:bg-wizard-accent-pink/20 hover:shadow-glow-pink',
+    },
+    cyan: {
+      text: 'text-wizard-accent-cyan',
+      border: 'border-wizard-accent-cyan',
+      hover: 'hover:bg-wizard-accent-cyan/20 hover:shadow-glow-cyan',
+    },
+  };
+
+  const colors = colorClasses[accentColor];
+
+  return (
+    <div className="not-found-page min-h-screen flex items-center justify-center wizard-gradient-bg wizard-particles">
+      <div className="wizard-container">
+        <div className="max-w-2xl mx-auto text-center">
+          <div className="mb-8 flex justify-center">
+            <GlowingIcon
+              icon={<AlertCircle className="w-32 h-32" />}
+              color={accentColor}
+              size="xl"
+              animate
+            />
+          </div>
+
+          <h1 className="text-8xl md:text-9xl font-bold wizard-text mb-6">
+            404
+          </h1>
+
+          <h2 className="text-3xl md:text-4xl font-bold text-wizard-text-primary mb-4">
+            Page Not Found
+          </h2>
+
+          <p className="text-lg text-wizard-text-secondary mb-10 max-w-md mx-auto">
+            The page you're looking for doesn't exist or has been moved to another location.
+          </p>
+
+          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <button
+              onClick={() => navigate(-1)}
+              className="wizard-button flex items-center justify-center space-x-2"
+            >
+              <ArrowLeft className="w-5 h-5" />
+              <span>Go Back</span>
+            </button>
+
+            <button
+              onClick={() => navigate('/')}
+              className={`bg-transparent border-2 ${colors.border} ${colors.text} ${colors.hover} transition-all duration-300 rounded-lg font-semibold px-6 py-3 flex items-center justify-center space-x-2`}
+            >
+              <Home className="w-5 h-5" />
+              <span>Go Home</span>
+            </button>
+          </div>
+
+          {popularLinks && popularLinks.length > 0 && (
+            <div className="mt-16 pt-8 border-t border-wizard-border-secondary">
+              <p className="text-wizard-text-muted mb-4">
+                Popular Pages:
+              </p>
+              <div className="flex flex-wrap justify-center gap-4">
+                {popularLinks.map((link, index) => (
+                  <React.Fragment key={link.path}>
+                    {index > 0 && <span className="text-wizard-text-muted">•</span>}
+                    <button
+                      onClick={() => navigate(link.path)}
+                      className={`${colors.text} hover:underline`}
+                    >
+                      {link.label}
+                    </button>
+                  </React.Fragment>
+                ))}
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+};

@@ -14,7 +14,7 @@ import json
 from datetime import datetime
 from typing import Any, Dict
 
-from app.models.mongodb.investigation import Investigation
+from app.models.investigation_mongodb import Investigation
 from app.schemas.investigation_state import InvestigationStateUpdate
 from app.service.logging import get_bridge_logger
 

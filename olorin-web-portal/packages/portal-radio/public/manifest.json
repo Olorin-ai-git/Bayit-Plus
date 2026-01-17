@@ -1,0 +1,41 @@
+{
+  "short_name": "Olorin Radio",
+  "name": "Olorin.AI Radio Management - Intelligent Radio Automation",
+  "description": "Intelligent radio station management with AI automation",
+  "icons": [
+    {
+      "src": "favicons/16x16.png",
+      "type": "image/png",
+      "sizes": "16x16"
+    },
+    {
+      "src": "favicons/32x32.png",
+      "type": "image/png",
+      "sizes": "32x32"
+    },
+    {
+      "src": "favicons/64x64.png",
+      "type": "image/png",
+      "sizes": "64x64"
+    },
+    {
+      "src": "favicons/128x128.png",
+      "type": "image/png",
+      "sizes": "128x128"
+    },
+    {
+      "src": "favicons/192x192.png",
+      "type": "image/png",
+      "sizes": "192x192"
+    },
+    {
+      "src": "favicons/512x512.png",
+      "type": "image/png",
+      "sizes": "512x512"
+    }
+  ],
+  "start_url": ".",
+  "display": "standalone",
+  "theme_color": "#1a0033",
+  "background_color": "#0f0027"
+}

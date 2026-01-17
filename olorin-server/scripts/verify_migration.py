@@ -19,7 +19,7 @@ from sqlalchemy import create_engine, select, func
 from sqlalchemy.orm import Session
 
 from app.config.mongodb_settings import get_mongodb_settings
-from app.models.investigation import InvestigationState
+from app.models.investigation_state import InvestigationState
 from app.service.logging import get_bridge_logger
 
 logger = get_bridge_logger(__name__)
@@ -70,7 +70,7 @@ class MigrationVerifier:
         try:
             # Count records in PostgreSQL
             with Session(self.postgres_engine) as session:
-                pg_count = session.scalar(select(func.count(InvestigationState.id)))
+                pg_count = session.scalar(select(func.count(InvestigationState.investigation_id)))
 
             # Count documents in MongoDB
             mongo_count = await self.mongodb.investigations.count_documents({})
