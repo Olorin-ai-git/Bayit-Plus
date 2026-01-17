@@ -1815,4 +1815,10 @@ __all__ = [
     "expose_metrics",
     "add_actuator_endpoints",
     "get_app_kwargs",
+    # Application instance
+    "app",
 ]
+
+# Create module-level app instance for uvicorn to import
+# This allows: uvicorn app.service:app
+app = create_app()
