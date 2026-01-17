@@ -29,13 +29,20 @@ export default function FullscreenVideoOverlay() {
   const containerRef = useRef<HTMLDivElement>(null)
   const lastProgressRef = useRef<number>(0)
 
-  // Fetch stream URL when content changes
+  // Fetch stream URL when content changes (unless src is already provided)
   useEffect(() => {
     if (!isOpen || !content) {
       setStreamUrl(null)
       setChapters([])
       setLoading(true)
       setError(null)
+      return
+    }
+
+    // If src is already provided (e.g., for trailers), use it directly
+    if (content.src) {
+      setStreamUrl(content.src)
+      setLoading(false)
       return
     }
 
@@ -65,7 +72,7 @@ export default function FullscreenVideoOverlay() {
     }
 
     fetchStream()
-  }, [isOpen, content?.id, content?.type])
+  }, [isOpen, content?.id, content?.type, content?.src])
 
   // Fetch chapters for VOD content
   useEffect(() => {

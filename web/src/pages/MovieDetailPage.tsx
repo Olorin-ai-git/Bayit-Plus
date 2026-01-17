@@ -10,7 +10,7 @@ import ContentCarousel from '@/components/content/ContentCarousel';
 import { contentService, watchlistService, favoritesService, subtitlesService } from '@/services/api';
 import { colors, spacing, fontSize, borderRadius } from '@bayit/shared/theme';
 import { getLanguageInfo, SubtitleTrack } from '@/types/subtitle';
-import { GlassCard, GlassButton, GlassView, GlassBadge } from '@bayit/shared/ui';
+import { GlassCard, GlassButton, GlassView, GlassBadge, GlassTooltip } from '@bayit/shared/ui';
 import { useFullscreenPlayerStore } from '@/stores/fullscreenPlayerStore';
 
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window');
@@ -393,13 +393,32 @@ export default function MovieDetailPage() {
               title={inWatchlist ? t('content.inList') : t('content.addToList')}
             />
 
-            {showPoster && (movie.preview_url || movie.trailer_url) && (
+            {movie.trailer_url ? (
               <GlassButton
-                onPress={startPreview}
+                onPress={() => {
+                  // Open trailer in fullscreen player
+                  openPlayer({
+                    id: `${movie.id}-trailer`,
+                    title: `${movie.title} - ${t('content.trailer')}`,
+                    src: movie.trailer_url!,
+                    poster: movie.backdrop || movie.thumbnail,
+                    type: 'vod',
+                  });
+                }}
                 variant="ghost"
                 size="lg"
                 title={t('content.watchTrailer')}
               />
+            ) : (
+              <GlassTooltip content={t('content.trailerNotAvailable', 'Trailer not available for this title')}>
+                <GlassButton
+                  variant="ghost"
+                  size="lg"
+                  title={t('content.watchTrailer')}
+                  disabled
+                  style={{ opacity: 0.5 }}
+                />
+              </GlassTooltip>
             )}
           </View>
 

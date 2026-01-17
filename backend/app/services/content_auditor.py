@@ -134,6 +134,10 @@ async def check_metadata_completeness(contents: List[Content]) -> List[Dict[str,
         if not content.is_series and len(content.available_subtitle_languages) < 3:
             issues.append("insufficient_subtitle_languages")
 
+        # Check for missing trailer (movies and series should have trailers)
+        if not content.trailer_url:
+            issues.append("missing_trailer")
+
         if issues:
             missing_metadata.append({
                 "content_id": str(content.id),

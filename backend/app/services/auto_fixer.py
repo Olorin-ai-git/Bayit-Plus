@@ -223,6 +223,7 @@ async def fix_missing_metadata(
             "cast": content.cast,
             "director": content.director,
             "year": content.year,
+            "trailer_url": content.trailer_url,
         }
 
         changes_made = []
@@ -231,7 +232,8 @@ async def fix_missing_metadata(
 
         # Enrich from TMDB if we have the title
         if "missing_tmdb_id" in issues or "missing_imdb_id" in issues or \
-           "missing_thumbnail" in issues or "missing_backdrop" in issues:
+           "missing_thumbnail" in issues or "missing_backdrop" in issues or \
+           "missing_trailer" in issues:
 
             logger.info(f"   🔍 Fetching TMDB data for '{content.title}' ({content.year})")
             if content.is_series:
@@ -328,7 +330,13 @@ async def fix_missing_metadata(
                 content.year = enriched["release_year"]
                 after_state["year"] = enriched["release_year"]
                 changes_made.append("added_year")
-        
+
+            # Add trailer URL from TMDB
+            if enriched.get("trailer_url") and not content.trailer_url:
+                content.trailer_url = enriched["trailer_url"]
+                after_state["trailer_url"] = enriched["trailer_url"]
+                changes_made.append("added_trailer_url")
+
         # Set content type if missing
         if not content.content_type:
             content.content_type = "series" if content.is_series else "movie"
