@@ -76,7 +76,8 @@ class UploadJob(Document):
     
     # Processing stages
     stages: Dict[str, Any] = Field(default_factory=dict)  # Track individual processing stages
-    
+    stage_timings: Dict[str, Dict[str, Any]] = Field(default_factory=dict)  # Track timing for each stage
+
     def get_current_stage(self) -> Optional[str]:
         """Get human-readable current processing stage"""
         if self.status == UploadStatus.QUEUED:
@@ -176,6 +177,49 @@ class MonitoredFolder(Document):
             "path",
             "enabled",
             "last_scanned",
+        ]
+
+
+class BrowserUploadSession(Document):
+    """
+    Track browser upload sessions with chunk-level detail for resumability.
+    Allows uploads to be paused and resumed without losing progress.
+    """
+    # Session identification
+    upload_id: Indexed(str, unique=True)
+
+    # File information
+    filename: str
+    file_size: int
+    content_type: ContentType
+    user_id: str
+
+    # Chunk tracking
+    total_chunks: int
+    chunks_received: List[int] = Field(default_factory=list)  # Indices of received chunks
+    bytes_received: int = 0
+
+    # Status tracking
+    status: str = "initialized"  # initialized, uploading, completed, timeout, failed
+
+    # Timing
+    started_at: datetime = Field(default_factory=datetime.utcnow)
+    last_activity: datetime = Field(default_factory=datetime.utcnow)
+    completed_at: Optional[datetime] = None
+
+    # Upload job reference (once enqueued)
+    job_id: Optional[str] = None
+
+    # Error tracking
+    error_message: Optional[str] = None
+
+    class Settings:
+        name = "browser_upload_sessions"
+        indexes = [
+            "upload_id",
+            "status",
+            "user_id",
+            "started_at",
         ]
 
 

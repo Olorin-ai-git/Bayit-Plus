@@ -139,8 +139,13 @@ export default function ChessPage() {
     return game.black_player?.user_id === user.id;
   };
 
-  const handleCreateGame = async (color: 'white' | 'black', timeControl?: number) => {
-    await createGame(color, timeControl);
+  const handleCreateGame = async (
+    color: 'white' | 'black',
+    timeControl?: number,
+    gameMode?: 'pvp' | 'bot',
+    botDifficulty?: 'easy' | 'medium' | 'hard'
+  ) => {
+    await createGame(color, timeControl, gameMode, botDifficulty);
   };
 
   const handleJoinGame = async (gameCode: string) => {

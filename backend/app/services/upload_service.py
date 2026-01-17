@@ -234,15 +234,20 @@ class UploadService:
                 else:
                     # Calculate hash in background
                     job.stages["hash_calculation"] = "in_progress"
+                    job.stage_timings["hash_calculation"] = {"started": datetime.utcnow().isoformat()}
                     job.progress = 5.0  # Show some progress during hash calculation
                     await job.save()
                     await self._broadcast_queue_update()
-                    
+
                     logger.info(f"📊 Calculating hash in background for {job.filename}...")
+                    hash_start_time = datetime.utcnow()
                     job.file_hash = await self._calculate_file_hash(job.source_path)
+                    hash_duration = (datetime.utcnow() - hash_start_time).total_seconds()
                     logger.info(f"✓ Hash calculated: {job.file_hash[:16]}... (will be stored in DB)")
-                    
+
                     job.stages["hash_calculation"] = "completed"
+                    job.stage_timings["hash_calculation"]["completed"] = datetime.utcnow().isoformat()
+                    job.stage_timings["hash_calculation"]["duration_seconds"] = round(hash_duration, 2)
                     job.progress = 10.0
                     await job.save()
                     await self._broadcast_queue_update()
@@ -267,10 +272,12 @@ class UploadService:
             
             # Stage 1: Extract metadata
             job.stages["metadata_extraction"] = "in_progress"
+            job.stage_timings["metadata_extraction"] = {"started": datetime.utcnow().isoformat()}
             job.progress = 15.0
             await job.save()
             await self._broadcast_queue_update()
-            
+
+            metadata_start_time = datetime.utcnow()
             if job.type == ContentType.MOVIE:
                 metadata = await self._extract_movie_metadata(job)
             elif job.type == ContentType.SERIES:
@@ -279,9 +286,12 @@ class UploadService:
                 metadata = await self._extract_podcast_metadata(job)
             else:
                 metadata = {}
-            
+            metadata_duration = (datetime.utcnow() - metadata_start_time).total_seconds()
+
             job.metadata.update(metadata)
             job.stages["metadata_extraction"] = "completed"
+            job.stage_timings["metadata_extraction"]["completed"] = datetime.utcnow().isoformat()
+            job.stage_timings["metadata_extraction"]["duration_seconds"] = round(metadata_duration, 2)
             job.progress = 20.0
             await job.save()
             await self._broadcast_queue_update()
@@ -297,27 +307,37 @@ class UploadService:
             # Stage 2: Upload to GCS
             job.status = UploadStatus.UPLOADING
             job.stages["gcs_upload"] = "in_progress"
+            job.stage_timings["gcs_upload"] = {"started": datetime.utcnow().isoformat()}
             await job.save()
             await self._broadcast_queue_update()
-            
+
+            gcs_start_time = datetime.utcnow()
             destination_url = await self._upload_to_gcs(job)
-            
+            gcs_duration = (datetime.utcnow() - gcs_start_time).total_seconds()
+
             if not destination_url:
                 raise Exception("GCS upload failed")
-            
+
             job.destination_url = destination_url
             job.stages["gcs_upload"] = "completed"
+            job.stage_timings["gcs_upload"]["completed"] = datetime.utcnow().isoformat()
+            job.stage_timings["gcs_upload"]["duration_seconds"] = round(gcs_duration, 2)
             await job.save()
             
             # Stage 3: Create content entry in database
             job.stages["database_insert"] = "in_progress"
+            job.stage_timings["database_insert"] = {"started": datetime.utcnow().isoformat()}
             job.progress = 96.0
             await job.save()
             await self._broadcast_queue_update()
-            
+
+            db_start_time = datetime.utcnow()
             await self._create_content_entry(job)
+            db_duration = (datetime.utcnow() - db_start_time).total_seconds()
             
             job.stages["database_insert"] = "completed"
+            job.stage_timings["database_insert"]["completed"] = datetime.utcnow().isoformat()
+            job.stage_timings["database_insert"]["duration_seconds"] = round(db_duration, 2)
             job.progress = 98.0
             await job.save()
             await self._broadcast_queue_update()
@@ -1070,9 +1090,11 @@ class UploadService:
             logger.info(f"[Background] Starting IMDB/TMDB lookup for job {job_id}")
             
             # Get the job and update stage
+            imdb_start_time = datetime.utcnow()
             job = await UploadJob.find_one(UploadJob.job_id == job_id)
             if job:
                 job.stages["imdb_lookup"] = "in_progress"
+                job.stage_timings["imdb_lookup"] = {"started": datetime.utcnow().isoformat()}
                 await job.save()
                 await self._broadcast_queue_update()
             
@@ -1174,7 +1196,10 @@ class UploadService:
             
             # Mark stage as completed
             if job:
+                imdb_duration = (datetime.utcnow() - imdb_start_time).total_seconds()
                 job.stages["imdb_lookup"] = "completed"
+                job.stage_timings["imdb_lookup"]["completed"] = datetime.utcnow().isoformat()
+                job.stage_timings["imdb_lookup"]["duration_seconds"] = round(imdb_duration, 2)
                 await job.save()
                 await self._broadcast_queue_update()
             
@@ -1201,9 +1226,11 @@ class UploadService:
             logger.info(f"[Background] Starting subtitle extraction for job {job_id}")
             
             # Update job stage
+            subtitle_start_time = datetime.utcnow()
             job = await UploadJob.find_one(UploadJob.job_id == job_id)
             if job:
                 job.stages["subtitle_extraction"] = "in_progress"
+                job.stage_timings["subtitle_extraction"] = {"started": datetime.utcnow().isoformat()}
                 await job.save()
                 await self._broadcast_queue_update()
             
@@ -1278,7 +1305,10 @@ class UploadService:
             # Mark stage as completed
             job = await UploadJob.find_one(UploadJob.job_id == job_id)
             if job:
+                subtitle_duration = (datetime.utcnow() - subtitle_start_time).total_seconds()
                 job.stages["subtitle_extraction"] = "completed"
+                job.stage_timings["subtitle_extraction"]["completed"] = datetime.utcnow().isoformat()
+                job.stage_timings["subtitle_extraction"]["duration_seconds"] = round(subtitle_duration, 2)
                 await job.save()
                 await self._broadcast_queue_update()
             

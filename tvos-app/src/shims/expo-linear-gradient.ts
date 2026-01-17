@@ -1,5 +1,6 @@
-// Shim for expo-linear-gradient -> react-native-linear-gradient
-import LinearGradientRN from 'react-native-linear-gradient';
-
-export const LinearGradient = LinearGradientRN;
-export default LinearGradientRN;
+/**
+ * tvos-app Shim: expo-linear-gradient
+ * Re-exports from shared shims package for consistency.
+ */
+export * from '@bayit/shared-shims/expo-linear-gradient';
+export { default } from '@bayit/shared-shims/expo-linear-gradient';

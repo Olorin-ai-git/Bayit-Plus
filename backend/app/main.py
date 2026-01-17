@@ -25,44 +25,21 @@ from app.api.routes import (
 from app.api.routes.admin.recordings import router as admin_recordings_router
 
 
-async def sync_podcast_rss_feeds():
-    """
-    Periodic background task to sync podcast episodes from RSS feeds.
-    Runs every 6 hours to keep podcast episodes up-to-date.
-    """
-    import asyncio
-    from app.services.podcast_sync import sync_all_podcasts
-
-    # Wait for server to initialize
-    await asyncio.sleep(30)
-
-    while True:
-        try:
-            logger.info("🔄 Starting scheduled podcast sync (background task)...")
-            await sync_all_podcasts(max_episodes=20)
-            logger.info("✅ Scheduled podcast sync completed")
-        except Exception as e:
-            logger.error(f"⚠️ Scheduled podcast sync failed: {e}", exc_info=True)
-
-        # Wait 6 hours before next sync
-        await asyncio.sleep(6 * 60 * 60)
-
-
 async def scan_monitored_folders_task():
     """Periodically scan monitored folders for new content."""
     import asyncio
     from app.services.folder_monitor_service import folder_monitor_service
-    
+
     # Wait for server to initialize
     await asyncio.sleep(10)
-    
+
     # Initialize default folders from config
     try:
         await folder_monitor_service.initialize_from_config()
         logger.info("✅ Monitored folders initialized from config")
     except Exception as e:
         logger.warning(f"⚠️ Failed to initialize monitored folders: {e}")
-    
+
     # Run periodic scans
     while True:
         try:
@@ -70,14 +47,93 @@ async def scan_monitored_folders_task():
                 logger.info("🔍 Scanning monitored folders for new content...")
                 stats = await folder_monitor_service.scan_and_enqueue()
                 logger.info(f"✅ Folder scan complete: {stats}")
-            
+
             # Wait for next scan interval
             await asyncio.sleep(settings.UPLOAD_MONITOR_INTERVAL)
-            
+
         except Exception as e:
             logger.error(f"❌ Folder monitoring task error: {e}", exc_info=True)
             # Wait before retrying on error
             await asyncio.sleep(60)
+
+
+async def cleanup_upload_sessions_task():
+    """Clean up orphaned upload sessions older than 24 hours."""
+    import asyncio
+    import shutil
+    import json
+    from pathlib import Path
+    from datetime import datetime, timedelta
+
+    # Wait for server to initialize
+    await asyncio.sleep(60)
+
+    while True:
+        try:
+            upload_dir = Path(settings.UPLOAD_DIR)
+            if not upload_dir.exists():
+                await asyncio.sleep(settings.UPLOAD_SESSION_CLEANUP_INTERVAL_SECONDS)
+                continue
+
+            cutoff_time = datetime.utcnow() - timedelta(hours=settings.UPLOAD_SESSION_MAX_AGE_HOURS)
+            timeout_cutoff = datetime.utcnow() - timedelta(hours=settings.UPLOAD_SESSION_TIMEOUT_HOURS)
+            cleaned_count = 0
+            timeout_count = 0
+
+            for session_dir in upload_dir.iterdir():
+                if not session_dir.is_dir():
+                    continue
+
+                metadata_file = session_dir / "metadata.json"
+                if not metadata_file.exists():
+                    # No metadata, check filesystem age
+                    mtime = datetime.fromtimestamp(session_dir.stat().st_mtime)
+                    if mtime < cutoff_time:
+                        shutil.rmtree(session_dir)
+                        cleaned_count += 1
+                    continue
+
+                # Read metadata
+                with open(metadata_file) as f:
+                    metadata = json.load(f)
+
+                # Check if session has active job reference
+                job_id = metadata.get("job_id")
+                if job_id:
+                    from app.models.upload import UploadJob, UploadStatus
+                    job = await UploadJob.find_one(UploadJob.job_id == job_id)
+                    if job and job.status in [UploadStatus.PROCESSING, UploadStatus.UPLOADING]:
+                        continue  # Skip active jobs
+
+                # Check timeout (2 hours since last activity)
+                last_activity_str = metadata.get("last_activity", metadata.get("started_at"))
+                if last_activity_str:
+                    last_activity = datetime.fromisoformat(last_activity_str)
+                    status = metadata.get("status")
+
+                    if status in ["initialized", "uploading"] and last_activity < timeout_cutoff:
+                        logger.warning(f"⏱️  Upload session timeout: {session_dir.name}")
+                        metadata["status"] = "timeout"
+                        with open(metadata_file, "w") as f:
+                            json.dump(metadata, f)
+                        timeout_count += 1
+
+                # Check age for deletion
+                started_str = metadata.get("started_at")
+                if started_str:
+                    started = datetime.fromisoformat(started_str)
+                    if started < cutoff_time:
+                        shutil.rmtree(session_dir)
+                        cleaned_count += 1
+                        logger.info(f"🗑️  Cleaned orphaned upload session: {session_dir.name}")
+
+            if cleaned_count > 0 or timeout_count > 0:
+                logger.info(f"✅ Session cleanup: {cleaned_count} deleted, {timeout_count} timed out")
+
+        except Exception as e:
+            logger.error(f"❌ Upload session cleanup error: {e}", exc_info=True)
+
+        await asyncio.sleep(settings.UPLOAD_SESSION_CLEANUP_INTERVAL_SECONDS)
 
 
 def validate_configuration():
@@ -99,6 +155,14 @@ def validate_configuration():
     # Check SendGrid if email is needed
     if hasattr(settings, 'SENDGRID_API_KEY') and not settings.SENDGRID_API_KEY:
         warnings.append("⚠️  SENDGRID_API_KEY not configured - email notifications will not work")
+
+    # Validate storage configuration
+    if settings.STORAGE_TYPE == "gcs":
+        if not settings.GCS_BUCKET_NAME:
+            warnings.append("⚠️  STORAGE_TYPE is 'gcs' but GCS_BUCKET_NAME not configured")
+    elif settings.STORAGE_TYPE == "local":
+        if settings.GCS_BUCKET_NAME:
+            warnings.append("⚠️  GCS_BUCKET_NAME configured but STORAGE_TYPE is 'local'")
 
     # Log all warnings
     if warnings:
@@ -423,24 +487,32 @@ async def lifespan(app: FastAPI):
     logger.info("🚀 Starting Bayit+ Backend Server...")
     validate_configuration()
     await connect_to_mongo()
+
+    # Ensure upload directory exists
+    upload_dir = Path(settings.UPLOAD_DIR)
+    upload_dir.mkdir(parents=True, exist_ok=True)
+    logger.info(f"✅ Upload directory ready: {upload_dir}")
+
     try:
         await init_default_data()
     except Exception as e:
         logger.warning(f"Failed to initialize default data: {e}")
-    # Run podcast sync in background (scheduled every 6 hours)
-    asyncio.create_task(sync_podcast_rss_feeds())
-    logger.info("📻 Started podcast RSS background sync task (every 6 hours)")
+
     # Run folder monitoring in background (non-blocking)
     if settings.UPLOAD_MONITOR_ENABLED:
         asyncio.create_task(scan_monitored_folders_task())
         logger.info("📂 Started folder monitoring background task")
-    
+
+    # Run upload session cleanup in background (every 1 hour)
+    asyncio.create_task(cleanup_upload_sessions_task())
+    logger.info("🗑️  Started upload session cleanup background task (every 1 hour)")
+
     # Upload queue processor is now manual-only (triggered from UI)
     # Automatic processing disabled to prevent server overload
     from app.services.upload_service import upload_service
     # asyncio.create_task(upload_service.process_queue())
     logger.info("📤 Upload queue processor ready (manual trigger only)")
-    
+
     logger.info("✅ Server startup complete - Ready to accept connections")
     yield
     # Shutdown

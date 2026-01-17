@@ -3,7 +3,7 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from pydantic import BaseModel
 from typing import Optional, List
 
-from app.models.chess import ChessGame, ChessChatMessage, PlayerColor
+from app.models.chess import ChessGame, ChessChatMessage, PlayerColor, GameMode, BotDifficulty
 from app.models.user import User
 from app.services.chess_service import chess_service
 from app.core.security import get_current_active_user
@@ -16,6 +16,8 @@ class CreateGameRequest(BaseModel):
     """Request model for creating a new chess game."""
     color: PlayerColor
     time_control: Optional[int] = None
+    game_mode: GameMode = GameMode.PVP
+    bot_difficulty: Optional[BotDifficulty] = None
 
 
 class JoinGameRequest(BaseModel):
@@ -46,12 +48,21 @@ async def create_game(
     current_user: User = Depends(get_current_active_user)
 ):
     """Create a new chess game."""
+    # Validate bot difficulty is provided for bot games
+    if request.game_mode == GameMode.BOT and not request.bot_difficulty:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Bot difficulty is required for bot games"
+        )
+
     try:
         game = await chess_service.create_game(
             host_user_id=str(current_user.id),
             host_user_name=current_user.name,
             color=request.color,
-            time_control=request.time_control
+            time_control=request.time_control,
+            game_mode=request.game_mode,
+            bot_difficulty=request.bot_difficulty,
         )
         return {
             "game_code": game.game_code,

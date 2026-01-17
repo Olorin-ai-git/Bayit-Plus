@@ -9,7 +9,8 @@
       "@bayit/shared-stores": ["../shared/stores"],
       "@bayit/shared-hooks": ["../shared/hooks"],
       "@bayit/shared-contexts": ["../shared/contexts"],
-      "@bayit/shared-i18n": ["../shared/i18n"]
+      "@bayit/shared-i18n": ["../shared/i18n"],
+      "@bayit/shared-shims": ["../shared/shims"]
     }
   },
   "include": ["**/*.ts", "**/*.tsx", "../shared/**/*.ts", "../shared/**/*.tsx"],

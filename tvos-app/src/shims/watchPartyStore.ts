@@ -1,111 +1,34 @@
 /**
- * Watch Party Store Shim for tvOS
+ * Watch Party Store for tvOS
  *
- * WebRTC/LiveKit is not supported on tvOS, so we provide a no-op store
- * that returns empty state and no-op functions.
+ * Re-exports the shared watch party store with text-only mode enabled.
+ * Provides full watch party functionality except WebRTC audio:
+ * - Create/join parties
+ * - Real-time text chat via WebSocket
+ * - Playback synchronization with host
+ * - Participant list (no speaking indicators)
  */
 
-import { create } from 'zustand';
+import { useEffect } from 'react';
+import { useWatchPartyStore as useSharedWatchPartyStore } from '@bayit/shared-stores';
 
-interface Participant {
-  user_id: string;
-  user_name: string;
-  is_muted: boolean;
-  is_speaking: boolean;
-}
+/**
+ * Hook wrapper that automatically enables text-only mode for tvOS
+ */
+export const useWatchPartyStore = () => {
+  const store = useSharedWatchPartyStore();
 
-interface ChatMessage {
-  id: string;
-  user_id: string;
-  user_name: string;
-  message: string;
-  message_type: string;
-  timestamp: string;
-}
-
-interface Party {
-  id: string;
-  host_id: string;
-  host_name: string;
-  content_id: string;
-  content_type: string;
-  room_code: string;
-  audio_enabled: boolean;
-  chat_enabled: boolean;
-  sync_playback: boolean;
-  participants: Participant[];
-}
-
-interface WatchPartyState {
-  party: Party | null;
-  participants: Participant[];
-  messages: ChatMessage[];
-  isConnected: boolean;
-  isConnecting: boolean;
-  error: string | null;
-  syncedPosition: number;
-  isPlaying: boolean;
-  isHost: boolean;
-  ws: WebSocket | null;
-
-  createParty: (
-    contentId: string,
-    contentType: string,
-    options?: {
-      title?: string;
-      isPrivate?: boolean;
-      audioEnabled?: boolean;
-      chatEnabled?: boolean;
-      syncPlayback?: boolean;
+  // Ensure text-only mode is enabled on tvOS
+  useEffect(() => {
+    if (!store.textOnlyMode) {
+      store.setTextOnlyMode(true);
     }
-  ) => Promise<Party>;
-  joinByCode: (roomCode: string) => Promise<Party>;
-  connect: (partyId: string) => void;
-  handleMessage: (data: any) => void;
-  sendMessage: (message: string, messageType?: string) => void;
-  syncPlayback: (position: number, isPlaying?: boolean) => void;
-  updateState: (isMuted: boolean, isSpeaking: boolean) => void;
-  leaveParty: () => Promise<void>;
-  endParty: () => Promise<void>;
-  reset: () => void;
-}
+  }, [store.textOnlyMode, store.setTextOnlyMode]);
 
-// No-op store for tvOS
-export const useWatchPartyStore = create<WatchPartyState>()((set, get) => ({
-  party: null,
-  participants: [],
-  messages: [],
-  isConnected: false,
-  isConnecting: false,
-  error: null,
-  syncedPosition: 0,
-  isPlaying: false,
-  isHost: false,
-  ws: null,
+  return store;
+};
 
-  // All functions are no-ops that return empty/rejected promises
-  createParty: async () => {
-    console.log('[tvOS] Watch Party not supported on this platform');
-    throw new Error('Watch Party not supported on tvOS');
-  },
-
-  joinByCode: async () => {
-    console.log('[tvOS] Watch Party not supported on this platform');
-    throw new Error('Watch Party not supported on tvOS');
-  },
-
-  connect: () => {
-    console.log('[tvOS] Watch Party not supported on this platform');
-  },
-
-  handleMessage: () => {},
-  sendMessage: () => {},
-  syncPlayback: () => {},
-  updateState: () => {},
-
-  leaveParty: async () => {},
-  endParty: async () => {},
-  reset: () => {},
-}));
+// Also export the raw store for cases where the hook wrapper isn't needed
+export { useWatchPartyStore as useSharedWatchPartyStore } from '@bayit/shared-stores';
 
 export default useWatchPartyStore;

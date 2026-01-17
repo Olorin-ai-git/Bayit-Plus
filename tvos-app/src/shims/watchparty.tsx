@@ -1,20 +1,25 @@
 /**
- * Watch Party Shims for tvOS
+ * Watch Party Components for tvOS
  *
- * WebRTC/LiveKit is not supported on tvOS, so we provide no-op shim components
- * that render nothing. This allows the PlayerScreen to work without watch party features.
+ * Provides text-only watch party functionality for tvOS.
+ * WebRTC/LiveKit audio is not supported on tvOS, so we use:
+ * - Text chat via WebSocket and REST API
+ * - Playback synchronization with host
+ * - No audio controls or speaking indicators
+ *
+ * Most components are re-exported from shared with text-only overlay.
  */
 
-import React from 'react';
-import { View } from 'react-native';
+// Re-export standard shared components that work on tvOS
+export { WatchPartyButton } from '@bayit/shared/watchparty/WatchPartyButton';
+export { WatchPartyCreateModal } from '@bayit/shared/watchparty/WatchPartyCreateModal';
+export { WatchPartyJoinModal } from '@bayit/shared/watchparty/WatchPartyJoinModal';
+export { WatchPartyHeader } from '@bayit/shared/watchparty/WatchPartyHeader';
+export { WatchPartyParticipants } from '@bayit/shared/watchparty/WatchPartyParticipants';
+export { WatchPartyChat } from '@bayit/shared/watchparty/WatchPartyChat';
+export { WatchPartyChatInput } from '@bayit/shared/watchparty/WatchPartyChatInput';
+export { WatchPartySyncIndicator } from '@bayit/shared/watchparty/WatchPartySyncIndicator';
 
-// Shim components that render nothing
-export const WatchPartyButton: React.FC<any> = () => null;
-export const WatchPartyCreateModal: React.FC<any> = () => null;
-export const WatchPartyJoinModal: React.FC<any> = () => null;
-export const WatchPartyOverlay: React.FC<any> = () => null;
-export const WatchPartyHeader: React.FC<any> = () => null;
-export const WatchPartyParticipants: React.FC<any> = () => null;
-export const WatchPartyChat: React.FC<any> = () => null;
-export const WatchPartyChatInput: React.FC<any> = () => null;
-export const WatchPartySyncIndicator: React.FC<any> = () => null;
+// Export text-only overlay for tvOS (no audio controls)
+export { WatchPartyTextOverlay as WatchPartyOverlay } from '@bayit/shared/watchparty/WatchPartyTextOverlay';
+export { WatchPartyTextPanel } from '@bayit/shared/watchparty/WatchPartyTextPanel';

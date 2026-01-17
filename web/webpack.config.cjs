@@ -32,7 +32,8 @@ module.exports = (env, argv) => {
     entry: path.resolve(__dirname, 'index.web.js'),
     output: {
       path: getOutputPath(),
-      filename: isProduction ? 'bundle.[contenthash].js' : 'bundle.js',
+      filename: isProduction ? '[name].[contenthash].js' : '[name].js',
+      chunkFilename: isProduction ? '[name].[contenthash].chunk.js' : '[name].chunk.js',
       // Use relative paths for TV apps (packaged), absolute for web
       publicPath: isTV ? './' : '/',
       clean: true,
@@ -256,6 +257,50 @@ module.exports = (env, argv) => {
           changeOrigin: true,
         },
       ],
+    },
+    optimization: {
+      splitChunks: {
+        chunks: 'all',
+        cacheGroups: {
+          // Admin pages in separate chunk (lazy loaded)
+          admin: {
+            test: /[\\/]pages[\\/]admin[\\/]/,
+            name: 'admin',
+            chunks: 'all',
+            priority: 20,
+          },
+          // Chess/games in separate chunk
+          games: {
+            test: /[\\/](pages[\\/]Chess|components[\\/]chess)[\\/]/,
+            name: 'games',
+            chunks: 'all',
+            priority: 15,
+          },
+          // Watch party components in separate chunk
+          watchparty: {
+            test: /[\\/]components[\\/]watchparty[\\/]/,
+            name: 'watchparty',
+            chunks: 'all',
+            priority: 15,
+          },
+          // Vendor libraries in separate chunk
+          vendors: {
+            test: /[\\/]node_modules[\\/]/,
+            name: 'vendors',
+            chunks: 'all',
+            priority: 10,
+          },
+          // React core libraries
+          react: {
+            test: /[\\/]node_modules[\\/](react|react-dom|react-router-dom)[\\/]/,
+            name: 'react',
+            chunks: 'all',
+            priority: 25,
+          },
+        },
+      },
+      // Keep runtime chunk separate for better caching
+      runtimeChunk: 'single',
     },
     performance: {
       hints: false,

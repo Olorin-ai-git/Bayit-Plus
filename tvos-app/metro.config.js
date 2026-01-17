@@ -56,6 +56,8 @@ function getExtraNodeModules() {
   modules['@bayit/shared/services'] = path.resolve(sharedRoot, 'services');
   modules['@bayit/shared/chat'] = path.resolve(sharedRoot, 'components/chat');
   modules['@bayit/shared/ui'] = path.resolve(sharedRoot, 'components/ui');
+  modules['@bayit/shared/watchparty'] = path.resolve(sharedRoot, 'components/watchparty');
+  modules['@bayit/shared-shims'] = path.resolve(sharedRoot, 'shims');
 
   // Shim Expo packages to React Native alternatives
   modules['expo-linear-gradient'] = path.resolve(shimsRoot, 'expo-linear-gradient.ts');
@@ -144,6 +146,7 @@ const config = {
         '@bayit/shared/theme': path.resolve(sharedRoot, 'theme'),
         '@bayit/shared/chat': path.resolve(sharedRoot, 'components/chat'),
         '@bayit/shared/ui': path.resolve(sharedRoot, 'components/ui'),
+        '@bayit/shared/watchparty': path.resolve(sharedRoot, 'components/watchparty'),
       };
 
       // Handle single-file imports (not folders)
@@ -161,6 +164,24 @@ const config = {
       if (sharedSubpaths[moduleName]) {
         return {
           filePath: path.resolve(sharedSubpaths[moduleName], 'index.ts'),
+          type: 'sourceFile',
+        };
+      }
+
+      // Handle @bayit/shared/watchparty/ComponentName subpath imports
+      if (moduleName.startsWith('@bayit/shared/watchparty/')) {
+        const componentName = moduleName.replace('@bayit/shared/watchparty/', '');
+        return {
+          filePath: path.resolve(sharedRoot, 'components/watchparty', `${componentName}.tsx`),
+          type: 'sourceFile',
+        };
+      }
+
+      // Handle @bayit/shared-shims subpath imports
+      if (moduleName.startsWith('@bayit/shared-shims/')) {
+        const shimName = moduleName.replace('@bayit/shared-shims/', '');
+        return {
+          filePath: path.resolve(sharedRoot, 'shims', `${shimName}.ts`),
           type: 'sourceFile',
         };
       }

@@ -6,13 +6,18 @@ from typing import Optional
 from datetime import datetime
 import json
 import logging
+import asyncio
 from fastapi import APIRouter, WebSocket, WebSocketDisconnect, Query
 from jose import jwt, JWTError
 
 from app.core.config import settings
 from app.models.user import User
-from app.models.chess import ChessGame, ChessChatMessage
+from app.models.chess import ChessGame, ChessChatMessage, GameMode, PlayerColor
 from app.services.chess_service import chess_service
+from app.services.bot_chess_service import get_bot_move
+
+# Bot move delay in seconds for natural feel
+BOT_MOVE_DELAY_SECONDS = 0.8
 
 router = APIRouter()
 logger = logging.getLogger(__name__)
@@ -69,6 +74,83 @@ async def get_user_from_token(token: str) -> Optional[User]:
         return user
     except JWTError:
         return None
+
+
+async def execute_bot_move(game: ChessGame, game_code: str) -> None:
+    """Execute the bot's move after a short delay for natural feel."""
+    if game.game_mode != GameMode.BOT or not game.bot_difficulty:
+        return
+
+    # Determine if it's the bot's turn
+    current_player = game.white_player if game.current_turn == PlayerColor.WHITE else game.black_player
+    if not current_player or not current_player.is_bot:
+        return
+
+    # Don't move if game is over
+    if game.status not in ["active"]:
+        return
+
+    # Add delay for natural feel
+    await asyncio.sleep(BOT_MOVE_DELAY_SECONDS)
+
+    try:
+        # Get bot's move
+        from_square, to_square, promotion = await get_bot_move(
+            game.board_fen,
+            game.bot_difficulty
+        )
+
+        # Execute the move using the bot's user_id
+        game, move_record = await chess_service.make_move(
+            game_id=str(game.id),
+            user_id="BOT",
+            from_square=from_square,
+            to_square=to_square,
+            promotion=promotion
+        )
+
+        # Broadcast bot's move to all players
+        await broadcast_to_game(
+            game_code,
+            {
+                "type": "move",
+                "data": {
+                    "move": move_record.dict(),
+                    "board_fen": game.board_fen,
+                    "current_turn": game.current_turn,
+                    "status": game.status
+                }
+            }
+        )
+
+        # Check if game ended after bot's move
+        if game.status in ["checkmate", "stalemate", "draw"]:
+            winner = None
+            if game.status == "checkmate":
+                # The bot just moved and won
+                winner = "white" if move_record.player == "white" else "black"
+
+            await broadcast_to_game(
+                game_code,
+                {
+                    "type": "game_end",
+                    "data": {
+                        "status": game.status,
+                        "winner": winner
+                    }
+                }
+            )
+
+    except Exception as e:
+        logger.error(f"[Chess] Bot move failed: {e}")
+        # Broadcast error to players
+        await broadcast_to_game(
+            game_code,
+            {
+                "type": "error",
+                "message": f"Bot move failed: {str(e)}"
+            }
+        )
 
 
 @router.websocket("/ws/chess/{game_code}")
@@ -146,10 +228,20 @@ async def chess_websocket(
                 "board_fen": game.board_fen,
                 "move_history": [move.dict() for move in game.move_history],
                 "chat_enabled": game.chat_enabled,
-                "voice_enabled": game.voice_enabled
+                "voice_enabled": game.voice_enabled,
+                "game_mode": game.game_mode,
+                "bot_difficulty": game.bot_difficulty
             }
         })
         logger.info(f"[Chess] Sent initial game state to {user.name}")
+
+        # If it's a bot game and the bot plays white, make the first move
+        if (game.game_mode == GameMode.BOT and
+            game.status == "active" and
+            game.white_player and
+            game.white_player.is_bot and
+            len(game.move_history) == 0):
+            asyncio.create_task(execute_bot_move(game, game_code))
 
         # Message loop
         while True:
@@ -206,6 +298,11 @@ async def chess_websocket(
                                     }
                                 }
                             )
+                        else:
+                            # If game is still active and it's a bot game, execute bot move
+                            if game.game_mode == GameMode.BOT and game.status == "active":
+                                # Use asyncio.create_task to avoid blocking the WebSocket
+                                asyncio.create_task(execute_bot_move(game, game_code))
 
                     except ValueError as e:
                         await websocket.send_json({"type": "error", "message": str(e)})

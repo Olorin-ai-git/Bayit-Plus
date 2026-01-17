@@ -571,3 +571,62 @@ input[type="range"]::-moz-range-thumb {
 .animated-carousel-delay-13 { animation-delay: 650ms; }
 .animated-carousel-delay-14 { animation-delay: 700ms; }
 .animated-carousel-delay-15 { animation-delay: 750ms; }
+
+/* ==================== */
+/* Chess Check Glow Animations */
+/* ==================== */
+
+/* King in check - red pulsing glow */
+@keyframes checkGlowKing {
+  0%, 100% {
+    filter: drop-shadow(0 0 15px rgba(239, 68, 68, 0.6))
+            drop-shadow(0 0 30px rgba(239, 68, 68, 0.4))
+            drop-shadow(0 0 45px rgba(239, 68, 68, 0.2));
+  }
+  50% {
+    filter: drop-shadow(0 0 25px rgba(239, 68, 68, 1))
+            drop-shadow(0 0 50px rgba(239, 68, 68, 0.8))
+            drop-shadow(0 0 75px rgba(239, 68, 68, 0.5));
+  }
+}
+
+/* Attacking piece - amber pulsing glow */
+@keyframes checkGlowAttacker {
+  0%, 100% {
+    filter: drop-shadow(0 0 15px rgba(251, 191, 36, 0.6))
+            drop-shadow(0 0 30px rgba(251, 191, 36, 0.4))
+            drop-shadow(0 0 45px rgba(251, 191, 36, 0.2));
+  }
+  50% {
+    filter: drop-shadow(0 0 25px rgba(251, 191, 36, 1))
+            drop-shadow(0 0 50px rgba(251, 191, 36, 0.8))
+            drop-shadow(0 0 75px rgba(251, 191, 36, 0.5));
+  }
+}
+
+.chess-check-glow-king {
+  animation: checkGlowKing 1.2s ease-in-out infinite;
+}
+
+.chess-check-glow-attacker {
+  animation: checkGlowAttacker 1.2s ease-in-out infinite;
+}
+
+/* Illegal move shake animation */
+@keyframes illegal-move-shake {
+  0%, 100% {
+    transform: translateX(0);
+  }
+  20% {
+    transform: translateX(-3px);
+  }
+  40% {
+    transform: translateX(3px);
+  }
+  60% {
+    transform: translateX(-2px);
+  }
+  80% {
+    transform: translateX(2px);
+  }
+}

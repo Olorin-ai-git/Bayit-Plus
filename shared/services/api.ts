@@ -179,6 +179,7 @@ const apiPodcastService = {
   getShow: (showId: string) => api.get(`/podcasts/${showId}`),
   getEpisodes: (showId: string) => api.get(`/podcasts/${showId}/episodes`),
   getCategories: () => api.get('/podcasts/categories'),
+  syncPodcasts: () => api.post('/podcasts/sync'),
 };
 
 // Subscription Service (API)
@@ -585,6 +586,123 @@ const demoChatService = {
   },
 };
 
+// Downloads Service (API)
+export interface Download {
+  id: string;
+  content_id: string;
+  content_type: string;
+  title?: string;
+  title_en?: string;
+  title_es?: string;
+  thumbnail?: string;
+  quality: string;
+  status: 'pending' | 'downloading' | 'completed' | 'failed';
+  progress: number;
+  file_size?: number;
+  downloaded_at: string;
+}
+
+export interface DownloadAdd {
+  content_id: string;
+  content_type: string;
+  quality?: string;
+}
+
+const apiDownloadsService = {
+  getDownloads: (): Promise<Download[]> => api.get('/downloads'),
+  startDownload: (contentId: string, contentType: string, quality: string = 'hd') =>
+    api.post('/downloads', { content_id: contentId, content_type: contentType, quality }),
+  deleteDownload: (downloadId: string) => api.delete(`/downloads/${downloadId}`),
+  checkDownload: (contentId: string): Promise<{ is_downloaded: boolean; download_id?: string }> =>
+    api.get(`/downloads/check/${contentId}`),
+};
+
+// Demo Downloads Service
+const demoDownloadsService = {
+  getDownloads: async (): Promise<Download[]> => {
+    await new Promise(resolve => setTimeout(resolve, 500));
+    return [
+      {
+        id: 'dl-1',
+        content_id: 'fauda-s4e1',
+        content_type: 'episode',
+        title: 'פאודה - עונה 4 פרק 1',
+        title_en: 'Fauda - Season 4 Episode 1',
+        thumbnail: 'https://picsum.photos/seed/fauda-ep1/400/225',
+        quality: 'hd',
+        status: 'completed',
+        progress: 100,
+        file_size: 1288490188,
+        downloaded_at: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString(),
+      },
+      {
+        id: 'dl-2',
+        content_id: 'shtisel-s3e5',
+        content_type: 'episode',
+        title: 'שטיסל - עונה 3 פרק 5',
+        title_en: 'Shtisel - Season 3 Episode 5',
+        thumbnail: 'https://picsum.photos/seed/shtisel-ep5/400/225',
+        quality: 'hd',
+        status: 'completed',
+        progress: 100,
+        file_size: 1027604480,
+        downloaded_at: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000).toISOString(),
+      },
+      {
+        id: 'dl-3',
+        content_id: 'waltz',
+        content_type: 'movie',
+        title: 'ואלס עם באשיר',
+        title_en: 'Waltz with Bashir',
+        thumbnail: 'https://picsum.photos/seed/waltz/400/225',
+        quality: 'fhd',
+        status: 'completed',
+        progress: 100,
+        file_size: 2576980377,
+        downloaded_at: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString(),
+      },
+      {
+        id: 'dl-4',
+        content_id: 'history-42',
+        content_type: 'podcast_episode',
+        title: 'עושים היסטוריה - פרק 42',
+        title_en: 'Making History - Episode 42',
+        thumbnail: 'https://picsum.photos/seed/history-42/400/225',
+        quality: 'audio',
+        status: 'completed',
+        progress: 100,
+        file_size: 89128960,
+        downloaded_at: new Date(Date.now() - 9 * 24 * 60 * 60 * 1000).toISOString(),
+      },
+      {
+        id: 'dl-5',
+        content_id: 'tehran-s2e3',
+        content_type: 'episode',
+        title: 'טהרן - עונה 2 פרק 3',
+        title_en: 'Tehran - Season 2 Episode 3',
+        thumbnail: 'https://picsum.photos/seed/tehran-ep3/400/225',
+        quality: 'hd',
+        status: 'downloading',
+        progress: 65,
+        file_size: 1181116006,
+        downloaded_at: new Date().toISOString(),
+      },
+    ];
+  },
+  startDownload: async (contentId: string, contentType: string, quality: string = 'hd') => {
+    await new Promise(resolve => setTimeout(resolve, 300));
+    return { message: 'Download started', id: `dl-demo-${Date.now()}`, status: 'pending' };
+  },
+  deleteDownload: async (_downloadId: string) => {
+    await new Promise(resolve => setTimeout(resolve, 200));
+    return { message: 'Download deleted' };
+  },
+  checkDownload: async (_contentId: string): Promise<{ is_downloaded: boolean; download_id?: string }> => {
+    await new Promise(resolve => setTimeout(resolve, 100));
+    return { is_downloaded: false };
+  },
+};
+
 // Recording Service (API)
 const apiRecordingService = {
   getRecordings: () => api.get('/recordings'),
@@ -651,6 +769,7 @@ export const chaptersService = isDemo ? demoChaptersService : apiChaptersService
 export const partyService = isDemo ? demoPartyService : apiPartyService;
 export const chatService = isDemo ? demoChatService : apiChatService;
 export const recordingService = isDemo ? demoRecordingService : apiRecordingService;
+export const downloadsService = isDemo ? demoDownloadsService : apiDownloadsService;
 export const profilesService = apiProfilesService; // No demo mode for profiles - requires real auth
 export const childrenService = apiChildrenService; // No demo mode for children
 export const judaismService = apiJudaismService; // No demo mode for judaism

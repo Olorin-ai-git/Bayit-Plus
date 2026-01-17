@@ -59,6 +59,7 @@ interface WatchPartyState {
   isPlaying: boolean;
   isHost: boolean;
   ws: WebSocket | null;
+  textOnlyMode: boolean;
 
   createParty: (
     contentId: string,
@@ -81,6 +82,7 @@ interface WatchPartyState {
   endParty: () => Promise<void>;
   loadChatHistory: () => Promise<void>;
   clearError: () => void;
+  setTextOnlyMode: (enabled: boolean) => void;
 }
 
 export const useWatchPartyStore = create<WatchPartyState>((set, get) => ({
@@ -94,6 +96,7 @@ export const useWatchPartyStore = create<WatchPartyState>((set, get) => ({
   isPlaying: true,
   isHost: false,
   ws: null,
+  textOnlyMode: false,
 
   createParty: async (contentId, contentType, options = {}) => {
     set({ error: null });
@@ -371,6 +374,8 @@ export const useWatchPartyStore = create<WatchPartyState>((set, get) => ({
   },
 
   clearError: () => set({ error: null }),
+
+  setTextOnlyMode: (enabled: boolean) => set({ textOnlyMode: enabled }),
 }));
 
 export default useWatchPartyStore;

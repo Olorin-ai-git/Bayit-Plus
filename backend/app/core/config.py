@@ -76,8 +76,8 @@ class Settings(BaseSettings):
     DRM_API_KEY: str = ""
 
     # Storage (local, S3, or GCS)
-    STORAGE_TYPE: str = "local"  # "local", "s3", or "gcs"
-    UPLOAD_DIR: str = "uploads"
+    STORAGE_TYPE: str = "gcs"  # "local", "s3", or "gcs"
+    UPLOAD_DIR: str = "/tmp/bayit-uploads"
 
     # AWS S3 (optional, only needed if STORAGE_TYPE is "s3")
     AWS_ACCESS_KEY_ID: str = ""
@@ -88,6 +88,7 @@ class Settings(BaseSettings):
     # Google Cloud Storage (optional, only needed if STORAGE_TYPE is "gcs")
     GCS_BUCKET_NAME: str = ""
     GCS_PROJECT_ID: str = ""  # Optional, auto-detected from Cloud Run
+    GOOGLE_APPLICATION_CREDENTIALS: str = ""  # Path to service account key JSON file for local development
 
     # CDN (optional, works with both S3 CloudFront and GCS Cloud CDN)
     CDN_BASE_URL: str = ""
@@ -96,6 +97,11 @@ class Settings(BaseSettings):
     UPLOAD_MONITOR_ENABLED: bool = False  # Disabled auto-scan to prevent server overload
     UPLOAD_MONITOR_INTERVAL: int = 3600  # Seconds between scans (default: 1 hour)
     UPLOAD_DEFAULT_FOLDERS: str = ""  # Comma-separated paths to monitor on startup
+
+    # Upload Session Cleanup Configuration
+    UPLOAD_SESSION_MAX_AGE_HOURS: int = 24  # Maximum age for orphaned upload sessions
+    UPLOAD_SESSION_CLEANUP_INTERVAL_SECONDS: int = 3600  # Cleanup task interval (1 hour)
+    UPLOAD_SESSION_TIMEOUT_HOURS: int = 2  # Timeout for inactive upload sessions
 
     # Email Service (for Librarian AI Agent notifications)
     SENDGRID_API_KEY: str = ""

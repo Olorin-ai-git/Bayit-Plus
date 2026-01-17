@@ -37,6 +37,9 @@ interface ChessChatMessage {
   timestamp: string;
 }
 
+type GameMode = 'pvp' | 'bot';
+type BotDifficulty = 'easy' | 'medium' | 'hard';
+
 interface ChessGame {
   id: string;
   game_code: string;
@@ -48,6 +51,8 @@ interface ChessGame {
   move_history: ChessMove[];
   chat_enabled: boolean;
   voice_enabled: boolean;
+  game_mode?: GameMode;
+  bot_difficulty?: BotDifficulty;
 }
 
 export default function useChessGame() {
@@ -183,7 +188,12 @@ export default function useChessGame() {
     }
   }, [token, game, getWebSocketUrl]);
 
-  const createGame = async (color: 'white' | 'black', timeControl?: number) => {
+  const createGame = async (
+    color: 'white' | 'black',
+    timeControl?: number,
+    gameMode: GameMode = 'pvp',
+    botDifficulty?: BotDifficulty
+  ) => {
     if (!token) {
       setError('Not authenticated');
       throw new Error('Not authenticated');
@@ -192,7 +202,9 @@ export default function useChessGame() {
     try {
       const response = await axios.post('/api/v1/chess/create', {
         color,
-        time_control: timeControl
+        time_control: timeControl,
+        game_mode: gameMode,
+        bot_difficulty: botDifficulty
       }, {
         headers: {
           'Authorization': `Bearer ${token}`

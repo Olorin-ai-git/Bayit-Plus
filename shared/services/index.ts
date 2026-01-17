@@ -5,6 +5,9 @@ export * from './devicePairingService';
 export * from './onboardingAIService';
 export * from './epgApi';
 
+// Downloads Service exports
+export { downloadsService, type Download, type DownloadAdd } from './api';
+
 // Voice-first conversational interface services (Phases 1, 8-10)
 export { ttsService, default as ttsServiceDefault } from './ttsService';
 export { proactiveAgentService, default as proactiveAgentServiceDefault } from './proactiveAgentService';

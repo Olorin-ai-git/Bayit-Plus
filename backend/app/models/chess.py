@@ -12,6 +12,19 @@ class PlayerColor(str, Enum):
     BLACK = "black"
 
 
+class GameMode(str, Enum):
+    """Chess game mode enum."""
+    PVP = "pvp"
+    BOT = "bot"
+
+
+class BotDifficulty(str, Enum):
+    """Bot difficulty level enum."""
+    EASY = "easy"
+    MEDIUM = "medium"
+    HARD = "hard"
+
+
 class GameStatus(str, Enum):
     """Chess game status enum."""
     WAITING = "waiting"
@@ -43,6 +56,7 @@ class ChessPlayer(BaseModel):
     user_name: str
     color: PlayerColor
     is_connected: bool = True
+    is_bot: bool = False
     time_remaining_ms: Optional[int] = None  # For timed games
     joined_at: datetime = Field(default_factory=datetime.utcnow)
 
@@ -61,6 +75,8 @@ class ChessGame(Document):
     livekit_room_name: Optional[str] = None
     livekit_room_token: Optional[str] = None
     time_control: Optional[int] = None  # Time per player in seconds (null = untimed)
+    game_mode: GameMode = GameMode.PVP  # "pvp" or "bot"
+    bot_difficulty: Optional[BotDifficulty] = None  # "easy", "medium", "hard"
     created_at: datetime = Field(default_factory=datetime.utcnow)
     updated_at: datetime = Field(default_factory=datetime.utcnow)
 

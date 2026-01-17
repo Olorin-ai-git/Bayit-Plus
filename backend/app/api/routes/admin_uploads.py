@@ -7,6 +7,7 @@ Includes queue management, monitored folders, and real-time WebSocket updates.
 from typing import Optional, List
 from fastapi import APIRouter, UploadFile, File, Query, HTTPException, status, Depends, Request, WebSocket, WebSocketDisconnect
 from pydantic import BaseModel
+from datetime import datetime
 import json
 import asyncio
 import logging
@@ -24,6 +25,7 @@ from app.models.upload import (
     MonitoredFolderResponse,
 )
 from app.core.security import get_current_active_user, decode_token
+from app.core.config import settings
 from app.core.storage import storage
 from app.services.upload_service import upload_service
 from app.services.folder_monitor_service import folder_monitor_service
@@ -234,9 +236,9 @@ async def init_browser_upload(
         
         # Create upload session
         upload_id = str(uuid4())
-        upload_dir = Path("/tmp/bayit-uploads") / upload_id
+        upload_dir = Path(settings.UPLOAD_DIR) / upload_id
         upload_dir.mkdir(parents=True, exist_ok=True)
-        
+
         # Store upload metadata
         metadata = {
             "upload_id": upload_id,
@@ -246,13 +248,28 @@ async def init_browser_upload(
             "user_id": str(current_user.id),
             "chunks_received": 0,
             "bytes_received": 0,
-            "status": "initialized"
+            "status": "initialized",
+            "started_at": datetime.utcnow().isoformat(),
+            "last_activity": datetime.utcnow().isoformat(),
         }
         
         import json
+        import math
         with open(upload_dir / "metadata.json", "w") as f:
             json.dump(metadata, f)
-        
+
+        # Create database session record for resumability
+        from app.models.upload import BrowserUploadSession
+        session = BrowserUploadSession(
+            upload_id=upload_id,
+            filename=filename,
+            file_size=file_size,
+            content_type=content_type,
+            user_id=str(current_user.id),
+            total_chunks=math.ceil(file_size / (5 * 1024 * 1024)),  # 5MB chunks
+        )
+        await session.insert()
+
         logger.info(f"Browser upload initialized: {upload_id} for {filename} ({file_size} bytes)")
         
         return {
@@ -287,7 +304,7 @@ async def upload_chunk(
     import json
     
     try:
-        upload_dir = Path("/tmp/bayit-uploads") / upload_id
+        upload_dir = Path(settings.UPLOAD_DIR) / upload_id
         metadata_path = upload_dir / "metadata.json"
         
         if not metadata_path.exists():
@@ -311,10 +328,29 @@ async def upload_chunk(
         metadata["chunks_received"] += 1
         metadata["bytes_received"] += len(chunk_data)
         metadata["status"] = "uploading"
-        
+        metadata["last_activity"] = datetime.utcnow().isoformat()
+
         with open(metadata_path, "w") as f:
             json.dump(metadata, f)
-        
+
+        # Update database session for resumability
+        from app.models.upload import BrowserUploadSession
+        session = await BrowserUploadSession.find_one(
+            BrowserUploadSession.upload_id == upload_id
+        )
+        if not session:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="Session not found in database"
+            )
+
+        if chunk_index not in session.chunks_received:
+            session.chunks_received.append(chunk_index)
+        session.bytes_received = metadata["bytes_received"]
+        session.last_activity = datetime.utcnow()
+        session.status = "uploading"
+        await session.save()
+
         progress = (metadata["bytes_received"] / metadata["file_size"]) * 100
         
         return {
@@ -348,7 +384,7 @@ async def complete_browser_upload(
     import json
     
     try:
-        upload_dir = Path("/tmp/bayit-uploads") / upload_id
+        upload_dir = Path(settings.UPLOAD_DIR) / upload_id
         metadata_path = upload_dir / "metadata.json"
         
         if not metadata_path.exists():
@@ -386,7 +422,18 @@ async def complete_browser_upload(
         metadata["job_id"] = job.job_id
         with open(metadata_path, "w") as f:
             json.dump(metadata, f)
-        
+
+        # Update database session
+        from app.models.upload import BrowserUploadSession
+        session = await BrowserUploadSession.find_one(
+            BrowserUploadSession.upload_id == upload_id
+        )
+        if session:
+            session.status = "completed"
+            session.completed_at = datetime.utcnow()
+            session.job_id = job.job_id
+            await session.save()
+
         return UploadJobResponse.from_orm(job)
         
     except HTTPException:
@@ -411,7 +458,7 @@ async def get_browser_upload_status(
     import json
     
     try:
-        upload_dir = Path("/tmp/bayit-uploads") / upload_id
+        upload_dir = Path(settings.UPLOAD_DIR) / upload_id
         metadata_path = upload_dir / "metadata.json"
         
         if not metadata_path.exists():
@@ -442,6 +489,75 @@ async def get_browser_upload_status(
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"Failed to get upload status: {str(e)}"
+        )
+
+
+@router.get("/uploads/browser-upload/{upload_id}/resume-info")
+async def get_resume_info(
+    upload_id: str,
+    current_user: User = Depends(has_permission(Permission.CONTENT_CREATE))
+):
+    """
+    Get resume information for a paused/failed upload.
+    Returns which chunks are already received and which are missing.
+    Allows clients to resume uploads without re-uploading completed chunks.
+    """
+    from app.models.upload import BrowserUploadSession
+    from datetime import timedelta
+
+    try:
+        session = await BrowserUploadSession.find_one(
+            BrowserUploadSession.upload_id == upload_id
+        )
+
+        if not session:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail=f"Upload session not found: {upload_id}"
+            )
+
+        # Check if session is resumable
+        if session.status not in ["initialized", "uploading", "timeout", "failed"]:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail=f"Session not resumable (status: {session.status})"
+            )
+
+        # Check if session expired (> 48 hours old)
+        if datetime.utcnow() - session.started_at > timedelta(hours=48):
+            raise HTTPException(
+                status_code=status.HTTP_410_GONE,
+                detail="Session expired (>48 hours old)"
+            )
+
+        # Calculate missing chunks
+        missing_chunks = [
+            i for i in range(session.total_chunks)
+            if i not in session.chunks_received
+        ]
+
+        return {
+            "upload_id": upload_id,
+            "filename": session.filename,
+            "total_chunks": session.total_chunks,
+            "chunks_received": sorted(session.chunks_received),
+            "missing_chunks": missing_chunks,
+            "bytes_received": session.bytes_received,
+            "total_size": session.file_size,
+            "progress": (session.bytes_received / session.file_size) * 100 if session.file_size > 0 else 0,
+            "status": session.status,
+            "can_resume": True,
+            "started_at": session.started_at.isoformat(),
+            "last_activity": session.last_activity.isoformat(),
+        }
+
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Failed to get resume info: {e}", exc_info=True)
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Failed to get resume info: {str(e)}"
         )
 
 

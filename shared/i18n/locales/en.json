@@ -1053,7 +1053,9 @@
       "speaking": "Speaking",
       "connecting": "Connecting to audio...",
       "noAudio": "Audio not available"
-    }
+    },
+    "textOnlyMode": "Text Chat Only",
+    "endParty": "End Party"
   },
   "footer": {
     "brandDescription": "Your home in the USA. TV broadcasts, VOD, radio and podcasts in Hebrew.",
@@ -2723,7 +2725,15 @@
     "joinInvite": "Join Game",
     "challenge": "Challenge",
     "playedAsWhite": "Played as White",
-    "playedAsBlack": "Played as Black"
+    "playedAsBlack": "Played as Black",
+    "gameMode": "Game Mode",
+    "playVsFriend": "Play vs Friend",
+    "playVsBot": "Play vs Bot",
+    "difficulty": "Difficulty",
+    "easy": "Easy",
+    "medium": "Medium",
+    "hard": "Hard",
+    "chessBot": "Chess Bot"
   },
   "friends": {
     "title": "Friends & Opponents",

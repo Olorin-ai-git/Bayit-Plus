@@ -52,87 +52,248 @@ interface StageIndicatorProps {
   stages?: UploadStages;
   status: string;
   isRTL: boolean;
+  fileSize?: number;
+  showTooltips?: boolean;
 }
 
-const StageIndicator: React.FC<StageIndicatorProps> = ({ stages, status, isRTL }) => {
+const StageIndicator: React.FC<StageIndicatorProps> = ({
+  stages,
+  status,
+  isRTL,
+  fileSize,
+  showTooltips = false,
+}) => {
+  const [selectedStage, setSelectedStage] = useState<string | null>(null);
+
   if (!stages || status === 'queued') return null;
   
   const criticalStagesCount = CRITICAL_STAGES.length;
-  
+
   return (
-    <View style={[stageStyles.container, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
-      {UPLOAD_STAGES.map((stage, index) => {
-        const stageStatus = stages[stage.key as keyof UploadStages];
-        const isActive = stageStatus === 'in_progress';
-        const isCompleted = stageStatus === 'completed';
-        const isSkipped = stageStatus === 'skipped';
-        const isScheduled = stageStatus === 'scheduled';
-        const isEnrichmentStage = index >= criticalStagesCount;
-        
-        const Icon = stage.icon;
-        
-        // Color logic: completed=green, active=blue, skipped=orange, pending=gray
-        let iconColor = colors.textMuted;
-        let bgColor = 'transparent';
-        let borderColor = colors.glassBorder;
-        
-        if (isCompleted) {
-          iconColor = colors.success;
-          bgColor = colors.success + '20';
-          borderColor = colors.success + '40';
-        } else if (isActive) {
-          iconColor = colors.primary;
-          bgColor = colors.primary + '20';
-          borderColor = colors.primary + '40';
-        } else if (isSkipped) {
-          iconColor = colors.warning;
-          bgColor = colors.warning + '15';
-          borderColor = colors.warning + '30';
-        } else if (isScheduled) {
-          iconColor = colors.info || colors.primary;
-          bgColor = (colors.info || colors.primary) + '15';
-          borderColor = (colors.info || colors.primary) + '30';
-        }
-        
-        // Add visual separator before enrichment stages
-        const showSeparator = index === criticalStagesCount;
-        
-        return (
-          <React.Fragment key={stage.key}>
-            {index > 0 && !showSeparator && (
-              <View 
-                style={[
-                  stageStyles.connector,
-                  { backgroundColor: isCompleted ? colors.success : colors.glassBorder }
-                ]} 
-              />
-            )}
-            {showSeparator && (
-              <View style={stageStyles.enrichmentSeparator}>
-                <View style={stageStyles.separatorDot} />
-              </View>
-            )}
-            <View 
-              style={[
-                stageStyles.stage,
-                isEnrichmentStage && stageStyles.enrichmentStage,
-                { 
-                  backgroundColor: bgColor,
-                  borderColor: borderColor,
-                }
-              ]}
-            >
-              <Icon size={isEnrichmentStage ? 10 : 12} color={iconColor} />
-              {isActive && (
-                <ActivityIndicator size={8} color={colors.primary} style={stageStyles.spinner} />
+    <View>
+      <View style={[stageStyles.container, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
+        {UPLOAD_STAGES.map((stage, index) => {
+          const stageStatus = stages[stage.key as keyof UploadStages];
+          const isActive = stageStatus === 'in_progress';
+          const isCompleted = stageStatus === 'completed';
+          const isSkipped = stageStatus === 'skipped';
+          const isScheduled = stageStatus === 'scheduled';
+          const isEnrichmentStage = index >= criticalStagesCount;
+
+          const Icon = stage.icon;
+
+          // Color logic: completed=green, active=blue, skipped=orange, pending=gray
+          let iconColor = colors.textMuted;
+          let bgColor = 'transparent';
+          let borderColor = colors.glassBorder;
+
+          if (isCompleted) {
+            iconColor = colors.success;
+            bgColor = colors.success + '20';
+            borderColor = colors.success + '40';
+          } else if (isActive) {
+            iconColor = colors.primary;
+            bgColor = colors.primary + '20';
+            borderColor = colors.primary + '40';
+          } else if (isSkipped) {
+            iconColor = colors.warning;
+            bgColor = colors.warning + '15';
+            borderColor = colors.warning + '30';
+          } else if (isScheduled) {
+            iconColor = colors.info || colors.primary;
+            bgColor = (colors.info || colors.primary) + '15';
+            borderColor = (colors.info || colors.primary) + '30';
+          }
+
+          // Add visual separator before enrichment stages
+          const showSeparator = index === criticalStagesCount;
+
+          return (
+            <React.Fragment key={stage.key}>
+              {index > 0 && !showSeparator && (
+                <View
+                  style={[
+                    stageStyles.connector,
+                    { backgroundColor: isCompleted ? colors.success : colors.glassBorder }
+                  ]}
+                />
               )}
-            </View>
-          </React.Fragment>
-        );
-      })}
+              {showSeparator && (
+                <View style={stageStyles.enrichmentSeparator}>
+                  <View style={stageStyles.separatorDot} />
+                </View>
+              )}
+              <Pressable
+                onPress={() => setSelectedStage(selectedStage === stage.key ? null : stage.key)}
+                style={[
+                  stageStyles.stage,
+                  isEnrichmentStage && stageStyles.enrichmentStage,
+                  {
+                    backgroundColor: bgColor,
+                    borderColor: borderColor,
+                  }
+                ]}
+              >
+                <Icon size={isEnrichmentStage ? 10 : 12} color={iconColor} />
+                {isActive && (
+                  <ActivityIndicator size={8} color={colors.primary} style={stageStyles.spinner} />
+                )}
+              </Pressable>
+            </React.Fragment>
+          );
+        })}
+      </View>
+      {showTooltips && selectedStage && (
+        <StageTooltip
+          stage={UPLOAD_STAGES.find(s => s.key === selectedStage)!}
+          status={stages[selectedStage as keyof UploadStages] || 'pending'}
+          fileSize={fileSize}
+          visible={true}
+        />
+      )}
     </View>
   );
 };
+
+// Stage Tooltip Component
+interface StageTooltipProps {
+  stage: typeof UPLOAD_STAGES[number];
+  status: string;
+  fileSize?: number;
+  visible: boolean;
+}
+
+const StageTooltip: React.FC<StageTooltipProps> = ({ stage, status, fileSize, visible }) => {
+  if (!visible) return null;
+
+  const getStageDescription = (key: string): string => {
+    const descriptions: Record<string, string> = {
+      hash_calculation: 'Calculating file hash for duplicate detection',
+      metadata_extraction: 'Extracting title, year, and metadata from filename',
+      gcs_upload: 'Uploading file to Google Cloud Storage',
+      database_insert: 'Saving content entry to database',
+      imdb_lookup: 'Fetching enhanced movie/series details from TMDB',
+      subtitle_extraction: 'Extracting embedded subtitles from video file',
+    };
+    return descriptions[key] || key;
+  };
+
+  const getEstimatedTime = (key: string, size?: number): string => {
+    const fileSizeGB = size ? size / (1024 * 1024 * 1024) : 2;
+    const estimates: Record<string, string> = {
+      hash_calculation: '30s - 2m',
+      metadata_extraction: '5s - 10s',
+      gcs_upload: size ? `${Math.ceil(fileSizeGB * 3)}m` : '5m - 30m',
+      database_insert: '1s - 2s',
+      imdb_lookup: '2s - 5s',
+      subtitle_extraction: '10s - 1m',
+    };
+    return estimates[key] || 'Unknown';
+  };
+
+  return (
+    <View style={tooltipStyles.container}>
+      <Text style={tooltipStyles.title}>{stage.label}</Text>
+      <Text style={tooltipStyles.description}>
+        {getStageDescription(stage.key)}
+      </Text>
+      <Text style={tooltipStyles.estimate}>
+        Estimated: {getEstimatedTime(stage.key, fileSize)}
+      </Text>
+      <Text style={tooltipStyles.status}>
+        Status: {status || 'pending'}
+      </Text>
+    </View>
+  );
+};
+
+const tooltipStyles = StyleSheet.create({
+  container: {
+    backgroundColor: 'rgba(0, 0, 0, 0.95)',
+    backdropFilter: 'blur(20px)',
+    borderRadius: 12,
+    padding: spacing.md,
+    marginTop: spacing.xs,
+    marginBottom: spacing.sm,
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.1)',
+  },
+  title: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: '#FFFFFF',
+    marginBottom: spacing.xs,
+  },
+  description: {
+    fontSize: 12,
+    color: 'rgba(255, 255, 255, 0.8)',
+    marginBottom: spacing.xs,
+    lineHeight: 16,
+  },
+  estimate: {
+    fontSize: 11,
+    color: colors.primary,
+    marginBottom: spacing.xxs,
+  },
+  status: {
+    fontSize: 11,
+    color: colors.textMuted,
+  },
+});
+
+// Stage Error Display Component
+interface StageErrorProps {
+  job: QueueJob;
+}
+
+const StageError: React.FC<StageErrorProps> = ({ job }) => {
+  const failedStages = Object.entries(job.stages || {})
+    .filter(([_, status]) => status === 'failed')
+    .map(([key, _]) => key);
+
+  if (failedStages.length === 0 || !job.error_message) return null;
+
+  return (
+    <View style={stageErrorStyles.container}>
+      <View style={stageErrorStyles.header}>
+        <AlertCircle size={14} color={colors.error} />
+        <Text style={stageErrorStyles.headerText}>
+          Failed at: {failedStages.join(', ')}
+        </Text>
+      </View>
+      <Text style={stageErrorStyles.errorDetail}>
+        {job.error_message}
+      </Text>
+    </View>
+  );
+};
+
+const stageErrorStyles = StyleSheet.create({
+  container: {
+    backgroundColor: 'rgba(239, 68, 68, 0.1)',
+    borderLeftWidth: 3,
+    borderLeftColor: colors.error,
+    borderRadius: 8,
+    padding: spacing.sm,
+    marginTop: spacing.sm,
+  },
+  header: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: spacing.xs,
+  },
+  headerText: {
+    fontSize: 12,
+    fontWeight: '600',
+    color: colors.error,
+    marginLeft: spacing.xs,
+  },
+  errorDetail: {
+    fontSize: 11,
+    color: colors.textMuted,
+    lineHeight: 16,
+  },
+});
 
 const stageStyles = StyleSheet.create({
   container: {
@@ -435,23 +596,28 @@ const GlassQueue: React.FC<GlassQueueProps> = ({
             </View>
             
             {/* Stage Progress Indicator */}
-            <StageIndicator 
-              stages={activeJob.stages} 
+            <StageIndicator
+              stages={activeJob.stages}
               status={activeJob.status}
               isRTL={isRTL}
+              fileSize={activeJob.file_size}
+              showTooltips={true}
             />
-            
+
             {/* Current Stage Text */}
             {activeJob.current_stage && (
               <Text style={[styles.currentStage, { textAlign }]}>
                 {activeJob.current_stage}
               </Text>
             )}
-            
+
             {/* Progress Bar */}
             <View style={styles.progressContainer}>
               <View style={[styles.progressBar, { width: `${activeJob.progress}%` }]} />
             </View>
+
+            {/* Stage Error Display */}
+            <StageError job={activeJob} />
             
             {/* Job Details */}
             <View style={[styles.jobDetails, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>

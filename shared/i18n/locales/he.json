@@ -2348,7 +2348,9 @@
       "speaking": "מדבר",
       "connecting": "מתחבר לשמע...",
       "noAudio": "שמע לא זמין"
-    }
+    },
+    "textOnlyMode": "צ'אט טקסט בלבד",
+    "endParty": "סיים מסיבה"
   },
   "footer": {
     "brandDescription": "הבית שלך בארה״ב. שידורי טלוויזיה, VOD, רדיו ופודקאסטים בעברית.",
@@ -2708,7 +2710,15 @@
     "joinInvite": "הצטרף למשחק",
     "challenge": "אתגר",
     "playedAsWhite": "שיחק כלבן",
-    "playedAsBlack": "שיחק כשחור"
+    "playedAsBlack": "שיחק כשחור",
+    "gameMode": "מצב משחק",
+    "playVsFriend": "שחק נגד חבר",
+    "playVsBot": "שחק נגד בוט",
+    "difficulty": "רמת קושי",
+    "easy": "קל",
+    "medium": "בינוני",
+    "hard": "קשה",
+    "chessBot": "בוט שחמט"
   },
   "friends": {
     "title": "חברים ויריבים",

@@ -342,12 +342,19 @@ class GCSStorageProvider(StorageProvider):
             from google.cloud import storage
             from google.api_core import exceptions
             import datetime
+            import os
 
             self.storage = storage
             self.exceptions = exceptions
             self.datetime = datetime
 
-            # Client auto-authenticates in Cloud Run via metadata server
+            # Set credentials path if provided (for local development)
+            if settings.GOOGLE_APPLICATION_CREDENTIALS:
+                os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = settings.GOOGLE_APPLICATION_CREDENTIALS
+
+            # Client auto-authenticates:
+            # - In Cloud Run: via metadata server
+            # - Locally: via GOOGLE_APPLICATION_CREDENTIALS env var
             self.client = storage.Client(project=settings.GCS_PROJECT_ID or None)
             self.bucket_name = settings.GCS_BUCKET_NAME
             self.bucket = self.client.bucket(self.bucket_name)
@@ -520,10 +527,29 @@ class GCSStorageProvider(StorageProvider):
 
 def get_storage_provider() -> StorageProvider:
     """Get configured storage provider"""
+    import logging
+    logger = logging.getLogger(__name__)
+
     if settings.STORAGE_TYPE == "gcs":
-        return GCSStorageProvider()
+        try:
+            return GCSStorageProvider()
+        except Exception as e:
+            logger.warning(
+                f"⚠️  Failed to initialize GCS storage: {e}\n"
+                f"Falling back to local storage. "
+                f"For local development, set STORAGE_TYPE=local in your .env file."
+            )
+            return LocalStorageProvider(settings.UPLOAD_DIR)
     elif settings.STORAGE_TYPE == "s3":
-        return S3StorageProvider()
+        try:
+            return S3StorageProvider()
+        except Exception as e:
+            logger.warning(
+                f"⚠️  Failed to initialize S3 storage: {e}\n"
+                f"Falling back to local storage. "
+                f"For local development, set STORAGE_TYPE=local in your .env file."
+            )
+            return LocalStorageProvider(settings.UPLOAD_DIR)
     else:
         return LocalStorageProvider(settings.UPLOAD_DIR)
 

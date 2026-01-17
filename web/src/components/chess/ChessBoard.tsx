@@ -63,9 +63,97 @@ export default function ChessBoard({
     kingSquare: string | null;
     attackingSquares: string[];
   }>({ isInCheck: false, kingSquare: null, attackingSquares: [] });
-  const glowAnimation = useRef(new Animated.Value(0)).current;
+  const [illegalMoveSquare, setIllegalMoveSquare] = useState<string | null>(null);
+  const illegalMoveTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const isRTL = checkIsRTL();
+
+  // Clear illegal move indicator after timeout
+  const showIllegalMove = useCallback((square: string) => {
+    if (illegalMoveTimeout.current) {
+      clearTimeout(illegalMoveTimeout.current);
+    }
+    setIllegalMoveSquare(square);
+    illegalMoveTimeout.current = setTimeout(() => {
+      setIllegalMoveSquare(null);
+    }, 500);
+  }, []);
+
+  // Cleanup timeout on unmount
+  useEffect(() => {
+    return () => {
+      if (illegalMoveTimeout.current) {
+        clearTimeout(illegalMoveTimeout.current);
+      }
+    };
+  }, []);
+
+  // Check if path between two squares is blocked
+  const isPathBlocked = useCallback((
+    fromFile: number, fromRank: number,
+    toFile: number, toRank: number,
+    board: ({ type: string; color: string } | null)[][]
+  ): boolean => {
+    const fileStep = toFile > fromFile ? 1 : toFile < fromFile ? -1 : 0;
+    const rankStep = toRank > fromRank ? 1 : toRank < fromRank ? -1 : 0;
+
+    let file = fromFile + fileStep;
+    let rank = fromRank + rankStep;
+
+    while (file !== toFile || rank !== toRank) {
+      if (board[7 - rank][file] !== null) {
+        return true; // Path is blocked
+      }
+      file += fileStep;
+      rank += rankStep;
+    }
+
+    return false;
+  }, []);
+
+  // Helper function to check if a piece can attack a target square
+  const canPieceAttackSquare = useCallback((
+    pieceType: string,
+    fromSquare: string,
+    toSquare: string,
+    board: ({ type: string; color: string } | null)[][]
+  ): boolean => {
+    const fromFile = fromSquare.charCodeAt(0) - 97;
+    const fromRank = parseInt(fromSquare[1]) - 1;
+    const toFile = toSquare.charCodeAt(0) - 97;
+    const toRank = parseInt(toSquare[1]) - 1;
+
+    const fileDiff = Math.abs(toFile - fromFile);
+    const rankDiff = Math.abs(toRank - fromRank);
+
+    switch (pieceType) {
+      case 'p': // Pawn attacks diagonally
+        const pawnColor = board[7 - fromRank][fromFile]?.color;
+        const pawnDirection = pawnColor === 'w' ? 1 : -1;
+        return fileDiff === 1 && (toRank - fromRank) === pawnDirection;
+
+      case 'n': // Knight
+        return (fileDiff === 2 && rankDiff === 1) || (fileDiff === 1 && rankDiff === 2);
+
+      case 'b': // Bishop - diagonal
+        if (fileDiff !== rankDiff) return false;
+        return !isPathBlocked(fromFile, fromRank, toFile, toRank, board);
+
+      case 'r': // Rook - horizontal/vertical
+        if (fileDiff !== 0 && rankDiff !== 0) return false;
+        return !isPathBlocked(fromFile, fromRank, toFile, toRank, board);
+
+      case 'q': // Queen - diagonal or straight
+        if (fileDiff !== rankDiff && fileDiff !== 0 && rankDiff !== 0) return false;
+        return !isPathBlocked(fromFile, fromRank, toFile, toRank, board);
+
+      case 'k': // King
+        return fileDiff <= 1 && rankDiff <= 1;
+
+      default:
+        return false;
+    }
+  }, [isPathBlocked]);
 
   // Detect check and find attacking pieces
   const updateCheckState = useCallback(() => {
@@ -74,8 +162,9 @@ export default function ChessBoard({
       return;
     }
 
-    // Find the king's position
+    // Find the king's position (the player whose turn it is - they are in check)
     const currentTurn = chess.turn();
+    const opponentColor = currentTurn === 'w' ? 'b' : 'w';
     const board = chess.board();
     let kingSquare: string | null = null;
 
@@ -97,19 +186,20 @@ export default function ChessBoard({
       return;
     }
 
-    // Find all pieces attacking the king
+    // Find all opponent pieces that could be attacking the king
+    // We use isAttacked to check if the king square is attacked, then find the attackers
     const attackingSquares: string[] = [];
+
     for (let row = 0; row < 8; row++) {
       for (let col = 0; col < 8; col++) {
         const piece = board[row][col];
-        if (piece && piece.color !== currentTurn) {
+        if (piece && piece.color === opponentColor) {
           const file = String.fromCharCode(97 + col);
           const rank = 8 - row;
           const square = `${file}${rank}`;
 
-          // Check if this piece can attack the king
-          const moves = chess.moves({ square, verbose: true });
-          if (moves.some(m => m.to === kingSquare)) {
+          // Check if this piece type can attack the king from this position
+          if (canPieceAttackSquare(piece.type, square, kingSquare, board)) {
             attackingSquares.push(square);
           }
         }
@@ -118,7 +208,7 @@ export default function ChessBoard({
 
     console.log('[Chess] Check detected! King at', kingSquare, 'attacked by', attackingSquares);
     setCheckState({ isInCheck: true, kingSquare, attackingSquares });
-  }, [chess]);
+  }, [chess, canPieceAttackSquare]);
 
   // Update chess instance when game state changes
   useEffect(() => {
@@ -143,33 +233,12 @@ export default function ChessBoard({
     }
   }, [game?.move_history]);
 
-  // Animate glow when in check
+  // Log check state changes for debugging
   useEffect(() => {
-    console.log('[Chess] Check state changed:', checkState);
     if (checkState.isInCheck) {
-      console.log('[Chess] Starting check glow animation');
-      // Start pulsing animation
-      Animated.loop(
-        Animated.sequence([
-          Animated.timing(glowAnimation, {
-            toValue: 1,
-            duration: 600,
-            useNativeDriver: Platform.OS !== 'web',
-          }),
-          Animated.timing(glowAnimation, {
-            toValue: 0,
-            duration: 600,
-            useNativeDriver: Platform.OS !== 'web',
-          }),
-        ])
-      ).start();
-    } else {
-      console.log('[Chess] Stopping check glow animation');
-      // Stop animation and reset
-      glowAnimation.stopAnimation();
-      glowAnimation.setValue(0);
+      console.log('[Chess] Check detected! King at', checkState.kingSquare, 'attacked by', checkState.attackingSquares);
     }
-  }, [checkState.isInCheck, glowAnimation]);
+  }, [checkState]);
 
   // Helper function to animate piece movement
   const animateMove = (from: string, to: string, piece: { type: string; color: string }, callback: () => void) => {
@@ -210,11 +279,13 @@ export default function ChessBoard({
           setSelectedSquare(null);
           setLegalMoves([]);
         } else {
-          // Invalid move - try selecting new piece
+          // Invalid move - show red border and try selecting new piece
+          showIllegalMove(square);
           selectSquare(square);
         }
       } catch (err) {
-        // Move failed, try selecting new square
+        // Move failed - show red border and try selecting new square
+        showIllegalMove(square);
         selectSquare(square);
       }
     } else {
@@ -270,6 +341,7 @@ export default function ChessBoard({
     // Check if this square is part of the check scenario
     const isKingInCheck = checkState.isInCheck && checkState.kingSquare === square;
     const isAttackingPiece = checkState.isInCheck && checkState.attackingSquares.includes(square);
+    const isIllegalMoveTarget = illegalMoveSquare === square;
 
     // Calculate square size based on playable area (94% of board)
     const squareSize = playableSize / 8;
@@ -297,6 +369,7 @@ export default function ChessBoard({
           isLight ? styles.lightSquare : styles.darkSquare,
           isSelected && styles.selectedSquare,
           isLastMoveSquare && styles.lastMoveSquare,
+          isIllegalMoveTarget && styles.illegalMoveSquare,
           squareGlowStyle,
         ]}
         onPress={() => handleSquarePress(square)}
@@ -329,49 +402,33 @@ export default function ChessBoard({
           // All pieces anchor from bottom of square
           const bottomOffset = squareSize * 0.05; // Small lift from bottom edge
 
-          // Calculate glow intensity based on animation value
-          const glowIntensity = glowAnimation.interpolate({
-            inputRange: [0, 1],
-            outputRange: [0, 1],
-          });
+          // Check glow animation styles (applied directly to image for web)
+          const checkGlowStyle = (isKingInCheck || isAttackingPiece) ? Platform.select({
+            web: {
+              animation: isKingInCheck
+                ? 'checkGlowKing 1.2s ease-in-out infinite'
+                : 'checkGlowAttacker 1.2s ease-in-out infinite',
+            },
+            default: {},
+          }) : {};
 
-          // Different glow colors for king vs attacking piece
-          const glowColor = isKingInCheck
-            ? 'rgba(239, 68, 68, 0.9)'  // Red for king in check
-            : 'rgba(251, 191, 36, 0.9)'; // Amber for attacking piece
-
-          const animatedGlowStyle = {
-            shadowColor: glowColor,
-            shadowOffset: { width: 0, height: 0 },
-            shadowOpacity: glowIntensity,
-            shadowRadius: Animated.multiply(glowIntensity, 25),
-          };
-
-          const pieceElement = (
-            <Image
-              source={{ uri: pieceImage }}
-              style={[
-                styles.piece,
-                {
-                  width: pieceWidth,
-                  height: pieceHeight,
-                  marginBottom: bottomOffset, // Small lift from square bottom
-                }
-              ]}
-              resizeMode="contain"
-            />
+          return (
+            <View style={styles.glowContainer}>
+              <Image
+                source={{ uri: pieceImage }}
+                style={[
+                  styles.piece,
+                  {
+                    width: pieceWidth,
+                    height: pieceHeight,
+                    marginBottom: bottomOffset, // Small lift from square bottom
+                  },
+                  checkGlowStyle,
+                ]}
+                resizeMode="contain"
+              />
+            </View>
           );
-
-          // Wrap with animated glow if this piece is involved in check
-          if (isKingInCheck || isAttackingPiece) {
-            return (
-              <Animated.View style={[styles.glowContainer, animatedGlowStyle]}>
-                {pieceElement}
-              </Animated.View>
-            );
-          }
-
-          return pieceElement;
         })()}
 
         {/* Legal move indicator - only show if hints enabled */}
@@ -569,6 +626,18 @@ const styles = StyleSheet.create({
       },
     }),
   },
+  illegalMoveSquare: {
+    backgroundColor: 'rgba(239, 68, 68, 0.35)',
+    backdropFilter: 'blur(15px)',
+    borderColor: 'rgba(239, 68, 68, 0.9)',
+    borderWidth: 3,
+    ...Platform.select({
+      web: {
+        boxShadow: 'inset 0 0 25px rgba(239, 68, 68, 0.6), 0 0 30px rgba(239, 68, 68, 0.7), 0 0 60px rgba(239, 68, 68, 0.4)',
+        animation: 'illegal-move-shake 0.3s ease-in-out',
+      },
+    }),
+  },
   piece: {
     zIndex: 10, // Ensure pieces render above squares
     ...Platform.select({
@@ -581,11 +650,7 @@ const styles = StyleSheet.create({
   },
   glowContainer: {
     zIndex: 15, // Above regular pieces
-    ...Platform.select({
-      web: {
-        filter: 'drop-shadow(0 0 30px currentColor)',
-      },
-    }),
+    // Filter is applied dynamically for check glow animation
   },
   animatingPieceContainer: {
     position: 'absolute',

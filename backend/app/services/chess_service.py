@@ -10,8 +10,11 @@ from app.models.chess import (
     ChessMove,
     ChessPlayer,
     PlayerColor,
-    GameStatus
+    GameStatus,
+    GameMode,
+    BotDifficulty,
 )
+from app.services.bot_chess_service import get_bot_name
 
 
 def generate_game_code(length: int = 6) -> str:
@@ -28,7 +31,9 @@ class ChessService:
         host_user_id: str,
         host_user_name: str,
         color: PlayerColor,
-        time_control: Optional[int] = None
+        time_control: Optional[int] = None,
+        game_mode: GameMode = GameMode.PVP,
+        bot_difficulty: Optional[BotDifficulty] = None,
     ) -> ChessGame:
         """Create new chess game."""
         game_code = generate_game_code()
@@ -46,13 +51,35 @@ class ChessService:
 
         game = ChessGame(
             game_code=game_code,
-            time_control=time_control
+            time_control=time_control,
+            game_mode=game_mode,
+            bot_difficulty=bot_difficulty,
         )
 
         if color == PlayerColor.WHITE:
             game.white_player = player
         else:
             game.black_player = player
+
+        # For bot games, create the bot player and start immediately
+        if game_mode == GameMode.BOT and bot_difficulty:
+            bot_color = PlayerColor.BLACK if color == PlayerColor.WHITE else PlayerColor.WHITE
+            bot_player = ChessPlayer(
+                user_id="BOT",
+                user_name=get_bot_name(bot_difficulty),
+                color=bot_color,
+                is_connected=True,
+                is_bot=True,
+                time_remaining_ms=time_control * 1000 if time_control else None
+            )
+
+            if bot_color == PlayerColor.WHITE:
+                game.white_player = bot_player
+            else:
+                game.black_player = bot_player
+
+            # Bot games start immediately since both players are present
+            game.status = GameStatus.ACTIVE
 
         await game.insert()
         return game

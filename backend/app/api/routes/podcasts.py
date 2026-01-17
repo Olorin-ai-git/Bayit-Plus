@@ -32,40 +32,48 @@ async def get_podcast_categories():
 @router.post("/sync")
 async def sync_podcasts():
     """
-    Podcast RSS sync is now background-only (scheduled task).
-    This endpoint is kept for backward compatibility but returns immediately.
+    Manually trigger podcast RSS sync.
+    This endpoint syncs all podcast RSS feeds and fetches new episodes.
     """
-    logger.info("📻 Podcast sync requested (background task handles syncing)")
-    return {
-        "status": "background_only",
-        "message": "Podcast syncing runs as a scheduled background task only. Changes will appear automatically.",
-        "total_podcasts": 0,
-        "podcasts_synced": 0,
-        "total_episodes_added": 0,
-    }
+    logger.info("📻 Manual podcast sync triggered")
+    try:
+        result = await sync_all_podcasts(max_episodes=20)
+        logger.info(f"✅ Podcast sync completed: {result}")
+        return {
+            "status": "success",
+            "message": "Podcast sync completed successfully",
+            "total_podcasts": result.get("total_podcasts", 0),
+            "podcasts_synced": result.get("synced_count", 0),
+            "total_episodes_added": result.get("total_episodes_added", 0),
+        }
+    except Exception as e:
+        logger.error(f"❌ Podcast sync failed: {e}", exc_info=True)
+        raise HTTPException(status_code=500, detail=f"Podcast sync failed: {str(e)}")
 
 
 @router.post("/refresh")
 async def refresh_all_content():
     """
     Refresh all content: podcasts, live channels, and trending data.
-    Podcast syncing is now background-only (scheduled task).
+    Triggers manual podcast RSS sync.
     """
-    logger.info("📻 Full content refresh requested (podcasts sync in background)")
+    logger.info("📻 Full content refresh requested - triggering podcast sync")
 
-    # Podcast syncing disabled - runs as background task only
-    # Trending is fetched on-demand from news APIs, so no sync needed
-    # Live channels are typically static or updated via admin, so no sync needed
-
-    return {
-        "status": "background_only",
-        "message": "Podcast syncing runs as a scheduled background task only. Changes will appear automatically.",
-        "podcasts": {
-            "total": 0,
-            "synced": 0,
-            "episodes_added": 0,
-        },
-    }
+    try:
+        result = await sync_all_podcasts(max_episodes=20)
+        logger.info(f"✅ Podcast sync completed: {result}")
+        return {
+            "status": "success",
+            "message": "Content refresh completed successfully",
+            "podcasts": {
+                "total": result.get("total_podcasts", 0),
+                "synced": result.get("synced_count", 0),
+                "episodes_added": result.get("total_episodes_added", 0),
+            },
+        }
+    except Exception as e:
+        logger.error(f"❌ Content refresh failed: {e}", exc_info=True)
+        raise HTTPException(status_code=500, detail=f"Content refresh failed: {str(e)}")
 
 
 @router.get("")
