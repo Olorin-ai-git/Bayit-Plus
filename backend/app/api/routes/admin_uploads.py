@@ -35,9 +35,10 @@ logger = logging.getLogger(__name__)
 # ============ HELPER FUNCTIONS ============
 
 def job_to_response(job: UploadJob) -> UploadJobResponse:
-    """Convert UploadJob to UploadJobResponse with current_stage"""
+    """Convert UploadJob to UploadJobResponse with current_stage and stages"""
     response = UploadJobResponse.from_orm(job)
     response.current_stage = job.get_current_stage()
+    response.stages = job.stages or {}
     return response
 
 

@@ -92,6 +92,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     marginLeft: spacing.md,
+    marginRight: spacing.sm,
   },
   checkboxChecked: {
     backgroundColor: colors.primary,

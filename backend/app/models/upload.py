@@ -86,6 +86,11 @@ class UploadJob(Document):
         elif self.status == UploadStatus.FAILED:
             return "Failed"
         elif self.status == UploadStatus.COMPLETED:
+            # Check if enrichment stages are still running
+            if self.stages.get("imdb_lookup") == "in_progress":
+                return "Fetching IMDB info..."
+            elif self.stages.get("subtitle_extraction") == "in_progress":
+                return "Extracting subtitles..."
             return "Completed"
         
         # For processing/uploading status, check which stage is in progress
@@ -104,6 +109,11 @@ class UploadJob(Document):
                 return "Saving to database..."
             return "Finalizing..."
         elif self.stages.get("database_insert") == "completed":
+            # Critical stages done, check enrichment
+            if self.stages.get("imdb_lookup") == "in_progress":
+                return "Fetching IMDB info..."
+            elif self.stages.get("subtitle_extraction") == "in_progress":
+                return "Extracting subtitles..."
             return "Completed"
         
         # Default based on status
@@ -229,6 +239,7 @@ class UploadJobResponse(BaseModel):
     started_at: Optional[datetime] = None
     completed_at: Optional[datetime] = None
     current_stage: Optional[str] = None  # Human-readable current processing stage
+    stages: Dict[str, Any] = {}  # Detailed stage status for progress indicator
     
     class Config:
         from_attributes = True

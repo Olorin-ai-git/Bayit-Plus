@@ -49,6 +49,27 @@ export interface MonitoredFolder {
   exclude_patterns?: string[];
 }
 
+// Upload processing stages
+export type UploadStage = 
+  | 'browser_upload'      // File chunks being sent from browser to server
+  | 'hash_calculation'    // Server calculating file hash
+  | 'duplicate_check'     // Checking for duplicates
+  | 'metadata_extraction' // Extracting file metadata
+  | 'gcs_upload'          // Uploading to Google Cloud Storage
+  | 'database_insert'     // Creating content entry in database
+  | 'completed'           // All done
+  | 'failed';             // Failed at some stage
+
+export interface UploadStages {
+  hash_calculation?: 'pending' | 'in_progress' | 'completed';
+  metadata_extraction?: 'pending' | 'in_progress' | 'completed';
+  gcs_upload?: 'pending' | 'in_progress' | 'completed';
+  database_insert?: 'pending' | 'in_progress' | 'completed';
+  // Non-critical enrichment stages (run after upload is complete)
+  imdb_lookup?: 'pending' | 'in_progress' | 'completed' | 'skipped';
+  subtitle_extraction?: 'pending' | 'in_progress' | 'completed' | 'skipped' | 'scheduled';
+}
+
 export interface UploadJob {
   job_id: string;
   filename: string;
@@ -63,6 +84,9 @@ export interface UploadJob {
   created_at: string;
   started_at?: string | null;
   completed_at?: string | null;
+  // Multi-stage progress tracking
+  current_stage?: string | null;  // Human-readable current stage
+  stages?: UploadStages;          // Detailed stage status
 }
 
 export interface QueueStats {

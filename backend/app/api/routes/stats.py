@@ -1,5 +1,5 @@
 from fastapi import APIRouter, Depends
-from app.api.deps import get_current_user
+from app.core.security import get_current_user
 from app.services.stats_service import StatsService
 from app.models.user import User
 

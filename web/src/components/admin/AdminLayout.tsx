@@ -2,11 +2,10 @@ import { useState, useEffect, useCallback } from 'react'
 import { View, StyleSheet, Text, ActivityIndicator, Pressable, useWindowDimensions } from 'react-native'
 import { Outlet, Navigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
-import { ChevronLeft, ChevronRight, Menu } from 'lucide-react'
+import { Menu } from 'lucide-react'
 import AdminSidebar from './AdminSidebar'
 import { colors, spacing } from '@bayit/shared/theme'
 import { useAuthStore } from '@/stores/authStore'
-import { GlassView } from '@bayit/shared/ui'
 
 const SIDEBAR_DEFAULT_WIDTH = 280
 const SIDEBAR_MIN_WIDTH = 240
@@ -99,23 +98,30 @@ export default function AdminLayout() {
         <Outlet />
       </View>
 
-      {/* Sidebar Toggle Button */}
+      {/* Sidebar Toggle Button - Matches main sidebar style */}
       {!isMobile && (
         <Pressable
           style={[
             styles.sidebarToggle,
             isRTL && styles.sidebarToggleRTL,
             sidebarOpen
-              ? (isRTL ? { right: sidebarWidth - 18 } : { left: sidebarWidth - 18 })
+              ? (isRTL ? { right: sidebarWidth - 22 } : { left: sidebarWidth - 22 })
               : (isRTL ? { right: spacing.md } : { left: spacing.md }),
           ]}
           onPress={() => setSidebarOpen(!sidebarOpen)}
         >
-          <GlassView style={styles.toggleInner} intensity="medium">
-            {isRTL
-              ? (sidebarOpen ? <ChevronRight size={18} color={colors.text} /> : <ChevronLeft size={18} color={colors.text} />)
-              : (sidebarOpen ? <ChevronLeft size={18} color={colors.text} /> : <ChevronRight size={18} color={colors.text} />)}
-          </GlassView>
+          {({ hovered }: any) => (
+            <View style={[
+              styles.toggleInner,
+              hovered && styles.toggleInnerHovered,
+            ]}>
+              <Text style={styles.toggleArrow}>
+                {isRTL
+                  ? (sidebarOpen ? '▶' : '◀')
+                  : (sidebarOpen ? '◀' : '▶')}
+              </Text>
+            </View>
+          )}
         </Pressable>
       )}
 
@@ -195,13 +201,24 @@ const styles = StyleSheet.create({
     right: 0,
   },
   toggleInner: {
-    width: 36,
-    height: 36,
-    borderRadius: 18,
+    width: 44,
+    height: 44,
+    borderRadius: 8,
     justifyContent: 'center',
     alignItems: 'center',
-    borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.15)',
+    borderWidth: 2,
+    borderColor: colors.primary,
+    backgroundColor: 'transparent',
+    opacity: 0.6,
+  },
+  toggleInnerHovered: {
+    opacity: 1,
+    backgroundColor: colors.primary + '30',
+  },
+  toggleArrow: {
+    fontSize: 16,
+    fontWeight: '700' as any,
+    color: colors.primary,
   },
   overlay: {
     position: 'fixed' as any,

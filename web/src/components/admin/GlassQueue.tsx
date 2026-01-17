@@ -18,11 +18,176 @@ import {
   Pause,
   Play,
   Info,
+  Hash,
+  FileText,
+  Cloud,
+  Database,
+  Film,
+  Subtitles,
 } from 'lucide-react';
 import { GlassView, GlassCard, GlassBadge, GlassButton } from '@bayit/shared/ui';
 import { colors, spacing, borderRadius, fontSize } from '@bayit/shared/theme';
 import { useDirection } from '@/hooks/useDirection';
 import { format } from 'date-fns';
+
+// Stage configuration for visual display
+// Critical stages (must succeed for upload to complete)
+const CRITICAL_STAGES = [
+  { key: 'hash_calculation', icon: Hash, label: 'Hash' },
+  { key: 'metadata_extraction', icon: FileText, label: 'Metadata' },
+  { key: 'gcs_upload', icon: Cloud, label: 'Cloud' },
+  { key: 'database_insert', icon: Database, label: 'Database' },
+] as const;
+
+// Non-critical enrichment stages (run after upload, failures don't fail the upload)
+const ENRICHMENT_STAGES = [
+  { key: 'imdb_lookup', icon: Film, label: 'IMDB' },
+  { key: 'subtitle_extraction', icon: Subtitles, label: 'Subtitles' },
+] as const;
+
+const UPLOAD_STAGES = [...CRITICAL_STAGES, ...ENRICHMENT_STAGES] as const;
+
+// Stage Indicator Component
+interface StageIndicatorProps {
+  stages?: UploadStages;
+  status: string;
+  isRTL: boolean;
+}
+
+const StageIndicator: React.FC<StageIndicatorProps> = ({ stages, status, isRTL }) => {
+  if (!stages || status === 'queued') return null;
+  
+  const criticalStagesCount = CRITICAL_STAGES.length;
+  
+  return (
+    <View style={[stageStyles.container, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
+      {UPLOAD_STAGES.map((stage, index) => {
+        const stageStatus = stages[stage.key as keyof UploadStages];
+        const isActive = stageStatus === 'in_progress';
+        const isCompleted = stageStatus === 'completed';
+        const isSkipped = stageStatus === 'skipped';
+        const isScheduled = stageStatus === 'scheduled';
+        const isEnrichmentStage = index >= criticalStagesCount;
+        
+        const Icon = stage.icon;
+        
+        // Color logic: completed=green, active=blue, skipped=orange, pending=gray
+        let iconColor = colors.textMuted;
+        let bgColor = 'transparent';
+        let borderColor = colors.glassBorder;
+        
+        if (isCompleted) {
+          iconColor = colors.success;
+          bgColor = colors.success + '20';
+          borderColor = colors.success + '40';
+        } else if (isActive) {
+          iconColor = colors.primary;
+          bgColor = colors.primary + '20';
+          borderColor = colors.primary + '40';
+        } else if (isSkipped) {
+          iconColor = colors.warning;
+          bgColor = colors.warning + '15';
+          borderColor = colors.warning + '30';
+        } else if (isScheduled) {
+          iconColor = colors.info || colors.primary;
+          bgColor = (colors.info || colors.primary) + '15';
+          borderColor = (colors.info || colors.primary) + '30';
+        }
+        
+        // Add visual separator before enrichment stages
+        const showSeparator = index === criticalStagesCount;
+        
+        return (
+          <React.Fragment key={stage.key}>
+            {index > 0 && !showSeparator && (
+              <View 
+                style={[
+                  stageStyles.connector,
+                  { backgroundColor: isCompleted ? colors.success : colors.glassBorder }
+                ]} 
+              />
+            )}
+            {showSeparator && (
+              <View style={stageStyles.enrichmentSeparator}>
+                <View style={stageStyles.separatorDot} />
+              </View>
+            )}
+            <View 
+              style={[
+                stageStyles.stage,
+                isEnrichmentStage && stageStyles.enrichmentStage,
+                { 
+                  backgroundColor: bgColor,
+                  borderColor: borderColor,
+                }
+              ]}
+            >
+              <Icon size={isEnrichmentStage ? 10 : 12} color={iconColor} />
+              {isActive && (
+                <ActivityIndicator size={8} color={colors.primary} style={stageStyles.spinner} />
+              )}
+            </View>
+          </React.Fragment>
+        );
+      })}
+    </View>
+  );
+};
+
+const stageStyles = StyleSheet.create({
+  container: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginVertical: spacing.sm,
+    justifyContent: 'center',
+  },
+  stage: {
+    width: 28,
+    height: 28,
+    borderRadius: 14,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderWidth: 1,
+    position: 'relative',
+  },
+  enrichmentStage: {
+    width: 24,
+    height: 24,
+    borderRadius: 12,
+    opacity: 0.85,
+  },
+  connector: {
+    width: 20,
+    height: 2,
+    marginHorizontal: 2,
+  },
+  enrichmentSeparator: {
+    marginHorizontal: spacing.sm,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  separatorDot: {
+    width: 4,
+    height: 4,
+    borderRadius: 2,
+    backgroundColor: colors.textMuted,
+  },
+  spinner: {
+    position: 'absolute',
+    top: -4,
+    right: -4,
+  },
+});
+
+export interface UploadStages {
+  hash_calculation?: 'pending' | 'in_progress' | 'completed';
+  metadata_extraction?: 'pending' | 'in_progress' | 'completed';
+  gcs_upload?: 'pending' | 'in_progress' | 'completed';
+  database_insert?: 'pending' | 'in_progress' | 'completed';
+  // Non-critical enrichment stages (run after upload is complete)
+  imdb_lookup?: 'pending' | 'in_progress' | 'completed' | 'skipped';
+  subtitle_extraction?: 'pending' | 'in_progress' | 'completed' | 'skipped' | 'scheduled';
+}
 
 export interface QueueJob {
   job_id: string;
@@ -38,6 +203,7 @@ export interface QueueJob {
   started_at?: string | null;
   completed_at?: string | null;
   current_stage?: string | null;
+  stages?: UploadStages;
 }
 
 export interface QueueStats {
@@ -82,7 +248,7 @@ const GlassQueue: React.FC<GlassQueueProps> = ({
   const { t } = useTranslation();
   const { isRTL, textAlign, flexDirection: directionFlex } = useDirection();
   const [showQueue, setShowQueue] = useState(true);
-  const [showCompleted, setShowCompleted] = useState(false);
+  const [showCompleted, setShowCompleted] = useState(true); // Default to expanded
 
   // Calculate skipped count (duplicates) from recent completed
   const skippedCount = stats.skipped ?? recentCompleted.filter(job => isDuplicate(job)).length;
@@ -268,7 +434,14 @@ const GlassQueue: React.FC<GlassQueueProps> = ({
               />
             </View>
             
-            {/* Current Stage */}
+            {/* Stage Progress Indicator */}
+            <StageIndicator 
+              stages={activeJob.stages} 
+              status={activeJob.status}
+              isRTL={isRTL}
+            />
+            
+            {/* Current Stage Text */}
             {activeJob.current_stage && (
               <Text style={[styles.currentStage, { textAlign }]}>
                 {activeJob.current_stage}

@@ -321,7 +321,7 @@ class UploadService:
             await job.save()
             await self._broadcast_queue_update()
             
-            # Mark as completed
+            # Mark as completed (critical stages done)
             job.status = UploadStatus.COMPLETED
             job.progress = 100.0
             job.completed_at = datetime.utcnow()
@@ -330,13 +330,33 @@ class UploadService:
             
             logger.info(f"Job {job.job_id} completed successfully")
             
-            # Trigger background subtitle extraction if scheduled
+            # ============ NON-CRITICAL ENRICHMENT STAGES ============
+            # These run in background and don't affect the upload success status
+            
+            # Stage 4 (Optional): IMDB/TMDB lookup for movies
+            if job.type == ContentType.MOVIE and job.metadata.get("content_id"):
+                job.stages["imdb_lookup"] = "scheduled"
+                await job.save()
+                asyncio.create_task(self._fetch_imdb_info_background(
+                    job.metadata.get("content_id"),
+                    job.job_id
+                ))
+            else:
+                job.stages["imdb_lookup"] = "skipped"
+                await job.save()
+            
+            # Stage 5 (Optional): Subtitle extraction
             if job.stages.get("subtitle_extraction") == "scheduled" and job.metadata.get("local_source_path"):
                 asyncio.create_task(self._extract_subtitles_background(
                     job.metadata.get("content_id"),
                     job.metadata.get("local_source_path"),
                     job.job_id
                 ))
+            elif job.type != ContentType.MOVIE:
+                job.stages["subtitle_extraction"] = "skipped"
+                await job.save()
+            
+            await self._broadcast_queue_update()
             
         except Exception as e:
             logger.error(f"Job {job.job_id} failed: {e}", exc_info=True)
@@ -1007,6 +1027,13 @@ class UploadService:
             # Restart processing
             await self.process_queue()
 
+    def _job_to_response(self, job: UploadJob) -> UploadJobResponse:
+        """Convert UploadJob to UploadJobResponse with current_stage and stages"""
+        response = UploadJobResponse.from_orm(job)
+        response.current_stage = job.get_current_stage()
+        response.stages = job.stages or {}
+        return response
+
     async def _broadcast_queue_update(self):
         """Broadcast queue update via WebSocket"""
         if self._websocket_callback:
@@ -1018,12 +1045,13 @@ class UploadService:
                 
                 # Add queue pause info to the broadcast
                 # Use model_dump(mode='json') to properly serialize datetime objects
+                # Use _job_to_response to include stages and current_stage
                 message = {
                     "type": "queue_update",
                     "stats": stats.model_dump(mode='json'),
-                    "active_job": UploadJobResponse.from_orm(active_job).model_dump(mode='json') if active_job else None,
-                    "queue": [UploadJobResponse.from_orm(j).model_dump(mode='json') for j in queue],
-                    "recent_completed": [UploadJobResponse.from_orm(j).model_dump(mode='json') for j in recent],
+                    "active_job": self._job_to_response(active_job).model_dump(mode='json') if active_job else None,
+                    "queue": [self._job_to_response(j).model_dump(mode='json') for j in queue],
+                    "recent_completed": [self._job_to_response(j).model_dump(mode='json') for j in recent],
                     "queue_paused": self._queue_paused,
                     "pause_reason": self._pause_reason,
                 }
@@ -1031,6 +1059,90 @@ class UploadService:
                 await self._websocket_callback(message)
             except Exception as e:
                 logger.error(f"Failed to broadcast queue update: {e}")
+
+    async def _fetch_imdb_info_background(self, content_id: str, job_id: str):
+        """
+        Fetch IMDB/TMDB info in background without blocking the upload queue.
+        Updates the content entry with enriched metadata.
+        """
+        try:
+            logger.info(f"[Background] Starting IMDB/TMDB lookup for job {job_id}")
+            
+            # Get the job and update stage
+            job = await UploadJob.find_one(UploadJob.job_id == job_id)
+            if job:
+                job.stages["imdb_lookup"] = "in_progress"
+                await job.save()
+                await self._broadcast_queue_update()
+            
+            from app.models.content import Content
+            from beanie import PydanticObjectId
+            
+            content = await Content.get(PydanticObjectId(content_id))
+            if not content:
+                logger.error(f"[Background] Content not found: {content_id}")
+                if job:
+                    job.stages["imdb_lookup"] = "skipped"
+                    await job.save()
+                    await self._broadcast_queue_update()
+                return
+            
+            # Use TMDB service to fetch metadata
+            title = content.title or ""
+            year = content.year  # Content model uses 'year' not 'release_year'
+            
+            if title:
+                # Search TMDB for the movie
+                search_results = await self.tmdb_service.search_movie(title, year=year)
+                
+                if search_results:
+                    best_match = search_results[0]
+                    tmdb_id = best_match.get("id")
+                    
+                    if tmdb_id:
+                        # Get detailed info
+                        details = await self.tmdb_service.get_movie_details(tmdb_id)
+                        
+                        if details:
+                            # Update content with enriched data
+                            if details.get("overview") and not content.description:
+                                content.description = details["overview"]
+                            if details.get("poster_path"):
+                                content.thumbnail_url = f"https://image.tmdb.org/t/p/w500{details['poster_path']}"
+                            if details.get("backdrop_path") and not content.banner_url:
+                                content.banner_url = f"https://image.tmdb.org/t/p/original{details['backdrop_path']}"
+                            if details.get("genres"):
+                                content.genres = [g["name"] for g in details["genres"]]
+                            if details.get("vote_average"):
+                                content.rating = details["vote_average"]
+                            if details.get("runtime"):
+                                content.duration = details["runtime"] * 60  # Convert to seconds
+                            if details.get("imdb_id"):
+                                content.metadata = content.metadata or {}
+                                content.metadata["imdb_id"] = details["imdb_id"]
+                            
+                            await content.save()
+                            logger.info(f"[Background] Updated content with TMDB data for job {job_id}")
+            
+            # Mark stage as completed
+            if job:
+                job.stages["imdb_lookup"] = "completed"
+                await job.save()
+                await self._broadcast_queue_update()
+            
+            logger.info(f"[Background] IMDB/TMDB lookup completed for job {job_id}")
+            
+        except Exception as e:
+            logger.error(f"[Background] IMDB lookup failed for job {job_id}: {e}", exc_info=True)
+            # Mark as skipped on error (non-critical)
+            try:
+                job = await UploadJob.find_one(UploadJob.job_id == job_id)
+                if job:
+                    job.stages["imdb_lookup"] = "skipped"
+                    await job.save()
+                    await self._broadcast_queue_update()
+            except:
+                pass
 
     async def _extract_subtitles_background(self, content_id: str, local_path: str, job_id: str):
         """
@@ -1040,13 +1152,25 @@ class UploadService:
         try:
             logger.info(f"[Background] Starting subtitle extraction for job {job_id}")
             
+            # Update job stage
+            job = await UploadJob.find_one(UploadJob.job_id == job_id)
+            if job:
+                job.stages["subtitle_extraction"] = "in_progress"
+                await job.save()
+                await self._broadcast_queue_update()
+            
             # Check if file still exists
             if not os.path.exists(local_path):
                 logger.warning(f"[Background] Local file no longer exists: {local_path}")
+                if job:
+                    job.stages["subtitle_extraction"] = "skipped"
+                    await job.save()
+                    await self._broadcast_queue_update()
                 return
             
             from app.services.ffmpeg_service import FFmpegService
-            from app.models.content import Content, SubtitleTrackDoc, SubtitleCueModel
+            from app.models.content import Content
+            from app.models.subtitles import SubtitleTrackDoc, SubtitleCueModel
             from app.services.subtitle_service import parse_srt
             from beanie import PydanticObjectId
             
@@ -1075,17 +1199,18 @@ class UploadService:
             for sub_data in extracted_subs:
                 try:
                     # Parse and save subtitle
+                    parsed_track = parse_srt(sub_data["content"])
                     subtitle_track = SubtitleTrackDoc(
                         content_id=content_id,
                         language=sub_data.get("language", "und"),
                         format=sub_data.get("format", "srt"),
-                        is_embedded=True,
                         source="embedded",
                         cues=[SubtitleCueModel(
-                            start=cue["start"],
-                            end=cue["end"],
-                            text=cue["text"]
-                        ) for cue in parse_srt(sub_data["content"]).cues]
+                            index=cue.index,
+                            start_time=cue.start_time,
+                            end_time=cue.end_time,
+                            text=cue.text
+                        ) for cue in parsed_track.cues]
                     )
                     await subtitle_track.insert()
                     saved_count += 1
@@ -1097,13 +1222,29 @@ class UploadService:
                 content.subtitle_extraction_status = "completed"
                 content.subtitle_last_checked = datetime.utcnow()
                 existing_languages = set(t.language for t in await SubtitleTrackDoc.get_for_content(content_id))
-                content.available_subtitles = sorted(list(existing_languages))
+                content.available_subtitle_languages = sorted(list(existing_languages))
                 await content.save()
                 
             logger.info(f"[Background] Saved {saved_count} subtitle tracks for job {job_id}")
             
+            # Mark stage as completed
+            job = await UploadJob.find_one(UploadJob.job_id == job_id)
+            if job:
+                job.stages["subtitle_extraction"] = "completed"
+                await job.save()
+                await self._broadcast_queue_update()
+            
         except Exception as e:
             logger.error(f"[Background] Subtitle extraction failed for job {job_id}: {e}", exc_info=True)
+            # Mark as skipped on error (non-critical)
+            try:
+                job = await UploadJob.find_one(UploadJob.job_id == job_id)
+                if job:
+                    job.stages["subtitle_extraction"] = "skipped"
+                    await job.save()
+                    await self._broadcast_queue_update()
+            except:
+                pass
 
 
 # Global upload service instance

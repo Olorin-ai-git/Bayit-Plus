@@ -166,7 +166,13 @@ const UploadsPage: React.FC = () => {
           }));
         },
         (fileIndex, job) => {
-          logger.info(`File ${fileIndex + 1} uploaded successfully`, 'UploadsPage', { job_id: job.job_id });
+          // Note: This means file was sent to server and queued - NOT fully processed yet
+          // Full processing (hash, GCS upload, DB entry) happens in the background queue
+          logger.info(`File ${fileIndex + 1} queued for processing`, 'UploadsPage', { 
+            job_id: job.job_id,
+            status: job.status,
+            current_stage: job.current_stage || 'queued'
+          });
         }
       );
       
@@ -887,35 +893,38 @@ const UploadsPage: React.FC = () => {
               )}
             </View>
 
-            {/* Queue Actions */}
-            <View style={styles.queueActions}>
+            {/* Queue Actions - Row 1: Scan button */}
+            <View style={styles.queueActionsMain}>
               <GlassButton
                 title={triggeringUpload ? t('common.loading') : t('admin.uploads.scanFolders', 'Scan Folders')}
                 variant="ghost"
                 icon={triggeringUpload ? null : <FolderOpen size={16} color="white" />}
                 onPress={handleTriggerUpload}
                 disabled={triggeringUpload || queueStats.processing > 0 || queueStats.queued > 0}
-                style={styles.queueActionButton}
+                style={styles.queueActionButtonFull}
               >
                 {triggeringUpload && <ActivityIndicator size="small" color={colors.primary} />}
               </GlassButton>
-              
+            </View>
+            
+            {/* Queue Actions - Row 2: Reset & Clear buttons */}
+            <View style={styles.queueActionsSecondary}>
               <GlassButton
-                title={resettingCache ? '' : t('admin.uploads.resetCache', 'Reset')}
+                title={resettingCache ? '' : t('admin.uploads.resetCache', 'Reset Cache')}
                 variant="ghost"
                 icon={resettingCache ? <ActivityIndicator size="small" color={colors.warning} /> : <XCircle size={16} color={colors.textMuted} />}
                 onPress={handleResetCache}
                 disabled={resettingCache}
-                style={styles.queueActionButtonSmall}
+                style={styles.queueActionButtonHalf}
               />
 
               <GlassButton
-                title={clearingQueue ? '' : t('admin.uploads.clearQueue', 'Clear')}
+                title={clearingQueue ? '' : t('admin.uploads.clearQueue', 'Clear Queue')}
                 variant="danger"
                 icon={clearingQueue ? <ActivityIndicator size="small" color={colors.error} /> : <Trash2 size={16} color="white" />}
                 onPress={handleClearQueue}
                 disabled={clearingQueue || (queueStats.queued === 0 && queueStats.processing === 0)}
-                style={styles.queueActionButtonSmall}
+                style={styles.queueActionButtonHalf}
               />
             </View>
 
@@ -1762,16 +1771,19 @@ const styles = StyleSheet.create({
     color: colors.textMuted,
     marginTop: 2,
   },
-  queueActions: {
+  queueActionsMain: {
+    marginBottom: spacing.sm,
+  },
+  queueActionsSecondary: {
     flexDirection: 'row',
     gap: spacing.sm,
     marginBottom: spacing.sm,
   },
-  queueActionButton: {
-    flex: 1,
+  queueActionButtonFull: {
+    width: '100%',
   },
-  queueActionButtonSmall: {
-    minWidth: 70,
+  queueActionButtonHalf: {
+    flex: 1,
   },
   triggerResult: {
     flexDirection: 'row',

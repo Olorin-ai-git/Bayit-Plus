@@ -1475,6 +1475,19 @@
       "noQueuedItems": "No items in queue",
       "addedAt": "Added",
       "recentCompleted": "Recently Completed",
+      "stages": {
+        "browserUpload": "Uploading to server",
+        "hashCalculation": "Calculating hash",
+        "duplicateCheck": "Checking for duplicates",
+        "metadataExtraction": "Extracting metadata",
+        "gcsUpload": "Uploading to cloud",
+        "databaseInsert": "Saving to database",
+        "imdbLookup": "Fetching IMDB info",
+        "subtitleExtraction": "Extracting subtitles",
+        "completed": "Completed",
+        "failed": "Failed",
+        "skipped": "Skipped"
+      },
       "form": {
         "name": "Folder Name",
         "namePlaceholder": "My Movies Folder",

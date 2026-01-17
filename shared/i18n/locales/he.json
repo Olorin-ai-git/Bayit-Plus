@@ -1346,6 +1346,19 @@
       "noQueuedItems": "אין פריטים בתור",
       "addedAt": "נוסף",
       "recentCompleted": "הושלמו לאחרונה",
+      "stages": {
+        "browserUpload": "מעלה לשרת",
+        "hashCalculation": "מחשב גיבוב",
+        "duplicateCheck": "בודק כפילויות",
+        "metadataExtraction": "מחלץ מטאדאטה",
+        "gcsUpload": "מעלה לענן",
+        "databaseInsert": "שומר למסד נתונים",
+        "imdbLookup": "מביא מידע מ-IMDB",
+        "subtitleExtraction": "מחלץ כתוביות",
+        "completed": "הושלם",
+        "failed": "נכשל",
+        "skipped": "דולג"
+      },
       "form": {
         "name": "שם תיקייה",
         "namePlaceholder": "תיקיית הסרטים שלי",
